@@ -71,20 +71,27 @@ if ($courseid > 0) {
         echo $OUTPUT->box(text_to_html(get_string("activitysuccess", "block_exacomp")));
     }
     $zeile = "";
-    $activities = get_coursemodules_in_course('assignment', $COURSE->id, '');
+    $activities_old = get_coursemodules_in_course('assignment', $COURSE->id, '');
+    $activities = get_coursemodules_in_course('assign', $COURSE->id, '');
+    
     echo $OUTPUT->box(text_to_html(get_string("explaineditactivities_subjects", "block_exacomp")));
 
     //Inhalt nur zeigen falls Aktivitäten vorhanden sind
-    if ($activities) {
+    if ($activities || $activities_old) {
         $content.='<div class="grade-report-grader">
 		<table id="comps" class="compstable flexible boxaligncenter generaltable">
 		<tr class="heading r0">
 		<td class="category catlevel1" colspan="' . (count($activities) + 1) . '" scope="col"><h2>' . $COURSE->fullname . '</h2></td></tr>
 		<tr><td></td>';
         foreach ($activities as $activitymodule) {
-            $activity = $DB->get_record('assignment', array("id" => $activitymodule->instance));
-            $content.='<td class="ec_tableheadwidth"><a href="' . $CFG->wwwroot . '/mod/assignment/submissions.php?id=' . $activitymodule->id . '">' . $activity->name . '</a><input type="hidden" value="' . $activitymodule->id . '" name="ec_activity[' . $activitymodule->id . ']" /></td>';
+            $activity = $DB->get_record('assign', array("id" => $activitymodule->instance));
+            $content.='<td class="ec_tableheadwidth"><a href="' . $CFG->wwwroot . '/mod/assign/view.php?id=' . $activitymodule->id . '">' . $activity->name . '</a><input type="hidden" value="' . $activitymodule->id . '" name="ec_activity[' . $activitymodule->id . ']" /></td>';
             $zeile.='<td><input type="checkbox" name="data[' . $activitymodule->id . '][###descid###]" checked="###checked' . $activitymodule->id . '_###descid######" /></td>';
+        }
+        foreach ($activities_old as $activitymodule) {
+        	$activity = $DB->get_record('assignment', array("id" => $activitymodule->instance));
+        	$content.='<td class="ec_tableheadwidth"><a href="' . $CFG->wwwroot . '/mod/assignment/submissions.php?id=' . $activitymodule->id . '">' . $activity->name . '</a><input type="hidden" value="' . $activitymodule->id . '" name="ec_activity[' . $activitymodule->id . ']" /></td>';
+        	$zeile.='<td><input type="checkbox" name="data[' . $activitymodule->id . '][###descid###]" checked="###checked' . $activitymodule->id . '_###descid######" /></td>';
         }
         $content.="</tr>";
         $descriptors = block_exacomp_get_descritors_list($courseid);

@@ -502,7 +502,7 @@ function block_exacomp_reset_coursetopics($courseid) {
 }
 function block_exacomp_get_subjects() {
     global $DB;
-    $query = 'SELECT s.title, s.id FROM {block_exacompsubjects} s WHERE s.stid IN (SELECT t.typeid FROM {block_exacompmdltype_mm} t)';
+    $query = 'SELECT s.id, s.title FROM {block_exacompsubjects} s WHERE s.stid IN (SELECT t.typeid FROM {block_exacompmdltype_mm} t)';
     //echo $query;
     $subjects = $DB->get_records_sql($query);
 

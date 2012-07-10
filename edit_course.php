@@ -132,7 +132,10 @@ if (empty($action)) {
 }
 else if ($action == 'detail') {
 
-    $subids = optional_param('data', '', PARAM_ALPHANUMEXT);
+    if (!empty($_POST["data"])){
+    	if (function_exists("clean_param_array")) $subids=clean_param_array($_POST["data"],PARAM_ALPHANUMEXT,true);
+    	else $subids=optional_param('data', '', PARAM_ALPHANUMEXT);
+    }
     
     if ($subids) {
         $subjects = block_exacomp_get_subjects_by_id($subids);

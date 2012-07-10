@@ -107,7 +107,7 @@ foreach ($activities as $activitymod) {
     if($activitymod->module != 1)
             continue;
     // datensatz der activity holen, 
-    $activity = get_coursemodule_from_id('assignment',$activitymod->id);
+    $activity = ($temp = get_coursemodule_from_id('assignment',$activitymod->id)) ? $temp : get_coursemodule_from_id('assign',$activitymod->id);
 
     if ($trclass == "even") {
         $trclass = "odd";
