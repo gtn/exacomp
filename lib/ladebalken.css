@@ -1,0 +1,13 @@
+<style type="text/css">
+div.ladebalken {
+    background:url('pix/balkenleer.png') no-repeat left center;
+    width:425px;
+    height:27px;
+}
+ 
+div.lbfortschritt {
+    background:url('pix/balkenfull.png') no-repeat left center;
+    height:27px;
+    width:60%;
+}
+</style>
