@@ -710,7 +710,7 @@ function block_exacomp_build_comp_tree($courseid, $sort="tax") {
 	global $DB;
 	//to do: left
 	//$sql = "SELECT e.id, d.title, t.title as topic, s.title as subject, e.title as example, tax.title as tax, e.task, e.externalurl, e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement FROM {block_exacompdescriptors} d, {block_exacomptopics} t, {block_exacompsubjects} s, {block_exacompdescrtopic_mm} dt, {block_exacompcoutopi_mm} ct, {block_exacompexamples} e LEFT JOIN {block_exacomptaxonomies} tax ON e.taxid=tax.id, {block_exacompdescrexamp_mm} de WHERE ct.courseid = ".$courseid." AND ct.topicid = t.id AND t.subjid = s.id AND d.id=dt.descrid AND dt.topicid=t.id AND de.descrid=d.id AND de.exampid=e.id GROUP BY e.id";
-	$sql = "SELECT e.id, d.title, t.title as topic, s.title as subject, e.title as example, tax.title as tax, e.task, e.externalurl,
+	$sql = "SELECT concat(e.id,'_',d.id) as uniquid,e.id, d.title, t.title as topic, s.title as subject, concat(e.id,'_',d.id,' ',e.title) as example, tax.title as tax, e.task, e.externalurl,
 	e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement
 	FROM {block_exacompexamples} e INNER JOIN {block_exacompdescrexamp_mm} de ON e.id=de.exampid
 	INNER JOIN {block_exacompdescriptors} d ON d.id=de.descrid
@@ -724,7 +724,7 @@ function block_exacomp_build_comp_tree($courseid, $sort="tax") {
 	if($courseid > 0){
 		$sql.=" WHERE ct.courseid = ".$courseid;
 	}
-	$sql.=" GROUP BY e.id";
+	//$sql.=" GROUP BY e.id";
 
 	if($sort=="desc")
 		$sql.=" ORDER BY s.title,t.title,d.sorting";
