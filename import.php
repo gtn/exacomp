@@ -25,7 +25,7 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-
+ini_set('max_execution_time', 3000);
 require_once dirname(__FILE__) . '/inc.php';
 require_once dirname(__FILE__) . '/lib/div.php';
 require_once dirname(__FILE__) . '/lib/xmllib.php';
