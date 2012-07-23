@@ -201,7 +201,14 @@ function block_exacomp_get_assignments($courseid) { //alle assignments eines bes
 	}
 	return $returnassignments;
 }
-
+function block_exacomp_get_activityurl($activity) {
+	global $DB, $CFG;
+	$mod = $DB->get_record('modules',array("id"=>$activity->module));
+	if($mod->name == "assignment")
+		return $CFG->wwwroot . '/mod/assignment/submissions.php?id=' . ($activity->id);
+	else if($mod->name == "assign")
+		return $CFG->wwwroot . '/mod/assign/view.php?id=' . $activity->id;
+}
 function print_descriptors($descriptors, $classprefix="ec") {
 	foreach ($descriptors as $descriptor) {
 		$content.='<p class="' . $classprefix . '_descriptor">' . $descriptor->title . '</p>';

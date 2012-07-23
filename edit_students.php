@@ -118,7 +118,7 @@ foreach ($activities as $activitymod) {
     }
 		//aufgabe=assignment, titel anzeigen und link 
     //$content.='<tr class="r2 ' . $trclass . '" ' . $bgcolor . '><td colspan="' . (count($students)*$colspan + 1) . '" class="ec_activitylist_item"><a href="' . $CFG->wwwroot . '/mod/assignment/submissions.php?id=' . ($activity->id + $courseid) . '&course='.$courseid.'">' . $activity->name . '</a><input type="hidden" value="' . $activity->id . '" name="ec_activity[' . $activity->id . ']" /></td></tr>';
-    $content.='<tr class="r2 ' . $trclass . '" ' . $bgcolor . '><td colspan="' . (count($students)*$colspan + 1) . '" class="ec_activitylist_item"><a href="' . $CFG->wwwroot . '/mod/assignment/submissions.php?id=' . ($activity->id) . '&amp;course='.$courseid.'">' . $activity->name . '</a><input type="hidden" value="' . $activity->id . '" name="ec_activity[' . $activity->id . ']" /></td></tr>';
+    $content.='<tr class="r2 ' . $trclass . '" ' . $bgcolor . '><td colspan="' . (count($students)*$colspan + 1) . '" class="ec_activitylist_item"><a href="' . block_exacomp_get_activityurl($activitymod) . '&amp;course='.$courseid.'">' . $activity->name . '</a><input type="hidden" value="' . $activity->id . '" name="ec_activity[' . $activity->id . ']" /></td></tr>';
     $zeile = "";
     $tempzeile = "";
 
