@@ -2,7 +2,7 @@
 
 function block_exacomp_xml_insert_edulevel($value) {
 	global $DB;
-	$sql='INSERT INTO {block_exacompedulevels} (id,sorting,title) VALUES('.$value->uid.','.$value->sorting.',"'.$value->title.'")';
+	$sql='INSERT INTO {block_exacompedulevels} (id,sorting,title) VALUES('.$value->uid.','.$value->sorting.',\''.$value->title.'\')';
 
 	$DB->Execute($sql);
 
@@ -13,7 +13,7 @@ function block_exacomp_xml_insert_schooltyp($value) {
 
 	$value->id = $value->uid;
 
-	$sql='INSERT INTO {block_exacompschooltypes} (id,sorting,title,elid,isoez) VALUES('.$value->uid.','.$value->sorting.',"'.$value->title.'",'.$value->elid.','.$value->isoez.')';
+	$sql='INSERT INTO {block_exacompschooltypes} (id,sorting,title,elid,isoez) VALUES('.$value->uid.','.$value->sorting.',\''.$value->title.'\','.$value->elid.','.$value->isoez.')';
 	$DB->Execute($sql);
 
 }
@@ -39,14 +39,14 @@ function block_exacomp_xml_insert_subject($value) {
 	} else {
 		//insert
 
-		$sql='INSERT INTO {block_exacompsubjects} (id,sorting,title,stid,sourceid) VALUES('.$value->uid.','.$value->sorting.',"'.$value->title.'",'.$value->stid.','.$value->uid.')';
+		$sql='INSERT INTO {block_exacompsubjects} (id,sorting,title,stid,sourceid) VALUES('.$value->uid.','.$value->sorting.',\''.$value->title.'\','.$value->stid.','.$value->uid.')';
 		$DB->Execute($sql);
 	}
 }
 
 function block_exacomp_xml_insert_skill($value) {
 	global $DB;
-	$sql='INSERT INTO {block_exacompskills} (id,sorting,title) VALUES('.$value->uid.','.$value->sorting.',"'.$value->title.'")';
+	$sql='INSERT INTO {block_exacompskills} (id,sorting,title) VALUES('.$value->uid.','.$value->sorting.',\''.$value->title.'\')';
 	$DB->Execute($sql);
 
 }
@@ -80,7 +80,7 @@ function block_exacomp_xml_insert_taxonomie($value) {
 		$value->sourceid = $value->uid;
 		$value->parentid = $value->parent_tax;
 
-		$sql='INSERT INTO {block_exacomptaxonomies} (id,sorting,title,sourceid) VALUES('.$value->uid.','.$value->sorting.',"'.$value->title.'",'.$value->uid.')';
+		$sql='INSERT INTO {block_exacomptaxonomies} (id,sorting,title,sourceid) VALUES('.$value->uid.','.$value->sorting.',\''.$value->title.'\','.$value->uid.')';
 		$DB->Execute($sql);
 
 	}

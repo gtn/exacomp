@@ -25,10 +25,10 @@ function create_pulldown_array($items, $selectname, $anzeigefeld, $wert, $ka, $m
 	$prefixid = "exacomp";
 	if (count($items) > 0) {
 		if ($multiple == "multiple") {
-			$inhalt = '<select name="' . $selectname . '[]" ' . $multiple . ' ' . $onchange . '>';
+			$inhalt = '<select name=\'' . $selectname . '[]\' ' . $multiple . ' ' . $onchange . '>';
 		}
 		else
-			$inhalt='<select name="' . $selectname . '" ' . $multiple . ' ' . $onchange . '>';
+			$inhalt='<select name=\'' . $selectname . '\' ' . $multiple . ' ' . $onchange . '>';
 
 
 		if ($ka)
@@ -71,6 +71,8 @@ function block_exacomp_get_descriptors_by_course($courseid) {
 	//$possible = block_exacomp_get_possible_descritptors_by_course($courseid);
 	$query = "SELECT d.title, d.id FROM {block_exacompdescriptors} d INNER JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid INNER JOIN {course_modules} a ON da.activityid=a.id WHERE a.course = :courseid GROUP BY d.id";
 	$query.= " ORDER BY d.sorting";
+
+	echo "in block_exacomp_get:des";
 	$descriptors = $DB->get_records_sql($query, array("courseid" => $courseid));
 	if (!$descriptors) {
 		$descriptors = array();
@@ -241,8 +243,9 @@ function block_exacomp_set_descractivitymm($descrlist, $activityid) {
 }
 
 function block_exacomp_set_descusermm($values, $courseid, $reviewerid, $role) {
-	global $DB;
-	$query= 'DELETE c.* FROM {block_exacompdescuser_mm} c INNER JOIN {course_modules} a ON c.activityid=a.id WHERE a.course='.$courseid.' AND c.role = ' . $role;
+	global $DB, $CFG;
+	if(strcmp("pgsql", $CFG->dbtype)==0) $query= 'DELETE FROM {block_exacompdescuser_mm} c USING {course_modules} a WHERE c.activityid=a.id AND a.course='.$courseid.' AND c.role = ' . $role;
+	else $query= 'DELETE c.* FROM {block_exacompdescuser_mm} c INNER JOIN {course_modules} a ON c.activityid=a.id WHERE a.course='.$courseid.' AND c.role = ' . $role;
 	$DB->Execute($query);
 
 	foreach ($values as $value) {
@@ -710,9 +713,7 @@ function block_exacomp_build_comp_tree($courseid, $sort="tax") {
 	global $DB;
 	//to do: left
 	//$sql = "SELECT e.id, d.title, t.title as topic, s.title as subject, e.title as example, tax.title as tax, e.task, e.externalurl, e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement FROM {block_exacompdescriptors} d, {block_exacomptopics} t, {block_exacompsubjects} s, {block_exacompdescrtopic_mm} dt, {block_exacompcoutopi_mm} ct, {block_exacompexamples} e LEFT JOIN {block_exacomptaxonomies} tax ON e.taxid=tax.id, {block_exacompdescrexamp_mm} de WHERE ct.courseid = ".$courseid." AND ct.topicid = t.id AND t.subjid = s.id AND d.id=dt.descrid AND dt.topicid=t.id AND de.descrid=d.id AND de.exampid=e.id GROUP BY e.id";
-
-$sql = "SELECT concat(e.id,'_',d.id) as uniquid,e.id, d.title, t.title as topic, s.title as subject, e.title as example, tax.title as tax, e.task, e.externalurl,
-//$sql = "SELECT concat(e.id,'_',d.id) as uniquid,e.id, d.title, t.title as topic, s.title as subject, concat(e.id,'_',d.id,' ',e.title) as example, tax.title as tax, e.task, e.externalurl,
+	$sql = "SELECT e.id, d.title, t.title as topic, s.title as subject, e.title as example, tax.title as tax, e.task, e.externalurl,
 	e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement
 	FROM {block_exacompexamples} e INNER JOIN {block_exacompdescrexamp_mm} de ON e.id=de.exampid
 	INNER JOIN {block_exacompdescriptors} d ON d.id=de.descrid

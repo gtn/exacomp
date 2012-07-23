@@ -31,9 +31,12 @@ require_once dirname(__FILE__) . '/lib/div.php';
 require_once($CFG->dirroot . "/lib/datalib.php");
 
 global $COURSE, $CFG, $OUTPUT,$DB;
-$sql5="SET @@group_concat_max_len = 5012";
 
-$DB->execute($sql5);
+if(strcmp("mysql",$CFG->dbtype)==0){
+	$sql5="SET @@group_concat_max_len = 5012";
+
+	$DB->execute($sql5);
+}
 $content = "";
 $courseid = required_param('courseid', PARAM_INT);
 $action = optional_param('action', "", PARAM_ALPHA);
