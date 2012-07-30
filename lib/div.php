@@ -72,7 +72,6 @@ function block_exacomp_get_descriptors_by_course($courseid) {
 	$query = "SELECT d.title, d.id FROM {block_exacompdescriptors} d INNER JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid INNER JOIN {course_modules} a ON da.activityid=a.id WHERE a.course = :courseid GROUP BY d.id";
 	$query.= " ORDER BY d.sorting";
 
-	echo "in block_exacomp_get:des";
 	$descriptors = $DB->get_records_sql($query, array("courseid" => $courseid));
 	if (!$descriptors) {
 		$descriptors = array();
@@ -83,20 +82,29 @@ function block_exacomp_get_descriptors_by_course($courseid) {
 function block_exacomp_get_descriptors_by_course_ids($courseid) {
 	global $DB;
 	//$possible = block_exacomp_get_possible_descritptors_by_course($courseid);
-	$query = "select group_concat(cast(d.id as char)) as ids FROM {block_exacompdescriptors} d INNER JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid INNER JOIN {course_modules} a ON da.activityid=a.id WHERE a.course = :courseid";
-	$descriptorids = $DB->get_record_sql($query, array("courseid" => $courseid));
+	
+	//da.id so query is unique
+	$query = "select  da.id, d.id AS did FROM {block_exacompdescriptors} d INNER JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid INNER JOIN {course_modules} a ON da.activityid=a.id WHERE a.course = :courseid";
+	$descriptorids = $DB->get_records_sql($query, array("courseid" => $courseid));
+	
+	$commaids= "";
+	foreach($descriptorids as $descriptorid)
+		$commaids .= $descriptorid->did.",";
+	
 	if (!$descriptorids) {
 		return 0;
 	}
-	return $descriptorids->ids;
+	
+	//cut of last ","
+	return substr($commaids, 0, strlen($commaids)-1);
 }
 
 
 function block_exacomp_get_descritors_list($courseid,$onlywithactivitys=0) {
 	global $CFG, $DB;
-	 
+	$condition = array($courseid); 
 	$query = "SELECT d.id,d.title,tp.title as topic, s.title as subject FROM {block_exacompdescriptors} d, {block_exacompcoutopi_mm} c, {block_exacompdescrtopic_mm} t, {block_exacomptopics} tp, {block_exacompsubjects} s
-	WHERE d.id=t.descrid AND t.topicid = c.topicid AND t.topicid=tp.id AND tp.subjid = s.id AND c.courseid = " . $courseid;
+	WHERE d.id=t.descrid AND t.topicid = c.topicid AND t.topicid=tp.id AND tp.subjid = s.id AND c.courseid = ?";
 	if ($onlywithactivitys==1){
 		$descr=block_exacomp_get_descriptors_by_course_ids($courseid);
 		if ($descr=="") $descr=0;
@@ -104,7 +112,7 @@ function block_exacomp_get_descritors_list($courseid,$onlywithactivitys=0) {
 	}
 	$query.= " ORDER BY s.title,tp.title,d.sorting";
 	// echo $query;
-	$descriptors = $DB->get_records_sql($query);
+	$descriptors = $DB->get_records_sql($query, $condition);
 	if (!$descriptors) {
 		$descriptors = array();
 	}
@@ -114,10 +122,11 @@ function block_exacomp_get_descritors_list($courseid,$onlywithactivitys=0) {
 function block_exacomp_get_descriptors($activityid) {
 	global $DB;
 	$query = "SELECT descr.title,descr.id FROM {block_exacompdescriptors} descr INNER JOIN {block_exacompdescractiv_mm} mm  ON descr.id=mm.descrid INNER JOIN {course_modules} l ON l.id=mm.activityid ";
-	$query.="WHERE l.id=" . $activityid;
+	$query.="WHERE l.id=?";
 	$query.=" ORDER BY descr.sorting";
-
-	$descriptors = $DB->get_records_sql($query);
+	
+	$descriptors = $DB->get_records_sql($query, array($activityid));
+	
 	if (!$descriptors) {
 		$descriptors = array();
 	}
@@ -126,21 +135,23 @@ function block_exacomp_get_descriptors($activityid) {
 
 function block_exacomp_get_activityid($activity) {
 	global $DB;
-	$query = "SELECT distinct cm.id FROM {course_modules} cm, {assignment} a, {modules} m WHERE cm.module = m.id AND m.name = 'assignment' AND cm.instance = " . $activity->id;
-	$id = $DB->get_record_sql($query);
+	$query = "SELECT distinct cm.id FROM {course_modules} cm, {assignment} a, {modules} m WHERE cm.module = m.id AND m.name = 'assignment' AND cm.instance = ?";
+	$id = $DB->get_record_sql($query, array($activity->id));
 	return $id;
 }
 
 function block_exacomp_get_activities($descid, $courseid = null) { //alle assignments die einem bestimmten descriptor zugeordnet sind
 	global $CFG, $DB;
 	$query = "SELECT a.id,ass.grade, mm.activitytype FROM {block_exacompdescriptors} descr INNER JOIN {block_exacompdescractiv_mm} mm  ON descr.id=mm.descrid INNER JOIN {course_modules} a ON a.id=mm.activityid LEFT JOIN {assignment} ass ON ass.id=a.instance  ";
-	$query.="WHERE descr.id=" . $descid;
+	$query.="WHERE descr.id=?";
 	//echo $query;
+	$condition = array($descid);
+	if ($courseid){
+		$query.=" AND a.course=?";
+		$condition = array($descid, $courseid);
+	}
 
-	if ($courseid)
-		$query.=" AND a.course=" . $courseid;
-
-	$activities = $DB->get_records_sql($query);
+	$activities = $DB->get_records_sql($query, $condition);
 	if (!$activities) {
 		$activities = array();
 	}
@@ -159,9 +170,9 @@ function block_exacomp_get_submissions($activityid) {
 
 function block_exacomp_get_competences($descriptorid, $courseid, $role = 1) {
 	global $DB;
-	$query = 'SELECT c.id,c.activityid, c.descid, c.userid, c.wert FROM {block_exacompdescuser_mm} c, {course_modules} a WHERE c.activityid = a.id AND a.course = ' . $courseid . ' AND c.descid = ' . $descriptorid . ' AND c.role = ' . $role;
+	$query = 'SELECT c.id,c.activityid, c.descid, c.userid, c.wert FROM {block_exacompdescuser_mm} c, {course_modules} a WHERE c.activityid = a.id AND a.course = ? AND c.descid = ? AND c.role = ?';
 
-	$competences = $DB->get_records_sql($query);
+	$competences = $DB->get_records_sql($query, array($courseid, $descriptorid, $role));
 	if (!$competences) {
 		$competences = array();
 	}
@@ -171,16 +182,16 @@ function block_exacomp_get_competences($descriptorid, $courseid, $role = 1) {
 function block_exacomp_get_genericcompetences($descriptorid, $courseid, $role = 1,$grading=1) {
 	global $DB;
 	$gut=ceil($grading/2);
-	$query = "SELECT * FROM {block_exacompdescuser} WHERE descid=".$descriptorid." AND courseid=".$courseid." AND role=".$role." AND wert<=".$gut;
-	$users = $DB->get_records_sql($query);
+	$query = "SELECT * FROM {block_exacompdescuser} WHERE descid=? AND courseid=? AND role=? AND wert<=?";
+	$users = $DB->get_records_sql($query, array($descriptorid, $courseid, $role, $gut));
 	return $users;
 }
 
 function block_exacomp_get_competences_by_descriptor($descriptorid, $courseid, $role) {
 	global $DB;
-	$query = 'SELECT c.id, c.descid, c.userid,c.wert, u.lastname, u.firstname FROM {block_exacompdescuser} c, {user} u WHERE c.descid = ' . $descriptorid . ' AND c.courseid = ' . $courseid . ' AND c.role = ' . $role.' AND c.reviewerid=u.id';
+	$query = 'SELECT c.id, c.descid, c.userid,c.wert, u.lastname, u.firstname FROM {block_exacompdescuser} c, {user} u WHERE c.descid =? AND c.courseid =? AND c.role =? AND c.reviewerid=u.id';
 
-	$competences = $DB->get_records_sql($query);
+	$competences = $DB->get_records_sql($query, array($descriptorid, $courseid, $role));
 	if (!$competences) {
 		$competences = array();
 	}
@@ -217,9 +228,9 @@ function print_descriptors($descriptors, $classprefix="ec") {
 
 function get_descriptor_ids($activityid) {
 	global $CFG;
-	$query = "select GROUP_CONCAT(cast(descrid as char))  as descrids from " . $CFG->prefix . "block_exacompdescractiv_mm WHERE activityid=" . intval($activityid);
+	$query = "select GROUP_CONCAT(cast(descrid as char))  as descrids from " . $CFG->prefix . "block_exacompdescractiv_mm WHERE activityid=?";
 
-	$str = get_record_sql($query);
+	$str = get_record_sql($query, array(intval($activityid)));
 	return $str->descrids;
 }
 
@@ -251,9 +262,9 @@ function block_exacomp_set_descractivitymm($descrlist, $activityid) {
 
 function block_exacomp_set_descusermm($values, $courseid, $reviewerid, $role) {
 	global $DB, $CFG;
-	if(strcmp("pgsql", $CFG->dbtype)==0) $query= 'DELETE FROM {block_exacompdescuser_mm} c USING {course_modules} a WHERE c.activityid=a.id AND a.course='.$courseid.' AND c.role = ' . $role;
-	else $query= 'DELETE c.* FROM {block_exacompdescuser_mm} c INNER JOIN {course_modules} a ON c.activityid=a.id WHERE a.course='.$courseid.' AND c.role = ' . $role;
-	$DB->Execute($query);
+	if(strcmp("pgsql", $CFG->dbtype)==0) $query= 'DELETE FROM {block_exacompdescuser_mm} c USING {course_modules} a WHERE c.activityid=a.id AND a.course=? AND c.role = ?';
+	else $query= 'DELETE c.* FROM {block_exacompdescuser_mm} c INNER JOIN {course_modules} a ON c.activityid=a.id WHERE a.course=? AND c.role =? ';
+	$DB->Execute($query, array($courseid, $role));
 
 	foreach ($values as $value) {
 		$data = array(
@@ -520,8 +531,8 @@ function block_exacomp_get_subjects() {
 }
 function block_exacomp_get_possible_descritptors_by_course($courseid) {
 	global $DB;
-	$query = 'SELECT dt.descrid FROM {block_exacompdescrtopic_mm} dt, {block_exacompcoutopi_mm} ct WHERE dt.topicid = ct.topicid AND ct.courseid = '.$courseid;
-	$possible = $DB->get_records_sql($query);
+	$query = 'SELECT dt.descrid FROM {block_exacompdescrtopic_mm} dt, {block_exacompcoutopi_mm} ct WHERE dt.topicid = ct.topicid AND ct.courseid = ?';
+	$possible = $DB->get_records_sql($query, array($courseid));
 	$comma_separated = implode(",",$possible);
 
 	return $comma_separated;
@@ -537,9 +548,9 @@ function block_exacomp_get_subjects_by_id($subids) {
 
 function block_exacomp_get_topics($subjectid) {
 	global $DB;
-	$query = "SELECT * FROM {block_exacomptopics} WHERE subjid=".$subjectid;
+	$query = "SELECT * FROM {block_exacomptopics} WHERE subjid=?";
 	$query.= " ORDER BY sorting";
-	$topics = $DB->get_records_sql($query);
+	$topics = $DB->get_records_sql($query, array($subjectid));
 
 	//$topics = $DB->get_records('block_exacomptopics', array("subjid" => $subjectid));
 	return $topics;
@@ -556,8 +567,8 @@ function block_exacomp_check_subject_by_course($subjectid, $courseid) {
 	$query = '  SELECT ct.topicid FROM {block_exacompcoutopi_mm} ct
 	INNER JOIN {block_exacomptopics} t ON ct.topicid = t.id
 	INNER JOIN {block_exacompsubjects} s ON t.subjid = s.id
-	WHERE ct.courseid = ' . $courseid . ' AND s.id = ' . $subjectid;
-	$subjects = $DB->get_records_sql($query);
+	WHERE ct.courseid = ? AND s.id = ?';
+	$subjects = $DB->get_records_sql($query, array($courseid, $subjectid));
 
 	return $subjects;
 }
@@ -609,8 +620,8 @@ function block_exacomp_get_student_icon($activities, $student) {
 			continue;
 
 		//$submission = $DB->get_record('assignment_submissions', array("userid" => $student->id, "assignment" => $act->instance));
-		$query = ($mod->name === "assign") ? "SELECT s.*, a.grade as agrade FROM {assign_submission} s INNER JOIN {assign} a ON s.assignment=a.id WHERE a.id=".$act->instance." AND s.userid=".$student->id : "SELECT s.*, a.grade as agrade FROM {assignment_submissions} s INNER JOIN {assignment} a ON s.assignment=a.id WHERE a.id=".$act->instance." AND s.userid=".$student->id;
-		$rs = $DB->get_records_sql($query);
+		$query = ($mod->name === "assign") ? "SELECT s.*, a.grade as agrade FROM {assign_submission} s INNER JOIN {assign} a ON s.assignment=a.id WHERE a.id=? AND s.userid=?" : "SELECT s.*, a.grade as agrade FROM {assignment_submissions} s INNER JOIN {assignment} a ON s.assignment=a.id WHERE a.id=? AND s.userid=?";
+		$rs = $DB->get_records_sql($query, array($act->instance, $student->id));
 		foreach($rs as $submission){//hoechstens 1 durchlauf moeglich
 			if ($submission) {
 				$submitted .= "<li>" . $act->name;
@@ -652,7 +663,7 @@ function block_exacomp_exaportexists()
 function block_exacomp_get_portfolio_icon($student, $descrid) {
 	global $DB, $CFG;
 
-	$rs = $DB->get_records_sql("SELECT i.name FROM {block_exaportitem} i, {block_exacompdescractiv_mm} da WHERE i.id=da.activityid AND da.activitytype=2000 AND da.descrid=".$descrid." AND i.userid=".$student->id);
+	$rs = $DB->get_records_sql("SELECT i.name FROM {block_exaportitem} i, {block_exacompdescractiv_mm} da WHERE i.id=da.activityid AND da.activitytype=2000 AND da.descrid=? AND i.userid=?", array($descrid, $student->id));
 
 	if(!$rs)
 		return null;
@@ -731,8 +742,10 @@ function block_exacomp_build_comp_tree($courseid, $sort="tax") {
 	}
 	$sql.="INNER JOIN {block_exacompsubjects} s ON s.id=t.subjid
 	LEFT JOIN {block_exacomptaxonomies} tax ON e.taxid=tax.id";
+	$condition = null;
 	if($courseid > 0){
-		$sql.=" WHERE ct.courseid = ".$courseid;
+		$sql.=" WHERE ct.courseid = ?";
+		$condition = array($courseid);
 	}
 	//$sql.=" GROUP BY e.id";
 
@@ -746,7 +759,7 @@ function block_exacomp_build_comp_tree($courseid, $sort="tax") {
 	$sql.=" ORDER BY s.title,t.title,d.sorting";
 	}*/
 
-	$examples = $DB->get_records_sql($sql);
+	$examples = $DB->get_records_sql($sql, $condition);
 
 	$tree='<form name="treeform"><ul id="comptree" class="treeview">';
 	$subject="";
@@ -886,8 +899,8 @@ function block_exacomp_get_exampleicon($example) {
 }
 function block_exacomp_check_portfolio_competences($userid) {
 	global $DB;
-	$sql = "SELECT d.title, d.id, da.activityid, i.name FROM {block_exacompdescractiv_mm} da, {block_exacompdescriptors} d, {block_exaportitem} i WHERE da.descrid=d.id AND i.id =da.activityid AND da.activitytype=2000 and i.userid=".$userid;
-	$comps = $DB->get_records_sql($sql);
+	$sql = "SELECT d.title, d.id, da.activityid, i.name FROM {block_exacompdescractiv_mm} da, {block_exacompdescriptors} d, {block_exaportitem} i WHERE da.descrid=d.id AND i.id =da.activityid AND da.activitytype=2000 and i.userid=?";
+	$comps = $DB->get_records_sql($sql, array($userid));
 	return $comps;
 }
 function block_exacomp_check_teacher_assign($descriptor,$userid, $role=1) {
