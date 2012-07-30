@@ -105,6 +105,9 @@ if ($activities) {
         if ($activitymod->module != 1)
             continue;
         $activity = get_coursemodule_from_id('assignment', $activitymod->id);
+        if(!$activity){
+        	$activity = get_coursemodule_from_id('assign', $activitymod->id);
+        }
         if ($trclass == "even") {
             $trclass = "odd";
             $bgcolor = ' style="background-color:#efefef" ';
@@ -112,7 +115,7 @@ if ($activities) {
             $trclass = "even";
             $bgcolor = ' style="background-color:#ffffff" ';
         }
-
+		
         $content.='<tr class="r2 ' . $trclass . '" ' . $bgcolor . '><td colspan="' . ($colspan + 1) . '" class="ec_activitylist_item"><a href="' . $CFG->wwwroot . '/mod/assignment/view.php?id=' . $activitymod->id . '">' . $activity->name . '</a><input type="hidden" value="' . $activitymod->id . '" name="ec_activity[' . $activitymod->id . ']" /></td></tr>';
         $zeile = "";
         $tempzeile = "";
