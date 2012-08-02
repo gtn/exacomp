@@ -212,11 +212,13 @@ function block_exacomp_get_assignments($courseid) { //alle assignments eines bes
 	}
 	return $returnassignments;
 }
-function block_exacomp_get_activityurl($activity) {
+function block_exacomp_get_activityurl($activity,$student=false) {
 	global $DB, $CFG;
 	$mod = $DB->get_record('modules',array("id"=>$activity->module));
-	if($mod->name == "assignment")
+	if($mod->name == "assignment" && !$student)
 		return $CFG->wwwroot . '/mod/assignment/submissions.php?id=' . ($activity->id);
+	else if($mod->name == "assignment" && $student)
+		return $CFG->wwwroot . '/mod/assignment/view.php?id=' . ($activity->id);
 	else if($mod->name == "assign")
 		return $CFG->wwwroot . '/mod/assign/view.php?id=' . $activity->id;
 }
@@ -582,6 +584,9 @@ function block_exacomp_get_activity_icon($descriptorid) {
 	$temp = get_string("descriptor_task", "block_exacomp").":<br><ul>";
 
 	foreach ($activities as $activity) {
+		if($activity->activitytype == 2000) //exaport eintrag
+			continue;
+		
 		$mod = $DB->get_record('modules',array("id"=>$activity->activitytype));
 		$desc = get_coursemodule_from_id($mod->name, $activity->activityid);
 		if(!$desc OR $desc->course != $COURSE->id)
@@ -731,7 +736,7 @@ function block_exacomp_build_comp_tree($courseid, $sort="tax") {
 	global $DB;
 	//to do: left
 	//$sql = "SELECT e.id, d.title, t.title as topic, s.title as subject, e.title as example, tax.title as tax, e.task, e.externalurl, e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement FROM {block_exacompdescriptors} d, {block_exacomptopics} t, {block_exacompsubjects} s, {block_exacompdescrtopic_mm} dt, {block_exacompcoutopi_mm} ct, {block_exacompexamples} e LEFT JOIN {block_exacomptaxonomies} tax ON e.taxid=tax.id, {block_exacompdescrexamp_mm} de WHERE ct.courseid = ".$courseid." AND ct.topicid = t.id AND t.subjid = s.id AND d.id=dt.descrid AND dt.topicid=t.id AND de.descrid=d.id AND de.exampid=e.id GROUP BY e.id";
-	$sql = "SELECT e.id, d.title, t.title as topic, s.title as subject, e.title as example, tax.title as tax, e.task, e.externalurl,
+	$sql = "SELECT de.id as deid, e.id, d.title, t.title as topic, s.title as subject, e.title as example, tax.title as tax, e.task, e.externalurl,
 	e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement
 	FROM {block_exacompexamples} e INNER JOIN {block_exacompdescrexamp_mm} de ON e.id=de.exampid
 	INNER JOIN {block_exacompdescriptors} d ON d.id=de.descrid

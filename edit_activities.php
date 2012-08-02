@@ -74,8 +74,11 @@ if ($courseid > 0) {
         echo $OUTPUT->box(text_to_html(get_string("activitysuccess", "block_exacomp")));
     }
     $zeile = "";
+    
+    $activities = array();
     $activities_old = get_coursemodules_in_course('assignment', $COURSE->id, '');
-    $activities = get_coursemodules_in_course('assign', $COURSE->id, '');
+    if(floatval(substr($CFG->release, 0, 3))>=2.3)
+    	$activities = get_coursemodules_in_course('assign', $COURSE->id, '');
     
     echo $OUTPUT->box(text_to_html(get_string("explaineditactivities_subjects", "block_exacomp")));
 

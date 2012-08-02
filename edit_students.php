@@ -106,8 +106,10 @@ $trclass = "even";
 foreach ($activities as $activitymod) {
     if($activitymod->module != 1)
             continue;
-    // datensatz der activity holen, 
-    $activity = ($temp = get_coursemodule_from_id('assignment',$activitymod->id)) ? $temp : get_coursemodule_from_id('assign',$activitymod->id);
+    // datensatz der activity holen
+    $activity = get_coursemodule_from_id('assignment',$activitymod->id);
+    if(!$activity && floatval(substr($CFG->release, 0, 3))>=2.3)
+    	$activity = get_coursemodule_from_id('assign',$activitymod->id);
 
     if ($trclass == "even") {
         $trclass = "odd";
