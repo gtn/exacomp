@@ -85,7 +85,19 @@ if($showevaluation == 'on')
     else
         $colspan=1;
 if($activities) {
-$content.='<div>
+$content.='<div>';
+if (count($students)>5){
+	$p=1;$q=1;
+	for ($z=1;$z<count($students);$z++){
+		if ($q==1){
+			$content.='<a href="javascript:hidezelle('.$p.');">'.$p.'</a>';
+		}
+		
+	if ($q==5) {$q=1;$p++;}
+	else $q++;
+	}
+}
+$content.='
 		<table id="comps" class="compstable flexible boxaligncenter generaltable">
 		<tr class="heading r0">
 		<td class="category catlevel1" colspan="' . (count($students)*$colspan + 1) . '" scope="col"><h2>' . $COURSE->fullname . '</h2></td></tr>
@@ -134,24 +146,28 @@ foreach ($activities as $activitymod) {
             $bgcolor = ' style="background-color:#ffffff" ';
         }
 		
-		$exicon = block_exacomp_get_examplelink($descriptor->id);
+				$exicon = block_exacomp_get_examplelink($descriptor->id);
         $tempzeile.='<tr class="r2 ' . $trclass . '" ' . $bgcolor . '><td class="ec_minwidth">' . $descriptor->title . '' . $exicon . '<input type="hidden" value="' . $descriptor->id . '" name="ec_activity[' . $activity->id . ']_descriptor[' . $descriptor->id . ']" /></td>';
         //Checkbox für jeden Schüler generieren
+        $z=1;
+        $p=1;
         foreach ($students as $student) {
             
             		if ($bewertungsdimensionen==1){ 
             			if($showevaluation=='on')
-                		{$tempzeile.='<td ###checkedcomp' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###><input type="checkbox" name="student[' . $activity->id . '][' . $descriptor->id . '][' . $student->id . ']" checked="###checkedstudent' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###" disabled /></td>';}
-            			$tempzeile.='<td ###checkedcomp' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###><input value="1" type="checkbox" name="data[' . $activity->id . '][' . $descriptor->id . '][' . $student->id . ']" checked="###checked' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###" /></td>';
+                		{$tempzeile.='<td class="zelle'.$p.'" ###checkedcomp' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###><input type="checkbox" name="student[' . $activity->id . '][' . $descriptor->id . '][' . $student->id . ']" checked="###checkedstudent' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###" disabled /></td>';}
+            			$tempzeile.='<td class="zelle'.$p.'" ###checkedcomp' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###><input value="1" type="checkbox" name="data[' . $activity->id . '][' . $descriptor->id . '][' . $student->id . ']" checked="###checked' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###" /></td>';
         				}else {
         					if($showevaluation=='on')
-                		{$tempzeile.='<td ###checkedcomp' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###>###checkedstudent' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###</td>';}
-        					$tempzeile.='<td ###checkedcomp' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###><select name="data[' . $activity->id . '][' . $descriptor->id . '][' . $student->id . ']"  >';
+                		{$tempzeile.='<td class="zelle'.$p.'" ###checkedcomp' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###>###checkedstudent' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###</td>';}
+        					$tempzeile.='<td class="zelle'.$p.'" ###checkedcomp' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###><select name="data[' . $activity->id . '][' . $descriptor->id . '][' . $student->id . ']"  >';
         					for ($i=0;$i<=$bewertungsdimensionen;$i++){
         						$tempzeile.='<option value="'.$i.'" selected="###selected' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '_'.$i.'###">'.$i.'</option>';
         					}
         					$tempzeile.='</select></td>';
         				}
+        				if ($z==5){ $z=1;$p++;}
+        				else $z++;
         }
         $tempzeile .= '</tr>';
 
@@ -196,5 +212,47 @@ $content.='</form>';
 }
 echo $content;
 echo "</div>";
-echo '</div>'; //exabis_competences_block
+echo '</div>'."\n"; //exabis_competences_block
+echo '<script language="JavaScript">'."\n";
+echo 'function hidezelle(nummer){'."\n";
+echo 'hidecell("zelle" + nummer);'."\n";
+echo '}'."\n";
+
+$content='
+function hidecell(zelle) {
+alert (zelle);
+var elements = document.getElementsByTagName("*");
+
+for(i = 0; i < elements.length; i++) {
+
+if(elements[i].getAttribute("class") == zelle) {
+//alert ("drinnen");
+elements[i].style.display = "none";
+
+}}}
+
+
+function hideClass(objClass){
+alert (objClass);
+var elements = (ie) ? document.all : document.getElementsByTagName("td");
+//alert (elements);
+  for (i=0; i<elements.length; i++){
+    if (elements[i].className==objClass){
+      elements[i].style.display="none"
+    }
+  }
+}
+
+function showClass(objClass){
+
+var elements = (ie) ? document.all : document.getElementsByTagName("*");
+  for (i=0; i<elements.length; i++){
+    if (elements[i].className==objClass){
+      elements[i].style.display="block"
+    }
+  }
+}
+';
+echo $content;
+echo '</script>'."\n";
 echo $OUTPUT->footer();
