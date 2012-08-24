@@ -102,8 +102,12 @@ $content.='
 		<tr class="heading r0">
 		<td class="category catlevel1" colspan="' . (count($students)*$colspan + 1) . '" scope="col"><h2>' . $COURSE->fullname . '</h2></td></tr>
 		<tr><td></td>';
+$z=1;
+$p=1;
 foreach ($students as $student) {
-    $content.='<td class="ec_tableheadwidth" colspan="'.$colspan.'">' . $student->lastname . ' ' . $student->firstname . '<input type="hidden" value="' . $student->id . '" name="ec_student[' . $student->id . ']" /></td>';
+    $content.='<td class="ec_tableheadwidth zelle'.$p.'" colspan="'.$colspan.'">' . $student->lastname . ' ' . $student->firstname . '<input type="hidden" value="' . $student->id . '" name="ec_student[' . $student->id . ']" /></td>';
+		if ($z==5){ $z=1;$p++;}
+    else $z++;
 }
 $content.="</tr>";
 
