@@ -31,6 +31,7 @@ require_once dirname(__FILE__) . '/lib/div.php';
 require_once($CFG->dirroot . "/lib/datalib.php");
 
 global $COURSE, $CFG, $OUTPUT;
+$spalten=5;
 $content = "";
 $courseid = required_param('courseid', PARAM_INT);
 $action = optional_param('action', "", PARAM_ALPHA);
@@ -86,14 +87,15 @@ if($showevaluation == 'on')
         $colspan=1;
 if($activities) {
 $content.='<div>';
-if (count($students)>5){
-	$p=1;$q=1;
+if (count($students)>$spalten){
+	$p=1;$q=1;$splt=(floor(count($students)/5)+1);
+	$content.='<a href="javascript:hidezelle(0,'.$splt.');">alle&nbsp;</a>';
 	for ($z=1;$z<count($students);$z++){
 		if ($q==1){
-			$content.='<a href="javascript:hidezelle('.$p.');">'.$p.'</a>';
+			$content.='<a href="javascript:hidezelle('.$p.','.$splt.');">Spalte '.$p.'&nbsp;</a>';
 		}
 		
-	if ($q==5) {$q=1;$p++;}
+	if ($q==$spalten) {$q=1;$p++;}
 	else $q++;
 	}
 }
@@ -105,7 +107,7 @@ $content.='
 $z=1;
 $p=1;
 foreach ($students as $student) {
-    $content.='<td class="ec_tableheadwidth zelle'.$p.'" colspan="'.$colspan.'">' . $student->lastname . ' ' . $student->firstname . '<input type="hidden" value="' . $student->id . '" name="ec_student[' . $student->id . ']" /></td>';
+    $content.='<td class="zelle'.$p.'" colspan="'.$colspan.'">' . $student->lastname . ' ' . $student->firstname . '<input type="hidden" value="' . $student->id . '" name="ec_student[' . $student->id . ']" /></td>';
 		if ($z==5){ $z=1;$p++;}
     else $z++;
 }
@@ -217,21 +219,37 @@ $content.='</form>';
 echo $content;
 echo "</div>";
 echo '</div>'."\n"; //exabis_competences_block
-echo '<script language="JavaScript">'."\n";
-echo 'function hidezelle(nummer){'."\n";
-echo 'hidecell("zelle" + nummer);'."\n";
-echo '}'."\n";
+
 
 $content='
+<script language="JavaScript">
+
+function hidezelle(nummer,bereiche){
+for (z=1;z<=bereiche;z++){
+	if (nummer==0) showcell("zelle" + z);
+	else if (z==nummer) showcell("zelle" + nummer);
+	else hidecell("zelle" + z);
+}
+}
+
 function hidecell(zelle) {
-alert (zelle);
+
 var elements = document.getElementsByTagName("*");
 
 for(i = 0; i < elements.length; i++) {
 
 if(elements[i].getAttribute("class") == zelle) {
-//alert ("drinnen");
 elements[i].style.display = "none";
+
+}}}
+function showcell(zelle) {
+
+var elements = document.getElementsByTagName("*");
+
+for(i = 0; i < elements.length; i++) {
+
+if(elements[i].getAttribute("class") == zelle) {
+elements[i].style.display = "table-cell";
 
 }}}
 
