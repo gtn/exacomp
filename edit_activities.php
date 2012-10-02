@@ -75,29 +75,24 @@ if ($courseid > 0) {
     }
     $zeile = "";
     
-    $activities = array();
-    $activities_old = get_coursemodules_in_course('assignment', $COURSE->id, '');
-    if(floatval(substr($CFG->release, 0, 3))>=2.3)
-    	$activities = get_coursemodules_in_course('assign', $COURSE->id, '');
-    
+	$modules = block_exacomp_get_modules();
+    $colspan = (count($modules) + 1);
     echo $OUTPUT->box(text_to_html(get_string("explaineditactivities_subjects", "block_exacomp")));
 
     //Inhalt nur zeigen falls Aktivitäten vorhanden sind
-    if ($activities || $activities_old) {
+    if ($modules) {
         $content.='<div class="grade-report-grader">
 		<table id="comps" class="compstable flexible boxaligncenter generaltable">
 		<tr class="heading r0">
-		<td class="category catlevel1" colspan="' . (count($activities) + 1) . '" scope="col"><h2>' . $COURSE->fullname . '</h2></td></tr>
+		<td class="category catlevel1" colspan="' . $colspan . '" scope="col"><h2>' . $COURSE->fullname . '</h2></td></tr>
 		<tr><td></td>';
-        foreach ($activities as $activitymodule) {
-            $activity = $DB->get_record('assign', array("id" => $activitymodule->instance));
-            $content.='<td class="ec_tableheadwidth"><a href="' . $CFG->wwwroot . '/mod/assign/view.php?id=' . $activitymodule->id . '">' . $activity->name . '</a><input type="hidden" value="' . $activitymodule->id . '" name="ec_activity[' . $activitymodule->id . ']" /></td>';
-            $zeile.='<td><input type="checkbox" name="data[' . $activitymodule->id . '][###descid###]" checked="###checked' . $activitymodule->id . '_###descid######" /></td>';
-        }
-        foreach ($activities_old as $activitymodule) {
-        	$activity = $DB->get_record('assignment', array("id" => $activitymodule->instance));
-        	$content.='<td class="ec_tableheadwidth"><a href="' . $CFG->wwwroot . '/mod/assignment/submissions.php?id=' . $activitymodule->id . '">' . $activity->name . '</a><input type="hidden" value="' . $activitymodule->id . '" name="ec_activity[' . $activitymodule->id . ']" /></td>';
-        	$zeile.='<td><input type="checkbox" name="data[' . $activitymodule->id . '][###descid###]" checked="###checked' . $activitymodule->id . '_###descid######" /></td>';
+
+        foreach ($modules as $mod) {
+        	if(!$mod->visible)
+        		continue;
+        	$module = $activity = block_exacomp_get_coursemodule($mod);
+        	$content.='<td class="ec_tableheadwidth"><a href="' . block_exacomp_get_activityurl($module). '">' . $module->name . '</a><input type="hidden" value="' . $module->id . '" name="ec_activity[' . $module->id . ']" /></td>';
+        	$zeile.='<td><input type="checkbox" name="data[' . $module->id . '][###descid###]" checked="###checked' . $module->id . '_###descid######" /></td>';
         }
         $content.="</tr>";
         $descriptors = block_exacomp_get_descritors_list($courseid);
@@ -115,11 +110,11 @@ if ($courseid > 0) {
             }
             if ($subject !== $descriptor->subject) {
                 $subject = $descriptor->subject;
-                $content .= '<tr class="ec_heading"><td colspan="' . (count($activities) + 1) . '"><h4>' . $subject . '</h4></td></tr>';
+                $content .= '<tr class="ec_heading"><td colspan="' . $colspan . '"><h4>' . $subject . '</h4></td></tr>';
             }
             if ($topic !== $descriptor->topic) {
                 $topic = $descriptor->topic;
-                $content .= '<tr class="ec_heading"><td colspan="' . (count($activities) + 1) . '"><b>' . $topic . '</b></td></tr>';
+                $content .= '<tr class="ec_heading"><td colspan="' . $colspan . '"><b>' . $topic . '</b></td></tr>';
             }
             $activitiesr = block_exacomp_get_activities($descriptor->id); //alle gewählten aktivitäten eines descriptors, zum sparen von abfragen
             $zeiletemp = str_replace("###descid###", "" . $descriptor->id, $zeile);
@@ -131,7 +126,7 @@ if ($courseid > 0) {
             $zeiletemp = preg_replace('/checked="###checked([0-9_])+###"/', '', $zeiletemp); //nicht gewählte aktivitäten-descriptorenpaare, checked=... löschen
             $content.='<tr class="r2 ' . $trclass . '" ' . $bgcolor . '><td class="ec_minwidth">' . $descriptor->title . '<input type="hidden" value="' . $descriptor->id . '" name="ec_descr[' . $descriptor->id . ']" /></td>' . $zeiletemp . '</tr>';
         }
-        $content.='<tr><td id="tdsubmit" colspan="' . (count($activities) + 1) . '"><input type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" /></td></tr>';
+        $content.='<tr><td id="tdsubmit" colspan="' . (count($modules) + 1) . '"><input type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" /></td></tr>';
         $content.="</table></div>";
         
         $content.='</form>';

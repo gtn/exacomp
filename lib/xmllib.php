@@ -2,45 +2,70 @@
 
 function block_exacomp_xml_insert_edulevel($value) {
 	global $DB;
+	
 	$sql='INSERT INTO {block_exacompedulevels} (id,sorting,title) VALUES('.$value->uid.','.$value->sorting.',\''.$value->title.'\')';
 
 	$DB->Execute($sql);
 
 }
 
-function block_exacomp_xml_insert_schooltyp($value) {
+function block_exacomp_xml_insert_schooltyp($value,$source) {
 	global $DB;
 
 	$value->id = $value->uid;
+	$schooltype = $DB->get_record('block_exacompschooltypes', array("sourceid" => (int)$value->uid,"source"=>$source));
+	if ($schooltype) {
+		//update
+		$schooltype->title = $value->title;
+		$schooltype->titleshort = $value->titleshort;
+		$schooltype->elid = $value->elid;
+		$schooltype->sorting = $value->sorting;
+		$schooltype->isoez = $value->isoez;
 
-	$sql='INSERT INTO {block_exacompschooltypes} (id,sorting,title,elid,isoez) VALUES('.$value->uid.','.$value->sorting.',\''.$value->title.'\','.$value->elid.','.$value->isoez.')';
-	$DB->Execute($sql);
+		$DB->update_record('block_exacompsubjects', $schooltype);
+		
+	} else {
+		$sql='INSERT INTO {block_exacompschooltypes} (id,sorting,title,elid,isoez) VALUES('.$value->uid.','.$value->sorting.',\''.$value->title.'\','.$value->elid.','.$value->isoez.')';
+		$DB->Execute($sql);
+	}
 
 }
 
-function block_exacomp_xml_insert_subject($value) {
+function block_exacomp_xml_insert_subject($value,$source) {
 	//    global $DB;
-	//    $DB->insert_record('block_exacompsubjects', $value);
 
-	global $DB;
+	global $DB, exaport;
+	
 	/*
 	 * ID aus XML mit sourceID der Datenbank vergleichen.
 	* Falls gefunden, update
 	* Falls nicht, insert
 	*
 	*/
-	$subject = $DB->get_record('block_exacompsubjects', array("sourceid" => (int)$value->uid));
+	$schooltype = $DB->get_record('block_exacompschooltypes', array("sourceid"=> (int)$value->stid,"source"=>$source));
+	if (!empty($schooltype->id)) $stid=$schooltype->id;
+	else $stid=0;
+	$subject = $DB->get_record('block_exacompsubjects', array("sourceid" => (int)$value->uid,"source"=>$source));
 	if ($subject) {
 		//update
 		$subject->title = $value->title;
-		$subject->stid = $value->stid;
-
+		$subject->titleshort = $value->titleshort;
+		$subject->stid = $stid;
 		$DB->update_record('block_exacompsubjects', $subject);
+		if ($exaport==true){
+			$data=stdClass();
+			$data->name=$value->title;
+			$data->description=$value->title;
+			$data->id=$value->id;
+			$DB->update_record('block_exaportcate', $subject);
+		}
 	} else {
-		//insert
-
-		$sql='INSERT INTO {block_exacompsubjects} (id,sorting,title,stid,sourceid) VALUES('.$value->uid.','.$value->sorting.',\''.$value->title.'\','.$value->stid.','.$value->uid.')';
+		$sql='INSERT INTO {block_exacompsubjects} (sorting,title,titleshort,stid,sourceid,source) VALUES('.$value->sorting.',\''.$value->title.'\',\''.$value->titleshort.'\','.$stid.','.$value->uid.','.$source.')';
 		$DB->Execute($sql);
+		if ($exaport==true){
+			$sql='INSERT INTO {block_exaportcate} (sorting,title,titleshort,stid,sourceid,source) VALUES('.$value->sorting.',\''.$value->title.'\',\''.$value->titleshort.'\','.$stid.','.$value->uid.','.$source.')';
+			$DB->Execute($sql);
+		}
 	}
 }
 
@@ -86,7 +111,7 @@ function block_exacomp_xml_insert_taxonomie($value) {
 	}
 }
 
-function block_exacomp_xml_insert_topic($value) {
+function block_exacomp_xml_insert_topic($value,$source) {
 	global $DB;
 	/*
 	 * ID aus XML mit sourceID der Datenbank vergleichen.
@@ -99,20 +124,22 @@ function block_exacomp_xml_insert_topic($value) {
 	$new_value->subjid = (int)$value->subjid;
 	$new_value->uid = (int)$value->uid;
 	$new_value->title = (string)$value->title;
+	$new_value->titleshort = (string)$value->titleshort;
 	$new_value->sorting = (int)$value->sorting;
 	$new_value->description = (string)$value->description;
 	unset($value);
 	$value = $new_value;
 	
 	// Subject ID wird benštigt, durch sourceid holen
-	$subject = $DB->get_record('block_exacompsubjects', array("sourceid"=> (int)$value->subjid));
+	$subject = $DB->get_record('block_exacompsubjects', array("sourceid"=> (int)$value->subjid,"source"=>$source));
 	if (!empty($subject->id)) $subj=$subject->id;
 	else $subj=0;
-	$topic = $DB->get_record('block_exacomptopics', array("sourceid" => (int)$value->uid));
+	$topic = $DB->get_record('block_exacomptopics', array("sourceid" => (int)$value->uid,"source"=>$source));
 
 	if ($topic) {
 		//update
 		$topic->title = $value->title;
+		$topic->titleshort = $value->titleshort;
 		$topic->subjid = $subj;
 		$topic->sorting = $value->sorting;
 		$topic->description = $value->description;
@@ -121,11 +148,12 @@ function block_exacomp_xml_insert_topic($value) {
 		//insert
 		$value->sourceid = $value->uid;
 		$value->subjid = $subj;
+		$value->source = $source;
 		$DB->insert_record('block_exacomptopics', $new_value);
 	}
 }
 
-function block_exacomp_xml_insert_descriptor($value) {
+function block_exacomp_xml_insert_descriptor($value,$source) {
 	global $DB;
 	/*
 	 * ID aus XML mit sourceID der Datenbank vergleichen.
@@ -144,7 +172,7 @@ function block_exacomp_xml_insert_descriptor($value) {
 	unset($value);
 	$value = $new_value;
 	
-	$desc = $DB->get_record('block_exacompdescriptors', array("sourceid" => $value->uid));
+	$desc = $DB->get_record('block_exacompdescriptors', array("sourceid" => $value->uid,"source"=>$source));
 	if ($desc) {
 		//update
 		$desc->title = (string)$value->title;
@@ -156,11 +184,12 @@ function block_exacomp_xml_insert_descriptor($value) {
 	} else {
 		//insert
 		$value->sourceid = $value->uid;
+		$value->source = $source;
 		$DB->insert_record('block_exacompdescriptors', $value);
 	}
 }
 
-function block_exacomp_xml_insert_example($value) {
+function block_exacomp_xml_insert_example($value,$source) {
 	global $DB;
 	/*
 	 * ID aus XML mit sourceID der Datenbank vergleichen.
@@ -171,6 +200,7 @@ function block_exacomp_xml_insert_example($value) {
 	$new_value = new stdClass();
 	$new_value->uid = (int)$value->uid;
 	$new_value->title = (string)$value->title;
+		$new_value->titleshort = (string)$value->titleshort;
 	$new_value->task = (string)$value->task;
 	$new_value->solution = (string)$value->solution;
 	$new_value->attachement = (string)$value->attachement;
@@ -185,12 +215,14 @@ function block_exacomp_xml_insert_example($value) {
 	$new_value->externaltask = (string)$value->externaltask;
 	$new_value->sorting = (int)$value->sorting;
 	$new_value->lang = (int)$value->lang;
+	$new_value->source = $source;
 	unset($value);
 	$value = $new_value;
-	$example = $DB->get_record('block_exacompexamples', array("sourceid" => (int)$value->uid));
+	$example = $DB->get_record('block_exacompexamples', array("sourceid" => (int)$value->uid,"source"=>$source));
 	if ($example) {
 		//update
 		$example->title = (string)$value->title;
+		$example->titleshort = (string)$value->titleshort;
 		$example->task = (string)$value->task;
 		$example->solution = (string)$value->solution;
 		$example->attachement = (string)$value->attachement;
@@ -208,6 +240,7 @@ function block_exacomp_xml_insert_example($value) {
 	} else {
 		//insert
 		$value->sourceid = $value->uid;
+		$value->source = $source;
 		$DB->insert_record('block_exacompexamples', $value);
 	}
 }
@@ -217,19 +250,19 @@ function block_exacomp_xml_truncate($tablename) {
 	$DB->delete_records($tablename);
 }
 
-function block_exacomp_xml_get_topics() {
+function block_exacomp_xml_get_topics($source) {
 	global $DB;
-	return $DB->get_records('block_exacomptopics');
+	return $DB->get_records('block_exacomptopics',array("source"=>$source));
 }
 
-function block_exacomp_xml_get_descriptors() {
+function block_exacomp_xml_get_descriptors($source) {
 	global $DB;
-	return $DB->get_records('block_exacompdescriptors');
+	return $DB->get_records('block_exacompdescriptors',array("source"=>$source));
 }
 
-function block_exacomp_xml_get_examples() {
+function block_exacomp_xml_get_examples($source) {
 	global $DB;
-	return $DB->get_records('block_exacompexamples');
+	return $DB->get_records('block_exacompexamples',array("source"=>$source));
 }
 
 function block_exacomp_xml_find_unused($values, $xml, $tablename) {
@@ -251,45 +284,48 @@ function block_exacomp_xml_find_unused($values, $xml, $tablename) {
 	return $founds;
 }
 
-function block_exacomp_xml_delete_unused_topics($founds) {
+function block_exacomp_xml_delete_unused_topics($founds,$source) {
 	global $DB;
 	foreach ($founds as $found) {
-		$query = "SELECT * FROM {block_exacomptopics} t, {block_exacompdescrtopic_mm} dt WHERE dt.topicid = t.id and t.sourceid = " . $found;
+		$query = "SELECT * FROM {block_exacomptopics} t, {block_exacompdescrtopic_mm} dt WHERE dt.topicid = t.id and t.sourceid = " . $found . " and t.source = ".$source;
 		$occur = $DB->get_records_sql($query);
 		if (!$occur)
 			$DB->delete_records('block_exacomptopics', array("sourceid" => $found));
 	}
 }
 
-function block_exacomp_xml_delete_unused_descriptors($founds) {
+function block_exacomp_xml_delete_unused_descriptors($founds,$source) {
 	global $DB;
 	foreach ($founds as $found) {
-		$query = "SELECT * FROM {block_exacompdescriptors} d, {block_exacompdescrtopic_mm} dt WHERE dt.descrid = d.id and d.sourceid = " . $found;
+		$query = "SELECT * FROM {block_exacompdescriptors} d, {block_exacompdescrtopic_mm} dt WHERE dt.descrid = d.id and d.sourceid = " . $found . " and d.source = ".$source;
 		$occur = $DB->get_records_sql($query);
 		if (!$occur)
 			$DB->delete_records('block_exacompdescriptors', array("sourceid" => $found));
 	}
 }
 
-function block_exacomp_xml_delete_unused_examples($founds) {
+function block_exacomp_xml_delete_unused_examples($founds,$source) {
 	global $DB;
 	foreach ($founds as $found) {
-		$query = "SELECT * FROM {block_exacompexamples} e, {block_exacompdescrexamp_mm} de WHERE de.exampid = e.id and e.sourceid = " . $found;
+		$query = "SELECT * FROM {block_exacompexamples} e, {block_exacompdescrexamp_mm} de WHERE de.exampid = e.id and e.sourceid = " . $found . " and e.source = ".$source;
 		$occur = $DB->get_records_sql($query);
 		if (!$occur)
 			$DB->delete_records('block_exacompexamples', array("sourceid" => $found));
 	}
 }
 
-function block_exacomp_xml_get_current_ids($table, $tablename) {
+function block_exacomp_xml_get_current_ids($table, $tablename, $source) {
 	global $DB;
 	$value = array();
 	if ($tablename == "topic")
-		$topic = $DB->get_record('block_exacomptopics', array("sourceid" => (int)$table->topicid), "id");
+		$topic = $DB->get_record('block_exacomptopics', array("sourceid" => (int)$table->topicid,"source"=>$source), "id");
 	else
-		$example = $DB->get_record('block_exacompexamples', array("sourceid" => (int)$table->exampid), "id");
+		$example = $DB->get_record('block_exacompexamples', array("sourceid" => (int)$table->exampid,"source"=>$source), "id");
 
-	$descr = $DB->get_record('block_exacompdescriptors', array("sourceid" => (int)$table->descrid), "id");
+	if($table->source == 1)
+		$source = 1;
+	
+	$descr = $DB->get_record('block_exacompdescriptors', array("sourceid" => (int)$table->descrid,"source"=>$source), "id");
 
 	if (!empty($topic) && !empty($descr)) {
 		$value['topicid'] = $topic->id;
@@ -303,20 +339,20 @@ function block_exacomp_xml_get_current_ids($table, $tablename) {
 	}
 }
 
-function block_exacomp_xml_delete_descrtopicmm() {
+function block_exacomp_xml_delete_descrtopicmm($source) {
 	global $DB;
-	$query = "SELECT dt.id FROM {block_exacomptopics} t, {block_exacompdescriptors} d, {block_exacompdescrtopic_mm} dt WHERE t.id=dt.topicid AND d.id=dt.descrid AND t.sourceid IS NOT NULL AND d.sourceid IS NOT NULL";
-	$assigns = $DB->get_records_sql($query);
+	$query = "SELECT dt.id FROM {block_exacomptopics} t, {block_exacompdescriptors} d, {block_exacompdescrtopic_mm} dt WHERE t.id=dt.topicid AND d.id=dt.descrid AND t.sourceid IS NOT NULL AND d.sourceid IS NOT NULL AND d.source = ? AND t.source = ?";
+	$assigns = $DB->get_records_sql($query,array($source,$source));
 
 	foreach ($assigns as $assign) {
 		$DB->delete_records('block_exacompdescrtopic_mm', array("id" => $assign->id));
 	}
 }
 
-function block_exacomp_xml_delete_descrexampmm() {
+function block_exacomp_xml_delete_descrexampmm($source) {
 	global $DB;
-	$query = "SELECT de.id FROM {block_exacompexamples} e, {block_exacompdescriptors} d, {block_exacompdescrexamp_mm} de WHERE e.id=de.exampid AND d.id=de.descrid AND e.sourceid IS NOT NULL AND d.sourceid IS NOT NULL";
-	$assigns = $DB->get_records_sql($query);
+	$query = "SELECT de.id FROM {block_exacompexamples} e, {block_exacompdescriptors} d, {block_exacompdescrexamp_mm} de WHERE e.id=de.exampid AND d.id=de.descrid AND e.sourceid IS NOT NULL AND d.sourceid IS NOT NULL AND d.source = ? AND e.source = ?";
+	$assigns = $DB->get_records_sql($query,array($source,$source));
 
 	foreach ($assigns as $assign) {
 		$DB->delete_records('block_exacompdescrexamp_mm', array("id" => $assign->id));
@@ -347,7 +383,7 @@ function block_exacomp_xml_insert_descrtopicmm($descrtopics) {
 	}
 }
 
-function block_exacomp_xml_do_import($file = null) {
+function block_exacomp_xml_do_import($file = null, $source = 1) {
 	global $DB;
 	$filename = 'xml/exacomp_data.xml';
 
@@ -363,13 +399,13 @@ function block_exacomp_xml_do_import($file = null) {
 	$descrtopic = array();
 	$descrexamp = array();
 
-	if (file_exists($filename)) {
-		$xml = simplexml_load_file($filename);
+	if (file_exists($filename) || $file) {
+		$xml = (!$file) ? simplexml_load_file($filename) : simplexml_load_string($file);
 		if ($xml) {
 			foreach ($xml->table as $table) {
 				$name = $table->attributes()->name;
 
-				if ($name == "block_exacompedulevels") {
+				if ($name == "block_exacompedulevels" && $source==1) {
 					if ($edulevel == 0) {
 						block_exacomp_xml_truncate($table->attributes()->name);
 						$edulevel = 1;
@@ -377,27 +413,27 @@ function block_exacomp_xml_do_import($file = null) {
 					block_exacomp_xml_insert_edulevel($table);
 				}
 				if ($name == "block_exacompschooltypes") {
-					if ($schooltyp == 0) {
+					/*if ($schooltyp == 0) {
 						block_exacomp_xml_truncate($name);
 						$schooltyp = 1;
-					}
-					block_exacomp_xml_insert_schooltyp($table);
+					}*/
+					block_exacomp_xml_insert_schooltyp($table,$source);
 				}
 				if ($name == "block_exacompsubjects") {
-					if ($subject == 0) {
-						block_exacomp_xml_truncate($name);
+					/*if ($subject == 0) {
+						$DB->delete_records('block_exacompsubjects',array("source" => $source));
 						$subject = 1;
-					}
-					block_exacomp_xml_insert_subject($table);
+					}*/
+					block_exacomp_xml_insert_subject($table,$source);
 				}
-				if ($name == "block_exacompskills") {
+				if ($name == "block_exacompskills" && $source==1) {
 					if ($skill == 0) {
 						block_exacomp_xml_truncate($name);
 						$skill = 1;
 					}
 					block_exacomp_xml_insert_skill($table);
 				}
-				if ($name == "block_exacomptaxonomies") {
+				if ($name == "block_exacomptaxonomies" && $source==1) {
 					if ($tax == 0) {
 						block_exacomp_xml_truncate($name);
 						$tax = 1;
@@ -405,46 +441,43 @@ function block_exacomp_xml_do_import($file = null) {
 					block_exacomp_xml_insert_taxonomie($table);
 				}
 				if ($name == "block_exacomptopics") {
-					block_exacomp_xml_insert_topic($table);
+					block_exacomp_xml_insert_topic($table,$source);
 				}
 				if ($name == "block_exacompdescriptors") {
-					block_exacomp_xml_insert_descriptor($table);
+					block_exacomp_xml_insert_descriptor($table,$source);
 				}
 				if ($name == "block_exacompexamples") {
-					block_exacomp_xml_insert_example($table);
+					block_exacomp_xml_insert_example($table,$source);
 				}
 				if ($name == "block_exacompdescrtopic_mm") {
-					$descrtopicmm = block_exacomp_xml_get_current_ids($table, "topic");
-
+					$descrtopicmm = block_exacomp_xml_get_current_ids($table, "topic",$source);
 					if (!empty($descrtopicmm['descrid']) && !empty($descrtopicmm['topicid']))
 						$descrtopic[] = $descrtopicmm;
 				}
 				if ($name == "block_exacompdescrexamp_mm") {
-					$descrexampmm = block_exacomp_xml_get_current_ids($table, "example");
+					$descrexampmm = block_exacomp_xml_get_current_ids($table, "example",$source);
 
 					if (!empty($descrexampmm['descrid']) && !empty($descrexampmm['exampid']))
 						$descrexamp[] = $descrexampmm;
 				}
 			}
 
-
-			$topics = block_exacomp_xml_get_topics();
+			$topics = block_exacomp_xml_get_topics($source);
 			$founds = block_exacomp_xml_find_unused($topics, $xml, "block_exacomptopics");
-			block_exacomp_xml_delete_unused_topics($founds);
+			block_exacomp_xml_delete_unused_topics($founds,$source);
 
-			$descs = block_exacomp_xml_get_descriptors();
+			$descs = block_exacomp_xml_get_descriptors($source);
 			$founds = block_exacomp_xml_find_unused($descs, $xml, "block_exacompdescriptors");
-			block_exacomp_xml_delete_unused_descriptors($founds);
+			block_exacomp_xml_delete_unused_descriptors($founds,$source);
 
-			$examples = block_exacomp_xml_get_examples();
+			$examples = block_exacomp_xml_get_examples($source);
 			$founds = block_exacomp_xml_find_unused($examples, $xml, "block_exacompexamples");
-			block_exacomp_xml_delete_unused_examples($founds);
+			block_exacomp_xml_delete_unused_examples($founds,$source);
 
-			block_exacomp_xml_delete_descrtopicmm();
+			block_exacomp_xml_delete_descrtopicmm($source); 
 			block_exacomp_xml_insert_descrtopicmm($descrtopic);
 
-			block_exacomp_xml_delete_descrexampmm();
-
+			block_exacomp_xml_delete_descrexampmm($source); 
 			block_exacomp_xml_insert_descrexampmm($descrexamp);
 		}
 		return true;
@@ -460,5 +493,16 @@ function block_exacomp_xml_check_import() {
 	else
 		return false;
 }
-
+function has_exaport(){
+	global $DB;
+	$all_tables = $DB->get_tables();
+	
+	//achtung dossier aus exaport derzeit nicht eingebunden, bei aktivierung $exaport=false 6 zeilen weiter unten löschen;
+	if (in_array("block_exaportview", $all_tables)) {
+		$exaport=true;
+	}else{
+		$exaport=false;
+	}
+	return $exaport;
+}
 ?>

@@ -31,6 +31,8 @@ require_once dirname(__FILE__) . '/lib/div.php';
 require_once($CFG->dirroot . "/lib/datalib.php");
 
 global $COURSE, $CFG, $OUTPUT, $USER;
+$spalten=5;
+$zeilenanzahl=5;
 $content = "";
 $courseid = required_param('courseid', PARAM_INT);
 $action = optional_param('action', "", PARAM_ALPHA);
@@ -113,17 +115,24 @@ else
     $colspan=1;
 
 if ($descriptors) {
-    $content.='<div class="ec_td_mo_auto">
-		<table id="comps" class="compstable flexible boxaligncenter generaltable">
+    $content.='<div class="ec_td_mo_auto">';
+    $content.='<div class="spaltenbrowser">';
+if (count($students)>$spalten) $content.=spaltenbrowser(count($students),$spalten);
+	$content.="</div>";
+ $content.='<table style="empty-cells:hide;border-left:1px solid #E3DFD4;margin-top:4px;" id="comps" class="compstable flexible boxaligncenter generaltable">
 		<thead>
 		<tr class="heading r0">
-		<td  colspan="' . (count($students) * $colspan + 1) . '" scope="col"><h2>' . $COURSE->fullname . '</h2></td></tr>
+		<td  id="headerwithcoursename" class="category catlevel1" colspan="' . (count($students) * $colspan + 1) . '" scope="col"><h2>' . $COURSE->fullname . '</h2></td></tr>
 		<tr>';
 		
     if ($role == "teacher") {
         $content.='<td class="ec_minwidth ec_activitylist_item"></td>';
+       	$z=1;
+				$p=1;
         foreach ($students as $student) {
-            $content.='<td class="ec_tableheadwidth" colspan="' . $colspan . '">' . $student->lastname . ' ' . $student->firstname . '</td>';
+            $content.='<td class="zelle'.$p.'" ttclass="ec_tableheadwidth" colspan="' . $colspan . '">' . $student->lastname . ' ' . $student->firstname . '</td>';
+       			if ($z==$spalten){ $z=1;$p++;}
+  					else $z++;
         }
     } else {
         $content.='<td class="ec_activitylist_item" colspan="' . (count($students) * $colspan + 1) . '">' . get_string("compevaluation", "block_exacomp") . '</td>';
@@ -132,15 +141,21 @@ if ($descriptors) {
 
     if ($showevaluation == 'on') {
         $content.='<tr><td></td>';
-        for ($i = 0; $i < count($students); $i++)
+        $z=1;
+				$p=1;
+        for ($i = 0; $i < count($students); $i++){
             if($role=="teacher")   
-                $content.='<td>'.get_string("schueler_short", "block_exacomp").'</td><td>'.get_string("lehrer_short", "block_exacomp").'</td>';
+                $content.='<td class="zelle'.$p.'" >'.get_string("schueler_short", "block_exacomp").'</td><td class="zelle'.$p.'">'.get_string("lehrer_short", "block_exacomp").'</td>';
             else
-                $content.='<td>'.get_string("lehrer_short", "block_exacomp").'</td><td>'.get_string("schueler_short", "block_exacomp").'</td>';
+                $content.='<td class="zelle'.$p.'" >'.get_string("lehrer_short", "block_exacomp").'</td><td class="zelle'.$p.'">'.get_string("schueler_short", "block_exacomp").'</td>';
+        	if ($z==$spalten){ $z=1;$p++;}
+  				else $z++;
+        }
         $content.='</tr>';
     }
 
     $trclass = "even";
+    $zeile=1;
     foreach ($descriptors as $descriptor) {
         $tempzeile = "";
 
@@ -152,25 +167,28 @@ if ($descriptors) {
             $bgcolor = ' style="background-color:#ffffff" ';
         }
         $tempzeile.='<tr class="r2 ' . $trclass . '" ' . $bgcolor . '><td class="ec_minwidth ec_activitylist_item">' . $descriptor->title . '<input type="hidden" value="' . $descriptor->id . '" name="ec_descriptor[' . $descriptor->id . ']" /></td>';
+        $z=1;
+        $p=1;
         foreach ($students as $student) {
             
 						if ($bewertungsdimensionen==1){ 
 							if ($showevaluation == "on"){
-                	$tempzeile.='<td onmouseover="Tip(\'###evalteacher' . $descriptor->id . '_' . $student->id . '###\')" onmouseout="UnTip()" class="ec_td_mo"><input type="checkbox" value="1" name="evaluation[' . $descriptor->id . '][' . $student->id . ']" checked="###checkedevaluation' . $descriptor->id . '_' . $student->id . '###" disabled="disabled" /></td>';
-               }
-							$tempzeile.='<td class="ec_td_mo"><input type="checkbox" value="1" name="data[' . $descriptor->id . '][' . $student->id . ']" checked="###checked' . $descriptor->id . '_' . $student->id . '###" /></td>';
+                	$tempzeile.='<td class="zelle'.$p.'" onmouseover="Tip(\'###evalteacher' . $descriptor->id . '_' . $student->id . '###\')" onmouseout="UnTip()" ttclass="ec_td_mo"><input type="checkbox" value="1" name="evaluation[' . $descriptor->id . '][' . $student->id . ']" checked="###checkedevaluation' . $descriptor->id . '_' . $student->id . '###" disabled="disabled" /></td>';
+              }
+							$tempzeile.='<td class="zelle'.$p.'" ttclass="ec_td_mo"><input type="checkbox" value="1" name="data[' . $descriptor->id . '][' . $student->id . ']" checked="###checked' . $descriptor->id . '_' . $student->id . '###" /></td>';
         		}else {
 	        			if ($showevaluation == "on"){
-	                	$tempzeile.='<td onmouseover="Tip(\'###evalteacher' . $descriptor->id . '_' . $student->id . '###\')" onmouseout="UnTip()" class="ec_td_mo">';
+	                	$tempzeile.='<td class="zelle'.$p.'" onmouseover="Tip(\'###evalteacher' . $descriptor->id . '_' . $student->id . '###\')" onmouseout="UnTip()" ttclass="ec_td_mo">';
 	                	$tempzeile.='###checkedevaluation' . $descriptor->id . '_' . $student->id . '###</td>';
 	               }
-        				$tempzeile.='<td class="ec_td_mo"><select name="data[' . $descriptor->id . '][' . $student->id . ']">';
+        				$tempzeile.='<td class="zelle'.$p.'" ttclass="ec_td_mo"><select name="data[' . $descriptor->id . '][' . $student->id . ']">';
         					for ($i=0;$i<=$bewertungsdimensionen;$i++){
         						$tempzeile.='<option value="'.$i.'" selected="###selected' . $descriptor->id . '_' . $student->id . '_'.$i.'###">'.$i.'</option>';
         					}
         					$tempzeile.='</select></td>';
         				}
-            
+            if ($z==$spalten){ $z=1;$p++;}
+        		else $z++;
         }
         $competences = block_exacomp_get_competences_by_descriptor($descriptor->id, $courseid, $introle);
         foreach ($competences as $competence) {
@@ -208,17 +226,19 @@ if ($descriptors) {
 
         $acticon = block_exacomp_get_activity_icon($descriptor->id);
 		$exicon = block_exacomp_get_examplelink($descriptor->id);
-	
+				
+				
         $tempzeile.='<tr class="r2 ' . $trclass . '" ' . $bgcolor . '><td>
         <a onmouseover="Tip(\'' . $acticon->text . '\')" onmouseout="UnTip()">' . $acticon->icon . '</a> '.$exicon.'</td>';
 
 				 
         $activities = block_exacomp_get_activities($descriptor->id, $courseid);
-        
+        $z=1;
+        $p=1;
         foreach ($students as $student) {
             $stdicon = block_exacomp_get_student_icon($activities, $student);
             
-            $tempzeile .= '<td colspan="' . $colspan . '"><a onmouseover="Tip(\'' . $stdicon->text . '\')" onmouseout="UnTip()">' . $stdicon->icon . '</a>';
+            $tempzeile .= '<td class="zelle'.$p.'"  colspan="' . $colspan . '"><a onmouseover="Tip(\'' . $stdicon->text . '\')" onmouseout="UnTip()">' . $stdicon->icon . '</a>';
         		//gibt es zugeordnete artefakte in exabis_eportfolio
             if (block_exacomp_exaportexists()){
 	            $stdicon = block_exacomp_get_portfolio_icon($student, $descriptor->id);
@@ -231,12 +251,36 @@ if ($descriptors) {
 	            }
 	          }
             $tempzeile .= '</td>';
+            if ($z==$spalten){ $z=1;$p++;}
+        		else $z++;
         }
 	
         $tempzeile.='</tr>';
 
         $content .= $tempzeile;
+        if ($zeile==$zeilenanzahl && $role == "teacher"){
+        	if ($trclass == "even") {
+            $trclass = "odd";
+            $bgcolor = ' style="background-color:#efefef" ';
+            $fontcolor = ' style="color:#6c6c6c" ';
+	        } else {
+	            $trclass = "even";
+	            $bgcolor = ' style="background-color:#ffffff" ';
+	            $fontcolor = ' style="color:#6c6c6c" ';
+	        }
+        	$content.='<tr class="'.$trclass.'" ' . $bgcolor . '><td></td>';
+        	$zi=1;
+        	$pi=1;
+        	foreach ($students as $student) {
+        		$content.='<td'.$fontcolor.' class="zelle'.$pi.'" >'.$student->lastname.'</td>';
+        		if ($zi==$spalten){ $zi=1;$pi++;}
+        		else $zi++;
+        	}
+        	$content.='</tr>';
+					$zeile=0;
+				}
         $tempzeile = "";
+        $zeile++;
     }
 		$content.='<tr><td id="tdsubmit" colspan="'.(count($students) * $colspan + 1).'"><input type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" /></td></tr>';
     $content.="</table></div>";
@@ -245,22 +289,66 @@ if ($descriptors) {
 } else {
     $content.=$OUTPUT->box(text_to_html(get_string("explainno_comps", "block_exacomp")));
 }
-
+/*
 $content.='
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 <script type="text/javascript" src="lib/jquery.tablescroll.js"></script>
 
 <script>
-/*<![CDATA[*/
+//<![CDATA[
 
 jQuery(document).ready(function($)
 {
-	$("#comps").tableScroll({height:500});
+	$("#comps12").tableScroll({height:500});
 });
 
-/*]]>*/
-</script>';
+//]]>
+</script>';*/
 echo $content;
 echo "</div>";
 echo '</div>'; //exabis_competences_block
+$content='
+<script language="JavaScript">
+
+function hidezelle(nummer,bereiche){
+for (z=1;z<=bereiche;z++){
+	if (nummer==0) showcell("zelle" + z);
+	else if (z==nummer) showcell("zelle" + nummer);
+	else hidecell("zelle" + z);
+}
+if (nummer==0){}
+else change_colspan(bereiche); 
+}
+
+function change_colspan(anzahl){
+/*
+document.getElementById("headerwithcoursename").setAttribute("colspan",(anzahl+2));
+var elements = document.getElementsByTagName("*");
+for(i = 0; i < elements.length; i++) {
+if(elements[i].getAttribute("class") == "ec_activitylist_item") {
+elements[i].setAttribute("colspan",(anzahl+2));
+}}
+*/
+}
+function hidecell(zelle) {
+
+var elements = document.getElementsByTagName("*");
+for(i = 0; i < elements.length; i++) {
+if(elements[i].getAttribute("class") == zelle) {
+elements[i].style.display = "none";
+}}}
+
+function showcell(zelle) {
+
+var elements = document.getElementsByTagName("*");
+
+for(i = 0; i < elements.length; i++) {
+
+if(elements[i].getAttribute("class") == zelle) {
+elements[i].style.display = "table-cell";
+
+}}}
+';
+echo $content;
+echo '</script>'."\n";
 echo $OUTPUT->footer();

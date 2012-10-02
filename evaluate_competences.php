@@ -105,9 +105,6 @@ if ($activities) {
     	
     	$mod = $DB->get_record('modules',array("id"=>$activitymod->module));
     	$activity = get_coursemodule_from_id($mod->name, $activitymod->id);
-    	
-        if ($mod->name !== "assign" && $mod->name !== "assignment")
-            continue;
         
         if ($trclass == "even") {
             $trclass = "odd";

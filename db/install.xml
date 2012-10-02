@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/exacomp/db" VERSION="20120511" COMMENT="XMLDB file for Moodle blocks/exacomp"
+<XMLDB PATH="blocks/exacomp/db" VERSION="20120918" COMMENT="XMLDB file for Moodle blocks/exacomp"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -29,7 +29,8 @@
         <FIELD NAME="subjid" TYPE="int" LENGTH="11" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="title" NEXT="sourceid"/>
         <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="false" SEQUENCE="false" COMMENT="Die ID des Datensatzes am zentralen Server, für Import wichtig" PREVIOUS="subjid" NEXT="source"/>
         <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" UNSIGNED="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft, 0=Moodleinstanz 1=Zentraler Server" PREVIOUS="sourceid" NEXT="description"/>
-        <FIELD NAME="description" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" PREVIOUS="source"/>
+        <FIELD NAME="description" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" PREVIOUS="source" NEXT="titleshort"/>
+        <FIELD NAME="titleshort" TYPE="char" LENGTH="250" NOTNULL="false" SEQUENCE="false" PREVIOUS="description"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="subjid"/>
@@ -42,7 +43,9 @@
         <FIELD NAME="sorting" TYPE="int" LENGTH="11" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id" NEXT="title"/>
         <FIELD NAME="title" TYPE="char" LENGTH="250" NOTNULL="false" SEQUENCE="false" PREVIOUS="sorting" NEXT="stid"/>
         <FIELD NAME="stid" TYPE="int" LENGTH="11" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="title" NEXT="sourceid"/>
-        <FIELD NAME="sourceid" TYPE="int" LENGTH="20" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="stid"/>
+        <FIELD NAME="sourceid" TYPE="int" LENGTH="20" NOTNULL="true" UNSIGNED="false" SEQUENCE="false" PREVIOUS="stid" NEXT="source"/>
+        <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" UNSIGNED="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft, 0=Moodleinstanz 1=Zentraler Server" PREVIOUS="sourceid" NEXT="titleshort"/>
+        <FIELD NAME="titleshort" TYPE="char" LENGTH="200" NOTNULL="false" SEQUENCE="false" PREVIOUS="source"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="stid"/>
@@ -102,7 +105,8 @@
         <FIELD NAME="externalsolution" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" PREVIOUS="externalurl" NEXT="externaltask"/>
         <FIELD NAME="externaltask" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" PREVIOUS="externalsolution" NEXT="sourceid"/>
         <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="false" SEQUENCE="false" COMMENT="Die ID des Datensatzes am zentralen Server, für Import wichtig" PREVIOUS="externaltask" NEXT="source"/>
-        <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" UNSIGNED="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft. 0=Moodleinstanz, 1=Zentraler Server" PREVIOUS="sourceid"/>
+        <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" UNSIGNED="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft. 0=Moodleinstanz, 1=Zentraler Server" PREVIOUS="sourceid" NEXT="titleshort"/>
+        <FIELD NAME="titleshort" TYPE="char" LENGTH="200" NOTNULL="false" SEQUENCE="false" PREVIOUS="source"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="taxid"/>

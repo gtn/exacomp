@@ -1,0 +1,173 @@
+body {
+	font-family: 'Open Sans', sans-serif;
+	color: #000;
+	font-size: 12pt;
+	background-color: #fff;
+	font-family: 'Ubuntu', sans-serif;
+}
+
+#printsectionhoch {
+	width: 595, 3pt;
+	background-color: #fff;
+
+}
+
+.printpage {
+	margin: 60 52.5 0 52.5;
+}
+
+.printderpass {
+	font-size: 22.5pt;
+}
+
+.printpersonalinfo,.printblock {
+	border: 0.25pt solid #848484;
+	border-radius: 3.75pt;
+	margin-top: 37.5pt;
+	width: 600pt;
+	padding: 15pt;
+}
+
+.printtable {
+	width: 600pt;
+}
+
+.printpersonalinfo table,.printblock table {
+	width: 100%;
+}
+
+.printblock h2 {
+	font-size: 18pt;
+	margin: 0pt;
+	padding: 0pt;
+}
+
+.printblockinfo {
+	margin-bottom: 22.5pt;
+}
+
+.printpersonalinfo  table td {
+	
+}
+
+img.printpersonalinfo_img {
+	width: 100pt;
+}
+
+td.printpersonalinfo_imgcontainer {
+	text-align: right;
+	width: 40%;
+}
+
+td.printpersonalinfo_heading {
+	font-size: 18;
+	height: 18;
+	vertical-align: bottom;
+	width: 60%;
+}
+
+td.printpersonalinfo_subheading {
+	font-size: 9pt;
+	height: 22.5pt;
+	border-top: 0.75pt solid #848484;
+	vertical-align: top;
+}
+
+.printtable tr.printrowgrey,.printtable tr.printrowheading,.printtable tr.printrowsubheading
+	{
+	background-color: #dcdcdc;
+}
+
+.printtable tr.printrowheading {
+	font-weight: bold;
+	font-style: italic;
+	color: #545454;
+	font-size: 13.5pt;
+	vertical-align: middle;
+}
+
+.printtable tr.printrowheading h3 {
+	font-weight: bold;
+	font-style: normal;
+	color: #000;
+	font-size: 16.5pt;
+	margin: 0pt;
+	padding: 0pt;
+}
+
+.printtable tr.printrowsubheading {
+	font-weight: bold;
+	font-style: italic;
+	color: #545454;
+}
+
+.printtable tr.printrowheadingtwo {
+	font-weight: bold;
+	margin-top: 15pt;
+}
+
+.printtable tr.printsummary {
+	font-weight: bold;
+}
+
+.printblock td {
+	padding: 3.75pt;
+}
+
+.printtabletrenner {
+	height: 18.75pt;
+}
+
+td.assessment {
+	width: 5%;
+}
+
+td.descriptor {
+	width: 90%;
+}
+
+td.legend {
+	width: 15%;
+}
+
+td.text {
+	width: 85%;
+}
+
+table.ratingtable {
+	
+	-webkit-border-radius: 3.75pt;
+	-moz-border-radius: 3.75pt;
+	border-radius: 3.75pt;
+	border-collapse: collapse;
+}
+
+table.bordertable td {
+		border: 1pt solid #848484;
+}
+
+table.ratingtable .ratings td, .ratingtable .ratinguser td, .ratingtable .ratingtext td {
+		border: 1pt solid #848484;
+}
+
+.ratingheading h3 {
+	display: inline;
+}
+
+.ratingsubhead {
+	font-size: 9pt;
+	padding-left: 12pt;
+}
+
+.ratingtable .ratingfirst, .ratingtable .rating {
+	text-align: center;
+}
+
+.ratingtable .rating, .ratinguser td {
+	background-color:#dcdcdc;
+}
+
+.ratinguser td {
+	background-color:#dcdcdc;
+	font-size: 9pt;
+}

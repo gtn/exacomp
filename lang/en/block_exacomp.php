@@ -18,6 +18,7 @@ $string['teachertabassigncompetenceexamples'] = 'examples and tasks';
 $string['studenttabcompetences'] = 'overview of competencies';
 $string['studenttabcompetencesdetail'] = 'detailed view of competencies';
 $string['studenttabcompetencesoverview'] = 'all gained competencies';
+$string['studenttabcompetenceprofile'] = 'competence profile';
 
 //NAVIGATION
 $string['studentnavcompetences'] = 'assessment of competencies';
@@ -35,8 +36,10 @@ $string['adminbread'] = 'subjects & topics';
 //TEXTE
 $string['importdone'] = 'data has already been imported from xml';
 $string['importpending'] = 'no data was imported!';
-$string['doimport'] = 'import of xml';
+$string['doimport'] = 'import descriptors';
+$string['doimport_own'] = 'import own descriptors';
 $string['importsuccess'] = 'data was successfully imported!';
+$string['importsuccess_own'] = 'own data was successfully imported!';
 $string['importfail'] = 'an error during import has occured';
 
 $string['activitysuccess'] = 'changes were successful';
@@ -45,6 +48,8 @@ $string['usersubmitted'] = ' has submitted the following tasks:';
 $string['usernosubmission'] = ' has not yet submitted any tasks associated with this descriptor';
 $string['descnoassignment'] = 'no descriptors have been associated with this tasks';
 
+$string['specificcontent'] = 'site-specific priorities';
+$string['specificsubject'] = 'site-specific subjects';
 $string['explain_bewertungsschema'] = 'Hier können sie das Bewertungsschema für diesen Kurs festlegen. Erlaubt sind Zahlen von 1-10. Standardmäßig wird 1 verwendet, d.h. es kann in einer Checkbox gewählt werden, ob eine Kompetenz erfüllt ist oder nicht. Eine Zahl n grösser 1 bewirkt eine Bewertungsskala mit n Ausprägungen.';
 $string['explainnomoodle_config'] = 'In order to use the module exabis competencies your Moodle administrator has to pre-configure the block.';
 $string['explainconfig'] = 'In order to use the module exabis competencies you have to choose your schooltype - the appropriate data will then be imported from the xml-file.';
@@ -102,3 +107,20 @@ $string['course'] = 'Course';
 $string['erreicht'] = 'Achieved';
 $string['gesamt'] = 'Total';
 $string['configcourseonce'] = 'Please configure the course once.';
+
+$string['createpdf'] = 'Create a pdf document';
+$string['exaportintro'] = 'Introduction';
+$string['exaportcategory'] = 'Category';
+$string['exaporttype'] = 'Type';
+$string['exaportfilename'] = 'Filename';
+$string['exaportinfo'] = 'This entry is assigned to the following competencies:';
+$string['periodreview'] = 'Review for the period ';
+$string['countreviews'] = ' reviews done';
+$string['detailedreview'] = 'Detailed review';
+
+$string['competence_profile'] = 'Competence profile';
+$string['infotext'] = 'Dises Dokument bietet eine Übersicht über deinen bisherigen Kompetenzerwerb. Es setzt sich aus Daten von 3 unterschiedlicher Module zusammen und bietet einen umfangreichen Überblick über deine Fähigkeiten.';
+$string['exacompinfotext'] = 'Deine bisher erworbenen Kompetenzen';
+$string['exaportinfotext'] = 'Eine Übersicht über die Portfolio Einträge, die mit Kompetenzen assoziiert sind';
+$string['exastudinfotext'] = 'Deine Bewertungen über verschiedene Perioden hinweg';
+?>

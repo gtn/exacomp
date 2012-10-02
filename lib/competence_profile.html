@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="###CSSFILE###">
+</head>
+<body>
+	<div class="printpage" id="printsectionhoch">
+		<div class="clearfix">
+			<div class="printtable">
+
+				<h1 class="printderpass">###TITLE###</h1>
+
+				<p class="printinfotext">###INFOTEXT###</p>
+
+			</div>
+			<div class="printtable printpersonalinfo">
+				<table>
+					<tr>
+						<td class="printpersonalinfo_heading">###NAME###</td>
+						<td rowspan="4" class="printpersonalinfo_imgcontainer">###USERPIC###</td>
+					</tr>
+					<tr>
+						<td class="printpersonalinfo_subheading">Name<br></td>
+					</tr>
+					<tr>
+						<td class="printpersonalinfo_heading">###CITY###</td>
+					</tr>
+					<tr>
+						<td class="printpersonalinfo_subheading">Wohnort</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<hr>
+		<div class="clearfix printtable printblock">
+			<h2>exabis competencies</h2>
+			<p class="printblockinfo">###EXACOMPINFOTEXT###</p>
+			<table class="bordertable">
+				<tr class="printrowsubheading">
+					<td><i>###COURSE###</i></td>
+					<td><i>###TOTAL###</i></td>
+					<td><i>###ACHIEVED###</i></td>
+				</tr>
+				###EXACOMP_COURSESUMMARY###
+				<tr class="printsummary">
+					<td>Total</td>
+					<td>###EXACOMP_TOTALAMOUNT###</td>
+					<td>###EXACOMP_TOTALREACHED###</td>
+				</tr>
+			</table>
+
+			<p></p>
+
+			###EXACOMP_TABLES###
+		</div>
+		###EXAPORT###
+		
+		###EXASTUD###
+	</div>
+</body>
+</html>

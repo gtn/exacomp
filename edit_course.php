@@ -115,9 +115,13 @@ if (empty($action)) {
         echo $OUTPUT->box(text_to_html(get_string("explainconfigcourse_subjects", "block_exacomp")));
         $content.='<form action="edit_course.php?courseid=' . $courseid . '&amp;action=detail" method="post">';
         $content .= '<table>';
-
+		$specific=false;
         foreach ($subjects as $subject) {
 
+        	if($subject->source!=1 && !$specific){
+        		$specific=true;
+        		$content .= '<tr> <td colspan="2"><b>' . get_string("specificsubject","block_exacomp") . '</b></td></tr>';
+        	}
             if (block_exacomp_check_subject_by_course($subject->id, $courseid))
                 $content .= '<tr><td>' . $subject->title . '</td><td><input type="checkbox" name="data[' . $subject->id . ']" value="' . $subject->id . '" checked="checked" /></td></tr>';
             else
@@ -141,7 +145,12 @@ else if ($action == 'detail') {
         $subjects = block_exacomp_get_subjects_by_id($subids);
         $content.='<form name="topics" action="edit_course.php?courseid=' . $courseid . '&action=save" method="post">';
         $content .= '<table>';
+        $specific=false;
         foreach ($subjects as $subject) {
+        	if($subject->source!=1 && !$specific){
+        		$specific=true;
+        		$content .= '<tr> <td colspan="2"><b>' . get_string("specificcontent","block_exacomp") . '</b></td></tr>';
+        	}
             $topics = block_exacomp_get_topics($subject->id);
             $content .= '<tr> <td colspan="2"><b>' . $subject->title . '</b></td></tr>';
             foreach ($topics as $topic) {

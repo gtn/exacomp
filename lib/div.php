@@ -1,8 +1,25 @@
 <?php
+function spaltenbrowser($anz,$spalten){
+	$p=1;$q=1;$splt=(floor($anz/5)+1);
+	$content='<b>Tabellenspalten Anzeige: </b>';
+	for ($z=1;$z<$anz;$z++){
+		if ($q==1){
+			$von=((($p-1)*5)+1);
+			$bis=($von-1)+5;
+			if ($bis>$anz) $bis=$anz;
+			$content.='<a href="javascript:hidezelle('.$p.','.$splt.');">'.$von.'-'.$bis.'&nbsp;</a> | ';
+		}
+		
+	if ($q==$spalten) {$q=1;$p++;}
+	else $q++;
+	}
+	$content.='<a href="javascript:hidezelle(0,'.$splt.');">alle&nbsp;Schüler</a>';
+	return $content;
+}
 function block_exacomp_get_examplelink($sourceid){
 	global $DB,$CFG;
 
-	$descriptor = $DB->get_record('block_exacompdescriptors',array("sourceid" => $sourceid));
+	$descriptor = $DB->get_record('block_exacompdescriptors',array("sourceid" => $sourceid,"source"=>1));
 	if($descriptor) {
 		$examples=$DB->get_records('block_exacompdescrexamp_mm', array("descrid" => $descriptor->id));
 
@@ -82,19 +99,19 @@ function block_exacomp_get_descriptors_by_course($courseid) {
 function block_exacomp_get_descriptors_by_course_ids($courseid) {
 	global $DB;
 	//$possible = block_exacomp_get_possible_descritptors_by_course($courseid);
-	
+
 	//da.id so query is unique
 	$query = "select  da.id, d.id AS did FROM {block_exacompdescriptors} d INNER JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid INNER JOIN {course_modules} a ON da.activityid=a.id WHERE a.course = :courseid";
 	$descriptorids = $DB->get_records_sql($query, array("courseid" => $courseid));
-	
+
 	$commaids= "";
 	foreach($descriptorids as $descriptorid)
 		$commaids .= $descriptorid->did.",";
-	
+
 	if (!$descriptorids) {
 		return 0;
 	}
-	
+
 	//cut of last ","
 	return substr($commaids, 0, strlen($commaids)-1);
 }
@@ -102,7 +119,7 @@ function block_exacomp_get_descriptors_by_course_ids($courseid) {
 
 function block_exacomp_get_descritors_list($courseid,$onlywithactivitys=0) {
 	global $CFG, $DB;
-	$condition = array($courseid); 
+	$condition = array($courseid);
 	$query = "SELECT d.id,d.title,tp.title as topic, s.title as subject FROM {block_exacompdescriptors} d, {block_exacompcoutopi_mm} c, {block_exacompdescrtopic_mm} t, {block_exacomptopics} tp, {block_exacompsubjects} s
 	WHERE d.id=t.descrid AND t.topicid = c.topicid AND t.topicid=tp.id AND tp.subjid = s.id AND c.courseid = ?";
 	if ($onlywithactivitys==1){
@@ -124,9 +141,9 @@ function block_exacomp_get_descriptors($activityid) {
 	$query = "SELECT descr.title,descr.id FROM {block_exacompdescriptors} descr INNER JOIN {block_exacompdescractiv_mm} mm  ON descr.id=mm.descrid INNER JOIN {course_modules} l ON l.id=mm.activityid ";
 	$query.="WHERE l.id=?";
 	$query.=" ORDER BY descr.sorting";
-	
+
 	$descriptors = $DB->get_records_sql($query, array($activityid));
-	
+
 	if (!$descriptors) {
 		$descriptors = array();
 	}
@@ -197,8 +214,22 @@ function block_exacomp_get_competences_by_descriptor($descriptorid, $courseid, $
 	}
 	return $competences;
 }
+function block_exacomp_get_supported_modules() {
+	global $DB;
+	$modules=array();
+	foreach($DB->get_records("modules") as $module)
+		if(in_array($module->name,array("forum","assign")))
+		$modules[$module->name] = $module->id;
 
-function block_exacomp_get_assignments($courseid) { //alle assignments eines bestimmten kurses
+	return $modules;
+}
+function block_exacomp_get_coursemodule($mod) {
+	global $DB;
+	$name = $DB->get_field('modules','name',array("id"=>$mod->module));
+
+	return get_coursemodule_from_id($name,$mod->id);
+}
+function block_exacomp_get_assignments($courseid) {
 	global $CFG, $DB;
 
 	$assignments = $DB->get_records('course_modules', array("course" => $courseid));
@@ -217,10 +248,24 @@ function block_exacomp_get_activityurl($activity,$student=false) {
 	$mod = $DB->get_record('modules',array("id"=>$activity->module));
 	if($mod->name == "assignment" && !$student)
 		return $CFG->wwwroot . '/mod/assignment/submissions.php?id=' . ($activity->id);
-	else if($mod->name == "assignment" && $student)
-		return $CFG->wwwroot . '/mod/assignment/view.php?id=' . ($activity->id);
-	else if($mod->name == "assign")
-		return $CFG->wwwroot . '/mod/assign/view.php?id=' . $activity->id;
+	else return $CFG->wwwroot . '/mod/'.$mod->name.'/view.php?id=' . $activity->id;
+}
+function block_exacomp_get_modules() {
+	global $COURSE,$CFG;
+	$activities = array();
+	$activities_old = get_coursemodules_in_course('assignment', $COURSE->id);
+	if(floatval(substr($CFG->release, 0, 3))>=2.3)
+		$activities = get_coursemodules_in_course('assign', $COURSE->id);
+
+	$forums = get_coursemodules_in_course('forum', $COURSE->id);
+	$data = get_coursemodules_in_course('data', $COURSE->id);
+	$quizes = get_coursemodules_in_course('quiz', $COURSE->id);
+	$scorm = get_coursemodules_in_course('scorm', $COURSE->id);
+	$glossaries = get_coursemodules_in_course('glossary', $COURSE->id);
+	$lessons = get_coursemodules_in_course('lesson', $COURSE->id);
+	$wikis = get_coursemodules_in_course('wiki', $COURSE->id);
+
+	return array_merge($activities,$activities_old,$forums,$data,$quizes,$scorm,$glossaries,$lessons,$wikis);
 }
 function print_descriptors($descriptors, $classprefix="ec") {
 	foreach ($descriptors as $descriptor) {
@@ -230,8 +275,8 @@ function print_descriptors($descriptors, $classprefix="ec") {
 
 function get_descriptor_ids($activityid) {
 	global $CFG;
-	$query = "select GROUP_CONCAT(cast(descrid as char))  as descrids from " . $CFG->prefix . "block_exacompdescractiv_mm WHERE activityid=?";
-
+	$query = "select GROUP_CONCAT(cast(descrid as char(10)))  as descrids from " . $CFG->prefix . "block_exacompdescractiv_mm WHERE activityid=?";
+	
 	$str = get_record_sql($query, array(intval($activityid)));
 	return $str->descrids;
 }
@@ -264,8 +309,8 @@ function block_exacomp_set_descractivitymm($descrlist, $activityid) {
 
 function block_exacomp_set_descusermm($values, $courseid, $reviewerid, $role) {
 	global $DB, $CFG;
-	if(strcmp("pgsql", $CFG->dbtype)==0) $query= 'DELETE FROM {block_exacompdescuser_mm} c USING {course_modules} a WHERE c.activityid=a.id AND a.course=? AND c.role = ?';
-	else $query= 'DELETE c.* FROM {block_exacompdescuser_mm} c INNER JOIN {course_modules} a ON c.activityid=a.id WHERE a.course=? AND c.role =? ';
+	if(strcmp("pgsql", $CFG->dbtype)==0) $query= 'DELETE FROM {block_exacompdescuser_mm} c USING {course_modules} a WHERE c.activityid=a.id AND a.course=? AND c.role = ? AND c.activitytype != 2000';
+	else $query= 'DELETE c.* FROM {block_exacompdescuser_mm} c INNER JOIN {course_modules} a ON c.activityid=a.id WHERE a.course=? AND c.role =? AND c.activitytype != 2000';
 	$DB->Execute($query, array($courseid, $role));
 
 	foreach ($values as $value) {
@@ -424,6 +469,8 @@ function block_exacomp_print_header($role, $item_identifier, $sub_item_identifie
 		$tabs[] = new tabobject('studenttabcompetences', $CFG->wwwroot . '/blocks/exacomp/assign_competences.php?courseid=' . $COURSE->id, get_string("studenttabcompetences", "block_exacomp"), '', true);
 		$tabs[] = new tabobject('studenttabcompetencesdetail', $CFG->wwwroot . '/blocks/exacomp/evaluate_competences.php?courseid=' . $COURSE->id, get_string("studenttabcompetencesdetail", "block_exacomp"), '', true);
 		$tabs[] = new tabobject('studenttabcompetencesoverview', $CFG->wwwroot . '/blocks/exacomp/view_competences.php?courseid=' . $COURSE->id, get_string("studenttabcompetencesoverview", "block_exacomp"), '', true);
+		$tabs[] = new tabobject('studenttabcompetenceprofile', $CFG->wwwroot . '/blocks/exacomp/competence_profile.php?courseid=' . $COURSE->id, get_string("studenttabcompetenceprofile", "block_exacomp"), '', true);
+
 		// tabs fuer das untermenue
 		$tabs_sub = array();
 		// ausgewaehlte tabs fuer untermenues
@@ -448,6 +495,7 @@ function block_exacomp_get_edulevels() {
 }
 
 function block_exacomp_get_usercompetences($userid, $role=1, $courseid=null,$grading=1,$anzeige=0) {
+
 	global $DB;
 	$gut=ceil($grading/2);
 	$descriptors = array();
@@ -460,7 +508,7 @@ function block_exacomp_get_usercompetences($userid, $role=1, $courseid=null,$gra
 
 	}
 	foreach($descriptorids as $descriptorid) {
-		 
+			
 		if ($descriptorid->wert <= $gut){
 			$descriptor = $DB->get_record('block_exacompdescriptors',array("id"=>$descriptorid->descid));
 			$descriptors[] = $descriptor;
@@ -525,7 +573,7 @@ function block_exacomp_reset_coursetopics($courseid) {
 }
 function block_exacomp_get_subjects() {
 	global $DB;
-	$query = 'SELECT s.id, s.title FROM {block_exacompsubjects} s WHERE s.stid IN (SELECT t.typeid FROM {block_exacompmdltype_mm} t)';
+	$query = 'SELECT s.id, s.title, s.source FROM {block_exacompsubjects} s WHERE s.stid IN (SELECT t.typeid FROM {block_exacompmdltype_mm} t) ORDER BY s.source,s.sorting';
 	//echo $query;
 	$subjects = $DB->get_records_sql($query);
 
@@ -542,7 +590,7 @@ function block_exacomp_get_possible_descritptors_by_course($courseid) {
 function block_exacomp_get_subjects_by_id($subids) {
 	global $DB;
 	$comma_separated = implode(",", $subids);
-	$query = 'SELECT s.id, s.title FROM {block_exacompsubjects} s WHERE s.id IN (' . $comma_separated . ')';
+	$query = 'SELECT s.id, s.title, s.source FROM {block_exacompsubjects} s WHERE s.id IN (' . $comma_separated . ')';
 	$subjects = $DB->get_records_sql($query);
 
 	return $subjects;
@@ -586,7 +634,7 @@ function block_exacomp_get_activity_icon($descriptorid) {
 	foreach ($activities as $activity) {
 		if($activity->activitytype == 2000) //exaport eintrag
 			continue;
-		
+
 		$mod = $DB->get_record('modules',array("id"=>$activity->activitytype));
 		$desc = get_coursemodule_from_id($mod->name, $activity->activityid);
 		if(!$desc OR $desc->course != $COURSE->id)
@@ -618,6 +666,8 @@ function block_exacomp_get_student_icon($activities, $student) {
 	$submitted = $student->firstname . get_string('usersubmitted', "block_exacomp") . "<br><ul>";
 
 	foreach ($activities as $activity) {
+		if($activity->activitytype == 2000)	//ePortfolio entry
+			continue;
 
 		$mod = $DB->get_record('modules',array("id"=>$activity->activitytype));
 		$act = get_coursemodule_from_id($mod->name, $activity->id);
@@ -658,12 +708,12 @@ function block_exacomp_get_student_icon($activities, $student) {
 function block_exacomp_exaportexists()
 {
 	global $DB;
-	$all_tables = $DB->get_tables();
-	if (in_array("block_exaportview", $all_tables)) {
-		return true;
-	}else{
-		return false;
-	}
+	return $DB->get_record('block',array('name'=>'exaport'));
+}
+function block_exacomp_exastudexists()
+{
+	global $DB;
+	return $DB->get_record('block',array('name'=>'exastud'));
 }
 function block_exacomp_get_portfolio_icon($student, $descrid) {
 	global $DB, $CFG;
@@ -706,7 +756,7 @@ function block_exacomp_get_examples($courseid) {
 	return $data;
 
 }
-function block_exacomp_get_ladebalken($courseid, $userid, $gesamt,$anteil=null,$grading=1) {
+function block_exacomp_get_ladebalken($courseid, $userid, $gesamt,$anteil=null,$grading=1,$avg=0) {
 	global $DB;
 
 	if(!$anteil) {
@@ -715,9 +765,21 @@ function block_exacomp_get_ladebalken($courseid, $userid, $gesamt,$anteil=null,$
 	}
 	if ($gesamt==0) $percent=0;
 	else $percent = round($anteil / $gesamt * 100,0);
-	return "<div class='ladebalken' style=\"background:url('pix/balkenleer.png') no-repeat left center;\"><div style=\"background:url('pix/balkenfull.png') no-repeat left center; height:27px; width:".$percent."%;\"></div></div>";
+
+	if($avg==0)
+		$avg = block_exacomp_get_average_course_competences($courseid)->a;
+
+	$avg = round($avg / $gesamt * 100,0);
+	return "<div class='ladebalken' style=\"background:url('pix/balkenleer.png') no-repeat left center;\">
+	<div class='lbmittelwertcontainer'><div class='lbmittelwert' style='width: ".$avg."%;'></div></div>
+	<div style=\"background:url('pix/balkenfull.png') no-repeat left center; height:27px; width:".$percent."%;\"></div></div>";
 }
 
+function block_exacomp_get_average_course_competences($courseid, $role=1) {
+	global $DB;
+	$sql = "SELECT avg(count) as a FROM (SELECT count(id) as count FROM {block_exacompdescuser} WHERE courseid=? AND role=? AND wert=1 GROUP BY userid) as avgvalues";
+	return $DB->get_record_sql($sql,array($courseid,$role));
+}
 function block_exacomp_get_descriptors_of_all_courses() {
 	//kurse holen
 
@@ -904,19 +966,189 @@ function block_exacomp_get_exampleicon($example) {
 }
 function block_exacomp_check_portfolio_competences($userid) {
 	global $DB;
-	$sql = "SELECT d.title, d.id, da.activityid, i.name FROM {block_exacompdescractiv_mm} da, {block_exacompdescriptors} d, {block_exaportitem} i WHERE da.descrid=d.id AND i.id =da.activityid AND da.activitytype=2000 and i.userid=?";
+	$sql = "SELECT da.id as daid, d.title, d.id, da.activityid, i.name FROM {block_exacompdescractiv_mm} da, {block_exacompdescriptors} d, {block_exaportitem} i WHERE da.descrid=d.id AND i.id =da.activityid AND da.activitytype=2000 and i.userid=?";
 	$comps = $DB->get_records_sql($sql, array($userid));
 	return $comps;
 }
-function block_exacomp_check_teacher_assign($descriptor,$userid, $role=1) {
+function block_exacomp_check_teacher_assign($descriptor,$userid, $role=1, $small=true, $activitytype=null) {
 	global $DB, $CFG;
-	$rs = $DB->get_record('block_exacompdescuser_mm',array("userid"=>$userid,"activityid"=>$descriptor->activityid,"descid"=>$descriptor->id,"role"=>$role));
+	$rs = $DB->get_record('block_exacompdescuser_mm',array("userid"=>$userid,"activityid"=>$descriptor->activityid,"descid"=>$descriptor->id,"role"=>$role,"activitytype"=>$activitytype));
 	if($rs)
-		return '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/accept.png" alt="" />';
+		return ($small) ? '<img src="pix/accept.png" alt="Reached competence" width="10" height="10" />' : '<img alt="Reached competence" width="16" height="16" src="pix/accept.png" alt="" />';
 	else
-		return '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/cancel.png" alt="" />';
+		return ($small) ? '<img src="pix/cancel.png" alt="Not reached competence" width="10" height="10" />' : ' <img alt="Not reached competence" width="16" height="16" src="pix/cancel.png" alt="" />';
 }
-function block_exacomp_check_student_assign($descriptor,$userid) {
-	return block_exacomp_check_teacher_assign($descriptor, $userid, 0);
+function block_exacomp_check_student_assign($descriptor,$userid,$small=true,$activitytype=null) {
+	return block_exacomp_check_teacher_assign($descriptor, $userid, 0,$small,$activitytype);
 }
-?>
+function block_exacomp_switch_bgcolor($bgcolor) {
+	return ($bgcolor == ' style="background-color:#efefef" ') ? ' style="background-color:#ffffff" ' : ' style="background-color:#efefef" ';
+}
+function block_exacomp_competence_reached($descid,$userid,$courseid) {
+	global $DB;
+	return ($DB->get_record('block_exacompdescuser',array("courseid"=>$courseid,"wert"=>1,"role"=>1,"descid"=>$descid,"userid"=>$userid))) ? true : false;
+}
+function block_exacomp_read_profile_template() {
+	global $CFG,$DB;
+	$filecontent = '';
+
+	if(is_file($CFG->dirroot . '/blocks/exacomp/lib/competence_profile.html')) {
+		$filecontent = file_get_contents ($CFG->dirroot . '/blocks/exacomp/lib/competence_profile.html');
+	}
+
+	return $filecontent;
+}
+function block_exacomp_switch_css($css) {
+	return ($css == 'printrowgrey') ? "" : "printrowgrey";
+}
+function block_exacomp_get_eportfolio_template() {
+	return '<hr><tcpdf method="AddPage" />
+	<div class="clearfix printtable printblock">
+	<h2>exabis eportfolio</h2>
+	<p class="printblockinfo">Eine Übersicht über die Portfolio
+	Einträge, die mit Kompetenzen assoziiert sind</p>
+	###EXAPORT###
+	</div>';
+}
+function block_exacomp_get_portfolio_table($descriptors) {
+	global $USER;
+	$exaport = block_exacomp_get_table_heading('exabis ePortfolio');
+
+	$name="";
+	$cssclass='';
+	foreach ($descriptors as $descriptor) {
+
+		if ($name !== $descriptor->name) {
+			$name = $descriptor->name;
+			$exaport .= block_exacomp_get_table_headingtwo($name);
+		}
+
+		$icon1 = block_exacomp_check_teacher_assign($descriptor,$USER->id,true,2000);
+		$icon2 = block_exacomp_check_student_assign($descriptor,$USER->id,true,2000);
+		$exaport .= block_exacomp_get_table_row($cssclass, $descriptor->title, $icon1, $icon2);
+		$cssclass = block_exacomp_switch_css($cssclass);
+	}
+	$exaport .= '</table>';
+	return $exaport;
+}
+function block_exacomp_get_competence_tables($courses) {
+	global $USER;
+	$exacomp='';
+	foreach ($courses as $course) {
+		$descriptors = $course->descriptors;
+		if ($descriptors) {
+			$exacomp .= block_exacomp_get_table_heading($course->fullname);
+			$topic = "";
+			$cssclass="printrowgrey";
+			foreach ($descriptors as $descriptor) {
+				//print only reached competences
+				if(!block_exacomp_competence_reached($descriptor->id,$USER->id,$course->id))
+					continue;
+
+				if ($topic !== $descriptor->topic) {
+					$topic = $descriptor->topic;
+					$exacomp .= block_exacomp_get_table_headingtwo($topic,$cssclass);
+					$cssclass = block_exacomp_switch_css($cssclass);
+				}
+				$exacomp .= block_exacomp_get_table_row($cssclass,$descriptor->title,'###icon'.$descriptor->id.'###','###studenticon'.$descriptor->id.'###');
+				$cssclass = block_exacomp_switch_css($cssclass);
+			}
+			$exacomp .= '</table>';
+		}
+	}
+	$teacher_competences = block_exacomp_get_usercompetences($USER->id);
+	foreach ($teacher_competences as $teacher_competence) {
+		if (!empty($teacher_competence))
+			$exacomp = str_replace('###icon' . $teacher_competence->id . '###', '<img src="pix/accept.png" height="10" width="10" alt="Reached Competence" />', $exacomp);
+	}
+	$exacomp = preg_replace('/###icon([0-9])+###/', '<img src="pix/cancel.png" height="10" width="10" alt="'.get_string("not_met", "block_exacomp").'" />', $exacomp);
+
+	$user_competences = block_exacomp_get_usercompetences($USER->id, 0);
+	foreach ($user_competences as $user_competence) {
+		if (!empty($user_competence))
+			$exacomp = str_replace('###studenticon' . $user_competence->id . '###', '<img src="pix/accept.png" height="10" width="10" alt="'.get_string("not_met", "block_exacomp").'" />', $exacomp);
+	}
+	$exacomp = preg_replace('/###studenticon([0-9])+###/', '<img src="pix/cancel.png" height="10" width="10" alt="'.get_string("not_met", "block_exacomp").'" />', $exacomp);
+	$exacomp .= '###EXAPORT_COMPS###';
+	return $exacomp;
+}
+function block_exacomp_get_table_heading($name) {
+	return '<table class="bordertable"><tr class="printrowheading">
+	<td class="descriptor">
+	<h3>'.$name.'</h3>
+	</td>
+	<td class="assessment">L</td>
+	<td class="assessment">S</td>
+	</tr>';
+}
+function block_exacomp_get_table_headingtwo($name,$css='') {
+	return '<tr class="printrowheadingtwo '.$css.'">
+	<td>'.$name.'</td>
+	<td></td>
+	<td></td>
+	</tr>';
+}
+function block_exacomp_get_table_row($cssclass,$title,$icon1,$icon2) {
+	return '<tr class="'.$cssclass.'">
+	<td>'.$title.'</td>
+	<td>'.$icon1.'</td>
+	<td>'.$icon2.'</td>
+	</tr>';
+}
+function block_exacomp_get_studentreview_template() {
+	return '<hr><tcpdf method="AddPage" />
+	<div class="clearfix printtable printblock">
+	<h2>exabis student review</h2>
+	<p class="printblockinfo">Deine Bewertungen über verschiedene Perioden hinweg</p>
+	###EXASTUD###
+	</div>';
+}
+function block_exacomp_get_student_report_template() {
+	return '<table class="ratingtable">
+	<tr class="ratingheading">
+	<td colspan="2"><h3>###PERIODTEXT### ###PERIOD###:</h3><span class="ratingsubhead">*(###NUM### ###COUNTREVIEWS###)</span></td></tr>
+	###CATEGORIES###
+	</table>
+	<p></p>
+	###COMMENTS###';
+}
+function block_exacomp_get_student_report($studentid, $periodid) {
+	global $CFG,$DB,$USER;
+	require_once($CFG->dirroot . "/blocks/exastud/lib/lib.php");
+
+	$class = $DB->get_record('block_exastudclass', array('userid'=>$USER->id));
+	$period =$DB->get_record('block_exastudperiod', array('id'=>$periodid));
+
+	$studentReport = block_exabis_student_review_get_report($studentid, $periodid);
+	$studentTemplate = block_exacomp_get_student_report_template();
+	$studentTemplate = str_replace ( '###PERIODTEXT###', get_string('periodreview','block_exacomp'), $studentTemplate);
+	$studentTemplate = str_replace ( '###COUNTREVIEWS###', get_string('countreviews','block_exacomp'), $studentTemplate);
+	$studentTemplate = str_replace ( '###NUM###', $studentReport->numberOfEvaluations, $studentTemplate);
+	$studentTemplate = str_replace ( '###PERIOD###', $period->description, $studentTemplate);
+
+	$categories = block_exabis_student_review_get_period_categories($periodid);
+	$html='';
+	foreach($categories as $category) {
+		$html.='<tr class="ratings"><td class="ratingfirst text">'.$category->title.'</td>
+		<td class="rating legend">'.@$studentReport->{$category->title}.'</td></tr>';
+	}
+	$studentTemplate = str_replace ( '###CATEGORIES###', $html, $studentTemplate);
+
+	if (!$studentReport->comments) {
+		$studentTemplate = str_replace ( '###COMMENTS###', '', $studentTemplate);
+	}
+	else {
+		$comments='
+		<table class="ratingtable"><tr class="ratingheading"><td><h3>'.get_string('detailedreview','block_exacomp').'</h3></td></tr></table>';
+		foreach($studentReport->comments as $comment) {
+			$comments.='<table class="ratingtable">
+			<tr class="ratinguser"><td class="ratingfirst">'.$comment->name.'</td></tr>
+			<tr class="ratingtext"><td>'.$comment->review.'</td>
+			</tr>
+			</table>';
+		}
+		$studentTemplate = str_replace ( '###COMMENTS###', $comments, $studentTemplate);
+	}
+	return $studentTemplate;
+	}
+	?>

@@ -32,6 +32,7 @@ require_once($CFG->dirroot . "/lib/datalib.php");
 
 global $COURSE, $CFG, $OUTPUT;
 $spalten=5;
+$zeilenanzahl=5;
 $content = "";
 $courseid = required_param('courseid', PARAM_INT);
 $action = optional_param('action', "", PARAM_ALPHA);
@@ -87,48 +88,39 @@ if($showevaluation == 'on')
         $colspan=1;
 if($activities) {
 $content.='<div>';
-if (count($students)>$spalten){
-	$p=1;$q=1;$splt=(floor(count($students)/5)+1);
-	$content.='<a href="javascript:hidezelle(0,'.$splt.');">alle&nbsp;</a>';
-	for ($z=1;$z<count($students);$z++){
-		if ($q==1){
-			$content.='<a href="javascript:hidezelle('.$p.','.$splt.');">Spalte '.$p.'&nbsp;</a>';
-		}
-		
-	if ($q==$spalten) {$q=1;$p++;}
-	else $q++;
-	}
-}
+$content.='<div class="spaltenbrowser">';
+	if (count($students)>$spalten) $content.=spaltenbrowser(count($students),$spalten);
+$content.="</div>";
 $content.='
-		<table id="comps" class="compstable flexible boxaligncenter generaltable">
+		<table style="empty-cells:hide;border-left:1px solid #E3DFD4;margin-top:4px;" id="comps" class="compstable flexible boxaligncenter generaltable">
 		<tr class="heading r0">
-		<td class="category catlevel1" colspan="' . (count($students)*$colspan + 1) . '" scope="col"><h2>' . $COURSE->fullname . '</h2></td></tr>
+		<td id="headerwithcoursename" class="category catlevel1" colspan="' . (count($students)*$colspan + 1) . '" scope="col"><h2>' . $COURSE->fullname . '</h2></td></tr>
 		<tr><td></td>';
-$z=1;
-$p=1;
+	$z=1;
+	$p=1;
 foreach ($students as $student) {
-    $content.='<td class="zelle'.$p.'" colspan="'.$colspan.'">' . $student->lastname . ' ' . $student->firstname . '<input type="hidden" value="' . $student->id . '" name="ec_student[' . $student->id . ']" /></td>';
-		if ($z==5){ $z=1;$p++;}
-    else $z++;
+	$content.='<td class="zelle'.$p.'" colspan="'.$colspan.'">' . $student->lastname . ' ' . $student->firstname . '<input type="hidden" value="' . $student->id . '" name="ec_student[' . $student->id . ']" /></td>';
+	if ($z==$spalten){ $z=1;$p++;}
+  else $z++;
 }
 $content.="</tr>";
 
 if ($showevaluation == 'on') {
     $content.='<tr><td></td>';
-    for ($i = 0; $i < count($students); $i++)
-        $content.='<td>S</td><td>L</td>';
+    $z=1;
+	$p=1;
+    for ($i = 0; $i < count($students); $i++){
+      $content.='<td class="zelle'.$p.'">S</td><td class="zelle'.$p.'">L</td>';
+      if ($z==$spalten){ $z=1;$p++;}
+  		else $z++; 
+    }
     $content.='</tr>';
 }
 
 $trclass = "even";
+$zeilenr=0;
 foreach ($activities as $activitymod) {
-    if($activitymod->module != 1)
-            continue;
-    // datensatz der activity holen
-    $activity = get_coursemodule_from_id('assignment',$activitymod->id);
-    if(!$activity && floatval(substr($CFG->release, 0, 3))>=2.3)
-    	$activity = get_coursemodule_from_id('assign',$activitymod->id);
-
+    $activity = block_exacomp_get_coursemodule($activitymod);
     if ($trclass == "even") {
         $trclass = "odd";
         $bgcolor = ' style="background-color:#efefef" ';
@@ -143,6 +135,7 @@ foreach ($activities as $activitymod) {
     $tempzeile = "";
 
     $descriptors = block_exacomp_get_descriptors($activitymod->id,$courseid);
+    
     foreach ($descriptors as $descriptor) {
         if ($trclass == "even") {
             $trclass = "odd";
@@ -155,7 +148,7 @@ foreach ($activities as $activitymod) {
 				$exicon = block_exacomp_get_examplelink($descriptor->id);
         $tempzeile.='<tr class="r2 ' . $trclass . '" ' . $bgcolor . '><td class="ec_minwidth">' . $descriptor->title . '' . $exicon . '<input type="hidden" value="' . $descriptor->id . '" name="ec_activity[' . $activity->id . ']_descriptor[' . $descriptor->id . ']" /></td>';
         //Checkbox für jeden Schüler generieren
-        $z=1;
+         $z=1;
         $p=1;
         foreach ($students as $student) {
             
@@ -172,7 +165,7 @@ foreach ($activities as $activitymod) {
         					}
         					$tempzeile.='</select></td>';
         				}
-        				if ($z==5){ $z=1;$p++;}
+        				if ($z==$spalten){ $z=1;$p++;}
         				else $z++;
         }
         $tempzeile .= '</tr>';
@@ -206,8 +199,32 @@ foreach ($activities as $activitymod) {
 
         $zeile .= $tempzeile;
         $tempzeile = "";
+        if ($zeilenr==$zeilenanzahl && $role == "teacher"){
+        	
+        	if ($trclass == "even") {
+            $trclass = "odd";
+            $bgcolor = ' style="background-color:#efefef" ';
+            $fontcolor = ' style="color:#6c6c6c" ';
+	        } else {
+	            $trclass = "even";
+	            $bgcolor = ' style="background-color:#ffffff" ';
+	            $fontcolor = ' style="color:#6c6c6c" ';
+	        }
+        	$zeile.='<tr class="'.$trclass.'" ' . $bgcolor . '><td></td>';
+        	$zi=1;
+        	$pi=1;
+        	foreach ($students as $student) {
+        		$zeile.='<td'.$fontcolor.' class="zelle'.$pi.'" >'.$student->lastname.'</td>';
+        		if ($zi==$spalten){ $zi=1;$pi++;}
+        		else $zi++;
+        	}
+        	$zeile.='</tr>';
+					$zeilenr=0;
+				}
+        $zeilenr++;
     }
     $content .= $zeile;
+    
 }
 $content.='<tr><td id="tdsubmit" colspan="'.(count($students)*$colspan + 1).'"><input type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" /></td></tr>';
 $content.="</table></div>";
@@ -230,18 +247,28 @@ for (z=1;z<=bereiche;z++){
 	else if (z==nummer) showcell("zelle" + nummer);
 	else hidecell("zelle" + z);
 }
+if (nummer==0){}
+else change_colspan(bereiche); 
 }
 
+function change_colspan(anzahl){
+/*
+document.getElementById("headerwithcoursename").setAttribute("colspan",(anzahl+2));
+var elements = document.getElementsByTagName("*");
+for(i = 0; i < elements.length; i++) {
+if(elements[i].getAttribute("class") == "ec_activitylist_item") {
+elements[i].setAttribute("colspan",(anzahl+2));
+}}
+*/
+}
 function hidecell(zelle) {
 
 var elements = document.getElementsByTagName("*");
-
 for(i = 0; i < elements.length; i++) {
-
 if(elements[i].getAttribute("class") == zelle) {
 elements[i].style.display = "none";
-
 }}}
+
 function showcell(zelle) {
 
 var elements = document.getElementsByTagName("*");
@@ -252,28 +279,6 @@ if(elements[i].getAttribute("class") == zelle) {
 elements[i].style.display = "table-cell";
 
 }}}
-
-
-function hideClass(objClass){
-alert (objClass);
-var elements = (ie) ? document.all : document.getElementsByTagName("td");
-//alert (elements);
-  for (i=0; i<elements.length; i++){
-    if (elements[i].className==objClass){
-      elements[i].style.display="none"
-    }
-  }
-}
-
-function showClass(objClass){
-
-var elements = (ie) ? document.all : document.getElementsByTagName("*");
-  for (i=0; i<elements.length; i++){
-    if (elements[i].className==objClass){
-      elements[i].style.display="block"
-    }
-  }
-}
 ';
 echo $content;
 echo '</script>'."\n";

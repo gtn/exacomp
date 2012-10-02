@@ -18,6 +18,7 @@ $string['teachertabassigncompetenceexamples'] = 'Beispiel-Aufgaben';
 $string['studenttabcompetences'] = 'Kompetenz-Gesamtansicht';
 $string['studenttabcompetencesdetail'] = 'Kompetenz-Detailansicht';
 $string['studenttabcompetencesoverview'] = 'Alle erworbenen Kompetenzen';
+$string['studenttabcompetenceprofile'] = 'Kompetenzprofil';
 
 //NAVIGATION
 $string['studentnavcompetences'] = 'Kompetenzeinschätzung';
@@ -35,8 +36,10 @@ $string['adminbread'] = 'Konfiguration';
 //TEXTE
 $string['importdone'] = 'Es sind bereits Daten importiert.';
 $string['importpending'] = 'Es sind keine Daten importiert!';
-$string['doimport'] = 'XML Import durchführen';
+$string['doimport'] = 'Daten importieren';
+$string['doimport_own'] = 'Eigene Daten importieren';
 $string['importsuccess'] = 'Daten erfolgreich importiert!';
+$string['importsuccess_own'] = 'Eigene Daten erfolgreich importiert!';
 $string['importfail'] = 'Es ist ein Fehler aufgetreten.';
 
 $string['activitysuccess'] = 'Änderungen erfolgreich übernommen.';
@@ -45,7 +48,8 @@ $string['usersubmitted'] = ' hat folgende Aufgaben abgegeben:';
 $string['usernosubmission'] = ' hat keine Aufgaben zu diesem Deskriptor abgegeben.';
 $string['descnoassignment'] = 'Diesem Deskriptor sind keine Aufgaben zugeordnet.';
 
-
+$string['specificcontent'] = 'Standortspezifische Schwerpunkte';
+$string['specificsubject'] = 'Standortspezifische Unterrichtsgegenst&auml;nde';
 $string['explain_bewertungsschema'] = 'Hier können sie das Bewertungsschema für diesen Kurs festlegen. Erlaubt sind Zahlen von 1-10. Standardmäßig wird 1 verwendet, d.h. es kann in einer Checkbox gewählt werden, ob eine Kompetenz erfüllt ist oder nicht. Eine Zahl n grösser 1 bewirkt eine Bewertungsskala mit n Ausprägungen.';
 $string['explainnomoodle_config'] = 'Um das Modul exabis competences verwenden zu können, muss dieses erst von einen Moodle Administrator konfiguriert werden.';
 $string['explainconfig'] = 'Um das Modul exabis competences verwenden zu k&ouml;nnen, m&uuml;ssen hier die Schultypen der Moodle-Instanz selektiert werden.';
@@ -103,8 +107,20 @@ $string['course'] = 'Kurs';
 $string['erreicht'] = 'Erreicht';
 $string['gesamt'] = 'Gesamt';
 $string['configcourseonce'] = 'Der Kurs muss einmalig konfiguriert werden.';
+$string['createpdf'] = 'PDF Dokument erstellen';
 
+$string['exaportintro'] = 'Beschreibung';
+$string['exaportcategory'] = 'Kategorie';
+$string['exaporttype'] = 'Typ';
+$string['exaportfilename'] = 'Dateiname';
+$string['exaportinfo'] = 'Der Eintrag ist mit folgenden Kompetenzen assoziiert:';
+$string['periodreview'] = 'Bewertung für die Periode ';
+$string['countreviews'] = ' Bewertungen abgegeben';
+$string['detailedreview'] = 'Ausführliche Beurteilung';
 
-
-
-
+$string['competence_profile'] = 'Kompetenzprofil';
+$string['infotext'] = 'Dises Dokument bietet eine Übersicht über deinen bisherigen Kompetenzerwerb. Es setzt sich aus Daten von 3 unterschiedlicher Module zusammen und bietet einen umfangreichen Überblick über deine Fähigkeiten.';
+$string['exacompinfotext'] = 'Deine bisher erworbenen Kompetenzen';
+$string['exaportinfotext'] = 'Eine Übersicht über die Portfolio Einträge, die mit Kompetenzen assoziiert sind';
+$string['exastudinfotext'] = 'Deine Bewertungen über verschiedene Perioden hinweg';
+?>
