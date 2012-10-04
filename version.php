@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$exacomp_version = 2012091801;   // The current version is a date (YYYYMMDDXX)
-$plugin->version = 2012091801;
+$exacomp_version = 2012100402;   // The current version is a date (YYYYMMDDXX)
+$plugin->version = 2012100402;
 // NOTE: see revision.txt for internal version number
 $exaport_release = "1.0";  // User-friendly version number
 $plugin->maturity  = MATURITY_BETA;
