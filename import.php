@@ -49,7 +49,7 @@ block_exacomp_print_header("admin", "admintabimport");
 echo "<div class='block_excomp_center'>";
 
 if($action == "xml") {
-	global exaport=has_exaport();
+	global $exaport=has_exaport();
     $import = block_exacomp_xml_do_import();
 }
 $check = block_exacomp_xml_check_import();
