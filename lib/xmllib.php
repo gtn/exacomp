@@ -34,7 +34,7 @@ function block_exacomp_xml_insert_schooltyp($value,$source,$userlst) {
 		$sql='INSERT INTO {block_exacompschooltypes} (sorting,title,elid,isoez,sourceid,source) VALUES('.$value->sorting.',\''.$value->title.'\','.$elid.','.$value->isoez.','.$value->uid.','.$source.')';
 		$DB->Execute($sql);
 	}
-	if ($userlst!=0){
+	if ($userlst!="0"){
 			
 		/*gibts diese kategorie bei irgendeinem user? wenn ja, update, wenn nein insert
 		  hats sich jemand die kategorie gelöscht, wird sie nicht neu angelegt, sonst bevormundung*/
@@ -60,7 +60,7 @@ function block_exacomp_xml_insert_schooltyp($value,$source,$userlst) {
 function block_exacomp_xml_insert_subject($value,$source) {
 	//    global $DB;
 
-	global $DB, exaport;
+	global $DB;
 	
 	/*
 	 * ID aus XML mit sourceID der Datenbank vergleichen.
@@ -90,10 +90,10 @@ function block_exacomp_xml_insert_subject($value,$source) {
 	} else {
 		$sql='INSERT INTO {block_exacompsubjects} (sorting,title,titleshort,stid,sourceid,source) VALUES('.$value->sorting.',\''.$value->title.'\',\''.$value->titleshort.'\','.$stid.','.$value->uid.','.$source.')';
 		$DB->Execute($sql);
-		if ($exaport==true){
+		/*if ($exaport==true){
 			$sql='INSERT INTO {block_exaportcate} (sorting,title,titleshort,stid,sourceid,source) VALUES('.$value->sorting.',\''.$value->title.'\',\''.$value->titleshort.'\','.$stid.','.$value->uid.','.$source.')';
 			$DB->Execute($sql);
-		}
+		}*/
 	}
 }
 
@@ -108,13 +108,22 @@ function block_exacomp_xml_insert_skill($value,$source) {
 		$DB->update_record('block_exacompskills', $skill);
 		
 	} else {*/
-		$sql='INSERT INTO {block_exacompskills} (sorting,title,sourceid,source) VALUES('.$value->sorting.',\''.$value->title.'\','.$value->uid.','.$source.')';
+		$sql='INSERT INTO {block_exacompskills} (sorting,title) VALUES('.$value->sorting.',\''.$value->title.'\')';
 		$DB->Execute($sql);
 	//}
 }
 
 function block_exacomp_xml_insert_taxonomie($value,$source) {
 	global $DB;
+
+
+	/*
+	 * ID aus XML mit sourceID der Datenbank vergleichen.
+	* Falls gefunden, update
+	* Falls nicht, insert
+	*
+	*/
+		global $DB;
 
 
 	/*
@@ -131,6 +140,30 @@ function block_exacomp_xml_insert_taxonomie($value,$source) {
 	$new_value->parent_tax = (int)$value->parent_tax;
 	unset($value);
 	$value = $new_value;
+	
+	$tax = $DB->get_record('block_exacomptaxonomies', array("sourceid" => $value->uid));
+	if ($tax) {
+		//update
+		$tax->title = $value->title;
+		$DB->update_record('block_exacompexamples', $tax);
+	} else {
+		//insert
+		$value->sourceid = $value->uid;
+		$value->parentid = $value->parent_tax;
+
+		$sql='INSERT INTO {block_exacomptaxonomies} (id,sorting,title,sourceid) VALUES('.$value->uid.','.$value->sorting.',\''.$value->title.'\','.$value->uid.')';
+		$DB->Execute($sql);
+
+	}
+	/*new version mit source
+	$new_value = new stdClass();
+	$new_value->uid = (int)$value->uid;
+	$new_value->title = (string)$value->title;
+	$new_value->sorting = (int)$value->sorting;
+	$new_value->parent_tax = (int)$value->parent_tax;
+	unset($value);
+	$value = $new_value;
+	
 	$parenttax = $DB->get_record('block_exacomptaxonomies', array("sourceid" => $value->uid,"source"=>$source));
 	if (!empty($parenttax->id)) $ptax=$parenttax->id;
 	else $ptax=0;
@@ -149,7 +182,7 @@ function block_exacomp_xml_insert_taxonomie($value,$source) {
 		$sql='INSERT INTO {block_exacomptaxonomies} (sorting,title,sourceid,source,parentid) VALUES('.$value->sorting.',\''.$value->title.'\','.$value->uid.','.$source.','.$value->parent_tax.')';
 		$DB->Execute($sql);
 
-	}
+	}*/
 }
 
 function block_exacomp_xml_insert_topic($value,$source) {
@@ -443,16 +476,17 @@ function block_exacomp_xml_do_import($file = null, $source = 1) {
 	if (file_exists($filename) || $file) {
 		$xml = (!$file) ? simplexml_load_file($filename) : simplexml_load_string($file);
 		if ($xml) {
-			$exaport=has_exaport();
+			
 			$userlst=0;
+			/*$exaport=has_exaport();
 			if ($exaport==true){
-				if ($users = $DB->get_record("block_exaportuser", array("isoez"=>1))){
+				if ($users = $DB->get_records("block_exaportuser", array("oezinstall"=>1))){
 					foreach ($users as $user){
 						$userlst.=",".$user->id;
 					}
 					$userlst=preg_replace("/^,/","",$userlst);
 				}
-			}
+			}*/
 			foreach ($xml->table as $table) {
 				$name = $table->attributes()->name;
 
