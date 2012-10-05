@@ -2,25 +2,44 @@
 
 function block_exacomp_xml_insert_edulevel($value,$source) {
 	global $DB;
+	$new_value = new stdClass();
+	$new_value->uid = (int)$value->uid;
+	$new_value->title = (string)$value->title;
+	$new_value->sorting = (int)$value->sorting;
+	unset($value);
+	$value = $new_value;
+	
 	$edulevel = $DB->get_record('block_exacompedulevels', array("sourceid" => (int)$value->uid,"source"=>$source));
 	if ($edulevel) {
 		//update
 		$edulevel->title = $value->title;
 		$edulevel->sorting = $value->sorting;
 		$DB->update_record('block_exacompedulevels', $edulevel);
-		
 	} else {
 	$sql='INSERT INTO {block_exacompedulevels} (sorting,title,sourceid,source) VALUES('.$value->sorting.',\''.$value->title.'\','.$value->uid.','.$source.')';
 	$DB->Execute($sql);
 	}
+
 }
 
 function block_exacomp_xml_insert_schooltyp($value,$source,$userlst) {
 	global $DB;
+	$newvalue=new stdClass();
+	$newvalue->title=(string)$value->title;
+	$newvalue->titleshort=(string)$value->titleshort;
+	if (empty($newvalue->titleshort)) $newvalue->titleshort=" ";
+	$newvalue->sourceid=(int)$value->uid;
+	$newvalue->source=$source;
+	$newvalue->sorting = (int)$value->sorting;
+	$newvalue->isoez = (int)$value->isoez;
+	$newvalue->elid = (int)$value->elid;
+	$newvalue->uid = (int)$value->uid;
+	unset($value);
+	$value = $newvalue;
 	$edulevel = $DB->get_record('block_exacompedulevels', array("sourceid"=> (int)$value->elid,"source"=>$source));
 	if (!empty($edulevel->id)) $elid=$edulevel->id;
 	else $elid=0;
-	
+	$newvalue->elid=$elid;
 	$schooltype = $DB->get_record('block_exacompschooltypes', array("sourceid" => (int)$value->uid,"source"=>$source));
 	if ($schooltype) {
 		//update
@@ -29,9 +48,11 @@ function block_exacomp_xml_insert_schooltyp($value,$source,$userlst) {
 		$schooltype->elid = $elid;
 		$schooltype->sorting = $value->sorting;
 		$schooltype->isoez = $value->isoez;
-		$DB->update_record('block_exacompsubjects', $schooltype);
+
+		$DB->update_record('block_exacompschooltypes', $schooltype);
+
 	} else {
-		$sql='INSERT INTO {block_exacompschooltypes} (sorting,title,elid,isoez,sourceid,source) VALUES('.$value->sorting.',\''.$value->title.'\','.$elid.','.$value->isoez.','.$value->uid.','.$source.')';
+		$sql='INSERT INTO {block_exacompschooltypes} (sorting,title,titleshort,elid,isoez,sourceid,source) VALUES('.$value->sorting.',\''.$value->title.'\',\''.$value->titleshort.'\','.$elid.','.$value->isoez.','.$value->uid.','.$source.')';
 		$DB->Execute($sql);
 	}
 	if ($userlst!="0"){
@@ -61,17 +82,31 @@ function block_exacomp_xml_insert_subject($value,$source) {
 	//    global $DB;
 
 	global $DB;
-	
+
 	/*
 	 * ID aus XML mit sourceID der Datenbank vergleichen.
 	* Falls gefunden, update
 	* Falls nicht, insert
 	*
 	*/
+	$newvalue=new stdClass();
+	$newvalue->title=(string)$value->title;
+	$newvalue->titleshort=(string)$value->titleshort;
+	if (empty($newvalue->titleshort)) $newvalue->titleshort=" ";
+	$newvalue->sourceid=(int)$value->uid;
+	$newvalue->source=$source;
+	$newvalue->sorting = (int)$value->sorting;
+	$newvalue->stid = (int)$value->stid;
+	$newvalue->uid = (int)$value->uid;
+	unset($value);
+	$value = $newvalue;
+	
 	$schooltype = $DB->get_record('block_exacompschooltypes', array("sourceid"=> (int)$value->stid,"source"=>$source));
 	if (!empty($schooltype->id)) $stid=$schooltype->id;
 	else $stid=0;
+	
 	$subject = $DB->get_record('block_exacompsubjects', array("sourceid" => (int)$value->uid,"source"=>$source));
+	if (empty($value->titleshort)) $value->titleshort=" ";
 	if ($subject) {
 		//update
 		$subject->title = $value->title;
@@ -88,8 +123,11 @@ function block_exacomp_xml_insert_subject($value,$source) {
 			}
 		}*/
 	} else {
-		$sql='INSERT INTO {block_exacompsubjects} (sorting,title,titleshort,stid,sourceid,source) VALUES('.$value->sorting.',\''.$value->title.'\',\''.$value->titleshort.'\','.$stid.','.$value->uid.','.$source.')';
+		$sql='INSERT INTO {block_exacompsubjects} (sorting,title,titleshort,stid,sourceid,source) VALUES('.$value->sorting.',\''.($value->title).'\',\''.($value->titleshort).'\','.$stid.','.$value->uid.','.$source.')';
+		//echo $sql;
 		$DB->Execute($sql);
+		$datei="";
+		show_sql_error($sql,$zeile="",$datei);
 		/*if ($exaport==true){
 			$sql='INSERT INTO {block_exaportcate} (sorting,title,titleshort,stid,sourceid,source) VALUES('.$value->sorting.',\''.$value->title.'\',\''.$value->titleshort.'\','.$stid.','.$value->uid.','.$source.')';
 			$DB->Execute($sql);
@@ -505,6 +543,7 @@ function block_exacomp_xml_do_import($file = null, $source = 1) {
 					block_exacomp_xml_insert_schooltyp($table,$source,$userlst);
 				}
 				if ($name == "block_exacompsubjects") {
+					
 					/*if ($subject == 0) {
 						$DB->delete_records('block_exacompsubjects',array("source" => $source));
 						$subject = 1;
@@ -589,5 +628,12 @@ function has_exaport(){
 		$exaport=false;
 	}
 	return $exaport;
+}
+function show_sql_error($sql,$zeile="",$datei){
+ 	$err=mysql_error();
+	if(!empty($err)){
+		 echo "<p style='background-color:#f9cdcd;border:2px red solid;'>".$sql."<br>";
+		 echo "SQL-Fehler: ".mysql_error(). " in ".$datei." Zeile ".$zeile."</p>";
+	}
 }
 ?>
