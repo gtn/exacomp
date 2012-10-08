@@ -26,8 +26,6 @@ function block_exacomp_xml_insert_schooltyp($value,$source,$userlst) {
 	global $DB;
 	$newvalue=new stdClass();
 	$newvalue->title=(string)$value->title;
-	$newvalue->titleshort=(string)$value->titleshort;
-	if (empty($newvalue->titleshort)) $newvalue->titleshort=" ";
 	$newvalue->sourceid=(int)$value->uid;
 	$newvalue->source=$source;
 	$newvalue->sorting = (int)$value->sorting;
@@ -44,7 +42,6 @@ function block_exacomp_xml_insert_schooltyp($value,$source,$userlst) {
 	if ($schooltype) {
 		//update
 		$schooltype->title = $value->title;
-		$schooltype->titleshort = $value->titleshort;
 		$schooltype->elid = $elid;
 		$schooltype->sorting = $value->sorting;
 		$schooltype->isoez = $value->isoez;
@@ -52,7 +49,7 @@ function block_exacomp_xml_insert_schooltyp($value,$source,$userlst) {
 		$DB->update_record('block_exacompschooltypes', $schooltype);
 
 	} else {
-		$sql='INSERT INTO {block_exacompschooltypes} (sorting,title,titleshort,elid,isoez,sourceid,source) VALUES('.$value->sorting.',\''.$value->title.'\',\''.$value->titleshort.'\','.$elid.','.$value->isoez.','.$value->uid.','.$source.')';
+		$sql='INSERT INTO {block_exacompschooltypes} (sorting,title,elid,isoez,sourceid,source) VALUES('.$value->sorting.',\''.$value->title.'\','.$elid.','.$value->isoez.','.$value->uid.','.$source.')';
 		$DB->Execute($sql);
 	}
 	if ($userlst!="0"){
