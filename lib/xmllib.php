@@ -330,6 +330,7 @@ function block_exacomp_xml_insert_example($value,$source) {
 	$new_value->externaltask = (string)$value->externaltask;
 	$new_value->sorting = (int)$value->sorting;
 	$new_value->lang = (int)$value->lang;
+	$new_value->iseditable = (int)$value->iseditable;
 	$new_value->source = $source;
 	unset($value);
 	$value = $new_value;
@@ -351,6 +352,8 @@ function block_exacomp_xml_insert_example($value,$source) {
 		$example->externalsolution = (string)$value->externalsolution;
 		$example->externaltask = (string)$value->externaltask;
 		$example->sorting = (int)$value->sorting;
+		$example->lang = (int)$value->lang;
+		$example->iseditable = (int)$value->iseditable;
 		$DB->update_record('block_exacompexamples', $example);
 	} else {
 		//insert

@@ -135,6 +135,15 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			$DB->Execute($sql);
 		}
 	}
+	if ($oldversion < 2012101203) {
+		$table = new xmldb_table('block_exacompexamples');
+		$field = new xmldb_field('iseditable');
+		$field->set_attributes(XMLDB_TYPE_INTEGER, 1, XMLDB_UNSIGNED, null, null, 0, null);
+
+		if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+	}
 	
 	return $result;
 }
