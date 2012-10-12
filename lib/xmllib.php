@@ -17,6 +17,7 @@ function block_exacomp_xml_insert_edulevel($value,$source) {
 		$DB->update_record('block_exacompedulevels', $edulevel);
 	} else {
 		$value->source = $source;
+		$value->sourceid = $value->uid;
 		$DB->insert_record('block_exacompedulevels', $value);
 	}
 
