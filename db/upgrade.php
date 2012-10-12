@@ -98,19 +98,23 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			$dbman->add_field($table, $field);
 		}
 	}
-	if ($oldversion < 2012100402) {
+	if ($oldversion < 2012101202) {
 		$table = new xmldb_table('block_exacompedulevels');
 		$field = new xmldb_field('source');
 		$field->set_attributes(XMLDB_TYPE_INTEGER, 4, XMLDB_UNSIGNED, null, null, 0, null);
 
 		if (!$dbman->field_exists($table, $field)) {
 			$dbman->add_field($table, $field);
+			$sql='UPDATE {block_exacompedulevels} SET source=1';
+			$DB->Execute($sql);
 		}
 		$field = new xmldb_field('sourceid');
 		$field->set_attributes(XMLDB_TYPE_INTEGER, 20, XMLDB_UNSIGNED, null, null, 0, null);
 
 		if (!$dbman->field_exists($table, $field)) {
 			$dbman->add_field($table, $field);
+			$sql='UPDATE {block_exacompedulevels} SET sourceid=id';
+			$DB->Execute($sql);
 		}
 		
 		$table = new xmldb_table('block_exacompschooltypes');
@@ -119,12 +123,16 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 
 		if (!$dbman->field_exists($table, $field)) {
 			$dbman->add_field($table, $field);
+			$sql='UPDATE {block_exacompschooltypes} SET source=1';
+			$DB->Execute($sql);
 		}
 		$field = new xmldb_field('sourceid');
 		$field->set_attributes(XMLDB_TYPE_INTEGER, 20, XMLDB_UNSIGNED, null, null, 0, null);
 
 		if (!$dbman->field_exists($table, $field)) {
 			$dbman->add_field($table, $field);
+			$sql='UPDATE {block_exacompschooltypes} SET sourceid=id';
+			$DB->Execute($sql);
 		}
 	}
 	
