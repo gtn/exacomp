@@ -272,7 +272,7 @@ if (count($students)>$spalten) $content.=spaltenbrowser(count($students),$spalte
         	$zi=1;
         	$pi=1;
         	foreach ($students as $student) {
-        		$content.='<td'.$fontcolor.' class="zelle'.$pi.'" >'.$student->lastname.'</td>';
+        		$content.='<td'.$fontcolor.' class="zelle'.$pi.'" colspan="' . $colspan . '">'.$student->lastname.'</td>';
         		if ($zi==$spalten){ $zi=1;$pi++;}
         		else $zi++;
         	}
