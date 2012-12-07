@@ -60,7 +60,7 @@ function block_exacomp_xml_insert_schooltyp($value,$source,$userlst) {
 	if ($userlst!="0"){
 			
 		/*gibts diese kategorie bei irgendeinem user? wenn ja, update, wenn nein insert
-		  hats sich jemand die kategorie gelöscht, wird sie nicht neu angelegt, sonst bevormundung*/
+		  hats sich jemand die kategorie gelÃ¶scht, wird sie nicht neu angelegt, sonst bevormundung*/
 		//$daten=New stdClass;$daten->pid=0;$daten->name=$value->title;
 		if ($cats = $DB->get_records_sql('SELECT * FROM {block_exaportcate} WHERE source=? AND sourceid=? AND userid IN ('.$userlst.')',array($source,(int)$value->uid))){
 			//$sql='Update {block_exaportcate} SET pid="0", name="'.$value->title.'" WHERE userid IN ('.$userlst.')' AND source='.source.' AND sourceid='..';
@@ -245,7 +245,7 @@ function block_exacomp_xml_insert_topic($value,$source) {
 	unset($value);
 	$value = $new_value;
 	
-	// Subject ID wird benštigt, durch sourceid holen
+	// Subject ID wird benÅ¡tigt, durch sourceid holen
 	$subject = $DB->get_record('block_exacompsubjects', array("sourceid"=> (int)$value->subjid,"source"=>$source));
 	if (!empty($subject->id)) $subj=$subject->id;
 	else $subj=0;
@@ -627,7 +627,7 @@ function has_exaport(){
 	global $DB;
 	$all_tables = $DB->get_tables();
 	
-	//achtung dossier aus exaport derzeit nicht eingebunden, bei aktivierung $exaport=false 6 zeilen weiter unten löschen;
+	//achtung dossier aus exaport derzeit nicht eingebunden, bei aktivierung $exaport=false 6 zeilen weiter unten lÃ¶schen;
 	if (in_array("block_exaportview", $all_tables)) {
 		$exaport=true;
 	}else{
