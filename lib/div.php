@@ -120,7 +120,7 @@ function block_exacomp_get_descriptors_by_course_ids($courseid) {
 function block_exacomp_get_descritors_list($courseid,$onlywithactivitys=0) {
 	global $CFG, $DB;
 	$condition = array($courseid);
-	$query = "SELECT d.id,d.title,tp.title as topic, s.title as subject FROM {block_exacompdescriptors} d, {block_exacompcoutopi_mm} c, {block_exacompdescrtopic_mm} t, {block_exacomptopics} tp, {block_exacompsubjects} s
+	$query = "SELECT d.id,d.title,tp.title as topic,tp.id as topicid, s.title as subject,s.id as subjectid FROM {block_exacompdescriptors} d, {block_exacompcoutopi_mm} c, {block_exacompdescrtopic_mm} t, {block_exacomptopics} tp, {block_exacompsubjects} s
 	WHERE d.id=t.descrid AND t.topicid = c.topicid AND t.topicid=tp.id AND tp.subjid = s.id AND c.courseid = ?";
 	if ($onlywithactivitys==1){
 		$descr=block_exacomp_get_descriptors_by_course_ids($courseid);
@@ -128,7 +128,7 @@ function block_exacomp_get_descritors_list($courseid,$onlywithactivitys=0) {
 		$query.=" AND d.id IN (".$descr.")";
 	}
 	$query.= " ORDER BY s.title,tp.title,d.sorting";
-	// echo $query;
+
 	$descriptors = $DB->get_records_sql($query, $condition);
 	if (!$descriptors) {
 		$descriptors = array();
@@ -497,6 +497,7 @@ function block_exacomp_get_edulevels() {
 function block_exacomp_get_usercompetences($userid, $role=1, $courseid=null,$grading=1,$anzeige=0) {
 
 	global $DB;
+	if($courseid) $grading=getgrading($courseid);
 	$gut=ceil($grading/2);
 	$descriptors = array();
 
@@ -517,6 +518,35 @@ function block_exacomp_get_usercompetences($userid, $role=1, $courseid=null,$gra
 
 	return $descriptors;
 }
+function getgrading($courseid){
+	global $DB;
+	if ($grad = $DB->get_record('block_exacompsettings',array("course"=>$courseid)))
+		return $grad->grading;
+	else return 1;
+	
+}
+function block_exacomp_get_usercompetences_topics($userid, $role=1, $courseid=null,$anzeige=0,$descrids=0) {
+	global $DB;
+	$grading=getgrading($courseid);
+	$gut=ceil($grading/2);
+	$descriptors = array();
+	$sql="SELECT * FROM {block_exacompdescuser} WHERE role=? AND descid IN (".$descrids.")";
+	if($courseid) {$sql.=" AND courseid=?";$warr=array($role,$courseid);}
+	else {$warr=array($role);}
+	
+	$wert=new stdClass();
+	$wert->p=0;$wert->a=0;
+	if ($descriptorids=$DB->get_records_sql($sql,$warr)){
+		foreach($descriptorids as $descriptorid) {
+			if ($descriptorid->wert <= $gut){
+				if ($userid==$descriptorid->userid) $wert->p++;
+				else $wert->a++;
+			}
+		}
+	}
+	return $wert;
+}
+
 function block_exacomp_get_schooltypes($edulevel) {
 	global $DB;
 
@@ -780,14 +810,14 @@ function block_exacomp_get_average_course_competences($courseid, $role=1) {
 	$sql = "SELECT avg(count) as a FROM (SELECT count(id) as count FROM {block_exacompdescuser} WHERE courseid=? AND role=? AND wert=1 GROUP BY userid) as avgvalues";
 	return $DB->get_record_sql($sql,array($courseid,$role));
 }
-function block_exacomp_get_descriptors_of_all_courses() {
+function block_exacomp_get_descriptors_of_all_courses($onlywithactivity=1) {
 	//kurse holen
 
 	$courses = enrol_get_my_courses();
 	$descs = array();
 	foreach($courses as $course) {
 		$current = $course;
-		$current->descriptors = block_exacomp_get_descritors_list($course->id,1);  //alle desciptoren
+		$current->descriptors = block_exacomp_get_descritors_list($course->id,$onlywithactivity);  //alle desciptoren
 		//$current->descriptors = block_exacomp_get_descriptors_by_course ($course->id); // nur descriptoren mit zugeordneten aufgaben
 		$descs[] = $current;
 	}
