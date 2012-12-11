@@ -179,8 +179,9 @@ else {
 	$identifier = "studenttabcompetenceprofile";
 	block_exacomp_print_header("student", $identifier);
 	$pdfurl = $CFG->wwwroot . "/blocks/exacomp/competence_profile.php?view=print&courseid=".$courseid;
+	$settingsurl = $CFG->wwwroot . "/blocks/exacomp/competence_profile_settings.php?courseid=".$courseid;
 	echo $OUTPUT->box("<a href='".$pdfurl."'>".get_string('createpdf','block_exacomp')."</a>");
-	
+	echo $OUTPUT->box("<a href='".$settingsurl."'>".get_string('pdfsettings','block_exacomp')."</a>");
 	//pdf-Trennelemente <hr> entfernen
 	$profile = str_replace ( '<hr>', '', $profile);
 	//Userpic einfügen

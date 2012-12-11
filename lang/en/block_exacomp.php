@@ -107,8 +107,13 @@ $string['course'] = 'Course';
 $string['erreicht'] = 'Achieved';
 $string['gesamt'] = 'Total';
 $string['configcourseonce'] = 'Please configure the course once.';
-
 $string['createpdf'] = 'Create a pdf document';
+$string['pdfsettings'] = 'Edit pdf settings';
+$string['explainprofilesettings'] = 'Which modules should be presented in the competence profile?';
+$string['explain_exastud_profile_settings'] = 'Exabis Student Review speichert Beurteilungen in verschiedenen Kategorien über mehrere Perioden hinweg. Du kannst auswählen, welche Perioden das Kompetenzprofil beinhalten soll.';
+$string['explain_exacomp_profile_settings'] = 'In Exabis Competencies beurteilen Lehrer deinen Kompetenzerwerb in unterschiedlichen Fachgebieten. Du kannst auswählen, welche Kurse im Kompetenzprofil aufscheinen sollen.';
+$string['explain_exaport_profile_settings'] = 'Exabis ePortfolio dokumentiert deinen Kompetenzerwerb außerhalb von Lehrern vorgegebenen Grenzen. Du kannst auswählen, welche Einträge im Kompetenzprofil aufscheinen sollen.';
+
 $string['exaportintro'] = 'Introduction';
 $string['exaportcategory'] = 'Category';
 $string['exaporttype'] = 'Type';

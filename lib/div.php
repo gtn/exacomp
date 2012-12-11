@@ -9,9 +9,11 @@ function spaltenbrowser($anz,$spalten){
 			if ($bis>$anz) $bis=$anz;
 			$content.='<a href="javascript:hidezelle('.$p.','.$splt.');">'.$von.'-'.$bis.'&nbsp;</a> | ';
 		}
-		
-	if ($q==$spalten) {$q=1;$p++;}
-	else $q++;
+
+		if ($q==$spalten) {
+			$q=1;$p++;
+		}
+		else $q++;
 	}
 	$content.='<a href="javascript:hidezelle(0,'.$splt.');">alle&nbsp;Schüler</a>';
 	return $content;
@@ -276,7 +278,7 @@ function print_descriptors($descriptors, $classprefix="ec") {
 function get_descriptor_ids($activityid) {
 	global $CFG;
 	$query = "select GROUP_CONCAT(cast(descrid as char(10)))  as descrids from " . $CFG->prefix . "block_exacompdescractiv_mm WHERE activityid=?";
-	
+
 	$str = get_record_sql($query, array(intval($activityid)));
 	return $str->descrids;
 }
@@ -523,7 +525,7 @@ function getgrading($courseid){
 	if ($grad = $DB->get_record('block_exacompsettings',array("course"=>$courseid)))
 		return $grad->grading;
 	else return 1;
-	
+
 }
 function block_exacomp_get_usercompetences_topics($userid, $role=1, $courseid=null,$anzeige=0,$descrids=0) {
 	global $DB;
@@ -531,9 +533,12 @@ function block_exacomp_get_usercompetences_topics($userid, $role=1, $courseid=nu
 	$gut=ceil($grading/2);
 	$descriptors = array();
 	$sql="SELECT * FROM {block_exacompdescuser} WHERE role=? AND descid IN (".$descrids.")";
-	if($courseid) {$sql.=" AND courseid=?";$warr=array($role,$courseid);}
-	else {$warr=array($role);}
-	
+	if($courseid) {
+		$sql.=" AND courseid=?";$warr=array($role,$courseid);
+	}
+	else {$warr=array($role);
+	}
+
 	$wert=new stdClass();
 	$wert->p=0;$wert->a=0;
 	if ($descriptorids=$DB->get_records_sql($sql,$warr)){
@@ -1180,5 +1185,12 @@ function block_exacomp_get_student_report($studentid, $periodid) {
 		$studentTemplate = str_replace ( '###COMMENTS###', $comments, $studentTemplate);
 	}
 	return $studentTemplate;
-	}
-	?>
+}
+function block_exacomp_check_profile_settings($userid,$block="exacomp",$itemid=false) {
+	global $DB;
+	$cmptext = $DB->sql_compare_text("block",7);
+	$conditions = "userid = $userid AND ".$cmptext." = '$block'";
+	$conditions = (!$itemid) ? $conditions : $conditions . " AND itemid=".$itemid;
+	return $DB->get_records_select('block_exacompprofilesettings',$conditions);
+}
+?>

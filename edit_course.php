@@ -34,9 +34,7 @@ global $COURSE, $CFG, $OUTPUT;
 $content = "";
 
 $courseid = required_param('courseid', PARAM_INT);
-if (!isset($courseid)
-
-    )$courseid = $COURSE->id;
+$courseid = (isset($courseid)) ? $courseid : $COURSE->id;
 $action = optional_param('action', "", PARAM_ALPHA);
 
 require_login($courseid);
