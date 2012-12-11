@@ -1033,6 +1033,30 @@ function block_exacomp_read_profile_template() {
 
 	return $filecontent;
 }
+function block_exacomp_read_exacomp_template() {
+	$temp = '<div class="clearfix printtable printblock">
+			<h2>exabis competencies</h2>
+			<p class="printblockinfo">###EXACOMPINFOTEXT###</p>
+			<table class="bordertable">
+				<tr class="printrowsubheading">
+					<td><i>###COURSE###</i></td>
+					<td><i>###TOTAL###</i></td>
+					<td><i>###ACHIEVED###</i></td>
+				</tr>
+				###EXACOMP_COURSESUMMARY###
+				<tr class="printsummary">
+					<td>Total</td>
+					<td>###EXACOMP_TOTALAMOUNT###</td>
+					<td>###EXACOMP_TOTALREACHED###</td>
+				</tr>
+			</table>
+
+			<p></p>
+
+			###EXACOMP_TABLES###
+		</div>';
+	return $temp;
+}
 function block_exacomp_switch_css($css) {
 	return ($css == 'printrowgrey') ? "" : "printrowgrey";
 }
@@ -1046,13 +1070,16 @@ function block_exacomp_get_eportfolio_template() {
 	</div>';
 }
 function block_exacomp_get_portfolio_table($descriptors) {
-	global $USER;
-	$exaport = block_exacomp_get_table_heading('exabis ePortfolio');
-
+	global $USER,$DB;
+	$exaport="";
+	$profilesettings = ($DB->count_records("block_exacompprofilesettings",array("userid"=>$USER->id))) ? true : false;
+	
 	$name="";
 	$cssclass='';
 	foreach ($descriptors as $descriptor) {
-
+		if($profilesettings && !block_exacomp_check_profile_settings($USER->id,"exaport",$descriptor->activityid))
+			continue;
+		
 		if ($name !== $descriptor->name) {
 			$name = $descriptor->name;
 			$exaport .= block_exacomp_get_table_headingtwo($name);
@@ -1063,15 +1090,21 @@ function block_exacomp_get_portfolio_table($descriptors) {
 		$exaport .= block_exacomp_get_table_row($cssclass, $descriptor->title, $icon1, $icon2);
 		$cssclass = block_exacomp_switch_css($cssclass);
 	}
-	$exaport .= '</table>';
+	if($exaport != "")
+		$exaport = block_exacomp_get_table_heading('exabis ePortfolio') . $exaport . '</table>';
 	return $exaport;
 }
 function block_exacomp_get_competence_tables($courses) {
-	global $USER;
+	global $USER,$DB;
 	$exacomp='';
+	$profilesettings = ($DB->count_records("block_exacompprofilesettings",array("userid"=>$USER->id))) ? true : false;
+	
 	foreach ($courses as $course) {
 		$descriptors = $course->descriptors;
 		if ($descriptors) {
+			
+			if($profilesettings && !block_exacomp_check_profile_settings($USER->id,"exacomp",$course->id))
+				continue;
 			$exacomp .= block_exacomp_get_table_heading($course->fullname);
 			$topic = "";
 			$cssclass="printrowgrey";

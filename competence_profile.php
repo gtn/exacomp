@@ -35,19 +35,14 @@ $profile = block_exacomp_read_profile_template();
 $profile2=$profile;
 $profile = str_replace ( '###TITLE###', get_string('competence_profile','block_exacomp'), $profile);
 $profile = str_replace ( '###INFOTEXT###', get_string('infotext','block_exacomp'), $profile);
-$profile = str_replace ( '###EXACOMPINFOTEXT###', get_string('exacompinfotext','block_exacomp'), $profile);
 $profile = str_replace ( '###EXAPORTINFOTEXT###', get_string('exaportinfotext','block_exacomp'), $profile);
 $profile = str_replace ( '###EXASTUDINFOTEXT###', get_string('exastudinfotext','block_exacomp'), $profile);
-
-$profile = str_replace ( '###COURSE###', get_string('course','block_exacomp'), $profile);
-$profile = str_replace ( '###TOTAL###', get_string('gesamt','block_exacomp'), $profile);
-$profile = str_replace ( '###ACHIEVED###', get_string('erreicht','block_exacomp'), $profile);
-
 
 $profile = str_replace ( '###CSSFILE###', $css, $profile );
 $profile = str_replace ( '###NAME###', $USER->firstname. ' ' .$USER->lastname, $profile );
 $profile = str_replace ( '###CITY###', $USER->city, $profile );
 
+$profilesettings = ($DB->count_records("block_exacompprofilesettings",array("userid"=>$USER->id))) ? true : false;
 $course_desriptors = block_exacomp_get_descriptors_of_all_courses();
 
 $cssclass= '';
@@ -59,15 +54,24 @@ foreach ($course_desriptors as $coures_descriptor) {
 	if(!$descriptors)
 		continue;
 
+	if($profilesettings && !block_exacomp_check_profile_settings($USER->id,"exacomp",$coures_descriptor->id))
+		continue;
 	$coursesummary.='<tr class="'.$cssclass.'"><td>'.$coures_descriptor->fullname.'</td><td>'.count($coures_descriptor->descriptors).'</td><td>'.count(block_exacomp_get_usercompetences($USER->id, 1, $coures_descriptor->id)).'</td></tr>';
 	$total = $total + count($coures_descriptor->descriptors);
 	$total_achieved = $total_achieved + count(block_exacomp_get_usercompetences($USER->id, 1, $coures_descriptor->id));
 	$cssclass = block_exacomp_switch_css($cssclass);
 }
-
-$profile = str_replace ( '###EXACOMP_COURSESUMMARY###', $coursesummary, $profile);
-$profile = str_replace ( '###EXACOMP_TOTALAMOUNT###', $total, $profile);
-$profile = str_replace ( '###EXACOMP_TOTALREACHED###', $total_achieved, $profile);
+if($coursesummary != '') {
+	$profile = str_replace ( '###EXACOMP###', block_exacomp_read_exacomp_template(), $profile);
+	$profile = str_replace ( '###EXACOMPINFOTEXT###', get_string('exacompinfotext','block_exacomp'), $profile);
+	$profile = str_replace ( '###COURSE###', get_string('course','block_exacomp'), $profile);
+	$profile = str_replace ( '###TOTAL###', get_string('gesamt','block_exacomp'), $profile);
+	$profile = str_replace ( '###ACHIEVED###', get_string('erreicht','block_exacomp'), $profile);
+	$profile = str_replace ( '###EXACOMP_COURSESUMMARY###', $coursesummary, $profile);
+	$profile = str_replace ( '###EXACOMP_TOTALAMOUNT###', $total, $profile);
+	$profile = str_replace ( '###EXACOMP_TOTALREACHED###', $total_achieved, $profile);
+} else
+	$profile = str_replace ( '###EXACOMP###','',$profile);
 
 $profile = str_replace ( '###EXACOMP_TABLES###', block_exacomp_get_competence_tables($course_desriptors), $profile);
 
@@ -89,6 +93,9 @@ if (block_exacomp_exaportexists()){
 			if(!block_exaport_check_item_competences($item))
 				continue;
 
+			if($profilesettings && !block_exacomp_check_profile_settings($USER->id,"exaport",$item->id))
+				continue;
+				
 			$anycomp=true;
 			$cssclass = "printrowgrey";
 			$exaport.='<table class="bordertable">';
@@ -141,11 +148,17 @@ else {
 if(block_exacomp_exastudexists()) {
 	require_once($CFG->dirroot . "/blocks/exastud/lib/lib.php");
 	if($reviews = block_exabis_student_review_get_review_periods($USER->id)) {
-		$profile = str_replace ( '###EXASTUD###', block_exacomp_get_studentreview_template(), $profile);
 		$exastud='';
 		foreach($reviews as $review) {
+			if($profilesettings && !block_exacomp_check_profile_settings($USER->id,"exastud",$review->periods_id))
+				continue;
 			$exastud.=block_exacomp_get_student_report($USER->id, $review->periods_id);
 		}
+		if($exastud!='')
+			$profile = str_replace ( '###EXASTUD###', block_exacomp_get_studentreview_template(), $profile);
+		else
+			$profile = str_replace ( '###EXASTUD###', '', $profile);
+
 		$profile = str_replace ( '###EXASTUD###', $exastud, $profile);
 	}
 	else
@@ -158,7 +171,7 @@ if($view == "print") {
 	try
 	{
 		$profile = str_replace ( '###USERPIC###', '', $profile);
-		
+
 		// create new PDF document
 		$pdf = new TCPDF("P", "pt", "A4", true, 'UTF-8', false);
 		$pdf->SetTitle('Kompetenzprofil');

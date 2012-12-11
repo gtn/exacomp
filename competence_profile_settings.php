@@ -11,6 +11,10 @@ require_login($courseid);
 $PAGE->set_url('/blocks/exacomp/competence_profile_settings.php?courseid=' . $courseid);
 block_exacomp_print_header("student", "studenttabcompetenceprofile");
 
+if($action == "detail") {
+	if(optional_param('exacomp','',PARAM_TEXT) == '' && optional_param('exastud','',PARAM_TEXT)=='' && optional_param('exaport','',PARAM_TEXT)=='')
+		$action="save";
+}
 if($action == "save") {
 	//delete old user settings
 	$DB->delete_records('block_exacompprofilesettings',array('userid'=>$USER->id));
@@ -97,7 +101,7 @@ if (empty($action)){
 			if(!block_exaport_check_item_competences($item))
 				continue;
 			$checked = (block_exacomp_check_profile_settings($USER->id,"exaport",$item->id)) ? " checked " : "";
-			$exaport.='<p><input type="checkbox" name="exaport[]" value="'.$item->id.'" /> '.$item->name.'</p>';
+			$exaport.='<p><input '.$checked.' type="checkbox" name="exaport[]" value="'.$item->id.'" /> '.$item->name.'</p>';
 		}
 	
 		$inhalt.= $OUTPUT->box($exaport);
