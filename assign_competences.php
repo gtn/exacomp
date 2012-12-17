@@ -28,7 +28,7 @@
 
 require_once dirname(__FILE__) . '/inc.php';
 require_once dirname(__FILE__) . '/lib/div.php';
-require_once dirname(__FILE__) . '/lib/radargraph.php';
+//require_once dirname(__FILE__) . '/lib/radargraph.php';
 require_once($CFG->dirroot . "/lib/datalib.php");
 
 global $COURSE, $CFG, $OUTPUT, $USER;
@@ -98,7 +98,7 @@ else {
 		echo $OUTPUT->box(text_to_html(get_string("explainassignonstudent", "block_exacomp") . '<a href="' . $url . '&amp;showevaluation=on">'.get_string("hier", "block_exacomp").'.</a>'));
 }
 
-$content.=block_exacomp_create_radargraph();
+//$content.=block_exacomp_create_radargraph();
 
 $content.='<form action="assign_competences.php?action=save&amp;courseid=' . $courseid . '" method="post">';
 $zeile = "";

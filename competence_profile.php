@@ -1,6 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/inc.php';
 require_once dirname(__FILE__) . '/lib/div.php';
+require_once dirname(__FILE__) . '/lib/radargraph.php';
 require_once($CFG->dirroot . "/lib/datalib.php");
 
 global $COURSE, $CFG, $OUTPUT, $USER,$DB;
@@ -189,10 +190,13 @@ if($view == "print") {
 	}
 }
 else {
+	$graph="<div>".block_exacomp_create_radargraph()."</div>";
+	
 	$identifier = "studenttabcompetenceprofile";
 	block_exacomp_print_header("student", $identifier);
 	$pdfurl = $CFG->wwwroot . "/blocks/exacomp/competence_profile.php?view=print&courseid=".$courseid;
 	$settingsurl = $CFG->wwwroot . "/blocks/exacomp/competence_profile_settings.php?courseid=".$courseid;
+	echo $OUTPUT->box($graph);
 	echo $OUTPUT->box("<a href='".$pdfurl."'>".get_string('createpdf','block_exacomp')."</a>");
 	echo $OUTPUT->box("<a href='".$settingsurl."'>".get_string('pdfsettings','block_exacomp')."</a>");
 	//pdf-Trennelemente <hr> entfernen
