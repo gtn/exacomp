@@ -753,16 +753,28 @@ function block_exacomp_exastudexists()
 	return $DB->get_record('block',array('name'=>'exastud'));
 }
 function block_exacomp_get_portfolio_icon($student, $descrid) {
-	global $DB, $CFG;
+	global $DB, $CFG,$USER;
 
 	$rs = $DB->get_records_sql("SELECT i.id,i.name FROM {block_exaportitem} i, {block_exacompdescractiv_mm} da WHERE i.id=da.activityid AND da.activitytype=2000 AND da.descrid=? AND i.userid=?", array($descrid, $student->id));
-
+	$submitted = "";
 	if(!$rs)
 		return null;
-	$submitted = $student->firstname . get_string('portfolio', "block_exacomp") . "<br><ul>";
 	foreach($rs as $item) {
+		$view = $DB->get_records_sql("SELECT v.* " .
+                " FROM {block_exaportview} AS v" .
+                " JOIN {block_exaportviewblock} vb ON vb.viewid=v.id AND vb.itemid = ?" .
+                " LEFT JOIN {block_exaportviewshar} vshar ON v.id=vshar.viewid AND vshar.userid=?" .
+                " WHERE (v.shareall=1 OR vshar.userid IS NOT NULL)",array($item->id,$USER->id));
+		if(!$view)
+			continue;
+		
 		$submitted .= "<li>".$item->name."</li>";
 	}
+	if(!$submitted)
+		//none of the associated items is in a view that is visible for the current user
+		return null;
+	
+	$submitted = $student->firstname . get_string('portfolio', "block_exacomp") . "<br><ul>" . $submitted;
 	$submitted .= "</ul>";
 	$submitted = str_replace("\"","",$submitted);
 	$submitted = str_replace("\'","",$submitted);
