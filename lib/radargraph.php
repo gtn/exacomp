@@ -4,7 +4,7 @@ function block_exacomp_create_radargraph(){
 	global $USER,$CFG;
 	$content="";
 $course_desriptors = block_exacomp_get_descriptors_of_all_courses(1);
-$content.='<table style="empty-cells:hide;margin:0 auto;">';
+$content.='<table style="empty-cells:hide;">';
 
 foreach ($course_desriptors as $coures_descriptor) {
 	if(!$coures_descriptor->descriptors)
@@ -67,6 +67,7 @@ foreach ($course_desriptors as $coures_descriptor) {
 
 
 }
+$content .= '</table>';
 return $content;
 }
 
