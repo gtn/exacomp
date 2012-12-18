@@ -91,6 +91,11 @@ if ($courseid > 0) {
         	if(!$mod->visible)
         		continue;
         	$module = $activity = block_exacomp_get_coursemodule($mod);
+        	
+        	//Skip Nachrichtenforum
+        	if($module->name == get_string('namenews','mod_forum'))
+        		continue;
+        	
         	$content.='<td class="ec_tableheadwidth"><a href="' . block_exacomp_get_activityurl($module). '">' . $module->name . '</a><input type="hidden" value="' . $module->id . '" name="ec_activity[' . $module->id . ']" /></td>';
         	$zeile.='<td><input type="checkbox" name="data[' . $module->id . '][###descid###]" checked="###checked' . $module->id . '_###descid######" /></td>';
         }

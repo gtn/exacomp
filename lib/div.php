@@ -266,8 +266,10 @@ function block_exacomp_get_modules() {
 	$glossaries = get_coursemodules_in_course('glossary', $COURSE->id);
 	$lessons = get_coursemodules_in_course('lesson', $COURSE->id);
 	$wikis = get_coursemodules_in_course('wiki', $COURSE->id);
+	$urls = get_coursemodules_in_course('url', $COURSE->id);
+	$resouces = get_coursemodules_in_course('resource', $COURSE->id);
 
-	return array_merge($activities,$activities_old,$forums,$data,$quizes,$scorm,$glossaries,$lessons,$wikis);
+	return array_merge($activities,$activities_old,$forums,$data,$quizes,$scorm,$glossaries,$lessons,$wikis,$urls,$resouces);
 }
 function print_descriptors($descriptors, $classprefix="ec") {
 	foreach ($descriptors as $descriptor) {
