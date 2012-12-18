@@ -755,7 +755,7 @@ function block_exacomp_exastudexists()
 function block_exacomp_get_portfolio_icon($student, $descrid) {
 	global $DB, $CFG;
 
-	$rs = $DB->get_records_sql("SELECT i.name FROM {block_exaportitem} i, {block_exacompdescractiv_mm} da WHERE i.id=da.activityid AND da.activitytype=2000 AND da.descrid=? AND i.userid=?", array($descrid, $student->id));
+	$rs = $DB->get_records_sql("SELECT i.id,i.name FROM {block_exaportitem} i, {block_exacompdescractiv_mm} da WHERE i.id=da.activityid AND da.activitytype=2000 AND da.descrid=? AND i.userid=?", array($descrid, $student->id));
 
 	if(!$rs)
 		return null;
