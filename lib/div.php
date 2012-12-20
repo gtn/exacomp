@@ -88,7 +88,7 @@ function create_pulldown_array($items, $selectname, $anzeigefeld, $wert, $ka, $m
 function block_exacomp_get_descriptors_by_course($courseid) {
 	global $DB;
 	//$possible = block_exacomp_get_possible_descritptors_by_course($courseid);
-	$query = "SELECT d.title, d.id FROM {block_exacompdescriptors} d INNER JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid INNER JOIN {course_modules} a ON da.activityid=a.id WHERE a.course = :courseid GROUP BY d.id";
+	$query = "SELECT da.id, d.title, d.id FROM {block_exacompdescriptors} d INNER JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid INNER JOIN {course_modules} a ON da.activityid=a.id WHERE a.course = :courseid GROUP BY d.id";
 	$query.= " ORDER BY d.sorting";
 
 	$descriptors = $DB->get_records_sql($query, array("courseid" => $courseid));
@@ -140,7 +140,7 @@ function block_exacomp_get_descritors_list($courseid,$onlywithactivitys=0) {
 
 function block_exacomp_get_descriptors($activityid) {
 	global $DB;
-	$query = "SELECT descr.title,descr.id FROM {block_exacompdescriptors} descr INNER JOIN {block_exacompdescractiv_mm} mm  ON descr.id=mm.descrid INNER JOIN {course_modules} l ON l.id=mm.activityid ";
+	$query = "SELECT mm.id, descr.title,descr.id FROM {block_exacompdescriptors} descr INNER JOIN {block_exacompdescractiv_mm} mm  ON descr.id=mm.descrid INNER JOIN {course_modules} l ON l.id=mm.activityid ";
 	$query.="WHERE l.id=?";
 	$query.=" ORDER BY descr.sorting";
 
@@ -1181,7 +1181,7 @@ function block_exacomp_get_studentreview_template() {
 	return '<hr><tcpdf method="AddPage" />
 	<div class="clearfix printtable printblock">
 	<h2>exabis student review</h2>
-	<p class="printblockinfo">Deine Bewertungen über verschiedene Perioden hinweg</p>
+	<p class="printblockinfo">'.get_string('exastudinfotext','block_exacomp').'</p>
 	###EXASTUD###
 	</div>';
 }

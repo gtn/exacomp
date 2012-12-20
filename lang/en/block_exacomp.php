@@ -37,7 +37,7 @@ $string['adminbread'] = 'subjects & topics';
 $string['importdone'] = 'data has already been imported from xml';
 $string['importpending'] = 'no data was imported!';
 $string['doimport'] = 'import descriptors';
-$string['doimport_own'] = 'import own descriptors';
+$string['doimport_own'] = 'import individual descriptors';
 $string['importsuccess'] = 'data was successfully imported!';
 $string['importsuccess_own'] = 'own data was successfully imported!';
 $string['importfail'] = 'an error during import has occured';
@@ -50,7 +50,7 @@ $string['descnoassignment'] = 'no descriptors have been associated with this tas
 
 $string['specificcontent'] = 'site-specific priorities';
 $string['specificsubject'] = 'site-specific subjects';
-$string['explain_bewertungsschema'] = 'Hier können sie das Bewertungsschema für diesen Kurs festlegen. Erlaubt sind Zahlen von 1-10. Standardmäßig wird 1 verwendet, d.h. es kann in einer Checkbox gewählt werden, ob eine Kompetenz erfüllt ist oder nicht. Eine Zahl n grösser 1 bewirkt eine Bewertungsskala mit n Ausprägungen.';
+$string['explain_bewertungsschema'] = 'You can specify the marking scheme for this course. Allowed are numbers from 1 to 10. 1 is used by default, i.e. it can be selected a checkbox, if a competence is satisfied or not. Let n be a number greater than 1, then it causes a rating scale with n occurences.';
 $string['explainnomoodle_config'] = 'In order to use the module exabis competencies your Moodle administrator has to pre-configure the block.';
 $string['explainconfig'] = 'In order to use the module exabis competencies you have to choose your schooltype - the appropriate data will then be imported from the xml-file.';
 $string['explainconfigcourse'] = 'Please choose the subject that you deal with in this course.';
@@ -110,9 +110,9 @@ $string['configcourseonce'] = 'Please configure the course once.';
 $string['createpdf'] = 'Create a pdf document';
 $string['pdfsettings'] = 'Edit pdf settings';
 $string['explainprofilesettings'] = 'Which modules should be presented in the competence profile?';
-$string['explain_exastud_profile_settings'] = 'Exabis Student Review speichert Beurteilungen in verschiedenen Kategorien über mehrere Perioden hinweg. Du kannst auswählen, welche Perioden das Kompetenzprofil beinhalten soll.';
-$string['explain_exacomp_profile_settings'] = 'In Exabis Competencies beurteilen Lehrer deinen Kompetenzerwerb in unterschiedlichen Fachgebieten. Du kannst auswählen, welche Kurse im Kompetenzprofil aufscheinen sollen.';
-$string['explain_exaport_profile_settings'] = 'Exabis ePortfolio dokumentiert deinen Kompetenzerwerb außerhalb von Lehrern vorgegebenen Grenzen. Du kannst auswählen, welche Einträge im Kompetenzprofil aufscheinen sollen.';
+$string['explain_exastud_profile_settings'] = 'Exabis Student Review stores reviews in various categories over several periods. You can select which periods to include in the competence profile.';
+$string['explain_exacomp_profile_settings'] = 'Via Exabis Competencies teacher evaluate your competencies in various subjects. You can select which course to include in the competence profile.';
+$string['explain_exaport_profile_settings'] = 'Exabis ePortfolio is used to document your competencies outside limits set by teachers. You can select which entries to include in the competence profile.';
 
 $string['exaportintro'] = 'Introduction';
 $string['exaportcategory'] = 'Category';
@@ -124,8 +124,10 @@ $string['countreviews'] = ' reviews done';
 $string['detailedreview'] = 'Detailed review';
 
 $string['competence_profile'] = 'Competence profile';
-$string['infotext'] = 'Dises Dokument bietet eine Übersicht über deinen bisherigen Kompetenzerwerb. Es setzt sich aus Daten von 3 unterschiedlicher Module zusammen und bietet einen umfangreichen Überblick über deine Fähigkeiten.';
-$string['exacompinfotext'] = 'Deine bisher erworbenen Kompetenzen';
-$string['exaportinfotext'] = 'Eine Übersicht über die Portfolio Einträge, die mit Kompetenzen assoziiert sind';
-$string['exastudinfotext'] = 'Deine Bewertungen über verschiedene Perioden hinweg';
+$string['infotext'] = 'This paper provides an overview of your current competencies. It is composed of data from 3 different modules and provides a comprehensive overview.';
+$string['exacompinfotext'] = 'Your previously acquired competencies';
+$string['exaportinfotext'] = 'An overview of the portfolio entries that are associated with competencies';
+$string['exastudinfotext'] = 'Your reviews about different periods';
+$string['name'] = 'name';
+$string['city'] = 'city';
 ?>

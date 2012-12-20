@@ -94,13 +94,13 @@ $string['keine_beurteilung'] = 'Noch keine Beurteilung';
 $string['not_met'] = 'Die Kompetenz wurde nicht erreicht';
 $string['reached_competence'] = 'Die Kompetenz wurde erreicht';
 $string['assigned_acitivities'] = 'zugeteilte Aktivitäten';
+
 $string['no_assigned_acitivities'] = 'keine Aktivitäten zugeordnet';
 $string['assigned_example'] = 'Assigned Example';
 $string['aufgabenstellung'] = 'Aufgabenstellung';
 $string['solution'] = 'Lösung';
 $string['anhang'] = 'Anhang';
 $string['externe_aufgabenstellung'] = 'Externe Aufgabenstellung';
-
 $string['gesamtbeispiel'] = 'Gesamtbeispiel';
 $string['descriptor_task'] = 'Der Deskriptor ist folgenden Aufgaben zugeordnet';
 $string['course'] = 'Kurs';
@@ -124,8 +124,10 @@ $string['countreviews'] = ' Bewertungen abgegeben';
 $string['detailedreview'] = 'Ausführliche Beurteilung';
 
 $string['competence_profile'] = 'Kompetenzprofil';
-$string['infotext'] = 'Dises Dokument bietet eine Übersicht über deinen bisherigen Kompetenzerwerb. Es setzt sich aus Daten von 3 unterschiedlicher Module zusammen und bietet einen umfangreichen Überblick über deine Fähigkeiten.';
+$string['infotext'] = 'Dieses Dokument bietet eine Übersicht über deinen bisherigen Kompetenzerwerb. Es setzt sich aus Daten von 3 unterschiedlicher Module zusammen und bietet einen umfangreichen Überblick über deine Fähigkeiten.';
 $string['exacompinfotext'] = 'Deine bisher erworbenen Kompetenzen';
 $string['exaportinfotext'] = 'Eine Übersicht über die Portfolio Einträge, die mit Kompetenzen assoziiert sind';
 $string['exastudinfotext'] = 'Deine Bewertungen über verschiedene Perioden hinweg';
+$string['name'] = 'Name';
+$string['city'] = 'Wohnort';
 ?>

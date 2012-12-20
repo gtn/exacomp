@@ -38,6 +38,8 @@ $profile = str_replace ( '###TITLE###', get_string('competence_profile','block_e
 $profile = str_replace ( '###INFOTEXT###', get_string('infotext','block_exacomp'), $profile);
 $profile = str_replace ( '###EXAPORTINFOTEXT###', get_string('exaportinfotext','block_exacomp'), $profile);
 $profile = str_replace ( '###EXASTUDINFOTEXT###', get_string('exastudinfotext','block_exacomp'), $profile);
+$profile = str_replace ( '###NAMETRANSLATION###', get_string('name','block_exacomp'), $profile);
+$profile = str_replace ( '###CITYTRANSLATION###', get_string('city','block_exacomp'), $profile);
 
 $profile = str_replace ( '###CSSFILE###', $css, $profile );
 $profile = str_replace ( '###NAME###', $USER->firstname. ' ' .$USER->lastname, $profile );
@@ -179,6 +181,7 @@ if($view == "print") {
 		$pdf->AddPage();
 		$pdf->setCellHeightRatio(1.25);
 		if($file) $pdf->Image($newfile,480,243, 75, 75);
+		
 		$pdf->writeHTML($profile, true, false, true, false, '');
 
 		$pdf->Output('Kompetenzprofil.pdf', 'I');
