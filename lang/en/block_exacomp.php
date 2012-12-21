@@ -83,6 +83,10 @@ $string['keineauswahl'] = 'no subjects have been chosen!';
 $string['assessedby'] = 'assessed by: ';
 $string['portfolio'] = ' has uploaded the following artefacts for this competency:<br/>';
 
+$string['examples'] = 'examples';
+$string['sorting'] = 'select sorting: ';
+$string['subject'] = 'subjects';
+$string['taxonomies'] = 'taxonomies';
 $string['opencomps'] = 'choose your competencies';
 $string['expandcomps'] = 'expand all';
 $string['contactcomps'] = 'contract all';

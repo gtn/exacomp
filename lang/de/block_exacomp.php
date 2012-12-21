@@ -83,6 +83,10 @@ $string['keineauswahl'] = 'Es wurden keine Gegenstände ausgewählt!';
 $string['assessedby'] = 'Beurteilt durch: ';
 $string['portfolio'] = ' hat folgende Artefakte zu dieser Kompetenz eingereicht:<br/>';
 
+$string['examples'] = 'Beispiele';
+$string['sorting'] = 'Sortierung wählen: ';
+$string['subject'] = 'Gegenstände';
+$string['taxonomies'] = 'Taxonomien';
 $string['expandcomps'] = 'Alle öffnen';
 $string['contactcomps'] = 'Alle schließen';
 $string['opencomps'] = 'Kompetenzen auswählen';

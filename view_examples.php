@@ -22,8 +22,8 @@ echo '<script type="text/javascript" src="lib/wz_tooltip.js"></script>';
 echo '<script type="text/javascript" src="lib/simpletreemenu.js"></script>';
 
 ?>
-<h4>Beispiele</h4>
-Sortierung wählen: <a href="<?php echo $url.'&amp;sort=desc';?>"><?php echo ($sort=="desc") ? "<b>Gegenstände</b>" : "Gegenstände"?></a>, <a href="<?php echo $url.'&amp;sort=tax';?>"><?php echo ($sort=="tax") ? "<b>Taxonomien</b>" : "Taxonomien"?></a>
+<h4><?php echo get_string("examples", "block_exacomp") ?></h4>
+<?php echo get_string("sorting", "block_exacomp") ?> <a href="<?php echo $url.'&amp;sort=desc';?>"><?php echo ($sort=="desc") ? "<b>".get_string("subject", "block_exacomp")."</b>" : get_string("subject", "block_exacomp")?></a>, <a href="<?php echo $url.'&amp;sort=tax';?>"><?php echo ($sort=="tax") ? "<b>".get_string("taxonomies", "block_exacomp")."</b>" : get_string("taxonomies", "block_exacomp")?></a>
 <br/><br/>
 
 <a href="javascript:ddtreemenu.flatten('comptree', 'expand')"><?php echo get_string("expandcomps", "block_exacomp") ?></a> | <a href="javascript:ddtreemenu.flatten('comptree', 'contact')"><?php echo get_string("contactcomps", "block_exacomp") ?></a>
