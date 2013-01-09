@@ -1,4 +1,3 @@
-compstable flexible boxaligncenter generaltable
 
 /* 
     Document   : style
@@ -15,13 +14,6 @@ td.competenceok {
 	background-color: #CCFF99;
 }
 
-b#page-content {
-	width: 100%;
-}
-
-b#page-content #region-main {
-	width: 100%;
-}
 
 .ec_firstcol {
 	width: 50px;
@@ -55,10 +47,6 @@ b#page-content #region-main {
 	background-color: #dfdfdf;
 }
 
-table#comps,table#comps2 {
-	
-}
-
 div#exabis_competences_block .tabtree ul {
 	text-align: left;
 }
@@ -73,7 +61,7 @@ div#exabis_competences_block .tabtree ul {
 	width: auto;
 }
 
-table {
+.block_excomp_center table {
 	font-size: inherit;
 	border-collapse: collapse;
 	border-spacing: 0;
@@ -83,12 +71,12 @@ table {
 	border: 1px transparent solid;
 }
 
-.treeview ul { /*CSS for Simple Tree Menu*/
+.block_excomp_center .treeview ul { /*CSS for Simple Tree Menu*/
 	margin: 0;
 	padding: 0;
 }
 
-.treeview li {
+.block_excomp_center .treeview li {
 	/*Style for LI elements in general (excludes an LI that contains sub lists)*/
 	background: white url(../pix/list.gif) no-repeat left center;
 	background-image: url([[pix:a/em1_bwgreater]]);
@@ -97,7 +85,7 @@ table {
 	margin-bottom: 3px;
 }
 
-.treeview li.submenu {
+.block_excomp_center .treeview li.submenu {
 	/* Style for LI that contains sub lists (other ULs). */
 	background: white url(../pix/closed.gif) no-repeat left 1px;
 	background-image: url([[pix:i/closed]]);
@@ -105,12 +93,12 @@ table {
 	cursor: pointer !important;
 }
 
-.treeview li.submenu ul {
+.block_excomp_center .treeview li.submenu ul {
 	/*Style for ULs that are children of LIs (submenu) */
 	display: none; /*Hide them by default. Don't delete. */
 }
 
-.treeview .submenu ul li {
+.block_excomp_center .treeview .submenu ul li {
 	/*Style for LIs of ULs that are children of LIs (submenu) */
 	cursor: default;
 }
