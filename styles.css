@@ -10,40 +10,40 @@ div#exabis_competences_block {
 	
 }
 
-td.competenceok {
+#exabis_competences_block td.competenceok {
 	background-color: #CCFF99;
 }
 
 
-.ec_firstcol {
+#exabis_competences_block .ec_firstcol {
 	width: 50px;
 }
 
-.ec_td_mo {
+#exabis_competences_block .ec_td_mo {
 	width: 100px;
 }
 
-.ec_td_mo_auto {
+#exabis_competences_block .ec_td_mo_auto {
 	width: auto;
 }
 
-.ec_overflow {
+#exabis_competences_block .ec_overflow {
 	overflow: auto;
 }
 
-.ec_minwidth {
+#exabis_competences_block .ec_minwidth {
 	width: 750px;
 }
 
-.ec_tableheadwidth {
+#exabis_competences_block .ec_tableheadwidth {
 	width: 100px;
 }
 
-.ec_activitylist_student {
+#exabis_competences_block .ec_activitylist_student {
 	width: 50px;
 }
 
-.ec_heading {
+#exabis_competences_block .ec_heading {
 	background-color: #dfdfdf;
 }
 
@@ -51,7 +51,7 @@ div#exabis_competences_block .tabtree ul {
 	text-align: left;
 }
 
-.compstable {
+#exabis_competences_block .compstable {
 	margin-bottom: 0;
 	background-color: transparent;
 	border-style: solid;
@@ -61,22 +61,22 @@ div#exabis_competences_block .tabtree ul {
 	width: auto;
 }
 
-.block_excomp_center table {
+#exabis_competences_block  table {
 	font-size: inherit;
 	border-collapse: collapse;
 	border-spacing: 0;
 }
 
-#tdsubmit {
+#exabis_competences_block #tdsubmit {
 	border: 1px transparent solid;
 }
 
-.block_excomp_center .treeview ul { /*CSS for Simple Tree Menu*/
+#exabis_competences_block  .treeview ul { /*CSS for Simple Tree Menu*/
 	margin: 0;
 	padding: 0;
 }
 
-.block_excomp_center .treeview li {
+#exabis_competences_block .treeview li {
 	/*Style for LI elements in general (excludes an LI that contains sub lists)*/
 	background: white url(../pix/list.gif) no-repeat left center;
 	background-image: url([[pix:a/em1_bwgreater]]);
@@ -85,7 +85,7 @@ div#exabis_competences_block .tabtree ul {
 	margin-bottom: 3px;
 }
 
-.block_excomp_center .treeview li.submenu {
+#exabis_competences_block .treeview li.submenu {
 	/* Style for LI that contains sub lists (other ULs). */
 	background: white url(../pix/closed.gif) no-repeat left 1px;
 	background-image: url([[pix:i/closed]]);
@@ -93,27 +93,27 @@ div#exabis_competences_block .tabtree ul {
 	cursor: pointer !important;
 }
 
-.block_excomp_center .treeview li.submenu ul {
+#exabis_competences_block .treeview li.submenu ul {
 	/*Style for ULs that are children of LIs (submenu) */
 	display: none; /*Hide them by default. Don't delete. */
 }
 
-.block_excomp_center .treeview .submenu ul li {
+#exabis_competences_block .treeview .submenu ul li {
 	/*Style for LIs of ULs that are children of LIs (submenu) */
 	cursor: default;
 }
 
-div.ladebalken {
+#exabis_competences_block div.ladebalken {
 	width: 425px;
 	height: 27px;
 }
-div.lbmittelwert {
+#exabis_competences_block div.lbmittelwert {
     border-right: 1px solid #000000;
     height: 27px;
 }
-div.lbmittelwertcontainer {
+#exabis_competences_block div.lbmittelwertcontainer {
     height: 27px;
     position: absolute;
     width: 425px;
 }
-div.spaltenbrowser {margin-top:15px;}
+#exabis_competences_block div.spaltenbrowser {margin-top:15px;}
