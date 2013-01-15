@@ -69,12 +69,26 @@ if ($courseid > 0) {
                 $wert = "";
             }
             //echo $wert."--".$key."<br>";
-            block_exacomp_set_descractivitymm($wert, $key);
+						block_exacomp_set_descractivitymm($wert, $key);
         }
+        $modsetting_arr=array();
+        if (!empty($_POST['block_exacomp_activitysetting'])){
+	        foreach ($_POST['block_exacomp_activitysetting'] as $ks=>$vs){
+	            $modsetting_arr["activities"][]=$vs;
+	        };
+	      }
+            $modsetting="";
+						if ($modsetting = $DB->get_record("block_exacompsettings", array("course"=>$courseid))){
+							$modsetting->activities=serialize($modsetting_arr);
+							$DB->update_record('block_exacompsettings', $modsetting);
+						}else{
+							$modsettingi=array("course" => $courseid,"grading"=>"1","activities"=>serialize($modsetting_arr));
+							$DB->insert_record('block_exacompsettings',$modsettingi);
+				}   
         echo $OUTPUT->box(text_to_html(get_string("activitysuccess", "block_exacomp")));
     }
     $zeile = "";
-    
+  $shownactivities=array();
 	$modules = block_exacomp_get_modules();
     $colspan = (count($modules) + 1);
     echo $OUTPUT->box(text_to_html(get_string("explaineditactivities_subjects", "block_exacomp")));
@@ -84,20 +98,36 @@ if ($courseid > 0) {
         $content.='<div class="grade-report-grader">
 		<table id="comps" class="compstable flexible boxaligncenter generaltable">
 		<tr class="heading r0">
-		<td class="category catlevel1" colspan="' . $colspan . '" scope="col"><h2>' . $COURSE->fullname . '</h2></td></tr>
+		<td class="category catlevel1" scope="col"><h2>' . $COURSE->fullname . '</h2></td>
+		<td class="category catlevel1 bottom" colspan="' . ($colspan-1) . '" scope="col"><a href="#colsettings">'.get_string('spalten_setting','block_exacomp').'</a></td>
+		</tr>
 		<tr><td></td>';
+				if($modsetting = $DB->get_record("block_exacompsettings", array("course"=>$courseid))){
+					$modhide=unserialize($modsetting->activities);
+				}else{
+					$modhide=array();
+				}
 
         foreach ($modules as $mod) {
         	if(!$mod->visible)
         		continue;
         	$module = $activity = block_exacomp_get_coursemodule($mod);
-        	
+
         	//Skip Nachrichtenforum
         	if($module->name == get_string('namenews','mod_forum'))
         		continue;
         	
+        	$shownactivities[$module->id]["name"]=$module->name;
+        	if(in_array($mod->id,$modhide["activities"])){
+        		$shownactivities[$module->id]["selected"]=1;
+        		continue;
+        	}else{
+        		$shownactivities[$module->id]["selected"]=0;
+        	}
+        	
         	$content.='<td class="ec_tableheadwidth"><a href="' . block_exacomp_get_activityurl($module). '">' . $module->name . '</a><input type="hidden" value="' . $module->id . '" name="ec_activity[' . $module->id . ']" /></td>';
         	$zeile.='<td><input type="checkbox" name="data[' . $module->id . '][###descid###]" checked="###checked' . $module->id . '_###descid######" /></td>';
+        	
         }
         $content.="</tr>";
         $descriptors = block_exacomp_get_descritors_list($courseid);
@@ -134,11 +164,36 @@ if ($courseid > 0) {
         $content.='<tr><td id="tdsubmit" colspan="' . (count($modules) + 1) . '"><input type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" /></td></tr>';
         $content.="</table></div>";
         
+        $content.='<div id="colsettings">';
+        
+        $content.='<table id="comps" class="compstable flexible boxaligncenter generaltable">
+				<tr class="heading r0" >
+				<td class="category catlevel1" colspan="2" scope="col"><h2>' . get_string('hide_activities', 'block_exacomp') . '</h2></td>
+				</tr><tr><td>';
+        
+        if (!empty($shownactivities)){
+					if (count($shownactivities)<10) $ssize=count($shownactivities);
+					else $ssize=10;
+					$content.='<select size="'.$ssize.'" name="block_exacomp_activitysetting[]" multiple="multiple">';
+						$content.='<option value="-1">  </option>';
+						foreach($shownactivities as $k=>$v){
+							$content.='<option value="'.$k.'"';
+							if ($v["selected"]==1) $content.=' selected="selected"';
+							$content.='>'.$v["name"].'</option>';
+						}
+					$content.='</select></td><td>';
+				}
+				$content.='<input type="submit" value="' . get_string('hide_activities_save', 'block_exacomp') . '" /></td></tr><tr><td colspan="2">';
+				$content.=get_string('hide_activities_descr', 'block_exacomp') . '</td></tr></table>';
+				$content.='</div>';
+
         $content.='</form>';
     } else {
         echo $OUTPUT->box(text_to_html(get_string("explainno_subjects", "block_exacomp")));
     }
 }
+
+$content.="";
 echo $content;
 echo "</div>";
 echo '</div>'; //exabis_competences_block

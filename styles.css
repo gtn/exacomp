@@ -14,7 +14,9 @@ div#exabis_competences_block {
 	background-color: #CCFF99;
 }
 
-
+#exabis_competences_block .generaltable td.bottom {
+	vertical-align:bottom;
+}
 #exabis_competences_block .ec_firstcol {
 	width: 50px;
 }

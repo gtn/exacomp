@@ -134,4 +134,8 @@ $string['exaportinfotext'] = 'An overview of the portfolio entries that are asso
 $string['exastudinfotext'] = 'Your reviews about different periods';
 $string['name'] = 'name';
 $string['city'] = 'city';
+$string['spalten_setting'] = 'hide/display Columns';
+$string['hide_activities'] = 'Setting Hide Acitivities';
+$string['hide_activities_descr'] = 'Please Select Activities you want to hide and save';
+$string['hide_activities_save'] = 'Save settings and selection';
 ?>

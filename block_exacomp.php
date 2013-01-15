@@ -12,7 +12,7 @@ class block_exacomp extends block_base {
 */
     function init() {
         $this->title = get_string('exabis_competences', 'block_exacomp');
-        $this->version = 2012122100;
+        $this->version = 2013011500;
     }
 
     // The PHP tag and the curly bracket for the class definition
