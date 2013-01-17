@@ -358,7 +358,7 @@ function block_exacomp_isactivated($courseid) {
 		return false;
 }
 
-function block_exacomp_print_header($role, $item_identifier, $sub_item_identifier = null) {
+function block_exacomp_print_header($role, $item_identifier, $sub_item_identifier = null,$return=false) {
 	if (!is_string($item_identifier)) {
 		echo 'noch nicht unterstützt';
 	}
@@ -392,9 +392,16 @@ function block_exacomp_print_header($role, $item_identifier, $sub_item_identifie
 		$navlinks[] = array('name' => $item_name, 'link' => null, 'type' => 'misc');
 
 		$navigation = build_navigation($navlinks);
-		print_header_simple($item_name, $COURSE->fullname, $navigation, "", "", true);
-		echo '<div id="exabis_competences_block">';
-		print_tabs(array($tabs, $tabs_sub), $currenttab, null, $activetabsubs);
+		if ($return){
+			$inhalt=print_header_simple($item_name, $COURSE->fullname, $navigation, "", "", true,'&nbsp;','',false,'',$return);
+			$inhalt.='<div id="exabis_competences_block">';
+			$inhalt.=print_tabs(array($tabs, $tabs_sub), $currenttab, null, $activetabsubs,$return);
+			return $inhalt;
+		}else{
+			print_header_simple($item_name, $COURSE->fullname, $navigation, "", "", true,'&nbsp;','',false,'',$return);
+			echo '<div id="exabis_competences_block">';
+			print_tabs(array($tabs, $tabs_sub), $currenttab, null, $activetabsubs);
+		}
 	}
 	else if ($role == 'teacher') {
 		$strbookmarks = get_string($item_identifier, "block_exacomp");
@@ -450,10 +457,16 @@ function block_exacomp_print_header($role, $item_identifier, $sub_item_identifie
 		$navlinks[] = array('name' => $item_name, 'link' => null, 'type' => 'misc');
 
 		$navigation = build_navigation($navlinks);
-
-		print_header_simple($item_name, $COURSE->fullname, $navigation, "", "", true);
-		echo '<div id="exabis_competences_block">';
-		print_tabs(array($tabs, $tabs_sub), $currenttab, null, $activetabsubs);
+		if ($return){
+			$inhalt=print_header_simple($item_name, $COURSE->fullname, $navigation, "", "", true,'&nbsp;','',false,'',$return);
+			$inhalt.='<div id="exabis_competences_block">';
+			$inhalt.=print_tabs(array($tabs, $tabs_sub), $currenttab, null, $activetabsubs,$return);
+			return $inhalt;
+		}else{
+			print_header_simple($item_name, $COURSE->fullname, $navigation, "", "", true,'&nbsp;','',false,'',$return);
+			echo '<div id="exabis_competences_block">';
+			print_tabs(array($tabs, $tabs_sub), $currenttab, null, $activetabsubs);
+		}
 	}
 	else if ($role == 'student') {
 		$strbookmarks = get_string($item_identifier, "block_exacomp");
@@ -486,9 +499,16 @@ function block_exacomp_print_header($role, $item_identifier, $sub_item_identifie
 		$navlinks[] = array('name' => $item_name, 'link' => null, 'type' => 'misc');
 
 		$navigation = build_navigation($navlinks);
-		print_header_simple($item_name, $COURSE->fullname, $navigation, "", "", true);
-		echo '<div id="exabis_competences_block">';
-		print_tabs(array($tabs, $tabs_sub), $currenttab, null, $activetabsubs);
+		if ($return){
+			$inhalt=print_header_simple($item_name, $COURSE->fullname, $navigation, "", "", true,'&nbsp;','',false,'',$return);
+			$inhalt.='<div id="exabis_competences_block">';
+			$inhalt.=print_tabs(array($tabs, $tabs_sub), $currenttab, null, $activetabsubs,$return);
+			return $inhalt;
+		}else{
+			print_header_simple($item_name, $COURSE->fullname, $navigation, "", "", true,'&nbsp;','',false,'',$return);
+			echo '<div id="exabis_competences_block">';
+			print_tabs(array($tabs, $tabs_sub), $currenttab, null, $activetabsubs,$return);
+		}
 	}
 }
 
@@ -1037,12 +1057,15 @@ function block_exacomp_competence_reached($descid,$userid,$courseid) {
 	global $DB;
 	return ($DB->get_record('block_exacompdescuser',array("courseid"=>$courseid,"wert"=>1,"role"=>1,"descid"=>$descid,"userid"=>$userid))) ? true : false;
 }
-function block_exacomp_read_profile_template() {
+function block_exacomp_read_profile_template($view) {
 	global $CFG,$DB;
 	$filecontent = '';
 
 	if(is_file($CFG->dirroot . '/blocks/exacomp/lib/competence_profile.html')) {
 		$filecontent = file_get_contents ($CFG->dirroot . '/blocks/exacomp/lib/competence_profile.html');
+		if ($view!="print"){
+			$filecontent=block_exacomp_getSubpart($filecontent,"###DOCUMENT###");
+		}
 	}
 
 	return $filecontent;
@@ -1240,4 +1263,23 @@ function block_exacomp_check_profile_settings($userid,$block="exacomp",$itemid=f
 	$conditions = (!$itemid) ? $conditions : $conditions . " AND itemid=".$itemid;
 	return $DB->get_records_select('block_exacompprofilesettings',$conditions);
 }
+
+function block_exacomp_getSubpart($content, $marker)	{
+		if ($marker && strstr($content,$marker))	{
+			$start = strpos($content, $marker)+strlen($marker);
+			$stop = @strpos($content, $marker, $start+1);
+			$sub = substr($content, $start, $stop-$start);
+
+			$reg=Array();
+			preg_match('/^[^<]*-->/',$sub,$reg);
+			$start+=strlen($reg[0]);
+
+			$reg=Array();
+			preg_match('/<!--[^>]*$/',$sub,$reg);
+			$stop-=strlen($reg[0]);
+
+			return substr($content, $start, $stop-$start);
+		}
+	}
+
 ?>

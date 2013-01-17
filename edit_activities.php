@@ -107,7 +107,7 @@ if ($courseid > 0) {
 				}else{
 					$modhide=array();
 				}
-
+				if (!array_key_exists("activities",$modhide)) $modhide["activities"]=array();
         foreach ($modules as $mod) {
         	if(!$mod->visible)
         		continue;

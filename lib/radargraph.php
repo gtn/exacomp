@@ -2,6 +2,7 @@
 
 function block_exacomp_create_radargraph(){
 	global $USER,$CFG;
+	$isoutput=false;
 	$content="";
 $course_desriptors = block_exacomp_get_descriptors_of_all_courses(1);
 $content.='<table style="empty-cells:hide;">';
@@ -44,9 +45,12 @@ foreach ($course_desriptors as $coures_descriptor) {
 				
 		}
 	}
-
+	
+	$isoutput_bereich=false;
 	foreach($topics as $skey=>$sval){
 		if(count($sval)>2){
+			$isoutput=true;
+			$isoutput_bereich=true;
 			$varname="graphval".$skey;
 			$USER->$varname=serialize($sval);
 	
@@ -55,19 +59,27 @@ foreach ($course_desriptors as $coures_descriptor) {
 				$content.='<tr>';
 			}
 			$content.='<td>'.$subjects[$skey]["title"];
-			$content.='<br><img src=\''.$CFG->wwwroot.'/blocks/exacomp/phpgraph/radar.php?par='.$skey.'\'>';
+			$content.='<br><img alt="radar Graph" src=\''.$CFG->wwwroot.'/blocks/exacomp/phpgraph/radar.php?par='.$skey.'\'>';
 			$content.='</td>';
-			$h++;
-			if($h==3) {
+			
+			if($h==2) {
 				$content.='</tr>';$h=1;
 			}
+			$h++;
 			//unset($USER->$varname);
+		}
+	}
+	if ($isoutput_bereich==true){ //add empty table cells if necessary
+		for($z=$h;$z<=2;$z++){
+			$content.="<td></td>";
+			if ($z==2) $content.="</tr>";
 		}
 	}
 
 
 }
 $content .= '</table>';
+if ($isoutput==true) $content='<h2>'.get_string('radargraphheader','block_exacomp').'</h2>'.$content;
 return $content;
 }
 

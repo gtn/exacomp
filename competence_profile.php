@@ -32,7 +32,7 @@ if($file) {
 }
 
 $css = "styles_print.css";
-$profile = block_exacomp_read_profile_template();
+$profile = block_exacomp_read_profile_template($view);
 $profile2=$profile;
 $profile = str_replace ( '###TITLE###', get_string('competence_profile','block_exacomp'), $profile);
 $profile = str_replace ( '###INFOTEXT###', get_string('infotext','block_exacomp'), $profile);
@@ -196,11 +196,15 @@ else {
 	
 	
 	$identifier = "studenttabcompetenceprofile";
-	block_exacomp_print_header("student", $identifier);
-	$pdfurl = $CFG->wwwroot . "/blocks/exacomp/competence_profile.php?view=print&courseid=".$courseid;
+	$hdrtmp=block_exacomp_print_header("student", $identifier,null,true);
+	$hdrers='
+	<link rel="stylesheet" type="text/css" href="styles_print.css" />
+	';
+	$hdrtmp=str_replace("</head>",$hdrers.'</head>',$hdrtmp);
+	echo $hdrtmp;
+	$pdfurl = $CFG->wwwroot . "/blocks/exacomp/competence_profile.php?view=print&amp;courseid=".$courseid;
 	$settingsurl = $CFG->wwwroot . "/blocks/exacomp/competence_profile_settings.php?courseid=".$courseid;
-	$graph= block_exacomp_create_radargraph();
-	echo $graph;
+
 	echo $OUTPUT->box("<a href='".$pdfurl."'>".get_string('createpdf','block_exacomp')."</a>");
 	echo $OUTPUT->box("<a href='".$settingsurl."'>".get_string('pdfsettings','block_exacomp')."</a>");
 	//pdf-Trennelemente <hr> entfernen
@@ -209,5 +213,8 @@ else {
 	//Userpic einfügen
 	$profile = str_replace ( '###USERPIC###', $OUTPUT->user_picture($USER,array("size"=>100)), $profile);
 	echo $profile;
+	$graph= block_exacomp_create_radargraph();
+	echo $graph;
+	echo '</div>';// id=exabis_competences_block opend in header
 	echo $OUTPUT->footer();
 }
