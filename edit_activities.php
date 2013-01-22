@@ -99,7 +99,7 @@ if ($courseid > 0) {
 		<table id="comps" class="compstable flexible boxaligncenter generaltable">
 		<tr class="heading r0">
 		<td class="category catlevel1" scope="col"><h2>' . $COURSE->fullname . '</h2></td>
-		<td class="category catlevel1 bottom" colspan="' . ($colspan-1) . '" scope="col"><a href="#colsettings">'.get_string('spalten_setting','block_exacomp').'</a></td>
+		<td class="category catlevel1 bottom" colspan="###colspanminus1###" scope="col"><a href="#colsettings">'.get_string('spalten_setting','block_exacomp').'</a></td>
 		</tr>
 		<tr><td></td>';
 				if($modsetting = $DB->get_record("block_exacompsettings", array("course"=>$courseid))){
@@ -109,18 +109,19 @@ if ($courseid > 0) {
 				}
 				if (!array_key_exists("activities",$modhide)) $modhide["activities"]=array();
         foreach ($modules as $mod) {
-        	if(!$mod->visible)
-        		continue;
+        	if(!$mod->visible){
+        		$colspan=($colspan-1);continue;
+        	}
         	$module = $activity = block_exacomp_get_coursemodule($mod);
 
         	//Skip Nachrichtenforum
-        	if($module->name == get_string('namenews','mod_forum'))
-        		continue;
-        	
+        	if($module->name == get_string('namenews','mod_forum')){
+        		$colspan=($colspan-1);continue;
+        	}
         	$shownactivities[$module->id]["name"]=$module->name;
         	if(in_array($mod->id,$modhide["activities"])){
         		$shownactivities[$module->id]["selected"]=1;
-        		continue;
+        		$colspan=($colspan-1);continue;
         	}else{
         		$shownactivities[$module->id]["selected"]=0;
         	}
@@ -145,11 +146,11 @@ if ($courseid > 0) {
             }
             if ($subject !== $descriptor->subject) {
                 $subject = $descriptor->subject;
-                $content .= '<tr class="ec_heading"><td colspan="' . $colspan . '"><h4>' . $subject . '</h4></td></tr>';
+                $content .= '<tr class="ec_heading"><td colspan="###colspannormal###"><h4>' . $subject . '</h4></td></tr>';
             }
             if ($topic !== $descriptor->topic) {
                 $topic = $descriptor->topic;
-                $content .= '<tr class="ec_heading"><td colspan="' . $colspan . '"><b>' . $topic . '</b></td></tr>';
+                $content .= '<tr class="ec_heading"><td colspan="###colspannormal###"><b>' . $topic . '</b></td></tr>';
             }
             $activitiesr = block_exacomp_get_activities($descriptor->id); //alle gewählten aktivitäten eines descriptors, zum sparen von abfragen
             $zeiletemp = str_replace("###descid###", "" . $descriptor->id, $zeile);
@@ -161,7 +162,7 @@ if ($courseid > 0) {
             $zeiletemp = preg_replace('/checked="###checked([0-9_])+###"/', '', $zeiletemp); //nicht gewählte aktivitäten-descriptorenpaare, checked=... löschen
             $content.='<tr class="r2 ' . $trclass . '" ' . $bgcolor . '><td class="ec_minwidth">' . $descriptor->title . '<input type="hidden" value="' . $descriptor->id . '" name="ec_descr[' . $descriptor->id . ']" /></td>' . $zeiletemp . '</tr>';
         }
-        $content.='<tr><td id="tdsubmit" colspan="' . (count($modules) + 1) . '"><input type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" /></td></tr>';
+        $content.='<tr><td id="tdsubmit" colspan="###colspannormal###"><input type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" /></td></tr>';
         $content.="</table></div>";
         
         $content.='<div id="colsettings">';
@@ -188,6 +189,8 @@ if ($courseid > 0) {
 				$content.='</div>';
 
         $content.='</form>';
+        $content=str_replace("###colspannormal###",$colspan,$content);
+        $content=str_replace("###colspanminus1###",($colspan-1),$content);
     } else {
         echo $OUTPUT->box(text_to_html(get_string("explainno_subjects", "block_exacomp")));
     }
