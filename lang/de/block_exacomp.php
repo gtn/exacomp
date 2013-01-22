@@ -139,5 +139,5 @@ $string['hide_activities'] = 'Einstellung Aktivitäten ausblenden';
 $string['hide_activities_descr'] = 'Bitte wählen sie die Aktivitäten die sie verstecken wollen und speichern dann.';
 $string['hide_activities_save'] = 'Einstellungen und Auswahl speichern';
 $string['radargraphheader'] = 'Kompetenzradar';
-
+$string['notinview'] = 'Diese Item ist nicht veröffentlicht';
 ?>
