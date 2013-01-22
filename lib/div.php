@@ -174,7 +174,7 @@ function block_exacomp_get_activityid($activity) {
 
 function block_exacomp_get_activities($descid, $courseid = null) { //alle assignments die einem bestimmten descriptor zugeordnet sind
 	global $CFG, $DB;
-	$query = "SELECT a.id,ass.grade, mm.activitytype FROM {block_exacompdescriptors} descr INNER JOIN {block_exacompdescractiv_mm} mm  ON descr.id=mm.descrid INNER JOIN {course_modules} a ON a.id=mm.activityid LEFT JOIN {assignment} ass ON ass.id=a.instance  ";
+	$query = "SELECT mm.id as uniqueid,a.id,ass.grade, mm.activitytype FROM {block_exacompdescriptors} descr INNER JOIN {block_exacompdescractiv_mm} mm  ON descr.id=mm.descrid INNER JOIN {course_modules} a ON a.id=mm.activityid LEFT JOIN {assignment} ass ON ass.id=a.instance  ";
 	$query.="WHERE descr.id=?";
 	//echo $query;
 	$condition = array($descid);
@@ -792,16 +792,18 @@ function block_exacomp_get_portfolio_icon($student, $descrid) {
 	$submitted = "";
 	if(!$rs)
 		return null;
+	$theicon="";
 	foreach($rs as $item) {
 		$view = $DB->get_records_sql("SELECT v.* " .
                 " FROM {block_exaportview} AS v" .
                 " JOIN {block_exaportviewblock} vb ON vb.viewid=v.id AND vb.itemid = ?" .
                 " LEFT JOIN {block_exaportviewshar} vshar ON v.id=vshar.viewid AND vshar.userid=?" .
                 " WHERE (v.shareall=1 OR vshar.userid IS NOT NULL)",array($item->id,$USER->id));
-		if(!$view)
-			continue;
-		
-		$submitted .= "<li>".$item->name."</li>";
+		if(!$view){
+			$submitted .= "<li class=\"noview\">".$item->name." (".get_string('notinview', 'block_exacomp').")</li>";
+		}else{
+			$submitted .= "<li>".$item->name."</li>";$theicon="myportfolio.png";
+		}
 	}
 	if(!$submitted)
 		//none of the associated items is in a view that is visible for the current user
@@ -813,7 +815,8 @@ function block_exacomp_get_portfolio_icon($student, $descrid) {
 	$submitted = str_replace("\'","",$submitted);
 	$icon = new stdClass();
 	$icon->text = $submitted;
-	$icon->icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/myportfolio.png" height="16" width="23" alt="'.get_string("assigned_acitivities", "block_exacomp").'" />';
+	if ($theicon=="") $theicon="myportfolio_noview.png";
+	$icon->icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/'.$theicon.'" height="16" width="23" alt="'.get_string("assigned_acitivities", "block_exacomp").'" />';
 	return $icon;
 }
 function block_exacomp_get_examples($courseid) {

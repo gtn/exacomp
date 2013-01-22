@@ -246,12 +246,16 @@ if ($descriptors) {
 		$p=1;
 		foreach ($students as $student) {
 			$stdicon = block_exacomp_get_student_icon($activities, $student);
-
+			
 			$tempzeile .= '<td class="zelle'.$p.'"  colspan="' . $colspan . '"><a onmouseover="Tip(\'' . $stdicon->text . '\')" onmouseout="UnTip()">' . $stdicon->icon . '</a>';
 			//gibt es zugeordnete artefakte in exabis_eportfolio
 			if (block_exacomp_exaportexists()){
+				
+
 				$stdicon = block_exacomp_get_portfolio_icon($student, $descriptor->id);
+				
 				if(isset($stdicon)) {
+					
 					if($role=="student")
 						$url = 'href="'.$CFG->wwwroot.'/blocks/exaport/view_items.php?courseid='.$courseid.'"';
 					else
