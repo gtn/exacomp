@@ -147,7 +147,7 @@ function block_exacomp_get_descritors_list($courseid,$onlywithactivitys=0) {
 
 function block_exacomp_get_descriptors($activityid,$courseid) {
 	global $DB;
-	$query = "SELECT mm.id, descr.title,descr.id FROM 
+	$query = "SELECT descr.id,mm.id, descr.title FROM 
 	{block_exacompcoutopi_mm} cou INNER JOIN 
 	{block_exacomptopics} top ON top.id=cou.topicid INNER JOIN
 	{block_exacompdescrtopic_mm} topmm ON topmm.topicid=top.id INNER JOIN

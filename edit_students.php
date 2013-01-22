@@ -199,7 +199,7 @@ foreach ($activities as $activitymod) {
 
         $zeile .= $tempzeile;
         $tempzeile = "";
-        if ($zeilenr==$zeilenanzahl && $role == "teacher"){
+        if ($zeilenr==$zeilenanzahl){
         	
         	if ($trclass == "even") {
             $trclass = "odd";
@@ -214,7 +214,9 @@ foreach ($activities as $activitymod) {
         	$zi=1;
         	$pi=1;
         	foreach ($students as $student) {
-        		$zeile.='<td'.$fontcolor.' class="zelle'.$pi.'" >'.$student->lastname.'</td>';
+        		$zeile.='<td'.$fontcolor.' ';
+        		if($showevaluation=='on') $zeile.=' colspan="2" ';
+        		$zeile.='class="zelle'.$pi.'" >'.$student->lastname.' ' . $student->firstname.'</td>';
         		if ($zi==$spalten){ $zi=1;$pi++;}
         		else $zi++;
         	}
