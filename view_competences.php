@@ -36,7 +36,7 @@ $total=0;
 $total_achieved=0;
 $total_avg=0;
 $countstudents=0;
-$countstudentsges=0;
+$countstudentsges=0;$gesamtpossible=0;
 foreach ($course_desriptors as $coures_descriptor) {
 	if(!$coures_descriptor->descriptors)
 		continue;
@@ -50,9 +50,10 @@ foreach ($course_desriptors as $coures_descriptor) {
 	$total = $total + count($coures_descriptor->descriptors);
 	$total_avg = $total_avg + block_exacomp_get_average_course_competences($coures_descriptor->id)->a;
 	$total_achieved = $total_achieved + count(block_exacomp_get_usercompetences($USER->id, 1, $coures_descriptor->id));
+	$gesamtpossible=$gesamtpossible+($countstudents*count($coures_descriptor->descriptors));
 }
 
-$content.='<tr><td><b>Total</b></td><td>'.$total.'</td><td>'.$total_achieved.'</td><td>'.block_exacomp_get_ladebalken($coures_descriptor->id, $USER->id, $total,$total_achieved,1,$total_avg,$countstudentsges).'</td></tr></table>';
+$content.='<tr><td><b>Total</b></td><td>'.$total.'</td><td>'.$total_achieved.'</td><td>'.block_exacomp_get_ladebalken($coures_descriptor->id, $USER->id, $total,$total_achieved,1,$total_avg,$countstudentsges,$gesamtpossible).'</td></tr></table>';
 foreach ($course_desriptors as $coures_descriptor) {
 	$descriptors = $coures_descriptor->descriptors;
 	if ($descriptors) {

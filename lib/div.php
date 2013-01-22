@@ -838,7 +838,7 @@ function block_exacomp_get_examples($courseid) {
 	return $data;
 
 }
-function block_exacomp_get_ladebalken($courseid, $userid, $gesamt,$anteil=null,$grading=1,$avg=0,$countstudents=1) {
+function block_exacomp_get_ladebalken($courseid, $userid, $gesamt,$anteil=null,$grading=1,$avg=0,$countstudents=1,$gesamtpossible=0) {
 	global $DB;
 
 	if(!$anteil) {
@@ -850,7 +850,8 @@ function block_exacomp_get_ladebalken($courseid, $userid, $gesamt,$anteil=null,$
 
 	if($avg==0)
 		$avg = block_exacomp_get_average_course_competences($courseid)->a;
-	$avg = round($avg / ($gesamt*$countstudents) * 100,0);
+		if ($gesamtpossible==0) $avg = round($avg / ($gesamt*$countstudents) * 100,0); //$avg=positiv bewertete, $gesamt*$countstudents=anzahl der descriptoren mal anzahl der schüler =anzahl der möglichen
+		else $avg = round($avg / ($gesamtpossible) * 100,0);  //$avg=positiv bewertete, $gesamtpossible=anzahl der möglichen
 	return "<div class='ladebalken' style=\"background:url('pix/balkenleer.png') no-repeat left center;\">
 	<div class='lbmittelwertcontainer'><div class='lbmittelwert' style='width: ".$avg."%;'></div></div>
 	<div style=\"background:url('pix/balkenfull.png') no-repeat left center; height:27px; width:".$percent."%;\"></div></div>";
@@ -870,7 +871,7 @@ function block_exacomp_get_average_course_competences($courseid, $role=1) {
 	{block_exacompdescractiv_mm} da ON d.id=da.descrid INNER JOIN 
 	{course_modules} a ON da.activityid=a.id 
 	WHERE a.course = '.$courseid.' AND cou.courseid='.$courseid.' GROUP BY d.id)';
-	//echo $query;
+//die innere selectquery bringt die ids der descriptoren die in diesem kurs freigeschalten sind (unter subjects und topics)
 	return $DB->get_record_sql($query,array($courseid,$role));
 }
 function block_exacomp_get_descriptors_of_all_courses($onlywithactivity=1) {
