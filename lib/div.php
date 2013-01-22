@@ -145,13 +145,19 @@ function block_exacomp_get_descritors_list($courseid,$onlywithactivitys=0) {
 	return $descriptors;
 }
 
-function block_exacomp_get_descriptors($activityid) {
+function block_exacomp_get_descriptors($activityid,$courseid) {
 	global $DB;
-	$query = "SELECT mm.id, descr.title,descr.id FROM {block_exacompdescriptors} descr INNER JOIN {block_exacompdescractiv_mm} mm  ON descr.id=mm.descrid INNER JOIN {course_modules} l ON l.id=mm.activityid ";
-	$query.="WHERE l.id=?";
+	$query = "SELECT mm.id, descr.title,descr.id FROM 
+	{block_exacompcoutopi_mm} cou INNER JOIN 
+	{block_exacomptopics} top ON top.id=cou.topicid INNER JOIN
+	{block_exacompdescrtopic_mm} topmm ON topmm.topicid=top.id INNER JOIN
+	{block_exacompdescriptors} descr ON descr.id=topmm.descrid INNER JOIN 
+	{block_exacompdescractiv_mm} mm  ON descr.id=mm.descrid INNER JOIN 
+	{course_modules} l ON l.id=mm.activityid ";
+	$query.="WHERE l.id=? AND cou.courseid=?";
 	$query.=" ORDER BY descr.sorting";
 
-	$descriptors = $DB->get_records_sql($query, array($activityid));
+	$descriptors = $DB->get_records_sql($query, array($activityid,$courseid));
 
 	if (!$descriptors) {
 		$descriptors = array();
@@ -832,7 +838,7 @@ function block_exacomp_get_examples($courseid) {
 	return $data;
 
 }
-function block_exacomp_get_ladebalken($courseid, $userid, $gesamt,$anteil=null,$grading=1,$avg=0) {
+function block_exacomp_get_ladebalken($courseid, $userid, $gesamt,$anteil=null,$grading=1,$avg=0,$countstudents=1) {
 	global $DB;
 
 	if(!$anteil) {
@@ -844,8 +850,7 @@ function block_exacomp_get_ladebalken($courseid, $userid, $gesamt,$anteil=null,$
 
 	if($avg==0)
 		$avg = block_exacomp_get_average_course_competences($courseid)->a;
-
-	$avg = round($avg / $gesamt * 100,0);
+	$avg = round($avg / ($gesamt*$countstudents) * 100,0);
 	return "<div class='ladebalken' style=\"background:url('pix/balkenleer.png') no-repeat left center;\">
 	<div class='lbmittelwertcontainer'><div class='lbmittelwert' style='width: ".$avg."%;'></div></div>
 	<div style=\"background:url('pix/balkenfull.png') no-repeat left center; height:27px; width:".$percent."%;\"></div></div>";
@@ -853,8 +858,20 @@ function block_exacomp_get_ladebalken($courseid, $userid, $gesamt,$anteil=null,$
 
 function block_exacomp_get_average_course_competences($courseid, $role=1) {
 	global $DB;
-	$sql = "SELECT avg(count) as a FROM (SELECT count(id) as count FROM {block_exacompdescuser} WHERE courseid=? AND role=? AND wert=1 GROUP BY userid) as avgvalues";
-	return $DB->get_record_sql($sql,array($courseid,$role));
+	//$sql = "SELECT avg(count) as a FROM (SELECT count(id) as count FROM {block_exacompdescuser} WHERE courseid=? AND role=? AND wert=1 GROUP BY userid) as avgvalues";
+	//return $DB->get_record_sql($sql,array($courseid,$role));
+		
+	$query='select count(user.id) as a from mdl_block_exacompdescuser user where courseid=? and role=? and wert=1 and descid IN
+	(SELECT d.id FROM 
+	{block_exacompcoutopi_mm} cou INNER JOIN 
+	{block_exacomptopics} top ON top.id=cou.topicid INNER JOIN
+	{block_exacompdescrtopic_mm} topmm ON topmm.topicid=top.id INNER JOIN
+	{block_exacompdescriptors} d ON topmm.descrid=d.id INNER JOIN 
+	{block_exacompdescractiv_mm} da ON d.id=da.descrid INNER JOIN 
+	{course_modules} a ON da.activityid=a.id 
+	WHERE a.course = '.$courseid.' AND cou.courseid='.$courseid.' GROUP BY d.id)';
+	//echo $query;
+	return $DB->get_record_sql($query,array($courseid,$role));
 }
 function block_exacomp_get_descriptors_of_all_courses($onlywithactivity=1) {
 	//kurse holen
