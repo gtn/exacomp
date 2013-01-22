@@ -154,7 +154,7 @@ if ($courseid > 0) {
             }
             $activitiesr = block_exacomp_get_activities($descriptor->id); //alle gewählten aktivitäten eines descriptors, zum sparen von abfragen
             $zeiletemp = str_replace("###descid###", "" . $descriptor->id, $zeile);
-			$exicon = block_exacomp_get_examplelink($descriptor->id);
+						$exicon = block_exacomp_get_examplelink($descriptor->id);
 			
             foreach ($activitiesr as $activietyr) {
                 $zeiletemp = str_replace('###checked' . $activietyr->id . '_' . $descriptor->id . '###', 'checked', $zeiletemp);

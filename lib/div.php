@@ -88,7 +88,14 @@ function create_pulldown_array($items, $selectname, $anzeigefeld, $wert, $ka, $m
 function block_exacomp_get_descriptors_by_course($courseid) {
 	global $DB;
 	//$possible = block_exacomp_get_possible_descritptors_by_course($courseid);
-	$query = "SELECT da.id, d.title, d.id FROM {block_exacompdescriptors} d INNER JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid INNER JOIN {course_modules} a ON da.activityid=a.id WHERE a.course = :courseid GROUP BY d.id";
+	$query = "SELECT da.id, d.title, d.id FROM 
+	{block_exacompcoutopi_mm} cou INNER JOIN 
+	{block_exacomptopics} top ON top.id=cou.topicid INNER JOIN
+	{block_exacompdescrtopic_mm} topmm ON topmm.topicid=top.id INNER JOIN
+	{block_exacompdescriptors} d ON topmm.descrid=d.id INNER JOIN 
+	{block_exacompdescractiv_mm} da ON d.id=da.descrid INNER JOIN 
+	{course_modules} a ON da.activityid=a.id 
+	WHERE a.course = :courseid AND cou.courseid= ".$courseid." GROUP BY d.id";
 	$query.= " ORDER BY d.sorting";
 
 	$descriptors = $DB->get_records_sql($query, array("courseid" => $courseid));
