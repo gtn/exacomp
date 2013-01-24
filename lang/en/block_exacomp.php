@@ -140,4 +140,5 @@ $string['hide_activities_descr'] = 'Please Select Activities you want to hide an
 $string['hide_activities_save'] = 'Save settings and selection';
 $string['radargraphheader'] = 'Competence radar';
 $string['notinview'] = 'This Item ist not public';
+$string['bewertungsschema_speichern']='save marking scheme';
 ?>

@@ -140,4 +140,5 @@ $string['hide_activities_descr'] = 'Bitte wählen sie die Aktivitäten die sie v
 $string['hide_activities_save'] = 'Einstellungen und Auswahl speichern';
 $string['radargraphheader'] = 'Kompetenzradar';
 $string['notinview'] = 'Diese Item ist nicht veröffentlicht';
+$string['bewertungsschema_speichern']='Bewertungsschema speichern';
 ?>

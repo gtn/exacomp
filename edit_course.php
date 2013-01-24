@@ -98,7 +98,7 @@ if (empty($action)){
 	<form action="edit_course.php?courseid=' . $courseid . '&amp;action=save" method="post">
 	<input type="text" size="2" name="bewertungsschema" value="'.block_exacomp_getbewertungsschema($courseid,"").'" />
 	<input type="hidden" name="bew" value="1">
-	<input type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" />
+	<input type="submit" value="' . get_string('bewertungsschema_speichern', 'block_exacomp') . '" />
 	</form>
 	';
     echo $OUTPUT->box($inhalt);
