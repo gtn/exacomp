@@ -104,9 +104,8 @@ if ($courseid > 0) {
 		<tr><td></td>';
 				if($modsetting = $DB->get_record("block_exacompsettings", array("course"=>$courseid))){
 					$modhide=unserialize($modsetting->activities);
-				}else{
-					$modhide=array();
 				}
+				if(empty($modhide)) $modhide=array();
 				if (!array_key_exists("activities",$modhide)) $modhide["activities"]=array();
         foreach ($modules as $mod) {
         	if(!$mod->visible){
