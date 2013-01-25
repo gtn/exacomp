@@ -271,7 +271,6 @@ function block_exacomp_get_modules() {
 	$activities_old = get_coursemodules_in_course('assignment', $COURSE->id);
 	if(floatval(substr($CFG->release, 0, 3))>=2.3)
 		$activities = get_coursemodules_in_course('assign', $COURSE->id);
-
 	$forums = get_coursemodules_in_course('forum', $COURSE->id);
 	$data = get_coursemodules_in_course('data', $COURSE->id);
 	$quizes = get_coursemodules_in_course('quiz', $COURSE->id);
@@ -281,8 +280,9 @@ function block_exacomp_get_modules() {
 	$wikis = get_coursemodules_in_course('wiki', $COURSE->id);
 	$urls = get_coursemodules_in_course('url', $COURSE->id);
 	$resouces = get_coursemodules_in_course('resource', $COURSE->id);
-
-	return array_merge($activities,$activities_old,$forums,$data,$quizes,$scorm,$glossaries,$lessons,$wikis,$urls,$resouces);
+	$chat = get_coursemodules_in_course('chat', $COURSE->id);
+	$workshop = get_coursemodules_in_course('workshop', $COURSE->id);
+	return array_merge($activities,$activities_old,$forums,$data,$quizes,$scorm,$glossaries,$lessons,$wikis,$urls,$resouces,$chat,$workshop);
 }
 function print_descriptors($descriptors, $classprefix="ec") {
 	foreach ($descriptors as $descriptor) {
@@ -531,9 +531,10 @@ function block_exacomp_get_edulevels() {
 	return $levels;
 }
 
-function block_exacomp_get_usercompetences($userid, $role=1, $courseid=null,$grading=1,$anzeige=0) {
+function block_exacomp_get_usercompetences($userid, $role=1, $courseid=null,$anzeige=0) {
 
 	global $DB;
+	$grading=1;
 	if($courseid) $grading=getgrading($courseid);
 	$gut=ceil($grading/2);
 	$descriptors = array();
@@ -843,7 +844,7 @@ function block_exacomp_get_examples($courseid) {
 }
 function block_exacomp_get_ladebalken($courseid, $userid, $gesamt,$anteil=null,$grading=1,$avg=0,$countstudents=1,$gesamtpossible=0) {
 	global $DB;
-
+//2=id 5=userid 32=total 19=total_achieved dann 1 31=total_avg 6=countstudentsges 96=gesamtpossible
 	if(!$anteil) {
 		$usercomp = block_exacomp_get_usercompetences($userid, 1, $courseid,$grading);
 		$anteil = count($usercomp);
@@ -852,20 +853,21 @@ function block_exacomp_get_ladebalken($courseid, $userid, $gesamt,$anteil=null,$
 	else $percent = round($anteil / $gesamt * 100,0);
 
 	if($avg==0)
-		$avg = block_exacomp_get_average_course_competences($courseid)->a;
-		if ($gesamtpossible==0) $avg = round($avg / ($gesamt*$countstudents) * 100,0); //$avg=positiv bewertete, $gesamt*$countstudents=anzahl der descriptoren mal anzahl der schüler =anzahl der möglichen
-		else $avg = round($avg / ($gesamtpossible) * 100,0);  //$avg=positiv bewertete, $gesamtpossible=anzahl der möglichen
+		$avg = block_exacomp_get_average_course_competences($courseid,$grading)->a;
+	if ($gesamtpossible==0) $avg = round($avg / ($gesamt*$countstudents) * 100,0); //$avg=positiv bewertete, $gesamt*$countstudents=anzahl der descriptoren mal anzahl der schüler =anzahl der möglichen
+	else $avg = round($avg / ($gesamtpossible) * 100,0);  //$avg=positiv bewertete, $gesamtpossible=anzahl der möglichen
 	return "<div class='ladebalken' style=\"background:url('pix/balkenleer.png') no-repeat left center;\">
 	<div class='lbmittelwertcontainer'><div class='lbmittelwert' style='width: ".$avg."%;'></div></div>
 	<div style=\"background:url('pix/balkenfull.png') no-repeat left center; height:27px; width:".$percent."%;\"></div></div>";
 }
 
-function block_exacomp_get_average_course_competences($courseid, $role=1) {
+function block_exacomp_get_average_course_competences($courseid, $grading,$role=1) {
 	global $DB;
 	//$sql = "SELECT avg(count) as a FROM (SELECT count(id) as count FROM {block_exacompdescuser} WHERE courseid=? AND role=? AND wert=1 GROUP BY userid) as avgvalues";
 	//return $DB->get_record_sql($sql,array($courseid,$role));
-		
-	$query='select count(user.id) as a from mdl_block_exacompdescuser user where courseid=? and role=? and wert=1 and descid IN
+	//if($courseid) $grading=getgrading($courseid);
+	$gut=ceil($grading/2);
+	$query='select count(user.id) as a from mdl_block_exacompdescuser user where courseid=? and role=? and wert<=? and descid IN
 	(SELECT d.id FROM 
 	{block_exacompcoutopi_mm} cou INNER JOIN 
 	{block_exacomptopics} top ON top.id=cou.topicid INNER JOIN
@@ -875,7 +877,8 @@ function block_exacomp_get_average_course_competences($courseid, $role=1) {
 	{course_modules} a ON da.activityid=a.id 
 	WHERE a.course = '.$courseid.' AND cou.courseid='.$courseid.' GROUP BY d.id)';
 //die innere selectquery bringt die ids der descriptoren die in diesem kurs freigeschalten sind (unter subjects und topics)
-	return $DB->get_record_sql($query,array($courseid,$role));
+
+	return $DB->get_record_sql($query,array($courseid,$role,$gut));
 }
 function block_exacomp_get_descriptors_of_all_courses($onlywithactivity=1) {
 	//kurse holen
@@ -1081,9 +1084,12 @@ function block_exacomp_check_student_assign($descriptor,$userid,$small=true,$act
 function block_exacomp_switch_bgcolor($bgcolor) {
 	return ($bgcolor == ' style="background-color:#efefef" ') ? ' style="background-color:#ffffff" ' : ' style="background-color:#efefef" ';
 }
-function block_exacomp_competence_reached($descid,$userid,$courseid) {
+function block_exacomp_competence_reached($descid,$userid,$courseid,$grading) {
 	global $DB;
-	return ($DB->get_record('block_exacompdescuser',array("courseid"=>$courseid,"wert"=>1,"role"=>1,"descid"=>$descid,"userid"=>$userid))) ? true : false;
+	$where="courseid=".$courseid." AND wert<=".$grading." AND role=1 AND descid=".$descid." AND userid=".$userid;
+	if ($DB->get_record_select('block_exacompdescuser',$where)) return true;
+	else return false;	
+	//return ($DB->get_record('block_exacompdescuser',array("courseid"=>$courseid,"wert"=>1,"role"=>1,"descid"=>$descid,"userid"=>$userid))) ? true : false;
 }
 function block_exacomp_read_profile_template($view) {
 	global $CFG,$DB;
@@ -1173,9 +1179,11 @@ function block_exacomp_get_competence_tables($courses) {
 			$exacomp .= block_exacomp_get_table_heading($course->fullname);
 			$topic = "";
 			$cssclass="printrowgrey";
+			$grading=1;
+			if($course->id) $grading=getgrading($course->id);
 			foreach ($descriptors as $descriptor) {
 				//print only reached competences
-				if(!block_exacomp_competence_reached($descriptor->id,$USER->id,$course->id))
+				if(!block_exacomp_competence_reached($descriptor->id,$USER->id,$course->id,$grading))
 					continue;
 
 				if ($topic !== $descriptor->topic) {
@@ -1183,25 +1191,30 @@ function block_exacomp_get_competence_tables($courses) {
 					$exacomp .= block_exacomp_get_table_headingtwo($topic,$cssclass);
 					$cssclass = block_exacomp_switch_css($cssclass);
 				}
-				$exacomp .= block_exacomp_get_table_row($cssclass,$descriptor->title,'###icon'.$descriptor->id.'###','###studenticon'.$descriptor->id.'###');
+				$exacomp .= block_exacomp_get_table_row($cssclass,$descriptor->title,'###icon'.$course->id.'_'.$descriptor->id.'###','###studenticon'.$course->id.'_'.$descriptor->id.'###');
 				$cssclass = block_exacomp_switch_css($cssclass);
 			}
 			$exacomp .= '</table>';
 		}
 	}
-	$teacher_competences = block_exacomp_get_usercompetences($USER->id);
-	foreach ($teacher_competences as $teacher_competence) {
-		if (!empty($teacher_competence))
-			$exacomp = str_replace('###icon' . $teacher_competence->id . '###', '<img src="pix/accept.png" height="10" width="10" alt="Reached Competence" />', $exacomp);
+	foreach ($courses as $course) {
+		$descriptors = $course->descriptors;
+		if ($descriptors) {
+			$teacher_competences = block_exacomp_get_usercompetences($USER->id,1,$course->id);
+			foreach ($teacher_competences as $teacher_competence) {
+				if (!empty($teacher_competence))
+					$exacomp = str_replace('###icon'.$course->id.'_'. $teacher_competence->id . '###', '<img src="pix/accept.png" height="10" width="10" alt="Reached Competence" />', $exacomp);
+			}
+			$exacomp = preg_replace('/###icon'.$course->id.'_([0-9])+###/', '<img src="pix/cancel.png" height="10" width="10" alt="'.get_string("not_met", "block_exacomp").'" />', $exacomp);
+		
+			$user_competences = block_exacomp_get_usercompetences($USER->id, 0,$course->id);
+			foreach ($user_competences as $user_competence) {
+				if (!empty($user_competence))
+					$exacomp = str_replace('###studenticon'.$course->id.'_'. $user_competence->id . '###', '<img src="pix/accept.png" height="10" width="10" alt="'.get_string("not_met", "block_exacomp").'" />', $exacomp);
+			}
+			$exacomp = preg_replace('/###studenticon'.$course->id.'_([0-9])+###/', '<img src="pix/cancel.png" height="10" width="10" alt="'.get_string("not_met", "block_exacomp").'" />', $exacomp);
+		}
 	}
-	$exacomp = preg_replace('/###icon([0-9])+###/', '<img src="pix/cancel.png" height="10" width="10" alt="'.get_string("not_met", "block_exacomp").'" />', $exacomp);
-
-	$user_competences = block_exacomp_get_usercompetences($USER->id, 0);
-	foreach ($user_competences as $user_competence) {
-		if (!empty($user_competence))
-			$exacomp = str_replace('###studenticon' . $user_competence->id . '###', '<img src="pix/accept.png" height="10" width="10" alt="'.get_string("not_met", "block_exacomp").'" />', $exacomp);
-	}
-	$exacomp = preg_replace('/###studenticon([0-9])+###/', '<img src="pix/cancel.png" height="10" width="10" alt="'.get_string("not_met", "block_exacomp").'" />', $exacomp);
 	$exacomp .= '###EXAPORT_COMPS###';
 	return $exacomp;
 }

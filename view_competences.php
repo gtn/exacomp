@@ -40,26 +40,28 @@ $countstudentsges=0;$gesamtpossible=0;
 foreach ($course_desriptors as $coures_descriptor) {
 	if(!$coures_descriptor->descriptors)
 		continue;
-
-
+	
+	$grading=1;
+	if($coures_descriptor->id) $grading=getgrading($coures_descriptor->id);
+	
 	$conttemp = get_context_instance(CONTEXT_COURSE, $coures_descriptor->id);
 	$students = get_role_users(5, $conttemp);
 	$countstudents=count($students);
  	$countstudentsges=$countstudentsges+$countstudents;
-	$content.='<tr><td>'.$coures_descriptor->fullname.'</td><td>'.count($coures_descriptor->descriptors).'</td><td>'.count(block_exacomp_get_usercompetences($USER->id, 1, $coures_descriptor->id)).'</td><td>'.block_exacomp_get_ladebalken($coures_descriptor->id, $USER->id, count($coures_descriptor->descriptors),null,1,0,$countstudents).'</td></tr>';
+	$content.='<tr><td>'.$coures_descriptor->fullname.'</td><td>'.count($coures_descriptor->descriptors).'</td><td>'.count(block_exacomp_get_usercompetences($USER->id, 1, $coures_descriptor->id)).'</td><td>'.block_exacomp_get_ladebalken($coures_descriptor->id, $USER->id, count($coures_descriptor->descriptors),null,$grading,0,$countstudents).'</td></tr>';
 	$total = $total + count($coures_descriptor->descriptors);
-	$total_avg = $total_avg + block_exacomp_get_average_course_competences($coures_descriptor->id)->a;
+	$total_avg = $total_avg + block_exacomp_get_average_course_competences($coures_descriptor->id,$grading)->a;
 	$total_achieved = $total_achieved + count(block_exacomp_get_usercompetences($USER->id, 1, $coures_descriptor->id));
 	$gesamtpossible=$gesamtpossible+($countstudents*count($coures_descriptor->descriptors));
 }
-
+//echo $coures_descriptor->id."=id   ".$USER->id."=userid    ".$total."=total    ".$total_achieved."=total_achieved dann 1   ".$total_avg."=total_avg   ".$countstudentsges."=countstudentsges   ".$gesamtpossible."=gesamtpossible";
 $content.='<tr><td><b>Total</b></td><td>'.$total.'</td><td>'.$total_achieved.'</td><td>'.block_exacomp_get_ladebalken($coures_descriptor->id, $USER->id, $total,$total_achieved,1,$total_avg,$countstudentsges,$gesamtpossible).'</td></tr></table>';
 foreach ($course_desriptors as $coures_descriptor) {
 	$descriptors = $coures_descriptor->descriptors;
 	if ($descriptors) {
 
 		$content.='<table class="compstable flexible boxaligncenter generaltable"><tr class="heading r0">
-		<td class="category catlevel1"  scope="col"><h2>' . $coures_descriptor->fullname . '</h2></td>
+		<td class="category catlevel1"  scope="col"><h2>' . $coures_descriptor->fullname .'</h2></td>
 		<td>L</td>
 		<td>S</td></tr>';
 
@@ -80,26 +82,30 @@ foreach ($course_desriptors as $coures_descriptor) {
 			}
 
 			$content .= '<tr class="r2 ' . $trclass . '" ' . $bgcolor . '><td class="ec_minwidth">' . $descriptor->title . '</td>
-			<td>###icon' . $descriptor->id . '###</td>
-			<td>###studenticon' . $descriptor->id . '###</td></tr>';
+			<td>###icon' . $coures_descriptor->id."_".$descriptor->id . '###</td>
+			<td>###studenticon' . $coures_descriptor->id."_".$descriptor->id . '###</td></tr>';
 		}
 		$content .= '</table>';
 	}
 }
-$teacher_competences = block_exacomp_get_usercompetences($USER->id);
-foreach ($teacher_competences as $teacher_competence) {
-	if (!empty($teacher_competence))
-		$content = str_replace('###icon' . $teacher_competence->id . '###', '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/accept.png" height="16" width="16" alt="Reached Competence" />', $content);
+foreach ($course_desriptors as $coures_descriptor) {
+	$descriptors = $coures_descriptor->descriptors;
+	if ($descriptors) {
+		$teacher_competences = block_exacomp_get_usercompetences($USER->id,1,$coures_descriptor->id);
+		foreach ($teacher_competences as $teacher_competence) {
+			if (!empty($teacher_competence))
+				$content = str_replace('###icon' . $coures_descriptor->id."_".$teacher_competence->id . '###', '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/accept.png" height="16" width="16" alt="Reached Competence" />', $content);
+		}
+		$content = preg_replace('/###icon'.$coures_descriptor->id."_".'([0-9])+###/', '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/cancel.png" height="16" width="16" alt="'.get_string("not_met", "block_exacomp").'" />', $content);
+		
+		$user_competences = block_exacomp_get_usercompetences($USER->id, 0,$coures_descriptor->id);
+		foreach ($user_competences as $user_competence) {
+			if (!empty($user_competence))
+				$content = str_replace('###studenticon' . $coures_descriptor->id."_".$user_competence->id . '###', '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/accept.png" height="16" width="16" alt="'.get_string("not_met", "block_exacomp").'" />', $content);
+		}
+		$content = preg_replace('/###studenticon'.$coures_descriptor->id."_".'([0-9])+###/', '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/cancel.png" height="16" width="16" alt="'.get_string("not_met", "block_exacomp").'" />', $content);
+	}
 }
-$content = preg_replace('/###icon([0-9])+###/', '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/cancel.png" height="16" width="16" alt="'.get_string("not_met", "block_exacomp").'" />', $content);
-
-$user_competences = block_exacomp_get_usercompetences($USER->id, 0);
-foreach ($user_competences as $user_competence) {
-	if (!empty($user_competence))
-		$content = str_replace('###studenticon' . $user_competence->id . '###', '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/accept.png" height="16" width="16" alt="'.get_string("not_met", "block_exacomp").'" />', $content);
-}
-$content = preg_replace('/###studenticon([0-9])+###/', '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/cancel.png" height="16" width="16" alt="'.get_string("not_met", "block_exacomp").'" />', $content);
-
 //Portfolio Kompetenzen
 if (block_exacomp_exaportexists()){
 	$descriptors = block_exacomp_check_portfolio_competences($USER->id);
