@@ -133,7 +133,7 @@ if ($descriptors) {
 		$z=1;
 		$p=1;
 		foreach ($students as $student) {
-			$content.='<td class="zelle'.$p.'" ttclass="ec_tableheadwidth" colspan="' . $colspan . '">' . $student->lastname . ' ' . $student->firstname . '</td>';
+			$content.='<td class="zelle'.$p.'" class="ec_tableheadwidth" colspan="' . $colspan . '">' . $student->lastname . ' ' . $student->firstname . '</td>';
 			if ($z==$spalten){
 				$z=1;$p++;
 			}
@@ -325,7 +325,7 @@ echo $content;
 echo "</div>";
 echo '</div>'; //exabis_competences_block
 $content='
-<script language="JavaScript">
+<script type="text/javascript">
 
 function hidezelle(nummer,bereiche){
 for (z=1;z<=bereiche;z++){
