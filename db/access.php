@@ -39,6 +39,13 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
+    'block/exacomp:use' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'legacy' => array(
+            'user' => CAP_ALLOW
+        )
+    ),
     'block/exacomp:teacher' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
@@ -55,6 +62,24 @@ $capabilities = array(
         'legacy' => array(
             'student' => CAP_ALLOW
         )
-    )
+    ),
+    'block/exacomp:myaddinstance' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+        'user' => CAP_PREVENT
+        ),
+        'clonepermissionsfrom' => 'moodle/my:manageblocks'
+    ),
+    'block/exacomp:addinstance' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_BLOCK,
+        'archetypes' => array(
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        ),
+        'clonepermissionsfrom' => 'moodle/site:manageblocks'
+    ),
+    
 );
 ?>

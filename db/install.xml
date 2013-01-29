@@ -4,7 +4,7 @@
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="block_exacompdescriptors" COMMENT="die bildungsstandards=Deskriptoren" NEXT="block_exacomptopics">
+    <TABLE NAME="block_exacompdescriptors" COMMENT="die Bildungsstandards=Deskriptoren" NEXT="block_exacomptopics">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="title"/>
         <FIELD NAME="title" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="der bildungsstandard" PREVIOUS="id" NEXT="crdate"/>
