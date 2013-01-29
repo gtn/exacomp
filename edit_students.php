@@ -110,7 +110,7 @@ if ($showevaluation == 'on') {
     $z=1;
 	$p=1;
     for ($i = 0; $i < count($students); $i++){
-      $content.='<td class="zelle'.$p.'">S</td><td class="zelle'.$p.'">L</td>';
+      $content.='<td class="zelle'.$p.'">'.get_string("schueler_short", "block_exacomp").'</td><td class="zelle'.$p.'">'.get_string("lehrer_short", "block_exacomp").'</td>';
       if ($z==$spalten){ $z=1;$p++;}
   		else $z++; 
     }
