@@ -57,6 +57,7 @@ $content.='<form action="edit_activities.php?action=save&amp;courseid=' . $cours
 
 if ($courseid > 0) {
     if ($action == "save") {
+    	if(!empty($_POST['ec_activity'])){
         foreach ($_POST['ec_activity'] as $key => $activitiest) {
             $wert = "";
             if (!empty($_POST['data'][$key])) {
@@ -71,6 +72,7 @@ if ($courseid > 0) {
             //echo $wert."--".$key."<br>";
 						block_exacomp_set_descractivitymm($wert, $key);
         }
+      }
         $modsetting_arr=array();
         if (!empty($_POST['block_exacomp_activitysetting'])){
 	        foreach ($_POST['block_exacomp_activitysetting'] as $ks=>$vs){
