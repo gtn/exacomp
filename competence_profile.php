@@ -103,12 +103,12 @@ if (block_exacomp_exaportexists()){
 			$cssclass = "printrowgrey";
 			$exaport.='<table class="bordertable">';
 			$exaport.='<tr class="printrowheading"><td width="100%" colspan="2" class="text"><h3>'.$item->name.'</h3></td></tr>';
-			$exaport.='<tr><td class="legend">Beschreibung</td><td class="text">'.$item->intro.'</td></tr>';
-			$exaport.='<tr class="printrowgrey"><td class="legend">Kategorie</td><td class="text">'.$DB->get_field('block_exaportcate', 'name', array('id'=>$item->categoryid)).'</td></tr>';
-			$exaport.='<tr><td class="legend">Typ</td><td class="text">'.$item->type.'</td></tr>';
+			$exaport.='<tr><td class="legend">'.get_string('exaportintro','block_exacomp').'</td><td class="text">'.$item->intro.'</td></tr>';
+			$exaport.='<tr class="printrowgrey"><td class="legend">'.get_string('exaportcategory','block_exacomp').'</td><td class="text">'.$DB->get_field('block_exaportcate', 'name', array('id'=>$item->categoryid)).'</td></tr>';
+			$exaport.='<tr><td class="legend">'.get_string('exaporttype','block_exacomp').'</td><td class="text">'.$item->type.'</td></tr>';
 			switch ($item->type) {
 				case ("link"):
-					$exaport.='<tr class="'.$cssclass.'"><td class="legend">Url</td><td class="text">'.$item->url.'</td></tr>';
+					$exaport.='<tr class="'.$cssclass.'"><td class="legend">'.get_string('url','block_exaport').'</td><td class="text">'.$item->url.'</td></tr>';
 					$cssclass = block_exacomp_switch_css($cssclass);
 					break;
 				case ("file"):
@@ -118,12 +118,12 @@ if (block_exacomp_exaportexists()){
 					unset($files);
 					//copy file
 					if($portfile) {
-						$exaport.='<tr class="'.$cssclass.'"><td class="legend">Dateiname</td><td class="text">'.$portfile->get_filename().'</td></tr>';
+						$exaport.='<tr class="'.$cssclass.'"><td class="legend">'.get_string('exaportfilename','block_exacomp').'</td><td class="text">'.$portfile->get_filename().'</td></tr>';
 						$cssclass = block_exacomp_switch_css($cssclass);
 					}
 					break;
 			}
-			$exaport.='<tr class="'.$cssclass.'"><td colspan="2">Der Eintrag ist mit folgenden Kompetenzen assoziiert:</td></tr>';
+			$exaport.='<tr class="'.$cssclass.'"><td colspan="2">'.get_string('exaportinfo','block_exacomp').'</td></tr>';
 			$cssclass = block_exacomp_switch_css($cssclass);
 			$exaport.='<tr class="'.$cssclass.'"><td colspan="2"><ul>';
 			$competencies = $DB->get_records('block_exacompdescractiv_mm',array("activitytype"=>2000,"activityid"=>$item->id));
