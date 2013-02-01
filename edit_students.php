@@ -163,7 +163,6 @@ foreach ($activities as $activitymod) {
             	
 				      if ($gradelib){
 					      if($qid = $DB->get_record('quiz',array("id"=>$activity->instance))){
-					      	echo "----".$qid->id;
 									$grading_info = grade_get_grades($courseid, 'mod', 'quiz', $qid->id, $student->id);
 									if (!empty($grading_info->items)) {
 										$gradeitem = $grading_info->items[0];$gradeinfo=true;
