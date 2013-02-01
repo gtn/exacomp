@@ -527,7 +527,7 @@ function block_exacomp_print_header($role, $item_identifier, $sub_item_identifie
 
 function block_exacomp_get_edulevels() {
 	global $DB;
-	$levels = $DB->get_records('block_exacompedulevels');
+	$levels = $DB->get_records('block_exacompedulevels',null,'source');
 	return $levels;
 }
 

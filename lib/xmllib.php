@@ -82,36 +82,19 @@ function block_exacomp_xml_insert_schooltyp($value,$source,$userlst) {
 
 function block_exacomp_xml_insert_subject($value,$source) {
 	global $DB;
-	/*
-	 * ID aus XML mit sourceID der Datenbank vergleichen.
-	* Falls gefunden, update
-	* Falls nicht, insert
-	*
-	*/
-	$newvalue=new stdClass();
-	$newvalue->title=(string)$value->title;
-	$newvalue->titleshort=(string)$value->titleshort;
-	//if (empty($newvalue->titleshort)) $newvalue->titleshort=" ";
-	$newvalue->sourceid=(int)$value->uid;
-	$newvalue->source=$source;
-	$newvalue->sorting = (int)$value->sorting;
-	$newvalue->uid = (int)$value->uid;
-	$newvalue->stid = (int)$value->stid;
-	unset($value);
-	$value = $newvalue;
-	
-	$schooltype = $DB->get_record('block_exacompschooltypes', array("sourceid"=> (int)$value->stid,"source"=>$source));
-	if (!empty($schooltype->id)) $stid=$schooltype->id;
+	$data=array();
+	$data["title"]=strval($value->title);
+	$data["titleshort"]=strval($value->titleshort);
+	$data["sourceid"]=intval($value->uid);
+	$data["source"]=$source;
+	$data["sorting"]=intval($value->sorting);
+	if ($schooltype = $DB->get_record('block_exacompschooltypes', array("sourceid"=>intval($value->stid),"source"=>$source))) $stid=$schooltype->id;
 	else $stid=0;
-	$subject = $DB->get_record('block_exacompsubjects', array("sourceid" => (int)$value->uid,"source"=>$source));
-
-
-	if ($subject) {
-		//update
-		$subject->title = $value->title;
-		$subject->titleshort = $value->titleshort;
-		$subject->stid = $stid;
-		$DB->update_record('block_exacompsubjects', $subject);
+	$data["stid"]=$stid;
+	$uid=intval($value->uid);
+	if($subject = $DB->get_record('block_exacompsubjects', array("sourceid" =>$uid,"source"=>$source))){
+		$data["id"]=$subject->id;
+		$DB->update_record('block_exacompsubjects', $data);
 		/*if ($exaport==true){
 			$cats = $DB->get_record('block_exaportcate', array("sourceid"=> (int)$value->uid,"source"=>$source));
 			$data=stdClass();
@@ -122,8 +105,7 @@ function block_exacomp_xml_insert_subject($value,$source) {
 			}
 		}*/
 	} else {
-		$value->stid = $stid;
-		$DB->insert_record('block_exacompsubjects', $value);
+		$DB->insert_record('block_exacompsubjects', $data);
 		
 		
 		/*$sql='INSERT INTO {block_exacompsubjects} (sorting,title,titleshort,stid,sourceid,source) VALUES('.$value->sorting.',\''.($value->title).'\',\''.($value->uid).'\','.$stid.','.$value->uid.','.$source.')';
@@ -137,7 +119,6 @@ function block_exacomp_xml_insert_subject($value,$source) {
 		}*/
 	}
 }
-
 function block_exacomp_xml_insert_skill($value,$source) {
 
 	global $DB;
@@ -246,6 +227,7 @@ function block_exacomp_xml_insert_topic($value,$source) {
 	$value = $new_value;
 	
 	// Subject ID wird benštigt, durch sourceid holen
+	//echo (int)$value->subjid." ".$source;
 	$subject = $DB->get_record('block_exacompsubjects', array("sourceid"=> (int)$value->subjid,"source"=>$source));
 	if (!empty($subject->id)) $subj=$subject->id;
 	else $subj=0;
@@ -368,6 +350,17 @@ function block_exacomp_xml_truncate($tablename) {
 	$DB->delete_records($tablename);
 }
 
+/* this function deletes all categories if there are no subcategories
+i.e. if there are no topics to a subject, the subject can be deleted*/
+function block_exacomp_deleteIfNoSubcategories($parenttable,$subtable,$subforeignfield,$source) {
+	global $DB;
+	$sql='SELECT * FROM {'.$parenttable.'} pt WHERE source=? AND id NOT IN(Select '.$subforeignfield.' FROM {'.$subtable.'} WHERE source=? AND '.$subforeignfield.'=pt.id)';
+	$todelets = $DB->get_records_sql($sql,array($source,$source));
+	foreach ($todelets as $todelete) {
+		//echo "delete ".$parenttable." id=".$todelete->id."<br>";
+		$DB->delete_records($parenttable, array("id" => $todelete->id));
+	}
+}
 function block_exacomp_xml_get_topics($source) {
 	global $DB;
 	return $DB->get_records('block_exacomptopics',array("source"=>$source));
@@ -502,11 +495,10 @@ function block_exacomp_xml_insert_descrtopicmm($descrtopics) {
 }
 
 function block_exacomp_xml_do_import($file = null, $source = 1) {
-	global $DB;
+	
+	global $DB,$CFG;
 	$filename = 'xml/exacomp_data.xml';
-
-	if($file == "desp")
-		$filename = '../digitales_esp/xml/exacomp_data.xml';
+	$schritt = optional_param('schr', 0, PARAM_INT);
 
 	$edulevel = 0;
 	$schooltyp = 0;
@@ -518,6 +510,7 @@ function block_exacomp_xml_do_import($file = null, $source = 1) {
 	$descrexamp = array();
 
 	if (file_exists($filename) || $file) {
+		
 		$xml = (!$file) ? simplexml_load_file($filename) : simplexml_load_string($file);
 		if ($xml) {
 			
@@ -531,84 +524,98 @@ function block_exacomp_xml_do_import($file = null, $source = 1) {
 					$userlst=preg_replace("/^,/","",$userlst);
 				}
 			}*/
-			foreach ($xml->table as $table) {
-				$name = $table->attributes()->name;
-
-				if ($name == "block_exacompedulevels" && $source==1) {
-					if ($edulevel == 0) {
-						//block_exacomp_xml_truncate($table->attributes()->name);
-						$edulevel = 1;
+			if (($schritt==0 && $source==1) || $source>1){
+				foreach ($xml->table as $table) {
+					$name = $table->attributes()->name;
+	
+					if ($name == "block_exacompedulevels") {
+						if ($edulevel == 0) {
+							//block_exacomp_xml_truncate($table->attributes()->name);
+							$edulevel = 1;
+						}
+						block_exacomp_xml_insert_edulevel($table,$source);
 					}
-					block_exacomp_xml_insert_edulevel($table,$source);
-				}
-				if ($name == "block_exacompschooltypes") {
-					/*if ($schooltyp == 0) {
-						block_exacomp_xml_truncate($name);
-						$schooltyp = 1;
-					}*/
-					block_exacomp_xml_insert_schooltyp($table,$source,$userlst);
-				}
-				if ($name == "block_exacompsubjects") {
-					
-					/*if ($subject == 0) {
-						$DB->delete_records('block_exacompsubjects',array("source" => $source));
-						$subject = 1;
-					}*/
-					block_exacomp_xml_insert_subject($table,$source);
-				}
-				if ($name == "block_exacompskills" && $source==1) {
-					if ($skill == 0) {
-						block_exacomp_xml_truncate($name);
-						$skill = 1;
+					if ($name == "block_exacompschooltypes") {
+						/*if ($schooltyp == 0) {
+							block_exacomp_xml_truncate($name);
+							$schooltyp = 1;
+						}*/
+						block_exacomp_xml_insert_schooltyp($table,$source,$userlst);
 					}
-					block_exacomp_xml_insert_skill($table,$source);
-				}
-				if ($name == "block_exacomptaxonomies" && $source==1) {
-					if ($tax == 0) {
-						block_exacomp_xml_truncate($name);
-						$tax = 1;
+					if ($name == "block_exacompsubjects") {
+						
+						/*if ($subject == 0) {
+							$DB->delete_records('block_exacompsubjects',array("source" => $source));
+							$subject = 1;
+						}*/
+						block_exacomp_xml_insert_subject($table,$source);
 					}
-					block_exacomp_xml_insert_taxonomie($table,$source);
+					if ($name == "block_exacompskills" && $source==1) {
+						if ($skill == 0) {
+							block_exacomp_xml_truncate($name);
+							$skill = 1;
+						}
+						block_exacomp_xml_insert_skill($table,$source);
+					}
+					if ($name == "block_exacomptaxonomies" && $source==1) {
+						if ($tax == 0) {
+							block_exacomp_xml_truncate($name);
+							$tax = 1;
+						}
+						block_exacomp_xml_insert_taxonomie($table,$source);
+					}
+					if ($name == "block_exacomptopics") {
+						block_exacomp_xml_insert_topic($table,$source);
+					}
+					if ($name == "block_exacompdescriptors") {
+						block_exacomp_xml_insert_descriptor($table,$source);
+					}
+					if ($name == "block_exacompexamples") {
+						block_exacomp_xml_insert_example($table,$source);
+					}
+					if ($name == "block_exacompdescrtopic_mm") {
+						$descrtopicmm = block_exacomp_xml_get_current_ids($table, "topic",$source);
+						if (!empty($descrtopicmm['descrid']) && !empty($descrtopicmm['topicid']))
+							$descrtopic[] = $descrtopicmm;
+					}
+					if ($name == "block_exacompdescrexamp_mm") {
+						$descrexampmm = block_exacomp_xml_get_current_ids($table, "example",$source);
+	
+						if (!empty($descrexampmm['descrid']) && !empty($descrexampmm['exampid']))
+							$descrexamp[] = $descrexampmm;
+					}
 				}
-				if ($name == "block_exacomptopics") {
-					block_exacomp_xml_insert_topic($table,$source);
-				}
-				if ($name == "block_exacompdescriptors") {
-					block_exacomp_xml_insert_descriptor($table,$source);
-				}
-				if ($name == "block_exacompexamples") {
-					block_exacomp_xml_insert_example($table,$source);
-				}
-				if ($name == "block_exacompdescrtopic_mm") {
-					$descrtopicmm = block_exacomp_xml_get_current_ids($table, "topic",$source);
-					if (!empty($descrtopicmm['descrid']) && !empty($descrtopicmm['topicid']))
-						$descrtopic[] = $descrtopicmm;
-				}
-				if ($name == "block_exacompdescrexamp_mm") {
-					$descrexampmm = block_exacomp_xml_get_current_ids($table, "example",$source);
-
-					if (!empty($descrexampmm['descrid']) && !empty($descrexampmm['exampid']))
-						$descrexamp[] = $descrexampmm;
+				if ($source==1){
+					$courseid=optional_param('courseid', 0, PARAM_INT);
+					redirect($CFG->wwwroot.'/blocks/exacomp/import.php?action=xml&courseid='.$courseid.'&schr=1');
+					die;
 				}
 			}
-
-			$topics = block_exacomp_xml_get_topics($source);
-			$founds = block_exacomp_xml_find_unused($topics, $xml, "block_exacomptopics");
-			block_exacomp_xml_delete_unused_topics($founds,$source);
-
-			$descs = block_exacomp_xml_get_descriptors($source);
-			$founds = block_exacomp_xml_find_unused($descs, $xml, "block_exacompdescriptors");
-			block_exacomp_xml_delete_unused_descriptors($founds,$source);
-
-			$examples = block_exacomp_xml_get_examples($source);
-			$founds = block_exacomp_xml_find_unused($examples, $xml, "block_exacompexamples");
-			block_exacomp_xml_delete_unused_examples($founds,$source);
-
-			block_exacomp_xml_delete_descrtopicmm($source); 
-			block_exacomp_xml_insert_descrtopicmm($descrtopic);
-
-			block_exacomp_xml_delete_descrexampmm($source); 
-			block_exacomp_xml_insert_descrexampmm($descrexamp);
+			if (($schritt==1 && $source==1) || $source>1){
+			//block_exacomp_deleteIfNoSubcategories("block_exacomptopics","block_exacompdescrtopic_mm","topicid",$source);
+				block_exacomp_deleteIfNoSubcategories("block_exacompsubjects","block_exacomptopics","subjid",$source);
+				block_exacomp_deleteIfNoSubcategories("block_exacompschooltypes","block_exacompsubjects","stid",$source);
+				block_exacomp_deleteIfNoSubcategories("block_exacompedulevels","block_exacompschooltypes","elid",$source);
+	
+				
+				$topics = block_exacomp_xml_get_topics($source);
+				$founds = block_exacomp_xml_find_unused($topics, $xml, "block_exacomptopics");
+				block_exacomp_xml_delete_unused_topics($founds,$source);
+	
+				$descs = block_exacomp_xml_get_descriptors($source);
+				$founds = block_exacomp_xml_find_unused($descs, $xml, "block_exacompdescriptors");
+				block_exacomp_xml_delete_unused_descriptors($founds,$source);
+	
+				$examples = block_exacomp_xml_get_examples($source);
+				$founds = block_exacomp_xml_find_unused($examples, $xml, "block_exacompexamples");
+				block_exacomp_xml_delete_unused_examples($founds,$source);
+	
+				block_exacomp_xml_delete_descrtopicmm($source); 
+				block_exacomp_xml_insert_descrtopicmm($descrtopic);
+	
+				block_exacomp_xml_delete_descrexampmm($source); 
+				block_exacomp_xml_insert_descrexampmm($descrexamp);
+			}
 		}
 		return true;
 	}
