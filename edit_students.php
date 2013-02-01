@@ -29,7 +29,13 @@
 require_once dirname(__FILE__) . '/inc.php';
 require_once dirname(__FILE__) . '/lib/div.php';
 require_once($CFG->dirroot . "/lib/datalib.php");
-
+if (file_exists($CFG->dirroot . "/lib/gradelib.php")){
+		require_once($CFG->dirroot . "/lib/gradelib.php");
+		if (function_exists("grade_get_grades")) $gradelib=true;
+		else $gradelib=false;
+}else{
+	$gradelib=false;
+}
 global $COURSE, $CFG, $OUTPUT;
 $spalten=5;
 $zeilenanzahl=5;
@@ -120,7 +126,9 @@ if ($showevaluation == 'on') {
 $trclass = "even";
 $zeilenr=0;
 foreach ($activities as $activitymod) {
-    $activity = block_exacomp_get_coursemodule($activitymod);
+		$gradeinfo=false;
+    $activity = block_exacomp_get_coursemodule($activitymod); 	
+   			
     if ($trclass == "even") {
         $trclass = "odd";
         $bgcolor = ' style="background-color:#efefef" ';
@@ -151,19 +159,38 @@ foreach ($activities as $activitymod) {
          $z=1;
         $p=1;
         foreach ($students as $student) {
-            
+            if ($activity->modname=="quiz"){
+            	
+				      if ($gradelib){
+					      if($qid = $DB->get_record('quiz',array("id"=>$activity->instance))){
+					      	echo "----".$qid->id;
+									$grading_info = grade_get_grades($courseid, 'mod', 'quiz', $qid->id, $student->id);
+									if (!empty($grading_info->items)) {
+										$gradeitem = $grading_info->items[0];$gradeinfo=true;
+									}
+								}
+							}
+				    }
+				    		$gradeicon="";
+							  if ($gradeinfo==true){			
+									if (isset($gradeitem->grades[$student->id])) {
+										$grade = $gradeitem->grades[$student->id];
+										$gradeicon.='<img src="pix/quiz_grade.jpg" border="0" alt="'.$grade->str_long_grade.'" title="'.$grade->str_long_grade.'">';  
+									}
+        				}
             		if ($bewertungsdimensionen==1){ 
             			if($showevaluation=='on')
                 		{$tempzeile.='<td class="zelle'.$p.'" ###checkedcomp' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###><input type="checkbox" name="student[' . $activity->id . '][' . $descriptor->id . '][' . $student->id . ']" checked="###checkedstudent' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###" disabled /></td>';}
-            			$tempzeile.='<td class="zelle'.$p.'" ###checkedcomp' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###><input value="1" type="checkbox" name="data[' . $activity->id . '][' . $descriptor->id . '][' . $student->id . ']" checked="###checked' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###" /></td>';
+            			$tempzeile.='<td class="zelle'.$p.'" ###checkedcomp' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###><input value="1" type="checkbox" name="data[' . $activity->id . '][' . $descriptor->id . '][' . $student->id . ']" checked="###checked' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###" />'.$gradeicon.'</td>';
         				}else {
         					if($showevaluation=='on')
                 		{$tempzeile.='<td class="zelle'.$p.'" ###checkedcomp' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###>###checkedstudent' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###</td>';}
-        					$tempzeile.='<td class="zelle'.$p.'" ###checkedcomp' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###><select name="data[' . $activity->id . '][' . $descriptor->id . '][' . $student->id . ']"  >';
+        					$tempzeile.='<td class="zelle'.$p.'" ###checkedcomp' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###><select style="float:left;" name="data[' . $activity->id . '][' . $descriptor->id . '][' . $student->id . ']"  >';
         					for ($i=0;$i<=$bewertungsdimensionen;$i++){
         						$tempzeile.='<option value="'.$i.'" selected="###selected' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '_'.$i.'###">'.$i.'</option>';
         					}
-        					$tempzeile.='</select></td>';
+        					$tempzeile.='</select> '.$gradeicon;
+        					$tempzeile.='</td>';
         				}
         				if ($z==$spalten){ $z=1;$p++;}
         				else $z++;
