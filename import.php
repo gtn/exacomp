@@ -44,15 +44,18 @@ require_capability('block/exacomp:admin', $context);
 $url = '/blocks/exacomp/import.php';
 $PAGE->set_url($url);
 $url = $CFG->wwwroot.$url;
-block_exacomp_print_header("admin", "admintabimport");
-
-echo "<div class='block_excomp_center'>";
 
 if($action == "xml") {
 	//global $exaport;
 	//$exaport=has_exaport();
     $import = block_exacomp_xml_do_import();
 }
+
+block_exacomp_print_header("admin", "admintabimport");
+
+echo "<div class='block_excomp_center'>";
+
+
 $check = block_exacomp_xml_check_import();
 if($check)
      echo $OUTPUT->box(text_to_html(get_string("importdone", "block_exacomp")));

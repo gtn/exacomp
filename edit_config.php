@@ -69,9 +69,14 @@ echo $OUTPUT->box(text_to_html($headertext));
 $content.='<form action="edit_config.php?courseid=' . $courseid . '&action=save" method="post">';
 $content .= '<table>';
 
+$eigenest=false;
 $levels = block_exacomp_get_edulevels();
 foreach ($levels as $level) {
     $types = block_exacomp_get_schooltypes($level->id);
+    if($level->source>1 && $eigenest==false){
+    	$content .= '<tr class="heading r0"> <td class="category catlevel1" colspan="2"><h2>' . get_string('specificcontent', 'block_exacomp') . '</h2></td></tr>';
+    	$eigenest=true;
+    }
     $content .= '<tr> <td colspan="2"><b>' . $level->title . '</b></td></tr>';
     foreach ($types as $type) {
         if (block_exacomp_get_moodletypes($type->id))
