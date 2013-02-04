@@ -137,7 +137,6 @@ function block_exacomp_get_descritors_list($courseid,$onlywithactivitys=0) {
 		$query.=" AND d.id IN (".$descr.")";
 	}
 	$query.= " ORDER BY s.title,tp.title,d.sorting";
-
 	$descriptors = $DB->get_records_sql($query, $condition);
 	if (!$descriptors) {
 		$descriptors = array();

@@ -513,7 +513,9 @@ function block_exacomp_xml_do_import($file = null, $source = 1) {
 		
 		$xml = (!$file) ? simplexml_load_file($filename) : simplexml_load_string($file);
 		if ($xml) {
-			
+			$STARTZEIT = time();
+
+		
 			$userlst=0;
 			/*$exaport=has_exaport();
 			if ($exaport==true){
@@ -570,6 +572,7 @@ function block_exacomp_xml_do_import($file = null, $source = 1) {
 					if ($name == "block_exacompdescriptors") {
 						block_exacomp_xml_insert_descriptor($table,$source);
 					}
+
 					if ($name == "block_exacompexamples") {
 						block_exacomp_xml_insert_example($table,$source);
 					}
@@ -585,13 +588,22 @@ function block_exacomp_xml_do_import($file = null, $source = 1) {
 							$descrexamp[] = $descrexampmm;
 					}
 				}
+
+				block_exacomp_xml_delete_descrtopicmm($source); 
+				block_exacomp_xml_insert_descrtopicmm($descrtopic);
+	
+				block_exacomp_xml_delete_descrexampmm($source); 
+				block_exacomp_xml_insert_descrexampmm($descrexamp);
+
+			
 				if ($source==1){
 					$courseid=optional_param('courseid', 0, PARAM_INT);
 					redirect($CFG->wwwroot.'/blocks/exacomp/import.php?action=xml&courseid='.$courseid.'&schr=1');
 					die;
 				}
 			}
-			if (($schritt==1 && $source==1) || $source>1){
+			if (($schritt=="1" && $source=="1") || $source>1){
+				$STARTZEIT = time();
 			//block_exacomp_deleteIfNoSubcategories("block_exacomptopics","block_exacompdescrtopic_mm","topicid",$source);
 				block_exacomp_deleteIfNoSubcategories("block_exacompsubjects","block_exacomptopics","subjid",$source);
 				block_exacomp_deleteIfNoSubcategories("block_exacompschooltypes","block_exacompsubjects","stid",$source);
@@ -609,12 +621,7 @@ function block_exacomp_xml_do_import($file = null, $source = 1) {
 				$examples = block_exacomp_xml_get_examples($source);
 				$founds = block_exacomp_xml_find_unused($examples, $xml, "block_exacompexamples");
 				block_exacomp_xml_delete_unused_examples($founds,$source);
-	
-				block_exacomp_xml_delete_descrtopicmm($source); 
-				block_exacomp_xml_insert_descrtopicmm($descrtopic);
-	
-				block_exacomp_xml_delete_descrexampmm($source); 
-				block_exacomp_xml_insert_descrexampmm($descrexamp);
+
 			}
 		}
 		return true;
