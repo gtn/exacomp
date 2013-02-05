@@ -174,8 +174,8 @@ if ($courseid > 0) {
 				</tr><tr><td>';
         
         if (!empty($shownactivities)){
-					if (count($shownactivities)<10) $ssize=count($shownactivities);
-					else $ssize=10;
+					if (count($shownactivities)<10) $ssize=count($shownactivities)+1;
+					else $ssize=11;
 					$content.='<select size="'.$ssize.'" name="block_exacomp_activitysetting[]" multiple="multiple">';
 						$content.='<option value="-1">  </option>';
 						foreach($shownactivities as $k=>$v){
