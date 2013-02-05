@@ -48,8 +48,8 @@ $string['usersubmitted'] = ' hat folgende Aufgaben abgegeben:';
 $string['usernosubmission'] = ' hat keine Aufgaben zu diesem Deskriptor abgegeben.';
 $string['descnoassignment'] = 'Diesem Deskriptor sind keine Aufgaben zugeordnet.';
 
-$string['specificcontent'] = 'Standortspezifische Schwerpunkte';
-$string['specificsubject'] = 'Standortspezifische Unterrichtsgegenst&auml;nde';
+$string['specificcontent'] = 'Schulbezogene Themenbereiche';
+$string['specificsubject'] = 'Schulbezogene Gegenstands-/Kompetenzbereiche';
 $string['explain_bewertungsschema'] = 'Hier können sie das Bewertungsschema für diesen Kurs festlegen. Erlaubt sind Zahlen von 1-10. Standardmäßig wird 1 verwendet, d.h. es kann in einer Checkbox gewählt werden, ob eine Kompetenz erfüllt ist oder nicht. Eine Zahl n grösser 1 bewirkt eine Bewertungsskala mit n Ausprägungen.';
 $string['explainnomoodle_config'] = 'Um das Modul exabis competences verwenden zu können, muss dieses erst von einen Moodle Administrator konfiguriert werden.';
 $string['explainconfig'] = 'Um das Modul exabis competences verwenden zu k&ouml;nnen, m&uuml;ssen hier die Schultypen der Moodle-Instanz selektiert werden.';
