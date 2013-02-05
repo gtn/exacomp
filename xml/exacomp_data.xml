@@ -3,17 +3,17 @@
 	<table name="block_exacompedulevels">
 		<uid>14</uid>
 		<title><![CDATA[Sekundarstufe II]]></title>
-		<sorting>64</sorting>
+		<sorting>256</sorting>
 	</table>
 	<table name="block_exacompedulevels">
 		<uid>3</uid>
 		<title><![CDATA[Sekundarstufe I]]></title>
-		<sorting>256</sorting>
+		<sorting>64</sorting>
 	</table>
 	<table name="block_exacompedulevels">
 		<uid>2</uid>
 		<title><![CDATA[Grundbildung]]></title>
-		<sorting>286</sorting>
+		<sorting>370</sorting>
 	</table>
 	<table name="block_exacompschooltypes">
 		<uid>1</uid>
@@ -54,7 +54,7 @@
 		<uid>7</uid>
 		<title><![CDATA[Volksschule]]></title>
 		<elid>2</elid>
-		<sorting>0</sorting>
+		<sorting>1</sorting>
 		<isoez>0</isoez>
 	</table>
 	<table name="block_exacompschooltypes">
@@ -68,7 +68,7 @@
 		<uid>10</uid>
 		<title><![CDATA[NMS]]></title>
 		<elid>3</elid>
-		<sorting>1</sorting>
+		<sorting>2</sorting>
 		<isoez>0</isoez>
 	</table>
 	<table name="block_exacompschooltypes">
@@ -76,13 +76,6 @@
 		<title><![CDATA[PTS Polytechnische Schule]]></title>
 		<elid>14</elid>
 		<sorting>64</sorting>
-		<isoez>0</isoez>
-	</table>
-	<table name="block_exacompschooltypes">
-		<uid>21</uid>
-		<title><![CDATA[Hauptschule]]></title>
-		<elid>3</elid>
-		<sorting>2</sorting>
 		<isoez>0</isoez>
 	</table>
 	<table name="block_exacompschooltypes">
@@ -170,6 +163,13 @@
 		<sorting>2823</sorting>
 	</table>
 	<table name="block_exacompsubjects">
+		<uid>21</uid>
+		<title><![CDATA[ANGEWANDTE INFORMATIK]]></title>
+		<titleshort><![CDATA[ANGEWANDTE INFORMATIK]]></titleshort>
+		<stid>2</stid>
+		<sorting>2819</sorting>
+	</table>
+	<table name="block_exacompsubjects">
 		<uid>24</uid>
 		<title><![CDATA[ANGEWANDTE NATURWISSENSCHAFTEN UND WARENLEHRE (HAS)]]></title>
 		<titleshort><![CDATA[ANGEWANDTE NATURWISSENSCHAFTEN UND WARENLEHRE (HAS)]]></titleshort>
@@ -186,14 +186,14 @@
 	<table name="block_exacompsubjects">
 		<uid>149</uid>
 		<title><![CDATA[Lern- u. Arbeitsverhalten]]></title>
-		<titleshort><![CDATA[Lern- und Arbeits- verhalten]]></titleshort>
+		<titleshort><![CDATA[Lern- und Arbeits-<br>verhalten]]></titleshort>
 		<stid>73</stid>
 		<sorting>2938</sorting>
 	</table>
 	<table name="block_exacompsubjects">
 		<uid>150</uid>
 		<title><![CDATA[Selbst-/Eigenverantwortung]]></title>
-		<titleshort><![CDATA[Selbst-/Eigenverant- wortung]]></titleshort>
+		<titleshort><![CDATA[Selbst-/Eigenverant-<br>wortung]]></titleshort>
 		<stid>73</stid>
 		<sorting>2939</sorting>
 	</table>
@@ -235,9 +235,9 @@
 	<table name="block_exacompsubjects">
 		<uid>156</uid>
 		<title><![CDATA[Situationsgerechtes Auftreten]]></title>
-		<titleshort><![CDATA[Situations- gerechtes Auftreten]]></titleshort>
+		<titleshort><![CDATA[Situations-<br>gerechtes Auftreten]]></titleshort>
 		<stid>72</stid>
-		<sorting>2945</sorting>
+		<sorting>3026</sorting>
 	</table>
 	<table name="block_exacompsubjects">
 		<uid>164</uid>
@@ -317,13 +317,6 @@
 		<sorting>2963</sorting>
 	</table>
 	<table name="block_exacompsubjects">
-		<uid>175</uid>
-		<title><![CDATA[NATURWISSENSCHAFTEN BMS]]></title>
-		<titleshort><![CDATA[NATURWISSENSCHAFTEN BMS]]></titleshort>
-		<stid>78</stid>
-		<sorting>2964</sorting>
-	</table>
-	<table name="block_exacompsubjects">
 		<uid>176</uid>
 		<title><![CDATA[WIRTSCHAFT UND RECHT]]></title>
 		<titleshort><![CDATA[WIRTSCHAFT UND RECHT]]></titleshort>
@@ -400,6 +393,69 @@
 		<stid>2</stid>
 		<sorting>2977</sorting>
 	</table>
+	<table name="block_exacompsubjects">
+		<uid>239</uid>
+		<title><![CDATA[Englisch 8. Schulstufe]]></title>
+		<titleshort><![CDATA[Englisch 8. Schulstufe]]></titleshort>
+		<stid>125</stid>
+		<sorting>3027</sorting>
+	</table>
+	<table name="block_exacompsubjects">
+		<uid>242</uid>
+		<title><![CDATA[Deutsch 8. Schulstufe]]></title>
+		<titleshort><![CDATA[Deutsch 8. Schulstufe]]></titleshort>
+		<stid>125</stid>
+		<sorting>3030</sorting>
+	</table>
+	<table name="block_exacompsubjects">
+		<uid>244</uid>
+		<title><![CDATA[Mathematik 8. Schulstufe]]></title>
+		<titleshort><![CDATA[Mathematik 8. Schulstufe]]></titleshort>
+		<stid>125</stid>
+		<sorting>3032</sorting>
+	</table>
+	<table name="block_exacompsubjects">
+		<uid>245</uid>
+		<title><![CDATA[Mathematik 4. Schulstufe]]></title>
+		<titleshort><![CDATA[Mathematik 4. Schulstufe]]></titleshort>
+		<stid>125</stid>
+		<sorting>3033</sorting>
+	</table>
+	<table name="block_exacompsubjects">
+		<uid>246</uid>
+		<title><![CDATA[Deutsch, Lesen, Schreiben 4. Schulstufe]]></title>
+		<titleshort><![CDATA[Deutsch, Lesen, Schreiben 4. Schulstufe]]></titleshort>
+		<stid>125</stid>
+		<sorting>3034</sorting>
+	</table>
+	<table name="block_exacompsubjects">
+		<uid>283</uid>
+		<title><![CDATA[GERS]]></title>
+		<titleshort/>
+		<stid>78</stid>
+		<sorting>3071</sorting>
+	</table>
+	<table name="block_exacompsubjects">
+		<uid>324</uid>
+		<title><![CDATA[ITALIENISCH]]></title>
+		<titleshort/>
+		<stid>78</stid>
+		<sorting>3110</sorting>
+	</table>
+	<table name="block_exacompsubjects">
+		<uid>326</uid>
+		<title><![CDATA[SPANISCH]]></title>
+		<titleshort/>
+		<stid>78</stid>
+		<sorting>3112</sorting>
+	</table>
+	<table name="block_exacompsubjects">
+		<uid>327</uid>
+		<title><![CDATA[FRANZÖSISCH]]></title>
+		<titleshort/>
+		<stid>78</stid>
+		<sorting>3113</sorting>
+	</table>
 	<table name="block_exacomptopics">
 		<uid>1</uid>
 		<title><![CDATA[1. Informatiksysteme (Hardware, Betriebssystem, Netzwerk) ]]></title>
@@ -441,16 +497,8 @@
 		<description/>
 	</table>
 	<table name="block_exacomptopics">
-		<uid>6</uid>
-		<title><![CDATA[1. Schule und Arbeitswelt]]></title>
-		<titleshort><![CDATA[1. Schule und Arbeitswelt]]></titleshort>
-		<subjid>2</subjid>
-		<sorting>27392</sorting>
-		<description/>
-	</table>
-	<table name="block_exacomptopics">
 		<uid>10</uid>
-		<title><![CDATA[2. Kindheit und Erwachsenwerden]]></title>
+		<title><![CDATA[Kindheit und Erwachsenwerden]]></title>
 		<titleshort><![CDATA[2. Kindheit und Erwachsenwerden]]></titleshort>
 		<subjid>2</subjid>
 		<sorting>27648</sorting>
@@ -458,8 +506,8 @@
 	</table>
 	<table name="block_exacomptopics">
 		<uid>13</uid>
-		<title><![CDATA[1.2. Lesen]]></title>
-		<titleshort><![CDATA[1.2. Lesen]]></titleshort>
+		<title><![CDATA[Lesen]]></title>
+		<titleshort><![CDATA[Lesen]]></titleshort>
 		<subjid>2</subjid>
 		<sorting>25344</sorting>
 		<description/>
@@ -773,7 +821,7 @@
 		<title><![CDATA[AK 1.1 Eine Sachsituation in ein mathematisches Modell (Terme und Gleichungen) übertragen, dieses lösen und auf die Ausgangssituation beziehen]]></title>
 		<titleshort><![CDATA[AK 1.1 Eine Sachsituation in ein mathematisches Modell (Terme und Gleichungen) übertragen, dieses lösen und auf die Ausgangssituation beziehen]]></titleshort>
 		<subjid>8</subjid>
-		<sorting>13312</sorting>
+		<sorting>13056</sorting>
 		<description/>
 	</table>
 	<table name="block_exacomptopics">
@@ -829,7 +877,7 @@
 		<title><![CDATA[AK 4.2 Lösungsstrategien (er)finden und nutzen]]></title>
 		<titleshort><![CDATA[AK 4.2 Lösungsstrategien (er)finden und nutzen]]></titleshort>
 		<subjid>8</subjid>
-		<sorting>9728</sorting>
+		<sorting>9984</sorting>
 		<description/>
 	</table>
 	<table name="block_exacomptopics">
@@ -837,7 +885,7 @@
 		<title><![CDATA[IK 1.1 Zahldarstellungen und -beziehungen verstehen]]></title>
 		<titleshort><![CDATA[IK 1.1 Zahldarstellungen und -beziehungen verstehen]]></titleshort>
 		<subjid>8</subjid>
-		<sorting>9984</sorting>
+		<sorting>9728</sorting>
 		<description/>
 	</table>
 	<table name="block_exacomptopics">
@@ -933,7 +981,7 @@
 		<title><![CDATA[IK 4.4 Umfang und Flächeninhalt ermitteln]]></title>
 		<titleshort><![CDATA[IK 4.4 Umfang und Flächeninhalt ermitteln]]></titleshort>
 		<subjid>8</subjid>
-		<sorting>13056</sorting>
+		<sorting>13312</sorting>
 		<description/>
 	</table>
 	<table name="block_exacomptopics">
@@ -1029,7 +1077,7 @@
 		<title><![CDATA[Handlungsbereich - Rechnen, Operieren, Inhaltsbereich "Zahlen und Maße"]]></title>
 		<titleshort><![CDATA[Handlungsbereich - Rechnen, Operieren, Inhaltsbereich "Zahlen und Maße"]]></titleshort>
 		<subjid>14</subjid>
-		<sorting>2560</sorting>
+		<sorting>2816</sorting>
 		<description/>
 	</table>
 	<table name="block_exacomptopics">
@@ -1037,7 +1085,7 @@
 		<title><![CDATA[Handlungsbereich "Interpretieren" - Inhaltsbereich "Zahlen und Maße"]]></title>
 		<titleshort><![CDATA[Handlungsbereich "Interpretieren" - Inhaltsbereich "Zahlen und Maße"]]></titleshort>
 		<subjid>14</subjid>
-		<sorting>2816</sorting>
+		<sorting>2560</sorting>
 		<description/>
 	</table>
 	<table name="block_exacomptopics">
@@ -1101,7 +1149,7 @@
 		<title><![CDATA[Handlungsbereich - Rechnen, Operieren, Inhaltsbereich "Zahlen und Maße"]]></title>
 		<titleshort><![CDATA[Handlungsbereich - Rechnen, Operieren, Inhaltsbereich "Zahlen und Maße"]]></titleshort>
 		<subjid>14</subjid>
-		<sorting>1792</sorting>
+		<sorting>1536</sorting>
 		<description/>
 	</table>
 	<table name="block_exacomptopics">
@@ -1133,7 +1181,7 @@
 		<title><![CDATA[Arbeitshaltung]]></title>
 		<titleshort><![CDATA[Arbeitshaltung]]></titleshort>
 		<subjid>15</subjid>
-		<sorting>1536</sorting>
+		<sorting>1792</sorting>
 		<description/>
 	</table>
 	<table name="block_exacomptopics">
@@ -1141,7 +1189,7 @@
 		<title><![CDATA[Methodenkompetenz]]></title>
 		<titleshort><![CDATA[Methodenkompetenz]]></titleshort>
 		<subjid>15</subjid>
-		<sorting>1024</sorting>
+		<sorting>1280</sorting>
 		<description/>
 	</table>
 	<table name="block_exacomptopics">
@@ -1149,7 +1197,7 @@
 		<title><![CDATA[Lernziele Informatik]]></title>
 		<titleshort><![CDATA[Lernziele Informatik]]></titleshort>
 		<subjid>15</subjid>
-		<sorting>768</sorting>
+		<sorting>512</sorting>
 		<description/>
 	</table>
 	<table name="block_exacomptopics">
@@ -2616,6 +2664,206 @@ Sozialkompetenz)]]></titleshort>
 		<titleshort><![CDATA[HLW 15 Sprachliche Kompetenz]]></titleshort>
 		<subjid>188</subjid>
 		<sorting>31858</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>670</uid>
+		<title><![CDATA[Hören]]></title>
+		<titleshort><![CDATA[Hören]]></titleshort>
+		<subjid>239</subjid>
+		<sorting>31979</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>676</uid>
+		<title><![CDATA[Lesen]]></title>
+		<titleshort><![CDATA[Lesen]]></titleshort>
+		<subjid>239</subjid>
+		<sorting>31985</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>677</uid>
+		<title><![CDATA[An Gesprächen teilnehmen]]></title>
+		<titleshort><![CDATA[An Gesprächen teilnehmen]]></titleshort>
+		<subjid>239</subjid>
+		<sorting>31986</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>678</uid>
+		<title><![CDATA[Zusammenhängend sprechen]]></title>
+		<titleshort><![CDATA[Zusammenhängend sprechen]]></titleshort>
+		<subjid>239</subjid>
+		<sorting>31987</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>679</uid>
+		<title><![CDATA[Schreiben]]></title>
+		<titleshort><![CDATA[Schreiben]]></titleshort>
+		<subjid>239</subjid>
+		<sorting>31988</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>869</uid>
+		<title><![CDATA[Hören]]></title>
+		<titleshort><![CDATA[Hören]]></titleshort>
+		<subjid>324</subjid>
+		<sorting>32173</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>870</uid>
+		<title><![CDATA[Lesen]]></title>
+		<titleshort><![CDATA[Lesen]]></titleshort>
+		<subjid>324</subjid>
+		<sorting>32174</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>871</uid>
+		<title><![CDATA[An Gesprächen teilnehmen]]></title>
+		<titleshort><![CDATA[An Gesprächen teilnehmen]]></titleshort>
+		<subjid>324</subjid>
+		<sorting>32175</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>872</uid>
+		<title><![CDATA[Zusammenhängend sprechen]]></title>
+		<titleshort><![CDATA[Zusammenhängend sprechen]]></titleshort>
+		<subjid>324</subjid>
+		<sorting>32176</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>873</uid>
+		<title><![CDATA[Schreiben]]></title>
+		<titleshort><![CDATA[Schreiben]]></titleshort>
+		<subjid>324</subjid>
+		<sorting>32177</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>874</uid>
+		<title><![CDATA[Hören]]></title>
+		<titleshort><![CDATA[Hören]]></titleshort>
+		<subjid>326</subjid>
+		<sorting>32178</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>875</uid>
+		<title><![CDATA[Lesen]]></title>
+		<titleshort><![CDATA[Lesen]]></titleshort>
+		<subjid>326</subjid>
+		<sorting>32179</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>876</uid>
+		<title><![CDATA[An Gesprächen teilnehmen]]></title>
+		<titleshort><![CDATA[An Gesprächen teilnehmen]]></titleshort>
+		<subjid>326</subjid>
+		<sorting>32180</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>877</uid>
+		<title><![CDATA[Zusammenhängend sprechen]]></title>
+		<titleshort><![CDATA[Zusammenhängend sprechen]]></titleshort>
+		<subjid>326</subjid>
+		<sorting>32181</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>878</uid>
+		<title><![CDATA[Schreiben]]></title>
+		<titleshort><![CDATA[Schreiben]]></titleshort>
+		<subjid>326</subjid>
+		<sorting>32182</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>879</uid>
+		<title><![CDATA[Hören]]></title>
+		<titleshort><![CDATA[Hören]]></titleshort>
+		<subjid>327</subjid>
+		<sorting>32183</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>880</uid>
+		<title><![CDATA[Lesen]]></title>
+		<titleshort><![CDATA[Lesen]]></titleshort>
+		<subjid>327</subjid>
+		<sorting>32184</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>881</uid>
+		<title><![CDATA[An Gesprächen teilnehmen]]></title>
+		<titleshort><![CDATA[An Gesprächen teilnehmen]]></titleshort>
+		<subjid>327</subjid>
+		<sorting>32185</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>882</uid>
+		<title><![CDATA[Zusammenhängend sprechen]]></title>
+		<titleshort><![CDATA[Zusammenhängend sprechen]]></titleshort>
+		<subjid>327</subjid>
+		<sorting>32186</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>883</uid>
+		<title><![CDATA[Schreiben]]></title>
+		<titleshort><![CDATA[Schreiben]]></titleshort>
+		<subjid>327</subjid>
+		<sorting>32187</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>906</uid>
+		<title><![CDATA[Hören]]></title>
+		<titleshort/>
+		<subjid>283</subjid>
+		<sorting>32208</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>907</uid>
+		<title><![CDATA[Lesen]]></title>
+		<titleshort><![CDATA[GERS Lesen]]></titleshort>
+		<subjid>283</subjid>
+		<sorting>32209</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>908</uid>
+		<title><![CDATA[An Gesprächen teilnehmen]]></title>
+		<titleshort><![CDATA[GERS An Gesprächen teilnehmen]]></titleshort>
+		<subjid>283</subjid>
+		<sorting>32210</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>909</uid>
+		<title><![CDATA[Zusammenhängend Sprechen]]></title>
+		<titleshort><![CDATA[Zusammenhängend Sprechen]]></titleshort>
+		<subjid>283</subjid>
+		<sorting>32211</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>910</uid>
+		<title><![CDATA[Schreiben]]></title>
+		<titleshort><![CDATA[Schreiben]]></titleshort>
+		<subjid>283</subjid>
+		<sorting>32212</sorting>
 		<description/>
 	</table>
 	<table name="block_exacompdescriptors">
@@ -4716,7 +4964,7 @@ Darstellungen (Modelle) statistischer Sachverhalte machen und bewerten.]]></titl
 		<uid>634</uid>
 		<title><![CDATA[Die Schülerinnen und Schüler können elementare Rechenoperationen mit konkreten Zahlen und Größen durchfuhren sowie Maßeinheiten umrechnen, wobei diese Operationen miteinander, mit anderen mathematischen Inhalten (Begriffen, Sätzen, Darstellungen) oder Tätigkeiten verbunden werden müssen.]]></title>
 		<niveauid>0</niveauid>
-		<sorting>19968</sorting>
+		<sorting>20224</sorting>
 		<skillid>1</skillid>
 		<parent_id>0</parent_id>
 	</table>
@@ -4725,7 +4973,7 @@ Darstellungen (Modelle) statistischer Sachverhalte machen und bewerten.]]></titl
 		<title><![CDATA[Die Schülerinnen und Schüler können Aussagen zur Abfolge, Wirkung, Zulässigkeit, Genauigkeit und Korrektheit arithmetischer
 Operationen und Lösungswege machen und bewerten sowie Rechenabläufe dokumentieren.]]></title>
 		<niveauid>0</niveauid>
-		<sorting>20224</sorting>
+		<sorting>19968</sorting>
 		<skillid>1</skillid>
 		<parent_id>0</parent_id>
 	</table>
@@ -4821,14 +5069,6 @@ dokumentieren.]]></title>
 		<title><![CDATA[Die Schülerinnen und Schüler können Zahlenwerte aus Tabellen, grafischen oder symbolischen Darstellungen ablesen, sie miteinander, mit anderen mathematischen Inhalten (Begriffen, Sätzen, Darstellungen) oder Tätigkeiten verbinden und sie sowie Rechenoperationen und Rechenergebnisse im jeweiligen Kontext deuten.]]></title>
 		<niveauid>0</niveauid>
 		<sorting>23040</sorting>
-		<skillid>1</skillid>
-		<parent_id>0</parent_id>
-	</table>
-	<table name="block_exacompdescriptors">
-		<uid>647</uid>
-		<title><![CDATA[Die Schülerinnen und Schüler können Aussagen zur Angemessenheit und Aussagekraft kontextbezogener Interpretationen von Zahlenwerten, Rechenoperationen und Rechenergebnisse machen und bewerten.]]></title>
-		<niveauid>0</niveauid>
-		<sorting>23296</sorting>
 		<skillid>1</skillid>
 		<parent_id>0</parent_id>
 	</table>
@@ -17736,6 +17976,1887 @@ Bereich die ich höre bzw. lese, verstehen, verarbeiten und verwenden.]]></title
 		<niveauid>0</niveauid>
 		<sorting>198096</sorting>
 		<skillid>0</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3820</uid>
+		<title><![CDATA[1. Ich kann Gesprächen über vertraute Themen die Hauptpunkte entnehmen, wenn Standardsprache verwendet und auch deutlich
+gesprochen wird. (B1)]]></title>
+		<niveauid>3</niveauid>
+		<sorting>198457</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3825</uid>
+		<title><![CDATA[2. Ich kann Erzählungen aus dem Alltag und Geschichten verstehen,
+wenn es sich um vertraute Themenbereiche handelt und deutlich
+gesprochen wird. (B1)]]></title>
+		<niveauid>3</niveauid>
+		<sorting>198462</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3826</uid>
+		<title><![CDATA[3. Ich kann Anweisungen, Fragen, Auskünfte und Mitteilungen in
+einem sprachlich vertrauten Kontext (z. B. Wegerklärungen)
+meistens verstehen. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198463</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3827</uid>
+		<title><![CDATA[4. Ich kann in Texten (Audio- und Videoaufnahmen) über vertraute
+Themen die Hauptpunkte verstehen, wenn deutlich gesprochen
+wird. (B1)]]></title>
+		<niveauid>3</niveauid>
+		<sorting>198464</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3828</uid>
+		<title><![CDATA[5. Ich kann einfachen Interviews, Berichten, Hörspielen und Sketches
+zu vertrauten Themen folgen. (B1)]]></title>
+		<niveauid>3</niveauid>
+		<sorting>198465</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3829</uid>
+		<title><![CDATA[6. Kann Wörter, die buchstabiert werden, sowie Zahlen und
+Mengenangaben, die diktiert werden, notieren, wenn langsam
+und deutlich gesprochen wird. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198466</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3830</uid>
+		<title><![CDATA[1. Ich kann kurze, einfache persönliche Briefe, Karten oder E-Mails
+verstehen. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198467</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3831</uid>
+		<title><![CDATA[2. Ich kann vertrauten Alltagstexten die wichtigsten Informationen entnehmen (z. B. Prospekten, Speisekarten, Fahrplänen, Schildern, Formularen, kurzen sachlichen Mitteilungen − auch im Internet). (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198468</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3832</uid>
+		<title><![CDATA[3. Ich kann einfachen, klar gegliederten Texten zu vertrauten Themen in Zeitungen und Zeitschriften die wesentlichen Informationen entnehmen, wenn sie gegebenenfalls mit visueller Unterstützung ausgestattet sind. (B1)]]></title>
+		<niveauid>3</niveauid>
+		<sorting>198469</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3833</uid>
+		<title><![CDATA[4. Ich kann unkomplizierte Sachtexte über Themen, die mit den eigenen Interessen und Fachgebieten aus den Themenbereichen des Lehrplans im Zusammenhang stehen, mit befriedigendem Verständnis lesen. (B1)]]></title>
+		<niveauid>3</niveauid>
+		<sorting>198470</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3834</uid>
+		<title><![CDATA[5. Ich kann einfache alltägliche Anleitungen und Vorschriften verstehen. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198471</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3835</uid>
+		<title><![CDATA[6. Ich kann einfache literarische Texte (z. B. fiktionale Texte, Lieder und
+Gedichte) verstehen. (B1)]]></title>
+		<niveauid>3</niveauid>
+		<sorting>198472</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3836</uid>
+		<title><![CDATA[1. Ich kann ein einfaches Gespräch über vertraute Themen (z. B. über Familie, Freundinnen und Freunde, Schule, Freizeit) beginnen, in Gang halten und beenden. (B1)]]></title>
+		<niveauid>3</niveauid>
+		<sorting>198473</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3837</uid>
+		<title><![CDATA[2. Ich kann Gefühle wie Überraschung, Freude, Bedauern und Gleichgültigkeit
+ausdrücken und auf solche Gefühlsäußerungen reagieren. (B1)]]></title>
+		<niveauid>3</niveauid>
+		<sorting>198474</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3838</uid>
+		<title><![CDATA[3. Ich kann in einem Gespräch (z. B. Gruppengespräch in der Klasse) Zustimmung äußern bzw. widersprechen und andere Vorschläge machen. (A2+)]]></title>
+		<niveauid>7</niveauid>
+		<sorting>198475</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3839</uid>
+		<title><![CDATA[4. Ich kann einfache Vereinbarungen treffen. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198476</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3840</uid>
+		<title><![CDATA[5. Ich kann in einfachen Worten die eigenen Ansichten, Pläne und
+Absichten äußern und begründen. (B1)]]></title>
+		<niveauid>3</niveauid>
+		<sorting>198477</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3841</uid>
+		<title><![CDATA[6. Ich kann vertraute Alltagssituationen bewältigen, z. B. Gespräche in Geschäften, in Restaurants und an Schaltern führen. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198478</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3842</uid>
+		<title><![CDATA[7. Kann einfache Erklärungen und Anweisungen geben, z. B. nach dem Weg fragen bzw. den Weg erklären. (A2+)]]></title>
+		<niveauid>7</niveauid>
+		<sorting>198479</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3843</uid>
+		<title><![CDATA[1. Ich kann über eigene Erfahrungen detailliert berichten und dabei die eigenen Gefühle und Reaktionen beschreiben. (B1)]]></title>
+		<niveauid>3</niveauid>
+		<sorting>198480</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3844</uid>
+		<title><![CDATA[2. Ich kann Pläne, Ziele, Träume und Hoffnungen beschreiben. (B1)]]></title>
+		<niveauid>3</niveauid>
+		<sorting>198481</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3845</uid>
+		<title><![CDATA[3. Ich kann etwas Reales oder Erfundenes erzählen oder in Form einer einfachen Aufzählung berichten. (A2+)]]></title>
+		<niveauid>7</niveauid>
+		<sorting>198482</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3846</uid>
+		<title><![CDATA[4. Ich kann über Sachverhalte und Abläufe aus dem eigenen alltäglichen Lebensbereich berichten, z. B. über Leute, Orte, Tätigkeiten. (A2+)]]></title>
+		<niveauid>7</niveauid>
+		<sorting>198483</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3847</uid>
+		<title><![CDATA[5. Ich kann über persönliche Erlebnisse und Beobachtungen in einfachen, zusammenhängenden Sätzen berichten. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198484</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3848</uid>
+		<title><![CDATA[6. Ich kann mit einfachen Mitteln vertraute Gegenstände kurz beschreiben und vergleichen. (A2)]]></title>
+		<niveauid>7</niveauid>
+		<sorting>198485</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3849</uid>
+		<title><![CDATA[7. Ich kann mich, die Familie, Freundinnen und Freunde sowie vertraute Orte, persönliche Gegenstände und Tätigkeiten in mehreren einfachen Sätzen beschreiben. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198486</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3850</uid>
+		<title><![CDATA[8. Ich kann für Ansichten, Pläne oder Handlungen kurze Begründungen oder Erklärungen geben. (B1)]]></title>
+		<niveauid>3</niveauid>
+		<sorting>198487</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3851</uid>
+		<title><![CDATA[1. Ich kann Erfahrungsberichte schreiben, in denen Gefühle und Reaktionen in einem einfachen, zusammenhängenden Text wiedergegeben werden. (B1)]]></title>
+		<niveauid>3</niveauid>
+		<sorting>198488</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3852</uid>
+		<title><![CDATA[2. Ich kann eine Beschreibung eines realen oder fiktiven Ereignisses, z. B. einer Reise, verfassen. (B1)]]></title>
+		<niveauid>3</niveauid>
+		<sorting>198489</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3853</uid>
+		<title><![CDATA[3. Ich kann eine Geschichte erzählen. (B1)]]></title>
+		<niveauid>3</niveauid>
+		<sorting>198490</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3854</uid>
+		<title><![CDATA[4. Ich kann in Form verbundener Sätze etwas über das alltägliche Umfeld schreiben, wie z. B. über Familie, andere Menschen, Orte, Schule. (A2+)]]></title>
+		<niveauid>7</niveauid>
+		<sorting>198491</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3855</uid>
+		<title><![CDATA[5. Ich kann kurze, einfache Biografien und andere einfache fiktionale Texte schreiben. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198492</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3856</uid>
+		<title><![CDATA[6. Ich kann ausführlichere Karten, persönliche Briefe und E-Mails schreiben und darin auch über Ereignisse, Erfahrungen und Gefühle berichten. (B1)]]></title>
+		<niveauid>3</niveauid>
+		<sorting>198493</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3857</uid>
+		<title><![CDATA[7. Ich kann kurze, einfache Notizen und Mitteilungen schreiben, die sich auf unmittelbare Bedürfnisse beziehen. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198494</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>3858</uid>
+		<title><![CDATA[8. Ich kann einfache Texte z. B. zu Bildimpulsen oder Schlüsselwörtern (key words) schreiben. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198495</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4313</uid>
+		<title><![CDATA[Ich kann in ganz einfachen Gesprächen zu mir vertrauten Themen bekannte Wörter und sehr einfache Sätze verstehen. (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198943</sorting>
+		<skillid>1</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4312</uid>
+		<title><![CDATA[Ich kann einzelne Wörter und Sätze erkennen, wenn ich ganz einfache Texte über mir bekannte Themen höre. (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198942</sorting>
+		<skillid>1</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4314</uid>
+		<title><![CDATA[Ich kann kurze, einfache Fragen (z.B. nach meinem Namen, Wohnort) verstehen. (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198944</sorting>
+		<skillid>1</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4315</uid>
+		<title><![CDATA[Ich kann verstehen, worum es geht, wenn ganz einfache Texte über mir bekannte Themen audio-visuell präsentiert werden. (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198945</sorting>
+		<skillid>1</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4316</uid>
+		<title><![CDATA[Ich kann Zahlen, Preis- und Zeitangaben verstehen. (A1)
+]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198946</sorting>
+		<skillid>1</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4317</uid>
+		<title><![CDATA[Ich kann kurze, ganz einfache Anweisungen und Erklärungen (z.B. Wegbeschreibungen, Arbeitsanweisungen,…) verstehen und ihnen folgen. (A1)
+]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198947</sorting>
+		<skillid>1</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4318</uid>
+		<title><![CDATA[Ich kann einfache Erklärungen verstehen (z.B. wie man zu Fuß oder mit öffentlichen Verkehrsmitteln an einen Ort gelangt). (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198948</sorting>
+		<skillid>1</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4319</uid>
+		<title><![CDATA[Ich kann das Wesentliche von kurzen, klaren und einfachen Durchsagen (z.B. am Bahnhof, am Flughafen, in der Werkstätte) und Mitteilungen erfassen. (A2)
+]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198949</sorting>
+		<skillid>1</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4320</uid>
+		<title><![CDATA[Ich kann die Hauptinformationen von Fernsehsendungen über Ereignisse, Personen, Orte,… erfassen, wenn Bilder mir dabei helfen. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198950</sorting>
+		<skillid>1</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4321</uid>
+		<title><![CDATA[Ich kann erkennen, worum es in einfachen Gesprächen geht, wenn mir das Thema vertraut ist und deutlich gesprochen wird. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198951</sorting>
+		<skillid>1</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4322</uid>
+		<title><![CDATA[Ich kann den Sinn einer einfachen Geschichte, eines einfachen Liedtextes, einer gespielten Szene erfassen. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198952</sorting>
+		<skillid>1</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4323</uid>
+		<title><![CDATA[Ich kann kurzen und deutlich gesprochenen Texten auf Tonträgern die wesentlichen Informationen entnehmen, wenn es um vorhersehbare alltägliche Dinge (z.B. Wetterbericht) geht. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198953</sorting>
+		<skillid>1</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4324</uid>
+		<title><![CDATA[Ich kann Anweisungen, Fragen und Auskünfte in Alltags-, Ausbildungs- und Berufssituation im Wesentlichen verstehen. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198954</sorting>
+		<skillid>1</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4325</uid>
+		<title><![CDATA[Ich kann einfachen Beschreibungen von Vorgängen und Arbeitsabläufen im Wesentlichen folgen (z.B. Sicherheitsanweisungen, Bedienungsanleitungen, Kochrezepte). (A2)
+]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198955</sorting>
+		<skillid>1</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4326</uid>
+		<title><![CDATA[Ich kann kurze, einfache Mitteilungen (Mail, Postkarte) verstehen. (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198956</sorting>
+		<skillid>3</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4327</uid>
+		<title><![CDATA[Ich kann bekannte Namen, Wörter und sehr einfache Redewendungen in einfachen Mitteilungen in den häufigsten Alltagssituation erkennen. (A1)
+]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198957</sorting>
+		<skillid>3</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4328</uid>
+		<title><![CDATA[Ich kann die Grundaussagen eines einfachen Informationstextes und kurzer, einfacher Beschreibungen verstehen, insbesondere wenn diese Bilder enthalten, die den Text erklären. (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198958</sorting>
+		<skillid>3</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4329</uid>
+		<title><![CDATA[Ich kann sehr kurze, einfache Texte mit bekannten Namen, Wörtern und grundlegenden Redewendungen verstehen, wenn ich zum Beispiel Teile des Textes noch einmal lese. (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198959</sorting>
+		<skillid>3</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4330</uid>
+		<title><![CDATA[Ich kann einfache Formulare (z.B. bei der Anmeldung im Hotel) soweit verstehen, dass ich die wichtigsten Angaben zu meiner Person machen kann (z.B. Name, Geburtsdatum…). (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198960</sorting>
+		<skillid>3</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4331</uid>
+		<title><![CDATA[Ich kann einfache Arbeitsanleitungen in meiner Ausbildung oder in meinem Berufsfeld verstehen. (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198961</sorting>
+		<skillid>3</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4332</uid>
+		<title><![CDATA[Ich kann einfache Geschichten, Dialoge und Gedichte im Wesentlichen verstehen, auch wenn ich nicht alle Wörter kenne. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198962</sorting>
+		<skillid>3</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4333</uid>
+		<title><![CDATA[Ich kann kurze einfache persönliche Briefe, Karten, E-Mails und SMS verstehen. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198963</sorting>
+		<skillid>3</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4334</uid>
+		<title><![CDATA[Ich kann einfachen Alltagstexten, die sich auf vertraute Situationen beziehen, die wichtigsten Informationen entnehmen (z.B. Prospekte, Broschüren Speisekarten, Plakaten, Anzeigen). (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198964</sorting>
+		<skillid>3</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4335</uid>
+		<title><![CDATA[Ich kann einfache Sachtexte (z.B. Beschreibungen) verstehen, wenn Bilder oder Grafiken den Inhalt unterstützen. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198965</sorting>
+		<skillid>3</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4336</uid>
+		<title><![CDATA[Ich kann einfache Texte und Meldungen im Internet, in Computerprogrammen und Computerspielen verstehen. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198966</sorting>
+		<skillid>3</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4337</uid>
+		<title><![CDATA[Ich kann wenn ich mit dem Thema vertraut bin, einfache Geschichten, Gedichte und Dialoge im Wesentlichen verstehen, auch wenn ich nicht alle Wörter kenne. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198967</sorting>
+		<skillid>3</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4339</uid>
+		<title><![CDATA[Ich kann kurze oder vereinfachte Texte aus literarischen Quellen, Unterhaltungs- und Nachrichtenmedien verstehen. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198969</sorting>
+		<skillid>3</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4340</uid>
+		<title><![CDATA[Ich kann Arbeitsanleitungen in meiner Ausbildung und schriftliche Anmerkungen zu meinen eigenen Arbeiten verstehen. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198970</sorting>
+		<skillid>3</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4341</uid>
+		<title><![CDATA[Ich kann grüßen, mich verabschieden und mich oder jemanden anderen vorstellen. (A1)
+]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198971</sorting>
+		<skillid>4</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4342</uid>
+		<title><![CDATA[Ich kann einfache Fragen nach Wohnort, Dingen und Hobbys stellen und solche Fragen beantworten. (A1)
+]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198972</sorting>
+		<skillid>4</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4343</uid>
+		<title><![CDATA[Ich kann andere fragen, wie es ihnen geht, und sagen, wie ich mich fühle. (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198973</sorting>
+		<skillid>4</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4344</uid>
+		<title><![CDATA[Ich kann einfachste Einkaufsgespräche führen und, wenn es möglich ist, durch Zeigen oder andere Gesten verdeutlichen, was ich will. (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198974</sorting>
+		<skillid>4</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4345</uid>
+		<title><![CDATA[Ich kann mit Zahlen umgehen, z.B. nach Telefonnummer / Uhrzeit / Preis fragen und auf diese Fragen antworten. (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198975</sorting>
+		<skillid>4</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4346</uid>
+		<title><![CDATA[Ich kann in Alltagssituationen und Rollenspielen vertraute Gegenstände benennen, einfache Anweisungen geben und einfache Rollen übernehmen. (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198976</sorting>
+		<skillid>4</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4347</uid>
+		<title><![CDATA[Ich kann um etwas bitten, mich bedanken und entschuldigen. (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198977</sorting>
+		<skillid>4</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4348</uid>
+		<title><![CDATA[Ich kann sagen, dass ich etwas nicht verstanden habe, nachfragen und um Wiederholung bitten. (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198978</sorting>
+		<skillid>4</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4349</uid>
+		<title><![CDATA[Ich kann vertraute Namen und Adressen buchstabieren. (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198979</sorting>
+		<skillid>4</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4350</uid>
+		<title><![CDATA[Ich kann sagen, was ich gerne habe und was nicht und andere danach fragen. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198980</sorting>
+		<skillid>4</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4351</uid>
+		<title><![CDATA[Ich kann nach dem Weg fragen und mit einer Karte oder einem Plan den Weg erklären. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198981</sorting>
+		<skillid>4</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4352</uid>
+		<title><![CDATA[Ich kann an einfachen Gesprächen teilnehmen (z.B. über Freizeit, Familie, Freundes- und Bekanntenkreis, Freizeit,…) und dabei zeigen, dass ich mich für das interessiere, was mir jemand sagt. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198982</sorting>
+		<skillid>4</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4353</uid>
+		<title><![CDATA[Ich kann in einfachen Worten meine Meinung zu einem bestimmten Thema sagen. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198983</sorting>
+		<skillid>4</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4354</uid>
+		<title><![CDATA[Ich kann sagen, ob ich mit etwas einverstanden bin oder nicht, und wenn nötig einen anderen Vorschlag machen. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198984</sorting>
+		<skillid>4</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4355</uid>
+		<title><![CDATA[Ich kann Einkäufe machen und nach etwas fragen, wobei ich mir manchmal auch durch Zeigen oder andere Gesten helfe. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198985</sorting>
+		<skillid>4</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4356</uid>
+		<title><![CDATA[Ich kann im direkten Gespräch und am Telefon Vorhaben besprechen sowie Termine und Treffen vereinbaren. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198986</sorting>
+		<skillid>4</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4357</uid>
+		<title><![CDATA[Ich kann eine Rolle in einem Dialog oder einer Simulation übernehmen. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198987</sorting>
+		<skillid>4</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4358</uid>
+		<title><![CDATA[Ich kann in ganz kurzen, eingeübten Einzelsätzen mitteilen, wo ich wohne.  (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198988</sorting>
+		<skillid>5</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4359</uid>
+		<title><![CDATA[Ich kann mich, meine Familie und meinen Freundes- und Bekanntenkreis in einzelnen, ganz kurzen Sätzen beschreiben. (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198989</sorting>
+		<skillid>5</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4360</uid>
+		<title><![CDATA[Ich kann in ganz kurzen, eingeübten Einzelsätzen darüber informieren, welche Ausbildung ich mache oder welchem Beruf ich nachgehe. (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198990</sorting>
+		<skillid>5</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4361</uid>
+		<title><![CDATA[Ich kann jemanden (z.B. einen Redner oder einen Gast) in kurzen, eingeübten Sätzen vorstellen. (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198991</sorting>
+		<skillid>5</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4362</uid>
+		<title><![CDATA[Ich kann Zahlen wiedergeben (z.B. Telefonnummern). (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>198992</sorting>
+		<skillid>5</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4363</uid>
+		<title><![CDATA[Ich kann auf einfache Art Gegenstände, Geräte und deren Funktion beschreiben. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198993</sorting>
+		<skillid>5</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4364</uid>
+		<title><![CDATA[Ich kann einfache Berechnungen (z.B. 3,5 mal 2 ist 7) wiedergeben und einfache Formeln beschreiben. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198994</sorting>
+		<skillid>5</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4365</uid>
+		<title><![CDATA[Ich kann in mehreren einfachen Sätzen über gewohnheitsmäßige und geplante Aktivitäten (z.B. Interessen, Arbeitsplan, Tagesablauf, Wochenende, …) berichten. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198995</sorting>
+		<skillid>5</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4366</uid>
+		<title><![CDATA[Ich kann mir vertraute Orte (z.B. meinen Wohnort, meinen Urlaubsort,…) in einfachen Sätzen beschreiben. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198996</sorting>
+		<skillid>5</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4367</uid>
+		<title><![CDATA[Ich kann mit Hilfe vorgegebener Illustrationen oder Wörter einfache Geschichten oder Beschreibungen von Abläufen vorbereiten und erzählen. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198997</sorting>
+		<skillid>5</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4368</uid>
+		<title><![CDATA[Ich kann von Ereignissen, persönlichen Erlebnissen und Erfahrungen berichten, wenn ich mich darauf vorbereiten kann. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198998</sorting>
+		<skillid>5</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4369</uid>
+		<title><![CDATA[Ich kann kurze Ausschnitte aus gelesenen oder gehörten Texten in mehreren Sätzen wiedergeben. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>198999</sorting>
+		<skillid>5</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4370</uid>
+		<title><![CDATA[Ich kann eine eingeübte, kurze, einfache Präsentation zu einem Thema vortragen, das mir vertraut ist. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199000</sorting>
+		<skillid>5</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4371</uid>
+		<title><![CDATA[Ich kann ganz kurze Einzelsätze über mich, meine Familie und meinen Freundes- und Bekanntenkreis schreiben. (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>199001</sorting>
+		<skillid>2</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4372</uid>
+		<title><![CDATA[Ich kann in einfachen Sätzen darüber schreiben, was ich (beruflich) tue und wo ich wohne. (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>199002</sorting>
+		<skillid>2</skillid>
+		<parent_id>4382</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4373</uid>
+		<title><![CDATA[Ich kann Wörter und Sätze richtig abschreiben. (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>199003</sorting>
+		<skillid>2</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4374</uid>
+		<title><![CDATA[Ich kann aus vorgegebenen Wörtern einfache Sätze bilden und aufschreiben. (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>199004</sorting>
+		<skillid>2</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4375</uid>
+		<title><![CDATA[Ich kann bei einer Internetrecherche einfache Suchbegriffe formulieren. (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>199005</sorting>
+		<skillid>2</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4376</uid>
+		<title><![CDATA[Ich kann Listen schreiben und einfache Angaben vervollständigen. (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>199006</sorting>
+		<skillid>2</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4377</uid>
+		<title><![CDATA[Ich kann einfache Mitteilungen schreiben (z.B. E-Mails, Postkarten). (A1)]]></title>
+		<niveauid>1</niveauid>
+		<sorting>199007</sorting>
+		<skillid>2</skillid>
+		<parent_id>4699</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4378</uid>
+		<title><![CDATA[Ich kann über meine Familie, mein Umfeld, meine Ausbildung und meine gegenwärtige Tätigkeit schreiben. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199008</sorting>
+		<skillid>2</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4379</uid>
+		<title><![CDATA[Ich kann einen kurzen, einfachen Text über ein persönliches Erlebnis oder eine Erfahrung (in der Vergangenheit) schreiben. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199009</sorting>
+		<skillid>2</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4380</uid>
+		<title><![CDATA[Ich kann meine Wohn- und Lebensverhältnisse in einfachen Sätzen beschreiben. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199010</sorting>
+		<skillid>2</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4381</uid>
+		<title><![CDATA[Ich kann Ansichtskarten, kurze Briefe und E-Mails schreiben, um etwas mitzuteilen, mich zu bedanken, mich entschuldigen oder Fragen zu beantworten. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199011</sorting>
+		<skillid>2</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4382</uid>
+		<title><![CDATA[Ich kann mit Hilfe von vorgegebenen Wörtern, Illustrationen oder Filmmaterial eine kurze, einfache Geschichte schreiben oder Vorgänge und Abläufe beschreiben. (A2)]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199012</sorting>
+		<skillid>2</skillid>
+		<parent_id>4700</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4559</uid>
+		<title><![CDATA[Ich kann kurze, klare Mitteilungen, Anweisungen, Fragen und
+Auskünfte erfassen]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199189</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4558</uid>
+		<title><![CDATA[Ich kann kurze, einfache Äußerungen in Standardsprache verstehen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199188</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4560</uid>
+		<title><![CDATA[Ich kann im Allgemeinen bekannte Themen in Gesprächen
+wieder erkennen, die in seiner/ihrer Gegenwart geführt werden,
+wenn langsam und deutlich gesprochen wird.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199190</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4561</uid>
+		<title><![CDATA[Ich kann in einfachen, kurzen Berichten, Geschichten oder Beschreibungen
+zu bekannten Themen das Wesentliche erfassen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199191</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4562</uid>
+		<title><![CDATA[Ich kann die Hauptinformation von Fernsehberichten zu vertrauten
+Themen erfassen, wenn das Gesagte durch das Bild unterstützt
+wird.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199192</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4563</uid>
+		<title><![CDATA[Ich kann Wörter, die buchstabiert werden, sowie Zahlen und
+Mengenangaben, die diktiert werden, notieren, wenn langsam
+und deutlich gesprochen wird.]]></title>
+		<niveauid>1</niveauid>
+		<sorting>199193</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4564</uid>
+		<title><![CDATA[Ich kann kurze, einfache Texte zu vertrauten Themen verstehen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199194</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4565</uid>
+		<title><![CDATA[Ich kann Notizen, kurze Mitteilungen und einfache persönliche
+Briefe oder E-Mails verstehen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199195</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4567</uid>
+		<title><![CDATA[Ich kann konkrete Informationen in einfachen Alltagstexten auffinden.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199197</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4568</uid>
+		<title><![CDATA[Ich kann einfachen Berichten und Ankündigungen spezifische
+Informationen entnehmen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199198</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4569</uid>
+		<title><![CDATA[Ich kann die Gesamtaussage kurzer Texte zu alltäglichen Themen
+verstehen, indem die Bedeutung neuer Wörter aus dem Zusammenhang
+erschlossen wird.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199199</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4571</uid>
+		<title><![CDATA[Ich kann mich in einfachen routinemäßigen Situationen verständigen,
+in denen es um einen einfachen und direkten Austausch von Informationen
+über vertraute und geläufige Dinge geht.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199201</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4572</uid>
+		<title><![CDATA[Ich kann mit einfachen Mitteln sich selbst, die direkte Umgebung und Dinge im Zusammenhang mit unmittelbaren Bedürfnissen beschreiben.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199202</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4573</uid>
+		<title><![CDATA[Ich kann sehr kurze Kontaktgespräche mit einfachen Fragen und Antworten führen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199203</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4574</uid>
+		<title><![CDATA[Ich kann einfache „Kontaktgespräche“ führen.]]></title>
+		<niveauid>1</niveauid>
+		<sorting>199204</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4575</uid>
+		<title><![CDATA[Ich kann fragen, was jemand in der Schule, in der Arbeit und in
+der Freizeit macht oder gemacht hat, und kann entsprechende
+Fragen beantworten.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199205</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4576</uid>
+		<title><![CDATA[Ich kann Vorschläge machen und darauf reagieren, Aussagen auf einfache Art kommentieren,
+sowie Vereinbarungen treffen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199206</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4577</uid>
+		<title><![CDATA[Ich kann die gängigsten Gesprächsfloskeln benützen und darauf reagieren.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199207</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4578</uid>
+		<title><![CDATA[Ich kann einfache Erledigungen und Bestellungen machen und um einfache Auskünfte bitten.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199208</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4579</uid>
+		<title><![CDATA[Ich kann über Vorlieben und Abneigungen sprechen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199209</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4580</uid>
+		<title><![CDATA[Ich kann nach kurzer Vorbereitung in mehreren Sätzen über einige
+Themen des täglichen Lebens Auskunft geben.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199210</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4581</uid>
+		<title><![CDATA[Ich kann in kurzen, einfachen Sätzen vorstellen und seine
+Gewohnheiten, Vorlieben, Abneigungen und Hobbys aufzählen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199211</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4582</uid>
+		<title><![CDATA[Ich kann mit einfachen Worten vertraute Personen, Orte und Gegenstände
+beschreiben.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199212</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4583</uid>
+		<title><![CDATA[Ich kann über persönliche Erlebnisse und Beobachtungen in einfachen,
+zusammenhängenden Sätzen berichten.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199213</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4584</uid>
+		<title><![CDATA[Ich kann eine kurze, vorbereitete Präsentation zu einem vertrauten
+Thema vortragen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199214</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4585</uid>
+		<title><![CDATA[Ich kann einfache Texte zu vertrauten Themen schreiben.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199215</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4586</uid>
+		<title><![CDATA[Ich kann einfache, kurze Glückwunschkarten, Urlaubsgrüße
+schreiben.]]></title>
+		<niveauid>1</niveauid>
+		<sorting>199216</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4587</uid>
+		<title><![CDATA[Ich kann kurze persönliche Briefe und E-Mails mit einfachen
+Inhalten schreiben.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199217</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4588</uid>
+		<title><![CDATA[Ich kann kurze, einfache Notizen und Mitteilungen schreiben, die
+sich auf unmittelbare Bedürfnisse beziehen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199218</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4589</uid>
+		<title><![CDATA[Ich kann kurze, einfache Berichte und Geschichten über vertraute
+Themen und vergangene Ereignisse schreiben und darin die zeitliche Abfolge ausdrücken.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199219</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4590</uid>
+		<title><![CDATA[Ich kann sich selbst, andere Personen, vertraute Gegenstände und
+Orte in einfachen, zusammenhängenden Sätzen beschreiben.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199220</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4591</uid>
+		<title><![CDATA[Ich kann einfache Formulare und Steckbriefe ausfüllen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199221</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4594</uid>
+		<title><![CDATA[Ich kann kurze, einfache Äußerungen in Standardsprache verstehen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199224</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4595</uid>
+		<title><![CDATA[Ich kann kurze, klare Mitteilungen, Anweisungen, Fragen und
+Auskünfte erfassen]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199225</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4596</uid>
+		<title><![CDATA[Ich kann im Allgemeinen bekannte Themen in Gesprächen
+wieder erkennen, die in seiner/ihrer Gegenwart geführt werden,
+wenn langsam und deutlich gesprochen wird.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199226</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4597</uid>
+		<title><![CDATA[Ich kann in einfachen, kurzen Berichten, Geschichten oder Beschreibungen
+zu bekannten Themen das Wesentliche erfassen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199227</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4598</uid>
+		<title><![CDATA[Ich kann die Hauptinformation von Fernsehberichten zu vertrauten
+Themen erfassen, wenn das Gesagte durch das Bild unterstützt
+wird.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199228</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4599</uid>
+		<title><![CDATA[Ich kann Wörter, die buchstabiert werden, sowie Zahlen und
+Mengenangaben, die diktiert werden, notieren, wenn langsam
+und deutlich gesprochen wird.]]></title>
+		<niveauid>1</niveauid>
+		<sorting>199229</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4600</uid>
+		<title><![CDATA[Ich kann kurze, einfache Texte zu vertrauten Themen verstehen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199230</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4601</uid>
+		<title><![CDATA[Ich kann Notizen, kurze Mitteilungen und einfache persönliche
+Briefe oder E-Mails verstehen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199231</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4602</uid>
+		<title><![CDATA[Ich kann konkrete Informationen in einfachen Alltagstexten auffinden.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199232</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4603</uid>
+		<title><![CDATA[Ich kann einfachen Berichten und Ankündigungen spezifische
+Informationen entnehmen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199233</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4604</uid>
+		<title><![CDATA[Ich kann die Gesamtaussage kurzer Texte zu alltäglichen Themen
+verstehen, indem die Bedeutung neuer Wörter aus dem Zusammenhang
+erschlossen wird.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199234</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4606</uid>
+		<title><![CDATA[Ich kann mich in einfachen routinemäßigen Situationen verständigen,
+in denen es um einen einfachen und direkten Austausch von Informationen
+über vertraute und geläufige Dinge geht.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199236</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4607</uid>
+		<title><![CDATA[Ich kann mit
+einfachen Mitteln sich selbst, die direkte Umgebung und Dinge im Zusammenhang
+mit unmittelbaren Bedürfnissen beschreiben.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199237</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4608</uid>
+		<title><![CDATA[Ich kann sehr
+kurze Kontaktgespräche mit einfachen Fragen und Antworten führen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199238</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4609</uid>
+		<title><![CDATA[Ich kann einfache „Kontaktgespräche“ führen.]]></title>
+		<niveauid>1</niveauid>
+		<sorting>199239</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4610</uid>
+		<title><![CDATA[Ich kann fragen, was jemand in der Schule, in der Arbeit und in
+der Freizeit macht oder gemacht hat, und kann entsprechende
+Fragen beantworten.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199240</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4611</uid>
+		<title><![CDATA[Ich kann Vorschläge machen
+und darauf reagieren, Aussagen auf einfache Art kommentieren,
+sowie Vereinbarungen treffen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199241</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4612</uid>
+		<title><![CDATA[Ich kann die gängigsten Gesprächsfloskeln benützen und darauf
+reagieren.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199242</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4613</uid>
+		<title><![CDATA[Ich kann einfache Erledigungen und Bestellungen machen und um einfache Auskünfte bitten.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199243</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4614</uid>
+		<title><![CDATA[Ich kann über Vorlieben und Abneigungen sprechen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199244</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4615</uid>
+		<title><![CDATA[Ich kann nach kurzer Vorbereitung in mehreren Sätzen über einige
+Themen des täglichen Lebens Auskunft geben.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199245</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4616</uid>
+		<title><![CDATA[Ich kann sich in kurzen, einfachen Sätzen vorstellen und seine
+Gewohnheiten, Vorlieben, Abneigungen und Hobbys aufzählen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199246</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4617</uid>
+		<title><![CDATA[Ich kann mit einfachen Worten vertraute Personen, Orte und Gegenstände
+beschreiben.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199247</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4618</uid>
+		<title><![CDATA[Ich kann über persönliche Erlebnisse und Beobachtungen in einfachen,
+zusammenhängenden Sätzen berichten.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199248</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4619</uid>
+		<title><![CDATA[Ich kann eine kurze, vorbereitete Präsentation zu einem vertrauten
+Thema vortragen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199249</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4620</uid>
+		<title><![CDATA[Ich kann einfache Texte zu vertrauten Themen schreiben.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199250</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4621</uid>
+		<title><![CDATA[Ich kann einfache, kurze Glückwunschkarten, Urlaubsgrüße
+schreiben.]]></title>
+		<niveauid>1</niveauid>
+		<sorting>199251</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4622</uid>
+		<title><![CDATA[Ich kann kurze persönliche Briefe und E-Mails mit einfachen
+Inhalten schreiben.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199252</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4623</uid>
+		<title><![CDATA[Ich kann kurze, einfache Notizen und Mitteilungen schreiben, die
+sich auf unmittelbare Bedürfnisse beziehen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199253</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4624</uid>
+		<title><![CDATA[Ich kann kurze, einfache Berichte und Geschichten über vertraute
+Themen und vergangene Ereignisse schreiben und darin die zeitliche Abfolge ausdrücken.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199254</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4625</uid>
+		<title><![CDATA[Ich kann sich selbst, andere Personen, vertraute Gegenstände und
+Orte in einfachen, zusammenhängenden Sätzen beschreiben.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199255</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4626</uid>
+		<title><![CDATA[Ich kann einfache Formulare und Steckbriefe ausfüllen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199256</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4627</uid>
+		<title><![CDATA[Ich kann kurze, einfache Äußerungen in Standardsprache verstehen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199257</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4628</uid>
+		<title><![CDATA[Ich kann kurze, klare Mitteilungen, Anweisungen, Fragen und
+Auskünfte erfassen]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199258</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4629</uid>
+		<title><![CDATA[Ich kann im Allgemeinen bekannte Themen in Gesprächen
+wieder erkennen, die in seiner/ihrer Gegenwart geführt werden,
+wenn langsam und deutlich gesprochen wird.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199259</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4630</uid>
+		<title><![CDATA[Ich kann in einfachen, kurzen Berichten, Geschichten oder Beschreibungen
+zu bekannten Themen das Wesentliche erfassen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199260</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4632</uid>
+		<title><![CDATA[Ich kann die Hauptinformation von Fernsehberichten zu vertrauten
+Themen erfassen, wenn das Gesagte durch das Bild unterstützt
+wird.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199262</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4633</uid>
+		<title><![CDATA[Ich kann Wörter, die buchstabiert werden, sowie Zahlen und
+Mengenangaben, die diktiert werden, notieren, wenn langsam
+und deutlich gesprochen wird.]]></title>
+		<niveauid>1</niveauid>
+		<sorting>199263</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4634</uid>
+		<title><![CDATA[Ich kann kurze, einfache Texte zu vertrauten Themen verstehen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199264</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4635</uid>
+		<title><![CDATA[Ich kann Notizen, kurze Mitteilungen und einfache persönliche
+Briefe oder E-Mails verstehen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199265</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4637</uid>
+		<title><![CDATA[Ich kann konkrete Informationen in einfachen Alltagstexten auffinden.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199267</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4638</uid>
+		<title><![CDATA[Ich kann einfachen Berichten und Ankündigungen spezifische
+Informationen entnehmen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199268</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4639</uid>
+		<title><![CDATA[Ich kann die Gesamtaussage kurzer Texte zu alltäglichen Themen
+verstehen, indem die Bedeutung neuer Wörter aus dem Zusammenhang
+erschlossen wird.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199269</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4640</uid>
+		<title><![CDATA[Ich kann mich in einfachen routinemäßigen Situationen verständigen,
+in denen es um einen einfachen und direkten Austausch von Informationen
+über vertraute und geläufige Dinge geht.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199270</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4641</uid>
+		<title><![CDATA[Ich kann mit
+einfachen Mitteln sich selbst, die direkte Umgebung und Dinge im Zusammenhang
+mit unmittelbaren Bedürfnissen beschreiben.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199271</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4642</uid>
+		<title><![CDATA[Ich kann sehr
+kurze Kontaktgespräche mit einfachen Fragen und Antworten führen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199272</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4643</uid>
+		<title><![CDATA[Ich kann einfache „Kontaktgespräche“ führen.]]></title>
+		<niveauid>1</niveauid>
+		<sorting>199273</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4644</uid>
+		<title><![CDATA[Ich kann fragen, was jemand in der Schule, in der Arbeit und in
+der Freizeit macht oder gemacht hat, und kann entsprechende
+Fragen beantworten.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199274</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4645</uid>
+		<title><![CDATA[Ich kann Vorschläge machen
+und darauf reagieren, Aussagen auf einfache Art kommentieren,
+sowie Vereinbarungen treffen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199275</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4646</uid>
+		<title><![CDATA[Ich kann die gängigsten Gesprächsfloskeln benützen und darauf
+reagieren.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199276</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4647</uid>
+		<title><![CDATA[Ich kann einfache Erledigungen und Bestellungen machen und um einfache Auskünfte bitten.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199277</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4648</uid>
+		<title><![CDATA[Ich kann über Vorlieben und Abneigungen sprechen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199278</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4649</uid>
+		<title><![CDATA[Ich kann nach kurzer Vorbereitung in mehreren Sätzen über einige
+Themen des täglichen Lebens Auskunft geben.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199279</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4650</uid>
+		<title><![CDATA[Ich kann sich in kurzen, einfachen Sätzen vorstellen und seine
+Gewohnheiten, Vorlieben, Abneigungen und Hobbys aufzählen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199280</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4651</uid>
+		<title><![CDATA[Ich kann mit einfachen Worten vertraute Personen, Orte und Gegenstände
+beschreiben.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199281</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4652</uid>
+		<title><![CDATA[Ich kann über persönliche Erlebnisse und Beobachtungen in einfachen,
+zusammenhängenden Sätzen berichten.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199282</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4653</uid>
+		<title><![CDATA[Ich kann eine kurze, vorbereitete Präsentation zu einem vertrauten
+Thema vortragen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199283</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4655</uid>
+		<title><![CDATA[Ich kann einfache Texte zu vertrauten Themen schreiben.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199285</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4656</uid>
+		<title><![CDATA[Ich kann einfache, kurze Glückwunschkarten, Urlaubsgrüße
+schreiben.]]></title>
+		<niveauid>1</niveauid>
+		<sorting>199286</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4657</uid>
+		<title><![CDATA[Ich kann kurze persönliche Briefe und E-Mails mit einfachen
+Inhalten schreiben.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199287</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4659</uid>
+		<title><![CDATA[Ich kann kurze, einfache Notizen und Mitteilungen schreiben, die
+sich auf unmittelbare Bedürfnisse beziehen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199289</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4660</uid>
+		<title><![CDATA[Ich kann kurze, einfache Berichte und Geschichten über vertraute
+Themen und vergangene Ereignisse 
+schreiben und darin die zeitliche Abfolge ausdrücken.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199290</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4661</uid>
+		<title><![CDATA[Ich kann mich selbst, andere Personen, vertraute Gegenstände und
+Orte in einfachen, zusammenhängenden Sätzen beschreiben.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199291</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4662</uid>
+		<title><![CDATA[Ich kann einfache Formulare und Steckbriefe ausfüllen.]]></title>
+		<niveauid>2</niveauid>
+		<sorting>199292</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4706</uid>
+		<title><![CDATA[Ich habe keinerlei Schwierigkeit, gesprochene Sprache zu verstehen, gleichgültig ob 'live' oder in den Medien, und zwar auch, wenn schnell gesprochen wird. Ich brauche nur etwas Zeit, mich an einen besonderen Akzent zu gewöhnen. (C2)]]></title>
+		<niveauid>14</niveauid>
+		<sorting>199335</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4703</uid>
+		<title><![CDATA[Ich kann die Hauptpunkte verstehen, wenn klare Standardsprache verwendet wird und wenn es um vertraute Dinge aus Arbeit, Schule, Freizeit usw. geht. Ich kann vielen Radio- oder Fernsehsendungen über aktuelle Ereignisse und über Themen aus meinem Berufs- oder Interessengebiet die Hauptinformation entnehmen, wenn relativ langsam und deutlich gesprochen wird. (B1)]]></title>
+		<niveauid>3</niveauid>
+		<sorting>199332</sorting>
+		<skillid>1</skillid>
+		<parent_id>4701</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4704</uid>
+		<title><![CDATA[Ich kann längere Redebeiträge und Vorträge verstehen und auch komplexer Argumentation folgen, wenn mir das Thema einigermaßen vertraut ist. Ich kann am Fernsehen die meisten Nachrichtensendungen und aktuellen Reportagen verstehen. Ich kann die meisten Spielfilme verstehen, sofern Standardsprache gesprochen wird. (B2)]]></title>
+		<niveauid>4</niveauid>
+		<sorting>199333</sorting>
+		<skillid>1</skillid>
+		<parent_id>4702</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4705</uid>
+		<title><![CDATA[Ich kann längeren Redebeiträgen folgen, auch wenn diese nicht klar strukturiert sind und wenn Zusammenhänge nicht explizit ausgedrückt sind. Ich kann ohne allzu große Mühe Fernsehsendungen und Spielfilme verstehen. (C1)]]></title>
+		<niveauid>13</niveauid>
+		<sorting>199334</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4707</uid>
+		<title><![CDATA[Ich kann Texte verstehen, in denen vor allem sehr gebräuchliche Alltags? oder Berufssprache vorkommt. Ich kann private Briefe verstehen, in denen von Ereignissen, Gefühlen und Wünschen berichtet wird. (B1)]]></title>
+		<niveauid>3</niveauid>
+		<sorting>199336</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4708</uid>
+		<title><![CDATA[Ich kann Artikel und Berichte über Probleme der Gegenwart lesen und verstehen, in denen die Schreibenden eine bestimmte Haltung oder einen bestimmten Standpunkt vertreten. Ich kann zeitgenössische literarische Prosatexte verstehen. (B2)]]></title>
+		<niveauid>4</niveauid>
+		<sorting>199337</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4709</uid>
+		<title><![CDATA[Ich kann lange, komplexe Sachtexte und literarische Texte verstehen und Stilunterschiede wahrnehmen. Ich kann Fachartikel und längere technische Anleitungen verstehen, auch wenn sie nicht in meinem Fachgebiet liegen. (C1)]]></title>
+		<niveauid>13</niveauid>
+		<sorting>199338</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4710</uid>
+		<title><![CDATA[Ich kann praktisch jede Art von geschriebenen Texten mühelos lesen, auch wenn sie abstrakt oder inhaltlich und sprachlich komplex sind, z. B. Handbücher, Fachartikel und literarische Werke. (C2)]]></title>
+		<niveauid>14</niveauid>
+		<sorting>199339</sorting>
+		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4711</uid>
+		<title><![CDATA[Ich kann die meisten Situationen bewältigen, denen man auf Reisen im Sprachgebiet begegnet. Ich kann ohne Vorbereitung an Gesprächen über Themen teilnehmen, die mir vertraut sind, die mich persönlich interessieren oder die sich auf Themen des Alltags wie Familie, Hobbys, Arbeit, Reisen, aktuelle Ereignisse beziehen. (B1)]]></title>
+		<niveauid>3</niveauid>
+		<sorting>199340</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4712</uid>
+		<title><![CDATA[Ich kann mich so spontan und fließend verständigen, dass ein normales Gespräch mit einem Muttersprachler recht gut möglich ist. Ich kann mich in vertrauten Situationen aktiv an einer Diskussion beteiligen und meine Ansichten begründen und verteidigen. (B2)]]></title>
+		<niveauid>4</niveauid>
+		<sorting>199341</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4713</uid>
+		<title><![CDATA[Ich kann mich spontan und fließend ausdrücken, ohne öfter deutlich erkennbar nach Worten suchen zu müssen. Ich kann die Sprache im gesellschaftlichen und beruflichen Leben wirksam und flexibel gebrauchen. Ich kann meine Gedanken und Meinungen präzise ausdrücken und meine eigenen Beiträge geschickt mit denen anderer verknüpfen. (C1)]]></title>
+		<niveauid>13</niveauid>
+		<sorting>199342</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4714</uid>
+		<title><![CDATA[Ich kann mich mühelos an allen Gesprächen und Diskussionen beteiligen und bin auch mit Redewendungen und umgangssprachlichen Wendungen gut vertraut. Ich kann fließend sprechen und auch feinere Bedeutungsnuancen genau ausdrücken. Bei Ausdrucksschwierigkeiten kann ich so reibungslos wieder ansetzen und umformulieren, dass man es kaum merkt. (C2)]]></title>
+		<niveauid>14</niveauid>
+		<sorting>199343</sorting>
+		<skillid>4</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4715</uid>
+		<title><![CDATA[Ich kann in einfachen zusammenhängenden Sätzen sprechen, um Erfahrungen und Ereignisse oder meine Träume, Hoffnungen und Ziele zu beschreiben. Ich kann kurz meine Meinungen und Pläne erklären und begründen. Ich kann eine Geschichte erzählen oder die Handlung eines Buches oder Films wiedergeben und meine Reaktionen beschreiben. (B1)]]></title>
+		<niveauid>3</niveauid>
+		<sorting>199344</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4716</uid>
+		<title><![CDATA[Ich kann zu vielen Themen aus meinen Interessengebieten eine klare und detaillierte Darstellung geben. Ich kann einen Standpunkt zu einer aktuellen Frage erläutern und Vor- und Nachteile verschiedener Möglichkeiten angeben. (B2)]]></title>
+		<niveauid>4</niveauid>
+		<sorting>199345</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4717</uid>
+		<title><![CDATA[Ich kann komplexe Sachverhalte ausführlich darstellen und dabei Themenpunkte miteinander verbinden, bestimmte Aspekte besonders ausführen und meinen Beitrag angemessen abschließen. (C1)]]></title>
+		<niveauid>13</niveauid>
+		<sorting>199346</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4718</uid>
+		<title><![CDATA[Ich kann Sachverhalte klar, flüssig und im Stil der jeweiligen Situation angemessen darstellen und erörtern; ich kann meine Darstellung logisch aufbauen und es so den Zuhörern erleichtern, wichtige Punkte zu erkennen und sich diese zu merken. (C2)]]></title>
+		<niveauid>14</niveauid>
+		<sorting>199347</sorting>
+		<skillid>5</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4719</uid>
+		<title><![CDATA[Ich kann über Themen, die mir vertraut sind oder mich persönlich interessieren, einfache zusammenhängende Texte schreiben. Ich kann persönliche Briefe schreiben und darin von Erfahrungen und Eindrücken berichten. (B1)]]></title>
+		<niveauid>3</niveauid>
+		<sorting>199348</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4720</uid>
+		<title><![CDATA[Ich kann über eine Vielzahl von Themen, die mich interessieren, klare und detaillierte Texte schreiben. Ich kann in einem Aufsatz oder Bericht Informationen wiedergeben oder Argumente und Gegenargumente für oder gegen einen bestimmten Standpunkt darlegen. Ich kann Briefe schreiben und darin die persönliche Bedeutung von Ereignissen und Erfahrungen deutlich machen. (B2)]]></title>
+		<niveauid>4</niveauid>
+		<sorting>199349</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4721</uid>
+		<title><![CDATA[Ich kann mich schriftlich klar und gut strukturiert ausdrücken und meine Ansicht ausführlich darstellen. Ich kann in Briefen, Aufsätzen oder Berichten über komplexe Sachverhalte schreiben und die für mich wesentlichen Aspekte hervorheben. Ich kann in meinen schriftlichen Texten den Stil wählen, der für die jeweiligen Leser angemessen ist. (C1)]]></title>
+		<niveauid>13</niveauid>
+		<sorting>199350</sorting>
+		<skillid>2</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>4722</uid>
+		<title><![CDATA[Ich kann klar, flüssig und stilistisch dem jeweiligen Zweck angemessen schreiben. Ich kann anspruchsvolle Briefe und komplexe Berichte oder Artikel verfassen, die einen Sachverhalt gut strukturiert darstellen und so dem Leser helfen, wichtige Punkte zu erkennen und sich diese zu merken. Ich kann Fachtexte und literarische Werke schriftlich zusammenfassen und besprechen. (C2)]]></title>
+		<niveauid>14</niveauid>
+		<sorting>199351</sorting>
+		<skillid>2</skillid>
 		<parent_id>0</parent_id>
 	</table>
 	<table name="block_exacompexamples">
@@ -40176,118 +42297,128 @@ Warum denkt man in der Regel eher innerhalb der eigenen „box“, innerhalb des
 	<table name="block_exacomptaxonomies">
 		<uid>76</uid>
 		<title><![CDATA[Kenntnis]]></title>
-		<sorting>8</sorting>
+		<sorting>512</sorting>
 		<parent_tax>0</parent_tax>
 	</table>
 	<table name="block_exacomptaxonomies">
 		<uid>77</uid>
 		<title><![CDATA[Verständnis]]></title>
-		<sorting>16</sorting>
+		<sorting>1792</sorting>
 		<parent_tax>0</parent_tax>
 	</table>
 	<table name="block_exacomptaxonomies">
 		<uid>78</uid>
 		<title><![CDATA[Anwendung]]></title>
-		<sorting>32</sorting>
+		<sorting>2048</sorting>
 		<parent_tax>0</parent_tax>
 	</table>
 	<table name="block_exacomptaxonomies">
 		<uid>79</uid>
 		<title><![CDATA[Analyse]]></title>
-		<sorting>64</sorting>
+		<sorting>2304</sorting>
 		<parent_tax>0</parent_tax>
 	</table>
 	<table name="block_exacomptaxonomies">
 		<uid>80</uid>
 		<title><![CDATA[Synthese]]></title>
-		<sorting>128</sorting>
+		<sorting>2560</sorting>
 		<parent_tax>0</parent_tax>
 	</table>
 	<table name="block_exacomptaxonomies">
 		<uid>81</uid>
 		<title><![CDATA[Beurteilung]]></title>
-		<sorting>256</sorting>
+		<sorting>2816</sorting>
 		<parent_tax>0</parent_tax>
 	</table>
 	<table name="block_exacompskills">
 		<uid>1</uid>
 		<title><![CDATA[Hören]]></title>
-		<sorting>1792</sorting>
+		<sorting>6656</sorting>
 	</table>
 	<table name="block_exacompskills">
 		<uid>2</uid>
 		<title><![CDATA[Schreiben]]></title>
-		<sorting>2816</sorting>
+		<sorting>7680</sorting>
 	</table>
 	<table name="block_exacompskills">
 		<uid>3</uid>
 		<title><![CDATA[Lesen]]></title>
-		<sorting>2048</sorting>
+		<sorting>6912</sorting>
+	</table>
+	<table name="block_exacompskills">
+		<uid>4</uid>
+		<title><![CDATA[An Gesprächen teilnehmen]]></title>
+		<sorting>7168</sorting>
+	</table>
+	<table name="block_exacompskills">
+		<uid>5</uid>
+		<title><![CDATA[Zusammenhängend sprechen]]></title>
+		<sorting>7424</sorting>
 	</table>
 	<table name="block_exacompskills">
 		<uid>6</uid>
 		<title><![CDATA[Hören, Sprechen und Miteinander-Reden]]></title>
-		<sorting>512</sorting>
+		<sorting>5376</sorting>
 	</table>
 	<table name="block_exacompskills">
 		<uid>7</uid>
 		<title><![CDATA[Lesen - Umgang mit Texten und Medien]]></title>
-		<sorting>768</sorting>
+		<sorting>5632</sorting>
 	</table>
 	<table name="block_exacompskills">
 		<uid>8</uid>
 		<title><![CDATA[Verfassen von Texten]]></title>
-		<sorting>1024</sorting>
+		<sorting>5888</sorting>
 	</table>
 	<table name="block_exacompskills">
 		<uid>9</uid>
 		<title><![CDATA[Rechtschreiben]]></title>
-		<sorting>1280</sorting>
+		<sorting>6144</sorting>
 	</table>
 	<table name="block_exacompskills">
 		<uid>10</uid>
 		<title><![CDATA[Einsicht in Sprache durch Sprachbetrachtung]]></title>
-		<sorting>1536</sorting>
+		<sorting>6400</sorting>
 	</table>
 	<table name="block_exacompskills">
 		<uid>11</uid>
 		<title><![CDATA[Modellieren (AK 1)]]></title>
-		<sorting>2</sorting>
+		<sorting>512</sorting>
 	</table>
 	<table name="block_exacompskills">
 		<uid>12</uid>
 		<title><![CDATA[Operieren (AK 2)]]></title>
-		<sorting>4</sorting>
+		<sorting>3584</sorting>
 	</table>
 	<table name="block_exacompskills">
 		<uid>13</uid>
 		<title><![CDATA[Kommunizieren (AK 3)]]></title>
-		<sorting>8</sorting>
+		<sorting>3840</sorting>
 	</table>
 	<table name="block_exacompskills">
 		<uid>14</uid>
 		<title><![CDATA[Problemlösen (AK 4)]]></title>
-		<sorting>16</sorting>
+		<sorting>4096</sorting>
 	</table>
 	<table name="block_exacompskills">
 		<uid>15</uid>
 		<title><![CDATA[Arbeiten mit Zahlen (IK 1)]]></title>
-		<sorting>32</sorting>
+		<sorting>4352</sorting>
 	</table>
 	<table name="block_exacompskills">
 		<uid>16</uid>
 		<title><![CDATA[Arbeiten mit Operationen (IK 2)]]></title>
-		<sorting>64</sorting>
+		<sorting>4608</sorting>
 	</table>
 	<table name="block_exacompskills">
 		<uid>17</uid>
 		<title><![CDATA[Arbeiten mit Größen (IK 3)]]></title>
-		<sorting>128</sorting>
+		<sorting>4864</sorting>
 	</table>
 	<table name="block_exacompskills">
 		<uid>18</uid>
 		<title><![CDATA[Arbeiten mit Ebene und Raum (IK 4)]]></title>
-		<sorting>256</sorting>
+		<sorting>5120</sorting>
 	</table>
 	<table name="block_exacompniveaus">
 		<uid>1</uid>
@@ -40361,15 +42492,27 @@ Warum denkt man in der Regel eher innerhalb der eigenen „box“, innerhalb des
 		<parent_niveau>4</parent_niveau>
 		<sorting>2816</sorting>
 	</table>
+	<table name="block_exacompniveaus">
+		<uid>13</uid>
+		<title><![CDATA[C1]]></title>
+		<parent_niveau>0</parent_niveau>
+		<sorting>896</sorting>
+	</table>
+	<table name="block_exacompniveaus">
+		<uid>14</uid>
+		<title><![CDATA[C2]]></title>
+		<parent_niveau>0</parent_niveau>
+		<sorting>960</sorting>
+	</table>
 	<table name="block_exacompniveau_texte">
 		<uid>5</uid>
-		<title><![CDATA[Ich kann einzelne vertraute Namen, WÃ¶rter und ganz einfache SÃ¤tze verstehen, z.B. auf Schildern, Plakaten oder in Katalogen.]]></title>
+		<title><![CDATA[Ich kann einzelne vertraute Namen, Wörter und ganz einfache Sätze verstehen, z.B. auf Schildern, Plakaten oder in Katalogen.]]></title>
 		<niveauid>1</niveauid>
 		<skillid>3</skillid>
 	</table>
 	<table name="block_exacompniveau_texte">
 		<uid>33</uid>
-		<title><![CDATA[Ich kann kurze, einfache Texte verstehen. Ich kann in einfachen Alltagstexten (z.B. Anzeigen, Prospekten, Speisekarten oder FahrplÃ¤nen) konkrete, vorhersehbare Informationen auffinden, und ich kann kurze, einfache persÃ¶nliche Briefe verstehen.]]></title>
+		<title><![CDATA[Ich kann kurze, einfache Texte verstehen. Ich kann in einfachen Alltagstexten (z.B. Anzeigen, Prospekten, Speisekarten oder Fahrplänen) konkrete, vorhersehbare Informationen auffinden, und ich kann kurze, einfache persönliche Briefe verstehen.]]></title>
 		<niveauid>2</niveauid>
 		<skillid>3</skillid>
 	</table>
@@ -40381,7 +42524,7 @@ Warum denkt man in der Regel eher innerhalb der eigenen „box“, innerhalb des
 	</table>
 	<table name="block_exacompniveau_texte">
 		<uid>40</uid>
-		<title><![CDATA[Ich kann Ã¼ber Themen, die mir vertraut sind oder mich persÃ¶nlich interessieren, einfache zusammenhÃ¤ngende Texte schreiben. Ich kann persÃ¶nliche Briefe schreiben und darin von Erfahrungen und EindrÃ¼cken berichten.]]></title>
+		<title><![CDATA[Ich kann über Themen, die mir vertraut sind oder mich persönlich interessieren, einfache zusammenhängende Texte schreiben. Ich kann persönliche Briefe schreiben und darin von Erfahrungen und Eindrücken berichten.]]></title>
 		<niveauid>3</niveauid>
 		<skillid>2</skillid>
 	</table>
@@ -40393,67 +42536,63 @@ Warum denkt man in der Regel eher innerhalb der eigenen „box“, innerhalb des
 	</table>
 	<table name="block_exacompniveau_texte">
 		<uid>46</uid>
-		<title><![CDATA[Ich kann eine kurze einfache Postkarte schreiben, z.B. FeriengrÃ¼ÃŸe. Ich kann auf Formularen, z.B. in Hotels, Namen, Adresse, NationalitÃ¤t usw. eintragen.]]></title>
+		<title><![CDATA[Ich kann eine kurze einfache Postkarte schreiben, z.B. Feriengrüße. Ich kann auf Formularen, z.B. in Hotels, Namen, Adresse, Nationalität usw. eintragen.]]></title>
 		<niveauid>1</niveauid>
 		<skillid>2</skillid>
 	</table>
 	<table name="block_exacompniveau_texte">
 		<uid>49</uid>
-		<title><![CDATA[Ich kann die Hauptpunkte verstehen, wenn klare Standardsprache verwendet wird und wenn es um vertraute Dinge aus Arbeit, Schule und Freizeit usw. geht. Ich kann kurze ErzÃ¤hlungen verstehen. Ich kann vielen Radio- und Fernsehsendungen Ã¼ber aktuelle Ereignisse und Ã¼ber Themen aus meinem Berufs- oder Interessensgebiet die Hauptinformationen entnehmen, wenn relativ langsam und deutlich gesprochen wird.]]></title>
+		<title><![CDATA[Ich kann die Hauptpunkte verstehen, wenn klare Standardsprache verwendet wird und wenn es um vertraute Dinge aus Arbeit, Schule und Freizeit usw. geht. Ich kann kurze Erzählungen verstehen. Ich kann vielen Radio- und Fernsehsendungen über aktuelle Ereignisse und über Themen aus meinem Berufs- oder Interessensgebiet die Hauptinformationen entnehmen, wenn relativ langsam und deutlich gesprochen wird.]]></title>
 		<niveauid>3</niveauid>
 		<skillid>1</skillid>
 	</table>
 	<table name="block_exacompniveau_texte">
 		<uid>52</uid>
-		<title><![CDATA[Ich kann einzelne SÃ¤tze und die gebrÃ¤uchlichsten WÃ¶rter verstehen, wenn es um fÃ¼r mich wichtige Dinge geht (z.B. sehr einfache  Informationen zur Person und zur Familie, Einkaufen, Arbeit, nÃ¤here Umgebung), sofern langsam und deutlich gesprochen wird. Ich verstehe das Wesentliche von kurzen, klaren und einfachen  Mitteilungen und Durchsagen.]]></title>
+		<title><![CDATA[Ich kann einzelne Sätze und die gebräuchlichsten Wörter verstehen, wenn es um für mich wichtige Dinge geht (z.B. sehr einfache  Informationen zur Person und zur Familie, Einkaufen, Arbeit, nähere Umgebung), sofern langsam und deutlich gesprochen wird. Ich verstehe das Wesentliche von kurzen, klaren und einfachen  Mitteilungen und Durchsagen.]]></title>
 		<niveauid>2</niveauid>
 		<skillid>1</skillid>
 	</table>
 	<table name="block_exacompniveau_texte">
 		<uid>55</uid>
-		<title><![CDATA[Ich kann vertraute WÃ¶rter und ganz einfache SÃ¤tze  verstehen, die sich auf mich selbst, meine Familie und auf konkrete Dinge um mich herum beziehen, wenn sehr langsam und deutlich gesprochen wird.]]></title>
+		<title><![CDATA[Ich kann vertraute Wörter und ganz einfache Sätze  verstehen, die sich auf mich selbst, meine Familie und auf konkrete Dinge um mich herum beziehen, wenn sehr langsam und deutlich gesprochen wird.]]></title>
 		<niveauid>1</niveauid>
 		<skillid>1</skillid>
 	</table>
 	<table name="block_exacompniveau_texte">
 		<uid>58</uid>
-		<title><![CDATA[Ich kann in einfachen, zusammenhÃ¤ngenden SÃ¤tzen sprechen, um Erfahrungen und Ereignisse oder meine TrÃ¤ume, Hoffnungen und Ziele zu beschreiben. Ich kann kurz meine Meinungen und PlÃ¤ne erklÃ¤ren und begrÃ¼nden. Ich kann eine Geschichte erzÃ¤hlen oder eine Handlung eines Buches oder Films wiedergeben und meine Reaktionen beschreiben.]]></title>
+		<title><![CDATA[Ich kann in einfachen, zusammenhängenden Sätzen sprechen, um Erfahrungen und Ereignisse oder meine Träume, Hoffnungen und Ziele zu beschreiben. Ich kann kurz meine Meinungen und Pläne erklären und begründen. Ich kann eine Geschichte erzählen oder eine Handlung eines Buches oder Films wiedergeben und meine Reaktionen beschreiben.]]></title>
 		<niveauid>3</niveauid>
 		<skillid>5</skillid>
 	</table>
 	<table name="block_exacompniveau_texte">
 		<uid>61</uid>
-		<title><![CDATA[Ich kann mit einer Reihe von SÃ¤tzen und mit einfachen Mitteln z.B. meine Familie, andere Leute, meine Wohnsituation, meine Ausbildung und meine gegenwÃ¤rtige oder letzte berufliche TÃ¤tigkeit beschreiben.]]></title>
+		<title><![CDATA[Ich kann mit einer Reihe von Sätzen und mit einfachen Mitteln z.B. meine Familie, andere Leute, meine Wohnsituation, meine Ausbildung und meine gegenwärtige oder letzte berufliche Tätigkeit beschreiben.]]></title>
 		<niveauid>2</niveauid>
 		<skillid>5</skillid>
 	</table>
 	<table name="block_exacompniveau_texte">
 		<uid>64</uid>
-		<title><![CDATA[Ich kann einfache Wendungen und SÃ¤tze gebrauchen, um Leute, die ich kenne, zu beschreiben und um zu beschreiben, wo ich wohne.]]></title>
+		<title><![CDATA[Ich kann einfache Wendungen und Sätze gebrauchen, um Leute, die ich kenne, zu beschreiben und um zu beschreiben, wo ich wohne.]]></title>
 		<niveauid>1</niveauid>
 		<skillid>5</skillid>
 	</table>
 	<table name="block_exacompniveau_texte">
 		<uid>67</uid>
-		<title><![CDATA[Ich kann die meisten Situationen bewÃ¤ltigen, denen  man auf Reisen im Sprachgebiet begegnet. Ich kann ohne Vorbereitung an GesprÃ¤chen Ã¼ber Themen teilnehmen, die mir vertraut sind, die mich persÃ¶nlich interessieren oder die sich auf Themen des Alltags wie Familie, Hobbys, Arbeit. Reisen aktuelle Ereignisse usw. beziehen.]]></title>
+		<title><![CDATA[Ich kann die meisten Situationen bewältigen, denen  man auf Reisen im Sprachgebiet begegnet. Ich kann ohne Vorbereitung an Gesprächen über Themen teilnehmen, die mir vertraut sind, die mich persönlich interessieren oder die sich auf Themen des Alltags wie Familie, Hobbys, Arbeit. Reisen aktuelle Ereignisse usw. beziehen.]]></title>
 		<niveauid>3</niveauid>
 		<skillid>4</skillid>
 	</table>
 	<table name="block_exacompniveau_texte">
 		<uid>70</uid>
-		<title><![CDATA[Ich kann mich in einfachen, routinemÃ¤ÃŸigen Situationen verstÃ¤ndigen, in denen es um einen einfachen, direkten Austausch von Informationen und um vertraute Themen und TÃ¤tigkeiten geht. Ich kann ein sehr kurzes KontaktgesprÃ¤ch fÃ¼hren, verstehe aber normalerweise nicht genug, um selbst das GesprÃ¤ch in Gang zu halten.]]></title>
+		<title><![CDATA[Ich kann mich in einfachen, routinemäßigen Situationen verständigen, in denen es um einen einfachen, direkten Austausch von Informationen und um vertraute Themen und Tätigkeiten geht. Ich kann ein sehr kurzes Kontaktgespräch führen, verstehe aber normalerweise nicht genug, um selbst das Gespräch in Gang zu halten.]]></title>
 		<niveauid>2</niveauid>
 		<skillid>4</skillid>
 	</table>
 	<table name="block_exacompniveau_texte">
 		<uid>73</uid>
-		<title><![CDATA[Ich kann mich auf einfache Art verstÃ¤ndigen, wenn mein GesprÃ¤chspartner/meine GesprÃ¤chspartnerin  bereit ist, etwas langsamer zu wiederholen oder anders zu sagen, und mir dabei hilft zu formulieren, was ich zu sagen versuche. Ich kann einfache Fragen stellen und beantworten, sofern es sich um unmittelbar notwendige Dinge und um sehr vertraute Themen handelt.]]></title>
+		<title><![CDATA[Ich kann mich auf einfache Art verständigen, wenn mein Gesprächspartner/meine Gesprächspartnerin  bereit ist, etwas langsamer zu wiederholen oder anders zu sagen, und mir dabei hilft zu formulieren, was ich zu sagen versuche. Ich kann einfache Fragen stellen und beantworten, sofern es sich um unmittelbar notwendige Dinge und um sehr vertraute Themen handelt.]]></title>
 		<niveauid>1</niveauid>
 		<skillid>4</skillid>
-	</table>
-	<table name="block_exacompdescrtopic_mm">
-		<descrid>647</descrid>
-		<topicid>118</topicid>
 	</table>
 	<table name="block_exacompdescrtopic_mm">
 		<descrid>748</descrid>
@@ -40873,10 +43012,6 @@ Warum denkt man in der Regel eher innerhalb der eigenen „box“, innerhalb des
 	</table>
 	<table name="block_exacompdescrtopic_mm">
 		<descrid>646</descrid>
-		<topicid>102</topicid>
-	</table>
-	<table name="block_exacompdescrtopic_mm">
-		<descrid>647</descrid>
 		<topicid>102</topicid>
 	</table>
 	<table name="block_exacompdescrtopic_mm">
@@ -41730,10 +43865,6 @@ Warum denkt man in der Regel eher innerhalb der eigenen „box“, innerhalb des
 	<table name="block_exacompdescrtopic_mm">
 		<descrid>59</descrid>
 		<topicid>13</topicid>
-	</table>
-	<table name="block_exacompdescrtopic_mm">
-		<descrid>26</descrid>
-		<topicid>10</topicid>
 	</table>
 	<table name="block_exacompdescrtopic_mm">
 		<descrid>1</descrid>
@@ -48022,6 +50153,894 @@ Warum denkt man in der Regel eher innerhalb der eigenen „box“, innerhalb des
 	<table name="block_exacompdescrtopic_mm">
 		<descrid>3434</descrid>
 		<topicid>540</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4559</descrid>
+		<topicid>869</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4558</descrid>
+		<topicid>869</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4560</descrid>
+		<topicid>869</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4561</descrid>
+		<topicid>869</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4562</descrid>
+		<topicid>869</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4563</descrid>
+		<topicid>869</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4564</descrid>
+		<topicid>870</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4565</descrid>
+		<topicid>870</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4567</descrid>
+		<topicid>870</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4568</descrid>
+		<topicid>870</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4569</descrid>
+		<topicid>870</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4571</descrid>
+		<topicid>871</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4572</descrid>
+		<topicid>871</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4573</descrid>
+		<topicid>871</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4574</descrid>
+		<topicid>871</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4575</descrid>
+		<topicid>871</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4576</descrid>
+		<topicid>871</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4577</descrid>
+		<topicid>871</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4578</descrid>
+		<topicid>871</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4579</descrid>
+		<topicid>871</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4580</descrid>
+		<topicid>872</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4581</descrid>
+		<topicid>872</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4582</descrid>
+		<topicid>872</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4583</descrid>
+		<topicid>872</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4584</descrid>
+		<topicid>872</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4585</descrid>
+		<topicid>873</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4586</descrid>
+		<topicid>873</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4587</descrid>
+		<topicid>873</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4588</descrid>
+		<topicid>873</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4589</descrid>
+		<topicid>873</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4590</descrid>
+		<topicid>873</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4591</descrid>
+		<topicid>873</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4594</descrid>
+		<topicid>874</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4595</descrid>
+		<topicid>874</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4596</descrid>
+		<topicid>874</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4597</descrid>
+		<topicid>874</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4598</descrid>
+		<topicid>874</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4599</descrid>
+		<topicid>874</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4600</descrid>
+		<topicid>875</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4601</descrid>
+		<topicid>875</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4602</descrid>
+		<topicid>875</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4603</descrid>
+		<topicid>875</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4604</descrid>
+		<topicid>875</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4606</descrid>
+		<topicid>876</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4607</descrid>
+		<topicid>876</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4608</descrid>
+		<topicid>876</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4609</descrid>
+		<topicid>876</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4610</descrid>
+		<topicid>876</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4611</descrid>
+		<topicid>876</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4612</descrid>
+		<topicid>876</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4613</descrid>
+		<topicid>876</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4614</descrid>
+		<topicid>876</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4615</descrid>
+		<topicid>877</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4616</descrid>
+		<topicid>877</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4617</descrid>
+		<topicid>877</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4618</descrid>
+		<topicid>877</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4619</descrid>
+		<topicid>877</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4620</descrid>
+		<topicid>878</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4621</descrid>
+		<topicid>878</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4622</descrid>
+		<topicid>878</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4623</descrid>
+		<topicid>878</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4624</descrid>
+		<topicid>878</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4625</descrid>
+		<topicid>878</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4626</descrid>
+		<topicid>878</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4627</descrid>
+		<topicid>879</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4628</descrid>
+		<topicid>879</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4629</descrid>
+		<topicid>879</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4630</descrid>
+		<topicid>879</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4632</descrid>
+		<topicid>879</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4633</descrid>
+		<topicid>879</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4634</descrid>
+		<topicid>880</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4635</descrid>
+		<topicid>880</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4637</descrid>
+		<topicid>880</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4638</descrid>
+		<topicid>880</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4639</descrid>
+		<topicid>880</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4640</descrid>
+		<topicid>881</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4641</descrid>
+		<topicid>881</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4642</descrid>
+		<topicid>881</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4643</descrid>
+		<topicid>881</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4644</descrid>
+		<topicid>881</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4645</descrid>
+		<topicid>881</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4646</descrid>
+		<topicid>881</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4647</descrid>
+		<topicid>881</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4648</descrid>
+		<topicid>881</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4649</descrid>
+		<topicid>882</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4650</descrid>
+		<topicid>882</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4651</descrid>
+		<topicid>882</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4652</descrid>
+		<topicid>882</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4653</descrid>
+		<topicid>882</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4655</descrid>
+		<topicid>883</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4656</descrid>
+		<topicid>883</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4659</descrid>
+		<topicid>883</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4657</descrid>
+		<topicid>883</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4660</descrid>
+		<topicid>883</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4661</descrid>
+		<topicid>883</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4662</descrid>
+		<topicid>883</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4313</descrid>
+		<topicid>906</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4314</descrid>
+		<topicid>906</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4312</descrid>
+		<topicid>906</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4315</descrid>
+		<topicid>906</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4316</descrid>
+		<topicid>906</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4317</descrid>
+		<topicid>906</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4318</descrid>
+		<topicid>906</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4319</descrid>
+		<topicid>906</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4320</descrid>
+		<topicid>906</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4321</descrid>
+		<topicid>906</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4322</descrid>
+		<topicid>906</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4323</descrid>
+		<topicid>906</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4324</descrid>
+		<topicid>906</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4325</descrid>
+		<topicid>906</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4326</descrid>
+		<topicid>907</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4327</descrid>
+		<topicid>907</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4328</descrid>
+		<topicid>907</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4329</descrid>
+		<topicid>907</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4331</descrid>
+		<topicid>907</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4332</descrid>
+		<topicid>907</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4333</descrid>
+		<topicid>907</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4334</descrid>
+		<topicid>907</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4330</descrid>
+		<topicid>907</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4335</descrid>
+		<topicid>907</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4336</descrid>
+		<topicid>907</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4337</descrid>
+		<topicid>907</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4339</descrid>
+		<topicid>907</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4340</descrid>
+		<topicid>907</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4341</descrid>
+		<topicid>908</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4342</descrid>
+		<topicid>908</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4343</descrid>
+		<topicid>908</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4344</descrid>
+		<topicid>908</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4345</descrid>
+		<topicid>908</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4346</descrid>
+		<topicid>908</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4347</descrid>
+		<topicid>908</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4348</descrid>
+		<topicid>908</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4349</descrid>
+		<topicid>908</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4350</descrid>
+		<topicid>908</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4351</descrid>
+		<topicid>908</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4352</descrid>
+		<topicid>908</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4353</descrid>
+		<topicid>908</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4354</descrid>
+		<topicid>908</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4355</descrid>
+		<topicid>908</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4356</descrid>
+		<topicid>908</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4357</descrid>
+		<topicid>908</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4358</descrid>
+		<topicid>909</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4359</descrid>
+		<topicid>909</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4360</descrid>
+		<topicid>909</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4361</descrid>
+		<topicid>909</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4362</descrid>
+		<topicid>909</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4363</descrid>
+		<topicid>909</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4364</descrid>
+		<topicid>909</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4365</descrid>
+		<topicid>909</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4366</descrid>
+		<topicid>909</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4367</descrid>
+		<topicid>909</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4368</descrid>
+		<topicid>909</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4369</descrid>
+		<topicid>909</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4370</descrid>
+		<topicid>909</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4371</descrid>
+		<topicid>909</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4372</descrid>
+		<topicid>909</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4373</descrid>
+		<topicid>910</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4374</descrid>
+		<topicid>910</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4375</descrid>
+		<topicid>910</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4376</descrid>
+		<topicid>910</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4378</descrid>
+		<topicid>910</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4377</descrid>
+		<topicid>910</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4379</descrid>
+		<topicid>910</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4380</descrid>
+		<topicid>910</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4381</descrid>
+		<topicid>910</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4382</descrid>
+		<topicid>910</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4703</descrid>
+		<topicid>906</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4704</descrid>
+		<topicid>906</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4705</descrid>
+		<topicid>906</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4706</descrid>
+		<topicid>906</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4707</descrid>
+		<topicid>907</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4708</descrid>
+		<topicid>907</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4709</descrid>
+		<topicid>907</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4710</descrid>
+		<topicid>907</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4711</descrid>
+		<topicid>908</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4712</descrid>
+		<topicid>908</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4713</descrid>
+		<topicid>908</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4714</descrid>
+		<topicid>908</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4715</descrid>
+		<topicid>909</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4716</descrid>
+		<topicid>909</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4717</descrid>
+		<topicid>909</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4718</descrid>
+		<topicid>909</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4719</descrid>
+		<topicid>910</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4720</descrid>
+		<topicid>910</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4721</descrid>
+		<topicid>910</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>4722</descrid>
+		<topicid>910</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>26</descrid>
+		<topicid>13</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3820</descrid>
+		<topicid>670</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3825</descrid>
+		<topicid>670</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3826</descrid>
+		<topicid>670</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3827</descrid>
+		<topicid>670</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3828</descrid>
+		<topicid>670</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3829</descrid>
+		<topicid>670</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3830</descrid>
+		<topicid>676</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3831</descrid>
+		<topicid>676</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3832</descrid>
+		<topicid>676</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3833</descrid>
+		<topicid>676</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3834</descrid>
+		<topicid>676</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3835</descrid>
+		<topicid>676</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3836</descrid>
+		<topicid>677</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3837</descrid>
+		<topicid>677</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3838</descrid>
+		<topicid>677</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3839</descrid>
+		<topicid>677</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3840</descrid>
+		<topicid>677</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3841</descrid>
+		<topicid>677</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3842</descrid>
+		<topicid>677</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3843</descrid>
+		<topicid>678</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3844</descrid>
+		<topicid>678</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3845</descrid>
+		<topicid>678</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3846</descrid>
+		<topicid>678</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3847</descrid>
+		<topicid>678</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3848</descrid>
+		<topicid>678</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3849</descrid>
+		<topicid>678</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3850</descrid>
+		<topicid>678</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3851</descrid>
+		<topicid>679</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3852</descrid>
+		<topicid>679</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3853</descrid>
+		<topicid>679</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3854</descrid>
+		<topicid>679</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3855</descrid>
+		<topicid>679</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3856</descrid>
+		<topicid>679</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3857</descrid>
+		<topicid>679</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>3858</descrid>
+		<topicid>679</topicid>
 	</table>
 	<table name="block_exacompdescrexamp_mm">
 		<exampid>31</exampid>
