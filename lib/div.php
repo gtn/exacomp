@@ -173,7 +173,7 @@ function block_exacomp_get_activityid($activity) {
 
 function block_exacomp_get_activities($descid, $courseid = null) { //alle assignments die einem bestimmten descriptor zugeordnet sind
 	global $CFG, $DB;
-	$query = "SELECT mm.id as uniqueid,a.id,ass.grade, mm.activitytype FROM {block_exacompdescriptors} descr INNER JOIN {block_exacompdescractiv_mm} mm  ON descr.id=mm.descrid INNER JOIN {course_modules} a ON a.id=mm.activityid LEFT JOIN {assignment} ass ON ass.id=a.instance  ";
+	$query = "SELECT mm.id as uniqueid,a.id,ass.grade, mm.activitytype,a.instance FROM {block_exacompdescriptors} descr INNER JOIN {block_exacompdescractiv_mm} mm  ON descr.id=mm.descrid INNER JOIN {course_modules} a ON a.id=mm.activityid LEFT JOIN {assignment} ass ON ass.id=a.instance  ";
 	$query.="WHERE descr.id=?";
 	//echo $query;
 	$condition = array($descid);
@@ -240,7 +240,6 @@ function block_exacomp_get_supported_modules() {
 function block_exacomp_get_coursemodule($mod) {
 	global $DB;
 	$name = $DB->get_field('modules','name',array("id"=>$mod->module));
-
 	return get_coursemodule_from_id($name,$mod->id);
 }
 function block_exacomp_get_assignments($courseid) {
@@ -729,12 +728,13 @@ function block_exacomp_get_activity_icon($descriptorid) {
 	return $icon;
 }
 
-function block_exacomp_get_student_icon($activities, $student) {
+function block_exacomp_get_student_icon($activities, $student,$courseid,$gradelib=false) {
 	global $DB, $CFG;
 	$count = false;
+	$countquiz = false;
 	$img = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/attach_2.png" height="16" width="16" alt="'.get_string("assigned_acitivities", "block_exacomp").'" />';
-	$submitted = $student->firstname . get_string('usersubmitted', "block_exacomp") . "<br><ul>";
-
+	$submitted = $student->firstname." ".$student->lastname . get_string('usersubmitted', "block_exacomp") . "<br><ul>";
+	$submittedquiz = $student->firstname." ".$student->lastname . get_string('usersubmittedquiz', "block_exacomp") . "<br><ul>";
 	foreach ($activities as $activity) {
 		if($activity->activitytype == 2000)	//ePortfolio entry
 			continue;
@@ -761,19 +761,56 @@ function block_exacomp_get_student_icon($activities, $student) {
 				$count = true;
 			}
 		}
+		
+		if ($mod->name == "quiz"){
+			$quizresult=block_exacomp_getquizresult($gradelib,$activity->instance,$courseid,$student->id);
+			if ($quizresult->countquiz) $countquiz=true; 
+			$submittedquiz.=$quizresult->submittedquiz;
+		}
 	}
 	$submitted .= "</ul>";
-	if (!$count) {
+	$submittedquiz .= "</ul>";
+	if (!$count && !$countquiz) {
 		$submitted = $student->firstname . get_string('usernosubmission', "block_exacomp");
 		$img = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/cancel.png" height="16" width="23" alt="'.get_string("assigned_acitivities", "block_exacomp").'" />';
 	}
 
 	$icon = new stdClass();
+
 	$submitted = str_replace("\"","",$submitted);
 	$submitted = str_replace("\'","",$submitted);
+
+	if($countquiz){
+		$submittedquiz = str_replace("\"","",$submittedquiz);
+		$submittedquiz = str_replace("\'","",$submittedquiz);
+		if (!$count){$submitted="";}
+		$submitted.=$submittedquiz."</ul>";
+	}
 	$icon->text = $submitted;
 	$icon->icon = $img;
 	return $icon;
+}
+function block_exacomp_getquizresult($gradelib,$activityinstance,$courseid,$studentid){
+	global $DB;
+			$ret=new stdClass();$ret->countquiz=false;$ret->submittedquiz="";$ret->icon="";
+			if ($gradelib){ //required file /lib/gradelib.php found and function grade_get_grades exists in system
+	      if($qid = $DB->get_record('quiz',array("id"=>$activityinstance))){
+	      	//print_r($qid);
+					$grading_info = grade_get_grades($courseid, 'mod', 'quiz', $qid->id, $studentid);
+					if (!empty($grading_info->items)) {
+						$gradeitem = $grading_info->items[0];
+						if (isset($gradeitem->grades[$studentid])) {
+							$grade = $gradeitem->grades[$studentid];
+							if ($grade->grade){
+								$ret->countquiz = true;
+								$ret->submittedquiz = "<li>".$qid->name.": ".$grade->str_long_grade."</li>";
+								$ret->icon='<img src="pix/quiz_grade.jpg" border="0" alt="'.$grade->str_long_grade.'" title="'.$grade->str_long_grade.'">';  
+							}
+						}
+					}
+				}
+			}
+			return $ret;
 }
 function block_exacomp_exaportexists()
 {

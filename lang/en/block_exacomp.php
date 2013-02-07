@@ -45,7 +45,8 @@ $string['importfail'] = 'an error during import has occured';
 $string['activitysuccess'] = 'changes were successful';
 
 $string['usersubmitted'] = ' has submitted the following tasks:';
-$string['usernosubmission'] = ' has not yet submitted any tasks associated with this descriptor';
+$string['usersubmittedquiz'] = ' did the following quizes:';
+$string['usernosubmission'] = ' has not yet submitted any tasks or quizzes associated with this descriptor';
 $string['descnoassignment'] = 'no descriptors have been associated with this tasks';
 
 $string['specificcontent'] = 'site-specific priorities';
@@ -132,6 +133,7 @@ $string['infotext'] = 'This paper provides an overview of your current competenc
 $string['exacompinfotext'] = 'Your previously acquired competencies';
 $string['exaportinfotext'] = 'An overview of the eportfolio artefacts that are associated with competencies';
 $string['exastudinfotext'] = 'Your reviews of different assessment-periods';
+
 $string['name'] = 'name';
 $string['city'] = 'city';
 $string['spalten_setting'] = 'hide/display columns';

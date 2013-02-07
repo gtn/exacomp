@@ -45,7 +45,8 @@ $string['importfail'] = 'Es ist ein Fehler aufgetreten.';
 $string['activitysuccess'] = 'Änderungen erfolgreich übernommen.';
 
 $string['usersubmitted'] = ' hat folgende Aufgaben abgegeben:';
-$string['usernosubmission'] = ' hat keine Aufgaben zu diesem Deskriptor abgegeben.';
+$string['usersubmittedquiz'] = ' hat folgende Tests durchgeführt:';
+$string['usernosubmission'] = ' hat keine Aufgaben zu diesem Deskriptor abgegeben und keine Test durchgeführt.';
 $string['descnoassignment'] = 'Diesem Deskriptor sind keine Aufgaben zugeordnet.';
 
 $string['specificcontent'] = 'Schulbezogene Themenbereiche';

@@ -30,7 +30,13 @@ require_once dirname(__FILE__) . '/inc.php';
 require_once dirname(__FILE__) . '/lib/div.php';
 //require_once dirname(__FILE__) . '/lib/radargraph.php';
 require_once($CFG->dirroot . "/lib/datalib.php");
-
+if (file_exists($CFG->dirroot . "/lib/gradelib.php")){
+		require_once($CFG->dirroot . "/lib/gradelib.php");
+		if (function_exists("grade_get_grades")) $gradelib=true;
+		else $gradelib=false;
+}else{
+	$gradelib=false;
+}
 global $COURSE, $CFG, $OUTPUT, $USER;
 $spalten=5;
 $zeilenanzahl=5;
@@ -180,15 +186,15 @@ if ($descriptors) {
 
 			if ($bewertungsdimensionen==1){
 				if ($showevaluation == "on"){
-					$tempzeile.='<td class="zelle'.$p.'" onmouseover="Tip(\'###evalteacher' . $descriptor->id . '_' . $student->id . '###\')" onmouseout="UnTip()" ttclass="ec_td_mo"><input type="checkbox" value="1" name="evaluation[' . $descriptor->id . '][' . $student->id . ']" checked="###checkedevaluation' . $descriptor->id . '_' . $student->id . '###" disabled="disabled" /></td>';
+					$tempzeile.='<td class="zelle'.$p.'" onmouseover="Tip(\'###evalteacher' . $descriptor->id . '_' . $student->id . '###\')" onmouseout="UnTip()" class="ec_td_mo"><input type="checkbox" value="1" name="evaluation[' . $descriptor->id . '][' . $student->id . ']" checked="###checkedevaluation' . $descriptor->id . '_' . $student->id . '###" disabled="disabled" /></td>';
 				}
-				$tempzeile.='<td class="zelle'.$p.'" ttclass="ec_td_mo"><input type="checkbox" value="1" name="data[' . $descriptor->id . '][' . $student->id . ']" checked="###checked' . $descriptor->id . '_' . $student->id . '###" /></td>';
+				$tempzeile.='<td class="zelle'.$p.'" class="ec_td_mo"><input type="checkbox" value="1" name="data[' . $descriptor->id . '][' . $student->id . ']" checked="###checked' . $descriptor->id . '_' . $student->id . '###" /></td>';
 			}else {
 				if ($showevaluation == "on"){
-					$tempzeile.='<td class="zelle'.$p.'" onmouseover="Tip(\'###evalteacher' . $descriptor->id . '_' . $student->id . '###\')" onmouseout="UnTip()" ttclass="ec_td_mo">';
+					$tempzeile.='<td class="zelle'.$p.'" onmouseover="Tip(\'###evalteacher' . $descriptor->id . '_' . $student->id . '###\')" onmouseout="UnTip()" class="ec_td_mo">';
 					$tempzeile.='###checkedevaluation' . $descriptor->id . '_' . $student->id . '###</td>';
 				}
-				$tempzeile.='<td class="zelle'.$p.'" ttclass="ec_td_mo"><select name="data[' . $descriptor->id . '][' . $student->id . ']">';
+				$tempzeile.='<td class="zelle'.$p.'" class="ec_td_mo"><select name="data[' . $descriptor->id . '][' . $student->id . ']">';
 				for ($i=0;$i<=$bewertungsdimensionen;$i++){
 					$tempzeile.='<option value="'.$i.'" selected="###selected' . $descriptor->id . '_' . $student->id . '_'.$i.'###">'.$i.'</option>';
 				}
@@ -245,7 +251,7 @@ if ($descriptors) {
 		$z=1;
 		$p=1;
 		foreach ($students as $student) {
-			$stdicon = block_exacomp_get_student_icon($activities, $student);
+			$stdicon = block_exacomp_get_student_icon($activities, $student,$courseid,$gradelib);
 			
 			$tempzeile .= '<td class="zelle'.$p.'"  colspan="' . $colspan . '"><a onmouseover="Tip(\'' . $stdicon->text . '\')" onmouseout="UnTip()">' . $stdicon->icon . '</a>';
 			//gibt es zugeordnete artefakte in exabis_eportfolio
