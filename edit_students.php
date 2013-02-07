@@ -126,7 +126,6 @@ if ($showevaluation == 'on') {
 $trclass = "even";
 $zeilenr=0;
 foreach ($activities as $activitymod) {
-		$gradeinfo=false;
     $activity = block_exacomp_get_coursemodule($activitymod); 	
    			
     if ($trclass == "even") {
@@ -159,24 +158,13 @@ foreach ($activities as $activitymod) {
          $z=1;
         $p=1;
         foreach ($students as $student) {
+        		$gradeicon="";
             if ($activity->modname=="quiz"){
-            	
-				      if ($gradelib){
-					      if($qid = $DB->get_record('quiz',array("id"=>$activity->instance))){
-									$grading_info = grade_get_grades($courseid, 'mod', 'quiz', $qid->id, $student->id);
-									if (!empty($grading_info->items)) {
-										$gradeitem = $grading_info->items[0];$gradeinfo=true;
-									}
-								}
-							}
+            	$quizresult=block_exacomp_getquizresult($gradelib,$activity->instance,$courseid,$student->id);
+            	$gradeicon=$quizresult->icon;
 				    }
-				    		$gradeicon="";
-							  if ($gradeinfo==true){			
-									if (isset($gradeitem->grades[$student->id])) {
-										$grade = $gradeitem->grades[$student->id];
-										$gradeicon.='<img src="pix/quiz_grade.jpg" border="0" alt="'.$grade->str_long_grade.'" title="'.$grade->str_long_grade.'">';  
-									}
-        				}
+				    		
+							  
             		if ($bewertungsdimensionen==1){ 
             			if($showevaluation=='on')
                 		{$tempzeile.='<td class="zelle'.$p.'" ###checkedcomp' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###><input type="checkbox" name="student[' . $activity->id . '][' . $descriptor->id . '][' . $student->id . ']" checked="###checkedstudent' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###" disabled /></td>';}
