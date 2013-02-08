@@ -112,7 +112,7 @@ $string['solution'] = 'Solution';
 $string['anhang'] = 'Attachement';
 $string['externe_aufgabenstellung'] = 'External Task';
 $string['gesamtbeispiel'] = 'Complete Example';
-$string['descriptor_task'] = 'Descriptor is assigned to tasks';
+$string['descriptor_task'] = 'Descriptor is assigned to the following tasks';
 $string['course'] = 'Course';
 $string['erreicht'] = 'assessed';
 $string['gesamt'] = 'Total';
@@ -136,7 +136,7 @@ $string['detailedreview'] = 'Detailed review';
 $string['competence_profile'] = 'Competence profile';
 $string['infotext'] = 'This document provides an overview of your current competencies. It is composed of data from three different modules and provides a comprehensive overview.';
 $string['exacompinfotext'] = 'Your previously acquired competencies';
-$string['exaportinfotext'] = 'An overview of the eportfolio artefacts that are associated with competencies';
+$string['exaportinfotext'] = 'overview of the eportfolio artefacts that are associated with competencies';
 $string['exastudinfotext'] = 'Your reviews of different assessment-periods';
 
 $string['name'] = 'name';
