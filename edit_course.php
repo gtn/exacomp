@@ -118,7 +118,7 @@ if (empty($action)) {
 
         	if($subject->source!=1 && !$specific){
         		$specific=true;
-        		$content .= '<tr> <td colspan="2"><b>' . get_string("specificsubject","block_exacomp") . '</b></td></tr>';
+        		$content .= '<tr> <td colspan="2"><h2>' . get_string("specificsubject","block_exacomp") . '</h2></td></tr>';
         	}
             if (block_exacomp_check_subject_by_course($subject->id, $courseid))
                 $content .= '<tr><td>' . $subject->title . '</td><td><input type="checkbox" name="data[' . $subject->id . ']" value="' . $subject->id . '" checked="checked" /></td></tr>';
@@ -147,7 +147,7 @@ else if ($action == 'detail') {
         foreach ($subjects as $subject) {
         	if($subject->source!=1 && !$specific){
         		$specific=true;
-        		$content .= '<tr> <td colspan="2"><b>' . get_string("specificcontent","block_exacomp") . '</b></td></tr>';
+        		$content .= '<tr> <td colspan="2"><h2>' . get_string("specificsubject","block_exacomp") . '</h2></td></tr>';
         	}
             $topics = block_exacomp_get_topics($subject->id);
             $content .= '<tr> <td colspan="2"><b>' . $subject->title . '</b></td></tr>';
