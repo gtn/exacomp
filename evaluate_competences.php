@@ -46,14 +46,14 @@ $PAGE->set_url($url);
 $url = $CFG->wwwroot . $url;
 block_exacomp_print_header("student", "studenttabcompetencesdetail");
 
-if ($action == "save") {
+if ($action == "save" && isset($_POST['btn_submit'])) {
     $values = array();
 		if (!empty($_POST['data'])){
 	    foreach ($_POST['data'] as $key => $activitiest) {
 	        if (!empty($_POST['data'][$key])) {
 	            foreach ($_POST['data'][$key] as $key2 => $descs) {
 	                foreach ($_POST['data'][$key][$key2] as $key3 => $wert) {
-	                    // Die EintrŠge in ein Array speichern
+	                    // Die Eintrï¿½ge in ein Array speichern
 	                     if ($wert>0){//wenn pulldown und wert 0, kein eintrag, wenn checkbox kein hackerl kommt er gar nicht hierhier
 			                    $values[] = array('user' => $key3, 'desc' => $key2, 'activity' => $key,'wert' => $wert);
 			                  }
@@ -130,7 +130,7 @@ if ($activities) {
                 $bgcolor = ' style="background-color:#ffffff" ';
             }
             $tempzeile.='<tr class="r2 ' . $trclass . '" ' . $bgcolor . '><td class="ec_minwidth">' . $descriptor->title . '<input type="hidden" value="' . $descriptor->id . '" name="ec_activity[' . $activity->id . ']_descriptor[' . $descriptor->id . ']" /></td>';
-            //Checkbox fŸr jeden SchŸler generieren
+            //Checkbox fï¿½r jeden Schï¿½ler generieren
             
 
 
@@ -152,7 +152,7 @@ if ($activities) {
             
             $tempzeile .= '</tr>';
 
-            //Checken welche Kompetenzen der SchŸler erworben hat
+            //Checken welche Kompetenzen der Schï¿½ler erworben hat
             $competences = block_exacomp_get_competences($descriptor->id, $courseid, 0);
             $evaluations = block_exacomp_get_competences($descriptor->id, $courseid, 1);
             $genericcomps = block_exacomp_get_genericcompetences($descriptor->id, $courseid, 0,$bewertungsdimensionen);
@@ -175,8 +175,8 @@ if ($activities) {
             foreach ($genericcomps as $gernericcomp) {
                 $tempzeile = str_replace('###checkedcomp' . $activity->id . '_' . $gernericcomp->descid . '_' . $gernericcomp->userid . '###', 'class="competenceok ec_firstcol"', $tempzeile);
             }
-            $tempzeile = preg_replace('/checked="###checked([0-9_])+###"/', '', $tempzeile); //nicht gewŠhlte aktivitŠten-descriptorenpaare, checked=... lšschen
-           	$tempzeile = preg_replace('/selected="###selected([0-9_])+###"/', '', $tempzeile); //nicht gewŠhlte aktivitŠten-descriptorenpaare, checked=... lšschen
+            $tempzeile = preg_replace('/checked="###checked([0-9_])+###"/', '', $tempzeile); //nicht gewï¿½hlte aktivitï¿½ten-descriptorenpaare, checked=... lï¿½schen
+           	$tempzeile = preg_replace('/selected="###selected([0-9_])+###"/', '', $tempzeile); //nicht gewï¿½hlte aktivitï¿½ten-descriptorenpaare, checked=... lï¿½schen
             $tempzeile = preg_replace('/checked="###checkedteacher([0-9_])+###"/', '', $tempzeile);
             $tempzeile = preg_replace('/###checkedteacher([0-9_])+###/', '', $tempzeile);
             $tempzeile = preg_replace('/###checkedcomp([0-9_])+###/', 'class="ec_firstcol"', $tempzeile);
@@ -186,7 +186,7 @@ if ($activities) {
         }
         $content .= $zeile;
     }
-    $content.='<tr><td colspan="'.($colspan + 1).'"><input id="tdsubmit" type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" /></td></tr>';
+    $content.='<tr><td colspan="'.($colspan + 1).'"><input name="btn_submit" id="tdsubmit" type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" /></td></tr>';
     $content.="</table></div>";
     
     $content.='</form>';

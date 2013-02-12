@@ -55,7 +55,7 @@ $PAGE->set_url($url);
 $url = $CFG->wwwroot.$url;
 block_exacomp_print_header("teacher", "teachertabassigncompetencesdetail");
 
-if ($action == "save") {
+if ($action == "save" && isset($_POST['btn_submit'])) {
     $values = array();
     if (!empty($_POST['data'])){
 	    foreach ($_POST['data'] as $key => $activitiest) {
@@ -245,7 +245,7 @@ foreach ($activities as $activitymod) {
     $content .= $zeile;
     
 }
-$content.='<tr><td id="tdsubmit" colspan="'.(count($students)*$colspan + 1).'"><input type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" /></td></tr>';
+$content.='<tr><td name="btn_submit" id="tdsubmit" colspan="'.(count($students)*$colspan + 1).'"><input type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" /></td></tr>';
 $content.="</table></div>";
 
 $content.='</form>';

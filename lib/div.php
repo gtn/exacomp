@@ -344,7 +344,11 @@ function block_exacomp_set_descusermm($values, $courseid, $reviewerid, $role) {
 function block_exacomp_set_descuser($values, $courseid, $reviewerid, $role) {
 	global $DB;
 
-	$DB->delete_records('block_exacompdescuser', array("courseid" => $courseid, "role" => $role));
+	if($role == 1)
+		$DB->delete_records('block_exacompdescuser', array("courseid" => $courseid, "role" => $role));
+	else 
+		$DB->delete_records('block_exacompdescuser', array("courseid" => $courseid, "role" => $role, "userid"=>$reviewerid));
+		
 	//print_r($values);
 	foreach ($values as $value) {
 		$data = array(

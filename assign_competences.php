@@ -72,7 +72,7 @@ if ($role == "student")
 
 block_exacomp_print_header($role, $identifier);
 
-if ($action == "save") {
+if ($action == "save" && isset($_POST['btn_submit'])) {
 	$values = array();
   if (!empty($_POST['data'])){
 		foreach ($_POST['data'] as $key => $desc) {
@@ -306,7 +306,7 @@ if ($descriptors) {
 		$tempzeile = "";
 		$zeile++;
 	}
-	$content.='<tr><td id="tdsubmit" colspan="'.(count($students) * $colspan + 1).'"><input type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" /></td></tr>';
+	$content.='<tr><td id="tdsubmit" colspan="'.(count($students) * $colspan + 1).'"><input name="btn_submit" type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" /></td></tr>';
 	$content.="</table></div>";
 
 	$content.='</form>';
