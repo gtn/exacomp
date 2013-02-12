@@ -755,11 +755,11 @@ function block_exacomp_get_student_icon($activities, $student,$courseid,$gradeli
 			if ($submission) {
 				$submitted .= "<li>" . $act->name;
 				if ($mod->name == "assignment" && $submission->grade>=0){
-					$submitted .= " Bewertung: (" . $submission->grade . "/".$submission->agrade.")";
+					$submitted .=  get_string('bewertung', "block_exacomp")."(" . $submission->grade . "/".$submission->agrade.")";
 				} else if($mod->name == "assign") {
 					$grade = $DB->get_record("assign_grades", array("assignment"=>$act->instance,"userid"=>$student->id));
 					if($grade)
-						$submitted .= " Bewertung: (" . round($grade->grade,2) . "/".$submission->agrade.")";
+						$submitted .=  get_string('bewertung', "block_exacomp")."(" . round($grade->grade,2) . "/".$submission->agrade.")";
 				}
 				$submitted .= "</li>";
 				$count = true;

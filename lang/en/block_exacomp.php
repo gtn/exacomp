@@ -143,4 +143,5 @@ $string['hide_activities_save'] = 'Save settings and selection';
 $string['radargraphheader'] = 'Competence radar';
 $string['notinview'] = 'This item has not been published yet';
 $string['bewertungsschema_speichern']='save marking scheme';
+$string['bewertung'] = ' assessment: ';
 ?>
