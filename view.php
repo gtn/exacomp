@@ -65,8 +65,10 @@ $pd=create_pulldown_array($lessons,"ec_lessons","name",$wert,false,"");
 $content.=$pd;
 
 $wert="";
-foreach ($_POST["ec_descriptors"] AS $key=>$value){
-	$wert.=intval($value).",";
+if (!empty($_POST["ec_descriptors"])){
+	foreach ($_POST["ec_descriptors"] AS $key=>$value){
+		$wert.=intval($value).",";
+	}
 }
 $pd=create_pulldown_array($descriptors,"ec_descriptors","title",$wert,false,"multiple");
 $content.=$pd;

@@ -74,13 +74,14 @@ block_exacomp_print_header($role, $identifier);
 
 if ($action == "save") {
 	$values = array();
-
-	foreach ($_POST['data'] as $key => $desc) {
-		if (!empty($_POST['data'][$key])) {
-			foreach ($_POST['data'][$key] as $key2 => $wert) {
-				// Die Einträge in ein Array speichern
-				if ($wert>0){//wenn pulldown und wert 0, kein eintrag, wenn checkbox kein hackerl kommt er gar nicht hierhier
-					$values[] = array('user' => $key2, 'desc' => $key, 'wert' => $wert);
+  if (!empty($_POST['data'])){
+		foreach ($_POST['data'] as $key => $desc) {
+			if (!empty($_POST['data'][$key])) {
+				foreach ($_POST['data'][$key] as $key2 => $wert) {
+					// Die Einträge in ein Array speichern
+					if ($wert>0){//wenn pulldown und wert 0, kein eintrag, wenn checkbox kein hackerl kommt er gar nicht hierhier
+						$values[] = array('user' => $key2, 'desc' => $key, 'wert' => $wert);
+					}
 				}
 			}
 		}
