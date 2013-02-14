@@ -34,10 +34,10 @@ $string['studentbread'] = 'Kompetenzeinschätzung';
 $string['adminbread'] = 'Konfiguration';
 
 //TEXTE
-$string['importdone'] = 'die allgemeinen Bildungsstandards sind bereits importiert.';
-$string['importpending'] = 'Bitte importieren Sie jetzt die allgemeinen Bildungsstandards und wählen sie anschließend im Tab Schultyp die anzuzeigenden Deskriptorenbereiche aus.';
-$string['doimport'] = 'allgemeine Bildungsstandards importieren';
-$string['doimport_again'] = 'allgemeine Bildungsstandards erneut importieren';
+$string['importdone'] = 'Die allgemeinen Bildungsstandards sind bereits importiert.';
+$string['importpending'] = 'Bitte importieren Sie jetzt die allgemeinen Bildungsstandards und wählen Sie anschließend im Tab Schultyp die anzuzeigenden Deskriptorenbereiche aus.';
+$string['doimport'] = 'Allgemeine Bildungsstandards importieren';
+$string['doimport_again'] = 'Allgemeine Bildungsstandards erneut importieren';
 $string['doimport_own'] = 'Schulspezifische Bildungsstandards importieren';
 $string['importsuccess'] = 'Daten erfolgreich importiert!';
 $string['importsuccess_own'] = 'Eigene Daten erfolgreich importiert!';

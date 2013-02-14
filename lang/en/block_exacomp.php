@@ -37,11 +37,11 @@ $string['adminbread'] = 'subjects & topics';
 $string['importdone'] = 'data has already been imported from xml';
 $string['importpending'] = 'no data was imported!';
 $string['doimport'] = 'import descriptors';
-$string['doimport_again'] = 'import descriptors again';
+$string['doimport_again'] = 're-import descriptors';
 $string['doimport_own'] = 'import individual descriptors';
 $string['importsuccess'] = 'data was successfully imported!';
-$string['importsuccess_own'] = 'individual data was successfully imported!';
-$string['importfail'] = 'an error during import has occured';
+$string['importsuccess_own'] = 'individual data was imported successfully!';
+$string['importfail'] = 'an error has occured during import';
 
 $string['activitysuccess'] = 'changes were successful';
 
