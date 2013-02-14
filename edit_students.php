@@ -245,7 +245,7 @@ foreach ($activities as $activitymod) {
     $content .= $zeile;
     
 }
-$content.='<tr><td name="btn_submit" id="tdsubmit" colspan="'.(count($students)*$colspan + 1).'"><input type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" /></td></tr>';
+$content.='<tr><td id="tdsubmit" colspan="'.(count($students)*$colspan + 1).'"><input name="btn_submit" type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" /></td></tr>';
 $content.="</table></div>";
 
 $content.='</form>';
