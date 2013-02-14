@@ -82,7 +82,7 @@ class block_exacomp extends block_base {
             }
         }
         //Schülerbereich
-        if (has_capability('block/exacomp:student', $context) && $courseid != 1) {
+        if (has_capability('block/exacomp:student', $context) && $courseid != 1 && !has_capability('block/exacomp:admin', $context)) {
             if (!empty($this->content->text))
                 $this->content->text .= '<br />';
             if (block_exacomp_isactivated($courseid)) {
