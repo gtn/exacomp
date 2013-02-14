@@ -37,6 +37,7 @@ $string['adminbread'] = 'subjects & topics';
 $string['importdone'] = 'data has already been imported from xml';
 $string['importpending'] = 'no data was imported!';
 $string['doimport'] = 'import descriptors';
+$string['doimport_again'] = 'import descriptors again';
 $string['doimport_own'] = 'import individual descriptors';
 $string['importsuccess'] = 'data was successfully imported!';
 $string['importsuccess_own'] = 'individual data was successfully imported!';

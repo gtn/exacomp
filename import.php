@@ -57,12 +57,15 @@ echo "<div class='block_excomp_center'>";
 
 
 $check = block_exacomp_xml_check_import();
-if($check)
+if($check){
      echo $OUTPUT->box(text_to_html(get_string("importdone", "block_exacomp")));
- else
+     echo $OUTPUT->box(text_to_html('<a href="'.$url.'?action=xml&courseid='.$courseid.'">'.get_string("doimport_again", "block_exacomp").'</a>'));
+   }
+ else{
      echo $OUTPUT->box(text_to_html(get_string("importpending", "block_exacomp")));
+     echo $OUTPUT->box(text_to_html('<a href="'.$url.'?action=xml&courseid='.$courseid.'">'.get_string("doimport", "block_exacomp").'</a>'));
+}
 
-echo $OUTPUT->box(text_to_html('<a href="'.$url.'?action=xml&courseid='.$courseid.'">'.get_string("doimport", "block_exacomp").'</a>'));
 if($check)
 	echo $OUTPUT->box(text_to_html('<a href="'.$CFG->wwwroot.'/blocks/exacomp/import_own.php?courseid='.$courseid.'">'.get_string("doimport_own", "block_exacomp").'</a>'));
 

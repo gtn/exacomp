@@ -44,8 +44,10 @@ $context = get_context_instance(CONTEXT_SYSTEM);
 require_capability('block/exacomp:admin', $context);
 
 $check = block_exacomp_xml_check_import();
-if(!$check)
-    block_exacomp_xml_do_import();
+if(!$check){
+	redirect($CFG->wwwroot.'/blocks/exacomp/import.php?courseid='.$courseid);
+  //block_exacomp_xml_do_import();
+}
 
 //Falls Formular abgesendet, speichern
 if (isset($action) && $action == 'save') {
