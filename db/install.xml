@@ -230,7 +230,8 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="course"/>
         <FIELD NAME="course" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Kurs" PREVIOUS="id" NEXT="grading"/>
         <FIELD NAME="grading" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Bewertungsschema maximaler Wert" PREVIOUS="course" NEXT="activities"/>
-        <FIELD NAME="activities" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the hidden activities of edit activities table" PREVIOUS="grading"/>
+        <FIELD NAME="activities" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the hidden activities of edit activities table" PREVIOUS="grading" NEXT="tstamp"/>
+				<FIELD NAME="tstamp" TYPE="int" NOTNULL="true" SEQUENCE="false" COMMENT="date of import" LENGTH="20" PREVIOUS="activities"/>      
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="course"/>

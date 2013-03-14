@@ -203,6 +203,21 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// exacomp savepoint reached
 		upgrade_block_savepoint(true, 2013011500, 'exacomp');
 	}
+	
+	if ($oldversion < 2013030800) {
+	
+		// Define field userid to be added to block_exacompprofilesettings
+		$table = new xmldb_table('block_exacompsettings');
+		$field = new xmldb_field('tstamp', XMLDB_TYPE_INTEGER, 20, null, null, null, null, null);
+	
+		// Conditionally launch add field userid
+		if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+	
+		// exacomp savepoint reached
+		upgrade_block_savepoint(true, 2013030800, 'exacomp');
+	}
 	return $result;
 }
 
