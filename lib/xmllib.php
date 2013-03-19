@@ -662,9 +662,9 @@ function block_exacomp_settstamp(){
 	global $DB;
 	$sql="SELECT * FROM {block_exacompsettings} WHERE course=0 AND activities='importxml'";
 	
-	if ($modsetting = $DB->get_records_sql($sql)){
-		$modsetting->tstamp=time();
-		$DB->update_record('block_exacompsettings', $modsetting);
+	if ($modsetting = $DB->get_record_sql($sql)){
+		$tstampt=time();
+		$DB->update_record('block_exacompsettings', array("id"=>$modsetting->id,"tstamp"=>$tstampt));
 	}else{
 		$modsettingi=array("course" => 0,"grading"=>"0","activities"=>"importxml","tstamp"=>time());
 		$DB->insert_record('block_exacompsettings',$modsettingi);
