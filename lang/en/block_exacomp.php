@@ -76,6 +76,10 @@ $string['explaincompetencesoverview'] = 'an overall overview of all your compete
 $string['exacomp:teacher'] = 'overview of teacher actions in a course';
 $string['exacomp:admin'] = 'overview of administrator actions in a course';
 $string['exacomp:student'] = 'overview of student actions in a course';
+$string['exacomp:use'] = 'use Exabis Competencies';
+$string['exacomp:addinstance'] = 'add Exabis Competencies to the course';
+$string['exacomp:myaddinstance'] = 'add Exabis Competencies on My home';
+
 $string['link_edit_activities'] = 'assign activitites';
 $string['link_import'] = 'import';
 $string['auswahl_speichern'] = 'save selection';
