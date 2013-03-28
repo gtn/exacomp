@@ -149,4 +149,8 @@ $string['radargraphheader'] = 'Competence radar';
 $string['notinview'] = 'This item has not been published yet';
 $string['bewertungsschema_speichern']='save marking scheme';
 $string['bewertung'] = ' assessment: ';
+
+
+$string['xmlserverurl'] = 'Server-URL';
+$string['configxmlserverurl'] = 'Url to a xml file, which is used for keeping the database entries up to date';
 ?>

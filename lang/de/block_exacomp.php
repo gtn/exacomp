@@ -147,4 +147,8 @@ $string['radargraphheader'] = 'Kompetenzradar';
 $string['notinview'] = 'Dieses Item ist nicht veröffentlicht';
 $string['bewertungsschema_speichern']='Bewertungsschema speichern';
 $string['bewertung'] = ' Bewertung: ';
+
+
+$string['xmlserverurl'] = 'Server-URL';
+$string['configxmlserverurl'] = 'Url zu einer XML Datei, die verwendet wird, um die Daten aktuell zu halten';
 ?>

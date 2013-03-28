@@ -20,4 +20,5 @@ $exaport_release = "1.0";  // User-friendly version number
 $plugin->maturity  = MATURITY_BETA;
 $plugin->release  = "1.0";
 $plugin->requires = 2011033005.06;
+$plugin->cron = 259200; //259200sec = 3 days
 

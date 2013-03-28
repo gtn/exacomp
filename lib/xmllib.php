@@ -494,10 +494,16 @@ function block_exacomp_xml_insert_descrtopicmm($descrtopics) {
 	}
 }
 
-function block_exacomp_xml_do_import($file = null, $source = 1) {
+/**
+ * 
+ * @param String $file path to xml file, xml/exacomp_data.xml is used if null
+ * @param unknown_type $source default is 1, for specific import userid should be used
+ * @param unknown_type $cron should always be 0, 1 if method is called by the cron job
+ */
+function block_exacomp_xml_do_import($file = null, $source = 1, $cron = 0) {
 	
 	global $DB,$CFG;
-	$filename = 'xml/exacomp_data.xml';
+	$filename = $CFG->dirroot . '/blocks/exacomp/xml/exacomp_data.xml';
 	$schritt = optional_param('schr', 0, PARAM_INT);
 
 	$edulevel = 0;
@@ -596,7 +602,7 @@ function block_exacomp_xml_do_import($file = null, $source = 1) {
 				block_exacomp_xml_insert_descrexampmm($descrexamp);
 
 			
-				if ($source==1){
+				if ($source==1 && $cron==0){
 					$courseid=optional_param('courseid', 0, PARAM_INT);
 					redirect($CFG->wwwroot.'/blocks/exacomp/import.php?action=xml&courseid='.$courseid.'&schr=1');
 					die;
