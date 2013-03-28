@@ -47,7 +47,7 @@ class block_exacomp extends block_base {
 		if (has_capability('block/exacomp:admin', $context)) {
 
 			$this->content->text = '';
-			$this->content->text.='<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/config.gif" height="16" width="23" alt="' . get_string("adminnavconfig", "block_exacomp") . '" />';
+			$this->content->text.='<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/module_config.png" height="16" width="23" alt="' . get_string("adminnavconfig", "block_exacomp") . '" />';
 			$this->content->text.='<a title="configuration" href="' . $CFG->wwwroot . '/blocks/exacomp/edit_config.php?courseid=' . $courseid . '">' . get_string('adminnavconfig', 'block_exacomp') . '</a>';
 			//$this->content->text.='<br /><img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/databases.png" height="16" width="23" alt="' . get_string("adminnavimport", "block_exacomp") . '" />';
 			//$this->content->text.='<a title="import" href="' . $CFG->wwwroot . '/blocks/exacomp/import.php">' . get_string('link_import', 'block_exacomp') . '</a>';
@@ -64,17 +64,17 @@ class block_exacomp extends block_base {
 				//Kurs nicht zugeordnet
 				$this->content->text .= get_string('configcourseonce', 'block_exacomp')."<br/>";
 			}
-			$this->content->text.='<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/cog.png" height="16" width="23" alt="' . get_string("teachernavconfig", "block_exacomp") . '" />';
+			$this->content->text.='<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/subjects_topics.gif" height="16" width="23" alt="' . get_string("teachernavconfig", "block_exacomp") . '" />';
 			$this->content->text.='<a title="edit course" href="' . $CFG->wwwroot . '/blocks/exacomp/edit_course.php?courseid=' . $courseid . '">' . get_string('teachernavconfig', 'block_exacomp') . '</a>';
 			if (block_exacomp_isactivated($courseid)) {
 				//Kurs zugeordnet
-				$this->content->text.='<br /><img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/application_view_tile.png" height="16" width="23" alt="' . get_string("link_edit_activities", "block_exacomp") . '" />';
+				$this->content->text.='<br /><img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/assign_moodle_activities.png" height="16" width="23" alt="' . get_string("link_edit_activities", "block_exacomp") . '" />';
 				$this->content->text.='<a title="edit" href="' . $CFG->wwwroot . '/blocks/exacomp/edit_activities.php?courseid=' . $courseid . '">' . get_string('teachernavactivities', 'block_exacomp') . '</a>';
-				$this->content->text.='<br /><img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/group.png" height="16" width="23" alt="' . get_string("teachernavstudents", "block_exacomp") . '" />';
+				$this->content->text.='<br /><img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/overview_of_competencies.png" height="16" width="23" alt="' . get_string("teachernavstudents", "block_exacomp") . '" />';
 				$this->content->text.='<a title="assign studetns" href="' . $CFG->wwwroot . '/blocks/exacomp/assign_competences.php?courseid=' . $courseid . '">' . get_string('teachernavstudents', 'block_exacomp') . '</a>';
-				$this->content->text.='<br /><img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/page_white_stack.png" height="16" width="23" alt="' . get_string("teachertabassigncompetencesdetail", "block_exacomp") . '" />';
+				$this->content->text.='<br /><img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/detailed_view_of_competencies.png" height="16" width="23" alt="' . get_string("teachertabassigncompetencesdetail", "block_exacomp") . '" />';
 				$this->content->text.='<a title="assign studetns" href="' . $CFG->wwwroot . '/blocks/exacomp/edit_students.php?courseid=' . $courseid . '">' . get_string('teachertabassigncompetencesdetail', 'block_exacomp') . '</a>';
-				$this->content->text.='<br /><img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/doc_offlice.png" height="16" width="23" alt="' . get_string("teachertabassigncompetenceexamples", "block_exacomp") . '" />';
+				$this->content->text.='<br /><img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/examples_and_tasks.png" height="16" width="23" alt="' . get_string("teachertabassigncompetenceexamples", "block_exacomp") . '" />';
 				$this->content->text.='<a title="assign studetns" href="' . $CFG->wwwroot . '/blocks/exacomp/view_examples.php?courseid=' . $courseid . '">' . get_string('teachertabassigncompetenceexamples', 'block_exacomp') . '</a>';
 			}
 		}
