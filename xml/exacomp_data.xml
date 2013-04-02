@@ -15,6 +15,16 @@
 		<title><![CDATA[Grundbildung]]></title>
 		<sorting>402</sorting>
 	</table>
+	<table name="block_exacompedulevels">
+		<uid>218</uid>
+		<title/>
+		<sorting>416</sorting>
+	</table>
+	<table name="block_exacompedulevels">
+		<uid>220</uid>
+		<title><![CDATA[Übergreifende Bildungsstandards]]></title>
+		<sorting>418</sorting>
+	</table>
 	<table name="block_exacompschooltypes">
 		<uid>1</uid>
 		<title><![CDATA[Kaufmännische Schulen]]></title>
@@ -80,15 +90,15 @@
 	</table>
 	<table name="block_exacompschooltypes">
 		<uid>72</uid>
-		<title><![CDATA[Soziale Kompetenzen]]></title>
-		<elid>14</elid>
+		<title><![CDATA[SOZIALE KOMPETENZEN]]></title>
+		<elid>220</elid>
 		<sorting>332</sorting>
 		<isoez>1</isoez>
 	</table>
 	<table name="block_exacompschooltypes">
 		<uid>73</uid>
-		<title><![CDATA[Personale Kompetenzen]]></title>
-		<elid>14</elid>
+		<title><![CDATA[PERSONALE KOMPETENZEN]]></title>
+		<elid>220</elid>
 		<sorting>436</sorting>
 		<isoez>1</isoez>
 	</table>
@@ -101,8 +111,8 @@
 	</table>
 	<table name="block_exacompschooltypes">
 		<uid>92</uid>
-		<title><![CDATA[Digitale Kompetenzen]]></title>
-		<elid>3</elid>
+		<title><![CDATA[DIGITALE KOMPETENZEN]]></title>
+		<elid>220</elid>
 		<sorting>439</sorting>
 		<isoez>1</isoez>
 	</table>
@@ -119,6 +129,13 @@
 		<titleshort><![CDATA[FREMDSPRACHEN 8. SCHULSTUFE]]></titleshort>
 		<stid>5</stid>
 		<sorting>2560</sorting>
+	</table>
+	<table name="block_exacompsubjects">
+		<uid>5</uid>
+		<title><![CDATA[Informatische Grundbildung]]></title>
+		<titleshort><![CDATA[Informatische Grundbildung]]></titleshort>
+		<stid>92</stid>
+		<sorting>2048</sorting>
 	</table>
 	<table name="block_exacompsubjects">
 		<uid>7</uid>
@@ -415,13 +432,6 @@
 		<sorting>3032</sorting>
 	</table>
 	<table name="block_exacompsubjects">
-		<uid>245</uid>
-		<title><![CDATA[Mathematik 4. Schulstufe]]></title>
-		<titleshort><![CDATA[Mathematik 4. Schulstufe]]></titleshort>
-		<stid>125</stid>
-		<sorting>3033</sorting>
-	</table>
-	<table name="block_exacompsubjects">
 		<uid>283</uid>
 		<title><![CDATA[GERS]]></title>
 		<titleshort/>
@@ -448,6 +458,13 @@
 		<titleshort/>
 		<stid>78</stid>
 		<sorting>3113</sorting>
+	</table>
+	<table name="block_exacompsubjects">
+		<uid>392</uid>
+		<title><![CDATA[Informatische Fortbildung]]></title>
+		<titleshort/>
+		<stid>92</stid>
+		<sorting>3171</sorting>
 	</table>
 	<table name="block_exacomptopics">
 		<uid>1</uid>
@@ -495,6 +512,110 @@
 		<titleshort><![CDATA[Lesen]]></titleshort>
 		<subjid>2</subjid>
 		<sorting>25344</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>14</uid>
+		<title><![CDATA[1.1. Informationstechnologie, Mensch und Gesellschaft - Bedeutung von IT in der Gesellschaft]]></title>
+		<titleshort><![CDATA[Bedeutung von IT in der Gesellschaft]]></titleshort>
+		<subjid>5</subjid>
+		<sorting>21248</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>15</uid>
+		<title><![CDATA[1.2. Informationstechnologie, Mensch und Gesellschaft - Verantwortung bei der Nutzung von IT]]></title>
+		<titleshort><![CDATA[Verantwortung bei der Nutzung von IT]]></titleshort>
+		<subjid>5</subjid>
+		<sorting>21504</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>16</uid>
+		<title><![CDATA[1.3. Informationstechnologie, Mensch und Gesellschaft - Datenschutz und Datensicherheit]]></title>
+		<titleshort><![CDATA[Datenschutz und Datensicherheit]]></titleshort>
+		<subjid>5</subjid>
+		<sorting>21760</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>17</uid>
+		<title><![CDATA[2.1. Informatiksysteme - Technische Bestandteile und deren Einsatz]]></title>
+		<titleshort><![CDATA[Technische Bestandteile und deren Einsatz]]></titleshort>
+		<subjid>5</subjid>
+		<sorting>22272</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>18</uid>
+		<title><![CDATA[2.2. Informatiksysteme - Gestaltung und Nutzung persönlicher Informatiksysteme]]></title>
+		<titleshort><![CDATA[Nutzung persönlicher Informatiksysteme]]></titleshort>
+		<subjid>5</subjid>
+		<sorting>22528</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>19</uid>
+		<title><![CDATA[2.3. Informatiksysteme - Datenaustausch in Netzwerken]]></title>
+		<titleshort><![CDATA[Datenaustausch in Netzwerken]]></titleshort>
+		<subjid>5</subjid>
+		<sorting>22784</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>20</uid>
+		<title><![CDATA[3.1. Anwendungen - Dokumentation, Publikation und Präsentation]]></title>
+		<titleshort><![CDATA[Dokumentation Publikation Präsentation]]></titleshort>
+		<subjid>5</subjid>
+		<sorting>23296</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>21</uid>
+		<title><![CDATA[3.2. Anwendungen - Berechnung und Visualisierung]]></title>
+		<titleshort><![CDATA[Berechnung und Visualisierung]]></titleshort>
+		<subjid>5</subjid>
+		<sorting>23552</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>22</uid>
+		<title><![CDATA[3.3. Anwendungen - Suche, Auswahl und Organisation von Information]]></title>
+		<titleshort><![CDATA[Organisation von Information]]></titleshort>
+		<subjid>5</subjid>
+		<sorting>23808</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>23</uid>
+		<title><![CDATA[4.1. Konzepte - Darstellung von Information]]></title>
+		<titleshort><![CDATA[Darstellung von Information]]></titleshort>
+		<subjid>5</subjid>
+		<sorting>24320</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>24</uid>
+		<title><![CDATA[4.2. Konzepte - Strukturieren von Daten]]></title>
+		<titleshort><![CDATA[Strukturieren von Daten]]></titleshort>
+		<subjid>5</subjid>
+		<sorting>24576</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>25</uid>
+		<title><![CDATA[4.3. Konzepte - Automatisierung von Handlungsanweisungen]]></title>
+		<titleshort><![CDATA[Automatisierte Handlungs- anweisungen]]></titleshort>
+		<subjid>5</subjid>
+		<sorting>24832</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>26</uid>
+		<title><![CDATA[4.4. Konzepte - Koordination und Steuerung von Abläufen]]></title>
+		<titleshort><![CDATA[Koordination und Steuerung von Abläufen]]></titleshort>
+		<subjid>5</subjid>
+		<sorting>25088</sorting>
 		<description/>
 	</table>
 	<table name="block_exacomptopics">
@@ -1039,6 +1160,30 @@
 		<titleshort><![CDATA[Handlungsbereich - Rechnen, Operieren, Inhaltsbereich "Zahlen und Maße"]]></titleshort>
 		<subjid>14</subjid>
 		<sorting>1536</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>111</uid>
+		<title><![CDATA[1.4. Informationstechnologie, Mensch und Gesellschaft - Entwicklungen und berufliche Perspektiven]]></title>
+		<titleshort><![CDATA[Entwicklungen und berufliche Perspektiven]]></titleshort>
+		<subjid>5</subjid>
+		<sorting>22016</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>112</uid>
+		<title><![CDATA[2.4. Informatiksysteme - Mensch-Maschine-Schnittstelle]]></title>
+		<titleshort><![CDATA[Mensch-Maschine-Schnittstelle]]></titleshort>
+		<subjid>5</subjid>
+		<sorting>23040</sorting>
+		<description/>
+	</table>
+	<table name="block_exacomptopics">
+		<uid>113</uid>
+		<title><![CDATA[3.4. Anwendungen - Kommunikation und Kooperation]]></title>
+		<titleshort><![CDATA[Kommunikation und Kooperation]]></titleshort>
+		<subjid>5</subjid>
+		<sorting>24064</sorting>
 		<description/>
 	</table>
 	<table name="block_exacomptopics">
@@ -3025,6 +3170,166 @@ Sozialkompetenz)]]></titleshort>
 		<niveauid>1</niveauid>
 		<sorting>175360</sorting>
 		<skillid>3</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>70</uid>
+		<title><![CDATA[1.1.1. Ich kann wichtige Anwendungsgebiete der Informationstechnologie anführen. ]]></title>
+		<niveauid>1</niveauid>
+		<sorting>1280</sorting>
+		<skillid>0</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>670</uid>
+		<title><![CDATA[1.2.6. Ich kann meine digitale Identität im Web gestalten und Manipulationsmöglichkeiten abschätzen]]></title>
+		<niveauid>0</niveauid>
+		<sorting>3072</sorting>
+		<skillid>0</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>72</uid>
+		<title><![CDATA[1.1.2. Ich kann Bereiche nennen, in denen der Computer den Menschen nicht ersetzen kann. ]]></title>
+		<niveauid>0</niveauid>
+		<sorting>1536</sorting>
+		<skillid>0</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>73</uid>
+		<title><![CDATA[1.2.3. Ich kenne die Risiken im Umgang mit Personen, die ich nur aus dem Internet kenne.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>1792</sorting>
+		<skillid>0</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>74</uid>
+		<title><![CDATA[1.2.1. Ich kann die Auswirkungen meines Verhaltens in virtuellen (Spiele)Welten abschätzen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>2048</sorting>
+		<skillid>0</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>75</uid>
+		<title><![CDATA[1.2.2. Ich kann Gefahren und Risiken bei der Nutzung von Informationstechnologien nennen und beschreiben und weiß damit umzugehen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>2560</sorting>
+		<skillid>0</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>76</uid>
+		<title><![CDATA[1.2.4. Ich weiß, dass auch im Internet Geschäfte abgeschlossen werden können und damit Risiken verbunden sind.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>2304</sorting>
+		<skillid>0</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>77</uid>
+		<title><![CDATA[1.2.5. Ich weiß, dass ich im Internet Spuren hinterlasse und grundsätzlich identifizierbar bin und weiß mich entsprechend zu verhalten. ]]></title>
+		<niveauid>0</niveauid>
+		<sorting>2816</sorting>
+		<skillid>0</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>78</uid>
+		<title><![CDATA[1.3.2. Ich weiß, dass es Bedrohungen wie Schadprogramme gibt - insbesondere bei Datenaustausch und Benutzung des Internets.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>4096</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>79</uid>
+		<title><![CDATA[1.3.1. Ich kenne einige Möglichkeiten um den Schutz meines Computers zu überprüfen und weiß, an wen ich mich im Bedarfsfall wenden kann.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>3840</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>80</uid>
+		<title><![CDATA[1.2.7. Ich kenne meine grundlegenden Rechte und Pflichten im Umgang mit eigenen und fremden Daten: Urheberrecht (Musik, Filme, Bilder, Texte, Software) ]]></title>
+		<niveauid>0</niveauid>
+		<sorting>3328</sorting>
+		<skillid>0</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>671</uid>
+		<title><![CDATA[1.2.8. Ich kenne meine grundlegenden Rechte und Pflichten im Umgang mit eigenen und fremden Daten: (Recht auf Schutz personenbezogener Daten insbesondere das Recht am eigenen Bild)]]></title>
+		<niveauid>0</niveauid>
+		<sorting>3584</sorting>
+		<skillid>0</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>81</uid>
+		<title><![CDATA[1.3.3. Ich kann zwischen Datenschutz und Datensicherung unterscheiden.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>4352</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>82</uid>
+		<title><![CDATA[1.3.4. Ich weiß, dass es geschützte Daten gibt, zu denen ich mir keinen Zugriff verschaffen darf, und dass missbräuchlicher Zugriff strafbar  ist.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>4608</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>83</uid>
+		<title><![CDATA[1.4.1. Ich kann die geschichtliche Entwicklung der Informations- und Kommunikationstechnologie und Informatik in groben Umrissen beschreiben.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>4864</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>84</uid>
+		<title><![CDATA[1.4.2. Ich kann einige Berufsfelder nennen, in denen Informatiksysteme sehr wichtig sind.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>5120</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>85</uid>
+		<title><![CDATA[1.4.3. Ich kann informationstechnologische Berufe anführen. ]]></title>
+		<niveauid>0</niveauid>
+		<sorting>5376</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>699</uid>
+		<title><![CDATA[3.1.2. Ich kann Texte überarbeiten und korrigieren.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>13056</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>700</uid>
+		<title><![CDATA[3.1.1. Ich kann Texte zügig eingeben, diese formatieren, kopieren, einfügen, verschieben und löschen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>12800</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>701</uid>
+		<title><![CDATA[2.4.3. Ich kann grundlegende Funktionen einer grafischen Benutzeroberfläche bedienen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>12544</sorting>
+		<skillid>1</skillid>
 		<parent_id>0</parent_id>
 	</table>
 	<table name="block_exacompdescriptors">
@@ -7576,6 +7881,430 @@ statistischer Darstellungen und Kennzahlen, bezüglich statistischer Sätze, bez
 		<niveauid>0</niveauid>
 		<sorting>1024</sorting>
 		<skillid>0</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>673</uid>
+		<title><![CDATA[4.4.1. Ich kann Abläufe aus dem Alltag beschreiben]]></title>
+		<niveauid>0</niveauid>
+		<sorting>19712</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>674</uid>
+		<title><![CDATA[4.3.4. Ich kann einfache Programme in einer geeigneten Entwicklungsumgebung erstellen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>19456</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>675</uid>
+		<title><![CDATA[4.3.3. Ich kann einfache Algorithmen aus dem Alltag nennen und beschreiben.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>19200</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>676</uid>
+		<title><![CDATA[4.3.2. Ich kann einfache Handlungsanleitungen (Algorithmen) verbal und schriftlich formulieren.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>18944</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>677</uid>
+		<title><![CDATA[4.3.1. Ich kann eindeutige Handlungsanleitungen (Algorithmen) nachvollziehen und ausführen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>18688</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>678</uid>
+		<title><![CDATA[4.2.4. Ich kann Tabellen in verschiedenen Anwendungen anlegen und ändern.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>18432</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>679</uid>
+		<title><![CDATA[4.2.3. Ich verstehe Ordnerstrukturen und kann eigene erstellen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>18176</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>680</uid>
+		<title><![CDATA[4.2.2. Ich weiß, dass es verschiedene Datentypen gibt (Ganzzahl, Gleitkommazahl, Text, Datum, Wahrheitswert), die bei der Verarbeitung beachtet werden müssen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>17920</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>681</uid>
+		<title><![CDATA[4.2.1. Ich kann mit Programmen Daten erfassen, speichern, ändern, sortieren, nach Daten suchen und diese selektieren.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>17664</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>682</uid>
+		<title><![CDATA[4.1.1. Ich kann einige Informationen aus dem Alltag kodieren und dekodieren.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>17408</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>683</uid>
+		<title><![CDATA[3.4.5. Ich beachte Umgangsformen im Internet (Netiquette)]]></title>
+		<niveauid>0</niveauid>
+		<sorting>17152</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>684</uid>
+		<title><![CDATA[3.4.4. Ich kann Registrierungen und Anmeldungen im Internet durchführen und mit persönlichen Daten verantwortungsbewusst umgehen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>16896</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>685</uid>
+		<title><![CDATA[3.4.3. Ich kann soziale Netzwerke sinnvoll und verantwortungsvoll nutzen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>16640</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>686</uid>
+		<title><![CDATA[3.4.2. Ich kann E-Mails und Foren zum Informationsaustausch, zur Diskussion und Zusammenarbeit nutzen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>16384</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>687</uid>
+		<title><![CDATA[3.4.1. Ich kann aktuelle Informations- und Kommunikationssysteme benennen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>16128</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>688</uid>
+		<title><![CDATA[3.3.5. Ich kann Daten aus dem Internet in anderen Anwendungsprogrammen nutzen und weiterbearbeiten.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>15872</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>689</uid>
+		<title><![CDATA[3.3.4. Ich kann Informationen im Internet unter Beachtung von Quellenangabe und Urheberrecht anderen zur Verfügung stellen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>15616</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>690</uid>
+		<title><![CDATA[3.3.3. Ich kann Kriterien für die Zuverlässigkeit von Informationsquellen nennen und diese anwenden.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>15360</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>691</uid>
+		<title><![CDATA[3.3.2. Ich kann Informationen und Medien im Internet unter Verwendung unterschiedlicher Dienste und Angebote durch die Wahl geeigneter Suchbegriffe gezielt recherchieren.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>15104</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>692</uid>
+		<title><![CDATA[3.3.1. Ich kann wichtige Informationsquellen im Internet anführen, die für meine schulischen und privaten Informationsbedürfnisse nützlich und notwendig sind und diese sinnvoll und gezielt nutzen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>14848</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>693</uid>
+		<title><![CDATA[3.2.4. Ich kann Zahlenreihen in geeigneten Diagrammen darstellen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>14592</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>694</uid>
+		<title><![CDATA[3.2.3. Ich kann Tabellen formatieren.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>14336</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>695</uid>
+		<title><![CDATA[3.2.2. Ich kann mit einer Tabellenkalkulation einfache Berechnungen durchführen und altersgemäße Aufgaben lösen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>14080</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>696</uid>
+		<title><![CDATA[3.2.1. Ich verstehe den grundlegenden Aufbau einer Tabelle.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>13824</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>697</uid>
+		<title><![CDATA[3.1.4. Ich kann digitale Texte, Bilder, Audio- und Videodaten in aktuellen Formaten mit verschiedenen Geräten und Anwendungen nutzen und gestalten.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>13568</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>698</uid>
+		<title><![CDATA[3.1.3. Ich kann Dokumente und Präsentationen unter Einbeziehung von Bildern, Grafiken und anderen Objekten gestalten.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>13312</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>702</uid>
+		<title><![CDATA[2.4.2. Ich weiß, dass meine Interaktion mit digitalen Geräten vom jeweiligen Gerät und Betriebssystem abhängig ist.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>12288</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>703</uid>
+		<title><![CDATA[2.4.1. Ich kann verschiedene Möglichkeiten der Interaktion mit digitalen Geräten nutzen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>12032</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>704</uid>
+		<title><![CDATA[2.3.5. Ich kann grundlegende Dienste im Internet benennen und nutzen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>11776</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>705</uid>
+		<title><![CDATA[2.3.4. Ich kann die wichtigsten Komponenten eines Netzwerks benennen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>11520</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>706</uid>
+		<title><![CDATA[2.3.3. Ich kann grundlegende Funktionen und Dienste in Netzwerken (z.B. Datei-, Druck- und Anmeldedienste) beschreiben und nutzen. ]]></title>
+		<niveauid>0</niveauid>
+		<sorting>11264</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>707</uid>
+		<title><![CDATA[2.3.2. Ich kann Computer mit einem Netzwerk verbinden.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>11008</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>708</uid>
+		<title><![CDATA[2.3.1. Ich kann zwischen lokalen und globalen Netzwerken unterscheiden und sie zum Datenaustausch nutzen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>10752</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>709</uid>
+		<title><![CDATA[2.2.15. Ich kann die wichtigsten Aufgaben eines Betriebssystems nennen und kann die zum Normalbetrieb notwendigen Funktionen nutzen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>10496</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>710</uid>
+		<title><![CDATA[2.2.14. Ich kann Betriebssysteme aufzählen]]></title>
+		<niveauid>0</niveauid>
+		<sorting>10240</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>711</uid>
+		<title><![CDATA[2.2.13. Ich kann Daten sichern und kenne die Risiken eines Datenverlustes.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>9984</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>712</uid>
+		<title><![CDATA[2.2.12. Ich kann eine Lernplattform in den Grundzügen aktiv nutzen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>9728</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>713</uid>
+		<title><![CDATA[2.2.11. Ich kann Daten zwischen verschiedenen elektronischen Geräten austauschen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>9472</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>714</uid>
+		<title><![CDATA[2.2.10. Ich kann Programme starten, darin arbeiten, speichern und drucken.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>9216</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>715</uid>
+		<title><![CDATA[2.2.9. Ich kann Dateien gezielt speichern und auffinden, nach diesen suchen und diese öffnen (lokal, im lokalen Netzwerk, im Web).]]></title>
+		<niveauid>0</niveauid>
+		<sorting>8960</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>716</uid>
+		<title><![CDATA[2.2.8. Ich kann ein Ordnersystem richtig gestalten, einsetzen und Dateien darin strukturiert verwalten.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>8704</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>717</uid>
+		<title><![CDATA[2.2.7. Ich kann Objekte verschieben, kopieren und löschen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>8448</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>718</uid>
+		<title><![CDATA[2.2.6. Ich kann einige Anwendungsprogramme und zugehörige Dateitypen nennen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>8192</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>719</uid>
+		<title><![CDATA[2.2.5. Ich kann verschiedene Arten von Software benennen und weiß, welchen Anwendungsgebieten sie zuzuordnen sind.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>7936</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>720</uid>
+		<title><![CDATA[2.2.4. Ich weiß über den Standby-Betrieb/Energiesparmodus Bescheid.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>7680</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>721</uid>
+		<title><![CDATA[2.2.3. Ich kann mich an einem Computersystem ordnungsgemäß an- und abmelden.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>7424</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>722</uid>
+		<title><![CDATA[2.2.2. Ich kann ein Computersystem starten und beenden.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>7168</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>723</uid>
+		<title><![CDATA[2.2.1. Ich kann Informationstechnologien zum (vernetzten) Lernen einsetzen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>6912</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>724</uid>
+		<title><![CDATA[2.1.5. Ich kann verschiedene Arten von Speichermedien und Speichersystemen nennen und nutzen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>6656</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>725</uid>
+		<title><![CDATA[2.1.4. Ich kann die wichtigsten Komponenten richtig zusammenschließen und Verbindungsfehler identifizieren (Tastatur, Maus, Drucker, USB-Geräte).]]></title>
+		<niveauid>0</niveauid>
+		<sorting>6400</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>726</uid>
+		<title><![CDATA[2.1.3. Ich kann gängige Eingabegeräte zügig bedienen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>6144</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>727</uid>
+		<title><![CDATA[2.1.2. Ich kann wichtige Bestandteile eines Computersystems (Eingabe-, Ausgabegeräte und Zentraleinheit) benennen, kann ihre Funktionen beschreiben und diese bedienen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>5888</sorting>
+		<skillid>1</skillid>
+		<parent_id>0</parent_id>
+	</table>
+	<table name="block_exacompdescriptors">
+		<uid>728</uid>
+		<title><![CDATA[2.1.1. Ich weiß, dass viele Geräte des täglichen Lebens durch Computer gesteuert werden und kann für mich relevante nennen und nutzen.]]></title>
+		<niveauid>0</niveauid>
+		<sorting>5632</sorting>
+		<skillid>1</skillid>
 		<parent_id>0</parent_id>
 	</table>
 	<table name="block_exacompdescriptors">
@@ -22206,6 +22935,468 @@ Didaktische Hinweise:	Einzelarbeit Für diese Aufgabenstellung ist kein Computer
 		<externaltask/>
 		<lang>0</lang>
 		<iseditable>1</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>140</uid>
+		<title><![CDATA[Notebookkauf]]></title>
+		<titleshort><![CDATA[Notebookkauf]]></titleshort>
+		<task/>
+		<sorting>7964</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Tipps und Hinweise zum Kauf eines Notebooks: Anhand von Werbematerial können verschiedene Angebote verglichen und die Grundlagen für eine Kaufentscheidung besprochen werden.]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.edugroup.at/praxis/portale/informatik-ikt/digitale-kompetenzen/detail/notebookkauf.html</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>141</uid>
+		<title><![CDATA[Einladung zu einer Geburtstagsfeier]]></title>
+		<titleshort><![CDATA[Einladung zu einer Geburtstags- feier]]></titleshort>
+		<task/>
+		<sorting>7965</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Erstellen einer Einladung zu einer Geburstagsfeier und Einfügen von Grafiken in einem geeigneten Programm sowie das Ausdrucken der erstellten Einladung.]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.edugroup.at/praxis/portale/informatik-ikt/digitale-kompetenzen/detail/einladung-zu-einer-geburtstagsfeier.html</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>142</uid>
+		<title><![CDATA[Holidays - Interview]]></title>
+		<titleshort><![CDATA[Holidays - Interview]]></titleshort>
+		<task/>
+		<sorting>7966</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Durchführung eines Interviews, Eingabe und Bearbeitung des Textes, Korrekturen und Präsentationen mit Bildern und Grafiken.]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.edugroup.at/praxis/portale/informatik-ikt/digitale-kompetenzen/detail/holidays-interview.html</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>144</uid>
+		<title><![CDATA[Informationen über ein Säugetier]]></title>
+		<titleshort><![CDATA[Informationen über ein Säugetier]]></titleshort>
+		<task/>
+		<sorting>7968</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Informationssuche im Internet]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.edugroup.at/praxis/portale/informatik-ikt/digitale-kompetenzen/detail/informationen-ueber-ein-saeugetier.html</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>145</uid>
+		<title><![CDATA[Wahrzeichen]]></title>
+		<titleshort><![CDATA[Wahrzeichen]]></titleshort>
+		<task/>
+		<sorting>7969</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Suche im Internet Informationen über ein Wahrzeichen deiner Wahl und gestalte dann dazu eine Präsentation sowie ein Infoblatt!]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://oezeps.at/moodle/course/view.php?id=157</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>146</uid>
+		<title><![CDATA[Bewegungsdiagramme]]></title>
+		<titleshort><![CDATA[Bewegungs- diagramme]]></titleshort>
+		<task/>
+		<sorting>7970</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Erstellung eines Bewegungsdiagramms. Die Sozialform (Gruppenarbeit) bzw. die Anzahl der Gruppenmitglieder kann geändert werden.]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.edugroup.at/praxis/portale/informatik-ikt/digitale-kompetenzen/detail/bewegungsdiagramme.html</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>147</uid>
+		<title><![CDATA[Energiekostenberechnung]]></title>
+		<titleshort><![CDATA[Energiekosten- berechnung]]></titleshort>
+		<task/>
+		<sorting>7971</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Erstellung eines Bewegungsdiagramms. Die Sozialform (Gruppenarbeit) bzw. die Anzahl der Gruppenmitglieder kann geändert werden.]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://oezeps.at/moodle/course/view.php?id=156</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>148</uid>
+		<title><![CDATA[Migration]]></title>
+		<titleshort><![CDATA[Migration]]></titleshort>
+		<task/>
+		<sorting>7972</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Erstellung von Diagrammen]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.edugroup.at/praxis/portale/informatik-ikt/digitale-kompetenzen/detail/migration-1.html</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>149</uid>
+		<title><![CDATA[Statistik und Sport]]></title>
+		<titleshort><![CDATA[Statistik und Sport]]></titleshort>
+		<task/>
+		<sorting>7973</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Datenerhebung und Datenverarbeitung mittels Tabellenkalkulation und anschließender Präsentation der Ergebnisse in einem Präsentationsprogramm.]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.edugroup.at/praxis/portale/informatik-ikt/digitale-kompetenzen/detail/statistik-und-sport.html</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>150</uid>
+		<title><![CDATA[Wohnfläche]]></title>
+		<titleshort><![CDATA[Wohnfläche]]></titleshort>
+		<task/>
+		<sorting>7974</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Berechne die Gesamtfläche einer Wohnung und stelle sie als Diagramm dar!]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.edugroup.at/praxis/portale/informatik-ikt/digitale-kompetenzen/detail/wohnflaeche.html</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>151</uid>
+		<title><![CDATA[Umfrage IT-Nutzung]]></title>
+		<titleshort><![CDATA[Umfrage IT-Nutzung]]></titleshort>
+		<task/>
+		<sorting>7975</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Erstellt einen Fragebogen zur Nutzung von Informationstechnologie (Computer, Internet, Mobiltelefon) in eurer Klasse.]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.edugroup.at/praxis/portale/informatik-ikt/digitale-kompetenzen/detail/it-nutzung-der-klasse.html</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>152</uid>
+		<title><![CDATA[Zoo Salzburg]]></title>
+		<titleshort><![CDATA[Zoo Salzburg]]></titleshort>
+		<task/>
+		<sorting>7976</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Du möchtest im Rahmen einer Projektwoche im Mai in Salzburg mit deiner Klasse den Zoo besuchen. Hole Informationen über den Zoo Salzburg ein, fasse sie in einem Dokument zusammen und versende diese als Anhang per E-Mail.]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.edugroup.at/praxis/portale/informatik-ikt/digitale-kompetenzen/detail/zoo-salzburg-1.html</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>153</uid>
+		<title><![CDATA[Information zu einem Lehrberuf]]></title>
+		<titleshort><![CDATA[Information zu einem Lehrberuf]]></titleshort>
+		<task/>
+		<sorting>7977</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Informationen zu einem Lehrberuf einholen und in einem Dokument zusammenfassen.]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.edugroup.at/praxis/portale/informatik-ikt/digitale-kompetenzen/detail/information-zu-einem-lehrberuf.html</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>154</uid>
+		<title><![CDATA[Handy]]></title>
+		<titleshort><![CDATA[Handy]]></titleshort>
+		<task/>
+		<sorting>7978</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Der Umgang mit einem Handy ist den SchülerInnen vertraut, das Schreiben von SMS gehört zum Alltag Jugendlicher.]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.edugroup.at/praxis/portale/informatik-ikt/digitale-kompetenzen/detail/handy-1.html</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>155</uid>
+		<title><![CDATA[Stempel]]></title>
+		<titleshort><![CDATA[Stempel]]></titleshort>
+		<task/>
+		<sorting>7979</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[
+
+In Präsentationsprogrammen kann man üben, die Reihenfolge von Objekten zu bestimmen und zu ändern. Praktisch kann die Übung im Werkunterricht oder in Bildnerischer Erziehung ausprobiert werden.]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.edugroup.at/praxis/portale/informatik-ikt/digitale-kompetenzen/detail/stempel.html</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>156</uid>
+		<title><![CDATA[Scratch - Katz und Maus]]></title>
+		<titleshort><![CDATA[Scratch - Katz und Maus]]></titleshort>
+		<task/>
+		<sorting>7980</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Erste Schritte in der Programmierumgebung SCRATCH]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.edugroup.at/praxis/portale/informatik-ikt/digitale-kompetenzen/detail/scratch-katz-und-maus.html</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>157</uid>
+		<title><![CDATA[Hardware]]></title>
+		<titleshort><![CDATA[Hardware]]></titleshort>
+		<task/>
+		<sorting>7981</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Ein Computer besteht aus vielen Bestandteilen, ohne die er nicht funktionieren würde... In diesem Kurs lernen SchülerInnen die Bestandteile des Computers und ihre Funktion kennen.]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://oezeps.at/moodle/course/view.php?id=155</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>158</uid>
+		<title><![CDATA[Dateimanagement - Das Haus]]></title>
+		<titleshort><![CDATA[Datei- management - Das Haus]]></titleshort>
+		<task/>
+		<sorting>7982</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Ein Haus wird in einem Ordnersystem abgebildet. Die Ordner beschreiben Räume und Möbel. Die Textdateien symbolisieren Gegenstände. Es herrscht große Unordnung in diesem System. Deine Aufgabe ist es, Ordnung in das Haus zu bringen.]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.edugroup.at/praxis/portale/informatik-ikt/digitale-kompetenzen/detail/dateimanagement-das-haus.html</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>159</uid>
+		<title><![CDATA[Wettervorhersage]]></title>
+		<titleshort><![CDATA[Wetter- vorhersage]]></titleshort>
+		<task/>
+		<sorting>7983</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Recherche nach verschiedenen Wetterprognosen, die einander gegenüber gestellt werden. Teile der Aufgabe eigenen sich als Hausübung, bei der Erstellung der eigenen Vorhersage ist aber die Diskussion in der Gruppe wesentlich.]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.edugroup.at/praxis/portale/informatik-ikt/digitale-kompetenzen/detail/wettervorhersage.html</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>160</uid>
+		<title><![CDATA[Eingabesteuerung]]></title>
+		<titleshort><![CDATA[Eingabe- steuerung]]></titleshort>
+		<task/>
+		<sorting>7984</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[SchülerInnen sollen klar identifizieren können, was zur Kommunikation mit dem Gerät verwendet wird. Dabei sind auch Eingabegeräte von Spielkonsolen durchaus akzeptabel.]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.edugroup.at/praxis/portale/informatik-ikt/digitale-kompetenzen/detail/eingabesteuerung.html</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>165</uid>
+		<title><![CDATA[Kaufen im Internet]]></title>
+		<titleshort><![CDATA[Kaufen im Internet]]></titleshort>
+		<task/>
+		<sorting>7988</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Recherche und Analyse sowie Vergleich verschiedener Online-Angebote zu einer Tasche sind Inhalt dieser Aufgabenstellung. Auch auf die wichtigsten Fachausdrücke rund um Internetgeschäfte wird eingegangen.]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.edugroup.at/praxis/portale/informatik-ikt/digitale-kompetenzen/detail/kaufen-im-internet.html</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>166</uid>
+		<title><![CDATA[Morgen im Chat]]></title>
+		<titleshort><![CDATA[Morgen im Chat]]></titleshort>
+		<task/>
+		<sorting>7989</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Anhand von Chatprotokollen wird das richtige Verhalten im Chat reflektiert und diskutiert.]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.edugroup.at/praxis/portale/informatik-ikt/digitale-kompetenzen/detail/morgen-im-chat.html</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>167</uid>
+		<title><![CDATA[Verkaufen im Internet]]></title>
+		<titleshort><![CDATA[Verkaufen im Internet]]></titleshort>
+		<task/>
+		<sorting>7990</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Modalitäten eines Online-Verkaufs kennen lernen]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.edugroup.at/praxis/portale/informatik-ikt/digitale-kompetenzen/detail/verkaufen-im-internet.html</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
 	</table>
 	<table name="block_exacompexamples">
 		<uid>211</uid>
@@ -45556,6 +46747,294 @@ Falls dir das passiert, besuche die Seite http://www.alleinr.de/.
 		<topicid>114</topicid>
 	</table>
 	<table name="block_exacompdescrtopic_mm">
+		<descrid>70</descrid>
+		<topicid>14</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>72</descrid>
+		<topicid>14</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>73</descrid>
+		<topicid>15</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>74</descrid>
+		<topicid>15</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>76</descrid>
+		<topicid>15</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>75</descrid>
+		<topicid>15</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>77</descrid>
+		<topicid>15</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>670</descrid>
+		<topicid>15</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>80</descrid>
+		<topicid>15</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>671</descrid>
+		<topicid>15</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>79</descrid>
+		<topicid>16</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>78</descrid>
+		<topicid>16</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>81</descrid>
+		<topicid>16</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>82</descrid>
+		<topicid>16</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>83</descrid>
+		<topicid>111</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>84</descrid>
+		<topicid>111</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>85</descrid>
+		<topicid>111</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>728</descrid>
+		<topicid>17</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>727</descrid>
+		<topicid>17</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>726</descrid>
+		<topicid>17</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>725</descrid>
+		<topicid>17</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>724</descrid>
+		<topicid>17</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>723</descrid>
+		<topicid>18</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>722</descrid>
+		<topicid>18</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>721</descrid>
+		<topicid>18</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>720</descrid>
+		<topicid>18</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>719</descrid>
+		<topicid>18</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>718</descrid>
+		<topicid>18</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>717</descrid>
+		<topicid>18</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>716</descrid>
+		<topicid>18</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>715</descrid>
+		<topicid>18</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>714</descrid>
+		<topicid>18</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>713</descrid>
+		<topicid>18</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>712</descrid>
+		<topicid>18</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>711</descrid>
+		<topicid>18</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>710</descrid>
+		<topicid>18</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>709</descrid>
+		<topicid>18</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>708</descrid>
+		<topicid>19</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>707</descrid>
+		<topicid>19</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>706</descrid>
+		<topicid>19</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>705</descrid>
+		<topicid>19</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>704</descrid>
+		<topicid>19</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>703</descrid>
+		<topicid>112</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>701</descrid>
+		<topicid>112</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>700</descrid>
+		<topicid>20</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>699</descrid>
+		<topicid>20</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>698</descrid>
+		<topicid>20</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>697</descrid>
+		<topicid>20</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>696</descrid>
+		<topicid>21</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>695</descrid>
+		<topicid>21</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>694</descrid>
+		<topicid>21</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>693</descrid>
+		<topicid>21</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>692</descrid>
+		<topicid>22</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>691</descrid>
+		<topicid>22</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>690</descrid>
+		<topicid>22</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>689</descrid>
+		<topicid>22</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>688</descrid>
+		<topicid>22</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>687</descrid>
+		<topicid>113</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>686</descrid>
+		<topicid>113</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>685</descrid>
+		<topicid>113</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>684</descrid>
+		<topicid>113</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>683</descrid>
+		<topicid>113</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>682</descrid>
+		<topicid>23</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>681</descrid>
+		<topicid>24</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>680</descrid>
+		<topicid>24</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>679</descrid>
+		<topicid>24</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>678</descrid>
+		<topicid>24</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>677</descrid>
+		<topicid>25</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>676</descrid>
+		<topicid>25</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>675</descrid>
+		<topicid>25</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>674</descrid>
+		<topicid>25</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>673</descrid>
+		<topicid>26</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
 		<descrid>634</descrid>
 		<topicid>110</topicid>
 	</table>
@@ -47998,6 +49477,10 @@ Falls dir das passiert, besuche die Seite http://www.alleinr.de/.
 	<table name="block_exacompdescrtopic_mm">
 		<descrid>1200</descrid>
 		<topicid>169</topicid>
+	</table>
+	<table name="block_exacompdescrtopic_mm">
+		<descrid>702</descrid>
+		<topicid>112</topicid>
 	</table>
 	<table name="block_exacompdescrtopic_mm">
 		<descrid>1774</descrid>
@@ -64982,6 +66465,486 @@ Falls dir das passiert, besuche die Seite http://www.alleinr.de/.
 	<table name="block_exacompdescrexamp_mm">
 		<exampid>42</exampid>
 		<descrid>3</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>152</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>152</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>152</exampid>
+		<descrid>692</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>152</exampid>
+		<descrid>691</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>152</exampid>
+		<descrid>689</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>152</exampid>
+		<descrid>688</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>152</exampid>
+		<descrid>686</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>159</exampid>
+		<descrid>70</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>159</exampid>
+		<descrid>712</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>159</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>159</exampid>
+		<descrid>694</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>159</exampid>
+		<descrid>693</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>159</exampid>
+		<descrid>692</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>159</exampid>
+		<descrid>691</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>159</exampid>
+		<descrid>690</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>159</exampid>
+		<descrid>688</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>167</exampid>
+		<descrid>76</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>167</exampid>
+		<descrid>704</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>167</exampid>
+		<descrid>692</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>167</exampid>
+		<descrid>691</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>167</exampid>
+		<descrid>690</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>165</exampid>
+		<descrid>76</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>165</exampid>
+		<descrid>704</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>165</exampid>
+		<descrid>692</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>165</exampid>
+		<descrid>691</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>165</exampid>
+		<descrid>690</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>160</exampid>
+		<descrid>728</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>160</exampid>
+		<descrid>703</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>160</exampid>
+		<descrid>702</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>160</exampid>
+		<descrid>691</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>140</exampid>
+		<descrid>727</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>140</exampid>
+		<descrid>724</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>141</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>141</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>141</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>141</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>142</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>142</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>142</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>142</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>144</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>144</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>144</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>144</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>144</exampid>
+		<descrid>692</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>144</exampid>
+		<descrid>691</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>144</exampid>
+		<descrid>689</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>144</exampid>
+		<descrid>688</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>146</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>146</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>146</exampid>
+		<descrid>696</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>146</exampid>
+		<descrid>694</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>146</exampid>
+		<descrid>693</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>146</exampid>
+		<descrid>691</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>148</exampid>
+		<descrid>696</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>148</exampid>
+		<descrid>695</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>148</exampid>
+		<descrid>694</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>148</exampid>
+		<descrid>693</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>148</exampid>
+		<descrid>686</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>148</exampid>
+		<descrid>683</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>149</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>149</exampid>
+		<descrid>694</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>149</exampid>
+		<descrid>693</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>150</exampid>
+		<descrid>696</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>150</exampid>
+		<descrid>695</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>150</exampid>
+		<descrid>694</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>150</exampid>
+		<descrid>693</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>151</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>151</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>151</exampid>
+		<descrid>696</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>151</exampid>
+		<descrid>695</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>151</exampid>
+		<descrid>694</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>151</exampid>
+		<descrid>693</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>153</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>153</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>153</exampid>
+		<descrid>692</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>153</exampid>
+		<descrid>691</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>153</exampid>
+		<descrid>689</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>153</exampid>
+		<descrid>688</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>154</exampid>
+		<descrid>682</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>155</exampid>
+		<descrid>682</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>156</exampid>
+		<descrid>677</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>156</exampid>
+		<descrid>676</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>156</exampid>
+		<descrid>674</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>158</exampid>
+		<descrid>717</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>158</exampid>
+		<descrid>716</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>166</exampid>
+		<descrid>73</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>145</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>145</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>145</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>145</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>147</exampid>
+		<descrid>696</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>147</exampid>
+		<descrid>695</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>147</exampid>
+		<descrid>694</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>147</exampid>
+		<descrid>693</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>157</exampid>
+		<descrid>727</descrid>
 		<source>1</source>
 	</table>
 	<table name="block_exacompdescrexamp_mm">
