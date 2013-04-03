@@ -907,7 +907,7 @@ function block_exacomp_get_average_course_competences($courseid, $grading,$role=
 	//return $DB->get_record_sql($sql,array($courseid,$role));
 	//if($courseid) $grading=getgrading($courseid);
 	$gut=ceil($grading/2);
-	$query='select count(user.id) as a from mdl_block_exacompdescuser user where courseid=? and role=? and wert<=? and descid IN
+	$query='select count(user.id) as a from {block_exacompdescuser} user where courseid=? and role=? and wert<=? and descid IN
 	(SELECT d.id FROM 
 	{block_exacompcoutopi_mm} cou INNER JOIN 
 	{block_exacomptopics} top ON top.id=cou.topicid INNER JOIN
