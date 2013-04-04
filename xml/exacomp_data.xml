@@ -459,13 +459,6 @@
 		<stid>78</stid>
 		<sorting>3113</sorting>
 	</table>
-	<table name="block_exacompsubjects">
-		<uid>392</uid>
-		<title><![CDATA[Informatische Fortbildung]]></title>
-		<titleshort/>
-		<stid>92</stid>
-		<sorting>3171</sorting>
-	</table>
 	<table name="block_exacomptopics">
 		<uid>1</uid>
 		<title><![CDATA[1. Informatiksysteme (Hardware, Betriebssystem, Netzwerk) ]]></title>
@@ -46366,6 +46359,1246 @@ Falls dir das passiert, besuche die Seite http://www.alleinr.de/.
 		<lang>0</lang>
 		<iseditable>0</iseditable>
 	</table>
+	<table name="block_exacompexamples">
+		<uid>1686</uid>
+		<title><![CDATA[Spam Mail]]></title>
+		<titleshort><![CDATA[Spam Mail]]></titleshort>
+		<task/>
+		<sorting>9466</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=371</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1687</uid>
+		<title><![CDATA[Soziale Netzwerke]]></title>
+		<titleshort><![CDATA[Soziale Netzwerke]]></titleshort>
+		<task/>
+		<sorting>9467</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=245</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1688</uid>
+		<title><![CDATA[Robin Hood]]></title>
+		<titleshort><![CDATA[Robin Hood]]></titleshort>
+		<task/>
+		<sorting>9468</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=267</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1689</uid>
+		<title><![CDATA[Leben ohne Handies]]></title>
+		<titleshort><![CDATA[Leben ohne Handies]]></titleshort>
+		<task/>
+		<sorting>9469</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=360</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1691</uid>
+		<title><![CDATA[Fotostory Cybermobbing]]></title>
+		<titleshort><![CDATA[Fotostory Cybermobbing]]></titleshort>
+		<task/>
+		<sorting>9471</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=255</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1692</uid>
+		<title><![CDATA[Geschichte der Informatik]]></title>
+		<titleshort><![CDATA[Geschichte der Informatik]]></titleshort>
+		<task/>
+		<sorting>9472</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=365</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1693</uid>
+		<title><![CDATA[Bits und Bytes]]></title>
+		<titleshort><![CDATA[Bits und Bytes]]></titleshort>
+		<task/>
+		<sorting>9473</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=276</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1694</uid>
+		<title><![CDATA[Dreieck - Merkwürdige Punkte - Anwendung]]></title>
+		<titleshort><![CDATA[Dreieck - Merkwürdige Punkte]]></titleshort>
+		<task/>
+		<sorting>9474</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=332</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1695</uid>
+		<title><![CDATA[Messen von Beschleunigungen]]></title>
+		<titleshort><![CDATA[Messen von Beschleunigungen]]></titleshort>
+		<task/>
+		<sorting>9475</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=266</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1696</uid>
+		<title><![CDATA[Umkreis und Inkreis]]></title>
+		<titleshort><![CDATA[Umkreis und Inkreis]]></titleshort>
+		<task/>
+		<sorting>9476</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=294</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1697</uid>
+		<title><![CDATA[Eigenschaften der Vierecke]]></title>
+		<titleshort><![CDATA[Eigenschaften der Vierecke]]></titleshort>
+		<task/>
+		<sorting>9477</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=290</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1698</uid>
+		<title><![CDATA[My Body - Monster]]></title>
+		<titleshort><![CDATA[My Body - Monster]]></titleshort>
+		<task/>
+		<sorting>9478</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=284</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1699</uid>
+		<title><![CDATA[Dreieckskonstruktionen]]></title>
+		<titleshort><![CDATA[Dreieckskonstruktionen]]></titleshort>
+		<task/>
+		<sorting>9479</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=287</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1700</uid>
+		<title><![CDATA[Flächenberechnung]]></title>
+		<titleshort><![CDATA[Flächenberechnung]]></titleshort>
+		<task/>
+		<sorting>9480</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=315</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1701</uid>
+		<title><![CDATA[Tangram]]></title>
+		<titleshort><![CDATA[Tangram]]></titleshort>
+		<task/>
+		<sorting>9481</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=275</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1702</uid>
+		<title><![CDATA[Virtuelle Reisen mit Geogebra]]></title>
+		<titleshort><![CDATA[Virtuelle Reisen mit Geogebra]]></titleshort>
+		<task/>
+		<sorting>9482</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=291</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1703</uid>
+		<title><![CDATA[Figuren beschreiben und Nachzeichnen]]></title>
+		<titleshort><![CDATA[Figuren beschreiben]]></titleshort>
+		<task/>
+		<sorting>9483</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=366</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1704</uid>
+		<title><![CDATA[Mein Fotoalbum]]></title>
+		<titleshort><![CDATA[Mein Fotoalbum]]></titleshort>
+		<task/>
+		<sorting>9484</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=358</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1705</uid>
+		<title><![CDATA[Presentare por viedo]]></title>
+		<titleshort><![CDATA[Presentare por viedo]]></titleshort>
+		<task/>
+		<sorting>9485</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=289</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1706</uid>
+		<title><![CDATA[Präsentiere dich mit einem Viedo]]></title>
+		<titleshort><![CDATA[Präsentiere dich mit einem Viedo]]></titleshort>
+		<task/>
+		<sorting>9486</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=310</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1707</uid>
+		<title><![CDATA[Abstrakte Malerei]]></title>
+		<titleshort><![CDATA[Abstrakte Malerei]]></titleshort>
+		<task/>
+		<sorting>9487</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=261</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1708</uid>
+		<title><![CDATA[Die Kunst des Zusammenfügens]]></title>
+		<titleshort><![CDATA[Die Kunst des Zusammenfügens]]></titleshort>
+		<task/>
+		<sorting>9488</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=281</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1709</uid>
+		<title><![CDATA[Die Kunst als Story]]></title>
+		<titleshort><![CDATA[Die Kunst als Story]]></titleshort>
+		<task/>
+		<sorting>9489</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=295</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1710</uid>
+		<title><![CDATA[Die Sage vom Drachentöter von Mixnitz]]></title>
+		<titleshort><![CDATA[Sage vom Drachentöter]]></titleshort>
+		<task/>
+		<sorting>9490</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=269</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1711</uid>
+		<title><![CDATA[Lebenslauf, Bewerbungsschreiben]]></title>
+		<titleshort><![CDATA[Lebenslauf, Bewerbungsschreiben]]></titleshort>
+		<task/>
+		<sorting>9491</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=278</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1712</uid>
+		<title><![CDATA[Der liebe Augustin]]></title>
+		<titleshort><![CDATA[Der liebe Augustin]]></titleshort>
+		<task/>
+		<sorting>9492</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=277</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1713</uid>
+		<title><![CDATA[Mein Heiliger in 120 Sekunden]]></title>
+		<titleshort><![CDATA[Mein Heiliger in 120 Sekunden]]></titleshort>
+		<task/>
+		<sorting>9493</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=293</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1714</uid>
+		<title><![CDATA[Wickelkalender]]></title>
+		<titleshort><![CDATA[Wickelkalender]]></titleshort>
+		<task/>
+		<sorting>9494</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=285</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1715</uid>
+		<title><![CDATA[Inhalte animiert darstellen]]></title>
+		<titleshort><![CDATA[Inhalte animiert darstellen]]></titleshort>
+		<task/>
+		<sorting>9495</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=270</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1716</uid>
+		<title><![CDATA[Touristenführer]]></title>
+		<titleshort><![CDATA[Touristenführer]]></titleshort>
+		<task/>
+		<sorting>9496</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=263</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1717</uid>
+		<title><![CDATA[Guia turistica]]></title>
+		<titleshort><![CDATA[Guia turistica]]></titleshort>
+		<task/>
+		<sorting>9497</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=311</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1718</uid>
+		<title><![CDATA[Navegando por viena]]></title>
+		<titleshort><![CDATA[Navegando por viena]]></titleshort>
+		<task/>
+		<sorting>9498</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=264</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1719</uid>
+		<title><![CDATA[Durch Wien navigieren]]></title>
+		<titleshort><![CDATA[Durch Wien navigieren]]></titleshort>
+		<task/>
+		<sorting>9499</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=309</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1720</uid>
+		<title><![CDATA[Mein Blumenherbarium]]></title>
+		<titleshort><![CDATA[Mein Blumenherbarium]]></titleshort>
+		<task/>
+		<sorting>9500</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=272</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1721</uid>
+		<title><![CDATA[Tiere des Waldes]]></title>
+		<titleshort><![CDATA[Tiere des Waldes]]></titleshort>
+		<task/>
+		<sorting>9501</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=265</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1722</uid>
+		<title><![CDATA[Mit Web 2.0 und Word durch Europa]]></title>
+		<titleshort><![CDATA[Mit Web 2.0 und Word durch Europa]]></titleshort>
+		<task/>
+		<sorting>9502</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=273</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1723</uid>
+		<title><![CDATA[Bildgeschichte Vater und Sohn]]></title>
+		<titleshort><![CDATA[Bildgeschichte Vater und Sohn]]></titleshort>
+		<task/>
+		<sorting>9503</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=260</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1724</uid>
+		<title><![CDATA[Gemischte Gefuehle]]></title>
+		<titleshort><![CDATA[Gemischte Gefuehle]]></titleshort>
+		<task/>
+		<sorting>9504</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=282</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1725</uid>
+		<title><![CDATA[Gymnastik bei Computerarbeit]]></title>
+		<titleshort><![CDATA[Gymnastik bei Computerarbeit]]></titleshort>
+		<task/>
+		<sorting>9505</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=286</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1726</uid>
+		<title><![CDATA[Bundesländer]]></title>
+		<titleshort><![CDATA[Bundesländer]]></titleshort>
+		<task/>
+		<sorting>9506</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=250</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1727</uid>
+		<title><![CDATA[Darf ich vorstellen? - Mein Haustier!]]></title>
+		<titleshort><![CDATA[Darf ich vorstellen? - Mein Haustier!]]></titleshort>
+		<task/>
+		<sorting>9507</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=374</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1728</uid>
+		<title><![CDATA[Pythagoras Bildbearbeitung]]></title>
+		<titleshort><![CDATA[Pythagoras Bildbearbeitung]]></titleshort>
+		<task/>
+		<sorting>9508</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=361</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1729</uid>
+		<title><![CDATA[Que haces en tu tiempo libre?]]></title>
+		<titleshort><![CDATA[Que haces en tu tiempo libre?]]></titleshort>
+		<task/>
+		<sorting>9509</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=288</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1730</uid>
+		<title><![CDATA[Was machst du in deiner Freizeit]]></title>
+		<titleshort><![CDATA[Was machst du in deiner Freizeit]]></titleshort>
+		<task/>
+		<sorting>9510</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=308</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1731</uid>
+		<title><![CDATA[Nudelsalat]]></title>
+		<titleshort><![CDATA[Nudelsalat]]></titleshort>
+		<task/>
+		<sorting>9511</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=370</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1732</uid>
+		<title><![CDATA[Rauchen oder Sparen]]></title>
+		<titleshort><![CDATA[Rauchen oder Sparen]]></titleshort>
+		<task/>
+		<sorting>9512</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=231</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1733</uid>
+		<title><![CDATA[Migration Statistik]]></title>
+		<titleshort><![CDATA[Migration Statistik]]></titleshort>
+		<task/>
+		<sorting>9513</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=34</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1734</uid>
+		<title><![CDATA[Schiwoche planen]]></title>
+		<titleshort><![CDATA[Schiwoche planen]]></titleshort>
+		<task/>
+		<sorting>9514</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=271</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1735</uid>
+		<title><![CDATA[Abenteuer Wiese]]></title>
+		<titleshort><![CDATA[Abenteuer Wiese]]></titleshort>
+		<task/>
+		<sorting>9515</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=349</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1736</uid>
+		<title><![CDATA[Durchschnittsgeschwindigkeit]]></title>
+		<titleshort><![CDATA[Durchschnitts-<br>geschwindigkeit]]></titleshort>
+		<task/>
+		<sorting>9516</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=243</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1737</uid>
+		<title><![CDATA[Diagramme erstellen]]></title>
+		<titleshort><![CDATA[Diagramme erstellen]]></titleshort>
+		<task/>
+		<sorting>9517</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=375</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1739</uid>
+		<title><![CDATA[Mein Schulort]]></title>
+		<titleshort><![CDATA[Mein Schulort]]></titleshort>
+		<task/>
+		<sorting>9519</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=251</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1740</uid>
+		<title><![CDATA[Wandertag - Hochseilgarten]]></title>
+		<titleshort><![CDATA[Wandertag - Hochseilgarten]]></titleshort>
+		<task/>
+		<sorting>9520</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=268</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1741</uid>
+		<title><![CDATA[Informationen zu einem Lehrberuf]]></title>
+		<titleshort><![CDATA[Informationen zu einem Lehrberuf]]></titleshort>
+		<task/>
+		<sorting>9521</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=16</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1742</uid>
+		<title><![CDATA[Klassentreffen]]></title>
+		<titleshort><![CDATA[Klassentreffen]]></titleshort>
+		<task/>
+		<sorting>9522</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=235</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1743</uid>
+		<title><![CDATA[Fliegen]]></title>
+		<titleshort><![CDATA[Fliegen]]></titleshort>
+		<task/>
+		<sorting>9523</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=240</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1744</uid>
+		<title><![CDATA[Europa - Flaggen]]></title>
+		<titleshort><![CDATA[Europa - Flaggen]]></titleshort>
+		<task/>
+		<sorting>9524</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=376</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1745</uid>
+		<title><![CDATA[QR Code]]></title>
+		<titleshort><![CDATA[QR Code]]></titleshort>
+		<task/>
+		<sorting>9525</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=257</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1746</uid>
+		<title><![CDATA[Blutgruppen]]></title>
+		<titleshort><![CDATA[Blutgruppen]]></titleshort>
+		<task/>
+		<sorting>9526</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=259</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1747</uid>
+		<title><![CDATA[Spielregeln]]></title>
+		<titleshort><![CDATA[Spielregeln]]></titleshort>
+		<task/>
+		<sorting>9527</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=372</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1748</uid>
+		<title><![CDATA[Blutgruppen Javascript]]></title>
+		<titleshort><![CDATA[Blutgruppen Javascript]]></titleshort>
+		<task/>
+		<sorting>9528</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=258</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1749</uid>
+		<title><![CDATA[Kara programmieren als Automat]]></title>
+		<titleshort><![CDATA[Kara als Automat]]></titleshort>
+		<task/>
+		<sorting>9529</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description/>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=254</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
 	<table name="block_exacomptaxonomies">
 		<uid>76</uid>
 		<title><![CDATA[Kenntnis]]></title>
@@ -67905,6 +69138,1206 @@ Falls dir das passiert, besuche die Seite http://www.alleinr.de/.
 	<table name="block_exacompdescrexamp_mm">
 		<exampid>1682</exampid>
 		<descrid>1816</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1686</exampid>
+		<descrid>75</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1687</exampid>
+		<descrid>76</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1687</exampid>
+		<descrid>75</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1688</exampid>
+		<descrid>77</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1689</exampid>
+		<descrid>70</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1689</exampid>
+		<descrid>75</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1689</exampid>
+		<descrid>728</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1691</exampid>
+		<descrid>75</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1691</exampid>
+		<descrid>80</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1691</exampid>
+		<descrid>671</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1691</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1692</exampid>
+		<descrid>83</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1693</exampid>
+		<descrid>724</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1693</exampid>
+		<descrid>696</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1693</exampid>
+		<descrid>695</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1694</exampid>
+		<descrid>723</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1694</exampid>
+		<descrid>691</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1695</exampid>
+		<descrid>713</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1695</exampid>
+		<descrid>703</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1695</exampid>
+		<descrid>691</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1695</exampid>
+		<descrid>681</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1695</exampid>
+		<descrid>677</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1695</exampid>
+		<descrid>675</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1696</exampid>
+		<descrid>676</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1697</exampid>
+		<descrid>717</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1697</exampid>
+		<descrid>716</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1698</exampid>
+		<descrid>723</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1698</exampid>
+		<descrid>722</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1698</exampid>
+		<descrid>721</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1698</exampid>
+		<descrid>717</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1698</exampid>
+		<descrid>716</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1698</exampid>
+		<descrid>715</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1698</exampid>
+		<descrid>714</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1698</exampid>
+		<descrid>713</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1698</exampid>
+		<descrid>712</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1698</exampid>
+		<descrid>711</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1698</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1698</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1698</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1699</exampid>
+		<descrid>723</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1699</exampid>
+		<descrid>701</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1700</exampid>
+		<descrid>703</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1700</exampid>
+		<descrid>701</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1701</exampid>
+		<descrid>677</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1702</exampid>
+		<descrid>677</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1703</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1703</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1703</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1703</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1703</exampid>
+		<descrid>677</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1703</exampid>
+		<descrid>676</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1704</exampid>
+		<descrid>717</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1704</exampid>
+		<descrid>716</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1704</exampid>
+		<descrid>715</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1704</exampid>
+		<descrid>714</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1704</exampid>
+		<descrid>713</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1704</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1705</exampid>
+		<descrid>713</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1705</exampid>
+		<descrid>703</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1705</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1705</exampid>
+		<descrid>686</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1705</exampid>
+		<descrid>684</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1706</exampid>
+		<descrid>713</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1706</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1706</exampid>
+		<descrid>686</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1706</exampid>
+		<descrid>684</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1707</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1708</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1709</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1709</exampid>
+		<descrid>691</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1710</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1710</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1710</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1711</exampid>
+		<descrid>717</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1711</exampid>
+		<descrid>715</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1711</exampid>
+		<descrid>714</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1711</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1712</exampid>
+		<descrid>717</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1712</exampid>
+		<descrid>715</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1712</exampid>
+		<descrid>714</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1712</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1712</exampid>
+		<descrid>691</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1713</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1713</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1713</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1713</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1714</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1714</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1714</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1715</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1715</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1715</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1716</exampid>
+		<descrid>81</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1716</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1716</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1716</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1716</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1716</exampid>
+		<descrid>684</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1717</exampid>
+		<descrid>80</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1717</exampid>
+		<descrid>728</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1717</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1717</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1717</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1717</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1717</exampid>
+		<descrid>684</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1718</exampid>
+		<descrid>713</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1718</exampid>
+		<descrid>703</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1718</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1718</exampid>
+		<descrid>686</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1720</exampid>
+		<descrid>713</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1720</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1719</exampid>
+		<descrid>713</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1719</exampid>
+		<descrid>703</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1719</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1719</exampid>
+		<descrid>686</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1721</exampid>
+		<descrid>724</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1721</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1721</exampid>
+		<descrid>688</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1721</exampid>
+		<descrid>686</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1722</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1722</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1722</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1722</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1722</exampid>
+		<descrid>696</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1722</exampid>
+		<descrid>695</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1722</exampid>
+		<descrid>694</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1722</exampid>
+		<descrid>693</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1722</exampid>
+		<descrid>692</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1722</exampid>
+		<descrid>691</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1722</exampid>
+		<descrid>689</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1722</exampid>
+		<descrid>688</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1723</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1723</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1723</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1723</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1724</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1724</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1724</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1724</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1725</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1725</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1725</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1725</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1726</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1726</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1726</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1726</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1726</exampid>
+		<descrid>692</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1726</exampid>
+		<descrid>691</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1727</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1727</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1727</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1727</exampid>
+		<descrid>692</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1727</exampid>
+		<descrid>691</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1727</exampid>
+		<descrid>689</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1727</exampid>
+		<descrid>688</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1728</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1729</exampid>
+		<descrid>77</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1729</exampid>
+		<descrid>723</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1729</exampid>
+		<descrid>687</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1729</exampid>
+		<descrid>685</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1729</exampid>
+		<descrid>684</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1729</exampid>
+		<descrid>683</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1730</exampid>
+		<descrid>77</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1730</exampid>
+		<descrid>723</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1730</exampid>
+		<descrid>687</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1730</exampid>
+		<descrid>685</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1730</exampid>
+		<descrid>684</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1730</exampid>
+		<descrid>683</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1731</exampid>
+		<descrid>696</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1731</exampid>
+		<descrid>695</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1731</exampid>
+		<descrid>694</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1731</exampid>
+		<descrid>693</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1731</exampid>
+		<descrid>688</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1732</exampid>
+		<descrid>696</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1732</exampid>
+		<descrid>695</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1732</exampid>
+		<descrid>694</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1733</exampid>
+		<descrid>696</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1733</exampid>
+		<descrid>695</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1733</exampid>
+		<descrid>694</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1733</exampid>
+		<descrid>693</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1733</exampid>
+		<descrid>686</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1733</exampid>
+		<descrid>683</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1734</exampid>
+		<descrid>695</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1734</exampid>
+		<descrid>688</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1735</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1735</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1735</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1735</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1735</exampid>
+		<descrid>696</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1735</exampid>
+		<descrid>695</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1735</exampid>
+		<descrid>694</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1735</exampid>
+		<descrid>693</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1736</exampid>
+		<descrid>712</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1736</exampid>
+		<descrid>696</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1736</exampid>
+		<descrid>695</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1736</exampid>
+		<descrid>694</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1736</exampid>
+		<descrid>692</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1736</exampid>
+		<descrid>681</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1737</exampid>
+		<descrid>696</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1737</exampid>
+		<descrid>695</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1737</exampid>
+		<descrid>694</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1737</exampid>
+		<descrid>693</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1739</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1740</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1740</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1740</exampid>
+		<descrid>692</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1740</exampid>
+		<descrid>691</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1741</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1741</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1741</exampid>
+		<descrid>692</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1741</exampid>
+		<descrid>691</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1741</exampid>
+		<descrid>689</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1742</exampid>
+		<descrid>692</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1742</exampid>
+		<descrid>691</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1742</exampid>
+		<descrid>688</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1742</exampid>
+		<descrid>687</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1742</exampid>
+		<descrid>686</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1742</exampid>
+		<descrid>681</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1742</exampid>
+		<descrid>678</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1743</exampid>
+		<descrid>691</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1743</exampid>
+		<descrid>689</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1743</exampid>
+		<descrid>688</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1744</exampid>
+		<descrid>692</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1744</exampid>
+		<descrid>691</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1744</exampid>
+		<descrid>690</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1745</exampid>
+		<descrid>713</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1745</exampid>
+		<descrid>703</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1746</exampid>
+		<descrid>682</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1747</exampid>
+		<descrid>677</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1747</exampid>
+		<descrid>676</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1747</exampid>
+		<descrid>675</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1748</exampid>
+		<descrid>678</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1748</exampid>
+		<descrid>677</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1748</exampid>
+		<descrid>676</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1748</exampid>
+		<descrid>674</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1749</exampid>
+		<descrid>677</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1749</exampid>
+		<descrid>676</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1749</exampid>
+		<descrid>675</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1749</exampid>
+		<descrid>674</descrid>
 		<source>1</source>
 	</table>
 </exabis_competences_tables>
