@@ -176,7 +176,10 @@ class block_exacomp extends block_base {
 				file_put_contents(dirname(__FILE__).'/xml/exacomp_data.xml',$xml);
 				require_once dirname(__FILE__) . '/lib/xmllib.php';
 
-				if(block_exacomp_xml_do_import(null,1,1)) mtrace("import done");
+				if(block_exacomp_xml_do_import(null,1,1)) {
+					mtrace("import done");
+					  block_exacomp_settstamp();
+				}
 				else mtrace("import failed");
 			}
 		}
