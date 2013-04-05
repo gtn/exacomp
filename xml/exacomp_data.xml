@@ -46248,7 +46248,10 @@ Falls dir das passiert, besuche die Seite http://www.alleinr.de/.
 		<solution/>
 		<attachement/>
 		<completefile/>
-		<description/>
+		<description><![CDATA[Erfolgreiche Teams gibt es in den Bereichen Sport, Filmbranche, Musikszene, Politik, Wirtschaft uvm.
+Sicher kennst auch du tolle Teams in deiner Klasse, deinem Verein, deinem Freundeskreis. Bist du Teil eines oder mehrerer Teams?
+
+Bitte bearbeiten Sie das Beispiel im Browser!]]></description>
 		<taxid>0</taxid>
 		<timeframe/>
 		<ressources/>
@@ -68876,21 +68879,6 @@ Falls dir das passiert, besuche die Seite http://www.alleinr.de/.
 		<source>1</source>
 	</table>
 	<table name="block_exacompdescrexamp_mm">
-		<exampid>1677</exampid>
-		<descrid>1809</descrid>
-		<source>1</source>
-	</table>
-	<table name="block_exacompdescrexamp_mm">
-		<exampid>1677</exampid>
-		<descrid>1810</descrid>
-		<source>1</source>
-	</table>
-	<table name="block_exacompdescrexamp_mm">
-		<exampid>1677</exampid>
-		<descrid>1811</descrid>
-		<source>1</source>
-	</table>
-	<table name="block_exacompdescrexamp_mm">
 		<exampid>1678</exampid>
 		<descrid>1809</descrid>
 		<source>1</source>
@@ -70338,6 +70326,21 @@ Falls dir das passiert, besuche die Seite http://www.alleinr.de/.
 	<table name="block_exacompdescrexamp_mm">
 		<exampid>1749</exampid>
 		<descrid>674</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1677</exampid>
+		<descrid>1809</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1677</exampid>
+		<descrid>1810</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1677</exampid>
+		<descrid>1811</descrid>
 		<source>1</source>
 	</table>
 </exabis_competences_tables>
