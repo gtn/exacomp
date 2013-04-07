@@ -84,7 +84,8 @@ if ($courseid > 0) {
 							$modsetting->activities=serialize($modsetting_arr);
 							$DB->update_record('block_exacompsettings', $modsetting);
 						}else{
-							$modsettingi=array("course" => $courseid,"grading"=>"1","activities"=>serialize($modsetting_arr));
+							$curtime=time();
+							$modsettingi=array("course" => $courseid,"grading"=>"1","activities"=>serialize($modsetting_arr),"tstamp"=>$curtime);
 							$DB->insert_record('block_exacompsettings',$modsettingi);
 				}   
         echo $OUTPUT->box(text_to_html(get_string("activitysuccess", "block_exacomp")));

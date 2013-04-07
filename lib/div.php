@@ -629,7 +629,8 @@ function block_exacomp_set_bewertungsschema($courseid, $wert) {
 	global $DB;
 	$DB->delete_records('block_exacompsettings', array("course" => $courseid));
 	if($wert>0){
-		$DB->insert_record('block_exacompsettings', array("course" => $courseid, "grading" => $wert));
+		$curtime=time();
+		$DB->insert_record('block_exacompsettings', array("course" => $courseid, "grading" => $wert,"tstamp"=>$curtime));
 	}
 }
 function block_exacomp_getbewertungsschema ($courseid,$leerwert=1){
