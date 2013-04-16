@@ -47,7 +47,7 @@ $string['activitysuccess'] = 'Änderungen erfolgreich übernommen.';
 
 $string['usersubmitted'] = ' hat folgende Aufgaben abgegeben:';
 $string['usersubmittedquiz'] = ' hat folgende Tests durchgeführt:';
-$string['usernosubmission'] = ' hat keine Aufgaben zu diesem Deskriptor abgegeben und keine Test durchgeführt.';
+$string['usernosubmission'] = ' hat keine Aufgaben zu diesem Deskriptor abgegeben und keinen Test durchgeführt.';
 $string['descnoassignment'] = 'Diesem Deskriptor sind keine Aufgaben zugeordnet.';
 
 $string['specificcontent'] = 'Schulbezogene Themenbereiche';
