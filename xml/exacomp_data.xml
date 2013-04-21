@@ -173,13 +173,6 @@
 		<sorting>512</sorting>
 	</table>
 	<table name="block_exacompsubjects">
-		<uid>15</uid>
-		<title><![CDATA[INFORMATIK]]></title>
-		<titleshort><![CDATA[INFORMATIK]]></titleshort>
-		<stid>10</stid>
-		<sorting>2823</sorting>
-	</table>
-	<table name="block_exacompsubjects">
 		<uid>21</uid>
 		<title><![CDATA[ANGEWANDTE INFORMATIK]]></title>
 		<titleshort><![CDATA[ANGEWANDTE INFORMATIK]]></titleshort>
@@ -1187,30 +1180,6 @@
 		<description/>
 	</table>
 	<table name="block_exacomptopics">
-		<uid>114</uid>
-		<title><![CDATA[Arbeitshaltung]]></title>
-		<titleshort><![CDATA[Arbeitshaltung]]></titleshort>
-		<subjid>15</subjid>
-		<sorting>1792</sorting>
-		<description/>
-	</table>
-	<table name="block_exacomptopics">
-		<uid>115</uid>
-		<title><![CDATA[Methodenkompetenz]]></title>
-		<titleshort><![CDATA[Methodenkompetenz]]></titleshort>
-		<subjid>15</subjid>
-		<sorting>1280</sorting>
-		<description/>
-	</table>
-	<table name="block_exacomptopics">
-		<uid>116</uid>
-		<title><![CDATA[Lernziele Informatik]]></title>
-		<titleshort><![CDATA[Lernziele Informatik]]></titleshort>
-		<subjid>15</subjid>
-		<sorting>512</sorting>
-		<description/>
-	</table>
-	<table name="block_exacomptopics">
 		<uid>144</uid>
 		<title><![CDATA[1. Informatiksysteme ]]></title>
 		<titleshort><![CDATA[1. Informatiksysteme ]]></titleshort>
@@ -1364,7 +1333,7 @@
 	<table name="block_exacomptopics">
 		<uid>375</uid>
 		<title><![CDATA[Selbstbewusstsein und Reflexion]]></title>
-		<titleshort><![CDATA[Selbstbewusst- sein u. Reflexion]]></titleshort>
+		<titleshort><![CDATA[Selbstbewusst-<br>sein u. Reflexion]]></titleshort>
 		<subjid>150</subjid>
 		<sorting>31693</sorting>
 		<description><![CDATA[Eigenverantwortliche Menschen sind sich ihrer selbst bewusst, sie tragen die Verantwortung für ihr Handeln sowie die daraus resultierenden Folgen.
@@ -1537,7 +1506,7 @@ Was, wenn wir die falsche Entscheidung treffen? Ob unsere Entscheidungen richtig
 	<table name="block_exacomptopics">
 		<uid>389</uid>
 		<title><![CDATA[Ressourcenorientierung]]></title>
-		<titleshort><![CDATA[Ressourcen- orientierung]]></titleshort>
+		<titleshort><![CDATA[Ressourcen-<br>orientierung]]></titleshort>
 		<subjid>153</subjid>
 		<sorting>31707</sorting>
 		<description><![CDATA[Erfolgreiche Teams gibt es in den Bereichen Sport, Filmbranche, Musikszene, Politik, Wirtschaft uvm.
@@ -1547,7 +1516,7 @@ Sicher kennst auch du tolle Teams in deiner Klasse, deinem Verein, deinem Freund
 	<table name="block_exacomptopics">
 		<uid>390</uid>
 		<title><![CDATA[Rollenverständnis]]></title>
-		<titleshort><![CDATA[Rollen- verständnis]]></titleshort>
+		<titleshort><![CDATA[Rollen-<br>verständnis]]></titleshort>
 		<subjid>153</subjid>
 		<sorting>31708</sorting>
 		<description><![CDATA[Schau in deinen eigenen Spiegel. Wen siehst du?
@@ -1562,7 +1531,7 @@ Welche individuellen Eigenschaften, Fähigkeiten, Werteinstellungen, Stärken 
 	<table name="block_exacomptopics">
 		<uid>391</uid>
 		<title><![CDATA[Konsensorientierung]]></title>
-		<titleshort><![CDATA[Konsens- orientierung]]></titleshort>
+		<titleshort><![CDATA[Konsens-<br>orientierung]]></titleshort>
 		<subjid>153</subjid>
 		<sorting>31709</sorting>
 		<description><![CDATA[Kennst du das, wenn eine Gruppe eine Entscheidung treffen oder einen Konsens finden soll? Konsens bedeutet so viel wie Zustimmung.
@@ -1581,7 +1550,7 @@ Ziel einer Konsensfindung ist: Den Beteiligten soll die Bandbreite der Meinungen
 	<table name="block_exacomptopics">
 		<uid>392</uid>
 		<title><![CDATA[Ergebnisorientierung]]></title>
-		<titleshort><![CDATA[Ergebnis- orientierung]]></titleshort>
+		<titleshort><![CDATA[Ergebnis-<br>orientierung]]></titleshort>
 		<subjid>153</subjid>
 		<sorting>31710</sorting>
 		<description><![CDATA[Um gemeinsam gute Ergebnisse erreichen zu können, braucht es klare Ziele!
@@ -7908,14 +7877,6 @@ statistischer Darstellungen und Kennzahlen, bezüglich statistischer Sätze, bez
 		<parent_id>0</parent_id>
 	</table>
 	<table name="block_exacompdescriptors">
-		<uid>730</uid>
-		<title><![CDATA[Ich beteilige mich aktiv an Einzel-, Partner- und Gruppenarbeit]]></title>
-		<niveauid>0</niveauid>
-		<sorting>1024</sorting>
-		<skillid>0</skillid>
-		<parent_id>0</parent_id>
-	</table>
-	<table name="block_exacompdescriptors">
 		<uid>673</uid>
 		<title><![CDATA[4.4.1. Ich kann Abläufe aus dem Alltag beschreiben]]></title>
 		<niveauid>0</niveauid>
@@ -8337,22 +8298,6 @@ statistischer Darstellungen und Kennzahlen, bezüglich statistischer Sätze, bez
 		<niveauid>0</niveauid>
 		<sorting>5632</sorting>
 		<skillid>1</skillid>
-		<parent_id>0</parent_id>
-	</table>
-	<table name="block_exacompdescriptors">
-		<uid>731</uid>
-		<title><![CDATA[Ich habe meine Arbeitsmaterialen immer mitgebracht und bereitgelegt.]]></title>
-		<niveauid>0</niveauid>
-		<sorting>768</sorting>
-		<skillid>0</skillid>
-		<parent_id>0</parent_id>
-	</table>
-	<table name="block_exacompdescriptors">
-		<uid>732</uid>
-		<title><![CDATA[Ich erledige meine Arbeitsaufträge vollständig und zeitgerecht.]]></title>
-		<niveauid>0</niveauid>
-		<sorting>512</sorting>
-		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 	</table>
 	<table name="block_exacompdescriptors">
@@ -23736,7 +23681,7 @@ Welche drei Stärken hat deine Freundin/dein Freund auch an dir wahrgenommen?]]>
 		<externalsolution/>
 		<externaltask/>
 		<lang>0</lang>
-		<iseditable>1</iseditable>
+		<iseditable>0</iseditable>
 	</table>
 	<table name="block_exacompexamples">
 		<uid>359</uid>
@@ -23758,7 +23703,7 @@ Welche drei Stärken hat deine Freundin/dein Freund auch an dir wahrgenommen?]]>
 		<externalsolution/>
 		<externaltask/>
 		<lang>0</lang>
-		<iseditable>1</iseditable>
+		<iseditable>0</iseditable>
 	</table>
 	<table name="block_exacompexamples">
 		<uid>360</uid>
@@ -23779,7 +23724,7 @@ Welche drei Stärken hat deine Freundin/dein Freund auch an dir wahrgenommen?]]>
 		<externalsolution/>
 		<externaltask/>
 		<lang>0</lang>
-		<iseditable>1</iseditable>
+		<iseditable>0</iseditable>
 	</table>
 	<table name="block_exacompexamples">
 		<uid>361</uid>
@@ -45445,7 +45390,7 @@ Bearbeite das Beispiel im Browser!]]></description>
 	<table name="block_exacompexamples">
 		<uid>1537</uid>
 		<title><![CDATA[Entscheidungsfindung in der Gruppe]]></title>
-		<titleshort><![CDATA[Entscheidungs- findung in der Gruppe]]></titleshort>
+		<titleshort><![CDATA[Entscheidungs-<br>findung in der Gruppe]]></titleshort>
 		<task/>
 		<sorting>9534</sorting>
 		<solution/>
@@ -46158,7 +46103,7 @@ Falls dir das passiert, besuche die Seite http://www.alleinr.de/.
 		<externalsolution/>
 		<externaltask/>
 		<lang>0</lang>
-		<iseditable>1</iseditable>
+		<iseditable>0</iseditable>
 	</table>
 	<table name="block_exacompexamples">
 		<uid>1677</uid>
@@ -46169,8 +46114,9 @@ Falls dir das passiert, besuche die Seite http://www.alleinr.de/.
 		<solution/>
 		<attachement/>
 		<completefile/>
-		<description><![CDATA[Was macht ein gutes und erfolgreiches Team aus? Welche Voraussetzungen sind für gute Zusammenarbeit notwendig? Schau dir das Bild mit den tierischen Teammitgliedern an. Öffne dafür das Beispiel im Browser.
-Welche Stärken werden den jeweiligen Tieren zugeschrieben? Welchem dieser Typen entsprichst du am ehesten? Findest du keine passende Abbildung für dich? Dann suche dir eine oder zeichne selbst ein Tier, das deinen Stärken entspricht.]]></description>
+		<description><![CDATA[Als Einstieg schau dir die Werbespots im Browser an. Was macht die Teams in den drei Werbespots so erfolgreich? Schreibe die Erfolgsfaktoren auf. 
+
+Bearbeite das Beispiel im Browser!]]></description>
 		<taxid>0</taxid>
 		<timeframe/>
 		<ressources/>
@@ -46179,7 +46125,7 @@ Welche Stärken werden den jeweiligen Tieren zugeschrieben? Welchem dieser Typen
 		<externalsolution/>
 		<externaltask/>
 		<lang>0</lang>
-		<iseditable>1</iseditable>
+		<iseditable>0</iseditable>
 	</table>
 	<table name="block_exacompexamples">
 		<uid>1678</uid>
@@ -46191,7 +46137,9 @@ Welche Stärken werden den jeweiligen Tieren zugeschrieben? Welchem dieser Typen
 		<attachement/>
 		<completefile/>
 		<description><![CDATA[Was macht ein gutes und erfolgreiches Team aus? Welche Voraussetzungen sind für gute Zusammenarbeit notwendig? Schau dir das Bild mit den tierischen Teammitgliedern an. Öffne dafür das Beispiel im Browser.
-]]></description>
+Welche Stärken werden den jeweiligen Tieren zugeschrieben? Welchem dieser Typen entsprichst du am ehesten? Findest du keine passende Abbildung für dich? Dann suche dir eine oder zeichne selbst ein Tier, das deinen Stärken entspricht.
+
+Bearbeite das Beispiel im Browser!]]></description>
 		<taxid>0</taxid>
 		<timeframe/>
 		<ressources/>
@@ -46200,7 +46148,7 @@ Welche Stärken werden den jeweiligen Tieren zugeschrieben? Welchem dieser Typen
 		<externalsolution/>
 		<externaltask/>
 		<lang>0</lang>
-		<iseditable>1</iseditable>
+		<iseditable>0</iseditable>
 	</table>
 	<table name="block_exacompexamples">
 		<uid>1679</uid>
@@ -46245,7 +46193,7 @@ Bearbeite das Beispiel im Browser!]]></description>
 		<externalsolution/>
 		<externaltask/>
 		<lang>0</lang>
-		<iseditable>1</iseditable>
+		<iseditable>0</iseditable>
 	</table>
 	<table name="block_exacompexamples">
 		<uid>1681</uid>
@@ -47900,6 +47848,163 @@ Bearbeite das Beispiel im Browser!]]></description>
 		<lang>0</lang>
 		<iseditable>0</iseditable>
 	</table>
+	<table name="block_exacompexamples">
+		<uid>1764</uid>
+		<title><![CDATA[Smartphones]]></title>
+		<titleshort><![CDATA[Smartphones]]></titleshort>
+		<task/>
+		<sorting>9544</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Was glaubt ihr sind die Unterschiede zwischen Handy und Smartphone? Führt die folgende Abstimmung durch.
+
+Bearbeite das Beispiel im Browser!]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=417</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1765</uid>
+		<title><![CDATA[Ich im Netz]]></title>
+		<titleshort><![CDATA[Ich im Netz]]></titleshort>
+		<task/>
+		<sorting>9545</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Du hast dich bei einer Firma um einen ausgeschriebenen Praktikumsplatz beworben und schlüpfst
+nun in die Rolle des verantwortlichen
+Personalchefs. 
+
+Bearbeite das Beispiel im Browser]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=390</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1766</uid>
+		<title><![CDATA[Instrumentenkunde]]></title>
+		<titleshort><![CDATA[Instrumentenkunde]]></titleshort>
+		<task/>
+		<sorting>9546</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Ordne die Musikinstrumente richtig zu.
+
+Bearbeite das Beispiel im Browser!]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=386</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1767</uid>
+		<title><![CDATA[Rooms and furniture]]></title>
+		<titleshort><![CDATA[Rooms and furniture]]></titleshort>
+		<task/>
+		<sorting>9547</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Ordne die Möbelstücke den Räumen zu!
+
+Bearbeite das Beispiel im Browser!]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=385</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1769</uid>
+		<title><![CDATA[Traumauto]]></title>
+		<titleshort><![CDATA[Traumauto]]></titleshort>
+		<task/>
+		<sorting>9549</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Beschreibe dein Traumauto!
+
+Bearbeite das Beispiel im Browser!]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=416</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1770</uid>
+		<title><![CDATA[Kontinente]]></title>
+		<titleshort><![CDATA[Kontinente]]></titleshort>
+		<task/>
+		<sorting>9550</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Texte, die gut strukturiert und optisch ansprechend gestaltet sind, erleichtern das Lesen!
+Bei dieser Aufgabe sollst du einen 'langweiligen' Text so formatieren, dass er gerne gelesen wird!
+
+Bearbeite das Beispiel im Browser!]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=384</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>1771</uid>
+		<title><![CDATA[Tierreich]]></title>
+		<titleshort><![CDATA[Tierreich]]></titleshort>
+		<task/>
+		<sorting>9551</sorting>
+		<solution/>
+		<attachement/>
+		<completefile/>
+		<description><![CDATA[Rekorde im Tierreich!
+
+Bearbeite das Beispiel im Browser!]]></description>
+		<taxid>0</taxid>
+		<timeframe/>
+		<ressources/>
+		<tips/>
+		<externalurl>http://www.digikomp.at/course/view.php?id=383</externalurl>
+		<externalsolution/>
+		<externaltask/>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
 	<table name="block_exacomptaxonomies">
 		<uid>76</uid>
 		<title><![CDATA[Kenntnis]]></title>
@@ -48199,86 +48304,6 @@ Bearbeite das Beispiel im Browser!]]></description>
 		<title><![CDATA[Ich kann mich auf einfache Art verständigen, wenn mein Gesprächspartner/meine Gesprächspartnerin  bereit ist, etwas langsamer zu wiederholen oder anders zu sagen, und mir dabei hilft zu formulieren, was ich zu sagen versuche. Ich kann einfache Fragen stellen und beantworten, sofern es sich um unmittelbar notwendige Dinge und um sehr vertraute Themen handelt.]]></title>
 		<niveauid>1</niveauid>
 		<skillid>4</skillid>
-	</table>
-	<table name="block_exacompdescrtopic_mm">
-		<descrid>748</descrid>
-		<topicid>116</topicid>
-	</table>
-	<table name="block_exacompdescrtopic_mm">
-		<descrid>747</descrid>
-		<topicid>116</topicid>
-	</table>
-	<table name="block_exacompdescrtopic_mm">
-		<descrid>746</descrid>
-		<topicid>116</topicid>
-	</table>
-	<table name="block_exacompdescrtopic_mm">
-		<descrid>745</descrid>
-		<topicid>116</topicid>
-	</table>
-	<table name="block_exacompdescrtopic_mm">
-		<descrid>744</descrid>
-		<topicid>116</topicid>
-	</table>
-	<table name="block_exacompdescrtopic_mm">
-		<descrid>743</descrid>
-		<topicid>116</topicid>
-	</table>
-	<table name="block_exacompdescrtopic_mm">
-		<descrid>742</descrid>
-		<topicid>116</topicid>
-	</table>
-	<table name="block_exacompdescrtopic_mm">
-		<descrid>741</descrid>
-		<topicid>116</topicid>
-	</table>
-	<table name="block_exacompdescrtopic_mm">
-		<descrid>740</descrid>
-		<topicid>116</topicid>
-	</table>
-	<table name="block_exacompdescrtopic_mm">
-		<descrid>739</descrid>
-		<topicid>116</topicid>
-	</table>
-	<table name="block_exacompdescrtopic_mm">
-		<descrid>738</descrid>
-		<topicid>116</topicid>
-	</table>
-	<table name="block_exacompdescrtopic_mm">
-		<descrid>737</descrid>
-		<topicid>115</topicid>
-	</table>
-	<table name="block_exacompdescrtopic_mm">
-		<descrid>736</descrid>
-		<topicid>115</topicid>
-	</table>
-	<table name="block_exacompdescrtopic_mm">
-		<descrid>735</descrid>
-		<topicid>115</topicid>
-	</table>
-	<table name="block_exacompdescrtopic_mm">
-		<descrid>734</descrid>
-		<topicid>115</topicid>
-	</table>
-	<table name="block_exacompdescrtopic_mm">
-		<descrid>733</descrid>
-		<topicid>115</topicid>
-	</table>
-	<table name="block_exacompdescrtopic_mm">
-		<descrid>729</descrid>
-		<topicid>114</topicid>
-	</table>
-	<table name="block_exacompdescrtopic_mm">
-		<descrid>732</descrid>
-		<topicid>114</topicid>
-	</table>
-	<table name="block_exacompdescrtopic_mm">
-		<descrid>731</descrid>
-		<topicid>114</topicid>
-	</table>
-	<table name="block_exacompdescrtopic_mm">
-		<descrid>730</descrid>
-		<topicid>114</topicid>
 	</table>
 	<table name="block_exacompdescrtopic_mm">
 		<descrid>70</descrid>
@@ -70117,21 +70142,6 @@ Bearbeite das Beispiel im Browser!]]></description>
 		<source>1</source>
 	</table>
 	<table name="block_exacompdescrexamp_mm">
-		<exampid>1678</exampid>
-		<descrid>1809</descrid>
-		<source>1</source>
-	</table>
-	<table name="block_exacompdescrexamp_mm">
-		<exampid>1678</exampid>
-		<descrid>1810</descrid>
-		<source>1</source>
-	</table>
-	<table name="block_exacompdescrexamp_mm">
-		<exampid>1678</exampid>
-		<descrid>1811</descrid>
-		<source>1</source>
-	</table>
-	<table name="block_exacompdescrexamp_mm">
 		<exampid>342</exampid>
 		<descrid>1909</descrid>
 		<source>1</source>
@@ -70607,21 +70617,6 @@ Bearbeite das Beispiel im Browser!]]></description>
 		<source>1</source>
 	</table>
 	<table name="block_exacompdescrexamp_mm">
-		<exampid>1677</exampid>
-		<descrid>1809</descrid>
-		<source>1</source>
-	</table>
-	<table name="block_exacompdescrexamp_mm">
-		<exampid>1677</exampid>
-		<descrid>1810</descrid>
-		<source>1</source>
-	</table>
-	<table name="block_exacompdescrexamp_mm">
-		<exampid>1677</exampid>
-		<descrid>1811</descrid>
-		<source>1</source>
-	</table>
-	<table name="block_exacompdescrexamp_mm">
 		<exampid>1679</exampid>
 		<descrid>1809</descrid>
 		<source>1</source>
@@ -70633,21 +70628,6 @@ Bearbeite das Beispiel im Browser!]]></description>
 	</table>
 	<table name="block_exacompdescrexamp_mm">
 		<exampid>1679</exampid>
-		<descrid>1811</descrid>
-		<source>1</source>
-	</table>
-	<table name="block_exacompdescrexamp_mm">
-		<exampid>1680</exampid>
-		<descrid>1809</descrid>
-		<source>1</source>
-	</table>
-	<table name="block_exacompdescrexamp_mm">
-		<exampid>1680</exampid>
-		<descrid>1810</descrid>
-		<source>1</source>
-	</table>
-	<table name="block_exacompdescrexamp_mm">
-		<exampid>1680</exampid>
 		<descrid>1811</descrid>
 		<source>1</source>
 	</table>
@@ -70664,16 +70644,6 @@ Bearbeite das Beispiel im Browser!]]></description>
 	<table name="block_exacompdescrexamp_mm">
 		<exampid>1540</exampid>
 		<descrid>1814</descrid>
-		<source>1</source>
-	</table>
-	<table name="block_exacompdescrexamp_mm">
-		<exampid>1537</exampid>
-		<descrid>1815</descrid>
-		<source>1</source>
-	</table>
-	<table name="block_exacompdescrexamp_mm">
-		<exampid>1537</exampid>
-		<descrid>1816</descrid>
 		<source>1</source>
 	</table>
 	<table name="block_exacompdescrexamp_mm">
@@ -70712,6 +70682,236 @@ Bearbeite das Beispiel im Browser!]]></description>
 		<source>1</source>
 	</table>
 	<table name="block_exacompdescrexamp_mm">
+		<exampid>1537</exampid>
+		<descrid>1815</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1537</exampid>
+		<descrid>1816</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1765</exampid>
+		<descrid>77</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1765</exampid>
+		<descrid>80</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1765</exampid>
+		<descrid>671</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1764</exampid>
+		<descrid>75</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1764</exampid>
+		<descrid>723</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1764</exampid>
+		<descrid>687</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1766</exampid>
+		<descrid>718</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1766</exampid>
+		<descrid>717</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1766</exampid>
+		<descrid>716</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1767</exampid>
+		<descrid>718</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1767</exampid>
+		<descrid>717</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1767</exampid>
+		<descrid>716</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1769</exampid>
+		<descrid>723</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1769</exampid>
+		<descrid>715</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1769</exampid>
+		<descrid>714</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1769</exampid>
+		<descrid>713</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1769</exampid>
+		<descrid>712</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1769</exampid>
+		<descrid>711</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1769</exampid>
+		<descrid>703</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1769</exampid>
+		<descrid>701</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1769</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1769</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1769</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1769</exampid>
+		<descrid>691</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1770</exampid>
+		<descrid>700</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1770</exampid>
+		<descrid>699</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1770</exampid>
+		<descrid>698</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1770</exampid>
+		<descrid>697</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1771</exampid>
+		<descrid>696</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1771</exampid>
+		<descrid>695</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1771</exampid>
+		<descrid>694</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1771</exampid>
+		<descrid>693</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1680</exampid>
+		<descrid>1809</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1680</exampid>
+		<descrid>1810</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1680</exampid>
+		<descrid>1811</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>346</exampid>
+		<descrid>1774</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>346</exampid>
+		<descrid>1775</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>346</exampid>
+		<descrid>1776</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>360</exampid>
+		<descrid>1774</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>360</exampid>
+		<descrid>1775</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>360</exampid>
+		<descrid>1776</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>359</exampid>
+		<descrid>1774</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>359</exampid>
+		<descrid>1775</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>359</exampid>
+		<descrid>1776</descrid>
+		<source>1</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
 		<exampid>1675</exampid>
 		<descrid>1780</descrid>
 		<source>1</source>
@@ -70732,48 +70932,33 @@ Bearbeite das Beispiel im Browser!]]></description>
 		<source>1</source>
 	</table>
 	<table name="block_exacompdescrexamp_mm">
-		<exampid>360</exampid>
-		<descrid>1774</descrid>
+		<exampid>1677</exampid>
+		<descrid>1809</descrid>
 		<source>1</source>
 	</table>
 	<table name="block_exacompdescrexamp_mm">
-		<exampid>360</exampid>
-		<descrid>1775</descrid>
+		<exampid>1677</exampid>
+		<descrid>1810</descrid>
 		<source>1</source>
 	</table>
 	<table name="block_exacompdescrexamp_mm">
-		<exampid>360</exampid>
-		<descrid>1776</descrid>
+		<exampid>1677</exampid>
+		<descrid>1811</descrid>
 		<source>1</source>
 	</table>
 	<table name="block_exacompdescrexamp_mm">
-		<exampid>346</exampid>
-		<descrid>1774</descrid>
+		<exampid>1678</exampid>
+		<descrid>1809</descrid>
 		<source>1</source>
 	</table>
 	<table name="block_exacompdescrexamp_mm">
-		<exampid>346</exampid>
-		<descrid>1775</descrid>
+		<exampid>1678</exampid>
+		<descrid>1810</descrid>
 		<source>1</source>
 	</table>
 	<table name="block_exacompdescrexamp_mm">
-		<exampid>346</exampid>
-		<descrid>1776</descrid>
-		<source>1</source>
-	</table>
-	<table name="block_exacompdescrexamp_mm">
-		<exampid>359</exampid>
-		<descrid>1774</descrid>
-		<source>1</source>
-	</table>
-	<table name="block_exacompdescrexamp_mm">
-		<exampid>359</exampid>
-		<descrid>1775</descrid>
-		<source>1</source>
-	</table>
-	<table name="block_exacompdescrexamp_mm">
-		<exampid>359</exampid>
-		<descrid>1776</descrid>
+		<exampid>1678</exampid>
+		<descrid>1811</descrid>
 		<source>1</source>
 	</table>
 </exabis_competences_tables>
