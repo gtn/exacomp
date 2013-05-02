@@ -218,6 +218,34 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// exacomp savepoint reached
 		upgrade_block_savepoint(true, 2013030800, 'exacomp');
 	}
+	
+	if ($oldversion < 2013042413) {
+	
+		$table = new xmldb_table('block_exacompniveaus');
+		$field = new xmldb_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
+		$field2 = new xmldb_field('sorting', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'id');
+		$field3 = new xmldb_field('title', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'sorting');
+		$field4 = new xmldb_field('parent', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'title');
+		$field5 = new xmldb_field('source',XMLDB_TYPE_INTEGER, 10, null, null, null, 0, null);
+		$field6 = new xmldb_field('sourceid',XMLDB_TYPE_INTEGER, 20, null, null, null, 0, null);
+
+		
+		$table->addField($field);
+		$table->addField($field2);
+		$table->addField($field3);
+		$table->addField($field4);
+		$table->addField($field5);
+		$table->addField($field6);
+		
+		$table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'), null, null);
+		
+		if(!$dbman->table_exists($table))
+			$dbman->create_table($table);
+		
+		
+		// exacomp savepoint reached
+		upgrade_block_savepoint(true, 2013042413, 'exacomp');
+	}
 	return $result;
 }
 

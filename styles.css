@@ -119,3 +119,12 @@ div#exabis_competences_block .tabtree ul {
     width: 425px;
 }
 #exabis_competences_block div.spaltenbrowser {margin-top:15px;}
+
+#exabis_competences_block #block_exacomp_activitysettings td.contentcell,
+#exabis_competences_block #block_exacomp_niveaufilter td.contentcell
+td.contentcell{height:100px;min-width:150px;}
+
+#exabis_competences_block table#block_exacomp_activitysettings ,
+#exabis_competences_block table#block_exacomp_niveaufilter  {width:300px;}
+
+#exabis_competences_block .settingtable td {vertical-align:top;}

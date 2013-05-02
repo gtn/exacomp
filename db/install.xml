@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/exacomp/db" VERSION="20130115" COMMENT="XMLDB file for Moodle blocks/exacomp"
+<XMLDB PATH="blocks/exacomp/db" VERSION="20130404" COMMENT="XMLDB file for Moodle blocks/exacomp"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -231,20 +231,31 @@
         <FIELD NAME="course" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Kurs" PREVIOUS="id" NEXT="grading"/>
         <FIELD NAME="grading" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Bewertungsschema maximaler Wert" PREVIOUS="course" NEXT="activities"/>
         <FIELD NAME="activities" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the hidden activities of edit activities table" PREVIOUS="grading" NEXT="tstamp"/>
-				<FIELD NAME="tstamp" TYPE="int" NOTNULL="false" SEQUENCE="false" COMMENT="date of import" LENGTH="20" PREVIOUS="activities"/>      
+        <FIELD NAME="tstamp" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="date of import" PREVIOUS="activities"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="course"/>
         <KEY NAME="course" TYPE="foreign" FIELDS="course" REFTABLE="course" REFFIELDS="id" COMMENT="Kurs" PREVIOUS="primary"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="block_exacompprofilesettings" COMMENT="This table stored the individual user settings for generating their competence profile" PREVIOUS="block_exacompsettings">
+    <TABLE NAME="block_exacompprofilesettings" COMMENT="This table stored the individual user settings for generating their competence profile" PREVIOUS="block_exacompsettings" NEXT="block_exacompniveaus">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="block"/>
         <FIELD NAME="block" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="This field stores the associated block: exacomp, exastud or exaport" PREVIOUS="id" NEXT="itemid"/>
         <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="this field stores the associated item, either periodid if block is exastud, courseid if block is exacomp or itemid if block is exaport" PREVIOUS="block" NEXT="feedback"/>
         <FIELD NAME="feedback" TYPE="binary" NOTNULL="true" SEQUENCE="false" COMMENT="this field indicates if verbal feedback should be displayed (for exastud reviews)" PREVIOUS="itemid" NEXT="userid"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="stores userid" PREVIOUS="feedback"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="block_exacompniveaus" COMMENT="Niveaus" PREVIOUS="block_exacompprofilesettings">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="sorting"/>
+        <FIELD NAME="sorting" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="id" NEXT="title"/>
+        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="title" PREVIOUS="sorting" NEXT="parent"/>
+        <FIELD NAME="parent" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="id of the parent niveau" PREVIOUS="title"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

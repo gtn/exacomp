@@ -151,4 +151,11 @@ $string['bewertung'] = ' Bewertung: ';
 
 $string['xmlserverurl'] = 'Server-URL';
 $string['configxmlserverurl'] = 'Url zu einer XML Datei, die verwendet wird, um die Daten aktuell zu halten';
+$string['niveau_filter'] = "Filter Niveaus";
+$string['niveau_auswahl'] = "Niveau auswählen";
+$string['niveau_auswahl_save'] = "Niveau filter anwenden";
+$string['filter_niveaus_descr'] = "Bitte wählen sie ein oder mehrere Niveaus um die obige Liste der Descriptoren einzuschränken.";
+
+
+
 ?>

@@ -40,7 +40,9 @@ if(strcmp("mysql",$CFG->dbtype)==0){
 $content = "";
 $courseid = required_param('courseid', PARAM_INT);
 $action = optional_param('action', "", PARAM_ALPHA);
-
+$niveau_arr=array();
+$niveau_arr["niveau"]=array();
+	      
 require_login($courseid);
 
 $context = get_context_instance(CONTEXT_COURSE, $courseid);
@@ -76,7 +78,13 @@ if ($courseid > 0) {
         $modsetting_arr=array();
         if (!empty($_POST['block_exacomp_activitysetting'])){
 	        foreach ($_POST['block_exacomp_activitysetting'] as $ks=>$vs){
-	            $modsetting_arr["activities"][]=$vs;
+	            $modsetting_arr["activities"][]=clean_param($vs,PARAM_SEQUENCE);
+	        };
+	      }
+	      
+        if (!empty($_POST['block_exacomp_niveaufilter'])){
+	        foreach ($_POST['block_exacomp_niveaufilter'] as $ks=>$vs){
+	            $niveau_arr["niveau"][]=clean_param($vs,PARAM_SEQUENCE);
 	        };
 	      }
             $modsetting="";
@@ -102,7 +110,7 @@ if ($courseid > 0) {
 		<table id="comps" class="compstable flexible boxaligncenter generaltable">
 		<tr class="heading r0">
 		<td class="category catlevel1" scope="col"><h2>' . $COURSE->fullname . '</h2></td>
-		<td class="category catlevel1 bottom" colspan="###colspanminus1###" scope="col"><a href="#colsettings">'.get_string('spalten_setting','block_exacomp').'</a></td>
+		<td class="category catlevel1 bottom" colspan="###colspanminus1###" scope="col"><a href="#colsettings">'.get_string('spalten_setting','block_exacomp').'</a> &nbsp;&nbsp;<a href="#colsettings">'.get_string('niveau_filter','block_exacomp').'</a></td>
 		</tr>
 		<tr><td></td>';
 				if($modsetting = $DB->get_record("block_exacompsettings", array("course"=>$courseid))){
@@ -133,12 +141,18 @@ if ($courseid > 0) {
         	
         }
         $content.="</tr>";
-        $descriptors = block_exacomp_get_descritors_list($courseid);
+        $descriptors = block_exacomp_get_descritors_list($courseid,0);
         $trclass = "even";
         $topic = "";
         $subject = "";
-
+				$descriptorlist="";
         foreach ($descriptors as $descriptor) {
+        	$showdescr=true;
+        	if (!empty($niveau_arr["niveau"])){
+        		if (!in_array($descriptor->niveauid,$niveau_arr["niveau"])) $showdescr=false;
+        	}
+        	if ($showdescr==true){
+        	
             if ($trclass == "even") {
                 $trclass = "odd";
                 $bgcolor = ' style="background-color:#efefef" ';
@@ -163,20 +177,25 @@ if ($courseid > 0) {
             }
             $zeiletemp = preg_replace('/checked="###checked([0-9_])+###"/', '', $zeiletemp); //nicht gewählte aktivitäten-descriptorenpaare, checked=... löschen
             $content.='<tr class="r2 ' . $trclass . '" ' . $bgcolor . '><td class="ec_minwidth">' . $descriptor->title . '<input type="hidden" value="' . $descriptor->id . '" name="ec_descr[' . $descriptor->id . ']" /></td>' . $zeiletemp . '</tr>';
+        		
+        	}
+        	$descriptorlist.=",".$descriptor->id;
         }
+        $descriptorlist=preg_replace("/^,/","",$descriptorlist);
         $content.='<tr><td id="tdsubmit" colspan="###colspannormal###"><input type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" /></td></tr>';
         $content.="</table></div>";
         
         $content.='<div id="colsettings">';
         
-        $content.='<table id="comps" class="compstable flexible boxaligncenter generaltable">
+        $content.='<table class="settingtable"><tr><td><table id="block_exacomp_activitysettings" class="compstable flexible boxaligncenter generaltable">
 				<tr class="heading r0" >
 				<td class="category catlevel1" colspan="2" scope="col"><h2>' . get_string('hide_activities', 'block_exacomp') . '</h2></td>
-				</tr><tr><td>';
+				</tr><tr><td class="contentcell">';
         
         if (!empty($shownactivities)){
 					if (count($shownactivities)<10) $ssize=count($shownactivities)+1;
 					else $ssize=11;
+					$ssize=11;
 					$content.='<select size="'.$ssize.'" name="block_exacomp_activitysetting[]" multiple="multiple">';
 						$content.='<option value="-1">  </option>';
 						foreach($shownactivities as $k=>$v){
@@ -184,10 +203,41 @@ if ($courseid > 0) {
 							if ($v["selected"]==1) $content.=' selected="selected"';
 							$content.='>'.$v["name"].'</option>';
 						}
-					$content.='</select></td><td>';
+					$content.='</select></td><td class="contentcell">';
 				}
 				$content.='<input type="submit" value="' . get_string('hide_activities_save', 'block_exacomp') . '" /></td></tr><tr><td colspan="2">';
-				$content.=get_string('hide_activities_descr', 'block_exacomp') . '</td></tr></table>';
+				$content.=get_string('hide_activities_descr', 'block_exacomp') . '</td></tr></table></td>';
+				$content.='<td>';
+				$content.='<table id="block_exacomp_niveaufilter" class="compstable flexible boxaligncenter generaltable">
+				<tr class="heading r0" >
+				<td class="category catlevel1" colspan="2" scope="col"><h2>' . get_string('niveau_auswahl', 'block_exacomp') . '</h2></td>
+				</tr><tr><td class="contentcell">';
+				/*niveau selector */
+				if (!empty($descriptorlist)){
+					$sql="SELECT n.id,n.title FROM {block_exacompdescriptors} d INNER JOIN {block_exacompniveaus} n ON d.niveauid=n.id WHERE d.id IN (".$descriptorlist.") GROUP BY n.id,n.title ORDER BY n.title";
+					if ($niveaus = $DB->get_records_sql($sql)){
+						if (count($niveaus)<10) $ssize=count($niveaus)+1;
+						else $ssize=11;
+						$ssize=11;
+						/*echo "<pre>";
+						print_r($niveau_arr);*/
+						
+						$content.='<select size="'.$ssize.'" name="block_exacomp_niveaufilter[]" multiple="multiple">';
+							$content.='<option value="-1">  </option>';
+							foreach($niveaus as $niveau){
+								$content.='<option value="'.$niveau->id.'"';
+								if (in_array($niveau->id,$niveau_arr["niveau"])) $content.=' selected="selected"';
+								$content.='>'.$niveau->title.'</option>';
+							}
+							$content.='</select>';
+					}
+				}
+				$content.='</td><td class="contentcell">';
+				$content.='<input type="submit" value="' . get_string('niveau_auswahl_save', 'block_exacomp') . '" /></td>';
+				
+				/*niveau selector end*/
+				$content.='</tr><tr><td colspan="2">'.get_string('filter_niveaus_descr', 'block_exacomp').'</td></td></table>';
+				$content.='</td></tr></table>';
 				$content.='</div>';
 
         $content.='</form>';

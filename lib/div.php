@@ -126,11 +126,13 @@ function block_exacomp_get_descriptors_by_course_ids($courseid) {
 }
 
 
-function block_exacomp_get_descritors_list($courseid,$onlywithactivitys=0) {
+function block_exacomp_get_descritors_list($courseid,$onlywithactivitys=0,$niveau_arr=array()) {
 	global $CFG, $DB;
+	//$niveaus=implode(",",$niveau_arr);
 	$condition = array($courseid);
-	$query = "SELECT d.id,d.title,tp.title as topic,tp.id as topicid, s.title as subject,s.id as subjectid FROM {block_exacompdescriptors} d, {block_exacompcoutopi_mm} c, {block_exacompdescrtopic_mm} t, {block_exacomptopics} tp, {block_exacompsubjects} s
+	$query = "SELECT d.id,d.title,tp.title as topic,tp.id as topicid, s.title as subject,s.id as subjectid,d.niveauid FROM {block_exacompdescriptors} d, {block_exacompcoutopi_mm} c, {block_exacompdescrtopic_mm} t, {block_exacomptopics} tp, {block_exacompsubjects} s
 	WHERE d.id=t.descrid AND t.topicid = c.topicid AND t.topicid=tp.id AND tp.subjid = s.id AND c.courseid = ?";
+	//if (!empty($niveaus)) $query.=" AND d.niveauid IN (".$niveaus.")";
 	if ($onlywithactivitys==1){
 		$descr=block_exacomp_get_descriptors_by_course_ids($courseid);
 		if ($descr=="") $descr=0;
