@@ -4,12 +4,32 @@ require_once($CFG->dirroot . '/blocks/exacomp/backup/moodle2/restore_exacomp_ste
 
 class restore_exacomp_block_task extends restore_block_task {
  
-    protected function define_my_settings() {
+  public function history_exists() {
+
+        $fullpath = $this->get_taskbasepath();
+        if (empty($fullpath)) {
+            return false;
+        }
+
+        $fullpath = rtrim($fullpath, '/') . '/exacomp.xml';
+        if (!file_exists($fullpath)) {
+           return false;
+        }
+        return true;
     }
+
+     protected function define_my_settings() {
+
+        if (!$this->history_exists()) {
+            return;
+        } 
+			}
 
     protected function define_my_steps() {
         // rss_client has one structure step
-        $this->add_step(new restore_exacomp_block_structure_step('exacomp_structure', 'exacomp.xml'));
+        if ($this->history_exists()) {
+	        $this->add_step(new restore_exacomp_block_structure_step('exacomp_structure', 'exacomp.xml'));
+	      }
     }
 
     public function get_fileareas() {
