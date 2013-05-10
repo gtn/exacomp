@@ -282,7 +282,9 @@ function block_exacomp_get_modules() {
 	$resouces = get_coursemodules_in_course('resource', $COURSE->id);
 	$chat = get_coursemodules_in_course('chat', $COURSE->id);
 	$workshop = get_coursemodules_in_course('workshop', $COURSE->id);
-	return array_merge($activities,$activities_old,$forums,$data,$quizes,$scorm,$glossaries,$lessons,$wikis,$urls,$resouces,$chat,$workshop);
+
+	// don't use array_merge here, use + operator, which preserves array keys!
+	return $activities+$activities_old+$forums+$data+$quizes+$scorm+$glossaries+$lessons+$wikis+$urls+$resouces+$chat+$workshop;
 }
 function print_descriptors($descriptors, $classprefix="ec") {
 	foreach ($descriptors as $descriptor) {
