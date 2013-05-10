@@ -100,7 +100,7 @@ if ($courseid > 0) {
     }
     $zeile = "";
   $shownactivities=array();
-	$modules = block_exacomp_get_modules();
+	$modules = block_exacomp_get_modules($COURSE->id);
     $colspan = (count($modules) + 1);
     echo $OUTPUT->box(text_to_html(get_string("explaineditactivities_subjects", "block_exacomp")));
 

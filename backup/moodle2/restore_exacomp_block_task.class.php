@@ -51,22 +51,24 @@ class restore_exacomp_block_task extends restore_block_task {
     public function after_restore() {
     	global $DB;
 
+		$modules = block_exacomp_get_modules($this->get_courseid());
     	$course = $DB->get_record("course",array("id"=>$this->get_courseid()));
+		
+		$modulesByName = array();
+		foreach ($modules as $module) {
+			$modulesByName[$module->name] = $module;
+		}
+		
     	$activities = $DB->get_records_sql("SELECT * FROM {block_exacompdescractiv_mm} WHERE activityid = ? AND " . $DB->sql_compare_text('coursetitle') . " = ?", array(-12345, $course->shortname));
     	    	
     	foreach($activities as $activity) {
-
-			$sql = 'SELECT * FROM {assign} WHERE course = ? AND ' . $DB->sql_compare_text('name') . ' = ?';
-        	$new_course_activity = $DB->get_record_sql($sql, array($this->get_courseid(),$activity->activitytitle));
-
-			$activityid = $DB->get_record('course_modules',array("module"=>1,"instance"=>$new_course_activity->id));
-			if ($activityid) {
+			if (isset($modulesByName[$activity->activitytitle])) {
 				// activity found
-				$activity->activityid = $activityid->id;
+				$activity->activityid = $modulesByName[$activity->activitytitle]->id;
 				$DB->update_record("block_exacompdescractiv_mm", $activity);
 			} else {
 				// activity not found, delete it
-				$DB->delete_record("block_exacompdescractiv_mm", array('id' => $activity->id));
+				$DB->delete_records("block_exacompdescractiv_mm", array('id' => $activity->id));
 			}
     	}
 	}

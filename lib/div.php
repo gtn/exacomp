@@ -265,27 +265,30 @@ function block_exacomp_get_activityurl($activity,$student=false) {
 		return $CFG->wwwroot . '/mod/assignment/submissions.php?id=' . ($activity->id);
 	else return $CFG->wwwroot . '/mod/'.$mod->name.'/view.php?id=' . $activity->id;
 }
-function block_exacomp_get_modules() {
-	global $COURSE,$CFG;
+function block_exacomp_get_modules($courseid) {
+	global $CFG;
+	
 	$activities = array();
-	$activities_old = get_coursemodules_in_course('assignment', $COURSE->id);
-	if(floatval(substr($CFG->release, 0, 3))>=2.3)
-		$activities = get_coursemodules_in_course('assign', $COURSE->id);
-	$forums = get_coursemodules_in_course('forum', $COURSE->id);
-	$data = get_coursemodules_in_course('data', $COURSE->id);
-	$quizes = get_coursemodules_in_course('quiz', $COURSE->id);
-	$scorm = get_coursemodules_in_course('scorm', $COURSE->id);
-	$glossaries = get_coursemodules_in_course('glossary', $COURSE->id);
-	$lessons = get_coursemodules_in_course('lesson', $COURSE->id);
-	$wikis = get_coursemodules_in_course('wiki', $COURSE->id);
-	$urls = get_coursemodules_in_course('url', $COURSE->id);
-	$resouces = get_coursemodules_in_course('resource', $COURSE->id);
-	$chat = get_coursemodules_in_course('chat', $COURSE->id);
-	$workshop = get_coursemodules_in_course('workshop', $COURSE->id);
-
+	
 	// don't use array_merge here, use + operator, which preserves array keys!
-	return $activities+$activities_old+$forums+$data+$quizes+$scorm+$glossaries+$lessons+$wikis+$urls+$resouces+$chat+$workshop;
+	$activities += get_coursemodules_in_course('assignment', $courseid);
+	if(floatval(substr($CFG->release, 0, 3))>=2.3)
+		$activities += get_coursemodules_in_course('assign', $courseid);
+	$activities += get_coursemodules_in_course('forum', $courseid);
+	$activities += get_coursemodules_in_course('data', $courseid);
+	$activities += get_coursemodules_in_course('quiz', $courseid);
+	$activities += get_coursemodules_in_course('scorm', $courseid);
+	$activities += get_coursemodules_in_course('glossary', $courseid);
+	$activities += get_coursemodules_in_course('lesson', $courseid);
+	$activities += get_coursemodules_in_course('wiki', $courseid);
+	$activities += get_coursemodules_in_course('url', $courseid);
+	$activities += get_coursemodules_in_course('resource', $courseid);
+	$activities += get_coursemodules_in_course('chat', $courseid);
+	$activities += get_coursemodules_in_course('workshop', $courseid);
+
+	return $activities;
 }
+
 function print_descriptors($descriptors, $classprefix="ec") {
 	foreach ($descriptors as $descriptor) {
 		$content.='<p class="' . $classprefix . '_descriptor">' . $descriptor->title . '</p>';

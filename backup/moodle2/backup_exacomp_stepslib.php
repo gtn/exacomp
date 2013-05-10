@@ -42,9 +42,9 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
  
 
 		// backup descractiv_mm
-		$modules = block_exacomp_get_modules();
-		$backup_descractiv_mm = array();
+		$modules = block_exacomp_get_modules($this->get_courseid());
 		$course = $DB->get_record("course",array("id"=>$this->get_courseid()));
+		$backup_descractiv_mm = array();
 
 		$all_descractiv_mm = $DB->get_records_sql('
 			SELECT da.id, d.sourceid as descrid, da.activityid
