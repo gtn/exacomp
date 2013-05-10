@@ -175,7 +175,7 @@ function block_exacomp_get_activityid($activity) {
 
 function block_exacomp_get_activities($descid, $courseid = null) { //alle assignments die einem bestimmten descriptor zugeordnet sind
 	global $CFG, $DB;
-	$query = "SELECT mm.id as uniqueid,a.id,ass.grade, mm.activitytype,a.instance FROM {block_exacompdescriptors} descr INNER JOIN {block_exacompdescractiv_mm} mm  ON descr.id=mm.descrid INNER JOIN {course_modules} a ON a.id=mm.activityid LEFT JOIN {assignment} ass ON ass.id=a.instance  ";
+	$query = "SELECT mm.id as uniqueid,a.id,ass.grade, mm.activitytype,a.instance FROM {block_exacompdescriptors} descr INNER JOIN {block_exacompdescractiv_mm} mm  ON descr.id=mm.descrid INNER JOIN {course_modules} a ON a.id=mm.activityid LEFT JOIN {assign} ass ON ass.id=a.instance  ";
 	$query.="WHERE descr.id=?";
 	//echo $query;
 	$condition = array($descid);

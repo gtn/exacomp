@@ -50,21 +50,25 @@ class restore_exacomp_block_task extends restore_block_task {
     
     public function after_restore() {
     	global $DB;
+
     	$course = $DB->get_record("course",array("id"=>$this->get_courseid()));
-    	$activities = $DB->get_records_sql("SELECT * FROM {block_exacompdescractiv_mm} WHERE " . $DB->sql_compare_text('coursetitle') . " = ?",array($course->shortname));
+    	$activities = $DB->get_records_sql("SELECT * FROM {block_exacompdescractiv_mm} WHERE activityid = ? AND " . $DB->sql_compare_text('coursetitle') . " = ?", array(-12345, $course->shortname));
     	    	
     	foreach($activities as $activity) {
-    	
-    		$sql = 'SELECT * FROM {assignment} WHERE course = ? AND ' . $DB->sql_compare_text('name') . ' = ?';
-        	$source_activity = $DB->get_record_sql($sql,array($this->get_courseid(),$activity->activitytitle));
-        	
-        	$activityid = $DB->get_record('course_modules',array("module"=>1,"instance"=>$source_activity->id));
-        	$activity->activityid = $activityid->id;
-        	
-        	$DB->update_record("block_exacompdescractiv_mm",$activity);
-    	
+
+			$sql = 'SELECT * FROM {assign} WHERE course = ? AND ' . $DB->sql_compare_text('name') . ' = ?';
+        	$new_course_activity = $DB->get_record_sql($sql, array($this->get_courseid(),$activity->activitytitle));
+
+			$activityid = $DB->get_record('course_modules',array("module"=>1,"instance"=>$new_course_activity->id));
+			if ($activityid) {
+				// activity found
+				$activity->activityid = $activityid->id;
+				$DB->update_record("block_exacompdescractiv_mm", $activity);
+			} else {
+				// activity not found, delete it
+				$DB->delete_record("block_exacompdescractiv_mm", array('id' => $activity->id));
+			}
     	}
-    	
 	}
  
 }

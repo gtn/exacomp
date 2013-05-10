@@ -40,8 +40,8 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
  
  		$descractiv_mm->set_source_sql('
  			SELECT da.id, d.sourceid as descrid, da.activityid, da.activitytitle, da.coursetitle
- 			  FROM {block_exacompdescractiv_mm} da, {block_exacompdescriptors} d, {course_modules} cm, {assignment} a
- 			 WHERE d.id=da.descrid AND da.activitytype=1 AND da.activityid=cm.id AND cm.module=1 AND a.id=cm.instance AND a.course = ?
+ 			  FROM {block_exacompdescractiv_mm} da, {block_exacompdescriptors} d, {course_modules} cm, {assign} a
+ 			 WHERE d.id=da.descrid AND da.activityid=cm.id AND cm.module=1 AND a.id=cm.instance AND a.course = ?
  			',
  			array(backup::VAR_COURSEID));
         // Define id annotations

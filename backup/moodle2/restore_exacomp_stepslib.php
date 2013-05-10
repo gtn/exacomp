@@ -35,22 +35,20 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
         }
         
         if (isset($data->exacomp['activities']['descractiv_mm'])) {
+ 			$course = $DB->get_record("course",array("id"=>$this->get_courseid()));
+
         	foreach ($data->exacomp['activities']['descractiv_mm'] as $descractiv_mm) {
 			
-			$descractiv_mm = (object)$descractiv_mm;
+				$descractiv_mm = (object)$descractiv_mm;
 			
-			$source_desc = $DB->get_record('block_exacompdescriptors',array("sourceid"=>$descractiv_mm->descrid));
-        	$descractiv_mm->descrid = $source_desc->id;
+				$source_desc = $DB->get_record('block_exacompdescriptors',array("sourceid"=>$descractiv_mm->descrid));
+				$descractiv_mm->descrid = $source_desc->id;
         
-        /*	$sql = 'SELECT * FROM {assignment} WHERE course = ? AND ' . $DB->sql_compare_text('name') . ' = ?';
-        	$source_activity = $DB->get_record_sql($sql,array($this->get_courseid(),$descractiv_mm->activitytitle));
-        	
-        	$activityid = $DB->get_record('course_modules',array("module"=>1,"instance"=>$source_activity->id));*/
- 			$descractiv_mm->activityid = 012345;
- 			$course = $DB->get_record("course",array("id"=>$this->get_courseid()));
- 			$descractiv_mm->coursetitle = $course->shortname;
-        	$newitemid = $DB->insert_record('block_exacompdescractiv_mm', $descractiv_mm);
+				// temporary activityid, will be overwritten in restore_exacomp_block_task.class.php::after_restore()
+				$descractiv_mm->activityid = -12345;
+				$descractiv_mm->coursetitle = $course->shortname;
 			
+				$newitemid = $DB->insert_record('block_exacompdescractiv_mm', $descractiv_mm);
 			}
 		}
 
@@ -81,12 +79,11 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
         $source_desc = $DB->get_record('block_exacompdescriptors',array("sourceid"=>$data->sourceid));
         $data->descrid = $source_desc->id;
         
-        $source_activity = $DB->get_record('assignment',array("course"=>$this->get_courseid(),"name"=>$data->activitytitle));
+        $source_activity = $DB->get_record('assign',array("course"=>$this->get_courseid(),"name"=>$data->activitytitle));
         $activityid = $DB->get_record('course_modules',array("module"=>1,"instance"=>$source_activity->id));
  		$data->activityid = $activityid->id;
  
-        $newitemid = $DB->insert_record('block_exabcompdescractiv_mm', $data);
+        $newitemid = $DB->insert_record('block_exacompdescractiv_mm', $data);
         //$this->set_mapping('choice_option', $oldid, $newitemid);
     }
- 
 }
