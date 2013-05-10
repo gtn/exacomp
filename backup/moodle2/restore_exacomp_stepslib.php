@@ -53,37 +53,4 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
 		}
 
     }
-    
-    public function process_exacomp($data) {}
-     public function process_topic($data) {
-        global $DB;
-        $data = (object)$data;
-
-        $data->courseid = $this->get_courseid();
-        
-        $source_topic = $DB->get_record('block_exacomptopics',array("sourceid"=>$data->sourceid));
-        $data->topicid = $source_topic->id;
- 
-        // insert the record
-        $newitemid = $DB->insert_record('block_exacompcoutopi_mm', $data);
-        // immediately after inserting "activity" record, call this
-        //$this->apply_activity_instance($newitemid);
-    }
- 
-    public function process_descractiv_mm($data) {
-        global $DB;
-         
-        $data = (object)$data;
-        $oldid = $data->id;
- 
-        $source_desc = $DB->get_record('block_exacompdescriptors',array("sourceid"=>$data->sourceid));
-        $data->descrid = $source_desc->id;
-        
-        $source_activity = $DB->get_record('assign',array("course"=>$this->get_courseid(),"name"=>$data->activitytitle));
-        $activityid = $DB->get_record('course_modules',array("module"=>1,"instance"=>$source_activity->id));
- 		$data->activityid = $activityid->id;
- 
-        $newitemid = $DB->insert_record('block_exacompdescractiv_mm', $data);
-        //$this->set_mapping('choice_option', $oldid, $newitemid);
-    }
 }
