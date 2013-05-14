@@ -266,27 +266,15 @@ function block_exacomp_get_activityurl($activity,$student=false) {
 	else return $CFG->wwwroot . '/mod/'.$mod->name.'/view.php?id=' . $activity->id;
 }
 function block_exacomp_get_modules($courseid) {
-	global $CFG;
+	global $DB;
 	
-	$activities = array();
-	
-	// don't use array_merge here, use + operator, which preserves array keys!
-	$activities += get_coursemodules_in_course('assignment', $courseid);
-	if(floatval(substr($CFG->release, 0, 3))>=2.3)
-		$activities += get_coursemodules_in_course('assign', $courseid);
-	$activities += get_coursemodules_in_course('forum', $courseid);
-	$activities += get_coursemodules_in_course('data', $courseid);
-	$activities += get_coursemodules_in_course('quiz', $courseid);
-	$activities += get_coursemodules_in_course('scorm', $courseid);
-	$activities += get_coursemodules_in_course('glossary', $courseid);
-	$activities += get_coursemodules_in_course('lesson', $courseid);
-	$activities += get_coursemodules_in_course('wiki', $courseid);
-	$activities += get_coursemodules_in_course('url', $courseid);
-	$activities += get_coursemodules_in_course('resource', $courseid);
-	$activities += get_coursemodules_in_course('chat', $courseid);
-	$activities += get_coursemodules_in_course('workshop', $courseid);
+	// read all the modules except 'label', because this one is just text!
+    $modules = $DB->get_records_sql("SELECT cm.*, m.name as modname
+					FROM {modules} m, {course_modules} cm
+					WHERE cm.course = ? AND cm.module = m.id AND m.name NOT IN ('label')",
+					array($courseid));
 
-	return $activities;
+	return $modules;
 }
 
 function print_descriptors($descriptors, $classprefix="ec") {
