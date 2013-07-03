@@ -18,6 +18,20 @@ function spaltenbrowser($anz,$spalten){
 	$content.='<a href="javascript:hidezelle(0,'.$splt.');">alle&nbsp;Schüler</a>';
 	return $content;
 }
+function spaltenbrowser_v2($anz, $spalten) {
+	if ($anz <= $spalten) return;
+
+	$content  = '';
+	$content .= '<div class="spaltenbrowser">';
+	$content .= '<b>Tabellenspalten Anzeige: </b>';
+	for ($i=0; $i<ceil($anz/$spalten); $i++) {
+		$content .= '<a href="javascript:Exacomp.onlyShowColumnGroup('.$i.');">'.($i*$spalten+1).'-'.min($anz, ($i+1)*$spalten).'</a> | ';
+	}
+	$content .= '<a href="javascript:Exacomp.onlyShowColumnGroup(null);">alle&nbsp;Schüler</a>';
+	$content .= "</div>";
+	
+	return $content;
+}
 function block_exacomp_get_examplelink($sourceid){
 	global $DB,$CFG;
 
