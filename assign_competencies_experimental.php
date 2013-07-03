@@ -44,6 +44,8 @@ $schueler_gruppierung_breite=5;
 $zeilenanzahl=5;
 $content = "";
 $action = optional_param('action', "", PARAM_ALPHA);
+$subjectid = optional_param('subjectid', 0, PARAM_INT);
+$topicid = optional_param('topicid', 0, PARAM_INT);
 $showevaluation = optional_param('showevaluation', "", PARAM_ALPHA);
 $bewertungsdimensionen=block_exacomp_getbewertungsschema($courseid);
 
@@ -103,28 +105,76 @@ if ($role == "teacher"){
 	$students = array($USER);
 }
 
-$descriptors = block_exacomp_get_descriptors_by_course($courseid);
+// read all subjects in this course
+$topics = null;
+$selected_subject = null;
+$selected_topic = null;
+$descriptors = null;
+
+$subjects = $DB->get_records_sql('
+	SELECT s.id, s.title
+	FROM {block_exacompsubjects} s
+	JOIN {block_exacomptopics} t ON t.subjid = s.id
+	JOIN {block_exacompcoutopi_mm} ct ON ct.topicid = t.id AND ct.courseid = ?
+	GROUP BY s.id
+	ORDER BY s.title
+', array($courseid));
+
+if (isset($subjects[$subjectid])) {
+	$selected_subject = $subjects[$subjectid];
+} elseif ($subjects) {
+	$selected_subject = reset($subjects);
+}
+
+if ($selected_subject) {
+	$topics = $DB->get_records_sql('
+		SELECT t.id, t.title
+		FROM {block_exacomptopics} t
+		JOIN {block_exacompcoutopi_mm} ct ON ct.topicid = t.id AND t.subjid = ? AND ct.courseid = ?
+		GROUP BY t.id
+		ORDER BY t.title
+	', array($selected_subject->id, $courseid));
+	
+	if (isset($topics[$topicid])) {
+		$selected_topic = $topics[$topicid];
+	} elseif ($topics) {
+		$selected_topic = reset($topics);
+	}
+	
+	if ($selected_topic) {
+		$descriptors = $DB->get_records_sql('
+			SELECT d.id, d.title
+			FROM {block_exacompdescriptors} d
+			JOIN {block_exacompdescrtopic_mm} topmm ON topmm.descrid=d.id AND topmm.topicid=?
+			GROUP BY d.id
+			ORDER BY d.sorting
+		', array($selected_topic->id));
+	}
+}
+
 
 ?>
 <div class="exabis_competencies_lis">
 
 <div class="exabis_comp_select">
 Fach auswählen:
-<select class="start-searchbox-select" name="gemeinde">
-<option value=""></option>
-<option value="">Mathematik</option>
-<option value="">Deutsch</option>
-<option value="">Englisch</option>
+<select class="start-searchbox-select" onchange="document.location.href='<?php echo $url; ?>&subjectid='+this.value;">
+<?php foreach ($subjects as $subject) {
+	echo '<option value="'.$subject->id.'"'.($subject->id==$selected_subject->id?' selected="selected"':'').'>'.$subject->title.'</option>';
+} ?>
 </select>
 
+<? if ($topics): ?>
 Kompetenzbereich/Leitidee auswählen:
-<select class="start-searchbox-select" name="gemeinde">
-<option value=""></option>
-<option value="">4-Messen</option>
-<option value="">4-Messen</option>
-<option value="">4-Messen Blindtext</option>
+<select class="start-searchbox-select" onchange="document.location.href='<?php echo $url; ?>&subjectid=<?php echo $selected_subject->id; ?>&topicid='+this.value;">
+	<?php foreach ($topics as $topic) {
+		echo '<option value="'.$topic->id.'"'.($topic->id==$selected_topic->id?' selected="selected"':'').'>'.$topic->title.'</option>';
+	} ?>
 </select>
+<? endif; ?>
 </div>
+
+<? if ($selected_topic) { ?>
 
 <table class="exabis_comp_info">
 	<tr>
@@ -138,10 +188,10 @@ Kompetenzbereich/Leitidee auswählen:
 			<b>13/14</b>
 		</td>
 		<td><span class="exabis_comp_top_small">Fach</span>
-			<b>Mathematik</b>
+			<b><?php echo $selected_subject->title; ?></b>
 		</td>
 		<td><span class="exabis_comp_top_small">Kompetenzbereich/Leitidee</span>
-			<b>4 - Messen</b>
+			<b><?php echo $selected_topic->title; ?></b>
 		</td>
 		<td><span class="exabis_comp_top_small">Lernfortschritt</span>
 			<b>LF 6</b>
@@ -231,10 +281,17 @@ if ($descriptors) {
             }
 			*/
 
+			if (preg_match('!^([^\s]*[0-9][^\s]*+)\s+(.*)$!iu', $descriptor->title, $matches)) {
+				$output_id = $matches[1];
+				$output_title = $matches[2];
+			} else {
+				$output_id = '';
+				$output_title = $descriptor->title;
+			}
 			?>
 			<tr class="exabis_comp_teilcomp rowgroup-header rowgroup-<?php echo $rowgroup; ?>">
-			<td>A01</td>
-			<td class="rowgroup-arrow"><div><?php echo $descriptor->title; ?></div></td>
+			<td><?php echo $output_id; ?></td>
+			<td class="rowgroup-arrow"><div><?php echo $output_title; ?></div></td>
 			<?php
 				$columnCnt = 0;
 				foreach ($students as $student) {
@@ -269,123 +326,13 @@ if ($descriptors) {
 				<?php
 		}
 	?>
-		<tr class="exabis_comp_teilcomp">
-			<td>A02</td>
-			<td><b><img src="pix/pfeil_show.png" class="exabis_comp_teilcomp_pfeil" />&nbsp;<a href="#">Ich kann das Volumen von Quadern berechnen</a></b></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/folder_fill_12x12.png" alt="ePortfolio" /><img src="pix/list_12x11.png" alt="Aktivitäten" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/folder_fill_12x12.png" alt="ePortfolio" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-		</tr>
-		<tr class="exabis_comp_teilcomp">
-			<td>A03</td>
-			<td><b><img src="pix/pfeil_hide.png" class="exabis_comp_teilcomp_pfeil" />&nbsp;<a href="#">Ich kann Raum- und Hohlmaße in benachbarte Einheiten umrechnen</a></b></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-		</tr>
-	
-		<tr class="exabis_comp_aufgabe">
-			<td></td>
-			<td>LM1.1</td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-		</tr>
-		<tr class="exabis_comp_aufgabe">
-			<td></td>
-			<td>LM1.2</td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-		</tr>
-		<tr  class="exabis_comp_aufgabe">
-			<td></td>
-			<td>LM1.2</td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-		</tr>
-		<tr  class="exabis_comp_aufgabe">
-			<td></td>
-			<td>LM1.3</td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-		</tr>
-		<tr  class="exabis_comp_aufgabe">
-			<td></td>
-			<td>LM1.4</td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"></td>
-		</tr>
-		
-		<tr class="exabis_comp_teilcomp">
-			<td>A04</td>
-			<td><b><img src="pix/pfeil_show.png" class="exabis_comp_teilcomp_pfeil" />&nbsp;<a href="#">Ich kann den Oberflächeninhalt von Quadern ermitteln</a></b></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-		</tr>
-		<tr class="exabis_comp_teilcomp">
-			<td>A05</td>
-			<td><b><img src="pix/pfeil_show.png" class="exabis_comp_teilcomp_pfeil" />&nbsp;<a href="#">Ich kann den Oberflächeninhalt von realen quaderförmigen Gegenständen durch Messen und Berechnen ermitteln</a></b></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-			<td><input type="checkbox" value="1" name="data[33][3679]" checked="checked"><img src="pix/x_11x11.png" alt="Leer" /></td>
-		</tr>
-
 	</thead>
 </table>
 </form>
 	<?php
 } else {
-	$content.=$OUTPUT->box(text_to_html(get_string("explainno_comps", "block_exacomp")));
+	echo $OUTPUT->box(text_to_html(get_string("explainno_comps", "block_exacomp")));
+}
 }
 
 echo $OUTPUT->footer();
