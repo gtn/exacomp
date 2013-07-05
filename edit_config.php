@@ -39,9 +39,16 @@ $action = optional_param('action', "", PARAM_ALPHA);
 
 require_login($courseid);
 
-$context = get_context_instance(CONTEXT_SYSTEM);
 
-require_capability('block/exacomp:admin', $context);
+$version = get_config('exacomp', 'alternativedatamodel');
+if($version) {
+	$context = get_context_instance(CONTEXT_COURSE, $courseid);
+	require_capability('block/exacomp:teacher', $context);
+}
+else {
+	$context = get_context_instance(CONTEXT_SYSTEM);
+	require_capability('block/exacomp:admin', $context);
+}
 
 $check = block_exacomp_xml_check_import();
 if(!$check){
@@ -52,7 +59,10 @@ if(!$check){
 //Falls Formular abgesendet, speichern
 if (isset($action) && $action == 'save') {
     $values = $_POST['data'];
-    block_exacomp_set_mdltype($values);
+    if($version)
+    	block_exacomp_set_mdltype($values,$courseid);
+    else
+    	block_exacomp_set_mdltype($values);
     $url = $CFG->wwwroot;
     //header('Location: ' . $url);
     $headertext=get_string("save", "block_exacomp");
@@ -61,8 +71,10 @@ if (isset($action) && $action == 'save') {
 }
 
 $PAGE->set_url('/blocks/exacomp/edit_config.php?courseid=1');
-block_exacomp_print_header("admin", "admintabschooltype");
-
+if(!$version)
+	block_exacomp_print_header("admin", "admintabschooltype");
+else
+	block_exacomp_print_header("teacher", "admintabschooltype");
 
 echo "<div class='block_excomp_center'>";
 
@@ -81,7 +93,8 @@ foreach ($levels as $level) {
     }
     $content .= '<tr> <td colspan="2"><b>' . $level->title . '</b></td></tr>';
     foreach ($types as $type) {
-        if (block_exacomp_get_moodletypes($type->id))
+    	$ticked = (!$version) ? block_exacomp_get_moodletypes($type->id) : block_exacomp_get_moodletypes($type->id,$courseid);
+        if ($ticked)
             $content .= '<tr><td>' . $type->title . '</td><td><input type="checkbox" name="data[' . $type->id . ']" value="' . $type->id . '" checked="checked" /></td></tr>';
         else
             $content .= '<tr><td>' . $type->title . '</td><td><input type="checkbox" name="data[' . $type->id . ']" value="' . $type->id . '" /></td></tr>';

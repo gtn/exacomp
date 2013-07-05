@@ -246,6 +246,22 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// exacomp savepoint reached
 		upgrade_block_savepoint(true, 2013042413, 'exacomp');
 	}
+	
+	if ($oldversion < 2013070400) {
+	
+		// Define field courseid to be added to block_exacompmdltype_mm
+		$table = new xmldb_table('block_exacompmdltype_mm');
+		$field = new xmldb_field('courseid', XMLDB_TYPE_INTEGER, '20', null, null, null, '0', 'typeid');
+	
+		// Conditionally launch add field courseid
+		if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+	
+		// exacomp savepoint reached
+		upgrade_block_savepoint(true, 2013070400, 'exacomp');
+	}
+	
 	return $result;
 }
 

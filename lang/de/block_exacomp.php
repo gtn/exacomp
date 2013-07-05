@@ -156,6 +156,7 @@ $string['niveau_auswahl'] = "Niveau auswählen";
 $string['niveau_auswahl_save'] = "Niveau filter anwenden";
 $string['filter_niveaus_descr'] = "Bitte wählen sie ein oder mehrere Niveaus um die obige Liste der Descriptoren einzuschränken.";
 
-
+$string['alternativedatamodel'] = 'Baden W&uuml;rttemberg Version';
+$string['alternativedatamodel_description'] = 'Anhaken für die Baden W&uuml;rttemberg Version';
 
 ?>

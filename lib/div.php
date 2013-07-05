@@ -441,6 +441,9 @@ function block_exacomp_print_header($role, $item_identifier, $sub_item_identifie
 
 		// haupttabs
 		$tabs = array();
+		
+		if(get_config("exacomp","alternativedatamodel"))
+			$tabs[] = new tabobject('admintabschooltype', $CFG->wwwroot . '/blocks/exacomp/edit_config.php?courseid=' . $COURSE->id, get_string("admintabschooltype", "block_exacomp"), '', true);
 		$tabs[] = new tabobject('teachertabconfig', $CFG->wwwroot . '/blocks/exacomp/edit_course.php?courseid=' . $COURSE->id, get_string("teachertabconfig", "block_exacomp"), '', true);
 
 		// Wenn der Kurs bereits aktiviert ist, alle Tabs anzeigen
@@ -606,22 +609,22 @@ function block_exacomp_get_schooltypes($edulevel) {
 	return $types;
 }
 
-function block_exacomp_get_moodletypes($typeid) {
+function block_exacomp_get_moodletypes($typeid, $courseid = 0) {
 	global $DB;
 
-	$res = $DB->get_record('block_exacompmdltype_mm', array("typeid" => $typeid));
+	$res = $DB->get_record('block_exacompmdltype_mm', array("typeid" => $typeid, "courseid" => $courseid));
 	if ($res)
 		return true;
 	else
 		return false;
 }
 
-function block_exacomp_set_mdltype($values) {
+function block_exacomp_set_mdltype($values, $courseid = 0) {
 	global $DB;
-
-	$DB->delete_records('block_exacompmdltype_mm');
+	
+	$DB->delete_records('block_exacompmdltype_mm',array("courseid"=>$courseid));
 	foreach ($values as $value) {
-		$DB->insert_record('block_exacompmdltype_mm', array("typeid" => $value));
+		$DB->insert_record('block_exacompmdltype_mm', array("typeid" => $value,"courseid" => $courseid));
 	}
 }
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/exacomp/db" VERSION="20130404" COMMENT="XMLDB file for Moodle blocks/exacomp"
+<XMLDB PATH="blocks/exacomp/db" VERSION="20130704" COMMENT="XMLDB file for Moodle blocks/exacomp"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -189,7 +189,8 @@
     <TABLE NAME="block_exacompmdltype_mm" COMMENT="Diese Tabelle speichert den Schultyp der jeweiligen Moodleinstanz" PREVIOUS="block_exacompdescuser_mm" NEXT="block_exacompcoutopi_mm">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="typeid"/>
-        <FIELD NAME="typeid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="ID des zugeordneten Schultyps" PREVIOUS="id"/>
+        <FIELD NAME="typeid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="ID des zugeordneten Schultyps" PREVIOUS="id" NEXT="courseid"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="20" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="used for the alternative data model because here the this configuration is not used globally for the whole moodle instance but for a specific course" PREVIOUS="typeid"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="typeid"/>
