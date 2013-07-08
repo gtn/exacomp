@@ -81,7 +81,7 @@ block_exacomp_print_header($role, $identifier);
 
 if ($action == "save" && isset($_POST['btn_submit'])) {
 	$values = array();
-  if (!empty($_POST['data'])){
+	if (!empty($_POST['data'])){
 		foreach ($_POST['data'] as $key => $desc) {
 			if (!empty($_POST['data'][$key])) {
 				foreach ($_POST['data'][$key] as $key2 => $wert) {
@@ -94,14 +94,34 @@ if ($action == "save" && isset($_POST['btn_submit'])) {
 		}
 	}
 	block_exacomp_set_descuser($values, $courseid, $USER->id, $introle);
+
+	// TODO
+	/*
+	$values = array();
+	if($introle == 1)
+		$DB->delete_records('block_exacompdescuser', array("courseid" => $courseid, "role" => $introle));
+	else 
+		$DB->delete_records('block_exacompdescuser', array("courseid" => $courseid, "role" => $introle, "userid"=>$USER->id));
+
+	if (!empty($_POST['dataexamples'])){
+		foreach ($_POST['dataexamples'] as $key => $desc) {
+			foreach ($_POST['dataexamples'][$key] as $key2 => $wert) {
+				if ($wert>0) {
+					//wenn pulldown und wert 0, kein eintrag, wenn checkbox kein hackerl kommt er gar nicht hierhier
+					$values[] = array('user' => $key2, 'desc' => $key, 'wert' => $wert);
+				}
+			}
+		}
+	}
+	*/
 }
 
 $context = get_context_instance(CONTEXT_COURSE, $courseid);
 if ($role == "teacher"){
 	// spalte mit schuelern(=teilnehmer), 5=teilnehmer
 	$students = get_role_users(5, $context);
-	$students = array_merge($students, $students, $students);
-	$students = array_merge($students, $students, $students);
+	// $students = array_merge($students, $students, $students);
+	// $students = array_merge($students, $students, $students);
 }else{
 	//spalte nur teilnehmer selber
 	$students = array($USER);
@@ -292,7 +312,7 @@ if ($descriptors) {
 	echo spaltenbrowser(count($students),$schueler_gruppierung_breite);
 ?>
 
-<form action="assign_competencies.php?action=save&courseid=<?php echo $courseid; ?>" method="post">
+<form action="assign_competencies.php?action=save&courseid=<?php echo $courseid; ?>&subjectid=<?php  echo $selected_subject->id; ?>&topicid=<?php echo $selected_topic->id; ?>" method="post">
 <table class="exabis_comp_comp">
 	<?php
 		$rowgroup = 0;
@@ -443,7 +463,17 @@ if ($descriptors) {
 							echo '</select>';
 						}
 						*/
-						echo '<input type="checkbox" value="1" name="dataexamples[' . $example->deid . '][' . $student->id . ']" checked="checked">';
+						
+						if ($role == "teacher") {
+							echo '<input type="checkbox" value="1" name="dataexamples[' . $example->deid . '][' . $student->id . ']" checked="checked">';
+						} else {
+							echo 'Aufgabe erledigt: <input type="checkbox" value="1" name="data[33][3679]" checked="checked">&nbsp;&nbsp;<select class="start-searchbox-select" name="gemeinde">
+<option value="">selbst</option>
+<option value="">Lernpartner</option>
+<option value="">Lerngruppe</option>
+<option value="">Lehrkraft</option>
+</select><br>von&nbsp;<input id="" class="" type="text" name="xy" value=""><img src="calendar_alt_stroke_12x12.png" alt="Aktivitäten" class="excolis_cal">&nbsp;bis&nbsp;<input id="" class="" type="text" name="xy" value=""><img src="calendar_alt_stroke_12x12.png" alt="Aktivitäten" class="excolis_cal">';
+						}
 						echo '</td>';
 					}
 				?>
@@ -453,8 +483,11 @@ if ($descriptors) {
 	?>
 	</thead>
 </table>
+<input name="btn_submit" type="submit" value="<?php echo get_string('auswahl_speichern', 'block_exacomp'); ?>" />
 </form>
+
 	<?php
+
 } else {
 	echo $OUTPUT->box(text_to_html(get_string("explainno_comps", "block_exacomp")));
 }
