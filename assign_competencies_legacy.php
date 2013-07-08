@@ -28,27 +28,26 @@
 
 require_once dirname(__FILE__) . '/inc.php';
 require_once dirname(__FILE__) . '/lib/div.php';
-
+//require_once dirname(__FILE__) . '/lib/radargraph.php';
 require_once($CFG->dirroot . "/lib/datalib.php");
 if (file_exists($CFG->dirroot . "/lib/gradelib.php")){
 		require_once($CFG->dirroot . "/lib/gradelib.php");
-		$gradelib = function_exists("grade_get_grades");
+		if (function_exists("grade_get_grades")) $gradelib=true;
+		else $gradelib=false;
 }else{
 	$gradelib=false;
 }
-
-$courseid = required_param('courseid', PARAM_INT);
-require_login($courseid);
-
-$schueler_gruppierung_breite=5;
+global $COURSE, $CFG, $OUTPUT, $USER;
+$spalten=5;
 $zeilenanzahl=5;
 $content = "";
+$courseid = required_param('courseid', PARAM_INT);
 $action = optional_param('action', "", PARAM_ALPHA);
-$subjectid = optional_param('subjectid', 0, PARAM_INT);
-$topicid = optional_param('topicid', 0, PARAM_INT);
 $showevaluation = optional_param('showevaluation', "", PARAM_ALPHA);
 $bewertungsdimensionen=block_exacomp_getbewertungsschema($courseid);
+require_login($courseid);
 
+//echo CONTEXT_USER."-----";
 $context = get_context_instance(CONTEXT_COURSE, $courseid);
 
 
@@ -60,22 +59,16 @@ if (has_capability('block/exacomp:student', $context)) {
 	$role = "student";
 }
 if (has_capability('block/exacomp:teacher', $context)) {
-	$introle = 1;
 	$role = "teacher";
+	$introle = 1;
 }
 
-$url = '/blocks/exacomp/assign_competencies_experimental.php?courseid=' . $courseid;
+$url = '/blocks/exacomp/assign_competencies_legacy.php?courseid=' . $courseid;
 $PAGE->set_url($url);
 $url = $CFG->wwwroot . $url;
 $identifier = "teachertabassigncompetences";
 if ($role == "student")
 	$identifier = "studenttabcompetences";
-
-$PAGE->requires->css('/blocks/exacomp/css/assign_competencies.css');
-$PAGE->requires->css('/blocks/exacomp/css/jquery-ui.css');
-$PAGE->requires->js('/blocks/exacomp/javascript/jquery.js', true);
-$PAGE->requires->js('/blocks/exacomp/javascript/jquery-ui.js', true);
-$PAGE->requires->js('/blocks/exacomp/javascript/exacomp.js', true);
 
 block_exacomp_print_header($role, $identifier);
 
@@ -95,272 +88,10 @@ if ($action == "save" && isset($_POST['btn_submit'])) {
 	}
 	block_exacomp_set_descuser($values, $courseid, $USER->id, $introle);
 }
-
-$context = get_context_instance(CONTEXT_COURSE, $courseid);
-if ($role == "teacher"){
-	// spalte mit schuelern(=teilnehmer), 5=teilnehmer
-	$students = get_role_users(5, $context);
-	$students = array_merge($students, $students, $students);
-	$students = array_merge($students, $students, $students);
-}else{
-	//spalte nur teilnehmer selber
-	$students = array($USER);
-}
-
-// read all subjects in this course
-$topics = null;
-$selected_subject = null;
-$selected_topic = null;
-$descriptors = null;
-
-$subjects = $DB->get_records_sql('
-	SELECT s.id, s.title
-	FROM {block_exacompsubjects} s
-	JOIN {block_exacomptopics} t ON t.subjid = s.id
-	JOIN {block_exacompcoutopi_mm} ct ON ct.topicid = t.id AND ct.courseid = ?
-	GROUP BY s.id
-	ORDER BY s.title
-', array($courseid));
-
-if (isset($subjects[$subjectid])) {
-	$selected_subject = $subjects[$subjectid];
-} elseif ($subjects) {
-	$selected_subject = reset($subjects);
-}
-
-if ($selected_subject) {
-	$topics = $DB->get_records_sql('
-		SELECT t.id, t.title
-		FROM {block_exacomptopics} t
-		JOIN {block_exacompcoutopi_mm} ct ON ct.topicid = t.id AND t.subjid = ? AND ct.courseid = ?
-		GROUP BY t.id
-		ORDER BY t.title
-	', array($selected_subject->id, $courseid));
-	
-	if (isset($topics[$topicid])) {
-		$selected_topic = $topics[$topicid];
-	} elseif ($topics) {
-		$selected_topic = reset($topics);
-	}
-	
-	if ($selected_topic) {
-		$descriptors = $DB->get_records_sql('
-			SELECT d.id, d.title
-			FROM {block_exacompdescriptors} d
-			JOIN {block_exacompdescrtopic_mm} topmm ON topmm.descrid=d.id AND topmm.topicid=?
-			GROUP BY d.id
-			ORDER BY d.sorting
-		', array($selected_topic->id));
-	}
-}
+echo '<script type="text/javascript" src="lib/wz_tooltip.js"></script>';
 
 
-?>
-<div class="exabis_competencies_lis">
-
-<div class="exabis_comp_select">
-Fach auswählen:
-<select class="start-searchbox-select" onchange="document.location.href='<?php echo $url; ?>&subjectid='+this.value;">
-<?php foreach ($subjects as $subject) {
-	echo '<option value="'.$subject->id.'"'.($subject->id==$selected_subject->id?' selected="selected"':'').'>'.$subject->title.'</option>';
-} ?>
-</select>
-
-<? if ($topics): ?>
-Kompetenzbereich/Leitidee auswählen:
-<select class="start-searchbox-select" onchange="document.location.href='<?php echo $url; ?>&subjectid=<?php echo $selected_subject->id; ?>&topicid='+this.value;">
-	<?php foreach ($topics as $topic) {
-		echo '<option value="'.$topic->id.'"'.($topic->id==$selected_topic->id?' selected="selected"':'').'>'.$topic->title.'</option>';
-	} ?>
-</select>
-<? endif; ?>
-</div>
-
-<? if ($selected_topic) { ?>
-
-<table class="exabis_comp_info">
-	<tr>
-		<td><span class="exabis_comp_top_small">Lehrkraft</span>
-			<b>LH</b>
-		</td>
-		<td><span class="exabis_comp_top_small">Klasse</span>
-			<b>4B</b>
-		</td>
-		<td><span class="exabis_comp_top_small">Schuljahr</span>
-			<b>13/14</b>
-		</td>
-		<td><span class="exabis_comp_top_small">Fach</span>
-			<b><?php echo $selected_subject->title; ?></b>
-		</td>
-		<td><span class="exabis_comp_top_small">Kompetenzbereich/Leitidee</span>
-			<b><?php echo $selected_topic->title; ?></b>
-		</td>
-		<td><span class="exabis_comp_top_small">Lernfortschritt</span>
-			<b>LF 6</b>
-		</td>
-		<td><span class="exabis_comp_top_small">Lernwegliste</span>
-			<b>M4.6</b>
-		</td>
-	</tr>
-	
-</table>
-
-
-
-
-<table class="exabis_comp_top">
-	<tr>
-		<td>
-			<span class="exabis_comp_top_small">Teilkompetenz</span>
-			<span class="exabis_comp_top_header">Ich kann Rauminhalt und Oberflächeninhalte von Quadern berechnen und mit Volumenmaßen umgehen</span>
-		</td>
-		<td rowspan="4" class="comp_grey_97">
-			<b>Anleitung</b>
-			<p>
-				Hier können Sie für Ihre Lerngruppen / Klasse vermerken, welche Lernmaterialien bearbeitet und welche Lernnachweise erbracht wurden. Darüber hinaus können Sie das Erreichen der Teilkompetenzen eintragen. Je nach Konzept der Schule kann die Bearbeitung des Lernmaterials / das Erreichen einer Teilkompetenz durch Kreuz markiert oder die Qualität der Bearbeitung / der Kompetenzerreichung gekennzeichnet werden. Keinenfalls müssen die Schülerinnen und Schüler alle Materialien bearbeiten. Wenn eine (Teil-)kompetenz bereits vorliegt, kann das hier eingetragen werden. Die Schülerinnen und Schüler müssen dann keine zugehörigen Lernmaterialien bearbeiten.
-			</p>
-		</td>
-	</tr>
-	<tr>
-		<td class="comp_grey_97">
-		<div class="exabis_comp_top_indentation_nr">A:</div>
-			<div class="exabis_comp_top_indentation">Ich kann das Volumen von Quadern berechnen. Ich kann Raum- und Hohlmaße in benachbarte Einheiten umwandeln. Ich kann das Volumen von Körpern durch Ausfüllen bestimmen.</div>
-		</td>
-		
-	</tr>
-	<tr>
-		<td class="comp_grey_90">
-			<div class="exabis_comp_top_indentation_nr">B:</div>
-			<div class="exabis_comp_top_indentation">Ich kann den Oberflächeninhalt von Quadern ermitteln. Ich kann Oberflächeninhalt und Volumen von realen, quaderförmigen Gegenständen durch Messen und Berechnen ermitteln.</div>
-		</td>
-		
-	</tr>
-	<tr>
-		<td class="comp_grey_83">
-			<div class="exabis_comp_top_indentation_nr">C:</div>
-			<div class="exabis_comp_top_indentation">Ich kann Raummaße in Einheiten umwandeln, die der Sachsituation angemessen sind. Ich kann Volumen und Oberflächeninhalt von zusammengesetzten Körpern berechnen.</div>
-		</td>
-		
-	</tr>
-</table>
-<br />
-<div class="exabis_comp_top_legend">
-<img src="pix/list_12x11.png" alt="Aktivitäten" /> Aktivitäten - <img src="pix/folder_fill_12x12.png" alt="ePortfolio" /> ePortfolio - <img src="pix/x_11x11.png" alt="Leer" /> noch keine Aufgaben zu diesem Deskriptor abgegeben und keinen Test durchgeführt
-</div>
-
-<?php
-if ($descriptors) {
-	?>
-<div class="ec_td_mo_auto"><?php
-	echo spaltenbrowser(count($students),$schueler_gruppierung_breite);
-?>
-
-<form action="assign_competencies_experimental.php?action=save&courseid=<?php echo $courseid; ?>" method="post">
-<table class="exabis_comp_comp">
-	<thead>
-		<tr>
-			<td colspan="2"><b>Teilkompetenzen und Lernmaterialien</b></td>
-			<?php
-				$columnCnt = 0;
-				foreach ($students as $student) {
-					echo '<td class="exabis_comp_top_studentcol colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'">'.fullname($student).'</td>';
-				}
-			?>
-		</tr>
-	</thead>
-	<?php
-		$rowgroup = 0;
-        foreach ($descriptors as $descriptor) {
-			$rowgroup++;
-			/*
-			if ($subject !== $descriptor->subject) {
-                $subject = $descriptor->subject;
-                $content .= '<tr class="ec_heading"><td colspan="###colspannormal###"><h4>' . $subject . '</h4></td></tr>';
-            }
-            if ($topic !== $descriptor->topic) {
-                $topic = $descriptor->topic;
-                $content .= '<tr class="ec_heading"><td colspan="###colspannormal###"><b>' . $topic . '</b></td></tr>';
-            }
-			*/
-
-			if (preg_match('!^([^\s]*[0-9][^\s]*+)\s+(.*)$!iu', $descriptor->title, $matches)) {
-				$output_id = $matches[1];
-				$output_title = $matches[2];
-			} else {
-				$output_id = '';
-				$output_title = $descriptor->title;
-			}
-			?>
-			<tr class="exabis_comp_teilcomp rowgroup-header rowgroup-<?php echo $rowgroup; ?>">
-			<td><?php echo $output_id; ?></td>
-			<td class="rowgroup-arrow"><div><?php echo $output_title; ?></div></td>
-			<?php
-				$columnCnt = 0;
-				$activities = block_exacomp_get_activities($descriptor->id, $courseid);
-				foreach ($students as $student) {
-					
-					echo '<td class="colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'"><input type="checkbox" value="1" name="data[' . $descriptor->id . '][' . $student->id . ']" checked="checked">';
-
-					$hasIcons = false;
-					if ($stdicon = block_exacomp_get_student_icon($activities, $student,$courseid,$gradelib)) {
-						echo ' <span title="'.s($stdicon->text).'" class="exabis-tooltip">' . $stdicon->icon . '</span>';
-						$hasIcons = true;
-					}
-					if (block_exacomp_exaportexists()) {
-						if ($stdicon = block_exacomp_get_portfolio_icon($student, $descriptor->id)) {
-							echo ' <span title="'.s($stdicon->text).'" class="exabis-tooltip">' . $stdicon->icon . '</span>';
-							$hasIcons = true;
-						}
-					}
-					
-					if (!$hasIcons) {
-						echo '<span title="'.s('todo').'" class="exabis-tooltip"><img src="pix/x_11x11.png" /></span>';
-					}
-					
-					echo '<img src="pix/folder_fill_12x12.png" alt="ePortfolio" title="asdf" class="exabis-tooltip" /><img src="pix/list_12x11.png" alt="Aktivitäten" /></td>';
-				}
-			?>
-			</tr>
-			<tr class="exabis_comp_aufgabe rowgroup-content rowgroup-<?php echo $rowgroup; ?>">
-				<td></td>
-				<td>LM1.1</td>
-				<?php
-					$columnCnt = 0;
-					foreach ($students as $student) {
-						echo '<td class="colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'">
-							<input type="checkbox" value="1" name="datatodo[' . $descriptor->id . '][' . $student->id . ']" checked="checked">
-						</td>';
-					}
-				?>
-			</tr>
-			<tr class="exabis_comp_aufgabe rowgroup-content rowgroup-<?php echo $rowgroup; ?>"">
-				<td></td>
-				<td>LM1.2</td>
-				<?php
-					$columnCnt = 0;
-					foreach ($students as $student) {
-						echo '<td class="colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'">
-							<input type="checkbox" value="1" name="datatodo[' . $descriptor->id . '][' . $student->id . ']" checked="checked">
-						</td>';
-					}
-				?>
-			</tr>
-				<?php
-		}
-	?>
-	</thead>
-</table>
-</form>
-	<?php
-} else {
-	echo $OUTPUT->box(text_to_html(get_string("explainno_comps", "block_exacomp")));
-}
-}
-
-echo $OUTPUT->footer();
-exit;
-
-/*
+echo "<div class='block_excomp_center'>";
 if ($role == "teacher") {
 	if ($showevaluation == 'on')
 		echo $OUTPUT->box(text_to_html(get_string("explainassignoff", "block_exacomp") . '<a href="' . $url . '">'.get_string("hier", "block_exacomp").'.</a>'));
@@ -375,9 +106,10 @@ else {
 }
 
 //$content.=block_exacomp_create_radargraph();
-*
 
+$content.='<form action="assign_competencies_legacy.php?action=save&amp;courseid=' . $courseid . '" method="post">';
 $zeile = "";
+$descriptors = block_exacomp_get_descriptors_by_course($courseid);
 
 $context = get_context_instance(CONTEXT_COURSE, $courseid);
 if ($role == "teacher"){
@@ -387,13 +119,37 @@ if ($role == "teacher"){
 	//spalte nur teilnehmer selber
 	$students = array($USER);
 }
-*
 if ($showevaluation == 'on')
 	$colspan = 2;
 else
 	$colspan=1;
-*/
+
 if ($descriptors) {
+	$content.='<div class="ec_td_mo_auto">';
+	$content.='<div class="spaltenbrowser">';
+	if (count($students)>$spalten) $content.=deprecated_spaltenbrowser(count($students),$spalten);
+	$content.="</div>";
+	$content.='<table style="empty-cells:hide;border-left:1px solid #E3DFD4;margin-top:4px;" id="comps" class="compstable flexible boxaligncenter generaltable">
+	<thead>
+	<tr class="heading r0">
+	<td  id="headerwithcoursename" class="category catlevel1" colspan="' . (count($students) * $colspan + 1) . '" scope="col"><h2>' . $COURSE->fullname . '</h2></td></tr>
+	<tr>';
+
+	if ($role == "teacher") {
+		$content.='<td class="ec_minwidth ec_activitylist_item"></td>';
+		$z=1;
+		$p=1;
+		foreach ($students as $student) {
+			$content.='<td class="zelle'.$p.'" class="ec_tableheadwidth" colspan="' . $colspan . '">' . $student->lastname . ' ' . $student->firstname . '</td>';
+			if ($z==$spalten){
+				$z=1;$p++;
+			}
+			else $z++;
+		}
+	} else {
+		$content.='<td class="ec_activitylist_item" colspan="' . (count($students) * $colspan + 1) . '">' . get_string("compevaluation", "block_exacomp") . '</td>';
+	}
+	$content.="</tr></thead>";
 
 	if ($showevaluation == 'on') {
 		$content.='<tr><td></td>';
@@ -404,7 +160,7 @@ if ($descriptors) {
 				$content.='<td class="zelle'.$p.'" >'.get_string("schueler_short", "block_exacomp").'</td><td class="zelle'.$p.'">'.get_string("lehrer_short", "block_exacomp").'</td>';
 			else
 				$content.='<td class="zelle'.$p.'" >'.get_string("lehrer_short", "block_exacomp").'</td><td class="zelle'.$p.'">'.get_string("schueler_short", "block_exacomp").'</td>';
-			if ($z==$schueler_gruppierung_breite){
+			if ($z==$spalten){
 				$z=1;$p++;
 			}
 			else $z++;
@@ -445,12 +201,12 @@ if ($descriptors) {
 				}
 				$tempzeile.='</select></td>';
 			}
-			if ($z==$schueler_gruppierung_breite){
+			if ($z==$spalten){
 				$z=1;$p++;
 			}
 			else $z++;
 		}
-		$competences = block_exacomp_get_competences_by_descriptor($descriptor->id, $courseid, $introle);
+		$competences = deprecated_block_exacomp_get_competences_by_descriptor($descriptor->id, $courseid, $introle);
 		foreach ($competences as $competence) {
 			if ($bewertungsdimensionen==1){
 				$tempzeile = str_replace('###checked' . $competence->descid . '_' . $competence->userid . '###', 'checked', $tempzeile);
@@ -460,7 +216,7 @@ if ($descriptors) {
 		}
 		$tempzeile = preg_replace('/checked="###checked([0-9_])+###"/', '', $tempzeile);
 		$tempzeile = preg_replace('/selected="###selected([0-9_])+###"/', '', $tempzeile); //nicht gewählte aktivitäten-descriptorenpaare, checked=... löschen
-		$evaluations = block_exacomp_get_competences_by_descriptor($descriptor->id, $courseid, ($introle + 1) % 2);
+		$evaluations = deprecated_block_exacomp_get_competences_by_descriptor($descriptor->id, $courseid, ($introle + 1) % 2);
 		foreach ($evaluations as $evaluation) {
 			if ($bewertungsdimensionen==1){
 				$tempzeile = str_replace('###checkedevaluation' . $evaluation->descid . '_' . $evaluation->userid . '###', 'checked', $tempzeile);
@@ -515,7 +271,7 @@ if ($descriptors) {
 				}
 			}
 			$tempzeile .= '</td>';
-			if ($z==$schueler_gruppierung_breite){
+			if ($z==$spalten){
 				$z=1;$p++;
 			}
 			else $z++;
@@ -539,7 +295,7 @@ if ($descriptors) {
 			$pi=1;
 			foreach ($students as $student) {
 				$content.='<td'.$fontcolor.' class="zelle'.$pi.'" colspan="' . $colspan . '">'.$student->lastname.'</td>';
-				if ($zi==$schueler_gruppierung_breite){
+				if ($zi==$spalten){
 					$zi=1;$pi++;
 				}
 				else $zi++;
@@ -557,7 +313,21 @@ if ($descriptors) {
 } else {
 	$content.=$OUTPUT->box(text_to_html(get_string("explainno_comps", "block_exacomp")));
 }
+/*
+ $content.='
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+<script type="text/javascript" src="lib/jquery.tablescroll.js"></script>
 
+<script>
+//<![CDATA[
+
+jQuery(document).ready(function($)
+{
+		$("#comps12").tableScroll({height:500});
+		});
+
+//]]>
+</script>';*/
 echo $content;
 echo "</div>";
 echo '</div>'; //exabis_competences_block

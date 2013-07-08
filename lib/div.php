@@ -234,15 +234,19 @@ function block_exacomp_get_genericcompetences($descriptorid, $courseid, $role = 
 	return $users;
 }
 
+function deprecated_block_exacomp_get_competences_by_descriptor($descriptorid, $courseid, $role) {
+	global $DB;
+
+	$query = "SELECT c.id AS id, c.descid, c.userid, c.wert, u.lastname, u.firstname FROM {block_exacompdescuser} c, {user} u WHERE c.descid =? AND c.courseid =? AND c.role =? AND c.reviewerid=u.id";
+
+	return $DB->get_records_sql($query, array($descriptorid, $courseid, $role));
+}
 function block_exacomp_get_competences_by_descriptor($descriptorid, $courseid, $role) {
 	global $DB;
-	$query = 'SELECT c.id, c.descid, c.userid,c.wert, u.lastname, u.firstname FROM {block_exacompdescuser} c, {user} u WHERE c.descid =? AND c.courseid =? AND c.role =? AND c.reviewerid=u.id';
 
-	$competences = $DB->get_records_sql($query, array($descriptorid, $courseid, $role));
-	if (!$competences) {
-		$competences = array();
-	}
-	return $competences;
+	$query = "SELECT c.userid AS id, c.descid, c.userid, c.wert, u.lastname, u.firstname FROM {block_exacompdescuser} c, {user} u WHERE c.descid =? AND c.courseid =? AND c.role =? AND c.reviewerid=u.id GROUP BY c.userid";
+
+	return $DB->get_records_sql($query, array($descriptorid, $courseid, $role));
 }
 function block_exacomp_get_supported_modules() {
 	global $DB;
@@ -449,7 +453,8 @@ function block_exacomp_print_header($role, $item_identifier, $sub_item_identifie
 		// Wenn der Kurs bereits aktiviert ist, alle Tabs anzeigen
 		if (block_exacomp_isactivated($COURSE->id)) {
 			$tabs[] = new tabobject('teachertabassignactivities', $CFG->wwwroot . '/blocks/exacomp/edit_activities.php?courseid=' . $COURSE->id, get_string("teachertabassignactivities", "block_exacomp"), '', true);
-			$tabs[] = new tabobject('teachertabassigncompetences', $CFG->wwwroot . '/blocks/exacomp/assign_competences.php?courseid=' . $COURSE->id, get_string("teachertabassigncompetences", "block_exacomp"), '', true);
+			$tabs[] = new tabobject('teachertabassigncompetences', $CFG->wwwroot . '/blocks/exacomp/assign_competencies.php?courseid=' . $COURSE->id, get_string("teachertabassigncompetences", "block_exacomp"), '', true);
+			$tabs[] = new tabobject('teachertabassigncompetenceslegacy', $CFG->wwwroot . '/blocks/exacomp/assign_competencies_legacy.php?courseid=' . $COURSE->id, 'assign competencies old', '', true);
 			$tabs[] = new tabobject('teachertabassigncompetencesdetail', $CFG->wwwroot . '/blocks/exacomp/edit_students.php?courseid=' . $COURSE->id, get_string("teachertabassigncompetencesdetail", "block_exacomp"), '', true);
 			$tabs[] = new tabobject('teachertabassigncompetenceexamples', $CFG->wwwroot . '/blocks/exacomp/view_examples.php?courseid=' . $COURSE->id, get_string("teachertabassigncompetenceexamples", "block_exacomp"), '', true);
 		}
@@ -501,7 +506,7 @@ function block_exacomp_print_header($role, $item_identifier, $sub_item_identifie
 
 		// navigationspfad
 		$navlinks = array();
-		$navlinks[] = array('name' => $adminbookmarks, 'link' => "assign_competences.php?courseid=" . $COURSE->id, 'type' => 'title');
+		$navlinks[] = array('name' => $adminbookmarks, 'link' => "assign_competencies.php?courseid=" . $COURSE->id, 'type' => 'title');
 
 		$nav_item_identifier = $item_identifier;
 
@@ -510,7 +515,8 @@ function block_exacomp_print_header($role, $item_identifier, $sub_item_identifie
 
 		// haupttabs
 		$tabs = array();
-		$tabs[] = new tabobject('studenttabcompetences', $CFG->wwwroot . '/blocks/exacomp/assign_competences.php?courseid=' . $COURSE->id, get_string("studenttabcompetences", "block_exacomp"), '', true);
+		$tabs[] = new tabobject('studenttabcompetences', $CFG->wwwroot . '/blocks/exacomp/assign_competencies.php?courseid=' . $COURSE->id, get_string("studenttabcompetences", "block_exacomp"), '', true);
+		$tabs[] = new tabobject('studenttabcompetenceslegacy', $CFG->wwwroot . '/blocks/exacomp/assign_competencies_legacy.php?courseid=' . $COURSE->id, 'assign competencies old', '', true);
 		$tabs[] = new tabobject('studenttabcompetencesdetail', $CFG->wwwroot . '/blocks/exacomp/evaluate_competences.php?courseid=' . $COURSE->id, get_string("studenttabcompetencesdetail", "block_exacomp"), '', true);
 		$tabs[] = new tabobject('studenttabcompetencesoverview', $CFG->wwwroot . '/blocks/exacomp/view_competences.php?courseid=' . $COURSE->id, get_string("studenttabcompetencesoverview", "block_exacomp"), '', true);
 		$tabs[] = new tabobject('studenttabcompetenceprofile', $CFG->wwwroot . '/blocks/exacomp/competence_profile.php?courseid=' . $COURSE->id, get_string("studenttabcompetenceprofile", "block_exacomp"), '', true);
@@ -842,6 +848,9 @@ function block_exacomp_exastudexists()
 function block_exacomp_get_portfolio_icon($student, $descrid) {
 	global $DB, $CFG,$USER;
 
+	$icon = new stdClass();
+	$icon->submitted = false;
+
 	$rs = $DB->get_records_sql("SELECT i.id,i.name FROM {block_exaportitem} i, {block_exacompdescractiv_mm} da WHERE i.id=da.activityid AND da.activitytype=2000 AND da.descrid=? AND i.userid=?", array($descrid, $student->id));
 	$submitted = "";
 	if(!$rs)
@@ -857,6 +866,7 @@ function block_exacomp_get_portfolio_icon($student, $descrid) {
 			$submitted .= "<li class=\"noview\">".$item->name." (".get_string('notinview', 'block_exacomp').")</li>";
 		}else{
 			$submitted .= "<li>".$item->name."</li>";$theicon="myportfolio.png";
+			$icon->submitted = true;
 		}
 	}
 	if(!$submitted)
@@ -867,7 +877,7 @@ function block_exacomp_get_portfolio_icon($student, $descrid) {
 	$submitted .= "</ul>";
 	$submitted = str_replace("\"","",$submitted);
 	$submitted = str_replace("\'","",$submitted);
-	$icon = new stdClass();
+
 	$icon->text = $submitted;
 	if ($theicon=="") $theicon="myportfolio_noview.png";
 	$icon->icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/'.$theicon.'" height="16" width="23" alt="'.get_string("assigned_acitivities", "block_exacomp").'" />';

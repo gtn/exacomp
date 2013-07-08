@@ -16,13 +16,12 @@ window.jQueryExacomp = jQuery.noConflict(true);
 		$('.colgroup-button-'+(group===null?'all':group)).css('font-weight', 'bold');
 	}
 	
-	$('.rowgroup-header .rowgroup-arrow').on('click', function(){
+	$(document).on('click', '.rowgroup-header .rowgroup-arrow', function(){
 		var tr = $(this).closest('tr');
 		tr.toggleClass('open');
 		
 		var id = tr[0].className.replace(/^.*(rowgroup-[0-9]+).*$/, '$1');
 		
-		console.log('.rowgroup-content .'+id);
 		if (tr.hasClass('open')) {
 			$('.rowgroup-content.'+id).show();
 		} else {
