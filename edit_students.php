@@ -98,7 +98,7 @@ if($showevaluation == 'on')
 if($activities) {
 $content.='<div>';
 $content.='<div class="spaltenbrowser">';
-	if (count($students)>$spalten) $content.=spaltenbrowser(count($students),$spalten);
+	if (count($students)>$spalten) $content.=deprecated_spaltenbrowser(count($students),$spalten);
 $content.="</div>";
 $content.='
 		<table style="empty-cells:hide;border-left:1px solid #E3DFD4;margin-top:4px;" id="comps" class="compstable flexible boxaligncenter generaltable">

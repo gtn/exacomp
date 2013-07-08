@@ -1,5 +1,5 @@
 <?php
-function spaltenbrowser($anz,$spalten){
+function deprecated_spaltenbrowser($anz,$spalten){
 	$p=1;$q=1;$splt=(floor($anz/5)+1);
 	$content='<b>Tabellenspalten Anzeige: </b>';
 	for ($z=1;$z<$anz;$z++){
@@ -18,16 +18,16 @@ function spaltenbrowser($anz,$spalten){
 	$content.='<a href="javascript:hidezelle(0,'.$splt.');">alle&nbsp;Schüler</a>';
 	return $content;
 }
-function spaltenbrowser_v2($anz, $spalten) {
+function spaltenbrowser($anz, $spalten) {
 	if ($anz <= $spalten) return;
 
 	$content  = '';
 	$content .= '<div class="spaltenbrowser">';
 	$content .= '<b>Tabellenspalten Anzeige: </b>';
 	for ($i=0; $i<ceil($anz/$spalten); $i++) {
-		$content .= '<a href="javascript:Exacomp.onlyShowColumnGroup('.$i.');">'.($i*$spalten+1).'-'.min($anz, ($i+1)*$spalten).'</a> | ';
+		$content .= '<a href="javascript:Exacomp.onlyShowColumnGroup('.$i.');" class="colgroup-button colgroup-button-'.$i.'">'.($i*$spalten+1).'-'.min($anz, ($i+1)*$spalten).'</a> | ';
 	}
-	$content .= '<a href="javascript:Exacomp.onlyShowColumnGroup(null);">alle&nbsp;Schüler</a>';
+	$content .= '<a href="javascript:Exacomp.onlyShowColumnGroup(null);" class="colgroup-button colgroup-button-all">alle&nbsp;Schüler</a>';
 	$content .= "</div>";
 	
 	return $content;

@@ -72,7 +72,9 @@ if ($role == "student")
 	$identifier = "studenttabcompetences";
 
 $PAGE->requires->css('/blocks/exacomp/css/assign_competencies.css');
+$PAGE->requires->css('/blocks/exacomp/css/jquery-ui.css');
 $PAGE->requires->js('/blocks/exacomp/javascript/jquery.js', true);
+$PAGE->requires->js('/blocks/exacomp/javascript/jquery-ui.js', true);
 $PAGE->requires->js('/blocks/exacomp/javascript/exacomp.js', true);
 
 block_exacomp_print_header($role, $identifier);
@@ -250,7 +252,7 @@ Kompetenzbereich/Leitidee auswählen:
 if ($descriptors) {
 	?>
 <div class="ec_td_mo_auto"><?php
-	echo spaltenbrowser_v2(count($students),$schueler_gruppierung_breite);
+	echo spaltenbrowser(count($students),$schueler_gruppierung_breite);
 ?>
 
 <form action="assign_competencies_experimental.php?action=save&courseid=<?php echo $courseid; ?>" method="post">
@@ -294,8 +296,28 @@ if ($descriptors) {
 			<td class="rowgroup-arrow"><div><?php echo $output_title; ?></div></td>
 			<?php
 				$columnCnt = 0;
+				$activities = block_exacomp_get_activities($descriptor->id, $courseid);
 				foreach ($students as $student) {
-					echo '<td class="colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'"><input type="checkbox" value="1" name="data[' . $descriptor->id . '][' . $student->id . ']" checked="checked"><img src="pix/folder_fill_12x12.png" alt="ePortfolio" /><img src="pix/list_12x11.png" alt="Aktivitäten" /></td>';
+					
+					echo '<td class="colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'"><input type="checkbox" value="1" name="data[' . $descriptor->id . '][' . $student->id . ']" checked="checked">';
+
+					$hasIcons = false;
+					if ($stdicon = block_exacomp_get_student_icon($activities, $student,$courseid,$gradelib)) {
+						echo ' <span title="'.s($stdicon->text).'" class="exabis-tooltip">' . $stdicon->icon . '</span>';
+						$hasIcons = true;
+					}
+					if (block_exacomp_exaportexists()) {
+						if ($stdicon = block_exacomp_get_portfolio_icon($student, $descriptor->id)) {
+							echo ' <span title="'.s($stdicon->text).'" class="exabis-tooltip">' . $stdicon->icon . '</span>';
+							$hasIcons = true;
+						}
+					}
+					
+					if (!$hasIcons) {
+						echo '<span title="'.s('todo').'" class="exabis-tooltip"><img src="pix/x_11x11.png" /></span>';
+					}
+					
+					echo '<img src="pix/folder_fill_12x12.png" alt="ePortfolio" title="asdf" class="exabis-tooltip" /><img src="pix/list_12x11.png" alt="Aktivitäten" /></td>';
 				}
 			?>
 			</tr>
