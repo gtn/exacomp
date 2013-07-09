@@ -101,37 +101,37 @@ if ($action == "save" && isset($_POST['btn_submit'])) {
 		if (!empty($_POST['dataexamples'])){
 			$oldData = $DB->get_records_sql("
 				SELECT CONCAT(deu.descrexamp_mm_id,'_',deu.studentid) AS tmp, id
-				FROM {block_exacompexamplesuser} deu
+				FROM {block_exacompexameval} deu
 				WHERE deu.courseid=?
 			", array($courseid));
 
 			foreach ($_POST['dataexamples'] as $deid => $students) {
 				foreach ($students as $studentid => $values) {
 				
-					$updateAssessment = new stdClass;
+					$updateEvaluation = new stdClass;
 					if ($role == "teacher") {
-						$updateAssessment->teacher_assessment = $values['teacher_assessment'];
-						$updateAssessment->teacher_reviewerid = $USER->id;
+						$updateEvaluation->teacher_evaluation = $values['teacher_evaluation'];
+						$updateEvaluation->teacher_reviewerid = $USER->id;
 					} else {
 						if ($studentid != $USER->id)
 							// student can only assess himself
 							continue;
 						
-						$updateAssessment->student_assessment = $values['student_assessment'];
-						$updateAssessment->starttime = $values['starttime'];
-						$updateAssessment->endtime = $values['endtime'];
-						$updateAssessment->studypartner = $values['studypartner'];
+						$updateEvaluation->student_evaluation = $values['student_evaluation'];
+						$updateEvaluation->starttime = $values['starttime'];
+						$updateEvaluation->endtime = $values['endtime'];
+						$updateEvaluation->studypartner = $values['studypartner'];
 					}
 					if (isset($oldData[$deid.'_'.$studentid])) {
-						$updateAssessment->id = $oldData[$deid.'_'.$studentid]->id;
+						$updateEvaluation->id = $oldData[$deid.'_'.$studentid]->id;
 
-						$DB->update_record('block_exacompexamplesuser', $updateAssessment);
+						$DB->update_record('block_exacompexameval', $updateEvaluation);
 					} else {
-						$updateAssessment->courseid = $courseid;
-						$updateAssessment->descrexamp_mm_id = $deid;
-						$updateAssessment->studentid = $studentid;
+						$updateEvaluation->courseid = $courseid;
+						$updateEvaluation->descrexamp_mm_id = $deid;
+						$updateEvaluation->studentid = $studentid;
 
-						$DB->insert_record('block_exacompexamplesuser', $updateAssessment);
+						$DB->insert_record('block_exacompexameval', $updateEvaluation);
 					}
 				}
 			}
@@ -162,13 +162,6 @@ $subjects = $DB->get_records_sql('
 	FROM {block_exacompsubjects} s
 	JOIN {block_exacomptopics} t ON t.subjid = s.id
 	JOIN {block_exacompcoutopi_mm} ct ON ct.topicid = t.id AND ct.courseid = ?
-
-	-- only show active ones
-	JOIN {block_exacompdescrtopic_mm} topmm ON topmm.topicid=t.id
-	JOIN {block_exacompdescriptors} d ON topmm.descrid=d.id
-	JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid
-	JOIN {course_modules} a ON da.activityid=a.id AND a.course=ct.courseid
-
 	GROUP BY s.id
 	ORDER BY s.title
 ', array($courseid));
@@ -184,13 +177,6 @@ if ($selected_subject) {
 		SELECT t.id, t.title
 		FROM {block_exacomptopics} t
 		JOIN {block_exacompcoutopi_mm} ct ON ct.topicid = t.id AND t.subjid = ? AND ct.courseid = ?
-
-		-- only show active ones
-		JOIN {block_exacompdescrtopic_mm} topmm ON topmm.topicid=t.id
-		JOIN {block_exacompdescriptors} d ON topmm.descrid=d.id
-		JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid
-		JOIN {course_modules} a ON da.activityid=a.id AND a.course=ct.courseid
-
 		GROUP BY t.id
 		ORDER BY t.title
 	', array($selected_subject->id, $courseid));
@@ -411,11 +397,16 @@ if ($descriptors) {
 					if ($showevaluation) {
 						if (isset($evaluations[$student->id])&&$evaluations[$student->id]->wert) {
 							$evaluation = $evaluations[$student->id];
-							echo '<td class="colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'" title="'.s(get_string('assessedby','block_exacomp').$evaluation->lastname.' '.$evaluation->firstname).'">';
-							if ($bewertungsdimensionen==1) {
-								// todo
+							if ($evaluation->wert) {
+								echo '<td class="exabis-tooltip colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'" title="'.s(get_string('assessedby','block_exacomp').fullname($evaluation)).'">';
+								if ($bewertungsdimensionen==1) {
+									echo '<input type="checkbox" disabled="disabled" '.($evaluation->wert?' checked="checked"':'').' />';
+								} else {
+									echo '<select disabled="disabled"><option>'.$evaluation->wert.'</option></select>';
+								}
+							} else {
+								echo '<td class="colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'">';
 							}
-							echo $evaluation->wert;
 							echo '</td>';
 						} else {
 							echo '<td class="colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'"></td>';
@@ -469,9 +460,10 @@ if ($descriptors) {
 			</tr>
 			<?php foreach ($examples as $example) {
 
-				$examplesData = $DB->get_records_sql("
-					SELECT deu.studentid, deu.*
-					FROM {block_exacompexamplesuser} deu
+				$examplesEvaluationData = $DB->get_records_sql("
+					SELECT deu.studentid, u.firstname, u.lastname, deu.*
+					FROM {block_exacompexameval} deu
+					LEFT JOIN {user} u ON u.id=deu.".($role == "teacher"?'studentid':'teacher_reviewerid')."
 					WHERE deu.courseid=? AND deu.descrexamp_mm_id=?
 				", array($courseid, $example->deid));
 			
@@ -482,35 +474,63 @@ if ($descriptors) {
 				<?php
 					$columnCnt = 0;
 					foreach ($students as $student) {
-						echo '<td class="colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'" colspan="' . $studentColspan . '">';
+
+						if ($showevaluation) {
+							$evaluation = null;
+							if (isset($examplesEvaluationData[$student->id])) {
+								$evaluation = $examplesEvaluationData[$student->id];
+								if ($role == "teacher") {
+									$evaluation->wert = $evaluation->student_evaluation;
+								} else {
+									$evaluation->wert = $evaluation->teacher_evaluation;
+								}
+								if (!$evaluation->wert)
+									$evaluation = null;
+							}
+							
+							if ($evaluation) {
+								echo '<td class="exabis-tooltip colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'" title="'.s(get_string('assessedby','block_exacomp').fullname($evaluation)).'">';
+								
+								if ($bewertungsdimensionen==1) {
+									echo '<input type="checkbox" disabled="disabled" '.($evaluation->wert?' checked="checked"':'').' />';
+								} else {
+									echo '<select disabled="disabled"><option>'.$evaluation->wert.'</option></select>';
+								}
+							} else {
+								echo '<td class="colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'">';
+							}
+							echo '</td>';
+						}
+
+						echo '<td class="colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'">';
 
 						if ($role == "teacher") {
 							if ($bewertungsdimensionen==1) {
-								echo '<input type="hidden" value="0" name="dataexamples[' . $example->deid . '][' . $student->id . '][teacher_assessment]" />';
-								echo '<input type="checkbox" value="1" name="dataexamples[' . $example->deid . '][' . $student->id . '][teacher_assessment]"'.
-									(isset($examplesData[$student->id])&&$examplesData[$student->id]->teacher_assessment?' checked="checked"':'').' />';
+								echo '<input type="hidden" value="0" name="dataexamples[' . $example->deid . '][' . $student->id . '][teacher_evaluation]" />';
+								echo '<input type="checkbox" value="1" name="dataexamples[' . $example->deid . '][' . $student->id . '][teacher_evaluation]"'.
+									(isset($examplesEvaluationData[$student->id])&&$examplesEvaluationData[$student->id]->teacher_evaluation?' checked="checked"':'').' />';
 							} else {
-								echo '<select name="dataexamples[' . $example->deid . '][' . $student->id . '][teacher_assessment]">';
+								echo '<select name="dataexamples[' . $example->deid . '][' . $student->id . '][teacher_evaluation]">';
 								for ($i=0; $i<=$bewertungsdimensionen; $i++) {
-									echo '<option value="'.$i.'"'.(isset($examplesData[$student->id])&&$examplesData[$student->id]->teacher_assessment==$i?' selected="selected"':'').'>'.$i.'</option>';
+									echo '<option value="'.$i.'"'.(isset($examplesEvaluationData[$student->id])&&$examplesEvaluationData[$student->id]->teacher_evaluation==$i?' selected="selected"':'').'>'.$i.'</option>';
 								}
 								echo '</select>';
 							}
 						} else {
 							echo 'Aufgabe erledigt: ';
 							if ($bewertungsdimensionen==1) {
-								echo '<input type="hidden" value="0" name="dataexamples[' . $example->deid . '][' . $student->id . '][student_assessment]" />';
-								echo '<input type="checkbox" value="1" name="dataexamples[' . $example->deid . '][' . $student->id . '][student_assessment]"'.
-									(isset($examplesData[$student->id])&&$examplesData[$student->id]->student_assessment?' checked="checked"':'').' />';
+								echo '<input type="hidden" value="0" name="dataexamples[' . $example->deid . '][' . $student->id . '][student_evaluation]" />';
+								echo '<input type="checkbox" value="1" name="dataexamples[' . $example->deid . '][' . $student->id . '][student_evaluation]"'.
+									(isset($examplesEvaluationData[$student->id])&&$examplesEvaluationData[$student->id]->student_evaluation?' checked="checked"':'').' />';
 							} else {
-								echo '<select name="dataexamples[' . $example->deid . '][' . $student->id . '][student_assessment]">';
+								echo '<select name="dataexamples[' . $example->deid . '][' . $student->id . '][student_evaluation]">';
 								for ($i=0; $i<=$bewertungsdimensionen; $i++) {
-									echo '<option value="'.$i.'"'.(isset($examplesData[$student->id])&&$examplesData[$student->id]->student_assessment==$i?' selected="selected"':'').'>'.$i.'</option>';
+									echo '<option value="'.$i.'"'.(isset($examplesEvaluationData[$student->id])&&$examplesEvaluationData[$student->id]->student_evaluation==$i?' selected="selected"':'').'>'.$i.'</option>';
 								}
 								echo '</select>';
 							}
 							
-							$studypartner = isset($examplesData[$student->id]) ? $examplesData[$student->id]->studypartner : '';
+							$studypartner = isset($examplesEvaluationData[$student->id]) ? $examplesEvaluationData[$student->id]->studypartner : '';
 
 							echo ' <select name="dataexamples[' . $example->deid . '][' . $student->id . '][studypartner]">
 								<option value="self"'.($studypartner=='self'?' selected="selected"':'').'>selbst</option>
@@ -519,9 +539,9 @@ if ($descriptors) {
 								<option value="teacher"'.($studypartner=='teacher'?' selected="selected"':'').'>Lehrkraft</option>
 								</select><br/>
 								von <input class="datepicker" type="text" name="dataexamples[' . $example->deid . '][' . $student->id . '][starttime]" value="'.
-									(isset($examplesData[$student->id])?$examplesData[$student->id]->starttime:'').'" />
+									(isset($examplesEvaluationData[$student->id])?$examplesEvaluationData[$student->id]->starttime:'').'" />
 								bis <input class="datepicker" type="text" name="dataexamples[' . $example->deid . '][' . $student->id . '][endtime]" value="'.
-									(isset($examplesData[$student->id])?$examplesData[$student->id]->endtime:'').'" />
+									(isset($examplesEvaluationData[$student->id])?$examplesEvaluationData[$student->id]->endtime:'').'" />
 							';
 						}
 						echo '</td>';

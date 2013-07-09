@@ -251,7 +251,7 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="block_exacompniveaus" COMMENT="Niveaus" PREVIOUS="block_exacompprofilesettings" NEXT="block_exacompexamplesuser">
+    <TABLE NAME="block_exacompniveaus" COMMENT="Niveaus" PREVIOUS="block_exacompprofilesettings" NEXT="block_exacompexameval">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="sorting"/>
         <FIELD NAME="sorting" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="id" NEXT="title"/>
@@ -262,16 +262,16 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="block_exacompexamplesuser" COMMENT="Default comment for the table, please edit me" PREVIOUS="block_exacompniveaus">
+    <TABLE NAME="block_exacompexameval" COMMENT="Default comment for the table, please edit me" PREVIOUS="block_exacompniveaus">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="descrexamp_mm_id"/>
         <FIELD NAME="descrexamp_mm_id" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="id" NEXT="courseid"/>
         <FIELD NAME="courseid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="descrexamp_mm_id" NEXT="studentid"/>
-        <FIELD NAME="studentid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="courseid" NEXT="teacher_assessment"/>
-        <FIELD NAME="teacher_assessment" TYPE="int" LENGTH="8" NOTNULL="false" SEQUENCE="false" PREVIOUS="studentid" NEXT="teacher_reviewerid"/>
-        <FIELD NAME="teacher_reviewerid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="teacher_assessment" NEXT="student_assessment"/>
-        <FIELD NAME="student_assessment" TYPE="int" LENGTH="8" NOTNULL="false" SEQUENCE="false" PREVIOUS="teacher_reviewerid" NEXT="starttime"/>
-        <FIELD NAME="starttime" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="student_assessment" NEXT="endtime"/>
+        <FIELD NAME="studentid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="courseid" NEXT="teacher_evaluation"/>
+        <FIELD NAME="teacher_evaluation" TYPE="int" LENGTH="8" NOTNULL="false" SEQUENCE="false" PREVIOUS="studentid" NEXT="teacher_reviewerid"/>
+        <FIELD NAME="teacher_reviewerid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="teacher_evaluation" NEXT="student_evaluation"/>
+        <FIELD NAME="student_evaluation" TYPE="int" LENGTH="8" NOTNULL="false" SEQUENCE="false" PREVIOUS="teacher_reviewerid" NEXT="starttime"/>
+        <FIELD NAME="starttime" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="student_evaluation" NEXT="endtime"/>
         <FIELD NAME="endtime" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="starttime" NEXT="studypartner"/>
         <FIELD NAME="studypartner" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="endtime"/>
       </FIELDS>

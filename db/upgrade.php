@@ -262,33 +262,33 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		upgrade_block_savepoint(true, 2013070400, 'exacomp');
 	}
 	
-    if ($oldversion < 2013070901) {
+    if ($oldversion < 2013070904) {
 
-        // Define table block_exacompexamplesuser to be created
-        $table = new xmldb_table('block_exacompexamplesuser');
+        // Define table block_exacompexameval to be created
+        $table = new xmldb_table('block_exacompexameval');
 
-        // Adding fields to table block_exacompexamplesuser
+        // Adding fields to table block_exacompexameval
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('descrexamp_mm_id', XMLDB_TYPE_INTEGER, '20', null, null, null, null);
         $table->add_field('courseid', XMLDB_TYPE_INTEGER, '20', null, null, null, null);
         $table->add_field('studentid', XMLDB_TYPE_INTEGER, '20', null, null, null, null);
-        $table->add_field('teacher_assessment', XMLDB_TYPE_INTEGER, '8', null, null, null, null);
+        $table->add_field('teacher_evaluation', XMLDB_TYPE_INTEGER, '8', null, null, null, null);
         $table->add_field('teacher_reviewerid', XMLDB_TYPE_INTEGER, '20', null, null, null, null);
-        $table->add_field('student_assessment', XMLDB_TYPE_INTEGER, '8', null, null, null, null);
+        $table->add_field('student_evaluation', XMLDB_TYPE_INTEGER, '8', null, null, null, null);
         $table->add_field('starttime', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('endtime', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('studypartner', XMLDB_TYPE_TEXT, null, null, null, null, null);
 
-        // Adding keys to table block_exacompexamplesuser
+        // Adding keys to table block_exacompexameval
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
 
-        // Conditionally launch create table for block_exacompexamplesuser
+        // Conditionally launch create table for block_exacompexameval
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
 
         // exacomp savepoint reached
-        upgrade_block_savepoint(true, 2013070901, 'exacomp');
+        upgrade_block_savepoint(true, 2013070904, 'exacomp');
     }
 
 	return $result;
