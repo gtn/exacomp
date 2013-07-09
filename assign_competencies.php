@@ -125,7 +125,6 @@ if ($action == "save" && isset($_POST['btn_submit'])) {
 					if (isset($oldData[$deid.'_'.$studentid])) {
 						$updateAssessment->id = $oldData[$deid.'_'.$studentid]->id;
 
-						var_dump($updateAssessment);
 						$DB->update_record('block_exacompexamplesuser', $updateAssessment);
 					} else {
 						$updateAssessment->courseid = $courseid;
