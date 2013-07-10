@@ -44,8 +44,9 @@ $schueler_gruppierung_breite=5;
 $zeilenanzahl=5;
 $content = "";
 $action = optional_param('action', "", PARAM_ALPHA);
-$subjectid = optional_param('subjectid', 0, PARAM_INT);
-$topicid = optional_param('topicid', 0, PARAM_INT);
+$subjectid = optional_param('subjectid', isset($SESSION->block_exacomp_last_subjectid) ? (int)$SESSION->block_exacomp_last_subjectid : 0, PARAM_INT);
+$topicid = optional_param('topicid', isset($SESSION->block_exacomp_last_topicid) ? (int)$SESSION->block_exacomp_last_topicid : 0, PARAM_INT);
+ 
 $showevaluation = optional_param('showevaluation', "", PARAM_ALPHA);
 $bewertungsdimensionen=block_exacomp_getbewertungsschema($courseid);
 
@@ -55,13 +56,12 @@ $context = get_context_instance(CONTEXT_COURSE, $courseid);
 //eigen berechtigung für exabis_competences, weil die moodle rollen nicht genau passen, zb
 //bei moodle dürfen übergeordnete rollen alles der untergeordneten, dass soll hier nicht sein
 
-if (has_capability('block/exacomp:student', $context)) {
-	$introle = 0;
-	$role = "student";
-}
 if (has_capability('block/exacomp:teacher', $context)) {
 	$introle = 1;
 	$role = "teacher";
+} elseif (has_capability('block/exacomp:student', $context)) {
+	$introle = 0;
+	$role = "student";
 }
 
 $url = '/blocks/exacomp/assign_competencies.php?courseid=' . $courseid;
@@ -162,6 +162,13 @@ $subjects = $DB->get_records_sql('
 	FROM {block_exacompsubjects} s
 	JOIN {block_exacomptopics} t ON t.subjid = s.id
 	JOIN {block_exacompcoutopi_mm} ct ON ct.topicid = t.id AND ct.courseid = ?
+	'.(get_config("exacomp","alternativedatamodel") ? '' : '
+		-- only show active ones
+		JOIN {block_exacompdescrtopic_mm} topmm ON topmm.topicid=t.id
+		JOIN {block_exacompdescriptors} d ON topmm.descrid=d.id
+		JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid
+		JOIN {course_modules} a ON da.activityid=a.id AND a.course=ct.courseid
+	').'
 	GROUP BY s.id
 	ORDER BY s.title
 ', array($courseid));
@@ -173,10 +180,19 @@ if (isset($subjects[$subjectid])) {
 }
 
 if ($selected_subject) {
+	$SESSION->block_exacomp_last_subjectid = $selected_subject->id;
+
 	$topics = $DB->get_records_sql('
 		SELECT t.id, t.title
 		FROM {block_exacomptopics} t
 		JOIN {block_exacompcoutopi_mm} ct ON ct.topicid = t.id AND t.subjid = ? AND ct.courseid = ?
+		'.(get_config("exacomp","alternativedatamodel") ? '' : '
+			-- only show active ones
+			JOIN {block_exacompdescrtopic_mm} topmm ON topmm.topicid=t.id
+			JOIN {block_exacompdescriptors} d ON topmm.descrid=d.id
+			JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid
+			JOIN {course_modules} a ON da.activityid=a.id AND a.course=ct.courseid
+		').'
 		GROUP BY t.id
 		ORDER BY t.title
 	', array($selected_subject->id, $courseid));
@@ -188,15 +204,20 @@ if ($selected_subject) {
 	}
 	
 	if ($selected_topic) {
+		$SESSION->block_exacomp_last_topicid = $selected_topic->id;
+		
 		$descriptors = $DB->get_records_sql('
-			SELECT da.id AS daid, d.id, d.title
+			SELECT d.id, d.title
 			FROM {block_exacompdescriptors} d
-			JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid
-			JOIN {course_modules} a ON da.activityid=a.id AND a.course=?
 			JOIN {block_exacompdescrtopic_mm} topmm ON topmm.descrid=d.id AND topmm.topicid=?
+			'.(get_config("exacomp","alternativedatamodel") ? '' : '
+				-- only show active ones
+				JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid
+				JOIN {course_modules} a ON da.activityid=a.id AND a.course='.$courseid.'
+			').'
 			GROUP BY d.id
 			ORDER BY d.sorting
-		', array($courseid, $selected_topic->id));
+		', array($selected_topic->id));
 	}
 }
 
@@ -216,14 +237,14 @@ Fach auswählen:
 } ?>
 </select>
 
-<? if ($topics): ?>
+<?php if ($topics): ?>
 Kompetenzbereich/Leitidee auswählen:
 <select class="start-searchbox-select" onchange="document.location.href='<?php echo $url; ?>&subjectid=<?php echo $selected_subject->id; ?>&topicid='+this.value;">
 	<?php foreach ($topics as $topic) {
 		echo '<option value="'.$topic->id.'"'.($topic->id==$selected_topic->id?' selected="selected"':'').'>'.$topic->title.'</option>';
 	} ?>
 </select>
-<? endif; ?>
+<?php endif; ?>
 </div>
 
 <?php if ($selected_topic) { 
@@ -243,74 +264,83 @@ else {
 		echo $OUTPUT->box(text_to_html(get_string("explainassignonstudent", "block_exacomp") . '<a href="' . $url . '&amp;showevaluation=on">'.get_string("hier", "block_exacomp").'.</a>'));
 }
 
+
+
+
+if (get_config("exacomp","alternativedatamodel")) {
+	?>
+
+	<table class="exabis_comp_info">
+		<tr>
+			<td><span class="exabis_comp_top_small">Lehrkraft</span>
+				<b><?php 
+				$context = get_context_instance(CONTEXT_COURSE, $courseid);
+				$teachers = get_users_by_capability($context, 'block/exacomp:teacher', 'u.id, u.firstname, u.lastname');
+				if ($teachers) {
+					echo fullname(reset($teachers));
+				}
+				?></b>
+			</td>
+			<td><span class="exabis_comp_top_small">Klasse</span>
+				<b><?php echo $COURSE->shortname; ?></b>
+			</td>
+			<td><span class="exabis_comp_top_small">Schuljahr</span>
+				<b>13/14</b>
+			</td>
+			<td><span class="exabis_comp_top_small">Fach</span>
+				<b><?php echo $selected_subject->title; ?></b>
+			</td>
+			<td><span class="exabis_comp_top_small">Kompetenzbereich/Leitidee</span>
+				<b><?php echo $selected_topic->title; ?></b>
+			</td>
+			<td><span class="exabis_comp_top_small">Lernfortschritt</span>
+				<b>LF 6</b>
+			</td>
+			<td><span class="exabis_comp_top_small">Lernwegliste</span>
+				<b>M4.6</b>
+			</td>
+		</tr>
+		
+	</table>
+	<table class="exabis_comp_top">
+		<tr>
+			<td>
+				<span class="exabis_comp_top_small">Teilkompetenz</span>
+				<span class="exabis_comp_top_header">Ich kann Rauminhalt und Oberflächeninhalte von Quadern berechnen und mit Volumenmaßen umgehen</span>
+			</td>
+			<td rowspan="4" class="comp_grey_97">
+				<b>Anleitung</b>
+				<p>
+					Hier können Sie für Ihre Lerngruppen / Klasse vermerken, welche Lernmaterialien bearbeitet und welche Lernnachweise erbracht wurden. Darüber hinaus können Sie das Erreichen der Teilkompetenzen eintragen. Je nach Konzept der Schule kann die Bearbeitung des Lernmaterials / das Erreichen einer Teilkompetenz durch Kreuz markiert oder die Qualität der Bearbeitung / der Kompetenzerreichung gekennzeichnet werden. Keinenfalls müssen die Schülerinnen und Schüler alle Materialien bearbeiten. Wenn eine (Teil-)kompetenz bereits vorliegt, kann das hier eingetragen werden. Die Schülerinnen und Schüler müssen dann keine zugehörigen Lernmaterialien bearbeiten.
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td class="comp_grey_97">
+			<div class="exabis_comp_top_indentation_nr">A:</div>
+				<div class="exabis_comp_top_indentation">Ich kann das Volumen von Quadern berechnen. Ich kann Raum- und Hohlmaße in benachbarte Einheiten umwandeln. Ich kann das Volumen von Körpern durch Ausfüllen bestimmen.</div>
+			</td>
+			
+		</tr>
+		<tr>
+			<td class="comp_grey_90">
+				<div class="exabis_comp_top_indentation_nr">B:</div>
+				<div class="exabis_comp_top_indentation">Ich kann den Oberflächeninhalt von Quadern ermitteln. Ich kann Oberflächeninhalt und Volumen von realen, quaderförmigen Gegenständen durch Messen und Berechnen ermitteln.</div>
+			</td>
+			
+		</tr>
+		<tr>
+			<td class="comp_grey_83">
+				<div class="exabis_comp_top_indentation_nr">C:</div>
+				<div class="exabis_comp_top_indentation">Ich kann Raummaße in Einheiten umwandeln, die der Sachsituation angemessen sind. Ich kann Volumen und Oberflächeninhalt von zusammengesetzten Körpern berechnen.</div>
+			</td>
+			
+		</tr>
+	</table>
+	<br />
+		<?php
+}
 ?>
-
-<table class="exabis_comp_info">
-	<tr>
-		<td><span class="exabis_comp_top_small">Lehrkraft</span>
-			<b>LH</b>
-		</td>
-		<td><span class="exabis_comp_top_small">Klasse</span>
-			<b>4B</b>
-		</td>
-		<td><span class="exabis_comp_top_small">Schuljahr</span>
-			<b>13/14</b>
-		</td>
-		<td><span class="exabis_comp_top_small">Fach</span>
-			<b><?php echo $selected_subject->title; ?></b>
-		</td>
-		<td><span class="exabis_comp_top_small">Kompetenzbereich/Leitidee</span>
-			<b><?php echo $selected_topic->title; ?></b>
-		</td>
-		<td><span class="exabis_comp_top_small">Lernfortschritt</span>
-			<b>LF 6</b>
-		</td>
-		<td><span class="exabis_comp_top_small">Lernwegliste</span>
-			<b>M4.6</b>
-		</td>
-	</tr>
-	
-</table>
-
-
-
-
-<table class="exabis_comp_top">
-	<tr>
-		<td>
-			<span class="exabis_comp_top_small">Teilkompetenz</span>
-			<span class="exabis_comp_top_header">Ich kann Rauminhalt und Oberflächeninhalte von Quadern berechnen und mit Volumenmaßen umgehen</span>
-		</td>
-		<td rowspan="4" class="comp_grey_97">
-			<b>Anleitung</b>
-			<p>
-				Hier können Sie für Ihre Lerngruppen / Klasse vermerken, welche Lernmaterialien bearbeitet und welche Lernnachweise erbracht wurden. Darüber hinaus können Sie das Erreichen der Teilkompetenzen eintragen. Je nach Konzept der Schule kann die Bearbeitung des Lernmaterials / das Erreichen einer Teilkompetenz durch Kreuz markiert oder die Qualität der Bearbeitung / der Kompetenzerreichung gekennzeichnet werden. Keinenfalls müssen die Schülerinnen und Schüler alle Materialien bearbeiten. Wenn eine (Teil-)kompetenz bereits vorliegt, kann das hier eingetragen werden. Die Schülerinnen und Schüler müssen dann keine zugehörigen Lernmaterialien bearbeiten.
-			</p>
-		</td>
-	</tr>
-	<tr>
-		<td class="comp_grey_97">
-		<div class="exabis_comp_top_indentation_nr">A:</div>
-			<div class="exabis_comp_top_indentation">Ich kann das Volumen von Quadern berechnen. Ich kann Raum- und Hohlmaße in benachbarte Einheiten umwandeln. Ich kann das Volumen von Körpern durch Ausfüllen bestimmen.</div>
-		</td>
-		
-	</tr>
-	<tr>
-		<td class="comp_grey_90">
-			<div class="exabis_comp_top_indentation_nr">B:</div>
-			<div class="exabis_comp_top_indentation">Ich kann den Oberflächeninhalt von Quadern ermitteln. Ich kann Oberflächeninhalt und Volumen von realen, quaderförmigen Gegenständen durch Messen und Berechnen ermitteln.</div>
-		</td>
-		
-	</tr>
-	<tr>
-		<td class="comp_grey_83">
-			<div class="exabis_comp_top_indentation_nr">C:</div>
-			<div class="exabis_comp_top_indentation">Ich kann Raummaße in Einheiten umwandeln, die der Sachsituation angemessen sind. Ich kann Volumen und Oberflächeninhalt von zusammengesetzten Körpern berechnen.</div>
-		</td>
-		
-	</tr>
-</table>
-<br />
 <div class="exabis_comp_top_legend">
 <img src="pix/list_12x11.png" alt="Aktivitäten" /> Aktivitäten - <img src="pix/folder_fill_12x12.png" alt="ePortfolio" /> ePortfolio - <img src="pix/x_11x11.png" alt="Leer" /> noch keine Aufgaben zu diesem Deskriptor abgegeben und keinen Test durchgeführt
 </div>
@@ -476,25 +506,26 @@ if ($descriptors) {
 					foreach ($students as $student) {
 
 						if ($showevaluation) {
-							$evaluation = null;
+							$evaluationWert = null;
+							$evaluationTooltip = null;
 							if (isset($examplesEvaluationData[$student->id])) {
 								$evaluation = $examplesEvaluationData[$student->id];
 								if ($role == "teacher") {
-									$evaluation->wert = $evaluation->student_evaluation;
+									$evaluationWert = $evaluation->student_evaluation;
+									$evaluationTooltip = $evaluation->starttime ? $evaluation->starttime.' - '.$evaluation->endtime : '';
 								} else {
-									$evaluation->wert = $evaluation->teacher_evaluation;
+									$evaluationWert = $evaluation->teacher_evaluation;
+									$evaluationTooltip = get_string('assessedby','block_exacomp').fullname($evaluation);
 								}
-								if (!$evaluation->wert)
-									$evaluation = null;
 							}
 							
-							if ($evaluation) {
-								echo '<td class="exabis-tooltip colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'" title="'.s(get_string('assessedby','block_exacomp').fullname($evaluation)).'">';
+							if ($evaluationWert) {
+								echo '<td class="exabis-tooltip colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'" title="'.s($evaluationTooltip).'">';
 								
 								if ($bewertungsdimensionen==1) {
-									echo '<input type="checkbox" disabled="disabled" '.($evaluation->wert?' checked="checked"':'').' />';
+									echo '<input type="checkbox" disabled="disabled" '.($evaluationWert?' checked="checked"':'').' />';
 								} else {
-									echo '<select disabled="disabled"><option>'.$evaluation->wert.'</option></select>';
+									echo '<select disabled="disabled"><option>'.$evaluationWert.'</option></select>';
 								}
 							} else {
 								echo '<td class="colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'">';
