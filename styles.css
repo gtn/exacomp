@@ -10,7 +10,7 @@ div#exabis_competences_block {
 	
 }
 
-#exabis_competences_block td.competenceok {
+#competenceok {
 	background-color: #CCFF99;
 }
 
@@ -128,3 +128,9 @@ td.contentcell{height:100px;min-width:150px;}
 #exabis_competences_block table#block_exacomp_niveaufilter  {width:300px;}
 
 #exabis_competences_block .settingtable td {vertical-align:top;}
+
+p.competence_grid_skill {
+	-webkit-transform:rotate(270deg);
+	-moz-transform:rotate(270deg);
+	-o-transform: rotate(270deg);
+}

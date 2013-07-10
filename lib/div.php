@@ -138,7 +138,7 @@ function block_exacomp_get_competence_grid_for_subject($subjectid) {
 		$cell1->text = $skills[$skillid];
 		$cell1->attributes['class'] = 'competence_grid_skill';
 		$row->cells[] = $cell1;
-		//$cell1->rowspan = 2;
+		$cell1->rowspan = count($skill);
 		foreach($skill as $topicid => $topic) {
 			$cell2 = new html_table_cell();
 			$cell2->text = $topics[$topicid];
@@ -224,7 +224,7 @@ function block_exacomp_get_descritors_list($courseid,$onlywithactivitys=0,$nivea
 
 function block_exacomp_get_descriptors($activityid,$courseid) {
 	global $DB;
-	$query = "SELECT descr.id,mm.id, descr.title FROM 
+	/*$query = "SELECT descr.id,mm.id, descr.title FROM 
 	{block_exacompcoutopi_mm} cou INNER JOIN 
 	{block_exacomptopics} top ON top.id=cou.topicid INNER JOIN
 	{block_exacompdescrtopic_mm} topmm ON topmm.topicid=top.id INNER JOIN
@@ -232,9 +232,11 @@ function block_exacomp_get_descriptors($activityid,$courseid) {
 	{block_exacompdescractiv_mm} mm  ON descr.id=mm.descrid INNER JOIN 
 	{course_modules} l ON l.id=mm.activityid ";
 	$query.="WHERE l.id=? AND cou.courseid=?";
-	$query.=" ORDER BY descr.sorting";
+	$query.=" ORDER BY descr.sorting";*/
 
-	$descriptors = $DB->get_records_sql($query, array($activityid,$courseid));
+	$query = "SELECT d.id, d.title FROM {block_exacompdescractiv_mm} da, {block_exacompdescriptors} d
+	WHERE da.descrid = d.id AND da.activityid = ?";
+	$descriptors = $DB->get_records_sql($query, array($activityid));
 
 	if (!$descriptors) {
 		$descriptors = array();
