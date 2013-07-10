@@ -13,6 +13,7 @@ $string['teachertabassignactivities'] = 'assign activities';
 $string['teachertabassigncompetences'] = 'overview of competencies';
 $string['teachertabassigncompetencesdetail'] = 'detailed view of competencies';
 $string['teachertabassigncompetenceexamples'] = 'examples and tasks';
+$string['teachertabcompetencegrid'] = 'competence grid';
 
 //Student
 $string['studenttabcompetences'] = 'overview of competencies';

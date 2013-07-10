@@ -97,7 +97,69 @@ function create_pulldown_array($items, $selectname, $anzeigefeld, $wert, $ka, $m
 		return($inhalt);
 	}
 }
+function block_exacomp_get_competence_grid_for_subject($subjectid) {
 
+	global $DB;
+
+	$sql = "SELECT d.*, dt.topicid, t.title as topic FROM {block_exacompdescriptors} d, {block_exacompdescrtopic_mm} dt, {block_exacomptopics} t
+	WHERE d.id=dt.descrid AND dt.topicid IN (SELECT id FROM {block_exacomptopics} WHERE subjid=?)
+	AND d.niveauid > 0 AND dt.topicid = t.id order by d.skillid, dt.topicid, d.niveauid";
+
+	$niveaus = "SELECT distinct n.id, n.title FROM {block_exacompdescriptors} d, {block_exacompdescrtopic_mm} dt, {block_exacompniveaus} n
+	WHERE d.id=dt.descrid AND dt.topicid IN (SELECT id FROM {block_exacomptopics} WHERE subjid=?)
+	AND d.niveauid > 0 AND d.niveauid = n.id order by d.skillid, dt.topicid, d.niveauid";
+
+	$niveaus = $DB->get_records_sql_menu($niveaus,array($subjectid));
+	$skills = $DB->get_records_menu('block_exacompskills',null,null,"id, title");
+
+	$table = new html_table();
+	$table->id = 'competence_grid';
+
+	$head = array();
+	$head[] = "";
+	$head[] = "";
+	$head = array_merge($head,$niveaus);
+	$table->head = $head;
+
+
+	$descriptors = $DB->get_records_sql($sql,array($subjectid));
+
+	$topics = array();
+	$data = array();
+	foreach ($descriptors as $descriptor) {
+		$data[$descriptor->skillid][$descriptor->topicid][$descriptor->niveauid][] = $descriptor;
+		$topics[$descriptor->topicid] = $descriptor->topic;
+	}
+
+	$rows = array();
+	foreach($data as $skillid => $skill) {
+		$row = new html_table_row();
+		$cell1 = new html_table_cell();
+		$cell1->text = $skills[$skillid];
+		$cell1->attributes['class'] = 'competence_grid_skill';
+		$row->cells[] = $cell1;
+		//$cell1->rowspan = 2;
+		foreach($skill as $topicid => $topic) {
+			$cell2 = new html_table_cell();
+			$cell2->text = $topics[$topicid];
+			$row->cells[] = $cell2;
+
+			foreach($niveaus as $niveauid => $niveau) {
+				if(isset($data[$skillid][$topicid][$niveauid])) {
+					$compString = "";
+					foreach($data[$skillid][$topicid][$niveauid] as $descriptor)
+						$compString .= $descriptor->title;
+						
+					$row->cells[] = $compString;
+				} else
+					$row->cells[] = "";
+			}
+		}
+		$rows[] = $row;
+	}
+	$table->data = $rows;
+	return $table;
+}
 //create pulldown array
 function block_exacomp_get_descriptors_by_course($courseid) {
 	global $DB;
@@ -456,6 +518,7 @@ function block_exacomp_print_header($role, $item_identifier, $sub_item_identifie
 			$tabs[] = new tabobject('teachertabassigncompetences', $CFG->wwwroot . '/blocks/exacomp/assign_competencies.php?courseid=' . $COURSE->id, get_string("teachertabassigncompetences", "block_exacomp"), '', true);
 			$tabs[] = new tabobject('teachertabassigncompetenceslegacy', $CFG->wwwroot . '/blocks/exacomp/assign_competencies_legacy.php?courseid=' . $COURSE->id, 'assign competencies old', '', true);
 			$tabs[] = new tabobject('teachertabassigncompetencesdetail', $CFG->wwwroot . '/blocks/exacomp/edit_students.php?courseid=' . $COURSE->id, get_string("teachertabassigncompetencesdetail", "block_exacomp"), '', true);
+			$tabs[] = new tabobject('teachertabcompetencegrid', $CFG->wwwroot . '/blocks/exacomp/competence_grid.php?courseid=' . $COURSE->id, get_string("teachertabcompetencegrid", "block_exacomp"), '', true);
 			$tabs[] = new tabobject('teachertabassigncompetenceexamples', $CFG->wwwroot . '/blocks/exacomp/view_examples.php?courseid=' . $COURSE->id, get_string("teachertabassigncompetenceexamples", "block_exacomp"), '', true);
 		}
 
@@ -664,9 +727,12 @@ function block_exacomp_reset_coursetopics($courseid) {
 	block_exacomp_set_coursetopics($courseid, null);
 }
 function block_exacomp_get_subjects() {
-	global $DB;
-	$query = 'SELECT s.id, s.title, s.source FROM {block_exacompsubjects} s WHERE s.stid IN (SELECT t.typeid FROM {block_exacompmdltype_mm} t) ORDER BY s.source,s.sorting';
-	//echo $query;
+	global $DB, $COURSE;
+	if(!get_config("exacomp","alternativedatamodel"))
+		$query = 'SELECT s.id, s.title, s.source FROM {block_exacompsubjects} s WHERE s.stid IN (SELECT t.typeid FROM {block_exacompmdltype_mm} t) ORDER BY s.source,s.sorting';
+	else
+		$query = 'SELECT s.id, s.title, s.source FROM {block_exacompsubjects} s WHERE s.stid IN (SELECT t.typeid FROM {block_exacompmdltype_mm} t WHERE t.courseid='.$COURSE->id.') ORDER BY s.source,s.sorting';
+	
 	$subjects = $DB->get_records_sql($query);
 
 	return $subjects;

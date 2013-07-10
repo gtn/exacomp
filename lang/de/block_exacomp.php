@@ -13,6 +13,7 @@ $string['teachertabassignactivities'] = 'Aktivitäten zuordnen';
 $string['teachertabassigncompetences'] = 'Kompetenz-Überblick';
 $string['teachertabassigncompetencesdetail'] = 'Kompetenz-Detailansicht';
 $string['teachertabassigncompetenceexamples'] = 'Beispiel-Aufgaben';
+$string['teachertabcompetencegrid'] = 'Kompetenzraster';
 
 //Student
 $string['studenttabcompetences'] = 'Kompetenz-Gesamtansicht';

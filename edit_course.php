@@ -139,7 +139,7 @@ else if ($action == 'detail') {
     	else $subids=optional_param('data', '', PARAM_ALPHANUMEXT);
     }
     
-    if ($subids) {
+    if (!empty($_POST["data"])) {
         $subjects = block_exacomp_get_subjects_by_id($subids);
         $content.='<form name="topics" action="edit_course.php?courseid=' . $courseid . '&action=save" method="post">';
         $content .= '<table>';
