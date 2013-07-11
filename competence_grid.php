@@ -45,7 +45,7 @@ $PAGE->requires->css('/blocks/exacomp/styles.css');
 
 block_exacomp_print_header("teacher", "teachertabcompetencegrid");
 
-$subjects = $DB->get_records_sql('
+$subjects = $DB->get_records_sql_menu('
 		SELECT s.id, s.title
 		FROM {block_exacompsubjects} s
 		JOIN {block_exacomptopics} t ON t.subjid = s.id
@@ -60,13 +60,31 @@ if (isset($subjects[$subjectid])) {
 } elseif ($subjects) {
 	$selected_subject = reset($subjects);
 }
+echo "Fach auswählen: ";
+echo html_writer::select($subjects, 'exacomp_competence_grid_select_subject',array($subjectid),null,
+		array("onchange"=>"document.location.href='".$CFG->wwwroot.$url."&subjectid='+this.value;"));
+
 ?>
-<div class="exabis_comp_select">
-Fach auswählen:
-<select class="start-searchbox-select" onchange="document.location.href='<?php echo $CFG->wwwroot.$url; ?>&subjectid='+this.value;">
-<?php foreach ($subjects as $subject) {
-	echo '<option value="'.$subject->id.'"'.($subject->id==$selected_subject->id?' selected="selected"':'').'>'.$subject->title.'</option>';
-} ?>
-</select>
-<?
-	echo html_writer::table(block_exacomp_get_competence_grid_for_subject($selected_subject->id));
+<div class="container">
+	<?
+	$output = $PAGE->get_renderer('block_exacomp');
+	
+	$niveaus = block_exacomp_get_niveaus_for_subject($subjectid);
+	$skills = $DB->get_records_menu('block_exacompskills',null,null,"id, title");
+	
+	$descriptors = block_exacomp_get_descriptors_for_subject($subjectid);
+	
+	// Arrange data in associative array for easier use
+	$topics = array();
+	$data = array();
+	foreach ($descriptors as $descriptor) {
+		$data[$descriptor->skillid][$descriptor->topicid][$descriptor->niveauid][] = $descriptor;
+		$topics[$descriptor->topicid] = $descriptor->topic;
+	}
+	
+	unset($descriptors);
+	
+	echo $output->render_competence_grid($niveaus, $skills, $topics, $data);
+	
+	?>
+	</div>

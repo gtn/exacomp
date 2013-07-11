@@ -97,6 +97,24 @@ function create_pulldown_array($items, $selectname, $anzeigefeld, $wert, $ka, $m
 		return($inhalt);
 	}
 }
+function block_exacomp_get_niveaus_for_subject($subjectid) {
+	global $DB;
+	
+	$niveaus = "SELECT distinct n.id, n.title FROM {block_exacompdescriptors} d, {block_exacompdescrtopic_mm} dt, {block_exacompniveaus} n
+	WHERE d.id=dt.descrid AND dt.topicid IN (SELECT id FROM {block_exacomptopics} WHERE subjid=?)
+	AND d.niveauid > 0 AND d.niveauid = n.id order by d.skillid, dt.topicid, d.niveauid";
+	
+	return $DB->get_records_sql_menu($niveaus,array($subjectid));
+}
+function block_exacomp_get_descriptors_for_subject($subjectid) {
+	global $DB;
+	
+	$sql = "SELECT d.*, dt.topicid, t.title as topic FROM {block_exacompdescriptors} d, {block_exacompdescrtopic_mm} dt, {block_exacomptopics} t
+	WHERE d.id=dt.descrid AND dt.topicid IN (SELECT id FROM {block_exacomptopics} WHERE subjid=?)
+	AND d.niveauid > 0 AND dt.topicid = t.id order by d.skillid, dt.topicid, d.niveauid";
+	
+	return $DB->get_records_sql($sql,array($subjectid));
+}
 function block_exacomp_get_competence_grid_for_subject($subjectid) {
 
 	global $DB;
