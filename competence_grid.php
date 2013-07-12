@@ -55,17 +55,16 @@ $subjects = $DB->get_records_sql_menu('
 		ORDER BY s.title
 		', array($courseid));
 
-if (isset($subjects[$subjectid])) {
-	$selected_subject = $subjects[$subjectid];
-} elseif ($subjects) {
-	$selected_subject = reset($subjects);
-}
-echo "Fach auswählen: ";
+// as default use the first subject from the dropdown list
+if($subjects && $subjectid == 0)
+	$subjectid = key($subjects);
+
+echo get_string("choosesubject","block_exacomp");
 echo html_writer::select($subjects, 'exacomp_competence_grid_select_subject',array($subjectid),null,
 		array("onchange"=>"document.location.href='".$CFG->wwwroot.$url."&subjectid='+this.value;"));
 
 ?>
-<div class="container">
+<div id="exabis_competences_block">
 	<?
 	$output = $PAGE->get_renderer('block_exacomp');
 	

@@ -159,5 +159,5 @@ $string['filter_niveaus_descr'] = "Bitte wählen sie ein oder mehrere Niveaus um
 
 $string['alternativedatamodel'] = 'Baden W&uuml;rttemberg Version';
 $string['alternativedatamodel_description'] = 'Anhaken für die Baden W&uuml;rttemberg Version';
-
+$string['choosesubject'] = "Fach auswählen: ";
 ?>
