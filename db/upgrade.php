@@ -291,5 +291,24 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2013070904, 'exacomp');
     }
 
+    if ($oldversion < 2013071200) {
+
+        // Define field uses_activities to be added to block_exacompsettings
+        $table = new xmldb_table('block_exacompsettings');
+
+        $field = new xmldb_field('uses_activities', XMLDB_TYPE_INTEGER, '1', null, null, null, null, 'tstamp');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('show_all_descriptors', XMLDB_TYPE_INTEGER, '1', null, null, null, null, 'uses_activities');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // exacomp savepoint reached
+        upgrade_block_savepoint(true, 2013071200, 'exacomp');
+    }
+
 	return $result;
 }

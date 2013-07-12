@@ -35,7 +35,7 @@ $content = "";
 
 $courseid = required_param('courseid', PARAM_INT);
 $courseid = (isset($courseid)) ? $courseid : $COURSE->id;
-$action = optional_param('action', "", PARAM_ALPHA);
+$action = optional_param('action', "", PARAM_ALPHAEXT);
 
 require_login($courseid);
 
@@ -45,21 +45,18 @@ require_capability('block/exacomp:teacher', $context);
 //Falls Formular abgesendet, speichern
 
 
-
-if (isset($action) && $action == 'save') {
-	$bewertungsschema=optional_param('bewertungsschema', "", PARAM_INT);
-	$bew=optional_param('bew', 0, PARAM_INT);
+if ($action == 'save_coursesettings') {
+	$settings = new stdClass;
+	$settings->grading = optional_param('grading', "", PARAM_INT);
+	$settings->uses_activities = optional_param('uses_activities', "", PARAM_INT);
+	$settings->show_all_descriptors = optional_param('show_all_descriptors', "", PARAM_INT);
 	
-	if (($bew==1)){
-		if ($bewertungsschema>10) $bewertungsschema=10;
-		block_exacomp_set_bewertungsschema($courseid,$bewertungsschema);
+	block_exacomp_save_coursesettings($courseid, $settings);
 		
-	}else{
-    $values = $_POST['data'];
-    block_exacomp_set_coursetopics($courseid, $values);
-   
-  }
+} elseif ($action == 'save_coursetopics') {
+    block_exacomp_set_coursetopics($courseid, $_POST['data']);
 }
+
 if($action == 'digicomps') {
 	$values=array("15"=>15,"20"=>20,"17"=>17,"18"=>18,"21"=>21,"22"=>22,"23"=>23,"25"=>25,"112"=>112,"113"=>113,);
 	block_exacomp_set_coursetopics($courseid, $values);
@@ -89,19 +86,29 @@ block_exacomp_print_header("teacher", "teachertabconfig");
 echo "<div class='block_excomp_center'>";
 
 
-if ($action == 'save')
+if ($action == 'save_coursesettings' || $action == 'save_coursetopics')
     $content = get_string("save", "block_exacomp");
 
 if (empty($action)){
 	echo $OUTPUT->box(text_to_html(get_string("explain_bewertungsschema", "block_exacomp")));
-	$inhalt='
-	<form action="edit_course.php?courseid=' . $courseid . '&amp;action=save" method="post">
-	<input type="text" size="2" name="bewertungsschema" value="'.block_exacomp_getbewertungsschema($courseid,"").'" />
-	<input type="hidden" name="bew" value="1">
-	<input type="submit" value="' . get_string('bewertungsschema_speichern', 'block_exacomp') . '" />
+	
+	$courseSettings = block_exacomp_coursesettings();
+	
+	echo $OUTPUT->box_start();
+	?>
+	<form action="edit_course.php?courseid=<?php echo $courseid; ?>&action=save_coursesettings" method="post">
+		<?php echo get_string('bewertungsschema', 'block_exacomp'); ?>:
+		<input type="text" size="2" name="grading" value="<?php echo block_exacomp_getbewertungsschema($courseid, ""); ?>" /><br />
+		
+		<input type="checkbox" value="1" name="uses_activities" <?php if (!empty($courseSettings->uses_activities)) echo 'checked="checked"'; ?> />
+		<?php echo get_string('uses_activities', 'block_exacomp'); ?><br />
+		
+		<input type="checkbox" value="1" name="show_all_descriptors" <?php if (!empty($courseSettings->show_all_descriptors)) echo 'checked="checked"'; ?> />
+		<?php echo get_string('show_all_descriptors', 'block_exacomp'); ?><br />
+		<input type="submit" value="<?php echo get_string('save', 'admin'); ?>" />
 	</form>
-	';
-    echo $OUTPUT->box($inhalt);
+	<?php
+	echo $OUTPUT->box_end();
 }
 
 if (empty($action)) {
@@ -141,7 +148,7 @@ else if ($action == 'detail') {
     
     if (!empty($_POST["data"])) {
         $subjects = block_exacomp_get_subjects_by_id($subids);
-        $content.='<form name="topics" action="edit_course.php?courseid=' . $courseid . '&action=save" method="post">';
+        $content.='<form name="topics" action="edit_course.php?courseid=' . $courseid . '&action=save_coursetopics" method="post">';
         $content .= '<table>';
         $specific=false;
         foreach ($subjects as $subject) {

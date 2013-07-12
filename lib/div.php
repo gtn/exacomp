@@ -472,8 +472,21 @@ function block_exacomp_print_header($role, $item_identifier, $sub_item_identifie
 	if (!is_string($item_identifier)) {
 		echo 'noch nicht unterstützt';
 	}
+	
+	$courseSettings = block_exacomp_coursesettings();
 
-	global $CFG, $COURSE;
+	global $CFG, $COURSE, $PAGE;
+
+	$PAGE->requires->css('/blocks/exacomp/css/jquery-ui.css');
+	$PAGE->requires->js('/blocks/exacomp/javascript/jquery.js', true);
+	$PAGE->requires->js('/blocks/exacomp/javascript/jquery-ui.js', true);
+	$PAGE->requires->js('/blocks/exacomp/javascript/exacomp.js', true);
+
+	$scriptName = preg_replace('!\.[^\.]+$!', '', basename($_SERVER['PHP_SELF']));
+	if (file_exists($CFG->dirroot.'/blocks/exacomp/css/'.$scriptName.'.css'))
+		$PAGE->requires->css('/blocks/exacomp/css/'.$scriptName.'.css');
+	if (file_exists($CFG->dirroot.'/blocks/exacomp/javascript/'.$scriptName.'.js'))
+		$PAGE->requires->js('/blocks/exacomp/javascript/'.$scriptName.'.js', true);
 
 	if ($role == 'admin') {
 		$strbookmarks = get_string($item_identifier, "block_exacomp");
@@ -534,7 +547,8 @@ function block_exacomp_print_header($role, $item_identifier, $sub_item_identifie
 
 		// Wenn der Kurs bereits aktiviert ist, alle Tabs anzeigen
 		if (block_exacomp_isactivated($COURSE->id)) {
-			$tabs[] = new tabobject('teachertabassignactivities', $CFG->wwwroot . '/blocks/exacomp/edit_activities.php?courseid=' . $COURSE->id, get_string("teachertabassignactivities", "block_exacomp"), '', true);
+			if ($courseSettings->uses_activities)
+				$tabs[] = new tabobject('teachertabassignactivities', $CFG->wwwroot . '/blocks/exacomp/edit_activities.php?courseid=' . $COURSE->id, get_string("teachertabassignactivities", "block_exacomp"), '', true);
 			$tabs[] = new tabobject('teachertabassigncompetences', $CFG->wwwroot . '/blocks/exacomp/assign_competencies.php?courseid=' . $COURSE->id, get_string("teachertabassigncompetences", "block_exacomp"), '', true);
 			$tabs[] = new tabobject('teachertabassigncompetencesdetail', $CFG->wwwroot . '/blocks/exacomp/edit_students.php?courseid=' . $COURSE->id, get_string("teachertabassigncompetencesdetail", "block_exacomp"), '', true);
 			$tabs[] = new tabobject('teachertabcompetencegrid', $CFG->wwwroot . '/blocks/exacomp/competence_grid.php?courseid=' . $COURSE->id, get_string("teachertabcompetencegrid", "block_exacomp"), '', true);
@@ -724,19 +738,41 @@ function block_exacomp_set_coursetopics($courseid, $values) {
 		}
 	}
 }
-function block_exacomp_set_bewertungsschema($courseid, $wert) {
+function block_exacomp_save_coursesettings($courseid, $settings) {
 	global $DB;
+	
 	$DB->delete_records('block_exacompsettings', array("course" => $courseid));
-	if($wert>0){
-		$curtime=time();
-		$DB->insert_record('block_exacompsettings', array("course" => $courseid, "grading" => $wert,"tstamp"=>$curtime));
-	}
+	
+	if ($settings->grading > 10) $settings->grading = 10;
+
+	$settings->course = $courseid;
+	$settings->tstamp = time();
+
+	$DB->insert_record('block_exacompsettings', $settings);
 }
-function block_exacomp_getbewertungsschema ($courseid,$leerwert=1){
+
+function block_exacomp_getbewertungsschema($courseid,$leerwert=1){
 	global $DB;
 	$rs = $DB->get_record('block_exacompsettings', array("course" => $courseid));
 	if (!empty($rs)) return $rs->grading;
 	else return $leerwert;
+}
+
+function block_exacomp_coursesettings($courseid = 0) {
+	global $DB, $COURSE;
+
+	if (!$courseid)
+		$courseid = $COURSE->id;
+		
+	$rs = $DB->get_record('block_exacompsettings', array("course" => $courseid));
+	
+	if (empty($rs)) $rs = new stdClass;
+	if (empty($rs->grading)) $rs->grading = 1;
+	if (!isset($rs->uses_activities)) $rs->uses_activities = 1;
+	if (!$rs->uses_activities) $rs->show_all_descriptors = 1;
+	elseif (!isset($rs->show_all_descriptors)) $rs->show_all_descriptors = 0;
+	
+	return $rs;
 }
 
 function block_exacomp_reset_coursetopics($courseid) {

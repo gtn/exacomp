@@ -52,6 +52,7 @@ $bewertungsdimensionen=block_exacomp_getbewertungsschema($courseid);
 
 $context = get_context_instance(CONTEXT_COURSE, $courseid);
 
+$courseSettings = block_exacomp_coursesettings();
 
 //eigen berechtigung für exabis_competences, weil die moodle rollen nicht genau passen, zb
 //bei moodle dürfen übergeordnete rollen alles der untergeordneten, dass soll hier nicht sein
@@ -70,12 +71,6 @@ $url = $CFG->wwwroot . $url;
 $identifier = "teachertabassigncompetences";
 if ($role == "student")
 	$identifier = "studenttabcompetences";
-
-$PAGE->requires->css('/blocks/exacomp/css/assign_competencies.css');
-$PAGE->requires->css('/blocks/exacomp/css/jquery-ui.css');
-$PAGE->requires->js('/blocks/exacomp/javascript/jquery.js', true);
-$PAGE->requires->js('/blocks/exacomp/javascript/jquery-ui.js', true);
-$PAGE->requires->js('/blocks/exacomp/javascript/exacomp.js', true);
 
 block_exacomp_print_header($role, $identifier);
 
@@ -162,7 +157,7 @@ $subjects = $DB->get_records_sql('
 	FROM {block_exacompsubjects} s
 	JOIN {block_exacomptopics} t ON t.subjid = s.id
 	JOIN {block_exacompcoutopi_mm} ct ON ct.topicid = t.id AND ct.courseid = ?
-	'.(get_config("exacomp","alternativedatamodel") ? '' : '
+	'.($courseSettings->show_all_descriptors ? '' : '
 		-- only show active ones
 		JOIN {block_exacompdescrtopic_mm} topmm ON topmm.topicid=t.id
 		JOIN {block_exacompdescriptors} d ON topmm.descrid=d.id
@@ -186,7 +181,7 @@ if ($selected_subject) {
 		SELECT t.id, t.title
 		FROM {block_exacomptopics} t
 		JOIN {block_exacompcoutopi_mm} ct ON ct.topicid = t.id AND t.subjid = ? AND ct.courseid = ?
-		'.(get_config("exacomp","alternativedatamodel") ? '' : '
+		'.($courseSettings->show_all_descriptors ? '' : '
 			-- only show active ones
 			JOIN {block_exacompdescrtopic_mm} topmm ON topmm.topicid=t.id
 			JOIN {block_exacompdescriptors} d ON topmm.descrid=d.id
@@ -210,7 +205,7 @@ if ($selected_subject) {
 			SELECT d.id, d.title
 			FROM {block_exacompdescriptors} d
 			JOIN {block_exacompdescrtopic_mm} topmm ON topmm.descrid=d.id AND topmm.topicid=?
-			'.(get_config("exacomp","alternativedatamodel") ? '' : '
+			'.($courseSettings->show_all_descriptors ? '' : '
 				-- only show active ones
 				JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid
 				JOIN {course_modules} a ON da.activityid=a.id AND a.course='.$courseid.'

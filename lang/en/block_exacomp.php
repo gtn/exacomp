@@ -148,7 +148,9 @@ $string['hide_activities_descr'] = 'Please select activities you want to hide an
 $string['hide_activities_save'] = 'Save settings and selection';
 $string['radargraphheader'] = 'Competence radar';
 $string['notinview'] = 'This item has not been published yet';
-$string['bewertungsschema_speichern']='save marking scheme';
+$string['bewertungsschema'] = 'Marking scheme';
+$string['uses_activities'] = 'I work with activites';
+$string['show_all_descriptors'] = 'Show all descriptors in overview';
 $string['bewertung'] = ' assessment: ';
 
 
