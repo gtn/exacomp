@@ -754,7 +754,7 @@ function block_exacomp_save_coursesettings($courseid, $settings) {
 function block_exacomp_getbewertungsschema($courseid,$leerwert=1){
 	global $DB;
 	$rs = $DB->get_record('block_exacompsettings', array("course" => $courseid));
-	if (!empty($rs)) return $rs->grading;
+	if (!empty($rs) && ($rs->grading > 0)) return $rs->grading;
 	else return $leerwert;
 }
 
@@ -768,7 +768,7 @@ function block_exacomp_coursesettings($courseid = 0) {
 	
 	if (empty($rs)) $rs = new stdClass;
 	if (empty($rs->grading)) $rs->grading = 1;
-	if (!isset($rs->uses_activities)) $rs->uses_activities = 1;
+	if (!isset($rs->uses_activities)) $rs->uses_activities = get_config("exacomp","alternativedatamodel") ? 0 : 1;
 	if (!$rs->uses_activities) $rs->show_all_descriptors = 1;
 	elseif (!isset($rs->show_all_descriptors)) $rs->show_all_descriptors = 0;
 	
