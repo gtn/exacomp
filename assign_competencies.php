@@ -112,9 +112,25 @@ if ($action == "save" && isset($_POST['btn_submit'])) {
 							// student can only assess himself
 							continue;
 						
+						if(strcmp($values['starttime'], "")!=0){
+							$date = explode("/", $values['starttime']);
+							$date = new DateTime($date[2].'-'.$date[0].'-'.$date[1]);
+							$starttime = $date->getTimestamp();
+						}else{
+							$starttime = NULL;
+						}
+						
+						if(strcmp($values['endtime'], "")!=0){
+							$date = explode("/", $values['endtime']);
+							$date = new DateTime($date[2].'-'.$date[0].'-'.$date[1]);
+							$endtime = $date->getTimestamp();
+						}else{
+							$endtime = NULL;
+						}
+						
 						$updateEvaluation->student_evaluation = $values['student_evaluation'];
-						$updateEvaluation->starttime = $values['starttime'];
-						$updateEvaluation->endtime = $values['endtime'];
+						$updateEvaluation->starttime = $starttime;
+						$updateEvaluation->endtime = $endtime;
 						$updateEvaluation->studypartner = $values['studypartner'];
 					}
 					if (isset($oldData[$deid.'_'.$studentid])) {
@@ -565,9 +581,9 @@ if ($descriptors) {
 								<option value="teacher"'.($studypartner=='teacher'?' selected="selected"':'').'>Lehrkraft</option>
 								</select><br/>
 								von <input class="datepicker" type="text" name="dataexamples[' . $example->deid . '][' . $student->id . '][starttime]" value="'.
-									(isset($examplesEvaluationData[$student->id])?$examplesEvaluationData[$student->id]->starttime:'').'" />
+									(isset($examplesEvaluationData[$student->id]->starttime)?date("m/d/Y",$examplesEvaluationData[$student->id]->starttime):'').'" readonly/>
 								bis <input class="datepicker" type="text" name="dataexamples[' . $example->deid . '][' . $student->id . '][endtime]" value="'.
-									(isset($examplesEvaluationData[$student->id])?$examplesEvaluationData[$student->id]->endtime:'').'" />
+									(isset($examplesEvaluationData[$student->id]->endtime)?date("m/d/Y",$examplesEvaluationData[$student->id]->endtime):'').'" readonly/>
 							';
 						}
 						echo '</td>';
