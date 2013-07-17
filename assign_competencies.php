@@ -169,7 +169,7 @@ $selected_topic = null;
 $descriptors = null;
 
 $subjects = $DB->get_records_sql('
-	SELECT s.id, s.title
+	SELECT s.id, s.title, s.stid, s.number
 	FROM {block_exacompsubjects} s
 	JOIN {block_exacomptopics} t ON t.subjid = s.id
 	JOIN {block_exacompcoutopi_mm} ct ON ct.topicid = t.id AND ct.courseid = ?
@@ -194,7 +194,7 @@ if ($selected_subject) {
 	$SESSION->block_exacomp_last_subjectid = $selected_subject->id;
 
 	$topics = $DB->get_records_sql('
-		SELECT t.id, t.title
+		SELECT t.id, t.title, t.cat, t.ataxonomie, t.btaxonomie, t.ctaxonomie
 		FROM {block_exacomptopics} t
 		JOIN {block_exacompcoutopi_mm} ct ON ct.topicid = t.id AND t.subjid = ? AND ct.courseid = ?
 		'.($courseSettings->show_all_descriptors ? '' : '
@@ -299,16 +299,19 @@ if (get_config("exacomp","alternativedatamodel")) {
 				<b>13/14</b>
 			</td>
 			<td><span class="exabis_comp_top_small">Fach</span>
-				<b><?php echo $selected_subject->title; ?></b>
+				<b><?php $schooltype = 	$DB->get_field("block_exacompschooltypes", "title", array("id"=>$selected_subject->stid));
+				echo $schooltype;?></b>
 			</td>
 			<td><span class="exabis_comp_top_small">Kompetenzbereich/Leitidee</span>
-				<b><?php echo $selected_topic->title; ?></b>
+				<b><?php echo $selected_subject->number . " - " . $selected_subject->title; ?></b>
 			</td>
 			<td><span class="exabis_comp_top_small">Lernfortschritt</span>
-				<b>LF 6</b>
+				<b>LF <?php echo $selected_topic->cat; ?></b>
 			</td>
 			<td><span class="exabis_comp_top_small">Lernwegliste</span>
-				<b>M4.6</b>
+				<b><?php 
+					echo substr($schooltype, 0,1).$selected_subject->number.".".$selected_topic->cat;				
+				?></b>
 			</td>
 		</tr>
 		
@@ -317,7 +320,7 @@ if (get_config("exacomp","alternativedatamodel")) {
 		<tr>
 			<td>
 				<span class="exabis_comp_top_small">Teilkompetenz</span>
-				<span class="exabis_comp_top_header">Ich kann Rauminhalt und Oberflächeninhalte von Quadern berechnen und mit Volumenmaßen umgehen</span>
+				<span class="exabis_comp_top_header"><?php echo $selected_topic->title; ?></span>
 			</td>
 			<td rowspan="4" class="comp_grey_97">
 				<b>Anleitung</b>
@@ -329,21 +332,21 @@ if (get_config("exacomp","alternativedatamodel")) {
 		<tr>
 			<td class="comp_grey_97">
 			<div class="exabis_comp_top_indentation_nr">A:</div>
-				<div class="exabis_comp_top_indentation">Ich kann das Volumen von Quadern berechnen. Ich kann Raum- und Hohlmaße in benachbarte Einheiten umwandeln. Ich kann das Volumen von Körpern durch Ausfüllen bestimmen.</div>
+				<div class="exabis_comp_top_indentation"><?php echo $selected_topic->ataxonomie; ?></div>
 			</td>
 			
 		</tr>
 		<tr>
 			<td class="comp_grey_90">
 				<div class="exabis_comp_top_indentation_nr">B:</div>
-				<div class="exabis_comp_top_indentation">Ich kann den Oberflächeninhalt von Quadern ermitteln. Ich kann Oberflächeninhalt und Volumen von realen, quaderförmigen Gegenständen durch Messen und Berechnen ermitteln.</div>
+				<div class="exabis_comp_top_indentation"><?php echo $selected_topic->btaxonomie; ?></div>
 			</td>
 			
 		</tr>
 		<tr>
 			<td class="comp_grey_83">
 				<div class="exabis_comp_top_indentation_nr">C:</div>
-				<div class="exabis_comp_top_indentation">Ich kann Raummaße in Einheiten umwandeln, die der Sachsituation angemessen sind. Ich kann Volumen und Oberflächeninhalt von zusammengesetzten Körpern berechnen.</div>
+				<div class="exabis_comp_top_indentation"><?php echo $selected_topic->ctaxonomie; ?></div>
 			</td>
 			
 		</tr>
