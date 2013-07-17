@@ -235,12 +235,12 @@ function block_exacomp_xml_insert_topic($value,$source) {
 	$new_value->requirement = (string)$value->requirement;
 	$new_value->benefit = (string)$value->benefit;
 	$new_value->knowledgecheck = (string)$value->knowledgecheck;
-	$new_value->ataxonomie = (string)$value->ataxonomie;
-	$new_value->btaxonomie = (string)$value->btaxonomie;
-	$new_value->ctaxonomie = (string)$value->ctaxonomie;
-	$new_value->dtaxonomie = (string)$value->dtaxonomie;
-	$new_value->etaxonomie = (string)$value->etaxonomie;
-	$new_value->ftaxonomie = (string)$value->ftaxonomie;
+	$new_value->ataxonomie = (string)$value->Ataxonomie;
+	$new_value->btaxonomie = (string)$value->Btaxonomie;
+	$new_value->ctaxonomie = (string)$value->Ctaxonomie;
+	$new_value->dtaxonomie = (string)$value->Dtaxonomie;
+	$new_value->etaxonomie = (string)$value->Etaxonomie;
+	$new_value->ftaxonomie = (string)$value->Ftaxonomie;
 	unset($value);
 	$value = $new_value;
 
@@ -258,6 +258,16 @@ function block_exacomp_xml_insert_topic($value,$source) {
 		$topic->subjid = $subj;
 		$topic->sorting = $value->sorting;
 		$topic->description = $value->description;
+		$topic->cat = (int)$value->cat;
+		$topic->requirement = (string)$value->requirement;
+		$topic->benefit = (string)$value->benefit;
+		$topic->knowledgecheck = (string)$value->knowledgecheck;
+		$topic->ataxonomie = (string)$value->ataxonomie;
+		$topic->btaxonomie = (string)$value->btaxonomie;
+		$topic->ctaxonomie = (string)$value->ctaxonomie;
+		$topic->dtaxonomie = (string)$value->dtaxonomie;
+		$topic->etaxonomie = (string)$value->etaxonomie;
+		$topic->ftaxonomie = (string)$value->ftaxonomie;
 		$DB->update_record('block_exacomptopics', $topic);
 	} else {
 		//insert
@@ -296,6 +306,8 @@ function block_exacomp_xml_insert_descriptor($value,$source) {
 		$desc->skillid = (int)$value->skillid;
 		$desc->niveauid = (int)$value->niveauid;
 		$desc->sorting = (int)$value->sorting;
+		$desc->exampletext = (string)$value->exampletext;
+		$desc->additionalinfo = (string)$value->additionalinfo;
 
 		$DB->update_record('block_exacompdescriptors', $desc);
 	} else {
