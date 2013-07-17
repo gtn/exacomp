@@ -65,7 +65,7 @@ echo html_writer::select($subjects, 'exacomp_competence_grid_select_subject',arr
 
 ?>
 <div id="exabis_competences_block">
-	<?
+	<?php
 	$output = $PAGE->get_renderer('block_exacomp');
 	
 	$niveaus = block_exacomp_get_niveaus_for_subject($subjectid);

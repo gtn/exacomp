@@ -91,6 +91,8 @@ function block_exacomp_xml_insert_subject($value,$source) {
 	if ($schooltype = $DB->get_record('block_exacompschooltypes', array("sourceid"=>intval($value->stid),"source"=>$source))) $stid=$schooltype->id;
 	else $stid=0;
 	$data["stid"]=$stid;
+	$data["cat"] = intval($value->cat);
+	$data["number"] = intval($value->number);
 	$uid=intval($value->uid);
 	if($subject = $DB->get_record('block_exacompsubjects', array("sourceid" =>$uid,"source"=>$source))){
 		$data["id"]=$subject->id;
@@ -229,6 +231,16 @@ function block_exacomp_xml_insert_topic($value,$source) {
 	$new_value->titleshort = (string)$value->titleshort;
 	$new_value->sorting = (int)$value->sorting;
 	$new_value->description = (string)$value->description;
+	$new_value->cat = (int)$value->cat;
+	$new_value->requirement = (string)$value->requirement;
+	$new_value->benefit = (string)$value->benefit;
+	$new_value->knowledgecheck = (string)$value->knowledgecheck;
+	$new_value->ataxonomie = (string)$value->ataxonomie;
+	$new_value->btaxonomie = (string)$value->btaxonomie;
+	$new_value->ctaxonomie = (string)$value->ctaxonomie;
+	$new_value->dtaxonomie = (string)$value->dtaxonomie;
+	$new_value->etaxonomie = (string)$value->etaxonomie;
+	$new_value->ftaxonomie = (string)$value->ftaxonomie;
 	unset($value);
 	$value = $new_value;
 
@@ -271,6 +283,8 @@ function block_exacomp_xml_insert_descriptor($value,$source) {
 	$new_value->sorting = (int)$value->sorting;
 	$new_value->skillid = (int)$value->skillid;
 	$new_value->parent_id = (int)$value->parent_id;
+	$new_value->exampletext = (string)$value->exampletext;
+	$new_value->additionalinfo = (string)$value->additionalinfo;
 
 	unset($value);
 	$value = $new_value;

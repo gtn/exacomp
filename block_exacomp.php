@@ -69,7 +69,7 @@ class block_exacomp extends block_base {
 				//Kurs nicht zugeordnet
 				$this->content->text .= get_string('configcourseonce', 'block_exacomp')."<br/>";
 			}
-			
+
 			$configurl = (!get_config("exacomp","alternativedatamodel")) ? '/blocks/exacomp/edit_course.php?courseid=': '/blocks/exacomp/edit_config.php?courseid=';
 			$this->content->text.='<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/subjects_topics.gif" height="16" width="23" alt="' . get_string("teachernavconfig", "block_exacomp") . '" />';
 			$this->content->text.='<a title="edit course" href="' . $CFG->wwwroot . $configurl . $courseid . '">' . get_string('teachernavconfig', 'block_exacomp') . '</a>';
@@ -185,7 +185,7 @@ class block_exacomp extends block_base {
 
 				if(block_exacomp_xml_do_import(null,1,1)) {
 					mtrace("import done");
-					  block_exacomp_settstamp();
+					block_exacomp_settstamp();
 				}
 				else mtrace("import failed");
 			}
