@@ -12922,6 +12922,71 @@
 		<exampletext></exampletext>
 		<comment></comment>
 	</table>
+	<table name="block_exacompexamples">
+		<uid>1</uid>
+		<title><![CDATA[Schreiben Sie einen Aufsatz über das Thema Genmanipulation. Als Denkanstoß können Sie die im Unterricht erhaltenen Unterlagen verwenden. Gehen Sie auch auf Ihre persönliche Meinung ein. ]]></title>
+		<titleshort><![CDATA[Aufsatz: Genmanipulation]]></titleshort>
+		<task></task>
+		<sorting>1</sorting>
+		<solution></solution>
+		<attachement></attachement>
+		<completefile></completefile>
+		<description><![CDATA[Schreiben Sie einen Aufsatz über das Thema Genmanipulation. Als Denkanstoß können Sie die im Unterricht erhaltenen Unterlagen verwenden. Gehen Sie auch auf Ihre persönliche Meinung ein. ]]></description>
+		<taxid>0</taxid>
+		<timeframe></timeframe>
+		<ressources></ressources>
+		<tips></tips>
+		<externalurl></externalurl>
+		<externalsolution></externalsolution>
+		<externaltask></externaltask>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>2</uid>
+		<title><![CDATA[Für diese Aufgabe arbeiten Sie mit dem Wikipedia-Artikel über Genmanipulation. Beantworten Sie folgende Fragen so rasch wie möglich:
+1. Was war der erste genetisch modifizierte Organismus?
+2. Welches war das erste medizinische Produkt, das mit Gentec]]></title>
+		<titleshort><![CDATA[Fragen beantworten: Genmanipulation]]></titleshort>
+		<task></task>
+		<sorting>2</sorting>
+		<solution></solution>
+		<attachement></attachement>
+		<completefile></completefile>
+		<description><![CDATA[Für diese Aufgabe arbeiten Sie mit dem Wikipedia-Artikel über Genmanipulation. Beantworten Sie folgende Fragen so rasch wie möglich:
+1. Was war der erste genetisch modifizierte Organismus?
+2. Welches war das erste medizinische Produkt, das mit Gentechnik produziert wurde? 
+3. Was versteht man unter BioArt?]]></description>
+		<taxid>0</taxid>
+		<timeframe>30</timeframe>
+		<ressources></ressources>
+		<tips></tips>
+		<externalurl>http://en.wikipedia.org/wiki/Genetic_engineering</externalurl>
+		<externalsolution></externalsolution>
+		<externaltask></externaltask>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
+		<uid>3</uid>
+		<title><![CDATA[Installieren Sie Moodle auf Ihrem eigenen PC. Dazu lesen Sie die Anleitung, die von Moodle zur Verfügung gestellt wird.]]></title>
+		<titleshort><![CDATA[Installation von Moodle]]></titleshort>
+		<task></task>
+		<sorting>3</sorting>
+		<solution></solution>
+		<attachement></attachement>
+		<completefile></completefile>
+		<description><![CDATA[Installieren Sie Moodle auf Ihrem eigenen PC. Dazu lesen Sie die Anleitung, die von Moodle zur Verfügung gestellt wird.]]></description>
+		<taxid>0</taxid>
+		<timeframe></timeframe>
+		<ressources></ressources>
+		<tips></tips>
+		<externalurl>http://docs.moodle.org/23/en/Installing_Moodle</externalurl>
+		<externalsolution></externalsolution>
+		<externaltask></externaltask>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
 	<table name="block_exacompcategories">
 		<uid>1</uid>
 		<title><![CDATA[1 - Zuhören und Spre]]></title>
@@ -17114,5 +17179,20 @@
 	<table name="block_exacompdescrtopic_mm">
 		<descrid>1043</descrid>
 		<topicid>125</topicid>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>1</exampid>
+		<descrid>192</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>2</exampid>
+		<descrid>194</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>3</exampid>
+		<descrid>195</descrid>
+		<source>0</source>
 	</table>
 </exabis_competences_tables>
