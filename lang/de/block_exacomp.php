@@ -20,6 +20,7 @@ $string['studenttabcompetences'] = 'Kompetenz-Gesamtansicht';
 $string['studenttabcompetencesdetail'] = 'Kompetenz-Detailansicht';
 $string['studenttabcompetencesoverview'] = 'Alle erworbenen Kompetenzen';
 $string['studenttabcompetenceprofile'] = 'Kompetenzprofil';
+$string['studenttabcompetencesagenda'] = 'Lernagenda';
 
 //NAVIGATION
 $string['studentnavcompetences'] = 'Kompetenzeinschätzung';
@@ -160,4 +161,16 @@ $string['filter_niveaus_descr'] = "Bitte wählen sie ein oder mehrere Niveaus um
 $string['alternativedatamodel'] = 'Baden W&uuml;rttemberg Version';
 $string['alternativedatamodel_description'] = 'Anhaken für die Baden W&uuml;rttemberg Version';
 $string['choosesubject'] = "Fach auswählen: ";
+
+$string['MO'] = "Mo";
+$string['DI'] = "Di";
+$string['MI'] = "Mi";
+$string['DO'] = "Do";
+$string['FR'] = "Fr";
+$string['todo'] = "Was mache ich?";
+$string['learning'] = "Was kann ich lernen?";
+$string['student'] = "S";
+$string['teacher'] = "L";
+$string['assessment'] = "Einsch&auml;tzung";
+$string['plan'] = "Arbeitsplan";
 ?>

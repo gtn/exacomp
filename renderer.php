@@ -24,6 +24,94 @@
 defined('MOODLE_INTERNAL') || die;
 
 class block_exacomp_renderer extends plugin_renderer_base {
+	public function render_learning_agenda($data, $wochentage){
+		//header
+		$table = new html_table();
+		$table->attributes['class'] = 'lernagenda';
+		$table->border = 3;
+		$head = array();
+		
+		$cellhead1 = new html_table_cell();
+		$cellhead1->text = html_writer::tag("p", get_string('plan', 'block_exacomp'));
+		$cellhead1->colspan = 4;
+		$head[] = $cellhead1;
+		
+		$cellhead2 = new html_table_cell();
+		$cellhead2->text = html_writer::tag("p", get_string('assessment', 'block_exacomp'));
+		$cellhead2->colspan = 2;
+		$head[] = $cellhead2;
+		
+		$table->head = $head;
+		
+		$rows = array();
+		
+		//erste Reihe->Überschriften
+		$row = new html_table_row();
+		$cell = new html_table_cell();
+		$cell->text = "";
+		$cell->colspan = 2;
+		$row->cells[] = $cell;
+		
+		$cell = new html_table_cell();
+		$cell->text = html_writer::tag("p", get_string('todo', 'block_exacomp'));
+		$row->cells[] = $cell;
+		
+		$cell = new html_table_cell();
+		$cell->text = html_writer::tag("p", get_string('learning', 'block_exacomp'));
+		$row->cells[] = $cell;
+		
+		$cell = new html_table_cell();
+		$cell->text = html_writer::tag("p", get_string('student', 'block_exacomp'));
+		$row->cells[] = $cell;
+		
+		$cell = new html_table_cell();
+		$cell->text = html_writer::tag("p", get_string('teacher', 'block_exacomp'));
+		$row->cells[] = $cell;
+		
+		$rows[] = $row;
+		
+		foreach($data as $day=>$daydata){
+			$row = new html_table_row();
+			$cell = new html_table_cell();
+			$cell->text = html_writer::tag("p", $day);
+			
+			$cell->rowspan = count($daydata, COUNT_RECURSIVE)-count($daydata);
+			$row->cells[] = $cell;
+			
+			foreach($daydata as $subject=>$subjectdata){
+				$cell = new html_table_cell();
+				$cell->text = html_writer::tag("p", $subject);
+				$cell->rowspan = count($subjectdata);
+				$row->cells[] = $cell;
+				
+				foreach($subjectdata as $example){
+					$cell = new html_table_cell();
+					$cell->text = html_writer::tag("p", html_writer::tag("b", $example->desc.": ").$example->title);
+					$row->cells[] = $cell;
+					
+					$cell = new html_table_cell();
+					$cell->text = html_writer::tag("p", "");
+					$row->cells[] = $cell;
+					
+					$cell = new html_table_cell();
+					$cell->text = html_writer::tag("p", $example->evaluate);
+					$row->cells[] = $cell;
+					
+					$cell = new html_table_cell();
+					$cell->text = html_writer::tag("p", $example->tevaluate);
+					$row->cells[] = $cell;
+					
+					$rows[] = $row;
+					$row = new html_table_row();
+				}
+			}
+							
+		}
+		
+		$table->data = $rows;
+		
+		return html_writer::tag("div", html_writer::table($table), array("id"=>"exabis_competences_block"));
+	}
 
 	public function render_competence_grid($niveaus, $skills, $topics, $data) {
 		$table = new html_table();

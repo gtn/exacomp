@@ -20,6 +20,7 @@ $string['studenttabcompetences'] = 'overview of competencies';
 $string['studenttabcompetencesdetail'] = 'detailed view of competencies';
 $string['studenttabcompetencesoverview'] = 'all gained competencies';
 $string['studenttabcompetenceprofile'] = 'competence profile';
+$string['studenttabcompetencesagenda'] = 'learning agenda';
 
 //NAVIGATION
 $string['studentnavcompetences'] = 'assessment of competencies';
@@ -165,4 +166,15 @@ $string['alternativedatamodel'] = 'Baden W&uuml;rttemberg Version';
 $string['alternativedatamodel_description'] = 'Tick to use Baden W&uuml;rttemberg Version';
 $string['choosesubject'] = "Choose subject: ";
 
+$string["MO"] = "MON";
+$string["DI"] = "TUE";
+$string["MI"] = "WED";
+$string["DO"] = "THU";
+$string["FR"] = "FRI";
+$string['todo'] = "What do I do?";
+$string['learning'] = "What can I learn?";
+$string['student'] = "S";
+$string['teacher'] = "T";
+$string['assessment'] = "assessment";
+$string['plan'] = "work plan";
 ?>
