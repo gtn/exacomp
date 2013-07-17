@@ -65,7 +65,6 @@ foreach($rows as $row){
 }
 
 $act = mktime(0,0,0,1,1,date("Y"));
-var_dump($act);
 $wtag = date('w',$act)-1;
 
 $days = array('MO','DI','MI','DO','FR');
