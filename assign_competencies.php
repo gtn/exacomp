@@ -432,7 +432,7 @@ if ($descriptors) {
 			?>
 			<tr class="exabis_comp_teilcomp <?php if ($examples): ?>rowgroup-header rowgroup-<?php echo $rowgroup; ?><?php endif; ?>">
 			<td><?php echo $output_id; ?></td>
-			<td class="rowgroup-arrow"><div><?php echo $output_title; ?></div></td>
+			<td class="rowgroup-arrow"><div class="desctitle"><?php echo $output_title; ?></div></td>
 			<?php
 				$columnCnt = 0;
 				$activities = block_exacomp_get_activities($descriptor->id, $courseid);
@@ -514,7 +514,7 @@ if ($descriptors) {
 				?>
 			<tr class="exabis_comp_aufgabe rowgroup-content rowgroup-<?php echo $rowgroup; ?>"">
 				<td></td>
-				<td><?php echo $example->title; ?></td>
+				<td> <p class="aufgabetext"><?php echo $example->title; ?></p></td>
 				<?php
 					$columnCnt = 0;
 					foreach ($students as $student) {
