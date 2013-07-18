@@ -457,5 +457,20 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// exacomp savepoint reached
 		upgrade_block_savepoint(true, 2013071600, 'exacomp');
 	}
+	if ($oldversion < 2013071801) {
+	
+		 // Define field sourceid to be added to block_exacompcategories
+        $table = new xmldb_table('block_exacompcategories');
+        $field = new xmldb_field('sourceid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null, 'parentid');
+
+        // Conditionally launch add field sourceid
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+	
+		// exacomp savepoint reached
+		upgrade_block_savepoint(true, 2013071801, 'exacomp');
+	}
+	
 	return $result;
 }

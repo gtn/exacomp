@@ -77,7 +77,7 @@
 		<titleshort><![CDATA[Zuhören]]></titleshort>
 		<stid>2</stid>
 		<sorting>0</sorting>
-		<cat>1</cat>
+		<cat>7</cat>
 		<number>11</number>
 	</table>
 	<table name="block_exacompsubjects">
@@ -86,7 +86,7 @@
 		<titleshort><![CDATA[Verknüpfung Zuhören und miteinander sprechen]]></titleshort>
 		<stid>2</stid>
 		<sorting>0</sorting>
-		<cat>1</cat>
+		<cat>7</cat>
 		<number>12</number>
 	</table>
 	<table name="block_exacompsubjects">
@@ -95,7 +95,7 @@
 		<titleshort><![CDATA[Miteinander sprechen]]></titleshort>
 		<stid>2</stid>
 		<sorting>0</sorting>
-		<cat>1</cat>
+		<cat>7</cat>
 		<number>13</number>
 	</table>
 	<table name="block_exacompsubjects">
@@ -104,7 +104,7 @@
 		<titleshort><![CDATA["Spielerisch" sprechen]]></titleshort>
 		<stid>2</stid>
 		<sorting>0</sorting>
-		<cat>1</cat>
+		<cat>7</cat>
 		<number>14</number>
 	</table>
 	<table name="block_exacompsubjects">
@@ -113,7 +113,7 @@
 		<titleshort><![CDATA[Zu anderen sprechen]]></titleshort>
 		<stid>2</stid>
 		<sorting>0</sorting>
-		<cat>1</cat>
+		<cat>7</cat>
 		<number>15</number>
 	</table>
 	<table name="block_exacompsubjects">
@@ -122,7 +122,7 @@
 		<titleshort><![CDATA[Verknüpfung Sprechen und Schreiben]]></titleshort>
 		<stid>2</stid>
 		<sorting>0</sorting>
-		<cat>1</cat>
+		<cat>7</cat>
 		<number>16</number>
 	</table>
 	<table name="block_exacompsubjects">
@@ -131,7 +131,7 @@
 		<titleshort><![CDATA[Texte verfassen]]></titleshort>
 		<stid>2</stid>
 		<sorting>0</sorting>
-		<cat>2</cat>
+		<cat>8</cat>
 		<number>21</number>
 	</table>
 	<table name="block_exacompsubjects">
@@ -140,7 +140,7 @@
 		<titleshort><![CDATA[Richtig schreiben]]></titleshort>
 		<stid>2</stid>
 		<sorting>0</sorting>
-		<cat>2</cat>
+		<cat>8</cat>
 		<number>22</number>
 	</table>
 	<table name="block_exacompsubjects">
@@ -149,7 +149,7 @@
 		<titleshort><![CDATA[Verknüpfung Schreiben und Lesen]]></titleshort>
 		<stid>2</stid>
 		<sorting>0</sorting>
-		<cat>2</cat>
+		<cat>8</cat>
 		<number>23</number>
 	</table>
 	<table name="block_exacompsubjects">
@@ -158,7 +158,7 @@
 		<titleshort><![CDATA[Mit Sachtexten und Medien umgehen]]></titleshort>
 		<stid>2</stid>
 		<sorting>0</sorting>
-		<cat>3</cat>
+		<cat>9</cat>
 		<number>31</number>
 	</table>
 	<table name="block_exacompsubjects">
@@ -167,7 +167,7 @@
 		<titleshort><![CDATA[Verknüpfung Sachtexte, literarische Texte und Medien]]></titleshort>
 		<stid>2</stid>
 		<sorting>0</sorting>
-		<cat>3</cat>
+		<cat>9</cat>
 		<number>32</number>
 	</table>
 	<table name="block_exacompsubjects">
@@ -176,7 +176,7 @@
 		<titleshort><![CDATA[Mit literarischen Texten und Medien umgehen]]></titleshort>
 		<stid>2</stid>
 		<sorting>0</sorting>
-		<cat>3</cat>
+		<cat>9</cat>
 		<number>33</number>
 	</table>
 	<table name="block_exacompsubjects">
@@ -12968,6 +12968,26 @@
 		<iseditable>0</iseditable>
 	</table>
 	<table name="block_exacompexamples">
+		<uid>4</uid>
+		<title><![CDATA[Testbeispiel]]></title>
+		<titleshort><![CDATA[TB]]></titleshort>
+		<task>http://cms.pfs.aa.schule-bw.de/comp/uploads/tx_exabiscompetences/link.gif</task>
+		<sorting>4</sorting>
+		<solution></solution>
+		<attachement></attachement>
+		<completefile></completefile>
+		<description><![CDATA[test]]></description>
+		<taxid>0</taxid>
+		<timeframe></timeframe>
+		<ressources></ressources>
+		<tips></tips>
+		<externalurl></externalurl>
+		<externalsolution>http://www.exabis.at</externalsolution>
+		<externaltask></externaltask>
+		<lang>0</lang>
+		<iseditable>0</iseditable>
+	</table>
+	<table name="block_exacompexamples">
 		<uid>3</uid>
 		<title><![CDATA[Installieren Sie Moodle auf Ihrem eigenen PC. Dazu lesen Sie die Anleitung, die von Moodle zur Verfügung gestellt wird.]]></title>
 		<titleshort><![CDATA[Installation von Moodle]]></titleshort>
@@ -12988,25 +13008,67 @@
 		<iseditable>0</iseditable>
 	</table>
 	<table name="block_exacompcategories">
-		<uid>1</uid>
+		<uid>7</uid>
 		<title><![CDATA[1 - Zuhören und Spre]]></title>
 		<parent_cat>0</parent_cat>
 		<sorting>0</sorting>
 		<level>3</level>
 	</table>
 	<table name="block_exacompcategories">
-		<uid>2</uid>
+		<uid>8</uid>
 		<title><![CDATA[2 - Schreiben]]></title>
 		<parent_cat>0</parent_cat>
 		<sorting>0</sorting>
 		<level>3</level>
 	</table>
 	<table name="block_exacompcategories">
-		<uid>3</uid>
+		<uid>9</uid>
 		<title><![CDATA[3 - Lesen]]></title>
 		<parent_cat>0</parent_cat>
 		<sorting>0</sorting>
 		<level>3</level>
+	</table>
+	<table name="block_exacompcategories">
+		<uid>1</uid>
+		<title><![CDATA[LF 1]]></title>
+		<parent_cat>0</parent_cat>
+		<sorting>1</sorting>
+		<level>4</level>
+	</table>
+	<table name="block_exacompcategories">
+		<uid>2</uid>
+		<title><![CDATA[LF 2]]></title>
+		<parent_cat>0</parent_cat>
+		<sorting>1</sorting>
+		<level>4</level>
+	</table>
+	<table name="block_exacompcategories">
+		<uid>3</uid>
+		<title><![CDATA[LF 3]]></title>
+		<parent_cat>0</parent_cat>
+		<sorting>1</sorting>
+		<level>4</level>
+	</table>
+	<table name="block_exacompcategories">
+		<uid>4</uid>
+		<title><![CDATA[LF 4]]></title>
+		<parent_cat>0</parent_cat>
+		<sorting>1</sorting>
+		<level>4</level>
+	</table>
+	<table name="block_exacompcategories">
+		<uid>5</uid>
+		<title><![CDATA[LF 5]]></title>
+		<parent_cat>0</parent_cat>
+		<sorting>1</sorting>
+		<level>4</level>
+	</table>
+	<table name="block_exacompcategories">
+		<uid>6</uid>
+		<title><![CDATA[LF 6]]></title>
+		<parent_cat>0</parent_cat>
+		<sorting>1</sorting>
+		<level>4</level>
 	</table>
 	<table name="block_exacompdescrtopic_mm">
 		<descrid>1</descrid>
@@ -17193,6 +17255,236 @@
 	<table name="block_exacompdescrexamp_mm">
 		<exampid>3</exampid>
 		<descrid>195</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>46</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>45</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>44</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>43</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>42</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>41</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>40</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>39</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>38</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>37</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>36</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>35</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>34</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>33</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>32</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>31</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>30</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>29</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>28</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>27</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>26</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>25</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>24</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>23</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>22</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>21</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>20</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>19</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>18</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>17</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>16</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>15</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>14</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>13</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>12</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>11</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>10</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>9</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>8</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>7</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>6</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>5</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>4</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>3</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>2</descrid>
+		<source>0</source>
+	</table>
+	<table name="block_exacompdescrexamp_mm">
+		<exampid>4</exampid>
+		<descrid>1</descrid>
 		<source>0</source>
 	</table>
 </exabis_competences_tables>

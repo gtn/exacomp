@@ -121,6 +121,21 @@ function block_exacomp_xml_insert_subject($value,$source) {
 		}*/
 	}
 }
+function block_exacomp_xml_insert_category($value,$source) {
+	global $DB;
+	$cat = $DB->get_record("block_exacompcategories", array("sourceid"=>intval($value->uid)));
+	$data = array();
+	$data['title'] = strval($value->title);
+	$data['parentid'] = intval($value->parent_cat);
+	$data['lvl'] = intval($value->level);
+	$data['sourceid'] = intval($value->uid);
+	if($cat) {
+		$data['id'] = $cat->id;
+		$DB->update_record("block_exacompcategories", $data);
+	} else {
+		$DB->insert_record("block_exacompcategories", $data);
+	}
+}
 function block_exacomp_xml_insert_skill($value,$source) {
 
 	global $DB;
@@ -632,6 +647,9 @@ function block_exacomp_xml_do_import($file = null, $source = 1, $cron = 0) {
 
 						if (!empty($descrexampmm['descrid']) && !empty($descrexampmm['exampid']))
 							$descrexamp[] = $descrexampmm;
+					}
+					if($name == "block_exacompcategories") {
+						block_exacomp_xml_insert_category($table,$source);
 					}
 				}
 
