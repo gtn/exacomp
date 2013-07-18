@@ -614,7 +614,8 @@ function block_exacomp_print_header($role, $item_identifier, $sub_item_identifie
 		// haupttabs
 		$tabs = array();
 		$tabs[] = new tabobject('studenttabcompetences', $CFG->wwwroot . '/blocks/exacomp/assign_competencies.php?courseid=' . $COURSE->id, get_string("studenttabcompetences", "block_exacomp"), '', true);
-		$tabs[] = new tabobject('studenttabcompetencesdetail', $CFG->wwwroot . '/blocks/exacomp/evaluate_competences.php?courseid=' . $COURSE->id, get_string("studenttabcompetencesdetail", "block_exacomp"), '', true);
+		if ($courseSettings->uses_activities)
+			$tabs[] = new tabobject('studenttabcompetencesdetail', $CFG->wwwroot . '/blocks/exacomp/evaluate_competences.php?courseid=' . $COURSE->id, get_string("studenttabcompetencesdetail", "block_exacomp"), '', true);
 		$tabs[] = new tabobject('studenttabcompetencesoverview', $CFG->wwwroot . '/blocks/exacomp/view_competences.php?courseid=' . $COURSE->id, get_string("studenttabcompetencesoverview", "block_exacomp"), '', true);
 		$tabs[] = new tabobject('studenttabcompetenceprofile', $CFG->wwwroot . '/blocks/exacomp/competence_profile.php?courseid=' . $COURSE->id, get_string("studenttabcompetenceprofile", "block_exacomp"), '', true);
 		$tabs[] = new tabobject('studenttabcompetencesagenda', $CFG->wwwroot . '/blocks/exacomp/learningagenda.php?courseid=' . $COURSE->id, get_string("studenttabcompetencesagenda", "block_exacomp"), '', true);
