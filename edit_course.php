@@ -53,43 +53,17 @@ if ($action == 'save_coursesettings') {
 	
 	block_exacomp_save_coursesettings($courseid, $settings);
 		
-} elseif ($action == 'save_coursetopics') {
-    block_exacomp_set_coursetopics($courseid, $_POST['data']);
-}
+} 
 
-if($action == 'digicomps') {
-	$values=array("15"=>15,"20"=>20,"17"=>17,"18"=>18,"21"=>21,"22"=>22,"23"=>23,"25"=>25,"112"=>112,"113"=>113,);
-	block_exacomp_set_coursetopics($courseid, $values);
-	/*
-	set_descr_for_assignment("Chat - Wie würdest du dich verhalten?",array(73,684));
-	set_descr_for_assignment("Chat - Wo wohnt Susi?",array(73,684));
-	set_descr_for_assignment("Aufgabe 1 - Bewegungsdiagramme bitte hier abgeben",array(696,695,693,));
-	set_descr_for_assignment("Aufgabe 2 - Bewegungsdiagramm - Textdatei und Präsentation bitte hier abgeben",array(700,698,699));
-	set_descr_for_assignment("Aufgabe 3 - Bewegungsdiagramm - Präsentation bitte hier abgeben",array(700,698,699,693,696));
-	set_descr_for_assignment("Das zusammengeräumte Haus bitte hier gezippt abgeben!",array(715,716,717));
-	set_descr_for_assignment("Mensch - Maschine - Schnittstelle Präsentation hier abgeben",array(701,703,700,698,699));
-	set_descr_for_assignment("Abagabe zu: Praktisches Beispiel - Eingabesteuerug",array(703));
-	set_descr_for_assignment("Energiekosten - Tabellenkalulationsblatt - Lösung bitte hier abgeben",array(693,694,695,696,686,684));
-	set_descr_for_assignment("Einladung - Datei bitte hier abgeben",array(700,698,699));
-	set_descr_for_assignment("Handy - Lösung bitte hier eingeben!",array(677));
-	set_descr_for_assignment("Zoo Salzburg - Ergebnis bitte hier abgeben",array(699,700,688,689,691,692,686));
-	set_descr_for_assignment("Interview bitte hier abgeben",array(697));
-	set_descr_for_assignment("Informationen Lehrberuf - Lösung bitte hier abgeben",array(699,700,688,689,691,692));
-	set_descr_for_assignment("Abgabe: Migration - Tabellenkalulatonsdatei, Präsentation",array(693,694,695,696));	*/
-
-}
 $PAGE->set_url('/blocks/exacomp/edit_course.php?courseid=' . $courseid);
 
 block_exacomp_print_header("teacher", "teachertabconfig");
 
-
 echo "<div class='block_excomp_center'>";
 
+if ($action == 'save_coursesettings')
+    echo get_string("save", "block_exacomp");
 
-if ($action == 'save_coursesettings' || $action == 'save_coursetopics')
-    $content = get_string("save", "block_exacomp");
-
-if (empty($action)){
 	echo $OUTPUT->box(text_to_html(get_string("explain_bewertungsschema", "block_exacomp")));
 	
 	$courseSettings = block_exacomp_coursesettings();
@@ -109,74 +83,6 @@ if (empty($action)){
 	</form>
 	<?php
 	echo $OUTPUT->box_end();
-}
-
-if (empty($action)) {
-    $subjects = block_exacomp_get_subjects();
-
-    if (!$subjects) {
-        echo $OUTPUT->box(text_to_html(get_string("explainnomoodle_config", "block_exacomp")));
-    } else {
-        echo $OUTPUT->box(text_to_html(get_string("explainconfigcourse_subjects", "block_exacomp")));
-        $content.='<form action="edit_course.php?courseid=' . $courseid . '&amp;action=detail" method="post">';
-        $content .= '<table>';
-		$specific=false;
-        foreach ($subjects as $subject) {
-
-        	if($subject->source!=1 && !$specific){
-        		$specific=true;
-        		$content .= '<tr> <td colspan="2"><h2>' . get_string("specificsubject","block_exacomp") . '</h2></td></tr>';
-        	}
-            if (block_exacomp_check_subject_by_course($subject->id, $courseid))
-                $content .= '<tr><td>' . $subject->title . '</td><td><input type="checkbox" name="data[' . $subject->id . ']" value="' . $subject->id . '" checked="checked" /></td></tr>';
-            else
-                $content .= '<tr><td>' . $subject->title . '</td><td><input type="checkbox" name="data[' . $subject->id . ']" value="' . $subject->id . '" /></td></tr>';
-        }
-        $content.='<tr><td colspan="2"><input type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" /></td></tr>';
-        $content .= '</table>';
-        
-
-        $content.='</form>';
-    }
-}
-else if ($action == 'detail') {
-
-    if (!empty($_POST["data"])){
-    	if (function_exists("clean_param_array")) $subids=clean_param_array($_POST["data"],PARAM_ALPHANUMEXT,true);
-    	else $subids=optional_param('data', '', PARAM_ALPHANUMEXT);
-    }
-    
-    if (!empty($_POST["data"])) {
-        $subjects = block_exacomp_get_subjects_by_id($subids);
-        $content.='<form name="topics" action="edit_course.php?courseid=' . $courseid . '&action=save_coursetopics" method="post">';
-        $content .= '<table>';
-        $specific=false;
-        foreach ($subjects as $subject) {
-        	if($subject->source!=1 && !$specific){
-        		$specific=true;
-        		$content .= '<tr> <td colspan="2"><h2>' . get_string("specificsubject","block_exacomp") . '</h2></td></tr>';
-        	}
-            $topics = block_exacomp_get_topics($subject->id);
-            $content .= '<tr> <td colspan="2"><b>' . $subject->title . '</b></td></tr>';
-            foreach ($topics as $topic) {
-                if (block_exacomp_check_topic_by_course($topic->id, $courseid))
-                    $content .= '<tr><td>' . $topic->title . '</td><td><input type="checkbox" name="data[' . $topic->id . ']" value="' . $topic->id . '" checked="checked" /></td></tr>';
-                else
-                    $content .= '<tr><td>' . $topic->title . '</td><td><input type="checkbox" alt="Topic" name="data[' . $topic->id . ']" value="' . $topic->id . '" /></td></tr>';
-            }
-        }
-        $content.='<tr><td colspan="2"><input type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" /></td></tr>';
-        $content .= '</table>';
-        
-
-        $content.='</form>';
-    } else {
-        $content.=get_string('keineauswahl', 'block_exacomp');
-        block_exacomp_reset_coursetopics($courseid);
-    }
-}
-if($content)
-    echo $OUTPUT->box($content);
 
 echo '</div>';
 echo '</div>'; //exabis_competences_block

@@ -29,6 +29,7 @@ $string['adminnavimport'] = 'import';
 $string['teachernavconfig'] = 'subjects & topics';
 $string['teachernavactivities'] = 'assign Moodle activities';
 $string['teachernavstudents'] = 'overview of competencies';
+$string['teachertabselection'] = 'subject selection';
 
 //BREADCRUMBS
 $string['teacherbread'] = 'course configuration';

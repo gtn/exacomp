@@ -542,15 +542,17 @@ function block_exacomp_print_header($role, $item_identifier, $sub_item_identifie
 		$tabs = array();
 		
 		if(get_config("exacomp","alternativedatamodel"))
-			$tabs[] = new tabobject('admintabschooltype', $CFG->wwwroot . '/blocks/exacomp/edit_config.php?courseid=' . $COURSE->id, get_string("admintabschooltype", "block_exacomp"), '', true);
 		$tabs[] = new tabobject('teachertabconfig', $CFG->wwwroot . '/blocks/exacomp/edit_course.php?courseid=' . $COURSE->id, get_string("teachertabconfig", "block_exacomp"), '', true);
-
+			$tabs[] = new tabobject('admintabschooltype', $CFG->wwwroot . '/blocks/exacomp/edit_config.php?courseid=' . $COURSE->id, get_string("admintabschooltype", "block_exacomp"), '', true);
+		$tabs[] = new tabobject('teachertabselection', $CFG->wwwroot . '/blocks/exacomp/courseselection.php?courseid=' . $COURSE->id, get_string("teachertabselection", "block_exacomp"), '', true);
+		
 		// Wenn der Kurs bereits aktiviert ist, alle Tabs anzeigen
 		if (block_exacomp_isactivated($COURSE->id)) {
 			if ($courseSettings->uses_activities)
 				$tabs[] = new tabobject('teachertabassignactivities', $CFG->wwwroot . '/blocks/exacomp/edit_activities.php?courseid=' . $COURSE->id, get_string("teachertabassignactivities", "block_exacomp"), '', true);
 			$tabs[] = new tabobject('teachertabassigncompetences', $CFG->wwwroot . '/blocks/exacomp/assign_competencies.php?courseid=' . $COURSE->id, get_string("teachertabassigncompetences", "block_exacomp"), '', true);
-			$tabs[] = new tabobject('teachertabassigncompetencesdetail', $CFG->wwwroot . '/blocks/exacomp/edit_students.php?courseid=' . $COURSE->id, get_string("teachertabassigncompetencesdetail", "block_exacomp"), '', true);
+			if ($courseSettings->uses_activities)
+				$tabs[] = new tabobject('teachertabassigncompetencesdetail', $CFG->wwwroot . '/blocks/exacomp/edit_students.php?courseid=' . $COURSE->id, get_string("teachertabassigncompetencesdetail", "block_exacomp"), '', true);
 			$tabs[] = new tabobject('teachertabcompetencegrid', $CFG->wwwroot . '/blocks/exacomp/competence_grid.php?courseid=' . $COURSE->id, get_string("teachertabcompetencegrid", "block_exacomp"), '', true);
 			$tabs[] = new tabobject('teachertabassigncompetenceexamples', $CFG->wwwroot . '/blocks/exacomp/view_examples.php?courseid=' . $COURSE->id, get_string("teachertabassigncompetenceexamples", "block_exacomp"), '', true);
 		}

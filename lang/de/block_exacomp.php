@@ -29,6 +29,7 @@ $string['adminnavimport'] = 'Import';
 $string['teachernavconfig'] = 'Einstellungen';
 $string['teachernavactivities'] = 'Aktivitäten zuordnen';
 $string['teachernavstudents'] = 'Kompetenz-Überblick';
+$string['teachertabselection'] = 'Gegenstand-Auswahl';
 
 //BREADCRUMBS
 $string['teacherbread'] = 'Kurseinstellungen';
