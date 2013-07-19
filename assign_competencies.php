@@ -194,7 +194,7 @@ if ($selected_subject) {
 	$SESSION->block_exacomp_last_subjectid = $selected_subject->id;
 
 	$topics = $DB->get_records_sql('
-		SELECT t.id, t.title, t.cat, t.ataxonomie, t.btaxonomie, t.ctaxonomie
+		SELECT t.id, t.title, t.cat, t.ataxonomie, t.btaxonomie, t.ctaxonomie, t.requirement, t.benefit, t.knowledgecheck
 		FROM {block_exacomptopics} t
 		JOIN {block_exacompcoutopi_mm} ct ON ct.topicid = t.id AND t.subjid = ? AND ct.courseid = ?
 		'.($courseSettings->show_all_descriptors ? '' : '
@@ -324,12 +324,19 @@ if (get_config("exacomp","alternativedatamodel")) {
 				<span class="exabis_comp_top_small">Teilkompetenz</span>
 				<span class="exabis_comp_top_header"><?php echo $selected_topic->title; ?></span>
 			</td>
+			<?php if ($role != "student") { ?>
 			<td rowspan="4" class="comp_grey_97">
 				<b>Anleitung</b>
 				<p>
 					Hier können Sie für Ihre Lerngruppen / Klasse vermerken, welche Lernmaterialien bearbeitet und welche Lernnachweise erbracht wurden. Darüber hinaus können Sie das Erreichen der Teilkompetenzen eintragen. Je nach Konzept der Schule kann die Bearbeitung des Lernmaterials / das Erreichen einer Teilkompetenz durch Kreuz markiert oder die Qualität der Bearbeitung / der Kompetenzerreichung gekennzeichnet werden. Keinenfalls müssen die Schülerinnen und Schüler alle Materialien bearbeiten. Wenn eine (Teil-)kompetenz bereits vorliegt, kann das hier eingetragen werden. Die Schülerinnen und Schüler müssen dann keine zugehörigen Lernmaterialien bearbeiten.
 				</p>
 			</td>
+			<?php } else { ?>
+			<td rowspan="2" class="comp_grey_97">
+				<b>Was du schon können solltest:</b>
+				<p><?php echo $selected_topic->requirement;?></p>
+			</td>			
+			<?php } ?>
 		</tr>
 		<tr>
 			<td class="comp_grey_97">
@@ -343,14 +350,24 @@ if (get_config("exacomp","alternativedatamodel")) {
 				<div class="exabis_comp_top_indentation_nr">B:</div>
 				<div class="exabis_comp_top_indentation"><?php echo $selected_topic->btaxonomie; ?></div>
 			</td>
-			
+			<?php if ($role == "student") { ?>
+			<td class="comp_grey_97">
+				<b>Wofür du das brauchst:</b>
+				<p><?php echo $selected_topic->benefit; ?></p>
+			</td>
+			<?php } ?>
 		</tr>
 		<tr>
 			<td class="comp_grey_83">
 				<div class="exabis_comp_top_indentation_nr">C:</div>
 				<div class="exabis_comp_top_indentation"><?php echo $selected_topic->ctaxonomie; ?></div>
 			</td>
-			
+			<?php if ($role == "student") { ?>
+			<td class="comp_grey_97">
+				<b>Wie du dein Können prüfen kannst:</b>
+				<p><?php echo $selected_topic->knowledgecheck; ?></p>
+			</td>
+			<?php } ?>
 		</tr>
 	</table>
 	<br />
