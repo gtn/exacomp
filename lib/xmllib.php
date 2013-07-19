@@ -20,7 +20,6 @@ function block_exacomp_xml_insert_edulevel($value,$source) {
 		$value->sourceid = $value->uid;
 		$DB->insert_record('block_exacompedulevels', $value);
 	}
-
 }
 
 function block_exacomp_xml_insert_schooltyp($value,$source,$userlst) {
@@ -133,7 +132,18 @@ function block_exacomp_xml_insert_category($value,$source) {
 		$data['id'] = $cat->id;
 		$DB->update_record("block_exacompcategories", $data);
 	} else {
-		$DB->insert_record("block_exacompcategories", $data);
+		$catid = $DB->insert_record("block_exacompcategories", $data);
+		$topics = $DB->get_records("block_exacomptopics",array("cat"=>intval($value->uid)));
+		foreach($topics as $topic) {
+			$topic->cat = $catid;
+			$DB->update_record("block_exacomptopics",$topic);
+		}
+			
+		$subjects = $DB->get_records("block_exacompsubjects",array("cat"=>intval($value->uid)));
+		foreach($subjects as $subject) {
+			$subject->cat = $catid;
+			$DB->update_record("block_exacompsubjects",$subject);
+		}
 	}
 }
 function block_exacomp_xml_insert_skill($value,$source) {

@@ -306,11 +306,13 @@ if (get_config("exacomp","alternativedatamodel")) {
 				<b><?php echo $selected_subject->number . " - " . $selected_subject->title; ?></b>
 			</td>
 			<td><span class="exabis_comp_top_small">Lernfortschritt</span>
-				<b>LF <?php echo $selected_topic->cat; ?></b>
+				<b><?php 
+				$cat = $DB->get_record("block_exacompcategories",array("id"=>$selected_topic->cat,"lvl"=>4));
+				echo $cat->title; ?></b>
 			</td>
 			<td><span class="exabis_comp_top_small">Lernwegliste</span>
 				<b><?php 
-					echo substr($schooltype, 0,1).$selected_subject->number.".".$selected_topic->cat;				
+					echo substr($schooltype, 0,1).$selected_subject->number.".".$cat->sourceid;				
 				?></b>
 			</td>
 		</tr>
