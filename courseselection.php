@@ -115,7 +115,7 @@ else if ($action == 'detail') {
     
     if (!empty($_POST["data"])) {
         $subjects = block_exacomp_get_subjects_by_id($subids);
-        $content.='<form name="topics" action="edit_course.php?courseid=' . $courseid . '&action=save_coursetopics" method="post">';
+        $content.='<form name="topics" action="courseselection.php?courseid=' . $courseid . '&action=save_coursetopics" method="post">';
         $content .= '<table>';
         $specific=false;
         foreach ($subjects as $subject) {

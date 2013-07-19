@@ -131,19 +131,20 @@ function block_exacomp_xml_insert_category($value,$source) {
 	if($cat) {
 		$data['id'] = $cat->id;
 		$DB->update_record("block_exacompcategories", $data);
+		$catid = $cat->id;
 	} else {
 		$catid = $DB->insert_record("block_exacompcategories", $data);
-		$topics = $DB->get_records("block_exacomptopics",array("cat"=>intval($value->uid)));
-		foreach($topics as $topic) {
-			$topic->cat = $catid;
-			$DB->update_record("block_exacomptopics",$topic);
-		}
-			
-		$subjects = $DB->get_records("block_exacompsubjects",array("cat"=>intval($value->uid)));
-		foreach($subjects as $subject) {
-			$subject->cat = $catid;
-			$DB->update_record("block_exacompsubjects",$subject);
-		}
+	}
+	$topics = $DB->get_records("block_exacomptopics",array("cat"=>intval($value->uid)));
+	foreach($topics as $topic) {
+		$topic->cat = $catid;
+		$DB->update_record("block_exacomptopics",$topic);
+	}
+		
+	$subjects = $DB->get_records("block_exacompsubjects",array("cat"=>intval($value->uid)));
+	foreach($subjects as $subject) {
+		$subject->cat = $catid;
+		$DB->update_record("block_exacompsubjects",$subject);
 	}
 }
 function block_exacomp_xml_insert_skill($value,$source) {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/exacomp/db" VERSION="20130718" COMMENT="XMLDB file for Moodle blocks/exacomp"
+<XMLDB PATH="blocks/exacomp/db" VERSION="20130719" COMMENT="XMLDB file for Moodle blocks/exacomp"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -280,9 +280,9 @@
     </TABLE>
     <TABLE NAME="block_exacompexameval" COMMENT="Default comment for the table, please edit me" PREVIOUS="block_exacompniveaus" NEXT="block_exacompcategories">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="descrexamp_mm_id"/>
-        <FIELD NAME="descrexamp_mm_id" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="id" NEXT="courseid"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="descrexamp_mm_id" NEXT="studentid"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="exampleid"/>
+        <FIELD NAME="exampleid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="exampleid" PREVIOUS="id" NEXT="courseid"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="exampleid" NEXT="studentid"/>
         <FIELD NAME="studentid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="courseid" NEXT="teacher_evaluation"/>
         <FIELD NAME="teacher_evaluation" TYPE="int" LENGTH="8" NOTNULL="false" SEQUENCE="false" PREVIOUS="studentid" NEXT="teacher_reviewerid"/>
         <FIELD NAME="teacher_reviewerid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="teacher_evaluation" NEXT="student_evaluation"/>
