@@ -316,13 +316,6 @@ function block_exacomp_get_genericcompetences($descriptorid, $courseid, $role = 
 	return $users;
 }
 
-function deprecated_block_exacomp_get_competences_by_descriptor($descriptorid, $courseid, $role) {
-	global $DB;
-
-	$query = "SELECT c.id AS id, c.descid, c.userid, c.wert, u.lastname, u.firstname FROM {block_exacompdescuser} c, {user} u WHERE c.descid =? AND c.courseid =? AND c.role =? AND c.reviewerid=u.id";
-
-	return $DB->get_records_sql($query, array($descriptorid, $courseid, $role));
-}
 function block_exacomp_get_competences_by_descriptor($descriptorid, $courseid, $role) {
 	global $DB;
 
