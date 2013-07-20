@@ -24,4 +24,30 @@
 			$('.rowgroup-content.'+id).hide();
 		}
 	});
+	
+	$(function(){
+	
+		var $form = $('#assign-competencies');
+
+		// submit open groups
+		$form.submit(function(){
+			
+			// find ids
+			var ids = '';
+			$form.find('.rowgroup-header.open').each(function(){
+				if ($(this).prop('class').match(/rowgroup-([0-9]+)/)) {
+					ids += ','+RegExp.$1
+				}
+			});
+			
+			// save to hidden input
+			$form.find('input[name=open_row_groups]').val(ids);
+		});
+		
+		// reopen open groups
+		$.each($form.find('input[name=open_row_groups]').val().split(','), function(tmp, id){
+			$form.find('.rowgroup-header.rowgroup-'+id).addClass('open');
+			$form.find('.rowgroup-content.rowgroup-'+id).show();
+		});
+	});
 })(jQueryExacomp);

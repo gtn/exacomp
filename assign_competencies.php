@@ -385,7 +385,8 @@ if ($descriptors) {
 	echo spaltenbrowser(count($students),$schueler_gruppierung_breite);
 ?>
 
-<form action="assign_competencies.php?action=save&courseid=<?php echo $courseid; ?>&subjectid=<?php  echo $selected_subject->id; ?>&topicid=<?php echo $selected_topic->id; ?>" method="post">
+<form id="assign-competencies" action="assign_competencies.php?action=save&courseid=<?php echo $courseid; ?>&subjectid=<?php  echo $selected_subject->id; ?>&topicid=<?php echo $selected_topic->id; ?>" method="post">
+	<input type="hidden" name="open_row_groups" value="<?php echo p(optional_param('open_row_groups', "", PARAM_TEXT)); ?>" />
 <table class="exabis_comp_comp">
 	<?php
 		$rowgroup = 0;
