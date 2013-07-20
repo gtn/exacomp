@@ -112,20 +112,18 @@ if ($action == "save" && isset($_POST['btn_submit'])) {
 							// student can only assess himself
 							continue;
 						
-						if(strcmp($values['starttime'], "")!=0){
-							$date = explode("/", $values['starttime']);
-							$date = new DateTime($date[2].'-'.$date[0].'-'.$date[1]);
+						if (!empty($values['starttime'])) {
+							$date = new DateTime($values['starttime']);
 							$starttime = $date->getTimestamp();
 						}else{
-							$starttime = NULL;
+							$starttime = null;
 						}
 						
-						if(strcmp($values['endtime'], "")!=0){
-							$date = explode("/", $values['endtime']);
-							$date = new DateTime($date[2].'-'.$date[0].'-'.$date[1]);
+						if (!empty($values['endtime'])) {
+							$date = new DateTime($values['endtime']);
 							$endtime = $date->getTimestamp();
 						}else{
-							$endtime = NULL;
+							$endtime = null;
 						}
 						
 						$updateEvaluation->student_evaluation = $values['student_evaluation'];
@@ -603,9 +601,9 @@ if ($descriptors) {
 								<option value="teacher"'.($studypartner=='teacher'?' selected="selected"':'').'>Lehrkraft</option>
 								</select><br/>
 								von <input class="datepicker" type="text" name="dataexamples[' . $example->id . '][' . $student->id . '][starttime]" value="'.
-									(isset($examplesEvaluationData[$student->id]->starttime)?date("m/d/Y",$examplesEvaluationData[$student->id]->starttime):'').'" readonly/>
+									(isset($examplesEvaluationData[$student->id]->starttime)?date("Y-m-d",$examplesEvaluationData[$student->id]->starttime):'').'" readonly/>
 								bis <input class="datepicker" type="text" name="dataexamples[' . $example->id . '][' . $student->id . '][endtime]" value="'.
-									(isset($examplesEvaluationData[$student->id]->endtime)?date("m/d/Y",$examplesEvaluationData[$student->id]->endtime):'').'" readonly/>
+									(isset($examplesEvaluationData[$student->id]->endtime)?date("Y-m-d",$examplesEvaluationData[$student->id]->endtime):'').'" readonly/>
 							';
 						}
 						echo '</td>';
