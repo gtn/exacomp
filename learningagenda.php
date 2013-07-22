@@ -53,7 +53,7 @@ INNER JOIN {block_exacompdescrtopic_mm} tmm ON tmm.topicid = top.id
 INNER JOIN {block_exacompdescriptors} descr ON descr.id = tmm.descrid
 INNER JOIN {block_exacompdescrexamp_mm} emm ON emm.descrid = descr.id
 INNER JOIN {block_exacompexamples} examp ON examp.id = emm.exampid
-INNER JOIN {block_exacompexameval} exameval ON exameval.descrexamp_mm_id = emm.id
+INNER JOIN {block_exacompexameval} exameval ON exameval.exampleid = emm.exampid
 WHERE exameval.studentid =".$USER->id;
 
 $rows = $DB->get_records_sql($sql);
@@ -71,7 +71,7 @@ $days = array('MO','DI','MI','DO','FR');
 $wochentage = array();
 for($i = 0; $i <5; $i++){
    $wtage = array(0,-1,-2,-3, -4);
-   $tage  = (29-1)*7 + $wtage[$wtag];
+   $tage  = (29)*7 + $wtage[$wtag];
    $ts= mktime(0,0,0,1,1+$tage+$i,2013);
    $datum = date($ts);
    $wochentage[get_string($days[$i], 'block_exacomp')] = $datum;
