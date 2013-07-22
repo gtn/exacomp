@@ -531,7 +531,16 @@ if ($descriptors) {
 				?>
 			<tr class="exabis_comp_aufgabe rowgroup-content rowgroup-<?php echo $rowgroup; ?>"">
 				<td></td>
-				<td> <p class="aufgabetext"><?php echo $example->title; ?></p></td>
+				<td> <p class="aufgabetext"><?php echo $example->title; ?></p>
+				<?php 
+				if($role == "student") {
+					$img = '<img src="pix/examples_and_tasks.png" height="16" width="23" alt="Example" />';
+					
+						if($example->externalurl)
+							echo "<a target='_blank' href='".$example->externalurl."'>".$img."</a>";
+				}
+				?>
+				</td>
 				<?php
 					$columnCnt = 0;
 					foreach ($students as $student) {
