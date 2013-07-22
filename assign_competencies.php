@@ -535,7 +535,8 @@ if ($descriptors) {
 				<?php 
 				if($role == "student") {
 					$img = '<img src="pix/examples_and_tasks.png" height="16" width="23" alt="Example" />';
-					
+						if($example->task)
+							echo "<a target='_blank' href='".$example->task."'>".$img."</a>";
 						if($example->externalurl)
 							echo "<a target='_blank' href='".$example->externalurl."'>".$img."</a>";
 				}
