@@ -88,8 +88,15 @@ if (empty($action)) {
         $content.='<form action="courseselection.php?courseid=' . $courseid . '&amp;action=detail" method="post">';
         $content .= '<table>';
 		$specific=false;
+		
+		$schooltype = "";
+		$schooltypes = $DB->get_records_menu("block_exacompschooltypes",null,null,"id, title");
         foreach ($subjects as $subject) {
-
+			if($schooltype != $schooltypes[$subject->stid]) {
+				$schooltype = $schooltypes[$subject->stid];
+				$content .= '<tr> <td colspan="2"><b>' . $schooltype . '</b></td></tr>';
+				
+			}
         	if($subject->source!=1 && !$specific){
         		$specific=true;
         		$content .= '<tr> <td colspan="2"><h2>' . get_string("specificsubject","block_exacomp") . '</h2></td></tr>';

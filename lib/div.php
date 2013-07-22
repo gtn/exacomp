@@ -782,7 +782,7 @@ function block_exacomp_get_subjects() {
 	if(!get_config("exacomp","alternativedatamodel"))
 		$query = 'SELECT s.id, s.title, s.source FROM {block_exacompsubjects} s WHERE s.stid IN (SELECT t.typeid FROM {block_exacompmdltype_mm} t) ORDER BY s.source,s.sorting';
 	else
-		$query = 'SELECT s.id, s.title, s.source FROM {block_exacompsubjects} s WHERE s.stid IN (SELECT t.typeid FROM {block_exacompmdltype_mm} t WHERE t.courseid='.$COURSE->id.') ORDER BY s.source,s.sorting';
+		$query = 'SELECT s.id, s.title, s.stid, s.source FROM {block_exacompsubjects} s WHERE s.stid IN (SELECT t.typeid FROM {block_exacompmdltype_mm} t WHERE t.courseid='.$COURSE->id.') ORDER BY s.stid,s.number';
 	
 	$subjects = $DB->get_records_sql($query);
 
