@@ -872,7 +872,7 @@ function block_exacomp_get_student_icon($activities, $student,$courseid,$gradeli
 	global $DB, $CFG;
 	$count = false;
 	$countquiz = false;
-	$img = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/attach_2.png" height="16" width="16" alt="'.get_string("assigned_acitivities", "block_exacomp").'" />';
+	$img = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/list_12x11.png" alt="'.get_string("assigned_acitivities", "block_exacomp").'" />';
 	$submitted = $student->firstname." ".$student->lastname . get_string('usersubmitted', "block_exacomp") . "<br><ul>";
 	$submittedquiz = $student->firstname." ".$student->lastname . get_string('usersubmittedquiz', "block_exacomp") . "<br><ul>";
 	foreach ($activities as $activity) {
@@ -912,7 +912,7 @@ function block_exacomp_get_student_icon($activities, $student,$courseid,$gradeli
 	$submittedquiz .= "</ul>";
 	if (!$count && !$countquiz) {
 		$submitted = $student->firstname . get_string('usernosubmission', "block_exacomp");
-		$img = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/cancel.png" height="16" width="23" alt="'.get_string("assigned_acitivities", "block_exacomp").'" />';
+		$img = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/x_11x11.png" height="11" width="11" alt="'.get_string("assigned_acitivities", "block_exacomp").'" />';
 	}
 
 	$icon = new stdClass();
@@ -982,7 +982,7 @@ function block_exacomp_get_portfolio_icon($student, $descrid) {
 		if(!$view){
 			$submitted .= "<li class=\"noview\">".$item->name." (".get_string('notinview', 'block_exacomp').")</li>";
 		}else{
-			$submitted .= "<li>".$item->name."</li>";$theicon="myportfolio.png";
+			$submitted .= "<li>".$item->name."</li>";$theicon="folder_fill_12x12.png";
 			$icon->submitted = true;
 		}
 	}
@@ -996,7 +996,7 @@ function block_exacomp_get_portfolio_icon($student, $descrid) {
 	$submitted = str_replace("\'","",$submitted);
 
 	$icon->text = $submitted;
-	if ($theicon=="") $theicon="myportfolio_noview.png";
+	if ($theicon=="") $theicon="folder_fill_12x12.png";
 	$icon->icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/'.$theicon.'" height="16" width="23" alt="'.get_string("assigned_acitivities", "block_exacomp").'" />';
 	return $icon;
 }
