@@ -997,7 +997,7 @@ function block_exacomp_get_portfolio_icon($student, $descrid) {
 
 	$icon->text = $submitted;
 	if ($theicon=="") $theicon="folder_fill_12x12.png";
-	$icon->icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/'.$theicon.'" height="16" width="23" alt="'.get_string("assigned_acitivities", "block_exacomp").'" />';
+	$icon->icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/'.$theicon.'" height="12" width="12" alt="'.get_string("assigned_acitivities", "block_exacomp").'" />';
 	return $icon;
 }
 function block_exacomp_get_examples($courseid) {
