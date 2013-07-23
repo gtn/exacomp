@@ -982,7 +982,8 @@ function block_exacomp_get_portfolio_icon($student, $descrid) {
 		if(!$view){
 			$submitted .= "<li class=\"noview\">".$item->name." (".get_string('notinview', 'block_exacomp').")</li>";
 		}else{
-			$submitted .= "<li>".$item->name."</li>";$theicon="folder_fill_12x12.png";
+			$submitted .= "<li>".$item->name."</li>";
+			$theicon="folder_fill_12x12.png";
 			$icon->submitted = true;
 		}
 	}
@@ -996,7 +997,7 @@ function block_exacomp_get_portfolio_icon($student, $descrid) {
 	$submitted = str_replace("\'","",$submitted);
 
 	$icon->text = $submitted;
-	if ($theicon=="") $theicon="folder_fill_12x12.png";
+	if ($theicon=="") $theicon="folderorange_fill_12x12.png";
 	$icon->icon = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/'.$theicon.'" height="12" width="12" alt="'.get_string("assigned_acitivities", "block_exacomp").'" />';
 	return $icon;
 }
