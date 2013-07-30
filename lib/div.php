@@ -534,8 +534,8 @@ function block_exacomp_print_header($role, $item_identifier, $sub_item_identifie
 		// haupttabs
 		$tabs = array();
 		
-		if(get_config("exacomp","alternativedatamodel"))
 		$tabs[] = new tabobject('teachertabconfig', $CFG->wwwroot . '/blocks/exacomp/edit_course.php?courseid=' . $COURSE->id, get_string("teachertabconfig", "block_exacomp"), '', true);
+		if(get_config("exacomp","alternativedatamodel"))
 			$tabs[] = new tabobject('admintabschooltype', $CFG->wwwroot . '/blocks/exacomp/edit_config.php?courseid=' . $COURSE->id, get_string("admintabschooltype", "block_exacomp"), '', true);
 		$tabs[] = new tabobject('teachertabselection', $CFG->wwwroot . '/blocks/exacomp/courseselection.php?courseid=' . $COURSE->id, get_string("teachertabselection", "block_exacomp"), '', true);
 		
@@ -780,7 +780,7 @@ function block_exacomp_reset_coursetopics($courseid) {
 function block_exacomp_get_subjects() {
 	global $DB, $COURSE;
 	if(!get_config("exacomp","alternativedatamodel"))
-		$query = 'SELECT s.id, s.title, s.source FROM {block_exacompsubjects} s WHERE s.stid IN (SELECT t.typeid FROM {block_exacompmdltype_mm} t) ORDER BY s.source,s.sorting';
+		$query = 'SELECT s.id, s.title, s.stid, s.source FROM {block_exacompsubjects} s WHERE s.stid IN (SELECT t.typeid FROM {block_exacompmdltype_mm} t) ORDER BY s.stid,s.source,s.sorting';
 	else
 		$query = 'SELECT s.id, s.title, s.stid, s.source FROM {block_exacompsubjects} s WHERE s.stid IN (SELECT t.typeid FROM {block_exacompmdltype_mm} t WHERE t.courseid='.$COURSE->id.') ORDER BY s.stid,s.number';
 	

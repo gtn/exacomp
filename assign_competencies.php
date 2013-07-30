@@ -447,13 +447,13 @@ if ($descriptors) {
 				$output_id = '';
 				$output_title = $descriptor->title;
 			}
+			$activities = block_exacomp_get_activities($descriptor->id, $courseid);
 			?>
 			<tr class="exabis_comp_teilcomp <?php if ($examples): ?>rowgroup-header rowgroup-<?php echo $rowgroup; ?><?php endif; ?>">
 			<td><?php echo $output_id; ?></td>
-			<td class="rowgroup-arrow"><div class="desctitle"><?php echo $output_title; ?></div></td>
+			<td class="rowgroup-arrow"><div class="desctitle<?php if(count($activities)==0 && $courseSettings->uses_activities == 1) echo "grey";?>"><?php echo $output_title; ?></div></td>
 			<?php
 				$columnCnt = 0;
-				$activities = block_exacomp_get_activities($descriptor->id, $courseid);
 				foreach ($students as $student) {
 					
 					if ($showevaluation) {

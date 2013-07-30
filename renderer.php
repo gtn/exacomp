@@ -148,7 +148,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		// Topic-Title
 		$row = new html_table_row();
 		$cell = new html_table_cell();
-		$cell->text = html_writer::tag("p","beschreibung");
+		$cell->text = "";
 		$cell->attributes['class'] = '';
 		$row->cells[] = $cell;
 
