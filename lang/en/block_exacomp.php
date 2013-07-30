@@ -8,7 +8,7 @@ $string['admintabschooltype'] = 'schooltype';
 $string['admintabimport'] = 'Import';
 
 //Teacher
-$string['teachertabconfig'] = 'subjects & topics';
+$string['teachertabconfig'] = 'settings';
 $string['teachertabassignactivities'] = 'assign activities';
 $string['teachertabassigncompetences'] = 'overview of competencies';
 $string['teachertabassigncompetencesdetail'] = 'detailed view of competencies';

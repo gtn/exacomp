@@ -1,6 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <exabis_competences_tables>
-	<table name="block_exacompedulevels">
+	<table name="block_exacompcategories">
+		<uid>7</uid>
+		<title><![CDATA[1 - Zuhören und Spre]]></title>
+		<parent_cat>0</parent_cat>
+		<sorting>0</sorting>
+		<level>3</level>
+	</table><table name="block_exacompcategories">
+		<uid>8</uid>
+		<title><![CDATA[2 - Schreiben]]></title>
+		<parent_cat>0</parent_cat>
+		<sorting>0</sorting>
+		<level>3</level>
+	</table><table name="block_exacompcategories">
+		<uid>9</uid>
+		<title><![CDATA[3 - Lesen]]></title>
+		<parent_cat>0</parent_cat>
+		<sorting>0</sorting>
+		<level>3</level>
+	</table><table name="block_exacompcategories">
+		<uid>1</uid>
+		<title><![CDATA[LF 1]]></title>
+		<parent_cat>0</parent_cat>
+		<sorting>1</sorting>
+		<level>4</level>
+	</table><table name="block_exacompcategories">
+		<uid>2</uid>
+		<title><![CDATA[LF 2]]></title>
+		<parent_cat>0</parent_cat>
+		<sorting>1</sorting>
+		<level>4</level>
+	</table><table name="block_exacompcategories">
+		<uid>3</uid>
+		<title><![CDATA[LF 3]]></title>
+		<parent_cat>0</parent_cat>
+		<sorting>1</sorting>
+		<level>4</level>
+	</table><table name="block_exacompcategories">
+		<uid>4</uid>
+		<title><![CDATA[LF 4]]></title>
+		<parent_cat>0</parent_cat>
+		<sorting>1</sorting>
+		<level>4</level>
+	</table><table name="block_exacompcategories">
+		<uid>5</uid>
+		<title><![CDATA[LF 5]]></title>
+		<parent_cat>0</parent_cat>
+		<sorting>1</sorting>
+		<level>4</level>
+	</table><table name="block_exacompcategories">
+		<uid>6</uid>
+		<title><![CDATA[LF 6]]></title>
+		<parent_cat>0</parent_cat>
+		<sorting>1</sorting>
+		<level>4</level>
+	</table><table name="block_exacompcategories">
+		<uid>10</uid>
+		<title><![CDATA[LernSchritte]]></title>
+		<parent_cat>0</parent_cat>
+		<sorting>0</sorting>
+		<level>6</level>
+	</table><table name="block_exacompcategories">
+		<uid>11</uid>
+		<title><![CDATA[LernThemen]]></title>
+		<parent_cat>0</parent_cat>
+		<sorting>0</sorting>
+		<level>6</level>
+	</table><table name="block_exacompcategories">
+		<uid>12</uid>
+		<title><![CDATA[LernProjekte]]></title>
+		<parent_cat>0</parent_cat>
+		<sorting>0</sorting>
+		<level>6</level>
+	</table><table name="block_exacompedulevels">
 		<uid>1</uid>
 		<title><![CDATA[LS allgemein bildende Schulen]]></title>
 		<sorting>0</sorting>
@@ -300,7 +372,8 @@
 		<subjid>1</subjid>
 		<sorting>3</sorting>
 		<description><![CDATA[z. B. Geschichten, Phantasiereisen]]></description>
-		<requirement><![CDATA[Anweisungen und Erklärungen verstehen Beim Hören mich darauf konzentrieren, was ich verstehe]]></requirement>
+		<requirement><![CDATA[Anweisungen und Erklärungen verstehen 
+Beim Hören mich darauf konzentrieren, was ich verstehe]]></requirement>
 		<benefit><![CDATA[Wenn man mit anderen zusammen ist, erzählt man sich häufig seine Erlebnisse und Geschichten. Das tut man zum Kennenlernen, zum Informieren oder einfach nur zur Unterhaltung. Wenn du Geschichten auf Englisch hörst, ist es wichtig, dass du weißt, worauf du achten musst, damit du möglichst viel verstehst.]]></benefit>
 		<knowledgecheck><![CDATA[Selbstüberprüfung]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann den Inhalt erfassen.]]></Ataxonomie>
@@ -318,7 +391,8 @@
 		<subjid>1</subjid>
 		<sorting>4</sorting>
 		<description></description>
-		<requirement><![CDATA[Wörter aus dem Zusammenhang erschließen Erzählungen von nur einem Sprecher verstehen]]></requirement>
+		<requirement><![CDATA[Wörter aus dem Zusammenhang erschließen 
+Erzählungen von nur einem Sprecher verstehen]]></requirement>
 		<benefit><![CDATA[Indem du verstehst, mit welchen Formulierungen und welcher Aussprache Muttersprachler miteinander sprechen, kannst du deren Äußerungen als Modell für eigene Gespräche nutzen.]]></benefit>
 		<knowledgecheck><![CDATA[Selbstüberprüfung]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann den Inhalt erfassen.]]></Ataxonomie>
@@ -336,7 +410,10 @@
 		<subjid>1</subjid>
 		<sorting>5</sorting>
 		<description><![CDATA[z. B. Vorträge meiner Lernbegleiter/Lernpartner]]></description>
-		<requirement><![CDATA[Schriftliche Höraufträge verstehen Schriftliche Worterklärungen auf Englisch verstehen Wichtiges von Unwichtigem unterscheiden Notizen machen]]></requirement>
+		<requirement><![CDATA[Schriftliche Höraufträge verstehen 
+Schriftliche Worterklärungen auf Englisch verstehen 
+Wichtiges von Unwichtigem unterscheiden 
+Notizen machen]]></requirement>
 		<benefit><![CDATA[Manchmal geben dir deine Lernbegleiter oder Lernpartner Informationen zu einem bestimmten Sachgebiet. Das können Informationen zu einem bestimmten Land und dessen Kultur sein, oder auch kurze Vorträge über ein Film oder ein Buch. Hier kannst du Strategien erwerben, um möglichst viel dabei zu verstehen.]]></benefit>
 		<knowledgecheck><![CDATA[Selbstüberprüfung]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann den Inhalt verstehen.]]></Ataxonomie>
@@ -354,7 +431,9 @@
 		<subjid>1</subjid>
 		<sorting>6</sorting>
 		<description><![CDATA[z. B. Filmsequenzen zum Lehrwerk, Trickfilm, Kurzfilm, Werbespots, Filmtrailer]]></description>
-		<requirement><![CDATA[Gesprächen folgen Wörter aus dem Zusammenhang erschließen Bilder und Geräusche zum Verständnis nutzen.]]></requirement>
+		<requirement><![CDATA[Gesprächen folgen 
+Wörter aus dem Zusammenhang erschließen 
+Bilder und Geräusche zum Verständnis nutzen.]]></requirement>
 		<benefit><![CDATA[Du kannst die unzähligen englischen Videos im Internet ansehen und verstehen.]]></benefit>
 		<knowledgecheck><![CDATA[Selbstüberprüfung]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann den Inhalt verstehen.]]></Ataxonomie>
@@ -390,7 +469,10 @@
 		<subjid>2</subjid>
 		<sorting>8</sorting>
 		<description><![CDATA[z. B. Schule, Freizeit, Pflichten]]></description>
-		<requirement><![CDATA[Strategien des Auswendiglernens und Übens Aussprache prüfen Auf Körpersprache und Stimme achten Dich in wenigen Sätzen kurz vorstellen]]></requirement>
+		<requirement><![CDATA[Strategien des Auswendiglernens und Übens 
+Aussprache prüfen 
+Auf Körpersprache und Stimme achten 
+Dich in wenigen Sätzen kurz vorstellen]]></requirement>
 		<benefit><![CDATA[Du kannst anderen Menschen, mit denen du in einem Gespräch zusammenkommst, von deinem Leben erzählen. Du kannst auf Nachfragen eingehen und bestimmte Dinge näher erläutern und erklären. So lernen dich Menschen besser kennen.]]></benefit>
 		<knowledgecheck><![CDATA[Lernpartnerfeedback]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann aus meinem Manuskript sinngestaltend ablesen.]]></Ataxonomie>
@@ -408,7 +490,8 @@
 		<subjid>2</subjid>
 		<sorting>9</sorting>
 		<description></description>
-		<requirement><![CDATA[Einfache Ortsangaben machen  Das Aussehen von Menschen, Dingen und Orten beschreiben]]></requirement>
+		<requirement><![CDATA[Einfache Ortsangaben machen  
+Das Aussehen von Menschen, Dingen und Orten beschreiben]]></requirement>
 		<benefit><![CDATA[Wenn du mit jemandem telefonierst, möchtest du vielleicht manchmal deinem Gesprächspartner schildern was um dich herum gerade vor sich geht. Dazu musst du im Englischen die sogenannte „ing-form“ verwenden. Diese kannst du anhand von  Bildbeschreibungen trainieren, so dass du sie später automatisch richtig verwendest. Auch wenn du später Vorträge für deine Lernpartner hältst, mag es angebracht sein, ein Bild zu zeigen und es näher zu beschreiben.]]></benefit>
 		<knowledgecheck><![CDATA[Lernpartnerfeedback]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann (Sätze aus meinem Manuskript)  sinngestaltend ablesen.]]></Ataxonomie>
@@ -426,7 +509,8 @@
 		<subjid>2</subjid>
 		<sorting>10</sorting>
 		<description><![CDATA[z. B. Ferienpläne, Traumberuf]]></description>
-		<requirement><![CDATA[Ortsangaben Zeitangaben]]></requirement>
+		<requirement><![CDATA[Ortsangaben 
+Zeitangaben]]></requirement>
 		<benefit><![CDATA[Wenn du andere Menschen von etwas überzeugen möchtest oder sie um Hilfe für ein Vorhaben bitten möchtest, musst du ihnen zunächst deine Pläne und Vorstellungen schildern. Es ist wichtig, dass du dies anschaulich und überzeugend machst, damit du andere für deine Pläne begeistern kannst.]]></benefit>
 		<knowledgecheck><![CDATA[Lernpartnerfeedback]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann (Sätze aus meinem Manuskript)  sinngestaltend ablesen.]]></Ataxonomie>
@@ -444,7 +528,8 @@
 		<subjid>2</subjid>
 		<sorting>11</sorting>
 		<description><![CDATA[z. B. Mein Lieblingsmusiker, mein Lieblingsstier, meine Lieblingsstadt, mein Lieblingssportler]]></description>
-		<requirement><![CDATA[Kurze Sachtexte lesen und ihnen Informationen entnehmen  Dir den Wortschatz aus kurzen Sachtexten erarbeiten]]></requirement>
+		<requirement><![CDATA[Kurze Sachtexte lesen und ihnen Informationen entnehmen  
+Dir den Wortschatz aus kurzen Sachtexten erarbeiten]]></requirement>
 		<benefit><![CDATA[Manchmal bist du von einem Thema, einem Menschen oder einem Ort so begeistert, dass du dies unbedingt anderen mitteilen möchstest. Hier lernst du, wie du ein Thema, für das du brennst, anderen nahe bringen kannst.]]></benefit>
 		<knowledgecheck><![CDATA[Lernpartnerfeedback]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann (Sätze aus meinem Manuskript)  sinngestaltend ablesen.]]></Ataxonomie>
@@ -462,7 +547,8 @@
 		<subjid>2</subjid>
 		<sorting>12</sorting>
 		<description></description>
-		<requirement><![CDATA[Einen ansprechenden Einstieg finden Erklären können warum dir etwas gefällt]]></requirement>
+		<requirement><![CDATA[Einen ansprechenden Einstieg finden 
+Erklären können warum dir etwas gefällt]]></requirement>
 		<benefit><![CDATA[Kennst du das Gefühl, ein Buch gelesen zu haben, dass dich absolut fasziniert und beschäftigt? Wie du anderen davon erzählen kannst und sie überreden kannst, diesen Genuss mit dir zu teilen, kannst du hier lernen.]]></benefit>
 		<knowledgecheck><![CDATA[Lernpartnerfeedback]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann (Sätze aus meinem Manuskript)  sinngestaltend ablesen.]]></Ataxonomie>
@@ -480,7 +566,11 @@
 		<subjid>3</subjid>
 		<sorting>13</sorting>
 		<description></description>
-		<requirement><![CDATA[Langsam und deutlich sprechen Deinem Partner zuhören Keine Angst davor haben einen Fehler zu machenMit deinem Partner zusammenarbeitenDeinen Partner unterstützen]]></requirement>
+		<requirement><![CDATA[Langsam und deutlich sprechen 
+Deinem Partner zuhören 
+Keine Angst davor haben einen Fehler zu machen
+Mit deinem Partner zusammenarbeiten
+Deinen Partner unterstützen]]></requirement>
 		<benefit><![CDATA[Die Briten sind dafür bekannt, höflich zu sein. Hier lernst du, in ganz einfachen Gesprächssituationen deinen Lernpartner um etwas zu bitten oder dich für etwas zu bedanken. Damit die Verständigung auch klappt, lernst du, Wörter und Redewendungen korrekt auszusprechen.]]></benefit>
 		<knowledgecheck><![CDATA[Selbstüberprüfung/Lernpartnerfeedback]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann detaillierte Vorgaben nutzen.]]></Ataxonomie>
@@ -498,7 +588,8 @@
 		<subjid>3</subjid>
 		<sorting>14</sorting>
 		<description></description>
-		<requirement><![CDATA[Mit jemanden Kontakt aufnehmen und ein Gespräch beginnenGestik und Mimik nutzen, wenn du ein Wort nicht weißt oder etwas nicht verstehst]]></requirement>
+		<requirement><![CDATA[Mit jemanden Kontakt aufnehmen und ein Gespräch beginnen
+Gestik und Mimik nutzen, wenn du ein Wort nicht weißt oder etwas nicht verstehst]]></requirement>
 		<benefit><![CDATA[Du kannst dich mit  einem Gesprächspartner verständigen und ganz grundlegende Dinge über ihn und sie in Erfahrung bringen.]]></benefit>
 		<knowledgecheck><![CDATA[Selbstüberprüfung/Lernpartnerfeedback]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann ein Gespräch nach vorgegebenem  Muster führen.]]></Ataxonomie>
@@ -516,7 +607,9 @@
 		<subjid>3</subjid>
 		<sorting>15</sorting>
 		<description><![CDATA[z. B. Schule, Hobbies, Alltag in der Familie]]></description>
-		<requirement><![CDATA[Jemanden ansprechen  Ein einfaches Gespräch führen, um jemanden kennenzulernen  Einfache Höflichkeitsformen]]></requirement>
+		<requirement><![CDATA[Jemanden ansprechen  
+Ein einfaches Gespräch führen, um jemanden kennenzulernen  
+Einfache Höflichkeitsformen]]></requirement>
 		<benefit><![CDATA[Wenn du im Ausland  andere Jugendliche triffst, möchtest du sie vielleicht näher kennenlernen und mit Ihnen Zeit verbringen. Du lernst hier, wie ihr besprechen könnt, was ihr zusammen unternehmen wollt. Auch kannst du dich jetzt mit anderen verabreden.]]></benefit>
 		<knowledgecheck><![CDATA[Selbstüberprüfung/Lernpartnerfeedback]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann ein Gespräch nach vorgegebenem Muster führen.]]></Ataxonomie>
@@ -534,7 +627,9 @@
 		<subjid>3</subjid>
 		<sorting>16</sorting>
 		<description><![CDATA[z. B. Feste, Feiertage, Traditionen]]></description>
-		<requirement><![CDATA[Mit anderen Kontakt aufnehmen und ein Gespräch beginnen Einfache Höflichkeitsformen Nachfragen]]></requirement>
+		<requirement><![CDATA[Mit anderen Kontakt aufnehmen und ein Gespräch beginnen 
+Einfache Höflichkeitsformen 
+Nachfragen]]></requirement>
 		<benefit><![CDATA[Du kannst Altersgenossen aus verschiedenen Ländern, die du sympathisch findest, ansprechen und mehr über sie erfahren. Du kannst du dich mit ihnen über Themen aus euerm Alltag unterhalten - auch wenn du manchmal noch Hilfen beim Formulieren brauchst.]]></benefit>
 		<knowledgecheck><![CDATA[Selbstüberprüfung/Lernpartnerfeedback]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann ein Gespräch nach vorgegebenem Muster führen.]]></Ataxonomie>
@@ -552,8 +647,12 @@
 		<subjid>3</subjid>
 		<sorting>17</sorting>
 		<description></description>
-		<requirement><![CDATA[Mit Zahlen, Preisen und Uhrzeit umgehen Einfache Wegbeschreibungen Nachfragen, Buchstabieren Gestik, Mimik zur Verständigung nutzen]]></requirement>
-		<benefit><![CDATA[Du kannst Auskünfte einholen, Erledigungen machen und einkaufen gehen. Außerdem kannst du entsprechende Informationen auch an einen englischsprachigen Touristen geben. Mit deinem Lernpartner kannst du dich in verschiedenen Rollen in unterschiedlichen Dienstleistungssituationen erproben.]]></benefit>
+		<requirement><![CDATA[Mit Zahlen, Preisen und Uhrzeit umgehen 
+Einfache Wegbeschreibungen 
+Nachfragen, Buchstabieren 
+Gestik, Mimik zur Verständigung nutzen]]></requirement>
+		<benefit><![CDATA[Du kannst Auskünfte einholen, Erledigungen machen und einkaufen gehen. Außerdem kannst du entsprechende Informationen auch an einen englischsprachigen Touristen geben. 
+Mit deinem Lernpartner kannst du dich in verschiedenen Rollen in unterschiedlichen Dienstleistungssituationen erproben.]]></benefit>
 		<knowledgecheck><![CDATA[Selbstüberprüfung/Lernpartnerfeedback]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Dialoge nach vorgegebenem  Muster führen.]]></Ataxonomie>
 		<Btaxonomie><![CDATA[Ich kann Formulierungshilfen nutzen.]]></Btaxonomie>
@@ -570,7 +669,8 @@
 		<subjid>3</subjid>
 		<sorting>18</sorting>
 		<description></description>
-		<requirement><![CDATA[Ausdrucksstarkes Vorlesen von Dialogen Techniken des Auswendiglernens und Vorsprechen]]></requirement>
+		<requirement><![CDATA[Ausdrucksstarkes Vorlesen von Dialogen 
+Techniken des Auswendiglernens und Vorsprechen]]></requirement>
 		<benefit><![CDATA[Du kannst die Rollen von Figuren in kurzen Theaterstücken übernehmen und Situationen in einer erdachten Welt erleben. Das Darstellen einer  Rolle gibt dir eine größere sprachliche Sicherheit und Selbstvertrauen.]]></benefit>
 		<knowledgecheck><![CDATA[Zuschauerfeedback, Selbstüberprüfung durch Videoaufnahme, Lernpartnerfeedback]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann zusammen mit anderen eine Rolle einüben.]]></Ataxonomie>
@@ -606,7 +706,9 @@
 		<subjid>4</subjid>
 		<sorting>20</sorting>
 		<description><![CDATA[z. B. Flyer, Plakate, Produktverpackungen, Katalog, Schilder, Webseite]]></description>
-		<requirement><![CDATA[Einfache Arbeitsanweisungen auf Englisch verstehen  Einfache englische Aufforderungen verstehen  Abschreiben und Anordnen von Wörtern]]></requirement>
+		<requirement><![CDATA[Einfache Arbeitsanweisungen auf Englisch verstehen  
+Einfache englische Aufforderungen verstehen  
+Abschreiben und Anordnen von Wörtern]]></requirement>
 		<benefit><![CDATA[Überall im Alltag begegnen dir Text-Bild-Kompositionen verschiedenster  Art: In der Werbung, im Straßenverkehr oder auf Lebensmittelverpackungen. Hier lernst du, englische Text-Bild-Kompositionen zu entschlüsseln und findest heraus, dass du dafür nicht jedes einzelne Wort kennen musst.]]></benefit>
 		<knowledgecheck><![CDATA[Selbstüberprüfung/Lernpartnerfeedback]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann mir eine Vorstellung vom Inhalt machen.]]></Ataxonomie>
@@ -624,7 +726,9 @@
 		<subjid>4</subjid>
 		<sorting>21</sorting>
 		<description><![CDATA[z. B. E-Mail, SMS, Brief, Postkarte, Mitteilung]]></description>
-		<requirement><![CDATA[Bilder zum Verständnis nutzen Texterschließungsstrategien verwenden Worterschließungsstrategien anwenden]]></requirement>
+		<requirement><![CDATA[Bilder zum Verständnis nutzen 
+Texterschließungsstrategien verwenden 
+Worterschließungsstrategien anwenden]]></requirement>
 		<benefit><![CDATA[Englisch ist DIE Sprache, mit der sich Menschen aus unterschiedlichen Ländern austauschen. Eine E-Mail ist in wenigen Sekunden am anderen Ende der Welt – hier lernst du, englische E-Mails und Text Messages zu lesen so dass du dich mit Freunden und Bekannten aus anderen Ländern übers Netz unterhalten kannst.]]></benefit>
 		<knowledgecheck><![CDATA[Selbstüberprüfung/Lernpartnerfeedback]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann den Inhalt erfassen.]]></Ataxonomie>
@@ -642,7 +746,8 @@
 		<subjid>4</subjid>
 		<sorting>22</sorting>
 		<description></description>
-		<requirement><![CDATA[Einfache Nachschlagetechniken anwenden Aus einem Text sprachliche Formulierungen herausarbeiten und selbst verwenden]]></requirement>
+		<requirement><![CDATA[Einfache Nachschlagetechniken anwenden 
+Aus einem Text sprachliche Formulierungen herausarbeiten und selbst verwenden]]></requirement>
 		<benefit><![CDATA[Erzählungen sind kleine Kunstwerke, die uns eine Geschichte erzählen. Das ist unterhaltsam und entspannend. Ganz nebenbei lernst du den Gebrauch neuer Wörter und Formulierungen kennen und kannst einige von ihnen selbst beim Schreiben oder Sprechen verwenden.]]></benefit>
 		<knowledgecheck><![CDATA[Selbstüberprüfung/Lernpartnerfeedback]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann den Inhalt erfassen.]]></Ataxonomie>
@@ -660,7 +765,9 @@
 		<subjid>4</subjid>
 		<sorting>23</sorting>
 		<description><![CDATA[z. B. Anleitungen,Texte zur Geschichte, Sehenswürdigkeiten und Lebensverhältnissen in Großbritannien, Webseite im Internet]]></description>
-		<requirement><![CDATA[Lesetechniken anwenden Begriffe sammeln und strukturieren Einfache Nachschlagetechniken anwenden]]></requirement>
+		<requirement><![CDATA[Lesetechniken anwenden 
+Begriffe sammeln und strukturieren 
+Einfache Nachschlagetechniken anwenden]]></requirement>
 		<benefit><![CDATA[Das Internet ist eine Fundgrube, aus der man jederzeit Wissen beziehen kann. Willst du dich gezielt informieren, ist es wichtig, dass du Webseiten schnell auf die nötigen Informationen hin absuchen kannst. Hier lernst du, Wichtiges von Unwichtigem zu unterscheiden und die neuen Informationen zu ordnen. Dann kannst du anderen dein Wissen weitererzählen oder jemanden, der kein Englisch kann, das Wichtigste auf Deutsch erklären.]]></benefit>
 		<knowledgecheck><![CDATA[Selbstüberprüfung/Lernpartnerfeedback]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Informationen finden.]]></Ataxonomie>
@@ -678,7 +785,9 @@
 		<subjid>4</subjid>
 		<sorting>24</sorting>
 		<description><![CDATA[z. B. Detektivgeschichte, Tiergeschichte, Liebesgeschichte, Abenteuergeschichte]]></description>
-		<requirement><![CDATA[Notizen machen Unbekannte Wörter nachschlagen Unbekannte Wörter erschließen]]></requirement>
+		<requirement><![CDATA[Notizen machen 
+Unbekannte Wörter nachschlagen 
+Unbekannte Wörter erschließen]]></requirement>
 		<benefit><![CDATA[Beim Lesen eines Buches kannst du in eine andere Welt eintauchen und dich in die Figuren hineinfühlen und in sie hineinversetzen.]]></benefit>
 		<knowledgecheck><![CDATA[Du kannst dein Buch deinen Lernpartnern präsentieren – wenn deine Lernpartner danach Lust haben, das Buch selbst zu lesen, ist das der beste Gradmesser für deinen Erfolg.]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann den Inhalt erfassen.]]></Ataxonomie>
@@ -696,7 +805,8 @@
 		<subjid>5</subjid>
 		<sorting>25</sorting>
 		<description></description>
-		<requirement><![CDATA[Wörter und Wendungen sorgfältig abschreiben Abgeschriebene Wörter auf korrekte Rechtschreibung prüfen]]></requirement>
+		<requirement><![CDATA[Wörter und Wendungen sorgfältig abschreiben 
+Abgeschriebene Wörter auf korrekte Rechtschreibung prüfen]]></requirement>
 		<benefit><![CDATA[Wörter sind die Bausteine einer Sprache. Aus ihnen kannst du Sätze bilden, und aus Sätzen wiederum kannst du ganze Texte schreiben. Wenn du Vokabeln richtig abschreibst, sie ordnest und in Beziehung zu anderen Wörtern bringst, kannst du sie dir viel leichter einprägen.]]></benefit>
 		<knowledgecheck><![CDATA[Selbstüberprüfung/Lernpartnerfeedback]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann einzelne Wörter bilden.]]></Ataxonomie>
@@ -714,7 +824,9 @@
 		<subjid>5</subjid>
 		<sorting>26</sorting>
 		<description><![CDATA[z. B.  Familie, Freunde, Haustier, Zimmer, Schulsachen, Klassenzimmer]]></description>
-		<requirement><![CDATA[Ideen sammeln und strukturierenWortfelder erstellen Wörter richtig schreiben]]></requirement>
+		<requirement><![CDATA[Ideen sammeln und strukturieren
+Wortfelder erstellen 
+Wörter richtig schreiben]]></requirement>
 		<benefit><![CDATA[Wenn du eine E-Mail Freundschaft mit einem Freund aus einem anderen Land aufbauen möchtest, musst du dich zunächst einmal vorstellen und beschreiben. Hier kannst du lernen, dich selbst und die Menschen, die dir wichtig sind, zu beschreiben, so dass man dich besser kennenlernen kann.]]></benefit>
 		<knowledgecheck><![CDATA[Selbstüberprüfung/Lernpartnerfeedback]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Vorlagen nutzen.]]></Ataxonomie>
@@ -732,7 +844,8 @@
 		<subjid>5</subjid>
 		<sorting>27</sorting>
 		<description><![CDATA[z. B. Tagebucheintrag, Erlebnisbericht, Notizen]]></description>
-		<requirement><![CDATA[Ideen sammeln und strukturierenOrte und Personen beschreiben]]></requirement>
+		<requirement><![CDATA[Ideen sammeln und strukturieren
+Orte und Personen beschreiben]]></requirement>
 		<benefit><![CDATA[Jeden Tag passiert so viel in deinem Leben und auch in deiner Phantasie. Das ist auch für andere interessant und wichtig, aber vielleicht gehörst du auch zu jenen Menschen, die die Erlebnisse eines Tages am Abend Revue passieren  lassen und in einem Tagebuch aufschreiben und das ist natürlich geheim. Egal ob du für andere oder nur dich selbst schreibst – hier lernst du nicht nur aufzuschreiben, was passiert ist, sondern wie du dich dabei gefühlt hast. Und das ist ausschlaggebend, ob es für dich ein guter oder schlechter Tag war.]]></benefit>
 		<knowledgecheck><![CDATA[Selbstüberprüfung/Lernpartnerfeedback]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Vorlagen nutzen.]]></Ataxonomie>
@@ -750,7 +863,8 @@
 		<subjid>5</subjid>
 		<sorting>28</sorting>
 		<description><![CDATA[z. B. Brief, Postkarte, E-Mail, Notiz, chat]]></description>
-		<requirement><![CDATA[Korrespondenz lesenTypische Merkmale von Korrespondenz kennen]]></requirement>
+		<requirement><![CDATA[Korrespondenz lesen
+Typische Merkmale von Korrespondenz kennen]]></requirement>
 		<benefit><![CDATA[Wie bleibt man mit Menschen in Verbindung, wenn man nicht direkt mit ihnen sprechen kann? Natürlich mit E-Mails, SMS, Briefen oder auch nur kurzen Notizen, das ist natürlich abhängig davon, was du jemanden mitteilen möchtest. Da Menschen auf der ganzen Welt die unterschiedlichsten Sprachen sprechen und einander auf Englisch schreiben, musst du wissen, wie man das auf Englisch macht, so dass du dich mit Bekannten aus aller Welt vernetzen kannst.]]></benefit>
 		<knowledgecheck><![CDATA[Selbstüberprüfung/Lernpartnerfeedback]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Vorlagen nutzen.]]></Ataxonomie>
@@ -768,7 +882,9 @@
 		<subjid>5</subjid>
 		<sorting>29</sorting>
 		<description><![CDATA[z. B. Alltag, Schule, Feste, Freizeit, Geschichte,   Sehenswürdigkeiten]]></description>
-		<requirement><![CDATA[Lesetechniken Texterschließungsstrategien Einem Text Vokabeln entnehmen, die für ein Thema wichtig sind]]></requirement>
+		<requirement><![CDATA[Lesetechniken 
+Texterschließungsstrategien 
+Einem Text Vokabeln entnehmen, die für ein Thema wichtig sind]]></requirement>
 		<benefit><![CDATA[Experte oder Expertin für ein bestimmtes Thema zu sein – das ist eine Sache. Aber es ist etwas ganz anderes, wenn du dein Wissen in Schriftform fassen musst und zwar so, dass es für andere verständlich, logisch aufgebaut und interessant ist.]]></benefit>
 		<knowledgecheck><![CDATA[Selbstüberprüfung/Lernpartnerfeedback]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann über ein eingegrenztes  Sachgebiet schreiben.]]></Ataxonomie>
@@ -786,7 +902,9 @@
 		<subjid>5</subjid>
 		<sorting>30</sorting>
 		<description></description>
-		<requirement><![CDATA[Dich in Figuren aus Filmen und Büchern hineinversetzen Bilder beschreiben Die Handlung von Erzählungen nacherzählen können]]></requirement>
+		<requirement><![CDATA[Dich in Figuren aus Filmen und Büchern hineinversetzen 
+Bilder beschreiben 
+Die Handlung von Erzählungen nacherzählen können]]></requirement>
 		<benefit><![CDATA[Sprache ist nicht nur zur Verständigung da, man kann auch mit ihr spielen und ein kleines Kunstwerk erschaffen. Du kannst Figuren erschaffen, dich in sie hineinversetzten und ihre Gedanken und Gefühle beschreiben. So arbeiten Schriftsteller – bestimmt auch die deiner Lieblingsbücher.]]></benefit>
 		<knowledgecheck><![CDATA[Selbstüberprüfung/Lernpartnerfeedback]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Texte ergänzen.]]></Ataxonomie>
@@ -804,7 +922,8 @@
 		<subjid>6</subjid>
 		<sorting>31</sorting>
 		<description></description>
-		<requirement><![CDATA[Gesprochene Wörter verstehen, auch wenn mir die Sprache eventuell noch nicht vertraut ist.Einem anderen Menschen zuhören wollen.]]></requirement>
+		<requirement><![CDATA[Gesprochene Wörter verstehen, auch wenn mir die Sprache eventuell noch nicht vertraut ist.
+Einem anderen Menschen zuhören wollen.]]></requirement>
 		<benefit></benefit>
 		<knowledgecheck></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann die Hauptaussage eines Gesprächs beim Zuhören erkennen.]]></Ataxonomie>
@@ -822,7 +941,8 @@
 		<subjid>6</subjid>
 		<sorting>32</sorting>
 		<description></description>
-		<requirement><![CDATA[Gesprochene Wörter verstehen, auch wenn mir die Sprache eventuell noch nicht vertraut ist.Einem anderen Menschen zuhören wollen.]]></requirement>
+		<requirement><![CDATA[Gesprochene Wörter verstehen, auch wenn mir die Sprache eventuell noch nicht vertraut ist.
+Einem anderen Menschen zuhören wollen.]]></requirement>
 		<benefit><![CDATA[Du kannst dein Sprechen für bestimmte Situationen, z.B. für Vorträge und Präsentationen, verbessern.]]></benefit>
 		<knowledgecheck></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann den Unterschied zwischen meiner Alltagssprache und anderen gesprochenen Sprachen erkennen.]]></Ataxonomie>
@@ -842,7 +962,8 @@
 		<description></description>
 		<requirement><![CDATA[Einem anderen Menschen zuhören wollen.]]></requirement>
 		<benefit><![CDATA[Du kannst dein Sprechen für bestimmte Situationen, z.B. für Vorträge und Präsentationen, verbessern.]]></benefit>
-		<knowledgecheck><![CDATA[Wie wirke ich auf andere beim Sprechen?Ich frage nach, ob meine Wahrnehmung stimmt?]]></knowledgecheck>
+		<knowledgecheck><![CDATA[Wie wirke ich auf andere beim Sprechen?
+Ich frage nach, ob meine Wahrnehmung stimmt?]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann die Mimik und Gestik meines Gesprächspartners einschätzen.]]></Ataxonomie>
 		<Btaxonomie><![CDATA[Ich kann meine Mimik und Gestik einsetzen.]]></Btaxonomie>
 		<Ctaxonomie><![CDATA[Ich kann die Körpersprache meines Gegenübers und ihre Wirkung auf mich einschätzen. Ich kann meine Körpersprache gezielt nutzen.]]></Ctaxonomie>
@@ -930,7 +1051,8 @@
 		<subjid>8</subjid>
 		<sorting>38</sorting>
 		<description></description>
-		<requirement><![CDATA[anderen zuhören Gesprächsregeln kennen]]></requirement>
+		<requirement><![CDATA[anderen zuhören 
+Gesprächsregeln kennen]]></requirement>
 		<benefit><![CDATA[Du kannst dich und deine Bedürfnisse anderen mitteilen.]]></benefit>
 		<knowledgecheck><![CDATA[D13.1 Diskussion / Brief mit Bitte schreiben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Aufforderungen, Bitten und Wünsche voneinander unterscheiden.]]></Ataxonomie>
@@ -948,7 +1070,9 @@
 		<subjid>8</subjid>
 		<sorting>39</sorting>
 		<description></description>
-		<requirement><![CDATA[anderen zuhören einem Gespräch folgen Gesprächsregeln kennen]]></requirement>
+		<requirement><![CDATA[anderen zuhören 
+einem Gespräch folgen 
+Gesprächsregeln kennen]]></requirement>
 		<benefit><![CDATA[Du kannst nachfragen, wenn du etwas nicht verstehst oder dich etwas besonders interessiert.]]></benefit>
 		<knowledgecheck><![CDATA[Gespräch auf CD anhören (Stichworte und Fragen zu ungeklärten Inhalten notieren)]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Inhalte eines Gesprächs mit vorgegebenen Fragen verstehen.]]></Ataxonomie>
@@ -966,7 +1090,9 @@
 		<subjid>8</subjid>
 		<sorting>40</sorting>
 		<description></description>
-		<requirement><![CDATA[anderen zuhören einem Gespräch folgen Gesprächsregeln kennen]]></requirement>
+		<requirement><![CDATA[anderen zuhören 
+einem Gespräch folgen 
+Gesprächsregeln kennen]]></requirement>
 		<benefit><![CDATA[Du kannst dir zu einem Thema eine Meinung bilden und diese gegenüber anderen erklären und vertreten.]]></benefit>
 		<knowledgecheck><![CDATA[Partnerdiskussion (Pro-Contra) / Debatte mit Beobachtern]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann verschiedene Gründe zu einem Thema sammeln und wiedergeben.]]></Ataxonomie>
@@ -984,7 +1110,9 @@
 		<subjid>8</subjid>
 		<sorting>41</sorting>
 		<description></description>
-		<requirement><![CDATA[anderen zuhören einem Gespräch folgen Gesprächsregeln beachten]]></requirement>
+		<requirement><![CDATA[anderen zuhören 
+einem Gespräch folgen 
+Gesprächsregeln beachten]]></requirement>
 		<benefit><![CDATA[Du kannst Missverständnissen vorbeugen und dich in einem Gespräch einbringen.]]></benefit>
 		<knowledgecheck><![CDATA[Rückmeldungen deiner Mitschüler und Mitschülerinnen.]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann die Meinung anderer wiedergeben.]]></Ataxonomie>
@@ -1002,8 +1130,11 @@
 		<subjid>8</subjid>
 		<sorting>42</sorting>
 		<description></description>
-		<requirement><![CDATA[anderen zuhören einem Gespräch folgen Gesprächsregeln im Umgang mit Mitschülern und Erwachsenen beachten]]></requirement>
-		<benefit><![CDATA[Du kannst dich anderen mitteilen und verstehen was andere dir mitteilen möchten. Du kannst Gespräche mit Erwachsenen und Mitschülern führen.]]></benefit>
+		<requirement><![CDATA[anderen zuhören 
+einem Gespräch folgen 
+Gesprächsregeln im Umgang mit Mitschülern und Erwachsenen beachten]]></requirement>
+		<benefit><![CDATA[Du kannst dich anderen mitteilen und verstehen was andere dir mitteilen möchten. 
+Du kannst Gespräche mit Erwachsenen und Mitschülern führen.]]></benefit>
 		<knowledgecheck><![CDATA[Rückmeldungen deiner Mitschüler und Mitschülerinnen]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann verschiedene Rollen in Alltagssituationen erkennen.]]></Ataxonomie>
 		<Btaxonomie><![CDATA[Ich kann eine zur Situation passende Rolle einnehmen.]]></Btaxonomie>
@@ -1020,9 +1151,13 @@
 		<subjid>8</subjid>
 		<sorting>43</sorting>
 		<description></description>
-		<requirement><![CDATA[anderen zuhören einem Gespräch folgen Gesprächs- und Umgangsregeln beachten]]></requirement>
-		<benefit><![CDATA[Du kannst Konfliktsituationen besser einschätzen. Du übst wie man Konflikte mit Worten lösen kann.]]></benefit>
-		<knowledgecheck><![CDATA[Konfliktgespräch analysieren (Gefühle, beteiligte Personen,..) Konflikt und Lösung szenisch darstellen (Rollenspiel)]]></knowledgecheck>
+		<requirement><![CDATA[anderen zuhören 
+einem Gespräch folgen 
+Gesprächs- und Umgangsregeln beachten]]></requirement>
+		<benefit><![CDATA[Du kannst Konfliktsituationen besser einschätzen. 
+Du übst wie man Konflikte mit Worten lösen kann.]]></benefit>
+		<knowledgecheck><![CDATA[Konfliktgespräch analysieren (Gefühle, beteiligte Personen,..) 
+Konflikt und Lösung szenisch darstellen (Rollenspiel)]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Konflikte erkennen und benennen.]]></Ataxonomie>
 		<Btaxonomie><![CDATA[Ich kann Konflikte einordnen und Strategien zur Lösung der Konflikte entwickeln.]]></Btaxonomie>
 		<Ctaxonomie><![CDATA[Ich kann Konflikte lösen.]]></Ctaxonomie>
@@ -1111,7 +1246,8 @@
 		<sorting>48</sorting>
 		<description></description>
 		<requirement></requirement>
-		<benefit><![CDATA[Was wäre wenn – ich mal jemand anders bin? Hier lernst du, wie du Rollen gestaltest (also zu schauspielern) und welche Tricks und Techniken es dabei gibt.]]></benefit>
+		<benefit><![CDATA[Was wäre wenn – ich mal jemand anders bin? 
+Hier lernst du, wie du Rollen gestaltest (also zu schauspielern) und welche Tricks und Techniken es dabei gibt.]]></benefit>
 		<knowledgecheck></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Techniken der Figurencharakterisierung erproben.]]></Ataxonomie>
 		<Btaxonomie><![CDATA[Ich kann Techniken der Figurencharakterisierung zur Ausgestaltung einer vorgegebenen Rolle anwenden.]]></Btaxonomie>
@@ -1254,8 +1390,14 @@
 		<subjid>11</subjid>
 		<sorting>56</sorting>
 		<description></description>
-		<requirement><![CDATA[Ich kann das ABC. Ich bringe Grundkenntnisse in der Bedienung eines Computers mit.Ich kann die Tastatur bedienen. Ich kann Texte und Bilder speichern. Ich kenne Schreibkriterien für verschiedene Textsorten. Ich kann Texte verfassen.]]></requirement>
-		<benefit><![CDATA[Du kannst jederzeit Fehler selbst finden.Du kannst deine Texte verbessern und gestalten, dies ist für den Alltag und das Berufsleben wichtig.]]></benefit>
+		<requirement><![CDATA[Ich kann das ABC. 
+Ich bringe Grundkenntnisse in der Bedienung eines Computers mit.
+Ich kann die Tastatur bedienen. 
+Ich kann Texte und Bilder speichern. 
+Ich kenne Schreibkriterien für verschiedene Textsorten. 
+Ich kann Texte verfassen.]]></requirement>
+		<benefit><![CDATA[Du kannst jederzeit Fehler selbst finden.
+Du kannst deine Texte verbessern und gestalten, dies ist für den Alltag und das Berufsleben wichtig.]]></benefit>
 		<knowledgecheck></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Hilfsmittel zur Überarbeitung von Texten beschreiben.]]></Ataxonomie>
 		<Btaxonomie><![CDATA[Ich kann Hilfsmittel zur Überarbeitung von Texten und zur Recherche nützen.]]></Btaxonomie>
@@ -1272,8 +1414,14 @@
 		<subjid>11</subjid>
 		<sorting>57</sorting>
 		<description></description>
-		<requirement><![CDATA[Ich kann das ABC. Ich bringe Grundkenntnisse in der Bedienung eines Computers mit.Ich kann die Tastatur bedienen. Ich kann Texte und Bilder speichern. Ich kenne Schreibkriterien für verschiedene Textsorten. Ich kann Texte verfassen.]]></requirement>
-		<benefit><![CDATA[Du kannst jederzeit Fehler selbst finden.Du kannst deine Texte verbessern und gestalten, dies ist für den Alltag und das Berufsleben wichtig.]]></benefit>
+		<requirement><![CDATA[Ich kann das ABC. 
+Ich bringe Grundkenntnisse in der Bedienung eines Computers mit.
+Ich kann die Tastatur bedienen. 
+Ich kann Texte und Bilder speichern. 
+Ich kenne Schreibkriterien für verschiedene Textsorten. 
+Ich kann Texte verfassen.]]></requirement>
+		<benefit><![CDATA[Du kannst jederzeit Fehler selbst finden.
+Du kannst deine Texte verbessern und gestalten, dies ist für den Alltag und das Berufsleben wichtig.]]></benefit>
 		<knowledgecheck></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Hilfsmittel zur Überarbeitung von Texten beschreiben.]]></Ataxonomie>
 		<Btaxonomie><![CDATA[Ich kann Hilfsmittel zur Überarbeitung von Texten und zur Recherche nützen.]]></Btaxonomie>
@@ -1309,8 +1457,11 @@
 		<sorting>59</sorting>
 		<description></description>
 		<requirement><![CDATA[Du interessierst dich für verschiedene Themen und hast dazu Ideen im Kopf.]]></requirement>
-		<benefit><![CDATA[Hier lernst du Möglichkeiten, um Ideen aufs Papier zu bekommen. Auch aus Texten kannst du mit Hilfe dieser Methoden Informationen fürs Schreiben gewinnen.]]></benefit>
-		<knowledgecheck><![CDATA[D21.2 Mindmap zu einem Thema deiner Wahl. A-B D21.2 Mindmap zu einem Sachtext (vgl. D31.2) C D21.2 Schreibplan]]></knowledgecheck>
+		<benefit><![CDATA[Hier lernst du Möglichkeiten, um Ideen aufs Papier zu bekommen. 
+Auch aus Texten kannst du mit Hilfe dieser Methoden Informationen fürs Schreiben gewinnen.]]></benefit>
+		<knowledgecheck><![CDATA[D21.2 Mindmap zu einem Thema deiner Wahl. A-B 
+D21.2 Mindmap zu einem Sachtext (vgl. D31.2) C 
+D21.2 Schreibplan]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Ideen sammeln.]]></Ataxonomie>
 		<Btaxonomie><![CDATA[Ich kann meine Ideen ordnen.]]></Btaxonomie>
 		<Ctaxonomie><![CDATA[Ich kann Ideen und Informationen kritisch bewerten und strukturieren.]]></Ctaxonomie>
@@ -1326,8 +1477,11 @@
 		<subjid>12</subjid>
 		<sorting>60</sorting>
 		<description></description>
-		<requirement><![CDATA[Du kannst eigene Erlebnisse mündlich erzählen (vgl. D15.1).Du kannst mit Hilfe verschiedener Schreibtechniken Ideen sammeln und ordnen (LF 2).Du kannst zu Bildergeschichten eine kurze Geschichte schreiben.]]></requirement>
-		<benefit><![CDATA[Hier kannst du lernen, wie man eigene Erlebnisse und Fantasiegeschichten für die Leser spannend erzählt. Du wirst merken, dass man durch schriftliches Erzählen und Nacherzählen Dinge besser versteht und Inhalte für sich klären kann.]]></benefit>
+		<requirement><![CDATA[Du kannst eigene Erlebnisse mündlich erzählen (vgl. D15.1).
+Du kannst mit Hilfe verschiedener Schreibtechniken Ideen sammeln und ordnen (LF 2).
+Du kannst zu Bildergeschichten eine kurze Geschichte schreiben.]]></requirement>
+		<benefit><![CDATA[Hier kannst du lernen, wie man eigene Erlebnisse und Fantasiegeschichten für die Leser spannend erzählt. 
+Du wirst merken, dass man durch schriftliches Erzählen und Nacherzählen Dinge besser versteht und Inhalte für sich klären kann.]]></benefit>
 		<knowledgecheck><![CDATA[D21.3_11.2 Erzählkern ausgestalten]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann den Aufbau erzählender Texte beschreiben.]]></Ataxonomie>
 		<Btaxonomie><![CDATA[Ich kann lebendige Erzählungen schreiben.]]></Btaxonomie>
@@ -1345,7 +1499,8 @@
 		<sorting>61</sorting>
 		<description></description>
 		<requirement><![CDATA[Du kannst mit Hilfe verschiedener Schreibtechniken Ideen sammeln und ordnen (LF 2).]]></requirement>
-		<benefit><![CDATA[So beschreiben können, dass andere sich ein Bild machen oder eine Handlung ausführen können, ist eine wichtige Fähigkeit auch im Alltag. Denke nur an Steckbriefe, Suchmeldungen, Verlustanzeigen, Wegbeschreibungen, Lexikonartikel und Bastelanleitungen! Oder willst du ein Buch oder einen Film vorstellen? Dann musst du die Handlung beschreiben können!]]></benefit>
+		<benefit><![CDATA[So beschreiben können, dass andere sich ein Bild machen oder eine Handlung ausführen können, ist eine wichtige Fähigkeit auch im Alltag. Denke nur an Steckbriefe, Suchmeldungen, Verlustanzeigen, Wegbeschreibungen, Lexikonartikel und Bastelanleitungen! 
+Oder willst du ein Buch oder einen Film vorstellen? Dann musst du die Handlung beschreiben können!]]></benefit>
 		<knowledgecheck><![CDATA[Steckbrief und genaue Beschreibung eines Tieres  Vorstellung eines Jugendbuchs]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann die Merkmale von beschreibenden Texten benennen.]]></Ataxonomie>
 		<Btaxonomie><![CDATA[Ich kann sachliche Beschreibungen verfassen.]]></Btaxonomie>
@@ -1362,8 +1517,10 @@
 		<subjid>12</subjid>
 		<sorting>62</sorting>
 		<description></description>
-		<requirement><![CDATA[Du kannst mit Hilfe verschiedener Schreibtechniken Ideen sammeln und ordnen (LFS 2).Du kennst die W-Fragen, mit denen du Informationen in Texten erschließen kannst (LFS 2 und D32).]]></requirement>
-		<benefit><![CDATA[Hattest du schon mal einen Unfall und musstest deinen Eltern, in der Schule oder der Polizei darüber berichten? Oder ging dir schon mal was kaputt und du musstest den Schaden melden? Wie das geht, kannst du hier lernen. Auch über Erfahrungen z.B. mit einem neuen Smartphone wird im Alltag berichtet. Sind das überhaupt Berichte?]]></benefit>
+		<requirement><![CDATA[Du kannst mit Hilfe verschiedener Schreibtechniken Ideen sammeln und ordnen (LFS 2).
+Du kennst die W-Fragen, mit denen du Informationen in Texten erschließen kannst (LFS 2 und D32).]]></requirement>
+		<benefit><![CDATA[Hattest du schon mal einen Unfall und musstest deinen Eltern, in der Schule oder der Polizei darüber berichten? Oder ging dir schon mal was kaputt und du musstest den Schaden melden? Wie das geht, kannst du hier lernen. 
+Auch über Erfahrungen z.B. mit einem neuen Smartphone wird im Alltag berichtet. Sind das überhaupt Berichte?]]></benefit>
 		<knowledgecheck><![CDATA[Unfallbericht, Schadensanzeige, Zeitungsbericht über ein besonderes Ereignis, Erfahrungsbericht]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann die Merkmale von berichtenden Texten benennen.]]></Ataxonomie>
 		<Btaxonomie><![CDATA[Ich kann Berichte schreiben.]]></Btaxonomie>
@@ -1380,9 +1537,11 @@
 		<subjid>12</subjid>
 		<sorting>63</sorting>
 		<description></description>
-		<requirement><![CDATA[Du kannst mündlich deine Meinung sagen und begründen (D13.3). Du kannst Schreibtechniken anwenden, um Ideen zu sammeln (LFS 2).]]></requirement>
+		<requirement><![CDATA[Du kannst mündlich deine Meinung sagen und begründen (D13.3). 
+Du kannst Schreibtechniken anwenden, um Ideen zu sammeln (LFS 2).]]></requirement>
 		<benefit><![CDATA[Wolltest du nicht schon einmal jemandem schriftlich deine Meinung sagen? Einen Film oder ein neues Spiel kritisch bewerten? Oder dich zu einem aktuellen Ereignis in der Schülerzeitung äußern? Wie dir das überzeugend gelingt, kannst du hier lernen.]]></benefit>
-		<knowledgecheck><![CDATA[Leserbrief  Buchvorstellung mit kritischer Bewertung]]></knowledgecheck>
+		<knowledgecheck><![CDATA[Leserbrief  
+Buchvorstellung mit kritischer Bewertung]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Begründungen (Argumente) zu einem strittigen Thema sammeln und wiedergeben.]]></Ataxonomie>
 		<Btaxonomie><![CDATA[Ich kann Behauptungen (Thesen) durch Begründungen stützen und kurze Meinungstexte schreiben.]]></Btaxonomie>
 		<Ctaxonomie><![CDATA[Ich kann  mir mit Hilfe einer schriftlichen Begründung über meinen Standpunkt klar werden und dies für andere überzeugend formulieren.]]></Ctaxonomie>
@@ -1416,7 +1575,8 @@
 		<subjid>13</subjid>
 		<sorting>65</sorting>
 		<description></description>
-		<requirement><![CDATA[Ich kann lautgetreu schreiben. Ich kann einen Grundwortschatz richtig schreiben.]]></requirement>
+		<requirement><![CDATA[Ich kann lautgetreu schreiben. 
+Ich kann einen Grundwortschatz richtig schreiben.]]></requirement>
 		<benefit><![CDATA[Durch richtiges Abschreiben prägst du dir die Wörter ein und verbesserst dadurch deine Rechtschreibung.]]></benefit>
 		<knowledgecheck><![CDATA[Du wendest die gelernten Abschreibtechniken als Korrekturtechniken an, vergleichst deinen Text mit der Vorlage.]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann bekannte Wörter richtig abschreiben.]]></Ataxonomie>
@@ -1434,7 +1594,9 @@
 		<subjid>13</subjid>
 		<sorting>66</sorting>
 		<description></description>
-		<requirement><![CDATA[Ich kann Vokale von Konsonanten unterscheiden. Ich kann den Wortstamm eines Wortes bilden (vgl. D21.1) Ich kann Wortarten unterscheiden.]]></requirement>
+		<requirement><![CDATA[Ich kann Vokale von Konsonanten unterscheiden. 
+Ich kann den Wortstamm eines Wortes bilden (vgl. D21.1) 
+Ich kann Wortarten unterscheiden.]]></requirement>
 		<benefit><![CDATA[Durch die Anwendung von Strategien kannst du dir selbst helfen, wenn du unsicher bist, wie ein Wort geschrieben wird.]]></benefit>
 		<knowledgecheck><![CDATA[Anwendung der Strategien]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Rechtschreibstrategien wiedergeben.]]></Ataxonomie>
@@ -1470,7 +1632,8 @@
 		<subjid>13</subjid>
 		<sorting>68</sorting>
 		<description></description>
-		<requirement><![CDATA[Satzschlusszeichen setzen Anführungszeichen bei der wörtlichen Rede verwenden Wortarten unterscheiden]]></requirement>
+		<requirement><![CDATA[Satzschlusszeichen setzen Anführungszeichen bei der wörtlichen Rede verwenden 
+Wortarten unterscheiden]]></requirement>
 		<benefit><![CDATA[Deine Texte machen einen guten Eindruck, weil du mehr als 90 Prozent aller Satzzeichen richtig setzt.]]></benefit>
 		<knowledgecheck><![CDATA[Selbstüberprüfung]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann die wichtigsten Regeln der Zeichensetzung wiedergeben.]]></Ataxonomie>
@@ -1506,7 +1669,9 @@
 		<subjid>14</subjid>
 		<sorting>70</sorting>
 		<description></description>
-		<requirement><![CDATA[Ich kann wichtige Wortarten an der Bedeutung der Wörter erkennen. Ich kann Sätze umstellen (Umstellprobe). Ich kann Subjekte und Prädikate als Bausteine eines Satzes ermitteln.]]></requirement>
+		<requirement><![CDATA[Ich kann wichtige Wortarten an der Bedeutung der Wörter erkennen. 
+Ich kann Sätze umstellen (Umstellprobe). 
+Ich kann Subjekte und Prädikate als Bausteine eines Satzes ermitteln.]]></requirement>
 		<benefit><![CDATA[Du verwendest deine Sprache automatisch. Damit weißt du auch eine Menge über Grammatik, allerdings unbewusst! Wenn du über Sprache nachdenkst und sie untersuchst, kannst du verstehen und beschreiben, wie sie funktioniert! Wozu das nützt? Für die Rechtschreibung, für die Verbesserung deines Schreibstils und für ein besseres Verständnis von Texten.]]></benefit>
 		<knowledgecheck></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Wortarten und Satzarten benennen.]]></Ataxonomie>
@@ -1524,7 +1689,8 @@
 		<subjid>15</subjid>
 		<sorting>71</sorting>
 		<description></description>
-		<requirement><![CDATA[Du kannst in kurzen Texten gezielt Informationen finden. Du kannst kurze Sachtexte verstehen.]]></requirement>
+		<requirement><![CDATA[Du kannst in kurzen Texten gezielt Informationen finden. 
+Du kannst kurze Sachtexte verstehen.]]></requirement>
 		<benefit><![CDATA[Wenn du einen Text verstehen willst, musst du zuerst herausfinden, was wirklich wichtig ist.]]></benefit>
 		<knowledgecheck><![CDATA[Selbstüberprüfung]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann einzelne Informationen erfassen.]]></Ataxonomie>
@@ -1542,7 +1708,8 @@
 		<subjid>15</subjid>
 		<sorting>72</sorting>
 		<description></description>
-		<requirement><![CDATA[Du kannst unterschiedliche Arten von Beschreibung erkennen.Du kannst Angebote in Zeitungen und Zeitschriften, in Hörfunk und Fernsehen, auf Ton- und Bildträgern sowie im Netz nennen.]]></requirement>
+		<requirement><![CDATA[Du kannst unterschiedliche Arten von Beschreibung erkennen.
+Du kannst Angebote in Zeitungen und Zeitschriften, in Hörfunk und Fernsehen, auf Ton- und Bildträgern sowie im Netz nennen.]]></requirement>
 		<benefit><![CDATA[Wenn du dich im Medienwald orientieren willst, solltest du die verschiedenen Merkmale von Texten und Medien kennen.]]></benefit>
 		<knowledgecheck><![CDATA[Selbstüberprüfung]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann verschiedene Textarten und Medien anhand ihrer Merkmale beschreiben.]]></Ataxonomie>
@@ -1578,7 +1745,9 @@
 		<subjid>15</subjid>
 		<sorting>74</sorting>
 		<description></description>
-		<requirement><![CDATA[Du kennst und nutzt verschiedene Medien. Du wählst deine Medien bewusst aus. Du kannst nichtlineare Texte lesen (LFS 2).]]></requirement>
+		<requirement><![CDATA[Du kennst und nutzt verschiedene Medien. 
+Du wählst deine Medien bewusst aus. 
+Du kannst nichtlineare Texte lesen (LFS 2).]]></requirement>
 		<benefit><![CDATA[Wenn du bewusst mit der Medienvielfalt umgehst, kannst du viel mehr von der Welt erfahren und verstehen.]]></benefit>
 		<knowledgecheck></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann verschiedene Medienangebote nennen und beschreiben.]]></Ataxonomie>
@@ -1596,7 +1765,8 @@
 		<subjid>15</subjid>
 		<sorting>75</sorting>
 		<description></description>
-		<requirement><![CDATA[Du kannst wichtige Informationen finden und erläutern. Du kannst Textarten und Medien mit Hilfe ihrer Gattungsmerkmale unterscheiden.]]></requirement>
+		<requirement><![CDATA[Du kannst wichtige Informationen finden und erläutern. 
+Du kannst Textarten und Medien mit Hilfe ihrer Gattungsmerkmale unterscheiden.]]></requirement>
 		<benefit><![CDATA[Du kannst entdecken, dass die Form genauso wichtig wie der Inhalt ist. Der Ton macht die Musik!]]></benefit>
 		<knowledgecheck></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann verschiedene Gestaltungsmittel beschreiben.]]></Ataxonomie>
@@ -1614,7 +1784,8 @@
 		<subjid>15</subjid>
 		<sorting>76</sorting>
 		<description></description>
-		<requirement><![CDATA[Du kannst kleine Beiträge für verschiedene Medien selbst gestalten. Du kannst mit anderen über eure Produkte sprechen (vgl. D13.3).]]></requirement>
+		<requirement><![CDATA[Du kannst kleine Beiträge für verschiedene Medien selbst gestalten. 
+Du kannst mit anderen über eure Produkte sprechen (vgl. D13.3).]]></requirement>
 		<benefit><![CDATA[Hier kannst du kreativ werden, eigene Produkte gestalten und in einem Team Verantwortung übernehmen.]]></benefit>
 		<knowledgecheck><![CDATA[Bewertung deines Produkts durch deine Mitschüler / Mitschülerinnen.]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann die wesentlichen Elemente eines audiovisuellen Produkts beschreiben.]]></Ataxonomie>
@@ -1686,7 +1857,8 @@
 		<subjid>17</subjid>
 		<sorting>80</sorting>
 		<description></description>
-		<requirement><![CDATA[Du kannst Inhalte erschließen (vgl. LFS 2). Du kennst bereits Märchen und Fabeln – auch als Film.]]></requirement>
+		<requirement><![CDATA[Du kannst Inhalte erschließen (vgl. LFS 2). 
+Du kennst bereits Märchen und Fabeln – auch als Film.]]></requirement>
 		<benefit><![CDATA[Wenn du weißt, mit welcher Textart du es zu tun hast, kannst du einen Text leichter verstehen. Das trifft auch auf unterschiedliche Medienangebote zu. Ein Beispiel? Ist ein Film als Märchen angekündigt, dann weißt du sofort, dass du mit wundersamen Dingen rechnen musst – und du kannst entscheiden, ob du ihn dir anschauen willst.]]></benefit>
 		<knowledgecheck></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann verschiedene Textarten und Medien anhand ihrer Merkmale beschreiben.]]></Ataxonomie>
@@ -1740,9 +1912,12 @@
 		<subjid>17</subjid>
 		<sorting>83</sorting>
 		<description></description>
-		<requirement><![CDATA[Literarische Texte und Medien erschließen (LSF 1-5). Lesestrategien beherrschen (Vgl. D32) Du kannst in Gesprächen deine Meinung begründen (vgl. D13.3).]]></requirement>
+		<requirement><![CDATA[Literarische Texte und Medien erschließen (LSF 1-5). 
+Lesestrategien beherrschen (Vgl. D32) 
+Du kannst in Gesprächen deine Meinung begründen (vgl. D13.3).]]></requirement>
 		<benefit><![CDATA[Jeder Leser versteht einen Text ein bisschen anders. Auch derselbe Film wird von zwei Zuschauern unterschiedlich beurteilt. Überzeugend mit deinem Verständnis wirst du, wenn du deine Meinung am Text belegen kannst. Im Gespräch kannst du aber auch dein Textverständnis klären und vertiefen.]]></benefit>
-		<knowledgecheck><![CDATA[Projekt: Das literarische Quartett Projekt: Oscar-Verleihung]]></knowledgecheck>
+		<knowledgecheck><![CDATA[Projekt: Das literarische Quartett 
+Projekt: Oscar-Verleihung]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann mein Textverständnis formulieren.]]></Ataxonomie>
 		<Btaxonomie><![CDATA[Ich kann im Gespräch mit anderen am Text begründen, warum ich den Text so verstehe.]]></Btaxonomie>
 		<Ctaxonomie><![CDATA[Ich kann im Gespräch mit anderen einen Text besser verstehen, indem ich verschiedene Lesarten prüfe.]]></Ctaxonomie>
@@ -1758,7 +1933,9 @@
 		<subjid>18</subjid>
 		<sorting>84</sorting>
 		<description></description>
-		<requirement><![CDATA[wissen, wie ein Zahlenstrahl aussiehtdie Stellenwerttafel kennengut lesen können]]></requirement>
+		<requirement><![CDATA[wissen, wie ein Zahlenstrahl aussieht
+die Stellenwerttafel kennen
+gut lesen können]]></requirement>
 		<benefit><![CDATA[Große Zahlen vereinfachen, Abstände im Universum verstehen und vergleichen können, Überschlagsrechnungen durchführen…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann natürliche Zahlen ordnen und am Zahlenstrahl veranschaulichen. Ich kann sie in eine Stellentafel eintragen und daraus ablesen. Ich kann zwischen Wortform und Ziffernschreibweise wechseln. Ich kann bei vorgegebener Genauigkeit runden.]]></Ataxonomie>
@@ -1776,7 +1953,10 @@
 		<subjid>18</subjid>
 		<sorting>85</sorting>
 		<description></description>
-		<requirement><![CDATA[Zahlen ordnen (M1.01)mit dem Zahlenstrahl umgehen (M1.01)Temperaturen am Thermometer ablesenwissen, was der Begriff "Meeresspiegel" bedeutet]]></requirement>
+		<requirement><![CDATA[Zahlen ordnen (M1.01)
+mit dem Zahlenstrahl umgehen (M1.01)
+Temperaturen am Thermometer ablesen
+wissen, was der Begriff "Meeresspiegel" bedeutet]]></requirement>
 		<benefit><![CDATA[Temperaturen vergleichen, Höhenunterschiede und Meerestiefen angeben, die Kontoführung bei Banken verstehen, Gesellschaftsspiele …]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann negative Zahlen an der Zahlengeraden veranschaulichen, kann sie ordnen und ihren Betrag und ihre Gegenzahl angeben.]]></Ataxonomie>
@@ -1794,7 +1974,8 @@
 		<subjid>18</subjid>
 		<sorting>86</sorting>
 		<description></description>
-		<requirement><![CDATA[mit dem Zahlenstrahl und der Stellenwerttafel umgehen (M1.01)Rundungsregeln bei natürlichen Zahlen (M1.01)]]></requirement>
+		<requirement><![CDATA[mit dem Zahlenstrahl und der Stellenwerttafel umgehen (M1.01)
+Rundungsregeln bei natürlichen Zahlen (M1.01)]]></requirement>
 		<benefit><![CDATA[Preis- und Mengenvergleiche beim Einkauf, Ranglisten bei Sportereignissen erstellen, Inhalt von Flaschen und Verpackungen, große Zahlen lesbar machen…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Dezimalbrüche an der Zahlengeraden veranschaulichen, sie in eine erweiterte Stellentafel eintragen und ordnen. Ich kann bei vorgegebener Genauigkeit runden.]]></Ataxonomie>
@@ -1812,7 +1993,8 @@
 		<subjid>18</subjid>
 		<sorting>87</sorting>
 		<description></description>
-		<requirement><![CDATA[natürliche Zahlen ordnen (M1.01)das kleine und das große Einmaleins (M2.01)]]></requirement>
+		<requirement><![CDATA[natürliche Zahlen ordnen (M1.01)
+das kleine und das große Einmaleins (M2.01)]]></requirement>
 		<benefit><![CDATA[Mengenangaben beim Einkaufen und in Koch- und Backrezepten verstehen, Zeitangaben, Notenwerte und Taktarten in der Musik…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Zähler und Nenner eines Bruches nennen. Ich kann Bruchteile zeichnerisch darstellen und Bruchzahlen an der Zahlengeraden darstellen.]]></Ataxonomie>
@@ -1830,7 +2012,8 @@
 		<subjid>18</subjid>
 		<sorting>88</sorting>
 		<description></description>
-		<requirement><![CDATA[Brüche erweitern und kürzen (M1.04)das kleine und das große Einmaleins (M1.02)]]></requirement>
+		<requirement><![CDATA[Brüche erweitern und kürzen (M1.04)
+das kleine und das große Einmaleins (M1.02)]]></requirement>
 		<benefit><![CDATA[Mischverhältnisse bei Getränken, Wahlergebnisse, Rabatte beim Einkaufen, Zinsen auf dem Sparbuch…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Brüche mit dem Nenner 100 in Prozentschreibweise angeben und umgekehrt.]]></Ataxonomie>
@@ -1848,7 +2031,9 @@
 		<subjid>18</subjid>
 		<sorting>89</sorting>
 		<description></description>
-		<requirement><![CDATA[Brüche erweitern und kürzen (M1.04)das kleine und das große Einmaleins (M1.02)Darstellung von Zahlen als Dezimalzahl (M1.03) und als Bruch (M1.04)]]></requirement>
+		<requirement><![CDATA[Brüche erweitern und kürzen (M1.04)
+das kleine und das große Einmaleins (M1.02)
+Darstellung von Zahlen als Dezimalzahl (M1.03) und als Bruch (M1.04)]]></requirement>
 		<benefit><![CDATA[Umgang mit unterschiedlichen Maßangaben z.B. bei Getränken (Volumen) oder Entfernungen (Länge)…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann einfache Brüche in abbrechende Dezimalbrüche umwandeln und umgekehrt.]]></Ataxonomie>
@@ -1866,7 +2051,9 @@
 		<subjid>19</subjid>
 		<sorting>90</sorting>
 		<description></description>
-		<requirement><![CDATA[wissen, was Addition und Subtraktion istdie Stufenzahlen kennenZahlen zerlegen (z.B. in Hunderter, Zehner und Einer) (M1.01)]]></requirement>
+		<requirement><![CDATA[wissen, was Addition und Subtraktion ist
+die Stufenzahlen kennen
+Zahlen zerlegen (z.B. in Hunderter, Zehner und Einer) (M1.01)]]></requirement>
 		<benefit><![CDATA[Beim Einkaufen (Reicht das Geld? Stimmt das Rückgeld?), beim Kochen und Backen (umrechnen auf unterschiedliche Personenzahlen)…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann zweistellige natürliche Zahlen im Kopf addieren und subtrahieren. Ich beherrsche das kleine Einmaleins.]]></Ataxonomie>
@@ -1884,7 +2071,8 @@
 		<subjid>19</subjid>
 		<sorting>91</sorting>
 		<description></description>
-		<requirement><![CDATA[Zahlen in eine Stellewerttafel eintragen (M1.01)Zahlen runden (M1.01)]]></requirement>
+		<requirement><![CDATA[Zahlen in eine Stellewerttafel eintragen (M1.01)
+Zahlen runden (M1.01)]]></requirement>
 		<benefit><![CDATA[Überschlagsrechnungen beim Einkaufen, Überprüfen von Rechnungen (z.B. in der Gaststätte)…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Zahlen stellengerecht untereinander schreiben und zwei Zahlen mit Übertrag schriftlich addieren. Ich kann zwei Zahlen schriftlich subtrahieren.]]></Ataxonomie>
@@ -1902,7 +2090,10 @@
 		<subjid>19</subjid>
 		<sorting>92</sorting>
 		<description></description>
-		<requirement><![CDATA[wissen, was Multiplikation und Division istdie natürlichen Zahlen kennen (M1.01)das kleine Einmaleins (M2.01)schriftlich addieren und subtrahieren (M2.02)]]></requirement>
+		<requirement><![CDATA[wissen, was Multiplikation und Division ist
+die natürlichen Zahlen kennen (M1.01)
+das kleine Einmaleins (M2.01)
+schriftlich addieren und subtrahieren (M2.02)]]></requirement>
 		<benefit><![CDATA[Einkauf größerer Mengen (z.B. für das Schullandheim), gerechtes Aufteilen großer Mengen (z.B. einer Bonbontüte)…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann natürliche Zahlen multiplizieren und durch einstellige Zahlen dividieren.]]></Ataxonomie>
@@ -1920,7 +2111,12 @@
 		<subjid>19</subjid>
 		<sorting>93</sorting>
 		<description></description>
-		<requirement><![CDATA[Dezimalbrüche kennen in eine Stellewerttafel eintragen (M1.03)Zahlen in kleinere Einheiten als Eins zerlegen (M1.03)die Stufenzahlen kennenKopfrechnen (M2.01)schriftlich addieren und subtrahieren (M2.02)schriftlich multiplizieren und dividieren (M2.03)]]></requirement>
+		<requirement><![CDATA[Dezimalbrüche kennen in eine Stellewerttafel eintragen (M1.03)
+Zahlen in kleinere Einheiten als Eins zerlegen (M1.03)
+die Stufenzahlen kennen
+Kopfrechnen (M2.01)
+schriftlich addieren und subtrahieren (M2.02)
+schriftlich multiplizieren und dividieren (M2.03)]]></requirement>
 		<benefit><![CDATA[Ergebnisse bei Sportereignissen berechnen (z.B. Gesamtweite bei mehreren Durchgängen beim Weitsprung), den Gesamtbetrag beim Einkauf berechnen, Berechnungen überprüfen...]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Dezimalbrüche mit der gleichen Anzahl an Dezimalen stellengerecht untereinanderschreiben und addieren bzw. subtrahieren. Ich kann Dezimalbrüche mit Stufenzahlen multiplizieren bzw. durch Stufenzahlen dividieren.]]></Ataxonomie>
@@ -1938,7 +2134,9 @@
 		<subjid>19</subjid>
 		<sorting>94</sorting>
 		<description></description>
-		<requirement><![CDATA[Brüche kennen (M1.04)Kopfrechnen (M2.01)das kleine Einmaleins (M2.01)]]></requirement>
+		<requirement><![CDATA[Brüche kennen (M1.04)
+Kopfrechnen (M2.01)
+das kleine Einmaleins (M2.01)]]></requirement>
 		<benefit><![CDATA[Um Gesamtmengen bei Kuchenrezepten bestimmen zu können oder Rezepte für andere Personenzahlen abändern zu können … und als Grundlage für ganz viele weitere Anforderungen in der Mathematik]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann gleichnamige Brüche addieren bzw. subtrahieren. Ich kann Brüche vervielfachen.]]></Ataxonomie>
@@ -1956,7 +2154,12 @@
 		<subjid>19</subjid>
 		<sorting>95</sorting>
 		<description></description>
-		<requirement><![CDATA[mit der Zahlengeraden umgehen (M1.02)ein Thermometer ablesenmit negativen Zahlen umgehen (M2.01)Kopfrechnen (M2.01)schriftlich addieren und subtrahieren (M2.02)schriftlich multiplizieren und dividieren (M2.03)]]></requirement>
+		<requirement><![CDATA[mit der Zahlengeraden umgehen (M1.02)
+ein Thermometer ablesen
+mit negativen Zahlen umgehen (M2.01)
+Kopfrechnen (M2.01)
+schriftlich addieren und subtrahieren (M2.02)
+schriftlich multiplizieren und dividieren (M2.03)]]></requirement>
 		<benefit><![CDATA[Temperaturunterschiede und Höhenunterschiede berechnen, Kontostände berechnen und die Kontoführung überprüfen…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann ganze Zahlen addieren, subtrahieren, multiplizieren und dividieren. Ich kann Zu- und Abnahmen durch Pfeildiagramme darstellen.]]></Ataxonomie>
@@ -2028,7 +2231,8 @@
 		<subjid>20</subjid>
 		<sorting>99</sorting>
 		<description></description>
-		<requirement><![CDATA[Zahlterme aufstellen und deren Wert berechnen (M3.02)bei einfachen Mustern und Zahlenreihen deren Gesetzmäßigkeit erkennen (M3.03)]]></requirement>
+		<requirement><![CDATA[Zahlterme aufstellen und deren Wert berechnen (M3.02)
+bei einfachen Mustern und Zahlenreihen deren Gesetzmäßigkeit erkennen (M3.03)]]></requirement>
 		<benefit><![CDATA[Handy-Kosten bei verschiedenen Mobilfunktarifen oder die Kosten für einen Klassenausflug überblicken können, mathematische Formeln z.B. für geometrische Größen oder in einer Tabellenkalkulation selbst aufstellen und sich damit das Leben einfacher machen…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich weiß, was eine „Variable“ ist und kann zu verbalen Anweisungen und zu vertrauten Situationen und Mustern Terme mit einer Variablen aufstellen.]]></Ataxonomie>
@@ -2064,7 +2268,9 @@
 		<subjid>20</subjid>
 		<sorting>101</sorting>
 		<description></description>
-		<requirement><![CDATA[Terme mit Variablen aufstellen (M3.04)den Wert von Termen berechnen (M3.05)mit rationalen Zahlen - insbesondere auch mit negativen - rechnen (M2.06)]]></requirement>
+		<requirement><![CDATA[Terme mit Variablen aufstellen (M3.04)
+den Wert von Termen berechnen (M3.05)
+mit rationalen Zahlen - insbesondere auch mit negativen - rechnen (M2.06)]]></requirement>
 		<benefit><![CDATA[Lösen von Zahlenrätseln, den benötigten Bedarf an Perlen, Bauklötzen usw. bestimmen…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich weiß, was eine Gleichung und die Lösung bzw. Lösungsmenge einer Gleichung ist. Ich kann durch Einsetzen überprüfen, ob eine Zahl Lösung einer vorgegebenen Gleichung ist.]]></Ataxonomie>
@@ -2118,7 +2324,10 @@
 		<subjid>21</subjid>
 		<sorting>104</sorting>
 		<description></description>
-		<requirement><![CDATA[Anordnung und Vergleich von natürlichen zahlen (M1.01)Größen messen und Maßangaben machen (M4.02)mit Stufenzahlen multiplizieren und durch sie dividieren (M2.01)Zahlen multiplizieren und dividieren (M2.03)]]></requirement>
+		<requirement><![CDATA[Anordnung und Vergleich von natürlichen zahlen (M1.01)
+Größen messen und Maßangaben machen (M4.02)
+mit Stufenzahlen multiplizieren und durch sie dividieren (M2.01)
+Zahlen multiplizieren und dividieren (M2.03)]]></requirement>
 		<benefit><![CDATA[Dein Alter in Tagen bestimmen, die Durchschnittsgröße oder das Durchschnittsgewicht bestimmen, maßstäbliche Darstellungen anfertigen, Flächeninhalte und Volumina bestimmen…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Größenangaben (Länge, Masse, Zeitspanne) in benachbarte Einheiten umwandeln.]]></Ataxonomie>
@@ -2154,7 +2363,9 @@
 		<subjid>21</subjid>
 		<sorting>106</sorting>
 		<description></description>
-		<requirement><![CDATA[Umgang mit Längenangaben/Maßeinheiten und Rechnen mit Größen (M4.03)mit Dezimalzahlen rechnen (M2.04)geometrische Objekte erkennen (M5.01)]]></requirement>
+		<requirement><![CDATA[Umgang mit Längenangaben/Maßeinheiten und Rechnen mit Größen (M4.03)
+mit Dezimalzahlen rechnen (M2.04)
+geometrische Objekte erkennen (M5.01)]]></requirement>
 		<benefit><![CDATA[Zaunlänge für das Hasengehege, die Größe deines Zimmers, Bedarf beim Tapezieren…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann den Umfang von Vielecken berechnen. Ich kann den Flächeninhalt von Figuren durch Abzählen oder Auslegen ermitteln sowie den Flächeninhalt von Rechtecken berechnen. Ich kann Flächenmaße angeben und in benachbarte Einheiten umwandeln.]]></Ataxonomie>
@@ -2172,7 +2383,12 @@
 		<subjid>21</subjid>
 		<sorting>107</sorting>
 		<description></description>
-		<requirement><![CDATA[mit Längenangaben umgehen (M4.03)mit Dezimalzahlen rechnen (M2.04)geometrische Objekte erkennen (M5.01)Eigenschaften geometrischer Körper (M5.02) Flächeninhalt ebener Figuren (M4.05)Umgang mit Längenangaben/Maßeinheiten und Rechnen mit Größen (M4.03)]]></requirement>
+		<requirement><![CDATA[mit Längenangaben umgehen (M4.03)
+mit Dezimalzahlen rechnen (M2.04)
+geometrische Objekte erkennen (M5.01)
+Eigenschaften geometrischer Körper (M5.02) 
+Flächeninhalt ebener Figuren (M4.05)
+Umgang mit Längenangaben/Maßeinheiten und Rechnen mit Größen (M4.03)]]></requirement>
 		<benefit><![CDATA[Verschiedene Anwendungen im Alltag wie Materialbedarf beim Basteln, beim Renovieren oder beim Verpacken von Geschenken, Ladevolumen von Fahrzeugen, Füllstand von Behältern, wie viel Luft im Klassenzimmer ist und wie viel Wasser in ein Schwimmbad passt…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann das Volumen von Körpern durch Ausfüllen bestimmen und das Volumen von Quadern mithilfe der Formel berechnen. Ich kann Volumenmaße in benachbarte Einheiten umwandeln.]]></Ataxonomie>
@@ -2208,7 +2424,8 @@
 		<subjid>22</subjid>
 		<sorting>109</sorting>
 		<description></description>
-		<requirement><![CDATA[Benennung von Figuren und Körpern mit den entsprechenden geometrischen Fachbegriffen (M5.01)Winkel schätzen und benennen (M4.04)]]></requirement>
+		<requirement><![CDATA[Benennung von Figuren und Körpern mit den entsprechenden geometrischen Fachbegriffen (M5.01)
+Winkel schätzen und benennen (M4.04)]]></requirement>
 		<benefit><![CDATA[Die Sprache der Mathematik verstehen und anwenden, Erdkunde/Planetenkunde, Erstellen von Zeichnungen und Mustern, Berechnungen an geometrischen Objekten...]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann die Begriffe Seite, Ecke, Kante, Fläche, Diagonale, Radius, Durchmesser, parallel und orthogonal fachgerecht nutzen. Ich kann angeben, über welche charakteristischen Merkmale Figuren und Körper verfügen.]]></Ataxonomie>
@@ -2226,7 +2443,11 @@
 		<subjid>22</subjid>
 		<sorting>110</sorting>
 		<description></description>
-		<requirement><![CDATA[gegenüberliegende Kanten auf Parallelität prüfen (M5.02)Umgang mit Geodreieck und Zirkelaneinanderstoßende Seiten auf Orthogonalität prüfen (M5.02)Längen messen und mit Längenangaben umgehen (M4.02)Winkel messen und zeichnen (M4.04)]]></requirement>
+		<requirement><![CDATA[gegenüberliegende Kanten auf Parallelität prüfen (M5.02)
+Umgang mit Geodreieck und Zirkel
+aneinanderstoßende Seiten auf Orthogonalität prüfen (M5.02)
+Längen messen und mit Längenangaben umgehen (M4.02)
+Winkel messen und zeichnen (M4.04)]]></requirement>
 		<benefit><![CDATA[Skizzen und Diagramme zeichnen, Orientierung auf dem Stadtplan, Mandalas oder Muster zeichnen, Papier falten (Servietten, Papierflieger, Origami)…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann mit einem Geodreieck zueinander orthogonale und parallele Geraden und Strecken zeichnen. Ich kann ein Koordinatensystem zeichnen und Punkte darin eintragen bzw. Koordinaten von Punkten ablesen. Ich kann Kreise mithilfe eines Zirkels zeichnen.]]></Ataxonomie>
@@ -2244,7 +2465,9 @@
 		<subjid>22</subjid>
 		<sorting>111</sorting>
 		<description></description>
-		<requirement><![CDATA[geometrische Objekte fachgerecht benennen und unterscheiden (M5.01)Ebene Figuren mit zueinander parallelen und orthogonalen Strecken zeichnen (M5.03)Längen messen und mit Längenangaben umgehen (M4.02)]]></requirement>
+		<requirement><![CDATA[geometrische Objekte fachgerecht benennen und unterscheiden (M5.01)
+Ebene Figuren mit zueinander parallelen und orthogonalen Strecken zeichnen (M5.03)
+Längen messen und mit Längenangaben umgehen (M4.02)]]></requirement>
 		<benefit><![CDATA[Anfertigung von Verpackungen, Schulung des räumlichen Vorstellungsvermögens…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann aus Körpernetzen Modelle herstellen. Ich kann Körper und Netze einander zuordnen. Ich kann anhand von Längenangaben Quadernetze zeichnen.]]></Ataxonomie>
@@ -2262,7 +2485,10 @@
 		<subjid>22</subjid>
 		<sorting>112</sorting>
 		<description></description>
-		<requirement><![CDATA[Ebene Figuren mit zueinander parallelen und orthogonalen Strecken zeichnen (M5.03)Längen messen und mit Längenangaben umgehen (M4.02)Umgang mit Geodreieck und ZirkelWinkel messen und zeichnen (M4.04)]]></requirement>
+		<requirement><![CDATA[Ebene Figuren mit zueinander parallelen und orthogonalen Strecken zeichnen (M5.03)
+Längen messen und mit Längenangaben umgehen (M4.02)
+Umgang mit Geodreieck und Zirkel
+Winkel messen und zeichnen (M4.04)]]></requirement>
 		<benefit><![CDATA[Erstellung von Handskizzen im Kunstunterricht, auch von Gegenständen oder Gebäuden…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Schrägbilder von Quadern bei vorgegebenen Maßen auf kariertes Papier zeichnen.]]></Ataxonomie>
@@ -2280,7 +2506,9 @@
 		<subjid>22</subjid>
 		<sorting>113</sorting>
 		<description></description>
-		<requirement><![CDATA[zueinander parallele und orthogonale Strecken zeichnen (M5.03)Längen messen und mit Längenangaben umgehen (M4.02)den Abstand eines Punktes von einer Geraden bestimmen (M5.03)]]></requirement>
+		<requirement><![CDATA[zueinander parallele und orthogonale Strecken zeichnen (M5.03)
+Längen messen und mit Längenangaben umgehen (M4.02)
+den Abstand eines Punktes von einer Geraden bestimmen (M5.03)]]></requirement>
 		<benefit><![CDATA[Muster herstellen, Spiegelschrift lesen, Scherenschnitte anfertigen, Symmetrien erkennen…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Punkte an einer gegebenen Gerade spiegeln. Ich kann Punkte an einem Spiegelzentrum spiegeln.]]></Ataxonomie>
@@ -2298,7 +2526,10 @@
 		<subjid>23</subjid>
 		<sorting>114</sorting>
 		<description></description>
-		<requirement><![CDATA[Längen messen und mit Längenangaben umgehen (M4.02)Umrechnen bei Längenangaben (M4.03)Rechnen mit Längenangaben (M4.03)Multiplizieren und Dividieren mit Stufenzahlen (M2.01, M2.04)]]></requirement>
+		<requirement><![CDATA[Längen messen und mit Längenangaben umgehen (M4.02)
+Umrechnen bei Längenangaben (M4.03)
+Rechnen mit Längenangaben (M4.03)
+Multiplizieren und Dividieren mit Stufenzahlen (M2.01, M2.04)]]></requirement>
 		<benefit><![CDATA[Anfertigen vergrößerter oder verkleinerter Zeichnungen von Gegenständen, reale Entfernungen aus einer Landkarte ablesen und bestimmen, die realen Maße von abgebildeten Gegenständen angeben, Modelle basteln…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann aus einer maßstäblichen Zeichnung, deren Maßstab bekannt ist, die tatsächlichen Längen bestimmen.]]></Ataxonomie>
@@ -2316,7 +2547,11 @@
 		<subjid>23</subjid>
 		<sorting>115</sorting>
 		<description></description>
-		<requirement><![CDATA[Umrechnen bei Längenangaben (M4.03)maßstäbliches Umrechnen (M6.01)Rechnen mit Längenangaben (M4.03)Multiplizieren und Dividieren mit Stufenzahlen (M2.01, M2.04)Zeichnen von geometrischen Figuren (und Schrägbildern) (M5.03, M5.05)]]></requirement>
+		<requirement><![CDATA[Umrechnen bei Längenangaben (M4.03)
+maßstäbliches Umrechnen (M6.01)
+Rechnen mit Längenangaben (M4.03)
+Multiplizieren und Dividieren mit Stufenzahlen (M2.01, M2.04)
+Zeichnen von geometrischen Figuren (und Schrägbildern) (M5.03, M5.05)]]></requirement>
 		<benefit><![CDATA[Modelle basteln, reale Gegenstände zeichnerisch darstellen…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann mit gegebenem einfachem Maßstab Längen für eine maßstäbliche Zeichnung bestimmen und eine vergrößerte / verkleinerte Zeichnung anfertigen.]]></Ataxonomie>
@@ -2334,7 +2569,11 @@
 		<subjid>23</subjid>
 		<sorting>116</sorting>
 		<description></description>
-		<requirement><![CDATA[Erkennen von Gesetzmäßigkeiten (M3.03)Aufstellen von Termen mit Variablen (M3.04)Messen von Größen (M4.02)Punkte aus einem Koordinatensystem ablesen (M5.03)Daten aus Tabellen und Diagrammen entnehmen (M7.01)]]></requirement>
+		<requirement><![CDATA[Erkennen von Gesetzmäßigkeiten (M3.03)
+Aufstellen von Termen mit Variablen (M3.04)
+Messen von Größen (M4.02)
+Punkte aus einem Koordinatensystem ablesen (M5.03)
+Daten aus Tabellen und Diagrammen entnehmen (M7.01)]]></requirement>
 		<benefit><![CDATA[Überprüfen von Preis-Leistungsverhältnissen, grafische Fahrpläne lesen, Messreihen auswerten, Zusammenhänge erkennen und nutzen…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann in einfachen Fällen angeben, welcher Zusammenhang zwischen zwei Größen besteht.]]></Ataxonomie>
@@ -2352,7 +2591,10 @@
 		<subjid>23</subjid>
 		<sorting>117</sorting>
 		<description></description>
-		<requirement><![CDATA[Tabellen und Diagramme erstellen (M7.02)Umgang mit Formeln / Werte berechnen (M3.05)Aufstellen von Termen mit Variablen (M3.04)Punkte in ein Koordinatensystem eintragen (M5.03)]]></requirement>
+		<requirement><![CDATA[Tabellen und Diagramme erstellen (M7.02)
+Umgang mit Formeln / Werte berechnen (M3.05)
+Aufstellen von Termen mit Variablen (M3.04)
+Punkte in ein Koordinatensystem eintragen (M5.03)]]></requirement>
 		<benefit><![CDATA[Messreihen von Experimenten veranschaulichen, Zusammenhänge übersichtlich darstellen…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann einfache Zusammenhänge zwischen Größen in einer Tabelle übersichtlich darstellen.]]></Ataxonomie>
@@ -2370,7 +2612,9 @@
 		<subjid>23</subjid>
 		<sorting>118</sorting>
 		<description></description>
-		<requirement><![CDATA[Multiplizieren und Dividieren von Größen (M4.03)Daten aus einer Tabelle entnehmen (M7.01)Zusammenhänge zwischen Größen erkennen (M6.03)]]></requirement>
+		<requirement><![CDATA[Multiplizieren und Dividieren von Größen (M4.03)
+Daten aus einer Tabelle entnehmen (M7.01)
+Zusammenhänge zwischen Größen erkennen (M6.03)]]></requirement>
 		<benefit><![CDATA[Kosten berechnen, Handyrechnungen überprüfen, benötigte Mengen für Koch- und Backrezepte berechnen, Geldbeträge in andere Währungen umrechnen, die Dauer einer Autofahrt berechnen…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann bei einer proportionalen Zuordnung fehlende Größen mithilfe des Dreisatzes ("je mehr, desto mehr") berechnen.]]></Ataxonomie>
@@ -2388,7 +2632,9 @@
 		<subjid>23</subjid>
 		<sorting>119</sorting>
 		<description></description>
-		<requirement><![CDATA[Multiplizieren und Dividieren von Größen (M4.03)Daten aus einer Tabelle entnehmen (M7.01)Zusammenhänge zwischen Größen erkennen (M6.03)]]></requirement>
+		<requirement><![CDATA[Multiplizieren und Dividieren von Größen (M4.03)
+Daten aus einer Tabelle entnehmen (M7.01)
+Zusammenhänge zwischen Größen erkennen (M6.03)]]></requirement>
 		<benefit><![CDATA[Berechnen, wie lange ein Vorrat ausreicht, Kosten (z.B. für einen Ausflug) aufteilen, Downloadzeiten für verschieden schnelle Internetverbindungen ermitteln…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann bei einer antiproportionalen Zuordnung fehlende Größen mithilfe des Dreisatzes "je mehr, desto weniger" bzw. "je weniger, desto mehr" berechnen.]]></Ataxonomie>
@@ -2406,7 +2652,9 @@
 		<subjid>24</subjid>
 		<sorting>120</sorting>
 		<description></description>
-		<requirement><![CDATA[Strichlisten führenInformationen aus Texten entnehmenTabellen anlegen]]></requirement>
+		<requirement><![CDATA[Strichlisten führen
+Informationen aus Texten entnehmen
+Tabellen anlegen]]></requirement>
 		<benefit><![CDATA[Klassensprecherwahl, Ergebnisse bei Sportwettkämpfen, Gesellschaftsspiele…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kenne verschiedene Darstellungsformen für Daten (Tabellen, Texte, Diagramme).]]></Ataxonomie>
@@ -2424,7 +2672,11 @@
 		<subjid>24</subjid>
 		<sorting>121</sorting>
 		<description></description>
-		<requirement><![CDATA[Umgang mit Bleistift und LinealLängen messen und zeichnen (M4.02)Zahlen runden (M1.01, M1.03)evtl. maßstäbliche Darstellungen anfertigen (M6.02)evtl. mit Größen rechnen (M4.03)]]></requirement>
+		<requirement><![CDATA[Umgang mit Bleistift und Lineal
+Längen messen und zeichnen (M4.02)
+Zahlen runden (M1.01, M1.03)
+evtl. maßstäbliche Darstellungen anfertigen (M6.02)
+evtl. mit Größen rechnen (M4.03)]]></requirement>
 		<benefit><![CDATA[Ergebnisse von Wahlen oder Sportwettkämpfen veranschaulichen, die eigene Klasse mit ihren Vorlieben präsentieren…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Daten ordnen und übersichtlich in (Häufigkeits-)Tabellen darstellen.]]></Ataxonomie>
@@ -2460,7 +2712,8 @@
 		<subjid>24</subjid>
 		<sorting>123</sorting>
 		<description></description>
-		<requirement><![CDATA[mit Brüchen umgehen (M1.04)die Prozentschreibweise beherrschen (M1.05)]]></requirement>
+		<requirement><![CDATA[mit Brüchen umgehen (M1.04)
+die Prozentschreibweise beherrschen (M1.05)]]></requirement>
 		<benefit><![CDATA[Wahlergebnisse, Anteile vergleichen (z.b. Fahrschüler in verschiedenen Klassen), Nährwertangaben bei Lebensmitteln…]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann den gesuchten Anteil einer Größe bestimmen.]]></Ataxonomie>
@@ -2478,7 +2731,9 @@
 		<subjid>24</subjid>
 		<sorting>124</sorting>
 		<description></description>
-		<requirement><![CDATA[Rechtecke und Kreise zeichnen (M5.03)Winkel zeichnen (M4.04)mit Dezimalzahlen rechnen (M2.04)]]></requirement>
+		<requirement><![CDATA[Rechtecke und Kreise zeichnen (M5.03)
+Winkel zeichnen (M4.04)
+mit Dezimalzahlen rechnen (M2.04)]]></requirement>
 		<benefit><![CDATA[Wahlergebnisse und Anteile oder Zusammensetzungen einer Gruppe oder von Nährstoffen in Lebensmitteln anschaulich darstellen...]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann Anteile in Streifendiagrammen mit vorgegebener Streifenlänge darstellen.]]></Ataxonomie>
@@ -2496,7 +2751,9 @@
 		<subjid>24</subjid>
 		<sorting>125</sorting>
 		<description></description>
-		<requirement><![CDATA[Daten erfassen (M7.01)Daten auswerten (M7.03, M7.04)Diagramme erstellen (M7.02, M7.05)]]></requirement>
+		<requirement><![CDATA[Daten erfassen (M7.01)
+Daten auswerten (M7.03, M7.04)
+Diagramme erstellen (M7.02, M7.05)]]></requirement>
 		<benefit><![CDATA[Umfragen in der Klasse durchführen, die Beliebtheit einer Autofarbe, eines Getränks usw. ermitteln …]]></benefit>
 		<knowledgecheck><![CDATA[Testaufgaben]]></knowledgecheck>
 		<Ataxonomie><![CDATA[Ich kann selbst eine einfache Umfrage durchführen und deren Ergebnisse darstellen.]]></Ataxonomie>
@@ -2515,7 +2772,11 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Etwas mitmachen Etwas mitsprechen Etwas nachmachen Etwas nachsprechen Etwas zeigen]]></comment>
+		<comment><![CDATA[Etwas mitmachen 
+Etwas mitsprechen 
+Etwas nachmachen 
+Etwas nachsprechen 
+Etwas zeigen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>2</uid>
@@ -2535,7 +2796,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Gestik Mimik Refrain Stimme]]></comment>
+		<comment><![CDATA[Gestik 
+Mimik 
+Refrain 
+Stimme]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>4</uid>
@@ -2545,7 +2809,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Mimik Gestik Um Wiederholung/ Klärung bitten]]></comment>
+		<comment><![CDATA[Mimik 
+Gestik 
+Um Wiederholung/ Klärung bitten]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>5</uid>
@@ -2575,7 +2841,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Aufgabenstellung gründlich durchlesen Mich in die Situation hineinversetzen]]></comment>
+		<comment><![CDATA[Aufgabenstellung gründlich durchlesen 
+Mich in die Situation hineinversetzen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>8</uid>
@@ -2585,7 +2852,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Bilder Geräusche]]></comment>
+		<comment><![CDATA[Bilder 
+Geräusche]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>9</uid>
@@ -2595,7 +2863,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[In Wortgruppen hören Konzentrieren auf das, was ich verstehe]]></comment>
+		<comment><![CDATA[In Wortgruppen hören 
+Konzentrieren auf das, was ich verstehe]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>10</uid>
@@ -2605,7 +2874,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Warnung Entschuldigung Aufforderung Hinweis]]></comment>
+		<comment><![CDATA[Warnung 
+Entschuldigung 
+Aufforderung 
+Hinweis]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>11</uid>
@@ -2615,7 +2887,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Datum Uhrzeit Ortsangaben Wegstrecke]]></comment>
+		<comment><![CDATA[Datum 
+Uhrzeit 
+Ortsangaben 
+Wegstrecke]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>12</uid>
@@ -2645,7 +2920,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Ort Situation Haltung der Sprecher]]></comment>
+		<comment><![CDATA[Ort 
+Situation 
+Haltung der Sprecher]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>15</uid>
@@ -2655,7 +2932,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Vorwissen zum Thema sammeln Wortschatz aktivieren]]></comment>
+		<comment><![CDATA[Vorwissen zum Thema sammeln 
+Wortschatz aktivieren]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>16</uid>
@@ -2685,7 +2963,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Aus dem ZusammenhangAus dem Deutschen]]></comment>
+		<comment><![CDATA[Aus dem Zusammenhang
+Aus dem Deutschen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>19</uid>
@@ -2695,7 +2974,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Musik Nebengeräusche Lautstärke Sprechtempo]]></comment>
+		<comment><![CDATA[Musik 
+Nebengeräusche 
+Lautstärke 
+Sprechtempo]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>20</uid>
@@ -2705,7 +2987,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Vor dem Hören Bei Unterbrechungen Am Ende Später vergleichen]]></comment>
+		<comment><![CDATA[Vor dem Hören 
+Bei Unterbrechungen 
+Am Ende 
+Später vergleichen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>21</uid>
@@ -2715,7 +3000,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Empfindungen beschreiben Meinung ausdrücken Mit anderen diskutieren]]></comment>
+		<comment><![CDATA[Empfindungen beschreiben 
+Meinung ausdrücken 
+Mit anderen diskutieren]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>22</uid>
@@ -2725,7 +3012,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Standbild Pantomime Nachspielen Verändern]]></comment>
+		<comment><![CDATA[Standbild 
+Pantomime 
+Nachspielen 
+Verändern]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>23</uid>
@@ -2735,7 +3025,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Mich in die Situation hineinversetzen Wortschatz aktivieren]]></comment>
+		<comment><![CDATA[Mich in die Situation hineinversetzen 
+Wortschatz aktivieren]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>24</uid>
@@ -2745,7 +3036,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Sprecher  Thema Anlass Ergebnis]]></comment>
+		<comment><![CDATA[Sprecher  
+Thema 
+Anlass 
+Ergebnis]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>25</uid>
@@ -2755,7 +3049,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Uhrzeit Preis Ort Mengen]]></comment>
+		<comment><![CDATA[Uhrzeit 
+Preis 
+Ort 
+Mengen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>26</uid>
@@ -2765,7 +3062,11 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Füllwörter Akzent Intonation Pausen Betonungen]]></comment>
+		<comment><![CDATA[Füllwörter 
+Akzent 
+Intonation 
+Pausen 
+Betonungen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>27</uid>
@@ -2775,7 +3076,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[SprecherwechselThemenwechsel]]></comment>
+		<comment><![CDATA[Sprecherwechsel
+Themenwechsel]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>28</uid>
@@ -2785,7 +3087,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Ort  Beziehung der Sprechenden]]></comment>
+		<comment><![CDATA[Ort  
+Beziehung der Sprechenden]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>29</uid>
@@ -2805,7 +3108,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[silent dialogue Weiterführen]]></comment>
+		<comment><![CDATA[silent dialogue 
+Weiterführen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>31</uid>
@@ -2815,7 +3119,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Fragen formulieren Wortschatz erarbeiten]]></comment>
+		<comment><![CDATA[Fragen formulieren 
+Wortschatz erarbeiten]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>32</uid>
@@ -2825,7 +3130,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Thema Hauptpunkte]]></comment>
+		<comment><![CDATA[Thema 
+Hauptpunkte]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>33</uid>
@@ -2835,7 +3141,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Raster Tabelle timeline Lückentext]]></comment>
+		<comment><![CDATA[Raster 
+Tabelle 
+timeline 
+Lückentext]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>34</uid>
@@ -2865,7 +3174,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Nachfragen Eigene Meinung äußern]]></comment>
+		<comment><![CDATA[Nachfragen 
+Eigene Meinung äußern]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>37</uid>
@@ -2875,7 +3185,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Weiterrecherchieren Kleinen Sachtext schreiben]]></comment>
+		<comment><![CDATA[Weiterrecherchieren 
+Kleinen Sachtext schreiben]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>38</uid>
@@ -2885,7 +3196,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Fragen formulieren Wortschatz erarbeiten]]></comment>
+		<comment><![CDATA[Fragen formulieren 
+Wortschatz erarbeiten]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>39</uid>
@@ -2895,7 +3207,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Thema Hauptaussage Rahmenhandlung]]></comment>
+		<comment><![CDATA[Thema 
+Hauptaussage 
+Rahmenhandlung]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>40</uid>
@@ -2905,7 +3219,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Figuren Schauplätze]]></comment>
+		<comment><![CDATA[Figuren 
+Schauplätze]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>41</uid>
@@ -2915,7 +3230,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Bilder Musik]]></comment>
+		<comment><![CDATA[Bilder 
+Musik]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>42</uid>
@@ -2925,7 +3241,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Kameraeinstellung Musik]]></comment>
+		<comment><![CDATA[Kameraeinstellung 
+Musik]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>43</uid>
@@ -2945,7 +3262,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[silent viewing sound only freeze frame]]></comment>
+		<comment><![CDATA[silent viewing 
+sound only 
+freeze frame]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>45</uid>
@@ -2955,7 +3274,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Gefühle Identifikation Meinung]]></comment>
+		<comment><![CDATA[Gefühle 
+Identifikation 
+Meinung]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>46</uid>
@@ -2965,7 +3286,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Filmposter entwerfen  Alternatives Ende erfinden Nachspielen]]></comment>
+		<comment><![CDATA[Filmposter entwerfen  
+Alternatives Ende erfinden 
+Nachspielen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>47</uid>
@@ -2985,7 +3308,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[BetonungenKonsonanten Vokale Diphtonge]]></comment>
+		<comment><![CDATA[Betonungen
+Konsonanten 
+Vokale 
+Diphtonge]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>49</uid>
@@ -2995,7 +3321,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Pausen Sprechgeschwindigkeit Flüssigkeit Intonation]]></comment>
+		<comment><![CDATA[Pausen 
+Sprechgeschwindigkeit 
+Flüssigkeit 
+Intonation]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>50</uid>
@@ -3005,7 +3334,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[read and look up backward build-up-technique Gedächtnisstützen]]></comment>
+		<comment><![CDATA[read and look up 
+backward build-up-technique 
+Gedächtnisstützen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>51</uid>
@@ -3015,7 +3346,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Haltung Augenkontakt Gestik Mimik]]></comment>
+		<comment><![CDATA[Haltung 
+Augenkontakt 
+Gestik 
+Mimik]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>52</uid>
@@ -3025,7 +3359,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Neu ansetzen Im Text nachlesen Um Hilfe bitten Spickzettel nutzen]]></comment>
+		<comment><![CDATA[Neu ansetzen 
+Im Text nachlesen 
+Um Hilfe bitten 
+Spickzettel nutzen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>53</uid>
@@ -3035,7 +3372,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Etwas vorspielen Nähe/Distanz zum Publikum Stimme modulieren]]></comment>
+		<comment><![CDATA[Etwas vorspielen 
+Nähe/Distanz zum Publikum 
+Stimme modulieren]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>54</uid>
@@ -3045,7 +3384,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[cluster  mindmap Logische Abfolge festlegen]]></comment>
+		<comment><![CDATA[cluster  
+mindmap 
+Logische Abfolge festlegen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>55</uid>
@@ -3135,7 +3476,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Etwas richtig stellen Etwas umformulieren Etwas wiederholen]]></comment>
+		<comment><![CDATA[Etwas richtig stellen 
+Etwas umformulieren 
+Etwas wiederholen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>64</uid>
@@ -3145,7 +3488,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Nachschlagetechniken Aussprache]]></comment>
+		<comment><![CDATA[Nachschlagetechniken 
+Aussprache]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>65</uid>
@@ -3155,7 +3499,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[present progressive negation]]></comment>
+		<comment><![CDATA[present progressive 
+negation]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>66</uid>
@@ -3185,7 +3530,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[comparative superlative comparison of adverbs]]></comment>
+		<comment><![CDATA[comparative 
+superlative 
+comparison of adverbs]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>69</uid>
@@ -3205,7 +3552,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Ideen sammeln Strukturieren]]></comment>
+		<comment><![CDATA[Ideen sammeln 
+Strukturieren]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>71</uid>
@@ -3215,7 +3563,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Nachschlagetechniken Aussprache abklären]]></comment>
+		<comment><![CDATA[Nachschlagetechniken 
+Aussprache abklären]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>72</uid>
@@ -3225,7 +3574,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Einleitung Hauptpunkte Schluss]]></comment>
+		<comment><![CDATA[Einleitung 
+Hauptpunkte 
+Schluss]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>73</uid>
@@ -3245,7 +3596,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[want to Angaben zum Grund Angaben zur Zeit]]></comment>
+		<comment><![CDATA[want to 
+Angaben zum Grund 
+Angaben zur Zeit]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>75</uid>
@@ -3265,7 +3618,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Bilder Gegenstände]]></comment>
+		<comment><![CDATA[Bilder 
+Gegenstände]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>77</uid>
@@ -3275,7 +3629,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Etwas erklären Ein Beispiel geben]]></comment>
+		<comment><![CDATA[Etwas erklären 
+Ein Beispiel geben]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>78</uid>
@@ -3305,7 +3660,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Befragen Nachlesen]]></comment>
+		<comment><![CDATA[Befragen 
+Nachlesen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>81</uid>
@@ -3315,7 +3671,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Wortfelder erstellenAussprache abklären Verknüpfungswortschatz]]></comment>
+		<comment><![CDATA[Wortfelder erstellen
+Aussprache abklären 
+Verknüpfungswortschatz]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>82</uid>
@@ -3325,7 +3683,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[EinleitungHauptpunkteSchluss]]></comment>
+		<comment><![CDATA[Einleitung
+Hauptpunkte
+Schluss]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>83</uid>
@@ -3335,7 +3695,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Einen Gegenstand/Bild zeigen Ein Lied vorspielen Etwas vorspielen Eine Anekdote erzählen]]></comment>
+		<comment><![CDATA[Einen Gegenstand/Bild zeigen 
+Ein Lied vorspielen 
+Etwas vorspielen 
+Eine Anekdote erzählen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>84</uid>
@@ -3345,7 +3708,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Anzahl der Bilder Aussagekraft der Bilder Bezug zum Thema]]></comment>
+		<comment><![CDATA[Anzahl der Bilder 
+Aussagekraft der Bilder 
+Bezug zum Thema]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>85</uid>
@@ -3355,7 +3720,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Beschreiben Erklären Pausen zum Betrachten einräumen]]></comment>
+		<comment><![CDATA[Beschreiben 
+Erklären 
+Pausen zum Betrachten einräumen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>86</uid>
@@ -3365,7 +3732,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Schlüsselwörter Wichtige Namen Zentrale Vokabeln]]></comment>
+		<comment><![CDATA[Schlüsselwörter 
+Wichtige Namen 
+Zentrale Vokabeln]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>87</uid>
@@ -3375,7 +3744,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[comparative superlative]]></comment>
+		<comment><![CDATA[comparative 
+superlative]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>88</uid>
@@ -3385,7 +3755,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Interesse ausdrücken Meinung ausdrücken]]></comment>
+		<comment><![CDATA[Interesse ausdrücken 
+Meinung ausdrücken]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>89</uid>
@@ -3395,7 +3766,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Zusätzliche Informationen geben Etwas genauer erklären]]></comment>
+		<comment><![CDATA[Zusätzliche Informationen geben 
+Etwas genauer erklären]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>90</uid>
@@ -3405,7 +3777,11 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Notizen vom Text Notizen zu eigenen Leseerfahrungen Notizen zu Hintergrundinformationen Wichtiges von Unwichtigem trennen Wortschatz]]></comment>
+		<comment><![CDATA[Notizen vom Text 
+Notizen zu eigenen Leseerfahrungen 
+Notizen zu Hintergrundinformationen 
+Wichtiges von Unwichtigem trennen 
+Wortschatz]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>91</uid>
@@ -3415,7 +3791,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Einstieg Inhaltswiedergabe Beschreibungen Kommentar]]></comment>
+		<comment><![CDATA[Einstieg 
+Inhaltswiedergabe 
+Beschreibungen 
+Kommentar]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>92</uid>
@@ -3425,7 +3804,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Buchcover beschreiben Filmplakat beschreiben Szene zeigen]]></comment>
+		<comment><![CDATA[Buchcover beschreiben 
+Filmplakat beschreiben 
+Szene zeigen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>93</uid>
@@ -3435,7 +3816,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[book in the box show and tell Poster Wandzeitung]]></comment>
+		<comment><![CDATA[book in the box 
+show and tell 
+Poster 
+Wandzeitung]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>94</uid>
@@ -3465,7 +3849,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[relative clauses subordinate clauses]]></comment>
+		<comment><![CDATA[relative clauses 
+subordinate clauses]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>97</uid>
@@ -3475,7 +3860,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Empfindungen ausdrücken Meinung darlegen]]></comment>
+		<comment><![CDATA[Empfindungen ausdrücken 
+Meinung darlegen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>98</uid>
@@ -3485,7 +3871,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Fragen stellen  Fragen beantworten Meinung begründen]]></comment>
+		<comment><![CDATA[Fragen stellen  
+Fragen beantworten 
+Meinung begründen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>99</uid>
@@ -3495,7 +3883,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Begrüßen Verabschieden Sich /andere vorstellen Nach dem Befinden fragen und antworten]]></comment>
+		<comment><![CDATA[Begrüßen 
+Verabschieden 
+Sich /andere vorstellen 
+Nach dem Befinden fragen und antworten]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>100</uid>
@@ -3505,7 +3896,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Einfache Höflichkeitsformen Gegenstände im Klassenzimmer]]></comment>
+		<comment><![CDATA[Einfache Höflichkeitsformen 
+Gegenstände im Klassenzimmer]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>101</uid>
@@ -3535,7 +3927,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[wh-questions yes/no-questions &amp; short answers]]></comment>
+		<comment><![CDATA[wh-questions 
+yes/no-questions &amp; short answers]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>104</uid>
@@ -3555,7 +3948,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Nachfragen  Um Wiederholung bitten Nach einem englischen Wort fragen]]></comment>
+		<comment><![CDATA[Nachfragen  
+Um Wiederholung bitten 
+Nach einem englischen Wort fragen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>106</uid>
@@ -3565,7 +3960,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Gestik Mimik]]></comment>
+		<comment><![CDATA[Gestik 
+Mimik]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>107</uid>
@@ -3585,17 +3981,28 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Englisch-DeutschDeutsch-Englisch]]></comment>
+		<comment><![CDATA[Englisch-Deutsch
+Deutsch-Englisch]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>109</uid>
-		<title><![CDATA[Ich kann mich mit einem Partner Informationen austauschen über - Name/Nachname  - Alter - Adresse - Nationalität/Herkunft - E-Mail/Telefonnummer - Geburtstag]]></title>
+		<title><![CDATA[Ich kann mich mit einem Partner Informationen austauschen über 
+- Name/Nachname  
+- Alter 
+- Adresse 
+- Nationalität/Herkunft 
+- E-Mail/Telefonnummer 
+- Geburtstag]]></title>
 		<niveauid>0</niveauid>
 		<sorting>109</sorting>
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[be Ländernamen Monatsnamen Zahlen Datum]]></comment>
+		<comment><![CDATA[be 
+Ländernamen 
+Monatsnamen 
+Zahlen 
+Datum]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>110</uid>
@@ -3605,7 +4012,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[have got Wortschatz Familie und Haustiere]]></comment>
+		<comment><![CDATA[have got 
+Wortschatz 
+Familie und Haustiere]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>111</uid>
@@ -3615,7 +4024,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Über das  Wetter reden Komplimente über Kleidung machen Über das reden, was jemand gerade isst oder trinkt]]></comment>
+		<comment><![CDATA[Über das  Wetter reden 
+Komplimente über Kleidung machen 
+Über das reden, was jemand gerade isst oder trinkt]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>112</uid>
@@ -3635,7 +4046,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Zuhören Unbekanntes Wort zuflüstern Aussprechen lassen]]></comment>
+		<comment><![CDATA[Zuhören 
+Unbekanntes Wort zuflüstern 
+Aussprechen lassen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>114</uid>
@@ -3645,7 +4058,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Englisch-Deutsch Deutsch- Englisch]]></comment>
+		<comment><![CDATA[Englisch-Deutsch 
+Deutsch- Englisch]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>115</uid>
@@ -3655,7 +4069,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[weathertemperature seasons]]></comment>
+		<comment><![CDATA[weather
+temperature 
+seasons]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>116</uid>
@@ -3665,7 +4081,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Stundenplan Fächer Wochentage simple present]]></comment>
+		<comment><![CDATA[Stundenplan 
+Fächer 
+Wochentage 
+simple present]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>117</uid>
@@ -3685,7 +4104,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Räume im Haus Möbel Familienmitglieder]]></comment>
+		<comment><![CDATA[Räume im Haus 
+Möbel 
+Familienmitglieder]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>119</uid>
@@ -3695,7 +4116,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Uhrzeit modal auxiliaries]]></comment>
+		<comment><![CDATA[Uhrzeit 
+modal auxiliaries]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>120</uid>
@@ -3745,7 +4167,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[prepositions Uhrzeit einfache Wegerklärungen]]></comment>
+		<comment><![CDATA[prepositions 
+Uhrzeit 
+einfache Wegerklärungen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>125</uid>
@@ -3755,7 +4179,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Englisch-DeutschDeutsch-Englisch]]></comment>
+		<comment><![CDATA[Englisch-Deutsch
+Deutsch-Englisch]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>126</uid>
@@ -3765,7 +4190,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Weihnachten  Hannukah Fastenbrechen Thanksgiving]]></comment>
+		<comment><![CDATA[Weihnachten  
+Hannukah 
+Fastenbrechen 
+Thanksgiving]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>127</uid>
@@ -3775,7 +4203,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Wortschatz: Länder Jahreszeiten Wetter]]></comment>
+		<comment><![CDATA[Wortschatz: 
+Länder 
+Jahreszeiten 
+Wetter]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>128</uid>
@@ -3785,7 +4216,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Geburtstagsfeste Ausflüge Urlaubsreisen Halloween]]></comment>
+		<comment><![CDATA[Geburtstagsfeste 
+Ausflüge 
+Urlaubsreisen 
+Halloween]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>129</uid>
@@ -3795,7 +4229,11 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Essgewohnheiten Kleidung Verbote Pflichten zu Hause Taschengeld]]></comment>
+		<comment><![CDATA[Essgewohnheiten 
+Kleidung 
+Verbote 
+Pflichten zu Hause 
+Taschengeld]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>130</uid>
@@ -3805,7 +4243,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Schule Essen Freizeit Familienleben]]></comment>
+		<comment><![CDATA[Schule 
+Essen 
+Freizeit 
+Familienleben]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>131</uid>
@@ -3815,7 +4256,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Interesse bekunden Meinung äußern Gefühle äußern]]></comment>
+		<comment><![CDATA[Interesse bekunden 
+Meinung äußern 
+Gefühle äußern]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>132</uid>
@@ -3845,7 +4288,12 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Thema, Fragen, Gruppe der Befragten festlegen Umfrage durchführen Auswerten Ergebnisse vorstellen]]></comment>
+		<comment><![CDATA[Thema, 
+Fragen, 
+Gruppe der Befragten festlegen 
+Umfrage durchführen 
+Auswerten 
+Ergebnisse vorstellen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>135</uid>
@@ -3855,7 +4303,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Englisch-DeutschDeutsch-Englisch]]></comment>
+		<comment><![CDATA[Englisch-Deutsch
+Deutsch-Englisch]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>136</uid>
@@ -3865,7 +4314,12 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Kleider Lebensmittel  Souvenirs, Postkarten, Zeitschriften Schulsachen]]></comment>
+		<comment><![CDATA[Kleider 
+Lebensmittel  
+Souvenirs, 
+Postkarten, 
+Zeitschriften 
+Schulsachen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>137</uid>
@@ -3875,7 +4329,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Bank / Post  Bahnhof  Kino / Zoo]]></comment>
+		<comment><![CDATA[Bank / Post  
+Bahnhof  
+Kino / Zoo]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>138</uid>
@@ -3895,7 +4351,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Stadtplan  U-Bahn-Karte]]></comment>
+		<comment><![CDATA[Stadtplan  
+U-Bahn-Karte]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>140</uid>
@@ -3905,7 +4362,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[(fast)food Getränke]]></comment>
+		<comment><![CDATA[(fast)food 
+Getränke]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>141</uid>
@@ -3925,7 +4383,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[city brochures  maps]]></comment>
+		<comment><![CDATA[city brochures  
+maps]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>143</uid>
@@ -3935,7 +4394,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[youth hostels campsites]]></comment>
+		<comment><![CDATA[youth hostels 
+campsites]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>144</uid>
@@ -3955,7 +4415,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Englisch-DeutschDeutsch-Englisch]]></comment>
+		<comment><![CDATA[Englisch-Deutsch
+Deutsch-Englisch]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>146</uid>
@@ -3965,7 +4426,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Memorierungs-techniken]]></comment>
+		<comment><![CDATA[Memorierungs-
+techniken]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>147</uid>
@@ -3975,7 +4437,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Gestik Mimik Stimme Sprache und Bewegung kombinieren]]></comment>
+		<comment><![CDATA[Gestik 
+Mimik 
+Stimme 
+Sprache und Bewegung kombinieren]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>148</uid>
@@ -3985,7 +4450,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Bühnenbild Kostüme Requisiten]]></comment>
+		<comment><![CDATA[Bühnenbild 
+Kostüme 
+Requisiten]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>149</uid>
@@ -3995,7 +4462,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Nähe und Distanz zum Publikum Bewegung auf der Bühne]]></comment>
+		<comment><![CDATA[Nähe und Distanz zum Publikum 
+Bewegung auf der Bühne]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>150</uid>
@@ -4025,7 +4493,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[BilderNamen]]></comment>
+		<comment><![CDATA[Bilder
+Namen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>153</uid>
@@ -4035,7 +4504,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Satz einem Bild zuordnen Sätze in die richtige Reihenfolge bringen Fragen und Antworten zuordnen]]></comment>
+		<comment><![CDATA[Satz einem Bild zuordnen 
+Sätze in die richtige Reihenfolge bringen 
+Fragen und Antworten zuordnen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>154</uid>
@@ -4045,7 +4516,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[wh-questions yes/no questionsl]]></comment>
+		<comment><![CDATA[wh-questions 
+yes/no questionsl]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>155</uid>
@@ -4075,7 +4547,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[word order subject/verb/objectquestions negation]]></comment>
+		<comment><![CDATA[word order 
+subject/verb/object
+questions 
+negation]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>158</uid>
@@ -4095,7 +4570,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Bilder betrachten Erwartungen im Kopf formulieren]]></comment>
+		<comment><![CDATA[Bilder betrachten 
+Erwartungen im Kopf formulieren]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>160</uid>
@@ -4105,7 +4581,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Bilder Farben Namen]]></comment>
+		<comment><![CDATA[Bilder 
+Farben 
+Namen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>161</uid>
@@ -4115,7 +4593,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Verbot Warnung Hinweis Werbung]]></comment>
+		<comment><![CDATA[Verbot 
+Warnung 
+Hinweis 
+Werbung]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>162</uid>
@@ -4125,7 +4606,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Preise Namen Daten Uhrzeiten]]></comment>
+		<comment><![CDATA[Preise 
+Namen 
+Daten 
+Uhrzeiten]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>163</uid>
@@ -4135,7 +4619,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Markieren Symbole verwenden: Wegstreichen, Pfeile, Einkreisen]]></comment>
+		<comment><![CDATA[Markieren 
+Symbole verwenden: 
+Wegstreichen, Pfeile, Einkreisen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>164</uid>
@@ -4145,7 +4631,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Internationale Wörter Herleiten aus dem Deutschen]]></comment>
+		<comment><![CDATA[Internationale Wörter 
+Herleiten aus dem Deutschen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>165</uid>
@@ -4165,7 +4652,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[imperatives do/don´t]]></comment>
+		<comment><![CDATA[imperatives 
+do/don´t]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>167</uid>
@@ -4175,7 +4663,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Bildinhalt-Textinhalt Layout]]></comment>
+		<comment><![CDATA[Bildinhalt-Textinhalt 
+Layout]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>168</uid>
@@ -4205,7 +4694,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Poster Verpackung]]></comment>
+		<comment><![CDATA[Poster 
+Verpackung]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>171</uid>
@@ -4215,7 +4705,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Bilder betrachten Ideen sammeln Wortschatz aktivieren]]></comment>
+		<comment><![CDATA[Bilder betrachten 
+Ideen sammeln 
+Wortschatz aktivieren]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>172</uid>
@@ -4225,7 +4717,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Schreiber/Empfänger Satzzeichen Betreffzeile]]></comment>
+		<comment><![CDATA[Schreiber/
+Empfänger 
+Satzzeichen 
+Betreffzeile]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>173</uid>
@@ -4235,7 +4730,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Thema Anlass Absicht]]></comment>
+		<comment><![CDATA[Thema 
+Anlass 
+Absicht]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>174</uid>
@@ -4245,7 +4742,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[AnredeVerweise Verabschiedung]]></comment>
+		<comment><![CDATA[Anrede
+Verweise 
+Verabschiedung]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>175</uid>
@@ -4255,7 +4754,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Grußformeln  Höflichkeitsfloskeln]]></comment>
+		<comment><![CDATA[Grußformeln  
+Höflichkeitsfloskeln]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>176</uid>
@@ -4265,7 +4765,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Stil Inhalt]]></comment>
+		<comment><![CDATA[Stil 
+Inhalt]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>177</uid>
@@ -4285,7 +4786,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Beziehung Schreiber-Empfänger Schreibanlass]]></comment>
+		<comment><![CDATA[Beziehung Schreiber-Empfänger 
+Schreibanlass]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>179</uid>
@@ -4315,7 +4817,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Vorwissen notieren Wortschatz abrufen Persönliche Erfahrungen notieren]]></comment>
+		<comment><![CDATA[Vorwissen notieren 
+Wortschatz abrufen 
+Persönliche Erfahrungen notieren]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>182</uid>
@@ -4325,7 +4829,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Überschrift Zwischen-überschriften Bilder]]></comment>
+		<comment><![CDATA[Überschrift 
+Zwischen-
+überschriften 
+Bilder]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>183</uid>
@@ -4335,7 +4842,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[question words wh-questions]]></comment>
+		<comment><![CDATA[question words 
+wh-questions]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>184</uid>
@@ -4355,7 +4863,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Einleitung Hauptteil Schluss]]></comment>
+		<comment><![CDATA[Einleitung 
+Hauptteil 
+Schluss]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>186</uid>
@@ -4385,7 +4895,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[adverbs subordinate clauses present perfect-simple past]]></comment>
+		<comment><![CDATA[adverbs 
+subordinate clauses 
+present perfect-simple past]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>189</uid>
@@ -4395,7 +4907,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Weiterer Verlauf der Handlung Ende]]></comment>
+		<comment><![CDATA[Weiterer Verlauf der Handlung 
+Ende]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>190</uid>
@@ -4405,7 +4918,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Kommentieren Eigene Erfahrungen anführen]]></comment>
+		<comment><![CDATA[Kommentieren 
+Eigene Erfahrungen anführen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>191</uid>
@@ -4415,7 +4929,11 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Pantomime Standbilder Nachspielen Verändern Wandzeitung]]></comment>
+		<comment><![CDATA[Pantomime 
+Standbilder 
+Nachspielen 
+Verändern 
+Wandzeitung]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>192</uid>
@@ -4425,7 +4943,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[mindmap cluster]]></comment>
+		<comment><![CDATA[mindmap 
+cluster]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>193</uid>
@@ -4445,7 +4964,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Diagonallesen Wörter überfliegen Segmentieren von Wortabfolgen]]></comment>
+		<comment><![CDATA[Diagonallesen 
+Wörter überfliegen 
+Segmentieren von Wortabfolgen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>195</uid>
@@ -4455,7 +4976,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Bastelanleitung Bedienungsanleitung MalanleitungBackrezept]]></comment>
+		<comment><![CDATA[Bastelanleitung 
+Bedienungsanleitung 
+Malanleitung
+Backrezept]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>196</uid>
@@ -4495,7 +5019,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Vortrag Sachtexte schreiben]]></comment>
+		<comment><![CDATA[Vortrag 
+Sachtexte schreiben]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>200</uid>
@@ -4505,7 +5030,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Abrufen was ich zum Thema weiß Wortschatz aktivieren Fragen aufschreiben]]></comment>
+		<comment><![CDATA[Abrufen was ich zum Thema weiß 
+Wortschatz aktivieren 
+Fragen aufschreiben]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>201</uid>
@@ -4515,7 +5042,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Glossar Zeichnungen Fußnoten mit Worterklärungen]]></comment>
+		<comment><![CDATA[Glossar 
+Zeichnungen 
+Fußnoten mit Worterklärungen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>202</uid>
@@ -4525,7 +5054,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Notizen Fragen beantworten]]></comment>
+		<comment><![CDATA[Notizen 
+Fragen beantworten]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>203</uid>
@@ -4545,7 +5075,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Schreiben LFS 2 / 3]]></comment>
+		<comment><![CDATA[Schreiben 
+LFS 2 / 3]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>205</uid>
@@ -4555,7 +5086,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[story – plot Verwendeter Wortschatz]]></comment>
+		<comment><![CDATA[story – plot 
+Verwendeter Wortschatz]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>206</uid>
@@ -4565,7 +5097,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Eigene Gedanken und Gefühle beim Lesen notieren Fragen an den Text  Spekulieren Vergleich mit eigenen Erfahrungen]]></comment>
+		<comment><![CDATA[Eigene Gedanken und Gefühle beim Lesen notieren 
+Fragen an den Text  
+Spekulieren 
+Vergleich mit eigenen Erfahrungen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>207</uid>
@@ -4575,7 +5110,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Buchvorstellung mich mit anderen austauschen Lesetagebuch]]></comment>
+		<comment><![CDATA[Buchvorstellung 
+mich mit anderen austauschen 
+Lesetagebuch]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>208</uid>
@@ -4585,7 +5122,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Buchpräsentation Schriftliche Buchempfehlungbook in the box]]></comment>
+		<comment><![CDATA[Buchpräsentation 
+Schriftliche Buchempfehlung
+book in the box]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>209</uid>
@@ -4595,7 +5134,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Kreuzworträtsel Silbenrätsel Reime vervollständigen]]></comment>
+		<comment><![CDATA[Kreuzworträtsel 
+Silbenrätsel 
+Reime vervollständigen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>210</uid>
@@ -4605,7 +5146,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Neue Wörter aus einem vorhandenen bilden Worthälften richtig verbinden Wortschlangen]]></comment>
+		<comment><![CDATA[Neue Wörter aus einem vorhandenen bilden 
+Worthälften richtig verbinden 
+Wortschlangen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>211</uid>
@@ -4615,7 +5158,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[HausZimmer Menschen Essen]]></comment>
+		<comment><![CDATA[Haus
+Zimmer 
+Menschen 
+Essen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>212</uid>
@@ -4625,7 +5171,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Freundebuch Fragebogen Lückentext]]></comment>
+		<comment><![CDATA[Freundebuch 
+Fragebogen 
+Lückentext]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>213</uid>
@@ -4635,7 +5183,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Buchstabierte Wörter aufschreiben Diktate]]></comment>
+		<comment><![CDATA[Buchstabierte Wörter aufschreiben 
+Diktate]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>214</uid>
@@ -4645,7 +5194,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[to-do-list shopping list do´s/don´ts pro/con]]></comment>
+		<comment><![CDATA[to-do-list 
+shopping list 
+do´s/don´ts 
+pro/con]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>215</uid>
@@ -4655,7 +5207,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[clustering mindmapping]]></comment>
+		<comment><![CDATA[clustering 
+mindmapping]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>216</uid>
@@ -4665,7 +5218,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Wortarten Gegensatzpaare Ober-/Unterbegriffe]]></comment>
+		<comment><![CDATA[Wortarten 
+Gegensatzpaare 
+Ober-/Unterbegriffe]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>217</uid>
@@ -4675,7 +5230,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[noun adjective verb]]></comment>
+		<comment><![CDATA[noun 
+adjective 
+verb]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>218</uid>
@@ -4685,7 +5242,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Kreative Wortbilder poems Text-Bild-Plakate Reime bilden]]></comment>
+		<comment><![CDATA[Kreative Wortbilder 
+poems 
+Text-Bild-Plakate 
+Reime bilden]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>219</uid>
@@ -4695,7 +5255,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Groß- und Kleinschreibung Prüfen und verbessern]]></comment>
+		<comment><![CDATA[Groß- und Kleinschreibung 
+Prüfen und verbessern]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>220</uid>
@@ -4705,7 +5266,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Textbausteine Wortgerüste Satzanfänge]]></comment>
+		<comment><![CDATA[Textbausteine 
+Wortgerüste 
+Satzanfänge]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>221</uid>
@@ -4715,7 +5278,11 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[be/have adjectives pronouns determiners can]]></comment>
+		<comment><![CDATA[be/have 
+adjectives 
+pronouns 
+determiners 
+can]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>222</uid>
@@ -4725,7 +5292,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Farben Ländernamen Zahlen Körperteile]]></comment>
+		<comment><![CDATA[Farben 
+Ländernamen 
+Zahlen 
+Körperteile]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>223</uid>
@@ -4735,7 +5305,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[there is/are prepositions]]></comment>
+		<comment><![CDATA[there is/are 
+prepositions]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>224</uid>
@@ -4765,7 +5336,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Wortschatz  Grammatik Rechtschreibung]]></comment>
+		<comment><![CDATA[Wortschatz  
+Grammatik 
+Rechtschreibung]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>227</uid>
@@ -4775,7 +5348,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Datum  Überschrift Schönschrift]]></comment>
+		<comment><![CDATA[Datum  
+Überschrift 
+Schönschrift]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>228</uid>
@@ -4785,7 +5360,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Steckbrief Poster]]></comment>
+		<comment><![CDATA[Steckbrief 
+Poster]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>229</uid>
@@ -4795,7 +5371,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[simple present simple past]]></comment>
+		<comment><![CDATA[simple present 
+simple past]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>230</uid>
@@ -4805,7 +5382,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[brainstorming mindmapping]]></comment>
+		<comment><![CDATA[brainstorming 
+mindmapping]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>231</uid>
@@ -4815,7 +5393,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Menschen befragen Nachlesen]]></comment>
+		<comment><![CDATA[Menschen befragen 
+Nachlesen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>232</uid>
@@ -4825,7 +5404,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Reihenfolge Logischer Aufbau]]></comment>
+		<comment><![CDATA[Reihenfolge 
+Logischer Aufbau]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>233</uid>
@@ -4835,7 +5415,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[simple past irregular verbs adverbs of manner]]></comment>
+		<comment><![CDATA[simple past 
+irregular verbs 
+adverbs of manner]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>234</uid>
@@ -4845,7 +5427,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[adverbials subordinate clauses Datum]]></comment>
+		<comment><![CDATA[adverbials 
+subordinate 
+clauses Datum]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>235</uid>
@@ -4855,7 +5439,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[linking words personal pronouns]]></comment>
+		<comment><![CDATA[linking words 
+personal pronouns]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>236</uid>
@@ -4895,7 +5480,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Photos Zeichnungen]]></comment>
+		<comment><![CDATA[Photos 
+Zeichnungen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>240</uid>
@@ -4905,7 +5491,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Textsorte  wählen Notizen]]></comment>
+		<comment><![CDATA[Textsorte  wählen 
+Notizen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>241</uid>
@@ -4915,7 +5502,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Urlaubspostkarte Brief]]></comment>
+		<comment><![CDATA[Urlaubspostkarte 
+Brief]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>242</uid>
@@ -4925,7 +5513,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[imperatives want to questions]]></comment>
+		<comment><![CDATA[imperatives 
+want to 
+questions]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>243</uid>
@@ -4935,7 +5525,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[will-future conditional I questions]]></comment>
+		<comment><![CDATA[will-future 
+conditional I 
+questions]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>244</uid>
@@ -5015,7 +5607,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Webseite Schulbuchtexte]]></comment>
+		<comment><![CDATA[Webseite 
+Schulbuchtexte]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>252</uid>
@@ -5025,7 +5618,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Inhaltliche Notizen Wortschatz Fragen]]></comment>
+		<comment><![CDATA[Inhaltliche Notizen 
+Wortschatz 
+Fragen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>253</uid>
@@ -5045,7 +5640,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Thema Hauptpunkte Beispiele Schluss]]></comment>
+		<comment><![CDATA[Thema 
+Hauptpunkte 
+Beispiele 
+Schluss]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>255</uid>
@@ -5075,7 +5673,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[simple past relative clauses]]></comment>
+		<comment><![CDATA[simple past 
+relative clauses]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>258</uid>
@@ -5085,7 +5684,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[adjective/adverb comparative superlative quantifiers]]></comment>
+		<comment><![CDATA[adjective/adverb 
+comparative 
+superlative 
+quantifiers]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>259</uid>
@@ -5115,7 +5717,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Reiseführer Wandzeitung]]></comment>
+		<comment><![CDATA[Reiseführer 
+Wandzeitung]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>262</uid>
@@ -5125,7 +5728,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[brainstorming mindmapping]]></comment>
+		<comment><![CDATA[brainstorming 
+mindmapping]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>263</uid>
@@ -5135,7 +5739,10 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Anfang schreiben Ende schreiben Kommentare einfügen Dialog ergänzen]]></comment>
+		<comment><![CDATA[Anfang schreiben 
+Ende schreiben 
+Kommentare einfügen 
+Dialog ergänzen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>264</uid>
@@ -5155,7 +5762,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Tagebucheintrag Gedankengänge]]></comment>
+		<comment><![CDATA[Tagebucheintrag 
+Gedankengänge]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>266</uid>
@@ -5185,7 +5793,9 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Streitgespräch Wiedertreffen Versöhnung]]></comment>
+		<comment><![CDATA[Streitgespräch 
+Wiedertreffen 
+Versöhnung]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>269</uid>
@@ -5195,7 +5805,8 @@
 		<skillid>0</skillid>
 		<parent_id>0</parent_id>
 		<exampletext></exampletext>
-		<comment><![CDATA[Comic Zeichnungen mit Sätzen]]></comment>
+		<comment><![CDATA[Comic 
+Zeichnungen mit Sätzen]]></comment>
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>270</uid>
@@ -13080,90 +13691,18 @@
 		<sorting>3</sorting>
 		<parent_tax>0</parent_tax>
 	</table>
-	<table name="block_exacompcategories">
-		<uid>7</uid>
-		<title><![CDATA[1 - Zuhören und Spre]]></title>
-		<parent_cat>0</parent_cat>
-		<sorting>0</sorting>
-		<level>3</level>
-	</table>
-	<table name="block_exacompcategories">
-		<uid>8</uid>
-		<title><![CDATA[2 - Schreiben]]></title>
-		<parent_cat>0</parent_cat>
-		<sorting>0</sorting>
-		<level>3</level>
-	</table>
-	<table name="block_exacompcategories">
-		<uid>9</uid>
-		<title><![CDATA[3 - Lesen]]></title>
-		<parent_cat>0</parent_cat>
-		<sorting>0</sorting>
-		<level>3</level>
-	</table>
-	<table name="block_exacompcategories">
-		<uid>1</uid>
-		<title><![CDATA[LF 1]]></title>
-		<parent_cat>0</parent_cat>
-		<sorting>1</sorting>
-		<level>4</level>
-	</table>
-	<table name="block_exacompcategories">
-		<uid>2</uid>
-		<title><![CDATA[LF 2]]></title>
-		<parent_cat>0</parent_cat>
-		<sorting>1</sorting>
-		<level>4</level>
-	</table>
-	<table name="block_exacompcategories">
-		<uid>3</uid>
-		<title><![CDATA[LF 3]]></title>
-		<parent_cat>0</parent_cat>
-		<sorting>1</sorting>
-		<level>4</level>
-	</table>
-	<table name="block_exacompcategories">
-		<uid>4</uid>
-		<title><![CDATA[LF 4]]></title>
-		<parent_cat>0</parent_cat>
-		<sorting>1</sorting>
-		<level>4</level>
-	</table>
-	<table name="block_exacompcategories">
-		<uid>5</uid>
-		<title><![CDATA[LF 5]]></title>
-		<parent_cat>0</parent_cat>
-		<sorting>1</sorting>
-		<level>4</level>
-	</table>
-	<table name="block_exacompcategories">
-		<uid>6</uid>
-		<title><![CDATA[LF 6]]></title>
-		<parent_cat>0</parent_cat>
-		<sorting>1</sorting>
-		<level>4</level>
-	</table>
-	<table name="block_exacompcategories">
-		<uid>10</uid>
-		<title><![CDATA[LernSchritte]]></title>
-		<parent_cat>0</parent_cat>
-		<sorting>0</sorting>
-		<level>6</level>
-	</table>
-	<table name="block_exacompcategories">
-		<uid>11</uid>
-		<title><![CDATA[LernThemen]]></title>
-		<parent_cat>0</parent_cat>
-		<sorting>0</sorting>
-		<level>6</level>
-	</table>
-	<table name="block_exacompcategories">
-		<uid>12</uid>
-		<title><![CDATA[LernProjekte]]></title>
-		<parent_cat>0</parent_cat>
-		<sorting>0</sorting>
-		<level>6</level>
-	</table>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	<table name="block_exacompdescrtopic_mm">
 		<descrid>1</descrid>
 		<topicid>1</topicid>

@@ -131,21 +131,10 @@ function block_exacomp_xml_insert_category($value,$source) {
 	if($cat) {
 		$data['id'] = $cat->id;
 		$DB->update_record("block_exacompcategories", $data);
-		$catid = $cat->id;
 	} else {
-		$catid = $DB->insert_record("block_exacompcategories", $data);
+		$DB->insert_record("block_exacompcategories", $data);
 	}
-	$topics = $DB->get_records("block_exacomptopics",array("cat"=>intval($value->uid)));
-	foreach($topics as $topic) {
-		$topic->cat = $catid;
-		$DB->update_record("block_exacomptopics",$topic);
-	}
-		
-	$subjects = $DB->get_records("block_exacompsubjects",array("cat"=>intval($value->uid)));
-	foreach($subjects as $subject) {
-		$subject->cat = $catid;
-		$DB->update_record("block_exacompsubjects",$subject);
-	}
+
 }
 function block_exacomp_xml_insert_skill($value,$source) {
 
@@ -277,6 +266,8 @@ function block_exacomp_xml_insert_topic($value,$source) {
 	else $subj=0;
 	$topic = $DB->get_record('block_exacomptopics', array("sourceid" => (int)$value->uid,"source"=>$source));
 
+	$catid = $DB->get_field('block_exacompcategories', 'id', array('sourceid'=>$value->cat));
+	
 	if ($topic) {
 		//update
 		$topic->title = $value->title;
@@ -284,7 +275,7 @@ function block_exacomp_xml_insert_topic($value,$source) {
 		$topic->subjid = $subj;
 		$topic->sorting = $value->sorting;
 		$topic->description = $value->description;
-		$topic->cat = (int)$value->cat;
+		$topic->cat = $catid;
 		$topic->requirement = (string)$value->requirement;
 		$topic->benefit = (string)$value->benefit;
 		$topic->knowledgecheck = (string)$value->knowledgecheck;
@@ -300,7 +291,8 @@ function block_exacomp_xml_insert_topic($value,$source) {
 		$value->sourceid = $value->uid;
 		$value->subjid = $subj;
 		$value->source = $source;
-		$DB->insert_record('block_exacomptopics', $new_value);
+		$value->cat = $catid;
+		$DB->insert_record('block_exacomptopics', $value);
 	}
 }
 

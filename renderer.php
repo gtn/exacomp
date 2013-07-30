@@ -45,7 +45,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		$rows = array();
 		
-		//erste Reihe->Überschriften
+		//erste Reihe->ï¿½berschriften
 		$row = new html_table_row();
 		$cell = new html_table_cell();
 		$cell->text = "";
@@ -112,8 +112,108 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		return html_writer::tag("div", html_writer::table($table), array("id"=>"exabis_competences_block"));
 	}
+	public function render_tax_competence_grid($niveaus, $subject, $topics, $selection = array(), $courseid = 0) {
+		global $CFG;
+		
+		$table = new html_table();
+		$table->attributes['class'] = 'competence_grid';
+		$head = array();
+		$head[] = "";
+		$head[] = "";
+		$head[] = "";
+		$head = array_merge($head,$niveaus);
+		$table->head = $head;
+		
+		// Kompetenzbereich
+		$rows = array();
+		$row = new html_table_row();
+		$cell = new html_table_cell();
+		$cell->text = html_writer::tag("p","Kompetenzbereich");
+		$cell->attributes['class'] = 'skill';
+		$cell->rowspan = 6;
+		$row->cells[] = $cell;
 
-	public function render_competence_grid($niveaus, $skills, $topics, $data) {
+		$rows[] = $row;
+	
+		// Subject-Title
+		$row = new html_table_row();
+		$cell = new html_table_cell();
+		$cell->text = html_writer::tag("p",$subject->title);
+		$cell->attributes['class'] = 'topic';
+		$cell->rowspan = 5;
+		$row->cells[] = $cell;
+		
+		$rows[] = $row;
+		
+		// Topic-Title
+		$row = new html_table_row();
+		$cell = new html_table_cell();
+		$cell->text = html_writer::tag("p","beschreibung");
+		$cell->attributes['class'] = '';
+		$row->cells[] = $cell;
+
+		foreach($topics as $topic) {
+			$cell = new html_table_cell();
+			
+			$text = $topic->title;
+			if(in_array($topic->id, $selection)) {
+				$text = html_writer::link($CFG->wwwroot."/blocks/exacomp/assign_competencies.php?courseid=".$courseid."&subjectid=".$subject->id."&topicid=".$topic->id, $text);
+			}
+			
+			$cell->text = html_writer::tag("p",$text);
+			$row->cells[] = $cell;
+		}
+		$rows[] = $row;
+		
+		// A Taxonomie
+		$row = new html_table_row();
+		$cell = new html_table_cell();
+		$cell->text = html_writer::tag("p","A");
+		$cell->attributes['class'] = 'atax';
+		$row->cells[] = $cell;
+		
+		foreach($topics as $topic) {
+			$cell = new html_table_cell();
+			$cell->text = html_writer::tag("p",$topic->ataxonomie);
+			$cell->attributes['class'] = 'atax';
+			$row->cells[] = $cell;
+		}
+		$rows[] = $row;
+		
+		// B Taxonomie
+		$row = new html_table_row();
+		$cell = new html_table_cell();
+		$cell->text = html_writer::tag("p","B");
+		$cell->attributes['class'] = '';
+		$row->cells[] = $cell;
+		
+		foreach($topics as $topic) {
+			$cell = new html_table_cell();
+			$cell->text = html_writer::tag("p",$topic->btaxonomie);
+			$row->cells[] = $cell;
+		}
+		$rows[] = $row;
+		
+		// C Taxonomie
+		$row = new html_table_row();
+		$cell = new html_table_cell();
+		$cell->text = html_writer::tag("p","C");
+		$cell->attributes['class'] = '';
+		$row->cells[] = $cell;
+		
+		foreach($topics as $topic) {
+			$cell = new html_table_cell();
+			$cell->text = html_writer::tag("p",$topic->ctaxonomie);
+			$row->cells[] = $cell;
+		}
+		$rows[] = $row;
+		$table->data = $rows;
+		
+		return html_writer::tag("div", html_writer::table($table), array("id"=>"exabis_competences_block"));
+	}
+	public function render_competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0) {
+		global $CFG;
+		
 		$table = new html_table();
 		$table->attributes['class'] = 'competence_grid';
 		$head = array();
@@ -128,10 +228,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$cell1 = new html_table_cell();
 			$cell1->text = html_writer::tag("p",$skills[$skillid]);
 			$cell1->attributes['class'] = 'skill';
-			$cell1->rowspan = count($skill);
+			$cell1->rowspan = count($skill)+1;
 			$row->cells[] = $cell1;
-
+			//
+			$rows[] = $row;
 			foreach($skill as $topicid => $topic) {
+				$row = new html_table_row();
+				
 				$cell2 = new html_table_cell();
 				$cell2->text = html_writer::tag("p",$topics[$topicid]);
 				$cell2->attributes['class'] = 'topic';
@@ -140,15 +243,24 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				foreach($niveaus as $niveauid => $niveau) {
 					if(isset($data[$skillid][$topicid][$niveauid])) {
 						$compString = "";
-						foreach($data[$skillid][$topicid][$niveauid] as $descriptor)
-							$compString .= $descriptor->title;
+						foreach($data[$skillid][$topicid][$niveauid] as $descriptor) {
+							$text = $descriptor->title;
+							if(in_array($descriptor->id, $selection)) {
+								$text = html_writer::link($CFG->wwwroot."/blocks/exacomp/assign_competencies.php?courseid=".$courseid."&subjectid=".$topicid."&topicid=".$descriptor->id, $text);
+							}
+							$compString .= $text;
+							
+							if(count($data[$skillid][$topicid][$niveauid]) > 1)
+								$compString .= html_writer::tag("hr","");
+						}
 
 						$row->cells[] = $compString;
 					} else
 						$row->cells[] = "";
 				}
+				$rows[] = $row;
 			}
-			$rows[] = $row;
+			//$rows[] = $row;
 		}
 		$table->data = $rows;
 

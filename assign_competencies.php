@@ -179,7 +179,7 @@ $subjects = $DB->get_records_sql('
 		JOIN {course_modules} a ON da.activityid=a.id AND a.course=ct.courseid
 	').'
 	GROUP BY s.id
-	ORDER BY s.title
+	ORDER BY s.stid, s.title
 ', array($courseid));
 
 if (isset($subjects[$subjectid])) {
@@ -203,7 +203,7 @@ if ($selected_subject) {
 			JOIN {course_modules} a ON da.activityid=a.id AND a.course=ct.courseid
 		').'
 		GROUP BY t.id
-		ORDER BY t.title
+		ORDER BY t.cat, t.title
 	', array($selected_subject->id, $courseid));
 	
 	if (isset($topics[$topicid])) {
