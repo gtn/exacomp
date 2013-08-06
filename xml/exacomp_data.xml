@@ -7,7 +7,7 @@
 	</table>
 	<table name="block_exacompschooltypes">
 		<uid>13</uid>
-		<title><![CDATA[School of Rock'n Roll]]></title>
+		<title><![CDATA[School of Rock n Roll]]></title>
 		<elid>8</elid>
 		<sorting>16</sorting>
 		<isoez>0</isoez>
@@ -69,7 +69,7 @@
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>1243</uid>
-		<title><![CDATA[I can catch the sheepabilly-feeling during di'laemma-concerts]]></title>
+		<title><![CDATA[I can catch the sheepabilly-feeling during di laemma-concerts]]></title>
 		<niveauid>0</niveauid>
 		<sorting>196004</sorting>
 		<skillid>1</skillid>
@@ -89,7 +89,7 @@
 	</table>
 	<table name="block_exacompdescriptors">
 		<uid>1245</uid>
-		<title><![CDATA[I know the three best titles of di'laemma]]></title>
+		<title><![CDATA[I know the three best titles of di laemma]]></title>
 		<niveauid>0</niveauid>
 		<sorting>196006</sorting>
 		<skillid>1</skillid>
@@ -99,7 +99,7 @@
 	</table>
 	<table name="block_exacompexamples">
 		<uid>195</uid>
-		<title><![CDATA[A short history of di'laemma]]></title>
+		<title><![CDATA[A short history of di laemma]]></title>
 		<titleshort><![CDATA[A short history of di'laemma]]></titleshort>
 		<task>http://gtn02.gtn-solutions.com/uploads/tx_exabiscompetences/Task.pdf</task>
 		<sorting>8016</sorting>
