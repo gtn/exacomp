@@ -68,14 +68,28 @@ $act = mktime(0,0,0,1,1,date("Y"));
 $wtag = date('w',$act)-1;
 
 $days = array('MO','DI','MI','DO','FR');
-$wochentage = array();
+/*$wochentage = array();
 for($i = 0; $i <5; $i++){
    $wtage = array(0,-1,-2,-3, -4);
    $tage  = (29)*7 + $wtage[$wtag];
    $ts= mktime(0,0,0,1,1+$tage+$i,2013);
    $datum = date($ts);
    $wochentage[get_string($days[$i], 'block_exacomp')] = $datum;
-} 
+} */
+
+$dates = array();
+$dates[] = getdate( time()-((date("N")-1)*86400));
+$dates[] = getdate( time()-((4-date("N"))*86400));
+$dates[] = getdate( time()-((3-date("N"))*86400));
+$dates[] = getdate( time()-((2-date("N"))*86400));
+$dates[] = getdate( time()-((1-date("N"))*86400));
+
+$wochentage = array();
+for($i = 0; $i <5; $i++){
+	$boxdate = mktime(0,0,0, $dates[$i]['mon'], $dates[$i]['mday'], $dates[$i]['year']);
+	$wochentage[get_string($days[$i], 'block_exacomp')] = date($boxdate);
+}
+
 $data = array();
 foreach($wochentage as $wochentag=>$tag){
 	foreach($results as $result){
