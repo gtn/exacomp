@@ -28,7 +28,10 @@ echo '<script type="text/javascript" src="lib/wz_tooltip.js"></script>';
 $content.= $OUTPUT->box(text_to_html(get_string("explaincompetencesoverview", "block_exacomp")));
 $content.='<div class="grade-report-grader">';
 
-$course_desriptors = block_exacomp_get_descriptors_of_all_courses();
+$version = get_config('exacomp', 'alternativedatamodel');
+$courseSettings = block_exacomp_coursesettings();
+// if alternatie data model & not using activities: show all descriptors
+$course_desriptors = ($version && $courseSettings->uses_activities == 0) ? block_exacomp_get_descriptors_of_all_courses(0) : block_exacomp_get_descriptors_of_all_courses();
 
 $content.='<table id="comps" class="compstable flexible boxaligncenter generaltable">';
 $content.='<tr class="heading r0"><td><h3>'.get_string("course", "block_exacomp").'</h3></td><td><h3>'.get_string("gesamt", "block_exacomp").'</h3></td><td><h3>'.get_string("erreicht", "block_exacomp").'</h3></td><td></td></tr>';
