@@ -184,13 +184,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$row = new html_table_row();
 		$cell = new html_table_cell();
 		$cell->text = html_writer::tag("p","B");
-		$cell->attributes['class'] = '';
+		$cell->attributes['class'] = 'btax';
 		$row->cells[] = $cell;
 		
 		foreach($topics as $topic) {
 			$cell = new html_table_cell();
 			$cell->text = html_writer::tag("p",$topic->btaxonomie);
 			$row->cells[] = $cell;
+			$cell->attributes['class'] = 'btax';
 		}
 		$rows[] = $row;
 		
@@ -198,13 +199,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$row = new html_table_row();
 		$cell = new html_table_cell();
 		$cell->text = html_writer::tag("p","C");
-		$cell->attributes['class'] = '';
+		$cell->attributes['class'] = 'ctax';
 		$row->cells[] = $cell;
 		
 		foreach($topics as $topic) {
 			$cell = new html_table_cell();
 			$cell->text = html_writer::tag("p",$topic->ctaxonomie);
 			$row->cells[] = $cell;
+			$cell->attributes['class'] = 'ctax';
 		}
 		$rows[] = $row;
 		$table->data = $rows;
