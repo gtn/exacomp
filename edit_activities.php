@@ -50,10 +50,10 @@ $context = get_context_instance(CONTEXT_COURSE, $courseid);
 require_capability('block/exacomp:teacher', $context);
 
 $PAGE->set_url('/blocks/exacomp/edit_activities.php?courseid=' . $courseid);
-
+$PAGE->requires->css('/blocks/exacomp/css/assign_competencies.css');
 block_exacomp_print_header("teacher", "teachertabassignactivities");
 echo '<script type="text/javascript" src="lib/wz_tooltip.js"></script>';
-echo "<div class='block_excomp_center'>";
+echo "<div class='exabis_competencies_lis'>";
 
 $content.='<form action="edit_activities.php?action=save&amp;courseid=' . $courseid . '" method="post">';
 
@@ -107,7 +107,7 @@ if ($courseid > 0) {
     //Inhalt nur zeigen falls Aktivitäten vorhanden sind
     if ($modules) {
         $content.='<div class="grade-report-grader">
-		<table id="comps" class="compstable flexible boxaligncenter generaltable">
+		<table id="comps" class="exabis_comp_comp">
 		<tr class="heading r0">
 		<td class="category catlevel1" scope="col"><h2>' . $COURSE->fullname . '</h2></td>
 		<td class="category catlevel1 bottom" colspan="###colspanminus1###" scope="col"><a href="#colsettings">'.get_string('spalten_setting','block_exacomp').'</a> &nbsp;&nbsp;<a href="#colsettings">'.get_string('niveau_filter','block_exacomp').'</a></td>
@@ -252,4 +252,5 @@ $content.="";
 echo $content;
 echo "</div>";
 echo '</div>'; //exabis_competences_block
+
 echo $OUTPUT->footer();
