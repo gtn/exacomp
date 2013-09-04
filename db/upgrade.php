@@ -478,11 +478,13 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		$table = new xmldb_table('block_exacompexameval');
 		$field = new xmldb_field('descrexamp_mm_id', XMLDB_TYPE_INTEGER, '20', null, null, null, null, 'id');
 	
-		// Launch rename field exampleid
-		$dbman->rename_field($table, $field, 'exampleid');
-	
+		if($dbman->field_exists($table, $field)) {
+			// Launch rename field exampleid
+			$dbman->rename_field($table, $field, 'exampleid');
+		}
 		// exacomp savepoint reached
 		upgrade_block_savepoint(true, 2013071900, 'exacomp');
+		
 	}
 	
 	return $result;
