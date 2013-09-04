@@ -42,6 +42,7 @@ $string['doimport_own'] = 'Schulspezifische Bildungsstandards importieren';
 $string['importsuccess'] = 'Daten erfolgreich importiert!';
 $string['importsuccess_own'] = 'Eigene Daten erfolgreich importiert!';
 $string['importfail'] = 'Es ist ein Fehler aufgetreten.';
+$string['noxmlfile'] = 'Ein Import ist derzeit nicht möglich weil keine XML Datei vorhanden ist. Bitte hier die entsprechenden Standards downloaden und in das xml Verzeichnis des Blocks kopieren: <a href="https://github.com/gtn/edustandards">https://github.com/gtn/edustandards</a>';
 
 $string['activitysuccess'] = 'Änderungen erfolgreich übernommen.';
 
