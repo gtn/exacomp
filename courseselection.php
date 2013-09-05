@@ -47,6 +47,7 @@ require_capability('block/exacomp:teacher', $context);
 
 if ($action == 'save_coursetopics') {
     block_exacomp_set_coursetopics($courseid, $_POST['data']);
+    $action="";
 }
 
 if($action == 'digicomps') {
