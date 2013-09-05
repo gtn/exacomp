@@ -18,11 +18,12 @@
 		
 		var id = tr[0].className.replace(/^.*(rowgroup-[0-9]+).*$/, '$1');
 		
-		if (tr.hasClass('open')) {
-			$('.rowgroup-content.'+id).show();
-		} else {
-			$('.rowgroup-content.'+id).hide();
-		}
+		$('.rowgroup-header, .rowgroup-content').show();
+		$($('.rowgroup-header').not('.open').get().reverse()).each(function(){
+			var id = this.className.replace(/^.*(rowgroup-[0-9]+).*$/, '$1');
+			console.log(id);
+			$('.content-'+id).hide();
+		});
 	});
 	
 	$(function(){
@@ -47,7 +48,7 @@
 		// reopen open groups
 		$.each($form.find('input[name=open_row_groups]').val().split(','), function(tmp, id){
 			$form.find('.rowgroup-header.rowgroup-'+id).addClass('open');
-			$form.find('.rowgroup-content.rowgroup-'+id).show();
+			$form.find('.rowgroup-content-rowgroup-'+id).show();
 		});
 	});
 })(jQueryExacomp);
