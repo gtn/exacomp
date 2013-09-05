@@ -803,4 +803,8 @@ else
 	}
 	}
 
+	?>
+	</div>
+	</div>
+	<?php 
 	echo $OUTPUT->footer();
