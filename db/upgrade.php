@@ -487,5 +487,20 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		
 	}
 	
+	if ($oldversion < 2013090500) {
+	
+		// Define field parentid to be added to block_exacomptopics
+		$table = new xmldb_table('block_exacomptopics');
+		$field = new xmldb_field('parentid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'ftaxonomie');
+	
+		// Conditionally launch add field parentid
+		if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+	
+		// exacomp savepoint reached
+		upgrade_block_savepoint(true, 2013090500, 'exacomp');
+	}
+	
 	return $result;
 }

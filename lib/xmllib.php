@@ -256,6 +256,7 @@ function block_exacomp_xml_insert_topic($value,$source) {
 	$new_value->dtaxonomie = (string)$value->Dtaxonomie;
 	$new_value->etaxonomie = (string)$value->Etaxonomie;
 	$new_value->ftaxonomie = (string)$value->Ftaxonomie;
+	$new_value->parentid = (int)$value->parentid;
 	unset($value);
 	$value = $new_value;
 
@@ -266,6 +267,9 @@ function block_exacomp_xml_insert_topic($value,$source) {
 	else $subj=0;
 	$topic = $DB->get_record('block_exacomptopics', array("sourceid" => (int)$value->uid,"source"=>$source));
 
+	if(isset($value->parentid))
+		$parenttopicid = $DB->get_field('block_exacomptopics', 'id', array("sourceid" => (int)$value->parentid,"source"=>$source));
+	
 	$catid = $DB->get_field('block_exacompcategories', 'id', array('sourceid'=>$value->cat));
 	
 	if ($topic) {
@@ -285,6 +289,9 @@ function block_exacomp_xml_insert_topic($value,$source) {
 		$topic->dtaxonomie = (string)$value->dtaxonomie;
 		$topic->etaxonomie = (string)$value->etaxonomie;
 		$topic->ftaxonomie = (string)$value->ftaxonomie;
+		if($parenttopicid)
+			$topic->parentid = $parenttopicid;
+		
 		$DB->update_record('block_exacomptopics', $topic);
 	} else {
 		//insert
@@ -292,6 +299,8 @@ function block_exacomp_xml_insert_topic($value,$source) {
 		$value->subjid = $subj;
 		$value->source = $source;
 		$value->cat = $catid;
+		$value->parentid = $parenttopicid;
+		
 		$DB->insert_record('block_exacomptopics', $value);
 	}
 }
