@@ -523,7 +523,7 @@ else
 					foreach ($students as $student) {
 
 						if(!$version) {
-							echo "<td colspan='".$studentColspan."'></td>";
+							echo "<td class='colgroup colgroup-".floor($columnCnt++/$schueler_gruppierung_breite)."' colspan='".$studentColspan."'></td>";
 							continue;
 						}
 
