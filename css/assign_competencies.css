@@ -37,7 +37,7 @@
 	font-size: 0.9em;
 }
 .exabis_competencies_lis .exabis_comp_aufgabe .aufgabetext {
-	margin-left: 1em;
+	margin: 0 0 0 1em;
 }
 .exabis_competencies_lis table.exabis_comp_comp tr.highlight {
   background-color: #e6e6e6;

@@ -81,8 +81,8 @@ if ($action == 'save_coursesettings')
 		
 		<input type="checkbox" value="1" name="show_all_descriptors" <?php if (!empty($courseSettings->show_all_descriptors)) echo 'checked="checked"'; ?> />
 		<?php echo get_string('show_all_descriptors', 'block_exacomp'); ?><br />
-		<input type="submit" value="<?php echo get_string('save', 'admin'); ?>" />
 		<?php } ?>
+		<input type="submit" value="<?php echo get_string('save', 'admin'); ?>" />
 	</form>
 	<?php
 	echo $OUTPUT->box_end();

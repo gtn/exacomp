@@ -152,9 +152,8 @@ if (isset($subjects[$subjectid])) {
 	$selected_subject = reset($subjects);
 }
 
-$version = get_config('exacomp', 'alternativedatamodel');
 
-if ($selected_subject && $version) {
+if ($selected_subject) {
 	$SESSION->block_exacomp_last_subjectid = $selected_subject->id;
 
 	$topics = $DB->get_records_sql('
@@ -195,16 +194,7 @@ if ($selected_subject && $version) {
 				', array($selected_topic->id));
 	}
 }
-else {
-	$descriptors = $DB->get_records_sql('
-			SELECT t.id, t.title, s.title as subject
-			FROM {block_exacomptopics} t
-			JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
-			JOIN {block_exacompsubjects} s ON t.subjid = s.id
-			GROUP BY t.id
-			ORDER BY s.id, t.sorting
-			', array($courseid));
-}
+
 if ($showevaluation == 'on')
 	$studentColspan = 2;
 else
@@ -212,10 +202,6 @@ else
 
 ?>
 <div class="exabis_competencies_lis">
-
-	<?php
-	if($version) {
-		?>
 
 	<div class="exabis_comp_select">
 		Fach auswählen: <select class="start-searchbox-select"
@@ -236,8 +222,8 @@ else
 		<?php endif; ?>
 	</div>
 
-	<?php }
-	if ($selected_topic || !$version) {
+	<?php
+	if ($selected_topic) {
 
 		$url .= '&subjectid='.$subjectid.'&topicid='.$topicid;
 
@@ -254,11 +240,7 @@ else
 				echo $OUTPUT->box(text_to_html(get_string("explainassignonstudent", "block_exacomp") . '<a href="' . $url . '&amp;showevaluation=on">'.get_string("hier", "block_exacomp").'.</a>'));
 		}
 
-
-
-
-		if ($version) {
-			?>
+		?>
 
 	<table class="exabis_comp_info">
 		<tr>
@@ -362,9 +344,7 @@ else
 		</tr>
 	</table>
 	<br />
-	<?php
-		}
-		?>
+
 	<div class="exabis_comp_top_legend">
 		<img src="pix/list_12x11.png" alt="Aktivitäten" /> Aktivitäten - <img
 			src="pix/folder_fill_12x12.png" alt="ePortfolio" /> ePortfolio - <img
@@ -388,15 +368,13 @@ else
 			<table class="exabis_comp_comp">
 				<?php
 				$rowgroup = 0;
-				$subjectTitle = ($version) ? "Teilkompetenzen und Lernmaterialien" : "";
+				$subjectTitle = "Teilkompetenzen und Lernmaterialien";
 				foreach ($descriptors as $descriptor) {
 					$rowgroup++;
 
-					if ((($rowgroup % 6) == 1 && $version) || (isset($descriptor->subject) && $descriptor->subject != $subjectTitle && !$version)) {
-						if(!$version)
-							$subjectTitle = $descriptor->subject;
+					if (($rowgroup % 6) == 1) {
 						?>
-				<tr>
+				<tr class="highlight">
 					<td colspan="2"><b><?php echo $subjectTitle; ?> </b></td>
 					<?php
 					$columnCnt = 0;
@@ -421,7 +399,6 @@ else
 					}
 
 					// in the alternative data model we use examples on this level, in the normal case we use descriptors
-					if($version) {
 						$examples = $DB->get_records_sql(
 								"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
 								e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement
@@ -429,20 +406,6 @@ else
 								JOIN {block_exacompdescrexamp_mm} de ON e.id=de.exampid AND de.descrid=?
 								LEFT JOIN {block_exacomptaxonomies} tax ON e.taxid=tax.id
 								ORDER BY tax.title", array($descriptor->id));
-					} else {
-						$examples = $DB->get_records_sql('
-								SELECT d.id, d.title
-								FROM {block_exacompdescriptors} d
-								JOIN {block_exacompdescrtopic_mm} topmm ON topmm.descrid=d.id AND topmm.topicid=?
-								'.($courseSettings->show_all_descriptors ? '' : '
-										-- only show active ones
-										JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid
-										JOIN {course_modules} a ON da.activityid=a.id AND a.course='.$courseid.'
-										').'
-								GROUP BY d.id
-								ORDER BY d.sorting
-								', array($descriptor->id));
-					}
 
 					$competences = block_exacomp_get_competences_by_descriptor($descriptor->id, $courseid, $introle);
 					if ($showevaluation) {
@@ -459,20 +422,15 @@ else
 					$activities = block_exacomp_get_activities($descriptor->id, $courseid);
 					?>
 				<tr
-					class="exabis_comp_teilcomp <?php if ($examples): ?>rowgroup-header rowgroup-<?php echo $rowgroup; ?><?php endif; ?>">
+					class="highlight exabis_comp_teilcomp <?php if ($examples): ?>rowgroup-header rowgroup-header-<?php echo $rowgroup; ?><?php endif; ?>">
 					<td><?php echo $output_id; ?></td>
 					<td class="rowgroup-arrow"><div
-							class="desctitle<?php if(count($activities)==0 && $courseSettings->uses_activities == 1 && $version) echo "grey";?>">
+							class="desctitle<?php if(count($activities)==0 && $courseSettings->uses_activities == 1) echo "grey";?>">
 							<?php echo $output_title; ?>
 						</div></td>
 					<?php
 					$columnCnt = 0;
 					foreach ($students as $student) {
-
-						if(!$version) {
-							echo "<td class='colgroup colgroup-".floor($columnCnt++/$schueler_gruppierung_breite)."' colspan='".$studentColspan."'></td>";
-							continue;
-						}
 
 						if ($showevaluation) {
 							if (isset($evaluations[$student->id])&&$evaluations[$student->id]->wert) {
@@ -540,20 +498,11 @@ else
 				</tr>
 				<?php foreach ($examples as $example) {
 
-					if($version) {
 						$examplesEvaluationData = $DB->get_records_sql("
 								SELECT deu.studentid, u.firstname, u.lastname, deu.*
 								FROM {block_exacompexameval} deu
 								LEFT JOIN {user} u ON u.id=deu.".($role == "teacher"?'studentid':'teacher_reviewerid')."
 								WHERE deu.courseid=? AND deu.exampleid=?
-								", array($courseid, $example->id));
-					}
-					else {
-						$examplesEvaluationData = $DB->get_records_sql("
-								SELECT deu.userid, u.firstname, u.lastname, deu.*, deu.wert as teacher_evaluation
-								FROM {block_exacompdescuser} deu
-								LEFT JOIN {user} u ON u.id=deu.userid
-								WHERE deu.courseid=? AND deu.descid=? AND deu.role = 1
 								", array($courseid, $example->id));
 
 						foreach($examplesEvaluationData as $exaeval) {
@@ -562,16 +511,15 @@ else
 
 						$activities = block_exacomp_get_activities($example->id, $courseid);
 
-					}
 					?>
 				<tr
-					class="exabis_comp_aufgabe rowgroup-content rowgroup-<?php echo $rowgroup; ?>"">
+					class="exabis_comp_aufgabe rowgroup-content rowgroup-content-<?php echo $rowgroup; ?>"">
 					<td></td>
 					<td>
 						<p class="aufgabetext">
 							<?php echo $example->title; ?>
 						</p> <?php 
-						if($role == "student" && $version) {
+						if($role == "student") {
 							$img = '<img src="pix/examples_and_tasks.png" height="16" width="23" alt="Example" />';
 							if($example->task)
 								echo "<a target='_blank' href='".$example->task."'>".$img."</a>";
@@ -594,10 +542,7 @@ else
 									$evaluationTooltip = isset($evaluation->starttime) ? $evaluation->starttime.' - '.$evaluation->endtime : '';
 								} else {
 									$evaluationWert = $evaluation->teacher_evaluation;
-									if($version)
-										$evaluationTooltip = get_string('assessedby','block_exacomp').fullname($evaluation);
-									else
-										$evaluationTooltip = get_string('assessedby','block_exacomp').fullname($DB->get_record('user',array('id'=>$evaluation->reviewerid)));
+									$evaluationTooltip = get_string('assessedby','block_exacomp').fullname($evaluation);
 								}
 							}
 
@@ -617,7 +562,7 @@ else
 
 						echo '<td class="colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'">';
 
-						$checkboxname = ($version) ? "dataexamples" : "data";
+						$checkboxname = "dataexamples";
 
 						if ($role == "teacher") {
 							if ($bewertungsdimensionen==1) {
@@ -632,8 +577,7 @@ else
 								echo '</select>';
 							}
 						} else {
-							if($version)
-								echo 'Aufgabe erledigt: ';
+							echo 'Aufgabe erledigt: ';
 							
 							if ($bewertungsdimensionen==1) {
 								echo '<input type="hidden" value="0" name="'.$checkboxname.'[' . $example->id . '][' . $student->id . '][student_evaluation]" />';
@@ -647,53 +591,19 @@ else
 								echo '</select>';
 							}
 
-							if($version) {
-								$studypartner = isset($examplesEvaluationData[$student->id]) ? $examplesEvaluationData[$student->id]->studypartner : '';
+							$studypartner = isset($examplesEvaluationData[$student->id]) ? $examplesEvaluationData[$student->id]->studypartner : '';
 
-								echo ' <select name="dataexamples[' . $example->id . '][' . $student->id . '][studypartner]">
-								<option value="self"'.($studypartner=='self'?' selected="selected"':'').'>selbst</option>
-								<option value="studypartner"'.($studypartner=='studypartner'?' selected="selected"':'').'>Lernpartner</option>
-								<option value="studygroup"'.($studypartner=='studygroup'?' selected="selected"':'').'>Lerngruppe</option>
-								<option value="teacher"'.($studypartner=='teacher'?' selected="selected"':'').'>Lehrkraft</option>
-								</select><br/>
-								von <input class="datepicker" type="text" name="dataexamples[' . $example->id . '][' . $student->id . '][starttime]" value="'.
-								(isset($examplesEvaluationData[$student->id]->starttime)?date("Y-m-d",$examplesEvaluationData[$student->id]->starttime):'').'" readonly/>
-								bis <input class="datepicker" type="text" name="dataexamples[' . $example->id . '][' . $student->id . '][endtime]" value="'.
-								(isset($examplesEvaluationData[$student->id]->endtime)?date("Y-m-d",$examplesEvaluationData[$student->id]->endtime):'').'" readonly/>
-								';
-							}
-
-						}
-
-						if(!$version) {
-							$hasIcons = false;
-							if ($stdicon = block_exacomp_get_student_icon($activities, $student,$courseid,$gradelib)) {
-								echo '<span title="'.s($stdicon->text).'" class="exabis-tooltip">' . $stdicon->icon . '</span>';
-								$hasIcons = true;
-							}
-							if (block_exacomp_exaportexists()) {
-								if ($stdicon = block_exacomp_get_portfolio_icon($student, $descriptor->id)) {
-									if($role=="student")
-										$url = 'href="'.$CFG->wwwroot.'/blocks/exaport/view_items.php?courseid='.$courseid.'"';
-									elseif ($stdicon->submitted) {
-										$url = 'href="'.$CFG->wwwroot.'/blocks/exaport/shared_views.php?courseid='.$courseid.'&desc='.$descriptor->id.'&u='.$student->id.'"';
-									} else {
-										$url = '';
-									}
-
-									if ($url) {
-										echo '<a '.$url.' title="'.s($stdicon->text).'" class="exabis-tooltip">' . $stdicon->icon . '</a>';
-									} else {
-										echo '<span title="'.s($stdicon->text).'" class="exabis-tooltip">' . $stdicon->icon . '</span>';
-									}
-									$hasIcons = true;
-								}
-							}
-
-							if (!$hasIcons) {
-								echo '<span title="'.s('todo').'" class="exabis-tooltip"><img src="pix/x_11x11.png" /></span>';
-							}
-							echo '</td>';
+							echo ' <select name="dataexamples[' . $example->id . '][' . $student->id . '][studypartner]">
+							<option value="self"'.($studypartner=='self'?' selected="selected"':'').'>selbst</option>
+							<option value="studypartner"'.($studypartner=='studypartner'?' selected="selected"':'').'>Lernpartner</option>
+							<option value="studygroup"'.($studypartner=='studygroup'?' selected="selected"':'').'>Lerngruppe</option>
+							<option value="teacher"'.($studypartner=='teacher'?' selected="selected"':'').'>Lehrkraft</option>
+							</select><br/>
+							von <input class="datepicker" type="text" name="dataexamples[' . $example->id . '][' . $student->id . '][starttime]" value="'.
+							(isset($examplesEvaluationData[$student->id]->starttime)?date("Y-m-d",$examplesEvaluationData[$student->id]->starttime):'').'" readonly/>
+							bis <input class="datepicker" type="text" name="dataexamples[' . $example->id . '][' . $student->id . '][endtime]" value="'.
+							(isset($examplesEvaluationData[$student->id]->endtime)?date("Y-m-d",$examplesEvaluationData[$student->id]->endtime):'').'" readonly/>
+							';
 						}
 					}
 					?>

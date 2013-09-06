@@ -176,10 +176,24 @@ function block_exacomp_build_topic_tree($courseid, $courseSettings, &$parentTopi
 		GROUP BY d.id
 		ORDER BY d.sorting
 		', array($parentTopic->id));
-		
+	
+	foreach ($parentTopic->descriptors as &$descriptor) {
+		$descriptor->evaluationData = $DB->get_records_sql("
+				SELECT deu.userid, u.firstname, u.lastname, deu.*, deu.wert as teacher_evaluation
+				FROM {block_exacompdescuser} deu
+				LEFT JOIN {user} u ON u.id=deu.userid
+				WHERE deu.courseid=? AND deu.descid=? AND deu.role = 1
+				", array($courseid, $descriptor->id));
+
+		foreach($descriptor->evaluationData as $exaeval) {
+			$exaeval->student_evaluation = $DB->get_field('block_exacompdescuser', 'wert', array("userid"=>$exaeval->userid,"descid"=>$exaeval->descid,"role"=>0,"courseid"=>$exaeval->courseid));
+		}
+	}
+	/*
 	if ($parentTopic->descriptors) {
 		return;
 	}
+	*/
 
 	$topics = $DB->get_records_sql('
 		SELECT t.id, t.title
@@ -239,14 +253,16 @@ function block_exacomp_print_level_descriptors($level, $subs, &$data) {
 
 	$version = 0;
 	
-	foreach ($subs as $example) {
+	foreach ($subs as $descriptor) {
+
+		$activities = block_exacomp_get_activities($descriptor->id, $courseid);
 		?>
 		<tr
 			class="exabis_comp_aufgabe <?php echo $data->rowgroup_class; ?>">
 			<td></td>
 			<td style="padding-left: <?php echo ($level-1)*20+12; ?>px">
 				<p class="aufgabetext">
-					<?php echo $example->title; ?>
+					<?php echo $descriptor->title; ?>
 				</p> <?php 
 				?>
 			</td>
@@ -257,8 +273,8 @@ function block_exacomp_print_level_descriptors($level, $subs, &$data) {
 				if ($showevaluation) {
 					$evaluationWert = null;
 					$evaluationTooltip = null;
-					if (isset($examplesEvaluationData[$student->id])) {
-						$evaluation = $examplesEvaluationData[$student->id];
+					if (isset($descriptor->evaluationData[$student->id])) {
+						$evaluation = $descriptor->evaluationData[$student->id];
 						if ($role == "teacher") {
 							$evaluationWert = $evaluation->student_evaluation;
 							$evaluationTooltip = isset($evaluation->starttime) ? $evaluation->starttime.' - '.$evaluation->endtime : '';
@@ -288,40 +304,38 @@ function block_exacomp_print_level_descriptors($level, $subs, &$data) {
 
 				if ($role == "teacher") {
 					if ($bewertungsdimensionen==1) {
-						echo '<input type="hidden" value="0" name="'.$checkboxname.'[' . $example->id . '][' . $student->id . '][teacher_evaluation]" />';
-						echo '<input type="checkbox" value="1" name="'.$checkboxname.'[' . $example->id . '][' . $student->id . '][teacher_evaluation]"'.
-								(isset($examplesEvaluationData[$student->id])&&$examplesEvaluationData[$student->id]->teacher_evaluation?' checked="checked"':'').' />';
+						echo '<input type="hidden" value="0" name="'.$checkboxname.'[' . $descriptor->id . '][' . $student->id . '][teacher_evaluation]" />';
+						echo '<input type="checkbox" value="1" name="'.$checkboxname.'[' . $descriptor->id . '][' . $student->id . '][teacher_evaluation]"'.
+								(isset($descriptor->evaluationData[$student->id])&&$descriptor->evaluationData[$student->id]->teacher_evaluation?' checked="checked"':'').' />';
 					} else {
-						echo '<select name="'.$checkboxname.'[' . $example->id . '][' . $student->id . '][teacher_evaluation]">';
+						echo '<select name="'.$checkboxname.'[' . $descriptor->id . '][' . $student->id . '][teacher_evaluation]">';
 						for ($i=0; $i<=$bewertungsdimensionen; $i++) {
-							echo '<option value="'.$i.'"'.(isset($examplesEvaluationData[$student->id])&&$examplesEvaluationData[$student->id]->teacher_evaluation==$i?' selected="selected"':'').'>'.$i.'</option>';
+							echo '<option value="'.$i.'"'.(isset($descriptor->evaluationData[$student->id])&&$descriptor->evaluationData[$student->id]->teacher_evaluation==$i?' selected="selected"':'').'>'.$i.'</option>';
 						}
 						echo '</select>';
 					}
 				} else {
 					if ($bewertungsdimensionen==1) {
-						echo '<input type="hidden" value="0" name="'.$checkboxname.'[' . $example->id . '][' . $student->id . '][student_evaluation]" />';
-						echo '<input type="checkbox" value="1" name="'.$checkboxname.'[' . $example->id . '][' . $student->id . '][student_evaluation]"'.
-								(isset($examplesEvaluationData[$student->id])&&$examplesEvaluationData[$student->id]->student_evaluation?' checked="checked"':'').' />';
+						echo '<input type="hidden" value="0" name="'.$checkboxname.'[' . $descriptor->id . '][' . $student->id . '][student_evaluation]" />';
+						echo '<input type="checkbox" value="1" name="'.$checkboxname.'[' . $descriptor->id . '][' . $student->id . '][student_evaluation]"'.
+								(isset($descriptor->evaluationData[$student->id])&&$descriptor->evaluationData[$student->id]->student_evaluation?' checked="checked"':'').' />';
 					} else {
-						echo '<select name="'.$checkboxname.'[' . $example->id . '][' . $student->id . '][student_evaluation]">';
+						echo '<select name="'.$checkboxname.'[' . $descriptor->id . '][' . $student->id . '][student_evaluation]">';
 						for ($i=0; $i<=$bewertungsdimensionen; $i++) {
-							echo '<option value="'.$i.'"'.(isset($examplesEvaluationData[$student->id])&&$examplesEvaluationData[$student->id]->student_evaluation==$i?' selected="selected"':'').'>'.$i.'</option>';
+							echo '<option value="'.$i.'"'.(isset($descriptor->evaluationData[$student->id])&&$descriptor->evaluationData[$student->id]->student_evaluation==$i?' selected="selected"':'').'>'.$i.'</option>';
 						}
 						echo '</select>';
 					}
 
 				}
 
-				$activities = block_exacomp_get_activities($example->id, $courseid);
-				
 				$hasIcons = false;
 				if ($stdicon = block_exacomp_get_student_icon($activities, $student,$courseid,$gradelib)) {
 					echo '<span title="'.s($stdicon->text).'" class="exabis-tooltip">' . $stdicon->icon . '</span>';
 					$hasIcons = true;
 				}
 				if (block_exacomp_exaportexists()) {
-					if ($stdicon = block_exacomp_get_portfolio_icon($student, $example->id)) {
+					if ($stdicon = block_exacomp_get_portfolio_icon($student, $descriptor->id)) {
 						if($role=="student")
 							$url = 'href="'.$CFG->wwwroot.'/blocks/exaport/view_items.php?courseid='.$courseid.'"';
 						elseif ($stdicon->submitted) {
@@ -402,8 +416,8 @@ function block_exacomp_print_levels($level, $subs, &$data) {
 
 		if ($hasSubs) {
 			$data->rowgroup++;
-			$rowgroup_class = 'rowgroup-header '.$original_rowgroup_class.' rowgroup-'.$data->rowgroup;
-			$data->rowgroup_class = 'rowgroup-content '.$original_rowgroup_class.' content-rowgroup-'.$data->rowgroup.' rowgroup-'.$data->rowgroup;
+			$rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$original_rowgroup_class;
+			$data->rowgroup_class = 'rowgroup-content rowgroup-content-'.$data->rowgroup.' '.$original_rowgroup_class;
 		} else {
 			$rowgroup_class = $original_rowgroup_class;
 		}
@@ -431,9 +445,9 @@ function block_exacomp_print_levels($level, $subs, &$data) {
 
 		if (!empty($item->descriptors)) {
 			block_exacomp_print_level_descriptors($level+1, $item->descriptors, $data);
-		} else {
-			block_exacomp_print_levels($level+1, $item->subs, $data);
 		}
+		
+		block_exacomp_print_levels($level+1, $item->subs, $data);
 	}
 }
 
@@ -502,44 +516,6 @@ function block_exacomp_print_levels($level, $subs, &$data) {
 								echo '<td'.$extra.'>'.get_string("lehrer_short", "block_exacomp").'</td><td'.$extra.'>'.get_string("schueler_short", "block_exacomp").'</td>';
 						}
 						echo '</tr>';
-					}
-					
-					foreach ($group->subs as $item) {
-					}
-					exit;
-
-					// in the alternative data model we use examples on this level, in the normal case we use descriptors
-						$examples = $DB->get_records_sql('
-								SELECT d.id, d.title
-								FROM {block_exacompdescriptors} d
-								JOIN {block_exacompdescrtopic_mm} topmm ON topmm.descrid=d.id AND topmm.topicid=?
-								'.($courseSettings->show_all_descriptors ? '' : '
-										-- only show active ones
-										JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid
-										JOIN {course_modules} a ON da.activityid=a.id AND a.course='.$courseid.'
-										').'
-								GROUP BY d.id
-								ORDER BY d.sorting
-								', array($descriptor->id));
-
-					$competences = block_exacomp_get_competences_by_descriptor($descriptor->id, $courseid, $introle);
-					if ($showevaluation) {
-						$evaluations = block_exacomp_get_competences_by_descriptor($descriptor->id, $courseid, ($introle + 1) % 2);
-					}
-
-					
-					foreach ($examples as $example) {
-
-						$examplesEvaluationData = $DB->get_records_sql("
-								SELECT deu.userid, u.firstname, u.lastname, deu.*, deu.wert as teacher_evaluation
-								FROM {block_exacompdescuser} deu
-								LEFT JOIN {user} u ON u.id=deu.userid
-								WHERE deu.courseid=? AND deu.descid=? AND deu.role = 1
-								", array($courseid, $example->id));
-
-						foreach($examplesEvaluationData as $exaeval) {
-							$exaeval->student_evaluation = $DB->get_field('block_exacompdescuser', 'wert', array("userid"=>$exaeval->userid,"descid"=>$exaeval->descid,"role"=>0,"courseid"=>$exaeval->courseid));
-						}
 					}
 				}
 	}

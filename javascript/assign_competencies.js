@@ -16,14 +16,21 @@
 		var tr = $(this).closest('tr');
 		tr.toggleClass('open');
 		
-		var id = tr[0].className.replace(/^.*(rowgroup-[0-9]+).*$/, '$1');
+		var id = tr[0].className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
 		
-		$('.rowgroup-header, .rowgroup-content').show();
-		$($('.rowgroup-header').not('.open').get().reverse()).each(function(){
-			var id = this.className.replace(/^.*(rowgroup-[0-9]+).*$/, '$1');
-			console.log(id);
-			$('.content-'+id).hide();
-		});
+		console.log($(this).is('.open'));
+		if ($(tr).is('.open')) {
+			// opening: show all subs
+			$('.rowgroup-content-'+id).show();
+			// opening: hide all subs which are still closed
+			$('.rowgroup-header').not('.open').each(function(){
+				var id = this.className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
+				$('.rowgroup-content-'+id).hide();
+			});
+		} else {
+			// closing: hide all subs
+			$('.rowgroup-content-'+id).hide();
+		}
 	});
 	
 	$(function(){
@@ -36,7 +43,7 @@
 			// find ids
 			var ids = '';
 			$form.find('.rowgroup-header.open').each(function(){
-				if ($(this).prop('class').match(/rowgroup-([0-9]+)/)) {
+				if ($(this).prop('class').match(/rowgroup-header-([0-9]+)/)) {
 					ids += ','+RegExp.$1
 				}
 			});
@@ -47,8 +54,14 @@
 		
 		// reopen open groups
 		$.each($form.find('input[name=open_row_groups]').val().split(','), function(tmp, id){
-			$form.find('.rowgroup-header.rowgroup-'+id).addClass('open');
-			$form.find('.rowgroup-content-rowgroup-'+id).show();
+			$form.find('.rowgroup-header-'+id).addClass('open');
+			$form.find('.rowgroup-content-'+id).show();
+
+			// opening: hide all subs which are still closed
+			$('.rowgroup-header').not('.open').each(function(){
+				var id = this.className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
+				$('.rowgroup-content-'+id).hide();
+			});
 		});
 	});
 })(jQueryExacomp);
