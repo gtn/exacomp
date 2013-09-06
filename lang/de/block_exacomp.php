@@ -176,4 +176,9 @@ $string['student'] = "S";
 $string['teacher'] = "L";
 $string['assessment'] = "Einsch&auml;tzung";
 $string['plan'] = "Arbeitsplan";
+
+/*langstrings for alternativedatamodel*/
+require dirname(__FILE__).'/block_exacomp_overlaystatic.php';
+/*langstrings from other systems*/
+require dirname(__FILE__).'/block_exacomp_overlaydynamic.php';
 ?>
