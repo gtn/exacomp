@@ -131,101 +131,9 @@ if ($role == "teacher"){
 	$students = array($USER);
 }
 
-$levels = array();
-$topics = $DB->get_records_sql('
-	SELECT t.id, t.title, s.id AS sid, s.title AS stitle
-	FROM {block_exacomptopics} t
-	JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
-	JOIN {block_exacompsubjects} s ON t.subjid = s.id
-	WHERE t.parentid=0
-	GROUP BY t.id
-	ORDER BY s.id, t.sorting
-	', array($courseid));
-
-foreach ($topics as $topicRow) {
-	$topic = (object)array(
-		'id' => $topicRow->id,
-		'title' => $topicRow->title,
-		'type' => 'topic',
-		'subs' => array()
-	);
-
-	block_exacomp_build_topic_tree($courseid, $courseSettings, $topic);
-	
-	if (!empty($topic->subs) || !empty($topic->descriptors)) {
-		// only add this one if has subtopics or descriptors
-		if (empty($levels[$topicRow->sid])) {
-			$levels[$topicRow->sid] = (object)array(
-				'id' => $topicRow->sid,
-				'title' => $topicRow->stitle,
-				'type' => 'subject',
-				'subs' => array()
-			);
-		}
-
-		$levels[$topicRow->sid]->subs[$topic->id] = $topic;
-	}
-}
-
-function block_exacomp_build_topic_tree($courseid, $courseSettings, &$parentTopic) {
-	global $DB;
-	
-	$parentTopic->descriptors = $DB->get_records_sql('
-		SELECT d.id, d.title, "descriptor" AS type
-		FROM {block_exacompdescriptors} d
-		JOIN {block_exacompdescrtopic_mm} topmm ON topmm.descrid=d.id AND topmm.topicid=?
-		'.($courseSettings->show_all_descriptors ? '' : '
-				-- only show active ones
-				JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid
-				JOIN {course_modules} a ON da.activityid=a.id AND a.course='.$courseid.'
-				').'
-		GROUP BY d.id
-		ORDER BY d.sorting
-		', array($parentTopic->id));
-	
-	foreach ($parentTopic->descriptors as &$descriptor) {
-		$descriptor->evaluationData = $DB->get_records_sql("
-				SELECT deu.userid, u.firstname, u.lastname, deu.*, deu.wert as teacher_evaluation
-				FROM {block_exacompdescuser} deu
-				LEFT JOIN {user} u ON u.id=deu.userid
-				WHERE deu.courseid=? AND deu.descid=? AND deu.role = 1
-				", array($courseid, $descriptor->id));
-
-		foreach($descriptor->evaluationData as $exaeval) {
-			$exaeval->student_evaluation = $DB->get_field('block_exacompdescuser', 'wert', array("userid"=>$exaeval->userid,"descid"=>$exaeval->descid,"role"=>0,"courseid"=>$exaeval->courseid));
-		}
-	}
-	/*
-	if ($parentTopic->descriptors) {
-		return;
-	}
-	*/
-
-	$topics = $DB->get_records_sql('
-		SELECT t.id, t.title
-		FROM {block_exacomptopics} t
-		WHERE t.parentid = ?
-		ORDER BY t.sorting
-		', array($parentTopic->id));
-	
-	foreach ($topics as $topic) {
-		$topic = (object)array(
-			'id' => $topic->id,
-			'title' => $topic->title,
-			'type' => 'topic',
-			'subs' => array()
-		);
-
-		block_exacomp_build_topic_tree($courseid, $courseSettings, $topic);
-		
-		if (!empty($topic->subs) || !empty($topic->descriptors)) {
-			// only add this one if has subtopics or descriptors
-			$parentTopic->subs[$topic->id] = $topic;
-		}
-	}
-}
-//echo "<pre>";
-//print_r($levels); exit;
+$levels = block_exacomp_get_competence_tree_for_course($courseid);
+// echo "<pre>";
+// print_r($levels); exit;
 
 if ($showevaluation == 'on')
 	$studentColspan = 2;
@@ -459,7 +367,8 @@ function block_exacomp_print_levels($level, $subs, &$data) {
 			block_exacomp_print_level_descriptors($level+1, $item->descriptors, $data);
 		}
 		
-		block_exacomp_print_levels($level+1, $item->subs, $data);
+		if (isset($item->subs))
+			block_exacomp_print_levels($level+1, $item->subs, $data);
 	}
 }
 

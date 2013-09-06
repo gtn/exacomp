@@ -131,14 +131,27 @@ else if ($action == 'detail') {
         		$specific=true;
         		$content .= '<tr> <td colspan="2"><h2>' . get_string("specificsubject","block_exacomp") . '</h2></td></tr>';
         	}
-            $topics = block_exacomp_get_topics($subject->id);
+			
             $content .= '<tr> <td colspan="2"><b>' . $subject->title . '</b></td></tr>';
-            foreach ($topics as $topic) {
-                if (block_exacomp_check_topic_by_course($topic->id, $courseid))
-                    $content .= '<tr><td>' . $topic->title . '</td><td><input type="checkbox" name="data[' . $topic->id . ']" value="' . $topic->id . '" checked="checked" /></td></tr>';
-                else
-                    $content .= '<tr><td>' . $topic->title . '</td><td><input type="checkbox" alt="Topic" name="data[' . $topic->id . ']" value="' . $topic->id . '" /></td></tr>';
-            }
+
+			function block_exacomp_print_levels($level, $topics) {
+				$content = '';
+				
+				foreach ($topics as $topic) {
+					$content .= '<tr><td style="padding-left: '.(25*$level).'px">' . $topic->title . '</td>';
+					if (empty($topic->subs)) {
+						$content .= '<td><input type="checkbox" alt="Topic" name="data[' . $topic->id . ']" value="' . $topic->id . '" '.($topic->checked?'checked="checked"':'').' /></td>';
+					}
+					$content .= '</tr>';
+					if (!empty($topic->subs)) {
+						$content .= block_exacomp_print_levels($level+1, $topic->subs);
+					}
+				}
+				
+				return $content;
+			}
+			$topics = block_exacomp_get_competence_tree_for_subject($courseid, $subject->id);
+			$content .= block_exacomp_print_levels(0, $topics);
         }
         $content.='<tr><td colspan="2"><input type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" /></td></tr>';
         $content .= '</table>';
