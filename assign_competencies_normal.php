@@ -137,28 +137,34 @@ $topics = $DB->get_records_sql('
 	FROM {block_exacomptopics} t
 	JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
 	JOIN {block_exacompsubjects} s ON t.subjid = s.id
+	WHERE t.parentid=0
 	GROUP BY t.id
 	ORDER BY s.id, t.sorting
 	', array($courseid));
 
-foreach ($topics as $topic) {
-	if (empty($levels[$topic->sid])) {
-		$levels[$topic->sid] = (object)array(
-			'id' => $topic->sid,
-			'title' => $topic->stitle,
-			'type' => 'subject',
-			'subs' => array()
-		);
-	}
-	
-	$levels[$topic->sid]->subs[$topic->id] = (object)array(
-		'id' => $topic->id,
-		'title' => $topic->title,
+foreach ($topics as $topicRow) {
+	$topic = (object)array(
+		'id' => $topicRow->id,
+		'title' => $topicRow->title,
 		'type' => 'topic',
 		'subs' => array()
 	);
 
-	block_exacomp_build_topic_tree($courseid, $courseSettings, $levels[$topic->sid]->subs[$topic->id]);
+	block_exacomp_build_topic_tree($courseid, $courseSettings, $topic);
+	
+	if (!empty($topic->subs) || !empty($topic->descriptors)) {
+		// only add this one if has subtopics or descriptors
+		if (empty($levels[$topicRow->sid])) {
+			$levels[$topicRow->sid] = (object)array(
+				'id' => $topicRow->sid,
+				'title' => $topicRow->stitle,
+				'type' => 'subject',
+				'subs' => array()
+			);
+		}
+
+		$levels[$topicRow->sid]->subs[$topic->id] = $topic;
+	}
 }
 
 function block_exacomp_build_topic_tree($courseid, $courseSettings, &$parentTopic) {
@@ -203,16 +209,22 @@ function block_exacomp_build_topic_tree($courseid, $courseSettings, &$parentTopi
 		', array($parentTopic->id));
 	
 	foreach ($topics as $topic) {
-		$parentTopic->subs[$topic->id] = (object)array(
+		$topic = (object)array(
 			'id' => $topic->id,
 			'title' => $topic->title,
 			'type' => 'topic',
 			'subs' => array()
 		);
 
-		block_exacomp_build_topic_tree($courseid, $courseSettings, $parentTopic->subs[$topic->id]);
+		block_exacomp_build_topic_tree($courseid, $courseSettings, $topic);
+		
+		if (!empty($topic->subs) || !empty($topic->descriptors)) {
+			// only add this one if has subtopics or descriptors
+			$parentTopic->subs[$topic->id] = $topic;
+		}
 	}
 }
+//echo "<pre>";
 //print_r($levels); exit;
 
 if ($showevaluation == 'on')
