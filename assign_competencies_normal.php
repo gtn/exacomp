@@ -169,6 +169,7 @@ else
 	<?php
 
 function block_exacomp_print_level_descriptors($level, $subs, &$data) {
+	global $CFG;
 	extract((array)$data);
 
 	$version = 0;
