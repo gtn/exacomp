@@ -87,7 +87,7 @@ if (empty($action)) {
     } else {
         echo $OUTPUT->box(text_to_html(get_string("explainconfigcourse_subjects", "block_exacomp")));
         $content.='<form action="courseselection.php?courseid=' . $courseid . '&amp;action=detail" method="post">';
-        $content .= '<table>';
+        $content .= '<table class="selection-table">';
 		$specific=false;
 		
 		$schooltype = "";
@@ -100,12 +100,12 @@ if (empty($action)) {
 			}
         	if($subject->source!=1 && !$specific){
         		$specific=true;
-        		$content .= '<tr> <td colspan="2"><h2>' . get_string("specificsubject","block_exacomp") . '</h2></td></tr>';
+        		$content .= '<tr class="selection-group"> <td colspan="2"><h2>' . get_string("specificsubject","block_exacomp") . '</h2></td></tr>';
         	}
             if (block_exacomp_check_subject_by_course($subject->id, $courseid))
-                $content .= '<tr><td>' . $subject->title . '</td><td><input type="checkbox" name="data[' . $subject->id . ']" value="' . $subject->id . '" checked="checked" /></td></tr>';
+                $content .= '<tr class="selection-item"><td><div>' . $subject->title . '</div></td><td><input type="checkbox" name="data[' . $subject->id . ']" value="' . $subject->id . '" checked="checked" /></td></tr>';
             else
-                $content .= '<tr><td>' . $subject->title . '</td><td><input type="checkbox" name="data[' . $subject->id . ']" value="' . $subject->id . '" /></td></tr>';
+                $content .= '<tr class="selection-item"><td><div>' . $subject->title . '</div></td><td><input type="checkbox" name="data[' . $subject->id . ']" value="' . $subject->id . '" /></td></tr>';
         }
         $content.='<tr><td colspan="2"><input type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" /></td></tr>';
         $content .= '</table>';
@@ -124,7 +124,7 @@ else if ($action == 'detail') {
     if (!empty($_POST["data"])) {
         $subjects = block_exacomp_get_subjects_by_id($subids);
         $content.='<form name="topics" action="courseselection.php?courseid=' . $courseid . '&action=save_coursetopics" method="post">';
-        $content .= '<table>';
+        $content .= '<table class="selection-table">';
         $specific=false;
         foreach ($subjects as $subject) {
         	if($subject->source!=1 && !$specific){
@@ -132,13 +132,13 @@ else if ($action == 'detail') {
         		$content .= '<tr> <td colspan="2"><h2>' . get_string("specificsubject","block_exacomp") . '</h2></td></tr>';
         	}
 			
-            $content .= '<tr> <td colspan="2"><b>' . $subject->title . '</b></td></tr>';
+            $content .= '<tr class="selection-group"> <td colspan="2"><b>' . $subject->title . '</b></td></tr>';
 
 			function block_exacomp_print_levels($level, $topics) {
 				$content = '';
 				
 				foreach ($topics as $topic) {
-					$content .= '<tr><td style="padding-left: '.(25*$level).'px">' . $topic->title . '</td>';
+					$content .= '<tr class="'.(empty($topic->subs)?'selection-item':'selection-group').'"><td><div style="padding-left: '.(25*$level).'px">' . $topic->title . '</div></td>';
 					if (empty($topic->subs)) {
 						$content .= '<td><input type="checkbox" alt="Topic" name="data[' . $topic->id . ']" value="' . $topic->id . '" '.($topic->checked?'checked="checked"':'').' /></td>';
 					}

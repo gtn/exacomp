@@ -55,7 +55,7 @@ block_exacomp_print_header("teacher", "teachertabassignactivities");
 echo '<script type="text/javascript" src="lib/wz_tooltip.js"></script>';
 echo "<div class='exabis_competencies_lis'>";
 
-$content.='<form action="edit_activities.php?action=save&amp;courseid=' . $courseid . '" method="post">';
+$content.='<form id="edit-activities" action="edit_activities.php?action=save&amp;courseid=' . $courseid . '" method="post">';
 
 if ($courseid > 0) {
     if ($action == "save") {
@@ -141,47 +141,79 @@ if ($courseid > 0) {
         	
         }
         $content.="</tr>";
-        $descriptors = block_exacomp_get_descritors_list($courseid,0);
-        $trclass = "even";
-        $topic = "";
-        $subject = "";
-				$descriptorlist="";
-        foreach ($descriptors as $descriptor) {
-        	$showdescr=true;
-        	if (!empty($niveau_arr["niveau"])){
-        		if (!in_array($descriptor->niveauid,$niveau_arr["niveau"])) $showdescr=false;
-        	}
-        	if ($showdescr==true){
-        	
-            if ($trclass == "even") {
-                $trclass = "odd";
-                $bgcolor = ' style="background-color:#efefef" ';
-            } else {
-                $trclass = "even";
-                $bgcolor = ' style="background-color:#ffffff" ';
-            }
-            if ($subject !== $descriptor->subject) {
-                $subject = $descriptor->subject;
-                $content .= '<tr class="ec_heading"><td colspan="###colspannormal###"><h4>' . $subject . '</h4></td></tr>';
-            }
-            if ($topic !== $descriptor->topic) {
-                $topic = $descriptor->topic;
-                $content .= '<tr class="ec_heading"><td colspan="###colspannormal###"><b>' . $topic . '</b></td></tr>';
-            }
-            $activitiesr = block_exacomp_get_activities($descriptor->id); //alle gewählten aktivitäten eines descriptors, zum sparen von abfragen
-            $zeiletemp = str_replace("###descid###", "" . $descriptor->id, $zeile);
-						$exicon = block_exacomp_get_examplelink($descriptor->id);
+		
+		function block_exacomp_print_levels($level, $subs, &$data) {
+			if (empty($subs)) return;
+
+			extract((array)$data);
 			
-            foreach ($activitiesr as $activietyr) {
-                $zeiletemp = str_replace('###checked' . $activietyr->id . '_' . $descriptor->id . '###', 'checked', $zeiletemp);
-            }
-            $zeiletemp = preg_replace('/checked="###checked([0-9_])+###"/', '', $zeiletemp); //nicht gewählte aktivitäten-descriptorenpaare, checked=... löschen
-            $content.='<tr class="r2 ' . $trclass . '" ' . $bgcolor . '><td class="ec_minwidth">' . $descriptor->title . '<input type="hidden" value="' . $descriptor->id . '" name="ec_descr[' . $descriptor->id . ']" /></td>' . $zeiletemp . '</tr>';
-        		
-        	}
-        	$descriptorlist.=",".$descriptor->id;
-        }
-        $descriptorlist=preg_replace("/^,/","",$descriptorlist);
+			if ($level == 0) {
+				foreach ($subs as $group) {
+					?>
+					<tr class="ec_heading">
+					<td colspan="###colspannormal###"><h4><?php echo $group->title; ?></h4></td>
+					</tr>
+					<?php
+
+					block_exacomp_print_levels($level+1, $group->subs, $data);
+				}
+				
+				return;
+			}
+			
+			$original_rowgroup_class = $data->rowgroup_class;
+			
+			foreach ($subs as $item) {
+				$hasSubs = !empty($item->subs) || !empty($item->descriptors);
+
+				if ($hasSubs) {
+					$data->rowgroup++;
+					$rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$original_rowgroup_class;
+					$data->rowgroup_class = 'rowgroup-content rowgroup-content-'.$data->rowgroup.' '.$original_rowgroup_class;
+				} else {
+					$rowgroup_class = $original_rowgroup_class;
+				}
+				
+				?>
+                <tr class="ec_heading <?php echo $rowgroup_class; ?>">
+					<td class="rowgroup-arrow" style="padding-left: <?php echo ($level-1)*20+12; ?>px" colspan="###colspannormal###"><div><?php echo $item->title; ?></div></td></tr>
+				</tr>
+				<?php
+
+				if (isset($item->subs))
+					block_exacomp_print_levels($level+1, $item->subs, $data);
+
+				if (!empty($item->descriptors)) {
+					foreach ($item->descriptors as $descriptor) {
+						$activitiesr = block_exacomp_get_activities($descriptor->id); //alle gewählten aktivitäten eines descriptors, zum sparen von abfragen
+						$zeiletemp = str_replace("###descid###", "" . $descriptor->id, $data->zeile);
+			
+						foreach ($activitiesr as $activietyr) {
+							$zeiletemp = str_replace('###checked' . $activietyr->id . '_' . $descriptor->id . '###', 'checked', $zeiletemp);
+						}
+						$zeiletemp = preg_replace('/checked="###checked([0-9_])+###"/', '', $zeiletemp); //nicht gewählte aktivitäten-descriptorenpaare, checked=... löschen
+						echo '<tr class="r2 '.$data->rowgroup_class.'">';
+						echo '<td class="ec_minwidth" style="padding-left: '.(($level-1)*20+12).'px">' . $descriptor->title . '<input type="hidden" value="' . $descriptor->id . '" name="ec_descr[' . $descriptor->id . ']" /></td>' . $zeiletemp . '</tr>';
+					}
+					$data->descriptorlist .= ",".$descriptor->id;
+				}
+			}
+		}
+
+		$levels = block_exacomp_get_competence_tree_for_activity_selection($courseid);
+		$data = (object)array(
+			'rowgroup' => 0,
+			'rowgroup_class' => '',
+			'courseid' => $courseid,
+			'zeile' => $zeile,
+			'descriptorlist' => ''
+		);
+		ob_start();
+		block_exacomp_print_levels(0, $levels, $data);
+		$content .= ob_get_clean();
+
+		$descriptorlist = trim($data->descriptorlist, ',');
+		
         $content.='<tr><td id="tdsubmit" colspan="###colspannormal###"><input type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" /></td></tr>';
         $content.="</table></div>";
         

@@ -18,7 +18,6 @@
 		
 		var id = tr[0].className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
 		
-		console.log($(this).is('.open'));
 		if ($(tr).is('.open')) {
 			// opening: show all subs
 			$('.rowgroup-content-'+id).show();
@@ -56,12 +55,11 @@
 		$.each($form.find('input[name=open_row_groups]').val().split(','), function(tmp, id){
 			$form.find('.rowgroup-header-'+id).addClass('open');
 			$form.find('.rowgroup-content-'+id).show();
-
-			// opening: hide all subs which are still closed
-			$('.rowgroup-header').not('.open').each(function(){
-				var id = this.className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
-				$('.rowgroup-content-'+id).hide();
-			});
+		});
+		// opening: hide all subs which are still closed
+		$('.rowgroup-header').not('.open').each(function(){
+			var id = this.className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
+			$('.rowgroup-content-'+id).hide();
 		});
 	});
 })(jQueryExacomp);

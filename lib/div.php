@@ -1089,7 +1089,7 @@ function block_exacomp_get_competence_tree_for_test($courseid) {
 		JOIN {block_exacomptopics} t ON t.subjid = s.id
 		LEFT JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
 		GROUP BY s.id
-		ORDER BY s.id
+		ORDER BY s.stid, s.title
 		', array($courseid));
 	
 	$allTopics = $DB->get_records_sql('
@@ -1098,7 +1098,7 @@ function block_exacomp_get_competence_tree_for_test($courseid) {
 		JOIN {block_exacomptopics} t ON t.subjid = s.id
 		LEFT JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
 		GROUP BY t.id
-		ORDER BY t.id
+		ORDER BY t.sorting
 		', array($courseid));
 	
 	$subjects = array();
@@ -1153,7 +1153,7 @@ function block_exacomp_get_competence_tree_for_subject($courseid, $subjectid) {
 		LEFT JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
 		WHERE t.subjid = ?
 		GROUP BY t.id
-		ORDER BY t.id
+		ORDER BY t.sorting
 		', array($courseid, $subjectid));
 	
 	$topics = array();
@@ -1191,6 +1191,84 @@ function block_exacomp_get_competence_tree_for_subject($courseid, $subjectid) {
 	return $topics;
 }
 
+function block_exacomp_get_competence_tree_for_activity_selection($courseid) {
+	global $DB;
+
+	$allSubjects = $DB->get_records_sql('
+		SELECT s.id, s.title, "subject" as type
+		FROM {block_exacompsubjects} s
+		JOIN {block_exacomptopics} t ON t.subjid = s.id
+		JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
+		GROUP BY s.id
+		ORDER BY s.stid, s.title
+		', array($courseid));
+	
+	$allTopics = $DB->get_records_sql('
+		SELECT t.id, t.title, t.parentid, t.subjid, "topic" as type
+		FROM {block_exacompsubjects} s
+		JOIN {block_exacomptopics} t ON t.subjid = s.id
+		ORDER BY t.sorting
+		', array($courseid));
+	
+	$allDescriptors = $DB->get_records_sql('
+		SELECT d.id, d.title, t.id AS topicid, "descriptor" as type
+		FROM {block_exacompsubjects} s
+		JOIN {block_exacomptopics} t ON t.subjid = s.id
+		JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
+		JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.topicid=t.id
+		JOIN {block_exacompdescriptors} d ON desctopmm.descrid=d.id
+		GROUP BY d.id
+		ORDER BY d.sorting
+		', array($courseid));
+	
+	$subjects = array();
+
+	foreach ($allDescriptors as $descriptor) {
+	
+		// get descriptor topic
+		if (empty($allTopics[$descriptor->topicid])) continue;
+		$topic = $allTopics[$descriptor->topicid];
+		$topic->descriptors[] = $descriptor;
+		
+		// find all parent topics
+		$found = true;
+		for ($i = 0; $i < 10; $i++) {
+			if ($topic->parentid) {
+				// parent is topic, find it
+				if (empty($allTopics[$topic->parentid])) {
+					$found = false;
+					break;
+				}
+				
+				// found it
+				$allTopics[$topic->parentid]->subs[$topic->id] = $topic;
+				
+				// go up
+				$topic = $allTopics[$topic->parentid];
+			} else {
+				// parent is subject, find it
+				if (empty($allSubjects[$topic->subjid])) {
+					$found = false;
+					break;
+				}
+				
+				// found: add it to the subject result
+				$subject = $allSubjects[$topic->subjid];
+				$subject->subs[$topic->id] = $topic;
+				$subjects[$topic->subjid] = $subject;
+				
+				// top found
+				break;
+			}
+		}
+		
+		// if parent not found (error), skip it
+		if (!$found) continue;
+	}
+	
+	return $subjects;
+}
+
 function block_exacomp_get_competence_tree_for_course($courseid) {
 	global $DB;
 
@@ -1200,16 +1278,14 @@ function block_exacomp_get_competence_tree_for_course($courseid) {
 		JOIN {block_exacomptopics} t ON t.subjid = s.id
 		JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
 		GROUP BY s.id
-		ORDER BY s.id
+		ORDER BY s.stid, s.title
 		', array($courseid));
 	
 	$allTopics = $DB->get_records_sql('
 		SELECT t.id, t.title, t.parentid, t.subjid, "topic" as type
 		FROM {block_exacompsubjects} s
 		JOIN {block_exacomptopics} t ON t.subjid = s.id
-		JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
-		GROUP BY t.id
-		ORDER BY t.id
+		ORDER BY t.sorting
 		', array($courseid));
 	
 	$allDescriptors = $DB->get_records_sql('
