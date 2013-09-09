@@ -158,10 +158,10 @@ $string['bewertung'] = ' assessment: ';
 
 $string['xmlserverurl'] = 'Server-URL';
 $string['configxmlserverurl'] = 'Url to a xml file, which is used for keeping the database entries up to date';
-$string['niveau_filter'] = "filter niveau";
+$string['niveau_filter'] = "filter levels";
 $string['niveau_auswahl'] = "choose niveau";
 $string['niveau_auswahl_save'] = "filter Niveau!";
-$string['filter_niveaus_descr'] = "Bitte wählen sie ein oder mehrere Niveaus um die obige Liste der Descriptoren einzuschränken.";
+$string['filter_niveaus_descr'] = "Choose one or more difficulty levels to reduce list above";
 
 $string['alternativedatamodel'] = 'Baden W&uuml;rttemberg Version';
 $string['alternativedatamodel_description'] = 'Tick to use Baden W&uuml;rttemberg Version';
@@ -178,4 +178,6 @@ $string['student'] = "S";
 $string['teacher'] = "T";
 $string['assessment'] = "assessment";
 $string['plan'] = "work plan";
+
+$string['example_upload_header'] = 'Upload own example';
 ?>
