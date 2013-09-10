@@ -179,5 +179,7 @@ $string['teacher'] = "T";
 $string['assessment'] = "assessment";
 $string['plan'] = "work plan";
 
-$string['example_upload_header'] = 'Upload own example';
+$string['example_upload_header'] = 'Upload custom example for "{$a}"';
+$string['filerequired'] = 'A file upload is required';
+$string['titlerequired'] = 'A title is required';
 ?>

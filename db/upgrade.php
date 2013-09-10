@@ -502,5 +502,20 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		upgrade_block_savepoint(true, 2013090500, 'exacomp');
 	}
 	
+	if ($oldversion < 2013091000) {
+	
+		// Define field creatorid to be added to block_exacompexamples
+		$table = new xmldb_table('block_exacompexamples');
+		$field = new xmldb_field('creatorid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'iseditable');
+	
+		// Conditionally launch add field creatorid
+		if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+	
+		// exacomp savepoint reached
+		upgrade_block_savepoint(true, 2013091000, 'exacomp');
+	}
+	
 	return $result;
 }

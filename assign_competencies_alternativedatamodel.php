@@ -3,6 +3,7 @@
 $action = optional_param('action', "", PARAM_ALPHA);
 $subjectid = optional_param('subjectid', isset($SESSION->block_exacomp_last_subjectid) ? (int)$SESSION->block_exacomp_last_subjectid : 0, PARAM_INT);
 $topicid = optional_param('topicid', isset($SESSION->block_exacomp_last_topicid) ? (int)$SESSION->block_exacomp_last_topicid : 0, PARAM_INT);
+$delete = optional_param('delete', 0, PARAM_INT);
 
 $showevaluation = optional_param('showevaluation', "", PARAM_ALPHA);
 $bewertungsdimensionen=block_exacomp_getbewertungsschema($courseid);
@@ -31,6 +32,20 @@ if ($role == "student")
 
 block_exacomp_print_header($role, $identifier);
 
+if($delete > 0 && $role == "teacher") {
+	$example = $DB->get_record('block_exacompexamples', array('id'=>$delete));
+	if($example && $example->creatorid == $USER->id) {
+		$DB->delete_records('block_exacompexamples', array('id' => $delete));
+		$DB->delete_records('block_exacompdescrexamp_mm', array('exampid' => $delete));
+		$DB->delete_records('block_exacompexameval', array('exampleid' => $delete));
+		$fs = get_file_storage();
+		$fileinstance = $DB->get_record('files',array("userid"=>$example->creatorid,"itemid"=>$example->id),'*',IGNORE_MULTIPLE);
+		if($fileinstance) {
+			$file = $fs->get_file_instance($fileinstance);
+			$file->delete();
+		}
+	}
+}
 if ($action == "save" && isset($_POST['btn_submit'])) {
 	$values = array();
 	if (!empty($_POST['data'])){
@@ -123,6 +138,7 @@ if ($role == "teacher"){
 	//spalte nur teilnehmer selber
 	$students = array($USER);
 }
+$teachers = get_role_users(array(1,2,3,4), $context);
 
 // read all subjects in this course
 $topics = null;
@@ -349,9 +365,11 @@ else
 		<img src="pix/list_12x11.png" alt="Aktivitäten" /> Aktivitäten - <img
 			src="pix/folder_fill_12x12.png" alt="ePortfolio" /> ePortfolio - <img
 			src="pix/x_11x11.png" alt="Leer" /> noch keine Aufgaben zu diesem
-		Deskriptor abgegeben und keinen Test durchgeführt
+		Deskriptor abgegeben und keinen Test durchgeführt <?php if($role == "teacher") { ?>- <img src="pix/upload_12x12.png"
+		alt="Upload" /> Eigenes Lernmaterial hinzufügen <?php } ?>
 	</div>
 
+	
 	<?php
 	if ($descriptors) {
 		?>
@@ -401,7 +419,7 @@ else
 					// in the alternative data model we use examples on this level, in the normal case we use descriptors
 						$examples = $DB->get_records_sql(
 								"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
-								e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement
+								e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid
 								FROM {block_exacompexamples} e
 								JOIN {block_exacompdescrexamp_mm} de ON e.id=de.exampid AND de.descrid=?
 								LEFT JOIN {block_exacomptaxonomies} tax ON e.taxid=tax.id
@@ -423,7 +441,15 @@ else
 					?>
 				<tr
 					class="highlight exabis_comp_teilcomp <?php if ($examples): ?>rowgroup-header rowgroup-header-<?php echo $rowgroup; ?><?php endif; ?>">
-					<td><?php echo $output_id; ?></td>
+					<td><?php
+					if($role == "teacher") {
+						?>
+						<a href="example_upload.php?courseid=<?php echo $courseid;?>&descrid=<?php echo $descriptor->id;?>" target="_blank" onclick="window.open(this.href,this.target,'width=640,height=480'); return false;" >
+						<img src='pix/upload_12x12.png'/></a>
+						<?php 
+					}
+					echo $output_id;
+					?></td>
 					<td class="rowgroup-arrow"><div
 							class="desctitle<?php if(count($activities)==0 && $courseSettings->uses_activities == 1) echo "grey";?>">
 							<?php echo $output_title; ?>
@@ -497,7 +523,11 @@ else
 					?>
 				</tr>
 				<?php foreach ($examples as $example) {
-
+					
+					//skip custom examples from other courses
+					if( (!array_key_exists($example->creatorid, $teachers)))
+						continue;
+					
 						$examplesEvaluationData = $DB->get_records_sql("
 								SELECT deu.studentid, u.firstname, u.lastname, deu.*
 								FROM {block_exacompexameval} deu
@@ -505,9 +535,9 @@ else
 								WHERE deu.courseid=? AND deu.exampleid=?
 								", array($courseid, $example->id));
 
-						foreach($examplesEvaluationData as $exaeval) {
+						/*foreach($examplesEvaluationData as $exaeval) {
 							$exaeval->student_evaluation = $DB->get_field('block_exacompdescuser', 'wert', array("userid"=>$exaeval->userid,"descid"=>$exaeval->descid,"role"=>0,"courseid"=>$exaeval->courseid));
-						}
+						}*/
 
 						$activities = block_exacomp_get_activities($example->id, $courseid);
 
@@ -517,15 +547,22 @@ else
 					<td></td>
 					<td>
 						<p class="aufgabetext">
-							<?php echo $example->title; ?>
+							<?php echo $example->title;
+							
+							if(isset($example->creatorid) && $example->creatorid == $USER->id) {
+								?>
+								<a onclick="return confirm('Beispiel wirklich löschen?')" href="<?php echo $url.'&delete='.$example->id;?>"><img src="pix/x_11x11_redsmall.png"/></a>
+								<?php 
+							}
+							?>
 						</p> <?php 
-						if($role == "student") {
-							$img = '<img src="pix/examples_and_tasks.png" height="16" width="23" alt="Example" />';
+						//if($role == "student") {
+							$img = '<img src="pix/i_11x11.png" alt="Beispiel" />';
 							if($example->task)
 								echo "<a target='_blank' href='".$example->task."'>".$img."</a>";
 							if($example->externalurl)
 								echo "<a target='_blank' href='".$example->externalurl."'>".$img."</a>";
-						}
+						//}
 						?>
 					</td>
 					<?php
