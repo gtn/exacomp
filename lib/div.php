@@ -982,6 +982,14 @@ function block_exacomp_get_portfolio_icon($student, $descrid) {
 				" LEFT JOIN {block_exaportviewshar} vshar ON v.id=vshar.viewid AND vshar.userid=?" .
 				" WHERE (v.shareall=1 OR vshar.userid IS NOT NULL)",array($item->id,$USER->id));
 		if(!$view){
+			$view =$DB->get_records_sql("SELECT v.* " .
+					" FROM {block_exaportview} AS v" .
+					" JOIN {block_exaportviewblock} vb ON vb.viewid=v.id AND vb.itemid = ?" .
+					" JOIN {block_exaportitem} AS item ON vb.itemid = item.id" .
+					" LEFT JOIN {block_exaportviewshar} vshar ON v.id=vshar.viewid AND vshar.userid=?" .
+					" WHERE (v.shareall=1 OR vshar.userid IS NOT NULL OR item.userid = ?)",array($item->id,$USER->id, $USER->id));
+		}
+		if(!$view){
 			$submitted .= "<li class=\"noview\">".$item->name." (".get_string('notinview', 'block_exacomp').")</li>";
 		}else{
 			$submitted .= "<li>".$item->name."</li>";
