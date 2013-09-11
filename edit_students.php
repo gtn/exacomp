@@ -52,7 +52,8 @@ require_capability('block/exacomp:teacher', $context);
 
 $url = '/blocks/exacomp/edit_students.php?courseid=' . $courseid;
 $PAGE->set_url($url);
-$PAGE->requires->css('/blocks/exacomp/styles.css');
+$PAGE->requires->css('/blocks/exacomp/css/assign_competencies.css');
+$PAGE->requires->js('/blocks/exacomp/javascript/assign_competencies.js');
 $url = $CFG->wwwroot.$url;
 block_exacomp_print_header("teacher", "teachertabassigncompetencesdetail");
 
@@ -79,7 +80,7 @@ if ($action == "save" && isset($_POST['btn_submit'])) {
 	block_exacomp_set_descusermm($values, $courseid, $USER->id, 1);
 }
 echo '<script type="text/javascript" src="lib/wz_tooltip.js"></script>';
-echo "<div class='block_excomp_center'>";
+echo "<div class='exabis_competencies_lis'>";
 if($showevaluation=='on')
 	echo $OUTPUT->box(text_to_html(get_string("explainstudenteditingoff", "block_exacomp").'<a href="'.$url.'">'.get_string("hier", "block_exacomp").'</a>'));
 else
@@ -97,21 +98,21 @@ if($showevaluation == 'on')
 else
 	$colspan=1;
 if($activities) {
-	$content.='<div>';
+	$content.='<div class="exabis_competencies_lis">';
 	$content.='<div class="spaltenbrowser">';
-	if (count($students)>$spalten) $content.=deprecated_spaltenbrowser(count($students),$spalten);
+	if (count($students)>$spalten) $content.=spaltenbrowser(count($students),$spalten);
 	$content.="</div>";
 	$content.='
-	<table style="empty-cells:hide;border-left:1px solid #E3DFD4;margin-top:4px;" id="comps" class="compstable flexible boxaligncenter generaltable">
+	<table style="empty-cells:hide;border-left:1px solid #E3DFD4;margin-top:4px;" id="comps" class="exabis_comp_comp">
 	<tr class="heading r0">
 	<td id="headerwithcoursename" class="category catlevel1" colspan="' . (count($students)*$colspan + 1) . '" scope="col"><h2>' . $COURSE->fullname . '</h2></td></tr>
 	<tr><td></td>';
 	$z=1;
-	$p=1;
+	$p=0;
 	foreach ($students as $student) {
-		$content.='<td class="zelle'.$p.'" colspan="'.$colspan.'">' . $student->lastname . ' ' . $student->firstname . '<input type="hidden" value="' . $student->id . '" name="ec_student[' . $student->id . ']" /></td>';
+		$content.='<td class="colgroup colgroup-'.floor($p++/$spalten).'" colspan="'.$colspan.'">' . $student->lastname . ' ' . $student->firstname . '<input type="hidden" value="' . $student->id . '" name="ec_student[' . $student->id . ']" /></td>';
 		if ($z==$spalten){
-			$z=1;$p++;
+			$z=1;
 		}
 		else $z++;
 	}
@@ -122,9 +123,9 @@ if($activities) {
 		$z=1;
 		$p=1;
 		for ($i = 0; $i < count($students); $i++){
-			$content.='<td class="zelle'.$p.'">'.get_string("schueler_short", "block_exacomp").'</td><td class="zelle'.$p.'">'.get_string("lehrer_short", "block_exacomp").'</td>';
+			$content.='<td class="colgroup colgroup-'.floor($p++/$spalten).'">'.get_string("schueler_short", "block_exacomp").'</td><td class="colgroup colgroup-'.floor($p++/$spalten).'"'.get_string("lehrer_short", "block_exacomp").'</td>';
 			if ($z==$spalten){
-				$z=1;$p++;
+				$z=1;
 			}
 			else $z++;
 		}
@@ -145,7 +146,7 @@ if($activities) {
 		}
 		//aufgabe=assignment, titel anzeigen und link
 		//$content.='<tr class="r2 ' . $trclass . '" ' . $bgcolor . '><td colspan="' . (count($students)*$colspan + 1) . '" class="ec_activitylist_item"><a href="' . $CFG->wwwroot . '/mod/assignment/submissions.php?id=' . ($activity->id + $courseid) . '&course='.$courseid.'">' . $activity->name . '</a><input type="hidden" value="' . $activity->id . '" name="ec_activity[' . $activity->id . ']" /></td></tr>';
-		$content.='<tr class="r2 ' . $trclass . '" ' . $bgcolor . '><td colspan="' . (count($students)*$colspan + 1) . '" class="ec_activitylist_item"><a href="' . block_exacomp_get_activityurl($activitymod) . '&amp;course='.$courseid.'">' . $activity->name . '</a><input type="hidden" value="' . $activity->id . '" name="ec_activity[' . $activity->id . ']" /></td></tr>';
+		$content.='<tr class="exabis_comp_aufgabe ' . $trclass . '" ' . $bgcolor . '><td colspan="' . (count($students)*$colspan + 1) . '" class="ec_activitylist_item"><a href="' . block_exacomp_get_activityurl($activitymod) . '&amp;course='.$courseid.'">' . $activity->name . '</a><input type="hidden" value="' . $activity->id . '" name="ec_activity[' . $activity->id . ']" /></td></tr>';
 		$zeile = "";
 		$tempzeile = "";
 
@@ -161,10 +162,10 @@ if($activities) {
 			}
 
 			$exicon = block_exacomp_get_examplelink($descriptor->id);
-			$tempzeile.='<tr class="r2 ' . $trclass . '" ' . $bgcolor . '><td class="ec_minwidth">' . $descriptor->title . '' . $exicon . '<input type="hidden" value="' . $descriptor->id . '" name="ec_activity[' . $activity->id . ']_descriptor[' . $descriptor->id . ']" /></td>';
+			$tempzeile.='<tr class="exabis_comp_aufgabe ' . $trclass . '" ' . $bgcolor . '><td class="ec_minwidth">' . $descriptor->title . '' . $exicon . '<input type="hidden" value="' . $descriptor->id . '" name="ec_activity[' . $activity->id . ']_descriptor[' . $descriptor->id . ']" /></td>';
 			//Checkbox für jeden Schüler generieren
 			$z=1;
-			$p=1;
+			$p=0;
 			foreach ($students as $student) {
 				$gradeicon="";
 				if ($activity->modname=="quiz"){
@@ -172,19 +173,18 @@ if($activities) {
 					$gradeicon=$quizresult->icon;
 				}
 
-					
 				if ($bewertungsdimensionen==1){
 					if($showevaluation=='on')
 					{
-						$tempzeile.='<td class="zelle'.$p.'" ###checkedcomp' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###><input type="checkbox" name="student[' . $activity->id . '][' . $descriptor->id . '][' . $student->id . ']" checked="###checkedstudent' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###" disabled /></td>';
+						$tempzeile.='<td class="colgroup colgroup-'.floor($p++/$spalten).'" ###checkedcomp' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###><input type="checkbox" name="student[' . $activity->id . '][' . $descriptor->id . '][' . $student->id . ']" checked="###checkedstudent' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###" disabled /></td>';
 					}
-					$tempzeile.='<td class="zelle'.$p.'" ###checkedcomp' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###><input value="1" type="checkbox" name="data[' . $activity->id . '][' . $descriptor->id . '][' . $student->id . ']" checked="###checked' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###" />'.$gradeicon.'</td>';
+					$tempzeile.='<td class="colgroup colgroup-'.floor($p++/$spalten).'" ###checkedcomp' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###><input value="1" type="checkbox" name="data[' . $activity->id . '][' . $descriptor->id . '][' . $student->id . ']" checked="###checked' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###" />'.$gradeicon.'</td>';
 				}else {
 					if($showevaluation=='on')
 					{
-						$tempzeile.='<td class="zelle'.$p.'" ###checkedcomp' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###>###checkedstudent' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###</td>';
+						$tempzeile.='<td class="colgroup colgroup-'.floor($p++/$spalten).'" ###checkedcomp' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###>###checkedstudent' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###</td>';
 					}
-					$tempzeile.='<td class="zelle'.$p.'" ###checkedcomp' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###><select style="float:left;" name="data[' . $activity->id . '][' . $descriptor->id . '][' . $student->id . ']"  >';
+					$tempzeile.='<td class="colgroup colgroup-'.floor($p++/$spalten).'" ###checkedcomp' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '###><select style="float:left;" name="data[' . $activity->id . '][' . $descriptor->id . '][' . $student->id . ']"  >';
 					for ($i=0;$i<=$bewertungsdimensionen;$i++){
 						$tempzeile.='<option value="'.$i.'" selected="###selected' . $activity->id . '_' . $descriptor->id . '_' . $student->id . '_'.$i.'###">'.$i.'</option>';
 					}
@@ -192,7 +192,7 @@ if($activities) {
 					$tempzeile.='</td>';
 				}
 				if ($z==$spalten){
-					$z=1;$p++;
+					$z=1;
 				}
 				else $z++;
 			}
@@ -241,13 +241,13 @@ if($activities) {
 				}
 				$zeile.='<tr class="'.$trclass.'" ' . $bgcolor . '><td></td>';
 				$zi=1;
-				$pi=1;
+				$pi=0;
 				foreach ($students as $student) {
 					$zeile.='<td'.$fontcolor.' ';
 					if($showevaluation=='on') $zeile.=' colspan="2" ';
-					$zeile.='class="zelle'.$pi.'" >'.$student->lastname.' ' . $student->firstname.'</td>';
+					$zeile.='class="colgroup colgroup-'.floor($pi++/$spalten).'" >'.$student->lastname.' ' . $student->firstname.'</td>';
 					if ($zi==$spalten){
-						$zi=1;$pi++;
+						$zi=1;
 					}
 					else $zi++;
 				}
@@ -270,49 +270,5 @@ echo $content;
 echo "</div>";
 echo '</div>'."\n"; //exabis_competences_block
 
-
-$content='
-<script language="JavaScript">
-
-function hidezelle(nummer,bereiche){
-for (z=1;z<=bereiche;z++){
-if (nummer==0) showcell("zelle" + z);
-else if (z==nummer) showcell("zelle" + nummer);
-else hidecell("zelle" + z);
-}
-if (nummer==0){}
-else change_colspan(bereiche);
-}
-
-function change_colspan(anzahl){
-/*
-document.getElementById("headerwithcoursename").setAttribute("colspan",(anzahl+2));
-var elements = document.getElementsByTagName("*");
-for(i = 0; i < elements.length; i++) {
-if(elements[i].getAttribute("class") == "ec_activitylist_item") {
-elements[i].setAttribute("colspan",(anzahl+2));
-}}
-*/
-}
-function hidecell(zelle) {
-
-var elements = document.getElementsByTagName("*");
-for(i = 0; i < elements.length; i++) {
-if(elements[i].getAttribute("class") == zelle) {
-elements[i].style.display = "none";
-}}}
-
-function showcell(zelle) {
-
-var elements = document.getElementsByTagName("*");
-
-for(i = 0; i < elements.length; i++) {
-
-if(elements[i].getAttribute("class") == zelle) {
-elements[i].style.display = "table-cell";
-
-}}}
-';
-echo $content;
 echo '</script>'."\n";
 echo $OUTPUT->footer();
