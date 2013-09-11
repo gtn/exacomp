@@ -410,8 +410,7 @@ function block_exacomp_print_levels($level, $subs, &$data) {
 		</form>
 	</div>
 		<?php
-
-				
+			/*				
 				return;
 				foreach ($levels as $group) {
 					$rowgroup++;
@@ -440,11 +439,11 @@ function block_exacomp_print_levels($level, $subs, &$data) {
 						echo '</tr>';
 					}
 				}
+				*/
 	}
 	else {
 		echo $OUTPUT->box(text_to_html(get_string("explainno_comps", "block_exacomp")));
 	}
-
 
 ?>
 </div>

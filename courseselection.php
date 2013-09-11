@@ -134,6 +134,23 @@ else if ($action == 'detail') {
 			
             $content .= '<tr class="selection-group"> <td colspan="2"><b>' . $subject->title . '</b></td></tr>';
 
+            function block_exacomp_print_levels($level, $topics) {
+            	$content = '';
+            
+            	foreach ($topics as $topic) {
+            		$content .= '<tr class="'.(empty($topic->subs)?'selection-item':'selection-group').'"><td><div style="padding-left: '.(25*$level).'px">' . $topic->title . '</div></td>';
+            		if (empty($topic->subs)) {
+            			$content .= '<td><input type="checkbox" alt="Topic" name="data[' . $topic->id . ']" value="' . $topic->id . '" '.($topic->checked?'checked="checked"':'').' /></td>';
+            		}
+            		$content .= '</tr>';
+            		if (!empty($topic->subs)) {
+            			$content .= block_exacomp_print_levels($level+1, $topic->subs);
+            		}
+            	}
+            
+            	return $content;
+            }
+            
 			$topics = block_exacomp_get_competence_tree_for_subject($courseid, $subject->id);
 			$content .= block_exacomp_print_levels(0, $topics);
         }
