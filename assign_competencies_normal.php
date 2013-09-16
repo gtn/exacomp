@@ -239,7 +239,7 @@ function block_exacomp_print_level_descriptors($level, $subs, &$data) {
 					if ($bewertungsdimensionen==1) {
 						echo '<input type="hidden" value="0" name="'.$checkboxname.'[' . $descriptor->id . '][' . $student->id . '][student_evaluation]" />';
 						echo '<input type="checkbox" value="1" name="'.$checkboxname.'[' . $descriptor->id . '][' . $student->id . '][student_evaluation]"'.
-								(isset($descriptor->evaluationData[$student->id])&&$descriptor->evaluationData[$student->id]->student_evaluation?' checked="checked"':'').' />';
+								(isset($descriptor->evaluationData[$student->id])&&isset($descriptor->evaluationData[$student->id]->student_evaluation) ?' checked="checked"':'').' />';
 					} else {
 						echo '<select name="'.$checkboxname.'[' . $descriptor->id . '][' . $student->id . '][student_evaluation]">';
 						for ($i=0; $i<=$bewertungsdimensionen; $i++) {
