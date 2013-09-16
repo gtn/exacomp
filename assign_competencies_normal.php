@@ -160,10 +160,9 @@ else
 
 		?>
 	<div class="exabis_comp_top_legend">
-		<img src="pix/list_12x11.png" alt="Aktivitäten" /> Aktivitäten - <img
+		<img src="pix/list_12x11.png" alt=<?php echo get_string('activities', 'block_exacomp'); ?> /> <?php echo get_string('activities', 'block_exacomp'); ?> - <img
 			src="pix/folder_fill_12x12.png" alt="ePortfolio" /> ePortfolio - <img
-			src="pix/x_11x11.png" alt="Leer" /> noch keine Aufgaben zu diesem
-		Deskriptor abgegeben und keinen Test durchgeführt
+			src="pix/x_11x11.png" alt="<?php echo get_string('noactivitiesyet', 'block_exacomp');?>" /> <?php echo get_string('noactivitiesyet', 'block_exacomp');?>
 	</div>
 
 	<?php

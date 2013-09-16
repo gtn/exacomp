@@ -28,11 +28,11 @@ function spaltenbrowser($anz, $spalten) {
 
 	$content  = '';
 	$content .= '<div class="spaltenbrowser">';
-	$content .= '<b>Tabellenspalten Anzeige: </b>';
+	$content .= '<b>'.get_string('columnselection','block_exacomp').': </b>';
 	for ($i=0; $i<ceil($anz/$spalten); $i++) {
 		$content .= '<a href="javascript:Exacomp.onlyShowColumnGroup('.$i.');" class="colgroup-button colgroup-button-'.$i.'">'.($i*$spalten+1).'-'.min($anz, ($i+1)*$spalten).'</a> | ';
 	}
-	$content .= '<a href="javascript:Exacomp.onlyShowColumnGroup(null);" class="colgroup-button colgroup-button-all">alle&nbsp;Schüler</a>';
+	$content .= '<a href="javascript:Exacomp.onlyShowColumnGroup(null);" class="colgroup-button colgroup-button-all">'.get_string('allstudents','block_exacomp').'</a>';
 	$content .= "</div>";
 
 	return $content;
@@ -874,6 +874,7 @@ function block_exacomp_get_activity_icon($descriptorid) {
 }
 
 function block_exacomp_get_student_icon($activities, $student,$courseid,$gradelib=false) {
+	
 	global $DB, $CFG;
 	$count = false;
 	$countquiz = false;

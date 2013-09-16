@@ -362,11 +362,11 @@ else
 	<br />
 
 	<div class="exabis_comp_top_legend">
-		<img src="pix/list_12x11.png" alt="Aktivitäten" /> Aktivitäten - <img
+		<div class="exabis_comp_top_legend">
+		<img src="pix/list_12x11.png" alt=<?php echo get_string('activities', 'block_exacomp'); ?> /> <?php echo get_string('activities', 'block_exacomp'); ?> - <img
 			src="pix/folder_fill_12x12.png" alt="ePortfolio" /> ePortfolio - <img
-			src="pix/x_11x11.png" alt="Leer" /> noch keine Aufgaben zu diesem
-		Deskriptor abgegeben und keinen Test durchgeführt <?php if($role == "teacher") { ?>- <img src="pix/upload_12x12.png"
-		alt="Upload" /> Eigenes Lernmaterial hinzufügen <?php } ?>
+			src="pix/x_11x11.png" alt="<?php echo get_string('noactivitiesyet', 'block_exacomp');?>" /> <?php echo get_string('noactivitiesyet', 'block_exacomp');?> <?php if($role == "teacher") { ?>- <img src="pix/upload_12x12.png"
+		alt="Upload" /> <?php echo get_string('example_upload_header', 'block_exacomp');?> <?php } ?>
 	</div>
 
 	

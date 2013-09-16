@@ -178,8 +178,9 @@ $string['student'] = "S";
 $string['teacher'] = "T";
 $string['assessment'] = "assessment";
 $string['plan'] = "work plan";
-
-$string['example_upload_header'] = 'Upload custom example for "{$a}"';
-$string['filerequired'] = 'A file upload is required';
-$string['titlerequired'] = 'A title is required';
+$string['example_upload_header'] = 'Upload own example';
+$string['activities'] = "activities";
+$string['noactivitiesyet'] = "no solutions to this descriptor submitted and no test made";
+$string['columnselection'] = 'Table column selection';
+$string['allstudents'] = 'All students';
 ?>

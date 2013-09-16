@@ -176,10 +176,11 @@ $string['student'] = "S";
 $string['teacher'] = "L";
 $string['assessment'] = "Einsch&auml;tzung";
 $string['plan'] = "Arbeitsplan";
-
-$string['example_upload_header'] = 'Eigenes Beispiel erstellen für "{$a}"';
-$string['filerequired'] = 'Es muss eine Datei hochgeladen werden';
-$string['titlerequired'] = 'Es wird ein Name benötigt';
+$string['example_upload_header'] = 'Eigenes Lernmaterial hinzufügen';
+$string['activities'] = "Aktivitäten";
+$string['noactivitiesyet'] = "noch keine Aufgaben zu diesem Deskriptor abgegeben und keinen Test durchgeführt";
+$string['columnselection'] = 'Tabellenspalten Auswahl';
+$string['allstudents'] = 'Alle Schüler';
 
 /*langstrings for alternativedatamodel*/
 require dirname(__FILE__).'/block_exacomp_overlaystatic.php';
