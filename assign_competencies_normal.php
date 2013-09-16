@@ -169,7 +169,7 @@ else
 	<?php
 
 function block_exacomp_print_level_descriptors($level, $subs, &$data) {
-	global $CFG;
+	global $CFG, $DB;
 	extract((array)$data);
 
 	$version = 0;
@@ -197,7 +197,7 @@ function block_exacomp_print_level_descriptors($level, $subs, &$data) {
 					if (isset($descriptor->evaluationData[$student->id])) {
 						$evaluation = $descriptor->evaluationData[$student->id];
 						if ($role == "teacher") {
-							$evaluationWert = $evaluation->student_evaluation;
+							$evaluationWert = isset($evaluation->student_evaluation) ? $evaluation->student_evaluation : 0;
 							$evaluationTooltip = isset($evaluation->starttime) ? $evaluation->starttime.' - '.$evaluation->endtime : '';
 						} else {
 							$evaluationWert = $evaluation->teacher_evaluation;

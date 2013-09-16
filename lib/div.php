@@ -1368,9 +1368,26 @@ function block_exacomp_get_competence_tree_for_course($courseid) {
 				WHERE deu.courseid=? AND deu.descid=? AND deu.role = 1
 				", array($courseid, $descriptor->id));
 
-		foreach($descriptor->evaluationData as $exaeval) {
+		
+		/*foreach($descriptor->evaluationData as $exaeval) {
 			$exaeval->student_evaluation = $DB->get_field('block_exacompdescuser', 'wert', array("userid"=>$exaeval->userid,"descid"=>$exaeval->descid,"role"=>0,"courseid"=>$exaeval->courseid));
+		}*/
+		
+		$studentEvaluationData = $DB->get_records_sql("
+				SELECT deu.userid, u.firstname, u.lastname, deu.*, deu.wert as student_evaluation, 0 as teacher_evaluation
+				FROM {block_exacompdescuser} deu
+				LEFT JOIN {user} u ON u.id=deu.userid
+				WHERE deu.courseid=? AND deu.descid=? AND deu.role = 0
+				", array($courseid, $descriptor->id));
+		
+		foreach($studentEvaluationData as $studentEval) {
+			if(isset($descriptor->evaluationData[$studentEval->userid]))
+				$descriptor->evaluationData[$studentEval->userid]->student_evaluation = $studentEval->student_evaluation;
+			
+			else 
+				$descriptor->evaluationData[$studentEval->userid] = $studentEval;
 		}
+		
 	}
 	
 	return $subjects;
