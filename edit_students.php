@@ -151,7 +151,12 @@ if($activities) {
 		$tempzeile = "";
 
 		$descriptors = block_exacomp_get_descriptors($activitymod->id,$courseid);
-
+		
+		$query = "SELECT mm.id as uniqueid,a.id,ass.grade, mm.activitytype,a.instance FROM {block_exacompdescriptors} descr INNER JOIN {block_exacompdescractiv_mm} mm  ON descr.id=mm.descrid INNER JOIN {course_modules} a ON a.id=mm.activityid LEFT JOIN {assign} ass ON ass.id=a.instance  ";
+		$query.="WHERE mm.activityid=? GROUP BY mm.activityid";
+		$activityForIcon =  $DB->get_records_sql($query, array("activityid" => $activitymod->id));
+		
+		
 		foreach ($descriptors as $descriptor) {
 			if ($trclass == "even") {
 				$trclass = "odd";
@@ -171,6 +176,13 @@ if($activities) {
 				if ($activity->modname=="quiz"){
 					$quizresult=block_exacomp_getquizresult($gradelib,$activity->instance,$courseid,$student->id);
 					$gradeicon=$quizresult->icon;
+				}
+				
+				if ($stdicon = block_exacomp_get_student_icon($activityForIcon, $student,$courseid, true)) {
+					$gradeicon = '<span title="'.s($stdicon->text).'" class="exabis-tooltip">' . $stdicon->icon . '</span>';
+				}
+				else {
+					$gradeicon = '<span title="'.s('todo').'" class="exabis-tooltip"><img src="pix/x_11x11.png" /></span>';
 				}
 
 				if ($bewertungsdimensionen==1){
@@ -228,6 +240,7 @@ if($activities) {
 
 			$zeile .= $tempzeile;
 			$tempzeile = "";
+			/*
 			if ($zeilenr==$zeilenanzahl){
 				 
 				if ($trclass == "even") {
@@ -253,7 +266,7 @@ if($activities) {
 				}
 				$zeile.='</tr>';
 				$zeilenr=0;
-			}
+			}*/
 			$zeilenr++;
 		}
 		$content .= $zeile;
