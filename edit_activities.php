@@ -142,7 +142,7 @@ if ($courseid > 0) {
         }
         $content.="</tr>";
 		
-		function block_exacomp_print_levels($level, $subs, &$data) {
+		function block_exacomp_print_levels($level, $subs, &$data, $rowgroup_class = '') {
 			if (empty($subs)) return;
 
 			extract((array)$data);
@@ -161,27 +161,25 @@ if ($courseid > 0) {
 				return;
 			}
 			
-			$original_rowgroup_class = $data->rowgroup_class;
-			
 			foreach ($subs as $item) {
 				$hasSubs = !empty($item->subs) || !empty($item->descriptors);
 
 				if ($hasSubs) {
 					$data->rowgroup++;
-					$rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$original_rowgroup_class;
-					$data->rowgroup_class = 'rowgroup-content rowgroup-content-'.$data->rowgroup.' '.$original_rowgroup_class;
+					$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$rowgroup_class;
+					$subs_rowgroup_class = 'rowgroup-content rowgroup-content-'.$data->rowgroup.' '.$rowgroup_class;
 				} else {
-					$rowgroup_class = $original_rowgroup_class;
+					$this_rowgroup_class = $rowgroup_class;
 				}
 				
 				?>
-                <tr class="ec_heading <?php echo $rowgroup_class; ?>">
+                <tr class="ec_heading <?php echo $this_rowgroup_class; ?>">
 					<td class="rowgroup-arrow" style="padding-left: <?php echo ($level-1)*20+12; ?>px" colspan="###colspannormal###"><div><?php echo $item->title; ?></div></td></tr>
 				</tr>
 				<?php
 
 				if (isset($item->subs))
-					block_exacomp_print_levels($level+1, $item->subs, $data);
+					block_exacomp_print_levels($level+1, $item->subs, $data, $subs_rowgroup_class);
 
 				if (!empty($item->descriptors)) {
 					foreach ($item->descriptors as $descriptor) {
@@ -192,7 +190,7 @@ if ($courseid > 0) {
 							$zeiletemp = str_replace('###checked' . $activietyr->id . '_' . $descriptor->id . '###', 'checked', $zeiletemp);
 						}
 						$zeiletemp = preg_replace('/checked="###checked([0-9_])+###"/', '', $zeiletemp); //nicht gewählte aktivitäten-descriptorenpaare, checked=... löschen
-						echo '<tr class="r2 '.$data->rowgroup_class.'">';
+						echo '<tr class="r2 '.$subs_rowgroup_class.'">';
 						echo '<td class="ec_minwidth" style="padding-left: '.(($level-1)*20+12).'px">' . $descriptor->title . '<input type="hidden" value="' . $descriptor->id . '" name="ec_descr[' . $descriptor->id . ']" /></td>' . $zeiletemp . '</tr>';
 					}
 					$data->descriptorlist .= ",".$descriptor->id;
@@ -203,7 +201,6 @@ if ($courseid > 0) {
 		$levels = block_exacomp_get_competence_tree_for_activity_selection($courseid);
 		$data = (object)array(
 			'rowgroup' => 0,
-			'rowgroup_class' => '',
 			'courseid' => $courseid,
 			'zeile' => $zeile,
 			'descriptorlist' => ''

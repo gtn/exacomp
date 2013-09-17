@@ -167,7 +167,7 @@ else
 
 	<?php
 
-function block_exacomp_print_level_descriptors($level, $subs, &$data) {
+function block_exacomp_print_level_descriptors($level, $subs, &$data, $rowgroup_class = '') {
 	global $CFG, $DB;
 	extract((array)$data);
 
@@ -178,7 +178,7 @@ function block_exacomp_print_level_descriptors($level, $subs, &$data) {
 		$activities = block_exacomp_get_activities($descriptor->id, $courseid);
 		?>
 		<tr
-			class="exabis_comp_aufgabe <?php echo $data->rowgroup_class; ?>">
+			class="exabis_comp_aufgabe <?php echo $rowgroup_class; ?>">
 			<td></td>
 			<td style="padding-left: <?php echo ($level-1)*20+12; ?>px">
 				<p class="aufgabetext">
@@ -284,7 +284,7 @@ function block_exacomp_print_level_descriptors($level, $subs, &$data) {
 	}
 }
 
-function block_exacomp_print_levels($level, $subs, &$data) {
+function block_exacomp_print_levels($level, $subs, &$data, $rowgroup_class = '') {
 	if (empty($subs)) return;
 
 	extract((array)$data);
@@ -321,8 +321,6 @@ function block_exacomp_print_levels($level, $subs, &$data) {
 		return;
 	}
 	
-	$original_rowgroup_class = $data->rowgroup_class;
-	
 	foreach ($subs as $item) {
 		if (preg_match('!^([^\s]*[0-9][^\s]*+)\s+(.*)$!iu', $item->title, $matches)) {
 			$output_id = $matches[1];
@@ -336,10 +334,10 @@ function block_exacomp_print_levels($level, $subs, &$data) {
 
 		if ($hasSubs) {
 			$data->rowgroup++;
-			$rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$original_rowgroup_class;
-			$data->rowgroup_class = 'rowgroup-content rowgroup-content-'.$data->rowgroup.' '.$original_rowgroup_class;
+			$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$rowgroup_class;
+			$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$data->rowgroup.' '.$rowgroup_class;
 		} else {
-			$rowgroup_class = $original_rowgroup_class;
+			$this_rowgroup_class = $rowgroup_class;
 		}
 		
 		if ($level == 1) {
@@ -348,7 +346,7 @@ function block_exacomp_print_levels($level, $subs, &$data) {
 		
 		?>
 		<tr
-			class="exabis_comp_teilcomp <?php echo $rowgroup_class; ?>">
+			class="exabis_comp_teilcomp <?php echo $this_rowgroup_class; ?>">
 			<td><?php echo $output_id; ?></td>
 			<td class="rowgroup-arrow" style="padding-left: <?php echo ($level-1)*20+12; ?>px"><div
 					class="desctitle">
@@ -364,11 +362,12 @@ function block_exacomp_print_levels($level, $subs, &$data) {
 		<?php
 
 		if (!empty($item->descriptors)) {
-			block_exacomp_print_level_descriptors($level+1, $item->descriptors, $data);
+			block_exacomp_print_level_descriptors($level+1, $item->descriptors, $data, $sub_rowgroup_class);
 		}
 		
-		if (isset($item->subs))
-			block_exacomp_print_levels($level+1, $item->subs, $data);
+		if (!empty($item->subs)) {
+			block_exacomp_print_levels($level+1, $item->subs, $data, $sub_rowgroup_class);
+		}
 	}
 }
 
@@ -390,7 +389,6 @@ function block_exacomp_print_levels($level, $subs, &$data) {
 				$rowgroup = 0;
 				$data = (object)array(
 					'rowgroup' => 0,
-					'rowgroup_class' => '',
 					'courseid' => $courseid,
 					'showevaluation' => $showevaluation,
 					'students' => $students,
