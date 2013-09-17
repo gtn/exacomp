@@ -678,7 +678,7 @@ function block_exacomp_xml_do_import($file = null, $source = 1, $cron = 0) {
 					die;
 				}
 			}
-			if (($schritt=="1" && $source=="1") || $source>1){
+			if (($schritt=="1" && $source=="1") || $source>1 || $cron==1){
 				$STARTZEIT = time();
 				//block_exacomp_deleteIfNoSubcategories("block_exacomptopics","block_exacompdescrtopic_mm","topicid",$source);
 				block_exacomp_deleteIfNoSubcategories("block_exacompsubjects","block_exacomptopics","subjid",$source);
