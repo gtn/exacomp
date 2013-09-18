@@ -462,18 +462,18 @@ else
 							if (isset($evaluations[$student->id])&&$evaluations[$student->id]->wert) {
 								$evaluation = $evaluations[$student->id];
 								if ($evaluation->wert) {
-									echo '<td class="exabis-tooltip colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'" title="'.s(get_string('assessedby','block_exacomp').fullname($evaluation)).'">';
+									echo '<td class="exabis-tooltip colgroup colgroup-'.floor($columnCnt/$schueler_gruppierung_breite).'" title="'.s(get_string('assessedby','block_exacomp').fullname($evaluation)).'">';
 									if ($bewertungsdimensionen==1) {
 										echo '<input type="checkbox" disabled="disabled" '.($evaluation->wert?' checked="checked"':'').' />';
 									} else {
 										echo '<select disabled="disabled"><option>'.$evaluation->wert.'</option></select>';
 									}
 								} else {
-									echo '<td class="colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'">';
+									echo '<td class="colgroup colgroup-'.floor($columnCnt/$schueler_gruppierung_breite).'">';
 								}
 								echo '</td>';
 							} else {
-								echo '<td class="colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'"></td>';
+								echo '<td class="colgroup colgroup-'.floor($columnCnt/$schueler_gruppierung_breite).'"></td>';
 							}
 						}
 
