@@ -648,7 +648,6 @@ else
 				<?php }
 				}
 				?>
-				</thead>
 			</table>
 			<input name="btn_submit" type="submit"
 				value="<?php echo get_string('auswahl_speichern', 'block_exacomp'); ?>" />
@@ -662,6 +661,7 @@ else
 }
 
 ?>
+</div>
 </div>
 </div>
 </div>
