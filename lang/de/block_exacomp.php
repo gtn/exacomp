@@ -152,7 +152,7 @@ $string['bewertungsschema'] = 'Bewertungsschema';
 $string['uses_activities'] = 'Ich verwende Moodle Aktivitäten zur Beurteilung';
 $string['show_all_descriptors'] = 'Alle Deskriptoren im Überblick anzeigen';
 $string['bewertung'] = ' Bewertung: ';
-
+$string['filerequired'] = 'Es wurde keine Datei angehängt!';
 
 $string['xmlserverurl'] = 'Server-URL';
 $string['configxmlserverurl'] = 'Url zu einer XML Datei, die verwendet wird, um die Daten aktuell zu halten';
@@ -164,6 +164,7 @@ $string['filter_niveaus_descr'] = "Bitte wählen sie ein oder mehrere Niveaus um
 $string['alternativedatamodel'] = 'Baden W&uuml;rttemberg Version';
 $string['alternativedatamodel_description'] = 'Anhaken für die Baden W&uuml;rttemberg Version';
 $string['choosesubject'] = "Fach auswählen: ";
+$string['selectall'] = 'Alle auswählen';
 
 $string['MO'] = "Mo";
 $string['DI'] = "Di";

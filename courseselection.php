@@ -73,6 +73,23 @@ if($action == 'digicomps') {
 }
 $PAGE->set_url('/blocks/exacomp/courseselection.php?courseid=' . $courseid);
 
+function block_exacomp_print_levels($level, $topics) {
+	$content = '';
+
+	foreach ($topics as $topic) {
+		$content .= '<tr class="'.(empty($topic->subs)?'selection-item':'selection-group').'"><td><div style="padding-left: '.(25*$level).'px">' . $topic->title . '</div></td>';
+		if (empty($topic->subs)) {
+			$content .= '<td><input type="checkbox" alt="Topic" class="topiccheckbox" name="data[' . $topic->id . ']" value="' . $topic->id . '" '.($topic->checked?'checked="checked"':'').' /></td>';
+		}
+		$content .= '</tr>';
+		if (!empty($topic->subs)) {
+			$content .= block_exacomp_print_levels($level+1, $topic->subs);
+		}
+	}
+
+	return $content;
+}
+
 block_exacomp_print_header("teacher", "teachertabselection");
 
 
@@ -134,27 +151,12 @@ else if ($action == 'detail') {
 			
             $content .= '<tr class="selection-group"> <td colspan="2"><b>' . $subject->title . '</b></td></tr>';
 
-            function block_exacomp_print_levels($level, $topics) {
-            	$content = '';
-            
-            	foreach ($topics as $topic) {
-            		$content .= '<tr class="'.(empty($topic->subs)?'selection-item':'selection-group').'"><td><div style="padding-left: '.(25*$level).'px">' . $topic->title . '</div></td>';
-            		if (empty($topic->subs)) {
-            			$content .= '<td><input type="checkbox" alt="Topic" name="data[' . $topic->id . ']" value="' . $topic->id . '" '.($topic->checked?'checked="checked"':'').' /></td>';
-            		}
-            		$content .= '</tr>';
-            		if (!empty($topic->subs)) {
-            			$content .= block_exacomp_print_levels($level+1, $topic->subs);
-            		}
-            	}
-            
-            	return $content;
-            }
-            
 			$topics = block_exacomp_get_competence_tree_for_subject($courseid, $subject->id);
 			$content .= block_exacomp_print_levels(0, $topics);
         }
-        $content.='<tr><td colspan="2"><input type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" /></td></tr>';
+        $content.='<tr><td colspan="2"><input type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" />
+        <input type="button" class="selectall" value="' . get_string('selectall', 'block_exacomp') . '" />
+        </td></tr>';
         $content .= '</table>';
         
 

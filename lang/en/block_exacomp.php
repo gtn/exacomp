@@ -154,7 +154,7 @@ $string['bewertungsschema'] = 'Marking scheme';
 $string['uses_activities'] = 'I work with activites';
 $string['show_all_descriptors'] = 'Show all descriptors in overview';
 $string['bewertung'] = ' assessment: ';
-
+$string['filerequired'] = 'You must upload an file!';
 
 $string['xmlserverurl'] = 'Server-URL';
 $string['configxmlserverurl'] = 'Url to a xml file, which is used for keeping the database entries up to date';
@@ -166,6 +166,7 @@ $string['filter_niveaus_descr'] = "Choose one or more difficulty levels to reduc
 $string['alternativedatamodel'] = 'Baden W&uuml;rttemberg Version';
 $string['alternativedatamodel_description'] = 'Tick to use Baden W&uuml;rttemberg Version';
 $string['choosesubject'] = "Choose subject: ";
+$string['selectall'] = 'Select all';
 
 $string["MO"] = "MON";
 $string["DI"] = "TUE";

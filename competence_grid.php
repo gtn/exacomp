@@ -133,3 +133,6 @@ if($mode == 'normal') {
 	}
 	?>
 </div>
+</div>
+
+<?php echo $OUTPUT->footer(); ?>

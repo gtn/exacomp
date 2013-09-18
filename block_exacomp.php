@@ -46,6 +46,8 @@ class block_exacomp extends block_base {
 		$this->content->icons = array();
 
 		$version = get_config('exacomp', 'alternativedatamodel');
+		
+		/*
 		//Adminbereich
 		if ((has_capability('block/exacomp:admin', $context) && !$version)) {
 
@@ -102,80 +104,94 @@ class block_exacomp extends block_base {
 				$this->content->text.='<a title="' . get_string("studentnavcompetences", "block_exacomp") . '" href="' . $CFG->wwwroot . '/blocks/exacomp/assign_competencies.php?courseid=' . $courseid . '">' . get_string('studentnavcompetences', 'block_exacomp') . '</a>';
 			}
 		}
+		*/
+		$this->content->text .= block_exacomp::getIcons($context, $courseid, $courseSettings, $version);
 		$renderer = $this->page->get_renderer('block_exacomp');
-		//$this->content->text .= $renderer->settings_tree($this->page->settingsnav);
-		//$this->content->text .= print_r($this->page->settingsnav,true);
-		/*	$this->content->text .= '
 
-		<ul class="block_tree list">
-		<li class="type_unknown depth_1 contains_branch">
-		<p class="tree_item branch navigation_node">
-		<a href="http://gtn02.gtn-solutions.com/moodle20/" title="Home">Home</a>
-		</p>
-		<ul>
-		<li class="type_setting depth_2 item_with_icon">
-		<p class="tree_item leaf hasicon">
-		<a href="http://gtn02.gtn-solutions.com/moodle20/my/" title="My home">
-		</p>
-		</li>
-		<li id="yui_3_4_1_1_1330523496683_699" class="type_course depth_2 contains_branch collapsed">
-		<p id="yui_3_4_1_1_1330523496683_697" class="tree_item branch">
-		<span tabindex="0" title="gtn moodle development server">Site pages</span>
-		</p>
-		<ul>
-		<li class="type_custom depth_3 item_with_icon">
-		<p class="tree_item leaf hasicon">
-		<a href="http://gtn02.gtn-solutions.com/moodle20/user/index.php?id=1" title="Participants">
-		<img class="smallicon navicon" src="http://gtn02.gtn-solutions.com/moodle20/theme/image.php?theme=arialist&image=i%2Fnavigationitem" title="moodle" alt="moodle">
-		Participants
-		</a>
-		</p>
-		</li>
-		<li class="type_custom depth_3 item_with_icon">
-		<p class="tree_item leaf hasicon">
-		<a href="http://gtn02.gtn-solutions.com/moodle20/blog/index.php?courseid=0" title="Blogs">
-		<img class="smallicon navicon" src="http://gtn02.gtn-solutions.com/moodle20/theme/image.php?theme=arialist&image=i%2Fnavigationitem" title="moodle" alt="moodle">
-		Blogs
-		</a>
-		</p>
-		</li>
-		<li class="type_custom depth_3 item_with_icon">
-		<p class="tree_item leaf hasicon">
-		<a href="http://gtn02.gtn-solutions.com/moodle20/notes/index.php?filtertype=course&filterselect=0" title="Notes">
-		<img class="smallicon navicon" src="http://gtn02.gtn-solutions.com/moodle20/theme/image.php?theme=arialist&image=i%2Fnavigationitem" title="moodle" alt="moodle">
-		Notes
-		</a>
-		</p>
-		</li>
-		<li class="type_custom depth_3 item_with_icon">
-		<p class="tree_item leaf hasicon">
-		<a href="http://gtn02.gtn-solutions.com/moodle20/tag/search.php" title="Tags">
-		<img class="smallicon navicon" src="http://gtn02.gtn-solutions.com/moodle20/theme/image.php?theme=arialist&image=i%2Fnavigationitem" title="moodle" alt="moodle">
-		Tags
-		</a>
-		</p>
-		</li>
-		<li class="type_custom depth_3 item_with_icon">
-		<p class="tree_item leaf hasicon">
-		<a href="http://gtn02.gtn-solutions.com/moodle20/calendar/view.php?view=month" title="Calendar">
-		<img class="smallicon navicon" src="http://gtn02.gtn-solutions.com/moodle20/theme/image.php?theme=arialist&image=i%2Fnavigationitem" title="moodle" alt="moodle">
-		Calendar
-		</a>
-		</p>
-		</li>
-		<li class="type_unknown depth_3 collapsed contains_branch">
-		<p class="tree_item branch">
-		<a href="http://gtn02.gtn-solutions.com/moodle20/course/report.php?id=1" title="Reports">Reports</a>
-		</p>
-		<ul>
-		<li class="type_setting depth_4 item_with_icon">
-		<li class="type_setting depth_4 item_with_icon">
-		<li class="type_setting depth_4 item_with_icon">
-		</ul>
-		</li>
-		</ul>
-		</li></ul></li></ul>';*/
 		return true;
+	}
+	function getIcons($context, $courseid, $courseSettings, $version) {
+		global $CFG;
+		$text = "";
+		
+		// ADMIN TABS:
+		// Import
+		if ((has_capability('block/exacomp:admin', $context))) {
+		
+			if(!$version) {
+				$this->content->text.='<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/module_config.png" height="16" width="23" alt="' . get_string("adminnavconfig", "block_exacomp") . '" />';
+				$this->content->text.='<a title="' . get_string("adminnavconfig", "block_exacomp") . '" href="' . $CFG->wwwroot . '/blocks/exacomp/edit_config.php?courseid=' . $courseid . '">' . get_string('adminnavconfig', 'block_exacomp') . '</a>';
+			} else {
+				$text ='<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/module_config.png" height="16" width="23" alt="' . get_string("adminnavconfig", "block_exacomp") . '" />';
+				$text.='<a title="' . get_string("adminnavconfig", "block_exacomp") . '" href="' . $CFG->wwwroot . '/blocks/exacomp/import.php?courseid=' . $courseid . '">' . get_string('admintabimport', 'block_exacomp') . '</a>';
+			}
+		}
+		
+		if (has_capability('block/exacomp:teacher', $context) && $courseid != 1) {
+		
+			if (!empty($text))
+				$text .= '<br />';
+			
+			//Check if already configured
+			if (!block_exacomp_isactivated($courseid)) {
+				$text .= get_string('configcourseonce', 'block_exacomp')."<br/>";
+			}
+			
+			// SETTINGS
+			$url = '/blocks/exacomp/edit_course.php?courseid=';
+			$text.='<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/subjects_topics.gif" height="16" width="23" alt="' . get_string("teachertabconfig", "block_exacomp") . '" />';
+			$text.='<a title="' . get_string("teachertabconfig", "block_exacomp") . '" href="' . $CFG->wwwroot . $url . $courseid . '">' . get_string('teachertabconfig', 'block_exacomp') . '</a>';
+			
+
+			// SUBJECT SELECTION
+			if($version)
+				$url = '/blocks/exacomp/edit_config.php?courseid=';
+			else
+				$url = '/blocks/exacomp/courseselection.php?courseid=';
+			$text.='<br /><img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/subjects_topics.gif" height="16" width="23" alt="' . get_string("admintabschooltype", "block_exacomp") . '" />';
+			$text.='<a title="' . get_string("admintabschooltype", "block_exacomp") . '" href="' . $CFG->wwwroot . $url . $courseid . '">' . get_string('admintabschooltype', 'block_exacomp') . '</a>';
+				
+			if (block_exacomp_isactivated($courseid)) {
+
+				if($version) {
+					// TOPIC SELECTION
+					$url = '/blocks/exacomp/courseselection.php?courseid=';
+					$text.='<br /><img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/area.png" height="16" width="23" alt="' . get_string("teachertabselection", "block_exacomp") . '" />';
+					$text.='<a title="' . get_string("teachertabselection", "block_exacomp") . '" href="' . $CFG->wwwroot . $url . $courseid . '">' . get_string('teachertabselection', 'block_exacomp') . '</a>';
+				}
+					
+			if ($courseSettings->uses_activities)
+			{
+				$text.='<br /><img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/assign_moodle_activities.png" height="16" width="23" alt="' . get_string("link_edit_activities", "block_exacomp") . '" />';
+				$text.='<a title="' . get_string("link_edit_activities", "block_exacomp") . '" href="' . $CFG->wwwroot . '/blocks/exacomp/edit_activities.php?courseid=' . $courseid . '">' . get_string('teachernavactivities', 'block_exacomp') . '</a>';
+			}
+			$text.='<br /><img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/grid.png" height="16" width="23" alt="' . get_string("teachertabcompetencegrid", "block_exacomp") . '" />';
+			$text.='<a title="' . get_string("teachertabcompetencegrid", "block_exacomp") . '" href="' . $CFG->wwwroot . '/blocks/exacomp/competence_grid.php?courseid=' . $courseid . '">' . get_string('teachertabcompetencegrid', 'block_exacomp') . '</a>';
+				
+			$text.='<br /><img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/overview_of_competencies.png" height="16" width="23" alt="' . get_string("teachernavstudents", "block_exacomp") . '" />';
+			$text.='<a title="' . get_string("teachernavstudents", "block_exacomp") . '" href="' . $CFG->wwwroot . '/blocks/exacomp/assign_competencies.php?courseid=' . $courseid . '">' . get_string('teachernavstudents', 'block_exacomp') . '</a>';
+			if ($courseSettings->uses_activities)
+			{
+				$text.='<br /><img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/detailed_view_of_competencies.png" height="16" width="23" alt="' . get_string("teachertabassigncompetencesdetail", "block_exacomp") . '" />';
+				$text.='<a title="' . get_string("teachertabassigncompetencesdetail", "block_exacomp") . '" href="' . $CFG->wwwroot . '/blocks/exacomp/edit_students.php?courseid=' . $courseid . '">' . get_string('teachertabassigncompetencesdetail', 'block_exacomp') . '</a>';
+			}
+			$text.='<br /><img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/examples_and_tasks.png" height="16" width="23" alt="' . get_string("teachertabassigncompetenceexamples", "block_exacomp") . '" />';
+			$text.='<a title="' . get_string("teachertabassigncompetenceexamples", "block_exacomp") . '" href="' . $CFG->wwwroot . '/blocks/exacomp/view_examples.php?courseid=' . $courseid . '">' . get_string('teachertabassigncompetenceexamples', 'block_exacomp') . '</a>';
+		
+			}
+		}
+		
+		//Schülerbereich
+		if (has_capability('block/exacomp:student', $context) && $courseid != 1 && !has_capability('block/exacomp:admin', $context)) {
+			if (!empty($this->content->text))
+				$this->content->text .= '<br />';
+			if (block_exacomp_isactivated($courseid)) {
+				$this->content->text.='<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/chart_bar.png" height="16" width="23" alt="' . get_string("studentnavcompetences", "block_exacomp") . '" />';
+				$this->content->text.='<a title="' . get_string("studentnavcompetences", "block_exacomp") . '" href="' . $CFG->wwwroot . '/blocks/exacomp/assign_competencies.php?courseid=' . $courseid . '">' . get_string('studentnavcompetences', 'block_exacomp') . '</a>';
+			}
+		}
+		
+		return $text;
 	}
 	/**
 	 * This function is executed by the Moodle cron job.

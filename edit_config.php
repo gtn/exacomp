@@ -57,8 +57,9 @@ if(!$check){
 }
 
 //Falls Formular abgesendet, speichern
-if (isset($action) && $action == 'save' && isset($_POST['data'])) {
-    $values = $_POST['data'];
+if (isset($action) && $action == 'save') {
+	
+    $values = isset($_POST['data']) ? $_POST['data'] : array();
     if($version)
     	block_exacomp_set_mdltype($values,$courseid);
     else
