@@ -1369,7 +1369,6 @@ function block_exacomp_get_competence_tree_for_course($courseid) {
 				WHERE deu.courseid=? AND deu.descid=? AND deu.role = 1
 				", array($courseid, $descriptor->id));
 
-		
 		/*foreach($descriptor->evaluationData as $exaeval) {
 			$exaeval->student_evaluation = $DB->get_field('block_exacompdescuser', 'wert', array("userid"=>$exaeval->userid,"descid"=>$exaeval->descid,"role"=>0,"courseid"=>$exaeval->courseid));
 		}*/
@@ -1387,6 +1386,21 @@ function block_exacomp_get_competence_tree_for_course($courseid) {
 			
 			else 
 				$descriptor->evaluationData[$studentEval->userid] = $studentEval;
+		}
+		
+		//Already reached competencies from other courses
+		$compReachedData = $DB->get_records_sql("
+				SELECT deu.userid, u.firstname, u.lastname, deu.*, 1 as compalreadyreached, 0 as student_evaluation, 0 as teacher_evaluation
+				FROM {block_exacompdescuser} deu
+				LEFT JOIN {user} u ON u.id=deu.userid
+				WHERE deu.courseid!=? AND deu.descid=? AND deu.role = 1
+				", array($courseid, $descriptor->id));
+		
+		foreach($compReachedData as $compReached) {
+			if(isset($descriptor->evaluationData[$compReached->userid]))
+				$descriptor->evaluationData[$compReached->userid]->compalreadyreached = 1;
+			else
+				$descriptor->evaluationData[$compReached->userid] = $compReached;
 		}
 		
 	}
