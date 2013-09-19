@@ -216,24 +216,37 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function render_competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0) {
 		global $CFG;
 		
+		$headFlag = false;
+		
 		$table = new html_table();
 		$table->attributes['class'] = 'competence_grid';
 		$head = array();
-		$head[] = "";
-		$head[] = "";
-		$head = array_merge($head,$niveaus);
-		$table->head = $head;
+		
 
 		$rows = array();
 		foreach($data as $skillid => $skill) {
-			$row = new html_table_row();
-			$cell1 = new html_table_cell();
-			$cell1->text = html_writer::tag("p",$skills[$skillid]);
-			$cell1->attributes['class'] = 'skill';
-			$cell1->rowspan = count($skill)+1;
-			$row->cells[] = $cell1;
-			//
-			$rows[] = $row;
+
+			if($skillid) {
+				$row = new html_table_row();
+				$cell1 = new html_table_cell();
+				$cell1->text = html_writer::tag("p",$skills[$skillid]);
+				$cell1->attributes['class'] = 'skill';
+				$cell1->rowspan = count($skill)+1;
+				$row->cells[] = $cell1;
+				//
+				$rows[] = $row;
+				
+				if(!$headFlag)
+					$head[] = "";
+			}
+			
+			if(!$headFlag) {
+				$head[] = "";
+				$head = array_merge($head,$niveaus);
+				$table->head = $head;
+				$headFlag = true;
+			}
+			
 			foreach($skill as $topicid => $topic) {
 				$row = new html_table_row();
 				

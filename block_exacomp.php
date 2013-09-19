@@ -119,8 +119,8 @@ class block_exacomp extends block_base {
 		if ((has_capability('block/exacomp:admin', $context))) {
 		
 			if(!$version) {
-				$this->content->text.='<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/module_config.png" height="16" width="23" alt="' . get_string("adminnavconfig", "block_exacomp") . '" />';
-				$this->content->text.='<a title="' . get_string("adminnavconfig", "block_exacomp") . '" href="' . $CFG->wwwroot . '/blocks/exacomp/edit_config.php?courseid=' . $courseid . '">' . get_string('adminnavconfig', 'block_exacomp') . '</a>';
+				$text.='<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/module_config.png" height="16" width="23" alt="' . get_string("adminnavconfig", "block_exacomp") . '" />';
+				$text.='<a title="' . get_string("adminnavconfig", "block_exacomp") . '" href="' . $CFG->wwwroot . '/blocks/exacomp/edit_config.php?courseid=' . $courseid . '">' . get_string('adminnavconfig', 'block_exacomp') . '</a>';
 			} else {
 				$text ='<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/module_config.png" height="16" width="23" alt="' . get_string("adminnavconfig", "block_exacomp") . '" />';
 				$text.='<a title="' . get_string("adminnavconfig", "block_exacomp") . '" href="' . $CFG->wwwroot . '/blocks/exacomp/import.php?courseid=' . $courseid . '">' . get_string('admintabimport', 'block_exacomp') . '</a>';
@@ -144,12 +144,16 @@ class block_exacomp extends block_base {
 			
 
 			// SUBJECT SELECTION
-			if($version)
+			if($version) {
+				$tab = get_string("admintabschooltype", "block_exacomp");
 				$url = '/blocks/exacomp/edit_config.php?courseid=';
-			else
+			}
+			else {
 				$url = '/blocks/exacomp/courseselection.php?courseid=';
-			$text.='<br /><img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/subjects_topics.gif" height="16" width="23" alt="' . get_string("admintabschooltype", "block_exacomp") . '" />';
-			$text.='<a title="' . get_string("admintabschooltype", "block_exacomp") . '" href="' . $CFG->wwwroot . $url . $courseid . '">' . get_string('admintabschooltype', 'block_exacomp') . '</a>';
+				$tab = get_string("teachertabselection", "block_exacomp");
+			}
+			$text.='<br /><img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/subjects_topics.gif" height="16" width="23" alt="' . $tab . '" />';
+			$text.='<a title="' . $tab . '" href="' . $CFG->wwwroot . $url . $courseid . '">' . $tab . '</a>';
 				
 			if (block_exacomp_isactivated($courseid)) {
 

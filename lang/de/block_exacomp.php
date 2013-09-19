@@ -183,8 +183,10 @@ $string['noactivitiesyet'] = "noch keine Aufgaben zu diesem Deskriptor abgegeben
 $string['columnselection'] = 'Tabellenspalten Auswahl';
 $string['allstudents'] = 'Alle Schüler';
 
-/*langstrings for alternativedatamodel*/
-require dirname(__FILE__).'/block_exacomp_overlaystatic.php';
-/*langstrings from other systems*/
-require dirname(__FILE__).'/block_exacomp_overlaydynamic.php';
+if(get_config('block_exacomp','alternativedatamodel')) {
+	/*langstrings for alternativedatamodel*/
+	require dirname(__FILE__).'/block_exacomp_overlaystatic.php';
+	/*langstrings from other systems*/
+	require dirname(__FILE__).'/block_exacomp_overlaydynamic.php';
+}
 ?>
