@@ -57,7 +57,7 @@ class block_exacomp_example_upload_form extends moodleform {
 		$mform->addElement('text', 'intro', get_string("moduleintro"), 'maxlength="255" size="60"');
 		$mform->setType('intro', PARAM_TEXT);
 		
-		$mform->addElement('filemanager', 'file', get_string('file'), null, array('subdirs' => false, 'maxfiles' => 1));
+		$mform->addElement('filepicker', 'file', get_string('file'), null, array('subdirs' => false, 'maxfiles' => 1));
 		$mform->addRule('file', get_string("filerequired", "block_exacomp"), 'required', null, 'client');
 		
 		$this->add_action_buttons(false);

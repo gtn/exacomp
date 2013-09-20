@@ -38,12 +38,12 @@ if($delete > 0 && $role == "teacher") {
 		$DB->delete_records('block_exacompexamples', array('id' => $delete));
 		$DB->delete_records('block_exacompdescrexamp_mm', array('exampid' => $delete));
 		$DB->delete_records('block_exacompexameval', array('exampleid' => $delete));
-		$fs = get_file_storage();
+		/*$fs = get_file_storage();
 		$fileinstance = $DB->get_record('files',array("userid"=>$example->creatorid,"itemid"=>$example->id),'*',IGNORE_MULTIPLE);
 		if($fileinstance) {
 			$file = $fs->get_file_instance($fileinstance);
 			$file->delete();
-		}
+		}*/
 	}
 }
 if ($action == "save" && isset($_POST['btn_submit'])) {
