@@ -272,7 +272,10 @@ function block_exacomp_print_level_descriptors($level, $subs, &$data, $rowgroup_
 						$hasIcons = true;
 					}
 				}
-
+				
+				if(isset($descriptor->evaluationData[$student->id]->compalreadyreached))
+					echo '<span title="'.s(get_string('compalreadyreached','block_exacomp')).'" class="exabis-tooltip"><img src="pix/info.png" /></span>';
+				
 				if (!$hasIcons) {
 					echo '<span title="'.s('todo').'" class="exabis-tooltip"><img src="pix/x_11x11.png" /></span>';
 				}

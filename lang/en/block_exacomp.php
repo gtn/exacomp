@@ -155,7 +155,7 @@ $string['uses_activities'] = 'I work with activites';
 $string['show_all_descriptors'] = 'Show all descriptors in overview';
 $string['bewertung'] = ' assessment: ';
 $string['filerequired'] = 'You must upload an file!';
-
+$string['compalreadyreached'] = 'The student reached this competence already in another course.';
 $string['xmlserverurl'] = 'Server-URL';
 $string['configxmlserverurl'] = 'Url to a xml file, which is used for keeping the database entries up to date';
 $string['niveau_filter'] = "filter levels";

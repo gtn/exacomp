@@ -153,7 +153,7 @@ $string['uses_activities'] = 'Ich verwende Moodle Aktivitäten zur Beurteilung';
 $string['show_all_descriptors'] = 'Alle Deskriptoren im Überblick anzeigen';
 $string['bewertung'] = ' Bewertung: ';
 $string['filerequired'] = 'Es wurde keine Datei angehängt!';
-
+$string['compalreadyreached'] = 'Der Schüler hat diese Kompetenz bereits in einem anderen Kurs erreicht.';
 $string['xmlserverurl'] = 'Server-URL';
 $string['configxmlserverurl'] = 'Url zu einer XML Datei, die verwendet wird, um die Daten aktuell zu halten';
 $string['niveau_filter'] = "Filter Niveaus";
