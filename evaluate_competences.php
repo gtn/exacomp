@@ -43,6 +43,8 @@ require_capability('block/exacomp:student', $context);
 
 $url = '/blocks/exacomp/evaluate_competences.php?courseid=' . $courseid;
 $PAGE->set_url($url);
+$PAGE->requires->css('/blocks/exacomp/css/assign_competencies.css');
+$PAGE->requires->js('/blocks/exacomp/javascript/assign_competencies.js');
 $url = $CFG->wwwroot . $url;
 block_exacomp_print_header("student", "studenttabcompetencesdetail");
 
@@ -65,7 +67,7 @@ if ($action == "save" && isset($_POST['btn_submit'])) {
 
     block_exacomp_set_descusermm($values, $courseid, $USER->id, 0);
 }
-echo "<div class='block_excomp_center'>";
+echo "<div class='exabis_competencies_lis'>";
 
 
 if ($showevaluation == 'on')
@@ -86,8 +88,8 @@ else
 
 if ($activities) {
     $content.='<div style="text-align:left;">
-		<table id="comps" class="compstable flexible boxaligncenter generaltable">
-		<tr class="heading r0">
+		<table id="comps" class="exabis_comp_comp">
+		<tr class="highlight">
 		<td  colspan="' . ($colspan + 1) . '" scope="col"><span><b>' . $COURSE->fullname . '</b></span></td></tr>
 		<tr>';
 
