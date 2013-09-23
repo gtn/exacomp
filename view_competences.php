@@ -76,57 +76,71 @@ block_exacomp_print_levels(0, $levels, $data, $content);
 $content .= '</table></div>';
  
 function block_exacomp_print_levels($level, $subs, &$data, &$content, $rowgroup_class = ''){
+	global $DB, $USER;
+	
+	$topics = $DB->get_records_sql("SELECT t.topicid FROM {block_exacompdescuser} u JOIN
+			{block_exacompdescrtopic_mm} t on u.descid = t.descrid
+			WHERE u.userid=? AND u.role=1 AND u.wert=1 GROUP BY t.topicid", array($USER->id));
+	
+	$subjects = $DB->get_records_sql("SELECT x.subjid FROM {block_exacompdescuser} u JOIN
+			{block_exacompdescrtopic_mm} t on u.descid = t.descrid
+			JOIN {block_exacomptopics} x ON x.id = t.topicid
+			WHERE u.userid=? AND u.role=1 AND u.wert=1 GROUP BY x.subjid", array($USER->id));
 	
 	if ($level == 0) {
 		foreach ($subs as $group) {
-			$content .=	'<tr class="highlight">';
-			$content .= '<td colspan="2"><b>'.$group->title.'</b></td>';
-			$content .= '<td>L</td>';
-			$content .= '<td>S</td>';
-			$content .= '</tr>';
-	
-			block_exacomp_print_levels($level+1, $group->subs, $data, $content);
+			if(isset($subjects[$group->id])){
+				$content .=	'<tr class="highlight">';
+				$content .= '<td colspan="2"><b>'.$group->title.'</b></td>';
+				$content .= '<td>L</td>';
+				$content .= '<td>S</td>';
+				$content .= '</tr>';
+		
+				block_exacomp_print_levels($level+1, $group->subs, $data, $content);
+			}
 		}
 			
 		return;
 	}
 	
 	foreach ($subs as $item) {
-		if (preg_match('!^([^\s]*[0-9][^\s]*+)\s+(.*)$!iu', $item->title, $matches)) {
-			$output_id = $matches[1];
-			$output_title = $matches[2];
-		} else {
-			$output_id = '';
-			$output_title = $item->title;
-		}
-	
-		$hasSubs = !empty($item->subs) || !empty($item->descriptors);
-	
-		if ($hasSubs) {
-			$data->rowgroup++;
-			$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$rowgroup_class;
-			$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$data->rowgroup.' '.$rowgroup_class;
-		} else {
-			$this_rowgroup_class = $rowgroup_class;
-		}
-	
-		if ($level == 1) {
-			$rowgroup_class .= ' highlight';
-		}
-	
-		$content .= '<tr class="exabis_comp_teilcomp'.$this_rowgroup_class.'">';
-		$content .= '<td>'.$output_id.'</td>';
-		$content .= '<td class="rowgroup-arrow" style="padding-left:'.(($level-1)*20+12).'px"><div class="desctitle">'.$output_title.'</div></td>';	
-		$content .= '<td></td>';
-		$content .= '<td></td>';
-		$content .= '</tr>';
-			
-		if (!empty($item->descriptors)) {
-			block_exacomp_print_level_descriptors($level+1, $item->descriptors, $data, $content);
-		}
+		if(isset($topics[$item->id])){
+			if (preg_match('!^([^\s]*[0-9][^\s]*+)\s+(.*)$!iu', $item->title, $matches)) {
+				$output_id = $matches[1];
+				$output_title = $matches[2];
+			} else {
+				$output_id = '';
+				$output_title = $item->title;
+			}
 		
-		if (!empty($item->subs)) {
-			block_exacomp_print_levels($level+1, $item->subs, $data, $content, $sub_rowgroup_class);
+			$hasSubs = !empty($item->subs) || !empty($item->descriptors);
+		
+			if ($hasSubs) {
+				$data->rowgroup++;
+				$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$rowgroup_class;
+				$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$data->rowgroup.' '.$rowgroup_class;
+			} else {
+				$this_rowgroup_class = $rowgroup_class;
+			}
+		
+			if ($level == 1) {
+				$rowgroup_class .= ' highlight';
+			}
+			
+			$content .= '<tr class="exabis_comp_teilcomp'.$this_rowgroup_class.'">';
+			$content .= '<td>'.$output_id.'</td>';
+			$content .= '<td class="rowgroup-arrow" style="padding-left:'.(($level-1)*20+12).'px"><div class="desctitle">'.$output_title.'</div></td>';	
+			$content .= '<td></td>';
+			$content .= '<td></td>';
+			$content .= '</tr>';
+				
+			if (!empty($item->descriptors)) {
+				block_exacomp_print_level_descriptors($level+1, $item->descriptors, $data, $content);
+			}
+			
+			if (!empty($item->subs)) {
+				block_exacomp_print_levels($level+1, $item->subs, $data, $content, $sub_rowgroup_class);
+			}
 		}
 	}
 		
@@ -160,7 +174,8 @@ function block_exacomp_print_level_descriptors($level, $subs, &$data, &$content,
 
 echo $content;
 
-echo '</div></div>'; //exabis_competences_block
+echo '</div></div></div>'; //exabis_competences_block
 echo $OUTPUT->footer();
 ?>
+
 
