@@ -59,90 +59,108 @@ foreach ($course_desriptors as $coures_descriptor) {
 }
 //echo $coures_descriptor->id."=id   ".$USER->id."=userid    ".$total."=total    ".$total_achieved."=total_achieved dann 1   ".$total_avg."=total_avg   ".$countstudentsges."=countstudentsges   ".$gesamtpossible."=gesamtpossible";
 $content.='<tr><td><b>Total</b></td><td>'.$total.'</td><td>'.$total_achieved.'</td><td>'.block_exacomp_get_ladebalken($coures_descriptor->id, $USER->id, $total,$total_achieved,1,$total_avg,$countstudentsges,$gesamtpossible).'</td></tr></table>';
-foreach ($course_desriptors as $coures_descriptor) {
-	$descriptors = $coures_descriptor->descriptors;
-	if ($descriptors) {
 
-		$content.='<table class="compstable flexible boxaligncenter generaltable"><tr class="heading r0">
-		<td class="category catlevel1"  scope="col"><h2>' . $coures_descriptor->fullname .'</h2></td>
-		<td>L</td>
-		<td>S</td></tr>';
+$levels = block_exacomp_get_competence_tree_for_all_courses();
+$content .= '<div class="ec_td_mo_auto">';
+$content .= '<div class="exabis_competencies_lis">';
+$content .= '<br/><br/><table class="exabis_comp_comp">';
 
-		$trclass = "even";
-		$topic = "";
-		foreach ($descriptors as $descriptor) {
-			if ($trclass == "even") {
-				$trclass = "odd";
-				$bgcolor = ' style="background-color:#efefef" ';
-			} else {
-				$trclass = "even";
-				$bgcolor = ' style="background-color:#ffffff" ';
-			}
+$rowgroup = 0;
+$data = (object)array(
+		'rowgroup' => 0,
+		'courseid' => $courseid
+);
+block_exacomp_print_levels(0, $levels, $data, $content);
 
-			if ($topic !== $descriptor->topic) {
-				$topic = $descriptor->topic;
-				$content .= '<tr><td colspan="3"><b>' . $topic . '</b></td></tr>';
-			}
 
-			$content .= '<tr class="r2 ' . $trclass . '" ' . $bgcolor . '><td class="ec_minwidth">' . $descriptor->title . '</td>
-			<td>###icon' . $coures_descriptor->id."_".$descriptor->id . '###</td>
-			<td>###studenticon' . $coures_descriptor->id."_".$descriptor->id . '###</td></tr>';
+$content .= '</table></div>';
+ 
+function block_exacomp_print_levels($level, $subs, &$data, &$content, $rowgroup_class = ''){
+	
+	if ($level == 0) {
+		foreach ($subs as $group) {
+			$content .=	'<tr class="highlight">';
+			$content .= '<td colspan="2"><b>'.$group->title.'</b></td>';
+			$content .= '<td>L</td>';
+			$content .= '<td>S</td>';
+			$content .= '</tr>';
+	
+			block_exacomp_print_levels($level+1, $group->subs, $data, $content);
 		}
-		$content .= '</table>';
+			
+		return;
 	}
-}
-foreach ($course_desriptors as $coures_descriptor) {
-	$descriptors = $coures_descriptor->descriptors;
-	if ($descriptors) {
-		$teacher_competences = block_exacomp_get_usercompetences($USER->id,1,$coures_descriptor->id);
-		foreach ($teacher_competences as $teacher_competence) {
-			if (!empty($teacher_competence))
-				$content = str_replace('###icon' . $coures_descriptor->id."_".$teacher_competence->id . '###', '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/accept.png" height="16" width="16" alt="Reached Competence" />', $content);
+	
+	foreach ($subs as $item) {
+		if (preg_match('!^([^\s]*[0-9][^\s]*+)\s+(.*)$!iu', $item->title, $matches)) {
+			$output_id = $matches[1];
+			$output_title = $matches[2];
+		} else {
+			$output_id = '';
+			$output_title = $item->title;
 		}
-		$content = preg_replace('/###icon'.$coures_descriptor->id."_".'([0-9])+###/', '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/cancel.png" height="16" width="16" alt="'.get_string("not_met", "block_exacomp").'" />', $content);
+	
+		$hasSubs = !empty($item->subs) || !empty($item->descriptors);
+	
+		if ($hasSubs) {
+			$data->rowgroup++;
+			$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$rowgroup_class;
+			$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$data->rowgroup.' '.$rowgroup_class;
+		} else {
+			$this_rowgroup_class = $rowgroup_class;
+		}
+	
+		if ($level == 1) {
+			$rowgroup_class .= ' highlight';
+		}
+	
+		$content .= '<tr class="exabis_comp_teilcomp'.$this_rowgroup_class.'">';
+		$content .= '<td>'.$output_id.'</td>';
+		$content .= '<td class="rowgroup-arrow" style="padding-left:'.(($level-1)*20+12).'px"><div class="desctitle">'.$output_title.'</div></td>';	
+		$content .= '<td></td>';
+		$content .= '<td></td>';
+		$content .= '</tr>';
+			
+		if (!empty($item->descriptors)) {
+			block_exacomp_print_level_descriptors($level+1, $item->descriptors, $data, $content);
+		}
 		
-		$user_competences = block_exacomp_get_usercompetences($USER->id, 0,$coures_descriptor->id);
-		foreach ($user_competences as $user_competence) {
-			if (!empty($user_competence))
-				$content = str_replace('###studenticon' . $coures_descriptor->id."_".$user_competence->id . '###', '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/accept.png" height="16" width="16" alt="'.get_string("not_met", "block_exacomp").'" />', $content);
-		}
-		$content = preg_replace('/###studenticon'.$coures_descriptor->id."_".'([0-9])+###/', '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/cancel.png" height="16" width="16" alt="'.get_string("not_met", "block_exacomp").'" />', $content);
-	}
-}
-//Portfolio Kompetenzen
-if (block_exacomp_exaportexists()){
-	$descriptors = block_exacomp_check_portfolio_competences($USER->id);
-	if ($descriptors) {
-		$content.='	<table class="compstable flexible boxaligncenter generaltable"><tr class="heading r0">
-		<td class="category catlevel1"  scope="col"><h2 class="eP">exabis ePortfolio</h2></td>
-		<td>L</td>
-		<td>S</td></tr>';
-		$name="";
-		foreach ($descriptors as $descriptor) {
-			if ($trclass == "even") {
-				$trclass = "odd";
-				$bgcolor = ' style="background-color:#efefef" ';
-			} else {
-				$trclass = "even";
-				$bgcolor = ' style="background-color:#ffffff" ';
-			}
-
-			if ($name !== $descriptor->name) {
-				$name = $descriptor->name;
-				$content .= '<tr><td colspan="3"><b>' . $name . '</b></td></tr>';
-			}
-
-			$content .= '<tr class="r2 ' . $trclass . '" ' . $bgcolor . '><td class="ec_minwidth">' . $descriptor->title . '</td>';
-
-			$icon = block_exacomp_check_teacher_assign($descriptor,$USER->id,1,false,2000);
-			$content .= '<td>'.$icon.'</td>';
-			$icon = block_exacomp_check_student_assign($descriptor,$USER->id,false,2000);
-			$content .= '<td>'.$icon.'</td></tr>';
+		if (!empty($item->subs)) {
+			block_exacomp_print_levels($level+1, $item->subs, $data, $content, $sub_rowgroup_class);
 		}
 	}
+		
 }
-$content.="</table></div>";
+
+function block_exacomp_print_level_descriptors($level, $subs, &$data, &$content, $rowgroup_class = '') {
+	global $CFG, $DB, $USER, $COURSE;
+	extract((array)$data);
+	
+	$version = 0;
+	foreach ($subs as $descriptor) {
+		if(isset($descriptor->evaluationData[$USER->id])){
+			
+			$activities = block_exacomp_get_activities($descriptor->id, $courseid);
+		
+			$content .= '<tr class="exabis_comp_aufgabe'.$rowgroup_class.'">';
+			$content .= '<td></td>';
+			$content .= '<td style="padding-left:'.(($level-1)*20+12).'px">';
+			$content .= '<p class="aufgabetext">'.$descriptor->title.'</p>';
+			$content .= '</td>';
+			$content .= '<td><img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/accept.png" height="16" width="16" alt="'.get_string("not_met", "block_exacomp").'" /></td>';
+			if(isset ($descriptor->evaluationData[$USER->id]->student_evaluation))	
+				$content .= '<td><img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/accept.png" height="16" width="16" alt="'.get_string("not_met", "block_exacomp").'" /></td>';
+			else
+				$content .= '<td><img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/cancel.png" height="16" width="16" alt="'.get_string("not_met", "block_exacomp").'" /></td>';
+			$content .= '</tr>';
+		
+		}		
+	}
+}
+
 echo $content;
-echo '</div>'; //exabis_competences_block
+
+echo '</div></div>'; //exabis_competences_block
 echo $OUTPUT->footer();
 ?>
+
