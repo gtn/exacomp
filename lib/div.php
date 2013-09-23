@@ -1082,8 +1082,10 @@ function block_exacomp_get_average_course_competences($courseid, $grading,$role=
 }
 function block_exacomp_get_descriptors_of_all_courses($onlywithactivity=1) {
 	//kurse holen
-
-	$courses = enrol_get_my_courses();
+	global $USER;
+	
+	//$courses = enrol_get_my_courses();
+	$courses = enrol_get_all_users_courses($USER->id);
 	$descs = array();
 	foreach($courses as $course) {
 		$current = $course;
