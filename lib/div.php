@@ -372,6 +372,9 @@ function block_exacomp_get_modules($courseid) {
 			WHERE cm.course = ? AND cm.module = m.id AND m.name NOT IN ('label')",
 			array($courseid));
 
+	foreach($modules as $module) {
+		$module->name = $DB->get_field($module->modname, "name", array('id' => $module->instance));
+	}
 	return $modules;
 }
 
