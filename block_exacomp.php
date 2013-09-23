@@ -152,7 +152,7 @@ class block_exacomp extends block_base {
 				$url = '/blocks/exacomp/courseselection.php?courseid=';
 				$tab = get_string("teachertabselection", "block_exacomp");
 			}
-			$text.='<br /><img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/subjects_topics.gif" height="16" width="23" alt="' . $tab . '" />';
+			$text.='<br /><img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/subject.png" height="16" width="23" alt="' . $tab . '" />';
 			$text.='<a title="' . $tab . '" href="' . $CFG->wwwroot . $url . $courseid . '">' . $tab . '</a>';
 				
 			if (block_exacomp_isactivated($courseid)) {

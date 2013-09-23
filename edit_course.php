@@ -74,14 +74,11 @@ if ($action == 'save_coursesettings')
 		<?php echo get_string('bewertungsschema', 'block_exacomp'); ?>:
 		<input type="text" size="2" name="grading" value="<?php echo block_exacomp_getbewertungsschema($courseid, ""); ?>" /><br />
 		
-		<?php $version = get_config('exacomp', 'alternativedatamodel');
-		if($version) {?>
 		<input type="checkbox" value="1" name="uses_activities" <?php if (!empty($courseSettings->uses_activities)) echo 'checked="checked"'; ?> />
 		<?php echo get_string('uses_activities', 'block_exacomp'); ?><br />
 		
 		<input type="checkbox" value="1" name="show_all_descriptors" <?php if (!empty($courseSettings->show_all_descriptors)) echo 'checked="checked"'; ?> />
 		<?php echo get_string('show_all_descriptors', 'block_exacomp'); ?><br />
-		<?php } ?>
 		<input type="submit" value="<?php echo get_string('save', 'admin'); ?>" />
 	</form>
 	<?php
