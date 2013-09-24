@@ -123,6 +123,14 @@ if($mode == 'normal') {
 		$topics = array();
 		$data = array();
 		foreach ($descriptors as $descriptor) {
+			$examples = $DB->get_records_sql(
+					"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
+					e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid
+					FROM {block_exacompexamples} e
+					JOIN {block_exacompdescrexamp_mm} de ON e.id=de.exampid AND de.descrid=?
+					LEFT JOIN {block_exacomptaxonomies} tax ON e.taxid=tax.id
+					ORDER BY tax.title", array($descriptor->id));
+			$descriptor->examples = $examples;
 			$data[$descriptor->skillid][$descriptor->topicid][$descriptor->niveauid][] = $descriptor;
 			$topics[$descriptor->topicid] = $descriptor->topic;
 		}

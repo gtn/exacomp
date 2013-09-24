@@ -68,12 +68,12 @@ if($formdata = $form->get_data()) {
 	$context = get_context_instance(CONTEXT_USER, $USER->id);
 	$fs = get_file_storage();
 	if($fs->file_exists($context->id, 'user', 'private', 0, '/', $form->get_new_filename('file'))) {
-		$pathnamehash = $fs->get_pathname_hash($context->id, 'user', 'private', 0, '/', $form->get_new_filename('file'));
 	}
 	else {
-		$storedfile = $form->save_stored_file('file', $context->id, 'user', 'private', 0, '/', $form->get_new_filename('file'), true);
-		$pathnamehash = $storedfile->pathnamehash;
+		$form->save_stored_file('file', $context->id, 'user', 'private', 0, '/', $form->get_new_filename('file'), true);
+		
 	}
+	$pathnamehash = $fs->get_pathname_hash($context->id, 'user', 'private', 0, '/', $form->get_new_filename('file'));
 	
 	/*
 	file_save_draft_area_files($formdata->file, $context->id, 'user', 'private', 0, array('subdirs' => 1, 'maxbytes' => $CFG->userquota, 'maxfiles' => -1, 'accepted_types' => '*'));

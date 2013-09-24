@@ -251,7 +251,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$row = new html_table_row();
 				
 				$cell2 = new html_table_cell();
-				$cell2->text = html_writer::tag("p",$topics[$topicid]);
+				$cell2->text = html_writer::tag("p",html_writer::tag("p",$topics[$topicid],array('class'=>'rotated-text__inner')),array('class'=>'rotated-text'));
 				$cell2->attributes['class'] = 'topic';
 				$row->cells[] = $cell2;
 
@@ -262,6 +262,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$text = $descriptor->title;
 							if(in_array($descriptor->id, $selection)) {
 								$text = html_writer::link($CFG->wwwroot."/blocks/exacomp/assign_competencies.php?courseid=".$courseid."&subjectid=".$topicid."&topicid=".$descriptor->id, $text);
+							}
+							
+							if(isset($descriptor->examples)) {
+								$text .= '<br/>';
+								foreach($descriptor->examples as $example) {
+									$img = '<img src="pix/i_11x11.png" alt="Beispiel" />';
+									if($example->task)
+										$text .= "<a target='_blank' href='".$example->task."'>".$img."</a>";
+									if($example->externalurl)
+										$text .= "<a target='_blank' href='".$example->externalurl."'>".$img."</a>";
+								}
 							}
 							$compString .= $text;
 							

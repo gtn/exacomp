@@ -4,6 +4,22 @@ define("DEFAULT_SOURCE", 1);
 define("CUSTOM_DESCRIPTORS_SOURCE", 2);
 define("CUSTOM_EXAMPLES_SOURCE", 3);
 
+function block_exacomp_delete_custom_example($delete) {
+	global $DB,$USER;
+	
+	$example = $DB->get_record('block_exacompexamples', array('id'=>$delete));
+	if($example && $example->creatorid == $USER->id) {
+		$DB->delete_records('block_exacompexamples', array('id' => $delete));
+		$DB->delete_records('block_exacompdescrexamp_mm', array('exampid' => $delete));
+		$DB->delete_records('block_exacompexameval', array('exampleid' => $delete));
+		/*$fs = get_file_storage();
+			$fileinstance = $DB->get_record('files',array("userid"=>$example->creatorid,"itemid"=>$example->id),'*',IGNORE_MULTIPLE);
+		if($fileinstance) {
+		$file = $fs->get_file_instance($fileinstance);
+		$file->delete();
+		}*/
+	}
+}
 function deprecated_spaltenbrowser($anz,$spalten){
 	$p=1;$q=1;$splt=(floor($anz/5)+1);
 	$content='<b>Tabellenspalten Anzeige: </b>';
@@ -619,7 +635,8 @@ function block_exacomp_print_header($role, $item_identifier, $sub_item_identifie
 			$tabs[] = new tabobject('studenttabcompetencesdetail', $CFG->wwwroot . '/blocks/exacomp/evaluate_competences.php?courseid=' . $COURSE->id, get_string("studenttabcompetencesdetail", "block_exacomp"), '', true);
 		$tabs[] = new tabobject('studenttabcompetencesoverview', $CFG->wwwroot . '/blocks/exacomp/view_competences.php?courseid=' . $COURSE->id, get_string("studenttabcompetencesoverview", "block_exacomp"), '', true);
 		$tabs[] = new tabobject('studenttabcompetenceprofile', $CFG->wwwroot . '/blocks/exacomp/competence_profile.php?courseid=' . $COURSE->id, get_string("studenttabcompetenceprofile", "block_exacomp"), '', true);
-		$tabs[] = new tabobject('studenttabcompetencesagenda', $CFG->wwwroot . '/blocks/exacomp/learningagenda.php?courseid=' . $COURSE->id, get_string("studenttabcompetencesagenda", "block_exacomp"), '', true);
+		if(get_config("exacomp","alternativedatamodel"))
+			$tabs[] = new tabobject('studenttabcompetencesagenda', $CFG->wwwroot . '/blocks/exacomp/learningagenda.php?courseid=' . $COURSE->id, get_string("studenttabcompetencesagenda", "block_exacomp"), '', true);
 
 		// tabs fuer das untermenue
 		$tabs_sub = array();
@@ -1059,6 +1076,7 @@ function block_exacomp_get_ladebalken($courseid, $userid, $gesamt,$anteil=null,$
 		$avg = 0;
 	else if ($gesamtpossible==0) $avg = round($avg / ($gesamt*$countstudents) * 100,0); //$avg=positiv bewertete, $gesamt*$countstudents=anzahl der descriptoren mal anzahl der schüler =anzahl der möglichen
 	else $avg = round($avg / ($gesamtpossible) * 100,0);  //$avg=positiv bewertete, $gesamtpossible=anzahl der möglichen
+	
 	return "<div class='ladebalken' style=\"background:url('pix/balkenleer.png') no-repeat left center;\">
 	<div class='lbmittelwertcontainer'><div class='lbmittelwert' style='width: ".$avg."%;'></div></div>
 	<div style=\"background:url('pix/balkenfull.png') no-repeat left center; height:27px; width:".$percent."%;\"></div></div>";
@@ -1066,10 +1084,11 @@ function block_exacomp_get_ladebalken($courseid, $userid, $gesamt,$anteil=null,$
 
 function block_exacomp_get_average_course_competences($courseid, $grading,$role=1) {
 	global $DB;
-	//$sql = "SELECT avg(count) as a FROM (SELECT count(id) as count FROM {block_exacompdescuser} WHERE courseid=? AND role=? AND wert=1 GROUP BY userid) as avgvalues";
-	//return $DB->get_record_sql($sql,array($courseid,$role));
-	//if($courseid) $grading=getgrading($courseid);
 	$gut=ceil($grading/2);
+	//$sql = "SELECT avg(count) as a FROM (SELECT count(id) as count FROM {block_exacompdescuser} WHERE courseid=? AND role=? AND wert<=? GROUP BY userid) as avgvalues";
+	//return $DB->get_record_sql($sql,array($courseid,$role,$gut));
+	
+	//if($courseid) $grading=getgrading($courseid);
 	$query='select count(user.id) as a from {block_exacompdescuser} user where courseid=? and role=? and wert<=? and descid IN
 	(SELECT d.id FROM
 	{block_exacompcoutopi_mm} cou INNER JOIN
@@ -1439,11 +1458,13 @@ function block_exacomp_get_competence_tree_for_all_courses() {
 			JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id
 			JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.topicid=t.id
 			JOIN {block_exacompdescriptors} d ON desctopmm.descrid=d.id
-			'.(block_exacomp_coursesettings()->show_all_descriptors ? '' : '
+			'
+			/*.(block_exacomp_coursesettings()->show_all_descriptors ? '' : '
 					-- only show active ones
 					JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid
 					JOIN {course_modules} a ON da.activityid=a.id
-					').'
+					').*/
+			.'
 			GROUP BY d.id
 			ORDER BY d.sorting');
 
@@ -1537,7 +1558,6 @@ function block_exacomp_get_competence_tree_for_all_courses() {
 
 	return $subjects;
 }
-
 
 function block_exacomp_build_comp_tree($courseid, $sort="tax") {
 	global $DB;

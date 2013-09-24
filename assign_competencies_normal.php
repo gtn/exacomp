@@ -10,6 +10,7 @@ $content = "";
 $action = optional_param('action', "", PARAM_ALPHA);
 $subjectid = optional_param('subjectid', isset($SESSION->block_exacomp_last_subjectid) ? (int)$SESSION->block_exacomp_last_subjectid : 0, PARAM_INT);
 $topicid = optional_param('topicid', isset($SESSION->block_exacomp_last_topicid) ? (int)$SESSION->block_exacomp_last_topicid : 0, PARAM_INT);
+$delete = optional_param('delete',0,PARAM_INT);
 
 $showevaluation = optional_param('showevaluation', "", PARAM_ALPHA);
 $bewertungsdimensionen=block_exacomp_getbewertungsschema($courseid);
@@ -38,6 +39,9 @@ if ($role == "student")
 
 block_exacomp_print_header($role, $identifier);
 
+if($delete > 0 && $role == "teacher") {
+	block_exacomp_delete_custom_example($delete);
+}
 if ($action == "save" && isset($_POST['btn_submit'])) {
 	$values = array();
 	if (!empty($_POST['data'])){
@@ -168,22 +172,50 @@ else
 	<?php
 
 function block_exacomp_print_level_descriptors($level, $subs, &$data, $rowgroup_class = '') {
-	global $CFG, $DB;
+	global $CFG, $DB, $USER;
 	extract((array)$data);
 
 	$version = 0;
 	
+	$url = '/blocks/exacomp/assign_competencies.php?courseid=' . $courseid;
+	$url = $CFG->wwwroot . $url;
+	
 	foreach ($subs as $descriptor) {
 
 		$activities = block_exacomp_get_activities($descriptor->id, $courseid);
+		
+		// in the alternative data model we use examples on this level, in the normal case we use descriptors
+		$examples = $DB->get_records_sql(
+				"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
+				e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid
+				FROM {block_exacompexamples} e
+				JOIN {block_exacompdescrexamp_mm} de ON e.id=de.exampid AND de.descrid=?
+				LEFT JOIN {block_exacomptaxonomies} tax ON e.taxid=tax.id
+				ORDER BY tax.title", array($descriptor->id));
+		
+		if ($examples) {
+			$data->rowgroup++;
+			$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$rowgroup_class;
+			$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$data->rowgroup.' '.$rowgroup_class;
+		} else {
+			$this_rowgroup_class = $rowgroup_class;
+		}
+		
 		?>
 		<tr
-			class="exabis_comp_aufgabe <?php echo $rowgroup_class; ?>">
-			<td></td>
-			<td style="padding-left: <?php echo ($level-1)*20+12; ?>px">
-				<p class="aufgabetext">
+			class="exabis_comp_aufgabe <?php echo $this_rowgroup_class; ?>">
+			<td><?php 
+			if($role == "teacher") {
+				?>
+					<a href="example_upload.php?courseid=<?php echo $courseid;?>&descrid=<?php echo $descriptor->id;?>" target="_blank" onclick="window.open(this.href,this.target,'width=640,height=480'); return false;" >
+					<img src='pix/upload_12x12.png'/></a>
+				<?php 
+				}
+			?></td>
+			<td <?php if($examples) { ?>class="rowgroup-arrow" <?php } ?> style="padding-left: <?php echo ($level-1)*20+12; ?>px">
+				<div class="aufgabetext">
 					<?php echo $descriptor->title; ?>
-				</p> <?php 
+				</div> <?php 
 				?>
 			</td>
 			<?php
@@ -284,6 +316,37 @@ function block_exacomp_print_level_descriptors($level, $subs, &$data, $rowgroup_
 			?>
 		</tr>
 		<?php 
+		
+		foreach($examples as $example) {
+			?>
+					<tr
+						class="exabis_comp_aufgabe <?php echo $sub_rowgroup_class; ?>">
+						<td></td>
+						<td style="padding-left: <?php echo ($level-1)*20+35; ?>px">
+							<p class="aufgabetext">
+								<?php echo $example->title; 
+								if(isset($example->creatorid) && $example->creatorid == $USER->id) {
+									?>
+										<a onclick="return confirm('Beispiel wirklich löschen?')" href="<?php echo $url.'&delete='.$example->id;?>"><img src="pix/x_11x11_redsmall.png"/></a>
+									<?php 
+								}
+								$img = '<img src="pix/i_11x11.png" alt="Beispiel" />';
+								if($example->task)
+									echo "<a target='_blank' href='".$example->task."'>".$img."</a>";
+								if($example->externalurl)
+									echo "<a target='_blank' href='".$example->externalurl."'>".$img."</a>";
+								
+								?>
+							</p> <?php 
+							?>
+						</td>
+						<?php 
+							foreach($students as $student)
+								echo "<td></td>";
+						?>
+						</tr>
+						<?php
+		}
 	}
 }
 

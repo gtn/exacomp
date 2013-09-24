@@ -203,13 +203,19 @@ td.contentcell {
 	vertical-align: middle;
 }
 
-#exabis_competences_block .competence_grid td.skill p {
+/* #exabis_competences_block .competence_grid td.skill p {
 	font-weight: normal;
 	font-size: 1.3rem;
 	-webkit-transform: rotate(270deg);
 	-moz-transform: rotate(270deg);
 	-o-transform: rotate(270deg);
-}
+} */
+
+
+
+
+
+
 
 #exabis_competences_block .competence_grid td.topic {
 	background-color: #ebebeb;
@@ -231,10 +237,56 @@ td.contentcell {
 	overflow: hidden;
 }
 
-#exabis_competences_block .competence_grid td.topic p {
+/* #exabis_competences_block .competence_grid td.topic p {
 	font-weight: normal;
 	font-size: 1.1rem;
 	-webkit-transform: rotate(270deg);
 	-moz-transform: rotate(270deg);
-	-o-transform: rotate(270deg);
+	 -o-transform: rotate(270deg);
+} */
+
+
+
+#exabis_competences_block .rotated-text {
+	font-weight: normal;
+	font-size: 1.1rem;
+	
+	 display: inline-block;
+     overflow: hidden;
+     width: 1.5em;
+     line-height: 1.5;
+}
+
+#exabis_competences_block .rotated-text__inner {
+	display: inline-block;
+     white-space: normal;
+     -moz-hyphens: auto;
+	-ms-hyphens: auto;
+	-webkit-hyphens: auto;
+	 hyphens: auto;
+	word-wrap: break-word;
+     
+     -webkit-transform: translate(40%,100%) rotate(-90deg);
+  -moz-transform: translate(40%,100%) rotate(-90deg);
+  -ms-transform: translate(40%,100%) rotate(-90deg);
+  -o-transform: translate(40%,100%) rotate(-90deg);
+  transform: translate(40%,100%) rotate(-90deg);
+     
+
+     -webkit-transform-origin: 0 0;
+     -moz-transform-origin: 0 0;
+     -ms-transform-origin: 0 0;
+     -o-transform-origin: 0 0;
+     transform-origin: 0 0;
+     
+     
+     text-align: center;
+     font-size: 1.1rem;
+ 
+}
+
+#exabis_competences_block .rotated-text__inner:after {
+	content: "";
+     float: left;
+     margin-top: 100%;
 }

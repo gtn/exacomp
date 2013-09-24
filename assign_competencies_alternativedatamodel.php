@@ -33,18 +33,7 @@ if ($role == "student")
 block_exacomp_print_header($role, $identifier);
 
 if($delete > 0 && $role == "teacher") {
-	$example = $DB->get_record('block_exacompexamples', array('id'=>$delete));
-	if($example && $example->creatorid == $USER->id) {
-		$DB->delete_records('block_exacompexamples', array('id' => $delete));
-		$DB->delete_records('block_exacompdescrexamp_mm', array('exampid' => $delete));
-		$DB->delete_records('block_exacompexameval', array('exampleid' => $delete));
-		/*$fs = get_file_storage();
-		$fileinstance = $DB->get_record('files',array("userid"=>$example->creatorid,"itemid"=>$example->id),'*',IGNORE_MULTIPLE);
-		if($fileinstance) {
-			$file = $fs->get_file_instance($fileinstance);
-			$file->delete();
-		}*/
-	}
+	block_exacomp_delete_custom_example($delete);
 }
 if ($action == "save" && isset($_POST['btn_submit'])) {
 	$values = array();
@@ -513,6 +502,9 @@ else
 							}
 						}
 							
+						if(isset($descriptor->evaluationData[$student->id]->compalreadyreached))
+							echo '<span title="'.s(get_string('compalreadyreached','block_exacomp')).'" class="exabis-tooltip"><img src="pix/info.png" /></span>';
+						
 						if (!$hasIcons) {
 							echo '<span title="'.s('todo').'" class="exabis-tooltip"><img src="pix/x_11x11.png" /></span>';
 						}
