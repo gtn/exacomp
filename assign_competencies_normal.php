@@ -18,6 +18,7 @@ $bewertungsdimensionen=block_exacomp_getbewertungsschema($courseid);
 $context = get_context_instance(CONTEXT_COURSE, $courseid);
 
 $courseSettings = block_exacomp_coursesettings();
+$alternativeDataVersion = get_config('exacomp', 'alternativedatamodel');
 
 //eigen berechtigung für exabis_competences, weil die moodle rollen nicht genau passen, zb
 //bei moodle dürfen übergeordnete rollen alles der untergeordneten, dass soll hier nicht sein
@@ -126,18 +127,83 @@ if ($action == "save" && isset($_POST['btn_submit'])) {
 
 $context = get_context_instance(CONTEXT_COURSE, $courseid);
 if ($role == "teacher"){
-	// spalte mit schuelern(=teilnehmer), 5=teilnehmer
 	$students = get_role_users(5, $context);
-	// $students = array_merge($students, $students, $students);
-	// $students = array_merge($students, $students, $students);
 }else{
-	//spalte nur teilnehmer selber
 	$students = array($USER);
 }
+if($alternativeDataVersion) {
+	$teachers = get_role_users(array(1,2,3,4), $context);
+	// read all subjects in this course
+	$topics = null;
+	$selected_subject = null;
+	$selected_topic = null;
+	$descriptors = null;
 
-$levels = block_exacomp_get_competence_tree_for_course($courseid);
-// echo "<pre>";
-// print_r($levels); exit;
+	$subjects = $DB->get_records_sql('
+			SELECT s.id, s.title, s.stid, s.number
+			FROM {block_exacompsubjects} s
+			JOIN {block_exacomptopics} t ON t.subjid = s.id
+			JOIN {block_exacompcoutopi_mm} ct ON ct.topicid = t.id AND ct.courseid = ?
+			'.($courseSettings->show_all_descriptors ? '' : '
+					-- only show active ones
+					JOIN {block_exacompdescrtopic_mm} topmm ON topmm.topicid=t.id
+					JOIN {block_exacompdescriptors} d ON topmm.descrid=d.id
+					JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid
+					JOIN {course_modules} a ON da.activityid=a.id AND a.course=ct.courseid
+					').'
+			GROUP BY s.id
+			ORDER BY s.stid, s.title
+			', array($courseid));
+
+	if (isset($subjects[$subjectid])) {
+		$selected_subject = $subjects[$subjectid];
+	} elseif ($subjects) {
+		$selected_subject = reset($subjects);
+	}
+
+
+	if ($selected_subject) {
+		$SESSION->block_exacomp_last_subjectid = $selected_subject->id;
+
+		$topics = $DB->get_records_sql('
+				SELECT t.id, t.title, t.cat, t.ataxonomie, t.btaxonomie, t.ctaxonomie, t.requirement, t.benefit, t.knowledgecheck
+				FROM {block_exacomptopics} t
+				JOIN {block_exacompcoutopi_mm} ct ON ct.topicid = t.id AND t.subjid = ? AND ct.courseid = ?
+				'.($courseSettings->show_all_descriptors ? '' : '
+						-- only show active ones
+						JOIN {block_exacompdescrtopic_mm} topmm ON topmm.topicid=t.id
+						JOIN {block_exacompdescriptors} d ON topmm.descrid=d.id
+						JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid
+						JOIN {course_modules} a ON da.activityid=a.id AND a.course=ct.courseid
+						').'
+				GROUP BY t.id
+				ORDER BY t.cat, t.title
+				', array($selected_subject->id, $courseid));
+
+		if (isset($topics[$topicid])) {
+			$selected_topic = $topics[$topicid];
+		} elseif ($topics) {
+			$selected_topic = reset($topics);
+		}
+
+		if ($selected_topic) {
+			$SESSION->block_exacomp_last_topicid = $selected_topic->id;
+
+			$descriptors = $DB->get_records_sql('
+					SELECT d.id, d.title
+					FROM {block_exacompdescriptors} d
+					JOIN {block_exacompdescrtopic_mm} topmm ON topmm.descrid=d.id AND topmm.topicid=?
+					'.($courseSettings->show_all_descriptors ? '' : '
+							-- only show active ones
+							JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid
+							JOIN {course_modules} a ON da.activityid=a.id AND a.course='.$courseid.'
+							').'
+					GROUP BY d.id
+					ORDER BY d.sorting
+					', array($selected_topic->id));
+		}
+	}
+}
 
 if ($showevaluation == 'on')
 	$studentColspan = 2;
@@ -148,6 +214,31 @@ else
 <div class="exabis_competencies_lis">
 
 	<?php
+
+	if($alternativeDataVersion) {
+		?>
+	<div class="exabis_comp_select">
+		Fach auswählen: <select class="start-searchbox-select"
+			onchange="document.location.href='<?php echo $url; ?>&subjectid='+this.value;">
+			<?php foreach ($subjects as $subject) {
+				echo '<option value="'.$subject->id.'"'.($subject->id==$selected_subject->id?' selected="selected"':'').'>'.$subject->title.'</option>';
+} ?>
+		</select>
+
+		<?php if ($topics): ?>
+		Kompetenzbereich/Leitidee auswählen: <select
+			class="start-searchbox-select"
+			onchange="document.location.href='<?php echo $url; ?>&subjectid=<?php echo $selected_subject->id; ?>&topicid='+this.value;">
+			<?php foreach ($topics as $topic) {
+				echo '<option value="'.$topic->id.'"'.($topic->id==$selected_topic->id?' selected="selected"':'').'>'.$topic->title.'</option>';
+	} ?>
+		</select>
+		<?php endif; ?>
+	</div>
+	<?php 
+	}
+
+	if(($alternativeDataVersion && $selected_topic) || !$alternativeDataVersion) {
 		if ($role == "teacher") {
 			if ($showevaluation)
 				echo $OUTPUT->box(text_to_html(get_string("explainassignoff", "block_exacomp") . '<a href="' . $url . '">'.get_string("hier", "block_exacomp").'.</a>'));
@@ -162,59 +253,88 @@ else
 		}
 
 
+		if($alternativeDataVersion)
+			include 'assign_competencies_lis_metadata.php';
 		?>
+
 	<div class="exabis_comp_top_legend">
-		<img src="pix/list_12x11.png" alt=<?php echo get_string('activities', 'block_exacomp'); ?> /> <?php echo get_string('activities', 'block_exacomp'); ?> - <img
-			src="pix/folder_fill_12x12.png" alt="ePortfolio" /> ePortfolio - <img
-			src="pix/x_11x11.png" alt="<?php echo get_string('noactivitiesyet', 'block_exacomp');?>" /> <?php echo get_string('noactivitiesyet', 'block_exacomp');?>
-	</div>
+		<div class="exabis_comp_top_legend">
+			<img src="pix/list_12x11.png"
+				alt=<?php echo get_string('activities', 'block_exacomp'); ?> />
+			<?php echo get_string('activities', 'block_exacomp'); ?>
+			- <img src="pix/folder_fill_12x12.png" alt="ePortfolio" /> ePortfolio
+			- <img src="pix/x_11x11.png"
+				alt="<?php echo get_string('noactivitiesyet', 'block_exacomp');?>" />
+			<?php echo get_string('noactivitiesyet', 'block_exacomp');?>
+			<?php if($role == "teacher") { ?>
+			- <img src="pix/upload_12x12.png" alt="Upload" />
+			<?php echo get_string('example_upload_header', 'block_exacomp');?>
+			<?php } ?>
+		</div>
 
-	<?php
+		<?php
 
-function block_exacomp_print_level_descriptors($level, $subs, &$data, $rowgroup_class = '') {
-	global $CFG, $DB, $USER;
-	extract((array)$data);
+		if(!$alternativeDataVersion)
+			$levels = block_exacomp_get_competence_tree_for_course($courseid);
+		else
+			$levels = block_exacomp_get_competence_tree_for_LIS($selected_topic->id);
 
-	$version = 0;
-	
-	$url = '/blocks/exacomp/assign_competencies.php?courseid=' . $courseid;
-	$url = $CFG->wwwroot . $url;
-	
-	foreach ($subs as $descriptor) {
+		function block_exacomp_print_level_descriptors($level, $subs, &$data, $rowgroup_class = '') {
+			global $CFG, $DB, $USER, $teachers;
+			extract((array)$data);
 
-		$activities = block_exacomp_get_activities($descriptor->id, $courseid);
-		
-		// in the alternative data model we use examples on this level, in the normal case we use descriptors
-		$examples = $DB->get_records_sql(
-				"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
-				e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid
-				FROM {block_exacompexamples} e
-				JOIN {block_exacompdescrexamp_mm} de ON e.id=de.exampid AND de.descrid=?
-				LEFT JOIN {block_exacomptaxonomies} tax ON e.taxid=tax.id
-				ORDER BY tax.title", array($descriptor->id));
-		
-		if ($examples) {
-			$data->rowgroup++;
-			$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$rowgroup_class;
-			$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$data->rowgroup.' '.$rowgroup_class;
-		} else {
-			$this_rowgroup_class = $rowgroup_class;
-		}
-		
-		?>
-		<tr
-			class="exabis_comp_aufgabe <?php echo $this_rowgroup_class; ?>">
+			$version = 0;
+
+			$url = '/blocks/exacomp/assign_competencies.php?courseid=' . $courseid;
+			$url = $CFG->wwwroot . $url;
+
+			foreach ($subs as $descriptor) {
+
+				$activities = block_exacomp_get_activities($descriptor->id, $courseid);
+
+				// in the alternative data model we use examples on this level, in the normal case we use descriptors
+				$examples = $DB->get_records_sql(
+						"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
+						e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid
+						FROM {block_exacompexamples} e
+						JOIN {block_exacompdescrexamp_mm} de ON e.id=de.exampid AND de.descrid=?
+						LEFT JOIN {block_exacomptaxonomies} tax ON e.taxid=tax.id
+						ORDER BY tax.title", array($descriptor->id));
+
+				if ($examples) {
+					$data->rowgroup++;
+					$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$rowgroup_class;
+					$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$data->rowgroup.' '.$rowgroup_class;
+				} else {
+					$this_rowgroup_class = $rowgroup_class;
+				}
+
+				$descrpadding = (get_config('exacomp','alternativedatamodel')) ? ($level-1)*20 :  ($level-2)*20+12;;
+
+				if (preg_match('!^([^\s]*[0-9][^\s]*+)\s+(.*)$!iu', $descriptor->title, $matches)) {
+					$output_id = $matches[1];
+					$output_title = $matches[2];
+				} else {
+					$output_id = '';
+					$output_title = $descriptor->title;
+				}
+				?>
+		<tr class="exabis_comp_aufgabe <?php echo $this_rowgroup_class; ?>">
 			<td><?php 
 			if($role == "teacher") {
-				?>
-					<a href="example_upload.php?courseid=<?php echo $courseid;?>&descrid=<?php echo $descriptor->id;?>" target="_blank" onclick="window.open(this.href,this.target,'width=640,height=480'); return false;" >
-					<img src='pix/upload_12x12.png'/></a>
-				<?php 
-				}
-			?></td>
-			<td <?php if($examples) { ?>class="rowgroup-arrow" <?php } ?> style="padding-left: <?php echo ($level-1)*20+12; ?>px">
+				?> <a
+				href="example_upload.php?courseid=<?php echo $courseid;?>&descrid=<?php echo $descriptor->id;?>"
+				target="_blank"
+				onclick="window.open(this.href,this.target,'width=640,height=480'); return false;">
+					<img src='pix/upload_12x12.png' />
+			</a> <?php 
+			}
+			echo $output_id;
+			?>
+			</td>
+			<td <?php if($examples) { ?>class="rowgroup-arrow" <?php } ?> style="padding-left: <?php echo $descrpadding; ?>px">
 				<div class="aufgabetext">
-					<?php echo $descriptor->title; ?>
+					<?php echo $output_title; ?>
 				</div> <?php 
 				?>
 			</td>
@@ -304,10 +424,10 @@ function block_exacomp_print_level_descriptors($level, $subs, &$data, $rowgroup_
 						$hasIcons = true;
 					}
 				}
-				
+
 				if(isset($descriptor->evaluationData[$student->id]->compalreadyreached))
 					echo '<span title="'.s(get_string('compalreadyreached','block_exacomp')).'" class="exabis-tooltip"><img src="pix/info.png" /></span>';
-				
+
 				if (!$hasIcons) {
 					echo '<span title="'.s('todo').'" class="exabis-tooltip"><img src="pix/x_11x11.png" /></span>';
 				}
@@ -316,49 +436,145 @@ function block_exacomp_print_level_descriptors($level, $subs, &$data, $rowgroup_
 			?>
 		</tr>
 		<?php 
-		
+
 		foreach($examples as $example) {
+
+			//skip custom examples from other courses
+			if( (!array_key_exists($example->creatorid, $teachers)) && isset($example->creatorid))
+				continue;
+
+			$examplepadding = (get_config('exacomp','alternativedatamodel')) ? ($level-1)*35 : $examplepadding = ($level-1)*20+35;
 			?>
-					<tr
-						class="exabis_comp_aufgabe <?php echo $sub_rowgroup_class; ?>">
-						<td></td>
-						<td style="padding-left: <?php echo ($level-1)*20+35; ?>px">
-							<p class="aufgabetext">
-								<?php echo $example->title; 
-								if(isset($example->creatorid) && $example->creatorid == $USER->id) {
-									?>
-										<a onclick="return confirm('Beispiel wirklich löschen?')" href="<?php echo $url.'&delete='.$example->id;?>"><img src="pix/x_11x11_redsmall.png"/></a>
-									<?php 
-								}
-								$img = '<img src="pix/i_11x11.png" alt="Beispiel" />';
-								if($example->task)
-									echo "<a target='_blank' href='".$example->task."'>".$img."</a>";
-								if($example->externalurl)
-									echo "<a target='_blank' href='".$example->externalurl."'>".$img."</a>";
-								
-								?>
-							</p> <?php 
-							?>
-						</td>
-						<?php 
-							foreach($students as $student)
-								echo "<td></td>";
+		<tr class="exabis_comp_aufgabe <?php echo $sub_rowgroup_class; ?>">
+			<td></td>
+			<td style="padding-left: <?php echo $examplepadding; ?>px">
+				<p class="aufgabetext">
+					<?php echo $example->title; 
+					if(isset($example->creatorid) && $example->creatorid == $USER->id) {
 						?>
-						</tr>
-						<?php
-		}
-	}
-}
+					<a onclick="return confirm('Beispiel wirklich löschen?')"
+						href="<?php echo $url.'&delete='.$example->id;?>"><img
+						src="pix/x_11x11_redsmall.png" /> </a>
+					<?php 
+					}
+					$img = '<img src="pix/i_11x11.png" alt="Beispiel" />';
+					if($example->task)
+						echo "<a target='_blank' href='".$example->task."'>".$img."</a>";
+					if($example->externalurl)
+						echo "<a target='_blank' href='".$example->externalurl."'>".$img."</a>";
 
-function block_exacomp_print_levels($level, $subs, &$data, $rowgroup_class = '') {
-	if (empty($subs)) return;
+					?>
+				</p> <?php 
+				?>
+			</td>
+			<?php 
+			if(!get_config('exacomp','alternativedatamodel')) {
+				foreach($students as $student)
+					echo "<td></td>";
+			} else {
+				$examplesEvaluationData = $DB->get_records_sql("
+						SELECT deu.studentid, u.firstname, u.lastname, deu.*
+						FROM {block_exacompexameval} deu
+						LEFT JOIN {user} u ON u.id=deu.".($role == "teacher"?'studentid':'teacher_reviewerid')."
+						WHERE deu.courseid=? AND deu.exampleid=?
+						", array($courseid, $example->id));
+					
+				$columnCnt = 0;
+				foreach ($students as $student) {
 
-	extract((array)$data);
-	
-	if ($level == 0) {
-		foreach ($subs as $group) {
+					if ($showevaluation) {
+						$evaluationWert = null;
+						$evaluationTooltip = null;
+						if (isset($examplesEvaluationData[$student->id])) {
+							$evaluation = $examplesEvaluationData[$student->id];
+							if ($role == "teacher") {
+								$evaluationWert = $evaluation->student_evaluation;
+								$evaluationTooltip = isset($evaluation->starttime) ? $evaluation->starttime.' - '.$evaluation->endtime : '';
+							} else {
+								$evaluationWert = $evaluation->teacher_evaluation;
+								$evaluationTooltip = get_string('assessedby','block_exacomp').fullname($evaluation);
+							}
+						}
+							
+						if ($evaluationWert) {
+							echo '<td class="exabis-tooltip colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'" title="'.s($evaluationTooltip).'">';
+
+							if ($bewertungsdimensionen==1) {
+								echo '<input type="checkbox" disabled="disabled" '.($evaluationWert?' checked="checked"':'').' />';
+							} else {
+								echo '<select disabled="disabled"><option>'.$evaluationWert.'</option></select>';
+							}
+						} else {
+							echo '<td class="colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'">';
+						}
+						echo '</td>';
+					}
+
+					echo '<td class="colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'">';
+
+					$checkboxname = "dataexamples";
+
+					if ($role == "teacher") {
+						if ($bewertungsdimensionen==1) {
+							echo '<input type="hidden" value="0" name="'.$checkboxname.'[' . $example->id . '][' . $student->id . '][teacher_evaluation]" />';
+							echo '<input type="checkbox" value="1" name="'.$checkboxname.'[' . $example->id . '][' . $student->id . '][teacher_evaluation]"'.
+									(isset($examplesEvaluationData[$student->id])&&$examplesEvaluationData[$student->id]->teacher_evaluation?' checked="checked"':'').' />';
+						} else {
+							echo '<select name="'.$checkboxname.'[' . $example->id . '][' . $student->id . '][teacher_evaluation]">';
+							for ($i=0; $i<=$bewertungsdimensionen; $i++) {
+								echo '<option value="'.$i.'"'.(isset($examplesEvaluationData[$student->id])&&$examplesEvaluationData[$student->id]->teacher_evaluation==$i?' selected="selected"':'').'>'.$i.'</option>';
+							}
+							echo '</select>';
+						}
+					} else {
+						echo 'Aufgabe erledigt: ';
+
+						if ($bewertungsdimensionen==1) {
+							echo '<input type="hidden" value="0" name="'.$checkboxname.'[' . $example->id . '][' . $student->id . '][student_evaluation]" />';
+							echo '<input type="checkbox" value="1" name="'.$checkboxname.'[' . $example->id . '][' . $student->id . '][student_evaluation]"'.
+									(isset($examplesEvaluationData[$student->id])&&$examplesEvaluationData[$student->id]->student_evaluation?' checked="checked"':'').' />';
+						} else {
+							echo '<select name="'.$checkboxname.'[' . $example->id . '][' . $student->id . '][student_evaluation]">';
+							for ($i=0; $i<=$bewertungsdimensionen; $i++) {
+								echo '<option value="'.$i.'"'.(isset($examplesEvaluationData[$student->id])&&$examplesEvaluationData[$student->id]->student_evaluation==$i?' selected="selected"':'').'>'.$i.'</option>';
+							}
+							echo '</select>';
+						}
+							
+						$studypartner = isset($examplesEvaluationData[$student->id]) ? $examplesEvaluationData[$student->id]->studypartner : '';
+							
+						echo ' <select name="dataexamples[' . $example->id . '][' . $student->id . '][studypartner]">
+						<option value="self"'.($studypartner=='self'?' selected="selected"':'').'>selbst</option>
+						<option value="studypartner"'.($studypartner=='studypartner'?' selected="selected"':'').'>Lernpartner</option>
+						<option value="studygroup"'.($studypartner=='studygroup'?' selected="selected"':'').'>Lerngruppe</option>
+						<option value="teacher"'.($studypartner=='teacher'?' selected="selected"':'').'>Lehrkraft</option>
+						</select><br/>
+						von <input class="datepicker" type="text" name="dataexamples[' . $example->id . '][' . $student->id . '][starttime]" value="'.
+						(isset($examplesEvaluationData[$student->id]->starttime)?date("Y-m-d",$examplesEvaluationData[$student->id]->starttime):'').'" readonly/>
+						bis <input class="datepicker" type="text" name="dataexamples[' . $example->id . '][' . $student->id . '][endtime]" value="'.
+						(isset($examplesEvaluationData[$student->id]->endtime)?date("Y-m-d",$examplesEvaluationData[$student->id]->endtime):'').'" readonly/>
+						';
+					}
+				}
+			}
 			?>
-			<tr class="highlight">
+		</tr>
+		<?php
+		}
+			}
+		}
+
+		function block_exacomp_print_levels($level, $subs, &$data, $rowgroup_class = '') {
+			if (empty($subs)) return;
+
+			extract((array)$data);
+
+			if ($level == 0) {
+				foreach ($subs as $group) {
+					if(get_config('exacomp', 'alternativedatamodel'))
+						$group->title = "Teilkompetenzen und Lernmaterialien";
+					?>
+		<tr class="highlight">
 			<td colspan="2"><b><?php echo $group->title; ?> </b></td>
 			<?php
 			$columnCnt = 0;
@@ -366,53 +582,52 @@ function block_exacomp_print_levels($level, $subs, &$data, $rowgroup_class = '')
 				echo '<td class="exabis_comp_top_studentcol colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'" colspan="' . $studentColspan . '">'.fullname($student).'</td>';
 			}
 			?>
-			</tr>
-			<?php
+		</tr>
+		<?php
 
-			if ($showevaluation) {
-				echo '<tr><td colspan="2"></td>';
-				for ($i = 0; $i < count($students); $i++){
-					$extra = ' class="colgroup colgroup-'.floor($i/$schueler_gruppierung_breite).'"';
-					if($role=="teacher")
-						echo '<td'.$extra.'>'.get_string("schueler_short", "block_exacomp").'</td><td'.$extra.'>'.get_string("lehrer_short", "block_exacomp").'</td>';
-					else
-						echo '<td'.$extra.'>'.get_string("lehrer_short", "block_exacomp").'</td><td'.$extra.'>'.get_string("schueler_short", "block_exacomp").'</td>';
-				}
-				echo '</tr>';
+		if ($showevaluation) {
+			echo '<tr><td colspan="2"></td>';
+			for ($i = 0; $i < count($students); $i++){
+				$extra = ' class="colgroup colgroup-'.floor($i/$schueler_gruppierung_breite).'"';
+				if($role=="teacher")
+					echo '<td'.$extra.'>'.get_string("schueler_short", "block_exacomp").'</td><td'.$extra.'>'.get_string("lehrer_short", "block_exacomp").'</td>';
+				else
+					echo '<td'.$extra.'>'.get_string("lehrer_short", "block_exacomp").'</td><td'.$extra.'>'.get_string("schueler_short", "block_exacomp").'</td>';
 			}
+			echo '</tr>';
+		}
 			
-			block_exacomp_print_levels($level+1, $group->subs, $data);
-		}
-		
-		return;
-	}
-	
-	foreach ($subs as $item) {
-		if (preg_match('!^([^\s]*[0-9][^\s]*+)\s+(.*)$!iu', $item->title, $matches)) {
-			$output_id = $matches[1];
-			$output_title = $matches[2];
-		} else {
-			$output_id = '';
-			$output_title = $item->title;
-		}
-		
-		$hasSubs = !empty($item->subs) || !empty($item->descriptors);
+		block_exacomp_print_levels($level+1, $group->subs, $data);
+				}
 
-		if ($hasSubs) {
-			$data->rowgroup++;
-			$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$rowgroup_class;
-			$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$data->rowgroup.' '.$rowgroup_class;
-		} else {
-			$this_rowgroup_class = $rowgroup_class;
-		}
-		
-		if ($level == 1) {
-			$rowgroup_class .= ' highlight';
-		}
-		
-		?>
-		<tr
-			class="exabis_comp_teilcomp <?php echo $this_rowgroup_class; ?>">
+				return;
+			}
+
+			foreach ($subs as $item) {
+				if (preg_match('!^([^\s]*[0-9][^\s]*+)\s+(.*)$!iu', $item->title, $matches)) {
+					$output_id = $matches[1];
+					$output_title = $matches[2];
+				} else {
+					$output_id = '';
+					$output_title = $item->title;
+				}
+
+				$hasSubs = (!empty($item->subs) || !empty($item->descriptors) && !get_config('exacomp','alternativedatamodel'));
+
+				if ($hasSubs) {
+					$data->rowgroup++;
+					$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$rowgroup_class;
+					$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$data->rowgroup.' '.$rowgroup_class;
+				} else {
+					$this_rowgroup_class = $rowgroup_class;
+				}
+
+				if ($level == 1) {
+					$rowgroup_class .= ' highlight';
+				}
+				if(!get_config('exacomp','alternativedatamodel')) {
+					?>
+		<tr class="exabis_comp_teilcomp <?php echo $this_rowgroup_class; ?>">
 			<td><?php echo $output_id; ?></td>
 			<td class="rowgroup-arrow" style="padding-left: <?php echo ($level-1)*20+12; ?>px"><div
 					class="desctitle">
@@ -427,88 +642,62 @@ function block_exacomp_print_levels($level, $subs, &$data, $rowgroup_class = '')
 		</tr>
 		<?php
 
-		if (!empty($item->descriptors)) {
-			block_exacomp_print_level_descriptors($level+1, $item->descriptors, $data, $sub_rowgroup_class);
-		}
-		
-		if (!empty($item->subs)) {
-			block_exacomp_print_levels($level+1, $item->subs, $data, $sub_rowgroup_class);
-		}
-	}
-}
-
-	if ($levels) {
-	
-		?>
-	<div class="ec_td_mo_auto">
-		<?php
-		echo spaltenbrowser(count($students),$schueler_gruppierung_breite);
-		?>
-
-		<form id="assign-competencies"
-			action="assign_competencies.php?action=save&courseid=<?php echo $courseid; ?>"
-			method="post">
-			<input type="hidden" name="open_row_groups"
-				value="<?php echo p(optional_param('open_row_groups', "", PARAM_TEXT)); ?>" />
-			<table class="exabis_comp_comp">
-				<?php
-				$rowgroup = 0;
-				$data = (object)array(
-					'rowgroup' => 0,
-					'courseid' => $courseid,
-					'showevaluation' => $showevaluation,
-					'students' => $students,
-					'schueler_gruppierung_breite' => $schueler_gruppierung_breite,
-					'studentColspan' => $studentColspan,
-					'role' => $role,
-					'bewertungsdimensionen' => $bewertungsdimensionen,
-					'gradelib' => $gradelib
-				);
-				block_exacomp_print_levels(0, $levels, $data);
-				
-				?>
-			</table>
-			<input name="btn_submit" type="submit"
-				value="<?php echo get_string('auswahl_speichern', 'block_exacomp'); ?>" />
-		</form>
-	</div>
-		<?php
-			/*				
-				return;
-				foreach ($levels as $group) {
-					$rowgroup++;
-
-					?>
-					<tr>
-					<td colspan="2"><b><?php echo $group->title; ?> </b></td>
-					<?php
-					$columnCnt = 0;
-					foreach ($students as $student) {
-						echo '<td class="exabis_comp_top_studentcol colgroup colgroup-'.floor($columnCnt++/$schueler_gruppierung_breite).'" colspan="' . $studentColspan . '">'.fullname($student).'</td>';
-					}
-					?>
-					</tr>
-					<?php
-
-					if ($showevaluation) {
-						echo '<tr><td colspan="2"></td>';
-						for ($i = 0; $i < count($students); $i++){
-							$extra = ' class="colgroup colgroup-'.floor($i/$schueler_gruppierung_breite).'"';
-							if($role=="teacher")
-								echo '<td'.$extra.'>'.get_string("schueler_short", "block_exacomp").'</td><td'.$extra.'>'.get_string("lehrer_short", "block_exacomp").'</td>';
-							else
-								echo '<td'.$extra.'>'.get_string("lehrer_short", "block_exacomp").'</td><td'.$extra.'>'.get_string("schueler_short", "block_exacomp").'</td>';
-						}
-						echo '</tr>';
-					}
 				}
-				*/
-	}
-	else {
-		echo $OUTPUT->box(text_to_html(get_string("explainno_comps", "block_exacomp")));
-	}
+				if(!isset($sub_rowgroup_class))
+					$sub_rowgroup_class = '';
 
-?>
-</div>
+				if (!empty($item->descriptors)) {
+					block_exacomp_print_level_descriptors($level+1, $item->descriptors, $data, $sub_rowgroup_class);
+				}
+
+				if (!empty($item->subs)) {
+					block_exacomp_print_levels($level+1, $item->subs, $data, $sub_rowgroup_class);
+				}
+			}
+		}
+
+		if ($levels) {
+
+			?>
+		<div class="ec_td_mo_auto">
+			<?php
+			echo spaltenbrowser(count($students),$schueler_gruppierung_breite);
+			?>
+
+			<form id="assign-competencies"
+				action="assign_competencies.php?action=save&courseid=<?php echo $courseid; ?>"
+				method="post">
+				<input type="hidden" name="open_row_groups"
+					value="<?php echo p(optional_param('open_row_groups', "", PARAM_TEXT)); ?>" />
+				<table class="exabis_comp_comp">
+					<?php
+					$rowgroup = 0;
+					$data = (object)array(
+							'rowgroup' => 0,
+							'courseid' => $courseid,
+							'showevaluation' => $showevaluation,
+							'students' => $students,
+							'schueler_gruppierung_breite' => $schueler_gruppierung_breite,
+							'studentColspan' => $studentColspan,
+							'role' => $role,
+							'bewertungsdimensionen' => $bewertungsdimensionen,
+							'gradelib' => $gradelib
+					);
+					block_exacomp_print_levels(0, $levels, $data);
+
+					?>
+				</table>
+				<input name="btn_submit" type="submit"
+					value="<?php echo get_string('auswahl_speichern', 'block_exacomp'); ?>" />
+			</form>
+		</div>
+		<?php
+		}
+		else {
+			echo $OUTPUT->box(text_to_html(get_string("explainno_comps", "block_exacomp")));
+		}
+	}
+	?>
+	</div>
 </div>
 <?php 

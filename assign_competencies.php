@@ -43,10 +43,12 @@ require_login($courseid);
 $schueler_gruppierung_breite=5;
 $zeilenanzahl=5;
 
+require dirname(__FILE__).'/assign_competencies_normal.php';
+/*
 $version = get_config('exacomp', 'alternativedatamodel');
-if ($version)
+if (!$version)
 	require dirname(__FILE__).'/assign_competencies_alternativedatamodel.php';
 else
 	require dirname(__FILE__).'/assign_competencies_normal.php';
-
+*/
 echo $OUTPUT->footer();

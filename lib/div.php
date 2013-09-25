@@ -1432,6 +1432,131 @@ function block_exacomp_get_competence_tree_for_course($courseid) {
 	return $subjects;
 }
 
+function block_exacomp_get_competence_tree_for_LIS($topicid) {
+	global $DB, $COURSE;
+
+	$courseid = $COURSE->id;
+	
+	$allSubjects = $DB->get_records_sql('
+			SELECT s.id, s.title, "subject" as type
+			FROM {block_exacompsubjects} s
+			JOIN {block_exacomptopics} t ON t.subjid = s.id
+			WHERE t.id = ?
+			GROUP BY s.id
+			ORDER BY s.stid, s.title
+			', array($topicid));
+
+	$allTopics = $DB->get_records_sql('
+			SELECT t.id, t.title, t.parentid, t.subjid, "topic" as type
+			FROM {block_exacomptopics} t
+			WHERE t.id = ?
+			ORDER BY t.sorting
+			', array($topicid));
+
+	$allDescriptors = $DB->get_records_sql('
+			SELECT d.id, d.title, desctopmm.topicid AS topicid, "descriptor" as type
+			FROM {block_exacompdescriptors} d
+			JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.descrid=d.id
+			'.(block_exacomp_coursesettings()->show_all_descriptors ? '' : '
+					-- only show active ones
+					JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid
+					JOIN {course_modules} a ON da.activityid=a.id AND a.course='.$COURSE->id.'
+					').'
+			WHERE desctopmm.topicid = ?
+			GROUP BY d.id
+			ORDER BY d.sorting
+			', array($topicid));
+
+	$subjects = array();
+
+	foreach ($allDescriptors as $descriptor) {
+
+		// get descriptor topic
+		if (empty($allTopics[$descriptor->topicid])) continue;
+		$topic = $allTopics[$descriptor->topicid];
+		$topic->descriptors[] = $descriptor;
+
+		// find all parent topics
+		$found = true;
+		for ($i = 0; $i < 10; $i++) {
+			if ($topic->parentid) {
+				// parent is topic, find it
+				if (empty($allTopics[$topic->parentid])) {
+					$found = false;
+					break;
+				}
+
+				// found it
+				$allTopics[$topic->parentid]->subs[$topic->id] = $topic;
+
+				// go up
+				$topic = $allTopics[$topic->parentid];
+			} else {
+				// parent is subject, find it
+				if (empty($allSubjects[$topic->subjid])) {
+					$found = false;
+					break;
+				}
+
+				// found: add it to the subject result
+				$subject = $allSubjects[$topic->subjid];
+				$subject->subs[$topic->id] = $topic;
+				$subjects[$topic->subjid] = $subject;
+
+				// top found
+				break;
+			}
+		}
+
+		// if parent not found (error), skip it
+		if (!$found) continue;
+
+		$descriptor->evaluationData = $DB->get_records_sql("
+				SELECT deu.userid, u.firstname, u.lastname, deu.*, deu.wert as teacher_evaluation
+				FROM {block_exacompdescuser} deu
+				LEFT JOIN {user} u ON u.id=deu.userid
+				WHERE deu.courseid=? AND deu.descid=? AND deu.role = 1
+				", array($courseid, $descriptor->id));
+
+		/*foreach($descriptor->evaluationData as $exaeval) {
+			$exaeval->student_evaluation = $DB->get_field('block_exacompdescuser', 'wert', array("userid"=>$exaeval->userid,"descid"=>$exaeval->descid,"role"=>0,"courseid"=>$exaeval->courseid));
+		}*/
+
+		$studentEvaluationData = $DB->get_records_sql("
+				SELECT deu.userid, u.firstname, u.lastname, deu.*, deu.wert as student_evaluation, 0 as teacher_evaluation
+				FROM {block_exacompdescuser} deu
+				LEFT JOIN {user} u ON u.id=deu.userid
+				WHERE deu.courseid=? AND deu.descid=? AND deu.role = 0
+				", array($courseid, $descriptor->id));
+
+		foreach($studentEvaluationData as $studentEval) {
+			if(isset($descriptor->evaluationData[$studentEval->userid]))
+				$descriptor->evaluationData[$studentEval->userid]->student_evaluation = $studentEval->student_evaluation;
+				
+			else
+				$descriptor->evaluationData[$studentEval->userid] = $studentEval;
+		}
+
+		//Already reached competencies from other courses
+		$compReachedData = $DB->get_records_sql("
+				SELECT deu.userid, u.firstname, u.lastname, deu.*, 1 as compalreadyreached, 0 as student_evaluation, 0 as teacher_evaluation
+				FROM {block_exacompdescuser} deu
+				LEFT JOIN {user} u ON u.id=deu.userid
+				WHERE deu.courseid!=? AND deu.descid=? AND deu.role = 1
+				", array($courseid, $descriptor->id));
+
+		foreach($compReachedData as $compReached) {
+			if(isset($descriptor->evaluationData[$compReached->userid]))
+				$descriptor->evaluationData[$compReached->userid]->compalreadyreached = 1;
+			else
+				$descriptor->evaluationData[$compReached->userid] = $compReached;
+		}
+
+	}
+
+	return $subjects;
+}
+
 function block_exacomp_get_competence_tree_for_all_courses() {
 	global $DB;
 
