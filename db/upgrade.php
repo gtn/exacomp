@@ -517,5 +517,29 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		upgrade_block_savepoint(true, 2013091000, 'exacomp');
 	}
 	
+	global $DB;
+	// BEWERTUNGSSCHEMA UMDREHEN
+	if($oldversion < 2013092602) {
+		
+		$coursegradings = $DB->get_records_menu("block_exacompsettings",null,"","course,grading");
+		$competencies = $DB->get_records("block_exacompdescuser");
+		foreach($competencies as $competence) {
+			if($coursegradings[$competence->courseid] > 1) {
+				$competence->wert = ($coursegradings[$competence->courseid] + 1) - $competence->wert;
+				$DB->update_record("block_exacompdescuser", $competence);
+			}
+		}
+		
+		$competencies = $DB->get_records_sql("
+				SELECT c.*, cm.course as courseid FROM {block_exacompdescuser_mm} c
+				JOIN {course_modules} cm ON c.activityid = cm.id
+				");
+		foreach($competencies as $competence) {
+			if($coursegradings[$competence->courseid] > 1) {
+				$competence->wert = ($coursegradings[$competence->courseid] + 1) - $competence->wert;
+				$DB->update_record("block_exacompdescuser_mm", $competence);
+			}
+		}
+	}
 	return $result;
 }

@@ -332,7 +332,7 @@ function block_exacomp_get_competences($descriptorid, $courseid, $role = 1) {
 function block_exacomp_get_genericcompetences($descriptorid, $courseid, $role = 1,$grading=1) {
 	global $DB;
 	$gut=ceil($grading/2);
-	$query = "SELECT * FROM {block_exacompdescuser} WHERE descid=? AND courseid=? AND role=? AND wert<=?";
+	$query = "SELECT * FROM {block_exacompdescuser} WHERE descid=? AND courseid=? AND role=? AND wert>=?";
 	$users = $DB->get_records_sql($query, array($descriptorid, $courseid, $role, $gut));
 	return $users;
 }
@@ -685,7 +685,7 @@ function block_exacomp_get_usercompetences($userid, $role=1, $courseid=null,$anz
 	}
 	foreach($descriptorids as $descriptorid) {
 			
-		if ($descriptorid->wert <= $gut){
+		if ($descriptorid->wert >= $gut){
 			$descriptor = $DB->get_record('block_exacompdescriptors',array("id"=>$descriptorid->descid));
 			$descriptors[] = $descriptor;
 		}
@@ -718,7 +718,7 @@ function block_exacomp_get_usercompetences_topics($userid, $role=1, $courseid=nu
 	$wert->p=0;$wert->a=0;
 	if ($descriptorids=$DB->get_records_sql($sql,$warr)){
 		foreach($descriptorids as $descriptorid) {
-			if ($descriptorid->wert <= $gut){
+			if ($descriptorid->wert >= $gut){
 				if ($userid==$descriptorid->userid) $wert->p++;
 				else $wert->a++;
 			}
@@ -1091,7 +1091,7 @@ function block_exacomp_get_average_course_competences($courseid, $grading,$role=
 	//return $DB->get_record_sql($sql,array($courseid,$role,$gut));
 	
 	//if($courseid) $grading=getgrading($courseid);
-	$query='select count(user.id) as a from {block_exacompdescuser} user where courseid=? and role=? and wert<=? and descid IN
+	$query='select count(user.id) as a from {block_exacompdescuser} user where courseid=? and role=? and wert>=? and descid IN
 	(SELECT d.id FROM
 	{block_exacompcoutopi_mm} cou INNER JOIN
 	{block_exacomptopics} top ON top.id=cou.topicid INNER JOIN
@@ -1878,8 +1878,9 @@ function block_exacomp_switch_bgcolor($bgcolor) {
 }
 function block_exacomp_competence_reached($descid,$userid,$courseid,$grading) {
 	global $DB;
-	if($grading > 0)
-		$where="courseid=".$courseid." AND wert<=".$grading." AND role=1 AND descid=".$descid." AND userid=".$userid;
+	$gut=ceil($grading/2);
+	if($gut > 1)
+		$where="courseid=".$courseid." AND wert>=".$gut." AND role=1 AND descid=".$descid." AND userid=".$userid;
 	else
 		$where="courseid=".$courseid." AND role=1 AND descid=".$descid." AND userid=".$userid;
 		
