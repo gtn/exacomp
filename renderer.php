@@ -229,7 +229,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			if($skillid) {
 				$row = new html_table_row();
 				$cell1 = new html_table_cell();
-				$cell1->text = html_writer::tag("p",$skills[$skillid]);
+				$cell1->text = html_writer::tag("span",html_writer::tag("span",$skills[$skillid],array('class'=>'rotated-text__inner')),array('class'=>'rotated-text'));
 				$cell1->attributes['class'] = 'skill';
 				$cell1->rowspan = count($skill)+1;
 				$row->cells[] = $cell1;
@@ -251,7 +251,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$row = new html_table_row();
 				
 				$cell2 = new html_table_cell();
-				$cell2->text = html_writer::tag("p",html_writer::tag("p",$topics[$topicid],array('class'=>'rotated-text__inner')),array('class'=>'rotated-text'));
+				$cell2->text = html_writer::tag("span",html_writer::tag("span",$topics[$topicid],array('class'=>'rotated-text__inner')),array('class'=>'rotated-text'));
 				$cell2->attributes['class'] = 'topic';
 				$row->cells[] = $cell2;
 

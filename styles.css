@@ -203,19 +203,13 @@ td.contentcell {
 	vertical-align: middle;
 }
 
-/* #exabis_competences_block .competence_grid td.skill p {
+#exabis_competences_block .competence_grid_tax td.skill p {
 	font-weight: normal;
 	font-size: 1.3rem;
 	-webkit-transform: rotate(270deg);
 	-moz-transform: rotate(270deg);
 	-o-transform: rotate(270deg);
-} */
-
-
-
-
-
-
+} 
 
 #exabis_competences_block .competence_grid td.topic {
 	background-color: #ebebeb;
@@ -237,16 +231,16 @@ td.contentcell {
 	overflow: hidden;
 }
 
-/* #exabis_competences_block .competence_grid td.topic p {
+ #exabis_competences_block .competence_grid_tax td.topic p {
 	font-weight: normal;
 	font-size: 1.1rem;
 	-webkit-transform: rotate(270deg);
 	-moz-transform: rotate(270deg);
 	 -o-transform: rotate(270deg);
-} */
+} 
 
 
-
+/*
 #exabis_competences_block .rotated-text {
 	font-weight: normal;
 	font-size: 1.1rem;
@@ -290,3 +284,44 @@ td.contentcell {
      float: left;
      margin-top: 100%;
 }
+*/
+
+#exabis_competences_block .rotated-text {
+	font-weight: normal;
+	font-size: 1.1rem;
+     display: inline-block;
+     overflow: hidden;
+
+     width: 1.5em;
+     line-height: 1.5;
+ }
+ 
+#exabis_competences_block .rotated-text__inner {
+     display: inline-block;
+     white-space: nowrap;
+
+     -webkit-transform: translate(0%,100%) rotate(-90deg);
+  -moz-transform: translate(0%,100%) rotate(-90deg);
+  -ms-transform: translate(0%,100%) rotate(-90deg);
+  -o-transform: translate(0%,100%) rotate(-90deg);
+  transform: translate(0%,100%) rotate(-90deg);
+     
+
+     -webkit-transform-origin: 0 0;
+     -moz-transform-origin: 0 0;
+     -ms-transform-origin: 0 0;
+     -o-transform-origin: 0 0;
+     transform-origin: 0 0;
+     
+  text-align: center;
+     font-size: 1.1rem;
+
+	word-wrap: break-word;
+    
+ }
+ 
+#exabis_competences_block .rotated-text__inner:after {
+     content: "";
+     float: left;
+     margin-top: 100%;
+ }
