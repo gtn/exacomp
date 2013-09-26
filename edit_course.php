@@ -47,7 +47,11 @@ require_capability('block/exacomp:teacher', $context);
 
 if ($action == 'save_coursesettings') {
 	$settings = new stdClass;
-	$settings->grading = optional_param('grading', "", PARAM_INT);
+	$settings->grading = optional_param('grading', 1, PARAM_INT);
+	
+	if($settings->grading == 0)
+		$settings->grading = 1;
+	
 	$settings->uses_activities = optional_param('uses_activities', "", PARAM_INT);
 	$settings->show_all_descriptors = optional_param('show_all_descriptors', "", PARAM_INT);
 	
@@ -72,7 +76,7 @@ if ($action == 'save_coursesettings')
 	?>
 	<form action="edit_course.php?courseid=<?php echo $courseid; ?>&action=save_coursesettings" method="post">
 		<?php echo get_string('bewertungsschema', 'block_exacomp'); ?>:
-		<input type="text" size="2" name="grading" value="<?php echo block_exacomp_getbewertungsschema($courseid, ""); ?>" /><br />
+		<input type="text" size="2" name="grading" value="<?php echo block_exacomp_getbewertungsschema($courseid); ?>" /><br />
 		
 		<input type="checkbox" value="1" name="uses_activities" <?php if (!empty($courseSettings->uses_activities)) echo 'checked="checked"'; ?> />
 		<?php echo get_string('uses_activities', 'block_exacomp'); ?><br />

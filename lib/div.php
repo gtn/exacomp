@@ -695,9 +695,11 @@ function block_exacomp_get_usercompetences($userid, $role=1, $courseid=null,$anz
 }
 function getgrading($courseid){
 	global $DB;
-	if ($grad = $DB->get_record('block_exacompsettings',array("course"=>$courseid)))
-		return $grad->grading;
-	else return 1;
+	$grad = $DB->get_record('block_exacompsettings',array("course"=>$courseid));
+	if(!isset($grad) || $grad->grading == 0)
+		return 1;
+
+	return $grad->grading;
 
 }
 function block_exacomp_get_usercompetences_topics($userid, $role=1, $courseid=null,$anzeige=0,$descrids=0) {
@@ -1876,7 +1878,11 @@ function block_exacomp_switch_bgcolor($bgcolor) {
 }
 function block_exacomp_competence_reached($descid,$userid,$courseid,$grading) {
 	global $DB;
-	$where="courseid=".$courseid." AND wert<=".$grading." AND role=1 AND descid=".$descid." AND userid=".$userid;
+	if($grading > 0)
+		$where="courseid=".$courseid." AND wert<=".$grading." AND role=1 AND descid=".$descid." AND userid=".$userid;
+	else
+		$where="courseid=".$courseid." AND role=1 AND descid=".$descid." AND userid=".$userid;
+		
 	if ($DB->get_record_select('block_exacompdescuser',$where)) return true;
 	else return false;
 	//return ($DB->get_record('block_exacompdescuser',array("courseid"=>$courseid,"wert"=>1,"role"=>1,"descid"=>$descid,"userid"=>$userid))) ? true : false;
