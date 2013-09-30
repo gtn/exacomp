@@ -1,0 +1,11 @@
+.selection-table .selection-item:hover td {
+	background: #ccc;
+}
+.selection-table td {
+	margin: 0;
+	padding: 5px;
+}
+
+.selection-table .selection-item div:before, .selection-table .selection-group div:before {
+    content: '•\a0\a0';
+}

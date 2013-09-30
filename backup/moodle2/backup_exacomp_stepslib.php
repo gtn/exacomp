@@ -1,5 +1,7 @@
 <?php
  
+require_once dirname(__FILE__) . '/../../lib/div.php';
+
 /**
  * Define all the backup steps that will be used by the backup_choice_activity_task
  */
@@ -10,7 +12,7 @@
 class backup_exacomp_block_structure_step extends backup_block_structure_step {
  
     protected function define_structure() {
- 
+		global $DB;
  
         // Define each element separated
         
@@ -20,13 +22,13 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
         $topic = new backup_nested_element('topic', array('id'), array('sourceid'));
         
         $activities = new backup_nested_element('activities');
-        $descractiv_mm = new backup_nested_element('descractiv_mm', array('id'), array('descrid','activityid','activitytitle','coursetitle'));
+		$descractiv_mm = new backup_nested_element('descractiv_mm', array('id'), array('descrid','activityid','activitytitle','coursetitle'));
  
         // Build the tree
         $exacomp->add_child($topics);
         $topics->add_child($topic);
         $exacomp->add_child($activities);
-        $activities->add_child($descractiv_mm);
+		$activities->add_child($descractiv_mm);
  
         // Define sources
         
@@ -38,18 +40,32 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
              WHERE t.id = ct.topicid AND ct.courseid = ?',
             array(backup::VAR_COURSEID));
  
- 		$descractiv_mm->set_source_sql('
- 			SELECT da.id, d.sourceid as descrid, da.activityid, da.activitytitle, da.coursetitle
- 			  FROM {block_exacompdescractiv_mm} da, {block_exacompdescriptors} d, {course_modules} cm, {assignment} a
- 			 WHERE d.id=da.descrid AND da.activitytype=1 AND da.activityid=cm.id AND cm.module=1 AND a.id=cm.instance AND a.course = ?
- 			',
- 			array(backup::VAR_COURSEID));
-        // Define id annotations
- 
-        // Define file annotations
- 
+
+		// backup descractiv_mm
+		$modules = block_exacomp_get_modules($this->get_courseid());
+		$course = $DB->get_record("course",array("id"=>$this->get_courseid()));
+		$backup_descractiv_mm = array();
+
+		$all_descractiv_mm = $DB->get_records_sql('
+			SELECT da.id, d.sourceid as descrid, da.activityid
+				FROM {block_exacompdescractiv_mm} da
+				JOIN {block_exacompdescriptors} d ON d.id=da.descrid
+				JOIN {course_modules} cm ON  da.activityid=cm.id AND cm.course = ?
+			', array($this->get_courseid()));
+		
+		foreach ($all_descractiv_mm as $id=>$descriptor) {
+			if (!isset($modules[$descriptor->activityid]))
+				continue;
+			
+			$descriptor->activitytitle = $modules[$descriptor->activityid]->name;
+			$descriptor->coursetitle = $course->shortname;
+			
+			$backup_descractiv_mm[$id] = $descriptor;
+		}
+
+		$descractiv_mm->set_source_array($backup_descractiv_mm);
+		
         // Return the root element (choice), wrapped into standard activity structure
         return $this->prepare_block_structure($exacomp);
- 
     }
 }

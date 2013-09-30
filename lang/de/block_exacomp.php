@@ -13,12 +13,14 @@ $string['teachertabassignactivities'] = 'Aktivitäten zuordnen';
 $string['teachertabassigncompetences'] = 'Kompetenz-Überblick';
 $string['teachertabassigncompetencesdetail'] = 'Kompetenz-Detailansicht';
 $string['teachertabassigncompetenceexamples'] = 'Beispiel-Aufgaben';
+$string['teachertabcompetencegrid'] = 'Kompetenzraster';
 
 //Student
 $string['studenttabcompetences'] = 'Kompetenz-Gesamtansicht';
 $string['studenttabcompetencesdetail'] = 'Kompetenz-Detailansicht';
 $string['studenttabcompetencesoverview'] = 'Alle erworbenen Kompetenzen';
 $string['studenttabcompetenceprofile'] = 'Kompetenzprofil';
+$string['studenttabcompetencesagenda'] = 'Lernagenda';
 
 //NAVIGATION
 $string['studentnavcompetences'] = 'Kompetenzeinschätzung';
@@ -27,6 +29,7 @@ $string['adminnavimport'] = 'Import';
 $string['teachernavconfig'] = 'Einstellungen';
 $string['teachernavactivities'] = 'Aktivitäten zuordnen';
 $string['teachernavstudents'] = 'Kompetenz-Überblick';
+$string['teachertabselection'] = 'Gegenstand-Auswahl';
 
 //BREADCRUMBS
 $string['teacherbread'] = 'Kurseinstellungen';
@@ -146,10 +149,45 @@ $string['hide_activities_descr'] = 'Bitte wählen sie die Aktivitäten die sie v
 $string['hide_activities_save'] = 'Einstellungen und Auswahl speichern';
 $string['radargraphheader'] = 'Kompetenzradar';
 $string['notinview'] = 'Dieses Item ist nicht veröffentlicht';
-$string['bewertungsschema_speichern']='Bewertungsschema speichern';
+$string['bewertungsschema'] = 'Bewertungsschema';
+$string['uses_activities'] = 'Ich verwende Moodle Aktivitäten zur Beurteilung';
+$string['show_all_descriptors'] = 'Alle Deskriptoren im Überblick anzeigen';
 $string['bewertung'] = ' Bewertung: ';
-
-
+$string['filerequired'] = 'Es wurde keine Datei angehängt!';
+$string['compalreadyreached'] = 'Der Schüler hat diese Kompetenz bereits in einem anderen Kurs erreicht.';
 $string['xmlserverurl'] = 'Server-URL';
 $string['configxmlserverurl'] = 'Url zu einer XML Datei, die verwendet wird, um die Daten aktuell zu halten';
+$string['niveau_filter'] = "Filter Niveaus";
+$string['niveau_auswahl'] = "Niveau auswählen";
+$string['niveau_auswahl_save'] = "Niveau filter anwenden";
+$string['filter_niveaus_descr'] = "Bitte wählen sie ein oder mehrere Niveaus um die obige Liste der Descriptoren einzuschränken.";
+
+$string['alternativedatamodel'] = 'Baden W&uuml;rttemberg Version';
+$string['alternativedatamodel_description'] = 'Anhaken für die Baden W&uuml;rttemberg Version';
+$string['choosesubject'] = "Fach auswählen: ";
+$string['selectall'] = 'Alle auswählen';
+
+$string['MO'] = "Mo";
+$string['DI'] = "Di";
+$string['MI'] = "Mi";
+$string['DO'] = "Do";
+$string['FR'] = "Fr";
+$string['todo'] = "Was mache ich?";
+$string['learning'] = "Was kann ich lernen?";
+$string['student'] = "S";
+$string['teacher'] = "L";
+$string['assessment'] = "Einsch&auml;tzung";
+$string['plan'] = "Arbeitsplan";
+$string['example_upload_header'] = 'Eigenes Lernmaterial hinzufügen';
+$string['activities'] = "Aktivitäten";
+$string['noactivitiesyet'] = "noch keine Aufgaben zu diesem Deskriptor abgegeben und keinen Test durchgeführt";
+$string['columnselection'] = 'Tabellenspalten Auswahl';
+$string['allstudents'] = 'Alle Schüler';
+
+if(get_config('block_exacomp','alternativedatamodel')) {
+	/*langstrings for alternativedatamodel*/
+	require dirname(__FILE__).'/block_exacomp_overlaystatic.php';
+	/*langstrings from other systems*/
+	require dirname(__FILE__).'/block_exacomp_overlaydynamic.php';
+}
 ?>
