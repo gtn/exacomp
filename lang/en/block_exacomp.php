@@ -8,17 +8,19 @@ $string['admintabschooltype'] = 'schooltype';
 $string['admintabimport'] = 'Import';
 
 //Teacher
-$string['teachertabconfig'] = 'subjects & topics';
+$string['teachertabconfig'] = 'settings';
 $string['teachertabassignactivities'] = 'assign activities';
 $string['teachertabassigncompetences'] = 'overview of competencies';
 $string['teachertabassigncompetencesdetail'] = 'detailed view of competencies';
 $string['teachertabassigncompetenceexamples'] = 'examples and tasks';
+$string['teachertabcompetencegrid'] = 'competence grid';
 
 //Student
 $string['studenttabcompetences'] = 'overview of competencies';
 $string['studenttabcompetencesdetail'] = 'detailed view of competencies';
 $string['studenttabcompetencesoverview'] = 'all gained competencies';
 $string['studenttabcompetenceprofile'] = 'competence profile';
+$string['studenttabcompetencesagenda'] = 'learning agenda';
 
 //NAVIGATION
 $string['studentnavcompetences'] = 'assessment of competencies';
@@ -27,6 +29,7 @@ $string['adminnavimport'] = 'import';
 $string['teachernavconfig'] = 'subjects & topics';
 $string['teachernavactivities'] = 'assign Moodle activities';
 $string['teachernavstudents'] = 'overview of competencies';
+$string['teachertabselection'] = 'subject selection';
 
 //BREADCRUMBS
 $string['teacherbread'] = 'course configuration';
@@ -148,10 +151,38 @@ $string['hide_activities_descr'] = 'Please select activities you want to hide an
 $string['hide_activities_save'] = 'Save settings and selection';
 $string['radargraphheader'] = 'Competence radar';
 $string['notinview'] = 'This item has not been published yet';
-$string['bewertungsschema_speichern']='save marking scheme';
+$string['bewertungsschema'] = 'grading scheme';
+$string['uses_activities'] = 'I work with activites';
+$string['show_all_descriptors'] = 'Show all descriptors in overview';
 $string['bewertung'] = ' assessment: ';
-
-
+$string['filerequired'] = 'You must upload a file!';
+$string['compalreadyreached'] = 'The student has already gained this competence in another course.';
 $string['xmlserverurl'] = 'Server-URL';
 $string['configxmlserverurl'] = 'Url to a xml file, which is used for keeping the database entries up to date';
+$string['niveau_filter'] = "filter levels";
+$string['niveau_auswahl'] = "choose level";
+$string['niveau_auswahl_save'] = "filter level!";
+$string['filter_niveaus_descr'] = "Choose one or more difficulty levels to reduce list above";
+
+$string['alternativedatamodel'] = 'Baden W&uuml;rttemberg Version';
+$string['alternativedatamodel_description'] = 'Tick to use Baden W&uuml;rttemberg Version';
+$string['choosesubject'] = "Choose subject: ";
+$string['selectall'] = 'Select all';
+
+$string["MO"] = "MON";
+$string["DI"] = "TUE";
+$string["MI"] = "WED";
+$string["DO"] = "THU";
+$string["FR"] = "FRI";
+$string['todo'] = "What do I do?";
+$string['learning'] = "What can I learn?";
+$string['student'] = "S";
+$string['teacher'] = "T";
+$string['assessment'] = "assessment";
+$string['plan'] = "working plan";
+$string['example_upload_header'] = 'Upload my own task/example';
+$string['activities'] = "activities";
+$string['noactivitiesyet'] = "nothing has been submitted for this descriptor/no quiz made";
+$string['columnselection'] = 'Table column selection';
+$string['allstudents'] = 'All students';
 ?>

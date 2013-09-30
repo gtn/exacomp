@@ -41,6 +41,7 @@ $content = "";
 $courseid = required_param('courseid', PARAM_INT);
 $action = optional_param('action', "", PARAM_ALPHA);
 
+	      
 require_login($courseid);
 
 $context = get_context_instance(CONTEXT_COURSE, $courseid);
@@ -48,12 +49,12 @@ $context = get_context_instance(CONTEXT_COURSE, $courseid);
 require_capability('block/exacomp:teacher', $context);
 
 $PAGE->set_url('/blocks/exacomp/edit_activities.php?courseid=' . $courseid);
-
+$PAGE->requires->css('/blocks/exacomp/css/assign_competencies.css');
 block_exacomp_print_header("teacher", "teachertabassignactivities");
 echo '<script type="text/javascript" src="lib/wz_tooltip.js"></script>';
-echo "<div class='block_excomp_center'>";
+echo "<div class='exabis_competencies_lis'>";
 
-$content.='<form action="edit_activities.php?action=save&amp;courseid=' . $courseid . '" method="post">';
+$content.='<form id="edit-activities" action="edit_activities.php?action=save&amp;courseid=' . $courseid . '" method="post">';
 
 if ($courseid > 0) {
     if ($action == "save") {
@@ -76,9 +77,10 @@ if ($courseid > 0) {
         $modsetting_arr=array();
         if (!empty($_POST['block_exacomp_activitysetting'])){
 	        foreach ($_POST['block_exacomp_activitysetting'] as $ks=>$vs){
-	            $modsetting_arr["activities"][]=$vs;
+	            $modsetting_arr["activities"][]=clean_param($vs,PARAM_SEQUENCE);
 	        };
 	      }
+	      
             $modsetting="";
 						if ($modsetting = $DB->get_record("block_exacompsettings", array("course"=>$courseid))){
 							$modsetting->activities=serialize($modsetting_arr);
@@ -90,19 +92,29 @@ if ($courseid > 0) {
 				}   
         echo $OUTPUT->box(text_to_html(get_string("activitysuccess", "block_exacomp")));
     }
+    
+    if (!empty($_POST['block_exacomp_niveaufilter'])){
+    	$niveau_arr=array();
+    	$niveau_arr["niveau"]=array();
+    	
+    	foreach ($_POST['block_exacomp_niveaufilter'] as $ks=>$vs){
+    		if($vs > 0)
+    			$niveau_arr["niveau"][]=clean_param($vs,PARAM_SEQUENCE);
+    	};
+    }
     $zeile = "";
   $shownactivities=array();
-	$modules = block_exacomp_get_modules();
+	$modules = block_exacomp_get_modules($COURSE->id);
     $colspan = (count($modules) + 1);
     echo $OUTPUT->box(text_to_html(get_string("explaineditactivities_subjects", "block_exacomp")));
 
     //Inhalt nur zeigen falls Aktivitäten vorhanden sind
     if ($modules) {
         $content.='<div class="grade-report-grader">
-		<table id="comps" class="compstable flexible boxaligncenter generaltable">
+		<table id="comps" class="exabis_comp_comp">
 		<tr class="heading r0">
 		<td class="category catlevel1" scope="col"><h2>' . $COURSE->fullname . '</h2></td>
-		<td class="category catlevel1 bottom" colspan="###colspanminus1###" scope="col"><a href="#colsettings">'.get_string('spalten_setting','block_exacomp').'</a></td>
+		<td class="category catlevel1 bottom" colspan="###colspanminus1###" scope="col"><a href="#colsettings">'.get_string('spalten_setting','block_exacomp').'</a> &nbsp;&nbsp;<a href="#colsettings">'.get_string('niveau_filter','block_exacomp').'</a></td>
 		</tr>
 		<tr><td></td>';
 				if($modsetting = $DB->get_record("block_exacompsettings", array("course"=>$courseid))){
@@ -133,50 +145,99 @@ if ($courseid > 0) {
         	
         }
         $content.="</tr>";
-        $descriptors = block_exacomp_get_descritors_list($courseid);
-        $trclass = "even";
-        $topic = "";
-        $subject = "";
+		
+		function block_exacomp_print_levels($level, $subs, &$data, $rowgroup_class = '') {
+			if (empty($subs)) return;
 
-        foreach ($descriptors as $descriptor) {
-            if ($trclass == "even") {
-                $trclass = "odd";
-                $bgcolor = ' style="background-color:#efefef" ';
-            } else {
-                $trclass = "even";
-                $bgcolor = ' style="background-color:#ffffff" ';
-            }
-            if ($subject !== $descriptor->subject) {
-                $subject = $descriptor->subject;
-                $content .= '<tr class="ec_heading"><td colspan="###colspannormal###"><h4>' . $subject . '</h4></td></tr>';
-            }
-            if ($topic !== $descriptor->topic) {
-                $topic = $descriptor->topic;
-                $content .= '<tr class="ec_heading"><td colspan="###colspannormal###"><b>' . $topic . '</b></td></tr>';
-            }
-            $activitiesr = block_exacomp_get_activities($descriptor->id); //alle gewählten aktivitäten eines descriptors, zum sparen von abfragen
-            $zeiletemp = str_replace("###descid###", "" . $descriptor->id, $zeile);
-						$exicon = block_exacomp_get_examplelink($descriptor->id);
+			extract((array)$data);
 			
-            foreach ($activitiesr as $activietyr) {
-                $zeiletemp = str_replace('###checked' . $activietyr->id . '_' . $descriptor->id . '###', 'checked', $zeiletemp);
-            }
-            $zeiletemp = preg_replace('/checked="###checked([0-9_])+###"/', '', $zeiletemp); //nicht gewählte aktivitäten-descriptorenpaare, checked=... löschen
-            $content.='<tr class="r2 ' . $trclass . '" ' . $bgcolor . '><td class="ec_minwidth">' . $descriptor->title . '<input type="hidden" value="' . $descriptor->id . '" name="ec_descr[' . $descriptor->id . ']" /></td>' . $zeiletemp . '</tr>';
-        }
+			if ($level == 0) {
+				foreach ($subs as $group) {
+					?>
+					<tr class="ec_heading">
+					<td colspan="###colspannormal###"><h4><?php echo $group->title; ?></h4></td>
+					</tr>
+					<?php
+
+					block_exacomp_print_levels($level+1, $group->subs, $data);
+				}
+				
+				return;
+			}
+			
+			foreach ($subs as $item) {
+				$hasSubs = !empty($item->subs) || !empty($item->descriptors);
+
+				if ($hasSubs) {
+					$data->rowgroup++;
+					$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$rowgroup_class;
+					$subs_rowgroup_class = 'rowgroup-content rowgroup-content-'.$data->rowgroup.' '.$rowgroup_class;
+				} else {
+					$this_rowgroup_class = $rowgroup_class;
+				}
+				
+				?>
+                <tr class="ec_heading <?php echo $this_rowgroup_class; ?>">
+					<td class="rowgroup-arrow" style="padding-left: <?php echo ($level-1)*20+12; ?>px" colspan="###colspannormal###"><div><?php echo $item->title; ?></div></td></tr>
+				</tr>
+				<?php
+
+				if (isset($item->subs))
+					block_exacomp_print_levels($level+1, $item->subs, $data, $subs_rowgroup_class);
+
+				if (!empty($item->descriptors)) {
+					foreach ($item->descriptors as $descriptor) {
+						$activitiesr = block_exacomp_get_activities($descriptor->id); //alle gewählten aktivitäten eines descriptors, zum sparen von abfragen
+						$zeiletemp = str_replace("###descid###", "" . $descriptor->id, $data->zeile);
+			
+						foreach ($activitiesr as $activietyr) {
+							$zeiletemp = str_replace('###checked' . $activietyr->id . '_' . $descriptor->id . '###', 'checked', $zeiletemp);
+						}
+						$zeiletemp = preg_replace('/checked="###checked([0-9_])+###"/', '', $zeiletemp); //nicht gewählte aktivitäten-descriptorenpaare, checked=... löschen
+						echo '<tr class="r2 '.$subs_rowgroup_class.'">';
+						echo '<td class="competencetitle" style="padding-left: '.(($level-1)*20+12).'px">' . $descriptor->title . '<input type="hidden" value="' . $descriptor->id . '" name="ec_descr[' . $descriptor->id . ']" /></td>' . $zeiletemp . '</tr>';
+					}
+					$data->descriptorlist .= ",".$descriptor->id;
+				}
+			}
+		}
+		
+		$levels = block_exacomp_get_competence_tree_for_activity_selection($courseid,(isset($niveau_arr)) ? $niveau_arr["niveau"] : null);
+		$data = (object)array(
+			'rowgroup' => 0,
+			'courseid' => $courseid,
+			'zeile' => $zeile,
+			'descriptorlist' => ''
+		);
+		ob_start();
+		block_exacomp_print_levels(0, $levels, $data);
+		$content .= ob_get_clean();
+
+		$allDescriptors = $DB->get_fieldset_sql('
+				SELECT d.id
+				FROM {block_exacompsubjects} s
+				JOIN {block_exacomptopics} t ON t.subjid = s.id
+				JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
+				JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.topicid=t.id
+				JOIN {block_exacompdescriptors} d ON desctopmm.descrid=d.id
+				', array($courseid));
+		
+		$descriptorlist = implode(",",$allDescriptors);
+		
         $content.='<tr><td id="tdsubmit" colspan="###colspannormal###"><input type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" /></td></tr>';
         $content.="</table></div>";
         
         $content.='<div id="colsettings">';
         
-        $content.='<table id="comps" class="compstable flexible boxaligncenter generaltable">
+        $content.='<table class="settingtable"><tr><td><table id="block_exacomp_activitysettings" class="compstable flexible boxaligncenter generaltable">
 				<tr class="heading r0" >
 				<td class="category catlevel1" colspan="2" scope="col"><h2>' . get_string('hide_activities', 'block_exacomp') . '</h2></td>
-				</tr><tr><td>';
+				</tr><tr><td class="contentcell">';
         
         if (!empty($shownactivities)){
 					if (count($shownactivities)<10) $ssize=count($shownactivities)+1;
 					else $ssize=11;
+					$ssize=11;
 					$content.='<select size="'.$ssize.'" name="block_exacomp_activitysetting[]" multiple="multiple">';
 						$content.='<option value="-1">  </option>';
 						foreach($shownactivities as $k=>$v){
@@ -184,10 +245,43 @@ if ($courseid > 0) {
 							if ($v["selected"]==1) $content.=' selected="selected"';
 							$content.='>'.$v["name"].'</option>';
 						}
-					$content.='</select></td><td>';
+					$content.='</select></td><td class="contentcell">';
 				}
 				$content.='<input type="submit" value="' . get_string('hide_activities_save', 'block_exacomp') . '" /></td></tr><tr><td colspan="2">';
-				$content.=get_string('hide_activities_descr', 'block_exacomp') . '</td></tr></table>';
+				$content.=get_string('hide_activities_descr', 'block_exacomp') . '</td></tr></table></td>';
+				$content.='<td>';
+				$content.='<table id="block_exacomp_niveaufilter" class="compstable flexible boxaligncenter generaltable">
+				<tr class="heading r0" >
+				<td class="category catlevel1" colspan="2" scope="col"><h2>' . get_string('niveau_auswahl', 'block_exacomp') . '</h2></td>
+				</tr><tr><td class="contentcell">';
+				/*niveau selector */
+				if (!empty($descriptorlist)){
+					$sql="SELECT n.id,n.title FROM {block_exacompdescriptors} d INNER JOIN {block_exacompniveaus} n ON d.niveauid=n.id WHERE d.id IN (".$descriptorlist.") GROUP BY n.id,n.title ORDER BY n.title";
+					if ($niveaus = $DB->get_records_sql($sql)){
+						if (count($niveaus)<10) $ssize=count($niveaus)+1;
+						else $ssize=11;
+						$ssize=11;
+						if(!isset($niveau_arr)) {
+							$niveau_arr=array();
+							$niveau_arr["niveau"]=array();
+						}
+						
+						$content.='<select size="'.$ssize.'" name="block_exacomp_niveaufilter[]" multiple="multiple">';
+							$content.='<option value="0">  </option>';
+							foreach($niveaus as $niveau){
+								$content.='<option value="'.$niveau->id.'"';
+								if (in_array($niveau->id,$niveau_arr["niveau"])) $content.=' selected="selected"';
+								$content.='>'.$niveau->title.'</option>';
+							}
+							$content.='</select>';
+					}
+				}
+				$content.='</td><td class="contentcell">';
+				$content.='<input type="submit" value="' . get_string('niveau_auswahl_save', 'block_exacomp') . '" /></td>';
+				
+				/*niveau selector end*/
+				$content.='</tr><tr><td colspan="2">'.get_string('filter_niveaus_descr', 'block_exacomp').'</td></td></table>';
+				$content.='</td></tr></table>';
 				$content.='</div>';
 
         $content.='</form>';
@@ -202,4 +296,5 @@ $content.="";
 echo $content;
 echo "</div>";
 echo '</div>'; //exabis_competences_block
+
 echo $OUTPUT->footer();

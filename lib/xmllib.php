@@ -8,7 +8,7 @@ function block_exacomp_xml_insert_edulevel($value,$source) {
 	$new_value->sorting = (int)$value->sorting;
 	unset($value);
 	$value = $new_value;
-	
+
 	$edulevel = $DB->get_record('block_exacompedulevels', array("sourceid" => (int)$value->uid,"source"=>$source));
 	if ($edulevel) {
 		//update
@@ -20,7 +20,6 @@ function block_exacomp_xml_insert_edulevel($value,$source) {
 		$value->sourceid = $value->uid;
 		$DB->insert_record('block_exacompedulevels', $value);
 	}
-
 }
 
 function block_exacomp_xml_insert_schooltyp($value,$source,$userlst) {
@@ -53,14 +52,14 @@ function block_exacomp_xml_insert_schooltyp($value,$source,$userlst) {
 		$value->elid = $elid;
 		$value->source = $source;
 		$DB->insert_record('block_exacompsubjects', $value);
-		
+
 		$sql='INSERT INTO {block_exacompschooltypes} (sorting,title,elid,isoez,sourceid,source) VALUES('.$value->sorting.',\''.$value->title.'\','.$elid.','.$value->isoez.','.$value->uid.','.$source.')';
 		$DB->Execute($sql);
 	}
 	if ($userlst!="0"){
 			
 		/*gibts diese kategorie bei irgendeinem user? wenn ja, update, wenn nein insert
-		  hats sich jemand die kategorie gelöscht, wird sie nicht neu angelegt, sonst bevormundung*/
+		 hats sich jemand die kategorie gelöscht, wird sie nicht neu angelegt, sonst bevormundung*/
 		//$daten=New stdClass;$daten->pid=0;$daten->name=$value->title;
 		if ($cats = $DB->get_records_sql('SELECT * FROM {block_exaportcate} WHERE source=? AND sourceid=? AND userid IN ('.$userlst.')',array($source,(int)$value->uid))){
 			//$sql='Update {block_exaportcate} SET pid="0", name="'.$value->title.'" WHERE userid IN ('.$userlst.')' AND source='.source.' AND sourceid='..';
@@ -68,13 +67,13 @@ function block_exacomp_xml_insert_schooltyp($value,$source,$userlst) {
 		}else{
 			//insert
 		}
-		
-		
-		  
+
+
+
 		/*if ($cat1 = $DB->get_records('block_exaportcate', array("sourceid"=> (int)$value->uid,"source"=>$source))){
 			foreach($cat1 as $category){
-				$cat1ids.=",".$category->id;
-			}
+		$cat1ids.=",".$category->id;
+		}
 		}
 		else $cat1ids=0;*/
 	}
@@ -91,51 +90,84 @@ function block_exacomp_xml_insert_subject($value,$source) {
 	if ($schooltype = $DB->get_record('block_exacompschooltypes', array("sourceid"=>intval($value->stid),"source"=>$source))) $stid=$schooltype->id;
 	else $stid=0;
 	$data["stid"]=$stid;
+	$data["cat"] = intval($value->cat);
+	$data["number"] = intval($value->number);
 	$uid=intval($value->uid);
 	if($subject = $DB->get_record('block_exacompsubjects', array("sourceid" =>$uid,"source"=>$source))){
 		$data["id"]=$subject->id;
 		$DB->update_record('block_exacompsubjects', $data);
 		/*if ($exaport==true){
 			$cats = $DB->get_record('block_exaportcate', array("sourceid"=> (int)$value->uid,"source"=>$source));
-			$data=stdClass();
-			$data->name=$value->title;
-			foreach ($cats as $cat){
-				$data->id=$cat->id;
-				$DB->update_record('block_exaportcate', $data);
-			}
+		$data=stdClass();
+		$data->name=$value->title;
+		foreach ($cats as $cat){
+		$data->id=$cat->id;
+		$DB->update_record('block_exaportcate', $data);
+		}
 		}*/
 	} else {
 		$DB->insert_record('block_exacompsubjects', $data);
-		
-		
+
+
 		/*$sql='INSERT INTO {block_exacompsubjects} (sorting,title,titleshort,stid,sourceid,source) VALUES('.$value->sorting.',\''.($value->title).'\',\''.($value->uid).'\','.$stid.','.$value->uid.','.$source.')';
-		echo $sql;
+		 echo $sql;
 		$DB->Execute($sql);
 		$datei="";
 		show_sql_error($sql,$zeile="",$datei);*/
 		/*if ($exaport==true){
 			$sql='INSERT INTO {block_exaportcate} (sorting,title,titleshort,stid,sourceid,source) VALUES('.$value->sorting.',\''.$value->title.'\',\''.$value->titleshort.'\','.$stid.','.$value->uid.','.$source.')';
-			$DB->Execute($sql);
+		$DB->Execute($sql);
 		}*/
 	}
+}
+function block_exacomp_xml_insert_category($value,$source) {
+	global $DB;
+	$cat = $DB->get_record("block_exacompcategories", array("sourceid"=>intval($value->uid)));
+	$data = array();
+	$data['title'] = strval($value->title);
+	$data['parentid'] = intval($value->parent_cat);
+	$data['lvl'] = intval($value->level);
+	$data['sourceid'] = intval($value->uid);
+	if($cat) {
+		$data['id'] = $cat->id;
+		$DB->update_record("block_exacompcategories", $data);
+	} else {
+		$DB->insert_record("block_exacompcategories", $data);
+	}
+
 }
 function block_exacomp_xml_insert_skill($value,$source) {
 
 	global $DB;
 	/*$skill = $DB->get_record('block_exacompskills', array("sourceid" => (int)$value->uid,"source"=>$source));
-	if ($skill) {
-		//update
-		$skill->title = $value->title;
-		$skill->sorting = $value->sorting;
-		$DB->update_record('block_exacompskills', $skill);
-		
+	 if ($skill) {
+	//update
+	$skill->title = $value->title;
+	$skill->sorting = $value->sorting;
+	$DB->update_record('block_exacompskills', $skill);
+
 	} else {*/
-		$sql='INSERT INTO {block_exacompskills} (sorting,title) VALUES('.$value->sorting.',\''.$value->title.'\')';
-		$DB->Execute($sql);
+	$sql='INSERT INTO {block_exacompskills} (sorting,title) VALUES('.$value->sorting.',\''.$value->title.'\')';
+	$DB->Execute($sql);
 	//}
 }
 
+function block_exacomp_xml_insert_niveau($value,$source) {
+	global $DB;
+	$sql='INSERT INTO {block_exacompniveaus} (sorting,title,parent) VALUES('.$value->sorting.',\''.$value->title.'\','.$value->parent_niveau.')';
+	//$DB->insert_record('block_exacompniveaus', array("parent"=>1,"title"=>"test","sorting"=>123));
+	$DB->Execute($sql);
+}
+
 function block_exacomp_xml_insert_taxonomie($value,$source) {
+	global $DB;
+
+	/*
+	 * ID aus XML mit sourceID der Datenbank vergleichen.
+	* Falls gefunden, update
+	* Falls nicht, insert
+	*
+	*/
 	global $DB;
 
 
@@ -145,16 +177,7 @@ function block_exacomp_xml_insert_taxonomie($value,$source) {
 	* Falls nicht, insert
 	*
 	*/
-		global $DB;
 
-
-	/*
-	 * ID aus XML mit sourceID der Datenbank vergleichen.
-	* Falls gefunden, update
-	* Falls nicht, insert
-	*
-	*/
-	
 	$new_value = new stdClass();
 	$new_value->uid = (int)$value->uid;
 	$new_value->title = (string)$value->title;
@@ -162,7 +185,7 @@ function block_exacomp_xml_insert_taxonomie($value,$source) {
 	$new_value->parent_tax = (int)$value->parent_tax;
 	unset($value);
 	$value = $new_value;
-	
+
 	$tax = $DB->get_record('block_exacomptaxonomies', array("sourceid" => $value->uid));
 	if ($tax) {
 		//update
@@ -178,31 +201,31 @@ function block_exacomp_xml_insert_taxonomie($value,$source) {
 
 	}
 	/*new version mit source
-	$new_value = new stdClass();
+	 $new_value = new stdClass();
 	$new_value->uid = (int)$value->uid;
 	$new_value->title = (string)$value->title;
 	$new_value->sorting = (int)$value->sorting;
 	$new_value->parent_tax = (int)$value->parent_tax;
 	unset($value);
 	$value = $new_value;
-	
+
 	$parenttax = $DB->get_record('block_exacomptaxonomies', array("sourceid" => $value->uid,"source"=>$source));
 	if (!empty($parenttax->id)) $ptax=$parenttax->id;
 	else $ptax=0;
-	
+
 	$tax = $DB->get_record('block_exacomptaxonomies', array("sourceid" => $value->parent_tax,"source"=>$source));
 	if ($tax) {
-		//update
-		$tax->title = $value->title;
-		$tax->parentid =$ptax;
-		$DB->update_record('block_exacompexamples', $tax);
+	//update
+	$tax->title = $value->title;
+	$tax->parentid =$ptax;
+	$DB->update_record('block_exacompexamples', $tax);
 	} else {
-		//insert
-		$value->sourceid = $value->uid;
-		$value->parentid = $value->parent_tax;
+	//insert
+	$value->sourceid = $value->uid;
+	$value->parentid = $value->parent_tax;
 
-		$sql='INSERT INTO {block_exacomptaxonomies} (sorting,title,sourceid,source,parentid) VALUES('.$value->sorting.',\''.$value->title.'\','.$value->uid.','.$source.','.$value->parent_tax.')';
-		$DB->Execute($sql);
+	$sql='INSERT INTO {block_exacomptaxonomies} (sorting,title,sourceid,source,parentid) VALUES('.$value->sorting.',\''.$value->title.'\','.$value->uid.','.$source.','.$value->parent_tax.')';
+	$DB->Execute($sql);
 
 	}*/
 }
@@ -223,9 +246,20 @@ function block_exacomp_xml_insert_topic($value,$source) {
 	$new_value->titleshort = (string)$value->titleshort;
 	$new_value->sorting = (int)$value->sorting;
 	$new_value->description = (string)$value->description;
+	$new_value->cat = (int)$value->cat;
+	$new_value->requirement = (string)$value->requirement;
+	$new_value->benefit = (string)$value->benefit;
+	$new_value->knowledgecheck = (string)$value->knowledgecheck;
+	$new_value->ataxonomie = (string)$value->Ataxonomie;
+	$new_value->btaxonomie = (string)$value->Btaxonomie;
+	$new_value->ctaxonomie = (string)$value->Ctaxonomie;
+	$new_value->dtaxonomie = (string)$value->Dtaxonomie;
+	$new_value->etaxonomie = (string)$value->Etaxonomie;
+	$new_value->ftaxonomie = (string)$value->Ftaxonomie;
+	$new_value->parentid = (int)$value->parentid;
 	unset($value);
 	$value = $new_value;
-	
+
 	// Subject ID wird benštigt, durch sourceid holen
 	//echo (int)$value->subjid." ".$source;
 	$subject = $DB->get_record('block_exacompsubjects', array("sourceid"=> (int)$value->subjid,"source"=>$source));
@@ -233,6 +267,11 @@ function block_exacomp_xml_insert_topic($value,$source) {
 	else $subj=0;
 	$topic = $DB->get_record('block_exacomptopics', array("sourceid" => (int)$value->uid,"source"=>$source));
 
+	if(isset($value->parentid))
+		$parenttopicid = $DB->get_field('block_exacomptopics', 'id', array("sourceid" => (int)$value->parentid,"source"=>$source));
+	
+	$catid = $DB->get_field('block_exacompcategories', 'id', array('sourceid'=>$value->cat));
+	
 	if ($topic) {
 		//update
 		$topic->title = $value->title;
@@ -240,13 +279,29 @@ function block_exacomp_xml_insert_topic($value,$source) {
 		$topic->subjid = $subj;
 		$topic->sorting = $value->sorting;
 		$topic->description = $value->description;
+		$topic->cat = $catid;
+		$topic->requirement = (string)$value->requirement;
+		$topic->benefit = (string)$value->benefit;
+		$topic->knowledgecheck = (string)$value->knowledgecheck;
+		$topic->ataxonomie = (string)$value->ataxonomie;
+		$topic->btaxonomie = (string)$value->btaxonomie;
+		$topic->ctaxonomie = (string)$value->ctaxonomie;
+		$topic->dtaxonomie = (string)$value->dtaxonomie;
+		$topic->etaxonomie = (string)$value->etaxonomie;
+		$topic->ftaxonomie = (string)$value->ftaxonomie;
+		if($parenttopicid)
+			$topic->parentid = $parenttopicid;
+		
 		$DB->update_record('block_exacomptopics', $topic);
 	} else {
 		//insert
 		$value->sourceid = $value->uid;
 		$value->subjid = $subj;
 		$value->source = $source;
-		$DB->insert_record('block_exacomptopics', $new_value);
+		$value->cat = $catid;
+		$value->parentid = $parenttopicid;
+		
+		$DB->insert_record('block_exacomptopics', $value);
 	}
 }
 
@@ -265,10 +320,12 @@ function block_exacomp_xml_insert_descriptor($value,$source) {
 	$new_value->sorting = (int)$value->sorting;
 	$new_value->skillid = (int)$value->skillid;
 	$new_value->parent_id = (int)$value->parent_id;
-	
+	$new_value->exampletext = (string)$value->exampletext;
+	$new_value->additionalinfo = (string)$value->additionalinfo;
+
 	unset($value);
 	$value = $new_value;
-	
+
 	$desc = $DB->get_record('block_exacompdescriptors', array("sourceid" => $value->uid,"source"=>$source));
 	if ($desc) {
 		//update
@@ -276,6 +333,8 @@ function block_exacomp_xml_insert_descriptor($value,$source) {
 		$desc->skillid = (int)$value->skillid;
 		$desc->niveauid = (int)$value->niveauid;
 		$desc->sorting = (int)$value->sorting;
+		$desc->exampletext = (string)$value->exampletext;
+		$desc->additionalinfo = (string)$value->additionalinfo;
 
 		$DB->update_record('block_exacompdescriptors', $desc);
 	} else {
@@ -297,7 +356,7 @@ function block_exacomp_xml_insert_example($value,$source) {
 	$new_value = new stdClass();
 	$new_value->uid = (int)$value->uid;
 	$new_value->title = (string)$value->title;
-		$new_value->titleshort = (string)$value->titleshort;
+	$new_value->titleshort = (string)$value->titleshort;
 	$new_value->task = (string)$value->task;
 	$new_value->solution = (string)$value->solution;
 	$new_value->attachement = (string)$value->attachement;
@@ -351,7 +410,7 @@ function block_exacomp_xml_truncate($tablename) {
 }
 
 /* this function deletes all categories if there are no subcategories
-i.e. if there are no topics to a subject, the subject can be deleted*/
+ i.e. if there are no topics to a subject, the subject can be deleted*/
 function block_exacomp_deleteIfNoSubcategories($parenttable,$subtable,$subforeignfield,$source) {
 	global $DB;
 	$sql='SELECT * FROM {'.$parenttable.'} pt WHERE source=? AND id NOT IN(Select '.$subforeignfield.' FROM {'.$subtable.'} WHERE source=? AND '.$subforeignfield.'=pt.id)';
@@ -435,7 +494,7 @@ function block_exacomp_xml_get_current_ids($table, $tablename, $source) {
 
 	if($table->source == 1)
 		$source = 1;
-	
+
 	$descr = $DB->get_record('block_exacompdescriptors', array("sourceid" => (int)$table->descrid,"source"=>$source), "id");
 
 	if (!empty($topic) && !empty($descr)) {
@@ -495,13 +554,13 @@ function block_exacomp_xml_insert_descrtopicmm($descrtopics) {
 }
 
 /**
- * 
+ *
  * @param String $file path to xml file, xml/exacomp_data.xml is used if null
  * @param unknown_type $source default is 1, for specific import userid should be used
  * @param unknown_type $cron should always be 0, 1 if method is called by the cron job
  */
 function block_exacomp_xml_do_import($file = null, $source = 1, $cron = 0) {
-	
+
 	global $DB,$CFG;
 	$filename = $CFG->dirroot . '/blocks/exacomp/xml/exacomp_data.xml';
 	$schritt = optional_param('schr', 0, PARAM_INT);
@@ -512,30 +571,31 @@ function block_exacomp_xml_do_import($file = null, $source = 1, $cron = 0) {
 	$topic = 0;
 	$skill = 0;
 	$tax = 0;
+	$niveaus = 0;
 	$descrtopic = array();
 	$descrexamp = array();
 
 	if (file_exists($filename) || $file) {
-		
+
 		$xml = (!$file) ? simplexml_load_file($filename) : simplexml_load_string($file);
 		if ($xml) {
 			$STARTZEIT = time();
 
-		
+
 			$userlst=0;
 			/*$exaport=has_exaport();
-			if ($exaport==true){
-				if ($users = $DB->get_records("block_exaportuser", array("oezinstall"=>1))){
-					foreach ($users as $user){
-						$userlst.=",".$user->id;
-					}
-					$userlst=preg_replace("/^,/","",$userlst);
-				}
+			 if ($exaport==true){
+			if ($users = $DB->get_records("block_exaportuser", array("oezinstall"=>1))){
+			foreach ($users as $user){
+			$userlst.=",".$user->id;
+			}
+			$userlst=preg_replace("/^,/","",$userlst);
+			}
 			}*/
 			if (($schritt==0 && $source==1) || $source>1){
 				foreach ($xml->table as $table) {
 					$name = $table->attributes()->name;
-	
+
 					if ($name == "block_exacompedulevels") {
 						if ($edulevel == 0) {
 							//block_exacomp_xml_truncate($table->attributes()->name);
@@ -546,15 +606,15 @@ function block_exacomp_xml_do_import($file = null, $source = 1, $cron = 0) {
 					if ($name == "block_exacompschooltypes") {
 						/*if ($schooltyp == 0) {
 							block_exacomp_xml_truncate($name);
-							$schooltyp = 1;
+						$schooltyp = 1;
 						}*/
 						block_exacomp_xml_insert_schooltyp($table,$source,$userlst);
 					}
 					if ($name == "block_exacompsubjects") {
-						
+
 						/*if ($subject == 0) {
 							$DB->delete_records('block_exacompsubjects',array("source" => $source));
-							$subject = 1;
+						$subject = 1;
 						}*/
 						block_exacomp_xml_insert_subject($table,$source);
 					}
@@ -564,6 +624,13 @@ function block_exacomp_xml_do_import($file = null, $source = 1, $cron = 0) {
 							$skill = 1;
 						}
 						block_exacomp_xml_insert_skill($table,$source);
+					}
+					if ($name == "block_exacompniveaus" && $source==1) {
+						if ($niveaus == 0) {
+							block_exacomp_xml_truncate($name);
+							$niveaus = 1;
+						}
+						block_exacomp_xml_insert_niveau($table,$source);
 					}
 					if ($name == "block_exacomptaxonomies" && $source==1) {
 						if ($tax == 0) {
@@ -589,41 +656,44 @@ function block_exacomp_xml_do_import($file = null, $source = 1, $cron = 0) {
 					}
 					if ($name == "block_exacompdescrexamp_mm") {
 						$descrexampmm = block_exacomp_xml_get_current_ids($table, "example",$source);
-	
+
 						if (!empty($descrexampmm['descrid']) && !empty($descrexampmm['exampid']))
 							$descrexamp[] = $descrexampmm;
 					}
+					if($name == "block_exacompcategories") {
+						block_exacomp_xml_insert_category($table,$source);
+					}
 				}
 
-				block_exacomp_xml_delete_descrtopicmm($source); 
+				block_exacomp_xml_delete_descrtopicmm($source);
 				block_exacomp_xml_insert_descrtopicmm($descrtopic);
-	
-				block_exacomp_xml_delete_descrexampmm($source); 
+
+				block_exacomp_xml_delete_descrexampmm($source);
 				block_exacomp_xml_insert_descrexampmm($descrexamp);
 
-			
+					
 				if ($source==1 && $cron==0){
 					$courseid=optional_param('courseid', 0, PARAM_INT);
 					redirect($CFG->wwwroot.'/blocks/exacomp/import.php?action=xml&courseid='.$courseid.'&schr=1');
 					die;
 				}
 			}
-			if (($schritt=="1" && $source=="1") || $source>1){
+			if (($schritt=="1" && $source=="1") || $source>1 || $cron==1){
 				$STARTZEIT = time();
-			//block_exacomp_deleteIfNoSubcategories("block_exacomptopics","block_exacompdescrtopic_mm","topicid",$source);
+				//block_exacomp_deleteIfNoSubcategories("block_exacomptopics","block_exacompdescrtopic_mm","topicid",$source);
 				block_exacomp_deleteIfNoSubcategories("block_exacompsubjects","block_exacomptopics","subjid",$source);
 				block_exacomp_deleteIfNoSubcategories("block_exacompschooltypes","block_exacompsubjects","stid",$source);
 				block_exacomp_deleteIfNoSubcategories("block_exacompedulevels","block_exacompschooltypes","elid",$source);
-	
-				
+
+
 				$topics = block_exacomp_xml_get_topics($source);
 				$founds = block_exacomp_xml_find_unused($topics, $xml, "block_exacomptopics");
 				block_exacomp_xml_delete_unused_topics($founds,$source);
-	
+
 				$descs = block_exacomp_xml_get_descriptors($source);
 				$founds = block_exacomp_xml_find_unused($descs, $xml, "block_exacompdescriptors");
 				block_exacomp_xml_delete_unused_descriptors($founds,$source);
-	
+
 				$examples = block_exacomp_xml_get_examples($source);
 				$founds = block_exacomp_xml_find_unused($examples, $xml, "block_exacompexamples");
 				block_exacomp_xml_delete_unused_examples($founds,$source);
@@ -650,7 +720,7 @@ function block_exacomp_xml_check_import() {
 function has_exaport(){
 	global $DB;
 	$all_tables = $DB->get_tables();
-	
+
 	//achtung dossier aus exaport derzeit nicht eingebunden, bei aktivierung $exaport=false 6 zeilen weiter unten löschen;
 	if (in_array("block_exaportview", $all_tables)) {
 		$exaport=true;
@@ -660,18 +730,18 @@ function has_exaport(){
 	return $exaport;
 }
 function show_sql_error($sql,$zeile="",$datei){
- 	$err=mysql_error();
+	$err=mysql_error();
 	if(!empty($err)){
-		 echo "<p style='background-color:#f9cdcd;border:2px red solid;'>".$sql."<br>";
-		 echo "SQL-Fehler: ".mysql_error(). " in ".$datei." Zeile ".$zeile."</p>";
+		echo "<p style='background-color:#f9cdcd;border:2px red solid;'>".$sql."<br>";
+		echo "SQL-Fehler: ".mysql_error(). " in ".$datei." Zeile ".$zeile."</p>";
 	}
 }
 
 function block_exacomp_settstamp(){
-	
+
 	global $DB;
 	$sql="SELECT * FROM {block_exacompsettings} WHERE course=0 AND activities='importxml'";
-	
+
 	if ($modsetting = $DB->get_record_sql($sql)){
 		$tstampt=time();
 		$id=$modsetting->id;
@@ -679,6 +749,6 @@ function block_exacomp_settstamp(){
 	}else{
 		$modsettingi=array("course" => 0,"grading"=>"0","activities"=>"importxml","tstamp"=>time());
 		$DB->insert_record('block_exacompsettings',$modsettingi);
-	}   
+	}
 }
 ?>

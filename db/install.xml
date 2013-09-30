@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/exacomp/db" VERSION="20130115" COMMENT="XMLDB file for Moodle blocks/exacomp"
+<XMLDB PATH="blocks/exacomp/db" VERSION="20130910" COMMENT="XMLDB file for Moodle blocks/exacomp"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -13,7 +13,9 @@
         <FIELD NAME="niveauid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="skillid" NEXT="sorting"/>
         <FIELD NAME="sorting" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="niveauid" NEXT="sourceid"/>
         <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Die ID des Datensatzes am zentralen Server, für Import wichtig" PREVIOUS="sorting" NEXT="source"/>
-        <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft. 0=Moodleinstanz, 1=Zentraler Server" PREVIOUS="sourceid"/>
+        <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft. 0=Moodleinstanz, 1=Zentraler Server" PREVIOUS="sourceid" NEXT="exampletext"/>
+        <FIELD NAME="exampletext" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="source" NEXT="additionalinfo"/>
+        <FIELD NAME="additionalinfo" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="exampletext"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="niveauid"/>
@@ -30,7 +32,18 @@
         <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Die ID des Datensatzes am zentralen Server, für Import wichtig" PREVIOUS="subjid" NEXT="source"/>
         <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft, 0=Moodleinstanz 1=Zentraler Server" PREVIOUS="sourceid" NEXT="description"/>
         <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="source" NEXT="titleshort"/>
-        <FIELD NAME="titleshort" TYPE="char" LENGTH="250" NOTNULL="false" SEQUENCE="false" PREVIOUS="description"/>
+        <FIELD NAME="titleshort" TYPE="char" LENGTH="250" NOTNULL="false" SEQUENCE="false" PREVIOUS="description" NEXT="cat"/>
+        <FIELD NAME="cat" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false" PREVIOUS="titleshort" NEXT="requirement"/>
+        <FIELD NAME="requirement" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="cat" NEXT="benefit"/>
+        <FIELD NAME="benefit" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="requirement" NEXT="knowledgecheck"/>
+        <FIELD NAME="knowledgecheck" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="benefit" NEXT="ataxonomie"/>
+        <FIELD NAME="ataxonomie" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="knowledgecheck" NEXT="btaxonomie"/>
+        <FIELD NAME="btaxonomie" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="ataxonomie" NEXT="ctaxonomie"/>
+        <FIELD NAME="ctaxonomie" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="btaxonomie" NEXT="dtaxonomie"/>
+        <FIELD NAME="dtaxonomie" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="ctaxonomie" NEXT="etaxonomie"/>
+        <FIELD NAME="etaxonomie" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="dtaxonomie" NEXT="ftaxonomie"/>
+        <FIELD NAME="ftaxonomie" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="etaxonomie" NEXT="parentid"/>
+        <FIELD NAME="parentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the parent topic" PREVIOUS="ftaxonomie"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="subjid"/>
@@ -45,7 +58,9 @@
         <FIELD NAME="stid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false" PREVIOUS="title" NEXT="sourceid"/>
         <FIELD NAME="sourceid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" PREVIOUS="stid" NEXT="source"/>
         <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft, 0=Moodleinstanz 1=Zentraler Server" PREVIOUS="sourceid" NEXT="titleshort"/>
-        <FIELD NAME="titleshort" TYPE="char" LENGTH="200" NOTNULL="false" SEQUENCE="false" PREVIOUS="source"/>
+        <FIELD NAME="titleshort" TYPE="char" LENGTH="200" NOTNULL="false" SEQUENCE="false" PREVIOUS="source" NEXT="number"/>
+        <FIELD NAME="number" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false" PREVIOUS="titleshort" NEXT="cat"/>
+        <FIELD NAME="cat" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false" PREVIOUS="number"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="stid"/>
@@ -111,7 +126,8 @@
         <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Die ID des Datensatzes am zentralen Server, für Import wichtig" PREVIOUS="externaltask" NEXT="source"/>
         <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft. 0=Moodleinstanz, 1=Zentraler Server" PREVIOUS="sourceid" NEXT="titleshort"/>
         <FIELD NAME="titleshort" TYPE="char" LENGTH="200" NOTNULL="false" SEQUENCE="false" PREVIOUS="source" NEXT="iseditable"/>
-        <FIELD NAME="iseditable" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="mobile app" PREVIOUS="titleshort"/>
+        <FIELD NAME="iseditable" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="mobile app" PREVIOUS="titleshort" NEXT="creatorid"/>
+        <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the user who created this custom example" PREVIOUS="iseditable"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="taxid"/>
@@ -189,7 +205,8 @@
     <TABLE NAME="block_exacompmdltype_mm" COMMENT="Diese Tabelle speichert den Schultyp der jeweiligen Moodleinstanz" PREVIOUS="block_exacompdescuser_mm" NEXT="block_exacompcoutopi_mm">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="typeid"/>
-        <FIELD NAME="typeid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="ID des zugeordneten Schultyps" PREVIOUS="id"/>
+        <FIELD NAME="typeid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="ID des zugeordneten Schultyps" PREVIOUS="id" NEXT="courseid"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="20" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="used for the alternative data model because here the this configuration is not used globally for the whole moodle instance but for a specific course" PREVIOUS="typeid"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="typeid"/>
@@ -231,20 +248,62 @@
         <FIELD NAME="course" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Kurs" PREVIOUS="id" NEXT="grading"/>
         <FIELD NAME="grading" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Bewertungsschema maximaler Wert" PREVIOUS="course" NEXT="activities"/>
         <FIELD NAME="activities" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the hidden activities of edit activities table" PREVIOUS="grading" NEXT="tstamp"/>
-				<FIELD NAME="tstamp" TYPE="int" NOTNULL="false" SEQUENCE="false" COMMENT="date of import" LENGTH="20" PREVIOUS="activities"/>      
+        <FIELD NAME="tstamp" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="date of import" PREVIOUS="activities" NEXT="uses_activities"/>
+        <FIELD NAME="uses_activities" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" PREVIOUS="tstamp" NEXT="show_all_descriptors"/>
+        <FIELD NAME="show_all_descriptors" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" PREVIOUS="uses_activities"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="course"/>
         <KEY NAME="course" TYPE="foreign" FIELDS="course" REFTABLE="course" REFFIELDS="id" COMMENT="Kurs" PREVIOUS="primary"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="block_exacompprofilesettings" COMMENT="This table stored the individual user settings for generating their competence profile" PREVIOUS="block_exacompsettings">
+    <TABLE NAME="block_exacompprofilesettings" COMMENT="This table stored the individual user settings for generating their competence profile" PREVIOUS="block_exacompsettings" NEXT="block_exacompniveaus">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="block"/>
         <FIELD NAME="block" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="This field stores the associated block: exacomp, exastud or exaport" PREVIOUS="id" NEXT="itemid"/>
         <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="this field stores the associated item, either periodid if block is exastud, courseid if block is exacomp or itemid if block is exaport" PREVIOUS="block" NEXT="feedback"/>
         <FIELD NAME="feedback" TYPE="binary" NOTNULL="true" SEQUENCE="false" COMMENT="this field indicates if verbal feedback should be displayed (for exastud reviews)" PREVIOUS="itemid" NEXT="userid"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="stores userid" PREVIOUS="feedback"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="block_exacompniveaus" COMMENT="Niveaus" PREVIOUS="block_exacompprofilesettings" NEXT="block_exacompexameval">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="sorting"/>
+        <FIELD NAME="sorting" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="id" NEXT="title"/>
+        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="title" PREVIOUS="sorting" NEXT="parent"/>
+        <FIELD NAME="parent" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="id of the parent niveau" PREVIOUS="title"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="block_exacompexameval" COMMENT="Default comment for the table, please edit me" PREVIOUS="block_exacompniveaus" NEXT="block_exacompcategories">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="exampleid"/>
+        <FIELD NAME="exampleid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="exampleid" PREVIOUS="id" NEXT="courseid"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="exampleid" NEXT="studentid"/>
+        <FIELD NAME="studentid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="courseid" NEXT="teacher_evaluation"/>
+        <FIELD NAME="teacher_evaluation" TYPE="int" LENGTH="8" NOTNULL="false" SEQUENCE="false" PREVIOUS="studentid" NEXT="teacher_reviewerid"/>
+        <FIELD NAME="teacher_reviewerid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="teacher_evaluation" NEXT="student_evaluation"/>
+        <FIELD NAME="student_evaluation" TYPE="int" LENGTH="8" NOTNULL="false" SEQUENCE="false" PREVIOUS="teacher_reviewerid" NEXT="starttime"/>
+        <FIELD NAME="starttime" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="student_evaluation" NEXT="endtime"/>
+        <FIELD NAME="endtime" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="starttime" NEXT="studypartner"/>
+        <FIELD NAME="studypartner" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="endtime"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="block_exacompcategories" COMMENT="used for additional info" PREVIOUS="block_exacompexameval">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="title"/>
+        <FIELD NAME="title" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="lvl"/>
+        <FIELD NAME="lvl" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false" PREVIOUS="title" NEXT="parentid"/>
+        <FIELD NAME="parentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="parent category" PREVIOUS="lvl" NEXT="sourceid"/>
+        <FIELD NAME="sourceid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" PREVIOUS="parentid"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

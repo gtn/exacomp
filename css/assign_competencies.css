@@ -1,0 +1,141 @@
+.exabis_competencies_lis table.exabis_comp_top, .exabis_competencies_lis table.exabis_comp_comp, .exabis_competencies_lis .exabis_comp_info {
+	width: 100%;
+	border: 1px solid #E3DFD4;
+	border-collapse: collapse;
+}
+
+.exabis_competencies_lis .exabis_comp_info {
+	margin-bottom: 20px;
+	background-color: #efefef;
+}
+
+.exabis_competencies_lis table.exabis_comp_top td {
+	width: 50px;
+}
+
+.exabis_competencies_lis table.exabis_comp_top td, .exabis_competencies_lis table.exabis_comp_comp td, .exabis_competencies_lis .exabis_comp_info td {
+	padding: 0.5em;
+	border: 1px solid #cacaca;
+    border-collapse: collapse;
+    vertical-align: top;
+}
+
+.desctitle {
+	font-weight: bold;
+}
+
+.desctitlegrey{
+	font-weight: bold;
+	color: #666666;
+}
+
+.exabis_competencies_lis table.exabis_comp_comp {
+	font-size: 0.85em;
+}
+
+.exabis_competencies_lis .exabis_comp_aufgabe {
+	font-size: 0.9em;
+}
+.exabis_competencies_lis .exabis_comp_aufgabe .aufgabetext {
+	margin: 0 0 0 1em;
+}
+.exabis_competencies_lis table.exabis_comp_comp tr.highlight {
+  background-color: #e6e6e6;
+}
+
+.exabis_competencies_lis table.exabis_comp_comp tr.exabis_comp_aufgabe:nth-child(2n+1) {
+  background-color: #f9f9f9;
+}
+
+.exabis_competencies_lis table.exabis_comp_comp tr.exabis_comp_teilcomp {
+ /* background-color: #e2e2e2; */
+}
+
+.exabis_competencies_lis table.exabis_comp_comp thead {
+	font-size: ;
+}
+
+.exabis_competencies_lis span.exabis_comp_top_header {
+	font-style: italic;
+	font-size: 15px;
+}
+
+.exabis_competencies_lis span.exabis_comp_top_small {
+	display: block;
+	font-size: 0.84em;
+}
+
+.exabis_competencies_lis div.exabis_comp_top_indentation {
+	margin-left: 20px;
+	/* width:80%; */
+} 
+
+.exabis_competencies_lis div.exabis_comp_top_indentation_nr {
+	width: 20px;
+	float: left;
+}
+
+.exabis_competencies_lis .spaltenbrowser {
+	margin-top: 15px;
+	margin-bottom: 5px;
+}
+
+.exabis_competencies_lis img.exabis_comp_teilcomp_pfeil {
+	margin-right: 10px
+}
+
+.exabis_competencies_lis table.exabis_comp_top .comp_grey_97 {
+	background-color: #f6f6f6;
+}
+
+.exabis_competencies_lis table.exabis_comp_top .comp_grey_90 {
+	background-color: #e2e2e2;
+}
+
+.exabis_competencies_lis table.exabis_comp_top .comp_grey_83 {
+	background-color: #cfcfcf;
+}
+
+.exabis_competencies_lis .exabis_comp_select select {
+	margin-bottom: 20px
+}
+
+.exabis_competencies_lis .exabis_comp_select select {
+	margin-right: 20px
+}
+
+.exabis_competencies_lis .exabis_comp_aufgabe input[type="checkbox"], .exabis_competencies_lis .exabis_comp_teilcomp input[type="checkbox"], .exabis_competencies_lis .exabis_comp_aufgabe img, .exabis_competencies_lis .exabis_comp_teilcomp img {
+ 	margin-right: 4px;
+}
+.exabis_competencies_lis .exabis_comp_aufgabe img.exabis_comp_cal, .exabis_competencies_lis .exabis_comp_teilcomp img.exabis_comp_cal {
+ 	margin-right: 4px;
+ 	margin-left: 4px
+}
+
+.exabis_competencies_lis .exabis_comp_top_iconcol {
+	min-width: 35px;
+}
+
+.exabis_competencies_lis .exabis_comp_top_studentcol {
+	min-width: 40px;
+}
+
+.exabis_competencies_lis .exabis_comp_top_evalcol {
+	width: 50px;
+}
+
+.rowgroup-header .rowgroup-arrow {
+	cursor: pointer;
+	font-weight: bold;
+	text-decoration: underline;
+}
+.rowgroup-header .rowgroup-arrow div {
+	padding-left: 12px;
+	background: url(../pix/pfeil_show.png) 0 6px no-repeat;
+}
+.rowgroup-header.open .rowgroup-arrow div {
+	background: url(../pix/pfeil_hide.png) 0 6px no-repeat;
+}
+.rowgroup-content {
+	display: none;
+}
