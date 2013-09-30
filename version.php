@@ -15,9 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$plugin->version = 2013092602;
-$exaport_release = "1.0";  // User-friendly version number
-$plugin->maturity  = MATURITY_BETA;
+$plugin->version = 2013093000;
+$plugin->maturity  = MATURITY_RC;
 $plugin->release  = "1.0";
 $plugin->requires = 2011033005.06;
 $plugin->cron = 259200; //259200sec = 3 days
