@@ -1231,7 +1231,8 @@ function block_exacomp_get_competence_tree_for_subject($courseid, $subjectid) {
 	return $topics;
 }
 
-function block_exacomp_get_competence_tree_for_activity_selection($courseid) {
+function block_exacomp_get_competence_tree_for_activity_selection($courseid,$niveaufilter = null) {
+	
 	global $DB;
 
 	$allSubjects = $DB->get_records_sql('
@@ -1256,8 +1257,11 @@ function block_exacomp_get_competence_tree_for_activity_selection($courseid) {
 		JOIN {block_exacomptopics} t ON t.subjid = s.id
 		JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
 		JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.topicid=t.id
-		JOIN {block_exacompdescriptors} d ON desctopmm.descrid=d.id
-		GROUP BY d.id
+		JOIN {block_exacompdescriptors} d ON desctopmm.descrid=d.id 
+			'.(!$niveaufilter ? '' : '
+					WHERE d.niveauid IN ('.implode(",",$niveaufilter).')
+					').'
+			GROUP BY d.id
 		ORDER BY d.sorting
 		', array($courseid));
 	

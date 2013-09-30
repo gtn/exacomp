@@ -40,8 +40,7 @@ if(strcmp("mysql",$CFG->dbtype)==0){
 $content = "";
 $courseid = required_param('courseid', PARAM_INT);
 $action = optional_param('action', "", PARAM_ALPHA);
-$niveau_arr=array();
-$niveau_arr["niveau"]=array();
+
 	      
 require_login($courseid);
 
@@ -82,11 +81,6 @@ if ($courseid > 0) {
 	        };
 	      }
 	      
-        if (!empty($_POST['block_exacomp_niveaufilter'])){
-	        foreach ($_POST['block_exacomp_niveaufilter'] as $ks=>$vs){
-	            $niveau_arr["niveau"][]=clean_param($vs,PARAM_SEQUENCE);
-	        };
-	      }
             $modsetting="";
 						if ($modsetting = $DB->get_record("block_exacompsettings", array("course"=>$courseid))){
 							$modsetting->activities=serialize($modsetting_arr);
@@ -97,6 +91,16 @@ if ($courseid > 0) {
 							$DB->insert_record('block_exacompsettings',$modsettingi);
 				}   
         echo $OUTPUT->box(text_to_html(get_string("activitysuccess", "block_exacomp")));
+    }
+    
+    if (!empty($_POST['block_exacomp_niveaufilter'])){
+    	$niveau_arr=array();
+    	$niveau_arr["niveau"]=array();
+    	
+    	foreach ($_POST['block_exacomp_niveaufilter'] as $ks=>$vs){
+    		if($vs > 0)
+    			$niveau_arr["niveau"][]=clean_param($vs,PARAM_SEQUENCE);
+    	};
     }
     $zeile = "";
   $shownactivities=array();
@@ -191,14 +195,14 @@ if ($courseid > 0) {
 						}
 						$zeiletemp = preg_replace('/checked="###checked([0-9_])+###"/', '', $zeiletemp); //nicht gewählte aktivitäten-descriptorenpaare, checked=... löschen
 						echo '<tr class="r2 '.$subs_rowgroup_class.'">';
-						echo '<td class="ec_minwidth" style="padding-left: '.(($level-1)*20+12).'px">' . $descriptor->title . '<input type="hidden" value="' . $descriptor->id . '" name="ec_descr[' . $descriptor->id . ']" /></td>' . $zeiletemp . '</tr>';
+						echo '<td class="competencetitle" style="padding-left: '.(($level-1)*20+12).'px">' . $descriptor->title . '<input type="hidden" value="' . $descriptor->id . '" name="ec_descr[' . $descriptor->id . ']" /></td>' . $zeiletemp . '</tr>';
 					}
 					$data->descriptorlist .= ",".$descriptor->id;
 				}
 			}
 		}
-
-		$levels = block_exacomp_get_competence_tree_for_activity_selection($courseid);
+		
+		$levels = block_exacomp_get_competence_tree_for_activity_selection($courseid,(isset($niveau_arr)) ? $niveau_arr["niveau"] : null);
 		$data = (object)array(
 			'rowgroup' => 0,
 			'courseid' => $courseid,
@@ -209,7 +213,16 @@ if ($courseid > 0) {
 		block_exacomp_print_levels(0, $levels, $data);
 		$content .= ob_get_clean();
 
-		$descriptorlist = trim($data->descriptorlist, ',');
+		$allDescriptors = $DB->get_fieldset_sql('
+				SELECT d.id
+				FROM {block_exacompsubjects} s
+				JOIN {block_exacomptopics} t ON t.subjid = s.id
+				JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
+				JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.topicid=t.id
+				JOIN {block_exacompdescriptors} d ON desctopmm.descrid=d.id
+				', array($courseid));
+		
+		$descriptorlist = implode(",",$allDescriptors);
 		
         $content.='<tr><td id="tdsubmit" colspan="###colspannormal###"><input type="submit" value="' . get_string('auswahl_speichern', 'block_exacomp') . '" /></td></tr>';
         $content.="</table></div>";
@@ -248,11 +261,13 @@ if ($courseid > 0) {
 						if (count($niveaus)<10) $ssize=count($niveaus)+1;
 						else $ssize=11;
 						$ssize=11;
-						/*echo "<pre>";
-						print_r($niveau_arr);*/
+						if(!isset($niveau_arr)) {
+							$niveau_arr=array();
+							$niveau_arr["niveau"]=array();
+						}
 						
 						$content.='<select size="'.$ssize.'" name="block_exacomp_niveaufilter[]" multiple="multiple">';
-							$content.='<option value="-1">  </option>';
+							$content.='<option value="0">  </option>';
 							foreach($niveaus as $niveau){
 								$content.='<option value="'.$niveau->id.'"';
 								if (in_array($niveau->id,$niveau_arr["niveau"])) $content.=' selected="selected"';
