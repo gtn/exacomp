@@ -50,7 +50,7 @@ $string['activitysuccess'] = 'changes were successful';
 
 $string['usersubmitted'] = ' has submitted the following tasks:';
 $string['usersubmittedquiz'] = ' did the following quizzes:';
-$string['usernosubmission'] = ' has not yet submitted any tasks or quizzes associated with this descriptor';
+$string['usernosubmission'] = ' has not yet submitted any moodle-tasks or quizzes associated with this descriptor';
 $string['descnoassignment'] = 'no descriptors have been associated with this tasks';
 
 $string['specificcontent'] = 'site-specific topics';
@@ -181,7 +181,7 @@ $string['assessment'] = "assessment";
 $string['plan'] = "working plan";
 $string['example_upload_header'] = 'Upload my own task/example';
 $string['activities'] = "activities";
-$string['noactivitiesyet'] = "nothing has been submitted for this descriptor/no quiz made";
+$string['noactivitiesyet'] = "no moodle-task has been submitted for this descriptor/no quiz made";
 $string['columnselection'] = 'Table column selection';
 $string['allstudents'] = 'All students';
 ?>

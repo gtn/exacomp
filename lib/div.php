@@ -900,6 +900,7 @@ function block_exacomp_get_student_icon($activities, $student,$courseid,$gradeli
 	global $DB, $CFG;
 	$count = false;
 	$countquiz = false;
+	$actSubOccured = false; 	//this becomes true if an activity occures for which a submission is possible, otherwise there should be no icon
 	$img = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/list_12x11.png" alt="'.get_string("assigned_acitivities", "block_exacomp").'" />';
 	$submitted = $student->firstname." ".$student->lastname . get_string('usersubmitted', "block_exacomp") . "<br><ul>";
 	$submittedquiz = $student->firstname." ".$student->lastname . get_string('usersubmittedquiz', "block_exacomp") . "<br><ul>";
@@ -912,6 +913,9 @@ function block_exacomp_get_student_icon($activities, $student,$courseid,$gradeli
 		if(!$act)
 			continue;
 
+		if ($mod->name == "assign" || $mod->name == "quiz")
+			$actSubOccured = true;
+			
 		//$submission = $DB->get_record('assignment_submissions', array("userid" => $student->id, "assignment" => $act->instance));
 		$query = ($mod->name === "assign") ? "SELECT s.*, a.grade as agrade FROM {assign_submission} s INNER JOIN {assign} a ON s.assignment=a.id WHERE a.id=? AND s.userid=?" : "SELECT s.*, a.grade as agrade FROM {assignment_submissions} s INNER JOIN {assignment} a ON s.assignment=a.id WHERE a.id=? AND s.userid=?";
 		$rs = $DB->get_records_sql($query, array($act->instance, $student->id));
@@ -958,6 +962,7 @@ function block_exacomp_get_student_icon($activities, $student,$courseid,$gradeli
 	}
 	$icon->text = $submitted;
 	$icon->icon = $img;
+	$icon->actSubOccured = $actSubOccured;
 	return $icon;
 }
 function block_exacomp_getquizresult($gradelib,$activityinstance,$courseid,$studentid){

@@ -50,7 +50,7 @@ $string['activitysuccess'] = 'Änderungen erfolgreich übernommen.';
 
 $string['usersubmitted'] = ' hat folgende Aufgaben abgegeben:';
 $string['usersubmittedquiz'] = ' hat folgende Tests durchgeführt:';
-$string['usernosubmission'] = ' hat keine Aufgaben zu diesem Deskriptor abgegeben und keinen Test durchgeführt.';
+$string['usernosubmission'] = ' hat keine Moodle-Aufgaben zu diesem Deskriptor abgegeben und keinen Test durchgeführt.';
 $string['descnoassignment'] = 'Diesem Deskriptor sind keine Aufgaben zugeordnet.';
 
 $string['specificcontent'] = 'Schulbezogene Themenbereiche';
@@ -179,7 +179,7 @@ $string['assessment'] = "Einsch&auml;tzung";
 $string['plan'] = "Arbeitsplan";
 $string['example_upload_header'] = 'Eigenes Lernmaterial hinzufügen';
 $string['activities'] = "Aktivitäten";
-$string['noactivitiesyet'] = "noch keine Aufgaben zu diesem Deskriptor abgegeben und keinen Test durchgeführt";
+$string['noactivitiesyet'] = "noch keine Moodle-Aufgaben zu diesem Deskriptor abgegeben und keinen Test durchgeführt";
 $string['columnselection'] = 'Tabellenspalten Auswahl';
 $string['allstudents'] = 'Alle Schüler';
 

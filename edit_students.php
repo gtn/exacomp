@@ -179,7 +179,8 @@ if($activities) {
 				}
 				
 				if ($stdicon = block_exacomp_get_student_icon($activityForIcon, $student,$courseid, true)) {
-					$gradeicon = '<span title="'.s($stdicon->text).'" class="exabis-tooltip">' . $stdicon->icon . '</span>';
+					
+					$gradeicon = ($stdicon->actSubOccured) ? '<span title="'.s($stdicon->text).'" class="exabis-tooltip">' . $stdicon->icon . '</span>' : '';
 				}
 				else {
 					$gradeicon = '<span title="'.s('todo').'" class="exabis-tooltip"><img src="pix/x_11x11.png" /></span>';

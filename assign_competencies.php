@@ -443,10 +443,9 @@ else
 
 				}
 
-				$hasIcons = false;
 				if ($stdicon = block_exacomp_get_student_icon($activities, $student,$courseid,$gradelib)) {
-					echo '<span title="'.s($stdicon->text).'" class="exabis-tooltip">' . $stdicon->icon . '</span>';
-					$hasIcons = true;
+					if($stdicon->actSubOccured)
+						echo '<span title="'.s($stdicon->text).'" class="exabis-tooltip">' . $stdicon->icon . '</span>';
 				}
 				if (block_exacomp_exaportexists()) {
 					if ($stdicon = block_exacomp_get_portfolio_icon($student, $descriptor->id)) {
@@ -463,16 +462,12 @@ else
 						} else {
 							echo '<span title="'.s($stdicon->text).'" class="exabis-tooltip">' . $stdicon->icon . '</span>';
 						}
-						$hasIcons = true;
 					}
 				}
 
 				if(isset($descriptor->evaluationData[$student->id]->compalreadyreached))
 					echo '<span title="'.s(get_string('compalreadyreached','block_exacomp')).'" class="exabis-tooltip"><img src="pix/info.png" /></span>';
 
-				if (!$hasIcons) {
-					echo '<span title="'.s('todo').'" class="exabis-tooltip"><img src="pix/x_11x11.png" /></span>';
-				}
 				echo '</td>';
 			}
 			?>
