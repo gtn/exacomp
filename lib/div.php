@@ -1576,51 +1576,57 @@ function block_exacomp_get_competence_tree_for_LIS($topicid) {
 	return $subjects;
 }
 
-function block_exacomp_get_competence_tree_for_all_courses() {
-	global $DB;
+function block_exacomp_get_competence_tree_all_reached_competencies_for_user() {
+	global $DB, $USER;
 
 	$allSubjects = $DB->get_records_sql('
-			SELECT s.id, s.title, "subject" as type
-			FROM {block_exacompsubjects} s
-			JOIN {block_exacomptopics} t ON t.subjid = s.id
-			JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id 
-			GROUP BY s.id
-			ORDER BY s.stid, s.title
-			');
-
+		SELECT s.id, s.title, "subject" as type
+		FROM {block_exacompsubjects} s
+		JOIN {block_exacomptopics} t ON t.subjid = s.id
+		JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id
+		GROUP BY s.id
+		ORDER BY s.stid, s.title
+		');
+	
 	$allTopics = $DB->get_records_sql('
-			SELECT t.id, t.title, t.parentid, t.subjid, "topic" as type
-			FROM {block_exacompsubjects} s
-			JOIN {block_exacomptopics} t ON t.subjid = s.id
-			ORDER BY t.sorting
-			');
-
+		SELECT t.id, t.title, t.parentid, t.subjid, "topic" as type
+		FROM {block_exacompsubjects} s
+		JOIN {block_exacomptopics} t ON t.subjid = s.id
+		ORDER BY t.sorting
+		');
+	
 	$allDescriptors = $DB->get_records_sql('
-			SELECT d.id, d.title, t.id AS topicid, "descriptor" as type
-			FROM {block_exacompsubjects} s
-			JOIN {block_exacomptopics} t ON t.subjid = s.id
-			JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id
-			JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.topicid=t.id
-			JOIN {block_exacompdescriptors} d ON desctopmm.descrid=d.id
-			'
-			/*.(block_exacomp_coursesettings()->show_all_descriptors ? '' : '
-					-- only show active ones
-					JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid
-					JOIN {course_modules} a ON da.activityid=a.id
-					').*/
-			.'
-			GROUP BY d.id
-			ORDER BY d.sorting');
+		SELECT d.id, d.title, t.id AS topicid, "descriptor" as type, 1 as reached
+		FROM {block_exacompsubjects} s
+		JOIN {block_exacomptopics} t ON t.subjid = s.id
+		JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id
+		JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.topicid=t.id
+		JOIN {block_exacompdescriptors} d ON desctopmm.descrid=d.id
+		
+		-- get user evaluation
+		JOIN {block_exacompdescuser} deu ON deu.userid=? AND deu.descid=d.id AND deu.role = 1
+		-- get course settings
+		LEFT JOIN {block_exacompsettings} settings ON settings.course=deu.courseid
+		-- where no settings: default 1
+		WHERE
+			-- where settings are set and grade is reached
+			((settings.grading IS NOT NULL AND deu.wert >= (settings.grading)/2) OR
+			-- or where not settings and grade is reached
+			 settings.grading IS NULL AND deu.wert >= 1)
+		
+		GROUP BY d.id
+		ORDER BY d.sorting
+		', array($USER->id));
 
 	$subjects = array();
 
 	foreach ($allDescriptors as $descriptor) {
-
+	
 		// get descriptor topic
 		if (empty($allTopics[$descriptor->topicid])) continue;
 		$topic = $allTopics[$descriptor->topicid];
 		$topic->descriptors[] = $descriptor;
-
+		
 		// find all parent topics
 		$found = true;
 		for ($i = 0; $i < 10; $i++) {
@@ -1630,10 +1636,10 @@ function block_exacomp_get_competence_tree_for_all_courses() {
 					$found = false;
 					break;
 				}
-
+				
 				// found it
 				$allTopics[$topic->parentid]->subs[$topic->id] = $topic;
-
+				
 				// go up
 				$topic = $allTopics[$topic->parentid];
 			} else {
@@ -1642,64 +1648,21 @@ function block_exacomp_get_competence_tree_for_all_courses() {
 					$found = false;
 					break;
 				}
-
+				
 				// found: add it to the subject result
 				$subject = $allSubjects[$topic->subjid];
 				$subject->subs[$topic->id] = $topic;
 				$subjects[$topic->subjid] = $subject;
-
+				
 				// top found
 				break;
 			}
 		}
-
+		
 		// if parent not found (error), skip it
 		if (!$found) continue;
-
-		$descriptor->evaluationData = $DB->get_records_sql("
-				SELECT deu.userid, u.firstname, u.lastname, deu.*, deu.wert as teacher_evaluation
-				FROM {block_exacompdescuser} deu
-				LEFT JOIN {user} u ON u.id=deu.userid
-				WHERE deu.descid=? AND deu.role = 1 GROUP BY deu.descid
-				", array($descriptor->id));
-
-		$studentEvaluationData = $DB->get_records_sql("
-				SELECT deu.userid, u.firstname, u.lastname, deu.*, deu.wert as student_evaluation, 0 as teacher_evaluation
-				FROM {block_exacompdescuser} deu
-				LEFT JOIN {user} u ON u.id=deu.userid
-				WHERE deu.descid=? AND deu.role = 0
-				", array($descriptor->id));
-
-		foreach($studentEvaluationData as $studentEval) {
-			if(isset($descriptor->evaluationData[$studentEval->userid])){
-				if(!isset($descriptor->evaluationData[$studentEval->userid]->student_evaluation))
-					$descriptor->evaluationData[$studentEval->userid]->student_evaluation = $studentEval->student_evaluation;
-				else {	
-					if($descriptor->evaluationData[$studentEval->userid]->student_evaluation == 0)
-						$descriptor->evaluationData[$studentEval->userid]->student_evaluation = $studentEval->student_evaluation;
-				}
-			}
-			else
-				$descriptor->evaluationData[$studentEval->userid] = $studentEval;
-		}
-		
-		//Already reached competencies from other courses
-		$compReachedData = $DB->get_records_sql("
-				SELECT deu.userid, u.firstname, u.lastname, deu.*, 1 as compalreadyreached, 0 as student_evaluation, 0 as teacher_evaluation
-				FROM {block_exacompdescuser} deu
-				LEFT JOIN {user} u ON u.id=deu.userid
-				WHERE deu.descid=? AND deu.role = 1 GROUP BY deu.descid
-				", array($descriptor->id));
-
-		foreach($compReachedData as $compReached) {
-			if(isset($descriptor->evaluationData[$compReached->userid]))
-				$descriptor->evaluationData[$compReached->userid]->compalreadyreached = 1;
-			else
-				$descriptor->evaluationData[$compReached->userid] = $compReached;
-		}
-
 	}
-
+	
 	return $subjects;
 }
 
