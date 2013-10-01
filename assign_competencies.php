@@ -85,7 +85,7 @@ block_exacomp_print_header($role, $identifier);
 if($delete > 0 && $role == "teacher") {
 	block_exacomp_delete_custom_example($delete);
 }
-if ($action == "save" && isset($_POST['btn_submit'])) {
+if ($action == "save") {
 	$values = array();
 	if (!empty($_POST['data'])){
 		foreach ($_POST['data'] as $key => $desc) {

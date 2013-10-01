@@ -93,7 +93,7 @@ if($formdata = $form->get_data()) {
 	
 	?>
 	<script type="text/javascript">
-		window.opener.document.getElementById("assign-competencies").submit();
+		window.opener.Exacomp.newExampleAdded();
 		window.close();
 	</script>
 	<?php 

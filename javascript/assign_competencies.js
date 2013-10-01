@@ -32,6 +32,13 @@
 		}
 	});
 	
+	// called from the add example popup-window, after the example was added
+	window.Exacomp.newExampleAdded = function() {
+		// reload form by submitting it
+		var $form = $('#assign-competencies');
+		$form.submit();
+	}
+	
 	$(function(){
 	
 		var $form = $('#assign-competencies');
