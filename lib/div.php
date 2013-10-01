@@ -648,6 +648,14 @@ function block_exacomp_print_header($role, $item_identifier, $sub_item_identifie
 			$item_name = get_string($nav_item_identifier);
 		$navlinks[] = array('name' => $item_name, 'link' => null, 'type' => 'misc');
 
+		if ($item_identifier == 'studenttabcompetencesoverview') {
+
+			// untermenue tabs hinzufuegen
+			$tabs_sub[] = new tabobject('all_competencies_per_course', $CFG->wwwroot . '/blocks/exacomp/view_competences.php?courseid=' . $COURSE->id, get_string("all_competencies_per_course", "block_exacomp"), '', true);
+			$tabs_sub[] = new tabobject('all_reached_for_all_courses', $CFG->wwwroot . '/blocks/exacomp/all_reached_competencies.php?courseid=' . $COURSE->id, get_string("all_reached_for_all_courses", "block_exacomp"), '', true);
+			$activetabsubs[] = $sub_item_identifier;
+		}
+
 		$navigation = build_navigation($navlinks);
 		if ($return){
 			$inhalt=print_header_simple($item_name, $COURSE->fullname, $navigation, "", "", true,'&nbsp;','',false,'',$return);

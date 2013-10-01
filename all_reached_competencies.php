@@ -59,7 +59,7 @@ $url = '/blocks/exacomp/all_reached_competencies.php?courseid=' . $courseid;
 $PAGE->set_url($url);
 $url = $CFG->wwwroot . $url;
 
-block_exacomp_print_header($role, 'all_reached_competencies');
+block_exacomp_print_header($role, 'studenttabcompetencesoverview', 'all_reached_for_all_courses');
 
 $students = array($USER);
 $levels = block_exacomp_get_competence_tree_all_reached_competencies_for_user();
@@ -68,19 +68,6 @@ $levels = block_exacomp_get_competence_tree_all_reached_competencies_for_user();
 <div class="exabis_competencies_lis">
 
 	<div class="exabis_comp_top_legend">
-		<div class="exabis_comp_top_legend">
-			<img src="pix/list_12x11.png"
-				alt=<?php echo get_string('activities', 'block_exacomp'); ?> />
-			<?php echo get_string('activities', 'block_exacomp'); ?>
-			- <img src="pix/folder_fill_12x12.png" alt="ePortfolio" /> ePortfolio
-			- <img src="pix/x_11x11.png"
-				alt="<?php echo get_string('noactivitiesyet', 'block_exacomp');?>" />
-			<?php echo get_string('noactivitiesyet', 'block_exacomp');?>
-			<?php if($role == "teacher") { ?>
-			- <img src="pix/upload_12x12.png" alt="Upload" />
-			<?php echo get_string('example_upload_header', 'block_exacomp');?>
-			<?php } ?>
-		</div>
 
 		<?php
 
@@ -147,37 +134,12 @@ $levels = block_exacomp_get_competence_tree_all_reached_competencies_for_user();
 			$columnCnt = 0;
 			foreach ($students as $student) {
 
-				echo '<td>';
+				echo '<td class="reached-info">';
 
 				$checkboxname = ($version) ? "dataexamples" : "data";
 
 				if ($descriptor->reached)
-					echo 'REACHED';
-
-				if ($stdicon = block_exacomp_get_student_icon($activities, $student,$courseid,$gradelib)) {
-					if($stdicon->actSubOccured)
-						echo '<span title="'.s($stdicon->text).'" class="exabis-tooltip">' . $stdicon->icon . '</span>';
-				}
-				if (block_exacomp_exaportexists()) {
-					if ($stdicon = block_exacomp_get_portfolio_icon($student, $descriptor->id)) {
-						if($role=="student")
-							$url = 'href="'.$CFG->wwwroot.'/blocks/exaport/view_items.php?courseid='.$courseid.'"';
-						elseif ($stdicon->submitted) {
-							$url = 'href="'.$CFG->wwwroot.'/blocks/exaport/shared_views.php?courseid='.$courseid.'&desc='.$descriptor->id.'&u='.$student->id.'"';
-						} else {
-							$url = '';
-						}
-
-						if ($url) {
-							echo '<a '.$url.' title="'.s($stdicon->text).'" class="exabis-tooltip">' . $stdicon->icon . '</a>';
-						} else {
-							echo '<span title="'.s($stdicon->text).'" class="exabis-tooltip">' . $stdicon->icon . '</span>';
-						}
-					}
-				}
-
-				if(isset($descriptor->evaluationData[$student->id]->compalreadyreached))
-					echo '<span title="'.s(get_string('compalreadyreached','block_exacomp')).'" class="exabis-tooltip"><img src="pix/info.png" /></span>';
+					echo '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/accept.png" height="16" width="16" alt="Reached Competence" />';
 
 				echo '</td>';
 			}
@@ -372,11 +334,6 @@ $levels = block_exacomp_get_competence_tree_all_reached_competencies_for_user();
 			?>
 		<div class="ec_td_mo_auto">
 
-			<form id="assign-competencies"
-				action="assign_competencies.php?action=save&courseid=<?php echo $courseid; ?>"
-				method="post">
-				<input type="hidden" name="open_row_groups"
-					value="<?php echo p(optional_param('open_row_groups', "", PARAM_TEXT)); ?>" />
 				<table class="exabis_comp_comp">
 					<?php
 					$rowgroup = 0;
@@ -391,9 +348,6 @@ $levels = block_exacomp_get_competence_tree_all_reached_competencies_for_user();
 
 					?>
 				</table>
-				<input name="btn_submit" type="submit"
-					value="<?php echo get_string('auswahl_speichern', 'block_exacomp'); ?>" />
-			</form>
 		</div>
 		<?php
 		}

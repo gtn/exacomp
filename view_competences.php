@@ -20,8 +20,7 @@ require_capability('block/exacomp:student', $context);
 $url = '/blocks/exacomp/view_competences.php?courseid=' . $courseid;
 $PAGE->set_url($url);
 $url = $CFG->wwwroot . $url;
-$identifier = "studenttabcompetencesoverview";
-block_exacomp_print_header("student", $identifier);
+block_exacomp_print_header("student", 'studenttabcompetencesoverview', 'all_competencies_per_course');
 echo '<script type="text/javascript" src="lib/wz_tooltip.js"></script>';
 
 
