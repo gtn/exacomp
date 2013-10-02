@@ -343,6 +343,11 @@ else
 						LEFT JOIN {block_exacomptaxonomies} tax ON e.taxid=tax.id
 						ORDER BY tax.title", array($descriptor->id));
 
+				foreach ($examples as $key=>$example) {
+					if (isset($example->creatorid) && ($example->creatorid != $USER->id && !array_key_exists($example->creatorid, $teachers)))
+						unset($examples[$key]);
+				}
+
 				if ($examples) {
 					$data->rowgroup++;
 					$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$rowgroup_class;
@@ -476,9 +481,6 @@ else
 
 		foreach($examples as $example) {
 			
-			if( isset($example->creatorid) && ($example->creatorid != $USER->id && !array_key_exists($example->creatorid, $teachers)))
-				continue;
-
 			$examplepadding = (get_config('exacomp','alternativedatamodel')) ? ($level-1)*35 : ($level-1)*20+35;
 			?>
 		<tr class="exabis_comp_aufgabe <?php echo $sub_rowgroup_class; ?>">
