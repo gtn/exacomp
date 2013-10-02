@@ -18,7 +18,9 @@ $string['teachertabcompetencegrid'] = 'competence grid';
 //Student
 $string['studenttabcompetences'] = 'overview of competencies';
 $string['studenttabcompetencesdetail'] = 'detailed view of competencies';
-$string['studenttabcompetencesoverview'] = 'all gained competencies';
+$string['studenttab_all_gained_competencies'] = 'all gained competencies';
+$string['studenttab_all_gained_competencies_course_based'] = 'all course-based competencies';
+$string['studenttab_all_gained_competencies_overall'] = 'overall view of competencies';
 $string['studenttabcompetenceprofile'] = 'competence profile';
 $string['studenttabcompetencesagenda'] = 'learning agenda';
 

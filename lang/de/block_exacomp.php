@@ -18,7 +18,9 @@ $string['teachertabcompetencegrid'] = 'Kompetenzraster';
 //Student
 $string['studenttabcompetences'] = 'Kompetenz-Gesamtansicht';
 $string['studenttabcompetencesdetail'] = 'Kompetenz-Detailansicht';
-$string['studenttabcompetencesoverview'] = 'Alle erworbenen Kompetenzen';
+$string['studenttab_all_gained_competencies'] = 'Alle erworbenen Kompetenzen';
+$string['studenttab_all_gained_competencies_course_based'] = 'Alle kursbasierten Kompetenzen';
+$string['studenttab_all_gained_competencies_overall'] = 'Gesamtkompetenzerwerb';
 $string['studenttabcompetenceprofile'] = 'Kompetenzprofil';
 $string['studenttabcompetencesagenda'] = 'Lernagenda';
 

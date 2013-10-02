@@ -17,10 +17,10 @@ require_login($courseid);
 $context = get_context_instance(CONTEXT_COURSE, $courseid);
 require_capability('block/exacomp:student', $context);
 
-$url = '/blocks/exacomp/view_competences.php?courseid=' . $courseid;
+$url = '/blocks/exacomp/all_gained_competencies_course_based.php?courseid=' . $courseid;
 $PAGE->set_url($url);
 $url = $CFG->wwwroot . $url;
-block_exacomp_print_header("student", 'studenttabcompetencesoverview', 'all_competencies_per_course');
+block_exacomp_print_header("student", 'studenttab_all_gained_competencies', 'studenttab_all_gained_competencies_course_based');
 echo '<script type="text/javascript" src="lib/wz_tooltip.js"></script>';
 
 

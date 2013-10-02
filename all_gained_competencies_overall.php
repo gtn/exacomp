@@ -55,11 +55,11 @@ if (has_capability('block/exacomp:teacher', $context)) {
 	$role = "student";
 }
 
-$url = '/blocks/exacomp/all_reached_competencies.php?courseid=' . $courseid;
+$url = '/blocks/exacomp/all_gained_competencies_course_based.php?courseid=' . $courseid;
 $PAGE->set_url($url);
 $url = $CFG->wwwroot . $url;
 
-block_exacomp_print_header($role, 'studenttabcompetencesoverview', 'all_reached_for_all_courses');
+block_exacomp_print_header($role, 'studenttab_all_gained_competencies', 'studenttab_all_gained_competencies_overall');
 
 $students = array($USER);
 $levels = block_exacomp_get_competence_tree_all_reached_competencies_for_user();
@@ -147,6 +147,7 @@ $levels = block_exacomp_get_competence_tree_all_reached_competencies_for_user();
 		</tr>
 		<?php 
 
+			/*
 		foreach($examples as $example) {
 
 			//skip custom examples from other courses
@@ -178,7 +179,6 @@ $levels = block_exacomp_get_competence_tree_all_reached_competencies_for_user();
 				?>
 			</td>
 			<?php 
-			/*
 			if(!get_config('exacomp','alternativedatamodel')) {
 				$columnCnt = 0;
 				foreach($students as $student)
@@ -241,11 +241,11 @@ $levels = block_exacomp_get_competence_tree_all_reached_competencies_for_user();
 					}
 				}
 			}
-			*/
 			?>
 		</tr>
 		<?php
 		}
+			*/
 			}
 		}
 

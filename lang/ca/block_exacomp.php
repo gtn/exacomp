@@ -18,7 +18,7 @@ $string['teachertabcompetencegrid'] = 'competence grid'; //englisch
 //Student
 $string['studenttabcompetences'] = 'Resum de les competències';
 $string['studenttabcompetencesdetail'] = 'Vista detallada de les competències';
-$string['studenttabcompetencesoverview'] = 'Totes les competències assolides';
+$string['studenttab_all_gained_competencies'] = 'Totes les competències assolides';
 $string['studenttabcompetenceprofile'] = 'Perfil competencial';
 $string['studenttabcompetencesagenda'] = 'learning agenda'; //englisch
 

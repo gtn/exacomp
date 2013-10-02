@@ -633,7 +633,7 @@ function block_exacomp_print_header($role, $item_identifier, $sub_item_identifie
 		$tabs[] = new tabobject('studenttabcompetences', $CFG->wwwroot . '/blocks/exacomp/assign_competencies.php?courseid=' . $COURSE->id, get_string("studenttabcompetences", "block_exacomp"), '', true);
 		if ($courseSettings->uses_activities)
 			$tabs[] = new tabobject('studenttabcompetencesdetail', $CFG->wwwroot . '/blocks/exacomp/evaluate_competences.php?courseid=' . $COURSE->id, get_string("studenttabcompetencesdetail", "block_exacomp"), '', true);
-		$tabs[] = new tabobject('studenttabcompetencesoverview', $CFG->wwwroot . '/blocks/exacomp/view_competences.php?courseid=' . $COURSE->id, get_string("studenttabcompetencesoverview", "block_exacomp"), '', true);
+		$tabs[] = new tabobject('studenttab_all_gained_competencies', $CFG->wwwroot . '/blocks/exacomp/all_gained_competencies_course_based.php?courseid=' . $COURSE->id, get_string("studenttab_all_gained_competencies", "block_exacomp"), '', true);
 		$tabs[] = new tabobject('studenttabcompetenceprofile', $CFG->wwwroot . '/blocks/exacomp/competence_profile.php?courseid=' . $COURSE->id, get_string("studenttabcompetenceprofile", "block_exacomp"), '', true);
 		if(get_config("exacomp","alternativedatamodel"))
 			$tabs[] = new tabobject('studenttabcompetencesagenda', $CFG->wwwroot . '/blocks/exacomp/learningagenda.php?courseid=' . $COURSE->id, get_string("studenttabcompetencesagenda", "block_exacomp"), '', true);
@@ -648,11 +648,11 @@ function block_exacomp_print_header($role, $item_identifier, $sub_item_identifie
 			$item_name = get_string($nav_item_identifier);
 		$navlinks[] = array('name' => $item_name, 'link' => null, 'type' => 'misc');
 
-		if ($item_identifier == 'studenttabcompetencesoverview') {
+		if ($item_identifier == 'studenttab_all_gained_competencies') {
 
 			// untermenue tabs hinzufuegen
-			$tabs_sub[] = new tabobject('all_competencies_per_course', $CFG->wwwroot . '/blocks/exacomp/view_competences.php?courseid=' . $COURSE->id, get_string("all_competencies_per_course", "block_exacomp"), '', true);
-			$tabs_sub[] = new tabobject('all_reached_for_all_courses', $CFG->wwwroot . '/blocks/exacomp/all_reached_competencies.php?courseid=' . $COURSE->id, get_string("all_reached_for_all_courses", "block_exacomp"), '', true);
+			$tabs_sub[] = new tabobject('studenttab_all_gained_competencies_course_based', $CFG->wwwroot . '/blocks/exacomp/all_gained_competencies_course_based.php?courseid=' . $COURSE->id, get_string("studenttab_all_gained_competencies_course_based", "block_exacomp"), '', true);
+			$tabs_sub[] = new tabobject('studenttab_all_gained_competencies_overall', $CFG->wwwroot . '/blocks/exacomp/all_gained_competencies_overall.php?courseid=' . $COURSE->id, get_string("studenttab_all_gained_competencies_overall", "block_exacomp"), '', true);
 			$activetabsubs[] = $sub_item_identifier;
 		}
 
