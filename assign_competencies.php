@@ -475,12 +475,11 @@ else
 		<?php 
 
 		foreach($examples as $example) {
-
-			//skip custom examples from other courses
-			if( (!array_key_exists($example->creatorid, $teachers)) && isset($example->creatorid))
+			
+			if( isset($example->creatorid) && ($example->creatorid != $USER->id && !array_key_exists($example->creatorid, $teachers)))
 				continue;
 
-			$examplepadding = (get_config('exacomp','alternativedatamodel')) ? ($level-1)*35 : $examplepadding = ($level-1)*20+35;
+			$examplepadding = (get_config('exacomp','alternativedatamodel')) ? ($level-1)*35 : ($level-1)*20+35;
 			?>
 		<tr class="exabis_comp_aufgabe <?php echo $sub_rowgroup_class; ?>">
 			<td></td>
@@ -661,11 +660,11 @@ else
 				}
 
 				if ($level == 1) {
-					$rowgroup_class .= ' highlight';
+					//$rowgroup_class .= ' highlight';
 				}
 				if(!get_config('exacomp','alternativedatamodel')) {
 					?>
-		<tr class="exabis_comp_teilcomp <?php echo $this_rowgroup_class; ?>">
+		<tr class="exabis_comp_teilcomp <?php echo $this_rowgroup_class; ?> highlight">
 			<td><?php echo $output_id; ?></td>
 			<td class="rowgroup-arrow" style="padding-left: <?php echo ($level-1)*20+12; ?>px"><div
 					class="desctitle">
