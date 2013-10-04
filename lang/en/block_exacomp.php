@@ -47,6 +47,7 @@ $string['doimport_own'] = 'import individual descriptors';
 $string['importsuccess'] = 'data was successfully imported!';
 $string['importsuccess_own'] = 'individual data was imported successfully!';
 $string['importfail'] = 'an error has occured during import';
+$string['noxmlfile'] = 'There is no data available to import. Please visit <a href="https://github.com/gtn/edustandards">https://github.com/gtn/edustandards</a> to download the required outcomes to the blocks xml directory.';
 
 $string['activitysuccess'] = 'changes were successful';
 

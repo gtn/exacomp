@@ -541,5 +541,29 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			}
 		}
 	}
+	
+	if ($oldversion < 2013100400) {
+	
+		// Define field sourceid to be added to block_exacompniveaus
+        $table = new xmldb_table('block_exacompniveaus');
+        $field = new xmldb_field('sourceid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'parent');
+
+        // Conditionally launch add field sourceid
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+	
+        // Define field source to be added to block_exacompniveaus
+        $table = new xmldb_table('block_exacompniveaus');
+        $field = new xmldb_field('source', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '1', 'sourceid');
+        
+        // Conditionally launch add field source
+        if (!$dbman->field_exists($table, $field)) {
+        	$dbman->add_field($table, $field);
+        }
+        
+		// exacomp savepoint reached
+		upgrade_block_savepoint(true, 2013100400, 'exacomp');
+	}
 	return $result;
 }

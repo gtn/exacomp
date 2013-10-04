@@ -4,9 +4,14 @@ define("DEFAULT_SOURCE", 1);
 define("CUSTOM_DESCRIPTORS_SOURCE", 2);
 define("CUSTOM_EXAMPLES_SOURCE", 3);
 
+function block_exacomp_xml_exists() {
+	global $CFG;
+
+	return file_exists($CFG->dirroot."/blocks/exacomp/xml/exacomp_data.xml");
+}
 function block_exacomp_delete_custom_example($delete) {
 	global $DB,$USER;
-	
+
 	$example = $DB->get_record('block_exacompexamples', array('id'=>$delete));
 	if($example && $example->creatorid == $USER->id) {
 		$DB->delete_records('block_exacompexamples', array('id' => $delete));
@@ -904,8 +909,9 @@ function block_exacomp_get_activity_icon($descriptorid) {
 }
 
 function block_exacomp_get_student_icon($activities, $student,$courseid,$gradelib=false) {
-	
+
 	global $DB, $CFG;
+	require_once $CFG->dirroot."/question/editlib.php";
 	$count = false;
 	$countquiz = false;
 	$actSubOccured = false; 	//this becomes true if an activity occures for which a submission is possible, otherwise there should be no icon
@@ -920,9 +926,12 @@ function block_exacomp_get_student_icon($activities, $student,$courseid,$gradeli
 		$act = get_coursemodule_from_id($mod->name, $activity->id);
 		if(!$act)
 			continue;
-
-		if ($mod->name == "assign" || $mod->name == "quiz")
-			$actSubOccured = true;
+	
+		if ($mod->name == "assign" || $mod->name == "quiz") {
+			if($mod->name == "assign" && $DB->get_field("assign","nosubmissions",array("id"=>$act->instance)) == 0)
+				$actSubOccured = true;
+		}
+		
 			
 		//$submission = $DB->get_record('assignment_submissions', array("userid" => $student->id, "assignment" => $act->instance));
 		$query = ($mod->name === "assign") ? "SELECT s.*, a.grade as agrade FROM {assign_submission} s INNER JOIN {assign} a ON s.assignment=a.id WHERE a.id=? AND s.userid=?" : "SELECT s.*, a.grade as agrade FROM {assignment_submissions} s INNER JOIN {assignment} a ON s.assignment=a.id WHERE a.id=? AND s.userid=?";
@@ -1091,7 +1100,7 @@ function block_exacomp_get_ladebalken($courseid, $userid, $gesamt,$anteil=null,$
 		$avg = 0;
 	else if ($gesamtpossible==0) $avg = round($avg / ($gesamt*$countstudents) * 100,0); //$avg=positiv bewertete, $gesamt*$countstudents=anzahl der descriptoren mal anzahl der schüler =anzahl der möglichen
 	else $avg = round($avg / ($gesamtpossible) * 100,0);  //$avg=positiv bewertete, $gesamtpossible=anzahl der möglichen
-	
+
 	return "<div class='ladebalken' style=\"background:url('pix/balkenleer.png') no-repeat left center;\">
 	<div class='lbmittelwertcontainer'><div class='lbmittelwert' style='width: ".$avg."%;'></div></div>
 	<div style=\"background:url('pix/balkenfull.png') no-repeat left center; height:27px; width:".$percent."%;\"></div></div>";
@@ -1102,7 +1111,7 @@ function block_exacomp_get_average_course_competences($courseid, $grading,$role=
 	$gut=ceil($grading/2);
 	//$sql = "SELECT avg(count) as a FROM (SELECT count(id) as count FROM {block_exacompdescuser} WHERE courseid=? AND role=? AND wert<=? GROUP BY userid) as avgvalues";
 	//return $DB->get_record_sql($sql,array($courseid,$role,$gut));
-	
+
 	//if($courseid) $grading=getgrading($courseid);
 	$query='select count(user.id) as a from {block_exacompdescuser} user where courseid=? and role=? and wert>=? and descid IN
 	(SELECT d.id FROM
@@ -1120,7 +1129,7 @@ function block_exacomp_get_average_course_competences($courseid, $grading,$role=
 function block_exacomp_get_descriptors_of_all_courses($onlywithactivity=1) {
 	//kurse holen
 	global $USER;
-	
+
 	//$courses = enrol_get_my_courses();
 	$courses = enrol_get_all_users_courses($USER->id);
 	$descs = array();
@@ -1137,27 +1146,27 @@ function block_exacomp_get_competence_tree_for_test($courseid) {
 	global $DB;
 
 	$allSubjects = $DB->get_records_sql('
-		SELECT s.id, s.title, "subject" as type
-		FROM {block_exacompsubjects} s
-		JOIN {block_exacomptopics} t ON t.subjid = s.id
-		LEFT JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
-		GROUP BY s.id
-		ORDER BY s.stid, s.title
-		', array($courseid));
-	
+			SELECT s.id, s.title, "subject" as type
+			FROM {block_exacompsubjects} s
+			JOIN {block_exacomptopics} t ON t.subjid = s.id
+			LEFT JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
+			GROUP BY s.id
+			ORDER BY s.stid, s.title
+			', array($courseid));
+
 	$allTopics = $DB->get_records_sql('
-		SELECT t.id, t.title, t.parentid, t.subjid, "topic" as type
-		FROM {block_exacompsubjects} s
-		JOIN {block_exacomptopics} t ON t.subjid = s.id
-		LEFT JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
-		GROUP BY t.id
-		ORDER BY t.sorting
-		', array($courseid));
-	
+			SELECT t.id, t.title, t.parentid, t.subjid, "topic" as type
+			FROM {block_exacompsubjects} s
+			JOIN {block_exacomptopics} t ON t.subjid = s.id
+			LEFT JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
+			GROUP BY t.id
+			ORDER BY t.sorting
+			', array($courseid));
+
 	$subjects = array();
 
 	foreach ($allTopics as $topic) {
-	
+
 		// find all parent topics
 		$found = true;
 		for ($i = 0; $i < 10; $i++) {
@@ -1167,10 +1176,10 @@ function block_exacomp_get_competence_tree_for_test($courseid) {
 					$found = false;
 					break;
 				}
-				
+
 				// found it
 				$allTopics[$topic->parentid]->subs[$topic->id] = $topic;
-				
+
 				// go up
 				$topic = $allTopics[$topic->parentid];
 			} else {
@@ -1179,21 +1188,21 @@ function block_exacomp_get_competence_tree_for_test($courseid) {
 					$found = false;
 					break;
 				}
-				
+
 				// found: add it to the subject result
 				$subject = $allSubjects[$topic->subjid];
 				$subject->subs[$topic->id] = $topic;
 				$subjects[$topic->subjid] = $subject;
-				
+
 				// top found
 				break;
 			}
 		}
-		
+
 		// if parent not found (error), skip it
 		if (!$found) continue;
 	}
-	
+
 	return $subjects;
 }
 
@@ -1201,18 +1210,18 @@ function block_exacomp_get_competence_tree_for_subject($courseid, $subjectid) {
 	global $DB;
 
 	$allTopics = $DB->get_records_sql('
-		SELECT t.id, t.title, t.parentid, t.subjid, "topic" as type, COUNT(topmm.topicid) AS checked
-		FROM {block_exacomptopics} t
-		LEFT JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
-		WHERE t.subjid = ?
-		GROUP BY t.id
-		ORDER BY t.sorting
-		', array($courseid, $subjectid));
-	
+			SELECT t.id, t.title, t.parentid, t.subjid, "topic" as type, COUNT(topmm.topicid) AS checked
+			FROM {block_exacomptopics} t
+			LEFT JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
+			WHERE t.subjid = ?
+			GROUP BY t.id
+			ORDER BY t.sorting
+			', array($courseid, $subjectid));
+
 	$topics = array();
 
 	foreach ($allTopics as $topic) {
-	
+
 		// find all parent topics
 		$found = true;
 		for ($i = 0; $i < 10; $i++) {
@@ -1222,71 +1231,71 @@ function block_exacomp_get_competence_tree_for_subject($courseid, $subjectid) {
 					$found = false;
 					break;
 				}
-				
+
 				// found it
 				$allTopics[$topic->parentid]->subs[$topic->id] = $topic;
-				
+
 				// go up
 				$topic = $allTopics[$topic->parentid];
 			} else {
 				// parent is subject, find it
 				$topics[$topic->id] = $topic;
-				
+
 				// top found
 				break;
 			}
 		}
-		
+
 		// if parent not found (error), skip it
 		if (!$found) continue;
 	}
-	
+
 	return $topics;
 }
 
 function block_exacomp_get_competence_tree_for_activity_selection($courseid,$niveaufilter = null) {
-	
+
 	global $DB;
 
 	$allSubjects = $DB->get_records_sql('
-		SELECT s.id, s.title, "subject" as type
-		FROM {block_exacompsubjects} s
-		JOIN {block_exacomptopics} t ON t.subjid = s.id
-		JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
-		GROUP BY s.id
-		ORDER BY s.stid, s.title
-		', array($courseid));
-	
+			SELECT s.id, s.title, "subject" as type
+			FROM {block_exacompsubjects} s
+			JOIN {block_exacomptopics} t ON t.subjid = s.id
+			JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
+			GROUP BY s.id
+			ORDER BY s.stid, s.title
+			', array($courseid));
+
 	$allTopics = $DB->get_records_sql('
-		SELECT t.id, t.title, t.parentid, t.subjid, "topic" as type
-		FROM {block_exacompsubjects} s
-		JOIN {block_exacomptopics} t ON t.subjid = s.id
-		ORDER BY t.sorting
-		', array($courseid));
-	
+			SELECT t.id, t.title, t.parentid, t.subjid, "topic" as type
+			FROM {block_exacompsubjects} s
+			JOIN {block_exacomptopics} t ON t.subjid = s.id
+			ORDER BY t.sorting
+			', array($courseid));
+
 	$allDescriptors = $DB->get_records_sql('
-		SELECT d.id, d.title, t.id AS topicid, "descriptor" as type
-		FROM {block_exacompsubjects} s
-		JOIN {block_exacomptopics} t ON t.subjid = s.id
-		JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
-		JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.topicid=t.id
-		JOIN {block_exacompdescriptors} d ON desctopmm.descrid=d.id 
+			SELECT d.id, d.title, t.id AS topicid, "descriptor" as type
+			FROM {block_exacompsubjects} s
+			JOIN {block_exacomptopics} t ON t.subjid = s.id
+			JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
+			JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.topicid=t.id
+			JOIN {block_exacompdescriptors} d ON desctopmm.descrid=d.id
 			'.(!$niveaufilter ? '' : '
 					WHERE d.niveauid IN ('.implode(",",$niveaufilter).')
 					').'
 			GROUP BY d.id
-		ORDER BY d.sorting
-		', array($courseid));
-	
+			ORDER BY d.sorting
+			', array($courseid));
+
 	$subjects = array();
 
 	foreach ($allDescriptors as $descriptor) {
-	
+
 		// get descriptor topic
 		if (empty($allTopics[$descriptor->topicid])) continue;
 		$topic = $allTopics[$descriptor->topicid];
 		$topic->descriptors[] = $descriptor;
-		
+
 		// find all parent topics
 		$found = true;
 		for ($i = 0; $i < 10; $i++) {
@@ -1296,10 +1305,10 @@ function block_exacomp_get_competence_tree_for_activity_selection($courseid,$niv
 					$found = false;
 					break;
 				}
-				
+
 				// found it
 				$allTopics[$topic->parentid]->subs[$topic->id] = $topic;
-				
+
 				// go up
 				$topic = $allTopics[$topic->parentid];
 			} else {
@@ -1308,21 +1317,21 @@ function block_exacomp_get_competence_tree_for_activity_selection($courseid,$niv
 					$found = false;
 					break;
 				}
-				
+
 				// found: add it to the subject result
 				$subject = $allSubjects[$topic->subjid];
 				$subject->subs[$topic->id] = $topic;
 				$subjects[$topic->subjid] = $subject;
-				
+
 				// top found
 				break;
 			}
 		}
-		
+
 		// if parent not found (error), skip it
 		if (!$found) continue;
 	}
-	
+
 	return $subjects;
 }
 
@@ -1330,46 +1339,46 @@ function block_exacomp_get_competence_tree_for_course($courseid) {
 	global $DB;
 
 	$allSubjects = $DB->get_records_sql('
-		SELECT s.id, s.title, "subject" as type
-		FROM {block_exacompsubjects} s
-		JOIN {block_exacomptopics} t ON t.subjid = s.id
-		JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
-		GROUP BY s.id
-		ORDER BY s.stid, s.title
-		', array($courseid));
-	
+			SELECT s.id, s.title, "subject" as type
+			FROM {block_exacompsubjects} s
+			JOIN {block_exacomptopics} t ON t.subjid = s.id
+			JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
+			GROUP BY s.id
+			ORDER BY s.stid, s.title
+			', array($courseid));
+
 	$allTopics = $DB->get_records_sql('
-		SELECT t.id, t.title, t.parentid, t.subjid, "topic" as type
-		FROM {block_exacompsubjects} s
-		JOIN {block_exacomptopics} t ON t.subjid = s.id
-		ORDER BY t.sorting
-		', array($courseid));
-	
+			SELECT t.id, t.title, t.parentid, t.subjid, "topic" as type
+			FROM {block_exacompsubjects} s
+			JOIN {block_exacomptopics} t ON t.subjid = s.id
+			ORDER BY t.sorting
+			', array($courseid));
+
 	$allDescriptors = $DB->get_records_sql('
-		SELECT d.id, d.title, t.id AS topicid, "descriptor" as type
-		FROM {block_exacompsubjects} s
-		JOIN {block_exacomptopics} t ON t.subjid = s.id
-		JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
-		JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.topicid=t.id
-		JOIN {block_exacompdescriptors} d ON desctopmm.descrid=d.id
-		'.(block_exacomp_coursesettings()->show_all_descriptors ? '' : '
-				-- only show active ones
-				JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid
-				JOIN {course_modules} a ON da.activityid=a.id AND a.course='.$courseid.'
-				').'
-		GROUP BY d.id
-		ORDER BY d.sorting
-		', array($courseid));
-	
+			SELECT d.id, d.title, t.id AS topicid, "descriptor" as type
+			FROM {block_exacompsubjects} s
+			JOIN {block_exacomptopics} t ON t.subjid = s.id
+			JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
+			JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.topicid=t.id
+			JOIN {block_exacompdescriptors} d ON desctopmm.descrid=d.id
+			'.(block_exacomp_coursesettings()->show_all_descriptors ? '' : '
+					-- only show active ones
+					JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid
+					JOIN {course_modules} a ON da.activityid=a.id AND a.course='.$courseid.'
+					').'
+			GROUP BY d.id
+			ORDER BY d.sorting
+			', array($courseid));
+
 	$subjects = array();
 
 	foreach ($allDescriptors as $descriptor) {
-	
+
 		// get descriptor topic
 		if (empty($allTopics[$descriptor->topicid])) continue;
 		$topic = $allTopics[$descriptor->topicid];
 		$topic->descriptors[] = $descriptor;
-		
+
 		// find all parent topics
 		$found = true;
 		for ($i = 0; $i < 10; $i++) {
@@ -1379,10 +1388,10 @@ function block_exacomp_get_competence_tree_for_course($courseid) {
 					$found = false;
 					break;
 				}
-				
+
 				// found it
 				$allTopics[$topic->parentid]->subs[$topic->id] = $topic;
-				
+
 				// go up
 				$topic = $allTopics[$topic->parentid];
 			} else {
@@ -1391,17 +1400,17 @@ function block_exacomp_get_competence_tree_for_course($courseid) {
 					$found = false;
 					break;
 				}
-				
+
 				// found: add it to the subject result
 				$subject = $allSubjects[$topic->subjid];
 				$subject->subs[$topic->id] = $topic;
 				$subjects[$topic->subjid] = $subject;
-				
+
 				// top found
 				break;
 			}
 		}
-		
+
 		// if parent not found (error), skip it
 		if (!$found) continue;
 
@@ -1415,22 +1424,22 @@ function block_exacomp_get_competence_tree_for_course($courseid) {
 		/*foreach($descriptor->evaluationData as $exaeval) {
 			$exaeval->student_evaluation = $DB->get_field('block_exacompdescuser', 'wert', array("userid"=>$exaeval->userid,"descid"=>$exaeval->descid,"role"=>0,"courseid"=>$exaeval->courseid));
 		}*/
-		
+
 		$studentEvaluationData = $DB->get_records_sql("
 				SELECT deu.userid, u.firstname, u.lastname, deu.*, deu.wert as student_evaluation, 0 as teacher_evaluation
 				FROM {block_exacompdescuser} deu
 				LEFT JOIN {user} u ON u.id=deu.userid
 				WHERE deu.courseid=? AND deu.descid=? AND deu.role = 0
 				", array($courseid, $descriptor->id));
-		
+
 		foreach($studentEvaluationData as $studentEval) {
 			if(isset($descriptor->evaluationData[$studentEval->userid]))
 				$descriptor->evaluationData[$studentEval->userid]->student_evaluation = $studentEval->student_evaluation;
-			
-			else 
+				
+			else
 				$descriptor->evaluationData[$studentEval->userid] = $studentEval;
 		}
-		
+
 		//Already reached competencies from other courses
 		$checkReached = $DB->get_records_sql("
 				SELECT deu.userid, u.firstname, u.lastname, deu.*, 1 as compalreadyreached, 0 as student_evaluation, 0 as teacher_evaluation
@@ -1438,7 +1447,7 @@ function block_exacomp_get_competence_tree_for_course($courseid) {
 				LEFT JOIN {user} u ON u.id=deu.userid
 				WHERE deu.courseid!=? AND deu.descid=? AND deu.role = 1
 				", array($courseid, $descriptor->id));
-		
+
 		$compReachedData = array();
 		//go trough all assessments and check if competence is reached
 		foreach($checkReached as $check){
@@ -1446,16 +1455,16 @@ function block_exacomp_get_competence_tree_for_course($courseid) {
 			if($check->wert>=($settings->grading/2))
 				$compReachedData[$check->userid] = $check;
 		}
-		
+
 		foreach($compReachedData as $compReached) {
 			if(isset($descriptor->evaluationData[$compReached->userid]))
 				$descriptor->evaluationData[$compReached->userid]->compalreadyreached = 1;
 			else
 				$descriptor->evaluationData[$compReached->userid] = $compReached;
 		}
-		
+
 	}
-	
+
 	return $subjects;
 }
 
@@ -1463,7 +1472,7 @@ function block_exacomp_get_competence_tree_for_LIS($topicid) {
 	global $DB, $COURSE;
 
 	$courseid = $COURSE->id;
-	
+
 	$allSubjects = $DB->get_records_sql('
 			SELECT s.id, s.title, "subject" as type
 			FROM {block_exacompsubjects} s
@@ -1559,7 +1568,7 @@ function block_exacomp_get_competence_tree_for_LIS($topicid) {
 		foreach($studentEvaluationData as $studentEval) {
 			if(isset($descriptor->evaluationData[$studentEval->userid]))
 				$descriptor->evaluationData[$studentEval->userid]->student_evaluation = $studentEval->student_evaluation;
-				
+
 			else
 				$descriptor->evaluationData[$studentEval->userid] = $studentEval;
 		}
@@ -1588,53 +1597,53 @@ function block_exacomp_get_competence_tree_all_reached_competencies_for_user() {
 	global $DB, $USER;
 
 	$allSubjects = $DB->get_records_sql('
-		SELECT s.id, s.title, "subject" as type
-		FROM {block_exacompsubjects} s
-		JOIN {block_exacomptopics} t ON t.subjid = s.id
-		JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id
-		GROUP BY s.id
-		ORDER BY s.stid, s.title
-		');
-	
+			SELECT s.id, s.title, "subject" as type
+			FROM {block_exacompsubjects} s
+			JOIN {block_exacomptopics} t ON t.subjid = s.id
+			JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id
+			GROUP BY s.id
+			ORDER BY s.stid, s.title
+			');
+
 	$allTopics = $DB->get_records_sql('
-		SELECT t.id, t.title, t.parentid, t.subjid, "topic" as type
-		FROM {block_exacompsubjects} s
-		JOIN {block_exacomptopics} t ON t.subjid = s.id
-		ORDER BY t.sorting
-		');
-	
+			SELECT t.id, t.title, t.parentid, t.subjid, "topic" as type
+			FROM {block_exacompsubjects} s
+			JOIN {block_exacomptopics} t ON t.subjid = s.id
+			ORDER BY t.sorting
+			');
+
 	$allDescriptors = $DB->get_records_sql('
-		SELECT d.id, d.title, t.id AS topicid, "descriptor" as type, 1 as reached
-		FROM {block_exacompsubjects} s
-		JOIN {block_exacomptopics} t ON t.subjid = s.id
-		JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id
-		JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.topicid=t.id
-		JOIN {block_exacompdescriptors} d ON desctopmm.descrid=d.id
-		
-		-- get user evaluation
-		JOIN {block_exacompdescuser} deu ON deu.userid=? AND deu.descid=d.id AND deu.role = 1
-		-- get course settings
-		LEFT JOIN {block_exacompsettings} settings ON settings.course=deu.courseid
-		-- where no settings: default 1
-		WHERE
+			SELECT d.id, d.title, t.id AS topicid, "descriptor" as type, 1 as reached
+			FROM {block_exacompsubjects} s
+			JOIN {block_exacomptopics} t ON t.subjid = s.id
+			JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id
+			JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.topicid=t.id
+			JOIN {block_exacompdescriptors} d ON desctopmm.descrid=d.id
+
+			-- get user evaluation
+			JOIN {block_exacompdescuser} deu ON deu.userid=? AND deu.descid=d.id AND deu.role = 1
+			-- get course settings
+			LEFT JOIN {block_exacompsettings} settings ON settings.course=deu.courseid
+			-- where no settings: default 1
+			WHERE
 			-- where settings are set and grade is reached
 			((settings.grading IS NOT NULL AND deu.wert >= (settings.grading)/2) OR
 			-- or where not settings and grade is reached
-			 settings.grading IS NULL AND deu.wert >= 1)
-		
-		GROUP BY d.id
-		ORDER BY d.sorting
-		', array($USER->id));
+			settings.grading IS NULL AND deu.wert >= 1)
+
+			GROUP BY d.id
+			ORDER BY d.sorting
+			', array($USER->id));
 
 	$subjects = array();
 
 	foreach ($allDescriptors as $descriptor) {
-	
+
 		// get descriptor topic
 		if (empty($allTopics[$descriptor->topicid])) continue;
 		$topic = $allTopics[$descriptor->topicid];
 		$topic->descriptors[] = $descriptor;
-		
+
 		// find all parent topics
 		$found = true;
 		for ($i = 0; $i < 10; $i++) {
@@ -1644,10 +1653,10 @@ function block_exacomp_get_competence_tree_all_reached_competencies_for_user() {
 					$found = false;
 					break;
 				}
-				
+
 				// found it
 				$allTopics[$topic->parentid]->subs[$topic->id] = $topic;
-				
+
 				// go up
 				$topic = $allTopics[$topic->parentid];
 			} else {
@@ -1656,21 +1665,21 @@ function block_exacomp_get_competence_tree_all_reached_competencies_for_user() {
 					$found = false;
 					break;
 				}
-				
+
 				// found: add it to the subject result
 				$subject = $allSubjects[$topic->subjid];
 				$subject->subs[$topic->id] = $topic;
 				$subjects[$topic->subjid] = $subject;
-				
+
 				// top found
 				break;
 			}
 		}
-		
+
 		// if parent not found (error), skip it
 		if (!$found) continue;
 	}
-	
+
 	return $subjects;
 }
 
@@ -1871,7 +1880,7 @@ function block_exacomp_competence_reached($descid,$userid,$courseid,$grading) {
 		$where="courseid=".$courseid." AND wert>=".$gut." AND role=1 AND descid=".$descid." AND userid=".$userid;
 	else
 		$where="courseid=".$courseid." AND role=1 AND descid=".$descid." AND userid=".$userid;
-		
+
 	if ($DB->get_record_select('block_exacompdescuser',$where)) return true;
 	else return false;
 	//return ($DB->get_record('block_exacompdescuser',array("courseid"=>$courseid,"wert"=>1,"role"=>1,"descid"=>$descid,"userid"=>$userid))) ? true : false;
@@ -1958,7 +1967,7 @@ function block_exacomp_get_competence_tables($courses) {
 	foreach ($courses as $course) {
 		$descriptors = $course->descriptors;
 		if ($descriptors) {
-				
+
 			if($profilesettings && !block_exacomp_check_profile_settings($USER->id,"exacomp",$course->id))
 				continue;
 			$exacomp .= block_exacomp_get_table_heading($course->fullname);

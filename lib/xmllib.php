@@ -153,10 +153,28 @@ function block_exacomp_xml_insert_skill($value,$source) {
 }
 
 function block_exacomp_xml_insert_niveau($value,$source) {
+	
 	global $DB;
-	$sql='INSERT INTO {block_exacompniveaus} (sorting,title,parent) VALUES('.$value->sorting.',\''.$value->title.'\','.$value->parent_niveau.')';
-	//$DB->insert_record('block_exacompniveaus', array("parent"=>1,"title"=>"test","sorting"=>123));
-	$DB->Execute($sql);
+	
+	$new_value = new stdClass();
+	$new_value->uid = (int)$value->uid;
+	$new_value->title = (string)$value->title;
+	$new_value->sorting = (int)$value->sorting;
+	$new_value->parent = (int)$value->parent_niveau;
+	unset($value);
+	$value = $new_value;
+	
+	$niveau = $DB->get_record('block_exacompniveaus', array("sourceid" => $value->uid, "source"=>$source));
+	
+	if($niveau) {
+		$niveau->title = $value->title;
+		$niveau->parent = $value->parent;
+		$DB->update_record('block_exacompniveaus', $niveau);
+	} else {
+		$value->sourceid = $value->uid;
+		$value->source = $source;
+		$DB->insert_record('block_exacompniveaus', $value);
+	}
 }
 
 function block_exacomp_xml_insert_taxonomie($value,$source) {
@@ -326,6 +344,9 @@ function block_exacomp_xml_insert_descriptor($value,$source) {
 	unset($value);
 	$value = $new_value;
 
+	$niveauid = $DB->get_field('block_exacompniveaus', 'id', array('sourceid'=>$value->niveauid,'source'=>$source));
+	$value->niveauid = ($niveauid) ? $niveauid : 0;
+	
 	$desc = $DB->get_record('block_exacompdescriptors', array("sourceid" => $value->uid,"source"=>$source));
 	if ($desc) {
 		//update
@@ -625,11 +646,7 @@ function block_exacomp_xml_do_import($file = null, $source = 1, $cron = 0) {
 						}
 						block_exacomp_xml_insert_skill($table,$source);
 					}
-					if ($name == "block_exacompniveaus" && $source==1) {
-						if ($niveaus == 0) {
-							block_exacomp_xml_truncate($name);
-							$niveaus = 1;
-						}
+					if ($name == "block_exacompniveaus") {
 						block_exacomp_xml_insert_niveau($table,$source);
 					}
 					if ($name == "block_exacomptaxonomies" && $source==1) {
