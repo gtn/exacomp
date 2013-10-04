@@ -17,7 +17,7 @@
 
 $plugin->version = 2013100400;
 $plugin->maturity  = MATURITY_RC;
-$plugin->release  = "1.0";
+$plugin->release  = "1.1";
 $plugin->requires = 2011033005.06;
 $plugin->cron = 259200; //259200sec = 3 days
 
