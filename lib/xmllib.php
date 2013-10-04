@@ -721,7 +721,11 @@ function block_exacomp_xml_do_import($file = null, $source = 1, $cron = 0) {
 	}
 	return false;
 }
-
+function block_exacomp_xml_exists() {
+	global $CFG;
+	
+	return file_exists($CFG->wwwroot."/blocks/exacomp/xml/exacomp_data.xml");
+}
 function block_exacomp_xml_check_import() {
 	global $DB;
 	$check = $DB->get_records('block_exacompdescriptors');
