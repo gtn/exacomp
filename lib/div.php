@@ -61,7 +61,7 @@ function spaltenbrowser($anz, $spalten) {
 function block_exacomp_get_examplelink($sourceid){
 	global $DB,$CFG;
 
-	$descriptor = $DB->get_record('block_exacompdescriptors',array("sourceid" => $sourceid,"source"=>1));
+	$descriptor = $DB->get_record('block_exacompdescriptors',array("id" => $sourceid));
 	if($descriptor) {
 		$examples=$DB->get_records('block_exacompdescrexamp_mm', array("descrid" => $descriptor->id));
 
