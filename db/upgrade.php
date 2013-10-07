@@ -524,7 +524,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		$coursegradings = $DB->get_records_menu("block_exacompsettings",null,"","course,grading");
 		$competencies = $DB->get_records("block_exacompdescuser");
 		foreach($competencies as $competence) {
-			if($coursegradings[$competence->courseid] > 1) {
+			if(isset($coursegradings[$competence->courseid]) && $coursegradings[$competence->courseid] > 1) {
 				$competence->wert = ($coursegradings[$competence->courseid] + 1) - $competence->wert;
 				$DB->update_record("block_exacompdescuser", $competence);
 			}
@@ -535,7 +535,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 				JOIN {course_modules} cm ON c.activityid = cm.id
 				");
 		foreach($competencies as $competence) {
-			if($coursegradings[$competence->courseid] > 1) {
+			if(isset($coursegradings[$competence->courseid]) && $coursegradings[$competence->courseid] > 1) {
 				$competence->wert = ($coursegradings[$competence->courseid] + 1) - $competence->wert;
 				$DB->update_record("block_exacompdescuser_mm", $competence);
 			}
