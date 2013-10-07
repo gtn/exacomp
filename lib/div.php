@@ -1442,7 +1442,7 @@ function block_exacomp_get_competence_tree_for_course($courseid) {
 
 		//Already reached competencies from other courses
 		$checkReached = $DB->get_records_sql("
-				SELECT deu.userid, u.firstname, u.lastname, deu.*, 1 as compalreadyreached, 0 as student_evaluation, 0 as teacher_evaluation
+				SELECT deu.id, deu.userid, u.firstname, u.lastname, deu.*, 1 as compalreadyreached, 0 as student_evaluation, 0 as teacher_evaluation
 				FROM {block_exacompdescuser} deu
 				LEFT JOIN {user} u ON u.id=deu.userid
 				WHERE deu.courseid!=? AND deu.descid=? AND deu.role = 1
