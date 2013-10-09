@@ -322,7 +322,7 @@ else
 			$levels = block_exacomp_get_competence_tree_for_LIS($selected_topic->id);
 
 		function block_exacomp_print_level_descriptors($level, $subs, &$data, $rowgroup_class = '') {
-			global $CFG, $DB, $USER, $teachers;
+			global $CFG, $DB, $USER, $teachers, $courseSettings;
 			extract((array)$data);
 
 			$version = 0;
@@ -345,6 +345,9 @@ else
 
 				foreach ($examples as $key=>$example) {
 					if (isset($example->creatorid) && ($example->creatorid != $USER->id && !array_key_exists($example->creatorid, $teachers)))
+						unset($examples[$key]);
+					
+					if (!isset($example->creatorid) && !$courseSettings->show_all_examples)
 						unset($examples[$key]);
 				}
 

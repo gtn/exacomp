@@ -154,6 +154,7 @@ $string['notinview'] = 'Dieses Item ist nicht veröffentlicht';
 $string['bewertungsschema'] = 'Bewertungsschema';
 $string['uses_activities'] = 'Ich verwende Moodle Aktivitäten zur Beurteilung';
 $string['show_all_descriptors'] = 'Alle Deskriptoren im Überblick anzeigen';
+$string['show_all_examples'] = 'Externe Beispiele im Überblick anzeigen';
 $string['bewertung'] = ' Bewertung: ';
 $string['filerequired'] = 'Es wurde keine Datei angehängt!';
 $string['compalreadyreached'] = 'Der Schüler hat diese Kompetenz bereits in einem anderen Kurs erreicht.';

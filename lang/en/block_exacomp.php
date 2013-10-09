@@ -156,6 +156,7 @@ $string['notinview'] = 'This item has not been published yet';
 $string['bewertungsschema'] = 'grading scheme';
 $string['uses_activities'] = 'I work with activites';
 $string['show_all_descriptors'] = 'Show all descriptors in overview';
+$string['show_all_examples'] = 'Show all examples in overview';
 $string['bewertung'] = ' assessment: ';
 $string['filerequired'] = 'You must upload a file!';
 $string['compalreadyreached'] = 'The student has already gained this competence in another course.';

@@ -68,10 +68,12 @@ function block_exacomp_get_examplelink($sourceid){
 		$returntext = "";
 		foreach($examples as $example) {
 			$e = $DB->get_record('block_exacompexamples',array("id"=>$example->exampid));
-			if($e->task) {
 				$img = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/i_11x11.png" height="11" width="11" alt="Aufgabenstellung" />';
+			if($e->task) 
 				$returntext .= '<a target="_blank" href="' . $e->task . '" onmouseover="Tip(\''.$e->title.'\')" onmouseout="UnTip()">'.$img.'</a> ';
-			}
+			if($e->externalurl)
+				$returntext .= '<a target="_blank" href="' . $e->externalurl . '" onmouseover="Tip(\''.$e->title.'\')" onmouseout="UnTip()">'.$img.'</a> ';
+				
 		}
 	}
 	if (!empty($returntext))
