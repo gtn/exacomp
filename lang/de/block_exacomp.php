@@ -187,7 +187,7 @@ $string['noactivitiesyet'] = "noch keine Moodle-Aufgaben zu diesem Deskriptor ab
 $string['columnselection'] = 'Tabellenspalten Auswahl';
 $string['allstudents'] = 'Alle Schüler';
 
-if(get_config('block_exacomp','alternativedatamodel')) {
+if(get_config('exacomp','alternativedatamodel')) {
 	/*langstrings for alternativedatamodel*/
 	require dirname(__FILE__).'/block_exacomp_overlaystatic.php';
 	/*langstrings from other systems*/
