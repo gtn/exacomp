@@ -154,6 +154,7 @@ $string['notinview'] = 'Dieses Item ist nicht veröffentlicht';
 $string['bewertungsschema'] = 'Bewertungsschema';
 $string['uses_activities'] = 'Ich verwende Moodle Aktivitäten zur Beurteilung';
 $string['show_all_descriptors'] = 'Alle Deskriptoren im Überblick anzeigen';
+$string['show_all_examples'] = 'Externe Beispiele im Überblick anzeigen';
 $string['bewertung'] = ' Bewertung: ';
 $string['filerequired'] = 'Es wurde keine Datei angehängt!';
 $string['compalreadyreached'] = 'Der Schüler hat diese Kompetenz bereits in einem anderen Kurs erreicht.';
@@ -186,7 +187,7 @@ $string['noactivitiesyet'] = "noch keine Moodle-Aufgaben zu diesem Deskriptor ab
 $string['columnselection'] = 'Tabellenspalten Auswahl';
 $string['allstudents'] = 'Alle Schüler';
 
-if(get_config('block_exacomp','alternativedatamodel')) {
+if(get_config('exacomp','alternativedatamodel')) {
 	/*langstrings for alternativedatamodel*/
 	require dirname(__FILE__).'/block_exacomp_overlaystatic.php';
 	/*langstrings from other systems*/

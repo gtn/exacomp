@@ -565,5 +565,21 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// exacomp savepoint reached
 		upgrade_block_savepoint(true, 2013100400, 'exacomp');
 	}
+	
+	if ($oldversion < 2013100900) {
+	
+		// Define field show_all_examples to be added to block_exacompsettings
+		$table = new xmldb_table('block_exacompsettings');
+		$field = new xmldb_field('show_all_examples', XMLDB_TYPE_INTEGER, '1', null, null, null, '0', 'show_all_descriptors');
+	
+		// Conditionally launch add field show_all_examples
+		if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+	
+		// exacomp savepoint reached
+		upgrade_block_savepoint(true, 2013100900, 'exacomp');
+	}
+	
 	return $result;
 }

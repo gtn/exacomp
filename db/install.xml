@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/exacomp/db" VERSION="20131004" COMMENT="XMLDB file for Moodle blocks/exacomp"
+<XMLDB PATH="blocks/exacomp/db" VERSION="20131009" COMMENT="XMLDB file for Moodle blocks/exacomp"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -250,7 +250,8 @@
         <FIELD NAME="activities" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="the hidden activities of edit activities table" PREVIOUS="grading" NEXT="tstamp"/>
         <FIELD NAME="tstamp" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="date of import" PREVIOUS="activities" NEXT="uses_activities"/>
         <FIELD NAME="uses_activities" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" PREVIOUS="tstamp" NEXT="show_all_descriptors"/>
-        <FIELD NAME="show_all_descriptors" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" PREVIOUS="uses_activities"/>
+        <FIELD NAME="show_all_descriptors" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" PREVIOUS="uses_activities" NEXT="show_all_examples"/>
+        <FIELD NAME="show_all_examples" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" PREVIOUS="show_all_descriptors"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="course"/>

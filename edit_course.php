@@ -54,6 +54,7 @@ if ($action == 'save_coursesettings') {
 	
 	$settings->uses_activities = optional_param('uses_activities', "", PARAM_INT);
 	$settings->show_all_descriptors = optional_param('show_all_descriptors', "", PARAM_INT);
+	$settings->show_all_examples = optional_param('show_all_examples', "", PARAM_INT);
 	
 	block_exacomp_save_coursesettings($courseid, $settings);
 		
@@ -83,6 +84,10 @@ if ($action == 'save_coursesettings')
 		
 		<input type="checkbox" value="1" name="show_all_descriptors" <?php if (!empty($courseSettings->show_all_descriptors)) echo 'checked="checked"'; ?> />
 		<?php echo get_string('show_all_descriptors', 'block_exacomp'); ?><br />
+		
+		<input type="checkbox" value="1" name="show_all_examples" <?php if (!empty($courseSettings->show_all_examples)) echo 'checked="checked"'; ?> />
+		<?php echo get_string('show_all_examples', 'block_exacomp'); ?><br />
+		
 		<input type="submit" value="<?php echo get_string('save', 'admin'); ?>" />
 	</form>
 	<?php
