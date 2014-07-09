@@ -73,6 +73,14 @@ function block_exacomp_get_all_topics($subjectid = null) {
 	return $topics;
 }
 
+/**
+ * Cheks if a competence is associated to any activity in a particular course
+ * 
+ * @param int $compid
+ * @param int $comptype
+ * @param int $courseid
+ * @return boolean
+ */
 function block_exacomp_check_activity_association($compid, $comptype, $courseid) {
 	global $DB;
 	
@@ -84,26 +92,33 @@ function block_exacomp_check_activity_association($compid, $comptype, $courseid)
 	
 	return false;
 }
-function block_exacomp_get_competence_tree_by_course($courseid, $subjectid = null) {
+
+/**
+ * Gets settings for the current course
+ * @param int$courseid
+ */
+function block_exacomp_get_settings_by_course($courseid = 0) {
+	global $DB, $COURSE;
+
+	if (!$courseid)
+		$courseid = $COURSE->id;
+
+	$settings = $DB->get_record('block_exacompsettings', array("course" => $courseid));
+
+	if (empty($settings)) $settings = new stdClass;
+	if (empty($settings->grading)) $settings->grading = 1;
+	if (!isset($settings->uses_activities)) $settings->uses_activities = get_config("exacomp","alternativedatamodel") ? 0 : 1;
+	if (!$settings->uses_activities) $settings->show_all_examples = 1;
+	elseif (!isset($settings->show_all_examples)) $settings->show_all_examples = 0;
+	if (!$settings->uses_activities) $settings->show_all_descriptors = 1;
+	elseif (!isset($settings->show_all_descriptors)) $settings->show_all_descriptors = 0;
+
+	return $settings;
+}
+
+function block_exacomp_get_descriptors_by_course($courseid) {
 	global $DB;
-
-	$allSubjects = block_exacomp_get_subjects_by_course($courseid, $subjectid);
-	$allTopics = block_exacomp_get_all_topics($subjectid);
-
-	$subjects = array();
-	//subjectid is not null iff lis version is used
-	if($subjectid != null) {
-		foreach ($allTopics as $topic) {
-			if(block_exacomp_check_activity_association($topic->id, TYPE_TOPIC, $courseid))
-				// found: add it to the subject result
-				$subject = $allSubjects[$topic->subjid];
-				$subject->subs[$topic->id] = $topic;
-				$subjects[$topic->subjid] = $subject;
-			}
-		}
-	}
-	
-	$allDescriptors = $DB->get_records_sql('
+	$descriptors = $DB->get_records_sql('
 			SELECT d.id, d.title, t.id AS topicid, "descriptor" as type
 			FROM {block_exacompsubjects} s
 			JOIN {block_exacomptopics} t ON t.subjid = s.id
@@ -118,7 +133,37 @@ function block_exacomp_get_competence_tree_by_course($courseid, $subjectid = nul
 			GROUP BY d.id
 			ORDER BY d.sorting
 			', array($courseid, $courseid));
+	
+	return $descriptors;
+}
 
+/**
+ * Gets an associative array that is used to display the whole hierarchie of subjects, topics and competencies within a course
+ * 
+ * @param int $courseid
+ * @param int $subjectid
+ * @return associative_array
+ */
+function block_exacomp_get_competence_tree_by_course($courseid, $subjectid = null) {
+	global $DB;
+
+	$allSubjects = block_exacomp_get_subjects_by_course($courseid, $subjectid);
+	$allTopics = block_exacomp_get_all_topics($subjectid);
+
+	$subjects = array();
+	//subjectid is not null iff lis version is used
+	if($subjectid != null) {
+		foreach ($allTopics as $topic) {
+			if(block_exacomp_check_activity_association($topic->id, TYPE_TOPIC, $courseid))
+				// found: add it to the subject result, even if no descriptor from the topic is used
+				$subject = $allSubjects[$topic->subjid];
+				$subject->subs[$topic->id] = $topic;
+				$subjects[$topic->subjid] = $subject;
+			}
+		}
+	}
+	
+	$allDescriptors = block_exacomp_get_descriptors_by_course($courseid);
 
 	foreach ($allDescriptors as $descriptor) {
 
@@ -161,56 +206,6 @@ function block_exacomp_get_competence_tree_by_course($courseid, $subjectid = nul
 
 		// if parent not found (error), skip it
 		if (!$found) continue;
-
-		$descriptor->evaluationData = $DB->get_records_sql("
-				SELECT deu.userid, u.firstname, u.lastname, deu.*, deu.wert as teacher_evaluation
-				FROM {block_exacompdescuser} deu
-				LEFT JOIN {user} u ON u.id=deu.userid
-				WHERE deu.courseid=? AND deu.descid=? AND deu.role = 1
-				", array($courseid, $descriptor->id));
-
-		/*foreach($descriptor->evaluationData as $exaeval) {
-		 $exaeval->student_evaluation = $DB->get_field('block_exacompdescuser', 'wert', array("userid"=>$exaeval->userid,"descid"=>$exaeval->descid,"role"=>0,"courseid"=>$exaeval->courseid));
-		}*/
-
-		$studentEvaluationData = $DB->get_records_sql("
-				SELECT deu.userid, u.firstname, u.lastname, deu.*, deu.wert as student_evaluation, 0 as teacher_evaluation
-				FROM {block_exacompdescuser} deu
-				LEFT JOIN {user} u ON u.id=deu.userid
-				WHERE deu.courseid=? AND deu.descid=? AND deu.role = 0
-				", array($courseid, $descriptor->id));
-
-		foreach($studentEvaluationData as $studentEval) {
-			if(isset($descriptor->evaluationData[$studentEval->userid]))
-				$descriptor->evaluationData[$studentEval->userid]->student_evaluation = $studentEval->student_evaluation;
-
-			else
-				$descriptor->evaluationData[$studentEval->userid] = $studentEval;
-		}
-
-		//Already reached competencies from other courses
-		$checkReached = $DB->get_records_sql("
-				SELECT deu.id, deu.userid, u.firstname, u.lastname, deu.*, 1 as compalreadyreached, 0 as student_evaluation, 0 as teacher_evaluation
-				FROM {block_exacompdescuser} deu
-				LEFT JOIN {user} u ON u.id=deu.userid
-				WHERE deu.courseid!=? AND deu.descid=? AND deu.role = 1
-				", array($courseid, $descriptor->id));
-
-		$compReachedData = array();
-		//go trough all assessments and check if competence is reached
-		foreach($checkReached as $check){
-			$settings = $DB->get_record("block_exacompsettings", array("course"=>$check->courseid));
-			if($check->wert>=($settings->grading/2))
-				$compReachedData[$check->userid] = $check;
-		}
-
-		foreach($compReachedData as $compReached) {
-			if(isset($descriptor->evaluationData[$compReached->userid]))
-				$descriptor->evaluationData[$compReached->userid]->compalreadyreached = 1;
-			else
-				$descriptor->evaluationData[$compReached->userid] = $compReached;
-		}
-
 	}
 
 	return $subjects;
