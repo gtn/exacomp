@@ -50,3 +50,33 @@ $string['tab_examples'] = 'Examples and tasks';
 $string['tab_learning_agenda'] = 'Learning agenda';
 $string['tab_badges'] = 'My badges';
 $string['tab_competence_profile'] = 'Competence profile';
+$string['tab_help'] = 'Help';
+
+//Learning agenda
+$string['LA_MO'] = "MON";
+$string['LA_DI'] = "TUE";
+$string['LA_MI'] = "WED";
+$string['LA_DO'] = "THU";
+$string['LA_FR'] = "FRI";
+$string['LA_todo'] = "What do I do?";
+$string['LA_learning'] = "What can I learn?";
+$string['LA_student'] = "S";
+$string['LA_teacher'] = "T";
+$string['LA_assessment'] = "assessment";
+$string['LA_plan'] = "working plan";
+//$string['LA_allstudents'] = 'Alle Schüler';
+$string['LA_keine_lernagenden'] = 'no learning agenda available';
+$string['LA_no_student_selected'] = '-- no student selected --';
+$string['LA_schueler_waehlen'] = 'choose student';
+$string['LA_no_example'] = 'no example available';
+$string['LA_backtoview'] = 'back to original view';
+$string['LA_von'] = ' from ';
+$string['LA_vom'] = ' from ';
+$string['LA_bis'] = ' to ';
+$string['LA_enddate']='end date';
+$string['LA_startdate']='start date';
+
+//Help
+$string['help_content'] = '<h1>Introduction Video</h1>
+<iframe width="640" height="360" src="//www.youtube.com/embed/EL4Vb3_17EM?feature=player_embedded" frameborder="0" allowfullscreen></iframe>
+';

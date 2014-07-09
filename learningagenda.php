@@ -136,7 +136,7 @@ foreach($temps as $temp){
 $weekdays = array();
 for($i = 0; $i <5; $i++){
 	$boxdate = mktime(0,0,0, $dates[$i]['mon'], $dates[$i]['mday'], $dates[$i]['year']);
-	$weekdays[get_string($days[$i], 'block_exacomp')] = date($boxdate);
+	$weekdays[get_string("LA_".$days[$i], 'block_exacomp')] = date($boxdate);
 }
 //in $weekdays all timestamps from actual week are stored now
 //add subjects, examples and descriptors to each day
@@ -184,9 +184,9 @@ if($print == 0){
 		echo $output->render_learning_agenda($data, $weekdays);
 	else { //no examples
 		if($studentid == 0) //no studentid -> choose student
-			echo '<h2>'.get_string('schueler_waehlen', 'block_exacomp').'</h2>';
+			echo '<h2>'.get_string('LA_schueler_waehlen', 'block_exacomp').'</h2>';
 		else 
-			echo '<h2>'.get_string('keine_lernagenden', 'block_exacomp').'</h2>';
+			echo '<h2>'.get_string('LA_keine_lernagenden', 'block_exacomp').'</h2>';
 	} 
 		
 }else{

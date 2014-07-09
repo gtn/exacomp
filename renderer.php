@@ -46,14 +46,14 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 			$content .= html_writer::end_tag('form');
 
 			$content .= html_writer::start_tag('div', array('align'=>"right"));
-			$content .= html_writer::start_tag('a', array('href' => new moodle_url('/blocks/exacomp/learningagenda.php?courseid='.$COURSE->id.'&studentid='.$studentid.'&druck=1&action='.$action)));
+			$content .= html_writer::start_tag('a', array('href' => new moodle_url('/blocks/exacomp/learningagenda.php?courseid='.$COURSE->id.'&studentid='.$studentid.'&print=1&action='.$action)));
 			$content .= html_writer::empty_tag('img', array('src'=>$CFG->wwwroot . '/blocks/exacomp/pix/view_print.png', 'alt'=>'print'));
 			$content .= html_writer::end_tag('a');
 			$content .= html_writer::end_tag('div');
 		} else {
 			$content = html_writer::start_tag('div', array('id'=>'linkback', 'align'=>"right"));
-			$content .= html_writer::start_tag('a', array('href' => new moodle_url('/blocks/exacomp/learningagenda.php?courseid='.$COURSE->id.'&studentid='.$studentid.'&druck=0&action='.$action)));
-			$content .= html_writer::tag('p',get_string('backtoview', 'block_exacomp'));
+			$content .= html_writer::start_tag('a', array('href' => new moodle_url('/blocks/exacomp/learningagenda.php?courseid='.$COURSE->id.'&studentid='.$studentid.'&print=0&action='.$action)));
+			$content .= html_writer::tag('p',get_string('LA_backtoview', 'block_exacomp'));
 			$content .= html_writer::end_tag('a');
 			$content .= html_writer::end_tag('div');
 		}
@@ -70,14 +70,14 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 		$head = array();
 
 		$cellhead1 = new html_table_cell();
-		$cellhead1->text = html_writer::tag("p", get_string('plan', 'block_exacomp'));
+		$cellhead1->text = html_writer::tag("p", get_string('LA_plan', 'block_exacomp'));
 		//$cellhead1->colspan = 4;
 		//without column "Was kann ich lernen"
 		$cellhead1->colspan = 4;
 		$head[] = $cellhead1;
 
 		$cellhead2 = new html_table_cell();
-		$cellhead2->text = html_writer::tag("p", get_string('assessment', 'block_exacomp'));
+		$cellhead2->text = html_writer::tag("p", get_string('LA_assessment', 'block_exacomp'));
 		$cellhead2->colspan = 2;
 		$head[] = $cellhead2;
 
@@ -85,7 +85,7 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 
 		$rows = array();
 
-		//erste Reihe->Ãœberschriften
+		//erste Reihe->Überschriften
 		$row = new html_table_row();
 		$cell = new html_table_cell();
 		$cell->text = "";
@@ -93,7 +93,7 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 		$row->cells[] = $cell;
 
 		$cell = new html_table_cell();
-		$cell->text = html_writer::tag("p", get_string('todo', 'block_exacomp'));
+		$cell->text = html_writer::tag("p", get_string('LA_todo', 'block_exacomp'));
 		$row->cells[] = $cell;
 
 		//$cell = new html_table_cell();
@@ -101,15 +101,15 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 		//$row->cells[] = $cell;
 
 		$cell = new html_table_cell();
-		$cell->text = html_writer::tag("p", get_string('enddate', 'block_exacomp'));
+		$cell->text = html_writer::tag("p", get_string('LA_enddate', 'block_exacomp'));
 		$row->cells[] = $cell;
 		
 		$cell = new html_table_cell();
-		$cell->text = html_writer::tag("p", get_string('student', 'block_exacomp'));
+		$cell->text = html_writer::tag("p", get_string('LA_student', 'block_exacomp'));
 		$row->cells[] = $cell;
 
 		$cell = new html_table_cell();
-		$cell->text = html_writer::tag("p", get_string('teacher', 'block_exacomp'));
+		$cell->text = html_writer::tag("p", get_string('LA_teacher', 'block_exacomp'));
 		$row->cells[] = $cell;
 
 		$rows[] = $row;
@@ -178,7 +178,7 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 						}
 					}else{
 						$cell = new html_table_cell();
-						$cell->text = html_writer::tag("p",get_string('no_example', 'block_exacomp'));
+						$cell->text = html_writer::tag("p",get_string('LA_no_example', 'block_exacomp'));
 						$cell->colspan = 5;
 						$row->cells[] = $cell;
 						$rows[] = $row;
@@ -195,9 +195,7 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 
 	public function print_view_learning_agenda($data, $studentname){
 		global $CFG, $COURSE;
-
-		//$content = html_writer::tag('p', "SchÃ¼lerinformation");
-
+var_dump($data['Mo']);
 		//header
 		$table = new html_table();
 		$table->attributes['class'] = 'lernagenda';
@@ -207,16 +205,16 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 		$head = array();
 
 		$cellhead1 = new html_table_cell();
-		$cellhead1->text = html_writer::tag("p", get_string('plan', 'block_exacomp').
-				get_string('von', 'block_exacomp').$studentname.get_string('vom', 'block_exacomp').
-				$data[get_string('MO', 'block_exacomp')]['date'].get_string('bis', 'block_exacomp').$data[get_string('FR', 'block_exacomp')]['date']);
+		$cellhead1->text = html_writer::tag("p", get_string('LA_plan', 'block_exacomp').
+				get_string('LA_von', 'block_exacomp').$studentname.get_string('LA_vom', 'block_exacomp').
+				$data[get_string('LA_MO', 'block_exacomp')]['date'].get_string('LA_bis', 'block_exacomp').$data[get_string('LA_FR', 'block_exacomp')]['date']);
 		//$cellhead1->colspan = 4;
 		//without column "Was kann ich lernen"
 		$cellhead1->colspan = 4;
 		$head[] = $cellhead1;
 
 		$cellhead2 = new html_table_cell();
-		$cellhead2->text = html_writer::tag("p", get_string('assessment', 'block_exacomp'));
+		$cellhead2->text = html_writer::tag("p", get_string('LA_assessment', 'block_exacomp'));
 		$cellhead2->colspan = 2;
 		$head[] = $cellhead2;
 
@@ -224,7 +222,7 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 
 		$rows = array();
 
-		//erste Reihe->Ãœberschriften
+		//erste Reihe->Überschriften
 		$row = new html_table_row();
 		$cell = new html_table_cell();
 		$cell->text = "";
@@ -232,22 +230,22 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 		$row->cells[] = $cell;
 
 		$cell = new html_table_cell();
-		$cell->text = html_writer::tag("p", get_string('todo', 'block_exacomp'));
+		$cell->text = html_writer::tag("p", get_string('LA_todo', 'block_exacomp'));
 		$row->cells[] = $cell;
 
 		//$cell = new html_table_cell();
 		//$cell->text = html_writer::tag("p", get_string('learning', 'block_exacomp'));
 		//$row->cells[] = $cell;
 		$cell = new html_table_cell();
-		$cell->text = html_writer::tag("p", get_string('enddate', 'block_exacomp'));
+		$cell->text = html_writer::tag("p", get_string('LA_enddate', 'block_exacomp'));
 		$row->cells[] = $cell;
 		
 		$cell = new html_table_cell();
-		$cell->text = html_writer::tag("p", get_string('student', 'block_exacomp'));
+		$cell->text = html_writer::tag("p", get_string('LA_student', 'block_exacomp'));
 		$row->cells[] = $cell;
 
 		$cell = new html_table_cell();
-		$cell->text = html_writer::tag("p", get_string('teacher', 'block_exacomp'));
+		$cell->text = html_writer::tag("p", get_string('LA_teacher', 'block_exacomp'));
 		$row->cells[] = $cell;
 
 		$rows[] = $row;
@@ -308,7 +306,7 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 						}
 					}else{
 						$cell = new html_table_cell();
-						$cell->text = html_writer::tag("p",get_string('no_example', 'block_exacomp'));
+						$cell->text = html_writer::tag("p",get_string('LA_no_example', 'block_exacomp'));
 						$cell->colspan = 5;
 						$row->cells[] = $cell;
 						$rows[] = $row;
