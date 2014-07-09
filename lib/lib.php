@@ -15,6 +15,7 @@ define('DB_DESCTOPICS', 'block_exacompdescrtopic_mm');
 define('DB_CATEGORIES', 'block_exacompcategories');
 define('DB_COMPETENCE_ACTIVITY', 'block_exacompcompactiv_mm');
 define('DB_COMPETENCIES', 'block_exacompcompuser');
+define('DB_SETTINGS', 'block_exacompsettings');
 
 // ROLE CONSTANTS
 define('ROLE_TEACHER', 1);
@@ -154,7 +155,7 @@ function block_exacomp_get_competence_tree_by_course($courseid, $subjectid = nul
 	//subjectid is not null iff lis version is used
 	if($subjectid != null) {
 		foreach ($allTopics as $topic) {
-			if(block_exacomp_check_activity_association($topic->id, TYPE_TOPIC, $courseid))
+			if(block_exacomp_check_activity_association($topic->id, TYPE_TOPIC, $courseid)){
 				// found: add it to the subject result, even if no descriptor from the topic is used
 				$subject = $allSubjects[$topic->subjid];
 				$subject->subs[$topic->id] = $topic;
@@ -328,4 +329,23 @@ function block_exacomp_studentselector($students,$selected,$url){
 	}
 	return html_writer::select($studentsAssociativeArray, 'exacomp_competence_grid_select_student',$selected,true,
 			array("onchange"=>"document.location.href='".$url."&studentid='+this.value;"));
+}
+
+function block_exacomp_coursesettings($courseid = 0) {
+	global $DB, $COURSE;
+
+	if (!$courseid)
+		$courseid = $COURSE->id;
+
+	$rs = $DB->get_record(DB_SETTINGS, array("courseid" => $courseid));
+
+	if (empty($rs)) $rs = new stdClass;
+	if (empty($rs->grading)) $rs->grading = 1;
+	if (!isset($rs->uses_activities)) $rs->uses_activities = get_config("exacomp","alternativedatamodel") ? 0 : 1;
+	if (!$rs->uses_activities) $rs->show_all_examples = 1;
+	elseif (!isset($rs->show_all_examples)) $rs->show_all_examples = 0;
+	if (!$rs->uses_activities) $rs->show_all_descriptors = 1;
+	elseif (!isset($rs->show_all_descriptors)) $rs->show_all_descriptors = 0;
+
+	return $rs;
 }
