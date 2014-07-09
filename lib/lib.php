@@ -31,3 +31,15 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 	
 	return $rows;
 }
+
+function block_exacomp_studentselector($students,$selected,$url){
+	global $CFG;
+
+	$studentsAssociativeArray = array();
+	$studentsAssociativeArray[0]=get_string('no_student_selected', "block_exacomp");
+	foreach($students as $student) {
+		$studentsAssociativeArray[$student->id] = fullname($student);
+	}
+	return html_writer::select($studentsAssociativeArray, 'exacomp_competence_grid_select_student',$selected,true,
+			array("onchange"=>"document.location.href='".$CFG->wwwroot.$url."&studentid='+this.value;"));
+}
