@@ -97,7 +97,7 @@ function block_exacomp_insert_topic($topic, $parent = 0) {
 	$topic->parentid = $parent;
 
 	if($topic['categoryid'])
-		$topic->cat = block_exacomp_get_database_id(DB_CATEGORIES,$topic['categoryid']->__toString());
+		$topic->catid = block_exacomp_get_database_id(DB_CATEGORIES,$topic['categoryid']->__toString());
 
 	if($stObj = $DB->get_record(DB_TOPICS, array("sourceid"=>$topic['id']->__toString()))) {
 		$topic->id = $stObj->id;
@@ -128,7 +128,7 @@ function block_exacomp_insert_subject(&$subject) {
 	global $DB;
 	$subject->sourceid = $subject['id']->__toString();
 	if($subject['categoryid'])
-		$subject->cat = block_exacomp_get_database_id(DB_CATEGORIES,$subject['categoryid']->__toString());
+		$subject->catid = block_exacomp_get_database_id(DB_CATEGORIES,$subject['categoryid']->__toString());
 
 	if($stObj = $DB->get_record(DB_SUBJECTS, array("sourceid"=>$subject['id']->__toString()))) {
 		$subject->id = $stObj->id;
@@ -224,7 +224,7 @@ function block_exacomp_insert_example($example, $parent = 0) {
 function block_exacomp_insert_taxonomy($taxonomy, $parent = 0) {
 	global $DB;
 	$taxonomy->sourceid = $taxonomy['id']->__toString();
-	$taxonomy->parent = $parent;
+	$taxonomy->parentid = $parent;
 	$id = $DB->insert_record(DB_TAXONOMIES, simpleXMLElementToArray($taxonomy));
 
 	if($taxonomy->children) {
@@ -242,7 +242,7 @@ function block_exacomp_insert_skill($skill) {
 function block_exacomp_insert_niveau($niveau, $parent = 0) {
 	global $DB;
 	$niveau->sourceid = $niveau['id']->__toString();
-	$niveau->parent = $parent;
+	$niveau->parentid = $parent;
 	$id = $DB->insert_record(DB_NIVEAUS, simpleXMLElementToArray($niveau));
 
 	if($niveau->children) {
@@ -304,15 +304,20 @@ function block_exacomp_xml_find_unused_descriptors($source,$crdate,$topiclist){
 	6) wenn kein selbst hinaufgeladenes beispiel drannhängt
 	*/
 
-	$sql="SELECT distinct descr.id,descr.sourceid FROM {block_exacompdescuser} u
-	RIGHT JOIN {block_exacompdescriptors} descr ON descr.id=u.descid
-	JOIN {block_exacompdescrtopic_mm} tmm ON tmm.descrid=descr.id JOIN {block_exacomptopics} top ON top.id=tmm.topicid JOIN {block_exacompsubjects} subj ON subj.id=top.subjid JOIN {block_exacompschooltypes} st ON st.id=subj.stid
+	$sql="SELECT distinct descr.id,descr.sourceid FROM {block_exacompcompuser} u
+	RIGHT JOIN {block_exacompdescriptors} descr ON descr.id=u.compid
+	JOIN {block_exacompdescrtopic_mm} tmm ON tmm.descrid=descr.id 
+	JOIN {block_exacomptopics} top ON top.id=tmm.topicid 
+	JOIN {block_exacompsubjects} subj ON subj.id=top.subjid 
+	JOIN {block_exacompschooltypes} st ON st.id=subj.stid
 	LEFT JOIN {block_exacompcoutopi_mm} cou ON cou.topicid=tmm.topicid
-	LEFT JOIN ({block_exacompdescrexamp_mm} emm JOIN {block_exacompexamples} ex ON (ex.id=emm.exampid AND ex.source=3)) ON emm.descrid=descr.id
-	LEFT JOIN {block_exacompmdltype_mm} typmm ON typmm.typeid=st.id
-	LEFT JOIN {block_exacompdescuser_mm} umm ON umm.descid=descr.id
-	LEFT JOIN {block_exacompdescractiv_mm} act ON act.descrid=descr.id
-	WHERE typmm.id IS NULL AND ex.id IS NULL AND act.id IS NULL AND cou.id IS NULL AND  umm.id IS NULL AND u.id IS NULL AND descr.source=? AND descr.crdate <> (?)";
+	LEFT JOIN ({block_exacompdescrexamp_mm} emm 
+	JOIN {block_exacompexamples} ex ON (ex.id=emm.exampid AND ex.source=3)) ON emm.descrid=descr.id
+	LEFT JOIN {block_exacompmdltype_mm} typmm ON typmm.stid=st.id
+	LEFT JOIN {block_exacompcompuser_mm} umm ON umm.compid=descr.id
+	LEFT JOIN {block_exacompcompactiv_mm} act ON act.compid=descr.id
+	WHERE typmm.id IS NULL AND ex.id IS NULL AND act.id IS NULL AND cou.id IS NULL AND  umm.id IS NULL AND u.id IS NULL AND descr.source=? AND descr.crdate <> (?) 
+	AND u.comptype=0 AND umm.comptype=0 AND act.comptype=0"; //only use descriptors
 
 	$rs=$DB->get_records_sql($sql, array($source, $crdate));
 	foreach($rs as $row){

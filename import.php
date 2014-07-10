@@ -75,15 +75,15 @@ if($isAdmin || block_exacomp_check_customupload()) {
 		} else {
 			if ($data = $mform->get_file_content('file')) {
 				if(block_exacomp_xml_do_import($data, (($importtype == 'normal') ? IMPORT_SOURCE_NORMAL : IMPORT_SOURCE_SPECIFIC))) {
-					echo $OUTPUT->box(text_to_html(get_string("importsuccess", "block_exacomp")));
+					echo $OUTPUT->box(get_string("importsuccess", "block_exacomp"));
 				}
 				else {
-					echo $OUTPUT->box(text_to_html(get_string("importfail", "block_exacomp")));
+					echo $OUTPUT->box(get_string("importfail", "block_exacomp"));
 					$mform->display();
 				}
 			} else {
-				echo $OUTPUT->box(text_to_html(get_string("importinfo", "block_exacomp")));
-				echo $OUTPUT->box(text_to_html(get_string("importwebservice", "block_exacomp",$CFG->wwwroot."/admin/settings.php?section=blocksettingexacomp")));
+				echo $OUTPUT->box(get_string("importinfo", "block_exacomp"));
+				echo $OUTPUT->box(get_string("importwebservice", "block_exacomp",new moodle_url("/admin/settings.php", array('section'=>'blocksettingexacomp'))));
 		
 				$mform->display();
 			}
@@ -92,22 +92,22 @@ if($isAdmin || block_exacomp_check_customupload()) {
 	} else {
 
 		if(block_exacomp_xml_check_import() && $isAdmin){
-			echo $OUTPUT->box(text_to_html(get_string("importdone", "block_exacomp")));
-			echo $OUTPUT->box(text_to_html('<a href="'.$CFG->wwwroot.'/blocks/exacomp/import.php?courseid='.$courseid.'&importtype=normal">'.get_string("doimport_again", "block_exacomp").'</a>'));
+			echo $OUTPUT->box(get_string("importdone", "block_exacomp"));
+			echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'normal')), get_string('doimport_again', 'block_exacomp')));
 		}
 		else if($isAdmin) {
-			echo $OUTPUT->box(text_to_html(get_string("importpending", "block_exacomp")));
-			echo $OUTPUT->box(text_to_html('<a href="'.$CFG->wwwroot.'/blocks/exacomp/import.php?courseid='.$courseid.'&importtype=normal">'.get_string("doimport", "block_exacomp").'</a>'));
+			echo $OUTPUT->box(get_string("importpending", "block_exacomp"));
+			echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'normal')), get_string('doimport', 'block_exacomp')));
 		}
 
 		if(block_exacomp_xml_check_import())
-			echo $OUTPUT->box(text_to_html('<a href="'.$CFG->wwwroot.'/blocks/exacomp/import_own.php?courseid='.$courseid.'">'.get_string("doimport_own", "block_exacomp").'</a>'));
+			echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import_own.php', array('courseid'=>$courseid)), get_string('doimport_own', 'block_exacomp')));
 
 		if(isset($import)) {
 			if($import)
-				echo $OUTPUT->box(text_to_html(get_string("importsuccess", "block_exacomp")));
+				echo $OUTPUT->box(get_string("importsuccess", "block_exacomp"));
 			else
-				echo $OUTPUT->box(text_to_html(get_string("importfail", "block_exacomp")));
+				echo $OUTPUT->box(get_string("importfail", "block_exacomp"));
 
 		}
 	}
