@@ -23,8 +23,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['newblock:addinstance'] = 'Add a exabis competencies block';
-$string['newblock:myaddinstance'] = 'Add a exabis competencies block to my moodle';
+$string['exacomp:addinstance'] = 'Add a exabis competencies block';
+$string['exacomp:myaddinstance'] = 'Add a exabis competencies block to my moodle';
 $string['pluginname'] = 'exabis competencies';
 
 // TABS and PAGE IDENTIFIERS
@@ -35,6 +35,7 @@ $string['tab_admin_configuration'] = 'Configuration';
 //Teacher Tabs
 $string['tab_teacher_settings'] = 'Settings';
 $string['tab_teacher_settings_configuration'] = 'configuration';
+$string['tab_teacher_settings_selection_st'] = 'Schooltype selection';
 $string['tab_teacher_settings_selection'] = 'Subject selection';
 $string['tab_teacher_settings_assignactivities'] = 'Assign activities';
 $string['tab_teacher_settings_badges'] = 'Edit badges';
@@ -104,3 +105,9 @@ $string['noxmlfile'] = 'There is no data available to import. Please visit <a hr
 $string['explainconfig'] = 'In order to use the module exabis competencies you have to choose your schooltype - the appropriate data will then be imported from the xml-file.';
 $string['save_selection'] = 'save selection';
 $string['save_success'] = 'changes were successful';
+
+//Course configuratin
+$string['grading_scheme'] = 'grading scheme';
+$string['uses_activities'] = 'I work with activites';
+$string['show_all_descriptors'] = 'Show all outcomes in overview';
+$string['show_all_examples'] = 'Show all examples in overview';

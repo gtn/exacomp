@@ -51,6 +51,8 @@ $page_identifier = 'tab_learning_agenda';
 $PAGE->set_url('/blocks/exacomp/learningagenda.php', array('courseid' => $courseid));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 
+block_exacomp_init_js_css();
+
 // build breadcrumbs navigation
 $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
 $blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));

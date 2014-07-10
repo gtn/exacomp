@@ -383,5 +383,51 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 		
 		return $content;
 	}
+	public function print_edit_course($settings, $action, $courseid){
+		$saved = "";
+		if ($action == 'save_coursesettings')
+   				$saved = html_writer::label(get_string("save_success", "block_exacomp"), "").html_writer::empty_tag('br');
+   				
+		$input_grading = get_string('grading_scheme', 'block_exacomp').": &nbsp"
+			.html_writer::empty_tag('input', array('type'=>'text', 'size'=>2, 'name'=>'grading', 'value'=>block_exacomp_getbewertungsschema($courseid)))
+			.html_writer::empty_tag('br');
+		
+		if(!empty($settings->uses_activities))
+			$checkbox = html_writer::empty_tag('input', array('type'=>'checkbox', 'value'=>1, 'name'=>'uses_activities', 'checked'=>'checked'));
+		else 
+			$checkbox = html_writer::empty_tag('input', array('type'=>'checkbox', 'value'=>1, 'name'=>'uses_activities'));
+	
+		$input_activities = $checkbox.get_string('uses_activities', 'block_exacomp')
+			.html_writer::empty_tag('br');
+				
+		if(!empty($settings->show_all_descriptors))
+			$checkbox = html_writer::empty_tag('input', array('type'=>'checkbox', 'value'=>1, 'name'=>'show_all_descriptors', 'checked'=>'checked'));
+		else
+			$checkbox = html_writer::empty_tag('input', array('type'=>'checkbox', 'value'=>1, 'name'=>'show_all_descriptors'));	
+		
+		$input_descriptors = $checkbox.get_string('show_all_descriptors', 'block_exacomp')
+			.html_writer::empty_tag('br');
+			
+		if(!empty($settings->show_all_examples))
+			$checkbox = html_writer::empty_tag('input', array('type'=>'checkbox', 'value'=>1, 'name'=>'show_all_examples', 'checked'=>'checked'));
+		else
+			$checkbox = html_writer::empty_tag('input', array('type'=>'checkbox', 'value'=>1, 'name'=>'show_all_examples'));
+			
+		$input_examples = $checkbox.get_string('show_all_examples', 'block_exacomp')
+			.html_writer::empty_tag('br');
+			
+		$input_submit = html_writer::empty_tag('br').html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save', 'admin')));
+		
+		$hiddenaction = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'action', 'value'=>'save_coursesettings'));
+		
+		
+		$div = html_writer::div(html_writer::tag('form',
+			$saved.$input_grading.$input_activities.$input_descriptors.$input_examples.$hiddenaction.$input_submit, 
+			array('action'=>'edit_course.php?courseid='.$courseid, 'method'=>'post')), 'block_excomp_center');
+		
+		$content = html_writer::tag("div", $div, array("id"=>"exabis_competences_block"));
+		 
+		return $content;
+	}
 }
 ?>

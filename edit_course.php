@@ -28,12 +28,11 @@
 require_once dirname(__FILE__)."/inc.php";
 require_once dirname(__FILE__) . '/lib/lib.php';
 require_once($CFG->dirroot . "/lib/datalib.php");
-require_once dirname(__FILE__) . '/lib/xmllib.php';
 
-global $DB, $OUTPUT, $PAGE, $COURSE, $CFG;
+global $DB, $OUTPUT, $PAGE;
 
 $courseid = required_param('courseid', PARAM_INT);
-$action = optional_param('action', "", PARAM_ALPHA);
+$action = optional_param('action', "", PARAM_ALPHAEXT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_simplehtml', $courseid);
@@ -41,26 +40,15 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 
 require_login($course);
 
-$version = get_config('exacomp', 'alternativedatamodel');
-if($version) {
-	$context = context_course::instance($courseid);
-	require_capability('block/exacomp:teacher', $context);
-}
-else {
-	$context =context_system::instance();
-	require_capability('block/exacomp:admin', $context);
-}
+$context = context_course::instance($courseid);
 
-$check = block_exacomp_xml_check_import();
-if(!$check){
-	redirect(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid)));
-}
+require_capability('block/exacomp:teacher', $context);
 
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
-$page_identifier = 'tab_admin_configuration';
+$page_identifier = 'tab_teacher_settings_configuration';
 
 /* PAGE URL - MUST BE CHANGED */
-$PAGE->set_url('/blocks/exacomp/edit_config.php', array('courseid' => $courseid));
+$PAGE->set_url('/blocks/exacomp/edit_course.php', array('courseid' => $courseid));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 
 block_exacomp_init_js_css();
@@ -71,55 +59,31 @@ $blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
 $pagenode = $blocknode->add(get_string($page_identifier,'block_exacomp'), $PAGE->url);
 $pagenode->make_active();
 
+if ($action == 'save_coursesettings') {
+	$settings = new stdClass;
+	$settings->grading = optional_param('grading', 1, PARAM_INT);
+	
+	if($settings->grading == 0)
+		$settings->grading = 1;
+	
+	$settings->uses_activities = optional_param('uses_activities', "", PARAM_INT);
+	$settings->show_all_descriptors = optional_param('show_all_descriptors', "", PARAM_INT);
+	$settings->show_all_examples = optional_param('show_all_examples', "", PARAM_INT);
+	
+	block_exacomp_save_coursesettings($courseid, $settings);	
+} 
+
 // build tab navigation & print header
 echo $OUTPUT->header();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
 /* CONTENT REGION */
-
-//Falls Formular abgesendet, speichern
-if (isset($action) && $action == 'save') {
-    $values = isset($_POST['data']) ? $_POST['data'] : array();
-    if($version)
-    	block_exacomp_set_mdltype($values,$courseid);
-    else
-    	block_exacomp_set_mdltype($values);
-  
-    $headertext=get_string("save_success", "block_exacomp");
-}else{
-	$headertext=get_string("explainconfig", "block_exacomp");
-}
-
-
-/* HTML CONTENT */
-
-$data = new stdClass();
-$data->headertext = $headertext;
-$data->levels = array();
- 
-$levels = block_exacomp_get_edulevels();
-foreach($levels as $level){
-	$data->levels[$level->id] = new stdClass();
-	$data->levels[$level->id]->level = $level;
-	$data->levels[$level->id]->schooltypes = array();
-	
-	$types = block_exacomp_get_schooltypes($level->id);
-
-	foreach($types as $type){
-		$ticked = (!$version) ? block_exacomp_get_mdltypes($type->id) : block_exacomp_get_mdltypes($type->id,$courseid);
-		
-		$data->levels[$level->id]->schooltypes[$type->id] = new stdClass();
-		$data->levels[$level->id]->schooltypes[$type->id]->schooltype = $type;
-		$data->levels[$level->id]->schooltypes[$type->id]->ticked = $ticked;
-	}
-}
+$courseSettings = block_exacomp_get_settings_by_course($courseid);
 
 $output = $PAGE->get_renderer('block_exacomp');
-	
-echo $output->print_edit_config($data, $courseid);
+echo $output->print_edit_course($courseSettings, $action, $courseid);
 
 /* END CONTENT REGION */
 
 echo $OUTPUT->footer();
-
 ?>

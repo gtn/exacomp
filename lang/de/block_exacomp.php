@@ -35,6 +35,7 @@ $string['tab_admin_configuration'] = 'Konfiguration';
 //Teacher Tabs
 $string['tab_teacher_settings'] = 'Einstellungen';
 $string['tab_teacher_settings_configuration'] = 'Konfiguration';
+$string['tab_teacher_settings_selection_st'] = 'Schultyp-Auswahl';
 $string['tab_teacher_settings_selection'] = 'Gegenstands-Auswahl';
 $string['tab_teacher_settings_assignactivities'] = 'Aktivit&auml;ten zuordnen';
 $string['tab_teacher_settings_badges'] = 'Auszeichnungen bearbeiten';
@@ -128,3 +129,9 @@ $string['noxmlfile'] = 'Ein Import ist derzeit nicht m&ouml;glich weil keine XML
 $string['explainconfig'] = 'Um das Modul exabis competences verwenden zu k&ouml;nnen, m&uuml;ssen hier die Schultypen der Moodle-Instanz selektiert werden.';
 $string['save_selection'] = 'Auswahl speichern';
 $string['save_success'] = '&Auml;nderungen erfolgreich &uuml;bernommen';
+
+//Course-Configuration
+$string['grading_scheme'] = 'Bewertungsschema';
+$string['uses_activities'] = 'Ich verwende Moodle Aktivit&auml;ten zur Beurteilung';
+$string['show_all_descriptors'] = 'Alle Deskriptoren im &Uuml;berblick anzeigen';
+$string['show_all_examples'] = 'Externe Beispiele im &Uuml;berblick anzeigen';
