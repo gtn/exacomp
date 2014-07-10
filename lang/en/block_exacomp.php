@@ -52,12 +52,18 @@ $string['tab_badges'] = 'My badges';
 $string['tab_competence_profile'] = 'Competence profile';
 $string['tab_help'] = 'Help';
 
+//Block Settings 
+$string['settings_xmlserverurl'] = 'Server-URL';
+$string['settings_configxmlserverurl'] = 'Url to a xml file, which is used for keeping the database entries up to date';
+$string['settings_alternativedatamodel'] = 'Baden W&uuml;rttemberg Version';
+$string['settings_alternativedatamodel_description'] = 'Tick to use Baden W&uuml;rttemberg Version';
+
 //Learning agenda
-$string['LA_MO'] = "MON";
-$string['LA_DI'] = "TUE";
-$string['LA_MI'] = "WED";
-$string['LA_DO'] = "THU";
-$string['LA_FR'] = "FRI";
+$string['LA_MON'] = "MON";
+$string['LA_TUE'] = "TUE";
+$string['LA_WED'] = "WED";
+$string['LA_THU'] = "THU";
+$string['LA_FRI'] = "FRI";
 $string['LA_todo'] = "What do I do?";
 $string['LA_learning'] = "What can I learn?";
 $string['LA_student'] = "S";
@@ -65,14 +71,14 @@ $string['LA_teacher'] = "T";
 $string['LA_assessment'] = "assessment";
 $string['LA_plan'] = "working plan";
 //$string['LA_allstudents'] = 'Alle Schüler';
-$string['LA_keine_lernagenden'] = 'no learning agenda available';
+$string['LA_no_lerningagenda'] = 'no learning agenda available';
 $string['LA_no_student_selected'] = '-- no student selected --';
-$string['LA_schueler_waehlen'] = 'choose student';
+$string['LA_select_student'] = 'select student';
 $string['LA_no_example'] = 'no example available';
 $string['LA_backtoview'] = 'back to original view';
-$string['LA_von'] = ' from ';
-$string['LA_vom'] = ' from ';
-$string['LA_bis'] = ' to ';
+$string['LA_from_n'] = ' from ';
+$string['LA_from_m'] = ' from ';
+$string['LA_to'] = ' to ';
 $string['LA_enddate']='end date';
 $string['LA_startdate']='start date';
 

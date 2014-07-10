@@ -195,7 +195,7 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 
 	public function print_view_learning_agenda($data, $studentname){
 		global $CFG, $COURSE;
-var_dump($data['Mo']);
+		
 		//header
 		$table = new html_table();
 		$table->attributes['class'] = 'lernagenda';
@@ -206,8 +206,8 @@ var_dump($data['Mo']);
 
 		$cellhead1 = new html_table_cell();
 		$cellhead1->text = html_writer::tag("p", get_string('LA_plan', 'block_exacomp').
-				get_string('LA_von', 'block_exacomp').$studentname.get_string('LA_vom', 'block_exacomp').
-				$data[get_string('LA_MO', 'block_exacomp')]['date'].get_string('LA_bis', 'block_exacomp').$data[get_string('LA_FR', 'block_exacomp')]['date']);
+				get_string('LA_from_n', 'block_exacomp').$studentname.get_string('LA_from_m', 'block_exacomp').
+				$data[get_string('LA_MO', 'block_exacomp')]['date'].get_string('LA_to', 'block_exacomp').$data[get_string('LA_FR', 'block_exacomp')]['date']);
 		//$cellhead1->colspan = 4;
 		//without column "Was kann ich lernen"
 		$cellhead1->colspan = 4;

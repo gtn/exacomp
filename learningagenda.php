@@ -184,9 +184,9 @@ if($print == 0){
 		echo $output->render_learning_agenda($data, $weekdays);
 	else { //no examples
 		if($studentid == 0) //no studentid -> choose student
-			echo '<h2>'.get_string('LA_schueler_waehlen', 'block_exacomp').'</h2>';
+			echo '<h2>'.get_string('LA_select_student', 'block_exacomp').'</h2>';
 		else 
-			echo '<h2>'.get_string('LA_keine_lernagenden', 'block_exacomp').'</h2>';
+			echo '<h2>'.get_string('LA_no_learningagenda', 'block_exacomp').'</h2>';
 	} 
 		
 }else{

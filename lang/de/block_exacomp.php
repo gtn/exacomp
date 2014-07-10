@@ -52,6 +52,12 @@ $string['tab_badges'] = 'Meine Auszeichnungen';
 $string['tab_competence_profile'] = 'Kompetenzprofil';
 $string['tab_help'] = 'Hilfe';
 
+//Block Settings
+$string['settings_xmlserverurl'] = 'Server-URL';
+$string['settings_configxmlserverurl'] = 'Url zu einer XML Datei, die verwendet wird, um die Daten aktuell zu halten';
+$string['settings_alternativedatamodel'] = 'Baden W&uuml;rttemberg Version';
+$string['settings_alternativedatamodel_description'] = 'Anhaken für die Baden W&uuml;rttemberg Version';
+
 //Learning agenda
 $string['LA_MO'] = "Mo";
 $string['LA_DI'] = "Di";
@@ -64,14 +70,14 @@ $string['LA_student'] = "S";
 $string['LA_teacher'] = "L";
 $string['LA_assessment'] = "Einsch&auml;tzung";
 $string['LA_plan'] = "Arbeitsplan";
-$string['LA_keine_lernagenden'] = 'Es sind keine Lernagenden in der ausgew&auml;hlten Woche vorhanden';
+$string['LA_no_learningagenda'] = 'Es sind keine Lernagenden in der ausgew&auml;hlten Woche vorhanden';
 $string['LA_no_student_selected'] = '-- kein Sch&uuml;ler ausgew&auml;hlt --';
-$string['LA_schueler_waehlen'] = 'Sch&uuml;ler ausw&auml;hlen';
+$string['LA_select_student'] = 'Sch&uuml;ler ausw&auml;hlen';
 $string['LA_no_example'] = 'Kein Beispiel zugeordnet';
 $string['LA_backtoview'] = 'Zur&uuml;ck zur Originalansicht';
-$string['LA_von'] = ' von ';
-$string['LA_vom'] = ' vom ';
-$string['LA_bis'] = ' bis zum ';
+$string['LA_from_n'] = ' von ';
+$string['LA_from_m'] = ' vom ';
+$string['LA_to'] = ' bis zum ';
 $string['LA_enddate']='Enddatum';
 $string['LA_startdate']='Startdatum';
 
