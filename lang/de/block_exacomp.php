@@ -56,7 +56,7 @@ $string['tab_help'] = 'Hilfe';
 $string['settings_xmlserverurl'] = 'Server-URL';
 $string['settings_configxmlserverurl'] = 'Url zu einer XML Datei, die verwendet wird, um die Daten aktuell zu halten';
 $string['settings_alternativedatamodel'] = 'Baden W&uuml;rttemberg Version';
-$string['settings_alternativedatamodel_description'] = 'Anhaken f�r die Baden W&uuml;rttemberg Version';
+$string['settings_alternativedatamodel_description'] = 'Anhaken f�r die Baden W&uuml;rttemberg Version';
 
 //Learning agenda
 $string['LA_MO'] = "Mo";
@@ -109,3 +109,16 @@ ePOP-Kontinente:
 ePOP erlaubt die individuelle Strukturierung der Inhalte.
 <a href="http://www.youtube.com/watch?v=gwqVm5R1Dvo#t=54">http://www.youtube.com/watch?v=gwqVm5R1Dvo#t=54</a>
 ';
+
+//Import
+$string['importinfo'] = 'Erstellen Sie Ihre eigenen Kompetenzen/Standards auf <a href="http://www.edustandards.org">www.edustandards.org</a> oder laden Sie ein bestehendes XML von <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch.';
+$string['importwebservice'] = 'Es besteht auch die Möglichkeit die Daten über ein <a href="{$a}">Webservice</a> aktuell zu halten.';
+$string['importdone'] = 'Die allgemeinen Bildungsstandards sind bereits importiert.';
+$string['importpending'] = 'Bitte importieren Sie jetzt die allgemeinen Bildungsstandards und wählen Sie anschließend im Tab Schultyp die anzuzeigenden Deskriptorenbereiche aus.';
+$string['doimport'] = 'Allgemeine Bildungsstandards importieren';
+$string['doimport_again'] = 'Allgemeine Bildungsstandards erneut importieren';
+$string['doimport_own'] = 'Schulspezifische Bildungsstandards importieren';
+$string['importsuccess'] = 'Daten erfolgreich importiert!';
+$string['importsuccess_own'] = 'Eigene Daten erfolgreich importiert!';
+$string['importfail'] = 'Es ist ein Fehler aufgetreten.';
+$string['noxmlfile'] = 'Ein Import ist derzeit nicht möglich weil keine XML Datei vorhanden ist. Bitte hier die entsprechenden Standards downloaden und in das xml Verzeichnis des Blocks kopieren: <a href="https://github.com/gtn/edustandards">https://github.com/gtn/edustandards</a>';

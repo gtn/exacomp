@@ -70,7 +70,7 @@ $string['LA_student'] = "S";
 $string['LA_teacher'] = "T";
 $string['LA_assessment'] = "assessment";
 $string['LA_plan'] = "working plan";
-//$string['LA_allstudents'] = 'Alle Schüler';
+//$string['LA_allstudents'] = 'Alle Schï¿½ler';
 $string['LA_no_lerningagenda'] = 'no learning agenda available';
 $string['LA_no_student_selected'] = '-- no student selected --';
 $string['LA_select_student'] = 'select student';
@@ -86,3 +86,16 @@ $string['LA_startdate']='start date';
 $string['help_content'] = '<h1>Introduction Video</h1>
 <iframe width="640" height="360" src="//www.youtube.com/embed/EL4Vb3_17EM?feature=player_embedded" frameborder="0" allowfullscreen></iframe>
 ';
+
+//Import
+$string['importinfo'] = 'Please create your outcomes/standards at <a href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file to the blocks xml directory.';
+$string['importwebservice'] = 'It is possible to keep the data up to date via a <a href="{$a}">webservice</a>.';
+$string['importdone'] = 'data has already been imported from xml';
+$string['importpending'] = 'no data has been imported yet!';
+$string['doimport'] = 'import descriptors';
+$string['doimport_again'] = 're-import descriptors';
+$string['doimport_own'] = 'import individual descriptors';
+$string['importsuccess'] = 'data was successfully imported!';
+$string['importsuccess_own'] = 'individual data was imported successfully!';
+$string['importfail'] = 'an error has occured during import';
+$string['noxmlfile'] = 'There is no data available to import. Please visit <a href="https://github.com/gtn/edustandards">https://github.com/gtn/edustandards</a> to download the required outcomes to the blocks xml directory.';

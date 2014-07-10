@@ -25,7 +25,6 @@ define('ROLE_STUDENT', 0);
 define('TYPE_DESCRIPTOR', 0);
 define('TYPE_TOPIC', 1);
 
-
 /**
  * Gets all subjects that are used in a particular course. 
  * 
@@ -155,7 +154,7 @@ function block_exacomp_get_competence_tree_by_course($courseid, $subjectid = nul
 	//subjectid is not null iff lis version is used
 	if($subjectid != null) {
 		foreach ($allTopics as $topic) {
-			if(block_exacomp_check_activity_association($topic->id, TYPE_TOPIC, $courseid)){
+			if(block_exacomp_check_activity_association($topic->id, TYPE_TOPIC, $courseid)) {
 				// found: add it to the subject result, even if no descriptor from the topic is used
 				$subject = $allSubjects[$topic->subjid];
 				$subject->subs[$topic->id] = $topic;
@@ -293,7 +292,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 				new tabobject('tab_admin_configuration', new moodle_url('/blocks/exacomp/import.php',array("courseid"=>$courseid)),get_string('tab_admin_configuration','block_exacomp'))
 		);
 	}
-	if (has_capability('block/exacomp:teacher', $context)) {
+	elseif (has_capability('block/exacomp:teacher', $context)) {
 		$rows = array(
 				new tabobject('tab_competence_overview', new moodle_url('/blocks/exacomp/assign_competencies.php',array("courseid"=>$courseid)),get_string('tab_competence_overview','block_exacomp')),
 				new tabobject('tab_competence_details', new moodle_url('/blocks/exacomp/edit_students.php',array("courseid"=>$courseid)),get_string('tab_competence_details','block_exacomp')),
@@ -329,6 +328,17 @@ function block_exacomp_studentselector($students,$selected,$url){
 	}
 	return html_writer::select($studentsAssociativeArray, 'exacomp_competence_grid_select_student',$selected,true,
 			array("onchange"=>"document.location.href='".$url."&studentid='+this.value;"));
+}
+
+function block_exacomp_check_customupload() {
+	$context = context_system::instance();
+
+	foreach (get_user_roles($context) as $role) {
+		if($role->shortname == "exacompcustomupload")
+			return true;
+	}
+
+	return false;
 }
 
 function block_exacomp_coursesettings($courseid = 0) {
