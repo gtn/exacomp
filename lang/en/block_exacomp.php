@@ -71,7 +71,7 @@ $string['LA_teacher'] = "T";
 $string['LA_assessment'] = "assessment";
 $string['LA_plan'] = "working plan";
 //$string['LA_allstudents'] = 'Alle Sch�ler';
-$string['LA_no_lerningagenda'] = 'no learning agenda available';
+$string['LA_no_learningagenda'] = 'no learning agenda available';
 $string['LA_no_student_selected'] = '-- no student selected --';
 $string['LA_select_student'] = 'select student';
 $string['LA_no_example'] = 'no example available';
@@ -99,3 +99,8 @@ $string['importsuccess'] = 'data was successfully imported!';
 $string['importsuccess_own'] = 'individual data was imported successfully!';
 $string['importfail'] = 'an error has occured during import';
 $string['noxmlfile'] = 'There is no data available to import. Please visit <a href="https://github.com/gtn/edustandards">https://github.com/gtn/edustandards</a> to download the required outcomes to the blocks xml directory.';
+
+//Configuration
+$string['explainconfig'] = 'In order to use the module exabis competencies you have to choose your schooltype - the appropriate data will then be imported from the xml-file.';
+$string['save_selection'] = 'save selection';
+$string['save_success'] = 'changes were successful';

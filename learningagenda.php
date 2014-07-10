@@ -120,7 +120,7 @@ if(isset($timecal)) $time = $timecal;
 //if current date is used, add $week to browse through the weeks
 else $time = time()+$week;
 
-$days = array('MO','DI','MI','DO','FR');
+$days = array('MON','TUE','WED','THU','FRI');
 
 //calculate dates of whole week from current day
 $actday = date('w', $time);

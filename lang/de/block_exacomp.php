@@ -56,14 +56,14 @@ $string['tab_help'] = 'Hilfe';
 $string['settings_xmlserverurl'] = 'Server-URL';
 $string['settings_configxmlserverurl'] = 'Url zu einer XML Datei, die verwendet wird, um die Daten aktuell zu halten';
 $string['settings_alternativedatamodel'] = 'Baden W&uuml;rttemberg Version';
-$string['settings_alternativedatamodel_description'] = 'Anhaken f�r die Baden W&uuml;rttemberg Version';
+$string['settings_alternativedatamodel_description'] = 'Anhaken f&uuml;r die Baden W&uuml;rttemberg Version';
 
 //Learning agenda
-$string['LA_MO'] = "Mo";
-$string['LA_DI'] = "Di";
-$string['LA_MI'] = "Mi";
-$string['LA_DO'] = "Do";
-$string['LA_FR'] = "Fr";
+$string['LA_MON'] = "Mo";
+$string['LA_TUE'] = "Di";
+$string['LA_WED'] = "Mi";
+$string['LA_THU'] = "Do";
+$string['LA_FRI'] = "Fr";
 $string['LA_todo'] = "Was mache ich?";
 $string['LA_learning'] = "Was kann ich lernen?";
 $string['LA_student'] = "S";
@@ -122,3 +122,9 @@ $string['importsuccess'] = 'Daten erfolgreich importiert!';
 $string['importsuccess_own'] = 'Eigene Daten erfolgreich importiert!';
 $string['importfail'] = 'Es ist ein Fehler aufgetreten.';
 $string['noxmlfile'] = 'Ein Import ist derzeit nicht m&ouml;glich weil keine XML Datei vorhanden ist. Bitte hier die entsprechenden Standards downloaden und in das xml Verzeichnis des Blocks kopieren: <a href="https://github.com/gtn/edustandards">https://github.com/gtn/edustandards</a>';
+
+
+//Configuration
+$string['explainconfig'] = 'Um das Modul exabis competences verwenden zu k&ouml;nnen, m&uuml;ssen hier die Schultypen der Moodle-Instanz selektiert werden.';
+$string['save_selection'] = 'Auswahl speichern';
+$string['save_success'] = '&Auml;nderungen erfolgreich &uuml;bernommen';

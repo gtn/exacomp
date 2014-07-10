@@ -60,12 +60,18 @@ class block_exacomp extends block_list {
 
 		$courseid = intval($COURSE->id);
 		
-		$checkSubjects = block_exacomp_get_subjects_by_course($courseid);
+		$version = get_config('exacomp', 'alternativedatamodel');
+		
+		if($version)
+			$checkConfig = block_exacomp_is_configured($courseid);
+		else
+			$checkConfig = block_exacomp_is_configured();
+			
 		$checkImport = $DB->get_records('block_exacompdescriptors');
 		
 		$courseSettings = block_exacomp_coursesettings();
 		
-		$version = get_config('exacomp', 'alternativedatamodel');
+		
 		
 		//if checkImport && checkSubjects -> Modul wurde konfiguriert 
 		//else nur admin sieht block und hat nur den link Modulkonfiguration
@@ -73,16 +79,27 @@ class block_exacomp extends block_list {
 		if((has_capability('block/exacomp:admin', $currentcontext))){	//Admin sieht immer Modulkonfiguration
 			//Modulkonfiguration
 			if(!$version){
-				$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/edit_config.php', array('courseid'=>$courseid)), get_string('tab_admin_configuration', 'block_exacomp'), array('title'=>get_string('tab_admin_configuration', 'block_exacomp')));
-				$this->content->icons[] = html_writer::img(new moodle_url('/blocks/exacomp/pix/module_config.png'), "", array('height'=>16, 'width'=>23));
+				//Wenn Import schon erledigt, weiterleitung zu edit_config, ansonsten import.
+				if($checkImport){
+					$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/edit_config.php', array('courseid'=>$courseid)), get_string('tab_admin_configuration', 'block_exacomp'), array('title'=>get_string('tab_admin_configuration', 'block_exacomp')));
+					$this->content->icons[] = html_writer::img(new moodle_url('/blocks/exacomp/pix/module_config.png'), "", array('height'=>16, 'width'=>23));
+				}else{
+					$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid)), get_string('tab_admin_configuration', 'block_exacomp'), array('title'=>get_string('tab_admin_configuration', 'block_exacomp')));
+					$this->content->icons[] = html_writer::img(new moodle_url('/blocks/exacomp/pix/module_config.png'), "", array('height'=>16, 'width'=>23));
+				
+				}
 			}else{
 				$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid)), get_string('tab_admin_import', 'block_exacomp'), array('title'=>get_string('tab_admin_import', 'block_exacomp')));
 				$this->content->icons[] = html_writer::img(new moodle_url('/blocks/exacomp/pix/module_config.png'), "", array('height'=>16, 'width'=>23));
 			}
 		}
 		
-		if($checkSubjects && $checkImport){	//Modul wurde konfiguriert
+		if($checkConfig && $checkImport || $version && $checkImport){	//Modul wurde konfiguriert
 			if (has_capability('block/exacomp:teacher', $currentcontext) && $courseid != 1){
+				if($version){
+					$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/edit_config.php', array('courseid'=>$courseid)), get_string('tab_admin_configuration', 'block_exacomp'), array('title'=>get_string('tab_admin_configuration', 'block_exacomp')));
+					$this->content->icons[] = html_writer::img(new moodle_url('/blocks/exacomp/pix/module_config.png'), "", array('height'=>16, 'width'=>23));
+				}
 				//Kompetenzüberblick
 				$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/assign_competencies.php', array('courseid'=>$courseid)), get_string('tab_competence_overview','block_exacomp'), array('title'=>get_string('tab_competence_overview','block_exacomp')));
 				$this->content->icons[] = html_writer::img(new moodle_url('/blocks/exacomp/pix/overview_of_competencies.png'), "", array('height'=>16, 'width'=>'23'));
@@ -111,8 +128,8 @@ class block_exacomp extends block_list {
 				
 				//Hilfe
 				$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/help.php', array('courseid'=>$courseid)), get_string('tab_help', 'block_exacomp'), array('title'=>get_string('tab_help', 'block_exacomp')));
-				//welches icon?
-				//$this->content->icons[] = 
+				$this->content->icons[] = html_writer::img(new moodle_url('/blocks/exacomp/pix/info.png'), "", array('height'=>16, 'width'=>23));
+				
 			}else if (has_capability('block/exacomp:student', $currentcontext) && $courseid != 1 && !has_capability('block/exacomp:admin', $currentcontext)){
 				//Kompetenzüberblick
 				$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/assign_competencies.php', array('courseid'=>$courseid)), get_string('tab_competence_overview','block_exacomp'), array('title'=>get_string('tab_competence_overview','block_exacomp')));
@@ -148,8 +165,8 @@ class block_exacomp extends block_list {
 				
 				//Hilfe
 				$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/help.php', array('courseid'=>$courseid)), get_string('tab_help', 'block_exacomp'), array('title'=>get_string('tab_help', 'block_exacomp')));
-				//welches icon?
-				//$this->content->icons[] = 
+				$this->content->icons[] = html_writer::img(new moodle_url('/blocks/exacomp/pix/info.png'), "", array('height'=>16, 'width'=>23));
+				
 			}
 		}
 		return $this->content;

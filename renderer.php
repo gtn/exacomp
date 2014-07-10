@@ -321,6 +321,67 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 		$content = html_writer::tag("div", html_writer::table($table), array("id"=>"exabis_competences_block"));
 		return $content;
 	}
-	
+	public function print_edit_config($data, $courseid){
+		global $OUTPUT;
+		
+		$header = html_writer::label($data->headertext, '').html_writer::empty_tag('br');
+		
+		$table = new html_table();
+		$rows = array();
+		
+		$temp = false;
+		foreach($data->levels as $levelstruct){
+			if($levelstruct->level->source > 1 && $temp == false){
+				$row = new html_table_row();
+				$row->attributes['class'] = 'heading r0';
+				
+				$cell = new html_table_cell();
+				$cell->attributes['class'] = 'category catlevel1';
+				$cell->colspan = 2;
+				$cell->text = html_writer::tag('h2', get_string('specificcontent', 'block_exacomp'));
+    			
+				$row->cells[] = $cell;
+				$rows[] = $row;
+				$temp = true;
+    		}
+    		
+    		$row = new html_table_row();
+    		$cell = new html_table_cell();
+    		$cell->colspan = 2;
+    		$cell->text = html_writer::tag('b', $levelstruct->level->title);
+    		
+    		$row->cells[] = $cell;
+    		$rows[] = $row;
+			
+			foreach($levelstruct->schooltypes as $schooltypestruct){
+				$row = new html_table_row();
+				$cell = new html_table_cell();
+				$cell->text = $schooltypestruct->schooltype->title;
+				$row->cells[] = $cell;
+					
+				$cell = new html_table_cell();
+				if($schooltypestruct->ticked){
+					$cell->text = html_writer::empty_tag('input', array('type'=>'checkbox', 'name'=>'data['.$schooltypestruct->schooltype->id.']', 'value'=>$schooltypestruct->schooltype->id, 'checked'=>'checked'));
+				}else{
+					$cell->text = html_writer::empty_tag('input', array('type'=>'checkbox', 'name'=>'data['.$schooltypestruct->schooltype->id.']', 'value'=>$schooltypestruct->schooltype->id));
+				}
+				
+				$row->cells[] = $cell;
+				$rows[] = $row;
+			}
+		}
+		
+		$hiddenaction = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'action', 'value'=>'save'));
+		$innerdiv = html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))));
+		
+		$table->data = $rows;
+		
+		
+		$div = html_writer::div(html_writer::tag('form', html_writer::table($table).$hiddenaction.$innerdiv, array('action'=>'edit_config.php?courseid='.$courseid, 'method'=>'post')), 'block_excomp_center');
+		
+		$content = html_writer::tag("div", $header.$div, array("id"=>"exabis_competences_block"));
+		
+		return $content;
+	}
 }
 ?>
