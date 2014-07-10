@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once dirname(__FILE__) . '/lib/lib.php';
 
-class block_exacomp extends block_base {
+class block_exacomp extends block_list {
 
 	function init() {
 		$this->title = get_string('pluginname', 'block_exacomp');
@@ -45,27 +45,17 @@ class block_exacomp extends block_base {
 		}
 
 		$this->content = new stdClass();
-		$this->content->items = array();
-		$this->content->icons = array();
 		$this->content->footer = '';
+		$this->content->icons = array();
+		$this->content->items = array();
+		
 
 		// user/index.php expect course context, so get one if page has module context.
 		$currentcontext = $this->page->context->get_course_context(false);
 
-		if (! empty($this->config->text)) {
-			$this->content->text = $this->config->text;
-		}
-
 		$this->content = '';
 		if (empty($currentcontext)) {
 			return $this->content;
-		}
-		if ($this->page->course->id == SITEID) {
-			$this->context->text .= "site context";
-		}
-
-		if (! empty($this->config->text)) {
-			$this->content->text .= $this->config->text;
 		}
 
 		$courseid = intval($COURSE->id);
@@ -162,7 +152,6 @@ class block_exacomp extends block_base {
 				//$this->content->icons[] = 
 			}
 		}
-		
 		return $this->content;
 	}
 
