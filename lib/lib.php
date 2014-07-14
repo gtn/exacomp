@@ -25,6 +25,12 @@ define('ROLE_STUDENT', 0);
 define('TYPE_DESCRIPTOR', 0);
 define('TYPE_TOPIC', 1);
 
+// SETTINGS
+define('SETTINGS_MAX_SCHEME', 10);
+
+$version = get_config('exacomp','alternativedatamodel');
+define("LIS_SHOW_ALL_TOPICS",99999999);
+
 function block_exacomp_init_js_css(){
 	global $PAGE;
 	$PAGE->requires->css('/blocks/exacomp/css/jquery-ui.css');
@@ -68,7 +74,7 @@ function block_exacomp_get_all_topics($subjectid = null) {
 	global $DB;
 	
 	$topics = $DB->get_records_sql('
-			SELECT t.id, t.title, t.parentid, t.subjid, "topic" as type, t.cat
+			SELECT t.id, t.title, t.parentid, t.subjid, "topic" as type, t.catid
 			FROM {'.DB_SUBJECTS.'} s
 			JOIN {'.DB_TOPICS.'} t ON t.subjid = s.id
 			'.($subjectid == null ? '' : '
@@ -135,7 +141,7 @@ function block_exacomp_get_descriptors_by_course($courseid) {
 			JOIN {block_exacompdescriptors} d ON desctopmm.descrid=d.id
 			'.(block_exacomp_coursesettings()->show_all_descriptors ? '' : '
 					-- only show active ones
-					JOIN {block_exacompdescractiv_mm} da ON d.id=da.descrid
+					JOIN {block_exacompcompactiv_mm} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
 					JOIN {course_modules} a ON da.activityid=a.id AND a.course=?
 					').'
 			GROUP BY d.id
@@ -316,7 +322,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 
 		$settings->subtree[] = new tabobject('tab_teacher_settings_selection', new moodle_url('/blocks/exacomp/courseselection.php', array('courseid'=>$courseid)), get_string("tab_teacher_settings_selection", "block_exacomp"));
 		
-		if (block_exacomp_isactivated($courseid)) {
+		if (block_exacomp_is_activated($courseid)) {
 			if ($courseSettings->uses_activities)
 				$settings->subtree[] = new tabobject('tab_teacher_settings_assignactivities', new moodle_url('/blocks/exacomp/edit_activities.php', array('courseid'=>$courseid)), get_string("tab_teacher_settings_assignactivities", "block_exacomp"));
 		}
@@ -390,24 +396,18 @@ function block_exacomp_coursesettings($courseid = 0) {
 }
 function block_exacomp_get_edulevels() {
 	global $DB;
-	$levels = $DB->get_records('block_exacompedulevels',null,'source');
-	return $levels;
+	return $DB->get_records('block_exacompedulevels',null,'source');
 }
 
 function block_exacomp_get_schooltypes($edulevel) {
 	global $DB;
 
-	$types = $DB->get_records('block_exacompschooltypes', array("elid" => $edulevel));
-	return $types;
+	return $DB->get_records('block_exacompschooltypes', array("elid" => $edulevel));
 }
 function block_exacomp_get_mdltypes($typeid, $courseid = 0) {
 	global $DB;
 
-	$res = $DB->get_record('block_exacompmdltype_mm', array("stid" => $typeid, "courseid" => $courseid));
-	if ($res)
-		return true;
-	else
-		return false;
+	return $DB->get_record('block_exacompmdltype_mm', array("stid" => $typeid, "courseid" => $courseid));
 }
 function block_exacomp_set_mdltype($values, $courseid = 0) {
 	global $DB;
@@ -424,11 +424,7 @@ function block_exacomp_set_mdltype($values, $courseid = 0) {
 function block_exacomp_is_configured($courseid=0){
 	global $DB;
 	
-	$res = $DB->get_record('block_exacompmdltype_mm', array("courseid"=>$courseid));
-	if($res)
-		return true;
-	else
-		return false;
+	return $DB->get_record('block_exacompmdltype_mm', array("courseid"=>$courseid));
 }
 function block_exacomp_moodle_badges_enabled() {
 	global $CFG;
@@ -441,25 +437,36 @@ function block_exacomp_save_coursesettings($courseid, $settings) {
 
 	$DB->delete_records('block_exacompsettings', array("courseid" => $courseid));
 
-	if ($settings->grading > 10) $settings->grading = 10;
+	if ($settings->grading > SETTINGS_MAX_SCHEME) $settings->grading = SETTINGS_MAX_SCHEME;
 
 	$settings->courseid = $courseid;
 	$settings->tstamp = time();
 
 	$DB->insert_record('block_exacompsettings', $settings);
 }
-function block_exacomp_isactivated($courseid) {
+function block_exacomp_is_activated($courseid) {
 	global $DB;
 
-	$topics = $DB->get_records('block_exacompcoutopi_mm', array("courseid" => $courseid));
-	if (!empty($topics))
-		return true;
-	else
-		return false;
+	return $DB->get_records('block_exacompcoutopi_mm', array("courseid" => $courseid));
 }
-function block_exacomp_getbewertungsschema($courseid,$leerwert=1){
+function block_exacomp_get_grading_scheme($courseid) {
 	global $DB;
-	$rs = $DB->get_record('block_exacompsettings', array("courseid" => $courseid));
-	if (!empty($rs) && ($rs->grading > 0)) return $rs->grading;
-	else return $leerwert;
+	$settings = block_exacomp_get_settings_by_course($courseid);
+	return $settings->grading;
+}
+
+function block_exacomp_get_output_fields($topic) {
+	global $version;
+
+	if (preg_match('!^([^\s]*[0-9][^\s]*+)\s+(.*)$!iu', $topic->title, $matches)) {
+		$output_id = $matches[1];
+		$output_title = $matches[2];
+	} else {
+		$output_id = '';
+		$output_title = $topic->title;
+	}
+	if($version && $topic->id == LIS_SHOW_ALL_TOPICS)
+		$output_id = $DB->get_field('block_exacompcategories', 'title', array("id"=>$topic->cat));
+
+	return array($output_id, $output_title);
 }

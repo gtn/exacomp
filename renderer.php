@@ -23,8 +23,10 @@
  */
 defined('MOODLE_INTERNAL') || die;
 
+define('STUDENTS_PER_COLUMN', 5);
+
 class block_exacomp_renderer extends plugin_renderer_base {
-public function form_week_learningagenda($selectstudent,$action,$studentid, $view, $date = ''){
+	public function form_week_learningagenda($selectstudent,$action,$studentid, $view, $date = ''){
 		global $COURSE, $CFG;
 
 		if($view == 0){
@@ -85,7 +87,7 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 
 		$rows = array();
 
-		//erste Reihe->Überschriften
+		//erste Reihe->ï¿½berschriften
 		$row = new html_table_row();
 		$cell = new html_table_cell();
 		$cell->text = "";
@@ -103,7 +105,7 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 		$cell = new html_table_cell();
 		$cell->text = html_writer::tag("p", get_string('LA_enddate', 'block_exacomp'));
 		$row->cells[] = $cell;
-		
+
 		$cell = new html_table_cell();
 		$cell->text = html_writer::tag("p", get_string('LA_student', 'block_exacomp'));
 		$row->cells[] = $cell;
@@ -134,18 +136,18 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 							$cell = new html_table_cell();
 							if(isset($example->task))
 								$cell->text = html_writer::tag("p", html_writer::tag("b", $example->desc.": ").(($example->numb > 0) ? $example->schooltype.$example->numb : "")." "
-									.html_writer::tag("a", $example->title, array("href"=>$example->task, "target"=>"_blank")).(($example->cat) ? " (".$example->cat.")" : ""));
+										.html_writer::tag("a", $example->title, array("href"=>$example->task, "target"=>"_blank")).(($example->cat) ? " (".$example->cat.")" : ""));
 							elseif(isset($example->externalurl))
-								$cell->text = html_writer::tag("p", html_writer::tag("b", $example->desc.": ").(($example->numb > 0) ? $example->schooltype.$example->numb : "")." "
+							$cell->text = html_writer::tag("p", html_writer::tag("b", $example->desc.": ").(($example->numb > 0) ? $example->schooltype.$example->numb : "")." "
 									.html_writer::tag("a", $example->title, array("href"=>$example->externalurl, "target"=>"_blank")).(($example->cat) ? " (".$example->cat.")" : ""));
-							else 
+							else
 								$cell->text = html_writer::tag("p", html_writer::tag("b", $example->desc.": ").(($example->numb > 0) ? $example->schooltype.$example->numb : "")." "
-									.$example->title.(($example->cat) ? " (".$example->cat.")" : ""));
-									
+										.$example->title.(($example->cat) ? " (".$example->cat.")" : ""));
+
 							$row->cells[] = $cell;
 
 							$cell = new html_table_cell();
-							$cell->text = date("d.m.y", $example->enddate); 
+							$cell->text = date("d.m.y", $example->enddate);
 							$row->cells[] = $cell;
 							$cell = new html_table_cell();
 							$grading=getgrading($COURSE->id);
@@ -159,7 +161,7 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 							}else{
 								if($example->evaluate > 0)
 									$cell->text =	$example->evaluate;
-								else 
+								else
 									$cell->text = html_writer::empty_tag('img', array('src' => $CFG->wwwroot . '/blocks/exacomp/pix/del_16x16.png', 'alt' => '0', 'height' => '16', 'width'=>'16'));
 							}
 							$row->cells[] = $cell;
@@ -195,13 +197,13 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 
 	public function print_view_learning_agenda($data, $studentname){
 		global $CFG, $COURSE;
-		
+
 		//header
 		$table = new html_table();
 		$table->attributes['class'] = 'lernagenda';
 		$table->attributes['border'] = 1;
 		$table->attributes['style'] = 'padding:5px; table-layout:inherit';
-		
+
 		$head = array();
 
 		$cellhead1 = new html_table_cell();
@@ -222,7 +224,7 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 
 		$rows = array();
 
-		//erste Reihe->Überschriften
+		//erste Reihe->ï¿½berschriften
 		$row = new html_table_row();
 		$cell = new html_table_cell();
 		$cell->text = "";
@@ -239,7 +241,7 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 		$cell = new html_table_cell();
 		$cell->text = html_writer::tag("p", get_string('LA_enddate', 'block_exacomp'));
 		$row->cells[] = $cell;
-		
+
 		$cell = new html_table_cell();
 		$cell->text = html_writer::tag("p", get_string('LA_student', 'block_exacomp'));
 		$row->cells[] = $cell;
@@ -272,7 +274,7 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 							$row->cells[] = $cell;
 
 							$cell = new html_table_cell();
-							$cell->text = date("d.m.y", $example->enddate); 
+							$cell->text = date("d.m.y", $example->enddate);
 							$row->cells[] = $cell;
 
 							$cell = new html_table_cell();
@@ -287,7 +289,7 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 							}else{
 								if($example->evaluate > 0)
 									$cell->text = $example->evaluate;
-								else 
+								else
 									$cell->text = html_writer::empty_tag('img', array('src' => $CFG->wwwroot . '/blocks/exacomp/pix/del_16x16.png', 'alt' => '0', 'height' => '16', 'width'=>'16'));
 							}
 							$row->cells[] = $cell;
@@ -321,38 +323,39 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 		$content = html_writer::tag("div", html_writer::table($table), array("id"=>"exabis_competences_block"));
 		return $content;
 	}
+	/*
 	public function print_edit_config($data, $courseid){
 		global $OUTPUT;
-		
+
 		$header = html_writer::label($data->headertext, '').html_writer::empty_tag('br');
-		
+
 		$table = new html_table();
 		$rows = array();
-		
+
 		$temp = false;
 		foreach($data->levels as $levelstruct){
 			if($levelstruct->level->source > 1 && $temp == false){
 				$row = new html_table_row();
 				$row->attributes['class'] = 'heading r0';
-				
+
 				$cell = new html_table_cell();
 				$cell->attributes['class'] = 'category catlevel1';
 				$cell->colspan = 2;
 				$cell->text = html_writer::tag('h2', get_string('specificcontent', 'block_exacomp'));
-    			
+					
 				$row->cells[] = $cell;
 				$rows[] = $row;
 				$temp = true;
-    		}
-    		
-    		$row = new html_table_row();
-    		$cell = new html_table_cell();
-    		$cell->colspan = 2;
-    		$cell->text = html_writer::tag('b', $levelstruct->level->title);
-    		
-    		$row->cells[] = $cell;
-    		$rows[] = $row;
-			
+			}
+
+			$row = new html_table_row();
+			$cell = new html_table_cell();
+			$cell->colspan = 2;
+			$cell->text = html_writer::tag('b', $levelstruct->level->title);
+
+			$row->cells[] = $cell;
+			$rows[] = $row;
+
 			foreach($levelstruct->schooltypes as $schooltypestruct){
 				$row = new html_table_row();
 				$cell = new html_table_cell();
@@ -365,68 +368,222 @@ public function form_week_learningagenda($selectstudent,$action,$studentid, $vie
 				}else{
 					$cell->text = html_writer::empty_tag('input', array('type'=>'checkbox', 'name'=>'data['.$schooltypestruct->schooltype->id.']', 'value'=>$schooltypestruct->schooltype->id));
 				}
-				
+
 				$row->cells[] = $cell;
 				$rows[] = $row;
 			}
 		}
-		
+
 		$hiddenaction = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'action', 'value'=>'save'));
 		$innerdiv = html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))));
-		
+
 		$table->data = $rows;
-		
-		
+
+
 		$div = html_writer::div(html_writer::tag('form', html_writer::table($table).$hiddenaction.$innerdiv, array('action'=>'edit_config.php?courseid='.$courseid, 'method'=>'post')), 'block_excomp_center');
-		
+
 		$content = html_writer::tag("div", $header.$div, array("id"=>"exabis_competences_block"));
-		
+
+		return $content;
+	}
+
+	*/
+	public function print_competence_overview($subjects, $courseid, $evaluation, $students) {
+
+		$table = new html_table();
+		$rows = array();
+		$table->attributes['class'] = 'exabis_comp_comp';
+
+		/* SUBJECTS */
+		foreach($subjects as $subject) {
+			//for every subject
+			$subjectRow = new html_table_row();
+			$subjectRow->attributes['class'] = 'highlight';
+
+			//subject-title
+			$title = new html_table_cell();
+			$title->colspan = 2;
+			$title->text = html_writer::tag("b", $subject->title);
+
+			$subjectRow->cells[] = $title;
+
+			$studentsCount = 0;
+			$studentsColspan = 1;
+
+			foreach($students as $student) {
+				$studentCell = new html_table_cell();
+				$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
+
+				$studentCell->attributes['class'] = 'exabis_comp_top_studentcol colgroup colgroup-' . $columnGroup;
+				$studentCell->colspan = $studentsColspan;
+				$studentCell->text = fullname($student);
+
+				$subjectRow->cells[] = $studentCell;
+			}
+			$rows[] = $subjectRow;
+			/*
+			 * TO DO: PRINT S | T Columns
+			*/
+
+			/* TOPICS */
+			//for every topic
+			$data = (object)array(
+					'rowgroup' => 0,
+					'courseid' => $courseid
+			);
+			$this->print_topics($rows, 0, $subject->subs, $data, $students);
+			$table->data = $rows;
+		}
+
+		return html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
+	}
+
+	public function print_topics(&$rows, $level, $topics, &$data, $students, $rowgroup_class = '') {
+
+		foreach($topics as $topic) {
+			list($outputid, $outputname) = block_exacomp_get_output_fields($topic);
+			$studentsCount = 0;
+			$studentsColspan = 1;
+
+			$hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) && (!get_config('exacomp','alternativedatamodel') || (get_config('exacomp','alternativedatamodel') && $topicid == LIS_SHOW_ALL_TOPICS)));
+
+			if ($hasSubs) {
+				$data->rowgroup++;
+				$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$rowgroup_class;
+				$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$data->rowgroup.' '.$rowgroup_class;
+			} else {
+				$this_rowgroup_class = $rowgroup_class;
+				$sub_rowgroup_class = '';
+			}
+
+			$topicRow = new html_table_row();
+			$topicRow->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rowgroup_class . ' highlight';
+
+			$outputidCell = new html_table_cell();
+			$outputidCell->text = $outputid;
+			$topicRow->cells[] = $outputidCell;
+
+			$outputnameCell = new html_table_cell();
+			$outputnameCell->attributes['class'] = 'rowgroup-arrow';
+			$outputnameCell->text = $outputname;
+			$topicRow->cells[] = $outputnameCell;
+
+			foreach($students as $student) {
+				$studentCell = new html_table_cell();
+				$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
+				$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+				$studentCell->colspan = $studentsColspan;
+
+				$topicRow->cells[] = $studentCell;
+			}
+
+			$rows[] = $topicRow;
+
+			if (!empty($topic->descriptors)) {
+				//print_level_descriptors($level+1, $item->descriptors, $data, $sub_rowgroup_class);
+			}
+
+			if (!empty($topic->subs)) {
+				$this->print_topics($rows, $level+1, $topic->subs, $data, $students, $sub_rowgroup_class);
+			}
+		}
+	}
+	public function print_edit_config($data, $courseid){
+		global $OUTPUT;
+
+		$header = html_writer::label($data->headertext, '').html_writer::empty_tag('br');
+
+		$table = new html_table();
+		$rows = array();
+
+		$temp = false;
+		foreach($data->levels as $levelstruct){
+			if($levelstruct->level->source > 1 && $temp == false){
+				$row = new html_table_row();
+				$row->attributes['class'] = 'heading r0';
+
+				$cell = new html_table_cell();
+				$cell->attributes['class'] = 'category catlevel1';
+				$cell->colspan = 2;
+				$cell->text = html_writer::tag('h2', get_string('specificcontent', 'block_exacomp'));
+				 
+				$row->cells[] = $cell;
+				$rows[] = $row;
+				$temp = true;
+			}
+
+			$row = new html_table_row();
+			$cell = new html_table_cell();
+			$cell->colspan = 2;
+			$cell->text = html_writer::tag('b', $levelstruct->level->title);
+
+			$row->cells[] = $cell;
+			$rows[] = $row;
+				
+			foreach($levelstruct->schooltypes as $schooltypestruct){
+				$row = new html_table_row();
+				$cell = new html_table_cell();
+				$cell->text = $schooltypestruct->schooltype->title;
+				$row->cells[] = $cell;
+					
+				$cell = new html_table_cell();
+				if($schooltypestruct->ticked){
+					$cell->text = html_writer::empty_tag('input', array('type'=>'checkbox', 'name'=>'data['.$schooltypestruct->schooltype->id.']', 'value'=>$schooltypestruct->schooltype->id, 'checked'=>'checked'));
+				}else{
+					$cell->text = html_writer::empty_tag('input', array('type'=>'checkbox', 'name'=>'data['.$schooltypestruct->schooltype->id.']', 'value'=>$schooltypestruct->schooltype->id));
+				}
+
+				$row->cells[] = $cell;
+				$rows[] = $row;
+			}
+		}
+
+		$hiddenaction = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'action', 'value'=>'save'));
+		$innerdiv = html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))));
+
+		$table->data = $rows;
+
+
+		$div = html_writer::div(html_writer::tag('form', html_writer::table($table).$hiddenaction.$innerdiv, array('action'=>'edit_config.php?courseid='.$courseid, 'method'=>'post')), 'block_excomp_center');
+
+		$content = html_writer::tag("div", $header.$div, array("id"=>"exabis_competences_block"));
+
 		return $content;
 	}
 	public function print_edit_course($settings, $action, $courseid){
 		$saved = "";
 		if ($action == 'save_coursesettings')
-   				$saved = html_writer::label(get_string("save_success", "block_exacomp"), "").html_writer::empty_tag('br');
-   				
-		$input_grading = get_string('grading_scheme', 'block_exacomp').": &nbsp"
-			.html_writer::empty_tag('input', array('type'=>'text', 'size'=>2, 'name'=>'grading', 'value'=>block_exacomp_getbewertungsschema($courseid)))
-			.html_writer::empty_tag('br');
-		
-		if(!empty($settings->uses_activities))
-			$checkbox = html_writer::empty_tag('input', array('type'=>'checkbox', 'value'=>1, 'name'=>'uses_activities', 'checked'=>'checked'));
-		else 
-			$checkbox = html_writer::empty_tag('input', array('type'=>'checkbox', 'value'=>1, 'name'=>'uses_activities'));
-	
-		$input_activities = $checkbox.get_string('uses_activities', 'block_exacomp')
-			.html_writer::empty_tag('br');
-				
-		if(!empty($settings->show_all_descriptors))
-			$checkbox = html_writer::empty_tag('input', array('type'=>'checkbox', 'value'=>1, 'name'=>'show_all_descriptors', 'checked'=>'checked'));
-		else
-			$checkbox = html_writer::empty_tag('input', array('type'=>'checkbox', 'value'=>1, 'name'=>'show_all_descriptors'));	
-		
-		$input_descriptors = $checkbox.get_string('show_all_descriptors', 'block_exacomp')
-			.html_writer::empty_tag('br');
+			$saved = html_writer::label(get_string("save_success", "block_exacomp"), "").html_writer::empty_tag('br');
 			
-		if(!empty($settings->show_all_examples))
-			$checkbox = html_writer::empty_tag('input', array('type'=>'checkbox', 'value'=>1, 'name'=>'show_all_examples', 'checked'=>'checked'));
-		else
-			$checkbox = html_writer::empty_tag('input', array('type'=>'checkbox', 'value'=>1, 'name'=>'show_all_examples'));
+		$input_grading = get_string('grading_scheme', 'block_exacomp').": &nbsp"
+		.html_writer::empty_tag('input', array('type'=>'text', 'size'=>2, 'name'=>'grading', 'value'=>block_exacomp_get_grading_scheme($courseid)))
+		.html_writer::empty_tag('br');
+
+		$checkbox = html_writer::empty_tag('input', array('type'=>'checkbox', 'value'=>1, 'name'=>'uses_activities', 'checked'=> (!empty($settings->uses_activities) ? 'checked' : '')));
+
+		$input_activities = $checkbox.get_string('uses_activities', 'block_exacomp')
+		.html_writer::empty_tag('br');
+
+		$checkbox = html_writer::empty_tag('input', array('type'=>'checkbox', 'value'=>1, 'name'=>'show_all_descriptors', 'checked'=> (!empty($settings->show_all_descriptors) ? 'checked' : '')));
+
+		$input_descriptors = $checkbox.get_string('show_all_descriptors', 'block_exacomp')
+		.html_writer::empty_tag('br');
+			
+		$checkbox = html_writer::empty_tag('input', array('type'=>'checkbox', 'value'=>1, 'name'=>'show_all_examples', 'checked'=> (!empty($settings->show_all_examples) ? 'checked' : '')));
 			
 		$input_examples = $checkbox.get_string('show_all_examples', 'block_exacomp')
-			.html_writer::empty_tag('br');
+		.html_writer::empty_tag('br');
 			
 		$input_submit = html_writer::empty_tag('br').html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save', 'admin')));
-		
+
 		$hiddenaction = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'action', 'value'=>'save_coursesettings'));
-		
-		
+
 		$div = html_writer::div(html_writer::tag('form',
-			$saved.$input_grading.$input_activities.$input_descriptors.$input_examples.$hiddenaction.$input_submit, 
-			array('action'=>'edit_course.php?courseid='.$courseid, 'method'=>'post')), 'block_excomp_center');
-		
+				$saved.$input_grading.$input_activities.$input_descriptors.$input_examples.$hiddenaction.$input_submit,
+				array('action'=>'edit_course.php?courseid='.$courseid, 'method'=>'post')), 'block_excomp_center');
+
 		$content = html_writer::tag("div", $div, array("id"=>"exabis_competences_block"));
-		 
+			
 		return $content;
 	}
 }
