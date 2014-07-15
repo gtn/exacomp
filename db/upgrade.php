@@ -1018,10 +1018,10 @@ function xmldb_block_exacomp_upgrade($oldversion) {
      	
      	//change type of fields starttime and endtime
      	$field = new xmldb_field('starttime', XMLDB_TYPE_INTEGER);
-     	$dbname->change_field_type($table, $field);
+     	$dbman->change_field_type($table, $field);
      	
      	$field = new xmldb_field('endtime', XMLDB_TYPE_INTEGER);
-     	$dbname->change_field_type($table, $field);
+     	$dbman->change_field_type($table, $field);
      	
      	//add key studentid, exampleid, courseid and teacher_reviewerid
      	$key = new xmldb_key('studentid', XMLDB_KEY_FOREIGN, array('studentid'), 'user', array('id'));
