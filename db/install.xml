@@ -173,7 +173,7 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-     <!-- changed tablename, fields(compid, cmid, cmtitle, comptype, eportfolioitem) deleted activitytype, and foreign key descid, activityid deleted -->
+     <!-- changed tablename, fields(compid, comptype, eportfolioitem) deleted activitytype, and foreign key descid, activityid deleted -->
     <TABLE NAME="block_exacompcompactiv_mm" COMMENT="zuordnung aufgaben zu deskriptoren oder topics festlegen">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -182,8 +182,7 @@
         <FIELD NAME="activitytitle" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Name der Aktivität. Dient nur als Backup, damit Name bei Löschen des Kurses nicht verloren geht"/>
         <FIELD NAME="coursetitle" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Dient zum Sichern des Kurstitels, falls dieser gelöscht werden sollte"/>
      	<FIELD NAME="comptype" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Deskriptor, 1 für Topic"/>
-     	<FIELD NAME="eportfolioitem" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Kursmodul, 1 für Eportfolio Item"/>
-      	
+     	<FIELD NAME="eportfolioitem" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Kursmodul, 1 für Eportfolio Item"/> 	
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -199,7 +198,7 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-     <!-- changed tablename, fields(compid, value, comptype, eportfolioitem) deleted: activitytype, and foreign key descid, activityid deleted -->
+     <!-- changed tablename, fields(compid, value, comptype, eportfolioitem, timestamp) deleted: activitytype, and foreign key descid, activityid deleted -->
     <TABLE NAME="block_exacompcompuser_mm" COMMENT="In dieser Tabelle wird gespeichert, welche User welche Deskriptoren oder Topics von welcher Aufgabe erfüllen und zustäzlich wer den Eintrag gemacht hat, also Lehrer oder Schüler.">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>

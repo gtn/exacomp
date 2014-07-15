@@ -323,71 +323,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content = html_writer::tag("div", html_writer::table($table), array("id"=>"exabis_competences_block"));
 		return $content;
 	}
-	/*
-	public function print_edit_config($data, $courseid){
-		global $OUTPUT;
-
-		$header = html_writer::label($data->headertext, '').html_writer::empty_tag('br');
-
-		$table = new html_table();
-		$rows = array();
-
-		$temp = false;
-		foreach($data->levels as $levelstruct){
-			if($levelstruct->level->source > 1 && $temp == false){
-				$row = new html_table_row();
-				$row->attributes['class'] = 'heading r0';
-
-				$cell = new html_table_cell();
-				$cell->attributes['class'] = 'category catlevel1';
-				$cell->colspan = 2;
-				$cell->text = html_writer::tag('h2', get_string('specificcontent', 'block_exacomp'));
-					
-				$row->cells[] = $cell;
-				$rows[] = $row;
-				$temp = true;
-			}
-
-			$row = new html_table_row();
-			$cell = new html_table_cell();
-			$cell->colspan = 2;
-			$cell->text = html_writer::tag('b', $levelstruct->level->title);
-
-			$row->cells[] = $cell;
-			$rows[] = $row;
-
-			foreach($levelstruct->schooltypes as $schooltypestruct){
-				$row = new html_table_row();
-				$cell = new html_table_cell();
-				$cell->text = $schooltypestruct->schooltype->title;
-				$row->cells[] = $cell;
-					
-				$cell = new html_table_cell();
-				if($schooltypestruct->ticked){
-					$cell->text = html_writer::empty_tag('input', array('type'=>'checkbox', 'name'=>'data['.$schooltypestruct->schooltype->id.']', 'value'=>$schooltypestruct->schooltype->id, 'checked'=>'checked'));
-				}else{
-					$cell->text = html_writer::empty_tag('input', array('type'=>'checkbox', 'name'=>'data['.$schooltypestruct->schooltype->id.']', 'value'=>$schooltypestruct->schooltype->id));
-				}
-
-				$row->cells[] = $cell;
-				$rows[] = $row;
-			}
-		}
-
-		$hiddenaction = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'action', 'value'=>'save'));
-		$innerdiv = html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))));
-
-		$table->data = $rows;
-
-
-		$div = html_writer::div(html_writer::tag('form', html_writer::table($table).$hiddenaction.$innerdiv, array('action'=>'edit_config.php?courseid='.$courseid, 'method'=>'post')), 'block_excomp_center');
-
-		$content = html_writer::tag("div", $header.$div, array("id"=>"exabis_competences_block"));
-
-		return $content;
-	}
-
-	*/
 	public function print_competence_overview($subjects, $courseid, $evaluation, $students) {
 
 		$table = new html_table();
@@ -584,6 +519,43 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$content = html_writer::tag("div", $div, array("id"=>"exabis_competences_block"));
 			
+		return $content;
+	}
+	
+	public function print_my_badges($badges){
+		$content = "";
+		if($badges->issued){
+			$content .= html_writer::tag('h2', get_string('mybadges', 'block_exacomp'));
+			foreach ($badges->issues as $badge){
+				$context = context_course::instance($badge->courseid);
+				$imageurl = moodle_url::make_pluginfile_url($context->id, 'badges', 'badgeimage', $badge->id, '/', 'f1', false);
+        		$img = html_writer::empty_tag('img', array('src' => $imageurl, 'class' => 'badge-image'));
+        		$innerdiv = html_writer::div($badge->name,"", array('style'=>'font-weight:bold;'));
+        		$div = html_writer::div($img.$innerdiv, '', array('style'=>'padding:10px;'));
+				$content .= $div;
+			}
+		
+		}
+		if($badges->pending){
+			$content .= html_writer::tag('h2', get_string('pendingbadges', 'block_exacomp'));
+			foreach($badges as $badge){
+				$context = context_course::instance($badge->courseid);
+        		$imageurl = moodle_url::make_pluginfile_url($context->id, 'badges', 'badgeimage', $badge->id, '/', 'f1', false);
+        		$img = html_writer::empty_tag('img', array('src' => $imageurl, 'class' => 'badge-image'));
+				$innerdiv = html_writer::div($badge->name, "", array('style'=>'font-weight: bold;'));
+				$innerdiv2 = "";
+				if($badge->descriptorStatus){
+					$innerdiv2_content = "";
+					foreach($badge->descriptorStatus as $descriptor){
+						$innerdiv2_content .= html_writer::div($descriptor, "", array('style'=>'padding: 3px 0'));
+					}
+					$innerdiv2 = html_writer::div($innerdiv2_content, "", array('style'=>'padding: 2px 10px'));
+				}
+				$div = html_writer::div($img.$innerdiv.$innerdiv2, '', array('style'=>'padding: 10px;'));
+				$content .= $div;
+			}
+		}
+		
 		return $content;
 	}
 }

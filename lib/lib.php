@@ -16,6 +16,7 @@ define('DB_CATEGORIES', 'block_exacompcategories');
 define('DB_COMPETENCE_ACTIVITY', 'block_exacompcompactiv_mm');
 define('DB_COMPETENCIES', 'block_exacompcompuser');
 define('DB_SETTINGS', 'block_exacompsettings');
+define('DB_MDLTYPES', 'block_exacompmdltype_mm');
 
 // ROLE CONSTANTS
 define('ROLE_TEACHER', 1);
@@ -117,7 +118,7 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 	if (!$courseid)
 		$courseid = $COURSE->id;
 
-	$settings = $DB->get_record('block_exacompsettings', array("courseid" => $courseid));
+	$settings = $DB->get_record(DB_SETTINGS, array("courseid" => $courseid));
 
 	if (empty($settings)) $settings = new stdClass;
 	if (empty($settings->grading)) $settings->grading = 1;
@@ -396,25 +397,25 @@ function block_exacomp_coursesettings($courseid = 0) {
 }
 function block_exacomp_get_edulevels() {
 	global $DB;
-	return $DB->get_records('block_exacompedulevels',null,'source');
+	return $DB->get_records(DB_EDULEVELS,null,'source');
 }
 
 function block_exacomp_get_schooltypes($edulevel) {
 	global $DB;
 
-	return $DB->get_records('block_exacompschooltypes', array("elid" => $edulevel));
+	return $DB->get_records(DB_SCHOOLTYPES, array("elid" => $edulevel));
 }
 function block_exacomp_get_mdltypes($typeid, $courseid = 0) {
 	global $DB;
 
-	return $DB->get_record('block_exacompmdltype_mm', array("stid" => $typeid, "courseid" => $courseid));
+	return $DB->get_record(DB_MDLTYPES, array("stid" => $typeid, "courseid" => $courseid));
 }
 function block_exacomp_set_mdltype($values, $courseid = 0) {
 	global $DB;
 
-	$DB->delete_records('block_exacompmdltype_mm',array("courseid"=>$courseid));
+	$DB->delete_records(DB_MDLTYPES,array("courseid"=>$courseid));
 	foreach ($values as $value) {
-		$DB->insert_record('block_exacompmdltype_mm', array("stid" => intval($value),"courseid" => $courseid));
+		$DB->insert_record(DB_MDLTYPES, array("stid" => intval($value),"courseid" => $courseid));
 	}
 }
 /*
@@ -424,7 +425,7 @@ function block_exacomp_set_mdltype($values, $courseid = 0) {
 function block_exacomp_is_configured($courseid=0){
 	global $DB;
 	
-	return $DB->get_record('block_exacompmdltype_mm', array("courseid"=>$courseid));
+	return $DB->get_record(DB_MDLTYPES, array("courseid"=>$courseid));
 }
 function block_exacomp_moodle_badges_enabled() {
 	global $CFG;
@@ -435,19 +436,19 @@ function block_exacomp_moodle_badges_enabled() {
 function block_exacomp_save_coursesettings($courseid, $settings) {
 	global $DB;
 
-	$DB->delete_records('block_exacompsettings', array("courseid" => $courseid));
+	$DB->delete_records(DB_SETTINGS, array("courseid" => $courseid));
 
 	if ($settings->grading > SETTINGS_MAX_SCHEME) $settings->grading = SETTINGS_MAX_SCHEME;
 
 	$settings->courseid = $courseid;
 	$settings->tstamp = time();
 
-	$DB->insert_record('block_exacompsettings', $settings);
+	$DB->insert_record(DB_SETTINGS, $settings);
 }
 function block_exacomp_is_activated($courseid) {
 	global $DB;
 
-	return $DB->get_records('block_exacompcoutopi_mm', array("courseid" => $courseid));
+	return $DB->get_records(DB_COURSETOPICS, array("courseid" => $courseid));
 }
 function block_exacomp_get_grading_scheme($courseid) {
 	global $DB;
@@ -466,7 +467,131 @@ function block_exacomp_get_output_fields($topic) {
 		$output_title = $topic->title;
 	}
 	if($version && $topic->id == LIS_SHOW_ALL_TOPICS)
-		$output_id = $DB->get_field('block_exacompcategories', 'title', array("id"=>$topic->cat));
+		$output_id = $DB->get_field(DB_CATEGORIES, 'title', array("id"=>$topic->cat));
 
 	return array($output_id, $output_title);
+}
+
+function block_exacomp_award_badges($courseid, $userid=null) {
+	global $DB, $USER;
+
+	// only award if badges are enabled
+	if (!block_exacomp_moodle_badges_enabled()) return;
+
+	$users = get_enrolled_users(context_course::instance($courseid));
+	if ($userid) {
+		if (!isset($users[$userid])) {
+			return;
+		}
+
+		// only award for this user
+		$users = array(
+				$userid => $users[$userid]
+		);
+	}
+	$badges = badges_get_badges(BADGE_TYPE_COURSE, $courseid);
+
+	foreach ($badges as $badge) {
+
+		// badges, which can be issued to user: status=active, type=manual
+		if (!$badge->is_active() || !$badge->has_manual_award_criteria()) continue;
+
+		$descriptors = $DB->get_records_sql('
+				SELECT d.*
+				FROM {block_exacompdescriptors} d
+				JOIN {block_exacompdescbadge_mm} db ON d.id=db.descid AND db.badgeid=?
+				', array($badge->id));
+
+		// no descriptors selected?
+		if (empty($descriptors)) continue;
+
+		foreach ($users as $user) {
+			if ($badge->is_issued($user->id)) {
+				// skip, already issued
+				continue;
+			}
+
+			$usercompetences = block_exacomp_get_usercompetences($user->id, $role=1, $courseid);
+			$allFound = true;
+			foreach ($descriptors as $descriptor) {
+				if (isset($usercompetences[$descriptor->id])) {
+					// found
+				} else {
+					// missing
+					$allFound = false;
+					break;
+				}
+			}
+
+			// some are missing
+			if (!$allFound) continue;
+
+			// has all required competencies
+			$acceptedroles = array_keys($badge->criteria[BADGE_CRITERIA_TYPE_MANUAL]->params);
+			if (process_manual_award($user->id, $USER->id, $acceptedroles[0], $badge->id))  {
+				// If badge was successfully awarded, review manual badge criteria.
+				$data = new stdClass();
+				$data->crit = $badge->criteria[BADGE_CRITERIA_TYPE_MANUAL];
+				$data->userid = $user->id;
+				badges_award_handle_manual_criteria_review($data);
+			} else {
+				echo 'error';
+			}
+		}
+	}
+}
+function block_exacomp_get_all_user_badges($userid = null) {
+	global $USER;
+
+	if ($userid == null) $userid = $USER->id;
+
+	$records = badges_get_user_badges($userid);
+
+	return $records;
+}
+
+function block_exacomp_get_user_badges($courseid, $userid) {
+	global $CFG, $DB;
+
+	$badges = badges_get_badges(BADGE_TYPE_COURSE, $courseid);
+
+	$result = (object)array(
+			'issued' => array(),
+			'pending' => array()
+	);
+
+	foreach ($badges as $badge) {
+
+		// badges, which can be issued to user: status=active, type=manual
+		if (!$badge->is_active() || !$badge->has_manual_award_criteria()) continue;
+
+		$descriptors = $DB->get_records_sql('
+				SELECT d.*
+				FROM {block_exacompdescriptors} d
+				JOIN {block_exacompdescbadge_mm} db ON d.id=db.descid AND db.badgeid=?
+				', array($badge->id));
+
+		// no descriptors selected?
+		if (empty($descriptors)) continue;
+
+		$badge->descriptorStatus = array();
+
+		$usercompetences = block_exacomp_get_usercompetences($userid, $role=1, $courseid);
+
+		foreach ($descriptors as $descriptor) {
+			if (isset($usercompetences[$descriptor->id])) {
+				$badge->descriptorStatus[] = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/accept.png" style="vertical-align: text-bottom" />'.$descriptor->title;
+			} else {
+				$badge->descriptorStatus[] = '<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/cancel.png" style="vertical-align: text-bottom" />'.$descriptor->title;
+			}
+		}
+			
+		if ($badge->is_issued($userid)) {
+			$result->issued[$badge->id] = $badge;
+		} else {
+			$result->pending[$badge->id] = $badge;
+		}
+	}
+
+	return $result;
 }

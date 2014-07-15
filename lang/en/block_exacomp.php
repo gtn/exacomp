@@ -100,6 +100,7 @@ $string['importsuccess'] = 'data was successfully imported!';
 $string['importsuccess_own'] = 'individual data was imported successfully!';
 $string['importfail'] = 'an error has occured during import';
 $string['noxmlfile'] = 'There is no data available to import. Please visit <a href="https://github.com/gtn/edustandards">https://github.com/gtn/edustandards</a> to download the required outcomes to the blocks xml directory.';
+$string['oldxmlfile'] = 'You are using an outdated xml-file. Please create new outcomes/standards at <a href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file to the blocks xml directory.';
 
 //Configuration
 $string['explainconfig'] = 'In order to use the module exabis competencies you have to choose your schooltype - the appropriate data will then be imported from the xml-file.';
@@ -111,3 +112,8 @@ $string['grading_scheme'] = 'grading scheme';
 $string['uses_activities'] = 'I work with activites';
 $string['show_all_descriptors'] = 'Show all outcomes in overview';
 $string['show_all_examples'] = 'Show all examples in overview';
+
+//Badges
+$string['mybadges'] = 'My badges';
+$string['pendingbadges'] = 'Pending badges';
+$string['no_badges_yet'] = "no badges available";

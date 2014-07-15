@@ -123,7 +123,7 @@ $string['importsuccess'] = 'Daten erfolgreich importiert!';
 $string['importsuccess_own'] = 'Eigene Daten erfolgreich importiert!';
 $string['importfail'] = 'Es ist ein Fehler aufgetreten.';
 $string['noxmlfile'] = 'Ein Import ist derzeit nicht m&ouml;glich weil keine XML Datei vorhanden ist. Bitte hier die entsprechenden Standards downloaden und in das xml Verzeichnis des Blocks kopieren: <a href="https://github.com/gtn/edustandards">https://github.com/gtn/edustandards</a>';
-
+$string['oldxmlfile'] = 'Sie benutzen eine veraltete XML-Datei, bitte erstellen Sie sich eine neue Datei auf <a href="http://www.edustandards.org">www.edustandards.org</a> oder laden Sie ein bestehendes XML von <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch.';
 
 //Configuration
 $string['explainconfig'] = 'Um das Modul exabis competences verwenden zu k&ouml;nnen, m&uuml;ssen hier die Schultypen der Moodle-Instanz selektiert werden.';
@@ -135,3 +135,8 @@ $string['grading_scheme'] = 'Bewertungsschema';
 $string['uses_activities'] = 'Ich verwende Moodle Aktivit&auml;ten zur Beurteilung';
 $string['show_all_descriptors'] = 'Alle Deskriptoren im &Uuml;berblick anzeigen';
 $string['show_all_examples'] = 'Externe Beispiele im &Uuml;berblick anzeigen';
+
+//Badges
+$string['mybadges'] = 'Meine Auszeichnungen';
+$string['pendingbadges'] = 'Anstehende Auszeichnungen';
+$string['no_badges_yet'] = "Keine Auszeichnungen verfügbar";
