@@ -840,6 +840,17 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		
 		//rename table
 		$dbman->rename_table($table, 'block_exacompcompactiv_mm');
+		$table = new xmldb_table('block_exacompcompactiv_mm');
+		
+		//delete key activityid, activitytype and descid
+		$key = new xmldb_key('descrid', XMLDB_KEY_FOREIGN, array('descrid'), 'block_exacompdescriptors', array('id'));
+        $dbman->drop_key($table, $key);
+        
+		$key = new xmldb_key('activityid', XMLDB_KEY_FOREIGN, array('activityid'), 'activity', array('id'));
+		$dbman->drop_key($table, $key);
+		
+		$key = new xmldb_key('activitytype', XMLDB_KEY_FOREIGN, array('activitytype'), 'modules', array('id'));
+		$dbman->drop_key($table, $key);
 		
 		//rename field descrid to compid
 		$field = new xmldb_field('descrid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL);
@@ -859,7 +870,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		$records = $DB->get_records('block_exacompcompactiv_mm');
 		
 		foreach($records as $record){
-			if($record->activitytype = 2000){
+			if($record->activitytype == 2000){
 				$record->eportfolioitem = 1;
 				$DB->update_record('block_exacompcompactiv_mm', $record);
 			}
@@ -869,22 +880,20 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		$field = new xmldb_field('activitytype', XMLDB_TYPE_INTEGER, '10', null, null, null, '1');
 		$dbman->drop_field($table, $field);
 		
-		//delete key activityid, activitytype and descid
-		$key = new xmldb_key('descrid', XMLDB_KEY_FOREIGN, array('descrid'), 'block_exacompdescriptors', array('id'));
-        $dbman->drop_key($table, $key);
-        
-		$key = new xmldb_key('activityid', XMLDB_KEY_FOREIGN, array('activityid'), 'activity', array('id'));
-		$dbman->drop_key($table, $key);
-		
-		$key = new xmldb_key('activitytype', XMLDB_KEY_FOREIGN, array('activitytype'), 'modules', array('id'));
-		$dbman->drop_key($table, $key);
-		
 		
 		/* block_exacompdescuser_mm */
 		$table = new xmldb_table('block_exacompdescuser_mm');
 		
 		//rename table
 		$dbman->rename_table($table, 'block_exacompcompuser_mm');
+		$table = new xmldb_table('block_exacompcompuser_mm');
+		
+		//delete key activityid and descid
+		$key = new xmldb_key('descid', XMLDB_KEY_FOREIGN, array('descid'), 'block_exacompdescriptors', array('id'));
+        $dbman->drop_key($table, $key);
+        
+		$key = new xmldb_key('activityid', XMLDB_KEY_FOREIGN, array('activityid'), 'assignment', array('id'));
+		$dbman->drop_key($table, $key);
 		
 		//rename field descid to compid
 		$field = new xmldb_field('descid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
@@ -910,7 +919,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		$records = $DB->get_records('block_exacompcompuser_mm');
 		
 		foreach($records as $record){
-			if($record->activitytype = 2000){
+			if($record->activitytype == 2000){
 				$record->eportfolioitem = 1;
 				$DB->update_record('block_exacompcompuser_mm', $record);
 			}
@@ -920,38 +929,37 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		$field = new xmldb_field('activitytype', XMLDB_TYPE_INTEGER, '20', null, null, null, '1');
 		$dbman->drop_field($table, $field);
 		
-		//delete key activityid and descid
-		$key = new xmldb_key('descid', XMLDB_KEY_FOREIGN, array('descid'), 'block_exacompdescriptors', array('id'));
-        $dbman->drop_key($table, $key);
-        
-		$key = new xmldb_key('activityid', XMLDB_KEY_FOREIGN, array('activityid'), 'assignment', array('id'));
-		$dbman->drop_key($table, $key);
-
 		
 		/* block_exacompmdltype_mm */
 		$table = new xmldb_table('block_exacompmdltype_mm');
 		
+		//drop key typeid
+    	$key = new xmldb_key('typeid', XMLDB_KEY_FOREIGN, array('typeid'), 'block_exacompschooltypes', array('id'));
+    	$dbman->drop_key($table, $key);
+    	
 		//rename fiels typeid to stid
 		$field = new xmldb_field('typeid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null);
     	$dbman->rename_field($table, $field, 'stid');
     	
-    	//rename key typeid, add key courseid
-    	$key = new xmldb_key('typeid', XMLDB_KEY_FOREIGN, array('typeid'), 'block_exacompschooltypes', array('id'));
-    	$dbman->drop_key($table, $key);
-    	
+    	//add key stid and courseid
     	$key = new xmldb_key('stid', XMLDB_KEY_FOREIGN, array('stid'), 'block_exacompschooltypes', array('id'));
     	$dbman->add_key($table, $key);
     	
     	$key = new xmldb_key('courseid', XMLDB_KEY_FOREIGN, array('courseid'), 'course', array('id'));
     	$dbman->add_key($table, $key);
-    	
 		
+    	
     	/* block_exacompdescuser */
     	$table = new xmldb_table('block_exacompdescuser');
     	
     	//rename table
     	$dbman->rename_table($table, 'block_exacompcompuser');
+    	$table = new xmldb_table('block_exacompcompuser');
     	
+    	//delete key descid
+		$key = new xmldb_key('descid', XMLDB_KEY_FOREIGN, array('descid'), 'block_exacompdescriptors', array('id'));
+        $dbman->drop_key($table, $key);
+        
     	//rename field descid to compid
     	$field = new xmldb_field('descid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
 		$dbman->rename_field($table, $field, 'compid');
@@ -967,27 +975,24 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		//add field timestamp
 		$field = new xmldb_field('timestamp', XMLDB_TYPE_INTEGER, '20');
 		$dbman->add_field($table, $field);
-		
-		//delete key descid
-		$key = new xmldb_key('descid', XMLDB_KEY_FOREIGN, array('descid'), 'block_exacompdescriptors', array('id'));
-        $dbman->drop_key($table, $key);
-        
-        //add key courseid
+	
+		//add key courseid
         $key = new xmldb_key('courseid', XMLDB_KEY_FOREIGN, array('courseid'), 'course', array('id'));
        	$dbman->add_key($table, $key);
-        
+       	
        	
        	/* block_exacompsettings */
         $table = new xmldb_table('block_exacompsettings');
+        
+         //drop key course
+        $key = new xmldb_key('course', XMLDB_KEY_FOREIGN, array('course'), 'course', array('id'));
+    	$dbman->drop_key($table, $key);
         
         //rename field course to courseid
         $field = new xmldb_field('course', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL);
         $dbman->rename_field($table, $field, 'courseid');
         
-        //change key course to courseid
-        $key = new xmldb_key('course', XMLDB_KEY_FOREIGN, array('course'), 'course', array('id'));
-    	$dbman->drop_key($table, $key);
-    	
+        //add key courseid
         $key = new xmldb_key('courseid', XMLDB_KEY_FOREIGN, array('courseid'), 'course', array('id'));
         $dbman->add_key($table, $key);
         
@@ -998,6 +1003,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
   		//add key userid
   		$key = new xmldb_key('userid', XMLDB_KEY_FOREIGN, array('userid'), 'user', array('id'));
      	$dbman->add_key($table, $key);
+     	
      	
      	/* block_exacompniveaus */
      	$table = new xmldb_table('block_exacompniveaus');
