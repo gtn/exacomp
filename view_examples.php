@@ -70,23 +70,19 @@ $output = $PAGE->get_renderer('block_exacomp');
 	
 echo $output->print_head_view_examples($sort, $show_all_examples, $PAGE->url, $context);
 
-$example_tree = block_exacomp_build_example_tree($courseid);
-/*?>
+if($sort == 'desc')
+	$example_tree_desc = block_exacomp_build_example_tree_desc($courseid_for_tree);
+else 
+	$example_tree_tax = block_exacomp_build_example_tree_tax($course_for_tree);
+	
+echo $output->print_tree_head();
 
-<br/><br/>
-<a href="javascript:ddtreemenu.flatten('comptree', 'expand')"><?php echo get_string("expandcomps", "block_exacomp") ?></a> | <a href="javascript:ddtreemenu.flatten('comptree', 'contact')"><?php echo get_string("contactcomps", "block_exacomp") ?></a>
-
-<?php echo block_exacomp_build_comp_tree($courseid_for_comptree,$sort); ?>
-
-
-<script type="text/javascript">
-    ddtreemenu.createTree("comptree", true)
-</script>
-
-
-<?php
-echo '</div>'; //exabis_competences_block
-*/
+if($sort == 'desc')
+	echo $output->print_tree_view_examples_desc($example_tree_desc);
+else 	
+	echo $output->print_tree_view_examples_tax($example_tree_tax);
+	
+echo $output->print_foot_view_examples();
 
 /* END CONTENT REGION */
 

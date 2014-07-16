@@ -861,6 +861,16 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		$field = new xmldb_field('comptype', XMLDB_TYPE_INTEGER, '1', null, null, null, '0');
 		$dbman->change_field_default($table, $field);
 		
+		$records = $DB->get_records('block_exacompcompactiv_mm');
+		foreach($records as $record){
+			if($record->comptype == 1)
+				$record->comptype = 0 ;
+			else if($record->comptype == 0)
+				$record->comptype = 1;
+				
+			$DB->update_record('block_exacompcompactiv_mm', $record);
+		}
+		
 		//add field eportfolioitem 
 		$field = new xmldb_field('eportfolioitem', XMLDB_TYPE_INTEGER, '1', null, null, null, '0');
 		$dbman->add_field($table, $field);

@@ -50,18 +50,22 @@ function block_exacomp_init_js_css(){
 function block_exacomp_get_subjects_by_course($courseid, $subjectid = null) {
 	global $DB;
 	
-	$subjects = $DB->get_records_sql('
-			SELECT s.id, s.title, "subject" as type
+	$sql = 'SELECT s.id, s.title, "subject" as type
 			FROM {'.DB_SUBJECTS.'} s
-			JOIN {'.DB_TOPICS.'} t ON t.subjid = s.id
-			JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=?
-			'.($subjectid == null ? '' : '
+			JOIN {'.DB_TOPICS.'} t ON t.subjid = s.id ';
+	
+	if($courseid>0)
+		$sql .= 'JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ';
+		
+	$sql .=	 ($subjectid == null ? '' : '
 					-- only show active ones
 					WHERE s.id = ?
 					').'
 			GROUP BY s.id
 			ORDER BY s.stid, s.title
-			', array($courseid,$subjectid));
+			';
+	
+	$subjects = $DB->get_records_sql($sql, array($courseid,$subjectid));
 	
 	return $subjects;
 }
@@ -133,22 +137,32 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 
 function block_exacomp_get_descriptors_by_course($courseid) {
 	global $DB;
-	$descriptors = $DB->get_records_sql('
-			SELECT d.id, d.title, t.id AS topicid, "descriptor" as type
+	$course='';
+	
+	$sql = 'SELECT d.id, d.title, t.id AS topicid, "descriptor" as type
 			FROM {block_exacompsubjects} s
-			JOIN {block_exacomptopics} t ON t.subjid = s.id
-			JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=?
-			JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.topicid=t.id
+			JOIN {block_exacomptopics} t ON t.subjid = s.id ';
+	
+	if($courseid>0){
+		$sql .=	'JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=? ';
+		$course = 'AND a.course=? ';
+	}
+		
+	$sql .=	'JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.topicid=t.id
 			JOIN {block_exacompdescriptors} d ON desctopmm.descrid=d.id
 			'.(block_exacomp_coursesettings()->show_all_descriptors ? '' : '
-					-- only show active ones
 					JOIN {block_exacompcompactiv_mm} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
-					JOIN {course_modules} a ON da.activityid=a.id AND a.course=?
-					').'
-			GROUP BY d.id
-			ORDER BY d.sorting
-			', array($courseid, $courseid));
+					JOIN {course_modules} a ON da.activityid=a.id '.$course); 
 	
+	$sql .=	' GROUP BY d.id
+			ORDER BY d.sorting
+			';
+	
+	if($courseid>0)
+		$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid));
+	else 
+		$descriptors = $DB->get_records_sql($sql);
+		
 	return $descriptors;
 }
 
@@ -179,13 +193,13 @@ function block_exacomp_get_competence_tree_by_course($courseid, $subjectid = nul
 	}
 	
 	$allDescriptors = block_exacomp_get_descriptors_by_course($courseid);
-	var_dump($allDescriptors);
+
 	foreach ($allDescriptors as $descriptor) {
 
 		// get descriptor topic
 		if (empty($allTopics[$descriptor->topicid])) continue;
 		$topic = $allTopics[$descriptor->topicid];
-		$topic->descriptors[] = $descriptor;
+		$topic->descriptors[$descriptor->id] = $descriptor;
 
 		// find all parent topics
 		$found = true;
@@ -610,15 +624,42 @@ function block_exacomp_get_user_badges($courseid, $userid) {
 	return $result;
 }
 
-function block_exacomp_build_example_tree($courseid){
+function block_exacomp_build_example_tree_desc($courseid){
+	global $DB;
+	
 	$tree = block_exacomp_get_competence_tree_by_course($courseid);
 	
-	var_dump($tree);
-	/*foreach($tree->subjects as $subject){
-		foreach($subject->topics as $topic){
-			foreach($topic->descriptors as $descriptors){
-				var_dump($descriptor->id);
+	foreach($tree as $subject){
+		$subject_has_examples = false;
+		foreach($subject->subs as $topic){
+			$topic_has_examples = false;
+			foreach($topic->descriptors as $descriptor){
+				$records = $DB->get_records('block_exacompdescrexamp_mm', array('descrid'=>$descriptor->id));
+				if(!$records)
+					unset($topic->descriptors[$descriptor->id]);
+				else{
+					$subject_has_examples = true;
+					$topic_has_examples = true;
+					$descriptor->examples = array();
+					foreach($records as $record){
+						$example = $DB->get_record('block_exacompexamples', array('id'=>$record->exampid));
+						$descriptor->examples[$example->id]=$example;
+					}
+				}
 			}
+			if(!$topic_has_examples)
+				unset($subject->subs[$topic->id]);
+			$topic_has_examples = false;
 		}
-	}*/
+		if(!$subject_has_examples)
+			unset($tree[$subject->id]);
+	
+		$subject_has_examples = false;
+	}
+	
+	return $tree;
+}
+
+function block_exacomp_build_example_tree_tax($courseid){
+	return '';
 }

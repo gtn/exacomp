@@ -146,3 +146,5 @@ $string['sorting'] = 'Sortierung w&auml;hlen: ';
 $string['subject'] = 'Gegenst&auml;nde';
 $string['taxonomies'] = 'Taxonomien';
 $string['show_all_course_examples'] = 'Beispiele aus allen Kursen anzeigen';
+$string['expandcomps'] = 'Alle &ouml;ffnen';
+$string['contactcomps'] = 'Alle schlie&szlig;en';

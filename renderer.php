@@ -577,8 +577,56 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			
 			$content .= html_writer::tag('form', $input, array('method'=>'post', 'name'=>'showallexamples_form'));
 		}
-			
+		$div_exabis_competences_block = html_writer::start_div('', array('id'=>'exabis_competences_block'));	
+		return $div_exabis_competences_block.$content;
+	}
+	
+	public function print_tree_head(){
+		$content = html_writer::empty_tag('br').html_writer::empty_tag('br');
+		$content .= html_writer::link("javascript:ddtreemenu.flatten('comptree', 'expand')", get_string("expandcomps", "block_exacomp"));
+		$content .=' | ';
+		$content .= html_writer::link("javascript:ddtreemenu.flatten('comptree', 'contact')", get_string("contactcomps", "block_exacomp"));
 		return $content;
 	}
+	
+	public function print_tree_view_examples_desc($tree){
+		$li_subjects = '';
+		foreach($tree as $subject){
+			$li_topics = '';			
+			foreach($subject->subs as $topic){
+				$li_descriptors = '';
+				foreach($topic->descriptors as $descriptor){
+					$li_examples = '';
+					foreach($descriptor->examples as $example){
+						$li_examples .= html_writer::tag('li', $example->title);
+					}
+					$ul_examples = html_writer::tag('ul', $li_examples);
+					$li_descriptors .= html_writer::tag('li', $descriptor->title
+						.$ul_examples);
+				}
+				$ul_descriptors = html_writer::tag('ul', $li_descriptors);
+				$li_topics .= html_writer::tag('li', $topic->title
+					.$ul_descriptors);	
+			}
+			$ul_topics = html_writer::tag('ul', $li_topics);
+			$li_subjects .= html_writer::tag('li', $subject->title
+				.$ul_topics);
+		}
+		
+		$ul_subjects = html_writer::tag('ul', $li_subjects, array('id'=>'comptree', 'class'=>'treeview'));
+		$form = html_writer::tag('form', $ul_subjects, array('name'=>'treeform'));
+		
+		return $form;
+	}
+	
+	public function print_tree_view_examples_tax($tree){
+		return '';
+	}
+	
+	public function print_foot_view_examples(){
+		$content = html_writer::tag('script', 'ddtreemenu.createTree("comptree", true)', array('type'=>'text/javascript'));
+		return $content.html_writer::end_div();
+	}
+
 }
 ?>

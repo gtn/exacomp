@@ -124,3 +124,5 @@ $string['sorting'] = 'select sorting: ';
 $string['subject'] = 'subjects';
 $string['taxonomies'] = 'taxonomies';
 $string['show_all_course_examples'] = 'Show examples from all courses';
+$string['expandcomps'] = 'expand all';
+$string['contactcomps'] = 'contract all';
