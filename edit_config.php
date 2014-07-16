@@ -86,6 +86,7 @@ if (isset($action) && $action == 'save') {
     	block_exacomp_set_mdltype($values);
   
     $headertext=get_string("save_success", "block_exacomp");
+    //echo '<script>location.reload();</script>';
 }else{
 	$headertext=get_string("explainconfig", "block_exacomp");
 }

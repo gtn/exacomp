@@ -78,6 +78,7 @@ if($isAdmin || block_exacomp_check_customupload()) {
 			if ($data = $mform->get_file_content('file')) {
 				if(block_exacomp_xml_do_import($data, (($importtype == 'normal') ? IMPORT_SOURCE_NORMAL : IMPORT_SOURCE_SPECIFIC))) {
 					echo $OUTPUT->box(get_string("importsuccess", "block_exacomp"));
+					//echo '<script>location.reload();</script>';
 				}
 				else {
 					echo $OUTPUT->box(get_string("importfail", "block_exacomp"));

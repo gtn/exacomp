@@ -803,10 +803,9 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	 	// Exacomp savepoint reached.
 	 	upgrade_block_savepoint(true, 2014050900, 'exacomp');
 	 }
-	 	var_dump("not in here");
+	 	
 	//exacomp next generation -> some major changes in db
 	if($oldversion < 2014070801){
-		var_dump("in here");
 		/* block_exacomptopics, change field cat to catid, add key catid */
 		$table = new xmldb_table('block_exacomptopics');
 		$field = new xmldb_field('cat', XMLDB_TYPE_INTEGER, '11');
@@ -1017,10 +1016,10 @@ function xmldb_block_exacomp_upgrade($oldversion) {
      	$table = new xmldb_table('block_exacompexameval');
      	
      	//change type of fields starttime and endtime
-     	$field = new xmldb_field('starttime', XMLDB_TYPE_INTEGER);
+     	$field = new xmldb_field('starttime', XMLDB_TYPE_INTEGER, '20');
      	$dbman->change_field_type($table, $field);
      	
-     	$field = new xmldb_field('endtime', XMLDB_TYPE_INTEGER);
+     	$field = new xmldb_field('endtime', XMLDB_TYPE_INTEGER, '20');
      	$dbman->change_field_type($table, $field);
      	
      	//add key studentid, exampleid, courseid and teacher_reviewerid

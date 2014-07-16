@@ -558,5 +558,27 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		return $content;
 	}
+	
+	public function print_head_view_examples($sort, $show_all_examples, $url, $context){
+		$text_link1 = ($sort=="desc") ? html_writer::tag('b', get_string("subject", "block_exacomp")) : get_string("subject", "block_exacomp");
+		$text_link2 = ($sort=="tax") ? html_writer::tag('b', get_string("taxonomies", "block_exacomp")) : get_string("taxonomies", "block_exacomp");
+		$content = get_string('sorting', 'block_exacomp')
+			.html_writer::link($url.'&sort=desc', $text_link1)." "
+			.html_writer::link($url.'&sort=tax', $text_link2);
+		
+		if(has_capability('block/exacomp:teacher', $context) OR has_capability('block/exacomp:admin', $context)){
+			$input = '';
+			if($show_all_examples != 0)
+				$input = html_writer::empty_tag('input', array('type'=>'checkbox', 'name'=>'showallexamples_check', 'value'=>1, 'onClick'=>'showallexamples_form.submit();', 'checked'=>'checked'));
+			else 
+				$input = html_writer::empty_tag('input', array('type'=>'checkbox', 'name'=>'showallexamples_check', 'value'=>1, 'onClick'=>'showallexamples_form.submit();'));
+			
+			$input .= get_string('show_all_course_examples', 'block_exacomp');
+			
+			$content .= html_writer::tag('form', $input, array('method'=>'post', 'name'=>'showallexamples_form'));
+		}
+			
+		return $content;
+	}
 }
 ?>

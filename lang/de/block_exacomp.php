@@ -139,4 +139,10 @@ $string['show_all_examples'] = 'Externe Beispiele im &Uuml;berblick anzeigen';
 //Badges
 $string['mybadges'] = 'Meine Auszeichnungen';
 $string['pendingbadges'] = 'Anstehende Auszeichnungen';
-$string['no_badges_yet'] = "Keine Auszeichnungen verfügbar";
+$string['no_badges_yet'] = "Keine Auszeichnungen verf&uuml;gbar";
+
+//Examples
+$string['sorting'] = 'Sortierung w&auml;hlen: ';
+$string['subject'] = 'Gegenst&auml;nde';
+$string['taxonomies'] = 'Taxonomien';
+$string['show_all_course_examples'] = 'Beispiele aus allen Kursen anzeigen';

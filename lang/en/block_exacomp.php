@@ -117,3 +117,10 @@ $string['show_all_examples'] = 'Show all examples in overview';
 $string['mybadges'] = 'My badges';
 $string['pendingbadges'] = 'Pending badges';
 $string['no_badges_yet'] = "no badges available";
+
+//Examples
+
+$string['sorting'] = 'select sorting: ';
+$string['subject'] = 'subjects';
+$string['taxonomies'] = 'taxonomies';
+$string['show_all_course_examples'] = 'Show examples from all courses';
