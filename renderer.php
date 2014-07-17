@@ -708,7 +708,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							
 						$icons = $this->example_tree_get_exampleicon($example);
 
-						$li_examples .= html_writer::tag('li', $example_content.$icons.$example->taxid);
+						$li_examples .= html_writer::tag('li', $example_content.$icons);
 					}
 					$ul_examples = html_writer::tag('ul', $li_examples);
 					$li_descriptors .= html_writer::tag('li', $descriptor->title

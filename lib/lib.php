@@ -651,17 +651,11 @@ function block_exacomp_build_example_tree_desc($courseid){
 		foreach($subject->subs as $topic){
 			$topic_has_examples = false;
 			foreach($topic->descriptors as $descriptor){
-				$records = $DB->get_records('block_exacompdescrexamp_mm', array('descrid'=>$descriptor->id));
-				if(!$records)
+				if(!isset($descriptor->examples))
 					unset($topic->descriptors[$descriptor->id]);
 				else{
 					$subject_has_examples = true;
 					$topic_has_examples = true;
-					$descriptor->examples = array();
-					foreach($records as $record){
-						$example = $DB->get_record('block_exacompexamples', array('id'=>$record->exampid));
-						$descriptor->examples[$example->id]=$example;
-					}
 				}
 			}
 			if(!$topic_has_examples)
