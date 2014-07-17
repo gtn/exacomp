@@ -66,7 +66,7 @@ foreach($students as $student)
 
 $subjects = block_exacomp_get_competence_tree_by_course($courseid);
 $output = $PAGE->get_renderer('block_exacomp');
-echo $output->print_competence_overview($subjects, $courseid, false, $students);
+echo $output->print_competence_overview($subjects, $courseid, $students, false, (has_capability('block/exacomp:teacher', $context)) ? ROLE_TEACHER : ROLE_STUDENT, block_exacomp_get_grading_scheme($courseid));
 /* END CONTENT REGION */
 
 echo $OUTPUT->footer();

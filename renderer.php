@@ -323,7 +323,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content = html_writer::tag("div", html_writer::table($table), array("id"=>"exabis_competences_block"));
 		return $content;
 	}
-	public function print_competence_overview($subjects, $courseid, $evaluation, $students) {
+	public function print_competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1) {
 
 		$table = new html_table();
 		$rows = array();
@@ -364,7 +364,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			//for every topic
 			$data = (object)array(
 					'rowgroup' => 0,
-					'courseid' => $courseid
+					'courseid' => $courseid,
+					'showevaluation' => $showevaluation,
+					'role' => $role,
+					'scheme' => $scheme
 			);
 			$this->print_topics($rows, 0, $subject->subs, $data, $students);
 			$table->data = $rows;
@@ -374,6 +377,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	public function print_topics(&$rows, $level, $topics, &$data, $students, $rowgroup_class = '') {
+		global $version;
+
+		//$padding = ($version) ? ($level-1)*20 :  ($level-2)*20+12;
+		$padding = $level * 20 + 12;
 
 		foreach($topics as $topic) {
 			list($outputid, $outputname) = block_exacomp_get_output_fields($topic);
@@ -400,6 +407,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$outputnameCell = new html_table_cell();
 			$outputnameCell->attributes['class'] = 'rowgroup-arrow';
+			$outputnameCell->style = "padding-left: ".$padding."px";
 			$outputnameCell->text = html_writer::div($outputname,"desctitle");
 			$topicRow->cells[] = $outputnameCell;
 
@@ -427,26 +435,35 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	function print_descriptors(&$rows, $level, $descriptors, $data, $students, $rowgroup_class) {
 		global $version;
 
+		$checkboxname = ($version) ? "dataexamples" : "data";
+		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
+
 		foreach($descriptors as $descriptor) {
 			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor);
 			$studentsCount = 0;
 			$studentsColspan = 1;
-				
-			$descrpadding = ($version) ? ($level-1)*20 :  ($level-2)*20+12;;
-				
+
+			$padding = ($level) * 20 + 4;
+
 			$descriptorRow = new html_table_row();
 			$descriptorRow->attributes['class'] = 'exabis_comp_aufgabe ' . $rowgroup_class;
 			$exampleuploadCell = new html_table_cell();
-			$exampleuploadCell->text = $outputid;
-				
+			if($data->role == ROLE_TEACHER) {
+				$exampleuploadCell->text = html_writer::link(
+						new moodle_url('/blocks/exacomp/example_upload.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id,"topicid"=>$descriptor->topicid)),
+						html_writer::img('pix/upload_12x12.png', 'upload'),
+						array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+			}
+			$exampleuploadCell->text .= $outputid;
+
 			$descriptorRow->cells[] = $exampleuploadCell;
-				
+
 			$titleCell = new html_table_cell();
-			$titleCell->style = "padding-left: ".$descrpadding."px";
+			$titleCell->style = "padding-left: ".$padding."px";
 			$titleCell->text = $outputname;
-				
+
 			$descriptorRow->cells[] = $titleCell;
-				
+
 			foreach($students as $student) {
 				$studentCell = new html_table_cell();
 				$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
@@ -457,12 +474,39 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				if(isset($student->competencies->teacher[$descriptor->id]))
 					$studentCell->text = "C";
 
+				/*
+				 * if scheme == 1: print checkbox
+				* if scheme != 1, role = student, version = LIS
+				*/
+				if($data->scheme == 1 || ($data->scheme != 1 && $data->role == ROLE_STUDENT && $version)) {
+					$studentCell->text = html_writer::checkbox(
+							$checkboxname . '[' . $descriptor->id . '][' . $student->id . '][' . $evaluation . ']',
+							$data->scheme,
+							(isset($student->competencies->{$evaluation}[$descriptor->id])) && $student->competencies->{$evaluation}[$descriptor->id] >= ceil($data->scheme/2));
+				}
+				/*
+				 * if scheme != 1, !version: print select
+				* if scheme != 1, version = LIS, role = teacher
+				*/
+				elseif(!$version || ($version && $data->role == ROLE_TEACHER)) {
+					$options = array();
+					for($i=0;$i<=$data->scheme;$i++)
+						$options[] = $i;
+
+					$studentCell->text = html_writer::select(
+							$options,
+							$checkboxname . '[' . $descriptor->id . '][' . $student->id . '][' . $evaluation . ']',
+							(isset($student->competencies->{$evaluation}[$descriptor->id])) ? $student->competencies->{$evaluation}[$descriptor->id] : 0,
+							false);
+				}
+
 				$descriptorRow->cells[] = $studentCell;
 			}
-				
+
 			$rows[] = $descriptorRow;
 		}
 	}
+
 	public function print_edit_config($data, $courseid){
 		global $OUTPUT;
 
@@ -612,9 +656,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$input = html_writer::empty_tag('input', array('type'=>'checkbox', 'name'=>'showallexamples_check', 'value'=>1, 'onClick'=>'showallexamples_form.submit();', 'checked'=>'checked'));
 			else
 				$input = html_writer::empty_tag('input', array('type'=>'checkbox', 'name'=>'showallexamples_check', 'value'=>1, 'onClick'=>'showallexamples_form.submit();'));
-				
+
 			$input .= get_string('show_all_course_examples', 'block_exacomp');
-				
+
 			$content .= html_writer::tag('form', $input, array('method'=>'post', 'name'=>'showallexamples_form'));
 		}
 		$div_exabis_competences_block = html_writer::start_div('', array('id'=>'exabis_competences_block'));
@@ -647,23 +691,23 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$text = str_replace("\n"," ",$text);
 						$text = str_replace("\r"," ",$text);
 						$text = str_replace(":","\:",$text);
-						 
+							
 						$example_content = '';
-						
-						$inner_example_content = $subject_example_content . 
-								' ' . $example->title . ' ' .
-								$topic_example_content;
+
+						$inner_example_content = $subject_example_content .
+						' ' . $example->title . ' ' .
+						$topic_example_content;
 
 						//if text is set, on mouseover is enabled, other wise just inner_example_content is displayed
 						if($text)
-							$example_content = html_writer::tag('a', 
-								$inner_example_content, 
-								array('onmouseover'=>'Tip(\''.$text.'\')', 'onmouseout'=>'UnTip()'));
+							$example_content = html_writer::tag('a',
+									$inner_example_content,
+									array('onmouseover'=>'Tip(\''.$text.'\')', 'onmouseout'=>'UnTip()'));
 						else
 							$example_content = $inner_example_content;
 							
 						$icons = $this->example_tree_get_exampleicon($example);
-						
+
 						$li_examples .= html_writer::tag('li', $example_content.$icons.$example->taxid);
 					}
 					$ul_examples = html_writer::tag('ul', $li_examples);
@@ -684,12 +728,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$conditions = array('id'=>'comptree', 'class'=>'treeview');
 			
 		$ul_subjects = html_writer::tag('ul', $li_subjects, $conditions);
-		
+
 		if($do_form)
 			$content = html_writer::tag('form', $ul_subjects, array('name'=>'treeform'));
-		else 
+		else
 			$content = $ul_subjects;
-		
+
 		return $content;
 	}
 
@@ -697,35 +741,35 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$icon="";
 		if($example->task) {
 			$img = html_writer::img(new moodle_url('/blocks/exacomp/pix/pdf.gif'), get_string("assigned_example", "block_exacomp"), array('width'=>16, 'height'=>16));
-			$icon .= html_writer::link($example->task, $img, 
-				array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('task_example', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
+			$icon .= html_writer::link($example->task, $img,
+					array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('task_example', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
 		} if($example->solution) {
 			$img = html_writer::img(new moodle_url('/blocks/exacomp/pix/pdf solution.gif'), get_string("assigned_example", "block_exacomp"), array('height'=>16, 'width'=>16));
-			$icon .= html_writer::link($example->solution, $img, 
-				array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('solution_example', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
+			$icon .= html_writer::link($example->solution, $img,
+					array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('solution_example', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
 		}
 		if($example->attachement) {
 			$img = html_writer::img(new moodle_url('/blocks/exacomp/pix/attach_2.png'), get_string("task_example", "block_exacomp"), array('height'=>16, 'width'=>16));
-			$icon .= html_writer::link($example->attachement, $img, 
-				array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('attachement_example', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
+			$icon .= html_writer::link($example->attachement, $img,
+					array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('attachement_example', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
 		}if($example->externaltask) {
 			$img = html_writer::img(new moodle_url('/blocks/exacomp/pix/link.png'), get_string("task_example", "block_exacomp"), array('height'=>16, 'width'=>16));
-			$icon .= html_writer::link($example->externaltask, $img, 
-				array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('extern_task', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
+			$icon .= html_writer::link($example->externaltask, $img,
+					array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('extern_task', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
 		}
 		if($example->externalurl) {
 			$img = html_writer::img(new moodle_url('/blocks/exacomp/pix/link.png'), get_string("assigned_example", "block_exacomp"), array('height'=>16, 'width'=>16));
-			$icon .= html_writer::link($example->externalurl, $img, 
-				array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('extern_task', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
+			$icon .= html_writer::link($example->externalurl, $img,
+					array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('extern_task', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
 		}
 		if($example->completefile) {
 			$img = html_writer::img(new moodle_url('/blocks/exacomp/pix/folder.png'), get_string("assigned_example", "block_exacomp"), array('height'=>16, 'width'=>16));
-			$icon .= html_writer::link($example->completefile, $img, 
-				array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('total_example', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
+			$icon .= html_writer::link($example->completefile, $img,
+					array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('total_example', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
 		}
 		return $icon;
 	}
-	
+
 	public function print_tree_view_examples_tax($tree){
 		$li_taxonomies = '';
 		foreach($tree as $taxonomy){
@@ -733,7 +777,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$li_taxonomies .= html_writer::tag('li', $taxonomy->title->title
 					.$ul_subjects);
 		}
-		
+
 		$ul_taxonomies = html_writer::tag('ul', $li_taxonomies, array('id'=>'comptree', 'class'=>'treeview'));
 		$content = html_writer::tag('form', $ul_taxonomies, array('name'=>'treeform'));
 		return $content;
