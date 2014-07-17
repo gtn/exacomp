@@ -29,6 +29,11 @@ define('TYPE_TOPIC', 1);
 // SETTINGS
 define('SETTINGS_MAX_SCHEME', 10);
 
+if (block_exacomp_moodle_badges_enabled()) {
+	require_once($CFG->libdir . '/badgeslib.php');
+	require_once($CFG->dirroot . '/badges/lib/awardlib.php');
+}
+
 $version = get_config('exacomp','alternativedatamodel');
 define("LIS_SHOW_ALL_TOPICS",99999999);
 
@@ -142,6 +147,29 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 	elseif (!isset($settings->show_all_descriptors)) $settings->show_all_descriptors = 0;
 
 	return $settings;
+}
+
+function block_exacomp_get_descritors_list($courseid, $onlywithactivitys = 0) {
+	global $DB;
+	
+	$query = "SELECT t.id as topdescrid, d.id,d.title,tp.title as topic,tp.id as topicid, s.title as subject,s.id as 
+	subjectid,d.niveauid FROM {block_exacompdescriptors} d, {block_exacompcoutopi_mm} c, {block_exacompdescrtopic_mm} t, 
+	{block_exacomptopics} tp, {block_exacompsubjects} s
+	WHERE d.id=t.descrid AND t.topicid = c.topicid AND t.topicid=tp.id AND tp.subjid = s.id AND c.courseid = ?";
+	
+	if ($onlywithactivitys==1){
+		$descr=block_exacomp_get_descriptors_by_course($courseid);
+		if ($descr=="") $descr=0;
+		$query.=" AND d.id IN (".$descr.")";
+	}
+	$query.= " ORDER BY s.title,tp.title,d.sorting";
+	$descriptors = $DB->get_records_sql($query, array($courseid));
+	
+	if (!$descriptors) {
+		$descriptors = array();
+	}
+	
+	return $descriptors;
 }
 
 function block_exacomp_get_descriptors_by_course($courseid) {
