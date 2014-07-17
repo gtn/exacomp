@@ -780,7 +780,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function print_tree_view_examples_desc($tree, $do_form = true){
 		$li_subjects = '';
 		foreach($tree as $subject){
-			$subject_example_content = (empty($subject->number) || $subject->number==0)? '' : $subject->number;
+			$subject_example_content = (empty($subject->numb) || $subject->numb==0)? '' : $subject->numb;
 			$li_topics = '';
 			foreach($subject->subs as $topic){
 				$topic_example_content = (empty($topic->cat)) ? '' : '('.$topic->cat.')';

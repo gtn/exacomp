@@ -64,7 +64,7 @@ function block_exacomp_init_js_css(){
 function block_exacomp_get_subjects_by_course($courseid, $subjectid = null) {
 	global $DB;
 
-	$sql = 'SELECT s.id, s.title, s.number, "subject" as type
+	$sql = 'SELECT s.id, s.title, s.numb, "subject" as type
 	FROM {'.DB_SUBJECTS.'} s
 	JOIN {'.DB_TOPICS.'} t ON t.subjid = s.id ';
 
@@ -732,7 +732,7 @@ function block_exacomp_build_example_tree_tax($courseid){
 								$taxonomy->subjects[$subject->id] = new stdClass();
 								$taxonomy->subjects[$subject->id]->id = $subject->id;
 								$taxonomy->subjects[$subject->id]->title = $subject->title;
-								$taxonomy->subjects[$subject->id]->number = $subject->number;
+								$taxonomy->subjects[$subject->id]->numb = $subject->numb;
 								$taxonomy->subjects[$subject->id]->subs = array();
 							}
 							

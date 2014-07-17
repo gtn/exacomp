@@ -819,6 +819,9 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		$field = new xmldb_field('cat', XMLDB_TYPE_INTEGER, '11');
 		$dbman->rename_field($table, $field, 'catid');
 	
+		$field = new xmldb_field('number', XMLDB_TYPE_INTEGER, '11');
+		$dbman->rename_field($table, $field, 'numb');
+		
 		$key = new xmldb_key('catid', XMLDB_KEY_FOREIGN, array('catid'), 'block_exacompcategories', array('id'));
 		$dbman->add_key($table, $key);
 		

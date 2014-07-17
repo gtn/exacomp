@@ -96,8 +96,8 @@ if(strcmp($calendarinput, 'none')!=0){
 
 /* CONTENT REGION */
 
-$sql="SELECT concat( tmm.id, '_', emm.id ) AS id, subj.title AS subject, subj.number as subnumb, st.title AS schooltype, examp.title AS example, examp.task AS exampletask, examp.externalurl AS exampleurl, cat.title as cat,
-exameval.starttime as start, exameval.endtime as end, exameval.student_evaluation as evaluate, exameval.teacher_evaluation as tevaluate, descr.title
+$sql="SELECT concat( tmm.id, '_', emm.id ) AS id, subj.title AS subject, subj.numb as subnumb, st.title AS schooltype, examp.title AS example, examp.task AS exampletask, examp.externalurl AS exampleurl, cat.title as cat,
+exameval.starttime as starttime, exameval.endtime as endtime, exameval.student_evaluation as evaluate, exameval.teacher_evaluation as tevaluate, descr.title
 FROM {block_exacompsubjects} subj
 INNER JOIN {block_exacomptopics} top ON top.subjid = subj.id
 INNER JOIN {block_exacompdescrtopic_mm} tmm ON tmm.topicid = top.id
@@ -113,7 +113,7 @@ $rows = $DB->get_records_sql($sql, array($studentid));
 
 $results = array();	
 foreach($rows as $row){
-	if(isset($row->start))
+	if(isset($row->starttime))
 		$results[] = $row;
 }
 
@@ -149,7 +149,7 @@ foreach($weekdays as $weekday=>$tag){
 	foreach($results as $result){
 		$example = new stdClass();
 		
-		if($result->start == $tag || !isset($result->end))	{
+		if($result->starttime == $tag || !isset($result->endtime))	{
 			$example_count_week++;
 			$example->title = $result->example;
 			$example->task = $result->exampletask;
@@ -159,7 +159,7 @@ foreach($weekdays as $weekday=>$tag){
 			$example->numb = $result->subnumb;
 			$example->schooltype = substr($result->schooltype,0,1);
 			$example->cat = $result->cat;
-			$example->enddate = $result->end;
+			$example->enddate = $result->endtime;
 			if(isset($result->tevaluate)){
 				$example->tevaluate = $result->tevaluate;
 			}else{

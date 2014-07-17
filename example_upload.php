@@ -85,7 +85,7 @@ if($formdata = $form->get_data()) {
 	$fs = get_file_storage();
 	
 	if($formdata->lisfilename == 1) {
-		$filenameinfos = $DB->get_record_sql("SELECT s.number, st.title as subjecttitle, cat.title as cattitle, cat.sourceid as catid FROM {block_exacompschooltypes} st
+		$filenameinfos = $DB->get_record_sql("SELECT s.numb, st.title as subjecttitle, cat.title as cattitle, cat.sourceid as catid FROM {block_exacompschooltypes} st
 				JOIN {block_exacompsubjects} s ON s.stid = st.id
 				JOIN {block_exacomptopics} t ON s.id = t.subjid
 				JOIN {block_exacompcategories} cat ON t.cat = cat.id
@@ -94,7 +94,7 @@ if($formdata = $form->get_data()) {
 		$newfilename = substr($filenameinfos->subjecttitle,0,1);
 		//$newfilename .= '_';
 		//Nr Kompetenzbereich sprintf(%02d, $var); 
-		$newfilename .= sprintf("%02d", $filenameinfos->number);
+		$newfilename .= sprintf("%02d", $filenameinfos->numb);
 		//$newfilename .= '.';
 		//Nr Lernfortschritt
 		

@@ -53,7 +53,7 @@
         <KEY NAME="catid" TYPE="foreign" FIELDS="catid" REFTABLE="block_exacompcategories" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
-    <!-- added key catid, changed field catid -->
+    <!-- added key catid, changed field catid, changed field number to numb -->
     <TABLE NAME="block_exacompsubjects" COMMENT="Gegenstände, Kategorie der Schwerpunkte">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -63,7 +63,7 @@
         <FIELD NAME="sourceid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft, 0=Moodleinstanz 1=Zentraler Server"/>
         <FIELD NAME="titleshort" TYPE="char" LENGTH="200" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="number" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="numb" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="catid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
