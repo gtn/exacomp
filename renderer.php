@@ -629,7 +629,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 
-	public function print_tree_view_examples_desc($tree){
+	public function print_tree_view_examples_desc($tree, $do_form = true){
 		$li_subjects = '';
 		foreach($tree as $subject){
 			$subject_example_content = (empty($subject->number) || $subject->number==0)? '' : $subject->number;
@@ -664,7 +664,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							
 						$icons = $this->example_tree_get_exampleicon($example);
 						
-						$li_examples .= html_writer::tag('li', $example_content.$icons);
+						$li_examples .= html_writer::tag('li', $example_content.$icons.$example->taxid);
 					}
 					$ul_examples = html_writer::tag('ul', $li_examples);
 					$li_descriptors .= html_writer::tag('li', $descriptor->title
@@ -679,10 +679,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					.$ul_topics);
 		}
 
-		$ul_subjects = html_writer::tag('ul', $li_subjects, array('id'=>'comptree', 'class'=>'treeview'));
-		$form = html_writer::tag('form', $ul_subjects, array('name'=>'treeform'));
-
-		return $form;
+		$conditions = null;
+		if($do_form)
+			$conditions = array('id'=>'comptree', 'class'=>'treeview');
+			
+		$ul_subjects = html_writer::tag('ul', $li_subjects, $conditions);
+		
+		if($do_form)
+			$content = html_writer::tag('form', $ul_subjects, array('name'=>'treeform'));
+		else 
+			$content = $ul_subjects;
+		
+		return $content;
 	}
 
 	public function example_tree_get_exampleicon($example) {
@@ -719,7 +727,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 	
 	public function print_tree_view_examples_tax($tree){
-		return '';
+		$li_taxonomies = '';
+		foreach($tree as $taxonomy){
+			$ul_subjects = $this->print_tree_view_examples_desc($taxonomy->subjects, false);
+			$li_taxonomies .= html_writer::tag('li', $taxonomy->title->title
+					.$ul_subjects);
+		}
+		
+		$ul_taxonomies = html_writer::tag('ul', $li_taxonomies, array('id'=>'comptree', 'class'=>'treeview'));
+		$content = html_writer::tag('form', $ul_taxonomies, array('name'=>'treeform'));
+		return $content;
 	}
 
 	public function print_foot_view_examples(){

@@ -70,17 +70,18 @@ $output = $PAGE->get_renderer('block_exacomp');
 	
 echo $output->print_head_view_examples($sort, $show_all_examples, $PAGE->url, $context);
 
+$example_tree = '';
 if($sort == 'desc')
-	$example_tree_desc = block_exacomp_build_example_tree_desc($courseid_for_tree);
+	$example_tree = block_exacomp_build_example_tree_desc($courseid_for_tree);
 else 
-	$example_tree_tax = block_exacomp_build_example_tree_tax($course_for_tree);
+	$example_tree = block_exacomp_build_example_tree_tax($courseid_for_tree);
 	
 echo $output->print_tree_head();
 
 if($sort == 'desc')
-	echo $output->print_tree_view_examples_desc($example_tree_desc);
+	echo $output->print_tree_view_examples_desc($example_tree);
 else 	
-	echo $output->print_tree_view_examples_tax($example_tree_tax);
+	echo $output->print_tree_view_examples_tax($example_tree);
 	
 echo $output->print_foot_view_examples();
 

@@ -670,5 +670,74 @@ function block_exacomp_build_example_tree_desc($courseid){
 }
 
 function block_exacomp_build_example_tree_tax($courseid){
-	return '';
+	$tree = block_exacomp_build_example_tree_desc($courseid);
+	
+	$taxonomies = block_exacomp_get_taxonomies($tree);
+	
+	//append subjects to taxonomies
+	foreach($taxonomies as $taxonomy){
+		foreach($tree as $subject){
+			foreach($subject->subs as $topic){
+				foreach($topic->descriptors as $descriptor){
+					foreach($descriptor->examples as $example){
+						if($taxonomy->id == $example->taxid){
+							if(!isset($taxonomy->subjects))
+								$taxonomy->subjects = array();
+							
+							if(!isset($taxonomy->subjects[$subject->id])){
+								$taxonomy->subjects[$subject->id] = new stdClass();
+								$taxonomy->subjects[$subject->id]->id = $subject->id;
+								$taxonomy->subjects[$subject->id]->title = $subject->title;
+								$taxonomy->subjects[$subject->id]->number = $subject->number;
+								$taxonomy->subjects[$subject->id]->subs = array();
+							}
+							
+							if(!isset($taxonomy->subjects[$subject->id]->subs[$topic->id])){
+								$taxonomy->subjects[$subject->id]->subs[$topic->id] = new stdClass();
+								$taxonomy->subjects[$subject->id]->subs[$topic->id]->id = $topic->id;
+								$taxonomy->subjects[$subject->id]->subs[$topic->id]->title = $topic->title;
+								$taxonomy->subjects[$subject->id]->subs[$topic->id]->cat = $topic->cat;
+								$taxonomy->subjects[$subject->id]->subs[$topic->id]->descriptors = array();
+							}
+							
+							if(!isset($taxonomy->subjects[$subject->id]->subs[$topic->id]->descriptors[$descriptor->id])){
+								$taxonomy->subjects[$subject->id]->subs[$topic->id]->descriptors[$descriptor->id] = new stdClass();
+								$taxonomy->subjects[$subject->id]->subs[$topic->id]->descriptors[$descriptor->id]->id = $descriptor->id;
+								$taxonomy->subjects[$subject->id]->subs[$topic->id]->descriptors[$descriptor->id]->title = $descriptor->title;
+								$taxonomy->subjects[$subject->id]->subs[$topic->id]->descriptors[$descriptor->id]->examples = array();
+							}
+							
+							if(!isset($taxonomy->subjects[$subject->id]->subs[$topic->id]->descriptors[$descriptor->id]->examples[$example->id])){
+								$taxonomy->subjects[$subject->id]->subs[$topic->id]->descriptors[$descriptor->id]->examples[$example->id] = $example;
+							}
+								
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return $taxonomies;
+}
+function block_exacomp_get_taxonomies($tree){
+	global $DB;
+	
+	$taxonomies = array();
+	
+	foreach($tree as $subject){
+		foreach($subject->subs as $topic){
+			foreach($topic->descriptors as $descriptor){
+				foreach($descriptor->examples as $example){
+					if($example->taxid > 0 && !in_array($example->taxid, $taxonomies)){
+						$taxonomy = new stdClass();
+						$taxonomy->id = $example->taxid;
+						$taxonomy->title = $DB->get_record(DB_TAXONOMIES, array('id'=>$example->taxid), $fields='title');
+						$taxonomies[$example->taxid]= $taxonomy;
+					}
+				}
+			}
+		}
+	}
+	return $taxonomies;
 }
