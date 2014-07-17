@@ -169,7 +169,7 @@ td.contentcell {
 }
 
 #exabis_competences_block .header,#exabis_competences_block .cell {
-	padding: 0.5rem;
+	padding: 0.3em;
 	border: 1px solid #cacaca;
 	border-collapse: collapse;
 	-moz-hyphens: auto;
@@ -180,7 +180,6 @@ td.contentcell {
 	font-size:1em;
 }
 #exabis_competences_block .cell {
-	padding: 0;
 	border: 1px solid #cacaca;
 	border-collapse: collapse;
 	-moz-hyphens: auto;

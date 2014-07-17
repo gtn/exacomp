@@ -381,6 +381,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		//$padding = ($version) ? ($level-1)*20 :  ($level-2)*20+12;
 		$padding = $level * 20 + 12;
+		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
 
 		foreach($topics as $topic) {
 			list($outputid, $outputname) = block_exacomp_get_output_fields($topic);
@@ -417,6 +418,21 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
 				$studentCell->colspan = $studentsColspan;
 
+				/*
+				 * if scheme == 1: print checkbox
+				* if scheme != 1, role = student, version = LIS
+				*/
+				if($data->scheme == 1 || ($data->scheme != 1 && $data->role == ROLE_STUDENT && $version)) {
+					$studentCell->text = $this->generate_checkbox("datatopics", $topic->id, 'topics', $student, $evaluation, $data->scheme);
+				}
+				/*
+				 * if scheme != 1, !version: print select
+				* if scheme != 1, version = LIS, role = teacher
+				*/
+				elseif(!$version || ($version && $data->role == ROLE_TEACHER)) {
+					$studentCell->text = $this->generate_select("datatopics", $topic->id, 'topics', $student, $evaluation);
+				}
+
 				$topicRow->cells[] = $studentCell;
 			}
 
@@ -432,8 +448,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 	}
 
-	function print_descriptors(&$rows, $level, $descriptors, $data, $students, $rowgroup_class) {
-		global $version;
+	function print_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class) {
+		global $version, $PAGE, $USER;
 
 		$checkboxname = ($version) ? "dataexamples" : "data";
 		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
@@ -445,8 +461,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$padding = ($level) * 20 + 4;
 
+			if($descriptor->examples) {
+				$data->rowgroup++;
+				$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$rowgroup_class;
+				$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$data->rowgroup.' '.$rowgroup_class;
+			} else {
+				$this_rowgroup_class = $rowgroup_class;
+			}
 			$descriptorRow = new html_table_row();
-			$descriptorRow->attributes['class'] = 'exabis_comp_aufgabe ' . $rowgroup_class;
+			$descriptorRow->attributes['class'] = 'exabis_comp_aufgabe ' . $this_rowgroup_class;
 			$exampleuploadCell = new html_table_cell();
 			if($data->role == ROLE_TEACHER) {
 				$exampleuploadCell->text = html_writer::link(
@@ -459,8 +482,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$descriptorRow->cells[] = $exampleuploadCell;
 
 			$titleCell = new html_table_cell();
+			if($descriptor->examples)
+				$titleCell->attributes['class'] = 'rowgroup-arrow';
 			$titleCell->style = "padding-left: ".$padding."px";
-			$titleCell->text = $outputname;
+			$titleCell->text = html_writer::div($outputname);
 
 			$descriptorRow->cells[] = $titleCell;
 
@@ -469,42 +494,121 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
 				$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
 				$studentCell->colspan = $studentsColspan;
-				$studentCell->text = "S";
-
-				if(isset($student->competencies->teacher[$descriptor->id]))
-					$studentCell->text = "C";
 
 				/*
 				 * if scheme == 1: print checkbox
 				* if scheme != 1, role = student, version = LIS
 				*/
 				if($data->scheme == 1 || ($data->scheme != 1 && $data->role == ROLE_STUDENT && $version)) {
-					$studentCell->text = html_writer::checkbox(
-							$checkboxname . '[' . $descriptor->id . '][' . $student->id . '][' . $evaluation . ']',
-							$data->scheme,
-							(isset($student->competencies->{$evaluation}[$descriptor->id])) && $student->competencies->{$evaluation}[$descriptor->id] >= ceil($data->scheme/2));
+					$studentCell->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme);
 				}
 				/*
 				 * if scheme != 1, !version: print select
 				* if scheme != 1, version = LIS, role = teacher
 				*/
 				elseif(!$version || ($version && $data->role == ROLE_TEACHER)) {
-					$options = array();
-					for($i=0;$i<=$data->scheme;$i++)
-						$options[] = $i;
-
-					$studentCell->text = html_writer::select(
-							$options,
-							$checkboxname . '[' . $descriptor->id . '][' . $student->id . '][' . $evaluation . ']',
-							(isset($student->competencies->{$evaluation}[$descriptor->id])) ? $student->competencies->{$evaluation}[$descriptor->id] : 0,
-							false);
+					$studentCell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, $evaluation);
 				}
 
 				$descriptorRow->cells[] = $studentCell;
 			}
 
 			$rows[] = $descriptorRow;
+
+			$studentsCount = 0;
+			$checkboxname = "dataexamples";
+
+			foreach($descriptor->examples as $example) {
+				$exampleRow = new html_table_row();
+				$exampleRow->attributes['class'] = 'exabis_comp_aufgabe ' . $sub_rowgroup_class;
+				$exampleRow->cells[] = new html_table_cell();
+
+				$titleCell = new html_table_cell();
+				$titleCell->style = "padding-left: ". ($padding + 20 )."px";
+				$titleCell->text = $example->title;
+
+				if(isset($example->creatorid) && $example->creatorid == $USER->id) {
+					$titleCell->text .= html_writer::link($PAGE->url . "&delete=" . $example->id, html_writer::img("pix/x_11x11_redsmall.png", "Delete"));
+				}
+
+				if($example->task)
+					$titleCell->text .= html_writer::link($example->task, html_writer::img('pix/i_11x11.png', 'link'),array("target" => "_blank"));
+				if($example->externalurl)
+					$titleCell->text .= html_writer::link($example->externalurl, html_writer::img('pix/i_11x11.png', 'link'),array("target" => "_blank"));
+
+				$exampleRow->cells[] = $titleCell;
+
+				foreach($students as $student) {
+					$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
+					$studentCell = new html_table_cell();
+					$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+
+					/*
+					 * if scheme == 1: print checkbox
+					* if scheme != 1, role = student, version = LIS
+					*/
+					if($data->scheme == 1 || ($data->scheme != 1 && $data->role == ROLE_STUDENT && $version)) {
+						$studentCell->text = $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme);
+					}
+					/*
+					 * if scheme != 1, !version: print select
+					* if scheme != 1, version = LIS, role = teacher
+					*/
+					elseif(!$version || ($version && $data->role == ROLE_TEACHER)) {
+						$options = array();
+						for($i=0;$i<=$data->scheme;$i++)
+							$options[] = $i;
+							
+						$studentCell->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, $evaluation);
+					}
+
+					$exampleRow->cells[] = $studentCell;
+				}
+
+				$rows[] = $exampleRow;
+			}
 		}
+	}
+	/**
+	 * Used to generate a checkbox for ticking topics/competencies/examples
+	 *
+	 * @param String $name name of the checkbox: data for competencies, dataexamples for examples, datatopic for topics
+	 * @param int $compid
+	 * @param String $type comptencies or topics or examples
+	 * @param stdClass $student
+	 * @param String $evaluation teacher or student
+	 * @param int $scheme grading scheme
+	 *
+	 * @return String $checkbox html code for checkbox
+	 */
+	public function generate_checkbox($name, $compid, $type, $student, $evaluation, $scheme) {
+		return html_writer::checkbox(
+				$name . '[' . $compid . '][' . $student->id . '][' . $evaluation . ']',
+				$scheme,
+				(isset($student->{$type}->{$evaluation}[$compid])) && $student->{$type}->{$evaluation}[$compid] >= ceil($scheme/2));
+	}
+
+	/**
+	 * Used to generate a select for topics/competencies/examples values
+	 *
+	 * @param String $name name of the checkbox: data for competencies, dataexamples for examples, datatopic for topics
+	 * @param int $compid
+	 * @param String $type comptencies or topics or examples
+	 * @param stdClass $student
+	 * @param String $evaluation teacher or student
+	 *
+	 * @return String $select html code for select
+	 */
+	public function generate_select($name, $compid, $type, $student, $evaluation) {
+		$options = array();
+		for($i=0;$i<=$scheme;$i++)
+			$options[] = $i;
+
+		return html_writer::select(
+				$options,
+				$checkboxname . '[' . $compid . '][' . $student->id . '][' . $evaluation . ']',
+				(isset($student->{$type}->{$evaluation}[$compid])) ? $student->{$type}->{$evaluation}[$compid] : 0,
+				false);
 	}
 
 	public function print_edit_config($data, $courseid){

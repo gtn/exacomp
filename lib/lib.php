@@ -4,6 +4,7 @@ define('DB_SKILLS', 'block_exacompskills');
 define('DB_NIVEAUS', 'block_exacompniveaus');
 define('DB_TAXONOMIES', 'block_exacomptaxonomies');
 define('DB_EXAMPLES', 'block_exacompexamples');
+define('DB_EXAMPLEEVAL', 'block_exacompexameval');
 define('DB_DESCRIPTORS', 'block_exacompdescriptors');
 define('DB_DESCEXAMP', 'block_exacompdescrexamp_mm');
 define('DB_EDULEVELS', 'block_exacompedulevels');
@@ -302,10 +303,10 @@ function block_exacomp_get_teachers_by_course($courseid) {
  * 		$user
  * 			->competencies
  * 				->teacher[competenceid] = competence value
- * 				->self[competenceid] = competence value
+ * 				->student[competenceid] = competence value
  * 			->topics
  * 				->teacher
- * 				->self
+ * 				->student
  *
  * @param sdtClass $user
  * @param int $courseid
@@ -317,7 +318,8 @@ function block_exacomp_get_user_information_by_course($user, $courseid) {
 	// get student topics
 	$user = block_exacomp_get_user_topics_by_course($user, $courseid);
 	// get student examples
-
+	$user = block_exacomp_get_user_examples_by_course($user, $courseid);
+	
 	return $user;
 }
 
@@ -332,7 +334,7 @@ function block_exacomp_get_user_competencies_by_course($user, $courseid) {
 	global $DB;
 	$user->competencies = new stdClass();
 	$user->competencies->teacher = $DB->get_records_menu(DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR),'','compid as id, value');
-	$user->competencies->self = $DB->get_records_menu(DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => ROLE_STUDENT, "comptype" => TYPE_DESCRIPTOR),'','compid as id, value');
+	$user->competencies->student = $DB->get_records_menu(DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => ROLE_STUDENT, "comptype" => TYPE_DESCRIPTOR),'','compid as id, value');
 
 	return $user;
 }
@@ -342,20 +344,32 @@ function block_exacomp_get_user_competencies_by_course($user, $courseid) {
  *
  * @param stdClass $user
  * @param int $courseid
- * @return stdClass user
+ * @return stdClass $user
  */
 function block_exacomp_get_user_topics_by_course($user, $courseid) {
 	global $DB;
 
 	$user->topics = new stdClass();
 	$user->topics->teacher = $DB->get_records_menu(DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => ROLE_TEACHER, "comptype" => TYPE_TOPIC),'','compid as id, value');
-	$user->topics->self = $DB->get_records_menu(DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => ROLE_STUDENT, "comptype" => TYPE_TOPIC),'','compid as id, value');
+	$user->topics->student = $DB->get_records_menu(DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => ROLE_STUDENT, "comptype" => TYPE_TOPIC),'','compid as id, value');
 
 	return $user;
 }
-
+/**
+ *  This method returns all user examples for a particular user in the given course
+ *
+ * @param stdClass $user
+ * @param int $courseid
+ * @return stdClass $user
+ */
 function block_exacomp_get_user_examples_by_course($user, $courseid) {
-
+	global $DB;
+	
+	$user->examples = new stdClass();
+	$user->examples->teacher = $DB->get_records_menu(DB_EXAMPLEEVAL,array("courseid" => $courseid, "studentid" => $user->id),'','exampleid as id, teacher_evaluation as value');
+	$user->examples->student = $DB->get_records_menu(DB_EXAMPLEEVAL,array("courseid" => $courseid, "studentid" => $user->id),'','exampleid as id, student_evaluation as value');
+	
+	return $user;
 }
 
 function block_exacomp_build_navigation_tabs($context,$courseid) {
