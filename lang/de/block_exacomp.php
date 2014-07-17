@@ -148,3 +148,10 @@ $string['taxonomies'] = 'Taxonomien';
 $string['show_all_course_examples'] = 'Beispiele aus allen Kursen anzeigen';
 $string['expandcomps'] = 'Alle &ouml;ffnen';
 $string['contactcomps'] = 'Alle schlie&szlig;en';
+//Icons
+$string['assigned_example'] = 'Assigned Example';
+$string['task_example'] = 'Aufgabenstellung';
+$string['solution_example'] = 'Lösung';
+$string['attachement_example'] = 'Anhang';
+$string['extern_task'] = 'Externe Aufgabenstellung';
+$string['total_example'] = 'Gesamtbeispiel';

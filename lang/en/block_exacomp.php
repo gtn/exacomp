@@ -119,10 +119,16 @@ $string['pendingbadges'] = 'Pending badges';
 $string['no_badges_yet'] = "no badges available";
 
 //Examples
-
 $string['sorting'] = 'select sorting: ';
 $string['subject'] = 'subjects';
 $string['taxonomies'] = 'taxonomies';
 $string['show_all_course_examples'] = 'Show examples from all courses';
 $string['expandcomps'] = 'expand all';
 $string['contactcomps'] = 'contract all';
+//Icons
+$string['assigned_example'] = 'Assigned Example';
+$string['task_example'] = 'Tasks';
+$string['solution_example'] = 'Solution';
+$string['attachement_example'] = 'Attachement';
+$string['extern_task'] = 'External Task';
+$string['total_example'] = 'Complete Example';

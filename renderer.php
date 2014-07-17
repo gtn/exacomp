@@ -632,13 +632,39 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function print_tree_view_examples_desc($tree){
 		$li_subjects = '';
 		foreach($tree as $subject){
+			$subject_example_content = (empty($subject->number) || $subject->number==0)? '' : $subject->number;
 			$li_topics = '';
 			foreach($subject->subs as $topic){
+				$topic_example_content = (empty($topic->cat)) ? '' : '('.$topic->cat.')';
 				$li_descriptors = '';
 				foreach($topic->descriptors as $descriptor){
 					$li_examples = '';
 					foreach($descriptor->examples as $example){
-						$li_examples .= html_writer::tag('li', $example->title);
+						//create description for on mouse over
+						$text=$example->description;
+						$text = str_replace("\"","",$text);
+						$text = str_replace("\'","",$text);
+						$text = str_replace("\n"," ",$text);
+						$text = str_replace("\r"," ",$text);
+						$text = str_replace(":","\:",$text);
+						 
+						$example_content = '';
+						
+						$inner_example_content = $subject_example_content . 
+								' ' . $example->title . ' ' .
+								$topic_example_content;
+
+						//if text is set, on mouseover is enabled, other wise just inner_example_content is displayed
+						if($text)
+							$example_content = html_writer::tag('a', 
+								$inner_example_content, 
+								array('onmouseover'=>'Tip(\''.$text.'\')', 'onmouseout'=>'UnTip()'));
+						else
+							$example_content = $inner_example_content;
+							
+						$icons = $this->example_tree_get_exampleicon($example);
+						
+						$li_examples .= html_writer::tag('li', $example_content.$icons);
 					}
 					$ul_examples = html_writer::tag('ul', $li_examples);
 					$li_descriptors .= html_writer::tag('li', $descriptor->title
@@ -659,6 +685,39 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $form;
 	}
 
+	public function example_tree_get_exampleicon($example) {
+		$icon="";
+		if($example->task) {
+			$img = html_writer::img(new moodle_url('/blocks/exacomp/pix/pdf.gif'), get_string("assigned_example", "block_exacomp"), array('width'=>16, 'height'=>16));
+			$icon .= html_writer::link($example->task, $img, 
+				array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('task_example', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
+		} if($example->solution) {
+			$img = html_writer::img(new moodle_url('/blocks/exacomp/pix/pdf solution.gif'), get_string("assigned_example", "block_exacomp"), array('height'=>16, 'width'=>16));
+			$icon .= html_writer::link($example->solution, $img, 
+				array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('solution_example', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
+		}
+		if($example->attachement) {
+			$img = html_writer::img(new moodle_url('/blocks/exacomp/pix/attach_2.png'), get_string("task_example", "block_exacomp"), array('height'=>16, 'width'=>16));
+			$icon .= html_writer::link($example->attachement, $img, 
+				array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('attachement_example', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
+		}if($example->externaltask) {
+			$img = html_writer::img(new moodle_url('/blocks/exacomp/pix/link.png'), get_string("task_example", "block_exacomp"), array('height'=>16, 'width'=>16));
+			$icon .= html_writer::link($example->externaltask, $img, 
+				array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('extern_task', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
+		}
+		if($example->externalurl) {
+			$img = html_writer::img(new moodle_url('/blocks/exacomp/pix/link.png'), get_string("assigned_example", "block_exacomp"), array('height'=>16, 'width'=>16));
+			$icon .= html_writer::link($example->externalurl, $img, 
+				array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('extern_task', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
+		}
+		if($example->completefile) {
+			$img = html_writer::img(new moodle_url('/blocks/exacomp/pix/folder.png'), get_string("assigned_example", "block_exacomp"), array('height'=>16, 'width'=>16));
+			$icon .= html_writer::link($example->completefile, $img, 
+				array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('total_example', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
+		}
+		return $icon;
+	}
+	
 	public function print_tree_view_examples_tax($tree){
 		return '';
 	}

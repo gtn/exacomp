@@ -58,7 +58,7 @@ function block_exacomp_init_js_css(){
 function block_exacomp_get_subjects_by_course($courseid, $subjectid = null) {
 	global $DB;
 	
-	$sql = 'SELECT s.id, s.title, "subject" as type
+	$sql = 'SELECT s.id, s.title, s.number, "subject" as type
 			FROM {'.DB_SUBJECTS.'} s
 			JOIN {'.DB_TOPICS.'} t ON t.subjid = s.id ';
 	
@@ -87,9 +87,10 @@ function block_exacomp_get_all_topics($subjectid = null) {
 	global $DB;
 	
 	$topics = $DB->get_records_sql('
-			SELECT t.id, t.title, t.parentid, t.subjid, "topic" as type, t.catid
+			SELECT t.id, t.title, t.parentid, t.subjid, "topic" as type, t.catid, cat.title as cat
 			FROM {'.DB_SUBJECTS.'} s
 			JOIN {'.DB_TOPICS.'} t ON t.subjid = s.id
+			LEFT JOIN {'.DB_CATEGORIES.'} cat ON t.catid = cat.id
 			'.($subjectid == null ? '' : '
 					-- only show active ones
 					WHERE s.id = ?
