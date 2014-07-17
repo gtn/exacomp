@@ -400,7 +400,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$outputnameCell = new html_table_cell();
 			$outputnameCell->attributes['class'] = 'rowgroup-arrow';
-			$outputnameCell->text = $outputname;
+			$outputnameCell->text = html_writer::div($outputname,"desctitle");
 			$topicRow->cells[] = $outputnameCell;
 
 			foreach($students as $student) {
@@ -415,12 +415,52 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$rows[] = $topicRow;
 
 			if (!empty($topic->descriptors)) {
-				//print_level_descriptors($level+1, $item->descriptors, $data, $sub_rowgroup_class);
+				$this->print_descriptors($rows, $level+1, $topic->descriptors, $data, $students, $sub_rowgroup_class);
 			}
 
 			if (!empty($topic->subs)) {
 				$this->print_topics($rows, $level+1, $topic->subs, $data, $students, $sub_rowgroup_class);
 			}
+		}
+	}
+
+	function print_descriptors(&$rows, $level, $descriptors, $data, $students, $rowgroup_class) {
+		global $version;
+
+		foreach($descriptors as $descriptor) {
+			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor);
+			$studentsCount = 0;
+			$studentsColspan = 1;
+				
+			$descrpadding = ($version) ? ($level-1)*20 :  ($level-2)*20+12;;
+				
+			$descriptorRow = new html_table_row();
+			$descriptorRow->attributes['class'] = 'exabis_comp_aufgabe ' . $rowgroup_class;
+			$exampleuploadCell = new html_table_cell();
+			$exampleuploadCell->text = $outputid;
+				
+			$descriptorRow->cells[] = $exampleuploadCell;
+				
+			$titleCell = new html_table_cell();
+			$titleCell->style = "padding-left: ".$descrpadding."px";
+			$titleCell->text = $outputname;
+				
+			$descriptorRow->cells[] = $titleCell;
+				
+			foreach($students as $student) {
+				$studentCell = new html_table_cell();
+				$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
+				$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+				$studentCell->colspan = $studentsColspan;
+				$studentCell->text = "S";
+
+				if(isset($student->competencies->teacher[$descriptor->id]))
+					$studentCell->text = "C";
+
+				$descriptorRow->cells[] = $studentCell;
+			}
+				
+			$rows[] = $descriptorRow;
 		}
 	}
 	public function print_edit_config($data, $courseid){
@@ -441,7 +481,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$cell->attributes['class'] = 'category catlevel1';
 				$cell->colspan = 2;
 				$cell->text = html_writer::tag('h2', get_string('specificcontent', 'block_exacomp'));
-				 
+					
 				$row->cells[] = $cell;
 				$rows[] = $row;
 				$temp = true;
@@ -454,7 +494,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$row->cells[] = $cell;
 			$rows[] = $row;
-				
+
 			foreach($levelstruct->schooltypes as $schooltypestruct){
 				$row = new html_table_row();
 				$cell = new html_table_cell();
@@ -521,7 +561,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			
 		return $content;
 	}
-	
+
 	public function print_my_badges($badges){
 		$content = "";
 		if($badges->issued){
@@ -529,19 +569,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			foreach ($badges->issues as $badge){
 				$context = context_course::instance($badge->courseid);
 				$imageurl = moodle_url::make_pluginfile_url($context->id, 'badges', 'badgeimage', $badge->id, '/', 'f1', false);
-        		$img = html_writer::empty_tag('img', array('src' => $imageurl, 'class' => 'badge-image'));
-        		$innerdiv = html_writer::div($badge->name,"", array('style'=>'font-weight:bold;'));
-        		$div = html_writer::div($img.$innerdiv, '', array('style'=>'padding:10px;'));
+				$img = html_writer::empty_tag('img', array('src' => $imageurl, 'class' => 'badge-image'));
+				$innerdiv = html_writer::div($badge->name,"", array('style'=>'font-weight:bold;'));
+				$div = html_writer::div($img.$innerdiv, '', array('style'=>'padding:10px;'));
 				$content .= $div;
 			}
-		
+
 		}
 		if($badges->pending){
 			$content .= html_writer::tag('h2', get_string('pendingbadges', 'block_exacomp'));
 			foreach($badges as $badge){
 				$context = context_course::instance($badge->courseid);
-        		$imageurl = moodle_url::make_pluginfile_url($context->id, 'badges', 'badgeimage', $badge->id, '/', 'f1', false);
-        		$img = html_writer::empty_tag('img', array('src' => $imageurl, 'class' => 'badge-image'));
+				$imageurl = moodle_url::make_pluginfile_url($context->id, 'badges', 'badgeimage', $badge->id, '/', 'f1', false);
+				$img = html_writer::empty_tag('img', array('src' => $imageurl, 'class' => 'badge-image'));
 				$innerdiv = html_writer::div($badge->name, "", array('style'=>'font-weight: bold;'));
 				$innerdiv2 = "";
 				if($badge->descriptorStatus){
@@ -555,32 +595,32 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$content .= $div;
 			}
 		}
-		
+
 		return $content;
 	}
-	
+
 	public function print_head_view_examples($sort, $show_all_examples, $url, $context){
 		$text_link1 = ($sort=="desc") ? html_writer::tag('b', get_string("subject", "block_exacomp")) : get_string("subject", "block_exacomp");
 		$text_link2 = ($sort=="tax") ? html_writer::tag('b', get_string("taxonomies", "block_exacomp")) : get_string("taxonomies", "block_exacomp");
 		$content = get_string('sorting', 'block_exacomp')
-			.html_writer::link($url.'&sort=desc', $text_link1)." "
-			.html_writer::link($url.'&sort=tax', $text_link2);
-		
+		.html_writer::link($url.'&sort=desc', $text_link1)." "
+		.html_writer::link($url.'&sort=tax', $text_link2);
+
 		if(has_capability('block/exacomp:teacher', $context) OR has_capability('block/exacomp:admin', $context)){
 			$input = '';
 			if($show_all_examples != 0)
 				$input = html_writer::empty_tag('input', array('type'=>'checkbox', 'name'=>'showallexamples_check', 'value'=>1, 'onClick'=>'showallexamples_form.submit();', 'checked'=>'checked'));
-			else 
+			else
 				$input = html_writer::empty_tag('input', array('type'=>'checkbox', 'name'=>'showallexamples_check', 'value'=>1, 'onClick'=>'showallexamples_form.submit();'));
-			
+				
 			$input .= get_string('show_all_course_examples', 'block_exacomp');
-			
+				
 			$content .= html_writer::tag('form', $input, array('method'=>'post', 'name'=>'showallexamples_form'));
 		}
-		$div_exabis_competences_block = html_writer::start_div('', array('id'=>'exabis_competences_block'));	
+		$div_exabis_competences_block = html_writer::start_div('', array('id'=>'exabis_competences_block'));
 		return $div_exabis_competences_block.$content;
 	}
-	
+
 	public function print_tree_head(){
 		$content = html_writer::empty_tag('br').html_writer::empty_tag('br');
 		$content .= html_writer::link("javascript:ddtreemenu.flatten('comptree', 'expand')", get_string("expandcomps", "block_exacomp"));
@@ -588,11 +628,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content .= html_writer::link("javascript:ddtreemenu.flatten('comptree', 'contact')", get_string("contactcomps", "block_exacomp"));
 		return $content;
 	}
-	
+
 	public function print_tree_view_examples_desc($tree){
 		$li_subjects = '';
 		foreach($tree as $subject){
-			$li_topics = '';			
+			$li_topics = '';
 			foreach($subject->subs as $topic){
 				$li_descriptors = '';
 				foreach($topic->descriptors as $descriptor){
@@ -602,27 +642,27 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					}
 					$ul_examples = html_writer::tag('ul', $li_examples);
 					$li_descriptors .= html_writer::tag('li', $descriptor->title
-						.$ul_examples);
+							.$ul_examples);
 				}
 				$ul_descriptors = html_writer::tag('ul', $li_descriptors);
 				$li_topics .= html_writer::tag('li', $topic->title
-					.$ul_descriptors);	
+						.$ul_descriptors);
 			}
 			$ul_topics = html_writer::tag('ul', $li_topics);
 			$li_subjects .= html_writer::tag('li', $subject->title
-				.$ul_topics);
+					.$ul_topics);
 		}
-		
+
 		$ul_subjects = html_writer::tag('ul', $li_subjects, array('id'=>'comptree', 'class'=>'treeview'));
 		$form = html_writer::tag('form', $ul_subjects, array('name'=>'treeform'));
-		
+
 		return $form;
 	}
-	
+
 	public function print_tree_view_examples_tax($tree){
 		return '';
 	}
-	
+
 	public function print_foot_view_examples(){
 		$content = html_writer::tag('script', 'ddtreemenu.createTree("comptree", true)', array('type'=>'text/javascript'));
 		return $content.html_writer::end_div();

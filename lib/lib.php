@@ -33,11 +33,19 @@ $version = get_config('exacomp','alternativedatamodel');
 define("LIS_SHOW_ALL_TOPICS",99999999);
 
 function block_exacomp_init_js_css(){
-	global $PAGE;
+	global $PAGE, $CFG;
+	$PAGE->requires->css('/blocks/exacomp/styles.css');
 	$PAGE->requires->css('/blocks/exacomp/css/jquery-ui.css');
 	$PAGE->requires->js('/blocks/exacomp/javascript/jquery.js', true);
 	$PAGE->requires->js('/blocks/exacomp/javascript/jquery-ui.js', true);
 	$PAGE->requires->js('/blocks/exacomp/javascript/exacomp.js', true);
+	
+	$scriptName = preg_replace('!\.[^\.]+$!', '', basename($_SERVER['PHP_SELF']));
+	if (file_exists($CFG->dirroot.'/blocks/exacomp/css/'.$scriptName.'.css'))
+		$PAGE->requires->css('/blocks/exacomp/css/'.$scriptName.'.css');
+	if (file_exists($CFG->dirroot.'/blocks/exacomp/javascript/'.$scriptName.'.js'))
+		$PAGE->requires->js('/blocks/exacomp/javascript/'.$scriptName.'.js', true);
+	
 }
 
 /**
