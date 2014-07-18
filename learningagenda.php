@@ -96,7 +96,7 @@ if(strcmp($calendarinput, 'none')!=0){
 
 /* CONTENT REGION */
 
-$sql="SELECT concat( tmm.id, '_', emm.id ) AS id, subj.title AS subject, subj.numb as subnumb, st.title AS schooltype, examp.title AS example, examp.task AS exampletask, examp.externalurl AS exampleurl, cat.title as cat,
+$sql="SELECT concat(concat( tmm.id, '_'), emm.id ) AS id, subj.title AS subject, subj.numb as subnumb, st.title AS schooltype, examp.title AS example, examp.task AS exampletask, examp.externalurl AS exampleurl, cat.title as cat,
 exameval.starttime as starttime, exameval.endtime as endtime, exameval.student_evaluation as evaluate, exameval.teacher_evaluation as tevaluate, descr.title
 FROM {block_exacompsubjects} subj
 INNER JOIN {block_exacomptopics} top ON top.subjid = subj.id

@@ -64,7 +64,7 @@ function block_exacomp_init_js_css(){
 function block_exacomp_get_subjects_by_course($courseid, $subjectid = null) {
 	global $DB;
 
-	$sql = 'SELECT s.id, s.title, s.numb, "subject" as type
+	$sql = 'SELECT s.id, s.title, s.numb, \'subject\' as tabletype
 	FROM {'.DB_SUBJECTS.'} s
 	JOIN {'.DB_TOPICS.'} t ON t.subjid = s.id ';
 
@@ -75,7 +75,7 @@ function block_exacomp_get_subjects_by_course($courseid, $subjectid = null) {
 			-- only show active ones
 			WHERE s.id = ?
 			').'
-			GROUP BY s.id
+			GROUP BY s.id, s.title, s.numb, s.stid
 			ORDER BY s.stid, s.title
 			';
 
@@ -93,7 +93,7 @@ function block_exacomp_get_all_topics($subjectid = null) {
 	global $DB;
 
 	$topics = $DB->get_records_sql('
-			SELECT t.id, t.title, t.parentid, t.subjid, "topic" as type, t.catid, cat.title as cat
+			SELECT t.id, t.title, t.parentid, t.subjid, \'topic\' as tabletype, t.catid, cat.title as cat
 			FROM {'.DB_SUBJECTS.'} s
 			JOIN {'.DB_TOPICS.'} t ON t.subjid = s.id
 			LEFT JOIN {'.DB_CATEGORIES.'} cat ON t.catid = cat.id
@@ -176,30 +176,28 @@ function block_exacomp_get_descritors_list($courseid, $onlywithactivitys = 0) {
 function block_exacomp_get_descriptors_by_course($courseid) {
 	global $DB;
 	$course='';
-
-	$sql = 'SELECT d.id, d.title, t.id AS topicid, "descriptor" as type
-	FROM {block_exacompsubjects} s
-	JOIN {block_exacomptopics} t ON t.subjid = s.id ';
-
-	if($courseid>0){
-		$sql .=	'JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=? ';
-		$course = 'AND a.course=? ';
-	}
-
-	$sql .=	'JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.topicid=t.id
-	JOIN {block_exacompdescriptors} d ON desctopmm.descrid=d.id
-	'.(block_exacomp_coursesettings()->show_all_descriptors ? '' : '
+	
+	//to be compatible with oracle, DISTINCT can not be used with CLOB and order by must be a constance
+	//so the statement is splitted in two parts. 1 Selecting ids, 2 selecting rest and order by
+	$sql = 'SELECT d.id, d.title, t.id AS topicid, \'descriptor\' as tabletype '
+		.'FROM {block_exacomptopics} t '
+		.(($courseid>0)?'JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid = t.id AND topmm.courseid=? ':'')
+		.'JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.topicid = t.id '
+		.'JOIN {block_exacompdescriptors} d ON desctopmm.descrid = d.id '
+		.'WHERE d.id IN ';
+		
+	$sql .= '(SELECT DISTINCT d.id '
+		.'FROM {block_exacomptopics} t '
+		.(($courseid>0)?'JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=? ':'')
+		.'JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.topicid=t.id '
+		.'JOIN {block_exacompdescriptors} d ON desctopmm.descrid=d.id '
+		.(block_exacomp_coursesettings()->show_all_descriptors ? '' : '
 			JOIN {block_exacompcompactiv_mm} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
-			JOIN {course_modules} a ON da.activityid=a.id '.$course);
+			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':'')).')';
 
-	$sql .=	' GROUP BY d.id
-	ORDER BY d.sorting
-	';
+	$sql .= 'ORDER BY d.sorting';
 
-	if($courseid>0)
-		$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid));
-	else
-		$descriptors = $DB->get_records_sql($sql);
+	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid));
 
 	return $descriptors;
 }
