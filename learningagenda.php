@@ -177,7 +177,9 @@ foreach($weekdays as $weekday=>$tag){
 	$example_count += $example_count_week;
 	$example_count_week = 0;	
 }
+
 $output = $PAGE->get_renderer('block_exacomp');	
+
 if($print == 0){
 	echo $output->form_week_learningagenda($stundentselect,$action, $studentid, $print,date('Y-m-d',$time));
 	
@@ -186,33 +188,43 @@ if($print == 0){
 		echo $output->render_learning_agenda($data, $weekdays);
 	else { //no examples
 		if($studentid == 0) //no studentid -> choose student
-			echo '<h2>'.get_string('LA_select_student', 'block_exacomp').'</h2>';
+			echo html_writer::tag('h2', get_string('LA_select_student', 'block_exacomp'));
 		else 
-			echo '<h2>'.get_string('LA_no_learningagenda', 'block_exacomp').'</h2>';
+			echo html_writer::tag('h2', get_string('LA_no_learningagenda', 'block_exacomp'));
 	} 
 		
 }else{
-	$user = $DB->get_record('user', array('id'=>$studentid)); 
-	$content =  $output->print_view_learning_agenda($data, $user->firstname.' '.$user->lastname);
-	
-	require_once($CFG->dirroot.'/lib/tcpdf/tcpdf.php');
-	try
-	{	// create new PDF document
-		$pdf = new TCPDF("P", "pt", "A4", true, 'UTF-8', false);
-		$pdf->AddPage();
-		$pdf->SetTitle('Lernagenda');
-		$pdf->setCellHeightRatio(1.25);
-		$pdf->writeHTML($content, true, false, true, false, '');
-		$pdf->Output('Lernagenda.pdf', 'I');
-	}
-	catch(tcpdf_exception $e) {
-		echo $e;
-		exit;
-	}
+	if($example_count!=0){	
+		$user = $DB->get_record('user', array('id'=>$studentid)); 
+		$content =  $output->print_view_learning_agenda($data, $user->firstname.' '.$user->lastname);
+		
+		require_once($CFG->dirroot.'/lib/tcpdf/tcpdf.php');
+		try
+		{	// create new PDF document
+			$pdf = new TCPDF("P", "pt", "A4", true, 'UTF-8', false);
+			$pdf->AddPage();
+			$pdf->SetTitle('Lernagenda');
+			$pdf->setCellHeightRatio(1.25);
+			$pdf->writeHTML($content, true, false, true, false, '');
+			$pdf->Output('Lernagenda.pdf', 'I');
+		}
+		catch(tcpdf_exception $e) {
+			echo $e;
+			exit;
+		}
+	}else { //no examples
+		if($studentid == 0) //no studentid -> choose student
+			echo html_writer::tag('h2', get_string('LA_select_student', 'block_exacomp'));
+		else 
+			echo html_writer::tag('h2', get_string('LA_no_learningagenda', 'block_exacomp'));
+			
+		echo html_writer::link($PAGE->url, get_string('LA_backtoview', 'block_exacomp'));
+	} 
 }
 /* END CONTENT REGION */
 
-echo $OUTPUT->footer();
+if($print == 0)
+	echo $OUTPUT->footer();
 
 ?>
 

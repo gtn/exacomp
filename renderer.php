@@ -197,7 +197,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	public function print_view_learning_agenda($data, $studentname){
 		global $CFG, $COURSE;
-
+		
 		//header
 		$table = new html_table();
 		$table->attributes['class'] = 'lernagenda';
@@ -209,7 +209,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$cellhead1 = new html_table_cell();
 		$cellhead1->text = html_writer::tag("p", get_string('LA_plan', 'block_exacomp').
 				get_string('LA_from_n', 'block_exacomp').$studentname.get_string('LA_from_m', 'block_exacomp').
-				$data[get_string('LA_MO', 'block_exacomp')]['date'].get_string('LA_to', 'block_exacomp').$data[get_string('LA_FR', 'block_exacomp')]['date']);
+				$data[get_string('LA_MON', 'block_exacomp')]['date'].get_string('LA_to', 'block_exacomp').$data[get_string('LA_FRI', 'block_exacomp')]['date']);
 		//$cellhead1->colspan = 4;
 		//without column "Was kann ich lernen"
 		$cellhead1->colspan = 4;
@@ -474,7 +474,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			if($data->role == ROLE_TEACHER) {
 				$exampleuploadCell->text = html_writer::link(
 						new moodle_url('/blocks/exacomp/example_upload.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id,"topicid"=>$descriptor->topicid)),
-						html_writer::img('pix/upload_12x12.png', 'upload'),
+						html_writer::empty_tag('img', array('src'=>'pix/upload_12x12.png', 'alt'=>'upload')),
 						array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 			}
 			$exampleuploadCell->text .= $outputid;
@@ -528,13 +528,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$titleCell->text = $example->title;
 
 				if(isset($example->creatorid) && $example->creatorid == $USER->id) {
-					$titleCell->text .= html_writer::link($PAGE->url . "&delete=" . $example->id, html_writer::img("pix/x_11x11_redsmall.png", "Delete"));
+					$titleCell->text .= html_writer::link($PAGE->url . "&delete=" . $example->id, html_writer::empty_tag('img', array('src'=>"pix/x_11x11_redsmall.png", 'alt'=>"Delete")));
 				}
 
 				if($example->task)
-					$titleCell->text .= html_writer::link($example->task, html_writer::img('pix/i_11x11.png', 'link'),array("target" => "_blank"));
+					$titleCell->text .= html_writer::link($example->task, html_writer::empty_tag('img', array('src'=>'pix/i_11x11.png', 'alt'=>'link')),array("target" => "_blank"));
 				if($example->externalurl)
-					$titleCell->text .= html_writer::link($example->externalurl, html_writer::img('pix/i_11x11.png', 'link'),array("target" => "_blank"));
+					$titleCell->text .= html_writer::link($example->externalurl, html_writer::empty_tag('img', array('src'=>'pix/i_11x11.png', 'alt'=>'link')),array("target" => "_blank"));
 
 				$exampleRow->cells[] = $titleCell;
 
@@ -844,30 +844,30 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function example_tree_get_exampleicon($example) {
 		$icon="";
 		if($example->task) {
-			$img = html_writer::img(new moodle_url('/blocks/exacomp/pix/pdf.gif'), get_string("assigned_example", "block_exacomp"), array('width'=>16, 'height'=>16));
+			$img = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pdf.gif'), 'alt'=>get_string("assigned_example", "block_exacomp"), 'width'=>16, 'height'=>16));
 			$icon .= html_writer::link($example->task, $img,
 					array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('task_example', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
 		} if($example->solution) {
-			$img = html_writer::img(new moodle_url('/blocks/exacomp/pix/pdf solution.gif'), get_string("assigned_example", "block_exacomp"), array('height'=>16, 'width'=>16));
+			$img = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pdf solution.gif'), 'alt'=>get_string("assigned_example", "block_exacomp"), 'height'=>16, 'width'=>16));
 			$icon .= html_writer::link($example->solution, $img,
 					array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('solution_example', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
 		}
 		if($example->attachement) {
-			$img = html_writer::img(new moodle_url('/blocks/exacomp/pix/attach_2.png'), get_string("task_example", "block_exacomp"), array('height'=>16, 'width'=>16));
+			$img = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/attach_2.png'), 'alt'=>get_string("task_example", "block_exacomp"), 'height'=>16, 'width'=>16));
 			$icon .= html_writer::link($example->attachement, $img,
 					array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('attachement_example', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
 		}if($example->externaltask) {
-			$img = html_writer::img(new moodle_url('/blocks/exacomp/pix/link.png'), get_string("task_example", "block_exacomp"), array('height'=>16, 'width'=>16));
+			$img = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/link.png'), 'alt'=>get_string("task_example", "block_exacomp"), 'height'=>16, 'width'=>16));
 			$icon .= html_writer::link($example->externaltask, $img,
 					array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('extern_task', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
 		}
 		if($example->externalurl) {
-			$img = html_writer::img(new moodle_url('/blocks/exacomp/pix/link.png'), get_string("assigned_example", "block_exacomp"), array('height'=>16, 'width'=>16));
+			$img = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/link.png'), 'alt'=>get_string("assigned_example", "block_exacomp"), 'height'=>16, 'width'=>16));
 			$icon .= html_writer::link($example->externalurl, $img,
 					array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('extern_task', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
 		}
 		if($example->completefile) {
-			$img = html_writer::img(new moodle_url('/blocks/exacomp/pix/folder.png'), get_string("assigned_example", "block_exacomp"), array('height'=>16, 'width'=>16));
+			$img = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/folder.png'), 'alt'=>get_string("assigned_example", "block_exacomp"), 'height'=>16, 'width'=>16));
 			$icon .= html_writer::link($example->completefile, $img,
 					array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('total_example', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
 		}
