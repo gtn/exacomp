@@ -19,7 +19,7 @@
  * Strings for component 'block_exacomp', language 'en'
  *
  * @package   block_exacomp
- * @copyright Florian Jungwirth <danielneis@gmail.com>
+ * @copyright Florian Jungwirth <fjungwirth@gtn-solutions.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -132,3 +132,19 @@ $string['solution_example'] = 'Solution';
 $string['attachement_example'] = 'Attachement';
 $string['extern_task'] = 'External Task';
 $string['total_example'] = 'Complete Example';
+
+//Example Upload
+$string['example_upload_header']  = 'Upload my own task/example';
+$string['taxonomy'] = 'taxonomy';
+$string['descriptors'] = 'competencies';
+$string['descriptors_help'] = 'You can select multible competencies';
+$string['filerequired'] = 'A file must be selected.';
+$string['titlenotemtpy'] = 'A name is required.';
+
+//Assign competencies
+$string['save_selection'] = 'Save selection';
+$string['delete_confirmation'] = 'Do you really want to delete this example?';
+$string['legend_activities'] = 'activities';
+$string['legend_eportfolio'] = 'ePortfolio';
+$string['legend_notask'] = 'no moodle-task/quiz has been submitted for this descriptor';
+$string['legend_upload'] = 'Upload your own task/example';

@@ -27,7 +27,7 @@
 
 require_once dirname(__FILE__)."/inc.php";
 
-global $DB, $OUTPUT, $PAGE;
+global $DB, $OUTPUT, $PAGE, $USER;
 
 $courseid = required_param('courseid', PARAM_INT);
 
@@ -58,14 +58,30 @@ $pagenode->make_active();
 echo $OUTPUT->header();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
-/* CONTENT REGION */
+// CHECK TEACHER
+$isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
+// IF DELETE > 0 DELTE CUSTOM EXAMPLE
+if(($delete = optional_param("delete", 0, PARAM_INT)) > 0 && $isTeacher) 
+	block_exacomp_delete_custom_example($delete);
 
-$students = block_exacomp_get_students_by_course($courseid);
+// SAVA DATA
+if (($action = optional_param("action", "", PARAM_TEXT) )== "save") {
+	// DESCRIPTOR DATA
+		block_exacomp_save_competencies(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_DESCRIPTOR);
+	
+	// TOPIC DATA
+		block_exacomp_save_competencies(isset($_POST['datatopics']) ? $_POST['datatopics'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_TOPIC);
+}
+
+// IF TEACHER SHOW ALL COURSE STUDENTS, IF NOT ONLY CURRENT USER
+$students = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : array($USER);
 foreach($students as $student)
 	block_exacomp_get_user_information_by_course($student, $courseid);
 
 $subjects = block_exacomp_get_competence_tree_by_course($courseid);
 $output = $PAGE->get_renderer('block_exacomp');
+// PRINT LEGEND
+echo $output->print_overview_legend($isTeacher);
 echo $output->print_competence_overview($subjects, $courseid, $students, false, (has_capability('block/exacomp:teacher', $context)) ? ROLE_TEACHER : ROLE_STUDENT, block_exacomp_get_grading_scheme($courseid));
 /* END CONTENT REGION */
 

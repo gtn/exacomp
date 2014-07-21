@@ -29,6 +29,7 @@ define('TYPE_TOPIC', 1);
 
 // SETTINGS
 define('SETTINGS_MAX_SCHEME', 10);
+define('CUSTOM_EXAMPLE_SOURCE', 3);
 
 if (block_exacomp_moodle_badges_enabled()) {
 	require_once($CFG->libdir . '/badgeslib.php');
@@ -118,6 +119,9 @@ function block_exacomp_get_all_topics($subjectid = null) {
 function block_exacomp_check_activity_association($compid, $comptype, $courseid) {
 	global $DB;
 
+	if(!block_exacomp_get_settings_by_course($courseid)->uses_activities)
+		return true;
+	
 	$cms = get_course_mods($courseid);
 	foreach($cms as $cm) {
 		if($DB->record_exists(DB_COMPETENCE_ACTIVITY, array("compid"=>$compid,"comptype"=>$comptype,"activityid"=>$cm->id)))
@@ -125,6 +129,93 @@ function block_exacomp_check_activity_association($compid, $comptype, $courseid)
 	}
 
 	return false;
+}
+
+/**
+ * Deletes an uploaded example and all it's data base entries and from the file system
+ * @param int $delete exampleid
+ */
+function block_exacomp_delete_custom_example($delete) {
+	global $DB,$USER;
+
+	$example = $DB->get_record(DB_EXAMPLES, array('id'=>$delete));
+	if($example && $example->creatorid == $USER->id) {
+		$DB->delete_records(DB_EXAMPLES, array('id' => $delete));
+		$DB->delete_records(DB_DESCEXAMP, array('exampid' => $delete));
+		$DB->delete_records(DB_EXAMPLEEVAL, array('exampleid' => $delete));
+
+		$fs = get_file_storage();
+		$fileinstance = $DB->get_record('files',array("userid"=>$example->creatorid,"itemid"=>$example->id),'*',IGNORE_MULTIPLE);
+		if($fileinstance) {
+			$file = $fs->get_file_instance($fileinstance);
+			$file->delete();
+		}
+	}
+}
+/**
+ * Set one competence for one user in one course
+ *
+ * @param int $userid
+ * @param int $compid
+ * @param int $comptype
+ * @param int $courseid
+ * @param int $role
+ * @param int $value
+ */
+function block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value) {
+	global $DB,$USER;
+
+	if($record = $DB->get_record(DB_COMPETENCIES, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, "courseid" => $courseid, "role" => $role))) {
+		$record->value = $value;
+		$record->timestamp = time();
+		$DB->update_record(DB_COMPETENCIES, $record);
+	} else {
+		$DB->insert_record(DB_COMPETENCIES, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, "courseid" => $courseid, "role" => $role, "value" => $value, "reviewerid" => $USER->id, "timestamp" => time()));
+	}
+}
+/**
+ * Reset comp data for one comptype in one course
+ *
+ * @param int $courseid
+ * @param int $role
+ * @param int $comptype
+ * @param int $userid
+ */
+function block_exacomp_reset_comp_data($courseid, $role, $comptype, $userid = false) {
+	global $DB;
+	if($role == ROLE_TEACHER)
+		$DB->delete_records(DB_COMPETENCIES, array("courseid" => $courseid, "role" => $role, "comptype" => $comptype));
+	else
+		$DB->delete_records(DB_COMPETENCIES, array("courseid" => $courseid, "role" => $role,  "comptype" => $comptype, "userid"=>$userid));
+}
+/**
+ * Saves competence data submitted by the assign competencies form
+ *
+ * @param array $data
+ * @param int $courseid
+ * @param int $role
+ * @param int $comptype
+ */
+function block_exacomp_save_competencies($data, $courseid, $role, $comptype) {
+	$values = array();
+	foreach ($data as $compidKey => $students) {
+		if (!empty($data[$compidKey])) {
+			foreach ($data[$compidKey] as $studentidKey => $evaluations) {
+
+				if(is_array($evaluations)) {
+					if(isset($evaluations['teacher']))
+						$value = intval($evaluations['teacher']);
+					else
+						$value = intval($evaluations['student']);
+				}
+				$values[] =  array('user' => intval($studentidKey), 'compid' => intval($compidKey), 'value' => $value);
+			}
+		}
+	}
+	block_exacomp_reset_comp_data($courseid, $role, $comptype, (($role == ROLE_STUDENT)) ? $USER->id : false);
+
+	foreach ($values as $value)
+		block_exacomp_set_user_competence($value['user'], $value['compid'], $comptype, $courseid, $role, $value['value']);
 }
 
 /**

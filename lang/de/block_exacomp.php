@@ -151,7 +151,22 @@ $string['contactcomps'] = 'Alle schlie&szlig;en';
 //Icons
 $string['assigned_example'] = 'Assigned Example';
 $string['task_example'] = 'Aufgabenstellung';
-$string['solution_example'] = 'L�sung';
+$string['solution_example'] = 'Lösung';
 $string['attachement_example'] = 'Anhang';
 $string['extern_task'] = 'Externe Aufgabenstellung';
 $string['total_example'] = 'Gesamtbeispiel';
+//Example Upload
+$string['example_upload_header']  = 'Eigenes Beispiel raufladen';
+$string['taxonomy'] = 'Taxonomie';
+$string['descriptors'] = 'Kompetenzen';
+$string['descriptors_help'] = 'Es können mehrere Kompetenzen ausgewählt werden.';
+$string['filerequired'] = 'Es muss eine Datei ausgewählt sein.';
+$string['titlenotemtpy'] = 'Es muss ein Name eingegeben werden.';
+
+//Assign competencies
+$string['save_selection'] = 'Auswahl speichern';
+$string['delete_confirmation'] = 'Soll das Beispiel wirklich gelöscht werden?';
+$string['legend_activities'] = 'Aktivitäten';
+$string['legend_eportfolio'] = 'ePortfolio';
+$string['legend_notask'] = 'Keine Aktivität/Quiz für diese Kompetenz abgegeben';
+$string['legend_upload'] = 'Eigenes Beispiel hochladen';

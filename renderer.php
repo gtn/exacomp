@@ -324,6 +324,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 	public function print_competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1) {
+		global $PAGE;
 
 		$table = new html_table();
 		$rows = array();
@@ -373,7 +374,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$table->data = $rows;
 		}
 
-		return html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
+		$table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
+		$table_html .= html_writer::tag("input", "", array("name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp")));
+		$table_html .= html_writer::tag("input", "", array("name" => "open_row_groups", "type" => "hidden", "value" => (optional_param('open_row_groups', "", PARAM_TEXT))));
+
+		return html_writer::tag("form", $table_html, array("id" => "assign-competencies", "method" => "post", "action" => $PAGE->url . "&action=save"));
 	}
 
 	public function print_topics(&$rows, $level, $topics, &$data, $students, $rowgroup_class = '') {
@@ -451,10 +456,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	function print_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class) {
 		global $version, $PAGE, $USER;
 
-		$checkboxname = ($version) ? "dataexamples" : "data";
 		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
 
 		foreach($descriptors as $descriptor) {
+			$checkboxname = ($version) ? "dataexamples" : "data";
 			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor);
 			$studentsCount = 0;
 			$studentsColspan = 1;
@@ -528,9 +533,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$titleCell->text = $example->title;
 
 				if(isset($example->creatorid) && $example->creatorid == $USER->id) {
-					$titleCell->text .= html_writer::link($PAGE->url . "&delete=" . $example->id, html_writer::empty_tag('img', array('src'=>"pix/x_11x11_redsmall.png", 'alt'=>"Delete")));
+					$titleCell->text .= html_writer::link($PAGE->url . "&delete=" . $example->id, html_writer::empty_tag("img", array("src" => "pix/x_11x11_redsmall.png", "alt" => "Delete", "onclick" => "return confirm('" . get_string('delete_confirmation','block_exacomp') . "')")));
 				}
-
+				
 				if($example->task)
 					$titleCell->text .= html_writer::link($example->task, html_writer::empty_tag('img', array('src'=>'pix/i_11x11.png', 'alt'=>'link')),array("target" => "_blank"));
 				if($example->externalurl)
@@ -568,6 +573,24 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$rows[] = $exampleRow;
 			}
 		}
+	}
+	public function print_overview_legend($teacher) {
+		$legend = html_writer::tag("img", "", array("src" => "pix/list_12x11.png", "alt" => get_string('legend_activities','block_exacomp')));
+		$legend .= get_string('legend_activities','block_exacomp') . " - ";
+	
+		$legend .= html_writer::tag("img", "", array("src" => "pix/folder_fill_12x12.png", "alt" => get_string('legend_eportfolio','block_exacomp')));
+		$legend .= get_string('legend_eportfolio','block_exacomp') . " - ";
+	
+		$legend .= html_writer::tag("img", "", array("src" => "pix/x_11x11.png", "alt" => get_string('legend_notask','block_exacomp')));
+		$legend .= get_string('legend_notask','block_exacomp');
+	
+		if($teacher) {
+			$legend .= " - ";
+			$legend .= html_writer::tag("img", "", array("src" => "pix/upload_12x12.png", "alt" => get_string('legend_upload','block_exacomp')));
+			$legend .= get_string('legend_upload','block_exacomp');
+		}
+	
+		return $legend;
 	}
 	/**
 	 * Used to generate a checkbox for ticking topics/competencies/examples
