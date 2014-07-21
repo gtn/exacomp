@@ -170,3 +170,10 @@ $string['legend_activities'] = 'Aktivitäten';
 $string['legend_eportfolio'] = 'ePortfolio';
 $string['legend_notask'] = 'Keine Aktivität/Quiz für diese Kompetenz abgegeben';
 $string['legend_upload'] = 'Eigenes Beispiel hochladen';
+
+//Icons
+$string['usersubmitted'] = ' hat folgende Aktivitäten abgegeben:';
+$string['usersubmittedquiz'] = ' hat folgende Tests durchgeführt:';
+$string['usernosubmission'] = ' hat keine Moodle-Aufgaben zu diesem Deskriptor abgegeben und keinen Test durchgeführt.';
+$string['usernosubmission_topic'] = ' hat keine Moodle-Aufgaben zu diesem Thema abgegeben und keinen Test durchgeführt.';
+$string['grading'] = ' Bewertung: ';

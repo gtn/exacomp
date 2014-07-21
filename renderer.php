@@ -328,6 +328,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$table = new html_table();
 		$rows = array();
+		$studentsColspan = $showevaluation ? 2 : 1;
 		$table->attributes['class'] = 'exabis_comp_comp';
 
 		/* SUBJECTS */
@@ -344,7 +345,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$subjectRow->cells[] = $title;
 
 			$studentsCount = 0;
-			$studentsColspan = 1;
 
 			foreach($students as $student) {
 				$studentCell = new html_table_cell();
@@ -368,7 +368,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					'courseid' => $courseid,
 					'showevaluation' => $showevaluation,
 					'role' => $role,
-					'scheme' => $scheme
+					'scheme' => $scheme,
+					'cm_mm' => block_exacomp_get_course_module_association($courseid),
+					'course_mods' => get_fast_modinfo($courseid)->get_cms()
 			);
 			$this->print_topics($rows, 0, $subject->subs, $data, $students);
 			$table->data = $rows;
@@ -387,7 +389,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		//$padding = ($version) ? ($level-1)*20 :  ($level-2)*20+12;
 		$padding = $level * 20 + 12;
 		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
-
+		
 		foreach($topics as $topic) {
 			list($outputid, $outputname) = block_exacomp_get_output_fields($topic);
 			$studentsCount = 0;
@@ -438,6 +440,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$studentCell->text = $this->generate_select("datatopics", $topic->id, 'topics', $student, $evaluation);
 				}
 
+				// ICONS
+				if(isset($data->cm_mm->topics[$topic->id])) {
+					//get CM instances
+					$cm_temp = array();
+					foreach($data->cm_mm->topics[$topic->id] as $cmid)
+						$cm_temp[] = $data->course_mods[$cmid];
+						
+					$icon = block_exacomp_get_icon_for_user($cm_temp, $student);
+					$studentCell->text .= '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>';
+				}
+				
 				$topicRow->cells[] = $studentCell;
 			}
 
@@ -457,12 +470,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		global $version, $PAGE, $USER;
 
 		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
-
+		
 		foreach($descriptors as $descriptor) {
 			$checkboxname = ($version) ? "dataexamples" : "data";
 			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor);
 			$studentsCount = 0;
-			$studentsColspan = 1;
 
 			$padding = ($level) * 20 + 4;
 
@@ -498,13 +510,20 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$studentCell = new html_table_cell();
 				$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
 				$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-				$studentCell->colspan = $studentsColspan;
 
+				// SHOW EVALUATION
+				if($data->showevaluation) {
+					$studentCellEvaluation = new html_table_cell();
+					$studentCellEvaluation->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+				}
 				/*
 				 * if scheme == 1: print checkbox
 				* if scheme != 1, role = student, version = LIS
 				*/
 				if($data->scheme == 1 || ($data->scheme != 1 && $data->role == ROLE_STUDENT && $version)) {
+					if($data->showevaluation)
+						$studentCellEvaluation->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
+					
 					$studentCell->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme);
 				}
 				/*
@@ -512,9 +531,25 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				* if scheme != 1, version = LIS, role = teacher
 				*/
 				elseif(!$version || ($version && $data->role == ROLE_TEACHER)) {
+					if($data->showevaluation)
+						$studentCellEvaluation->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
+						
 					$studentCell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, $evaluation);
 				}
 
+				// ICONS
+				if(isset($data->cm_mm->competencies[$descriptor->id])) {
+					//get CM instances
+					$cm_temp = array();
+					foreach($data->cm_mm->competencies[$descriptor->id] as $cmid)
+						$cm_temp[] = $data->course_mods[$cmid];
+					
+					$icon = block_exacomp_get_icon_for_user($cm_temp, $student);
+					$studentCell->text .= '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>';
+				}
+				if($data->showevaluation)
+					$descriptorRow->cells[] = $studentCellEvaluation;
+				
 				$descriptorRow->cells[] = $studentCell;
 			}
 
@@ -604,11 +639,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 *
 	 * @return String $checkbox html code for checkbox
 	 */
-	public function generate_checkbox($name, $compid, $type, $student, $evaluation, $scheme) {
+	public function generate_checkbox($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false) {
 		return html_writer::checkbox(
 				$name . '[' . $compid . '][' . $student->id . '][' . $evaluation . ']',
 				$scheme,
-				(isset($student->{$type}->{$evaluation}[$compid])) && $student->{$type}->{$evaluation}[$compid] >= ceil($scheme/2));
+				(isset($student->{$type}->{$evaluation}[$compid])) && $student->{$type}->{$evaluation}[$compid] >= ceil($scheme/2), null, (!$disabled) ? null : array("disabled"=>"disabled"));
 	}
 
 	/**
@@ -622,7 +657,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 *
 	 * @return String $select html code for select
 	 */
-	public function generate_select($name, $compid, $type, $student, $evaluation) {
+	public function generate_select($name, $compid, $type, $student, $evaluation, $disabled = false) {
 		$options = array();
 		for($i=0;$i<=$scheme;$i++)
 			$options[] = $i;
@@ -631,7 +666,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$options,
 				$checkboxname . '[' . $compid . '][' . $student->id . '][' . $evaluation . ']',
 				(isset($student->{$type}->{$evaluation}[$compid])) ? $student->{$type}->{$evaluation}[$compid] : 0,
-				false);
+				false,(!$disabled) ? null : array("disabled"=>"disabled"));
 	}
 
 	public function print_edit_config($data, $courseid){

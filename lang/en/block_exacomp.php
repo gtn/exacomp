@@ -148,3 +148,10 @@ $string['legend_activities'] = 'activities';
 $string['legend_eportfolio'] = 'ePortfolio';
 $string['legend_notask'] = 'no moodle-task/quiz has been submitted for this descriptor';
 $string['legend_upload'] = 'Upload your own task/example';
+
+//Icons
+$string['usersubmitted'] = ' has submitted the following tasks:';
+$string['usersubmittedquiz'] = ' has done the following quizzes:';
+$string['usernosubmission'] = ' has not yet submitted any moodle-tasks or quizzes associated with this descriptor';
+$string['usernosubmission_topic'] = ' has not yet submitted any moodle-tasks or quizzes associated with this topic';
+$string['grading'] = ' Grading: ';

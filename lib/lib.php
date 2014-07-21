@@ -880,3 +880,80 @@ function block_exacomp_get_taxonomies($tree){
 	}
 	return $taxonomies;
 }
+function block_exacomp_get_supported_modules() {
+	//TO DO: Settings for modules
+	//assign, forum, glossary, quiz, wiki,url
+	return array(1, 9, 10, 16, 20, 21);
+}
+/**
+ * Returns an associative array that gives information about which competence/topic is
+ * associated with which course module
+ * 
+ * $array->competencies[compid] = array(cmid, cmid, cmid)
+ * $array->topics[topicid] = array(cmid, cmid, cmid)
+ * 
+ * @param int $courseid
+ * @return array
+ */
+function block_exacomp_get_course_module_association($courseid) {
+	if(block_exacomp_get_settings_by_course($courseid)->uses_activities == 0)
+		return null;
+
+	global $DB;
+	$records = $DB->get_records_sql('
+			SELECT mm.id, compid, comptype, activityid
+			FROM {'.DB_COMPETENCE_ACTIVITY.'} mm
+			JOIN {course_modules} m ON m.id = mm.activityid
+			WHERE m.course = ? AND mm.eportfolioitem = 0
+			ORDER BY comptype, compid', array($courseid));
+
+	$mm = new stdClass();
+	$mm->competencies = array();
+	$mm->topics = array();
+
+	foreach($records as $record) {
+		if($record->comptype == TYPE_DESCRIPTOR)
+			$mm->competencies[$record->compid][] = $record->activityid;
+		else
+			$mm->topics[$record->compid][] = $record->activityid;
+	}
+
+	return $mm;
+}
+/**
+ * Prepares an icon for a student for the given course modules, based on the grading.
+
+ * @param array $coursemodules
+ * @param stdClass $student
+ * 
+ * @return stdClass $icon
+ */
+function block_exacomp_get_icon_for_user($coursemodules, $student) {
+	global $CFG, $DB;
+	require_once $CFG->libdir . '/gradelib.php';
+
+	$found = false;
+	$modules = $DB->get_records_menu("modules");
+	
+	$icon = new stdClass();
+	$icon->text = fullname($student) . get_string('usersubmitted','block_exacomp') . ' <ul>';
+	
+	foreach ($coursemodules as $cm) {
+		if(!in_array($cm->module, block_exacomp_get_supported_modules()))
+			continue;
+
+		$gradeinfo = grade_get_grades($cm->course,"mod",$modules[$cm->module],$cm->instance,$student->id);
+		if(isset($gradeinfo->items[0]->grades[$student->id]->dategraded)) {
+			$found = true;
+			$icon->img = html_writer::empty_tag("img", array("src" => "pix/list_12x11.png","alt" => get_string("legend_activities","block_exacomp")));
+			$icon->text .= '<li>' . $gradeinfo->items[0]->name . ((isset($gradeinfo->items[0]->grades[$student->id])) ? get_string('grading', "block_exacomp"). $gradeinfo->items[0]->grades[$student->id]->str_long_grade : '' ) . '</li>';
+		}
+	}
+	if(!$found) {
+		$icon->text = fullname($student) . get_string("usernosubmission","block_exacomp");
+		$icon->img = html_writer::empty_tag("img", array("src" => "pix/x_11x11.png","alt" => fullname($student) . get_string("usernosubmission","block_exacomp")));
+	} else
+		$icon->text .= '</ul>';
+	
+	return $icon;
+}

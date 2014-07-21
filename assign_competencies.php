@@ -68,7 +68,6 @@ if(($delete = optional_param("delete", 0, PARAM_INT)) > 0 && $isTeacher)
 if (($action = optional_param("action", "", PARAM_TEXT) )== "save") {
 	// DESCRIPTOR DATA
 		block_exacomp_save_competencies(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_DESCRIPTOR);
-	
 	// TOPIC DATA
 		block_exacomp_save_competencies(isset($_POST['datatopics']) ? $_POST['datatopics'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_TOPIC);
 }
@@ -82,7 +81,7 @@ $subjects = block_exacomp_get_competence_tree_by_course($courseid);
 $output = $PAGE->get_renderer('block_exacomp');
 // PRINT LEGEND
 echo $output->print_overview_legend($isTeacher);
-echo $output->print_competence_overview($subjects, $courseid, $students, false, (has_capability('block/exacomp:teacher', $context)) ? ROLE_TEACHER : ROLE_STUDENT, block_exacomp_get_grading_scheme($courseid));
+echo $output->print_competence_overview($subjects, $courseid, $students, true, (has_capability('block/exacomp:teacher', $context)) ? ROLE_TEACHER : ROLE_STUDENT, block_exacomp_get_grading_scheme($courseid));
 /* END CONTENT REGION */
 
 echo $OUTPUT->footer();
