@@ -1017,7 +1017,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function print_tree_view_examples_tax($tree){
 		$li_taxonomies = '';
 		foreach($tree as $taxonomy){
-			$ul_subjects = $this->print_tree_view_examples_desc($taxonomy->subjects, false);
+			$ul_subjects = $this->print_tree_view_examples_desc($taxonomy->subs, false);
 			$li_taxonomies .= html_writer::tag('li', $taxonomy->title->title
 					.$ul_subjects);
 		}

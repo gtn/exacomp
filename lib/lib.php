@@ -369,13 +369,17 @@ function block_exacomp_get_competence_tree_by_course($courseid, $subjectid = nul
 		$topic = $allTopics[$descriptor->topicid];
 		$topic->descriptors[$descriptor->id] = $descriptor;
 
-		$descriptor->examples = $DB->get_records_sql(
+		$examples = $DB->get_records_sql(
 				"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
 				e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid
 				FROM {" . DB_EXAMPLES . "} e
 				JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
 				LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id
 				ORDER BY tax.title", array($descriptor->id));
+		$descriptor->examples = array();
+		foreach($examples as $example){
+			$descriptor->examples[$example->id] = $example;
+		}
 	}
 
 	return $subjects;
@@ -781,91 +785,127 @@ function block_exacomp_get_user_badges($courseid, $userid) {
 function block_exacomp_build_example_tree_desc($courseid){
 	global $DB;
 
+	//get all subjects, topics, descriptors and examples
 	$tree = block_exacomp_get_competence_tree_by_course($courseid);
-
+	
+	//go through tree and unset every subject, topic and descriptor where no example is appended
 	foreach($tree as $subject){
-		$subject_has_examples = false;
-		foreach($subject->subs as $topic){
-			$topic_has_examples = false;
+		//traverse recursively, because of possible topic-children
+		$subject_has_examples = block_exacomp_build_rec_topic_example_tree_desc($subject->subs);
+		
+		if(!$subject_has_examples)
+			unset($tree[$subject->id]);
+	}
+	
+	return $tree;
+}
+/**
+ * helper function to traverse through tree recursively, because of endless topic children
+ * and unset every node where leaf is no example
+ */
+function block_exacomp_build_rec_topic_example_tree_desc($subs){
+	$sub_has_examples = false;
+	foreach($subs as $topic){
+		$topic_has_examples = false;
+		if(isset($topic->descriptors)){
 			foreach($topic->descriptors as $descriptor){
-				if(!isset($descriptor->examples))
+				if(empty($descriptor->examples)){
 					unset($topic->descriptors[$descriptor->id]);
+				}
 				else{
-					$subject_has_examples = true;
+					$sub_has_examples = true;
 					$topic_has_examples = true;
 				}
 			}
-			if(!$topic_has_examples)
-				unset($subject->subs[$topic->id]);
-			$topic_has_examples = false;
 		}
-		if(!$subject_has_examples)
-			unset($tree[$subject->id]);
-
-		$subject_has_examples = false;
+		if(isset($topic->subs))
+			$topic_has_examples = block_exacomp_build_rec_topic_example_tree_desc($topic->subs);
+		elseif(!isset($topic->subs) && !$topic_has_examples)
+			unset($subs[$topic->id]);
 	}
-
-	return $tree;
+	return $sub_has_examples;
 }
-
 function block_exacomp_build_example_tree_tax($courseid){
+
+	//get all subjects, topics, descriptor and examples
 	$tree = block_exacomp_build_example_tree_desc($courseid);
-
+	
+	//extract all used taxonomies
 	$taxonomies = block_exacomp_get_taxonomies($tree);
-
-	//append subjects to taxonomies
+	
+	//append the whole tree to every taxonomy
 	foreach($taxonomies as $taxonomy){
-		foreach($tree as $subject){
-			foreach($subject->subs as $topic){
-				foreach($topic->descriptors as $descriptor){
-					foreach($descriptor->examples as $example){
-						if($taxonomy->id == $example->taxid){
-							if(!isset($taxonomy->subjects))
-								$taxonomy->subjects = array();
-
-							if(!isset($taxonomy->subjects[$subject->id])){
-								$taxonomy->subjects[$subject->id] = new stdClass();
-								$taxonomy->subjects[$subject->id]->id = $subject->id;
-								$taxonomy->subjects[$subject->id]->title = $subject->title;
-								$taxonomy->subjects[$subject->id]->numb = $subject->numb;
-								$taxonomy->subjects[$subject->id]->subs = array();
-							}
-
-							if(!isset($taxonomy->subjects[$subject->id]->subs[$topic->id])){
-								$taxonomy->subjects[$subject->id]->subs[$topic->id] = new stdClass();
-								$taxonomy->subjects[$subject->id]->subs[$topic->id]->id = $topic->id;
-								$taxonomy->subjects[$subject->id]->subs[$topic->id]->title = $topic->title;
-								$taxonomy->subjects[$subject->id]->subs[$topic->id]->cat = $topic->cat;
-								$taxonomy->subjects[$subject->id]->subs[$topic->id]->descriptors = array();
-							}
-
-							if(!isset($taxonomy->subjects[$subject->id]->subs[$topic->id]->descriptors[$descriptor->id])){
-								$taxonomy->subjects[$subject->id]->subs[$topic->id]->descriptors[$descriptor->id] = new stdClass();
-								$taxonomy->subjects[$subject->id]->subs[$topic->id]->descriptors[$descriptor->id]->id = $descriptor->id;
-								$taxonomy->subjects[$subject->id]->subs[$topic->id]->descriptors[$descriptor->id]->title = $descriptor->title;
-								$taxonomy->subjects[$subject->id]->subs[$topic->id]->descriptors[$descriptor->id]->examples = array();
-							}
-
-							if(!isset($taxonomy->subjects[$subject->id]->subs[$topic->id]->descriptors[$descriptor->id]->examples[$example->id])){
-								$taxonomy->subjects[$subject->id]->subs[$topic->id]->descriptors[$descriptor->id]->examples[$example->id] = $example;
-							}
-
-						}
+		$tree = block_exacomp_build_example_tree_desc($courseid);
+		$taxonomy->subs = $tree;
+	}
+	
+	//unset every examples, descriptor, topic and subject where the taxonomy-id is not used
+	foreach($taxonomies as $taxonomy){
+		foreach($taxonomy->subs as $subject){
+			$subject_has_examples = false;
+			//do it recursively to ensure endless topic structure
+			$subject_has_examples = block_exacomp_build_rec_topic_example_tree_tax($subject->subs, $taxonomy->id, $subject_has_examples);
+			if(!$subject_has_examples)
+				unset($taxonomy->subs[$subject->id]);
+		}
+	}
+	return $taxonomies;
+}
+/**
+ * helper function to traverse tree recursively because of endless topic structure
+ */
+function block_exacomp_build_rec_topic_example_tree_tax(&$subs, $taxid, $parent_has_examples){
+	foreach($subs as $topic){
+		$topic_has_examples = false;
+		if(isset($topic->descriptors) && !empty($topic->descriptors)){
+			foreach($topic->descriptors as $descriptor){
+				$descriptor_has_examples = false;
+				foreach($descriptor->examples as $example){
+					if($example->taxid != $taxid){
+						unset($descriptor->examples[$example->id]);
 					}
+					else{
+						$descriptor_has_examples = true;
+						$topic_has_examples = true;
+						$parent_has_examples = true;
+					}
+				}
+				if(!$descriptor_has_examples){
+					unset($topic->descriptors[$descriptor->id]);
 				}
 			}
 		}
+		if(isset($topic->subs)){
+			$sub_has_examples = block_exacomp_build_rec_topic_example_tree_tax($topic->subs, $taxid, $topic_has_examples);
+			if($sub_has_examples) $parent_has_examples = true;
+			
+			if(!$sub_has_examples && !$topic_has_examples)
+				unset($subs[$topic->id]);
+		}
+		elseif(!isset($topic->subs) && !$topic_has_examples){
+			unset($subs[$topic->id]);
+		}
 	}
-
-	return $taxonomies;
+	return $parent_has_examples;
 }
+
 function block_exacomp_get_taxonomies($tree){
 	global $DB;
 
 	$taxonomies = array();
-
+	//extract all taxonomies from given structure, do it recursively because of topic structure
 	foreach($tree as $subject){
-		foreach($subject->subs as $topic){
+		$taxonomies = block_exacomp_get_taxonomies_rek_topics($subject->subs, $taxonomies);
+	}
+	return $taxonomies;
+}
+/**
+ * helper function for traversing through tree recursively
+ */
+function block_exacomp_get_taxonomies_rek_topics($subs, $taxonomies){
+	global $DB;
+	foreach($subs as $topic){
+		if(isset($topic->descriptors)){
 			foreach($topic->descriptors as $descriptor){
 				foreach($descriptor->examples as $example){
 					if($example->taxid > 0 && !in_array($example->taxid, $taxonomies)){
@@ -875,6 +915,13 @@ function block_exacomp_get_taxonomies($tree){
 						$taxonomies[$example->taxid]= $taxonomy;
 					}
 				}
+			}
+		}
+		if(isset($topic->subs)){
+			$taxonomies_sub = block_exacomp_get_taxonomies_rek_topics($topic->subs, $taxonomies);
+			foreach($taxonomies_sub as $sub){
+				if(!in_array($sub, $taxonomies))
+					$taxonomies[$sub->id] = $sub;
 			}
 		}
 	}
