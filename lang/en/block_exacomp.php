@@ -155,3 +155,10 @@ $string['usersubmittedquiz'] = ' has done the following quizzes:';
 $string['usernosubmission'] = ' has not yet submitted any moodle-tasks or quizzes associated with this descriptor';
 $string['usernosubmission_topic'] = ' has not yet submitted any moodle-tasks or quizzes associated with this topic';
 $string['grading'] = ' Grading: ';
+
+$string['teachershortcut'] = 'T';
+$string['studentshortcut'] = 'S';
+
+$string['overview'] = 'This is an overview of all students and the course competencies.';
+$string['showevaluation'] = 'To show self-assessment click <a href="{$a}">here</a>';
+$string['hideevaluation'] = 'To hide self-assessment click <a href="{$a}">here</a>';

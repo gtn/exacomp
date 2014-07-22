@@ -197,7 +197,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	public function print_view_learning_agenda($data, $studentname){
 		global $CFG, $COURSE;
-		
+
 		//header
 		$table = new html_table();
 		$table->attributes['class'] = 'lernagenda';
@@ -333,6 +333,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		/* SUBJECTS */
 		foreach($subjects as $subject) {
+			if(!$subject->subs)
+				continue;
+			
 			//for every subject
 			$subjectRow = new html_table_row();
 			$subjectRow->attributes['class'] = 'highlight';
@@ -357,9 +360,26 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$subjectRow->cells[] = $studentCell;
 			}
 			$rows[] = $subjectRow;
-			/*
-			 * TO DO: PRINT S | T Columns
-			*/
+				
+			if($showevaluation) {
+				$evaluationRow = new html_table_row();
+				$emptyCell = new html_table_cell();
+				$emptyCell->colspan = 2;
+				$evaluationRow->cells[] = $emptyCell;
+
+				if($role == ROLE_TEACHER) {
+					$firstCol = get_string('studentshortcut','block_exacomp');
+					$secCol = get_string('teachershortcut','block_exacomp');
+				} else {
+					$firstCol = get_string('teachershortcut','block_exacomp');
+					$secCol = get_string('studentshortcut','block_exacomp');
+				}
+				foreach($students as $student) {
+					$evaluationRow->cells[] = $firstCol;
+					$evaluationRow->cells[] = $secCol;
+				}
+				$rows[] = $evaluationRow;
+			}
 
 			/* TOPICS */
 			//for every topic
@@ -389,7 +409,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		//$padding = ($version) ? ($level-1)*20 :  ($level-2)*20+12;
 		$padding = $level * 20 + 12;
 		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
-		
+
 		foreach($topics as $topic) {
 			list($outputid, $outputname) = block_exacomp_get_output_fields($topic);
 			$studentsCount = 0;
@@ -425,11 +445,20 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
 				$studentCell->colspan = $studentsColspan;
 
+				// SHOW EVALUATION
+				if($data->showevaluation) {
+					$studentCellEvaluation = new html_table_cell();
+					$studentCellEvaluation->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+				}
+
 				/*
 				 * if scheme == 1: print checkbox
 				* if scheme != 1, role = student, version = LIS
 				*/
 				if($data->scheme == 1 || ($data->scheme != 1 && $data->role == ROLE_STUDENT && $version)) {
+					if($data->showevaluation)
+						$studentCellEvaluation->text = $this->generate_checkbox("datatopics", $topic->id, 'topics', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
+
 					$studentCell->text = $this->generate_checkbox("datatopics", $topic->id, 'topics', $student, $evaluation, $data->scheme);
 				}
 				/*
@@ -437,8 +466,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				* if scheme != 1, version = LIS, role = teacher
 				*/
 				elseif(!$version || ($version && $data->role == ROLE_TEACHER)) {
+					if($data->showevaluation)
+						$studentCellEvaluation->text = $this->generate_select("datatopics", $topic->id, 'topics', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
+
 					$studentCell->text = $this->generate_select("datatopics", $topic->id, 'topics', $student, $evaluation);
 				}
+
 
 				// ICONS
 				if(isset($data->cm_mm->topics[$topic->id])) {
@@ -446,11 +479,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$cm_temp = array();
 					foreach($data->cm_mm->topics[$topic->id] as $cmid)
 						$cm_temp[] = $data->course_mods[$cmid];
-						
+
 					$icon = block_exacomp_get_icon_for_user($cm_temp, $student);
 					$studentCell->text .= '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>';
 				}
-				
+
+				if($data->showevaluation)
+					$topicRow->cells[] = $studentCellEvaluation;
+
 				$topicRow->cells[] = $studentCell;
 			}
 
@@ -470,7 +506,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		global $version, $PAGE, $USER;
 
 		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
-		
+
 		foreach($descriptors as $descriptor) {
 			$checkboxname = ($version) ? "dataexamples" : "data";
 			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor);
@@ -523,7 +559,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				if($data->scheme == 1 || ($data->scheme != 1 && $data->role == ROLE_STUDENT && $version)) {
 					if($data->showevaluation)
 						$studentCellEvaluation->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
-					
+						
 					$studentCell->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme);
 				}
 				/*
@@ -533,7 +569,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				elseif(!$version || ($version && $data->role == ROLE_TEACHER)) {
 					if($data->showevaluation)
 						$studentCellEvaluation->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
-						
+
 					$studentCell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, $evaluation);
 				}
 
@@ -543,13 +579,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$cm_temp = array();
 					foreach($data->cm_mm->competencies[$descriptor->id] as $cmid)
 						$cm_temp[] = $data->course_mods[$cmid];
-					
+						
 					$icon = block_exacomp_get_icon_for_user($cm_temp, $student);
 					$studentCell->text .= '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>';
 				}
 				if($data->showevaluation)
 					$descriptorRow->cells[] = $studentCellEvaluation;
-				
+
 				$descriptorRow->cells[] = $studentCell;
 			}
 
@@ -570,7 +606,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				if(isset($example->creatorid) && $example->creatorid == $USER->id) {
 					$titleCell->text .= html_writer::link($PAGE->url . "&delete=" . $example->id, html_writer::empty_tag("img", array("src" => "pix/x_11x11_redsmall.png", "alt" => "Delete", "onclick" => "return confirm('" . get_string('delete_confirmation','block_exacomp') . "')")));
 				}
-				
+
 				if($example->task)
 					$titleCell->text .= html_writer::link($example->task, html_writer::empty_tag('img', array('src'=>'pix/i_11x11.png', 'alt'=>'link')),array("target" => "_blank"));
 				if($example->externalurl)
@@ -578,16 +614,26 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 				$exampleRow->cells[] = $titleCell;
 
+
 				foreach($students as $student) {
 					$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
 					$studentCell = new html_table_cell();
 					$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
 
+					// SHOW EVALUATION
+					if($data->showevaluation) {
+						$studentCellEvaluation = new html_table_cell();
+						$studentCellEvaluation->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+					}
+						
 					/*
 					 * if scheme == 1: print checkbox
 					* if scheme != 1, role = student, version = LIS
 					*/
 					if($data->scheme == 1 || ($data->scheme != 1 && $data->role == ROLE_STUDENT && $version)) {
+						if($data->showevaluation)
+							$studentCellEvaluation->text = $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
+							
 						$studentCell->text = $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme);
 					}
 					/*
@@ -595,13 +641,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					* if scheme != 1, version = LIS, role = teacher
 					*/
 					elseif(!$version || ($version && $data->role == ROLE_TEACHER)) {
-						$options = array();
-						for($i=0;$i<=$data->scheme;$i++)
-							$options[] = $i;
-							
+						if($data->showevaluation)
+							$studentCellEvaluation->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
+						
 						$studentCell->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, $evaluation);
 					}
 
+					if($data->showevaluation)
+						$exampleRow->cells[] = $studentCellEvaluation;
 					$exampleRow->cells[] = $studentCell;
 				}
 
@@ -609,22 +656,34 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 		}
 	}
+	public function print_student_evaluation($showevaluation) {
+		global $OUTPUT,$COURSE;
+		
+		$link = new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid" => $COURSE->id, "showevaluation" => (($showevaluation) ? "0" : "1")));
+		$evaluation = $OUTPUT->box_start();
+		$evaluation .= get_string('overview','block_exacomp');
+		$evaluation .= html_writer::empty_tag("br");
+		$evaluation .= ($showevaluation) ? get_string('hideevaluation','block_exacomp',$link->__toString()) : get_string('showevaluation','block_exacomp',$link->__toString());
+		$evaluation .= $OUTPUT->box_end();
+		
+		return $evaluation;
+	}
 	public function print_overview_legend($teacher) {
 		$legend = html_writer::tag("img", "", array("src" => "pix/list_12x11.png", "alt" => get_string('legend_activities','block_exacomp')));
 		$legend .= get_string('legend_activities','block_exacomp') . " - ";
-	
+
 		$legend .= html_writer::tag("img", "", array("src" => "pix/folder_fill_12x12.png", "alt" => get_string('legend_eportfolio','block_exacomp')));
 		$legend .= get_string('legend_eportfolio','block_exacomp') . " - ";
-	
+
 		$legend .= html_writer::tag("img", "", array("src" => "pix/x_11x11.png", "alt" => get_string('legend_notask','block_exacomp')));
 		$legend .= get_string('legend_notask','block_exacomp');
-	
+
 		if($teacher) {
 			$legend .= " - ";
 			$legend .= html_writer::tag("img", "", array("src" => "pix/upload_12x12.png", "alt" => get_string('legend_upload','block_exacomp')));
 			$legend .= get_string('legend_upload','block_exacomp');
 		}
-	
+
 		return $legend;
 	}
 	/**
@@ -636,6 +695,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 * @param stdClass $student
 	 * @param String $evaluation teacher or student
 	 * @param int $scheme grading scheme
+	 * @param bool $disabled disabled becomes true for the "show evaluation" option
 	 *
 	 * @return String $checkbox html code for checkbox
 	 */
@@ -654,6 +714,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 * @param String $type comptencies or topics or examples
 	 * @param stdClass $student
 	 * @param String $evaluation teacher or student
+	 * @param bool $disabled disabled becomes true for the "show evaluation" option
 	 *
 	 * @return String $select html code for select
 	 */

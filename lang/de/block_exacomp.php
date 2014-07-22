@@ -177,3 +177,10 @@ $string['usersubmittedquiz'] = ' hat folgende Tests durchgeführt:';
 $string['usernosubmission'] = ' hat keine Moodle-Aufgaben zu diesem Deskriptor abgegeben und keinen Test durchgeführt.';
 $string['usernosubmission_topic'] = ' hat keine Moodle-Aufgaben zu diesem Thema abgegeben und keinen Test durchgeführt.';
 $string['grading'] = ' Bewertung: ';
+
+$string['teachershortcut'] = 'L';
+$string['studentshortcut'] = 'S';
+
+$string['overview'] = 'Der Kompetenz-Überblick listet Schüler und die im Kurs aktivierten Kompetenzen auf.';
+$string['showevaluation'] = 'Um die Selbsteinschätzung zu aktivieren klicke <a href="{$a}">hier</a>';
+$string['hideevaluation'] = 'Um die Selbsteinschätzung zu deaktivieren klicke <a href="{$a}">hier</a>';
