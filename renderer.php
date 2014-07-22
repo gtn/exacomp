@@ -666,12 +666,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$content = html_writer::tag("b", get_string('columnselect','block_exacomp'));
 		for($i=0; $i < ceil($students / STUDENTS_PER_COLUMN); $i++) {
+			$content .= " ";
 			$content .= html_writer::link('javascript:Exacomp.onlyShowColumnGroup('.$i.');',
 					($i*STUDENTS_PER_COLUMN+1).'-'.min($students, ($i+1)*STUDENTS_PER_COLUMN),
 					array('class' => 'colgroup-button colgroup-button-'.$i));
-			$content .= " ";
 		}
-		$content .= html_writer::link('javascript:Exacomp.onlyShowColumnGroup(null);',
+		$content .= " " . html_writer::link('javascript:Exacomp.onlyShowColumnGroup(null);',
 				get_string('allstudents','block_exacomp'),
 				array('class' => 'colgroup-button colgroup-button-all'));
 
