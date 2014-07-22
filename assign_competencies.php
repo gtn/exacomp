@@ -83,6 +83,7 @@ $output = $PAGE->get_renderer('block_exacomp');
 $showevaluation = optional_param("showevaluation", false, PARAM_BOOL);
 echo $output->print_student_evaluation($showevaluation);
 echo $output->print_overview_legend($isTeacher);
+echo $output->print_column_selector(count($students));
 echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, (has_capability('block/exacomp:teacher', $context)) ? ROLE_TEACHER : ROLE_STUDENT, block_exacomp_get_grading_scheme($courseid));
 /* END CONTENT REGION */
 

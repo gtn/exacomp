@@ -335,7 +335,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		foreach($subjects as $subject) {
 			if(!$subject->subs)
 				continue;
-			
+				
 			//for every subject
 			$subjectRow = new html_table_row();
 			$subjectRow->attributes['class'] = 'highlight';
@@ -360,7 +360,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$subjectRow->cells[] = $studentCell;
 			}
 			$rows[] = $subjectRow;
-				
+
 			if($showevaluation) {
 				$evaluationRow = new html_table_row();
 				$emptyCell = new html_table_cell();
@@ -559,7 +559,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				if($data->scheme == 1 || ($data->scheme != 1 && $data->role == ROLE_STUDENT && $version)) {
 					if($data->showevaluation)
 						$studentCellEvaluation->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
-						
+
 					$studentCell->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme);
 				}
 				/*
@@ -579,7 +579,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$cm_temp = array();
 					foreach($data->cm_mm->competencies[$descriptor->id] as $cmid)
 						$cm_temp[] = $data->course_mods[$cmid];
-						
+
 					$icon = block_exacomp_get_icon_for_user($cm_temp, $student);
 					$studentCell->text .= '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>';
 				}
@@ -625,7 +625,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$studentCellEvaluation = new html_table_cell();
 						$studentCellEvaluation->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
 					}
-						
+
 					/*
 					 * if scheme == 1: print checkbox
 					* if scheme != 1, role = student, version = LIS
@@ -643,7 +643,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					elseif(!$version || ($version && $data->role == ROLE_TEACHER)) {
 						if($data->showevaluation)
 							$studentCellEvaluation->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
-						
+
 						$studentCell->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, $evaluation);
 					}
 
@@ -656,16 +656,37 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 		}
 	}
+	/**
+	 *
+	 * @param int $students Amount of students
+	 */
+	public function print_column_selector($students) {
+		if($students < STUDENTS_PER_COLUMN)
+			return;
+
+		$content = html_writer::tag("b", get_string('columnselect','block_exacomp'));
+		for($i=0; $i < ceil($students / STUDENTS_PER_COLUMN); $i++) {
+			$content .= html_writer::link('javascript:Exacomp.onlyShowColumnGroup('.$i.');',
+					($i*STUDENTS_PER_COLUMN+1).'-'.min($students, ($i+1)*STUDENTS_PER_COLUMN),
+					array('class' => 'colgroup-button colgroup-button-'.$i));
+			$content .= " ";
+		}
+		$content .= html_writer::link('javascript:Exacomp.onlyShowColumnGroup(null);',
+				get_string('allstudents','block_exacomp'),
+				array('class' => 'colgroup-button colgroup-button-all'));
+
+		return html_writer::div($content,'spaltenbrowser');
+	}
 	public function print_student_evaluation($showevaluation) {
 		global $OUTPUT,$COURSE;
-		
+
 		$link = new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid" => $COURSE->id, "showevaluation" => (($showevaluation) ? "0" : "1")));
 		$evaluation = $OUTPUT->box_start();
 		$evaluation .= get_string('overview','block_exacomp');
 		$evaluation .= html_writer::empty_tag("br");
 		$evaluation .= ($showevaluation) ? get_string('hideevaluation','block_exacomp',$link->__toString()) : get_string('showevaluation','block_exacomp',$link->__toString());
 		$evaluation .= $OUTPUT->box_end();
-		
+
 		return $evaluation;
 	}
 	public function print_overview_legend($teacher) {

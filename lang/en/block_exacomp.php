@@ -162,3 +162,5 @@ $string['studentshortcut'] = 'S';
 $string['overview'] = 'This is an overview of all students and the course competencies.';
 $string['showevaluation'] = 'To show self-assessment click <a href="{$a}">here</a>';
 $string['hideevaluation'] = 'To hide self-assessment click <a href="{$a}">here</a>';
+$string['columnselect'] = 'Column selection';
+$string['allstudents'] = 'All students';

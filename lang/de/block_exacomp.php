@@ -184,3 +184,5 @@ $string['studentshortcut'] = 'S';
 $string['overview'] = 'Der Kompetenz-Überblick listet Schüler und die im Kurs aktivierten Kompetenzen auf.';
 $string['showevaluation'] = 'Um die Selbsteinschätzung zu aktivieren klicke <a href="{$a}">hier</a>';
 $string['hideevaluation'] = 'Um die Selbsteinschätzung zu deaktivieren klicke <a href="{$a}">hier</a>';
+$string['columnselect'] = 'Spaltenauswahl';
+$string['allstudents'] = 'Alle Schüler';
