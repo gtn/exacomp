@@ -922,46 +922,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		foreach($tree as $subject){
 			$subject_example_content = (empty($subject->numb) || $subject->numb==0)? '' : $subject->numb;
 			$li_topics = '';
-			foreach($subject->subs as $topic){
-				$topic_example_content = (empty($topic->cat)) ? '' : '('.$topic->cat.')';
-				$li_descriptors = '';
-				foreach($topic->descriptors as $descriptor){
-					$li_examples = '';
-					foreach($descriptor->examples as $example){
-						//create description for on mouse over
-						$text=$example->description;
-						$text = str_replace("\"","",$text);
-						$text = str_replace("\'","",$text);
-						$text = str_replace("\n"," ",$text);
-						$text = str_replace("\r"," ",$text);
-						$text = str_replace(":","\:",$text);
-							
-						$example_content = '';
-
-						$inner_example_content = $subject_example_content .
-						' ' . $example->title . ' ' .
-						$topic_example_content;
-
-						//if text is set, on mouseover is enabled, other wise just inner_example_content is displayed
-						if($text)
-							$example_content = html_writer::tag('a',
-									$inner_example_content,
-									array('onmouseover'=>'Tip(\''.$text.'\')', 'onmouseout'=>'UnTip()'));
-						else
-							$example_content = $inner_example_content;
-							
-						$icons = $this->example_tree_get_exampleicon($example);
-
-						$li_examples .= html_writer::tag('li', $example_content.$icons);
-					}
-					$ul_examples = html_writer::tag('ul', $li_examples);
-					$li_descriptors .= html_writer::tag('li', $descriptor->title
-							.$ul_examples);
-				}
-				$ul_descriptors = html_writer::tag('ul', $li_descriptors);
-				$li_topics .= html_writer::tag('li', $topic->title
-						.$ul_descriptors);
-			}
+			
+			$li_topics = $this->print_tree_view_examples_desc_rec_topic($subject->subs, $subject_example_content);
+			
 			$ul_topics = html_writer::tag('ul', $li_topics);
 			$li_subjects .= html_writer::tag('li', $subject->title
 					.$ul_topics);
@@ -981,6 +944,60 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 
+	public function print_tree_view_examples_desc_rec_topic($subs, $subject_example_content){
+		$li_topics = '';
+		foreach($subs as $topic){
+			$topic_example_content = (empty($topic->cat)) ? '' : '('.$topic->cat.')';
+			$li_descriptors = '';
+			if(isset($topic->descriptors)){
+				foreach($topic->descriptors as $descriptor){
+					$li_examples = '';
+					foreach($descriptor->examples as $example){
+						//create description for on mouse over
+						$text=$example->description;
+						$text = str_replace("\"","",$text);
+						$text = str_replace("\'","",$text);
+						$text = str_replace("\n"," ",$text);
+						$text = str_replace("\r"," ",$text);
+						$text = str_replace(":","\:",$text);
+							
+						$example_content = '';
+	
+						$inner_example_content = $subject_example_content .
+						' ' . $example->title . ' ' .
+						$topic_example_content;
+	
+						//if text is set, on mouseover is enabled, other wise just inner_example_content is displayed
+						if($text)
+							$example_content = html_writer::tag('a',
+									$inner_example_content,
+									array('onmouseover'=>'Tip(\''.$text.'\')', 'onmouseout'=>'UnTip()'));
+						else
+							$example_content = $inner_example_content;
+							
+						$icons = $this->example_tree_get_exampleicon($example);
+	
+						$li_examples .= html_writer::tag('li', $example_content.$icons);
+					}
+					$ul_examples = html_writer::tag('ul', $li_examples);
+					$li_descriptors .= html_writer::tag('li', $descriptor->title
+							.$ul_examples);
+				}	
+			}
+			$ul_descriptors = html_writer::tag('ul', $li_descriptors);
+			
+			$ul_subs = '';
+			if(isset($topic->subs)){
+				$li_subs = $this->print_tree_view_examples_desc_rec_topic($topic->subs, $subject_example_content);
+				$ul_subs .= html_writer::tag('ul', $li_subs); 	
+			}
+			
+			$li_topics .= html_writer::tag('li', $topic->title
+					.$ul_descriptors.$ul_subs);
+			
+		}
+		return $li_topics;
+	}
 	public function example_tree_get_exampleicon($example) {
 		$icon="";
 		if($example->task) {
