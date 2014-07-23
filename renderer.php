@@ -1087,6 +1087,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content.html_writer::end_div();
 	}
 	public function print_courseselection($tree){
+		global $PAGE;
+		
 		$table = new html_table();
 		$table->attributes['class'] = 'exabis_comp_comp';
 		
@@ -1101,7 +1103,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$row->cells[] = $cell;
 			
 			$rows[] = $row;
-			//$this->print_courseselection_rec_topic($subject->subs, $rows);
 			$this->print_topics_courseselection($rows, 0, $subject->subs, 0, $rowgroup_class = '');
 		}
 		
@@ -1112,28 +1113,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$table_html .= html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))));
 		$table_html .= html_writer::tag("input", "", array("name" => "open_row_groups", "type" => "hidden", "value" => (optional_param('open_row_groups', "", PARAM_TEXT))));
 
-		return html_writer::tag("form", $table_html, array("method" => "post", "action" => 'courseselection.php' . "&action=save", "id" => "course-selection"));
-	}
-	public function print_courseselection_rec_topic($subs, &$rows){
-		foreach($subs as $topic){
-			$row = new html_table_row();
-		
-			$cell = new html_table_cell();
-			if(isset($topic->subs))
-				$cell->text = html_writer::tag('b', $topic->title);
-			else 
-				$cell->text = $topic->title;
-			$row->cells[] = $cell;
-			
-			$cell = new html_table_cell();
-			$cell->text = html_writer::checkbox('top1', '1');
-			$row->cells[] = $cell;
-			
-			$rows[] = $row;
-			if(isset($topic->subs)){
-				$this->print_courseselection_rec_topic($topic->subs, $rows);
-			}
-		}
+		return html_writer::tag("form", $table_html, array("method" => "post", "action" => $PAGE->url . "&action=save", "id" => "course-selection"));
 	}
 	public function print_topics_courseselection(&$rows, $level, $topics, $rowgroup, $rowgroup_class = ''){
 		global $version;
@@ -1168,7 +1148,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$topicRow->cells[] = $outputnameCell;
 			
 			$cell = new html_table_cell();
-			$cell->text = html_writer::checkbox('top1', '1');
+			$cell->text = html_writer::checkbox('data['.$topic->id.']', $topic->id, ($topic->checked)?true:false, '', array('class'=>'topiccheckbox'));
 			$topicRow->cells[] = $cell;
 			
 			$rows[] = $topicRow;
