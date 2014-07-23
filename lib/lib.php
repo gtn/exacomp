@@ -58,11 +58,11 @@ function block_exacomp_init_js_css(){
 /**
  * Gets all subjects that are used in a particular course.
  *
- * @param int $courseid
+ * @param int $courseid optional, when 0 all subjects from all courses are returned
  * @param int $subjectid this parameter is only used to check if a subject is in use in a course
  *
  */
-function block_exacomp_get_subjects_by_course($courseid, $subjectid = null) {
+function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 	global $DB;
 
 	$sql = 'SELECT s.id, s.title, s.numb, \'subject\' as tabletype
@@ -84,15 +84,19 @@ function block_exacomp_get_subjects_by_course($courseid, $subjectid = null) {
 
 	return $subjects;
 }
-
-function block_exacomp_get_topics_by_course($courseid) {
+/**
+ * 
+ * returns all topics
+ * @param $courseid if course id = 0 all available topics are returned
+ */
+function block_exacomp_get_topics($courseid=0) {
 	global $DB;
 
 	$topics = $DB->get_records_sql('
 			SELECT t.id, t.title, t.parentid, t.subjid, \'topic\' as tabletype, t.catid, cat.title as cat
-			FROM {'.DB_TOPICS.'} t
-			JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=?
-			LEFT JOIN {'.DB_CATEGORIES.'} cat ON t.catid = cat.id
+			FROM {'.DB_TOPICS.'} t ' 
+			. (($courseid>0)?'JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' : ' ')
+			. 'LEFT JOIN {'.DB_CATEGORIES.'} cat ON t.catid = cat.id
 			',array($courseid));
 
 	return $topics;
@@ -135,6 +139,7 @@ function block_exacomp_check_activity_association($compid, $comptype, $courseid)
 		return true;
 
 	$cms = get_course_mods($courseid);
+	
 	foreach($cms as $cm) {
 		if($DB->record_exists(DB_COMPETENCE_ACTIVITY, array("compid"=>$compid,"comptype"=>$comptype,"activityid"=>$cm->id)))
 			return true;
@@ -262,7 +267,7 @@ function block_exacomp_get_descritors_list($courseid, $onlywithactivitys = 0) {
 	WHERE d.id=t.descrid AND t.topicid = c.topicid AND t.topicid=tp.id AND tp.subjid = s.id AND c.courseid = ?";
 
 	if ($onlywithactivitys==1){
-		$descr=block_exacomp_get_descriptors_by_course($courseid);
+		$descr=block_exacomp_get_descriptors($courseid);
 		if ($descr=="") $descr=0;
 		$query.=" AND d.id IN (".$descr.")";
 	}
@@ -275,21 +280,16 @@ function block_exacomp_get_descritors_list($courseid, $onlywithactivitys = 0) {
 
 	return $descriptors;
 }
-
-function block_exacomp_get_descriptors_by_course($courseid) {
+/**
+ * 
+ * returns all descriptors
+ * @param $courseid if course id =0 all possible descriptors are returned
+ */
+function block_exacomp_get_descriptors($courseid = 0) {
 	global $DB;
 	$course='';
 
-	//to be compatible with oracle, DISTINCT can not be used with CLOB and order by must be a constance
-	//so the statement is splitted in two parts. 1 Selecting ids, 2 selecting rest and order by
-	$sql = 'SELECT d.id, d.title, t.id AS topicid, \'descriptor\' as tabletype '
-	.'FROM {block_exacomptopics} t '
-	.(($courseid>0)?'JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid = t.id AND topmm.courseid=? ':'')
-	.'JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.topicid = t.id '
-	.'JOIN {block_exacompdescriptors} d ON desctopmm.descrid = d.id '
-	.'WHERE d.id IN ';
-
-	$sql .= '(SELECT DISTINCT d.id '
+	$sql = '(SELECT desctopmm.id as u_id, d.id as id, d.title, t.id AS topicid, \'descriptor\' as tabletype '
 	.'FROM {block_exacomptopics} t '
 	.(($courseid>0)?'JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=? ':'')
 	.'JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.topicid=t.id '
@@ -297,8 +297,6 @@ function block_exacomp_get_descriptors_by_course($courseid) {
 	.(block_exacomp_coursesettings()->show_all_descriptors ? '' : '
 			JOIN {block_exacompcompactiv_mm} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
 			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':'')).')';
-
-	$sql .= 'ORDER BY d.sorting';
 
 	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid));
 
@@ -312,18 +310,18 @@ function block_exacomp_get_descriptors_by_course($courseid) {
  * @param int $subjectid
  * @return associative_array
  */
-function block_exacomp_get_competence_tree_by_course($courseid, $subjectid = null) {
+function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null) {
 	global $DB;
 
-	$allSubjects = block_exacomp_get_subjects_by_course($courseid, $subjectid);
+	$allSubjects = block_exacomp_get_subjects($courseid, $subjectid);
 	//$allTopics = block_exacomp_get_all_topics($subjectid);
-	$allTopics = block_exacomp_get_topics_by_course($courseid);
+	$allTopics = block_exacomp_get_topics($courseid);
 
 	$subjects = array();
 	//subjectid is not null iff lis version is used
 	//if($subjectid != null) {
 	foreach ($allTopics as $topic) {
-		if(block_exacomp_check_activity_association($topic->id, TYPE_TOPIC, $courseid)) {
+		if($courseid==0 || block_exacomp_check_activity_association($topic->id, TYPE_TOPIC, $courseid)) {
 			// found: add it to the subject result, even if no descriptor from the topic is used
 			// find all parent topics
 			$found = true;
@@ -360,7 +358,7 @@ function block_exacomp_get_competence_tree_by_course($courseid, $subjectid = nul
 	}
 	//}
 
-	$allDescriptors = block_exacomp_get_descriptors_by_course($courseid);
+	$allDescriptors = block_exacomp_get_descriptors($courseid);
 
 	foreach ($allDescriptors as $descriptor) {
 
@@ -786,7 +784,7 @@ function block_exacomp_build_example_tree_desc($courseid){
 	global $DB;
 
 	//get all subjects, topics, descriptors and examples
-	$tree = block_exacomp_get_competence_tree_by_course($courseid);
+	$tree = block_exacomp_get_competence_tree($courseid);
 	
 	//go through tree and unset every subject, topic and descriptor where no example is appended
 	foreach($tree as $subject){

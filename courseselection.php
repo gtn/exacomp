@@ -195,7 +195,10 @@ echo '</div>'; //exabis_competences_block
 
  */
 
-echo "CONTENT";
+$tree = block_exacomp_get_competence_tree(0);
+
+$output = $PAGE->get_renderer('block_exacomp');
+echo $output->print_courseselection($tree);
 
 /* END CONTENT REGION */
 

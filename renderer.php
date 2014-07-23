@@ -30,8 +30,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		global $COURSE, $CFG;
 
 		if($view == 0){
-			$content = html_writer::start_tag('div',array('style'=>'width:400px;'));
-			$content.=$selectstudent;
+			$content = html_writer::start_div('', array('align'=>'center'));
+			$content .= html_writer::start_tag('div',array('style'=>'width:400px;'));
+			$content .= $selectstudent;
 			$content .= html_writer::start_tag('form', array('id'=>"calendar", 'method'=>"POST", 'action'=>new moodle_url('/blocks/exacomp/learningagenda.php?courseid='.$COURSE->id.'&studentid='.$studentid)));
 			$content .= html_writer::start_tag('a', array('href' => new moodle_url('/blocks/exacomp/learningagenda.php?courseid='.$COURSE->id.'&studentid='.$studentid.'&action='.($action-1))));
 			$content .= html_writer::empty_tag('img', array('src' => $CFG->wwwroot . '/blocks/exacomp/pix/bwd_16x16.png', 'alt' => 'bwd', 'height' => '16', 'width'=>'16'));
@@ -46,12 +47,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$content .= html_writer::end_tag('a');
 			$content .= html_writer::end_tag('div');
 			$content .= html_writer::end_tag('form');
+			
 
 			$content .= html_writer::start_tag('div', array('align'=>"right"));
 			$content .= html_writer::start_tag('a', array('href' => new moodle_url('/blocks/exacomp/learningagenda.php?courseid='.$COURSE->id.'&studentid='.$studentid.'&print=1&action='.$action)));
 			$content .= html_writer::empty_tag('img', array('src'=>$CFG->wwwroot . '/blocks/exacomp/pix/view_print.png', 'alt'=>'print'));
 			$content .= html_writer::end_tag('a');
 			$content .= html_writer::end_tag('div');
+			$content .= html_writer::end_div();
 		} else {
 			$content = html_writer::start_tag('div', array('id'=>'linkback', 'align'=>"right"));
 			$content .= html_writer::start_tag('a', array('href' => new moodle_url('/blocks/exacomp/learningagenda.php?courseid='.$COURSE->id.'&studentid='.$studentid.'&print=0&action='.$action)));
@@ -757,16 +760,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$header = html_writer::label($data->headertext, '').html_writer::empty_tag('br');
 
 		$table = new html_table();
+		$table->attributes['class'] = 'exabis_comp_comp';
 		$rows = array();
 
 		$temp = false;
 		foreach($data->levels as $levelstruct){
 			if($levelstruct->level->source > 1 && $temp == false){
 				$row = new html_table_row();
-				$row->attributes['class'] = 'heading r0';
+				$row->attributes['class'] = 'highlight';
 
 				$cell = new html_table_cell();
-				$cell->attributes['class'] = 'category catlevel1';
+				//$cell->attributes['class'] = 'category catlevel1';
 				$cell->colspan = 2;
 				$cell->text = html_writer::tag('h2', get_string('specificcontent', 'block_exacomp'));
 					
@@ -776,6 +780,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 
 			$row = new html_table_row();
+			$row->attributes['class'] = 'highlight';
+			
 			$cell = new html_table_cell();
 			$cell->colspan = 2;
 			$cell->text = html_writer::tag('b', $levelstruct->level->title);
@@ -802,13 +808,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 
 		$hiddenaction = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'action', 'value'=>'save'));
+		$hiddenaction .= html_writer::empty_tag('br');
 		$innerdiv = html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))));
 
 		$table->data = $rows;
 
 
-		$div = html_writer::div(html_writer::tag('form', html_writer::table($table).$hiddenaction.$innerdiv, array('action'=>'edit_config.php?courseid='.$courseid, 'method'=>'post')), 'block_excomp_center');
+		$div = html_writer::div(html_writer::tag('form', html_writer::table($table).$hiddenaction.$innerdiv, array('action'=>'edit_config.php?courseid='.$courseid, 'method'=>'post')), 'exabis_competencies_lis');
 
+		
 		$content = html_writer::tag("div", $header.$div, array("id"=>"exabis_competences_block"));
 
 		return $content;
@@ -1048,6 +1056,58 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content = html_writer::tag('script', 'ddtreemenu.createTree("comptree", true)', array('type'=>'text/javascript'));
 		return $content.html_writer::end_div();
 	}
+	public function print_courseselection($tree){
+		$table = new html_table();
+		$table->attributes['class'] = 'exabis_comp_comp';
+		
+		$rows = array();
+		foreach($tree as $subject){
+			$row = new html_table_row();
+			$row->attributes['class'] = 'highlight';
+			
+			$cell = new html_table_cell();
+			$cell->text = html_writer::tag('b', $subject->title);
+			$row->cells[] = $cell;
+			
+			$cell = new html_table_cell();
+			$cell->text = html_writer::checkbox('sub1', '1');
+			$row->cells[] = $cell;
+			
+			$rows[] = $row;
+			$this->print_courseselection_rec_topic($subject->subs, $rows);
+		}
+		
+		$table->data = $rows;
 
+		$hiddenaction = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'action', 'value'=>'save'));
+		$hiddenaction .= html_writer::empty_tag('br');
+		$innerdiv = html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))));
+		
+		$div = html_writer::div(html_writer::tag('form', html_writer::table($table).$hiddenaction.$innerdiv, array('action'=>'courseselection.php?', 'method'=>'post')), 'exabis_competencies_lis');
+
+		$content = html_writer::tag("div", $div, array("id"=>"exabis_competences_block"));
+		return $content;
+	}
+	public function print_courseselection_rec_topic($subs, &$rows){
+		foreach($subs as $topic){
+			$row = new html_table_row();
+		
+			$cell = new html_table_cell();
+			if(isset($topic->subs))
+				$cell->text = html_writer::tag('b', $topic->title);
+			else 
+				$cell->text = $topic->title;
+			$row->cells[] = $cell;
+			
+			$cell = new html_table_cell();
+			$cell->text = html_writer::checkbox('top1', '1');
+			$row->cells[] = $cell;
+			
+			$rows[] = $row;
+			if(isset($topic->subs)){
+				$this->print_courseselection_rec_topic($topic->subs, $rows);
+			}
+		}
+	}
 }
 ?>
