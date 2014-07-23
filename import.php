@@ -49,6 +49,17 @@ $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 
 block_exacomp_init_js_css();
 
+$isAdmin = has_capability('block/exacomp:admin', $context);
+
+$action = optional_param('action', "", PARAM_ALPHA);
+$importoption = optional_param('importoption', "", PARAM_ALPHA);
+$importtype = optional_param('importtype', '', PARAM_TEXT);
+$mform = new block_exacomp_generalxml_upload_form();
+
+$importSuccess = false;
+if($isAdmin && $importtype && $data = $mform->get_file_content('file'))
+	$importSuccess = block_exacomp_xml_do_import($data, (($importtype == 'normal') ? IMPORT_SOURCE_NORMAL : IMPORT_SOURCE_SPECIFIC));
+
 // build breadcrumbs navigation
 $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
 $blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
@@ -58,27 +69,19 @@ $pagenode->make_active();
 // build tab navigation & print header
 echo $OUTPUT->header();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
-
 /* CONTENT REGION */
 
-$action = optional_param('action', "", PARAM_ALPHA);
-$importoption = optional_param('importoption', "", PARAM_ALPHA);
-$importtype = optional_param('importtype', '', PARAM_TEXT);
-
-$isAdmin = has_capability('block/exacomp:admin', $context);
 /* Admins are allowed to import data, or a special capability for custom imports */
 if($isAdmin || block_exacomp_check_customupload()) {
 
 	if($importtype) {
 		
-		$mform = new block_exacomp_generalxml_upload_form();
 		if ($mform->is_cancelled()) {
 			redirect($PAGE->url);
 		} else {
 			if ($data = $mform->get_file_content('file')) {
-				if(block_exacomp_xml_do_import($data, (($importtype == 'normal') ? IMPORT_SOURCE_NORMAL : IMPORT_SOURCE_SPECIFIC))) {
+				if($importSuccess) {
 					echo $OUTPUT->box(get_string("importsuccess", "block_exacomp"));
-					//echo '<script>location.reload();</script>';
 				}
 				else {
 					echo $OUTPUT->box(get_string("importfail", "block_exacomp"));

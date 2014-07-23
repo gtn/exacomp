@@ -71,25 +71,27 @@ $blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
 $pagenode = $blocknode->add(get_string($page_identifier,'block_exacomp'), $PAGE->url);
 $pagenode->make_active();
 
+//Falls Formular abgesendet, speichern
+if (isset($action) && $action == 'save') {
+	$values = isset($_POST['data']) ? $_POST['data'] : array();
+	if($version)
+		block_exacomp_set_mdltype($values,$courseid);
+	else
+		block_exacomp_set_mdltype($values);
+
+	$headertext=get_string("save_success", "block_exacomp");
+	//echo '<script>location.reload();</script>';
+}else{
+	$headertext=get_string("explainconfig", "block_exacomp");
+}
+
 // build tab navigation & print header
 echo $OUTPUT->header();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
 /* CONTENT REGION */
 
-//Falls Formular abgesendet, speichern
-if (isset($action) && $action == 'save') {
-    $values = isset($_POST['data']) ? $_POST['data'] : array();
-    if($version)
-    	block_exacomp_set_mdltype($values,$courseid);
-    else
-    	block_exacomp_set_mdltype($values);
-  
-    $headertext=get_string("save_success", "block_exacomp");
-    //echo '<script>location.reload();</script>';
-}else{
-	$headertext=get_string("explainconfig", "block_exacomp");
-}
+
 
 
 /* HTML CONTENT */
