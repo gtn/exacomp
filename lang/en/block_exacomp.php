@@ -58,6 +58,14 @@ $string['settings_xmlserverurl'] = 'Server-URL';
 $string['settings_configxmlserverurl'] = 'Url to a xml file, which is used for keeping the database entries up to date';
 $string['settings_alternativedatamodel'] = 'Baden W&uuml;rttemberg Version';
 $string['settings_alternativedatamodel_description'] = 'Tick to use Baden W&uuml;rttemberg Version';
+$string['settings_usedetailpage'] = 'Competence Details';
+$string['settings_usedetailpage_description'] = 'Use competences details overview';
+$string['settings_autotest'] = 'Automatic test evalutaion';
+$string['settings_autotest_description'] = 'Students reach competenes automatically if a test is completed';
+$string['settings_testlimit'] = 'Test limit';
+$string['settings_testlimit_description'] = 'Students have to reach this limit to gain competences';
+$string['settings_usebadges'] = 'Use Badges';
+$string['settings_usebadges_description'] = 'Work with Badges associated with competences';
 
 //Learning agenda
 $string['LA_MON'] = "MON";

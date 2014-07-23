@@ -58,6 +58,14 @@ $string['settings_xmlserverurl'] = 'Server-URL';
 $string['settings_configxmlserverurl'] = 'Url zu einer XML Datei, die verwendet wird, um die Daten aktuell zu halten';
 $string['settings_alternativedatamodel'] = 'Baden W&uuml;rttemberg Version';
 $string['settings_alternativedatamodel_description'] = 'Anhaken f&uuml;r die Baden W&uuml;rttemberg Version';
+$string['settings_usedetailpage'] = 'Detaillierte Kompetenzansicht';
+$string['settings_usedetailpage_description'] = 'Sch&uuml;ler hat Zugriff auf detaillierte Kompetenz&uuml;bersicht';
+$string['settings_autotest'] = 'Automatische Tests';
+$string['settings_autotest_description'] = 'Kompetenzen die mit Tests verbunden sind, werden automatisch &uuml;bernommen, wenn der Test abgegeben wurde';
+$string['settings_testlimit'] = 'Testlimit';
+$string['settings_testlimit_description'] = 'Dieser Prozentwert muss erreicht werden, damit der Test als bestanden gilt';
+$string['settings_usebadges'] = 'Badges verwenden';
+$string['settings_usebadges_description'] = 'Anhaken um Badges Kompetenzen zu zuteilen';
 
 //Learning agenda
 $string['LA_MON'] = "Mo";

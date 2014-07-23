@@ -179,9 +179,70 @@ class block_exacomp extends block_list {
 		return true;
 	}
 
+	/**
+	 * This function is executed by the Moodle cron job.
+	 * It checks if an url for updating the data-xml file is specified and in this case
+	 * it tries to get the content and update the local xml.
+	 */
 	public function cron() {
-		mtrace( "Hey, my cron script is running" );
-		// do something
+		mtrace('Exabis Competencies: cron job is running.');
+		
+		//import xml with provided server url
+		$xmlserverurl = get_config('exacomp', 'xmlserverurl');
+		if($xmlserverurl) {
+			$xml = file_get_contents($xmlserverurl);
+			if($xml) {
+				require_once dirname(__FILE__) . '/lib/xmllib.php';
+
+				if(block_exacomp_xml_do_import($xml,1,1)) {
+					mtrace("import done");
+					block_exacomp_settstamp();
+				}
+				else mtrace("import failed");
+			}
+		}
+		
+		if(get_config('exacomp', 'autotest')){
+			//tests associated with competences 
+			//get all tests that are associated with competences
+			$tests = block_exacomp_get_active_tests_by_course($courseid);
+			$students = block_exacomp_get_students_by_course($courseid);
+		
+			$limit = get_config('exacomp', 'testlimit');
+			
+			//get student grading for each test
+			foreach($students as $student){
+				foreach($tests as $test){
+					//get grading for each test and assign topics and descriptors
+					$grade = $DB->get_record('quiz_grades', array('quiz'=>$test->id, 'user'=>$student->id));
+					if(($test->grade*($limit/100)) <= $grade){
+						//assign competences to student
+						if(isset($test->descriptors)){
+							foreach($test->descriptors as $descriptor){
+								$insert = new stdClass();
+								$insert->activityid = $test->activityid;
+								$insert->compid = $descriptor->id;
+								$insert->userid = $student->id;
+								$insert->comptype = '0';
+								
+								$DB->insert_record('block_exacompcompuser_mm', $insert);
+							}
+						}
+						if(isset($test->topics)){
+							foreach($test->topics as $topics){
+								$insert = new stdClass();
+								$insert->activityid = $test->activityid;
+								$insert->compid = $topic->id;
+								$insert->userid = $student->id;
+								$insert->comptype = '1';
+								
+								$DB->insert_record('block_exacompcompuser_mm', $insert);
+							}
+						}
+					}
+				}
+			}
+		}
 		return true;
 	}
 }
