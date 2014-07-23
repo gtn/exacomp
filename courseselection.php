@@ -195,7 +195,7 @@ echo '</div>'; //exabis_competences_block
 
  */
 
-$tree = block_exacomp_get_competence_tree(0);
+$tree = block_exacomp_get_competence_tree();
 
 $output = $PAGE->get_renderer('block_exacomp');
 echo $output->print_courseselection($tree);

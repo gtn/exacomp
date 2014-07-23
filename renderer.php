@@ -1089,55 +1089,97 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function print_courseselection($tree){
 		$table = new html_table();
 		$table->attributes['class'] = 'exabis_comp_comp';
-
+		
 		$rows = array();
 		foreach($tree as $subject){
 			$row = new html_table_row();
 			$row->attributes['class'] = 'highlight';
-				
+			
 			$cell = new html_table_cell();
 			$cell->text = html_writer::tag('b', $subject->title);
+			$cell->colspan = 3;
 			$row->cells[] = $cell;
-				
-			$cell = new html_table_cell();
-			$cell->text = html_writer::checkbox('sub1', '1');
-			$row->cells[] = $cell;
-				
+			
 			$rows[] = $row;
-			$this->print_courseselection_rec_topic($subject->subs, $rows);
+			//$this->print_courseselection_rec_topic($subject->subs, $rows);
+			$this->print_topics_courseselection($rows, 0, $subject->subs, 0, $rowgroup_class = '');
 		}
-
+		
 		$table->data = $rows;
+		
+		
+		$table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
+		$table_html .= html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))));
+		$table_html .= html_writer::tag("input", "", array("name" => "open_row_groups", "type" => "hidden", "value" => (optional_param('open_row_groups', "", PARAM_TEXT))));
 
-		$hiddenaction = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'action', 'value'=>'save'));
-		$hiddenaction .= html_writer::empty_tag('br');
-		$innerdiv = html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))));
-
-		$div = html_writer::div(html_writer::tag('form', html_writer::table($table).$hiddenaction.$innerdiv, array('action'=>'courseselection.php?', 'method'=>'post')), 'exabis_competencies_lis');
-
-		$content = html_writer::tag("div", $div, array("id"=>"exabis_competences_block"));
-		return $content;
+		return html_writer::tag("form", $table_html, array("method" => "post", "action" => 'courseselection.php' . "&action=save"));
+	
+		//return $content;
 	}
 	public function print_courseselection_rec_topic($subs, &$rows){
 		foreach($subs as $topic){
 			$row = new html_table_row();
-
+		
 			$cell = new html_table_cell();
 			if(isset($topic->subs))
 				$cell->text = html_writer::tag('b', $topic->title);
-			else
+			else 
 				$cell->text = $topic->title;
 			$row->cells[] = $cell;
-				
+			
 			$cell = new html_table_cell();
 			$cell->text = html_writer::checkbox('top1', '1');
 			$row->cells[] = $cell;
-				
+			
 			$rows[] = $row;
 			if(isset($topic->subs)){
 				$this->print_courseselection_rec_topic($topic->subs, $rows);
 			}
 		}
 	}
+	public function print_topics_courseselection(&$rows, $level, $topics, $rowgroup, $rowgroup_class = ''){
+		global $version;
+
+		$padding = $level * 20 + 12;
+		
+		foreach($topics as $topic) {
+			list($outputid, $outputname) = block_exacomp_get_output_fields($topic);
+
+			$hasSubs = !empty($topic->subs);
+			
+			if ($hasSubs) {
+				$rowgroup++;
+				$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$rowgroup.' '.$rowgroup_class;
+				$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$rowgroup.' '.$rowgroup_class;
+			} else {
+				$this_rowgroup_class = $rowgroup_class;
+				$sub_rowgroup_class = '';
+			}
+
+			$topicRow = new html_table_row();
+			$topicRow->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rowgroup_class . ' highlight';
+
+			$outputidCell = new html_table_cell();
+			$outputidCell->text = $outputid;
+			$topicRow->cells[] = $outputidCell;
+
+			$outputnameCell = new html_table_cell();
+			$outputnameCell->attributes['class'] = 'rowgroup-arrow';
+			$outputnameCell->style = "padding-left: ".$padding."px";
+			$outputnameCell->text = html_writer::div($outputname,"desctitle");
+			$topicRow->cells[] = $outputnameCell;
+			
+			$cell = new html_table_cell();
+			$cell->text = html_writer::checkbox('top1', '1');
+			$topicRow->cells[] = $cell;
+			
+			$rows[] = $topicRow;
+			
+			if (!empty($topic->subs)) {
+				$this->print_topics_courseselection($rows, $level+1, $topic->subs, $rowgroup, $sub_rowgroup_class);
+			}
+		}
+	}
+
 }
 ?>
