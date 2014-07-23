@@ -47,7 +47,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$content .= html_writer::end_tag('a');
 			$content .= html_writer::end_tag('div');
 			$content .= html_writer::end_tag('form');
-			
+				
 
 			$content .= html_writer::start_tag('div', array('align'=>"right"));
 			$content .= html_writer::start_tag('a', array('href' => new moodle_url('/blocks/exacomp/learningagenda.php?courseid='.$COURSE->id.'&studentid='.$studentid.'&print=1&action='.$action)));
@@ -338,7 +338,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		foreach($subjects as $subject) {
 			if(!$subject->subs)
 				continue;
-				
+
 			//for every subject
 			$subjectRow = new html_table_row();
 			$subjectRow->attributes['class'] = 'highlight';
@@ -637,7 +637,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						if($data->showevaluation)
 							$studentCellEvaluation->text = $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
 							
-						$studentCell->text = $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme);
+						if($data->role == ROLE_STUDENT) {
+							$studentCell->text = get_string('assigndone','block_exacomp');
+							$studentCell->text .= $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme);
+							
+							$studentCell->text .= $this->print_student_example_evaluation_form($example->id, $student->id, $data->courseid);
+						}
+						else
+							$studentCell->text = $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme);
 					}
 					/*
 					 * if scheme != 1, !version: print select
@@ -659,6 +666,29 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 		}
 	}
+
+	private function print_student_example_evaluation_form($exampleid, $studentid, $courseid) {
+		global $DB;
+		$exampleInfo = $DB->get_record(DB_EXAMPLEEVAL, array("exampleid" => $exampleid, "studentid" => $studentid, "courseid" => $courseid));
+		$options = array();
+		$options['self'] = get_string('assignmyself','block_exacomp');
+		$options['studypartner'] = get_string('assignlearningpartner','block_exacomp');
+		$options['studygroup'] = get_string('assignlearninggroup','block_exacomp');
+		$options['teacher'] = get_string('assignteacher','block_exacomp');
+
+		$content = html_writer::select($options, 'dataexamples[' . $exampleid . '][' . $studentid . '][studypartner]', (isset($exampleInfo->studypartner) ? $exampleInfo->studypartner : null), false);
+
+		$content .= get_string('assignfrom','block_exacomp');
+		$content .= html_writer::empty_tag('input', array('class' => 'datepicker', 'type' => 'text', 'name' => 'dataexamples[' . $exampleid . '][' . $studentid . '][starttime]', 'readonly' => 'readonly',
+				'value' => (isset($exampleInfo->starttime) ? date("Y-m-d",$exampleInfo->starttime) : null)));
+
+		$content .= get_string('assignuntil','block_exacomp');
+		$content .= html_writer::empty_tag('input', array('class' => 'datepicker', 'type' => 'text', 'name' => 'dataexamples[' . $exampleid . '][' . $studentid . '][endtime]', 'readonly' => 'readonly',
+				'value' => (isset($exampleInfo->endtime) ? date("Y-m-d",$exampleInfo->endtime) : null)));
+
+		return $content;
+	}
+
 	/**
 	 *
 	 * @param int $students Amount of students
@@ -781,7 +811,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$row = new html_table_row();
 			$row->attributes['class'] = 'highlight';
-			
+				
 			$cell = new html_table_cell();
 			$cell->colspan = 2;
 			$cell->text = html_writer::tag('b', $levelstruct->level->title);
@@ -816,7 +846,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$div = html_writer::div(html_writer::tag('form', html_writer::table($table).$hiddenaction.$innerdiv, array('action'=>'edit_config.php?courseid='.$courseid, 'method'=>'post')), 'exabis_competencies_lis');
 
-		
+
 		$content = html_writer::tag("div", $header.$div, array("id"=>"exabis_competences_block"));
 
 		return $content;
@@ -930,9 +960,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		foreach($tree as $subject){
 			$subject_example_content = (empty($subject->numb) || $subject->numb==0)? '' : $subject->numb;
 			$li_topics = '';
-			
+				
 			$li_topics = $this->print_tree_view_examples_desc_rec_topic($subject->subs, $subject_example_content);
-			
+				
 			$ul_topics = html_writer::tag('ul', $li_topics);
 			$li_subjects .= html_writer::tag('li', $subject->title
 					.$ul_topics);
@@ -970,11 +1000,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$text = str_replace(":","\:",$text);
 							
 						$example_content = '';
-	
+
 						$inner_example_content = $subject_example_content .
 						' ' . $example->title . ' ' .
 						$topic_example_content;
-	
+
 						//if text is set, on mouseover is enabled, other wise just inner_example_content is displayed
 						if($text)
 							$example_content = html_writer::tag('a',
@@ -984,25 +1014,25 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$example_content = $inner_example_content;
 							
 						$icons = $this->example_tree_get_exampleicon($example);
-	
+
 						$li_examples .= html_writer::tag('li', $example_content.$icons);
 					}
 					$ul_examples = html_writer::tag('ul', $li_examples);
 					$li_descriptors .= html_writer::tag('li', $descriptor->title
 							.$ul_examples);
-				}	
+				}
 			}
 			$ul_descriptors = html_writer::tag('ul', $li_descriptors);
-			
+				
 			$ul_subs = '';
 			if(isset($topic->subs)){
 				$li_subs = $this->print_tree_view_examples_desc_rec_topic($topic->subs, $subject_example_content);
-				$ul_subs .= html_writer::tag('ul', $li_subs); 	
+				$ul_subs .= html_writer::tag('ul', $li_subs);
 			}
-			
+				
 			$li_topics .= html_writer::tag('li', $topic->title
 					.$ul_descriptors.$ul_subs);
-			
+				
 		}
 		return $li_topics;
 	}
@@ -1059,30 +1089,30 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function print_courseselection($tree){
 		$table = new html_table();
 		$table->attributes['class'] = 'exabis_comp_comp';
-		
+
 		$rows = array();
 		foreach($tree as $subject){
 			$row = new html_table_row();
 			$row->attributes['class'] = 'highlight';
-			
+				
 			$cell = new html_table_cell();
 			$cell->text = html_writer::tag('b', $subject->title);
 			$row->cells[] = $cell;
-			
+				
 			$cell = new html_table_cell();
 			$cell->text = html_writer::checkbox('sub1', '1');
 			$row->cells[] = $cell;
-			
+				
 			$rows[] = $row;
 			$this->print_courseselection_rec_topic($subject->subs, $rows);
 		}
-		
+
 		$table->data = $rows;
 
 		$hiddenaction = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'action', 'value'=>'save'));
 		$hiddenaction .= html_writer::empty_tag('br');
 		$innerdiv = html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))));
-		
+
 		$div = html_writer::div(html_writer::tag('form', html_writer::table($table).$hiddenaction.$innerdiv, array('action'=>'courseselection.php?', 'method'=>'post')), 'exabis_competencies_lis');
 
 		$content = html_writer::tag("div", $div, array("id"=>"exabis_competences_block"));
@@ -1091,18 +1121,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function print_courseselection_rec_topic($subs, &$rows){
 		foreach($subs as $topic){
 			$row = new html_table_row();
-		
+
 			$cell = new html_table_cell();
 			if(isset($topic->subs))
 				$cell->text = html_writer::tag('b', $topic->title);
-			else 
+			else
 				$cell->text = $topic->title;
 			$row->cells[] = $cell;
-			
+				
 			$cell = new html_table_cell();
 			$cell->text = html_writer::checkbox('top1', '1');
 			$row->cells[] = $cell;
-			
+				
 			$rows[] = $row;
 			if(isset($topic->subs)){
 				$this->print_courseselection_rec_topic($topic->subs, $rows);

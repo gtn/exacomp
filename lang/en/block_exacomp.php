@@ -164,3 +164,11 @@ $string['showevaluation'] = 'To show self-assessment click <a href="{$a}">here</
 $string['hideevaluation'] = 'To hide self-assessment click <a href="{$a}">here</a>';
 $string['columnselect'] = 'Column selection';
 $string['allstudents'] = 'All students';
+
+$string['assigndone'] = 'Exercise done: ';
+$string['assignmyself'] = 'myself';
+$string['assignlearningpartner'] = 'learning partner';
+$string['assignlearninggroup'] = 'learning group';
+$string['assignteacher'] = 'teacher';
+$string['assignfrom'] = 'from';
+$string['assignuntil'] = 'until';

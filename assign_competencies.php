@@ -61,15 +61,17 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $
 // CHECK TEACHER
 $isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
 // IF DELETE > 0 DELTE CUSTOM EXAMPLE
-if(($delete = optional_param("delete", 0, PARAM_INT)) > 0 && $isTeacher) 
+if(($delete = optional_param("delete", 0, PARAM_INT)) > 0 && $isTeacher)
 	block_exacomp_delete_custom_example($delete);
 
 // SAVA DATA
 if (($action = optional_param("action", "", PARAM_TEXT) )== "save") {
 	// DESCRIPTOR DATA
-		block_exacomp_save_competencies(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_DESCRIPTOR);
+	block_exacomp_save_competencies(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_DESCRIPTOR);
 	// TOPIC DATA
-		block_exacomp_save_competencies(isset($_POST['datatopics']) ? $_POST['datatopics'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_TOPIC);
+	block_exacomp_save_competencies(isset($_POST['datatopics']) ? $_POST['datatopics'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_TOPIC);
+	// EXAMPLE DATA
+	block_exacomp_save_example_evaluation(isset($_POST['dataexamples']) ? $_POST['dataexamples'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT);
 }
 
 // IF TEACHER SHOW ALL COURSE STUDENTS, IF NOT ONLY CURRENT USER
@@ -77,7 +79,7 @@ $students = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : arr
 foreach($students as $student)
 	block_exacomp_get_user_information_by_course($student, $courseid);
 
-$subjects = block_exacomp_get_competence_tree_by_course($courseid);
+$subjects = block_exacomp_get_competence_tree($courseid);
 $output = $PAGE->get_renderer('block_exacomp');
 // PRINT LEGEND
 $showevaluation = optional_param("showevaluation", false, PARAM_BOOL);

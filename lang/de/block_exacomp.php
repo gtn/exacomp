@@ -186,3 +186,12 @@ $string['showevaluation'] = 'Um die Selbsteinschätzung zu aktivieren klicke <a 
 $string['hideevaluation'] = 'Um die Selbsteinschätzung zu deaktivieren klicke <a href="{$a}">hier</a>';
 $string['columnselect'] = 'Spaltenauswahl';
 $string['allstudents'] = 'Alle Schüler';
+
+$string['assigndone'] = 'Aufgabe erledigt: ';
+$string['assignmyself'] = 'selbst';
+$string['assignlearningpartner'] = 'Lernpartner';
+$string['assignlearningrgoup'] = 'Lerngruppe';
+$string['assignteacher'] = 'Lehrkraft';
+$string['assignfrom'] = 'von';
+$string['assignuntil'] = 'bis';
+$string['assignlearninggroup'] = 'Lerngruppe';
