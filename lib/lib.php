@@ -1069,3 +1069,31 @@ function block_exacomp_get_icon_for_user($coursemodules, $student) {
 
 	return $icon;
 }
+function block_exacomp_set_coursetopics($courseid, $values) {
+	global $DB;
+	$DB->delete_records('block_exacompcoutopi_mm', array("courseid" => $courseid));
+	if(isset($values)){
+		foreach ($values as $value) {
+			$DB->insert_record('block_exacompcoutopi_mm', array("courseid" => $courseid, "topicid" => intval($value)));
+		}
+	}
+}
+function block_exacomp_get_active_topics($tree, $courseid){
+	$topics = block_exacomp_get_topics($courseid);
+	foreach($tree as $subject){
+		block_exacomp_get_active_topics_rec($subject->subs, $topics);
+	}
+	return $tree;
+}
+function block_exacomp_get_active_topics_rec($subs, $topics){
+	foreach($subs as $topic){
+		if(isset($topics[$topic->id])){
+			$topic->checked = true;
+		}else{
+			$topic->checked = false;
+		}
+		if(!empty($topic->subs)){
+			block_exacomp_get_active_topics_rec($topic->subs, $topics);
+		}
+	}
+}
