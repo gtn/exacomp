@@ -860,18 +860,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		.html_writer::empty_tag('input', array('type'=>'text', 'size'=>2, 'name'=>'grading', 'value'=>block_exacomp_get_grading_scheme($courseid)))
 		.html_writer::empty_tag('br');
 
-		$checkbox = html_writer::empty_tag('input', array('type'=>'checkbox', 'value'=>1, 'name'=>'uses_activities', 'checked'=> (!empty($settings->uses_activities) ? 'checked' : '')));
+		$checkbox = html_writer::checkbox('uses_activities', 1, $settings->uses_activities == 1);
 
 		$input_activities = $checkbox.get_string('uses_activities', 'block_exacomp')
 		.html_writer::empty_tag('br');
 
-		$checkbox = html_writer::empty_tag('input', array('type'=>'checkbox', 'value'=>1, 'name'=>'show_all_descriptors', 'checked'=> (!empty($settings->show_all_descriptors) ? 'checked' : '')));
-
+		$checkbox = html_writer::checkbox('show_all_descriptors',1,$settings->show_all_descriptors == 1);
 		$input_descriptors = $checkbox.get_string('show_all_descriptors', 'block_exacomp')
 		.html_writer::empty_tag('br');
 			
-		$checkbox = html_writer::empty_tag('input', array('type'=>'checkbox', 'value'=>1, 'name'=>'show_all_examples', 'checked'=> (!empty($settings->show_all_examples) ? 'checked' : '')));
-			
+		$checkbox = html_writer::checkbox('show_all_examples', 1, $settings->show_all_examples == 1);
+		
 		$input_examples = $checkbox.get_string('show_all_examples', 'block_exacomp')
 		.html_writer::empty_tag('br');
 			

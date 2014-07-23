@@ -317,11 +317,11 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 	if (empty($settings)) $settings = new stdClass;
 	if (empty($settings->grading)) $settings->grading = 1;
 	if (!isset($settings->uses_activities)) $settings->uses_activities = get_config("exacomp","alternativedatamodel") ? 0 : 1;
-	if (!$settings->uses_activities) $settings->show_all_examples = 1;
-	elseif (!isset($settings->show_all_examples)) $settings->show_all_examples = 0;
+	//if (!$settings->uses_activities) $settings->show_all_examples = 1;
+	if (!isset($settings->show_all_examples)) $settings->show_all_examples = 0;
 	if (!$settings->uses_activities) $settings->show_all_descriptors = 1;
 	elseif (!isset($settings->show_all_descriptors)) $settings->show_all_descriptors = 0;
-
+	
 	return $settings;
 }
 
@@ -629,7 +629,7 @@ function block_exacomp_check_customupload() {
 }
 
 function block_exacomp_coursesettings($courseid = 0) {
-	global $DB, $COURSE;
+	global $DB, $COURSE, $version;
 
 	if (!$courseid)
 		$courseid = $COURSE->id;
@@ -638,12 +638,11 @@ function block_exacomp_coursesettings($courseid = 0) {
 
 	if (empty($rs)) $rs = new stdClass;
 	if (empty($rs->grading)) $rs->grading = 1;
-	if (!isset($rs->uses_activities)) $rs->uses_activities = get_config("exacomp","alternativedatamodel") ? 0 : 1;
-	if (!$rs->uses_activities) $rs->show_all_examples = 1;
-	elseif (!isset($rs->show_all_examples)) $rs->show_all_examples = 0;
+	if (!isset($rs->uses_activities)) $rs->uses_activities = ( $version )? 0 : 1;
+	//if (!$rs->uses_activities) $rs->show_all_examples = 1;
+	if (!isset($rs->show_all_examples)) $rs->show_all_examples = 0;
 	if (!$rs->uses_activities) $rs->show_all_descriptors = 1;
 	elseif (!isset($rs->show_all_descriptors)) $rs->show_all_descriptors = 0;
-
 	return $rs;
 }
 function block_exacomp_get_edulevels() {
