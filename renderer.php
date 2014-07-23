@@ -1091,19 +1091,31 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		$table = new html_table();
 		$table->attributes['class'] = 'exabis_comp_comp';
-		
+		$rowgroup = 0;
 		$rows = array();
 		foreach($tree as $subject){
+			
+			$hasSubs = !empty($subject->subs);
+				
+			if ($hasSubs) {
+				$rowgroup++;
+				$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$rowgroup;
+				$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$rowgroup;
+			} else {
+				$this_rowgroup_class = $rowgroup_class;
+				$sub_rowgroup_class = '';
+			}
 			$row = new html_table_row();
-			$row->attributes['class'] = 'highlight';
+			$row->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rowgroup_class . ' highlight';
 			
 			$cell = new html_table_cell();
-			$cell->text = html_writer::tag('b', $subject->title);
+			$cell->text = html_writer::div(html_writer::tag('b', $subject->title));
+			$cell->attributes['class'] = 'rowgroup-arrow';
 			$cell->colspan = 3;
 			$row->cells[] = $cell;
 			
 			$rows[] = $row;
-			$this->print_topics_courseselection($rows, 0, $subject->subs, 0, $rowgroup_class = '');
+			$this->print_topics_courseselection($rows, 0, $subject->subs, $rowgroup, $sub_rowgroup_class);
 		}
 		
 		$table->data = $rows;
@@ -1115,7 +1127,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return html_writer::tag("form", $table_html, array("method" => "post", "action" => $PAGE->url . "&action=save", "id" => "course-selection"));
 	}
-	public function print_topics_courseselection(&$rows, $level, $topics, $rowgroup, $rowgroup_class = ''){
+	public function print_topics_courseselection(&$rows, $level, $topics, &$rowgroup, $rowgroup_class = ''){
 		global $version;
 
 		$padding = $level * 20 + 12;
