@@ -510,10 +510,10 @@ td.contentcell {
 }
 .rowgroup-header .rowgroup-arrow div {
 	padding-left: 12px;
-	background: url(../pix/pfeil_show.png) 0 6px no-repeat;
+	background: url(pix/pfeil_show.png) 0 6px no-repeat;
 }
 .rowgroup-header.open .rowgroup-arrow div {
-	background: url(../pix/pfeil_hide.png) 0 6px no-repeat;
+	background: url(pix/pfeil_hide.png) 0 6px no-repeat;
 }
 .rowgroup-content {
 	display: none;

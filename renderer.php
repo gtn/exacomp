@@ -1112,9 +1112,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$table_html .= html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))));
 		$table_html .= html_writer::tag("input", "", array("name" => "open_row_groups", "type" => "hidden", "value" => (optional_param('open_row_groups', "", PARAM_TEXT))));
 
-		return html_writer::tag("form", $table_html, array("method" => "post", "action" => 'courseselection.php' . "&action=save"));
-	
-		//return $content;
+		return html_writer::tag("form", $table_html, array("method" => "post", "action" => 'courseselection.php' . "&action=save", "id" => "course-selection"));
 	}
 	public function print_courseselection_rec_topic($subs, &$rows){
 		foreach($subs as $topic){
