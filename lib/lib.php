@@ -1107,15 +1107,30 @@ function block_exacomp_get_active_tests_by_course($courseid){
 	$sql = "SELECT cm.instance as id, cm.id as activityid, q.grade FROM {block_exacompcompactiv_mm} activ "
 		."JOIN {course_modules} cm ON cm.id = activ.activityid "
 		."JOIN {modules} m ON m.id = cm.module "
-		."JOIN {quiz} q ON "
+		."JOIN {quiz} q ON cm.instance = q.id "
 		."WHERE m.name='quiz' AND cm.course=?";
 	
 	$tests = $DB->get_records_sql($sql, array($courseid));
 	
 	foreach($tests as $test){
-		$test->descriptors = $DB->get_records('block_exacompcompactiv_mm', array('activityid'=>$test->id, 'comptype'=>0), null, 'compid');
-		$test->topics = $DB->get_records('block_exacompcompactiv_mm', array('activityid'=>$test->if, 'comptype'=>1), null, 'compid');
+		$test->descriptors = $DB->get_records('block_exacompcompactiv_mm', array('activityid'=>$test->activityid, 'comptype'=>0), null, 'compid');
+		$test->topics = $DB->get_records('block_exacompcompactiv_mm', array('activityid'=>$test->activityid, 'comptype'=>1), null, 'compid');
 	}
 	
 	return $tests;
+}
+function block_exacomp_get_courses(){
+	global $DB;
+	$courses = get_courses();
+	
+	$instances = $DB->get_records('block_instances', array('blockname'=>'exacomp'));
+	
+	$exabis_competences_courses = array();
+	
+	foreach($instances as $instance){
+		$context = $DB->get_record('context', array('id'=>$instance->parentcontextid));
+		$exabis_competences_courses[] = $context->instanceid;
+	}
+	
+	return $exabis_competences_courses;
 }

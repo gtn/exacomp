@@ -185,6 +185,7 @@ class block_exacomp extends block_list {
 	 * it tries to get the content and update the local xml.
 	 */
 	public function cron() {
+		global $COURSE;
 		mtrace('Exabis Competencies: cron job is running.');
 		
 		//import xml with provided server url
@@ -203,40 +204,36 @@ class block_exacomp extends block_list {
 		}
 		
 		if(get_config('exacomp', 'autotest')){
-			//tests associated with competences 
-			//get all tests that are associated with competences
-			$tests = block_exacomp_get_active_tests_by_course($courseid);
-			$students = block_exacomp_get_students_by_course($courseid);
-		
-			$limit = get_config('exacomp', 'testlimit');
+			//for all courses where exacomp is used
+			$courses = block_exacomp_get_courses();
 			
-			//get student grading for each test
-			foreach($students as $student){
-				foreach($tests as $test){
-					//get grading for each test and assign topics and descriptors
-					$grade = $DB->get_record('quiz_grades', array('quiz'=>$test->id, 'user'=>$student->id));
-					if(($test->grade*($limit/100)) <= $grade){
-						//assign competences to student
-						if(isset($test->descriptors)){
-							foreach($test->descriptors as $descriptor){
-								$insert = new stdClass();
-								$insert->activityid = $test->activityid;
-								$insert->compid = $descriptor->id;
-								$insert->userid = $student->id;
-								$insert->comptype = '0';
-								
-								$DB->insert_record('block_exacompcompuser_mm', $insert);
+			foreach($courses as $courseid){
+				//tests associated with competences 
+				//get all tests that are associated with competences
+				$tests = block_exacomp_get_active_tests_by_course($courseid);
+				$students = block_exacomp_get_students_by_course($courseid);
+			
+				$limit = get_config('exacomp', 'testlimit');
+				$grading_scheme = block_exacomp_get_grading_scheme($courseid);
+				
+				//get student grading for each test
+				foreach($students as $student){
+					foreach($tests as $test){
+						//get grading for each test and assign topics and descriptors
+						$quiz = $DB->get_record('quiz_grades', array('quiz'=>$test->id, 'userid'=>$student->id));
+						if(isset($quiz->grade) && (floatval($test->grade)*(floatval($limit)/100)) <= $quiz->grade){
+							//assign competences to student
+							if(isset($test->descriptors)){
+								foreach($test->descriptors as $descriptor){
+									block_exacomp_set_user_competence($student->id, $descriptor->compid,
+										0, $courseid, ROLE_TEACHER, $grading_scheme);
+								}
 							}
-						}
-						if(isset($test->topics)){
-							foreach($test->topics as $topics){
-								$insert = new stdClass();
-								$insert->activityid = $test->activityid;
-								$insert->compid = $topic->id;
-								$insert->userid = $student->id;
-								$insert->comptype = '1';
-								
-								$DB->insert_record('block_exacompcompuser_mm', $insert);
+							if(isset($test->topics)){
+								foreach($test->topics as $topics){
+									block_exacomp_set_user_competence($student->id, $topic->compid,
+										1, $courseid, ROLE_TEACHER, $grading_scheme);
+								}
 							}
 						}
 					}
