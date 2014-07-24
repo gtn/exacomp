@@ -329,6 +329,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function print_competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1) {
 		global $PAGE;
 
+		$rowgroup = 0;
 		$table = new html_table();
 		$rows = array();
 		$studentsColspan = $showevaluation ? 2 : 1;
@@ -387,7 +388,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			/* TOPICS */
 			//for every topic
 			$data = (object)array(
-					'rowgroup' => 0,
+					'rowgroup' => &$rowgroup,
 					'courseid' => $courseid,
 					'showevaluation' => $showevaluation,
 					'role' => $role,

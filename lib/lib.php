@@ -381,13 +381,18 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null) {
 	global $DB;
 
 	$allSubjects = block_exacomp_get_subjects($courseid, $subjectid);
-	//$allTopics = block_exacomp_get_all_topics($subjectid);
-	$allTopics = block_exacomp_get_topics($courseid);
+	$allTopics = block_exacomp_get_all_topics($subjectid);
+	if($courseid > 0)
+		$courseTopics = $DB->get_records(DB_COURSETOPICS,array("courseid" => $courseid),'','topicid');
 
 	$subjects = array();
 	//subjectid is not null iff lis version is used
 	//if($subjectid != null) {
 	foreach ($allTopics as $topic) {
+		//topic must be coursetopic if courseid <> 0
+		if($courseid > 0 && !array_key_exists($topic->id, $courseTopics))
+			continue;
+		
 		if($courseid==0 || block_exacomp_check_activity_association($topic->id, TYPE_TOPIC, $courseid)) {
 			// found: add it to the subject result, even if no descriptor from the topic is used
 			// find all parent topics
