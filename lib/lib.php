@@ -334,7 +334,7 @@ function block_exacomp_get_descritors_list($courseid, $onlywithactivitys = 0) {
 	WHERE d.id=t.descrid AND t.topicid = c.topicid AND t.topicid=tp.id AND tp.subjid = s.id AND c.courseid = ?";
 
 	if ($onlywithactivitys==1){
-		$descr=block_exacomp_get_descriptors($courseid);
+		$descr=block_exacomp_get_descriptors($courseid, block_exacomp_coursesettings()->show_all_descriptors);
 		if ($descr=="") $descr=0;
 		$query.=" AND d.id IN (".$descr.")";
 	}
@@ -352,7 +352,7 @@ function block_exacomp_get_descritors_list($courseid, $onlywithactivitys = 0) {
  * returns all descriptors
  * @param $courseid if course id =0 all possible descriptors are returned
  */
-function block_exacomp_get_descriptors($courseid = 0) {
+function block_exacomp_get_descriptors($courseid = 0, $showonlyactivdescriptors) {
 	global $DB;
 	$course='';
 
@@ -361,7 +361,7 @@ function block_exacomp_get_descriptors($courseid = 0) {
 	.(($courseid>0)?'JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=? ':'')
 	.'JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.topicid=t.id '
 	.'JOIN {block_exacompdescriptors} d ON desctopmm.descrid=d.id '
-	.(block_exacomp_coursesettings()->show_all_descriptors ? '' : '
+	.($showonlyactivdescriptors ? '' : '
 			JOIN {block_exacompcompactiv_mm} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
 			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':'')).')';
 
@@ -377,9 +377,11 @@ function block_exacomp_get_descriptors($courseid = 0) {
  * @param int $subjectid
  * @return associative_array
  */
-function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null) {
+function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $showonlyactivdescriptors = false) {
 	global $DB;
 
+	if(!$showonlyactivdescriptors) $showonlyactivdescriptors = block_exacomp_coursesettings()->show_all_descriptors;
+	
 	$allSubjects = block_exacomp_get_subjects($courseid, $subjectid);
 	$allTopics = block_exacomp_get_all_topics($subjectid);
 	if($courseid > 0)
@@ -430,7 +432,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null) {
 	}
 	//}
 
-	$allDescriptors = block_exacomp_get_descriptors($courseid);
+	$allDescriptors = block_exacomp_get_descriptors($courseid, $showonlyactivdescriptors);
 
 	foreach ($allDescriptors as $descriptor) {
 

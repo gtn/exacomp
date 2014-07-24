@@ -91,7 +91,6 @@ if($action == 'digicomps') {
 
 $tree = block_exacomp_get_competence_tree();
 $tree = block_exacomp_get_active_topics($tree, $courseid);
-
 $output = $PAGE->get_renderer('block_exacomp');
 echo $output->print_courseselection($tree);
 
