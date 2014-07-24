@@ -159,7 +159,7 @@ $string['contactcomps'] = 'Alle schlie&szlig;en';
 //Icons
 $string['assigned_example'] = 'Assigned Example';
 $string['task_example'] = 'Aufgabenstellung';
-$string['solution_example'] = 'Lösung';
+$string['solution_example'] = 'L&ouml;sung';
 $string['attachement_example'] = 'Anhang';
 $string['extern_task'] = 'Externe Aufgabenstellung';
 $string['total_example'] = 'Gesamtbeispiel';
@@ -167,33 +167,33 @@ $string['total_example'] = 'Gesamtbeispiel';
 $string['example_upload_header']  = 'Eigenes Beispiel raufladen';
 $string['taxonomy'] = 'Taxonomie';
 $string['descriptors'] = 'Kompetenzen';
-$string['descriptors_help'] = 'Es können mehrere Kompetenzen ausgewählt werden.';
-$string['filerequired'] = 'Es muss eine Datei ausgewählt sein.';
+$string['descriptors_help'] = 'Es k&ouml;nnen mehrere Kompetenzen ausgew&auml;hlt werden.';
+$string['filerequired'] = 'Es muss eine Datei ausgew&auml;hlt sein.';
 $string['titlenotemtpy'] = 'Es muss ein Name eingegeben werden.';
 
 //Assign competencies
 $string['save_selection'] = 'Auswahl speichern';
-$string['delete_confirmation'] = 'Soll das Beispiel wirklich gelöscht werden?';
-$string['legend_activities'] = 'Aktivitäten';
+$string['delete_confirmation'] = 'Soll das Beispiel wirklich gel&ouml;scht werden?';
+$string['legend_activities'] = 'Aktivit&auml;ten';
 $string['legend_eportfolio'] = 'ePortfolio';
-$string['legend_notask'] = 'Keine Aktivität/Quiz für diese Kompetenz abgegeben';
+$string['legend_notask'] = 'Keine Aktivit&auml;t/Quiz f&uuml;r diese Kompetenz abgegeben';
 $string['legend_upload'] = 'Eigenes Beispiel hochladen';
 
 //Icons
-$string['usersubmitted'] = ' hat folgende Aktivitäten abgegeben:';
-$string['usersubmittedquiz'] = ' hat folgende Tests durchgeführt:';
-$string['usernosubmission'] = ' hat keine Moodle-Aufgaben zu diesem Deskriptor abgegeben und keinen Test durchgeführt.';
-$string['usernosubmission_topic'] = ' hat keine Moodle-Aufgaben zu diesem Thema abgegeben und keinen Test durchgeführt.';
+$string['usersubmitted'] = ' hat folgende Aktivit&auml;ten abgegeben:';
+$string['usersubmittedquiz'] = ' hat folgende Tests durchgef&uuml;hrt:';
+$string['usernosubmission'] = ' hat keine Moodle-Aufgaben zu diesem Deskriptor abgegeben und keinen Test durchgef&uuml;hrt.';
+$string['usernosubmission_topic'] = ' hat keine Moodle-Aufgaben zu diesem Thema abgegeben und keinen Test durchgef&uuml;hrt.';
 $string['grading'] = ' Bewertung: ';
 
 $string['teachershortcut'] = 'L';
 $string['studentshortcut'] = 'S';
 
-$string['overview'] = 'Der Kompetenz-Überblick listet Schüler und die im Kurs aktivierten Kompetenzen auf.';
-$string['showevaluation'] = 'Um die Selbsteinschätzung zu aktivieren klicke <a href="{$a}">hier</a>';
-$string['hideevaluation'] = 'Um die Selbsteinschätzung zu deaktivieren klicke <a href="{$a}">hier</a>';
+$string['overview'] = 'Der Kompetenz-&Uuml;berblick listet Sch&uuml;ler und die im Kurs aktivierten Kompetenzen auf.';
+$string['showevaluation'] = 'Um die Selbsteinsch&auml;tzung zu aktivieren klicke <a href="{$a}">hier</a>';
+$string['hideevaluation'] = 'Um die Selbsteinsch&auml;tzung zu deaktivieren klicke <a href="{$a}">hier</a>';
 $string['columnselect'] = 'Spaltenauswahl';
-$string['allstudents'] = 'Alle Schüler';
+$string['allstudents'] = 'Alle Sch&uuml;ler';
 
 $string['assigndone'] = 'Aufgabe erledigt: ';
 $string['assignmyself'] = 'selbst';
@@ -203,3 +203,8 @@ $string['assignteacher'] = 'Lehrkraft';
 $string['assignfrom'] = 'von';
 $string['assignuntil'] = 'bis';
 $string['assignlearninggroup'] = 'Lerngruppe';
+
+//Activities
+$string['explaineditactivities_subjects'] = 'Hier k&ouml;nnen Sie den erstellten Aufgaben Deskriptoren zuordnen.';
+$string['column_setting'] = 'Spalten aus/einblenden';
+$string['niveau_filter'] = "Niveaus filtern";

@@ -461,7 +461,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				*/
 				if($data->scheme == 1 || ($data->scheme != 1 && $data->role == ROLE_STUDENT && $version)) {
 					if($data->showevaluation)
-						$studentCellEvaluation->text = $this->generate_checkbox("datatopics", $topic->id, 'topics', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
+						$studentCellEvaluation->text = $this->generate_checkbox("datatopics", $topic->id, 
+						'topics', $student, ($evaluation == "teacher") ? "student" : "teacher", 
+						$data->scheme, true);
 
 					$studentCell->text = $this->generate_checkbox("datatopics", $topic->id, 'topics', $student, $evaluation, $data->scheme);
 				}
@@ -1170,6 +1172,154 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 		}
 	}
+	public function print_activity_legend(){
+		return html_writer::label(get_string("explaineditactivities_subjects", "block_exacomp"), '').html_writer::empty_tag('br');	
+	}
+	public function print_activity_content($subjects, $modules, $courseid, $colspan){
+		global $COURSE, $PAGE;
+		
+		$table = new html_table;
+		$table->attributes['class'] = 'exabis_comp_comp';
+		$table->attributes['id'] = 'comps';
+		
+		$rows = array();
+		
+		//print heading
+		
+		$row = new html_table_row();
+		$row->attributes['class'] = 'heading r0';
+		
+		$cell = new html_table_cell();
+		$cell->attributes['class'] = 'category catlevel1';
+		$cell->attributes['scope'] = 'col';
+		$cell->text = html_writer::tag('h1', $COURSE->fullname);
+		
+		$row->cells[] = $cell;
+		
+		$cell = new html_table_cell();
+		$cell->attributes['class'] = 'category catlevel1 bottom';
+		$cell->attributes['scope'] = 'col';
+		$cell->colspan = $colspan;
+		$cell->text = html_writer::link('#colsettings', get_string('column_setting', 'block_exacomp'))."&nbsp;&nbsp;"
+			.html_writer::link('#colsettings', get_string('niveau_filter', 'block_exacomp')).'&nbsp;&nbsp; ##file_module_selector###';
+		
+		$row->cells[] = $cell;
+		$rows[] = $row;
+		
+		//print row with list of activities
+		$row = new html_table_row();
+		$cell = new html_table_cell();
+		
+		$row->cells[] = $cell;
+		
+		$modules_printed = array();
+		
+		foreach($modules as $module){
+			$cell = new html_table_cell();
+			$cell->attributes['class'] = 'ec_tableheadwidth';
+			$cell->attributes['module-type'] = $module->modname;
+			$cell->text = html_writer::link(block_exacomp_get_activityurl($module), $module->name);
+			
+			$row->cells[] = $cell;
+		}
+		
+		$rows[] = $row;
+		
+		//print tree
+		foreach($subjects as $subject){
+			$row = new html_table_row();
+			$row->attributes['class'] = 'ec_heading';
+			$cell = new html_table_cell();
+			$cell->colspan = $colspan;
+			$cell->text = html_writer::tag('h4', $subject->title);
+			$row->cells[] = $cell;
+			$rows[] = $row;
+			
+			$this->print_topics_activities($rows, 0, $subject->subs, 0, $modules);
+		}
+		$table->data = $rows;
+	
+		$table_html = html_writer::div(html_writer::table($table), 'grade-report-grader');
+		$div = html_writer::tag("div", html_writer::tag("div", $table_html, array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
+		$div .= html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))));
+		//$table_html .= html_writer::tag("input", "", array("name" => "open_row_groups", "type" => "hidden", "value" => (optional_param('open_row_groups', "", PARAM_TEXT))));
 
+		return html_writer::tag('form', $div, array('id'=>'edit-activities', 'action'=>$PAGE->url.'&action=save', 'method'=>'post'));
+		
+	}
+	public function print_topics_activities(&$rows, $level, $topics, $rowgroup, $modules, $rowgroup_class = '') {
+		$padding = $level * 20 + 12;
+		
+		foreach($topics as $topic) {
+			list($outputid, $outputname) = block_exacomp_get_output_fields($topic);
+
+			$hasSubs = (!empty($topic->subs) || !empty($topic->descriptors));
+			
+			if ($hasSubs) {
+				$rowgroup++;
+				$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$rowgroup.' '.$rowgroup_class;
+				$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$rowgroup.' '.$rowgroup_class;
+			} else {
+				$this_rowgroup_class = $rowgroup_class;
+				$sub_rowgroup_class = '';
+			}
+
+			$topicRow = new html_table_row();
+			$topicRow->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rowgroup_class . ' highlight';
+
+			$outputnameCell = new html_table_cell();
+			$outputnameCell->attributes['class'] = 'rowgroup-arrow';
+			$outputnameCell->style = "padding-left: ".$padding."px";
+			$outputnameCell->text = html_writer::div($outputname,"desctitle");
+			$topicRow->cells[] = $outputnameCell;
+
+			foreach($modules as $module) {
+				$moduleCell = new html_table_cell();
+				$moduleCell->attributes['module-type='] = $module->modname;
+				$moduleCell->text = html_writer::checkbox('topicdata[' . $module->id . '][' . $topic->id . ']', "", (in_array($topic->id, $module->topics))?true:false);
+				
+				$topicRow->cells[] = $moduleCell;
+			}
+
+			$rows[] = $topicRow;
+
+			if (!empty($topic->descriptors)) {
+				$this->print_descriptors_activities($rows, $level+1, $topic->descriptors, $rowgroup, $modules, $sub_rowgroup_class);
+			}
+
+			if (!empty($topic->subs)) {
+				$this->print_topics_activites($rows, $level+1, $topic->subs, $rowgroup, $modules, $sub_rowgroup_class);
+			}
+		}
+	}
+	function print_descriptors_activities(&$rows, $level, $descriptors, $rowgroup, $modules, $rowgroup_class) {
+		global $version, $PAGE, $USER;
+
+		foreach($descriptors as $descriptor) {
+			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor);
+
+			$padding = ($level) * 20 + 4;
+
+			$this_rowgroup_class = $rowgroup_class;
+			
+			$descriptorRow = new html_table_row();
+			$descriptorRow->attributes['class'] = 'exabis_comp_aufgabe ' . $this_rowgroup_class;
+			
+			$titleCell = new html_table_cell();
+			$titleCell->style = "padding-left: ".$padding."px";
+			$titleCell->text = html_writer::div($outputname);
+
+			$descriptorRow->cells[] = $titleCell;
+
+			foreach($modules as $module) {
+				$moduleCell = new html_table_cell();
+				$moduleCell->text = html_writer::checkbox('data[' . $module->id . '][' . $descriptor->id . ']', '', (in_array($descriptor->id, $module->descriptors))?true:false);
+				$descriptorRow->cells[] = $moduleCell;
+			}
+
+			$rows[] = $descriptorRow;
+		}
+	}
+	
 }
 ?>

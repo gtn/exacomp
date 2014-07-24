@@ -68,31 +68,16 @@ echo $OUTPUT->header();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
 /* CONTENT REGION */
-
+if (($action = optional_param("action", "", PARAM_TEXT) )== "save") {
+	block_exacomp_delete_competencies_activities();
+	// DESCRIPTOR DATA
+	block_exacomp_save_competencies_activities(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, 0);
+	// TOPIC DATA
+	block_exacomp_save_competencies_activities(isset($_POST['topicdata']) ? $_POST['topicdata'] : array(), $courseid, 1);
+}
 /*
  * save 
- *     if ($action == "save") {
-		$edited_activities = explode(',', required_param('edited_activities', PARAM_TEXT));
-		$edited_descriptors = explode(',', required_param('edited_descriptors', PARAM_TEXT));
-		$edited_topics = explode(',', required_param('edited_topics', PARAM_TEXT));
-		
-		foreach ($edited_activities as $activityid) {
-			// build the desciptor array
-			$descrarray = array();
-			foreach ($edited_descriptors as $descriptorid) {
-				$descrarray[$descriptorid] = intval(!empty($_POST['data'][$activityid][$descriptorid]));
-			}
-			
-			// build the topic array
-			$topicarray = array();
-			foreach ($edited_topics as $topicid) {
-				$topicarray[$topicid] = intval(!empty($_POST['topicdata'][$activityid][$topicid]));
-			}
-				
-			// update the descriptors for this activity
-			block_exacomp_set_descractivitymm($activityid, $descrarray, $topicarray);
-		}
-		
+ * 	
         $modsetting_arr=array();
         if (!empty($_POST['block_exacomp_activitysetting'])){
 	        foreach ($_POST['block_exacomp_activitysetting'] as $ks=>$vs){
@@ -127,9 +112,49 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $
  */
 
 $subjects = block_exacomp_get_competence_tree($courseid, null, true);
-//var_dump($subjects);
+$modinfo = get_fast_modinfo($COURSE->id);
+$modules = $modinfo->get_cms();
+	
+$output = $PAGE->get_renderer('block_exacomp');
+echo $output->print_activity_legend();
 
-echo "CONTENT";
+$visible_modules = array();
+if($modules){
+	$colspan = (count($modules) + 1);
+	foreach($modules as $mod){
+		if(!$mod->visible){
+			$colspan = ($colspan-1);
+			continue;
+		}
+		
+		$module = block_exacomp_get_coursemodule($mod);
+		
+		//Skip Nachrichtenforum
+        if($module->name == get_string('namenews','mod_forum')){
+        	$colspan=($colspan-1);
+        	continue;
+        }
+        
+		if ($module->modname == 'file') {
+			$hasFileModule = true;
+		}
+		
+		$compsactiv = $DB->get_records('block_exacompcompactiv_mm', array('activityid'=>$module->id, 'eportfolioitem'=>0));
+		
+		$module->descriptors = array();
+		$module->topics = array();
+		
+		foreach($compsactiv as $comp){
+			if($comp->comptype == 0)
+				$module->descriptors[$comp->compid] = $comp->compid;
+			else 	
+				$module->topics[$comp->compid] = $comp->compid;
+		}
+		
+		$visible_modules[] = $module;
+	}
+	echo $output->print_activity_content($subjects, $visible_modules, $courseid, $colspan);
+}
 
 /* END CONTENT REGION */
 

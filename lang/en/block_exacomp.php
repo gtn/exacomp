@@ -180,3 +180,8 @@ $string['assignlearninggroup'] = 'learning group';
 $string['assignteacher'] = 'teacher';
 $string['assignfrom'] = 'from';
 $string['assignuntil'] = 'until';
+
+//Activities
+$string['explaineditactivities_subjects'] = 'Here you can associate tasks with descriptors.';
+$string['column_setting'] = 'hide/display columns';
+$string['niveau_filter'] = "filter levels";

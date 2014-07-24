@@ -1136,3 +1136,47 @@ function block_exacomp_get_courses(){
 	
 	return $exabis_competences_courses;
 }
+function block_exacomp_get_activityurl($activity,$student=false) {
+	global $DB;
+	
+	$mod = $DB->get_record('modules',array("id"=>$activity->module));
+	
+	if($mod->name == "assignment" && !$student)
+		return new moodle_url('/mod/assignment/submissions.php', array('id'=>$activity->id));
+	else return new moodle_url('mod/'.$mod->name.'/view.php', array('id'=>$activity->id));
+}
+function block_exacomp_get_coursemodule($mod) {
+	global $DB;
+	$name = $DB->get_field('modules','name',array("id"=>$mod->module));
+	return get_coursemodule_from_id($name,$mod->id);
+}
+function block_exacomp_save_competencies_activities($data, $courseid, $comptype) {
+	global $USER;
+	foreach($data as $cmoduleKey => $comps){
+		if(!empty($cmoduleKey)){
+			foreach($comps as $compidKey=>$empty){
+				//set activity 
+				block_exacomp_set_compactivity($cmoduleKey, $compidKey, $comptype);
+			}
+		}
+	}
+}
+function block_exacomp_set_compactivity($activityid, $compid, $comptype) {
+	global $DB, $COURSE;
+
+	$cmmod = $DB->get_record('course_modules',array("id"=>$activityid));
+	$modulename = $DB->get_record('modules',array("id"=>$cmmod->module));
+	$instance = get_coursemodule_from_id($modulename->name, $activityid);
+
+	$DB->delete_records('block_exacompcompactiv_mm', array("activityid" => $activityid, "compid" => $compid, "comptype"=>$comptype, "eportfolioitem"=>0));
+	$DB->insert_record('block_exacompcompactiv_mm', array("activityid" => $activityid, "compid" => $compid, "comptype"=>$comptype, "coursetitle"=>$COURSE->shortname, 'activitytitle'=>$instance->name));
+}
+function block_exacomp_delete_competencies_activities(){
+	global $COURSE, $DB;
+	
+	$cmodules = $DB->get_records('course_modules', array('course'=>$COURSE->id));
+	
+	foreach($cmodules as $cm){
+		$DB->delete_records('block_exacompcompactiv_mm', array('activityid'=>$cm->id, 'eportfolioitem'=>0));
+	}
+}
