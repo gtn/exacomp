@@ -352,7 +352,7 @@ function block_exacomp_get_descritors_list($courseid, $onlywithactivitys = 0) {
  * returns all descriptors
  * @param $courseid if course id =0 all possible descriptors are returned
  */
-function block_exacomp_get_descriptors($courseid = 0, $showonlyactivdescriptors) {
+function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors) {
 	global $DB;
 	$course='';
 
@@ -361,7 +361,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showonlyactivdescriptors)
 	.(($courseid>0)?'JOIN {block_exacompcoutopi_mm} topmm ON topmm.topicid=t.id AND topmm.courseid=? ':'')
 	.'JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.topicid=t.id '
 	.'JOIN {block_exacompdescriptors} d ON desctopmm.descrid=d.id '
-	.($showonlyactivdescriptors ? '' : '
+	.($showalldescriptors ? '' : '
 			JOIN {block_exacompcompactiv_mm} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
 			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':'')).')';
 
@@ -377,10 +377,10 @@ function block_exacomp_get_descriptors($courseid = 0, $showonlyactivdescriptors)
  * @param int $subjectid
  * @return associative_array
  */
-function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $showonlyactivdescriptors = false) {
+function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $showalldescriptors = false) {
 	global $DB;
 
-	if(!$showonlyactivdescriptors) $showonlyactivdescriptors = block_exacomp_coursesettings()->show_all_descriptors;
+	if(!$showalldescriptors) $showalldescriptors = block_exacomp_coursesettings()->show_all_descriptors;
 	
 	$allSubjects = block_exacomp_get_subjects($courseid, $subjectid);
 	$allTopics = block_exacomp_get_all_topics($subjectid);
@@ -395,7 +395,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 		if($courseid > 0 && !array_key_exists($topic->id, $courseTopics))
 			continue;
 		
-		if($courseid==0 || block_exacomp_check_activity_association($topic->id, TYPE_TOPIC, $courseid)) {
+		if($courseid==0 || $showalldescriptors || block_exacomp_check_activity_association($topic->id, TYPE_TOPIC, $courseid)) {
 			// found: add it to the subject result, even if no descriptor from the topic is used
 			// find all parent topics
 			$found = true;
@@ -432,7 +432,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 	}
 	//}
 
-	$allDescriptors = block_exacomp_get_descriptors($courseid, $showonlyactivdescriptors);
+	$allDescriptors = block_exacomp_get_descriptors($courseid, $showalldescriptors);
 
 	foreach ($allDescriptors as $descriptor) {
 

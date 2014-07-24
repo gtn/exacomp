@@ -127,6 +127,7 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $
  */
 
 $subjects = block_exacomp_get_competence_tree($courseid, null, true);
+//var_dump($subjects);
 
 echo "CONTENT";
 
