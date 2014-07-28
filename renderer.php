@@ -1200,8 +1200,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$cell->attributes['class'] = 'category catlevel1 bottom';
 		$cell->attributes['scope'] = 'col';
 		$cell->colspan = $colspan;
-		$cell->text = html_writer::link('#colsettings', get_string('column_setting', 'block_exacomp'))."&nbsp;&nbsp;"
-			.html_writer::link('#colsettings', get_string('niveau_filter', 'block_exacomp')).'&nbsp;&nbsp; ##file_module_selector###';
+		//$cell->text = html_writer::link('#colsettings', get_string('column_setting', 'block_exacomp'))."&nbsp;&nbsp;"
+			//.html_writer::link('#colsettings', get_string('niveau_filter', 'block_exacomp')).'&nbsp;&nbsp; ##file_module_selector###';
 		
 		$row->cells[] = $cell;
 		$rows[] = $row;

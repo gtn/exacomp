@@ -139,19 +139,25 @@ if($modules){
 			$hasFileModule = true;
 		}
 		
-		$compsactiv = $DB->get_records('block_exacompcompactiv_mm', array('activityid'=>$module->id, 'eportfolioitem'=>0));
+		$supported_modules = block_exacomp_get_supported_modules();
 		
-		$module->descriptors = array();
-		$module->topics = array();
-		
-		foreach($compsactiv as $comp){
-			if($comp->comptype == 0)
-				$module->descriptors[$comp->compid] = $comp->compid;
-			else 	
-				$module->topics[$comp->compid] = $comp->compid;
+		$module_type = $DB->get_record('course_modules', array('id'=>$module->id));
+
+		if(in_array($module_type->module, $supported_modules)){
+			$compsactiv = $DB->get_records('block_exacompcompactiv_mm', array('activityid'=>$module->id, 'eportfolioitem'=>0));
+			
+			$module->descriptors = array();
+			$module->topics = array();
+			
+			foreach($compsactiv as $comp){
+				if($comp->comptype == 0)
+					$module->descriptors[$comp->compid] = $comp->compid;
+				else 	
+					$module->topics[$comp->compid] = $comp->compid;
+			}
+			
+			$visible_modules[] = $module;
 		}
-		
-		$visible_modules[] = $module;
 	}
 	echo $output->print_activity_content($subjects, $visible_modules, $courseid, $colspan);
 }
