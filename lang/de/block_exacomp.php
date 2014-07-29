@@ -52,6 +52,7 @@ $string['tab_learning_agenda'] = 'Lernagenda';
 $string['tab_badges'] = 'Meine Auszeichnungen';
 $string['tab_competence_profile'] = 'Kompetenzprofil';
 $string['tab_help'] = 'Hilfe';
+$string['tab_skillmanagement'] = 'Erstelle deine Kompetenzen';
 
 //Block Settings
 $string['settings_xmlserverurl'] = 'Server-URL';
@@ -66,6 +67,8 @@ $string['settings_testlimit'] = 'Testlimit';
 $string['settings_testlimit_description'] = 'Dieser Prozentwert muss erreicht werden, damit der Test als bestanden gilt';
 $string['settings_usebadges'] = 'Badges verwenden';
 $string['settings_usebadges_description'] = 'Anhaken um Badges Kompetenzen zu zuteilen';
+$string['settings_skillmanagement'] = 'Skillmanagement verwenden';
+$string['settings_skillmanagement_description'] = 'Anhaken um Skillmanagement-Tool anstelle von Import verwenden';
 
 //Learning agenda
 $string['LA_MON'] = "Mo";

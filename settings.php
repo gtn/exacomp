@@ -19,3 +19,6 @@ $settings->add(new admin_setting_configtext('exacomp/testlimit', get_string('set
 	
 $settings->add(new admin_setting_configcheckbox('exacomp/usebadges', get_string('settings_usebadges', 'block_exacomp'), 
 		get_string('settings_usebadges_description', 'block_exacomp'), 0, 1));
+		
+$settings->add(new admin_setting_configcheckbox('exacomp/skillmanagement', get_string('settings_skillmanagement', 'block_exacomp'),
+		get_string('settings_skillmanagement_description', 'block_exacomp'), 0, 1));
