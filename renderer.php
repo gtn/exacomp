@@ -499,15 +499,23 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$cell = new html_table_cell();
 				
 				if(isset($example->descriptors[$columns[$i]->descriptor])){
-					$cell->text = "X";
-					if(isset($exampleInfo->teacher_evaluation) && $exampleInfo->teacher_evaluation>0)
+					if(isset($exampleInfo->teacher_evaluation) && $exampleInfo->teacher_evaluation>0){
 						$cell->attributes['class'] = 'exabis_comp_teacher_assigned';
-					elseif(isset($exampleInfo->student_evaluation) && $exampleInfo->student_evaluation>0)
+						$cell->text = '';
+						if(isset($exampleInfo->student_evaluation) && $exampleInfo->student_evaluation>0)
+							$cell->text = " S ";
+						$cell->text = " L: ".$exampleInfo->teacher_evaluation;
+					}
+					elseif(isset($exampleInfo->student_evaluation) && $exampleInfo->student_evaluation>0){
 						$cell->attributes['class'] = 'exabis_comp_student_assigned';
-					elseif(isset($exampleInfo->starttime) && time() > $exampleInfo->starttime)
+						$cell->text = " S";
+					}elseif(isset($exampleInfo->starttime) && time() > $exampleInfo->starttime){
 						$cell->attributes['class'] = 'exabis_comp_student_started';
-					else 	
+						$cell->text = " X";
+					}else{ 	
 						$cell->attributes['class'] = 'exabis_comp_student_not';
+						$cell->text = " X";
+					}
 				}
 					
 				$row->cells[] = $cell;
