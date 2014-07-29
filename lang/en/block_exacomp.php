@@ -156,6 +156,11 @@ $string['legend_activities'] = 'activities';
 $string['legend_eportfolio'] = 'ePortfolio';
 $string['legend_notask'] = 'no moodle-task/quiz has been submitted for this descriptor';
 $string['legend_upload'] = 'Upload your own task/example';
+$string['alltopics'] = 'All topics';
+$string['choosesubject'] = "Choose subject: ";
+$string['choosetopic'] = "Choose topic";
+$string['choosestudent'] = "Choose student: ";
+$string['selectall'] = 'Select all';
 
 //Icons
 $string['usersubmitted'] = ' has submitted the following tasks:';

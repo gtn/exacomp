@@ -55,6 +55,57 @@ function block_exacomp_init_js_css(){
 
 }
 
+
+/**
+ * Gets one particular subject
+ * @param int $subjectid
+ */
+function block_exacomp_get_subject_by_id($subjectid) {
+	global $DB;
+	return $DB->get_records(DB_SUBJECTS,array("id" => $subjectid),'','id, title, numb, \'subject\' as tabletype');
+}
+/**
+ * Gets all subjects that are in use in a particular course. The method also checks 
+ * @param unknown_type $courseid
+ * @return multitype:
+ */
+function block_exacomp_get_subjects_by_course($courseid) {
+	global $DB;
+	
+	return $DB->get_records_sql('
+			SELECT s.id, s.title, s.stid, s.numb, \'subject\' as tabletype
+			FROM {'.DB_SUBJECTS.'} s
+			JOIN {'.DB_TOPICS.'} t ON t.subjid = s.id
+			JOIN {'.DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?
+			'.(block_exacomp_get_settings_by_course($courseid)->show_all_descriptors ? '' : '
+					-- only show active ones
+					JOIN {'.DB_DESCTOPICS.'} topmm ON topmm.topicid=t.id
+					JOIN {'.DB_DESCRIPTORS.'} d ON topmm.descrid=d.id
+					JOIN {'.DB_COMPETENCE_ACTIVITY.'} ca ON (d.id=ca.compid AND ca.comptype = '.TYPE_DESCRIPTOR.') OR (t.id=ca.compid AND ca.comptype = '.TYPE_TOPIC.')
+					JOIN {course_modules} a ON ca.activityid=a.id AND a.course=ct.courseid
+					').'
+			GROUP BY id
+			ORDER BY id, title
+			', array($courseid));
+}
+function block_exacomp_get_all_subjects() {
+	global $DB;
+	return $DB->get_records(DB_SUBJECTS,array(),'','id, title, numb, \'subject\' as tabletype');
+}
+/**
+ * This method is only used in the LIS version
+ * @param int $courseid
+ */
+function block_exacomp_get_schooltypes_by_course($courseid) {
+	global $DB;
+	return $DB->get_records_sql_menu('
+			SELECT s.id, s.title
+			FROM {block_exacompschooltypes} s
+			JOIN {block_exacompmdltype_mm} m ON m.typeid = s.id AND m.courseid = ?
+			GROUP BY s.id
+			ORDER BY s.title
+			', array($courseid));
+}
 /**
  * Gets all subjects that are used in a particular course.
  *
@@ -65,46 +116,76 @@ function block_exacomp_init_js_css(){
 function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 	global $DB;
 
-	$sql = 'SELECT s.id, s.title, s.numb, \'subject\' as tabletype
-	FROM {'.DB_SUBJECTS.'} s
-	JOIN {'.DB_TOPICS.'} t ON t.subjid = s.id ';
+	if($courseid == 0) {
+		$sql = 'SELECT s.id, s.title, s.numb, \'subject\' as tabletype
+		FROM {'.DB_SUBJECTS.'} s
+		JOIN {'.DB_TOPICS.'} t ON t.subjid = s.id
+		GROUP BY s.id, s.title, s.numb, s.stid
+		ORDER BY s.stid, s.title
+		';
 
-	if($courseid>0)
-		$sql .= 'JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ';
+		return $DB->get_records_sql($sql);
+	} else if($subjectid != null) {
+		$sql = 'SELECT s.id, s.title, s.numb, \'subject\' as tabletype
+		FROM {'.DB_SUBJECTS.'} s
+		JOIN {'.DB_TOPICS.'} t ON t.subjid = s.id
+		WHERE s.id = ?
+		GROUP BY s.id, s.title, s.numb, s.stid
+		ORDER BY s.stid, s.title';
 
-	$sql .=	 ($subjectid == null ? '' : '
-			-- only show active ones
-			WHERE s.id = ?
-			').'
-			GROUP BY s.id, s.title, s.numb, s.stid
-			ORDER BY s.stid, s.title
-			';
+		return $DB->get_records_sql($sql,$subjectid);
+	}
 
-	$subjects = $DB->get_records_sql($sql, array($courseid,$subjectid));
+	$subjects = $DB->get_records_sql('
+			SELECT s.id, s.title, s.stid, s.numb, \'subject\' as tabletype
+			FROM {'.DB_SUBJECTS.'} s
+			JOIN {'.DB_TOPICS.'} t ON t.subjid = s.id
+			JOIN {'.DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?
+			'.(block_exacomp_get_settings_by_course($courseid)->show_all_descriptors ? '' : '
+					-- only show active ones
+					JOIN {'.DB_DESCTOPICS.'} topmm ON topmm.topicid=t.id
+					JOIN {'.DB_DESCRIPTORS.'} d ON topmm.descrid=d.id
+					JOIN {'.DB_COMPETENCE_ACTIVITY.'} ca ON (d.id=ca.compid AND ca.comptype = '.TYPE_DESCRIPTOR.') OR (t.id=ca.compid AND ca.comptype = '.TYPE_TOPIC.')
+					JOIN {course_modules} a ON ca.activityid=a.id AND a.course=ct.courseid
+					').'
+			GROUP BY id
+			ORDER BY id, title
+			', array($courseid));
 
 	return $subjects;
 }
 /**
- *
- * returns all topics
- * @param $courseid if course id = 0 all available topics are returned
+ * returns all topics from a course
+ * @param int $courseid 
  */
-function block_exacomp_get_topics($courseid=0) {
-	global $DB;
-
-	$topics = $DB->get_records_sql('
-			SELECT t.id, t.title, t.parentid, t.subjid, \'topic\' as tabletype, t.catid, cat.title as cat
-			FROM {'.DB_TOPICS.'} t '
-			. (($courseid>0)?'JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' : ' ')
-			. 'LEFT JOIN {'.DB_CATEGORIES.'} cat ON t.catid = cat.id
-			',array($courseid));
-
-	return $topics;
+function block_exacomp_get_topics_by_course($courseid) {
+	return block_exacomp_get_topics_by_subject($courseid);
 }
 /**
- * Gets all topics, or all topics from a particular subject if given
- *
+ * Gets all topics from a particular subject
+ * @param int $courseid
  * @param int $subjectid
+ */
+function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0) {
+	global $DB;
+	return $DB->get_records_sql('
+			SELECT t.id, t.title, t.catid, t.ataxonomie, t.btaxonomie, t.ctaxonomie, t.requirement, t.benefit, t.knowledgecheck,cat.title as cattitle
+			FROM {'.DB_TOPICS.'} t
+			JOIN {'.DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.(($subjectid > 0) ? 'AND t.subjid = ? ': '') 
+			.(block_exacomp_get_settings_by_course($courseid)->show_all_descriptors ? '' : '
+					-- only show active ones
+					JOIN {'.DB_DESCTOPICS.'} topmm ON topmm.topicid=t.id
+					JOIN {'.DB_DESCRIPTORS.'} d ON topmm.descrid=d.id
+					JOIN {'.DB_COMPETENCE_ACTIVITY.'} da ON (d.id=da.compid AND da.comptype = '.TYPE_DESCRIPTOR.') OR (t.id=da.compid AND da.comptype = '.TYPE_TOPIC.')
+					JOIN {course_modules} a ON da.activityid=a.id AND a.course=ct.courseid
+					').'
+			LEFT JOIN {'.DB_CATEGORIES.'} cat ON t.catid = cat.id
+			GROUP BY t.id
+			ORDER BY t.catid, t.title
+			', array($courseid, $subjectid));
+}
+/**
+ * Gets all topics
  */
 function block_exacomp_get_all_topics($subjectid = null) {
 	global $DB;
@@ -120,6 +201,19 @@ function block_exacomp_get_all_topics($subjectid = null) {
 					').'
 			ORDER BY t.sorting
 			', array($subjectid));
+
+	return $topics;
+}
+function block_exacomp_get_topic_by_id($topicid) {
+	global $DB;
+
+	$topics = $DB->get_records_sql('
+			SELECT t.id, t.title, t.parentid, t.subjid, \'topic\' as tabletype, t.catid, cat.title as cat
+			FROM {'.DB_TOPICS.'} t 
+			LEFT JOIN {'.DB_CATEGORIES.'} cat ON t.catid = cat.id
+			WHERE t.id = ?
+			ORDER BY t.sorting
+			', array($topicid));
 
 	return $topics;
 }
@@ -369,7 +463,6 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors) {
 
 	return $descriptors;
 }
-
 /**
  * Gets an associative array that is used to display the whole hierarchie of subjects, topics and competencies within a course
  *
@@ -377,16 +470,29 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors) {
  * @param int $subjectid
  * @return associative_array
  */
-function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $showalldescriptors = false) {
+function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $showalldescriptors = false, $topicid = null) {
 	global $DB;
 
-	if(!$showalldescriptors) $showalldescriptors = block_exacomp_coursesettings()->show_all_descriptors;
-	
-	$allSubjects = block_exacomp_get_subjects($courseid, $subjectid);
-	$allTopics = block_exacomp_get_all_topics($subjectid);
-	if($courseid > 0)
-		$courseTopics = $DB->get_records(DB_COURSETOPICS,array("courseid" => $courseid),'','topicid');
+	if(!$showalldescriptors) $showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
+	//$allSubjects = block_exacomp_get_subjects($courseid, $subjectid);
+	$allSubjects = ($courseid == 0) ? block_exacomp_get_all_subjects() :
+	($subjectid != null) ? block_exacomp_get_subject_by_id($subjectid) : block_exacomp_get_subjects_by_course($courseid);
+	if($courseid == 0)
+		$allSubjects = block_exacomp_get_all_subjects();
+	elseif($subjectid != null)
+	$allSubjects = block_exacomp_get_subject_by_id($subjectid);
+	else
+		$allSubjects = block_exacomp_get_subjects_by_course($courseid);
+
+	$allTopics = block_exacomp_get_all_topics($subjectid);
+	if($courseid > 0) {
+		if($topicid == LIS_SHOW_ALL_TOPICS)
+			$courseTopics = block_exacomp_get_topics_by_subject($courseid, $subjectid);
+		//$courseTopics = $DB->get_records(DB_COURSETOPICS,array("courseid" => $courseid),'','topicid');
+		else
+			$courseTopics = ($topicid == null) ? $DB->get_records(DB_COURSETOPICS,array("courseid" => $courseid),'','topicid') : block_exacomp_get_topic_by_id($topicid);
+	}
 	$subjects = array();
 	//subjectid is not null iff lis version is used
 	//if($subjectid != null) {
@@ -394,7 +500,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 		//topic must be coursetopic if courseid <> 0
 		if($courseid > 0 && !array_key_exists($topic->id, $courseTopics))
 			continue;
-		
+
 		if($courseid==0 || $showalldescriptors || block_exacomp_check_activity_association($topic->id, TYPE_TOPIC, $courseid)) {
 			// found: add it to the subject result, even if no descriptor from the topic is used
 			// find all parent topics
@@ -455,6 +561,33 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 	}
 
 	return $subjects;
+}
+function block_exacomp_init_lis_data($courseid, $subjectid, $topicid) {
+
+	$subjects = block_exacomp_get_subjects_by_course($courseid);
+	if (isset($subjects[$subjectid])) {
+		$selectedSubject = $subjects[$subjectid];
+	} elseif ($subjects) {
+		$selectedSubject = reset($subjects);
+	}
+
+	$topics = block_exacomp_get_topics_by_subject($courseid,$selectedSubject->id);
+	if (isset($topics[$topicid])) {
+		$selectedTopic = $topics[$topicid];
+	} elseif ($topics) {
+		$selectedTopic = reset($topics);
+	}
+
+	$defaultTopic = new stdClass();
+	$defaultTopic->id=LIS_SHOW_ALL_TOPICS;
+	$defaultTopic->title= get_string('alltopics','block_exacomp');
+
+	$topics = array_merge(array($defaultTopic),$topics);
+
+	if($topicid == LIS_SHOW_ALL_TOPICS)
+		$selectedTopic = $defaultTopic;
+
+	return array($subjects, $topics, $selectedSubject, $selectedTopic);
 }
 
 function block_exacomp_get_students_by_course($courseid) {
@@ -1125,7 +1258,7 @@ function block_exacomp_set_coursetopics($courseid, $values) {
 	}
 }
 function block_exacomp_get_active_topics($tree, $courseid){
-	$topics = block_exacomp_get_topics($courseid);
+	$topics = block_exacomp_get_topics_by_course($courseid);
 	foreach($tree as $subject){
 		block_exacomp_get_active_topics_rec($subject->subs, $topics);
 	}

@@ -1,19 +1,19 @@
-.exabis_competencies_lis table.exabis_comp_top, .exabis_competencies_lis table.exabis_comp_comp, .exabis_competencies_lis .exabis_comp_info {
+table.exabis_comp_top, .exabis_competencies_lis table.exabis_comp_comp, .exabis_comp_info {
 	width: 100%;
 	border: 1px solid #E3DFD4;
 	border-collapse: collapse;
 }
 
-.exabis_competencies_lis .exabis_comp_info {
+.exabis_comp_info {
 	margin-bottom: 20px;
 	background-color: #efefef;
 }
 
-.exabis_competencies_lis table.exabis_comp_top td {
+table.exabis_comp_top td {
 	width: 50px;
 }
 
-.exabis_competencies_lis table.exabis_comp_top td, .exabis_competencies_lis table.exabis_comp_comp td, .exabis_competencies_lis .exabis_comp_info td {
+table.exabis_comp_top td, .exabis_competencies_lis table.exabis_comp_comp td, .exabis_competencies_lis .exabis_comp_info td {
 	padding: 0.5em;
 	border: 1px solid #cacaca;
     border-collapse: collapse;
@@ -29,7 +29,7 @@
 	color: #666666;
 }
 
-.exabis_competencies_lis table.exabis_comp_comp {
+table.exabis_comp_comp {
 	font-size: 0.85em;
 }
 

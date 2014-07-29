@@ -27,7 +27,7 @@
 
 require_once dirname(__FILE__)."/inc.php";
 
-global $DB, $OUTPUT, $PAGE;
+global $DB, $OUTPUT, $PAGE, $USER, $version;
 
 $courseid = required_param('courseid', PARAM_INT);
 
@@ -58,9 +58,17 @@ $pagenode->make_active();
 echo $OUTPUT->header();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
+// CHECK TEACHER
+$isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
 /* CONTENT REGION */
+$subjectid = optional_param('subjectid', 0, PARAM_INT);
+$studentid = optional_param("studentid", 0, PARAM_INT);
 
-echo "CONTENT";
+if(!$isTeacher) $studentid = $USER->id;
+
+$subjects = ($version) ? block_exacomp_get_schooltypes_by_course($courseid) : block_exacomp_get_subjects_by_course($courseid);
+if($subjects && $subjectid == 0)
+	$subjectid = key($subjects);
 
 /* END CONTENT REGION */
 

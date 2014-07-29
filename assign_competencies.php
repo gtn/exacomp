@@ -27,7 +27,7 @@
 
 require_once dirname(__FILE__)."/inc.php";
 
-global $DB, $OUTPUT, $PAGE, $USER;
+global $DB, $OUTPUT, $PAGE, $USER, $version;
 
 $courseid = required_param('courseid', PARAM_INT);
 
@@ -79,13 +79,25 @@ $students = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : arr
 foreach($students as $student)
 	block_exacomp_get_user_information_by_course($student, $courseid);
 
-$subjects = block_exacomp_get_competence_tree($courseid);
 $output = $PAGE->get_renderer('block_exacomp');
-// PRINT LEGEND
-$showevaluation = optional_param("showevaluation", false, PARAM_BOOL);
-echo $output->print_student_evaluation($showevaluation);
+$showevaluation = ($version) ? true : optional_param("showevaluation", false, PARAM_BOOL);
+if(!$version) echo $output->print_student_evaluation($showevaluation);
+else {
+	/* LIS */
+	list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_lis_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', 0, PARAM_INT));
+	echo $output->print_lis_dropdowns($subjects, $topics, $selectedSubject->id, $selectedTopic->id);
+	
+	if($selectedTopic->id != LIS_SHOW_ALL_TOPICS && $isTeacher)
+		include 'assign_competencies_lis_metadata.php';
+	else if($selectedTopic->id != LIS_SHOW_ALL_TOPICS && !$isTeacher)
+		include 'assign_competencies_lis_metadata_student.php';
+	
+	$PAGE->set_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid,"topicid"=>$selectedTopic->id,"subjectid"=>$selectedSubject->id));
+}
 echo $output->print_overview_legend($isTeacher);
 echo $output->print_column_selector(count($students));
+
+$subjects = block_exacomp_get_competence_tree($courseid,$selectedSubject->id,false,$selectedTopic->id);
 echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, (has_capability('block/exacomp:teacher', $context)) ? ROLE_TEACHER : ROLE_STUDENT, block_exacomp_get_grading_scheme($courseid));
 /* END CONTENT REGION */
 

@@ -326,6 +326,28 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content = html_writer::tag("div", html_writer::table($table), array("id"=>"exabis_competences_block"));
 		return $content;
 	}
+	public function print_lis_dropdowns($subjects, $topics, $selectedSubject, $selectedTopic) {
+		global $PAGE;
+		$content = get_string("choosesubject", "block_exacomp");
+		$options = array();
+		foreach($subjects as $subject)
+			$options[$subject->id] = $subject->title;
+	
+		$content .= html_writer::select($options, "lis_subjects",$selectedSubject, false,
+				array("onchange" => "document.location.href='".$PAGE->url."&subjectid='+this.value;"));
+	
+		$content .= html_writer::empty_tag("br");
+	
+		$content .= get_string("choosetopic", "block_exacomp");
+		$options = array();
+		foreach($topics as $topic)
+			$options[$topic->id] = $topic->cattitle . ": " . $topic->title;
+		$content .= html_writer::select($options, "lis_topics", $selectedTopic, false,
+				array("onchange" => "document.location.href='".$PAGE->url."&subjectid=".$selectedSubject."&topicid='+this.value;"));
+	
+		return $content;
+	}
+	
 	public function print_competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1) {
 		global $PAGE;
 
@@ -394,7 +416,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					'role' => $role,
 					'scheme' => $scheme,
 					'cm_mm' => block_exacomp_get_course_module_association($courseid),
-					'course_mods' => get_fast_modinfo($courseid)->get_cms()
+					'course_mods' => get_fast_modinfo($courseid)->get_cms(),
+					'selected_topicid' => null
 			);
 			$this->print_topics($rows, 0, $subject->subs, $data, $students);
 			$table->data = $rows;
@@ -514,7 +537,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
 
 		foreach($descriptors as $descriptor) {
-			$checkboxname = ($version) ? "dataexamples" : "data";
+			$checkboxname = "data";
 			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor);
 			$studentsCount = 0;
 

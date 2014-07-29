@@ -178,6 +178,11 @@ $string['legend_activities'] = 'Aktivit&auml;ten';
 $string['legend_eportfolio'] = 'ePortfolio';
 $string['legend_notask'] = 'Keine Aktivit&auml;t/Quiz f&uuml;r diese Kompetenz abgegeben';
 $string['legend_upload'] = 'Eigenes Beispiel hochladen';
+$string['alltopics'] = 'Alle Teilbereiche';
+$string['choosesubject'] = "Fach auswählen: ";
+$string['choosetopic'] = "Teilkompetenzbereich/Leitidee auswählen";
+$string['choosestudent'] = "Schüler auswählen: ";
+$string['selectall'] = 'Alle auswählen';
 
 //Icons
 $string['usersubmitted'] = ' hat folgende Aktivit&auml;ten abgegeben:';
