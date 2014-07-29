@@ -341,11 +341,298 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content .= get_string("choosetopic", "block_exacomp");
 		$options = array();
 		foreach($topics as $topic)
-			$options[$topic->id] = $topic->cattitle . ": " . $topic->title;
+			$options[$topic->id] = (isset($topic->cattitle)?$topic->cattitle.": " :" ")  . $topic->title;
 		$content .= html_writer::select($options, "lis_topics", $selectedTopic, false,
 				array("onchange" => "document.location.href='".$PAGE->url."&subjectid=".$selectedSubject."&topicid='+this.value;"));
 	
 		return $content;
+	}
+	public function print_competence_overview_LIS_student_topics($subs, &$row, &$columns, &$column_count, $scheme){
+		global $USER, $COURSE;
+		foreach($subs as $topic){
+			if(isset($topic->subs))
+				print_competence_overview_LIS_student_topics($topic->subs);
+			
+			if(isset($topic->descriptors)){
+				foreach($topic->descriptors as $descriptor){
+					$cell = new html_table_cell();
+					$cell->attributes['class'] = 'exabis_comp_top_student';
+					$cell->attributes['title'] = $descriptor->title;
+					$cell->text = $columns[$column_count].html_writer::empty_tag('br');
+					
+					$columns[$column_count] = new stdClass();
+					$columns[$column_count]->descriptor = $descriptor->id;
+					
+					if($scheme == 1)
+						$cell->text .= "L:".$this->generate_checkbox('data', $descriptor->id, 'competencies', $USER, "teacher", $scheme, true)
+							.html_writer::empty_tag('br')
+							."S:".$this->generate_checkbox('data', $descriptor->id, 'competencies', $USER, "student", $scheme);
+					else 
+						$cell->text .= 'L:'.$this->generate_select('data', $descriptor->id, 'competencies', $USER, "teacher", $scheme, true)
+							.html_writer::empty_tag('br')
+							."S:".$this->generate_select('data', $descriptor->id, 'competencies', $USER,"student", $scheme, true);;
+						
+					$activities = block_exacomp_get_activities($descriptor->id, $COURSE->id);
+					if($activities && $stdicon = block_exacomp_get_icon_for_user($activities, $USER)){
+						$cell->text .= html_writer::empty_tag('br')
+							.html_writer::tag('span', $stdicon->img, array('title'=>$stdicon->text, 'class'=>'exabis-tooltip'));
+					}
+					
+					$row->cells[] = $cell;
+					$column_count++;
+				}
+			}
+		}
+	}
+	public function print_competence_overview_LIS_student($subjects, $courseid, $showevaluation, $scheme, $examples){
+		global $USER, $DB, $PAGE, $COURSE;
+		
+		$columns = array('01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15');
+		
+		$table = new html_table();
+		$table->attributes['class'] = 'exabis_comp_comp';
+		$rows = array();
+		$row = new html_table_row();
+		$row->attributes['class'] = 'highlight';
+		
+		$cell = new html_table_cell();
+		$cell->colspan = 4;
+		$cell->text = html_writer::tag('h1', 'Teilkompetenzen', array('style'=>'float:right;'));
+		
+		$row->cells[] = $cell;
+		
+		$column_count = 0;
+		//print header
+		foreach($subjects as $subject){
+			$this->print_competence_overview_LIS_student_topics($subject->subs, $row, $columns, $column_count, $scheme);
+		}
+		$rows[] = $row;
+		
+		//print subheader
+		$row = new html_table_row();
+		$cell = new html_table_cell();
+		$cell->text = html_writer::tag('b', 'Lernmaterialien');
+		$row->cells[] = $cell;
+		
+		$cell = new html_table_cell();
+		$row->cells[] = $cell;
+		
+		$cell = new html_table_cell();
+		$cell->text = 'In Arbeit';
+		$row->cells[] = $cell;
+		
+		$cell = new html_table_cell();
+		$cell->text = 'abgeschlossen';
+		$row->cells[] = $cell;
+		
+		$cell = new html_table_cell();
+		$cell->colspan = $column_count;
+		$row->cells[] = $cell;
+		
+		$rows[] = $row;
+		
+		//print examples
+		foreach($examples as $example){
+			$row = new html_table_row();
+			$cell = new html_table_cell();
+			$cell->text = $example->title;
+			
+			$img = html_writer::img('pix/i_11x11.png', 'Beispiel');
+			if(isset($example->task))
+				$cell->text .= html_writer::link($example->task, $img, array('target'=>'_blank'));
+			elseif(isset($example->externalurl))
+				$cell->text .= html_writer::link($example->externalurl, $img);
+			
+			$row->cells[] = $cell;
+			
+			$cell = new html_table_cell();
+			$cell->text = (isset($example->tax))?$example->tax:'';
+			
+			$row->cells[] = $cell;
+			
+			$exampleInfo = $DB->get_record(DB_EXAMPLEEVAL, array("exampleid" => $example->id, "studentid" => $USER->id, "courseid" => $COURSE->id));
+			
+			$cell = new html_table_cell();
+			$cell->text = html_writer::img('pix/subjects_topics.gif', "edit", array('onclick'=>'AssignVisibility('.$example->id."2".')', 'style'=>'cursor:pointer;'));
+			
+			$dates = (isset($exampleInfo->starttime) && isset($exampleInfo->endtime))?date("d.m.Y", $exampleInfo->starttime)
+				." - ".date("d.m.Y", $exampleInfo->endtime):"";
+			$div_1 = html_writer::div($dates, '', array('id'=>'exabis_assign_student_data'.$example->id."2"));
+			
+			$cell->text .= $div_1;
+			
+			$content = get_string('assignfrom','block_exacomp');
+			$content .= ' '.html_writer::empty_tag('input', array('class' => 'datepicker', 'type' => 'text', 'name' => 'dataexamples[' . $example->id . '][' . $USER->id . '][starttime]', 'readonly' => 'readonly',
+					'value' => (isset($exampleInfo->starttime) ? date("Y-m-d",$exampleInfo->starttime) : null)));
+			$content .= ' '.html_writer::link(new moodle_url($PAGE->url, array('exampleid'=>$example->id, 'deletestart'=>1)), 
+				html_writer::img('pix/x_11x11.png', 'delete'));
+			$content .= html_writer::empty_tag('br');
+			$content .= get_string('assignuntil','block_exacomp');
+			$content .= ' '.html_writer::empty_tag('input', array('class' => 'datepicker', 'type' => 'text', 'name' => 'dataexamples[' . $example->id . '][' . $USER->id . '][endtime]', 'readonly' => 'readonly',
+					'value' => (isset($exampleInfo->endtime) ? date("Y-m-d",$exampleInfo->endtime) : null)));
+			$content .= ' '.html_writer::link(new moodle_url($PAGE->url, array('exampleid'=>$example->id, 'deleteend'=>1)), 
+				html_writer::img('pix/x_11x11.png', 'delete'));
+				
+			$div_2 = html_writer::div($content, 'exabis_assign_student', array('id'=>'exabis_assign_student'.$example->id."2"));
+			$cell->text .= $div_2;
+			
+			$row->cells[] = $cell;
+			
+			$cell = new html_table_cell();
+			$options = array();
+			$options['self'] = get_string('assignmyself','block_exacomp');
+			$options['studypartner'] = get_string('assignlearningpartner','block_exacomp');
+			$options['studygroup'] = get_string('assignlearninggroup','block_exacomp');
+			$options['teacher'] = get_string('assignteacher','block_exacomp');
+
+			$cell->text = html_writer::img('pix/subjects_topics.gif', 'edit', array('onclick'=>'AssignVisibility('.$example->id."1".')', 'style'=>'cursor:pointer;'));
+			
+			$content = $this->generate_checkbox('dataexamples', $example->id, 'examples', $USER, "student", $scheme)
+				. html_writer::select($options, 'dataexamples[' . $example->id . '][' . $USER->id . '][studypartner]', (isset($exampleInfo->studypartner) ? $exampleInfo->studypartner : null), false);
+			
+			$div_2 = html_writer::div($content, 'exabis_assign_student', array('id'=>'exabis_assign_student'.$example->id."1"));
+			$cell->text .= $div_2;
+			
+			$row->cells[] = $cell;
+			
+			for($i=0; $i<$column_count; $i++){
+				$cell = new html_table_cell();
+				
+				if(isset($example->descriptors[$columns[$i]->descriptor])){
+					$cell->text = "X";
+					if(isset($exampleInfo->teacher_evaluation) && $exampleInfo->teacher_evaluation>0)
+						$cell->attributes['class'] = 'exabis_comp_teacher_assigned';
+					elseif(isset($exampleInfo->student_evaluation) && $exampleInfo->student_evaluation>0)
+						$cell->attributes['class'] = 'exabis_comp_student_assigned';
+					elseif(isset($exampleInfo->starttime) && time() > $exampleInfo->starttime)
+						$cell->attributes['class'] = 'exabis_comp_student_started';
+					else 	
+						$cell->attributes['class'] = 'exabis_comp_student_not';
+				}
+					
+				$row->cells[] = $cell;
+				
+			}
+			$rows[] = $row;
+		}
+		
+		
+		$table->data = $rows;
+		
+		$submit = html_writer::empty_tag('input', array('name'=>'btn_submit', 'type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp')));
+		
+		$script_content = 'function AssignVisibility(id)
+							{
+								if(document.getElementById("exabis_assign_student"+id).style.display!="inherit"){
+									document.getElementById("exabis_assign_student"+id).style.display = "inherit";
+									document.getElementById("exabis_assign_student_data"+id).style.display ="none";
+								}else {
+									document.getElementById("exabis_assign_student"+id).style.display = "none";
+									document.getElementById("exabis_assign_student_data"+id).style.display ="inherit";
+								}
+
+							}';
+		$script = html_writer::tag('script', $script_content, array('type'=>'text/javascript'));
+		$innerdiv = html_writer::div($script.html_writer::table($table).$submit, 'exabis_comp_comp_table');
+		$div = html_writer::div($innerdiv, "exabis_competencies_lis", array("id"=>"exabis_competences_block"));
+		return html_writer::tag('form', $div, array('id'=>'assign-competencies', 'action'=>new moodle_url($PAGE->url, array('courseid'=>$courseid, 'action'=>'save')), 'method'=>'post'));
+		//new view for LIS students
+			/*
+				
+				
+			<?php
+			<?php 
+			
+
+			
+				
+
+				//datepicker l�schbar
+				
+				if($example_del == $example->id && $deletestart == 1){
+					$examplesEvaluationData[$USER->id]->starttime=null;
+				}
+				if($example_del == $example->id && $deleteend == 1) $examplesEvaluationData[$USER->id]->endtime=null;
+					
+
+				if($teacher_evaluation)
+					$class = "exabis_comp_teacher_assigned";
+				else if($student_evaluation)
+					$class = "exabis_comp_student_assigned";
+				else if(isset($examplesEvaluationData[$USER->id]->starttime) && time() > $examplesEvaluationData[$USER->id]->starttime)
+					$class = "exabis_comp_student_started";
+				else
+					$class = "exabis_comp_student_not";
+
+				?>
+			<tr>
+				<td>
+					<!-- example task  --> <?php echo $example->title; $img = '<img src="pix/i_11x11.png" alt="Beispiel" />';?>
+					<?php if(isset($example->task)){?> <a
+					href="<?php echo $example->task?>" target="_blank"> <?php echo $img?>
+				</a> <!--  example externurl --> <?php } elseif(isset($example->externalurl)){?>
+					<a href="<?php echo $example->externalurl?>" target="_blank"> <?php echo $img?>
+				</a> <!-- else einfach ausgeben --> <?php } else echo $example->title;?>
+				</td>
+				<td><?php if(isset($example->tax)) echo $example->tax;?>
+				</td>
+				 //here
+					
+				</td>
+				<td><img src="pix/subjects_topics.gif" alt="edit"
+					style="cursor: pointer;"
+					onclick="Assign_Visibility(<?php echo $example->id."1"?>)" />
+					<div class="exabis_assign_student"
+						id="exabis_assign_student<?php echo $example->id."1"?>">
+						<?php 	//keine Auswahl fuer Schueler
+						//if($bewertungsdimensionen == 1){
+						echo '<input type="hidden" value="0" name="'.$checkboxname.'[' . $example->id . '][' . $USER->id . '][student_evaluation]" />';
+						echo '<input type="checkbox" value="1" name="'.$checkboxname.'[' . $example->id . '][' . $USER->id . '][student_evaluation]"'.
+								(isset($examplesEvaluationData[$USER->id])&&$examplesEvaluationData[$USER->id]->student_evaluation?' checked="checked"':'').' />';
+						/*}else{
+						 echo '<select name="'.$checkboxname.'[' . $example->id . '][' . $USER->id . '][student_evaluation]">';
+						for ($i=0; $i<=$bewertungsdimensionen; $i++) {
+						echo '<option value="'.$i.'"'.(isset($examplesEvaluationData[$USER->id])&&$examplesEvaluationData[$USER->id]->student_evaluation==$i?' selected="selected"':'').'>'.$i.'</option>';
+						}
+						echo '</select>';
+						}*/
+/*
+						$studypartner = isset($examplesEvaluationData[$USER->id]) ? $examplesEvaluationData[$USER->id]->studypartner : '';
+
+						echo ' <select name="dataexamples[' . $example->id . '][' . $USER->id . '][studypartner]">
+						<option value="self"'.($studypartner=='self'?' selected="selected"':'').'>'.get_string('assignmyself','block_exacomp').'</option>
+						<option value="studypartner"'.($studypartner=='studypartner'?' selected="selected"':'').'>'.get_string('assignlearningpartner','block_exacomp').'</option>
+						<option value="studygroup"'.($studypartner=='studygroup'?' selected="selected"':'').'>'.get_string('assignlearninggroup','block_exacomp').'</option>
+						<option value="teacher"'.($studypartner=='teacher'?' selected="selected"':'').'>'.get_string('assignteacher','block_exacomp').'</option>
+						</select><br/>';
+						?>
+					</div>
+				</td>
+				<?php for($i=0; $i<$columnCnt; $i++){
+					$descriptorid = $descriptors[$i];
+
+
+					if(isset($examples_descriptor_mm[$descriptorid][$example->id]) && $examples_descriptor_mm[$descriptorid][$example->id]==1){
+						?>
+				<td class="<?php echo $class;?>"><?php
+
+					
+				if($student_evaluation) echo " S";
+				if($teacher_evaluation) echo " L: ".$evaluationWert;
+				if(!$student_evaluation && !$teacher_evaluation) echo "x";
+					}else{
+						?>
+				
+				<td class="exabis_comp_student_not"><?php 
+					}
+
+					?>
+				</td>
+				<?php }?>
+			</tr>
+			<?php 
+			}
+			}*/
 	}
 	
 	public function print_competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1) {
@@ -442,7 +729,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$studentsCount = 0;
 			$studentsColspan = 1;
 
-			$hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) && (!get_config('exacomp','alternativedatamodel') || (get_config('exacomp','alternativedatamodel') && $topicid == LIS_SHOW_ALL_TOPICS)));
+			$hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) && (!get_config('exacomp','alternativedatamodel') || (get_config('exacomp','alternativedatamodel') && $topic->id == LIS_SHOW_ALL_TOPICS)));
 
 			if ($hasSubs) {
 				$data->rowgroup++;

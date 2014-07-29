@@ -213,3 +213,16 @@ $string['assignlearninggroup'] = 'Lerngruppe';
 $string['explaineditactivities_subjects'] = 'Hier k&ouml;nnen Sie den erstellten Aufgaben Deskriptoren zuordnen.';
 $string['column_setting'] = 'Spalten aus/einblenden';
 $string['niveau_filter'] = "Niveaus filtern";
+
+
+//LIS Strings
+if(get_config('exacomp','alternativedatamodel')) {
+	/*langstrings for alternativedatamodel--*/
+	if (file_exists($CFG->dirroot . '/blocks/exacomp/block_exacomp_overlaystatic.php')){
+		require $CFG->dirroot . '/blocks/exacomp/block_exacomp_overlaystatic.php';
+	}
+	/*langstrings from other systems*/
+	if (file_exists($CFG->dirroot . '/blocks/exacomp/block_exacomp_overlaydynamic.php')){
+		$CFG->dirroot . '/blocks/exacomp/block_exacomp_overlaydynamic.php';
+	}
+}

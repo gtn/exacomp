@@ -1,23 +1,23 @@
 <table class="exabis_comp_info">
 		<tr>
-			<td><span class="exabis_comp_top_small">Fach</span> <b><?php $schooltype = 	$DB->get_field("block_exacompschooltypes", "title", array("id"=>$selected_subject->stid));
+			<td><span class="exabis_comp_top_small">Fach</span> <b><?php $schooltype = 	$DB->get_field("block_exacompschooltypes", "title", array("id"=>$selectedSubject->stid));
 			echo $schooltype;?> </b>
 			</td>
 			<td><span class="exabis_comp_top_small">Kompetenzbereich/Leitidee</span>
-				<b><?php echo $selected_subject->number . " - " . $selected_subject->title; ?>
+				<b><?php echo $selectedSubject->numb . " - " . $selectedSubject->title; ?>
 			</b>
 			</td>
 			<td><span class="exabis_comp_top_small">Kompetenz</span><b>
-				<?php echo $selected_topic->title; ?>
+				<?php echo $selectedTopic->title; ?>
 			</b>
 			</td>
 			
 			<td><span class="exabis_comp_top_small">Lernfortschritt</span> <b><?php 
-			$cat = $DB->get_record("block_exacompcategories",array("id"=>$selected_topic->cat,"lvl"=>4));
+			$cat = $DB->get_record("block_exacompcategories",array("id"=>$selectedTopic->catid,"lvl"=>4));
 			echo $cat->title; ?> </b>
 			</td>
 			<td><span class="exabis_comp_top_small">Lernwegliste</span> <b><?php 
-			echo substr($schooltype, 0,1).$selected_subject->number.".".$cat->sourceid;
+			echo substr($schooltype, 0,1).$selectedSubject->numb.".".$cat->sourceid;
 			?> </b>
 			</td>
 		</tr>
@@ -25,50 +25,35 @@
 	</table>
 	<table class="exabis_comp_top">
 		<tr>			
-			<?php if ($role != "student") { ?>
-			<td rowspan="4" class="comp_grey_97"><b>Anleitung</b>
-				<p>Hier können Sie für Ihre Lerngruppen / Klasse vermerken, welche
-					Lernmaterialien bearbeitet und welche Lernnachweise erbracht
-					wurden. Darüber hinaus können Sie das Erreichen der Teilkompetenzen
-					eintragen. Je nach Konzept der Schule kann die Bearbeitung des
-					Lernmaterials / das Erreichen einer Teilkompetenz durch Kreuz
-					markiert oder die Qualität der Bearbeitung / der
-					Kompetenzerreichung gekennzeichnet werden. Keinenfalls müssen die
-					Schülerinnen und Schüler alle Materialien bearbeiten. Wenn eine
-					(Teil-)kompetenz bereits vorliegt, kann das hier eingetragen
-					werden. Die Schülerinnen und Schüler müssen dann keine zugehörigen
-					Lernmaterialien bearbeiten.</p>
-			</td>
-			<?php } else { ?>
+			
 			<td class="comp_grey_97"><b>Was du schon können solltest:</b>
 				<p>
-					<?php echo $selected_topic->requirement;?>
+					<?php echo $selectedTopic->requirement;?>
 				</p>
 			</td>
-			<?php } ?>
 		</tr>
 		
 		<tr>
-			<?php if ($role == "student") { ?>
+			<?php if (!$isTeacher) { ?>
 			<td class="comp_grey_97"><b>Wofür du das brauchst:</b>
 				<p>
-					<?php echo $selected_topic->benefit; ?>
+					<?php echo $selectedTopic->benefit; ?>
 				</p>
 			</td>
 			<?php } ?>
 		</tr>
 		<tr>
-			<?php if ($role == "student") { ?>
+			<?php if (!$isTeacher) { ?>
 			<td class="comp_grey_97"><b>Wie du dein Können prüfen kannst:</b>
 				<p>
-					<?php echo $selected_topic->knowledgecheck; ?>
+					<?php echo $selectedTopic->knowledgecheck; ?>
 				</p>
 				<p>
 					Ich habe diese Kompetenz erreicht:
-					<?php $topicReached = $DB->get_record('block_exacomptopicuser',array("userid"=>$USER->id,"courseid"=>$courseid,"role"=>0,"subjid"=>$selected_subject->id,"topicid"=>$selected_topic->id));
+					<?php $topicReached = $DB->get_record('block_exacompcompuser',array("comptype"=>1,"userid"=>$USER->id,"courseid"=>$courseid,"role"=>0,"compid"=>$selectedTopic->id));
 					//if($showevaluation) {
-						$topicReachedTeacher = $DB->get_record('block_exacomptopicuser', array("userid"=>$USER->id,"courseid"=>$courseid,"role"=>1,"subjid"=>$selected_subject->id,"topicid"=>$selected_topic->id));
-						$schema=block_exacomp_getbewertungsschema($courseid);
+						$topicReachedTeacher = $DB->get_record('block_exacompcompuser', array("comptype"=>1, "userid"=>$USER->id,"courseid"=>$courseid,"role"=>1,"compid"=>$selectedTopic->id));
+						$schema=block_exacomp_get_grading_scheme($courseid);
 						if(!isset($topicReachedTeacher->wert)) {
 							$topicReachedTeacher = new stdClass();
 							$topicReachedTeacher->wert = 0;
@@ -92,14 +77,15 @@
 							//}else{
 						//echo html_writer::checkbox("topiccomp", 1, $topicReached);
 					//}
-					$activities = block_exacomp_get_activities($selected_topic->id, $courseid, 0);
-					if ($stdicon = block_exacomp_get_student_icon($activities, $USER,$courseid,$gradelib,true)) {
-								if($stdicon->actSubOccured)
-									echo ' &nbsp;<span title="'.s($stdicon->text).'" class="exabis-tooltip">' . $stdicon->icon . '</span>';
+				
+					$activities = block_exacomp_get_activities($selectedTopic->id, $courseid, 0);
+					
+					if ($stdicon = block_exacomp_get_icon_for_user($activities, $USER)) {
+						echo ' &nbsp;<span title="'.s($stdicon->text).'" class="exabis-tooltip">' . $stdicon->img . '</span>';
 					}
 					?>
-					<input type="hidden" name="topiccompid" value="<?php $selected_topic->id;?>" />
-					<input type="hidden" name="subjectcompid" value="<?php echo $selected_subject->id;?>" />
+					<input type="hidden" name="topiccompid" value="<?php $selectedTopic->id;?>" />
+					<input type="hidden" name="subjectcompid" value="<?php echo $selectedSubject->id;?>" />
 				</p>
 			</td>
 			<?php } ?>

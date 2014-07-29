@@ -562,7 +562,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 
 	return $subjects;
 }
-function block_exacomp_init_lis_data($courseid, $subjectid, $topicid) {
+function block_exacomp_init_lis_data($courseid, $subjectid, $topicid, $student=false) {
 
 	$subjects = block_exacomp_get_subjects_by_course($courseid);
 	if (isset($subjects[$subjectid])) {
@@ -578,15 +578,16 @@ function block_exacomp_init_lis_data($courseid, $subjectid, $topicid) {
 		$selectedTopic = reset($topics);
 	}
 
-	$defaultTopic = new stdClass();
-	$defaultTopic->id=LIS_SHOW_ALL_TOPICS;
-	$defaultTopic->title= get_string('alltopics','block_exacomp');
+	if(!$student){
+		$defaultTopic = new stdClass();
+		$defaultTopic->id=LIS_SHOW_ALL_TOPICS;
+		$defaultTopic->title= get_string('alltopics','block_exacomp');
 
-	$topics = array_merge(array($defaultTopic),$topics);
+		$topics = array_merge(array($defaultTopic),$topics);
 
-	if($topicid == LIS_SHOW_ALL_TOPICS)
-		$selectedTopic = $defaultTopic;
-
+		if($topicid == LIS_SHOW_ALL_TOPICS)
+			$selectedTopic = $defaultTopic;
+	}
 	return array($subjects, $topics, $selectedSubject, $selectedTopic);
 }
 
@@ -1351,5 +1352,52 @@ function block_exacomp_delete_competencies_activities(){
 	
 	foreach($cmodules as $cm){
 		$DB->delete_records('block_exacompcompactiv_mm', array('activityid'=>$cm->id, 'eportfolioitem'=>0));
+	}
+}
+function block_exacomp_get_activities($descid, $courseid = null, $descriptorassociation = 0) { //alle assignments die einem bestimmten descriptor zugeordnet sind
+	global $CFG, $DB;
+	$query = "SELECT mm.id as uniqueid,a.id,ass.grade,a.instance FROM {block_exacompdescriptors} descr INNER JOIN {block_exacompcompactiv_mm} mm  ON descr.id=mm.compid INNER JOIN {course_modules} a ON a.id=mm.activityid LEFT JOIN {assign} ass ON ass.id=a.instance  ";
+	$query.="WHERE descr.id=? AND mm.comptype = " . $descriptorassociation;
+	//echo $query;
+	$condition = array($descid);
+	if ($courseid){
+		$query.=" AND a.course=?";
+		$condition = array($descid, $courseid);
+	}
+
+	$activities = $DB->get_records_sql($query, $condition);
+	if (!$activities) {
+		$activities = array();
+	}
+	return $activities;
+}
+function block_exacomp_get_examples_LIS_student($subjects){
+	$examples = array();
+	foreach($subjects as $subject){
+		block_exacomp_get_examples_LIS_student_topics($subject->subs, $examples);
+	}
+	return $examples;
+	
+}
+function block_exacomp_get_examples_LIS_student_topics($subs, &$examples){
+	foreach($subs as $topic){
+		if(isset($topic->subs))
+			block_exacomp_get_examples_LIS_student_topics($subs, $examples);
+			
+		if(isset($topic->descriptors)){
+			foreach($topic->descriptors as $descriptor){
+				foreach($descriptor->examples as $example){
+					if(isset($examples[$example->id])){
+						if(!isset($examples[$example->id]->descriptors[$descriptor->id]))
+							$examples[$example->id]->descriptors[$descriptor->id] = $descriptor;
+					}else{
+						$examples[$example->id] = $example;
+						$examples[$example->id]->descriptors = array();
+						$examples[$example->id]->descriptors[$descriptor->id] = $descriptor;
+					}	
+					
+				}
+			}
+		}
 	}
 }

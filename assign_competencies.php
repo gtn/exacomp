@@ -73,6 +73,17 @@ if (($action = optional_param("action", "", PARAM_TEXT) )== "save") {
 	// EXAMPLE DATA
 	block_exacomp_save_example_evaluation(isset($_POST['dataexamples']) ? $_POST['dataexamples'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT);
 }
+if($example_del = optional_param('exampleid', 0, PARAM_INT)){
+	$updateid = $DB->get_field('block_exacompexameval', 'id', array('exampleid'=>$example_del, 'studentid'=>$USER->id));
+	$update = new stdClass();	
+	$update->id = $updateid; 
+	if($deletestart = optional_param('deletestart', 0, PARAM_INT)==1)
+		$update->starttime = null;
+	elseif($deleteend = optional_param('deleteend', 0, PARAM_INT)==1)
+		$update->endtime = null;
+	
+	$DB->update_record('block_exacompexameval', $update);
+}
 
 // IF TEACHER SHOW ALL COURSE STUDENTS, IF NOT ONLY CURRENT USER
 $students = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : array($USER);
@@ -84,7 +95,11 @@ $showevaluation = ($version) ? true : optional_param("showevaluation", false, PA
 if(!$version) echo $output->print_student_evaluation($showevaluation);
 else {
 	/* LIS */
-	list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_lis_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', 0, PARAM_INT));
+	if($isTeacher)
+		list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_lis_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', 0, PARAM_INT));
+	else 
+		list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_lis_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', 0, PARAM_INT), true);
+	
 	echo $output->print_lis_dropdowns($subjects, $topics, $selectedSubject->id, $selectedTopic->id);
 	
 	if($selectedTopic->id != LIS_SHOW_ALL_TOPICS && $isTeacher)
@@ -98,7 +113,11 @@ echo $output->print_overview_legend($isTeacher);
 echo $output->print_column_selector(count($students));
 
 $subjects = block_exacomp_get_competence_tree($courseid,$selectedSubject->id,false,$selectedTopic->id);
-echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, (has_capability('block/exacomp:teacher', $context)) ? ROLE_TEACHER : ROLE_STUDENT, block_exacomp_get_grading_scheme($courseid));
+if($version && !$isTeacher){
+	$examples = block_exacomp_get_examples_LIS_student($subjects);
+	echo $output->print_competence_overview_LIS_student($subjects, $courseid, $showevaluation, block_exacomp_get_grading_scheme($courseid), $examples);
+}else
+	echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, (has_capability('block/exacomp:teacher', $context)) ? ROLE_TEACHER : ROLE_STUDENT, block_exacomp_get_grading_scheme($courseid));
 /* END CONTENT REGION */
 
 echo $OUTPUT->footer();
