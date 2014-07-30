@@ -45,6 +45,7 @@ $page_identifier = 'tab_competence_overview';
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
+$PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
 block_exacomp_init_js_css();
 
@@ -73,16 +74,9 @@ if (($action = optional_param("action", "", PARAM_TEXT) )== "save") {
 	// EXAMPLE DATA
 	block_exacomp_save_example_evaluation(isset($_POST['dataexamples']) ? $_POST['dataexamples'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT);
 }
+//Delete timestamp (end|start) from example
 if($example_del = optional_param('exampleid', 0, PARAM_INT)){
-	$updateid = $DB->get_field('block_exacompexameval', 'id', array('exampleid'=>$example_del, 'studentid'=>$USER->id));
-	$update = new stdClass();	
-	$update->id = $updateid; 
-	if($deletestart = optional_param('deletestart', 0, PARAM_INT)==1)
-		$update->starttime = null;
-	elseif($deleteend = optional_param('deleteend', 0, PARAM_INT)==1)
-		$update->endtime = null;
-	
-	$DB->update_record('block_exacompexameval', $update);
+	block_exacomp_delete_timefield($example_del, optional_param('deletestart', 0, PARAM_INT), optional_param('deleteend', 0, PARAM_INT));
 }
 
 // IF TEACHER SHOW ALL COURSE STUDENTS, IF NOT ONLY CURRENT USER
