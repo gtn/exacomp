@@ -9,7 +9,7 @@
 		</b></td>
 
 		<td><span class="exabis_comp_top_small">Lernfortschritt</span> <b><?php 
-		$cat = $DB->get_record("block_exacompcategories",array("id"=>$selectedTopic->catid,"lvl"=>4));
+		$cat = $DB->get_record("block_exacompcategories",array("id"=>$selectedTopic->catid));
 		echo $cat->title; ?> </b></td>
 		<td><span class="exabis_comp_top_small">Lernwegliste</span> <b><?php 
 		echo substr($schooltype, 0,1).$selectedSubject->numb.".".$cat->sourceid;

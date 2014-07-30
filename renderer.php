@@ -1059,7 +1059,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$legend .= get_string('legend_upload','block_exacomp');
 		}
 
-		return $legend;
+		return html_writer::tag("p", $legend);
 	}
 	/**
 	 * Used to generate a checkbox for ticking topics/competencies/examples

@@ -13,7 +13,7 @@ table.exabis_comp_top td {
 	width: 50px;
 }
 
-table.exabis_comp_top td, .exabis_competencies_lis table.exabis_comp_comp td, .exabis_competencies_lis .exabis_comp_info td {
+table.exabis_comp_top td, .exabis_competencies_lis table.exabis_comp_comp td, .exabis_comp_info td {
 	padding: 0.5em;
 	border: 1px solid #cacaca;
     border-collapse: collapse;
@@ -59,7 +59,7 @@ table.exabis_comp_comp {
 	font-size: 15px;
 }
 
-.exabis_competencies_lis span.exabis_comp_top_small {
+span.exabis_comp_top_small {
 	display: block;
 	font-size: 0.84em;
 }

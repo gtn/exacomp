@@ -70,6 +70,13 @@ $subjects = ($version) ? block_exacomp_get_schooltypes_by_course($courseid) : bl
 if($subjects && $subjectid == 0)
 	$subjectid = key($subjects);
 
+echo get_string("choosesubject","block_exacomp");
+echo html_writer::select($subjects, 'exacomp_competence_grid_select_subject',array($subjectid),null,
+		array("onchange"=>"document.location.href='".$CFG->wwwroot.$url."&subjectid='+this.value+'&studentid=".$studentid."';"));
+if (has_capability('block/exacomp:teacher', $context)) {
+	echo get_string("choosestudent","block_exacomp");
+	echo block_exacomp_studentselector(get_role_users(5, $context),$studentid,$url);
+}
 /* END CONTENT REGION */
 
 echo $OUTPUT->footer();
