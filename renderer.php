@@ -153,7 +153,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$cell->text = date("d.m.y", $example->enddate);
 							$row->cells[] = $cell;
 							$cell = new html_table_cell();
-							$grading=getgrading($COURSE->id);
+							$grading = block_exacomp_get_grading_scheme($COURSE->id);
 							if($grading == 1){
 								if($example->evaluate == 1){
 									$cell->text = html_writer::empty_tag('img', array('src' => $CFG->wwwroot . '/blocks/exacomp/pix/ok_16x16.png', 'alt' => '1', 'height' => '16', 'width'=>'16'));
@@ -281,7 +281,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$row->cells[] = $cell;
 
 							$cell = new html_table_cell();
-							$grading=getgrading($COURSE->id);
+							$grading=block_exacomp_get_grading_scheme($COURSE->id);
 							if($grading == 1){
 								if($example->evaluate == 1){
 									$cell->text = html_writer::empty_tag('img', array('src' => $CFG->wwwroot . '/blocks/exacomp/pix/ok_16x16.png', 'alt' => '1', 'height' => '16', 'width'=>'16'));
