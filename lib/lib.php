@@ -696,7 +696,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 		$checkConfig = block_exacomp_is_configured();
 
 	$checkImport = $DB->get_records('block_exacompdescriptors');
-
+	$skillmanagement = get_config('exacomp', 'skillmanagement');
 	$rows = array();
 
 	if (has_capability('block/exacomp:teacher', $context)) {
@@ -725,7 +725,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 				
 				$rows[] = $settings;
 				
-				if(has_capability('block/exacomp:admin', $context))
+				if(!$skillmanagement && has_capability('block/exacomp:admin', $context))
 					$rows[] = new tabobject('tab_admin_import', new moodle_url('/blocks/exacomp/import.php',array("courseid"=>$courseid)),get_string('tab_admin_import','block_exacomp'));
 				
 				$rows[] = new tabobject('tab_help', new moodle_url('/blocks/exacomp/help.php', array("courseid"=>$courseid)), get_string('tab_help', 'block_exacomp'));	
