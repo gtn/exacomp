@@ -952,7 +952,9 @@ function block_exacomp_award_badges($courseid, $userid=null) {
 				continue;
 			}
 
-			$usercompetences = block_exacomp_get_usercompetences($user->id, $role=1, $courseid);
+			$usercompetences_all = block_exacomp_get_user_competencies_by_course($user, $courseid);
+			$usercompetences = $usercompetences_all->competencies->teacher;
+			
 			$allFound = true;
 			foreach ($descriptors as $descriptor) {
 				if (isset($usercompetences[$descriptor->id])) {
@@ -1017,7 +1019,10 @@ function block_exacomp_get_user_badges($courseid, $userid) {
 
 		$badge->descriptorStatus = array();
 
-		$usercompetences = block_exacomp_get_usercompetences($userid, $role=1, $courseid);
+		$user = $DB->get_record('user', array('id'=>$userid));
+		$usercompetences_all = block_exacomp_get_user_competencies_by_course($user, $courseid);
+		$usercomptences = $usercompetences_all->competencies->teacher;
+		//$usercompetences = block_exacomp_get_usercompetences($userid, $role=1, $courseid);
 
 		foreach ($descriptors as $descriptor) {
 			if (isset($usercompetences[$descriptor->id])) {
@@ -1036,7 +1041,14 @@ function block_exacomp_get_user_badges($courseid, $userid) {
 
 	return $result;
 }
-
+function block_exacomp_get_badge_descriptors($badgeid){
+	global $DB;
+	return $DB->get_records_sql('
+		SELECT d.*
+		FROM {block_exacompdescriptors} d
+		JOIN {block_exacompdescbadge_mm} db ON d.id=db.descid AND db.badgeid=?
+	', array($badgeid));
+}
 function block_exacomp_build_example_tree_desc($courseid){
 	global $DB;
 

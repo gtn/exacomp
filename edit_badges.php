@@ -65,21 +65,12 @@ if (!block_exacomp_moodle_badges_enabled()) {
 	exit;
 }
 
+
 /* CONTENT REGION */
 /*NOT CONTINUED BECAUSE OF PRINT LEVELS, SHOULD BE THE SAME, EVERYTIME*/
 
 /*
- if ($badgeid && $badge = $DB->get_record('badge', array('id' => $badgeid))) {
 
-	if ($action == 'save') {
-		$DB->delete_records('block_exacompdescbadge_mm', array("badgeid" => $badgeid));
-		
-		if (!empty($_POST['descriptors'])){
-			foreach ($_POST['descriptors'] as $value=>$tmp) {
-				$DB->insert_record('block_exacompdescbadge_mm', array("badgeid" => $badgeid, "descid" => intval($value)));
-			}
-		}
-	}
 
 	?>
 	<div class='exabis_competencies_lis'>
@@ -171,10 +162,27 @@ if (!block_exacomp_moodle_badges_enabled()) {
 	return;
 }
 
+ */
+$output = $PAGE->get_renderer('block_exacomp');
+if ($badgeid && $badge = $DB->get_record('badge', array('id' => $badgeid))) {
+	if ($action == 'save') {
+		$DB->delete_records('block_exacompdescbadge_mm', array("badgeid" => $badgeid));
+		if (!empty($_POST['descriptors'])){
+			foreach ($_POST['descriptors'] as $value=>$tmp) {
+				$DB->insert_record('block_exacompdescbadge_mm', array("badgeid" => $badgeid, "descid" => intval($value)));
+			}
+		}
+	}else{
+		$tree = block_exacomp_get_competence_tree($courseid);
+		$badge->descriptors = block_exacomp_get_badge_descriptors($badge->id);
+		echo $output->print_edit_badges($tree, $badge);
+		echo $OUTPUT->footer();
+		return;
+	}
+ }
+ 
 
-
-$badges = badges_get_badges(BADGE_TYPE_COURSE, $courseid); // , $sort = '', $dir = '', $page = 0, $perpage = BADGE_PERPAGE, $user = 0) {
-
+$badges = badges_get_badges(BADGE_TYPE_COURSE, $courseid); 
 
 if (!$badges) {
 	echo $OUTPUT->box(text_to_html(get_string("no_badges_yet", "block_exacomp")));
@@ -182,84 +190,20 @@ if (!$badges) {
 	return;
 }
 
-
-
 block_exacomp_award_badges($courseid);
 
-
 foreach ($badges as $badge) {
+	$descriptors = block_exacomp_get_badge_descriptors($badge->id);
 	$descriptors = $DB->get_records_sql('
 		SELECT d.*
 		FROM {block_exacompdescriptors} d
 		JOIN {block_exacompdescbadge_mm} db ON d.id=db.descid AND db.badgeid=?
 	', array($badge->id));
 
-	echo '<div style="padding: 10px;">';
 	$context = context_course::instance($badge->courseid);
-	$imageurl = moodle_url::make_pluginfile_url($context->id, 'badges', 'badgeimage', $badge->id, '/', 'f1', false);
-	echo html_writer::empty_tag('img', array('src' => $imageurl, 'class' => 'badge-image'));
-	echo '<div style="font-weight: bold;">';
-	echo $badge->name;
-	echo "</div>";
-	if ($badge->is_locked()) {
-		echo get_string('statusmessage_'.$badge->status, 'badges');
-	} elseif ($badge->status == BADGE_STATUS_ACTIVE) {
-		echo get_string('statusmessage_'.$badge->status, 'badges');
-		echo '<div>';
-		?>
-			<form method="post" action="<?php echo $CFG->wwwroot.'/badges/action.php'; ?>">
-				<input type="hidden" name="id" value="<?php echo $badge->id; ?>" />
-				<input type="hidden" name="lock" value="1" />
-				<input type="hidden" name="sesskey" value="<?php echo sesskey(); ?>" />
-				<input type="hidden" name="return" value="<?php echo '/blocks/exacomp/edit_badges.php?courseid=' . $courseid; ?>" />
-				<input type="submit" value="<?php echo get_string('deactivate', 'badges'); ?>" />
-			</form>
-		<?php
-		echo '</div>';
-	} elseif (!$badge->has_manual_award_criteria()) {
-		echo '<div>';
-		echo '<a href="'.$CFG->wwwroot.'/badges/edit.php?id='.$badge->id.'&action=details">To award this badge in exacomp you have to add the "Manual issue by role" criteria</a>';
-		echo '</div>';
-	} else {
-		if (empty($descriptors)) {
-			echo '<div>';
-			echo '<a href="'.$CFG->wwwroot.'/blocks/exacomp/edit_badges.php?courseid=' . $courseid.'&badgeid='.$badge->id.'">To award this badge in exacomp you have to configure competencies</a>';
-			echo '</div>';
-		} else {
-			echo '<div style="padding-bottom: 20px;">';
-			
-			?>
-			<form method="post" action="<?php echo $CFG->wwwroot.'/badges/action.php'; ?>">
-				<input type="hidden" name="id" value="<?php echo $badge->id; ?>" />
-				<input type="hidden" name="activate" value="1" />
-				<input type="hidden" name="sesskey" value="<?php echo sesskey(); ?>" />
-				<input type="hidden" name="return" value="<?php echo '/blocks/exacomp/edit_badges.php?courseid=' . $courseid; ?>" />
-
-				This badge is ready to be activated: 
-				<input type="submit" value="<?php echo get_string('activate', 'badges'); ?>" />
-			</form>
-			<?php
-			
-			echo '</div>';
-			echo '<div>';
-			echo '<a href="'.$CFG->wwwroot.'/badges/edit.php?id='.$badge->id.'&action=details">configure badge</a>';
-			echo ' / <a href="'.$CFG->wwwroot.'/blocks/exacomp/edit_badges.php?courseid=' . $courseid.'&badgeid='.$badge->id.'">configure competencies</a>';
-			echo '</div>';
-		}
-	}
-	if ($descriptors) {
-		echo '<ul>';
-		foreach ($descriptors as $descriptor) {
-			echo '<li>'.$descriptor->title.'</li>';
-		}
-		echo '</ul>';
-	}
-	echo "</div>";
+	echo $output->print_badge($badge, $descriptors, $context);
 }
 
- */
-
-echo "CONTENT";
 
 /* END CONTENT REGION */
 

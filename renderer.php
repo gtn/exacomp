@@ -1233,7 +1233,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 		if($badges->pending){
 			$content .= html_writer::tag('h2', get_string('pendingbadges', 'block_exacomp'));
-			foreach($badges as $badge){
+			foreach($badges->pending as $badge){
 				$context = context_course::instance($badge->courseid);
 				$imageurl = moodle_url::make_pluginfile_url($context->id, 'badges', 'badgeimage', $badge->id, '/', 'f1', false);
 				$img = html_writer::empty_tag('img', array('src' => $imageurl, 'class' => 'badge-image'));
@@ -1253,7 +1253,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return $content;
 	}
-
 	public function print_head_view_examples($sort, $show_all_examples, $url, $context){
 		$text_link1 = ($sort=="desc") ? html_writer::tag('b', get_string("subject", "block_exacomp")) : get_string("subject", "block_exacomp");
 		$text_link2 = ($sort=="tax") ? html_writer::tag('b', get_string("taxonomies", "block_exacomp")) : get_string("taxonomies", "block_exacomp");
@@ -1648,6 +1647,179 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$rows[] = $descriptorRow;
 		}
 	}
+	public function print_badge($badge, $descriptors, $context){
+		global $CFG, $COURSE;;
+		
+		$imageurl = moodle_url::make_pluginfile_url($context->id, 'badges', 'badgeimage', $badge->id, '/', 'f1', false);
+		$content = html_writer::empty_tag('img', array('src' => $imageurl, 'class' => 'badge-image'));
+		$content .= html_writer::div($badge->name, '', array('style'=>'font-weight:bold;'));
+		
+		if($badge->is_locked())
+			$content .= get_string('statusmessage_'.$badge->status, 'badges');
+		elseif ($badge->status == BADGE_STATUS_ACTIVE){
+			$content_form = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'id', 'value'=>$badge->id))
+				.html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'lock', 'value'=>1))
+				.html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'sesskey', 'value'=>sesskey()))
+				.html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'return', 'value'=>new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid'=>$COURSE->id))))
+				.html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('deactivate', 'badges')));
+				
+			$form = html_writer::tag('form', $content_form, array('method'=>'post', 'action'=>new moodle_url('/badges/action.php')));
+			
+			$content .= html_writer::div($form);
+		}elseif(!$badge->has_manual_award_criteria()){
+			$link = html_writer::link(new moodle_url('/badges/edit.php', array('id'=>$badge->id, 'action'=>'details')), 'To award this badge in exacomp you have to add the "Manual issue by role" criteria');
+			$content .= html_writer::div($link);
+		}else{
+			if(empty($descriptors)){
+				$link = html_writer::link(new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid'=>$COURSE->id, 'badgeid'=>$badge->id)), 'To award this badge in exacomp you have to configure competencies');
+				$content .= html_writer::div($link);
+			}else{
+				$content_form = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'id', 'value'=>$badge->id))
+					.html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'activate', 'value'=>1))
+					.html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'sesskey', 'value'=>sesskey()))
+					.html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'return', 'value'=>new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid'=>$COURSE->id))))
+					.'This badge is ready to be activated: '
+					.html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('activate', 'badges')));
+					
+				$form = html_writer::tag('form', $content_form, array('method'=>'post', 'action'=>new moodle_url('/badges/action.php')));
+				$content .= html_writer::div($form, '', array('style'=>'padding-bottom:20px;'));
+				
+				$link1 = html_writer::link(new moodle_url('/badges/edit.php', array('id'=>$badge->id, 'action'=>'details')), 'configure badges' );
+				$link2 = html_writer::link(new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid'=>$COURSE->id, 'badgeid'=>$badge->id)), 'configure competences');
+				
+				$content .= html_writer::div($link1.' / '.$link2);
+			}
+		}
+		
+		if($descriptors){
+			$li_desc = '';
+			foreach($descriptors as $descriptor){
+				$li_desc .= html_writer::tag('li', $descriptor->title);
+			}
+			$content .= html_writer::tag('ul', $li_desc);
+		}
+		
+		return html_writer::div($content, '', array('style'=>'padding:10px;'));
+	}
+	
+	public function print_edit_badges($subjects, $badge){
+		global $COURSE;
+		$table = new html_table();
+		$table->attributes['id'] = 'comps';
+		$table->attributes['class'] = 'exabis_comp_comp';
+		
+		$rows = array();
+		$row = new html_table_row();
+		$row->attributes['class'] = 'heading r0';
+		
+		$cell = new html_table_cell();
+		$cell->attributes['class'] = 'category catlevel1';
+		$cell->attributes['scope'] = 'col';
+		$cell->colspan = 2;
+		$cell->text = html_writer::tag('h2', $COURSE->fullname);
+		
+		$row->cells[] = $cell;
+		
+		$rows[] = $row;
+		
+		$row = new html_table_row();
+		$cell = new html_table_cell();
+		$row->cells[] = $cell;
+		$cell = new html_table_cell();
+		$cell->attributes['class'] = 'ec_tableheadwidth';
+		$cell->text = html_writer::link(new moodle_url('/badges/edit.php', array('id'=>$badge->id, 'action'=>'details')), $badge->name);
+		$row->cells[] = $cell;
+		$rows[] = $row;
+		
+		//print tree
+		foreach($subjects as $subject){
+			$row = new html_table_row();
+			$row->attributes['class'] = 'ec_heading';
+			$cell = new html_table_cell();
+			$cell->colspan = 2;
+			$cell->text = html_writer::tag('h4', $subject->title);
+			$row->cells[] = $cell;
+			$rows[] = $row;
+			
+			$this->print_topics_badges($rows, 0, $subject->subs, 0, $badge);
+		}
+		
+		$table->data = $rows;
+		
+		$table_html = html_writer::div(html_writer::table($table), 'grade-report-grader');
+		$div = html_writer::tag("div", html_writer::tag("div", $table_html, array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
+		$div .= html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))));
+		
+		return html_writer::tag('form', $div, array('id'=>'edit-activities','action'=> new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid'=>$COURSE->id, 'badgeid'=>$badge->id, 'action'=>'save')), 'method'=>'post'));
+		
+	}
+	public function print_topics_badges(&$rows, $level, $topics, $rowgroup, $badge, $rowgroup_class = '') {
+		$padding = $level * 20 + 12;
+		
+		foreach($topics as $topic) {
+			list($outputid, $outputname) = block_exacomp_get_output_fields($topic);
+
+			$hasSubs = (!empty($topic->subs) || !empty($topic->descriptors));
+			
+			if ($hasSubs) {
+				$rowgroup++;
+				$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$rowgroup.' '.$rowgroup_class;
+				$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$rowgroup.' '.$rowgroup_class;
+			} else {
+				$this_rowgroup_class = $rowgroup_class;
+				$sub_rowgroup_class = '';
+			}
+
+			$topicRow = new html_table_row();
+			$topicRow->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rowgroup_class . ' highlight';
+
+			$outputnameCell = new html_table_cell();
+			$outputnameCell->attributes['class'] = 'rowgroup-arrow';
+			$outputnameCell->style = "padding-left: ".$padding."px";
+			$outputnameCell->text = html_writer::div($outputname,"desctitle");
+			$topicRow->cells[] = $outputnameCell;
+
+			$badgeCell = new html_table_cell();
+			$topicRow->cells[] = $badgeCell;
+			
+			$rows[] = $topicRow;
+
+			if (!empty($topic->descriptors)) {
+				$this->print_descriptors_badges($rows, $level+1, $topic->descriptors, $rowgroup, $badge, $sub_rowgroup_class);
+			}
+
+			if (!empty($topic->subs)) {
+				$this->print_topics_badges($rows, $level+1, $topic->subs, $rowgroup, $badge, $sub_rowgroup_class);
+			}
+		}
+	}
+	public function print_descriptors_badges(&$rows, $level, $descriptors, $rowgroup, $badge, $rowgroup_class) {
+		global $version, $PAGE, $USER;
+
+		foreach($descriptors as $descriptor) {
+			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor);
+
+			$padding = ($level) * 20 + 4;
+
+			$this_rowgroup_class = $rowgroup_class;
+			
+			$descriptorRow = new html_table_row();
+			$descriptorRow->attributes['class'] = 'exabis_comp_aufgabe ' . $this_rowgroup_class;
+			
+			$titleCell = new html_table_cell();
+			$titleCell->style = "padding-left: ".$padding."px";
+			$titleCell->text = html_writer::div($outputname);
+
+			$descriptorRow->cells[] = $titleCell;
+			
+			$badgeCell = new html_table_cell();
+			$badgeCell->text = html_writer::checkbox('descriptors['.$descriptor->id.']', $descriptor->id, ((isset($badge->descriptors[$descriptor->id]))?true:false));
+			$descriptorRow->cells[] = $badgeCell;
+			
+			$rows[] = $descriptorRow;
+		}
+	}
+	
 
 }
 ?>
