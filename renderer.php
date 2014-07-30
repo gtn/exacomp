@@ -1406,7 +1406,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content = html_writer::tag('script', 'ddtreemenu.createTree("comptree", true)', array('type'=>'text/javascript'));
 		return $content.html_writer::end_div();
 	}
-	public function print_courseselection($tree){
+	public function print_courseselection($tree, $subjects){
 		global $PAGE;
 		
 		$table = new html_table();
@@ -1414,28 +1414,29 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$rowgroup = 0;
 		$rows = array();
 		foreach($tree as $subject){
-			
-			$hasSubs = !empty($subject->subs);
+			if(isset($subjects[$subject->id])){
+				$hasSubs = !empty($subject->subs);
+					
+				if ($hasSubs) {
+					$rowgroup++;
+					$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$rowgroup;
+					$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$rowgroup;
+				} else {
+					$this_rowgroup_class = $rowgroup_class;
+					$sub_rowgroup_class = '';
+				}
+				$row = new html_table_row();
+				$row->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rowgroup_class . ' highlight';
 				
-			if ($hasSubs) {
-				$rowgroup++;
-				$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$rowgroup;
-				$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$rowgroup;
-			} else {
-				$this_rowgroup_class = $rowgroup_class;
-				$sub_rowgroup_class = '';
+				$cell = new html_table_cell();
+				$cell->text = html_writer::div(html_writer::tag('b', $subject->title));
+				$cell->attributes['class'] = 'rowgroup-arrow';
+				$cell->colspan = 3;
+				$row->cells[] = $cell;
+				
+				$rows[] = $row;
+				$this->print_topics_courseselection($rows, 0, $subject->subs, $rowgroup, $sub_rowgroup_class);
 			}
-			$row = new html_table_row();
-			$row->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rowgroup_class . ' highlight';
-			
-			$cell = new html_table_cell();
-			$cell->text = html_writer::div(html_writer::tag('b', $subject->title));
-			$cell->attributes['class'] = 'rowgroup-arrow';
-			$cell->colspan = 3;
-			$row->cells[] = $cell;
-			
-			$rows[] = $row;
-			$this->print_topics_courseselection($rows, 0, $subject->subs, $rowgroup, $sub_rowgroup_class);
 		}
 		
 		$table->data = $rows;

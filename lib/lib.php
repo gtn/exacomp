@@ -106,6 +106,14 @@ function block_exacomp_get_schooltypes_by_course($courseid) {
 			ORDER BY s.title
 			', array($courseid));
 }
+function block_exacomp_get_subjects_for_schooltype($courseid){
+	global $DB;
+	$sql = 'SELECT sub.id FROM {block_exacompsubjects} sub 
+		JOIN {block_exacompmdltype_mm} type ON sub.stid = type.stid
+		WHERE type.courseid=?';
+	
+	return $DB->get_records_sql($sql, array($courseid));
+}
 /**
  * Gets all subjects that are used in a particular course.
  *
@@ -856,7 +864,7 @@ function block_exacomp_set_mdltype($values, $courseid = 0) {
 function block_exacomp_is_configured($courseid=0){
 	global $DB;
 
-	return $DB->get_record(DB_MDLTYPES, array("courseid"=>$courseid));
+	return $DB->get_records(DB_MDLTYPES, array("courseid"=>$courseid));
 }
 function block_exacomp_moodle_badges_enabled() {
 	global $CFG;
