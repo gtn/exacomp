@@ -45,6 +45,7 @@ $page_identifier = 'tab_help';
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/help.php', array('courseid' => $courseid));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
+$PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
 block_exacomp_init_js_css();
 
