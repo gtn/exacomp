@@ -383,6 +383,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 		}
 	}
+	public function print_competence_overview_form_start(){
+		global $PAGE, $COURSE;
+		return html_writer::start_tag('form',array('id'=>'assign-competencies', 'action'=>new moodle_url($PAGE->url, array('courseid'=>$COURSE->id, 'action'=>'save')), 'method'=>'post'));
+	}
 	public function print_competence_overview_LIS_student($subjects, $courseid, $showevaluation, $scheme, $examples){
 		global $USER, $DB, $PAGE, $COURSE;
 
@@ -542,104 +546,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$script = html_writer::tag('script', $script_content, array('type'=>'text/javascript'));
 		$innerdiv = html_writer::div($script.html_writer::table($table).$submit, 'exabis_comp_comp_table');
 		$div = html_writer::div($innerdiv, "exabis_competencies_lis", array("id"=>"exabis_competences_block"));
-		return html_writer::tag('form', $div, array('id'=>'assign-competencies', 'action'=>new moodle_url($PAGE->url, array('courseid'=>$courseid, 'action'=>'save')), 'method'=>'post'));
-		//new view for LIS students
-		/*
-
-
-		<?php
-		<?php
-			
-
-			
-
-
-		//datepicker l�schbar
-
-		if($example_del == $example->id && $deletestart == 1){
-		$examplesEvaluationData[$USER->id]->starttime=null;
-		}
-		if($example_del == $example->id && $deleteend == 1) $examplesEvaluationData[$USER->id]->endtime=null;
-			
-
-		if($teacher_evaluation)
-			$class = "exabis_comp_teacher_assigned";
-		else if($student_evaluation)
-			$class = "exabis_comp_student_assigned";
-		else if(isset($examplesEvaluationData[$USER->id]->starttime) && time() > $examplesEvaluationData[$USER->id]->starttime)
-			$class = "exabis_comp_student_started";
-		else
-			$class = "exabis_comp_student_not";
-
-		?>
-		<tr>
-		<td>
-		<!-- example task  --> <?php echo $example->title; $img = '<img src="pix/i_11x11.png" alt="Beispiel" />';?>
-		<?php if(isset($example->task)){?> <a
-		href="<?php echo $example->task?>" target="_blank"> <?php echo $img?>
-		</a> <!--  example externurl --> <?php } elseif(isset($example->externalurl)){?>
-		<a href="<?php echo $example->externalurl?>" target="_blank"> <?php echo $img?>
-		</a> <!-- else einfach ausgeben --> <?php } else echo $example->title;?>
-		</td>
-		<td><?php if(isset($example->tax)) echo $example->tax;?>
-		</td>
-		//here
-			
-		</td>
-		<td><img src="pix/subjects_topics.gif" alt="edit"
-		style="cursor: pointer;"
-		onclick="Assign_Visibility(<?php echo $example->id."1"?>)" />
-		<div class="exabis_assign_student"
-		id="exabis_assign_student<?php echo $example->id."1"?>">
-		<?php 	//keine Auswahl fuer Schueler
-		//if($bewertungsdimensionen == 1){
-		echo '<input type="hidden" value="0" name="'.$checkboxname.'[' . $example->id . '][' . $USER->id . '][student_evaluation]" />';
-		echo '<input type="checkbox" value="1" name="'.$checkboxname.'[' . $example->id . '][' . $USER->id . '][student_evaluation]"'.
-		(isset($examplesEvaluationData[$USER->id])&&$examplesEvaluationData[$USER->id]->student_evaluation?' checked="checked"':'').' />';
-		/*}else{
-		echo '<select name="'.$checkboxname.'[' . $example->id . '][' . $USER->id . '][student_evaluation]">';
-		for ($i=0; $i<=$bewertungsdimensionen; $i++) {
-		echo '<option value="'.$i.'"'.(isset($examplesEvaluationData[$USER->id])&&$examplesEvaluationData[$USER->id]->student_evaluation==$i?' selected="selected"':'').'>'.$i.'</option>';
-		}
-		echo '</select>';
-		}*/
-		/*
-		 $studypartner = isset($examplesEvaluationData[$USER->id]) ? $examplesEvaluationData[$USER->id]->studypartner : '';
-
-		echo ' <select name="dataexamples[' . $example->id . '][' . $USER->id . '][studypartner]">
-		<option value="self"'.($studypartner=='self'?' selected="selected"':'').'>'.get_string('assignmyself','block_exacomp').'</option>
-		<option value="studypartner"'.($studypartner=='studypartner'?' selected="selected"':'').'>'.get_string('assignlearningpartner','block_exacomp').'</option>
-		<option value="studygroup"'.($studypartner=='studygroup'?' selected="selected"':'').'>'.get_string('assignlearninggroup','block_exacomp').'</option>
-		<option value="teacher"'.($studypartner=='teacher'?' selected="selected"':'').'>'.get_string('assignteacher','block_exacomp').'</option>
-		</select><br/>';
-		?>
-		</div>
-		</td>
-		<?php for($i=0; $i<$columnCnt; $i++){
-		$descriptorid = $descriptors[$i];
-
-
-		if(isset($examples_descriptor_mm[$descriptorid][$example->id]) && $examples_descriptor_mm[$descriptorid][$example->id]==1){
-		?>
-		<td class="<?php echo $class;?>"><?php
-
-			
-		if($student_evaluation) echo " S";
-		if($teacher_evaluation) echo " L: ".$evaluationWert;
-		if(!$student_evaluation && !$teacher_evaluation) echo "x";
-		}else{
-		?>
-
-		<td class="exabis_comp_student_not"><?php
-		}
-
-		?>
-		</td>
-		<?php }?>
-		</tr>
-		<?php
-		}
-		}*/
+		return $div.html_writer::end_tag('form');
+		//return html_writer::tag('form', $div, array('id'=>'assign-competencies', 'action'=>new moodle_url($PAGE->url, array('courseid'=>$courseid, 'action'=>'save')), 'method'=>'post'));
 	}
 
 	public function print_competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1) {
@@ -731,7 +639,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$table_html .= html_writer::tag("input", "", array("name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp")));
 		$table_html .= html_writer::tag("input", "", array("name" => "open_row_groups", "type" => "hidden", "value" => (optional_param('open_row_groups', "", PARAM_TEXT))));
 
-		return html_writer::tag("form", $table_html, array("id" => "assign-competencies", "method" => "post", "action" => $PAGE->url . "&action=save"));
+		return $table_html.html_writer::end_tag('form');
+		//return html_writer::tag("form", $table_html, array("id" => "assign-competencies", "method" => "post", "action" => $PAGE->url . "&action=save"));
 	}
 
 	public function print_topics(&$rows, $level, $topics, &$data, $students, $rowgroup_class = '') {

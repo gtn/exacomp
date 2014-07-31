@@ -73,6 +73,17 @@ if (($action = optional_param("action", "", PARAM_TEXT) )== "save") {
 	block_exacomp_save_competencies(isset($_POST['datatopics']) ? $_POST['datatopics'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_TOPIC);
 	// EXAMPLE DATA
 	block_exacomp_save_example_evaluation(isset($_POST['dataexamples']) ? $_POST['dataexamples'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT);
+	
+	//TOPIC LIS STUDENT
+	if(isset($_POST['topiccomp'])){
+		var_dump('in if');
+		if(($topicid = optional_param('topicid', 0, PARAM_INT))!=0){	
+			var_dump('in here');
+			block_exacomp_set_user_competence($USER->id, $topicid, TYPE_TOPIC, $courseid, ROLE_STUDENT, $_POST['topiccomp']);
+		}
+	}
+		
+	
 }
 //Delete timestamp (end|start) from example
 if($example_del = optional_param('exampleid', 0, PARAM_INT)){
@@ -86,6 +97,9 @@ foreach($students as $student)
 
 $output = $PAGE->get_renderer('block_exacomp');
 $showevaluation = ($version) ? true : optional_param("showevaluation", false, PARAM_BOOL);
+
+echo $output->print_competence_overview_form_start();
+
 if(!$version) echo $output->print_student_evaluation($showevaluation);
 else {
 	/* LIS */
@@ -112,6 +126,7 @@ if($version && !$isTeacher){
 	echo $output->print_competence_overview_LIS_student($subjects, $courseid, $showevaluation, block_exacomp_get_grading_scheme($courseid), $examples);
 }else
 	echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, (has_capability('block/exacomp:teacher', $context)) ? ROLE_TEACHER : ROLE_STUDENT, block_exacomp_get_grading_scheme($courseid));
+
 /* END CONTENT REGION */
 
 echo $OUTPUT->footer();
