@@ -512,7 +512,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors) {
 	global $DB;
 	$course='';
 
-	$sql = '(SELECT desctopmm.id as u_id, d.id as id, d.title, t.id AS topicid, \'descriptor\' as tabletype '
+	$sql = '(SELECT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype '
 	.'FROM {'.DB_TOPICS.'} t '
 	.(($courseid>0)?'JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ':'')
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
@@ -1646,4 +1646,72 @@ function block_exacomp_get_examples_LIS_student_topics($subs, &$examples){
 			}
 		}
 	}
+}
+function block_exacomp_extract_niveaus($subject_tree){
+	$niveaus = array();
+	
+	foreach($subject_tree as $subject){
+		block_exacomp_extract_niveaus_topics($subject->subs, $niveaus);
+	}
+	return $niveaus;
+}
+function block_exacomp_extract_niveaus_topics($subs, &$niveaus){
+	global $DB;
+	foreach ($subs as $topic){
+		if(isset($topic->subs))
+			block_exacomp_extract_niveaus_topics($topic->subs, $niveaus);
+		
+		if(isset($topic->descriptors)){
+			foreach($topic->descriptors as $descriptor){
+				if($descriptor->niveauid > 0){
+					if(!isset($niveaus[$descriptor->niveauid]))
+						$niveaus[$descriptor->niveauid] = $DB->get_record(DB_NIVEAUS, array('id'=>$descriptor->niveauid));
+				}	
+			}
+		}
+	}
+}
+/**
+ * 
+ * Unsets every subject, topic, descriptor where descriptor niveauid is filtered
+ * @param unknown_type $tree
+ * @param unknown_type $niveaus
+ */
+function block_exacomp_filter_niveaus(&$tree, $niveaus){
+	if(!empty($niveaus) && !in_array(0, $niveaus)){
+		//go through tree and unset every subject, topic and descriptor where niveau is not in selected niveaus
+		foreach($tree as $subject){
+			//traverse recursively, because of possible topic-children
+			$subject_has_niveaus = block_exacomp_filter_niveaus_topics($subject->subs, $niveaus);
+	
+			if(!$subject_has_niveaus)
+				unset($tree[$subject->id]);
+		}
+	}
+}
+/**
+ * helper function to traverse through tree recursively, because of endless topic children
+ * and unset every node where descriptor doesn't fit to niveaus
+ */
+function block_exacomp_filter_niveaus_topics($subs, $niveaus){
+	$sub_has_niveaus = false;
+	foreach($subs as $topic){
+		$topic_has_niveaus = false;
+		if(isset($topic->descriptors)){
+			foreach($topic->descriptors as $descriptor){
+				if(!in_array($descriptor->niveauid, $niveaus)){
+					unset($topic->descriptors[$descriptor->id]);
+				}
+				else{
+					$sub_has_niveaus = true;
+					$topic_has_niveaus = true;
+				}
+			}
+		}
+		if(isset($topic->subs))
+			$topic_has_niveaus = block_exacomp_filter_niveaus_topics($topic->subs, $niveaus);
+		elseif(!isset($topic->subs) && !$topic_has_niveaus)
+			unset($subs[$topic->id]);
+	}
+	return $sub_has_niveaus;
 }

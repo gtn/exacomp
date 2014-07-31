@@ -216,6 +216,8 @@ $string['assignlearninggroup'] = 'Lerngruppe';
 $string['explaineditactivities_subjects'] = 'Hier k&ouml;nnen Sie den erstellten Aufgaben Deskriptoren zuordnen.';
 $string['column_setting'] = 'Spalten aus/einblenden';
 $string['niveau_filter'] = "Niveaus filtern";
+$string['module_filter'] = 'Aktivit&auml;ten filtern';
+$string['apply_filter'] = 'Filter anwenden';
 
 
 //LIS Strings

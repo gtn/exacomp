@@ -68,6 +68,8 @@ $pagenode->make_active();
 echo $OUTPUT->header();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
+$selected_niveaus = array();
+$selected_modules = array();
 /* CONTENT REGION */
 if (($action = optional_param("action", "", PARAM_TEXT) )== "save") {
 	block_exacomp_delete_competencies_activities();
@@ -76,50 +78,20 @@ if (($action = optional_param("action", "", PARAM_TEXT) )== "save") {
 	// TOPIC DATA
 	block_exacomp_save_competencies_activities(isset($_POST['topicdata']) ? $_POST['topicdata'] : array(), $courseid, 1);
 }
-/*
- * save 
- * 	
-        $modsetting_arr=array();
-        if (!empty($_POST['block_exacomp_activitysetting'])){
-	        foreach ($_POST['block_exacomp_activitysetting'] as $ks=>$vs){
-	            $modsetting_arr["activities"][]=clean_param($vs,PARAM_SEQUENCE);
-	        };
-	      }
-	      
-            $modsetting="";
-						if ($modsetting = $DB->get_record("block_exacompsettings", array("course"=>$courseid))){
-							$modsetting->activities=serialize($modsetting_arr);
-							$DB->update_record('block_exacompsettings', $modsetting);
-						}else{
-							$curtime=time();
-							$modsettingi=array("course" => $courseid,"grading"=>"1","activities"=>serialize($modsetting_arr),"tstamp"=>$curtime);
-							$DB->insert_record('block_exacompsettings',$modsettingi);
-				}   
-        echo $OUTPUT->box(text_to_html(get_string("activitysuccess", "block_exacomp")));
-    }
- */
-
-/* 
- * niveau filter
- * if (!empty($_POST['block_exacomp_niveaufilter'])){
-    	$niveau_arr=array();
-    	$niveau_arr["niveau"]=array();
-    	
-    	foreach ($_POST['block_exacomp_niveaufilter'] as $ks=>$vs){
-    		if($vs > 0)
-    			$niveau_arr["niveau"][]=clean_param($vs,PARAM_SEQUENCE);
-    	};
-    }
- */
+else if(($action = optional_param("action", "", PARAM_TEXT) ) == "filter"){
+	if(isset($_POST['niveau_filter']))
+		$selected_niveaus = $_POST['niveau_filter'];
+		
+	if(isset($_POST['module_filter']))
+		$selected_modules = $_POST['module_filter'];
+}
 
 $subjects = block_exacomp_get_competence_tree($courseid, null, true);
 $modinfo = get_fast_modinfo($COURSE->id);
 $modules = $modinfo->get_cms();
-	
-$output = $PAGE->get_renderer('block_exacomp');
-echo $output->print_activity_legend();
 
 $visible_modules = array();
+$modules_to_filter = array();
 if($modules){
 	$colspan = (count($modules) + 1);
 	foreach($modules as $mod){
@@ -157,10 +129,20 @@ if($modules){
 					$module->topics[$comp->compid] = $comp->compid;
 			}
 			
-			$visible_modules[] = $module;
+			if(empty($selected_modules) || in_array(0, $selected_modules) || in_array($module->id, $selected_modules))
+				$visible_modules[] = $module;
+			
+			$modules_to_filter[] = $module;
 		}
 	}
-	echo $output->print_activity_content($subjects, $visible_modules, $courseid, $colspan);
+	
+	$niveaus = block_exacomp_extract_niveaus($subjects);
+	block_exacomp_filter_niveaus($subjects, $selected_niveaus);
+	
+	$output = $PAGE->get_renderer('block_exacomp');
+	echo $output->print_activity_legend();
+	echo $output->print_activity_content($subjects, $visible_modules, $courseid, $colspan, $selected_niveaus);
+	echo $output->print_activity_footer($niveaus, $modules_to_filter, $selected_niveaus, $selected_modules);
 }
 
 /* END CONTENT REGION */

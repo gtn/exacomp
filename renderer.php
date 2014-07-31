@@ -1501,6 +1501,53 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 	public function print_activity_legend(){
 		return html_writer::label(get_string("explaineditactivities_subjects", "block_exacomp"), '').html_writer::empty_tag('br');
+		
+	}
+	public function print_activity_footer($niveaus, $modules, $selected_niveaus=array(), $selected_modules=array()){
+		global $PAGE;
+		$content = '';
+		
+		$form_content = '';
+		if(!empty($niveaus)){
+			$selected = '';
+			if(in_array('0', $selected_niveaus) || empty($selected_niveaus))
+				$selected = ' selected';
+			
+			$options = html_writer::tag('option'.$selected, 'all niveaus', array('value'=>0));
+			foreach($niveaus as $niveau){
+				$selected = '';
+				if(in_array($niveau->id, $selected_niveaus))
+					$selected = ' selected';
+					
+				$options .= html_writer::tag('option'.$selected, $niveau->title, array('value'=>$niveau->id));
+			}
+			$select = html_writer::tag('select multiple', $options, array('name'=>'niveau_filter[]'));
+			$form_content .= html_writer::div(html_writer::tag('h3', get_string('niveau_filter', 'block_exacomp')).$select, '');
+		}
+
+		if(!empty($modules)){
+			$selected = '';
+			if(in_array('0', $selected_modules) || empty($selected_modules))
+				$selected = ' selected';
+				
+			$options = html_writer::tag('option'.$selected, 'all modules', array('value'=>0));
+			foreach($modules as $module){
+				$selected = '';
+				if(in_array($module->id, $selected_modules))
+					$selected = ' selected';
+					
+				$options .= html_writer::tag('option'.$selected, $module->name, array('value'=>$module->id));
+			}
+			$select = html_writer::tag('select multiple', $options, array('name'=>'module_filter[]'));
+			$form_content .= html_writer::div(html_writer::tag('h3', get_string('module_filter', 'block_exacomp')).$select, '');
+		}
+		
+		if(!empty($niveaus) || !empty($modules)){
+			$form_content .= html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('apply_filter', 'block_exacomp')));
+			$content .= html_writer::tag('form', $form_content, array('action'=>$PAGE->url.'&action=filter', 'method'=>'post'));
+		}
+
+		return $content;
 	}
 	public function print_activity_content($subjects, $modules, $courseid, $colspan){
 		global $COURSE, $PAGE;
@@ -1567,7 +1614,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$table_html = html_writer::div(html_writer::table($table), 'grade-report-grader');
 		$div = html_writer::tag("div", html_writer::tag("div", $table_html, array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
-		$div .= html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))));
+		$div .= html_writer::div(html_writer::empty_tag('br')
+			.html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))));
 		//$table_html .= html_writer::tag("input", "", array("name" => "open_row_groups", "type" => "hidden", "value" => (optional_param('open_row_groups', "", PARAM_TEXT))));
 
 		return html_writer::tag('form', $div, array('id'=>'edit-activities', 'action'=>$PAGE->url.'&action=save', 'method'=>'post'));

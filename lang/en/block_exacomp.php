@@ -193,3 +193,5 @@ $string['assignuntil'] = 'until';
 $string['explaineditactivities_subjects'] = 'Here you can associate tasks with descriptors.';
 $string['column_setting'] = 'hide/display columns';
 $string['niveau_filter'] = "filter levels";
+$string['module_filter'] = 'filter activities';
+$string['apply_filter'] = 'apply filter';

@@ -27,7 +27,7 @@
 
 require_once dirname(__FILE__)."/inc.php";
 
-global $DB, $OUTPUT, $PAGE;
+global $DB, $OUTPUT, $PAGE, $version;
 
 $courseid = required_param('courseid', PARAM_INT);
 $action = optional_param('action', "", PARAM_ALPHAEXT);
@@ -91,8 +91,13 @@ if($action == 'digicomps') {
  */
 
 $tree = block_exacomp_get_competence_tree();
+
+$courseid_temp = $courseid;
+if(!$version) $courseid_temp = 0;
+
 $topics = block_exacomp_get_topics_by_subject($courseid, 0, true);
-$subjects = block_exacomp_get_subjects_for_schooltype($courseid);
+
+$subjects = block_exacomp_get_subjects_for_schooltype($courseid_temp);
 $output = $PAGE->get_renderer('block_exacomp');
 echo $output->print_courseselection($tree, $subjects, $topics);
 
