@@ -51,6 +51,8 @@ $string['tab_examples'] = 'Beispiele und Aufgaben';
 $string['tab_learning_agenda'] = 'Lernagenda';
 $string['tab_badges'] = 'Meine Auszeichnungen';
 $string['tab_competence_profile'] = 'Kompetenzprofil';
+$string['tab_competence_profile_profile'] = 'Profil';
+$string['tab_competence_profile_settings'] = 'Einstellungen';
 $string['tab_help'] = 'Hilfe';
 $string['tab_skillmanagement'] = 'Erstelle deine Kompetenzen';
 

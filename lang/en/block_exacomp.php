@@ -25,7 +25,7 @@
 
 $string['exacomp:addinstance'] = 'Add a exabis competencies block';
 $string['exacomp:myaddinstance'] = 'Add a exabis competencies block to my moodle';
-$string['pluginname'] = 'exabis competencies';
+$string['pluginname'] = 'Exabis Competencies';
 
 // TABS and PAGE IDENTIFIERS
 // Admin Tabs
@@ -51,6 +51,8 @@ $string['tab_examples'] = 'Examples and tasks';
 $string['tab_learning_agenda'] = 'Learning agenda';
 $string['tab_badges'] = 'My badges';
 $string['tab_competence_profile'] = 'Competence profile';
+$string['tab_competence_profile_profile'] = 'Profile';
+$string['tab_competence_profile_settings'] = 'Settings';
 $string['tab_help'] = 'Help';
 $string['tab_skillmanagement'] = 'Create your competences';
 
