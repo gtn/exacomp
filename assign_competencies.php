@@ -106,7 +106,7 @@ else {
 echo $output->print_overview_legend($isTeacher);
 echo $output->print_column_selector(count($students));
 
-$subjects = block_exacomp_get_competence_tree($courseid,$selectedSubject->id,false,$selectedTopic->id);
+$subjects = block_exacomp_get_competence_tree($courseid,(isset($selectedSubject))?$selectedSubject->id:null,false,(isset($selectedTopic))?$selectedTopic->id:null);
 if($version && !$isTeacher){
 	$examples = block_exacomp_get_examples_LIS_student($subjects);
 	echo $output->print_competence_overview_LIS_student($subjects, $courseid, $showevaluation, block_exacomp_get_grading_scheme($courseid), $examples);
