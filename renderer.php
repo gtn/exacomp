@@ -1730,6 +1730,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$row->cells[] = $cell;
 		$rows[] = $row;
 		
+		$rowgroup = 0;
 		//print tree
 		foreach($subjects as $subject){
 			$row = new html_table_row();
@@ -1740,7 +1741,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$row->cells[] = $cell;
 			$rows[] = $row;
 			
-			$this->print_topics_badges($rows, 0, $subject->subs, 0, $badge);
+			$this->print_topics_badges($rows, 0, $subject->subs, $rowgroup, $badge);
 		}
 		
 		$table->data = $rows;
@@ -1752,7 +1753,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::tag('form', $div, array('id'=>'edit-activities','action'=> new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid'=>$COURSE->id, 'badgeid'=>$badge->id, 'action'=>'save')), 'method'=>'post'));
 		
 	}
-	public function print_topics_badges(&$rows, $level, $topics, $rowgroup, $badge, $rowgroup_class = '') {
+	public function print_topics_badges(&$rows, $level, $topics, &$rowgroup, $badge, $rowgroup_class = '') {
 		$padding = $level * 20 + 12;
 		
 		foreach($topics as $topic) {
@@ -1792,7 +1793,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 		}
 	}
-	public function print_descriptors_badges(&$rows, $level, $descriptors, $rowgroup, $badge, $rowgroup_class) {
+	public function print_descriptors_badges(&$rows, $level, $descriptors, &$rowgroup, $badge, $rowgroup_class) {
 		global $version, $PAGE, $USER;
 
 		foreach($descriptors as $descriptor) {
