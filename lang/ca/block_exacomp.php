@@ -197,3 +197,5 @@ $string['assignlearninggroup'] = 'Lerngruppe';
 $string['explaineditactivities_subjects'] = 'Aquí pots associar tasques amb descriptors.';
 $string['column_setting'] = 'Oculta/mostra columnes';
 $string['niveau_filter'] = "filtra nivells";
+$string['module_filter'] = 'filter activities';
+$string['apply_filter'] = 'apply filter';
