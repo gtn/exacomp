@@ -82,8 +82,9 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
-	return $DB->get_records_sql('
-			SELECT s.id, s.title, s.stid, s.numb, \'subject\' as tabletype
+		
+	$sql = '
+			SELECT DISTINCT s.id, s.title, s.stid, s.numb, \'subject\' as tabletype
 			FROM {'.DB_SUBJECTS.'} s
 			JOIN {'.DB_TOPICS.'} t ON t.subjid = s.id
 			JOIN {'.DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?
@@ -94,9 +95,10 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 					JOIN {'.DB_COMPETENCE_ACTIVITY.'} ca ON (d.id=ca.compid AND ca.comptype = '.TYPE_DESCRIPTOR.') OR (t.id=ca.compid AND ca.comptype = '.TYPE_TOPIC.')
 					JOIN {course_modules} a ON ca.activityid=a.id AND a.course=ct.courseid
 					').'
-			GROUP BY id
 			ORDER BY id, title
-			', array($courseid));
+			';
+	
+	return $DB->get_records_sql($sql, array($courseid));
 }
 /**
  * 
@@ -211,10 +213,9 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
 					JOIN {course_modules} a ON da.activityid=a.id AND a.course=ct.courseid
 					').'
 			LEFT JOIN {'.DB_CATEGORIES.'} cat ON t.catid = cat.id
-			GROUP BY t.id
-			ORDER BY t.catid, t.title
+			ORDER BY t.catid
 			';
-	
+	//GROUP By funktioniert nur mit allen feldern im select, aber nicht mit strings
 	return $DB->get_records_sql($sql, array($courseid, $subjectid));
 }
 /**
@@ -607,7 +608,8 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 				FROM {" . DB_EXAMPLES . "} e
 				JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
 				LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id
-				ORDER BY tax.title", array($descriptor->id));
+				", array($descriptor->id));
+		
 		$descriptor->examples = array();
 		foreach($examples as $example){
 			$descriptor->examples[$example->id] = $example;
