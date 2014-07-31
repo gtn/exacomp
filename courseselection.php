@@ -91,10 +91,10 @@ if($action == 'digicomps') {
  */
 
 $tree = block_exacomp_get_competence_tree();
-$tree = block_exacomp_get_active_topics($tree, $courseid);
+$topics = block_exacomp_get_topics_by_subject($courseid, 0, true);
 $subjects = block_exacomp_get_subjects_for_schooltype($courseid);
 $output = $PAGE->get_renderer('block_exacomp');
-echo $output->print_courseselection($tree, $subjects);
+echo $output->print_courseselection($tree, $subjects, $topics);
 
 /* END CONTENT REGION */
 

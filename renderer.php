@@ -1414,7 +1414,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content = html_writer::tag('script', 'ddtreemenu.createTree("comptree", true)', array('type'=>'text/javascript'));
 		return $content.html_writer::end_div();
 	}
-	public function print_courseselection($tree, $subjects){
+	public function print_courseselection($tree, $subjects, $topics_activ){
 		global $PAGE;
 
 		$table = new html_table();
@@ -1443,7 +1443,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$row->cells[] = $cell;
 
 				$rows[] = $row;
-				$this->print_topics_courseselection($rows, 0, $subject->subs, $rowgroup, $sub_rowgroup_class);
+				$this->print_topics_courseselection($rows, 0, $subject->subs, $rowgroup, $sub_rowgroup_class, $topics_activ);
 			}
 		}
 
@@ -1456,7 +1456,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return html_writer::tag("form", $table_html, array("method" => "post", "action" => $PAGE->url . "&action=save", "id" => "course-selection"));
 	}
-	public function print_topics_courseselection(&$rows, $level, $topics, &$rowgroup, $rowgroup_class = ''){
+	public function print_topics_courseselection(&$rows, $level, $topics, &$rowgroup, $rowgroup_class = '', $topics_activ){
 		global $version;
 
 		$padding = $level * 20 + 12;
@@ -1489,7 +1489,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$topicRow->cells[] = $outputnameCell;
 				
 			$cell = new html_table_cell();
-			$cell->text = html_writer::checkbox('data['.$topic->id.']', $topic->id, ($topic->checked)?true:false, '', array('class'=>'topiccheckbox'));
+			$cell->text = html_writer::checkbox('data['.$topic->id.']', $topic->id, ((isset($topics_activ[$topic->id]))?true:false), '', array('class'=>'topiccheckbox'));
 			$topicRow->cells[] = $cell;
 				
 			$rows[] = $topicRow;
@@ -1551,7 +1551,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 
 		$rows[] = $row;
-
+		$rowgroup = 1;	
 		//print tree
 		foreach($subjects as $subject){
 			$row = new html_table_row();
@@ -1561,8 +1561,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$cell->text = html_writer::tag('h4', $subject->title);
 			$row->cells[] = $cell;
 			$rows[] = $row;
-				
-			$this->print_topics_activities($rows, 0, $subject->subs, 0, $modules);
+			$this->print_topics_activities($rows, 0, $subject->subs, $rowgroup, $modules);
 		}
 		$table->data = $rows;
 
@@ -1574,14 +1573,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::tag('form', $div, array('id'=>'edit-activities', 'action'=>$PAGE->url.'&action=save', 'method'=>'post'));
 
 	}
-	public function print_topics_activities(&$rows, $level, $topics, $rowgroup, $modules, $rowgroup_class = '') {
+	public function print_topics_activities(&$rows, $level, $topics, &$rowgroup, $modules, $rowgroup_class = '') {
 		$padding = $level * 20 + 12;
 
 		foreach($topics as $topic) {
 			list($outputid, $outputname) = block_exacomp_get_output_fields($topic);
 
 			$hasSubs = (!empty($topic->subs) || !empty($topic->descriptors));
-				
+	
 			if ($hasSubs) {
 				$rowgroup++;
 				$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$rowgroup.' '.$rowgroup_class;
@@ -1619,7 +1618,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 		}
 	}
-	function print_descriptors_activities(&$rows, $level, $descriptors, $rowgroup, $modules, $rowgroup_class) {
+	function print_descriptors_activities(&$rows, $level, $descriptors, &$rowgroup, $modules, $rowgroup_class) {
 		global $version, $PAGE, $USER;
 
 		foreach($descriptors as $descriptor) {

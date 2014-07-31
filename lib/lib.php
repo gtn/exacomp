@@ -77,15 +77,17 @@ function block_exacomp_get_subject_by_id($subjectid) {
  * @param unknown_type $courseid
  * @return multitype:
  */
-function block_exacomp_get_subjects_by_course($courseid) {
+function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = false) {
 	global $DB;
 
+	if(!$showalldescriptors)
+		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	return $DB->get_records_sql('
 			SELECT s.id, s.title, s.stid, s.numb, \'subject\' as tabletype
 			FROM {'.DB_SUBJECTS.'} s
 			JOIN {'.DB_TOPICS.'} t ON t.subjid = s.id
 			JOIN {'.DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?
-			'.(block_exacomp_get_settings_by_course($courseid)->show_all_descriptors ? '' : '
+			'.($showalldescriptors ? '' : '
 					-- only show active ones
 					JOIN {'.DB_DESCTOPICS.'} topmm ON topmm.topicid=t.id
 					JOIN {'.DB_DESCRIPTORS.'} d ON topmm.descrid=d.id
@@ -192,13 +194,16 @@ function block_exacomp_get_topics_by_course($courseid) {
  * @param int $courseid
  * @param int $subjectid
  */
-function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0) {
+function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showalldescriptors = false) {
 	global $DB;
-	return $DB->get_records_sql('
-			SELECT t.id, t.title, t.catid, t.ataxonomie, t.btaxonomie, t.ctaxonomie, t.requirement, t.benefit, t.knowledgecheck,cat.title as cattitle
+	
+	if(!$showalldescriptors) 
+		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
+	
+	$sql = 'SELECT t.id, t.title, t.catid, t.ataxonomie, t.btaxonomie, t.ctaxonomie, t.requirement, t.benefit, t.knowledgecheck,cat.title as cattitle
 			FROM {'.DB_TOPICS.'} t
 			JOIN {'.DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.(($subjectid > 0) ? 'AND t.subjid = ? ': '')
-			.(block_exacomp_get_settings_by_course($courseid)->show_all_descriptors ? '' : '
+			.($showalldescriptors ? '' : '
 					-- only show active ones
 					JOIN {'.DB_DESCTOPICS.'} topmm ON topmm.topicid=t.id
 					JOIN {'.DB_DESCRIPTORS.'} d ON topmm.descrid=d.id
@@ -208,7 +213,9 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0) {
 			LEFT JOIN {'.DB_CATEGORIES.'} cat ON t.catid = cat.id
 			GROUP BY t.id
 			ORDER BY t.catid, t.title
-			', array($courseid, $subjectid));
+			';
+	
+	return $DB->get_records_sql($sql, array($courseid, $subjectid));
 }
 /**
  * Gets all topics
@@ -530,21 +537,14 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 
 	if(!$showalldescriptors) $showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
-	//$allSubjects = block_exacomp_get_subjects($courseid, $subjectid);
 	$allSubjects = ($courseid == 0) ? block_exacomp_get_all_subjects() :
-	($subjectid != null) ? block_exacomp_get_subject_by_id($subjectid) : block_exacomp_get_subjects_by_course($courseid);
-	if($courseid == 0)
-		$allSubjects = block_exacomp_get_all_subjects();
-	elseif($subjectid != null)
-	$allSubjects = block_exacomp_get_subject_by_id($subjectid);
-	else
-		$allSubjects = block_exacomp_get_subjects_by_course($courseid);
+	(($subjectid != null) ? block_exacomp_get_subject_by_id($subjectid) : block_exacomp_get_subjects_by_course($courseid, $showalldescriptors));
 
+	
 	$allTopics = block_exacomp_get_all_topics($subjectid);
 	if($courseid > 0) {
 		if($topicid == LIS_SHOW_ALL_TOPICS)
 			$courseTopics = block_exacomp_get_topics_by_subject($courseid, $subjectid);
-		//$courseTopics = $DB->get_records(DB_COURSETOPICS,array("courseid" => $courseid),'','topicid');
 		else
 			$courseTopics = ($topicid == null) ? $DB->get_records(DB_COURSETOPICS,array("courseid" => $courseid),'','topicid') : block_exacomp_get_topic_by_id($topicid);
 	}
