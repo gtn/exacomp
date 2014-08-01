@@ -1337,9 +1337,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 	public function print_head_view_examples($sort, $show_all_examples, $url, $context){
+		$content = html_writer::start_tag('script', array('type'=>'text/javascript', 'src'=>'javascript/wz_tooltip.js'));
+		$content .= html_writer::end_tag('script');
+		$content .= html_writer::start_tag('script', array('type'=>'text/javascript', 'src'=>'javascript/simpletreemenu.js'));
+		$content .= html_writer::end_tag('script');
 		$text_link1 = ($sort=="desc") ? html_writer::tag('b', get_string("subject", "block_exacomp")) : get_string("subject", "block_exacomp");
 		$text_link2 = ($sort=="tax") ? html_writer::tag('b', get_string("taxonomies", "block_exacomp")) : get_string("taxonomies", "block_exacomp");
-		$content = get_string('sorting', 'block_exacomp')
+		$content .= get_string('sorting', 'block_exacomp')
 		.html_writer::link($url.'&sort=desc', $text_link1)." "
 		.html_writer::link($url.'&sort=tax', $text_link2);
 
@@ -1357,7 +1361,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$div_exabis_competences_block = html_writer::start_div('', array('id'=>'exabis_competences_block'));
 		return $div_exabis_competences_block.$content;
 	}
-
 	public function print_tree_head(){
 		$content = html_writer::empty_tag('br').html_writer::empty_tag('br');
 		$content .= html_writer::link("javascript:ddtreemenu.flatten('comptree', 'expand')", get_string("expandcomps", "block_exacomp"));

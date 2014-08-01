@@ -1244,8 +1244,9 @@ function block_exacomp_build_example_tree_desc($courseid){
  * helper function to traverse through tree recursively, because of endless topic children
  * and unset every node where leaf is no example
  */
-function block_exacomp_build_rec_topic_example_tree_desc($subs){
+function block_exacomp_build_rec_topic_example_tree_desc(&$subs){
 	$sub_has_examples = false;
+	$sub_topics_have_examples = false;
 	foreach($subs as $topic){
 		$topic_has_examples = false;
 		if(isset($topic->descriptors)){
@@ -1259,11 +1260,18 @@ function block_exacomp_build_rec_topic_example_tree_desc($subs){
 				}
 			}
 		}
-		if(isset($topic->subs))
-			$topic_has_examples = block_exacomp_build_rec_topic_example_tree_desc($topic->subs);
-		elseif(!isset($topic->subs) && !$topic_has_examples)
-		unset($subs[$topic->id]);
+		if(isset($topic->subs)){
+			$sub_topic_has_examples = block_exacomp_build_rec_topic_example_tree_desc($topic->subs);
+			($sub_topic_has_examples)?$sub_topics_have_examples = true : $sub_topics_have_examples = false;
+		}
+		elseif((!isset($topic->subs) && !$topic_has_examples))
+			unset($subs[$topic->id]);
+			
+		if(!$topic_has_examples && !$sub_topics_have_examples){
+			unset($subs[$topic->id]);
+		}
 	}
+	
 	return $sub_has_examples;
 }
 /**
