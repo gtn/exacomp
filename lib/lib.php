@@ -532,7 +532,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors) {
 	global $DB;
 	$course='';
 
-	$sql = '(SELECT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype '
+	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype '
 	.'FROM {'.DB_TOPICS.'} t '
 	.(($courseid>0)?'JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ':'')
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
@@ -1661,6 +1661,7 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 			$competencies = array("studentcomps"=>$DB->get_records(DB_COMPETENCIES,array("role"=>ROLE_STUDENT,"courseid"=>$courseid,"userid"=>$studentid,"comptype"=>TYPE_TOPIC),"","compid,userid,reviewerid,value"),
 					"teachercomps"=>$DB->get_records(DB_COMPETENCIES,array("role"=>ROLE_TEACHER,"courseid"=>$courseid,"userid"=>$studentid,"comptype"=>TYPE_TOPIC),"","compid,userid,reviewerid,value"));
 
+		$selection = array();
 		// Arrange data in associative array for easier use
 		foreach($subjects as $subjid => $subject) {
 			$topics = $DB->get_records('block_exacomptopics',array("subjid"=>$subjid),"catid");
@@ -1684,15 +1685,30 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 				}
 				$data[1][$subjid][$topic->catid][] = $topic;
 			}
+		$selection_temp = block_exacomp_get_topics_by_subject($courseid,$subjid);
+		$selection = $selection + $selection_temp;
 		}
-
-		$selection = $DB->get_fieldset_select('block_exacompcoutopi_mm', 'topicid', ' courseid = ?',array($courseid));
-		$selection = block_exacomp_get_topics_by_subject($courseid,$subjid);
-
+		if(block_exacomp_get_settings_by_course($courseid)->show_all_descriptors)
+			$selection = $DB->get_records(DB_COURSETOPICS,array('courseid'=>$courseid),'','topicid');
+		
+	}
+	else {
+		$niveaus = block_exacomp_get_niveaus_for_subject($subjectid);
+		$skills = $DB->get_records_menu('block_exacompskills',null,null,"id, title");
+		$descriptors = block_exacomp_get_descriptors_by_subject($courseid, $subjectid); // TO DO
+		
 	}
 	return array($niveaus, $skills, $subjects, $data, $selection);
 }
+function block_exacomp_get_niveaus_for_subject($subjectid) {
+	global $DB;
 
+	$niveaus = "SELECT distinct n.id, n.title FROM {block_exacompdescriptors} d, {block_exacompdescrtopic_mm} dt, {block_exacompniveaus} n
+	WHERE d.id=dt.descrid AND dt.topicid IN (SELECT id FROM {block_exacomptopics} WHERE subjid=?)
+	AND d.niveauid > 0 AND d.niveauid = n.id order by n.sorting,d.skillid, dt.topicid, d.niveauid";
+
+	return $DB->get_records_sql_menu($niveaus,array($subjectid));
+}
 /**
  * 
  * Gets examples for LIS student view

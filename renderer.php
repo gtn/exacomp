@@ -455,7 +455,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						foreach($data[$skillid][$topicid][$niveauid] as $descriptor) {
 							$compString = "";
 							if (has_capability('block/exacomp:teacher', $context)) {
-								if(isset($descriptor->teachercomp) && in_array($descriptor->id, $selection)) {
+								if(isset($descriptor->teachercomp) && array_key_exists($descriptor->id, $selection)) {
 									$compString .= "L: ";
 									if($schema == 1) {
 										$compString .= html_writer::checkbox("data[".$descriptor->id."][".$studentid."][teacher]", 1,$descriptor->teachercomp).'&nbsp; ';
@@ -473,7 +473,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 									}
 									}
 										
-								} else if(has_capability('block/exacomp:student', $context) && in_array($descriptor->id, $selection)) {
+								} else if(has_capability('block/exacomp:student', $context) && array_key_exists($descriptor->id, $selection)) {
 								$compString.="S: ";
 								if($schema == 1) {
 								$compString .= html_writer::checkbox("data[".$descriptor->id."][".$studentid."][student]", 1,$descriptor->studentcomp).'&nbsp; ';
@@ -497,7 +497,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 									$compString .= $descriptor->icon;
 	
 								$text = "<br />".$descriptor->title;
-								if(in_array($descriptor->id, $selection)) {
+								if(array_key_exists($descriptor->id, $selection)) {
 									$text = html_writer::link(new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid"=>$courseid,"subjectid"=>$topicid,"topicid"=>$descriptor->id)),$text);
 								}
 	
