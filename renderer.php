@@ -850,7 +850,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$outputnameCell = new html_table_cell();
 			$outputnameCell->attributes['class'] = 'rowgroup-arrow';
 			$outputnameCell->style = "padding-left: ".$padding."px";
-			$outputnameCell->text = html_writer::div($outputname,"desctitle");
+			$outputnameCell->text = html_writer::div($outputid.$outputname,"desctitle");
 			$topicRow->cells[] = $outputnameCell;
 
 			foreach($students as $student) {
@@ -1711,8 +1711,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$padding = $level * 20 + 12;
 
 		foreach($topics as $topic) {
-			list($outputid, $outputname) = block_exacomp_get_output_fields($topic);
-
+			list($outputid, $outputname) = block_exacomp_get_output_fields($topic, true);
+			
 			$hasSubs = (!empty($topic->subs) || !empty($topic->descriptors));
 	
 			if ($hasSubs) {
@@ -1730,7 +1730,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$outputnameCell = new html_table_cell();
 			$outputnameCell->attributes['class'] = 'rowgroup-arrow';
 			$outputnameCell->style = "padding-left: ".$padding."px";
-			$outputnameCell->text = html_writer::div($outputname,"desctitle");
+			$outputnameCell->text = html_writer::div($outputid.$outputname,"desctitle");
 			$topicRow->cells[] = $outputnameCell;
 
 			foreach($modules as $module) {

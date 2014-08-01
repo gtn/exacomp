@@ -233,7 +233,7 @@ function block_exacomp_get_all_topics($subjectid = null) {
 					-- only show active ones
 					WHERE s.id = ?
 					').'
-			ORDER BY t.sorting
+			ORDER BY t.catid
 			', array($subjectid));
 
 	return $topics;
@@ -1046,8 +1046,8 @@ function block_exacomp_get_grading_scheme($courseid) {
  * Builds topic title to print
  * @param unknown_type $topic
  */
-function block_exacomp_get_output_fields($topic) {
-	global $version;
+function block_exacomp_get_output_fields($topic, $show_category=false) {
+	global $version, $DB;
 
 	if (preg_match('!^([^\s]*[0-9][^\s]*+)\s+(.*)$!iu', $topic->title, $matches)) {
 		$output_id = $matches[1];
@@ -1056,9 +1056,10 @@ function block_exacomp_get_output_fields($topic) {
 		$output_id = '';
 		$output_title = $topic->title;
 	}
-	if($version && $topic->id == LIS_SHOW_ALL_TOPICS)
-		$output_id = $DB->get_field(DB_CATEGORIES, 'title', array("id"=>$topic->cat));
-
+	if($version && ($topic->id == LIS_SHOW_ALL_TOPICS)|| $show_category){
+		$output_id = $DB->get_field(DB_CATEGORIES, 'title', array("id"=>$topic->catid));
+		$output_id .= ': ';
+	}
 	return array($output_id, $output_title);
 }
 /**
