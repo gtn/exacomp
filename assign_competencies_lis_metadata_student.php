@@ -54,23 +54,24 @@
 					//if($showevaluation) {
 						$topicReachedTeacher = $DB->get_record('block_exacompcompuser', array("comptype"=>1, "userid"=>$USER->id,"courseid"=>$courseid,"role"=>1,"compid"=>$selectedTopic->id));
 						$schema=block_exacomp_get_grading_scheme($courseid);
-						if(!isset($topicReachedTeacher->wert)) {
+						
+						if(!isset($topicReachedTeacher->value)) {
 							$topicReachedTeacher = new stdClass();
-							$topicReachedTeacher->wert = 0;
+							$topicReachedTeacher->value = 0;
 						}
-						if(!isset($topicReached->wert)) {
+						if(!isset($topicReached->value)) {
 							$topicReached = new stdClass();
-							$topicReached->wert = 0;
+							$topicReached->value = 0;
 						}
 						
 						if($schema == 1)
-							echo "S: ".html_writer::checkbox("topiccomp", 1, $topicReached->wert >= ceil($schema/2))." Bestätigung L: ".html_writer::checkbox("topiccomp", 1, $topicReachedTeacher->wert >= ceil($schema/2), "", array("disabled"=>"disabled"));
+							echo "S: ".html_writer::checkbox("topiccomp", 1, $topicReached->value >= ceil($schema/2))." Bestätigung L: ".html_writer::checkbox("topiccomp", 1, $topicReachedTeacher->value >= ceil($schema/2), "", array("disabled"=>"disabled"));
 						else {
 							$options = array();
 							for($i=0;$i<=$schema;$i++)
 								$options[] = $i;
 									
-							echo "S: ".html_writer::checkbox("topiccomp", $schema, $topicReached->wert >= ceil($schema/2))." Bestätigung L: ". $topicReachedTeacher->wert;
+							echo "S: ".html_writer::checkbox("topiccomp", $schema, $topicReached->value >= ceil($schema/2))." Bestätigung L: ". $topicReachedTeacher->value;
 								
 							//echo "S: ". html_writer::select($options, "topiccomp", $topicReached->wert, false) ." Bestätigung L: ". $topicReachedTeacher->wert;
 						}

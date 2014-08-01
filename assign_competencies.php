@@ -70,6 +70,7 @@ if($version) {
 		list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_lis_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', 0, PARAM_INT));
 	else
 		list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_lis_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', 0, PARAM_INT), true);
+	//$PAGE->set_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid,"topicid"=>$selectedTopic->id,"subjectid"=>$selectedSubject->id));
 }
 
 // SAVA DATA
@@ -83,9 +84,7 @@ if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 
 	//TOPIC LIS STUDENT
 	if(isset($_POST['topiccomp'])){
-		var_dump('in if');
 		if(($topicid = optional_param('topicid', 0, PARAM_INT))!=0){
-			var_dump('in here');
 			block_exacomp_set_user_competence($USER->id, $topicid, TYPE_TOPIC, $courseid, ROLE_STUDENT, $_POST['topiccomp']);
 		}
 	}
@@ -103,7 +102,7 @@ foreach($students as $student)
 $output = $PAGE->get_renderer('block_exacomp');
 $showevaluation = ($version) ? true : optional_param("showevaluation", false, PARAM_BOOL);
 
-echo $output->print_competence_overview_form_start();
+echo $output->print_competence_overview_form_start($selectedTopic, $selectedSubject);
 
 if(!$version) echo $output->print_student_evaluation($showevaluation);
 else {
@@ -115,7 +114,7 @@ else {
 	else if($selectedTopic->id != LIS_SHOW_ALL_TOPICS && !$isTeacher)
 		include 'assign_competencies_lis_metadata_student.php';
 
-	$PAGE->set_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid,"topicid"=>$selectedTopic->id,"subjectid"=>$selectedSubject->id));
+	//$PAGE->set_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid,"topicid"=>$selectedTopic->id,"subjectid"=>$selectedSubject->id));
 }
 echo $output->print_overview_legend($isTeacher);
 echo $output->print_column_selector(count($students));

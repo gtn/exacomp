@@ -555,10 +555,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	
 		return html_writer::tag("div", html_writer::table($table), array("id"=>"exabis_competences_block"));
 	}
-	public function print_competence_overview_form_start(){
+	public function print_competence_overview_form_start($selectedTopic=null, $selectedSubject=null){
 		global $PAGE, $COURSE;
-		
-		return html_writer::start_tag('form',array('id'=>'assign-competencies', "action" => str_replace("amp;","", $PAGE->url) . "&action=save", 'method'=>'post'));
+		$url_params = array();
+		$url_params['action'] = 'save';
+		if(isset($selectedTopic))	
+			$url_params['topicid'] = $selectedTopic->id;
+		if(isset($selectedSubject))
+			$url_params['subjectid'] = $selectedSubject->id;
+		$url = new moodle_url($PAGE->url, $url_params);
+		return html_writer::start_tag('form',array('id'=>'assign-competencies', "action" => $url, 'method'=>'post'));
 	}
 	public function print_competence_overview_LIS_student($subjects, $courseid, $showevaluation, $scheme, $examples){
 		global $USER, $DB, $PAGE, $COURSE;
