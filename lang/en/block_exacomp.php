@@ -197,3 +197,8 @@ $string['column_setting'] = 'hide/display columns';
 $string['niveau_filter'] = "filter levels";
 $string['module_filter'] = 'filter activities';
 $string['apply_filter'] = 'apply filter';
+
+//Competence Grid
+$string['textalign'] = "Switch text align";
+$string['selfevaluation'] = 'Self assessment';
+$string['teacherevaluation'] = 'Teacher assessment';

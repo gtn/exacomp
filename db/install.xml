@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/exacomp/db" VERSION="20140509" COMMENT="XMLDB file for Moodle blocks/exacomp"
+<XMLDB PATH="blocks/exacomp/db" VERSION="20140731" COMMENT="XMLDB file for Moodle blocks/exacomp"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -24,7 +24,6 @@
         <KEY NAME="skillid" TYPE="foreign" FIELDS="skillid" REFTABLE="block_exacompskills" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
-    <!-- add key cat, changed field catid-->
     <TABLE NAME="block_exacomptopics" COMMENT="Schwerpunkte, Kategorie der Deskriptoren">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -53,7 +52,6 @@
         <KEY NAME="catid" TYPE="foreign" FIELDS="catid" REFTABLE="block_exacompcategories" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
-    <!-- added key catid, changed field catid, changed field number to numb -->
     <TABLE NAME="block_exacompsubjects" COMMENT="Gegenstände, Kategorie der Schwerpunkte">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -70,7 +68,7 @@
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="stid" TYPE="foreign" FIELDS="stid" REFTABLE="block_exacompschooltypes" REFFIELDS="id" COMMENT="schooltyp id"/>
-         <KEY NAME="catid" TYPE="foreign" FIELDS="catid" REFTABLE="block_exacompcategories" REFFIELDS="id"/>
+        <KEY NAME="catid" TYPE="foreign" FIELDS="catid" REFTABLE="block_exacompcategories" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="block_exacompschooltypes" COMMENT="Schultypen, Kategorie der Gegensände">
@@ -113,7 +111,6 @@
         <KEY NAME="topicid" TYPE="foreign" FIELDS="topicid" REFTABLE="block_exacomptopics" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
-    <!-- added key creatorid -->
     <TABLE NAME="block_exacompexamples" COMMENT="Beispiele die für bestimmte Deskriptoren bestimmt sind">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -160,7 +157,6 @@
         <KEY NAME="exampid" TYPE="foreign" FIELDS="exampid" REFTABLE="block_exacompexamples" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
-    <!-- changed field parent in parentid, to be consistent with other tables-->
     <TABLE NAME="block_exacomptaxonomies" COMMENT="blumsche taxonomie, attribute zu den beispielen">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -173,7 +169,6 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-     <!-- changed tablename, fields(compid, comptype, eportfolioitem) deleted activitytype, and foreign key descid, activityid deleted -->
     <TABLE NAME="block_exacompcompactiv_mm" COMMENT="zuordnung aufgaben zu deskriptoren oder topics festlegen">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -181,8 +176,8 @@
         <FIELD NAME="activityid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" COMMENT="Entweder course_module id oder Exabis Eportfolio item id"/>
         <FIELD NAME="activitytitle" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Name der Aktivität. Dient nur als Backup, damit Name bei Löschen des Kurses nicht verloren geht"/>
         <FIELD NAME="coursetitle" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Dient zum Sichern des Kurstitels, falls dieser gelöscht werden sollte"/>
-     	<FIELD NAME="comptype" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Deskriptor, 1 für Topic"/>
-     	<FIELD NAME="eportfolioitem" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Kursmodul, 1 für Eportfolio Item"/> 	
+        <FIELD NAME="comptype" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Deskriptor, 1 für Topic"/>
+        <FIELD NAME="eportfolioitem" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Kursmodul, 1 für Eportfolio Item"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -198,7 +193,6 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-     <!-- changed tablename, fields(compid, value, comptype, eportfolioitem, timestamp) deleted: activitytype, and foreign key descid, activityid deleted -->
     <TABLE NAME="block_exacompcompuser_mm" COMMENT="In dieser Tabelle wird gespeichert, welche User welche Deskriptoren oder Topics von welcher Aufgabe erfüllen und zustäzlich wer den Eintrag gemacht hat, also Lehrer oder Schüler.">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -208,9 +202,9 @@
         <FIELD NAME="reviewerid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Benutzerid dessen, der bewertet ob Kompetenz erfüllt ist. Kann entweder ein Schüler sein (Selbsteinschätzung), oder ein Lehrer"/>
         <FIELD NAME="role" TYPE="int" LENGTH="5" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Speichert ob der Bewertende ein Schüler oder Lehrer ist. 1=Lehrer 0=Schüler"/>
         <FIELD NAME="value" TYPE="int" LENGTH="5" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="hier ist eine bewertung nach einem schema des lehrers möglich"/>
-    	<FIELD NAME="comptype" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Deskriptor, 1 für Topic"/>
-      	<FIELD NAME="eportfolioitem" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Kursmodul, 1 für Eportfolio Item"/>
-		<FIELD NAME="timestamp" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>     
+        <FIELD NAME="comptype" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Deskriptor, 1 für Topic"/>
+        <FIELD NAME="eportfolioitem" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Kursmodul, 1 für Eportfolio Item"/>
+        <FIELD NAME="timestamp" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -218,7 +212,6 @@
         <KEY NAME="reviewerid" TYPE="foreign" FIELDS="reviewerid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel Bewerter"/>
       </KEYS>
     </TABLE>
-    <!-- changed fields typeid in stid, to be consistent with other tables, added key courseid -->
     <TABLE NAME="block_exacompmdltype_mm" COMMENT="Diese Tabelle speichert den Schultyp der jeweiligen Moodleinstanz">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -228,7 +221,7 @@
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="stid" TYPE="foreign" FIELDS="stid" REFTABLE="block_exacompschooltypes" REFFIELDS="id" COMMENT="Fremdschlüssel Schultyp"/>
-      	<KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Fremdschlüssel Kurs"/>
+        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Fremdschlüssel Kurs"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="block_exacompcoutopi_mm" COMMENT="In dieser Tabelle werden die Zuordnungen der einzelnen Kurse zu Schwerpunkten gespeichert">
@@ -243,7 +236,6 @@
         <KEY NAME="topicid" TYPE="foreign" FIELDS="topicid" REFTABLE="block_exacomptopics" REFFIELDS="id" COMMENT="Fremdschlüssel Schwerpunkt-ID"/>
       </KEYS>
     </TABLE>
-    <!-- changed tablename, fields(compid, value, comptype), and foreign key descid deleted, added key courseid-->
     <TABLE NAME="block_exacompcompuser" COMMENT="In dieser Tabelle wird gespeichert, welcher Benutzer welchen Deskriptor oder welches Topic erfüllt. Zusätzlich wer die Kompetenzermittlung durchgeführt hat, also Schüler oder Lehrer">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -254,16 +246,15 @@
         <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="value" TYPE="int" LENGTH="5" NOTNULL="false" SEQUENCE="false" COMMENT="beurteilung"/>
         <FIELD NAME="comptype" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Deskriptor, 1 für Topic"/>
-      	<FIELD NAME="timestamp" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timestamp" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel userid"/>
-       	<KEY NAME="reviewerid" TYPE="foreign" FIELDS="reviewerid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel Beurteilender"/>
-      	<KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Fremdschlüssel Kurs"/>
+        <KEY NAME="reviewerid" TYPE="foreign" FIELDS="reviewerid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel Beurteilender"/>
+        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Fremdschlüssel Kurs"/>
       </KEYS>
     </TABLE>
-    <!-- changed field courseid and key courseid, to be consistend with other tables -->
     <TABLE NAME="block_exacompsettings" COMMENT="Bewertungsschema des Kurses festlegen">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -280,7 +271,6 @@
         <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Kurs"/>
       </KEYS>
     </TABLE>
-    <!-- changed foreign key userid -->
     <TABLE NAME="block_exacompprofilesettings" COMMENT="This table stored the individual user settings for generating their competence profile">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -294,7 +284,6 @@
         <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel Userid"/>
       </KEYS>
     </TABLE>
-    <!-- changed parent in parentid -->
     <TABLE NAME="block_exacompniveaus" COMMENT="Niveaus">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -308,7 +297,6 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <!-- added keys studentid, exampleid, courseid, teacher_reviewerid type von starttime und enttime modified-->
     <TABLE NAME="block_exacompexameval" COMMENT="Default comment for the table, please edit me">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -334,7 +322,7 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="title" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="lvl" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="level" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="parentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="parent category"/>
         <FIELD NAME="sourceid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
@@ -342,8 +330,6 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <!-- table  block_exacomptopicuser and block_exacomptopic_user_mm deleted, -->
-    <!-- added foreign keys descid and badgeid -->
     <TABLE NAME="block_exacompdescbadge_mm" COMMENT="badges require descriptors to get awarded">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>

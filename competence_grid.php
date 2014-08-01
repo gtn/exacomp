@@ -45,8 +45,7 @@ $page_identifier = 'tab_competence_grid';
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/competence_grid.php', array('courseid' => $courseid));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
-$PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
-
+$PAGE->set_title(get_string($page_identifier,'block_exacomp'));
 block_exacomp_init_js_css();
 
 // build breadcrumbs navigation
@@ -62,6 +61,7 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $
 // CHECK TEACHER
 $isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
 /* CONTENT REGION */
+$output = $PAGE->get_renderer('block_exacomp');
 $subjectid = optional_param('subjectid', 0, PARAM_INT);
 $studentid = optional_param("studentid", 0, PARAM_INT);
 
@@ -70,14 +70,23 @@ if(!$isTeacher) $studentid = $USER->id;
 $subjects = ($version) ? block_exacomp_get_schooltypes_by_course($courseid) : block_exacomp_get_subjects_by_course($courseid);
 if($subjects && $subjectid == 0)
 	$subjectid = key($subjects);
+/* SAVE DATA */
+if($version	&& $studentid > 0 && isset($_POST['btn_submit']) && $subjectid > 0)
+	block_exacomp_save_competencies(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_TOPIC);
 
-echo get_string("choosesubject","block_exacomp");
-echo html_writer::select($subjects, 'exacomp_competence_grid_select_subject',array($subjectid),null,
-		array("onchange"=>"document.location.href='".$CFG->wwwroot.$url."&subjectid='+this.value+'&studentid=".$studentid."';"));
+echo $output->print_subject_dropdown($subjects,$subjectid);
 if (has_capability('block/exacomp:teacher', $context)) {
 	echo get_string("choosestudent","block_exacomp");
-	echo block_exacomp_studentselector(get_role_users(5, $context),$studentid,$url);
+	echo block_exacomp_studentselector(block_exacomp_get_students_by_course($courseid),$studentid,$PAGE->url);
 }
+echo html_writer::start_div();
+echo html_writer::tag("a", get_string("textalign","block_exacomp"),array("class" => "switchtextalign"));
+echo html_writer::div($output->print_competence_grid_legend());
+list($niveaus, $skills, $subjects, $data, $selection) = block_exacomp_init_competence_grid_data($courseid, $subjectid, $studentid);
+echo html_writer::start_tag("form", array("method"=>"post"));
+echo $output->print_competence_grid($niveaus, $skills, $subjects, $data, $selection, $courseid,$studentid);
+echo html_writer::empty_tag("input", array("type"=>"submit","name"=>"btn_submit","value"=>get_string('save_selection','block_exacomp')));
+echo html_writer::end_div();
 /* END CONTENT REGION */
 
 echo $OUTPUT->footer();

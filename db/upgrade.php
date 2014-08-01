@@ -1101,6 +1101,12 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         $table = new xmldb_table('block_exacomptopicuser_mm');
         $dbman->drop_table($table); 
         
+        /* block_exacompcategories */
+        $table = new xmldb_table('block_exacompcategories');
+        $field = new xmldb_field('lvl', XMLDB_TYPE_INTEGER, '11', null, null, null, null, 'title');
+        
+        $dbman->rename_field($table, $field, 'level');
+        
         upgrade_block_savepoint(true, 2014070801, 'exacomp');
 	}
 	

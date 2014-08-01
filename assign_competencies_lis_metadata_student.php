@@ -13,7 +13,7 @@
 			</td>
 			
 			<td><span class="exabis_comp_top_small">Lernfortschritt</span> <b><?php 
-			$cat = $DB->get_record("block_exacompcategories",array("id"=>$selectedTopic->catid,"lvl"=>4));
+			$cat = $DB->get_record("block_exacompcategories",array("id"=>$selectedTopic->catid,"level"=>4));
 			echo $cat->title; ?> </b>
 			</td>
 			<td><span class="exabis_comp_top_small">Lernwegliste</span> <b><?php 

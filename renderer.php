@@ -325,16 +325,24 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content = html_writer::tag("div", html_writer::table($table), array("id"=>"exabis_competences_block"));
 		return $content;
 	}
-	public function print_lis_dropdowns($subjects, $topics, $selectedSubject, $selectedTopic) {
+	public function print_subject_dropdown($subjects, $selectedSubject) {
 		global $PAGE;
 		$content = get_string("choosesubject", "block_exacomp");
 		$options = array();
 		foreach($subjects as $subject)
 			$options[$subject->id] = $subject->title;
-
+		
 		$content .= html_writer::select($options, "lis_subjects",$selectedSubject, false,
 				array("onchange" => "document.location.href='".$PAGE->url."&subjectid='+this.value;"));
+		return $content;
+	}
+	/**
+	 * Prints 2 select inputs for subjects and topics
+	 */
+	public function print_lis_dropdowns($subjects, $topics, $selectedSubject, $selectedTopic) {
+		global $PAGE;
 
+		$content = $this->print_subject_dropdown($subjects, $selectedSubject);
 		$content .= html_writer::empty_tag("br");
 
 		$content .= get_string("choosetopic", "block_exacomp");
@@ -345,6 +353,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				array("onchange" => "document.location.href='".$PAGE->url."&subjectid=".$selectedSubject."&topicid='+this.value;"));
 
 		return $content;
+	}
+	public function print_competence_grid_legend() {
+			$content = html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","competenceyellow");
+			$content .= get_string("selfevaluation","block_exacomp");
+			$content .= html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","competenceok");
+			$content .= get_string("teacherevaluation","block_exacomp");
+			return $content;
 	}
 	public function print_competence_overview_LIS_student_topics($subs, &$row, &$columns, &$column_count, $scheme){
 		global $USER, $COURSE;
@@ -383,9 +398,167 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 		}
 	}
+	public function print_competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0,$studentid=0) {
+		global $CFG;
+	
+		$headFlag = false;
+	
+		$context = context_course::instance($courseid);
+	
+		$table = new html_table();
+		$table->attributes['class'] = 'competence_grid';
+		$head = array();
+	
+		$schema = ($courseid == 0) ? 1 : block_exacomp_get_grading_scheme($courseid);
+		$satisfied = ceil($schema/2);
+	
+		$rows = array();
+		if (empty($data)) return get_string('competencegrid_nodata', 'block_exacomp');
+	
+		foreach($data as $skillid => $skill) {
+	
+			if(isset($skills[$skillid])) {
+				$row = new html_table_row();
+				$cell1 = new html_table_cell();
+				$cell1->text = html_writer::tag("span",html_writer::tag("span",$skills[$skillid],array('class'=>'rotated-text__inner-header')),array('class'=>'rotated-text-header'));
+				$cell1->attributes['class'] = 'skill';
+				$cell1->rowspan = count($skill)+1;
+				$row->cells[] = $cell1;
+				//
+				$rows[] = $row;
+	
+				if(!$headFlag)
+					$head[] = "";
+			}
+	
+			if(!$headFlag) {
+				$head[] = "";
+				$head = array_merge($head,$niveaus);
+				$table->head = $head;
+				$headFlag = true;
+			}
+	
+			foreach($skill as $topicid => $topic) {
+				$row = new html_table_row();
+	
+				$cell2 = new html_table_cell();
+				$cell2->text = html_writer::tag("span",html_writer::tag("span",$topics[$topicid],array('class'=>'rotated-text__inner')),array('class'=>'rotated-text'));
+				$cell2->attributes['class'] = 'topic';
+				$row->cells[] = $cell2;
+	
+				foreach($niveaus as $niveauid => $niveau) {
+					if(isset($data[$skillid][$topicid][$niveauid])) {
+						$cell = new html_table_cell();
+						$compdiv = "";
+						$allTeachercomps = true;
+						$allStudentcomps = true;
+						foreach($data[$skillid][$topicid][$niveauid] as $descriptor) {
+							$compString = "";
+							if (has_capability('block/exacomp:teacher', $context)) {
+								if(isset($descriptor->teachercomp) && in_array($descriptor->id, $selection)) {
+									$compString .= "L: ";
+									if($schema == 1) {
+										$compString .= html_writer::checkbox("data[".$descriptor->id."][".$studentid."][teacher]", 1,$descriptor->teachercomp).'&nbsp; ';
+										$compString .= " S: ". html_writer::checkbox("studentdata[".$topicid."][".$descriptor->id."]", 1,($descriptor->studentcomp >= $satisfied),"",array("disabled"=>"disabled")).'&nbsp; ';
+									}else {
+										$options = array();
+										for($i=0;$i<=$schema;$i++)
+											$options[] = $i;
+	
+											$name = "data[".$descriptor->id."][".$studentid."][teacher]";
+											$compString .= html_writer::select($options, $name, $descriptor->teachercomp, false);
+	
+											//$compString .= "&nbsp;S: " . html_writer::select($options,"student".$name, $descriptor->studentcomp,false,array("disabled"=>"disabled")).'&nbsp; ';
+											$compString .= "&nbsp;S: " . html_writer::checkbox("student".$name, 0,$descriptor->studentcomp >= $satisfied,"",array("disabled"=>"disabled")).'&nbsp; ';
+									}
+									}
+										
+								} else if(has_capability('block/exacomp:student', $context) && in_array($descriptor->id, $selection)) {
+								$compString.="S: ";
+								if($schema == 1) {
+								$compString .= html_writer::checkbox("data[".$descriptor->id."][".$studentid."][student]", 1,$descriptor->studentcomp).'&nbsp; ';
+									
+								$compString .= "&nbsp;L: " . html_writer::checkbox("studentdata[".$studentid."][".$descriptor->id."]", 0,$descriptor->teachercomp >= $satisfied,"",array("disabled"=>"disabled")).'&nbsp; ';
+								} else {
+								$options = array();
+								for($i=0;$i<=$schema;$i++)
+									$options[] = $i;
+										
+									$name = "data[".$topicid."][".$descriptor->id."][student]";
+									//$compString .= html_writer::select($options, $name, $descriptor->studentcomp, false);
+									$compString .= html_writer::checkbox("data[".$descriptor->id."][".$studentid."]", $schema,$descriptor->studentcomp).'&nbsp; ';
+	
+									$compString .= "&nbsp;L: " . (($descriptor->teachercomp) ? $descriptor->teachercomp : 0);
+								}
+	
+									
+								}
+								if(isset($descriptor->icon))
+									$compString .= $descriptor->icon;
+	
+								$text = "<br />".$descriptor->title;
+								if(in_array($descriptor->id, $selection)) {
+									$text = html_writer::link(new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid"=>$courseid,"subjectid"=>$topicid,"topicid"=>$descriptor->id)),$text);
+								}
+	
+								if(isset($descriptor->examples)) {
+									$text .= '<br/>';
+									foreach($descriptor->examples as $example) {
+										$img = '<img src="pix/i_11x11.png" alt="Beispiel" />';
+										if($example->task)
+											$text .= "<a target='_blank' alt='".$example->title."' title='".$example->title."' href='".$example->task."'>".$img."</a>";
+										if($example->externalurl)
+											$text .= "<a target='_blank' alt='".$example->title."' title='".$example->title."' href='".$example->externalurl."'>".$img."</a>";
+									}
+								}
+								$compString .= $text;
+	
+								/*else {
+								 if(isset($descriptor->teachercomp) && $descriptor->teachercomp)
+									//$compString .= "T";
+								$cssClass = "teachercomp";
+								}
+							 //if(isset($descriptor->studentcomp) && $descriptor->studentcomp)
+									//	$compString .= "S";
+								*/
+	
+								if(count($data[$skillid][$topicid][$niveauid]) > 1)
+									$compString .= html_writer::tag("hr","");
+	
+								if(!isset($descriptor->teachercomp))
+									$allTeachercomps = false;
+								if(!isset($descriptor->studentcomp) || isset($descriptor->teachercomp))
+									$allStudentcomps = false;
+	
+								$cssClass = (isset($descriptor->teachercomp) && $descriptor->teachercomp >= $satisfied) ? "content competenceok" : ((isset($descriptor->studentcomp) && $descriptor->studentcomp >= $satisfied) ? "content competenceyellow" : "content ");
+								$compdiv .= html_writer::tag('div', $compString,array('class'=>$cssClass));
+						}
+	
+						if(count($data[$skillid][$topicid][$niveauid]) == 1)
+							$cell->attributes['class'] = $cssClass;
+						else if($allStudentcomps)
+							$cell->attributes['class'] = "content competenceyellow";
+						else if($allTeachercomps)
+							$cell->attributes['class'] = "content competenceok";
+	
+						$cell->text = $compdiv;
+	
+						$row->cells[] = $cell;
+					} else
+						$row->cells[] = "";
+				}
+				$rows[] = $row;
+			}
+			//$rows[] = $row;
+		}
+		$table->data = $rows;
+	
+		return html_writer::tag("div", html_writer::table($table), array("id"=>"exabis_competences_block"));
+	}
 	public function print_competence_overview_form_start(){
 		global $PAGE, $COURSE;
-		return html_writer::start_tag('form',array('id'=>'assign-competencies', 'action'=>new moodle_url($PAGE->url, array('courseid'=>$COURSE->id, 'action'=>'save')), 'method'=>'post'));
+		
+		return html_writer::start_tag('form',array('id'=>'assign-competencies', "action" => str_replace("amp;","", $PAGE->url) . "&action=save", 'method'=>'post'));
 	}
 	public function print_competence_overview_LIS_student($subjects, $courseid, $showevaluation, $scheme, $examples){
 		global $USER, $DB, $PAGE, $COURSE;
@@ -640,6 +813,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$table_html .= html_writer::tag("input", "", array("name" => "open_row_groups", "type" => "hidden", "value" => (optional_param('open_row_groups', "", PARAM_TEXT))));
 
 		return $table_html.html_writer::end_tag('form');
+		
 		//return html_writer::tag("form", $table_html, array("id" => "assign-competencies", "method" => "post", "action" => $PAGE->url . "&action=save"));
 	}
 

@@ -12,10 +12,10 @@ div#exabis_competences_block {
 #competenceok, .competenceok {
 	background-color: #dff0d8 !important;
 }
-#exabis_competences_block #competenceyellow, #exabis_competences_block .competenceyellow {
+#competenceyellow, .competenceyellow {
 	background-color: #fcf8e3 !important;
 }
-#exabis_competences_block span.competenceyellow,#exabis_competences_block span.competenceok{width:20px;border:1px gray solid;}
+span.competenceyellow, span.competenceok{width:20px;border:1px gray solid;}
 #exabis_competences_block .generaltable td.bottom {
 	vertical-align: bottom;
 }

@@ -114,7 +114,7 @@ function block_exacomp_get_all_subjects() {
  */
 function block_exacomp_get_schooltypes_by_course($courseid) {
 	global $DB;
-	return $DB->get_records_sql_menu('
+	return $DB->get_records_sql('
 			SELECT s.id, s.title
 			FROM {'.DB_SCHOOLTYPES.'} s
 			JOIN {'.DB_MDLTYPES.'} m ON m.stid = s.id AND m.courseid = ?
@@ -323,21 +323,7 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 		$DB->insert_record(DB_COMPETENCIES, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, "courseid" => $courseid, "role" => $role, "value" => $value, "reviewerid" => $USER->id, "timestamp" => time()));
 	}
 }
-/**
- * Reset comp data for one comptype in one course
- *
- * @param int $courseid
- * @param int $role
- * @param int $comptype
- * @param int $userid
- */
-function block_exacomp_reset_comp_data($courseid, $role, $comptype, $userid = false) {
-	global $DB;
-	if($role == ROLE_TEACHER)
-		$DB->delete_records(DB_COMPETENCIES, array("courseid" => $courseid, "role" => $role, "comptype" => $comptype));
-	else
-		$DB->delete_records(DB_COMPETENCIES, array("courseid" => $courseid, "role" => $role,  "comptype" => $comptype, "userid"=>$userid));
-}
+
 /**
  * Saves competence data submitted by the assign competencies form
  *
@@ -345,14 +331,14 @@ function block_exacomp_reset_comp_data($courseid, $role, $comptype, $userid = fa
  * @param int $courseid
  * @param int $role
  * @param int $comptype
+ * @param int $topicid
  */
-function block_exacomp_save_competencies($data, $courseid, $role, $comptype) {
+function block_exacomp_save_competencies($data, $courseid, $role, $comptype, $topicid = null) {
 	global $USER;
 	$values = array();
 	foreach ($data as $compidKey => $students) {
 		if (!empty($data[$compidKey])) {
 			foreach ($data[$compidKey] as $studentidKey => $evaluations) {
-
 				if(is_array($evaluations)) {
 					if(isset($evaluations['teacher']))
 						$value = intval($evaluations['teacher']);
@@ -363,11 +349,44 @@ function block_exacomp_save_competencies($data, $courseid, $role, $comptype) {
 			}
 		}
 	}
-	block_exacomp_reset_comp_data($courseid, $role, $comptype, (($role == ROLE_STUDENT)) ? $USER->id : false);
+	block_exacomp_reset_comp_data($courseid, $role, $comptype, (($role == ROLE_STUDENT)) ? $USER->id : false, $topicid);
 
 	foreach ($values as $value)
 		block_exacomp_set_user_competence($value['user'], $value['compid'], $comptype, $courseid, $role, $value['value']);
 }
+
+
+/**
+ * Reset comp data for one comptype in one course
+ *
+ * @param int $courseid
+ * @param int $role
+ * @param int $comptype
+ * @param int $userid
+ * @param int $topicid
+ */
+function block_exacomp_reset_comp_data($courseid, $role, $comptype, $userid = false, $topicid = null) {
+	global $DB;
+	if(!$topicid) {
+		if($role == ROLE_TEACHER)
+			$DB->delete_records(DB_COMPETENCIES, array("courseid" => $courseid, "role" => $role, "comptype" => $comptype));
+		else
+			$DB->delete_records(DB_COMPETENCIES, array("courseid" => $courseid, "role" => $role,  "comptype" => $comptype, "userid"=>$userid));
+	} else {
+		$sql = "
+			DELETE FROM {block_exacompcompuser} c WHERE c.compid = ? AND ((c.compid IN
+			(SELECT d.id FROM {block_exacompdescriptors} d, {block_exacompdescrtopic_mm} dt
+			WHERE d.id = dt.descrid AND dt.topicid = ?) AND c.comptype = 0) OR (c.comp = ? AND c.comptype = 1))
+		";
+		$select = " courseid = ? AND role = ? AND COMPTYPE = ? AND ((compid IN
+			(SELECT d.id FROM {block_exacompdescriptors} d, {block_exacompdescrtopic_mm} dt
+			WHERE d.id = dt.descrid AND dt.topicid = ?) AND comptype = 0) OR (compid = ? AND comptype = 1))";
+		if($userid)
+			$select .= " AND userid = ?";
+		$DB->delete_records_select("block_exacompcompuser", $select ,array($courseid, $role, $comptype, $topicid,$topicid, $userid));
+	}
+}
+
 /**
  * Delete timestamp for exampleid
  */
@@ -1591,7 +1610,6 @@ function block_exacomp_delete_competencies_activities(){
 	}
 }
 /**
- * 
  * Get activity for particular competence
  * @param unknown_type $descid
  * @param unknown_type $courseid
@@ -1617,6 +1635,55 @@ function block_exacomp_get_activities($compid, $courseid = null, $comptype = TYP
 	}
 	return $activities;
 }
+function block_exacomp_init_competence_grid_data($courseid, $subjectid, $studentid) {
+	global $version, $DB;
+
+	if($studentid > 0) {
+		$cm_mm = block_exacomp_get_course_module_association($courseid);
+		$course_mods = get_fast_modinfo($courseid)->get_cms();
+	}
+	if($version) {
+		$skills = array();
+		$subjects = $DB->get_records_menu(DB_SUBJECTS,array("stid" => $subjectid),null,"id, title");
+		$niveaus = $DB->get_records_menu(DB_CATEGORIES, array("level" => 4),"id,title","id,title");
+
+		$data = array();
+		if($studentid > 0)
+			$competencies = array("studentcomps"=>$DB->get_records(DB_COMPETENCIES,array("role"=>ROLE_STUDENT,"courseid"=>$courseid,"userid"=>$studentid,"comptype"=>TYPE_TOPIC),"","compid,userid,reviewerid,value"),
+					"teachercomps"=>$DB->get_records(DB_COMPETENCIES,array("role"=>ROLE_TEACHER,"courseid"=>$courseid,"userid"=>$studentid,"comptype"=>TYPE_TOPIC),"","compid,userid,reviewerid,value"));
+
+		// Arrange data in associative array for easier use
+		foreach($subjects as $subjid => $subject) {
+			$topics = $DB->get_records('block_exacomptopics',array("subjid"=>$subjid),"catid");
+			foreach($topics as $topic) {
+				if($topic->catid == 0) continue;
+
+				if($studentid > 0) {
+					$topic->studentcomp = (array_key_exists($topic->id, $competencies['studentcomps'])) ? $competencies['studentcomps'][$topic->id]->value : false;
+					$topic->teachercomp = (array_key_exists($topic->id, $competencies['teachercomps'])) ? $competencies['teachercomps'][$topic->id]->value : false;
+						
+					// ICONS
+					if(isset($cm_mm->topics[$topic->id])) {
+						//get CM instances
+						$cm_temp = array();
+						foreach($cm_mm->topics[$topic->id] as $cmid)
+							$cm_temp[] = $course_mods[$cmid];
+							
+						$icon = block_exacomp_get_icon_for_user($cm_temp, $DB->get_record("user",array("id"=>$studentid)));
+						$topic->icon = '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>';
+					}
+				}
+				$data[1][$subjid][$topic->catid][] = $topic;
+			}
+		}
+
+		$selection = $DB->get_fieldset_select('block_exacompcoutopi_mm', 'topicid', ' courseid = ?',array($courseid));
+		$selection = block_exacomp_get_topics_by_subject($courseid,$subjid);
+
+	}
+	return array($niveaus, $skills, $subjects, $data, $selection);
+}
+
 /**
  * 
  * Gets examples for LIS student view

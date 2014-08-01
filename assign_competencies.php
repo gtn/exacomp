@@ -65,25 +65,30 @@ $isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
 if(($delete = optional_param("delete", 0, PARAM_INT)) > 0 && $isTeacher)
 	block_exacomp_delete_custom_example($delete);
 
+if($version) {
+	if($isTeacher)
+		list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_lis_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', 0, PARAM_INT));
+	else
+		list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_lis_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', 0, PARAM_INT), true);
+}
+
 // SAVA DATA
-if (($action = optional_param("action", "", PARAM_TEXT) )== "save") {
+if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 	// DESCRIPTOR DATA
-	block_exacomp_save_competencies(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_DESCRIPTOR);
+	block_exacomp_save_competencies(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_DESCRIPTOR, ($version) ? $selectedTopic->id : null);
 	// TOPIC DATA
-	block_exacomp_save_competencies(isset($_POST['datatopics']) ? $_POST['datatopics'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_TOPIC);
+	block_exacomp_save_competencies(isset($_POST['datatopics']) ? $_POST['datatopics'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_TOPIC, ($version) ? $selectedTopic->id : null);
 	// EXAMPLE DATA
 	block_exacomp_save_example_evaluation(isset($_POST['dataexamples']) ? $_POST['dataexamples'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT);
-	
+
 	//TOPIC LIS STUDENT
 	if(isset($_POST['topiccomp'])){
 		var_dump('in if');
-		if(($topicid = optional_param('topicid', 0, PARAM_INT))!=0){	
+		if(($topicid = optional_param('topicid', 0, PARAM_INT))!=0){
 			var_dump('in here');
 			block_exacomp_set_user_competence($USER->id, $topicid, TYPE_TOPIC, $courseid, ROLE_STUDENT, $_POST['topiccomp']);
 		}
 	}
-		
-	
 }
 //Delete timestamp (end|start) from example
 if($example_del = optional_param('exampleid', 0, PARAM_INT)){
@@ -103,18 +108,13 @@ echo $output->print_competence_overview_form_start();
 if(!$version) echo $output->print_student_evaluation($showevaluation);
 else {
 	/* LIS */
-	if($isTeacher)
-		list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_lis_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', 0, PARAM_INT));
-	else 
-		list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_lis_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', 0, PARAM_INT), true);
-	
 	echo $output->print_lis_dropdowns($subjects, $topics, $selectedSubject->id, $selectedTopic->id);
-	
+
 	if($selectedTopic->id != LIS_SHOW_ALL_TOPICS && $isTeacher)
 		include 'assign_competencies_lis_metadata.php';
 	else if($selectedTopic->id != LIS_SHOW_ALL_TOPICS && !$isTeacher)
 		include 'assign_competencies_lis_metadata_student.php';
-	
+
 	$PAGE->set_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid,"topicid"=>$selectedTopic->id,"subjectid"=>$selectedSubject->id));
 }
 echo $output->print_overview_legend($isTeacher);

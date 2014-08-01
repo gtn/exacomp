@@ -221,6 +221,10 @@ $string['niveau_filter'] = "Niveaus filtern";
 $string['module_filter'] = 'Aktivit&auml;ten filtern';
 $string['apply_filter'] = 'Filter anwenden';
 
+//Competence Grid
+$string['textalign'] = "Switch text align";
+$string['selfevaluation'] = 'Selbsteinschätzung';
+$string['teacherevaluation'] = 'Lehrereinschätzung';
 
 //LIS Strings
 if(get_config('exacomp','alternativedatamodel')) {
