@@ -68,7 +68,8 @@ if(($delete = optional_param("delete", 0, PARAM_INT)) > 0 && $isTeacher)
 $output = $PAGE->get_renderer('block_exacomp');
 
 $activities = block_exacomp_get_activities_by_course($courseid);
-if(!$activities)
+
+if(block_exacomp_get_settings_by_course($courseid)->uses_activities && !$activities)
 	echo $output->print_no_activities_warning();
 else{
 	if($version) {
