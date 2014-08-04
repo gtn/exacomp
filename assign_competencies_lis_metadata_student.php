@@ -73,12 +73,8 @@
 									
 							echo "S: ".html_writer::checkbox("topiccomp", $schema, $topicReached->value >= ceil($schema/2))." Bestätigung L: ". $topicReachedTeacher->value;
 								
-							//echo "S: ". html_writer::select($options, "topiccomp", $topicReached->wert, false) ." Bestätigung L: ". $topicReachedTeacher->wert;
-						}
-							//}else{
-						//echo html_writer::checkbox("topiccomp", 1, $topicReached);
-					//}
-				
+					}
+						
 					$activities = block_exacomp_get_activities($selectedTopic->id, $courseid, 0);
 					
 					if ($stdicon = block_exacomp_get_icon_for_user($activities, $USER)) {

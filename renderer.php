@@ -1435,7 +1435,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$example_content = $inner_example_content;
 							
 						$icons = $this->example_tree_get_exampleicon($example);
-
+					
 						$li_examples .= html_writer::tag('li', $example_content.$icons);
 					}
 					$ul_examples = html_writer::tag('ul', $li_examples);
@@ -1965,6 +1965,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 	public function print_no_activities_warning(){
 		return html_writer::label(get_string("no_activities_selected", "block_exacomp"), '');
+	}
+	public function print_detail_legend(){
+		return html_writer::label(get_string('detail_description', 'block_exacomp'), '');
+	}
+	public function print_detail_content($tree){
+		
 	}
 }
 ?>

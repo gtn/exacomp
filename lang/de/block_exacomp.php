@@ -161,6 +161,7 @@ $string['taxonomies'] = 'Taxonomien';
 $string['show_all_course_examples'] = 'Beispiele aus allen Kursen anzeigen';
 $string['expandcomps'] = 'Alle &ouml;ffnen';
 $string['contactcomps'] = 'Alle schlie&szlig;en';
+
 //Icons
 $string['assigned_example'] = 'Assigned Example';
 $string['task_example'] = 'Aufgabenstellung';
@@ -169,7 +170,7 @@ $string['attachement_example'] = 'Anhang';
 $string['extern_task'] = 'Externe Aufgabenstellung';
 $string['total_example'] = 'Gesamtbeispiel';
 //Example Upload
-$string['example_upload_header']  = 'Eigenes Beispiel raufladen';
+$string['example_upload_header']  = 'Eigenes Beispiel hochladen';
 $string['taxonomy'] = 'Taxonomie';
 $string['descriptors'] = 'Kompetenzen';
 $string['descriptors_help'] = 'Es k&ouml;nnen mehrere Kompetenzen ausgew&auml;hlt werden.';
@@ -222,12 +223,15 @@ $string['niveau_filter'] = "Niveaus filtern";
 $string['module_filter'] = 'Aktivit&auml;ten filtern';
 $string['apply_filter'] = 'Filter anwenden';
 $string['no_topics_selected'] = 'Konfiguration für Exabis Competencies wurde noch nicht abgeschlossen. Bitte w&auml;hlen Sie erst Gegenst&auml;nde aus, denen Sie dann Aktivit&auml;ten zuordnen k&ouml;nnen.';
-$stinrg['no_activities_selected'] = 'Bitte ordnen Sie den erstellen Aufgaben Kompetenzen zu.';
+$string['no_activities_selected'] = 'Bitte ordnen Sie den erstellen Aufgaben Kompetenzen zu.';
 
 //Competence Grid
 $string['textalign'] = "Switch text align";
 $string['selfevaluation'] = 'Selbsteinschätzung';
 $string['teacherevaluation'] = 'Lehrereinschätzung';
+
+//Detail view
+$string['detail_description'] = 'Hier kann mit Hilfe von Aktivitäten eine Kompetenz beurteilt werden.';
 
 //LIS Strings
 if(get_config('exacomp','alternativedatamodel')) {

@@ -60,8 +60,18 @@ echo $OUTPUT->header();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
 /* CONTENT REGION */
+$output = $PAGE->get_renderer('block_exacomp');
+$activities = block_exacomp_get_activities_by_course($courseid);
+if(!$activities)
+	echo $output->print_no_activities_warning();
+else{
+	echo $output->print_detail_legend();
+	
+	$tree = block_exacomp_build_activity_tree($courseid);
+	//funktioniert noch nicht, wenn auch topic ausgewählt var_dump($tree);
+	echo $output->print_detail_content($tree);
+}
 
-echo "CONTENT";
 
 /* END CONTENT REGION */
 

@@ -33,7 +33,7 @@ class block_exacomp extends block_list {
 	}
 
 	function get_content() {
-		global $CFG, $COURSE, $DB, $OUTPUT;
+		global $CFG, $COURSE, $DB, $OUTPUT, $version, $skillmanagement, $usebadges, $usedetailpage;
 
 		if ($this->content !== null) {
 			return $this->content;
@@ -60,8 +60,6 @@ class block_exacomp extends block_list {
 
 		$courseid = intval($COURSE->id);
 		
-		$version = get_config('exacomp', 'alternativedatamodel');
-		
 		if($version)
 			$checkConfig = block_exacomp_is_configured($courseid);
 		else
@@ -70,8 +68,6 @@ class block_exacomp extends block_list {
 		$checkImport = $DB->get_records('block_exacompdescriptors');
 		
 		$courseSettings = block_exacomp_coursesettings();
-		
-		$skillmanagement = get_config('exacomp', 'skillmanagement');
 		
 		
 		//if use skill management
@@ -114,7 +110,7 @@ class block_exacomp extends block_list {
 					$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/overview_of_competencies.png'), 'alt'=>"", 'height'=>16, 'width'=>'23'));
 					
 					//Kompetenz-Detailansicht nur wenn mit Aktivit�ten gearbeitet wird
-					if ($courseSettings->uses_activities){
+					if ($courseSettings->uses_activities && $usedetailpage){
 						$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/competence_detail.php', array('courseid'=>$courseid)), get_string('tab_competence_details', 'block_exacomp'), array('title'=>get_string('tab_competence_details', 'block_exacomp')));	
 						$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/detailed_view_of_competencies.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
 					}
@@ -128,7 +124,7 @@ class block_exacomp extends block_list {
 					$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/subject.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
 				
 					//Meine Auszeichnungen
-					if (block_exacomp_moodle_badges_enabled()) {
+					if (block_exacomp_moodle_badges_enabled() && $usebadges) {
 						$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/my_badges.php', array('courseid'=>$courseid)), get_string('tab_badges', 'block_exacomp'), array('title'=>get_string('tab_badges', 'block_exacomp')));
 						$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/pix/i/badge.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
 					}
@@ -146,7 +142,7 @@ class block_exacomp extends block_list {
 					$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/overview_of_competencies.png'), 'alt'=>"", 'height'=>16, 'width'=>'23'));
 				
 					//Kompetenz-Detailansicht nur wenn mit Aktivit�ten gearbeitet wird
-					if ($courseSettings->uses_activities){
+					if ($courseSettings->uses_activities && $usedetailpage){
 						$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/competence_detail.php', array('courseid'=>$courseid)), get_string('tab_competence_details', 'block_exacomp'), array('title'=>get_string('tab_competence_details', 'block_exacomp')));	
 						$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/detailed_view_of_competencies.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
 					}
@@ -164,7 +160,7 @@ class block_exacomp extends block_list {
 					$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/subject.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
 				
 					//Meine Auszeichnungen
-					if (block_exacomp_moodle_badges_enabled()) {
+					if (block_exacomp_moodle_badges_enabled() && $usebadges) {
 						$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/my_badges.php', array('courseid'=>$courseid)), get_string('tab_badges', 'block_exacomp'), array('title'=>get_string('tab_badges', 'block_exacomp')));
 						$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/pix/i/badge.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
 					}
@@ -189,7 +185,7 @@ class block_exacomp extends block_list {
 					$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/overview_of_competencies.png'), 'alt'=>"", 'height'=>16, 'width'=>'23'));
 				
 					//Kompetenz-Detailansicht
-					if ($courseSettings->uses_activities){
+					if ($courseSettings->uses_activities && $usedetailpage){
 						$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/competence_detail.php', array('courseid'=>$courseid)), get_string('tab_competence_details', 'block_exacomp'), array('title'=>get_string('tab_competence_details', 'block_exacomp')));	
 						$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/detailed_view_of_competencies.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
 					}
@@ -207,7 +203,7 @@ class block_exacomp extends block_list {
 					$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/subject.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
 					
 					//Meine Auszeichnungen
-					if (block_exacomp_moodle_badges_enabled()) {
+					if (block_exacomp_moodle_badges_enabled() && $usebadges) {
 						$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/my_badges.php', array('courseid'=>$courseid)), get_string('tab_badges', 'block_exacomp'), array('title'=>get_string('tab_badges', 'block_exacomp')));
 						$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/pix/i/badge.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
 					}
@@ -221,7 +217,7 @@ class block_exacomp extends block_list {
 					$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/overview_of_competencies.png'), 'alt'=>"", 'height'=>16, 'width'=>'23'));
 					
 					//Kompetenz-Detailansicht
-					if ($courseSettings->uses_activities){
+					if ($courseSettings->uses_activities && $usedetailpage){
 						$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/competence_detail.php', array('courseid'=>$courseid)), get_string('tab_competence_details', 'block_exacomp'), array('title'=>get_string('tab_competence_details', 'block_exacomp')));	
 						$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/detailed_view_of_competencies.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
 					}
@@ -244,7 +240,7 @@ class block_exacomp extends block_list {
 					$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/subject.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
 					
 					//Meine Auszeichnungen
-					if (block_exacomp_moodle_badges_enabled()) {
+					if (block_exacomp_moodle_badges_enabled() && $usebadges) {
 						$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/my_badges.php', array('courseid'=>$courseid)), get_string('tab_badges', 'block_exacomp'), array('title'=>get_string('tab_badges', 'block_exacomp')));
 						$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/pix/i/badge.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
 					}
@@ -272,11 +268,10 @@ class block_exacomp extends block_list {
 	 * it tries to get the content and update the local xml.
 	 */
 	public function cron() {
-		global $COURSE;
+		global $COURSE, $xmlserverurl, $autotest, $testlimit;
 		mtrace('Exabis Competencies: cron job is running.');
 		
 		//import xml with provided server url
-		$xmlserverurl = get_config('exacomp', 'xmlserverurl');
 		if($xmlserverurl) {
 			$xml = file_get_contents($xmlserverurl);
 			if($xml) {
@@ -290,7 +285,7 @@ class block_exacomp extends block_list {
 			}
 		}
 		
-		if(get_config('exacomp', 'autotest')){
+		if($autotest){
 			//for all courses where exacomp is used
 			$courses = block_exacomp_get_courses();
 			
@@ -300,7 +295,6 @@ class block_exacomp extends block_list {
 				$tests = block_exacomp_get_active_tests_by_course($courseid);
 				$students = block_exacomp_get_students_by_course($courseid);
 			
-				$limit = get_config('exacomp', 'testlimit');
 				$grading_scheme = block_exacomp_get_grading_scheme($courseid);
 				
 				//get student grading for each test
@@ -308,7 +302,7 @@ class block_exacomp extends block_list {
 					foreach($tests as $test){
 						//get grading for each test and assign topics and descriptors
 						$quiz = $DB->get_record('quiz_grades', array('quiz'=>$test->id, 'userid'=>$student->id));
-						if(isset($quiz->grade) && (floatval($test->grade)*(floatval($limit)/100)) <= $quiz->grade){
+						if(isset($quiz->grade) && (floatval($test->grade)*(floatval($testlimit)/100)) <= $quiz->grade){
 							//assign competences to student
 							if(isset($test->descriptors)){
 								foreach($test->descriptors as $descriptor){

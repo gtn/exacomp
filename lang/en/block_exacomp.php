@@ -205,3 +205,7 @@ $string['no_activities_selected'] = 'Please associate tasks with competencies.';
 $string['textalign'] = "Switch text align";
 $string['selfevaluation'] = 'Self assessment';
 $string['teacherevaluation'] = 'Teacher assessment';
+
+//Detail view
+$string['detail_description'] = 'Use activities to evaluate competencies.';
+
