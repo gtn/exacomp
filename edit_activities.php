@@ -140,9 +140,15 @@ if($modules){
 	block_exacomp_filter_niveaus($subjects, $selected_niveaus);
 	
 	$output = $PAGE->get_renderer('block_exacomp');
-	echo $output->print_activity_legend();
-	echo $output->print_activity_content($subjects, $visible_modules, $courseid, $colspan, $selected_niveaus);
-	echo $output->print_activity_footer($niveaus, $modules_to_filter, $selected_niveaus, $selected_modules);
+	$topics_set = block_exacomp_get_topics_by_subject($courseid, null, true);
+
+	if(!$topics_set)
+		echo $output->print_no_topics_warning();
+	else{
+		echo $output->print_activity_legend();
+		echo $output->print_activity_content($subjects, $visible_modules, $courseid, $colspan, $selected_niveaus);
+		echo $output->print_activity_footer($niveaus, $modules_to_filter, $selected_niveaus, $selected_modules);
+	}
 }
 
 /* END CONTENT REGION */

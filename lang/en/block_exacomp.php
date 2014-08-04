@@ -193,11 +193,13 @@ $string['assignfrom'] = 'from';
 $string['assignuntil'] = 'until';
 
 //Activities
-$string['explaineditactivities_subjects'] = 'Here you can associate tasks with descriptors.';
+$string['explaineditactivities_subjects'] = 'Here you can associate tasks with competencies.';
 $string['column_setting'] = 'hide/display columns';
 $string['niveau_filter'] = "filter levels";
 $string['module_filter'] = 'filter activities';
 $string['apply_filter'] = 'apply filter';
+$string['no_topics_selected'] = 'Configuration for Exabis Competences hasn\'t been completed. Please select topics first.';
+$string['no_activities_selected'] = 'Please associate tasks with competencies.';
 
 //Competence Grid
 $string['textalign'] = "Switch text align";

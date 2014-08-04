@@ -216,11 +216,13 @@ $string['assignuntil'] = 'bis';
 $string['assignlearninggroup'] = 'Lerngruppe';
 
 //Activities
-$string['explaineditactivities_subjects'] = 'Hier k&ouml;nnen Sie den erstellten Aufgaben Deskriptoren zuordnen.';
+$string['explaineditactivities_subjects'] = 'Hier k&ouml;nnen Sie den erstellten Aufgaben Kompetenzen zuordnen.';
 $string['column_setting'] = 'Spalten aus/einblenden';
 $string['niveau_filter'] = "Niveaus filtern";
 $string['module_filter'] = 'Aktivit&auml;ten filtern';
 $string['apply_filter'] = 'Filter anwenden';
+$string['no_topics_selected'] = 'Konfiguration für Exabis Competencies wurde noch nicht abgeschlossen. Bitte w&auml;hlen Sie erst Gegenst&auml;nde aus, denen Sie dann Aktivit&auml;ten zuordnen k&ouml;nnen.';
+$stinrg['no_activities_selected'] = 'Bitte ordnen Sie den erstellen Aufgaben Kompetenzen zu.';
 
 //Competence Grid
 $string['textalign'] = "Switch text align";

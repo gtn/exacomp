@@ -202,7 +202,7 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
-	$sql = 'SELECT t.id, t.title, t.catid, t.ataxonomie, t.btaxonomie, t.ctaxonomie, t.requirement, t.benefit, t.knowledgecheck,cat.title as cattitle
+	$sql = 'SELECT DISTINCT t.id, t.title, t.catid, t.ataxonomie, t.btaxonomie, t.ctaxonomie, t.requirement, t.benefit, t.knowledgecheck,cat.title as cattitle
 	FROM {'.DB_TOPICS.'} t
 	JOIN {'.DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.(($subjectid > 0) ? 'AND t.subjid = ? ': '')
 	.($showalldescriptors ? '' : '
@@ -1067,7 +1067,8 @@ function block_exacomp_get_output_fields($topic, $show_category=false) {
 	}
 	if($version && ($topic->id == LIS_SHOW_ALL_TOPICS)|| $show_category){
 		$output_id = $DB->get_field(DB_CATEGORIES, 'title', array("id"=>$topic->catid));
-		$output_id .= ': ';
+		if($output_id)
+			$output_id .= ': ';
 	}
 	return array($output_id, $output_title);
 }
@@ -1652,6 +1653,13 @@ function block_exacomp_get_activities($compid, $courseid = null, $comptype = TYP
 		$activities = array();
 	}
 	return $activities;
+}
+function block_exacomp_get_activities_by_course($courseid){
+	global $DB;
+	$query = 'SELECT mm.id FROM {'.DB_COMPETENCE_ACTIVITY.'} mm 
+		INNER JOIN {course_modules} a ON a.id=mm.activityid 
+		WHERE a.course = ?';
+	return $DB->get_records_sql($query, array($courseid));
 }
 function block_exacomp_init_competence_grid_data($courseid, $subjectid, $studentid) {
 	global $version, $DB;

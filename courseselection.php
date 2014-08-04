@@ -62,8 +62,8 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $
 
 /* CONTENT REGION */
 
-if ($action == 'save' && !empty($_POST['data'])) {
-    block_exacomp_set_coursetopics($courseid, $_POST['data']);
+if ($action == 'save') {
+    block_exacomp_set_coursetopics($courseid, (isset($_POST['data'])?$_POST['data']:array()));
     $action="";
 }
 

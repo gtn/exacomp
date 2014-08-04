@@ -1960,7 +1960,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$rows[] = $descriptorRow;
 		}
 	}
-	
-
+	public function print_no_topics_warning(){
+		return html_writer::label(get_string("no_topics_selected", "block_exacomp"), '');
+	}
+	public function print_no_activities_warning(){
+		return html_writer::label(get_string("no_activities_selected", "block_exacomp"), '');
+	}
 }
 ?>
