@@ -153,6 +153,7 @@ $string['descriptors'] = 'competencies';
 $string['descriptors_help'] = 'You can select multible competencies';
 $string['filerequired'] = 'A file must be selected.';
 $string['titlenotemtpy'] = 'A name is required.';
+$string['lisfilename'] = 'Use LIS filename template';
 
 //Assign competencies
 $string['save_selection'] = 'Save selection';

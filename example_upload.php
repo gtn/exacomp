@@ -84,7 +84,7 @@ foreach($topics as $topic){
 
 	if($topic->catid) {
 		$topic->cattitle = $DB->get_record("block_exacompcategories", array("id"=>$topic->catid))->title;
-		$topic->title = block_exacomp_add_str($topic->cattitle,true,'',': ').$topic->title;
+		$topic->title = $topic->cattitle . ": " . $topic->title;
 	}
 }
 
@@ -106,7 +106,7 @@ if($formdata = $form->get_data()) {
 		$filenameinfos = $DB->get_record_sql("SELECT s.numb, st.title as subjecttitle, cat.title as cattitle, cat.sourceid as catid FROM {block_exacompschooltypes} st
 				JOIN {block_exacompsubjects} s ON s.stid = st.id
 				JOIN {block_exacomptopics} t ON s.id = t.subjid
-				JOIN {block_exacompcategories} cat ON t.cat = cat.id
+				JOIN {block_exacompcategories} cat ON t.catid = cat.id
 				WHERE t.id = ?", array($topicid));
 		//Fachkürzel
 		$newfilename = substr($filenameinfos->subjecttitle,0,1);
@@ -116,10 +116,9 @@ if($formdata = $form->get_data()) {
 		//$newfilename .= '.';
 		//Nr Lernfortschritt
 
-		$newfilename .= block_exacomp_add_str(sprintf("%02d", substr($filenameinfos->cattitle,4,1)),true,".");
-		//$newfilename .= '.';
+		$newfilename .= sprintf("%02d", substr($filenameinfos->cattitle,4,1)) . ".";
 		//Nr Lernwegeliste
-		$newfilename .= block_exacomp_add_str(sprintf("%02d", $filenameinfos->catid),true,".");
+		$newfilename .= sprintf("%02d", $filenameinfos->catid) . ".";
 		$newfilename .= '_';
 		//Taxonomie
 		$taxname = $DB->get_field('block_exacomptaxonomies', 'title', array("id"=>$formdata->tax));

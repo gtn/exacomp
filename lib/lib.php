@@ -44,7 +44,7 @@ $skillmanagement = get_config('exacomp', 'skillmanagement');
 define("LIS_SHOW_ALL_TOPICS",99999999);
 
 /**
- * 
+ *
  * Include all JavaScript files needed
  */
 function block_exacomp_init_js_css(){
@@ -82,26 +82,26 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
-		
+
 	$sql = '
-			SELECT DISTINCT s.id, s.title, s.stid, s.numb, \'subject\' as tabletype
-			FROM {'.DB_SUBJECTS.'} s
-			JOIN {'.DB_TOPICS.'} t ON t.subjid = s.id
-			JOIN {'.DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?
-			'.($showalldescriptors ? '' : '
-					-- only show active ones
-					JOIN {'.DB_DESCTOPICS.'} topmm ON topmm.topicid=t.id
-					JOIN {'.DB_DESCRIPTORS.'} d ON topmm.descrid=d.id
-					JOIN {'.DB_COMPETENCE_ACTIVITY.'} ca ON (d.id=ca.compid AND ca.comptype = '.TYPE_DESCRIPTOR.') OR (t.id=ca.compid AND ca.comptype = '.TYPE_TOPIC.')
-					JOIN {course_modules} a ON ca.activityid=a.id AND a.course=ct.courseid
-					').'
+	SELECT DISTINCT s.id, s.title, s.stid, s.numb, \'subject\' as tabletype
+	FROM {'.DB_SUBJECTS.'} s
+	JOIN {'.DB_TOPICS.'} t ON t.subjid = s.id
+	JOIN {'.DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?
+	'.($showalldescriptors ? '' : '
+			-- only show active ones
+			JOIN {'.DB_DESCTOPICS.'} topmm ON topmm.topicid=t.id
+			JOIN {'.DB_DESCRIPTORS.'} d ON topmm.descrid=d.id
+			JOIN {'.DB_COMPETENCE_ACTIVITY.'} ca ON (d.id=ca.compid AND ca.comptype = '.TYPE_DESCRIPTOR.') OR (t.id=ca.compid AND ca.comptype = '.TYPE_TOPIC.')
+			JOIN {course_modules} a ON ca.activityid=a.id AND a.course=ct.courseid
+			').'
 			ORDER BY id, title
 			';
-	
+
 	return $DB->get_records_sql($sql, array($courseid));
 }
 /**
- * 
+ *
  * Gets all available subjects
  */
 function block_exacomp_get_all_subjects() {
@@ -123,7 +123,7 @@ function block_exacomp_get_schooltypes_by_course($courseid) {
 			', array($courseid));
 }
 /**
- * 
+ *
  * This function is used for courseselection.php
  * -only subject according to selected schooltypes are returned
  * @param unknown_type $courseid
@@ -198,20 +198,20 @@ function block_exacomp_get_topics_by_course($courseid) {
  */
 function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showalldescriptors = false) {
 	global $DB;
-	
-	if(!$showalldescriptors) 
+
+	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
-	
+
 	$sql = 'SELECT t.id, t.title, t.catid, t.ataxonomie, t.btaxonomie, t.ctaxonomie, t.requirement, t.benefit, t.knowledgecheck,cat.title as cattitle
-			FROM {'.DB_TOPICS.'} t
-			JOIN {'.DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.(($subjectid > 0) ? 'AND t.subjid = ? ': '')
-			.($showalldescriptors ? '' : '
-					-- only show active ones
-					JOIN {'.DB_DESCTOPICS.'} topmm ON topmm.topicid=t.id
-					JOIN {'.DB_DESCRIPTORS.'} d ON topmm.descrid=d.id
-					JOIN {'.DB_COMPETENCE_ACTIVITY.'} da ON (d.id=da.compid AND da.comptype = '.TYPE_DESCRIPTOR.') OR (t.id=da.compid AND da.comptype = '.TYPE_TOPIC.')
-					JOIN {course_modules} a ON da.activityid=a.id AND a.course=ct.courseid
-					').'
+	FROM {'.DB_TOPICS.'} t
+	JOIN {'.DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.(($subjectid > 0) ? 'AND t.subjid = ? ': '')
+	.($showalldescriptors ? '' : '
+			-- only show active ones
+			JOIN {'.DB_DESCTOPICS.'} topmm ON topmm.topicid=t.id
+			JOIN {'.DB_DESCRIPTORS.'} d ON topmm.descrid=d.id
+			JOIN {'.DB_COMPETENCE_ACTIVITY.'} da ON (d.id=da.compid AND da.comptype = '.TYPE_DESCRIPTOR.') OR (t.id=da.compid AND da.comptype = '.TYPE_TOPIC.')
+			JOIN {course_modules} a ON da.activityid=a.id AND a.course=ct.courseid
+			').'
 			LEFT JOIN {'.DB_CATEGORIES.'} cat ON t.catid = cat.id
 			ORDER BY t.catid
 			';
@@ -239,7 +239,7 @@ function block_exacomp_get_all_topics($subjectid = null) {
 	return $topics;
 }
 /**
- * 
+ *
  * Gets topic with particular id
  * @param  $topicid
  */
@@ -374,13 +374,13 @@ function block_exacomp_reset_comp_data($courseid, $role, $comptype, $userid = fa
 			$DB->delete_records(DB_COMPETENCIES, array("courseid" => $courseid, "role" => $role,  "comptype" => $comptype, "userid"=>$userid));
 	} else {
 		$sql = "
-			DELETE FROM {block_exacompcompuser} c WHERE c.compid = ? AND ((c.compid IN
-			(SELECT d.id FROM {block_exacompdescriptors} d, {block_exacompdescrtopic_mm} dt
-			WHERE d.id = dt.descrid AND dt.topicid = ?) AND c.comptype = 0) OR (c.comp = ? AND c.comptype = 1))
+		DELETE FROM {block_exacompcompuser} c WHERE c.compid = ? AND ((c.compid IN
+		(SELECT d.id FROM {block_exacompdescriptors} d, {block_exacompdescrtopic_mm} dt
+		WHERE d.id = dt.descrid AND dt.topicid = ?) AND c.comptype = 0) OR (c.comp = ? AND c.comptype = 1))
 		";
 		$select = " courseid = ? AND role = ? AND COMPTYPE = ? AND ((compid IN
-			(SELECT d.id FROM {block_exacompdescriptors} d, {block_exacompdescrtopic_mm} dt
-			WHERE d.id = dt.descrid AND dt.topicid = ?) AND comptype = 0) OR (compid = ? AND comptype = 1))";
+		(SELECT d.id FROM {block_exacompdescriptors} d, {block_exacompdescrtopic_mm} dt
+		WHERE d.id = dt.descrid AND dt.topicid = ?) AND comptype = 0) OR (compid = ? AND comptype = 1))";
 		if($userid)
 			$select .= " AND userid = ?";
 		$DB->delete_records_select("block_exacompcompuser", $select ,array($courseid, $role, $comptype, $topicid,$topicid, $userid));
@@ -392,15 +392,15 @@ function block_exacomp_reset_comp_data($courseid, $role, $comptype, $userid = fa
  */
 function block_exacomp_delete_timefield($exampleid, $deletestart, $deleteent){
 	global $USER;
-	
+
 	$updateid = $DB->get_field(DB_EXAMPLEEVAL, 'id', array('exampleid'=>$exampleid, 'studentid'=>$USER->id));
-	$update = new stdClass();	
-	$update->id = $updateid; 
+	$update = new stdClass();
+	$update->id = $updateid;
 	if($deletestart==1)
 		$update->starttime = null;
 	elseif($deleteend==1)
-		$update->endtime = null;
-	
+	$update->endtime = null;
+
 	$DB->update_record(DB_EXAMPLEEVAL, $update);
 }
 /**
@@ -410,7 +410,7 @@ function block_exacomp_delete_timefield($exampleid, $deletestart, $deleteent){
  * @param int $courseid
  * @param int $role
  */
-function block_exacomp_save_example_evaluation($data, $courseid, $role) {
+function block_exacomp_save_example_evaluation($data, $courseid, $role, $topicid = null) {
 	global $DB,$USER, $version;
 	$values = array();
 
@@ -493,7 +493,7 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 }
 /**
  * Returns a list of descriptors from a particular course
- * 
+ *
  * @param $courseid
  * @param $onlywithactivitys - to select only descriptors assigned to activities
  */
@@ -501,13 +501,13 @@ function block_exacomp_get_descritors_list($courseid, $onlywithactivitys = 0) {
 	global $DB;
 
 	$query = 'SELECT t.id as topdescrid, d.id,d.title,tp.title as topic,tp.id as topicid, s.title as subject,s.id as
-		subjectid,d.niveauid 
-		FROM {'.DB_DESCRIPTORS.'} d, 
-		{'.DB_COURSETOPICS.'} c, 
-		{'.DB_DESCTOPICS.'} t,
-		{'.DB_TOPICS.'} tp, 
-		{'.DB_SUBJECTS.'} s
-		WHERE d.id=t.descrid AND t.topicid = c.topicid AND t.topicid=tp.id AND tp.subjid = s.id AND c.courseid = ?';
+	subjectid,d.niveauid
+	FROM {'.DB_DESCRIPTORS.'} d,
+	{'.DB_COURSETOPICS.'} c,
+	{'.DB_DESCTOPICS.'} t,
+	{'.DB_TOPICS.'} tp,
+	{'.DB_SUBJECTS.'} s
+	WHERE d.id=t.descrid AND t.topicid = c.topicid AND t.topicid=tp.id AND tp.subjid = s.id AND c.courseid = ?';
 
 	if ($onlywithactivitys==1){
 		$descr=block_exacomp_get_descriptors($courseid, block_exacomp_coursesettings()->show_all_descriptors);
@@ -545,6 +545,15 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors) {
 
 	return $descriptors;
 }
+function block_exacomp_get_descriptors_by_subject($subjectid) {
+	global $DB;
+
+	$sql = "SELECT d.*, dt.topicid, t.title as topic FROM {".DB_DESCRIPTORS."} d, {".DB_DESCTOPICS."} dt, {".DB_TOPICS."} t
+	WHERE d.id=dt.descrid AND dt.topicid IN (SELECT id FROM {".DB_TOPICS."} WHERE subjid=?)
+	AND d.niveauid > 0 AND dt.topicid = t.id order by d.skillid, dt.topicid, d.niveauid";
+
+	return $DB->get_records_sql($sql,array($subjectid));
+}
 /**
  * Gets an associative array that is used to display the whole hierarchie of subjects, topics and competencies within a course
  *
@@ -560,7 +569,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 	$allSubjects = ($courseid == 0) ? block_exacomp_get_all_subjects() :
 	(($subjectid != null) ? block_exacomp_get_subject_by_id($subjectid) : block_exacomp_get_subjects_by_course($courseid, $showalldescriptors));
 
-	
+
 	$allTopics = block_exacomp_get_all_topics($subjectid);
 	if($courseid > 0) {
 		if($topicid == LIS_SHOW_ALL_TOPICS)
@@ -628,7 +637,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 				JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
 				LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id
 				", array($descriptor->id));
-		
+
 		$descriptor->examples = array();
 		foreach($examples as $example){
 			$descriptor->examples[$example->id] = $example;
@@ -666,7 +675,7 @@ function block_exacomp_init_lis_data($courseid, $subjectid, $topicid, $student=f
 	return array($subjects, $topics, $selectedSubject, $selectedTopic);
 }
 /**
- * 
+ *
  * Returns all students enroled to a particular course
  * @param unknown_type $courseid
  */
@@ -675,7 +684,7 @@ function block_exacomp_get_students_by_course($courseid) {
 	return get_role_users(5, $context);
 }
 /**
- * 
+ *
  * Returns all teacher enroled to a course
  * @param unknown_type $courseid
  */
@@ -760,14 +769,14 @@ function block_exacomp_get_user_examples_by_course($user, $courseid) {
 	return $user;
 }
 /**
- * 
+ *
  * Build navigtion tabs, depending on role and version
  * @param unknown_type $context
  * @param unknown_type $courseid
  */
 function block_exacomp_build_navigation_tabs($context,$courseid) {
 	global $DB, $version, $usebadges, $skillmanagement;
-	
+
 	$courseSettings = block_exacomp_coursesettings();
 
 	if($version)
@@ -776,7 +785,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 		$checkConfig = block_exacomp_is_configured();
 
 	$checkImport = $DB->get_records(DB_DESCRIPTORS);
-	
+
 	$rows = array();
 
 	if (has_capability('block/exacomp:teacher', $context)) {
@@ -820,20 +829,20 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 					$rows[] = new tabobject('tab_learning_agenda', new moodle_url('/blocks/exacomp/learningagenda.php',array("courseid"=>$courseid)),get_string('tab_learning_agenda','block_exacomp'));
 					if(block_exacomp_moodle_badges_enabled() && $usebadges)
 						$rows[] = new tabobject('tab_badges', new moodle_url('/blocks/exacomp/my_badges.php',array("courseid"=>$courseid)),get_string('tab_badges','block_exacomp'));
-	
+
 					$settings = new tabobject('tab_teacher_settings', new moodle_url('/blocks/exacomp/edit_course.php',array("courseid"=>$courseid)),get_string('tab_teacher_settings','block_exacomp'));
 					$settings->subtree = array();
 					$settings->subtree[] = new tabobject('tab_teacher_settings_configuration', new moodle_url('/blocks/exacomp/edit_course.php', array('courseid'=>$courseid)), get_string("tab_teacher_settings_configuration", "block_exacomp"));
 					$settings->subtree[] = new tabobject('tab_teacher_settings_selection', new moodle_url('/blocks/exacomp/courseselection.php', array('courseid'=>$courseid)), get_string("tab_teacher_settings_selection", "block_exacomp"));
-	
+
 					if (block_exacomp_is_activated($courseid))
 						if ($courseSettings->uses_activities)
 						$settings->subtree[] = new tabobject('tab_teacher_settings_assignactivities', new moodle_url('/blocks/exacomp/edit_activities.php', array('courseid'=>$courseid)), get_string("tab_teacher_settings_assignactivities", "block_exacomp"));
-						
+
 					if (block_exacomp_moodle_badges_enabled() && $usebadges) {
 						$settings->subtree[] = new tabobject('tab_teacher_settings_badges', new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid'=>$courseid)), get_string("tab_teacher_settings_badges", "block_exacomp"));
 					}
-	
+
 					$rows[] = $settings;
 				}
 				if(has_capability('block/exacomp:admin', $context)){
@@ -888,7 +897,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 	return $rows;
 }
 /**
- * 
+ *
  * Gets html-selection with enroles students
  * @param unknown_type $students
  * @param unknown_type $selected
@@ -906,7 +915,7 @@ function block_exacomp_studentselector($students,$selected,$url){
 			array("onchange"=>"document.location.href='".$url."&studentid='+this.value;"));
 }
 /**
- * 
+ *
  * Check if there is an custom xml-file uploaded
  */
 function block_exacomp_check_customupload() {
@@ -920,7 +929,7 @@ function block_exacomp_check_customupload() {
 	return false;
 }
 /**
- * 
+ *
  * Returns Exabis Competencies course settings
  * @param unknown_type $courseid
  */
@@ -942,7 +951,7 @@ function block_exacomp_coursesettings($courseid = 0) {
 	return $rs;
 }
 /**
- * 
+ *
  * Get available education levels
  */
 function block_exacomp_get_edulevels() {
@@ -950,7 +959,7 @@ function block_exacomp_get_edulevels() {
 	return $DB->get_records(DB_EDULEVELS,null,'source');
 }
 /**
- * 
+ *
  * Get schooltypes for particular education level
  * @param unknown_type $edulevel
  */
@@ -960,7 +969,7 @@ function block_exacomp_get_schooltypes($edulevel) {
 	return $DB->get_records(DB_SCHOOLTYPES, array("elid" => $edulevel));
 }
 /**
- * 
+ *
  * Gets assigned schooltypes for particular courseid
  * @param unknown_type $typeid
  * @param unknown_type $courseid
@@ -971,7 +980,7 @@ function block_exacomp_get_mdltypes($typeid, $courseid = 0) {
 	return $DB->get_record(DB_MDLTYPES, array("stid" => $typeid, "courseid" => $courseid));
 }
 /**
- * 
+ *
  * Assign a schooltype to a course
  * @param unknown_type $values
  * @param unknown_type $courseid
@@ -994,7 +1003,7 @@ function block_exacomp_is_configured($courseid=0){
 	return $DB->get_records(DB_MDLTYPES, array("courseid"=>$courseid));
 }
 /**
- * 
+ *
  * Check if moodle version is supporting badges
  */
 function block_exacomp_moodle_badges_enabled() {
@@ -1004,7 +1013,7 @@ function block_exacomp_moodle_badges_enabled() {
 	return (version_compare($CFG->release, '2.5') >= 0);
 }
 /**
- * 
+ *
  * Set settings for course
  * @param unknown_type $courseid
  * @param unknown_type $settings
@@ -1021,8 +1030,8 @@ function block_exacomp_save_coursesettings($courseid, $settings) {
 
 	$DB->insert_record(DB_SETTINGS, $settings);
 }
-/** 
- * 
+/**
+ *
  * Check if there are already topics assigned to a course
  * @param unknown_type $courseid
  */
@@ -1032,7 +1041,7 @@ function block_exacomp_is_activated($courseid) {
 	return $DB->get_records(DB_COURSETOPICS, array("courseid" => $courseid));
 }
 /**
- * 
+ *
  * Gets grading scheme for a course
  * @param unknown_type $courseid
  */
@@ -1042,7 +1051,7 @@ function block_exacomp_get_grading_scheme($courseid) {
 	return $settings->grading;
 }
 /**
- * 
+ *
  * Builds topic title to print
  * @param unknown_type $topic
  */
@@ -1063,7 +1072,7 @@ function block_exacomp_get_output_fields($topic, $show_category=false) {
 	return array($output_id, $output_title);
 }
 /**
- * 
+ *
  * Awards badges to user
  * @param unknown_type $courseid
  * @param unknown_type $userid
@@ -1109,7 +1118,7 @@ function block_exacomp_award_badges($courseid, $userid=null) {
 
 			$usercompetences_all = block_exacomp_get_user_competencies_by_course($user, $courseid);
 			$usercompetences = $usercompetences_all->competencies->teacher;
-			
+				
 			$allFound = true;
 			foreach ($descriptors as $descriptor) {
 				if (isset($usercompetences[$descriptor->id])) {
@@ -1139,7 +1148,7 @@ function block_exacomp_award_badges($courseid, $userid=null) {
 	}
 }
 /**
- * 
+ *
  * Gets all badges for particular user
  * @param unknown_type $userid
  */
@@ -1153,7 +1162,7 @@ function block_exacomp_get_all_user_badges($userid = null) {
 	return $records;
 }
 /**
- * 
+ *
  * Gets all badges for particular user in particular course
  * @param unknown_type $courseid
  * @param unknown_type $userid
@@ -1207,20 +1216,20 @@ function block_exacomp_get_user_badges($courseid, $userid) {
 	return $result;
 }
 /**
- * 
+ *
  * Gets all desriptors assigned to a badge
  * @param unknown_type $badgeid
  */
 function block_exacomp_get_badge_descriptors($badgeid){
 	global $DB;
 	return $DB->get_records_sql('
-		SELECT d.*
-		FROM {'.DB_DESCRIPTORS.'} d
-		JOIN {'.DB_DESCBADGE.'} db ON d.id=db.descid AND db.badgeid=?
-	', array($badgeid));
+			SELECT d.*
+			FROM {'.DB_DESCRIPTORS.'} d
+			JOIN {'.DB_DESCBADGE.'} db ON d.id=db.descid AND db.badgeid=?
+			', array($badgeid));
 }
 /**
- * 
+ *
  * Build tree for learning materials with sort order "descriptors"
  * @param unknown_type $courseid
  */
@@ -1266,13 +1275,13 @@ function block_exacomp_build_rec_topic_example_tree_desc(&$subs){
 			($sub_topic_has_examples)?$sub_topics_have_examples = true : $sub_topics_have_examples = false;
 		}
 		elseif((!isset($topic->subs) && !$topic_has_examples))
-			unset($subs[$topic->id]);
+		unset($subs[$topic->id]);
 			
 		if(!$topic_has_examples && !$sub_topics_have_examples){
 			unset($subs[$topic->id]);
 		}
 	}
-	
+
 	return $sub_has_examples;
 }
 /**
@@ -1344,7 +1353,7 @@ function block_exacomp_build_rec_topic_example_tree_tax(&$subs, $taxid, $parent_
 	return $parent_has_examples;
 }
 /**
- * 
+ *
  * Extract used taxonomies from given subject tree
  * @param unknown_type $tree
  */
@@ -1387,7 +1396,7 @@ function block_exacomp_get_taxonomies_rek_topics($subs, $taxonomies){
 	return $taxonomies;
 }
 /**
- * 
+ *
  * Gets supported modules for assigning activities
  */
 function block_exacomp_get_supported_modules() {
@@ -1468,7 +1477,7 @@ function block_exacomp_get_icon_for_user($coursemodules, $student) {
 	return $icon;
 }
 /**
- * 
+ *
  * Assign topics to course
  * @param unknown_type $courseid
  * @param unknown_type $values
@@ -1504,7 +1513,7 @@ function block_exacomp_get_active_topics_rec($subs, $topics){
 	}
 }
 /**
- * 
+ *
  * Returns quizes assigned to course
  * @param unknown_type $courseid
  */
@@ -1527,7 +1536,7 @@ function block_exacomp_get_active_tests_by_course($courseid){
 	return $tests;
 }
 /**
- * 
+ *
  * Returns all courses where an instance of Exabis Competences is installed
  */
 function block_exacomp_get_courses(){
@@ -1546,7 +1555,7 @@ function block_exacomp_get_courses(){
 	return $exabis_competences_courses;
 }
 /**
- * 
+ *
  * Gets URL for particular activity
  * @param unknown_type $activity
  * @param unknown_type $student
@@ -1561,7 +1570,7 @@ function block_exacomp_get_activityurl($activity,$student=false) {
 	else return new moodle_url('mod/'.$mod->name.'/view.php', array('id'=>$activity->id));
 }
 /**
- * 
+ *
  * Gets course module name for module
  * @param unknown_type $mod
  */
@@ -1571,7 +1580,7 @@ function block_exacomp_get_coursemodule($mod) {
 	return get_coursemodule_from_id($name,$mod->id);
 }
 /**
- * 
+ *
  * Assign competencies to activites
  * @param unknown_type $data
  * @param unknown_type $courseid
@@ -1589,7 +1598,7 @@ function block_exacomp_save_competencies_activities($data, $courseid, $comptype)
 	}
 }
 /**
- * 
+ *
  * Assign one competence to one activity
  * @param unknown_type $activityid
  * @param unknown_type $compid
@@ -1606,7 +1615,7 @@ function block_exacomp_set_compactivity($activityid, $compid, $comptype) {
 	$DB->insert_record(DB_COMPETENCE_ACTIVITY, array("activityid" => $activityid, "compid" => $compid, "comptype"=>$comptype, "coursetitle"=>$COURSE->shortname, 'activitytitle'=>$instance->name));
 }
 /**
- * 
+ *
  * Delete competence, activity associations
  */
 function block_exacomp_delete_competencies_activities(){
@@ -1626,12 +1635,12 @@ function block_exacomp_delete_competencies_activities(){
  */
 function block_exacomp_get_activities($compid, $courseid = null, $comptype = TYPE_DESCRIPTOR) { //alle assignments die einem bestimmten descriptor zugeordnet sind
 	global $CFG, $DB;
-	$query = 'SELECT mm.id as uniqueid,a.id,ass.grade,a.instance FROM {'.DB_DESCRIPTORS.'} descr 
-		INNER JOIN {'.DB_COMPETENCE_ACTIVITY.'} mm  ON descr.id=mm.compid 
-		INNER JOIN {course_modules} a ON a.id=mm.activityid 
-		LEFT JOIN {assign} ass ON ass.id=a.instance 
-		WHERE descr.id=? AND mm.comptype = '. $comptype;
-	
+	$query = 'SELECT mm.id as uniqueid,a.id,ass.grade,a.instance FROM {'.DB_DESCRIPTORS.'} descr
+	INNER JOIN {'.DB_COMPETENCE_ACTIVITY.'} mm  ON descr.id=mm.compid
+	INNER JOIN {course_modules} a ON a.id=mm.activityid
+	LEFT JOIN {assign} ass ON ass.id=a.instance
+	WHERE descr.id=? AND mm.comptype = '. $comptype;
+
 	$condition = array($compid);
 	if ($courseid){
 		$query.=" AND a.course=?";
@@ -1671,7 +1680,7 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 				if($studentid > 0) {
 					$topic->studentcomp = (array_key_exists($topic->id, $competencies['studentcomps'])) ? $competencies['studentcomps'][$topic->id]->value : false;
 					$topic->teachercomp = (array_key_exists($topic->id, $competencies['teachercomps'])) ? $competencies['teachercomps'][$topic->id]->value : false;
-						
+
 					// ICONS
 					if(isset($cm_mm->topics[$topic->id])) {
 						//get CM instances
@@ -1685,20 +1694,57 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 				}
 				$data[1][$subjid][$topic->catid][] = $topic;
 			}
-		$selection_temp = block_exacomp_get_topics_by_subject($courseid,$subjid);
-		$selection = $selection + $selection_temp;
+			$selection_temp = block_exacomp_get_topics_by_subject($courseid,$subjid);
+			$selection = $selection + $selection_temp;
 		}
 		if(block_exacomp_get_settings_by_course($courseid)->show_all_descriptors)
 			$selection = $DB->get_records(DB_COURSETOPICS,array('courseid'=>$courseid),'','topicid');
-		
+
+		return array($niveaus, $skills, $subjects, $data, $selection);
 	}
 	else {
 		$niveaus = block_exacomp_get_niveaus_for_subject($subjectid);
 		$skills = $DB->get_records_menu('block_exacompskills',null,null,"id, title");
-		$descriptors = block_exacomp_get_descriptors_by_subject($courseid, $subjectid); // TO DO
+		$descriptors = block_exacomp_get_descriptors_by_subject($subjectid);
+
+		$data = array();
+		if($studentid > 0)
+			$competencies = array("studentcomps"=>$DB->get_records(DB_COMPETENCIES,array("role"=>ROLE_STUDENT,"courseid"=>$courseid,"userid"=>$studentid,"comptype"=>TYPE_DESCRIPTOR),"","compid,userid,reviewerid,value"),
+					"teachercomps"=>$DB->get_records(DB_COMPETENCIES,array("role"=>ROLE_TEACHER,"courseid"=>$courseid,"userid"=>$studentid,"comptype"=>TYPE_DESCRIPTOR),"","compid,userid,reviewerid,value"));
+
+		// Arrange data in associative array for easier use
+		$topics = array();
+		$data = array();
+		foreach ($descriptors as $descriptor) {
+			$examples = $DB->get_records_sql(
+					"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
+					e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid
+					FROM {block_exacompexamples} e
+					JOIN {block_exacompdescrexamp_mm} de ON e.id=de.exampid AND de.descrid=?
+					LEFT JOIN {block_exacomptaxonomies} tax ON e.taxid=tax.id
+					ORDER BY tax.title", array($descriptor->id));
+			$descriptor->examples = $examples;
+				
+			if($studentid > 0) {
+				$descriptor->studentcomp = (array_key_exists($descriptor->id, $competencies['studentcomps'])) ? $competencies['studentcomps'][$descriptor->id]->value : false;
+				$descriptor->teachercomp = (array_key_exists($descriptor->id, $competencies['teachercomps'])) ? $competencies['teachercomps'][$descriptor->id]->value : false;
+				// ICONS
+				if(isset($cm_mm->competencies[$descriptor->id])) {
+					//get CM instances
+					$cm_temp = array();
+					foreach($cm_mm->competencies[$descriptor->id] as $cmid)
+						$cm_temp[] = $course_mods[$cmid];
+						
+					$icon = block_exacomp_get_icon_for_user($cm_temp, $DB->get_record("user",array("id"=>$studentid)));
+					$descriptor->icon = '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>';
+				}
+			}
+			$data[$descriptor->skillid][$descriptor->topicid][$descriptor->niveauid][] = $descriptor;
+			$topics[$descriptor->topicid] = $descriptor->topic;
+		}
 		
+		return array($niveaus, $skills, $topics, $data, array());
 	}
-	return array($niveaus, $skills, $subjects, $data, $selection);
 }
 function block_exacomp_get_niveaus_for_subject($subjectid) {
 	global $DB;
@@ -1710,7 +1756,7 @@ function block_exacomp_get_niveaus_for_subject($subjectid) {
 	return $DB->get_records_sql_menu($niveaus,array($subjectid));
 }
 /**
- * 
+ *
  * Gets examples for LIS student view
  * @param unknown_type $subjects
  */
@@ -1723,7 +1769,7 @@ function block_exacomp_get_examples_LIS_student($subjects){
 
 }
 /**
- * 
+ *
  * Helper function to extract examples from subject tree for LIS student view
  * @param unknown_type $subs
  * @param unknown_type $examples
@@ -1744,7 +1790,7 @@ function block_exacomp_get_examples_LIS_student_topics($subs, &$examples){
 						$examples[$example->id]->descriptors = array();
 						$examples[$example->id]->descriptors[$descriptor->id] = $descriptor;
 					}
-						
+
 				}
 			}
 		}
@@ -1752,7 +1798,7 @@ function block_exacomp_get_examples_LIS_student_topics($subs, &$examples){
 }
 function block_exacomp_extract_niveaus($subject_tree){
 	$niveaus = array();
-	
+
 	foreach($subject_tree as $subject){
 		block_exacomp_extract_niveaus_topics($subject->subs, $niveaus);
 	}
@@ -1763,19 +1809,19 @@ function block_exacomp_extract_niveaus_topics($subs, &$niveaus){
 	foreach ($subs as $topic){
 		if(isset($topic->subs))
 			block_exacomp_extract_niveaus_topics($topic->subs, $niveaus);
-		
+
 		if(isset($topic->descriptors)){
 			foreach($topic->descriptors as $descriptor){
 				if($descriptor->niveauid > 0){
 					if(!isset($niveaus[$descriptor->niveauid]))
 						$niveaus[$descriptor->niveauid] = $DB->get_record(DB_NIVEAUS, array('id'=>$descriptor->niveauid));
-				}	
+				}
 			}
 		}
 	}
 }
 /**
- * 
+ *
  * Unsets every subject, topic, descriptor where descriptor niveauid is filtered
  * @param unknown_type $tree
  * @param unknown_type $niveaus
@@ -1786,7 +1832,7 @@ function block_exacomp_filter_niveaus(&$tree, $niveaus){
 		foreach($tree as $subject){
 			//traverse recursively, because of possible topic-children
 			$subject_has_niveaus = block_exacomp_filter_niveaus_topics($subject->subs, $niveaus);
-	
+
 			if(!$subject_has_niveaus)
 				unset($tree[$subject->id]);
 		}
@@ -1814,7 +1860,7 @@ function block_exacomp_filter_niveaus_topics($subs, $niveaus){
 		if(isset($topic->subs))
 			$topic_has_niveaus = block_exacomp_filter_niveaus_topics($topic->subs, $niveaus);
 		elseif(!isset($topic->subs) && !$topic_has_niveaus)
-			unset($subs[$topic->id]);
+		unset($subs[$topic->id]);
 	}
 	return $sub_has_niveaus;
 }

@@ -80,7 +80,7 @@ if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 	// TOPIC DATA
 	block_exacomp_save_competencies(isset($_POST['datatopics']) ? $_POST['datatopics'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_TOPIC, ($version) ? $selectedTopic->id : null);
 	// EXAMPLE DATA
-	block_exacomp_save_example_evaluation(isset($_POST['dataexamples']) ? $_POST['dataexamples'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT);
+	block_exacomp_save_example_evaluation(isset($_POST['dataexamples']) ? $_POST['dataexamples'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, ($version) ? $selectedTopic->id : null);
 
 	//TOPIC LIS STUDENT
 	if(isset($_POST['topiccomp'])){

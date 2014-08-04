@@ -325,7 +325,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content = html_writer::tag("div", html_writer::table($table), array("id"=>"exabis_competences_block"));
 		return $content;
 	}
-	public function print_subject_dropdown($subjects, $selectedSubject) {
+	public function print_subject_dropdown($subjects, $selectedSubject, $studentid = 0) {
 		global $PAGE;
 		$content = get_string("choosesubject", "block_exacomp");
 		$options = array();
@@ -333,7 +333,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$options[$subject->id] = $subject->title;
 		
 		$content .= html_writer::select($options, "lis_subjects",$selectedSubject, false,
-				array("onchange" => "document.location.href='".$PAGE->url."&subjectid='+this.value;"));
+				array("onchange" => "document.location.href='".$PAGE->url. ($studentid > 0 ? "&studentid=".$studentid : "") ."&subjectid='+this.value;"));
 		return $content;
 	}
 	/**
@@ -1048,6 +1048,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$studentCellEvaluation->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
 					}
 
+					$studentCell->text = html_writer::empty_tag("input",array("type" => "hidden", "value" => 0, "name" => $checkboxname . "[" . $example->id . "][" . $student->id . "][" . (($evaluation == "teacher") ? "teacher" : "student") . "]"));
 					/*
 					 * if scheme == 1: print checkbox
 					* if scheme != 1, role = student, version = LIS
@@ -1057,13 +1058,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$studentCellEvaluation->text = $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
 							
 						if($data->role == ROLE_STUDENT) {
-							$studentCell->text = get_string('assigndone','block_exacomp');
+							$studentCell->text .= get_string('assigndone','block_exacomp');
 							$studentCell->text .= $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme);
 								
 							$studentCell->text .= $this->print_student_example_evaluation_form($example->id, $student->id, $data->courseid);
 						}
 						else
-							$studentCell->text = $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme);
+							$studentCell->text .= $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme);
 					}
 					/*
 					 * if scheme != 1, !version: print select
@@ -1073,7 +1074,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						if($data->showevaluation)
 							$studentCellEvaluation->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
 
-						$studentCell->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, $evaluation);
+						$studentCell->text .= $this->generate_select($checkboxname, $example->id, 'examples', $student, $evaluation);
 					}
 
 					if($data->showevaluation)
