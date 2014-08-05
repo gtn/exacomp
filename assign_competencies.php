@@ -115,12 +115,18 @@ else{
 		/* LIS */
 		echo $output->print_lis_dropdowns($subjects, $topics, $selectedSubject->id, $selectedTopic->id);
 
-		if($selectedTopic->id != LIS_SHOW_ALL_TOPICS && $isTeacher)
-			include 'assign_competencies_lis_metadata.php';
-		else if($selectedTopic->id != LIS_SHOW_ALL_TOPICS && !$isTeacher)
-			include 'assign_competencies_lis_metadata_student.php';
-
-		//$PAGE->set_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid,"topicid"=>$selectedTopic->id,"subjectid"=>$selectedSubject->id));
+		$schooltype = block_exacomp_get_schooltyp_by_subject($selectedSubject);
+		$cat = block_exacomp_get_category($selectedTopic);
+		$user_evaluation = block_exacomp_get_user_information_by_course($USER, $courseid);
+		$activities = block_exacomp_get_activities($selectedTopic->id, $courseid, 0);
+		if($selectedTopic->id != LIS_SHOW_ALL_TOPICS){
+			echo $output->print_lis_metadata($schooltype, $selectedSubject, $selectedTopic, $cat);
+			
+			if($isTeacher)
+				echo $output->print_lis_metadata_teacher();
+			else
+				echo $output->print_lis_metadata_student($selectedSubject, $selectedTopic, $user_evaluation->topics, $showevaluation, block_exacomp_get_grading_scheme($courseid), block_exacomp_get_icon_for_user($activities, $USER));
+		}
 	}
 	echo $output->print_overview_legend($isTeacher);
 	echo $output->print_column_selector(count($students));

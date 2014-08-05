@@ -354,6 +354,135 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return $content;
 	}
+	public function print_lis_metadata_teacher(){
+		$table = new html_table();
+		$table->attributes['class'] = 'exabis_comp_top';
+		
+		$rows = array();
+		
+		$row = new html_table_row();
+		
+		$cell = new html_table_cell();
+		$cell->attributes['class'] = 'comp_grey_97';
+		$cell->text = html_writer::tag('b', get_string('instruction', 'block_exacomp'))
+			.html_writer::tag('p', get_string('instruction_content', 'block_exacomp'));
+		
+		$rows[] = $row;
+		$table->data = $rows;
+		
+		$content = html_writer::table($table);
+		$content .= html_writer::empty_tag('br');
+		
+		return $content;
+	}
+	public function print_lis_metadata_student($subject, $topic, $topic_evaluation, $showevaluation, $scheme, $icon = null){
+		$table = html_table();
+		$table->attributes['class'] = 'exabis_comp_top';
+		
+		$rows = array();
+		
+		$row = new html_table_row();
+		
+		$cell = new html_table_cell();
+		$cell->attributes['class'] = 'comp_grey_97';
+		$cell->text = html_writer::tag('b', get_string('requirements', 'block_exacomp'))
+			.html_writer::tag('p', $topic->requirement);
+		
+		$row->cells[] = $cell;
+		$rows[] = $row;
+		
+		$row = new html_table_row();
+		
+		$cell = new html_table_cell();
+		$cell->attributes['class'] = 'comp_grey_97';
+		$cell->text = html_writer::tag('b', get_string('forwhat', 'block_exacomp'))
+			.html_writer::tag('p', $topic->benefit);
+		
+		$row->cells[] = $cell;
+		$rows[] = $row;
+		
+		$row = new html_table_row();
+		
+		$cell = new html_table_cell();
+		$cell->attributes['class'] = 'comp_grey_97';
+		$cell->text = html_writer::tag('b', get_string('howtocheck', 'block_exacomp'))
+			.html_writer::tag('p', $topic->knowledgecheck);
+			
+		$p_content = get_string('reached_topic', 'block_exacomp');
+		
+		if($scheme == 1)
+			$p_content .= "S: " . html_writer::checkbox("topiccomp", 1, ((isset($topic_evaluation->student[$topic->id]))?true:false))
+				." Bestätigung L: ".html_writer::checkbox("topiccomp", 1, ((isset($topic->evaluation->teacher[$topic->id]))?true:false), "", array("disabled"=>"disabled"));
+		else{
+			(isset($topic_evaluation->student[$topic->id]))?$value_student = $topic_evaluation->student[$topic->id] : $value_student = 0;
+			(isset($topic_evaluation->teacher[$topic->id]))?$value_teacher = $topic_evaluation->teacher[$topic->id] : $value_teacher = 0;
+			
+			$p_content .= "S: " . html_writer::checkbox("topiccomp", $schema, $value_student >= ceil($schema/2))
+				." Bestätigung L: ". $value_teacher;
+						
+		}
+			
+		if(isset($icon))
+			$p_content .= " ".html_writer::span($icon->img, 'exabis-tooltip', array('title'=>s($icon->text)));		
+		
+		$p_content .= html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'topiccompid', 'value'=>$topic->id));
+		$p_content = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'subjectcompid', 'value'=>$subject->id));
+			
+		$cell->text .= html_writer::tag('p', $p_content);
+		
+		$row->cells[] = $cell;
+		$rows[] = $row;
+		
+		$table->data = $rows;
+		
+		return html_writer::table($table).html_writer::empty_tag('br');
+	}
+	public function print_lis_metadata($schooltype, $subject, $topic, $cat){
+		$table = new html_table();
+		$table->attributes['class'] = 'exabis_comp_info';
+		
+		$rows = array();
+		
+		$row = new html_table_row();
+		
+		$cell = new html_table_cell();
+		$cell->text = html_writer::span(get_string('subject_singular', 'block_exacomp'), 'exabis_comp_top_small')
+			. html_writer::tag('b', $schooltype);
+		
+		$row->cells[] = $cell;
+		
+		$cell = new html_table_cell();
+		$cell->text = html_writer::span(get_string('comp_field_idea', 'block_exacomp'), 'exabis_comp_top_small')
+			. html_writer::tag('b', $subject->numb." - ".$subject->title);
+		
+		$row->cells[] = $cell;
+		
+		$cell = new html_table_cell();
+		$cell->text = html_writer::span(get_string('comp', 'block_exacomp'), 'exabis_comp_top_small')
+			. html_writer::tag('b', $topic->title);
+		
+		$row->cells[] = $cell;
+		
+		$cell = new html_table_cell();
+		$cell->text = html_writer::span(get_string('progress', 'block_exacomp'), 'exabis_comp_top_small')
+			. html_writer::tag('b', $cat->title);
+		
+		$row->cells[] = $cell;
+		
+		$cell = new html_table_cell();
+		$cell->text = html_writer::span(get_string('tab_competence_overview', 'block_exacomp'), 'exabis_comp_top_small')
+			. html_writer::tag('b', substr($schooltype, 0,1).$subject->numb.".".$cat->sourceid);
+		
+		$row->cells[] = $cell;
+		
+		$rows[] = $row;
+		$table->data = $rows;
+		
+		$content = html_writer::table($table);
+		
+		return $content;
+	}
+	
 	public function print_competence_grid_legend() {
 			$content = html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","competenceyellow");
 			$content .= get_string("selfevaluation","block_exacomp");
