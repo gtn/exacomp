@@ -193,8 +193,8 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
  * returns all topics from a course
  * @param int $courseid
  */
-function block_exacomp_get_topics_by_course($courseid) {
-	return block_exacomp_get_topics_by_subject($courseid);
+function block_exacomp_get_topics_by_course($courseid,$showalldescriptors = false) {
+	return block_exacomp_get_topics_by_subject($courseid,0,$showalldescriptors);
 }
 /**
  * Gets all topics from a particular subject
@@ -524,7 +524,7 @@ function block_exacomp_save_example_evaluation($data, $courseid, $role, $topicid
 					$endtime = null;
 				}
 					
-				$updateEvaluation->student_evaluation = intval($values['student']);
+				$updateEvaluation->student_evaluation = isset($values['student']) ? intval($values['student']) : 0;
 				$updateEvaluation->starttime = $starttime;
 				$updateEvaluation->endtime = $endtime;
 				$updateEvaluation->studypartner = ($version) ? 'self' : $values['studypartner'];
@@ -612,8 +612,12 @@ function block_exacomp_get_descritors_list($courseid, $onlywithactivitys = 0) {
  * returns all descriptors
  * @param $courseid if course id =0 all possible descriptors are returned
  */
-function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors) {
+function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = false) {
 	global $DB;
+	
+	if(!$showalldescriptors)
+		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
+	
 	$course='';
 
 	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype '
@@ -638,6 +642,7 @@ function block_exacomp_get_descriptors_by_subject($subjectid) {
 
 	return $DB->get_records_sql($sql,array($subjectid));
 }
+
 /**
  * Gets an associative array that is used to display the whole hierarchie of subjects, topics and competencies within a course
  *
@@ -648,28 +653,59 @@ function block_exacomp_get_descriptors_by_subject($subjectid) {
 function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $showalldescriptors = false, $topicid = null) {
 	global $DB;
 
-	if(!$showalldescriptors) $showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
+	if(!$showalldescriptors)
+		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
-	$allSubjects = ($courseid == 0) ? block_exacomp_get_all_subjects() :
-	(($subjectid != null) ? block_exacomp_get_subject_by_id($subjectid) : block_exacomp_get_subjects_by_course($courseid, $showalldescriptors));
-
-
+	// 1. GET SUBJECTS
+	if($courseid == 0)
+		$allSubjects = block_exacomp_get_all_subjects();
+	elseif($subjectid != null)
+		$allSubjects = block_exacomp_get_subject_by_id($subjectid);
+	else
+		$allSubjects = block_exacomp_get_subjects_by_course($courseid, $showalldescriptors);
+	
+	// 2. GET TOPICS
 	$allTopics = block_exacomp_get_all_topics($subjectid);
 	if($courseid > 0) {
 		if($topicid == LIS_SHOW_ALL_TOPICS)
 			$courseTopics = block_exacomp_get_topics_by_subject($courseid, $subjectid);
+		elseif($topicid == null)
+			$courseTopics = block_exacomp_get_topics_by_course($courseid, $showalldescriptors);
 		else
-			$courseTopics = ($topicid == null) ? $DB->get_records(DB_COURSETOPICS,array("courseid" => $courseid),'','topicid') : block_exacomp_get_topic_by_id($topicid);
+			$courseTopics = block_exacomp_get_topic_by_id($topicid);
 	}
+	// 3. GET DESCRIPTORS
+	$allDescriptors = block_exacomp_get_descriptors($courseid, $showalldescriptors);
+	
+	foreach ($allDescriptors as $descriptor) {
+	
+		// get descriptor topic
+		if (empty($allTopics[$descriptor->topicid])) continue;
+		$topic = $allTopics[$descriptor->topicid];
+		$topic->descriptors[$descriptor->id] = $descriptor;
+
+		$examples = $DB->get_records_sql(
+				"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
+				e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid
+				FROM {" . DB_EXAMPLES . "} e
+				JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
+				LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id
+				", array($descriptor->id));
+	
+		$descriptor->examples = array();
+		foreach($examples as $example){
+			$descriptor->examples[$example->id] = $example;
+		}
+	}
+	
 	$subjects = array();
-	//subjectid is not null iff lis version is used
-	//if($subjectid != null) {
+
 	foreach ($allTopics as $topic) {
 		//topic must be coursetopic if courseid <> 0
 		if($courseid > 0 && !array_key_exists($topic->id, $courseTopics))
 			continue;
 
-		if($courseid==0 || $showalldescriptors || block_exacomp_check_activity_association($topic->id, TYPE_TOPIC, $courseid)) {
+		//if($courseid==0 || $showalldescriptors || block_exacomp_check_activity_association($topic->id, TYPE_TOPIC, $courseid)) {
 			// found: add it to the subject result, even if no descriptor from the topic is used
 			// find all parent topics
 			$found = true;
@@ -702,30 +738,6 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 					break;
 				}
 			}
-		}
-	}
-
-	$allDescriptors = block_exacomp_get_descriptors($courseid, $showalldescriptors);
-
-	foreach ($allDescriptors as $descriptor) {
-
-		// get descriptor topic
-		if (empty($allTopics[$descriptor->topicid])) continue;
-		$topic = $allTopics[$descriptor->topicid];
-		$topic->descriptors[$descriptor->id] = $descriptor;
-
-		$examples = $DB->get_records_sql(
-				"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
-				e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid
-				FROM {" . DB_EXAMPLES . "} e
-				JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
-				LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id
-				", array($descriptor->id));
-
-		$descriptor->examples = array();
-		foreach($examples as $example){
-			$descriptor->examples[$example->id] = $example;
-		}
 	}
 
 	return $subjects;
@@ -2094,4 +2106,30 @@ function block_exacomp_build_activity_tree_topics(&$subs, $activityid, $activity
 	}
 	
 	return $sub_has_activities;
+}
+
+function block_exacomp_truncate_all_data() {
+	global $DB;
+
+	$sql = "TRUNCATE {block_exacompcategories}"; $DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompcompactiv_mm}"; $DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompcompuser}"; $DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompcompuser_mm}"; $DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompcoutopi_mm}"; $DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompdescbadge_mm}"; $DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompdescrexamp_mm}"; $DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompdescriptors}"; $DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompdescrtopic_mm}"; $DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompedulevels}"; $DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompexameval}"; $DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompexamples}"; $DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompmdltype_mm}"; $DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompniveaus}"; $DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompprofilesettings}"; $DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompschooltypes}"; $DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompsettings}"; $DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompskills}"; $DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompsubjects}"; $DB->execute($sql);
+	$sql = "TRUNCATE {block_exacomptaxonomies}"; $DB->execute($sql);
+	$sql = "TRUNCATE {block_exacomptopics}"; $DB->execute($sql);
 }
