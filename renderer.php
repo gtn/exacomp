@@ -30,7 +30,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		global $COURSE, $CFG;
 
 		if($view == 0){
-			$content = html_writer::start_div('', array('align'=>'center'));
+			$content = html_writer::start_div('');
 			$content .= html_writer::start_tag('div',array('style'=>'width:400px;'));
 			$content .= $selectstudent;
 			$content .= html_writer::start_tag('form', array('id'=>"calendar", 'method'=>"POST", 'action'=>new moodle_url('/blocks/exacomp/learningagenda.php?courseid='.$COURSE->id.'&studentid='.$studentid)));
@@ -815,6 +815,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 
 		$table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
+		$table_html .= html_writer::empty_tag('br');
 		$table_html .= html_writer::tag("input", "", array("name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp")));
 		$table_html .= html_writer::tag("input", "", array("name" => "open_row_groups", "type" => "hidden", "value" => (optional_param('open_row_groups', "", PARAM_TEXT))));
 
@@ -850,7 +851,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$topicRow->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rowgroup_class . ' highlight';
 
 			$outputidCell = new html_table_cell();
-			$outputidCell->text = $outputid;
+			($version)?$outputidCell->text = $outputid:$outputidCell->text='';
 			$topicRow->cells[] = $outputidCell;
 
 			$outputnameCell = new html_table_cell();
@@ -906,6 +907,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$studentCell->text .= '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>';
 				}
 
+				// TIPP
+				if(isset($student->activities_topics->teacher[$topic->id])){
+					$icon_img = html_writer::empty_tag('img', array('src'=>"pix/tipp.png", "alt"=>get_string('teacher_tipp', 'block_exacomp')));
+					$studentCell->text .= html_writer::span($icon_img, 'exabis-tooltip', array('title'=>get_string('teacher_tipp_description', 'block_exacomp')));
+				}
+				
 				if($data->showevaluation)
 					$topicRow->cells[] = $studentCellEvaluation;
 
@@ -1004,6 +1011,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 					$icon = block_exacomp_get_icon_for_user($cm_temp, $student);
 					$studentCell->text .= '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>';
+				}
+				
+				// TIPP
+				if(isset($student->activities_competencies->teacher[$descriptor->id])){
+					$icon_img = html_writer::empty_tag('img', array('src'=>"pix/tipp.png", "alt"=>get_string('teacher_tipp', 'block_exacomp')));
+					$studentCell->text .= html_writer::span($icon_img, 'exabis-tooltip', array('title'=>get_string('teacher_tipp_description', 'block_exacomp')));
 				}
 				if($data->showevaluation)
 					$descriptorRow->cells[] = $studentCellEvaluation;
@@ -1546,6 +1559,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 
 		$table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
+		$table_html .= html_writer::empty_tag('br');
 		$table_html .= html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))));
 		$table_html .= html_writer::tag("input", "", array("name" => "open_row_groups", "type" => "hidden", "value" => (optional_param('open_row_groups', "", PARAM_TEXT))));
 

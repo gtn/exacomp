@@ -1181,7 +1181,8 @@ function block_exacomp_get_output_fields($topic, $show_category=false) {
 	global $version, $DB;
 
 	if (preg_match('!^([^\s]*[0-9][^\s]*+)\s+(.*)$!iu', $topic->title, $matches)) {
-		$output_id = $matches[1];
+		//$output_id = $matches[1];
+		$output_id = '';
 		$output_title = $matches[2];
 	} else {
 		$output_id = '';

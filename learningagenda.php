@@ -189,9 +189,9 @@ if($print == 0){
 		echo $output->render_learning_agenda($data, $weekdays);
 	else { //no examples
 		if($studentid == 0) //no studentid -> choose student
-			echo html_writer::tag('h2', get_string('LA_select_student', 'block_exacomp'));
+			echo html_writer::tag('p', get_string('LA_select_student', 'block_exacomp'));
 		else 
-			echo html_writer::tag('h2', get_string('LA_no_learningagenda', 'block_exacomp'));
+			echo html_writer::tag('p', get_string('LA_no_learningagenda', 'block_exacomp'));
 	} 
 		
 }else{

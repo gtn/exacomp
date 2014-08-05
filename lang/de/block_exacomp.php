@@ -84,9 +84,9 @@ $string['LA_student'] = "S";
 $string['LA_teacher'] = "L";
 $string['LA_assessment'] = "Einsch&auml;tzung";
 $string['LA_plan'] = "Arbeitsplan";
-$string['LA_no_learningagenda'] = 'Es sind keine Lernagenden in der ausgew&auml;hlten Woche vorhanden';
+$string['LA_no_learningagenda'] = 'Es sind keine Lernagenden in der ausgew&auml;hlten Woche vorhanden.';
 $string['LA_no_student_selected'] = '-- kein Sch&uuml;ler ausgew&auml;hlt --';
-$string['LA_select_student'] = 'Sch&uuml;ler ausw&auml;hlen';
+$string['LA_select_student'] = 'W&auml;hlen Sie bitte einen Sch&uuml;ler aus, um seine Lernagenda einzusehen.';
 $string['LA_no_example'] = 'Kein Beispiel zugeordnet';
 $string['LA_backtoview'] = 'Zur&uuml;ck zur Originalansicht';
 $string['LA_from_n'] = ' von ';
@@ -169,6 +169,7 @@ $string['solution_example'] = 'L&ouml;sung';
 $string['attachement_example'] = 'Anhang';
 $string['extern_task'] = 'Externe Aufgabenstellung';
 $string['total_example'] = 'Gesamtbeispiel';
+
 //Example Upload
 $string['example_upload_header']  = 'Eigenes Beispiel hochladen';
 $string['taxonomy'] = 'Taxonomie';
@@ -197,6 +198,8 @@ $string['usersubmittedquiz'] = ' hat folgende Tests durchgef&uuml;hrt:';
 $string['usernosubmission'] = ' hat keine Moodle-Aufgaben zu diesem Deskriptor abgegeben und keinen Test durchgef&uuml;hrt.';
 $string['usernosubmission_topic'] = ' hat keine Moodle-Aufgaben zu diesem Thema abgegeben und keinen Test durchgef&uuml;hrt.';
 $string['grading'] = ' Bewertung: ';
+$string['teacher_tipp'] = 'Tipp';
+$string['teacher_tipp_description'] = 'Diese Kompetenz wurde durch eine Aktivit&auml;t schon erreicht.';
 
 $string['teachershortcut'] = 'L';
 $string['studentshortcut'] = 'S';
