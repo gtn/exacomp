@@ -835,7 +835,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$studentsCount = 0;
 			$studentsColspan = 1;
 
-			$hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) && (!get_config('exacomp','alternativedatamodel') || (get_config('exacomp','alternativedatamodel') && $topic->id == LIS_SHOW_ALL_TOPICS)));
+			$hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) && (!$version || ($version && $topic->id == LIS_SHOW_ALL_TOPICS)));
 
 			if ($hasSubs) {
 				$data->rowgroup++;
@@ -1173,9 +1173,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 *
 	 * @return String $checkbox html code for checkbox
 	 */
-	public function generate_checkbox($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false) {
+	public function generate_checkbox($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false, $activityid = null) {
 		return html_writer::checkbox(
-				$name . '[' . $compid . '][' . $student->id . '][' . $evaluation . ']',
+				((isset($activityid))?$name . '[' .$compid .'][' . $student->id .'][' . $evaluation . '][' . $activityid . ']'
+				:$name . '[' . $compid . '][' . $student->id . '][' . $evaluation . ']'),
 				$scheme,
 				(isset($student->{$type}->{$evaluation}[$compid])) && $student->{$type}->{$evaluation}[$compid] >= ceil($scheme/2), null, (!$disabled) ? null : array("disabled"=>"disabled"));
 	}
@@ -1192,14 +1193,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 *
 	 * @return String $select html code for select
 	 */
-	public function generate_select($name, $compid, $type, $student, $evaluation, $disabled = false) {
+	public function generate_select($name, $compid, $type, $student, $evaluation, $disabled = false, $activityid = null) {
 		$options = array();
 		for($i=0;$i<=$scheme;$i++)
 			$options[] = $i;
 
 		return html_writer::select(
 				$options,
-				$checkboxname . '[' . $compid . '][' . $student->id . '][' . $evaluation . ']',
+				((isset($activityid))? $checkboxname . '[' . $compid . '][' . $student->id . '][' . $evaluation . '][' . $activityid . ']'
+				: $checkboxname . '[' . $compid . '][' . $student->id . '][' . $evaluation . ']'),
 				(isset($student->{$type}->{$evaluation}[$compid])) ? $student->{$type}->{$evaluation}[$compid] : 0,
 				false,(!$disabled) ? null : array("disabled"=>"disabled"));
 	}
@@ -1588,7 +1590,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$rows[] = $topicRow;
 				
 			if (!empty($topic->subs)) {
-				$this->print_topics_courseselection($rows, $level+1, $topic->subs, $rowgroup, $sub_rowgroup_class);
+				$this->print_topics_courseselection($rows, $level+1, $topic->subs, $rowgroup, $sub_rowgroup_class, $topics_activ);
 			}
 		}
 	}
@@ -1759,7 +1761,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 		}
 	}
-	function print_descriptors_activities(&$rows, $level, $descriptors, &$rowgroup, $modules, $rowgroup_class) {
+	public function print_descriptors_activities(&$rows, $level, $descriptors, &$rowgroup, $modules, $rowgroup_class) {
 		global $version, $PAGE, $USER;
 
 		foreach($descriptors as $descriptor) {
@@ -1966,11 +1968,289 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function print_no_activities_warning(){
 		return html_writer::label(get_string("no_activities_selected", "block_exacomp"), '');
 	}
-	public function print_detail_legend(){
-		return html_writer::label(get_string('detail_description', 'block_exacomp'), '');
+	public function print_detail_legend($showevaluation){
+		global $OUTPUT, $COURSE;
+
+		$link = new moodle_url("/blocks/exacomp/competence_detail.php",array("courseid" => $COURSE->id, "showevaluation" => (($showevaluation) ? "0" : "1")));
+		$evaluation = $OUTPUT->box_start();
+		$evaluation .= get_string('detail_description','block_exacomp');
+		$evaluation .= html_writer::empty_tag("br");
+		$evaluation .= ($showevaluation) ? get_string('hideevaluation','block_exacomp',$link->__toString()) : get_string('showevaluation','block_exacomp',$link->__toString());
+		$evaluation .= $OUTPUT->box_end();
+
+		return $evaluation;
 	}
-	public function print_detail_content($tree){
+	public function print_detail_content($activities, $courseid, $students, $showevaluation, $role, $scheme = 1){
+		global $PAGE;
+
+		$rowgroup = 0;
+		$table = new html_table();
+		$rows = array();
+		$studentsColspan = $showevaluation ? 2 : 1;
+		$colspan = 0;
+		$table->attributes['class'] = 'exabis_comp_comp';
+
+		/* SUBJECTS */
+		foreach($activities as $activity){
+			$activityRow = new html_table_row();
+			$activityRow->attributes['class'] = 'highlight';
+			
+			$title = new html_table_cell();
+			$title->text = html_writer::tag('b', $activity->title);
+			
+			$activityRow->cells[] = $title;
+			
+			$studentsCount = 0;
+	
+			foreach($students as $student) {
+				$studentCell = new html_table_cell();
+				$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
+
+				$studentCell->attributes['class'] = 'exabis_comp_top_studentcol colgroup colgroup-' . $columnGroup;
+				$studentCell->colspan = $studentsColspan;
+				$studentCell->text = fullname($student);
+
+				$activityRow->cells[] = $studentCell;
+			}
+			
+			$colspan = $studentsCount;
+			
+			$rows[] = $activityRow;
+		
+			if($showevaluation) {
+				$studentsCount = 0;
+
+				$evaluationRow = new html_table_row();
+				$emptyCell = new html_table_cell();
+				$evaluationRow->cells[] = $emptyCell;
+
+				foreach($students as $student) {
+					$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
+						
+					$firstCol = new html_table_cell();
+					$firstCol->attributes['class'] = 'exabis_comp_top_studentcol colgroup colgroup-' . $columnGroup;
+					$secCol = new html_table_cell();
+					$secCol->attributes['class'] = 'exabis_comp_top_studentcol colgroup colgroup-' . $columnGroup;
+						
+					if($role == ROLE_TEACHER) {
+						$firstCol->text = get_string('studentshortcut','block_exacomp');
+						$secCol->text = get_string('teachershortcut','block_exacomp');
+					} else {
+						$firstCol->text = get_string('teachershortcut','block_exacomp');
+						$secCol->text = get_string('studentshortcut','block_exacomp');
+					}
+						
+					$evaluationRow->cells[] = $firstCol;
+					$evaluationRow->cells[] = $secCol;
+				}
+				$rows[] = $evaluationRow;
+				$colspan += $studentsCount;
+			}
+			
+			foreach($activity->subs as $subject) {
+				if(!$subject->subs)
+					continue;
+	
+				//for every subject
+				$subjectRow = new html_table_row();
+				$subjectRow->attributes['class'] = 'highlight';
+	
+				//subject-title
+				$title = new html_table_cell();
+				$title->text = html_writer::tag('b',$subject->title);
+	
+				$subjectRow->cells[] = $title;
+	
+				$emptyCell = new html_table_cell();
+				$emptyCell->colspan = $colspan;
+				
+				$subjectRow->cells[] = $emptyCell;
+				
+				$rows[] = $subjectRow;
+	
+				/* TOPICS */
+				//for every topic
+				$data = (object)array(
+						'rowgroup' => &$rowgroup,
+						'courseid' => $courseid,
+						'showevaluation' => $showevaluation,
+						'role' => $role,
+						'scheme' => $scheme,
+						'activityid' => $activity->id,
+						'selected_topicid' => null
+				);
+				$this->print_detail_topics($rows, 0, $subject->subs, $data, $students, $colspan);
+				$table->data = $rows;
+			}
+		}
+		$table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
+		$table_html .= html_writer::empty_tag('br');
+		$table_html .= html_writer::tag("input", "", array("name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp")));
+		$table_html .= html_writer::tag("input", "", array("name" => "open_row_groups", "type" => "hidden", "value" => (optional_param('open_row_groups', "", PARAM_TEXT))));
+
+		
+		
+		return html_writer::tag("form", $table_html, array("id" => "competence-detail", "method" => "post", "action" => new moodle_url($PAGE->url, array('action'=>'save'))));
 		
 	}
+	public function print_detail_topics(&$rows, $level, $topics, &$data, $students, $colspan, $rowgroup_class = '') {
+		global $version;
+
+		//$padding = ($version) ? ($level-1)*20 :  ($level-2)*20+12;
+		$padding = $level * 20 + 12;
+		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
+
+		foreach($topics as $topic) {
+			list($outputid, $outputname) = block_exacomp_get_output_fields($topic);
+			$studentsColspan = 1;
+
+			$hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) && (!$version || ($version && $topic->id == LIS_SHOW_ALL_TOPICS)));
+
+			if ($hasSubs) {
+				$data->rowgroup++;
+				$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$rowgroup_class;
+				$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$data->rowgroup.' '.$rowgroup_class;
+			} else {
+				$this_rowgroup_class = $rowgroup_class;
+				$sub_rowgroup_class = '';
+			}
+
+			$topicRow = new html_table_row();
+			$topicRow->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rowgroup_class . ' highlight';
+
+			$outputnameCell = new html_table_cell();
+			$outputnameCell->attributes['class'] = 'rowgroup-arrow';
+			$outputnameCell->style = "padding-left: ".$padding."px";
+			$outputnameCell->text = html_writer::div($outputid.$outputname,"desctitle");
+			
+			$topicRow->cells[] = $outputnameCell;
+
+			if($topic->used){
+				$studentsCount = 0;
+				foreach($students as $student) {
+					$studentCell = new html_table_cell();
+					$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
+					$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+					$studentCell->colspan = $studentsColspan;
+	
+					// SHOW EVALUATION
+					if($data->showevaluation) {
+						$studentCellEvaluation = new html_table_cell();
+						$studentCellEvaluation->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+					}
+	
+					/*
+					 * if scheme == 1: print checkbox
+					* if scheme != 1, role = student, version = LIS
+					*/
+					if($data->scheme == 1 || ($data->scheme != 1 && $data->role == ROLE_STUDENT && $version)) {
+						if($data->showevaluation)
+							$studentCellEvaluation->text = $this->generate_checkbox("datatopics", $topic->id,
+									'activities_topics', $student, ($evaluation == "teacher") ? "student" : "teacher",
+									$data->scheme, true, $data->activityid);
+	
+						$studentCell->text = $this->generate_checkbox("datatopics", $topic->id, 'activities_topics', $student, $evaluation, $data->scheme, false, $data->activityid);
+					}
+					/*
+					 * if scheme != 1, !version: print select
+					* if scheme != 1, version = LIS, role = teacher
+					*/
+					elseif(!$version || ($version && $data->role == ROLE_TEACHER)) {
+						if($data->showevaluation)
+							$studentCellEvaluation->text = $this->generate_select("datatopics", $topic->id, 'activities_topics', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->activityid);
+	
+						$studentCell->text = $this->generate_select("datatopics", $topic->id, 'activities_topics', $student, $evaluation, $data->scheme, false, $data->activityid);
+					}
+	
+					if($data->showevaluation)
+						$topicRow->cells[] = $studentCellEvaluation;
+	
+					$topicRow->cells[] = $studentCell;
+				}
+			}
+			else{
+				$emptyCell = new html_table_cell();
+				$emptyCell->colspan = $colspan;
+				$topicRow->cells[] = $emptyCell;
+			}
+
+			$rows[] = $topicRow;
+
+			if (!empty($topic->descriptors)) {
+				$this->print_detail_descriptors($rows, $level+1, $topic->descriptors, $data, $students, $sub_rowgroup_class);
+			}
+
+			if (!empty($topic->subs)) {
+				$this->print_detail_topics($rows, $level+1, $topic->subs, $data, $students, $sub_rowgroup_class);
+			}
+		}
+	}
+
+	function print_detail_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class) {
+		global $version, $PAGE, $USER;
+
+		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
+
+		foreach($descriptors as $descriptor) {
+			$checkboxname = "data";
+			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor);
+			$studentsCount = 0;
+
+			$padding = ($level) * 20 + 4;
+
+			$this_rowgroup_class = $rowgroup_class;
+			
+			$descriptorRow = new html_table_row();
+			$descriptorRow->attributes['class'] = 'exabis_comp_aufgabe ' . $this_rowgroup_class;
+
+			$titleCell = new html_table_cell();
+			if($descriptor->examples)
+				$titleCell->attributes['class'] = 'rowgroup-arrow';
+			$titleCell->style = "padding-left: ".$padding."px";
+			$titleCell->text = html_writer::div($outputname);
+
+			$descriptorRow->cells[] = $titleCell;
+
+			foreach($students as $student) {
+				$studentCell = new html_table_cell();
+				$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
+				$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+
+				// SHOW EVALUATION
+				if($data->showevaluation) {
+					$studentCellEvaluation = new html_table_cell();
+					$studentCellEvaluation->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+				}
+				/*
+				 * if scheme == 1: print checkbox
+				* if scheme != 1, role = student, version = LIS
+				*/
+				if($data->scheme == 1 || ($data->scheme != 1 && $data->role == ROLE_STUDENT && $version)) {
+					if($data->showevaluation)
+						$studentCellEvaluation->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'activities_competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->activityid);
+
+					$studentCell->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'activities_competencies', $student, $evaluation, $data->scheme, false, $data->activityid);
+				}
+				/*
+				 * if scheme != 1, !version: print select
+				* if scheme != 1, version = LIS, role = teacher
+				*/
+				elseif(!$version || ($version && $data->role == ROLE_TEACHER)) {
+					if($data->showevaluation)
+						$studentCellEvaluation->text = $this->generate_select($checkboxname, $descriptor->id, 'activities_competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true,  $data->activityid);
+
+					$studentCell->text = $this->generate_select($checkboxname, $descriptor->id, 'activities_competencies', $student, $evaluation, $data->scheme, false, $data->activityid);
+				}
+
+				if($data->showevaluation)
+					$descriptorRow->cells[] = $studentCellEvaluation;
+
+				$descriptorRow->cells[] = $studentCell;
+			}
+
+			$rows[] = $descriptorRow;
+		}
+	}
+	
 }
 ?>

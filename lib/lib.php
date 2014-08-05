@@ -16,6 +16,7 @@ define('DB_DESCTOPICS', 'block_exacompdescrtopic_mm');
 define('DB_CATEGORIES', 'block_exacompcategories');
 define('DB_COMPETENCE_ACTIVITY', 'block_exacompcompactiv_mm');
 define('DB_COMPETENCIES', 'block_exacompcompuser');
+define('DB_COMPETENCIES_USER_MM', 'block_exacompcompuser_mm');
 define('DB_SETTINGS', 'block_exacompsettings');
 define('DB_MDLTYPES', 'block_exacompmdltype_mm');
 define('DB_DESCBADGE', 'block_exacompdescbadge_mm');
@@ -329,6 +330,28 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 }
 
 /**
+ * Set one competence for one user for one activity in one course
+ *
+ * @param int $userid
+ * @param int $compid
+ * @param int $comptype
+ * @param int $activityid
+ * @param int $role
+ * @param int $value
+ */
+function block_exacomp_set_user_competence_activity($userid, $compid, $comptype, $activityid,$role, $value) {
+	global $DB,$USER;
+
+	if($record = $DB->get_record(DB_COMPETENCIES_USER_MM, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, 'activityid'=>$activityid, "role" => $role))) {
+		$record->value = $value;
+		$record->timestamp = time();
+		$DB->update_record(DB_COMPETENCIES_USER_MM, $record);
+	} else {
+		$DB->insert_record(DB_COMPETENCIES_USER_MM, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, 'activityid'=>$activityid, "role" => $role, "value" => $value, "reviewerid" => $USER->id, "timestamp" => time()));
+	}
+}
+
+/**
  * Saves competence data submitted by the assign competencies form
  *
  * @param array $data
@@ -357,6 +380,41 @@ function block_exacomp_save_competencies($data, $courseid, $role, $comptype, $to
 
 	foreach ($values as $value)
 		block_exacomp_set_user_competence($value['user'], $value['compid'], $comptype, $courseid, $role, $value['value']);
+}
+/**
+ * Saves competence data submitted by the competence detail form
+ *
+ * @param array $data
+ * @param int $courseid
+ * @param int $role
+ * @param int $comptype
+ */
+function block_exacomp_save_competencies_activities_detail($data, $courseid, $role, $comptype) {
+	global $USER;
+	$activityid = null;
+	$values = array();
+	foreach ($data as $compidKey => $students) {
+		if (!empty($data[$compidKey])) {
+			foreach ($data[$compidKey] as $studentidKey => $evaluations) {
+				if(is_array($evaluations)) {
+					if(isset($evaluations['teacher']))
+						$value = intval($evaluations['teacher']);
+					else
+						$value = intval($evaluations['student']);
+				}
+				foreach($data[$compidKey][$studentidKey] as $evaluation => $activities){
+					foreach($data[$compidKey][$studentidKey][$evaluation] as $activityKey => $empty){
+						$activityid = $activityKey;
+						$values[] =  array('user' => intval($studentidKey), 'compid' => intval($compidKey), 'value' => $value, 'activityid'=>intval($activityKey));
+					}
+				}
+			}
+		}
+	}
+	block_exacomp_reset_comp_activity_data($courseid, $role, $comptype, (($role == ROLE_STUDENT)) ? $USER->id : false, $activityid);
+
+	foreach ($values as $value)
+		block_exacomp_set_user_competence_activity($value['user'], $value['compid'], $comptype, $value['activityid'], $role, $value['value']);
 }
 
 
@@ -388,6 +446,28 @@ function block_exacomp_reset_comp_data($courseid, $role, $comptype, $userid = fa
 		if($userid)
 			$select .= " AND userid = ?";
 		$DB->delete_records_select("block_exacompcompuser", $select ,array($courseid, $role, $comptype, $topicid,$topicid, $userid));
+	}
+}
+
+/**
+ * Reset activity comp data for one comptype in one course
+ *
+ * @param int $courseid
+ * @param int $role
+ * @param int $comptype
+ * @param int $userid
+ */
+function block_exacomp_reset_comp_activity_data($courseid, $role, $comptype, $userid = false, $activityid = null) {
+	global $DB;
+	
+	$activities = block_exacomp_get_activities_by_course($courseid);
+	
+	if($role == ROLE_TEACHER){
+		foreach($activities as $activity)
+			$DB->delete_records(DB_COMPETENCIES_USER_MM, array("activityid" => $activity->id, "role" => $role, "comptype" => $comptype));
+	}else{
+		foreach($activities as $activity)
+			$DB->delete_records(DB_COMPETENCIES_USER_MM, array("activityid" => $activity->id, "role" => $role,  "comptype" => $comptype, "userid"=>$userid));
 	}
 }
 
@@ -720,6 +800,10 @@ function block_exacomp_get_user_information_by_course($user, $courseid) {
 	$user = block_exacomp_get_user_topics_by_course($user, $courseid);
 	// get student examples
 	$user = block_exacomp_get_user_examples_by_course($user, $courseid);
+	// get student activities topics
+	$user = block_exacomp_get_user_activities_topics_by_course($user, $courseid);
+	// get student activities competencies
+	$user = block_exacomp_get_user_activities_competencies_by_course($user, $courseid);
 
 	return $user;
 }
@@ -770,6 +854,36 @@ function block_exacomp_get_user_examples_by_course($user, $courseid) {
 	$user->examples->teacher = $DB->get_records_menu(DB_EXAMPLEEVAL,array("courseid" => $courseid, "studentid" => $user->id),'','exampleid as id, teacher_evaluation as value');
 	$user->examples->student = $DB->get_records_menu(DB_EXAMPLEEVAL,array("courseid" => $courseid, "studentid" => $user->id),'','exampleid as id, student_evaluation as value');
 
+	return $user;
+}
+function block_exacomp_get_user_activities_topics_by_course($user, $courseid){
+	global $DB;
+	$activities = block_exacomp_get_activities_by_course($courseid);
+	
+	$user->activities_topics = new stdClass();
+	$user->activities_topics->teacher = array();
+	$user->activities_topics->student = array();
+	
+	foreach($activities as $activity){
+		$user->activities_topics->teacher += $DB->get_records_menu(DB_COMPETENCIES_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => ROLE_TEACHER, "comptype" => TYPE_TOPIC),'','compid as id, value');
+		$user->activities_topics->student += $DB->get_records_menu(DB_COMPETENCIES_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => ROLE_STUDENT, "comptype" => TYPE_TOPIC),'','compid as id, value');
+	}
+	
+	return $user;
+}
+function block_exacomp_get_user_activities_competencies_by_course($user, $courseid){
+	global $DB;
+	$activities = block_exacomp_get_activities_by_course($courseid);
+	
+	$user->activities_competencies = new stdClass();
+	$user->activities_competencies->teacher = array();
+	$user->activities_competencies->student = array();
+	
+	foreach($activities as $activity){
+		$user->activities_competencies->teacher += $DB->get_records_menu(DB_COMPETENCIES_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR),'','compid as id, value');
+		$user->activities_competencies->student += $DB->get_records_menu(DB_COMPETENCIES_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => ROLE_STUDENT, "comptype" => TYPE_DESCRIPTOR),'','compid as id, value');
+	}
+	
 	return $user;
 }
 /**
@@ -1446,9 +1560,9 @@ function block_exacomp_get_course_module_association($courseid) {
 
 	foreach($records as $record) {
 		if($record->comptype == TYPE_DESCRIPTOR)
-			$mm->competencies[$record->compid][] = $record->activityid;
+			$mm->competencies[$record->compid][$record->activityid] = $record->activityid;
 		else
-			$mm->topics[$record->compid][] = $record->activityid;
+			$mm->topics[$record->compid][$record->activityid] = $record->activityid;
 	}
 
 	return $mm;
@@ -1669,9 +1783,9 @@ function block_exacomp_get_activities($compid, $courseid = null, $comptype = TYP
 }
 function block_exacomp_get_activities_by_course($courseid){
 	global $DB;
-	$query = 'SELECT mm.activityid as id FROM {'.DB_COMPETENCE_ACTIVITY.'} mm 
+	$query = 'SELECT DISTINCT mm.activityid as id, mm.activitytitle as title FROM {'.DB_COMPETENCE_ACTIVITY.'} mm 
 		INNER JOIN {course_modules} a ON a.id=mm.activityid 
-		WHERE a.course = ? GROUP BY mm.activityid';
+		WHERE a.course = ?';
 	return $DB->get_records_sql($query, array($courseid));
 }
 function block_exacomp_init_competence_grid_data($courseid, $subjectid, $studentid) {
@@ -1906,10 +2020,11 @@ function block_exacomp_build_activity_tree($courseid){
 		$tree = block_exacomp_build_example_tree_desc($courseid);
 		$activity->subs = $tree;
 	}
+	$activity_association = block_exacomp_get_course_module_association($courseid);
 	
 	foreach($activities as $activity){
 		foreach($activity->subs as $subject){
-			$subject_has_examples = block_exacomp_build_activity_tree_topics($subject->subs, $activity->id);
+			$subject_has_examples = block_exacomp_build_activity_tree_topics($subject->subs, $activity->id, $activity_association);
 			
 			if(!$subject_has_examples)
 				unset($activity->subs[$subject->id]);
@@ -1922,7 +2037,7 @@ function block_exacomp_build_activity_tree($courseid){
 /**
  * helper function to traverse tree recursively because of endless topic structure
  */
-function block_exacomp_build_activity_tree_topics(&$subs, $activityid){
+function block_exacomp_build_activity_tree_topics(&$subs, $activityid, $activity_association){
 	global $DB;
 	
 	$sub_has_activities = false;
@@ -1930,22 +2045,27 @@ function block_exacomp_build_activity_tree_topics(&$subs, $activityid){
 	foreach($subs as $topic){
 		$topic_has_activities = false;
 		
-		$topic_activity_association = $DB->get_records(DB_COMPETENCE_ACTIVITY, array('activityid'=>$activityid, 'compid'=>$topic->id, 'comptype'=>TYPE_TOPIC));
+		(array_key_exists($activityid, $activity_association->topics[$topic->id]))?
+			$topic_activity_association = true:$topic_activity_association=false;
 		
-		if($topic_activity_association)
+		if($topic_activity_association){
 			$topic_has_activities = true;
+			$sub_has_activities = true;
+			$topic->used = true;
+		}else{
+			$topic->used = false;
+		}
 		
-		if(!$topic_has_activities){
-			if(isset($topic->descriptors) && !empty($topic->descriptors)){
-				foreach($topic->descriptors as $descriptor){
-					$descriptor_activity_association = $DB->get_records(DB_COMPETENCE_ACTIVITY, array('activityid'=>$activityid, 'compid'=>$descriptor->id, 'comptype'=>TYPE_DESCRIPTOR));
-					
-					if(!$descriptor_activity_association){
-						unset($topic->descriptors[$descriptor->id]);
-					}else{
-						$topic_has_activities = true;
-						$sub_has_activities = true;
-					}
+		if(isset($topic->descriptors) && !empty($topic->descriptors)){
+			foreach($topic->descriptors as $descriptor){
+				(array_key_exists($activityid, $activity_association->competencies[$descriptor->id]))?
+					$descriptor_activity_association = true:$descriptor_activity_association=false;
+		
+				if(!$descriptor_activity_association){
+					unset($topic->descriptors[$descriptor->id]);
+				}else{
+					$topic_has_activities = true;
+					$sub_has_activities = true;
 				}
 			}
 		}

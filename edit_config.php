@@ -30,7 +30,7 @@ require_once dirname(__FILE__) . '/lib/lib.php';
 require_once($CFG->dirroot . "/lib/datalib.php");
 require_once dirname(__FILE__) . '/lib/xmllib.php';
 
-global $DB, $OUTPUT, $PAGE, $COURSE, $CFG;
+global $DB, $OUTPUT, $PAGE, $COURSE, $CFG, $version;
 
 $courseid = required_param('courseid', PARAM_INT);
 $action = optional_param('action', "", PARAM_ALPHA);
@@ -41,7 +41,6 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 
 require_login($course);
 
-$version = get_config('exacomp', 'alternativedatamodel');
 if($version) {
 	$context = context_course::instance($courseid);
 	require_capability('block/exacomp:teacher', $context);

@@ -29,7 +29,7 @@ require_once $CFG->libdir . '/formslib.php';
 class block_exacomp_example_upload_form extends moodleform {
 
 	function definition() {
-		global $CFG, $USER, $DB;
+		global $CFG, $USER, $DB, $version;
 
 		$mform = & $this->_form;
 
@@ -74,7 +74,7 @@ class block_exacomp_example_upload_form extends moodleform {
 		$mform->addElement('filepicker', 'file', get_string('file'), null, array('subdirs' => false, 'maxfiles' => 1));
 		$mform->addRule('file', get_string("filerequired", "block_exacomp"), 'required', null, 'client');
 		
-		if(get_config('exacomp','alternativedatamodel')) {
+		if($version) {
 			$mform->addElement('checkbox', 'lisfilename', get_string('lisfilename', 'block_exacomp'));
 			$mform->setDefault('lisfilename', 0);
 		}

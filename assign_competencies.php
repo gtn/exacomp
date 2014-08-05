@@ -30,6 +30,7 @@ require_once dirname(__FILE__)."/inc.php";
 global $DB, $OUTPUT, $PAGE, $USER, $version;
 
 $courseid = required_param('courseid', PARAM_INT);
+$showevaluation = ($version) ? true : optional_param("showevaluation", false, PARAM_BOOL);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_simplehtml', $courseid);
@@ -43,7 +44,7 @@ $context = context_course::instance($courseid);
 $page_identifier = 'tab_competence_overview';
 
 /* PAGE URL - MUST BE CHANGED */
-$PAGE->set_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid));
+$PAGE->set_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid, 'showevaluation'=>$showevaluation));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
@@ -106,9 +107,8 @@ else{
 	foreach($students as $student)
 		block_exacomp_get_user_information_by_course($student, $courseid);
 
-	$showevaluation = ($version) ? true : optional_param("showevaluation", false, PARAM_BOOL);
-
-	echo $output->print_competence_overview_form_start($selectedTopic, $selectedSubject);
+	
+	echo $output->print_competence_overview_form_start((isset($selectedTopic))?$selectedTopic:null, (isset($selectedSubject))?$selectedSubject:null);
 
 	if(!$version) echo $output->print_student_evaluation($showevaluation);
 	else {

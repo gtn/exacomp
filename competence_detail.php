@@ -27,9 +27,10 @@
 
 require_once dirname(__FILE__)."/inc.php";
 
-global $DB, $OUTPUT, $PAGE;
+global $DB, $OUTPUT, $PAGE, $version;
 
 $courseid = required_param('courseid', PARAM_INT);
+$showevaluation = optional_param("showevaluation", false, PARAM_BOOL);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_simplehtml', $courseid);
@@ -43,7 +44,7 @@ $context = context_course::instance($courseid);
 $page_identifier = 'tab_competence_details';
 
 /* PAGE URL - MUST BE CHANGED */
-$PAGE->set_url('/blocks/exacomp/competence_detail.php', array('courseid' => $courseid));
+$PAGE->set_url('/blocks/exacomp/competence_detail.php', array('courseid' => $courseid, 'showevaluation'=>$showevaluation));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
@@ -59,17 +60,30 @@ $pagenode->make_active();
 echo $OUTPUT->header();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
+// CHECK TEACHER
+$isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
+
+if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
+	// DESCRIPTOR DATA
+	block_exacomp_save_competencies_activities_detail(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_DESCRIPTOR);
+	// TOPIC DATA
+	block_exacomp_save_competencies_activities_detail(isset($_POST['datatopics']) ? $_POST['datatopics'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_TOPIC);	
+}
+
 /* CONTENT REGION */
 $output = $PAGE->get_renderer('block_exacomp');
 $activities = block_exacomp_get_activities_by_course($courseid);
 if(!$activities)
 	echo $output->print_no_activities_warning();
 else{
-	echo $output->print_detail_legend();
+	echo $output->print_detail_legend($showevaluation);
 	
 	$tree = block_exacomp_build_activity_tree($courseid);
-	//funktioniert noch nicht, wenn auch topic ausgewählt var_dump($tree);
-	echo $output->print_detail_content($tree);
+	$students = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : array($USER);
+	foreach($students as $student)
+		block_exacomp_get_user_information_by_course($student, $courseid);
+	
+	echo $output->print_detail_content($tree, $courseid, $students, $showevaluation, (has_capability('block/exacomp:teacher', $context)) ? ROLE_TEACHER : ROLE_STUDENT, block_exacomp_get_grading_scheme($courseid));
 }
 
 
