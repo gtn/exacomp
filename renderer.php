@@ -2498,5 +2498,64 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		//print graphs
 		//print table
 	}
+	function print_radar_graph($records) {
+	
+		if(count($records) >= 3 && count($records) <= 7) {
+				
+			$height = $width = 450;
+			$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvas", "height" => $height, "width" => $width)),"radargraph",array("style" => "width:30%"));
+			$content .= '
+			<script>
+			var radarChartData = {
+			labels: [';
+	
+			foreach($records as $record)
+				$content .= '"'.$record->title.'",';
+	
+			$content .= '],
+			datasets: [
+			{
+			label: "My First dataset",
+			fillColor: "rgba(220,220,220,0.2)",
+			strokeColor: "rgba(220,220,220,1)",
+			pointColor: "rgba(220,220,220,1)",
+			pointStrokeColor: "#fff",
+			pointHighlightFill: "#fff",
+			pointHighlightStroke: "rgba(220,220,220,1)",
+			data: [';
+	
+			foreach($records as $record)
+				$content .= '"'.$record->teacher.'",';
+			$content .= ']
+		},
+		{
+		label: "My Second dataset",
+		fillColor: "rgba(151,187,205,0.2)",
+		strokeColor: "rgba(151,187,205,1)",
+		pointColor: "rgba(151,187,205,1)",
+		pointStrokeColor: "#fff",
+		pointHighlightFill: "#fff",
+		pointHighlightStroke: "rgba(151,187,205,1)",
+		data: [';
+	
+			foreach($records as $record)
+				$content .= '"'.$record->student.'",';
+			$content .=']
+		}
+		]
+		};
+	
+		window.onload = function(){
+		window.myRadar = new Chart(document.getElementById("canvas").getContext("2d")).Radar(radarChartData, {
+		responsive: true
+		});
+		}
+	
+		</script>';
+		} else {
+				
+		}
+		return $content;
+	}
 }
 ?>

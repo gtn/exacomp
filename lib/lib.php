@@ -612,7 +612,7 @@ function block_exacomp_get_descritors_list($courseid, $onlywithactivitys = 0) {
  * returns all descriptors
  * @param $courseid if course id =0 all possible descriptors are returned
  */
-function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = false) {
+function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = false, $subjectid = 0) {
 	global $DB;
 	
 	if(!$showalldescriptors)
@@ -622,7 +622,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 
 	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype '
 	.'FROM {'.DB_TOPICS.'} t '
-	.(($courseid>0)?'JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ':'')
+	.(($courseid>0)?'JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
 	.'JOIN {'.DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id '
 	.($showalldescriptors ? '' : '
@@ -633,12 +633,13 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 
 	return $descriptors;
 }
-function block_exacomp_get_descriptors_by_subject($subjectid) {
+function block_exacomp_get_descriptors_by_subject($subjectid,$niveaus = true) {
 	global $DB;
 
 	$sql = "SELECT d.*, dt.topicid, t.title as topic FROM {".DB_DESCRIPTORS."} d, {".DB_DESCTOPICS."} dt, {".DB_TOPICS."} t
-	WHERE d.id=dt.descrid AND dt.topicid IN (SELECT id FROM {".DB_TOPICS."} WHERE subjid=?)
-	AND d.niveauid > 0 AND dt.topicid = t.id order by d.skillid, dt.topicid, d.niveauid";
+	WHERE d.id=dt.descrid AND dt.topicid IN (SELECT id FROM {".DB_TOPICS."} WHERE subjid=?)";
+	if($niveaus) $sql .= " AND d.niveauid > 0";
+	$sql .= " AND dt.topicid = t.id order by d.skillid, dt.topicid, d.niveauid";
 
 	return $DB->get_records_sql($sql,array($subjectid));
 }
@@ -2224,7 +2225,7 @@ function block_exacomp_get_course_competence_statistics($courseid, $user, $schem
 	
 	return array($total,$reached,$average);
 }
-/**
+**
  * This method is used to get the necessary information to display a radar graph in
  * the profile overview
  *
@@ -2233,8 +2234,76 @@ function block_exacomp_get_course_competence_statistics($courseid, $user, $schem
  * $subject->teacher = 0-100 percentage
  * @return array $subjects
  */
-function block_exacomp_get_subjects_for_radar_graph($studentid) {
-	return array();
+function block_exacomp_get_subjects_for_radar_graph($userid) {
+	global $DB;
+	// 1. get all used subjects
+	$subjects = array();
+	foreach(block_exacomp_get_exacomp_courses($userid) as $course) {
+		$courseSubjects = block_exacomp_get_subjects_by_course($course->id);
+		foreach($courseSubjects as $courseSubject) {
+			if(!isset($subjects[$courseSubject->id]))
+				$subjects[$courseSubject->id] = $courseSubject;
+			
+			$topics = block_exacomp_get_topics_by_subject($course->id,$courseSubject->id);
+			foreach($topics as $topic) {
+				if(!isset($subjects[$courseSubject->id]->topics[$topic->id]))
+					$subjects[$courseSubject->id]->topics[$topic->id] = $topic;
+			}
+			
+			$descriptors = block_exacomp_get_descriptors($course->id, false, $courseSubject->id);
+			foreach($descriptors as $descriptor) {
+				if(!isset($subjects[$courseSubject->id]->competencies[$descriptor->id]))
+					$subjects[$courseSubject->id]->competencies[$descriptor->id] = $descriptor;
+			}
+		}
+	}
+	
+	// 2. get competencies per subject
+	foreach($subjects as $subject) {
+		$total = count($subject->topics) + count($subject->competencies);
+		$subject->total = $total;
+		$sql = "SELECT DISTINCT c.id, c.userid, c.compid, c.role, c.courseid, c.value, c.comptype, c.timestamp FROM {".DB_COMPETENCIES."} c, {".DB_TOPICS."} t
+			WHERE
+			((c.comptype = 1 AND c.compid = t.id AND t.subjid = ?)
+			OR
+			(c.comptype = 0 AND c.compid IN
+			 (
+			    SELECT dt.descrid FROM {".DB_DESCTOPICS."} dt, {".DB_TOPICS."} t WHERE dt.topicid = t.id AND t.subjid = ?
+			     )
+			))
+			AND c.role = ? AND c.userid = ?
+			ORDER BY c.courseid";
+		$competencies = $DB->get_records_sql($sql,array($subject->id,$subject->id,ROLE_TEACHER,$userid));
+		$c_courseid = 0;
+		$overall_competencies = array();
+		foreach ($competencies as $competence) {
+			if($competence->courseid != $c_courseid) {
+				$c_courseid = $competence->courseid;
+				$scheme = block_exacomp_get_grading_scheme($c_courseid);
+			}
+			if($competence->value >= ceil($scheme/2)) {
+				$overall_competencies[$competence->id] = true;
+			}
+		}
+		$subject->reached = count($overall_competencies);
+		$subject->teacher = (count($overall_competencies) / $total) * 100;
+		
+		$competencies = $DB->get_records_sql($sql,array($subject->id,$subject->id,ROLE_STUDENT,$userid));
+		$c_courseid = 0;
+		$overall_competencies_student = array();
+		foreach ($competencies as $competence) {
+			if($competence->courseid != $c_courseid) {
+				$c_courseid = $competence->courseid;
+				$scheme = block_exacomp_get_grading_scheme($c_courseid);
+			}
+			if($competence->value >= ceil($scheme/2)) {
+				$overall_competencies_student[$competence->id] = true;
+			}
+		}
+		$subject->reached_student = count($overall_competencies_student);
+		$subject->student = (count($overall_competencies_student) / $total) * 100;
+	}
+	return $subjects;
 }
 /**
  * $topics['topicid'] = $topic
