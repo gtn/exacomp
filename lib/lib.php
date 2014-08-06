@@ -2164,7 +2164,63 @@ function block_exacomp_get_exacomp_courses($user) {
  * @param int $courseid
  * @param int $studentid
  */
-function block_exacomp_get_course_competence_statistics($courseid, $studentid) {
+function block_exacomp_get_course_competence_statistics($courseid, $user, $scheme) {
+	
+	$coursesettings = block_exacomp_get_settings_by_course($courseid);
+	
+	$cm_mm = block_exacomp_get_course_module_association($courseid);
+	
+	$topics = block_exacomp_get_topics_by_course($courseid);
+	$descriptors = block_exacomp_get_descriptors($courseid);
+	
+	$students = block_exacomp_get_students_by_course($courseid);
+	$evaluation = block_exacomp_get_user_information_by_course($user, $courseid);
+	
+	$total = 0;
+	$reached = 0;
+	$average = 0;
+	
+	foreach($topics as $topic){
+		if(!$coursesettings->uses_activities || ($coursesettings->uses_activities && isset($cm_mm->topics[$topic->id])))
+			$total ++;
+		
+		foreach ($students as $student){
+			if($student->id == $user->id){
+				if(isset($evaluation->topics->teacher) && isset($evaluation->topics->teacher[$topic->id])){
+					if($scheme == 1 || $evaluation->topics->teacher[$topic->id] >= ceil($schema/2))
+						$reached ++;
+				}
+			}else{
+				$student_evaluation = block_exacomp_get_user_information_by_course($student, $courseid);
+				if(isset($student_evaluation->topics->teacher) && isset($student_evaluation->topics->teacher[$topic->id])){
+					if($scheme == 1 || $student_evaluation->topics->teacher[$topic->id] >= ceil($schema/2))
+						$average ++;
+				}
+			}
+		}
+	}
+	foreach($descriptors as $descriptor){
+		if(!$coursesettings->uses_activities || ($coursesettings->uses_activities && isset($cm_mm->competencies[$descriptor->id])))
+			$total ++;
+			
+		foreach($students as $student){
+			if($student->id == $user->id){
+				if(isset($evaluation->competencies->teacher) && isset($evaluation->competencies->teacher[$descriptor->id])){
+					if($scheme == 1 || $evaluation->competencies->teacher[$descriptor->id] >= ceil($schema/2))
+						$reached ++;
+				}
+			}else{
+				$student_evaluation = block_exacomp_get_user_information_by_course($student, $courseid);
+				if(isset($student_evaluation->competencies->teacher) && isset($student_evaluation->competencies->teacher[$descriptor->id])){
+					if($scheme == 1 || $student_evaluation->competencies->teacher[$descriptor->id] >= ceil($schema/2))
+						$average ++;
+				}
+			}
+		}
+	}
+	
+	$average = intval(ceil($average/(count($students)-1)));
+	
 	return array($total,$reached,$average);
 }
 /**
