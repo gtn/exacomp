@@ -937,7 +937,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					'scheme' => $scheme,
 					'cm_mm' => block_exacomp_get_course_module_association($courseid),
 					'course_mods' => get_fast_modinfo($courseid)->get_cms(),
-					'selected_topicid' => null
+					'selected_topicid' => null,
+					'showalldescriptors' => block_exacomp_get_settings_by_course($courseid)->show_all_descriptors
 			);
 			$this->print_topics($rows, 0, $subject->subs, $data, $students);
 			$table->data = $rows;
@@ -995,6 +996,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
 				$studentCell->colspan = $studentsColspan;
 
+				if(isset($data->cm_mm->topics[$topic->id]) || $data->showalldescriptors) {
 				// SHOW EVALUATION
 				if($data->showevaluation) {
 					$studentCellEvaluation = new html_table_cell();
@@ -1044,7 +1046,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				
 				if($data->showevaluation)
 					$topicRow->cells[] = $studentCellEvaluation;
-
+				}
 				$topicRow->cells[] = $studentCell;
 			}
 
@@ -1900,7 +1902,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 
 			if (!empty($topic->subs)) {
-				$this->print_topics_activites($rows, $level+1, $topic->subs, $rowgroup, $modules, $sub_rowgroup_class);
+				$this->print_topics_activities($rows, $level+1, $topic->subs, $rowgroup, $modules, $sub_rowgroup_class);
 			}
 		}
 	}

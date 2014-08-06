@@ -1737,6 +1737,7 @@ function block_exacomp_get_coursemodule($mod) {
  */
 function block_exacomp_save_competencies_activities($data, $courseid, $comptype) {
 	global $USER;
+	if($data != null)
 	foreach($data as $cmoduleKey => $comps){
 		if(!empty($cmoduleKey)){
 			foreach($comps as $compidKey=>$empty){
