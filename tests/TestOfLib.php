@@ -386,5 +386,40 @@ class TestOfLib extends UnitTestCase {
     
     	$this->assertEqual(count($data), 2);
     }
+    /**
+     * no activities selected
+     */
+    function testGetCompetenceTree8() {
+    	// serialized value of the topic selection for the course
+    	$topics = 'a:8:{i:1;s:1:"1";i:6;s:1:"6";i:8;s:1:"8";i:9;s:1:"9";i:7;s:1:"7";i:2;s:1:"2";i:13;s:2:"13";i:14;s:2:"14";}';
+    	$topicData = unserialize($topics);
+    	block_exacomp_set_coursetopics($this->courseid, $topicData);
+    
+    	$activities = '';
+    	block_exacomp_save_competencies_activities(unserialize($activities), $this->courseid, TYPE_DESCRIPTOR);
+    
+    	$activities = '';
+    	block_exacomp_save_competencies_activities(unserialize($activities), $this->courseid, TYPE_TOPIC);
+    
+    	$data = block_exacomp_get_competence_tree($this->courseid);
+    
+    	$this->assertEqual(count($data), 0);
+    }
+    /**
+     * show all descriptors
+     */
+    function testGetCompetenceTree9() {
+    	// serialized value of the topic selection for the course
+    	$topics = 'a:8:{i:1;s:1:"1";i:6;s:1:"6";i:8;s:1:"8";i:9;s:1:"9";i:7;s:1:"7";i:2;s:1:"2";i:13;s:2:"13";i:14;s:2:"14";}';
+    	$topicData = unserialize($topics);
+    	block_exacomp_set_coursetopics($this->courseid, $topicData);
+    	$settings = block_exacomp_get_settings_by_course($this->courseid);
+    	$settings->show_all_descriptors = true;
+    	block_exacomp_save_coursesettings($this->courseid, $settings);
+    
+    	$data = block_exacomp_get_competence_tree($this->courseid);
+    
+    	$this->assertEqual(count($data[1]->subs) + count($data[2]->subs), 4);
+    }
 }
 ?>
