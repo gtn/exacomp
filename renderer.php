@@ -419,7 +419,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			(isset($topic_evaluation->student[$topic->id]))?$value_student = $topic_evaluation->student[$topic->id] : $value_student = 0;
 			(isset($topic_evaluation->teacher[$topic->id]))?$value_teacher = $topic_evaluation->teacher[$topic->id] : $value_teacher = 0;
 			
-			$p_content .= "S: " . html_writer::checkbox("topiccomp", $schema, $value_student >= ceil($schema/2))
+			$p_content .= "S: " . html_writer::checkbox("topiccomp", $scheme, $value_student >= ceil($scheme/2))
 				." Bestätigung L: ". $value_teacher;
 						
 		}
@@ -515,7 +515,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					else
 						$cell->text .= 'L:'.$this->generate_select('data', $descriptor->id, 'competencies', $USER, "teacher", $scheme, true)
 						.html_writer::empty_tag('br')
-						."S:".$this->generate_select('data', $descriptor->id, 'competencies', $USER,"student", $scheme, true);;
+						."S:".$this->generate_select('data', $descriptor->id, 'competencies', $USER,"student", $scheme);
 
 					//$activities = block_exacomp_get_activities($descriptor->id, $COURSE->id);
 					$cm_mm = block_exacomp_get_course_module_association($COURSE->id);
@@ -1029,7 +1029,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					if($data->showevaluation)
 						$studentCellEvaluation->text = $this->generate_select("datatopics", $topic->id, 'topics', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
 
-					$studentCell->text = $this->generate_select("datatopics", $topic->id, 'topics', $student, $evaluation);
+					$studentCell->text = $this->generate_select("datatopics", $topic->id, 'topics', $student, $evaluation, $data->scheme);
 				}
 
 
@@ -1136,7 +1136,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					if($data->showevaluation)
 						$studentCellEvaluation->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
 
-					$studentCell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, $evaluation);
+					$studentCell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme);
 				}
 
 				// ICONS
@@ -1343,15 +1343,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 *
 	 * @return String $select html code for select
 	 */
-	public function generate_select($name, $compid, $type, $student, $evaluation, $disabled = false, $activityid = null) {
+	public function generate_select($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false, $activityid = null) {
 		$options = array();
 		for($i=0;$i<=$scheme;$i++)
 			$options[] = $i;
 
 		return html_writer::select(
 				$options,
-				((isset($activityid))? $checkboxname . '[' . $compid . '][' . $student->id . '][' . $evaluation . '][' . $activityid . ']'
-				: $checkboxname . '[' . $compid . '][' . $student->id . '][' . $evaluation . ']'),
+				((isset($activityid))? $name . '[' . $compid . '][' . $student->id . '][' . $evaluation . '][' . $activityid . ']'
+				: $name . '[' . $compid . '][' . $student->id . '][' . $evaluation . ']'),
 				(isset($student->{$type}->{$evaluation}[$compid])) ? $student->{$type}->{$evaluation}[$compid] : 0,
 				false,(!$disabled) ? null : array("disabled"=>"disabled"));
 	}

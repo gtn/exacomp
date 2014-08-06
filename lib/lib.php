@@ -2186,13 +2186,13 @@ function block_exacomp_get_course_competence_statistics($courseid, $user, $schem
 			foreach ($students as $student){
 				if($student->id == $user->id){
 					if(isset($evaluation->topics->teacher) && isset($evaluation->topics->teacher[$topic->id])){
-						if($scheme == 1 || $evaluation->topics->teacher[$topic->id] >= ceil($schema/2))
+						if($scheme == 1 || $evaluation->topics->teacher[$topic->id] >= ceil($scheme/2))
 							$reached ++;
 					}
 				}else{
 					$student_evaluation = block_exacomp_get_user_information_by_course($student, $courseid);
 					if(isset($student_evaluation->topics->teacher) && isset($student_evaluation->topics->teacher[$topic->id])){
-						if($scheme == 1 || $student_evaluation->topics->teacher[$topic->id] >= ceil($schema/2))
+						if($scheme == 1 || $student_evaluation->topics->teacher[$topic->id] >= ceil($scheme/2))
 							$average ++;
 					}
 				}
@@ -2206,13 +2206,13 @@ function block_exacomp_get_course_competence_statistics($courseid, $user, $schem
 			foreach($students as $student){
 				if($student->id == $user->id){
 					if(isset($evaluation->competencies->teacher) && isset($evaluation->competencies->teacher[$descriptor->id])){
-						if($scheme == 1 || $evaluation->competencies->teacher[$descriptor->id] >= ceil($schema/2))
+						if($scheme == 1 || $evaluation->competencies->teacher[$descriptor->id] >= ceil($scheme/2))
 							$reached ++;
 					}
 				}else{
 					$student_evaluation = block_exacomp_get_user_information_by_course($student, $courseid);
 					if(isset($student_evaluation->competencies->teacher) && isset($student_evaluation->competencies->teacher[$descriptor->id])){
-						if($scheme == 1 || $student_evaluation->competencies->teacher[$descriptor->id] >= ceil($schema/2))
+						if($scheme == 1 || $student_evaluation->competencies->teacher[$descriptor->id] >= ceil($scheme/2))
 							$average ++;
 					}
 				}
@@ -2270,26 +2270,42 @@ function block_exacomp_get_competencies_for_pie_chart($courseid,$user, $scheme) 
 	$pendingcomp = 0;
 	
 	foreach($topics as $topic){
+		$teacher_eval = false;
+		$student_eval = false;
 		if(!$coursesettings->uses_activities || ($coursesettings->uses_activities && isset($cm_mm->topics[$topic->id]))){
 			if(isset($evaluation->topics->teacher) && isset($evaluation->topics->teacher[$topic->id])){
-				if($scheme == 1 || $evaluation->topics->teacher[$topic->id] >= ceil($scheme/2))
+				if($scheme == 1 || $evaluation->topics->teacher[$topic->id] >= ceil($scheme/2)){
 					$teachercomp ++;
-			}else if(isset($evaluation->topics->student) && isset($evaluation->topics->student[$topic->id])){
-				if($scheme == 1 || $evaluation->topics->student[$topic->id] >= ceil($scheme/2))
+					$teacher_eval = true;
+				}
+			}
+			if(!$teacher_eval && isset($evaluation->topics->student) && isset($evaluation->topics->student[$topic->id])){
+				if($scheme == 1 || $evaluation->topics->student[$topic->id] >= ceil($scheme/2)){
 					$studentcomp ++;
-			}else 	
+					$student_eval = true;
+				}
+			}
+			if(!$teacher_eval && !$student_eval)	
 				$pendingcomp ++;
 		}
 	}
 	foreach($descriptors as $descriptor){
+		$teacher_eval = false;
+		$student_eval = false;
 		if(!$coursesettings->uses_activities || ($coursesettings->uses_activities && isset($cm_mm->competencies[$descriptor->id]))){
 			if(isset($evaluation->competencies->teacher) && isset($evaluation->competencies->teacher[$descriptor->id])){
-				if($scheme == 1 || $evaluation->competencies->teacher[$descriptor->id] >= ceil($scheme/2))
+				if($scheme == 1 || $evaluation->competencies->teacher[$descriptor->id] >= ceil($scheme/2)){
 					$teachercomp ++;
-			}else if(isset($evaluation->competencies->student) && isset($evaluation->competencies->student[$descriptor->id])){
-				if($scheme == 1 || $evaluation->competencies->student[$descriptor->id] >= ceil($scheme/2))
+					$teacher_eval = true;
+				}
+			}
+			if(!$teacher_eval && isset($evaluation->competencies->student) && isset($evaluation->competencies->student[$descriptor->id])){
+				if($scheme == 1 || $evaluation->competencies->student[$descriptor->id] >= ceil($scheme/2)){
 					$studentcomp ++;
-			}else 	
+					$student_eval = true;
+				}
+			}
+			if(!$teacher_eval && !$student_eval) 	
 				$pendingcomp ++;
 		}
 	}
