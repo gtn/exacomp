@@ -2038,7 +2038,7 @@ function block_exacomp_build_activity_tree($courseid){
 	
 	//append the whole tree to every taxonomy
 	foreach($activities as $activity){
-		$tree = block_exacomp_build_example_tree_desc($courseid);
+		$tree = block_exacomp_get_competence_tree($courseid);
 		$activity->subs = $tree;
 	}
 	$activity_association = block_exacomp_get_course_module_association($courseid);
@@ -2066,8 +2066,10 @@ function block_exacomp_build_activity_tree_topics(&$subs, $activityid, $activity
 	foreach($subs as $topic){
 		$topic_has_activities = false;
 		
-		(array_key_exists($activityid, $activity_association->topics[$topic->id]))?
-			$topic_activity_association = true:$topic_activity_association=false;
+		if(isset($activity_association->topics[$topic->id]) && array_key_exists($activityid, $activity_association->topics[$topic->id]))
+			$topic_activity_association = true;//:
+		else
+			$topic_activity_association=false;
 		
 		if($topic_activity_association){
 			$topic_has_activities = true;
