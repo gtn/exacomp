@@ -79,7 +79,7 @@ list($niveaus, $skills, $subjects, $data, $selection) = block_exacomp_init_compe
 	echo $output->print_subject_dropdown($dropdown_subjects,$subjectid, $studentid);
 if($data) {
 	if (has_capability('block/exacomp:teacher', $context)) {
-		echo get_string("choosestudent","block_exacomp");
+		echo ' '.get_string("choosestudent","block_exacomp").' ';
 		echo block_exacomp_studentselector(block_exacomp_get_students_by_course($courseid),$studentid,$PAGE->url . ($subjectid > 0 ? "&subjectid=".$subjectid : ""));
 	}
 	echo html_writer::start_div();
@@ -87,7 +87,7 @@ if($data) {
 	echo html_writer::div($output->print_competence_grid_legend());
 	echo html_writer::start_tag("form", array("method"=>"post"));
 	echo $output->print_competence_grid($niveaus, $skills, $subjects, $data, $selection, $courseid,$studentid);
-	echo html_writer::empty_tag("input", array("type"=>"submit","name"=>"btn_submit","value"=>get_string('save_selection','block_exacomp')));
+	echo html_writer::div(html_writer::empty_tag("input", array("type"=>"submit","name"=>"btn_submit","value"=>get_string('save_selection','block_exacomp'))), '', array('id'=>'exabis_save_button'));
 	echo html_writer::end_div();
 }
 else {

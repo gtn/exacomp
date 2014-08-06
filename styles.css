@@ -8,7 +8,9 @@
 div#exabis_competences_block {
 	font-family:Arial, Verdana, Helvetica, sans-serif;
 }
-
+div#exabis_save_button{
+	padding: 10px;
+}
 #competenceok, .competenceok {
 	background-color: #dff0d8 !important;
 }

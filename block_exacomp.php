@@ -195,10 +195,6 @@ class block_exacomp extends block_list {
 						$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/detailed_view_of_competencies.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
 					}
 					
-					//Alle erworbenen Kompetenzen
-					$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/all_gained_competencies_course_based.php', array('courseid'=>$courseid)), get_string('tab_student_all', 'block_exacomp'), array('title'=>get_string('tab_student_all', 'block_exacomp')));
-					$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/assign_moodle_activities.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
-				
 					//Kompetenzprofil
 					$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/competence_profile.php', array('courseid'=>$courseid)), get_string('tab_competence_profile', 'block_exacomp'), array('title'=>get_string('tab_competence_profile', 'block_exacomp')));
 					$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/area.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
@@ -226,10 +222,6 @@ class block_exacomp extends block_list {
 						$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/competence_detail.php', array('courseid'=>$courseid)), get_string('tab_competence_details', 'block_exacomp'), array('title'=>get_string('tab_competence_details', 'block_exacomp')));	
 						$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/detailed_view_of_competencies.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
 					}
-					
-					//Alle erworbenen Kompetenzen
-					$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/all_gained_competencies_course_based.php', array('courseid'=>$courseid)), get_string('tab_student_all', 'block_exacomp'), array('title'=>get_string('tab_student_all', 'block_exacomp')));
-					$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/assign_moodle_activities.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
 					
 					//Kompetenzprofil
 					$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/competence_profile.php', array('courseid'=>$courseid)), get_string('tab_competence_profile', 'block_exacomp'), array('title'=>get_string('tab_competence_profile', 'block_exacomp')));

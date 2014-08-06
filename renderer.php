@@ -345,7 +345,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content = $this->print_subject_dropdown($subjects, $selectedSubject);
 		$content .= html_writer::empty_tag("br");
 
-		$content .= get_string("choosetopic", "block_exacomp");
+		$content .= get_string("choosetopic", "block_exacomp").': ';
 		$options = array();
 		foreach($topics as $topic)
 			$options[$topic->id] = (isset($topic->cattitle)?$topic->cattitle.": " :" ")  . $topic->title;
@@ -487,9 +487,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	
 	public function print_competence_grid_legend() {
 			$content = html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","competenceyellow");
-			$content .= get_string("selfevaluation","block_exacomp");
+			$content .= ' '.get_string("selfevaluation","block_exacomp").' ';
 			$content .= html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","competenceok");
-			$content .= get_string("teacherevaluation","block_exacomp");
+			$content .= ' '.get_string("teacherevaluation","block_exacomp").' ';
 			return $content;
 	}
 	public function print_competence_overview_LIS_student_topics($subs, &$row, &$columns, &$column_count, $scheme){
@@ -839,7 +839,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$table->data = $rows;
 
-		$submit = html_writer::empty_tag('input', array('name'=>'btn_submit', 'type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp')));
+		$submit = html_writer::div(html_writer::empty_tag('input', array('name'=>'btn_submit', 'type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))), '', array('id'=>'exabis_save_button'));
 
 		$script_content = 'function AssignVisibility(id)
 		{
@@ -946,8 +946,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 
 		$table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
-		$table_html .= html_writer::empty_tag('br');
-		$table_html .= html_writer::tag("input", "", array("name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp")));
+		$table_html .= html_writer::div(html_writer::tag("input", "", array("name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp"))),'', array('id'=>'exabis_save_button'));
 		$table_html .= html_writer::tag("input", "", array("name" => "open_row_groups", "type" => "hidden", "value" => (optional_param('open_row_groups', "", PARAM_TEXT))));
 
 		return $table_html.html_writer::end_tag('form');
@@ -1289,18 +1288,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 	public function print_overview_legend($teacher) {
 		$legend = html_writer::tag("img", "", array("src" => "pix/list_12x11.png", "alt" => get_string('legend_activities','block_exacomp')));
-		$legend .= get_string('legend_activities','block_exacomp') . " - ";
+		$legend .= ' '.get_string('legend_activities','block_exacomp') . " - ";
 
 		$legend .= html_writer::tag("img", "", array("src" => "pix/folder_fill_12x12.png", "alt" => get_string('legend_eportfolio','block_exacomp')));
-		$legend .= get_string('legend_eportfolio','block_exacomp') . " - ";
+		$legend .= ' '.get_string('legend_eportfolio','block_exacomp') . " - ";
 
 		$legend .= html_writer::tag("img", "", array("src" => "pix/x_11x11.png", "alt" => get_string('legend_notask','block_exacomp')));
-		$legend .= get_string('legend_notask','block_exacomp');
+		$legend .= ' '.get_string('legend_notask','block_exacomp');
 
 		if($teacher) {
 			$legend .= " - ";
 			$legend .= html_writer::tag("img", "", array("src" => "pix/upload_12x12.png", "alt" => get_string('legend_upload','block_exacomp')));
-			$legend .= get_string('legend_upload','block_exacomp');
+			$legend .= ' '.get_string('legend_upload','block_exacomp');
 		}
 
 		return html_writer::tag("p", $legend);
@@ -1405,8 +1404,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 
 		$hiddenaction = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'action', 'value'=>'save'));
-		$hiddenaction .= html_writer::empty_tag('br');
-		$innerdiv = html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))));
+		$innerdiv = html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))), '', array('id'=>'exabis_save_button'));
 
 		$table->data = $rows;
 
@@ -1691,8 +1689,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 
 		$table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
-		$table_html .= html_writer::empty_tag('br');
-		$table_html .= html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))));
+		$table_html .= html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))), '', array('id'=>'exabis_save_button'));
 		$table_html .= html_writer::tag("input", "", array("name" => "open_row_groups", "type" => "hidden", "value" => (optional_param('open_row_groups', "", PARAM_TEXT))));
 
 		return html_writer::tag("form", $table_html, array("method" => "post", "action" => $PAGE->url . "&action=save", "id" => "course-selection"));
@@ -1717,8 +1714,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 
 			$topicRow = new html_table_row();
-			$topicRow->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rowgroup_class . ' highlight';
-
+			//$topicRow->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rowgroup_class . ' highlight';
+			$topicRow->attributes['class'] = 'exabis_comp_aufgabe ' . $this_rowgroup_class;	
 			$outputidCell = new html_table_cell();
 			$outputidCell->text = $outputid;
 			$topicRow->cells[] = $outputidCell;
@@ -1855,8 +1852,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$table_html = html_writer::div(html_writer::table($table), 'grade-report-grader');
 		$div = html_writer::tag("div", html_writer::tag("div", $table_html, array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
-		$div .= html_writer::div(html_writer::empty_tag('br')
-			.html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))));
+		$div .= html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))), '', array('id'=>'exabis_save_button'));
 		//$table_html .= html_writer::tag("input", "", array("name" => "open_row_groups", "type" => "hidden", "value" => (optional_param('open_row_groups', "", PARAM_TEXT))));
 
 		return html_writer::tag('form', $div, array('id'=>'edit-activities', 'action'=>$PAGE->url.'&action=save', 'method'=>'post'));
@@ -2037,7 +2033,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		$table_html = html_writer::div(html_writer::table($table), 'grade-report-grader');
 		$div = html_writer::tag("div", html_writer::tag("div", $table_html, array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
-		$div .= html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))));
+		$div .= html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))), '', array('id'=>'exabis_save_button'));
 		
 		return html_writer::tag('form', $div, array('id'=>'edit-activities','action'=> new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid'=>$COURSE->id, 'badgeid'=>$badge->id, 'action'=>'save')), 'method'=>'post'));
 		
@@ -2230,8 +2226,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 		}
 		$table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
-		$table_html .= html_writer::empty_tag('br');
-		$table_html .= html_writer::tag("input", "", array("name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp")));
+		$table_html .= html_writer::div(html_writer::tag("input", "", array("name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp"))),' ', array('id'=>'exabis_save_button'));
 		$table_html .= html_writer::tag("input", "", array("name" => "open_row_groups", "type" => "hidden", "value" => (optional_param('open_row_groups', "", PARAM_TEXT))));
 
 		

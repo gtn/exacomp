@@ -56,17 +56,16 @@ $blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
 $pagenode = $blocknode->add(get_string($page_identifier,'block_exacomp'), $PAGE->url);
 $pagenode->make_active();
 
-// build tab navigation & print header
-echo $OUTPUT->header();
-echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
-
-/* CONTENT REGION */
-
 if ($action == 'save') {
     block_exacomp_set_coursetopics($courseid, (isset($_POST['data'])?$_POST['data']:array()));
     $action="";
 }
 
+// build tab navigation & print header
+echo $OUTPUT->header();
+echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
+
+/* CONTENT REGION */
 /*
 if($action == 'digicomps') {
 	$values=array("15"=>15,"20"=>20,"17"=>17,"18"=>18,"21"=>21,"22"=>22,"23"=>23,"25"=>25,"112"=>112,"113"=>113,);
