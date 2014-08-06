@@ -118,15 +118,24 @@ else{
 		$schooltype = block_exacomp_get_schooltyp_by_subject($selectedSubject);
 		$cat = block_exacomp_get_category($selectedTopic);
 		
-		$user_evaluation = block_exacomp_get_user_information_by_course($USER, $courseid);
-		$activities = block_exacomp_get_activities($selectedTopic->id, $courseid, 0);
+		
 		if($selectedTopic->id != LIS_SHOW_ALL_TOPICS){
 			echo $output->print_lis_metadata($schooltype, $selectedSubject, $selectedTopic, $cat);
 			
 			if($isTeacher)
 				echo $output->print_lis_metadata_teacher();
-			else
-				echo $output->print_lis_metadata_student($selectedSubject, $selectedTopic, $user_evaluation->topics, $showevaluation, block_exacomp_get_grading_scheme($courseid), block_exacomp_get_icon_for_user($activities, $USER));
+			else{
+				$user_evaluation = block_exacomp_get_user_information_by_course($USER, $courseid);
+		
+				$cm_mm = block_exacomp_get_course_module_association($courseid);
+				$course_mods = get_fast_modinfo($courseid)->get_cms();
+		
+				$activities_student = array();
+				if(isset($cm_mm->topics[$selectedTopic->id]))
+					foreach($cm_mm->topics[$selectedTopic->id] as $cmid)
+						$activities_student[] = $course_mods[$cmid];
+				echo $output->print_lis_metadata_student($selectedSubject, $selectedTopic, $user_evaluation->topics, $showevaluation, block_exacomp_get_grading_scheme($courseid), block_exacomp_get_icon_for_user($activities_student, $USER));
+			}
 		}
 	}
 	echo $output->print_overview_legend($isTeacher);

@@ -69,7 +69,7 @@ $output = $PAGE->get_renderer('block_exacomp');
 echo $output->print_competence_profile_metadata($student);
 echo $output->print_competene_profile_overview($student);
 
-foreach(block_exacomp_get_exacomp_courses($student->id) as $course) {
+foreach(block_exacomp_get_exacomp_courses($student) as $course) {
 	//if selected
 	echo $output->print_competence_profile_course($course);
 }

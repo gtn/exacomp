@@ -1603,7 +1603,7 @@ function block_exacomp_get_icon_for_user($coursemodules, $student) {
 
 	$icon = new stdClass();
 	$icon->text = fullname($student) . get_string('usersubmitted','block_exacomp') . ' <ul>';
-
+	
 	foreach ($coursemodules as $cm) {
 		if(!in_array($cm->module, block_exacomp_get_supported_modules()))
 			continue;
@@ -2155,6 +2155,7 @@ function block_exacomp_get_exacomp_courses($user) {
 	
 	return $user_courses;
 }
+
 /**
  *
  * This method is used to display course information in the profile overview
