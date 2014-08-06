@@ -207,7 +207,6 @@ $string['no_activities_selected'] = 'Please associate tasks with competencies.';
 $string['textalign'] = "Switch text align";
 $string['selfevaluation'] = 'Self assessment';
 $string['teacherevaluation'] = 'Teacher assessment';
-$string['competencegrid_nodata'] = 'In case the competency grid is empty the outcomes for the chosen subject were not assigned to a level in the datafile. This can be fixed by associating outcomes with levels at www.edustandards.org and re-importing the xml-file.';
 
 //Detail view
 $string['detail_description'] = 'Use activities to evaluate competencies.';

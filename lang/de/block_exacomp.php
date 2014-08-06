@@ -232,7 +232,6 @@ $string['no_activities_selected'] = 'Bitte ordnen Sie den erstellen Aufgaben Kom
 $string['textalign'] = "Switch text align";
 $string['selfevaluation'] = 'Selbsteinschätzung';
 $string['teacherevaluation'] = 'Lehrereinschätzung';
-$string['competencegrid_nodata'] = 'Sollte der Kompetenzraster leer sein, wurden für die Deskriptoren des ausgewählten Gegenstands keine Niveaus in den Daten definiert';
 
 //Detail view
 $string['detail_description'] = 'Hier kann mit Hilfe von Aktivitäten eine Kompetenz beurteilt werden.';

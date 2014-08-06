@@ -999,7 +999,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 				$rows[] = new tabobject('tab_competence_overview', new moodle_url('/blocks/exacomp/assign_competencies.php',array("courseid"=>$courseid)),get_string('tab_competence_overview','block_exacomp'));
 				if ($courseSettings->uses_activities && $usedetailpage)
 					$rows[] = new tabobject('tab_competence_details', new moodle_url('/blocks/exacomp/competence_detail.php',array("courseid"=>$courseid)),get_string('tab_competence_details','block_exacomp'));
-				$rows[] = new tabobject('tab_student_all', new moodle_url('/blocks/exacomp/all_gained_competencies_course_based.php',array("courseid"=>$courseid)),get_string('tab_student_all','block_exacomp'));
+				
 				$profile = new tabobject('tab_competence_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid"=>$courseid)), get_string('tab_competence_profile',  'block_exacomp'));
 				$profile->subtree = array();
 				$profile->subtree[] = new tabobject('tab_competence_profile_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid"=>$courseid)), get_string('tab_competence_profile_profile', 'block_exacomp'));
@@ -1013,7 +1013,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 				$rows[] = new tabobject('tab_competence_overview', new moodle_url('/blocks/exacomp/assign_competencies.php',array("courseid"=>$courseid)),get_string('tab_competence_overview','block_exacomp'));
 				if ($courseSettings->uses_activities && $usedetailpage)
 					$rows[] = new tabobject('tab_competence_details', new moodle_url('/blocks/exacomp/competence_detail.php',array("courseid"=>$courseid)),get_string('tab_competence_details','block_exacomp'));
-				$rows[] = new tabobject('tab_student_all', new moodle_url('/blocks/exacomp/all_gained_competencies_course_based.php',array("courseid"=>$courseid)),get_string('tab_student_all','block_exacomp'));
+				
 				$profile = new tabobject('tab_competence_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid"=>$courseid)), get_string('tab_competence_profile',  'block_exacomp'));
 				$profile->subtree = array();
 				$profile->subtree[] = new tabobject('tab_competence_profile_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid"=>$courseid)), get_string('tab_competence_profile_profile', 'block_exacomp'));
@@ -1737,7 +1737,6 @@ function block_exacomp_get_coursemodule($mod) {
  */
 function block_exacomp_save_competencies_activities($data, $courseid, $comptype) {
 	global $USER;
-	if($data != null)
 	foreach($data as $cmoduleKey => $comps){
 		if(!empty($cmoduleKey)){
 			foreach($comps as $compidKey=>$empty){
@@ -1807,7 +1806,7 @@ function block_exacomp_get_activities_by_course($courseid){
 	global $DB;
 	$query = 'SELECT DISTINCT mm.activityid as id, mm.activitytitle as title FROM {'.DB_COMPETENCE_ACTIVITY.'} mm 
 		INNER JOIN {course_modules} a ON a.id=mm.activityid 
-		WHERE a.course = ?';
+		WHERE a.course = ? AND mm.eportfolioitem=0';
 	return $DB->get_records_sql($query, array($courseid));
 }
 function block_exacomp_init_competence_grid_data($courseid, $subjectid, $studentid) {
