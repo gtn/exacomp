@@ -2134,3 +2134,56 @@ function block_exacomp_truncate_all_data() {
 	$sql = "TRUNCATE {block_exacomptaxonomies}"; $DB->execute($sql);
 	$sql = "TRUNCATE {block_exacomptopics}"; $DB->execute($sql);
 }
+
+/**
+ * Michi
+ *
+ * This method returns all courses the user is entrolled to and exacomp is installed
+ */
+function block_exacomp_get_exacomp_courses($userid) {
+}
+
+/**
+ * Michi
+ *
+ * This method is used to display course information in the profile overview
+ *
+ * @param int $courseid
+ * @param int $studentid
+ */
+function block_exacomp_get_course_competence_statistics($courseid, $studentid) {
+	return array($total,$reached,$average);
+}
+/**
+ * This method is used to get the necessary information to display a radar graph in
+ * the profile overview
+ *
+ * $subjects['subjectid'] = $subject
+ * $subject->student = 0-100 percentage
+ * $subject->teacher = 0-100 percentage
+ * @return array $subjects
+ */
+function block_exacomp_get_subjects_for_radar_graph($studentid) {
+	return array();
+}
+/**
+ * $topics['topicid'] = $topic
+ * $topic->student = 0-100 percentage
+ * $topic->teacher = 0-100 percentage
+ * @return array $subjects
+ */
+function block_exacomp_get_topics_for_radar_graph($courseid,$studentid) {
+	return array();
+}
+
+/**
+ * This method returns the total value of reached competencies ($teachercomp),
+ * self-assessed competencies by the student ($studentcomp) and the pending
+ * competencies ($pendingcomp) that is used to display a pie chart
+ *
+ * @param int $courseid
+ * @return multitype:unknown
+ */
+function block_exacomp_get_competencies_for_pie_chart($courseid,$studentid) {
+	return array($teachercomp,$studentcomp,$pendingcomp);
+}

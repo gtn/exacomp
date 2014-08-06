@@ -2392,6 +2392,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$rows[] = $descriptorRow;
 		}
 	}
+	// Michi
+	function print_competence_profile_metadata($student) {
 	
+	}
+	// Michi
+	function print_competene_profile_overview($student) {
+	
+	}
+	// Flo
+	function print_competence_profile_course($courseid, $showall = true) {
+		//print heading
+		//print graphs
+		//print table
+	}
 }
 ?>

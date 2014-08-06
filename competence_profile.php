@@ -27,7 +27,7 @@
 
 require_once dirname(__FILE__)."/inc.php";
 
-global $DB, $OUTPUT, $PAGE;
+global $DB, $OUTPUT, $PAGE, $USER;
 
 $courseid = required_param('courseid', PARAM_INT);
 
@@ -60,8 +60,19 @@ echo $OUTPUT->header();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
 /* CONTENT REGION */
+$studentid = optional_param('studentid', $USER->id, PARAM_INT);
+$isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
+if(!$isTeacher) $studentid = $USER->id;
+$student = $DB->get_record('user',array('id' => $studentid));
+$output = $PAGE->get_renderer('block_exacomp');
 
-echo "CONTENT";
+echo $output->print_competence_profile_metadata($student);
+echo $output->print_competene_profile_overview($student);
+
+foreach(block_exacomp_get_exacomp_courses($student->id) as $course) {
+	//if selected
+	echo $output->print_competence_profile_course($course);
+}
 
 /* END CONTENT REGION */
 
