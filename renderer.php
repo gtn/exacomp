@@ -2553,7 +2553,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	
 		</script>';
 		} else {
-				
+			//print error
 		}
 		return $content;
 	}

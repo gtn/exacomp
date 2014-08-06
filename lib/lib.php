@@ -2225,7 +2225,7 @@ function block_exacomp_get_course_competence_statistics($courseid, $user, $schem
 	
 	return array($total,$reached,$average);
 }
-**
+/**
  * This method is used to get the necessary information to display a radar graph in
  * the profile overview
  *

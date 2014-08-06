@@ -48,6 +48,7 @@ $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
 block_exacomp_init_js_css();
+$PAGE->requires->js('/blocks/exacomp/javascript/Chart.min.js', true);
 
 // build breadcrumbs navigation
 $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
@@ -72,13 +73,13 @@ echo $output->print_competence_profile_metadata($student);
 
 echo $output->print_competene_profile_overview($student, $user_courses);
 
-//var_dump(block_exacomp_get_course_competence_statistics($courseid, $student, block_exacomp_get_grading_scheme($courseid)));
-//var_dump(block_exacomp_get_competencies_for_pie_chart($courseid, $student, block_exacomp_get_grading_scheme($courseid)));
 foreach($user_courses as $course) {
 	//if selected
 	echo $output->print_competence_profile_course($course);
 }
 
+$subjects = block_exacomp_get_subjects_for_radar_graph($student->id);
+echo $output->print_radar_graph($subjects);
 /* END CONTENT REGION */
 
 echo $OUTPUT->footer();
