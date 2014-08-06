@@ -117,6 +117,7 @@ else{
 
 		$schooltype = block_exacomp_get_schooltyp_by_subject($selectedSubject);
 		$cat = block_exacomp_get_category($selectedTopic);
+		
 		$user_evaluation = block_exacomp_get_user_information_by_course($USER, $courseid);
 		$activities = block_exacomp_get_activities($selectedTopic->id, $courseid, 0);
 		if($selectedTopic->id != LIS_SHOW_ALL_TOPICS){

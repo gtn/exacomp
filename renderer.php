@@ -355,6 +355,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 	public function print_lis_metadata_teacher(){
+	
 		$table = new html_table();
 		$table->attributes['class'] = 'exabis_comp_top';
 		
@@ -367,6 +368,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$cell->text = html_writer::tag('b', get_string('instruction', 'block_exacomp'))
 			.html_writer::tag('p', get_string('instruction_content', 'block_exacomp'));
 		
+		$row->cells[] = $cell;
 		$rows[] = $row;
 		$table->data = $rows;
 		
@@ -376,7 +378,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 	public function print_lis_metadata_student($subject, $topic, $topic_evaluation, $showevaluation, $scheme, $icon = null){
-		$table = html_table();
+		$table = new html_table();
 		$table->attributes['class'] = 'exabis_comp_top';
 		
 		$rows = array();
@@ -426,7 +428,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$p_content .= " ".html_writer::span($icon->img, 'exabis-tooltip', array('title'=>s($icon->text)));		
 		
 		$p_content .= html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'topiccompid', 'value'=>$topic->id));
-		$p_content = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'subjectcompid', 'value'=>$subject->id));
+		$p_content .= html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'subjectcompid', 'value'=>$subject->id));
 			
 		$cell->text .= html_writer::tag('p', $p_content);
 		
@@ -465,13 +467,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		$cell = new html_table_cell();
 		$cell->text = html_writer::span(get_string('progress', 'block_exacomp'), 'exabis_comp_top_small')
-			. html_writer::tag('b', $cat->title);
+			. html_writer::tag('b', (($cat)?$cat->title:''));
 		
 		$row->cells[] = $cell;
 		
 		$cell = new html_table_cell();
 		$cell->text = html_writer::span(get_string('tab_competence_overview', 'block_exacomp'), 'exabis_comp_top_small')
-			. html_writer::tag('b', substr($schooltype, 0,1).$subject->numb.".".$cat->sourceid);
+			. html_writer::tag('b', substr($schooltype, 0,1).$subject->numb.(($cat)?".".$cat->sourceid:''));
 		
 		$row->cells[] = $cell;
 		

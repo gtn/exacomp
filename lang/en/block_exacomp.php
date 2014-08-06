@@ -211,3 +211,24 @@ $string['teacherevaluation'] = 'Teacher assessment';
 //Detail view
 $string['detail_description'] = 'Use activities to evaluate competencies.';
 
+//LIS metadata
+$string['subject_singular'] = 'Fach';
+$string['comp_field_idea'] = 'Kompetenzbereich/Leitidee';
+$string['comp'] = 'Kompetenz';
+$string['progress'] = 'Lernfortschritt';
+$string['instruction'] = 'Anleitung';
+$string['instruction_content'] = 'Hier k&ouml;nnen Sie für Ihre Lerngruppen / Klasse vermerken, welche
+				Lernmaterialien bearbeitet und welche Lernnachweise erbracht wurden.
+				Dar&uuml;ber hinaus können Sie das Erreichen der Teilkompetenzen
+				eintragen. Je nach Konzept der Schule kann die Bearbeitung des
+				Lernmaterials / das Erreichen einer Teilkompetenz durch Kreuz
+				markiert oder die Qualit&auml;t der Bearbeitung / der Kompetenzerreichung
+				gekennzeichnet werden. Keinenfalls müssen die Sch&uuml;lerinnen und
+				Sch&uuml;ler alle Materialien bearbeiten. Wenn eine (Teil-)kompetenz
+				bereits vorliegt, kann das hier eingetragen werden. Die Sch&uuml;lerinnen
+				und Sch&uuml;ler m&uuml;ssen dann keine zugeh&ouml;rigen Lernmaterialien
+				bearbeiten.';
+$string['requirements'] = 'Was du schon k&ouml;nnen solltest: ';
+$string['forwhat'] = 'Wof&uuml;r du das brauchst: ';
+$string['howtocheck'] = 'Wie du dein K&ouml;nnen pr&uuml;fen kannst: ';
+$string['reached_topic'] = 'Ich habe diese Kompetenz erreicht: ';

@@ -39,7 +39,7 @@ class block_exacomp extends block_list {
 		$usedetailpage = get_config('exacomp', 'usedetailpage');
 		$usebadges = get_config('exacomp', 'usebadges');
 		$skillmanagement = get_config('exacomp', 'skillmanagement');
-		
+		$version = get_config('exacomp', 'alternativedatamodel');
 		if ($this->content !== null) {
 			return $this->content;
 		}
