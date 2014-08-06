@@ -66,11 +66,15 @@ if(!$isTeacher) $studentid = $USER->id;
 $student = $DB->get_record('user',array('id' => $studentid));
 $output = $PAGE->get_renderer('block_exacomp');
 
+$user_courses = block_exacomp_get_exacomp_courses($student);
+
 echo $output->print_competence_profile_metadata($student);
-echo $output->print_competene_profile_overview($student);
-var_dump(block_exacomp_get_course_competence_statistics($courseid, $student, block_exacomp_get_grading_scheme($courseid)));
-var_dump(block_exacomp_get_competencies_for_pie_chart($courseid, $student, block_exacomp_get_grading_scheme($courseid)));
-foreach(block_exacomp_get_exacomp_courses($student) as $course) {
+
+echo $output->print_competene_profile_overview($student, $user_courses);
+
+//var_dump(block_exacomp_get_course_competence_statistics($courseid, $student, block_exacomp_get_grading_scheme($courseid)));
+//var_dump(block_exacomp_get_competencies_for_pie_chart($courseid, $student, block_exacomp_get_grading_scheme($courseid)));
+foreach($user_courses as $course) {
 	//if selected
 	echo $output->print_competence_profile_course($course);
 }

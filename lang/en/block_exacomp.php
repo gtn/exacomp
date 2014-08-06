@@ -212,6 +212,11 @@ $string['competencegrid_nodata'] = 'In case the competency grid is empty the out
 //Detail view
 $string['detail_description'] = 'Use activities to evaluate competencies.';
 
+//Competence Profile
+$string['name'] = 'Name';
+$string['city'] = 'City';
+
+
 //LIS metadata
 $string['subject_singular'] = 'Fach';
 $string['comp_field_idea'] = 'Kompetenzbereich/Leitidee';

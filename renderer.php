@@ -2398,13 +2398,99 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$rows[] = $descriptorRow;
 		}
 	}
-	// Michi
+
 	function print_competence_profile_metadata($student) {
-	
+		global $OUTPUT;
+		
+		$namediv = html_writer::div(html_writer::tag('b',$student->firstname . ' ' . $student->lastname)
+			.html_writer::div(get_string('name', 'block_exacomp'), ''), '');
+		
+		$imgdiv = html_writer::div($OUTPUT->user_picture($student,array("size"=>100)), '');
+		
+		(!empty($student->city))?$citydiv = html_writer::div($student->city
+			.html_writer::div(get_string('city', 'block_exacomp'), ''), ''):$citydiv ='';
+			
+		return html_writer::div($namediv.$imgdiv.$citydiv, '');
 	}
 	// Michi
-	function print_competene_profile_overview($student) {
+	function print_competene_profile_overview($student, $courses) {
+		
+		$table = $this->print_competence_profile_overview_table($student, $courses);	
+		$overviewcontent = $table;
+		
+		return html_writer::div($overviewcontent, '');
+	}
+	function print_competence_profile_overview_table($student, $courses){
+		$total_total = 0;
+		$total_reached = 0;
+		$total_average = 0;
+		
+		$table = new html_table();
+		$rows = array();
+		
+		$row = new html_table_row();
+		$cell = new html_table_cell();
+		$cell->text = 'Kurs';
+		$row->cells[] = $cell;
+		$cell = new html_table_cell();
+		$cell->text = 'Total';
+		$row->cells[] = $cell;
+		$cell = new html_table_cell();
+		$cell->text = 'Erreicht';
+		$row->cells[] = $cell;
+		$cell = new html_table_cell();
+		$cell->text = '';
+		$row->cells[] = $cell;
+		$rows[] = $row;
+		
+		foreach($courses as $course){
+			$statistics = block_exacomp_get_course_competence_statistics($course->id, $student, block_exacomp_get_grading_scheme($course->id));
+			$pie_data = block_exacomp_get_competencies_for_pie_chart($course->id, $student, block_exacomp_get_grading_scheme($course->id));
+			
+			$row = new html_table_row();
+			$cell = new html_table_cell();
+			$cell->text = $course->shortname;
+			$row->cells[] = $cell;
+			
+			$cell = new html_table_cell();
+			$cell->text = $statistics[1];
+			$row->cells[] = $cell;
+			
+			$cell = new html_table_cell();
+			$cell->text = $statistics[0];
+			$row->cells[] = $cell;
+			
+			$cell = new html_table_cell();
+			$cell->text = 'bar';
+			$row->cells[] = $cell;
+			
+			$total_total +=  $statistics[0];
+			$total_reached += $statistics[1];
+			$total_average += $statistics[2];
+			
+			$rows[] = $row;
+		}
+		
+		$row = new html_table_row();
+		$cell = new html_table_cell();
+		$cell->text = 'Alle Kurse';
+		$row->cells[] = $cell;
+		
+		$cell = new html_table_cell();
+		$cell->text = $total_reached;
+		$row->cells[] = $cell;
+		
+		$cell = new html_table_cell();
+		$cell->text = $total_total;
+		$row->cells[] = $cell;
+		
+		$cell = new html_table_cell();
+		$cell->text = 'bar';
+		$row->cells[] = $cell;
 	
+		$rows[] = $row;
+		$table->data = $rows;
+		return html_writer::table($table);
 	}
 	// Flo
 	function print_competence_profile_course($courseid, $showall = true) {
