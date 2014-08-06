@@ -544,7 +544,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$satisfied = ceil($schema/2);
 	
 		$rows = array();
-		if (empty($data)) return get_string('competencegrid_nodata', 'block_exacomp');
 	
 		foreach($data as $skillid => $skill) {
 	
