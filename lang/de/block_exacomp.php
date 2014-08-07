@@ -244,6 +244,9 @@ $string['course'] = 'Kurs';
 $string['gained'] = 'Erreicht';
 $string['total'] = 'Total';
 $string['allcourses'] = 'Alle Kurse';
+$string['pendingcomp'] = 'Ausstehende Kompetenzen';
+$string['teachercomp'] = 'Erreichte Kompetenzen';
+$string['studentcomp'] = 'Laut Selbsteinsch&auml;tzung erreichte Kompetenzen';
 
 //LIS Strings
 if(get_config('exacomp','alternativedatamodel')) {
