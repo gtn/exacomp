@@ -248,6 +248,7 @@ $string['pendingcomp'] = 'Ausstehende Kompetenzen';
 $string['teachercomp'] = 'Erreichte Kompetenzen';
 $string['studentcomp'] = 'Laut Selbsteinsch&auml;tzung erreichte Kompetenzen';
 $string['radargrapherror'] = 'Der Radargraph kann nur bei 3-7 Achsen dargestellt werden';
+$string['nodata'] = 'Es sind keine Daten vorhanden.';
 
 //LIS Strings
 if(get_config('exacomp','alternativedatamodel')) {

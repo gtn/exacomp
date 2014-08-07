@@ -2473,8 +2473,8 @@ function print_competene_profile_overview($student, $courses) {
 			$cell->text = $statistics[0];
 			$row->cells[] = $cell;
 			
-			$perc_average = $statistics[2]/$statistics[0]*100;
-			$perc_reached = $statistics[1]/$statistics[0]*100;
+			$perc_average = $statistics[0] > 0 ? $statistics[2]/$statistics[0]*100 : 0;
+			$perc_reached = $statistics[0] > 0 ? $statistics[1]/$statistics[0]*100 : 0;
 			
 			$cell = new html_table_cell();
 			//$cell->colspan = 4;
@@ -2556,8 +2556,13 @@ function print_competene_profile_overview($student, $courses) {
 	}
 	function print_competence_profile_course($course, $student, $showall = true) {
 		$scheme = block_exacomp_get_grading_scheme($course->id);
+		$compTree = block_exacomp_get_competence_tree($course->id);
 		//print heading
 		$content = html_writer::tag("h3", $course->fullname, array("class" => "competence_profile_coursetitle"));
+		if(!$compTree) {
+			$content .= html_writer::div(get_string("nodata","block_exacomp"),"error");			
+			return $content;
+		}
 		//print graphs
 		$topics = block_exacomp_get_topics_for_radar_graph($course->id, $student->id);
 		$content .= html_writer::div($this->print_radar_graph($topics,$course->id),"competence_profile_radargraph");
@@ -2565,7 +2570,7 @@ function print_competene_profile_overview($student, $courses) {
 		list($teachercomp,$studentcomp,$pendingcomp) = block_exacomp_get_competencies_for_pie_chart($course->id,$student, $scheme);
 		$content .= html_writer::div($this->print_pie_graph($teachercomp, $studentcomp, $pendingcomp, $course->id),"competence_profile_radargraph");
 		//print list
-		$compTree = block_exacomp_get_competence_tree($course->id);
+		
 		$student = block_exacomp_get_user_information_by_course($student, $course->id);
 
 		$content .= $this->print_competence_profile_tree($compTree,$student,$scheme);
