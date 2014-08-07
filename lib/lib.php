@@ -618,8 +618,6 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$course='';
-
 	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype '
 	.'FROM {'.DB_TOPICS.'} t '
 	.(($courseid>0)?'JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
@@ -631,6 +629,24 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 
 	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid));
 
+	return $descriptors;
+}
+function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldescriptors = false) {
+	global $DB;
+	
+	if(!$showalldescriptors)
+		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
+	
+	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype '
+	.'FROM {'.DB_TOPICS.'} t JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($topicid > 0) ? ' AND t.id = '.$topicid.' ' : '')
+	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
+	.'JOIN {'.DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id '
+	.($showalldescriptors ? '' : '
+			JOIN {'.DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
+			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':'')).')';
+	
+	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid));
+	
 	return $descriptors;
 }
 function block_exacomp_get_descriptors_by_subject($subjectid,$niveaus = true) {
@@ -2309,10 +2325,32 @@ function block_exacomp_get_subjects_for_radar_graph($userid) {
  * $topics['topicid'] = $topic
  * $topic->student = 0-100 percentage
  * $topic->teacher = 0-100 percentage
- * @return array $subjects
+ * @return array $topics
  */
 function block_exacomp_get_topics_for_radar_graph($courseid,$studentid) {
-	return array();
+	global $DB;
+	$scheme = block_exacomp_get_grading_scheme($courseid);
+	$topics = block_exacomp_get_topics_by_course($courseid);
+	$user = $DB->get_record("user", array("id" => $studentid));
+
+	foreach($topics as $topic) {
+		$totalDescr = block_exacomp_get_descriptors_by_topic($courseid, $topic->id);
+		$sql = "SELECT c.id, c.userid, c.compid, c.role, c.courseid, c.value, c.comptype, c.timestamp FROM {".DB_COMPETENCIES."} c, {".DB_DESCTOPICS."} dt
+		WHERE c.compid = dt.descrid AND dt.topicid = ? AND c.comptype = 0 AND c.role=? AND c.userid = ? AND c.value >= ? AND c.courseid = ?";
+
+		$competencies = $DB->get_records_sql($sql,array($topic->id,ROLE_TEACHER,$studentid, ceil($scheme / 2), $courseid));
+		
+		$topic->teacher = (count($competencies) / count($totalDescr)) * 100;
+		
+		$sql = "SELECT c.id, c.userid, c.compid, c.role, c.courseid, c.value, c.comptype, c.timestamp FROM {".DB_COMPETENCIES."} c, {".DB_DESCTOPICS."} dt
+		WHERE c.compid = dt.descrid AND dt.topicid = ? AND c.comptype = 0 AND c.role=? AND c.userid = ? AND c.value >= ? AND c.courseid = ?";
+		
+		$competencies = $DB->get_records_sql($sql,array($topic->id,ROLE_STUDENT,$studentid, ceil($scheme/2),$courseid));
+		
+		$topic->student = (count($competencies) / count($totalDescr)) * 100;
+	}
+	
+	return $topics;
 }
 
 /**
