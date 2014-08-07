@@ -75,11 +75,9 @@ echo $output->print_competene_profile_overview($student, $user_courses);
 
 foreach($user_courses as $course) {
 	//if selected
-	echo $output->print_competence_profile_course($course);
+	echo $output->print_competence_profile_course($course,$student);
 }
 
-$subjects = block_exacomp_get_subjects_for_radar_graph($student->id);
-echo $output->print_radar_graph($subjects);
 /* END CONTENT REGION */
 
 echo $OUTPUT->footer();

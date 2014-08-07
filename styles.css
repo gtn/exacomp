@@ -5,7 +5,7 @@
     Description:
         Purpose of the stylesheet follows.
 */
-div#exabis_competences_block {
+div {
 	font-family:Arial, Verdana, Helvetica, sans-serif;
 }
 div#exabis_save_button{
@@ -18,66 +18,66 @@ div#exabis_save_button{
 	background-color: #fcf8e3 !important;
 }
 span.competenceyellow, span.competenceok{width:20px;border:1px gray solid;}
-#exabis_competences_block .generaltable td.bottom {
+.generaltable td.bottom {
 	vertical-align: bottom;
 }
 
-#exabis_competences_block .ec_firstcol {
+.ec_firstcol {
 	width: 50px;
 }
 
-#exabis_competences_block .ec_td_mo {
+ .ec_td_mo {
 	width: 100px;
 }
 
-#exabis_competences_block .ec_td_mo_auto {
+.ec_td_mo_auto {
 	width: auto;
 }
-#exabis_competences_block .exabis_comp_comp_table{
+.exabis_comp_comp_table{
 	overflow:auto;
 }
 
-#exabis_competences_block .ec_overflow {
+ .ec_overflow {
 	overflow: auto;
 }
 
-#exabis_competences_block .ec_minwidth {
+.ec_minwidth {
 	width: 750px;
 }
 
-#exabis_competences_block .ec_tableheadwidth {
+.ec_tableheadwidth {
 	width: 100px;
 }
 
-#exabis_competences_block .ec_activitylist_student {
+.ec_activitylist_student {
 	width: 50px;
 }
 
-#exabis_competences_block table.competence_grid td.atax {
+ table.competence_grid td.atax {
 	background-color: #c8d7f4 !important;
 }
 
-#exabis_competences_block table.competence_grid td.btax {
+ table.competence_grid td.btax {
 	background-color: #8eb2e2 !important;
 }
 
-#exabis_competences_block table.competence_grid td.ctax {
+ table.competence_grid td.ctax {
 	background-color: #548dd4 !important;
 }
 
-#exabis_competences_block table.competence_grid td:nth-child(2n+1) {
+ table.competence_grid td:nth-child(2n+1) {
 	background-color: #FFF;
 }
 
-#exabis_competences_block .ec_heading {
+ .ec_heading {
 	background-color: #dfdfdf;
 }
 
-div#exabis_competences_block .tabtree ul {
+div .tabtree ul {
 	text-align: left;
 }
 
-#exabis_competences_block .compstable {
+ .compstable {
 	margin-bottom: 0;
 	background-color: transparent;
 	border-style: solid;
@@ -87,22 +87,22 @@ div#exabis_competences_block .tabtree ul {
 	width: auto;
 }
 
-#exabis_competences_block  table {
+  table {
 	font-size: inherit;
 	border-collapse: collapse;
 	border-spacing: 0;
 }
 
-#exabis_competences_block #tdsubmit {
+ #tdsubmit {
 	border: 1px transparent solid;
 }
 
-#exabis_competences_block  .treeview ul { /*CSS for Simple Tree Menu*/
+  .treeview ul { /*CSS for Simple Tree Menu*/
 	margin: 0;
 	padding: 0;
 }
 
-#exabis_competences_block .treeview li {
+ .treeview li {
 	/*Style for LI elements in general (excludes an LI that contains sub lists)*/
 	background: white url(../pix/list.gif) no-repeat left center;
 	background-image: url([[pix:a/em1_bwgreater]]);
@@ -111,7 +111,7 @@ div#exabis_competences_block .tabtree ul {
 	margin-bottom: 3px;
 }
 
-#exabis_competences_block .treeview li.submenu {
+ .treeview li.submenu {
 	/* Style for LI that contains sub lists (other ULs). */
 	background: white url(../pix/closed.gif) no-repeat left 1px;
 	background-image: url([[pix:i/closed]]);
@@ -119,48 +119,48 @@ div#exabis_competences_block .tabtree ul {
 	cursor: pointer !important;
 }
 
-#exabis_competences_block .treeview li.submenu ul {
+ .treeview li.submenu ul {
 	/*Style for ULs that are children of LIs (submenu) */
 	display: none; /*Hide them by default. Don't delete. */
 }
 
-#exabis_competences_block .treeview .submenu ul li {
+ .treeview .submenu ul li {
 	/*Style for LIs of ULs that are children of LIs (submenu) */
 	cursor: default;
 }
 
-#exabis_competences_block div.ladebalken {
+ div.ladebalken {
 	width: 425px;
 	height: 27px;
 }
 
-#exabis_competences_block div.lbmittelwert {
+ div.lbmittelwert {
 	border-right: 1px solid #000000;
 	height: 27px;
 }
 
-#exabis_competences_block div.lbmittelwertcontainer {
+ div.lbmittelwertcontainer {
 	height: 27px;
 	position: absolute;
 	width: 425px;
 }
 
-#exabis_competences_block div.spaltenbrowser {
+ div.spaltenbrowser {
 	margin-top: 15px;
 }
 
-#exabis_competences_block #block_exacomp_activitysettings td.contentcell,#exabis_competences_block #block_exacomp_niveaufilter td.contentcell
+ #block_exacomp_activitysettings td.contentcell, #block_exacomp_niveaufilter td.contentcell
 td.contentcell {
 	height: 100px;
 	min-width: 150px;
 }
 
-#exabis_competences_block table#block_exacomp_activitysettings,#exabis_competences_block table#block_exacomp_niveaufilter
+ table#block_exacomp_activitysettings, table#block_exacomp_niveaufilter
 	{
 	width: 300px;
 }
 
-#exabis_competences_block .settingtable td {
+ .settingtable td {
 	vertical-align: top;
 }
 
@@ -170,7 +170,7 @@ td.contentcell {
 	
 }
 
-#exabis_competences_block .header,#exabis_competences_block .cell {
+ .header, .cell {
 	padding: 0.3em;
 	border: 1px solid #cacaca;
 	border-collapse: collapse;
@@ -181,7 +181,7 @@ td.contentcell {
 	word-wrap: break-word;
 	font-size:1em;
 }
-#exabis_competences_block .cell {
+ .cell {
 	border: 1px solid #cacaca;
 	border-collapse: collapse;
 	-moz-hyphens: auto;
@@ -190,11 +190,11 @@ td.contentcell {
 	hyphens: auto;
 	word-wrap: break-word;
 }
-#exabis_competences_block .cell .content {
+ .cell .content {
 	padding: 0.5rem;
 	font-size: 1em;
 }
-#exabis_competences_block .skill,#exabis_competences_block .topic {
+ .skill, .topic {
 	-moz-hyphens: none;
 	-ms-hyphens: none;
 	-webkit-hyphens: none;
@@ -203,29 +203,29 @@ td.contentcell {
 	padding: 0.5rem;
 }
 
-#exabis_competences_block .header {
+ .header {
 	background-color: #E6E6E6 !important;
 	background-image: none;
 	font-size: 0.9em;
 }
 
-#exabis_competences_block .competence_grid {
+ .competence_grid {
 	table-layout: fixed;
 	width: 100%;
 	border: 1px solid #cacaca;
 	border-collapse: collapse;
 }
 
-#exabis_competences_block {
+ {
 	margin-top: 1.42857143rem;
 }
 
-#exabis_competences_block .competence_grid td.skill {
+ .competence_grid td.skill {
 	background-color: #e4e2e2 !important;
 	vertical-align: middle;
 }
 
-#exabis_competences_block .competence_grid_tax td.skill p {
+ .competence_grid_tax td.skill p {
 	font-weight: normal;
 	font-size: 1.3rem;
 	-webkit-transform: rotate(270deg);
@@ -233,30 +233,30 @@ td.contentcell {
 	-o-transform: rotate(270deg);
 }
 
-#exabis_competences_block .competence_grid td.topic {
+ .competence_grid td.topic {
 	background-color: #ebebeb;
 	vertical-align: middle;
 }
 
-#exabis_competences_block .competence_grid th.c0 {
+ .competence_grid th.c0 {
 	overflow: hidden;
 	width: 5rem;
 }
 
-#exabis_competences_block .competence_grid th.c1 {
+ .competence_grid th.c1 {
 	overflow: hidden;
 }
 
-#exabis_competences_block .competence_grid {
+ .competence_grid {
 	table-layout: fixed;
 }
 
-#exabis_competences_block .competence_grid td.topic,#exabis_competences_block .competence_grid td.skill
+ .competence_grid td.topic, .competence_grid td.skill
 	{
 	overflow: hidden;
 }
 
-#exabis_competences_block .competence_grid_tax td.topic p {
+ .competence_grid_tax td.topic p {
 	font-weight: normal;
 	font-size: 1.1rem;
 	-webkit-transform: rotate(270deg);
@@ -265,7 +265,7 @@ td.contentcell {
 }
 
 /*
-#exabis_competences_block .rotated-text {
+ .rotated-text {
 	font-weight: normal;
 	font-size: 1.1rem;
 	
@@ -275,7 +275,7 @@ td.contentcell {
      line-height: 1.5;
 }
 
-#exabis_competences_block .rotated-text__inner {
+ .rotated-text__inner {
 	display: inline-block;
      white-space: normal;
      -moz-hyphens: auto;
@@ -303,13 +303,13 @@ td.contentcell {
  
 }
 
-#exabis_competences_block .rotated-text__inner:after {
+ .rotated-text__inner:after {
 	content: "";
      float: left;
      margin-top: 100%;
 }
 */
-#exabis_competences_block .rotated-text {
+ .rotated-text {
 	font-weight: normal;
 	font-size: 1.1rem;
 	display: inline-block;
@@ -317,7 +317,7 @@ td.contentcell {
 	width: 10.5em;
 	line-height: 1.5;
 }
-#exabis_competences_block .rotated-text-header{
+ .rotated-text-header{
 	font-weight: normal;
 	font-size: 1.1rem;
 	display: inline-block;
@@ -326,12 +326,12 @@ td.contentcell {
 	line-height: 1.5;
 }
 
-#exabis_competences_block .rotated-text-disabled{
+ .rotated-text-disabled{
 	width: 100%;
 	font-size: 1.1rem;
 }
 
-#exabis_competences_block .rotated-text__inner, #exabis_competences_block .rotated-text__inner-header {
+ .rotated-text__inner,  .rotated-text__inner-header {
 	display: inline-block;
 	white-space: nowrap;
 	-webkit-transform: translate(0%, 100%) rotate(-90deg);
@@ -349,30 +349,30 @@ td.contentcell {
 	word-wrap: break-word;
 	white-space: pre-wrap;
 }
-#exabis_competences_block .rotated-text__inner_disabled {
+ .rotated-text__inner_disabled {
 	-webkit-transform: none !important;
 	-moz-transform: translate(0%, 100%) rotate(0deg);
 	-ms-transform: translate(0%, 100%) rotate(0deg);
 	-o-transform: translate(0%, 100%) rotate(0deg);
 	transform: none;
 }
-#exabis_competences_block .rotated-text__inner:after, #exabis_competences_block .rotated-text__inner-header:after {
+ .rotated-text__inner:after,  .rotated-text__inner-header:after {
 	content: "";
 	float: left;
 	margin-top: 100%;
 }
-#exabis_competences_block #linkback{
+ #linkback{
 	font-family:Arial, Verdana, Helvetica, sans-serif;
 }
-#exabis_competences_block .helpdiv h3 {margin-bottom:4px;margin-top:18px;}
+ .helpdiv h3 {margin-bottom:4px;margin-top:18px;}
 
-#exabis_competences_block a.switchtextalign {cursor: pointer;}
+ a.switchtextalign {cursor: pointer;}
 
 @media print {
-	#exabis_competences_block div#linkback{
+	 div#linkback{
  		display:none;
 	}
-	#exabis_competences_block table#lernagenda{
+	 table#lernagenda{
 		padding: 5px;
 	}
 }
@@ -520,20 +520,20 @@ td.contentcell {
 .rowgroup-content {
 	display: none;
 }
-#exabis_competences_block .exabis_comp_top_student{
+ .exabis_comp_top_student{
 	text-align: center;
 }
-#exabis_competences_block .exabis_comp_student_not{
+ .exabis_comp_student_not{
 }
-#exabis_competences_block .exabis_comp_student_assigned{
+ .exabis_comp_student_assigned{
 	background-color: #ACFA58;
 }
-#exabis_competences_block .exabis_comp_teacher_assigned{
+ .exabis_comp_teacher_assigned{
 	background-color: #40FF00;
 }
-#exabis_competences_block .exabis_comp_student_started{
+ .exabis_comp_student_started{
 	background-color: #F4FA58;
 }
-#exabis_competences_block .exabis_assign_student{
+ .exabis_assign_student{
 	display:none;
 }

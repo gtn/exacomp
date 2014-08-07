@@ -222,6 +222,8 @@ $string['allcourses'] = 'all courses';
 $string['pendingcomp'] = 'pending competencies';
 $string['teachercomp'] = 'gained competencies';
 $string['studentcomp'] = 'self evaluated competencies';
+$string['radargrapherror'] = 'Radargraph can only be displayed with 3-7 axis';
+
 
 //LIS metadata
 $string['subject_singular'] = 'Fach';
