@@ -156,7 +156,7 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 		FROM {'.DB_SUBJECTS.'} s
 		JOIN {'.DB_TOPICS.'} t ON t.subjid = s.id
 		GROUP BY s.id, s.title, s.numb, s.stid
-		ORDER BY s.stid, s.title
+		ORDER BY s.stid, s.sorting, s.stid
 		';
 
 		return $DB->get_records_sql($sql);
@@ -166,7 +166,7 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 		JOIN {'.DB_TOPICS.'} t ON t.subjid = s.id
 		WHERE s.id = ?
 		GROUP BY s.id, s.title, s.numb, s.stid
-		ORDER BY s.stid, s.title';
+		ORDER BY s.stid, s.sorting, s.title';
 
 		return $DB->get_records_sql($sql,$subjectid);
 	}
@@ -184,7 +184,7 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 					JOIN {course_modules} a ON ca.activityid=a.id AND a.course=ct.courseid
 					').'
 			GROUP BY id
-			ORDER BY id, title
+			ORDER BY s.sorting, s.id, s.title
 			', array($courseid));
 
 	return $subjects;
@@ -218,7 +218,7 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
 			JOIN {course_modules} a ON da.activityid=a.id AND a.course=ct.courseid
 			').'
 			LEFT JOIN {'.DB_CATEGORIES.'} cat ON t.catid = cat.id
-			ORDER BY t.catid
+			ORDER BY t.catid, t.sorting, t.subjid
 			';
 	//GROUP By funktioniert nur mit allen feldern im select, aber nicht mit strings
 	return $DB->get_records_sql($sql, array($courseid, $subjectid));
@@ -238,7 +238,7 @@ function block_exacomp_get_all_topics($subjectid = null) {
 					-- only show active ones
 					WHERE s.id = ?
 					').'
-			ORDER BY t.catid
+			ORDER BY t.catid, t.sorting, t.subjid
 			', array($subjectid));
 
 	return $topics;
