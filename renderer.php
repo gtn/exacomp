@@ -2398,7 +2398,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$rows[] = $descriptorRow;
 		}
 	}
-
 	function print_competence_profile_metadata($student) {
 		global $OUTPUT;
 		
@@ -2415,10 +2414,23 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	// Michi
 	function print_competene_profile_overview($student, $courses) {
 		
+		$overviewcontent = html_writer::tag('h2', 'Übersicht');
 		$table = $this->print_competence_profile_overview_table($student, $courses);	
-		$overviewcontent = $table;
+		$overviewcontent .= $table;
 		
-		return html_writer::div($overviewcontent, '');
+		$teachercomp = 0;
+		$studentcomp = 0;
+		$pendingcomp = 0;
+		foreach($courses as $course){
+			$course_data = block_exacomp_get_competencies_for_pie_chart($course->id, $student, block_exacomp_get_grading_scheme($course->id));
+			$teachercomp += $course_data[0];
+			$studentcomp += $course_data[1];
+			$pendingcomp += $course_data[2];
+		}
+		
+		$overviewcontent .= $this->print_pie_graph($teachercomp, $studentcomp, $pendingcomp);
+		
+		return html_writer::div(html_writer::div($overviewcontent, 'grade-report-grader'), '', array('id'=>'exabis_competences_block') );
 	}
 	function print_competence_profile_overview_table($student, $courses){
 		$total_total = 0;
@@ -2426,6 +2438,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$total_average = 0;
 		
 		$table = new html_table();
+		$table->attributes['class'] = 'compstable flexible boxaligncenter generaltable';
 		$rows = array();
 		
 		$row = new html_table_row();
@@ -2433,10 +2446,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$cell->text = 'Kurs';
 		$row->cells[] = $cell;
 		$cell = new html_table_cell();
-		$cell->text = 'Total';
+		$cell->text = 'Erreicht';
 		$row->cells[] = $cell;
 		$cell = new html_table_cell();
-		$cell->text = 'Erreicht';
+		$cell->text = 'Total';
 		$row->cells[] = $cell;
 		$cell = new html_table_cell();
 		$cell->text = '';
@@ -2449,7 +2462,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			
 			$row = new html_table_row();
 			$cell = new html_table_cell();
-			$cell->text = $course->shortname;
+			$cell->text = $course->fullname;
 			$row->cells[] = $cell;
 			
 			$cell = new html_table_cell();
@@ -2460,8 +2473,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$cell->text = $statistics[0];
 			$row->cells[] = $cell;
 			
+			$perc_average = $statistics[2]/$statistics[0]*100;
+			$perc_reached = $statistics[1]/$statistics[0]*100;
+			
 			$cell = new html_table_cell();
-			$cell->text = 'bar';
+			//$cell->colspan = 4;
+			$cell->text = html_writer::div(
+				html_writer::div(html_writer::div('', 'lbmittelwert', array('style'=>'width:'.$perc_average.'%;')), 'lbmittelwertcontainer')
+				.html_writer::div('', '', array('style'=>'background:url(\'pix/balkenfull.png\') no-repeat left center; height:27px; width:'.$perc_reached.'%;')), 
+				'ladebalken', array('style'=>'background:url(\'pix/balkenleer.png\') no-repeat left center;'));
 			$row->cells[] = $cell;
 			
 			$total_total +=  $statistics[0];
@@ -2484,13 +2504,57 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$cell->text = $total_total;
 		$row->cells[] = $cell;
 		
+		$perc_average = $total_average/$total_total*100;
+		$perc_reached = $total_reached/$total_total*100;
 		$cell = new html_table_cell();
-		$cell->text = 'bar';
+		$cell->text = $cell->text = html_writer::div(
+				html_writer::div(html_writer::div('', 'lbmittelwert', array('style'=>'width:'.$perc_average.'%;')), 'lbmittelwertcontainer')
+				.html_writer::div('', '', array('style'=>'background:url(\'pix/balkenfull.png\') no-repeat left center; height:27px; width:'.$perc_reached.'%;')), 
+				'ladebalken', array('style'=>'background:url(\'pix/balkenleer.png\') no-repeat left center;'));
+			
 		$row->cells[] = $cell;
 	
 		$rows[] = $row;
 		$table->data = $rows;
 		return html_writer::table($table);
+	}
+	
+	function print_pie_graph($teachercomp, $studentcomp, $pendingcomp){
+		
+		$height = $width = 300;
+		$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvaspie", "height" => $height, "width" => $width)),'piegraph',array("style" => "width:30%"));
+		$content .= '
+			<script>
+			var pieChartData = [
+			{
+				value:'.$pendingcomp.',
+				color:"#F7464A",
+      	 	 	highlight: "#FF5A5E",
+        		label: "Pending"
+			},
+			{
+				value: '.$teachercomp.',
+        		color: "#46BFBD",
+        		highlight: "#5AD3D1",
+        		label: "Teacher"
+			},
+			{
+				value: '.$studentcomp.',
+        		color: "#FDB45C",
+        		highlight: "#FFC870",
+        		label: "Student"
+			}
+			];
+			
+			window.onload = function(){
+			window.myDoughnut = new Chart(document.getElementById("canvaspie").getContext("2d")).Doughnut(pieChartData, {
+			responsive: true
+			});
+			}
+	
+		</script>
+		';
+		return $content;
 	}
 	// Flo
 	function print_competence_profile_course($courseid, $showall = true) {
