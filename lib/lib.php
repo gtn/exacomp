@@ -123,7 +123,7 @@ function block_exacomp_get_schooltypes_by_course($courseid) {
 			SELECT s.id, s.title
 			FROM {'.DB_SCHOOLTYPES.'} s
 			JOIN {'.DB_MDLTYPES.'} m ON m.stid = s.id AND m.courseid = ?
-			GROUP BY s.id, s.title
+			GROUP BY s.id
 			ORDER BY s.title
 			', array($courseid));
 }
@@ -207,7 +207,7 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
-	$sql = 'SELECT DISTINCT t.id, t.title, t.catid, t.sorting, t.subjid, t.ataxonomie, t.btaxonomie, t.ctaxonomie, t.requirement, t.benefit, t.knowledgecheck,cat.title as cattitle
+	$sql = 'SELECT DISTINCT t.id, t.title, t.catid, t.ataxonomie, t.btaxonomie, t.ctaxonomie, t.requirement, t.benefit, t.knowledgecheck,cat.title as cattitle
 	FROM {'.DB_TOPICS.'} t
 	JOIN {'.DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.(($subjectid > 0) ? 'AND t.subjid = ? ': '')
 	.($showalldescriptors ? '' : '
@@ -618,7 +618,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = '(SELECT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype '
+	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype '
 	.'FROM {'.DB_TOPICS.'} t '
 	.(($courseid>0)?'JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
@@ -1822,7 +1822,7 @@ function block_exacomp_get_activities_by_course($courseid){
 	global $DB;
 	$query = 'SELECT DISTINCT mm.activityid as id, mm.activitytitle as title FROM {'.DB_COMPETENCE_ACTIVITY.'} mm 
 		INNER JOIN {course_modules} a ON a.id=mm.activityid 
-		WHERE a.course = ? AND mm.eportfolioitem=0';
+		WHERE a.course = ?';
 	return $DB->get_records_sql($query, array($courseid));
 }
 function block_exacomp_init_competence_grid_data($courseid, $subjectid, $studentid) {
@@ -1921,9 +1921,9 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 function block_exacomp_get_niveaus_for_subject($subjectid) {
 	global $DB;
 
-	$niveaus = "SELECT DISTINCT n.id, n.title, n.sorting, d.skillid, dt.topicid FROM {block_exacompdescriptors} d, {block_exacompdescrtopic_mm} dt, {block_exacompniveaus} n
+	$niveaus = "SELECT distinct n.id, n.title FROM {block_exacompdescriptors} d, {block_exacompdescrtopic_mm} dt, {block_exacompniveaus} n
 	WHERE d.id=dt.descrid AND dt.topicid IN (SELECT id FROM {block_exacomptopics} WHERE subjid=?)
-	AND d.niveauid > 0 AND d.niveauid = n.id ORDER BY n.id, n.sorting,d.skillid, dt.topicid";
+	AND d.niveauid > 0 AND d.niveauid = n.id order by n.sorting,d.skillid, dt.topicid, d.niveauid";
 
 	return $DB->get_records_sql_menu($niveaus,array($subjectid));
 }
