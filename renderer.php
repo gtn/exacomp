@@ -2411,8 +2411,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			
 		return html_writer::div($namediv.$imgdiv.$citydiv, '');
 	}
-	// Michi
-	function print_competene_profile_overview($student, $courses) {
+function print_competene_profile_overview($student, $courses) {
 		
 		$overviewcontent = html_writer::tag('h2', 'Übersicht');
 		$table = $this->print_competence_profile_overview_table($student, $courses);	
@@ -2428,7 +2427,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$pendingcomp += $course_data[2];
 		}
 		
-		$overviewcontent .= $this->print_pie_graph($teachercomp, $studentcomp, $pendingcomp);
+		$overviewcontent .= $this->print_pie_graph($teachercomp, $studentcomp, $pendingcomp, 0);
 		
 		return html_writer::div(html_writer::div($overviewcontent, 'grade-report-grader'), '', array('id'=>'exabis_competences_block') );
 	}
@@ -2519,10 +2518,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::table($table);
 	}
 	
-	function print_pie_graph($teachercomp, $studentcomp, $pendingcomp){
+	function print_pie_graph($teachercomp, $studentcomp, $pendingcomp, $courseid){
 		
 		$height = $width = 300;
-		$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvaspie", "height" => $height, "width" => $width)),'piegraph',array("style" => "width:30%"));
+		$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvas_doughnut".$courseid, "height" => $height, "width" => $width)),'piegraph',array("style" => "width:30%"));
 		$content .= '
 			<script>
 			var pieChartData = [
@@ -2547,7 +2546,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			];
 			
 			window.onload = function(){
-			window.myDoughnut = new Chart(document.getElementById("canvaspie").getContext("2d")).Doughnut(pieChartData, {
+			window.myDoughnut = new Chart(document.getElementById("canvas_doughnut'.$courseid.'").getContext("2d")).Doughnut(pieChartData, {
 			responsive: true
 			});
 			}
