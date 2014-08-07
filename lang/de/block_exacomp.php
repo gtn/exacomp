@@ -240,6 +240,10 @@ $string['detail_description'] = 'Hier kann mit Hilfe von Aktivitäten eine Kompe
 //Competence Profile
 $string['name'] = 'Name';
 $string['city'] = 'Wohnort';
+$string['course'] = 'Kurs';
+$string['gained'] = 'Erreicht';
+$string['total'] = 'Total';
+$string['allcourses'] = 'Alle Kurse';
 
 //LIS Strings
 if(get_config('exacomp','alternativedatamodel')) {

@@ -2442,13 +2442,13 @@ function print_competene_profile_overview($student, $courses) {
 		
 		$row = new html_table_row();
 		$cell = new html_table_cell();
-		$cell->text = 'Kurs';
+		$cell->text = get_string('course', 'block_exacomp');
 		$row->cells[] = $cell;
 		$cell = new html_table_cell();
-		$cell->text = 'Erreicht';
+		$cell->text = get_string('gained', 'block_exacomp');
 		$row->cells[] = $cell;
 		$cell = new html_table_cell();
-		$cell->text = 'Total';
+		$cell->text = get_string('total', 'block_exacomp');
 		$row->cells[] = $cell;
 		$cell = new html_table_cell();
 		$cell->text = '';
@@ -2492,7 +2492,7 @@ function print_competene_profile_overview($student, $courses) {
 		
 		$row = new html_table_row();
 		$cell = new html_table_cell();
-		$cell->text = 'Alle Kurse';
+		$cell->text = get_string('all_courses', 'block_exacomp');
 		$row->cells[] = $cell;
 		
 		$cell = new html_table_cell();
@@ -2520,8 +2520,8 @@ function print_competene_profile_overview($student, $courses) {
 	
 	function print_pie_graph($teachercomp, $studentcomp, $pendingcomp, $courseid){
 		
-		$height = $width = 300;
-		$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvas_doughnut".$courseid, "height" => $height, "width" => $width)),'piegraph',array("style" => "width:30%"));
+		$height = $width = 150;
+		$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvas_doughnut".$courseid, "height" => $height, "width" => $width)),'piegraph',array("style" => "width:15%"));
 		$content .= '
 			<script>
 			var pieChartData = [
@@ -2529,27 +2529,25 @@ function print_competene_profile_overview($student, $courses) {
 				value:'.$pendingcomp.',
 				color:"#F7464A",
       	 	 	highlight: "#FF5A5E",
-        		label: "Pending"
+        		label: '.get_string('pendingcomp', 'block_exacomp').'
 			},
 			{
 				value: '.$teachercomp.',
         		color: "#46BFBD",
         		highlight: "#5AD3D1",
-        		label: "Teacher"
+        		label: '.get_string('teachercomp', 'block_exacomp').'
 			},
 			{
 				value: '.$studentcomp.',
         		color: "#FDB45C",
         		highlight: "#FFC870",
-        		label: "Student"
+        		label: '.get_string('studentcomp', 'block_exacomp').'
 			}
 			];
 			
-			window.onload = function(){
 			window.myDoughnut = new Chart(document.getElementById("canvas_doughnut'.$courseid.'").getContext("2d")).Doughnut(pieChartData, {
 			responsive: true
 			});
-			}
 	
 		</script>
 		';
@@ -2566,7 +2564,7 @@ function print_competene_profile_overview($student, $courses) {
 		if(count($records) >= 3 && count($records) <= 7) {
 				
 			$height = $width = 450;
-			$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvas", "height" => $height, "width" => $width)),"radargraph",array("style" => "width:30%"));
+			$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvas", "height" => $height, "width" => $width)),"radargraph",array("style" => "width:40%"));
 			$content .= '
 			<script>
 			var radarChartData = {
@@ -2608,12 +2606,10 @@ function print_competene_profile_overview($student, $courses) {
 		]
 		};
 	
-		window.onload = function(){
 		window.myRadar = new Chart(document.getElementById("canvas").getContext("2d")).Radar(radarChartData, {
 		responsive: true
 		});
-		}
-	
+		
 		</script>';
 		} else {
 			//print error

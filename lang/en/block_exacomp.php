@@ -215,7 +215,13 @@ $string['detail_description'] = 'Use activities to evaluate competencies.';
 //Competence Profile
 $string['name'] = 'Name';
 $string['city'] = 'City';
-
+$string['course'] = 'Course';
+$string['gained'] = 'gained';
+$string['total'] = 'total';
+$string['allcourses'] = 'all courses';
+$string['pendingcomp'] = 'pending competencies';
+$string['teachercomp'] = 'gained competencies';
+$string['studentcomp'] = 'self evaluated competencies';
 
 //LIS metadata
 $string['subject_singular'] = 'Fach';
