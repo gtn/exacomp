@@ -2492,7 +2492,7 @@ function print_competene_profile_overview($student, $courses) {
 		
 		$row = new html_table_row();
 		$cell = new html_table_cell();
-		$cell->text = get_string('all_courses', 'block_exacomp');
+		$cell->text = get_string('allcourses', 'block_exacomp');
 		$row->cells[] = $cell;
 		
 		$cell = new html_table_cell();
@@ -2529,19 +2529,19 @@ function print_competene_profile_overview($student, $courses) {
 				value:'.$pendingcomp.',
 				color:"#F7464A",
       	 	 	highlight: "#FF5A5E",
-        		label: '.get_string('pendingcomp', 'block_exacomp').'
+        		label: "'.get_string('pendingcomp', 'block_exacomp').'"
 			},
 			{
 				value: '.$teachercomp.',
         		color: "#46BFBD",
         		highlight: "#5AD3D1",
-        		label: '.get_string('teachercomp', 'block_exacomp').'
+        		label: "'.get_string('teachercomp', 'block_exacomp').'"
 			},
 			{
 				value: '.$studentcomp.',
         		color: "#FDB45C",
         		highlight: "#FFC870",
-        		label: '.get_string('studentcomp', 'block_exacomp').'
+        		label: "'.get_string('studentcomp', 'block_exacomp').'"
 			}
 			];
 			
