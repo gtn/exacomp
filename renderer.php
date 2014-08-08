@@ -521,14 +521,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$cm_mm = block_exacomp_get_course_module_association($COURSE->id);
 					$course_mods = get_fast_modinfo($COURSE->id)->get_cms();
 		
-					$activities_student = array();
-					foreach($cm_mm->competencies[$descriptor->id] as $cmid)
-						$activities_student[] = $course_mods[$cmid];
-					if($activities_student && $stdicon = block_exacomp_get_icon_for_user($activities_student, $USER)){
-						$cell->text .= html_writer::empty_tag('br')
-						.html_writer::tag('span', $stdicon->img, array('title'=>$stdicon->text, 'class'=>'exabis-tooltip'));
-					}
-						
+					if(isset($data->cm_mm->competencies[$descriptor->id])) {
+						$activities_student = array();
+						foreach($cm_mm->competencies[$descriptor->id] as $cmid)
+							$activities_student[] = $course_mods[$cmid];
+						if($activities_student && $stdicon = block_exacomp_get_icon_for_user($activities_student, $USER)){
+							$cell->text .= html_writer::empty_tag('br')
+							.html_writer::tag('span', $stdicon->img, array('title'=>$stdicon->text, 'class'=>'exabis-tooltip'));
+						}
+					}	
 					$row->cells[] = $cell;
 					$column_count++;
 				}
