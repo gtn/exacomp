@@ -1835,7 +1835,7 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 	if($version) {
 		$skills = array();
 		$subjects = $DB->get_records_menu(DB_SUBJECTS,array("stid" => $subjectid),null,"id, title");
-		$niveaus = $DB->get_records_menu(DB_CATEGORIES, array("level" => 4),"id,title","id,title");
+		$niveaus = $DB->get_records_menu(DB_CATEGORIES, array("lvl" => 4),"id,title","id,title");
 
 		$data = array();
 		if($studentid > 0)
