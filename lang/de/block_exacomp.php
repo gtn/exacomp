@@ -61,8 +61,6 @@ $string['settings_xmlserverurl'] = 'Server-URL';
 $string['settings_configxmlserverurl'] = 'Url zu einer XML Datei, die verwendet wird, um die Daten aktuell zu halten';
 $string['settings_alternativedatamodel'] = 'Baden W&uuml;rttemberg Version';
 $string['settings_alternativedatamodel_description'] = 'Anhaken f&uuml;r die Baden W&uuml;rttemberg Version';
-$string['settings_usedetailpage'] = 'Detaillierte Kompetenzansicht';
-$string['settings_usedetailpage_description'] = 'Sch&uuml;ler hat Zugriff auf detaillierte Kompetenz&uuml;bersicht';
 $string['settings_autotest'] = 'Automatische Tests';
 $string['settings_autotest_description'] = 'Kompetenzen die mit Tests verbunden sind, werden automatisch &uuml;bernommen, wenn der Test abgegeben wurde';
 $string['settings_testlimit'] = 'Testlimit';
@@ -148,6 +146,7 @@ $string['grading_scheme'] = 'Bewertungsschema';
 $string['uses_activities'] = 'Ich verwende Moodle Aktivit&auml;ten zur Beurteilung';
 $string['show_all_descriptors'] = 'Alle Deskriptoren im &Uuml;berblick anzeigen';
 $string['show_all_examples'] = 'Externe Beispiele im &Uuml;berblick anzeigen';
+$string['usedetailpage'] = 'Detaillierte Kompetenzansicht verwenden';
 
 //Badges
 $string['mybadges'] = 'Meine Auszeichnungen';

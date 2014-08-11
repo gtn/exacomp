@@ -41,7 +41,6 @@ if (block_exacomp_moodle_badges_enabled()) {
 $version = get_config('exacomp','alternativedatamodel');
 $usebadges = get_config('exacomp', 'usebadges');
 $skillmanagement = get_config('exacomp', 'skillmanagement');
-$usedetailpage = get_config('exacomp', 'usedetailpage');
 $xmlserverurl = get_config('exacomp', 'xmlserverurl');
 $autotest = get_config('exacomp', 'autotest');
 $testlimit = get_config('exacomp', 'testlimit');
@@ -570,9 +569,10 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 	if (empty($settings->grading)) $settings->grading = 1;
 	if (!isset($settings->uses_activities)) $settings->uses_activities = ($version)? 0 : 1;
 	if (!isset($settings->show_all_examples)) $settings->show_all_examples = 0;
+	if (!isset($settings->usedetailpage)) $settings->usedetailpage = 0;
 	if (!$settings->uses_activities) $settings->show_all_descriptors = 1;
 	elseif (!isset($settings->show_all_descriptors)) $settings->show_all_descriptors = 0;
-
+	
 	return $settings;
 }
 /**
@@ -594,7 +594,7 @@ function block_exacomp_get_descritors_list($courseid, $onlywithactivitys = 0) {
 	WHERE d.id=t.descrid AND t.topicid = c.topicid AND t.topicid=tp.id AND tp.subjid = s.id AND c.courseid = ?';
 
 	if ($onlywithactivitys==1){
-		$descr=block_exacomp_get_descriptors($courseid, block_exacomp_coursesettings()->show_all_descriptors);
+		$descr=block_exacomp_get_descriptors($courseid, block_exacomp_get_settings_by_course($courseid)->show_all_descriptors);
 		if ($descr=="") $descr=0;
 		$query.=" AND d.id IN (".$descr.")";
 	}
@@ -922,10 +922,11 @@ function block_exacomp_get_user_activities_competencies_by_course($user, $course
  * @param unknown_type $courseid
  */
 function block_exacomp_build_navigation_tabs($context,$courseid) {
-	global $DB, $version, $usebadges, $skillmanagement, $usedetailpage;
+	global $DB, $version, $usebadges, $skillmanagement;
 
-	$courseSettings = block_exacomp_coursesettings();
-
+	$courseSettings = block_exacomp_get_settings_by_course($courseid);
+	$usedetailpage = $courseSettings->usedetailpage;
+	
 	if($version)
 		$checkConfig = block_exacomp_is_configured($courseid);
 	else
@@ -1077,28 +1078,7 @@ function block_exacomp_check_customupload() {
 
 	return false;
 }
-/**
- *
- * Returns Exabis Competencies course settings
- * @param unknown_type $courseid
- */
-function block_exacomp_coursesettings($courseid = 0) {
-	global $DB, $COURSE, $version;
 
-	if (!$courseid)
-		$courseid = $COURSE->id;
-
-	$rs = $DB->get_record(DB_SETTINGS, array("courseid" => $courseid));
-
-	if (empty($rs)) $rs = new stdClass;
-	if (empty($rs->grading)) $rs->grading = 1;
-	if (!isset($rs->uses_activities)) $rs->uses_activities = ( $version )? 0 : 1;
-	//if (!$rs->uses_activities) $rs->show_all_examples = 1;
-	if (!isset($rs->show_all_examples)) $rs->show_all_examples = 0;
-	if (!$rs->uses_activities) $rs->show_all_descriptors = 1;
-	elseif (!isset($rs->show_all_descriptors)) $rs->show_all_descriptors = 0;
-	return $rs;
-}
 /**
  *
  * Get available education levels

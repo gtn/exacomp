@@ -33,10 +33,9 @@ class block_exacomp extends block_list {
 	}
 
 	function get_content() {
-		global $CFG, $COURSE, $DB, $OUTPUT, $usedetailpage, $version, $skillmanagement, $usebadges;
+		global $CFG, $COURSE, $DB, $OUTPUT, $version, $skillmanagement, $usebadges;
 
 		//does not work with global var, don't know why TODO
-		$usedetailpage = get_config('exacomp', 'usedetailpage');
 		$usebadges = get_config('exacomp', 'usebadges');
 		$skillmanagement = get_config('exacomp', 'skillmanagement');
 		$version = get_config('exacomp', 'alternativedatamodel');
@@ -72,8 +71,8 @@ class block_exacomp extends block_list {
 			
 		$checkImport = $DB->get_records('block_exacompdescriptors');
 		
-		$courseSettings = block_exacomp_coursesettings();
-		
+		$courseSettings = block_exacomp_get_settings_by_course($courseid);
+		$usedetailpage = $courseSettings->usedetailpage;
 		
 		//if use skill management
 		if($skillmanagement && has_capability('block/exacomp:teacher', $currentcontext)){

@@ -7,10 +7,7 @@ $settings->add(new admin_setting_configtext('exacomp/xmlserverurl', get_string('
 
 $settings->add(new admin_setting_configcheckbox('exacomp/alternativedatamodel', get_string('settings_alternativedatamodel', 'block_exacomp'),
 		get_string('settings_alternativedatamodel_description', 'block_exacomp'), 0, 1, 0));
-
-$settings->add(new admin_setting_configcheckbox('exacomp/usedetailpage', get_string('settings_usedetailpage', 'block_exacomp'),
-		get_string('settings_usedetailpage_description', 'block_exacomp'), 0, 1, 0));
-
+		
 $settings->add(new admin_setting_configcheckbox('exacomp/autotest', get_string('settings_autotest', 'block_exacomp'), 
 		get_string('settings_autotest_description', 'block_exacomp'), 0, 1, 0));
 

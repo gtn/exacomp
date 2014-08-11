@@ -1048,6 +1048,10 @@ function xmldb_block_exacomp_upgrade($oldversion) {
        	/* block_exacompsettings */
         $table = new xmldb_table('block_exacompsettings');
         
+        //add field usedetailpage
+        $field = new xmldb_field('usedetailpage', XMLDB_TYPE_INTEGER, '1');
+		$dbman->add_field($table, $field);
+        
          //drop key course
         $key = new xmldb_key('course', XMLDB_KEY_FOREIGN, array('course'), 'course', array('id'));
     	$dbman->drop_key($table, $key);

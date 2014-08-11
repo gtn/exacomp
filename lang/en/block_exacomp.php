@@ -61,8 +61,6 @@ $string['settings_xmlserverurl'] = 'Server-URL';
 $string['settings_configxmlserverurl'] = 'Url to a xml file, which is used for keeping the database entries up to date';
 $string['settings_alternativedatamodel'] = 'Baden W&uuml;rttemberg Version';
 $string['settings_alternativedatamodel_description'] = 'Tick to use Baden W&uuml;rttemberg Version';
-$string['settings_usedetailpage'] = 'Competence Details';
-$string['settings_usedetailpage_description'] = 'Use detailed overview of competencies';
 $string['settings_autotest'] = 'Automatic test evalutaion';
 $string['settings_autotest_description'] = 'Students reach competencies automatically if a test is completed';
 $string['settings_testlimit'] = 'Test limit';
@@ -125,7 +123,7 @@ $string['grading_scheme'] = 'grading scheme';
 $string['uses_activities'] = 'I work with activites';
 $string['show_all_descriptors'] = 'Show all outcomes in overview';
 $string['show_all_examples'] = 'Show all examples in overview';
-
+$string['usedetailpage'] = 'Use detailed overview of competencies';
 //Badges
 $string['mybadges'] = 'My badges';
 $string['pendingbadges'] = 'Pending badges';

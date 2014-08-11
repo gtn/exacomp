@@ -1432,26 +1432,24 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		.html_writer::empty_tag('input', array('type'=>'text', 'size'=>2, 'name'=>'grading', 'value'=>block_exacomp_get_grading_scheme($courseid)))
 		.html_writer::empty_tag('br');
 
-		$checkbox = html_writer::checkbox('uses_activities', 1, $settings->uses_activities == 1);
+		$input_activities = html_writer::checkbox('uses_activities', 1, $settings->uses_activities == 1, get_string('uses_activities', 'block_exacomp'))
+			.html_writer::empty_tag('br');
 
-		$input_activities = $checkbox.get_string('uses_activities', 'block_exacomp')
-		.html_writer::empty_tag('br');
+		$input_descriptors = html_writer::checkbox('show_all_descriptors',1,$settings->show_all_descriptors == 1, get_string('show_all_descriptors', 'block_exacomp'))
+			.html_writer::empty_tag('br');
+		
+		$input_examples = html_writer::checkbox('show_all_examples', 1, $settings->show_all_examples == 1, get_string('show_all_examples', 'block_exacomp'))
+			.html_writer::empty_tag('br');
 
-		$checkbox = html_writer::checkbox('show_all_descriptors',1,$settings->show_all_descriptors == 1);
-		$input_descriptors = $checkbox.get_string('show_all_descriptors', 'block_exacomp')
-		.html_writer::empty_tag('br');
-			
-		$checkbox = html_writer::checkbox('show_all_examples', 1, $settings->show_all_examples == 1);
-
-		$input_examples = $checkbox.get_string('show_all_examples', 'block_exacomp')
-		.html_writer::empty_tag('br');
+		$input_detailpage = html_writer::checkbox('usedetailpage', 1, $settings->usedetailpage==1, get_string('usedetailpage', 'block_exacomp'))
+			.html_writer::empty_tag('br');
 			
 		$input_submit = html_writer::empty_tag('br').html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save', 'admin')));
 
 		$hiddenaction = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'action', 'value'=>'save_coursesettings'));
 
 		$div = html_writer::div(html_writer::tag('form',
-				$saved.$input_grading.$input_activities.$input_descriptors.$input_examples.$hiddenaction.$input_submit,
+				$saved.$input_grading.$input_activities.$input_descriptors.$input_examples.$input_detailpage.$hiddenaction.$input_submit,
 				array('action'=>'edit_course.php?courseid='.$courseid, 'method'=>'post')), 'block_excomp_center');
 
 		$content = html_writer::tag("div", $div, array("id"=>"exabis_competences_block"));
