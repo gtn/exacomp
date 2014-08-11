@@ -20,6 +20,7 @@ define('DB_COMPETENCIES_USER_MM', 'block_exacompcompuser_mm');
 define('DB_SETTINGS', 'block_exacompsettings');
 define('DB_MDLTYPES', 'block_exacompmdltype_mm');
 define('DB_DESCBADGE', 'block_exacompdescbadge_mm');
+define('DB_PROFILESETTINGS', 'block_exacompprofilesettings');
 
 // ROLE CONSTANTS
 define('ROLE_TEACHER', 1);
@@ -2399,3 +2400,63 @@ function block_exacomp_get_competencies_for_pie_chart($courseid,$user, $scheme) 
 	
 	return array($teachercomp,$studentcomp,$pendingcomp);
 }
+
+function block_exacomp_exaportexists(){
+	global $DB;
+	return $DB->get_record('block',array('name'=>'exaport'));
+}
+function block_exacomp_exastudexists(){
+	global $DB;
+	return $DB->get_record('block',array('name'=>'exastud'));
+}
+function block_exacomp_get_exastud_periods(){
+	global $USER, $DB;
+	$sql = "SELECT p.id,p.description FROM {block_exastudreview} r, {block_exastudperiod} p WHERE r.student_id = ? AND r.periods_id = p.id GROUP BY p.id";
+	return $DB->get_records_sql($sql,array("studentid"=>$USER->id));
+}
+function block_exacomp_get_exaport_items(){
+	global $USER, $DB;
+	return $DB->get_records('block_exaportitem',array("userid"=>$USER->id));
+}
+function block_exacomp_get_profile_settings(){
+	global $USER, $DB;
+	
+	$profile_settings = new stdClass();
+	
+	$profile_settings->exacomp = array();
+	$exacomp_settings = $DB->get_records(DB_PROFILESETTINGS, array('block'=>'exacomp', 'userid'=>$USER->id));
+	foreach($exacomp_settings as $setting){
+		$profile_settings->exacomp[$setting->itemid] = $setting;
+	}
+	
+	$profile_settings->exaport = array();
+	$exaport_settings = $DB->get_records(DB_PROFILESETTINGS, array('block'=>'exaport', 'userid'=>$USER->id));
+	foreach($exaport_settings as $setting){
+		$profile_settings->exaport[$setting->itemid] = $setting;
+	}
+	
+	$profile_settings->exastud = array();
+	$exastud_settings = $DB->get_records(DB_PROFILESETTINGS, array('block'=>'exastud', 'userid'=>$USER->id));
+	foreach($exastud_settings as $setting){
+		$profile_settings->exastud[$setting->itemid] = $setting;
+	}
+	
+	$profile_settings->showonlyreached=0;
+	$showonlyreached = $DB->get_field(DB_PROFILESETTINGS, 'itemid' ,array('block'=>'exacompdesc', 'userid'=>$USER->id));
+	if($showonlyreached && $showonlyreached->itemid == 1)
+		$profile_settings->showonlyreached = 1;
+	
+	$profile_settings->useexaport = 0;
+	$useexaport = $DB->get_field(DB_PROFILESETTINGS, 'itemid', array('block'=>'useexaport', 'userid'=>$USER->id));
+	if($useexaport && $useexaport->itemid == 1)
+		$profile_settings->useexaport = 1;
+		
+	$profile_settings->useexastud = 0;	
+ 	$useexastud = $DB->get_field(DB_PROFILESETTINGS, 'itemid', array('block'=>'useexastud', 'userid'=>$USER->id));
+	if($useexastud && $useexastud->itemid == 1)
+		$profile_settings->useexastud = 1;
+ 	
+	return $profile_settings;
+}
+
+	

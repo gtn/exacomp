@@ -223,6 +223,14 @@ $string['studentcomp'] = 'self evaluated competencies';
 $string['radargrapherror'] = 'Radargraph can only be displayed with 3-7 axis';
 $string['nodata'] = 'There is no data do display';
 
+//Competence Profile Settings
+$string['profile_settings_showonlyreached'] = 'I only want to see already gained outcomes in my competence profile';
+$string['profile_settings_choose_courses'] = 'Using Exabis Competencies teachers assess your competencies in various subjects. You can select which course to include in the competence profile.';
+$string['profile_settings_useexaport'] = 'I want to see competencies used in Exabis ePortfolio within my profile.';
+$string['profile_settings_choose_items'] = 'Exabis ePortfolio is used to document your competencies on your individual learning path. You can select which artefacts to include in the competence profile.';
+$string['profile_settings_useexastud'] = 'I want to see evaluations from Exabis Student Review.';
+$string['profile_settings_choose_periods'] = 'Exabis Student Review stores reviews in various categories over several periods. You can select which periods to include in the competence profile.';
+
 //LIS metadata
 $string['subject_singular'] = 'Fach';
 $string['comp_field_idea'] = 'Kompetenzbereich/Leitidee';

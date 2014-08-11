@@ -55,13 +55,32 @@ $blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
 $pagenode = $blocknode->add(get_string($page_identifier,'block_exacomp'), $PAGE->url);
 $pagenode->make_active();
 
+//TODO action == save
+
 // build tab navigation & print header
 echo $OUTPUT->header();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
 /* CONTENT REGION */
+$studentid = optional_param('studentid', $USER->id, PARAM_INT);
+$isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
+if(!$isTeacher) $studentid = $USER->id;
+$student = $DB->get_record('user',array('id' => $studentid));
+$output = $PAGE->get_renderer('block_exacomp');
 
-echo "CONTENT";
+$exaport = block_exacomp_exaportexists();
+$exastud = block_exacomp_exastudexists();
+
+$user_courses = block_exacomp_get_exacomp_courses($student);
+
+if($exaport)
+	$exaport_items = block_exacomp_get_exaport_items();
+if($exastud)
+	$exastud_periods = block_exacomp_get_exastud_periods();
+		
+$profile_settings = block_exacomp_get_profile_settings();
+
+echo $output->print_profile_settings($user_courses, $profile_settings, $exaport, $exastud, (isset($exaport_items))?$exaport_items:array(), (isset($exastud_periods))?$exastud_periods:array());
 
 /* END CONTENT REGION */
 

@@ -249,6 +249,14 @@ $string['studentcomp'] = 'Laut Selbsteinsch&auml;tzung erreichte Kompetenzen';
 $string['radargrapherror'] = 'Der Radargraph kann nur bei 3-7 Achsen dargestellt werden';
 $string['nodata'] = 'Es sind keine Daten vorhanden.';
 
+//Competence Profile Settings
+$string['profile_settings_showonlyreached'] = 'Ich möchte in meinem Kompetenzprofil nur bereits erreichte Kompetenzen sehen.';
+$string['profile_settings_choose_courses'] = 'In Exabis Competencies beurteilen Lehrer deinen Kompetenzerwerb in unterschiedlichen Fachgebieten. Du kannst auswählen, welche Kurse im Kompetenzprofil aufscheinen sollen.';
+$string['profile_settings_useexaport'] = 'Ich möchte Kompetenzen, die in Exabis E-Portfolio verwendet werden in meinem Profil sehen.';
+$string['profile_settings_choose_items'] = 'Exabis ePortfolio dokumentiert deinen Kompetenzerwerb außerhalb von Lehrern vorgegebenen Grenzen. Du kannst auswählen, welche Einträge im Kompetenzprofil aufscheinen sollen.';
+$string['profile_settings_useexastud'] = 'Ich möchte Beurteilungen aus Exabis Student Review in meinem Profil sehen.';
+$string['profile_settings_choose_periods'] = 'Exabis Student Review speichert Beurteilungen in verschiedenen Kategorien über mehrere Perioden hinweg. Du kannst auswählen, welche Perioden das Kompetenzprofil beinhalten soll.';
+
 //LIS Strings
 if(get_config('exacomp','alternativedatamodel')) {
 	/*langstrings for alternativedatamodel--*/
