@@ -62,13 +62,13 @@ $string['settings_configxmlserverurl'] = 'Url to a xml file, which is used for k
 $string['settings_alternativedatamodel'] = 'Baden W&uuml;rttemberg Version';
 $string['settings_alternativedatamodel_description'] = 'Tick to use Baden W&uuml;rttemberg Version';
 $string['settings_usedetailpage'] = 'Competence Details';
-$string['settings_usedetailpage_description'] = 'Use competences details overview';
+$string['settings_usedetailpage_description'] = 'Use detailed overview of competencies';
 $string['settings_autotest'] = 'Automatic test evalutaion';
-$string['settings_autotest_description'] = 'Students reach competenes automatically if a test is completed';
+$string['settings_autotest_description'] = 'Students reach competencies automatically if a test is completed';
 $string['settings_testlimit'] = 'Test limit';
-$string['settings_testlimit_description'] = 'Students have to reach this limit to gain competences';
+$string['settings_testlimit_description'] = 'Students have to reach this limit to gain competence';
 $string['settings_usebadges'] = 'Use Badges';
-$string['settings_usebadges_description'] = 'Work with Badges associated with competences';
+$string['settings_usebadges_description'] = 'Work with badges associated with competencies';
 $string['settings_skillmanagement'] = 'Use skill managemnet';
 $string['settings_skillmanagement_description'] = 'Tick to use the skill management tool instead of import';
 
@@ -106,9 +106,9 @@ $string['importinfo'] = 'Please create your outcomes/standards at <a href="http:
 $string['importwebservice'] = 'It is possible to keep the data up to date via a <a href="{$a}">webservice</a>.';
 $string['importdone'] = 'data has already been imported from xml';
 $string['importpending'] = 'no data has been imported yet!';
-$string['doimport'] = 'import descriptors';
-$string['doimport_again'] = 're-import descriptors';
-$string['doimport_own'] = 'import individual descriptors';
+$string['doimport'] = 'import outcomes/standards';
+$string['doimport_again'] = 're-import outcomes/standards';
+$string['doimport_own'] = 'import individual outcomes/standards';
 $string['importsuccess'] = 'data was successfully imported!';
 $string['importsuccess_own'] = 'individual data was imported successfully!';
 $string['importfail'] = 'an error has occured during import';
@@ -149,8 +149,8 @@ $string['total_example'] = 'Complete Example';
 //Example Upload
 $string['example_upload_header']  = 'Upload my own task/example';
 $string['taxonomy'] = 'taxonomy';
-$string['descriptors'] = 'competencies';
-$string['descriptors_help'] = 'You can select multible competencies';
+$string['descriptors'] = 'outcomes/standards';
+$string['descriptors_help'] = 'You can select multible outcomes/standards';
 $string['filerequired'] = 'A file must be selected.';
 $string['titlenotemtpy'] = 'A name is required.';
 $string['lisfilename'] = 'Use LIS filename template';
