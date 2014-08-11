@@ -7,7 +7,6 @@
     <TABLE NAME="block_exacompdescriptors" COMMENT="die Bildungsstandards=Deskriptoren">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-       	<!-- change -->
         <FIELD NAME="title" TYPE="char"  LENGTH="1000" NOTNULL="true" SEQUENCE="false" COMMENT="der bildungsstandard"/>
         <FIELD NAME="crdate" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="skillid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
@@ -15,9 +14,7 @@
         <FIELD NAME="sorting" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Die ID des Datensatzes am zentralen Server, für Import wichtig"/>
         <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft. 0=Moodleinstanz, 1=Zentraler Server"/>
-        	<!-- change -->
         <FIELD NAME="exampletext" TYPE="char" LENGTH="1000" NOTNULL="false" SEQUENCE="false"/>
-        	<!-- change -->
         <FIELD NAME="additionalinfo" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="profoundness" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
@@ -35,15 +32,11 @@
         <FIELD NAME="subjid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Die ID des Datensatzes am zentralen Server, für Import wichtig"/>
         <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft, 0=Moodleinstanz 1=Zentraler Server"/>
-        	<!-- change -->
         <FIELD NAME="description" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="titleshort" TYPE="char" LENGTH="250" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="catid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
-        	<!-- change -->
         <FIELD NAME="requirement" TYPE="char" LENGTH="1000" NOTNULL="false" SEQUENCE="false"/>
-        	<!-- change -->
         <FIELD NAME="benefit" TYPE="char" LENGTH="1000" NOTNULL="false" SEQUENCE="false"/>
-       		<!-- change -->
         <FIELD NAME="knowledgecheck" TYPE="char" LENGTH="1000" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="ataxonomie" TYPE="char" LENGTH="1000" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="btaxonomie" TYPE="char" LENGTH="1000" NOTNULL="false" SEQUENCE="false"/>
@@ -87,8 +80,7 @@
         <FIELD NAME="isoez" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="sourceid" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false"/>
-       <!-- changed -->
-        <FIELD NAME="description" TYPE="char" LENGTH="1000" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="description" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -128,7 +120,6 @@
         <FIELD NAME="solution" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="attachement" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="completefile" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-        <!-- changed -->
         <FIELD NAME="description" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="taxid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="timeframe" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
@@ -144,7 +135,6 @@
         <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the user who created this custom example"/>
         <FIELD NAME="timestamp" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="parentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the parent topic"/>
-        <!-- changed -->
         <FIELD NAME="restorelink" TYPE="char" LENGTH="1000" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="metalink" TYPE="char" LENGTH="1000" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="packagelink" TYPE="char" LENGTH="1000" NOTNULL="false" SEQUENCE="false"/>
@@ -171,7 +161,6 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="sorting" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
-        <!-- changed -->
         <FIELD NAME="title" TYPE="char" LENGTH="1000" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="sourceid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="parentid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
@@ -185,9 +174,7 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="compid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="activityid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" COMMENT="Entweder course_module id oder Exabis Eportfolio item id"/>
-        <!-- changed -->
         <FIELD NAME="activitytitle" TYPE="char" LENGTH="1000" NOTNULL="false" SEQUENCE="false" COMMENT="Name der Aktivität. Dient nur als Backup, damit Name bei Löschen des Kurses nicht verloren geht"/>
-        <!-- changed -->
         <FIELD NAME="coursetitle" TYPE="char" LENGTH="1000" NOTNULL="false" SEQUENCE="false" COMMENT="Dient zum Sichern des Kurstitels, falls dieser gelöscht werden sollte"/>
         <FIELD NAME="comptype" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Deskriptor, 1 für Topic"/>
         <FIELD NAME="eportfolioitem" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Kursmodul, 1 für Eportfolio Item"/>
@@ -273,7 +260,6 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="courseid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="Kurs"/>
         <FIELD NAME="grading" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Bewertungsschema maximaler Wert"/>
-        <!-- changed -->
         <FIELD NAME="activities" TYPE="char" LENGTH="1000" NOTNULL="false" SEQUENCE="false" COMMENT="the hidden activities of edit activities table"/>
         <FIELD NAME="tstamp" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="date of import"/>
         <FIELD NAME="uses_activities" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
@@ -288,7 +274,6 @@
     <TABLE NAME="block_exacompprofilesettings" COMMENT="This table stored the individual user settings for generating their competence profile">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <!-- changed -->
         <FIELD NAME="block" TYPE="char" LENGTH="1333" NOTNULL="true" SEQUENCE="false" COMMENT="This field stores the associated block: exacomp, exastud or exaport"/>
         <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="this field stores the associated item, either periodid if block is exastud, courseid if block is exacomp or itemid if block is exaport"/>
         <FIELD NAME="feedback" TYPE="binary" NOTNULL="true" SEQUENCE="false" COMMENT="this field indicates if verbal feedback should be displayed (for exastud reviews)"/>
@@ -323,7 +308,6 @@
         <FIELD NAME="student_evaluation" TYPE="int" LENGTH="8" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="starttime" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="endtime" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
-        <!-- changed -->
         <FIELD NAME="studypartner" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>

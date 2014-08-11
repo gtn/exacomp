@@ -814,6 +814,38 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		$key = new xmldb_key('catid', XMLDB_KEY_FOREIGN, array('catid'), 'block_exacompcategories', array('id'));
 		$dbman->add_key($table, $key);
 		
+		//change type of text fields
+		$field = new xmldb_field('description', XMLDB_TYPE_CHAR, '1333');
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('requirement', XMLDB_TYPE_CHAR, '1000');
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('benefit', XMLDB_TYPE_CHAR, '1000');
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('knowledgecheck', XMLDB_TYPE_CHAR, '1000');
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('ataxonomie', XMLDB_TYPE_CHAR, '1000');
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('btaxonomie', XMLDB_TYPE_CHAR, '1000');
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('ctaxonomie', XMLDB_TYPE_CHAR, '1000');
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('dtaxonomie', XMLDB_TYPE_CHAR, '1000');
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('etaxonomie', XMLDB_TYPE_CHAR, '1000');
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('ftaxonomie', XMLDB_TYPE_CHAR, '1000');
+		$dbman->change_field_type($table, $field);
+		
+		
 		/* block_exacompsubjects, change field cat to catid, add key catid */
 		$table = new xmldb_table('block_exacompsubjects');
 		$field = new xmldb_field('cat', XMLDB_TYPE_INTEGER, '11');
@@ -830,12 +862,25 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		$key = new xmldb_key('creatorid', XMLDB_KEY_FOREIGN, array('creatorid'), 'user', array('id'));
 		$dbman->add_key($table, $key);
 		
+		$field = new xmldb_field('description', XMLDB_TYPE_CHAR, '1333');
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('restorelink', XMLDB_TYPE_CHAR, '1000');
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('metalink', XMLDB_TYPE_CHAR, '1000');
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('packagelink', XMLDB_TYPE_CHAR, '1000');
+		$dbman->change_field_type($table, $field);
 		
 		/* block_exacomptaxonomies, rename field parent to parentid */
 		$table = new xmldb_table('block_exacomptaxonomies');
 		$field = new xmldb_field('parent', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
 		$dbman->rename_field($table, $field, 'parentid');
 		
+		$field = new xmldb_field('title', XMLDB_TYPE_CHAR, '1000');
+		$dbman->change_field_type($table, $field);
 		
 		/* block_exacompdescractiv_mm */
 		$table = new xmldb_table('block_exacompdescractiv_mm');
@@ -891,6 +936,13 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		//delete field activitytype
 		$field = new xmldb_field('activitytype', XMLDB_TYPE_INTEGER, '10', null, null, null, '1');
 		$dbman->drop_field($table, $field);
+		
+		//change type of activity- and coursetitle
+		$field = new xmldb_field('activitytitle', XMLDB_TYPE_CHAR, '1000');
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('coursetitle', XMLDB_TYPE_CHAR, '1000');
+		$dbman->change_field_type($table, $field);
 		
 		
 		/* block_exacompdescuser_mm */
@@ -1008,6 +1060,8 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         $key = new xmldb_key('courseid', XMLDB_KEY_FOREIGN, array('courseid'), 'course', array('id'));
         $dbman->add_key($table, $key);
         
+        $field = new xmldb_field('activities', XMLDB_TYPE_CHAR, '1000');
+		$dbman->change_field_type($table, $field);
         
         /* block_exacompprofilesettings */
   		$table = new xmldb_table('block_exacompprofilesettings');
@@ -1016,6 +1070,9 @@ function xmldb_block_exacomp_upgrade($oldversion) {
   		$key = new xmldb_key('userid', XMLDB_KEY_FOREIGN, array('userid'), 'user', array('id'));
      	$dbman->add_key($table, $key);
      	
+     	$field = new xmldb_field('block', XMLDB_TYPE_CHAR, '1333');
+		$dbman->change_field_type($table, $field);
+        
      	
      	/* block_exacompniveaus */
      	$table = new xmldb_table('block_exacompniveaus');
@@ -1047,6 +1104,9 @@ function xmldb_block_exacomp_upgrade($oldversion) {
      	
      	$key = new xmldb_key('teacher_reviewerid', XMLDB_KEY_FOREIGN, array('teacher_reviewerid'), 'user', array('id'));
      	$dbman->add_key($table, $key);
+     	
+     	$field = new xmldb_field('studypartner', XMLDB_TYPE_CHAR, '100');
+		$dbman->change_field_type($table, $field);
      	
      	/* block_exacompdescbadge_mm */
      	$table = new xmldb_table('block_exacompdescbadge_mm');
@@ -1101,12 +1161,25 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         $table = new xmldb_table('block_exacomptopicuser_mm');
         $dbman->drop_table($table); 
         
-        /* block_exacompcategories */
-        $table = new xmldb_table('block_exacompcategories');
-        $field = new xmldb_field('lvl', XMLDB_TYPE_INTEGER, '11', null, null, null, null, 'title');
+        /*block_exacompdescriptors */
         
-        $dbman->rename_field($table, $field, 'level');
-        
+       	$table = new xmldb_table('block_exacompdescriptors');
+        $field = new xmldb_field('title', XMLDB_TYPE_CHAR, '1000');
+     	$dbman->change_field_type($table, $field);
+     	
+     	$field = new xmldb_field('exampletext', XMLDB_TYPE_CHAR, '1000');
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('additionalinfo', XMLDB_TYPE_CHAR, '1333');
+		$dbman->change_field_type($table, $field);
+		
+		
+		/*block_exacompschooltypes */
+		
+		$table = new xmldb_table('block_exacompschooltypes');
+		$field = new xmldb_field('description', XMLDB_TYPE_CHAR, '1333');
+		$dbman->change_field_type($table, $field);
+	
         upgrade_block_savepoint(true, 2014070801, 'exacomp');
 	}
 	
