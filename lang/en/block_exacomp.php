@@ -100,7 +100,7 @@ $string['help_content'] = '<h1>Introduction Video</h1>
 ';
 
 //Import
-$string['importinfo'] = 'Please create your outcomes/standards at <a href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file to the blocks xml directory.';
+$string['importinfo'] = 'Please create your outcomes/standards at <a href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file.';
 $string['importwebservice'] = 'It is possible to keep the data up to date via a <a href="{$a}">webservice</a>.';
 $string['importdone'] = 'data has already been imported from xml';
 $string['importpending'] = 'no data has been imported yet!';
@@ -114,7 +114,7 @@ $string['noxmlfile'] = 'There is no data available to import. Please visit <a hr
 $string['oldxmlfile'] = 'You are using an outdated xml-file. Please create new outcomes/standards at <a href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file to the blocks xml directory.';
 
 //Configuration
-$string['explainconfig'] = 'In order to use the module exabis competencies you have to choose your schooltype - the appropriate data will then be imported from the xml-file.';
+$string['explainconfig'] = 'Your outcomes have already been imported. In this configuration you have to make the selection of main outcomes you would like to use in this Moodle installation.';
 $string['save_selection'] = 'save selection';
 $string['save_success'] = 'changes were successful';
 

@@ -75,7 +75,9 @@ echo $output->print_competene_profile_overview($student, $user_courses);
 
 foreach($user_courses as $course) {
 	//if selected
-	echo $output->print_competence_profile_course($course,$student);
+	$profile_settings = block_exacomp_get_profile_settings();
+	if(isset($profile_settings->exacomp[$course->id]))
+		echo $output->print_competence_profile_course($course,$student);
 }
 
 /* END CONTENT REGION */

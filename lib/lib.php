@@ -1872,9 +1872,9 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 			$examples = $DB->get_records_sql(
 					"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
 					e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid
-					FROM {block_exacompexamples} e
-					JOIN {block_exacompdescrexamp_mm} de ON e.id=de.exampid AND de.descrid=?
-					LEFT JOIN {block_exacomptaxonomies} tax ON e.taxid=tax.id
+					FROM {".DB_EXAMPLES."} e
+					JOIN {".DB_DESCEXAMP."} de ON e.id=de.exampid AND de.descrid=?
+					LEFT JOIN {".DB_TAXONOMIES."} tax ON e.taxid=tax.id
 					ORDER BY tax.title", array($descriptor->id));
 			$descriptor->examples = $examples;
 				
@@ -2533,4 +2533,13 @@ function block_exacomp_set_profile_settings($userid, $showonlyreached, $useexapo
 		}
 	}
 }
-		
+
+function block_exacomp_init_profile($courses, $userid){
+	foreach($courses as $course){
+		$insert = new stdClass();
+		$insert->block = 'exacomp';
+		$insert->itemid = $course->id;
+		$insert->feedback = '';
+		$insert->userid = $userid;
+	}	
+}
