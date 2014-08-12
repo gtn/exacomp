@@ -2416,7 +2416,11 @@ function block_exacomp_get_exastud_periods(){
 }
 function block_exacomp_get_exaport_items(){
 	global $USER, $DB;
-	return $DB->get_records('block_exaportitem',array("userid"=>$USER->id));
+	$sql = "SELECT i.id, i.name FROM {block_exaportitem} i 
+		JOIN {".DB_COMPETENCE_ACTIVITY."} ca ON i.id = ca.activityid 
+		WHERE i.userid = ? AND ca.eportfolioitem = 1 
+		GROUP BY i.id, i.name ";
+	return $DB->get_records_sql($sql,array("userid"=>$USER->id));
 }
 function block_exacomp_get_profile_settings(){
 	global $USER, $DB;
@@ -2443,20 +2447,90 @@ function block_exacomp_get_profile_settings(){
 	
 	$profile_settings->showonlyreached=0;
 	$showonlyreached = $DB->get_field(DB_PROFILESETTINGS, 'itemid' ,array('block'=>'exacompdesc', 'userid'=>$USER->id));
-	if($showonlyreached && $showonlyreached->itemid == 1)
+	if($showonlyreached && $showonlyreached == 1)
 		$profile_settings->showonlyreached = 1;
 	
 	$profile_settings->useexaport = 0;
 	$useexaport = $DB->get_field(DB_PROFILESETTINGS, 'itemid', array('block'=>'useexaport', 'userid'=>$USER->id));
-	if($useexaport && $useexaport->itemid == 1)
+	if($useexaport && $useexaport == 1)
 		$profile_settings->useexaport = 1;
 		
 	$profile_settings->useexastud = 0;	
  	$useexastud = $DB->get_field(DB_PROFILESETTINGS, 'itemid', array('block'=>'useexastud', 'userid'=>$USER->id));
-	if($useexastud && $useexastud->itemid == 1)
+	if($useexastud && $useexastud == 1)
 		$profile_settings->useexastud = 1;
  	
 	return $profile_settings;
 }
 
+function block_exacomp_reset_profile_settings($userid){
+	global $DB;
+	$DB->delete_records(DB_PROFILESETTINGS, array('userid'=>$userid));
+}
 	
+function block_exacomp_set_profile_settings($userid, $showonlyreached, $useexaport, $useexastud, $courses, $items, $periods){
+	global $DB;
+	//showonlyreached
+	$insert = new stdClass();
+	$insert->block = 'exacompdesc';
+	$insert->itemid = intval($showonlyreached);
+	$insert->feedback = '';
+	$insert->userid = $userid;
+	
+	$DB->insert_record(DB_PROFILESETTINGS, $insert);
+	
+	//useexaport
+	$insert = new stdClass();
+	$insert->block = 'useexaport';
+	$insert->itemid = intval($useexaport);
+	$insert->feedback = '';
+	$insert->userid = $userid;
+	
+	$DB->insert_record(DB_PROFILESETTINGS, $insert);
+	
+	//useexastud
+	$insert = new stdClass();
+	$insert->block = 'useexastud';
+	$insert->itemid = intval($useexastud);
+	$insert->feedback = '';
+	$insert->userid = $userid;
+	
+	$DB->insert_record(DB_PROFILESETTINGS, $insert);
+	
+	//save courses
+	foreach($courses as $course){
+		$insert = new stdClass();
+		$insert->block = 'exacomp';
+		$insert->itemid = intval($course);
+		$insert->feedback = '';
+		$insert->userid = $userid;
+		
+		$DB->insert_record(DB_PROFILESETTINGS, $insert);
+	}
+	
+	if($useexaport == 1){
+		//save items
+		foreach($items as $item){
+			$insert = new stdClass();
+			$insert->block = 'exaport';
+			$insert->itemid = intval($item);
+			$insert->feedback = '';
+			$insert->userid = $userid;
+			
+			$DB->insert_record(DB_PROFILESETTINGS, $insert);
+		}
+	}
+	if($useexastud == 1){
+		//save periods
+		foreach($periods as $period){
+			$insert = new stdClass();
+			$insert->block = 'exastud';
+			$insert->itemid = intval($period);
+			$insert->feedback = '';
+			$insert->userid = $userid;
+			
+			$DB->insert_record(DB_PROFILESETTINGS, $insert);
+		}
+	}
+}
+		

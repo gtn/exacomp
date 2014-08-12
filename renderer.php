@@ -2661,6 +2661,7 @@ function print_competene_profile_overview($student, $courses) {
 		$content_courses = html_writer::label(get_string('profile_settings_choose_courses', 'block_exacomp'), '');
 		foreach($courses as $course){
 			$content_courses .= html_writer::checkbox('profile_settings_course[]', $course->id, (isset($settings->exacomp[$course->id])), $course->fullname);
+			$content_courses .= html_writer::empty_tag('br');
 		}
 		$exacomp_div_content .= html_writer::div($content_courses);
 		$exacomp_div = html_writer::div($exacomp_div_content);
@@ -2672,13 +2673,16 @@ function print_competene_profile_overview($student, $courses) {
 			$exaport_div_content .= html_writer::div(
 				html_writer::checkbox('useexaport', 1, ($settings->useexaport==1), get_string('profile_settings_useexaport', 'block_exacomp')));
 			
-			if($settings->useexaport == 1){
+			if(!empty($exaport_items)){
 				$content_items = html_writer::label(get_string('profile_settings_choose_items', 'block_exacomp'), '');
 				foreach($exaport_items as $item){
 					$content_items .= html_writer::checkbox('profile_settings_items[]', $item->id, (isset($settings->exaport[$item->id])), $item->name);
+					$content_items .= html_writer::empty_tag('br');
 				}
-				$exacomp_div_content .= html_writer::div($content_items);
+			}else{
+				$content_items = html_writer::label(get_string('profile_settings_no_item', 'block_exacomp'), '');
 			}
+			$exaport_div_content .= html_writer::div($content_items);
 			
 			$exaport_div = html_writer::div($exaport_div_content);
 			$content .= $exaport_div;
@@ -2686,25 +2690,29 @@ function print_competene_profile_overview($student, $courses) {
 		
 		if($exastud){
 			$exastud_div_content = html_writer::tag('h2', get_string('pluginname', 'block_exastud'));
-			$exasutd_div_content .= html_writer::div(
+			$exastud_div_content .= html_writer::div(
 				html_writer::checkbox('useexastud', 1, ($settings->useexastud ==1), get_string('profile_settings_useexastud', 'block_exacomp')));
 			
-			if($settings->useexastud == 1){
+			if(!empty($exastud_periods)){
 				$content_periods = html_writer::label(get_string('profile_settings_choose_periods', 'block_exacomp'), '');
 				foreach($exastud_periods as $period){
-					$content_periods .= html_writer::checkbox('profile_settings_periods[]', $period->id, (isset($settings->exastud[$period->id])), $period->title);
+					$content_periods .= html_writer::checkbox('profile_settings_periods[]', $period->id, (isset($settings->exastud[$period->id])), $period->description);
+					$content_periods .= html_writer::empty_tag('br');
 				}
-				$exastud_div_content .= html_writer::div($content_periods);
+			}else{
+				$content_periods = html_writer::label(get_string('profile_settings_no_period', 'block_exacomp'), '');
 			}
+			$exastud_div_content .= html_writer::div($content_periods);
+		
 			$exastud_div = html_writer::div($exastud_div_content);
 			$content .= $exastud_div;
 		}
 		
-		$content .= html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp')));
+		$content .= html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))), 'exabis_save_button');
 
 		$div = html_writer::div(html_writer::tag('form',
 				$content,
-				array('action'=>'competence_profile_settings.php?courseid='.$COURSE->id, 'method'=>'post')), 'block_excomp_center');
+				array('action'=>'competence_profile_settings.php?courseid='.$COURSE->id.'&action=save', 'method'=>'post')), 'block_excomp_center');
 
 		return html_writer::tag("div", $div, array("id"=>"exabis_competences_block"));
 	}

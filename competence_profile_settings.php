@@ -55,7 +55,28 @@ $blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
 $pagenode = $blocknode->add(get_string($page_identifier,'block_exacomp'), $PAGE->url);
 $pagenode->make_active();
 
-//TODO action == save
+//SAVE DATA
+if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
+	$showonlyreached = 0;
+	if(isset($_POST['showonlyreached']))
+		$showonlyreached = 1;
+		
+	$useexaport = 0;
+	if(isset($_POST['useexaport']))
+		$useexaport = 1;
+		
+	$useexastud = 0;
+	if(isset($_POST['useexastud']))
+		$useexastud = 1;
+	
+	block_exacomp_reset_profile_settings($USER->id);
+	
+	block_exacomp_set_profile_settings($USER->id, $showonlyreached, $useexaport, $useexastud, 
+		(isset($_POST['profile_settings_course']))?$_POST['profile_settings_course']:array(),
+		(isset($_POST['profile_settings_items']))?$_POST['profile_settings_items']:array(),
+		(isset($_POST['profile_settings_periods']))?$_POST['profile_settings_periods']:array());
+	
+}
 
 // build tab navigation & print header
 echo $OUTPUT->header();
