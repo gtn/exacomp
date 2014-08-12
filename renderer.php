@@ -2531,20 +2531,20 @@ function print_competene_profile_overview($student, $courses) {
 			var pieChartData = [
 			{
 				value:'.$pendingcomp.',
-				color:"#F7464A",
-      	 	 	highlight: "#FF5A5E",
+				color:"#3D3D3D",
+      	 	 	highlight: "#4F4F4F",
         		label: "'.get_string('pendingcomp', 'block_exacomp').'"
 			},
 			{
 				value: '.$teachercomp.',
-        		color: "#46BFBD",
-        		highlight: "#5AD3D1",
+        		color: "#6B6B6B",
+        		highlight: "#7D7D7D",
         		label: "'.get_string('teachercomp', 'block_exacomp').'"
 			},
 			{
 				value: '.$studentcomp.',
-        		color: "#FDB45C",
-        		highlight: "#FFC870",
+        		color: "#9C9C9C",
+        		highlight: "#ABABAB",
         		label: "'.get_string('studentcomp', 'block_exacomp').'"
 			}
 			];
@@ -2583,14 +2583,21 @@ function print_competene_profile_overview($student, $courses) {
 	
 	private function print_competence_profile_tree($in,$student,$scheme = 1) {
 		$content = "<ul>";
+		$profile_settings = block_exacomp_get_profile_settings();
 		foreach($in as $v) {
 			$class = 'competence_profile_' . $v->tabletype;
-			if($v->tabletype == "topic" && isset($student->topics->teacher[$v->id]) && $student->topics->teacher[$v->id] >= ceil($scheme/2)) 
+			$reached = false;
+			if($v->tabletype == "topic" && isset($student->topics->teacher[$v->id]) && $student->topics->teacher[$v->id] >= ceil($scheme/2)){
 				$class .= " reached";
-			if($v->tabletype == "descriptor" && isset($student->competencies->teacher[$v->id]) && $student->competencies->teacher[$v->id] >= ceil($scheme/2))
+				$reached = true;
+			}
+			if($v->tabletype == "descriptor" && isset($student->competencies->teacher[$v->id]) && $student->competencies->teacher[$v->id] >= ceil($scheme/2)){
 				$class .= " reached";
+				$reached = true;
+			}
 			
-			$content .= '<li class="'.$class.'">' . $v->title	 . '</li>';
+			if($profile_settings->showonlyreached ==0 || ($profile_settings->showonlyreached == 1 && $reached || $v->tabletype == 'subject'))
+				$content .= '<li class="'.$class.'">' . $v->title	 . '</li>';
 			if( isset($v->subs) && is_array($v->subs)) $content .= $this->print_competence_profile_tree($v->subs, $student,$scheme);
 			if( isset($v->descriptors) && is_array($v->descriptors)) $content .= $this->print_competence_profile_tree($v->descriptors, $student,$scheme);
 		}
@@ -2656,7 +2663,7 @@ function print_competene_profile_overview($student, $courses) {
 		return $content;
 	}
 	
-	public function print_profile_settings($courses, $settings, $exaport, $exastud, $exaport_items, $exastud_periods){
+	public function print_profile_settings($courses, $settings, $exaport, $exastud, $exastud_periods){
 		global $COURSE;
 		$exacomp_div_content = html_writer::tag('h2', get_string('pluginname', 'block_exacomp'));
 		$exacomp_div_content .= html_writer::div(
@@ -2677,7 +2684,7 @@ function print_competene_profile_overview($student, $courses) {
 			$exaport_div_content .= html_writer::div(
 				html_writer::checkbox('useexaport', 1, ($settings->useexaport==1), get_string('profile_settings_useexaport', 'block_exacomp')));
 			
-			if(!empty($exaport_items)){
+			/*if(!empty($exaport_items)){
 				$content_items = html_writer::label(get_string('profile_settings_choose_items', 'block_exacomp'), '');
 				foreach($exaport_items as $item){
 					$content_items .= html_writer::checkbox('profile_settings_items[]', $item->id, (isset($settings->exaport[$item->id])), $item->name);
@@ -2685,8 +2692,8 @@ function print_competene_profile_overview($student, $courses) {
 				}
 			}else{
 				$content_items = html_writer::label(get_string('profile_settings_no_item', 'block_exacomp'), '');
-			}
-			$exaport_div_content .= html_writer::div($content_items);
+			}*/
+			//$exaport_div_content .= html_writer::div($content_items);
 			
 			$exaport_div = html_writer::div($exaport_div_content);
 			$content .= $exaport_div;
@@ -2699,6 +2706,7 @@ function print_competene_profile_overview($student, $courses) {
 			
 			if(!empty($exastud_periods)){
 				$content_periods = html_writer::label(get_string('profile_settings_choose_periods', 'block_exacomp'), '');
+				
 				foreach($exastud_periods as $period){
 					$content_periods .= html_writer::checkbox('profile_settings_periods[]', $period->id, (isset($settings->exastud[$period->id])), $period->description);
 					$content_periods .= html_writer::empty_tag('br');
@@ -2712,13 +2720,85 @@ function print_competene_profile_overview($student, $courses) {
 			$content .= $exastud_div;
 		}
 		
-		$content .= html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))), 'exabis_save_button');
-
+		
 		$div = html_writer::div(html_writer::tag('form',
-				$content,
+				$content
+				. html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))), 'exabis_save_button'),
 				array('action'=>'competence_profile_settings.php?courseid='.$COURSE->id.'&action=save', 'method'=>'post')), 'block_excomp_center');
 
 		return html_writer::tag("div", $div, array("id"=>"exabis_competences_block"));
+	}
+	public function print_competence_profile_exaport($settings, $user, $items){
+		global $COURSE, $CFG;
+		
+		$content = html_writer::tag('h2', get_string('pluginname', 'block_exaport'));
+		
+		//print items with comps
+		$items_with_no_comps = false;
+		foreach($items as $item){
+			if($item->hascomps)
+				$content .= $this->print_exaport_item($item, $user->id);
+			else 
+				$items_with_no_comps = true;
+		}
+		
+		if($items_with_no_comps){
+			$content .= html_writer::label(get_string('item_no_comps', 'block_exacomp'), '');	
+			foreach($items as $item){
+				$url = $CFG->wwwroot.'/blocks/exaport/shared_item.php?courseid='.$COURSE->id.'&access=portfolio/id/'.$user->id.'&itemid='.$item->id.'&backtype=&att='.$item->attachment;
+		
+				$li_items = '';
+				if(!$item->hascomps){
+					$li_items .= html_writer::tag('li', html_writer::link($url, $item->name));
+				}
+				$content .= html_writer::tag('ul', $li_items);
+			}
+		}
+		return $content;
+	}
+	
+	public function print_exaport_item($item, $userid){
+		global $COURSE, $CFG;
+		$url = $CFG->wwwroot.'/blocks/exaport/shared_item.php?courseid='.$COURSE->id.'&access=portfolio/id/'.$userid.'&itemid='.$item->id.'&backtype=&att='.$item->attachment;
+		$li_item = html_writer::tag('li', 
+			html_writer::link($url, $item->name), array('class'=>'competence_profile_item'));
+		
+		$li_descriptors = '';
+		foreach($item->descriptors as $descriptor) {
+				$class = 'competence_profile_descriptor';
+				$li_descriptors .= '<li class="'.$class.'">' . $descriptor->title	 . '</li>';
+		}
+		$ul_descriptors = html_writer::tag('ul', $li_descriptors);
+		$li_item .= $ul_descriptors;
+		return html_writer::tag('ul', $li_item);	
+	}
+	public function print_competence_profile_exastud($settings, $user, $periods, $reviews){
+		$content = html_writer::tag('h2', get_string('pluginname', 'block_exastud'));
+		$profile_settings = block_exacomp_get_profile_settings();
+		$li_periods= '';
+		foreach($periods as $period){
+			if(isset($profile_settings->exastud[$period->id])){
+				$li_periods .= html_writer::tag('li', $period->description);
+				$review = $reviews[$period->id];
+				
+				$li_review = html_writer::tag('li', "Reviewer: ".$review->reviewer->firstname." ".$review->reviewer->lastname);
+				$li_review .= html_writer::tag('li', "Feedback: ".$review->feedback);
+				
+				foreach($review->categories as $category){
+					$li_review .= html_writer::tag('li', $category->title.": ".$category->evaluation."/10");
+				}
+				
+				foreach($review->descriptors as $descriptor){
+					$li_review .= html_writer::tag('li', $descriptor->title.": ".$descriptor->evaluation."/10");
+				}
+				
+				$li_periods .= html_writer::tag('ul', $li_review);
+			}
+		}
+		
+		$content .= html_writer::tag('ul', $li_periods);
+		
+		return $content;
 	}
 }
 ?>

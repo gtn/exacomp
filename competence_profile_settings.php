@@ -73,7 +73,6 @@ if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 	
 	block_exacomp_set_profile_settings($USER->id, $showonlyreached, $useexaport, $useexastud, 
 		(isset($_POST['profile_settings_course']))?$_POST['profile_settings_course']:array(),
-		(isset($_POST['profile_settings_items']))?$_POST['profile_settings_items']:array(),
 		(isset($_POST['profile_settings_periods']))?$_POST['profile_settings_periods']:array());
 	
 }
@@ -103,7 +102,7 @@ if($exastud)
 		
 $profile_settings = block_exacomp_get_profile_settings();
 
-echo $output->print_profile_settings($user_courses, $profile_settings, $exaport, $exastud, (isset($exaport_items))?$exaport_items:array(), (isset($exastud_periods))?$exastud_periods:array());
+echo $output->print_profile_settings($user_courses, $profile_settings, $exaport, $exastud, (isset($exastud_periods))?$exastud_periods:array());
 
 /* END CONTENT REGION */
 

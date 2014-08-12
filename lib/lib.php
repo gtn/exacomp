@@ -2416,11 +2416,7 @@ function block_exacomp_get_exastud_periods(){
 }
 function block_exacomp_get_exaport_items(){
 	global $USER, $DB;
-	$sql = "SELECT i.id, i.name FROM {block_exaportitem} i 
-		JOIN {".DB_COMPETENCE_ACTIVITY."} ca ON i.id = ca.activityid 
-		WHERE i.userid = ? AND ca.eportfolioitem = 1 
-		GROUP BY i.id, i.name ";
-	return $DB->get_records_sql($sql,array("userid"=>$USER->id));
+	return $DB->get_records('block_exaportitem',array("userid"=>$USER->id));
 }
 function block_exacomp_get_profile_settings(){
 	global $USER, $DB;
@@ -2433,11 +2429,11 @@ function block_exacomp_get_profile_settings(){
 		$profile_settings->exacomp[$setting->itemid] = $setting;
 	}
 	
-	$profile_settings->exaport = array();
+	/*$profile_settings->exaport = array();
 	$exaport_settings = $DB->get_records(DB_PROFILESETTINGS, array('block'=>'exaport', 'userid'=>$USER->id));
 	foreach($exaport_settings as $setting){
 		$profile_settings->exaport[$setting->itemid] = $setting;
-	}
+	}*/
 	
 	$profile_settings->exastud = array();
 	$exastud_settings = $DB->get_records(DB_PROFILESETTINGS, array('block'=>'exastud', 'userid'=>$USER->id));
@@ -2468,7 +2464,7 @@ function block_exacomp_reset_profile_settings($userid){
 	$DB->delete_records(DB_PROFILESETTINGS, array('userid'=>$userid));
 }
 	
-function block_exacomp_set_profile_settings($userid, $showonlyreached, $useexaport, $useexastud, $courses, $items, $periods){
+function block_exacomp_set_profile_settings($userid, $showonlyreached, $useexaport, $useexastud, $courses, $periods){
 	global $DB;
 	//showonlyreached
 	$insert = new stdClass();
@@ -2508,7 +2504,7 @@ function block_exacomp_set_profile_settings($userid, $showonlyreached, $useexapo
 		$DB->insert_record(DB_PROFILESETTINGS, $insert);
 	}
 	
-	if($useexaport == 1){
+	/*if($useexaport == 1){
 		//save items
 		foreach($items as $item){
 			$insert = new stdClass();
@@ -2519,7 +2515,7 @@ function block_exacomp_set_profile_settings($userid, $showonlyreached, $useexapo
 			
 			$DB->insert_record(DB_PROFILESETTINGS, $insert);
 		}
-	}
+	}*/
 	if($useexastud == 1){
 		//save periods
 		foreach($periods as $period){
@@ -2551,4 +2547,52 @@ function block_exacomp_check_profile_config($userid){
 	global $DB;
 	
 	return $DB->get_records(DB_PROFILESETTINGS, array('userid'=>$userid));
+}
+function block_exacomp_init_exaport_items($items){
+	global $DB;
+	$profile_settings = block_exacomp_get_profile_settings();
+	
+	foreach($items as $item){
+		$item_comps = $DB->get_records(DB_COMPETENCE_ACTIVITY, array('activityid'=>$item->id, 'eportfolioitem'=>1));
+		if($item_comps){
+			$item->hascomps = true;
+			$item->descriptors = array();
+			$item->tabletype = 'item';
+			foreach($item_comps as $item_comp){
+				$item->descriptors[$item_comp->compid]  = $DB->get_record(DB_DESCRIPTORS, array('id'=>$item_comp->compid));
+			}
+		}
+		else 
+			$item->hascomps = false;
+	}
+	
+	return $items;
+}
+function block_exacomp_get_exastud_reviews($periods, $student){
+	global $DB;
+	$reviews = array();
+	foreach($periods as $period){
+		$reviews[$period->id] = new stdClass();
+		$reviews[$period->id]->id = $period->id;
+		
+		$db_review = $DB->get_record('block_exastudreview', array('student_id'=>$student->id, 'periods_id'=>$period->id));
+		
+		$reviews[$period->id]->feedback = $db_review->review;
+		$reviews[$period->id]->reviewer = $DB->get_record('user', array('id'=>$db_review->teacher_id));
+		$exastud_comps = $DB->get_records('block_exastudreviewpos', array('reviewid'=>$db_review->id, 'categorysource'=>'exastud'));
+		$reviews[$period->id]->categories = array();
+		foreach($exastud_comps as $cat){
+			$reviews[$period->id]->categories[$cat->categoryid] = $DB->get_record('block_exastudcate', array('id'=>$cat->categoryid));
+			$reviews[$period->id]->categories[$cat->categoryid]->evaluation = $cat->value;
+		}
+		
+		$exacomp_comps = $DB->get_records('block_exastudreviewpos', array('reviewid'=>$db_review->id, 'categorysource'=>'exacomp'));
+		$reviews[$period->id]->descriptors = array();
+		foreach($exacomp_comps as $comp){
+			$reviews[$period->id]->descriptors[$comp->categoryid] = $DB->get_record(DB_DESCRIPTORS, array('id'=>$comp->categoryid)); 
+			$reviews[$period->id]->descriptors[$comp->categoryid]->evaluation = $comp->value;
+		}
+		
+	}
+	return $reviews;
 }

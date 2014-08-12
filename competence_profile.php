@@ -83,6 +83,19 @@ foreach($user_courses as $course) {
 		echo $output->print_competence_profile_course($course,$student);
 }
 
+$profile_settings = block_exacomp_get_profile_settings();
+
+if($profile_settings->useexaport == 1){
+	$items = block_exacomp_get_exaport_items();
+	$items = block_exacomp_init_exaport_items($items);
+	echo $output->print_competence_profile_exaport($profile_settings, $student, $items);
+}
+if($profile_settings->useexastud == 1){
+	$periods = block_exacomp_get_exastud_periods();
+	$reviews = block_exacomp_get_exastud_reviews($periods, $student);
+	
+	echo $output->print_competence_profile_exastud($profile_settings, $student, $periods, $reviews);
+}
 /* END CONTENT REGION */
 
 echo $OUTPUT->footer();

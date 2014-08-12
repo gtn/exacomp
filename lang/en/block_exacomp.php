@@ -34,7 +34,7 @@ $string['tab_admin_configuration'] = 'Configuration';
 
 //Teacher Tabs
 $string['tab_teacher_settings'] = 'Settings';
-$string['tab_teacher_settings_configuration'] = 'configuration';
+$string['tab_teacher_settings_configuration'] = 'Configuration';
 $string['tab_teacher_settings_selection_st'] = 'Schooltype selection';
 $string['tab_teacher_settings_selection'] = 'Subject selection';
 $string['tab_teacher_settings_assignactivities'] = 'Assign activities';
@@ -120,9 +120,9 @@ $string['save_success'] = 'changes were successful';
 
 //Course configuratin
 $string['grading_scheme'] = 'grading scheme';
-$string['uses_activities'] = 'I work with activites';
+$string['uses_activities'] = 'I work with Moodle activites';
 $string['show_all_descriptors'] = 'Show all outcomes in overview';
-$string['show_all_examples'] = 'Show all examples in overview';
+$string['show_all_examples'] = 'Show all external examples in overview';
 $string['usedetailpage'] = 'Use detailed overview of competencies';
 //Badges
 $string['mybadges'] = 'My badges';
@@ -222,6 +222,7 @@ $string['teachercomp'] = 'gained competencies';
 $string['studentcomp'] = 'self evaluated competencies';
 $string['radargrapherror'] = 'Radargraph can only be displayed with 3-7 axis';
 $string['nodata'] = 'There is no data do display';
+$string['item_no_comps'] = 'There are no outcomes assigned to the following items: ';
 
 //Competence Profile Settings
 $string['profile_settings_showonlyreached'] = 'I only want to see already gained outcomes in my competence profile';
