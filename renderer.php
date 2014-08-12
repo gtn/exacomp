@@ -2503,8 +2503,12 @@ function print_competene_profile_overview($student, $courses) {
 		$cell->text = $total_total;
 		$row->cells[] = $cell;
 		
-		$perc_average = $total_average/$total_total*100;
-		$perc_reached = $total_reached/$total_total*100;
+		$perc_average = 0;
+		$perc_reached = 0;
+		if($total_total != 0){
+			$perc_average = $total_average/$total_total*100;
+			$perc_reached = $total_reached/$total_total*100;
+		}
 		$cell = new html_table_cell();
 		$cell->text = $cell->text = html_writer::div(
 				html_writer::div(html_writer::div('', 'lbmittelwert', array('style'=>'width:'.$perc_average.'%;')), 'lbmittelwertcontainer')

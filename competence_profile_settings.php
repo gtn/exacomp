@@ -93,8 +93,8 @@ $exaport = block_exacomp_exaportexists();
 $exastud = block_exacomp_exastudexists();
 
 $user_courses = block_exacomp_get_exacomp_courses($student);
-
-block_exacomp_init_profile($user_courses);
+//if(!block_exacomp_check_profile_config($student->id))
+	//block_exacomp_init_profile($user_courses, $student->id);
 
 if($exaport)
 	$exaport_items = block_exacomp_get_exaport_items();

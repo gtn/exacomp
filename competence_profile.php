@@ -69,6 +69,9 @@ $output = $PAGE->get_renderer('block_exacomp');
 
 $user_courses = block_exacomp_get_exacomp_courses($student);
 
+if(!block_exacomp_check_profile_config($student->id))
+	block_exacomp_init_profile($user_courses, $student->id);
+
 echo $output->print_competence_profile_metadata($student);
 
 echo $output->print_competene_profile_overview($student, $user_courses);

@@ -2535,11 +2535,20 @@ function block_exacomp_set_profile_settings($userid, $showonlyreached, $useexapo
 }
 
 function block_exacomp_init_profile($courses, $userid){
+	global $DB;
+	block_exacomp_reset_profile_settings($userid);
 	foreach($courses as $course){
 		$insert = new stdClass();
 		$insert->block = 'exacomp';
 		$insert->itemid = $course->id;
 		$insert->feedback = '';
 		$insert->userid = $userid;
+		
+		$DB->insert_record(DB_PROFILESETTINGS, $insert);
 	}	
+}
+function block_exacomp_check_profile_config($userid){
+	global $DB;
+	
+	return $DB->get_records(DB_PROFILESETTINGS, array('userid'=>$userid));
 }
