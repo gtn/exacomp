@@ -56,6 +56,8 @@ $string['tab_competence_profile_settings'] = 'Settings';
 $string['tab_help'] = 'Help';
 $string['tab_skillmanagement'] = 'Create your competences';
 
+$string['next_step'] = 'continue configuration';
+
 //Block Settings 
 $string['settings_xmlserverurl'] = 'Server-URL';
 $string['settings_configxmlserverurl'] = 'Url to a xml file, which is used for keeping the database entries up to date';
@@ -184,10 +186,10 @@ $string['hideevaluation'] = 'To hide self-assessment click <a href="{$a}">here</
 $string['columnselect'] = 'Column selection';
 $string['allstudents'] = 'All students';
 
-$string['assigndone'] = 'Exercise done: ';
-$string['assignmyself'] = 'myself';
-$string['assignlearningpartner'] = 'learning partner';
-$string['assignlearninggroup'] = 'learning group';
+$string['assigndone'] = 'task done: ';
+$string['assignmyself'] = 'by myself';
+$string['assignlearningpartner'] = 'peer-to-peer';
+$string['assignlearninggroup'] = 'peer group';
 $string['assignteacher'] = 'teacher';
 $string['assignfrom'] = 'from';
 $string['assignuntil'] = 'until';

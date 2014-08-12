@@ -64,13 +64,6 @@ $blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
 $pagenode = $blocknode->add(get_string($page_identifier,'block_exacomp'), $PAGE->url);
 $pagenode->make_active();
 
-// build tab navigation & print header
-echo $OUTPUT->header();
-echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
-
-$selected_niveaus = array();
-$selected_modules = array();
-/* CONTENT REGION */
 if (($action = optional_param("action", "", PARAM_TEXT) )== "save") {
 	block_exacomp_delete_competencies_activities();
 	// DESCRIPTOR DATA
@@ -78,7 +71,15 @@ if (($action = optional_param("action", "", PARAM_TEXT) )== "save") {
 	// TOPIC DATA
 	block_exacomp_save_competencies_activities(isset($_POST['topicdata']) ? $_POST['topicdata'] : array(), $courseid, 1);
 }
-else if(($action = optional_param("action", "", PARAM_TEXT) ) == "filter"){
+
+// build tab navigation & print header
+echo $OUTPUT->header();
+echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
+
+$selected_niveaus = array();
+$selected_modules = array();
+/* CONTENT REGION */
+if(($action = optional_param("action", "", PARAM_TEXT) ) == "filter"){
 	if(isset($_POST['niveau_filter']))
 		$selected_niveaus = $_POST['niveau_filter'];
 		

@@ -56,6 +56,8 @@ $string['tab_competence_profile_settings'] = 'Einstellungen';
 $string['tab_help'] = 'Hilfe';
 $string['tab_skillmanagement'] = 'Erstelle deine Kompetenzen';
 
+$string['next_step'] = 'Zum nächsten Konfigurationsschritt';
+
 //Block Settings
 $string['settings_xmlserverurl'] = 'Server-URL';
 $string['settings_configxmlserverurl'] = 'Url zu einer XML Datei, die verwendet wird, um die Daten aktuell zu halten';

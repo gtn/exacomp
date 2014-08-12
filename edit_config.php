@@ -79,8 +79,9 @@ if (isset($action) && $action == 'save') {
 	else
 		block_exacomp_set_mdltype($values);
 
-	$headertext=get_string("save_success", "block_exacomp");
-	//echo '<script>location.reload();</script>';
+	$headertext=get_string("save_success", "block_exacomp") .html_writer::empty_tag('br')
+		. html_writer::link(new moodle_url('edit_course.php', array('courseid'=>$courseid)), get_string('next_step', 'block_exacomp'));
+			
 }else{
 	$headertext=get_string("explainconfig", "block_exacomp");
 }
