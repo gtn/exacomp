@@ -1218,7 +1218,7 @@ function block_exacomp_is_ready_for_use($courseid){
 	//activity assigned in given course
 	foreach($activities_assigned_to_any_course as $activity){
 		$module = $DB->get_record('course_modules', array('id'=>$activity->activityid));
-		if($module->course == $courseid)
+		if(isset($module->course) && $module->course == $courseid)
 			return true;
 	}
 
