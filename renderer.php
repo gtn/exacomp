@@ -1225,7 +1225,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						if($data->showevaluation)
 							$studentCellEvaluation->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
 
-						$studentCell->text .= $this->generate_select($checkboxname, $example->id, 'examples', $student, $evaluation);
+						$studentCell->text .= $this->generate_select($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme);
 					}
 
 					if($data->showevaluation)
@@ -1459,7 +1459,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	public function print_my_badges($badges){
 		$content = "";
-		if($badges->issued){
+		if($badges->issues){
 			$content .= html_writer::tag('h2', get_string('mybadges', 'block_exacomp'));
 			foreach ($badges->issues as $badge){
 				$context = context_course::instance($badge->courseid);

@@ -82,7 +82,8 @@ if($isAdmin || block_exacomp_check_customupload()) {
 		} else {
 			if ($data = $mform->get_file_content('file')) {
 				if($importSuccess) {
-					echo $OUTPUT->box(get_string("importsuccess", "block_exacomp").html_writer::link(new moodle_url('edit_config.php', array('courseid'=>$courseid)), get_string('next_step', 'block_exacomp')));
+					echo $OUTPUT->box(get_string("importsuccess", "block_exacomp").html_writer::empty_tag('br')
+						.html_writer::link(new moodle_url('edit_config.php', array('courseid'=>$courseid)), get_string('next_step', 'block_exacomp')));
 				}
 				else {
 					echo $OUTPUT->box(get_string("importfail", "block_exacomp"));

@@ -928,7 +928,11 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 	$courseSettings = block_exacomp_get_settings_by_course($courseid);
 	$usedetailpage = $courseSettings->usedetailpage;
 	$ready_for_use = block_exacomp_is_ready_for_use($courseid);
-	
+	$de = false;
+		$lang = current_language();
+		if(isset($lang) && substr( $lang, 0, 2) === 'de'){
+			$de = true;
+	}
 	if($version)
 		$checkConfig = block_exacomp_is_configured($courseid);
 	else
@@ -970,7 +974,8 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 				if(!$skillmanagement && has_capability('block/exacomp:admin', $context))
 					$rows[] = new tabobject('tab_admin_import', new moodle_url('/blocks/exacomp/import.php',array("courseid"=>$courseid)),get_string('tab_admin_import','block_exacomp'));
 
-				$rows[] = new tabobject('tab_help', new moodle_url('/blocks/exacomp/help.php', array("courseid"=>$courseid)), get_string('tab_help', 'block_exacomp'));
+				if($de)
+					$rows[] = new tabobject('tab_help', new moodle_url('/blocks/exacomp/help.php', array("courseid"=>$courseid)), get_string('tab_help', 'block_exacomp'));
 			}else{	//teacher tabs !LIS
 				if($checkConfig){
 					if($ready_for_use){
@@ -1004,7 +1009,8 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 						$rows[] = new tabobject('tab_admin_configuration', new moodle_url('/blocks/exacomp/edit_config.php',array("courseid"=>$courseid)),get_string('tab_admin_configuration','block_exacomp'));
 				}
 
-				$rows[] = new tabobject('tab_help', new moodle_url('/blocks/exacomp/help.php', array("courseid"=>$courseid)), get_string('tab_help', 'block_exacomp'));
+				if($de)
+					$rows[] = new tabobject('tab_help', new moodle_url('/blocks/exacomp/help.php', array("courseid"=>$courseid)), get_string('tab_help', 'block_exacomp'));
 			}
 		}else{
 			if(has_capability('block/exacomp:admin', $context)){
@@ -1030,7 +1036,8 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 					if(block_exacomp_moodle_badges_enabled() && $usebadges)
 						$rows[] = new tabobject('tab_badges', new moodle_url('/blocks/exacomp/my_badges.php',array("courseid"=>$courseid)),get_string('tab_badges','block_exacomp'));
 				}
-				$rows[] = new tabobject('tab_help', new moodle_url('/blocks/exacomp/help.php', array("courseid"=>$courseid)), get_string('tab_help', 'block_exacomp'));
+				if($de)
+					$rows[] = new tabobject('tab_help', new moodle_url('/blocks/exacomp/help.php', array("courseid"=>$courseid)), get_string('tab_help', 'block_exacomp'));
 			}else{	//student tabs !LIS
 				if($ready_for_use){
 					$rows[] = new tabobject('tab_competence_overview', new moodle_url('/blocks/exacomp/assign_competencies.php',array("courseid"=>$courseid)),get_string('tab_competence_overview','block_exacomp'));
@@ -1046,7 +1053,8 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 					if(block_exacomp_moodle_badges_enabled() && $usebadges)
 						$rows[] = new tabobject('tab_badges', new moodle_url('/blocks/exacomp/my_badges.php',array("courseid"=>$courseid)),get_string('tab_badges','block_exacomp'));
 				}
-				$rows[] = new tabobject('tab_help', new moodle_url('/blocks/exacomp/help.php', array("courseid"=>$courseid)), get_string('tab_help', 'block_exacomp'));
+				if($de)
+					$rows[] = new tabobject('tab_help', new moodle_url('/blocks/exacomp/help.php', array("courseid"=>$courseid)), get_string('tab_help', 'block_exacomp'));
 			}
 		}
 	}
@@ -1382,7 +1390,7 @@ function block_exacomp_get_user_badges($courseid, $userid) {
 			if (isset($usercompetences[$descriptor->id])) {
 				$badge->descriptorStatus[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/accept.png'), 'style'=>'vertical-align:text-bottom;')).$descriptor->title;
 			} else {
-				$badge->descriptorStatus[] = html_writer::empty_tag('img', array('src'=>new moodle_url('blocks/exacomp/pix/cancel.png'), 'style'=>'vertical-align:text-bottom;')).$descriptor->title;
+				$badge->descriptorStatus[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/cancel.png'), 'style'=>'vertical-align:text-bottom;')).$descriptor->title;
 			}
 		}
 			
@@ -1587,7 +1595,16 @@ function block_exacomp_get_taxonomies_rek_topics($subs, $taxonomies){
 function block_exacomp_get_supported_modules() {
 	//TO DO: Settings for modules
 	//assign, forum, glossary, quiz, wiki,url
-	return array(1, 9, 10, 16, 20, 21);
+	global $DB;
+	
+	$assign = $DB->get_record('modules', array('name'=>'assign'));
+	$forum = $DB->get_record('modules', array('name'=>'forum'));
+	$glossary = $DB->get_record('modules', array('name'=>'glossary'));
+	$quiz = $DB->get_record('modules', array('name'=>'quiz'));
+	$wiki = $DB->get_record('modules', array('name'=>'wiki'));
+	$url = $DB->get_record('modules', array('name'=>'url'));
+	
+	return array($assign->id, $forum->id, $glossary->id, $quiz->id, $wiki->id, $url->id);
 }
 /**
  * Returns an associative array that gives information about which competence/topic is
@@ -2366,14 +2383,18 @@ function block_exacomp_get_topics_for_radar_graph($courseid,$studentid) {
 
 		$competencies = $DB->get_records_sql($sql,array($topic->id,ROLE_TEACHER,$studentid, ceil($scheme / 2), $courseid));
 		
-		$topic->teacher = (count($competencies) / count($totalDescr)) * 100;
+		$topic->teacher = 0;
+		if(count($totalDescr)>0)
+			$topic->teacher = (count($competencies) / count($totalDescr)) * 100;
 		
 		$sql = "SELECT c.id, c.userid, c.compid, c.role, c.courseid, c.value, c.comptype, c.timestamp FROM {".DB_COMPETENCIES."} c, {".DB_DESCTOPICS."} dt
 		WHERE c.compid = dt.descrid AND dt.topicid = ? AND c.comptype = 0 AND c.role=? AND c.userid = ? AND c.value >= ? AND c.courseid = ?";
 		
 		$competencies = $DB->get_records_sql($sql,array($topic->id,ROLE_STUDENT,$studentid, ceil($scheme/2),$courseid));
 		
-		$topic->student = (count($competencies) / count($totalDescr)) * 100;
+		$topic->student  =0;
+		if(count($totalDescr)>0)
+			$topic->student = (count($competencies) / count($totalDescr)) * 100;
 	}
 	
 	return $topics;
