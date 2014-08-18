@@ -54,7 +54,7 @@ $string['tab_competence_profile'] = 'Kompetenzprofil';
 $string['tab_competence_profile_profile'] = 'Profil';
 $string['tab_competence_profile_settings'] = 'Einstellungen';
 $string['tab_help'] = 'Hilfe';
-$string['tab_skillmanagement'] = 'Erstelle deine Kompetenzen';
+$string['tab_skillmanagement'] = 'Kompetenzen-Verwaltung';
 
 $string['next_step'] = 'Zum nächsten Konfigurationsschritt';
 
@@ -63,15 +63,14 @@ $string['settings_xmlserverurl'] = 'Server-URL';
 $string['settings_configxmlserverurl'] = 'Url zu einer XML Datei, die verwendet wird, um die Daten aktuell zu halten';
 $string['settings_alternativedatamodel'] = 'Baden W&uuml;rttemberg Version';
 $string['settings_alternativedatamodel_description'] = 'Anhaken f&uuml;r die Baden W&uuml;rttemberg Version';
-$string['settings_autotest'] = 'Automatische Tests';
-$string['settings_autotest_description'] = 'Kompetenzen die mit Tests verbunden sind, werden automatisch &uuml;bernommen, wenn der Test abgegeben wurde';
+$string['settings_autotest'] = 'Automatischer Kompetenzerwerb durch Tests';
+$string['settings_autotest_description'] = 'Kompetenzen die mit Tests verbunden sind, gelten automatisch als erworben, wenn der angegebene Test-Prozentwert erreicht wurde';
 $string['settings_testlimit'] = 'Testlimit';
-$string['settings_testlimit_description'] = 'Dieser Prozentwert muss erreicht werden, damit der Test als bestanden gilt';
-$string['settings_usebadges'] = 'Badges verwenden';
-$string['settings_usebadges_description'] = 'Anhaken um Badges Kompetenzen zu zuteilen';
-$string['settings_skillmanagement'] = 'Skillmanagement verwenden';
-$string['settings_skillmanagement_description'] = 'Anhaken um Skillmanagement-Tool anstelle von Import verwenden';
-
+$string['settings_testlimit_description'] = 'Dieser Prozentwert muss erreicht werden, damit die Kompetenz als erworben gilt';
+$string['settings_usebadges'] = 'Badges/Auszeichnungen verwenden';
+$string['settings_usebadges_description'] = 'Anhaken um den Badges/Auszeichnungen Kompetenzen zuzuteilen';
+$string['settings_skillmanagement'] = 'Skills-Management verwenden';
+$string['settings_skillmanagement_description'] = 'Anhaken um Skills-Management-Tool anstelle des Imports verwenden';
 //Learning agenda
 $string['LA_MON'] = "Mo";
 $string['LA_TUE'] = "Di";
@@ -226,9 +225,8 @@ $string['column_setting'] = 'Spalten aus/einblenden';
 $string['niveau_filter'] = "Niveaus filtern";
 $string['module_filter'] = 'Aktivit&auml;ten filtern';
 $string['apply_filter'] = 'Filter anwenden';
-$string['no_topics_selected'] = 'Konfiguration für Exabis Competencies wurde noch nicht abgeschlossen. Bitte w&auml;hlen Sie erst Gegenst&auml;nde aus, denen Sie dann Aktivit&auml;ten zuordnen k&ouml;nnen.';
-$string['no_activities_selected'] = 'Bitte ordnen Sie den erstellen Aufgaben Kompetenzen zu.';
-
+$string['no_topics_selected'] = 'Konfiguration für Exabis Competencies wurde noch nicht abgeschlossen. Bitte w&auml;hlen Sie zuerst Gegenst&auml;nde aus, denen Sie dann Aktivit&auml;ten zuordnen k&ouml;nnen.';
+$stinrg['no_activities_selected'] = 'Bitte ordnen Sie den erstellen Aufgaben Kompetenzen zu.';
 //Competence Grid
 $string['textalign'] = "Switch text align";
 $string['selfevaluation'] = 'Selbsteinschätzung';

@@ -54,7 +54,7 @@ $string['tab_competence_profile'] = 'Competence profile';
 $string['tab_competence_profile_profile'] = 'Profile';
 $string['tab_competence_profile_settings'] = 'Settings';
 $string['tab_help'] = 'Help';
-$string['tab_skillmanagement'] = 'Create your competences';
+$string['tab_skillmanagement'] = 'manage your competencies';
 
 $string['next_step'] = 'continue configuration';
 
@@ -63,14 +63,14 @@ $string['settings_xmlserverurl'] = 'Server-URL';
 $string['settings_configxmlserverurl'] = 'Url to a xml file, which is used for keeping the database entries up to date';
 $string['settings_alternativedatamodel'] = 'Baden W&uuml;rttemberg Version';
 $string['settings_alternativedatamodel_description'] = 'Tick to use Baden W&uuml;rttemberg Version';
-$string['settings_autotest'] = 'Automatic test evalutaion';
-$string['settings_autotest_description'] = 'Students reach competencies automatically if a test is completed';
-$string['settings_testlimit'] = 'Test limit';
-$string['settings_testlimit_description'] = 'Students have to reach this limit to gain competence';
-$string['settings_usebadges'] = 'Use Badges';
-$string['settings_usebadges_description'] = 'Work with badges associated with competencies';
-$string['settings_skillmanagement'] = 'Use skill managemnet';
-$string['settings_skillmanagement_description'] = 'Tick to use the skill management tool instead of import';
+$string['settings_autotest'] = 'automatical gain of competence through quizzes';
+$string['settings_autotest_description'] = 'competences that are associated with quizzes are gained automatically if needed percentage of quiz is reached';
+$string['settings_testlimit'] = 'quiz-percentage needed to gain competence';
+$string['settings_testlimit_description'] = 'this percentage has to be reached to gain the competence';
+$string['settings_usebadges'] = 'use badges';
+$string['settings_usebadges_description'] = 'check to associate badges with competences';
+$string['settings_skillmanagement'] = 'use skills-management';
+$string['settings_skillmanagement_description'] = 'check to use skills-management-tool instead of import';
 
 //Learning agenda
 $string['LA_MON'] = "MON";
@@ -200,8 +200,8 @@ $string['column_setting'] = 'hide/display columns';
 $string['niveau_filter'] = "filter levels";
 $string['module_filter'] = 'filter activities';
 $string['apply_filter'] = 'apply filter';
-$string['no_topics_selected'] = 'Configuration for Exabis Competences hasn\'t been completed. Please select topics first.';
-$string['no_activities_selected'] = 'Please associate tasks with competencies.';
+$string['no_topics_selected'] = 'configuration of exabis competencies is not completed yet. please chose a topic that you would like to associate activities with';
+$string['no_activities_selected'] = 'please associate activities with competences';
 
 //Competence Grid
 $string['textalign'] = "Switch text align";
