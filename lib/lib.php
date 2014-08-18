@@ -395,17 +395,16 @@ function block_exacomp_save_competencies_activities_detail($data, $courseid, $ro
 	$values = array();
 	foreach ($data as $compidKey => $students) {
 		if (!empty($data[$compidKey])) {
-			foreach ($data[$compidKey] as $studentidKey => $evaluations) {
-				if(is_array($evaluations)) {
-					if(isset($evaluations['teacher']))
-						$value = intval($evaluations['teacher']);
-					else
-						$value = intval($evaluations['student']);
-				}
-				foreach($data[$compidKey][$studentidKey] as $evaluation => $activities){
-					foreach($data[$compidKey][$studentidKey][$evaluation] as $activityKey => $empty){
-						$activityid = $activityKey;
-						$values[] =  array('user' => intval($studentidKey), 'compid' => intval($compidKey), 'value' => $value, 'activityid'=>intval($activityKey));
+			foreach ($data[$compidKey] as $studentidKey => $activities) {
+				if (!empty($data[$compidKey][$studentidKey])) {
+					foreach($data[$compidKey][$studentidKey] as $activityidKey => $evaluations){
+						if(!empty($data[$compidKey][$studentidKey][$activityidKey])){
+							foreach($data[$compidKey][$studentidKey][$activityidKey] as $evalKey => $evalvalue){
+								$value = intval($evalvalue);
+								$activityid = $activityidKey;
+								$values[] =  array('user' => intval($studentidKey), 'compid' => intval($compidKey), 'value' => $value, 'activityid'=>intval($activityidKey));
+							}
+						}
 					}
 				}
 			}

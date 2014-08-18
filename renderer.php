@@ -1326,7 +1326,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 */
 	public function generate_checkbox($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false, $activityid = null) {
 		return html_writer::checkbox(
-				((isset($activityid))?$name . '[' .$compid .'][' . $student->id .'][' . $evaluation . '][' . $activityid . ']'
+				((isset($activityid))?$name . '[' .$compid .'][' . $student->id .'][' . $activityid . '][' . $evaluation . ']'
 				:$name . '[' . $compid . '][' . $student->id . '][' . $evaluation . ']'),
 				$scheme,
 				(isset($student->{$type}->{$evaluation}[$compid])) && $student->{$type}->{$evaluation}[$compid] >= ceil($scheme/2), null, (!$disabled) ? null : array("disabled"=>"disabled"));
@@ -1351,7 +1351,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return html_writer::select(
 				$options,
-				((isset($activityid))? $name . '[' . $compid . '][' . $student->id . '][' . $evaluation . '][' . $activityid . ']'
+				((isset($activityid))? $name . '[' . $compid . '][' . $student->id . '][' . $activityid . '][' . $evaluation . ']'
 				: $name . '[' . $compid . '][' . $student->id . '][' . $evaluation . ']'),
 				(isset($student->{$type}->{$evaluation}[$compid])) ? $student->{$type}->{$evaluation}[$compid] : 0,
 				false,(!$disabled) ? null : array("disabled"=>"disabled"));
@@ -2137,7 +2137,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$colspan = 0;
 		$table->attributes['class'] = 'exabis_comp_comp';
 
-		/* SUBJECTS */
+		/* ACTIVITIES */
 		foreach($activities as $activity){
 			$activityRow = new html_table_row();
 			$activityRow->attributes['class'] = 'highlight';
