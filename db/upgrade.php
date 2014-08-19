@@ -1133,8 +1133,8 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         	$DB->insert_record('block_exacompcompuser', $insert);
         }
         
-        $table = new xmldb_table('block_exacomptopicuser');
-        $dbman->drop_table($table);
+       // $table = new xmldb_table('block_exacomptopicuser');
+       // $dbman->drop_table($table);
         
         
         /* block_exacomptopicuser_mm */
@@ -1156,8 +1156,8 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         		$insert->eportfolioitem = 0;
         }
         
-        $table = new xmldb_table('block_exacomptopicuser_mm');
-        $dbman->drop_table($table); 
+       // $table = new xmldb_table('block_exacomptopicuser_mm');
+       // $dbman->drop_table($table); 
         
         /*block_exacompdescriptors */
         
