@@ -1046,11 +1046,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				}
 
 				// TIPP
-				if(isset($student->activities_topics->teacher[$topic->id])){
-					$icon_img = html_writer::empty_tag('img', array('src'=>"pix/tipp.png", "alt"=>get_string('teacher_tipp', 'block_exacomp')));
-					$studentCell->text .= html_writer::span($icon_img, 'exabis-tooltip', array('title'=>get_string('teacher_tipp_description', 'block_exacomp')));
-				}
+				if(block_exacomp_set_tipp($topic->id, $student, 'activities_topics', $data->scheme)){
+					$icon_img = html_writer::empty_tag('img', array('src'=>"pix/info.png", "alt"=>get_string('teacher_tipp', 'block_exacomp')));
+					$string = block_exacomp_get_tipp_string($topic->id, $student, $data->scheme, 'activities_topics', TYPE_TOPIC);
+					$studentCell->text .= html_writer::span($icon_img, 'exabis-tooltip', array('title'=>$string));
 				
+				}
 				if($data->showevaluation)
 					$topicRow->cells[] = $studentCellEvaluation;
 				}
@@ -1151,11 +1152,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$studentCell->text .= '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>';
 				}
 				
-				// TIPP
-				if(isset($student->activities_competencies->teacher[$descriptor->id])){
-					$icon_img = html_writer::empty_tag('img', array('src'=>"pix/tipp.png", "alt"=>get_string('teacher_tipp', 'block_exacomp')));
-					$studentCell->text .= html_writer::span($icon_img, 'exabis-tooltip', array('title'=>get_string('teacher_tipp_description', 'block_exacomp')));
+				// TIPP 
+				if(block_exacomp_set_tipp($descriptor->id, $student, 'activities_competencies', $data->scheme)){
+					$icon_img = html_writer::empty_tag('img', array('src'=>"pix/info.png", "alt"=>get_string('teacher_tipp', 'block_exacomp')));
+					$string = block_exacomp_get_tipp_string($descriptor->id, $student, $data->scheme, 'activities_competencies', TYPE_DESCRIPTOR);
+					$studentCell->text .= html_writer::span($icon_img, 'exabis-tooltip', array('title'=>$string));
 				}
+				
 				if($data->showevaluation)
 					$descriptorRow->cells[] = $studentCellEvaluation;
 
@@ -1331,7 +1334,48 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$scheme,
 				(isset($student->{$type}->{$evaluation}[$compid])) && $student->{$type}->{$evaluation}[$compid] >= ceil($scheme/2), null, (!$disabled) ? null : array("disabled"=>"disabled"));
 	}
+	/**
+	 * Used to generate a checkbox for ticking activities topics and competencies
+	 *
+	 * @param String $name name of the checkbox: data for competencies, dataexamples for examples, datatopic for topics
+	 * @param int $compid
+	 * @param String $type comptencies or topics or examples
+	 * @param stdClass $student
+	 * @param String $evaluation teacher or student
+	 * @param int $scheme grading scheme
+	 * @param bool $disabled disabled becomes true for the "show evaluation" option
+	 *
+	 * @return String $checkbox html code for checkbox
+	 */
+	public function generate_checkbox_activities($name, $compid, $activityid, $type, $student, $evaluation, $scheme, $disabled = false) {
+		return html_writer::checkbox(
+				$name . '[' .$compid .'][' . $student->id .'][' . $activityid . '][' . $evaluation . ']', $scheme,
+				(isset($student->{$type}->activities[$activityid]->{$evaluation}[$compid])) && $student->{$type}->activities[$activityid]->{$evaluation}[$compid] >= ceil($scheme/2), 
+				null, (!$disabled) ? null : array("disabled"=>"disabled"));
+	}
+	/**
+	 * Used to generate a select for activities topics & competencies
+	 *
+	 * @param String $name name of the checkbox: data for competencies, dataexamples for examples, datatopic for topics
+	 * @param int $compid
+	 * @param String $type comptencies or topics or examples
+	 * @param stdClass $student
+	 * @param String $evaluation teacher or student
+	 * @param bool $disabled disabled becomes true for the "show evaluation" option
+	 *
+	 * @return String $select html code for select
+	 */
+	public function generate_select_activities($name, $compid, $activityid, $type, $student, $evaluation, $scheme, $disabled = false) {
+		$options = array();
+		for($i=0;$i<=$scheme;$i++)
+			$options[] = $i;
 
+		return html_writer::select(
+				$options,
+				$name . '[' . $compid . '][' . $student->id . '][' . $activityid . '][' . $evaluation . ']',
+				(isset($student->{$type}->activities[$activityid]->{$evaluation}[$compid])) ? $student->{$type}->activities[$activityid]->{$evaluation}[$compid] : 0,
+				false,(!$disabled) ? null : array("disabled"=>"disabled"));
+	}
 	/**
 	 * Used to generate a select for topics/competencies/examples values
 	 *
@@ -2291,11 +2335,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					*/
 					if($data->scheme == 1 || ($data->scheme != 1 && $data->role == ROLE_STUDENT && $version)) {
 						if($data->showevaluation)
-							$studentCellEvaluation->text = $this->generate_checkbox("datatopics", $topic->id,
+							$studentCellEvaluation->text = $this->generate_checkbox_activities("datatopics", $topic->id, $data->activityid,
 									'activities_topics', $student, ($evaluation == "teacher") ? "student" : "teacher",
-									$data->scheme, true, $data->activityid);
+									$data->scheme, true);
 	
-						$studentCell->text = $this->generate_checkbox("datatopics", $topic->id, 'activities_topics', $student, $evaluation, $data->scheme, false, $data->activityid);
+						$studentCell->text = $this->generate_checkbox_activities("datatopics", $topic->id,$data->activityid, 'activities_topics', $student, $evaluation, $data->scheme, false);
 					}
 					/*
 					 * if scheme != 1, !version: print select
@@ -2303,9 +2347,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					*/
 					elseif(!$version || ($version && $data->role == ROLE_TEACHER)) {
 						if($data->showevaluation)
-							$studentCellEvaluation->text = $this->generate_select("datatopics", $topic->id, 'activities_topics', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->activityid);
-	
-						$studentCell->text = $this->generate_select("datatopics", $topic->id, 'activities_topics', $student, $evaluation, $data->scheme, false, $data->activityid);
+							$studentCellEvaluation->text = $this->generate_select_activities("datatopics", $topic->id, $data->activityid, 'activities_topics', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
+						
+						$studentCell->text = $this->generate_select_activities("datatopics", $topic->id, $data->activityid, 'activities_topics', $student, $evaluation, $data->scheme, false);
 					}
 	
 					if($data->showevaluation)
@@ -2373,19 +2417,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				*/
 				if($data->scheme == 1 || ($data->scheme != 1 && $data->role == ROLE_STUDENT && $version)) {
 					if($data->showevaluation)
-						$studentCellEvaluation->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'activities_competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->activityid);
-
-					$studentCell->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'activities_competencies', $student, $evaluation, $data->scheme, false, $data->activityid);
+						$studentCellEvaluation->text = $this->generate_checkbox_activities($checkboxname, $descriptor->id, $data->activityid, 'activities_competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
+					
+					$studentCell->text = $this->generate_checkbox_activities($checkboxname, $descriptor->id, $data->activityid, 'activities_competencies', $student, $evaluation, $data->scheme, false);
 				}
 				/*
 				 * if scheme != 1, !version: print select
 				* if scheme != 1, version = LIS, role = teacher
 				*/
 				elseif(!$version || ($version && $data->role == ROLE_TEACHER)) {
-					if($data->showevaluation)
-						$studentCellEvaluation->text = $this->generate_select($checkboxname, $descriptor->id, 'activities_competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true,  $data->activityid);
-
-					$studentCell->text = $this->generate_select($checkboxname, $descriptor->id, 'activities_competencies', $student, $evaluation, $data->scheme, false, $data->activityid);
+					if($data->showevaluation) 
+						$studentCellEvaluation->text = $this->generate_select_activities($checkboxname, $descriptor->id, $data->activityid, 'activities_competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
+					
+					$studentCell->text = $this->generate_select_activities($checkboxname, $descriptor->id, $data->activityid, 'activities_competencies', $student, $evaluation, $data->scheme, false);
 				}
 
 				if($data->showevaluation)

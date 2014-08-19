@@ -80,8 +80,9 @@ else{
 	
 	$tree = block_exacomp_build_activity_tree($courseid);
 	$students = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : array($USER);
-	foreach($students as $student)
+	foreach($students as $student){
 		block_exacomp_get_user_information_by_course($student, $courseid);
+	}
 	
 	echo $output->print_detail_content($tree, $courseid, $students, $showevaluation, (has_capability('block/exacomp:teacher', $context)) ? ROLE_TEACHER : ROLE_STUDENT, block_exacomp_get_grading_scheme($courseid));
 }

@@ -175,7 +175,9 @@ $string['usernosubmission'] = ' has not yet submitted any moodle-tasks or quizze
 $string['usernosubmission_topic'] = ' has not yet submitted any moodle-tasks or quizzes associated with this topic';
 $string['grading'] = ' Grading: ';
 $string['teacher_tipp'] = 'tip';
-$string['teacher_tipp_description'] = 'This competence has been reached through an activity.';
+$string['teacher_tipp_1'] = 'This competence has been associated with ';
+$string['teacher_tipp_2'] = ' Moodle activities and has been reached with ';
+$string['teacher_tipp_3'] = ' outcomes.';
 
 $string['teachershortcut'] = 'T';
 $string['studentshortcut'] = 'S';

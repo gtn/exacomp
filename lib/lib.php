@@ -402,6 +402,7 @@ function block_exacomp_save_competencies_activities_detail($data, $courseid, $ro
 							foreach($data[$compidKey][$studentidKey][$activityidKey] as $evalKey => $evalvalue){
 								$value = intval($evalvalue);
 								$activityid = $activityidKey;
+								//var_dump($activityid);
 								$values[] =  array('user' => intval($studentidKey), 'compid' => intval($compidKey), 'value' => $value, 'activityid'=>intval($activityidKey));
 							}
 						}
@@ -618,7 +619,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = '(SELECT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype '
+	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype '
 	.'FROM {'.DB_TOPICS.'} t '
 	.(($courseid>0)?'JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
@@ -890,12 +891,16 @@ function block_exacomp_get_user_activities_topics_by_course($user, $courseid){
 	$activities = block_exacomp_get_activities_by_course($courseid);
 	
 	$user->activities_topics = new stdClass();
-	$user->activities_topics->teacher = array();
-	$user->activities_topics->student = array();
+	$user->activities_topics->activities = array();
 	
 	foreach($activities as $activity){
-		$user->activities_topics->teacher += $DB->get_records_menu(DB_COMPETENCIES_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => ROLE_TEACHER, "comptype" => TYPE_TOPIC),'','compid as id, value');
-		$user->activities_topics->student += $DB->get_records_menu(DB_COMPETENCIES_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => ROLE_STUDENT, "comptype" => TYPE_TOPIC),'','compid as id, value');
+		$user->activities_topics->activities[$activity->id] = new stdClass();
+		
+		$user->activities_topics->activities[$activity->id]->teacher = array();
+		$user->activities_topics->activities[$activity->id]->student = array();
+		
+		$user->activities_topics->activities[$activity->id]->teacher += $DB->get_records_menu(DB_COMPETENCIES_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => ROLE_TEACHER, "comptype" => TYPE_TOPIC),'','compid as id, value');
+		$user->activities_topics->activities[$activity->id]->student += $DB->get_records_menu(DB_COMPETENCIES_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => ROLE_STUDENT, "comptype" => TYPE_TOPIC),'','compid as id, value');
 	}
 	
 	return $user;
@@ -905,12 +910,15 @@ function block_exacomp_get_user_activities_competencies_by_course($user, $course
 	$activities = block_exacomp_get_activities_by_course($courseid);
 	
 	$user->activities_competencies = new stdClass();
-	$user->activities_competencies->teacher = array();
-	$user->activities_competencies->student = array();
+	$user->activities_competencies->activities = array();
 	
 	foreach($activities as $activity){
-		$user->activities_competencies->teacher += $DB->get_records_menu(DB_COMPETENCIES_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR),'','compid as id, value');
-		$user->activities_competencies->student += $DB->get_records_menu(DB_COMPETENCIES_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => ROLE_STUDENT, "comptype" => TYPE_DESCRIPTOR),'','compid as id, value');
+		$user->activities_competencies->activities[$activity->id] = new stdClass();
+		
+		$user->activities_competencies->activities[$activity->id]->teacher = array();
+		$user->activities_competencies->activities[$activity->id]->student = array();
+		$user->activities_competencies->activities[$activity->id]->teacher += $DB->get_records_menu(DB_COMPETENCIES_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR),'','compid as id, value');
+		$user->activities_competencies->activities[$activity->id]->student += $DB->get_records_menu(DB_COMPETENCIES_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => ROLE_STUDENT, "comptype" => TYPE_DESCRIPTOR),'','compid as id, value');
 	}
 	
 	return $user;
@@ -2341,7 +2349,7 @@ function block_exacomp_get_subjects_for_radar_graph($userid) {
 	
 	// 2. get competencies per subject
 	foreach($subjects as $subject) {
-		$total = count($subject->topics) + count($subject->competencies);
+		$total = (isset($subject->topics)? count($subject->topics):0) + (isset($subject->competencies)? count($subject->competencies) : 0);
 		$subject->total = $total;
 		$sql = "SELECT DISTINCT c.id, c.userid, c.compid, c.role, c.courseid, c.value, c.comptype, c.timestamp FROM {".DB_COMPETENCIES."} c, {".DB_TOPICS."} t
 			WHERE
@@ -2683,4 +2691,32 @@ function block_exacomp_get_exastud_reviews($periods, $student){
 		
 	}
 	return $reviews;
+}
+function block_exacomp_set_tipp($compid, $user, $type, $scheme){
+	global $COURSE;
+	$user_information = block_exacomp_get_user_information_by_course($user, $COURSE->id);
+	
+	$show_tipp = false;
+	foreach($user_information->{$type}->activities as $activity){
+		if(isset($activity->teacher[$compid]) && $activity->teacher[$compid]>= ceil($scheme/2) )
+			$show_tipp = true;
+	}
+	return $show_tipp;
+}
+function block_exacomp_get_tipp_string($compid, $user, $scheme, $type, $comptype){
+	global $COURSE;
+	$activities = block_exacomp_get_activities($compid, $COURSE->id, $comptype);
+	$user_information = block_exacomp_get_user_information_by_course($user, $COURSE->id);
+	
+	$gained = 0;
+	$total = count($activities);
+	
+	foreach($activities as $activity){
+		if(isset($user_information->{$type}->activities[$activity->id]->teacher[$compid]) 
+			&& $user_information->{$type}->activities[$activity->id]->teacher[$compid] >= ceil($scheme/2)){
+				$gained++;
+		}
+	}
+	
+	return get_string('teacher_tipp_1', 'block_exacomp').$total.get_string('teacher_tipp_2', 'block_exacomp').$gained.get_string('teacher_tipp_3', 'block_exacomp');
 }

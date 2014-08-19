@@ -199,7 +199,9 @@ $string['usernosubmission'] = ' hat keine Moodle-Aufgaben zu diesem Deskriptor a
 $string['usernosubmission_topic'] = ' hat keine Moodle-Aufgaben zu diesem Thema abgegeben und keinen Test durchgef&uuml;hrt.';
 $string['grading'] = ' Bewertung: ';
 $string['teacher_tipp'] = 'Tipp';
-$string['teacher_tipp_description'] = 'Diese Kompetenz wurde durch eine Aktivit&auml;t schon erreicht.';
+$string['teacher_tipp_1'] = 'Diese Kompetenz wurde bei ';
+$string['teacher_tipp_2'] = ' Aktivit&auml;ten zugeordnet und bereits bei ';
+$string['teacher_tipp_3'] = ' erf&uuml;llt.';
 
 $string['teachershortcut'] = 'L';
 $string['studentshortcut'] = 'S';
