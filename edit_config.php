@@ -74,11 +74,12 @@ $pagenode->make_active();
 //Falls Formular abgesendet, speichern
 if (isset($action) && $action == 'save') {
 	$values = isset($_POST['data']) ? $_POST['data'] : array();
+	
 	if($version)
 		block_exacomp_set_mdltype($values,$courseid);
 	else
 		block_exacomp_set_mdltype($values);
-
+	
 	$headertext=get_string("save_success", "block_exacomp") .html_writer::empty_tag('br')
 		. html_writer::link(new moodle_url('edit_course.php', array('courseid'=>$courseid)), get_string('next_step', 'block_exacomp'));
 			

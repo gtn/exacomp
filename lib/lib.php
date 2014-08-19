@@ -1143,6 +1143,29 @@ function block_exacomp_set_mdltype($values, $courseid = 0) {
 	foreach ($values as $value) {
 		$DB->insert_record(DB_MDLTYPES, array("stid" => intval($value),"courseid" => $courseid));
 	}
+	
+	block_exacomp_clean_course_topics($values, $courseid);
+}
+
+function block_exacomp_clean_course_topics($values, $courseid){
+	global $DB;
+	
+	if($courseid == 0)
+		$coutopics = $DB->get_records(DB_COURSETOPICS);
+	else 
+		$coutopics = $DB->get_records(DB_COURSETOPICS, array('courseid'=>$courseid));
+		
+	foreach($coutopics as $coutopic){
+		$sql = 'SELECT s.stid FROM {'.DB_TOPICS.'} t 
+			JOIN {'.DB_SUBJECTS.'} s ON t.subjid=s.id 
+			WHERE t.id=?';
+		
+		$schooltype = $DB->get_record_sql($sql, array($coutopic->topicid));
+		
+		if(!array_key_exists($schooltype->stid, $values)){
+			$DB->delete_records(DB_COURSETOPICS, array('id'=>$coutopic->id));
+		}
+	}
 }
 /**
  * check if configuration is already finished
