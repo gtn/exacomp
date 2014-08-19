@@ -1786,8 +1786,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 		}
 	}
-	public function print_activity_legend(){
-		return html_writer::label(get_string("explaineditactivities_subjects", "block_exacomp"), '').html_writer::empty_tag('br');
+	public function print_activity_legend($headertext){
+		$header = html_writer::tag('p', $headertext).html_writer::empty_tag('br');
+		
+		return $header.html_writer::label(get_string("explaineditactivities_subjects", "block_exacomp"), '').html_writer::empty_tag('br');
 		
 	}
 	public function print_activity_footer($niveaus, $modules, $selected_niveaus=array(), $selected_modules=array()){

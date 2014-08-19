@@ -47,6 +47,9 @@ $string['requirements'] = 'Was du schon k&ouml;nnen solltest: ';
 $string['forwhat'] = 'Wof&uuml;r du das brauchst: ';
 $string['howtocheck'] = 'Wie du dein K&ouml;nnen pr&uuml;fen kannst: ';
 $string['reached_topic'] = 'Ich habe diese Kompetenz erreicht: ';
+
+$string['second_configuration_step'] = 'Im zweiten Konfigurationsschritt m&uuml;ssen Bildungsstandards ausgew&auml;hlt werden.';
+$string['teacher_second_configuration_step'] = 'Im dritten Konfigurationsschritt m&uuml;ssen Themenbereiche ausgew&auml;hlt werden, mit denen Sie in diesem Kurs arbeiten m&ouml;chten';
 //nicht verwendete und doppelt deklarierte Strings
 //$string['descnoassignment'] = 'Dieser Lernliste sind keine Aufgaben zugeordnet.';
 //$string['specificsubject'] = 'Schulbezogene Kompetenzbereiche';

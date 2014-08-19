@@ -56,7 +56,15 @@ $string['tab_competence_profile_settings'] = 'Settings';
 $string['tab_help'] = 'Help';
 $string['tab_skillmanagement'] = 'manage your competencies';
 
-$string['next_step'] = 'continue configuration';
+$string['first_configuration_step'] = 'The first step of the configuration is to import some data to Exabis Competencies.';
+$string['second_configuration_step'] = 'In the second configuration step you have to preselect standards.';
+$string['next_step'] = 'This configuration step has been completed. Click here to continue configuration.';
+$string['next_step_teacher'] = 'The configuration that has to be done by the administrator is now completed. To continue with the course specific configuration click here.';
+$string['teacher_first_configuration_step'] = 'The first step of the configuration is to select some general settings for your course.';
+$string['teacher_second_configuration_step'] = 'In the second configuration step topics to work with in this course have to be selected.';
+$string['teacher_third_configuration_step'] = 'The next step is to associate Moodle activities with competencies';
+$string['completed_config'] = 'The configuration of Exabis Competencies is completed.';
+$string['optional_step'] = 'There are no participants in your course yet. If you want to enrol some please use this link.';
 
 //Block Settings 
 $string['settings_xmlserverurl'] = 'Server-URL';

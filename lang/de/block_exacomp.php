@@ -56,7 +56,16 @@ $string['tab_competence_profile_settings'] = 'Einstellungen';
 $string['tab_help'] = 'Hilfe';
 $string['tab_skillmanagement'] = 'Kompetenzen-Verwaltung';
 
-$string['next_step'] = 'Zum nächsten Konfigurationsschritt';
+$string['first_configuration_step'] = 'Der erste Konfigurationsschritt besteht darin, Daten in das Exabis Competencies Modul zu importieren.';
+$string['second_configuration_step'] = 'Im zweiten Konfigurationsschritt muss eine Vorauswahl für die Standards getroffen werden. Diese Einstellungen sind unabh&auml;ngig von Kurs für die gesamte Moodle-Installation g&uuml;ltig.';
+$string['next_step'] = 'Dieser Konfigurationsschritt wurde abgeschlossen. Klicken Sie hier um zum N&auml;chsten zu gelangen.';
+$string['next_step_teacher'] = 'Die Konfiguration, die vom Administrator vorgenommen werden muss ist hiermit abgeschlossen. Um mit der Kurs-spezifischen Konfiguration fort zu fahren klicken Sie hier.';
+$string['teacher_first_configuration_step'] = 'Im ersten Konfigurationsschritt müssen einige generelle Einstellungen getroffen werden.';
+$string['teacher_second_configuration_step'] = 'Im zweite Konfigurationsschritt müssen Themenbereiche ausgewählt werden mit denen Sie in diesem Kurs arbeiten möchten.';
+$string['teacher_third_configuration_step'] = 'Im nächsten Schritt werden Moodle Aktivit&auml;ten mit Kompetenzen assoziiert.';
+$string['completed_config'] = 'Die Exabis Competencies Konfiguration wurde abgeschlossen.';
+$string['optional_step'] = 'In Ihrem Kurs sind noch keine Teilnehmer eingeschrieben, bet&auml;tigen Sie diesen Link wenn Sie das jetzt machen m&ouml;chten.';
+
 
 //Block Settings
 $string['settings_xmlserverurl'] = 'Server-URL';
@@ -127,7 +136,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 $string['importinfo'] = 'Erstellen Sie Ihre eigenen Kompetenzen/Standards auf <a href="http://www.edustandards.org">www.edustandards.org</a> oder laden Sie ein bestehendes XML von <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch.';
 $string['importwebservice'] = 'Es besteht auch die M&ouml;glichkeit die Daten &uuml;ber ein <a href="{$a}">Webservice</a> aktuell zu halten.';
 $string['importdone'] = 'Die allgemeinen Bildungsstandards sind bereits importiert.';
-$string['importpending'] = 'Bitte importieren Sie jetzt die allgemeinen Bildungsstandards und w&auml;hlen Sie anschlie&szlig;end im Tab Schultyp die anzuzeigenden Deskriptorenbereiche aus.';
+$string['importpending'] = 'Bitte importieren Sie jetzt die allgemeinen Bildungsstandards und w&auml;hlen Sie anschlie&szlig;end im Tab "Konfiguration" die anzuzeigenden Deskriptorenbereiche aus.';
 $string['doimport'] = 'Allgemeine Bildungsstandards importieren';
 $string['doimport_again'] = 'Allgemeine Bildungsstandards erneut importieren';
 $string['doimport_own'] = 'Schulspezifische Bildungsstandards importieren';

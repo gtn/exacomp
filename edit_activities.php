@@ -63,13 +63,28 @@ $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
 $blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
 $pagenode = $blocknode->add(get_string($page_identifier,'block_exacomp'), $PAGE->url);
 $pagenode->make_active();
-
+$headertext = "";
+if(!$version)
+	$img = new moodle_url('/blocks/exacomp/pix/three.png');
+else 
+ 	$img = new moodle_url('/blocks/exacomp/pix/four.png');
+	 
 if (($action = optional_param("action", "", PARAM_TEXT) )== "save") {
 	block_exacomp_delete_competencies_activities();
 	// DESCRIPTOR DATA
 	block_exacomp_save_competencies_activities(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, 0);
 	// TOPIC DATA
 	block_exacomp_save_competencies_activities(isset($_POST['topicdata']) ? $_POST['topicdata'] : array(), $courseid, 1);
+	
+	$headertext=get_string("save_success", "block_exacomp") .html_writer::empty_tag('br')
+    	.html_writer::empty_tag('img', array('src'=>$img, 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).get_string('completed_config', 'block_exacomp');
+
+    $students = block_exacomp_get_students_by_course($courseid);
+    if(empty($students))
+		$headertext .= html_writer::empty_tag('br')
+			.html_writer::link(new moodle_url('/enrol/users.php', array('id'=>$courseid)), get_string('optional_step', 'block_exacomp'));
+}else{
+	$headertext = html_writer::empty_tag('img', array('src'=>$img, 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).get_string('teacher_third_configuration_step', 'block_exacomp');
 }
 
 // build tab navigation & print header
@@ -146,7 +161,7 @@ if($modules){
 	if(!$topics_set)
 		echo $output->print_no_topics_warning();
 	else{
-		echo $output->print_activity_legend();
+		echo $output->print_activity_legend($headertext);
 		echo $output->print_activity_content($subjects, $visible_modules, $courseid, $colspan, $selected_niveaus);
 		echo $output->print_activity_footer($niveaus, $modules_to_filter, $selected_niveaus, $selected_modules);
 	}
