@@ -93,9 +93,6 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $
 
 /* CONTENT REGION */
 
-
-
-
 /* HTML CONTENT */
 
 $data = new stdClass();

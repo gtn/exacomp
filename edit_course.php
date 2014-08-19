@@ -59,6 +59,7 @@ $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
 $blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
 $pagenode = $blocknode->add(get_string($page_identifier,'block_exacomp'), $PAGE->url);
 $pagenode->make_active();
+$headertext = '';
 
 if ($action == 'save_coursesettings') {
 	$settings = new stdClass;
@@ -73,6 +74,9 @@ if ($action == 'save_coursesettings') {
 	$settings->usedetailpage = optional_param('usedetailpage', "", PARAM_INT);
 	
 	block_exacomp_save_coursesettings($courseid, $settings);	
+	
+	$headertext=get_string("save_success", "block_exacomp") .html_writer::empty_tag('br')
+		. html_writer::link(new moodle_url('edit_course.php', array('courseid'=>$courseid)), get_string('next_step', 'block_exacomp'));
 } 
 
 // build tab navigation & print header
@@ -83,7 +87,7 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $
 $courseSettings = block_exacomp_get_settings_by_course($courseid);
 
 $output = $PAGE->get_renderer('block_exacomp');
-echo $output->print_edit_course($courseSettings, $action, $courseid);
+echo $output->print_edit_course($courseSettings, $courseid, $headertext);
 
 /* END CONTENT REGION */
 

@@ -1423,10 +1423,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return $content;
 	}
-	public function print_edit_course($settings, $action, $courseid){
-		$saved = "";
-		if ($action == 'save_coursesettings')
-			$saved = html_writer::label(get_string("save_success", "block_exacomp"), "").html_writer::empty_tag('br');
+	public function print_edit_course($settings, $courseid, $headertext){
+		$header = html_writer::label($headertext, '').html_writer::empty_tag('br');
 			
 		$input_grading = get_string('grading_scheme', 'block_exacomp').": &nbsp"
 		.html_writer::empty_tag('input', array('type'=>'text', 'size'=>2, 'name'=>'grading', 'value'=>block_exacomp_get_grading_scheme($courseid)))
@@ -1449,10 +1447,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$hiddenaction = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'action', 'value'=>'save_coursesettings'));
 
 		$div = html_writer::div(html_writer::tag('form',
-				$saved.$input_grading.$input_activities.$input_descriptors.$input_examples.$input_detailpage.$hiddenaction.$input_submit,
+				$input_grading.$input_activities.$input_descriptors.$input_examples.$input_detailpage.$hiddenaction.$input_submit,
 				array('action'=>'edit_course.php?courseid='.$courseid, 'method'=>'post')), 'block_excomp_center');
 
-		$content = html_writer::tag("div", $div, array("id"=>"exabis_competences_block"));
+		$content = html_writer::tag("div",$header.$div, array("id"=>"exabis_competences_block"));
 			
 		return $content;
 	}
@@ -1657,9 +1655,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content = html_writer::tag('script', 'ddtreemenu.createTree("comptree", true)', array('type'=>'text/javascript'));
 		return $content.html_writer::end_div();
 	}
-	public function print_courseselection($tree, $subjects, $topics_activ){
+	public function print_courseselection($tree, $subjects, $topics_activ, $headertext){
 		global $PAGE;
-
+		
+		$header = html_writer::label($headertext, '').html_writer::empty_tag('br');
+		
 		$table = new html_table();
 		$table->attributes['class'] = 'exabis_comp_comp';
 		$rowgroup = 0;
@@ -1697,7 +1697,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$table_html .= html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))), '', array('id'=>'exabis_save_button'));
 		$table_html .= html_writer::tag("input", "", array("name" => "open_row_groups", "type" => "hidden", "value" => (optional_param('open_row_groups', "", PARAM_TEXT))));
 
-		return html_writer::tag("form", $table_html, array("method" => "post", "action" => $PAGE->url . "&action=save", "id" => "course-selection"));
+		return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url . "&action=save", "id" => "course-selection"));
 	}
 	public function print_topics_courseselection(&$rows, $level, $topics, &$rowgroup, $rowgroup_class = '', $topics_activ){
 		global $version;

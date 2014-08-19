@@ -195,7 +195,7 @@ $string['assignfrom'] = 'from';
 $string['assignuntil'] = 'until';
 
 //Activities
-$string['explaineditactivities_subjects'] = 'Here you can associate tasks with competencies.';
+$string['explaineditactivities_subjects'] = 'Here you can associate competencies with moodle activities.';
 $string['column_setting'] = 'hide/display columns';
 $string['niveau_filter'] = "filter levels";
 $string['module_filter'] = 'filter activities';

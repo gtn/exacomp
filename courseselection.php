@@ -56,9 +56,13 @@ $blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
 $pagenode = $blocknode->add(get_string($page_identifier,'block_exacomp'), $PAGE->url);
 $pagenode->make_active();
 
+$headertext = "";
 if ($action == 'save') {
     block_exacomp_set_coursetopics($courseid, (isset($_POST['data'])?$_POST['data']:array()));
     $action="";
+    
+    $headertext=get_string("save_success", "block_exacomp") .html_writer::empty_tag('br')
+		. html_writer::link(new moodle_url('edit_activities.php', array('courseid'=>$courseid)), get_string('next_step', 'block_exacomp'));
 }
 
 // build tab navigation & print header
@@ -98,7 +102,7 @@ $topics = block_exacomp_get_topics_by_subject($courseid, 0, true);
 
 $subjects = block_exacomp_get_subjects_for_schooltype($courseid_temp);
 $output = $PAGE->get_renderer('block_exacomp');
-echo $output->print_courseselection($tree, $subjects, $topics);
+echo $output->print_courseselection($tree, $subjects, $topics, $headertext);
 
 /* END CONTENT REGION */
 

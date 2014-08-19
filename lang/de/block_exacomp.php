@@ -220,7 +220,7 @@ $string['assignuntil'] = 'bis';
 $string['assignlearninggroup'] = 'Lerngruppe';
 
 //Activities
-$string['explaineditactivities_subjects'] = 'Hier k&ouml;nnen Sie den erstellten Aufgaben Kompetenzen zuordnen.';
+$string['explaineditactivities_subjects'] = 'Hier können Sie Kompetenzen mit Moodle-Aktivitäten verknüpfen.';
 $string['column_setting'] = 'Spalten aus/einblenden';
 $string['niveau_filter'] = "Niveaus filtern";
 $string['module_filter'] = 'Aktivit&auml;ten filtern';
