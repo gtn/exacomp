@@ -21,6 +21,8 @@ $string['show_all_descriptors'] = 'Alle Lernlisten im &Uuml;berblick anzeigen';
 $string['choosesubject']='Bildungsstandard ausw&auml;hlen';
 $string['choosetopic'] = "Lernfortschritte ausw&auml;hlen";
 
+$string['second_configuration_step'] = 'Im zweiten Konfigurationsschritt m&uuml;ssen Bildungsstandards ausgew&auml;hlt werden.';
+$string['teacher_second_configuration_step'] = 'Im dritten Konfigurationsschritt m&uuml;ssen Themenbereiche ausgew&auml;hlt werden, mit denen Sie in diesem Kurs arbeiten m&ouml;chten';
 
 $string['help_content'] = '<h1>Video zur Einführung</h1>
 <iframe width="640" height="360" src="//www.youtube.com/embed/EL4Vb3_17EM?feature=player_embedded" frameborder="0" allowfullscreen></iframe>
@@ -48,8 +50,7 @@ $string['forwhat'] = 'Wof&uuml;r du das brauchst: ';
 $string['howtocheck'] = 'Wie du dein K&ouml;nnen pr&uuml;fen kannst: ';
 $string['reached_topic'] = 'Ich habe diese Kompetenz erreicht: ';
 
-$string['second_configuration_step'] = 'Im zweiten Konfigurationsschritt m&uuml;ssen Bildungsstandards ausgew&auml;hlt werden.';
-$string['teacher_second_configuration_step'] = 'Im dritten Konfigurationsschritt m&uuml;ssen Themenbereiche ausgew&auml;hlt werden, mit denen Sie in diesem Kurs arbeiten m&ouml;chten';
+
 //nicht verwendete und doppelt deklarierte Strings
 //$string['descnoassignment'] = 'Dieser Lernliste sind keine Aufgaben zugeordnet.';
 //$string['specificsubject'] = 'Schulbezogene Kompetenzbereiche';

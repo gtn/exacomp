@@ -237,7 +237,12 @@ $string['niveau_filter'] = "Niveaus filtern";
 $string['module_filter'] = 'Aktivit&auml;ten filtern';
 $string['apply_filter'] = 'Filter anwenden';
 $string['no_topics_selected'] = 'Konfiguration für Exabis Competencies wurde noch nicht abgeschlossen. Bitte w&auml;hlen Sie zuerst Gegenst&auml;nde aus, denen Sie dann Aktivit&auml;ten zuordnen k&ouml;nnen.';
-$stinrg['no_activities_selected'] = 'Bitte ordnen Sie den erstellen Aufgaben Kompetenzen zu.';
+$string['no_activities_selected'] = 'Bitte ordnen Sie den erstellen Aufgaben Kompetenzen zu.';
+$string['no_course_activities'] = 'In diesem Kurs wurden noch keine Aktivit&auml;ten erstellt, klicken Sie hier um dies nun zu tun.';
+$string['all_modules'] = 'Alle Aktivitäten';
+$string['all_niveaus'] = 'Alle Niveaustufen';
+$string['tick_some'] = 'Bitte treffen Sie eine Auswahl!';
+
 //Competence Grid
 $string['textalign'] = "Switch text align";
 $string['selfevaluation'] = 'Selbsteinschätzung';

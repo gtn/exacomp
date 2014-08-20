@@ -212,6 +212,10 @@ $string['module_filter'] = 'filter activities';
 $string['apply_filter'] = 'apply filter';
 $string['no_topics_selected'] = 'configuration of exabis competencies is not completed yet. please chose a topic that you would like to associate activities with';
 $string['no_activities_selected'] = 'please associate activities with competences';
+$string['no_course_activities'] = 'There exist no Moodle activities in your course yet, klick here to create some.';
+$string['all_modules'] = 'all modules';
+$string['all_niveaus'] = 'all niveaus';
+$string['tick_some'] = 'Please make a selection!';
 
 //Competence Grid
 $string['textalign'] = "Switch text align";

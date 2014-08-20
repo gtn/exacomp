@@ -1802,7 +1802,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			if(in_array('0', $selected_niveaus) || empty($selected_niveaus))
 				$selected = ' selected';
 			
-			$options = html_writer::tag('option'.$selected, 'all niveaus', array('value'=>0));
+			$options = html_writer::tag('option'.$selected, get_string('all_niveaus', 'block_exacomp'), array('value'=>0));
 			foreach($niveaus as $niveau){
 				$selected = '';
 				if(in_array($niveau->id, $selected_niveaus))
@@ -1819,7 +1819,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			if(in_array('0', $selected_modules) || empty($selected_modules))
 				$selected = ' selected';
 				
-			$options = html_writer::tag('option'.$selected, 'all modules', array('value'=>0));
+			$options = html_writer::tag('option'.$selected, get_string('all_modules', 'block_exacomp'), array('value'=>0));
 			foreach($modules as $module){
 				$selected = '';
 				if(in_array($module->id, $selected_modules))
@@ -2156,10 +2156,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 	}
 	public function print_no_topics_warning(){
-		return html_writer::label(get_string("no_topics_selected", "block_exacomp"), '');
+		global $COURSE;
+		return html_writer::link(new moodle_url('/blocks/exacomp/courseselection.php', array('courseid'=>$COURSE->id)), get_string("no_topics_selected", "block_exacomp"));
+	}
+	public function print_no_course_activities_warning(){
+		global $COURSE;
+		return html_writer::link(new moodle_url('/course/view.php', array('id'=>$COURSE->id, 'notifyeditingon'=>1)), get_string("no_course_activities", "block_exacomp"));
 	}
 	public function print_no_activities_warning(){
-		return html_writer::label(get_string("no_activities_selected", "block_exacomp"), '');
+		global $COURSE;
+		return html_writer::link(new moodle_url('/blocks/exacomp/edit_activities.php', array('courseid'=>$COURSE->id)), get_string("no_activities_selected", "block_exacomp"));
 	}
 	public function print_detail_legend($showevaluation){
 		global $OUTPUT, $COURSE;
