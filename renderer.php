@@ -781,13 +781,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$cell->text .= $div_1;
 				
 			$content = get_string('assignfrom','block_exacomp');
-			$content .= ' '.html_writer::empty_tag('input', array('class' => 'datepicker', 'type' => 'text', 'name' => 'dataexamples[' . $example->id . '][' . $USER->id . '][starttime]', 'readonly' => 'readonly',
+			$content .= ' '.html_writer::empty_tag('input', array('class' => 'datepicker', 'type' => 'text', 'name' => 'dataexamples[' . $example->id . '][' . $USER->id . '][starttime]', 'disabled',
 					'value' => (isset($exampleInfo->starttime) ? date("Y-m-d",$exampleInfo->starttime) : null)));
 			$content .= ' '.html_writer::link(new moodle_url($PAGE->url, array('exampleid'=>$example->id, 'deletestart'=>1)),
 					html_writer::img('pix/x_11x11.png', 'delete'));
 			$content .= html_writer::empty_tag('br');
 			$content .= get_string('assignuntil','block_exacomp');
-			$content .= ' '.html_writer::empty_tag('input', array('class' => 'datepicker', 'type' => 'text', 'name' => 'dataexamples[' . $example->id . '][' . $USER->id . '][endtime]', 'readonly' => 'readonly',
+			$content .= ' '.html_writer::empty_tag('input', array('class' => 'datepicker', 'type' => 'text', 'name' => 'dataexamples[' . $example->id . '][' . $USER->id . '][endtime]', 'disabled',
 					'value' => (isset($exampleInfo->endtime) ? date("Y-m-d",$exampleInfo->endtime) : null)));
 			$content .= ' '.html_writer::link(new moodle_url($PAGE->url, array('exampleid'=>$example->id, 'deleteend'=>1)),
 					html_writer::img('pix/x_11x11.png', 'delete'));
@@ -1229,6 +1229,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$studentCellEvaluation->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
 
 						$studentCell->text .= $this->generate_select($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme);
+						
+						if($data->role == ROLE_STUDENT)
+							$studentCell->text .= $this->print_student_example_evaluation_form($example->id, $student->id, $data->courseid);
 					}
 
 					if($data->showevaluation)
@@ -1253,11 +1256,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content = html_writer::select($options, 'dataexamples[' . $exampleid . '][' . $studentid . '][studypartner]', (isset($exampleInfo->studypartner) ? $exampleInfo->studypartner : null), false);
 
 		$content .= get_string('assignfrom','block_exacomp');
-		$content .= html_writer::empty_tag('input', array('class' => 'datepicker', 'type' => 'text', 'name' => 'dataexamples[' . $exampleid . '][' . $studentid . '][starttime]', 'readonly' => 'readonly',
+		$content .= html_writer::empty_tag('input', array('class' => 'datepicker', 'type' => 'text', 'name' => 'dataexamples[' . $exampleid . '][' . $studentid . '][starttime]', 'disabled',
 				'value' => (isset($exampleInfo->starttime) ? date("Y-m-d",$exampleInfo->starttime) : null)));
 
 		$content .= get_string('assignuntil','block_exacomp');
-		$content .= html_writer::empty_tag('input', array('class' => 'datepicker', 'type' => 'text', 'name' => 'dataexamples[' . $exampleid . '][' . $studentid . '][endtime]', 'readonly' => 'readonly',
+		$content .= html_writer::empty_tag('input', array('class' => 'datepicker', 'type' => 'text', 'name' => 'dataexamples[' . $exampleid . '][' . $studentid . '][endtime]', 'disabled',
 				'value' => (isset($exampleInfo->endtime) ? date("Y-m-d",$exampleInfo->endtime) : null)));
 
 		return $content;

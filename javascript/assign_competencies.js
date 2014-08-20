@@ -38,11 +38,15 @@
 		$('input[name="'+$this.attr("name")+'"]').prop('checked', $this.prop('checked'));
 	});
 	// update same examples: selects (bewertungsdimensionen > 1)
-	$(document).on('click', 'select[name^=dataexamples]', function(){
+	$(document).on('change', 'select[name^=dataexamples]', function(){
 		var $this = $(this);
 		$('select[name="'+$this.attr("name")+'"]').val($this.val());
 	});
-
+	$(document).on('change', 'input[name^=dataexamples]', function(){
+		var $this = $(this);
+		$('input[name="'+$this.attr("name")+'"]').val($this.val());
+	});
+	
 	// called from the add example popup-window, after the example was added
 	window.Exacomp.newExampleAdded = function() {
 		// reload form by submitting it
