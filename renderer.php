@@ -1404,7 +1404,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function print_edit_config($data, $courseid){
 		global $OUTPUT;
 
-		$header = html_writer::label($data->headertext, '').html_writer::empty_tag('br');
+		$header = html_writer::tag('p', $data->headertext).html_writer::empty_tag('br');
 
 		$table = new html_table();
 		$table->attributes['class'] = 'exabis_comp_comp';
@@ -1468,7 +1468,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 	public function print_edit_course($settings, $courseid, $headertext){
-		$header = html_writer::label($headertext, '').html_writer::empty_tag('br');
+		$header = html_writer::tag('p', $headertext).html_writer::empty_tag('br');
 			
 		$input_grading = get_string('grading_scheme', 'block_exacomp').": &nbsp"
 		.html_writer::empty_tag('input', array('type'=>'text', 'size'=>2, 'name'=>'grading', 'value'=>block_exacomp_get_grading_scheme($courseid)))
@@ -1501,9 +1501,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	public function print_my_badges($badges){
 		$content = "";
-		if($badges->issues){
+		if($badges->issued){
 			$content .= html_writer::tag('h2', get_string('mybadges', 'block_exacomp'));
-			foreach ($badges->issues as $badge){
+			foreach ($badges->issued as $badge){
 				$context = context_course::instance($badge->courseid);
 				$imageurl = moodle_url::make_pluginfile_url($context->id, 'badges', 'badgeimage', $badge->id, '/', 'f1', false);
 				$img = html_writer::empty_tag('img', array('src' => $imageurl, 'class' => 'badge-image'));
@@ -1702,7 +1702,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function print_courseselection($tree, $subjects, $topics_activ, $headertext){
 		global $PAGE;
 		
-		$header = html_writer::label($headertext, '').html_writer::empty_tag('br');
+		$header = html_writer::tag('p', $headertext).html_writer::empty_tag('br');
 		
 		$table = new html_table();
 		$table->attributes['class'] = 'exabis_comp_comp';
@@ -1789,7 +1789,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function print_activity_legend($headertext){
 		$header = html_writer::tag('p', $headertext).html_writer::empty_tag('br');
 		
-		return $header.html_writer::label(get_string("explaineditactivities_subjects", "block_exacomp"), '').html_writer::empty_tag('br');
+		return $header.html_writer::tag('p', get_string("explaineditactivities_subjects", "block_exacomp")).html_writer::empty_tag('br');
 		
 	}
 	public function print_activity_footer($niveaus, $modules, $selected_niveaus=array(), $selected_modules=array()){
@@ -2721,7 +2721,7 @@ function print_competene_profile_overview($student, $courses) {
 		$exacomp_div_content .= html_writer::div(
 			html_writer::checkbox('showonlyreached', 1, ($settings->showonlyreached==1), get_string('profile_settings_showonlyreached', 'block_exacomp')));
 		
-		$content_courses = html_writer::label(get_string('profile_settings_choose_courses', 'block_exacomp'), '');
+		$content_courses = html_writer::tag('p', get_string('profile_settings_choose_courses', 'block_exacomp'));
 		foreach($courses as $course){
 			$content_courses .= html_writer::checkbox('profile_settings_course[]', $course->id, (isset($settings->exacomp[$course->id])), $course->fullname);
 			$content_courses .= html_writer::empty_tag('br');
@@ -2757,14 +2757,14 @@ function print_competene_profile_overview($student, $courses) {
 				html_writer::checkbox('useexastud', 1, ($settings->useexastud ==1), get_string('profile_settings_useexastud', 'block_exacomp')));
 			
 			if(!empty($exastud_periods)){
-				$content_periods = html_writer::label(get_string('profile_settings_choose_periods', 'block_exacomp'), '');
+				$content_periods = html_writer::tag('p', get_string('profile_settings_choose_periods', 'block_exacomp'));
 				
 				foreach($exastud_periods as $period){
 					$content_periods .= html_writer::checkbox('profile_settings_periods[]', $period->id, (isset($settings->exastud[$period->id])), $period->description);
 					$content_periods .= html_writer::empty_tag('br');
 				}
 			}else{
-				$content_periods = html_writer::label(get_string('profile_settings_no_period', 'block_exacomp'), '');
+				$content_periods = html_writer::tag('p', get_string('profile_settings_no_period', 'block_exacomp'));
 			}
 			$exastud_div_content .= html_writer::div($content_periods);
 		
@@ -2795,7 +2795,7 @@ function print_competene_profile_overview($student, $courses) {
 		}
 		
 		if($items_with_no_comps){
-			$content .= html_writer::label(get_string('item_no_comps', 'block_exacomp'), '');	
+			$content .= html_writer::tag('p', get_string('item_no_comps', 'block_exacomp'));	
 			foreach($items as $item){
 				$url = $CFG->wwwroot.'/blocks/exaport/shared_item.php?courseid='.$COURSE->id.'&access=portfolio/id/'.$user->id.'&itemid='.$item->id.'&backtype=&att='.$item->attachment;
 		
