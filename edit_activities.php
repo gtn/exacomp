@@ -123,7 +123,7 @@ if($modules){
 		$module = block_exacomp_get_coursemodule($mod);
 		
 		//Skip Nachrichtenforum
-        if($module->name == get_string('namenews','mod_forum')){
+        if(strcmp($module->name, get_string('namenews','mod_forum'))==0){
         	$colspan=($colspan-1);
         	continue;
         }
@@ -136,6 +136,14 @@ if($modules){
 		
 		$module_type = $DB->get_record('course_modules', array('id'=>$module->id));
 
+		//skip News forum in any language, supported_modules[1] == forum
+		if($module_type->module == $supported_modules[1]){
+			$forum = $DB->get_record('forum', array('id'=>$module->instance));
+			if(strcmp($forum->type, 'news')==0){
+				$colspan = ($colspan-1);
+				continue;	
+			}	
+		}
 		if(in_array($module_type->module, $supported_modules)){
 			$compsactiv = $DB->get_records('block_exacompcompactiv_mm', array('activityid'=>$module->id, 'eportfolioitem'=>0));
 			

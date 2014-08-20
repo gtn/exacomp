@@ -1624,8 +1624,6 @@ function block_exacomp_get_taxonomies_rek_topics($subs, $taxonomies){
  * Gets supported modules for assigning activities
  */
 function block_exacomp_get_supported_modules() {
-	//TO DO: Settings for modules
-	//assign, forum, glossary, quiz, wiki,url
 	global $DB;
 	
 	$assign = $DB->get_record('modules', array('name'=>'assign'));
@@ -1634,7 +1632,7 @@ function block_exacomp_get_supported_modules() {
 	$quiz = $DB->get_record('modules', array('name'=>'quiz'));
 	$wiki = $DB->get_record('modules', array('name'=>'wiki'));
 	$url = $DB->get_record('modules', array('name'=>'url'));
-	
+	//do not change order, this affects visible modules
 	return array($assign->id, $forum->id, $glossary->id, $quiz->id, $wiki->id, $url->id);
 }
 /**
