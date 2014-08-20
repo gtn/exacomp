@@ -28,8 +28,16 @@
 require_once dirname(__FILE__)."/inc.php";
 require_once dirname(__FILE__)."/lib/xmllib.php";
 
-define('DEMO_XML_PATH', 'https://raw.githubusercontent.com/gtn/edustandards/master/demo/exacomp_data.xml');
+$de = false;
+$lang = current_language();
+if(isset($lang) && substr( $lang, 0, 2) === 'de'){
+	$de = true;
+}
 
+if($de)
+	define('DEMO_XML_PATH', 'https://raw.githubusercontent.com/gtn/edustandards/master/demo/exacomp_data.xml');
+else 
+	define('DEMO_XML_PATH', 'https://raw.githubusercontent.com/gtn/edustandards/master/demo/english/exacomp_data.xml');
 
 global $DB, $OUTPUT, $PAGE;
 
