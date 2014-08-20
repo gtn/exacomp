@@ -1137,7 +1137,8 @@ function block_exacomp_get_schooltyp_by_subject($subject){
 }
 function block_exacomp_get_category($topic){
 	global $DB;
-	return $DB->get_record(DB_CATEGORIES,array("id"=>$topic->catid));
+	if(isset($topic->catid))
+		return $DB->get_record(DB_CATEGORIES,array("id"=>$topic->catid));
 }
 /**
  *
