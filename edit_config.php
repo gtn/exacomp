@@ -87,7 +87,7 @@ if (isset($action) && $action == 'save') {
 		else $string = get_string('next_step_teacher', 'block_exacomp');
 		
 		if($version) $url = 'courseselection.php';
-		else $url = 'edit_activities.php';
+		else $url = 'edit_course.php';
 		
 		$headertext=get_string("save_success", "block_exacomp") .html_writer::empty_tag('br')
 			.html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/two.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))				

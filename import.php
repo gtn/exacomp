@@ -28,6 +28,9 @@
 require_once dirname(__FILE__)."/inc.php";
 require_once dirname(__FILE__)."/lib/xmllib.php";
 
+define('DEMO_XML_PATH', 'https://raw.githubusercontent.com/gtn/edustandards/master/demo/exacomp_data.xml');
+
+
 global $DB, $OUTPUT, $PAGE;
 
 $courseid = required_param('courseid', PARAM_INT);
@@ -58,9 +61,19 @@ $importtype = optional_param('importtype', '', PARAM_TEXT);
 $mform = new block_exacomp_generalxml_upload_form();
 
 $importSuccess = false;
-if($isAdmin && $importtype && $data = $mform->get_file_content('file'))
-	$importSuccess = block_exacomp_xml_do_import($data, (($importtype == 'normal') ? IMPORT_SOURCE_NORMAL : IMPORT_SOURCE_SPECIFIC));
-
+if($isAdmin && $importtype && $data = $mform->get_file_content('file')){
+	if(strcmp($importtype, 'demo')!=0)
+		$importSuccess = block_exacomp_xml_do_import($data, (($importtype == 'normal') ? IMPORT_SOURCE_NORMAL : IMPORT_SOURCE_SPECIFIC));
+}
+if($isAdmin && $importtype && strcmp($importtype, 'demo')==0){
+	//do demo import	
+	$xml = file_get_contents(DEMO_XML_PATH);
+	if($xml) {
+		if(block_exacomp_xml_do_import($xml,1,1)) {
+			$importSuccess = true;
+		}
+	}
+}
 // build breadcrumbs navigation
 $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
 $blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
@@ -76,31 +89,42 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $
 if($isAdmin || block_exacomp_check_customupload()) {
 
 	if($importtype) {
-		
-		if ($mform->is_cancelled()) {
-			redirect($PAGE->url);
-		} else {
-			if ($data = $mform->get_file_content('file')) {
-				if($importSuccess) {
-					if($version) $string = get_string('next_step', 'block_exacomp');
-					else $string = get_string('next_step_teacher', 'block_exacomp');
-					
-					echo $OUTPUT->box(get_string("importsuccess", "block_exacomp").html_writer::empty_tag('br')
-						.html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))
-						.html_writer::link(new moodle_url('edit_config.php', array('courseid'=>$courseid)), $string));
-				}
-				else {
-					echo $OUTPUT->box(get_string("importfail", "block_exacomp"));
+		if(strcmp($importtype, 'normal')==0){
+			if ($mform->is_cancelled()) {
+				redirect($PAGE->url);
+			} else {
+				if ($data = $mform->get_file_content('file')) {
+					if($importSuccess) {
+						if(!$version) $string = get_string('next_step', 'block_exacomp');
+						else $string = get_string('next_step_teacher', 'block_exacomp');
+						
+						echo $OUTPUT->box(get_string("importsuccess", "block_exacomp").html_writer::empty_tag('br')
+							.html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))
+							.html_writer::link(new moodle_url('edit_config.php', array('courseid'=>$courseid)), $string));
+					}
+					else {
+						echo $OUTPUT->box(get_string("importfail", "block_exacomp"));
+						$mform->display();
+					}
+				} else {
+					echo $OUTPUT->box(get_string("importinfo", "block_exacomp"));
+					echo $OUTPUT->box(get_string("importwebservice", "block_exacomp",new moodle_url("/admin/settings.php", array('section'=>'blocksettingexacomp'))));
+			
 					$mform->display();
 				}
-			} else {
-				echo $OUTPUT->box(get_string("importinfo", "block_exacomp"));
-				echo $OUTPUT->box(get_string("importwebservice", "block_exacomp",new moodle_url("/admin/settings.php", array('section'=>'blocksettingexacomp'))));
-		
-				$mform->display();
+			}
+		}elseif(strcmp($importtype, 'demo')==0){
+			if($importSuccess){
+				if(!$version) $string = get_string('next_step', 'block_exacomp');
+				else $string = get_string('next_step_teacher', 'block_exacomp');
+							
+				echo $OUTPUT->box(get_string("importsuccess", "block_exacomp").html_writer::empty_tag('br')
+					.html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))
+					.html_writer::link(new moodle_url('edit_config.php', array('courseid'=>$courseid)), $string));
+			}else{
+				echo $OUTPUT->box(get_string("importfail", "block_exacomp"));
 			}
 		}
-
 	} else {
 
 		if(block_exacomp_xml_check_import() && $isAdmin){
@@ -111,6 +135,7 @@ if($isAdmin || block_exacomp_check_customupload()) {
 			echo $OUTPUT->box(html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).get_string('first_configuration_step', 'block_exacomp'));
 			echo $OUTPUT->box(get_string("importpending", "block_exacomp"));
 			echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'normal')), get_string('doimport', 'block_exacomp')));
+			echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'demo')), get_string('do_demo_import', 'block_exacomp')));
 		}
 
 		if(block_exacomp_xml_check_import())
