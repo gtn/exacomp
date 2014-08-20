@@ -1693,6 +1693,8 @@ function block_exacomp_get_icon_for_user($coursemodules, $student) {
 	global $CFG, $DB;
 	require_once $CFG->libdir . '/gradelib.php';
 
+	$supported = block_exacomp_get_supported_modules();
+	
 	$found = false;
 	$modules = $DB->get_records_menu("modules");
 
@@ -1700,11 +1702,18 @@ function block_exacomp_get_icon_for_user($coursemodules, $student) {
 	$icon->text = fullname($student) . get_string('usersubmitted','block_exacomp') . ' <ul>';
 	
 	foreach ($coursemodules as $cm) {
-		if(!in_array($cm->module, block_exacomp_get_supported_modules()))
+		$hasSubmission = false;
+		if(!in_array($cm->module, $supported))
 			continue;
-
+		
 		$gradeinfo = grade_get_grades($cm->course,"mod",$modules[$cm->module],$cm->instance,$student->id);
-		if(isset($gradeinfo->items[0]->grades[$student->id]->dategraded)) {
+
+		//check for assign
+		if($cm->module == $supported[0]) {
+			$hasSubmission = $DB->get_record('assign_submission', array('assignment' => $cm->instance, 'userid' => $student->id));
+		}
+		
+		if(isset($gradeinfo->items[0]->grades[$student->id]->dategraded) || $hasSubmission) {
 			$found = true;
 			$icon->img = html_writer::empty_tag("img", array("src" => "pix/list_12x11.png","alt" => get_string("legend_activities","block_exacomp")));
 			$icon->text .= '<li>' . $gradeinfo->items[0]->name . ((isset($gradeinfo->items[0]->grades[$student->id])) ? get_string('grading', "block_exacomp"). $gradeinfo->items[0]->grades[$student->id]->str_long_grade : '' ) . '</li>';
