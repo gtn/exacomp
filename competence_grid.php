@@ -67,7 +67,7 @@ $studentid = optional_param("studentid", 0, PARAM_INT);
 
 if(!$isTeacher) $studentid = $USER->id;
 
-$dropdown_subjects = ($version) ? block_exacomp_get_schooltypes_by_course($courseid) : block_exacomp_get_subjects_by_course($courseid);
+$dropdown_subjects = ($version) ? block_exacomp_get_schooltypes_by_course($courseid) : block_exacomp_get_subjects_by_course($courseid, true);
 if($dropdown_subjects && $subjectid == 0)
 	$subjectid = key($dropdown_subjects);
 /* SAVE DATA */
