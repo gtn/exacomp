@@ -155,7 +155,7 @@ $string['save_success'] = '&Auml;nderungen erfolgreich &uuml;bernommen';
 $string['grading_scheme'] = 'Bewertungsschema';
 $string['uses_activities'] = 'Ich verwende Moodle Aktivit&auml;ten zur Beurteilung';
 $string['show_all_descriptors'] = 'Alle Deskriptoren im &Uuml;berblick anzeigen';
-$string['show_all_examples'] = 'Externe Beispiele im &Uuml;berblick anzeigen';
+$string['show_all_examples'] = 'Externe Beispiele für Schüler anzeigen';
 $string['usedetailpage'] = 'Detaillierte Kompetenzansicht verwenden';
 
 //Badges

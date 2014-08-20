@@ -132,7 +132,7 @@ $string['save_success'] = 'changes were successful';
 $string['grading_scheme'] = 'grading scheme';
 $string['uses_activities'] = 'I work with Moodle activites';
 $string['show_all_descriptors'] = 'Show all outcomes in overview';
-$string['show_all_examples'] = 'Show all external examples in overview';
+$string['show_all_examples'] = 'Show external examples for students';
 $string['usedetailpage'] = 'Use detailed overview of competencies';
 //Badges
 $string['mybadges'] = 'My badges';

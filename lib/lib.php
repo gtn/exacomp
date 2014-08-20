@@ -668,7 +668,7 @@ function block_exacomp_get_descriptors_by_subject($subjectid,$niveaus = true) {
  * @param int $subjectid
  * @return associative_array
  */
-function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $showalldescriptors = false, $topicid = null) {
+function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $showalldescriptors = false, $topicid = null, $showallexamples = true) {
 	global $DB;
 
 	if(!$showalldescriptors)
@@ -707,8 +707,9 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 				e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid
 				FROM {" . DB_EXAMPLES . "} e
 				JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
-				LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id
-				", array($descriptor->id));
+				LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id"
+				. (($showallexamples) ? "" : " WHERE e.creatorid > 0")
+				, array($descriptor->id));
 	
 		$descriptor->examples = array();
 		foreach($examples as $example){
@@ -1893,7 +1894,7 @@ function block_exacomp_get_activities_by_course($courseid){
 		WHERE a.course = ? AND mm.eportfolioitem=0';
 	return $DB->get_records_sql($query, array($courseid));
 }
-function block_exacomp_init_competence_grid_data($courseid, $subjectid, $studentid) {
+function block_exacomp_init_competence_grid_data($courseid, $subjectid, $studentid, $showallexamples = false) {
 	global $version, $DB;
 
 	if($studentid > 0) {
@@ -1961,8 +1962,9 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 					e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid
 					FROM {".DB_EXAMPLES."} e
 					JOIN {".DB_DESCEXAMP."} de ON e.id=de.exampid AND de.descrid=?
-					LEFT JOIN {".DB_TAXONOMIES."} tax ON e.taxid=tax.id
-					ORDER BY tax.title", array($descriptor->id));
+					LEFT JOIN {".DB_TAXONOMIES."} tax ON e.taxid=tax.id"
+					. (($showallexamples) ? "" : " WHERE e.creatorid > 0")
+					." ORDER BY tax.title", array($descriptor->id));
 			$descriptor->examples = $examples;
 				
 			if($studentid > 0) {
