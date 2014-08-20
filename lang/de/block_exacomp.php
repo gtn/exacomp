@@ -213,6 +213,10 @@ $string['teacher_tipp_1'] = 'Diese Kompetenz wurde bei ';
 $string['teacher_tipp_2'] = ' Moodle-Aktivit&auml;ten zugeordnet und bereits bei ';
 $string['teacher_tipp_3'] = ' erf&uuml;llt.';
 
+$string['eportitems'] = 'Dieser Teilnehmer hat folgende E-Portfolio-Artefakte zu diesem Deskriptor eingereicht: ';
+$string['eportitem_shared'] = ' (geteilt)';
+$string['eportitem_notshared'] = ' (nicht geteilt)';
+
 $string['teachershortcut'] = 'L';
 $string['studentshortcut'] = 'S';
 

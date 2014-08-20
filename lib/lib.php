@@ -1683,6 +1683,66 @@ function block_exacomp_get_course_module_association($courseid) {
 	return $mm;
 }
 /**
+ * Returns an associative array that gives information about which competence/topic is
+ * associated with which eportfolioitem
+ *
+ * $array[$studentid->competencies[compid]->items[$itemid]->name = artefact name
+ * 
+ * $array[$studentid->competencies[compid]->items[$itemid]->shared = shared or not 
+ *
+ * @param int $courseid
+ * @return array
+ */
+
+function block_exacomp_get_eportfolioitem_association($students){
+	global $DB, $COURSE;
+	$teachers = block_exacomp_get_teachers_by_course($COURSE->id);
+	$result = array();
+	foreach($students as $student){
+		$eportfolioitems = $DB->get_records_sql('
+			SELECT mm.id, compid, activityid, i.shareall, i.externaccess, i.name
+			FROM {'.DB_COMPETENCE_ACTIVITY.'} mm
+			JOIN {block_exaportitem} i ON mm.activityid=i.id
+			WHERE i.courseid = ? AND mm.eportfolioitem = 1 AND i.userid=?
+			ORDER BY compid', array($COURSE->id, $student->id));
+ 		
+		$result[$student->id] = new stdClass();
+		$result[$student->id]->competencies = array();
+		
+		foreach($eportfolioitems as $item){
+			$shared = false;
+			if((isset($item->shareall) && $item->shareall>0) || (isset($item->externaccess)&& $item->externaccess>0)){
+				$shared= true;
+			}
+			else{
+				
+				$shared_persons = $DB->get_records_sql('
+				SELECT vs.userid FROM {block_exaportviewblock} vb 
+				JOIN {block_exaportviewshar} vs ON vb.viewid=vs.viewid 
+				WHERE vb.itemid = ?'
+				, array($item->activityid));
+				
+				foreach($teachers as $teacher){
+					foreach($shared_persons as $person){
+						if($teacher->id == $person->userid){
+							$shared=true;
+						}
+					}
+				}
+			}
+			if(!isset($result[$student->id]->competencies[$item->compid])){
+				$result[$student->id]->competencies[$item->compid] = new stdClass();
+				$result[$student->id]->competencies[$item->compid]->items = array();
+			}
+			$result[$student->id]->competencies[$item->compid]->items[$item->activityid] = new stdClass();
+			$result[$student->id]->competencies[$item->compid]->items[$item->activityid]->shared = $shared;
+			$result[$student->id]->competencies[$item->compid]->items[$item->activityid]->name = $item->name;
+				
+		}
+	}
+	return $result;
+}
+/**
  * Prepares an icon for a student for the given course modules, based on the grading.
 
  * @param array $coursemodules

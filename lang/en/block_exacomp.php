@@ -188,6 +188,10 @@ $string['teacher_tipp_1'] = 'This competence has been associated with ';
 $string['teacher_tipp_2'] = ' Moodle activities and has been reached with ';
 $string['teacher_tipp_3'] = ' outcomes.';
 
+$string['eportitems'] = 'This participant has submitted the following ePortfolio artefacts: ';
+$string['eportitem_shared'] = ' (shared)';
+$string['eportitem_notshared'] = ' (not shared)';
+
 $string['teachershortcut'] = 'T';
 $string['studentshortcut'] = 'S';
 
