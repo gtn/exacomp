@@ -1800,15 +1800,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content = '';
 		
 		$form_content = '';
-		if(!empty($niveaus)){
+		if(!empty($niveaus) && isset($niveaus)){
 			$selected = '';
-			if(in_array('0', $selected_niveaus) || empty($selected_niveaus))
+			if(empty($selected_niveaus) || in_array('0', $selected_niveaus))
 				$selected = ' selected';
 			
 			$options = html_writer::tag('option'.$selected, get_string('all_niveaus', 'block_exacomp'), array('value'=>0));
 			foreach($niveaus as $niveau){
 				$selected = '';
-				if(in_array($niveau->id, $selected_niveaus))
+				if(!empty($selected_niveaus) && in_array($niveau->id, $selected_niveaus))
 					$selected = ' selected';
 					
 				$options .= html_writer::tag('option'.$selected, $niveau->title, array('value'=>$niveau->id));
