@@ -1287,14 +1287,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return html_writer::div($content,'spaltenbrowser');
 	}
-	public function print_student_evaluation($showevaluation) {
+	public function print_student_evaluation($showevaluation, $isTeacher=true) {
 		global $OUTPUT,$COURSE;
 
 		$link = new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid" => $COURSE->id, "showevaluation" => (($showevaluation) ? "0" : "1")));
 		$evaluation = $OUTPUT->box_start();
 		$evaluation .= get_string('overview','block_exacomp');
 		$evaluation .= html_writer::empty_tag("br");
-		$evaluation .= ($showevaluation) ? get_string('hideevaluation','block_exacomp',$link->__toString()) : get_string('showevaluation','block_exacomp',$link->__toString());
+		if($isTeacher)	$evaluation .= ($showevaluation) ? get_string('hideevaluation','block_exacomp',$link->__toString()) : get_string('showevaluation','block_exacomp',$link->__toString());
+		else $evaluation .= ($showevaluation) ? get_string('hideevaluation_student','block_exacomp',$link->__toString()) : get_string('showevaluation_student','block_exacomp',$link->__toString());
+		
 		$evaluation .= $OUTPUT->box_end();
 
 		return $evaluation;
@@ -2170,14 +2172,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		global $COURSE;
 		return html_writer::link(new moodle_url('/blocks/exacomp/edit_activities.php', array('courseid'=>$COURSE->id)), get_string("no_activities_selected", "block_exacomp"));
 	}
-	public function print_detail_legend($showevaluation){
+	public function print_detail_legend($showevaluation, $isTeacher=true){
 		global $OUTPUT, $COURSE;
 
 		$link = new moodle_url("/blocks/exacomp/competence_detail.php",array("courseid" => $COURSE->id, "showevaluation" => (($showevaluation) ? "0" : "1")));
 		$evaluation = $OUTPUT->box_start();
 		$evaluation .= get_string('detail_description','block_exacomp');
 		$evaluation .= html_writer::empty_tag("br");
-		$evaluation .= ($showevaluation) ? get_string('hideevaluation','block_exacomp',$link->__toString()) : get_string('showevaluation','block_exacomp',$link->__toString());
+		if($isTeacher)
+			$evaluation .= ($showevaluation) ? get_string('hideevaluation','block_exacomp',$link->__toString()) : get_string('showevaluation','block_exacomp',$link->__toString());
+		else
+			$evaluation .= ($showevaluation) ? get_string('hideevaluation_student','block_exacomp',$link->__toString()) : get_string('showevaluation_student','block_exacomp',$link->__toString());
+		
 		$evaluation .= $OUTPUT->box_end();
 
 		return $evaluation;

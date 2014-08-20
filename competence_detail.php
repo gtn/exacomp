@@ -76,7 +76,7 @@ $activities = block_exacomp_get_activities_by_course($courseid);
 if(!$activities)
 	echo $output->print_no_activities_warning();
 else{
-	echo $output->print_detail_legend($showevaluation);
+	echo $output->print_detail_legend($showevaluation, $isTeacher);
 	
 	$tree = block_exacomp_build_activity_tree($courseid);
 	$students = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : array($USER);

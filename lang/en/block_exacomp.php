@@ -37,7 +37,7 @@ $string['tab_teacher_settings'] = 'Settings';
 $string['tab_teacher_settings_configuration'] = 'Configuration';
 $string['tab_teacher_settings_selection_st'] = 'Schooltype selection';
 $string['tab_teacher_settings_selection'] = 'Subject selection';
-$string['tab_teacher_settings_assignactivities'] = 'Assign activities';
+$string['tab_teacher_settings_assignactivities'] = 'Assign Moodle activities';
 $string['tab_teacher_settings_badges'] = 'Edit badges';
 
 //Student Tabs
@@ -167,9 +167,9 @@ $string['lisfilename'] = 'Use LIS filename template';
 //Assign competencies
 $string['save_selection'] = 'Save selection';
 $string['delete_confirmation'] = 'Do you really want to delete this example?';
-$string['legend_activities'] = 'activities';
+$string['legend_activities'] = 'Moodle activities';
 $string['legend_eportfolio'] = 'ePortfolio';
-$string['legend_notask'] = 'no moodle-task/quiz has been submitted for this descriptor';
+$string['legend_notask'] = 'no Moodle activities/quiz has been submitted for this outcome';
 $string['legend_upload'] = 'Upload your own task/example';
 $string['alltopics'] = 'All topics';
 $string['choosesubject'] = "Choose subject: ";
@@ -178,10 +178,10 @@ $string['choosestudent'] = "Choose student: ";
 $string['selectall'] = 'Select all';
 
 //Icons
-$string['usersubmitted'] = ' has submitted the following tasks:';
+$string['usersubmitted'] = ' has submitted the following Moodle activities:';
 $string['usersubmittedquiz'] = ' has done the following quizzes:';
-$string['usernosubmission'] = ' has not yet submitted any moodle-tasks or quizzes associated with this descriptor';
-$string['usernosubmission_topic'] = ' has not yet submitted any moodle-tasks or quizzes associated with this topic';
+$string['usernosubmission'] = ' has not yet submitted any Moodle activities or quizzes associated with this outcome';
+$string['usernosubmission_topic'] = ' has not yet submitted any Moodle activities or quizzes associated with this topic';
 $string['grading'] = ' Grading: ';
 $string['teacher_tipp'] = 'tip';
 $string['teacher_tipp_1'] = 'This competence has been associated with ';
@@ -194,6 +194,8 @@ $string['studentshortcut'] = 'S';
 $string['overview'] = 'This is an overview of all students and the course competencies.';
 $string['showevaluation'] = 'To show self-assessment click <a href="{$a}">here</a>';
 $string['hideevaluation'] = 'To hide self-assessment click <a href="{$a}">here</a>';
+$string['showevaluation_student'] = 'To show teacher-assessment click <a href="{$a}">here</a>';
+$string['hideevaluation_student'] = 'To hide teacher-assessment click <a href="{$a}">here</a>';
 $string['columnselect'] = 'Column selection';
 $string['allstudents'] = 'All students';
 
@@ -206,13 +208,13 @@ $string['assignfrom'] = 'from';
 $string['assignuntil'] = 'until';
 
 //Activities
-$string['explaineditactivities_subjects'] = 'Here you can associate competencies with moodle activities.';
+$string['explaineditactivities_subjects'] = 'Here you can associate competencies with Moodle activities.';
 $string['column_setting'] = 'hide/display columns';
 $string['niveau_filter'] = "filter levels";
 $string['module_filter'] = 'filter activities';
 $string['apply_filter'] = 'apply filter';
-$string['no_topics_selected'] = 'configuration of exabis competencies is not completed yet. please chose a topic that you would like to associate activities with';
-$string['no_activities_selected'] = 'please associate activities with competences';
+$string['no_topics_selected'] = 'configuration of exabis competencies is not completed yet. please chose a topic that you would like to associate Moodle activities with';
+$string['no_activities_selected'] = 'please associate Moodle activities with competences';
 $string['no_course_activities'] = 'There exist no Moodle activities in your course yet, klick here to create some.';
 $string['all_modules'] = 'all modules';
 $string['all_niveaus'] = 'all niveaus';
@@ -225,7 +227,7 @@ $string['teacherevaluation'] = 'Teacher assessment';
 $string['competencegrid_nodata'] = 'In case the competency grid is empty the outcomes for the chosen subject were not assigned to a level in the datafile. This can be fixed by associating outcomes with levels at www.edustandards.org and re-importing the xml-file.';
 
 //Detail view
-$string['detail_description'] = 'Use activities to evaluate competencies.';
+$string['detail_description'] = 'Use Moodle activities to evaluate competencies.';
 
 //Competence Profile
 $string['name'] = 'Name';

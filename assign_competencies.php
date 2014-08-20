@@ -110,7 +110,7 @@ else{
 	
 	echo $output->print_competence_overview_form_start((isset($selectedTopic))?$selectedTopic:null, (isset($selectedSubject))?$selectedSubject:null);
 
-	if(!$version) echo $output->print_student_evaluation($showevaluation);
+	if(!$version) echo $output->print_student_evaluation($showevaluation, $isTeacher);
 	else {
 		/* LIS */
 		echo $output->print_lis_dropdowns($subjects, $topics, $selectedSubject->id, $selectedTopic->id);

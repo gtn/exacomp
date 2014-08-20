@@ -37,7 +37,7 @@ $string['tab_teacher_settings'] = 'Einstellungen';
 $string['tab_teacher_settings_configuration'] = 'Konfiguration';
 $string['tab_teacher_settings_selection_st'] = 'Schultyp-Auswahl';
 $string['tab_teacher_settings_selection'] = 'Gegenstands-Auswahl';
-$string['tab_teacher_settings_assignactivities'] = 'Aktivit&auml;ten zuordnen';
+$string['tab_teacher_settings_assignactivities'] = 'Moodle-Aktivit&auml;ten zuordnen';
 $string['tab_teacher_settings_badges'] = 'Auszeichnungen bearbeiten';
 
 //Student Tabs
@@ -62,7 +62,7 @@ $string['next_step'] = 'Dieser Konfigurationsschritt wurde abgeschlossen. Klicke
 $string['next_step_teacher'] = 'Die Konfiguration, die vom Administrator vorgenommen werden muss ist hiermit abgeschlossen. Um mit der Kurs-spezifischen Konfiguration fort zu fahren klicken Sie hier.';
 $string['teacher_first_configuration_step'] = 'Im ersten Konfigurationsschritt müssen einige generelle Einstellungen getroffen werden.';
 $string['teacher_second_configuration_step'] = 'Im zweite Konfigurationsschritt müssen Themenbereiche ausgewählt werden mit denen Sie in diesem Kurs arbeiten möchten.';
-$string['teacher_third_configuration_step'] = 'Im nächsten Schritt werden Moodle Aktivit&auml;ten mit Kompetenzen assoziiert.';
+$string['teacher_third_configuration_step'] = 'Im nächsten Schritt werden Moodle-Aktivit&auml;ten mit Kompetenzen assoziiert.';
 $string['completed_config'] = 'Die Exabis Competencies Konfiguration wurde abgeschlossen.';
 $string['optional_step'] = 'In Ihrem Kurs sind noch keine Teilnehmer eingeschrieben, bet&auml;tigen Sie diesen Link wenn Sie das jetzt machen m&ouml;chten.';
 
@@ -192,9 +192,9 @@ $string['lisfilename'] = 'Dateiname nach LS Vorgabe generieren';
 //Assign competencies
 $string['save_selection'] = 'Auswahl speichern';
 $string['delete_confirmation'] = 'Soll das Beispiel wirklich gel&ouml;scht werden?';
-$string['legend_activities'] = 'Aktivit&auml;ten';
+$string['legend_activities'] = 'Moodle-Aktivit&auml;ten';
 $string['legend_eportfolio'] = 'ePortfolio';
-$string['legend_notask'] = 'Keine Aktivit&auml;t/Quiz f&uuml;r diese Kompetenz abgegeben';
+$string['legend_notask'] = 'Keine Moodle-Aktivit&auml;t/Quiz f&uuml;r diese Kompetenz abgegeben';
 $string['legend_upload'] = 'Eigenes Beispiel hochladen';
 $string['alltopics'] = 'Alle Teilbereiche';
 $string['choosesubject'] = "Fach auswählen: ";
@@ -203,14 +203,14 @@ $string['choosestudent'] = "Schüler auswählen: ";
 $string['selectall'] = 'Alle auswählen';
 
 //Icons
-$string['usersubmitted'] = ' hat folgende Aktivit&auml;ten abgegeben:';
+$string['usersubmitted'] = ' hat folgende Moodle-Aktivit&auml;ten abgegeben:';
 $string['usersubmittedquiz'] = ' hat folgende Tests durchgef&uuml;hrt:';
 $string['usernosubmission'] = ' hat keine Moodle-Aufgaben zu diesem Deskriptor abgegeben und keinen Test durchgef&uuml;hrt.';
 $string['usernosubmission_topic'] = ' hat keine Moodle-Aufgaben zu diesem Thema abgegeben und keinen Test durchgef&uuml;hrt.';
 $string['grading'] = ' Bewertung: ';
 $string['teacher_tipp'] = 'Tipp';
 $string['teacher_tipp_1'] = 'Diese Kompetenz wurde bei ';
-$string['teacher_tipp_2'] = ' Aktivit&auml;ten zugeordnet und bereits bei ';
+$string['teacher_tipp_2'] = ' Moodle-Aktivit&auml;ten zugeordnet und bereits bei ';
 $string['teacher_tipp_3'] = ' erf&uuml;llt.';
 
 $string['teachershortcut'] = 'L';
@@ -219,6 +219,8 @@ $string['studentshortcut'] = 'S';
 $string['overview'] = 'Der Kompetenz-&Uuml;berblick listet Sch&uuml;ler und die im Kurs aktivierten Kompetenzen auf.';
 $string['showevaluation'] = 'Um die Selbsteinsch&auml;tzung zu aktivieren klicke <a href="{$a}">hier</a>';
 $string['hideevaluation'] = 'Um die Selbsteinsch&auml;tzung zu deaktivieren klicke <a href="{$a}">hier</a>';
+$string['showevaluation_student'] = 'Um die Einsch&auml;tzung des Lehrers zu aktivieren klicke <a href="{$a}">hier</a>';
+$string['hideevaluation_student'] = 'Um die Einsch&auml;tzung des Lehrers zu deaktivieren klicke <a href="{$a}">hier</a>';
 $string['columnselect'] = 'Spaltenauswahl';
 $string['allstudents'] = 'Alle Sch&uuml;ler';
 
@@ -237,9 +239,9 @@ $string['column_setting'] = 'Spalten aus/einblenden';
 $string['niveau_filter'] = "Niveaus filtern";
 $string['module_filter'] = 'Aktivit&auml;ten filtern';
 $string['apply_filter'] = 'Filter anwenden';
-$string['no_topics_selected'] = 'Konfiguration für Exabis Competencies wurde noch nicht abgeschlossen. Bitte w&auml;hlen Sie zuerst Gegenst&auml;nde aus, denen Sie dann Aktivit&auml;ten zuordnen k&ouml;nnen.';
+$string['no_topics_selected'] = 'Konfiguration für Exabis Competencies wurde noch nicht abgeschlossen. Bitte w&auml;hlen Sie zuerst Gegenst&auml;nde aus, denen Sie dann Moodle-Aktivit&auml;ten zuordnen k&ouml;nnen.';
 $string['no_activities_selected'] = 'Bitte ordnen Sie den erstellen Aufgaben Kompetenzen zu.';
-$string['no_course_activities'] = 'In diesem Kurs wurden noch keine Aktivit&auml;ten erstellt, klicken Sie hier um dies nun zu tun.';
+$string['no_course_activities'] = 'In diesem Kurs wurden noch keine Moodle-Aktivit&auml;ten erstellt, klicken Sie hier um dies nun zu tun.';
 $string['all_modules'] = 'Alle Aktivitäten';
 $string['all_niveaus'] = 'Alle Niveaustufen';
 $string['tick_some'] = 'Bitte treffen Sie eine Auswahl!';
