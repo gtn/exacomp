@@ -1741,7 +1741,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content = html_writer::tag('script', 'ddtreemenu.createTree("comptree", true)', array('type'=>'text/javascript'));
 		return $content.html_writer::end_div();
 	}
-	public function print_courseselection($tree, $subjects, $topics_activ, $headertext){
+	public function print_courseselection($schooltypes, $topics_activ, $headertext){
 		global $PAGE;
 
 		$header = html_writer::tag('p', $headertext).html_writer::empty_tag('br');
@@ -1750,8 +1750,21 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$table->attributes['class'] = 'exabis_comp_comp';
 		$rowgroup = 0;
 		$rows = array();
-		foreach($tree as $subject){
-			if(isset($subjects[$subject->id])){
+		foreach($schooltypes as $schooltype){
+			
+			$row = new html_table_row();
+			$row->attributes['class'] = 'exabis_comp_teilcomp highlight';
+	
+			$cell = new html_table_cell();
+			$cell->text = html_writer::div(html_writer::tag('b', $schooltype->title));
+			$cell->attributes['class'] = 'rowgroup-arrow';
+					
+			$cell->colspan = 3;
+			$row->cells[] = $cell;
+			
+			$rows[] = $row;
+					
+			foreach($schooltype->subs as $subject){
 				$hasSubs = !empty($subject->subs);
 					
 				if ($hasSubs) {
@@ -1778,9 +1791,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 				$rows[] = $row;
 				$this->print_topics_courseselection($rows, 0, $subject->subs, $rowgroup, $sub_rowgroup_class, $topics_activ);
+				
 			}
 		}
-
+		
 		$table->data = $rows;
 
 

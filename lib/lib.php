@@ -133,13 +133,16 @@ function block_exacomp_get_schooltypes_by_course($courseid) {
  * -only subject according to selected schooltypes are returned
  * @param unknown_type $courseid
  */
-function block_exacomp_get_subjects_for_schooltype($courseid){
+function block_exacomp_get_subjects_for_schooltype($courseid, $schooltypeid=0){
 	global $DB;
 	$sql = 'SELECT sub.id FROM {'.DB_SUBJECTS.'} sub
 	JOIN {'.DB_MDLTYPES.'} type ON sub.stid = type.stid
 	WHERE type.courseid=?';
 
-	return $DB->get_records_sql($sql, array($courseid));
+	if($schooltypeid > 0)
+		$sql .= ' AND type.stid = ?';
+		
+	return $DB->get_records_sql($sql, array($courseid, $schooltypeid));
 }
 /**
  * Gets all subjects that are used in a particular course.
@@ -2902,4 +2905,24 @@ function block_exacomp_get_tipp_string($compid, $user, $scheme, $type, $comptype
 	}
 	
 	return get_string('teacher_tipp_1', 'block_exacomp').$total.get_string('teacher_tipp_2', 'block_exacomp').$gained.get_string('teacher_tipp_3', 'block_exacomp');
+}
+/**
+ * 
+ * Gets tree with schooltype on highest level
+ * @param unknown_type $courseid
+ */
+function block_exacomp_build_schooltype_tree($courseid=0){
+	$schooltypes = block_exacomp_get_schooltypes_by_course($courseid);
+	
+	foreach($schooltypes as $schooltype){
+		$subjects = block_exacomp_get_subjects_for_schooltype($courseid, $schooltype->id);
+
+		$schooltype->subs = array();
+		foreach($subjects as $subject){
+			$tree = block_exacomp_get_competence_tree($courseid, $subject->id);
+			$schooltype->subs += $tree;
+		}
+	}
+	
+	return $schooltypes;
 }

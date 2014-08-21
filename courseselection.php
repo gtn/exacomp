@@ -118,16 +118,15 @@ if($action == 'digicomps') {
 
  */
 
-$tree = block_exacomp_get_competence_tree();
-
 $courseid_temp = $courseid;
 if(!$version) $courseid_temp = 0;
 
+$schooltypes = block_exacomp_build_schooltype_tree($courseid_temp);
+
 $topics = block_exacomp_get_topics_by_subject($courseid, 0, true);
 
-$subjects = block_exacomp_get_subjects_for_schooltype($courseid_temp);
 $output = $PAGE->get_renderer('block_exacomp');
-echo $output->print_courseselection($tree, $subjects, $topics, $headertext);
+echo $output->print_courseselection($schooltypes, $topics, $headertext);
 
 /* END CONTENT REGION */
 
