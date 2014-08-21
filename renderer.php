@@ -716,7 +716,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$cell = new html_table_cell();
 		$cell->colspan = 4;
-		$cell->text = html_writer::tag('h3', 'Teilkompetenzen', array('style'=>'float:right;'));
+		$cell->text = html_writer::tag('h5', 'Teilkompetenzen', array('style'=>'float:right;'));
 
 		$row->cells[] = $cell;
 
@@ -1872,7 +1872,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$options .= html_writer::tag('option'.$selected, $niveau->title, array('value'=>$niveau->id));
 			}
 			$select = html_writer::tag('select multiple', $options, array('name'=>'niveau_filter[]'));
-			$form_content .= html_writer::div(html_writer::tag('h3', get_string('niveau_filter', 'block_exacomp')).$select, '');
+			$form_content .= html_writer::div(html_writer::tag('h5', get_string('niveau_filter', 'block_exacomp')).$select, '');
 		}
 
 		if(!empty($modules)){
@@ -1889,7 +1889,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$options .= html_writer::tag('option'.$selected, $module->name, array('value'=>$module->id));
 			}
 			$select = html_writer::tag('select multiple', $options, array('name'=>'module_filter[]'));
-			$form_content .= html_writer::div(html_writer::tag('h3', get_string('module_filter', 'block_exacomp')).$select, '');
+			$form_content .= html_writer::div(html_writer::tag('h5', get_string('module_filter', 'block_exacomp')).$select, '');
 		}
 
 		if(!empty($niveaus) || !empty($modules)){
@@ -1955,7 +1955,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$row->attributes['class'] = 'ec_heading';
 			$cell = new html_table_cell();
 			$cell->colspan = $colspan;
-			$cell->text = html_writer::tag('h4', $subject->title);
+			$cell->text = html_writer::tag('b', $subject->title);
 			$row->cells[] = $cell;
 			$rows[] = $row;
 			$this->print_topics_activities($rows, 0, $subject->subs, $rowgroup, $modules);
@@ -2104,36 +2104,20 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$table->attributes['class'] = 'exabis_comp_comp';
 
 		$rows = array();
-		$row = new html_table_row();
-		$row->attributes['class'] = 'heading r0';
-
-		$cell = new html_table_cell();
-		$cell->attributes['class'] = 'category catlevel1';
-		$cell->attributes['scope'] = 'col';
-		$cell->colspan = 2;
-		$cell->text = html_writer::tag('h2', $COURSE->fullname);
-
-		$row->cells[] = $cell;
-
-		$rows[] = $row;
-
-		$row = new html_table_row();
-		$cell = new html_table_cell();
-		$row->cells[] = $cell;
-		$cell = new html_table_cell();
-		$cell->attributes['class'] = 'ec_tableheadwidth';
-		$cell->text = html_writer::link(new moodle_url('/badges/edit.php', array('id'=>$badge->id, 'action'=>'details')), $badge->name);
-		$row->cells[] = $cell;
-		$rows[] = $row;
-
+		
 		$rowgroup = 0;
 		//print tree
 		foreach($subjects as $subject){
 			$row = new html_table_row();
 			$row->attributes['class'] = 'ec_heading';
 			$cell = new html_table_cell();
-			$cell->colspan = 2;
-			$cell->text = html_writer::tag('h4', $subject->title);
+			//$cell->colspan = 2;
+			$cell->text = html_writer::tag('b', $subject->title);
+			$row->cells[] = $cell;
+			
+			$cell = new html_table_cell();
+			$cell->attributes['class'] = 'ec_tableheadwidth';
+			$cell->text = html_writer::link(new moodle_url('/badges/edit.php', array('id'=>$badge->id, 'action'=>'details')), $badge->name);
 			$row->cells[] = $cell;
 			$rows[] = $row;
 				
@@ -2146,7 +2130,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$div = html_writer::tag("div", html_writer::tag("div", $table_html, array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
 		$div .= html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))), '', array('id'=>'exabis_save_button'));
 
-		return html_writer::tag('form', $div, array('id'=>'edit-activities','action'=> new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid'=>$COURSE->id, 'badgeid'=>$badge->id, 'action'=>'save')), 'method'=>'post'));
+		return html_writer::div(get_string('description_edit_badge_comps', 'block_exacomp'))
+			.html_writer::empty_tag('br')
+			.html_writer::tag('form', $div, array('id'=>'edit-activities','action'=> new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid'=>$COURSE->id, 'badgeid'=>$badge->id, 'action'=>'save')), 'method'=>'post'));
 
 	}
 	public function print_topics_badges(&$rows, $level, $topics, &$rowgroup, $badge, $rowgroup_class = '') {
@@ -2259,7 +2245,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$activityRow->attributes['class'] = 'highlight';
 				
 			$title = new html_table_cell();
-			$title->text = html_writer::tag('b', $activity->title);
+			$title->text = html_writer::tag('h5', $activity->title);
 				
 			$activityRow->cells[] = $title;
 				
@@ -2680,7 +2666,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$scheme = block_exacomp_get_grading_scheme($course->id);
 		$compTree = block_exacomp_get_competence_tree($course->id);
 		//print heading
-		$content = html_writer::tag("h3", $course->fullname, array("class" => "competence_profile_coursetitle"));
+		$content = html_writer::tag("h5", $course->fullname, array("class" => "competence_profile_coursetitle"));
 		if(!$compTree) {
 			$content .= html_writer::div(get_string("nodata","block_exacomp"),"error");
 			return $content;

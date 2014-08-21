@@ -140,6 +140,8 @@ $string['mybadges'] = 'My badges';
 $string['pendingbadges'] = 'Pending badges';
 $string['no_badges_yet'] = "no badges available";
 
+$string['description_edit_badge_comps'] = 'Here you can associate the selected badge with outcomes.';
+
 //Examples
 $string['sorting'] = 'select sorting: ';
 $string['subject'] = 'subjects';
