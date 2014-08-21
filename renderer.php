@@ -1060,6 +1060,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					}
 					if($data->showevaluation)
 						$topicRow->cells[] = $studentCellEvaluation;
+				}else{
+					if($data->showevaluation)
+						$topicRow->cells[] = new html_table_cell();
 				}
 				$topicRow->cells[] = $studentCell;
 			}
