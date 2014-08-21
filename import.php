@@ -35,7 +35,7 @@ if(isset($lang) && substr( $lang, 0, 2) === 'de'){
 }
 
 if($de)
-	define('DEMO_XML_PATH', 'https://raw.githubusercontent.com/gtn/edustandards/master/demo/exacomp_data.xml');
+	define('DEMO_XML_PATH', 'https://raw.githubusercontent.com/gtn/edustandards/master/demo/deutsch/exacomp_data.xml');
 else 
 	define('DEMO_XML_PATH', 'https://raw.githubusercontent.com/gtn/edustandards/master/demo/english/exacomp_data.xml');
 
