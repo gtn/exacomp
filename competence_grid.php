@@ -87,7 +87,8 @@ if($data) {
 	echo html_writer::div($output->print_competence_grid_legend());
 	echo html_writer::start_tag("form", array("method"=>"post"));
 	echo $output->print_competence_grid($niveaus, $skills, $subjects, $data, $selection, $courseid,$studentid);
-	echo html_writer::div(html_writer::empty_tag("input", array("type"=>"submit","name"=>"btn_submit","value"=>get_string('save_selection','block_exacomp'))), '', array('id'=>'exabis_save_button'));
+	if($version)
+		echo html_writer::div(html_writer::empty_tag("input", array("type"=>"submit","name"=>"btn_submit","value"=>get_string('save_selection','block_exacomp'))), '', array('id'=>'exabis_save_button'));
 	echo html_writer::end_div();
 }
 else {
