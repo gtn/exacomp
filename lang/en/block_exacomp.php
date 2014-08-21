@@ -260,6 +260,8 @@ $string['profile_settings_useexastud'] = 'I want to see evaluations from Exabis 
 $string['profile_settings_choose_periods'] = 'Exabis Student Review stores reviews in various categories over several periods. You can select which periods to include in the competence profile.';
 $string['profile_settings_no_item'] = 'No Exabis ePortfolio item available, so there is nothing to display.';
 $string['profile_settings_no_period'] = 'No review in a period in Exabis Student Review available.';
+$string['profile_settings_usebadges'] = 'I want to see badges in my competence profile.';
+$string['profile_settings_onlygainedbadges'] = 'I don\'t want to see pending badges.';
 
 //LIS metadata
 $string['subject_singular'] = 'Fach';

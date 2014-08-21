@@ -1048,8 +1048,8 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 					$profile->subtree[] = new tabobject('tab_competence_profile_settings', new moodle_url('/blocks/exacomp/competence_profile_settings.php', array("courseid"=>$courseid)), get_string('tab_competence_profile_settings', 'block_exacomp'));
 					$rows[] = $profile;
 					$rows[] = new tabobject('tab_learning_agenda', new moodle_url('/blocks/exacomp/learningagenda.php',array("courseid"=>$courseid)),get_string('tab_learning_agenda','block_exacomp'));
-					if(block_exacomp_moodle_badges_enabled() && $usebadges)
-						$rows[] = new tabobject('tab_badges', new moodle_url('/blocks/exacomp/my_badges.php',array("courseid"=>$courseid)),get_string('tab_badges','block_exacomp'));
+					//if(block_exacomp_moodle_badges_enabled() && $usebadges)
+						//$rows[] = new tabobject('tab_badges', new moodle_url('/blocks/exacomp/my_badges.php',array("courseid"=>$courseid)),get_string('tab_badges','block_exacomp'));
 				}
 				if($de)
 					$rows[] = new tabobject('tab_help', new moodle_url('/blocks/exacomp/help.php', array("courseid"=>$courseid)), get_string('tab_help', 'block_exacomp'));
@@ -1069,8 +1069,8 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 					
 				if($ready_for_use){
 					$rows[] = new tabobject('tab_learning_agenda', new moodle_url('/blocks/exacomp/learningagenda.php',array("courseid"=>$courseid)),get_string('tab_learning_agenda','block_exacomp'));
-					if(block_exacomp_moodle_badges_enabled() && $usebadges)
-						$rows[] = new tabobject('tab_badges', new moodle_url('/blocks/exacomp/my_badges.php',array("courseid"=>$courseid)),get_string('tab_badges','block_exacomp'));
+					//if(block_exacomp_moodle_badges_enabled() && $usebadges)
+						//$rows[] = new tabobject('tab_badges', new moodle_url('/blocks/exacomp/my_badges.php',array("courseid"=>$courseid)),get_string('tab_badges','block_exacomp'));
 				}
 				if($de)
 					$rows[] = new tabobject('tab_help', new moodle_url('/blocks/exacomp/help.php', array("courseid"=>$courseid)), get_string('tab_help', 'block_exacomp'));
@@ -2705,7 +2705,17 @@ function block_exacomp_get_profile_settings(){
  	$useexastud = $DB->get_field(DB_PROFILESETTINGS, 'itemid', array('block'=>'useexastud', 'userid'=>$USER->id));
 	if($useexastud && $useexastud == 1)
 		$profile_settings->useexastud = 1;
- 	
+		
+	$profile_settings->usebadges = 0;
+	$usebadges = $DB->get_field(DB_PROFILESETTINGS, 'itemid', array('block'=>'usebadges', 'userid'=>$USER->id));
+ 	if($usebadges && $usebadges == 1)
+		$profile_settings->usebadges = 1;
+	
+	$profile_settings->onlygainedbadges = 0;
+	$onlygainedbadges = $DB->get_field(DB_PROFILESETTINGS, 'itemid', array('block'=>'badges', 'userid'=>$USER->id));
+	if($onlygainedbadges && $onlygainedbadges == 1)
+		$profile_settings->onlygainedbadges = 1;
+		
 	return $profile_settings;
 }
 
@@ -2714,12 +2724,30 @@ function block_exacomp_reset_profile_settings($userid){
 	$DB->delete_records(DB_PROFILESETTINGS, array('userid'=>$userid));
 }
 	
-function block_exacomp_set_profile_settings($userid, $showonlyreached, $useexaport, $useexastud, $courses, $periods){
+function block_exacomp_set_profile_settings($userid, $showonlyreached, $usebadges, $onlygainedbadges, $useexaport, $useexastud, $courses, $periods){
 	global $DB;
 	//showonlyreached
 	$insert = new stdClass();
 	$insert->block = 'exacompdesc';
 	$insert->itemid = intval($showonlyreached);
+	$insert->feedback = '';
+	$insert->userid = $userid;
+	
+	$DB->insert_record(DB_PROFILESETTINGS, $insert);
+	
+	//usebadges
+	$insert = new stdClass();
+	$insert->block = 'usebadges';
+	$insert->itemid = intval($usebadges);
+	$insert->feedback = '';
+	$insert->userid = $userid;
+	
+	$DB->insert_record(DB_PROFILESETTINGS, $insert);
+	
+	//onlygainedbadges
+	$insert = new stdClass();
+	$insert->block = 'badges';
+	$insert->itemid = intval($onlygainedbadges);
 	$insert->feedback = '';
 	$insert->userid = $userid;
 	

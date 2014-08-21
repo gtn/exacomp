@@ -1539,7 +1539,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 
-	public function print_my_badges($badges){
+	public function print_my_badges($badges, $onlygained=false){
 		$content = "";
 		if($badges->issued){
 			$content .= html_writer::tag('h2', get_string('mybadges', 'block_exacomp'));
@@ -1553,27 +1553,28 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 
 		}
-		if($badges->pending){
-			$content .= html_writer::tag('h2', get_string('pendingbadges', 'block_exacomp'));
-			foreach($badges->pending as $badge){
-				$context = context_course::instance($badge->courseid);
-				$imageurl = moodle_url::make_pluginfile_url($context->id, 'badges', 'badgeimage', $badge->id, '/', 'f1', false);
-				$img = html_writer::empty_tag('img', array('src' => $imageurl, 'class' => 'badge-image'));
-				$innerdiv = html_writer::div($badge->name, "", array('style'=>'font-weight: bold;'));
-				$innerdiv2 = "";
-				if($badge->descriptorStatus){
-					$innerdiv2_content = "";
-					foreach($badge->descriptorStatus as $descriptor){
-						$innerdiv2_content .= html_writer::div($descriptor, "", array('style'=>'padding: 3px 0'));
+		if(!$onlygained){
+			if($badges->pending){
+				$content .= html_writer::tag('h2', get_string('pendingbadges', 'block_exacomp'));
+				foreach($badges->pending as $badge){
+					$context = context_course::instance($badge->courseid);
+					$imageurl = moodle_url::make_pluginfile_url($context->id, 'badges', 'badgeimage', $badge->id, '/', 'f1', false);
+					$img = html_writer::empty_tag('img', array('src' => $imageurl, 'class' => 'badge-image'));
+					$innerdiv = html_writer::div($badge->name, "", array('style'=>'font-weight: bold;'));
+					$innerdiv2 = "";
+					if($badge->descriptorStatus){
+						$innerdiv2_content = "";
+						foreach($badge->descriptorStatus as $descriptor){
+							$innerdiv2_content .= html_writer::div($descriptor, "", array('style'=>'padding: 3px 0'));
+						}
+						$innerdiv2 = html_writer::div($innerdiv2_content, "", array('style'=>'padding: 2px 10px'));
 					}
-					$innerdiv2 = html_writer::div($innerdiv2_content, "", array('style'=>'padding: 2px 10px'));
+					$div = html_writer::div($img.$innerdiv.$innerdiv2, '', array('style'=>'padding: 10px;'));
+					$content .= $div;
 				}
-				$div = html_writer::div($img.$innerdiv.$innerdiv2, '', array('style'=>'padding: 10px;'));
-				$content .= $div;
 			}
 		}
-
-		return $content;
+		return html_writer::div($content, 'exacomp_profile_badges');
 	}
 	public function print_head_view_examples($sort, $show_all_examples, $url, $context){
 		$content = html_writer::start_tag('script', array('type'=>'text/javascript', 'src'=>'javascript/wz_tooltip.js'));
@@ -1766,14 +1767,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$cell = new html_table_cell();
 				$cell->text = html_writer::div(html_writer::tag('b', $subject->title));
 				$cell->attributes['class'] = 'rowgroup-arrow';
-
+				
 				$cell->colspan = 2;
 				$row->cells[] = $cell;
 				
 				$selectAllCell = new html_table_cell();
 				$selectAllCell->text = html_writer::tag("a", get_string('selectall','block_exacomp'),array("class" => "selectall"));
 				$row->cells[] = $selectAllCell;
-				
+
 				$rows[] = $row;
 				$this->print_topics_courseselection($rows, 0, $subject->subs, $rowgroup, $sub_rowgroup_class, $topics_activ);
 			}
@@ -2510,7 +2511,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			
 		return html_writer::div($namediv.$imgdiv.$citydiv, 'competence_profile_metadata');
 	}
-	function print_competene_profile_overview($student, $courses) {
+	function print_competene_profile_overview($student, $courses, $badges, $olygainedbadges=false) {
 
 		$overviewcontent = html_writer::tag('h2', 'Übersicht');
 		$table = $this->print_competence_profile_overview_table($student, $courses);
@@ -2528,7 +2529,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$subjects = block_exacomp_get_subjects_for_radar_graph($student->id);
 		$overviewcontent .= html_writer::div($this->print_radar_graph($subjects,0),"competence_profile_radargraph");
 		$overviewcontent .= html_writer::div($this->print_pie_graph($teachercomp, $studentcomp, $pendingcomp, 0),"competence_profile_piegraph");
-
+		
+		if(!empty($badges))
+			$overviewcontent .= $this->print_my_badges($badges, $olygainedbadges);
+		
 		return html_writer::div($overviewcontent, 'competence_profile_overview');
 	}
 	function print_competence_profile_overview_table($student, $courses){
@@ -2763,7 +2767,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 
-	public function print_profile_settings($courses, $settings, $exaport, $exastud, $exastud_periods){
+	public function print_profile_settings($courses, $settings, $usebadges, $exaport, $exastud, $exastud_periods){
 		global $COURSE;
 		$exacomp_div_content = html_writer::tag('h2', get_string('pluginname', 'block_exacomp'));
 		$exacomp_div_content .= html_writer::div(
@@ -2775,6 +2779,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$content_courses .= html_writer::empty_tag('br');
 		}
 		$exacomp_div_content .= html_writer::div($content_courses);
+		
+		if($usebadges){
+			$badge_div_content = '';
+			$badge_div_content .= html_writer::div(
+					html_writer::checkbox('usebadges', 1, ($settings->usebadges ==1), get_string('profile_settings_usebadges', 'block_exacomp')));
+				
+			$badge_div_content .= html_writer::checkbox('profile_settings_onlygainedbadges', 1, ($settings->onlygainedbadges==1), get_string('profile_settings_onlygainedbadges', 'block_exacomp'));
+			$badge_div_content .= html_writer::empty_tag('br');
+				
+			$badges_div = html_writer::div($badge_div_content);
+			$exacomp_div_content .= $badges_div;
+		}
 		$exacomp_div = html_writer::div($exacomp_div_content);
 
 		$content = $exacomp_div;

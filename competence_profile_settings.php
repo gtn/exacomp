@@ -68,10 +68,18 @@ if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 	$useexastud = 0;
 	if(isset($_POST['useexastud']))
 		$useexastud = 1;
+		
+	$profile_usebadges = 0;
+	if(isset($_POST['usebadges']))
+		$profile_usebadges = 1;
+		
+	$profile_onlygainedbadges = 0;
+	if(isset($_POST['profile_settings_onlygainedbadges']))
+		$profile_onlygainedbadges = 1;
 	
 	block_exacomp_reset_profile_settings($USER->id);
 	
-	block_exacomp_set_profile_settings($USER->id, $showonlyreached, $useexaport, $useexastud, 
+	block_exacomp_set_profile_settings($USER->id, $showonlyreached, $profile_usebadges, $profile_onlygainedbadges, $useexaport, $useexastud, 
 		(isset($_POST['profile_settings_course']))?$_POST['profile_settings_course']:array(),
 		(isset($_POST['profile_settings_periods']))?$_POST['profile_settings_periods']:array());
 	
@@ -99,10 +107,16 @@ if($exaport)
 	$exaport_items = block_exacomp_get_exaport_items();
 if($exastud)
 	$exastud_periods = block_exacomp_get_exastud_periods();
-		
+
+$usebadges = get_config('exacomp', 'usebadges');
+
+$profile_usebadges = false;
+if(block_exacomp_moodle_badges_enabled() && $usebadges)
+	$profile_usebadges = true;
+
 $profile_settings = block_exacomp_get_profile_settings();
 
-echo $output->print_profile_settings($user_courses, $profile_settings, $exaport, $exastud, (isset($exastud_periods))?$exastud_periods:array());
+echo $output->print_profile_settings($user_courses, $profile_settings, $profile_usebadges, $exaport, $exastud, (isset($exastud_periods))?$exastud_periods:array());
 
 /* END CONTENT REGION */
 

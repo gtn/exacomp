@@ -74,16 +74,24 @@ if(!block_exacomp_check_profile_config($student->id))
 
 echo $output->print_competence_profile_metadata($student);
 
-echo $output->print_competene_profile_overview($student, $user_courses);
+$usebadges = get_config('exacomp', 'usebadges');
+
+$profile_settings = block_exacomp_get_profile_settings();
+
+if (block_exacomp_moodle_badges_enabled() && $usebadges && $profile_settings->usebadges){
+	block_exacomp_award_badges($courseid, $USER->id);
+	$badges = block_exacomp_get_user_badges($courseid, $USER->id);
+}else{
+	$badges = array();
+}
+
+echo $output->print_competene_profile_overview($student, $user_courses, $badges, $profile_settings->onlygainedbadges);
 
 foreach($user_courses as $course) {
 	//if selected
-	$profile_settings = block_exacomp_get_profile_settings();
 	if(isset($profile_settings->exacomp[$course->id]))
 		echo $output->print_competence_profile_course($course,$student);
 }
-
-$profile_settings = block_exacomp_get_profile_settings();
 
 if($profile_settings->useexaport == 1){
 	$items = block_exacomp_get_exaport_items();
