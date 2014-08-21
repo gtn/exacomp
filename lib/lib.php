@@ -1215,10 +1215,83 @@ function block_exacomp_moodle_badges_enabled() {
 function block_exacomp_save_coursesettings($courseid, $settings) {
 	global $DB;
 
+	$old_course_settings = block_exacomp_get_settings_by_course($courseid);
+	
 	$DB->delete_records(DB_SETTINGS, array("courseid" => $courseid));
 
 	if ($settings->grading > SETTINGS_MAX_SCHEME) $settings->grading = SETTINGS_MAX_SCHEME;
 
+	//adapt old evaluation to new scheme
+	//update compcompuser && compcompuser_mm && exameval
+	if($old_course_settings->grading != $settings->grading){
+		//block_exacompcompuser
+		$records = $DB->get_records(DB_COMPETENCIES, array('courseid'=>$courseid));
+		foreach($records as $record){
+			//if value is set and greater than zero->adapt to new scheme
+			if(isset($record->value) && $record->value > 0){
+				//calculate old percentage and apply it to new scheme
+				$percent_old = $record->value / $old_course_settings->grading;
+				$value_new = round($settings->grading * $percent_old);
+				
+				$update = new stdClass();
+				$update->id = $record->id;
+				$update->value = $value_new;
+				$DB->update_record(DB_COMPETENCIES, $update);
+				
+			}
+		}
+		
+		//block_exacompcompuser_mm
+		$records = $DB->get_records_sql('
+			SELECT comp.id, comp.value 
+			FROM {'.DB_COMPETENCIES_USER_MM.'} comp 
+			JOIN {course_modules} cm ON comp.activityid=cm.id
+			WHERE cm.course=?', array($courseid));
+		
+		foreach($records as $record){
+			if(isset($record->value) && $record->value > 0){
+				//calculate old percentage and apply it to new scheme
+				$percent_old = $record->value / $old_course_settings->grading;
+				$value_new = round($settings->grading * $percent_old);
+				
+				$update = new stdClass();
+				$update->id = $record->id;
+				$update->value = $value_new;
+				$DB->update_record(DB_COMPETENCIES_USER_MM, $update);
+			}
+		}
+		
+		//block_exacompexampeval
+		$records = $DB->get_records(DB_EXAMPLEEVAL, array('courseid'=>$courseid));
+		foreach($records as $record){
+			$update = new stdClass();
+			$update->id = $record->id;
+			
+			$doteacherupdate = false;
+			if(isset($record->teacher_evaluation) && $record->teacher_evaluation > 0){
+				//calculate old percentage and apply it to new scheme
+				$percent_old =  $record->teacher_evaluation / $old_course_settings->grading;
+				$teachereval_new = round($settings->grading * $percent_old);	
+				
+				$update->teacher_evaluation = $teachereval_new;
+				$doteacherupdate = true;
+			}
+			$dostudentupdate = false;
+			if(isset($record->student_evaluation) && $record->student_evaluation > 0){
+				//calculate old percentage and apply it to new scheme
+				$percent_old =  $record->student_evaluation / $old_course_settings->grading;
+				$studenteval_new = round($settings->grading * $percent_old);	
+				
+				$update->student_evaluation = $studenteval_new;
+				$dostudentupdate = true;
+			}
+			
+			if($dostudentupdate || $doteacherupdate)
+				$DB->update_record(DB_EXAMPLEEVAL, $update);
+		}
+		
+	}
+	
 	$settings->courseid = $courseid;
 	$settings->tstamp = time();
 
