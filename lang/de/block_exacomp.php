@@ -290,6 +290,11 @@ $string['profile_settings_no_period'] = 'Keine Beurteilung in einer Periode in E
 $string['profile_settings_usebadges'] = 'Ich möchte im Kompetenzprofil auch meine Auszeichnungen sehen.';
 $string['profile_settings_onlygainedbadges'] = 'Ich möchte nur Auszeichnungen sehen, die mir bereits verliehen wurden.';
 
+
+$string['specificcontent'] = 'Schulbezogene Themenbereiche';
+$string['specificsubject'] = 'Schulbezogene Gegenstands-/Kompetenzbereiche';
+
+
 //LIS Strings
 if(get_config('exacomp','alternativedatamodel')) {
 	/*langstrings for alternativedatamodel--*/

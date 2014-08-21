@@ -265,6 +265,10 @@ $string['profile_settings_no_period'] = 'No review in a period in Exabis Student
 $string['profile_settings_usebadges'] = 'I want to see badges in my competence profile.';
 $string['profile_settings_onlygainedbadges'] = 'I don\'t want to see pending badges.';
 
+$string['specificcontent'] = 'site-specific topics';
+$string['specificsubject'] = 'site-specific subjects';
+
+
 //LIS metadata
 $string['subject_singular'] = 'Fach';
 $string['comp_field_idea'] = 'Kompetenzbereich/Leitidee';
