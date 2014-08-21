@@ -874,7 +874,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$rows = array();
 		$studentsColspan = $showevaluation ? 2 : 1;
 		$table->attributes['class'] = 'exabis_comp_comp';
-		$eportfolioitems = block_exacomp_get_eportfolioitem_association($students);
+		
+		if(block_exacomp_exaportexists())
+			$eportfolioitems = block_exacomp_get_eportfolioitem_association($students);
+		else
+			$eportfolioitems = array();
 		
 		/* SUBJECTS */
 		foreach($subjects as $subject) {
@@ -1155,30 +1159,31 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				}
 
 				//EPORTFOLIOITEMS
-				if(isset($data->eportfolioitems[$student->id]) && isset($data->eportfolioitems[$student->id]->competencies[$descriptor->id])){
-					$shared = false;
-					$li_items = '';
-					foreach($data->eportfolioitems[$student->id]->competencies[$descriptor->id]->items as $item){
-						$li_item = $item->name;
-						if($item->shared){
-							$li_item .= get_string('eportitem_shared', 'block_exacomp');
-							$shared = true;
+				if(block_exacomp_exaportexists()){
+					if(isset($data->eportfolioitems[$student->id]) && isset($data->eportfolioitems[$student->id]->competencies[$descriptor->id])){
+						$shared = false;
+						$li_items = '';
+						foreach($data->eportfolioitems[$student->id]->competencies[$descriptor->id]->items as $item){
+							$li_item = $item->name;
+							if($item->shared){
+								$li_item .= get_string('eportitem_shared', 'block_exacomp');
+								$shared = true;
+							}
+							else
+								$li_item .=  get_string('eportitem_notshared', 'block_exacomp');
+								
+							$li_items .= html_writer::tag('li', $li_item);
 						}
+						if($shared)
+							$img = html_writer::empty_tag("img", array("src" => "pix/folder_shared.png","alt" => ''));
 						else
-							$li_item .=  get_string('eportitem_notshared', 'block_exacomp');
-							
-						$li_items .= html_writer::tag('li', $li_item);
-					}
-					if($shared)
-						$img = html_writer::empty_tag("img", array("src" => "pix/folder_shared.png","alt" => ''));
-					else
-						$img = html_writer::empty_tag("img", array("src" => "pix/folder_notshared.png","alt" => ''));
-				
-					$text =  get_string('eportitems', 'block_exacomp').html_writer::tag('ul', $li_items);
+							$img = html_writer::empty_tag("img", array("src" => "pix/folder_notshared.png","alt" => ''));
 					
-					$studentCell->text .= '<span title="'.$text.'" class="exabis-tooltip">'.$img.'</span>';
+						$text =  get_string('eportitems', 'block_exacomp').html_writer::tag('ul', $li_items);
+						
+						$studentCell->text .= '<span title="'.$text.'" class="exabis-tooltip">'.$img.'</span>';
+					}
 				}
-				
 				// TIPP
 				if(block_exacomp_set_tipp($descriptor->id, $student, 'activities_competencies', $data->scheme)){
 					$icon_img = html_writer::empty_tag('img', array('src'=>"pix/info.png", "alt"=>get_string('teacher_tipp', 'block_exacomp')));
