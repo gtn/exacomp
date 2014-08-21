@@ -716,7 +716,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$cell = new html_table_cell();
 		$cell->colspan = 4;
-		$cell->text = html_writer::tag('h1', 'Teilkompetenzen', array('style'=>'float:right;'));
+		$cell->text = html_writer::tag('h3', 'Teilkompetenzen', array('style'=>'float:right;'));
 
 		$row->cells[] = $cell;
 
@@ -728,28 +728,29 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$rows[] = $row;
 
 		//print subheader
-		$row = new html_table_row();
-		$cell = new html_table_cell();
-		$cell->text = html_writer::tag('b', 'Lernmaterialien');
-		$row->cells[] = $cell;
-
-		$cell = new html_table_cell();
-		$row->cells[] = $cell;
-
-		$cell = new html_table_cell();
-		$cell->text = 'In Arbeit';
-		$row->cells[] = $cell;
-
-		$cell = new html_table_cell();
-		$cell->text = 'abgeschlossen';
-		$row->cells[] = $cell;
-
-		$cell = new html_table_cell();
-		$cell->colspan = $column_count;
-		$row->cells[] = $cell;
-
-		$rows[] = $row;
-
+		if(!empty($examples)){
+			$row = new html_table_row();
+			$cell = new html_table_cell();
+			$cell->text = html_writer::tag('b', 'Lernmaterialien');
+			$row->cells[] = $cell;
+	
+			$cell = new html_table_cell();
+			$row->cells[] = $cell;
+	
+			$cell = new html_table_cell();
+			$cell->text = 'In Arbeit';
+			$row->cells[] = $cell;
+	
+			$cell = new html_table_cell();
+			$cell->text = 'abgeschlossen';
+			$row->cells[] = $cell;
+	
+			$cell = new html_table_cell();
+			$cell->colspan = $column_count;
+			$row->cells[] = $cell;
+	
+			$rows[] = $row;
+		}
 		//print examples
 		foreach($examples as $example){
 			$row = new html_table_row();
