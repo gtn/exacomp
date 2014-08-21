@@ -1933,8 +1933,9 @@ function block_exacomp_get_courses(){
 	$exabis_competences_courses = array();
 
 	foreach($instances as $instance){
-		$context = $DB->get_record('context', array('id'=>$instance->parentcontextid));
-		$exabis_competences_courses[] = $context->instanceid;
+		$context = $DB->get_record('context', array('id'=>$instance->parentcontextid, 'contextlevel'=>50));
+		if($context)
+			$exabis_competences_courses[] = $context->instanceid;
 	}
 
 	return $exabis_competences_courses;
