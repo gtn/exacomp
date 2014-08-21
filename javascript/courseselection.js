@@ -18,6 +18,25 @@
 		}
 	});
 	
+	$(document).on('click', '.selectall', function(){
+		var tr = $(this).closest('tr');
+		var id = tr[0].className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
+
+		if (!$(tr).is('.open')) {
+			tr.toggleClass('open');
+
+			// opening: show all subs
+			$('.rowgroup-content-'+id).show();
+			// opening: hide all subs which are still closed
+			$('.rowgroup-header').not('.open').each(function(){
+				var id = this.className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
+				$('.rowgroup-content-'+id).hide();
+			});
+		}
+		
+		$('.topiccheckbox-'+id).prop('checked', true);
+	});
+	
 	$(function(){
 		var $form = $('#course-selection');
 

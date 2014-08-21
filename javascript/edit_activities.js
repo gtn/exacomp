@@ -19,6 +19,24 @@
 			$('.rowgroup-content-'+id).hide();
 		}
 	});
+	$(document).on('click', '.topiccheckbox', function(){
+		var tr = $(this).closest('tr');
+		if($(this).prop('checked')) {
+			if (!$(tr).is('.open')) 
+				tr.toggleClass('open');
+			
+			var id = tr[0].className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
+			
+
+				// opening: show all subs
+				$('.rowgroup-content-'+id).show();
+				// opening: hide all subs which are still closed
+				$('.rowgroup-header').not('.open').each(function(){
+					var id = this.className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
+					$('.rowgroup-content-'+id).hide();
+				});
+		}
+	});
 	
 	$(function(){
 		var $form = $('#edit-activities');

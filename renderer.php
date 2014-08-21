@@ -1766,9 +1766,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$cell = new html_table_cell();
 				$cell->text = html_writer::div(html_writer::tag('b', $subject->title));
 				$cell->attributes['class'] = 'rowgroup-arrow';
-				$cell->colspan = 3;
-				$row->cells[] = $cell;
 
+				$cell->colspan = 2;
+				$row->cells[] = $cell;
+				
+				$selectAllCell = new html_table_cell();
+				$selectAllCell->text = html_writer::tag("a", get_string('selectall','block_exacomp'),array("class" => "selectall"));
+				$row->cells[] = $selectAllCell;
+				
 				$rows[] = $row;
 				$this->print_topics_courseselection($rows, 0, $subject->subs, $rowgroup, $sub_rowgroup_class, $topics_activ);
 			}
@@ -1816,7 +1821,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$topicRow->cells[] = $outputnameCell;
 
 			$cell = new html_table_cell();
-			$cell->text = html_writer::checkbox('data['.$topic->id.']', $topic->id, ((isset($topics_activ[$topic->id]))?true:false), '', array('class'=>'topiccheckbox'));
+			$cell->text = html_writer::checkbox('data['.$topic->id.']', $topic->id, ((isset($topics_activ[$topic->id]))?true:false), '', array('class'=>'topiccheckbox-'.$rowgroup));
 			$topicRow->cells[] = $cell;
 
 			$rows[] = $topicRow;
@@ -1978,8 +1983,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			foreach($modules as $module) {
 				$moduleCell = new html_table_cell();
 				$moduleCell->attributes['module-type='] = $module->modname;
-				$moduleCell->text = html_writer::checkbox('topicdata[' . $module->id . '][' . $topic->id . ']', "", (in_array($topic->id, $module->topics))?true:false);
-
+				$moduleCell->text = html_writer::checkbox('topicdata[' . $module->id . '][' . $topic->id . ']', "", (in_array($topic->id, $module->topics))?true:false,'',array('class' => 'topiccheckbox'));
 				$topicRow->cells[] = $moduleCell;
 			}
 
