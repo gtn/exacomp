@@ -97,6 +97,7 @@ if($formdata = $form->get_data()) {
 	$newExample->description = $formdata->intro;
 	$newExample->taxid = $formdata->tax;
 	$newExample->creatorid = $USER->id;
+	$newExample->externalurl = $formdata->link;
 	$newExample->source = CUSTOM_EXAMPLE_SOURCE;
 	// save file
 	$context = context_user::instance($USER->id);
@@ -127,31 +128,31 @@ if($formdata = $form->get_data()) {
 			$newfilename .= '.';
 		}
 		//Dateiname
+		$temp_filename = $newfilename;
+
 		$newfilename .= $formdata->name . "." . pathinfo($form->get_new_filename('file'), PATHINFO_EXTENSION);
+		$newsolutionname = $temp_filename . $formdata->name . "_SOLUTION." . pathinfo($form->get_new_filename('solution'), PATHINFO_EXTENSION);
 		$newExample->title = $newfilename;
 	}
-	else
-		$newfilename = $form->get_new_filename('file');
-
-	if($fs->file_exists($context->id, 'user', 'private', 0, '/', $newfilename)) {
-	}
 	else {
+		$newfilename = $form->get_new_filename('file');
+		$newsolutionname = $form->get_new_filename('solution');
+	}
+
+	if(!$fs->file_exists($context->id, 'user', 'private', 0, '/', $newfilename))
 		$form->save_stored_file('file', $context->id, 'user', 'private', 0, '/', $newfilename, true);
 
-	}
 	$pathnamehash = $fs->get_pathname_hash($context->id, 'user', 'private', 0, '/', $newfilename);
 
-	/*
-	 file_save_draft_area_files($formdata->file, $context->id, 'user', 'private', 0, array('subdirs' => 1, 'maxbytes' => $CFG->userquota, 'maxfiles' => -1, 'accepted_types' => '*'));
-
-	// find out the filename, so we can get the pathnamehash
-	$filename = $DB->get_field("files", "filename", array("itemid"=>$formdata->file), IGNORE_MULTIPLE);
-	$pathnamehash = $DB->get_field("files", "pathnamehash", array("filename"=>$filename,"component"=>"user","filearea"=>"private"));
-	*/
+	if(!$fs->file_exists($context->id, 'user', 'private', 0, '/', $newsolutionname))
+		$form->save_stored_file('solution', $context->id, 'user', 'private', 0, '/', $newsolutionname, true);
+	$solutionpathnamehash = $fs->get_pathname_hash($context->id, 'user', 'private', 0, '/', $newsolutionname);
 
 	// insert example
 	$task = new moodle_url($CFG->wwwroot.'/blocks/exacomp/example_upload.php',array("action"=>"serve","c"=>$context->id,"i"=>$pathnamehash,"courseid"=>$courseid));
 	$newExample->task = $task->out(false);
+	$solution = new moodle_url($CFG->wwwroot.'/blocks/exacomp/example_upload.php',array("action"=>"serve","c"=>$context->id,"i"=>$solutionpathnamehash,"courseid"=>$courseid));
+	$newExample->solution = $solution->out(false);
 
 	$newExample->id = $DB->insert_record('block_exacompexamples', $newExample);
 
@@ -159,11 +160,11 @@ if($formdata = $form->get_data()) {
 		$DB->insert_record('block_exacompdescrexamp_mm', array('descrid' => $descr, 'exampid' => $newExample->id));
 
 	?>
-	<script type="text/javascript">
+<script type="text/javascript">
 		window.opener.Exacomp.newExampleAdded();
 		window.close();
 	</script>
-	<?php 
+<?php 
 }
 
 $form->display();

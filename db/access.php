@@ -79,6 +79,13 @@ $capabilities = array(
 						'manager' => CAP_ALLOW
 				),
 				'clonepermissionsfrom' => 'moodle/site:manageblocks'
+		),
+		'block/exacomp:deleteexamples' => array(
+				'captype' => 'write',
+				'contextlevel' => CONTEXT_COURSE,
+				'legacy' => array(
+						'manager' => CAP_ALLOW
+				)
 		)
 );
 ?>

@@ -69,14 +69,19 @@ class block_exacomp_example_upload_form extends moodleform {
 		$mform->addElement('text', 'intro', get_string("moduleintro"), 'maxlength="255" size="60"');
 		$mform->setType('intro', PARAM_TEXT);
 		
+		$mform->addElement('text', 'link', get_string("link","block_exacomp"), 'maxlength="255" size="60"');
+		$mform->setType('link', PARAM_TEXT);
+		
 		$mform->addElement('select', 'tax', get_string('taxonomy', 'block_exacomp'),$this->_customdata['taxonomies']);
 		
 		$mform->addElement('filepicker', 'file', get_string('file'), null, array('subdirs' => false, 'maxfiles' => 1));
-		$mform->addRule('file', get_string("filerequired", "block_exacomp"), 'required', null, 'client');
+		//$mform->addRule('file', get_string("filerequired", "block_exacomp"), 'required', null, 'client');
+		
+		$mform->addElement('filepicker', 'solution', get_string('solution','block_exacomp'), null, array('subdirs' => false, 'maxfiles' => 1));
 		
 		if($version) {
 			$mform->addElement('checkbox', 'lisfilename', get_string('lisfilename', 'block_exacomp'));
-			$mform->setDefault('lisfilename', 0);
+			$mform->setDefault('lisfilename', 1);
 		}
 		
 		$mform->addElement('hidden','topicid');
@@ -86,4 +91,15 @@ class block_exacomp_example_upload_form extends moodleform {
 		$this->add_action_buttons(false);
 	}
 
+	function validation($data, $files) {
+		$errors = parent::validation($data, $files);
+	
+		$errors= array();
+	
+		if (!empty($data['link']) && filter_var($data['link'], FILTER_VALIDATE_URL) === FALSE) {
+			$errors['link'] = get_string('linkerr','block_exacomp');
+		}
+	
+		return $errors;
+	}
 }

@@ -163,6 +163,10 @@ $string['descriptors_help'] = 'You can select multible outcomes/standards';
 $string['filerequired'] = 'A file must be selected.';
 $string['titlenotemtpy'] = 'A name is required.';
 $string['lisfilename'] = 'Use LIS filename template';
+$string['solution'] = 'Solution';
+$string['link'] = 'Link';
+$string['dataerr'] = 'At least a link or a file are required!';
+$string['linkerr'] = 'The given link is not valid!';
 
 //Assign competencies
 $string['save_selection'] = 'Save selection';

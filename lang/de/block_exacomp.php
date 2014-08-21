@@ -188,6 +188,10 @@ $string['descriptors_help'] = 'Es k&ouml;nnen mehrere Kompetenzen ausgew&auml;hl
 $string['filerequired'] = 'Es muss eine Datei ausgew&auml;hlt sein.';
 $string['titlenotemtpy'] = 'Es muss ein Name eingegeben werden.';
 $string['lisfilename'] = 'Dateiname nach LS Vorgabe generieren';
+$string['solution'] = 'Lösung';
+$string['link'] = 'Link';
+$string['dataerr'] = 'Es muss zumindest ein Link oder eine Datei hochgeladen werden!';
+$string['linkerr'] = 'Bitte geben Sie einen korrekten Link ein!';
 
 //Assign competencies
 $string['save_selection'] = 'Auswahl speichern';
