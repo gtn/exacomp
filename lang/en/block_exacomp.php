@@ -258,7 +258,7 @@ $string['profile_settings_useexaport'] = 'I want to see competencies used in Exa
 $string['profile_settings_choose_items'] = 'Exabis ePortfolio is used to document your competencies on your individual learning path. You can select which artefacts to include in the competence profile.';
 $string['profile_settings_useexastud'] = 'I want to see evaluations from Exabis Student Review.';
 $string['profile_settings_choose_periods'] = 'Exabis Student Review stores reviews in various categories over several periods. You can select which periods to include in the competence profile.';
-$string['profile_settings_no_item'] = 'No Exabis ePortfolio item available.';
+$string['profile_settings_no_item'] = 'No Exabis ePortfolio item available, so there is nothing to display.';
 $string['profile_settings_no_period'] = 'No review in a period in Exabis Student Review available.';
 
 //LIS metadata

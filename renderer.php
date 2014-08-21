@@ -2776,23 +2776,31 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content = $exacomp_div;
 
 		if($exaport){
-			$exaport_div_content = html_writer::tag('h2', get_string('pluginname', 'block_exaport'));
-			$exaport_div_content .= html_writer::div(
-					html_writer::checkbox('useexaport', 1, ($settings->useexaport==1), get_string('profile_settings_useexaport', 'block_exacomp')));
-				
-			/*if(!empty($exaport_items)){
-				$content_items = html_writer::label(get_string('profile_settings_choose_items', 'block_exacomp'), '');
-			foreach($exaport_items as $item){
-			$content_items .= html_writer::checkbox('profile_settings_items[]', $item->id, (isset($settings->exaport[$item->id])), $item->name);
-			$content_items .= html_writer::empty_tag('br');
-			}
+			$exaport_items = block_exacomp_get_exaport_items();
+			if(!empty($exaport_items)){
+				$exaport_div_content = html_writer::tag('h2', get_string('pluginname', 'block_exaport'));
+				$exaport_div_content .= html_writer::div(
+						html_writer::checkbox('useexaport', 1, ($settings->useexaport==1), get_string('profile_settings_useexaport', 'block_exacomp')));
+					
+				/*if(!empty($exaport_items)){
+					$content_items = html_writer::label(get_string('profile_settings_choose_items', 'block_exacomp'), '');
+				foreach($exaport_items as $item){
+				$content_items .= html_writer::checkbox('profile_settings_items[]', $item->id, (isset($settings->exaport[$item->id])), $item->name);
+				$content_items .= html_writer::empty_tag('br');
+				}
+				}else{
+				$content_items = html_writer::label(get_string('profile_settings_no_item', 'block_exacomp'), '');
+				}*/
+				//$exaport_div_content .= html_writer::div($content_items);
+					
+				$exaport_div = html_writer::div($exaport_div_content);
+				$content .= $exaport_div;
 			}else{
-			$content_items = html_writer::label(get_string('profile_settings_no_item', 'block_exacomp'), '');
-			}*/
-			//$exaport_div_content .= html_writer::div($content_items);
-				
-			$exaport_div = html_writer::div($exaport_div_content);
-			$content .= $exaport_div;
+				$exaport_div_content = html_writer::tag('h2', get_string('pluginname', 'block_exaport'));
+				$exaport_div_content .= get_string('profile_settings_no_item', 'block_exacomp');
+				$exaport_div = html_writer::div($exaport_div_content);
+				$content .= $exaport_div;
+			}
 		}
 
 		if($exastud){

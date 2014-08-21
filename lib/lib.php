@@ -918,8 +918,8 @@ function block_exacomp_get_user_activities_competencies_by_course($user, $course
 		
 		$user->activities_competencies->activities[$activity->id]->teacher = array();
 		$user->activities_competencies->activities[$activity->id]->student = array();
-		$user->activities_competencies->activities[$activity->id]->teacher += $DB->get_records_menu(DB_COMPETENCIES_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR),'','compid as id, value');
-		$user->activities_competencies->activities[$activity->id]->student += $DB->get_records_menu(DB_COMPETENCIES_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => ROLE_STUDENT, "comptype" => TYPE_DESCRIPTOR),'','compid as id, value');
+		$user->activities_competencies->activities[$activity->id]->teacher += $DB->get_records_menu(DB_COMPETENCIES_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR, "eportfolioitem"=>0),'','compid as id, value');
+		$user->activities_competencies->activities[$activity->id]->student += $DB->get_records_menu(DB_COMPETENCIES_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => ROLE_STUDENT, "comptype" => TYPE_DESCRIPTOR, "eportfolioitem"=>0),'','compid as id, value');
 	}
 	
 	return $user;
