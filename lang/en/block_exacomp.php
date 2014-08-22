@@ -38,7 +38,7 @@ $string['tab_admin_configuration'] = 'Configuration';
 
 //Teacher Tabs
 $string['tab_teacher_settings'] = 'Settings';
-$string['tab_teacher_settings_configuration'] = 'Configuration';
+$string['tab_teacher_settings_configuration'] = 'Standard pre-selection';
 $string['tab_teacher_settings_selection_st'] = 'Schooltype selection';
 $string['tab_teacher_settings_selection'] = 'Subject selection';
 $string['tab_teacher_settings_assignactivities'] = 'Assign Moodle activities';

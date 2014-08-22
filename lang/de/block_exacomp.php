@@ -38,7 +38,7 @@ $string['tab_admin_configuration'] = 'Konfiguration';
 
 //Teacher Tabs
 $string['tab_teacher_settings'] = 'Einstellungen';
-$string['tab_teacher_settings_configuration'] = 'Konfiguration';
+$string['tab_teacher_settings_configuration'] = 'Vorauswahl der Standards';
 $string['tab_teacher_settings_selection_st'] = 'Schultyp-Auswahl';
 $string['tab_teacher_settings_selection'] = 'Gegenstands-Auswahl';
 $string['tab_teacher_settings_assignactivities'] = 'Moodle-Aktivit&auml;ten zuordnen';
@@ -61,7 +61,7 @@ $string['tab_help'] = 'Hilfe';
 $string['tab_skillmanagement'] = 'Kompetenzen-Verwaltung';
 
 $string['first_configuration_step'] = 'Der erste Konfigurationsschritt besteht darin, Daten in das Exabis Competencies Modul zu importieren.';
-$string['second_configuration_step'] = 'In diesem Konfigurationsschritt muss eine Vorauswahl für die Standards getroffen werden. Diese Einstellungen sind unabh&auml;ngig von Kurs für die gesamte Moodle-Installation g&uuml;ltig.';
+$string['second_configuration_step'] = 'In diesem Konfigurationsschritt muss eine Vorauswahl für die Standards getroffen werden. Diese Einstellungen sind unabh&auml;ngig vom Kurs für die gesamte Moodle-Installation g&uuml;ltig.';
 $string['next_step'] = 'Dieser Konfigurationsschritt wurde abgeschlossen. Klicken Sie hier um zum N&auml;chsten zu gelangen.';
 $string['next_step_teacher'] = 'Die Konfiguration, die vom Administrator vorgenommen werden muss ist hiermit abgeschlossen. Um mit der Kurs-spezifischen Konfiguration fort zu fahren klicken Sie hier.';
 $string['teacher_first_configuration_step'] = 'Im ersten Konfigurationsschritt müssen einige generelle Einstellungen getroffen werden.';
