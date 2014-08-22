@@ -34,11 +34,11 @@ $string['exacomp:use'] = 'Nutzung';
 // TABS and PAGE IDENTIFIERS
 // Admin Tabs
 $string['tab_admin_import'] = 'Import';
-$string['tab_admin_configuration'] = 'Konfiguration';
+$string['tab_admin_configuration'] = 'Vorauswahl der Standards';
 
 //Teacher Tabs
 $string['tab_teacher_settings'] = 'Einstellungen';
-$string['tab_teacher_settings_configuration'] = 'Vorauswahl der Standards';
+$string['tab_teacher_settings_configuration'] = 'Konfiguration';
 $string['tab_teacher_settings_selection_st'] = 'Schultyp-Auswahl';
 $string['tab_teacher_settings_selection'] = 'Gegenstands-Auswahl';
 $string['tab_teacher_settings_assignactivities'] = 'Moodle-Aktivit&auml;ten zuordnen';
@@ -61,12 +61,13 @@ $string['tab_help'] = 'Hilfe';
 $string['tab_skillmanagement'] = 'Kompetenzen-Verwaltung';
 
 $string['first_configuration_step'] = 'Der erste Konfigurationsschritt besteht darin, Daten in das Exabis Competencies Modul zu importieren.';
-$string['second_configuration_step'] = 'In diesem Konfigurationsschritt muss eine Vorauswahl für die Standards getroffen werden. Diese Einstellungen sind unabh&auml;ngig vom Kurs für die gesamte Moodle-Installation g&uuml;ltig.';
+$string['second_configuration_step'] = 'In diesem Konfigurationsschritt muss eine Vorauswahl für die Standards getroffen werden, damit das Modul verwendet werden kann. Diese Einstellungen sind unabh&auml;ngig vom Kurs für die gesamte Moodle-Installation g&uuml;ltig.';
 $string['next_step'] = 'Dieser Konfigurationsschritt wurde abgeschlossen. Klicken Sie hier um zum N&auml;chsten zu gelangen.';
-$string['next_step_teacher'] = 'Die Konfiguration, die vom Administrator vorgenommen werden muss ist hiermit abgeschlossen. Um mit der Kurs-spezifischen Konfiguration fort zu fahren klicken Sie hier.';
-$string['teacher_first_configuration_step'] = 'Im ersten Konfigurationsschritt müssen einige generelle Einstellungen getroffen werden.';
+$string['next_step_teacher'] = 'Die Konfiguration, die vom Administrator vorgenommen werden muss, ist hiermit abgeschlossen. Um mit der kursspezifischen Konfiguration fortzufahren klicken Sie hier.';
+$string['teacher_first_configuration_step'] = 'Im ersten Konfigurationsschritt der Kurs-Standards müssen einige generelle Einstellungen getroffen werden.';
 $string['teacher_second_configuration_step'] = 'Im zweite Konfigurationsschritt müssen Themenbereiche ausgewählt werden mit denen Sie in diesem Kurs arbeiten möchten.';
-$string['teacher_third_configuration_step'] = 'Im nächsten Schritt werden Moodle-Aktivit&auml;ten mit Kompetenzen assoziiert. (optional: Wenn Sie nicht mit Aktivit&auml;ten arbeiten m&ouml;chten, dann entfernen Sie das Häkchen "Ich m&ouml;chte mit Moodle-Aktivit&auml;ten arbeiten" im Tab "Konfiguration")';
+$string['teacher_third_configuration_step'] = 'Im nächsten Schritt werden Moodle-Aktivit&auml;ten mit Kompetenzen assoziiert. '; 
+$string['teacher_third_configuration_step_link'] = '(Optional: Wenn Sie nicht mit Moodle-Aktivit&auml;ten arbeiten m&ouml;chten, dann entfernen Sie das Häkchen "Ich m&ouml;chte mit Moodle-Aktivit&auml;ten arbeiten" im Tab "Konfiguration".)';
 $string['completed_config'] = 'Die Exabis Competencies Konfiguration wurde abgeschlossen.';
 $string['optional_step'] = 'In Ihrem Kurs sind noch keine Teilnehmer eingeschrieben, bet&auml;tigen Sie diesen Link wenn Sie das jetzt machen m&ouml;chten.';
 
@@ -152,7 +153,7 @@ $string['oldxmlfile'] = 'Sie benutzen eine veraltete XML-Datei, bitte erstellen 
 $string['do_demo_import'] = 'Importieren Sie einen Demodatensatz, um zu sehen wie Exabis Competencies funktioniert.';
 
 //Configuration
-$string['explainconfig'] = 'Um das Modul exabis competences verwenden zu k&ouml;nnen, m&uuml;ssen hier die Schultypen der Moodle-Instanz selektiert werden.';
+$string['explainconfig'] = '';
 $string['save_selection'] = 'Auswahl speichern';
 $string['save_success'] = '&Auml;nderungen erfolgreich &uuml;bernommen';
 
@@ -247,7 +248,7 @@ $string['assignuntil'] = 'bis';
 $string['assignlearninggroup'] = 'Lerngruppe';
 
 //Activities
-$string['explaineditactivities_subjects'] = 'Hier können Sie Kompetenzen mit Moodle-Aktivitäten verknüpfen.';
+$string['explaineditactivities_subjects'] = '';
 $string['column_setting'] = 'Spalten aus/einblenden';
 $string['niveau_filter'] = "Niveaus filtern";
 $string['module_filter'] = 'Aktivit&auml;ten filtern';

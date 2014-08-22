@@ -34,11 +34,11 @@ $string['exacomp:use'] = 'use Exabis Competencies';
 // TABS and PAGE IDENTIFIERS
 // Admin Tabs
 $string['tab_admin_import'] = 'Import';
-$string['tab_admin_configuration'] = 'Configuration';
+$string['tab_admin_configuration'] = 'Standards pre-selection';
 
 //Teacher Tabs
 $string['tab_teacher_settings'] = 'Settings';
-$string['tab_teacher_settings_configuration'] = 'Standard pre-selection';
+$string['tab_teacher_settings_configuration'] = 'Configuration';
 $string['tab_teacher_settings_selection_st'] = 'Schooltype selection';
 $string['tab_teacher_settings_selection'] = 'Subject selection';
 $string['tab_teacher_settings_assignactivities'] = 'Assign Moodle activities';
@@ -61,12 +61,13 @@ $string['tab_help'] = 'Help';
 $string['tab_skillmanagement'] = 'manage your competencies';
 
 $string['first_configuration_step'] = 'The first step of the configuration is to import some data to Exabis Competencies.';
-$string['second_configuration_step'] = 'In this configuration step you have to preselect standards.';
+$string['second_configuration_step'] = 'In this configuration step you have to pre-select standards.';
 $string['next_step'] = 'This configuration step has been completed. Click here to continue configuration.';
 $string['next_step_teacher'] = 'The configuration that has to be done by the administrator is now completed. To continue with the course specific configuration click here.';
-$string['teacher_first_configuration_step'] = 'The first step of the configuration is to select some general settings for your course.';
+$string['teacher_first_configuration_step'] = 'The first step of course configuration is to adjust general settings for your course.';
 $string['teacher_second_configuration_step'] = 'In the second configuration step topics to work with in this course have to be selected.';
-$string['teacher_third_configuration_step'] = 'The next step is to associate Moodle activities with competencies (optional: if you don\'t want to work with activities unset the setting "I want to work with activities" in the tab "Configuration")';
+$string['teacher_third_configuration_step'] = 'The next step is to associate Moodle activities with competencies ';
+$string['teacher_third_configuration_step_link'] = '(optional: if you don\'t want to work with activities untick the setting "I want to work with Moodle activities" in the tab "Configuration")';
 $string['completed_config'] = 'The configuration of Exabis Competencies is completed.';
 $string['optional_step'] = 'There are no participants in your course yet. If you want to enrol some please use this link.';
 
@@ -129,7 +130,7 @@ $string['oldxmlfile'] = 'You are using an outdated xml-file. Please create new o
 $string['do_demo_import'] = 'import demo data to see how Exabis Competencies works.';
 
 //Configuration
-$string['explainconfig'] = 'Your outcomes have already been imported. In this configuration you have to make the selection of main outcomes you would like to use in this Moodle installation.';
+$string['explainconfig'] = 'Your outcomes have already been imported. In this configuration you have to make the selection of the main standards you would like to use in this Moodle installation.';
 $string['save_selection'] = 'save selection';
 $string['save_success'] = 'changes were successful';
 
@@ -222,14 +223,14 @@ $string['assignfrom'] = 'from';
 $string['assignuntil'] = 'until';
 
 //Activities
-$string['explaineditactivities_subjects'] = 'Here you can associate competencies with Moodle activities.';
+$string['explaineditactivities_subjects'] = '';
 $string['column_setting'] = 'hide/display columns';
 $string['niveau_filter'] = "filter levels";
 $string['module_filter'] = 'filter activities';
 $string['apply_filter'] = 'apply filter';
 $string['no_topics_selected'] = 'configuration of exabis competencies is not completed yet. please chose a topic that you would like to associate Moodle activities with';
 $string['no_activities_selected'] = 'please associate Moodle activities with competences';
-$string['no_course_activities'] = 'There exist no Moodle activities in your course yet, klick here to create some.';
+$string['no_course_activities'] = 'No Moodle activities found in this course - click here to create some.';
 $string['all_modules'] = 'all modules';
 $string['all_niveaus'] = 'all niveaus';
 $string['tick_some'] = 'Please make a selection!';
