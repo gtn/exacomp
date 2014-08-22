@@ -1442,7 +1442,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				false,(!$disabled) ? null : array("disabled"=>"disabled"));
 	}
 
-	public function print_edit_config($data, $courseid){
+	public function print_edit_config($data, $courseid, $fromimport=0){
 		global $OUTPUT;
 
 		$header = html_writer::tag('p', $data->headertext).html_writer::empty_tag('br');
@@ -1501,7 +1501,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$table->data = $rows;
 
 
-		$div = html_writer::div(html_writer::tag('form', html_writer::table($table).$hiddenaction.$innerdiv, array('action'=>'edit_config.php?courseid='.$courseid, 'method'=>'post')), 'exabis_competencies_lis');
+		$div = html_writer::div(html_writer::tag('form', html_writer::table($table).$hiddenaction.$innerdiv, array('action'=>'edit_config.php?courseid='.$courseid.'&fromimport='.$fromimport, 'method'=>'post')), 'exabis_competencies_lis');
 
 
 		$content = html_writer::tag("div", $header.$div, array("id"=>"exabis_competences_block"));

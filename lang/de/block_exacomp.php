@@ -61,15 +61,14 @@ $string['tab_help'] = 'Hilfe';
 $string['tab_skillmanagement'] = 'Kompetenzen-Verwaltung';
 
 $string['first_configuration_step'] = 'Der erste Konfigurationsschritt besteht darin, Daten in das Exabis Competencies Modul zu importieren.';
-$string['second_configuration_step'] = 'Im zweiten Konfigurationsschritt muss eine Vorauswahl für die Standards getroffen werden. Diese Einstellungen sind unabh&auml;ngig von Kurs für die gesamte Moodle-Installation g&uuml;ltig.';
+$string['second_configuration_step'] = 'In diesem Konfigurationsschritt muss eine Vorauswahl für die Standards getroffen werden. Diese Einstellungen sind unabh&auml;ngig von Kurs für die gesamte Moodle-Installation g&uuml;ltig.';
 $string['next_step'] = 'Dieser Konfigurationsschritt wurde abgeschlossen. Klicken Sie hier um zum N&auml;chsten zu gelangen.';
 $string['next_step_teacher'] = 'Die Konfiguration, die vom Administrator vorgenommen werden muss ist hiermit abgeschlossen. Um mit der Kurs-spezifischen Konfiguration fort zu fahren klicken Sie hier.';
 $string['teacher_first_configuration_step'] = 'Im ersten Konfigurationsschritt müssen einige generelle Einstellungen getroffen werden.';
 $string['teacher_second_configuration_step'] = 'Im zweite Konfigurationsschritt müssen Themenbereiche ausgewählt werden mit denen Sie in diesem Kurs arbeiten möchten.';
-$string['teacher_third_configuration_step'] = 'Im nächsten Schritt werden Moodle-Aktivit&auml;ten mit Kompetenzen assoziiert.';
+$string['teacher_third_configuration_step'] = 'Im nächsten Schritt werden Moodle-Aktivit&auml;ten mit Kompetenzen assoziiert. (optional: Wenn Sie nicht mit Aktivit&auml;ten arbeiten m&ouml;chten, dann entfernen Sie das Häkchen "Ich m&ouml;chte mit Moodle-Aktivit&auml;ten arbeiten" im Tab "Konfiguration")';
 $string['completed_config'] = 'Die Exabis Competencies Konfiguration wurde abgeschlossen.';
 $string['optional_step'] = 'In Ihrem Kurs sind noch keine Teilnehmer eingeschrieben, bet&auml;tigen Sie diesen Link wenn Sie das jetzt machen m&ouml;chten.';
-
 
 //Block Settings
 $string['settings_xmlserverurl'] = 'Server-URL';
@@ -84,6 +83,7 @@ $string['settings_usebadges'] = 'Badges/Auszeichnungen verwenden';
 $string['settings_usebadges_description'] = 'Anhaken um den Badges/Auszeichnungen Kompetenzen zuzuteilen';
 $string['settings_skillmanagement'] = 'Skills-Management verwenden';
 $string['settings_skillmanagement_description'] = 'Anhaken um Skills-Management-Tool anstelle des Imports verwenden';
+
 //Learning agenda
 $string['LA_MON'] = "Mo";
 $string['LA_TUE'] = "Di";
@@ -297,7 +297,6 @@ $string['profile_settings_onlygainedbadges'] = 'Ich möchte nur Auszeichnungen s
 
 $string['specificcontent'] = 'Schulbezogene Themenbereiche';
 $string['specificsubject'] = 'Schulbezogene Gegenstands-/Kompetenzbereiche';
-
 
 //LIS Strings
 if(get_config('exacomp','alternativedatamodel')) {

@@ -34,6 +34,7 @@ global $DB, $OUTPUT, $PAGE, $COURSE, $CFG, $version;
 
 $courseid = required_param('courseid', PARAM_INT);
 $action = optional_param('action', "", PARAM_ALPHA);
+$fromimport = optional_param('fromimport', 0, PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_simplehtml', $courseid);
@@ -71,6 +72,11 @@ $blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
 $pagenode = $blocknode->add(get_string($page_identifier,'block_exacomp'), $PAGE->url);
 $pagenode->make_active();
 
+if($fromimport == 1)
+	$img = 'two_admin.png';
+else 	
+	$img = 'one_admin.png';
+	
 //Falls Formular abgesendet, speichern
 if (isset($action) && $action == 'save') {
 	$values = isset($_POST['data']) ? $_POST['data'] : array();
@@ -90,11 +96,11 @@ if (isset($action) && $action == 'save') {
 		else $url = 'edit_course.php';
 		
 		$headertext=get_string("save_success", "block_exacomp") .html_writer::empty_tag('br')
-			.html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/two.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))				
+			.html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/'.$img), 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))				
 			. html_writer::link(new moodle_url($url, array('courseid'=>$courseid)), $string);
 	}		
 }else{
-	$headertext=html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/two.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).get_string('second_configuration_step', 'block_exacomp')
+	$headertext=html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/'.$img), 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).get_string('second_configuration_step', 'block_exacomp')
 		.html_writer::empty_tag('br').get_string("explainconfig", "block_exacomp");
 }
 
@@ -129,7 +135,7 @@ foreach($levels as $level){
 
 $output = $PAGE->get_renderer('block_exacomp');
 	
-echo $output->print_edit_config($data, $courseid);
+echo $output->print_edit_config($data, $courseid, $fromimport);
 
 /* END CONTENT REGION */
 

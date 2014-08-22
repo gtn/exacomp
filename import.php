@@ -113,8 +113,8 @@ if($isAdmin || block_exacomp_check_customupload()) {
 						}
 						
 						echo $OUTPUT->box(get_string("importsuccess", "block_exacomp").html_writer::empty_tag('br')
-							.html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))
-							.html_writer::link(new moodle_url($url, array('courseid'=>$courseid)), $string));
+							.html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one_admin.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))
+							.html_writer::link(new moodle_url($url, array('courseid'=>$courseid, 'fromimport'=>1)), $string));
 					}
 					else {
 						echo $OUTPUT->box(get_string("importfail", "block_exacomp"));
@@ -133,8 +133,8 @@ if($isAdmin || block_exacomp_check_customupload()) {
 				else $string = get_string('next_step_teacher', 'block_exacomp');
 							
 				echo $OUTPUT->box(get_string("importsuccess", "block_exacomp").html_writer::empty_tag('br')
-					.html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))
-					.html_writer::link(new moodle_url('edit_config.php', array('courseid'=>$courseid)), $string));
+					.html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one_admin.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))
+					.html_writer::link(new moodle_url('edit_config.php', array('courseid'=>$courseid, 'fromimport'=>1)), $string));
 			}else{
 				echo $OUTPUT->box(get_string("importfail", "block_exacomp"));
 			}
