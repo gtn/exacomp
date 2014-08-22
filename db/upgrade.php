@@ -805,7 +805,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	 }
 	 	
 	//exacomp next generation -> some major changes in db
-	if($oldversion < 2014070801){
+	if($oldversion < 2014082101){
 		/* block_exacomptopics, change field cat to catid, add key catid */
 		$table = new xmldb_table('block_exacomptopics');
 		$field = new xmldb_field('cat', XMLDB_TYPE_INTEGER, '11');
@@ -1178,7 +1178,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		$field = new xmldb_field('description', XMLDB_TYPE_CHAR, '1333');
 		$dbman->change_field_type($table, $field);
 	
-        upgrade_block_savepoint(true, 2014070801, 'exacomp');
+        upgrade_block_savepoint(true, 2014082101, 'exacomp');
 	}
 	
 	return $result;
