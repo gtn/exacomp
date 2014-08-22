@@ -22,10 +22,14 @@
  * @copyright Florian Jungwirth <danielneis@gmail.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
+$string['pluginname'] = 'Exabis Competencies';
+ 
 $string['exacomp:addinstance'] = 'Exabis Competencies auf Kursseite anlegen';
 $string['exacomp:myaddinstance'] = 'Exabis Competencies auf Startseite anlegen';
-$string['pluginname'] = 'Exabis Competencies';
+$string['exacomp:teacher'] = 'Übersicht der Lehrerfunktionen in einem Kurs';
+$string['exacomp:admin'] = 'Übersicht der Administratorfunktionen in einem Kurs';
+$string['exacomp:student'] = 'Übersicht der Schülerfunktionen in einem Kurs';
+$string['exacomp:use'] = 'Nutzung';
 
 // TABS and PAGE IDENTIFIERS
 // Admin Tabs

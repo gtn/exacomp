@@ -22,10 +22,14 @@
  * @copyright Florian Jungwirth <fjungwirth@gtn-solutions.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+ $string['pluginname'] = 'Exabis Competencies';
 
 $string['exacomp:addinstance'] = 'Add a exabis competencies block';
 $string['exacomp:myaddinstance'] = 'Add a exabis competencies block to my moodle';
-$string['pluginname'] = 'Exabis Competencies';
+$string['exacomp:teacher'] = 'overview of teacher actions in a course';
+$string['exacomp:admin'] = 'overview of administrator actions in a course';
+$string['exacomp:student'] = 'overview of student actions in a course';
+$string['exacomp:use'] = 'use Exabis Competencies';
 
 // TABS and PAGE IDENTIFIERS
 // Admin Tabs
