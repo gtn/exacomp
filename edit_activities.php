@@ -91,7 +91,7 @@ if (($action = optional_param("action", "", PARAM_TEXT) )== "save") {
 }else{
 	$headertext = html_writer::empty_tag('img', array('src'=>$img, 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))
 		.get_string('teacher_third_configuration_step', 'block_exacomp')
-		.html_writer::link(new moodle_url('/blocks/exacomp/edit_course.php', array('courseid'=>$courseid)), get_string('teacher_tab_third_configuration_step_link', 'block_exacomp'));
+		.html_writer::link(new moodle_url('/blocks/exacomp/edit_course.php', array('courseid'=>$courseid)), get_string('teacher_third_configuration_step_link', 'block_exacomp'));
 }
 
 // build tab navigation & print header
