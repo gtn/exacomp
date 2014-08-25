@@ -1081,7 +1081,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	function print_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class) {
-		global $version, $PAGE, $USER;
+		global $version, $PAGE, $USER, $COURSE;
 
 		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
 
@@ -1179,6 +1179,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$li_items .= html_writer::tag('li', $li_item);
 						}
 						if($shared)
+							//$img = html_writer::link(new moodle_url('/blocks/exaport/shared_view.php', array('courseid'=>$COURSE->id, 'access'=>'id&frasl;'.$item->owner.'-'.$item->viewid)), html_writer::empty_tag("img", array("src" => "pix/folder_shared.png","alt" => '')));
 							$img = html_writer::empty_tag("img", array("src" => "pix/folder_shared.png","alt" => ''));
 						else
 							$img = html_writer::empty_tag("img", array("src" => "pix/folder_notshared.png","alt" => ''));
@@ -2062,25 +2063,25 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				
 			$content .= html_writer::div($form);
 		}elseif(!$badge->has_manual_award_criteria()){
-			$link = html_writer::link(new moodle_url('/badges/edit.php', array('id'=>$badge->id, 'action'=>'details')), 'To award this badge in exacomp you have to add the "Manual issue by role" criteria');
+			$link = html_writer::link(new moodle_url('/badges/edit.php', array('id'=>$badge->id, 'action'=>'details')), get_string('to_award_role', 'block_exacomp'));
 			$content .= html_writer::div($link);
 		}else{
 			if(empty($descriptors)){
-				$link = html_writer::link(new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid'=>$COURSE->id, 'badgeid'=>$badge->id)), 'To award this badge in exacomp you have to configure competencies');
+				$link = html_writer::link(new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid'=>$COURSE->id, 'badgeid'=>$badge->id)), get_string('to_award', 'block_exacomp'));
 				$content .= html_writer::div($link);
 			}else{
 				$content_form = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'id', 'value'=>$badge->id))
 				.html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'activate', 'value'=>1))
 				.html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'sesskey', 'value'=>sesskey()))
 				.html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'return', 'value'=>new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid'=>$COURSE->id))))
-				.'This badge is ready to be activated: '
+				.get_string('ready_to_activate', 'block_exacomp')
 				.html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('activate', 'badges')));
 					
 				$form = html_writer::tag('form', $content_form, array('method'=>'post', 'action'=>new moodle_url('/badges/action.php')));
 				$content .= html_writer::div($form, '', array('style'=>'padding-bottom:20px;'));
 
-				$link1 = html_writer::link(new moodle_url('/badges/edit.php', array('id'=>$badge->id, 'action'=>'details')), 'configure badges' );
-				$link2 = html_writer::link(new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid'=>$COURSE->id, 'badgeid'=>$badge->id)), 'configure competences');
+				$link1 = html_writer::link(new moodle_url('/badges/edit.php', array('id'=>$badge->id, 'action'=>'details')), get_string('conf_badges', 'block_exacomp') );
+				$link2 = html_writer::link(new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid'=>$COURSE->id, 'badgeid'=>$badge->id)), get_string('conf_comps', 'block_exacomp'));
 
 				$content .= html_writer::div($link1.' / '.$link2);
 			}

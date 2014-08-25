@@ -1787,9 +1787,10 @@ function block_exacomp_get_eportfolioitem_association($students){
 		
 		foreach($eportfolioitems as $item){
 			$shared = false;
-			
+			$viewid = 0;
+			$owner = 0;
 			$sql = '
-				SELECT vs.userid, v.shareall, v.externaccess FROM {block_exaportviewblock} vb 
+				SELECT vs.userid, v.shareall, v.externaccess, v.id, v.userid as owner FROM {block_exaportviewblock} vb 
 				JOIN {block_exaportview} v ON vb.viewid=v.id 
 				LEFT JOIN {block_exaportviewshar} vs ON vb.viewid=vs.viewid
 				WHERE vb.itemid = ?';
@@ -1801,6 +1802,8 @@ function block_exacomp_get_eportfolioitem_association($students){
 					|| (isset($info->externaccess)&& $info->externaccess>0)){
 						$shared= true;
 				}
+				$viewid = $info->id;
+				$owner = $info->owner;
 			}
 			if(!$shared){
 				foreach($teachers as $teacher){
@@ -1818,6 +1821,8 @@ function block_exacomp_get_eportfolioitem_association($students){
 			$result[$student->id]->competencies[$item->compid]->items[$item->activityid] = new stdClass();
 			$result[$student->id]->competencies[$item->compid]->items[$item->activityid]->shared = $shared;
 			$result[$student->id]->competencies[$item->compid]->items[$item->activityid]->name = $item->name;
+			$result[$student->id]->competencies[$item->compid]->items[$item->activityid]->viewid = $viewid;
+			$result[$student->id]->competencies[$item->compid]->items[$item->activityid]->owner = $owner;
 				
 		}
 	}
@@ -2473,7 +2478,9 @@ function block_exacomp_get_course_competence_statistics($courseid, $user, $schem
 		}	
 	}
 	
-	$average = intval(ceil($average/(count($students)-1)));
+	$average = 0;
+	if((count($students)-1)>0)
+		$average = intval(ceil($average/(count($students)-1)));
 	
 	return array($total,$reached,$average);
 }

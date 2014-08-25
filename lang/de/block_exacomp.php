@@ -169,6 +169,11 @@ $string['mybadges'] = 'Meine Auszeichnungen';
 $string['pendingbadges'] = 'Anstehende Auszeichnungen';
 $string['no_badges_yet'] = "Keine Auszeichnungen verf&uuml;gbar";
 $string['description_edit_badge_comps'] = 'Hier können Sie der ausgew&auml;hlten Auszeichnung Kompetenzen zuordnen.';
+$string['to_award'] = 'Um diese Auszeichnung zu erwerben, m&uuml;ssen Kompetenzen zugeordnet werden.';
+$string['to_award_role'] = 'Um diese Auszeichnung zu erwerben, m&uuml;ssen sie das "manuelle Verleihung" Kriterium hinzuf&uuml;gen.';
+$string['ready_to_activate'] = 'Diese Auszeichnung kann aktiviert werden: ';
+$string['conf_badges'] = 'Auszeichnungen konfigurieren';
+$string['conf_comps'] = 'Kompetenzen zuordnen';
 
 //Examples
 $string['sorting'] = 'Sortierung w&auml;hlen: ';

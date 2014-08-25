@@ -140,12 +140,17 @@ $string['uses_activities'] = 'I work with Moodle activites';
 $string['show_all_descriptors'] = 'Show all outcomes in overview';
 $string['show_all_examples'] = 'Show external examples for students';
 $string['usedetailpage'] = 'Use detailed overview of competencies';
+
 //Badges
 $string['mybadges'] = 'My badges';
 $string['pendingbadges'] = 'Pending badges';
 $string['no_badges_yet'] = "no badges available";
-
+$string['to_award'] = 'To award this badge in exacomp you have to configure competencies';
+$string['to_award_role'] = 'To award this badge in exacomp you have to add the "Manual issue by role" criteria';
 $string['description_edit_badge_comps'] = 'Here you can associate the selected badge with outcomes.';
+$string['ready_to_activate'] = 'This badge is ready to be activated: ';
+$string['conf_badges'] = 'configure badges';
+$string['conf_comps'] = 'configure competences';
 
 //Examples
 $string['sorting'] = 'select sorting: ';
