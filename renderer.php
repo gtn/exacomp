@@ -2379,6 +2379,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$studentCell = new html_table_cell();
 					$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
 					$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+					if(isset($student->topics->teacher[$topic->id]) && $student->topics->teacher[$topic->id]>= ceil($data->scheme/2)){
+						$studentCell->attributes['class'] .= ' exabis_comp_teacher_assigned';
+					}
 					$studentCell->colspan = $studentsColspan;
 
 					// SHOW EVALUATION
@@ -2463,7 +2466,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$studentCell = new html_table_cell();
 				$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
 				$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-
+				if(isset($student->competencies->teacher[$descriptor->id]) && $student->competencies->teacher[$descriptor->id]>= ceil($data->scheme/2)){
+						$studentCell->attributes['class'] .= ' exabis_comp_teacher_assigned';
+					}
 				// SHOW EVALUATION
 				if($data->showevaluation) {
 					$studentCellEvaluation = new html_table_cell();
