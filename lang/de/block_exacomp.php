@@ -119,7 +119,7 @@ Kompetenzorientierter Unterricht ist in aller Munde - und Moodle kann dabei mit 
 <h3>Die TrainerInnen-Rolle</h3>Die Lehrenden k&ouml;nnen mit Hilfe des Blockes einem Kurs bestimmte Kompetenzen zuordnen und den Kompetenzerwerb anschlie&szlig;end auch bewerten.
 <a href="http://www.youtube.com/watch?v=gxSrXa4Ynik">http://www.youtube.com/watch?v=gxSrXa4Ynik</a>
 
-<h3>Die TeilnehmerInnen-Rolle</h3>Lernende k&ouml;nnen mit Hilfe von Exabis Competencies u.a. ihren Kompetenzerwerb selbst einsch&auml;tzen und die eigene Einsch$auml;tzung unkompliziert der der Lehrkraft gegen&uuml;berstellen.
+<h3>Die TeilnehmerInnen-Rolle</h3>Lernende k&ouml;nnen mit Hilfe von Exabis Competencies u.a. ihren Kompetenzerwerb selbst einsch&auml;tzen und die eigene Einsch$auml;tzung unkompliziert der des Trainers gegen&uuml;berstellen.
 <a href="http://www.youtube.com/watch?v=DdAOIiXXhZ8">http://www.youtube.com/watch?v=DdAOIiXXhZ8</a>
 
 <h3>Das Bildungsstandards-Erfassungstool</h3>Mit Hilfe dieses Tools k&ouml;nnen Schulen erg&auml;nzend zu den &ouml;sterreichischen Bildungsstandards eigene Standards erstellen, erfassen und verwalten.
@@ -221,7 +221,7 @@ $string['grading'] = ' Bewertung: ';
 $string['teacher_tipp'] = 'Tipp';
 $string['teacher_tipp_1'] = 'Diese Kompetenz wurde bei ';
 $string['teacher_tipp_2'] = ' Moodle-Aktivit&auml;ten zugeordnet und bereits bei ';
-$string['teacher_tipp_3'] = ' erf&uuml;llt.';
+$string['teacher_tipp_3'] = ' Moodle-Aktivit&auml;ten in der Kompetenz-Detailansicht erf&uuml;llt.';
 
 $string['eportitems'] = 'Dieser Teilnehmer hat folgende E-Portfolio-Artefakte zu diesem Deskriptor eingereicht: ';
 $string['eportitem_shared'] = ' (geteilt)';
@@ -242,7 +242,7 @@ $string['assigndone'] = 'Aufgabe erledigt: ';
 $string['assignmyself'] = 'selbst';
 $string['assignlearningpartner'] = 'Lernpartner';
 $string['assignlearningrgoup'] = 'Lerngruppe';
-$string['assignteacher'] = 'Lehrkraft';
+$string['assignteacher'] = 'Trainer';
 $string['assignfrom'] = 'von';
 $string['assignuntil'] = 'bis';
 $string['assignlearninggroup'] = 'Lerngruppe';
