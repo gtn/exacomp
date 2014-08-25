@@ -103,7 +103,7 @@ if($formdata = $form->get_data()) {
 	$context = context_user::instance($USER->id);
 	$fs = get_file_storage();
 
-	if($formdata->lisfilename == 1) {
+	if($formdata->lisfilename == 1 && $form->get_new_filename('file')) {
 		$filenameinfos = $DB->get_record_sql("SELECT s.numb, st.title as subjecttitle, cat.title as cattitle, cat.sourceid as catid FROM {block_exacompschooltypes} st
 				JOIN {block_exacompsubjects} s ON s.stid = st.id
 				JOIN {block_exacomptopics} t ON s.id = t.subjid
@@ -149,11 +149,14 @@ if($formdata = $form->get_data()) {
 	$solutionpathnamehash = $fs->get_pathname_hash($context->id, 'user', 'private', 0, '/', $newsolutionname);
 
 	// insert example
-	$task = new moodle_url($CFG->wwwroot.'/blocks/exacomp/example_upload.php',array("action"=>"serve","c"=>$context->id,"i"=>$pathnamehash,"courseid"=>$courseid));
-	$newExample->task = $task->out(false);
-	$solution = new moodle_url($CFG->wwwroot.'/blocks/exacomp/example_upload.php',array("action"=>"serve","c"=>$context->id,"i"=>$solutionpathnamehash,"courseid"=>$courseid));
-	$newExample->solution = $solution->out(false);
-
+	if($newfilename) {
+		$task = new moodle_url($CFG->wwwroot.'/blocks/exacomp/example_upload.php',array("action"=>"serve","c"=>$context->id,"i"=>$pathnamehash,"courseid"=>$courseid));
+		$newExample->task = $task->out(false);
+	}
+	if($newsolutionname) {
+		$solution = new moodle_url($CFG->wwwroot.'/blocks/exacomp/example_upload.php',array("action"=>"serve","c"=>$context->id,"i"=>$solutionpathnamehash,"courseid"=>$courseid));
+		$newExample->solution = $solution->out(false);
+	}
 	$newExample->id = $DB->insert_record('block_exacompexamples', $newExample);
 
 	foreach($formdata->descriptors as $descr)

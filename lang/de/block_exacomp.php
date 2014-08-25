@@ -28,7 +28,7 @@ $string['exacomp:addinstance'] = 'Exabis Competencies auf Kursseite anlegen';
 $string['exacomp:myaddinstance'] = 'Exabis Competencies auf Startseite anlegen';
 $string['exacomp:teacher'] = 'Übersicht der Lehrerfunktionen in einem Kurs';
 $string['exacomp:admin'] = 'Übersicht der Administratorfunktionen in einem Kurs';
-$string['exacomp:student'] = 'Übersicht der Schülerfunktionen in einem Kurs';
+$string['exacomp:student'] = 'Übersicht der Teilnehmerfunktionen in einem Kurs';
 $string['exacomp:use'] = 'Nutzung';
 
 // TABS and PAGE IDENTIFIERS
@@ -99,7 +99,7 @@ $string['LA_assessment'] = "Einsch&auml;tzung";
 $string['LA_plan'] = "Arbeitsplan";
 $string['LA_no_learningagenda'] = 'Es sind keine Lernagenden in der ausgew&auml;hlten Woche vorhanden.';
 $string['LA_no_student_selected'] = '-- kein Sch&uuml;ler ausgew&auml;hlt --';
-$string['LA_select_student'] = 'W&auml;hlen Sie bitte einen Sch&uuml;ler aus, um seine Lernagenda einzusehen.';
+$string['LA_select_student'] = 'W&auml;hlen Sie bitte einen Kursteilnehmer aus, um seine Lernagenda einzusehen.';
 $string['LA_no_example'] = 'Kein Beispiel zugeordnet';
 $string['LA_backtoview'] = 'Zur&uuml;ck zur Originalansicht';
 $string['LA_from_n'] = ' von ';
@@ -138,7 +138,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 ';
 
 //Import
-$string['importinfo'] = 'Erstellen Sie Ihre eigenen Kompetenzen/Standards auf <a href="http://www.edustandards.org">www.edustandards.org</a> oder laden Sie ein bestehendes XML von <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch.';
+$string['importinfo'] = 'Erstellen Sie Ihre eigenen Kompetenzen/Standards auf <a target="_blank" href="http://www.edustandards.org">www.edustandards.org</a> oder laden Sie ein bestehendes XML von <a target="_blank" href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch.';
 $string['importwebservice'] = 'Es besteht auch die M&ouml;glichkeit die Daten &uuml;ber ein <a href="{$a}">Webservice</a> aktuell zu halten.';
 $string['importdone'] = 'Die allgemeinen Bildungsstandards sind bereits importiert.';
 $string['importpending'] = 'Bitte importieren Sie jetzt die allgemeinen Bildungsstandards und w&auml;hlen Sie anschlie&szlig;end im Tab "Konfiguration" die anzuzeigenden Deskriptorenbereiche aus.';
@@ -161,7 +161,7 @@ $string['save_success'] = '&Auml;nderungen erfolgreich &uuml;bernommen';
 $string['grading_scheme'] = 'Bewertungsschema';
 $string['uses_activities'] = 'Ich verwende Moodle Aktivit&auml;ten zur Beurteilung';
 $string['show_all_descriptors'] = 'Alle Deskriptoren im &Uuml;berblick anzeigen';
-$string['show_all_examples'] = 'Externe Beispiele für Schüler anzeigen';
+$string['show_all_examples'] = 'Externe Beispiele für Teilnehmer anzeigen';
 $string['usedetailpage'] = 'Detaillierte Kompetenzansicht verwenden';
 
 //Badges
@@ -209,7 +209,7 @@ $string['legend_upload'] = 'Eigenes Beispiel hochladen';
 $string['alltopics'] = 'Alle Teilbereiche';
 $string['choosesubject'] = "Fach auswählen: ";
 $string['choosetopic'] = "Teilkompetenzbereich/Leitidee auswählen";
-$string['choosestudent'] = "Schüler auswählen: ";
+$string['choosestudent'] = "Kursteilnehmer auswählen: ";
 $string['selectall'] = 'Alle auswählen';
 
 //Icons
@@ -261,9 +261,9 @@ $string['all_niveaus'] = 'Alle Niveaustufen';
 $string['tick_some'] = 'Bitte treffen Sie eine Auswahl!';
 
 //Competence Grid
-$string['textalign'] = "Switch text align";
+$string['textalign'] = "Textuelle Ausrichtung ändern";
 $string['selfevaluation'] = 'Selbsteinschätzung';
-$string['teacherevaluation'] = 'Lehrereinschätzung';
+$string['teacherevaluation'] = 'Einschätzung des Beurteilenden';
 $string['competencegrid_nodata'] = 'Sollte der Kompetenzraster leer sein, wurden für die Deskriptoren des ausgewählten Gegenstands keine Niveaus in den Daten definiert';
 
 //Detail view
