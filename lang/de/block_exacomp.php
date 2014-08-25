@@ -230,8 +230,8 @@ $string['eportitem_notshared'] = ' (nicht geteilt)';
 $string['teachershortcut'] = 'L';
 $string['studentshortcut'] = 'S';
 
-$string['overview'] = 'Der Kompetenz-&Uuml;berblick listet Sch&uuml;ler und die im Kurs aktivierten Kompetenzen auf.';
-$string['showevaluation'] = 'Um die Selbsteinsch&auml;tzung zu aktivieren klicke <a href="{$a}">hier</a>';
+$string['overview'] = 'Der Kompetenz-&Uuml;berblick listet TeilnehmerInnen und die im Kurs aktivierten Kompetenzen auf.';
+$string['showevaluation'] = 'Um die Selbsteinsch&auml;tzung zu aktivieren klicken Sie <a href="{$a}">hier</a>';
 $string['hideevaluation'] = 'Um die Selbsteinsch&auml;tzung zu deaktivieren klicke <a href="{$a}">hier</a>';
 $string['showevaluation_student'] = 'Um die Einsch&auml;tzung des Lehrers zu aktivieren klicke <a href="{$a}">hier</a>';
 $string['hideevaluation_student'] = 'Um die Einsch&auml;tzung des Lehrers zu deaktivieren klicke <a href="{$a}">hier</a>';
