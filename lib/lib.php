@@ -1913,7 +1913,7 @@ function block_exacomp_get_active_topics_rec($subs, $topics){
 function block_exacomp_get_active_tests_by_course($courseid){
 	global $DB;
 
-	$sql = "SELECT cm.instance as id, cm.id as activityid, q.grade FROM {block_exacompcompactiv_mm} activ "
+	$sql = "SELECT DISTINCT cm.instance as id, cm.id as activityid, q.grade FROM {block_exacompcompactiv_mm} activ "
 	."JOIN {course_modules} cm ON cm.id = activ.activityid "
 	."JOIN {modules} m ON m.id = cm.module "
 	."JOIN {quiz} q ON cm.instance = q.id "

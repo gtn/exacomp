@@ -298,7 +298,11 @@ class block_exacomp extends block_list {
 	 * it tries to get the content and update the local xml.
 	 */
 	public function cron() {
-		global $COURSE, $xmlserverurl, $autotest, $testlimit;
+		global $COURSE, $DB, $xmlserverurl, $autotest, $testlimit;
+		$xmlserverurl = get_config('exacomp', 'xmlserverurl');
+		$autotest = get_config('exacomp', 'autotest');
+		$testlimit = get_config('exacomp', 'testlimit');
+
 		mtrace('Exabis Competencies: cron job is running.');
 		
 		//import xml with provided server url
@@ -316,6 +320,7 @@ class block_exacomp extends block_list {
 		}
 		
 		if($autotest){
+			mtrace('autotest');
 			//for all courses where exacomp is used
 			$courses = block_exacomp_get_courses();
 			
@@ -338,12 +343,15 @@ class block_exacomp extends block_list {
 								foreach($test->descriptors as $descriptor){
 									block_exacomp_set_user_competence($student->id, $descriptor->compid,
 										0, $courseid, ROLE_TEACHER, $grading_scheme);
+									mtrace("set competence ".$descriptor->compid." for user ".$student->id);
 								}
 							}
 							if(isset($test->topics)){
-								foreach($test->topics as $topics){
+								foreach($test->topics as $topic){
 									block_exacomp_set_user_competence($student->id, $topic->compid,
 										1, $courseid, ROLE_TEACHER, $grading_scheme);
+									mtrace("set topic competence ".$topic->compid." for user ".$student->id);
+								
 								}
 							}
 						}

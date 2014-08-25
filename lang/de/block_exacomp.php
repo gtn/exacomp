@@ -220,8 +220,8 @@ $string['usernosubmission_topic'] = ' hat keine Moodle-Aufgaben zu diesem Thema 
 $string['grading'] = ' Bewertung: ';
 $string['teacher_tipp'] = 'Tipp';
 $string['teacher_tipp_1'] = 'Diese Kompetenz wurde bei ';
-$string['teacher_tipp_2'] = ' Moodle-Aktivit&auml;ten zugeordnet und bereits bei ';
-$string['teacher_tipp_3'] = ' Moodle-Aktivit&auml;ten in der Kompetenz-Detailansicht erf&uuml;llt.';
+$string['teacher_tipp_2'] = ' Moodle-Aktivit&auml;t(en) zugeordnet und bereits bei ';
+$string['teacher_tipp_3'] = ' Moodle-Aktivit&auml;t(en) in der Kompetenz-Detailansicht erf&uuml;llt.';
 
 $string['eportitems'] = 'Dieser Teilnehmer hat folgende E-Portfolio-Artefakte zu diesem Deskriptor eingereicht: ';
 $string['eportitem_shared'] = ' (geteilt)';
