@@ -1787,20 +1787,25 @@ function block_exacomp_get_eportfolioitem_association($students){
 		
 		foreach($eportfolioitems as $item){
 			$shared = false;
-			if((isset($item->shareall) && $item->shareall>0) || (isset($item->externaccess)&& $item->externaccess>0)){
-				$shared= true;
+			
+			$sql = '
+				SELECT vs.userid, v.shareall, v.externaccess FROM {block_exaportviewblock} vb 
+				JOIN {block_exaportview} v ON vb.viewid=v.id 
+				LEFT JOIN {block_exaportviewshar} vs ON vb.viewid=vs.viewid
+				WHERE vb.itemid = ?';
+			
+			$shared_info = $DB->get_records_sql($sql, array($item->activityid));
+			
+			foreach($shared_info as $info){
+				if((isset($info->shareall) && $info->shareall>0) 
+					|| (isset($info->externaccess)&& $info->externaccess>0)){
+						$shared= true;
+				}
 			}
-			else{
-				
-				$shared_persons = $DB->get_records_sql('
-				SELECT vs.userid FROM {block_exaportviewblock} vb 
-				JOIN {block_exaportviewshar} vs ON vb.viewid=vs.viewid 
-				WHERE vb.itemid = ?'
-				, array($item->activityid));
-				
+			if(!$shared){
 				foreach($teachers as $teacher){
-					foreach($shared_persons as $person){
-						if($teacher->id == $person->userid){
+					foreach($shared_info as $person){
+						if(isset($person->userid) && $teacher->id == $person->userid){
 							$shared=true;
 						}
 					}
