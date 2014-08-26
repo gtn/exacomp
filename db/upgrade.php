@@ -805,7 +805,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	 }
 	 	
 	//exacomp next generation -> some major changes in db
-	if($oldversion < 2014082101){
+	if($oldversion < 2014082101 || $oldversion < 2014070801){
 		/* block_exacomptopics, change field cat to catid, add key catid */
 		$table = new xmldb_table('block_exacomptopics');
 		$field = new xmldb_field('cat', XMLDB_TYPE_INTEGER, '11');
