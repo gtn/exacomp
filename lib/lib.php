@@ -2041,16 +2041,17 @@ function block_exacomp_delete_competencies_activities(){
  */
 function block_exacomp_get_activities($compid, $courseid = null, $comptype = TYPE_DESCRIPTOR) { //alle assignments die einem bestimmten descriptor zugeordnet sind
 	global $CFG, $DB;
-	$query = 'SELECT mm.id as uniqueid,a.id,ass.grade,a.instance FROM {'.DB_DESCRIPTORS.'} descr
-	INNER JOIN {'.DB_COMPETENCE_ACTIVITY.'} mm  ON descr.id=mm.compid
+	$query = 'SELECT mm.id as uniqueid,a.id,ass.grade,a.instance 
+	FROM {'.DB_COMPETENCE_ACTIVITY.'} mm  
 	INNER JOIN {course_modules} a ON a.id=mm.activityid
 	LEFT JOIN {assign} ass ON ass.id=a.instance
-	WHERE descr.id=? AND mm.comptype = '. $comptype;
+	WHERE mm.compid=? AND mm.comptype = ?';
 
-	$condition = array($compid);
+	$condition = array($compid, $comptype);
+	
 	if ($courseid){
 		$query.=" AND a.course=?";
-		$condition = array($compid, $courseid);
+		$condition = array($compid, $comptype, $courseid);
 	}
 
 	$activities = $DB->get_records_sql($query, $condition);
