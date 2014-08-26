@@ -2345,7 +2345,8 @@ function block_exacomp_build_activity_tree_topics(&$subs, $activityid, $activity
 		
 		if(isset($topic->descriptors) && !empty($topic->descriptors)){
 			foreach($topic->descriptors as $descriptor){
-				(array_key_exists($activityid, $activity_association->competencies[$descriptor->id]))?
+				
+				(isset($activity_association->competencies[$descriptor->id]) && array_key_exists($activityid, $activity_association->competencies[$descriptor->id]))?
 					$descriptor_activity_association = true:$descriptor_activity_association=false;
 		
 				if(!$descriptor_activity_association){

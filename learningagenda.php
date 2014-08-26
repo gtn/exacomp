@@ -27,7 +27,7 @@
 
 require_once dirname(__FILE__)."/inc.php";
 
-global $DB, $OUTPUT, $PAGE;
+global $DB, $OUTPUT, $PAGE, $version;
 
 $courseid = required_param('courseid', PARAM_INT);
 
@@ -150,24 +150,46 @@ foreach($weekdays as $weekday=>$tag){
 	foreach($results as $result){
 		$example = new stdClass();
 		
-		if($result->starttime == $tag || !isset($result->endtime))	{
-			$example_count_week++;
-			$example->title = $result->example;
-			$example->task = $result->exampletask;
-			$example->externalurl = $result->exampleurl;
-			$example->desc = $result->title;
-			$example->evaluate = $result->evaluate;
-			$example->numb = $result->subnumb;
-			$example->schooltype = substr($result->schooltype,0,1);
-			$example->cat = $result->cat;
-			$example->enddate = $result->endtime;
-			if(isset($result->tevaluate)){
-				$example->tevaluate = $result->tevaluate;
-			}else{
-				$example->tevaluate = 0;
+		if($version){
+			if($result->starttime == $tag || !isset($result->endtime))	{
+				$example_count_week++;
+				$example->title = $result->example;
+				$example->task = $result->exampletask;
+				$example->externalurl = $result->exampleurl;
+				$example->desc = $result->title;
+				$example->evaluate = $result->evaluate;
+				$example->numb = $result->subnumb;
+				$example->schooltype = substr($result->schooltype,0,1);
+				$example->cat = $result->cat;
+				$example->enddate = $result->endtime;
+				if(isset($result->tevaluate)){
+					$example->tevaluate = $result->tevaluate;
+				}else{
+					$example->tevaluate = 0;
+				}
+				$data[$weekday][$result->subject][] = $example;
 			}
-			$data[$weekday][$result->subject][] = $example;
+		}else{
+			if($result->starttime <= $tag && ($result->endtime >= $tag || !isset($result->endtime))){
+				$example_count_week++;
+				$example->title = $result->example;
+				$example->task = $result->exampletask;
+				$example->externalurl = $result->exampleurl;
+				$example->desc = $result->title;
+				$example->evaluate = $result->evaluate;
+				$example->numb = $result->subnumb;
+				$example->schooltype = substr($result->schooltype,0,1);
+				$example->cat = $result->cat;
+				$example->enddate = $result->endtime;
+				if(isset($result->tevaluate)){
+					$example->tevaluate = $result->tevaluate;
+				}else{
+					$example->tevaluate = 0;
+				}
+				$data[$weekday][$result->subject][] = $example;
+			}
 		}
+		
 		$data[$weekday]['date'] =  strftime("%d. %b %Y", $tag);
 	}
 	

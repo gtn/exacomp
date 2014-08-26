@@ -66,20 +66,23 @@ $isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
 if(!$isTeacher) $studentid = $USER->id;
 else {
 	$coursestudents = block_exacomp_get_students_by_course($courseid);
-	//check permission for viewing students profile
-	if(!array_key_exists($studentid, $coursestudents))
-		print_error("nopermissions","","","Show student profile");
-	
-	//print student selector
-	echo get_string("choosestudent","block_exacomp");
-	echo block_exacomp_studentselector($coursestudents,$studentid,$PAGE->url);
 	
 	if($studentid == 0) {
 		echo html_writer::tag("p", get_string("select_student","block_exacomp"));
+		//print student selector
+		echo get_string("choosestudent","block_exacomp");
+		echo block_exacomp_studentselector($coursestudents,$studentid,$PAGE->url);
 		echo $OUTPUT->footer();
 		die;
+	}else{
+		//check permission for viewing students profile
+		if(!array_key_exists($studentid, $coursestudents))
+			print_error("nopermissions","","","Show student profile");
+		
+		//print student selector
+		echo get_string("choosestudent","block_exacomp");
+		echo block_exacomp_studentselector($coursestudents,$studentid,$PAGE->url);
 	}
-	
 }
 $student = $DB->get_record('user',array('id' => $studentid));
 $output = $PAGE->get_renderer('block_exacomp');

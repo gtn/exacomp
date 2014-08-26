@@ -98,7 +98,7 @@ $string['LA_teacher'] = "L";
 $string['LA_assessment'] = "Einsch&auml;tzung";
 $string['LA_plan'] = "Arbeitsplan";
 $string['LA_no_learningagenda'] = 'Es sind keine Lernagenden in der ausgew&auml;hlten Woche vorhanden.';
-$string['LA_no_student_selected'] = '-- kein Sch&uuml;ler ausgew&auml;hlt --';
+$string['LA_no_student_selected'] = '-- kein Kursteilnehmer ausgew&auml;hlt --';
 $string['LA_select_student'] = 'W&auml;hlen Sie bitte einen Kursteilnehmer aus, um seine Lernagenda einzusehen.';
 $string['LA_no_example'] = 'Kein Beispiel zugeordnet';
 $string['LA_backtoview'] = 'Zur&uuml;ck zur Originalansicht';
@@ -167,10 +167,10 @@ $string['usedetailpage'] = 'Detaillierte Kompetenzansicht verwenden';
 //Badges
 $string['mybadges'] = 'Meine Auszeichnungen';
 $string['pendingbadges'] = 'Anstehende Auszeichnungen';
-$string['no_badges_yet'] = "Keine Auszeichnungen verf&uuml;gbar";
-$string['description_edit_badge_comps'] = 'Hier können Sie der ausgew&auml;hlten Auszeichnung Kompetenzen zuordnen.';
-$string['to_award'] = 'Um diese Auszeichnung zu erwerben, m&uuml;ssen Kompetenzen zugeordnet werden.';
-$string['to_award_role'] = 'Um diese Auszeichnung zu erwerben, m&uuml;ssen sie das "manuelle Verleihung" Kriterium hinzuf&uuml;gen.';
+$string['no_badges_yet'] = "Keine Auszeichnungen verfügbar";
+$string['description_edit_badge_comps'] = 'Hier können Sie der ausgewählten Auszeichnung Kompetenzen zuordnen.';
+$string['to_award'] = 'Um diese Auszeichnung zu erwerben, müssen Kompetenzen zugeordnet werden.';
+$string['to_award_role'] = 'Um diese Auszeichnung zu erwerben, müssen sie das "manuelle Verleihung" Kriterium hinzufügen.';
 $string['ready_to_activate'] = 'Diese Auszeichnung kann aktiviert werden: ';
 $string['conf_badges'] = 'Auszeichnungen konfigurieren';
 $string['conf_comps'] = 'Kompetenzen zuordnen';
@@ -206,16 +206,16 @@ $string['linkerr'] = 'Bitte geben Sie einen korrekten Link ein!';
 
 //Assign competencies
 $string['save_selection'] = 'Auswahl speichern';
-$string['delete_confirmation'] = 'Soll das Beispiel wirklich gel&ouml;scht werden?';
+$string['delete_confirmation'] = 'Soll das Beispiel wirklich gelöscht werden?';
 $string['legend_activities'] = 'Moodle-Aktivit&auml;ten';
 $string['legend_eportfolio'] = 'ePortfolio';
 $string['legend_notask'] = 'Keine Moodle-Aktivit&auml;t/Quiz f&uuml;r diese Kompetenz abgegeben';
 $string['legend_upload'] = 'Eigenes Beispiel hochladen';
 $string['alltopics'] = 'Alle Teilbereiche';
-$string['choosesubject'] = "Fach auswählen: ";
-$string['choosetopic'] = "Teilkompetenzbereich/Leitidee auswählen";
-$string['choosestudent'] = "Kursteilnehmer auswählen: ";
-$string['selectall'] = 'Alle auswählen';
+$string['choosesubject'] = "Fach ausw&auml;hlen: ";
+$string['choosetopic'] = "Teilkompetenzbereich/Leitidee ausw&auml;hlen";
+$string['choosestudent'] = "Kursteilnehmer ausw&auml;hlen: ";
+$string['selectall'] = 'Alle ausw&auml;hlen';
 
 //Icons
 $string['usersubmitted'] = ' hat folgende Moodle-Aktivit&auml;ten abgegeben:';
@@ -235,13 +235,13 @@ $string['eportitem_notshared'] = ' (nicht geteilt)';
 $string['teachershortcut'] = 'L';
 $string['studentshortcut'] = 'S';
 
-$string['overview'] = 'Der Kompetenz-&Uuml;berblick listet TeilnehmerInnen und die im Kurs aktivierten Kompetenzen auf.';
-$string['showevaluation'] = 'Um die Selbsteinsch&auml;tzung zu aktivieren klicken Sie <a href="{$a}">hier</a>';
-$string['hideevaluation'] = 'Um die Selbsteinsch&auml;tzung zu deaktivieren klicke <a href="{$a}">hier</a>';
-$string['showevaluation_student'] = 'Um die Einsch&auml;tzung des Lehrers zu aktivieren klicke <a href="{$a}">hier</a>';
-$string['hideevaluation_student'] = 'Um die Einsch&auml;tzung des Lehrers zu deaktivieren klicke <a href="{$a}">hier</a>';
+$string['overview'] = 'Der Kompetenz-&Uuml;berblick listet Teilnehmer/-innen und die im Kurs aktivierten Kompetenzen auf.';
+$string['showevaluation'] = 'Um die Selbsteinsch&auml;tzung zu aktivieren, klicken Sie <a href="{$a}">hier</a>.';
+$string['hideevaluation'] = 'Um die Selbsteinsch&auml;tzung zu deaktivieren, klicken Sie <a href="{$a}">hier</a>.';
+$string['showevaluation_student'] = 'Um die Einsch&auml;tzung des Lehrers zu aktivieren, klicke <a href="{$a}">hier</a>.';
+$string['hideevaluation_student'] = 'Um die Einsch&auml;tzung des Lehrers zu deaktivieren, klicke <a href="{$a}">hier</a>.';
 $string['columnselect'] = 'Spaltenauswahl';
-$string['allstudents'] = 'Alle Sch&uuml;ler';
+$string['allstudents'] = 'Alle  Kursteilnehmer';
 
 $string['assigndone'] = 'Aufgabe erledigt: ';
 $string['assignmyself'] = 'selbst';
@@ -291,11 +291,11 @@ $string['select_student'] = 'Wählen Sie einen Kursteilnehmer aus, dessen Kompet
 
 //Competence Profile Settings
 $string['profile_settings_showonlyreached'] = 'Ich möchte in meinem Kompetenzprofil nur bereits erreichte Kompetenzen sehen.';
-$string['profile_settings_choose_courses'] = 'In Exabis Competencies beurteilen Lehrer deinen Kompetenzerwerb in unterschiedlichen Fachgebieten. Du kannst auswählen, welche Kurse im Kompetenzprofil aufscheinen sollen.';
+$string['profile_settings_choose_courses'] = 'In Exabis Competencies beurteilen Lehrer deinen Kompetenzerwerb in unterschiedlichen Fachgebieten. Du kannst ausw&auml;hlen, welche Kurse im Kompetenzprofil aufscheinen sollen.';
 $string['profile_settings_useexaport'] = 'Ich möchte Kompetenzen, die in Exabis E-Portfolio verwendet werden in meinem Profil sehen.';
-$string['profile_settings_choose_items'] = 'Exabis ePortfolio dokumentiert deinen Kompetenzerwerb außerhalb von Lehrern vorgegebenen Grenzen. Du kannst auswählen, welche Einträge im Kompetenzprofil aufscheinen sollen.';
+$string['profile_settings_choose_items'] = 'Exabis ePortfolio dokumentiert deinen Kompetenzerwerb außerhalb von Lehrern vorgegebenen Grenzen. Du kannst ausw&auml;hlen, welche Einträge im Kompetenzprofil aufscheinen sollen.';
 $string['profile_settings_useexastud'] = 'Ich möchte Beurteilungen aus Exabis Student Review in meinem Profil sehen.';
-$string['profile_settings_choose_periods'] = 'Exabis Student Review speichert Beurteilungen in verschiedenen Kategorien über mehrere Perioden hinweg. Du kannst auswählen, welche Perioden das Kompetenzprofil beinhalten soll.';
+$string['profile_settings_choose_periods'] = 'Exabis Student Review speichert Beurteilungen in verschiedenen Kategorien über mehrere Perioden hinweg. Du kannst ausw&auml;hlen, welche Perioden das Kompetenzprofil beinhalten soll.';
 $string['profile_settings_no_item'] = 'Kein Exabis ePortfolio Artefakt vorhanden, somit kann nichts dargestellt werden.';
 $string['profile_settings_no_period'] = 'Keine Beurteilung in einer Periode in Exabis Student Review vorhanden.';
 $string['profile_settings_usebadges'] = 'Ich möchte im Kompetenzprofil auch meine Auszeichnungen sehen.';
