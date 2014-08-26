@@ -1161,7 +1161,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$icon = block_exacomp_get_icon_for_user($cm_temp, $student);
 					$studentCell->text .= '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>';
 				}
-
+				
 				//EPORTFOLIOITEMS
 				if(block_exacomp_exaportexists()){
 					if(isset($data->eportfolioitems[$student->id]) && isset($data->eportfolioitems[$student->id]->competencies[$descriptor->id])){
@@ -1178,9 +1178,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								
 							$li_items .= html_writer::tag('li', $li_item);
 						}
+						$first_param = 'id';
+						$second_param = $item->viewid;
+						if($item->useextern){
+							$second_param = $item->hash;
+							$first_param = 'hash';
+						}
+						$link = new moodle_url('/blocks/exaport/shared_view.php', array('courseid'=>$COURSE->id, 'access'=>$first_param.'/'.$item->owner.'-'.$second_param));
+						
 						if($shared)
-							//$img = html_writer::link(new moodle_url('/blocks/exaport/shared_view.php', array('courseid'=>$COURSE->id, 'access'=>'id&frasl;'.$item->owner.'-'.$item->viewid)), html_writer::empty_tag("img", array("src" => "pix/folder_shared.png","alt" => '')));
-							$img = html_writer::empty_tag("img", array("src" => "pix/folder_shared.png","alt" => ''));
+							$img = html_writer::link($link, html_writer::empty_tag("img", array("src" => "pix/folder_shared.png","alt" => '')));
+							//$img = html_writer::empty_tag("img", array("src" => "pix/folder_shared.png","alt" => ''));
 						else
 							$img = html_writer::empty_tag("img", array("src" => "pix/folder_notshared.png","alt" => ''));
 					

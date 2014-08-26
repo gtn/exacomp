@@ -1788,8 +1788,10 @@ function block_exacomp_get_eportfolioitem_association($students){
 			$shared = false;
 			$viewid = 0;
 			$owner = 0;
+			$useextern = false;
+			$hash = 0;
 			$sql = '
-				SELECT vs.userid, v.shareall, v.externaccess, v.id, v.userid as owner FROM {block_exaportviewblock} vb 
+				SELECT vs.userid, v.shareall, v.externaccess, v.id, v.hash, v.userid as owner FROM {block_exaportviewblock} vb 
 				JOIN {block_exaportview} v ON vb.viewid=v.id 
 				LEFT JOIN {block_exaportviewshar} vs ON vb.viewid=vs.viewid
 				WHERE vb.itemid = ?';
@@ -1797,10 +1799,14 @@ function block_exacomp_get_eportfolioitem_association($students){
 			$shared_info = $DB->get_records_sql($sql, array($item->activityid));
 			
 			foreach($shared_info as $info){
-				if((isset($info->shareall) && $info->shareall>0) 
-					|| (isset($info->externaccess)&& $info->externaccess>0)){
-						$shared= true;
+				if((isset($info->shareall) && $info->shareall>0)){
+					$shared = true;
+				} 
+				if(isset($info->externaccess)&& $info->externaccess>0){
+					$shared= true;
+					$useextern = true;
 				}
+				$hash = $info->hash;
 				$viewid = $info->id;
 				$owner = $info->owner;
 			}
@@ -1822,7 +1828,8 @@ function block_exacomp_get_eportfolioitem_association($students){
 			$result[$student->id]->competencies[$item->compid]->items[$item->activityid]->name = $item->name;
 			$result[$student->id]->competencies[$item->compid]->items[$item->activityid]->viewid = $viewid;
 			$result[$student->id]->competencies[$item->compid]->items[$item->activityid]->owner = $owner;
-				
+			$result[$student->id]->competencies[$item->compid]->items[$item->activityid]->useextern = $useextern;
+			$result[$student->id]->competencies[$item->compid]->items[$item->activityid]->hash = $hash;	
 		}
 	}
 	return $result;
