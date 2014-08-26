@@ -262,6 +262,7 @@ $string['studentcomp'] = 'self evaluated competencies';
 $string['radargrapherror'] = 'Radargraph can only be displayed with 3-7 axis';
 $string['nodata'] = 'There is no data do display';
 $string['item_no_comps'] = 'There are no outcomes assigned to the following items: ';
+$string['select_student'] = 'Please select a student first';
 
 //Competence Profile Settings
 $string['profile_settings_showonlyreached'] = 'I only want to see already gained outcomes in my competence profile';

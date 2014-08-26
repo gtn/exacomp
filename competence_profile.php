@@ -61,9 +61,22 @@ echo $OUTPUT->header();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
 /* CONTENT REGION */
-$studentid = optional_param('studentid', $USER->id, PARAM_INT);
+$studentid = optional_param('studentid', 0, PARAM_INT);
 $isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
 if(!$isTeacher) $studentid = $USER->id;
+else {
+	//check permission for viewing students profile
+	//print student selector
+	echo get_string("choosestudent","block_exacomp");
+	echo block_exacomp_studentselector(block_exacomp_get_students_by_course($courseid),$studentid,$PAGE->url);
+	
+	if($studentid == 0) {
+		echo html_writer::tag("p", get_string("select_student","block_exacomp"));
+		echo $OUTPUT->footer();
+		die;
+	}
+	
+}
 $student = $DB->get_record('user',array('id' => $studentid));
 $output = $PAGE->get_renderer('block_exacomp');
 
