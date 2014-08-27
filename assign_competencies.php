@@ -73,14 +73,12 @@ $activities = block_exacomp_get_activities_by_course($courseid);
 if(block_exacomp_get_settings_by_course($courseid)->uses_activities && !$activities && !block_exacomp_get_settings_by_course($courseid)->show_all_descriptors)
 	echo $output->print_no_activities_warning();
 else{
-	if($version) {
-		if($isTeacher)
-			list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_lis_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', 0, PARAM_INT));
-		else
-			list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_lis_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', 0, PARAM_INT), true);
-		//$PAGE->set_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid,"topicid"=>$selectedTopic->id,"subjectid"=>$selectedSubject->id));
-	}
-
+	
+	if($isTeacher)
+		list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_overview_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', 0, PARAM_INT));
+	else
+		list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_overview_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', 0, PARAM_INT), true);
+		
 	// SAVA DATA
 	if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 		// DESCRIPTOR DATA
@@ -110,34 +108,35 @@ else{
 	
 	echo $output->print_competence_overview_form_start((isset($selectedTopic))?$selectedTopic:null, (isset($selectedSubject))?$selectedSubject:null);
 
-	if(!$version) echo $output->print_student_evaluation($showevaluation, $isTeacher);
-	else {
-		/* LIS */
-		echo $output->print_lis_dropdowns($subjects, $topics, $selectedSubject->id, $selectedTopic->id);
-
-		$schooltype = block_exacomp_get_schooltyp_by_subject($selectedSubject);
-		$cat = block_exacomp_get_category($selectedTopic);
+	//dropdowns for subjects and topics
+	echo $output->print_overview_dropdowns($subjects, $topics, $selectedSubject->id, $selectedTopic->id);
+	
+	$schooltype = block_exacomp_get_schooltyp_by_subject($selectedSubject);
+	$cat = block_exacomp_get_category($selectedTopic);
 		
+	if($selectedTopic->id != SHOW_ALL_TOPICS){
+		echo $output->print_overview_metadata($schooltype, $selectedSubject, $selectedTopic, $cat);
 		
-		if($selectedTopic->id != LIS_SHOW_ALL_TOPICS){
-			echo $output->print_lis_metadata($schooltype, $selectedSubject, $selectedTopic, $cat);
+		if($isTeacher)
+			echo $output->print_overview_metadata_teacher();
+		else{
+			$user_evaluation = block_exacomp_get_user_information_by_course($USER, $courseid);
+	
+			$cm_mm = block_exacomp_get_course_module_association($courseid);
+			$course_mods = get_fast_modinfo($courseid)->get_cms();
+	
+			$activities_student = array();
+			if(isset($cm_mm->topics[$selectedTopic->id]))
+				foreach($cm_mm->topics[$selectedTopic->id] as $cmid)
+					$activities_student[] = $course_mods[$cmid];
 			
-			if($isTeacher)
-				echo $output->print_lis_metadata_teacher();
-			else{
-				$user_evaluation = block_exacomp_get_user_information_by_course($USER, $courseid);
-		
-				$cm_mm = block_exacomp_get_course_module_association($courseid);
-				$course_mods = get_fast_modinfo($courseid)->get_cms();
-		
-				$activities_student = array();
-				if(isset($cm_mm->topics[$selectedTopic->id]))
-					foreach($cm_mm->topics[$selectedTopic->id] as $cmid)
-						$activities_student[] = $course_mods[$cmid];
-				echo $output->print_lis_metadata_student($selectedSubject, $selectedTopic, $user_evaluation->topics, $showevaluation, block_exacomp_get_grading_scheme($courseid), block_exacomp_get_icon_for_user($activities_student, $USER));
-			}
+			if($version)
+				echo $output->print_overview_metadata_student($selectedSubject, $selectedTopic, $user_evaluation->topics, $showevaluation, block_exacomp_get_grading_scheme($courseid), block_exacomp_get_icon_for_user($activities_student, $USER));
 		}
 	}
+	
+	if(!$version) echo $output->print_student_evaluation($showevaluation, $isTeacher);
+	
 	echo $output->print_overview_legend($isTeacher);
 	echo $output->print_column_selector(count($students));
 

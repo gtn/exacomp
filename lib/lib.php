@@ -46,7 +46,7 @@ $xmlserverurl = get_config('exacomp', 'xmlserverurl');
 $autotest = get_config('exacomp', 'autotest');
 $testlimit = get_config('exacomp', 'testlimit');
 
-define("LIS_SHOW_ALL_TOPICS",99999999);
+define("SHOW_ALL_TOPICS",99999999);
 
 /**
  *
@@ -688,7 +688,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 	// 2. GET TOPICS
 	$allTopics = block_exacomp_get_all_topics($subjectid);
 	if($courseid > 0) {
-		if($topicid == LIS_SHOW_ALL_TOPICS)
+		if($topicid == SHOW_ALL_TOPICS)
 			$courseTopics = block_exacomp_get_topics_by_subject($courseid, $subjectid);
 		elseif($topicid == null)
 			$courseTopics = block_exacomp_get_topics_by_course($courseid, $showalldescriptors);
@@ -764,7 +764,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 
 	return $subjects;
 }
-function block_exacomp_init_lis_data($courseid, $subjectid, $topicid, $student=false) {
+function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $student=false) {
 
 	$subjects = block_exacomp_get_subjects_by_course($courseid);
 	if (isset($subjects[$subjectid])) {
@@ -782,12 +782,12 @@ function block_exacomp_init_lis_data($courseid, $subjectid, $topicid, $student=f
 
 	if(!$student){
 		$defaultTopic = new stdClass();
-		$defaultTopic->id=LIS_SHOW_ALL_TOPICS;
+		$defaultTopic->id=SHOW_ALL_TOPICS;
 		$defaultTopic->title= get_string('alltopics','block_exacomp');
 
 		$topics = array_merge(array($defaultTopic),$topics);
 
-		if($topicid == LIS_SHOW_ALL_TOPICS)
+		if($topicid == SHOW_ALL_TOPICS)
 			$selectedTopic = $defaultTopic;
 	}
 	return array($subjects, $topics, $selectedSubject, $selectedTopic);
@@ -1370,7 +1370,7 @@ function block_exacomp_get_output_fields($topic, $show_category=false) {
 		$output_id = '';
 		$output_title = $topic->title;
 	}
-	if($version && ($topic->id == LIS_SHOW_ALL_TOPICS)|| $show_category){
+	if($version && ($topic->id == SHOW_ALL_TOPICS)|| $show_category){
 		$output_id = $DB->get_field(DB_CATEGORIES, 'title', array("id"=>$topic->catid));
 		if($output_id)
 			$output_id .= ': ';

@@ -339,7 +339,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	/**
 	 * Prints 2 select inputs for subjects and topics
 	 */
-	public function print_lis_dropdowns($subjects, $topics, $selectedSubject, $selectedTopic) {
+	public function print_overview_dropdowns($subjects, $topics, $selectedSubject, $selectedTopic) {
 		global $PAGE;
 
 		$content = $this->print_subject_dropdown($subjects, $selectedSubject);
@@ -354,7 +354,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return $content;
 	}
-	public function print_lis_metadata_teacher(){
+	public function print_overview_metadata_teacher(){
 
 		$table = new html_table();
 		$table->attributes['class'] = 'exabis_comp_top';
@@ -377,7 +377,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return $content;
 	}
-	public function print_lis_metadata_student($subject, $topic, $topic_evaluation, $showevaluation, $scheme, $icon = null){
+	public function print_overview_metadata_student($subject, $topic, $topic_evaluation, $showevaluation, $scheme, $icon = null){
 		$table = new html_table();
 		$table->attributes['class'] = 'exabis_comp_top';
 
@@ -439,7 +439,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return html_writer::table($table).html_writer::empty_tag('br');
 	}
-	public function print_lis_metadata($schooltype, $subject, $topic, $cat){
+	public function print_overview_metadata($schooltype, $subject, $topic, $cat){
+		global $version;
+		
 		$table = new html_table();
 		$table->attributes['class'] = 'exabis_comp_info';
 
@@ -455,7 +457,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$cell = new html_table_cell();
 		$cell->text = html_writer::span(get_string('comp_field_idea', 'block_exacomp'), 'exabis_comp_top_small')
-		. html_writer::tag('b', $subject->numb." - ".$subject->title);
+		. html_writer::tag('b', (strcmp($subject->numb, '')!=0)?$subject->numb." - ".$subject->title:$subject->title);
 
 		$row->cells[] = $cell;
 
@@ -465,18 +467,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$row->cells[] = $cell;
 
-		$cell = new html_table_cell();
-		$cell->text = html_writer::span(get_string('progress', 'block_exacomp'), 'exabis_comp_top_small')
-		. html_writer::tag('b', (($cat)?$cat->title:''));
-
-		$row->cells[] = $cell;
-
-		$cell = new html_table_cell();
-		$cell->text = html_writer::span(get_string('tab_competence_overview', 'block_exacomp'), 'exabis_comp_top_small')
-		. html_writer::tag('b', substr($schooltype, 0,1).$subject->numb.(($cat)?".".$cat->sourceid:''));
-
-		$row->cells[] = $cell;
-
+		if($version){
+			$cell = new html_table_cell();
+			$cell->text = html_writer::span(get_string('progress', 'block_exacomp'), 'exabis_comp_top_small')
+			. html_writer::tag('b', (($cat)?$cat->title:''));
+	
+			$row->cells[] = $cell;
+	
+			$cell = new html_table_cell();
+			$cell->text = html_writer::span(get_string('tab_competence_overview', 'block_exacomp'), 'exabis_comp_top_small')
+			. html_writer::tag('b', substr($schooltype, 0,1).$subject->numb.(($cat)?".".$cat->sourceid:''));
+	
+			$row->cells[] = $cell;
+		}
 		$rows[] = $row;
 		$table->data = $rows;
 
@@ -980,7 +983,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$studentsCount = 0;
 			$studentsColspan = 1;
 
-			$hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) && (!$version || ($version && $topic->id == LIS_SHOW_ALL_TOPICS)));
+			$hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) && (!$version || ($version && $topic->id == SHOW_ALL_TOPICS)));
 
 			if ($hasSubs) {
 				$data->rowgroup++;
@@ -1347,7 +1350,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $evaluation;
 	}
 	public function print_overview_legend($teacher) {
-		$legend = html_writer::tag("img", "", array("src" => "pix/list_12x11.png", "alt" => get_string('legend_activities','block_exacomp')));
+		$legend = html_writer::empty_tag('br').html_writer::tag("img", "", array("src" => "pix/list_12x11.png", "alt" => get_string('legend_activities','block_exacomp')));
 		$legend .= ' '.get_string('legend_activities','block_exacomp') . " - ";
 
 		$legend .= html_writer::tag("img", "", array("src" => "pix/folder_fill_12x12.png", "alt" => get_string('legend_eportfolio','block_exacomp')));
@@ -2361,7 +2364,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			list($outputid, $outputname) = block_exacomp_get_output_fields($topic);
 			$studentsColspan = 1;
 
-			$hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) && (!$version || ($version && $topic->id == LIS_SHOW_ALL_TOPICS)));
+			$hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) && (!$version || ($version && $topic->id == SHOW_ALL_TOPICS)));
 
 			if ($hasSubs) {
 				$data->rowgroup++;
