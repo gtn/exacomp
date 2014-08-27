@@ -1181,5 +1181,43 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2014082601, 'exacomp');
 	}
 	
+	if ($oldversion < 2014082710) {
+	
+		// Define field sourceid to be added to block_exacompskills.
+        $table = new xmldb_table('block_exacompskills');
+        $field = new xmldb_field('sourceid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'title');
+
+        // Conditionally launch add field sourceid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+	
+        $field = new xmldb_field('source', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '1', 'sourceid');
+        
+        // Conditionally launch add field source.
+        if (!$dbman->field_exists($table, $field)) {
+        	$dbman->add_field($table, $field);
+        }
+        
+        // Define field source to be added to block_exacomptaxonomies.
+        $table = new xmldb_table('block_exacomptaxonomies');
+        $field = new xmldb_field('source', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '1', 'parentid');
+        
+        // Conditionally launch add field source.
+        if (!$dbman->field_exists($table, $field)) {
+        	$dbman->add_field($table, $field);
+        }
+        
+        $table = new xmldb_table('block_exacompcategories');
+        $field = new xmldb_field('source', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '1', 'sourceid');
+        
+        // Conditionally launch add field source.
+        if (!$dbman->field_exists($table, $field)) {
+        	$dbman->add_field($table, $field);
+        }
+        
+		// Exacomp savepoint reached.
+		upgrade_block_savepoint(true, 2014082710, 'exacomp');
+	}
 	return $result;
 }

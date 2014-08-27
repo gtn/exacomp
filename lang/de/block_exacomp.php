@@ -84,6 +84,8 @@ $string['settings_usebadges'] = 'Badges/Auszeichnungen verwenden';
 $string['settings_usebadges_description'] = 'Anhaken um den Badges/Auszeichnungen Kompetenzen zuzuteilen';
 $string['settings_skillmanagement'] = 'Skills-Management verwenden';
 $string['settings_skillmanagement_description'] = 'Anhaken um Skills-Management-Tool anstelle des Imports verwenden';
+$string['settings_enableteacherimport'] = 'Schulspezifische Standards verwenden';
+$string['settings_enableteacherimport_description'] = 'Anhaken um Lehrern/Kurstrainern zu erlauben, eigene, schulspezifische Standards zu importieren';
 
 //Learning agenda
 $string['LA_MON'] = "Mo";

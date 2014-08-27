@@ -84,6 +84,8 @@ $string['settings_usebadges'] = 'use badges';
 $string['settings_usebadges_description'] = 'check to associate badges with competences';
 $string['settings_skillmanagement'] = 'use skills-management';
 $string['settings_skillmanagement_description'] = 'check to use skills-management-tool instead of import';
+$string['settings_enableteacherimport'] = 'Use school specific standards';
+$string['settings_enableteacherimport_description'] = 'Check to enable school specific standard import for trainers';
 
 //Learning agenda
 $string['LA_MON'] = "MON";

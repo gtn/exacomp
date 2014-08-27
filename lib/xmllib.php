@@ -2,18 +2,21 @@
 
 define('IMPORT_SOURCE_NORMAL', 1);
 define("IMPORT_SOURCE_SPECIFIC", 2);
+
+$source = 1;
 /**
  *
  * @param String $data xml content
  * @param unknown_type $source default is 1, for specific import userid should be used
  * @param unknown_type $cron should always be 0, 1 if method is called by the cron job
  */
-function block_exacomp_xml_do_import($data = null, $source = 1, $cron = 0) {
-	global $DB,$CFG;
+function block_exacomp_xml_do_import($data = null, $par_source = 1, $cron = 0) {
+	global $DB,$CFG,$source;
 
 	if($data == null)
 		return false;
 
+	$source = $par_source;
 	/*
 	 * LIBXML_NOCDATA is important at this point, because it converts CDATA Elements to Strings for
 	* immediate useage
@@ -36,7 +39,7 @@ function block_exacomp_xml_do_import($data = null, $source = 1, $cron = 0) {
 		foreach($xml->niveaus->niveau as $niveau) {
 		block_exacomp_insert_niveau($niveau);
 	}
-
+	
 	block_exacomp_xml_truncate(DB_TAXONOMIES);
 	if(isset($xml->taxonomies)) {
 		foreach($xml->taxonomies->taxonomy as $taxonomy) {
@@ -96,14 +99,15 @@ function block_exacomp_xml_do_import($data = null, $source = 1, $cron = 0) {
 	return true;
 }
 function block_exacomp_insert_topic($topic, $parent = 0) {
-	global $DB;
+	global $DB,$source;
 	$topic->sourceid = $topic['id']->__toString();
 	$topic->parentid = $parent;
-
+	$topic->source = $source;
+	
 	if($topic['categoryid'])
-		$topic->catid = block_exacomp_get_database_id(DB_CATEGORIES,$topic['categoryid']->__toString());
+		$topic->catid = block_exacomp_get_database_id(DB_CATEGORIES,$topic['categoryid']->__toString(),$source);
 
-	if($stObj = $DB->get_record(DB_TOPICS, array("sourceid"=>$topic['id']->__toString()))) {
+	if($stObj = $DB->get_record(DB_TOPICS, array("sourceid"=>$topic['id']->__toString(),"source"=>$source))) {
 		$topic->id = $stObj->id;
 		$DB->update_record(DB_TOPICS, simpleXMLElementToArray($topic));
 	} else
@@ -113,7 +117,7 @@ function block_exacomp_insert_topic($topic, $parent = 0) {
 		$DB->delete_records(DB_DESCTOPICS,array("topicid"=>$topic->id->__toString()));
 
 		foreach($topic->descriptors->descriptorid as $descriptor) {
-			$descriptorid = $DB->get_field(DB_DESCRIPTORS, "id", array("sourceid"=>$descriptor['id']->__toString()));
+			$descriptorid = $DB->get_field(DB_DESCRIPTORS, "id", array("sourceid"=>$descriptor['id']->__toString(),"source"=>$source));
 			if($descriptorid > 0)
 				$DB->insert_record(DB_DESCTOPICS, array("topicid"=>$topic->id->__toString(),"descrid"=>$descriptorid));
 		}
@@ -129,32 +133,35 @@ function block_exacomp_insert_topic($topic, $parent = 0) {
 	return $topic->id;
 }
 function block_exacomp_insert_subject(&$subject) {
-	global $DB;
+	global $DB,$source;
 	$subject->sourceid = $subject['id']->__toString();
+	$subject->source = $source;
 	if($subject['categoryid'])
-		$subject->catid = block_exacomp_get_database_id(DB_CATEGORIES,$subject['categoryid']->__toString());
+		$subject->catid = block_exacomp_get_database_id(DB_CATEGORIES,$subject['categoryid']->__toString(),$source);
 
-	if($stObj = $DB->get_record(DB_SUBJECTS, array("sourceid"=>$subject['id']->__toString()))) {
+	if($stObj = $DB->get_record(DB_SUBJECTS, array("sourceid"=>$subject['id']->__toString(),"source"=>$source))) {
 		$subject->id = $stObj->id;
 		$DB->update_record(DB_SUBJECTS, simpleXMLElementToArray($subject));
 	} else
 		$subject->id = $DB->insert_record(DB_SUBJECTS, simpleXMLElementToArray($subject));
 }
 function block_exacomp_insert_schooltype(&$schooltype) {
-	global $DB;
+	global $DB,$source;
 	$schooltype->sourceid = $schooltype['id']->__toString();
-
-	if($stObj = $DB->get_record(DB_SCHOOLTYPES, array("sourceid"=>$schooltype['id']->__toString()))) {
+	$schooltype->source = $source;
+	
+	if($stObj = $DB->get_record(DB_SCHOOLTYPES, array("sourceid"=>$schooltype['id']->__toString(),"source"=>$source))) {
 		$schooltype->id = $stObj->id;
 		$DB->update_record(DB_SCHOOLTYPES, simpleXMLElementToArray($schooltype));
 	} else
 		$schooltype->id = $DB->insert_record(DB_SCHOOLTYPES, simpleXMLElementToArray($schooltype));
 }
 function block_exacomp_insert_edulevel(&$edulevel) {
-	global $DB;
+	global $DB,$source;
 	$edulevel->sourceid = $edulevel['id']->__toString();
-
-	if($eduObj = $DB->get_record(DB_EDULEVELS, array("sourceid"=>$edulevel['id']->__toString()))) {
+	$edulevel->source = $source;
+	
+	if($eduObj = $DB->get_record(DB_EDULEVELS, array("sourceid"=>$edulevel['id']->__toString(),"source"=>$source))) {
 		$edulevel->id = $eduObj->id;
 		$DB->update_record(DB_EDULEVELS, simpleXMLElementToArray($edulevel));
 	} else
@@ -164,14 +171,16 @@ function block_exacomp_insert_edulevel(&$edulevel) {
  * no child-descriptors supported yet
  */
 function block_exacomp_insert_descriptor($descriptor, $parent = 0) {
-	global $DB;
+	global $DB, $source;
 	$descriptor->sourceid = $descriptor['id']->__toString();
+	$descriptor->source = $source;
+	
 	if($descriptor['skillid'])
 		$descriptor->skillid = $descriptor['skillid']->__toString();
 	if($descriptor['niveauid'])
-		$descriptor->niveauid = block_exacomp_get_database_id(DB_NIVEAUS,$descriptor['niveauid']->__toString());
+		$descriptor->niveauid = block_exacomp_get_database_id(DB_NIVEAUS,$descriptor['niveauid']->__toString(),$source);
 
-	if($descriptorObj = $DB->get_record(DB_DESCRIPTORS, array("sourceid"=>$descriptor['id']->__toString()))) {
+	if($descriptorObj = $DB->get_record(DB_DESCRIPTORS, array("sourceid"=>$descriptor['id']->__toString(),"source"=>$source))) {
 		$descriptor->id = $descriptorObj->id;
 		$DB->update_record(DB_DESCRIPTORS, simpleXMLElementToArray($descriptor));
 	} else
@@ -179,7 +188,7 @@ function block_exacomp_insert_descriptor($descriptor, $parent = 0) {
 
 	if($descriptor->examples) {
 		foreach($descriptor->examples->exampleid as $example) {
-			$exampleid = $DB->get_field(DB_EXAMPLES, "id", array("sourceid"=>$example['id']->__toString()));
+			$exampleid = $DB->get_field(DB_EXAMPLES, "id", array("sourceid"=>$example['id']->__toString(),"source"=>$source));
 			//$exampleid = $examples->xpath('example[@id="'.$example['id']->__toString().'"]');
 			//$conditions = array("descrid"=>$descriptor->id->__toString(),"exampid"=>$exampleid[0]->id->__toString());
 			$conditions = array("descrid"=>$descriptor->id->__toString(),"exampid"=>$exampleid);
@@ -191,11 +200,12 @@ function block_exacomp_insert_descriptor($descriptor, $parent = 0) {
 
 }
 function block_exacomp_insert_category($category, $parent = 0) {
-	global $DB;
+	global $DB, $source;
 	$category->sourceid = $category['id']->__toString();
+	$category->source = $source;
 	$category->parentid = $parent;
 
-	if($categoryObj = $DB->get_record(DB_CATEGORIES, array("sourceid"=>$category['id']->__toString()))) {
+	if($categoryObj = $DB->get_record(DB_CATEGORIES, array("sourceid"=>$category['id']->__toString(),"source" => $source))) {
 		$category->id = $categoryObj->id;
 		$DB->update_record(DB_CATEGORIES, simpleXMLElementToArray($category));
 	} else
@@ -207,13 +217,14 @@ function block_exacomp_insert_category($category, $parent = 0) {
 	}
 }
 function block_exacomp_insert_example($example, $parent = 0) {
-	global $DB;
+	global $DB, $source;
 	$example->sourceid = $example['id']->__toString();
+	$example->source = $source;
 	$example->parentid = $parent;
 	if($example['taxid'])
-		$example->taxid = block_exacomp_get_database_id(DB_TAXONOMIES,$example['taxid']->__toString());
+		$example->taxid = block_exacomp_get_database_id(DB_TAXONOMIES,$example['taxid']->__toString(),$source);
 
-	if($exampleObj = $DB->get_record(DB_EXAMPLES, array("sourceid"=>$example['id']->__toString()))) {
+	if($exampleObj = $DB->get_record(DB_EXAMPLES, array("sourceid"=>$example['id']->__toString(), "source" => $source))) {
 		$example->id = $exampleObj->id;
 		$DB->update_record(DB_EXAMPLES, simpleXMLElementToArray($example));
 	} else {
@@ -228,6 +239,7 @@ function block_exacomp_insert_example($example, $parent = 0) {
 function block_exacomp_insert_taxonomy($taxonomy, $parent = 0) {
 	global $DB;
 	$taxonomy->sourceid = $taxonomy['id']->__toString();
+	$taxonomy->source = IMPORT_SOURCE_NORMAL;
 	$taxonomy->parentid = $parent;
 	$id = $DB->insert_record(DB_TAXONOMIES, simpleXMLElementToArray($taxonomy));
 
@@ -240,12 +252,15 @@ function block_exacomp_insert_taxonomy($taxonomy, $parent = 0) {
 
 function block_exacomp_insert_skill($skill) {
 	global $DB;
+	$skill->sourceid = $skill['id']->__toString();
+	$skill->source = IMPORT_SOURCE_NORMAL;
 	$DB->insert_record(DB_SKILLS, simpleXMLElementToArray($skill));
 }
 
 function block_exacomp_insert_niveau($niveau, $parent = 0) {
 	global $DB;
 	$niveau->sourceid = $niveau['id']->__toString();
+	$niveau->source = IMPORT_SOURCE_NORMAL;
 	$niveau->parentid = $parent;
 	$id = $DB->insert_record(DB_NIVEAUS, simpleXMLElementToArray($niveau));
 
@@ -267,14 +282,14 @@ function simpleXMLElementToArray(SimpleXMLElement $xmlobject) {
 	return array_filter(json_decode(json_encode($xmlobject),true));
 }
 
-function block_exacomp_get_database_id($table, $sourceid) {
+function block_exacomp_get_database_id($table, $sourceid, $par_source = 1) {
 	global $DB;
-	return $DB->get_field($table, "id", array("sourceid" => $sourceid));
+	return $DB->get_field($table, "id", array("sourceid" => $sourceid, "source" => $par_source));
 }
 
 function block_exacomp_xml_truncate($tablename) {
-	global $DB;
-	$DB->delete_records($tablename);
+	global $DB, $source;
+	$DB->delete_records($tablename,array("source" => $source));
 }
 
 /* this function deletes all categories if there are no subcategories
@@ -310,17 +325,17 @@ function block_exacomp_xml_find_unused_descriptors($source,$crdate,$topiclist){
 
 	$sql="SELECT distinct descr.id,descr.sourceid FROM {block_exacompcompuser} u
 	RIGHT JOIN {block_exacompdescriptors} descr ON descr.id=u.compid
-	JOIN {block_exacompdescrtopic_mm} tmm ON tmm.descrid=descr.id 
-	JOIN {block_exacomptopics} top ON top.id=tmm.topicid 
-	JOIN {block_exacompsubjects} subj ON subj.id=top.subjid 
+	JOIN {block_exacompdescrtopic_mm} tmm ON tmm.descrid=descr.id
+	JOIN {block_exacomptopics} top ON top.id=tmm.topicid
+	JOIN {block_exacompsubjects} subj ON subj.id=top.subjid
 	JOIN {block_exacompschooltypes} st ON st.id=subj.stid
 	LEFT JOIN {block_exacompcoutopi_mm} cou ON cou.topicid=tmm.topicid
-	LEFT JOIN ({block_exacompdescrexamp_mm} emm 
+	LEFT JOIN ({block_exacompdescrexamp_mm} emm
 	JOIN {block_exacompexamples} ex ON (ex.id=emm.exampid AND ex.source=3)) ON emm.descrid=descr.id
 	LEFT JOIN {block_exacompmdltype_mm} typmm ON typmm.stid=st.id
 	LEFT JOIN {block_exacompcompuser_mm} umm ON umm.compid=descr.id
 	LEFT JOIN {block_exacompcompactiv_mm} act ON act.compid=descr.id
-	WHERE typmm.id IS NULL AND ex.id IS NULL AND act.id IS NULL AND cou.id IS NULL AND  umm.id IS NULL AND u.id IS NULL AND descr.source=? AND descr.crdate <> (?) 
+	WHERE typmm.id IS NULL AND ex.id IS NULL AND act.id IS NULL AND cou.id IS NULL AND  umm.id IS NULL AND u.id IS NULL AND descr.source=? AND descr.crdate <> (?)
 	AND u.comptype=0 AND umm.comptype=0 AND act.comptype=0"; //only use descriptors
 
 	$rs=$DB->get_records_sql($sql, array($source, $crdate));
@@ -366,9 +381,14 @@ class block_exacomp_generalxml_upload_form extends moodleform {
 		global $CFG, $USER, $DB;
 		$mform = & $this->_form;
 
+		$importtype = optional_param('importtype', 'normal', PARAM_TEXT);
+
 		$this->_form->_attributes['action'] = $_SERVER['REQUEST_URI'];
 		$check = block_exacomp_xml_check_import();
-		if($check){
+		if($importtype == 'custom') {
+			$mform->addElement('header', 'comment', get_string("doimport_own", "block_exacomp"));
+		}
+		elseif($check){
 			$mform->addElement('header', 'comment', get_string("doimport", "block_exacomp"));
 		} else
 			$mform->addElement('header', 'comment', get_string("doimport_again", "block_exacomp"));

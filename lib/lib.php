@@ -45,6 +45,7 @@ $skillmanagement = get_config('exacomp', 'skillmanagement');
 $xmlserverurl = get_config('exacomp', 'xmlserverurl');
 $autotest = get_config('exacomp', 'autotest');
 $testlimit = get_config('exacomp', 'testlimit');
+$specificimport = get_config('exacomp','enableteacherimport');
 
 define("SHOW_ALL_TOPICS",99999999);
 
@@ -1105,6 +1106,7 @@ function block_exacomp_studentselector($students,$selected,$url){
  * Check if there is an custom xml-file uploaded
  */
 function block_exacomp_check_customupload() {
+	/*
 	$context = context_system::instance();
 
 	foreach (get_user_roles($context) as $role) {
@@ -1112,7 +1114,10 @@ function block_exacomp_check_customupload() {
 			return true;
 	}
 
-	return false;
+	return false;*/
+	global $specificimport;
+	
+	return $specificimport;
 }
 
 /**

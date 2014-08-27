@@ -50,6 +50,7 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 require_login($course);
 
 $context = context_system::instance();
+$course_context = context_course::instance($courseid);
 
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_admin_import';
@@ -62,6 +63,7 @@ $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 block_exacomp_init_js_css();
 
 $isAdmin = has_capability('block/exacomp:admin', $context);
+require_capability('block/exacomp:teacher', $course_context);
 
 $action = optional_param('action', "", PARAM_ALPHA);
 $importoption = optional_param('importoption', "", PARAM_ALPHA);
@@ -69,11 +71,18 @@ $importtype = optional_param('importtype', '', PARAM_TEXT);
 $mform = new block_exacomp_generalxml_upload_form();
 
 $importSuccess = false;
+/*
 if($isAdmin && $importtype && $data = $mform->get_file_content('file')){
 	if(strcmp($importtype, 'demo')!=0)
-		$importSuccess = block_exacomp_xml_do_import($data, (($importtype == 'normal') ? IMPORT_SOURCE_NORMAL : IMPORT_SOURCE_SPECIFIC));
-}
-if($isAdmin && $importtype && strcmp($importtype, 'demo')==0){
+		print_r($data);
+	//$importSuccess = block_exacomp_xml_do_import($data, (($importtype == 'normal') ? IMPORT_SOURCE_NORMAL : IMPORT_SOURCE_SPECIFIC));
+}*/
+
+if((strcmp($importtype,'custom') == 0) && $data = $mform->get_file_content('file')) {
+	$importSuccess = block_exacomp_xml_do_import($data, IMPORT_SOURCE_SPECIFIC);
+} elseif($isAdmin && (strcmp($importtype, 'demo') != 0) && $data = $mform->get_file_content('file')) {
+	$importSuccess = block_exacomp_xml_do_import($data, IMPORT_SOURCE_NORMAL);
+} elseif($isAdmin && $importtype && strcmp($importtype, 'demo')==0){
 	//do demo import	
 	$xml = file_get_contents(DEMO_XML_PATH);
 	if($xml) {
@@ -97,7 +106,7 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $
 if($isAdmin || block_exacomp_check_customupload()) {
 
 	if($importtype) {
-		if(strcmp($importtype, 'normal')==0){
+		if(strcmp($importtype, 'normal')==0 || strcmp($importtype, 'custom')==0){
 			if ($mform->is_cancelled()) {
 				redirect($PAGE->url);
 			} else {
@@ -122,7 +131,7 @@ if($isAdmin || block_exacomp_check_customupload()) {
 					}
 				} else {
 					echo $OUTPUT->box(get_string("importinfo", "block_exacomp"));
-					echo $OUTPUT->box(get_string("importwebservice", "block_exacomp",new moodle_url("/admin/settings.php", array('section'=>'blocksettingexacomp'))));
+					if($isAdmin) echo $OUTPUT->box(get_string("importwebservice", "block_exacomp",new moodle_url("/admin/settings.php", array('section'=>'blocksettingexacomp'))));
 			
 					$mform->display();
 				}
@@ -153,7 +162,7 @@ if($isAdmin || block_exacomp_check_customupload()) {
 		}
 
 		if(block_exacomp_xml_check_import())
-			echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import_own.php', array('courseid'=>$courseid)), get_string('doimport_own', 'block_exacomp')));
+			echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'custom')), get_string('doimport_own', 'block_exacomp')));
 
 		if(isset($import)) {
 			if($import)
