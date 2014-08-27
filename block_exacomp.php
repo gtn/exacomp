@@ -57,7 +57,8 @@ class block_exacomp extends block_list {
 
 		// user/index.php expect course context, so get one if page has module context.
 		$currentcontext = $this->page->context->get_course_context(false);
-
+		$globalcontext = context_system::instance();
+		
 		$this->content = '';
 		if (empty($currentcontext)) {
 			return $this->content;
@@ -92,7 +93,7 @@ class block_exacomp extends block_list {
 		
 		//if checkImport && checkSubjects -> Modul wurde konfiguriert 
 		//else nur admin sieht block und hat nur den link Modulkonfiguration
-		if((has_capability('block/exacomp:admin', $currentcontext))){	//Admin sieht immer Modulkonfiguration
+		if((has_capability('block/exacomp:admin', $globalcontext))){	//Admin sieht immer Modulkonfiguration
 			//Modulkonfiguration
 			if(!$version){
 				//Wenn Import schon erledigt, weiterleitung zu edit_config, ansonsten import.

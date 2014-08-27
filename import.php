@@ -99,7 +99,7 @@ $pagenode->make_active();
 
 // build tab navigation & print header
 echo $OUTPUT->header();
-echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
+echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($course_context,$courseid), $page_identifier);
 /* CONTENT REGION */
 
 /* Admins are allowed to import data, or a special capability for custom imports */

@@ -935,8 +935,10 @@ function block_exacomp_get_user_activities_competencies_by_course($user, $course
  * @param unknown_type $courseid
  */
 function block_exacomp_build_navigation_tabs($context,$courseid) {
-	global $DB, $version, $usebadges, $skillmanagement;
+	global $DB, $version, $usebadges, $skillmanagement,$specificimport;
 
+	$global_context = context_system::instance();
+	
 	$courseSettings = block_exacomp_get_settings_by_course($courseid);
 	$usedetailpage = $courseSettings->usedetailpage;
 	$ready_for_use = block_exacomp_is_ready_for_use($courseid);
@@ -1019,9 +1021,9 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 
 					$rows[] = $settings;
 				}
-				if(has_capability('block/exacomp:admin', $context)){
+				if(has_capability('block/exacomp:admin', $global_context) || $specificimport){
 					$rows[] = new tabobject('tab_admin_import', new moodle_url('/blocks/exacomp/import.php',array("courseid"=>$courseid)),get_string('tab_admin_import','block_exacomp'));
-					if($checkImport)
+					if($checkImport && has_capability('block/exacomp:admin', $global_context))
 						$rows[] = new tabobject('tab_admin_configuration', new moodle_url('/blocks/exacomp/edit_config.php',array("courseid"=>$courseid)),get_string('tab_admin_configuration','block_exacomp'));
 				}
 
@@ -1029,9 +1031,9 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 					$rows[] = new tabobject('tab_help', new moodle_url('/blocks/exacomp/help.php', array("courseid"=>$courseid)), get_string('tab_help', 'block_exacomp'));
 			}
 		}else{
-			if(has_capability('block/exacomp:admin', $context)){
+			if(has_capability('block/exacomp:admin', $global_context) || $specificimport){
 				$rows[] = new tabobject('tab_admin_import', new moodle_url('/blocks/exacomp/import.php',array("courseid"=>$courseid)),get_string('tab_admin_import','block_exacomp'));
-				if($checkImport && !$version)
+				if($checkImport && !$version && has_capability('block/exacomp:admin', $global_context))
 					$rows[] = new tabobject('tab_admin_configuration', new moodle_url('/blocks/exacomp/edit_config.php',array("courseid"=>$courseid)),get_string('tab_admin_configuration','block_exacomp'));
 			}
 		}
