@@ -84,7 +84,6 @@ class block_exacomp_external extends external_api {
 		if (empty($courseid)) {
 			throw new invalid_parameter_exception('Parameter can not be empty');
 		}
-		print_r($courseid);
 		$params = self::validate_parameters(self::get_subjects_parameters(), array('courseid'=>$courseid));
 
 		$subjects = $DB->get_records_sql('
