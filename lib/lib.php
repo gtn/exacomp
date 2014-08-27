@@ -2930,6 +2930,7 @@ function block_exacomp_get_tipp_string($compid, $user, $scheme, $type, $comptype
  * @param unknown_type $courseid
  */
 function block_exacomp_build_schooltype_tree($courseid=0){
+	global $version;
 	$schooltypes = block_exacomp_get_schooltypes_by_course($courseid);
 	
 	foreach($schooltypes as $schooltype){
@@ -2937,7 +2938,9 @@ function block_exacomp_build_schooltype_tree($courseid=0){
 
 		$schooltype->subs = array();
 		foreach($subjects as $subject){
-			$tree = block_exacomp_get_competence_tree($courseid, $subject->id);
+			$param = $courseid;
+			if($version)	$param = 0;
+			$tree = block_exacomp_get_competence_tree($param, $subject->id);
 			$schooltype->subs += $tree;
 		}
 	}
