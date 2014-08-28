@@ -26,10 +26,12 @@
 
 $string['exacomp:addinstance'] = 'Add a exabis competencies block';
 $string['exacomp:myaddinstance'] = 'Add a exabis competencies block to my moodle';
-$string['exacomp:teacher'] = 'overview of teacher actions in a course';
+$string['exacomp:teacher'] = 'overview of trainer actions in a course';
 $string['exacomp:admin'] = 'overview of administrator actions in a course';
 $string['exacomp:student'] = 'overview of student actions in a course';
 $string['exacomp:use'] = 'use Exabis Competencies';
+$string['exacomp:deleteexamples'] = 'delete examples';
+
 
 // TABS and PAGE IDENTIFIERS
 // Admin Tabs
@@ -216,8 +218,8 @@ $string['studentshortcut'] = 'S';
 $string['overview'] = 'This is an overview of all students and the course competencies.';
 $string['showevaluation'] = 'To show self-assessment click <a href="{$a}">here</a>';
 $string['hideevaluation'] = 'To hide self-assessment click <a href="{$a}">here</a>';
-$string['showevaluation_student'] = 'To show teacher-assessment click <a href="{$a}">here</a>';
-$string['hideevaluation_student'] = 'To hide teacher-assessment click <a href="{$a}">here</a>';
+$string['showevaluation_student'] = 'To show trainer-assessment click <a href="{$a}">here</a>';
+$string['hideevaluation_student'] = 'To hide trainer-assessment click <a href="{$a}">here</a>';
 $string['columnselect'] = 'Column selection';
 $string['allstudents'] = 'All students';
 
@@ -225,7 +227,7 @@ $string['assigndone'] = 'task done: ';
 $string['assignmyself'] = 'by myself';
 $string['assignlearningpartner'] = 'peer-to-peer';
 $string['assignlearninggroup'] = 'peer group';
-$string['assignteacher'] = 'teacher';
+$string['assignteacher'] = 'trainer';
 $string['assignfrom'] = 'from';
 $string['assignuntil'] = 'until';
 
@@ -245,7 +247,7 @@ $string['tick_some'] = 'Please make a selection!';
 //Competence Grid
 $string['textalign'] = "Switch text align";
 $string['selfevaluation'] = 'Self assessment';
-$string['teacherevaluation'] = 'Teacher assessment';
+$string['teacherevaluation'] = 'Trainer assessment';
 $string['competencegrid_nodata'] = 'In case the competency grid is empty the outcomes for the chosen subject were not assigned to a level in the datafile. This can be fixed by associating outcomes with levels at www.edustandards.org and re-importing the xml-file.';
 
 //Detail view
@@ -281,7 +283,7 @@ $string['period_feedback'] = 'Feedback';
 
 //Competence Profile Settings
 $string['profile_settings_showonlyreached'] = 'I only want to see already gained outcomes in my competence profile';
-$string['profile_settings_choose_courses'] = 'Using Exabis Competencies teachers assess your competencies in various subjects. You can select which course to include in the competence profile.';
+$string['profile_settings_choose_courses'] = 'Using Exabis Competencies trainers assess your competencies in various subjects. You can select which course to include in the competence profile.';
 $string['profile_settings_useexaport'] = 'I want to see competencies used in Exabis ePortfolio within my profile.';
 $string['profile_settings_choose_items'] = 'Exabis ePortfolio is used to document your competencies on your individual learning path. You can select which artefacts to include in the competence profile.';
 $string['profile_settings_useexastud'] = 'I want to see evaluations from Exabis Student Review.';
