@@ -309,6 +309,11 @@ td.contentcell {
      margin-top: 100%;
 }
 */
+
+h4 {
+	font-size:16px;
+}
+
  .rotated-text {
 	font-weight: normal;
 	font-size: 1.1rem;
@@ -537,3 +542,168 @@ td.contentcell {
  .exabis_assign_student{
 	display:none;
 }
+
+
+/* ##################################################### */
+/* ##################################################### */
+/* ############ Neue Styles Kompetenzprofil ############ */
+/* ##################################################### */
+/* ##################################################### */
+
+
+
+
+.userpicturecontainer {
+	float: left;
+	margin-right: 10px;
+}
+
+.competence_profile_metadata {
+	background-color: #f9f9f9;
+}
+
+.competence_profile_metadata, .competence_profile_overview_mycompetencies, .competence_profile_coursedata, .competence_profile_overview_artefacts, .competence_profile_overview_feedback, .competence_profile_artefacts, .competence_profile_feedback {
+	border: 1px solid #ddd;
+	padding: 10px;
+}
+
+.competence_profile_overview h4 {
+	margin: 0;
+}
+
+
+.competence_profile_overview_mycompetencies, .competence_profile_artefacts, .competence_profile_feedback, .competence_profile_coursedata {
+	margin-bottom: 20px;
+}
+
+.competence_profile_overview_artefacts, .competence_profile_overview_feedback, .competence_profile_piegraph, .competence_profile_radargraph {
+	width: 48.7179%;
+	float: left;
+	box-sizing: border-box;
+    display: block;
+}
+
+.competence_profile_overview_feedback {
+	margin-left: 2.5641%;
+}
+
+.competence_profile_overview, .competence_profile_coursedata {
+	margin-top: 30px;
+}
+
+.competence_profile_radargraph .radargraph, .competence_profile_piegraph .piegraph, .competence_profile_radargraph .piegraph {
+	margin: 0 auto;
+}
+
+.competence_profile_piegraph .piegraph, .competence_profile_radargraph .piegraph {
+	margin-bottom: 40px;
+}
+
+.competence_profile_overview .compstable, .competence_profile_artefacts .compstable, .competence_profile_feedback .compstable {
+	font-size: 1em;
+}
+
+div.lbmittelwertcontainer {
+	height: 18px;
+}
+
+div.lbmittelwert {
+    border-right: 2px solid #d9534f;
+    height: 18px;
+-webkit-box-shadow: 2px 0px 0px 0px rgba(255, 255, 255, 0.75);
+-moz-box-shadow:    2px 0px 0px 0px rgba(255, 255, 255, 0.75);
+box-shadow:         2px 0px 0px 0px rgba(255, 255, 255, 0.75);
+}
+
+div.ladebalken {
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset;
+	background-color: #f5f5f5;
+	border: 1px solid #ddd;
+}
+
+div.ladebalken, .ladebalkenstatus {
+	border-radius: 5px;
+	height: 18px;
+}
+.stripes {
+		 background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+		 background-color: #008d36;
+		  background-size: 30px 30px; 
+		  animation: 2s linear 0s normal none infinite progress-bar-stripes;
+}
+ 
+.competence_profile_overview_artefacts ul, .competence_profile_overview_feedback ul {
+	margin-top: 20px;
+	list-style-type: circle;
+}
+
+.competence_profile_coursedata ul.competence_profile_complist, .competence_profile_coursedata ul.competence_profile_complist ul, .competence_profile_artefacts ul.competence_profile_complist, .competence_profile_artefacts ul.competence_profile_complist ul {
+	list-style-type: none;
+}
+
+.competence_profile_coursedata ul li, .competence_profile_artefacts ul li {
+		padding-left: 12px;
+		color: #7f7f7f;
+}
+
+.competence_profile_artefacts ul.competence_profile_complist li {
+	padding-left: 12px;
+}
+
+.competence_profile_coursedata ul li.reached {
+		color: #000;
+}
+
+.competence_profile_artefacts ul li.focused {
+		color: #000;
+}
+
+.competence_profile_coursedata ul.competence_profile_complist > ul > ul li, .competence_profile_artefacts ul.competence_profile_complist > ul > ul li {
+	margin-left: 10px;
+}
+
+
+.competence_profile_coursedata ul.competence_profile_complist_items li {
+	background: transparent url(folder_fill_12x12.png) no-repeat left center;
+	padding-left: 18px;
+	color: #000;
+}
+
+.competence_profile_coursedata li.complistshow {
+	background: transparent url(pfeil_show.png) no-repeat left center;
+}
+
+.competence_profile_coursedata li.complisthide, .competence_profile_artefacts ul.competence_profile_complist li {
+	background: transparent url(pfeil_hide.png) no-repeat left center;
+}
+
+.competence_profile_coursedata {
+    margin-top: 0px;
+}
+
+h3.competence_profile_sectiontitle {
+	margin-top: 40px;
+}
+
+.competence_profile_artefacts ul.competence_profile_complist > ul > ul li {
+	margin-left: 10px;
+	list-style-type: circle;
+	background: none;
+	padding: 0;
+}
+
+.generaltable td.competence_tableright {
+	text-align: right;
+	min-width: 140px;
+}
+
+/* 
+.competence_profile_radargraph {
+	float: left;
+	width: 50%;
+}
+
+.competence_profile_piegraph {
+	margin-left: 50%;
+}*/
+
