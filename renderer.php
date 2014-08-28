@@ -2668,14 +2668,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	},
 	{
 	value: '.$teachercomp.',
-	color: "#39d13d",
-	highlight: "#00a631",
+	color: "#008d36",
+	highlight: "#006532",
 	label: "'.get_string('teachercomp', 'block_exacomp').'"
 	},
 	{
 	value: '.$studentcomp.',
-	color: "#f9f316",
-	highlight: "#e3dd00",
+	color: "#f9b233",
+	highlight: "#f39200",
 	label: "'.get_string('studentcomp', 'block_exacomp').'"
 	}
 	];
@@ -2758,12 +2758,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			datasets: [
 			{
 			label: "'.get_string("studentcomp","block_exacomp").'",
-			fillColor: "rgba(0,166,49,0.2)",
-			strokeColor: "rgba(0,166,49,1)",
-			pointColor: "rgba(0,166,49,1)",
+			fillColor: "rgba(249,178,51,0.2)",
+			strokeColor: "rgba(249,178,51,1)",
+			pointColor: "rgba(249,178,51,1)",
 			pointStrokeColor: "#fff",
 			pointHighlightFill: "#fff",
-			pointHighlightStroke: "rgba(220,220,220,1)",
+			pointHighlightStroke: "rgba(151,187,205,1)",
 			data: [';
 
 			foreach($records as $record)
@@ -2772,9 +2772,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		},
 		{
 		label: "'.get_string("teachercomp","block_exacomp").'",
-		fillColor: "rgba(0,166,49,0.2)",
-		strokeColor: "rgba(0,166,49,1)",
-		pointColor: "rgba(0,166,49,1)",	
+		fillColor: "rgba(0,141,54,0.2)",
+		strokeColor: "rgba(0,141,54,1)",
+		pointColor: "rgba(0,141,54,1)",	
 		pointStrokeColor: "#fff",
 		pointHighlightFill: "#fff",
 		pointHighlightStroke: "rgba(151,187,205,1)",
@@ -3063,22 +3063,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$table->data = $rows;
 		$content .= html_writer::table($table);
 		
-		
-				/*$li_periods .= html_writer::tag('li', $period->description);
-				$review = $reviews[$period->id];
-
-				$li_review = html_writer::tag('li', "Reviewer: ".$review->reviewer->firstname." ".$review->reviewer->lastname);
-				$li_review .= html_writer::tag('li', "Feedback: ".$review->feedback);
-
-				foreach($review->categories as $category){
-					$li_review .= html_writer::tag('li', $category->title.": ".$category->evaluation."/10");
-				}
-
-				foreach($review->descriptors as $descriptor){
-					$li_review .= html_writer::tag('li', $descriptor->title.": ".$descriptor->evaluation."/10");
-				}
-
-				$li_periods .= html_writer::tag('ul', $li_review);*/
 		return html_writer::div($content, 'competence_profile_feedback');
 	}
 	public function print_competence_profile_course_all($courses, $student){
