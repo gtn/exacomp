@@ -27,32 +27,34 @@ function block_exacomp_xml_do_import($data = null, $par_source = 1, $cron = 0) {
 		echo get_string('oldxmlfile', 'block_exacomp');
 		exit;
 	}
-	block_exacomp_xml_truncate(DB_SKILLS);
-	if(isset($xml->skills)) {
-		foreach($xml->skills->skill as $skill) {
-			block_exacomp_insert_skill($skill);
+	if($source == IMPORT_SOURCE_NORMAL) {
+		block_exacomp_xml_truncate(DB_SKILLS);
+		if(isset($xml->skills)) {
+			foreach($xml->skills->skill as $skill) {
+				block_exacomp_insert_skill($skill);
+			}
 		}
-	}
 
-	block_exacomp_xml_truncate(DB_NIVEAUS);
-	if(isset($xml->niveaus))
-		foreach($xml->niveaus->niveau as $niveau) {
-		block_exacomp_insert_niveau($niveau);
+		block_exacomp_xml_truncate(DB_NIVEAUS);
+		if(isset($xml->niveaus))
+			foreach($xml->niveaus->niveau as $niveau) {
+			block_exacomp_insert_niveau($niveau);
+		}
+
+		block_exacomp_xml_truncate(DB_TAXONOMIES);
+		if(isset($xml->taxonomies)) {
+			foreach($xml->taxonomies->taxonomy as $taxonomy) {
+				block_exacomp_insert_taxonomy($taxonomy);
+			}
+		}
+
+		if(isset($xml->categories)) {
+			foreach($xml->categories->category as $category) {
+				block_exacomp_insert_category($category);
+			}
+		}
 	}
 	
-	block_exacomp_xml_truncate(DB_TAXONOMIES);
-	if(isset($xml->taxonomies)) {
-		foreach($xml->taxonomies->taxonomy as $taxonomy) {
-			block_exacomp_insert_taxonomy($taxonomy);
-		}
-	}
-
-	if(isset($xml->categories)) {
-		foreach($xml->categories->category as $category) {
-			block_exacomp_insert_category($category);
-		}
-	}
-
 	if(isset($xml->examples)) {
 		foreach($xml->examples->example as $example) {
 			block_exacomp_insert_example($example);
@@ -67,16 +69,17 @@ function block_exacomp_xml_do_import($data = null, $par_source = 1, $cron = 0) {
 
 	$insertedTopics = array();
 	foreach($xml->edulevels->edulevel as $edulevel) {
-
-		block_exacomp_insert_edulevel($edulevel);
+		if($source == IMPORT_SOURCE_NORMAL)
+			block_exacomp_insert_edulevel($edulevel);
 
 		foreach($edulevel->schooltypes->schooltype as $schooltype) {
 			$schooltype->elid = $edulevel->id;
-			block_exacomp_insert_schooltype($schooltype);
+			if($source == IMPORT_SOURCE_NORMAL)
+				block_exacomp_insert_schooltype($schooltype);
 
 			foreach($schooltype->subjects->subject as $subject) {
 				$subject->stid = $schooltype->id;
-				block_exacomp_insert_subject($subject);
+					block_exacomp_insert_subject($subject);
 
 				foreach($subject->topics->topic as $topic) {
 					$topic->subjid = $subject->id;
@@ -99,15 +102,14 @@ function block_exacomp_xml_do_import($data = null, $par_source = 1, $cron = 0) {
 	return true;
 }
 function block_exacomp_insert_topic($topic, $parent = 0) {
-	global $DB,$source;
+	global $DB;
 	$topic->sourceid = $topic['id']->__toString();
 	$topic->parentid = $parent;
-	$topic->source = $source;
-	
-	if($topic['categoryid'])
-		$topic->catid = block_exacomp_get_database_id(DB_CATEGORIES,$topic['categoryid']->__toString(),$source);
 
-	if($stObj = $DB->get_record(DB_TOPICS, array("sourceid"=>$topic['id']->__toString(),"source"=>$source))) {
+	if($topic['categoryid'])
+		$topic->catid = block_exacomp_get_database_id(DB_CATEGORIES,$topic['categoryid']->__toString());
+
+	if($stObj = $DB->get_record(DB_TOPICS, array("sourceid"=>$topic['id']->__toString()))) {
 		$topic->id = $stObj->id;
 		$DB->update_record(DB_TOPICS, simpleXMLElementToArray($topic));
 	} else
@@ -117,7 +119,7 @@ function block_exacomp_insert_topic($topic, $parent = 0) {
 		$DB->delete_records(DB_DESCTOPICS,array("topicid"=>$topic->id->__toString()));
 
 		foreach($topic->descriptors->descriptorid as $descriptor) {
-			$descriptorid = $DB->get_field(DB_DESCRIPTORS, "id", array("sourceid"=>$descriptor['id']->__toString(),"source"=>$source));
+			$descriptorid = $DB->get_field(DB_DESCRIPTORS, "id", array("sourceid"=>$descriptor['id']->__toString()));
 			if($descriptorid > 0)
 				$DB->insert_record(DB_DESCTOPICS, array("topicid"=>$topic->id->__toString(),"descrid"=>$descriptorid));
 		}
@@ -134,6 +136,12 @@ function block_exacomp_insert_topic($topic, $parent = 0) {
 }
 function block_exacomp_insert_subject(&$subject) {
 	global $DB,$source;
+	
+	if($source > IMPORT_SOURCE_NORMAL) {
+		$subject->id = $DB->get_record(DB_SUBJECTS, array("sourceid"=>$subject['id']->__toString(),"source"=>IMPORT_SOURCE_NORMAL))->id;
+		return;
+	}
+	
 	$subject->sourceid = $subject['id']->__toString();
 	$subject->source = $source;
 	if($subject['categoryid'])
@@ -149,7 +157,7 @@ function block_exacomp_insert_schooltype(&$schooltype) {
 	global $DB,$source;
 	$schooltype->sourceid = $schooltype['id']->__toString();
 	$schooltype->source = $source;
-	
+
 	if($stObj = $DB->get_record(DB_SCHOOLTYPES, array("sourceid"=>$schooltype['id']->__toString(),"source"=>$source))) {
 		$schooltype->id = $stObj->id;
 		$DB->update_record(DB_SCHOOLTYPES, simpleXMLElementToArray($schooltype));
@@ -160,7 +168,7 @@ function block_exacomp_insert_edulevel(&$edulevel) {
 	global $DB,$source;
 	$edulevel->sourceid = $edulevel['id']->__toString();
 	$edulevel->source = $source;
-	
+
 	if($eduObj = $DB->get_record(DB_EDULEVELS, array("sourceid"=>$edulevel['id']->__toString(),"source"=>$source))) {
 		$edulevel->id = $eduObj->id;
 		$DB->update_record(DB_EDULEVELS, simpleXMLElementToArray($edulevel));
@@ -174,11 +182,16 @@ function block_exacomp_insert_descriptor($descriptor, $parent = 0) {
 	global $DB, $source;
 	$descriptor->sourceid = $descriptor['id']->__toString();
 	$descriptor->source = $source;
-	
+
 	if($descriptor['skillid'])
 		$descriptor->skillid = $descriptor['skillid']->__toString();
 	if($descriptor['niveauid'])
 		$descriptor->niveauid = block_exacomp_get_database_id(DB_NIVEAUS,$descriptor['niveauid']->__toString(),$source);
+
+	if($source != IMPORT_SOURCE_NORMAL) {
+		if($descriptorObj = $DB->get_record(DB_DESCRIPTORS, array("sourceid"=>$descriptor['id']->__toString(),"source"=>IMPORT_SOURCE_NORMAL)))
+			return;
+	}
 
 	if($descriptorObj = $DB->get_record(DB_DESCRIPTORS, array("sourceid"=>$descriptor['id']->__toString(),"source"=>$source))) {
 		$descriptor->id = $descriptorObj->id;
@@ -224,6 +237,11 @@ function block_exacomp_insert_example($example, $parent = 0) {
 	if($example['taxid'])
 		$example->taxid = block_exacomp_get_database_id(DB_TAXONOMIES,$example['taxid']->__toString(),$source);
 
+	if($source != IMPORT_SOURCE_NORMAL) {
+		if($exampleObj = $DB->get_record(DB_EXAMPLES, array("sourceid"=>$example['id']->__toString(), "source" => IMPORT_SOURCE_NORMAL)))
+			return;
+	}
+	
 	if($exampleObj = $DB->get_record(DB_EXAMPLES, array("sourceid"=>$example['id']->__toString(), "source" => $source))) {
 		$example->id = $exampleObj->id;
 		$DB->update_record(DB_EXAMPLES, simpleXMLElementToArray($example));
