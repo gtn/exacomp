@@ -290,6 +290,10 @@ $string['radargrapherror'] = 'Der Radargraph kann nur bei 3-7 Achsen dargestellt
 $string['nodata'] = 'Es sind keine Daten vorhanden.';
 $string['item_no_comps'] = 'Zu folgenden Eintr&auml;gen wurden noch keine Deskriptoren zugeordnet:';
 $string['select_student'] = 'Wählen Sie einen Kursteilnehmer aus, dessen Kompetenzprofil Sie sehen möchten.';
+$string['my_comps'] = 'Meine Kompetenzen';
+$string['my_items'] = 'Meine Artefakte';
+$string['my_badges'] = 'Meine Auszeichnungen';
+$string['my_periods'] = 'Meine Feedbacks';
 
 //Competence Profile Settings
 $string['profile_settings_showonlyreached'] = 'Ich möchte in meinem Kompetenzprofil nur bereits erreichte Kompetenzen sehen.';
