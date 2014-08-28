@@ -92,7 +92,10 @@ $user_courses = block_exacomp_get_exacomp_courses($student);
 if(!block_exacomp_check_profile_config($student->id))
 	block_exacomp_init_profile($user_courses, $student->id);
 
+
 echo $output->print_competence_profile_metadata($student);
+
+//echo html_writer::start_div('competence_profile_overview clearfix');
 
 $usebadges = get_config('exacomp', 'usebadges');
 
@@ -105,25 +108,40 @@ if (block_exacomp_moodle_badges_enabled() && $usebadges && $profile_settings->us
 	$badges = array();
 }
 
-echo $output->print_competene_profile_overview($student, $user_courses, $badges, $profile_settings->onlygainedbadges);
+$items = array();
+if($profile_settings->useexaport == 1){
+	$items = block_exacomp_get_exaport_items();
+	$items = block_exacomp_init_exaport_items($items);
+}
 
+$periods = array();
+if($profile_settings->useexastud == 1){
+	$periods = block_exacomp_get_exastud_periods();
+	$reviews = block_exacomp_get_exastud_reviews($periods, $student);
+}
+
+echo $output->print_competene_profile_overview($student, $user_courses, $badges, 
+	$profile_settings->useexaport, $items, $profile_settings->useexastud, $periods,  $profile_settings->onlygainedbadges);
+
+echo html_writer::tag('h3', get_string('my_comps', 'block_exacomp'), array('class'=>'competence_profile_sectiontitle'));
+	
 foreach($user_courses as $course) {
 	//if selected
 	if(isset($profile_settings->exacomp[$course->id]))
 		echo $output->print_competence_profile_course($course,$student);
 }
 
+if(!empty($user_courses))
+	echo $output->print_competence_profile_course_all($user_courses, $student);
+
 if($profile_settings->useexaport == 1){
-	$items = block_exacomp_get_exaport_items();
-	$items = block_exacomp_init_exaport_items($items);
 	echo $output->print_competence_profile_exaport($profile_settings, $student, $items);
 }
 if($profile_settings->useexastud == 1){
-	$periods = block_exacomp_get_exastud_periods();
-	$reviews = block_exacomp_get_exastud_reviews($periods, $student);
-	
 	echo $output->print_competence_profile_exastud($profile_settings, $student, $periods, $reviews);
 }
+
+//echo html_writer::end_div();
 /* END CONTENT REGION */
 
 echo $OUTPUT->footer();

@@ -1555,7 +1555,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function print_my_badges($badges, $onlygained=false){
 		$content = "";
 		if($badges->issued){
-			$content .= html_writer::tag('h2', get_string('mybadges', 'block_exacomp'));
+			$content .= html_writer::tag('h4', get_string('my_badges', 'block_exacomp'));
 			foreach ($badges->issued as $badge){
 				$context = context_course::instance($badge->courseid);
 				$imageurl = moodle_url::make_pluginfile_url($context->id, 'badges', 'badgeimage', $badge->id, '/', 'f1', false);
@@ -2527,31 +2527,38 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		(!empty($student->city))?$citydiv = html_writer::div($student->city
 				.html_writer::div(get_string('city', 'block_exacomp'), ''), ''):$citydiv ='';
 			
-		return html_writer::div($namediv.$imgdiv.$citydiv, 'competence_profile_metadata');
+		return html_writer::div($namediv.$imgdiv.$citydiv, 'competence_profile_metadata clearfix');
 	}
-	function print_competene_profile_overview($student, $courses, $badges, $olygainedbadges=false) {
+	function print_competene_profile_overview($student, $courses, $badges, $exaport, $exaportitems, $exastud, $exastudperiods, $olygainedbadges=false) {
 
-		$overviewcontent = html_writer::tag('h2', 'Übersicht');
 		$table = $this->print_competence_profile_overview_table($student, $courses);
-		$overviewcontent .= $table;
+		$overviewcontent = $table;
 
-		$teachercomp = 0;
-		$studentcomp = 0;
-		$pendingcomp = 0;
-		foreach($courses as $course){
-			$course_data = block_exacomp_get_competencies_for_pie_chart($course->id, $student, block_exacomp_get_grading_scheme($course->id));
-			$teachercomp += $course_data[0];
-			$studentcomp += $course_data[1];
-			$pendingcomp += $course_data[2];
-		}
-		$subjects = block_exacomp_get_subjects_for_radar_graph($student->id);
-		$overviewcontent .= html_writer::div($this->print_radar_graph($subjects,0),"competence_profile_radargraph");
-		$overviewcontent .= html_writer::div($this->print_pie_graph($teachercomp, $studentcomp, $pendingcomp, 0),"competence_profile_piegraph");
-		
+		//my badges
 		if(!empty($badges))
-			$overviewcontent .= $this->print_my_badges($badges, $olygainedbadges);
+			$overviewcontent .= html_writer::div($this->print_my_badges($badges, $olygainedbadges), 'competence_profile_overview_badges');
 		
-		return html_writer::div($overviewcontent, 'competence_profile_overview');
+		//my items
+		if($exaport){
+			$exaport_content = '';
+			foreach($exaportitems as $item){
+				$exaport_content .= html_writer::tag('li', html_writer::link('#', $item->name));
+			}
+			$overviewcontent .= html_writer::div(html_writer::tag('h4', get_string('my_items', 'block_exacomp'))
+				. html_writer::tag('ul',$exaport_content), 'competence_profile_overview_artefacts');
+		}
+		
+		//my feedbacks
+		if($exastud){
+			$exastud_content  = '';
+			foreach($exastudperiods as $period){
+				$exastud_content .= html_writer::tag('li', html_writer::link('#', $period->description));
+			}
+			$overviewcontent .= html_writer::div(html_writer::tag('h4', get_string('my_periods', 'block_exacomp'))
+				. html_writer::tag('ul', $exastud_content), 'competence_profile_overview_feedback');
+		}
+		
+		return html_writer::div($overviewcontent, 'competence_profile_overview clearfix');
 	}
 	function print_competence_profile_overview_table($student, $courses){
 		$total_total = 0;
@@ -2599,10 +2606,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				
 			$cell = new html_table_cell();
 			//$cell->colspan = 4;
-			$cell->text = html_writer::div(
-					html_writer::div(html_writer::div('', 'lbmittelwert', array('style'=>'width:'.$perc_average.'%;')), 'lbmittelwertcontainer')
-					.html_writer::div('', '', array('style'=>'background:url(\'pix/balkenfull.png\') no-repeat left center; height:27px; width:'.$perc_reached.'%;')),
-					'ladebalken', array('style'=>'background:url(\'pix/balkenleer.png\') no-repeat left center;'));
+			$cell->text = html_writer::div(html_writer::div(
+					html_writer::div('','lbmittelwert', array('style'=>'width:'.$perc_average.'%;')), 
+					'lbmittelwertcontainer') . 
+					html_writer::div('', 'ladebalkenstatus stripes', array('style'=>'width:'.$perc_reached.'%;')),
+				'ladebalken');
+					
 			$row->cells[] = $cell;
 				
 			$total_total +=  $statistics[0];
@@ -2632,41 +2641,41 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$perc_reached = $total_reached/$total_total*100;
 		}
 		$cell = new html_table_cell();
-		$cell->text = $cell->text = html_writer::div(
-				html_writer::div(html_writer::div('', 'lbmittelwert', array('style'=>'width:'.$perc_average.'%;')), 'lbmittelwertcontainer')
-				.html_writer::div('', '', array('style'=>'background:url(\'pix/balkenfull.png\') no-repeat left center; height:27px; width:'.$perc_reached.'%;')),
-				'ladebalken', array('style'=>'background:url(\'pix/balkenleer.png\') no-repeat left center;'));
-			
+		$cell->text = html_writer::div(html_writer::div(
+					html_writer::div('','lbmittelwert', array('style'=>'width:'.$perc_average.'%;')), 
+					'lbmittelwertcontainer') . 
+					html_writer::div('', 'ladebalkenstatus stripes', array('style'=>'width:'.$perc_reached.'%;')),
+				'ladebalken');
+						
 		$row->cells[] = $cell;
 
 		$rows[] = $row;
 		$table->data = $rows;
-		return html_writer::table($table);
+		return html_writer::div(html_writer::tag('h4', get_string('my_comps', 'block_exacomp')).html_writer::table($table), 'competence_profile_overview_mycompetencies clearfix');;
 	}
 
 	function print_pie_graph($teachercomp, $studentcomp, $pendingcomp, $courseid){
 
-		$height = $width = 150;
-		$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvas_doughnut".$courseid, "height" => $height, "width" => $width)),'piegraph',array("style" => "width:15%"));
+		$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvas_doughnut".$courseid)),'piegraph',array("style" => "width:75%"));
 		$content .= '
 		<script>
 		var pieChartData = [
 		{
 		value:'.$pendingcomp.',
-		color:"#3D3D3D",
-		highlight: "#4F4F4F",
+		color:"#888888",
+		highlight: "#3D3D3D",
 		label: "'.get_string('pendingcomp', 'block_exacomp').'"
 	},
 	{
 	value: '.$teachercomp.',
-	color: "#6B6B6B",
-	highlight: "#7D7D7D",
+	color: "#39d13d",
+	highlight: "#00a631",
 	label: "'.get_string('teachercomp', 'block_exacomp').'"
 	},
 	{
 	value: '.$studentcomp.',
-	color: "#9C9C9C",
-	highlight: "#ABABAB",
+	color: "#f9f316",
+	highlight: "#e3dd00",
 	label: "'.get_string('studentcomp', 'block_exacomp').'"
 	}
 	];
@@ -2683,19 +2692,20 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$scheme = block_exacomp_get_grading_scheme($course->id);
 		$compTree = block_exacomp_get_competence_tree($course->id);
 		//print heading
-		$content = html_writer::tag("h5", $course->fullname, array("class" => "competence_profile_coursetitle"));
+		$content = html_writer::tag("h4", $course->fullname, array("class" => "competence_profile_coursetitle"));
 		if(!$compTree) {
 			$content .= html_writer::div(get_string("nodata","block_exacomp"),"error");
 			return $content;
 		}
 		//print graphs
 		$topics = block_exacomp_get_topics_for_radar_graph($course->id, $student->id);
-		$content .= html_writer::div($this->print_radar_graph($topics,$course->id),"competence_profile_radargraph");
+		$radar_graph = html_writer::div($this->print_radar_graph($topics,$course->id),"competence_profile_radargraph");
 
 		list($teachercomp,$studentcomp,$pendingcomp) = block_exacomp_get_competencies_for_pie_chart($course->id,$student, $scheme);
-		$content .= html_writer::div($this->print_pie_graph($teachercomp, $studentcomp, $pendingcomp, $course->id),"competence_profile_radargraph");
+		$pie_graph = html_writer::div($this->print_pie_graph($teachercomp, $studentcomp, $pendingcomp, $course->id),"competence_profile_radargraph");
+		
+		$content .= html_writer::div($radar_graph.$pie_graph, 'competence_profile_graphbox clearfix');
 		//print list
-
 		$student = block_exacomp_get_user_information_by_course($student, $course->id);
 
 		$content .= $this->print_competence_profile_tree($compTree,$student,$scheme);
@@ -2703,9 +2713,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::div($content,"competence_profile_coursedata");
 	}
 
-	private function print_competence_profile_tree($in,$student,$scheme = 1) {
-		$content = "<ul>";
+	private function print_competence_profile_tree($in,$student,$scheme = 1, $showonlyreached = false) {
 		$profile_settings = block_exacomp_get_profile_settings();
+		
+		$showonlyreached_total = false;
+		if($showonlyreached || $profile_settings->showonlyreached ==1)
+			$showonlyreached_total = true;
+			
+		$content = "<ul>";
 		foreach($in as $v) {
 			$class = 'competence_profile_' . $v->tabletype;
 			$reached = false;
@@ -2717,11 +2732,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$class .= " reached";
 				$reached = true;
 			}
-				
-			if($profile_settings->showonlyreached ==0 || ($profile_settings->showonlyreached == 1 && $reached || $v->tabletype == 'subject'))
+			
+			if(!$showonlyreached_total || ($showonlyreached_total == 1 && $reached || $v->tabletype == 'subject'))
 				$content .= '<li class="'.$class.'">' . $v->title	 . '</li>';
-			if( isset($v->subs) && is_array($v->subs)) $content .= $this->print_competence_profile_tree($v->subs, $student,$scheme);
-			if( isset($v->descriptors) && is_array($v->descriptors)) $content .= $this->print_competence_profile_tree($v->descriptors, $student,$scheme);
+			if( isset($v->subs) && is_array($v->subs)) $content .= $this->print_competence_profile_tree($v->subs, $student,$scheme, $showonlyreached_total);
+			if( isset($v->descriptors) && is_array($v->descriptors)) $content .= $this->print_competence_profile_tree($v->descriptors, $student,$scheme, $showonlyreached_total);
 		}
 		$content .= "</ul>";
 		return $content;
@@ -2730,8 +2745,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		if(count($records) >= 3 && count($records) <= 7) {
 
-			$height = $width = 450;
-			$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvasradar".$courseid, "height" => $height, "width" => $width)),"radargraph",array("style" => "width:40%"));
+			$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvasradar".$courseid)),"radargraph",array("style" => "width:90%"));
 			$content .= '
 			<script>
 			var radarChartData = {
@@ -2744,9 +2758,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			datasets: [
 			{
 			label: "'.get_string("studentcomp","block_exacomp").'",
-			fillColor: "rgba(220,220,220,0.2)",
-			strokeColor: "rgba(220,220,220,1)",
-			pointColor: "rgba(220,220,220,1)",
+			fillColor: "rgba(0,166,49,0.2)",
+			strokeColor: "rgba(0,166,49,1)",
+			pointColor: "rgba(0,166,49,1)",
 			pointStrokeColor: "#fff",
 			pointHighlightFill: "#fff",
 			pointHighlightStroke: "rgba(220,220,220,1)",
@@ -2758,9 +2772,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		},
 		{
 		label: "'.get_string("teachercomp","block_exacomp").'",
-		fillColor: "rgba(151,187,205,0.2)",
-		strokeColor: "rgba(151,187,205,1)",
-		pointColor: "rgba(151,187,205,1)",
+		fillColor: "rgba(0,166,49,0.2)",
+		strokeColor: "rgba(0,166,49,1)",
+		pointColor: "rgba(0,166,49,1)",	
 		pointStrokeColor: "#fff",
 		pointHighlightFill: "#fff",
 		pointHighlightStroke: "rgba(151,187,205,1)",
@@ -2873,8 +2887,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function print_competence_profile_exaport($settings, $user, $items){
 		global $COURSE, $CFG;
 
-		$content = html_writer::tag('h2', get_string('pluginname', 'block_exaport'));
+		$header = html_writer::tag('h3', get_string('my_items', 'block_exacomp'), array('class'=>'competence_profile_sectiontitle'));
 
+		$content = '';
 		//print items with comps
 		$items_with_no_comps = false;
 		foreach($items as $item){
@@ -2896,23 +2911,33 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$content .= html_writer::tag('ul', $li_items);
 			}
 		}
-		return $content;
+		return $header.$content;
 	}
 
 	public function print_exaport_item($item, $userid){
 		global $COURSE, $CFG;
+		$content .= html_writer::tag('h4', $item->name, array('class'=>'competence_profile_coursetitle'));
+		
+		$table = new html_table();
+		$table->attributes['class'] = 'compstable flexible boxaligncenter generaltable';
+		$rows = array();
+		$row = new html_table_row();
+		$cell = new html_table_cell();
+		$cell->attributes['class'] = '';
+		
+		$table->data = $rows;
+		$content .= html_writer::table($table);
+		
 		$url = $CFG->wwwroot.'/blocks/exaport/shared_item.php?courseid='.$COURSE->id.'&access=portfolio/id/'.$userid.'&itemid='.$item->id.'&backtype=&att='.$item->attachment;
-		$li_item = html_writer::tag('li',
-				html_writer::link($url, $item->name), array('class'=>'competence_profile_item'));
-
+		
 		$li_descriptors = '';
 		foreach($item->descriptors as $descriptor) {
 			$class = 'competence_profile_descriptor';
 			$li_descriptors .= '<li class="'.$class.'">' . $descriptor->title	 . '</li>';
 		}
 		$ul_descriptors = html_writer::tag('ul', $li_descriptors);
-		$li_item .= $ul_descriptors;
-		return html_writer::tag('ul', $li_item);
+		
+		return html_writer::div($content.$ul_descriptors, 'competence_profile_artefacts');
 	}
 	public function print_competence_profile_exastud($settings, $user, $periods, $reviews){
 		$content = html_writer::tag('h2', get_string('pluginname', 'block_exastud'));
@@ -2941,6 +2966,44 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content .= html_writer::tag('ul', $li_periods);
 
 		return $content;
+	}
+	public function print_competence_profile_course_all($courses, $student){
+		$subjects = block_exacomp_get_subjects_for_radar_graph($student->id);
+		
+		$content = html_writer::div(html_writer::tag('h4', get_string('allcourses', 'block_exacomp')), 'competence_profile_coursetitle');
+		
+		if(!$subjects) {
+			$content .= html_writer::div(get_string("nodata","block_exacomp"),"error");
+			return $content;
+		}
+		
+		$teachercomp = 0;
+		$studentcomp = 0;
+		$pendingcomp = 0;
+		foreach($courses as $course){
+			$course_data = block_exacomp_get_competencies_for_pie_chart($course->id, $student, block_exacomp_get_grading_scheme($course->id));
+			$teachercomp += $course_data[0];
+			$studentcomp += $course_data[1];
+			$pendingcomp += $course_data[2];
+		}
+		
+		//print graphs
+		$radar_graph = html_writer::div($this->print_radar_graph($subjects, 0),"competence_profile_radargraph");
+
+		$pie_graph = html_writer::div($this->print_pie_graph($teachercomp, $studentcomp, $pendingcomp, 0),"competence_profile_radargraph");
+		
+		$content .= html_writer::div($radar_graph.$pie_graph, 'competence_profile_graphbox clearfix');
+		
+		//print list
+		foreach($courses as $course){
+			$student = block_exacomp_get_user_information_by_course($student, $course->id);
+			$scheme = block_exacomp_get_grading_scheme($course->id);
+			$compTree = block_exacomp_get_competence_tree($course->id);
+			if($compTree)
+				$content .= html_writer::tag('h4', $course->fullname) .
+					$this->print_competence_profile_tree($compTree,$student,$scheme, true);
+		}
+		return html_writer::div($content,"competence_profile_coursedata");
 	}
 }
 ?>
