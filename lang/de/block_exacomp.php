@@ -294,6 +294,15 @@ $string['my_comps'] = 'Meine Kompetenzen';
 $string['my_items'] = 'Meine Artefakte';
 $string['my_badges'] = 'Meine Auszeichnungen';
 $string['my_periods'] = 'Meine Feedbacks';
+$string['item_type'] = 'Typ';
+$string['item_link'] = 'Link';
+$string['item_file'] = 'Datei';
+$string['item_note'] = 'Notiz';
+$string['item_title'] = 'Titel';
+$string['item_url'] = 'Url';
+$string['item_link'] = 'Link';
+$string['period_reviewer'] = 'Bewerter';
+$string['period_feedback'] = 'Verbales Feedback';
 
 //Competence Profile Settings
 $string['profile_settings_showonlyreached'] = 'Ich möchte in meinem Kompetenzprofil nur bereits erreichte Kompetenzen sehen.';

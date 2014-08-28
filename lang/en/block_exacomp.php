@@ -269,6 +269,15 @@ $string['my_comps'] = 'My Competencies';
 $string['my_items'] = 'My Items';
 $string['my_badges'] = 'My Badges';
 $string['my_periods'] = 'My Feedbacks';
+$string['item_type'] = 'Type';
+$string['item_link'] = 'Link';
+$string['item_file'] = 'File';
+$string['item_note'] = 'Note';
+$string['item_title'] = 'Title';
+$string['item_url'] = 'URL';
+$string['item_link'] = 'Link';
+$string['period_reviewer'] = 'Reviewer';
+$string['period_feedback'] = 'Feedback';
 
 //Competence Profile Settings
 $string['profile_settings_showonlyreached'] = 'I only want to see already gained outcomes in my competence profile';

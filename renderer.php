@@ -2916,19 +2916,70 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	public function print_exaport_item($item, $userid){
 		global $COURSE, $CFG;
-		$content .= html_writer::tag('h4', $item->name, array('class'=>'competence_profile_coursetitle'));
+		$content = html_writer::tag('h4', $item->name, array('class'=>'competence_profile_coursetitle'));
 		
 		$table = new html_table();
 		$table->attributes['class'] = 'compstable flexible boxaligncenter generaltable';
 		$rows = array();
 		$row = new html_table_row();
 		$cell = new html_table_cell();
-		$cell->attributes['class'] = '';
+		$cell->attributes['class'] = 'competence_tableright';
+		$cell->text = get_string('item_type', 'block_exacomp').": "; 
+		$row->cells[] = $cell;
+		$cell = new html_table_cell();
+		if(strcmp($item->type, 'link')==0){
+			$cell->text = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/link_32.png')))
+				.get_string('item_link', 'block_exacomp');
+		}elseif(strcmp($item->type, 'file')==0){
+			$cell->text = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/file_32.png')))
+				.get_string('item_file', 'block_exacomp');
+		}elseif(strcmp($item->type, 'note')==0){
+			$cell->text = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/note_32.png')))
+				.get_string('item_note', 'block_exacomp');
+		}
+		$row->cells[] = $cell;
+		$rows[] = $row;
 		
+		if(!empty($item->intro)){
+			$row = new html_table_row();
+			$cell = new html_table_cell();
+			$cell->attributes['class'] = 'competence_tableright';
+			$cell->text = get_string('item_title', 'block_exacomp').": "; 
+			$row->cells[] = $cell;
+			$cell = new html_table_cell();
+			$cell->text = $item->intro;
+			$row->cells[] = $cell;
+			$rows[] = $row;
+		}
+		
+		if(!empty($item->url)){
+			$row = new html_table_row();
+			$cell = new html_table_cell();
+			$cell->attributes['class'] = 'competence_tableright';
+			$cell->text = get_string('item_url', 'block_exacomp').": "; 
+			$row->cells[] = $cell;
+			$cell = new html_table_cell();
+			$cell->text = $item->url;
+			$row->cells[] = $cell;
+			$rows[] = $row;
+		}
+		
+		$row = new html_table_row();
+		$cell = new html_table_cell();
+		$cell->attributes['class'] = 'competence_tableright';
+		$cell->text = get_string('item_link', 'block_exacomp').": "; 
+		$row->cells[] = $cell;
+		$cell = new html_table_cell();
+		
+		$url = $CFG->wwwroot.'/blocks/exaport/shared_item.php?courseid='.$COURSE->id.'&access=portfolio/id/'.$userid.'&itemid='.$item->id.'&backtype=&att='.$item->attachment;
+		
+		$cell->text = html_writer::link($url, $url);
+		$row->cells[] = $cell;
+		$rows[] = $row;
+			
 		$table->data = $rows;
 		$content .= html_writer::table($table);
 		
-		$url = $CFG->wwwroot.'/blocks/exaport/shared_item.php?courseid='.$COURSE->id.'&access=portfolio/id/'.$userid.'&itemid='.$item->id.'&backtype=&att='.$item->attachment;
 		
 		$li_descriptors = '';
 		foreach($item->descriptors as $descriptor) {
@@ -2940,12 +2991,80 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::div($content.$ul_descriptors, 'competence_profile_artefacts');
 	}
 	public function print_competence_profile_exastud($settings, $user, $periods, $reviews){
-		$content = html_writer::tag('h2', get_string('pluginname', 'block_exastud'));
+		$header = html_writer::tag('h3', get_string('my_items', 'block_exacomp'), array('class'=>'competence_profile_sectiontitle'));
+		
 		$profile_settings = block_exacomp_get_profile_settings();
-		$li_periods= '';
+		
+		$content = '';
 		foreach($periods as $period){
+			
 			if(isset($profile_settings->exastud[$period->id])){
-				$li_periods .= html_writer::tag('li', $period->description);
+				$content .= $this->print_exastud_period($period, $reviews);
+			}
+		}
+
+		//$content .= html_writer::div($content, 'competence_profile_feedback');
+
+		return $header.$content;
+	}
+	private function print_exastud_period($period, $reviews){
+		$content = html_writer::tag('h4', $period->description, array('class'=>'competence_profile_coursetitle'));
+		
+		$review = $reviews[$period->id];
+		
+		$table = new html_table();
+		$table->attributes['class'] = 'compstable flexible boxaligncenter generaltable';
+		$rows = array();
+		$row = new html_table_row();
+		$cell = new html_table_cell();
+		$cell->attributes['class'] = 'competence_tableright';
+		$cell->text = get_string('period_reviewer', 'block_exacomp').":";
+		$row->cells[] = $cell;
+		$cell = new html_table_cell();
+		$cell->text = $review->reviewer->firstname." ".$review->reviewer->lastname;
+		$row->cells[] = $cell;
+		$rows[] = $row;
+			
+		
+		foreach($review->categories as $category){
+			$row = new html_table_row();
+			$cell = new html_table_cell();
+			$cell->attributes['class'] = 'competence_tableright';
+			$cell->text = $category->title.":";
+			$row->cells[] = $cell;
+			$cell = new html_table_cell();
+			$cell->text = $category->evaluation."/10";
+			$row->cells[] = $cell;
+			$rows[] = $row;
+		}
+
+		foreach($review->descriptors as $descriptor){
+			$row = new html_table_row();
+			$cell = new html_table_cell();
+			$cell->attributes['class'] = 'competence_tableright';
+			$cell->text = $descriptor->title.":";
+			$row->cells[] = $cell;
+			$cell = new html_table_cell();
+			$cell->text = $descriptor->evaluation."/10";
+			$row->cells[] = $cell;
+			$rows[] = $row;
+		}
+
+		$row = new html_table_row();
+		$cell = new html_table_cell();
+		$cell->attributes['class'] = 'competence_tableright';
+		$cell->text = get_string('period_feedback', 'block_exacomp').":";
+		$row->cells[] = $cell;
+		$cell = new html_table_cell();
+		$cell->text = $review->feedback;
+		$row->cells[] = $cell;
+		$rows[] = $row;
+		
+		$table->data = $rows;
+		$content .= html_writer::table($table);
+		
+		
+				/*$li_periods .= html_writer::tag('li', $period->description);
 				$review = $reviews[$period->id];
 
 				$li_review = html_writer::tag('li', "Reviewer: ".$review->reviewer->firstname." ".$review->reviewer->lastname);
@@ -2959,13 +3078,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$li_review .= html_writer::tag('li', $descriptor->title.": ".$descriptor->evaluation."/10");
 				}
 
-				$li_periods .= html_writer::tag('ul', $li_review);
-			}
-		}
-
-		$content .= html_writer::tag('ul', $li_periods);
-
-		return $content;
+				$li_periods .= html_writer::tag('ul', $li_review);*/
+		return html_writer::div($content, 'competence_profile_feedback');
 	}
 	public function print_competence_profile_course_all($courses, $student){
 		$subjects = block_exacomp_get_subjects_for_radar_graph($student->id);
