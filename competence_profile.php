@@ -87,10 +87,10 @@ else {
 $student = $DB->get_record('user',array('id' => $studentid));
 $output = $PAGE->get_renderer('block_exacomp');
 
-$user_courses = block_exacomp_get_exacomp_courses($student);
+$possible_courses = block_exacomp_get_exacomp_courses($student);
 
 if(!block_exacomp_check_profile_config($student->id))
-	block_exacomp_init_profile($user_courses, $student->id);
+	block_exacomp_init_profile($possible_courses, $student->id);
 
 
 echo $output->print_competence_profile_metadata($student);
@@ -118,6 +118,12 @@ $periods = array();
 if($profile_settings->useexastud == 1){
 	$periods = block_exacomp_get_exastud_periods();
 	$reviews = block_exacomp_get_exastud_reviews($periods, $student);
+}
+
+$user_courses = array();
+foreach($possible_courses as $course){
+	if(isset($profile_settings->exacomp[$course->id]))
+		$user_courses[] = $course; 
 }
 
 echo $output->print_competene_profile_overview($student, $user_courses, $badges, 

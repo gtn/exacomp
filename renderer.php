@@ -2542,7 +2542,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		if($exaport){
 			$exaport_content = '';
 			foreach($exaportitems as $item){
-				$exaport_content .= html_writer::tag('li', html_writer::link('#', $item->name));
+				$exaport_content .= html_writer::tag('li', html_writer::link('#'.$item->name.$item->id, $item->name));
 			}
 			$overviewcontent .= html_writer::div(html_writer::tag('h4', get_string('my_items', 'block_exacomp'))
 				. html_writer::tag('ul',$exaport_content), 'competence_profile_overview_artefacts');
@@ -2552,7 +2552,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		if($exastud){
 			$exastud_content  = '';
 			foreach($exastudperiods as $period){
-				$exastud_content .= html_writer::tag('li', html_writer::link('#', $period->description));
+				$exastud_content .= html_writer::tag('li', html_writer::link('#'.$period->description.$period->id, $period->description));
 			}
 			$overviewcontent .= html_writer::div(html_writer::tag('h4', get_string('my_periods', 'block_exacomp'))
 				. html_writer::tag('ul', $exastud_content), 'competence_profile_overview_feedback');
@@ -2590,7 +2590,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				
 			$row = new html_table_row();
 			$cell = new html_table_cell();
-			$cell->text = $course->fullname;
+			$cell->text = html_writer::link('#'.$course->fullname.$course->id, $course->fullname);
 			$row->cells[] = $cell;
 				
 			$cell = new html_table_cell();
@@ -2623,7 +2623,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$row = new html_table_row();
 		$cell = new html_table_cell();
-		$cell->text = get_string('allcourses', 'block_exacomp');
+		$cell->text = html_writer::link('#all_courses',get_string('allcourses', 'block_exacomp'));
 		$row->cells[] = $cell;
 
 		$cell = new html_table_cell();
@@ -2692,7 +2692,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$scheme = block_exacomp_get_grading_scheme($course->id);
 		$compTree = block_exacomp_get_competence_tree($course->id);
 		//print heading
-		$content = html_writer::tag("h4", $course->fullname, array("class" => "competence_profile_coursetitle"));
+		$content = html_writer::tag("h4", html_writer::tag('a', $course->fullname, array('name'=>$course->fullname.$course->id)), array("class" => "competence_profile_coursetitle"));
 		if(!$compTree) {
 			$content .= html_writer::div(get_string("nodata","block_exacomp"),"error");
 			return $content;
@@ -2916,7 +2916,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	public function print_exaport_item($item, $userid){
 		global $COURSE, $CFG;
-		$content = html_writer::tag('h4', $item->name, array('class'=>'competence_profile_coursetitle'));
+		$content = html_writer::tag('h4', html_writer::tag('a', $item->name, array('name'=>$item->name.$item->id)), array('class'=>'competence_profile_coursetitle'));
 		
 		$table = new html_table();
 		$table->attributes['class'] = 'compstable flexible boxaligncenter generaltable';
@@ -3008,7 +3008,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $header.$content;
 	}
 	private function print_exastud_period($period, $reviews){
-		$content = html_writer::tag('h4', $period->description, array('class'=>'competence_profile_coursetitle'));
+		$content = html_writer::tag('h4', html_writer::tag('a', $period->description, array('name'=>$period->description.$period->id)), array('class'=>'competence_profile_coursetitle'));
 		
 		$review = $reviews[$period->id];
 		
@@ -3068,7 +3068,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function print_competence_profile_course_all($courses, $student){
 		$subjects = block_exacomp_get_subjects_for_radar_graph($student->id);
 		
-		$content = html_writer::div(html_writer::tag('h4', get_string('allcourses', 'block_exacomp')), 'competence_profile_coursetitle');
+		$content = html_writer::div(html_writer::tag('h4', html_writer::tag('a', get_string('allcourses', 'block_exacomp'), array('name'=>'all_courses'))), 'competence_profile_coursetitle');
 		
 		if(!$subjects) {
 			$content .= html_writer::div(get_string("nodata","block_exacomp"),"error");
