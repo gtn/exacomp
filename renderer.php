@@ -2713,7 +2713,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::div($content,"competence_profile_coursedata");
 	}
 
-	private function print_competence_profile_tree($in,$student,$scheme = 1, $showonlyreached = false) {
+	private function print_competence_profile_tree($in,$student = null,$scheme = 1, $showonlyreached = false) {
 		$profile_settings = block_exacomp_get_profile_settings();
 		
 		$showonlyreached_total = false;
@@ -2916,7 +2916,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	public function print_exaport_item($item, $userid){
-		global $COURSE, $CFG;
+		global $COURSE, $CFG, $DB;
 		$content = html_writer::tag('h4', html_writer::tag('a', $item->name, array('name'=>$item->name.$item->id)), array('class'=>'competence_profile_coursetitle'));
 		
 		$table = new html_table();
@@ -2981,15 +2981,58 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$table->data = $rows;
 		$content .= html_writer::table($table);
 		
-		
-		$li_descriptors = '';
-		foreach($item->descriptors as $descriptor) {
-			$class = 'competence_profile_descriptor';
-			$li_descriptors .= '<li class="'.$class.'">' . $descriptor->title	 . '</li>';
+		// STANDARDS
+		$allSubjects = block_exacomp_get_all_subjects();
+		$allTopics = block_exacomp_get_all_topics();
+		// 3. GET DESCRIPTORS
+		$allDescriptors = $item->descriptors;
+		$usedTopics = array();
+		foreach ($allDescriptors as $descriptor) {
+			$descriptor->topicid = $DB->get_field(DB_DESCTOPICS, 'topicid', array('descrid' => $descriptor->id), IGNORE_MULTIPLE);
+			$descriptor->tabletype = 'descriptor';
+			// get descriptor topic
+			if (empty($allTopics[$descriptor->topicid])) continue;
+			$topic = $allTopics[$descriptor->topicid];
+			$topic->descriptors[$descriptor->id] = $descriptor;
+			$usedTopics[$topic->id] = $topic;
 		}
-		$ul_descriptors = html_writer::tag('ul', $li_descriptors);
+		$subjects = array();
 		
-		return html_writer::div($content.$ul_descriptors, 'competence_profile_artefacts');
+		foreach ($usedTopics as $topic) {
+			$found = true;
+			for ($i = 0; $i < 10; $i++) {
+				if ($topic->parentid) {
+					// parent is topic, find it
+					if (empty($allTopics[$topic->parentid])) {
+						$found = false;
+						break;
+					}
+		
+					// found it
+					$allTopics[$topic->parentid]->subs[$topic->id] = $topic;
+					$usedTopics[$topic->parentid] = $allTopics[$topic->parentid];
+					// go up
+					$topic = $allTopics[$topic->parentid];
+				} else {
+					// parent is subject, find it
+					if (empty($allSubjects[$topic->subjid])) {
+						$found = false;
+						break;
+					}
+		
+					// found: add it to the subject result
+					$subject = $allSubjects[$topic->subjid];
+					$subject->subs[$topic->id] = $topic;
+					$subjects[$topic->subjid] = $subject;
+		
+					// top found
+					break;
+				}
+			}
+		}
+		$list_descriptors = $this->print_competence_profile_tree($subjects);
+		
+		return html_writer::div($content.$list_descriptors, 'competence_profile_artefacts');
 	}
 	public function print_competence_profile_exastud($settings, $user, $periods, $reviews){
 		$header = html_writer::tag('h3', get_string('my_items', 'block_exacomp'), array('class'=>'competence_profile_sectiontitle'));

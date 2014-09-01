@@ -99,7 +99,7 @@ echo $output->print_competence_profile_metadata($student);
 
 $usebadges = get_config('exacomp', 'usebadges');
 
-$profile_settings = block_exacomp_get_profile_settings();
+$profile_settings = block_exacomp_get_profile_settings($studentid);
 
 if (block_exacomp_moodle_badges_enabled() && $usebadges && $profile_settings->usebadges){
 	block_exacomp_award_badges($courseid, $USER->id);

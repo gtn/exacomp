@@ -2697,51 +2697,48 @@ function block_exacomp_get_exaport_items(){
 	global $USER, $DB;
 	return $DB->get_records('block_exaportitem',array("userid"=>$USER->id));
 }
-function block_exacomp_get_profile_settings(){
+function block_exacomp_get_profile_settings($userid = 0){
 	global $USER, $DB;
+	
+	if($userid == 0)
+		$userid = $USER->id;
 	
 	$profile_settings = new stdClass();
 	
 	$profile_settings->exacomp = array();
-	$exacomp_settings = $DB->get_records(DB_PROFILESETTINGS, array('block'=>'exacomp', 'userid'=>$USER->id));
+	$exacomp_settings = $DB->get_records(DB_PROFILESETTINGS, array('block'=>'exacomp', 'userid'=>$userid));
 	foreach($exacomp_settings as $setting){
 		$profile_settings->exacomp[$setting->itemid] = $setting;
 	}
 	
-	/*$profile_settings->exaport = array();
-	$exaport_settings = $DB->get_records(DB_PROFILESETTINGS, array('block'=>'exaport', 'userid'=>$USER->id));
-	foreach($exaport_settings as $setting){
-		$profile_settings->exaport[$setting->itemid] = $setting;
-	}*/
-	
 	$profile_settings->exastud = array();
-	$exastud_settings = $DB->get_records(DB_PROFILESETTINGS, array('block'=>'exastud', 'userid'=>$USER->id));
+	$exastud_settings = $DB->get_records(DB_PROFILESETTINGS, array('block'=>'exastud', 'userid'=>$userid));
 	foreach($exastud_settings as $setting){
 		$profile_settings->exastud[$setting->itemid] = $setting;
 	}
 	
 	$profile_settings->showonlyreached=0;
-	$showonlyreached = $DB->get_field(DB_PROFILESETTINGS, 'itemid' ,array('block'=>'exacompdesc', 'userid'=>$USER->id));
+	$showonlyreached = $DB->get_field(DB_PROFILESETTINGS, 'itemid' ,array('block'=>'exacompdesc', 'userid'=>$userid));
 	if($showonlyreached && $showonlyreached == 1)
 		$profile_settings->showonlyreached = 1;
 	
 	$profile_settings->useexaport = 0;
-	$useexaport = $DB->get_field(DB_PROFILESETTINGS, 'itemid', array('block'=>'useexaport', 'userid'=>$USER->id));
+	$useexaport = $DB->get_field(DB_PROFILESETTINGS, 'itemid', array('block'=>'useexaport', 'userid'=>$userid));
 	if($useexaport && $useexaport == 1)
 		$profile_settings->useexaport = 1;
 		
 	$profile_settings->useexastud = 0;	
- 	$useexastud = $DB->get_field(DB_PROFILESETTINGS, 'itemid', array('block'=>'useexastud', 'userid'=>$USER->id));
+ 	$useexastud = $DB->get_field(DB_PROFILESETTINGS, 'itemid', array('block'=>'useexastud', 'userid'=>$userid));
 	if($useexastud && $useexastud == 1)
 		$profile_settings->useexastud = 1;
 		
 	$profile_settings->usebadges = 0;
-	$usebadges = $DB->get_field(DB_PROFILESETTINGS, 'itemid', array('block'=>'usebadges', 'userid'=>$USER->id));
+	$usebadges = $DB->get_field(DB_PROFILESETTINGS, 'itemid', array('block'=>'usebadges', 'userid'=>$userid));
  	if($usebadges && $usebadges == 1)
 		$profile_settings->usebadges = 1;
 	
 	$profile_settings->onlygainedbadges = 0;
-	$onlygainedbadges = $DB->get_field(DB_PROFILESETTINGS, 'itemid', array('block'=>'badges', 'userid'=>$USER->id));
+	$onlygainedbadges = $DB->get_field(DB_PROFILESETTINGS, 'itemid', array('block'=>'badges', 'userid'=>$userid));
 	if($onlygainedbadges && $onlygainedbadges == 1)
 		$profile_settings->onlygainedbadges = 1;
 		
