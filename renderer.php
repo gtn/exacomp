@@ -2794,7 +2794,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		</script>';
 		} else {
 			//print error
-			$content = html_writer::div(get_string("radargrapherror","block_exacomp"),"competence_profile_grapherror");
+			$img = html_writer::div(html_writer::tag("img", "", array("src" => "pix/graph_notavailable.png")));
+			$content = html_writer::div($img . get_string("radargrapherror","block_exacomp"),"competence_profile_grapherror");
 		}
 		return $content;
 	}

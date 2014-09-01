@@ -696,7 +696,10 @@ h3.competence_profile_sectiontitle {
 	text-align: right;
 	min-width: 140px;
 }
-
+.competence_profile_grapherror {
+	text-align: center;
+	font-size:0.7em;
+}
 /* 
 .competence_profile_radargraph {
 	float: left;
