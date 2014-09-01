@@ -292,6 +292,7 @@ $string['profile_settings_no_item'] = 'No Exabis ePortfolio item available, so t
 $string['profile_settings_no_period'] = 'No review in a period in Exabis Student Review available.';
 $string['profile_settings_usebadges'] = 'I want to see badges in my competence profile.';
 $string['profile_settings_onlygainedbadges'] = 'I don\'t want to see pending badges.';
+$string['profile_settings_badges_lineup'] = 'Badges settings';
 
 $string['specificcontent'] = 'site-specific topics';
 $string['specificsubject'] = 'site-specific subjects';

@@ -2824,7 +2824,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$exacomp_div_content .= html_writer::div($content_courses);
 		
 		if($usebadges){
-			$badge_div_content = '';
+			$badge_div_content = html_writer::tag('h4', get_string('profile_settings_badges_lineup', 'block_exacomp'));
 			$badge_div_content .= html_writer::div(
 					html_writer::checkbox('usebadges', 1, ($settings->usebadges ==1), get_string('profile_settings_usebadges', 'block_exacomp')));
 				

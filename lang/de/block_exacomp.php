@@ -307,16 +307,16 @@ $string['period_feedback'] = 'Verbales Feedback';
 
 //Competence Profile Settings
 $string['profile_settings_showonlyreached'] = 'Ich möchte in meinem Kompetenzprofil nur bereits erreichte Kompetenzen sehen.';
-$string['profile_settings_choose_courses'] = 'In Exabis Competencies beurteilen Lehrer deinen Kompetenzerwerb in unterschiedlichen Fachgebieten. Du kannst ausw&auml;hlen, welche Kurse im Kompetenzprofil aufscheinen sollen.';
+$string['profile_settings_choose_courses'] = 'In Exabis Competencies beurteilen Trainer/innen den Kompetenzerwerb in unterschiedlichen Fachgebieten. Hier kann ausgew&auml;hlt werden, welche Kurse im Kompetenzprofil aufscheinen sollen.';
 $string['profile_settings_useexaport'] = 'Ich möchte Kompetenzen, die in Exabis E-Portfolio verwendet werden in meinem Profil sehen.';
 $string['profile_settings_choose_items'] = 'Exabis ePortfolio dokumentiert deinen Kompetenzerwerb außerhalb von Lehrern vorgegebenen Grenzen. Du kannst ausw&auml;hlen, welche Einträge im Kompetenzprofil aufscheinen sollen.';
 $string['profile_settings_useexastud'] = 'Ich möchte Beurteilungen aus Exabis Student Review in meinem Profil sehen.';
-$string['profile_settings_choose_periods'] = 'Exabis Student Review speichert Beurteilungen in verschiedenen Kategorien über mehrere Perioden hinweg. Du kannst ausw&auml;hlen, welche Perioden das Kompetenzprofil beinhalten soll.';
+$string['profile_settings_choose_periods'] = 'Exabis Student Review speichert Beurteilungen in verschiedenen Kategorien über mehrere Perioden hinweg. Es kann ausgew&auml;hlt werden, welche Perioden das Kompetenzprofil beinhalten soll.';
 $string['profile_settings_no_item'] = 'Kein Exabis ePortfolio Artefakt vorhanden, somit kann nichts dargestellt werden.';
 $string['profile_settings_no_period'] = 'Keine Beurteilung in einer Periode in Exabis Student Review vorhanden.';
 $string['profile_settings_usebadges'] = 'Ich möchte im Kompetenzprofil auch meine Auszeichnungen sehen.';
 $string['profile_settings_onlygainedbadges'] = 'Ich möchte nur Auszeichnungen sehen, die mir bereits verliehen wurden.';
-
+$string['profile_settings_badges_lineup'] = 'Einstellungen zu Auszeichnungen';
 
 $string['specificcontent'] = 'Schulbezogene Themenbereiche';
 $string['specificsubject'] = 'Schulbezogene Gegenstands-/Kompetenzbereiche';
