@@ -2688,17 +2688,20 @@ function block_exacomp_exastudexists(){
 	global $DB;
 	return $DB->get_record('block',array('name'=>'exastud'));
 }
-function block_exacomp_get_exastud_periods(){
+function block_exacomp_get_exastud_periods($userid = 0){
 	global $USER, $DB;
+	if($userid == 0)
+		$userid = $USER->id;
+	
 	$sql = "SELECT p.id,p.description FROM {block_exastudreview} r, {block_exastudperiod} p WHERE r.student_id = ? AND r.periods_id = p.id GROUP BY p.id";
-	return $DB->get_records_sql($sql,array("studentid"=>$USER->id));
+	return $DB->get_records_sql($sql,array("studentid"=>$userid));
 }
 function block_exacomp_get_exaport_items($userid = 0){
 	global $USER, $DB;
 	if($userid == 0)
 		$userid = $USER->id;
 	
-	$items = $DB->get_records('block_exaportitem',array("userid"=>$userid));
+	$items = $DB->get_records('block_exaportitem',array("userid"=>$userid,"isoez" => 0));
 	//if a teacher accesses a competence profile he should only see the views that are shared with him
 	if($userid != $USER->id) {
 		$teacherViews = $DB->get_fieldset_select('block_exaportviewshar', 'viewid', 'userid = ?',array($USER->id));
