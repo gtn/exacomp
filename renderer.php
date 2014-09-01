@@ -2714,17 +2714,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	private function print_competence_profile_tree($in,$student = null,$scheme = 1, $showonlyreached = false) {
-		$profile_settings = block_exacomp_get_profile_settings();
+		if($student != null)
+			$profile_settings = block_exacomp_get_profile_settings();
 		
 		$showonlyreached_total = false;
-		if($showonlyreached || $profile_settings->showonlyreached ==1)
+		if($showonlyreached || ($student != null && $profile_settings->showonlyreached ==1))
 			$showonlyreached_total = true;
 			
 		$content = "<ul>";
 		foreach($in as $v) {
 			$class = 'competence_profile_' . $v->tabletype;
 			$reached = false;
-			if($v->tabletype == "topic" && isset($student->topics->teacher[$v->id]) && $student->topics->teacher[$v->id] >= ceil($scheme/2)){
+			if(($v->tabletype == "topic" && isset($student->topics->teacher[$v->id]) && $student->topics->teacher[$v->id] >= ceil($scheme/2)) || $student == null){
 				$class .= " reached";
 				$reached = true;
 			}
@@ -3031,8 +3032,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 		}
 		$list_descriptors = $this->print_competence_profile_tree($subjects);
+		$list_heading = html_writer::tag('p', '<b>Kompetenzen:</b>');
 		
-		return html_writer::div($content.$list_descriptors, 'competence_profile_artefacts');
+		return html_writer::div($content.$list_heading.$list_descriptors, 'competence_profile_artefacts');
 	}
 	public function print_competence_profile_exastud($settings, $user, $periods, $reviews){
 		$header = html_writer::tag('h3', get_string('my_items', 'block_exacomp'), array('class'=>'competence_profile_sectiontitle'));

@@ -641,20 +641,19 @@ div.ladebalken, .ladebalkenstatus {
 	list-style-type: none;
 }
 
-.competence_profile_coursedata ul li, .competence_profile_artefacts ul li {
+.competence_profile_coursedata ul li {
 		padding-left: 12px;
 		color: #7f7f7f;
 }
 
+.competence_profile_artefacts ul li {
+	color: #000;
+}
 .competence_profile_artefacts ul.competence_profile_complist li {
 	padding-left: 12px;
 }
 
 .competence_profile_coursedata ul li.reached {
-		color: #000;
-}
-
-.competence_profile_artefacts ul li.focused {
 		color: #000;
 }
 
