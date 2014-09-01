@@ -110,7 +110,7 @@ if (block_exacomp_moodle_badges_enabled() && $usebadges && $profile_settings->us
 
 $items = array();
 if($profile_settings->useexaport == 1){
-	$items = block_exacomp_get_exaport_items();
+	$items = block_exacomp_get_exaport_items($studentid);
 	$items = block_exacomp_init_exaport_items($items);
 }
 
