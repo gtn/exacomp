@@ -2668,14 +2668,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	},
 	{
 	value: '.$teachercomp.',
-	color: "#008d36",
-	highlight: "#006532",
+	color: "#48a53f",
+    highlight: "#006532",
 	label: "'.get_string('teachercomp', 'block_exacomp').'"
 	},
 	{
 	value: '.$studentcomp.',
 	color: "#f9b233",
-	highlight: "#f39200",
+    highlight: "#f39200",
 	label: "'.get_string('studentcomp', 'block_exacomp').'"
 	}
 	];
@@ -2725,6 +2725,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		foreach($in as $v) {
 			$class = 'competence_profile_' . $v->tabletype;
 			$reached = false;
+			if($v->tabletype == "subject")
+				$class .= " reached";
 			if(($v->tabletype == "topic" && isset($student->topics->teacher[$v->id]) && $student->topics->teacher[$v->id] >= ceil($scheme/2)) || $student == null){
 				$class .= " reached";
 				$reached = true;
@@ -2733,17 +2735,24 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$class .= " reached";
 				$reached = true;
 			}
+
+			if($v->tabletype != "descriptor" && (isset($v->subs) && is_array($v->subs)) || isset($v->descriptors) && is_array($v->descriptors))
+				$class .= " category";
 			
 			if(!$showonlyreached_total || ($showonlyreached_total == 1 && $reached || $v->tabletype == 'subject'))
-				$content .= '<li class="'.$class.'">' . $v->title	 . '</li>';
+				$content .= '<li class="'.$class.'">' . $v->title;
 			if( isset($v->subs) && is_array($v->subs)) $content .= $this->print_competence_profile_tree($v->subs, $student,$scheme, $showonlyreached_total);
 			if( isset($v->descriptors) && is_array($v->descriptors)) $content .= $this->print_competence_profile_tree($v->descriptors, $student,$scheme, $showonlyreached_total);
+			
+			if(!$showonlyreached_total || ($showonlyreached_total == 1 && $reached || $v->tabletype == 'subject'))
+				$content .= '</li>';
 		}
 		$content .= "</ul>";
 		return $content;
 	}
 	function print_radar_graph($records,$courseid) {
-
+		global $CFG;
+		
 		if(count($records) >= 3 && count($records) <= 7) {
 
 			$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvasradar".$courseid)),"radargraph",array("style" => "width:90%"));
@@ -2760,8 +2769,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			{
 			label: "'.get_string("studentcomp","block_exacomp").'",
 			fillColor: "rgba(249,178,51,0.2)",
-			strokeColor: "rgba(249,178,51,1)",
-			pointColor: "rgba(249,178,51,1)",
+            strokeColor: "rgba(249,178,51,0.2)",
+            pointColor: "rgba(249,178,51,0.2)",
 			pointStrokeColor: "#fff",
 			pointHighlightFill: "#fff",
 			pointHighlightStroke: "rgba(151,187,205,1)",
@@ -2770,16 +2779,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			foreach($records as $record)
 				$content .= '"'.$record->student.'",';
 			$content .= ']
-		},
-		{
-		label: "'.get_string("teachercomp","block_exacomp").'",
-		fillColor: "rgba(0,141,54,0.2)",
-		strokeColor: "rgba(0,141,54,1)",
-		pointColor: "rgba(0,141,54,1)",	
-		pointStrokeColor: "#fff",
-		pointHighlightFill: "#fff",
-		pointHighlightStroke: "rgba(151,187,205,1)",
-		data: [';
+			},
+			{
+			label: "'.get_string("teachercomp","block_exacomp").'",
+			fillColor: "rgba(72,165,63,0.2)",
+	        strokeColor: "rgba(72,165,63,1)",
+	        pointColor: "rgba(72,165,63,1)",
+			pointStrokeColor: "#fff",
+			pointHighlightFill: "#fff",
+			pointHighlightStroke: "rgba(151,187,205,1)",
+			data: [';
 
 			foreach($records as $record)
 				$content .= '"'.$record->teacher.'",';
@@ -2795,7 +2804,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		</script>';
 		} else {
 			//print error
-			$img = html_writer::div(html_writer::tag("img", "", array("src" => "pix/graph_notavailable.png")));
+			$img = html_writer::div(html_writer::tag("img", "", array("src" => $CFG->wwwroot . "/blocks/exacomp/pix/graph_notavailable.png")));
 			$content = html_writer::div($img . get_string("radargrapherror","block_exacomp"),"competence_profile_grapherror");
 		}
 		return $content;
@@ -2908,16 +2917,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 				$li_items = '';
 				if(!$item->hascomps){
-					$li_items .= html_writer::tag('li', html_writer::link($url, $item->name));
+					$li_items .= html_writer::tag('li', html_writer::link($url, $item->name,array('name'=>$item->name.$item->id)));
 				}
 				$content .= html_writer::tag('ul', $li_items);
 			}
+			$content = html_writer::div($content,'competence_profile_noassociation');
 		}
 		return $header.$content;
 	}
 
 	public function print_exaport_item($item, $userid){
-		global $COURSE, $CFG, $DB;
+		global $COURSE, $CFG, $DB, $USER;
 		$content = html_writer::tag('h4', html_writer::tag('a', $item->name, array('name'=>$item->name.$item->id)), array('class'=>'competence_profile_coursetitle'));
 		
 		$table = new html_table();
@@ -2973,7 +2983,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$row->cells[] = $cell;
 		$cell = new html_table_cell();
 		
-		$url = $CFG->wwwroot.'/blocks/exaport/shared_item.php?courseid='.$COURSE->id.'&access=portfolio/id/'.$userid.'&itemid='.$item->id.'&backtype=&att='.$item->attachment;
+		if($userid != $USER->id)
+			$url = $CFG->wwwroot.'/blocks/exaport/shared_item.php?courseid='.$COURSE->id.'&access=portfolio/id/'.$userid.'&itemid='.$item->id.'&backtype=&att='.$item->attachment;
+		else
+			$url = new moodle_url('/blocks/exaport/item.php',array("courseid"=>$COURSE->id,"access"=>'portfolio/id/'.$userid,"id"=>$item->id,"sesskey"=>sesskey(),"action"=>"edit"));
 		
 		$cell->text = html_writer::link($url, $url);
 		$row->cells[] = $cell;
@@ -3032,12 +3045,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 		}
 		$list_descriptors = $this->print_competence_profile_tree($subjects);
-		$list_heading = html_writer::tag('p', '<b>Kompetenzen:</b>');
+		$list_heading = html_writer::tag('p', '<b>Verknüpfte Kompetenzen:</b>');
 		
 		return html_writer::div($content.$list_heading.$list_descriptors, 'competence_profile_artefacts');
 	}
 	public function print_competence_profile_exastud($settings, $user, $periods, $reviews){
-		$header = html_writer::tag('h3', get_string('my_items', 'block_exacomp'), array('class'=>'competence_profile_sectiontitle'));
+		$header = html_writer::tag('h3', get_string('my_periods', 'block_exacomp'), array('class'=>'competence_profile_sectiontitle'));
 		
 		$profile_settings = block_exacomp_get_profile_settings();
 		
@@ -3145,7 +3158,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$compTree = block_exacomp_get_competence_tree($course->id);
 			if($compTree)
 				$content .= html_writer::tag('h4', $course->fullname) .
-					$this->print_competence_profile_tree($compTree,$student,$scheme, true);
+					$this->print_competence_profile_tree($compTree,$student,$scheme);
 		}
 		return html_writer::div($content,"competence_profile_coursedata");
 	}

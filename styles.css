@@ -36,7 +36,9 @@ span.competenceyellow, span.competenceok{width:20px;border:1px gray solid;}
 .exabis_comp_comp_table{
 	overflow:auto;
 }
-
+.competence_profile_overview_artefacts ul, .competence_profile_overview_feedback ul, .competence_profile_coursedata ul, .competence_profile_artefacts ul, .competence_profile_noassociation ul {
+    padding-left: 20px;
+}
  .ec_overflow {
 	overflow: auto;
 }
@@ -626,10 +628,10 @@ div.ladebalken, .ladebalkenstatus {
 	height: 18px;
 }
 .stripes {
-		 background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-		 background-color: #008d36;
-		  background-size: 30px 30px; 
-		  animation: 2s linear 0s normal none infinite progress-bar-stripes;
+         background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 10%, transparent 10%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+         background-color: #48a53f;
+          background-size: 30px 30px;
+          animation: 2s linear 0s normal none infinite progress-bar-stripes;
 }
  
 .competence_profile_overview_artefacts ul, .competence_profile_overview_feedback ul {
@@ -694,7 +696,9 @@ h3.competence_profile_sectiontitle {
 .generaltable td.competence_tableright {
 	text-align: right;
 	min-width: 140px;
+	max-width: 200px;
 }
+
 .competence_profile_grapherror {
 	text-align: center;
 	font-size:0.7em;
@@ -709,3 +713,15 @@ h3.competence_profile_sectiontitle {
 	margin-left: 50%;
 }*/
 
+.plusimageapply{
+list-style-image:url(pix/plus.png);
+cursor:pointer;
+}
+.minusimageapply{
+list-style-image:url(pix/minus.png);
+cursor:pointer;
+}
+.selectedimage{
+list-style-image:url(pix/selected.png);
+cursor:pointer;
+}

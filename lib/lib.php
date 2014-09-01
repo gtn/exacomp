@@ -2705,7 +2705,11 @@ function block_exacomp_get_exaport_items($userid = 0){
 	//if a teacher accesses a competence profile he should only see the views that are shared with him
 	if($userid != $USER->id) {
 		$teacherViews = $DB->get_fieldset_select('block_exaportviewshar', 'viewid', 'userid = ?',array($USER->id));
+		if(!$teacherViews)
+			return array();
+		
 		$teacherViews = implode(',',$teacherViews);
+		
 		foreach($items as $item) {
 			//check if item is in one of the teacher views
 			$sql = "SELECT * FROM {block_exaportviewblock} vb

@@ -238,11 +238,11 @@ $string['eportitem_notshared'] = ' (nicht geteilt)';
 $string['teachershortcut'] = 'L';
 $string['studentshortcut'] = 'S';
 
-$string['overview'] = 'Der Kompetenz-&Uuml;berblick listet Teilnehmer/-innen und die im Kurs aktivierten Kompetenzen auf.';
+$string['overview'] = 'Der Kompetenz-&Uuml;berblick listet Teilnehmer/innen und die im Kurs aktivierten Kompetenzen auf.';
 $string['showevaluation'] = 'Um die Selbsteinsch&auml;tzung zu aktivieren, klicken Sie <a href="{$a}">hier</a>.';
 $string['hideevaluation'] = 'Um die Selbsteinsch&auml;tzung zu deaktivieren, klicken Sie <a href="{$a}">hier</a>.';
-$string['showevaluation_student'] = 'Um die Einsch&auml;tzung des Lehrers zu aktivieren, klicke <a href="{$a}">hier</a>.';
-$string['hideevaluation_student'] = 'Um die Einsch&auml;tzung des Lehrers zu deaktivieren, klicke <a href="{$a}">hier</a>.';
+$string['showevaluation_student'] = 'Um die Einsch&auml;tzung des Trainers zu aktivieren, klicke <a href="{$a}">hier</a>.';
+$string['hideevaluation_student'] = 'Um die Einsch&auml;tzung des Trainers zu deaktivieren, klicke <a href="{$a}">hier</a>.';
 $string['columnselect'] = 'Spaltenauswahl';
 $string['allstudents'] = 'Alle  Kursteilnehmer';
 
@@ -286,10 +286,10 @@ $string['total'] = 'Total';
 $string['allcourses'] = 'Alle Kurse';
 $string['pendingcomp'] = 'Ausstehende Kompetenzen';
 $string['teachercomp'] = 'Erreichte Kompetenzen';
-$string['studentcomp'] = 'Laut Selbsteinsch&auml;tzung erreichte Kompetenzen';
+$string['studentcomp'] = 'Laut Selbsteinschätzung erreichte Kompetenzen';
 $string['radargrapherror'] = 'Der Radargraph kann nur bei 3-7 Achsen dargestellt werden';
 $string['nodata'] = 'Es sind keine Daten vorhanden.';
-$string['item_no_comps'] = 'Zu folgenden Eintr&auml;gen wurden noch keine Deskriptoren zugeordnet:';
+$string['item_no_comps'] = 'Zu folgenden Eintr&auml;gen wurden noch keine Kompetenzen zugeordnet:';
 $string['select_student'] = 'Wählen Sie einen Kursteilnehmer aus, dessen Kompetenzprofil Sie sehen möchten.';
 $string['my_comps'] = 'Meine Kompetenzen';
 $string['my_items'] = 'Meine Artefakte';
