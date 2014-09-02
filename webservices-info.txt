@@ -1,7 +1,7 @@
 If you want to use Exabis Competencies Web services there are a few steps to do:
 
 1) Enable Webservices on your Moodle instance at: Site administration/Plugins/Web services/Overview (1)
-2) Enable rest-protocol on your Moodle instance at: Site administration/Plugins/Web services/Overview (2)
+2) Enable rest-protocol on your Moodle instance at: Site administration/Plugins/Web services/protocols (2)
 3) Grant additional permission to the role "authenticated user" at: Site administration/Users/Permissions/Define roles
 	3.1 Select Authenticated User
 	3.2 Klick on "Edit"
