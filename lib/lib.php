@@ -1483,7 +1483,8 @@ function block_exacomp_get_all_user_badges($userid = null) {
 function block_exacomp_get_user_badges($courseid, $userid) {
 	global $CFG, $DB;
 
-	$badges = badges_get_badges(BADGE_TYPE_COURSE, $courseid);
+	//$badges = badges_get_badges(BADGE_TYPE_COURSE, $courseid);
+	$badges = badges_get_badges(BADGE_TYPE_COURSE);
 
 	$result = (object)array(
 			'issued' => array(),
@@ -1785,8 +1786,8 @@ function block_exacomp_get_eportfolioitem_association($students){
 			SELECT mm.id, compid, activityid, i.shareall, i.externaccess, i.name
 			FROM {'.DB_COMPETENCE_ACTIVITY.'} mm
 			JOIN {block_exaportitem} i ON mm.activityid=i.id
-			WHERE i.courseid = ? AND mm.eportfolioitem = 1 AND i.userid=?
-			ORDER BY compid', array($COURSE->id, $student->id));
+			WHERE mm.eportfolioitem = 1 AND i.userid=?
+			ORDER BY compid', array($student->id));
  		
 		$result[$student->id] = new stdClass();
 		$result[$student->id]->competencies = array();
