@@ -92,7 +92,6 @@ $possible_courses = block_exacomp_get_exacomp_courses($student);
 if(!block_exacomp_check_profile_config($student->id))
 	block_exacomp_init_profile($possible_courses, $student->id);
 
-
 echo $output->print_competence_profile_metadata($student);
 
 //echo html_writer::start_div('competence_profile_overview clearfix');
@@ -102,8 +101,8 @@ $usebadges = get_config('exacomp', 'usebadges');
 $profile_settings = block_exacomp_get_profile_settings($studentid);
 
 if (block_exacomp_moodle_badges_enabled() && $usebadges && $profile_settings->usebadges){
-	block_exacomp_award_badges($courseid, $USER->id);
-	$badges = block_exacomp_get_user_badges($courseid, $USER->id);
+	block_exacomp_award_badges($courseid, $studentid);
+	$badges = block_exacomp_get_user_badges($courseid, $studentid);
 }else{
 	$badges = array();
 }

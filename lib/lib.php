@@ -1387,8 +1387,8 @@ function block_exacomp_get_output_fields($topic, $show_category=false) {
 /**
  *
  * Awards badges to user
- * @param unknown_type $courseid
- * @param unknown_type $userid
+ * @param int $courseid
+ * @param int $userid
  */
 function block_exacomp_award_badges($courseid, $userid=null) {
 	global $DB, $USER;
@@ -1414,6 +1414,7 @@ function block_exacomp_award_badges($courseid, $userid=null) {
 		// badges, which can be issued to user: status=active, type=manual
 		if (!$badge->is_active() || !$badge->has_manual_award_criteria()) continue;
 
+
 		$descriptors = $DB->get_records_sql('
 				SELECT d.*
 				FROM {'.DB_DESCRIPTORS.'} d
@@ -1422,7 +1423,6 @@ function block_exacomp_award_badges($courseid, $userid=null) {
 
 		// no descriptors selected?
 		if (empty($descriptors)) continue;
-
 		foreach ($users as $user) {
 			if ($badge->is_issued($user->id)) {
 				// skip, already issued
@@ -1445,7 +1445,7 @@ function block_exacomp_award_badges($courseid, $userid=null) {
 
 			// some are missing
 			if (!$allFound) continue;
-
+				
 			// has all required competencies
 			$acceptedroles = array_keys($badge->criteria[BADGE_CRITERIA_TYPE_MANUAL]->params);
 			if (process_manual_award($user->id, $USER->id, $acceptedroles[0], $badge->id))  {
@@ -2492,8 +2492,10 @@ function block_exacomp_get_course_competence_statistics($courseid, $user, $schem
 			}
 		}	
 	}
-	
-	$average = intval(ceil(($average+$reached)/count($students)));
+	if(count($students) > 0)
+		$average = intval(ceil(($average+$reached)/count($students)));
+	else
+		$average = 0;
 	
 	return array($total,$reached,$average);
 }

@@ -1560,7 +1560,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$context = context_course::instance($badge->courseid);
 				$imageurl = moodle_url::make_pluginfile_url($context->id, 'badges', 'badgeimage', $badge->id, '/', 'f1', false);
 				$img = html_writer::empty_tag('img', array('src' => $imageurl, 'class' => 'badge-image'));
-				$innerdiv = html_writer::div($badge->name,"", array('style'=>'font-weight:bold;'));
+				$innerdiv = html_writer::div($badge->name);
 				$div = html_writer::div($img.$innerdiv, '', array('style'=>'padding:10px;'));
 				$content .= $div;
 			}
@@ -2529,14 +2529,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			
 		return html_writer::div($namediv.$imgdiv.$citydiv, 'competence_profile_metadata clearfix');
 	}
-	function print_competene_profile_overview($student, $courses, $badges, $exaport, $exaportitems, $exastud, $exastudperiods, $olygainedbadges=false) {
+	function print_competene_profile_overview($student, $courses, $badges, $exaport, $exaportitems, $exastud, $exastudperiods, $onlygainedbadges=false) {
 
 		$table = $this->print_competence_profile_overview_table($student, $courses);
 		$overviewcontent = $table;
-
 		//my badges
 		if(!empty($badges))
-			$overviewcontent .= html_writer::div($this->print_my_badges($badges, $olygainedbadges), 'competence_profile_overview_badges');
+			$overviewcontent .= html_writer::div($this->print_my_badges($badges, $onlygainedbadges), 'competence_profile_overview_badges');
 		
 		//my items
 		if($exaport){
@@ -2756,6 +2755,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		if(count($records) >= 3 && count($records) <= 7) {
 
 			$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvasradar".$courseid)),"radargraph",array("style" => "width:90%"));
+			$content .= html_writer::div($this->print_radar_graph_legend(),"radargraph_legend");
 			$content .= '
 			<script>
 			var radarChartData = {
@@ -2809,7 +2809,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 		return $content;
 	}
-
+	public function print_radar_graph_legend() {
+		$content = html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","competenceyellow");
+		$content .= ' '.get_string("studentcomp","block_exacomp").' ';
+		$content .= html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","competenceok");
+		$content .= ' '.get_string("teachercomp","block_exacomp").' ';
+		return $content;
+	}
 	public function print_profile_settings($courses, $settings, $usebadges, $exaport, $exastud, $exastud_periods){
 		global $COURSE;
 		$exacomp_div_content = html_writer::tag('h2', get_string('pluginname', 'block_exacomp'));

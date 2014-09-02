@@ -12,10 +12,10 @@ div#exabis_save_button{
 	padding: 10px;
 }
 #competenceok, .competenceok {
-	background-color: #dff0d8 !important;
+	background-color: #48a53f !important;
 }
 #competenceyellow, .competenceyellow {
-	background-color: #fcf8e3 !important;
+	background-color: #f9b233 !important;
 }
 span.competenceyellow, span.competenceok{width:20px;border:1px gray solid;}
 .generaltable td.bottom {
@@ -533,10 +533,10 @@ h4 {
  .exabis_comp_student_not{
 }
  .exabis_comp_student_assigned{
-	background-color: #ACFA58;
+	background-color: #f9b233;
 }
  .exabis_comp_teacher_assigned{
-	background-color: #40FF00;
+	background-color: #48a53f;
 }
  .exabis_comp_student_started{
 	background-color: #F4FA58;
@@ -583,6 +583,9 @@ h4 {
 	float: left;
 	box-sizing: border-box;
     display: block;
+}
+.competence_profile_graphbox .radargraph_legend {
+	text-align: center;	
 }
 
 .competence_profile_overview_feedback {
@@ -724,4 +727,9 @@ cursor:pointer;
 .selectedimage{
 list-style-image:url(pix/selected.png);
 cursor:pointer;
+}
+.exacomp_profile_badges {
+	border: 1px solid #ddd;
+	padding: 10px;
+	margin-bottom: 20px;
 }
