@@ -7,8 +7,8 @@ $source = 1;
 /**
  *
  * @param String $data xml content
- * @param unknown_type $source default is 1, for specific import userid should be used
- * @param unknown_type $cron should always be 0, 1 if method is called by the cron job
+ * @param int $source default is 1, for specific import 2 is used. A specific import can be done by teachers and only effects data from topic leven downwards (topics, descriptors, examples)
+ * @param int $cron should always be 0, 1 if method is called by the cron job
  */
 function block_exacomp_xml_do_import($data = null, $par_source = 1, $cron = 0) {
 	global $DB,$CFG,$source;

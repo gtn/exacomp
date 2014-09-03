@@ -1,5 +1,7 @@
 <?php
-// DB TABLE NAMES
+/**
+ * DATABSE TABLE NAMES
+ */
 define('DB_SKILLS', 'block_exacompskills');
 define('DB_NIVEAUS', 'block_exacompniveaus');
 define('DB_TAXONOMIES', 'block_exacomptaxonomies');
@@ -22,17 +24,21 @@ define('DB_MDLTYPES', 'block_exacompmdltype_mm');
 define('DB_DESCBADGE', 'block_exacompdescbadge_mm');
 define('DB_PROFILESETTINGS', 'block_exacompprofilesettings');
 
-// ROLE CONSTANTS
+/**
+ * PLUGIN ROLES
+ */
 define('ROLE_TEACHER', 1);
 define('ROLE_STUDENT', 0);
 
-// DB COMPETENCE TYPE CONSTANTS
+/**
+ * COMPETENCE TYPES
+ */
 define('TYPE_DESCRIPTOR', 0);
 define('TYPE_TOPIC', 1);
 
-// SETTINGS
 define('SETTINGS_MAX_SCHEME', 10);
 define('CUSTOM_EXAMPLE_SOURCE', 3);
+
 
 if (block_exacomp_moodle_badges_enabled()) {
 	require_once($CFG->libdir . '/badgeslib.php');
@@ -51,7 +57,7 @@ define("SHOW_ALL_TOPICS",99999999);
 
 /**
  *
- * Include all JavaScript files needed
+ * Includes all neccessary JavaScript files
  */
 function block_exacomp_init_js_css(){
 	global $PAGE, $CFG;
@@ -72,16 +78,20 @@ function block_exacomp_init_js_css(){
 
 /**
  * Gets one particular subject
+ * 
  * @param int $subjectid
+ * @return object $subject
  */
 function block_exacomp_get_subject_by_id($subjectid) {
 	global $DB;
 	return $DB->get_records(DB_SUBJECTS,array("id" => $subjectid),'','id, title, numb, \'subject\' as tabletype');
 }
 /**
- * Gets all subjects that are in use in a particular course. The method also checks
- * @param unknown_type $courseid
- * @return multitype:
+ * Gets all subjects that are in use in a particular course.
+ * 
+ * @param int $courseid
+ * @param bool $showalldescriptors default false, show only comps with activities
+ * @return array $subjects
  */
 function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = false) {
 	global $DB;
@@ -107,7 +117,6 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 	return $DB->get_records_sql($sql, array($courseid));
 }
 /**
- *
  * Gets all available subjects
  */
 function block_exacomp_get_all_subjects() {
@@ -132,7 +141,7 @@ function block_exacomp_get_schooltypes_by_course($courseid) {
  *
  * This function is used for courseselection.php
  * -only subject according to selected schooltypes are returned
- * @param unknown_type $courseid
+ * @param int $courseid
  */
 function block_exacomp_get_subjects_for_schooltype($courseid, $schooltypeid=0){
 	global $DB;
@@ -291,7 +300,7 @@ function block_exacomp_check_activity_association($compid, $comptype, $courseid)
 }
 
 /**
- * Deletes an uploaded example and all it's data base entries and from the file system
+ * Deletes an uploaded example and all it's database/filesystem entries
  * @param int $delete exampleid
  */
 function block_exacomp_delete_custom_example($delete) {
@@ -560,7 +569,7 @@ function block_exacomp_save_example_evaluation($data, $courseid, $role, $topicid
 }
 /**
  * Gets settings for the current course
- * @param int$courseid
+ * @param int $courseid
  */
 function block_exacomp_get_settings_by_course($courseid = 0) {
 	global $DB, $COURSE, $version;
@@ -636,6 +645,13 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 
 	return $descriptors;
 }
+/**
+ * Returns descriptors for a given topic
+ * 
+ * @param int $courseid
+ * @param int $topicid
+ * @param bool $showalldescriptors
+ */
 function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldescriptors = false) {
 	global $DB;
 	
@@ -654,6 +670,12 @@ function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldes
 	
 	return $descriptors;
 }
+/**
+ * Returns descriptors for a given subject
+ * @param int $subjectid
+ * @param bool $niveaus default false, if true only descriptors with neveaus are returned
+ * @return multitype:
+ */
 function block_exacomp_get_descriptors_by_subject($subjectid,$niveaus = true) {
 	global $DB;
 
@@ -891,6 +913,12 @@ function block_exacomp_get_user_examples_by_course($user, $courseid) {
 
 	return $user;
 }
+/**
+ *  This method returns all topics for the detailed view for a given user
+ *
+ * @param object $user
+ * @param int $courseid
+ */
 function block_exacomp_get_user_activities_topics_by_course($user, $courseid){
 	global $DB;
 	$activities = block_exacomp_get_activities_by_course($courseid);
@@ -910,6 +938,12 @@ function block_exacomp_get_user_activities_topics_by_course($user, $courseid){
 	
 	return $user;
 }
+/**
+ *  This method returns all competencies for the detailed view for a given user
+ *
+ * @param object $user
+ * @param int $courseid
+ */
 function block_exacomp_get_user_activities_competencies_by_course($user, $courseid){
 	global $DB;
 	$activities = block_exacomp_get_activities_by_course($courseid);
@@ -929,10 +963,10 @@ function block_exacomp_get_user_activities_competencies_by_course($user, $course
 	return $user;
 }
 /**
- *
  * Build navigtion tabs, depending on role and version
- * @param unknown_type $context
- * @param unknown_type $courseid
+ * 
+ * @param object $context
+ * @param int $courseid
  */
 function block_exacomp_build_navigation_tabs($context,$courseid) {
 	global $DB, $version, $usebadges, $skillmanagement,$specificimport;
@@ -1086,11 +1120,11 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 	return $rows;
 }
 /**
- *
- * Gets html-selection with enroles students
- * @param unknown_type $students
- * @param unknown_type $selected
- * @param unknown_type $url
+ * Generates html dropdown for students
+ * 
+ * @param array $students
+ * @param object $selected
+ * @param moodle_url $url
  */
 function block_exacomp_studentselector($students,$selected,$url){
 	global $CFG;
@@ -1105,7 +1139,7 @@ function block_exacomp_studentselector($students,$selected,$url){
 }
 /**
  *
- * Check if there is an custom xml-file uploaded
+ * Check if school specific import is enabled
  */
 function block_exacomp_check_customupload() {
 	/*
@@ -1140,20 +1174,31 @@ function block_exacomp_get_schooltypes($edulevel) {
 
 	return $DB->get_records(DB_SCHOOLTYPES, array("elid" => $edulevel));
 }
+/**
+ * Gets a subject's schooltype
+ * 
+ * @param object $subject
+ * @return Ambigous <mixed, boolean>
+ */
 function block_exacomp_get_schooltyp_by_subject($subject){
 	global $DB;
 	return $DB->get_field(DB_SCHOOLTYPES, "title", array("id"=>$subject->stid));
 }
+/**
+ * Gets a topic's category
+ * 
+ * @param object $topic
+ */
 function block_exacomp_get_category($topic){
 	global $DB;
 	if(isset($topic->catid))
 		return $DB->get_record(DB_CATEGORIES,array("id"=>$topic->catid));
 }
 /**
- *
  * Gets assigned schooltypes for particular courseid
- * @param unknown_type $typeid
- * @param unknown_type $courseid
+ * 
+ * @param int $typeid
+ * @param int $courseid
  */
 function block_exacomp_get_mdltypes($typeid, $courseid = 0) {
 	global $DB;
@@ -1309,7 +1354,7 @@ function block_exacomp_save_coursesettings($courseid, $settings) {
 /**
  *
  * Check if there are already topics assigned to a course
- * @param unknown_type $courseid
+ * @param int $courseid
  */
 function block_exacomp_is_activated($courseid) {
 	global $DB;
@@ -1317,7 +1362,11 @@ function block_exacomp_is_activated($courseid) {
 	return $DB->get_records(DB_COURSETOPICS, array("courseid" => $courseid));
 }
 /**
- *	Check is module is ready for use
+ *	Check is block is ready for use.
+ *	It is ready if:
+ *	1. block is activated and no activites are used in the course
+ *	or
+ *	2. block is activated, activities are used and associated
  * 
  */
 function block_exacomp_is_ready_for_use($courseid){
@@ -1347,7 +1396,7 @@ function block_exacomp_is_ready_for_use($courseid){
 			return true;
 	}
 
-	//no activity assigned in givel course
+	//no activity assigned in given course
 	return false;
 }
 
@@ -2176,11 +2225,6 @@ function block_exacomp_get_niveaus_for_subject($subjectid) {
 	WHERE d.id=dt.descrid AND dt.topicid IN (SELECT id FROM {block_exacomptopics} WHERE subjid=?)
 	AND d.niveauid > 0 AND d.niveauid = n.id order by n.sorting, n.id";
 	
-	/*$niveaus = "SELECT n.id, n.title, n.sorting, d.skillid, dt.topicid FROM {block_exacompdescriptors} d, {block_exacompdescrtopic_mm} dt, {block_exacompniveaus} n
-	WHERE d.id=dt.descrid AND dt.topicid IN (SELECT id FROM {block_exacomptopics} WHERE subjid=?)
-	AND d.niveauid > 0 AND d.niveauid = n.id GROUP BY n.id, n.title, n.sorting, d.skillid, dt.topicid
-	ORDER BY n.id, n.sorting,d.skillid, dt.topicid";
-*/
 	return $DB->get_records_sql_menu($niveaus,array($subjectid));
 }
 /**

@@ -26,6 +26,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->version   = 2014082710;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2014051200;        // Requires this Moodle version
+$plugin->requires  = 2014041100;        // Requires this Moodle version
 $plugin->component = 'block_exacomp'; 	// Full name of the plugin (used for diagnostics)
 $plugin->cron = 259200; 				//259200sec = 3 days
+
+$plugin->maturity = MATURITY_STABLE;
+$plugin->release = 'v2.7-r1'; 			// This is our first release for Moodle 2.7.x branch.
