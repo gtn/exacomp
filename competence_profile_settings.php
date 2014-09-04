@@ -76,10 +76,14 @@ if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 	$profile_onlygainedbadges = 0;
 	if(isset($_POST['profile_settings_onlygainedbadges']))
 		$profile_onlygainedbadges = 1;
+		
+	$profile_showallcomps = 0;
+	if(isset($_POST['profile_settings_showallcomps']))
+		$profile_showallcomps = 1;
 	
 	block_exacomp_reset_profile_settings($USER->id);
 	
-	block_exacomp_set_profile_settings($USER->id, $showonlyreached, $profile_usebadges, $profile_onlygainedbadges, $useexaport, $useexastud, 
+	block_exacomp_set_profile_settings($USER->id, $showonlyreached, $profile_usebadges, $profile_onlygainedbadges, $profile_showallcomps, $useexaport, $useexastud, 
 		(isset($_POST['profile_settings_course']))?$_POST['profile_settings_course']:array(),
 		(isset($_POST['profile_settings_periods']))?$_POST['profile_settings_periods']:array());
 	

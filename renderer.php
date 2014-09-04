@@ -2837,6 +2837,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function print_profile_settings($courses, $settings, $usebadges, $exaport, $exastud, $exastud_periods){
 		global $COURSE;
 		$exacomp_div_content = html_writer::tag('h2', get_string('pluginname', 'block_exacomp'));
+		
 		$exacomp_div_content .= html_writer::div(
 				html_writer::checkbox('showonlyreached', 1, ($settings->showonlyreached==1), get_string('profile_settings_showonlyreached', 'block_exacomp')));
 
@@ -2846,6 +2847,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$content_courses .= html_writer::empty_tag('br');
 		}
 		$exacomp_div_content .= html_writer::div($content_courses);
+		
+		$exacomp_div_content .= html_writer::div(
+				html_writer::checkbox('profile_settings_showallcomps', 1, ($settings->showallcomps==1), get_string('profile_settings_showallcomps', 'block_exacomp')));
 		
 		if($usebadges){
 			$badge_div_content = html_writer::tag('h4', get_string('profile_settings_badges_lineup', 'block_exacomp'));
@@ -2868,17 +2872,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$exaport_div_content = html_writer::tag('h2', get_string('pluginname', 'block_exaport'));
 				$exaport_div_content .= html_writer::div(
 						html_writer::checkbox('useexaport', 1, ($settings->useexaport==1), get_string('profile_settings_useexaport', 'block_exacomp')));
-					
-				/*if(!empty($exaport_items)){
-					$content_items = html_writer::label(get_string('profile_settings_choose_items', 'block_exacomp'), '');
-				foreach($exaport_items as $item){
-				$content_items .= html_writer::checkbox('profile_settings_items[]', $item->id, (isset($settings->exaport[$item->id])), $item->name);
-				$content_items .= html_writer::empty_tag('br');
-				}
-				}else{
-				$content_items = html_writer::label(get_string('profile_settings_no_item', 'block_exacomp'), '');
-				}*/
-				//$exaport_div_content .= html_writer::div($content_items);
 					
 				$exaport_div = html_writer::div($exaport_div_content);
 				$content .= $exaport_div;
@@ -3151,7 +3144,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function print_competence_profile_course_all($courses, $student){
 		$subjects = block_exacomp_get_subjects_for_radar_graph($student->id);
 		
-		$content = html_writer::div(html_writer::tag('h4', html_writer::tag('a', get_string('allcourses', 'block_exacomp'), array('name'=>'all_courses'))), 'competence_profile_coursetitle');
+		$content = html_writer::div(html_writer::tag('h4', html_writer::tag('a', get_string('profile_settings_showallcomps', 'block_exacomp'), array('name'=>'all_courses'))), 'competence_profile_coursetitle');
 		
 		if(!$subjects) {
 			$content .= html_writer::div(get_string("nodata","block_exacomp"),"error");

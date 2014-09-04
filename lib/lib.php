@@ -2815,6 +2815,11 @@ function block_exacomp_get_profile_settings($userid = 0){
 	if($onlygainedbadges && $onlygainedbadges == 1)
 		$profile_settings->onlygainedbadges = 1;
 		
+	$profile_settings->showallcomps = 0;
+	$showallcomps = $DB->get_field(DB_PROFILESETTINGS, 'itemid', array('block'=>'all', 'userid'=>$userid));
+	if($showallcomps && $showallcomps == 1)
+		$profile_settings->showallcomps = 1;	
+		
 	return $profile_settings;
 }
 
@@ -2823,7 +2828,7 @@ function block_exacomp_reset_profile_settings($userid){
 	$DB->delete_records(DB_PROFILESETTINGS, array('userid'=>$userid));
 }
 	
-function block_exacomp_set_profile_settings($userid, $showonlyreached, $usebadges, $onlygainedbadges, $useexaport, $useexastud, $courses, $periods){
+function block_exacomp_set_profile_settings($userid, $showonlyreached, $usebadges, $onlygainedbadges, $showallcomps, $useexaport, $useexastud, $courses, $periods){
 	global $DB;
 	//showonlyreached
 	$insert = new stdClass();
@@ -2847,6 +2852,15 @@ function block_exacomp_set_profile_settings($userid, $showonlyreached, $usebadge
 	$insert = new stdClass();
 	$insert->block = 'badges';
 	$insert->itemid = intval($onlygainedbadges);
+	$insert->feedback = '';
+	$insert->userid = $userid;
+	
+	$DB->insert_record(DB_PROFILESETTINGS, $insert);
+	
+	//showallcomps
+	$insert = new stdClass();
+	$insert->block = 'all';
+	$insert->itemid = intval($showallcomps);
 	$insert->feedback = '';
 	$insert->userid = $userid;
 	
@@ -2881,18 +2895,6 @@ function block_exacomp_set_profile_settings($userid, $showonlyreached, $usebadge
 		$DB->insert_record(DB_PROFILESETTINGS, $insert);
 	}
 	
-	/*if($useexaport == 1){
-		//save items
-		foreach($items as $item){
-			$insert = new stdClass();
-			$insert->block = 'exaport';
-			$insert->itemid = intval($item);
-			$insert->feedback = '';
-			$insert->userid = $userid;
-			
-			$DB->insert_record(DB_PROFILESETTINGS, $insert);
-		}
-	}*/
 	if($useexastud == 1){
 		//save periods
 		foreach($periods as $period){
