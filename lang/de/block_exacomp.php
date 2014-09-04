@@ -255,6 +255,15 @@ $string['assignfrom'] = 'von';
 $string['assignuntil'] = 'bis';
 $string['assignlearninggroup'] = 'Lerngruppe';
 
+$string['instruction_content'] = 'Hier können Sie für Ihre Lerngruppen / Klasse vermerken, welche 
+				Lernmaterialien bearbeitet und welche Lernnachweise erbracht wurden. 
+				Darüber hinaus können Sie das Erreichen der Teilkompetenzen eintragen. 
+				Schüler/innen können sich darüber hinaus selbst einschätzen. Mit Kompetenzen 
+				verknüpfte Moodle-Aufgaben werden bei Einreichung durch Schüler/innen
+				mit rotem Icon dargestellt. Leistungsnachweise die eigeninitiativ über
+				ePortfolio-Arbeit durch Schüler/innen beigesteuert werden, werden mit
+				einem blauen Icon dargestellt.';
+
 //Activities
 $string['explaineditactivities_subjects'] = '';
 $string['column_setting'] = 'Spalten aus/einblenden';

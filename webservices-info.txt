@@ -2,12 +2,13 @@ If you want to use Exabis Competencies Web services there are a few steps to do:
 
 1) Enable Webservices on your Moodle instance at: Site administration/Plugins/Web services/Overview (1)
 2) Enable rest-protocol on your Moodle instance at: Site administration/Plugins/Web services/protocols (2)
-3) Grant additional permission to the role "authenticated user" at: Site administration/Users/Permissions/Define roles
-	3.1 Select Authenticated User
-	3.2 Klick on "Edit"
-	3.3 Filter for createtoken
-	3.4 Allow moodle/webservice:createtoken
-4) Go to Site administration/Server/Enable Exabis Competencies webservices to run the script to finish web service configuration
+3) Enable web services for mobile devices at: Site administration/Plugins/Web services/Mobile
+4) Grant additional permission to the role "authenticated user" at: Site administration/Users/Permissions/Define roles
+	4.1 Select Authenticated User
+	4.2 Klick on "Edit"
+	4.3 Filter for createtoken
+	4.4 Allow moodle/webservice:createtoken
+5) Go to Site administration/Server/Enable Exabis Competencies webservices to run the script to finish web service configuration
 	(if you do not see this entry, you may have missed on step in installation - 
 		to use Exabis Competencies web services you have to copy the folder exacomp_local to the local-directory of Moodle, 
 		log in as administrator and klick on Site administration/Notification to install this additional plugin)
