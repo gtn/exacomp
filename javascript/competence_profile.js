@@ -18,4 +18,9 @@ jQueryExacomp(function($){
 			}
 		});
 	});
+	$(document).on('click', '.print', function(){
+		$('li.category').children().show();
+		$('li.category').removeClass('plusimageapply');
+		$('li.category').addClass('minusimageapply');
+	});
 });

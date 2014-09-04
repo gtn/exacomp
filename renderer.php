@@ -3179,5 +3179,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 		return html_writer::div($content,"competence_profile_coursedata");
 	}
+	public function print_profile_print_button(){
+		$content = html_writer::link('javascript:window.print()', 
+			html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/view_print.png'), 'alt'=>'print')), array('class'=>'print'));
+		return html_writer::div(html_writer::tag('form', $content), 'competence_profile_printbox');
+	}
 }
 ?>

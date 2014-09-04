@@ -87,6 +87,8 @@ else {
 $student = $DB->get_record('user',array('id' => $studentid));
 $output = $PAGE->get_renderer('block_exacomp');
 
+echo $output->print_profile_print_button();
+
 $possible_courses = block_exacomp_get_exacomp_courses($student);
 
 if(!block_exacomp_check_profile_config($student->id))
