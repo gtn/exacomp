@@ -2694,7 +2694,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content = html_writer::tag("h4", html_writer::tag('a', $course->fullname, array('name'=>$course->fullname.$course->id)), array("class" => "competence_profile_coursetitle"));
 		if(!$compTree) {
 			$content .= html_writer::div(get_string("nodata","block_exacomp"),"error");
-			return $content;
+			return html_writer::div($content, 'competence_profile_coursedata');
 		}
 		//print graphs
 		$topics = block_exacomp_get_topics_for_radar_graph($course->id, $student->id);
