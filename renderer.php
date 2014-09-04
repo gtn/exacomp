@@ -48,11 +48,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$content .= html_writer::end_tag('div');
 			$content .= html_writer::end_tag('form');
 
-			$content .= html_writer::start_tag('div', array('align'=>"right"));
+			$print_content = html_writer::link('javascript:window.print()', 
+			html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/view_print.png'), 'alt'=>'print')), array('class'=>'print'));
+			$content .= html_writer::div(html_writer::tag('form', $print_content), 'competence_profile_printbox');
+	
+			/*$content .= html_writer::start_tag('div', array('align'=>"right"));
 			$content .= html_writer::start_tag('a', array('href' => new moodle_url('/blocks/exacomp/learningagenda.php?courseid='.$COURSE->id.'&studentid='.$studentid.'&print=1&action='.$action)));
 			$content .= html_writer::empty_tag('img', array('src'=>$CFG->wwwroot . '/blocks/exacomp/pix/view_print.png', 'alt'=>'print'));
 			$content .= html_writer::end_tag('a');
-			$content .= html_writer::end_tag('div');
+			$content .= html_writer::end_tag('div');*/
 			$content .= html_writer::end_div();
 		} else {
 			$content = html_writer::start_tag('div', array('id'=>'linkback', 'align'=>"right"));
