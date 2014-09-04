@@ -2707,21 +2707,24 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		//print list
 		$student = block_exacomp_get_user_information_by_course($student, $course->id);
 
-		$content .= $this->print_competence_profile_tree($compTree,$student,$scheme);
+		$content .= $this->print_competence_profile_tree($compTree,$student,$scheme, false, true);
 
 		return html_writer::div($content,"competence_profile_coursedata");
 	}
 
-	private function print_competence_profile_tree($in,$student = null,$scheme = 1, $showonlyreached = false) {
+	private function print_competence_profile_tree($in,$student = null,$scheme = 1, $showonlyreached = false, $eportfolioitems = false) {
+		global $DB;
 		if($student != null)
 			$profile_settings = block_exacomp_get_profile_settings();
 		
 		$showonlyreached_total = false;
 		if($showonlyreached || ($student != null && $profile_settings->showonlyreached ==1))
 			$showonlyreached_total = true;
-			
+		$ul_items = '';
 		$content = "<ul>";
+		
 		foreach($in as $v) {
+			
 			$class = 'competence_profile_' . $v->tabletype;
 			$reached = false;
 			if($v->tabletype == "subject")
@@ -2734,14 +2737,27 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$class .= " reached";
 				$reached = true;
 			}
-
+			if($eportfolioitems && $v->tabletype == "descriptor"){
+				//check for exaportitem
+				$items = $DB->get_records(DB_COMPETENCE_ACTIVITY, array('compid'=>$v->id, 'comptype'=>TYPE_DESCRIPTOR, 'eportfolioitem'=>1));
+				
+				if($items){
+					$li_items = '';
+					foreach($items as $item){
+						$li_items = html_writer::tag('li', html_writer::link('#'.$item->activitytitle.$item->activityid,
+							html_writer::empty_tag('img', array('src'=> new moodle_url('/blocks/exacomp/pix/folder_shared.png'), 'alt'=>''))
+							.' '.$item->activitytitle));
+					}
+					$ul_items = html_writer::tag('ul', $li_items, array('class'=>'competence_profile_complist_items'));
+				}
+			}
 			if($v->tabletype != "descriptor" && (isset($v->subs) && is_array($v->subs)) || isset($v->descriptors) && is_array($v->descriptors))
 				$class .= " category";
 			
 			if(!$showonlyreached_total || ($showonlyreached_total == 1 && $reached || $v->tabletype == 'subject'))
-				$content .= '<li class="'.$class.'">' . $v->title;
-			if( isset($v->subs) && is_array($v->subs)) $content .= $this->print_competence_profile_tree($v->subs, $student,$scheme, $showonlyreached_total);
-			if( isset($v->descriptors) && is_array($v->descriptors)) $content .= $this->print_competence_profile_tree($v->descriptors, $student,$scheme, $showonlyreached_total);
+				$content .= '<li class="'.$class.'">' . $v->title . $ul_items;
+			if( isset($v->subs) && is_array($v->subs)) $content .= $this->print_competence_profile_tree($v->subs, $student,$scheme, $showonlyreached_total, $eportfolioitems);
+			if( isset($v->descriptors) && is_array($v->descriptors)) $content .= $this->print_competence_profile_tree($v->descriptors, $student,$scheme, $showonlyreached_total, $eportfolioitems);
 			
 			if(!$showonlyreached_total || ($showonlyreached_total == 1 && $reached || $v->tabletype == 'subject'))
 				$content .= '</li>';
@@ -3164,7 +3180,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$compTree = block_exacomp_get_competence_tree($course->id);
 			if($compTree)
 				$content .= html_writer::tag('h4', $course->fullname) .
-					$this->print_competence_profile_tree($compTree,$student,$scheme);
+					$this->print_competence_profile_tree($compTree,$student,$scheme, false, true);
 		}
 		return html_writer::div($content,"competence_profile_coursedata");
 	}
