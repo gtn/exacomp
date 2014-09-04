@@ -72,10 +72,16 @@ $blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
 $pagenode = $blocknode->add(get_string($page_identifier,'block_exacomp'), $PAGE->url);
 $pagenode->make_active();
 
-if($fromimport == 1)
-	$img = 'two_admin.png';
-else 	
-	$img = 'one_admin.png';
+if($fromimport == 1){
+	if($version)
+		$img = 'two.png';
+	else $img = 'two_admin.png';
+}
+else{ 	
+	if($version)
+		$img = 'two.png';
+	else $img = 'one_admin.png';
+}
 	
 //Falls Formular abgesendet, speichern
 if (isset($action) && $action == 'save') {
