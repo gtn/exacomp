@@ -155,7 +155,7 @@ if($isAdmin || block_exacomp_check_customupload()) {
 			echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'normal')), get_string('doimport_again', 'block_exacomp')));
 		}
 		else if($isAdmin) {
-			echo $OUTPUT->box(html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).get_string('first_configuration_step', 'block_exacomp'));
+			echo $OUTPUT->box(html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one_admin.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).get_string('first_configuration_step', 'block_exacomp'));
 			echo $OUTPUT->box(get_string("importpending", "block_exacomp"));
 			echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'normal')), get_string('doimport', 'block_exacomp')));
 			echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'demo')), get_string('do_demo_import', 'block_exacomp')));
