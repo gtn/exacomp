@@ -2754,8 +2754,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			if($v->tabletype != "descriptor" && (isset($v->subs) && is_array($v->subs)) || isset($v->descriptors) && is_array($v->descriptors))
 				$class .= " category";
 			
-			if(!$showonlyreached_total || ($showonlyreached_total == 1 && $reached || $v->tabletype == 'subject'))
+			if(!$showonlyreached_total || ($showonlyreached_total == 1 && $reached || $v->tabletype == 'subject')){
 				$content .= '<li class="'.$class.'">' . $v->title . $ul_items;
+				$ul_items = '';
+			}
 			if( isset($v->subs) && is_array($v->subs)) $content .= $this->print_competence_profile_tree($v->subs, $student,$scheme, $showonlyreached_total, $eportfolioitems);
 			if( isset($v->descriptors) && is_array($v->descriptors)) $content .= $this->print_competence_profile_tree($v->descriptors, $student,$scheme, $showonlyreached_total, $eportfolioitems);
 			
