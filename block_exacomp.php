@@ -192,8 +192,11 @@ class block_exacomp extends block_list {
 						//}
 					} 
 
+					$settings_string = get_string('tab_teacher_settings', 'block_exacomp');
+					if($skillmanagement)
+						$settings_string = get_string('tab_teacher_demo_settings', 'block_exacomp');
 					//Einstellungen
-					$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/edit_course.php', array('courseid'=>$courseid)), get_string('tab_teacher_settings', 'block_exacomp'), array('title'=>get_string('tab_teacher_settings', 'block_exacomp')));
+					$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/edit_course.php', array('courseid'=>$courseid)), $settings_string, array('title'=>get_string('tab_teacher_settings', 'block_exacomp')));
 					$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/subjects_topics.gif'), 'alt'=>"", 'height'=>16, 'width'=>23));
 				
 					if($de){
