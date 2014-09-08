@@ -138,7 +138,9 @@ function block_exacomp_insert_subject(&$subject) {
 	global $DB,$source;
 	
 	if($source > IMPORT_SOURCE_NORMAL) {
-		$subject->id = $DB->get_record(DB_SUBJECTS, array("sourceid"=>$subject['id']->__toString(),"source"=>IMPORT_SOURCE_NORMAL))->id;
+		if($dbsubject = $DB->get_record(DB_SUBJECTS, array("sourceid"=>$subject['id']->__toString(),"source"=>IMPORT_SOURCE_NORMAL)))
+			$subject->id = $dbsubject->id;
+		
 		return;
 	}
 	
