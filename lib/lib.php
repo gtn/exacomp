@@ -2466,7 +2466,7 @@ function block_exacomp_get_exacomp_courses($user) {
 	foreach($all_exacomp_courses as $course){
 		$context = context_course::instance($course);
 		//only activte courses where user is enrolled
-		if(is_enrolled($context, $user, '', true) && has_capability('block/exacomp:student', $context)){
+		if(is_enrolled($context, $user, '', true) && has_capability('block/exacomp:student', $context, $user)){
 			$user_courses[$course] = $DB->get_record('course', array('id'=>$course));
 		}
 	}
