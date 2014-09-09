@@ -83,6 +83,8 @@ if($data) {
 		echo block_exacomp_studentselector(block_exacomp_get_students_by_course($courseid),$studentid,$PAGE->url . ($subjectid > 0 ? "&subjectid=".$subjectid : ""));
 	}
 	echo html_writer::start_div();
+	if(!$version && isset($dropdown_subjects[$subjectid]->infolink))
+		echo html_writer::tag("p",get_string('infolink','block_exacomp') . html_writer::link($dropdown_subjects[$subjectid]->infolink, $dropdown_subjects[$subjectid]->infolink,array('target'=>'_blank')));
 	echo html_writer::tag("a", get_string("textalign","block_exacomp"),array("class" => "switchtextalign"));
 	echo html_writer::div($output->print_competence_grid_legend());
 	echo html_writer::start_tag("form", array("method"=>"post"));

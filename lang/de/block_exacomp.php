@@ -279,6 +279,7 @@ $string['all_niveaus'] = 'Alle Niveaustufen';
 $string['tick_some'] = 'Bitte treffen Sie eine Auswahl!';
 
 //Competence Grid
+$string['infolink'] = 'Weiter Informationen: ';
 $string['textalign'] = "Textuelle Ausrichtung ändern";
 $string['selfevaluation'] = 'Selbsteinschätzung';
 $string['teacherevaluation'] = 'Einschätzung des Beurteilenden';

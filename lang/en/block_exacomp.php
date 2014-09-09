@@ -246,6 +246,7 @@ $string['all_niveaus'] = 'all niveaus';
 $string['tick_some'] = 'Please make a selection!';
 
 //Competence Grid
+$string['infolink'] = 'Additional information: ';
 $string['textalign'] = "Switch text align";
 $string['selfevaluation'] = 'Self assessment';
 $string['teacherevaluation'] = 'Trainer assessment';

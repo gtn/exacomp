@@ -721,11 +721,11 @@ h3.competence_profile_sectiontitle {
 }*/
 
 .plusimageapply{
-list-style-image:url(pix/plus.png);
+list-style-image:url(pix/pfeil_show.png);
 cursor:pointer;
 }
 .minusimageapply{
-list-style-image:url(pix/minus.png);
+list-style-image:url(pix/pfeil_hide.png);
 cursor:pointer;
 }
 .selectedimage{

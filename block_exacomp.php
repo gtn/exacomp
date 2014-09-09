@@ -293,7 +293,7 @@ class block_exacomp extends block_list {
 	}
 
 	public function instance_allow_multiple() {
-		return true;
+		return false;
 	}
 
 	function has_config() {

@@ -1231,5 +1231,19 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2014090800, 'exacomp');
 	}
+	if ($oldversion < 2014090900) {
+	
+		// Define field infolink to be added to block_exacompsubjects.
+		$table = new xmldb_table('block_exacompsubjects');
+		$field = new xmldb_field('infolink', XMLDB_TYPE_CHAR, '400', null, null, null, null, 'description');
+	
+		// Conditionally launch add field infolink.
+		if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+	
+		// Exacomp savepoint reached.
+		upgrade_block_savepoint(true, 2014090900, 'exacomp');
+	}
 	return $result;
 }

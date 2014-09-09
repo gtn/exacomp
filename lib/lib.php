@@ -100,7 +100,7 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
 	$sql = '
-	SELECT DISTINCT s.id, s.title, s.stid, s.numb, \'subject\' as tabletype
+	SELECT DISTINCT s.id, s.title, s.stid, s.numb, s.infolink, \'subject\' as tabletype
 	FROM {'.DB_SUBJECTS.'} s
 	JOIN {'.DB_TOPICS.'} t ON t.subjid = s.id
 	JOIN {'.DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?
