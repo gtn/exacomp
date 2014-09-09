@@ -375,6 +375,7 @@ function block_exacomp_xml_check_import() {
 	global $DB;
 	return ($DB->get_records('block_exacompdescriptors')) ? true : false;
 }
+global $CFG;
 require_once $CFG->libdir . '/formslib.php';
 
 class block_exacomp_xml_upload_form extends moodleform {
