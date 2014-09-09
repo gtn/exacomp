@@ -320,7 +320,7 @@ function block_exacomp_deleteIfNoSubcategories($parenttable,$subtable,$subforeig
 	if ($use_source_in_subtable==1) $wheresource="source"; //zb source=1
 	else $wheresource=$source; //zb 1=1
 	if ($pidlist!="" AND $pidlist!="0") {
-		$wherepid="AND parentid NOT IN (".$pidlist.")";
+		$wherepid="AND (parentid NOT IN (".$pidlist.") OR parentid IS NULL)";
 	}
 	$sql='SELECT * FROM {'.$parenttable.'} pt WHERE source=? AND id NOT IN(Select '.$subforeignfield.' FROM {'.$subtable.'} WHERE '.$wheresource.'=? AND '.$subforeignfield.'=pt.id)';
 	$sql='SELECT * FROM {'.$parenttable.'} pt WHERE source=? '.$wherepid.' AND id NOT IN(Select '.$subforeignfield.' FROM {'.$subtable.'} WHERE '.$wheresource.'=?)';
@@ -355,8 +355,7 @@ function block_exacomp_xml_find_unused_descriptors($source,$crdate,$topiclist){
 	LEFT JOIN {block_exacompmdltype_mm} typmm ON typmm.stid=st.id
 	LEFT JOIN {block_exacompcompuser_mm} umm ON umm.compid=descr.id
 	LEFT JOIN {block_exacompcompactiv_mm} act ON act.compid=descr.id
-	WHERE typmm.id IS NULL AND ex.id IS NULL AND act.id IS NULL AND cou.id IS NULL AND  umm.id IS NULL AND u.id IS NULL AND descr.source=? AND descr.crdate <> (?)
-	AND u.comptype=0 AND umm.comptype=0 AND act.comptype=0"; //only use descriptors
+	WHERE typmm.id IS NULL AND ex.id IS NULL AND act.id IS NULL AND cou.id IS NULL AND  umm.id IS NULL AND u.id IS NULL AND descr.source=? AND descr.crdate <> (?)";
 
 	$rs=$DB->get_records_sql($sql, array($source, $crdate));
 	foreach($rs as $row){
