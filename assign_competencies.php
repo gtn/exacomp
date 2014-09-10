@@ -74,11 +74,13 @@ if(block_exacomp_get_settings_by_course($courseid)->uses_activities && !$activit
 	echo $output->print_no_activities_warning();
 else{
 	
-	if($isTeacher)
+	/*if($isTeacher)
 		list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_overview_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', 0, PARAM_INT));
 	else
 		list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_overview_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', 0, PARAM_INT), true);
-		
+	*/	
+	list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_overview_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', 0, PARAM_INT));
+	
 	// SAVA DATA
 	if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 		// DESCRIPTOR DATA
