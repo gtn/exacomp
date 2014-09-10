@@ -358,7 +358,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return $content;
 	}
-	public function print_overview_metadata_teacher(){
+	public function print_overview_metadata_teacher($subject,$topic){
 
 		$table = new html_table();
 		$table->attributes['class'] = 'exabis_comp_top';
@@ -369,8 +369,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$cell = new html_table_cell();
 		$cell->attributes['class'] = 'comp_grey_97';
+		
 		$cell->text = html_writer::tag('b', get_string('instruction', 'block_exacomp'))
-		.html_writer::tag('p', get_string('instruction_content', 'block_exacomp'));
+		.html_writer::tag('p', isset($subject->description) ? $subject->description : '' .  isset($topic->description) ? $topic->description : '');
 
 		$row->cells[] = $cell;
 		$rows[] = $row;
@@ -378,8 +379,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$content = html_writer::table($table);
 		$content .= html_writer::empty_tag('br');
-
-		return $content;
+		if(isset($subject->description) || isset($topic->description))
+			return $content;
 	}
 	public function print_overview_metadata_student($subject, $topic, $topic_evaluation, $showevaluation, $scheme, $icon = null){
 		$table = new html_table();

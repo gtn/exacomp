@@ -256,6 +256,12 @@ $string['assignfrom'] = 'von';
 $string['assignuntil'] = 'bis';
 $string['assignlearninggroup'] = 'Lerngruppe';
 
+//metadata
+$string['subject_singular'] = 'Schultyp';
+$string['comp_field_idea'] = 'Fach';
+$string['comp'] = 'Teilkompetenzbereich';
+$string['progress'] = 'Fortschritt';
+$string['instruction'] = 'Erläuterung';
 $string['instruction_content'] = 'Hier können Sie für Ihre Lerngruppen / Klasse vermerken, welche 
 				Lernmaterialien bearbeitet und welche Lernnachweise erbracht wurden. 
 				Darüber hinaus können Sie das Erreichen der Teilkompetenzen eintragen. 

@@ -118,7 +118,7 @@ else{
 		echo $output->print_overview_metadata($schooltype, $selectedSubject, $selectedTopic, $cat);
 		
 		if($isTeacher)
-			echo $output->print_overview_metadata_teacher();
+			echo $output->print_overview_metadata_teacher($selectedSubject,$selectedTopic);
 		else{
 			$user_evaluation = block_exacomp_get_user_information_by_course($USER, $courseid);
 	

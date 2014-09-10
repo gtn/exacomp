@@ -100,7 +100,7 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
 	$sql = '
-	SELECT DISTINCT s.id, s.title, s.stid, s.numb, s.infolink, \'subject\' as tabletype
+	SELECT DISTINCT s.id, s.title, s.stid, s.numb, s.infolink, s.description, \'subject\' as tabletype
 	FROM {'.DB_SUBJECTS.'} s
 	JOIN {'.DB_TOPICS.'} t ON t.subjid = s.id
 	JOIN {'.DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?
@@ -220,7 +220,7 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
-	$sql = 'SELECT DISTINCT t.id, t.title, t.catid, t.sorting, t.subjid, t.ataxonomie, t.btaxonomie, t.ctaxonomie, t.requirement, t.benefit, t.knowledgecheck,cat.title as cattitle
+	$sql = 'SELECT DISTINCT t.id, t.title, t.catid, t.sorting, t.subjid, t.ataxonomie, t.btaxonomie, t.ctaxonomie, t.requirement, t.benefit, t.knowledgecheck,cat.title as cattitle, t.description
 	FROM {'.DB_TOPICS.'} t
 	JOIN {'.DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.(($subjectid > 0) ? 'AND t.subjid = ? ': '')
 	.($showalldescriptors ? '' : '
