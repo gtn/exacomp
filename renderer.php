@@ -371,7 +371,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$cell->attributes['class'] = 'comp_grey_97';
 		
 		$cell->text = html_writer::tag('b', get_string('instruction', 'block_exacomp'))
-		.html_writer::tag('p', isset($subject->description) ? $subject->description : '' .  isset($topic->description) ? $topic->description : '');
+		.html_writer::tag('p', isset($subject->description) ? $subject->description. '<br/>' : ''  . isset($topic->description) ? $topic->description : '');
 
 		$row->cells[] = $cell;
 		$rows[] = $row;
