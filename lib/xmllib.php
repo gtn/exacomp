@@ -74,8 +74,7 @@ function block_exacomp_xml_do_import($data = null, $par_source = 1, $cron = 0) {
 
 		foreach($edulevel->schooltypes->schooltype as $schooltype) {
 			$schooltype->elid = $edulevel->id;
-			if($source == IMPORT_SOURCE_NORMAL)
-				block_exacomp_insert_schooltype($schooltype);
+			block_exacomp_insert_schooltype($schooltype);
 
 			foreach($schooltype->subjects->subject as $subject) {
 				$subject->stid = $schooltype->id;
@@ -137,19 +136,19 @@ function block_exacomp_insert_topic($topic, $parent = 0) {
 function block_exacomp_insert_subject(&$subject) {
 	global $DB,$source;
 	
-	if($source > IMPORT_SOURCE_NORMAL) {
+	/*if($source > IMPORT_SOURCE_NORMAL) {
 		if($dbsubject = $DB->get_record(DB_SUBJECTS, array("sourceid"=>$subject['id']->__toString(),"source"=>IMPORT_SOURCE_NORMAL)))
 			$subject->id = $dbsubject->id;
 		
 		return;
-	}
+	}*/
 	
 	$subject->sourceid = $subject['id']->__toString();
-	$subject->source = $source;
+	//$subject->source = $source;
 	if($subject['categoryid'])
-		$subject->catid = block_exacomp_get_database_id(DB_CATEGORIES,$subject['categoryid']->__toString(),$source);
+		$subject->catid = block_exacomp_get_database_id(DB_CATEGORIES,$subject['categoryid']->__toString());
 
-	if($stObj = $DB->get_record(DB_SUBJECTS, array("sourceid"=>$subject['id']->__toString(),"source"=>$source))) {
+	if($stObj = $DB->get_record(DB_SUBJECTS, array("sourceid"=>$subject['id']->__toString()))) {
 		$subject->id = $stObj->id;
 		$DB->update_record(DB_SUBJECTS, simpleXMLElementToArray($subject));
 	} else
@@ -157,6 +156,14 @@ function block_exacomp_insert_subject(&$subject) {
 }
 function block_exacomp_insert_schooltype(&$schooltype) {
 	global $DB,$source;
+	
+	if($source > IMPORT_SOURCE_NORMAL) {
+		 if($dbschooltype = $DB->get_record(DB_SCHOOLTYPES, array("sourceid"=>$schooltype['id']->__toString(),"source"=>IMPORT_SOURCE_NORMAL)))
+			$schooltype->id = $dbschooltype->id;
+		
+		return;
+	}
+	
 	$schooltype->sourceid = $schooltype['id']->__toString();
 	$schooltype->source = $source;
 
