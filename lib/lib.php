@@ -981,7 +981,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 		if(isset($lang) && substr( $lang, 0, 2) === 'de'){
 			$de = true;
 	}
-	if($version)
+	if($version || $skillmanagement)
 		$checkConfig = block_exacomp_is_configured($courseid);
 	else
 		$checkConfig = block_exacomp_is_configured();
@@ -1027,6 +1027,10 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 				if($de)
 					$rows[] = new tabobject('tab_help', new moodle_url('/blocks/exacomp/help.php', array("courseid"=>$courseid)), get_string('tab_help', 'block_exacomp'));
 			}else{	//teacher tabs !LIS
+				//if use skill management
+				if($skillmanagement && has_capability('block/exacomp:teacher', $context)){
+					$rows[] = new tabobject('tab_skillmanagement', new moodle_url('/blocks/exacomp/skillmanagement.php', array('courseid'=>$courseid)),get_string('tab_skillmanagement','block_exacomp'));
+				}
 				if($checkConfig){
 					if($ready_for_use){
 						$rows[] = new tabobject('tab_competence_overview', new moodle_url('/blocks/exacomp/assign_competencies.php',array("courseid"=>$courseid)),get_string('tab_competence_overview','block_exacomp'));
@@ -1055,7 +1059,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 
 					$rows[] = $settings;
 				}
-				if(has_capability('block/exacomp:admin', $global_context) || $specificimport){
+				if((has_capability('block/exacomp:admin', $global_context) || $specificimport) && !$skillmanagement){
 					$rows[] = new tabobject('tab_admin_import', new moodle_url('/blocks/exacomp/import.php',array("courseid"=>$courseid)),get_string('tab_admin_import','block_exacomp'));
 					if($checkImport && has_capability('block/exacomp:admin', $global_context))
 						$rows[] = new tabobject('tab_admin_configuration', new moodle_url('/blocks/exacomp/edit_config.php',array("courseid"=>$courseid)),get_string('tab_admin_configuration','block_exacomp'));
@@ -3009,7 +3013,7 @@ function block_exacomp_get_tipp_string($compid, $user, $scheme, $type, $comptype
  * @param unknown_type $courseid
  */
 function block_exacomp_build_schooltype_tree($courseid=0){
-	global $version;
+	global $version,$skillmanagement;
 	$schooltypes = block_exacomp_get_schooltypes_by_course($courseid);
 	
 	foreach($schooltypes as $schooltype){
@@ -3018,7 +3022,7 @@ function block_exacomp_build_schooltype_tree($courseid=0){
 		$schooltype->subs = array();
 		foreach($subjects as $subject){
 			$param = $courseid;
-			if($version)	$param = 0;
+			if($version || $skillmanagement)	$param = 0;
 			$tree = block_exacomp_get_competence_tree($param, $subject->id);
 			$schooltype->subs += $tree;
 		}

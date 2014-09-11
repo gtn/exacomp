@@ -27,7 +27,7 @@
 
 require_once dirname(__FILE__)."/inc.php";
 
-global $DB, $OUTPUT, $PAGE, $version;
+global $DB, $OUTPUT, $PAGE, $version,$skillmanagement;
 
 $courseid = required_param('courseid', PARAM_INT);
 $action = optional_param('action', "", PARAM_ALPHAEXT);
@@ -119,7 +119,7 @@ if($action == 'digicomps') {
  */
 
 $courseid_temp = $courseid;
-if(!$version) $courseid_temp = 0;
+if(!$version && !$skillmanagement) $courseid_temp = 0;
 
 $schooltypes = block_exacomp_build_schooltype_tree($courseid_temp);
 

@@ -66,7 +66,7 @@ class block_exacomp extends block_list {
 
 		$courseid = intval($COURSE->id);
 		
-		if($version)
+		if($version || $skillmanagement)
 			$checkConfig = block_exacomp_is_configured($courseid);
 		else
 			$checkConfig = block_exacomp_is_configured();
@@ -95,9 +95,9 @@ class block_exacomp extends block_list {
 		//else nur admin sieht block und hat nur den link Modulkonfiguration
 		if((has_capability('block/exacomp:admin', $globalcontext))){	//Admin sieht immer Modulkonfiguration
 			//Modulkonfiguration
-			if(!$version){
+			if(!$version && !$skillmanagement){
 				//Wenn Import schon erledigt, weiterleitung zu edit_config, ansonsten import.
-				if($checkImport || $skillmanagement){
+				if($checkImport){
 					$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/edit_config.php', array('courseid'=>$courseid)), get_string('tab_admin_configuration', 'block_exacomp'), array('title'=>get_string('tab_admin_configuration', 'block_exacomp')));
 					$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/module_config.png'), 'alt'=>'', 'height'=>16, 'width'=>23));
 				}else{
@@ -193,8 +193,8 @@ class block_exacomp extends block_list {
 					} 
 
 					$settings_string = get_string('tab_teacher_settings', 'block_exacomp');
-					if($skillmanagement)
-						$settings_string = get_string('tab_teacher_demo_settings', 'block_exacomp');
+					//if($skillmanagement)
+						//$settings_string = get_string('tab_teacher_demo_settings', 'block_exacomp');
 					//Einstellungen
 					$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/edit_course.php', array('courseid'=>$courseid)), $settings_string, array('title'=>get_string('tab_teacher_settings', 'block_exacomp')));
 					$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/subjects_topics.gif'), 'alt'=>"", 'height'=>16, 'width'=>23));
