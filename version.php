@@ -31,4 +31,4 @@ $plugin->component = 'block_exacomp'; 	// Full name of the plugin (used for diag
 $plugin->cron = 259200; 				//259200sec = 3 days
 
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = 'v2.7-r1'; 			// This is our first release for Moodle 2.7.x branch.
+$plugin->release = 'v2.6.5-r1'; 			// This is our first release for Moodle 2.7.x branch.
