@@ -572,7 +572,7 @@ function block_exacomp_save_example_evaluation($data, $courseid, $role, $topicid
  * @param int $courseid
  */
 function block_exacomp_get_settings_by_course($courseid = 0) {
-	global $DB, $COURSE, $version;
+	global $DB, $COURSE, $version, $skillmanagement;
 
 	if (!$courseid)
 		$courseid = $COURSE->id;
@@ -581,8 +581,8 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 
 	if (empty($settings)) $settings = new stdClass;
 	if (empty($settings->grading)) $settings->grading = 1;
-	if (!isset($settings->uses_activities)) $settings->uses_activities = ($version)? 0 : 1;
-	if (!isset($settings->show_all_examples)) $settings->show_all_examples = 0;
+	if (!isset($settings->uses_activities)) $settings->uses_activities = ($version || $skillmanagement)? 0 : 1;
+	if (!isset($settings->show_all_examples)) $settings->show_all_examples = ($skillmanagement) ? 1 : 0;
 	if (!isset($settings->usedetailpage)) $settings->usedetailpage = 0;
 	if (!$settings->uses_activities) $settings->show_all_descriptors = 1;
 	elseif (!isset($settings->show_all_descriptors)) $settings->show_all_descriptors = 0;

@@ -60,7 +60,7 @@ $string['tab_competence_profile'] = 'Competence profile';
 $string['tab_competence_profile_profile'] = 'Profile';
 $string['tab_competence_profile_settings'] = 'Settings';
 $string['tab_help'] = 'Help';
-$string['tab_skillmanagement'] = 'manage your competencies';
+$string['tab_skillmanagement'] = 'Manage your competencies';
 $string['tab_teacher_demo_settings'] = 'work with demo data';
 
 $string['first_configuration_step'] = 'The first step of the configuration is to import some data to Exabis Competencies.';
