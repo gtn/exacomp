@@ -2973,7 +2973,7 @@ function block_exacomp_get_exastud_reviews($periods, $student){
 		$reviews[$period->id]->descriptors = array();
 		foreach($exacomp_comps as $comp){
 			$reviews[$period->id]->descriptors[$comp->categoryid] = $DB->get_record(DB_DESCRIPTORS, array('id'=>$comp->categoryid)); 
-			$reviews[$period->id]->descriptors[$comp->categoryid]->evaluation = $comp->value;
+			$reviews[$period->id]->descriptors[$comp->categoryid]->evaluation = isset($comp->value) ? $comp->value : 0;
 		}
 		
 	}

@@ -60,7 +60,7 @@ $string['tab_competence_profile'] = 'Competence profile';
 $string['tab_competence_profile_profile'] = 'Profile';
 $string['tab_competence_profile_settings'] = 'Settings';
 $string['tab_help'] = 'Help';
-$string['tab_skillmanagement'] = 'Manage your competencies';
+$string['tab_skillmanagement'] = 'Manage competencies';
 $string['tab_teacher_demo_settings'] = 'work with demo data';
 
 $string['first_configuration_step'] = 'The first step of the configuration is to import some data to Exabis Competencies.';
@@ -241,8 +241,8 @@ $string['apply_filter'] = 'apply filter';
 $string['no_topics_selected'] = 'configuration of exabis competencies is not completed yet. please chose a topic that you would like to associate Moodle activities with';
 $string['no_activities_selected'] = 'please associate Moodle activities with competences';
 $string['no_course_activities'] = 'No Moodle activities found in this course - click here to create some.';
-$string['all_modules'] = 'all modules';
-$string['all_niveaus'] = 'all niveaus';
+$string['all_modules'] = 'all activities';
+$string['all_niveaus'] = 'all levels';
 $string['tick_some'] = 'Please make a selection!';
 
 //Competence Grid
@@ -270,9 +270,9 @@ $string['nodata'] = 'There is no data do display';
 $string['item_no_comps'] = 'There are no outcomes assigned to the following items: ';
 $string['select_student'] = 'Please select a student first';
 $string['my_comps'] = 'My Competencies';
-$string['my_items'] = 'My Items';
+$string['my_items'] = 'My artefacts';
 $string['my_badges'] = 'My Badges';
-$string['my_periods'] = 'My Feedbacks';
+$string['my_periods'] = 'My assessments';
 $string['item_type'] = 'Type';
 $string['item_link'] = 'Link';
 $string['item_file'] = 'File';
