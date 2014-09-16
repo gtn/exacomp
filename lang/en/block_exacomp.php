@@ -209,7 +209,7 @@ $string['teacher_tipp_1'] = 'This competence has been associated with ';
 $string['teacher_tipp_2'] = ' Moodle activities and has been reached with ';
 $string['teacher_tipp_3'] = ' outcomes.';
 
-$string['eportitems'] = 'This participant has submitted the following ePortfolio artefacts: ';
+$string['eportitems'] = 'This participant has submitted the following ePortfolio artifacts: ';
 $string['eportitem_shared'] = ' (shared)';
 $string['eportitem_notshared'] = ' (not shared)';
 
@@ -270,7 +270,7 @@ $string['nodata'] = 'There is no data do display';
 $string['item_no_comps'] = 'There are no outcomes assigned to the following items: ';
 $string['select_student'] = 'Please select a student first';
 $string['my_comps'] = 'My Competencies';
-$string['my_items'] = 'My artefacts';
+$string['my_items'] = 'My artifacts';
 $string['my_badges'] = 'My Badges';
 $string['my_periods'] = 'My assessments';
 $string['item_type'] = 'Type';
@@ -287,7 +287,7 @@ $string['period_feedback'] = 'Feedback';
 $string['profile_settings_showonlyreached'] = 'I only want to see already gained outcomes in my competence profile';
 $string['profile_settings_choose_courses'] = 'Using Exabis Competencies trainers assess your competencies in various subjects. You can select which course to include in the competence profile.';
 $string['profile_settings_useexaport'] = 'I want to see competencies used in Exabis ePortfolio within my profile.';
-$string['profile_settings_choose_items'] = 'Exabis ePortfolio is used to document your competencies on your individual learning path. You can select which artefacts to include in the competence profile.';
+$string['profile_settings_choose_items'] = 'Exabis ePortfolio is used to document your competencies on your individual learning path. You can select which artifacts to include in the competence profile.';
 $string['profile_settings_useexastud'] = 'I want to see evaluations from Exabis Student Review.';
 $string['profile_settings_choose_periods'] = 'Exabis Student Review stores reviews in various categories over several periods. You can select which periods to include in the competence profile.';
 $string['profile_settings_no_item'] = 'No Exabis ePortfolio item available, so there is nothing to display.';
@@ -309,7 +309,7 @@ $string['instruction'] = 'Instruction';
 $string['instruction_content'] = 'This is an overview for learning resources that are associated with 
 				standards and ticking off competencies for students. Students can
 				assess their competencies. Moodle activities that were turned in by
-				students are displayed with a red icon. ePortfolio-artefacts of students 
+				students are displayed with a red icon. ePortfolio-artifacts of students 
 				are displayed in blue icons.';
 $string['requirements'] = 'Was du schon k&ouml;nnen solltest: ';
 $string['forwhat'] = 'Wof&uuml;r du das brauchst: ';
