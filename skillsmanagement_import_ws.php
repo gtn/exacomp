@@ -14,3 +14,12 @@ $success = block_exacomp_xml_do_import($data);
 foreach($schooltypes as &$schooltype)
 	$schooltype = $DB->get_field('block_exacompschooltypes','id',array('sourceid'=>$schooltype));
 block_exacomp_set_mdltype($schooltypes,$courseid);
+
+$subjects = block_exacomp_get_subjects_for_schooltype($courseid);
+$coursetopics = array();
+foreach($subjects as $subject) {
+	$topics = block_exacomp_get_all_topics($subject->id);
+	foreach($topics as $topic)
+		$coursetopics[] = $topic->id;
+}
+block_exacomp_set_coursetopics($courseid,$coursetopics);

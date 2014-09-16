@@ -27,7 +27,7 @@
 
 require_once dirname(__FILE__)."/inc.php";
 
-global $DB, $OUTPUT, $PAGE;
+global $DB, $OUTPUT, $PAGE, $USER;
 
 $courseid = required_param('courseid', PARAM_INT);
 
@@ -67,7 +67,7 @@ $contents = html_writer::tag('p', 'Ihr Browser kann leider keine eingebetteten F
 		'uhash'=>md5($USER->firstaccess))), get_string('tab_skillmanagement', 'block_exacomp')));
 	
 echo html_writer::tag('iframe', $contents, array('src'=>new moodle_url('../../../index.php?id=xmltool', 
-	array('courseid'=>$courseid, 'uname'=>$USER->username, 'uhash'=>md5($USER->firstaccess))), 'width'=>"99%", 'height'=>500, 'name'=>'iXmlTool'));
+	array('courseid'=>$courseid, 'L'=>($USER->lang == 'de') ? 1 : 0, 'uname'=>$USER->username, 'uhash'=>md5($USER->firstaccess))), 'width'=>"99%", 'height'=>500, 'name'=>'iXmlTool'));
 
 /* END CONTENT REGION */
 
