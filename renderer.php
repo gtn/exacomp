@@ -2718,7 +2718,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		//print list
 		$student = block_exacomp_get_user_information_by_course($student, $course->id);
 
-		$content .= $this->print_competence_profile_tree($compTree,$student,$scheme, false, false);
+		$items = false;
+		if($student != null && block_exacomp_get_profile_settings($student->id)->useexaport == 1) {
+			$items = block_exacomp_get_exaport_items($student->id);
+		}
+		$content .= $this->print_competence_profile_tree($compTree,$student,$scheme, false, $items);
 
 		return html_writer::div($content,"competence_profile_coursedata");
 	}
@@ -2731,10 +2735,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$showonlyreached_total = false;
 		if($showonlyreached || ($student != null && $profile_settings->showonlyreached ==1))
 			$showonlyreached_total = true;
-		
-		if(($student != null && $profile_settings->useexaport ==1))
-			$eportfolioitems = true;
-		
+			
 		$ul_items = '';
 		$content = "<ul>";
 		
@@ -2759,6 +2760,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				if($items){
 					$li_items = '';
 					foreach($items as $item){
+						if(!array_key_exists($item->activityid, $eportfolioitems))
+							continue;
+						
 						$li_items .= html_writer::tag('li', html_writer::link('#'.$item->activitytitle.$item->activityid,
 							html_writer::empty_tag('img', array('src'=> new moodle_url('/blocks/exacomp/pix/folder_shared.png'), 'alt'=>''))
 							.' '.$item->activitytitle));
