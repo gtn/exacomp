@@ -1109,6 +1109,19 @@ function xmldb_block_exacomp_upgrade($oldversion) {
      	/* block_exacompdescbadge_mm */
      	$table = new xmldb_table('block_exacompdescbadge_mm');
      	
+     	// Conditionally launch create table for block_exacompdescbadge_mm.
+     	if (!$dbman->table_exists($table)) {
+     		// Adding fields to table block_exacompdescbadge_mm.
+     		$table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+     		$table->add_field('descid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+     		$table->add_field('badgeid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+     		
+     		// Adding keys to table block_exacompdescbadge_mm.
+     		$table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+     		
+     		$dbman->create_table($table);
+     	}
+     	
      	//add key descid and badgeid
      	$key = new xmldb_key('descid', XMLDB_KEY_FOREIGN, array('descid'), 'block_exacompdescriptors', array('id'));
         $dbman->add_key($table, $key);
