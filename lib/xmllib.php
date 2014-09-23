@@ -219,6 +219,11 @@ function block_exacomp_insert_descriptor($descriptor, $parent = 0) {
 				$DB->insert_record(DB_DESCEXAMP, $conditions);
 		}
 	}
+	
+	if($descriptor->children) {
+		foreach($descriptor->children->descriptor as $child)
+			block_exacomp_insert_descriptor($child,$descriptor->id);
+	}
 
 }
 function block_exacomp_insert_category($category, $parent = 0) {
