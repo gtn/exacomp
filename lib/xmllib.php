@@ -35,10 +35,10 @@ function block_exacomp_xml_do_import($data = null, $par_source = 1, $cron = 0) {
 			}
 		}
 
-		block_exacomp_xml_truncate(DB_NIVEAUS);
+		//block_exacomp_xml_truncate(DB_NIVEAUS);
 		if(isset($xml->niveaus))
 			foreach($xml->niveaus->niveau as $niveau) {
-			block_exacomp_insert_niveau($niveau);
+				block_exacomp_insert_niveau($niveau);
 		}
 
 		block_exacomp_xml_truncate(DB_TAXONOMIES);
@@ -294,8 +294,13 @@ function block_exacomp_insert_niveau($niveau, $parent = 0) {
 	$niveau->sourceid = $niveau['id']->__toString();
 	$niveau->source = IMPORT_SOURCE_NORMAL;
 	$niveau->parentid = $parent;
-	$id = $DB->insert_record(DB_NIVEAUS, simpleXMLElementToArray($niveau));
-
+	
+	if($niveauObj = $DB->get_record(DB_NIVEAUS, array("sourceid"=>$niveau['id']->__toString()))) {
+		$niveau->id = $niveauObj->id;
+		$DB->update_record(DB_NIVEAUS, simpleXMLElementToArray($niveau));
+	} else
+		$niveau->id = $DB->insert_record(DB_NIVEAUS, simpleXMLElementToArray($niveau));
+	
 	if($niveau->children) {
 		foreach($niveau->children->niveau as $child) {
 			block_exacomp_insert_niveau($child,$id);
