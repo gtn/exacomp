@@ -303,7 +303,7 @@ function block_exacomp_insert_niveau($niveau, $parent = 0) {
 	
 	if($niveau->children) {
 		foreach($niveau->children->niveau as $child) {
-			block_exacomp_insert_niveau($child,$id);
+			block_exacomp_insert_niveau($child,$niveau->id);
 		}
 	}
 }
