@@ -142,7 +142,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 ';
 
 //Import
-$string['importinfo'] = 'Erstellen Sie Ihre eigenen Kompetenzen/Standards auf <a target="_blank" href="http://www.edustandards.org">www.edustandards.org</a> oder laden Sie ein bestehendes XML von <a target="_blank" href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch.';
+$string['importinfo'] = 'Erstellen Sie Ihre eigenen Kompetenzen/Standards auf <a target="_blank" href="http://www.edustandards.org">www.edustandards.org</a> oder laden Sie ein bestehendes XML von <a target="_blank" href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch. Für österreichische Standards besuchen Sie bitte <a target="_blank" href="http://bist.edugroup.at">http://bist.edugroup.at</a>';
 $string['importwebservice'] = 'Es besteht auch die M&ouml;glichkeit die Daten &uuml;ber ein <a href="{$a}">Webservice</a> aktuell zu halten.';
 $string['importdone'] = 'Die allgemeinen Bildungsstandards sind bereits importiert.';
 $string['importpending'] = 'Bitte importieren Sie jetzt die allgemeinen Bildungsstandards und w&auml;hlen Sie anschlie&szlig;end im Tab "Konfiguration" die anzuzeigenden Deskriptorenbereiche aus.';

@@ -1258,5 +1258,16 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2014090900, 'exacomp');
 	}
+	if ($oldversion < 2014092500) {
+	
+		$url = $DB->get_record('config_plugins',array('plugin'=>'exacomp','name'=>'xmlserverurl'));
+		if($url->value == 'https://raw.githubusercontent.com/gtn/edustandards/master/austria/exacomp_data.xml') {
+			$url->value = 'https://raw.githubusercontent.com/gtn/edustandards/master/austria/exacomp_data_v2.xml';
+			$DB->update_record('config_plugins',$url);
+		}
+			
+		// Exacomp savepoint reached.
+		upgrade_block_savepoint(true, 2014092500, 'exacomp');
+	}
 	return $result;
 }

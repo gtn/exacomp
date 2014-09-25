@@ -504,7 +504,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		global $USER, $COURSE;
 		foreach($subs as $topic){
 			if(isset($topic->subs))
-				print_competence_overview_LIS_student_topics($topic->subs);
+				$this->print_competence_overview_LIS_student_topics($topic->subs);
 
 			if(isset($topic->descriptors)){
 				foreach($topic->descriptors as $descriptor){
@@ -759,13 +759,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	
 			$rows[] = $row;
 		}
-		//print examples
+	//print examples
 		foreach($examples as $example){
 			$row = new html_table_row();
 			$cell = new html_table_cell();
 			$cell->text = $example->title;
 
-			$img = html_writer::img('pix/i_11x11.png', 'Beispiel');
+			//$img = html_writer::img('pix/i_11x11.png', 'Beispiel');
+			$img = html_writer::tag('img','',array('src'=>'pix/i_11x11.png','alt'=>'Beispiel'));
+			
 			if(isset($example->task))
 				$cell->text .= html_writer::link($example->task, $img, array('target'=>'_blank'));
 			elseif(isset($example->externalurl))
@@ -779,10 +781,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$row->cells[] = $cell;
 
 			$exampleInfo = $DB->get_record(DB_EXAMPLEEVAL, array("exampleid" => $example->id, "studentid" => $USER->id, "courseid" => $COURSE->id));
-
+			
 			$cell = new html_table_cell();
-			$cell->text = html_writer::img('pix/subjects_topics.gif', "edit", array('onclick'=>'AssignVisibility('.$example->id."2".')', 'style'=>'cursor:pointer;'));
-
+			//$cell->text = html_writer::img('pix/subjects_topics.gif', "edit", array('onclick'=>'AssignVisibility('.$example->id."2".')', 'style'=>'cursor:pointer;'));
+			$cell->text = html_writer::tag('img','',array('src'=>'pix/subjects_topics.gif', 'alt'=>"edit", 'onclick'=>'AssignVisibility('.$example->id."2".')', 'style'=>'cursor:pointer;'));
+			
 			$dates = (isset($exampleInfo->starttime) && isset($exampleInfo->endtime))?date("d.m.Y", $exampleInfo->starttime)
 			." - ".date("d.m.Y", $exampleInfo->endtime):"";
 			$div_1 = html_writer::div($dates, '', array('id'=>'exabis_assign_student_data'.$example->id."2"));
@@ -793,13 +796,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$content .= ' '.html_writer::empty_tag('input', array('class' => 'datepicker', 'type' => 'text', 'name' => 'dataexamples[' . $example->id . '][' . $USER->id . '][starttime]', 'disabled',
 					'value' => (isset($exampleInfo->starttime) ? date("Y-m-d",$exampleInfo->starttime) : null)));
 			$content .= ' '.html_writer::link(new moodle_url($PAGE->url, array('exampleid'=>$example->id, 'deletestart'=>1)),
-					html_writer::img('pix/x_11x11.png', 'delete'));
+					html_writer::tag('img','',array('src'=>'pix/x_11x11.png','alt'=>'delete')));
 			$content .= html_writer::empty_tag('br');
 			$content .= get_string('assignuntil','block_exacomp');
 			$content .= ' '.html_writer::empty_tag('input', array('class' => 'datepicker', 'type' => 'text', 'name' => 'dataexamples[' . $example->id . '][' . $USER->id . '][endtime]', 'disabled',
 					'value' => (isset($exampleInfo->endtime) ? date("Y-m-d",$exampleInfo->endtime) : null)));
 			$content .= ' '.html_writer::link(new moodle_url($PAGE->url, array('exampleid'=>$example->id, 'deleteend'=>1)),
-					html_writer::img('pix/x_11x11.png', 'delete'));
+					html_writer::tag('img','',array('src'=>'pix/x_11x11.png','alt'=>'delete')));
 
 			$div_2 = html_writer::div($content, 'exabis_assign_student', array('id'=>'exabis_assign_student'.$example->id."2"));
 			$cell->text .= $div_2;
@@ -813,8 +816,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$options['studygroup'] = get_string('assignlearninggroup','block_exacomp');
 			$options['teacher'] = get_string('assignteacher','block_exacomp');
 
-			$cell->text = html_writer::img('pix/subjects_topics.gif', 'edit', array('onclick'=>'AssignVisibility('.$example->id."1".')', 'style'=>'cursor:pointer;'));
-
+			//$cell->text = html_writer::img('pix/subjects_topics.gif', 'edit', array('onclick'=>'AssignVisibility('.$example->id."1".')', 'style'=>'cursor:pointer;'));
+			$cell->text = html_writer::tag('img','',array('src' => 'pix/subjects_topics.gif', 'alt'=>'edit', 'onclick'=>'AssignVisibility('.$example->id."1".')', 'style'=>'cursor:pointer;'));
+			
 			$content = $this->generate_checkbox('dataexamples', $example->id, 'examples', $USER, "student", $scheme)
 			. html_writer::select($options, 'dataexamples[' . $example->id . '][' . $USER->id . '][studypartner]', (isset($exampleInfo->studypartner) ? $exampleInfo->studypartner : null), false);
 
@@ -851,7 +855,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 			$rows[] = $row;
 		}
-
 
 		$table->data = $rows;
 
