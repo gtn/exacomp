@@ -137,7 +137,7 @@ else{
 		}
 	}
 	
-	if(!$version) echo $output->print_student_evaluation($showevaluation, $isTeacher);
+	if(!$version) echo $output->print_student_evaluation($showevaluation, $isTeacher,$selectedTopic->id,$selectedSubject->id);
 	
 	echo $output->print_overview_legend($isTeacher);
 	echo $output->print_column_selector(count($students));
