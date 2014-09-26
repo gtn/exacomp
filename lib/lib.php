@@ -1000,6 +1000,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 					$rows[] = new tabobject('tab_competence_overview', new moodle_url('/blocks/exacomp/assign_competencies.php',array("courseid"=>$courseid)),get_string('tab_competence_overview','block_exacomp'));
 					if ($courseSettings->uses_activities && $usedetailpage)
 						$rows[] = new tabobject('tab_competence_details', new moodle_url('/blocks/exacomp/competence_detail.php',array("courseid"=>$courseid)),get_string('tab_competence_details','block_exacomp'));
+					$rows[] = new tabobject('tab_competence_profile_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid"=>$courseid)), get_string('tab_competence_profile',  'block_exacomp'));
 					$rows[] = new tabobject('tab_examples', new moodle_url('/blocks/exacomp/view_examples.php',array("courseid"=>$courseid)),get_string('tab_examples','block_exacomp'));
 					$rows[] = new tabobject('tab_learning_agenda', new moodle_url('/blocks/exacomp/learningagenda.php',array("courseid"=>$courseid)),get_string('tab_learning_agenda','block_exacomp'));
 					//if (block_exacomp_moodle_badges_enabled() && $usebadges)
@@ -2503,7 +2504,7 @@ function block_exacomp_get_course_competence_statistics($courseid, $user, $schem
 	$average = 0;
 	
 	foreach($topics as $topic){
-		if(!$coursesettings->uses_activities || ($coursesettings->uses_activities && isset($cm_mm->topics[$topic->id]))){
+		if($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset($cm_mm->topics[$topic->id]))){
 			$total ++;
 		
 			foreach ($students as $student){
@@ -2523,7 +2524,7 @@ function block_exacomp_get_course_competence_statistics($courseid, $user, $schem
 		}
 	}
 	foreach($descriptors as $descriptor){
-		if(!$coursesettings->uses_activities || ($coursesettings->uses_activities && isset($cm_mm->competencies[$descriptor->id]))){
+		if($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset($cm_mm->competencies[$descriptor->id]))){
 			$total ++;
 				
 			foreach($students as $student){
