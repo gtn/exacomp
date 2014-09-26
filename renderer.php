@@ -1459,7 +1459,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				((isset($activityid))? $name . '[' . $compid . '][' . $student->id . '][' . $activityid . '][' . $evaluation . ']'
 						: $name . '[' . $compid . '][' . $student->id . '][' . $evaluation . ']'),
 				(isset($student->{$type}->{$evaluation}[$compid])) ? $student->{$type}->{$evaluation}[$compid] : 0,
-				false,(!$disabled) ? null : array("disabled"=>"disabled"));
+				false,($disabled) ? array("disabled"=>"disabled") : null);
 	}
 
 	public function print_edit_config($data, $courseid, $fromimport=0){
