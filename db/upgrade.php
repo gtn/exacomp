@@ -1269,5 +1269,106 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2014092500, 'exacomp');
 	}
+	if ($oldversion < 2014092600) {
+		//change type of text fields
+		$table = new xmldb_table('block_exacomptopics');
+		
+		$field = new xmldb_field('requirement', XMLDB_TYPE_TEXT, null);
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('benefit', XMLDB_TYPE_TEXT, null);
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('knowledgecheck', XMLDB_TYPE_TEXT, null);
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('ataxonomie', XMLDB_TYPE_TEXT, null);
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('btaxonomie', XMLDB_TYPE_TEXT, null);
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('ctaxonomie', XMLDB_TYPE_TEXT, null);
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('dtaxonomie', XMLDB_TYPE_TEXT, null);
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('etaxonomie', XMLDB_TYPE_TEXT, null);
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('ftaxonomie', XMLDB_TYPE_TEXT, null);
+		$dbman->change_field_type($table, $field);
+	
+		$table = new xmldb_table('block_exacompexamples');
+		
+		$field = new xmldb_field('restorelink', XMLDB_TYPE_TEXT, null);
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('metalink', XMLDB_TYPE_TEXT, null);
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('packagelink', XMLDB_TYPE_TEXT, null);
+		$dbman->change_field_type($table, $field);
+		
+		/* block_exacompexamples, create new foreign key creatorid */
+		$table = new xmldb_table('block_exacompexamples');
+		
+		$field = new xmldb_field('restorelink', XMLDB_TYPE_TEXT, null);
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('metalink', XMLDB_TYPE_TEXT, null);
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('packagelink', XMLDB_TYPE_TEXT, null);
+		$dbman->change_field_type($table, $field);
+		
+		/* block_exacomptaxonomies, rename field parent to parentid */
+		$table = new xmldb_table('block_exacomptaxonomies');
+		
+		$field = new xmldb_field('title', XMLDB_TYPE_TEXT, null);
+		$dbman->change_field_type($table, $field);
+		
+		$table = new xmldb_table('block_exacompcompactiv_mm');
+		//change type of activity- and coursetitle
+		$field = new xmldb_field('activitytitle', XMLDB_TYPE_TEXT, null);
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('coursetitle', XMLDB_TYPE_TEXT, null);
+		$dbman->change_field_type($table, $field);
+		
+		/* block_exacompsettings */
+		$table = new xmldb_table('block_exacompsettings');
+		
+		$field = new xmldb_field('activities', XMLDB_TYPE_TEXT, null);
+		$dbman->change_field_type($table, $field);
+		
+		/* block_exacompprofilesettings */
+		$table = new xmldb_table('block_exacompprofilesettings');
+		
+		$field = new xmldb_field('block', XMLDB_TYPE_TEXT, null);
+		$dbman->change_field_type($table, $field);
+		
+		/*block_exacompdescriptors */
+		
+		$table = new xmldb_table('block_exacompdescriptors');
+		$field = new xmldb_field('title', XMLDB_TYPE_TEXT, null);
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('exampletext', XMLDB_TYPE_TEXT, null);
+		$dbman->change_field_type($table, $field);
+		
+		$field = new xmldb_field('additionalinfo', XMLDB_TYPE_TEXT, null);
+		$dbman->change_field_type($table, $field);
+		
+		/*block_exacompschooltypes */
+		
+		$table = new xmldb_table('block_exacompschooltypes');
+		$field = new xmldb_field('description', XMLDB_TYPE_TEXT, null);
+		$dbman->change_field_type($table, $field);
+		
+		// Exacomp savepoint reached.
+		upgrade_block_savepoint(true, 2014092600, 'exacomp');
+	}
 	return $result;
 }
