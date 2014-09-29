@@ -2046,7 +2046,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		global $version, $PAGE, $USER;
 
 		foreach($descriptors as $descriptor) {
-			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor);
+			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor,false,false);
 
 			$padding = ($level) * 20 + 4;
 
@@ -2207,7 +2207,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		global $version, $PAGE, $USER;
 
 		foreach($descriptors as $descriptor) {
-			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor);
+			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor,false,false);
 
 			$padding = ($level) * 20 + 4;
 
@@ -2472,7 +2472,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		foreach($descriptors as $descriptor) {
 			$checkboxname = "data";
-			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor);
+			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor,false,false);
 			$studentsCount = 0;
 
 			$padding = ($level) * 20 + 4;
