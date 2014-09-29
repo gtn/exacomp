@@ -1421,7 +1421,7 @@ function block_exacomp_get_grading_scheme($courseid) {
  * Builds topic title to print
  * @param unknown_type $topic
  */
-function block_exacomp_get_output_fields($topic, $show_category=false) {
+function block_exacomp_get_output_fields($topic, $show_category=false, $isTopic = true) {
 	global $version, $DB;
 
 	if (preg_match('!^([^\s]*[0-9][^\s]*+)\s+(.*)$!iu', $topic->title, $matches)) {
@@ -1432,10 +1432,10 @@ function block_exacomp_get_output_fields($topic, $show_category=false) {
 		$output_id = '';
 		$output_title = $topic->title;
 	}
-	if($version && ($topic->id == SHOW_ALL_TOPICS)|| $show_category){
+	
+	$topicparam = optional_param('topicid', 0, PARAM_INT);
+	if($version && $isTopic && ($topicparam == SHOW_ALL_TOPICS) || $show_category){
 		$output_id = $DB->get_field(DB_CATEGORIES, 'title', array("id"=>$topic->catid));
-		if($output_id)
-			$output_id .= ': ';
 	}
 	return array($output_id, $output_title);
 }

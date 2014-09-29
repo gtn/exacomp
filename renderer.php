@@ -878,7 +878,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		//return html_writer::tag('form', $div, array('id'=>'assign-competencies', 'action'=>new moodle_url($PAGE->url, array('courseid'=>$courseid, 'action'=>'save')), 'method'=>'post'));
 	}
 
-	public function print_competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1) {
+	public function print_competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $lis_alltopics = true) {
 		global $PAGE;
 
 		$rowgroup = 0;
@@ -896,7 +896,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		foreach($subjects as $subject) {
 			if(!$subject->subs)
 				continue;
-
+			
 			//for every subject
 			$subjectRow = new html_table_row();
 			$subjectRow->attributes['class'] = 'highlight';
@@ -951,7 +951,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				}
 				$rows[] = $evaluationRow;
 			}
-
+			
 			/* TOPICS */
 			//for every topic
 			$data = (object)array(
@@ -981,8 +981,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	public function print_topics(&$rows, $level, $topics, &$data, $students, $rowgroup_class = '') {
 		global $version;
-
-		//$padding = ($version) ? ($level-1)*20 :  ($level-2)*20+12;
+		$topicparam = optional_param('topicid', 0, PARAM_INT);
 		$padding = $level * 20 + 12;
 		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
 
@@ -991,7 +990,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$studentsCount = 0;
 			$studentsColspan = 1;
 
-			$hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) && (!$version || ($version && $topic->id == SHOW_ALL_TOPICS)));
+			$hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) && (!$version || ($version && $topicparam == SHOW_ALL_TOPICS)));
 
 			if ($hasSubs) {
 				$data->rowgroup++;
@@ -1006,13 +1005,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$topicRow->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rowgroup_class . ' highlight';
 
 			$outputidCell = new html_table_cell();
-			($version)?$outputidCell->text = $outputid:$outputidCell->text='';
+			$outputidCell->text = ($version) ? $outputid : '';
 			$topicRow->cells[] = $outputidCell;
 
 			$outputnameCell = new html_table_cell();
 			$outputnameCell->attributes['class'] = 'rowgroup-arrow';
 			$outputnameCell->style = "padding-left: ".$padding."px";
-			$outputnameCell->text = html_writer::div($outputid.$outputname,"desctitle");
+			if($version && $topicparam == SHOW_ALL_TOPICS)
+				$outputnameCell->text = html_writer::div($outputname,"desctitle");
+			else
+				$outputnameCell->text = html_writer::div((($outputid) ? ($outputid.': ') : '').$outputname,"desctitle");
 			$topicRow->cells[] = $outputnameCell;
 
 			foreach($students as $student) {
@@ -1098,7 +1100,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		foreach($descriptors as $descriptor) {
 			$checkboxname = "data";
-			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor);
+			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor, false, false);
 			$studentsCount = 0;
 
 			$padding = ($level) * 20 + 4;
