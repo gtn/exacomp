@@ -1025,7 +1025,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 				if(!$skillmanagement && has_capability('block/exacomp:admin', $context))
 					$rows[] = new tabobject('tab_admin_import', new moodle_url('/blocks/exacomp/import.php',array("courseid"=>$courseid)),get_string('tab_admin_import','block_exacomp'));
 
-				if($de)
+				if($de && !$skillmanagement)
 					$rows[] = new tabobject('tab_help', new moodle_url('/blocks/exacomp/help.php', array("courseid"=>$courseid)), get_string('tab_help', 'block_exacomp'));
 			}else{	//teacher tabs !LIS
 				//if use skill management
@@ -1067,7 +1067,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 						$rows[] = new tabobject('tab_admin_configuration', new moodle_url('/blocks/exacomp/edit_config.php',array("courseid"=>$courseid)),get_string('tab_admin_configuration','block_exacomp'));
 				}
 
-				if($de)
+				if($de && !$skillmanagement)
 					$rows[] = new tabobject('tab_help', new moodle_url('/blocks/exacomp/help.php', array("courseid"=>$courseid)), get_string('tab_help', 'block_exacomp'));
 			}
 		}else{
@@ -1096,7 +1096,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 					//if(block_exacomp_moodle_badges_enabled() && $usebadges)
 						//$rows[] = new tabobject('tab_badges', new moodle_url('/blocks/exacomp/my_badges.php',array("courseid"=>$courseid)),get_string('tab_badges','block_exacomp'));
 				}
-				if($de)
+				if($de && !$skillmanagement)
 					$rows[] = new tabobject('tab_help', new moodle_url('/blocks/exacomp/help.php', array("courseid"=>$courseid)), get_string('tab_help', 'block_exacomp'));
 			}else{	//student tabs !LIS
 				if($ready_for_use){
@@ -1117,7 +1117,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 					//if(block_exacomp_moodle_badges_enabled() && $usebadges)
 						//$rows[] = new tabobject('tab_badges', new moodle_url('/blocks/exacomp/my_badges.php',array("courseid"=>$courseid)),get_string('tab_badges','block_exacomp'));
 				}
-				if($de)
+				if($de && !$skillmanagement)
 					$rows[] = new tabobject('tab_help', new moodle_url('/blocks/exacomp/help.php', array("courseid"=>$courseid)), get_string('tab_help', 'block_exacomp'));
 			}
 		}
