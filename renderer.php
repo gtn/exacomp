@@ -2765,7 +2765,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				if($items){
 					$li_items = '';
 					foreach($items as $item){
-						if(!array_key_exists($item->activityid, $eportfolioitems))
+						if(is_array($eportfolioitems) && !array_key_exists($item->activityid, $eportfolioitems))
 							continue;
 						
 						$li_items .= html_writer::tag('li', html_writer::link('#'.$item->activitytitle.$item->activityid,
@@ -3205,13 +3205,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	public function print_profile_print_button(){
-		if(!preg_match('/(?i)Trident|msie/',$_SERVER['HTTP_USER_AGENT'])){
-			$content = html_writer::link('javascript:window.print()',
-					html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/view_print.png'), 'alt'=>'print')), array('class'=>'print'));
-			return html_writer::div(html_writer::tag('form', $content), 'competence_profile_printbox');
-		}else{
-			return "";
-		}
+		$content = html_writer::link('javascript:window.print()',
+				html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/view_print.png'), 'alt'=>'print')), array('class'=>'print'));
+		return html_writer::div(html_writer::tag('form', $content), 'competence_profile_printbox');
 	}
 	
 }

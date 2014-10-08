@@ -1,5 +1,4 @@
 jQueryExacomp(function($){
-
 	$('li.category').addClass('plusimageapply');
 	$('li.category').children().addClass('selectedimage');
 	$('li.category').children().hide();
@@ -18,9 +17,11 @@ jQueryExacomp(function($){
 			}
 		});
 	});
+	
 	$(document).on('click', '.print', function(){
-		$('li.category').children().show();
 		$('li.category').removeClass('plusimageapply');
 		$('li.category').addClass('minusimageapply');
+		$('li.category').children().show();
 	});
+	
 });
