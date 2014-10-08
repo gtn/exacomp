@@ -321,7 +321,7 @@ class block_exacomp extends block_list {
 
 				if(block_exacomp_xml_do_import($xml,1,1)) {
 					mtrace("import done");
-					block_exacomp_settstamp();
+					//block_exacomp_settstamp();
 				}
 				else mtrace("import failed");
 			}
