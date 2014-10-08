@@ -637,10 +637,32 @@ div.ladebalken, .ladebalkenstatus {
 .stripes {
          background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 10%, transparent 10%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
          background-color: #48a53f;
-          background-size: 30px 30px;
-          animation: 2s linear 0s normal none infinite progress-bar-stripes;
+         background-size: 30px 30px;
+         animation: 2s linear 0s normal none infinite progress-bar-stripes;
 }
- 
+@media print {
+.stripes {
+     position: relative;
+     overflow: hidden; /* this might not work well in all situations */
+  }
+  .stripes:before {
+     content: '';
+     display: block;
+     position: absolute;
+     top: 0;
+     right: 0;
+     left: 0;
+     bottom: 0;
+     /* and here it is, the background color */
+     border: 99999px #48a53f solid;
+     z-index: 0; /* was required in my situation */
+  }
+  .stripes * {
+    /* was required in my situation */
+    position: relative;
+    z-index: 1;
+  }
+}
 .competence_profile_overview_artefacts ul, .competence_profile_overview_feedback ul {
 	margin-top: 20px;
 	list-style-type: circle;

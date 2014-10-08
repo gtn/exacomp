@@ -124,10 +124,10 @@ if($profile_settings->useexastud == 1){
 $user_courses = array();
 foreach($possible_courses as $course){
 	if(isset($profile_settings->exacomp[$course->id]))
-		$user_courses[] = $course; 
+		$user_courses[$course->id] = $course; 
 }
 
-echo $output->print_competene_profile_overview($student, $user_courses, $badges, 
+echo $output->print_competene_profile_overview($student, $user_courses, $possible_courses, $badges, 
 	$profile_settings->useexaport, $items, $profile_settings->useexastud, $periods,  $profile_settings->onlygainedbadges);
 
 if(!empty($profile_settings->exacomp) || $profile_settings->showallcomps == 1)

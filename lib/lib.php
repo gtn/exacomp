@@ -72,7 +72,10 @@ function block_exacomp_init_js_css(){
 		$PAGE->requires->css('/blocks/exacomp/css/'.$scriptName.'.css');
 	if (file_exists($CFG->dirroot.'/blocks/exacomp/javascript/'.$scriptName.'.js'))
 		$PAGE->requires->js('/blocks/exacomp/javascript/'.$scriptName.'.js', true);
-
+		
+	if(preg_match('/(?i)Trident|msie/',$_SERVER['HTTP_USER_AGENT']) && strcmp($scriptName, 'competence_profile')==0){
+		$PAGE->requires->js('/blocks/exacomp/javascript/competence_profile_msie.js', true);
+	}
 }
 
 
