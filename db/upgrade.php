@@ -1278,5 +1278,18 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2014092600, 'exacomp');
 	}
+	
+	if ($oldversion < 2014100800) {
+	
+		// Changing precision of field title on table block_exacomptopics to (1333).
+		$table = new xmldb_table('block_exacomptopics');
+		$field = new xmldb_field('title', XMLDB_TYPE_CHAR, '1333', null, null, null, null, 'sorting');
+	
+		// Launch change of precision for field title.
+		$dbman->change_field_precision($table, $field);
+	
+		// Exacomp savepoint reached.
+		upgrade_block_savepoint(true, 2014100800, 'exacomp');
+	}
 	return $result;
 }

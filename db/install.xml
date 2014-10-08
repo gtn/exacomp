@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/exacomp/db" VERSION="20140926" COMMENT="XMLDB file for Moodle blocks/exacomp"
+<XMLDB PATH="blocks/exacomp/db" VERSION="20141008" COMMENT="XMLDB file for Moodle blocks/exacomp"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -28,7 +28,7 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="sorting" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="title" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="subjid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Die ID des Datensatzes am zentralen Server, für Import wichtig"/>
         <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft, 0=Moodleinstanz 1=Zentraler Server"/>
