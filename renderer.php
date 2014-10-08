@@ -2545,9 +2545,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			
 		return html_writer::div($namediv.$imgdiv.$citydiv, 'competence_profile_metadata clearfix');
 	}
-	function print_competene_profile_overview($student, $courses, $badges, $exaport, $exaportitems, $exastud, $exastudperiods, $onlygainedbadges=false) {
+	function print_competene_profile_overview($student, $courses, $possible_courses, $badges, $exaport, $exaportitems, $exastud, $exastudperiods, $onlygainedbadges=false) {
 
-		$table = $this->print_competence_profile_overview_table($student, $courses);
+		$table = $this->print_competence_profile_overview_table($student, $courses, $possible_courses);
 		$overviewcontent = $table;
 		//my badges
 		if(!empty($badges))
@@ -2575,7 +2575,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		return html_writer::div($overviewcontent, 'competence_profile_overview clearfix');
 	}
-	function print_competence_profile_overview_table($student, $courses){
+	function print_competence_profile_overview_table($student, $courses, $possible_courses){
 		$total_total = 0;
 		$total_reached = 0;
 		$total_average = 0;
@@ -2599,41 +2599,43 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$row->cells[] = $cell;
 		$rows[] = $row;
 
-		foreach($courses as $course){
+		foreach($possible_courses as $course){
 			$statistics = block_exacomp_get_course_competence_statistics($course->id, $student, block_exacomp_get_grading_scheme($course->id));
 			$pie_data = block_exacomp_get_competencies_for_pie_chart($course->id, $student, block_exacomp_get_grading_scheme($course->id));
-				
-			$row = new html_table_row();
-			$cell = new html_table_cell();
-			$cell->text = html_writer::link('#'.$course->fullname.$course->id, $course->fullname);
-			$row->cells[] = $cell;
-				
-			$cell = new html_table_cell();
-			$cell->text = $statistics[1];
-			$row->cells[] = $cell;
-				
-			$cell = new html_table_cell();
-			$cell->text = $statistics[0];
-			$row->cells[] = $cell;
-				
-			$perc_average = $statistics[0] > 0 ? $statistics[2]/$statistics[0]*100 : 0;
-			$perc_reached = $statistics[0] > 0 ? $statistics[1]/$statistics[0]*100 : 0;
-				
-			$cell = new html_table_cell();
-			//$cell->colspan = 4;
-			$cell->text = html_writer::div(html_writer::div(
-					html_writer::div('','lbmittelwert', array('style'=>'width:'.$perc_average.'%;')), 
-					'lbmittelwertcontainer') . 
-					html_writer::div('', 'ladebalkenstatus stripes', array('style'=>'width:'.$perc_reached.'%;')),
-				'ladebalken');
+
+			if(array_key_exists($course->id, $courses)){
+				$row = new html_table_row();
+				$cell = new html_table_cell();
+				$cell->text = html_writer::link('#'.$course->fullname.$course->id, $course->fullname);
+				$row->cells[] = $cell;
 					
-			$row->cells[] = $cell;
+				$cell = new html_table_cell();
+				$cell->text = $statistics[1];
+				$row->cells[] = $cell;
+					
+				$cell = new html_table_cell();
+				$cell->text = $statistics[0];
+				$row->cells[] = $cell;
+					
+				$perc_average = $statistics[0] > 0 ? $statistics[2]/$statistics[0]*100 : 0;
+				$perc_reached = $statistics[0] > 0 ? $statistics[1]/$statistics[0]*100 : 0;
+					
+				$cell = new html_table_cell();
+				//$cell->colspan = 4;
+				$cell->text = html_writer::div(html_writer::div(
+						html_writer::div('','lbmittelwert', array('style'=>'width:'.$perc_average.'%;')), 
+						'lbmittelwertcontainer') . 
+						html_writer::div('', 'ladebalkenstatus stripes', array('style'=>'width:'.$perc_reached.'%;')),
+					'ladebalken');
+						
+				$row->cells[] = $cell;
+				$rows[] = $row;
+			}
 				
 			$total_total +=  $statistics[0];
 			$total_reached += $statistics[1];
 			$total_average += $statistics[2];
 				
-			$rows[] = $row;
 		}
 
 		$row = new html_table_row();
