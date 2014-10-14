@@ -29,15 +29,28 @@
 			});
 			//change onchange from selects
 			var value = String(document.getElementById('menulis_subjects').onchange);
-			value = value.substr(value.indexOf('href')+5);
-			value = value.substr(0, value.length-3);
-			value = value + "+'&group=0'";
-			//alert(value);
-			//document.getElementById('menulis_subjects').onchange = null;
-			//document.getElementById('menulis_subjects').onchange = undefined;
-			//$('menulis_subjects').change(function(event) { document.href = 'something'; });
-			//$('#menulis_subjects').attr('onchange',undefined).change(function() { document.href='something'; });
-			//alert(document.getElementById('menulis_subjects').onchange);
+			value = value.substr(value.indexOf('href')+6);
+			if(value.indexOf("group") > -1){
+				value = value.substr(0, value.indexOf("group")+6);
+				value = value + "0";
+			}else{
+				value = value.substr(0, value.length-3);
+				value = value + '+\'&group=0';
+			}
+			value = "document.location.href='"+value+"';";
+			$("#menulis_subjects")[0].setAttribute("onchange", value);
+			
+			var value = String(document.getElementById('menulis_topics').onchange);
+			value = value.substr(value.indexOf('href')+6);
+			if(value.indexOf("group") > -1){
+				value = value.substr(0, value.indexOf("group")+6);
+				value = value + "0";
+			}else{
+				value = value.substr(0, value.length-3);
+				value = value + '+\'&group=0';
+			}
+			value = "document.location.href='"+value+"';";
+			$("#menulis_topics")[0].setAttribute("onchange", value);
 		} else if(group== -1){
 			$('.colgroup').show();
 			$('#assign-competencies').attr('action', function(i, value) {
@@ -49,6 +62,30 @@
 				}
 			    return value + "&group=-1";
 			});
+			//change onchange from selects
+			var value = String(document.getElementById('menulis_subjects').onchange);
+			value = value.substr(value.indexOf('href')+6);
+			if(value.indexOf("group") > -1){
+				value = value.substr(0, value.indexOf("group")+6);
+				value = value + "-1";
+			}else{
+				value = value.substr(0, value.length-3);
+				value = value + '+\'&group=-1';
+			}
+			value = "document.location.href='"+value+"';";
+			$("#menulis_subjects")[0].setAttribute("onchange", value);
+			
+			var value = String(document.getElementById('menulis_topics').onchange);
+			value = value.substr(value.indexOf('href')+6);
+			if(value.indexOf("group") > -1){
+				value = value.substr(0, value.indexOf("group")+6);
+				value = value + "-1";
+			}else{
+				value = value.substr(0, value.length-3);
+				value = value + '+\'&group=-1';
+			}
+			value = "document.location.href='"+value+"';";
+			$("#menulis_topics")[0].setAttribute("onchange", value);
 		} else{
 			$('.colgroup').not('.colgroup-'+group).hide();
 			$('.colgroup-'+group).show();
@@ -61,6 +98,30 @@
 				}
 			    return value + "&group=1";
 			});
+			//change onchange from selects
+			var value = String(document.getElementById('menulis_subjects').onchange);
+			value = value.substr(value.indexOf('href')+6);
+			if(value.indexOf("group") > -1){
+				value = value.substr(0, value.indexOf("group")+6);
+				value = value + "1";
+			}else{
+				value = value.substr(0, value.length-3);
+				value = value + '+\'&group=1';
+			}
+			value = "document.location.href='"+value+"';";
+			$("#menulis_subjects")[0].setAttribute("onchange", value);
+			
+			var value = String(document.getElementById('menulis_topics').onchange);
+			value = value.substr(value.indexOf('href')+6);
+			if(value.indexOf("group") > -1){
+				value = value.substr(0, value.indexOf("group")+6);
+				value = value + "1";
+			}else{
+				value = value.substr(0, value.length-3);
+				value = value + '+\'&group=1';
+			}
+			value = "document.location.href='"+value+"';";
+			$("#menulis_topics")[0].setAttribute("onchange", value);
 		}
 
 		$('.colgroup-button').css('font-weight', 'normal');
