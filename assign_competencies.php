@@ -31,7 +31,7 @@ global $DB, $OUTPUT, $PAGE, $USER, $version;
 
 $courseid = required_param('courseid', PARAM_INT);
 $showevaluation = ($version) ? true : optional_param("showevaluation", false, PARAM_BOOL);
-
+$group = optional_param('group', 0, PARAM_INT);
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_simplehtml', $courseid);
 }

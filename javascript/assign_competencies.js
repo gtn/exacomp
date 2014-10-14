@@ -1,17 +1,77 @@
 
 (function($){
+	$( window ).load(function() {
+		var group = Exacomp.getParameterByName('group');
+		Exacomp.onlyShowColumnGroup(group);
+	});
+	window.Exacomp.getAppendix = function() {
+		$('#assign-competencies').attr('action', function(i, value) {
+			//if group is contained -> change value
+			if(value.indexOf("group") > -1){
+				group = value.substr(value.indexOf("group")+6);
+				return "&"+group;
+			}
+			return "&group=0";
+		});
+	}
 	window.Exacomp.onlyShowColumnGroup = function(group) {
-		if (group === null) {
+		if (group === null || group==0) {
+			$('.colgroup').not('.colgroup-0').hide();
+			$('.colgroup-0').show();
+			//chage form 
+			$('#assign-competencies').attr('action', function(i, value) {
+				//if group is contained -> change value
+				if(value.indexOf("group") > -1){
+					value = value.substr(0, value.indexOf("group")+6);
+					return value + "0";
+				}
+				return value + "&group=0";
+			});
+			//change onchange from selects
+			var value = String(document.getElementById('menulis_subjects').onchange);
+			value = value.substr(value.indexOf('href')+5);
+			value = value.substr(0, value.length-3);
+			value = value + "+'&group=0'";
+			//alert(value);
+			//document.getElementById('menulis_subjects').onchange = null;
+			//document.getElementById('menulis_subjects').onchange = undefined;
+			//$('menulis_subjects').change(function(event) { document.href = 'something'; });
+			//$('#menulis_subjects').attr('onchange',undefined).change(function() { document.href='something'; });
+			//alert(document.getElementById('menulis_subjects').onchange);
+		} else if(group== -1){
 			$('.colgroup').show();
-		} else {
+			$('#assign-competencies').attr('action', function(i, value) {
+				//only append if action does not contain group already
+				//if group is contained -> change value
+				if(value.indexOf("group") > -1){
+					value = value.substr(0, value.indexOf("group")+6);
+					return value + "-1";
+				}
+			    return value + "&group=-1";
+			});
+		} else{
 			$('.colgroup').not('.colgroup-'+group).hide();
 			$('.colgroup-'+group).show();
+			$('#assign-competencies').attr('action', function(i, value) {
+				//only append if action does not contain group already
+				//if group is contained -> change value
+				if(value.indexOf("group") > -1){
+					value = value.substr(0, value.indexOf("group")+6);
+					return value + "1";
+				}
+			    return value + "&group=1";
+			});
 		}
 
 		$('.colgroup-button').css('font-weight', 'normal');
-		$('.colgroup-button-'+(group===null?'all':group)).css('font-weight', 'bold');
+		$('.colgroup-button-'+(group===null?'0':(group==(-1)?'all':group))).css('font-weight', 'bold');
 	}
-	
+	window.Exacomp.getParameterByName = function(name) {
+	    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+	    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+	        results = regex.exec(location.search);
+	    return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
+	}
 	$(document).on('click', '.rowgroup-header .rowgroup-arrow', function(){
 		var tr = $(this).closest('tr');
 		tr.toggleClass('open');
