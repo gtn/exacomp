@@ -240,6 +240,7 @@ $string['module_filter'] = 'filter activities';
 $string['apply_filter'] = 'apply filter';
 $string['no_topics_selected'] = 'configuration of exabis competencies is not completed yet. please chose a topic that you would like to associate Moodle activities with';
 $string['no_activities_selected'] = 'please associate Moodle activities with competences';
+$string['no_activities_selected_student'] = 'There is no data available yet';
 $string['no_course_activities'] = 'No Moodle activities found in this course - click here to create some.';
 $string['all_modules'] = 'all activities';
 $string['all_niveaus'] = 'all levels';

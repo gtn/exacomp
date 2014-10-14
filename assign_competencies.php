@@ -71,7 +71,7 @@ $output = $PAGE->get_renderer('block_exacomp');
 $activities = block_exacomp_get_activities_by_course($courseid);
 
 if(block_exacomp_get_settings_by_course($courseid)->uses_activities && !$activities && !block_exacomp_get_settings_by_course($courseid)->show_all_descriptors)
-	echo $output->print_no_activities_warning();
+	echo $output->print_no_activities_warning($isTeacher);
 else{
 	
 	/*if($isTeacher)

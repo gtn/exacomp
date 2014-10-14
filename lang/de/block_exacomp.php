@@ -279,6 +279,7 @@ $string['module_filter'] = 'Aktivit&auml;ten filtern';
 $string['apply_filter'] = 'Filter anwenden';
 $string['no_topics_selected'] = 'Konfiguration für Exabis Competencies wurde noch nicht abgeschlossen. Bitte w&auml;hlen Sie zuerst Gegenst&auml;nde aus, denen Sie dann Moodle-Aktivit&auml;ten zuordnen k&ouml;nnen.';
 $string['no_activities_selected'] = 'Bitte ordnen Sie den erstellen Aufgaben Kompetenzen zu.';
+$string['no_activities_selected_student'] = 'In diesem Bereich sind derzeit keine Daten vorhanden.';
 $string['no_course_activities'] = 'In diesem Kurs wurden noch keine Moodle-Aktivit&auml;ten erstellt, klicken Sie hier um dies nun zu tun.';
 $string['all_modules'] = 'Alle Aktivitäten';
 $string['all_niveaus'] = 'Alle Niveaustufen';

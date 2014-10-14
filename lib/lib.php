@@ -1381,6 +1381,9 @@ function block_exacomp_is_activated($courseid) {
  * 
  */
 function block_exacomp_is_ready_for_use($courseid){
+	
+	return true;
+	
 	global $DB;
 	$course_settings = block_exacomp_get_settings_by_course($courseid);
 	$is_activated = block_exacomp_is_activated($courseid);

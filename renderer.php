@@ -2237,9 +2237,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		global $COURSE;
 		return html_writer::link(new moodle_url('/course/view.php', array('id'=>$COURSE->id, 'notifyeditingon'=>1)), get_string("no_course_activities", "block_exacomp"));
 	}
-	public function print_no_activities_warning(){
+	public function print_no_activities_warning($isTeacher = true){
 		global $COURSE;
-		return html_writer::link(new moodle_url('/blocks/exacomp/edit_activities.php', array('courseid'=>$COURSE->id)), get_string("no_activities_selected", "block_exacomp"));
+		if($isTeacher)
+			return html_writer::link(new moodle_url('/blocks/exacomp/edit_activities.php', array('courseid'=>$COURSE->id)), get_string("no_activities_selected", "block_exacomp"));
+		else 
+			return get_string("no_activities_selected_student", "block_exacomp");
 	}
 	public function print_detail_legend($showevaluation, $isTeacher=true){
 		global $OUTPUT, $COURSE;
