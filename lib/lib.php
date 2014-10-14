@@ -1392,6 +1392,9 @@ function block_exacomp_is_ready_for_use($courseid){
 	if(!$course_settings->uses_activities)
 		return true;
 	
+	if($course_settings->show_all_descriptors)
+		return true;
+	
 	//work with activities
 	$activities_assigned_to_any_course = $DB->get_records(DB_COMPETENCE_ACTIVITY, array('eportfolioitem'=>0));
 	//no activites assigned
