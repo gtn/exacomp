@@ -4,16 +4,6 @@
 		var group = Exacomp.getParameterByName('group');
 		Exacomp.onlyShowColumnGroup(group);
 	});
-	window.Exacomp.getAppendix = function() {
-		$('#assign-competencies').attr('action', function(i, value) {
-			//if group is contained -> change value
-			if(value.indexOf("group") > -1){
-				group = value.substr(value.indexOf("group")+6);
-				return "&"+group;
-			}
-			return "&group=0";
-		});
-	}
 	window.Exacomp.onlyShowColumnGroup = function(group) {
 		if (group === null || group==0) {
 			$('.colgroup').not('.colgroup-0').hide();
