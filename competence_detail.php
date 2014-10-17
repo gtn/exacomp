@@ -55,9 +55,11 @@ $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
 $blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
 $pagenode = $blocknode->add(get_string($page_identifier,'block_exacomp'), $PAGE->url);
 $pagenode->make_active();
-
+$output = $PAGE->get_renderer('block_exacomp');
 // build tab navigation & print header
+
 echo $OUTPUT->header();
+echo $output->print_wrapperdivstart();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
 // CHECK TEACHER
@@ -71,7 +73,7 @@ if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 }
 
 /* CONTENT REGION */
-$output = $PAGE->get_renderer('block_exacomp');
+
 $activities = block_exacomp_get_activities_by_course($courseid);
 if(!$activities)
 	echo $output->print_no_activities_warning();
@@ -89,7 +91,7 @@ else{
 
 
 /* END CONTENT REGION */
-
+echo $output->print_wrapperdivend();
 echo $OUTPUT->footer();
 
 ?>

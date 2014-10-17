@@ -59,6 +59,8 @@ $pagenode = $blocknode->add(get_string($page_identifier,'block_exacomp'), $PAGE-
 $pagenode->make_active();
 
 // build tab navigation & print header
+$output = $PAGE->get_renderer('block_exacomp');
+echo $output->print_wrapperdivstart();
 echo $OUTPUT->header();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
@@ -67,7 +69,7 @@ if($show_all_examples != 0)
 	
 /* CONTENT REGION */
 
-$output = $PAGE->get_renderer('block_exacomp');
+
 	
 echo $output->print_head_view_examples($sort, $show_all_examples, $PAGE->url, $context);
 
@@ -87,7 +89,7 @@ else
 echo $output->print_foot_view_examples();
 
 /* END CONTENT REGION */
-
+echo $output->print_wrapperdivend();
 echo $OUTPUT->footer();
 
 ?>

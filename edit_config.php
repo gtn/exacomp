@@ -111,7 +111,9 @@ if (isset($action) && $action == 'save') {
 }
 
 // build tab navigation & print header
+$output = $PAGE->get_renderer('block_exacomp');
 echo $OUTPUT->header();
+echo $output->print_wrapperdivstart();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
 /* CONTENT REGION */
@@ -139,12 +141,12 @@ foreach($levels as $level){
 	}
 }
 
-$output = $PAGE->get_renderer('block_exacomp');
+
 	
 echo $output->print_edit_config($data, $courseid, $fromimport);
 
 /* END CONTENT REGION */
-
+echo $output->print_wrapperdivend();
 echo $OUTPUT->footer();
 
 ?>

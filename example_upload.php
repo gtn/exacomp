@@ -64,7 +64,7 @@ if($action == 'serve') {
 }
 // build tab navigation & print header
 echo $OUTPUT->header();
-
+echo '<div id="exacomp">';
 /* CONTENT REGION */
 
 require_capability('block/exacomp:teacher', $context);
@@ -173,7 +173,7 @@ if($formdata = $form->get_data()) {
 $form->display();
 
 /* END CONTENT REGION */
-
+echo '</div>';
 echo $OUTPUT->footer();
 
 ?>

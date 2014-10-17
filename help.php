@@ -57,6 +57,7 @@ $pagenode->make_active();
 
 // build tab navigation & print header
 echo $OUTPUT->header();
+echo '<div id="exacomp">';
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
 /* CONTENT REGION */
@@ -64,7 +65,7 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $
 echo $OUTPUT->box('<div class="helpdiv">'.text_to_html(get_string("help_content", "block_exacomp")).'</div>');
 
 /* END CONTENT REGION */
-
+echo '</div>';
 echo $OUTPUT->footer();
 
 ?>

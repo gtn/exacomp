@@ -88,9 +88,10 @@ if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 		(isset($_POST['profile_settings_periods']))?$_POST['profile_settings_periods']:array());
 	
 }
-
+$output = $PAGE->get_renderer('block_exacomp');
 // build tab navigation & print header
 echo $OUTPUT->header();
+echo $output->print_wrapperdivstart();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
 /* CONTENT REGION */
@@ -98,7 +99,7 @@ $studentid = optional_param('studentid', $USER->id, PARAM_INT);
 $isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
 if(!$isTeacher) $studentid = $USER->id;
 $student = $DB->get_record('user',array('id' => $studentid));
-$output = $PAGE->get_renderer('block_exacomp');
+
 
 $exaport = block_exacomp_exaportexists();
 $exastud = block_exacomp_exastudexists();
@@ -123,7 +124,7 @@ $profile_settings = block_exacomp_get_profile_settings();
 echo $output->print_profile_settings($user_courses, $profile_settings, $profile_usebadges, $exaport, $exastud, (isset($exastud_periods))?$exastud_periods:array());
 
 /* END CONTENT REGION */
-
+echo $output->print_wrapperdivend();
 echo $OUTPUT->footer();
 
 ?>

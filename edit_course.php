@@ -86,16 +86,18 @@ if ($action == 'save_coursesettings') {
 } 
 
 // build tab navigation & print header
+$output = $PAGE->get_renderer('block_exacomp');
 echo $OUTPUT->header();
+echo $output->print_wrapperdivstart();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
 /* CONTENT REGION */
 $courseSettings = block_exacomp_get_settings_by_course($courseid);
 
-$output = $PAGE->get_renderer('block_exacomp');
+
 echo $output->print_edit_course($courseSettings, $courseid, $headertext);
 
 /* END CONTENT REGION */
-
+echo $output->print_wrapperdivend();
 echo $OUTPUT->footer();
 ?>

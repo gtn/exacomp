@@ -56,7 +56,9 @@ $pagenode = $blocknode->add(get_string($page_identifier,'block_exacomp'), $PAGE-
 $pagenode->make_active();
 
 // build tab navigation & print header
+$output = $PAGE->get_renderer('block_exacomp');
 echo $OUTPUT->header();
+echo $output->print_wrapperdivstart();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
 /* CONTENT REGION */
@@ -68,7 +70,7 @@ if (!block_exacomp_moodle_badges_enabled()) {
 block_exacomp_award_badges($courseid, $USER->id);
 $badges = block_exacomp_get_user_badges($courseid, $USER->id);
 
-$output = $PAGE->get_renderer('block_exacomp');
+
 echo $output->print_my_badges($badges);
 
 /* END CONTENT REGION */

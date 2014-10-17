@@ -91,7 +91,9 @@ if ($action == 'save') {
 }
 
 // build tab navigation & print header
+$output = $PAGE->get_renderer('block_exacomp');
 echo $OUTPUT->header();
+echo $output->print_wrapperdivstart();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
 /* CONTENT REGION */
@@ -125,11 +127,11 @@ $schooltypes = block_exacomp_build_schooltype_tree($courseid_temp);
 
 $topics = block_exacomp_get_topics_by_subject($courseid, 0, true);
 
-$output = $PAGE->get_renderer('block_exacomp');
+
 echo $output->print_courseselection($schooltypes, $topics, $headertext);
 
 /* END CONTENT REGION */
-
+echo $output->print_wrapperdivend();
 echo $OUTPUT->footer();
 
 ?>

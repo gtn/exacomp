@@ -99,6 +99,7 @@ $pagenode->make_active();
 
 // build tab navigation & print header
 echo $OUTPUT->header();
+echo '<div id="exacomp">';
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($course_context,$courseid), $page_identifier);
 /* CONTENT REGION */
 
@@ -175,7 +176,7 @@ if($isAdmin || block_exacomp_check_customupload()) {
 } else require_capability('block/exacomp:admin', $context);
 
 /* END CONTENT REGION */
-
+echo '</div>';
 echo $OUTPUT->footer();
 
 ?>

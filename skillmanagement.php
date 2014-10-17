@@ -56,7 +56,9 @@ $pagenode = $blocknode->add(get_string($page_identifier,'block_exacomp'), $PAGE-
 $pagenode->make_active();
 
 // build tab navigation & print header
+$output = $PAGE->get_renderer('block_exacomp');
 echo $OUTPUT->header();
+echo $output->print_wrapperdivstart();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
 /* CONTENT REGION */
@@ -70,7 +72,7 @@ echo html_writer::tag('iframe', $contents, array('src'=>new moodle_url('../../..
 	array('courseid'=>$courseid, 'L'=>($USER->lang == 'de') ? 1 : 0, 'uname'=>$USER->username, 'uhash'=>md5($USER->firstaccess))), 'width'=>"99%", 'height'=>500, 'name'=>'iXmlTool'));
 
 /* END CONTENT REGION */
-
+echo $output->print_wrapperdivend();
 echo $OUTPUT->footer();
 
 ?>

@@ -76,9 +76,11 @@ if (has_capability('block/exacomp:teacher', $context)) {
 /*ADDITIONAL FOR LEARNINGAGENDA
  * print header only if learningagenda is not viewed in print version
  */
+$output = $PAGE->get_renderer('block_exacomp');
 if($print == 0){
 	// build tab navigation & print header
 	echo $OUTPUT->header();
+	echo $output->print_wrapperdivstart();
 	echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 }
 
@@ -201,7 +203,7 @@ foreach($weekdays as $weekday=>$tag){
 	$example_count_week = 0;	
 }
 
-$output = $PAGE->get_renderer('block_exacomp');	
+	
 
 if($print == 0){
 	echo $output->form_week_learningagenda($stundentselect,$action, $studentid, $print,date('Y-m-d',$time));
@@ -246,9 +248,10 @@ if($print == 0){
 }
 /* END CONTENT REGION */
 
-if($print == 0)
+if($print == 0){
+	echo $output->print_wrapperdivend();
 	echo $OUTPUT->footer();
-
+}
 ?>
 
 

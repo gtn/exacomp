@@ -95,7 +95,9 @@ if (($action = optional_param("action", "", PARAM_TEXT) )== "save") {
 }
 
 // build tab navigation & print header
+	$output = $PAGE->get_renderer('block_exacomp');
 echo $OUTPUT->header();
+echo $output->print_wrapperdivstart();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
 $selected_niveaus = array();
@@ -170,7 +172,7 @@ if($modules){
 	$niveaus = block_exacomp_extract_niveaus($subjects);
 	block_exacomp_filter_niveaus($subjects, $selected_niveaus);
 	
-	$output = $PAGE->get_renderer('block_exacomp');
+
 	$topics_set = block_exacomp_get_topics_by_subject($courseid, null, true);
 
 	if(!$topics_set){
@@ -187,7 +189,7 @@ if($modules){
 }
 
 /* END CONTENT REGION */
-
+echo $output->print_wrapperdivend();
 echo $OUTPUT->footer();
 
 ?>

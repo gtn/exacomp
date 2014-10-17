@@ -58,7 +58,9 @@ $pagenode = $blocknode->add(get_string($page_identifier,'block_exacomp'), $PAGE-
 $pagenode->make_active();
 
 // build tab navigation & print header
+$output = $PAGE->get_renderer('block_exacomp');
 echo $OUTPUT->header();
+echo $output->print_wrapperdivstart();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
 if (!block_exacomp_moodle_badges_enabled()) {
@@ -68,7 +70,7 @@ if (!block_exacomp_moodle_badges_enabled()) {
 
 
 /* CONTENT REGION */
-$output = $PAGE->get_renderer('block_exacomp');
+
 if ($badgeid && $badge = $DB->get_record('badge', array('id' => $badgeid))) {
 	if ($action == 'save') {
 		$DB->delete_records('block_exacompdescbadge_mm', array("badgeid" => $badgeid));
@@ -111,7 +113,7 @@ foreach ($badges as $badge) {
 
 
 /* END CONTENT REGION */
-
+echo $output->print_wrapperdivend();
 echo $OUTPUT->footer();
 
 ?>
