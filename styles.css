@@ -720,7 +720,7 @@ td.contentcell {
     color: #000;
 }
 
-.competence_profile_coursedata li.complistshow {
+#exacomp .competence_profile_coursedata li.complistshow {
     background: transparent url(pfeil_show.png) no-repeat left center
 }
 
@@ -744,7 +744,7 @@ td.contentcell {
     padding: 0;
 }
 
-.generaltable td.competence_tableright {
+#exacomp .generaltable td.competence_tableright {
     text-align: right;
     min-width: 140px;
     max-width: 200px;
