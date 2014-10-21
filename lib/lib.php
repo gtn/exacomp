@@ -376,7 +376,7 @@ function block_exacomp_set_user_competence_activity($userid, $compid, $comptype,
  * @param int $comptype
  * @param int $topicid
  */
-function block_exacomp_save_competencies($data, $courseid, $role, $comptype, $topicid = null) {
+function block_exacomp_save_competencies($data, $courseid, $role, $comptype, $topicid = null, $compgrid = false) {
 	global $USER;
 	$values = array();
 	foreach ($data as $compidKey => $students) {
