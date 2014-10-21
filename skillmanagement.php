@@ -65,10 +65,10 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $
 
 $contents = html_writer::tag('p', 'Ihr Browser kann leider keine eingebetteten Frames anzeigen:
 	Sie k&ouml;nnen die eingebettete Seite &uuml;ber den folgeden Verweis aufrufen: '
-	.html_writer::link(new moodle_url('../../index.php?id=xmltool', array('courseid'=>$courseid, 'uname'=>$USER->username,
+	.html_writer::link(new moodle_url('http://www.skills-management.org/index.php?id=xmltool', array('courseid'=>$courseid, 'uname'=>$USER->username,
 		'uhash'=>md5($USER->firstaccess))), get_string('tab_skillmanagement', 'block_exacomp')));
 	
-echo html_writer::tag('iframe', $contents, array('src'=>new moodle_url('../../../index.php?id=xmltool', 
+echo html_writer::tag('iframe', $contents, array('src'=>new moodle_url('http://www.skills-management.org/index.php?id=xmltool', 
 	array('courseid'=>$courseid, 'L'=>($USER->lang == 'de') ? 1 : 0, 'uname'=>$USER->username, 'uhash'=>md5($USER->firstaccess))), 'width'=>"99%", 'height'=>500, 'name'=>'iXmlTool'));
 
 /* END CONTENT REGION */
