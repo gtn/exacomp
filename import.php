@@ -88,6 +88,7 @@ if((strcmp($importtype,'custom') == 0) && $data = $mform->get_file_content('file
 	if($xml) {
 		if(block_exacomp_xml_do_import($xml,1,1)) {
 			$importSuccess = true;
+			block_exacomp_settstamp();
 		}
 	}
 }

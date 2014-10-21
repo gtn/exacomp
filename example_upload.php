@@ -162,6 +162,7 @@ if($formdata = $form->get_data()) {
 	foreach($formdata->descriptors as $descr)
 		$DB->insert_record('block_exacompdescrexamp_mm', array('descrid' => $descr, 'exampid' => $newExample->id));
 
+	block_exacomp_settstamp();
 	?>
 <script type="text/javascript">
 		window.opener.Exacomp.newExampleAdded();

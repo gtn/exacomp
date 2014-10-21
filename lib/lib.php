@@ -392,7 +392,10 @@ function block_exacomp_save_competencies($data, $courseid, $role, $comptype, $to
 			}
 		}
 	}
-	block_exacomp_reset_comp_data($courseid, $role, $comptype, (($role == ROLE_STUDENT)) ? $USER->id : false, $topicid);
+	if(!$compgrid)
+		block_exacomp_reset_comp_data($courseid, $role, $comptype, (($role == ROLE_STUDENT)) ? $USER->id : false, $topicid);
+	else
+		block_exacomp_reset_comp_data($courseid, $role, $comptype, $USER->id , $topicid);
 
 	foreach ($values as $value)
 		block_exacomp_set_user_competence($value['user'], $value['compid'], $comptype, $courseid, $role, $value['value']);
@@ -3042,4 +3045,21 @@ function block_exacomp_build_schooltype_tree($courseid=0){
 	}
 	
 	return $schooltypes;
+}
+/**
+ * This function is used for ePop, to test for the latest db update.
+ * It is used after every xml import and every example upload.
+ */
+function block_exacomp_settstamp(){
+
+	global $DB;
+	$sql="SELECT * FROM {block_exacompsettings} WHERE courseid=0 AND activities='importxml'";
+
+	$modsetting = $DB->get_record('block_exacompsettings', array('courseid'=>0,'activities'=>'importxml'));
+	if ($modsetting){
+		$modsetting->tstamp = time();
+		$DB->update_record('block_exacompsettings', $modsetting);
+	}else{
+		$DB->insert_record('block_exacompsettings',array("courseid" => 0,"grading"=>"0","activities"=>"importxml","tstamp"=>time()));
+	}
 }

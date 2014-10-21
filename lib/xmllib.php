@@ -98,6 +98,8 @@ function block_exacomp_xml_do_import($data = null, $par_source = 1, $cron = 0) {
 	block_exacomp_deleteIfNoSubcategories("block_exacompschooltypes","block_exacompsubjects","stid",$source);
 	block_exacomp_deleteIfNoSubcategories("block_exacompedulevels","block_exacompschooltypes","elid",$source);
 
+	block_exacomp_settstamp();
+	
 	return true;
 }
 function block_exacomp_insert_topic($topic, $parent = 0) {

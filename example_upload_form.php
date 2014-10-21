@@ -62,7 +62,7 @@ class block_exacomp_example_upload_form extends moodleform {
 		$mform->setType('action', PARAM_ACTION);
 		$mform->setDefault('action', 'add');
 
-		$mform->addElement('text', 'name', get_string("name_example"), 'maxlength="255" size="60"');
+		$mform->addElement('text', 'name', get_string("name_example","block_exacomp"), 'maxlength="255" size="60"');
 		$mform->setType('name', PARAM_TEXT);
 		$mform->addRule('name', get_string("titlenotemtpy", "block_exacomp"), 'required', null, 'client');
 
