@@ -1,4 +1,4 @@
- <?php
+<?php
 $string['tab_teacher_settings_selection_st'] = 'Bildungsstandard-Auswahl';
 $string['tab_examples'] = 'Lernmaterialien';
 $string['tab_teacher_settings_selection'] = 'Kompetenzbereiche-Auswahl';
@@ -18,7 +18,7 @@ $string['showevaluation']= 'Um die Selbsteinschätzung einzusehen, klicken Sie <
 $string['hideevaluation']= 'Um die Selbsteinschätzung auszublenden, klicken Sie <a href="{$a}">hier</a>';
 $string['assigned_example'] = 'Lernmaterial zuordnen';
 $string['show_all_descriptors'] = 'Alle Lernlisten im &Uuml;berblick anzeigen';
-$string['choosesubject']='Bildungsstandard ausw&auml;hlen';
+$string['choosesubject']='Kompetenzbereich ausw&auml;hlen';
 $string['choosetopic'] = "Lernfortschritte ausw&auml;hlen";
 
 $string['second_configuration_step'] = 'Im zweiten Konfigurationsschritt m&uuml;ssen Bildungsstandards ausgew&auml;hlt werden.';
@@ -49,7 +49,9 @@ $string['requirements'] = 'Was du schon k&ouml;nnen solltest: ';
 $string['forwhat'] = 'Wof&uuml;r du das brauchst: ';
 $string['howtocheck'] = 'Wie du dein K&ouml;nnen pr&uuml;fen kannst: ';
 $string['reached_topic'] = 'Ich habe diese Kompetenz erreicht: ';
-
+$string['taxonomies'] = 'Niveaustufen';
+$string['taxonomy'] = 'Niveaustufe';
+$string['name_example'] = 'Dateiname / Schulbuchverweis';
 
 //nicht verwendete und doppelt deklarierte Strings
 //$string['descnoassignment'] = 'Dieser Lernliste sind keine Aufgaben zugeordnet.';

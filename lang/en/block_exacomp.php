@@ -164,6 +164,7 @@ $string['taxonomies'] = 'taxonomies';
 $string['show_all_course_examples'] = 'Show examples from all courses';
 $string['expandcomps'] = 'expand all';
 $string['contactcomps'] = 'contract all';
+$string['name_example'] = 'Name';
 //Icons
 $string['assigned_example'] = 'Assigned Example';
 $string['task_example'] = 'Tasks';
