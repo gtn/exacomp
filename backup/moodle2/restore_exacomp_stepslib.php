@@ -27,7 +27,10 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
 			$settings = reset($settings);
 
 			$settings['courseid'] = $this->get_courseid();
-			$DB->insert_record('block_exacompsettings',$settings);
+			
+			$db_settings = $DB->get_record('block_exacompsettings', array('courseid'=>$this->get_courseid()));
+			if(!$db_settings)
+				$DB->insert_record('block_exacompsettings',$settings);
 		}
 
 		if (isset($data->exacomp['mdltypes']['mdltype'])) {
@@ -35,7 +38,7 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
 				$mdltype = (object)$mdltype;
 				$source_type = $DB->get_record('block_exacompschooltypes',array("sourceid"=>$mdltype->id));
 				if($source_type) {
-					$mdltype->typeid = $source_type->id;
+					$mdltype->stid = $source_type->id;
 					$mdltype->courseid = $this->get_courseid();
 
 					$DB->insert_record('block_exacompmdltype_mm', $mdltype);
@@ -43,11 +46,9 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
 			}
 		}
 		
-	//	foreach($data->exacomp[0]['topics']['topic'] as $topic)
-		//	print_r((object)$topic);
-		if ($data->exacomp[0]['topics']['topic']) {
+		if (isset($data->exacomp['topics']['topic'])) {
 
-			foreach($data->exacomp[0]['topics']['topic'] as $topic) {
+			foreach($data->exacomp['topics']['topic'] as $topic) {
 				$topic = (object)$topic;
 				$topic->courseid = $this->get_courseid();
 
@@ -61,10 +62,10 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
 			}
 		}
 		
-		if (isset($data->exacomp[0]['activities']['compactiv_mm'])) {
+		if (isset($data->exacomp['activities']['compactiv_mm'])) {
 			$course = $DB->get_record("course",array("id"=>$this->get_courseid()));
 
-			foreach ($data->exacomp[0]['activities']['compactiv_mm'] as $descractiv_mm) {
+			foreach ($data->exacomp['activities']['compactiv_mm'] as $descractiv_mm) {
 					
 				$descractiv_mm = (object)$descractiv_mm;
 					
