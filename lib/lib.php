@@ -2578,7 +2578,13 @@ function block_exacomp_get_subjects_for_radar_graph($userid) {
 	global $DB;
 	// 1. get all used subjects
 	$subjects = array();
-	foreach(block_exacomp_get_exacomp_courses($userid) as $course) {
+	$profile_settings = block_exacomp_get_profile_settings($userid);
+	$user_courses = array();
+	foreach(block_exacomp_get_exacomp_courses($userid) as $course){
+		if(isset($profile_settings->exacomp[$course->id]))
+			$user_courses[$course->id] = $course; 
+	}
+	foreach($user_courses as $course) {
 		$courseSubjects = block_exacomp_get_subjects_by_course($course->id);
 		foreach($courseSubjects as $courseSubject) {
 			if(!isset($subjects[$courseSubject->id]))

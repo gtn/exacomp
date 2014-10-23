@@ -2770,7 +2770,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				if($items){
 					$li_items = '';
 					foreach($items as $item){
-						if(is_array($eportfolioitems) && !array_key_exists($item->activityid, $eportfolioitems))
+						if(!is_array($eportfolioitems) || (is_array($eportfolioitems) && !array_key_exists($item->activityid, $eportfolioitems)))
 							continue;
 						
 						$li_items .= html_writer::tag('li', html_writer::link('#'.$item->activitytitle.$item->activityid,
@@ -3205,9 +3205,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$student = block_exacomp_get_user_information_by_course($student, $course->id);
 			$scheme = block_exacomp_get_grading_scheme($course->id);
 			$compTree = block_exacomp_get_competence_tree($course->id);
+			if($student != null && block_exacomp_get_profile_settings($student->id)->useexaport == 1) {
+				$items = block_exacomp_get_exaport_items($student->id);
+			}
 			if($compTree)
 				$content .= html_writer::tag('h4', $course->fullname) .
-					$this->print_competence_profile_tree($compTree,$student,$scheme, false, true);
+					$this->print_competence_profile_tree($compTree,$student,$scheme, false, $items);
 		}
 		return html_writer::div($content,"competence_profile_coursedata");
 	}
