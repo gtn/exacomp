@@ -3205,6 +3205,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$student = block_exacomp_get_user_information_by_course($student, $course->id);
 			$scheme = block_exacomp_get_grading_scheme($course->id);
 			$compTree = block_exacomp_get_competence_tree($course->id);
+			$items = false;
 			if($student != null && block_exacomp_get_profile_settings($student->id)->useexaport == 1) {
 				$items = block_exacomp_get_exaport_items($student->id);
 			}
