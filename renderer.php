@@ -2942,7 +2942,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::tag("div", $div, array("id"=>"exabis_competences_block"));
 	}
 	public function print_competence_profile_exaport($settings, $user, $items){
-		global $COURSE, $CFG;
+		global $COURSE, $CFG, $USER;
 
 		$header = html_writer::tag('h3', get_string('my_items', 'block_exacomp'), array('class'=>'competence_profile_sectiontitle'));
 
@@ -2959,8 +2959,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		if($items_with_no_comps){
 			$content .= html_writer::tag('p', get_string('item_no_comps', 'block_exacomp'));
 			foreach($items as $item){
-				$url = $CFG->wwwroot.'/blocks/exaport/shared_item.php?courseid='.$COURSE->id.'&access=portfolio/id/'.$user->id.'&itemid='.$item->id.'&backtype=&att='.$item->attachment;
-
+				if($item->userid != $USER->id)
+					$url = $CFG->wwwroot.'/blocks/exaport/shared_item.php?courseid='.$COURSE->id.'&access=portfolio/id/'.$userid.'&itemid='.$item->id.'&backtype=&att='.$item->attachment;
+				else
+					$url = new moodle_url('/blocks/exaport/item.php',array("courseid"=>$COURSE->id,"access"=>'portfolio/id/'.$userid,"id"=>$item->id,"sesskey"=>sesskey(),"action"=>"edit"));
+				
 				$li_items = '';
 				if(!$item->hascomps){
 					$li_items .= html_writer::tag('li', html_writer::link($url, $item->name,array('name'=>$item->name.$item->id)));

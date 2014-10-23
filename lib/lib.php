@@ -982,6 +982,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 	$courseSettings = block_exacomp_get_settings_by_course($courseid);
 	$usedetailpage = $courseSettings->usedetailpage;
 	$ready_for_use = block_exacomp_is_ready_for_use($courseid);
+	
 	$de = false;
 		$lang = current_language();
 		if(isset($lang) && substr( $lang, 0, 2) === 'de'){
@@ -1385,8 +1386,6 @@ function block_exacomp_is_activated($courseid) {
  */
 function block_exacomp_is_ready_for_use($courseid){
 	
-	return true;
-	
 	global $DB;
 	$course_settings = block_exacomp_get_settings_by_course($courseid);
 	$is_activated = block_exacomp_is_activated($courseid);
@@ -1394,6 +1393,8 @@ function block_exacomp_is_ready_for_use($courseid){
 	//no topics selected
 	if(!$is_activated)
 		return false;
+	
+	return true;
 	
 	//topics selected
 	//no activities->finish
