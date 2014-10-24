@@ -376,7 +376,7 @@ function block_exacomp_set_user_competence_activity($userid, $compid, $comptype,
  * @param int $comptype
  * @param int $topicid
  */
-function block_exacomp_save_competencies($data, $courseid, $role, $comptype, $topicid = null, $compgrid = false) {
+function block_exacomp_save_competencies($data, $courseid, $role, $comptype, $topicid = null, $subjectid = false) {
 	global $USER;
 	$values = array();
 	foreach ($data as $compidKey => $students) {
@@ -392,10 +392,10 @@ function block_exacomp_save_competencies($data, $courseid, $role, $comptype, $to
 			}
 		}
 	}
-	if(!$compgrid)
+	if(!$subjectid)
 		block_exacomp_reset_comp_data($courseid, $role, $comptype, (($role == ROLE_STUDENT)) ? $USER->id : false, $topicid);
 	else
-		block_exacomp_reset_comp_data($courseid, $role, $comptype, $USER->id , $topicid);
+		block_exacomp_reset_comp_data_for_subject($courseid, $role, $comptype, required_param('studentid', PARAM_INT), $subjectid);
 
 	foreach ($values as $value)
 		block_exacomp_set_user_competence($value['user'], $value['compid'], $comptype, $courseid, $role, $value['value']);
@@ -467,7 +467,25 @@ function block_exacomp_reset_comp_data($courseid, $role, $comptype, $userid = fa
 		$DB->delete_records_select("block_exacompcompuser", $select ,array($courseid, $role, $comptype, $topicid,$topicid, $userid));
 	}
 }
-
+/**
+ * Is used to reset topics in the comp grid
+ * 
+ * @param int $courseid
+ * @param int $role
+ * @param int $comptype
+ * @param int $userid
+ * @param int $subjectid
+ */
+function block_exacomp_reset_comp_data_for_subject($courseid, $role, $comptype = 1, $userid, $subjectid) {
+	global $DB;
+	
+	$select = " courseid = ? AND role = ? AND COMPTYPE = ? AND userid = ? AND 
+		(compid IN
+		(SELECT t.id FROM {block_exacomptopics} t, {block_exacompsubjects} s
+		WHERE t.subjid = s.id AND s.stid = ?))";
+	
+	$DB->delete_records_select('block_exacompcompuser', $select,array($courseid, $role, $comptype, $userid, $subjectid));
+}
 /**
  * Reset activity comp data for one comptype in one course
  *

@@ -114,12 +114,12 @@ if($formdata = $form->get_data()) {
 		//$newfilename .= '_';
 		//Nr Kompetenzbereich sprintf(%02d, $var);
 		$newfilename .= sprintf("%02d", $filenameinfos->numb);
-		//$newfilename .= '.';
+		$newfilename .= '.';
 		//Nr Lernfortschritt
 
 		$newfilename .= sprintf("%02d", substr($filenameinfos->cattitle,4,1)) . ".";
 		//Nr Lernwegeliste
-		$newfilename .= sprintf("%02d", $filenameinfos->catid) . ".";
+		$newfilename .= sprintf("%02d", $filenameinfos->catid);
 		$newfilename .= '_';
 		//Taxonomie
 		$taxname = $DB->get_field('block_exacomptaxonomies', 'title', array("id"=>$formdata->tax));
