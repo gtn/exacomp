@@ -1965,7 +1965,7 @@ function block_exacomp_get_icon_for_user($coursemodules, $student) {
 		if(isset($gradeinfo->items[0]->grades[$student->id]->dategraded) || $hasSubmission) {
 			$found = true;
 			$icon->img = html_writer::empty_tag("img", array("src" => "pix/list_12x11.png","alt" => get_string("legend_activities","block_exacomp")));
-			$icon->text .= '<li>' . $gradeinfo->items[0]->name . ((isset($gradeinfo->items[0]->grades[$student->id])) ? get_string('grading', "block_exacomp"). $gradeinfo->items[0]->grades[$student->id]->str_long_grade : '' ) . '</li>';
+			$icon->text .= '<li>' . str_replace('"', '', $gradeinfo->items[0]->name) . ((isset($gradeinfo->items[0]->grades[$student->id])) ? get_string('grading', "block_exacomp"). $gradeinfo->items[0]->grades[$student->id]->str_long_grade : '' ) . '</li>';
 		}
 	}
 	if(!$found) {
