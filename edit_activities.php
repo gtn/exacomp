@@ -120,10 +120,6 @@ $modules_to_filter = array();
 if($modules){
 	$colspan = (count($modules) + 1);
 	foreach($modules as $mod){
-		if(!$mod->visible){
-			$colspan = ($colspan-1);
-			continue;
-		}
 		
 		$module = block_exacomp_get_coursemodule($mod);
 		
