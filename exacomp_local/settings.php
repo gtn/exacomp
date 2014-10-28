@@ -19,6 +19,9 @@ defined('MOODLE_INTERNAL') || die();
 // Include a link to the view script in the admin pages
 if ($hassiteconfig) { // needs this condition or there is error on login page
     $ADMIN->add('server', new admin_externalpage('local_exacomp_local',
-            get_string('pluginname', 'local_exacomp_local'),
-            new moodle_url('/local/exacomp_local/index.php')));
+            get_string('exacomp_local:execute', 'local_exacomp_local'),
+            new moodle_url('/local/exacomp_local/index.php?action=ws')));
+    $ADMIN->add('server', new admin_externalpage('local_exacomp_local_comps',
+    		get_string('exacomp_local:checkforcomp', 'local_exacomp_local'),
+    		new moodle_url('/local/exacomp_local/index.php?action=comp')));
 }

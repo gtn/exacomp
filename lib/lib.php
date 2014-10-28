@@ -3088,3 +3088,55 @@ function block_exacomp_settstamp(){
 		$DB->insert_record('block_exacompsettings',array("courseid" => 0,"grading"=>"0","activities"=>"importxml","tstamp"=>time()));
 	}
 }
+/**
+ * This function checkes for finished quizes that are associated with competencies and automatically gains them if the
+ * coresponding setting is activated.
+ */
+function block_exacomp_perform_auto_test() {
+	global $DB;
+	
+	$autotest = get_config('exacomp', 'autotest');
+	$testlimit = get_config('exacomp', 'testlimit');
+	
+	if(!$autotest)
+		return;
+	
+	//for all courses where exacomp is used
+	$courses = block_exacomp_get_courses();
+		
+	foreach($courses as $courseid){
+		//tests associated with competences
+		//get all tests that are associated with competences
+		$tests = block_exacomp_get_active_tests_by_course($courseid);
+		$students = block_exacomp_get_students_by_course($courseid);
+			
+		$grading_scheme = block_exacomp_get_grading_scheme($courseid);
+	
+		//get student grading for each test
+		foreach($students as $student){
+			foreach($tests as $test){
+				//get grading for each test and assign topics and descriptors
+				$quiz = $DB->get_record('quiz_grades', array('quiz'=>$test->id, 'userid'=>$student->id));
+				if(isset($quiz->grade) && (floatval($test->grade)*(floatval($testlimit)/100)) <= $quiz->grade){
+					//assign competences to student
+					if(isset($test->descriptors)){
+						foreach($test->descriptors as $descriptor){
+							block_exacomp_set_user_competence($student->id, $descriptor->compid,
+									0, $courseid, ROLE_TEACHER, $grading_scheme);
+							mtrace("set competence ".$descriptor->compid." for user ".$student->id.'<br>');
+						}
+					}
+					if(isset($test->topics)){
+						foreach($test->topics as $topic){
+							block_exacomp_set_user_competence($student->id, $topic->compid,
+									1, $courseid, ROLE_TEACHER, $grading_scheme);
+							mtrace("set topic competence ".$topic->compid." for user ".$student->id.'<br>');
+	
+						}
+					}
+				}
+			}
+		}
+	}
+	return true;
+}

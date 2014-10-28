@@ -312,8 +312,6 @@ class block_exacomp extends block_list {
 	public function cron() {
 		global $COURSE, $DB, $xmlserverurl, $autotest, $testlimit;
 		$xmlserverurl = get_config('exacomp', 'xmlserverurl');
-		$autotest = get_config('exacomp', 'autotest');
-		$testlimit = get_config('exacomp', 'testlimit');
 
 		mtrace('Exabis Competencies: cron job is running.');
 		
@@ -331,46 +329,8 @@ class block_exacomp extends block_list {
 			}
 		}
 		
-		if($autotest){
-			mtrace('autotest');
-			//for all courses where exacomp is used
-			$courses = block_exacomp_get_courses();
-			
-			foreach($courses as $courseid){
-				//tests associated with competences 
-				//get all tests that are associated with competences
-				$tests = block_exacomp_get_active_tests_by_course($courseid);
-				$students = block_exacomp_get_students_by_course($courseid);
-			
-				$grading_scheme = block_exacomp_get_grading_scheme($courseid);
-				
-				//get student grading for each test
-				foreach($students as $student){
-					foreach($tests as $test){
-						//get grading for each test and assign topics and descriptors
-						$quiz = $DB->get_record('quiz_grades', array('quiz'=>$test->id, 'userid'=>$student->id));
-						if(isset($quiz->grade) && (floatval($test->grade)*(floatval($testlimit)/100)) <= $quiz->grade){
-							//assign competences to student
-							if(isset($test->descriptors)){
-								foreach($test->descriptors as $descriptor){
-									block_exacomp_set_user_competence($student->id, $descriptor->compid,
-										0, $courseid, ROLE_TEACHER, $grading_scheme);
-									mtrace("set competence ".$descriptor->compid." for user ".$student->id);
-								}
-							}
-							if(isset($test->topics)){
-								foreach($test->topics as $topic){
-									block_exacomp_set_user_competence($student->id, $topic->compid,
-										1, $courseid, ROLE_TEACHER, $grading_scheme);
-									mtrace("set topic competence ".$topic->compid." for user ".$student->id);
-								
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+		block_exacomp_perform_auto_test();
+		
 		return true;
 	}
 }
