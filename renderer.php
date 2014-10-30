@@ -3192,6 +3192,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$studentcomp += $course_data[1];
 			$pendingcomp += $course_data[2];
 		}
+		block_exacomp_get_timeline_data($courses, $student);
 		
 		//print graphs
 		$radar_graph = html_writer::div($this->print_radar_graph($subjects, 0),"competence_profile_radargraph");
