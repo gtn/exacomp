@@ -394,9 +394,11 @@ function block_exacomp_save_competencies($data, $courseid, $role, $comptype, $to
 	}
 	if(!$subjectid)
 		block_exacomp_reset_comp_data($courseid, $role, $comptype, (($role == ROLE_STUDENT)) ? $USER->id : false, $topicid);
-	else
-		block_exacomp_reset_comp_data_for_subject($courseid, $role, $comptype, required_param('studentid', PARAM_INT), $subjectid);
-
+	else {
+		$studentid = ($role == ROLE_STUDENT) ? $USER->id : required_param('studentid', PARAM_INT);
+		block_exacomp_reset_comp_data_for_subject($courseid, $role, $comptype, $studentid, $subjectid);
+	}
+	
 	foreach ($values as $value)
 		block_exacomp_set_user_competence($value['user'], $value['compid'], $comptype, $courseid, $role, $value['value']);
 }
