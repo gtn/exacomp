@@ -2765,7 +2765,7 @@ function block_exacomp_get_competencies_for_pie_chart($courseid,$user, $scheme, 
 			if(isset($evaluation->competencies->teacher) && isset($evaluation->competencies->teacher[$descriptor->id])){
 				if($scheme == 1 || $evaluation->competencies->teacher[$descriptor->id] >= ceil($scheme/2)){
 					if($enddate>0){
-						//compare only startdate->akkumuliert
+						//compare only enddate->kumuliert
 						if($enddate>=$evaluation->competencies->timestamp[$descriptor->id]){
 							$teachercomp ++;
 							$teacher_eval = true;
@@ -3160,46 +3160,104 @@ function block_exacomp_perform_auto_test() {
 	}
 	return true;
 }
-function block_exacomp_get_timeline_data($courses, $student){
+function block_exacomp_get_timeline_data($courses, $student, $total){
 	global $DB;
 	$max_timestamp = 0;
 	$min_timestamp = time();
 	foreach($courses as $course){
+		
+		$topics = block_exacomp_get_topics_by_course($course->id);
+		$descriptors = block_exacomp_get_descriptors($course->id);
+		
 		$competencies = $DB->get_records(DB_COMPETENCIES, array('userid'=>$student->id, 'role'=>ROLE_TEACHER, 'value'=>1, 'courseid'=>$course->id));
-	
+		
 		foreach($competencies as $competence){
-			if($competence->timestamp>$max_timestamp)
-				$max_timestamp = $competence->timestamp;
-				
-			if($competence->timestamp<$min_timestamp)
-				$min_timestamp = $competence->timestamp;
+			if($competence->comptype == TYPE_DESCRIPTOR){
+				foreach($descriptors as $descriptor){
+					if($descriptor->id == $competence->compid){
+						//if($competence->timestamp>$max_timestamp)
+							//$max_timestamp = $competence->timestamp;
+					
+						if($competence->timestamp<$min_timestamp)
+							$min_timestamp = $competence->timestamp;
+					}
+					
+				}
+			} 
+			if($competence->comptype == TYPE_TOPIC) {
+				foreach($topics as $topic){
+					if($topic->id == $competence->compid){
+						//if($competence->timestamp>$max_timestamp)
+							//$max_timestamp = $competence->timestamp;
+					
+						if($competence->timestamp<$min_timestamp)
+							$min_timestamp = $competence->timestamp;
+					}
+				}
+			}
 		}
 	}
-	
+	$max_timestamp = time();
 	$time_diff = $max_timestamp - $min_timestamp;
+	
+	$x_values = array();
+	$y_values = array();
+	$y_values_total = array();
 	//Weeks
 	if($time_diff < 10519200 && $time_diff >= 2419200){
 		$weeks = array();
-	
-		$comp_timestamp = $min_timestamp;
+		
+		$comp_timestamp = $min_timestamp - 604800;
 		while($comp_timestamp <= $max_timestamp){
 			$result = block_exacomp_calc_week_dates($comp_timestamp);
 			$comp_timestamp = $result->dates[0][0]+604800;
 			$weeks[] = $result;
 		}
-		foreach($courses as $course){
-			//var_dump($course->id);
-			foreach($weeks as $week){
+		foreach($weeks as $week){
+			$teacher_comps = 0;
+			foreach($courses as $course){
 				$scheme = block_exacomp_get_grading_scheme($course->id); 
-				$comps = block_exacomp_get_competencies_for_pie_chart($course->id, $student, $scheme, $week->dates[0][0], $week->dates[6][0]);
-				//var_dump($week->label);
-				//var_dump($comps);
+				$comps = block_exacomp_get_competencies_for_pie_chart($course->id, $student, $scheme, $week->dates[6][0]);
+				$teacher_comps+=$comps[0];
 			}
+			$x_values[] = $week->label;
+			$y_values[] = $teacher_comps;
+			$y_values_total[] = $total;
 		}
-	}/*else if($time_diff<2419200) //Days
-		//var_dump("Tage");
-	else //var_dump("Monate"); // Month
-	*/
+	}else if($time_diff<2419200){ //Days
+		
+		$min_date = getdate($min_timestamp);
+		$max_date = getdate($max_timestamp);
+		$min_timestamp = strtotime($min_date["mday"]."-".$min_date["mon"]."-".$min_date["year"]." 23:59");
+		$max_timestamp = strtotime($max_date["mday"]."-".$max_date["mon"]."-".$max_date["year"]." 23:59");
+		$act_time = $min_timestamp-86400;
+		
+		while($act_time<=$max_timestamp){
+			//day enddate
+			$act_date = getdate($act_time);
+			
+			$teacher_comps = 0;
+			foreach($courses as $course){
+				$scheme = block_exacomp_get_grading_scheme($course->id); 
+				$comps = block_exacomp_get_competencies_for_pie_chart($course->id, $student, $scheme, $act_time);
+				$teacher_comps+=$comps[0];
+				//$pending_comps+=$comps[2];
+				//$student_comps+=$comps[1];
+			}
+			$x_values[] = $act_date["mday"].".".$act_date["mon"];
+			$y_values[] = $teacher_comps;
+			$y_values_total[] = $total;
+			
+			$act_time += 86400; 
+		}
+	}else var_dump("Monate"); // Month
+	
+	$result = new stdClass();
+	$result->x_values = $x_values;
+	$result->y_values = $y_values;
+	$result->y_values_total = $y_values_total;
+	return $result;
+	
 }
 function block_exacomp_calc_week_dates($time){
 	$actday = date('w', $time);

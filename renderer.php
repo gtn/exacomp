@@ -2863,6 +2863,58 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content .= ' '.get_string("teachercomp","block_exacomp").' ';
 		return $content;
 	}
+	
+	public function print_timeline_graph($x_values, $y_values1, $y_values2, $courseid){
+		$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvas_timeline".$courseid)),'timeline',array("style" => "width:35%"));
+		$content .= '
+		<script>
+		var timelinedata = {
+    		labels: [';
+			foreach($x_values as $val)
+				$content .= '"'.$val.'",';
+
+			$content .= '],
+    		datasets: [
+        	{
+	            label: "Timeline",
+	            fillColor: "rgba(72,165,63,0.2)",
+	       	 	strokeColor: "rgba(72,165,63,1)",
+	        	pointColor: "rgba(72,165,63,1)",
+	            pointStrokeColor: "#fff",
+	            pointHighlightFill: "#fff",
+	            pointHighlightStroke: "rgba(151,187,205,1)",
+	            data: [';
+				foreach($y_values1 as $val)
+					$content .= '"'.$val.'",';
+	
+				$content .= ']
+	        },
+	        {
+	            label: "Timeline",
+	            fillColor: "rgba(220,220,220,0.2)",
+	            strokeColor: "rgba(220,220,220,1)",
+	            pointColor: "rgba(220,220,220,1)",
+	            pointStrokeColor: "#fff",
+	            pointHighlightFill: "#fff",
+	            pointHighlightStroke: "rgba(220,220,220,1)",
+	            data: [';
+				foreach($y_values2 as $val)
+					$content .= '"'.$val.'",';
+	
+				$content .= ']
+	        }
+	    ]
+		};
+			
+		
+		window.myTimeline = new Chart(document.getElementById("canvas_timeline'.$courseid.'").getContext("2d")).Line(timelinedata, {
+		responsive: true, bezierCurve : false
+		});
+	
+		</script>
+		';
+		return $content;
+	}
 	public function print_profile_settings($courses, $settings, $usebadges, $exaport, $exastud, $exastud_periods){
 		global $COURSE;
 		$exacomp_div_content = html_writer::tag('h2', get_string('pluginname', 'block_exacomp'));
@@ -3192,14 +3244,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$studentcomp += $course_data[1];
 			$pendingcomp += $course_data[2];
 		}
-		block_exacomp_get_timeline_data($courses, $student);
 		
 		//print graphs
 		$radar_graph = html_writer::div($this->print_radar_graph($subjects, 0),"competence_profile_radargraph");
 
 		$pie_graph = html_writer::div($this->print_pie_graph($teachercomp, $studentcomp, $pendingcomp, 0),"competence_profile_radargraph");
+		$total_comps = $teachercomp+$studentcomp+$pendingcomp;
+		$timeline_data= block_exacomp_get_timeline_data($courses, $student, $total_comps);
 		
-		$content .= html_writer::div($radar_graph.$pie_graph, 'competence_profile_graphbox clearfix');
+		$timeline_graph =  html_writer::div($this->print_timeline_graph($timeline_data->x_values, $timeline_data->y_values, $timeline_data->y_values_total, 0),"competence_profile_timelinegraph");
+		
+		$content .= html_writer::div($radar_graph.$pie_graph.$timeline_graph, 'competence_profile_graphbox clearfix');
 		
 		//print list
 		foreach($courses as $course){
