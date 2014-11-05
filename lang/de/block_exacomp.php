@@ -323,6 +323,18 @@ $string['item_url'] = 'Url';
 $string['item_link'] = 'Link';
 $string['period_reviewer'] = 'Bewerter';
 $string['period_feedback'] = 'Verbales Feedback';
+$string['January'] = 'Jänner';
+$string['February'] = 'Februar';
+$string['March'] = 'März';
+$string['April'] = 'April';
+$string['May'] = 'Mai';
+$string['June'] = 'Juni';
+$string['July'] = 'Juli';
+$string['August'] = 'August';
+$string['September'] = 'September';
+$string['October'] = 'Oktober';
+$string['November'] = 'November';
+$string['December'] = 'Dezember';
 
 //Competence Profile Settings
 $string['profile_settings_showonlyreached'] = 'Ich möchte in meinem Kompetenzprofil nur bereits erreichte Kompetenzen sehen.';

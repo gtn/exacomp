@@ -2721,7 +2721,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$topics = block_exacomp_get_topics_for_radar_graph($course->id, $student->id);
 		$radar_graph = html_writer::div($this->print_radar_graph($topics,$course->id),"competence_profile_radargraph");
 
-		list($teachercomp,$studentcomp,$pendingcomp) = block_exacomp_get_competencies_for_pie_chart($course->id,$student, $scheme);
+		list($teachercomp,$studentcomp,$pendingcomp) = block_exacomp_get_competencies_for_pie_chart($course->id,$student, $scheme, 0, true);
 		$pie_graph = html_writer::div($this->print_pie_graph($teachercomp, $studentcomp, $pendingcomp, $course->id),"competence_profile_radargraph");
 		
 		$total_comps = $teachercomp+$studentcomp+$pendingcomp;
@@ -2822,8 +2822,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			{
 			label: "'.get_string("studentcomp","block_exacomp").'",
 			fillColor: "rgba(249,178,51,0.2)",
-            strokeColor: "rgba(249,178,51,0.2)",
-            pointColor: "rgba(249,178,51,0.2)",
+            strokeColor: "#f9b233",
+            pointColor: "#f9b233",
 			pointStrokeColor: "#fff",
 			pointHighlightFill: "#fff",
 			pointHighlightStroke: "rgba(151,187,205,1)",
@@ -2898,8 +2898,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	        {
 	            label: "Student Timeline",
 	            fillColor: "rgba(249,178,51,0.2)",
-	            strokeColor: "rgba(249,178,51,0.2)",
-	            pointColor: "rgba(249,178,51,0.2)",
+	            strokeColor: "#f9b233",
+	            pointColor: "#f9b233",
 				pointStrokeColor: "#fff",
 				pointHighlightFill: "#fff",
 				pointHighlightStroke: "rgba(151,187,205,1)",
@@ -3259,7 +3259,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$studentcomp = 0;
 		$pendingcomp = 0;
 		foreach($courses as $course){
-			$course_data = block_exacomp_get_competencies_for_pie_chart($course->id, $student, block_exacomp_get_grading_scheme($course->id));
+			$course_data = block_exacomp_get_competencies_for_pie_chart($course->id, $student, block_exacomp_get_grading_scheme($course->id), 0, true);
 			$teachercomp += $course_data[0];
 			$studentcomp += $course_data[1];
 			$pendingcomp += $course_data[2];

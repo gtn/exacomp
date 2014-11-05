@@ -284,6 +284,18 @@ $string['item_url'] = 'URL';
 $string['item_link'] = 'Link';
 $string['period_reviewer'] = 'Reviewer';
 $string['period_feedback'] = 'Feedback';
+$string['January'] = 'January';
+$string['February'] = 'February';
+$string['March'] = 'March';
+$string['April'] = 'April';
+$string['May'] = 'May';
+$string['June'] = 'June';
+$string['July'] = 'July';
+$string['August'] = 'August';
+$string['September'] = 'September';
+$string['October'] = 'October';
+$string['November'] = 'November';
+$string['December'] = 'December';
 
 //Competence Profile Settings
 $string['profile_settings_showonlyreached'] = 'I only want to see already gained outcomes in my competence profile';

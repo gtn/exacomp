@@ -3178,6 +3178,7 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 	global $DB;
 	$max_timestamp = 0;
 	$min_timestamp = time();
+	
 	foreach($courses as $course){
 		
 		$topics = block_exacomp_get_topics_by_course($course->id);
@@ -3216,9 +3217,6 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 			if($competence->comptype == TYPE_DESCRIPTOR){
 				foreach($descriptors as $descriptor){
 					if($descriptor->id == $competence->compid){
-						//if($competence->timestamp>$max_timestamp)
-							//$max_timestamp = $competence->timestamp;
-					
 						if($competence->timestamp<$min_timestamp)
 							$min_timestamp = $competence->timestamp;
 					}
@@ -3228,9 +3226,6 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 			if($competence->comptype == TYPE_TOPIC) {
 				foreach($topics as $topic){
 					if($topic->id == $competence->compid){
-						//if($competence->timestamp>$max_timestamp)
-							//$max_timestamp = $competence->timestamp;
-					
 						if($competence->timestamp<$min_timestamp)
 							$min_timestamp = $competence->timestamp;
 					}
@@ -3286,7 +3281,7 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 			$student_comps = 0;
 			foreach($courses as $course){
 				$scheme = block_exacomp_get_grading_scheme($course->id); 
-				$comps = block_exacomp_get_competencies_for_pie_chart($course->id, $student, $scheme, $act_time);
+				$comps = block_exacomp_get_competencies_for_pie_chart($course->id, $student, $scheme, $act_time, true);
 				$teacher_comps+=$comps[0];
 				$student_comps+=$comps[1];
 			}
@@ -3297,7 +3292,39 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 			
 			$act_time += 86400; 
 		}
-	}else var_dump("Monate"); // Month
+	}else{	//month
+		$month_end = strtotime('last day of this month', $min_timestamp);
+		$min_date = getdate($month_end);
+		$min_timestamp = strtotime($min_date["mday"]."-".$min_date["mon"]."-".$min_date["year"]." 23:59");
+		$month_end = strtotime('last day of this month', $max_timestamp);
+		$max_date = getdate($month_end);
+		$max_timestamp = strtotime($max_date["mday"]."-".$max_date["mon"]."-".$max_date["year"]." 23:59");
+		
+		$act_time = strtotime('last day of this month', $min_timestamp-(86400*$max_date["mday"]));
+		
+		while($act_time<=$max_timestamp){
+			
+			$act_date = getdate($act_time);
+		
+			$teacher_comps = 0;
+			$student_comps = 0;
+			foreach($courses as $course){
+				$scheme = block_exacomp_get_grading_scheme($course->id); 
+				$comps = block_exacomp_get_competencies_for_pie_chart($course->id, $student, $scheme, $act_time, true);
+				$teacher_comps+=$comps[0];
+				$student_comps+=$comps[1];
+			}
+			//TODO sprache
+			$x_values[] = get_string($act_date["month"], 'block_exacomp');
+			$y_values_teacher[] = $teacher_comps;
+			$y_values_student[] = $student_comps;
+			$y_values_total[] = $total;
+			
+			$act_time += 86400; 
+			$act_time = strtotime('last day of this month', $act_time);
+			
+		}
+	} 
 	
 	$result = new stdClass();
 	$result->x_values = $x_values;
