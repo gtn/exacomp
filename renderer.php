@@ -418,8 +418,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$p_content = get_string('reached_topic', 'block_exacomp');
 
 		if($scheme == 1)
-			$p_content .= "S: " . html_writer::checkbox("topiccomp", 1, ((isset($topic->evaluation->student[$topic->id]))?true:false))
-			." Bestätigung L: ".html_writer::checkbox("topiccomp", 1, ((isset($topic->evaluation->teacher[$topic->id]))?true:false), "", array("disabled"=>"disabled"));
+			$p_content .= "S: " . html_writer::checkbox("topiccomp", 1, ((isset($topic_evaluation->student[$topic->id]))?true:false))
+			." Bestätigung L: ".html_writer::checkbox("topiccomp", 1, ((isset($topic_evaluation->teacher[$topic->id]))?true:false), "", array("disabled"=>"disabled"));
 		else{
 			(isset($topic_evaluation->student[$topic->id]))?$value_student = $topic_evaluation->student[$topic->id] : $value_student = 0;
 			(isset($topic_evaluation->teacher[$topic->id]))?$value_teacher = $topic_evaluation->teacher[$topic->id] : $value_teacher = 0;
