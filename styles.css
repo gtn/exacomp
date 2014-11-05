@@ -14,7 +14,7 @@
 
 #exacomp  #competenceok,
 #exacomp .competenceok {
-    background-color: #cde7cb !important
+    background-color: #48a53f !important
 }
 
 #exacomp #competenceyellow,
@@ -605,15 +605,24 @@ td.contentcell {
 
 #exacomp .competence_profile_radargraph .radargraph,
 #exacomp .competence_profile_piegraph .piegraph,
-#exacomp .competence_profile_radargraph .piegraph {
+#exacomp .competence_profile_radargraph .piegraph 
+#exacomp .competence_profile_timelinegraph .timeline{
     margin: 0 auto
 }
 
 #exacomp .competence_profile_piegraph .piegraph,
-#exacomp .competence_profile_radargraph .piegraph {
+#exacomp .competence_profile_radargraph .piegraph 
+#exacomp .competence_profile_timelinegraph .timeline{
     margin-bottom: 40px
 }
 
+#exacomp .competence_profile_timelinegraph .timeline{
+   	margin-left: 5%;
+}
+#exacomp .radargraph_legend{
+	margin-left: 5%;
+	margin-bottom: 40px
+}
 #exacomp .competence_profile_overview .compstable,
 #exacomp .competence_profile_artefacts .compstable,
 #exacomp .competence_profile_feedback .compstable {

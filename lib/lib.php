@@ -398,7 +398,6 @@ function block_exacomp_save_competencies($data, $courseid, $role, $comptype, $to
 		$studentid = ($role == ROLE_STUDENT) ? $USER->id : required_param('studentid', PARAM_INT);
 		block_exacomp_reset_comp_data_for_subject($courseid, $role, $comptype, $studentid, $subjectid);
 	}
-	
 	foreach ($values as $value)
 		block_exacomp_set_user_competence($value['user'], $value['compid'], $comptype, $courseid, $role, $value['value']);
 }
@@ -903,7 +902,9 @@ function block_exacomp_get_user_competencies_by_course($user, $courseid) {
 	$user->competencies = new stdClass();
 	$user->competencies->teacher = $DB->get_records_menu(DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR),'','compid as id, value');
 	$user->competencies->student = $DB->get_records_menu(DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => ROLE_STUDENT, "comptype" => TYPE_DESCRIPTOR),'','compid as id, value');
-	$user->competencies->timestamp = $DB->get_records_menu(DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR),'','compid as id, timestamp');
+	$user->competencies->timestamp_teacher = $DB->get_records_menu(DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR),'','compid as id, timestamp');
+	$user->competencies->timestamp_student = $DB->get_records_menu(DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => ROLE_STUDENT, "comptype" => TYPE_DESCRIPTOR),'','compid as id, timestamp');
+	
 	return $user;
 }
 
@@ -920,7 +921,8 @@ function block_exacomp_get_user_topics_by_course($user, $courseid) {
 	$user->topics = new stdClass();
 	$user->topics->teacher = $DB->get_records_menu(DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => ROLE_TEACHER, "comptype" => TYPE_TOPIC),'','compid as id, value');
 	$user->topics->student = $DB->get_records_menu(DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => ROLE_STUDENT, "comptype" => TYPE_TOPIC),'','compid as id, value');
-	$user->topics->timestamp = $DB->get_records_menu(DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => ROLE_TEACHER, "comptype" => TYPE_TOPIC),'','compid as id, timestamp');
+	$user->topics->timestamp_teacher = $DB->get_records_menu(DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => ROLE_TEACHER, "comptype" => TYPE_TOPIC),'','compid as id, timestamp');
+	$user->topics->timestamp_student = $DB->get_records_menu(DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => ROLE_STUDENT, "comptype" => TYPE_TOPIC),'','compid as id, timestamp');
 	
 	return $user;
 }
@@ -2716,7 +2718,7 @@ function block_exacomp_get_topics_for_radar_graph($courseid,$studentid) {
  * @param int $courseid
  * @return multitype:unknown
  */
-function block_exacomp_get_competencies_for_pie_chart($courseid,$user, $scheme, $enddate=0) {
+function block_exacomp_get_competencies_for_pie_chart($courseid,$user, $scheme, $enddate=0, $exclude_student=false) {
 	
 	$coursesettings = block_exacomp_get_settings_by_course($courseid);
 	
@@ -2738,7 +2740,7 @@ function block_exacomp_get_competencies_for_pie_chart($courseid,$user, $scheme, 
 			if(isset($evaluation->topics->teacher) && isset($evaluation->topics->teacher[$topic->id])){
 				if($scheme == 1 || $evaluation->topics->teacher[$topic->id] >= ceil($scheme/2)){
 					if($enddate>0){
-						if($enddate >= $evaluation->topics->timestamp[$topic->id]){
+						if($enddate >= $evaluation->topics->timestamp_teacher[$topic->id]){
 							$teachercomp ++;
 							$teacher_eval = true;
 						}
@@ -2748,9 +2750,14 @@ function block_exacomp_get_competencies_for_pie_chart($courseid,$user, $scheme, 
 					}
 				}
 			}
-			if(!$teacher_eval && isset($evaluation->topics->student) && isset($evaluation->topics->student[$topic->id])){
+			if((!$teacher_eval||$exclude_student) && isset($evaluation->topics->student) && isset($evaluation->topics->student[$topic->id])){
 				if($scheme == 1 || $evaluation->topics->student[$topic->id] >= ceil($scheme/2)){
-					if($enddate==0){ //if time set->count only teacher evaluation 
+					if($enddate>0){
+						if($enddate >= $evaluation->topics->timestamp_student[$topic->id]){
+							$studentcomp ++;
+							$student_eval = true;
+						}
+					}else{
 						$studentcomp ++;
 						$student_eval = true;
 					}
@@ -2768,7 +2775,7 @@ function block_exacomp_get_competencies_for_pie_chart($courseid,$user, $scheme, 
 				if($scheme == 1 || $evaluation->competencies->teacher[$descriptor->id] >= ceil($scheme/2)){
 					if($enddate>0){
 						//compare only enddate->kumuliert
-						if($enddate>=$evaluation->competencies->timestamp[$descriptor->id]){
+						if($enddate>=$evaluation->competencies->timestamp_teacher[$descriptor->id]){
 							$teachercomp ++;
 							$teacher_eval = true;
 						}
@@ -2778,9 +2785,14 @@ function block_exacomp_get_competencies_for_pie_chart($courseid,$user, $scheme, 
 					}
 				}
 			}
-			if(!$teacher_eval && isset($evaluation->competencies->student) && isset($evaluation->competencies->student[$descriptor->id])){
+			if((!$teacher_eval||$exclude_student) && isset($evaluation->competencies->student) && isset($evaluation->competencies->student[$descriptor->id])){
 				if($scheme == 1 || $evaluation->competencies->student[$descriptor->id] >= ceil($scheme/2)){
-					if($enddate == 0){ //if time set->count only teacher evaluation 
+					if($enddate>0){
+						if($enddate >= $evaluation->competencies->timestamp_student[$descriptor->id]){
+							$studentcomp ++;
+							$student_eval = true;
+						}
+					}else{
 						$studentcomp ++;
 						$student_eval = true;
 					}
@@ -3171,9 +3183,36 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 		$topics = block_exacomp_get_topics_by_course($course->id);
 		$descriptors = block_exacomp_get_descriptors($course->id);
 		
-		$competencies = $DB->get_records(DB_COMPETENCIES, array('userid'=>$student->id, 'role'=>ROLE_TEACHER, 'value'=>1, 'courseid'=>$course->id));
+		$teacher_competencies = $DB->get_records(DB_COMPETENCIES, array('userid'=>$student->id, 'role'=>ROLE_TEACHER, 'value'=>1, 'courseid'=>$course->id));
 		
-		foreach($competencies as $competence){
+		foreach($teacher_competencies as $competence){
+			if($competence->comptype == TYPE_DESCRIPTOR){
+				foreach($descriptors as $descriptor){
+					if($descriptor->id == $competence->compid){
+						//if($competence->timestamp>$max_timestamp)
+							//$max_timestamp = $competence->timestamp;
+					
+						if($competence->timestamp<$min_timestamp)
+							$min_timestamp = $competence->timestamp;
+					}
+					
+				}
+			} 
+			if($competence->comptype == TYPE_TOPIC) {
+				foreach($topics as $topic){
+					if($topic->id == $competence->compid){
+						//if($competence->timestamp>$max_timestamp)
+							//$max_timestamp = $competence->timestamp;
+					
+						if($competence->timestamp<$min_timestamp)
+							$min_timestamp = $competence->timestamp;
+					}
+				}
+			}
+		}
+		$student_competencies = $DB->get_records(DB_COMPETENCIES, array('userid'=>$student->id, 'role'=>ROLE_STUDENT, 'value'=>1, 'courseid'=>$course->id));
+		
+		foreach($student_competencies as $competence){
 			if($competence->comptype == TYPE_DESCRIPTOR){
 				foreach($descriptors as $descriptor){
 					if($descriptor->id == $competence->compid){
@@ -3199,11 +3238,13 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 			}
 		}
 	}
+	
 	$max_timestamp = time();
 	$time_diff = $max_timestamp - $min_timestamp;
 	
 	$x_values = array();
-	$y_values = array();
+	$y_values_teacher = array();
+	$y_values_student = array();
 	$y_values_total = array();
 	//Weeks
 	if($time_diff < 10519200 && $time_diff >= 2419200){
@@ -3217,13 +3258,16 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 		}
 		foreach($weeks as $week){
 			$teacher_comps = 0;
+			$student_comps = 0;
 			foreach($courses as $course){
 				$scheme = block_exacomp_get_grading_scheme($course->id); 
-				$comps = block_exacomp_get_competencies_for_pie_chart($course->id, $student, $scheme, $week->dates[6][0]);
+				$comps = block_exacomp_get_competencies_for_pie_chart($course->id, $student, $scheme, $week->dates[6][0], true);
 				$teacher_comps+=$comps[0];
+				$student_comps+=$comps[1];
 			}
 			$x_values[] = $week->label;
-			$y_values[] = $teacher_comps;
+			$y_values_teacher[] = $teacher_comps;
+			$y_values_student[] = $student_comps;
 			$y_values_total[] = $total;
 		}
 	}else if($time_diff<2419200){ //Days
@@ -3235,19 +3279,20 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 		$act_time = $min_timestamp-86400;
 		
 		while($act_time<=$max_timestamp){
-			//day enddate
+			
 			$act_date = getdate($act_time);
 			
 			$teacher_comps = 0;
+			$student_comps = 0;
 			foreach($courses as $course){
 				$scheme = block_exacomp_get_grading_scheme($course->id); 
 				$comps = block_exacomp_get_competencies_for_pie_chart($course->id, $student, $scheme, $act_time);
 				$teacher_comps+=$comps[0];
-				//$pending_comps+=$comps[2];
-				//$student_comps+=$comps[1];
+				$student_comps+=$comps[1];
 			}
 			$x_values[] = $act_date["mday"].".".$act_date["mon"];
-			$y_values[] = $teacher_comps;
+			$y_values_teacher[] = $teacher_comps;
+			$y_values_student[] = $student_comps;
 			$y_values_total[] = $total;
 			
 			$act_time += 86400; 
@@ -3256,7 +3301,8 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 	
 	$result = new stdClass();
 	$result->x_values = $x_values;
-	$result->y_values = $y_values;
+	$result->y_values_teacher = $y_values_teacher;
+	$result->y_values_student = $y_values_student;
 	$result->y_values_total = $y_values_total;
 	return $result;
 	
