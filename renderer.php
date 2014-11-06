@@ -2871,7 +2871,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 	
 	public function print_timeline_graph($x_values, $y_values1, $y_values2, $y_values3, $courseid){
-		$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvas_timeline".$courseid)),'timeline',array("style" => "width:35%"));
+		$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvas_timeline".$courseid)),'timeline',array("style" => ""));
 		$content .= '
 		<script>
 		var timelinedata = {
@@ -2927,7 +2927,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		};
 			
 		
-		window.myTimeline = new Chart(document.getElementById("canvas_timeline'.$courseid.'").getContext("2d")).Line(timelinedata, {
+		var ctx = document.getElementById("canvas_timeline'.$courseid.'").getContext("2d")
+		ctx.canvas.height = 50;
+		
+		window.myTimeline = new Chart(ctx).Line(timelinedata, {
 		responsive: true, bezierCurve : false
 		});
 	
