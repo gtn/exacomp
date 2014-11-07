@@ -59,13 +59,15 @@ $output = $PAGE->get_renderer('block_exacomp');
 // build tab navigation & print header
 echo $OUTPUT->header();
 echo $output->print_wrapperdivstart();
-echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
+echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), 'tab_competence_profile');
 
 /* CONTENT REGION */
 $studentid = optional_param('studentid', 0, PARAM_INT);
 $isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
-if(!$isTeacher) $studentid = $USER->id;
-else {
+if(!$isTeacher){ 
+	$studentid = $USER->id;
+	echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_profile($context, $courseid), $page_identifier);
+}else {
 	$coursestudents = block_exacomp_get_students_by_course($courseid);
 	
 	if($studentid == 0) {

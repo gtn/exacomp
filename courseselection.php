@@ -94,8 +94,8 @@ if ($action == 'save') {
 $output = $PAGE->get_renderer('block_exacomp');
 echo $OUTPUT->header();
 echo $output->print_wrapperdivstart();
-echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
-
+echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), 'tab_teacher_settings');
+echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $page_identifier);
 /* CONTENT REGION */
 /*
 if($action == 'digicomps') {
