@@ -1892,15 +1892,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$selected = ' selected';
 				
 			$options = html_writer::tag('option'.$selected, get_string('all_niveaus', 'block_exacomp'), array('value'=>0));
+			$has_niveaus = false;
 			foreach($niveaus as $niveau){
-				$selected = '';
-				if(!empty($selected_niveaus) && in_array($niveau->id, $selected_niveaus))
-					$selected = ' selected';
-					
-				$options .= html_writer::tag('option'.$selected, $niveau->title, array('value'=>$niveau->id));
+				if($niveau){
+					$selected = '';
+					if(!empty($selected_niveaus) && in_array($niveau->id, $selected_niveaus))
+						$selected = ' selected';
+					$has_niveaus = true;
+					$options .= html_writer::tag('option'.$selected, $niveau->title, array('value'=>$niveau->id));
+				}
 			}
 			$select = html_writer::tag('select multiple', $options, array('name'=>'niveau_filter[]'));
-			$form_content .= html_writer::div(html_writer::tag('h5', get_string('niveau_filter', 'block_exacomp')).$select, '');
+			if($has_niveaus)
+				$form_content .= html_writer::div(html_writer::tag('h5', get_string('niveau_filter', 'block_exacomp')).$select, '');
 		}
 
 		if(!empty($modules)){
@@ -2604,7 +2608,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		foreach($possible_courses as $course){
 			$statistics = block_exacomp_get_course_competence_statistics($course->id, $student, block_exacomp_get_grading_scheme($course->id));
-			$pie_data = block_exacomp_get_competencies_for_pie_chart($course->id, $student, block_exacomp_get_grading_scheme($course->id));
+			//$pie_data = block_exacomp_get_competencies_for_pie_chart($course->id, $student, block_exacomp_get_grading_scheme($course->id));
 
 			if(array_key_exists($course->id, $courses)){
 				$row = new html_table_row();
@@ -2727,8 +2731,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$total_comps = $teachercomp+$studentcomp+$pendingcomp;
 		$timeline_data= block_exacomp_get_timeline_data(array($course), $student, $total_comps);
 		
-		$timeline_graph =  html_writer::div($this->print_timeline_graph($timeline_data->x_values, $timeline_data->y_values_teacher, $timeline_data->y_values_student, $timeline_data->y_values_total, $course->id),"competence_profile_timelinegraph");
-		
+		if($timeline_data)
+			$timeline_graph =  html_writer::div($this->print_timeline_graph($timeline_data->x_values, $timeline_data->y_values_teacher, $timeline_data->y_values_student, $timeline_data->y_values_total, $course->id),"competence_profile_timelinegraph");
+		else
+			$timeline_graph = "";
+			
 		$content .= html_writer::div($radar_graph.$pie_graph.$timeline_graph, 'competence_profile_graphbox clearfix');
 		$content .= html_writer::div($this->print_radar_graph_legend(),"radargraph_legend");
 			
@@ -3276,8 +3283,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$total_comps = $teachercomp+$studentcomp+$pendingcomp;
 		$timeline_data= block_exacomp_get_timeline_data($courses, $student, $total_comps);
 		
-		$timeline_graph =  html_writer::div($this->print_timeline_graph($timeline_data->x_values, $timeline_data->y_values_teacher, $timeline_data->y_values_student, $timeline_data->y_values_total, 0),"competence_profile_timelinegraph");
-		
+		if($timeline_data)
+			$timeline_graph =  html_writer::div($this->print_timeline_graph($timeline_data->x_values, $timeline_data->y_values_teacher, $timeline_data->y_values_student, $timeline_data->y_values_total, 0),"competence_profile_timelinegraph");
+		else	
+			$timeline_graph = "";
+			
 		$content .= html_writer::div($radar_graph.$pie_graph.$timeline_graph, 'competence_profile_graphbox clearfix');
 		$content .= html_writer::div($this->print_radar_graph_legend(),"radargraph_legend");
 			
