@@ -2552,54 +2552,46 @@ function block_exacomp_get_course_competence_statistics($courseid, $user, $schem
 	$reached = 0;
 	$average = 0;
 	
-	foreach($topics as $topic){
-		if($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset($cm_mm->topics[$topic->id]))){
-			$total ++;
+	foreach ($students as $student){
+		if($student->id == $user->id)
+			$current_evaluation = $evaluation;
+		else 
+			$current_evaluation = block_exacomp_get_user_information_by_course($student, $courseid, true);
+			
+		foreach($topics as $topic){
+			if($student->id == $user->id)
+				if($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset($cm_mm->topics[$topic->id])))
+					$total ++;
+			
+			if(!empty($current_evaluation->topics->teacher)){
+				if(isset($current_evaluation->topics->teacher) && isset($current_evaluation->topics->teacher[$topic->id])){
+					if($scheme == 1 || $current_evaluation->topics->teacher[$topic->id] >= ceil($scheme/2)){
+						if($student->id == $user->id)
+							$reached ++;
+						else
+							$average ++;
+					}
+						
+				}
+			}
+		}
+		foreach($descriptors as $descriptor){
+			if($student->id == $user->id)
+				if($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset($cm_mm->competencies[$descriptor->id])))
+					$total ++;
 		
-			foreach ($students as $student){
-				if($student->id == $user->id){
-					if(!empty($evaluation->topics->teacher)){
-						if(isset($evaluation->topics->teacher) && isset($evaluation->topics->teacher[$topic->id])){
-							if($scheme == 1 || $evaluation->topics->teacher[$topic->id] >= ceil($scheme/2))
-								$reached ++;
-						}
-					}
-				}else{
-					$student_evaluation = block_exacomp_get_user_information_by_course($student, $courseid, true);
-					if(!empty($student_evaluation->topics->teacher)){
-						if(isset($student_evaluation->topics->teacher) && isset($student_evaluation->topics->teacher[$topic->id])){
-							if($scheme == 1 || $student_evaluation->topics->teacher[$topic->id] >= ceil($scheme/2))
-								$average ++;
-						}
-					}
+			if(!empty($current_evaluation->competencies->teacher)){ 
+				if(isset($current_evaluation->competencies->teacher) && isset($current_evaluation->competencies->teacher[$descriptor->id])){
+					if($scheme == 1 || $current_evaluation->competencies->teacher[$descriptor->id] >= ceil($scheme/2))
+						if($student->id == $user->id)
+							$reached ++;
+						else
+							$average ++;
 				}
 			}
 		}
 	}
-	foreach($descriptors as $descriptor){
-		if($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset($cm_mm->competencies[$descriptor->id]))){
-			$total ++;
-				
-			foreach($students as $student){
-				if($student->id == $user->id){
-					if(!empty($evaluation->competencies->teacher)){ 
-						if(isset($evaluation->competencies->teacher) && isset($evaluation->competencies->teacher[$descriptor->id])){
-							if($scheme == 1 || $evaluation->competencies->teacher[$descriptor->id] >= ceil($scheme/2))
-								$reached ++;
-						}
-					}
-				}else{
-					$student_evaluation = block_exacomp_get_user_information_by_course($student, $courseid, true);
-					if(!empty($student_evaluation->competencies->teacher)){ 
-						if(isset($student_evaluation->competencies->teacher) && isset($student_evaluation->competencies->teacher[$descriptor->id])){
-							if($scheme == 1 || $student_evaluation->competencies->teacher[$descriptor->id] >= ceil($scheme/2))
-								$average ++;
-						}
-					}
-				}
-			}
-		}	
-	}
+			
 	if(count($students) > 0)
 		$average = intval(ceil(($average+$reached)/count($students)));
 	else
