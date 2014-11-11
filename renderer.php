@@ -2710,7 +2710,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 	];
 		
-	window.myDoughnut = new Chart(document.getElementById("canvas_doughnut'.$courseid.'").getContext("2d")).Doughnut(pieChartData, {
+	var ctx_d = document.getElementById("canvas_doughnut'.$courseid.'").getContext("2d");
+	ctx_d.canvas.height = 150;
+			
+	window.myDoughnut = new Chart(ctx_d).Doughnut(pieChartData, {
 	responsive: true
 	});
 
@@ -2863,10 +2866,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		]
 		};
 
-		window.myRadar = new Chart(document.getElementById("canvasradar'.$courseid.'").getContext("2d")).Radar(radarChartData, {
+		var ctx_r = document.getElementById("canvasradar'.$courseid.'").getContext("2d");
+		ctx_r.canvas.height = 150;
+		
+		window.myRadar = new Chart(ctx_r).Radar(radarChartData, {
 		responsive: true
 		});
-
+		
 		</script>';
 		} else {
 			//print error

@@ -3202,10 +3202,7 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 			if($competence->comptype == TYPE_DESCRIPTOR){
 				foreach($descriptors as $descriptor){
 					if($descriptor->id == $competence->compid){
-						//if($competence->timestamp>$max_timestamp)
-							//$max_timestamp = $competence->timestamp;
-					
-						if($competence->timestamp<$min_timestamp)
+						if($competence->timestamp != null && $competence->timestamp<$min_timestamp)
 							$min_timestamp = $competence->timestamp;
 					}
 					
@@ -3214,10 +3211,7 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 			if($competence->comptype == TYPE_TOPIC) {
 				foreach($topics as $topic){
 					if($topic->id == $competence->compid){
-						//if($competence->timestamp>$max_timestamp)
-							//$max_timestamp = $competence->timestamp;
-					
-						if($competence->timestamp<$min_timestamp)
+						if($competence->timestamp != null && $competence->timestamp<$min_timestamp)
 							$min_timestamp = $competence->timestamp;
 					}
 				}
@@ -3230,7 +3224,7 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 			if($competence->comptype == TYPE_DESCRIPTOR){
 				foreach($descriptors as $descriptor){
 					if($descriptor->id == $competence->compid){
-						if($competence->timestamp<$min_timestamp)
+						if($competence->timestamp != null && $competence->timestamp<$min_timestamp)
 							$min_timestamp = $competence->timestamp;
 					}
 					
@@ -3239,7 +3233,7 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 			if($competence->comptype == TYPE_TOPIC) {
 				foreach($topics as $topic){
 					if($topic->id == $competence->compid){
-						if($competence->timestamp<$min_timestamp)
+						if($competence->timestamp != null && $competence->timestamp<$min_timestamp)
 							$min_timestamp = $competence->timestamp;
 					}
 				}
@@ -3306,7 +3300,7 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 				
 				$act_time += 86400; 
 			}
-		}else{	//month
+		}else if ($time_diff<63072000){	//month
 			$month_end = strtotime('last day of this month', $min_timestamp);
 			$min_date = getdate($month_end);
 			$min_timestamp = strtotime($min_date["mday"]."-".$min_date["mon"]."-".$min_date["year"]." 23:59");
@@ -3338,6 +3332,8 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 				$act_time = strtotime('last day of this month', $act_time);
 				
 			}
+		}else{
+			return false; //more than 2 years
 		} 
 		
 		$result = new stdClass();
