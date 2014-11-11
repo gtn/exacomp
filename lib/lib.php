@@ -611,7 +611,7 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 	if (!isset($settings->usedetailpage)) $settings->usedetailpage = 0;
 	if (!$settings->uses_activities) $settings->show_all_descriptors = 1;
 	elseif (!isset($settings->show_all_descriptors)) $settings->show_all_descriptors = 0;
-	
+	if (!isset($settings->profoundness)) $settings->profoundness = 0;
 	return $settings;
 }
 /**
