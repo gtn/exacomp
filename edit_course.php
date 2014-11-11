@@ -72,6 +72,7 @@ if ($action == 'save_coursesettings') {
 	$settings->show_all_descriptors = optional_param('show_all_descriptors', "", PARAM_INT);
 	$settings->show_all_examples = optional_param('show_all_examples', "", PARAM_INT);
 	$settings->usedetailpage = optional_param('usedetailpage', "", PARAM_INT);
+	$settings->profoundness = optional_param('profoundness', 0, PARAM_INT);
 	
 	block_exacomp_save_coursesettings($courseid, $settings);	
 	

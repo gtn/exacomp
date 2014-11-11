@@ -500,7 +500,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content .= ' '.get_string("teacherevaluation","block_exacomp").' ';
 		return $content;
 	}
-	public function print_competence_overview_LIS_student_topics($subs, &$row, &$columns, &$column_count, $scheme){
+	public function print_competence_overview_LIS_student_topics($subs, &$row, &$columns, &$column_count, $scheme, $profoundness = false){
 		global $USER, $COURSE;
 		foreach($subs as $topic){
 			if(isset($topic->subs))
@@ -521,9 +521,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						.html_writer::empty_tag('br')
 						."S:".$this->generate_checkbox('data', $descriptor->id, 'competencies', $USER, "student", $scheme);
 					else
-						$cell->text .= 'L:'.$this->generate_select('data', $descriptor->id, 'competencies', $USER, "teacher", $scheme, true)
+						$cell->text .= 'L:'.$this->generate_select('data', $descriptor->id, 'competencies', $USER, "teacher", $scheme, true,$profoundness)
 						.html_writer::empty_tag('br')
-						."S:".$this->generate_select('data', $descriptor->id, 'competencies', $USER,"student", $scheme);
+						."S:".$this->generate_select('data', $descriptor->id, 'competencies', $USER,"student", $scheme,false,$profoundness);
 
 					//$activities = block_exacomp_get_activities($descriptor->id, $COURSE->id);
 					$cm_mm = block_exacomp_get_course_module_association($COURSE->id);
@@ -557,6 +557,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$schema = ($courseid == 0) ? 1 : block_exacomp_get_grading_scheme($courseid);
 		$satisfied = ceil($schema/2);
+		
+		$profoundness = block_exacomp_get_settings_by_course($courseid)->profoundness;
 
 		$rows = array();
 
@@ -608,7 +610,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 									}else {
 										$options = array();
 										for($i=0;$i<=$schema;$i++)
-											$options[] = $i;
+											$options[] = (!$profoundness) ? $i : get_string('profoundness_'.$i,'block_exacomp');
 
 										$name = "data[".$descriptor->id."][".$studentid."][teacher]";
 										$compString .= html_writer::select($options, $name, $descriptor->teachercomp, false);
@@ -631,7 +633,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 									$name = "data[".$topicid."][".$descriptor->id."][student]";
 									//$compString .= html_writer::select($options, $name, $descriptor->studentcomp, false);
-									$compString .= html_writer::checkbox("data[".$descriptor->id."][".$studentid."]", $schema,$descriptor->studentcomp).'&nbsp; ';
+									$compString .= html_writer::checkbox("data[".$descriptor->id."][".$studentid."][student]", $schema,$descriptor->studentcomp).'&nbsp; ';
 
 									$compString .= "&nbsp;L: " . (($descriptor->teachercomp) ? $descriptor->teachercomp : 0);
 								}
@@ -731,7 +733,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$column_count = 0;
 		//print header
 		foreach($subjects as $subject){
-			$this->print_competence_overview_LIS_student_topics($subject->subs, $row, $columns, $column_count, $scheme);
+			$this->print_competence_overview_LIS_student_topics($subject->subs, $row, $columns, $column_count, $scheme, block_exacomp_get_settings_by_course($courseid)->profoundness);
 		}
 		$rows[] = $row;
 
@@ -960,6 +962,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					'showevaluation' => $showevaluation,
 					'role' => $role,
 					'scheme' => $scheme,
+					'profoundness' => block_exacomp_get_settings_by_course($courseid)->profoundness,
 					'cm_mm' => block_exacomp_get_course_module_association($courseid),
 					'eportfolioitems' => $eportfolioitems,
 					'course_mods' => get_fast_modinfo($courseid)->get_cms(),
@@ -1048,9 +1051,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					*/
 					elseif(!$version || ($version && $data->role == ROLE_TEACHER)) {
 						if($data->showevaluation)
-							$studentCellEvaluation->text = $this->generate_select("datatopics", $topic->id, 'topics', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
+							$studentCellEvaluation->text = $this->generate_select("datatopics", $topic->id, 'topics', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
 
-						$studentCell->text = $this->generate_select("datatopics", $topic->id, 'topics', $student, $evaluation, $data->scheme);
+						$studentCell->text = $this->generate_select("datatopics", $topic->id, 'topics', $student, $evaluation, $data->scheme, false, $data->profoundness);
 					}
 
 
@@ -1159,9 +1162,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				*/
 				elseif(!$version || ($version && $data->role == ROLE_TEACHER)) {
 					if($data->showevaluation)
-						$studentCellEvaluation->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
+						$studentCellEvaluation->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
 
-					$studentCell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme);
+					$studentCell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme, false, $data->profoundness);
 				}
 
 				// ICONS
@@ -1284,9 +1287,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					*/
 					elseif(!$version || ($version && $data->role == ROLE_TEACHER)) {
 						if($data->showevaluation)
-							$studentCellEvaluation->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
+							$studentCellEvaluation->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
 
-						$studentCell->text .= $this->generate_select($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme);
+						$studentCell->text .= $this->generate_select($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, false, $data->profoundness);
 
 						if($data->role == ROLE_STUDENT)
 							$studentCell->text .= $this->print_student_example_evaluation_form($example->id, $student->id, $data->courseid);
@@ -1428,10 +1431,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 *
 	 * @return String $select html code for select
 	 */
-	public function generate_select_activities($name, $compid, $activityid, $type, $student, $evaluation, $scheme, $disabled = false) {
+	public function generate_select_activities($name, $compid, $activityid, $type, $student, $evaluation, $scheme, $disabled = false, $profoundness = false) {
 		$options = array();
 		for($i=0;$i<=$scheme;$i++)
-			$options[] = $i;
+			$options[] = (!$profoundness) ? $i : get_string('profoundness_'.$i,'block_exacomp');
 
 		return html_writer::select(
 				$options,
@@ -1451,15 +1454,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 *
 	 * @return String $select html code for select
 	 */
-	public function generate_select($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false, $activityid = null) {
+	public function generate_select($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false, $profoundness = false) {
 		$options = array();
 		for($i=0;$i<=$scheme;$i++)
-			$options[] = $i;
+			$options[$i] = (!$profoundness) ? $i : get_string('profoundness_'.$i,'block_exacomp');
 
 		return html_writer::select(
 				$options,
-				((isset($activityid))? $name . '[' . $compid . '][' . $student->id . '][' . $activityid . '][' . $evaluation . ']'
-						: $name . '[' . $compid . '][' . $student->id . '][' . $evaluation . ']'),
+				$name . '[' . $compid . '][' . $student->id . '][' . $evaluation . ']',
 				(isset($student->{$type}->{$evaluation}[$compid])) ? $student->{$type}->{$evaluation}[$compid] : 0,
 				false,($disabled) ? array("disabled"=>"disabled") : null);
 	}
@@ -1549,12 +1551,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$input_detailpage = html_writer::checkbox('usedetailpage', 1, $settings->usedetailpage==1, get_string('usedetailpage', 'block_exacomp'))
 		.html_writer::empty_tag('br');
 			
+		$input_profoundness = html_writer::checkbox('profoundness', 1, $settings->profoundness==1, get_string('useprofoundness', 'block_exacomp'))
+		.html_writer::empty_tag('br');
+		
 		$input_submit = html_writer::empty_tag('br').html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save', 'admin')));
 
 		$hiddenaction = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'action', 'value'=>'save_coursesettings'));
 
 		$div = html_writer::div(html_writer::tag('form',
-				$input_grading.$input_activities.$input_descriptors.$input_examples.$input_detailpage.$hiddenaction.$input_submit,
+				$input_grading.$input_activities.$input_descriptors.$input_examples.$input_detailpage.$hiddenaction.$input_profoundness.$input_submit,
 				array('action'=>'edit_course.php?courseid='.$courseid, 'method'=>'post')), 'block_excomp_center');
 
 		$content = html_writer::tag("div",$header.$div, array("id"=>"exabis_competences_block"));
@@ -2360,6 +2365,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						'showevaluation' => $showevaluation,
 						'role' => $role,
 						'scheme' => $scheme,
+						'profoundness' => block_exacomp_get_settings_by_course($courseid)->profoundness,
 						'activityid' => $activity->id,
 						'selected_topicid' => null
 				);
@@ -2443,9 +2449,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					*/
 					elseif(!$version || ($version && $data->role == ROLE_TEACHER)) {
 						if($data->showevaluation)
-							$studentCellEvaluation->text = $this->generate_select_activities("datatopics", $topic->id, $data->activityid, 'activities_topics', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
+							$studentCellEvaluation->text = $this->generate_select_activities("datatopics", $topic->id, $data->activityid, 'activities_topics', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
 
-						$studentCell->text = $this->generate_select_activities("datatopics", $topic->id, $data->activityid, 'activities_topics', $student, $evaluation, $data->scheme, false);
+						$studentCell->text = $this->generate_select_activities("datatopics", $topic->id, $data->activityid, 'activities_topics', $student, $evaluation, $data->scheme, false, $data->profoundness);
 					}
 
 					if($data->showevaluation)
@@ -2525,9 +2531,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				*/
 				elseif(!$version || ($version && $data->role == ROLE_TEACHER)) {
 					if($data->showevaluation)
-						$studentCellEvaluation->text = $this->generate_select_activities($checkboxname, $descriptor->id, $data->activityid, 'activities_competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
+						$studentCellEvaluation->text = $this->generate_select_activities($checkboxname, $descriptor->id, $data->activityid, 'activities_competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
 						
-					$studentCell->text = $this->generate_select_activities($checkboxname, $descriptor->id, $data->activityid, 'activities_competencies', $student, $evaluation, $data->scheme, false);
+					$studentCell->text = $this->generate_select_activities($checkboxname, $descriptor->id, $data->activityid, 'activities_competencies', $student, $evaluation, $data->scheme, false, $data->profoundness);
 				}
 
 				if($data->showevaluation)

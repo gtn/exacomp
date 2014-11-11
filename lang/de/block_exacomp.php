@@ -167,6 +167,10 @@ $string['uses_activities'] = 'Ich verwende Moodle Aktivit&auml;ten zur Beurteilu
 $string['show_all_descriptors'] = 'Alle Deskriptoren im &Uuml;berblick anzeigen';
 $string['show_all_examples'] = 'Externe Beispiele für Teilnehmer anzeigen';
 $string['usedetailpage'] = 'Detaillierte Kompetenzansicht verwenden';
+$string['useprofoundness'] = 'Erweiterungs- und Grundkompetenzen verwenden';
+$string['profoundness_0'] = 'Nicht erreicht';
+$string['profoundness_1'] = 'Zum Teil erreicht';
+$string['profoundness_2'] = 'Erreicht';
 
 //Badges
 $string['mybadges'] = 'Meine Auszeichnungen';

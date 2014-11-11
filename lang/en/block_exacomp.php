@@ -145,7 +145,10 @@ $string['uses_activities'] = 'I work with Moodle activites';
 $string['show_all_descriptors'] = 'Show all outcomes in overview';
 $string['show_all_examples'] = 'Show external examples for students';
 $string['usedetailpage'] = 'Use detailed overview of competencies';
-
+$string['useprofoundness'] = 'Use basic and extended competencies';
+$string['profoundness_0'] = 'not reached';
+$string['profoundness_1'] = 'partially gained';
+$string['profoundness_2'] = 'fully gained';
 //Badges
 $string['mybadges'] = 'My badges';
 $string['pendingbadges'] = 'Pending badges';
