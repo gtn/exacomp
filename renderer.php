@@ -502,6 +502,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 	public function print_competence_overview_LIS_student_topics($subs, &$row, &$columns, &$column_count, $scheme, $profoundness = false){
 		global $USER, $COURSE;
+		$supported = block_exacomp_get_supported_modules();
 		foreach($subs as $topic){
 			if(isset($topic->subs))
 				$this->print_competence_overview_LIS_student_topics($topic->subs);
@@ -533,7 +534,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$activities_student = array();
 						foreach($cm_mm->competencies[$descriptor->id] as $cmid)
 							$activities_student[] = $course_mods[$cmid];
-						if($activities_student && $stdicon = block_exacomp_get_icon_for_user($activities_student, $USER)){
+						if($activities_student && $stdicon = block_exacomp_get_icon_for_user($activities_student, $USER, $supported)){
 							$cell->text .= html_writer::empty_tag('br')
 							.html_writer::tag('span', $stdicon->img, array('title'=>$stdicon->text, 'class'=>'exabis-tooltip'));
 						}
@@ -965,8 +966,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					'profoundness' => block_exacomp_get_settings_by_course($courseid)->profoundness,
 					'cm_mm' => block_exacomp_get_course_module_association($courseid),
 					'eportfolioitems' => $eportfolioitems,
+					'exaport_exists'=>block_exacomp_exaportexists(),
 					'course_mods' => get_fast_modinfo($courseid)->get_cms(),
 					'selected_topicid' => null,
+					'supported_modules'=>block_exacomp_get_supported_modules(),
 					'showalldescriptors' => block_exacomp_get_settings_by_course($courseid)->show_all_descriptors
 			);
 			$this->print_topics($rows, 0, $subject->subs, $data, $students);
@@ -1064,7 +1067,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						foreach($data->cm_mm->topics[$topic->id] as $cmid)
 							$cm_temp[] = $data->course_mods[$cmid];
 
-						$icon = block_exacomp_get_icon_for_user($cm_temp, $student);
+						$icon = block_exacomp_get_icon_for_user($cm_temp, $student, $data->supported_modules);
 						$studentCell->text .= '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>';
 					}
 
@@ -1174,12 +1177,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					foreach($data->cm_mm->competencies[$descriptor->id] as $cmid)
 						$cm_temp[] = $data->course_mods[$cmid];
 
-					$icon = block_exacomp_get_icon_for_user($cm_temp, $student);
+					$icon = block_exacomp_get_icon_for_user($cm_temp, $student, $data->supported_modules);
 					$studentCell->text .= '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>';
 				}
 				
 				//EPORTFOLIOITEMS
-				if(block_exacomp_exaportexists()){
+				if($data->exaport_exists){
 					if(isset($data->eportfolioitems[$student->id]) && isset($data->eportfolioitems[$student->id]->competencies[$descriptor->id])){
 						$shared = false;
 						$li_items = '';

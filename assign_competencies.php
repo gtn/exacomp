@@ -72,16 +72,11 @@ if(($delete = optional_param("delete", 0, PARAM_INT)) > 0 && $isTeacher)
 
 
 $activities = block_exacomp_get_activities_by_course($courseid);
+$course_settings = block_exacomp_get_settings_by_course($courseid);
 
-if(block_exacomp_get_settings_by_course($courseid)->uses_activities && !$activities && !block_exacomp_get_settings_by_course($courseid)->show_all_descriptors)
+if($course_settings->uses_activities && !$activities && !$course_settings->show_all_descriptors)
 	echo $output->print_no_activities_warning($isTeacher);
 else{
-	
-	/*if($isTeacher)
-		list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_overview_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', 0, PARAM_INT));
-	else
-		list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_overview_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', 0, PARAM_INT), true);
-	*/	
 	list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_overview_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', 0, PARAM_INT));
 	
 	// SAVA DATA
@@ -108,9 +103,8 @@ else{
 	// IF TEACHER SHOW ALL COURSE STUDENTS, IF NOT ONLY CURRENT USER
 	$students = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : array($USER);
 	foreach($students as $student)
-		block_exacomp_get_user_information_by_course($student, $courseid);
+		$student = block_exacomp_get_user_information_by_course($student, $courseid);
 
-	
 	echo $output->print_competence_overview_form_start((isset($selectedTopic))?$selectedTopic:null, (isset($selectedSubject))?$selectedSubject:null);
 
 	//dropdowns for subjects and topics
@@ -119,13 +113,14 @@ else{
 	$schooltype = block_exacomp_get_schooltyp_by_subject($selectedSubject);
 	$cat = block_exacomp_get_category($selectedTopic);
 		
+	$scheme = block_exacomp_get_grading_scheme($courseid);
 	if($selectedTopic->id != SHOW_ALL_TOPICS){
 		echo $output->print_overview_metadata($schooltype, $selectedSubject, $selectedTopic, $cat);
 		
 		if($isTeacher)
 			echo $output->print_overview_metadata_teacher($selectedSubject,$selectedTopic);
 		else{
-			$user_evaluation = block_exacomp_get_user_information_by_course($USER, $courseid);
+			//$user_evaluation = block_exacomp_get_user_information_by_course($USER, $courseid);
 	
 			$cm_mm = block_exacomp_get_course_module_association($courseid);
 			$course_mods = get_fast_modinfo($courseid)->get_cms();
@@ -136,7 +131,7 @@ else{
 					$activities_student[] = $course_mods[$cmid];
 			
 			if($version)
-				echo $output->print_overview_metadata_student($selectedSubject, $selectedTopic, $user_evaluation->topics, $showevaluation, block_exacomp_get_grading_scheme($courseid), block_exacomp_get_icon_for_user($activities_student, $USER));
+				echo $output->print_overview_metadata_student($selectedSubject, $selectedTopic, $students[$USER->id]->topics, $showevaluation, $scheme, block_exacomp_get_icon_for_user($activities_student, $USER));
 		}
 	}
 	
@@ -146,13 +141,13 @@ else{
 	echo $output->print_column_selector(count($students));
 
 	$subjects = block_exacomp_get_competence_tree($courseid,(isset($selectedSubject))?$selectedSubject->id:null,false,(isset($selectedTopic))?$selectedTopic->id:null,
-			!(block_exacomp_get_settings_by_course($courseid)->show_all_examples == 0 && !$isTeacher));
+			!($course_settings->show_all_examples == 0 && !$isTeacher));
 
 	if($version && !$isTeacher && $selectedTopic->id != SHOW_ALL_TOPICS){
 		$examples = block_exacomp_get_examples_LIS_student($subjects);
-		echo $output->print_competence_overview_LIS_student($subjects, $courseid, $showevaluation, block_exacomp_get_grading_scheme($courseid), $examples);
+		echo $output->print_competence_overview_LIS_student($subjects, $courseid, $showevaluation, $scheme, $examples);
 	}else
-		echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, (has_capability('block/exacomp:teacher', $context)) ? ROLE_TEACHER : ROLE_STUDENT, block_exacomp_get_grading_scheme($courseid));
+		echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? ROLE_TEACHER : ROLE_STUDENT, $scheme);
 }
 /* END CONTENT REGION */
 echo $output->print_wrapperdivend();

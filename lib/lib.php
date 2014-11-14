@@ -883,10 +883,11 @@ function block_exacomp_get_user_information_by_course($user, $courseid, $onlycom
 	if(!$onlycomps){
 		// get student examples
 		$user = block_exacomp_get_user_examples_by_course($user, $courseid);
+		$activities = block_exacomp_get_activities_by_course($courseid);
 		// get student activities topics
-		$user = block_exacomp_get_user_activities_topics_by_course($user, $courseid);
+		$user = block_exacomp_get_user_activities_topics_by_course($user, $courseid, $activities);
 		// get student activities competencies
-		$user = block_exacomp_get_user_activities_competencies_by_course($user, $courseid);
+		$user = block_exacomp_get_user_activities_competencies_by_course($user, $courseid, $activities);
 	}
 	return $user;
 }
@@ -949,9 +950,8 @@ function block_exacomp_get_user_examples_by_course($user, $courseid) {
  * @param object $user
  * @param int $courseid
  */
-function block_exacomp_get_user_activities_topics_by_course($user, $courseid){
+function block_exacomp_get_user_activities_topics_by_course($user, $courseid, $activities){
 	global $DB;
-	$activities = block_exacomp_get_activities_by_course($courseid);
 	
 	$user->activities_topics = new stdClass();
 	$user->activities_topics->activities = array();
@@ -974,9 +974,8 @@ function block_exacomp_get_user_activities_topics_by_course($user, $courseid){
  * @param object $user
  * @param int $courseid
  */
-function block_exacomp_get_user_activities_competencies_by_course($user, $courseid){
+function block_exacomp_get_user_activities_competencies_by_course($user, $courseid, $activities){
 	global $DB;
-	$activities = block_exacomp_get_activities_by_course($courseid);
 	
 	$user->activities_competencies = new stdClass();
 	$user->activities_competencies->activities = array();
@@ -1954,11 +1953,9 @@ function block_exacomp_get_eportfolioitem_association($students){
  *
  * @return stdClass $icon
  */
-function block_exacomp_get_icon_for_user($coursemodules, $student) {
+function block_exacomp_get_icon_for_user($coursemodules, $student, $supported) {
 	global $CFG, $DB;
 	require_once $CFG->libdir . '/gradelib.php';
-
-	$supported = block_exacomp_get_supported_modules();
 	
 	$found = false;
 	$modules = $DB->get_records_menu("modules");
@@ -3067,10 +3064,10 @@ function block_exacomp_get_exastud_reviews($periods, $student){
 }
 function block_exacomp_set_tipp($compid, $user, $type, $scheme){
 	global $COURSE;
-	$user_information = block_exacomp_get_user_information_by_course($user, $COURSE->id);
+	//$user_information = block_exacomp_get_user_information_by_course($user, $COURSE->id);
 	
 	$show_tipp = false;
-	foreach($user_information->{$type}->activities as $activity){
+	foreach($user->{$type}->activities as $activity){
 		if(isset($activity->teacher[$compid]) && $activity->teacher[$compid]>= ceil($scheme/2) )
 			$show_tipp = true;
 	}
