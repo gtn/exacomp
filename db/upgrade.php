@@ -1295,24 +1295,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2014100800, 'exacomp');
 	}
-	
-	if ($oldversion < 2014110900) {
-	
-		// Changing nullability of field profoundness on table block_exacompdescriptors to not null.
-		$table = new xmldb_table('block_exacompdescriptors');
-	
-		// Launch change of nullability for field profoundness.
-		$field = new xmldb_field('profoundness', XMLDB_TYPE_INTEGER, '11', null, null, null, '0', 'additionalinfo');
-		
-		// Launch change of nullability for field profoundness.
-		$dbman->change_field_default($table, $field);
-		
-		$field = new xmldb_field('profoundness', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, '0', 'additionalinfo');
-		$dbman->change_field_notnull($table, $field);
-		
-		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2014110900, 'exacomp');
-	}
 	if ($oldversion < 2014111100) {
 	
 		// Define field profoundness to be added to block_exacompsettings.
@@ -1326,6 +1308,19 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2014111100, 'exacomp');
+	}
+	if($oldversion < 2014111400){
+		// Changing nullability of field profoundness on table block_exacompdescriptors to not null.
+		$table = new xmldb_table('block_exacompdescriptors');
+		$field = new xmldb_field('profoundness', XMLDB_TYPE_INTEGER, '11', null, null, null, null, 'additionalinfo');
+	
+		$dbman->drop_field($table, $field);
+		
+		$field = new xmldb_field('profoundness', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, '0', 'additionalinfo');
+		$dbman->add_field($table, $field);
+	
+		// Exacomp savepoint reached.
+		upgrade_block_savepoint(true, 2014111400, 'exacomp');
 	}
 	
 	return $result;
