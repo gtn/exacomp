@@ -449,7 +449,7 @@ function block_exacomp_save_competencies_activities_detail($data, $courseid, $ro
  */
 function block_exacomp_reset_comp_data($courseid, $role, $comptype, $userid = false, $topicid = null) {
 	global $DB;
-	if(!$topicid) {
+	if(!$topicid || $topicid == SHOW_ALL_TOPICS) {
 		if($role == ROLE_TEACHER)
 			$DB->delete_records(DB_COMPETENCIES, array("courseid" => $courseid, "role" => $role, "comptype" => $comptype));
 		else
@@ -1988,6 +1988,27 @@ function block_exacomp_get_icon_for_user($coursemodules, $student, $supported) {
 		$icon->text .= '</ul>';
 
 	return $icon;
+}
+
+function block_exacomp_get_icon_data($courseid, $students) {
+	global $DB,$CFG;
+	require_once $CFG->libdir . '/gradelib.php';
+	
+	$mods = $DB->get_records_sql("
+			SELECT activityid as cmid
+			FROM mdl_block_exacompcompactiv_mm mm
+			JOIN mdl_course_modules m ON m.id = mm.activityid
+			WHERE m.course = ? AND mm.eportfolioitem = 0
+            GROUP BY activityid", array($courseid));
+	
+	$icondata = array();
+	
+	foreach($mods as $mod) {
+		$gradeinfo = grade_get_grades($courseid,"mod",$mod->cmid,$cm->instance,array_keys($students));
+		$icondata[$mod->cmid] = $gradeinfo->grades;
+	}
+	
+	return $icondata;
 }
 /**
  *
