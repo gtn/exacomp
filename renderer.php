@@ -1231,10 +1231,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$rows[] = $descriptorRow;
 
-			$studentsCount = 0;
 			$checkboxname = "dataexamples";
 
 			foreach($descriptor->examples as $example) {
+				$studentsCount = 0;
 				$exampleRow = new html_table_row();
 				$exampleRow->attributes['class'] = 'exabis_comp_aufgabe ' . $sub_rowgroup_class;
 				$exampleRow->cells[] = new html_table_cell();
@@ -1256,6 +1256,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 
 				foreach($students as $student) {
+					
 					$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
 					$studentCell = new html_table_cell();
 					$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
@@ -1281,8 +1282,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 							$studentCell->text .= $this->print_student_example_evaluation_form($example->id, $student->id, $data->courseid);
 						}
-						else
+						else {
 							$studentCell->text .= $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme);
+						}
 					}
 					/*
 					 * if scheme != 1, !version: print select
@@ -1300,6 +1302,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 					if($data->showevaluation)
 						$exampleRow->cells[] = $studentCellEvaluation;
+					
 					$exampleRow->cells[] = $studentCell;
 				}
 
