@@ -1348,7 +1348,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					($i*STUDENTS_PER_COLUMN+1).'-'.min($students, ($i+1)*STUDENTS_PER_COLUMN),
 					array('class' => 'colgroup-button colgroup-button-'.$i));
 		}
-		$content .= " " . html_writer::link('javascript:Exacomp.onlyShowColumnGroup(null);',
+		$content .= " " . html_writer::link('javascript:Exacomp.onlyShowColumnGroup(-1);',
 				get_string('allstudents','block_exacomp'),
 				array('class' => 'colgroup-button colgroup-button-all'));
 
@@ -1539,6 +1539,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 	public function print_edit_course($settings, $courseid, $headertext){
+		global $DB;
 		$header = html_writer::tag('p', $headertext).html_writer::empty_tag('br');
 			
 		$input_grading = get_string('grading_scheme', 'block_exacomp').": &nbsp"
@@ -1560,6 +1561,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$input_profoundness = html_writer::checkbox('profoundness', 1, $settings->profoundness==1, get_string('useprofoundness', 'block_exacomp'))
 		.html_writer::empty_tag('br');
 		
+		$taxonomies = $DB->get_records_menu('block_exacomptaxonomies',null,'','id,title');
+
+		/*
+		 * TO DO:
+		 * alle default mäßig auswählen
+		 * db feld erzeugen
+		 * selected
+		 * speichern/laden
+		 * filtern in overview und überall
+		 */
+		
+		$input_taxonomies = html_writer::empty_tag('br').html_writer::select($taxonomies, 'filteredtaxonomies',null,false,array('multiple'=>'multiple'));
 		$input_submit = html_writer::empty_tag('br').html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save', 'admin')));
 
 		$hiddenaction = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'action', 'value'=>'save_coursesettings'));
