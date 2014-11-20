@@ -149,6 +149,9 @@ $string['useprofoundness'] = 'Use basic and extended competencies';
 $string['profoundness_0'] = 'not reached';
 $string['profoundness_1'] = 'partially gained';
 $string['profoundness_2'] = 'fully gained';
+$string['filteredtaxonomies'] = 'Examples are filtered accordingly to the following taxonomies:';
+$string['show_all_taxonomies'] = 'All taxonomies';
+
 //Badges
 $string['mybadges'] = 'My badges';
 $string['pendingbadges'] = 'Pending badges';

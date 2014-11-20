@@ -141,7 +141,7 @@ else{
 	echo $output->print_column_selector(count($students));
 
 	$subjects = block_exacomp_get_competence_tree($courseid,(isset($selectedSubject))?$selectedSubject->id:null,false,(isset($selectedTopic))?$selectedTopic->id:null,
-			!($course_settings->show_all_examples == 0 && !$isTeacher));
+			!($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies);
 
 	if($version && !$isTeacher && $selectedTopic->id != SHOW_ALL_TOPICS){
 		$examples = block_exacomp_get_examples_LIS_student($subjects);

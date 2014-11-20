@@ -171,7 +171,8 @@ $string['useprofoundness'] = 'Erweiterungs- und Grundkompetenzen verwenden';
 $string['profoundness_0'] = 'Nicht erreicht';
 $string['profoundness_1'] = 'Zum Teil erreicht';
 $string['profoundness_2'] = 'Erreicht';
-
+$string['filteredtaxonomies'] = 'Beispiele werden anhand der ausgewählten Taxonomien verwendet:';
+$string['show_all_taxonomies'] = 'Alle Taxonomien';
 //Badges
 $string['mybadges'] = 'Meine Auszeichnungen';
 $string['pendingbadges'] = 'Anstehende Auszeichnungen';

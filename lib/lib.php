@@ -54,7 +54,7 @@ $testlimit = get_config('exacomp', 'testlimit');
 $specificimport = get_config('exacomp','enableteacherimport');
 
 define("SHOW_ALL_TOPICS",99999999);
-
+define("SHOW_ALL_TAXONOMIES",100000000);
 /**
  *
  * Includes all neccessary JavaScript files
@@ -612,6 +612,8 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 	if (!$settings->uses_activities) $settings->show_all_descriptors = 1;
 	elseif (!isset($settings->show_all_descriptors)) $settings->show_all_descriptors = 0;
 	if (!isset($settings->profoundness)) $settings->profoundness = 0;
+	if(isset($settings->filteredtaxonomies)) $settings->filteredtaxonomies = json_decode($settings->filteredtaxonomies,true);
+	
 	return $settings;
 }
 /**
@@ -719,7 +721,7 @@ function block_exacomp_get_descriptors_by_subject($subjectid,$niveaus = true) {
  * @param int $subjectid
  * @return associative_array
  */
-function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $showalldescriptors = false, $topicid = null, $showallexamples = true) {
+function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $showalldescriptors = false, $topicid = null, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES)) {
 	global $DB;
 
 	if(!$showalldescriptors)
@@ -759,7 +761,9 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 				FROM {" . DB_EXAMPLES . "} e
 				JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
 				LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id"
-				. (($showallexamples) ? "" : " WHERE e.creatorid > 0")
+				. ((!$showallexamples || !in_array(SHOW_ALL_TAXONOMIES, $filteredtaxonomies)) ? " WHERE " : "")
+				. (($showallexamples) ? "" : " e.creatorid > 0")
+				. ((in_array(SHOW_ALL_TAXONOMIES, $filteredtaxonomies)) ? "" : " e.taxid IN (".implode(",", $filteredtaxonomies) .")" )
 				, array($descriptor->id));
 	
 		$descriptor->examples = array();
@@ -1654,7 +1658,7 @@ function block_exacomp_build_example_tree_desc($courseid){
 	global $DB;
 
 	//get all subjects, topics, descriptors and examples
-	$tree = block_exacomp_get_competence_tree($courseid);
+	$tree = block_exacomp_get_competence_tree($courseid, null, false, null, true, block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies);
 
 	//go through tree and unset every subject, topic and descriptor where no example is appended
 	foreach($tree as $subject){
@@ -2197,7 +2201,7 @@ function block_exacomp_get_activities_by_course($courseid){
 		WHERE a.course = ? AND mm.eportfolioitem=0';
 	return $DB->get_records_sql($query, array($courseid));
 }
-function block_exacomp_init_competence_grid_data($courseid, $subjectid, $studentid, $showallexamples = false) {
+function block_exacomp_init_competence_grid_data($courseid, $subjectid, $studentid, $showallexamples = false, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES)) {
 	global $version, $DB;
 
 	if($studentid > 0) {
@@ -2263,11 +2267,14 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 			$examples = $DB->get_records_sql(
 					"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
 					e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid
-					FROM {".DB_EXAMPLES."} e
-					JOIN {".DB_DESCEXAMP."} de ON e.id=de.exampid AND de.descrid=?
-					LEFT JOIN {".DB_TAXONOMIES."} tax ON e.taxid=tax.id"
-					. (($showallexamples) ? "" : " WHERE e.creatorid > 0")
-					." ORDER BY tax.title", array($descriptor->id));
+					FROM {" . DB_EXAMPLES . "} e
+					JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
+					LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id"
+					. ((!$showallexamples || !in_array(SHOW_ALL_TAXONOMIES, $filteredtaxonomies)) ? " WHERE " : "")
+					. (($showallexamples) ? "" : " e.creatorid > 0")
+					. ((in_array(SHOW_ALL_TAXONOMIES, $filteredtaxonomies)) ? "" : " e.taxid IN (".implode(",", $filteredtaxonomies) .")" )
+					, array($descriptor->id));
+			
 			$descriptor->examples = $examples;
 				
 			if($studentid > 0) {

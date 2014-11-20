@@ -1561,24 +1561,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$input_profoundness = html_writer::checkbox('profoundness', 1, $settings->profoundness==1, get_string('useprofoundness', 'block_exacomp'))
 		.html_writer::empty_tag('br');
 		
+		$alltax = array(SHOW_ALL_TAXONOMIES => get_string('show_all_taxonomies','block_exacomp'));
 		$taxonomies = $DB->get_records_menu('block_exacomptaxonomies',null,'','id,title');
-
-		/*
-		 * TO DO:
-		 * alle default mäßig auswählen
-		 * db feld erzeugen
-		 * selected
-		 * speichern/laden
-		 * filtern in overview und überall
-		 */
-		
-		$input_taxonomies = html_writer::empty_tag('br').html_writer::select($taxonomies, 'filteredtaxonomies',null,false,array('multiple'=>'multiple'));
+		$taxonomies = $alltax + $taxonomies;
+		$input_taxonomies = html_writer::empty_tag('br').html_writer::select($taxonomies, 'filteredtaxonomies[]',$settings->filteredtaxonomies,false,array('multiple'=>'multiple'));
 		$input_submit = html_writer::empty_tag('br').html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save', 'admin')));
 
 		$hiddenaction = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'action', 'value'=>'save_coursesettings'));
 
 		$div = html_writer::div(html_writer::tag('form',
-				$input_grading.$input_activities.$input_descriptors.$input_examples.$input_detailpage.$hiddenaction.$input_profoundness.$input_submit,
+				$input_grading.$input_activities.$input_descriptors.$input_examples.$input_detailpage.$hiddenaction.$input_profoundness.$input_taxonomies.$input_submit,
 				array('action'=>'edit_course.php?courseid='.$courseid, 'method'=>'post')), 'block_excomp_center');
 
 		$content = html_writer::tag("div",$header.$div, array("id"=>"exabis_competences_block"));

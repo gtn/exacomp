@@ -73,6 +73,7 @@ if ($action == 'save_coursesettings') {
 	$settings->show_all_examples = optional_param('show_all_examples', "", PARAM_INT);
 	$settings->usedetailpage = optional_param('usedetailpage', "", PARAM_INT);
 	$settings->profoundness = optional_param('profoundness', 0, PARAM_INT);
+	$settings->filteredtaxonomies = json_encode((isset($_POST['filteredtaxonomies'])) ? array_values($_POST['filteredtaxonomies']) : SHOW_ALL_TAXONOMIES);
 	
 	block_exacomp_save_coursesettings($courseid, $settings);	
 	
