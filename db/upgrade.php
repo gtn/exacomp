@@ -1326,7 +1326,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	
 		// Define field filteredtaxonomies to be added to block_exacompsettings.
 		$table = new xmldb_table('block_exacompsettings');
-		$field = new xmldb_field('filteredtaxonomies', XMLDB_TYPE_CHAR, '1333', null, XMLDB_NOTNULL, null, '100000000', 'profoundness');	
+		$field = new xmldb_field('filteredtaxonomies', XMLDB_TYPE_CHAR, '1333', null, XMLDB_NOTNULL, null, '["100000000"]', 'profoundness');	
 		
 		// Conditionally launch add field filteredtaxonomies.
 		if (!$dbman->field_exists($table, $field)) {
@@ -1336,6 +1336,21 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2014112001, 'exacomp');
 	}
+	if ($oldversion < 2014112401) {
 	
+		// Define field filteredtaxonomies to be added to block_exacompsettings.
+		$table = new xmldb_table('block_exacompsettings');
+		$field = new xmldb_field('filteredtaxonomies', XMLDB_TYPE_CHAR, '1333', null, XMLDB_NOTNULL, null, '["100000000"]', 'profoundness');
+	
+		$dbman->drop_field($table, $field);
+		
+		// Conditionally launch add field filteredtaxonomies.
+		if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+	
+		// Exacomp savepoint reached.
+		upgrade_block_savepoint(true, 2014112401, 'exacomp');
+	}
 	return $result;
 }

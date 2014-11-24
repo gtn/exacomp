@@ -271,7 +271,7 @@
         <FIELD NAME="show_all_examples" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="usedetailpage" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="profoundness" TYPE="int" LENGTH="5" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="filteredtaxonomies" TYPE="char" LENGTH="1333" NOTNULL="true" DEFAULT="100000000" SEQUENCE="false" COMMENT="json encoded tax filter"/>
+        <FIELD NAME="filteredtaxonomies" TYPE="char" LENGTH="1333" NOTNULL="true" DEFAULT="[\"100000000\"]" SEQUENCE="false" COMMENT="json encoded tax filter"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

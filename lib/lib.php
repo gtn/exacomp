@@ -613,6 +613,7 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 	elseif (!isset($settings->show_all_descriptors)) $settings->show_all_descriptors = 0;
 	if (!isset($settings->profoundness)) $settings->profoundness = 0;
 	if(isset($settings->filteredtaxonomies)) $settings->filteredtaxonomies = json_decode($settings->filteredtaxonomies,true);
+	else $settings->filteredtaxonomies = array(SHOW_ALL_TAXONOMIES);
 	
 	return $settings;
 }
