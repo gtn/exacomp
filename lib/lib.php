@@ -660,7 +660,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype '
+	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness '
 	.'FROM {'.DB_TOPICS.'} t '
 	.(($courseid>0)?'JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
@@ -762,9 +762,9 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 				FROM {" . DB_EXAMPLES . "} e
 				JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
 				LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id"
-				. ((!$showallexamples || !in_array(SHOW_ALL_TAXONOMIES, $filteredtaxonomies)) ? " WHERE " : "")
-				. (($showallexamples) ? "" : " e.creatorid > 0")
-				. ((in_array(SHOW_ALL_TAXONOMIES, $filteredtaxonomies)) ? "" : " e.taxid IN (".implode(",", $filteredtaxonomies) .")" )
+				. " WHERE " 
+				. (($showallexamples) ? " 1=1 " : " e.creatorid > 0")
+				. ((in_array(SHOW_ALL_TAXONOMIES, $filteredtaxonomies)) ? "" : " AND e.taxid IN (".implode(",", $filteredtaxonomies) .")" )
 				, array($descriptor->id));
 	
 		$descriptor->examples = array();
@@ -1107,6 +1107,8 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 						$rows[] = new tabobject('tab_competence_profile_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid"=>$courseid)), get_string('tab_competence_profile',  'block_exacomp'));
 						$rows[] = new tabobject('tab_examples', new moodle_url('/blocks/exacomp/view_examples.php',array("courseid"=>$courseid)),get_string('tab_examples','block_exacomp'));
 						$rows[] = new tabobject('tab_learning_agenda', new moodle_url('/blocks/exacomp/learningagenda.php',array("courseid"=>$courseid)),get_string('tab_learning_agenda','block_exacomp'));
+						if($courseSettings->profoundness == 1)
+							$rows[] = new tabobject('tab_profoundness', new moodle_url('/blocks/exacomp/profoundness.php',array("courseid"=>$courseid)),get_string('tab_profoundness','block_exacomp'));
 					}
 					$settings = new tabobject('tab_teacher_settings', new moodle_url('/blocks/exacomp/edit_course.php',array("courseid"=>$courseid)),get_string('tab_teacher_settings','block_exacomp'));
 					

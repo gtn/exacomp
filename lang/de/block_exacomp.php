@@ -61,6 +61,7 @@ $string['tab_competence_profile_settings'] = 'Einstellungen';
 $string['tab_help'] = 'Hilfe';
 $string['tab_skillmanagement'] = 'Kompetenzen-Verwaltung';
 $string['tab_teacher_demo_settings'] = 'Mit Demo-Daten arbeiten';
+$string['tab_profoundness'] = 'Grund/Erweiterungskompetenzen';
 
 $string['first_configuration_step'] = 'Der erste Konfigurationsschritt besteht darin, Daten in das Exabis Competencies Modul zu importieren.';
 $string['second_configuration_step'] = 'In diesem Konfigurationsschritt muss eine Vorauswahl für die Standards getroffen werden, damit das Modul verwendet werden kann. Diese Einstellungen sind unabh&auml;ngig vom Kurs für die gesamte Moodle-Installation g&uuml;ltig.';

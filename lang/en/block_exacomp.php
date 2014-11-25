@@ -62,6 +62,7 @@ $string['tab_competence_profile_settings'] = 'Settings';
 $string['tab_help'] = 'Help';
 $string['tab_skillmanagement'] = 'Manage competencies';
 $string['tab_teacher_demo_settings'] = 'work with demo data';
+$string['tab_profoundness'] = 'Basic & Extended Competencies';
 
 $string['first_configuration_step'] = 'The first step of the configuration is to import some data to Exabis Competencies.';
 $string['second_configuration_step'] = 'In this configuration step you have to pre-select standards.';

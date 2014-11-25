@@ -415,7 +415,9 @@ td.contentcell {
 #exacomp .exabis_competencies_lis table.exabis_comp_comp tr.highlight {
     background-color: #e6e6e6
 }
-
+#exacomp .exabis_competencies_lis table.exabis_comp_comp td.disabled {
+    background-color: #e6e6e6
+}
 #exacomp .exabis_competencies_lis table.exabis_comp_comp tr.exabis_comp_aufgabe:nth-child(2n+1) {
     background-color: #f9f9f9
 }

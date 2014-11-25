@@ -703,7 +703,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return html_writer::tag("div", html_writer::table($table), array("id"=>"exabis_competences_block"));
 	}
-	public function print_competence_overview_form_start($selectedTopic=null, $selectedSubject=null){
+	public function print_competence_overview_form_start($selectedTopic=null, $selectedSubject=null, $studentid=null){
 		global $PAGE, $COURSE;
 		$url_params = array();
 		$url_params['action'] = 'save';
@@ -711,6 +711,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$url_params['topicid'] = $selectedTopic->id;
 		if(isset($selectedSubject))
 			$url_params['subjectid'] = $selectedSubject->id;
+		if(isset($studentid))
+			$url_params['studentid'] = $studentid;
+				
 		$url = new moodle_url($PAGE->url, $url_params);
 		return html_writer::start_tag('form',array('id'=>'assign-competencies', "action" => $url, 'method'=>'post'));
 	}
@@ -881,6 +884,89 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		//return html_writer::tag('form', $div, array('id'=>'assign-competencies', 'action'=>new moodle_url($PAGE->url, array('courseid'=>$courseid, 'action'=>'save')), 'method'=>'post'));
 	}
 
+	public function print_profoundness($subjects, $courseid, $students, $role) {
+		$table = new html_table();
+		$rows = array();
+		$table->attributes['class'] = 'exabis_comp_comp';
+		
+		// 1st header row
+		$headerrow = new html_table_row();
+		
+		$cell = new html_table_cell();
+		$cell->rowspan = 2;
+		$cell->colspan = 2;
+		$cell->text = "Kompetenzbeschreibung";
+		$headerrow->cells[] = $cell;
+		
+		$cell = new html_table_cell();
+		$cell->text = "Kompetenz";
+		$cell->colspan = 2;
+		$headerrow->cells[] = $cell;
+		
+		$cell = new html_table_cell();
+		$cell->text = "erweiterte Kompetenz";
+		$cell->colspan = 2;
+		$headerrow->cells[] = $cell;
+		
+		$rows[] = $headerrow;
+
+		// 2nd header row
+		$headerrow = new html_table_row();
+		
+		$cell = new html_table_cell();
+		$cell->text = "überwiegend";
+		$headerrow->cells[] = $cell;
+		
+		$cell = new html_table_cell();
+		$cell->text = "zur Gänze erfüllt";
+		$headerrow->cells[] = $cell;
+		
+		$cell = new html_table_cell();
+		$cell->text = "hohes Niveau";
+		$headerrow->cells[] = $cell;
+		
+		$cell = new html_table_cell();
+		$cell->text = "höchstes Niveau";
+		$headerrow->cells[] = $cell;
+		
+		$rows[] = $headerrow;
+		
+		if(block_exacomp_exaportexists())
+			$eportfolioitems = block_exacomp_get_eportfolioitem_association($students);
+		else
+			$eportfolioitems = array();
+		
+		foreach($subjects as $subject) {
+			if(!$subject->subs)
+				continue;
+			
+			/* TOPICS */
+			//for every topic
+			$data = (object)array(
+					'rowgroup' => &$rowgroup,
+					'courseid' => $courseid,
+					'showevaluation' => 0,
+					'role' => $role,
+					'scheme' => 2,
+					'profoundness' => 1,
+					'cm_mm' => block_exacomp_get_course_module_association($courseid),
+					'eportfolioitems' => $eportfolioitems,
+					'exaport_exists'=>block_exacomp_exaportexists(),
+					'course_mods' => get_fast_modinfo($courseid)->get_cms(),
+					'selected_topicid' => null,
+					'supported_modules'=>block_exacomp_get_supported_modules(),
+					'showalldescriptors' => block_exacomp_get_settings_by_course($courseid)->show_all_descriptors
+			);
+			$this->print_topics($rows, 0, $subject->subs, $data, $students, '', true);
+			$table->data = $rows;
+		}
+		
+		$table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
+		$table_html .= html_writer::div(html_writer::tag("input", "", array("name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp"))),'', array('id'=>'exabis_save_button'));
+		$table_html .= html_writer::tag("input", "", array("name" => "open_row_groups", "type" => "hidden", "value" => (optional_param('open_row_groups', "", PARAM_TEXT))));
+		
+		return $table_html.html_writer::end_tag('form');
+	}
 	public function print_competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $lis_alltopics = true) {
 		global $PAGE;
 
@@ -889,17 +975,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$rows = array();
 		$studentsColspan = $showevaluation ? 2 : 1;
 		$table->attributes['class'] = 'exabis_comp_comp';
-		
+
 		if(block_exacomp_exaportexists())
 			$eportfolioitems = block_exacomp_get_eportfolioitem_association($students);
 		else
 			$eportfolioitems = array();
-		
+
 		/* SUBJECTS */
 		foreach($subjects as $subject) {
 			if(!$subject->subs)
 				continue;
-			
+				
 			//for every subject
 			$subjectRow = new html_table_row();
 			$subjectRow->attributes['class'] = 'highlight';
@@ -954,7 +1040,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				}
 				$rows[] = $evaluationRow;
 			}
-			
+				
 			/* TOPICS */
 			//for every topic
 			$data = (object)array(
@@ -985,7 +1071,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		//return html_writer::tag("form", $table_html, array("id" => "assign-competencies", "method" => "post", "action" => $PAGE->url . "&action=save"));
 	}
 
-	public function print_topics(&$rows, $level, $topics, &$data, $students, $rowgroup_class = '') {
+	public function print_topics(&$rows, $level, $topics, &$data, $students, $rowgroup_class = '', $profoundness = false) {
 		global $version;
 		$topicparam = optional_param('topicid', 0, PARAM_INT);
 		$padding = $level * 20 + 12;
@@ -1027,9 +1113,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$studentCell = new html_table_cell();
 				$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
 				$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-				$studentCell->colspan = $studentsColspan;
+				$studentCell->colspan = (!$profoundness) ? $studentsColspan : 4;
 
-				if(isset($data->cm_mm->topics[$topic->id]) || $data->showalldescriptors) {
+				if((isset($data->cm_mm->topics[$topic->id]) || $data->showalldescriptors) && !$profoundness) {
 					// SHOW EVALUATION
 					if($data->showevaluation) {
 						$studentCellEvaluation = new html_table_cell();
@@ -1084,22 +1170,23 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					if($data->showevaluation)
 						$topicRow->cells[] = new html_table_cell();
 				}
+				
 				$topicRow->cells[] = $studentCell;
 			}
 
 			$rows[] = $topicRow;
 
 			if (!empty($topic->descriptors)) {
-				$this->print_descriptors($rows, $level+1, $topic->descriptors, $data, $students, $sub_rowgroup_class);
+				$this->print_descriptors($rows, $level+1, $topic->descriptors, $data, $students, $sub_rowgroup_class,$profoundness);
 			}
 
 			if (!empty($topic->subs)) {
-				$this->print_topics($rows, $level+1, $topic->subs, $data, $students, $sub_rowgroup_class);
+				$this->print_topics($rows, $level+1, $topic->subs, $data, $students, $sub_rowgroup_class,$profoundness);
 			}
 		}
 	}
 
-	function print_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class) {
+	function print_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class, $profoundness = false) {
 		global $version, $PAGE, $USER, $COURSE;
 
 		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
@@ -1121,7 +1208,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$descriptorRow = new html_table_row();
 			$descriptorRow->attributes['class'] = 'exabis_comp_aufgabe ' . $this_rowgroup_class;
 			$exampleuploadCell = new html_table_cell();
-			if($data->role == ROLE_TEACHER) {
+			if($data->role == ROLE_TEACHER && !$profoundness) {
 				$exampleuploadCell->text = html_writer::link(
 						new moodle_url('/blocks/exacomp/example_upload.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id,"topicid"=>$descriptor->topicid)),
 						html_writer::empty_tag('img', array('src'=>'pix/upload_12x12.png', 'alt'=>'upload')),
@@ -1140,6 +1227,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$descriptorRow->cells[] = $titleCell;
 
 			foreach($students as $student) {
+
 				$studentCell = new html_table_cell();
 				$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
 				$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
@@ -1148,26 +1236,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				if($data->showevaluation) {
 					$studentCellEvaluation = new html_table_cell();
 					$studentCellEvaluation->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-				}
-				/*
-				 * if scheme == 1: print checkbox
-				* if scheme != 1, role = student, version = LIS
-				*/
-				if($data->scheme == 1 || ($data->scheme != 1 && $data->role == ROLE_STUDENT && $version)) {
-					if($data->showevaluation)
-						$studentCellEvaluation->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
-
-					$studentCell->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme);
-				}
-				/*
-				 * if scheme != 1, !version: print select
-				* if scheme != 1, version = LIS, role = teacher
-				*/
-				elseif(!$version || ($version && $data->role == ROLE_TEACHER)) {
-					if($data->showevaluation)
-						$studentCellEvaluation->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
-
-					$studentCell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme, false, $data->profoundness);
 				}
 
 				// ICONS
@@ -1178,9 +1246,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$cm_temp[] = $data->course_mods[$cmid];
 
 					$icon = block_exacomp_get_icon_for_user($cm_temp, $student, $data->supported_modules);
-					$studentCell->text .= '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>';
+					$icontext = '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>';
 				}
-				
 				//EPORTFOLIOITEMS
 				if($data->exaport_exists){
 					if(isset($data->eportfolioitems[$student->id]) && isset($data->eportfolioitems[$student->id]->competencies[$descriptor->id])){
@@ -1194,7 +1261,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							}
 							else
 								$li_item .=  get_string('eportitem_notshared', 'block_exacomp');
-								
+				
 							$li_items .= html_writer::tag('li', $li_item);
 						}
 						$first_param = 'id';
@@ -1204,29 +1271,98 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$first_param = 'hash';
 						}
 						$link = new moodle_url('/blocks/exaport/shared_view.php', array('courseid'=>$COURSE->id, 'access'=>$first_param.'/'.$item->owner.'-'.$second_param));
-						
+				
 						if($shared)
 							$img = html_writer::link($link, html_writer::empty_tag("img", array("src" => "pix/folder_shared.png","alt" => '')));
-							//$img = html_writer::empty_tag("img", array("src" => "pix/folder_shared.png","alt" => ''));
+						//$img = html_writer::empty_tag("img", array("src" => "pix/folder_shared.png","alt" => ''));
 						else
 							$img = html_writer::empty_tag("img", array("src" => "pix/folder_notshared.png","alt" => ''));
-					
+							
 						$text =  get_string('eportitems', 'block_exacomp').html_writer::tag('ul', $li_items);
-						
-						$studentCell->text .= '<span title="'.$text.'" class="exabis-tooltip">'.$img.'</span>';
+				
+						$eportfoliotext = '<span title="'.$text.'" class="exabis-tooltip">'.$img.'</span>';
 					}
 				}
 				// TIPP
 				if(block_exacomp_set_tipp($descriptor->id, $student, 'activities_competencies', $data->scheme)){
 					$icon_img = html_writer::empty_tag('img', array('src'=>"pix/info.png", "alt"=>get_string('teacher_tipp', 'block_exacomp')));
 					$string = block_exacomp_get_tipp_string($descriptor->id, $student, $data->scheme, 'activities_competencies', TYPE_DESCRIPTOR);
-					$studentCell->text .= html_writer::span($icon_img, 'exabis-tooltip', array('title'=>$string));
+					$tipptext = html_writer::span($icon_img, 'exabis-tooltip', array('title'=>$string));
 				}
-
-				if($data->showevaluation)
-					$descriptorRow->cells[] = $studentCellEvaluation;
-
-				$descriptorRow->cells[] = $studentCell;
+				
+				if(!$profoundness) {
+					/*
+					 * if scheme == 1: print checkbox
+					* if scheme != 1, role = student, version = LIS
+					*/
+					if($data->scheme == 1 || ($data->scheme != 1 && $data->role == ROLE_STUDENT && $version)) {
+						if($data->showevaluation)
+							$studentCellEvaluation->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
+	
+						$studentCell->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme);
+					}
+					/*
+					 * if scheme != 1, !version: print select
+					* if scheme != 1, version = LIS, role = teacher
+					*/
+					elseif(!$version || ($version && $data->role == ROLE_TEACHER)) {
+						if($data->showevaluation)
+							$studentCellEvaluation->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
+	
+						$studentCell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme, false, $data->profoundness);
+					}
+	
+					// ICONS
+					if(isset($icontext)) 
+						$studentCell->text .= $icontext;
+					
+					//EPORTFOLIOITEMS
+					if(isset($eportfoliotext))
+						$studentCell->text .= $eportfoliotext;
+					
+					// TIPP
+					if(isset($tipptext))
+						$studentCell->text .= $tipptext;
+	
+					if($data->showevaluation)
+						$descriptorRow->cells[] = $studentCellEvaluation;
+	
+					$descriptorRow->cells[] = $studentCell;
+				} else {
+					// ICONS
+					if(isset($icontext))
+						$titleCell->text .= $icontext;
+						
+					//EPORTFOLIOITEMS
+					if(isset($eportfoliotext))
+						$titleCell->text .= $eportfoliotext;
+						
+					// TIPP
+					if(isset($tipptext))
+						$titleCell->text .= $tipptext;
+					
+					$cell1 = new html_table_cell();
+					$cell2 = new html_table_cell();
+					$disabledCell = new html_table_cell();
+					
+					$cell1->text = $this->generate_checkbox_profoundness($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, 1);
+					$cell2->text = $this->generate_checkbox_profoundness($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, 2);
+					$disabledCell->text = html_writer::checkbox("disabled", "",false,null,array("disabled"=>"disabled"));
+					$disabledCell->attributes['class'] = 'disabled';
+					
+					if($descriptor->profoundness == 0) {
+						$descriptorRow->cells[] = $cell1;
+						$descriptorRow->cells[] = $cell2;
+						$descriptorRow->cells[] = $disabledCell;
+						$descriptorRow->cells[] = $disabledCell;
+					} else {
+						$descriptorRow->cells[] = $disabledCell;
+						$descriptorRow->cells[] = $disabledCell;
+						$descriptorRow->cells[] = $cell1;
+						$descriptorRow->cells[] = $cell2;
+					}
+						
+				}
 			}
 
 			$rows[] = $descriptorRow;
@@ -1401,10 +1537,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 */
 	public function generate_checkbox($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false, $activityid = null) {
 		return html_writer::checkbox(
-				((isset($activityid))?$name . '[' .$compid .'][' . $student->id .'][' . $activityid . '][' . $evaluation . ']'
-						:$name . '[' . $compid . '][' . $student->id . '][' . $evaluation . ']'),
+				((isset($activityid)) ? 
+						$name . '[' .$compid .'][' . $student->id .'][' . $activityid . '][' . $evaluation . ']'
+						: $name . '[' . $compid . '][' . $student->id . '][' . $evaluation . ']'),
 				$scheme,
-				(isset($student->{$type}->{$evaluation}[$compid])) && $student->{$type}->{$evaluation}[$compid] >= ceil($scheme/2), null, (!$disabled) ? null : array("disabled"=>"disabled"));
+				(isset($student->{$type}->{$evaluation}[$compid])) && $student->{$type}->{$evaluation}[$compid] >= ceil($scheme/2), null,
+				(!$disabled) ? null : array("disabled"=>"disabled"));
+	}
+	
+	public function generate_checkbox_profoundness($name, $compid, $type, $student, $evaluation, $scheme) {
+		return html_writer::checkbox($name . '[' . $compid . '][' . $student->id . '][' . $evaluation . ']',
+				$scheme,
+				(isset($student->{$type}->{$evaluation}[$compid])) && $student->{$type}->{$evaluation}[$compid] == $scheme, null);
 	}
 	/**
 	 * Used to generate a checkbox for ticking activities topics and competencies
