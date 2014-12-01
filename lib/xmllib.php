@@ -206,7 +206,11 @@ function block_exacomp_insert_descriptor($descriptor, $parent = 0) {
 
 	if($descriptorObj = $DB->get_record(DB_DESCRIPTORS, array("sourceid"=>$descriptor['id']->__toString(),"source"=>$source))) {
 		$descriptor->id = $descriptorObj->id;
-		$DB->update_record(DB_DESCRIPTORS, simpleXMLElementToArray($descriptor));
+		$descriptorarray = simpleXMLElementToArray($descriptor);
+		if(!isset($descriptorarray['profoundness']))
+			$descriptorarray['profoundness'] = 0;
+		
+		$DB->update_record(DB_DESCRIPTORS, $descriptorarray);
 	} else
 		$descriptor->id = $DB->insert_record(DB_DESCRIPTORS, simpleXMLElementToArray($descriptor));
 
