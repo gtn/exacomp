@@ -895,16 +895,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$cell = new html_table_cell();
 		$cell->rowspan = 2;
 		$cell->colspan = 2;
-		$cell->text = "Kompetenzbeschreibung";
+		$cell->text = get_string('profoundness_description','block_exacomp');
 		$headerrow->cells[] = $cell;
 		
 		$cell = new html_table_cell();
-		$cell->text = "Kompetenz";
+		$cell->text = get_string('profoundness_basic','block_exacomp');
 		$cell->colspan = 2;
 		$headerrow->cells[] = $cell;
 		
 		$cell = new html_table_cell();
-		$cell->text = "erweiterte Kompetenz";
+		$cell->text = get_string('profoundness_extended','block_exacomp');
 		$cell->colspan = 2;
 		$headerrow->cells[] = $cell;
 		
@@ -914,19 +914,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$headerrow = new html_table_row();
 		
 		$cell = new html_table_cell();
-		$cell->text = "überwiegend";
+		$cell->text = get_string('profoundness_mainly','block_exacomp');
 		$headerrow->cells[] = $cell;
 		
 		$cell = new html_table_cell();
-		$cell->text = "zur Gänze erfüllt";
+		$cell->text = get_string('profoundness_entirely','block_exacomp');
 		$headerrow->cells[] = $cell;
 		
 		$cell = new html_table_cell();
-		$cell->text = "hohes Niveau";
+		$cell->text = get_string('profoundness_mainly','block_exacomp');
 		$headerrow->cells[] = $cell;
 		
 		$cell = new html_table_cell();
-		$cell->text = "höchstes Niveau";
+		$cell->text = get_string('profoundness_entirely','block_exacomp');
 		$headerrow->cells[] = $cell;
 		
 		$rows[] = $headerrow;

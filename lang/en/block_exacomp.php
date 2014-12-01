@@ -321,6 +321,13 @@ $string['profile_settings_showallcomps'] = 'all my competencies';
 $string['specificcontent'] = 'site-specific topics';
 $string['specificsubject'] = 'site-specific subjects';
 
+//Profoundness
+$string['profoundness_description'] = 'Description';
+$string['profoundness_basic'] = 'Basic competence';
+$string['profoundness_extended'] = 'Extended competence';
+$string['profoundness_mainly'] = 'Mainly achieved';
+$string['profoundness_entirely'] = 'Entirely achieved';
+
 //metadata
 $string['subject_singular'] = 'Field of competence';
 $string['comp_field_idea'] = 'Skill';

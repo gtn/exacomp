@@ -359,6 +359,13 @@ $string['profile_settings_showallcomps'] = 'Alle meine Kompetenzen';
 $string['specificcontent'] = 'Schulbezogene Themenbereiche';
 $string['specificsubject'] = 'Schulbezogene Gegenstands-/Kompetenzbereiche';
 
+//Profoundness
+$string['profoundness_description'] = 'Kompetenzbeschreibung';
+$string['profoundness_basic'] = 'Grundkompetenz';
+$string['profoundness_extended'] = 'Erweiterte Kompetenz';
+$string['profoundness_mainly'] = 'Überwiegend erfüllt';
+$string['profoundness_entirely'] = 'Zur Gänze erfüllt';
+
 //LIS Strings
 if(get_config('exacomp','alternativedatamodel')) {
 	/*langstrings for alternativedatamodel--*/
