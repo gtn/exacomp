@@ -1888,7 +1888,7 @@ function block_exacomp_get_course_module_association($courseid) {
  */
 
 function block_exacomp_get_eportfolioitem_association($students){
-	global $DB, $COURSE;
+	global $DB, $COURSE, $USER;
 	$teachers = block_exacomp_get_teachers_by_course($COURSE->id);
 	$result = array();
 	foreach($students as $student){
@@ -1929,13 +1929,16 @@ function block_exacomp_get_eportfolioitem_association($students){
 				$owner = $info->owner;
 			}
 			if(!$shared){
-				foreach($teachers as $teacher){
-					foreach($shared_info as $person){
-						if(isset($person->userid) && $teacher->id == $person->userid){
+				//foreach($teachers as $teacher){
+					foreach($shared_info as $info){
+						if(isset($info->userid) && $USER->id == $info->userid){
 							$shared=true;
+							$hash = $info->hash;
+							$viewid = $info->id;
+							$owner = $info->owner;
 						}
 					}
-				}
+				//}
 			}
 			if(!isset($result[$student->id]->competencies[$item->compid])){
 				$result[$student->id]->competencies[$item->compid] = new stdClass();
