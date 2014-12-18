@@ -1889,7 +1889,7 @@ function block_exacomp_get_course_module_association($courseid) {
 
 function block_exacomp_get_eportfolioitem_association($students){
 	global $DB, $COURSE, $USER;
-	$teachers = block_exacomp_get_teachers_by_course($COURSE->id);
+	//$teachers = block_exacomp_get_teachers_by_course($COURSE->id);
 	$result = array();
 	foreach($students as $student){
 		$eportfolioitems = $DB->get_records_sql('
