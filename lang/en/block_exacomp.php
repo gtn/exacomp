@@ -152,7 +152,7 @@ $string['profoundness_1'] = 'partially gained';
 $string['profoundness_2'] = 'fully gained';
 $string['filteredtaxonomies'] = 'Examples are filtered accordingly to the following taxonomies:';
 $string['show_all_taxonomies'] = 'All taxonomies';
-$string['warning_use_activities'] = 'Warning: You are now working with Moodle Activities. Be sure to use the same outcomes as you did before.';
+$string['warning_use_activities'] = 'Warning: you are now working with Moodle-activites that are associated with competences. Please verify that the same outcomes are used as before.';
 
 //Badges
 $string['mybadges'] = 'My badges';
