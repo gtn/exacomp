@@ -3407,3 +3407,18 @@ function block_exacomp_calc_week_dates($time){
 	
 	return $result;
 }
+/**
+ * 
+ * check if there are already evaluations available
+ * @param unknown_type $courseid
+ */
+function block_exacomp_check_user_evaluation_exists($courseid){
+	$students = block_exacomp_get_students_by_course($courseid);
+	foreach($students as $student){
+		$info =  block_exacomp_get_user_competencies_by_course($student, $courseid);
+		
+		if(!empty($info->competencies->teacher) || !empty($info->comptencies->student))
+			return true;
+	}
+	return false;
+}

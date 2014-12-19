@@ -174,6 +174,8 @@ $string['profoundness_1'] = 'Zum Teil erreicht';
 $string['profoundness_2'] = 'Erreicht';
 $string['filteredtaxonomies'] = 'Beispiele werden anhand der ausgewählten Taxonomien verwendet:';
 $string['show_all_taxonomies'] = 'Alle Taxonomien';
+$string['warning_use_activities'] = 'Warnung: Sie arbeiten jetzt mit Moodle Aktivitäten. Stellen Sie sicher, dass sie mit den selben Kompetenzen arbeiten.';
+
 //Badges
 $string['mybadges'] = 'Meine Auszeichnungen';
 $string['pendingbadges'] = 'Anstehende Auszeichnungen';

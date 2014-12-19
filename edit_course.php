@@ -80,7 +80,11 @@ if ($action == 'save_coursesettings') {
 	if(!$version) $url = 'courseselection.php';
 	else $url = 'edit_config.php';
 	
-	$headertext=get_string("save_success", "block_exacomp") .html_writer::empty_tag('br')
+	$headertext = "";
+	if($settings->uses_activities==1 && block_exacomp_check_user_evaluation_exists($courseid))
+		$headertext .= get_string("warning_use_activities", "block_exacomp").html_writer::empty_tag('br'); 
+	
+	$headertext.=get_string("save_success", "block_exacomp") .html_writer::empty_tag('br')
 		.html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))				
 		. html_writer::link(new moodle_url($url, array('courseid'=>$courseid)), get_string('next_step', 'block_exacomp'));
 }else{
