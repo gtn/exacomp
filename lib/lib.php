@@ -1908,6 +1908,7 @@ function block_exacomp_get_eportfolioitem_association($students){
 			$owner = 0;
 			$useextern = false;
 			$hash = 0;
+			 
 			$sql = '
 				SELECT vs.userid, v.shareall, v.externaccess, v.id, v.hash, v.userid as owner FROM {block_exaportviewblock} vb 
 				JOIN {block_exaportview} v ON vb.viewid=v.id 
@@ -1919,23 +1920,32 @@ function block_exacomp_get_eportfolioitem_association($students){
 			foreach($shared_info as $info){
 				if((isset($info->shareall) && $info->shareall>0)){
 					$shared = true;
+					$useextern = false;
+					$hash = $info->hash;
+					$viewid = $info->id;
+					$owner = $info->owner;
+					continue;
 				} 
 				if(isset($info->externaccess)&& $info->externaccess>0){
 					$shared= true;
 					$useextern = true;
+					$hash = $info->hash;
+					$viewid = $info->id;
+					$owner = $info->owner;
+					continue;
 				}
-				$hash = $info->hash;
-				$viewid = $info->id;
-				$owner = $info->owner;
+				
 			}
 			if(!$shared){
 				//foreach($teachers as $teacher){
 					foreach($shared_info as $info){
 						if(isset($info->userid) && $USER->id == $info->userid){
 							$shared=true;
+							$useextern = false;
 							$hash = $info->hash;
 							$viewid = $info->id;
 							$owner = $info->owner;
+							continue;
 						}
 					}
 				//}
