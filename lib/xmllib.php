@@ -25,7 +25,7 @@ function block_exacomp_xml_do_import($data = null, $par_source = 1, $cron = 0) {
 
 	if(isset($xml->table)){
 		echo get_string('oldxmlfile', 'block_exacomp');
-		exit;
+		return false;
 	}
 	if($source == IMPORT_SOURCE_NORMAL) {
 		block_exacomp_xml_truncate(DB_SKILLS);
