@@ -1386,6 +1386,7 @@
 				longestTextWidth = max([labelWidth,titleWidth]);
 
 			this.width = longestTextWidth + (this.xPadding*2);
+			if (this.width > 280) this.width = 280;
 
 
 			var halfHeight = this.height/2;
@@ -1436,7 +1437,7 @@
 				ctx.fillStyle = this.titleTextColor;
 				ctx.font = this.titleFont;
 
-				wrapText(ctx, this.title, this.x + this.xPadding, this.getLineHeight(0), 300, 17);
+				wrapText(ctx, this.title, this.x + this.xPadding, this.getLineHeight(0), 280, 17);
 				
 				ctx.font = this.font;
 				helpers.each(this.labels,function(label,index){
@@ -1811,7 +1812,7 @@
 			for (i=0;i<this.valuesCount;i++){
 				// 5px to space the text slightly out - similar to what we do in the draw function.
 				pointPosition = this.getPointPosition(i, largestPossibleRadius);
-				textWidth = this.ctx.measureText(template(this.templateString, { value: this.labels[i] })).width + 5;
+				textWidth = 50;
 				if (i === 0 || i === this.valuesCount/2){
 					// If we're at index zero, or exactly the middle, we're at exactly the top/bottom
 					// of the radar chart, so text will be aligned centrally, so we'll half it and compare
@@ -1983,7 +1984,7 @@
 						} else {
 							ctx.textBaseline = 'top';
 						}
-						wrapText(ctx, this.labels[i], pointLabelPosition.x, pointLabelPosition.y-9, 300, 12);
+						//wrapText(ctx, this.labels[i], pointLabelPosition.x, pointLabelPosition.y-9, 300, 12);
 						
 					}
 				}

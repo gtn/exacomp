@@ -2981,7 +2981,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		if(count($records) >= 3 && count($records) <= 7) {
 
-			$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvasradar".$courseid)),"radargraph",array("style" => "width:80%"));
+			$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvasradar".$courseid)),"radargraph",array("style" => "height:100%"));
 			$content .= '
 			<script>
 			var radarChartData = {
