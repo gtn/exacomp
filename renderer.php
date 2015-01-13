@@ -2843,7 +2843,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	function print_pie_graph($teachercomp, $studentcomp, $pendingcomp, $courseid){
 
-		$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvas_doughnut".$courseid)),'piegraph',array("style" => "width:75%"));
+		$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvas_doughnut".$courseid)),'piegraph',array("style" => "width:100%"));
 		$content .= '
 		<script>
 		var pieChartData = [
@@ -2868,7 +2868,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	];
 		
 	var ctx_d = document.getElementById("canvas_doughnut'.$courseid.'").getContext("2d");
-	ctx_d.canvas.height = 150;
+	ctx_d.canvas.height = 120;
 			
 	window.myDoughnut = new Chart(ctx_d).Doughnut(pieChartData, {
 	responsive: true
@@ -2981,7 +2981,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		if(count($records) >= 3 && count($records) <= 7) {
 
-			$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvasradar".$courseid)),"radargraph",array("style" => "width:90%"));
+			$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvasradar".$courseid)),"radargraph",array("style" => "width:80%"));
 			$content .= '
 			<script>
 			var radarChartData = {

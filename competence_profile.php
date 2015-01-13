@@ -48,7 +48,7 @@ $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
 block_exacomp_init_js_css();
-$PAGE->requires->js('/blocks/exacomp/javascript/Chart.min.js', true);
+$PAGE->requires->js('/blocks/exacomp/javascript/Chart.js', true);
 
 // build breadcrumbs navigation
 $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
