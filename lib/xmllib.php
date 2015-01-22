@@ -211,6 +211,7 @@ function block_exacomp_insert_descriptor($descriptor, $parent = 0) {
 			$descriptorarray['profoundness'] = 0;
 		
 		$DB->update_record(DB_DESCRIPTORS, $descriptorarray);
+		$DB->delete_records(DB_DESCEXAMP,array("descrid" => $descriptor->id->__toString()));
 	} else
 		$descriptor->id = $DB->insert_record(DB_DESCRIPTORS, simpleXMLElementToArray($descriptor));
 
@@ -221,7 +222,7 @@ function block_exacomp_insert_descriptor($descriptor, $parent = 0) {
 			//$conditions = array("descrid"=>$descriptor->id->__toString(),"exampid"=>$exampleid[0]->id->__toString());
 			$conditions = array("descrid"=>$descriptor->id->__toString(),"exampid"=>$exampleid);
 
-			if(!$DB->record_exists(DB_DESCEXAMP, $conditions))
+			//if(!$DB->record_exists(DB_DESCEXAMP, $conditions)) //all records deleted above delete_records(DB_DESCEXA...
 				$DB->insert_record(DB_DESCEXAMP, $conditions);
 		}
 	}
