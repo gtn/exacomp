@@ -209,8 +209,14 @@ td.contentcell {
 }
 
 #exacomp .cell .content {
-    padding: 0.5rem;
+    padding: 0.7rem;
     font-size: 1em;
+    border: 1px solid #cacaca;
+    border-radius: 5px;
+    margin-bottom: 3px;
+}
+.childdescriptors {
+    font-size: 0.7em;
 }
 
 #exacomp .skill,

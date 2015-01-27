@@ -2287,6 +2287,8 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 		        continue;
 		    } 
 		        
+		    $descriptor->children = $DB->get_records('block_exacompdescriptors',array('parentid'=>$descriptor->id));
+		    
 			$examples = $DB->get_records_sql(
 					"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
 					e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid

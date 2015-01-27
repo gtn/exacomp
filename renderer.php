@@ -644,7 +644,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							if(isset($descriptor->icon))
 								$compString .= $descriptor->icon;
 
-							$text = "<br />".$descriptor->title;
+							$text = $descriptor->title;
 							if(array_key_exists($descriptor->id, $selection)) {
 								$text = html_writer::link(new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid"=>$courseid,"subjectid"=>$topicid,"topicid"=>$descriptor->id)),$text);
 							}
@@ -659,8 +659,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 										$text .= "<a target='_blank' alt='".$example->title."' title='".$example->title."' href='".$example->externalurl."'>".$img."</a>";
 								}
 							}
+							if(count($descriptor->children) > 0) {
+							    $children = '<ul class="childdescriptors">';
+							    foreach($descriptor->children as $child)
+							        $children .= '<li>' . $child->title . '</li>';
+							    $children .= '</ul>';
+							}
 							$compString .= $text;
 
+							$compString .= $children;
 							/*else {
 							 if(isset($descriptor->teachercomp) && $descriptor->teachercomp)
 								//$compString .= "T";
@@ -670,15 +677,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								//	$compString .= "S";
 							*/
 
-							if(count($data[$skillid][$topicid][$niveauid]) > 1)
-								$compString .= html_writer::tag("hr","");
-
 							if(!isset($descriptor->teachercomp) || !($descriptor->teachercomp))
 								$allTeachercomps = false;
 							if(!isset($descriptor->studentcomp) || !($descriptor->studentcomp) || ($descriptor->teachercomp))
 								$allStudentcomps = false;
 
 							$cssClass = (isset($descriptor->teachercomp) && $descriptor->teachercomp >= $satisfied) ? "content competenceok" : ((isset($descriptor->studentcomp) && $descriptor->studentcomp >= $satisfied) ? "content competenceyellow" : "content ");
+							if($descriptor->parentid > 0)
+							    $cssClass .= ' child';
 							$compdiv .= html_writer::tag('div', $compString,array('class'=>$cssClass));
 						}
 
