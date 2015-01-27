@@ -667,7 +667,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							}
 							$compString .= $text;
 
-							$compString .= $children;
+							if(count($descriptor->children) > 0)
+    							$compString .= $children;
 							/*else {
 							 if(isset($descriptor->teachercomp) && $descriptor->teachercomp)
 								//$compString .= "T";
