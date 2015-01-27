@@ -1366,6 +1366,37 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    // Exacomp savepoint reached.
 	    upgrade_block_savepoint(true, 2015012700, 'exacomp');
 	}
+	if ($oldversion < 2015012701) {
+	
+	    $table = new xmldb_table('block_exacompdescriptors');
+	    $field = new xmldb_field('epop', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, null, null, '0', 'profoundness');
+	    if (!$dbman->field_exists($table, $field)) {
+	        $dbman->add_field($table, $field);
+	    }
+	    $table = new xmldb_table('block_exacompsubjects');
+	    $field = new xmldb_field('epop', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, null, null, '0', 'infolink');
+	    if (!$dbman->field_exists($table, $field)) {
+	        $dbman->add_field($table, $field);
+	    }
+	    $table = new xmldb_table('block_exacomptopics');
+	    $field = new xmldb_field('epop', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, null, null, '0','parentid');
+	    if (!$dbman->field_exists($table, $field)) {
+	        $dbman->add_field($table, $field);
+	    }
+	    $table = new xmldb_table('block_exacompexamples');
+	    $field = new xmldb_field('epop', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, null, null, '0','packagelink');
+	    if (!$dbman->field_exists($table, $field)) {
+	        $dbman->add_field($table, $field);
+	    }
+	    $table = new xmldb_table('block_exacompschooltypes');
+	    $field = new xmldb_field('epop', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, null, null, '0','description');
+	    if (!$dbman->field_exists($table, $field)) {
+	        $dbman->add_field($table, $field);
+	    }
+	
+	    // Exacomp savepoint reached.
+	    upgrade_block_savepoint(true, 2015012701, 'exacomp');
+	}
 	
 	return $result;
 }
