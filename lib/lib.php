@@ -660,7 +660,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness '
+	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.parentid '
 	.'FROM {'.DB_TOPICS.'} t '
 	.(($courseid>0)?'JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
@@ -2270,7 +2270,9 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 		$niveaus = block_exacomp_get_niveaus_for_subject($subjectid);
 		$skills = $DB->get_records_menu('block_exacompskills',null,null,"id, title");
 		$descriptors = block_exacomp_get_descriptors_by_subject($subjectid);
-
+        
+		$supported = block_exacomp_get_supported_modules();
+		
 		$data = array();
 		if($studentid > 0)
 			$competencies = array("studentcomps"=>$DB->get_records(DB_COMPETENCIES,array("role"=>ROLE_STUDENT,"courseid"=>$courseid,"userid"=>$studentid,"comptype"=>TYPE_DESCRIPTOR),"","compid,userid,reviewerid,value"),
@@ -2280,6 +2282,11 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 		$topics = array();
 		$data = array();
 		foreach ($descriptors as $descriptor) {
+		    
+		    if($descriptor->parentid > 0) {
+		        continue;
+		    } 
+		        
 			$examples = $DB->get_records_sql(
 					"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
 					e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid
@@ -2303,7 +2310,7 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 					foreach($cm_mm->competencies[$descriptor->id] as $cmid)
 						$cm_temp[] = $course_mods[$cmid];
 						
-					$icon = block_exacomp_get_icon_for_user($cm_temp, $DB->get_record("user",array("id"=>$studentid)));
+					$icon = block_exacomp_get_icon_for_user($cm_temp, $DB->get_record("user",array("id"=>$studentid)), $supported);
 					$descriptor->icon = '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>';
 				}
 			}

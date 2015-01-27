@@ -1198,6 +1198,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$padding = ($level) * 20 + 4;
 
+			if($descriptor->parentid > 0)
+			    $padding += 20;
+				
 			if($descriptor->examples) {
 				$data->rowgroup++;
 				$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$rowgroup_class;
@@ -1385,6 +1388,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$titleCell->text .= html_writer::link($PAGE->url . "&delete=" . $example->id, html_writer::empty_tag("img", array("src" => "pix/x_11x11_redsmall.png", "alt" => "Delete", "onclick" => "return confirm('" . get_string('delete_confirmation','block_exacomp') . "')")));
 				}
 
+				/*if(isset($example->creatorid) && $example->creatorid == $USER->id) {
+				    $titleCell->text .= html_writer::link(
+				            new moodle_url('/blocks/exacomp/example_upload.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id,"topicid"=>$descriptor->topicid,"exampleid"=>$example->id)),
+				            html_writer::empty_tag('img', array('src'=>'pix/edit.png', 'alt'=>'upload')),
+				            array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+				
+				    $titleCell->text .= html_writer::link($PAGE->url . "&delete=" . $example->id, html_writer::empty_tag("img", array("src" => "pix/x_11x11_redsmall.png", "alt" => "Delete", "onclick" => "return confirm('" . get_string('delete_confirmation','block_exacomp') . "')")));
+				}*/
+				
 				if($example->task)
 					$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->task), html_writer::empty_tag('img', array('src'=>'pix/i_11x11.png', 'alt'=>'link')),array("target" => "_blank"));
 				if($example->externalurl)
@@ -2216,6 +2228,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$padding = ($level) * 20 + 4;
 
+			if($descriptor->parentid > 0)
+			    $padding += 20;
+			
 			$this_rowgroup_class = $rowgroup_class;
 
 			$descriptorRow = new html_table_row();

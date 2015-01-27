@@ -1352,5 +1352,20 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2014112401, 'exacomp');
 	}
+	if ($oldversion < 2015012700) {
+	
+	    // Define field parentid to be added to block_exacompdescriptors.
+	    $table = new xmldb_table('block_exacompdescriptors');
+	    $field = new xmldb_field('parentid', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'profoundness');
+	
+	    // Conditionally launch add field parentid.
+	    if (!$dbman->field_exists($table, $field)) {
+	        $dbman->add_field($table, $field);
+	    }
+	
+	    // Exacomp savepoint reached.
+	    upgrade_block_savepoint(true, 2015012700, 'exacomp');
+	}
+	
 	return $result;
 }

@@ -193,7 +193,10 @@ function block_exacomp_insert_descriptor($descriptor, $parent = 0) {
 	global $DB, $source;
 	$descriptor->sourceid = $descriptor['id']->__toString();
 	$descriptor->source = $source;
-
+    
+	if($parent > 0)
+	    $descriptor->parentid = $parent;
+	
 	if($descriptor['skillid'])
 		$descriptor->skillid = $descriptor['skillid']->__toString();
 	if($descriptor['niveauid'])
