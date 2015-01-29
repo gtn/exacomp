@@ -325,8 +325,16 @@ function block_exacomp_insert_niveau($niveau, $parent = 0) {
  * @param SimpleXMLElement $xmlobject
  */
 function simpleXMLElementToArray(SimpleXMLElement $xmlobject) {
-	//return array_filter(xml2array($xmlobject));
-	return array_filter(json_decode(json_encode($xmlobject),true));
+	$array = json_decode(json_encode((array)$xmlobject), true);
+	$array_final = array();
+	foreach($array as $key => $value){
+	    if(is_array($value) && empty($value)){
+	        $array_final[$key] = null;
+	    }else{
+	        $array_final[$key] = $value;
+	    }
+	}
+	return $array_final;
 }
 
 function block_exacomp_get_database_id($table, $sourceid, $par_source = 1) {
