@@ -68,6 +68,8 @@ require_capability('block/exacomp:teacher', $course_context);
 $action = optional_param('action', "", PARAM_ALPHA);
 $importoption = optional_param('importoption', "", PARAM_ALPHA);
 $importtype = optional_param('importtype', '', PARAM_TEXT);
+$action = optional_param('action', '', PARAM_TEXT);
+
 $mform = new block_exacomp_generalxml_upload_form();
 
 $importSuccess = false;
@@ -107,6 +109,10 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($course_context,$cours
 /* Admins are allowed to import data, or a special capability for custom imports */
 if($isAdmin || block_exacomp_check_customupload()) {
 
+    if($action == 'delete') {
+        block_exacomp_delete_custom_competencies();
+        echo $OUTPUT->box(get_string("delete_success", "block_exacomp"));
+    }
 	if($importtype) {
 		if(strcmp($importtype, 'normal')==0 || strcmp($importtype, 'custom')==0){
 			if ($mform->is_cancelled()) {
@@ -165,7 +171,10 @@ if($isAdmin || block_exacomp_check_customupload()) {
 
 		if(block_exacomp_xml_check_import())
 			echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'custom')), get_string('doimport_own', 'block_exacomp')));
-
+		
+		if(block_exacomp_xml_check_custom_import() && $isAdmin)
+		    echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'action'=>'delete' )), get_string('delete_own', 'block_exacomp'), array( "onclick" => "return confirm('" . get_string('delete_own_confirm','block_exacomp') . "')")));
+		
 		if(isset($import)) {
 			if($import)
 				echo $OUTPUT->box(get_string("importsuccess", "block_exacomp"));

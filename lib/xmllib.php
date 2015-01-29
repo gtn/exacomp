@@ -35,7 +35,6 @@ function block_exacomp_xml_do_import($data = null, $par_source = 1, $cron = 0) {
 			}
 		}
 
-		//block_exacomp_xml_truncate(DB_NIVEAUS);
 		if(isset($xml->niveaus))
 			foreach($xml->niveaus->niveau as $niveau) {
 				block_exacomp_insert_niveau($niveau);
@@ -186,9 +185,6 @@ function block_exacomp_insert_edulevel(&$edulevel) {
 	} else
 		$edulevel->id = $DB->insert_record(DB_EDULEVELS, simpleXMLElementToArray($edulevel));
 }
-/**
- * no child-descriptors supported yet
- */
 function block_exacomp_insert_descriptor($descriptor, $parent = 0) {
 	global $DB, $source;
 	$descriptor->sourceid = $descriptor['id']->__toString();
@@ -200,7 +196,7 @@ function block_exacomp_insert_descriptor($descriptor, $parent = 0) {
 	if($descriptor['skillid'])
 		$descriptor->skillid = $descriptor['skillid']->__toString();
 	if($descriptor['niveauid'])
-		$descriptor->niveauid = block_exacomp_get_database_id(DB_NIVEAUS,$descriptor['niveauid']->__toString(),$source);
+		$descriptor->niveauid = block_exacomp_get_database_id(DB_NIVEAUS,$descriptor['niveauid']->__toString());
 
 	if($source != IMPORT_SOURCE_NORMAL) {
 		if($descriptorObj = $DB->get_record(DB_DESCRIPTORS, array("sourceid"=>$descriptor['id']->__toString(),"source"=>IMPORT_SOURCE_NORMAL)))
@@ -409,6 +405,22 @@ function block_exacomp_xml_check_import() {
 	global $DB;
 	return ($DB->get_records('block_exacompdescriptors')) ? true : false;
 }
+function block_exacomp_xml_check_custom_import() {
+    global $DB;
+    return ($DB->get_records(DB_DESCRIPTORS,array("source" => IMPORT_SOURCE_SPECIFIC))) ? true : false;
+}
+function block_exacomp_delete_custom_competencies() {
+    global $DB;
+    $DB->delete_records(DB_SUBJECTS,array('source' => IMPORT_SOURCE_SPECIFIC));
+    $DB->delete_records(DB_TOPICS,array('source' => IMPORT_SOURCE_SPECIFIC));
+    $DB->delete_records(DB_DESCRIPTORS,array('source' => IMPORT_SOURCE_SPECIFIC));
+    $examples = $DB->get_records(DB_EXAMPLES,array('source' => IMPORT_SOURCE_SPECIFIC));
+    foreach($examples as $example) 
+        block_exacomp_delete_custom_example($example->id);
+    
+    return true;
+}
+
 global $CFG;
 require_once $CFG->libdir . '/formslib.php';
 
