@@ -3021,7 +3021,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			data: [';
 
 			foreach($records as $record)
-				$content .= '"'.$record->student.'",';
+				$content .= '"'.round($record->student, 2).'",';
 			$content .= ']
 			},
 			{
@@ -3035,7 +3035,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			data: [';
 
 			foreach($records as $record)
-				$content .= '"'.$record->teacher.'",';
+				$content .= '"'.round($record->teacher, 2).'",';
 			$content .=']
 		}
 		]
@@ -3045,7 +3045,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		ctx_r.canvas.height = 150;
 		
 		window.myRadar = new Chart(ctx_r).Radar(radarChartData, {
-		responsive: true
+		responsive: true, multiTooltipTemplate: "<%= value %>"+"%"
 		});
 		
 		</script>';
