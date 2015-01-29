@@ -62,31 +62,46 @@ class block_exacomp_example_upload_form extends moodleform {
 		$mform->setType('action', PARAM_ACTION);
 		$mform->setDefault('action', 'add');
 
-		$mform->addElement('text', 'name', get_string("name_example","block_exacomp"), 'maxlength="255" size="60"');
-		$mform->setType('name', PARAM_TEXT);
-		$mform->addRule('name', get_string("titlenotemtpy", "block_exacomp"), 'required', null, 'client');
+		$mform->addElement('text', 'title', get_string("name_example","block_exacomp"), 'maxlength="255" size="60"');
+		$mform->setType('title', PARAM_TEXT);
+		$mform->addRule('title', get_string("titlenotemtpy", "block_exacomp"), 'required', null, 'client');
 
-		$mform->addElement('text', 'intro', get_string("moduleintro"), 'maxlength="255" size="60"');
-		$mform->setType('intro', PARAM_TEXT);
+		$mform->addElement('text', 'description', get_string("moduleintro"), 'maxlength="255" size="60"');
+		$mform->setType('description', PARAM_TEXT);
 		
-		$mform->addElement('text', 'link', get_string("link","block_exacomp"), 'maxlength="255" size="60"');
-		$mform->setType('link', PARAM_TEXT);
+		$mform->addElement('text', 'externalurl', get_string("link","block_exacomp"), 'maxlength="255" size="60"');
+		$mform->setType('externalurl', PARAM_TEXT);
 		
-		$mform->addElement('select', 'tax', get_string('taxonomy', 'block_exacomp'),$this->_customdata['taxonomies']);
+		$mform->addElement('select', 'taxid', get_string('taxonomy', 'block_exacomp'),$this->_customdata['taxonomies']);
 		
-		$mform->addElement('filepicker', 'file', get_string('file'), null, array('subdirs' => false, 'maxfiles' => 1));
-		//$mform->addRule('file', get_string("filerequired", "block_exacomp"), 'required', null, 'client');
+		$editexample = $this->_customdata['exampleid'] > 0;
 		
-		$mform->addElement('filepicker', 'solution', get_string('solution','block_exacomp'), null, array('subdirs' => false, 'maxfiles' => 1));
+		if(!$editexample || ($editexample && !$this->_customdata['task'])) {
+    		$mform->addElement('filepicker', 'file', get_string('file'), null, array('subdirs' => false, 'maxfiles' => 1));
+		} else {
+		    $mform->addElement('static', 'filelabel', get_string('file'));
+		    $mform->addElement('html', '<img width="50%" src="'.$this->_customdata['task'].'"/>',get_string('file'));
+		}
 		
-		if($version) {
-			$mform->addElement('checkbox', 'lisfilename', get_string('lisfilename', 'block_exacomp'));
-			$mform->setDefault('lisfilename', 1);
+		if(!$editexample || ($editexample && !$this->_customdata['solution'])) {
+		    $mform->addElement('filepicker', 'solution', get_string('solution','block_exacomp'), null, array('subdirs' => false, 'maxfiles' => 1));
+		
+		    if($version) {
+		        $mform->addElement('checkbox', 'lisfilename', get_string('lisfilename', 'block_exacomp'));
+		        $mform->setDefault('lisfilename', 1);
+		    }
+		} else {
+		    $mform->addElement('static', 'solutionlabel', get_string('solution','block_exacomp'));
+		    $mform->addElement('html', '<img width="50%" src="'.$this->_customdata['solution'].'"/>',get_string('solution','block_exacomp'));
 		}
 		
 		$mform->addElement('hidden','topicid');
 		$mform->setType('topicid', PARAM_INT);
 		$mform->setDefault('topicid',$this->_customdata['topicid']);
+		
+		$mform->addElement('hidden','exampleid');
+		$mform->setType('exampleid', PARAM_INT);
+		$mform->setDefault('exampleid',$this->_customdata['exampleid']);
 		
 		$this->add_action_buttons(false);
 	}
