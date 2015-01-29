@@ -78,7 +78,7 @@ if($version	&& $studentid > 0 && isset($_POST['btn_submit']) && $subjectid > 0)
 
 list($niveaus, $skills, $subjects, $data, $selection) = block_exacomp_init_competence_grid_data($courseid, $subjectid, $studentid, (block_exacomp_get_settings_by_course($courseid)->show_all_examples != 0 || $isTeacher), block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies);
 
-echo $output->print_subject_dropdown($dropdown_subjects,$subjectid, $studentid);
+echo $output->print_subject_dropdown(block_exacomp_get_schooltypetree_by_subjects($dropdown_subjects),$subjectid, $studentid);
 if($data) {
 	if (has_capability('block/exacomp:teacher', $context)) {
 		echo ' '.get_string("choosestudent","block_exacomp").' ';

@@ -108,9 +108,9 @@ else{
 	echo $output->print_competence_overview_form_start((isset($selectedTopic))?$selectedTopic:null, (isset($selectedSubject))?$selectedSubject:null);
 
 	//dropdowns for subjects and topics
-	echo $output->print_overview_dropdowns($subjects, $topics, $selectedSubject->id, $selectedTopic->id);
+	echo $output->print_overview_dropdowns(block_exacomp_get_schooltypetree_by_subjects($subjects), $topics, $selectedSubject->id, $selectedTopic->id);
 	
-	$schooltype = block_exacomp_get_schooltyp_by_subject($selectedSubject);
+	$schooltype = block_exacomp_get_schooltype_title_by_subject($selectedSubject);
 	$cat = block_exacomp_get_category($selectedTopic);
 		
 	$scheme = block_exacomp_get_grading_scheme($courseid);
