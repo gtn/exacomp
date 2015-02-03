@@ -329,24 +329,32 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content = html_writer::tag("div", html_writer::table($table), array("id"=>"exabis_competences_block"));
 		return $content;
 	}
-	public function print_subject_dropdown($subjects, $selectedSubject, $studentid = 0) {
+	public function print_subject_dropdown($schooltypetree, $selectedSubject, $studentid = 0) {
 		global $PAGE;
 		$content = get_string("choosesubject", "block_exacomp");
+		$array = array();
 		$options = array();
-		foreach($subjects as $subject)
-			$options[$subject->id] = $subject->title;
-
-		$content .= html_writer::select($options, "lis_subjects",$selectedSubject, false,
+		
+		foreach($schooltypetree as $schooltype){
+		    $options[$schooltype->title] = array();
+		    foreach($schooltype->subjects as $subject)
+			    $options[$schooltype->title][$subject->id] = $subject->title;
+			
+			$array[] = $options;
+			$options = array();
+		}
+	
+		$content .= html_writer::select($array, "lis_subjects",$selectedSubject, false,
 				array("onchange" => "document.location.href='".$PAGE->url. ($studentid > 0 ? "&studentid=".$studentid : "") ."&subjectid='+this.value;"));
 		return $content;
 	}
 	/**
 	 * Prints 2 select inputs for subjects and topics
 	 */
-	public function print_overview_dropdowns($subjects, $topics, $selectedSubject, $selectedTopic) {
+	public function print_overview_dropdowns($schooltypetree, $topics, $selectedSubject, $selectedTopic) {
 		global $PAGE;
 
-		$content = $this->print_subject_dropdown($subjects, $selectedSubject);
+		$content = $this->print_subject_dropdown($schooltypetree, $selectedSubject);
 		$content .= html_writer::empty_tag("br");
 
 		$content .= get_string("choosetopic", "block_exacomp").': ';

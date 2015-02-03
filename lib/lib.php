@@ -820,6 +820,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $student=false) {
 
 	$subjects = block_exacomp_get_subjects_by_course($courseid);
+	
 	if (isset($subjects[$subjectid])) {
 		$selectedSubject = $subjects[$subjectid];
 	} elseif ($subjects) {
@@ -1230,14 +1231,23 @@ function block_exacomp_get_schooltypes($edulevel) {
 	return $DB->get_records(DB_SCHOOLTYPES, array("elid" => $edulevel));
 }
 /**
- * Gets a subject's schooltype
+ * Gets a subject's schooltype title
  * 
  * @param object $subject
  * @return Ambigous <mixed, boolean>
  */
-function block_exacomp_get_schooltyp_by_subject($subject){
+function block_exacomp_get_schooltype_title_by_subject($subject){
 	global $DB;
 	return $DB->get_field(DB_SCHOOLTYPES, "title", array("id"=>$subject->stid));
+}
+/**
+ * Get a schooltype by subject
+ * 
+ * @param unknown_type $subject
+ */
+function block_exacomp_get_schooltype_by_subject($subject){
+    global $DB;
+    return $DB->get_record(DB_SCHOOLTYPES, array("id"=>$subject->stid));
 }
 /**
  * Gets a topic's category
@@ -3430,4 +3440,29 @@ function block_exacomp_check_user_evaluation_exists($courseid){
 			return true;
 	}
 	return false;
+}
+/**
+ * build a schooltype -> subjects tree with given subjects
+ * @param unknown_type $subjects
+ * @return tree like:
+ *  schooltype1
+ *  	- subject 1
+ *  	- subject 2
+ *  schooltype2
+ *  	- subject 3 
+ */
+function block_exacomp_get_schooltypetree_by_subjects($subjects){
+    $tree = array();
+    foreach($subjects as $subject){
+        $schooltype = block_exacomp_get_schooltype_by_subject($subject);
+       
+        if(!array_key_exists($schooltype->id, $tree)){
+            $tree[$schooltype->id] = new stdClass();
+            $tree[$schooltype->id]->id = $schooltype->id;
+            $tree[$schooltype->id]->title = $schooltype->title; 
+            $tree[$schooltype->id]->subjects = array();
+        }
+        $tree[$schooltype->id]->subjects[$subject->id] = $subject; 
+    }
+    return $tree;
 }
