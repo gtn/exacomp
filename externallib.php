@@ -136,8 +136,14 @@ class block_exacomp_external extends external_api {
 		}
 
 		$params = self::validate_parameters(self::get_topics_parameters(), array('subjectid'=>$subjectid,'courseid'=>$courseid));
-
-		return $DB->get_records_sql('
+		
+		/*$returnval = array();
+		$returnval[92] = new stdClass();
+		$returnval[92]->title = "title";
+		$returnval[92]->topicid=12;
+		return $returnval;*/
+		
+		$array = $DB->get_records_sql('
 				SELECT s.id as topicid, s.title
 				FROM {block_exacompsubjects} s
 				JOIN {block_exacomptopics} t ON t.subjid = s.id
@@ -153,8 +159,8 @@ class block_exacomp_external extends external_api {
 				GROUP BY s.id
 				ORDER BY s.title
 				', array($courseid,$subjectid));
-
-		return $DB->get_records('block_exacompsubjects',array('stid' => $subjectid),'id','id as topicid, title');
+			
+		return $array;
 	}
 
 	/**
@@ -813,6 +819,74 @@ class block_exacomp_external extends external_api {
 				)
 		);
 	}
+	/**
+	 * Returns description of method parameters
+	 * @return external_function_parameters
+	 */
+	public static function get_subtopics_by_topic_parameters() {
+		return new external_function_parameters(
+				array('topicid' => new external_value(PARAM_INT, 'id of topic'))
+		);
+	}
+	/**
+	 * Get subtopics
+	 * @param int topicid
+	 * @return array of subtopics
+	 */
+	public static function get_subtopics_by_topic($topicid) {
+		global $CFG,$DB;
 
+		if (empty($topicid)) {
+			throw new invalid_parameter_exception('Parameter can not be empty');
+		}
+
+		$params = self::validate_parameters(self::get_subtopics_by_topic_parameters(), array('topicid'=>$topicid));
+        
+	    $mycourses = enrol_get_my_courses();
+		$courses = array();
+
+		foreach($mycourses as $mycourse) {
+			$context = context_course::instance($mycourse->id);
+			//$context = get_context_instance(CONTEXT_COURSE, $mycourse->id);
+			if($DB->record_exists("block_instances", array("blockname" => "exacomp", "parentcontextid" => $context->id))) {
+				$course = array("courseid" => $mycourse->id,"fullname"=>$mycourse->fullname,"shortname"=>$mycourse->shortname);
+				$courses[] = $course;
+			}
+		}
+		
+		//courses in $courses
+		$topics = array();
+		foreach($courses as $course){
+			$tree = block_exacomp_build_example_tree_desc($course["courseid"]);
+		    foreach($tree as $subject){
+		        if($subject->id == $topicid){
+		            foreach($subject->subs as $topic){
+		                if(!array_key_exists($topic->id, $topics)){
+		                    $topics[$topic->id] = new stdClass();
+		                    $topics[$topic->id]->subtopicid = $topic->id;
+		                    $topics[$topic->id]->title = $topic->title;
+		                }
+		            }
+		        }
+		    }
+		}
+		
+		return $topics;
+	}
+
+	/**
+	 * Returns desription of method return values
+	 * @return external_multiple_structure
+	 */
+	public static function get_subtopics_by_topic_returns() {
+		return new external_multiple_structure(
+				new external_single_structure(
+						array(
+								'subtopicid' => new external_value(PARAM_INT, 'id of topic'),
+								'title' => new external_value(PARAM_TEXT, 'title of topic')
+						)
+				)
+		);
+	}
 
 }
