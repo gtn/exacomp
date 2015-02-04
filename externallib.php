@@ -829,7 +829,9 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function get_subtopics_by_topic_parameters() {
 		return new external_function_parameters(
-				array('topicid' => new external_value(PARAM_INT, 'id of topic'))
+				array(
+					'topicid' => new external_value(PARAM_INT, 'id of topic'),
+					'userid' => new external_value(PARAM_INT, 'id of user'))
 		);
 	}
 	/**
@@ -837,16 +839,20 @@ class block_exacomp_external extends external_api {
 	 * @param int topicid
 	 * @return array of subtopics
 	 */
-	public static function get_subtopics_by_topic($topicid) {
-		global $CFG,$DB;
+	public static function get_subtopics_by_topic($topicid, $userid) {
+		global $CFG,$DB, $USER;
 
 		if (empty($topicid)) {
 			throw new invalid_parameter_exception('Parameter can not be empty');
 		}
-
-		$params = self::validate_parameters(self::get_subtopics_by_topic_parameters(), array('topicid'=>$topicid));
+		
+		$params = self::validate_parameters(self::get_subtopics_by_topic_parameters(), array('topicid'=>$topicid, 'userid'=>$userid));
         
-	    $mycourses = enrol_get_my_courses();
+	    if($userid == 0)
+		    $userid = $USER->id;
+
+		$mycourses = enrol_get_users_courses($USER->id);
+		//$mycourses = enrol_get_my_courses();
 		$courses = array();
 
 		foreach($mycourses as $mycourse) {
@@ -898,7 +904,9 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function get_examples_by_subtopic_parameters() {
 		return new external_function_parameters(
-				array('subtopicid' => new external_value(PARAM_INT, 'id of subtopic'))
+				array(
+					'subtopicid' => new external_value(PARAM_INT, 'id of subtopic'),
+					'userid' => new external_value(PARAM_INT, 'id of user'))
 		);
 	}
 	/**
@@ -906,16 +914,20 @@ class block_exacomp_external extends external_api {
 	 * @param int subtopicid
 	 * @return array of examples
 	 */
-	public static function get_examples_by_subtopic($subtopicid) {
-		global $CFG,$DB;
+	public static function get_examples_by_subtopic($subtopicid, $userid) {
+		global $CFG,$DB, $USER;
 
 		if (empty($subtopicid)) {
 			throw new invalid_parameter_exception('Parameter can not be empty');
 		}
 
-		$params = self::validate_parameters(self::get_examples_by_subtopic_parameters(), array('subtopicid'=>$subtopicid));
+		$params = self::validate_parameters(self::get_examples_by_subtopic_parameters(), array('subtopicid'=>$subtopicid, 'userid'=>$userid));
         
-	    $mycourses = enrol_get_my_courses();
+	    if($userid == 0)
+		    $userid = $USER->id;
+
+		$mycourses = enrol_get_users_courses($userid);
+		//$mycourses = enrol_get_my_courses();
 		$courses = array();
 
 		foreach($mycourses as $mycourse) {
