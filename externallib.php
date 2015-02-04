@@ -17,9 +17,7 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function get_courses_parameters() {
 		return new external_function_parameters(
-				array(
-						// no parameters
-				)
+				array('userid' => new external_value(PARAM_INT, 'id of user'))
 		);
 	}
 
@@ -27,11 +25,17 @@ class block_exacomp_external extends external_api {
 	 * get courses
 	 * @return array of user courses
 	 */
-	public static function get_courses() {
-		global $CFG,$DB;
+	public static function get_courses($userid) {
+		global $CFG,$DB, $USER;
 		require_once("$CFG->dirroot/lib/enrollib.php");
 
-		$mycourses = enrol_get_my_courses();
+		$params = self::validate_parameters(self::get_courses_parameters(), array('userid'=>$userid));
+
+		if($userid == 0)
+		    $userid = $USER->id;
+
+		$mycourses = enrol_get_users_courses($userid);
+		//$mycourses = enrol_get_my_courses();
 		$courses = array();
 
 		foreach($mycourses as $mycourse) {
