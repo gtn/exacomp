@@ -888,5 +888,84 @@ class block_exacomp_external extends external_api {
 				)
 		);
 	}
+	/**
+	 * Returns description of method parameters
+	 * @return external_function_parameters
+	 */
+	public static function get_examples_by_subtopic_parameters() {
+		return new external_function_parameters(
+				array('subtopicid' => new external_value(PARAM_INT, 'id of subtopic'))
+		);
+	}
+	/**
+	 * Get examples
+	 * @param int subtopicid
+	 * @return array of examples
+	 */
+	public static function get_examples_by_subtopic($subtopicid) {
+		global $CFG,$DB;
+
+		if (empty($subtopicid)) {
+			throw new invalid_parameter_exception('Parameter can not be empty');
+		}
+
+		$params = self::validate_parameters(self::get_examples_by_subtopic_parameters(), array('subtopicid'=>$subtopicid));
+        
+	    $mycourses = enrol_get_my_courses();
+		$courses = array();
+
+		foreach($mycourses as $mycourse) {
+			$context = context_course::instance($mycourse->id);
+			//$context = get_context_instance(CONTEXT_COURSE, $mycourse->id);
+			if($DB->record_exists("block_instances", array("blockname" => "exacomp", "parentcontextid" => $context->id))) {
+				$course = array("courseid" => $mycourse->id,"fullname"=>$mycourse->fullname,"shortname"=>$mycourse->shortname);
+				$courses[] = $course;
+			}
+		}
+		
+		$examples = array();
+
+		foreach($courses as $course){
+    		$descriptors = block_exacomp_get_descriptors_by_topic($course["courseid"], $subtopicid);
+    
+    		foreach($descriptors as $descriptor){
+        	    $examples = $DB->get_records_sql(
+        				"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
+        				e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid
+        				FROM {" . DB_EXAMPLES . "} e
+        				JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
+        				LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id"
+        				. " WHERE " 
+        				. ((true) ? " 1=1 " : " e.creatorid > 0")
+        				. ((in_array(SHOW_ALL_TAXONOMIES, $filteredtaxonomies)) ? "" : " AND e.taxid IN (".implode(",", $filteredtaxonomies) .")" )
+        				, array($descriptor->id));
+        	
+        		foreach($examples as $example){
+        		    if(!array_key_exists($example->id, $examples)){
+            			$examples[$example->id] = new stdClass();
+            			$examples[$example->id]->exampleid = $example->id;
+            			$examples[$example->id]->title = $example->title;
+            		}
+        		}
+    		}
+		}
+		
+	    return $examples;
+	}
+
+	/**
+	 * Returns desription of method return values
+	 * @return external_multiple_structure
+	 */
+	public static function get_subtopics_by_topic_returns() {
+		return new external_multiple_structure(
+				new external_single_structure(
+						array(
+								'exampleid' => new external_value(PARAM_INT, 'id of topic'),
+								'title' => new external_value(PARAM_TEXT, 'title of topic')
+						)
+				)
+		);
+	}
 
 }

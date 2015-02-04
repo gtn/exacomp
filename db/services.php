@@ -14,7 +14,8 @@ $services = array(
 						'block_exacomp_update_assign_submission',
 						'block_exacomp_get_competence_by_id',
 						'block_exacomp_get_topic_by_id',
-						'block_exacomp_get_subtopics_by_topic'), 	//web service functions of this service
+						'block_exacomp_get_subtopics_by_topic',
+                        'block_exacomp_get_examples_by_subtopic'), 	//web service functions of this service
 				'restrictedusers' =>0,                      //if enabled, the Moodle administrator must link some user to this service
 				//into the administration
 				'enabled'=>1,                               //if enabled, the service can be reachable on a default installation
@@ -114,6 +115,13 @@ $functions = array(
 				'methodname'  => 'get_subtopics_by_topic',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'Get subtopics by topic id',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'block_exacomp_get_examples_by_subtopic' => array(     //web service function name
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'get_examples_by_subtopic',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'Get examples for subtopic',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)
 		)
 );
