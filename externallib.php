@@ -957,7 +957,7 @@ class block_exacomp_external extends external_api {
 	 * Returns desription of method return values
 	 * @return external_multiple_structure
 	 */
-	public static function get_subtopics_by_topic_returns() {
+	public static function get_examples_by_subtopic_returns() {
 		return new external_multiple_structure(
 				new external_single_structure(
 						array(
