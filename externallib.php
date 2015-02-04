@@ -923,7 +923,7 @@ class block_exacomp_external extends external_api {
 			}
 		}
 		
-		$examples = array();
+		$examples_subtopic = array();
 
 		foreach($courses as $course){
     		$descriptors = block_exacomp_get_descriptors_by_topic($course["courseid"], $subtopicid);
@@ -935,22 +935,19 @@ class block_exacomp_external extends external_api {
         				FROM {" . DB_EXAMPLES . "} e
         				JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
         				LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id"
-        				. " WHERE " 
-        				. ((true) ? " 1=1 " : " e.creatorid > 0")
-        				. ((in_array(SHOW_ALL_TAXONOMIES, $filteredtaxonomies)) ? "" : " AND e.taxid IN (".implode(",", $filteredtaxonomies) .")" )
         				, array($descriptor->id));
         	
         		foreach($examples as $example){
-        		    if(!array_key_exists($example->id, $examples)){
-            			$examples[$example->id] = new stdClass();
-            			$examples[$example->id]->exampleid = $example->id;
-            			$examples[$example->id]->title = $example->title;
+        		    if(!array_key_exists($example->id, $examples_subtopic)){
+            			$examples_subtopic[$example->id] = new stdClass();
+            			$examples_subtopic[$example->id]->exampleid = $example->id;
+            			$examples_subtopic[$example->id]->title = $example->title;
             		}
         		}
     		}
 		}
 		
-	    return $examples;
+	    return $examples_subtopic;
 	}
 
 	/**
@@ -961,11 +958,12 @@ class block_exacomp_external extends external_api {
 		return new external_multiple_structure(
 				new external_single_structure(
 						array(
-								'exampleid' => new external_value(PARAM_INT, 'id of topic'),
-								'title' => new external_value(PARAM_TEXT, 'title of topic')
+								'exampleid' => new external_value(PARAM_INT, 'id of example'),
+								'title' => new external_value(PARAM_TEXT, 'title of example')
 						)
 				)
 		);
 	}
+
 
 }
