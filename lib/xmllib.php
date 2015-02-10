@@ -35,6 +35,7 @@ function block_exacomp_xml_do_import($data = null, $par_source = 1, $cron = 0) {
 			}
 		}
 
+		//niveaus are only updated within normal import -> TODO
 		if(isset($xml->niveaus))
 			foreach($xml->niveaus->niveau as $niveau) {
 				block_exacomp_insert_niveau($niveau);
@@ -195,14 +196,22 @@ function block_exacomp_insert_descriptor($descriptor, $parent = 0) {
 	
 	if($descriptor['skillid'])
 		$descriptor->skillid = $descriptor['skillid']->__toString();
-	if($descriptor['niveauid'])
+	if($descriptor['niveauid']) //niveaus have to be imported with normal import -> TODO
 		$descriptor->niveauid = block_exacomp_get_database_id(DB_NIVEAUS,$descriptor['niveauid']->__toString());
 
+	//if specific import and descriptor already normal imported -> return
 	if($source != IMPORT_SOURCE_NORMAL) {
 		if($descriptorObj = $DB->get_record(DB_DESCRIPTORS, array("sourceid"=>$descriptor['id']->__toString(),"source"=>IMPORT_SOURCE_NORMAL)))
 			return;
 	}
 
+	//other way round: if normale import and descriptor already specific imported -> return
+	if($source == IMPORT_SOURCE_NORMAL){
+	    if($descriptorObj = $DB->get_record(DB_DESCRIPTORS, array("sourceid"=>$descriptor['id']->__toString(), "source"=>IMPORT_SOURCE_SPECIFIC)))
+	        return;
+	}
+	
+	//if descriptor already in db, imported from same source -> update
 	if($descriptorObj = $DB->get_record(DB_DESCRIPTORS, array("sourceid"=>$descriptor['id']->__toString(),"source"=>$source))) {
 		$descriptor->id = $descriptorObj->id;
 		$descriptorarray = simpleXMLElementToArray($descriptor);
@@ -211,7 +220,7 @@ function block_exacomp_insert_descriptor($descriptor, $parent = 0) {
 		
 		$DB->update_record(DB_DESCRIPTORS, $descriptorarray);
 		$DB->delete_records(DB_DESCEXAMP,array("descrid" => $descriptor->id->__toString()));
-	} else
+	} else //descriptor not in db yet -> insert
 		$descriptor->id = $DB->insert_record(DB_DESCRIPTORS, simpleXMLElementToArray($descriptor));
 
 	if($descriptor->examples) {
