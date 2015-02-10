@@ -15,7 +15,9 @@ $services = array(
 						'block_exacomp_get_competence_by_id',
 						'block_exacomp_get_topic_by_id',
 						'block_exacomp_get_subtopics_by_topic',
-                        'block_exacomp_get_examples_by_subtopic'), 	//web service functions of this service
+                        'block_exacomp_get_examples_by_subtopic',
+                        'block_exacomp_get_example_by_id',
+						'block_exacomp_get_descriptors_for_example'), 	//web service functions of this service
 				'restrictedusers' =>0,                      //if enabled, the Moodle administrator must link some user to this service
 				//into the administration
 				'enabled'=>1,                               //if enabled, the service can be reachable on a default installation
@@ -122,6 +124,20 @@ $functions = array(
 				'methodname'  => 'get_examples_by_subtopic',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'Get examples for subtopic',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'block_exacomp_get_example_by_id' => array(     //web service function name
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'get_example_by_id',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'Get example',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'block_exacomp_get_descriptors_for_example' => array(     //web service function name
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'get_descriptors_for_example',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'Get desciptors for example',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)
 		)
 );

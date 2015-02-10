@@ -980,6 +980,106 @@ class block_exacomp_external extends external_api {
 				)
 		);
 	}
+	
+	/**
+	 * Returns description of method parameters
+	 * @return external_function_parameters
+	 */
+	public static function get_example_by_id_parameters() {
+		return new external_function_parameters(
+				array(
+					'exampleid' => new external_value(PARAM_INT, 'id of example')
+				)
+		);
+	}
+	/**
+	 * Get example
+	 * @param int exampleid
+	 * @return example
+	 */
+	public static function get_example_by_id($exampleid) {
+		global $CFG,$DB, $USER;
 
+		if (empty($exampleid)) {
+			throw new invalid_parameter_exception('Parameter can not be empty');
+		}
+
+		$params = self::validate_parameters(self::get_example_by_id_parameters(), array('exampleid'=>$exampleid));
+        
+        $example = $DB->get_record(DB_EXAMPLES, array('id'=>$exampleid));
+		
+		$example_item_db = $DB->get_record('block_exaportitemexample', array('exampleid'=>$exampleid));
+		//TODO letzten eintrag
+		$example->studentvalue = ($example_item_db)?$example_item_db->studentvalue:0;
+		
+		return $example;
+	}
+
+	/**
+	 * Returns desription of method return values
+	 * @return external_multiple_structure
+	 */
+	public static function get_example_by_id_returns() {
+		return new external_single_structure(
+				array(
+						'title' => new external_value(PARAM_TEXT, 'title of example'),
+				        'description' => new external_value(PARAM_TEXT, 'description of example'),
+						'studentvalue' => new external_value(PARAM_INT, 'student self evalution')
+				)
+				
+		);
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 * @return external_function_parameters
+	 */
+	public static function get_descriptors_for_example_parameters() {
+		return new external_function_parameters(
+				array(
+					'exampleid' => new external_value(PARAM_INT, 'id of example')
+				)
+		);
+	}
+
+	/**
+	 * Get descriptors for example
+	 * @param int exampleid
+	 * @return list of descriptors
+	 */
+	public static function get_descriptors_for_example($exampleid) {
+		global $CFG,$DB, $USER;
+
+		if (empty($exampleid)) {
+			throw new invalid_parameter_exception('Parameter can not be empty');
+		}
+
+		$params = self::validate_parameters(self::get_descriptors_for_example_parameters(), array('exampleid'=>$exampleid));
+        $descriptors_exam_mm = $DB->get_records(DB_DESCEXAMP, array('exampid'=>$exampleid));
+		$descriptors = array();
+		foreach($descriptors_exam_mm as $descriptor_mm){
+			$descriptors[$descriptor_mm->descrid] = $DB->get_record(DB_DESCRIPTORS, array('id'=>$descriptor_mm->descrid));
+			//TODO evaluation
+			$descriptors[$descriptor_mm->descrid]->evaluation=0;
+			$descriptors[$descriptor_mm->descrid]->descriptorid = $descriptor_mm->descrid;
+		}
+        return $descriptors;
+	}
+
+	/**
+	 * Returns desription of method return values
+	 * @return external_multiple_structure
+	 */
+	public static function get_descriptors_for_example_returns() {
+		return new external_multiple_structure(
+				new external_single_structure(
+						array(
+								'descriptorid' => new external_value(PARAM_INT, 'id of descriptor'),
+								'title' => new external_value(PARAM_TEXT, 'title of descriptor'),
+								'evaluation' => new external_value(PARAM_INT, 'evaluation of descriptor')
+						)
+				)
+		);
+	}
 
 }
