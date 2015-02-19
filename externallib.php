@@ -1087,14 +1087,13 @@ class block_exacomp_external extends external_api {
 				)
 		);
 	}
-	/**
+		/**
 	 * Returns description of method parameters
 	 * @return external_function_parameters
 	 */
 	public static function get_user_role_parameters() {
 		return new external_function_parameters(
 				array(
-					'userid' => new external_value(PARAM_INT, 'id of current user')
 				)
 		);
 	}
@@ -1105,26 +1104,22 @@ class block_exacomp_external extends external_api {
 	 * @param int userid
 	 * @return int
 	 */
-	public static function get_user_role($userid) {
+	public static function get_user_role() {
 		global $CFG,$DB, $USER;
 
-		if (empty($userid)) {
-			throw new invalid_parameter_exception('Parameter can not be empty');
-		}
-
-		$params = self::validate_parameters(self::get_user_role_parameters(), array('userid'=>$userid));
+		$params = self::validate_parameters(self::get_user_role_parameters(), array());
        
-        $trainer = $DB->get_records('block_exacompexternaltrainer', array('trainerid'=>$userid));
+        $trainer = $DB->get_records('block_exaportexternaltrainer', array('trainerid'=>$USER->id));
         if($trainer)
-            return 1;
+            return  array("role" => 1);
         
-        $student = $DB->get_records('block_exacompexternaltrainer', array('studentid'=>$userid));
+        $student = $DB->get_records('block_exaportexternaltrainer', array('studentid'=>$USER->id));
         
         if($student)
-            return 2;
+            return array("role" => 2);
         
         //neither student nor trainer
-		return 0;
+		return array("role" => $USER->id);
 	}
 
 	/**
