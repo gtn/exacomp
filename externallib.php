@@ -1081,5 +1081,56 @@ class block_exacomp_external extends external_api {
 				)
 		);
 	}
+	/**
+	 * Returns description of method parameters
+	 * @return external_function_parameters
+	 */
+	public static function get_user_role_parameters() {
+		return new external_function_parameters(
+				array(
+					'userid' => new external_value(PARAM_INT, 'id of current user')
+				)
+		);
+	}
 
+	/**
+	 * return 1 for trainer 
+	 * 		  2 for student
+	 * @param int userid
+	 * @return int
+	 */
+	public static function get_user_role($userid) {
+		global $CFG,$DB, $USER;
+
+		if (empty($userid)) {
+			throw new invalid_parameter_exception('Parameter can not be empty');
+		}
+
+		$params = self::validate_parameters(self::get_user_role_parameters(), array('userid'=>$userid));
+       
+        $trainer = $DB->get_records('block_exacompexternaltrainer', array('trainerid'=>$userid));
+        if($trainer)
+            return 1;
+        
+        $student = $DB->get_records('block_exacompexternaltrainer', array('studentid'=>$userid));
+        
+        if($student)
+            return 2;
+        
+        //neither student nor trainer
+		return 0;
+	}
+
+	/**
+	 * Returns description of method return values
+	 * @return external_multiple_structure
+	 */
+	public static function get_user_role_returns() {
+		return new external_function_parameters(
+				array(
+					'role' => new external_value(PARAM_INT, '1=trainer, 2=student')
+				)
+		);
+	}
+	
 }
