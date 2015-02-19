@@ -1059,8 +1059,14 @@ class block_exacomp_external extends external_api {
 		$descriptors = array();
 		foreach($descriptors_exam_mm as $descriptor_mm){
 			$descriptors[$descriptor_mm->descrid] = $DB->get_record(DB_DESCRIPTORS, array('id'=>$descriptor_mm->descrid));
-			//TODO evaluation
-			$descriptors[$descriptor_mm->descrid]->evaluation=0;
+			//missing courseid? possibility of duplicate entries
+			$eval = $DB->get_record(DB_COMPETENCIES, array('userid'=>$USER->id, 'compid'=>$descriptor_mm->descrid));
+			if($eval){
+			    $descriptors[$descriptor_mm->descrid]->evaluation=$eval->value;
+			}else{ 
+			    $descriptors[$descriptor_mm->descrid]->evaluation=0;
+			}
+			
 			$descriptors[$descriptor_mm->descrid]->descriptorid = $descriptor_mm->descrid;
 		}
         return $descriptors;
