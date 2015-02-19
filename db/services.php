@@ -18,7 +18,9 @@ $services = array(
                         'block_exacomp_get_examples_by_subtopic',
                         'block_exacomp_get_example_by_id',
 						'block_exacomp_get_descriptors_for_example',
-                        'block_exacomp_get_user_role'), 	//web service functions of this service
+                        'block_exacomp_get_user_role',
+				        'block_exacomp_get_external_trainer_students',
+                        'block_exacomp_get_item_example_status'), 	//web service functions of this service
 				'restrictedusers' =>0,                      //if enabled, the Moodle administrator must link some user to this service
 				//into the administration
 				'enabled'=>1,                               //if enabled, the service can be reachable on a default installation
@@ -146,6 +148,20 @@ $functions = array(
 				'methodname'  => 'get_user_role',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'Get role for user: 1=trainer 2=student',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+        'block_exacomp_get_external_trainer_students' => array(         //web service function name
+				'classname'   => 'block_exaport_external',  //class containing the external function
+				'methodname'  => 'get_external_trainer_students',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'Get external trainer\'s students' ,    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'block_exacomp_get_item_example_status' => array(    //web service function name
+		        'classname'   => 'block_exaport_external',  //class containing the external function
+				'methodname'  => 'get_item_example_status',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'Get Example Status',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)
 		)
 );

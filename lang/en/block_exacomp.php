@@ -332,6 +332,14 @@ $string['profoundness_extended'] = 'Extended competence';
 $string['profoundness_mainly'] = 'Mainly achieved';
 $string['profoundness_entirely'] = 'Entirely achieved';
 
+//External trainers
+$string['block_exacomp_external_trainer_assign_head'] = 'Allow assigning external trainers for students. This is required for using the elove app';
+$string['block_exacomp_external_trainer_assign_body'] = '';
+$string['block_exacomp_external_trainer_assign'] = 'Assign external trainers';
+$string['block_exacomp_external_trainer_assign_new'] = 'New assign: ';
+$string['block_exacomp_external_trainer'] = 'Trainer';
+$string['block_exacomp_external_trainer_student'] = 'Student';
+
 //metadata
 $string['subject_singular'] = 'Field of competence';
 $string['comp_field_idea'] = 'Skill';

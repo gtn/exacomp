@@ -22,3 +22,6 @@ $settings->add(new admin_setting_configcheckbox('exacomp/skillmanagement', get_s
 
 $settings->add(new admin_setting_configcheckbox('exacomp/enableteacherimport', get_string('settings_enableteacherimport', 'block_exacomp'),
 		get_string('settings_enableteacherimport_description', 'block_exacomp'), 0, 1, 0));
+
+$settings->add(new admin_setting_configcheckbox('exacomp/external_trainer_assign', get_string('block_exacomp_external_trainer_assign_head', 'block_exacomp'),
+        get_string('block_exacomp_external_trainer_assign_body', 'block_exacomp'), 0));

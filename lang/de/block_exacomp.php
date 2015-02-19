@@ -371,6 +371,14 @@ $string['profoundness_extended'] = 'Erweiterte Kompetenz';
 $string['profoundness_mainly'] = 'Überwiegend erfüllt';
 $string['profoundness_entirely'] = 'Zur Gänze erfüllt';
 
+//External trainer
+$string['block_exacomp_external_trainer_assign_head'] = 'Allow assigning external trainers for students. This is required for using the elove app';
+$string['block_exacomp_external_trainer_assign_body'] = '';
+$string['block_exacomp_external_trainer_assign'] = 'Externe Trainer zuordnen';
+$string['block_exacomp_external_trainer_assign_new'] = 'Neue Zuordnung: ';
+$string['block_exacomp_external_trainer'] = 'Ausbilder: ';
+$string['block_exacomp_external_trainer_student'] = 'Auszubildender: ';
+
 //LIS Strings
 if(get_config('exacomp','alternativedatamodel')) {
 	/*langstrings for alternativedatamodel--*/

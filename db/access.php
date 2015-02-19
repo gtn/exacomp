@@ -86,6 +86,13 @@ $capabilities = array(
 				'legacy' => array(
 						'manager' => CAP_ALLOW
 				)
-		)
+		),
+        'block/exacomp:assignstudents' => array(
+                'captype' => 'write',
+                'contextlevel' => CONTEXT_SYSTEM,
+                'archetypes' => array(
+                        'manager' => CAP_ALLOW
+                )
+        )
 );
 ?>

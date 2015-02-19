@@ -8,7 +8,6 @@ require_once dirname(__FILE__)."/inc.php";
 // DB COMPETENCE TYPE CONSTANTS
 define('TYPE_DESCRIPTOR', 0);
 define('TYPE_TOPIC', 1);
-
 class block_exacomp_external extends external_api {
 
 	/**
@@ -1134,4 +1133,95 @@ class block_exacomp_external extends external_api {
 		);
 	}
 	
+	
+	/**
+	 * Returns description of method parameters
+	 * @return external_function_parameters
+	 */
+	public static function get_external_trainer_students_parameters() {
+	    return new external_function_parameters(
+	            array(
+	            )
+	    );
+	}
+	
+	/**
+	 * Get all students for an external trainer
+	 * @return all items available
+	 */
+	public static function get_external_trainer_students($trainerid) {
+	    global $CFG,$DB,$USER;
+	
+	    $students = $DB->get_records('block_exacompexternaltrainer',array('trainerid'=>$USER->id));
+	    $returndata = array();
+	
+	    foreach($students as $student) {
+	        $studentObject = $DB->get_record('user',array('id'=>$student->studentid));
+	        $returndataObject = new stdClass();
+	        $returndataObject->name = fullname($studentObject);
+	        $returndataObject->userid = $student->studentid;
+	        $returndata[] = $returndataObject;
+	    }
+	    return $returndata;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * @return external_multiple_structure
+	 */
+	public static function get_external_trainer_students_returns() {
+	    return new external_multiple_structure(
+	            new external_single_structure(
+	                    array(
+	                            'userid' => new external_value(PARAM_INT, 'id of user'),
+	                            'name' => new external_value(PARAM_TEXT, 'name of user')
+	
+	                    )
+	            )
+	    );
+	}
+	/**
+	 * Returns description of method parameters
+	 * @return external_function_parameters
+	 */
+	public static function get_item_example_status_parameters() {
+	    return new external_function_parameters(
+	            array(
+	                    'exampleid' => new external_value(PARAM_INT, 'example id')
+	            )
+	    );
+	}
+	
+	/**
+	 * Get status of example
+	 * @return status
+	 */
+	public static function get_item_example_status($exampleid) {
+	    global $CFG,$DB,$USER;
+	
+	    $params = self::validate_parameters(self::get_item_example_status_parameters(), array('exampleid'=>$exampleid));
+	    $entries = $DB->get_records('block_exacompitemexample', array('exampleid'=>$exampleid));
+	
+	    $current_timestamp = 0;
+	    $status = 0;
+	    foreach($entries as $entry){
+	        if($current_timestamp < $entry->timecreated){
+	            $current_timestamp = $entry->timecreated;
+	            $status = $entry->status;
+	        }
+	    }
+	    return array("status"=>$status);;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * @return external_multiple_structure
+	 */
+	public static function get_item_example_status_returns() {
+	    return new external_single_structure(
+	            array(
+	                    'status' => new external_value(PARAM_INT, 'status')
+	            )
+	    );
+	}
 }
