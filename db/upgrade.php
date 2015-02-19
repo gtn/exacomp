@@ -1398,7 +1398,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    upgrade_block_savepoint(true, 2015012701, 'exacomp');
 	}
 	
-	if ($oldversion < 2015021902) {
+	if ($oldversion < 2015021903) {
 	
 	    // Define table block_exaportlovevet to be created.
 	    $table = new xmldb_table('block_exacompitemexample');
@@ -1438,7 +1438,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    }
 	
 	    // Exaport savepoint reached.
-	    upgrade_block_savepoint(true, 2015021900, 'exacomp');
+	    upgrade_block_savepoint(true, 2015021903, 'exacomp');
 	}
 	
 	return $result;
