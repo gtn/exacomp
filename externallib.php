@@ -953,6 +953,20 @@ class block_exacomp_external extends external_api {
 						$structure[$topic->id]->examples[$example->id] = new stdClass();
 						$structure[$topic->id]->examples[$example->id]->exampleid = $example->id;
 						$structure[$topic->id]->examples[$example->id]->example_title = $example->title;
+						$items = $DB->get_records('block_exaportitemexample', array('exampleid'=>$example->id));
+						if($items){
+							//check for current
+							$current_timestamp = 0;
+							foreach($items as $item){
+								if($item->timecreated > $current_timestamp){
+									$structure[$topic->id]->examples[$example->id]->example_item = $item->itemid;
+									$structure[$topic->id]->examples[$example->id]->example_status = $item->status;
+								}
+							}
+						}else{
+							$structure[$topic->id]->examples[$example->id]->example_item = 0;
+							$structure[$topic->id]->examples[$example->id]->example_status = 0;
+						}
 					}
 				}
 			}
@@ -975,7 +989,9 @@ class block_exacomp_external extends external_api {
 						new external_single_structure(
 							array(
 								'exampleid' => new external_value(PARAM_INT, 'id of example'),
-								'example_title' => new external_value(PARAM_TEXT, 'title of example')
+								'example_title' => new external_value(PARAM_TEXT, 'title of example'),
+								'example_item' => new external_value(PARAM_INT, 'current item id'),
+								'example_status' => new external_value(PARAM_INT, 'status of current item')
 							)
 						)
 					)
