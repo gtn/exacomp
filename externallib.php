@@ -1257,9 +1257,11 @@ class block_exacomp_external extends external_api {
 		          $subjects = block_exacomp_external::get_topics($schooltype->subjectid, $course["courseid"]);
 		          foreach($subjects as $subject){
 		              if(!array_key_exists($subject->topicid, $subjects_res)){
-		                  $subjects_res[$subject->topicid] = new stdClass();
-		                  $subjects_res[$subject->topicid]->subjectid = $subject->topicid;
-		                  $subjects_res[$subject->topicid]->title = $subject->title;
+						  $elem = new stdClass();
+						  $elem->subjectid = $subject->topicid;
+						  $elem->title= $subject->title;
+						  $elem->courseid = $course["courseid"];
+						  $subjects_res[] = $elem;
 		              }
 		          }
 		      }
@@ -1277,7 +1279,8 @@ class block_exacomp_external extends external_api {
 				new external_single_structure(
 						array(
 								'subjectid' => new external_value(PARAM_INT, 'id of subject'),
-								'title' => new external_value(PARAM_TEXT, 'title of subject')
+								'title' => new external_value(PARAM_TEXT, 'title of subject'), 
+								'courseid' => new external_value(PARAM_INT, 'id of course')
 						)
 				)
 		);
