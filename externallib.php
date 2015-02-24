@@ -1224,4 +1224,62 @@ class block_exacomp_external extends external_api {
 	            )
 	    );
 	}
+	
+	/**
+	 * Returns description of method parameters
+	 * @return external_function_parameters
+	 */
+	public static function get_subjects_for_user_parameters() {
+		return new external_function_parameters(
+				array('userid' => new external_value(PARAM_INT, 'id of user'))
+		);
+	}
+
+	/**
+	 * get subjects from one user for all his courses
+	 * @return array of user courses
+	 */
+	public static function get_subjects_for_user($userid) {
+		global $CFG,$DB, $USER;
+		require_once("$CFG->dirroot/lib/enrollib.php");
+
+		$params = self::validate_parameters(self::get_subjects_for_user_parameters(), array('userid'=>$userid));
+
+		if($userid == 0)
+		    $userid = $USER->id;
+
+		$courses = block_exacomp_external::get_courses($userid);
+		
+		$subjects_res = array();
+		foreach($courses as $course){
+		      $schooltypes = block_exacomp_external::get_subjects($course["courseid"]);
+		      foreach($schooltypes as $schooltype){
+		          $subjects = block_exacomp_external::get_topics($schooltype->subjectid, $course["courseid"]);
+		          foreach($subjects as $subject){
+		              if(!array_key_exists($subject->topicid, $subjects_res)){
+		                  $subjects_res[$subject->topicid] = new stdClass();
+		                  $subjects_res[$subject->topicid]->subjectid = $subject->topicid;
+		                  $subjects_res[$subject->topicid]->title = $subject->title;
+		              }
+		          }
+		      }
+		}
+		
+		return $subjects_res;
+	}
+
+	/**
+	 * Returns desription of method return values
+	 * @return external_multiple_structure
+	 */
+	public static function get_subjects_for_user_returns() {
+		return new external_multiple_structure(
+				new external_single_structure(
+						array(
+								'subjectid' => new external_value(PARAM_INT, 'id of subject'),
+								'title' => new external_value(PARAM_TEXT, 'title of subject')
+						)
+				)
+		);
+	}
 }
