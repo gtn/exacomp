@@ -901,85 +901,88 @@ class block_exacomp_external extends external_api {
 	 * Returns description of method parameters
 	 * @return external_function_parameters
 	 */
-	public static function get_examples_by_subtopic_parameters() {
+	public static function get_examples_for_subject_parameters() {
 		return new external_function_parameters(
 				array(
-					'subtopicid' => new external_value(PARAM_INT, 'id of subtopic'),
+					'subjectid' => new external_value(PARAM_INT, 'id of subject'),
+					'courseid' => new external_value(PARAM_INT, 'id of course'),
 					'userid' => new external_value(PARAM_INT, 'id of user'))
 		);
 	}
 	/**
 	 * Get examples
-	 * @param int subtopicid
+	 * @param int subjectid
 	 * @return array of examples
 	 */
-	public static function get_examples_by_subtopic($subtopicid, $userid) {
+	public static function get_examples_for_subject($subjectid, $courseid, $userid) {
 		global $CFG,$DB, $USER;
 
-		if (empty($subtopicid)) {
+		if (empty($subjectid) || empty($courseid)) {
 			throw new invalid_parameter_exception('Parameter can not be empty');
 		}
 
-		$params = self::validate_parameters(self::get_examples_by_subtopic_parameters(), array('subtopicid'=>$subtopicid, 'userid'=>$userid));
+		$params = self::validate_parameters(self::get_examples_for_subject_parameters(), array('subjectid'=>$subjectid,'courseid'=>$courseid, 'userid'=>$userid));
         
 	    if($userid == 0)
 		    $userid = $USER->id;
 
-		$mycourses = enrol_get_users_courses($userid);
-		//$mycourses = enrol_get_my_courses();
-		$courses = array();
+		
+		$structure = array();
 
-		foreach($mycourses as $mycourse) {
-			$context = context_course::instance($mycourse->id);
-			//$context = get_context_instance(CONTEXT_COURSE, $mycourse->id);
-			if($DB->record_exists("block_instances", array("blockname" => "exacomp", "parentcontextid" => $context->id))) {
-				$course = array("courseid" => $mycourse->id,"fullname"=>$mycourse->fullname,"shortname"=>$mycourse->shortname);
-				$courses[] = $course;
+		$topics = block_exacomp_get_topics_by_subject($courseid, $subjectid);
+		foreach($topics as $topic){
+			if(!array_key_exists($topic->id, $structure)){
+				$structure[$topic->id] = new stdClass();
+				$structure[$topic->id]->topicid = $topic->id;
+				$structure[$topic->id]->title = $topic->title;
+				$structure[$topic->id]->examples = array();
+			}
+			$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $topic->id);
+		
+			foreach($descriptors as $descriptor){
+				$examples = $DB->get_records_sql(
+						"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
+						e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid
+						FROM {" . DB_EXAMPLES . "} e
+						JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
+						LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id"
+						, array($descriptor->id));
+			
+				foreach($examples as $example){
+					if(!array_key_exists($example->id, $structure[$topic->id]->examples)){
+						$structure[$topic->id]->examples[$example->id] = new stdClass();
+						$structure[$topic->id]->examples[$example->id]->exampleid = $example->id;
+						$structure[$topic->id]->examples[$example->id]->example_title = $example->title;
+					}
+				}
 			}
 		}
 		
-		$examples_subtopic = array();
-
-		foreach($courses as $course){
-    		$descriptors = block_exacomp_get_descriptors_by_topic($course["courseid"], $subtopicid);
-    
-    		foreach($descriptors as $descriptor){
-        	    $examples = $DB->get_records_sql(
-        				"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
-        				e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid
-        				FROM {" . DB_EXAMPLES . "} e
-        				JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
-        				LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id"
-        				, array($descriptor->id));
-        	
-        		foreach($examples as $example){
-        		    if(!array_key_exists($example->id, $examples_subtopic)){
-            			$examples_subtopic[$example->id] = new stdClass();
-            			$examples_subtopic[$example->id]->exampleid = $example->id;
-            			$examples_subtopic[$example->id]->title = $example->title;
-            		}
-        		}
-    		}
-		}
-		
-	    return $examples_subtopic;
+	    return $structure;
 	}
 
 	/**
 	 * Returns desription of method return values
 	 * @return external_multiple_structure
 	 */
-	public static function get_examples_by_subtopic_returns() {
+	public static function get_examples_for_subject_returns() {
 		return new external_multiple_structure(
-				new external_single_structure(
-						array(
+			new external_single_structure(
+				array(
+					'topicid' => new external_value(PARAM_INT, 'id of topic'),
+					'title' => new external_value(PARAM_TEXT, 'title of topic'),
+					'examples' => new external_multiple_structure(
+						new external_single_structure(
+							array(
 								'exampleid' => new external_value(PARAM_INT, 'id of example'),
-								'title' => new external_value(PARAM_TEXT, 'title of example')
+								'example_title' => new external_value(PARAM_TEXT, 'title of example')
+							)
 						)
+					)
 				)
+			)		
 		);
-	}
-	
+	}	
 	/**
 	 * Returns description of method parameters
 	 * @return external_function_parameters

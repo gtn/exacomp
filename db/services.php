@@ -15,7 +15,7 @@ $services = array(
 						'block_exacomp_get_competence_by_id',
 						'block_exacomp_get_topic_by_id',
 						'block_exacomp_get_subtopics_by_topic',
-                        'block_exacomp_get_examples_by_subtopic',
+                        'block_exacomp_get_examples_for_subject',
                         'block_exacomp_get_example_by_id',
 						'block_exacomp_get_descriptors_for_example',
                         'block_exacomp_get_user_role',
@@ -123,9 +123,9 @@ $functions = array(
 				'description' => 'Get subtopics by topic id',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)
 		),
-		'block_exacomp_get_examples_by_subtopic' => array(     //web service function name
+		'block_exacomp_get_examples_for_subject' => array(     //web service function name
 				'classname'   => 'block_exacomp_external',  //class containing the external function
-				'methodname'  => 'get_examples_by_subtopic',          //external function name
+				'methodname'  => 'get_examples_for_subject',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'Get examples for subtopic',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)
