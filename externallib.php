@@ -1015,7 +1015,7 @@ class block_exacomp_external extends external_api {
 	 * @param int exampleid
 	 * @return example
 	 */
-	public static function get_example_by_id($exampleid) {
+		public static function get_example_by_id($exampleid) {
 		global $CFG,$DB, $USER;
 
 		if (empty($exampleid)) {
@@ -1025,10 +1025,6 @@ class block_exacomp_external extends external_api {
 		$params = self::validate_parameters(self::get_example_by_id_parameters(), array('exampleid'=>$exampleid));
         
         $example = $DB->get_record(DB_EXAMPLES, array('id'=>$exampleid));
-		
-		$example_item_db = $DB->get_record('block_exaportitemexample', array('exampleid'=>$exampleid));
-		//TODO letzten eintrag
-		$example->studentvalue = ($example_item_db)?$example_item_db->studentvalue:0;
 		
 		return $example;
 	}
@@ -1042,12 +1038,11 @@ class block_exacomp_external extends external_api {
 				array(
 						'title' => new external_value(PARAM_TEXT, 'title of example'),
 				        'description' => new external_value(PARAM_TEXT, 'description of example'),
-						'studentvalue' => new external_value(PARAM_INT, 'student self evalution')
+						'task' => new external_value(PARAM_TEXT, 'task(url/description) of example')
 				)
 				
 		);
 	}
-	
 	/**
 	 * Returns description of method parameters
 	 * @return external_function_parameters
