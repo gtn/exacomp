@@ -1322,7 +1322,7 @@ class block_exacomp_external extends external_api {
 	 * get subjects from one user for all his courses
 	 * @return array of user courses
 	 */
-	public static function get_item_for_example($userid,$itemid) {
+    public static function get_item_for_example($userid,$itemid) {
 	    global $CFG,$DB, $USER;
 	
 	    $params = self::validate_parameters(self::get_item_for_example_parameters(), array('userid'=>$userid,'itemid'=>$itemid));
@@ -1340,8 +1340,11 @@ class block_exacomp_external extends external_api {
 	    $item->status = isset($itemexample->status) ? $itemexample->status : 0;
 	
 	    if ($item->type == 'file') {
+	        require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
+	         
+	        $item->userid = $userid;
 	        if ($file = block_exaport_get_item_file($item)) {
-	            $item->file = ("{$CFG->wwwroot}/blocks/exaport/portfoliofile.php?access=portfolio/id/".$USER->id."&itemid=".$item->id);
+	            $item->file = ("{$CFG->wwwroot}/blocks/exaport/portfoliofile.php?access=portfolio/id/".$USER->id."&itemid=".$itemid);
 	            $item->isimage = $file->is_valid_image();
 	            $item->filename = $file->get_filename();
 	        }
