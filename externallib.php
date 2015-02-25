@@ -1604,4 +1604,46 @@ class block_exacomp_external extends external_api {
             )   
         );
     }
+	/**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function grade_item_parameters() {
+        return new external_function_parameters(
+                array(
+                        'userid' => new external_value(PARAM_INT, 'id of user'),
+                        'value' => new external_value(PARAM_INT, 'value for grading'),
+                        'comment' => new external_value(PARAM_TEXT, 'comment of grading'),
+                        'itemid' => new external_value(PARAM_INT, 'id of item') 
+                )
+        );
+    }
+    /**
+     * grade an item
+     * @param 
+     * @return 
+     */
+    public static function grade_item($userid, $value, $comment, $itemid) {
+        global $CFG,$DB, $USER;
+
+        if (empty($userid) || empty($value) || empty($comment) || empty($itemid)) {
+            throw new invalid_parameter_exception('Parameter can not be empty');
+        }
+        
+        $params = self::validate_parameters(self::grade_item_parameters(), array('userid'=>$userid, 'value'=>$value, 'comment'=>$comment, 'itemid'=>$itemid));
+        
+        return array("success"=>true);
+    }
+
+    /**
+     * Returns desription of method return values
+     * @return external_multiple_structure
+     */
+    public static function grade_item_returns() {
+        return new external_single_structure(
+            array(
+                    'success' => new external_value(PARAM_BOOL, 'true if grading was successful')
+            )   
+        );
+    }
 }
