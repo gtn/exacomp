@@ -1304,4 +1304,71 @@ class block_exacomp_external extends external_api {
 				)
 		);
 	}
+	
+	/**
+	 * Returns description of method parameters
+	 * @return external_function_parameters
+	 */
+	public static function get_item_for_example_parameters() {
+	    return new external_function_parameters(
+	            array('userid' => new external_value(PARAM_INT, 'id of user'),
+	                    'itemid' => new external_value(PARAM_INT, 'id of item'))
+	    );
+	}
+	
+	/**
+	 * get subjects from one user for all his courses
+	 * @return array of user courses
+	 */
+	public static function get_item_for_example($userid,$itemid) {
+	    global $CFG,$DB, $USER;
+	
+	    $params = self::validate_parameters(self::get_item_for_example_parameters(), array('userid'=>$userid,'itemid'=>$itemid));
+	
+	    $conditions=array("id"=>$itemid,"userid"=>$userid);
+	    $item = $DB->get_record("block_exaportitem", $conditions, 'id,userid,type,name,intro,url',MUST_EXIST);
+	    $itemexample = $DB->get_record("block_exacompitemexample", array("itemid" => $itemid));
+	
+	    $item->file = "";
+	    $item->isimage = false;
+	    $item->filename = "";
+	    $item->effort = strip_tags($item->intro);
+	    $item->teachervalue = isset($itemexample->teachervalue) ? $itemexample->teachervalue : 0;
+	    $item->studentvalue = isset($itemexample->studentvalue) ? $itemexample->studentvalue : 0;
+	    $item->status = isset($itemexample->status) ? $itemexample->status : 0;
+	
+	    if ($item->type == 'file') {
+	        if ($file = block_exaport_get_item_file($item)) {
+	            $item->file = ("{$CFG->wwwroot}/blocks/exaport/portfoliofile.php?access=portfolio/id/".$USER->id."&itemid=".$item->id);
+	            $item->isimage = $file->is_valid_image();
+	            $item->filename = $file->get_filename();
+	        }
+	    }
+	     
+	    return $item;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * @return external_multiple_structure
+	 */
+	public static function get_item_for_example() {
+	    return new external_multiple_structure(
+	            new external_single_structure(
+	                    array(
+	                            'id' => new external_value(PARAM_INT, 'id of item'),
+	                            'name' => new external_value(PARAM_TEXT, 'title of item'),
+	                            'type' => new external_value(PARAM_TEXT, 'type of item (note,file,link)'),
+	                            'url' => new external_value(PARAM_TEXT, 'url'),
+	                            'effort' => new external_value(PARAM_RAW, 'description of the effort'),
+	                            'filename' => new external_value(PARAM_TEXT, 'title of item'),
+	                            'file' => new external_value(PARAM_URL, 'file url'),
+	                            'isimage' => new external_value(PARAM_BOOL,'true if file is image'),
+	                            'status' => new external_value(PARAM_INT,'status of the submission'),
+	                            'teachervalue' => new external_value(PARAM_INT,'teacher grading'),
+	                            'studentvalue' => new external_value(PARAM_INT,'student grading')
+	                    )
+	            )
+	    );
+	}
 }
