@@ -1376,4 +1376,89 @@ class block_exacomp_external extends external_api {
 	            )
 	    );
 	}
+	/**
+	 * Returns description of method parameters
+	 * @return external_function_parameters
+	 */
+	public static function get_competencies_for_upload_parameters() {
+		return new external_function_parameters(
+				array(
+					'userid' => new external_value(PARAM_INT, 'id of user')
+				)
+		);
+	}
+	/**
+	 * Get all available competencies
+	 * @param int subjectid
+	 * @return array of examples
+	 */
+	public static function get_competencies_for_upload($userid) {
+		global $CFG,$DB, $USER;
+
+		$params = self::validate_parameters(self::get_competencies_for_upload_parameters(), array('userid'=>$userid));
+		if($userid == 0)
+			$userid = $USER->id;
+		
+		$structure = array();
+		
+		$courses = block_exacomp_external::get_courses($userid);
+		
+		foreach($courses as $course){
+			$tree = block_exacomp_get_competence_tree($course["courseid"]);
+			
+			foreach($tree as $subject){
+				$elem_sub = new stdClass();
+				$elem_sub->subjectid = $subject->id;
+				$elem_sub->subjecttitle = $subject->title;
+				$elem_sub->topics = array();
+				foreach($subject->subs as $topic){
+					$elem_topic = new stdClass();
+					$elem_topic->topicid = $topic->id;
+					$elem_topic->topictitle = $topic->title; 
+					$elem_topic->descriptors = array();
+					foreach($topic->descriptors as $descriptor){
+						$elem_desc = new stdClass();
+						$elem_desc->descriptorid = $descriptor->id;
+						$elem_desc->descriptortitle = $descriptor->title;
+						$elem_topic->descriptors[] = $elem_desc;
+					}
+					$elem_sub->topics[] = $elem_topic;
+				}
+				$structure[] = $elem_sub;
+			}
+		}
+        
+        return $structure;
+	}
+
+	/**
+	 * Returns desription of method return values
+	 * @return external_multiple_structure
+	 */
+	public static function get_competencies_for_upload_returns() {
+		return new external_multiple_structure(
+			new external_single_structure(
+				array(
+					'subjectid' => new external_value(PARAM_INT, 'id of topic'),
+					'subjecttitle' => new external_value(PARAM_TEXT, 'title of topic'),
+					'topics' => new external_multiple_structure(
+						new external_single_structure(
+							array(
+								'topicid' => new external_value(PARAM_INT, 'id of example'),
+								'topictitle' => new external_value(PARAM_TEXT, 'title of example'),
+								'descriptors' => new external_multiple_structure(
+            						new external_single_structure(
+            							array(
+            								'descriptorid' => new external_value(PARAM_INT, 'id of example'),
+            								'descriptortitle' => new external_value(PARAM_TEXT, 'title of example')
+            							)
+            						)
+            					)
+							)
+						)
+					)
+				)
+			)		
+		);
+	}
 }
