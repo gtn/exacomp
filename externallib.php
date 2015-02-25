@@ -1545,4 +1545,63 @@ class block_exacomp_external extends external_api {
                 )
         );
     }
+	/**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function create_example_parameters() {
+        return new external_function_parameters(
+                array(
+                        'name' => new external_value(PARAM_TEXT, 'title of example'),
+                        'description' => new external_value(PARAM_TEXT, 'description of example'),
+                        'task' => new external_value(PARAM_TEXT, 'task of example'),
+                        'comps' => new external_value(PARAM_TEXT, 'list of competencies, seperated by comma')
+                )
+        );
+    }
+    /**
+     * create example
+     * @param 
+     * @return 
+     */
+    public static function create_example($name, $description, $task, $comps) {
+        global $CFG,$DB, $USER;
+
+        if (empty($name)) {
+            throw new invalid_parameter_exception('Parameter can not be empty');
+        }
+        
+        $params = self::validate_parameters(self::create_example_parameters(), array('name'=>$name, 'description'=>$description, 'task'=>$task, 'comps'=>$comps));
+        //insert into examples and example_desc
+		$example = new stdClass();
+		$example->title = $name;
+		$example->description = $description;
+		$example->task = $task;
+		$example->creatorid = $USER->id;
+		$example->timestamp = date();
+		
+		$id = $DB->insert_record(DB_EXAMPLES, $example);
+		
+		$descriptors = explode(',', $comps);
+		foreach($descriptors as $descriptor){
+			$insert = new stdClass();
+			$insert->exampid = $id;
+			$insert->descrid = $descriptor;
+			$DB->insert_record(DB_DESCEXAMP, $insert);
+		}
+		
+       return array("exampleid"=>$id);
+    }
+
+    /**
+     * Returns desription of method return values
+     * @return external_multiple_structure
+     */
+    public static function create_example_returns() {
+        return new external_single_structure(
+            array(
+                    'exampleid' => new external_value(PARAM_INT, 'id of created example')
+            )   
+        );
+    }
 }
