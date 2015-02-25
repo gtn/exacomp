@@ -1050,7 +1050,9 @@ class block_exacomp_external extends external_api {
 	public static function get_descriptors_for_example_parameters() {
 		return new external_function_parameters(
 				array(
-					'exampleid' => new external_value(PARAM_INT, 'id of example')
+					'exampleid' => new external_value(PARAM_INT, 'id of example'),
+				    'courseid' => new external_value(PARAM_INT, 'id of course'),
+				    'userid' => new external_value(PARAM_INT, 'id of user')
 				)
 		);
 	}
@@ -1060,20 +1062,25 @@ class block_exacomp_external extends external_api {
 	 * @param int exampleid
 	 * @return list of descriptors
 	 */
-	public static function get_descriptors_for_example($exampleid) {
+	public static function get_descriptors_for_example($exampleid, $courseid, $userid) {
 		global $CFG,$DB, $USER;
 
-		if (empty($exampleid)) {
+		if (empty($exampleid) || empty($courseid)) {
 			throw new invalid_parameter_exception('Parameter can not be empty');
 		}
+		
+		if($userid == 0)
+		    $userid = $USER->id;
 
-		$params = self::validate_parameters(self::get_descriptors_for_example_parameters(), array('exampleid'=>$exampleid));
+		$params = self::validate_parameters(self::get_descriptors_for_example_parameters(), array('exampleid'=>$exampleid, 'courseid'=>$courseid, 'userid'=>$userid));
+		
         $descriptors_exam_mm = $DB->get_records(DB_DESCEXAMP, array('exampid'=>$exampleid));
+        
 		$descriptors = array();
 		foreach($descriptors_exam_mm as $descriptor_mm){
 			$descriptors[$descriptor_mm->descrid] = $DB->get_record(DB_DESCRIPTORS, array('id'=>$descriptor_mm->descrid));
-			//missing courseid? possibility of duplicate entries
-			$eval = $DB->get_record(DB_COMPETENCIES, array('userid'=>$USER->id, 'compid'=>$descriptor_mm->descrid));
+			
+			$eval = $DB->get_record(DB_COMPETENCIES, array('userid'=>$userid, 'compid'=>$descriptor_mm->descrid, 'courseid'=>$courseid, 'role'=>ROLE_TEACHER));
 			if($eval){
 			    $descriptors[$descriptor_mm->descrid]->evaluation=$eval->value;
 			}else{ 
@@ -1100,7 +1107,7 @@ class block_exacomp_external extends external_api {
 				)
 		);
 	}
-		/**
+	/**
 	 * Returns description of method parameters
 	 * @return external_function_parameters
 	 */
