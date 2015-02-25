@@ -1352,7 +1352,7 @@ class block_exacomp_external extends external_api {
 	 * Returns desription of method return values
 	 * @return external_multiple_structure
 	 */
-	public static function get_item_for_example() {
+	public static function get_item_for_example_returns() {
 	    return new external_multiple_structure(
 	            new external_single_structure(
 	                    array(
