@@ -207,7 +207,7 @@ $functions = array(
 		),
 		'block_exacomp_grade_item' => array(    //web service function name
 		        'classname'   => 'block_exacomp_external',  //class containing the external function
-				'methodname'  => 'grade item',          //external function name
+				'methodname'  => 'grade_item',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'Grade an item',    //human readable description of the web service function
 				'type'        => 'write'                  //database rights of the web service function (read, write)

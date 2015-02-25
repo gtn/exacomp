@@ -1614,7 +1614,9 @@ class block_exacomp_external extends external_api {
                         'userid' => new external_value(PARAM_INT, 'id of user'),
                         'value' => new external_value(PARAM_INT, 'value for grading'),
                         'comment' => new external_value(PARAM_TEXT, 'comment of grading'),
-                        'itemid' => new external_value(PARAM_INT, 'id of item') 
+                        'itemid' => new external_value(PARAM_INT, 'id of item'),
+						'comps' => new external_value(PARAM_TEXT, 'comps for example'), 
+						'courseid' => new external_value(PARAM_INT, 'if of course')
                 )
         );
     }
@@ -1623,15 +1625,50 @@ class block_exacomp_external extends external_api {
      * @param 
      * @return 
      */
-    public static function grade_item($userid, $value, $comment, $itemid) {
+    public static function grade_item($userid, $value, $comment, $itemid, $comps, $courseid) {
         global $CFG,$DB, $USER;
 
-        if (empty($userid) || empty($value) || empty($comment) || empty($itemid)) {
+        if (empty($userid) || empty($value) || empty($comment) || empty($itemid) || empty($courseid)) {
             throw new invalid_parameter_exception('Parameter can not be empty');
         }
         
-        $params = self::validate_parameters(self::grade_item_parameters(), array('userid'=>$userid, 'value'=>$value, 'comment'=>$comment, 'itemid'=>$itemid));
+        $params = self::validate_parameters(self::grade_item_parameters(), array('userid'=>$userid, 'value'=>$value, 'comment'=>$comment, 'itemid'=>$itemid, 'comps'=>$comps, 'courseid'=>$courseid));
         
+		//insert into block_exaportitemexample
+		$update = new stdClass();
+		$update->itemid = $itemid;
+		$update->datemodified = date();
+		$update->teachervalue = $value;
+		$status = 1;
+		if($value >= 50){
+			$status = 2;
+		}
+		$update->status = $status;
+		
+		$DB->update_record('block_exaportitemexample', $update);
+		
+		$insert = new stdClass();
+		$insert->itemid = $itemid;
+		$insert->userid = $USER->id;
+		$insert->entry = $comment;
+		$insert->timemodified = date();
+		
+		$DB->insert_record('block_exaportitemcomm', $insert);
+		
+		$descriptors = explode(',', $comps);
+		foreach($descriptors as $descriptor){
+			$insert = new stdClass();
+			$insert->userid = $userid;
+			$insert->compid = $descriptor;
+			$insert->reviewerid = $USER->id;
+			$insert->role = ROLE_TEACHER;
+			$insert->courseid = $courseid;
+			$insert->value = 1;
+			$insert->timestamp = date();
+			
+			$DB->insert_record(DB_COMPETENCIES, $insert);
+		}
+		
         return array("success"=>true);
     }
 
