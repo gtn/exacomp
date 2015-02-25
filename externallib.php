@@ -1353,6 +1353,8 @@ class block_exacomp_external extends external_api {
             }
         }
          
+        $item->studentcomment = '';
+        $item->teachercomment = '';
         $itemcomments = $DB->get_records('block_exaportitemcomm',array('itemid'=>$itemid),'timemodified ASC','entry',0,2);
         if($itemcomments) {
             $count = 0;
@@ -1364,10 +1366,8 @@ class block_exacomp_external extends external_api {
                     $item->teachercomment = $itemcomment->entry;
                 }
             }
-        } else {
-            $item->studentcomment = '';
-            $item->teachercomment = '';
-        }
+        } 
+        
         return array($item);
     }
 
