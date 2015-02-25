@@ -1325,6 +1325,9 @@ class block_exacomp_external extends external_api {
     public static function get_item_for_example($userid,$itemid) {
         global $CFG,$DB, $USER;
 
+        if($userid == 0)
+            $userid = $USER->id;
+        
         $params = self::validate_parameters(self::get_item_for_example_parameters(), array('userid'=>$userid,'itemid'=>$itemid));
 
         $conditions=array("id"=>$itemid,"userid"=>$userid);
@@ -1531,7 +1534,7 @@ class block_exacomp_external extends external_api {
         $DB->insert_record('block_exacompitemexample',array('exampleid'=>$exampleid,'itemid'=>$itemid,'timecreated'=>time(),'status'=>0,'studentvalue'=>$studentvalue));
         $DB->insert_record('block_exaportitemcomm',array('itemid'=>$itemid,'entry'=>$studentcomment,'timemodified'=>time()));
         
-        return array("success"=>true);
+        return array("success"=>true,"itemid"=>$itemid);
     }
     
     /**
@@ -1541,7 +1544,8 @@ class block_exacomp_external extends external_api {
     public static function submit_example_returns() {
         return new external_single_structure(
                 array(
-                        'success' => new external_value(PARAM_BOOL, 'status')
+                        'success' => new external_value(PARAM_BOOL, 'status'),
+                        'itemid' => new external_value(PARAM_INT, 'itemid')
                 )
         );
     }
