@@ -1478,4 +1478,71 @@ class block_exacomp_external extends external_api {
                 )
         );
     }
+    
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function submit_example_parameters() {
+        return new external_function_parameters(
+                array('exampleid' => new external_value(PARAM_INT, 'exampleid'),
+                        'studentvalue' => new external_value(PARAM_INT, 'studentvalue'),
+                        'url' => new external_value(PARAM_URL, 'url'),
+                        'effort' => new external_value(PARAM_TEXT, 'effort'),
+                        'filename' => new external_value(PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area'),
+                        'studentcomment' => new external_value(PARAM_TEXT, 'studentcomment'),
+                        'title' => new external_value(PARAM_TEXT, 'title'))
+        );
+    
+    }
+    
+    /**
+     * Add item
+     * @param int itemid
+     * @return array of course subjects
+     */
+    public static function submit_example($exampleid,$studentvalue,$url,$effort,$filename,$studentcomment,$title) {
+        global $CFG,$DB,$USER;
+    
+        $params = self::validate_parameters(self::submit_example_parameters(), array('title'=>$title,'exampleid'=>$exampleid,'url'=>$url,'effort'=>$effort,'filename'=>$filename,'studentcomment'=>$studentcomment,'studentvalue'=>$studentvalue));
+    
+        $type = ($filename) ? 'file' : 'url';
+        
+        $itemid = $DB->insert_record("block_exaportitem", array('userid'=>$USER->id,'name'=>$title,'url'=>$url,'intro'=>$effort,'type'=>$type,'timemodified'=>time()));
+    
+        //if a file is added we need to copy the file from the user/private filearea to block_exaport/item_file with the itemid from above
+        if($type == "file") {
+            $context = context_user::instance($USER->id);
+            $fs = get_file_storage();
+            try {
+                $old = $fs->get_file($context->id, "user", "private", 0, "/", $filename);
+    
+                if($old) {
+                    $file_record = array('contextid'=>$context->id, 'component'=>'block_exaport', 'filearea'=>'item_file',
+                            'itemid'=>$itemid, 'filepath'=>'/', 'filename'=>$old->get_filename(),
+                            'timecreated'=>time(), 'timemodified'=>time());
+                    $fs->create_file_from_storedfile($file_record, $old->get_id());
+                }
+            } catch (Exception $e) {
+                //some problem with the file occured
+            }
+        }
+        
+        $DB->insert_record('block_exacompitemexample',array('exampleid'=>$exampleid,'itemid'=>$itemid,'timecreated'=>time(),'status'=>0,'studentvalue'=>$studentvalue));
+        $DB->insert_record('block_exaportitemcomm',array('itemid'=>$itemid,'entry'=>$studentcomment,'timemodified'=>time()));
+        
+        return array("success"=>true);
+    }
+    
+    /**
+     * Returns desription of method return values
+     * @return external_single_structure
+     */
+    public static function submit_example_returns() {
+        return new external_single_structure(
+                array(
+                        'success' => new external_value(PARAM_BOOL, 'status')
+                )
+        );
+    }
 }

@@ -23,7 +23,8 @@ $services = array(
                         'block_exacomp_get_item_example_status',
 						'block_exacomp_get_subjects_for_user',
 				        'block_exacomp_get_item_for_example',
-                        'block_exacomp_get_competencies_for_upload'), 	//web service functions of this service
+                        'block_exacomp_get_competencies_for_upload',
+				        'block_exacomp_submit_example'), 	//web service functions of this service
 				'restrictedusers' =>0,                      //if enabled, the Moodle administrator must link some user to this service
 				//into the administration
 				'enabled'=>1,                               //if enabled, the service can be reachable on a default installation
@@ -186,6 +187,13 @@ $functions = array(
 				'methodname'  => 'get_competencies_for_upload',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'Get competencetree',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		), 
+		'block_exacomp_submit_example' => array(    //web service function name
+		        'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'submit_example',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'Submit example',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)
 		)
 );
