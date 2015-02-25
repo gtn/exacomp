@@ -1376,23 +1376,21 @@ class block_exacomp_external extends external_api {
      * @return external_multiple_structure
      */
     public static function get_item_for_example_returns() {
-        return new external_multiple_structure(
-                new external_single_structure(
-                        array(
-                                'id' => new external_value(PARAM_INT, 'id of item'),
-                                'name' => new external_value(PARAM_TEXT, 'title of item'),
-                                'type' => new external_value(PARAM_TEXT, 'type of item (note,file,link)'),
-                                'url' => new external_value(PARAM_TEXT, 'url'),
-                                'effort' => new external_value(PARAM_RAW, 'description of the effort'),
-                                'filename' => new external_value(PARAM_TEXT, 'title of item'),
-                                'file' => new external_value(PARAM_URL, 'file url'),
-                                'isimage' => new external_value(PARAM_BOOL,'true if file is image'),
-                                'status' => new external_value(PARAM_INT,'status of the submission'),
-                                'teachervalue' => new external_value(PARAM_INT,'teacher grading'),
-                                'studentvalue' => new external_value(PARAM_INT,'student grading'),
-                                'teachercomment' => new external_value(PARAM_TEXT,'teacher comment'),
-                                'studentcomment' => new external_value(PARAM_TEXT,'student comment')
-                        )
+        return new external_single_structure(
+                array(
+                        'id' => new external_value(PARAM_INT, 'id of item'),
+                        'name' => new external_value(PARAM_TEXT, 'title of item'),
+                        'type' => new external_value(PARAM_TEXT, 'type of item (note,file,link)'),
+                        'url' => new external_value(PARAM_TEXT, 'url'),
+                        'effort' => new external_value(PARAM_RAW, 'description of the effort'),
+                        'filename' => new external_value(PARAM_TEXT, 'title of item'),
+                        'file' => new external_value(PARAM_URL, 'file url'),
+                        'isimage' => new external_value(PARAM_BOOL,'true if file is image'),
+                        'status' => new external_value(PARAM_INT,'status of the submission'),
+                        'teachervalue' => new external_value(PARAM_INT,'teacher grading'),
+                        'studentvalue' => new external_value(PARAM_INT,'student grading'),
+                        'teachercomment' => new external_value(PARAM_TEXT,'teacher comment'),
+                        'studentcomment' => new external_value(PARAM_TEXT,'student comment')
                 )
         );
     }
