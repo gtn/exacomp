@@ -1065,10 +1065,6 @@ class block_exacomp_external extends external_api {
     public static function get_descriptors_for_example($exampleid, $courseid, $userid) {
         global $CFG,$DB, $USER;
 
-        if (empty($exampleid) || empty($courseid)) {
-            throw new invalid_parameter_exception('Parameter can not be empty');
-        }
-
         if($userid == 0)
             $userid = $USER->id;
 
