@@ -1350,7 +1350,7 @@ class block_exacomp_external extends external_api {
 	        }
 	    }
 	     
-	    return get_object_vars($item);
+	    return array($item);
 	}
 	
 	/**
