@@ -1634,8 +1634,9 @@ class block_exacomp_external extends external_api {
         
 		//insert into block_exacompitemexample
 		$update = new stdClass();
+		$update = $DB->get_record('block_exacompitemexample',array('itemid'=>$itemid));
 		$update->itemid = $itemid;
-		$update->datemodified = date();
+		$update->datemodified = time();
 		$update->teachervalue = $value;
 		$status = 1;
 		if($value >= 50){
@@ -1649,7 +1650,7 @@ class block_exacomp_external extends external_api {
 		$insert->itemid = $itemid;
 		$insert->userid = $USER->id;
 		$insert->entry = $comment;
-		$insert->timemodified = date();
+		$insert->timemodified = time();
 		
 		$DB->insert_record('block_exaportitemcomm', $insert);
 		
@@ -1662,7 +1663,7 @@ class block_exacomp_external extends external_api {
 			$insert->role = ROLE_TEACHER;
 			$insert->courseid = $courseid;
 			$insert->value = 1;
-			$insert->timestamp = date();
+			$insert->timestamp = time();
 			
 			$DB->insert_record(DB_COMPETENCIES, $insert);
 		}
