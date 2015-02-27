@@ -26,7 +26,8 @@ $services = array(
                         'block_exacomp_get_competencies_for_upload',
 				        'block_exacomp_submit_example',
                         'block_exacomp_create_example',
-						'block_exacomp_grade_item'), 	//web service functions of this service
+						'block_exacomp_grade_item',
+						'block_exacomp_get_item_grading'), 	//web service functions of this service
 				'restrictedusers' =>0,                      //if enabled, the Moodle administrator must link some user to this service
 				//into the administration
 				'enabled'=>1,                               //if enabled, the service can be reachable on a default installation
@@ -211,5 +212,12 @@ $functions = array(
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'Grade an item',    //human readable description of the web service function
 				'type'        => 'write'                  //database rights of the web service function (read, write)
+		),
+		'block_exacomp_get_item_grading' => array(    //web service function name
+		        'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'get_item_grading',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get grading of an item',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
 		)
 );

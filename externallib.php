@@ -1680,5 +1680,57 @@ class block_exacomp_external extends external_api {
                     'success' => new external_value(PARAM_BOOL, 'true if grading was successful')
             )   
         );
+    }	/**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function get_item_grading_parameters() {
+        return new external_function_parameters(
+                array(
+                        'itemid' => new external_value(PARAM_INT, 'id of item'),
+                        'userid' => new external_value(PARAM_INT, 'id of user')
+                )
+        );
+    }
+    /**
+     * grade an item
+     * @param 
+     * @return 
+     */
+    public static function get_item_grading($itemid, $userid) {
+        global $CFG,$DB, $USER;
+
+        if (empty($itemid)) {
+            throw new invalid_parameter_exception('Parameter can not be empty');
+        }
+        
+        $params = self::validate_parameters(self::get_item_grading_parameters(), array('itemid'=>$itemid, 'userid'=>$userid));
+        
+        if($userid == 0)
+            $userid = $USER->id;
+            
+		$entry = $DB->get_record('block_exaportitemexample', array('itemid'=>$itemid));
+	    $comments = $DB->get_records('block_exaportitemcomm', array('itemid'=>$itemid));
+	    foreach($comments as $comment){
+	        //two comments per item, one from student and one from trainer
+	        if($comment->userid != $userid){
+	            $entry->comment = $comment;
+	        }
+	    }
+		
+        return $entry;
+    }
+
+    /**
+     * Returns desription of method return values
+     * @return external_multiple_structure
+     */
+    public static function get_item_grading_returns() {
+        return new external_single_structure(
+            array(
+                    'teachervalue' => new external_value(PARAM_INT, 'grading of teacher'),
+                    'comment' => new external_value(PARAM_TEXT, 'comment of teacher')
+            )   
+        );
     }
 }
