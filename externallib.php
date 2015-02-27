@@ -953,7 +953,7 @@ class block_exacomp_external extends external_api {
                         $structure[$topic->id]->examples[$example->id] = new stdClass();
                         $structure[$topic->id]->examples[$example->id]->exampleid = $example->id;
                         $structure[$topic->id]->examples[$example->id]->example_title = $example->title;
-                        $items = $DB->get_records('block_exaportitemexample', array('exampleid'=>$example->id));
+                        $items = $DB->get_records('block_exacompitemexample', array('exampleid'=>$example->id));
                         if($items){
                             //check for current
                             $current_timestamp = 0;
@@ -964,8 +964,8 @@ class block_exacomp_external extends external_api {
                                 }
                             }
                         }else{
-                            $structure[$topic->id]->examples[$example->id]->example_item = 0;
-                            $structure[$topic->id]->examples[$example->id]->example_status = 0;
+                            $structure[$topic->id]->examples[$example->id]->example_item = -1;
+                            $structure[$topic->id]->examples[$example->id]->example_status = -1;
                         }
                     }
                 }
@@ -1632,7 +1632,7 @@ class block_exacomp_external extends external_api {
         
         $params = self::validate_parameters(self::grade_item_parameters(), array('userid'=>$userid, 'value'=>$value, 'comment'=>$comment, 'itemid'=>$itemid, 'comps'=>$comps, 'courseid'=>$courseid));
         
-		//insert into block_exaportitemexample
+		//insert into block_exacompitemexample
 		$update = new stdClass();
 		$update->itemid = $itemid;
 		$update->datemodified = date();
@@ -1643,7 +1643,7 @@ class block_exacomp_external extends external_api {
 		}
 		$update->status = $status;
 		
-		$DB->update_record('block_exaportitemexample', $update);
+		$DB->update_record('block_exacompitemexample', $update);
 		
 		$insert = new stdClass();
 		$insert->itemid = $itemid;
@@ -1680,7 +1680,8 @@ class block_exacomp_external extends external_api {
                     'success' => new external_value(PARAM_BOOL, 'true if grading was successful')
             )   
         );
-    }	/**
+    }
+		/**
      * Returns description of method parameters
      * @return external_function_parameters
      */
@@ -1709,7 +1710,7 @@ class block_exacomp_external extends external_api {
         if($userid == 0)
             $userid = $USER->id;
             
-		$entry = $DB->get_record('block_exaportitemexample', array('itemid'=>$itemid));
+		$entry = $DB->get_record('block_exacompitemexample', array('itemid'=>$itemid));
 	    $comments = $DB->get_records('block_exaportitemcomm', array('itemid'=>$itemid));
 	    foreach($comments as $comment){
 	        //two comments per item, one from student and one from trainer
