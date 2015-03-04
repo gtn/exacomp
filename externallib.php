@@ -1488,7 +1488,8 @@ class block_exacomp_external extends external_api {
                         'effort' => new external_value(PARAM_TEXT, 'effort'),
                         'filename' => new external_value(PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area'),
                         'studentcomment' => new external_value(PARAM_TEXT, 'studentcomment'),
-                        'title' => new external_value(PARAM_TEXT, 'title'))
+                        'title' => new external_value(PARAM_TEXT, 'title'),
+                        'itemid' => new external_value(PARAM_INT, 'itemid'))
         );
     
     }
@@ -1498,15 +1499,35 @@ class block_exacomp_external extends external_api {
      * @param int itemid
      * @return array of course subjects
      */
-    public static function submit_example($exampleid,$studentvalue,$url,$effort,$filename,$studentcomment,$title) {
+    public static function submit_example($exampleid,$studentvalue,$url,$effort,$filename,$studentcomment,$title,$itemid=0) {
         global $CFG,$DB,$USER;
     
-        $params = self::validate_parameters(self::submit_example_parameters(), array('title'=>$title,'exampleid'=>$exampleid,'url'=>$url,'effort'=>$effort,'filename'=>$filename,'studentcomment'=>$studentcomment,'studentvalue'=>$studentvalue));
+        $params = self::validate_parameters(self::submit_example_parameters(), array('title'=>$title,'exampleid'=>$exampleid,'url'=>$url,'effort'=>$effort,'filename'=>$filename,'studentcomment'=>$studentcomment,'studentvalue'=>$studentvalue,'itemid'=>$itemid));
     
         $type = ($filename) ? 'file' : 'url';
         
-        $itemid = $DB->insert_record("block_exaportitem", array('userid'=>$USER->id,'name'=>$title,'url'=>$url,'intro'=>$effort,'type'=>$type,'timemodified'=>time()));
-    
+        //insert: if itemid == 0 OR status != 0
+        $insert = true;
+        if($itemid != 0) {
+            $itemexample = $DB->get_record('block_exacompitemexample', array('itemid'=>$itemid));
+            if ($itemexample->status == 0) 
+                $insert = false;
+        }
+        if($insert) {
+            $itemid = $DB->insert_record("block_exaportitem", array('userid'=>$USER->id,'name'=>$title,'url'=>$url,'intro'=>$effort,'type'=>$type,'timemodified'=>time()));
+        } else {
+            require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
+            $item = $DB->get_record('block_exaportitem',array('id'=>$itemid));
+            $item->name = $title;
+            $item->url = $url;
+            $item->intro = $effort;
+            $item->type = $type;
+            $item->timemodified = time();
+            
+            block_exaport_file_remove($DB->get_record("block_exaportitem",array("id"=>$itemid)));
+            $DB->update_record('block_exaportitem', $item);
+        }
+        
         //if a file is added we need to copy the file from the user/private filearea to block_exaport/item_file with the itemid from above
         if($type == "file") {
             $context = context_user::instance($USER->id);
@@ -1525,8 +1546,17 @@ class block_exacomp_external extends external_api {
             }
         }
         
-        $DB->insert_record('block_exacompitemexample',array('exampleid'=>$exampleid,'itemid'=>$itemid,'timecreated'=>time(),'status'=>0,'studentvalue'=>$studentvalue));
-        $DB->insert_record('block_exaportitemcomm',array('itemid'=>$itemid,'entry'=>$studentcomment,'timemodified'=>time()));
+        if($insert) {
+            $DB->insert_record('block_exacompitemexample',array('exampleid'=>$exampleid,'itemid'=>$itemid,'timecreated'=>time(),'status'=>0,'studentvalue'=>$studentvalue));
+            $DB->insert_record('block_exaportitemcomm',array('itemid'=>$itemid,'userid'=>$USER->id,'entry'=>$studentcomment,'timemodified'=>time()));
+        } else {
+            $itemexample->timemodified = time();
+            $itemexample->studentvalue = $studentvalue;
+            $DB->update_record('block_exacompitemexample', $itemexample);
+
+            $DB->delete_records('block_exaportitemcomm',array('itemid'=>$itemid,'userid'=>$USER->id));
+            $DB->insert_record('block_exaportitemcomm',array('itemid'=>$itemid,'userid'=>$USER->id,'entry'=>$studentcomment,'timemodified'=>time()));
+        }
         
         return array("success"=>true,"itemid"=>$itemid);
     }
