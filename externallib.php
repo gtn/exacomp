@@ -1614,7 +1614,6 @@ class block_exacomp_external extends external_api {
                         'comment' => new external_value(PARAM_TEXT, 'comment of grading'),
                         'itemid' => new external_value(PARAM_INT, 'id of item'),
 						'comps' => new external_value(PARAM_TEXT, 'comps for example - positive grading'),
-						'all_comps' => new external_value(PARAM_INT, 'if one - all comps gained'),
 						'courseid' => new external_value(PARAM_INT, 'if of course')
                 )
         );
@@ -1624,14 +1623,14 @@ class block_exacomp_external extends external_api {
      * @param 
      * @return 
      */
-    public static function grade_item($userid, $value, $comment, $itemid, $comps, $all_comps, $courseid) {
+    public static function grade_item($userid, $value, $comment, $itemid, $comps, $courseid) {
         global $CFG,$DB, $USER;
 
         if (empty($userid) || empty($value) || empty($comment) || empty($itemid) || empty($courseid)) {
             throw new invalid_parameter_exception('Parameter can not be empty');
         }
         
-        $params = self::validate_parameters(self::grade_item_parameters(), array('userid'=>$userid, 'value'=>$value, 'comment'=>$comment, 'itemid'=>$itemid, 'comps'=>$comps, 'all_comps' => $all_comps, 'courseid'=>$courseid));
+        $params = self::validate_parameters(self::grade_item_parameters(), array('userid'=>$userid, 'value'=>$value, 'comment'=>$comment, 'itemid'=>$itemid, 'comps'=>$comps, 'courseid'=>$courseid));
         
 		//insert into block_exacompitemexample
 		$update = new stdClass();
@@ -1661,24 +1660,16 @@ class block_exacomp_external extends external_api {
 		//get all available descriptors and unset them who are not received via web service
 		$descriptors_exam_mm = $DB->get_records(DB_DESCEXAMP, array('exampid'=>$exampleid));
 		
-		if($all_comps == 1){
-			$descriptors = array();
-			foreach($descriptors_exam_mm as $descr_examp){
-				$descriptors[] = $descr_examp->descrid;
-			}
+		
+		$descriptors = explode(',', $comps);
 			
-			$unset_descriptors = array();
-		}else{
-			$descriptors = explode(',', $comps);
-			var_dump($descriptors);
-			
-			$unset_descriptors = array();
-			foreach($descriptors_exam_mm as $descr_examp){
-				if(!in_array($descr_examp->descrid, $descriptors)){
-					$unset_descriptors[] = $descr_examp->descrid;
-				}
+		$unset_descriptors = array();
+		foreach($descriptors_exam_mm as $descr_examp){
+			if(!in_array($descr_examp->descrid, $descriptors)){
+				$unset_descriptors[] = $descr_examp->descrid;
 			}
 		}
+		
 		
 		//set positive graded competencies
 		foreach($descriptors as $descriptor){
