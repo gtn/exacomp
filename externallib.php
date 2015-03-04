@@ -1577,13 +1577,14 @@ class block_exacomp_external extends external_api {
      * Returns description of method parameters
      * @return external_function_parameters
      */
-    public static function create_example_parameters() {
+     public static function create_example_parameters() {
         return new external_function_parameters(
                 array(
                         'name' => new external_value(PARAM_TEXT, 'title of example'),
                         'description' => new external_value(PARAM_TEXT, 'description of example'),
                         'task' => new external_value(PARAM_TEXT, 'task of example'),
-                        'comps' => new external_value(PARAM_TEXT, 'list of competencies, seperated by comma')
+                        'comps' => new external_value(PARAM_TEXT, 'list of competencies, seperated by comma'),
+						'filename' => new external_value(PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area')
                 )
         );
     }
@@ -1592,21 +1593,36 @@ class block_exacomp_external extends external_api {
      * @param 
      * @return 
      */
-    public static function create_example($name, $description, $task, $comps) {
+    public static function create_example($name, $description, $task, $comps, $filename) {
         global $CFG,$DB, $USER;
 
         if (empty($name)) {
             throw new invalid_parameter_exception('Parameter can not be empty');
         }
         
-        $params = self::validate_parameters(self::create_example_parameters(), array('name'=>$name, 'description'=>$description, 'task'=>$task, 'comps'=>$comps));
-        //insert into examples and example_desc
+        $params = self::validate_parameters(self::create_example_parameters(), array('name'=>$name, 'description'=>$description, 'task'=>$task, 'comps'=>$comps, 'filename'=>$filename));
+        
+		if($filename != null){
+			$context = context_user::instance($USER->id);
+			$fs = get_file_storage();
+			
+			if(!$fs->file_exists($context->id, 'user', 'private', 0, '/', $filename))
+				$form->save_stored_file('file', $context->id, 'user', 'private', 0, '/', $filename, true);
+
+			$pathnamehash = $fs->get_pathname_hash($context->id, 'user', 'private', 0, '/', $filename);
+			$temp_task = new moodle_url($CFG->wwwroot.'/blocks/exacomp/example_upload.php',array("action"=>"serve","c"=>$context->id,"i"=>$pathnamehash,"courseid"=>$courseid));
+            $example_task = $temp_task->out(false);
+		}
+		
+		//insert into examples and example_desc
 		$example = new stdClass();
 		$example->title = $name;
 		$example->description = $description;
-		$example->task = $task;
+		$example->externaltask = $task;
+		$example->task = $example_task;
 		$example->creatorid = $USER->id;
 		$example->timestamp = date();
+		$example->source = CUSTOM_EXAMPLE_SOURCE;
 		
 		$id = $DB->insert_record(DB_EXAMPLES, $example);
 		
