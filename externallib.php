@@ -1614,7 +1614,7 @@ class block_exacomp_external extends external_api {
                         'comment' => new external_value(PARAM_TEXT, 'comment of grading'),
                         'itemid' => new external_value(PARAM_INT, 'id of item'),
 						'comps' => new external_value(PARAM_TEXT, 'comps for example - positive grading'),
-						'comps_unset' => new external_value(PARAM_TEXT, 'comps for example - negative grading'),
+						'all_comps' => new external_value(PARAM_INT, 'if one - all comps gained'),
 						'courseid' => new external_value(PARAM_INT, 'if of course')
                 )
         );
@@ -1624,18 +1624,21 @@ class block_exacomp_external extends external_api {
      * @param 
      * @return 
      */
-    public static function grade_item($userid, $value, $comment, $itemid, $comps, $comps_unset, $courseid) {
+    public static function grade_item($userid, $value, $comment, $itemid, $comps, $all_comps, $courseid) {
         global $CFG,$DB, $USER;
 
         if (empty($userid) || empty($value) || empty($comment) || empty($itemid) || empty($courseid)) {
             throw new invalid_parameter_exception('Parameter can not be empty');
         }
         
-        $params = self::validate_parameters(self::grade_item_parameters(), array('userid'=>$userid, 'value'=>$value, 'comment'=>$comment, 'itemid'=>$itemid, 'comps'=>$comps, 'comps_unset' => $comps_unset, 'courseid'=>$courseid));
+        $params = self::validate_parameters(self::grade_item_parameters(), array('userid'=>$userid, 'value'=>$value, 'comment'=>$comment, 'itemid'=>$itemid, 'comps'=>$comps, 'all_comps' => $all_comps, 'courseid'=>$courseid));
         
 		//insert into block_exacompitemexample
 		$update = new stdClass();
 		$update = $DB->get_record('block_exacompitemexample',array('itemid'=>$itemid));
+		
+		$exampleid = $update->exampleid;
+		
 		$update->itemid = $itemid;
 		$update->datemodified = time();
 		$update->teachervalue = $value;
@@ -1654,34 +1657,56 @@ class block_exacomp_external extends external_api {
 		$insert->timemodified = time();
 		
 		$DB->insert_record('block_exaportitemcomm', $insert);
+
+		//get all available descriptors and unset them who are not received via web service
+		$descriptors_exam_mm = $DB->get_records(DB_DESCEXAMP, array('exampid'=>$exampleid));
+		
+		if($all_comps == 1){
+			$descriptors = array();
+			foreach($descriptors_exam_mm as $descr_examp){
+				$descriptors[] = $descr_examp->descrid;
+			}
+			
+			$unset_descriptors = array();
+		}else{
+			$descriptors = explode(',', $comps);
+			var_dump($descriptors);
+			
+			$unset_descriptors = array();
+			foreach($descriptors_exam_mm as $descr_examp){
+				if(!in_array($descr_examp->descrid, $descriptors)){
+					$unset_descriptors[] = $descr_examp->descrid;
+				}
+			}
+		}
 		
 		//set positive graded competencies
-		$descriptors = explode(',', $comps);
 		foreach($descriptors as $descriptor){
-			$entry = $DB->get_record(DB_COMPETENCIES, array('userid'=>$userid, 'compid'=>$descriptor, 'courseid'=>$courseid, 'role'=>ROLE_TEACHER));
-			
-			if($entry){
-				$entry->reviewerid = $USER->id;
-				$entry->value = 1;
-				$entry->timestamp = time();
-				$DB->update_record(DB_COMPETENCIES, $entry);
-			}else{
-				$insert = new stdClass();
-				$insert->userid = $userid;
-				$insert->compid = $descriptor;
-				$insert->reviewerid = $USER->id;
-				$insert->role = ROLE_TEACHER;
-				$insert->courseid = $courseid;
-				$insert->value = 1;
-				$insert->timestamp = time();
+			if($descriptor != 0){
+				$entry = $DB->get_record(DB_COMPETENCIES, array('userid'=>$userid, 'compid'=>$descriptor, 'courseid'=>$courseid, 'role'=>ROLE_TEACHER));
 				
-				$DB->insert_record(DB_COMPETENCIES, $insert);
+				if($entry){
+					$entry->reviewerid = $USER->id;
+					$entry->value = 1;
+					$entry->timestamp = time();
+					$DB->update_record(DB_COMPETENCIES, $entry);
+				}else{
+					$insert = new stdClass();
+					$insert->userid = $userid;
+					$insert->compid = $descriptor;
+					$insert->reviewerid = $USER->id;
+					$insert->role = ROLE_TEACHER;
+					$insert->courseid = $courseid;
+					$insert->value = 1;
+					$insert->timestamp = time();
+					
+					$DB->insert_record(DB_COMPETENCIES, $insert);
+				}
 			}
 		}
 		
 		//set negative graded competencies
-		$descriptors = explode(',', $comps_unset);
-		foreach($descriptors as $descriptor){
+		foreach($unset_descriptors as $descriptor){
 			$entry = $DB->get_record(DB_COMPETENCIES, array('userid'=>$userid, 'compid'=>$descriptor, 'courseid'=>$courseid, 'role'=>ROLE_TEACHER));
 			
 			if($entry){
