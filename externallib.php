@@ -1611,7 +1611,7 @@ class block_exacomp_external extends external_api {
 				$form->save_stored_file('file', $context->id, 'user', 'private', 0, '/', $filename, true);
 
 			$pathnamehash = $fs->get_pathname_hash($context->id, 'user', 'private', 0, '/', $filename);
-			$temp_task = new moodle_url($CFG->wwwroot.'/blocks/exacomp/example_upload.php',array("action"=>"serve","c"=>$context->id,"i"=>$pathnamehash,"courseid"=>$courseid));
+			$temp_task = new moodle_url($CFG->wwwroot.'/blocks/exacomp/example_upload.php',array("action"=>"serve","c"=>$context->id,"i"=>$pathnamehash,"courseid"=>1));
             $example_task = $temp_task->out(false);
 		}
 		
