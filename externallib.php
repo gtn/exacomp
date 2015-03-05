@@ -1885,4 +1885,74 @@ class block_exacomp_external extends external_api {
 				)
 		);
     }
+    
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function get_user_profile_parameters() {
+        return new external_function_parameters(
+                array('userid' => new external_value(PARAM_INT, 'id of user'))
+        );
+    }
+    
+    /**
+     * @return array of user courses
+     */
+    public static function get_user_profile($userid) {
+        global $CFG,$DB, $USER;
+        require_once("$CFG->dirroot/lib/enrollib.php");
+        require_once $CFG->dirroot . '/blocks/exacomp/lib/lib.php';
+    
+        $params = self::validate_parameters(self::get_subjects_for_user_parameters(), array('userid'=>$userid));
+    
+        if($userid == 0)
+            $userid = $USER->id;
+    
+        $courses = block_exacomp_external::get_courses($userid);
+    
+        $total_total = 0;
+        $total_reached = 0;
+        $total_average = 0;
+    
+        $response = array();
+    
+        foreach($courses as $course) {
+            $statistics = block_exacomp_get_course_competence_statistics($course->id, $DB->get_record('user',array('id'=>$userid)),
+                    block_exacomp_get_grading_scheme($course->id));
+    
+            $total_total +=  $statistics[0];
+            $total_reached += $statistics[1];
+            $total_average += $statistics[2];
+    
+            $response_obj = new stdClass();
+            $response_obj->courseid = $course->id;
+            $response_obj->title = $course->fullname;
+            $response_obj->totalcomps = $statistics[0];
+            $response_obj->reachedcomps = $statistics[1];
+            $response_obj->averagecomps = $statistics[2];
+    
+            $response[] = $response_obj;
+        }
+    
+        return $response;
+    }
+    
+    /**
+     * Returns desription of method return values
+     * @return external_multiple_structure
+     */
+    public static function get_subjects_for_user_returns() {
+        return new external_multiple_structure(
+                new external_single_structure(
+                        array(
+                                'courseid' => new external_value(PARAM_INT, 'id of course'),
+                                'title' => new external_value(PARAM_TEXT, 'title of course'),
+                                'totalcomps' => new external_value(PARAM_INT, 'amount of total competencies'),
+                                'reachedcomps' => new external_value(PARAM_INT, 'amount of reached competencies'),
+                                'averagecomps' => new external_value(PARAM_INT, 'amount of average reached competencies by all coure students')
+                        )
+                )
+        );
+    }
 }
