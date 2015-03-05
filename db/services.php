@@ -29,7 +29,8 @@ $services = array(
 						'block_exacomp_grade_item',
 						'block_exacomp_get_item_grading',
 						'block_exacomp_get_user_examples',
-				        'block_exacomp_get_user_profile'), 	//web service functions of this service
+				        'block_exacomp_get_user_profile',
+						'block_exacomp_update_example'), 	//web service functions of this service
 				'restrictedusers' =>0,                      //if enabled, the Moodle administrator must link some user to this service
 				//into the administration
 				'enabled'=>1,                               //if enabled, the service can be reachable on a default installation
@@ -235,5 +236,12 @@ $functions = array(
                 'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
                 'description' => 'get a list of courses with their competencies',    //human readable description of the web service function
                 'type'        => 'read'                  //database rights of the web service function (read, write)
-        )
+        ),
+		'block_exacomp_update_example' => array(    //web service function name
+		        'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'update_example',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'update an example',    //human readable description of the web service function
+				'type'        => 'write'                  //database rights of the web service function (read, write)
+		)
 );

@@ -1904,7 +1904,7 @@ class block_exacomp_external extends external_api {
         require_once("$CFG->dirroot/lib/enrollib.php");
         require_once $CFG->dirroot . '/blocks/exacomp/lib/lib.php';
     
-        $params = self::validate_parameters(self::get_subjects_for_user_parameters(), array('userid'=>$userid));
+        $params = self::validate_parameters(self::get_user_profile_parameters(), array('userid'=>$userid));
     
         if($userid == 0)
             $userid = $USER->id;
@@ -1942,7 +1942,7 @@ class block_exacomp_external extends external_api {
      * Returns desription of method return values
      * @return external_multiple_structure
      */
-    public static function get_subjects_for_user_returns() {
+    public static function get_user_profile_returns() {
         return new external_multiple_structure(
                 new external_single_structure(
                         array(
@@ -1953,6 +1953,84 @@ class block_exacomp_external extends external_api {
                                 'averagecomps' => new external_value(PARAM_INT, 'amount of average reached competencies by all coure students')
                         )
                 )
+        );
+    }
+	/**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+     public static function update_example_parameters() {
+        return new external_function_parameters(
+                array(
+						'exampleid' => new external_value(PARAM_INT, 'id of example'),
+                        'name' => new external_value(PARAM_TEXT, 'title of example'),
+                        'description' => new external_value(PARAM_TEXT, 'description of example'),
+                        'task' => new external_value(PARAM_TEXT, 'task of example'),
+                        'comps' => new external_value(PARAM_TEXT, 'list of competencies, seperated by comma'),
+						'filename' => new external_value(PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area')
+                )
+        );
+    }
+    /**
+     * create example
+     * @param 
+     * @return 
+     */
+    public static function update_example($exampleid, $name, $description, $task, $comps, $filename) {
+        global $CFG,$DB, $USER;
+
+        if (empty($exampleid) || empty($name)) {
+            throw new invalid_parameter_exception('Parameter can not be empty');
+        }
+        
+        $params = self::validate_parameters(self::update_example_parameters(), array('exampleid'=>$exampleid, 'name'=>$name, 'description'=>$description, 'task'=>$task, 'comps'=>$comps, 'filename'=>$filename));
+        
+		if($filename != null){
+			$context = context_user::instance($USER->id);
+			$fs = get_file_storage();
+			
+			if(!$fs->file_exists($context->id, 'user', 'private', 0, '/', $filename))
+				$form->save_stored_file('file', $context->id, 'user', 'private', 0, '/', $filename, true);
+
+			$pathnamehash = $fs->get_pathname_hash($context->id, 'user', 'private', 0, '/', $filename);
+			$temp_task = new moodle_url($CFG->wwwroot.'/blocks/exacomp/example_upload.php',array("action"=>"serve","c"=>$context->id,"i"=>$pathnamehash,"courseid"=>1));
+            $example_task = $temp_task->out(false);
+		}
+		
+		$example = $DB->get_record(DB_EXAMPLES, array('id'=>$exampleid));
+		
+		//insert into examples and example_desc
+		$example->title = $name;
+		$example->description = $description;
+		$example->externaltask = $task;
+		$example->task = $example_task;
+		
+		$id = $DB->update_record(DB_EXAMPLES, $example);
+		
+		if(!empty($comps)){
+			$DB->delete_records(DB_DESCEXAMP, array('exampid'=>$exampleid));
+			
+			$descriptors = explode(',', $comps);
+			foreach($descriptors as $descriptor){
+				$insert = new stdClass();
+				$insert->exampid = $id;
+				$insert->descrid = $descriptor;
+				$DB->insert_record(DB_DESCEXAMP, $insert);
+			}
+		}
+		
+       return array("success"=>true);
+    }
+
+    /**
+     * Returns desription of method return values
+     * @return external_multiple_structure
+     */
+    public static function update_example_returns() {
+        return new external_single_structure(
+            array(
+                    'success' => new external_value(PARAM_BOOL, 'true if successful')
+            )   
         );
     }
 }
