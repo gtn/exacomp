@@ -1993,7 +1993,7 @@ class block_exacomp_external extends external_api {
      * @param 
      * @return 
      */
-    public static function update_example($exampleid, $name, $description, $task, $comps, $filename) {
+     public static function update_example($exampleid, $name, $description, $task, $comps, $filename) {
         global $CFG,$DB, $USER;
 
         if (empty($exampleid) || empty($name)) {
@@ -2030,7 +2030,7 @@ class block_exacomp_external extends external_api {
 			$descriptors = explode(',', $comps);
 			foreach($descriptors as $descriptor){
 				$insert = new stdClass();
-				$insert->exampid = $id;
+				$insert->exampid = $exampleid;
 				$insert->descrid = $descriptor;
 				$DB->insert_record(DB_DESCEXAMP, $insert);
 			}
