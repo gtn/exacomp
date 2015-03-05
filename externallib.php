@@ -1603,7 +1603,7 @@ class block_exacomp_external extends external_api {
         
         $params = self::validate_parameters(self::create_example_parameters(), array('name'=>$name, 'description'=>$description, 'task'=>$task, 'comps'=>$comps, 'filename'=>$filename));
         
-		if($filename != null){
+		if(strcmp($filename, "0") !=0){
 			$context = context_user::instance($USER->id);
 			$fs = get_file_storage();
 			
@@ -2002,7 +2002,7 @@ class block_exacomp_external extends external_api {
         
         $params = self::validate_parameters(self::update_example_parameters(), array('exampleid'=>$exampleid, 'name'=>$name, 'description'=>$description, 'task'=>$task, 'comps'=>$comps, 'filename'=>$filename));
         
-		if($filename != null){
+		if(strcmp($filename, "0") !=0){
 			$context = context_user::instance($USER->id);
 			$fs = get_file_storage();
 			
