@@ -1907,28 +1907,48 @@ class block_exacomp_external extends external_api {
         if($userid == 0)
             $userid = $USER->id;
     
+        $user = $DB->get_record('user',array('id'=>$userid));
         $courses = block_exacomp_external::get_courses($userid);
     
-        $total_total = 0;
-        $total_reached = 0;
-        $total_average = 0;
+        $total = 0;
+        $reached = 0;
     
         $response = array();
-    
+        
         foreach($courses as $course) {
-            $statistics = block_exacomp_get_course_competence_statistics($course->id, $DB->get_record('user',array('id'=>$userid)),
-                    block_exacomp_get_grading_scheme($course->id));
+            $topics = block_exacomp_get_topics_by_course($course->courseid);
+            $descriptors = block_exacomp_get_descriptors($course->courseid);
+            $coursesettings = block_exacomp_get_settings_by_course($course->courseid);
+            
+            $user = block_exacomp_get_user_information_by_course($user, $course->courseid, true);
     
-            $total_total +=  $statistics[0];
-            $total_reached += $statistics[1];
-            $total_average += $statistics[2];
-    
+            foreach($topics as $topic){
+                    if($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset($cm_mm->topics[$topic->id])))
+                    $total ++;
+                	
+                if(!empty($user->topics->teacher)){
+                    if(isset($user->topics->teacher) && isset($user->topics->teacher[$topic->id])){
+                                $reached ++;
+                        }
+                }
+            }
+            foreach($descriptors as $descriptor){
+                if($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset($cm_mm->competencies[$descriptor->id])))
+                    $total ++;
+            
+                if(!empty($user->competencies->teacher)){
+                    if(isset($user->competencies->teacher) && isset($user->competencies->teacher[$descriptor->id])){
+                            $reached ++;
+                    }
+                }
+            }
+            
+            
             $response_obj = new stdClass();
-            $response_obj->courseid = $course->id;
+            $response_obj->courseid = $course->courseid;
             $response_obj->title = $course->fullname;
-            $response_obj->totalcomps = $statistics[0];
-            $response_obj->reachedcomps = $statistics[1];
-            $response_obj->averagecomps = $statistics[2];
+            $response_obj->totalcomps = $total;
+            $response_obj->reachedcomps = $reached;
     
             $response[] = $response_obj;
         }
@@ -1947,8 +1967,7 @@ class block_exacomp_external extends external_api {
                                 'courseid' => new external_value(PARAM_INT, 'id of course'),
                                 'title' => new external_value(PARAM_TEXT, 'title of course'),
                                 'totalcomps' => new external_value(PARAM_INT, 'amount of total competencies'),
-                                'reachedcomps' => new external_value(PARAM_INT, 'amount of reached competencies'),
-                                'averagecomps' => new external_value(PARAM_INT, 'amount of average reached competencies by all coure students')
+                                'reachedcomps' => new external_value(PARAM_INT, 'amount of reached competencies')
                         )
                 )
         );
