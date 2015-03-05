@@ -953,6 +953,7 @@ class block_exacomp_external extends external_api {
                         $structure[$topic->id]->examples[$example->id] = new stdClass();
                         $structure[$topic->id]->examples[$example->id]->exampleid = $example->id;
                         $structure[$topic->id]->examples[$example->id]->example_title = $example->title;
+						$structure[$topic->id]->examples[$example->id]->example_creatorid = $example->creatorid;
                         $items = $DB->get_records('block_exacompitemexample', array('exampleid'=>$example->id));
                         if($items){
                             //check for current
@@ -991,7 +992,8 @@ class block_exacomp_external extends external_api {
                                                         'exampleid' => new external_value(PARAM_INT, 'id of example'),
                                                         'example_title' => new external_value(PARAM_TEXT, 'title of example'),
                                                         'example_item' => new external_value(PARAM_INT, 'current item id'),
-                                                        'example_status' => new external_value(PARAM_INT, 'status of current item')
+                                                        'example_status' => new external_value(PARAM_INT, 'status of current item'),
+														'example_creatorid' => new external_value(PARAM_INT, 'creator of example')
                                                 )
                                         )
                                 )
@@ -1828,5 +1830,59 @@ class block_exacomp_external extends external_api {
                     'comment' => new external_value(PARAM_TEXT, 'comment of teacher')
             )   
         );
+    }
+		/**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function get_user_examples_parameters() {
+        return new external_function_parameters(
+                array()
+        );
+    }
+    /**
+     * grade an item
+     * @param 
+     * @return 
+     */
+    public static function get_user_examples() {
+        global $CFG,$DB, $USER;
+
+        $params = self::validate_parameters(self::get_user_examples_parameters(), array());
+        
+		$subjects = block_exacomp_external::get_subjects_for_user($USER->id);
+		
+		$examples = array();
+		foreach($subjects as $subject){
+			$topics = block_exacomp_external::get_examples_for_subject($subject->subjectid, $subject->courseid, 0);
+			foreach($topics as $topic){
+				foreach($topic->examples as $example){
+					if($example->example_creatorid == $USER->id){
+						$elem = new stdClass();
+						$elem->exampleid = $example->exampleid;
+						$elem->exampletitle = $example->example_title;
+						$examples[] = $elem;
+					}
+				}
+			}
+		}
+       
+        return $examples;
+		//return array();
+    }
+
+    /**
+     * Returns desription of method return values
+     * @return external_multiple_structure
+     */
+    public static function get_user_examples_returns() {
+        return new external_multiple_structure(
+                new external_single_structure(
+                        array(
+                                'exampleid' => new external_value(PARAM_INT, 'id of example'),
+                                'exampletitle' => new external_value(PARAM_TEXT, 'title of example')
+							)
+				)
+		);
     }
 }
