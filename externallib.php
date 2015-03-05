@@ -1658,6 +1658,7 @@ class block_exacomp_external extends external_api {
                 array(
                         'userid' => new external_value(PARAM_INT, 'id of user'),
                         'value' => new external_value(PARAM_INT, 'value for grading'),
+                        'status' => new external_value(PARAM_INT, 'status'),
                         'comment' => new external_value(PARAM_TEXT, 'comment of grading'),
                         'itemid' => new external_value(PARAM_INT, 'id of item'),
 						'comps' => new external_value(PARAM_TEXT, 'comps for example - positive grading'),
@@ -1670,14 +1671,14 @@ class block_exacomp_external extends external_api {
      * @param 
      * @return 
      */
-    public static function grade_item($userid, $value, $comment, $itemid, $comps, $courseid) {
+    public static function grade_item($userid, $value, $status, $comment, $itemid, $comps, $courseid) {
         global $CFG,$DB, $USER;
 
         if (empty($userid) || empty($value) || empty($comment) || empty($itemid) || empty($courseid)) {
             throw new invalid_parameter_exception('Parameter can not be empty');
         }
         
-        $params = self::validate_parameters(self::grade_item_parameters(), array('userid'=>$userid, 'value'=>$value, 'comment'=>$comment, 'itemid'=>$itemid, 'comps'=>$comps, 'courseid'=>$courseid));
+        $params = self::validate_parameters(self::grade_item_parameters(), array('userid'=>$userid, 'value'=>$value, 'status'=>$status, 'comment'=>$comment, 'itemid'=>$itemid, 'comps'=>$comps, 'courseid'=>$courseid));
         
 		//insert into block_exacompitemexample
 		$update = new stdClass();
@@ -1688,10 +1689,6 @@ class block_exacomp_external extends external_api {
 		$update->itemid = $itemid;
 		$update->datemodified = time();
 		$update->teachervalue = $value;
-		$status = 1;
-		if($value >= 50){
-			$status = 2;
-		}
 		$update->status = $status;
 		
 		$DB->update_record('block_exacompitemexample', $update);
@@ -1702,11 +1699,11 @@ class block_exacomp_external extends external_api {
 		$insert->entry = $comment;
 		$insert->timemodified = time();
 		
+		$DB->delete_records('block_exaportitemcomm',array('itemid'=>$itemid,'userid'=>$USER->id));
 		$DB->insert_record('block_exaportitemcomm', $insert);
 
 		//get all available descriptors and unset them who are not received via web service
 		$descriptors_exam_mm = $DB->get_records(DB_DESCEXAMP, array('exampid'=>$exampleid));
-		
 		
 		$descriptors = explode(',', $comps);
 			
@@ -1716,7 +1713,6 @@ class block_exacomp_external extends external_api {
 				$unset_descriptors[] = $descr_examp->descrid;
 			}
 		}
-		
 		
 		//set positive graded competencies
 		foreach($descriptors as $descriptor){
