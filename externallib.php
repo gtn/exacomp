@@ -1859,6 +1859,18 @@ class block_exacomp_external extends external_api {
 						$elem = new stdClass();
 						$elem->exampleid = $example->exampleid;
 						$elem->exampletitle = $example->example_title;
+						$items = $DB->get_records('block_exacompitemexample', array('exampleid'=>$example->exampleid));
+                        if($items){
+                            //check for current
+                            $current_timestamp = 0;
+                            foreach($items as $item){
+                                if($item->timecreated > $current_timestamp){
+                                    $elem->example_status = $item->status;
+                                }
+                            }
+                        }else{
+                            $elem->example_status = -1;
+                        }
 						$examples[] = $elem;
 					}
 				}
@@ -1878,12 +1890,12 @@ class block_exacomp_external extends external_api {
                 new external_single_structure(
                         array(
                                 'exampleid' => new external_value(PARAM_INT, 'id of example'),
-                                'exampletitle' => new external_value(PARAM_TEXT, 'title of example')
+                                'exampletitle' => new external_value(PARAM_TEXT, 'title of example'),
+								'example_status' => new external_value(PARAM_INT, 'status of example')
 							)
 				)
 		);
     }
-    
     /**
      * Returns description of method parameters
      * @return external_function_parameters
