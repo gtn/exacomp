@@ -1272,19 +1272,17 @@ class block_exacomp_external extends external_api {
 
         $subjects_res = array();
         foreach($courses as $course){
-            $schooltypes = block_exacomp_external::get_subjects($course["courseid"]);
-            foreach($schooltypes as $schooltype){
-                $subjects = block_exacomp_external::get_topics($schooltype->subjectid, $course["courseid"]);
-                foreach($subjects as $subject){
-                    if(!array_key_exists($subject->topicid, $subjects_res)){
-                        $elem = new stdClass();
-                        $elem->subjectid = $subject->topicid;
-                        $elem->title= $subject->title;
-                        $elem->courseid = $course["courseid"];
-                        $subjects_res[] = $elem;
-                    }
-                }
-            }
+			$subjects = block_exacomp_get_subjects_by_course($course["courseid"]);
+           
+            foreach($subjects as $subject){
+				if(!array_key_exists($subject->id, $subjects_res)){
+					$elem = new stdClass();
+					$elem->subjectid = $subject->id;
+					$elem->title= $subject->title;
+					$elem->courseid = $course["courseid"];
+					$subjects_res[] = $elem;
+				}
+			}
         }
 
         return $subjects_res;
