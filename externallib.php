@@ -954,8 +954,14 @@ class block_exacomp_external extends external_api {
                         $structure[$topic->id]->examples[$example->id]->exampleid = $example->id;
                         $structure[$topic->id]->examples[$example->id]->example_title = $example->title;
 						$structure[$topic->id]->examples[$example->id]->example_creatorid = $example->creatorid;
-                        $items = $DB->get_records('block_exacompitemexample', array('exampleid'=>$example->id));
-                        if($items){
+                        $items_examp = $DB->get_records('block_exacompitemexample', array('exampleid'=>$example->id));
+						$items = array();
+						foreach($items_examp as $item_examp){
+							$item_db = $DB->get_record('block_exaportitem', array('id'=>$item_examp->itemid));
+							if($item_db->userid == $userid)
+								$items[] = $item_examp;
+						}
+                        if(!empty($items)){
                             //check for current
                             $current_timestamp = 0;
                             foreach($items as $item){
@@ -1859,8 +1865,14 @@ class block_exacomp_external extends external_api {
 						$elem = new stdClass();
 						$elem->exampleid = $example->exampleid;
 						$elem->exampletitle = $example->example_title;
-						$items = $DB->get_records('block_exacompitemexample', array('exampleid'=>$example->exampleid));
-                        if($items){
+						$items_examp = $DB->get_records('block_exacompitemexample', array('exampleid'=>$example->exampleid));
+						$items = array();
+						foreach($items_examp as $item_examp){
+							$item_db = $DB->get_record('block_exaportitem', array('id'=>$item_examp->itemid));
+							if($item_db->userid == $USER->id)
+								$items[] = $item_examp;
+						}
+                        if(!empty($items)){
                             //check for current
                             $current_timestamp = 0;
                             foreach($items as $item){
@@ -1871,6 +1883,7 @@ class block_exacomp_external extends external_api {
                         }else{
                             $elem->example_status = -1;
                         }
+                       
 						$examples[] = $elem;
 					}
 				}
