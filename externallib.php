@@ -1916,11 +1916,11 @@ class block_exacomp_external extends external_api {
         $response = array();
         
         foreach($courses as $course) {
-            $topics = block_exacomp_get_topics_by_course($course->courseid);
-            $descriptors = block_exacomp_get_descriptors($course->courseid);
-            $coursesettings = block_exacomp_get_settings_by_course($course->courseid);
+            $topics = block_exacomp_get_topics_by_course($course['courseid']);
+            $descriptors = block_exacomp_get_descriptors($course['courseid']);
+            $coursesettings = block_exacomp_get_settings_by_course($course['courseid']);
             
-            $user = block_exacomp_get_user_information_by_course($user, $course->courseid, true);
+            $user = block_exacomp_get_user_information_by_course($user, $course['courseid'], true);
     
             foreach($topics as $topic){
                     if($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset($cm_mm->topics[$topic->id])))
@@ -1945,8 +1945,8 @@ class block_exacomp_external extends external_api {
             
             
             $response_obj = new stdClass();
-            $response_obj->courseid = $course->courseid;
-            $response_obj->title = $course->fullname;
+            $response_obj->courseid = $course['courseid'];
+            $response_obj->title = $course['fullname'];
             $response_obj->totalcomps = $total;
             $response_obj->reachedcomps = $reached;
     
