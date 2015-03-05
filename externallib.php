@@ -1619,8 +1619,8 @@ class block_exacomp_external extends external_api {
 		$example = new stdClass();
 		$example->title = $name;
 		$example->description = $description;
-		$example->externaltask = $task;
-		$example->task = $example_task;
+		$example->task = $task;
+		$example->externaltask = $example_task;
 		$example->creatorid = $USER->id;
 		$example->timestamp = date();
 		$example->source = CUSTOM_EXAMPLE_SOURCE;
@@ -2019,8 +2019,8 @@ class block_exacomp_external extends external_api {
 		//insert into examples and example_desc
 		$example->title = $name;
 		$example->description = $description;
-		$example->externaltask = $task;
-		$example->task = $example_task;
+		$example->task = $task;
+		$example->externaltask = $example_task;
 		
 		$id = $DB->update_record(DB_EXAMPLES, $example);
 		
