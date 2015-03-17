@@ -23,6 +23,8 @@ define('DB_SETTINGS', 'block_exacompsettings');
 define('DB_MDLTYPES', 'block_exacompmdltype_mm');
 define('DB_DESCBADGE', 'block_exacompdescbadge_mm');
 define('DB_PROFILESETTINGS', 'block_exacompprofilesettings');
+define('DB_CROSSSUBJECTS', 'block_exacompcrosssubjects');
+define('DB_DESCCROSS', 'block_exacompdescrcross_mm');
 
 /**
  * PLUGIN ROLES
@@ -1037,6 +1039,16 @@ function block_exacomp_build_navigation_tabs_profile($context,$courseid){
 	$profile_subtree[] = new tabobject('tab_competence_profile_settings', new moodle_url('/blocks/exacomp/competence_profile_settings.php', array("courseid"=>$courseid)), get_string('tab_competence_profile_settings', 'block_exacomp'));
 	return $profile_subtree;
 }
+function block_exacomp_build_navigation_tabs_cross_subjects($context,$courseid){
+	if (!has_capability('block/exacomp:teacher', $context)) 
+		return array();
+	
+	$profile_subtree = array();
+	
+	$profile_subtree[] = new tabobject('tab_cross_subjects_overview', new moodle_url('/blocks/exacomp/cross_subjects_overview.php', array("courseid"=>$courseid)), get_string('tab_cross_subjects_overview', 'block_exacomp'));
+	$profile_subtree[] = new tabobject('tab_cross_subjects_course', new moodle_url('/blocks/exacomp/cross_subjects.php', array("courseid"=>$courseid)), get_string('tab_cross_subjects_course', 'block_exacomp'));
+	return $profile_subtree;
+}
 /**
  * Build navigtion tabs, depending on role and version
  * 
@@ -1074,6 +1086,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 					
 				if($checkConfig && $ready_for_use) {
 					$rows[] = new tabobject('tab_competence_overview', new moodle_url('/blocks/exacomp/assign_competencies.php',array("courseid"=>$courseid)),get_string('tab_competence_overview','block_exacomp'));
+					$rows[] = new tabobject('tab_cross_subjects', new moodle_url('/blocks/exacomp/cross_subjects_overview.php', array("courseid"=>$courseid)), get_string('tab_cross_subjects', 'block_exacomp'));
 					if ($courseSettings->uses_activities && $usedetailpage)
 						$rows[] = new tabobject('tab_competence_details', new moodle_url('/blocks/exacomp/competence_detail.php',array("courseid"=>$courseid)),get_string('tab_competence_details','block_exacomp'));
 					$rows[] = new tabobject('tab_competence_profile_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid"=>$courseid)), get_string('tab_competence_profile',  'block_exacomp'));
@@ -1099,6 +1112,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 				if($checkConfig){
 					if($ready_for_use){
 						$rows[] = new tabobject('tab_competence_overview', new moodle_url('/blocks/exacomp/assign_competencies.php',array("courseid"=>$courseid)),get_string('tab_competence_overview','block_exacomp'));
+						$rows[] = new tabobject('tab_cross_subjects', new moodle_url('/blocks/exacomp/cross_subjects_overview.php', array("courseid"=>$courseid)), get_string('tab_cross_subjects', 'block_exacomp'));
 						if ($courseSettings->uses_activities && $usedetailpage)
 							$rows[] = new tabobject('tab_competence_details', new moodle_url('/blocks/exacomp/competence_detail.php',array("courseid"=>$courseid)),get_string('tab_competence_details','block_exacomp'));
 					}	
@@ -1139,6 +1153,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 					
 				if($ready_for_use){
 					$rows[] = new tabobject('tab_competence_overview', new moodle_url('/blocks/exacomp/assign_competencies.php',array("courseid"=>$courseid)),get_string('tab_competence_overview','block_exacomp'));
+					$rows[] = new tabobject('tab_cross_subjects', new moodle_url('/blocks/exacomp/cross_subjects.php', array("courseid"=>$courseid)), get_string('tab_cross_subjects', 'block_exacomp'));
 					if ($courseSettings->uses_activities && $usedetailpage)
 						$rows[] = new tabobject('tab_competence_details', new moodle_url('/blocks/exacomp/competence_detail.php',array("courseid"=>$courseid)),get_string('tab_competence_details','block_exacomp'));
 					
@@ -1154,6 +1169,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 			}else{	//student tabs !LIS
 				if($ready_for_use){
 					$rows[] = new tabobject('tab_competence_overview', new moodle_url('/blocks/exacomp/assign_competencies.php',array("courseid"=>$courseid)),get_string('tab_competence_overview','block_exacomp'));
+					$rows[] = new tabobject('tab_cross_subjects', new moodle_url('/blocks/exacomp/cross_subjects.php', array("courseid"=>$courseid)), get_string('tab_cross_subjects', 'block_exacomp'));
 					if ($courseSettings->uses_activities && $usedetailpage)
 						$rows[] = new tabobject('tab_competence_details', new moodle_url('/blocks/exacomp/competence_detail.php',array("courseid"=>$courseid)),get_string('tab_competence_details','block_exacomp'));
 					$profile = new tabobject('tab_competence_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid"=>$courseid)), get_string('tab_competence_profile',  'block_exacomp'));
@@ -3465,4 +3481,18 @@ function block_exacomp_get_schooltypetree_by_subjects($subjects){
         $tree[$schooltype->id]->subjects[$subject->id] = $subject; 
     }
     return $tree;
+}
+function block_exacomp_init_cross_subjects(){
+    global $DB;
+    $drafts = block_exacomp_get_cross_subjects_drafts();
+    if(!$drafts){
+        $insert = new stdClass();
+        $insert->title = get_string('empty_draft', 'block_exacomp');
+        $insert->description = get_string('empty_draft_description', 'block_exacomp');
+        $DB->insert_record(DB_CROSSSUBJECTS, $insert);
+    } 
+}
+function block_exacomp_get_cross_subjects_drafts(){
+    global $DB;
+    return $DB->get_records(DB_CROSSSUBJECTS, array('courseid'=>0));
 }

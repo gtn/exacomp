@@ -63,6 +63,9 @@ $string['tab_help'] = 'Help';
 $string['tab_skillmanagement'] = 'Manage competencies';
 $string['tab_teacher_demo_settings'] = 'work with demo data';
 $string['tab_profoundness'] = 'Basic & Extended Competencies';
+$string['tab_cross_subjects'] = 'Cross-Subjects';
+$string['tab_cross_subjects_overview'] = 'Drafts';
+$string['tab_cross_subjects_course'] = 'Course Cross-Subjects';
 
 $string['first_configuration_step'] = 'The first step of the configuration is to import some data to Exabis Competencies.';
 $string['second_configuration_step'] = 'In this configuration step you have to pre-select standards.';
@@ -339,6 +342,11 @@ $string['block_exacomp_external_trainer_assign'] = 'Assign external trainers';
 $string['block_exacomp_external_trainer_assign_new'] = 'New assign: ';
 $string['block_exacomp_external_trainer'] = 'Trainer';
 $string['block_exacomp_external_trainer_student'] = 'Student';
+
+//Crosssubjects
+$string['empty_draft'] = 'Empty draft';
+$string['empty_draft_description'] = 'Create your own cross-subject based on an empty draft.';
+$string['add_drafts_to_course'] = 'Add drafts to course';
 
 //metadata
 $string['subject_singular'] = 'Field of competence';
