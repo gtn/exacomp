@@ -3608,34 +3608,35 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$row->cells[] = $cell;
 
 		$cell = new html_table_cell();
-		$cell->text = html_writer::span(get_string('crosssubject', 'block_exacomp'), 'exabis_comp_top_small')
-		. html_writer::empty_tag('input', array('type'=>'text', 'value'=>$crosssubject->title, 'name'=>'crosssub-title'));
-
-		$row->cells[] = $cell;
-
-		if(isset($selectedStudent)){
-		    $cell = new html_table_cell();
-		    $cell->text = html_writer::span(get_string('student_name', 'block_exacomp'), 'exabis_comp_top_small')
-		        . html_writer::tag('b', $selectedStudent->name);
+		
+		if($selectedStudent == 0)
+		    $cell->text = html_writer::span(get_string('crosssubject', 'block_exacomp'), 'exabis_comp_top_small')
+		        . html_writer::empty_tag('input', array('type'=>'text', 'value'=>$crosssubject->title, 'name'=>'crosssub-title'));
+        else 
+            $cell->text = html_writer::span(get_string('crosssubject', 'block_exacomp'), 'exabis_comp_top_small')
+		        . html_writer::tag('b', $crosssubject->title);
 		        
-		    $row->cells[] = $cell;
-		}
+		$row->cells[] = $cell;
 		
 		$rows[] = $row;
 		
 		$row = new html_table_row();
 	    $cell = new html_table_cell();
 	    $cell->colspan = (isset($selectedStudent))?3:2;
-        $cell->text = html_writer::span(get_string('description', 'block_exacomp'), 'exabis_comp_top_small')
-	        . html_writer::empty_tag('input', array('type'=>'textarea', 'size'=>200, 'value'=>$crosssubject->description, 'name'=>'crosssub-description'));
-        
+	    if($selectedStudent == 0)
+            $cell->text = html_writer::span(get_string('description', 'block_exacomp'), 'exabis_comp_top_small')
+    	        . html_writer::empty_tag('input', array('type'=>'textarea', 'size'=>200, 'value'=>$crosssubject->description, 'name'=>'crosssub-description'));
+        else
+             $cell->text = html_writer::span(get_string('description', 'block_exacomp'), 'exabis_comp_top_small')
+		        . html_writer::tag('b', $crosssubject->description);
+		        
 	    $row->cells[] = $cell;  
 	    $rows[] = $row;
 		    
 		if($isTeacher){
 		    $row = new html_table_row();
 		    $cell = new html_table_cell();
-		    $cell->colspan = (isset($selectedStudent))?3:2;
+		    $cell->colspan = 2;
             $cell->text = html_writer::span(get_string('tab_help', 'block_exacomp'), 'exabis_comp_top_small')
 		        . get_string('help_crosssubject', 'block_exacomp');	
 		    $row->cells[] = $cell;  

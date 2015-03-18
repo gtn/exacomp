@@ -3504,6 +3504,29 @@ function block_exacomp_init_cross_subjects(){
         $insert->title = get_string('empty_draft', 'block_exacomp');
         $insert->description = get_string('empty_draft_description', 'block_exacomp');
         $DB->insert_record(DB_CROSSSUBJECTS, $insert);
+        
+        //just for testing
+        $draft1 = new stdClass();
+        $draft1->title = "Vorlage 1";
+        $draft1->description = "Das ist eine Vorlage, der mehrere Kompetenzen zugeordnet sind.";
+        $draft1id = $DB->insert_record(DB_CROSSSUBJECTS, $draft1);
+        
+        $insert = new stdClass();
+        $insert->crosssubjid = $draft1id;
+        $insert->descrid = 662;
+        $DB->insert_record(DB_DESCCROSS, $insert);
+        
+        $insert->descrid = 663;
+        $DB->insert_record(DB_DESCCROSS, $insert);
+        
+        $insert->descrid = 691;
+        $DB->insert_record(DB_DESCCROSS, $insert);
+        
+        $insert->descrid = 694;
+        $DB->insert_record(DB_DESCCROSS, $insert);
+        
+        $insert->descrid = 695;
+        $DB->insert_record(DB_DESCCROSS, $insert);
     } 
 }
 function block_exacomp_get_cross_subjects_drafts(){
