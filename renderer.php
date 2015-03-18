@@ -330,7 +330,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 	public function print_subject_dropdown($schooltypetree, $selectedSubject, $studentid = 0) {
-		global $PAGE;
+		global $PAGE, $version;
 		$content = get_string("choosesubject", "block_exacomp");
 		$array = array();
 		$options = array();
@@ -343,9 +343,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$array[] = $options;
 			$options = array();
 		}
-	
+		
 		$content .= html_writer::select($array, "lis_subjects",$selectedSubject, false,
 				array("onchange" => "document.location.href='".$PAGE->url. ($studentid > 0 ? "&studentid=".$studentid : "") ."&subjectid='+this.value;"));
+		
 		return $content;
 	}
 	/**
@@ -667,7 +668,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 										$text .= "<a target='_blank' alt='".$example->title."' title='".$example->title."' href='".$example->externalurl."'>".$img."</a>";
 								}
 							}
-							if(count($descriptor->children) > 0) {
+							if(isset($descriptor->children) && count($descriptor->children) > 0) {
 							    $children = '<ul class="childdescriptors">';
 							    foreach($descriptor->children as $child)
 							        $children .= '<li>' . $child->title . '</li>';
@@ -675,7 +676,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							}
 							$compString .= $text;
 
-							if(count($descriptor->children) > 0)
+							if(isset($descriptor->children) && count($descriptor->children) > 0)
     							$compString .= $children;
 							/*else {
 							 if(isset($descriptor->teachercomp) && $descriptor->teachercomp)
@@ -3512,6 +3513,30 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/view_print.png'), 'alt'=>'print')), array('class'=>'print'));
 		return html_writer::div(html_writer::tag('form', $content), 'competence_profile_printbox');
 	}
-	
+	public function print_cross_subjects_drafts($drafts){
+	    $content = html_writer::start_tag('script', array('type'=>'text/javascript', 'src'=>'javascript/wz_tooltip.js'));
+		$content .= html_writer::end_tag('script');
+		
+	    $drafts_checkboxes = "";
+	    foreach($drafts as $draft){
+	        $text=$draft->description;
+			$text = str_replace("\"","",$text);
+			$text = str_replace("\'","",$text);
+			$text = str_replace("\n"," ",$text);
+			$text = str_replace("\r"," ",$text);
+			$text = str_replace(":","\:",$text);
+
+			$draft_checkbox = html_writer::checkbox('draft['.$draft->id.']', $draft->id, false, $draft->title);
+	        $drafts_checkboxes .= html_writer::span($draft_checkbox, '', array('onmouseover'=>'Tip(\''.$text.'\')', 'onmouseout'=>'UnTip()'));
+	    }
+	    
+	    $submit = html_writer::div(html_writer::empty_tag('input', array('name'=>'btn_submit', 'type'=>'submit', 'value'=>get_string('add_drafts_to_course', 'block_exacomp'))), '', array('id'=>'exabis_save_button'));
+	    
+	    //$submit = html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('add_drafts_to_course', 'block_exacomp')));
+	    $content .= html_writer::tag('form', $drafts_checkboxes.$submit, array('method'=>'post', 'name'=>'add_drafts_to_course'));
+		//$div_exabis_competences_block = html_writer::div($content, array('id'=>'exabis_competences_block'));
+		$div_exabis_competences_block = html_writer::div($content, "", array('id'=>'exabis_competences_block'));
+		return $div_exabis_competences_block;
+	}
 }
 ?>

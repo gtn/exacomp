@@ -62,6 +62,9 @@ $string['tab_help'] = 'Hilfe';
 $string['tab_skillmanagement'] = 'Kompetenzen-Verwaltung';
 $string['tab_teacher_demo_settings'] = 'Mit Demo-Daten arbeiten';
 $string['tab_profoundness'] = 'Grund/Erweiterungskompetenzen';
+$string['tab_cross_subjects'] = 'Themen';
+$string['tab_cross_subjects_overview'] = 'Vorlagen';
+$string['tab_cross_subjects_course'] = 'Kursthemen';
 
 $string['first_configuration_step'] = 'Der erste Konfigurationsschritt besteht darin, Daten in das Exabis Competencies Modul zu importieren.';
 $string['second_configuration_step'] = 'In diesem Konfigurationsschritt muss eine Vorauswahl für die Standards getroffen werden, damit das Modul verwendet werden kann. Diese Einstellungen sind unabh&auml;ngig vom Kurs für die gesamte Moodle-Installation g&uuml;ltig.';
@@ -378,6 +381,11 @@ $string['block_exacomp_external_trainer_assign'] = 'Externe Trainer zuordnen';
 $string['block_exacomp_external_trainer_assign_new'] = 'Neue Zuordnung: ';
 $string['block_exacomp_external_trainer'] = 'Ausbilder: ';
 $string['block_exacomp_external_trainer_student'] = 'Auszubildender: ';
+
+//Crosssubjects
+$string['empty_draft'] = 'Leere Vorlage';
+$string['empty_draft_description'] = 'Erstelle dein eigenes Thema auf Basis einer leeren Vorlage.';
+$string['add_drafts_to_course'] = 'Vorlagen zum Kurs hinzufügen';
 
 //LIS Strings
 if(get_config('exacomp','alternativedatamodel')) {

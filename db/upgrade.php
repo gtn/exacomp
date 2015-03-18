@@ -1440,6 +1440,52 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    // Exaport savepoint reached.
 	    upgrade_block_savepoint(true, 2015021903, 'exacomp');
 	}
+	if($oldversion < 2015031502){
+	    global $DB;
+	    // Define table block_exacompcrosssubjects to be created.
+	    $table = new xmldb_table('block_exacompcrosssubjects');
+	    
+	    // Adding fields to table block_exacompcrossubjects.
+	    $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+	    $table->add_field('title', XMLDB_TYPE_CHAR, '1333', null, XMLDB_NOTNULL, null, null);
+	    $table->add_field('sorting', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+	    $table->add_field('sourceid', XMLDB_TYPE_INTEGER, '10', null, null, null);
+	    $table->add_field('source', XMLDB_TYPE_INTEGER, '4', null, null, null, '1');
+	    $table->add_field('description', XMLDB_TYPE_CHAR, '1333', null, null, null, null);
+	    $table->add_field('courseid', XMLDB_TYPE_INTEGER, '5', null, null, null, '0');
+	    $table->add_field('creatorid', XMLDB_TYPE_INTEGER, '5', null, null, null, '0');
+	
+	    // Adding keys to table block_exacompcrosssubjects.
+	    $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+	    $table->add_key('courseid', XMLDB_KEY_FOREIGN, array('courseid'), 'course', array('id'));
+	    $table->add_key('creatorid', XMLDB_KEY_FOREIGN, array('creatorid'), 'user', array('id'));
+
+	    // Conditionally launch create table for block_exacompcrosssubjects.
+	    if (!$dbman->table_exists($table)) {
+	        $dbman->create_table($table);
+	    }
+	    
+	    // Define table block_exacompcrosssubjects to be created.
+	    $table = new xmldb_table('block_exacompdescrcross_mm');
+	    
+	    // Adding fields to table block_exacompdescrcross_mm.
+	    $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+	    $table->add_field('descrid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+	    $table->add_field('crossubjid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+	
+	    // Adding keys to table block_exacompcdescrross_mm.
+	    $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+	    $table->add_key('descrid', XMLDB_KEY_FOREIGN, array('descrid'), 'block_exacompdescriptors', array('id'));
+	    $table->add_key('crosssubjid', XMLDB_KEY_FOREIGN, array('crosssubjid'), 'block_exacompcrosssubjects', array('id'));
+
+	    // Conditionally launch create table for block_exacompdescrcros_mm.
+	    if (!$dbman->table_exists($table)) {
+	        $dbman->create_table($table);
+	    }
+	    
+	    // Exaport savepoint reached.
+	    upgrade_block_savepoint(true, 2015031502, 'exacomp');
+	}
 	
 	return $result;
 }
