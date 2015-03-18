@@ -1126,6 +1126,7 @@ class block_exacomp_external extends external_api {
     /**
      * return 1 for trainer
      * 		  2 for student
+     *        0 if false
      * @param int userid
      * @return int
      */
@@ -1144,7 +1145,7 @@ class block_exacomp_external extends external_api {
             return array("role" => 2);
 
         //neither student nor trainer
-        return array("role" => $USER->id);
+        return array("role" => 0);
     }
 
     /**
@@ -1547,6 +1548,8 @@ class block_exacomp_external extends external_api {
                             'itemid'=>$itemid, 'filepath'=>'/', 'filename'=>$old->get_filename(),
                             'timecreated'=>time(), 'timemodified'=>time());
                     $fs->create_file_from_storedfile($file_record, $old->get_id());
+                    
+                    $old->delete();
                 }
             } catch (Exception $e) {
                 //some problem with the file occured
