@@ -347,6 +347,14 @@ $string['block_exacomp_external_trainer_student'] = 'Student';
 $string['empty_draft'] = 'Empty draft';
 $string['empty_draft_description'] = 'Create your own cross-subject based on an empty draft.';
 $string['add_drafts_to_course'] = 'Add drafts to course';
+$string['choosecrosssubject'] = 'Choose cross-subject';
+$string['crosssubject'] = "Cross-Subject";
+$string['student_name'] = "participant";
+$string['help_crosssubject'] = "Die Zusammenstellung des Themas erfolgt für die ganze Schule über den Reiter Lernwegeliste. Sie können hier kursspezifisch Kompetenzen, Teilkompetenzen und Lernmaterial ausblenden. Lernmaterial kann hier ergänzt werden. Dieses wird automatisch in die Lernwegeliste integriert.";
+$string['description'] = "description";
+$string['no_student'] = "edit - no participant";
+$string['save_as_draft'] = "share cross-subject as draft";
+$string['comps_and_material'] = "outcomes and exercises";
 
 //metadata
 $string['subject_singular'] = 'Field of competence';

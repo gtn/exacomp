@@ -983,7 +983,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		return $table_html.html_writer::end_tag('form');
 	}
-	public function print_competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $lis_alltopics = true) {
+	public function print_competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $lis_alltopics = true, $crosssubs = false) {
 		global $PAGE;
 
 		$rowgroup = 0;
@@ -1009,7 +1009,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			//subject-title
 			$title = new html_table_cell();
 			$title->colspan = 2;
-			$title->text = html_writer::tag("b", $subject->title);
+			if($crosssubs)
+			    $title->text = html_writer::tag("b", get_string('comps_and_material', 'block_exacomp'));
+			else
+			    $title->text = html_writer::tag("b", $subject->title);
 
 			$subjectRow->cells[] = $title;
 
@@ -1075,11 +1078,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					'showalldescriptors' => block_exacomp_get_settings_by_course($courseid)->show_all_descriptors
 			);
 			$this->print_topics($rows, 0, $subject->subs, $data, $students);
+			
 			$table->data = $rows;
 		}
 
 		$table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
-		$table_html .= html_writer::div(html_writer::tag("input", "", array("name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp"))),'', array('id'=>'exabis_save_button'));
+		
+		if($crosssubs && $role == ROLE_TEACHER)
+		    $table_html .= html_writer::div(html_writer::tag("input", "", array("name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp"))).html_writer::tag("input", "", array("name" => "save_as_draft", "type" => "submit", "value" => get_string("save_as_draft", "block_exacomp"))),'', array('id'=>'exabis_save_button'));
+		else
+		    $table_html .= html_writer::div(html_writer::tag("input", "", array("name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp"))),'', array('id'=>'exabis_save_button'));
+		
 		$table_html .= html_writer::tag("input", "", array("name" => "open_row_groups", "type" => "hidden", "value" => (optional_param('open_row_groups', "", PARAM_TEXT))));
 
 		return $table_html.html_writer::end_tag('form');
@@ -3502,18 +3511,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 		return html_writer::div($content,"competence_profile_coursedata");
 	}
-  public function print_wrapperdivstart(){
-  	return html_writer::start_tag('div',array('id'=>'exacomp'));
+    public function print_wrapperdivstart(){
+  	    return html_writer::start_tag('div',array('id'=>'exacomp'));
   }
-  public function print_wrapperdivend(){
-  	return html_writer::end_tag('div');
-  }
+    public function print_wrapperdivend(){
+      	return html_writer::end_tag('div');
+    }
 	public function print_profile_print_button(){
 		$content = html_writer::link('javascript:window.print()',
 				html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/view_print.png'), 'alt'=>'print')), array('class'=>'print'));
 		return html_writer::div(html_writer::tag('form', $content), 'competence_profile_printbox');
 	}
 	public function print_cross_subjects_drafts($drafts){
+	    global $PAGE;
 	    $content = html_writer::start_tag('script', array('type'=>'text/javascript', 'src'=>'javascript/wz_tooltip.js'));
 		$content .= html_writer::end_tag('script');
 		
@@ -3528,15 +3538,114 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$draft_checkbox = html_writer::checkbox('draft['.$draft->id.']', $draft->id, false, $draft->title);
 	        $drafts_checkboxes .= html_writer::span($draft_checkbox, '', array('onmouseover'=>'Tip(\''.$text.'\')', 'onmouseout'=>'UnTip()'));
+	        $drafts_checkboxes .= html_writer::empty_tag('br');
 	    }
 	    
 	    $submit = html_writer::div(html_writer::empty_tag('input', array('name'=>'btn_submit', 'type'=>'submit', 'value'=>get_string('add_drafts_to_course', 'block_exacomp'))), '', array('id'=>'exabis_save_button'));
 	    
 	    //$submit = html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('add_drafts_to_course', 'block_exacomp')));
-	    $content .= html_writer::tag('form', $drafts_checkboxes.$submit, array('method'=>'post', 'name'=>'add_drafts_to_course'));
+	    $content .= html_writer::tag('form', $drafts_checkboxes.$submit, array('method'=>'post', 'action'=>$PAGE->url.'&action=save', 'name'=>'add_drafts_to_course'));
 		//$div_exabis_competences_block = html_writer::div($content, array('id'=>'exabis_competences_block'));
 		$div_exabis_competences_block = html_writer::div($content, "", array('id'=>'exabis_competences_block'));
 		return $div_exabis_competences_block;
+	}
+	
+    public function print_cross_subjects_form_start($selectedCrosssubject=null, $studentid=null){
+		global $PAGE, $COURSE;
+		$url_params = array();
+		$url_params['action'] = 'save';
+		if(isset($selectedCrosssubject))
+			$url_params['crosssubjid'] = $selectedCrosssubject->id;
+		if(isset($studentid))
+			$url_params['studentid'] = $studentid;
+				
+		$url = new moodle_url($PAGE->url, $url_params);
+		return html_writer::start_tag('form',array('id'=>'cross-subjects', "action" => $url, 'method'=>'post'));
+	}
+	
+	public function print_dropdowns_cross_subjects($crosssubjects, $selectedCrosssubject, $students, $selectedStudent = 0, $isTeacher = false){
+	    global $PAGE;
+	    
+	    $content = html_writer::empty_tag("br");
+
+		$content .= get_string("choosecrosssubject", "block_exacomp").': ';
+		$options = array();
+		foreach($crosssubjects as $crosssub)
+			$options[$crosssub->id] = $crosssub->title;
+		$content .= html_writer::select($options, "lis_crosssubs", $selectedCrosssubject, false,
+				array("onchange" => "document.location.href='".$PAGE->url."&studentid=".$selectedStudent."&crosssubjid='+this.value;"));
+
+		if($isTeacher){
+    		$content .= html_writer::empty_tag("br");
+    
+    		$content .= get_string("choosestudent", "block_exacomp");
+    		$options = array();
+    		$options[0] = get_string('no_student', 'block_exacomp');
+    		
+    		foreach($students as $student)
+    			$options[$student->id] = $student->firstname." ".$student->lastname;
+    		$options[SHOW_ALL_STUDENTS] = get_string('allstudents', 'block_exacomp');
+    		$content .= html_writer::select($options, "lis_crosssubs_students", $selectedStudent, false,
+    				array("onchange" => "document.location.href='".$PAGE->url."&crosssubjid=".$selectedCrosssubject."&studentid='+this.value;"));
+		}	
+		return $content;
+	}
+	
+	public function print_overview_metadata_cross_subjects($schooltype, $crosssubject, $isTeacher, $selectedStudent = null){
+	    global $version;
+		
+		$table = new html_table();
+		$table->attributes['class'] = 'exabis_comp_info';
+
+		$rows = array();
+
+		$row = new html_table_row();
+
+		$cell = new html_table_cell();
+		$cell->text = html_writer::span(get_string('subject_singular', 'block_exacomp'), 'exabis_comp_top_small')
+		. html_writer::tag('b', $schooltype);
+
+		$row->cells[] = $cell;
+
+		$cell = new html_table_cell();
+		$cell->text = html_writer::span(get_string('crosssubject', 'block_exacomp'), 'exabis_comp_top_small')
+		. html_writer::empty_tag('input', array('type'=>'text', 'value'=>$crosssubject->title, 'name'=>'crosssub-title'));
+
+		$row->cells[] = $cell;
+
+		if(isset($selectedStudent)){
+		    $cell = new html_table_cell();
+		    $cell->text = html_writer::span(get_string('student_name', 'block_exacomp'), 'exabis_comp_top_small')
+		        . html_writer::tag('b', $selectedStudent->name);
+		        
+		    $row->cells[] = $cell;
+		}
+		
+		$rows[] = $row;
+		
+		$row = new html_table_row();
+	    $cell = new html_table_cell();
+	    $cell->colspan = (isset($selectedStudent))?3:2;
+        $cell->text = html_writer::span(get_string('description', 'block_exacomp'), 'exabis_comp_top_small')
+	        . html_writer::empty_tag('input', array('type'=>'textarea', 'size'=>200, 'value'=>$crosssubject->description, 'name'=>'crosssub-description'));
+        
+	    $row->cells[] = $cell;  
+	    $rows[] = $row;
+		    
+		if($isTeacher){
+		    $row = new html_table_row();
+		    $cell = new html_table_cell();
+		    $cell->colspan = (isset($selectedStudent))?3:2;
+            $cell->text = html_writer::span(get_string('tab_help', 'block_exacomp'), 'exabis_comp_top_small')
+		        . get_string('help_crosssubject', 'block_exacomp');	
+		    $row->cells[] = $cell;  
+		    $rows[] = $row;   
+		}
+		$table->data = $rows;
+
+		$content = html_writer::table($table);
+
+		return $content;
 	}
 }
 ?>

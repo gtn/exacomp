@@ -386,6 +386,14 @@ $string['block_exacomp_external_trainer_student'] = 'Auszubildender: ';
 $string['empty_draft'] = 'Leere Vorlage';
 $string['empty_draft_description'] = 'Erstelle dein eigenes Thema auf Basis einer leeren Vorlage.';
 $string['add_drafts_to_course'] = 'Vorlagen zum Kurs hinzufügen';
+$string['choosecrosssubject'] = 'Thema auswählen';
+$string['crosssubject'] = "Thema";
+$string['student_name'] = "Teilnehmer";
+$string['help_crosssubject'] = "Die Zusammenstellung des Themas erfolgt für die ganze Schule über den Reiter Lernwegeliste. Sie können hier kursspezifisch Kompetenzen, Teilkompetenzen und Lernmaterial ausblenden. Lernmaterial kann hier ergänzt werden. Dieses wird automatisch in die Lernwegeliste integriert.";
+$string['description'] = "Beschreibung";
+$string['no_student'] = "Editiermodus - kein Teilnehmer";
+$string['save_as_draft'] = "Thema als Vorlage für andere freigeben";
+$string['comps_and_material'] = "Kompetenzen und Lernmaterial";
 
 //LIS Strings
 if(get_config('exacomp','alternativedatamodel')) {

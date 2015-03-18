@@ -35,7 +35,7 @@ $group = optional_param('group', 0, PARAM_INT);
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
-
+$studentid = optional_param('studentid', 0, PARAM_INT);
 require_login($course);
 
 $context = context_course::instance($courseid);
@@ -73,23 +73,33 @@ if($isTeacher)
 if(($delete = optional_param("delete", 0, PARAM_INT)) > 0 && $isTeacher)
 	block_exacomp_delete_custom_example($delete);
 
-/*
+
 $activities = block_exacomp_get_activities_by_course($courseid);
 $course_settings = block_exacomp_get_settings_by_course($courseid);
 
 if($course_settings->uses_activities && !$activities && !$course_settings->show_all_descriptors)
 	echo $output->print_no_activities_warning($isTeacher);
 else{
-	list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_overview_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', SHOW_ALL_TOPICS, PARAM_INT));
+	//list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_overview_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', SHOW_ALL_TOPICS, PARAM_INT));
+	list($crosssubjects, $selectedCrosssubject) = block_exacomp_init_course_crosssubjects($courseid, optional_param('crosssubjid', 0, PARAM_INT));
 	
 	// SAVA DATA
 	if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
-		// DESCRIPTOR DATA
-		block_exacomp_save_competencies(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_DESCRIPTOR, $selectedTopic->id);
+	    if(isset($_POST['save_as_draft']))
+	        block_exacomp_save_drafts_to_course(array($selectedCrosssubject->id), 0);
+	        
+	    //CROSSSUBJECT NAME
+	    block_exacomp_save_cross_subject_title($selectedCrosssubject->id, $_POST['crosssub-title']);
+		
+	    //CROSSSUBJECT Description
+	    block_exacomp_save_cross_subject_description($selectedCrosssubject->id, $_POST['crosssub-description']);
+		
+	    // DESCRIPTOR DATA
+		block_exacomp_save_competencies(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_DESCRIPTOR);
 		// TOPIC DATA
-		block_exacomp_save_competencies(isset($_POST['datatopics']) ? $_POST['datatopics'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_TOPIC, $selectedTopic->id);
+		block_exacomp_save_competencies(isset($_POST['datatopics']) ? $_POST['datatopics'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_TOPIC);
 		// EXAMPLE DATA
-		block_exacomp_save_example_evaluation(isset($_POST['dataexamples']) ? $_POST['dataexamples'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, $selectedTopic->id);
+		block_exacomp_save_example_evaluation(isset($_POST['dataexamples']) ? $_POST['dataexamples'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT);
 
 		//TOPIC LIS STUDENT
 		if(isset($_POST['topiccomp'])){
@@ -97,7 +107,10 @@ else{
 				block_exacomp_set_user_competence($USER->id, $topicid, TYPE_TOPIC, $courseid, ROLE_STUDENT, $_POST['topiccomp']);
 			}
 		}
+		list($crosssubjects, $selectedCrosssubject) = block_exacomp_init_course_crosssubjects($courseid, optional_param('crosssubjid', 0, PARAM_INT));
+	
 	}
+	
 	//Delete timestamp (end|start) from example
 	if($example_del = optional_param('exampleid', 0, PARAM_INT)){
 		block_exacomp_delete_timefield($example_del, optional_param('deletestart', 0, PARAM_INT), optional_param('deleteend', 0, PARAM_INT));
@@ -108,50 +121,51 @@ else{
 	foreach($students as $student)
 		$student = block_exacomp_get_user_information_by_course($student, $courseid);
 
-	echo $output->print_competence_overview_form_start((isset($selectedTopic))?$selectedTopic:null, (isset($selectedSubject))?$selectedSubject:null);
+	echo $output->print_cross_subjects_form_start((isset($selectedCrosssubject))?$selectedCrosssubject:null);
 
-	//dropdowns for subjects and topics
-	echo $output->print_overview_dropdowns(block_exacomp_get_schooltypetree_by_subjects($subjects), $topics, $selectedSubject->id, $selectedTopic->id);
+	//dropdowns for crosssubjects
+	echo $output->print_dropdowns_cross_subjects($crosssubjects, $selectedCrosssubject->id, $students, $studentid, $isTeacher);
 	
-	$schooltype = block_exacomp_get_schooltype_title_by_subject($selectedSubject);
-	$cat = block_exacomp_get_category($selectedTopic);
+	//schooltypes
+	$schooltypes = block_exacomp_get_schooltypes_by_course($courseid);
+	$schooltype_title = "";
+	foreach($schooltypes as $schooltype){
+	    $schooltype_title .= $schooltype->title . ", ";
+	}
+	$schooltype = substr($schooltype_title, 0, strlen($schooltype_title)-1);
+	echo $output->print_overview_metadata_cross_subjects($schooltype, $selectedCrosssubject, $isTeacher);
 		
 	$scheme = block_exacomp_get_grading_scheme($courseid);
-	if($selectedTopic->id != SHOW_ALL_TOPICS){
-		echo $output->print_overview_metadata($schooltype, $selectedSubject, $selectedTopic, $cat);
-		
-		if($isTeacher)
-			echo $output->print_overview_metadata_teacher($selectedSubject,$selectedTopic);
-		else{
-			//$user_evaluation = block_exacomp_get_user_information_by_course($USER, $courseid);
 	
-			$cm_mm = block_exacomp_get_course_module_association($courseid);
-			$course_mods = get_fast_modinfo($courseid)->get_cms();
+	if(!$isTeacher){
+	    $user_evaluation = block_exacomp_get_user_information_by_course($USER, $courseid);
 	
-			$activities_student = array();
-			if(isset($cm_mm->topics[$selectedTopic->id]))
-				foreach($cm_mm->topics[$selectedTopic->id] as $cmid)
-					$activities_student[] = $course_mods[$cmid];
-			
-			if($version)
-				echo $output->print_overview_metadata_student($selectedSubject, $selectedTopic, $students[$USER->id]->topics, $showevaluation, $scheme, block_exacomp_get_icon_for_user($activities_student, $USER));
-		}
+    	$cm_mm = block_exacomp_get_course_module_association($courseid);
+    	$course_mods = get_fast_modinfo($courseid)->get_cms();
+    
+    	//TODO: test with activities
+    	/*$activities_student = array();
+    	if(isset($cm_mm->topics[$selectedTopic->id]))
+    		foreach($cm_mm->topics[$selectedTopic->id] as $cmid)
+    			$activities_student[] = $course_mods[$cmid];*/
 	}
 	
-	if(!$version) echo $output->print_student_evaluation($showevaluation, $isTeacher,$selectedTopic->id,$selectedSubject->id);
-	
 	echo $output->print_overview_legend($isTeacher);
-	echo $output->print_column_selector(count($students));
-
-	$subjects = block_exacomp_get_competence_tree($courseid,(isset($selectedSubject))?$selectedSubject->id:null,false,(isset($selectedTopic))?$selectedTopic->id:null,
-			!($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies);
-
-	if($version && !$isTeacher && $selectedTopic->id != SHOW_ALL_TOPICS){
-		$examples = block_exacomp_get_examples_LIS_student($subjects);
-		echo $output->print_competence_overview_LIS_student($subjects, $courseid, $showevaluation, $scheme, $examples);
-	}else
-		echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? ROLE_TEACHER : ROLE_STUDENT, $scheme);
-}*/
+	
+	if($isTeacher){
+    	if($studentid == SHOW_ALL_STUDENTS)
+    	    echo $output->print_column_selector(count($students));
+    	elseif ($studentid == 0)
+    	    $students = array();
+    	else 
+    	    $students = array($students[$studentid]);
+	}
+	$subjects = block_exacomp_get_competence_tree_for_cross_subject($courseid,(isset($selectedCrosssubject))?$selectedCrosssubject->id:null,false,
+	!($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies);
+	
+	echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? ROLE_TEACHER : ROLE_STUDENT, $scheme, true, true);
+	
+}
 /* END CONTENT REGION */
 echo $output->print_wrapperdivend();
 echo $OUTPUT->footer();

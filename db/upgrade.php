@@ -1445,7 +1445,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    // Define table block_exacompcrosssubjects to be created.
 	    $table = new xmldb_table('block_exacompcrosssubjects');
 	    
-	    // Adding fields to table block_exacompcrossubjects.
+	    // Adding fields to table block_exacompcrosssubjects.
 	    $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
 	    $table->add_field('title', XMLDB_TYPE_CHAR, '1333', null, XMLDB_NOTNULL, null, null);
 	    $table->add_field('sorting', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
@@ -1471,7 +1471,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    // Adding fields to table block_exacompdescrcross_mm.
 	    $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
 	    $table->add_field('descrid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
-	    $table->add_field('crossubjid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+	    $table->add_field('crosssubjid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
 	
 	    // Adding keys to table block_exacompcdescrross_mm.
 	    $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));

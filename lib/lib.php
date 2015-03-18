@@ -57,6 +57,8 @@ $specificimport = get_config('exacomp','enableteacherimport');
 
 define("SHOW_ALL_TOPICS",99999999);
 define("SHOW_ALL_TAXONOMIES",100000000);
+define("SHOW_ALL_STUDENTS", 100000);
+
 /**
  *
  * Includes all neccessary JavaScript files
@@ -1043,10 +1045,13 @@ function block_exacomp_build_navigation_tabs_cross_subjects($context,$courseid){
 	if (!has_capability('block/exacomp:teacher', $context)) 
 		return array();
 	
+	$crosssubs = block_exacomp_get_cross_subjects_by_course($courseid);
+	
 	$profile_subtree = array();
 	
 	$profile_subtree[] = new tabobject('tab_cross_subjects_overview', new moodle_url('/blocks/exacomp/cross_subjects_overview.php', array("courseid"=>$courseid)), get_string('tab_cross_subjects_overview', 'block_exacomp'));
-	$profile_subtree[] = new tabobject('tab_cross_subjects_course', new moodle_url('/blocks/exacomp/cross_subjects.php', array("courseid"=>$courseid)), get_string('tab_cross_subjects_course', 'block_exacomp'));
+	if($crosssubs)
+	    $profile_subtree[] = new tabobject('tab_cross_subjects_course', new moodle_url('/blocks/exacomp/cross_subjects.php', array("courseid"=>$courseid)), get_string('tab_cross_subjects_course', 'block_exacomp'));
 	return $profile_subtree;
 }
 /**
@@ -1074,6 +1079,8 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 	else
 		$checkConfig = block_exacomp_is_configured();
 
+	$crosssubs = block_exacomp_get_cross_subjects_by_course($courseid);
+	
 	$checkImport = $DB->get_records(DB_DESCRIPTORS);
 
 	$rows = array();
@@ -1086,7 +1093,11 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 					
 				if($checkConfig && $ready_for_use) {
 					$rows[] = new tabobject('tab_competence_overview', new moodle_url('/blocks/exacomp/assign_competencies.php',array("courseid"=>$courseid)),get_string('tab_competence_overview','block_exacomp'));
-					$rows[] = new tabobject('tab_cross_subjects', new moodle_url('/blocks/exacomp/cross_subjects_overview.php', array("courseid"=>$courseid)), get_string('tab_cross_subjects', 'block_exacomp'));
+					if($crosssubs)
+					    $rows[] = new tabobject('tab_cross_subjects', new moodle_url('/blocks/exacomp/cross_subjects.php', array("courseid"=>$courseid)), get_string('tab_cross_subjects', 'block_exacomp'));
+					else
+					    $rows[] = new tabobject('tab_cross_subjects', new moodle_url('/blocks/exacomp/cross_subjects_overview.php', array("courseid"=>$courseid)), get_string('tab_cross_subjects', 'block_exacomp'));
+					
 					if ($courseSettings->uses_activities && $usedetailpage)
 						$rows[] = new tabobject('tab_competence_details', new moodle_url('/blocks/exacomp/competence_detail.php',array("courseid"=>$courseid)),get_string('tab_competence_details','block_exacomp'));
 					$rows[] = new tabobject('tab_competence_profile_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid"=>$courseid)), get_string('tab_competence_profile',  'block_exacomp'));
@@ -1112,8 +1123,11 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 				if($checkConfig){
 					if($ready_for_use){
 						$rows[] = new tabobject('tab_competence_overview', new moodle_url('/blocks/exacomp/assign_competencies.php',array("courseid"=>$courseid)),get_string('tab_competence_overview','block_exacomp'));
-						$rows[] = new tabobject('tab_cross_subjects', new moodle_url('/blocks/exacomp/cross_subjects_overview.php', array("courseid"=>$courseid)), get_string('tab_cross_subjects', 'block_exacomp'));
-						if ($courseSettings->uses_activities && $usedetailpage)
+						if($crosssubs)
+    					    $rows[] = new tabobject('tab_cross_subjects', new moodle_url('/blocks/exacomp/cross_subjects.php', array("courseid"=>$courseid)), get_string('tab_cross_subjects', 'block_exacomp'));
+    					else
+    					    $rows[] = new tabobject('tab_cross_subjects', new moodle_url('/blocks/exacomp/cross_subjects_overview.php', array("courseid"=>$courseid)), get_string('tab_cross_subjects', 'block_exacomp'));
+					if ($courseSettings->uses_activities && $usedetailpage)
 							$rows[] = new tabobject('tab_competence_details', new moodle_url('/blocks/exacomp/competence_detail.php',array("courseid"=>$courseid)),get_string('tab_competence_details','block_exacomp'));
 					}	
 					if (block_exacomp_is_activated($courseid))
@@ -3495,4 +3509,190 @@ function block_exacomp_init_cross_subjects(){
 function block_exacomp_get_cross_subjects_drafts(){
     global $DB;
     return $DB->get_records(DB_CROSSSUBJECTS, array('courseid'=>0));
+}
+/**
+ * 
+ * save the given drafts to course
+ * @param array $drafts_to_save
+ * @param int $courseid
+ */
+function block_exacomp_save_drafts_to_course($drafts_to_save, $courseid){
+    global $DB, $USER;
+    foreach($drafts_to_save as $draftid){
+        $draft = $DB->get_record(DB_CROSSSUBJECTS, array('id'=>$draftid));
+        $draft->courseid = $courseid;
+        $draft->creatorid = $USER->id;
+        $crosssubjid = $DB->insert_record(DB_CROSSSUBJECTS, $draft);
+        
+        //assign competencies
+        $comps = $DB->get_records(DB_DESCCROSS, array('crosssubjid'=>$draftid));
+        foreach($comps as $comp){
+            $insert = new stdClass();
+            $insert->descrid = $comp->descrid;
+            $insert->crosssubjid = $crosssubjid;
+            $DB->insert_record(DB_DESCCROSS, $insert);
+        }
+    }
+}
+
+function block_exacomp_get_cross_subjects_by_course($courseid){
+    global $DB;
+    return $DB->get_records(DB_CROSSSUBJECTS, array('courseid'=>$courseid));
+}
+
+function block_exacomp_init_course_crosssubjects($courseid, $crosssubjid) {
+    $crosssubjects = block_exacomp_get_cross_subjects_by_course($courseid);
+	
+    if(isset($crosssubjects[$crosssubjid])){
+        $selectedCrosssubject = $crosssubjects[$crosssubjid];
+    } elseif ($crosssubjects) {
+        $selectedCrosssubject = reset($crosssubjects);
+    }
+	
+	return array($crosssubjects, $selectedCrosssubject);
+}
+/**
+ * Gets an associative array that is used to display the whole hierarchie of subjects, topics and competencies within a course
+ *
+ * @param int $courseid
+ * @param int $subjectid
+ * @return associative_array
+ */
+function block_exacomp_get_competence_tree_for_cross_subject($courseid, $crosssubjid, $showalldescriptors = false, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES)) {
+	global $DB;
+
+	if(!$showalldescriptors)
+		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
+
+	
+	$allTopics = block_exacomp_get_all_topics();
+	$allSubjects = block_exacomp_get_subjects();
+	
+	$allDescriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid, $showalldescriptors);
+	$courseTopics = block_exacomp_get_topics_for_cross_subject_by_descriptors($allDescriptors);
+	
+	foreach ($allDescriptors as $descriptor) {
+	
+		// get descriptor topic
+		if (empty($allTopics[$descriptor->topicid])) continue;
+		$topic = $allTopics[$descriptor->topicid];
+		$topic->descriptors[$descriptor->id] = $descriptor;
+
+		$examples = $DB->get_records_sql(
+				"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
+				e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid
+				FROM {" . DB_EXAMPLES . "} e
+				JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
+				LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id"
+				. " WHERE " 
+				. (($showallexamples) ? " 1=1 " : " e.creatorid > 0")
+				. ((in_array(SHOW_ALL_TAXONOMIES, $filteredtaxonomies)) ? "" : " AND e.taxid IN (".implode(",", $filteredtaxonomies) .")" )
+				, array($descriptor->id));
+	
+		$descriptor->examples = array();
+		foreach($examples as $example){
+			$descriptor->examples[$example->id] = $example;
+		}
+	}
+	
+	$subjects = array();
+
+	foreach ($allTopics as $topic) {
+		//topic must be coursetopic if courseid <> 0
+		if($courseid > 0 && !array_key_exists($topic->id, $courseTopics))
+			continue;
+
+		//if($courseid==0 || $showalldescriptors || block_exacomp_check_activity_association($topic->id, TYPE_TOPIC, $courseid)) {
+			// found: add it to the subject result, even if no descriptor from the topic is used
+			// find all parent topics
+			$found = true;
+			for ($i = 0; $i < 10; $i++) {
+				if ($topic->parentid) {
+					// parent is topic, find it
+					if (empty($allTopics[$topic->parentid])) {
+						$found = false;
+						break;
+					}
+
+					// found it
+					$allTopics[$topic->parentid]->subs[$topic->id] = $topic;
+
+					// go up
+					$topic = $allTopics[$topic->parentid];
+				} else {
+					// parent is subject, find it
+					if (empty($allSubjects[$topic->subjid])) {
+						$found = false;
+						break;
+					}
+
+					// found: add it to the subject result
+					$subject = $allSubjects[$topic->subjid];
+					$subject->subs[$topic->id] = $topic;
+					$subjects[$topic->subjid] = $subject;
+
+					// top found
+					break;
+				}
+			}
+	}
+	return $subjects;
+}
+
+function block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid, $showalldescriptors = false){
+    global $DB;
+    $comps = $DB->get_records(DB_DESCCROSS, array('crosssubjid'=>$crosssubjid));
+    
+    if(!$comps) return array();
+    
+    $WHERE = "";
+    foreach($comps as $comp){
+        $WHERE .=  $comp->descrid.",";
+    }
+    $WHERE = substr($WHERE, 0, strlen($WHERE)-1);
+    
+    if(!$showalldescriptors)
+		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
+	
+	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.parentid '
+	.'FROM {'.DB_TOPICS.'} t '
+	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
+	.'JOIN {'.DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id '
+	.($showalldescriptors ? '' : '
+			JOIN {'.DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
+			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':'')).
+			'WHERE d.id IN('.$WHERE.')'.')';
+
+	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid));
+    
+	return $descriptors;
+    
+}
+function block_exacomp_get_topics_for_cross_subject_by_descriptors($descriptors){
+    global $DB;
+    $topics = array();
+    foreach($descriptors as $descriptor){
+        $topic = $DB->get_record(DB_TOPICS, array('id'=>$descriptor->topicid));
+        if(!array_key_exists($topic->id, $topics))
+            $topics[$topic->id] = $topic;
+    }
+    return $topics;
+}
+function block_exacomp_save_cross_subject_title($crosssubjid, $title){
+    global $DB;
+    
+    if(isset($title)){
+        $crosssub = $DB->get_record(DB_CROSSSUBJECTS, array('id'=>$crosssubjid));
+        $crosssub->title = $title;
+        $DB->update_record(DB_CROSSSUBJECTS, $crosssub);
+    }
+}
+function block_exacomp_save_cross_subject_description($crosssubjid, $description){
+    global $DB;
+    
+    if(isset($description)){
+        $crosssub = $DB->get_record(DB_CROSSSUBJECTS, array('id'=>$crosssubjid));
+        $crosssub->description = $description;
+        $DB->update_record(DB_CROSSSUBJECTS, $crosssub);
+    }
 }
