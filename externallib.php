@@ -1532,7 +1532,9 @@ class block_exacomp_external extends external_api {
             $item->type = $type;
             $item->timemodified = time();
             
-            block_exaport_file_remove($DB->get_record("block_exaportitem",array("id"=>$itemid)));
+            if($type == 'file')
+                block_exaport_file_remove($DB->get_record("block_exaportitem",array("id"=>$itemid)));
+            
             $DB->update_record('block_exaportitem', $item);
         }
         
