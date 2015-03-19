@@ -1744,6 +1744,14 @@ class block_exacomp_external extends external_api {
 		$update->status = $status;
 		
 		$DB->update_record('block_exacompitemexample', $update);
+		//if the grading is good, tick the example in exacomp
+		$exameval = $DB->get_record('block_exacompexameval',array('exampleid'=>$exampleid,'courseid'=>$courseid,'studentid'=>$userid));
+		if($exameval) {
+		    $exameval->teacher_evaluation = 1;
+		    $DB->update_record('block_exacompexameval', $exameval);
+		} else {
+		    $DB->insert_record('block_exacompexameval', array('exampleid'=>$exampleid,'courseid'=>$courseid,'studentid'=>$userid,'teacher_evaluation'=>1));
+		}
 		
 		$insert = new stdClass();
 		$insert->itemid = $itemid;
