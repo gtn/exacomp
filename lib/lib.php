@@ -210,6 +210,23 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 	return $subjects;
 }
 /**
+ * returns the subject an example belongs to
+ * @param int $exampleid
+ */
+function block_exacomp_get_subjecttitle_by_example($exampleid) {
+    global $DB;
+
+    $descriptors = block_exacomp_get_descriptors_by_example($exampleid);
+
+    foreach($descriptors as $descriptor) {
+        $sql = "select s.* FROM {block_exacompsubjects} s, {block_exacompdescrtopic_mm} dt, {block_exacomptopics} t
+        WHERE dt.descrid = ? AND t.id = dt.topicid AND t.subjid = s.id";
+
+        $subject = $DB->get_record_sql($sql,array($descriptor->descrid),IGNORE_MULTIPLE);
+        return $subject->title;
+    }
+}
+/**
  * returns all topics from a course
  * @param int $courseid
  */
@@ -717,6 +734,12 @@ function block_exacomp_get_descriptors_by_subject($subjectid,$niveaus = true) {
 	$sql .= " AND dt.topicid = t.id order by d.skillid, dt.topicid, d.niveauid";
 
 	return $DB->get_records_sql($sql,array($subjectid));
+}
+
+function block_exacomp_get_descriptors_by_example($exampleid) {
+    global $DB;
+
+    return $DB->get_records('block_exacompdescrexamp_mm',array('exampid' => $exampleid));
 }
 
 /**

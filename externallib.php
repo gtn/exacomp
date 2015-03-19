@@ -1497,7 +1497,9 @@ class block_exacomp_external extends external_api {
                         'filename' => new external_value(PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area'),
                         'studentcomment' => new external_value(PARAM_TEXT, 'studentcomment'),
                         'title' => new external_value(PARAM_TEXT, 'title'),
-                        'itemid' => new external_value(PARAM_INT, 'itemid'))
+                        'itemid' => new external_value(PARAM_INT, 'itemid'),
+                        'courseid' => new external_value(PARAM_INT, 'courseid')
+                        )
         );
     
     }
@@ -1507,12 +1509,12 @@ class block_exacomp_external extends external_api {
      * @param int itemid
      * @return array of course subjects
      */
-    public static function submit_example($exampleid,$studentvalue,$url,$effort,$filename,$studentcomment,$title,$itemid=0) {
+    public static function submit_example($exampleid,$studentvalue,$url,$effort,$filename,$studentcomment,$title,$itemid=0,$courseid=0) {
         global $CFG,$DB,$USER;
     
-        $params = self::validate_parameters(self::submit_example_parameters(), array('title'=>$title,'exampleid'=>$exampleid,'url'=>$url,'effort'=>$effort,'filename'=>$filename,'studentcomment'=>$studentcomment,'studentvalue'=>$studentvalue,'itemid'=>$itemid));
+        $params = self::validate_parameters(self::submit_example_parameters(), array('title'=>$title,'exampleid'=>$exampleid,'url'=>$url,'effort'=>$effort,'filename'=>$filename,'studentcomment'=>$studentcomment,'studentvalue'=>$studentvalue,'itemid'=>$itemid,'courseid'=>$courseid));
     
-        $type = ($filename) ? 'file' : 'url';
+        $type = ($filename != '') ? 'file' : 'url';
         
         //insert: if itemid == 0 OR status != 0
         $insert = true;
@@ -1521,15 +1523,54 @@ class block_exacomp_external extends external_api {
             if ($itemexample->status == 0) 
                 $insert = false;
         }
+        require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
+        
         if($insert) {
-            $itemid = $DB->insert_record("block_exaportitem", array('userid'=>$USER->id,'name'=>$title,'url'=>$url,'intro'=>$effort,'type'=>$type,'timemodified'=>time()));
+            //store item in eLOVE portfolio category
+            $elove_category = block_exaport_get_user_category("eLOVE", $USER->id);
+            
+            if(!$elove_category) {
+                $elove_category = block_exaport_create_user_category("eLOVE", $USER->id);
+            }
+            
+            $exampletitle = $DB->get_field('block_exacompexamples', 'title', array('id'=>$exampleid));
+            $subjecttitle = block_exacomp_get_subjecttitle_by_example($exampleid);
+            $subject_category = block_exaport_get_user_category($subjecttitle, $USER->id);
+            if(!$subject_category) {
+                $subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $elove_category->id);
+            }
+            
+            $itemid = $DB->insert_record("block_exaportitem", array('userid'=>$USER->id,'name'=>$exampletitle,'url'=>$url,'intro'=>$effort,'type'=>$type,'timemodified'=>time(),'categoryid'=>$subject_category->id));
+            //autogenerate a published view for the new item
+            $dbView = new stdClass();
+            $dbView->userid = $USER->id;
+            $dbView->name = $exampletitle;
+            $dbView->timemodified = time();
+            $dbView->layout = 1;
+            // generate view hash
+            do {
+                $hash = substr(md5(microtime()), 3, 8);
+            } while ($DB->record_exists("block_exaportview", array("hash"=>$hash)));
+            $dbView->hash = $hash;
+
+            $dbView->id = $DB->insert_record('block_exaportview', $dbView);
+            
+            //share the view with teachers
+            share_view_to_teachers($dbView->id, $courseid);
+            
+            //add item to view
+            $DB->insert_record('block_exaportviewblock',array('viewid'=>$dbView->id,'positionx'=>1, 'positiony'=>1, 'type'=>'item', 'itemid'=>$itemid));
+
+            //add the example competencies to the item, so that it is displayed in the exacomp moodle block
+            $comps = $DB->get_records('block_exacompdescrexamp_mm',array('exampid'=>$exampleid));
+            foreach($comps as $comp) {
+                $DB->insert_record('block_exacompcompactiv_mm', array('compid'=>$comp->descrid,'comptype'=>0,'eportfolioitem'=>1,'activityid'=>$itemid));
+            }
         } else {
-            require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
             $item = $DB->get_record('block_exaportitem',array('id'=>$itemid));
             $item->name = $title;
             $item->url = $url;
             $item->intro = $effort;
-            $item->type = $type;
             $item->timemodified = time();
             
             if($type == 'file')
