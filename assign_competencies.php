@@ -35,6 +35,7 @@ $group = optional_param('group', 0, PARAM_INT);
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
+$studentid = optional_param('studentid', 0, PARAM_INT);
 
 require_login($course);
 
@@ -108,7 +109,7 @@ else{
 	echo $output->print_competence_overview_form_start((isset($selectedTopic))?$selectedTopic:null, (isset($selectedSubject))?$selectedSubject:null);
 
 	//dropdowns for subjects and topics
-	echo $output->print_overview_dropdowns(block_exacomp_get_schooltypetree_by_subjects($subjects), $topics, $selectedSubject->id, $selectedTopic->id);
+	echo $output->print_overview_dropdowns(block_exacomp_get_schooltypetree_by_subjects($subjects), $topics, $selectedSubject->id, $selectedTopic->id, $students, $studentid, $isTeacher);
 	
 	$schooltype = block_exacomp_get_schooltype_title_by_subject($selectedSubject);
 	$cat = block_exacomp_get_category($selectedTopic);
@@ -139,8 +140,15 @@ else{
 	
 	if($course_settings->nostudents != 1)
 	    echo $output->print_overview_legend($isTeacher);
-	
-	echo $output->print_column_selector(count($students));
+	    
+    if($isTeacher){
+    	if($studentid == SHOW_ALL_STUDENTS)
+    	    echo $output->print_column_selector(count($students));
+    	elseif ($studentid == 0)
+    	    $students = array();
+    	else 
+    	    $students = array($students[$studentid]);
+	}
 
 	$subjects = block_exacomp_get_competence_tree($courseid,(isset($selectedSubject))?$selectedSubject->id:null,false,(isset($selectedTopic))?$selectedTopic->id:null,
 			!($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies);

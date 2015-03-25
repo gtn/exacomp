@@ -3749,9 +3749,3 @@ function block_exacomp_save_cross_subject_description($crosssubjid, $description
         $DB->update_record(DB_CROSSSUBJECTS, $crosssub);
     }
 }
-function block_exacomp_cross_subjects_exists(){
-	global $DB;
-	$dbman = $DB->get_manager();
-	$table = new xmldb_table('block_exacompcrosssubjects');
-	return $dbman->table_exists($table);
-}
