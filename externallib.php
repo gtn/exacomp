@@ -1405,7 +1405,8 @@ class block_exacomp_external extends external_api {
     public static function get_competencies_for_upload_parameters() {
         return new external_function_parameters(
                 array(
-                        'userid' => new external_value(PARAM_INT, 'id of user')
+                        'userid' => new external_value(PARAM_INT, 'id of user'),
+						'topicid' => new external_value(PARAM_INT, 'id of topic')
                 )
         );
     }
@@ -1414,10 +1415,10 @@ class block_exacomp_external extends external_api {
      * @param int subjectid
      * @return array of examples
      */
-    public static function get_competencies_for_upload($userid) {
+    public static function get_competencies_for_upload($userid, $topicid) {
         global $CFG,$DB, $USER;
 
-        $params = self::validate_parameters(self::get_competencies_for_upload_parameters(), array('userid'=>$userid));
+        $params = self::validate_parameters(self::get_competencies_for_upload_parameters(), array('userid'=>$userid, 'topicid'=>$topicid));
         if($userid == 0)
             $userid = $USER->id;
 
@@ -1434,17 +1435,19 @@ class block_exacomp_external extends external_api {
                 $elem_sub->subjecttitle = $subject->title;
                 $elem_sub->topics = array();
                 foreach($subject->subs as $topic){
-                    $elem_topic = new stdClass();
-                    $elem_topic->topicid = $topic->id;
-                    $elem_topic->topictitle = $topic->title;
-                    $elem_topic->descriptors = array();
-                    foreach($topic->descriptors as $descriptor){
-                        $elem_desc = new stdClass();
-                        $elem_desc->descriptorid = $descriptor->id;
-                        $elem_desc->descriptortitle = $descriptor->title;
-                        $elem_topic->descriptors[] = $elem_desc;
-                    }
-                    $elem_sub->topics[] = $elem_topic;
+					if($topicid==0 || ($topicid != 0 && $topic->id == $topicid)){
+						$elem_topic = new stdClass();
+						$elem_topic->topicid = $topic->id;
+						$elem_topic->topictitle = $topic->title;
+						$elem_topic->descriptors = array();
+						foreach($topic->descriptors as $descriptor){
+							$elem_desc = new stdClass();
+							$elem_desc->descriptorid = $descriptor->id;
+							$elem_desc->descriptortitle = $descriptor->title;
+							$elem_topic->descriptors[] = $elem_desc;
+						}
+						$elem_sub->topics[] = $elem_topic;
+					}
                 }
                 $structure[] = $elem_sub;
             }
