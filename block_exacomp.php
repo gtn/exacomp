@@ -72,7 +72,7 @@ class block_exacomp extends block_list {
 			$checkConfig = block_exacomp_is_configured();
 			
 		$checkImport = $DB->get_records('block_exacompdescriptors');
-		$crosssubs = block_exacomp_get_cross_subjects_by_course($courseid);
+		$crosssubs = block_exacomp_cross_subjects_exists()?block_exacomp_get_cross_subjects_by_course($courseid):false;
 		
 		$courseSettings = block_exacomp_get_settings_by_course($courseid);
 		$usedetailpage = $courseSettings->usedetailpage;
