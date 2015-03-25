@@ -1246,7 +1246,8 @@ function block_exacomp_studentselector($students,$selected,$url){
 	global $CFG;
 
 	$studentsAssociativeArray = array();
-	$studentsAssociativeArray[0]=get_string('LA_no_student_selected', "block_exacomp");
+	$studentsAssociativeArray[0]=get_string('no_student', 'block_exacomp');
+
 	foreach($students as $student) {
 		$studentsAssociativeArray[$student->id] = fullname($student);
 	}
@@ -3748,10 +3749,4 @@ function block_exacomp_save_cross_subject_description($crosssubjid, $description
         $crosssub->description = $description;
         $DB->update_record(DB_CROSSSUBJECTS, $crosssub);
     }
-}
-function block_exacomp_cross_subjects_exists(){
-	global $DB;
-	$dbman = $DB->get_manager();
-	$table = new xmldb_table('block_exacompcrosssubjects');
-	return $dbman->table_exists($table);
 }
