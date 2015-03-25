@@ -132,13 +132,13 @@ class block_exacomp extends block_list {
 						$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/overview_of_competencies.png'), 'alt'=>"", 'height'=>16, 'width'=>'23'));
 						
 						//cross subjects
-						if($crosssubs)
+						/*if($crosssubs)
 						    $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid)), get_string('tab_cross_subjects','block_exacomp'), array('title'=>get_string('tab_cross_subjects','block_exacomp')));
 						else 
 						    $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects_overview.php', array('courseid'=>$courseid)), get_string('tab_cross_subjects','block_exacomp'), array('title'=>get_string('tab_cross_subjects','block_exacomp')));
 						
 						$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/overview_of_competencies.png'), 'alt'=>"", 'height'=>16, 'width'=>'23'));
-						
+						*/
 						//Kompetenz-Detailansicht nur wenn mit Aktivitäten gearbeitet wird
 						if ($courseSettings->uses_activities && $usedetailpage){
 							$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/competence_detail.php', array('courseid'=>$courseid)), get_string('tab_competence_details', 'block_exacomp'), array('title'=>get_string('tab_competence_details', 'block_exacomp')));	
@@ -179,12 +179,12 @@ class block_exacomp extends block_list {
 						$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/overview_of_competencies.png'), 'alt'=>"", 'height'=>16, 'width'=>'23'));
 					
 						//cross subjects
-						if($crosssubs)
+						/*if($crosssubs)
 						    $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid)), get_string('tab_cross_subjects','block_exacomp'), array('title'=>get_string('tab_cross_subjects','block_exacomp')));
 						else 
 						    $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects_overview.php', array('courseid'=>$courseid)), get_string('tab_cross_subjects','block_exacomp'), array('title'=>get_string('tab_cross_subjects','block_exacomp')));
 						$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/overview_of_competencies.png'), 'alt'=>"", 'height'=>16, 'width'=>'23'));
-						
+						*/
 						//Kompetenz-Detailansicht nur wenn mit Aktivitäten gearbeitet wird
 						if ($courseSettings->uses_activities && $usedetailpage){
 							$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/competence_detail.php', array('courseid'=>$courseid)), get_string('tab_competence_details', 'block_exacomp'), array('title'=>get_string('tab_competence_details', 'block_exacomp')));	
@@ -247,9 +247,9 @@ class block_exacomp extends block_list {
 						$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/overview_of_competencies.png'), 'alt'=>"", 'height'=>16, 'width'=>'23'));
 					
 						//Cross subjects
-						$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid)), get_string('tab_cross_subjects','block_exacomp'), array('title'=>get_string('tab_cross_subjects','block_exacomp')));
+						/*$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid)), get_string('tab_cross_subjects','block_exacomp'), array('title'=>get_string('tab_cross_subjects','block_exacomp')));
 						$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/overview_of_competencies.png'), 'alt'=>"", 'height'=>16, 'width'=>'23'));
-						
+						*/
 						//Kompetenz-Detailansicht
 						if ($courseSettings->uses_activities && $usedetailpage){
 							$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/competence_detail.php', array('courseid'=>$courseid)), get_string('tab_competence_details', 'block_exacomp'), array('title'=>get_string('tab_competence_details', 'block_exacomp')));	
@@ -282,9 +282,9 @@ class block_exacomp extends block_list {
 						$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/overview_of_competencies.png'), 'alt'=>"", 'height'=>16, 'width'=>'23'));
 						
 						//Cross subjects
-						$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid)), get_string('tab_cross_subjects','block_exacomp'), array('title'=>get_string('tab_cross_subjects','block_exacomp')));
+						/*$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid)), get_string('tab_cross_subjects','block_exacomp'), array('title'=>get_string('tab_cross_subjects','block_exacomp')));
 						$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/overview_of_competencies.png'), 'alt'=>"", 'height'=>16, 'width'=>'23'));
-						
+						*/
 						//Kompetenz-Detailansicht
 						if ($courseSettings->uses_activities && $usedetailpage){
 							$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/competence_detail.php', array('courseid'=>$courseid)), get_string('tab_competence_details', 'block_exacomp'), array('title'=>get_string('tab_competence_details', 'block_exacomp')));	
