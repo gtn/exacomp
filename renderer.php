@@ -352,10 +352,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	/**
 	 * Prints 2 select inputs for subjects and topics
 	 */
-	public function print_overview_dropdowns($schooltypetree, $topics, $selectedSubject, $selectedTopic) {
+	public function print_overview_dropdowns($schooltypetree, $topics, $selectedSubject, $selectedTopic, $students, $selectedStudent = 0, $isTeacher = false) {
 		global $PAGE;
 
-		$content = $this->print_subject_dropdown($schooltypetree, $selectedSubject);
+		$content = $this->print_subject_dropdown($schooltypetree, $selectedSubject, $selectedStudent);
 		$content .= html_writer::empty_tag("br");
 
 		$content .= get_string("choosetopic", "block_exacomp").': ';
@@ -363,8 +363,22 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		foreach($topics as $topic)
 			$options[$topic->id] = (isset($topic->cattitle)?$topic->cattitle.": " :" ")  . $topic->title;
 		$content .= html_writer::select($options, "lis_topics", $selectedTopic, false,
-				array("onchange" => "document.location.href='".$PAGE->url."&subjectid=".$selectedSubject."&topicid='+this.value;"));
+				array("onchange" => "document.location.href='".$PAGE->url."&studentid=".$selectedStudent."&subjectid=".$selectedSubject."&topicid='+this.value;"));
 
+		if($isTeacher){
+    		$content .= html_writer::empty_tag("br");
+    
+    		$content .= get_string("choosestudent", "block_exacomp");
+    		$options = array();
+    		$options[0] = get_string('no_student', 'block_exacomp');
+    		
+    		foreach($students as $student)
+    			$options[$student->id] = $student->firstname." ".$student->lastname;
+    		$options[SHOW_ALL_STUDENTS] = get_string('allstudents', 'block_exacomp');
+    		$content .= html_writer::select($options, "lis_crosssubs_students", $selectedStudent, false,
+    				array("onchange" => "document.location.href='".$PAGE->url."&subjectid=".$selectedSubject."&topicid=".$selectedTopic."&studentid='+this.value;"));
+		}	
+		
 		return $content;
 	}
 	public function print_overview_metadata_teacher($subject,$topic){
