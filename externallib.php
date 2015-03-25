@@ -1048,7 +1048,7 @@ class block_exacomp_external extends external_api {
                         'description' => new external_value(PARAM_TEXT, 'description of example'),
                         'task' => new external_value(PARAM_TEXT, 'task(url/description) of example'),
 						'externaltask' => new external_value(PARAM_TEXT, 'externaltask(url/description) of example'),
-                        'externallink' => new external_value(PARAM_TEXT, 'externallink of example')
+                        'externalurl' => new external_value(PARAM_TEXT, 'externalurl of example')
                 )
         );
     }
