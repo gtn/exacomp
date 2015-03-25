@@ -100,7 +100,10 @@ else{
 	}
 
 	// IF TEACHER SHOW ALL COURSE STUDENTS, IF NOT ONLY CURRENT USER
-	$students = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : array($USER);
+	$students_single = array();
+	$students_single[$USER->id] = $USER;
+	
+	$students = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : $students_single;
 	if($course_settings->nostudents) $students = array();
 	
 	foreach($students as $student)
@@ -108,7 +111,7 @@ else{
 
 	echo $output->print_competence_overview_form_start((isset($selectedTopic))?$selectedTopic:null, (isset($selectedSubject))?$selectedSubject:null);
 
-	//dropdowns for subjects and topics
+	//dropdowns for subjects and topics and students -> if user is teacher
 	echo $output->print_overview_dropdowns(block_exacomp_get_schooltypetree_by_subjects($subjects), $topics, $selectedSubject->id, $selectedTopic->id, $students, $studentid, $isTeacher);
 	
 	$schooltype = block_exacomp_get_schooltype_title_by_subject($selectedSubject);
@@ -121,8 +124,6 @@ else{
 		if($isTeacher)
 			echo $output->print_overview_metadata_teacher($selectedSubject,$selectedTopic);
 		else{
-			//$user_evaluation = block_exacomp_get_user_information_by_course($USER, $courseid);
-	
 			$cm_mm = block_exacomp_get_course_module_association($courseid);
 			$course_mods = get_fast_modinfo($courseid)->get_cms();
 	
@@ -130,9 +131,9 @@ else{
 			if(isset($cm_mm->topics[$selectedTopic->id]))
 				foreach($cm_mm->topics[$selectedTopic->id] as $cmid)
 					$activities_student[] = $course_mods[$cmid];
-			
+		    
 			if($version)
-				echo $output->print_overview_metadata_student($selectedSubject, $selectedTopic, $students[$USER->id]->topics, $showevaluation, $scheme, block_exacomp_get_icon_for_user($activities_student, $USER));
+				echo $output->print_overview_metadata_student($selectedSubject, $selectedTopic, $students[$USER->id]->topics, $showevaluation, $scheme, block_exacomp_get_icon_for_user($activities_student, $USER, block_exacomp_get_supported_modules()));
 		}
 	}
 	
@@ -153,11 +154,7 @@ else{
 	$subjects = block_exacomp_get_competence_tree($courseid,(isset($selectedSubject))?$selectedSubject->id:null,false,(isset($selectedTopic))?$selectedTopic->id:null,
 			!($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies);
 
-	if($version && !$isTeacher && $selectedTopic->id != SHOW_ALL_TOPICS){
-		$examples = block_exacomp_get_examples_LIS_student($subjects);
-		echo $output->print_competence_overview_LIS_student($subjects, $courseid, $showevaluation, $scheme, $examples);
-	}else
-		echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? ROLE_TEACHER : ROLE_STUDENT, $scheme);
+	echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? ROLE_TEACHER : ROLE_STUDENT, $scheme);
 
 }
 
