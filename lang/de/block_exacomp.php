@@ -175,6 +175,7 @@ $string['show_all_descriptors'] = 'Alle Deskriptoren im &Uuml;berblick anzeigen'
 $string['show_all_examples'] = 'Externe Beispiele für Teilnehmer anzeigen';
 $string['usedetailpage'] = 'Detaillierte Kompetenzansicht verwenden';
 $string['useprofoundness'] = 'Erweiterungs- und Grundkompetenzen verwenden';
+$string['usenostudents'] = 'Ohne Kursteilnehmer/innen arbeiten';
 $string['profoundness_0'] = 'Nicht erreicht';
 $string['profoundness_1'] = 'Zum Teil erreicht';
 $string['profoundness_2'] = 'Erreicht';
@@ -260,7 +261,8 @@ $string['hideevaluation'] = 'Um die Selbsteinsch&auml;tzung zu deaktivieren, kli
 $string['showevaluation_student'] = 'Um die Einsch&auml;tzung des Trainers zu aktivieren, klicke <a href="{$a}">hier</a>.';
 $string['hideevaluation_student'] = 'Um die Einsch&auml;tzung des Trainers zu deaktivieren, klicke <a href="{$a}">hier</a>.';
 $string['columnselect'] = 'Spaltenauswahl';
-$string['allstudents'] = 'Alle  Kursteilnehmer';
+$string['allstudents'] = 'Alle  Kursteilnehmer/innen';
+$string['nostudents'] = 'Keine  Kursteilnehmer/innen';
 
 $string['assigndone'] = 'Aufgabe erledigt: ';
 $string['assignmyself'] = 'selbst';

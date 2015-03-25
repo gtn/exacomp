@@ -5,6 +5,9 @@
 		Exacomp.onlyShowColumnGroup(group);
 	});
 	window.Exacomp.onlyShowColumnGroup = function(group) {
+		if(group == -2) {
+			$('.colgroup').not('.colgroup-5555').hide();
+		}
 		if (group === null || group==0) {
 			$('.colgroup').not('.colgroup-0').hide();
 			$('.colgroup-0').show();

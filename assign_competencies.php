@@ -69,8 +69,6 @@ $isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
 if(($delete = optional_param("delete", 0, PARAM_INT)) > 0 && $isTeacher)
 	block_exacomp_delete_custom_example($delete);
 
-
-
 $activities = block_exacomp_get_activities_by_course($courseid);
 $course_settings = block_exacomp_get_settings_by_course($courseid);
 
@@ -102,6 +100,8 @@ else{
 
 	// IF TEACHER SHOW ALL COURSE STUDENTS, IF NOT ONLY CURRENT USER
 	$students = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : array($USER);
+	if($course_settings->nostudents) $students = array();
+	
 	foreach($students as $student)
 		$student = block_exacomp_get_user_information_by_course($student, $courseid);
 
@@ -135,9 +135,11 @@ else{
 		}
 	}
 	
-	if(!$version) echo $output->print_student_evaluation($showevaluation, $isTeacher,$selectedTopic->id,$selectedSubject->id);
+	if(!$version && $course_settings->nostudents != 1) echo $output->print_student_evaluation($showevaluation, $isTeacher,$selectedTopic->id,$selectedSubject->id);
 	
-	echo $output->print_overview_legend($isTeacher);
+	if($course_settings->nostudents != 1)
+	    echo $output->print_overview_legend($isTeacher);
+	
 	echo $output->print_column_selector(count($students));
 
 	$subjects = block_exacomp_get_competence_tree($courseid,(isset($selectedSubject))?$selectedSubject->id:null,false,(isset($selectedTopic))?$selectedTopic->id:null,
@@ -148,7 +150,9 @@ else{
 		echo $output->print_competence_overview_LIS_student($subjects, $courseid, $showevaluation, $scheme, $examples);
 	}else
 		echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? ROLE_TEACHER : ROLE_STUDENT, $scheme);
+
 }
+
 /* END CONTENT REGION */
 echo $output->print_wrapperdivend();
 echo $OUTPUT->footer();

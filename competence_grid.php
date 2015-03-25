@@ -86,7 +86,7 @@ if($version){
 
 echo $output->print_subject_dropdown(block_exacomp_get_schooltypetree_by_subjects($dropdown_subjects),$subjectid, $studentid);
 if($data) {
-	if (has_capability('block/exacomp:teacher', $context)) {
+	if (has_capability('block/exacomp:teacher', $context) && !block_exacomp_get_settings_by_course($courseid)->nostudents) {
 		echo ' '.get_string("choosestudent","block_exacomp").' ';
 		echo block_exacomp_studentselector(block_exacomp_get_students_by_course($courseid),$studentid,$PAGE->url . ($subjectid > 0 ? "&subjectid=".$subjectid : ""));
 	}

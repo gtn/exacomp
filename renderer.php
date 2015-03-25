@@ -1522,7 +1522,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content .= " " . html_writer::link('javascript:Exacomp.onlyShowColumnGroup(-1);',
 				get_string('allstudents','block_exacomp'),
 				array('class' => 'colgroup-button colgroup-button-all'));
-
+		
+		global $COURSE;
+		if(block_exacomp_get_settings_by_course($COURSE->id)->nostudents) {
+		    $content .= " " . html_writer::link('javascript:Exacomp.onlyShowColumnGroup(-2);',
+		        get_string('nostudents','block_exacomp'),
+		        array('class' => 'colgroup-button colgroup-button-no'));
+		}
 		return html_writer::div($content,'spaltenbrowser');
 	}
 	public function print_student_evaluation($showevaluation, $isTeacher=true,$topic = SHOW_ALL_TOPICS,$subject=0) {
@@ -1738,6 +1744,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		.html_writer::empty_tag('br');
 			
 		$input_profoundness = html_writer::checkbox('profoundness', 1, $settings->profoundness==1, get_string('useprofoundness', 'block_exacomp'))
+		.html_writer::empty_tag('br');
+		
+		$input_profoundness = html_writer::checkbox('nostudents', 1, $settings->nostudents==1, get_string('usenostudents', 'block_exacomp'))
 		.html_writer::empty_tag('br');
 		
 		$alltax = array(SHOW_ALL_TAXONOMIES => get_string('show_all_taxonomies','block_exacomp'));

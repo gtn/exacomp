@@ -153,6 +153,7 @@ $string['show_all_descriptors'] = 'Show all outcomes in overview';
 $string['show_all_examples'] = 'Show external examples for students';
 $string['usedetailpage'] = 'Use detailed overview of competencies';
 $string['useprofoundness'] = 'Use basic and extended competencies';
+$string['usenostudents'] = 'Work without any students';
 $string['profoundness_0'] = 'not reached';
 $string['profoundness_1'] = 'partially gained';
 $string['profoundness_2'] = 'fully gained';
@@ -238,6 +239,7 @@ $string['showevaluation_student'] = 'To show trainer-assessment click <a href="{
 $string['hideevaluation_student'] = 'To hide trainer-assessment click <a href="{$a}">here</a>';
 $string['columnselect'] = 'Column selection';
 $string['allstudents'] = 'All students';
+$string['nostudents'] = 'No students';
 
 $string['assigndone'] = 'task done: ';
 $string['assignmyself'] = 'by myself';

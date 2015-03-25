@@ -40,7 +40,7 @@ define('TYPE_TOPIC', 1);
 
 define('SETTINGS_MAX_SCHEME', 10);
 define('CUSTOM_EXAMPLE_SOURCE', 3);
-
+define('ELOVE_EXAMPLE_SOURCE', 4);
 
 if (block_exacomp_moodle_badges_enabled()) {
 	require_once($CFG->libdir . '/badgeslib.php');
@@ -627,6 +627,7 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 
 	if (empty($settings)) $settings = new stdClass;
 	if (empty($settings->grading)) $settings->grading = 1;
+	if (empty($settings->nostudents)) $settings->nostudents = 0;
 	if (!isset($settings->uses_activities)) $settings->uses_activities = ($version || $skillmanagement)? 0 : 1;
 	if (!isset($settings->show_all_examples)) $settings->show_all_examples = ($skillmanagement) ? 1 : 0;
 	if (!isset($settings->usedetailpage)) $settings->usedetailpage = 0;
@@ -635,7 +636,7 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 	if (!isset($settings->profoundness)) $settings->profoundness = 0;
 	if(isset($settings->filteredtaxonomies)) $settings->filteredtaxonomies = json_decode($settings->filteredtaxonomies,true);
 	else $settings->filteredtaxonomies = array(SHOW_ALL_TAXONOMIES);
-	
+
 	return $settings;
 }
 /**
@@ -790,6 +791,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 				JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
 				LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id"
 				. " WHERE " 
+		        . " e.source != " . ELOVE_EXAMPLE_SOURCE . " AND "
 				. (($showallexamples) ? " 1=1 " : " e.creatorid > 0")
 				. ((in_array(SHOW_ALL_TAXONOMIES, $filteredtaxonomies)) ? "" : " AND e.taxid IN (".implode(",", $filteredtaxonomies) .")" )
 				, array($descriptor->id));
@@ -1123,10 +1125,12 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 					*/
 					if ($courseSettings->uses_activities && $usedetailpage)
 						$rows[] = new tabobject('tab_competence_details', new moodle_url('/blocks/exacomp/competence_detail.php',array("courseid"=>$courseid)),get_string('tab_competence_details','block_exacomp'));
-					$rows[] = new tabobject('tab_competence_profile_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid"=>$courseid)), get_string('tab_competence_profile',  'block_exacomp'));
-					$rows[] = new tabobject('tab_examples', new moodle_url('/blocks/exacomp/view_examples.php',array("courseid"=>$courseid)),get_string('tab_examples','block_exacomp'));
-					$rows[] = new tabobject('tab_learning_agenda', new moodle_url('/blocks/exacomp/learningagenda.php',array("courseid"=>$courseid)),get_string('tab_learning_agenda','block_exacomp'));
-					//if (block_exacomp_moodle_badges_enabled() && $usebadges)
+					
+					if($courseSettings->nostudents != 1) {
+					    $rows[] = new tabobject('tab_competence_profile_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid"=>$courseid)), get_string('tab_competence_profile',  'block_exacomp'));
+					    $rows[] = new tabobject('tab_examples', new moodle_url('/blocks/exacomp/view_examples.php',array("courseid"=>$courseid)),get_string('tab_examples','block_exacomp'));
+					    $rows[] = new tabobject('tab_learning_agenda', new moodle_url('/blocks/exacomp/learningagenda.php',array("courseid"=>$courseid)),get_string('tab_learning_agenda','block_exacomp'));
+					}//if (block_exacomp_moodle_badges_enabled() && $usebadges)
 						//$rows[] = new tabobject('tab_badges', new moodle_url('/blocks/exacomp/my_badges.php',array("courseid"=>$courseid)),get_string('tab_badges','block_exacomp'));
 				}
 				$settings = new tabobject('tab_teacher_settings', new moodle_url('/blocks/exacomp/edit_course.php',array("courseid"=>$courseid)),get_string('tab_teacher_settings','block_exacomp'));
@@ -1156,7 +1160,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 					}	
 					if (block_exacomp_is_activated($courseid))
 						$rows[] = new tabobject('tab_competence_grid', new moodle_url('/blocks/exacomp/competence_grid.php',array("courseid"=>$courseid)),get_string('tab_competence_grid','block_exacomp'));
-					if($ready_for_use){
+					if($ready_for_use && $courseSettings->nostudents != 1){
 						$rows[] = new tabobject('tab_competence_profile_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid"=>$courseid)), get_string('tab_competence_profile',  'block_exacomp'));
 						$rows[] = new tabobject('tab_examples', new moodle_url('/blocks/exacomp/view_examples.php',array("courseid"=>$courseid)),get_string('tab_examples','block_exacomp'));
 						$rows[] = new tabobject('tab_learning_agenda', new moodle_url('/blocks/exacomp/learningagenda.php',array("courseid"=>$courseid)),get_string('tab_learning_agenda','block_exacomp'));
@@ -1210,13 +1214,15 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 					//$rows[] = new tabobject('tab_cross_subjects', new moodle_url('/blocks/exacomp/cross_subjects.php', array("courseid"=>$courseid)), get_string('tab_cross_subjects', 'block_exacomp'));
 					if ($courseSettings->uses_activities && $usedetailpage)
 						$rows[] = new tabobject('tab_competence_details', new moodle_url('/blocks/exacomp/competence_detail.php',array("courseid"=>$courseid)),get_string('tab_competence_details','block_exacomp'));
-					$profile = new tabobject('tab_competence_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid"=>$courseid)), get_string('tab_competence_profile',  'block_exacomp'));
-					$rows[] = $profile;
+					if($courseSettings->nostudents != 1) {
+					    $profile = new tabobject('tab_competence_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid"=>$courseid)), get_string('tab_competence_profile',  'block_exacomp'));
+					    $rows[] = $profile;
+					}
 				}
 				if (block_exacomp_is_activated($courseid))
 					$rows[] = new tabobject('tab_competence_grid', new moodle_url('/blocks/exacomp/competence_grid.php',array("courseid"=>$courseid)),get_string('tab_competence_grid','block_exacomp'));
 					
-				if($ready_for_use){
+				if($ready_for_use && $courseSettings->nostudents != 1){
 					$rows[] = new tabobject('tab_learning_agenda', new moodle_url('/blocks/exacomp/learningagenda.php',array("courseid"=>$courseid)),get_string('tab_learning_agenda','block_exacomp'));
 					//if(block_exacomp_moodle_badges_enabled() && $usebadges)
 						//$rows[] = new tabobject('tab_badges', new moodle_url('/blocks/exacomp/my_badges.php',array("courseid"=>$courseid)),get_string('tab_badges','block_exacomp'));
