@@ -85,8 +85,6 @@ else{
 	
 	// SAVA DATA
 	if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
-	    if(isset($_POST['save_as_draft']))
-	        block_exacomp_save_drafts_to_course(array($selectedCrosssubject->id), 0);
 	        
 	    //CROSSSUBJECT NAME
 	    block_exacomp_save_cross_subject_title($selectedCrosssubject->id, $_POST['crosssub-title']);
@@ -94,7 +92,11 @@ else{
 	    //CROSSSUBJECT Description
 	    block_exacomp_save_cross_subject_description($selectedCrosssubject->id, $_POST['crosssub-description']);
 		
-	    // DESCRIPTOR DATA
+	    //SAVE AS DRAFT
+	    if(isset($_POST['save_as_draft']))
+	        block_exacomp_save_drafts_to_course(array($selectedCrosssubject->id), 0);
+	    
+	    /*// DESCRIPTOR DATA
 		block_exacomp_save_competencies(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_DESCRIPTOR);
 		// TOPIC DATA
 		block_exacomp_save_competencies(isset($_POST['datatopics']) ? $_POST['datatopics'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_TOPIC);
@@ -106,7 +108,7 @@ else{
 			if(($topicid = optional_param('topicid', 0, PARAM_INT))!=0){
 				block_exacomp_set_user_competence($USER->id, $topicid, TYPE_TOPIC, $courseid, ROLE_STUDENT, $_POST['topiccomp']);
 			}
-		}
+		}*/
 		list($crosssubjects, $selectedCrosssubject) = block_exacomp_init_course_crosssubjects($courseid, optional_param('crosssubjid', 0, PARAM_INT));
 	
 	}

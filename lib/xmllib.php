@@ -62,11 +62,19 @@ function block_exacomp_xml_do_import($data = null, $par_source = 1, $cron = 0) {
 	}
 
 	$crdate=time();
-	foreach($xml->descriptors->descriptor as $descriptor) {
-		$descriptor->crdate = $crdate;
-		block_exacomp_insert_descriptor($descriptor);
+	if(isset($xml->descriptors)) {
+    	foreach($xml->descriptors->descriptor as $descriptor) {
+    		$descriptor->crdate = $crdate;
+    		block_exacomp_insert_descriptor($descriptor);
+    	}
 	}
-
+    if(isset($xml->crosssubjects)) {
+        //insert empty draft as first entry
+        block_exacomp_init_cross_subjects();
+	    foreach($xml->crosssubjects->crosssubject as $crosssubject) {
+	        block_exacomp_insert_crosssubject($crosssubject);
+	    }
+	}
 	$insertedTopics = array();
 	foreach($xml->edulevels->edulevel as $edulevel) {
 		if($source == IMPORT_SOURCE_NORMAL)
@@ -257,6 +265,39 @@ function block_exacomp_insert_category($category, $parent = 0) {
 		foreach($category->children->category as $child)
 			block_exacomp_insert_category($child,$category->id);
 	}
+}
+function  block_exacomp_insert_crosssubject($crosssubject) {
+    global $DB, $source;
+    
+    $crosssubject->sourceid = $crosssubject['id']->__toString();
+    $crosssubject->source = $source;
+    
+    if($source != IMPORT_SOURCE_NORMAL) {
+		if($crosssubjectObj = $DB->get_record(DB_CROSSSUBJECTS, array("sourceid"=>$crosssubject['id']->__toString(), "source" => IMPORT_SOURCE_NORMAL)))
+			return;
+	}
+	
+	if($crosssubjectObj = $DB->get_record(DB_CROSSSUBJECTS, array("sourceid"=>$crosssubject['id']->__toString(), "source" => $source))) {
+		$crosssubject->id = $crosssubjectObj->id;
+		$DB->update_record(DB_CROSSSUBJECTS, simpleXMLElementToArray($crosssubject));
+	} else {
+		$crosssubject->id = $DB->insert_record(DB_CROSSSUBJECTS, simpleXMLElementToArray($crosssubject));
+	}
+	
+	//crosssubject in DB
+	//insert descriptors
+	
+    if($crosssubject->descriptors) {
+		$DB->delete_records(DB_DESCCROSS,array("crosssubjid"=>$crosssubject->id->__toString()));
+
+		foreach($crosssubject->descriptors->descriptorid as $descriptor) {
+			$descriptorid = $DB->get_field(DB_DESCRIPTORS, "id", array("sourceid"=>$descriptor['id']->__toString()));
+			if($descriptorid > 0)
+				$DB->insert_record(DB_DESCCROSS, array("crosssubjid"=>$crosssubject->id->__toString(),"descrid"=>$descriptorid));
+		}
+	}
+    
+    return $crosssubject->id;
 }
 function block_exacomp_insert_example($example, $parent = 0) {
 	global $DB, $source;

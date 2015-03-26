@@ -3529,35 +3529,13 @@ function block_exacomp_get_schooltypetree_by_subjects($subjects){
 }
 function block_exacomp_init_cross_subjects(){
     global $DB;
-    $drafts = block_exacomp_get_cross_subjects_drafts();
-    if(!$drafts){
+    $draft = $DB->get_records(DB_CROSSSUBJECTS, array('sourceid'=>0));
+    if(!$draft){
         $insert = new stdClass();
         $insert->title = get_string('empty_draft', 'block_exacomp');
         $insert->description = get_string('empty_draft_description', 'block_exacomp');
+        $insert->sourceid = 0;
         $DB->insert_record(DB_CROSSSUBJECTS, $insert);
-        
-        //just for testing
-        $draft1 = new stdClass();
-        $draft1->title = "Vorlage 1";
-        $draft1->description = "Das ist eine Vorlage, der mehrere Kompetenzen zugeordnet sind.";
-        $draft1id = $DB->insert_record(DB_CROSSSUBJECTS, $draft1);
-        
-        $insert = new stdClass();
-        $insert->crosssubjid = $draft1id;
-        $insert->descrid = 662;
-        $DB->insert_record(DB_DESCCROSS, $insert);
-        
-        $insert->descrid = 663;
-        $DB->insert_record(DB_DESCCROSS, $insert);
-        
-        $insert->descrid = 691;
-        $DB->insert_record(DB_DESCCROSS, $insert);
-        
-        $insert->descrid = 694;
-        $DB->insert_record(DB_DESCCROSS, $insert);
-        
-        $insert->descrid = 695;
-        $DB->insert_record(DB_DESCCROSS, $insert);
     } 
 }
 function block_exacomp_get_cross_subjects_drafts(){
