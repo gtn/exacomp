@@ -998,7 +998,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $table_html.html_writer::end_tag('form');
 	}
 	public function print_competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $lis_alltopics = true, $crosssubs = false) {
-		global $PAGE;
+		global $PAGE, $version;
 
 		$rowgroup = 0;
 		$table = new html_table();
@@ -1012,26 +1012,30 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$eportfolioitems = array();
 
 		/* SUBJECTS */
+		$first = true;
 		foreach($subjects as $subject) {
 			if(!$subject->subs)
 				continue;
 				
-			//for every subject
-			$subjectRow = new html_table_row();
-			$subjectRow->attributes['class'] = 'highlight';
-
-			//subject-title
-			$title = new html_table_cell();
-			$title->colspan = 2;
-			if($crosssubs)
-			    $title->text = html_writer::tag("b", get_string('comps_and_material', 'block_exacomp'));
-			else
-			    $title->text = html_writer::tag("b", $subject->title);
-
-			$subjectRow->cells[] = $title;
-
+			if($first){
+    			//for every subject
+    			$subjectRow = new html_table_row();
+    			$subjectRow->attributes['class'] = 'highlight';
+    
+    			//subject-title
+    			$title = new html_table_cell();
+    			$title->colspan = 2;
+    			
+    			if($crosssubs)
+    			    $title->text = html_writer::tag("b", get_string('comps_and_material', 'block_exacomp'));
+    			else
+    			    $title->text = html_writer::tag("b", $subject->title);
+    
+    			$subjectRow->cells[] = $title;
+			}
+    		
 			$studentsCount = 0;
-
+			
 			foreach($students as $student) {
 				$studentCell = new html_table_cell();
 				$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
@@ -1040,9 +1044,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$studentCell->colspan = $studentsColspan;
 				$studentCell->text = fullname($student);
 
-				$subjectRow->cells[] = $studentCell;
+				if($first)
+				    $subjectRow->cells[] = $studentCell;
 			}
-			$rows[] = $subjectRow;
+			if($first)
+			    $rows[] = $subjectRow;
 
 			if($showevaluation) {
 				$studentsCount = 0;
@@ -1094,6 +1100,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$this->print_topics($rows, 0, $subject->subs, $data, $students);
 			
 			$table->data = $rows;
+			$first = false;
 		}
 
 		$table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
