@@ -1405,8 +1405,7 @@ class block_exacomp_external extends external_api {
     public static function get_competencies_for_upload_parameters() {
         return new external_function_parameters(
                 array(
-                        'userid' => new external_value(PARAM_INT, 'id of user'),
-						'topicid' => new external_value(PARAM_INT, 'id of topic')
+                        'userid' => new external_value(PARAM_INT, 'id of user')
                 )
         );
     }
@@ -1415,10 +1414,10 @@ class block_exacomp_external extends external_api {
      * @param int subjectid
      * @return array of examples
      */
-    public static function get_competencies_for_upload($userid, $topicid) {
+    public static function get_competencies_for_upload($userid) {
         global $CFG,$DB, $USER;
 
-        $params = self::validate_parameters(self::get_competencies_for_upload_parameters(), array('userid'=>$userid, 'topicid'=>$topicid));
+        $params = self::validate_parameters(self::get_competencies_for_upload_parameters(), array('userid'=>$userid));
         if($userid == 0)
             $userid = $USER->id;
 
@@ -1434,20 +1433,18 @@ class block_exacomp_external extends external_api {
                 $elem_sub->subjectid = $subject->id;
                 $elem_sub->subjecttitle = $subject->title;
                 $elem_sub->topics = array();
-                foreach($subject->subs as $topic){
-					if($topicid==0 || ($topicid != 0 && $topic->id == $topicid)){
-						$elem_topic = new stdClass();
-						$elem_topic->topicid = $topic->id;
-						$elem_topic->topictitle = $topic->title;
-						$elem_topic->descriptors = array();
-						foreach($topic->descriptors as $descriptor){
-							$elem_desc = new stdClass();
-							$elem_desc->descriptorid = $descriptor->id;
-							$elem_desc->descriptortitle = $descriptor->title;
-							$elem_topic->descriptors[] = $elem_desc;
-						}
-						$elem_sub->topics[] = $elem_topic;
+                foreach($subject->subs as $topic){				
+					$elem_topic = new stdClass();
+					$elem_topic->topicid = $topic->id;
+					$elem_topic->topictitle = $topic->title;
+					$elem_topic->descriptors = array();
+					foreach($topic->descriptors as $descriptor){
+						$elem_desc = new stdClass();
+						$elem_desc->descriptorid = $descriptor->id;
+						$elem_desc->descriptortitle = $descriptor->title;
+						$elem_topic->descriptors[] = $elem_desc;
 					}
+					$elem_sub->topics[] = $elem_topic;				
                 }
                 $structure[] = $elem_sub;
             }
@@ -1486,7 +1483,7 @@ class block_exacomp_external extends external_api {
                 )
         );
     }
-    
+	
     /**
      * Returns description of method parameters
      * @return external_function_parameters
@@ -2130,6 +2127,69 @@ class block_exacomp_external extends external_api {
             array(
                     'success' => new external_value(PARAM_BOOL, 'true if successful')
             )   
+        );
+    }
+	
+	/**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function get_competencies_by_topic_parameters() {
+        return new external_function_parameters(
+                array(
+                        'userid' => new external_value(PARAM_INT, 'id of user'),
+						'topicid' => new external_value(PARAM_INT, 'id of topic')
+                )
+        );
+    }
+    /**
+     * Get all available competencies
+     * @param int subjectid
+     * @return array of examples
+     */
+    public static function get_competencies_by_topic($userid, $topicid) {
+        global $CFG,$DB, $USER;
+
+        $params = self::validate_parameters(self::get_competencies_by_topic_parameters(), array('userid'=>$userid, 'topicid'=>$topicid));
+        if($userid == 0)
+            $userid = $USER->id;
+
+        $structure = array();
+
+        $courses = block_exacomp_external::get_courses($userid);
+
+        foreach($courses as $course){
+            $tree = block_exacomp_get_competence_tree($course["courseid"]);
+            	
+            foreach($tree as $subject){
+                foreach($subject->subs as $topic){
+					if($topicid==0 || ($topicid != 0 && $topic->id == $topicid)){
+						foreach($topic->descriptors as $descriptor){
+							$elem_desc = new stdClass();
+							$elem_desc->descriptorid = $descriptor->id;
+							$elem_desc->descriptortitle = $descriptor->title;
+							$structure[] = $elem_desc;
+						}
+					}
+                }
+            }
+        }
+
+        return $structure;
+    }
+
+    /**
+     * Returns desription of method return values
+     * @return external_multiple_structure
+     */
+    public static function get_competencies_by_topic_returns() {
+        return new external_multiple_structure(
+			new external_single_structure(
+					array(
+							'descriptorid' => new external_value(PARAM_INT, 'id of example'),
+							'descriptortitle' => new external_value(PARAM_TEXT, 'title of example')
+					)
+			)
         );
     }
 }
