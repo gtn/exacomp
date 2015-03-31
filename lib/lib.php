@@ -25,6 +25,7 @@ define('DB_DESCBADGE', 'block_exacompdescbadge_mm');
 define('DB_PROFILESETTINGS', 'block_exacompprofilesettings');
 define('DB_CROSSSUBJECTS', 'block_exacompcrosssubjects');
 define('DB_DESCCROSS', 'block_exacompdescrcross_mm');
+define('DB_CROSSSTUD', 'block_exacompcrossstud_mm');
 
 /**
  * PLUGIN ROLES
@@ -3629,9 +3630,21 @@ function block_exacomp_save_drafts_to_course($drafts_to_save, $courseid){
     }
 }
 
-function block_exacomp_get_cross_subjects_by_course($courseid){
+function block_exacomp_get_cross_subjects_by_course($courseid, $studentid=0){
     global $DB;
-    return $DB->get_records(DB_CROSSSUBJECTS, array('courseid'=>$courseid));
+    $crosssubs = $DB->get_records(DB_CROSSSUBJECTS, array('courseid'=>$courseid));
+    if($studentid == 0)
+    	return $crosssubs;
+    
+    $crosssubs_shared = array();
+    foreach($crosssubs as $crosssubj){
+    	if($crosssubj->shared == 1 || block_exacomp_student_crosssubj($crosssubj->id, $studentid))
+    		$crosssubs_shared[$crosssubj->id] = $crosssub;
+    }
+}
+function block_exacomp_student_crosssubj($crosssubjid, $studentid){
+	global $DB;
+	return $DB->get_records(DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid, 'studentid'=>$studentid));
 }
 
 function block_exacomp_init_course_crosssubjects($courseid, $crosssubjid) {
