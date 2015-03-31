@@ -1113,8 +1113,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$table_html .= html_writer::tag("input", "", array("name" => "open_row_groups", "type" => "hidden", "value" => (optional_param('open_row_groups', "", PARAM_TEXT))));
 
 		return $table_html.html_writer::end_tag('form');
-
-		//return html_writer::tag("form", $table_html, array("id" => "assign-competencies", "method" => "post", "action" => $PAGE->url . "&action=save"));
 	}
 
 	public function print_topics(&$rows, $level, $topics, &$data, $students, $rowgroup_class = '', $profoundness = false) {
@@ -1459,7 +1457,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$studentCellEvaluation->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
 					}
 
-					$studentCell->text = html_writer::empty_tag("input",array("type" => "hidden", "value" => 0, "name" => $checkboxname . "[" . $example->id . "][" . $student->id . "][" . (($evaluation == "teacher") ? "teacher" : "student") . "]"));
+					$studentCell->text = html_writer::empty_tag("input",array("type" => "hidden", "value" => 0, "name" => $checkboxname . "-" . $example->id . "-" . $student->id . "-" . (($evaluation == "teacher") ? "teacher" : "student")));
 					/*
 					 * if scheme == 1: print checkbox
 					* if scheme != 1, role = student, version = LIS
@@ -1472,7 +1470,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$studentCell->text .= get_string('assigndone','block_exacomp');
 							$studentCell->text .= $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme);
 
-							$studentCell->text .= $this->print_student_example_evaluation_form($example->id, $student->id, $data->courseid);
+							//$studentCell->text .= $this->print_student_example_evaluation_form($example->id, $student->id, $data->courseid);
 						}
 						else {
 							$studentCell->text .= $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme);
@@ -1488,8 +1486,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 						$studentCell->text .= $this->generate_select($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, false, $data->profoundness);
 
-						if($data->role == ROLE_STUDENT)
-							$studentCell->text .= $this->print_student_example_evaluation_form($example->id, $student->id, $data->courseid);
+						//if($data->role == ROLE_STUDENT)
+							//$studentCell->text .= $this->print_student_example_evaluation_form($example->id, $student->id, $data->courseid);
 					}
 
 					if($data->showevaluation)
@@ -1512,14 +1510,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$options['studygroup'] = get_string('assignlearninggroup','block_exacomp');
 		$options['teacher'] = get_string('assignteacher','block_exacomp');
 
-		$content = html_writer::select($options, 'dataexamples[' . $exampleid . '][' . $studentid . '][studypartner]', (isset($exampleInfo->studypartner) ? $exampleInfo->studypartner : null), false);
+		$content = html_writer::select($options, 'dataexamples-' . $exampleid . '-' . $studentid . '-studypartner', (isset($exampleInfo->studypartner) ? $exampleInfo->studypartner : null), false);
 
 		$content .= get_string('assignfrom','block_exacomp');
-		$content .= html_writer::empty_tag('input', array('class' => 'datepicker', 'type' => 'text', 'name' => 'dataexamples[' . $exampleid . '][' . $studentid . '][starttime]', 'disabled',
+		$content .= html_writer::empty_tag('input', array('class' => 'datepicker', 'type' => 'text', 'name' => 'dataexamples-' . $exampleid . '-' . $studentid . '-starttime', 'disabled',
 				'value' => (isset($exampleInfo->starttime) ? date("Y-m-d",$exampleInfo->starttime) : null)));
 
 		$content .= get_string('assignuntil','block_exacomp');
-		$content .= html_writer::empty_tag('input', array('class' => 'datepicker', 'type' => 'text', 'name' => 'dataexamples[' . $exampleid . '][' . $studentid . '][endtime]', 'disabled',
+		$content .= html_writer::empty_tag('input', array('class' => 'datepicker', 'type' => 'text', 'name' => 'dataexamples-' . $exampleid . '-' . $studentid . '-endtime', 'disabled',
 				'value' => (isset($exampleInfo->endtime) ? date("Y-m-d",$exampleInfo->endtime) : null)));
 
 		return $content;
@@ -1600,13 +1598,21 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function generate_checkbox($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false, $activityid = null) {
 		return html_writer::checkbox(
 				((isset($activityid)) ? 
+						$name . '-' .$compid .'-' . $student->id .'-' . $activityid . '-' . $evaluation
+						: $name . '-' . $compid . '-' . $student->id . '-' . $evaluation),
+				$scheme,
+				(isset($student->{$type}->{$evaluation}[$compid])) && $student->{$type}->{$evaluation}[$compid] >= ceil($scheme/2), null,
+				(!$disabled) ? null : array("disabled"=>"disabled"));
+	}
+	public function generate_checkbox_old($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false, $activityid = null) {
+		return html_writer::checkbox(
+				((isset($activityid)) ?
 						$name . '[' .$compid .'][' . $student->id .'][' . $activityid . '][' . $evaluation . ']'
 						: $name . '[' . $compid . '][' . $student->id . '][' . $evaluation . ']'),
 				$scheme,
 				(isset($student->{$type}->{$evaluation}[$compid])) && $student->{$type}->{$evaluation}[$compid] >= ceil($scheme/2), null,
 				(!$disabled) ? null : array("disabled"=>"disabled"));
 	}
-	
 	public function generate_checkbox_profoundness($name, $compid, $type, $student, $evaluation, $scheme) {
 		return html_writer::checkbox($name . '[' . $compid . '][' . $student->id . '][' . $evaluation . ']',
 				$scheme,
@@ -1673,7 +1679,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return html_writer::select(
 				$options,
-				$name . '[' . $compid . '][' . $student->id . '][' . $evaluation . ']',
+				$name . '-' . $compid . '-' . $student->id . '-' . $evaluation,
 				(isset($student->{$type}->{$evaluation}[$compid])) ? $student->{$type}->{$evaluation}[$compid] : 0,
 				false,($disabled) ? array("disabled"=>"disabled") : null);
 	}

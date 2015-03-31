@@ -357,15 +357,78 @@ function block_exacomp_delete_custom_example($delete) {
 function block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value) {
 	global $DB,$USER;
 
+	if($role == ROLE_STUDENT && $userid != $USER->id)
+		return -1;
+	
 	if($record = $DB->get_record(DB_COMPETENCIES, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, "courseid" => $courseid, "role" => $role))) {
 		$record->value = $value;
 		$record->timestamp = time();
 		$DB->update_record(DB_COMPETENCIES, $record);
+		return $record->id;
 	} else {
-		$DB->insert_record(DB_COMPETENCIES, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, "courseid" => $courseid, "role" => $role, "value" => $value, "reviewerid" => $USER->id, "timestamp" => time()));
+		return $DB->insert_record(DB_COMPETENCIES, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, "courseid" => $courseid, "role" => $role, "value" => $value, "reviewerid" => $USER->id, "timestamp" => time()));
 	}
 }
 
+function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $value = null, $starttime = 0, $endtime = 0, $studypartner = 'self') {
+	global $DB,$USER,$version;
+	
+	
+	$updateEvaluation = new stdClass();
+	
+	if ($role == ROLE_TEACHER) {
+		$updateEvaluation->teacher_evaluation = intval($value);
+		$updateEvaluation->teacher_reviewerid = $USER->id;
+	} else {
+		if ($userid != $USER->id)
+			// student can only assess himself
+			continue;
+			
+		if (!empty($starttime)) {
+			$date = new DateTime(clean_param($values['starttime'], PARAM_SEQUENCE));
+			$starttime = $date->getTimestamp();
+		}else{
+			$starttime = null;
+		}
+			
+		if (!empty($endtime)) {
+			$date = new DateTime(clean_param($values['endtime'], PARAM_SEQUENCE));
+			$endtime = $date->getTimestamp();
+		}else{
+			$endtime = null;
+		}
+			
+		if($value != null)
+			$updateEvaluation->student_evaluation = $value;
+		$updateEvaluation->starttime = $starttime;
+		$updateEvaluation->endtime = $endtime;
+		$updateEvaluation->studypartner = ($version) ? 'self' : $studypartner;
+	}
+	if($record = $DB->get_record(DB_EXAMPLEEVAL,array("studentid" => $userid, "courseid" => $courseid, "exampleid" => $exampleid))) {
+		//if teacher keep studenteval
+		if($role == ROLE_TEACHER) {
+			$record->teacher_evaluation = $updateEvaluation->teacher_evaluation;
+			$record->teacher_reviewerid = $updateEvaluation->teacher_reviewerid;
+			$DB->update_record(DB_EXAMPLEEVAL,$record);
+		} else {
+			//if student keep teachereval
+			$updateEvaluation->teacher_evaluation = $record->teacher_evaluation;
+			$updateEvaluation->teacher_reviewerid = $record->teacher_reviewerid;
+			$updateEvaluation->id = $record->id;
+			$DB->update_record(DB_EXAMPLEEVAL,$updateEvaluation);
+		}
+		return $record->id;
+	}
+	else {
+		$updateEvaluation->courseid = $courseid;
+		$updateEvaluation->exampleid = $exampleid;
+		$updateEvaluation->studentid = $userid;
+	
+		return $DB->insert_record(DB_EXAMPLEEVAL, $updateEvaluation);
+	}
+	
+	
+}
 /**
  * Set one competence for one user for one activity in one course
  *
@@ -609,7 +672,6 @@ function block_exacomp_save_example_evaluation($data, $courseid, $role, $topicid
 
 				$DB->insert_record(DB_EXAMPLEEVAL, $updateEvaluation);
 			}
-
 		}
 	}
 }
