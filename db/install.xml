@@ -392,6 +392,7 @@
         <FIELD NAME="description" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="courseid" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="shared" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Freigabe für ganzen Kurs mit 1"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
