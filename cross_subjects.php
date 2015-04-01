@@ -66,9 +66,11 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), '
 
 // CHECK TEACHER
 $isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
-if($isTeacher)
+if($isTeacher){
     echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_cross_subjects($context, $courseid), $page_identifier);
-
+}else 
+	$studentid = $USER->id;
+	
 // IF DELETE > 0 DELTE CUSTOM EXAMPLE
 if(($delete = optional_param("delete", 0, PARAM_INT)) > 0 && $isTeacher)
 	block_exacomp_delete_custom_example($delete);
@@ -80,9 +82,16 @@ $course_settings = block_exacomp_get_settings_by_course($courseid);
 if($course_settings->uses_activities && !$activities && !$course_settings->show_all_descriptors)
 	echo $output->print_no_activities_warning($isTeacher);
 else{
-	//list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_overview_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', SHOW_ALL_TOPICS, PARAM_INT));
-	list($crosssubjects, $selectedCrosssubject) = block_exacomp_init_course_crosssubjects($courseid, optional_param('crosssubjid', 0, PARAM_INT), $studentid);
+	list($crosssubjects, $selectedCrosssubject) = block_exacomp_init_course_crosssubjects($courseid, optional_param('crosssubjid', 0, PARAM_INT), ($isTeacher)?0:$studentid);
 	
+	//no crosssubjects available -> end 
+	if(empty($crosssubjects)){
+		echo get_string('no_crosssubjs', 'block_exacomp');
+		echo $output->print_wrapperdivend();
+		echo $OUTPUT->footer();
+		die;
+	}
+		
 	// SAVA DATA
 	if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 	        
@@ -95,22 +104,8 @@ else{
 	    //SAVE AS DRAFT
 	    if(isset($_POST['save_as_draft']))
 	        block_exacomp_save_drafts_to_course(array($selectedCrosssubject->id), 0);
-	    
-	    /*// DESCRIPTOR DATA
-		block_exacomp_save_competencies(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_DESCRIPTOR);
-		// TOPIC DATA
-		block_exacomp_save_competencies(isset($_POST['datatopics']) ? $_POST['datatopics'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_TOPIC);
-		// EXAMPLE DATA
-		block_exacomp_save_example_evaluation(isset($_POST['dataexamples']) ? $_POST['dataexamples'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT);
-
-		//TOPIC LIS STUDENT
-		if(isset($_POST['topiccomp'])){
-			if(($topicid = optional_param('topicid', 0, PARAM_INT))!=0){
-				block_exacomp_set_user_competence($USER->id, $topicid, TYPE_TOPIC, $courseid, ROLE_STUDENT, $_POST['topiccomp']);
-			}
-		}*/
-		list($crosssubjects, $selectedCrosssubject) = block_exacomp_init_course_crosssubjects($courseid, optional_param('crosssubjid', 0, PARAM_INT));
-	
+	   
+		//list($crosssubjects, $selectedCrosssubject) = block_exacomp_init_course_crosssubjects($courseid, optional_param('crosssubjid', 0, PARAM_INT));
 	}
 	
 	//Delete timestamp (end|start) from example

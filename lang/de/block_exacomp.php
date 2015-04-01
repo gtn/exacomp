@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'block_exacomp', language 'en'
+ * Strings for component 'block_exacomp', language 'de'
  *
  * @package   block_exacomp
  * @copyright Florian Jungwirth <danielneis@gmail.com>
@@ -394,8 +394,9 @@ $string['student_name'] = "Teilnehmer";
 $string['help_crosssubject'] = "Die Zusammenstellung des Themas erfolgt für die ganze Schule über den Reiter Lernwegeliste. Sie können hier kursspezifisch Kompetenzen, Teilkompetenzen und Lernmaterial ausblenden. Lernmaterial kann hier ergänzt werden. Dieses wird automatisch in die Lernwegeliste integriert.";
 $string['description'] = "Beschreibung";
 $string['no_student'] = "Editiermodus - kein Teilnehmer";
-$string['save_as_draft'] = "Thema als Vorlage für andere freigeben";
+$string['save_as_draft'] = "Thema als Vorlage freigeben";
 $string['comps_and_material'] = "Kompetenzen und Lernmaterial";
+$string['no_crosssubjs'] = 'Keine Cross-Subjects verfügbar.';
 
 //LIS Strings
 if(get_config('exacomp','alternativedatamodel')) {

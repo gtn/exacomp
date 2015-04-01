@@ -357,6 +357,7 @@ $string['description'] = "description";
 $string['no_student'] = "edit - no participant";
 $string['save_as_draft'] = "share cross-subject as draft";
 $string['comps_and_material'] = "outcomes and exercises";
+$string['no_crosssubjs'] = 'No Cross-Subjects available.';
 
 //metadata
 $string['subject_singular'] = 'Field of competence';

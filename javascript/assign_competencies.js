@@ -3,8 +3,6 @@
 	$( window ).load(function() {
 		var group = Exacomp.getParameterByName('group');
 		Exacomp.onlyShowColumnGroup(group);
-		
-		var competencies = new Array();
 	});
 	window.Exacomp.onlyShowColumnGroup = function(group) {
 		if(group == -2) {

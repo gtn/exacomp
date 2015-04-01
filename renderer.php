@@ -3596,7 +3596,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$url_params['studentid'] = $studentid;
 				
 		$url = new moodle_url($PAGE->url, $url_params);
-		return html_writer::start_tag('form',array('id'=>'cross-subjects', "action" => $url, 'method'=>'post'));
+		return html_writer::start_tag('form',array('id'=>'assign-competencies', "action" => $url, 'method'=>'post'));
 	}
 	
 	public function print_dropdowns_cross_subjects($crosssubjects, $selectedCrosssubject, $students, $selectedStudent = 0, $isTeacher = false){
