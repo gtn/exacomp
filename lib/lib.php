@@ -3647,7 +3647,7 @@ function block_exacomp_get_cross_subjects_by_course($courseid, $studentid=0){
     $crosssubs_shared = array();
     foreach($crosssubs as $crosssubj){
     	if($crosssubj->shared == 1 || block_exacomp_student_crosssubj($crosssubj->id, $studentid))
-    		$crosssubs_shared[$crosssubj->id] = $crosssub;
+    		$crosssubs_shared[$crosssubj->id] = $crosssubj;
     }
 }
 function block_exacomp_student_crosssubj($crosssubjid, $studentid){
