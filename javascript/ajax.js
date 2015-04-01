@@ -53,8 +53,30 @@
 
 	});
 	
+	//#CrossSubject Title & Description
+	var title = "";
+	$(document).on('focusout', 'input[name^=crosssub-title]', function(){
+		title = $(this).val();
+	});
+	
+	var description = "";
+	$(document).on('focusout', 'input[name^=crosssub-description]', function(){
+		description = $(this).val();
+	});
+	
 	$(document).on('submit', '#assign-competencies', function(event){
 		courseid = getUrlVars()['courseid'];
+		
+		var crosssubjid = 0;
+		var select = document.getElementById("menulis_crosssubs");
+	
+		if(select){
+			crosssubjid = select.options[select.selectedIndex].value;
+		}
+		else if("crosssubjid" in getUrlVars()){
+			crosssubjid = getUrlVars()['crosssubjid'];
+		}
+		
 		  competencies.forEach(function(entry) {
 			    $.ajax({
 					  method: "POST",
@@ -89,9 +111,34 @@
 			});
 		  examples = [];
 		  
-		  event.preventDefault();
+		  //Cross-Subject title & description
+		  if(title && crosssubjid > 0 ) {
+				  $.ajax({
+					  method: "POST",
+					  url: "ajax.php",
+					  data: { crosssubjid: crosssubjid, title: title, courseid: courseid, action: 'crosssubj-title'}
+					})
+					  .done(function( msg ) {
+					    console.log( "Crosssub-Title changed");
+				  })
+				  .error(function (msg) {
+					  console.log(msg);
+				  });
+		  }
+		  if(description && crosssubjid > 0){ 
+				  $.ajax({
+					  method: "POST",
+					  url: "ajax.php",
+					  data: { crosssubjid: crosssubjid, description: description, courseid: courseid, action: 'crosssubj-description'}
+					})
+					  .done(function( msg ) {
+					    console.log( "Crosssub-Description changed");
+				  });
+		  }
+		  
+		  //event.preventDefault();
 		});
-	
+
 	
 	// Read a page's GET URL variables and return them as an associative array.
 	function getUrlVars()

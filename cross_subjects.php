@@ -94,13 +94,6 @@ else{
 		
 	// SAVA DATA
 	if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
-	        
-	    //CROSSSUBJECT NAME
-	    block_exacomp_save_cross_subject_title($selectedCrosssubject->id, $_POST['crosssub-title']);
-		
-	    //CROSSSUBJECT Description
-	    block_exacomp_save_cross_subject_description($selectedCrosssubject->id, $_POST['crosssub-description']);
-		
 	    //SAVE AS DRAFT
 	    if(isset($_POST['save_as_draft']))
 	        block_exacomp_save_drafts_to_course(array($selectedCrosssubject->id), 0);

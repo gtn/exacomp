@@ -40,20 +40,37 @@ $context = context_course::instance ( $courseid );
 $isTeacher = (has_capability ( 'block/exacomp:teacher', $context )) ? true : false;
 
 $action = optional_param ( 'action', 'competence', PARAM_TEXT );
-if ($action == 'competence') {
-	$userid = required_param ( 'userid', PARAM_INT );
-	$compid = required_param ( 'compid', PARAM_INT );
-	$comptype = required_param ( 'comptype', PARAM_INT );
-	$value = required_param ( 'value', PARAM_INT );
-	
-	echo block_exacomp_set_user_competence ( $userid, $compid, $comptype, $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, $value );
-} else {
-	$userid = required_param ( 'userid', PARAM_INT );
-	$exampleid = required_param ( 'exampleid', PARAM_INT );
-	$value = optional_param ( 'value', null, PARAM_INT );
-	$starttime = optional_param ( 'starttime', 0, PARAM_INT );
-	$endtime = optional_param ( 'endtime', 0, PARAM_INT );
-	$studypartner = optional_param ( 'studypartner', 'self', PARAM_TEXT );
-	
-	echo block_exacomp_set_user_example($userid, $exampleid, $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, $value, $starttime, $endtime, $studypartner);
+switch($action){
+	case ('competence') : 
+		$userid = required_param ( 'userid', PARAM_INT );
+		$compid = required_param ( 'compid', PARAM_INT );
+		$comptype = required_param ( 'comptype', PARAM_INT );
+		$value = required_param ( 'value', PARAM_INT );
+		
+		echo block_exacomp_set_user_competence ( $userid, $compid, $comptype, $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, $value );
+	break;
+	case ('example') : 
+		$userid = required_param ( 'userid', PARAM_INT );
+		$exampleid = required_param ( 'exampleid', PARAM_INT );
+		$value = optional_param ( 'value', null, PARAM_INT );
+		$starttime = optional_param ( 'starttime', 0, PARAM_INT );
+		$endtime = optional_param ( 'endtime', 0, PARAM_INT );
+		$studypartner = optional_param ( 'studypartner', 'self', PARAM_TEXT );
+		
+		echo block_exacomp_set_user_example($userid, $exampleid, $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, $value, $starttime, $endtime, $studypartner);
+	break;
+	case ('crosssubj-title') :
+		var_dump("inhere-title");
+		$crosssubjid = required_param('crosssubjid', PARAM_INT);
+		$title = required_param('title', PARAM_TEXT);
+		
+		echo block_exacomp_save_cross_subject_title($crosssubjid, $title);
+	break;
+	case ('crosssubj-description') :
+		var_dump("inhere-description");
+		$crosssubjid = required_param('crosssubjid', PARAM_INT);
+		$description = required_param('description', PARAM_TEXT);
+		
+		echo block_exacomp_save_cross_subject_description($crosssubjid, $description);
+	break;
 }
