@@ -1550,10 +1550,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 		return html_writer::div($content,'spaltenbrowser');
 	}
-	public function print_student_evaluation($showevaluation, $isTeacher=true,$topic = SHOW_ALL_TOPICS,$subject=0) {
+	public function print_student_evaluation($showevaluation, $isTeacher=true,$topic = SHOW_ALL_TOPICS,$subject=0, $studentid=0) {
 		global $OUTPUT,$COURSE;
 
-		$link = new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid" => $COURSE->id, "showevaluation" => (($showevaluation) ? "0" : "1"),'subjectid'=>$subject,'topicid'=>$topic));
+		$link = new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid" => $COURSE->id, "showevaluation" => (($showevaluation) ? "0" : "1"),'subjectid'=>$subject,'topicid'=>$topic, 'studentid'=>$studentid));
 		$evaluation = $OUTPUT->box_start();
 		$evaluation .= get_string('overview','block_exacomp');
 		$evaluation .= html_writer::empty_tag("br");

@@ -121,7 +121,7 @@ else{
 		}
 	}
 	
-	if(!$version && $course_settings->nostudents != 1) echo $output->print_student_evaluation($showevaluation, $isTeacher,$selectedTopic->id,$selectedSubject->id);
+	if(!$version && $course_settings->nostudents != 1 && $studentid >0) echo $output->print_student_evaluation($showevaluation, $isTeacher,$selectedTopic->id,$selectedSubject->id, $studentid);
 	
 	if($course_settings->nostudents != 1)
 	    echo $output->print_overview_legend($isTeacher);
