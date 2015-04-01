@@ -3623,6 +3623,8 @@ function block_exacomp_save_drafts_to_course($drafts_to_save, $courseid){
         $draft = $DB->get_record(DB_CROSSSUBJECTS, array('id'=>$draftid));
         $draft->courseid = $courseid;
         $draft->creatorid = $USER->id;
+		$draft->sourceid = 0;
+        $draft->source = IMPORT_SOURCE_SPECIFIC;
         $crosssubjid = $DB->insert_record(DB_CROSSSUBJECTS, $draft);
         
         //assign competencies
