@@ -78,22 +78,6 @@ if($course_settings->uses_activities && !$activities && !$course_settings->show_
 else{
 	list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_overview_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', SHOW_ALL_TOPICS, PARAM_INT));
 	
-	// SAVA DATA
-	if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
-		// DESCRIPTOR DATA
-		block_exacomp_save_competencies(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_DESCRIPTOR, $selectedTopic->id);
-		// TOPIC DATA
-		block_exacomp_save_competencies(isset($_POST['datatopics']) ? $_POST['datatopics'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_TOPIC, $selectedTopic->id);
-		// EXAMPLE DATA
-		block_exacomp_save_example_evaluation(isset($_POST['dataexamples']) ? $_POST['dataexamples'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, $selectedTopic->id);
-
-		//TOPIC LIS STUDENT
-		if(isset($_POST['topiccomp'])){
-			if(($topicid = optional_param('topicid', 0, PARAM_INT))!=0){
-				block_exacomp_set_user_competence($USER->id, $topicid, TYPE_TOPIC, $courseid, ROLE_STUDENT, $_POST['topiccomp']);
-			}
-		}
-	}
 	//Delete timestamp (end|start) from example
 	if($example_del = optional_param('exampleid', 0, PARAM_INT)){
 		block_exacomp_delete_timefield($example_del, optional_param('deletestart', 0, PARAM_INT), optional_param('deleteend', 0, PARAM_INT));

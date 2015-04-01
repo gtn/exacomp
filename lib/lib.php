@@ -71,7 +71,8 @@ function block_exacomp_init_js_css(){
 	$PAGE->requires->js('/blocks/exacomp/javascript/jquery.js', true);
 	$PAGE->requires->js('/blocks/exacomp/javascript/jquery-ui.js', true);
 	$PAGE->requires->js('/blocks/exacomp/javascript/exacomp.js', true);
-
+	$PAGE->requires->js('/blocks/exacomp/javascript/ajax.js', true);
+	
 	$scriptName = preg_replace('!\.[^\.]+$!', '', basename($_SERVER['PHP_SELF']));
 	if (file_exists($CFG->dirroot.'/blocks/exacomp/css/'.$scriptName.'.css'))
 		$PAGE->requires->css('/blocks/exacomp/css/'.$scriptName.'.css');
