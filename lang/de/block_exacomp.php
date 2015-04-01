@@ -66,6 +66,9 @@ $string['tab_cross_subjects'] = 'Themen';
 $string['tab_cross_subjects_overview'] = 'Vorlagen';
 $string['tab_cross_subjects_course'] = 'Kursthemen';
 
+$string['assign_descriptor_to_crosssubject'] = 'Die Teilkompetenz {$a} den folgenden Themen zuordnen:';
+$string['assign_descriptor_no_crosssubjects_available'] = 'Es sind keine Themen vorhanden, legen Sie welche an.';
+
 $string['first_configuration_step'] = 'Der erste Konfigurationsschritt besteht darin, Daten in das Exabis Competencies Modul zu importieren.';
 $string['second_configuration_step'] = 'In diesem Konfigurationsschritt muss eine Vorauswahl für die Standards getroffen werden, damit das Modul verwendet werden kann. Diese Einstellungen sind unabh&auml;ngig vom Kurs für die gesamte Moodle-Installation g&uuml;ltig.';
 $string['next_step'] = 'Dieser Konfigurationsschritt wurde abgeschlossen. Klicken Sie hier um zum N&auml;chsten zu gelangen.';

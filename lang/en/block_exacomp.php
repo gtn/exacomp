@@ -358,6 +358,8 @@ $string['no_student'] = "edit - no participant";
 $string['save_as_draft'] = "share cross-subject as draft";
 $string['comps_and_material'] = "outcomes and exercises";
 $string['no_crosssubjs'] = 'No Cross-Subjects available.';
+$string['assign_descriptor_to_crosssubject'] = 'Assign the competence {a} to the following crosssubjects:';
+$string['assign_descriptor_no_crosssubjects_available'] = 'No crosssubjects are available.';
 
 //metadata
 $string['subject_singular'] = 'Field of competence';

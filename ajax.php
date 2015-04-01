@@ -73,4 +73,14 @@ switch($action){
 		
 		echo block_exacomp_save_cross_subject_description($crosssubjid, $description);
 	break;
+	case ('crosssubj-descriptors'):
+		$descrid = required_param('descrid', PARAM_INT);
+		$crosssubjects = required_param('crosssubjects', PARAM_TEXT);
+		$subj_ids = json_decode($crosssubjects);
+		
+		$DB->delete_records(DB_DESCCROSS,array('descrid'=>$descrid));
+		foreach($subj_ids as $subj_id)
+			block_exacomp_set_cross_subject_descriptor($subj_id,$descrid);
+			
+		break;
 }

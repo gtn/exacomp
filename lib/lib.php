@@ -3818,3 +3818,11 @@ function block_exacomp_cross_subjects_exists(){
 	$table = new xmldb_table(DB_CROSSSUBJECTS);
 	return $dbman->table_exists($table);
 }
+function block_exacomp_set_cross_subject_descriptor($crosssubjid,$descrid) {
+	global $DB;
+	$record = $DB->get_record(DB_DESCCROSS,array('crosssubjid'=>$crosssubjid,'descrid'=>$descrid));
+	if($record)
+		$DB->delete_records(DB_DESCCROSS,array('crosssubjid'=>$crosssubjid,'descrid'=>$descrid));
+	else
+		$DB->insert_record(DB_DESCCROSS,array('crosssubjid'=>$crosssubjid,'descrid'=>$descrid));
+}

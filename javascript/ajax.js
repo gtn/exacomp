@@ -139,7 +139,26 @@
 		  //event.preventDefault();
 		});
 
-	
+	// Add Descriptor to crosssubjects
+	$(document).on('click', 'input[name=crosssubjects]', function(){
+		var crosssubjects = [];
+		courseid = getUrlVars()['courseid'];
+		descrid = getUrlVars()['descrid'];
+        $.each($("input[name='crosssubject']:checked"), function(){            
+        	crosssubjects.push($(this).val());
+        });
+        
+        $.ajax({
+			  method: "POST",
+			  url: "ajax.php",
+			  data: { crosssubjects: JSON.stringify(crosssubjects), descrid: descrid, courseid: courseid, action: 'crosssubj-descriptors'}
+			})
+			  .done(function( msg ) {
+			    console.log( msg );
+			    window.close();
+		  });
+        
+	});
 	// Read a page's GET URL variables and return them as an associative array.
 	function getUrlVars()
 	{

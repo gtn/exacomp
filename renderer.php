@@ -1000,6 +1000,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function print_competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $lis_alltopics = true, $crosssubs = false) {
 		global $PAGE, $version;
 
+		$editmode = (!$students && $role == ROLE_TEACHER && !$crosssubs) ? true : false;
 		$rowgroup = 0;
 		$table = new html_table();
 		$rows = array();
@@ -1097,7 +1098,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					'supported_modules'=>block_exacomp_get_supported_modules(),
 					'showalldescriptors' => block_exacomp_get_settings_by_course($courseid)->show_all_descriptors
 			);
-			$this->print_topics($rows, 0, $subject->subs, $data, $students);
+			$this->print_topics($rows, 0, $subject->subs, $data, $students, '', false, $editmode);
 			
 			$table->data = $rows;
 			$first = false;
@@ -1115,7 +1116,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $table_html.html_writer::end_tag('form');
 	}
 
-	public function print_topics(&$rows, $level, $topics, &$data, $students, $rowgroup_class = '', $profoundness = false) {
+	public function print_topics(&$rows, $level, $topics, &$data, $students, $rowgroup_class = '', $profoundness = false, $editmode = false) {
 		global $version;
 		$topicparam = optional_param('topicid', 0, PARAM_INT);
 		$padding = $level * 20 + 12;
@@ -1221,16 +1222,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$rows[] = $topicRow;
 
 			if (!empty($topic->descriptors)) {
-				$this->print_descriptors($rows, $level+1, $topic->descriptors, $data, $students, $sub_rowgroup_class,$profoundness);
+				$this->print_descriptors($rows, $level+1, $topic->descriptors, $data, $students, $sub_rowgroup_class,$profoundness, $editmode);
 			}
 
 			if (!empty($topic->subs)) {
-				$this->print_topics($rows, $level+1, $topic->subs, $data, $students, $sub_rowgroup_class,$profoundness);
+				$this->print_topics($rows, $level+1, $topic->subs, $data, $students, $sub_rowgroup_class,$profoundness, $editmode);
 			}
 		}
 	}
 
-	function print_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class, $profoundness = false) {
+	function print_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class, $profoundness = false, $editmode=false) {
 		global $version, $PAGE, $USER, $COURSE;
 
 		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
@@ -1271,6 +1272,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$titleCell->style = "padding-left: ".$padding."px";
 			$titleCell->text = html_writer::div($outputname);
 
+			// EDIT MODE BUTTONS
+			if($editmode) {
+				$titleCell->text .= html_writer::link(
+						new moodle_url('/blocks/exacomp/select_crosssubjects.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id)),
+						'T',
+						array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+			}
 			$descriptorRow->cells[] = $titleCell;
 
 			foreach($students as $student) {
