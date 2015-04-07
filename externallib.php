@@ -1919,6 +1919,7 @@ class block_exacomp_external extends external_api {
 						$elem = new stdClass();
 						$elem->exampleid = $example->exampleid;
 						$elem->exampletitle = $example->example_title;
+						$elem->exampletopicid = $topic->id;
 						$items_examp = $DB->get_records('block_exacompitemexample', array('exampleid'=>$example->exampleid));
 						$items = array();
 						foreach($items_examp as $item_examp){
@@ -1958,7 +1959,8 @@ class block_exacomp_external extends external_api {
                         array(
                                 'exampleid' => new external_value(PARAM_INT, 'id of example'),
                                 'exampletitle' => new external_value(PARAM_TEXT, 'title of example'),
-								'example_status' => new external_value(PARAM_INT, 'status of example')
+								'example_status' => new external_value(PARAM_INT, 'status of example'),
+								'exampletopicid' => new external_value(PARAM_INT, 'topic id where example belongs to')
 							)
 				)
 		);
