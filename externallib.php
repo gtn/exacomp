@@ -1919,7 +1919,7 @@ class block_exacomp_external extends external_api {
 						$elem = new stdClass();
 						$elem->exampleid = $example->exampleid;
 						$elem->exampletitle = $example->example_title;
-						$elem->exampletopicid = $topic->id;
+						$elem->exampletopicid = $topic->topicid;
 						$items_examp = $DB->get_records('block_exacompitemexample', array('exampleid'=>$example->exampleid));
 						$items = array();
 						foreach($items_examp as $item_examp){
