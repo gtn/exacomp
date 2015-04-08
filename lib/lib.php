@@ -1304,6 +1304,14 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 	
 	return $rows;
 }
+
+function block_exacomp_build_breadcrum_navigation($courseid) {
+	global $PAGE;
+	$coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
+	$blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
+	$coursenode->add($blocknode);
+	$blocknode->make_active();
+}
 /**
  * Generates html dropdown for students
  * 

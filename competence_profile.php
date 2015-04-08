@@ -51,10 +51,8 @@ block_exacomp_init_js_css();
 $PAGE->requires->js('/blocks/exacomp/javascript/Chart.js', true);
 
 // build breadcrumbs navigation
-$coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
-$blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
-$pagenode = $blocknode->add(get_string($page_identifier,'block_exacomp'), $PAGE->url);
-$pagenode->make_active();
+block_exacomp_build_breadcrum_navigation($courseid);
+
 $output = $PAGE->get_renderer('block_exacomp');
 // build tab navigation & print header
 echo $OUTPUT->header();

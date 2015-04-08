@@ -26,7 +26,6 @@
 * ************************************************************* */
 
 require_once dirname(__FILE__)."/inc.php";
-require_once dirname(__FILE__) . '/example_upload_form.php';
 
 global $DB, $OUTPUT, $PAGE, $USER;
 
