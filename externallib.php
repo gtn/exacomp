@@ -1360,7 +1360,7 @@ class block_exacomp_external extends external_api {
         $item->studentcomment = '';
         $item->teachercomment = '';
         $itemcomments = $DB->get_records('block_exaportitemcomm',array('itemid'=>$itemid),'timemodified ASC','entry',0,2);
-        if($itemcomments) {
+        if($itemcomments && count($itemcomments) == 2) {
             $count = 0;
             foreach($itemcomments as $itemcomment) {
                 if($count == 0) {
@@ -1370,7 +1370,12 @@ class block_exacomp_external extends external_api {
                     $item->teachercomment = $itemcomment->entry;
                 }
             }
-        } 
+        } else if($itemcomments && count($itemcomments) == 1) {
+        	foreach($itemcomments as $itemcomment) {
+        		$item->teachercomment = $itemcomment->entry;
+        		$item->studentcomment = '';
+        	}
+        }
         
         return ($item);
     }
@@ -1569,7 +1574,8 @@ class block_exacomp_external extends external_api {
         } else {
             $item = $DB->get_record('block_exaportitem',array('id'=>$itemid));
             $item->name = $title;
-            $item->url = $url;
+            if($url != '')
+            	$item->url = $url;
             $item->intro = $effort;
             $item->timemodified = time();
             
@@ -1601,14 +1607,17 @@ class block_exacomp_external extends external_api {
         
         if($insert) {
             $DB->insert_record('block_exacompitemexample',array('exampleid'=>$exampleid,'itemid'=>$itemid,'timecreated'=>time(),'status'=>0,'studentvalue'=>$studentvalue));
-			$DB->insert_record('block_exaportitemcomm',array('itemid'=>$itemid,'userid'=>$USER->id,'entry'=>$studentcomment,'timemodified'=>time()));
+            if($studentcomment != '')
+				$DB->insert_record('block_exaportitemcomm',array('itemid'=>$itemid,'userid'=>$USER->id,'entry'=>$studentcomment,'timemodified'=>time()));
         } else {
             $itemexample->timemodified = time();
             $itemexample->studentvalue = $studentvalue;
             $DB->update_record('block_exacompitemexample', $itemexample);
-
-            $DB->delete_records('block_exaportitemcomm',array('itemid'=>$itemid,'userid'=>$USER->id));
-            $DB->insert_record('block_exaportitemcomm',array('itemid'=>$itemid,'userid'=>$USER->id,'entry'=>$studentcomment,'timemodified'=>time()));
+			
+            if($studentcomment != '') {
+            	$DB->delete_records('block_exaportitemcomm',array('itemid'=>$itemid,'userid'=>$USER->id));
+            	$DB->insert_record('block_exaportitemcomm',array('itemid'=>$itemid,'userid'=>$USER->id,'entry'=>$studentcomment,'timemodified'=>time()));
+            }
         }
         
         return array("success"=>true,"itemid"=>$itemid);
