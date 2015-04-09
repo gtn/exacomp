@@ -1998,52 +1998,63 @@ class block_exacomp_external extends external_api {
             $userid = $USER->id;
     
         $user = $DB->get_record('user',array('id'=>$userid));
-        $courses = block_exacomp_external::get_courses($userid);
-    
         $total = 0;
         $reached = 0;
     
         $response = array();
         
-        foreach($courses as $course) {
-            $topics = block_exacomp_get_topics_by_course($course['courseid']);
-            $descriptors = block_exacomp_get_descriptors($course['courseid']);
-            $coursesettings = block_exacomp_get_settings_by_course($course['courseid']);
-            
-            $user = block_exacomp_get_user_information_by_course($user, $course['courseid'], true);
-    
-            foreach($topics as $topic){
-                    if($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset($cm_mm->topics[$topic->id])))
-                    $total ++;
-                	
-                if(!empty($user->topics->teacher)){
-                    if(isset($user->topics->teacher) && isset($user->topics->teacher[$topic->id])){
-                                $reached ++;
-                        }
-                }
-            }
-            foreach($descriptors as $descriptor){
-                if($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset($cm_mm->competencies[$descriptor->id])))
-                    $total ++;
-            
-                if(!empty($user->competencies->teacher)){
-                    if(isset($user->competencies->teacher) && isset($user->competencies->teacher[$descriptor->id])){
-                            $reached ++;
-                    }
-                }
-            }
-            
-            
-            $response_obj = new stdClass();
-            $response_obj->courseid = $course['courseid'];
-            $response_obj->title = $course['fullname'];
-            $response_obj->totalcomps = $total;
-            $response_obj->reachedcomps = $reached;
-    
-            $response[] = $response_obj;
+        $courses = block_exacomp_external::get_courses($userid);
+        
+        $subjects_res = array();
+        foreach($courses as $course){
+        	
+        	
+        	$subjects = block_exacomp_get_subjects_by_course($course["courseid"]);
+        	$coursesettings = block_exacomp_get_settings_by_course($course['courseid']);
+        	$user = block_exacomp_get_user_information_by_course($user, $course['courseid']);
+        	$cm_mm = block_exacomp_get_course_module_association($course['courseid']);
+        	 
+        	foreach($subjects as $subject){
+        		$total = 0;
+        		$reached = 0;
+        		
+        		$topics = block_exacomp_get_topics_by_subject($course['courseid'],$subject->id);
+        		foreach($topics as $topic) {
+        			
+        			if($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset($cm_mm->topics[$topic->id])))
+        				$total++;
+        			 
+        			if(!empty($user->topics->teacher)){
+        				if(isset($user->topics->teacher) && isset($user->topics->teacher[$topic->id])){
+        					$reached ++;
+        				}
+        			}
+        			
+	        		$descriptors = block_exacomp_get_descriptors_by_topic($course['courseid'], $topic->id);
+	        		foreach($descriptors as $descriptor){
+	        			if($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset($cm_mm->competencies[$descriptor->id])))
+	        				$total++;
+	        		
+	        			if(!empty($user->competencies->teacher)){
+	        				if(isset($user->competencies->teacher) && isset($user->competencies->teacher[$descriptor->id])){
+	        					$reached++;
+	        				}
+	        			}
+	        		}
+        		}
+        		
+	        	if(!array_key_exists($subject->id, $subjects_res)){
+	        		$elem = new stdClass();
+	        		$elem->courseid = $subject->id;
+	        		$elem->title= $subject->title;
+	        		$elem->totalcomps = $total;
+	        		$elem->reachedcomps = $reached;
+	        		$subjects_res[] = $elem;
+	        	}
+        	}
         }
     
-        return $response;
+        return $subjects_res;
     }
     
     /**
