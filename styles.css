@@ -1,0 +1,795 @@
+
+
+/* 
+    Document   : style
+    Created on : 03.05.2011, #exacomp 15:30:25
+    Author     : Florian
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+#exacomp div#exabis_save_button {
+    padding: 10px
+}
+
+#exacomp  #competenceok,
+#exacomp .competenceok {
+    background-color: #48a53f !important
+}
+
+#exacomp #competenceyellow,
+#exacomp .competenceyellow {
+    background-color: #f9b233 !important
+}
+
+#exacomp span.competenceyellow,
+#exacomp span.competenceok {
+    width: 20px;
+    border: 1px gray solid;
+}
+
+#exacomp .generaltable td.bottom {
+    vertical-align: bottom
+}
+
+#exacomp .ec_firstcol {
+    width: 50px
+}
+
+#exacomp .ec_td_mo {
+    width: 100px
+}
+
+#exacomp .ec_td_mo_auto {
+    width: auto
+}
+
+#exacomp .exabis_comp_comp_table {
+    overflow: auto
+}
+
+#exacomp .competence_profile_overview_artefacts ul,
+#exacomp .competence_profile_overview_feedback ul,
+#exacomp .competence_profile_coursedata ul,
+#exacomp .competence_profile_artefacts ul,
+#exacomp .competence_profile_noassociation ul {
+    padding-left: 20px
+}
+
+#exacomp .ec_overflow {
+    overflow: auto
+}
+
+#exacomp .ec_minwidth {
+    width: 750px
+}
+
+#exacomp .ec_tableheadwidth {
+    width: 100px
+}
+
+#exacomp .ec_activitylist_student {
+    width: 50px
+}
+
+#exacomp table.competence_grid td.atax {
+    background-color: #c8d7f4 !important
+}
+
+#exacomp table.competence_grid td.btax {
+    background-color: #8eb2e2 !important
+}
+
+#exacomp table.competence_grid td.ctax {
+    background-color: #548dd4 !important
+}
+
+#exacomp table.competence_grid td:nth-child(2n+1) {
+    background-color: #FFF
+}
+
+#exacomp .ec_heading {
+    background-color: #dfdfdf
+}
+
+#exacomp div .tabtree ul {
+    text-align: left
+}
+
+#exacomp .compstable {
+    margin-bottom: 0;
+    background-color: transparent;
+    border-style: solid;
+    border-width: 1px;
+    font-size: 10px;
+    margin: 20px 0 0;
+    width: auto;
+}
+
+#exacomp table {
+    font-size: inherit;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+#exacomp #tdsubmit {
+    border: 1px transparent solid
+}
+
+#exacomp .treeview ul {
+    /*CSS for Simple Tree Menu*/
+    margin: 0;
+    padding: 0;
+}
+
+#exacomp .treeview li {
+    /*Style for LI elements in general (excludes an LI that contains sub lists)*/
+    background: white url(../pix/list.gif) no-repeat left center;
+    background-image: url([[pix:a/em1_bwgreater]]);
+    list-style-type: none;
+    padding-left: 22px;
+    margin-bottom: 3px;
+}
+
+#exacomp .treeview li.submenu {
+    /* Style for LI that contains sub lists (other ULs). */
+    background: white url(../pix/closed.gif) no-repeat left 1px;
+    background-image: url([[pix:i/closed]]);
+    cursor: hand !important;
+    cursor: pointer !important;
+}
+
+#exacomp .treeview li.submenu ul {
+    /*Style for ULs that are children of LIs (submenu) */
+    display: none; /*Hide them by default. Don't delete. */
+}
+
+#exacomp .treeview .submenu ul li {
+    /*Style for LIs of ULs that are children of LIs (submenu) */
+    cursor: default;
+}
+
+#exacomp div.ladebalken {
+    width: 425px;
+    height: 27px;
+}
+
+#exacomp div.lbmittelwert {
+    border-right: 1px solid #000000;
+    height: 27px;
+}
+
+#exacomp div.lbmittelwertcontainer {
+    height: 27px;
+    position: absolute;
+    width: 425px;
+}
+
+#exacomp div.spaltenbrowser {
+    margin-top: 15px
+}
+
+#exacomp #block_exacomp_activitysettings td.contentcell,
+#exacomp #block_exacomp_niveaufilter td.contentcell
+td.contentcell {
+    height: 100px;
+    min-width: 150px;
+}
+
+#exacomp table#block_exacomp_activitysettings,
+#exacomp table#block_exacomp_niveaufilter {
+    width: 300px
+}
+
+#exacomp .settingtable td {
+    vertical-align: top
+}
+
+#exacomp .header,
+#exacomp .cell {
+    padding: 0.3em;
+    border: 1px solid #cacaca;
+    border-collapse: collapse;
+    -moz-hyphens: auto;
+    -ms-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+    word-wrap: break-word;
+    font-size: 1em;
+}
+
+#exacomp .cell {
+    border: 1px solid #cacaca;
+    border-collapse: collapse;
+    -moz-hyphens: auto;
+    -ms-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+    word-wrap: break-word;
+}
+
+#exacomp .cell .content {
+    padding: 0.7rem;
+    font-size: 1em;
+    border: 1px solid #cacaca;
+    border-radius: 5px;
+    margin-bottom: 3px;
+}
+.childdescriptors {
+    font-size: 0.7em;
+}
+
+#exacomp .skill,
+#exacomp .topic {
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    -webkit-hyphens: none;
+    hyphens: none;
+    word-wrap: normal;
+    padding: 0.5rem;
+}
+
+#exacomp .header {
+    background-color: #E6E6E6 !important;
+    background-image: none;
+    font-size: 0.9em;
+}
+
+#exacomp .competence_grid {
+    table-layout: fixed;
+    width: 100%;
+    border: 1px solid #cacaca;
+    border-collapse: collapse;
+}
+
+#exacomp .competence_grid td.skill {
+    background-color: #e4e2e2 !important;
+    vertical-align: middle;
+}
+
+#exacomp .competence_grid_tax td.skill p {
+    font-weight: normal;
+    font-size: 1.3rem;
+    -webkit-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    -o-transform: rotate(270deg);
+}
+
+#exacomp .competence_grid td.topic {
+    background-color: #ebebeb;
+    vertical-align: middle;
+}
+
+#exacomp .competence_grid th.c0 {
+    overflow: hidden;
+    width: 5rem;
+}
+
+#exacomp .competence_grid th.c1 {
+    overflow: hidden
+}
+
+#exacomp .competence_grid {
+    table-layout: fixed
+}
+
+#exacomp .competence_grid td.topic,
+#exacomp .competence_grid td.skill {
+    overflow: hidden
+}
+
+#exacomp .competence_grid_tax td.topic p {
+    font-weight: normal;
+    font-size: 1.1rem;
+    -webkit-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    -o-transform: rotate(270deg);
+}
+
+#exacomp h4 {
+    font-size: 16px
+}
+
+#exacomp .rotated-text {
+    font-weight: normal;
+    font-size: 1.1rem;
+    display: inline-block;
+    overflow: hidden;
+    width: 10.5em;
+    line-height: 1.5;
+}
+
+#exacomp .rotated-text-header {
+    font-weight: normal;
+    font-size: 1.1rem;
+    display: inline-block;
+    overflow: hidden;
+    width: 10.5em;
+    line-height: 1.5;
+}
+
+#exacomp .rotated-text-disabled {
+    width: 100%;
+    font-size: 1.1rem;
+}
+
+#exacomp .rotated-text__inner,
+#exacomp  .rotated-text__inner-header {
+    display: inline-block;
+    white-space: nowrap;
+    -webkit-transform: translate(0%, 100%) rotate(-90deg);
+    -moz-transform: translate(0%, 100%) rotate(-90deg);
+    -ms-transform: translate(0%, 100%) rotate(-90deg);
+    -o-transform: translate(0%, 100%) rotate(-90deg);
+    transform: translate(0%, 100%) rotate(-90deg);
+    -webkit-transform-origin: 0 0;
+    -moz-transform-origin: 0 0;
+    -ms-transform-origin: 0 0;
+    -o-transform-origin: 0 0;
+    transform-origin: 0 0;
+    text-align: left;
+    font-size: 1.1rem;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+#exacomp .rotated-text__inner_disabled {
+    -webkit-transform: none !important;
+    -moz-transform: translate(0%, 100%) rotate(0deg);
+    -ms-transform: translate(0%, 100%) rotate(0deg);
+    -o-transform: translate(0%, 100%) rotate(0deg);
+    transform: none;
+}
+
+#exacomp .rotated-text__inner:after,
+#exacomp  .rotated-text__inner-header:after {
+    content: "";
+    float: left;
+    margin-top: 100%;
+}
+
+#exacomp #linkback {
+    font-family: Arial, #exacomp Verdana, #exacomp Helvetica, #exacomp sans-serif
+}
+
+#exacomp .helpdiv h3 {
+    margin-bottom: 4px;
+    margin-top: 18px;
+}
+
+#exacomp a.switchtextalign {
+    cursor: pointer
+}
+
+@media print { 
+    #exacomp div#linkback {
+        display: none
+    }
+
+    #exacomp table#lernagenda {
+        padding: 5px
+    }
+}
+
+#exacomp .exabis_competencies_lis table.exabis_comp_top,
+#exacomp .exabis_competencies_lis table.exabis_comp_comp,
+#exacomp .exabis_competencies_lis .exabis_comp_info {
+    width: 100%;
+    border: 1px solid #E3DFD4;
+    border-collapse: collapse;
+}
+
+#exacomp .exabis_competencies_lis .exabis_comp_info {
+    margin-bottom: 20px;
+    background-color: #efefef;
+}
+
+#exacomp .exabis_competencies_lis table.exabis_comp_top td {
+    width: 50px
+}
+
+#exacomp .exabis_competencies_lis table.exabis_comp_top td,
+#exacomp .exabis_competencies_lis table.exabis_comp_comp td,
+#exacomp .exabis_competencies_lis .exabis_comp_info td {
+    padding: 0.5em;
+    border: 1px solid #cacaca;
+    border-collapse: collapse;
+    vertical-align: top;
+}
+
+#exacomp .desctitle {
+    font-weight: bold
+}
+
+#exacomp .desctitlegrey {
+    font-weight: bold;
+    color: #666666;
+}
+
+#exacomp .exabis_competencies_lis table.exabis_comp_comp {
+    font-size: 0.85em
+}
+
+#exacomp .exabis_competencies_lis .exabis_comp_aufgabe {
+    font-size: 0.9em
+}
+
+#exacomp .exabis_competencies_lis .exabis_comp_aufgabe .aufgabetext {
+    margin: 0 0 0 1em
+}
+
+#exacomp .exabis_competencies_lis table.exabis_comp_comp tr.highlight {
+    background-color: #e6e6e6
+}
+#exacomp .exabis_competencies_lis table.exabis_comp_comp td.disabled {
+    background-color: #e6e6e6
+}
+#exacomp .exabis_competencies_lis table.exabis_comp_comp tr.exabis_comp_aufgabe:nth-child(2n+1) {
+    background-color: #f9f9f9
+}
+
+#exacomp .exabis_competencies_lis span.exabis_comp_top_header {
+    font-style: italic;
+    font-size: 15px;
+}
+
+#exacomp .exabis_competencies_lis span.exabis_comp_top_small {
+    display: block;
+    font-size: 0.84em;
+}
+
+#exacomp .exabis_competencies_lis div.exabis_comp_top_indentation {
+    margin-left: 20px
+}
+
+#exacomp .exabis_competencies_lis div.exabis_comp_top_indentation_nr {
+    width: 20px;
+    float: left;
+}
+
+#exacomp .exabis_competencies_lis .spaltenbrowser {
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+#exacomp .exabis_competencies_lis img.exabis_comp_teilcomp_pfeil {
+    margin-right: 10px
+}
+
+#exacomp .exabis_competencies_lis table.exabis_comp_top .comp_grey_97 {
+    background-color: #f6f6f6
+}
+
+#exacomp .exabis_competencies_lis table.exabis_comp_top .comp_grey_90 {
+    background-color: #e2e2e2
+}
+
+#exacomp .exabis_competencies_lis table.exabis_comp_top .comp_grey_83 {
+    background-color: #cfcfcf
+}
+
+#exacomp .exabis_competencies_lis .exabis_comp_select select {
+    margin-bottom: 20px
+}
+
+#exacomp .exabis_competencies_lis .exabis_comp_select select {
+    margin-right: 20px
+}
+
+#exacomp .exabis_competencies_lis .exabis_comp_aufgabe input[type="checkbox"],
+#exacomp .exabis_competencies_lis .exabis_comp_teilcomp input[type="checkbox"],
+#exacomp .exabis_competencies_lis .exabis_comp_aufgabe img,
+#exacomp .exabis_competencies_lis .exabis_comp_teilcomp img {
+    margin-right: 4px
+}
+
+#exacomp .exabis_competencies_lis .exabis_comp_aufgabe img.exabis_comp_cal,
+#exacomp .exabis_competencies_lis .exabis_comp_teilcomp img.exabis_comp_cal {
+    margin-right: 4px;
+    margin-left: 4px;
+}
+
+#exacomp .exabis_competencies_lis .exabis_comp_top_iconcol {
+    min-width: 35px
+}
+
+#exacomp .exabis_competencies_lis .exabis_comp_top_studentcol {
+    min-width: 40px
+}
+
+#exacomp .exabis_competencies_lis .exabis_comp_top_evalcol {
+    width: 50px
+}
+
+#exacomp .rowgroup-header .rowgroup-arrow {
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+#exacomp .rowgroup-header .rowgroup-arrow div {
+    padding-left: 12px;
+    background: url(pix/pfeil_show.png) 0 6px no-repeat;
+}
+
+#exacomp .rowgroup-header.open .rowgroup-arrow div {
+    background: url(pix/pfeil_hide.png) 0 6px no-repeat
+}
+
+#exacomp .rowgroup-content {
+    display: none
+}
+
+#exacomp .exabis_comp_top_student {
+    text-align: center
+}
+
+#exacomp .exabis_comp_student_not {
+
+}
+
+#exacomp  .exabis_comp_student_assigned {
+    background-color: #f9b233
+}
+
+#exacomp .exabis_comp_teacher_assigned {
+    background-color: #48a53f
+}
+
+#exacomp .exabis_comp_student_started {
+    background-color: #F4FA58
+}
+
+#exacomp .exabis_assign_student {
+    display: none
+}
+
+
+/* ##################################################### */
+/* ##################################################### */
+/* ############ Neue Styles Kompetenzprofil ############ */
+/* ##################################################### */
+/* ##################################################### */
+
+
+#exacomp .userpicturecontainer {
+    float: left;
+    margin-right: 10px;
+}
+
+#exacomp .competence_profile_metadata {
+    background-color: #f9f9f9
+}
+
+#exacomp .competence_profile_metadata,
+#exacomp .competence_profile_overview_mycompetencies,
+#exacomp .competence_profile_coursedata,
+#exacomp .competence_profile_overview_artefacts,
+#exacomp .competence_profile_overview_feedback,
+#exacomp .competence_profile_artefacts,
+#exacomp .competence_profile_feedback {
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+#exacomp .competence_profile_overview h4 {
+    margin: 0
+}
+
+#exacomp .competence_profile_overview_mycompetencies,
+#exacomp .competence_profile_artefacts,
+#exacomp .competence_profile_feedback,
+#exacomp .competence_profile_coursedata {
+    margin-bottom: 20px
+}
+
+#exacomp .competence_profile_overview_artefacts,
+#exacomp .competence_profile_overview_feedback,
+#exacomp .competence_profile_piegraph,
+#exacomp .competence_profile_radargraph {
+    width: 48.7179%;
+    float: left;
+    box-sizing: border-box;
+    display: block;
+}
+
+#exacomp .competence_profile_graphbox .radargraph_legend {
+    text-align: center
+}
+
+#exacomp .competence_profile_printbox {
+    text-align: right;
+    margin-bottom: 5px;
+}
+
+#exacomp .competence_profile_overview_feedback {
+    margin-left: 2.5641%
+}
+
+#exacomp .competence_profile_overview,
+#exacomp .competence_profile_coursedata {
+    margin-top: 30px
+}
+
+#exacomp .competence_profile_radargraph .radargraph,
+#exacomp .competence_profile_piegraph .piegraph,
+#exacomp .competence_profile_radargraph .piegraph 
+#exacomp .competence_profile_timelinegraph .timeline{
+    margin: 0 auto
+}
+
+#exacomp .competence_profile_piegraph .piegraph,
+#exacomp .competence_profile_radargraph .piegraph 
+#exacomp .competence_profile_timelinegraph .timeline{
+    margin-bottom: 40px
+}
+
+#exacomp .competence_profile_timelinegraph .timeline{
+   	margin-left: 5%;
+}
+#exacomp .radargraph_legend{
+	margin-left: 5%;
+	margin-bottom: 40px
+}
+#exacomp .competence_profile_overview .compstable,
+#exacomp .competence_profile_artefacts .compstable,
+#exacomp .competence_profile_feedback .compstable {
+    font-size: 1em
+}
+
+#exacomp div.lbmittelwertcontainer {
+    height: 18px
+}
+
+#exacomp div.lbmittelwert {
+    border-right: 2px solid #d9534f;
+    height: 18px;
+    -webkit-box-shadow: 2px 0px 0px 0px rgba(255, 255, 255, 0.75);
+    -moz-box-shadow: 2px 0px 0px 0px rgba(255, 255, 255, 0.75);
+    box-shadow: 2px 0px 0px 0px rgba(255, 255, 255, 0.75);
+}
+
+#exacomp div.ladebalken {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+}
+
+#exacomp div.ladebalken,
+#exacomp .ladebalkenstatus {
+    border-radius: 5px;
+    height: 18px;
+}
+
+#exacomp .stripes {
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 10%, transparent 10%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-color: #48a53f;
+    background-size: 30px 30px;
+    animation: 2s linear 0s normal none infinite progress-bar-stripes;
+}
+
+@media print { 
+    #exacomp .stripes {
+        position: relative;
+        overflow: hidden;
+        /* this might not work well in all situations */
+    }
+
+    #exacomp .stripes:before {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        /* and here it is, #exacomp the background color */
+        border: 99999px #48a53f solid;
+        z-index: 0;
+        /* was required in my situation */
+    }
+
+    #exacomp .stripes * {
+        /* was required in my situation */
+        position: relative;
+        z-index: 1;
+    }
+}
+
+#exacomp .competence_profile_overview_artefacts ul,
+#exacomp .competence_profile_overview_feedback ul {
+    margin-top: 20px;
+    list-style-type: circle;
+}
+
+#exacomp .competence_profile_coursedata ul.competence_profile_complist,
+#exacomp .competence_profile_coursedata ul.competence_profile_complist ul,
+#exacomp .competence_profile_artefacts ul.competence_profile_complist,
+#exacomp .competence_profile_artefacts ul.competence_profile_complist ul {
+    list-style-type: none
+}
+
+#exacomp .competence_profile_coursedata ul li {
+    padding-left: 12px;
+    color: #7f7f7f;
+}
+
+#exacomp .competence_profile_artefacts ul li {
+    color: #000
+}
+
+#exacomp .competence_profile_artefacts ul.competence_profile_complist li {
+    padding-left: 12px
+}
+
+#exacomp .competence_profile_coursedata ul li.reached {
+    color: #000
+}
+
+#exacomp .competence_profile_coursedata ul.competence_profile_complist > ul > ul li,
+#exacomp .competence_profile_artefacts ul.competence_profile_complist > ul > ul li {
+    margin-left: 10px
+}
+
+#exacomp .competence_profile_coursedata ul.competence_profile_complist_items li {
+    background: transparent url(folder_fill_12x12.png) no-repeat left center;
+    padding-left: 18px;
+    color: #000;
+}
+
+#exacomp .competence_profile_coursedata li.complistshow {
+    background: transparent url(pfeil_show.png) no-repeat left center
+}
+
+#exacomp .competence_profile_coursedata li.complisthide,
+#exacomp .competence_profile_artefacts ul.competence_profile_complist li {
+    background: transparent url(pfeil_hide.png) no-repeat left center
+}
+
+#exacomp .competence_profile_coursedata {
+    margin-top: 0px
+}
+
+#exacomp h3.competence_profile_sectiontitle {
+    margin-top: 40px
+}
+
+#exacomp .competence_profile_artefacts ul.competence_profile_complist > ul > ul li {
+    margin-left: 10px;
+    list-style-type: circle;
+    background: none;
+    padding: 0;
+}
+
+#exacomp .generaltable td.competence_tableright {
+    text-align: right;
+    min-width: 140px;
+    max-width: 200px;
+}
+
+#exacomp .competence_profile_grapherror {
+    text-align: center;
+    font-size: 0.7em;
+}
+
+#exacomp .plusimageapply {
+    list-style-image: url(pix/pfeil_show.png);
+    cursor: pointer;
+}
+
+#exacomp .minusimageapply {
+    list-style-image: url(pix/pfeil_hide.png);
+    cursor: pointer;
+}
+
+#exacomp .selectedimage {
+    list-style-image: url(pix/selected.png);
+    cursor: pointer;
+}
+
+#exacomp .exacomp_profile_badges {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
