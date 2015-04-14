@@ -60,14 +60,12 @@ switch($action){
 		echo block_exacomp_set_user_example($userid, $exampleid, $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, $value, $starttime, $endtime, $studypartner);
 	break;
 	case ('crosssubj-title') :
-		var_dump("inhere-title");
 		$crosssubjid = required_param('crosssubjid', PARAM_INT);
 		$title = required_param('title', PARAM_TEXT);
 		
 		echo block_exacomp_save_cross_subject_title($crosssubjid, $title);
 	break;
 	case ('crosssubj-description') :
-		var_dump("inhere-description");
 		$crosssubjid = required_param('crosssubjid', PARAM_INT);
 		$description = required_param('description', PARAM_TEXT);
 		
@@ -78,9 +76,20 @@ switch($action){
 		$crosssubjects = required_param('crosssubjects', PARAM_TEXT);
 		$subj_ids = json_decode($crosssubjects);
 		
-		$DB->delete_records(DB_DESCCROSS,array('descrid'=>$descrid));
+		$not_crosssubjects = required_param('not_crosssubjects', PARAM_TEXT);
+		$not_subj_ids = json_decode($not_crosssubjects);
+		foreach($not_subj_ids as $not_subj_id)
+			block_exacomp_unset_cross_subject_descriptor($not_subj_id, $descrid);
+			
 		foreach($subj_ids as $subj_id)
 			block_exacomp_set_cross_subject_descriptor($subj_id,$descrid);
 			
+		break;
+	case ('crosssubj-students'):
+		$crosssubjid = required_param('crosssubjid', PARAM_INT);
+		$students = required_param('studentd', PARAM_TEXT);
+		$student_ids = json_decode($students);
+		
+		$DB->delete_records();
 		break;
 }

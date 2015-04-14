@@ -1033,7 +1033,7 @@ class block_exacomp_external extends external_api {
         $params = self::validate_parameters(self::get_example_by_id_parameters(), array('exampleid'=>$exampleid));
 
         $example = $DB->get_record(DB_EXAMPLES, array('id'=>$exampleid));
-
+		$example->description = htmlentities($example->description);
         return $example;
     }
 
@@ -1359,22 +1359,15 @@ class block_exacomp_external extends external_api {
          
         $item->studentcomment = '';
         $item->teachercomment = '';
-        $itemcomments = $DB->get_records('block_exaportitemcomm',array('itemid'=>$itemid),'timemodified ASC','entry',0,2);
-        if($itemcomments && count($itemcomments) == 2) {
-            $count = 0;
+        $itemcomments = $DB->get_records('block_exaportitemcomm',array('itemid'=>$itemid),'timemodified ASC','entry, userid',0,2);
+        if($itemcomments) {
             foreach($itemcomments as $itemcomment) {
-                if($count == 0) {
+                if($userid == $itemcomment->userid) {
                     $item->studentcomment = $itemcomment->entry;
-                    $count++;
                 } else {
                     $item->teachercomment = $itemcomment->entry;
                 }
             }
-        } else if($itemcomments && count($itemcomments) == 1) {
-        	foreach($itemcomments as $itemcomment) {
-        		$item->teachercomment = $itemcomment->entry;
-        		$item->studentcomment = '';
-        	}
         }
         
         return ($item);
@@ -1423,9 +1416,15 @@ class block_exacomp_external extends external_api {
         global $CFG,$DB, $USER;
 
         $params = self::validate_parameters(self::get_competencies_for_upload_parameters(), array('userid'=>$userid));
-        if($userid == 0)
+        if($userid > 0) {
+        	$isTrainer = $DB->get_record('block_exacompexternaltrainer',array('trainerid'=>$USER->id,'studentid'=>$userid));
+        	//check permission
+        	if(!$isTrainer)
+            	throw new invalid_parameter_exception('Not allowed');
+        }
+        else if($userid == 0)
             $userid = $USER->id;
-
+		
         $structure = array();
 
         $courses = block_exacomp_external::get_courses($userid);
@@ -1740,6 +1739,12 @@ class block_exacomp_external extends external_api {
         }
         
         $params = self::validate_parameters(self::grade_item_parameters(), array('userid'=>$userid, 'value'=>$value, 'status'=>$status, 'comment'=>$comment, 'itemid'=>$itemid, 'comps'=>$comps, 'courseid'=>$courseid));
+    	if($userid > 0) {
+        	$isTrainer = $DB->get_record('block_exacompexternaltrainer',array('trainerid'=>$USER->id,'studentid'=>$userid));
+        	//check permission
+        	if(!$isTrainer)
+            	throw new invalid_parameter_exception('Not allowed');
+        }
         
 		//insert into block_exacompitemexample
 		$update = new stdClass();
@@ -1871,7 +1876,13 @@ class block_exacomp_external extends external_api {
         
         $params = self::validate_parameters(self::get_item_grading_parameters(), array('itemid'=>$itemid, 'userid'=>$userid));
         
-        if($userid == 0)
+        if($userid > 0) {
+        	$isTrainer = $DB->get_record('block_exacompexternaltrainer',array('trainerid'=>$USER->id,'studentid'=>$userid));
+        	//check permission
+        	if(!$isTrainer)
+        		throw new invalid_parameter_exception('Not allowed');
+        }
+        else if($userid == 0)
             $userid = $USER->id;
             
 		$entry = $DB->get_record('block_exacompitemexample', array('itemid'=>$itemid));
@@ -1994,6 +2005,12 @@ class block_exacomp_external extends external_api {
     
         $params = self::validate_parameters(self::get_user_profile_parameters(), array('userid'=>$userid));
     
+        if($userid > 0) {
+        	$isTrainer = $DB->get_record('block_exacompexternaltrainer',array('trainerid'=>$USER->id,'studentid'=>$userid));
+        	//check permission
+        	if(!$isTrainer)
+        		throw new invalid_parameter_exception('Not allowed');
+        }
         if($userid == 0)
             $userid = $USER->id;
     
@@ -2173,6 +2190,12 @@ class block_exacomp_external extends external_api {
         global $CFG,$DB, $USER;
 
         $params = self::validate_parameters(self::get_competencies_by_topic_parameters(), array('userid'=>$userid, 'topicid'=>$topicid));
+        if($userid > 0) {
+        	$isTrainer = $DB->get_record('block_exacompexternaltrainer',array('trainerid'=>$USER->id,'studentid'=>$userid));
+        	//check permission
+        	if(!$isTrainer)
+        		throw new invalid_parameter_exception('Not allowed');
+        }
         if($userid == 0)
             $userid = $USER->id;
 

@@ -142,16 +142,21 @@
 	// Add Descriptor to crosssubjects
 	$(document).on('click', 'input[name=crosssubjects]', function(){
 		var crosssubjects = [];
+		var not_crosssubjects = [];
 		courseid = getUrlVars()['courseid'];
 		descrid = getUrlVars()['descrid'];
-        $.each($("input[name='crosssubject']:checked"), function(){            
-        	crosssubjects.push($(this).val());
+        
+        $("input[name='crosssubject']").each(function () {
+        	if(this.checked=="1")
+        		crosssubjects.push($(this).val());
+        	else
+        		not_crosssubjects.push($(this).val());
         });
         
         $.ajax({
 			  method: "POST",
 			  url: "ajax.php",
-			  data: { crosssubjects: JSON.stringify(crosssubjects), descrid: descrid, courseid: courseid, action: 'crosssubj-descriptors'}
+			  data: { crosssubjects: JSON.stringify(crosssubjects), not_crosssubjects: JSON.stringify(not_crosssubjects), descrid: descrid, courseid: courseid, action: 'crosssubj-descriptors'}
 			})
 			  .done(function( msg ) {
 			    console.log( msg );

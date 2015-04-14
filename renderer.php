@@ -1272,8 +1272,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$titleCell->style = "padding-left: ".$padding."px";
 			$titleCell->text = html_writer::div($outputname);
 
-			// EDIT MODE BUTTONS
-			if($editmode) {
+			// EDIT MODE BUTTONS 
+			//TODO also for !LIS
+			if($editmode && $version) {
 				$titleCell->text .= html_writer::link(
 						new moodle_url('/blocks/exacomp/select_crosssubjects.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id)),
 						'T',
