@@ -63,6 +63,7 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), '
 
 // CHECK TEACHER
 $isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
+
 if($isTeacher){
     echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_cross_subjects($context, $courseid), $page_identifier);
 }else 
@@ -89,14 +90,14 @@ else{
 		die;
 	}
 		
-	// SAVA DATA
+	/*// SAVA DATA
 	if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 	    //SAVE AS DRAFT
 	    if(isset($_POST['save_as_draft']))
 	        block_exacomp_save_drafts_to_course(array($selectedCrosssubject->id), 0);
 	   
 		//list($crosssubjects, $selectedCrosssubject) = block_exacomp_init_course_crosssubjects($courseid, optional_param('crosssubjid', 0, PARAM_INT));
-	}
+	}*/
 	
 	//Delete timestamp (end|start) from example
 	if($example_del = optional_param('exampleid', 0, PARAM_INT)){

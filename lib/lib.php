@@ -43,6 +43,9 @@ define('SETTINGS_MAX_SCHEME', 10);
 define('CUSTOM_EXAMPLE_SOURCE', 3);
 define('ELOVE_EXAMPLE_SOURCE', 4);
 
+
+define("IMPORT_SOURCE_SPECIFIC", 2);
+
 if (block_exacomp_moodle_badges_enabled()) {
 	require_once($CFG->libdir . '/badgeslib.php');
 	require_once($CFG->dirroot . '/badges/lib/awardlib.php');
@@ -122,7 +125,6 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 			').'
 			ORDER BY id, title
 			';
-
 	return $DB->get_records_sql($sql, array($courseid));
 }
 /**
@@ -1217,12 +1219,12 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 				if($checkConfig){
 					if($ready_for_use){
 						$rows[] = new tabobject('tab_competence_overview', new moodle_url('/blocks/exacomp/assign_competencies.php',array("courseid"=>$courseid)),get_string('tab_competence_overview','block_exacomp'));
-						//TODO show crosssubjects for !LIS
-						/*if($crosssubs)
+						
+						if($crosssubs)
     					    $rows[] = new tabobject('tab_cross_subjects', new moodle_url('/blocks/exacomp/cross_subjects.php', array("courseid"=>$courseid)), get_string('tab_cross_subjects', 'block_exacomp'));
     					else
     					    $rows[] = new tabobject('tab_cross_subjects', new moodle_url('/blocks/exacomp/cross_subjects_overview.php', array("courseid"=>$courseid)), get_string('tab_cross_subjects', 'block_exacomp'));
-					*/
+				
 					if ($courseSettings->uses_activities && $usedetailpage)
 							$rows[] = new tabobject('tab_competence_details', new moodle_url('/blocks/exacomp/competence_detail.php',array("courseid"=>$courseid)),get_string('tab_competence_details','block_exacomp'));
 					}	
@@ -1281,10 +1283,9 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 			}else{	//student tabs !LIS
 				if($ready_for_use){
 					$rows[] = new tabobject('tab_competence_overview', new moodle_url('/blocks/exacomp/assign_competencies.php',array("courseid"=>$courseid)),get_string('tab_competence_overview','block_exacomp'));
-					//TODO show crosssubjects !LIS
-					/*if($crosssubs)
+					if($crosssubs)
 						$rows[] = new tabobject('tab_cross_subjects', new moodle_url('/blocks/exacomp/cross_subjects.php', array("courseid"=>$courseid)), get_string('tab_cross_subjects', 'block_exacomp'));
-					*/if ($courseSettings->uses_activities && $usedetailpage)
+					if ($courseSettings->uses_activities && $usedetailpage)
 						$rows[] = new tabobject('tab_competence_details', new moodle_url('/blocks/exacomp/competence_detail.php',array("courseid"=>$courseid)),get_string('tab_competence_details','block_exacomp'));
 					if($courseSettings->nostudents != 1) {
 					    $profile = new tabobject('tab_competence_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid"=>$courseid)), get_string('tab_competence_profile',  'block_exacomp'));
@@ -3648,7 +3649,12 @@ function block_exacomp_save_drafts_to_course($drafts_to_save, $courseid){
         }
     }
 }
-
+function block_exacomp_delete_crosssubject_drafts($drafts_to_delete){
+	global $DB;
+	foreach($drafts_to_delete as $draftid){
+		$DB->delete_records(DB_CROSSSUBJECTS, array('id'=>$draftid));
+	}
+}
 function block_exacomp_get_cross_subjects_by_course($courseid, $studentid=0){
     global $DB;
     $crosssubs = $DB->get_records(DB_CROSSSUBJECTS, array('courseid'=>$courseid));

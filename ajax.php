@@ -100,4 +100,8 @@ switch($action){
 		}
 		echo $saved;
 		break;
+	case('save_as_draft'):
+		$crosssubjid = required_param('crosssubjid', PARAM_INT);
+		block_exacomp_save_drafts_to_course(array($crosssubjid), 0);
+		break;
 }

@@ -28,15 +28,12 @@
 			}
 		}
 	});
-	//Never entered
-	/*$(document).on('change', 'select[name^=data\-]', function() {
-		var values = $(this).attr("name").split("-");
-		competencies[values[1]] = {
-			userid : values[2],
-			compid : values[1],
-			value : $(this).val()
-		};
-	});*/
+	// Never entered
+	/*
+	 * $(document).on('change', 'select[name^=data\-]', function() { var values =
+	 * $(this).attr("name").split("-"); competencies[values[1]] = { userid :
+	 * values[2], compid : values[1], value : $(this).val() }; });
+	 */
 	// # TOPICS
 	var topics = [];
 	$(document).on('click', 'input[name^=datatopics\-]', function() {
@@ -62,7 +59,7 @@
 				};
 		}
 	});
-	//Never entered
+	// Never entered
 	$(document).on('change', 'select[name^=datatopics\-]', function() {
 		var values = $(this).attr("name").split("-");
 		topics[values[1]] = {
@@ -75,7 +72,7 @@
 	var examples = [];
 	$(document).on('click', 'input[name^=dataexamples\-]', function() {
 		var values = $(this).attr("name").split("-");
-	
+
 		if ($(this).prop("checked")) {
 			if (examples[values[1]]) {
 				examples[values[1]]['value'] = 1;
@@ -95,42 +92,25 @@
 					value : 0
 				};
 		}
-		console.log(examples);
 	});
-	//never entered
-	/*$(document).on('change', 'select[name^=dataexamples\-]', function() {
-		var values = $(this).attr("name").split("-");
+	// never entered
+	/*
+	 * $(document).on('change', 'select[name^=dataexamples\-]', function() { var
+	 * values = $(this).attr("name").split("-");
+	 * 
+	 * if (values[3] == 'studypartner') examples[values[1]] = { userid :
+	 * values[2], exampleid : values[1], studypartner : $(this).val() }; else if
+	 * (values[3] == 'starttime') examples[values[1]] = { userid : values[2],
+	 * exampleid : values[1], starttime : $(this).val() }; else if (values[3] ==
+	 * 'endtime') examples[values[1]] = { userid : values[2], exampleid :
+	 * values[1], endtime : $(this).val() }; else examples[values[1]] = { userid :
+	 * values[2], exampleid : values[1], value : $(this).val() };
+	 * 
+	 * console.log(examples);
+	 * 
+	 * });
+	 */
 
-		if (values[3] == 'studypartner')
-			examples[values[1]] = {
-				userid : values[2],
-				exampleid : values[1],
-				studypartner : $(this).val()
-			};
-		else if (values[3] == 'starttime')
-			examples[values[1]] = {
-				userid : values[2],
-				exampleid : values[1],
-				starttime : $(this).val()
-			};
-		else if (values[3] == 'endtime')
-			examples[values[1]] = {
-				userid : values[2],
-				exampleid : values[1],
-				endtime : $(this).val()
-			};
-		else
-			examples[values[1]] = {
-				userid : values[2],
-				exampleid : values[1],
-				value : $(this).val()
-			};
-		
-		console.log(examples);
-
-	});*/
-
-	
 	// #CrossSubject Title & Description
 	var title = "";
 	$(document).on('focusout', 'input[name^=crosssub-title]', function() {
@@ -142,108 +122,139 @@
 		description = $(this).val();
 	});
 
-	$(document).on('submit', '#assign-competencies', function(event) {
-		courseid = getUrlVars()['courseid'];
+	$(function() {
+		$("#assign-competencies input[type=submit]").click(function() {
+			courseid = getUrlVars()['courseid'];
 
-		// only for crosssubjects
-		var crosssubjid = 0;
-		var select = document.getElementById("menulis_crosssubs");
+			// only for crosssubjects
+			var crosssubjid = 0;
+			var select = document.getElementById("menulis_crosssubs");
 
-		if (select) {
-			crosssubjid = select.options[select.selectedIndex].value;
-		} else if ("crosssubjid" in getUrlVars()) {
-			crosssubjid = getUrlVars()['crosssubjid'];
-		}
+			if (select) {
+				crosssubjid = select.options[select.selectedIndex].value;
+			} else if ("crosssubjid" in getUrlVars()) {
+				crosssubjid = getUrlVars()['crosssubjid'];
+			}
 
-		if (competencies.length > 0) {
-			$.ajax({
-				method : "POST",
-				url : "ajax.php",
-				data : {
-					competencies : JSON.stringify(competencies),
-					courseid : courseid,
-					comptype : 0,
-					action : 'competencies_array'
+
+			switch ($(this).attr('id')) {
+			case 'btn_submit':
+				if (competencies.length > 0) {
+					$.ajax({
+						method : "POST",
+						url : "ajax.php",
+						data : {
+							competencies : JSON.stringify(competencies),
+							courseid : courseid,
+							comptype : 0,
+							action : 'competencies_array'
+						}
+					}).done(function(msg) {
+						console.log("Competence Saved: " + msg);
+					}).error(function(msg) {
+						console.log("Error" + msg);
+					});
+
+					competencies = [];
 				}
-			}).done(function(msg) {
-				console.log("Competence Saved: " + msg);
-			}).error(function(msg) {
-				console.log("Error" + msg);
-			});
 
-			competencies = [];
-		}
-		
-		if (topics.length > 0) {
-			$.ajax({
-				method : "POST",
-				url : "ajax.php",
-				data : {
-					competencies : JSON.stringify(topics),
-					courseid : courseid,
-					comptype : 1,
-					action : 'competencies_array'
-				}
-			}).done(function(msg) {
-				console.log("Topics Saved: " + msg);
-			}).error(function(msg) {
-				console.log("Error" + msg);
-			});
+				if (topics.length > 0) {
+					$.ajax({
+						method : "POST",
+						url : "ajax.php",
+						data : {
+							competencies : JSON.stringify(topics),
+							courseid : courseid,
+							comptype : 1,
+							action : 'competencies_array'
+						}
+					}).done(function(msg) {
+						console.log("Topics Saved: " + msg);
+					}).error(function(msg) {
+						console.log("Error" + msg);
+					});
 
-			topics = [];
-		}
-		
-		if (examples.length > 0) {
-			$.ajax({
-				method : "POST",
-				url : "ajax.php",
-				data : {
-					examples : JSON.stringify(examples),
-					courseid : courseid,
-					action : 'examples_array'
+					topics = [];
 				}
-			}).done(function(msg) {
-				console.log("Examples Saved: " + msg);
-			}).error(function(msg) {
-				console.log("Error" + msg);
-			});
 
-			examples = [];
-		}
-		
-		// Cross-Subject title & description
-		if (title && crosssubjid > 0) {
-			$.ajax({
-				method : "POST",
-				url : "ajax.php",
-				data : {
-					crosssubjid : crosssubjid,
-					title : title,
-					courseid : courseid,
-					action : 'crosssubj-title'
-				}
-			}).done(function(msg) {
-				console.log("Crosssub-Title changed");
-			}).error(function(msg) {
-				console.log(msg);
-			});
-		}
-		if (description && crosssubjid > 0) {
-			$.ajax({
-				method : "POST",
-				url : "ajax.php",
-				data : {
-					crosssubjid : crosssubjid,
-					description : description,
-					courseid : courseid,
-					action : 'crosssubj-description'
-				}
-			}).done(function(msg) {
-				console.log("Crosssub-Description changed");
-			});
-		}
+				if (examples.length > 0) {
+					$.ajax({
+						method : "POST",
+						url : "ajax.php",
+						data : {
+							examples : JSON.stringify(examples),
+							courseid : courseid,
+							action : 'examples_array'
+						}
+					}).done(function(msg) {
+						console.log("Examples Saved: " + msg);
+					}).error(function(msg) {
+						console.log("Error" + msg);
+					});
 
-		event.preventDefault();
+					examples = [];
+				}
+
+				// Cross-Subject title & description
+				if (title && crosssubjid > 0) {
+					$.ajax({
+						method : "POST",
+						url : "ajax.php",
+						data : {
+							crosssubjid : crosssubjid,
+							title : title,
+							courseid : courseid,
+							action : 'crosssubj-title'
+						}
+					}).done(function(msg) {
+						console.log("Crosssub-Title changed");
+					}).error(function(msg) {
+						console.log(msg);
+					});
+				}
+				if (description && crosssubjid > 0) {
+					$.ajax({
+						method : "POST",
+						url : "ajax.php",
+						data : {
+							crosssubjid : crosssubjid,
+							description : description,
+							courseid : courseid,
+							action : 'crosssubj-description'
+						}
+					}).done(function(msg) {
+						console.log("Crosssub-Description changed");
+					});
+				}
+
+				event.preventDefault();
+				alert('Änderungen wurden gespeichert!');
+				break;
+			case 'save_as_draft':
+				if (crosssubjid > 0) {
+					$.ajax({
+						method : "POST",
+						url : "ajax.php",
+						data : {
+							crosssubjid : crosssubjid,
+							courseid : courseid,
+							action : 'save_as_draft'
+						}
+					}).done(function(msg) {
+						console.log("Crosssub saved as draft");
+					}).error(function(msg) {
+						console.log(msg);
+					});
+				}
+				event.preventDefault();
+				alert("Thema wurde als Vorlage gespeichert!");
+				break;
+			case 'share_crosssub':
+				console.log('in here');
+				break;
+			}
+			
+		});
 	});
 
 	// Add Descriptor to crosssubjects

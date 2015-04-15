@@ -360,6 +360,8 @@ $string['comps_and_material'] = "outcomes and exercises";
 $string['no_crosssubjs'] = 'No Cross-Subjects available.';
 $string['assign_descriptor_to_crosssubject'] = 'Assign the competence {a} to the following crosssubjects:';
 $string['assign_descriptor_no_crosssubjects_available'] = 'No crosssubjects are available.';
+$string['delete_drafts'] = 'Delete selected crosssubjects';
+$string['share_crosssub'] = 'Share crosssubject with students';
 
 //metadata
 $string['subject_singular'] = 'Field of competence';

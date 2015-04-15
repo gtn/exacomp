@@ -1106,8 +1106,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
 		
-		if($crosssubs && $role == ROLE_TEACHER)
-		    $table_html .= html_writer::div(html_writer::tag("input", "", array("name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp"))).html_writer::tag("input", "", array("name" => "save_as_draft", "type" => "submit", "value" => get_string("save_as_draft", "block_exacomp"))),'', array('id'=>'exabis_save_button'));
+		if($crosssubs && $role == ROLE_TEACHER && !$students)
+		    $table_html .= html_writer::div(html_writer::tag("input", "", array("id"=>"btn_submit", "name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp")))
+		    .html_writer::tag("input", "", array("id"=>"save_as_draft", "name" => "save_as_draft", "type" => "submit", "value" => get_string("save_as_draft", "block_exacomp")))
+		    .html_writer::tag("input", "", array("id"=>"share_crosssub", "name"=>"share_crosssub", "type"=>"submit", "value"=>get_string("share_crosssub", "block_exacomp"))),'', array('id'=>'exabis_save_button'));
+		
 		else
 		    $table_html .= html_writer::div(html_writer::tag("input", "", array("name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp"))),'', array('id'=>'exabis_save_button'));
 		
@@ -1274,7 +1277,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			// EDIT MODE BUTTONS 
 			//TODO also for !LIS
-			if($editmode && $version) {
+			if($editmode) {
 				$titleCell->text .= html_writer::link(
 						new moodle_url('/blocks/exacomp/select_crosssubjects.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id)),
 						'T',
@@ -3567,8 +3570,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/view_print.png'), 'alt'=>'print')), array('class'=>'print'));
 		return html_writer::div(html_writer::tag('form', $content), 'competence_profile_printbox');
 	}
-	public function print_cross_subjects_drafts($drafts){
-	    global $PAGE;
+	public function print_cross_subjects_drafts($drafts, $isAdmin=false){
+	    global $PAGE, $USER;
 	    $content = html_writer::start_tag('script', array('type'=>'text/javascript', 'src'=>'javascript/wz_tooltip.js'));
 		$content .= html_writer::end_tag('script');
 		
@@ -3586,8 +3589,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	        $drafts_checkboxes .= html_writer::empty_tag('br');
 	    }
 	    
-	    $submit = html_writer::div(html_writer::empty_tag('input', array('name'=>'btn_submit', 'type'=>'submit', 'value'=>get_string('add_drafts_to_course', 'block_exacomp'))), '', array('id'=>'exabis_save_button'));
-	    
+	    $submit = html_writer::empty_tag('input', array('name'=>'btn_submit', 'type'=>'submit', 'value'=>get_string('add_drafts_to_course', 'block_exacomp')));
+	    if($isAdmin) $submit .= html_writer::empty_tag('input', array('name'=>'delete_crosssubs', 'type'=>'submit', 'value'=>get_string('delete_drafts', 'block_exacomp')));
+
+	    $submit = html_writer::div($submit, '', array('id'=>'exabis_save_button')); 
 	    //$submit = html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('add_drafts_to_course', 'block_exacomp')));
 	    $content .= html_writer::tag('form', $drafts_checkboxes.$submit, array('method'=>'post', 'action'=>$PAGE->url.'&action=save', 'name'=>'add_drafts_to_course'));
 		//$div_exabis_competences_block = html_writer::div($content, array('id'=>'exabis_competences_block'));
