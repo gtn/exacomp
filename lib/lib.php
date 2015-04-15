@@ -400,8 +400,9 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 			$endtime = null;
 		}
 			
-		if($value != null)
-			$updateEvaluation->student_evaluation = $value;
+		//if($value != null)
+		$updateEvaluation->student_evaluation = intval($value);
+			
 		$updateEvaluation->starttime = $starttime;
 		$updateEvaluation->endtime = $endtime;
 		$updateEvaluation->studypartner = ($version) ? 'self' : $studypartner;
