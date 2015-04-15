@@ -1135,11 +1135,11 @@ class block_exacomp_external extends external_api {
 
         $params = self::validate_parameters(self::get_user_role_parameters(), array());
          
-        $trainer = $DB->get_records('block_exaportexternaltrainer', array('trainerid'=>$USER->id));
+        $trainer = $DB->get_records('block_exacompexternaltrainer', array('trainerid'=>$USER->id));
         if($trainer)
             return  array("role" => 1);
 
-        $student = $DB->get_records('block_exaportexternaltrainer', array('studentid'=>$USER->id));
+        $student = $DB->get_records('block_exacompexternaltrainer', array('studentid'=>$USER->id));
 
         if($student)
             return array("role" => 2);
@@ -1959,7 +1959,8 @@ class block_exacomp_external extends external_api {
                             $elem->example_status = -1;
                         }
                        
-						$examples[] = $elem;
+						if(!array_key_exists($elem->exampleid, $examples))
+							$examples[$elem->exampleid] = $elem;
 					}
 				}
 			}

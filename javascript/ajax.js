@@ -95,6 +95,7 @@
 					value : 0
 				};
 		}
+		console.log(examples);
 	});
 	//never entered
 	/*$(document).on('change', 'select[name^=dataexamples\-]', function() {
@@ -242,7 +243,7 @@
 			});
 		}
 
-		// event.preventDefault();
+		event.preventDefault();
 	});
 
 	// Add Descriptor to crosssubjects
