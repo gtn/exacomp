@@ -1380,6 +1380,7 @@ function block_exacomp_get_schooltypes($edulevel) {
  */
 function block_exacomp_get_schooltype_title_by_subject($subject){
 	global $DB;
+	$subject = $DB->get_record(DB_SUBJECTS, array('id'=>$subject->id));
 	return $DB->get_field(DB_SCHOOLTYPES, "title", array("id"=>$subject->stid));
 }
 /**
@@ -3865,4 +3866,9 @@ function 	block_exacomp_share_crosssubject($crosssubjid, $value = 0){
 	$update = $DB->get_record(DB_CROSSSUBJECTS, array('id'=>$crosssubjid));
 	$update->shared = $value;
 	return $DB->update_record(DB_CROSSSUBJECTS, $update);
+}
+function block_exacomp_get_descr_topic_sorting($topicid, $descid){
+	global $DB;
+	$record = $DB->get_record(DB_DESCTOPICS, array('descrid'=>$descid, 'topicid'=>$topicid));
+	return $record->sorting;
 }

@@ -1,7 +1,6 @@
 <?php
 
 define('IMPORT_SOURCE_NORMAL', 1);
-define("IMPORT_SOURCE_SPECIFIC", 2);
 
 $source = 1;
 /**
@@ -127,10 +126,13 @@ function block_exacomp_insert_topic($topic, $parent = 0) {
 	if($topic->descriptors) {
 		$DB->delete_records(DB_DESCTOPICS,array("topicid"=>$topic->id->__toString()));
 
+		$i=1;
 		foreach($topic->descriptors->descriptorid as $descriptor) {
 			$descriptorid = $DB->get_field(DB_DESCRIPTORS, "id", array("sourceid"=>$descriptor['id']->__toString()));
-			if($descriptorid > 0)
-				$DB->insert_record(DB_DESCTOPICS, array("topicid"=>$topic->id->__toString(),"descrid"=>$descriptorid));
+			if($descriptorid > 0){
+				$DB->insert_record(DB_DESCTOPICS, array("topicid"=>$topic->id->__toString(),"descrid"=>$descriptorid, "sorting"=>$i));
+				$i++;
+			}
 		}
 	}
 

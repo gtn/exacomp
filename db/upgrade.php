@@ -1531,5 +1531,15 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	        // Exaport savepoint reached.
 	    upgrade_block_savepoint(true, 2015033100, 'exacomp');
 	}
+	if($oldversion < 2015041601){
+		$table = new xmldb_table("block_exacompdescrtopic_mm");
+		$field = new xmldb_field('sorting', XMLDB_TYPE_INTEGER, '11', null, null, null, '0');
+		
+		if(!$dbman->field_exists($table, $field)){
+			$dbman->add_field($table, $field);
+		}
+		
+		upgrade_block_savepoint(true, 2015041601, 'exacomp');
+	}
 	return $result;
 }

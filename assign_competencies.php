@@ -99,9 +99,10 @@ else{
 	$cat = block_exacomp_get_category($selectedTopic);
 		
 	$scheme = block_exacomp_get_grading_scheme($courseid);
+	
 	if($selectedTopic->id != SHOW_ALL_TOPICS){
 		echo $output->print_overview_metadata($schooltype, $selectedSubject, $selectedTopic, $cat);
-		
+				
 		if($isTeacher)
 			echo $output->print_overview_metadata_teacher($selectedSubject,$selectedTopic);
 		else{

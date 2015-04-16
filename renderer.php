@@ -1014,7 +1014,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		/* SUBJECTS */
 		$first = true;
+		$course_subs = block_exacomp_get_subjects_by_course($courseid);
+		
 		foreach($subjects as $subject) {
+			$schooltype = block_exacomp_get_schooltype_title_by_subject($subject);
+			$lwl = substr($schooltype, 0,1).$subject->numb;
 			if(!$subject->subs)
 				continue;
 				
@@ -1098,7 +1102,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					'supported_modules'=>block_exacomp_get_supported_modules(),
 					'showalldescriptors' => block_exacomp_get_settings_by_course($courseid)->show_all_descriptors
 			);
-			$this->print_topics($rows, 0, $subject->subs, $data, $students, '', false, $editmode);
+			$this->print_topics($rows, 0, $subject->subs, $data, $students, '', false, $editmode, $lwl);
 			
 			$table->data = $rows;
 			$first = false;
@@ -1119,13 +1123,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $table_html.html_writer::end_tag('form');
 	}
 
-	public function print_topics(&$rows, $level, $topics, &$data, $students, $rowgroup_class = '', $profoundness = false, $editmode = false) {
+	public function print_topics(&$rows, $level, $topics, &$data, $students, $rowgroup_class = '', $profoundness = false, $editmode = false, $lwl_sub="") {
 		global $version;
 		$topicparam = optional_param('topicid', 0, PARAM_INT);
 		$padding = $level * 20 + 12;
 		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
 
 		foreach($topics as $topic) {
+			$cat = block_exacomp_get_category($topic);
+			$lwl = $lwl_sub.(($cat)?".".$cat->sourceid:'');
+			
 			list($outputid, $outputname) = block_exacomp_get_output_fields($topic);
 			$studentsCount = 0;
 			$studentsColspan = 1;
@@ -1145,7 +1152,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$topicRow->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rowgroup_class . ' highlight';
 
 			$outputidCell = new html_table_cell();
-			$outputidCell->text = ($version) ? $outputid : '';
+			$outputidCell->text = ($version) ? $outputid." ".$lwl : '';
 			$topicRow->cells[] = $outputidCell;
 
 			$outputnameCell = new html_table_cell();
@@ -1225,7 +1232,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$rows[] = $topicRow;
 
 			if (!empty($topic->descriptors)) {
-				$this->print_descriptors($rows, $level+1, $topic->descriptors, $data, $students, $sub_rowgroup_class,$profoundness, $editmode);
+				$this->print_descriptors($rows, $level+1, $topic->descriptors, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $lwl);
 			}
 
 			if (!empty($topic->subs)) {
@@ -1234,7 +1241,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 	}
 
-	function print_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class, $profoundness = false, $editmode=false) {
+	function print_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class, $profoundness = false, $editmode=false, $lwl="") {
 		global $version, $PAGE, $USER, $COURSE;
 
 		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
@@ -1265,7 +1272,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						html_writer::empty_tag('img', array('src'=>'pix/upload_12x12.png', 'alt'=>'upload')),
 						array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 			}
-			$exampleuploadCell->text .= $outputid;
+			
+			$exampleuploadCell->text .= $outputid.($version)?$lwl.".".block_exacomp_get_descr_topic_sorting($descriptor->topicid, $descriptor->id):"";
 
 			$descriptorRow->cells[] = $exampleuploadCell;
 
