@@ -69,10 +69,23 @@ switch($action){
 		break;
 	case ('crosssubj-students'):
 		$crosssubjid = required_param('crosssubjid', PARAM_INT);
-		$students = required_param('studentd', PARAM_TEXT);
+		$students = required_param('students', PARAM_TEXT);
 		$student_ids = json_decode($students);
+		
+		$not_students = required_param('not_students', PARAM_TEXT);
+		$not_students_ids = json_decode($not_students);
 
-		$DB->delete_records();
+		foreach($student_ids as $studentid)
+			block_exacomp_set_cross_subject_student($crosssubjid, $studentid);
+		
+		foreach($not_students_ids as $studentid)
+			block_exacomp_unset_cross_subject_student($crosssubjid, $studentid);
+		
+		break;
+	case ('crosssubj-share'):
+		$crosssubjid = required_param('crosssubjid', PARAM_TEXT);
+		$value = required_param('value', PARAM_INT);
+		echo block_exacomp_share_crosssubject($crosssubjid, $value);
 		break;
 	case('competencies_array'):
 		$competencies = required_param('competencies', PARAM_TEXT);

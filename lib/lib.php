@@ -3666,6 +3666,7 @@ function block_exacomp_get_cross_subjects_by_course($courseid, $studentid=0){
     	if($crosssubj->shared == 1 || block_exacomp_student_crosssubj($crosssubj->id, $studentid))
     		$crosssubs_shared[$crosssubj->id] = $crosssubj;
     }
+    return $crosssubs_shared;
 }
 function block_exacomp_student_crosssubj($crosssubjid, $studentid){
 	global $DB;
@@ -3845,6 +3846,23 @@ function block_exacomp_unset_cross_subject_descriptor($crosssubjid, $descrid){
 	global $DB;
 	$record = $DB->get_record(DB_DESCCROSS,array('crosssubjid'=>$crosssubjid,'descrid'=>$descrid));
 	if($record)
-		$DB->delete_records(DB_DESCCROSS,array('crosssubjid'=>$crosssubjid,'descrid'=>$descrid));
-	
+		$DB->delete_records(DB_DESCCROSS,array('crosssubjid'=>$crosssubjid,'descrid'=>$descrid));	
+}
+function block_exacomp_set_cross_subject_student($crosssubjid, $studentid){
+	global $DB;
+	$record = $DB->get_record(DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid, 'studentid'=>$studentid));
+	if(!$record)
+		$DB->insert_record(DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid, 'studentid'=>$studentid));
+}
+function block_exacomp_unset_cross_subject_student($crosssubjid, $studentid){
+	global $DB;
+	$record = $DB->get_record(DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid, 'studentid'=>$studentid));
+	if($record)
+		$DB->delete_records(DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid, 'studentid'=>$studentid));
+}
+function 	block_exacomp_share_crosssubject($crosssubjid, $value = 0){
+	global $DB;
+	$update = $DB->get_record(DB_CROSSSUBJECTS, array('id'=>$crosssubjid));
+	$update->shared = $value;
+	return $DB->update_record(DB_CROSSSUBJECTS, $update);
 }

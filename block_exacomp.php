@@ -237,7 +237,6 @@ class block_exacomp extends block_list {
 				}
 			}else if (has_capability('block/exacomp:student', $currentcontext) && $courseid != 1 && !has_capability('block/exacomp:admin', $currentcontext)){
 				$crosssubs = block_exacomp_cross_subjects_exists()?block_exacomp_get_cross_subjects_by_course($courseid, $USER->id):false;
-		
 				//student LIS
 				if($version){
 					if(block_exacomp_is_activated($courseid)){

@@ -123,140 +123,185 @@
 	});
 
 	$(function() {
-		$("#assign-competencies input[type=submit]").click(function() {
-			courseid = getUrlVars()['courseid'];
+		$("#assign-competencies input[type=submit]")
+				.click(
+						function() {
+							courseid = getUrlVars()['courseid'];
 
-			// only for crosssubjects
-			var crosssubjid = 0;
-			var select = document.getElementById("menulis_crosssubs");
+							// only for crosssubjects
+							var crosssubjid = 0;
+							var select = document
+									.getElementById("menulis_crosssubs");
 
-			if (select) {
-				crosssubjid = select.options[select.selectedIndex].value;
-			} else if ("crosssubjid" in getUrlVars()) {
-				crosssubjid = getUrlVars()['crosssubjid'];
-			}
+							if (select) {
+								crosssubjid = select.options[select.selectedIndex].value;
+							} else if ("crosssubjid" in getUrlVars()) {
+								crosssubjid = getUrlVars()['crosssubjid'];
+							}
 
+							switch ($(this).attr('id')) {
+							case 'btn_submit':
+								if (competencies.length > 0) {
+									$
+											.ajax(
+													{
+														method : "POST",
+														url : "ajax.php",
+														data : {
+															competencies : JSON
+																	.stringify(competencies),
+															courseid : courseid,
+															comptype : 0,
+															action : 'competencies_array'
+														}
+													})
+											.done(
+													function(msg) {
+														console
+																.log("Competence Saved: "
+																		+ msg);
+													}).error(function(msg) {
+												console.log("Error" + msg);
+											});
 
-			switch ($(this).attr('id')) {
-			case 'btn_submit':
-				if (competencies.length > 0) {
-					$.ajax({
-						method : "POST",
-						url : "ajax.php",
-						data : {
-							competencies : JSON.stringify(competencies),
-							courseid : courseid,
-							comptype : 0,
-							action : 'competencies_array'
-						}
-					}).done(function(msg) {
-						console.log("Competence Saved: " + msg);
-					}).error(function(msg) {
-						console.log("Error" + msg);
-					});
+									competencies = [];
+								}
 
-					competencies = [];
-				}
+								if (topics.length > 0) {
+									$
+											.ajax(
+													{
+														method : "POST",
+														url : "ajax.php",
+														data : {
+															competencies : JSON
+																	.stringify(topics),
+															courseid : courseid,
+															comptype : 1,
+															action : 'competencies_array'
+														}
+													})
+											.done(
+													function(msg) {
+														console
+																.log("Topics Saved: "
+																		+ msg);
+													}).error(function(msg) {
+												console.log("Error" + msg);
+											});
 
-				if (topics.length > 0) {
-					$.ajax({
-						method : "POST",
-						url : "ajax.php",
-						data : {
-							competencies : JSON.stringify(topics),
-							courseid : courseid,
-							comptype : 1,
-							action : 'competencies_array'
-						}
-					}).done(function(msg) {
-						console.log("Topics Saved: " + msg);
-					}).error(function(msg) {
-						console.log("Error" + msg);
-					});
+									topics = [];
+								}
 
-					topics = [];
-				}
+								if (examples.length > 0) {
+									$
+											.ajax(
+													{
+														method : "POST",
+														url : "ajax.php",
+														data : {
+															examples : JSON
+																	.stringify(examples),
+															courseid : courseid,
+															action : 'examples_array'
+														}
+													})
+											.done(
+													function(msg) {
+														console
+																.log("Examples Saved: "
+																		+ msg);
+													}).error(function(msg) {
+												console.log("Error" + msg);
+											});
 
-				if (examples.length > 0) {
-					$.ajax({
-						method : "POST",
-						url : "ajax.php",
-						data : {
-							examples : JSON.stringify(examples),
-							courseid : courseid,
-							action : 'examples_array'
-						}
-					}).done(function(msg) {
-						console.log("Examples Saved: " + msg);
-					}).error(function(msg) {
-						console.log("Error" + msg);
-					});
+									examples = [];
+								}
 
-					examples = [];
-				}
+								// Cross-Subject title & description
+								if (title && crosssubjid > 0) {
+									$.ajax({
+										method : "POST",
+										url : "ajax.php",
+										data : {
+											crosssubjid : crosssubjid,
+											title : title,
+											courseid : courseid,
+											action : 'crosssubj-title'
+										}
+									}).done(function(msg) {
+										console.log("Crosssub-Title changed");
+									}).error(function(msg) {
+										console.log(msg);
+									});
+								}
+								if (description && crosssubjid > 0) {
+									$
+											.ajax(
+													{
+														method : "POST",
+														url : "ajax.php",
+														data : {
+															crosssubjid : crosssubjid,
+															description : description,
+															courseid : courseid,
+															action : 'crosssubj-description'
+														}
+													})
+											.done(
+													function(msg) {
+														console
+																.log("Crosssub-Description changed");
+													});
+								}
 
-				// Cross-Subject title & description
-				if (title && crosssubjid > 0) {
-					$.ajax({
-						method : "POST",
-						url : "ajax.php",
-						data : {
-							crosssubjid : crosssubjid,
-							title : title,
-							courseid : courseid,
-							action : 'crosssubj-title'
-						}
-					}).done(function(msg) {
-						console.log("Crosssub-Title changed");
-					}).error(function(msg) {
-						console.log(msg);
-					});
-				}
-				if (description && crosssubjid > 0) {
-					$.ajax({
-						method : "POST",
-						url : "ajax.php",
-						data : {
-							crosssubjid : crosssubjid,
-							description : description,
-							courseid : courseid,
-							action : 'crosssubj-description'
-						}
-					}).done(function(msg) {
-						console.log("Crosssub-Description changed");
-					});
-				}
+								event.preventDefault();
+								alert('Änderungen wurden gespeichert!');
+								break;
+							case 'save_as_draft':
+								if (crosssubjid > 0) {
+									$.ajax({
+										method : "POST",
+										url : "ajax.php",
+										data : {
+											crosssubjid : crosssubjid,
+											courseid : courseid,
+											action : 'save_as_draft'
+										}
+									}).done(function(msg) {
+										console.log("Crosssub saved as draft");
+									}).error(function(msg) {
+										console.log(msg);
+									});
+								}
+								event.preventDefault();
+								alert("Thema wurde als Vorlage gespeichert!");
+								break;
+							case 'share_crosssub':
+								url = 'select_students.php?courseid='
+										+ courseid + '&crosssubjid='
+										+ crosssubjid;
+								window.open(url, '_blank',
+										'width=880,height=660, scrollbars=yes');
+								break;
+							}
 
-				event.preventDefault();
-				alert('Änderungen wurden gespeichert!');
-				break;
-			case 'save_as_draft':
-				if (crosssubjid > 0) {
-					$.ajax({
-						method : "POST",
-						url : "ajax.php",
-						data : {
-							crosssubjid : crosssubjid,
-							courseid : courseid,
-							action : 'save_as_draft'
-						}
-					}).done(function(msg) {
-						console.log("Crosssub saved as draft");
-					}).error(function(msg) {
-						console.log(msg);
-					});
-				}
-				event.preventDefault();
-				alert("Thema wurde als Vorlage gespeichert!");
-				break;
-			case 'share_crosssub':
-				console.log('in here');
-				break;
-			}
-			
-		});
+						});
 	});
 
+	$(document).on('click', 'input[name=share_all]', function(){
+		if(this.checked == "1"){
+			console.log('checked');
+			$("input[name='student']").each(function() {
+				this.disabled = true;
+			});
+		}else{
+			console.log('not checked');
+			$("input[name='student']").each(function() {
+				this.disabled = false;
+			});
+		}
+	});
 	// Add Descriptor to crosssubjects
 	$(document).on('click', 'input[name=crosssubjects]', function() {
 		var crosssubjects = [];
@@ -286,6 +331,68 @@
 			window.close();
 		});
 
+	});
+
+	// Share crosssubject with students
+	$(document).on('click', 'input[name=students]', function() {
+		var students = [];
+		var not_students = [];
+		courseid = getUrlVars()['courseid'];
+		crosssubjid = getUrlVars()['crosssubjid'];
+
+		if ($("input[name='share_all']").is(':checked')) {
+			$.ajax({
+				method : "POST",
+				url : "ajax.php",
+				data : {
+					crosssubjid : crosssubjid,
+					value : 1,
+					courseid : courseid,
+					action : 'crosssubj-share'
+				}
+			}).done(function(msg) {
+				console.log(msg);
+				window.close();
+			});
+		} else {
+			$.ajax({
+				method : "POST",
+				url : "ajax.php",
+				data : {
+					crosssubjid : crosssubjid,
+					value : 0,
+					courseid : courseid,
+					action : 'crosssubj-share'
+				}
+			}).done(function(msg) {
+				console.log(msg);
+				window.close();
+			});
+			
+			$("input[name='student']").each(function() {
+				if (this.checked == "1")
+					students.push($(this).val());
+				else
+					not_students.push($(this).val());
+			});
+
+			console.log(students);
+			console.log(not_students)
+			$.ajax({
+				method : "POST",
+				url : "ajax.php",
+				data : {
+					students : JSON.stringify(students),
+					not_students : JSON.stringify(not_students),
+					crosssubjid : crosssubjid,
+					courseid : courseid,
+					action : 'crosssubj-students'
+				}
+			}).done(function(msg) {
+				console.log(msg);
+				window.close();
+			});
+		}
 	});
 	// Read a page's GET URL variables and return them as an associative array.
 	function getUrlVars() {

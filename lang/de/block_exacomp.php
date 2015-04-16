@@ -401,7 +401,9 @@ $string['save_as_draft'] = "Thema als Vorlage freigeben";
 $string['comps_and_material'] = "Kompetenzen und Lernmaterial";
 $string['no_crosssubjs'] = 'Keine Cross-Subjects verfügbar.';
 $string['delete_drafts'] = 'Ausgewählte Vorlagen löschen';
-$string['share_crosssub'] = 'Thema für Schüler freigeben';
+$string['share_crosssub'] = 'Thema für Teilnehmer freigeben';
+$string['share_crosssub_with_students'] = 'Das Thema "{$a}" für folgende Teilnehmer freigeben: ';
+$string['share_crosssub_with_all'] = 'Das Thema "{$a}" für <b>alle</b> Teilnehmer freigeben: ';
 
 //LIS Strings
 if(get_config('exacomp','alternativedatamodel')) {
