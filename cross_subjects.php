@@ -89,15 +89,6 @@ else{
 		echo $OUTPUT->footer();
 		die;
 	}
-		
-	/*// SAVA DATA
-	if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
-	    //SAVE AS DRAFT
-	    if(isset($_POST['save_as_draft']))
-	        block_exacomp_save_drafts_to_course(array($selectedCrosssubject->id), 0);
-	   
-		//list($crosssubjects, $selectedCrosssubject) = block_exacomp_init_course_crosssubjects($courseid, optional_param('crosssubjid', 0, PARAM_INT));
-	}*/
 	
 	//Delete timestamp (end|start) from example
 	if($example_del = optional_param('exampleid', 0, PARAM_INT)){
@@ -142,13 +133,19 @@ else{
 	echo $output->print_overview_legend($isTeacher);
 	
 	if($isTeacher){
-    	if($studentid == SHOW_ALL_STUDENTS)
+    	if($studentid == SHOW_ALL_STUDENTS){
+    		$showevaluation = false;
     	    echo $output->print_column_selector(count($students));
-    	elseif ($studentid == 0)
+    	}elseif ($studentid == 0)
     	    $students = array();
-    	else 
+    	else{ 
     	    $students = array($students[$studentid]);
+    	    $showevaluation = true;
+		}
+	}else{
+		$showevaluation = true;
 	}
+	
 	$subjects = block_exacomp_get_competence_tree_for_cross_subject($courseid,(isset($selectedCrosssubject))?$selectedCrosssubject->id:null,false,
 	!($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies);
 	
