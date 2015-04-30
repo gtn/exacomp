@@ -26,6 +26,7 @@ define('DB_PROFILESETTINGS', 'block_exacompprofilesettings');
 define('DB_CROSSSUBJECTS', 'block_exacompcrosssubjects');
 define('DB_DESCCROSS', 'block_exacompdescrcross_mm');
 define('DB_CROSSSTUD', 'block_exacompcrossstud_mm');
+define('DB_DESCVISIBILITY', 'block_exacompdescrvisibility');
 
 /**
  * PLUGIN ROLES
@@ -2192,9 +2193,19 @@ function block_exacomp_get_icon_data($courseid, $students) {
 function block_exacomp_set_coursetopics($courseid, $values) {
 	global $DB;
 	$DB->delete_records(DB_COURSETOPICS, array("courseid" => $courseid));
+	//TODO: schülerzuordnung geht verloren!!
+	$DB->delete_records(DB_DESCVISIBILITY, array("courseid"=>$courseid));
 	if(isset($values)){
 		foreach ($values as $value) {
-			$DB->insert_record(DB_COURSETOPICS, array("courseid" => $courseid, "topicid" => intval($value)));
+			$topicid = intval($value);
+			$DB->insert_record(DB_COURSETOPICS, array("courseid" => $courseid, "topicid" => $topicid));
+			
+			//insert descriptors in block_exacompdescrvisibility
+			$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $topicid);
+			foreach($descriptors as $descriptor){
+				$DB->insert_record(DB_DESCVISIBILITY, array("courseid"=>$courseid, "topicid"=>$topicid, "descrid"=>$descriptor->id, "studentid"=>0, "visible"=>1));
+			}
+			
 		}
 	}
 }

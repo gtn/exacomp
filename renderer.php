@@ -1284,12 +1284,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$titleCell->text = html_writer::div($outputname);
 
 			// EDIT MODE BUTTONS 
-			//TODO also for !LIS
 			if($editmode) {
 				$titleCell->text .= html_writer::link(
 						new moodle_url('/blocks/exacomp/select_crosssubjects.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id)),
 						'T',
 						array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+				//TODO add sign to hide  
 			}
 			$descriptorRow->cells[] = $titleCell;
 
