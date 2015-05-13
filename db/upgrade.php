@@ -1501,7 +1501,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    // Exacomp savepoint reached.
 	    upgrade_block_savepoint(true, 2015032500, 'exacomp');
 	}
-	if($oldversion < 2015033100){
+	if($oldversion < 2015041500){
 		 $table = new xmldb_table('block_exacompcrosssubjects');
 		 $field = new xmldb_field('shared', XMLDB_TYPE_INTEGER, '1', null, null, null, '0');
 		 
@@ -1529,7 +1529,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	        $dbman->create_table($table);
 	    }
 	        // Exaport savepoint reached.
-	    upgrade_block_savepoint(true, 2015033100, 'exacomp');
+	    upgrade_block_savepoint(true, 2015041500, 'exacomp');
 	}
 	return $result;
 }

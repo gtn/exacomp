@@ -1200,6 +1200,8 @@ class block_exacomp_external extends external_api {
 				'id' => $exampleid 
 		) );
 		$example->description = htmlentities ( $example->description );
+		$example->hassubmissions = ($DB->get_records('block_exacompitemexample',array('exampleid'=>$exampleid))) ? true : false;
+		
 		return $example;
 	}
 	
@@ -1214,7 +1216,8 @@ class block_exacomp_external extends external_api {
 				'description' => new external_value ( PARAM_TEXT, 'description of example' ),
 				'task' => new external_value ( PARAM_TEXT, 'task(url/description) of example' ),
 				'externaltask' => new external_value ( PARAM_TEXT, 'externaltask(url/description) of example' ),
-				'externalurl' => new external_value ( PARAM_TEXT, 'externalurl of example' ) 
+				'externalurl' => new external_value ( PARAM_TEXT, 'externalurl of example' ),
+				'hassubmissions' => new external_value ( PARAM_BOOL, 'true if example has already submissions' )
 		) );
 	}
 	/**
@@ -1500,6 +1503,59 @@ class block_exacomp_external extends external_api {
 				'title' => new external_value ( PARAM_TEXT, 'title of subject' ),
 				'courseid' => new external_value ( PARAM_INT, 'id of course' ) 
 		) ) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function delete_item_parameters() {
+		return new external_function_parameters ( array (
+				'itemid' => new external_value ( PARAM_INT, 'id of item' )
+		) );
+	}
+	
+	/**
+	 * Deletes one user item if it is not graded already
+	 * 
+	 * @param int $itemid
+	 */
+	public static function delete_item($itemid) {
+		global $CFG,$DB,$USER;
+
+		$item = $DB->get_record('block_exaportitem', array('id' => $itemid, 'userid' => $USER->id));
+		if($item) {
+			//check if the item is already graded
+			$itemexample = $DB->get_record_sql("SELECT id, exampleid, itemid, status, MAX(timecreated) from {block_exacompitemexample} ie WHERE itemid = ?",array($itemid));
+			if($itemexample->status == 0) {
+				//delete item and all associated content
+				$DB->delete_records('block_exacompitemexample',array('id' => $itemexample->id));
+				$DB->delete_records('block_exaportitem',array('id' => $itemid));
+				if($item->type == 'file') {
+					require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
+					block_exaport_file_remove($item);
+				}
+				
+				$DB->delete_records('block_exaportitemcomm',array('itemid' => $itemid));
+				$DB->delete_records('block_exaportviewblock',array('itemid' => $itemid));
+				return array("success"=>true);
+			}
+			throw new invalid_parameter_exception ( 'Not allowed; already graded' );
+		}
+		
+		throw new invalid_parameter_exception ( 'Not allowed' );
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_single_structure
+	 */
+	public static function delete_item_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status' )
+		) );
 	}
 	
 	/**
@@ -2658,7 +2714,8 @@ class block_exacomp_external extends external_api {
 				'filename' => $filename 
 		) );
 		$example_task = "";
-		if (strcmp ( $filename, "0" ) != 0) {
+		$type = ($filename != '') ? 'file' : 'url';
+		if ( $type == 'file') {
 			$context = context_user::instance ( $USER->id );
 			$fs = get_file_storage ();
 			
@@ -2683,7 +2740,8 @@ class block_exacomp_external extends external_api {
 		$example->title = $name;
 		$example->description = $description;
 		$example->task = $task;
-		$example->externaltask = $example_task;
+		if($type == 'file')
+			$example->externaltask = $example_task;
 		
 		$id = $DB->update_record ( DB_EXAMPLES, $example );
 		
@@ -2714,6 +2772,59 @@ class block_exacomp_external extends external_api {
 	public static function update_example_returns() {
 		return new external_single_structure ( array (
 				'success' => new external_value ( PARAM_BOOL, 'true if successful' ) 
+		) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function delete_example_parameters() {
+		return new external_function_parameters ( array (
+				'exampleid' => new external_value ( PARAM_INT, 'id of example' )
+		) );
+	}
+	/**
+	 * delete example
+	 *
+	 * @param
+	 *
+	 * @return
+	 *
+	 */
+	public static function delete_example($exampleid) {
+		global $CFG, $DB, $USER;
+	
+		$params = self::validate_parameters ( self::delete_example_parameters (), array (
+				'exampleid' => $exampleid
+		) );
+		
+		$example = $DB->get_record('block_exacompexamples', array('id' => $exampleid, 'creatorid' => $USER->id));
+		if(!$example)
+			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
+				
+		require_once $CFG->dirroot . '/blocks/exacomp/lib/lib.php';
+		block_exacomp_delete_custom_example($exampleid);
+		
+		$items = $DB->get_records('block_exacompitemexample',array('exampleid' => $exampleid));
+		foreach($items as $item) {
+			$DB->delete_records('block_exacompitemexample', array('id'=>$item->id));
+			self::delete_item($item->itemid);	
+		}
+		return array (
+				"success" => true
+		);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function delete_example_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'true if successful' )
 		) );
 	}
 	
