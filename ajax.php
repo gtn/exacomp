@@ -41,46 +41,80 @@ $isTeacher = (has_capability ( 'block/exacomp:teacher', $context )) ? true : fal
 
 $action = optional_param ( 'action', 'competence', PARAM_TEXT );
 switch($action){
-	case ('competence') : 
-		$userid = required_param ( 'userid', PARAM_INT );
-		$compid = required_param ( 'compid', PARAM_INT );
-		$comptype = required_param ( 'comptype', PARAM_INT );
-		$value = required_param ( 'value', PARAM_INT );
-		
-		echo block_exacomp_set_user_competence ( $userid, $compid, $comptype, $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, $value );
-	break;
-	case ('example') : 
-		$userid = required_param ( 'userid', PARAM_INT );
-		$exampleid = required_param ( 'exampleid', PARAM_INT );
-		$value = optional_param ( 'value', null, PARAM_INT );
-		$starttime = optional_param ( 'starttime', 0, PARAM_INT );
-		$endtime = optional_param ( 'endtime', 0, PARAM_INT );
-		$studypartner = optional_param ( 'studypartner', 'self', PARAM_TEXT );
-		
-		echo block_exacomp_set_user_example($userid, $exampleid, $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, $value, $starttime, $endtime, $studypartner);
-	break;
 	case ('crosssubj-title') :
-		var_dump("inhere-title");
 		$crosssubjid = required_param('crosssubjid', PARAM_INT);
 		$title = required_param('title', PARAM_TEXT);
-		
+
 		echo block_exacomp_save_cross_subject_title($crosssubjid, $title);
-	break;
+		break;
 	case ('crosssubj-description') :
-		var_dump("inhere-description");
 		$crosssubjid = required_param('crosssubjid', PARAM_INT);
 		$description = required_param('description', PARAM_TEXT);
-		
+
 		echo block_exacomp_save_cross_subject_description($crosssubjid, $description);
-	break;
+		break;
 	case ('crosssubj-descriptors'):
 		$descrid = required_param('descrid', PARAM_INT);
 		$crosssubjects = required_param('crosssubjects', PARAM_TEXT);
 		$subj_ids = json_decode($crosssubjects);
-		
-		$DB->delete_records(DB_DESCCROSS,array('descrid'=>$descrid));
-		foreach($subj_ids as $subj_id)
-			block_exacomp_set_cross_subject_descriptor($subj_id,$descrid);
+
+		$not_crosssubjects = required_param('not_crosssubjects', PARAM_TEXT);
+		$not_subj_ids = json_decode($not_crosssubjects);
+		foreach($not_subj_ids as $not_subj_id)
+		block_exacomp_unset_cross_subject_descriptor($not_subj_id, $descrid);
 			
+		foreach($subj_ids as $subj_id)
+		block_exacomp_set_cross_subject_descriptor($subj_id,$descrid);
+			
+		break;
+	case ('crosssubj-students'):
+		$crosssubjid = required_param('crosssubjid', PARAM_INT);
+		$students = required_param('students', PARAM_TEXT);
+		$student_ids = json_decode($students);
+		
+		$not_students = required_param('not_students', PARAM_TEXT);
+		$not_students_ids = json_decode($not_students);
+
+		foreach($student_ids as $studentid)
+			block_exacomp_set_cross_subject_student($crosssubjid, $studentid);
+		
+		foreach($not_students_ids as $studentid)
+			block_exacomp_unset_cross_subject_student($crosssubjid, $studentid);
+		
+		break;
+	case ('crosssubj-share'):
+		$crosssubjid = required_param('crosssubjid', PARAM_TEXT);
+		$value = required_param('value', PARAM_INT);
+		echo block_exacomp_share_crosssubject($crosssubjid, $value);
+		break;
+	case('competencies_array'):
+		$competencies = required_param('competencies', PARAM_TEXT);
+		$comptype = required_param ( 'comptype', PARAM_INT );
+
+		$comps = json_decode($competencies);
+		$saved = "";
+		foreach($comps as $comp){
+			if($comp){
+				$saved .= block_exacomp_set_user_competence ( $comp->userid, $comp->compid, $comptype, $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, $comp->value );
+			}
+		}
+		echo $saved;
+		break;
+	case('examples_array'):
+		$examples_json = required_param('examples', PARAM_TEXT);
+		
+		$examples = json_decode($examples_json);
+		$saved = "";
+		foreach($examples as $example){
+			if($example){
+				$saved.="value: ".$example->value.$isTeacher." id: ";
+				$saved .= block_exacomp_set_user_example($example->userid, $example->exampleid, $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, $example->value);
+			}
+		}
+		echo $saved;
+		break;
+	case('save_as_draft'):
+		$crosssubjid = required_param('crosssubjid', PARAM_INT);
+		block_exacomp_save_drafts_to_course(array($crosssubjid), 0);
 		break;
 }

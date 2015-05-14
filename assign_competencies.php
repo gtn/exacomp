@@ -90,7 +90,7 @@ else{
 	foreach($students as $student)
 		$student = block_exacomp_get_user_information_by_course($student, $courseid);
 
-	echo $output->print_competence_overview_form_start((isset($selectedTopic))?$selectedTopic:null, (isset($selectedSubject))?$selectedSubject:null);
+	echo $output->print_competence_overview_form_start((isset($selectedTopic))?$selectedTopic:null, (isset($selectedSubject))?$selectedSubject:null, $studentid);
 
 	//dropdowns for subjects and topics and students -> if user is teacher
 	echo $output->print_overview_dropdowns(block_exacomp_get_schooltypetree_by_subjects($subjects), $topics, $selectedSubject->id, $selectedTopic->id, $students, $studentid, $isTeacher);
@@ -99,9 +99,10 @@ else{
 	$cat = block_exacomp_get_category($selectedTopic);
 		
 	$scheme = block_exacomp_get_grading_scheme($courseid);
+	
 	if($selectedTopic->id != SHOW_ALL_TOPICS){
 		echo $output->print_overview_metadata($schooltype, $selectedSubject, $selectedTopic, $cat);
-		
+				
 		if($isTeacher)
 			echo $output->print_overview_metadata_teacher($selectedSubject,$selectedTopic);
 		else{

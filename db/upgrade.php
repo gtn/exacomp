@@ -1501,7 +1501,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    // Exacomp savepoint reached.
 	    upgrade_block_savepoint(true, 2015032500, 'exacomp');
 	}
-	if($oldversion < 2015041500){
+	if($oldversion < 2015051400){
 		 $table = new xmldb_table('block_exacompcrosssubjects');
 		 $field = new xmldb_field('shared', XMLDB_TYPE_INTEGER, '1', null, null, null, '0');
 		 
@@ -1528,8 +1528,49 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    if (!$dbman->table_exists($table)) {
 	        $dbman->create_table($table);
 	    }
-	        // Exaport savepoint reached.
-	    upgrade_block_savepoint(true, 2015041500, 'exacomp');
+	    
+		
+		$table = new xmldb_table("block_exacompdescrtopic_mm");
+		$field = new xmldb_field('sorting', XMLDB_TYPE_INTEGER, '11', null, null, null, '0');
+		
+		if(!$dbman->field_exists($table, $field)){
+			$dbman->add_field($table, $field);
+		}
+		
+		$table = new xmldb_table('block_exacompdescrvisibility');
+		
+	  	// Adding fields to table block_exacompdescrcross_mm.
+	    $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+	    $table->add_field('courseid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+	    $table->add_field('topicid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+	    $table->add_field('descrid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+	    $table->add_field('studentid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+		$table->add_field('visible', XMLDB_TYPE_INTEGER, '2', null, null, null, '1');
+		
+	    // Adding keys to table block_exacompcdescrross_mm.
+	    $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+	    $table->add_key('courseid', XMLDB_KEY_FOREIGN, array('courseid'), 'course', array('id'));
+	    $table->add_key('topicid', XMLDB_KEY_FOREIGN, array('topicid'), 'block_exacomptopics', array('id'));
+	    $table->add_key('descrid', XMLDB_KEY_FOREIGN, array('descrid'), 'block_exacompdescriptors', array('id'));
+	    $table->add_key('studentid', XMLDB_KEY_FOREIGN, array('studentid'), 'user', array('id'));
+
+	    // Conditionally launch create table for block_exacompdescrcros_mm.
+	    if (!$dbman->table_exists($table)) {
+	        $dbman->create_table($table);
+	    }
+	    
+	    //create entry for all existing courses 
+	    $courses = block_exacomp_get_courses();
+	    foreach($courses as $course){
+	    	$topics = block_exacomp_get_topics_by_course($course);
+	    	foreach($topics as $topic){
+	    		$descriptors = block_exacomp_get_descriptors_by_topic($course, $topic->id);
+	    		foreach($descriptors as $descriptor){
+	    			$DB->insert_record(DB_DESCVISIBILITY, array('courseid'=>$course, 'topicid'=>$topic->id, 'descrid'=>$descriptor->id, 'studentid'=>0, 'visible'=>1));
+	    		}
+	    	}
+	    }
+		upgrade_block_savepoint(true, 2015051400, 'exacomp');
 	}
 	return $result;
 }

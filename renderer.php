@@ -1014,7 +1014,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		/* SUBJECTS */
 		$first = true;
+		$course_subs = block_exacomp_get_subjects_by_course($courseid);
+		
 		foreach($subjects as $subject) {
+			$schooltype = block_exacomp_get_schooltype_title_by_subject($subject);
+			$lwl = substr($schooltype, 0,1).$subject->numb;
 			if(!$subject->subs)
 				continue;
 				
@@ -1098,7 +1102,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					'supported_modules'=>block_exacomp_get_supported_modules(),
 					'showalldescriptors' => block_exacomp_get_settings_by_course($courseid)->show_all_descriptors
 			);
-			$this->print_topics($rows, 0, $subject->subs, $data, $students, '', false, $editmode);
+			$this->print_topics($rows, 0, $subject->subs, $data, $students, '', false, $editmode, $lwl);
 			
 			$table->data = $rows;
 			$first = false;
@@ -1106,23 +1110,29 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
 		
-		if($crosssubs && $role == ROLE_TEACHER)
-		    $table_html .= html_writer::div(html_writer::tag("input", "", array("name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp"))).html_writer::tag("input", "", array("name" => "save_as_draft", "type" => "submit", "value" => get_string("save_as_draft", "block_exacomp"))),'', array('id'=>'exabis_save_button'));
+		if($crosssubs && $role == ROLE_TEACHER && !$students)
+		    $table_html .= html_writer::div(html_writer::tag("input", "", array("id"=>"btn_submit", "name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp")))
+		    .html_writer::tag("input", "", array("id"=>"save_as_draft", "name" => "save_as_draft", "type" => "submit", "value" => get_string("save_as_draft", "block_exacomp")))
+		    .html_writer::tag("input", "", array("id"=>"share_crosssub", "name"=>"share_crosssub", "type"=>"submit", "value"=>get_string("share_crosssub", "block_exacomp"))),'', array('id'=>'exabis_save_button'));
+		
 		else
-		    $table_html .= html_writer::div(html_writer::tag("input", "", array("name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp"))),'', array('id'=>'exabis_save_button'));
+		    $table_html .= html_writer::div(html_writer::tag("input", "", array("id"=>"btn_submit", "name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp"))),'', array('id'=>'exabis_save_button'));
 		
 		$table_html .= html_writer::tag("input", "", array("name" => "open_row_groups", "type" => "hidden", "value" => (optional_param('open_row_groups', "", PARAM_TEXT))));
 
 		return $table_html.html_writer::end_tag('form');
 	}
 
-	public function print_topics(&$rows, $level, $topics, &$data, $students, $rowgroup_class = '', $profoundness = false, $editmode = false) {
+	public function print_topics(&$rows, $level, $topics, &$data, $students, $rowgroup_class = '', $profoundness = false, $editmode = false, $lwl_sub="") {
 		global $version;
 		$topicparam = optional_param('topicid', 0, PARAM_INT);
 		$padding = $level * 20 + 12;
 		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
 
 		foreach($topics as $topic) {
+			$cat = block_exacomp_get_category($topic);
+			$lwl = $lwl_sub.(($cat)?".".$cat->sourceid:'');
+			
 			list($outputid, $outputname) = block_exacomp_get_output_fields($topic);
 			$studentsCount = 0;
 			$studentsColspan = 1;
@@ -1142,7 +1152,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$topicRow->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rowgroup_class . ' highlight';
 
 			$outputidCell = new html_table_cell();
-			$outputidCell->text = ($version) ? $outputid : '';
+			$outputidCell->text = ($version) ? $outputid." ".$lwl : '';
 			$topicRow->cells[] = $outputidCell;
 
 			$outputnameCell = new html_table_cell();
@@ -1222,7 +1232,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$rows[] = $topicRow;
 
 			if (!empty($topic->descriptors)) {
-				$this->print_descriptors($rows, $level+1, $topic->descriptors, $data, $students, $sub_rowgroup_class,$profoundness, $editmode);
+				$this->print_descriptors($rows, $level+1, $topic->descriptors, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $lwl);
 			}
 
 			if (!empty($topic->subs)) {
@@ -1231,7 +1241,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 	}
 
-	function print_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class, $profoundness = false, $editmode=false) {
+	function print_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class, $profoundness = false, $editmode=false, $lwl="") {
 		global $version, $PAGE, $USER, $COURSE;
 
 		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
@@ -1262,7 +1272,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						html_writer::empty_tag('img', array('src'=>'pix/upload_12x12.png', 'alt'=>'upload')),
 						array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 			}
-			$exampleuploadCell->text .= $outputid;
+			
+			$exampleuploadCell->text .= $outputid.($version)?$lwl.".".block_exacomp_get_descr_topic_sorting($descriptor->topicid, $descriptor->id):"";
 
 			$descriptorRow->cells[] = $exampleuploadCell;
 
@@ -1272,12 +1283,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$titleCell->style = "padding-left: ".$padding."px";
 			$titleCell->text = html_writer::div($outputname);
 
-			// EDIT MODE BUTTONS
+			// EDIT MODE BUTTONS 
 			if($editmode) {
 				$titleCell->text .= html_writer::link(
 						new moodle_url('/blocks/exacomp/select_crosssubjects.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id)),
 						'T',
 						array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+				//TODO add sign to hide  
 			}
 			$descriptorRow->cells[] = $titleCell;
 
@@ -3566,8 +3578,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/view_print.png'), 'alt'=>'print')), array('class'=>'print'));
 		return html_writer::div(html_writer::tag('form', $content), 'competence_profile_printbox');
 	}
-	public function print_cross_subjects_drafts($drafts){
-	    global $PAGE;
+	public function print_cross_subjects_drafts($drafts, $isAdmin=false){
+	    global $PAGE, $USER;
 	    $content = html_writer::start_tag('script', array('type'=>'text/javascript', 'src'=>'javascript/wz_tooltip.js'));
 		$content .= html_writer::end_tag('script');
 		
@@ -3585,8 +3597,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	        $drafts_checkboxes .= html_writer::empty_tag('br');
 	    }
 	    
-	    $submit = html_writer::div(html_writer::empty_tag('input', array('name'=>'btn_submit', 'type'=>'submit', 'value'=>get_string('add_drafts_to_course', 'block_exacomp'))), '', array('id'=>'exabis_save_button'));
-	    
+	    $submit = html_writer::empty_tag('input', array('name'=>'btn_submit', 'type'=>'submit', 'value'=>get_string('add_drafts_to_course', 'block_exacomp')));
+	    if($isAdmin) $submit .= html_writer::empty_tag('input', array('name'=>'delete_crosssubs', 'type'=>'submit', 'value'=>get_string('delete_drafts', 'block_exacomp')));
+
+	    $submit = html_writer::div($submit, '', array('id'=>'exabis_save_button')); 
 	    //$submit = html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('add_drafts_to_course', 'block_exacomp')));
 	    $content .= html_writer::tag('form', $drafts_checkboxes.$submit, array('method'=>'post', 'action'=>$PAGE->url.'&action=save', 'name'=>'add_drafts_to_course'));
 		//$div_exabis_competences_block = html_writer::div($content, array('id'=>'exabis_competences_block'));

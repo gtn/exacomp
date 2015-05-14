@@ -38,6 +38,8 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 require_login($course);
 
 $context = context_course::instance($courseid);
+$isAdmin = (has_capability('block/exacomp:admin', $context))?true:false;
+var_dump($isAdmin);
 
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_cross_subjects_overview';
@@ -56,7 +58,11 @@ $output = $PAGE->get_renderer('block_exacomp');
 
 //SAVE DATA
 if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
-    if(isset($_POST['draft'])){
+ 	if(isset($_POST['delete_crosssubs']) && isset($_POST['draft'])){
+    	$drafts_to_delete = $_POST['draft'];
+    	block_exacomp_delete_crosssubject_drafts($drafts_to_delete);
+    }
+	else if(isset($_POST['draft'])){
         $drafts_to_save = $_POST['draft'];
         block_exacomp_save_drafts_to_course($drafts_to_save, $courseid);
         redirect(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid)));
@@ -78,7 +84,7 @@ block_exacomp_init_cross_subjects();
 
 $drafts = block_exacomp_get_cross_subjects_drafts();
 
-echo $output->print_cross_subjects_drafts($drafts);
+echo $output->print_cross_subjects_drafts($drafts, $isAdmin);
 
 /* END CONTENT REGION */
 echo $output->print_wrapperdivend();
