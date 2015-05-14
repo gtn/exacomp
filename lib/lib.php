@@ -26,6 +26,7 @@ define('DB_PROFILESETTINGS', 'block_exacompprofilesettings');
 define('DB_CROSSSUBJECTS', 'block_exacompcrosssubjects');
 define('DB_DESCCROSS', 'block_exacompdescrcross_mm');
 define('DB_CROSSSTUD', 'block_exacompcrossstud_mm');
+define('DB_DESCVISIBILITY', 'block_exacompdescrvisibility');
 
 /**
  * PLUGIN ROLES
@@ -42,6 +43,9 @@ define('TYPE_TOPIC', 1);
 define('SETTINGS_MAX_SCHEME', 10);
 define('CUSTOM_EXAMPLE_SOURCE', 3);
 define('ELOVE_EXAMPLE_SOURCE', 4);
+
+
+define("IMPORT_SOURCE_SPECIFIC", 2);
 
 if (block_exacomp_moodle_badges_enabled()) {
 	require_once($CFG->libdir . '/badgeslib.php');
@@ -122,7 +126,6 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 			').'
 			ORDER BY id, title
 			';
-
 	return $DB->get_records_sql($sql, array($courseid));
 }
 /**
@@ -401,7 +404,8 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 		}
 			
 		if($value != null)
-			$updateEvaluation->student_evaluation = $value;
+		$updateEvaluation->student_evaluation = intval($value);
+			
 		$updateEvaluation->starttime = $starttime;
 		$updateEvaluation->endtime = $endtime;
 		$updateEvaluation->studypartner = ($version) ? 'self' : $studypartner;
@@ -1216,11 +1220,12 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 				if($checkConfig){
 					if($ready_for_use){
 						$rows[] = new tabobject('tab_competence_overview', new moodle_url('/blocks/exacomp/assign_competencies.php',array("courseid"=>$courseid)),get_string('tab_competence_overview','block_exacomp'));
+						
 						if($crosssubs)
     					    $rows[] = new tabobject('tab_cross_subjects', new moodle_url('/blocks/exacomp/cross_subjects.php', array("courseid"=>$courseid)), get_string('tab_cross_subjects', 'block_exacomp'));
     					else
     					    $rows[] = new tabobject('tab_cross_subjects', new moodle_url('/blocks/exacomp/cross_subjects_overview.php', array("courseid"=>$courseid)), get_string('tab_cross_subjects', 'block_exacomp'));
-					
+				
 					if ($courseSettings->uses_activities && $usedetailpage)
 							$rows[] = new tabobject('tab_competence_details', new moodle_url('/blocks/exacomp/competence_detail.php',array("courseid"=>$courseid)),get_string('tab_competence_details','block_exacomp'));
 					}	
@@ -1376,6 +1381,7 @@ function block_exacomp_get_schooltypes($edulevel) {
  */
 function block_exacomp_get_schooltype_title_by_subject($subject){
 	global $DB;
+	$subject = $DB->get_record(DB_SUBJECTS, array('id'=>$subject->id));
 	return $DB->get_field(DB_SCHOOLTYPES, "title", array("id"=>$subject->stid));
 }
 /**
@@ -2187,9 +2193,19 @@ function block_exacomp_get_icon_data($courseid, $students) {
 function block_exacomp_set_coursetopics($courseid, $values) {
 	global $DB;
 	$DB->delete_records(DB_COURSETOPICS, array("courseid" => $courseid));
+	//TODO: schülerzuordnung geht verloren!!
+	$DB->delete_records(DB_DESCVISIBILITY, array("courseid"=>$courseid));
 	if(isset($values)){
 		foreach ($values as $value) {
-			$DB->insert_record(DB_COURSETOPICS, array("courseid" => $courseid, "topicid" => intval($value)));
+			$topicid = intval($value);
+			$DB->insert_record(DB_COURSETOPICS, array("courseid" => $courseid, "topicid" => $topicid));
+			
+			//insert descriptors in block_exacompdescrvisibility
+			$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $topicid);
+			foreach($descriptors as $descriptor){
+				$DB->insert_record(DB_DESCVISIBILITY, array("courseid"=>$courseid, "topicid"=>$topicid, "descrid"=>$descriptor->id, "studentid"=>0, "visible"=>1));
+			}
+			
 		}
 	}
 }
@@ -3645,7 +3661,12 @@ function block_exacomp_save_drafts_to_course($drafts_to_save, $courseid){
         }
     }
 }
-
+function block_exacomp_delete_crosssubject_drafts($drafts_to_delete){
+	global $DB;
+	foreach($drafts_to_delete as $draftid){
+		$DB->delete_records(DB_CROSSSUBJECTS, array('id'=>$draftid));
+	}
+}
 function block_exacomp_get_cross_subjects_by_course($courseid, $studentid=0){
     global $DB;
     $crosssubs = $DB->get_records(DB_CROSSSUBJECTS, array('courseid'=>$courseid));
@@ -3657,6 +3678,7 @@ function block_exacomp_get_cross_subjects_by_course($courseid, $studentid=0){
     	if($crosssubj->shared == 1 || block_exacomp_student_crosssubj($crosssubj->id, $studentid))
     		$crosssubs_shared[$crosssubj->id] = $crosssubj;
     }
+    return $crosssubs_shared;
 }
 function block_exacomp_student_crosssubj($crosssubjid, $studentid){
 	global $DB;
@@ -3829,8 +3851,35 @@ function block_exacomp_cross_subjects_exists(){
 function block_exacomp_set_cross_subject_descriptor($crosssubjid,$descrid) {
 	global $DB;
 	$record = $DB->get_record(DB_DESCCROSS,array('crosssubjid'=>$crosssubjid,'descrid'=>$descrid));
-	if($record)
-		$DB->delete_records(DB_DESCCROSS,array('crosssubjid'=>$crosssubjid,'descrid'=>$descrid));
-	else
+	if(!$record)
 		$DB->insert_record(DB_DESCCROSS,array('crosssubjid'=>$crosssubjid,'descrid'=>$descrid));
+}
+function block_exacomp_unset_cross_subject_descriptor($crosssubjid, $descrid){
+	global $DB;
+	$record = $DB->get_record(DB_DESCCROSS,array('crosssubjid'=>$crosssubjid,'descrid'=>$descrid));
+	if($record)
+		$DB->delete_records(DB_DESCCROSS,array('crosssubjid'=>$crosssubjid,'descrid'=>$descrid));	
+}
+function block_exacomp_set_cross_subject_student($crosssubjid, $studentid){
+	global $DB;
+	$record = $DB->get_record(DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid, 'studentid'=>$studentid));
+	if(!$record)
+		$DB->insert_record(DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid, 'studentid'=>$studentid));
+}
+function block_exacomp_unset_cross_subject_student($crosssubjid, $studentid){
+	global $DB;
+	$record = $DB->get_record(DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid, 'studentid'=>$studentid));
+	if($record)
+		$DB->delete_records(DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid, 'studentid'=>$studentid));
+}
+function 	block_exacomp_share_crosssubject($crosssubjid, $value = 0){
+	global $DB;
+	$update = $DB->get_record(DB_CROSSSUBJECTS, array('id'=>$crosssubjid));
+	$update->shared = $value;
+	return $DB->update_record(DB_CROSSSUBJECTS, $update);
+}
+function block_exacomp_get_descr_topic_sorting($topicid, $descid){
+	global $DB;
+	$record = $DB->get_record(DB_DESCTOPICS, array('descrid'=>$descid, 'topicid'=>$topicid));
+	return $record->sorting;
 }
