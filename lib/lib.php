@@ -403,7 +403,11 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 			$endtime = null;
 		}
 			
+<<<<<<< HEAD
 		if($value != null)
+=======
+		//if($value != null)
+>>>>>>> master
 		$updateEvaluation->student_evaluation = intval($value);
 			
 		$updateEvaluation->starttime = $starttime;
