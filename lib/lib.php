@@ -2195,17 +2195,22 @@ function block_exacomp_set_coursetopics($courseid, $values) {
 	$DB->delete_records(DB_COURSETOPICS, array("courseid" => $courseid));
 	//TODO: schülerzuordnung geht verloren!!
 	$DB->delete_records(DB_DESCVISIBILITY, array("courseid"=>$courseid));
+	$descriptors = array();
 	if(isset($values)){
 		foreach ($values as $value) {
 			$topicid = intval($value);
 			$DB->insert_record(DB_COURSETOPICS, array("courseid" => $courseid, "topicid" => $topicid));
 			
 			//insert descriptors in block_exacompdescrvisibility
-			$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $topicid);
-			foreach($descriptors as $descriptor){
-				$DB->insert_record(DB_DESCVISIBILITY, array("courseid"=>$courseid, "topicid"=>$topicid, "descrid"=>$descriptor->id, "studentid"=>0, "visible"=>1));
+			$descriptors_topic = block_exacomp_get_descriptors_by_topic($courseid, $topicid);
+			foreach($descriptors_topic as $descriptor){
+				if(!array_key_exists($descriptor->id, $descriptors))
+				$descriptors[$descriptor->id] = $descriptor;	
 			}
 			
+		}
+		foreach($descriptors as $descriptor){
+			$DB->insert_record(DB_DESCVISIBILITY, array("courseid"=>$courseid, "descrid"=>$descriptor->id, "studentid"=>0, "visible"=>1));
 		}
 	}
 }

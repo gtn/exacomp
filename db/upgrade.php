@@ -1542,7 +1542,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	  	// Adding fields to table block_exacompdescrcross_mm.
 	    $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
 	    $table->add_field('courseid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
-	    $table->add_field('topicid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
 	    $table->add_field('descrid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
 	    $table->add_field('studentid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
 		$table->add_field('visible', XMLDB_TYPE_INTEGER, '2', null, null, null, '1');
@@ -1550,7 +1549,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    // Adding keys to table block_exacompcdescrross_mm.
 	    $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
 	    $table->add_key('courseid', XMLDB_KEY_FOREIGN, array('courseid'), 'course', array('id'));
-	    $table->add_key('topicid', XMLDB_KEY_FOREIGN, array('topicid'), 'block_exacomptopics', array('id'));
 	    $table->add_key('descrid', XMLDB_KEY_FOREIGN, array('descrid'), 'block_exacompdescriptors', array('id'));
 	    $table->add_key('studentid', XMLDB_KEY_FOREIGN, array('studentid'), 'user', array('id'));
 
@@ -1562,12 +1560,18 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    //create entry for all existing courses 
 	    $courses = block_exacomp_get_courses();
 	    foreach($courses as $course){
+	    	$descriptors = array();
 	    	$topics = block_exacomp_get_topics_by_course($course);
 	    	foreach($topics as $topic){
-	    		$descriptors = block_exacomp_get_descriptors_by_topic($course, $topic->id);
-	    		foreach($descriptors as $descriptor){
-	    			$DB->insert_record(DB_DESCVISIBILITY, array('courseid'=>$course, 'topicid'=>$topic->id, 'descrid'=>$descriptor->id, 'studentid'=>0, 'visible'=>1));
+	    		$descriptors_topic = block_exacomp_get_descriptors_by_topic($course, $topic->id);
+	    		foreach($descriptors_topic as $descriptor){
+	    			if(!array_key_exists($descriptor->id, $descriptors))
+	    				$descriptors[$descriptor->id] = $descriptor;
 	    		}
+	    	}
+	    	//only one entry, even descriptor belongs to more than one topic
+	    	foreach($descriptors as $descriptor){
+	    		$DB->insert_record(DB_DESCVISIBILITY, array('courseid'=>$course, 'descrid'=>$descriptor->id, 'studentid'=>0, 'visible'=>1));
 	    	}
 	    }
 		upgrade_block_savepoint(true, 2015051400, 'exacomp');
