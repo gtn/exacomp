@@ -358,7 +358,7 @@
         <KEY NAME="badgeid" TYPE="foreign" FIELDS="badgeid" REFTABLE="badge" REFFIELDS="id" COMMENT="Fremdschlüssel Badgeid"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="block_exacomplovevet" COMMENT="this table is used in the lovevet app">
+    <TABLE NAME="block_exacompitemexample" COMMENT="this table is used in the lovevet app">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="exampleid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>

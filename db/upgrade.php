@@ -1501,7 +1501,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    // Exacomp savepoint reached.
 	    upgrade_block_savepoint(true, 2015032500, 'exacomp');
 	}
-	if($oldversion < 2015033100){
+	if($oldversion < 2015051400){
 		 $table = new xmldb_table('block_exacompcrosssubjects');
 		 $field = new xmldb_field('shared', XMLDB_TYPE_INTEGER, '1', null, null, null, '0');
 		 
@@ -1528,10 +1528,8 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    if (!$dbman->table_exists($table)) {
 	        $dbman->create_table($table);
 	    }
-	        // Exaport savepoint reached.
-	    upgrade_block_savepoint(true, 2015033100, 'exacomp');
-	}
-	if($oldversion < 2015041601){
+	    
+		
 		$table = new xmldb_table("block_exacompdescrtopic_mm");
 		$field = new xmldb_field('sorting', XMLDB_TYPE_INTEGER, '11', null, null, null, '0');
 		
@@ -1539,9 +1537,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			$dbman->add_field($table, $field);
 		}
 		
-		upgrade_block_savepoint(true, 2015041601, 'exacomp');
-	}
-	if($oldversion < 2015043002){
 		$table = new xmldb_table('block_exacompdescrvisibility');
 		
 	  	// Adding fields to table block_exacompdescrcross_mm.
@@ -1575,7 +1570,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    		}
 	    	}
 	    }
-		upgrade_block_savepoint(true, 2015043002, 'exacomp');
+		upgrade_block_savepoint(true, 2015051400, 'exacomp');
 	}
 	return $result;
 }
