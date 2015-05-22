@@ -96,7 +96,8 @@ else{
 	}
 
 	// IF TEACHER SHOW ALL COURSE STUDENTS, IF NOT ONLY CURRENT USER
-	$students = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : array($USER);
+	$students = ($isTeacher) ? block_exacomp_get_students_for_crosssubject($courseid, $selectedCrosssubject) : array($USER);
+	
 	foreach($students as $student)
 		$student = block_exacomp_get_user_information_by_course($student, $courseid);
 

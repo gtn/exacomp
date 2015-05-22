@@ -117,4 +117,12 @@ switch($action){
 		$crosssubjid = required_param('crosssubjid', PARAM_INT);
 		block_exacomp_save_drafts_to_course(array($crosssubjid), 0);
 		break;
+	case('hide-descriptor'):
+		$descrid = required_param('descrid', PARAM_INT);
+		$courseid = required_param('courseid', PARAM_INT);
+		$visible = required_param('value', PARAM_INT);
+		$studentid = required_param('studentid', PARAM_INT);
+		
+		block_exacomp_set_descriptor_visibility($descrid, $courseid, $visible, $studentid);
+		break;
 }

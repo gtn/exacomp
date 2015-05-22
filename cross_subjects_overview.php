@@ -39,7 +39,6 @@ require_login($course);
 
 $context = context_course::instance($courseid);
 $isAdmin = (has_capability('block/exacomp:admin', $context))?true:false;
-var_dump($isAdmin);
 
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_cross_subjects_overview';

@@ -1000,7 +1000,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function print_competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $lis_alltopics = true, $crosssubs = false) {
 		global $PAGE, $version;
 
-		$editmode = (!$students && $role == ROLE_TEACHER && !$crosssubs) ? true : false;
+		$editmode = (!$students && $role == ROLE_TEACHER) ? true : false;
 		$rowgroup = 0;
 		$table = new html_table();
 		$rows = array();
@@ -1247,6 +1247,31 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
 
 		foreach($descriptors as $descriptor) {
+			//visibility
+			//visible if 
+			//		- visible in whole course 
+			//	and - visible for specific student
+			
+			$one_student = false;
+			$studentid = 0;
+			if(!$editmode && count($students)==1){
+				$studentid = array_values($students)[0]->id;
+				$one_student = true;
+			}
+			$descriptor_used = block_exacomp_descriptor_used($data->courseid, $descriptor, $studentid);
+			if(!$descriptor_used){
+				$visible = $descriptor->visible;
+				if(($one_student||$data->role==ROLE_STUDENT) && !block_exacomp_descriptor_visible($data->courseid, $descriptor->id, $studentid)){
+					$visible = 0;
+				}
+			}else{
+				$visible = 1;
+			}
+			
+			$visible_css = '';
+			if(!$visible)
+				($data->role == ROLE_TEACHER) ? $visible_css = ' hidden_temp' : $visible_css = ' hidden';
+				
 			$checkboxname = "data";
 			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor, false, false);
 			$studentsCount = 0;
@@ -1255,13 +1280,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			if($descriptor->parentid > 0)
 			    $padding += 20;
-				
+
 			if($descriptor->examples) {
 				$data->rowgroup++;
-				$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$rowgroup_class;
+				$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$rowgroup_class.$visible_css;
 				$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$data->rowgroup.' '.$rowgroup_class;
 			} else {
-				$this_rowgroup_class = $rowgroup_class;
+				$this_rowgroup_class = $rowgroup_class.$visible_css;
 			}
 			$descriptorRow = new html_table_row();
 			$descriptorRow->attributes['class'] = 'exabis_comp_aufgabe ' . $this_rowgroup_class;
@@ -1289,12 +1314,23 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						new moodle_url('/blocks/exacomp/select_crosssubjects.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id)),
 						'T',
 						array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
-				//TODO add sign to hide  
+			}
+			//if hidden in course, cannot be shown to one student
+			if($editmode || ($one_student && $descriptor->visible && $data->role == ROLE_TEACHER)){
+				if($visible && !$descriptor_used)
+					$value_vis = '-';
+				else 
+					$value_vis = '+';
+				$titleCell->text .= html_writer::empty_tag("input", array('type'=>'button', 'value'=>$value_vis, 'name'=>'hide-descriptor', 'descrid'=>$descriptor->id));
 			}
 			$descriptorRow->cells[] = $titleCell;
-
+			$visible_student = $visible;
 			foreach($students as $student) {
-
+				//check visibility for every student in overview
+				
+				if(!$one_student && $visible && !$editmode)
+					$visible_student = block_exacomp_descriptor_visible($data->courseid, $descriptor->id, $student->id);
+						
 				$studentCell = new html_table_cell();
 				$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
 				$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
@@ -1368,7 +1404,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						if($data->showevaluation)
 							$studentCellEvaluation->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
 	
-						$studentCell->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme);
+						$studentCell->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme, ($visible_student)?false:true);
 					}
 					/*
 					 * if scheme != 1, !version: print select
@@ -1378,7 +1414,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						if($data->showevaluation)
 							$studentCellEvaluation->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
 	
-						$studentCell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme, false, $data->profoundness);
+						$studentCell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme, ($visible_student)?false:true, $data->profoundness);
 					}
 	
 					// ICONS

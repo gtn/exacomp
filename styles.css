@@ -421,6 +421,9 @@ td.contentcell {
 #exacomp .exabis_competencies_lis table.exabis_comp_comp tr.highlight {
     background-color: #e6e6e6
 }
+#exacomp .exabis_competencies_lis table.exabis_comp_comp tr.hidden_temp {
+	color: #e0e0e0;
+}
 #exacomp .exabis_competencies_lis table.exabis_comp_comp td.disabled {
     background-color: #e6e6e6
 }

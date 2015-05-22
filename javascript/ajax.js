@@ -394,6 +394,46 @@
 			});
 		}
 	});
+	
+	$(document).on('click', 'input[name=hide-descriptor]', function() {
+		courseid = getUrlVars()['courseid'];
+		studentid = getUrlVars()['studentid'];
+		descrid = $(this).attr('descrid');
+		val = $(this).val();
+		
+		if(studentid==null)
+			studentid = 0;
+		
+		if(val=='-'){
+			$(this).prop('value', '+');
+			visible = 0;
+			$(this).parent().parent().addClass('hidden_temp');
+			//disable checkbox for teacher, when hiding descriptor for student
+			if(studentid > 0)
+				$('input[name=data-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", true ); 
+		}else{
+			$(this).prop('value', '-');
+			visible = 1;
+			$(this).parent().parent().removeClass('hidden_temp');
+			//enable checkbox for teacher, when showing descriptor for student
+			$('input[name=data-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
+		}
+		
+		$.ajax({
+			method : "POST",
+			url : "ajax.php",
+			data : {
+				descrid : descrid,
+				courseid : courseid,
+				value : visible,
+				studentid : studentid,
+				action : 'hide-descriptor'
+			}
+		}).done(function(msg) {
+			console.log('Visibility changed');
+		});
+
+	});
 	// Read a page's GET URL variables and return them as an associative array.
 	function getUrlVars() {
 		var vars = [], hash;
