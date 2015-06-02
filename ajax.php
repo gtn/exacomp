@@ -60,6 +60,7 @@ switch($action){
 
 		$not_crosssubjects = required_param('not_crosssubjects', PARAM_TEXT);
 		$not_subj_ids = json_decode($not_crosssubjects);
+		
 		foreach($not_subj_ids as $not_subj_id)
 		block_exacomp_unset_cross_subject_descriptor($not_subj_id, $descrid);
 			

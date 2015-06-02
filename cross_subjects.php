@@ -147,8 +147,7 @@ else{
 		$showevaluation = true;
 	}
 	
-	$subjects = block_exacomp_get_competence_tree_for_cross_subject($courseid,(isset($selectedCrosssubject))?$selectedCrosssubject->id:null,false,
-	!($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies);
+	$subjects = block_exacomp_get_competence_tree_for_cross_subject($courseid,(isset($selectedCrosssubject))?$selectedCrosssubject->id:null,false, !($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies);
 	
 	echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? ROLE_TEACHER : ROLE_STUDENT, $scheme, true, true);
 	

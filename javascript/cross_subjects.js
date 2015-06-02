@@ -55,23 +55,26 @@
 	    return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
 	}
 	$(document).on('click', '.rowgroup-header .rowgroup-arrow', function(){
-		console.log( "Crosssub-Description changed");
 		var tr = $(this).closest('tr');
-		tr.toggleClass('open');
-		
-		var id = tr[0].className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
-		
-		if ($(tr).is('.open')) {
-			// opening: show all subs
-			$('.rowgroup-content-'+id).show();
-			// opening: hide all subs which are still closed
-			$('.rowgroup-header').not('.open').each(function(){
-				var id = this.className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
+	
+		//only show subs if descriptor is not hidden
+		if(!$(tr).is('.hidden_temp')){	
+			tr.toggleClass('open');
+			
+			var id = tr[0].className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
+			
+			if ($(tr).is('.open')) {
+				// opening: show all subs
+				$('.rowgroup-content-'+id).show();
+				// opening: hide all subs which are still closed
+				$('.rowgroup-header').not('.open').each(function(){
+					var id = this.className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
+					$('.rowgroup-content-'+id).hide();
+				});
+			} else {
+				// closing: hide all subs
 				$('.rowgroup-content-'+id).hide();
-			});
-		} else {
-			// closing: hide all subs
-			$('.rowgroup-content-'+id).hide();
+			}
 		}
 	});
 

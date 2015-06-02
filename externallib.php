@@ -1101,7 +1101,7 @@ class block_exacomp_external extends external_api {
 				$structure [$topic->id]->title = $topic->title;
 				$structure [$topic->id]->examples = array ();
 			}
-			$descriptors = block_exacomp_get_descriptors_by_topic ( $courseid, $topic->id );
+			$descriptors = block_exacomp_get_descriptors_by_topic ( $courseid, $topic->id, false, true );
 			
 			foreach ( $descriptors as $descriptor ) {
 				$examples = $DB->get_records_sql ( "SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
@@ -2400,7 +2400,7 @@ class block_exacomp_external extends external_api {
 						}
 					}
 					
-					$descriptors = block_exacomp_get_descriptors_by_topic ( $course ['courseid'], $topic->id );
+					$descriptors = block_exacomp_get_descriptors_by_topic ( $course ['courseid'], $topic->id, false, true );
 					foreach ( $descriptors as $descriptor ) {
 						if ($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset ( $cm_mm->competencies [$descriptor->id] )))
 							$topic_total_competencies ++;

@@ -755,12 +755,12 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 	.(($courseid>0)?'JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
 	.'JOIN {'.DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id '
-	.'JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 '
+	.'JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=? '
 	.($showalldescriptors ? '' : '
 			JOIN {'.DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
 			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':'')).')';
 
-	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid));
+	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid, $courseid));
 
 	return $descriptors;
 }
@@ -771,7 +771,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
  * @param int $topicid
  * @param bool $showalldescriptors
  */
-function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldescriptors = false) {
+function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldescriptors = false, $mind_visibility=false) {
 	global $DB;
 	
 	if(!$showalldescriptors)
@@ -781,6 +781,7 @@ function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldes
 	.'FROM {'.DB_TOPICS.'} t JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($topicid > 0) ? ' AND t.id = '.$topicid.' ' : '')
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
 	.'JOIN {'.DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id '
+	.($mind_visibility ? 'JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 AND dvis.visible=1 ' : '')
 	.($showalldescriptors ? '' : '
 			JOIN {'.DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
 			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':'')).')';
@@ -2796,17 +2797,19 @@ function block_exacomp_get_course_competence_statistics($courseid, $user, $schem
 			}
 		}
 		foreach($descriptors as $descriptor){
-			if($student->id == $user->id)
-				if($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset($cm_mm->competencies[$descriptor->id])))
-					$total ++;
-		
-			if(!empty($current_evaluation->competencies->teacher)){ 
-				if(isset($current_evaluation->competencies->teacher) && isset($current_evaluation->competencies->teacher[$descriptor->id])){
-					if($scheme == 1 || $current_evaluation->competencies->teacher[$descriptor->id] >= ceil($scheme/2))
-						if($student->id == $user->id)
-							$reached ++;
-						else
-							$average ++;
+			if(block_exacomp_descriptor_visible($courseid, $descriptor, $student->id)){
+				if($student->id == $user->id)
+					if($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset($cm_mm->competencies[$descriptor->id])))
+						$total ++;
+			
+				if(!empty($current_evaluation->competencies->teacher)){ 
+					if(isset($current_evaluation->competencies->teacher) && isset($current_evaluation->competencies->teacher[$descriptor->id])){
+						if($scheme == 1 || $current_evaluation->competencies->teacher[$descriptor->id] >= ceil($scheme/2))
+							if($student->id == $user->id)
+								$reached ++;
+							else
+								$average ++;
+					}
 				}
 			}
 		}
@@ -2918,7 +2921,8 @@ function block_exacomp_get_topics_for_radar_graph($courseid,$studentid) {
 	$user = $DB->get_record("user", array("id" => $studentid));
 
 	foreach($topics as $topic) {
-		$totalDescr = block_exacomp_get_descriptors_by_topic($courseid, $topic->id);
+		$totalDescr = block_exacomp_get_descriptors_by_topic($courseid, $topic->id, false, true);
+		
 		$sql = "SELECT c.id, c.userid, c.compid, c.role, c.courseid, c.value, c.comptype, c.timestamp FROM {".DB_COMPETENCIES."} c, {".DB_DESCTOPICS."} dt
 		WHERE c.compid = dt.descrid AND dt.topicid = ? AND c.comptype = 0 AND c.role=? AND c.userid = ? AND c.value >= ? AND c.courseid = ?";
 
@@ -2999,41 +3003,43 @@ function block_exacomp_get_competencies_for_pie_chart($courseid,$user, $scheme, 
 		}
 	}
 	foreach($descriptors as $descriptor){
-		$teacher_eval = false;
-		$student_eval = false;
-		if(!$coursesettings->uses_activities || ($coursesettings->uses_activities && isset($cm_mm->competencies[$descriptor->id]))){
-			if(isset($evaluation->competencies->teacher) && isset($evaluation->competencies->teacher[$descriptor->id])){
-				if($scheme == 1 || $evaluation->competencies->teacher[$descriptor->id] >= ceil($scheme/2)){
-					if($enddate>0){
-						//compare only enddate->kumuliert
-						if($enddate>=$evaluation->competencies->timestamp_teacher[$descriptor->id]){
+		if(block_exacomp_descriptor_visible($courseid, $descriptor, $user->id)){
+			$teacher_eval = false;
+			$student_eval = false;
+			if(!$coursesettings->uses_activities || ($coursesettings->uses_activities && isset($cm_mm->competencies[$descriptor->id]))){
+				if(isset($evaluation->competencies->teacher) && isset($evaluation->competencies->teacher[$descriptor->id])){
+					if($scheme == 1 || $evaluation->competencies->teacher[$descriptor->id] >= ceil($scheme/2)){
+						if($enddate>0){
+							//compare only enddate->kumuliert
+							if($enddate>=$evaluation->competencies->timestamp_teacher[$descriptor->id]){
+								$teachercomp ++;
+								$teacher_eval = true;
+							}
+						}else{
 							$teachercomp ++;
 							$teacher_eval = true;
 						}
-					}else{
-						$teachercomp ++;
-						$teacher_eval = true;
 					}
 				}
-			}
-			if((!$teacher_eval||$exclude_student) && isset($evaluation->competencies->student) && isset($evaluation->competencies->student[$descriptor->id])){
-				if($scheme == 1 || $evaluation->competencies->student[$descriptor->id] >= ceil($scheme/2)){
-					if($enddate>0){
-						if($enddate >= $evaluation->competencies->timestamp_student[$descriptor->id]){
+				if((!$teacher_eval||$exclude_student) && isset($evaluation->competencies->student) && isset($evaluation->competencies->student[$descriptor->id])){
+					if($scheme == 1 || $evaluation->competencies->student[$descriptor->id] >= ceil($scheme/2)){
+						if($enddate>0){
+							if($enddate >= $evaluation->competencies->timestamp_student[$descriptor->id]){
+								$studentcomp ++;
+								$student_eval = true;
+							}
+						}else{
 							$studentcomp ++;
 							$student_eval = true;
 						}
-					}else{
-						$studentcomp ++;
-						$student_eval = true;
 					}
 				}
+				if(!$teacher_eval && !$student_eval) 	
+					$pendingcomp ++;
 			}
-			if(!$teacher_eval && !$student_eval) 	
-				$pendingcomp ++;
 		}
 	}
-	
+
 	return array($teachercomp,$studentcomp,$pendingcomp);
 }
 
@@ -3421,11 +3427,12 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 			$no_data = false;
 			if($competence->comptype == TYPE_DESCRIPTOR){
 				foreach($descriptors as $descriptor){
-					if($descriptor->id == $competence->compid){
-						if($competence->timestamp != null && $competence->timestamp<$min_timestamp)
-							$min_timestamp = $competence->timestamp;
+					if(block_exacomp_descriptor_visible($courseid, $descriptor, $student->id)){
+						if($descriptor->id == $competence->compid){
+							if($competence->timestamp != null && $competence->timestamp<$min_timestamp)
+								$min_timestamp = $competence->timestamp;
+						}
 					}
-					
 				}
 			} 
 			if($competence->comptype == TYPE_TOPIC) {
@@ -3443,9 +3450,11 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 			$no_data = false;
 			if($competence->comptype == TYPE_DESCRIPTOR){
 				foreach($descriptors as $descriptor){
-					if($descriptor->id == $competence->compid){
-						if($competence->timestamp != null && $competence->timestamp<$min_timestamp)
-							$min_timestamp = $competence->timestamp;
+					if(block_exacomp_descriptor_visible($courseid, $descriptor, $student->id)){
+						if($descriptor->id == $competence->compid){
+							if($competence->timestamp != null && $competence->timestamp<$min_timestamp)
+								$min_timestamp = $competence->timestamp;
+						}
 					}
 					
 				}
@@ -3664,6 +3673,17 @@ function block_exacomp_save_drafts_to_course($drafts_to_save, $courseid){
             $insert->descrid = $comp->descrid;
             $insert->crosssubjid = $crosssubjid;
             $DB->insert_record(DB_DESCCROSS, $insert);
+            
+            //cross course subjects -> insert in visibility table if not existing
+            $visibility = $DB->get_record(DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$comp->descrid, 'studentid'=>0));
+        	if(!$visibility){
+        		$insert = new stdClass();
+        		$insert->courseid = $courseid;
+        		$insert->descrid = $comp->descrid;
+        		$insert->studentid=0;
+        		$insert->visible = 1;
+        		$DB->insert_record(DB_DESCVISIBILITY, $insert);
+        	}
         }
     }
 }
@@ -3810,14 +3830,14 @@ function block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid
 	.'FROM {'.DB_TOPICS.'} t '
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
 	.'JOIN {'.DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id '
-	.'JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid = d.id AND dvis.studentid=0 '
+	.'JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid = d.id AND dvis.studentid=0 AND dvis.courseid=? '
 	.($showalldescriptors ? '' : '
 			JOIN {'.DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
 			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':'')).
 			'WHERE d.id IN('.$WHERE.')'.')';
 
-	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid));
-    
+	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid, $courseid));
+   
 	return $descriptors;
     
 }
@@ -3829,6 +3849,7 @@ function block_exacomp_get_topics_for_cross_subject_by_descriptors($descriptors)
         if(!array_key_exists($topic->id, $topics))
             $topics[$topic->id] = $topic;
     }
+   
     return $topics;
 }
 function block_exacomp_save_cross_subject_title($crosssubjid, $title){
@@ -3904,10 +3925,10 @@ function block_exacomp_set_descriptor_visibility($descrid, $courseid, $value, $s
 		$DB->insert_record(DB_DESCVISIBILITY, $insert);
 	}
 }
-function block_exacomp_descriptor_visible($courseid, $descrid, $studentid){
+function block_exacomp_descriptor_visible($courseid, $descriptor, $studentid){
 	global $DB;
-	$record = $DB->get_record(DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$descrid, 'studentid'=>$studentid));
-	return ($record)?$record->visible:1;
+	$record = $DB->get_record(DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$descriptor->id, 'studentid'=>$studentid));
+	return ($record)?$record->visible:$descriptor->visible;
 }
 function block_exacomp_descriptor_used($courseid, $descriptor, $studentid){
 	global $DB;
