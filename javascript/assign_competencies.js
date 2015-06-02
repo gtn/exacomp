@@ -128,21 +128,30 @@
 	}
 	$(document).on('click', '.rowgroup-header .rowgroup-arrow', function(){
 		var tr = $(this).closest('tr');
-		tr.toggleClass('open');
-		
-		var id = tr[0].className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
-		
-		if ($(tr).is('.open')) {
-			// opening: show all subs
-			$('.rowgroup-content-'+id).show();
-			// opening: hide all subs which are still closed
-			$('.rowgroup-header').not('.open').each(function(){
-				var id = this.className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
+	
+		if(!$(tr).is('.hidden_temp')){	
+			console.log($(tr).attr("class"));
+			console.log($(tr).is('.hidden_temp'));
+			tr.toggleClass('open');
+			
+			var id = tr[0].className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
+			
+			if ($(tr).is('.open')) {
+				//only show subs if descriptor is not hidden
+				
+				
+					// opening: show all subs
+					$('.rowgroup-content-'+id).show();
+					// opening: hide all subs which are still closed
+					$('.rowgroup-header').not('.open').each(function(){
+						var id = this.className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
+						$('.rowgroup-content-'+id).hide();
+					});
+				
+			} else {
+				// closing: hide all subs
 				$('.rowgroup-content-'+id).hide();
-			});
-		} else {
-			// closing: hide all subs
-			$('.rowgroup-content-'+id).hide();
+			}
 		}
 	});
 

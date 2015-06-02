@@ -3923,7 +3923,7 @@ function block_exacomp_descriptor_used($courseid, $descriptor, $studentid){
 		
 		if($descriptor->examples){
 			foreach($descriptor->examples as $example){
-				$records = $DB->get_records(DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'value'=>1));
+				$records = $DB->get_records(DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'teacher_evaluation'=>1));
 				if($records) return true;
 			}
 		}
@@ -3934,7 +3934,7 @@ function block_exacomp_descriptor_used($courseid, $descriptor, $studentid){
 		
 		if($descriptor->examples){
 			foreach($descriptor->examples as $example){
-				$records = $DB->get_records(DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'studentid'=>$studentid, 'value'=>1));
+				$records = $DB->get_records(DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'studentid'=>$studentid, 'student_evaluation'=>1));
 				if($records) return true;
 			}
 		}

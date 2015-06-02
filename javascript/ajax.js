@@ -396,6 +396,9 @@
 	});
 	
 	$(document).on('click', 'input[name=hide-descriptor]', function() {
+		var tr = $(this).closest('tr');
+		var id = tr[0].className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
+		
 		courseid = getUrlVars()['courseid'];
 		studentid = getUrlVars()['studentid'];
 		descrid = $(this).attr('descrid');
@@ -407,14 +410,23 @@
 		if(val=='-'){
 			$(this).prop('value', '+');
 			visible = 0;
-			$(this).parent().parent().addClass('hidden_temp');
+			tr.addClass('hidden_temp');
+			
+			//hide subs 
+			tr.removeClass('open');
+			$('.rowgroup-content-'+id).hide();
+			
 			//disable checkbox for teacher, when hiding descriptor for student
 			if(studentid > 0)
 				$('input[name=data-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", true ); 
 		}else{
 			$(this).prop('value', '-');
 			visible = 1;
-			$(this).parent().parent().removeClass('hidden_temp');
+			tr.removeClass('hidden_temp');
+			
+			//do not show subs
+			tr.toggleClass('open');
+			
 			//enable checkbox for teacher, when showing descriptor for student
 			$('input[name=data-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
 		}
