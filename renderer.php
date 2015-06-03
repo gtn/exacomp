@@ -1318,12 +1318,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 			//if hidden in course, cannot be shown to one student
 			//TODO without $descriptor->visible kann deskriptor f�r einzelnen sch�ler eingeblendet werden --> sinnvoll?
-			if($editmode || ($one_student && $descriptor->visible && $data->role == ROLE_TEACHER)){
-				if($visible && !$descriptor_used)
-					$value_vis = '-';
-				else 
-					$value_vis = '+';
-				$titleCell->text .= html_writer::empty_tag("input", array('type'=>'button', 'value'=>$value_vis, 'name'=>'hide-descriptor', 'descrid'=>$descriptor->id));
+			if(!$descriptor_used){
+				if($editmode || ($one_student && $descriptor->visible && $data->role == ROLE_TEACHER)){
+					if($visible)
+						$value_vis = '-';
+					else 
+						$value_vis = '+';
+					$titleCell->text .= html_writer::empty_tag("input", array('type'=>'button', 'value'=>$value_vis, 'name'=>'hide-descriptor', 'descrid'=>$descriptor->id));
+				}
 			}
 			$descriptorRow->cells[] = $titleCell;
 			$visible_student = $visible;

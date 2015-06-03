@@ -2,10 +2,13 @@
 
 	// ## AJAX
 	// # COMPETENCIES
+	//cannot hide anymore, as soon as competency is checked
 	var competencies = [];
 	$(document).on('click', 'input[name^=data\-]', function() {
 		var values = $(this).attr("name").split("-");
-
+		var tr = $(this).closest('tr');
+		var hide = $(tr).find('input[name~="hide-descriptor"]');
+		
 		if ($(this).prop("checked")) {
 			if (competencies[values[1]]) {
 				competencies[values[1]]['value'] = 1;
@@ -16,6 +19,8 @@
 					value : 1
 				};
 			}
+			//check comp->hide descriptor not possible
+			hide.addClass("hidden");
 		} else {
 			if (competencies[values[1]]) {
 				competencies[values[1]]['value'] = 0;
@@ -26,6 +31,8 @@
 					value : 0
 				};
 			}
+			//uncheck comp -> hide possible again
+			hide.removeClass("hidden");
 		}
 	});
 	// Never entered
@@ -72,7 +79,9 @@
 	var examples = [];
 	$(document).on('click', 'input[name^=dataexamples\-]', function() {
 		var values = $(this).attr("name").split("-");
-
+		var tr = $(this).closest('tr');
+		var hide = $(tr).find('input[name~="hide-descriptor"]');
+		
 		if ($(this).prop("checked")) {
 			if (examples[values[1]]) {
 				examples[values[1]]['value'] = 1;
@@ -82,6 +91,9 @@
 					exampleid : values[1],
 					value : 1
 				};
+		
+			//check comp->hide descriptor not possible
+			hide.addClass("hidden");
 		} else {
 			if (examples[values[1]])
 				examples[values[1]]['value'] = 0;
@@ -91,6 +103,9 @@
 					exampleid : values[1],
 					value : 0
 				};
+			
+			//uncheck comp -> hide possible again
+			hide.removeClass("hidden");
 		}
 	});
 	// never entered
@@ -219,6 +234,7 @@
 								}
 
 								// Cross-Subject title & description
+								
 								if (title && crosssubjid > 0) {
 									$.ajax({
 										method : "POST",
@@ -255,7 +271,10 @@
 													});
 								}
 
-								event.preventDefault();
+								//event.preventDefault();
+								//reload to display hide-buttons properly, especially when the descriptor is formerly used-> hide button not displayed
+								//if evaluation removed->hide button should be shown.
+								//alert is not necessary any more
 								alert('Änderungen wurden gespeichert!');
 								break;
 							case 'save_as_draft':

@@ -101,7 +101,7 @@ else{
 	foreach($students as $student)
 		$student = block_exacomp_get_user_information_by_course($student, $courseid);
 
-	echo $output->print_cross_subjects_form_start((isset($selectedCrosssubject))?$selectedCrosssubject:null);
+	echo $output->print_cross_subjects_form_start((isset($selectedCrosssubject))?$selectedCrosssubject:null, $studentid);
 
 	//dropdowns for crosssubjects
 	echo $output->print_dropdowns_cross_subjects($crosssubjects, $selectedCrosssubject->id, $students, $studentid, $isTeacher);

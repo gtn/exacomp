@@ -786,7 +786,7 @@ function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldes
 			JOIN {'.DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
 			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':'')).')';
 	
-	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid));
+	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid));
 	
 	return $descriptors;
 }
@@ -3457,7 +3457,7 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 			$no_data = false;
 			if($competence->comptype == TYPE_DESCRIPTOR){
 				foreach($descriptors as $descriptor){
-					if(block_exacomp_descriptor_visible($courseid, $descriptor, $student->id)){
+					if(block_exacomp_descriptor_visible($course->id, $descriptor, $student->id)){
 						if($descriptor->id == $competence->compid){
 							if($competence->timestamp != null && $competence->timestamp<$min_timestamp)
 								$min_timestamp = $competence->timestamp;
@@ -3861,10 +3861,7 @@ function block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
 	.'JOIN {'.DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id '
 	.'JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid = d.id AND dvis.studentid=0 AND dvis.courseid=? '
-	.($showalldescriptors ? '' : '
-			JOIN {'.DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
-			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':'')).
-			'WHERE d.id IN('.$WHERE.')'.')';
+	.'WHERE d.id IN('.$WHERE.')'.')';
 
 	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid, $courseid));
    
@@ -3976,6 +3973,9 @@ function block_exacomp_descriptor_used($courseid, $descriptor, $studentid){
 			foreach($descriptor->examples as $example){
 				$records = $DB->get_records(DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'teacher_evaluation'=>1));
 				if($records) return true;
+				
+				$records = $DB->get_records(DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'student_evaluation'=>1));
+				if($records) return true;
 			}
 		}
 		//TODO submission //activities
@@ -3986,6 +3986,9 @@ function block_exacomp_descriptor_used($courseid, $descriptor, $studentid){
 		if($descriptor->examples){
 			foreach($descriptor->examples as $example){
 				$records = $DB->get_records(DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'studentid'=>$studentid, 'student_evaluation'=>1));
+				if($records) return true;
+				
+				$records = $DB->get_records(DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'studentid'=>$studentid, 'teacher_evaluation'=>1));
 				if($records) return true;
 			}
 		}
