@@ -370,7 +370,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     
     		$content .= get_string("choosestudent", "block_exacomp");
     		$options = array();
-    		$options[0] = get_string('no_student', 'block_exacomp');
+    		$options[0] = get_string('no_student_edit', 'block_exacomp');
     		
     		foreach($students as $student)
     			$options[$student->id] = $student->firstname." ".$student->lastname;
@@ -676,6 +676,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								$text .= '<br/>';
 								foreach($descriptor->examples as $example) {
 									$img = '<img src="pix/i_11x11.png" alt="Beispiel" />';
+									
 									if($example->task)
 										$text .= "<a target='_blank' alt='".$example->title."' title='".$example->title."' href='".$example->task."'>".$img."</a>";
 									if($example->externalurl)
@@ -1316,7 +1317,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 			}
 			//if hidden in course, cannot be shown to one student
-			//TODO without $descriptor->visible kann deskriptor für einzelnen schüler eingeblendet werden --> sinnvoll?
+			//TODO without $descriptor->visible kann deskriptor fï¿½r einzelnen schï¿½ler eingeblendet werden --> sinnvoll?
 			if($editmode || ($one_student && $descriptor->visible && $data->role == ROLE_TEACHER)){
 				if($visible && !$descriptor_used)
 					$value_vis = '-';
@@ -1496,8 +1497,20 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				
 				if($example->task)
 					$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->task), html_writer::empty_tag('img', array('src'=>'pix/i_11x11.png', 'alt'=>'link')),array("target" => "_blank"));
-				if($example->externalurl)
-					$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->externalurl), html_writer::empty_tag('img', array('src'=>'pix/i_11x11.png', 'alt'=>'link')),array("target" => "_blank"));
+				
+				if($example->iseditable==7){
+					$iconforlink="pix/elc20_1.png";
+					$titleiconforlink='ELC 20 Etapa';
+				}else{
+					$iconforlink="pix/i_11x11.png";
+					$titleiconforlink='Link';
+				}
+				
+				if($example->externalurl){
+					$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->externalurl), html_writer::empty_tag('img', array('src'=>$iconforlink, 'alt'=>'link','title'=>$titleiconforlink)),array("target" => "_blank"));
+				}elseif($example->externaltask){
+					$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->externaltask), html_writer::empty_tag('img', array('src'=>$iconforlink, 'alt'=>'link','title'=>$titleiconforlink)),array("target" => "_blank"));
+				}
 				
 				$exampleRow->cells[] = $titleCell;
 
@@ -3685,7 +3698,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     
     		$content .= get_string("choosestudent", "block_exacomp");
     		$options = array();
-    		$options[0] = get_string('no_student', 'block_exacomp');
+    		$options[0] = get_string('no_student_edit', 'block_exacomp');
     		
     		foreach($students as $student)
     			$options[$student->id] = $student->firstname." ".$student->lastname;

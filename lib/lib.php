@@ -856,7 +856,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 
 		$examples = $DB->get_records_sql(
 				"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
-				e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid
+				e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid, e.iseditable 
 				FROM {" . DB_EXAMPLES . "} e
 				JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
 				LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id"
@@ -1326,12 +1326,16 @@ function block_exacomp_build_breadcrum_navigation($courseid) {
  * @param object $selected
  * @param moodle_url $url
  */
-function block_exacomp_studentselector($students,$selected,$url){
+function block_exacomp_studentselector($students,$selected,$url, $editmode = true){
 	global $CFG;
 
 	$studentsAssociativeArray = array();
-	$studentsAssociativeArray[0]=get_string('no_student', 'block_exacomp');
-
+	
+	if($editmode)
+		$studentsAssociativeArray[0]=get_string('no_student_edit', 'block_exacomp');
+	else 
+		$studentsAssociativeArray[0]=get_string('no_student', 'block_exacomp');
+		
 	foreach($students as $student) {
 		$studentsAssociativeArray[$student->id] = fullname($student);
 	}

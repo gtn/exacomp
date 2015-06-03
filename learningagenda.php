@@ -63,7 +63,7 @@ block_exacomp_build_breadcrum_navigation($courseid);
 if (has_capability('block/exacomp:teacher', $context)) {
 	$role = "teacher";
 	//lib function
-	$stundentselect = block_exacomp_studentselector(get_role_users(5, $context),$studentid,$PAGE->url);
+	$stundentselect = block_exacomp_studentselector(get_role_users(5, $context),$studentid,$PAGE->url, false);
 } else {
 	$role = "student";
 	$stundentselect="";
