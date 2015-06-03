@@ -2198,13 +2198,27 @@ function block_exacomp_get_icon_data($courseid, $students) {
  */
 function block_exacomp_set_coursetopics($courseid, $values) {
 	global $DB;
+
 	$DB->delete_records(DB_COURSETOPICS, array("courseid" => $courseid));
-	//TODO: schülerzuordnung geht verloren!!
-	$DB->delete_records(DB_DESCVISIBILITY, array("courseid"=>$courseid));
+	
+	$visibilities = $DB->get_fieldset_select(DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=0', array($courseid));
+	
+	//get all cross subject descriptors - to support cross-course subjects descriptor visibility must be kept
+	$cross_subjects = $DB->get_records(DB_CROSSSUBJECTS, array('courseid'=>$courseid));
+	$cross_subjects_descriptors = array();
+	foreach($cross_subjects as $crosssub){
+		$cross_subject_descriptors = $DB->get_fieldset_select(DB_DESCCROSS, 'descrid', 'crosssubjid=?', array($crosssub->id));
+		foreach($cross_subject_descriptors as $descriptor)
+		if(!in_array($descriptor, $cross_subjects_descriptors)){
+			$cross_subjects_descriptors[] = $descriptor;
+		}
+	}
+	
 	$descriptors = array();
 	if(isset($values)){
 		foreach ($values as $value) {
 			$topicid = intval($value);
+			
 			$DB->insert_record(DB_COURSETOPICS, array("courseid" => $courseid, "topicid" => $topicid));
 			
 			//insert descriptors in block_exacompdescrvisibility
@@ -2213,10 +2227,22 @@ function block_exacomp_set_coursetopics($courseid, $values) {
 				if(!array_key_exists($descriptor->id, $descriptors))
 				$descriptors[$descriptor->id] = $descriptor;	
 			}
-			
 		}
+		
+		//manage visibility, do not delete user visibility, but delete unused entries
 		foreach($descriptors as $descriptor){
-			$DB->insert_record(DB_DESCVISIBILITY, array("courseid"=>$courseid, "descrid"=>$descriptor->id, "studentid"=>0, "visible"=>1));
+			//new descriptors in table
+			if(!in_array($descriptor->id, $visibilities))
+				$DB->insert_record(DB_DESCVISIBILITY, array("courseid"=>$courseid, "descrid"=>$descriptor->id, "studentid"=>0, "visible"=>1));
+		}
+		
+		foreach($visibilities as $visible){
+			//delete ununsed descriptors for course and for special students
+			if(!array_key_exists($visible, $descriptors)){
+				//check if used in cross-subjects --> then it must still be visible
+				if(!in_array($visible, $cross_subjects_descriptors))
+					$DB->delete_records(DB_DESCVISIBILITY, array("courseid"=>$courseid, "descrid"=>$visible));
+			}
 		}
 	}
 }
@@ -3756,7 +3782,7 @@ function block_exacomp_get_competence_tree_for_cross_subject($courseid, $crosssu
 
 		$examples = $DB->get_records_sql(
 				"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
-				e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid
+				e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid, e.iseditable
 				FROM {" . DB_EXAMPLES . "} e
 				JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
 				LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id"
