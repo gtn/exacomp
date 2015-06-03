@@ -1243,7 +1243,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	function print_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class, $profoundness = false, $editmode=false, $lwl="") {
-		global $version, $PAGE, $USER, $COURSE;
+		global $version, $PAGE, $USER, $COURSE, $CFG;
 
 		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
 
@@ -1512,6 +1512,21 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->externalurl), html_writer::empty_tag('img', array('src'=>$iconforlink, 'alt'=>'link','title'=>$titleiconforlink)),array("target" => "_blank"));
 				}elseif($example->externaltask){
 					$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->externaltask), html_writer::empty_tag('img', array('src'=>$iconforlink, 'alt'=>'link','title'=>$titleiconforlink)),array("target" => "_blank"));
+				}
+				
+				if($data->role == ROLE_STUDENT) {
+					$titleCell->text .= html_writer::link(
+							new moodle_url('/blocks/exacomp/example_submission.php',array("courseid"=>$data->courseid,"exampleid"=>$example->id)),
+							'L',
+							array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+				} else if($data->role == ROLE_TEACHER) {
+					$studentid = optional_param("studentid", 0, PARAM_INT);
+					if($studentid > 0) {
+						$titleCell->text .= html_writer::link(
+								$CFG->wwwroot . ('/blocks/exaport/shared_item.php?access='.block_exacomp_get_viewurl_for_example($studentid,$example->id)),
+								'L',
+								array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+					}
 				}
 				
 				$exampleRow->cells[] = $titleCell;

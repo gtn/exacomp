@@ -4012,3 +4012,17 @@ function block_exacomp_get_students_for_crosssubject($courseid, $crosssub){
 	}
 	return $students;
 }
+function block_exacomp_get_viewurl_for_example($studentid,$exampleid) {
+	global $DB;
+	$sql = 'select *, max(timecreated) from {block_exacompitemexample} ie
+	        JOIN {block_exaportitem} i ON i.id = ie.itemid
+	        WHERE ie.exampleid = ? AND i.userid=?';
+	
+	$item = $DB->get_record_sql($sql, array($exampleid,$studentid));
+	
+	$view = $DB->get_record('block_exaportviewblock', array("type"=>"item","itemid"=>$item->itemid));
+	
+	$access = "view/id/".$studentid."-".$view->viewid."&itemid=".$item->itemid;
+	
+	return $access;
+}

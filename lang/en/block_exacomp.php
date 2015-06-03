@@ -214,6 +214,11 @@ $string['choosetopic'] = "Choose topic";
 $string['choosestudent'] = "Choose student: ";
 $string['selectall'] = 'Select all';
 
+//Example Submission
+$string['example_submission_header']  = 'Aufgabe {$a} bearbeiten';
+$string['example_submission_info'] = 'Du bist dabei die Aufgabe {a} zu bearbeiten. Deine Abgabe landet im ePortfolio und kann dort von dir und deinem Lehrern eingesehen werden.';
+$string['submissionmissing']  = 'Es müssen zumindest ein Link oder eine Datei abgegeben werden';
+
 //Icons
 $string['usersubmitted'] = ' has submitted the following Moodle activities:';
 $string['usersubmittedquiz'] = ' has done the following quizzes:';
