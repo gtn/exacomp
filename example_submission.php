@@ -135,7 +135,6 @@ if($formdata = $form->get_data()) {
 	
 	$DB->insert_record('block_exacompitemexample',array('exampleid'=>$exampleid,'itemid'=>$itemid,'timecreated'=>time(),'status'=>0));
 
-	die;
 ?>
 <script type="text/javascript">
 		window.opener.Exacomp.newExampleAdded();

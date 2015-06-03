@@ -70,7 +70,7 @@ class block_exacomp_example_submission_form extends moodleform {
 			$errors['url'] = get_string('linkerr','block_exacomp');
 		}
 	
-		if (empty($data['url']) && empty($files['file'])) {
+		if (empty($data['url']) && empty($data['file'])) {
 			$errors['url'] = get_string('submissionmissing','block_exacomp');
 			$errors['file'] = get_string('submissionmissing','block_exacomp');
 		}
