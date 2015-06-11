@@ -360,7 +360,7 @@ $string['student_name'] = "participant";
 $string['help_crosssubject'] = "Die Zusammenstellung des Themas erfolgt für die ganze Schule über den Reiter Lernwegeliste. Sie können hier kursspezifisch Kompetenzen, Teilkompetenzen und Lernmaterial ausblenden. Lernmaterial kann hier ergänzt werden. Dieses wird automatisch in die Lernwegeliste integriert.";
 $string['description'] = "description";
 $string['no_student'] = '-- no participant selected --';
-$string['no_student_edit'] = "edit - no participant";
+$string['no_student_edit'] = "edit mode - no participant";
 $string['save_as_draft'] = "share cross-subject as draft";
 $string['comps_and_material'] = "outcomes and exercises";
 $string['no_crosssubjs'] = 'No Cross-Subjects available.';
@@ -370,6 +370,9 @@ $string['delete_drafts'] = 'Delete selected crosssubjects';
 $string['share_crosssub'] = 'Share crosssubject with participants';
 $string['share_crosssub_with_students'] = 'Share crosssubject "{$a}" with the following participants: ';
 $string['share_crosssub_with_all'] = 'Share crosssubject "{$a}" with all participants: ';
+
+//Associations
+$string['competence_associations_explaination'] = 'The material {$a} is associated wih the following standards:';
 
 //metadata
 $string['subject_singular'] = 'Field of competence';

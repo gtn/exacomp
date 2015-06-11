@@ -411,6 +411,9 @@ $string['share_crosssub'] = 'Thema für Teilnehmer freigeben';
 $string['share_crosssub_with_students'] = 'Das Thema "{$a}" für folgende Teilnehmer freigeben: ';
 $string['share_crosssub_with_all'] = 'Das Thema "{$a}" für <b>alle</b> Teilnehmer freigeben: ';
 
+//Associations
+$string['competence_associations_explaination'] = 'Das Lernmaterial {$a} ist mit den folgenden Kompetenzen verknpüpft:';
+
 //LIS Strings
 if(get_config('exacomp','alternativedatamodel')) {
 	/*langstrings for alternativedatamodel--*/

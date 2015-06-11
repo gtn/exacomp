@@ -1516,14 +1516,29 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				
 				if($data->role == ROLE_STUDENT) {
 					$titleCell->text .= html_writer::link(
+							"#",
+							'W');
+					
+					$titleCell->text .= html_writer::link(
 							new moodle_url('/blocks/exacomp/example_submission.php',array("courseid"=>$data->courseid,"exampleid"=>$example->id)),
 							'L',
 							array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+					
+					$titleCell->text .= html_writer::link(
+							new moodle_url('/blocks/exacomp/competence_associations.php',array("courseid"=>$data->courseid,"exampleid"=>$example->id)),
+							'V', array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+					
+					if($example->solution)
+						$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->solution), "M" ,array("target" => "_blank"));
+					
+					
 				} else if($data->role == ROLE_TEACHER) {
 					$studentid = optional_param("studentid", 0, PARAM_INT);
 					if($studentid > 0) {
-						$titleCell->text .= html_writer::link(
-								$CFG->wwwroot . ('/blocks/exaport/shared_item.php?access='.block_exacomp_get_viewurl_for_example($studentid,$example->id)),
+						$viewurl = block_exacomp_get_viewurl_for_example($studentid,$example->id);
+						if($viewurl != false)
+							$titleCell->text .= html_writer::link(
+								$CFG->wwwroot . ('/blocks/exaport/shared_item.php?access='.$viewurl),
 								'L',
 								array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 					}
@@ -3782,6 +3797,54 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content = html_writer::table($table);
 
 		return $content;
+	}
+	
+	public function print_competence_based_list_tree($tree) {
+		$html_tree = "";
+		$html_tree .= html_writer::start_tag("ul",array("class"=>"collapsibleList"));
+		foreach($tree as $skey => $subject) {
+			$html_tree .= html_writer::start_tag("li");
+			$html_tree .= $subject->title;
+			
+			if(!empty($subject->subs))
+				$html_tree .= html_writer::start_tag("ul");
+			
+			foreach ( $subject->subs as $tkey => $topic ) {
+				$html_tree .= html_writer::start_tag("li");
+				$html_tree .= $topic->title;
+				
+				if(!empty($topic->descriptors))
+					$html_tree .= html_writer::start_tag("ul");
+				
+				foreach ( $topic->descriptors as $dkey => $descriptor ) {
+					$html_tree .= html_writer::start_tag("li");
+					$html_tree .= $descriptor->title;
+					
+					if(!empty($descriptor->examples))
+						$html_tree .= html_writer::start_tag("ul");
+					
+					foreach($descriptor->examples as $example) {
+						$html_tree .= html_writer::tag("li", $example->title);
+					}
+					
+					if(!empty($descriptor->examples))
+						$html_tree .= html_writer::end_tag("ul");
+					
+					$html_tree .= html_writer::end_tag("li");
+				}
+				
+				if(!empty($topic->descriptors))
+					$html_tree .= html_writer::end_tag("ul");
+				
+			}
+			if(!empty($subject->subs))
+				$html_tree .= html_writer::end_tag("ul");
+			
+			$html_tree .= html_writer::end_tag("li");
+		}
+		$html_tree .= html_writer::end_tag("ul");
+		
+		return $html_tree;
 	}
 }
 ?>

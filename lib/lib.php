@@ -71,9 +71,7 @@ define("SHOW_ALL_STUDENTS", 100000);
 function block_exacomp_init_js_css(){
 	global $PAGE, $CFG;
 	$PAGE->requires->css('/blocks/exacomp/styles.css');
-	$PAGE->requires->css('/blocks/exacomp/css/jquery-ui.css');
-	$PAGE->requires->js('/blocks/exacomp/javascript/jquery.js', true);
-	$PAGE->requires->js('/blocks/exacomp/javascript/jquery-ui.js', true);
+	$PAGE->requires->jquery();
 	$PAGE->requires->js('/blocks/exacomp/javascript/exacomp.js', true);
 	$PAGE->requires->js('/blocks/exacomp/javascript/ajax.js', true);
 
@@ -4019,8 +4017,12 @@ function block_exacomp_get_viewurl_for_example($studentid,$exampleid) {
 	        WHERE ie.exampleid = ? AND i.userid=?';
 	
 	$item = $DB->get_record_sql($sql, array($exampleid,$studentid));
+	if(!$item)
+		return false;
 	
 	$view = $DB->get_record('block_exaportviewblock', array("type"=>"item","itemid"=>$item->itemid));
+	if(!$view)
+		return false;
 	
 	$access = "view/id/".$studentid."-".$view->viewid."&itemid=".$item->itemid;
 	
