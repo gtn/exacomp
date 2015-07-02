@@ -35,12 +35,14 @@
 			hide.removeClass("hidden");
 		}
 	});
-	// Never entered
-	/*
-	 * $(document).on('change', 'select[name^=data\-]', function() { var values =
-	 * $(this).attr("name").split("-"); competencies[values[1]] = { userid :
-	 * values[2], compid : values[1], value : $(this).val() }; });
-	 */
+	  $(document).on('change', 'select[name^=data\-]', function() {
+		var values = $(this).attr("name").split("-");
+		competencies[values[1]] = {
+			userid : values[2],
+			compid : values[1],
+			value : $(this).val()
+		};
+	});
 	// # TOPICS
 	var topics = [];
 	$(document).on('click', 'input[name^=datatopics\-]', function() {
@@ -66,7 +68,6 @@
 				};
 		}
 	});
-	// Never entered
 	$(document).on('change', 'select[name^=datatopics\-]', function() {
 		var values = $(this).attr("name").split("-");
 		topics[values[1]] = {
@@ -108,23 +109,37 @@
 			hide.removeClass("hidden");
 		}
 	});
-	// never entered
-	/*
-	 * $(document).on('change', 'select[name^=dataexamples\-]', function() { var
-	 * values = $(this).attr("name").split("-");
-	 * 
-	 * if (values[3] == 'studypartner') examples[values[1]] = { userid :
-	 * values[2], exampleid : values[1], studypartner : $(this).val() }; else if
-	 * (values[3] == 'starttime') examples[values[1]] = { userid : values[2],
-	 * exampleid : values[1], starttime : $(this).val() }; else if (values[3] ==
-	 * 'endtime') examples[values[1]] = { userid : values[2], exampleid :
-	 * values[1], endtime : $(this).val() }; else examples[values[1]] = { userid :
-	 * values[2], exampleid : values[1], value : $(this).val() };
-	 * 
-	 * console.log(examples);
-	 * 
-	 * });
-	 */
+	
+
+	$(document).on('change', 'select[name^=dataexamples\-]', function() {
+		var values = $(this).attr("name").split("-");
+
+		if (values[3] == 'studypartner')
+			examples[values[1]] = {
+				userid : values[2],
+				exampleid : values[1],
+				studypartner : $(this).val()
+			};
+		else if (values[3] == 'starttime')
+			examples[values[1]] = {
+				userid : values[2],
+				exampleid : values[1],
+				starttime : $(this).val()
+			};
+		else if (values[3] == 'endtime')
+			examples[values[1]] = {
+				userid : values[2],
+				exampleid : values[1],
+				endtime : $(this).val()
+			};
+		else
+			examples[values[1]] = {
+				userid : values[2],
+				exampleid : values[1],
+				value : $(this).val()
+			};
+	});
+	 
 
 	// #CrossSubject Title & Description
 	var title = "";
@@ -136,11 +151,10 @@
 	$(document).on('focusout', 'input[name^=crosssub-description]', function() {
 		description = $(this).val();
 	});
-
-	$(function() {
-		$("#assign-competencies input[type=submit]")
-				.click(
-						function() {
+	
+	$(document).on('click', '#assign-competencies input[type=submit]', function() {
+							event.preventDefault();
+							console.log(event);
 							courseid = getUrlVars()['courseid'];
 
 							// only for crosssubjects
@@ -156,6 +170,7 @@
 
 							switch ($(this).attr('id')) {
 							case 'btn_submit':
+								
 								if (competencies.length > 0) {
 									$
 											.ajax(
@@ -207,7 +222,7 @@
 
 									topics = [];
 								}
-
+								
 								if (examples.length > 0) {
 									$
 											.ajax(
@@ -271,7 +286,6 @@
 													});
 								}
 
-								//event.preventDefault();
 								//reload to display hide-buttons properly, especially when the descriptor is formerly used-> hide button not displayed
 								//if evaluation removed->hide button should be shown.
 								//alert is not necessary any more
@@ -306,7 +320,6 @@
 							}
 
 						});
-	});
 
 	$(document).on('click', 'input[name=share_all]', function(){
 		if(this.checked == "1"){

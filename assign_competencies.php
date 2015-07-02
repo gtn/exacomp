@@ -95,13 +95,14 @@ else{
 	//dropdowns for subjects and topics and students -> if user is teacher
 	echo $output->print_overview_dropdowns(block_exacomp_get_schooltypetree_by_subjects($subjects), $topics, $selectedSubject->id, $selectedTopic->id, $students, $studentid, $isTeacher);
 	
-	$schooltype = block_exacomp_get_schooltype_title_by_subject($selectedSubject);
+	//$schooltype = block_exacomp_get_schooltype_title_by_subject($selectedSubject);
+	$subject = block_exacomp_get_subject_by_id($selectedSubject->subjid);
 	$cat = block_exacomp_get_category($selectedTopic);
 		
 	$scheme = block_exacomp_get_grading_scheme($courseid);
 	
 	if($selectedTopic->id != SHOW_ALL_TOPICS){
-		echo $output->print_overview_metadata($schooltype, $selectedSubject, $selectedTopic, $cat);
+		echo $output->print_overview_metadata(reset($subject)->title, $selectedSubject, $selectedTopic, $cat);
 				
 		if($isTeacher)
 			echo $output->print_overview_metadata_teacher($selectedSubject,$selectedTopic);
@@ -135,7 +136,8 @@ else{
 
 	$subjects = block_exacomp_get_competence_tree($courseid,(isset($selectedSubject))?$selectedSubject->id:null,false,(isset($selectedTopic))?$selectedTopic->id:null,
 			!($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies);
-
+	
+	
 	echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? ROLE_TEACHER : ROLE_STUDENT, $scheme);
 
 }

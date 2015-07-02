@@ -55,10 +55,7 @@ block_exacomp_build_breadcrum_navigation($courseid);
 
 $headertext = "";
 
-if(!$version)
 	$img = new moodle_url('/blocks/exacomp/pix/two.png');
-else 
- 	$img = new moodle_url('/blocks/exacomp/pix/three.png');
 	 	
 if ($action == 'save') {
     block_exacomp_set_coursetopics($courseid, (isset($_POST['data'])?$_POST['data']:array()));
@@ -118,12 +115,11 @@ if($action == 'digicomps') {
  */
 
 $courseid_temp = $courseid;
-if(!$version && !$skillmanagement) $courseid_temp = 0;
+$courseid_temp = 0;
 
 $schooltypes = block_exacomp_build_schooltype_tree($courseid_temp);
 
 $topics = block_exacomp_get_topics_by_subject($courseid, 0, true);
-
 
 echo $output->print_courseselection($schooltypes, $topics, $headertext);
 

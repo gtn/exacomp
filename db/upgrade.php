@@ -1576,5 +1576,178 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    }
 		upgrade_block_savepoint(true, 2015051400, 'exacomp');
 	}
+	
+	if ($oldversion < 2015070200) {
+	
+		// Define table block_exacompschedule to be created.
+		$table = new xmldb_table('block_exacompschedule');
+	
+		// Adding fields to table block_exacompschedule.
+		$table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+		$table->add_field('studentid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+		$table->add_field('exampleid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+		$table->add_field('creatorid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+		$table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+		$table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+		$table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+	
+		// Adding keys to table block_exacompschedule.
+		$table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+	
+		// Conditionally launch create table for block_exacompschedule.
+		if (!$dbman->table_exists($table)) {
+			$dbman->create_table($table);
+		}
+	
+		// Exacomp savepoint reached.
+		upgrade_block_savepoint(true, 2015070200, 'exacomp');
+	}
+	
+	if ($oldversion < 2015070201) {
+	
+		// Define field sourceid to be dropped from block_exacompsubjects.
+		$table = new xmldb_table('block_exacompsubjects');
+		$field = new xmldb_field('numb');
+	
+		// Conditionally launch drop field sourceid.
+		if ($dbman->field_exists($table, $field)) {
+			$dbman->drop_field($table, $field);
+		}
+	
+		// Define key subjid (foreign) to be dropped form block_exacomptopics.
+		$table = new xmldb_table('block_exacomptopics');
+		$key = new xmldb_key('catid', XMLDB_KEY_FOREIGN, array('catid'), 'block_exacompcategories', array('id'));
+		
+		// Launch drop key subjid.
+		$dbman->drop_key($table, $key);
+		
+		// Rename field catid on table block_exacomptopics to numb.
+		$table = new xmldb_table('block_exacomptopics');
+		$field = new xmldb_field('catid', XMLDB_TYPE_INTEGER, '11', null, null, null, null, 'titleshort');
+		
+		// Launch rename field catid.
+		$dbman->rename_field($table, $field, 'numb');
+		
+		// Define field requirement to be dropped from block_exacomptopics.
+		$table = new xmldb_table('block_exacomptopics');
+		$field = new xmldb_field('requirement');
+		
+		// Conditionally launch drop field requirement.
+		if ($dbman->field_exists($table, $field)) {
+			$dbman->drop_field($table, $field);
+		}
+		
+		// Define field requirement to be dropped from block_exacomptopics.
+		$table = new xmldb_table('block_exacomptopics');
+		$field = new xmldb_field('knowledgecheck');
+		
+		// Conditionally launch drop field requirement.
+		if ($dbman->field_exists($table, $field)) {
+			$dbman->drop_field($table, $field);
+		}
+		
+		// Define field requirement to be dropped from block_exacomptopics.
+		$table = new xmldb_table('block_exacomptopics');
+		$field = new xmldb_field('benefit');
+		
+		// Conditionally launch drop field requirement.
+		if ($dbman->field_exists($table, $field)) {
+			$dbman->drop_field($table, $field);
+		}
+		
+		// Define field requirement to be dropped from block_exacomptopics.
+		$table = new xmldb_table('block_exacomptopics');
+		$field = new xmldb_field('ataxonomie');
+		
+		// Conditionally launch drop field requirement.
+		if ($dbman->field_exists($table, $field)) {
+			$dbman->drop_field($table, $field);
+		}
+		// Define field requirement to be dropped from block_exacomptopics.
+		$table = new xmldb_table('block_exacomptopics');
+		$field = new xmldb_field('btaxonomie');
+		
+		// Conditionally launch drop field requirement.
+		if ($dbman->field_exists($table, $field)) {
+			$dbman->drop_field($table, $field);
+		}
+		// Define field requirement to be dropped from block_exacomptopics.
+		$table = new xmldb_table('block_exacomptopics');
+		$field = new xmldb_field('ctaxonomie');
+		
+		// Conditionally launch drop field requirement.
+		if ($dbman->field_exists($table, $field)) {
+			$dbman->drop_field($table, $field);
+		}
+		// Define field requirement to be dropped from block_exacomptopics.
+		$table = new xmldb_table('block_exacomptopics');
+		$field = new xmldb_field('dtaxonomie');
+		
+		// Conditionally launch drop field requirement.
+		if ($dbman->field_exists($table, $field)) {
+			$dbman->drop_field($table, $field);
+		}
+		// Define field requirement to be dropped from block_exacomptopics.
+		$table = new xmldb_table('block_exacomptopics');
+		$field = new xmldb_field('etaxonomie');
+		
+		// Conditionally launch drop field requirement.
+		if ($dbman->field_exists($table, $field)) {
+			$dbman->drop_field($table, $field);
+		}
+		// Define field requirement to be dropped from block_exacomptopics.
+		$table = new xmldb_table('block_exacomptopics');
+		$field = new xmldb_field('ftaxonomie');
+		
+		// Conditionally launch drop field requirement.
+		if ($dbman->field_exists($table, $field)) {
+			$dbman->drop_field($table, $field);
+		}
+		
+		// Define field requirement to be added to block_exacompdescriptors.
+		$table = new xmldb_table('block_exacompdescriptors');
+		$field = new xmldb_field('requirement', XMLDB_TYPE_TEXT, null, null, null, null, null, 'epop');
+		
+		// Conditionally launch add field requirement.
+		if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+		
+		// Define field requirement to be added to block_exacompdescriptors.
+		$table = new xmldb_table('block_exacompdescriptors');
+		$field = new xmldb_field('benefit', XMLDB_TYPE_TEXT, null, null, null, null, null, 'requirement');
+		
+		// Conditionally launch add field requirement.
+		if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+		
+		// Define field requirement to be added to block_exacompdescriptors.
+		$table = new xmldb_table('block_exacompdescriptors');
+		$field = new xmldb_field('knowledgecheck', XMLDB_TYPE_TEXT, null, null, null, null, null, 'benefit');
+		
+		// Conditionally launch add field requirement.
+		if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+		
+		// Define field catid to be added to block_exacompdescriptors.
+		$table = new xmldb_table('block_exacompdescriptors');
+		$field = new xmldb_field('catid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'knowledgecheck');
+		
+		// Conditionally launch add field catid.
+		if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+		
+		// Define key catid (foreign) to be added to block_exacompdescriptors.
+		$table = new xmldb_table('block_exacompdescriptors');
+		$key = new xmldb_key('catid', XMLDB_KEY_FOREIGN, array('catid'), 'block_exacompcategories', array('id'));
+		
+		// Launch add key catid.
+		$dbman->add_key($table, $key);
+		// Exacomp savepoint reached.
+		upgrade_block_savepoint(true, 2015070201, 'exacomp');
+	}
 	return $result;
 }

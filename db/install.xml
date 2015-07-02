@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/exacomp/db" VERSION="20150325" COMMENT="XMLDB file for Moodle blocks/exacomp"
+<XMLDB PATH="blocks/exacomp/db" VERSION="20150702" COMMENT="XMLDB file for Moodle blocks/exacomp"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -19,11 +19,16 @@
         <FIELD NAME="profoundness" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0 = basic descriptor, 1 = extended descriptor"/>
         <FIELD NAME="parentid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="epop" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="requirement" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="meta info"/>
+        <FIELD NAME="benefit" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="meta info"/>
+        <FIELD NAME="knowledgecheck" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="meta info"/>
+        <FIELD NAME="catid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="category id foreign key"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="niveauid" TYPE="foreign" FIELDS="niveauid" REFTABLE="block_exacompniveaus" REFFIELDS="id"/>
         <KEY NAME="skillid" TYPE="foreign" FIELDS="skillid" REFTABLE="block_exacompskills" REFFIELDS="id"/>
+        <KEY NAME="catid" TYPE="foreign" FIELDS="catid" REFTABLE="block_exacompcategories" REFFIELDS="id" COMMENT="cat id foreign key"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="block_exacomptopics" COMMENT="Schwerpunkte, Kategorie der Deskriptoren">
@@ -36,23 +41,13 @@
         <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft, 0=Moodleinstanz 1=Zentraler Server"/>
         <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="titleshort" TYPE="char" LENGTH="250" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="catid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="requirement" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="benefit" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="knowledgecheck" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="ataxonomie" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="btaxonomie" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="ctaxonomie" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="dtaxonomie" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="etaxonomie" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="ftaxonomie" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="numb" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="parentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the parent topic"/>
         <FIELD NAME="epop" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="subjid" TYPE="foreign" FIELDS="subjid" REFTABLE="block_exacompsubjects" REFFIELDS="id"/>
-        <KEY NAME="catid" TYPE="foreign" FIELDS="catid" REFTABLE="block_exacompcategories" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="block_exacompsubjects" COMMENT="Gegenstände, Kategorie der Schwerpunkte">
@@ -64,7 +59,6 @@
         <FIELD NAME="sourceid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Beschreibt die Herkunft, 0=Moodleinstanz 1=Zentraler Server"/>
         <FIELD NAME="titleshort" TYPE="char" LENGTH="200" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="numb" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="catid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="infolink" TYPE="char" LENGTH="400" NOTNULL="false" SEQUENCE="false" COMMENT="link to external description for comp grid"/>
@@ -413,7 +407,7 @@
         <KEY NAME="crosssubjid" TYPE="foreign" FIELDS="crosssubjid" REFTABLE="block_exacompcrosssubjects" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
-	 <TABLE NAME="block_exacompcrossstud_mm" COMMENT="zuordnung Schüler zu Cross-Subjects (Freigabe)">
+    <TABLE NAME="block_exacompcrossstud_mm" COMMENT="zuordnung Schüler zu Cross-Subjects (Freigabe)">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="crosssubjid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
@@ -422,14 +416,14 @@
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="crosssubjid" TYPE="foreign" FIELDS="crosssubjid" REFTABLE="block_exacompcrosssubjects" REFFIELDS="id"/>
-        <KEY NAME="studentid" TYPE="foreign" FIELDS="studentid" REFTABLE="user" REFFIELDS="id"/> 
+        <KEY NAME="studentid" TYPE="foreign" FIELDS="studentid" REFTABLE="user" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="block_exacompdescrvisibility" COMMENT="Visibility of descriptor in context of course, topic and student">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="courseid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
-       	<FIELD NAME="descrid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="descrid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="studentid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="visible" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
       </FIELDS>
@@ -438,6 +432,20 @@
         <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
         <KEY NAME="descrid" TYPE="foreign" FIELDS="descrid" REFTABLE="block_exacompdescriptors" REFFIELDS="id"/>
         <KEY NAME="studentid" TYPE="foreign" FIELDS="studentid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="block_exacompschedule" COMMENT="schedule for tasks">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="studentid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="exampleid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="creatorid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="id of the course in which the example is treated"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
   </TABLES>

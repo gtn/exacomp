@@ -114,9 +114,6 @@ function block_exacomp_insert_topic($topic, $parent = 0) {
 	$topic->sourceid = $topic['id']->__toString();
 	$topic->parentid = $parent;
 
-	if($topic['categoryid'])
-		$topic->catid = block_exacomp_get_database_id(DB_CATEGORIES,$topic['categoryid']->__toString());
-
 	if($stObj = $DB->get_record(DB_TOPICS, array("sourceid"=>$topic['id']->__toString()))) {
 		$topic->id = $stObj->id;
 		$DB->update_record(DB_TOPICS, simpleXMLElementToArray($topic));
@@ -147,13 +144,6 @@ function block_exacomp_insert_topic($topic, $parent = 0) {
 }
 function block_exacomp_insert_subject(&$subject) {
 	global $DB,$source;
-	
-	/*if($source > IMPORT_SOURCE_NORMAL) {
-		if($dbsubject = $DB->get_record(DB_SUBJECTS, array("sourceid"=>$subject['id']->__toString(),"source"=>IMPORT_SOURCE_NORMAL)))
-			$subject->id = $dbsubject->id;
-		
-		return;
-	}*/
 	
 	$subject->sourceid = $subject['id']->__toString();
 	//$subject->source = $source;
@@ -208,7 +198,9 @@ function block_exacomp_insert_descriptor($descriptor, $parent = 0) {
 		$descriptor->skillid = $descriptor['skillid']->__toString();
 	if($descriptor['niveauid']) //niveaus have to be imported with normal import -> TODO
 		$descriptor->niveauid = block_exacomp_get_database_id(DB_NIVEAUS,$descriptor['niveauid']->__toString());
-
+	if($descriptor['categoryid'])
+		$descriptor->catid = block_exacomp_get_database_id(DB_CATEGORIES,$descriptor['categoryid']->__toString());
+	
 	//if specific import and descriptor already normal imported -> return
 	if($source != IMPORT_SOURCE_NORMAL) {
 		if($descriptorObj = $DB->get_record(DB_DESCRIPTORS, array("sourceid"=>$descriptor['id']->__toString(),"source"=>IMPORT_SOURCE_NORMAL)))

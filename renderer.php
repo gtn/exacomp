@@ -1019,7 +1019,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		foreach($subjects as $subject) {
 			$schooltype = block_exacomp_get_schooltype_title_by_subject($subject);
-			$lwl = substr($schooltype, 0,1).$subject->numb;
+			$lwl = substr($schooltype, 0,1);
 			if(!$subject->subs)
 				continue;
 				
@@ -1125,6 +1125,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	public function print_topics(&$rows, $level, $topics, &$data, $students, $rowgroup_class = '', $profoundness = false, $editmode = false, $lwl_sub="") {
+		
 		global $version;
 		$topicparam = optional_param('topicid', 0, PARAM_INT);
 		$padding = $level * 20 + 12;
@@ -1138,7 +1139,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$studentsCount = 0;
 			$studentsColspan = 1;
 
-			$hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) && (!$version || ($version && $topicparam == SHOW_ALL_TOPICS)));
+			$hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) && (!$version));
 
 			if ($hasSubs) {
 				$data->rowgroup++;
@@ -1230,6 +1231,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$topicRow->cells[] = $studentCell;
 			}
 
+			if($version)
+				$topicRow->style = "display:none;";
+			
 			$rows[] = $topicRow;
 
 			if (!empty($topic->descriptors)) {
@@ -1282,7 +1286,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			if($descriptor->parentid > 0)
 			    $padding += 20;
 
-			if($descriptor->examples) {
+			if($descriptor->examples || $descriptor->children) {
 				$data->rowgroup++;
 				$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$rowgroup_class.$visible_css;
 				$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$data->rowgroup.' '.$rowgroup_class;
@@ -1290,7 +1294,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$this_rowgroup_class = $rowgroup_class.$visible_css;
 			}
 			$descriptorRow = new html_table_row();
+			
+			
 			$descriptorRow->attributes['class'] = 'exabis_comp_aufgabe ' . $this_rowgroup_class;
+			if($version && count($descriptor->children) > 0)
+				$descriptorRow->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rowgroup_class . ' highlight';
+				
+			
 			$exampleuploadCell = new html_table_cell();
 			if($data->role == ROLE_TEACHER && !$profoundness) {
 				$exampleuploadCell->text = html_writer::link(
@@ -1304,7 +1314,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$descriptorRow->cells[] = $exampleuploadCell;
 
 			$titleCell = new html_table_cell();
-			if($descriptor->examples)
+			if($descriptor->examples || $descriptor->children)
 				$titleCell->attributes['class'] = 'rowgroup-arrow';
 			$titleCell->style = "padding-left: ".$padding."px";
 			$titleCell->text = html_writer::div($outputname);
@@ -1600,6 +1610,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 				$rows[] = $exampleRow;
 			}
+			
+			if (!empty($descriptor->children)) {
+				$this->print_descriptors($rows, $level+1, $descriptor->children, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $lwl);
+			}	
 		}
 	}
 
