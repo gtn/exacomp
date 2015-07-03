@@ -95,7 +95,7 @@ function block_exacomp_init_js_css(){
  */
 function block_exacomp_get_subject_by_id($subjectid) {
 	global $DB;
-	return $DB->get_records(DB_SUBJECTS,array("id" => $subjectid),'','id, title, \'subject\' as tabletype');
+	return $DB->get_record(DB_SUBJECTS,array("id" => $subjectid),'id, title, \'subject\' as tabletype');
 }
 /**
  * Gets all subjects that are in use in a particular course.
@@ -131,7 +131,7 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
  */
 function block_exacomp_get_all_subjects() {
 	global $DB;
-	return $DB->get_records(DB_SUBJECTS,array(),'','id, title, numb, \'subject\' as tabletype');
+	return $DB->get_records(DB_SUBJECTS,array(),'','id, title, \'subject\' as tabletype');
 }
 /**
  * This method is only used in the LIS version
@@ -828,7 +828,7 @@ function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldes
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.catid '
+	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.catid, d.requirement, d.knowledgecheck, d.benefit '
 	.'FROM {'.DB_TOPICS.'} t JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($topicid > 0) ? ' AND t.id = '.$topicid.' ' : '')
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
 	.'JOIN {'.DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id '
@@ -886,10 +886,12 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 	// 1. GET SUBJECTS
 	if($courseid == 0)
 		$allSubjects = block_exacomp_get_all_subjects();
-	elseif($subjectid != null)
-		$allSubjects = block_exacomp_get_subject_by_id($subjectid);
+	elseif($subjectid != null) {
+		$allSubjects = array($subjectid => block_exacomp_get_subject_by_id($subjectid));
+	}
 	else
 		$allSubjects = block_exacomp_get_subjects_by_course($courseid, $showalldescriptors);
+	
 	
 	// 2. GET TOPICS
 	$allTopics = block_exacomp_get_all_topics($subjectid);
@@ -952,8 +954,6 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 
 					// found: add it to the subject result
 					$subject = $allSubjects[$topic->subjid];
-					if($version)
-						$subject->title = $selectedTopic->title;
 					$subject->subs[$topic->id] = $topic;
 					$subjects[$topic->subjid] = $subject;
 
@@ -3404,11 +3404,10 @@ function block_exacomp_build_schooltype_tree($courseid=0){
 	
 	foreach($schooltypes as $schooltype){
 		$subjects = block_exacomp_get_subjects_for_schooltype($courseid, $schooltype->id);
-
+		
 		$schooltype->subs = array();
 		foreach($subjects as $subject){
 			$param = $courseid;
-			if($version || $skillmanagement)	$param = 0;
 			$tree = block_exacomp_get_competence_tree($param, $subject->id);
 			$schooltype->subs += $tree;
 		}
@@ -3701,7 +3700,6 @@ function block_exacomp_get_schooltypetree_by_subjects($subjects){
     foreach($subjects as $subject){
     	if($version) {
     		$schooltype = block_exacomp_get_subject_by_id($subject->subjid);
-			$schooltype = reset($schooltype);    		
     	}
     	else
        		$schooltype = block_exacomp_get_schooltype_by_subject($subject);

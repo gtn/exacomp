@@ -102,7 +102,7 @@ else{
 	$scheme = block_exacomp_get_grading_scheme($courseid);
 	
 	if($selectedTopic->id != SHOW_ALL_TOPICS){
-		echo $output->print_overview_metadata(reset($subject)->title, $selectedSubject, $selectedTopic, $cat);
+		echo $output->print_overview_metadata($subject->title, $selectedSubject, $selectedTopic, $cat);
 				
 		if($isTeacher)
 			echo $output->print_overview_metadata_teacher($selectedSubject,$selectedTopic);
@@ -137,6 +137,8 @@ else{
 	$subjects = block_exacomp_get_competence_tree($courseid,(isset($selectedSubject))?$selectedSubject->id:null,false,(isset($selectedTopic))?$selectedTopic->id:null,
 			!($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies);
 	
+	$firstvalue = reset($subjects);
+	$firstvalue->title = $selectedSubject->title;
 	
 	echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? ROLE_TEACHER : ROLE_STUDENT, $scheme);
 
