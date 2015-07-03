@@ -1018,8 +1018,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$course_subs = block_exacomp_get_subjects_by_course($courseid);
 		
 		foreach($subjects as $subject) {
-			$schooltype = block_exacomp_get_schooltype_title_by_subject($subject);
-			$lwl = substr($schooltype, 0,1);
+			$lwl_subject = block_exacomp_get_topic_by_id($subject->id);
+			$lwl = substr(block_exacomp_get_subject_by_id(reset($lwl_subject)->subjid)->title, 0,1) . reset($lwl_subject)->numb;
 			if(!$subject->subs)
 				continue;
 				
@@ -1278,7 +1278,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				($data->role == ROLE_TEACHER) ? $visible_css = ' hidden_temp' : $visible_css = ' hidden';
 				
 			$checkboxname = "data";
-			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor, false, false);
+			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor, false, (count($descriptor->children) > 0) ? true : false);
 			$studentsCount = 0;
 
 			$padding = ($level) * 20 + 4;
@@ -1308,7 +1308,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						html_writer::empty_tag('img', array('src'=>'pix/upload_12x12.png', 'alt'=>'upload')),
 						array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 			}
-			
+			if (!empty($descriptor->children) && $version) {
+				$lwl .= '.'.$descriptor->catid;
+			}
+
 			$exampleuploadCell->text .= $outputid.($version)?$lwl.".".block_exacomp_get_descr_topic_sorting($descriptor->topicid, $descriptor->id):"";
 
 			$descriptorRow->cells[] = $exampleuploadCell;
