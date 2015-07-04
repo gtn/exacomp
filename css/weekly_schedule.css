@@ -1,0 +1,101 @@
+#main-content {
+	display: table;
+	width: 100%;
+}
+#main-content > .column {
+	display: table-cell;
+}
+#main-content > .column:first-child {
+	width: 20%;
+}
+#main-content > .column:last-child {
+	padding-left: 20px;
+}
+
+.header {
+	background: blue;
+	color: white;
+	padding: 5px 5px 5px 15px;
+}
+.items {
+	margin: 0;
+	min-height: 10px;
+}
+.item {
+	margin: 10px;
+	padding: 5px;
+	background: white;
+	border: 1px solid black;
+	cursor: pointer;
+}
+.item .header {
+	background: lightblue;
+	color: black;
+}
+.item .buttons {
+	display: none;
+}
+.item .buttons label:first-child {
+	float: left;
+}
+.day .item .buttons {
+	display: block;
+	margin-top: 5px;
+}
+.empty {
+	margin: 10px;
+	padding: 5px;
+	height: 40px;
+	display: none;
+	position: absolute;
+}
+
+#items {
+	border: 1px solid black;
+	min-height: 200px;
+}
+#items .items {
+	min-height: 200px;
+}
+
+#trash {
+	border: 1px solid black;
+	margin-top: 20px;
+}
+#trash .items {
+	min-height: 80px;
+}
+
+.placeholder {
+	margin: 10px;
+	padding: 5px;
+	background: yellow;
+}
+
+#save-button {
+	height: 55px;
+	text-align: center;
+}
+#save-button input {
+	margin-top: 3px;
+}
+#navi {
+	border: 1px solid black;
+	margin-bottom: 20px;
+	text-align: center;
+	padding: 5px 0;
+}
+#days {
+	border: 1px solid black;
+	display: table;
+	border-collapse: collapse;
+	width: 100%;
+}
+.day {
+	display: table-cell;
+	width: 20%;
+	border-right: 1px solid black;
+}
+#days .items {
+	min-height: 200px;
+}
