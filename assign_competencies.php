@@ -74,6 +74,7 @@ if($course_settings->uses_activities && !$activities && !$course_settings->show_
 	echo $output->print_no_activities_warning($isTeacher);
 else{
 	list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_overview_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', SHOW_ALL_TOPICS, PARAM_INT));
+	
 	//Delete timestamp (end|start) from example
 	if($example_del = optional_param('exampleid', 0, PARAM_INT)){
 		block_exacomp_delete_timefield($example_del, optional_param('deletestart', 0, PARAM_INT), optional_param('deleteend', 0, PARAM_INT));
@@ -94,14 +95,19 @@ else{
 	//dropdowns for subjects and topics and students -> if user is teacher
 	echo $output->print_overview_dropdowns(block_exacomp_get_schooltypetree_by_subjects($subjects), $topics, $selectedSubject->id, $selectedTopic->id, $students, $studentid, $isTeacher);
 	
-	//$schooltype = block_exacomp_get_schooltype_title_by_subject($selectedSubject);
-	$subject = block_exacomp_get_subject_by_id($selectedSubject->subjid);
+	if($version)
+		$metasubject = block_exacomp_get_subject_by_id($selectedSubject->subjid);
+	else {
+		$metasubject = new stdClass();
+		$metasubject->title = block_exacomp_get_schooltype_title_by_subject($selectedSubject);
+	}
+	
 	$cat = block_exacomp_get_category($selectedTopic);
 		
 	$scheme = block_exacomp_get_grading_scheme($courseid);
 	
 	if($selectedTopic->id != SHOW_ALL_TOPICS){
-		echo $output->print_overview_metadata($subject->title, $selectedSubject, $selectedTopic, $cat);
+		echo $output->print_overview_metadata($metasubject->title, $selectedSubject, $selectedTopic, $cat);
 				
 		if($isTeacher)
 			echo $output->print_overview_metadata_teacher($selectedSubject,$selectedTopic);

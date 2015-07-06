@@ -485,7 +485,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$cell = new html_table_cell();
 		$cell->text = html_writer::span(get_string('comp_field_idea', 'block_exacomp'), 'exabis_comp_top_small')
-		. html_writer::tag('b', (strcmp($subject->numb, '')!=0)?$subject->numb." - ".$subject->title:$subject->title);
+		. html_writer::tag('b', (isset($subject->numb) && strcmp($subject->numb, '')!=0)?$subject->numb." - ".$subject->title:$subject->title);
 
 		$row->cells[] = $cell;
 
@@ -569,7 +569,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 	}
 	public function print_competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0,$studentid=0) {
-		global $CFG;
+		global $CFG, $version;
 
 		$headFlag = false;
 
@@ -626,11 +626,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						foreach($data[$skillid][$topicid][$niveauid] as $descriptor) {
 							$compString = "";
 							if (has_capability('block/exacomp:teacher', $context)) {
-								if(isset($descriptor->teachercomp) && array_key_exists($descriptor->id, $selection)) {
+								if(isset($descriptor->teachercomp) && array_key_exists($descriptor->topicid, $selection)) {
 									$compString .= "L: ";
 									if($schema == 1) {
-										$compString .= html_writer::checkbox("data[".$descriptor->id."][".$studentid."][teacher]", 1,$descriptor->teachercomp).'&nbsp; ';
-										$compString .= " S: ". html_writer::checkbox("studentdata[".$topicid."][".$descriptor->id."]", 1,($descriptor->studentcomp >= $satisfied),"",array("disabled"=>"disabled")).'&nbsp; ';
+										$compString .= html_writer::checkbox("data-".$descriptor->id."-".$studentid."-teacher", 1,$descriptor->teachercomp).'&nbsp; ';
+										
+										$compString .= " S: ". html_writer::checkbox("data".$topicid."-".$descriptor->id."-student", 1,($descriptor->studentcomp >= $satisfied),"",array("disabled"=>"disabled")).'&nbsp; ';
 									}else {
 										$options = array();
 										for($i=0;$i<=$schema;$i++)
@@ -668,7 +669,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								$compString .= $descriptor->icon;
 
 							$text = $descriptor->title;
-							if(array_key_exists($descriptor->id, $selection)) {
+							if(array_key_exists($descriptor->topicid, $selection)) {
 								$text = html_writer::link(new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid"=>$courseid,"subjectid"=>$topicid,"topicid"=>$descriptor->id)),$text);
 							}
 
@@ -683,7 +684,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 										$text .= "<a target='_blank' alt='".$example->title."' title='".$example->title."' href='".$example->externalurl."'>".$img."</a>";
 								}
 							}
-							if(isset($descriptor->children) && count($descriptor->children) > 0) {
+							if(isset($descriptor->children) && count($descriptor->children) > 0 && !$version) {
 							    $children = '<ul class="childdescriptors">';
 							    foreach($descriptor->children as $child)
 							        $children .= '<li>' . $child->title . '</li>';
@@ -691,7 +692,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							}
 							$compString .= $text;
 
-							if(isset($descriptor->children) && count($descriptor->children) > 0)
+							if(isset($descriptor->children) && count($descriptor->children) > 0 && !$version)
     							$compString .= $children;
 							/*else {
 							 if(isset($descriptor->teachercomp) && $descriptor->teachercomp)
@@ -1020,6 +1021,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		foreach($subjects as $subject) {
 			$lwl_subject = block_exacomp_get_topic_by_id($subject->id);
 			$lwl = substr(block_exacomp_get_subject_by_id(reset($lwl_subject)->subjid)->title, 0,1) . reset($lwl_subject)->numb;
+			
 			if(!$subject->subs)
 				continue;
 				
@@ -1308,11 +1310,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						html_writer::empty_tag('img', array('src'=>'pix/upload_12x12.png', 'alt'=>'upload')),
 						array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 			}
+			$lwl_print = $lwl;
 			if (!empty($descriptor->children) && $version) {
-				$lwl .= '.'.$descriptor->catid;
+				$lwl_print .= '.'.$descriptor->catid;
+			}
+			elseif($version) {
+				//$lwl_print .= '.' . block_exacomp_get_descr_topic_sorting($descriptor->topicid, $descriptor->id);
+				$lwl_print .= '.' . $descriptor->sorting;
 			}
 
-			$exampleuploadCell->text .= $outputid.($version)?$lwl.".".block_exacomp_get_descr_topic_sorting($descriptor->topicid, $descriptor->id):"";
+			$exampleuploadCell->text .= $outputid . ($version) ? $lwl_print :"";
 
 			$descriptorRow->cells[] = $exampleuploadCell;
 
@@ -1615,7 +1622,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 			
 			if (!empty($descriptor->children)) {
-				$this->print_descriptors($rows, $level+1, $descriptor->children, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $lwl);
+				$this->print_descriptors($rows, $level+1, $descriptor->children, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $lwl_print);
 			}	
 		}
 	}

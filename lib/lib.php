@@ -175,10 +175,10 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 	global $DB;
 
 	if($courseid == 0) {
-		$sql = 'SELECT s.id, s.title, s.numb, \'subject\' as tabletype
+		$sql = 'SELECT s.id, s.title, \'subject\' as tabletype
 		FROM {'.DB_SUBJECTS.'} s
 		JOIN {'.DB_TOPICS.'} t ON t.subjid = s.id
-		GROUP BY s.id, s.title, s.numb, s.stid
+		GROUP BY s.id, s.title, s.stid
 		ORDER BY s.stid, s.sorting, s.stid
 		';
 
@@ -745,7 +745,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.catid, d.parentid, dvis.visible as visible '
+	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.catid, d.parentid, dvis.visible as visible, d.sorting '
 	.'FROM {'.DB_TOPICS.'} t '
 	.(($courseid>0)?'JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
@@ -776,7 +776,7 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescrip
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = 'SELECT d.id, d.title, d.niveauid, \'descriptor\' as tabletype, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, 1 as visible
+	$sql = 'SELECT d.id, d.title, d.niveauid, \'descriptor\' as tabletype, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, 1 as visible, d.sorting
 			FROM {'.DB_DESCRIPTORS.'} d '
 			.($showalldescriptors ? '' : '
 				JOIN {'.DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
@@ -828,11 +828,11 @@ function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldes
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.catid, d.requirement, d.knowledgecheck, d.benefit, c.title as cattitle '
+	$sql = '(SELECT DISTINCT d.id, desctopmm.id as u_id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.catid, d.requirement, d.knowledgecheck, d.benefit, n.title as cattitle '
 	.'FROM {'.DB_TOPICS.'} t JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($topicid > 0) ? ' AND t.id = '.$topicid.' ' : '')
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
 	.'JOIN {'.DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id '
-	. 'LEFT JOIN {'.DB_CATEGORIES.'} c ON c.id = d.catid '
+	. 'LEFT JOIN {'.DB_NIVEAUS.'} n ON n.id = d.niveauid '
 	.($mind_visibility ? 'JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 AND dvis.visible=1 ' : '')
 	.($showalldescriptors ? '' : '
 			JOIN {'.DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
@@ -2466,7 +2466,10 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 		$cm_mm = block_exacomp_get_course_module_association($courseid);
 		$course_mods = get_fast_modinfo($courseid)->get_cms();
 	}
-	if($version) {
+
+	$selection = array();
+	
+	/* if($version) {
 		$skills = array();
 		$subjects = $DB->get_records_menu(DB_SUBJECTS,array("stid" => $subjectid),null,"id, title");
 		$niveaus = $DB->get_records_menu(DB_CATEGORIES, array("lvl" => 4),"id,title","id,title");
@@ -2508,7 +2511,7 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 
 		return array($niveaus, $skills, $subjects, $data, $selection);
 	}
-	else {
+	else { */
 		$niveaus = block_exacomp_get_niveaus_for_subject($subjectid);
 		$skills = $DB->get_records_menu('block_exacompskills',null,null,"id, title");
 		$descriptors = block_exacomp_get_descriptors_by_subject($subjectid);
@@ -2524,7 +2527,6 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 		$topics = array();
 		$data = array();
 		foreach ($descriptors as $descriptor) {
-		    
 		    if($descriptor->parentid > 0) {
 		        continue;
 		    } 
@@ -2562,8 +2564,11 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 			$topics[$descriptor->topicid] = $descriptor->topic;
 		}
 		
-		return array($niveaus, $skills, $topics, $data, array());
-	}
+		//if(block_exacomp_get_settings_by_course($courseid)->show_all_descriptors)
+			$selection = $DB->get_records(DB_COURSETOPICS,array('courseid'=>$courseid),'','topicid');
+		
+		return array($niveaus, $skills, $topics, $data, $selection);
+	//}
 }
 function block_exacomp_get_niveaus_for_subject($subjectid) {
 	global $DB;
@@ -3690,18 +3695,17 @@ function block_exacomp_check_user_evaluation_exists($courseid){
  *  schooltype2
  *  	- subject 3 
  */
-function block_exacomp_get_schooltypetree_by_subjects($subjects){
+function block_exacomp_get_schooltypetree_by_subjects($subjects, $competencegrid = false){
 	global $version;
 	
     $tree = array();
     foreach($subjects as $subject){
-    	if($version) {
+    	if($version && !$competencegrid) {
     		$schooltype = block_exacomp_get_subject_by_id($subject->subjid);
     	}
     	else
-       		$schooltype = block_exacomp_get_schooltype_by_subject($subject);
+    		$schooltype = block_exacomp_get_schooltype_by_subject($subject);
        
-    	
         if(!array_key_exists($schooltype->id, $tree)){
             $tree[$schooltype->id] = new stdClass();
             $tree[$schooltype->id]->id = $schooltype->id;
@@ -3812,7 +3816,6 @@ function block_exacomp_get_competence_tree_for_cross_subject($courseid, $crosssu
 
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
-
 	
 	$allTopics = block_exacomp_get_all_topics();
 	$allSubjects = block_exacomp_get_subjects();
@@ -3826,22 +3829,6 @@ function block_exacomp_get_competence_tree_for_cross_subject($courseid, $crosssu
 		if (empty($allTopics[$descriptor->topicid])) continue;
 		$topic = $allTopics[$descriptor->topicid];
 		$topic->descriptors[$descriptor->id] = $descriptor;
-
-		$examples = $DB->get_records_sql(
-				"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
-				e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid, e.iseditable
-				FROM {" . DB_EXAMPLES . "} e
-				JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
-				LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id"
-				. " WHERE " 
-				. (($showallexamples) ? " 1=1 " : " e.creatorid > 0")
-				. ((in_array(SHOW_ALL_TAXONOMIES, $filteredtaxonomies)) ? "" : " AND e.taxid IN (".implode(",", $filteredtaxonomies) .")" )
-				, array($descriptor->id));
-	
-		$descriptor->examples = array();
-		foreach($examples as $example){
-			$descriptor->examples[$example->id] = $example;
-		}
 	}
 	
 	$subjects = array();
@@ -3903,7 +3890,7 @@ function block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid
     if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.parentid, dvis.visible as visible '
+	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.parentid, dvis.visible as visible, d.catid '
 	.'FROM {'.DB_TOPICS.'} t '
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
 	.'JOIN {'.DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id '
@@ -3912,6 +3899,13 @@ function block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid
 
 	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid, $courseid));
    
+	foreach($descriptors as &$descriptor) {
+		//get examples
+		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
+		//check for child-descriptors
+		$descriptor->children = block_exacomp_get_child_descriptors($descriptor,$courseid, $showalldescriptors);
+	}
+	
 	return $descriptors;
     
 }

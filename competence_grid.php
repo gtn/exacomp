@@ -67,7 +67,7 @@ $studentid = optional_param("studentid", 0, PARAM_INT);
 
 if(!$isTeacher) $studentid = $USER->id;
 
-$dropdown_subjects = ($version) ? block_exacomp_get_schooltypes_by_course($courseid) : block_exacomp_get_subjects_by_course($courseid, true);
+$dropdown_subjects = block_exacomp_get_subjects_by_course($courseid, true);
 if($dropdown_subjects && $subjectid == 0)
 	$subjectid = key($dropdown_subjects);
 /* SAVE DATA */
@@ -82,7 +82,7 @@ if($version){
     }
 }
 
-echo $output->print_subject_dropdown(block_exacomp_get_schooltypetree_by_subjects($dropdown_subjects),$subjectid, $studentid);
+echo $output->print_subject_dropdown(block_exacomp_get_schooltypetree_by_subjects($dropdown_subjects,true),$subjectid, $studentid);
 if($data) {
 	if (has_capability('block/exacomp:teacher', $context) && !block_exacomp_get_settings_by_course($courseid)->nostudents) {
 		echo ' '.get_string("choosestudent","block_exacomp").' ';
@@ -93,10 +93,10 @@ if($data) {
 		echo html_writer::tag("p",get_string('infolink','block_exacomp') . html_writer::link($dropdown_subjects[$subjectid]->infolink, $dropdown_subjects[$subjectid]->infolink,array('target'=>'_blank')));
 	echo html_writer::tag("a", get_string("textalign","block_exacomp"),array("class" => "switchtextalign"));
 	echo html_writer::div($output->print_competence_grid_legend());
-	echo html_writer::start_tag("form", array("method"=>"post"));
+	echo html_writer::start_tag("form", array("method"=>"post", "id" => "assign-competencies"));
 	echo $output->print_competence_grid($niveaus, $skills, $subjects, $data, $selection, $courseid,$studentid);
 	if($version)
-		echo html_writer::div(html_writer::empty_tag("input", array("type"=>"submit","name"=>"btn_submit","value"=>get_string('save_selection','block_exacomp'))), '', array('id'=>'exabis_save_button'));
+		echo html_writer::div(html_writer::empty_tag("input", array("type"=>"submit","name"=>"btn_submit","id"=>"btn_submit","value"=>get_string('save_selection','block_exacomp'))), '', array('id'=>'exabis_save_button'));
 	echo html_writer::end_div();
 }
 else {

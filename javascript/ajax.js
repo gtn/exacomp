@@ -154,7 +154,6 @@
 	
 	$(document).on('click', '#assign-competencies input[type=submit]', function() {
 							event.preventDefault();
-							console.log(event);
 							courseid = getUrlVars()['courseid'];
 
 							// only for crosssubjects
