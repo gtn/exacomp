@@ -2,17 +2,27 @@
 
 require_once dirname(__FILE__)."/inc.php";
 
-require_login();
+$courseid = required_param ( 'courseid', PARAM_INT );
+if (! $course = $DB->get_record ( 'course', array (
+		'id' => $courseid 
+) )) {
+	print_error ( 'invalidcourse', 'block_simplehtml', $courseid );
+}
 
-$monday = optional_param('monday', time(), PARAM_INT);
-$monday = block_exacomp_add_days($monday, 1 - date('N', $monday));
+require_login ( $course );
+$context = context_course::instance ( $courseid );
+$isTeacher = has_capability( 'block/exacomp:teacher', $context);
+$studentid = $isTeacher ? optional_param("studentid", $USER->id, PARAM_INT) : $USER->id;
 
-$lastMonday = block_exacomp_add_days($monday, -7);
-$nextMonday = block_exacomp_add_days($monday, +7);
+$week = optional_param('week', time(), PARAM_INT);
+$week = block_exacomp_add_days($week, 1 - date('N', $week));
 
-// CHECK TEACHER
-$isTeacher = 0; // todo: change .... has_capability('block/exacomp:teacher', $context);
-$studentid = $isTeacher ? optional_param("studentid", 0, PARAM_INT) : $USER->id;
+$lastWeek = block_exacomp_add_days($week, -7);
+$nextWeek = block_exacomp_add_days($week, +7);
+
+$my_url = new moodle_url('/blocks/exacomp/weekly_schedule.php',
+        array('courseid'=>$courseid, 'week'=>$week) + ($isTeacher ? array('studentid'=>$studentid) : array())
+    );
 
 function block_exacomp_add_days($date, $days) {
     return mktime(0,0,0,date('m', $date), date('d', $date)+$days, date('Y', $date));
@@ -70,21 +80,34 @@ if (optional_param('action', '', PARAM_TEXT) == 'save') {
     
     // day items auf einen tag verschieben
     foreach ($days as $day => $dayItems) {
+        $i = 0;
         foreach ($dayItems as $item) {
+            $schedule = $DB->get_record('block_exacompschedule', array('id'=>$item->id, 'studentid'=>$studentid));
+            if (!$schedule) {
+                // ignore error
+                continue;
+            }
+            
             // day speichern
-            $DB->execute('UPDATE {block_exacompschedule} SET
-                timecreated = ?
-            WHERE id=? AND studentid=?', array($day, $item->id, $studentid));
+            $DB->update_record('block_exacompschedule', array('id'=>$schedule->id, 'sorting' => ++$i, 'day'=>$day));
         
             // evaluation speichern
             if ($isTeacher) {
-                $DB->execute('UPDATE {block_exacompexameval} SET
-                    teach_evaluation = ?
-                WHERE id=? AND studentid=?', array($item->teach_evaluation, $item->id, $studentid));
+                $updates = array('teacher_evaluation'=>$item->teacher_evaluation);
             } else {
-                $DB->execute('UPDATE {block_exacompexameval} SET
-                    student_evaluation = ?
-                WHERE id=? AND studentid=?', array($item->student_evaluation, $item->id, $studentid));
+                $updates = array('student_evaluation'=>$item->student_evaluation);
+            }
+            $where = array(
+                'exampleid' => $schedule->exampleid,
+                'courseid' => $courseid,
+                'studentid' => $studentid 
+            );
+            $exameval = $DB->get_record('block_exacompexameval', $where);
+            
+            if ($exameval) {
+                $DB->update_record('block_exacompexameval', array('id'=>$exameval->id) + $updates);
+            } else {
+                $DB->insert_record('block_exacompexameval', $where + $updates);
             }
         }
     }
@@ -93,7 +116,7 @@ if (optional_param('action', '', PARAM_TEXT) == 'save') {
     foreach ($items as $item) {
         // datum loeschen
         $DB->execute('UPDATE {block_exacompschedule} SET
-            timecreated = NULL
+            day = NULL
         WHERE id=? AND studentid=?', array($item->id, $studentid));
         
         // todo: evaluation loeschen?
@@ -115,7 +138,7 @@ if (optional_param('action', '', PARAM_TEXT) == 'save') {
 
 
 
-$PAGE->set_url('/blocks/exacomp/weekly_schedule.php');
+$PAGE->set_url($my_url);
 $PAGE->set_context(context_system::instance());
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 
@@ -130,21 +153,27 @@ $sql = "select s.*, e.title, eval.student_evaluation, eval.teacher_evaluation
 		LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid
 		WHERE s.studentid = ? AND (
             -- noch nicht auf einen tag geleg
-            (s.timecreated IS null OR s.timecreated=0)
+            (s.day IS null OR s.day=0)
             -- oder auf einen tag der vorwoche gelegt und noch nicht evaluiert
-            OR (s.timecreated < $monday AND (eval.teacher_evaluation IS NULL OR eval.teacher_evaluation=0))
+            OR (s.day < $week AND (eval.teacher_evaluation IS NULL OR eval.teacher_evaluation=0))
         )
         ORDER BY e.title";
 $items = $DB->get_records_sql($sql,array($studentid));
 
 function block_exacomp_weekly_schedule_print_items($items) {
+    global $isTeacher;
+    
 	echo '<div class="items">';
     foreach ($items as $item) {
         echo '<div class="item" id="item-'.$item->id.'">';
         echo    '<div class="header">'.$item->title.'</div>';
 		echo    '<div class="buttons">';
-		echo        '<label>S <input type="checkbox" class="student_evaluation" '.($item->student_evaluation?'checked="checked"':'').' /></label>';
-		echo       	'<label>L <input type="checkbox" class="teacher_evaluation" '.($item->teacher_evaluation?'checked="checked"':'').' /></label>';
+		echo        '<label>S <input type="checkbox" class="student_evaluation" value="1" '.
+                    ($isTeacher ? 'disabled="disabled"':'').
+                    ($item->student_evaluation?'checked="checked"':'').' /></label>';
+		echo       	'<label>L <input type="checkbox" class="teacher_evaluation" value="1" '.
+                    (!$isTeacher ? 'disabled="disabled"':'').
+                    ($item->teacher_evaluation?'checked="checked"':'').' /></label>';
 		echo    '</div>';
         echo '</div>';
     }
@@ -171,16 +200,16 @@ function block_exacomp_weekly_schedule_print_items($items) {
 	</div>
 	<div class="column">
 		<div id="navi">
-			<a href="weekly_schedule.php?monday=<?=$lastMonday?>">&lt; vorige</a>
+			<a href="<?php echo $my_url->out(true, array('week'=>$lastWeek)); ?>">&lt; vorige</a>
             &nbsp;&nbsp;&nbsp;&nbsp;
-            Kalenderwoche <?php echo date('Y/W', block_exacomp_add_days($monday, 6) /* 1.1. kann der sonntag sein, dann ist die woche die 1te woche! */); ?>
+            Kalenderwoche <?php echo date('Y/W', block_exacomp_add_days($week, 6) /* 1.1. kann der sonntag sein, dann ist die woche die 1te woche! */); ?>
             &nbsp;&nbsp;&nbsp;&nbsp;
-			<a href="weekly_schedule.php?monday=<?=$nextMonday?>">nächste &gt;</a>
+			<a href="<?php echo $my_url->out(true, array('week'=>$nextWeek)); ?>">nächste &gt;</a>
 		</div>
 		<div id="days">
             <?php
                 for ($i = 0; $i < 5; $i++) {
-                    $day = block_exacomp_add_days($monday, $i);
+                    $day = block_exacomp_add_days($week, $i);
 
                     echo '<div class="day" id="day-'.$day.'">';
                     echo '<div class="header">'.date('l, d.m.', $day).'</div>';
@@ -189,7 +218,8 @@ function block_exacomp_weekly_schedule_print_items($items) {
                             FROM {block_exacompschedule} s 
                             JOIN {block_exacompexamples} e ON e.id = s.exampleid 
                             LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid
-                            WHERE s.studentid = ? AND s.timecreated = ?";
+                            WHERE s.studentid = ? AND s.day = ?
+                            ORDER BY s.sorting";
                     $items = $DB->get_records_sql($sql,array($studentid, $day));
                     block_exacomp_weekly_schedule_print_items($items);
                     echo '</div>';

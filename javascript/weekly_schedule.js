@@ -39,6 +39,10 @@ jQueryExacomp(function($) {
 		},
 	}).disableSelection();
 	
+	$('.items input').change(function(){
+		changed = true;
+	});
+	
 	
 	// save button
 	$(saveButton).click(function(){
@@ -67,8 +71,8 @@ jQueryExacomp(function($) {
 			$('.item', this).each(function(){
 				day.push({
 					id: numberic_id(this),
-					student_evaluation: parseInt($('input.student_evaluation', this).is(':checked')),
-					teacher_evaluation: parseInt($('input.teacher_evaluation', this).is(':checked'))
+					student_evaluation: $('input.student_evaluation:checked', this).length,
+					teacher_evaluation: $('input.teacher_evaluation:checked', this).length
 				});
 			});
 			data.days[numberic_id(this)] = day;
