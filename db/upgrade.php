@@ -1749,5 +1749,29 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2015070201, 'exacomp');
 	}
+	
+	if ($oldversion < 2015070700) {
+	
+		// Define field sorting to be added to block_exacompschedule.
+		$table = new xmldb_table('block_exacompschedule');
+		$field = new xmldb_field('sorting', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'courseid');
+	
+		// Conditionally launch add field sorting.
+		if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+	
+		// Define field day to be added to block_exacompschedule.
+		$table = new xmldb_table('block_exacompschedule');
+		$field = new xmldb_field('day', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'sorting');
+		
+		// Conditionally launch add field day.
+		if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+		
+		// Exacomp savepoint reached.
+		upgrade_block_savepoint(true, 2015070700, 'exacomp');
+	}
 	return $result;
 }
