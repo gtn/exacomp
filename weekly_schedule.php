@@ -24,51 +24,21 @@ $my_url = new moodle_url('/blocks/exacomp/weekly_schedule.php',
         array('courseid'=>$courseid, 'week'=>$week) + ($isTeacher ? array('studentid'=>$studentid) : array())
     );
 
-function block_exacomp_add_days($date, $days) {
-    return mktime(0,0,0,date('m', $date), date('d', $date)+$days, date('Y', $date));
-}
-
 if (optional_param('action', '', PARAM_TEXT) == 'save') {
 
-    function block_exacomp_clean_array_param($array, $param, $type) {
-        if (!isset($array[$param]))
-            return null;
-        else
-            return clean_param($array[$param], $type);
-    }
+    $itemsDefinition = array(
+        PARAM_INT => array(
+            'id' => PARAM_INT,
+            'student_evaluation' => PARAM_BOOL,
+            'teacher_evaluation' => PARAM_BOOL
+        )
+    );
+    $items = block_exacomp_optional_param_array('items', $itemsDefinition);
+    $trash = block_exacomp_optional_param_array('trash', $itemsDefinition);
     
-    function block_exacomp_clean_array_array($array, $param) {
-        if (!isset($array[$param]) || !is_array($array[$param]))
-            return array();
-        else
-            return $array[$param];
-    }
-    
-    function block_exacomp_weekly_schedule_clean_items($items) {
-        $result = array();
-
-        if (!is_array($items)) return $result;
-        
-        foreach ($items as $item) {
-            if (!is_array($item)) continue;
-            
-            $result[] = (object)array(
-                'id' => block_exacomp_clean_array_param($item, 'id', PARAM_INT),
-                'student_evaluation' => block_exacomp_clean_array_param($item, 'student_evaluation', PARAM_INT),
-                'teacher_evaluation' => block_exacomp_clean_array_param($item, 'teacher_evaluation', PARAM_INT)
-            );
-        }
-        
-        return $result;
-    }
-    
-    $items = block_exacomp_weekly_schedule_clean_items(block_exacomp_clean_array_array($_REQUEST, 'items'));
-    $trash = block_exacomp_weekly_schedule_clean_items(block_exacomp_clean_array_array($_REQUEST, 'trash'));
-    
-    $days = array();
-    foreach (block_exacomp_clean_array_array($_REQUEST, 'days') as $date=>$dayItems) {
-        $days[clean_param($date, PARAM_INT)] = block_exacomp_weekly_schedule_clean_items($dayItems);
-    }
+    $days = block_exacomp_optional_param_array('days', array(
+        PARAM_INT => $itemsDefinition
+    ));
 
     // trash
     foreach ($trash as $item) {
@@ -168,10 +138,10 @@ function block_exacomp_weekly_schedule_print_items($items) {
         echo '<div class="item" id="item-'.$item->id.'">';
         echo    '<div class="header">'.$item->title.'</div>';
 		echo    '<div class="buttons">';
-		echo        '<label>S <input type="checkbox" class="student_evaluation" value="1" '.
+		echo        '<label>S: <input type="checkbox" class="student_evaluation" value="1" '.
                     ($isTeacher ? 'disabled="disabled"':'').
                     ($item->student_evaluation?'checked="checked"':'').' /></label>';
-		echo       	'<label>L <input type="checkbox" class="teacher_evaluation" value="1" '.
+		echo       	'<label>L: <input type="checkbox" class="teacher_evaluation" value="1" '.
                     (!$isTeacher ? 'disabled="disabled"':'').
                     ($item->teacher_evaluation?'checked="checked"':'').' /></label>';
 		echo    '</div>';

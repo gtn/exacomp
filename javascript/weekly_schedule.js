@@ -71,8 +71,8 @@ jQueryExacomp(function($) {
 			$('.item', this).each(function(){
 				day.push({
 					id: numberic_id(this),
-					student_evaluation: $('input.student_evaluation:checked', this).length,
-					teacher_evaluation: $('input.teacher_evaluation:checked', this).length
+					student_evaluation: $('input.student_evaluation', this).is(':checked'),
+					teacher_evaluation: $('input.teacher_evaluation', this).is(':checked')
 				});
 			});
 			data.days[numberic_id(this)] = day;
@@ -89,7 +89,7 @@ jQueryExacomp(function($) {
 				saveButton.value = 'Fehler';
 				console.log(ret);
 			} else {
-			var i = 0;
+				var i = 0;
 				(function pulse(){
 					if (++i > 3) return;
 					$( saveButton ).delay(100).animate({'opacity':0.5},pulse).delay(100).animate({'opacity':1});
@@ -103,6 +103,10 @@ jQueryExacomp(function($) {
 				
 				update_ui();
 			}
+		}).fail(function(ret){
+			saveButton.disabled =  false;
+			saveButton.value = 'Fehler';
+			console.log(ret);
 		});
 		
 		console.log('save', data);

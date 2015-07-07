@@ -4079,3 +4079,60 @@ function block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,
 	} else 
 		return false;
 }
+
+function block_exacomp_add_days($date, $days) {
+    return mktime(0,0,0,date('m', $date), date('d', $date)+$days, date('Y', $date));
+}
+
+function block_exacomp_optional_param_parse_key_type($type) {
+    if (is_array($type)) return $type;
+    if ($type === PARAM_INT || $type === PARAM_TEXT) return $type;
+    return null;
+}
+
+function block_exacomp_clean_array($values, $definition) {
+
+    if ((count($definition) == 1) && ($keyType = block_exacomp_optional_param_parse_key_type(key($definition))))  {
+        // type => type
+        $ret = array();
+        
+        $valueType = reset($definition);
+        
+        if (is_array($valueType)) {
+            foreach ($values as $key=>$value) {
+                $ret[clean_param($key, $keyType)] = block_exacomp_clean_array($value, $valueType);
+            }
+        } else {
+            foreach ($values as $key=>$value) {
+                $ret[clean_param($key, $keyType)] = clean_param($value, $valueType);
+            }
+        }
+    } else {
+        // some value => type
+        $ret = new stdClass;
+        
+        foreach ($definition as $key => $valueType) {
+            $value = isset($values[$key]) ? $values[$key] : null;
+            if (is_array($valueType)) {
+                $ret->$key = block_exacomp_clean_array($value, $valueType);
+            } else {
+                $ret->$key = clean_param($value, $valueType);
+            }
+        }
+    }
+    return $ret;
+}
+
+function block_exacomp_optional_param_array($parname, array $definition) {
+
+    // POST has precedence.
+    if (isset($_POST[$parname])) {
+        $param = $_POST[$parname];
+    } else if (isset($_GET[$parname])) {
+        $param = $_GET[$parname];
+    } else {
+        return array();
+    }
+
+    return block_exacomp_clean_array($param, $definition);
+}
