@@ -26,6 +26,8 @@ $my_url = new moodle_url('/blocks/exacomp/weekly_schedule.php',
 
 if (optional_param('action', '', PARAM_TEXT) == 'save') {
 
+    require_sesskey();
+
     $itemsDefinition = array(
         PARAM_INT => array(
             'id' => PARAM_INT,

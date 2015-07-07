@@ -51,10 +51,13 @@ jQueryExacomp(function($) {
 			return item.id.replace(/^.*-([0-9])/, '$1');
 		}
 		
-		var data = {};
-		data.items = [];
-		data.trash = [];
-		data.days = {};
+		var data = {
+			action: 'save',
+			sesskey: M.cfg.sesskey,
+			items: [],
+			trash: [],
+			days: {}
+		}
 		
 		$('#items .item').each(function(){
 			data.items.push({
@@ -81,7 +84,6 @@ jQueryExacomp(function($) {
 		saveButton.value = 'Speichere...';
 		saveButton.disabled =  true;
 		
-		data.action = 'save';
 		$.post('', data, function(ret) {
 			saveButton.disabled =  false;
 			
