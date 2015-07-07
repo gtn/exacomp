@@ -3847,20 +3847,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$html_tree .= html_writer::start_tag("ul");
 				
 				foreach ( $topic->descriptors as $dkey => $descriptor ) {
-					$html_tree .= html_writer::start_tag("li");
-					$html_tree .= $descriptor->title;
-					
-					if(!empty($descriptor->examples))
-						$html_tree .= html_writer::start_tag("ul");
-					
-					foreach($descriptor->examples as $example) {
-						$html_tree .= html_writer::tag("li", $example->title);
-					}
-					
-					if(!empty($descriptor->examples))
-						$html_tree .= html_writer::end_tag("ul");
-					
-					$html_tree .= html_writer::end_tag("li");
+					$html_tree .= $this->print_competence_for_list_tree($descriptor);
 				}
 				
 				if(!empty($topic->descriptors))
@@ -3873,6 +3860,33 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$html_tree .= html_writer::end_tag("li");
 		}
 		$html_tree .= html_writer::end_tag("ul");
+		
+		return $html_tree;
+	}
+	
+	private function print_competence_for_list_tree($descriptor) {
+		$html_tree = html_writer::start_tag("li");
+		$html_tree .= $descriptor->title;
+			
+		if(!empty($descriptor->examples))
+			$html_tree .= html_writer::start_tag("ul");
+			
+		foreach($descriptor->examples as $example) {
+			$html_tree .= html_writer::tag("li", $example->title);
+		}
+			
+		if(!empty($descriptor->examples))
+			$html_tree .= html_writer::end_tag("ul");
+			
+		if(!empty($descriptor->children)) {
+			$html_tree .= html_writer::start_tag("ul");
+			
+			foreach($descriptor->children as $child)
+				$html_tree .= $this->print_competence_for_list_tree($child);
+			
+			$html_tree .= html_writer::end_tag("ul");
+		}
+		$html_tree .= html_writer::end_tag("li");
 		
 		return $html_tree;
 	}

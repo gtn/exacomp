@@ -67,25 +67,15 @@ echo '<div id="exacomp">';
 //get descriptors for the given example
 $example_descriptors = $DB->get_records(DB_DESCEXAMP,array('exampid'=>$exampleid),'','descrid');
 //get all subjects, topics, descriptors and examples
-$tree = block_exacomp_get_competence_tree($courseid, null, false, null, true, block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies);
-
+$tree = block_exacomp_get_competence_tree($courseid, null, false, SHOW_ALL_TOPICS, true, block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies);
 // unset all descriptors, topics and subjects hat do not contain the example descriptors
 foreach($tree as $skey => $subject) {
 	foreach ( $subject->subs as $tkey => $topic ) {
 		foreach ( $topic->descriptors as $dkey => $descriptor ) {
-			$keepDescriptor = false;
-				
-			if (array_key_exists ( $descriptor->id, $example_descriptors )) {
-				$keepDescriptor = true;
-			}
-			if (! $keepDescriptor) {
-				unset ( $topic->descriptors[$dkey] );
-				continue;
-			}
-			foreach($descriptor->examples as $ekey => $example) {
-				if($example->id != $exampleid)
-					unset($descriptor->examples[$ekey]);
-			}
+			$descriptor = block_exacomp_check_child_descriptors($descriptor, $example_descriptors, $exampleid);
+			
+			if(count($descriptor->children) == 0)
+				unset($topic->descriptors[$dkey]);
 		}
 		if(count($topic->descriptors) == 0)
 			unset($subject->subs[$tkey]);
@@ -94,6 +84,25 @@ foreach($tree as $skey => $subject) {
 		unset($tree[$skey]);
 }
 
+function block_exacomp_check_child_descriptors($descriptor, $example_descriptors, $exampleid) {
+
+	foreach($descriptor->children as $ckey => $cvalue) {
+		$keepDescriptor = false;
+		if (array_key_exists ( $cvalue->id, $example_descriptors )) {
+			$keepDescriptor = true;
+		}
+		if (! $keepDescriptor) {
+			unset ( $descriptor->children[$ckey] );
+			continue;
+		}
+		foreach($cvalue->examples as $ekey => $example) {
+			if($example->id != $exampleid)
+				unset($cvalue->examples[$ekey]);
+		}
+	}
+	
+	return $descriptor;
+}
 $output = $PAGE->get_renderer('block_exacomp');
 echo html_writer::tag("p",get_string("competence_associations_explaination","block_exacomp",$example->title));
 echo $output->print_competence_based_list_tree($tree);
