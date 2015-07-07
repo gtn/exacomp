@@ -133,4 +133,12 @@ function add_days($date, $days) {
 </div>
 <?php
 
+$sql = "select s.*, e.title, eval.student_evaluation, eval.teacher_evaluation
+		FROM {block_exacompschedule} s 
+		JOIN {block_exacompexamples} e ON e.id = s.exampleid 
+		LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid
+		WHERE s.studentid = ? AND s.timecreated IS null";
+$studentid = 3;
+$items = $DB->get_records_sql($sql,array($studentid));
+var_dump($items);
 echo $OUTPUT->footer();
