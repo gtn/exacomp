@@ -40,15 +40,6 @@ jQueryExacomp(function($) {
 	}).disableSelection();
 	
 	
-	// item design
-    $('.item')
-		.wrapInner('<div class="header" />')
-		.append('<div class="buttons">' +
-			'<label>S <input type="checkbox" class="s" /></label>' +
-			'<label>L <input type="checkbox" class="l" /></label>' +
-		'</div>');
-	
-	
 	// save button
 	$(saveButton).click(function(){
 		
@@ -76,8 +67,8 @@ jQueryExacomp(function($) {
 			$('.item', this).each(function(){
 				day.push({
 					id: numberic_id(this),
-					s: parseInt($('input.s', this).is(':checked')),
-					l: parseInt($('input.l', this).is(':checked'))
+					student_evaluation: parseInt($('input.student_evaluation', this).is(':checked')),
+					teacher_evaluation: parseInt($('input.teacher_evaluation', this).is(':checked'))
 				});
 			});
 			data.days[numberic_id(this)] = day;
@@ -100,8 +91,13 @@ jQueryExacomp(function($) {
 					$( saveButton ).delay(100).animate({'opacity':0.5},pulse).delay(100).animate({'opacity':1});
 				})();
 				
+				// clear trash
+				$("#trash .item").remove();
+
 				saveButton.value = 'Gespeichert!';
 				changed = false;
+				
+				update_ui();
 			}
 		});
 		

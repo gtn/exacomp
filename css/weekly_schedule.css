@@ -20,6 +20,8 @@
 .items {
 	margin: 0;
 	min-height: 10px;
+	max-height: 600px;
+	overflow: auto;
 }
 .item {
 	margin: 10px;
