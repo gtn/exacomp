@@ -39,6 +39,8 @@ require_login ( $course );
 $context = context_course::instance ( $courseid );
 $isTeacher = (has_capability ( 'block/exacomp:teacher', $context )) ? true : false;
 
+/* TODO: sesskey checken */
+
 $action = optional_param ( 'action', 'competence', PARAM_TEXT );
 switch($action){
 	case ('crosssubj-title') :

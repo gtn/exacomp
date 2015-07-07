@@ -154,7 +154,7 @@
 	
 	$(document).on('click', '#assign-competencies input[type=submit]', function() {
 							event.preventDefault();
-							courseid = getUrlVars()['courseid'];
+							courseid = get_param('courseid');
 
 							// only for crosssubjects
 							var crosssubjid = 0;
@@ -163,61 +163,33 @@
 
 							if (select) {
 								crosssubjid = select.options[select.selectedIndex].value;
-							} else if ("crosssubjid" in getUrlVars()) {
-								crosssubjid = getUrlVars()['crosssubjid'];
+							} else if (get_param("crosssubjid") !== null) {
+								crosssubjid = get_param('crosssubjid');
 							}
 
 							switch ($(this).attr('id')) {
 							case 'btn_submit':
 								
 								if (competencies.length > 0) {
-									$
-											.ajax(
-													{
-														method : "POST",
-														url : "ajax.php",
-														data : {
-															competencies : JSON
-																	.stringify(competencies),
-															courseid : courseid,
-															comptype : 0,
-															action : 'competencies_array'
-														}
-													})
-											.done(
-													function(msg) {
-														console
-																.log("Competence Saved: "
-																		+ msg);
-													}).error(function(msg) {
-												console.log("Error" + msg);
-											});
+									call_ajax({
+										competencies : JSON
+												.stringify(competencies),
+										comptype : 0,
+										action : 'competencies_array'
+									});
 
 									competencies = [];
 								}
 
 								if (topics.length > 0) {
-									$
-											.ajax(
-													{
-														method : "POST",
-														url : "ajax.php",
-														data : {
-															competencies : JSON
-																	.stringify(topics),
-															courseid : courseid,
-															comptype : 1,
-															action : 'competencies_array'
-														}
-													})
-											.done(
-													function(msg) {
-														console
-																.log("Topics Saved: "
-																		+ msg);
-													}).error(function(msg) {
-												console.log("Error" + msg);
-											});
+									call_ajax({
+										competencies : JSON
+												.stringify(topics),
+										comptype : 1,
+										action : 'competencies_array'
+									}).done(function(msg) {
+										console.log("Topics Saved: " + msg);
+									});
 
 									topics = [];
 								}
@@ -250,7 +222,7 @@
 								// Cross-Subject title & description
 								
 								if (title && crosssubjid > 0) {
-									$.ajax({
+									/* TODO: change to call_ajax */ $.ajax({
 										method : "POST",
 										url : "ajax.php",
 										data : {
@@ -292,7 +264,7 @@
 								break;
 							case 'save_as_draft':
 								if (crosssubjid > 0) {
-									$.ajax({
+									/* TODO: change to call_ajax */ $.ajax({
 										method : "POST",
 										url : "ajax.php",
 										data : {
@@ -337,8 +309,8 @@
 	$(document).on('click', 'input[name=crosssubjects]', function() {
 		var crosssubjects = [];
 		var not_crosssubjects = [];
-		courseid = getUrlVars()['courseid'];
-		descrid = getUrlVars()['descrid'];
+		courseid = get_param('courseid');
+		descrid = get_param('descrid');
 
 		$("input[name='crosssubject']").each(function() {
 			if (this.checked == "1")
@@ -347,7 +319,7 @@
 				not_crosssubjects.push($(this).val());
 		});
 
-		$.ajax({
+		/* TODO: change to call_ajax */ $.ajax({
 			method : "POST",
 			url : "ajax.php",
 			data : {
@@ -368,11 +340,11 @@
 	$(document).on('click', 'input[name=students]', function() {
 		var students = [];
 		var not_students = [];
-		courseid = getUrlVars()['courseid'];
-		crosssubjid = getUrlVars()['crosssubjid'];
+		courseid = get_param('courseid');
+		crosssubjid = get_param('crosssubjid');
 
 		if ($("input[name='share_all']").is(':checked')) {
-			$.ajax({
+			/* TODO: change to call_ajax */ $.ajax({
 				method : "POST",
 				url : "ajax.php",
 				data : {
@@ -386,7 +358,7 @@
 				window.close();
 			});
 		} else {
-			$.ajax({
+			/* TODO: change to call_ajax */ $.ajax({
 				method : "POST",
 				url : "ajax.php",
 				data : {
@@ -409,7 +381,7 @@
 
 			console.log(students);
 			console.log(not_students)
-			$.ajax({
+			/* TODO: change to call_ajax */ $.ajax({
 				method : "POST",
 				url : "ajax.php",
 				data : {
@@ -430,8 +402,8 @@
 		var tr = $(this).closest('tr');
 		var id = tr[0].className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
 		
-		courseid = getUrlVars()['courseid'];
-		studentid = getUrlVars()['studentid'];
+		courseid = get_param('courseid');
+		studentid = get_param('studentid');
 		descrid = $(this).attr('descrid');
 		val = $(this).val();
 		
@@ -462,7 +434,7 @@
 			$('input[name=data-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
 		}
 		
-		$.ajax({
+		/* TODO: change to call_ajax */ $.ajax({
 			method : "POST",
 			url : "ajax.php",
 			data : {
@@ -480,14 +452,14 @@
 	
 	$(document).on('click','#add-example-to-schedule', function() {
 		exampleid = $(this).attr('exampleid');
-		courseid = getUrlVars()['courseid'];
+		courseid = get_param('courseid');
 		studentid = $(this).attr('studentid');
 		
 		console.log(exampleid);
 		console.log(courseid);
 		console.log(studentid);
 		
-		$.ajax({
+		/* TODO: change to call_ajax */ $.ajax({
 			method : "POST",
 			url : "ajax.php",
 			data : {
@@ -501,7 +473,31 @@
 			window.close();
 		});
 	});
+	
+	function call_ajax(data, done, error) {
+		data.courseid = get_param('courseid');
+		data.sesskey = M.cfg.sesskey;
+		
+		return $.ajax({
+			method : "POST",
+			url : "ajax.php",
+			data : data
+		})
+		.done(function(msg) {
+			console.log(data.action + ': ' + msg);
+			if (done) done(msg);
+		}).error(function(msg) {
+			console.log("Error: " + data.action + ': ' + msg);
+			if (error) error(msg);
+		});
+	}
+	
 	// Read a page's GET URL variables and return them as an associative array.
+	function get_param(param) {
+		var vars = getUrlVars();
+		return typeof vars[param] == 'undefined' ? null : vars[param];
+	}
+	
 	function getUrlVars() {
 		var vars = [], hash;
 		var hashes = window.location.href.slice(
