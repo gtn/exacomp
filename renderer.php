@@ -637,7 +637,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 										for($i=0;$i<=$schema;$i++)
 											$options[] = (!$profoundness) ? $i : get_string('profoundness_'.$i,'block_exacomp');
 
-										$name = "data[".$descriptor->id."][".$studentid."][teacher]";
+										$name = "data-".$descriptor->id."-".$studentid."-teacher";
 										$compString .= html_writer::select($options, $name, $descriptor->teachercomp, false);
 
 										//$compString .= "&nbsp;S: " . html_writer::select($options,"student".$name, $descriptor->studentcomp,false,array("disabled"=>"disabled")).'&nbsp; ';
@@ -645,12 +645,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 									}
 								}
 
-							} else if(has_capability('block/exacomp:student', $context) && array_key_exists($descriptor->id, $selection)) {
+							} else if(has_capability('block/exacomp:student', $context) && array_key_exists($descriptor->topicid, $selection)) {
 								$compString.="S: ";
 								if($schema == 1) {
-									$compString .= html_writer::checkbox("data[".$descriptor->id."][".$studentid."][student]", 1,$descriptor->studentcomp).'&nbsp; ';
+									$compString .= html_writer::checkbox("data-".$descriptor->id."-".$studentid."-student", 1,$descriptor->studentcomp).'&nbsp; ';
 										
-									$compString .= "&nbsp;L: " . html_writer::checkbox("studentdata[".$studentid."][".$descriptor->id."]", 0,$descriptor->teachercomp >= $satisfied,"",array("disabled"=>"disabled")).'&nbsp; ';
+									$compString .= "&nbsp;L: " . html_writer::checkbox("data-".$studentid."-".$descriptor->id."-teacher", 0,$descriptor->teachercomp >= $satisfied,"",array("disabled"=>"disabled")).'&nbsp; ';
 								} else {
 									$options = array();
 									for($i=0;$i<=$schema;$i++)
@@ -658,7 +658,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 									$name = "data[".$topicid."][".$descriptor->id."][student]";
 									//$compString .= html_writer::select($options, $name, $descriptor->studentcomp, false);
-									$compString .= html_writer::checkbox("data[".$descriptor->id."][".$studentid."][student]", $schema,$descriptor->studentcomp).'&nbsp; ';
+									$compString .= html_writer::checkbox("data-".$descriptor->id."-".$studentid."-student", $schema,$descriptor->studentcomp).'&nbsp; ';
 
 									$compString .= "&nbsp;L: " . (($descriptor->teachercomp) ? $descriptor->teachercomp : 0);
 								}
@@ -1535,9 +1535,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				}
 				
 				if($data->role == ROLE_STUDENT) {
-					$titleCell->text .= html_writer::link(
-							"#",
-							'W');
+					$titleCell->text .= $this->print_schedule_icon($example->id, $USER->id, $data->courseid);
 					
 					$titleCell->text .= html_writer::link(
 							new moodle_url('/blocks/exacomp/example_submission.php',array("courseid"=>$data->courseid,"exampleid"=>$example->id)),
@@ -1561,6 +1559,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								$CFG->wwwroot . ('/blocks/exaport/shared_item.php?access='.$viewurl),
 								'L',
 								array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+					
+						$titleCell->text .= $this->print_schedule_icon($example->id, $studentid, $data->courseid);
 					}
 				}
 				
@@ -1627,6 +1627,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 	}
 
+	private function print_schedule_icon($exampleid, $studentid, $courseid) {
+		return html_writer::link(
+							"#",
+							'W',
+							array('id' => 'add-example-to-schedule', 'exampleid' => $exampleid, 'studentid' => $studentid, 'courseid' => $courseid));
+	}
 	private function print_student_example_evaluation_form($exampleid, $studentid, $courseid) {
 		global $DB;
 		$exampleInfo = $DB->get_record(DB_EXAMPLEEVAL, array("exampleid" => $exampleid, "studentid" => $studentid, "courseid" => $courseid));

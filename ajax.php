@@ -126,4 +126,16 @@ switch($action){
 		
 		block_exacomp_set_descriptor_visibility($descrid, $courseid, $visible, $studentid);
 		break;
+	case('add-example-to-schedule'):
+		$studentid = required_param('studentid', PARAM_INT);
+		$exampleid = required_param('exampleid', PARAM_INT);
+		$creatorid = $USER->id;
+		$timecreated = time();
+		$timemodified = time();
+		
+		if ( block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid,$timecreated,$timemodified) )
+			echo "inserted";
+		else
+			echo "already exists";
+		break;
 }

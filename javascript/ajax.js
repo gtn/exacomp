@@ -477,6 +477,30 @@
 		});
 
 	});
+	
+	$(document).on('click','#add-example-to-schedule', function() {
+		exampleid = $(this).attr('exampleid');
+		courseid = getUrlVars()['courseid'];
+		studentid = $(this).attr('studentid');
+		
+		console.log(exampleid);
+		console.log(courseid);
+		console.log(studentid);
+		
+		$.ajax({
+			method : "POST",
+			url : "ajax.php",
+			data : {
+				exampleid : exampleid,
+				courseid : courseid,
+				studentid : studentid,
+				action : 'add-example-to-schedule'
+			}
+		}).done(function(msg) {
+			alert(msg);
+			window.close();
+		});
+	});
 	// Read a page's GET URL variables and return them as an associative array.
 	function getUrlVars() {
 		var vars = [], hash;

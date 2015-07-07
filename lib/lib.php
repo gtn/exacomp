@@ -906,7 +906,6 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 		else 
 			$courseTopics = block_exacomp_get_topic_by_id($selectedTopic->id);
 	}
-	
 	// 3. GET DESCRIPTORS
 	$allDescriptors = block_exacomp_get_descriptors($courseid, $showalldescriptors,0,$showallexamples);
 	
@@ -4070,4 +4069,13 @@ function block_exacomp_get_viewurl_for_example($studentid,$exampleid) {
 	$access = "view/id/".$studentid."-".$view->viewid."&itemid=".$item->itemid;
 	
 	return $access;
+}
+function block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid,$timecreated,$timemodified) {
+	global $DB;
+	
+	if(!$DB->record_exists('block_exacompschedule', array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid))) {
+		$DB->insert_record('block_exacompschedule', array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid,'creatorid' => $creatorid, 'timecreated' => $timecreated, 'timemodified' => $timemodified));
+		return true;
+	} else 
+		return false;
 }
