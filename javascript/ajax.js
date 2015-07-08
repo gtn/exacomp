@@ -195,26 +195,10 @@
 								}
 								
 								if (examples.length > 0) {
-									$
-											.ajax(
-													{
-														method : "POST",
-														url : "ajax.php",
-														data : {
-															examples : JSON
-																	.stringify(examples),
-															courseid : courseid,
-															action : 'examples_array'
-														}
-													})
-											.done(
-													function(msg) {
-														console
-																.log("Examples Saved: "
-																		+ msg);
-													}).error(function(msg) {
-												console.log("Error" + msg);
-											});
+									call_ajax({
+										examples : JSON.stringify(examples),
+										action : 'examples_array'
+									});
 
 									examples = [];
 								}
@@ -222,39 +206,20 @@
 								// Cross-Subject title & description
 								
 								if (title && crosssubjid > 0) {
-									/* TODO: change to call_ajax */ $.ajax({
-										method : "POST",
-										url : "ajax.php",
-										data : {
-											crosssubjid : crosssubjid,
-											title : title,
-											courseid : courseid,
-											action : 'crosssubj-title'
-										}
-									}).done(function(msg) {
-										console.log("Crosssub-Title changed");
-									}).error(function(msg) {
-										console.log(msg);
+									
+									call_ajax({
+										crosssubjid : crosssubjid,
+										title : title,
+										action : 'crosssubj-title'
 									});
+
 								}
 								if (description && crosssubjid > 0) {
-									$
-											.ajax(
-													{
-														method : "POST",
-														url : "ajax.php",
-														data : {
-															crosssubjid : crosssubjid,
-															description : description,
-															courseid : courseid,
-															action : 'crosssubj-description'
-														}
-													})
-											.done(
-													function(msg) {
-														console
-																.log("Crosssub-Description changed");
-													});
+									call_ajax({
+										crosssubjid : crosssubjid,
+										description : description,
+										action : 'crosssubj-description'
+									});
 								}
 
 								//reload to display hide-buttons properly, especially when the descriptor is formerly used-> hide button not displayed
@@ -264,18 +229,9 @@
 								break;
 							case 'save_as_draft':
 								if (crosssubjid > 0) {
-									/* TODO: change to call_ajax */ $.ajax({
-										method : "POST",
-										url : "ajax.php",
-										data : {
-											crosssubjid : crosssubjid,
-											courseid : courseid,
-											action : 'save_as_draft'
-										}
-									}).done(function(msg) {
-										console.log("Crosssub saved as draft");
-									}).error(function(msg) {
-										console.log(msg);
+									call_ajax({
+										crosssubjid : crosssubjid,
+										action : 'save_as_draft'
 									});
 								}
 								event.preventDefault();
@@ -309,7 +265,6 @@
 	$(document).on('click', 'input[name=crosssubjects]', function() {
 		var crosssubjects = [];
 		var not_crosssubjects = [];
-		courseid = get_param('courseid');
 		descrid = get_param('descrid');
 
 		$("input[name='crosssubject']").each(function() {
@@ -319,19 +274,11 @@
 				not_crosssubjects.push($(this).val());
 		});
 
-		/* TODO: change to call_ajax */ $.ajax({
-			method : "POST",
-			url : "ajax.php",
-			data : {
-				crosssubjects : JSON.stringify(crosssubjects),
-				not_crosssubjects : JSON.stringify(not_crosssubjects),
-				descrid : descrid,
-				courseid : courseid,
-				action : 'crosssubj-descriptors'
-			}
-		}).done(function(msg) {
-			console.log(msg);
-			window.close();
+		call_ajax({
+			crosssubjects : JSON.stringify(crosssubjects),
+			not_crosssubjects : JSON.stringify(not_crosssubjects),
+			descrid : descrid,
+			action : 'crosssubj-descriptors'
 		});
 
 	});
@@ -344,32 +291,16 @@
 		crosssubjid = get_param('crosssubjid');
 
 		if ($("input[name='share_all']").is(':checked')) {
-			/* TODO: change to call_ajax */ $.ajax({
-				method : "POST",
-				url : "ajax.php",
-				data : {
-					crosssubjid : crosssubjid,
-					value : 1,
-					courseid : courseid,
-					action : 'crosssubj-share'
-				}
-			}).done(function(msg) {
-				console.log(msg);
-				window.close();
+			call_ajax({
+				crosssubjid : crosssubjid,
+				value : 1,
+				action : 'crosssubj-share'
 			});
 		} else {
-			/* TODO: change to call_ajax */ $.ajax({
-				method : "POST",
-				url : "ajax.php",
-				data : {
-					crosssubjid : crosssubjid,
-					value : 0,
-					courseid : courseid,
-					action : 'crosssubj-share'
-				}
-			}).done(function(msg) {
-				console.log(msg);
-				window.close();
+			call_ajax({
+				crosssubjid : crosssubjid,
+				value : 0,
+				action : 'crosssubj-share'
 			});
 			
 			$("input[name='student']").each(function() {
@@ -379,21 +310,11 @@
 					not_students.push($(this).val());
 			});
 
-			console.log(students);
-			console.log(not_students)
-			/* TODO: change to call_ajax */ $.ajax({
-				method : "POST",
-				url : "ajax.php",
-				data : {
-					students : JSON.stringify(students),
-					not_students : JSON.stringify(not_students),
-					crosssubjid : crosssubjid,
-					courseid : courseid,
-					action : 'crosssubj-students'
-				}
-			}).done(function(msg) {
-				console.log(msg);
-				window.close();
+			call_ajax({
+				students : JSON.stringify(students),
+				not_students : JSON.stringify(not_students),
+				crosssubjid : crosssubjid,
+				action : 'crosssubj-students'
 			});
 		}
 	});
@@ -434,44 +355,25 @@
 			$('input[name=data-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
 		}
 		
-		/* TODO: change to call_ajax */ $.ajax({
-			method : "POST",
-			url : "ajax.php",
-			data : {
-				descrid : descrid,
-				courseid : courseid,
-				value : visible,
-				studentid : studentid,
-				action : 'hide-descriptor'
-			}
-		}).done(function(msg) {
-			console.log('Visibility changed');
+		call_ajax({
+			descrid : descrid,
+			value : visible,
+			studentid : studentid,
+			action : 'hide-descriptor'
 		});
 
 	});
 	
 	$(document).on('click','#add-example-to-schedule', function() {
 		exampleid = $(this).attr('exampleid');
-		courseid = get_param('courseid');
 		studentid = $(this).attr('studentid');
 		
-		console.log(exampleid);
-		console.log(courseid);
-		console.log(studentid);
-		
-		/* TODO: change to call_ajax */ $.ajax({
-			method : "POST",
-			url : "ajax.php",
-			data : {
-				exampleid : exampleid,
-				courseid : courseid,
-				studentid : studentid,
-				action : 'add-example-to-schedule'
-			}
-		}).done(function(msg) {
-			alert(msg);
-			window.close();
-		});
+		call_ajax({
+			exampleid : exampleid,
+			studentid : studentid,
+			action : 'add-example-to-schedule'
+		},function(msg) { alert(msg) });
+
 	});
 	
 	function call_ajax(data, done, error) {
