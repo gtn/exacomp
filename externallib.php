@@ -2900,31 +2900,5 @@ class block_exacomp_external extends external_api {
 				'descriptortitle' => new external_value ( PARAM_TEXT, 'title of example' ) 
 		) ) );
 	}
-	
-	/**
-	 * Returns description of method parameters
-	 *
-	 * @return external_function_parameters
-	 */
-	public static function keep_alive_parameters() {
-		return new external_function_parameters ( array () );
-	}
-	/**
-	 * Used for connection check
-	 *
-	 * @return emtpy json
-	 */
-	public static function keep_alive() {
-		global $CFG, $DB, $USER;
-		return array();		
-	}
-	
-	/**
-	 * Returns desription of method return values
-	 *
-	 * @return external_multiple_structure
-	 */
-	public static function keep_alive_returns() {
-		return new external_single_structure ( array() );
-	}
+
 }
