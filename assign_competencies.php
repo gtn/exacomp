@@ -102,11 +102,11 @@ else{
 		$metasubject->title = block_exacomp_get_schooltype_title_by_subject($selectedSubject);
 	}
 	
-	$cat = block_exacomp_get_category($selectedTopic);
 		
 	$scheme = block_exacomp_get_grading_scheme($courseid);
 	
 	if($selectedTopic->id != SHOW_ALL_TOPICS){
+		$cat = block_exacomp_get_niveau($selectedTopic->niveauid);
 		echo $output->print_overview_metadata($metasubject->title, $selectedSubject, $selectedTopic, $cat);
 				
 		if($isTeacher)
@@ -140,12 +140,12 @@ else{
 	}
 
 	$subjects = block_exacomp_get_competence_tree($courseid,(isset($selectedSubject))?$selectedSubject->id:null,false,(isset($selectedTopic))?$selectedTopic->id:null,
-			!($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies);
+			!($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies, true);
 	
 	$firstvalue = reset($subjects);
 	$firstvalue->title = $selectedSubject->title;
 	
-	echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? ROLE_TEACHER : ROLE_STUDENT, $scheme);
+	echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? ROLE_TEACHER : ROLE_STUDENT, $scheme, ($version && $selectedTopic->id != SHOW_ALL_TOPICS));
 
 }
 

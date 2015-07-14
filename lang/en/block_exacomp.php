@@ -218,6 +218,8 @@ $string['selectall'] = 'Select all';
 $string['example_submission_header']  = 'Aufgabe {$a} bearbeiten';
 $string['example_submission_info'] = 'Du bist dabei die Aufgabe {a} zu bearbeiten. Deine Abgabe landet im ePortfolio und kann dort von dir und deinem Lehrern eingesehen werden.';
 $string['submissionmissing']  = 'Es müssen zumindest ein Link oder eine Datei abgegeben werden';
+$string['example_submission_subject'] = 'New submission';
+$string['example_submission_message'] = 'Student {$a->student} handed in a new submission in {$a->course}.';
 
 //Icons
 $string['usersubmitted'] = ' has submitted the following Moodle activities:';

@@ -28,7 +28,7 @@
 require_once dirname(__FILE__)."/inc.php";
 require_once dirname(__FILE__) . '/example_submission_form.php';
 
-global $DB, $OUTPUT, $PAGE, $USER;
+global $DB, $OUTPUT, $PAGE, $USER, $COURSE;
 
 $courseid = required_param('courseid', PARAM_INT);
 $exampleid = required_param('exampleid', PARAM_INT);
@@ -113,7 +113,7 @@ if($formdata = $form->get_data()) {
 	$dbView->id = $DB->insert_record('block_exaportview', $dbView);
 		
 	//share the view with teachers
-	share_view_to_teachers($dbView->id, $courseid);
+	$teachers = share_view_to_teachers($dbView->id, $courseid);
 		
 	//add item to view
 	$DB->insert_record('block_exaportviewblock',array('viewid'=>$dbView->id,'positionx'=>1, 'positiony'=>1, 'type'=>'item', 'itemid'=>$itemid));
@@ -135,6 +135,26 @@ if($formdata = $form->get_data()) {
 	
 	$DB->insert_record('block_exacompitemexample',array('exampleid'=>$exampleid,'itemid'=>$itemid,'timecreated'=>time(),'status'=>0));
 
+	if($teachers) {
+		foreach($teachers as $teacher) {
+			
+ 			$notification = new stdClass();
+			$notification->component        = 'block_exacomp';
+			$notification->name             = 'submission';
+			$notification->userfrom         = $USER;
+			$notification->userto           = $DB->get_record('user', array('id' => $teacher));
+			$notification->subject          = get_string('example_submission_subject', 'block_exacomp');
+			$notification->fullmessageformat 	= FORMAT_HTML;
+			$notification->fullmessage  	= get_string('example_submission_message', 'block_exacomp', array('course' => $COURSE->fullname, 'student' => fullname($USER)));
+			$notification->fullmessagehtml = $notification->fullmessage;
+			$notification->smallmessage     = '';
+			$notification->notification     = 1;
+			
+			$mailtext = get_string('example_submission_message', 'block_exacomp', array('course' => $COURSE->fullname, 'student' => fullname($USER)));
+			email_to_user($DB->get_record('user', array('id' => $teacher)), $USER, get_string('example_submission_subject', 'block_exacomp'), strip_tags($mailtext), $mailtext);
+		}
+		
+	}
 ?>
 <script type="text/javascript">
 		window.opener.Exacomp.newExampleAdded();

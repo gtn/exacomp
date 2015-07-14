@@ -44,9 +44,12 @@ class block_exacomp_example_upload_form extends moodleform {
 		
 		$descriptorgroups = array();
 		foreach($this->_customdata['topics'] as $topic){
-			$descriptorgroups[$topic->title] = array();
-			foreach($topic->descriptors as $id=>$descriptor)
-				$descriptorgroups[$topic->title][$id] = $descriptor;
+			foreach($topic->descriptors as $id=>$descriptor) {
+				$descriptor->title = $descriptor->niveautitle . ": " . $descriptor->title;
+				$descriptorgroups[$descriptor->title] = array();
+				foreach($descriptor->descriptors as $cid => $child)
+					$descriptorgroups[$descriptor->title][$cid] = $child->title;
+			}
 		}
 		$select = $mform->addElement('selectgroups', 'descriptors',  get_string('descriptors','block_exacomp'), $descriptorgroups);
 		$select->setMultiple(true);

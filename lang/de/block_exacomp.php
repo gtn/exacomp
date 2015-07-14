@@ -243,6 +243,9 @@ $string['selectall'] = 'Alle ausw&auml;hlen';
 //Example Submission
 $string['example_submission_header']  = 'Aufgabe {$a} bearbeiten';
 $string['example_submission_info'] = 'Du bist dabei die Aufgabe {$a} zu bearbeiten. Deine Abgabe landet im ePortfolio und kann dort von dir und deinem Lehrern eingesehen werden.';
+$string['example_submission_subject'] = 'Neue Abgabe';
+$string['example_submission_message'] = 'Im Kurs {$a->course} wurde vom Schüler {$a->student} eine neue Abgabe eingereicht.';
+
 $string['submissionmissing']  = 'Es müssen zumindest ein Link oder eine Datei abgegeben werden';
 
 //Icons
@@ -413,6 +416,8 @@ $string['share_crosssub_with_all'] = 'Das Thema "{$a}" für <b>alle</b> Teilnehm
 
 //Associations
 $string['competence_associations_explaination'] = 'Das Lernmaterial {$a} ist mit den folgenden Kompetenzen verknpüpft:';
+
+
 
 //LIS Strings
 if(get_config('exacomp','alternativedatamodel')) {

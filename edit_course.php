@@ -76,8 +76,7 @@ if ($action == 'save_coursesettings') {
 	
 	block_exacomp_save_coursesettings($courseid, $settings);	
 	
-	if(!$version) $url = 'courseselection.php';
-	else $url = 'edit_config.php';
+	$url = 'courseselection.php';
 	
 	$headertext = "";
 	if($settings->uses_activities==1 && block_exacomp_check_user_evaluation_exists($courseid))

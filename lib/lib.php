@@ -222,10 +222,12 @@ function block_exacomp_get_subjecttitle_by_example($exampleid) {
     $descriptors = block_exacomp_get_descriptors_by_example($exampleid);
 
     foreach($descriptors as $descriptor) {
+    	
+    	$full = $DB->get_record(DB_DESCRIPTORS, array("id" => $descriptor->descrid));
         $sql = "select s.* FROM {block_exacompsubjects} s, {block_exacompdescrtopic_mm} dt, {block_exacomptopics} t
         WHERE dt.descrid = ? AND t.id = dt.topicid AND t.subjid = s.id";
 
-        $subject = $DB->get_record_sql($sql,array($descriptor->descrid),IGNORE_MULTIPLE);
+        $subject = $DB->get_record_sql($sql,array($full->parentid),IGNORE_MULTIPLE);
         return $subject->title;
     }
 }
@@ -872,13 +874,13 @@ function block_exacomp_get_descriptors_by_example($exampleid) {
  * @param int $subjectid
  * @return associative_array
  */
-function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $showalldescriptors = false, $topicid = null, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES)) {
+function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $showalldescriptors = false, $topicid = null, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $calledfromoverview = false) {
 	global $DB, $version;
 
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
-	if($version && $subjectid != null) {
+	if($version && $subjectid != null && $calledfromoverview) {
 		$selectedTopic = $DB->get_record(DB_TOPICS,array('id'=>$subjectid));
 		$subjectid = $selectedTopic->subjid;
 		$selectedParent = $DB->get_record(DB_DESCRIPTORS,array('id'=>$topicid));
@@ -897,7 +899,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 	// 2. GET TOPICS
 	$allTopics = block_exacomp_get_all_topics($subjectid);
 	if($courseid > 0) {
-		if($topicid == SHOW_ALL_TOPICS)
+		if(($topicid == SHOW_ALL_TOPICS && !$version) || ($version && !$calledfromoverview))
 			$courseTopics = block_exacomp_get_topics_by_subject($courseid, $subjectid);
 		elseif($topicid == null)
 			$courseTopics = block_exacomp_get_topics_by_course($courseid, $showalldescriptors);
@@ -906,6 +908,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 		else 
 			$courseTopics = block_exacomp_get_topic_by_id($selectedTopic->id);
 	}
+	
 	// 3. GET DESCRIPTORS
 	$allDescriptors = block_exacomp_get_descriptors($courseid, $showalldescriptors,0,$showallexamples);
 	
@@ -1244,7 +1247,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 					if($courseSettings->nostudents != 1) {
 					    $rows[] = new tabobject('tab_competence_profile_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid"=>$courseid)), get_string('tab_competence_profile',  'block_exacomp'));
 					    $rows[] = new tabobject('tab_examples', new moodle_url('/blocks/exacomp/view_examples.php',array("courseid"=>$courseid)),get_string('tab_examples','block_exacomp'));
-					    $rows[] = new tabobject('tab_learning_agenda', new moodle_url('/blocks/exacomp/learningagenda.php',array("courseid"=>$courseid)),get_string('tab_learning_agenda','block_exacomp'));
+					    $rows[] = new tabobject('tab_learning_agenda', new moodle_url('/blocks/exacomp/weekly_schedule.php',array("courseid"=>$courseid)),get_string('tab_learning_agenda','block_exacomp'));
 					}//if (block_exacomp_moodle_badges_enabled() && $usebadges)
 						//$rows[] = new tabobject('tab_badges', new moodle_url('/blocks/exacomp/my_badges.php',array("courseid"=>$courseid)),get_string('tab_badges','block_exacomp'));
 				}
@@ -1317,7 +1320,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 					if ($courseSettings->uses_activities && $usedetailpage)
 						$rows[] = new tabobject('tab_competence_details', new moodle_url('/blocks/exacomp/competence_detail.php',array("courseid"=>$courseid)),get_string('tab_competence_details','block_exacomp'));
 					
-					$rows[] = new tabobject('tab_learning_agenda', new moodle_url('/blocks/exacomp/learningagenda.php',array("courseid"=>$courseid)),get_string('tab_learning_agenda','block_exacomp'));
+					$rows[] = new tabobject('tab_learning_agenda', new moodle_url('/blocks/exacomp/weekly_schedule.php',array("courseid"=>$courseid)),get_string('tab_learning_agenda','block_exacomp'));
 					
 					$profile = new tabobject('tab_competence_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid"=>$courseid)), get_string('tab_competence_profile',  'block_exacomp'));
 					$rows[] = $profile;
@@ -1451,6 +1454,15 @@ function block_exacomp_get_category($topic){
 	global $DB;
 	if(isset($topic->catid))
 		return $DB->get_record(DB_CATEGORIES,array("id"=>$topic->catid));
+}
+/**
+ * Gets a niveau
+ *
+ * @param object $niveau
+ */
+function block_exacomp_get_niveau($niveauid){
+	global $DB;
+	return $DB->get_record(DB_NIVEAUS,array("id"=>$niveauid));
 }
 /**
  * Gets assigned schooltypes for particular courseid
@@ -3409,7 +3421,7 @@ function block_exacomp_build_schooltype_tree($courseid=0){
 		$schooltype->subs = array();
 		foreach($subjects as $subject){
 			$param = $courseid;
-			$tree = block_exacomp_get_competence_tree($param, $subject->id);
+			$tree = block_exacomp_get_competence_tree($param, $subject->id, true);
 			$schooltype->subs += $tree;
 		}
 	}

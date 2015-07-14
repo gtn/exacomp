@@ -80,17 +80,18 @@ $topicid = required_param('topicid', PARAM_INT);
 $taxonomies = $DB->get_records_menu("block_exacomptaxonomies",null,"","id, title");
 $taxonomies = array_merge(array("0" => ""),$taxonomies);
 $topicsub = $DB->get_record("block_exacomptopics", array("id"=>$topicid));
-$topics = $DB->get_records("block_exacomptopics", array("subjid"=>$topicsub->subjid), null, 'title,id, catid');
+$topics = $DB->get_records("block_exacomptopics", array("subjid"=>$topicsub->subjid), null, 'title,id');
 
 foreach($topics as $topic){
-    $topic->descriptors = $DB->get_records_sql_menu("SELECT d.id, d.title FROM {block_exacompdescriptors} d
+    $topic->descriptors = $DB->get_records_sql("SELECT d.id, d.title, n.title as niveautitle FROM {block_exacompdescriptors} d
             JOIN {block_exacompdescrtopic_mm} dt ON dt.descrid = d.id
             JOIN {block_exacomptopics} t ON dt.topicid = t.id
+    		JOIN {block_exacompniveaus} n ON d.niveauid = n.id
             WHERE t.id = ?",array($topic->id));
 
-    if($topic->catid) {
-        $topic->cattitle = $DB->get_record("block_exacompcategories", array("id"=>$topic->catid))->title;
-        $topic->title = $topic->cattitle . ": " . $topic->title;
+    foreach($topic->descriptors as $did => $dtitle) {
+    	$dtitle->descriptors = $DB->get_records_sql("SELECT d.id, d.title FROM {block_exacompdescriptors} d
+            WHERE d.parentid = ?",array($did));
     }
 }
 
@@ -112,11 +113,13 @@ if($formdata = $form->get_data()) {
         $fs = get_file_storage();
 
         if($formdata->lisfilename == 1 && $form->get_new_filename('file')) {
-            $filenameinfos = $DB->get_record_sql("SELECT s.numb, st.title as subjecttitle, cat.title as cattitle, cat.sourceid as catid FROM {block_exacompschooltypes} st
-                    JOIN {block_exacompsubjects} s ON s.stid = st.id
-                    JOIN {block_exacomptopics} t ON s.id = t.subjid
-                    JOIN {block_exacompcategories} cat ON t.catid = cat.id
-                    WHERE t.id = ?", array($topicid));
+            $filenameinfos = $DB->get_record_sql("SELECT t.numb, s.title as subjecttitle, n.title as cattitle, n.sourceid as catid
+            		FROM {block_exacompdescriptors} d
+            		JOIN {block_exacompdescrtopic_mm} dt ON dt.descrid = d.id
+                    JOIN {block_exacomptopics} t ON t.id = dt.topicid
+            		JOIN {block_exacompsubjects} s ON s.id = t.subjid
+                    JOIN {block_exacompniveaus} n ON d.niveauid = n.id
+                    ", array($topicid));
             //Fachkürzel
             $newfilename = substr($filenameinfos->subjecttitle,0,1);
             //$newfilename .= '_';
@@ -138,7 +141,7 @@ if($formdata = $form->get_data()) {
             //Dateiname
             $temp_filename = $newfilename;
 
-            $newfilename .= $formdata->name . "." . pathinfo($form->get_new_filename('file'), PATHINFO_EXTENSION);
+            $newfilename .= $formdata->title . "." . pathinfo($form->get_new_filename('file'), PATHINFO_EXTENSION);
             $newsolutionname = $temp_filename . $formdata->name . "_SOLUTION." . pathinfo($form->get_new_filename('solution'), PATHINFO_EXTENSION);
             $newExample->title = $newfilename;
         }

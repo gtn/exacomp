@@ -39,7 +39,7 @@ class block_exacomp_example_submission_form extends moodleform {
 		$mform->addElement('header', 'general', get_string("example_submission_header", "block_exacomp", $exampleTitle));
 
 		$mform->addElement('static', 'info', get_string('description'),
-				get_string('example_submission_info', 'block_exacomp', $exampleTitle));
+				get_string("example_submission_info", "block_exacomp", $exampleTitle));
 		
 		$mform->addElement('text', 'name', get_string("name_example","block_exacomp"), 'maxlength="255" size="60"');
 		$mform->setType('name', PARAM_TEXT);

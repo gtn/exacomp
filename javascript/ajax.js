@@ -319,20 +319,22 @@
 		}
 	});
 	
-	$(document).on('click', 'input[name=hide-descriptor]', function() {
+	$(document).on('click', '#hide-descriptor', function() {
+		event.preventDefault();
+
 		var tr = $(this).closest('tr');
 		var id = tr[0].className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
 		
 		courseid = get_param('courseid');
 		studentid = get_param('studentid');
 		descrid = $(this).attr('descrid');
-		val = $(this).val();
+		val = $(this).text();
 		
 		if(studentid==null)
 			studentid = 0;
 		
 		if(val=='-'){
-			$(this).prop('value', '+');
+			$(this).text('+');
 			visible = 0;
 			tr.addClass('hidden_temp');
 			
@@ -344,7 +346,7 @@
 			if(studentid > 0)
 				$('input[name=data-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", true ); 
 		}else{
-			$(this).prop('value', '-');
+			$(this).text('-');
 			visible = 1;
 			tr.removeClass('hidden_temp');
 			

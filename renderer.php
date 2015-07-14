@@ -670,7 +670,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 							$text = $descriptor->title;
 							if(array_key_exists($descriptor->topicid, $selection)) {
-								$text = html_writer::link(new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid"=>$courseid,"subjectid"=>$topicid,"topicid"=>$descriptor->id)),$text);
+								$text = html_writer::link(new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid"=>$courseid,"subjectid"=>$topicid,"topicid"=>$descriptor->id,"studentid"=>$studentid)),$text);
 							}
 
 							if(isset($descriptor->examples)) {
@@ -999,11 +999,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		return $table_html.html_writer::end_tag('form');
 	}
-	public function print_competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $lis_alltopics = true, $crosssubs = false) {
+	public function print_competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $lis_singletopic = false, $crosssubs = false) {
 		global $PAGE, $version;
 
 		$editmode = (!$students && $role == ROLE_TEACHER) ? true : false;
-		$rowgroup = 0;
+		$rowgroup = ($lis_singletopic) ? null : 0;
 		$table = new html_table();
 		$rows = array();
 		$studentsColspan = $showevaluation ? 2 : 1;
@@ -1143,7 +1143,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) && (!$version));
 
-			if ($hasSubs) {
+			if ($hasSubs && !is_null($data->rowgroup)) {
 				$data->rowgroup++;
 				$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$rowgroup_class;
 				$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$data->rowgroup.' '.$rowgroup_class;
@@ -1233,8 +1233,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$topicRow->cells[] = $studentCell;
 			}
 
-			if($version)
+			//do not display topic level for version
+			if($version) {
+				$level--;				
 				$topicRow->style = "display:none;";
+			}
 			
 			$rows[] = $topicRow;
 
@@ -1288,12 +1291,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			if($descriptor->parentid > 0)
 			    $padding += 20;
 
-			if($descriptor->examples || $descriptor->children) {
+			if($descriptor->examples || (!is_null($data->rowgroup) && $descriptor->children)) {
 				$data->rowgroup++;
 				$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$rowgroup_class.$visible_css;
 				$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$data->rowgroup.' '.$rowgroup_class;
 			} else {
 				$this_rowgroup_class = $rowgroup_class.$visible_css;
+				$sub_rowgroup_class = '';
+				
 			}
 			$descriptorRow = new html_table_row();
 			
@@ -1324,7 +1329,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$descriptorRow->cells[] = $exampleuploadCell;
 
 			$titleCell = new html_table_cell();
-			if($descriptor->examples || $descriptor->children)
+			if(($descriptor->examples || $descriptor->children) && !is_null($data->rowgroup))
 				$titleCell->attributes['class'] = 'rowgroup-arrow';
 			$titleCell->style = "padding-left: ".$padding."px";
 			$titleCell->text = html_writer::div($outputname);
@@ -1344,7 +1349,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$value_vis = '-';
 					else 
 						$value_vis = '+';
-					$titleCell->text .= html_writer::empty_tag("input", array('type'=>'button', 'value'=>$value_vis, 'name'=>'hide-descriptor', 'descrid'=>$descriptor->id));
+					$titleCell->text .= html_writer::link("", $value_vis,array('name' => 'hide-descriptor','descrid' => $descriptor->id, 'id' => 'hide-descriptor'));
+					//$titleCell->text .= html_writer::empty_tag("input", array('type'=>'button', 'value'=>$value_vis, 'name'=>'hide-descriptor', 'descrid'=>$descriptor->id));
 				}
 			}
 			$descriptorRow->cells[] = $titleCell;
@@ -1537,29 +1543,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				if($data->role == ROLE_STUDENT) {
 					$titleCell->text .= $this->print_schedule_icon($example->id, $USER->id, $data->courseid);
 					
-					$titleCell->text .= html_writer::link(
-							new moodle_url('/blocks/exacomp/example_submission.php',array("courseid"=>$data->courseid,"exampleid"=>$example->id)),
-							'L',
-							array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
-					
-					$titleCell->text .= html_writer::link(
-							new moodle_url('/blocks/exacomp/competence_associations.php',array("courseid"=>$data->courseid,"exampleid"=>$example->id)),
-							'V', array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+					$titleCell->text .= $this->print_submission_icon($data->courseid, $example->id, $USER->id);
+						
+					$titleCell->text .= $this->print_competence_association_icon($example->id, $data->courseid);
 					
 					if($example->solution)
-						$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->solution), "M" ,array("target" => "_blank"));
+						$titleCell->text .= $this->print_example_solution_icon($example->solution);
 					
 					
 				} else if($data->role == ROLE_TEACHER) {
 					$studentid = optional_param("studentid", 0, PARAM_INT);
-					if($studentid > 0) {
-						$viewurl = block_exacomp_get_viewurl_for_example($studentid,$example->id);
-						if($viewurl != false)
-							$titleCell->text .= html_writer::link(
-								$CFG->wwwroot . ('/blocks/exaport/shared_item.php?access='.$viewurl),
-								'L',
-								array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
-					
+					if($studentid > 0 && $studentid != SHOW_ALL_STUDENTS) {
+						$titleCell->text .= $this->print_submission_icon($data->courseid, $example->id, $studentid);
 						$titleCell->text .= $this->print_schedule_icon($example->id, $studentid, $data->courseid);
 					}
 				}
@@ -1627,12 +1622,41 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 	}
 
-	private function print_schedule_icon($exampleid, $studentid, $courseid) {
+	public function print_submission_icon($courseid, $exampleid, $studentid = 0) {
+		global $CFG;
+		
+		$context = context_course::instance($courseid);
+		$isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
+		
+		if(!$isTeacher)
+			return html_writer::link(
+					new moodle_url('/blocks/exacomp/example_submission.php',array("courseid"=>$courseid,"exampleid"=>$exampleid)),
+					'L',
+					array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+		else if($studentid > 0) {
+			$url = block_exacomp_get_viewurl_for_example($studentid,$exampleid);
+			if($url)
+				return html_writer::link(
+					$CFG->wwwroot . ('/blocks/exaport/shared_item.php?access='.$url),
+					'L',
+					array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+		}
+	}
+	public function print_schedule_icon($exampleid, $studentid, $courseid) {
 		return html_writer::link(
 							"#",
 							'W',
 							array('id' => 'add-example-to-schedule', 'exampleid' => $exampleid, 'studentid' => $studentid, 'courseid' => $courseid));
 	}
+	public function print_competence_association_icon($exampleid, $courseid) {
+		return html_writer::link(
+				new moodle_url('/blocks/exacomp/competence_associations.php',array("courseid"=>$courseid,"exampleid"=>$exampleid)),
+				'V', array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+	}
+	public function print_example_solution_icon($solution) {
+		return html_writer::link(str_replace('&amp;','&',$solution), "M" ,array("target" => "_blank"));
+	}
+	
 	private function print_student_example_evaluation_form($exampleid, $studentid, $courseid) {
 		global $DB;
 		$exampleInfo = $DB->get_record(DB_EXAMPLEEVAL, array("exampleid" => $exampleid, "studentid" => $studentid, "courseid" => $courseid));

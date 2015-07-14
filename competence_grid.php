@@ -68,6 +68,7 @@ $studentid = optional_param("studentid", 0, PARAM_INT);
 if(!$isTeacher) $studentid = $USER->id;
 
 $dropdown_subjects = block_exacomp_get_subjects_by_course($courseid, true);
+
 if($dropdown_subjects && $subjectid == 0)
 	$subjectid = key($dropdown_subjects);
 /* SAVE DATA */
@@ -75,12 +76,6 @@ if($version	&& $studentid > 0 && isset($_POST['btn_submit']) && $subjectid > 0)
 	block_exacomp_save_competencies(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_TOPIC, null, $subjectid);
 
 list($niveaus, $skills, $subjects, $data, $selection) = block_exacomp_init_competence_grid_data($courseid, $subjectid, $studentid, (block_exacomp_get_settings_by_course($courseid)->show_all_examples != 0 || $isTeacher), block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies);
-
-if($version){
-    foreach($dropdown_subjects as $subject){
-        $subject->stid = $subject->id;
-    }
-}
 
 echo $output->print_subject_dropdown(block_exacomp_get_schooltypetree_by_subjects($dropdown_subjects,true),$subjectid, $studentid);
 if($data) {
