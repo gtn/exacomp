@@ -21,7 +21,7 @@ $lastWeek = block_exacomp_add_days($week, -7);
 $nextWeek = block_exacomp_add_days($week, +7);
 
 $my_url = new moodle_url('/blocks/exacomp/weekly_schedule.php',
-        array('courseid'=>$courseid, 'week'=>$week)
+        array('courseid'=>$courseid, 'week'=>$week) + ($isTeacher ? array('studentid'=>$studentid) : array())
     );
 
 if (optional_param('action', '', PARAM_TEXT) == 'save') {
@@ -131,10 +131,12 @@ if($isTeacher){
 	$options = array();
 
 	foreach($students as $student)
-		$options[$student->id] = $student->firstname." ".$student->lastname;
+		$options[$student->id] = $student->firstname." ".$student->lastname; // TODO: sollten wir hier nicht fullname() verwenden? -- prieler
 	
-	echo html_writer::select($options, "lis_crosssubs_students", $studentid, false,
-			array("onchange" => "document.location.href='".$PAGE->url."&studentid='+this.value;"));
+    $url = clone $my_url;
+    $url->remove_params('studentid');
+    echo html_writer::select($options, "lis_crosssubs_students", $studentid, false,
+			array("onchange" => "document.location.href='".$url."&studentid='+this.value;"));
 }
 
 $sql = "select s.*, e.title, eval.student_evaluation, eval.teacher_evaluation
