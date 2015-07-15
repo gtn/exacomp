@@ -66,7 +66,7 @@ class block_exacomp extends block_list {
 
 		$courseid = intval($COURSE->id);
 		
-		if($version || $skillmanagement)
+		if($skillmanagement)
 			$checkConfig = block_exacomp_is_configured($courseid);
 		else
 			$checkConfig = block_exacomp_is_configured();

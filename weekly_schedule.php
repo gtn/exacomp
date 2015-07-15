@@ -12,7 +12,7 @@ if (! $course = $DB->get_record ( 'course', array (
 require_login ( $course );
 $context = context_course::instance ( $courseid );
 $isTeacher = has_capability( 'block/exacomp:teacher', $context);
-$studentid = $isTeacher ? optional_param("studentid", $USER->id, PARAM_INT) : $USER->id;
+$studentid = $isTeacher ? optional_param("studentid", 0, PARAM_INT) : $USER->id;
 
 $week = optional_param('week', time(), PARAM_INT);
 $week = block_exacomp_add_days($week, 1 - date('N', $week));
@@ -124,6 +124,9 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), "
 if($isTeacher){
 	
 	$students = block_exacomp_get_students_by_course($courseid);
+
+	if($studentid == 0)
+		$studentid = reset($students)->id;
 	
 	echo html_writer::empty_tag("br");
 
@@ -131,7 +134,7 @@ if($isTeacher){
 	$options = array();
 
 	foreach($students as $student)
-		$options[$student->id] = $student->firstname." ".$student->lastname; // TODO: sollten wir hier nicht fullname() verwenden? -- prieler
+		$options[$student->id] = fullname($student); // TODO: sollten wir hier nicht fullname() verwenden? -- prieler
 	
     $url = clone $my_url;
     $url->remove_params('studentid');

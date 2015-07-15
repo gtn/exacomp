@@ -281,6 +281,7 @@
 			action : 'crosssubj-descriptors'
 		});
 
+ 		window.close();
 	});
 
 	// Share crosssubject with students

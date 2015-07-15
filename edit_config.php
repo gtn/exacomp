@@ -71,9 +71,6 @@ block_exacomp_init_js_css ();
 block_exacomp_build_breadcrum_navigation ( $courseid );
 
 if ($fromimport == 1) {
-	if ($version)
-		$img = 'two.png';
-	else
 		$img = 'two_admin.png';
 } else {
 		$img = 'one_admin.png';
