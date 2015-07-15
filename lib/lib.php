@@ -3889,24 +3889,26 @@ function block_exacomp_get_competence_tree_for_cross_subject($courseid, $crosssu
 
 function block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid, $showalldescriptors = false){
     global $DB;
-    $comps = $DB->get_records(DB_DESCCROSS, array('crosssubjid'=>$crosssubjid));
+    $comps = $DB->get_records(DB_DESCCROSS, array('crosssubjid'=>$crosssubjid),'','descrid,crosssubjid');
     
     if(!$comps) return array();
     
     $WHERE = "";
     foreach($comps as $comp){
-        $WHERE .=  $comp->descrid.",";
+    	$cross_descr = $DB->get_record(DB_DESCRIPTORS,array('id'=>$comp->descrid));
+        $WHERE .=  $cross_descr->parentid.",";
     }
     $WHERE = substr($WHERE, 0, strlen($WHERE)-1);
     
     if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.parentid, dvis.visible as visible, d.catid '
+	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.parentid, dvis.visible as visible, n.sorting as niveau, d.catid '
 	.'FROM {'.DB_TOPICS.'} t '
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
 	.'JOIN {'.DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id '
 	.'JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid = d.id AND dvis.studentid=0 AND dvis.courseid=? '
+	.'LEFT JOIN {'.DB_NIVEAUS.'} n ON n.id = d.niveauid '  
 	.'WHERE d.id IN('.$WHERE.')'.')';
 
 	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid, $courseid));
@@ -3916,6 +3918,10 @@ function block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid
 		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
 		//check for child-descriptors
 		$descriptor->children = block_exacomp_get_child_descriptors($descriptor,$courseid, $showalldescriptors);
+		foreach($descriptor->children as $cid => $cvalue) {
+			if(!array_key_exists($cid, $comps))
+				unset($descriptor->children[$cid]);
+		}
 	}
 	
 	return $descriptors;

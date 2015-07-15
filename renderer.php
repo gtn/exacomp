@@ -1335,7 +1335,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$titleCell->text = html_writer::div($outputname);
 
 			// EDIT MODE BUTTONS 
-			if($editmode) {
+			if($editmode && !$descriptor->children) {
+				//Adding to crosssubject only for "teilkompetenzen"
 				$titleCell->text .= html_writer::link(
 						new moodle_url('/blocks/exacomp/select_crosssubjects.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id)),
 						'T',
