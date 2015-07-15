@@ -21,7 +21,7 @@ $lastWeek = block_exacomp_add_days($week, -7);
 $nextWeek = block_exacomp_add_days($week, +7);
 
 $my_url = new moodle_url('/blocks/exacomp/weekly_schedule.php',
-        array('courseid'=>$courseid, 'week'=>$week) + ($isTeacher ? array('studentid'=>$studentid) : array())
+        array('courseid'=>$courseid, 'week'=>$week)
     );
 
 if (optional_param('action', '', PARAM_TEXT) == 'save') {
@@ -118,6 +118,24 @@ block_exacomp_init_js_css();
 $PAGE->requires->jquery_plugin('ui');
 
 echo $OUTPUT->header();
+echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), "tab_learning_agenda");
+
+
+if($isTeacher){
+	
+	$students = block_exacomp_get_students_by_course($courseid);
+	
+	echo html_writer::empty_tag("br");
+
+	echo get_string("choosestudent", "block_exacomp");
+	$options = array();
+
+	foreach($students as $student)
+		$options[$student->id] = $student->firstname." ".$student->lastname;
+	
+	echo html_writer::select($options, "lis_crosssubs_students", $studentid, false,
+			array("onchange" => "document.location.href='".$PAGE->url."&studentid='+this.value;"));
+}
 
 $sql = "select s.*, e.title, eval.student_evaluation, eval.teacher_evaluation
 		FROM {block_exacompschedule} s 
