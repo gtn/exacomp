@@ -1136,7 +1136,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		foreach($topics as $topic) {
 			
 			$lwl = $lwl_sub.(($topic->numb)?".".$topic->numb:'');
-			echo $lwl;
 			list($outputid, $outputname) = block_exacomp_get_output_fields($topic);
 			$studentsCount = 0;
 			$studentsColspan = 1;

@@ -113,13 +113,16 @@ if($formdata = $form->get_data()) {
         $fs = get_file_storage();
 
         if($formdata->lisfilename == 1 && $form->get_new_filename('file')) {
-            $filenameinfos = $DB->get_record_sql("SELECT t.numb, s.title as subjecttitle, n.title as cattitle, n.sourceid as catid
+        	$descr = reset($formdata->descriptors);
+        	$descr = $DB->get_record(DB_DESCRIPTORS,array('id' => $descr));
+            $filenameinfos = $DB->get_record_sql("SELECT t.numb, s.title as subjecttitle, n.title as cattitle, n.sorting as catid
             		FROM {block_exacompdescriptors} d
             		JOIN {block_exacompdescrtopic_mm} dt ON dt.descrid = d.id
                     JOIN {block_exacomptopics} t ON t.id = dt.topicid
             		JOIN {block_exacompsubjects} s ON s.id = t.subjid
                     JOIN {block_exacompniveaus} n ON d.niveauid = n.id
-                    ", array($topicid));
+            		WHERE d.id = ?
+                    ", array($descr->parentid));
             //Fachkürzel
             $newfilename = substr($filenameinfos->subjecttitle,0,1);
             //$newfilename .= '_';
@@ -128,9 +131,10 @@ if($formdata = $form->get_data()) {
             $newfilename .= '.';
             //Nr Lernfortschritt
 
-            $newfilename .= sprintf("%02d", substr($filenameinfos->cattitle,4,1)) . ".";
+            $newfilename .= sprintf("%02d", substr($filenameinfos->cattitle,4,1));
+            
             //Nr Lernwegeliste
-            $newfilename .= sprintf("%02d", $filenameinfos->catid);
+            //$newfilename .= sprintf("%02d", $filenameinfos->catid);
             $newfilename .= '_';
             //Taxonomie
             $taxname = $DB->get_field('block_exacomptaxonomies', 'title', array("id"=>$formdata->tax));
