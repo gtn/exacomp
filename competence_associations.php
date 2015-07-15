@@ -71,13 +71,14 @@ $tree = block_exacomp_get_competence_tree($courseid, null, false, SHOW_ALL_TOPIC
 // unset all descriptors, topics and subjects hat do not contain the example descriptors
 foreach($tree as $skey => $subject) {
 	foreach ( $subject->subs as $tkey => $topic ) {
+		if(isset($topic->descriptors)) {
 		foreach ( $topic->descriptors as $dkey => $descriptor ) {
 			$descriptor = block_exacomp_check_child_descriptors($descriptor, $example_descriptors, $exampleid);
 			
 			if(count($descriptor->children) == 0)
 				unset($topic->descriptors[$dkey]);
-		}
-		if(count($topic->descriptors) == 0)
+		}}
+		if(!isset($topic->descriptors) || count($topic->descriptors) == 0)
 			unset($subject->subs[$tkey]);
 	}
 	if(count($subject->subs) == 0)
