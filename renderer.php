@@ -1020,7 +1020,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		foreach($subjects as $subject) {
 			$lwl_subject = block_exacomp_get_topic_by_id($subject->id);
-			$lwl = substr(block_exacomp_get_subject_by_id(reset($lwl_subject)->subjid)->title, 0,1) . reset($lwl_subject)->numb;
+			$lwl = substr(block_exacomp_get_subject_by_id(reset($lwl_subject)->subjid)->title, 0,1);
 			
 			if(!$subject->subs)
 				continue;
@@ -1134,9 +1134,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
 
 		foreach($topics as $topic) {
-			$cat = block_exacomp_get_category($topic);
-			$lwl = $lwl_sub.(($cat)?".".$cat->sourceid:'');
 			
+			$lwl = $lwl_sub.(($topic->numb)?".".$topic->numb:'');
+			echo $lwl;
 			list($outputid, $outputname) = block_exacomp_get_output_fields($topic);
 			$studentsCount = 0;
 			$studentsColspan = 1;
@@ -1251,7 +1251,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 	}
 
-	function print_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class, $profoundness = false, $editmode=false, $lwl="") {
+	function print_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class, $profoundness = false, $editmode=false, $lwl="", $counter = null) {
 		global $version, $PAGE, $USER, $COURSE, $CFG;
 
 		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
@@ -1288,8 +1288,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$padding = ($level) * 20 + 4;
 
-			if($descriptor->parentid > 0)
-			    $padding += 20;
+			//if($descriptor->parentid > 0)
+			    //$padding += 20;
 
 			if($descriptor->examples || (!is_null($data->rowgroup) && $descriptor->children)) {
 				$data->rowgroup++;
@@ -1317,11 +1317,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 			$lwl_print = $lwl;
 			if (!empty($descriptor->children) && $version) {
-				$lwl_print .= '.'.$descriptor->catid;
+				$lwl_print .= '.'.$descriptor->niveau;
 			}
-			elseif($version) {
+			elseif($version && !is_null($counter)) {
 				//$lwl_print .= '.' . block_exacomp_get_descr_topic_sorting($descriptor->topicid, $descriptor->id);
-				$lwl_print .= '.' . $descriptor->sorting;
+				$lwl_print .= '.' . $counter;
+				$counter++;
 			}
 
 			$exampleuploadCell->text .= $outputid . ($version) ? $lwl_print :"";
@@ -1617,7 +1618,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 			
 			if (!empty($descriptor->children)) {
-				$this->print_descriptors($rows, $level+1, $descriptor->children, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $lwl_print);
+				$this->print_descriptors($rows, $level+1, $descriptor->children, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $lwl_print, 1);
 			}	
 		}
 	}
