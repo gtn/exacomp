@@ -134,7 +134,7 @@ if($isTeacher){
 	$options = array();
 
 	foreach($students as $student)
-		$options[$student->id] = fullname($student); // TODO: sollten wir hier nicht fullname() verwenden? -- prieler
+		$options[$student->id] = fullname($student);
 	
     $url = clone $my_url;
     $url->remove_params('studentid');
