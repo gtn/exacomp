@@ -37,6 +37,7 @@ $string['exacomp:deleteexamples'] = 'delete examples';
 // Admin Tabs
 $string['tab_admin_import'] = 'Import';
 $string['tab_admin_configuration'] = 'Standards pre-selection';
+$string['admin_config_pending'] = 'Standards pre-selection needs to be performed by the Moodle administrator';
 
 //Teacher Tabs
 $string['tab_teacher_settings'] = 'Settings';

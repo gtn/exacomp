@@ -36,6 +36,7 @@ $string['exacomp:deleteexamples'] = 'Beispiele löschen';
 // Admin Tabs
 $string['tab_admin_import'] = 'Import';
 $string['tab_admin_configuration'] = 'Vorauswahl der Standards';
+$string['admin_config_pending'] = 'Vorauswahl der Kompetenzen durch den Administrator notwendig';
 
 //Teacher Tabs
 $string['tab_teacher_settings'] = 'Einstellungen';

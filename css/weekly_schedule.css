@@ -1,50 +1,77 @@
-#main-content {
+#exacomp #main-content {
 	display: table;
 	width: 100%;
 }
-#main-content > .column {
+#exacomp #main-content  > .column {
 	display: table-cell;
 }
-#main-content > .column:first-child {
+#exacomp #main-content  > .column:first-child {
 	width: 20%;
 }
-#main-content > .column:last-child {
+#exacomp #main-content  > .column:last-child {
 	padding-left: 20px;
 }
 
-.header {
-	background: blue;
-	color: white;
+#exacomp .header {
+	background-color: #e6e6e6;
+	color: #000;
 	padding: 5px 5px 5px 15px;
+	border-bottom: 1px solid #cacaca;
+	border-left: none;
+	border-right: none;
+	border-top: none;
 }
-.items {
+
+#exacomp .header
+
+#exacomp .ui-sortable .header {
+	border-bottom: none;
+}
+
+#exacomp .items {
 	margin: 0;
 	min-height: 10px;
 	max-height: 600px;
 	overflow: auto;
 }
-.item {
+#exacomp .item {
 	margin: 10px;
-	padding: 5px;
 	background: white;
-	border: 1px solid black;
 	cursor: pointer;
+	background: #5ba803;
+	color: #fff;
+	-webkit-box-shadow: 1px 1px 1px 0px rgba(0,0,0,0.4);
+	-moz-box-shadow: 1px 1px 1px 0px rgba(0,0,0,0.4);
+	box-shadow: 1px 1px 1px 0px rgba(0,0,0,0.4);
+	border-radius: 3px;
 }
-.item .header {
-	background: lightblue;
-	color: black;
+
+#exacomp .item .header {
+	background-color: #5ba803 !important;
+	border: none;
 }
-.item .buttons {
+
+#exacomp .item .header {
+	color: #fff;
+	border-radius: 3px;
+}
+#exacomp .item .buttons {
 	display: none;
 }
-.item .buttons label:first-child {
+#exacomp .item .buttons label:first-child {
 	float: left;
 }
-.day .item .buttons {
+#exacomp .day .item .buttons {
 	display: block;
-	margin-top: 5px;
+	margin-top: 0;
+	padding: 5px 5px 5px 15px;
 }
-.empty {
+
+#exacomp .day .item .buttons input[type="radio"][disabled], #exacomp .day .item .buttons input[type="checkbox"][disabled], #exacomp .day .item .buttons input[type="radio"][readonly], #exacomp .day .item .buttons input[type="checkbox"][readonly] {
+    background-color: #d1d1d1;
+}
+
+#exacomp .empty {
 	margin: 10px;
 	padding: 5px;
 	height: 40px;
@@ -52,52 +79,65 @@
 	position: absolute;
 }
 
-#items {
-	border: 1px solid black;
+#exacomp #items {
+	border: 1px solid #cacaca;
 	min-height: 200px;
 }
-#items .items {
+#exacomp #items .items {
 	min-height: 200px;
 }
 
-#trash {
-	border: 1px solid black;
+#exacomp #trash {
+	border: 1px solid #cacaca;
 	margin-top: 20px;
 }
-#trash .items {
+#exacomp #trash .items {
 	min-height: 80px;
 }
 
-.placeholder {
+#exacomp .placeholder {
 	margin: 10px;
 	padding: 5px;
-	background: yellow;
+	background: rgba(102, 175, 233, 0.6);
+	border-radius:3px;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(102, 175, 233, 0.3);
 }
 
-#save-button {
+#exacomp #save-button {
 	height: 55px;
 	text-align: center;
 }
-#save-button input {
+#exacomp #save-button input {
 	margin-top: 3px;
 }
-#navi {
-	border: 1px solid black;
+#exacomp #navi {
 	margin-bottom: 20px;
 	text-align: center;
 	padding: 5px 0;
 }
-#days {
-	border: 1px solid black;
+#exacomp #days {
+	border: 1px solid #cacaca;
 	display: table;
 	border-collapse: collapse;
 	width: 100%;
 }
-.day {
+#exacomp .day {
 	display: table-cell;
 	width: 20%;
-	border-right: 1px solid black;
+	border: 1px solid #cacaca;
 }
-#days .items {
+#exacomp #days .items {
 	min-height: 200px;
+}
+
+#exacomp #days .day:nth-child(2n+1) {
+	background-color: #f6f6f6;
+}
+
+#exacomp #days .day:nth-child(2n+1) .header {
+	background-color: #dfdfdf;
+}
+
+#exacomp #days .day:nth-child(2n+1) .item .header {
+	background-color: transparent;
 }

@@ -113,14 +113,14 @@ if (optional_param('action', '', PARAM_TEXT) == 'save') {
 $PAGE->set_url($my_url);
 $PAGE->set_context(context_system::instance());
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
+$PAGE->set_title(get_string("tab_learning_agenda", 'block_exacomp'));
 
 block_exacomp_init_js_css();
 $PAGE->requires->jquery_plugin('ui');
 
 echo $OUTPUT->header();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), "tab_learning_agenda");
-
-
+echo '<div id="exacomp">';
 if($isTeacher){
 	
 	$students = block_exacomp_get_students_by_course($courseid);
@@ -176,50 +176,52 @@ function block_exacomp_weekly_schedule_print_items($items) {
 }
 
 ?>
-<div id="main-content">
-	<div class="column">
-		<div id="save-button">
-            <input type="button" value="Speichern" style="width: 90%;" />
-        </div>
-		<div id="items">
-			<div class="header">items</div>
-			<div class="empty">Keine Einträge</div>
-            <?php block_exacomp_weekly_schedule_print_items($items); ?>
-		</div>
-		<div id="trash">
-			<div class="header">papierkorb</div>
-			<div class="empty">Leer</div>
-			<div class="items">
+
+	<div id="main-content">
+		<div class="column">
+			<div id="save-button">
+	            <input type="button" value="Speichern" style="width: 90%;" />
+	        </div>
+			<div id="items">
+				<div class="header">items</div>
+				<div class="empty">Keine Einträge</div>
+	            <?php block_exacomp_weekly_schedule_print_items($items); ?>
+			</div>
+			<div id="trash">
+				<div class="header">papierkorb</div>
+				<div class="empty">Leer</div>
+				<div class="items">
+				</div>
 			</div>
 		</div>
-	</div>
-	<div class="column">
-		<div id="navi">
-			<a href="<?php echo $my_url->out(true, array('week'=>$lastWeek)); ?>">&lt; vorige</a>
-            &nbsp;&nbsp;&nbsp;&nbsp;
-            Kalenderwoche <?php echo date('Y/W', block_exacomp_add_days($week, 6) /* 1.1. kann der sonntag sein, dann ist die woche die 1te woche! */); ?>
-            &nbsp;&nbsp;&nbsp;&nbsp;
-			<a href="<?php echo $my_url->out(true, array('week'=>$nextWeek)); ?>">nächste &gt;</a>
-		</div>
-		<div id="days">
-            <?php
-                for ($i = 0; $i < 5; $i++) {
-                    $day = block_exacomp_add_days($week, $i);
-
-                    echo '<div class="day" id="day-'.$day.'">';
-                    echo '<div class="header">'.date('l, d.m.', $day).'</div>';
-                    
-                    $sql = "select s.*, e.title, eval.student_evaluation, eval.teacher_evaluation
-                            FROM {block_exacompschedule} s 
-                            JOIN {block_exacompexamples} e ON e.id = s.exampleid 
-                            LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid
-                            WHERE s.studentid = ? AND s.day = ?
-                            ORDER BY s.sorting";
-                    $items = $DB->get_records_sql($sql,array($studentid, $day));
-                    block_exacomp_weekly_schedule_print_items($items);
-                    echo '</div>';
-                }
-            ?>
+		<div class="column">
+			<div id="navi">
+				<a href="<?php echo $my_url->out(true, array('week'=>$lastWeek)); ?>">&lt; vorige</a>
+	            &nbsp;&nbsp;&nbsp;&nbsp;
+	            Kalenderwoche <?php echo date('Y/W', block_exacomp_add_days($week, 6) /* 1.1. kann der sonntag sein, dann ist die woche die 1te woche! */); ?>
+	            &nbsp;&nbsp;&nbsp;&nbsp;
+				<a href="<?php echo $my_url->out(true, array('week'=>$nextWeek)); ?>">nächste &gt;</a>
+			</div>
+			<div id="days">
+	            <?php
+	                for ($i = 0; $i < 5; $i++) {
+	                    $day = block_exacomp_add_days($week, $i);
+	
+	                    echo '<div class="day" id="day-'.$day.'">';
+	                    echo '<div class="header">'.date('l, d.m.', $day).'</div>';
+	                    
+	                    $sql = "select s.*, e.title, eval.student_evaluation, eval.teacher_evaluation
+	                            FROM {block_exacompschedule} s 
+	                            JOIN {block_exacompexamples} e ON e.id = s.exampleid 
+	                            LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid
+	                            WHERE s.studentid = ? AND s.day = ?
+	                            ORDER BY s.sorting";
+	                    $items = $DB->get_records_sql($sql,array($studentid, $day));
+	                    block_exacomp_weekly_schedule_print_items($items);
+	                    echo '</div>';
+	                }
+	            ?>
+			</div>
 		</div>
 	</div>
 </div>

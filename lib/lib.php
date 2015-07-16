@@ -780,13 +780,17 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescrip
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
 	$sql = 'SELECT d.id, d.title, d.niveauid, \'descriptor\' as tabletype, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, 1 as visible, d.sorting
-			FROM {'.DB_DESCRIPTORS.'} d '
+			FROM {'.DB_DESCRIPTORS.'} d ';
+	
+	/* activity association only for parent descriptors
 			.($showalldescriptors ? '' : '
 				JOIN {'.DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
 				JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':''));
+	*/
 	$sql .= ' WHERE  d.parentid = ?';
 	
-	$descriptors = $DB->get_records_sql($sql, ($showalldescriptors) ? array($parent->id) : array($courseid,$parent->id));
+	//$descriptors = $DB->get_records_sql($sql, ($showalldescriptors) ? array($parent->id) : array($courseid,$parent->id));
+	$descriptors = $DB->get_records_sql($sql,  array($parent->id) );
 	
 	foreach($descriptors as &$descriptor) {
 		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples);
@@ -875,7 +879,7 @@ function block_exacomp_get_descriptors_by_example($exampleid) {
  * @param int $subjectid
  * @return associative_array
  */
-function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $showalldescriptors = false, $topicid = null, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $calledfromoverview = false) {
+function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $showalldescriptors = false, $topicid = null, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $calledfromoverview = false, $calledfromactivities = false) {
 	global $DB, $version;
 
 	if(!$showalldescriptors)
@@ -896,11 +900,10 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 	else
 		$allSubjects = block_exacomp_get_subjects_by_course($courseid, $showalldescriptors);
 	
-	
 	// 2. GET TOPICS
 	$allTopics = block_exacomp_get_all_topics($subjectid);
 	if($courseid > 0) {
-		if(($topicid == SHOW_ALL_TOPICS && !$version) || ($version && !$calledfromoverview))
+		if(($topicid == SHOW_ALL_TOPICS && !$version) || ($version && !$calledfromoverview && !$calledfromactivities))
 			$courseTopics = block_exacomp_get_topics_by_subject($courseid, $subjectid);
 		elseif($topicid == null)
 			$courseTopics = block_exacomp_get_topics_by_course($courseid, $showalldescriptors);
@@ -915,7 +918,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 	
 	foreach ($allDescriptors as $descriptor) {
 	
-		if($version && $topicid != SHOW_ALL_TOPICS)
+		if($version && $topicid != SHOW_ALL_TOPICS && $calledfromoverview)
 			if($descriptor->id != $selectedParent->id)
 				continue;
 			
@@ -2194,7 +2197,7 @@ function block_exacomp_get_icon_for_user($coursemodules, $student, $supported) {
 	$modules = $DB->get_records_menu("modules");
 
 	$icon = new stdClass();
-	$icon->text = fullname($student) . get_string('usersubmitted','block_exacomp') . ' <ul>';
+	$icon->text = fullname($student) . get_string('usersubmitted','block_exacomp') . '&#013;';
 	
 	foreach ($coursemodules as $cm) {
 		$hasSubmission = false;
@@ -2211,14 +2214,13 @@ function block_exacomp_get_icon_for_user($coursemodules, $student, $supported) {
 		if(isset($gradeinfo->items[0]->grades[$student->id]->dategraded) || $hasSubmission) {
 			$found = true;
 			$icon->img = html_writer::empty_tag("img", array("src" => "pix/list_12x11.png","alt" => get_string("legend_activities","block_exacomp")));
-			$icon->text .= '<li>' . str_replace('"', '', $gradeinfo->items[0]->name) . ((isset($gradeinfo->items[0]->grades[$student->id])) ? get_string('grading', "block_exacomp"). $gradeinfo->items[0]->grades[$student->id]->str_long_grade : '' ) . '</li>';
+			$icon->text .= '* ' . str_replace('"', '', $gradeinfo->items[0]->name) . ((isset($gradeinfo->items[0]->grades[$student->id])) ? get_string('grading', "block_exacomp"). $gradeinfo->items[0]->grades[$student->id]->str_long_grade : '' ) . '&#013;';
 		}
 	}
 	if(!$found) {
 		$icon->text = fullname($student) . get_string("usernosubmission","block_exacomp");
 		$icon->img = html_writer::empty_tag("img", array("src" => "pix/x_11x11.png","alt" => fullname($student) . get_string("usernosubmission","block_exacomp")));
-	} else
-		$icon->text .= '</ul>';
+	}
 
 	return $icon;
 }

@@ -111,10 +111,9 @@ class block_exacomp extends block_list {
 			}
 		}
 		
-		if($checkConfig && $checkImport || $version && $checkImport){	//Modul wurde konfiguriert
+		if($checkConfig && $checkImport){	//Modul wurde konfiguriert
 			if (has_capability('block/exacomp:teacher', $currentcontext) && $courseid != 1){
 				$crosssubs = block_exacomp_cross_subjects_exists()?block_exacomp_get_cross_subjects_by_course($courseid):false;
-		
 				//teacher LIS
 				if($version){
 					if(block_exacomp_is_activated($courseid)){
@@ -159,11 +158,12 @@ class block_exacomp extends block_list {
 							//$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/my_badges.php', array('courseid'=>$courseid)), get_string('tab_badges', 'block_exacomp'), array('title'=>get_string('tab_badges', 'block_exacomp')));
 							//$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/pix/i/badge.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
 						//}
+					}
 						//Einstellungen
 						$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/edit_course.php', array('courseid'=>$courseid)), get_string('tab_teacher_settings', 'block_exacomp'), array('title'=>get_string('tab_teacher_settings', 'block_exacomp')));
 						$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/subjects_topics.gif'), 'alt'=>"", 'height'=>16, 'width'=>23));
 				
-					}
+					
 					if($de && !$skillmanagement){
 						//Hilfe
 						$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/help.php', array('courseid'=>$courseid)), get_string('tab_help', 'block_exacomp'), array('title'=>get_string('tab_help', 'block_exacomp')));
@@ -324,6 +324,11 @@ class block_exacomp extends block_list {
 						$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/info.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
 					}
 				}
+			}
+		} else {
+			if (has_capability('block/exacomp:teacher', $currentcontext) && $courseid != 1 && !has_capability('block/exacomp:admin', $globalcontext)){
+				$this->content->items[] = get_string('admin_config_pending','block_exacomp');
+				$this->content->icons[] = '';
 			}
 		}
 		return $this->content;

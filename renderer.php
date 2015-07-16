@@ -1918,7 +1918,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$input_activities = html_writer::checkbox('uses_activities', 1, $settings->uses_activities == 1, get_string('uses_activities', 'block_exacomp'))
 		.html_writer::empty_tag('br');
 
-		$input_descriptors = html_writer::checkbox('show_all_descriptors',1,$settings->show_all_descriptors == 1, get_string('show_all_descriptors', 'block_exacomp'))
+		$input_descriptors = html_writer::checkbox('show_all_descriptors',1,$settings->show_all_descriptors == 1, get_string('show_all_descriptors', 'block_exacomp'),($settings->uses_activities != 1) ? array("disabled" => "disabled") :  array())
 		.html_writer::empty_tag('br');
 
 		$input_examples = html_writer::checkbox('show_all_examples', 1, $settings->show_all_examples == 1, get_string('show_all_examples', 'block_exacomp'))
@@ -2391,6 +2391,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	}
 	public function print_topics_activities(&$rows, $level, $topics, &$rowgroup, $modules, $rowgroup_class = '') {
+		global $version;
+		
 		$padding = $level * 20 + 12;
 
 		foreach($topics as $topic) {
@@ -2419,6 +2421,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			foreach($modules as $module) {
 				$moduleCell = new html_table_cell();
 				$moduleCell->attributes['module-type='] = $module->modname;
+				if(!$version)
 				$moduleCell->text = html_writer::checkbox('topicdata[' . $module->id . '][' . $topic->id . ']', "", (in_array($topic->id, $module->topics))?true:false,'',array('class' => 'topiccheckbox'));
 				$topicRow->cells[] = $moduleCell;
 			}

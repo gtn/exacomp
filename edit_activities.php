@@ -110,7 +110,8 @@ if(($action = optional_param("action", "", PARAM_TEXT) ) == "filter"){
 		$selected_modules = $_POST['module_filter'];
 }
 
-$subjects = block_exacomp_get_competence_tree($courseid, null, true);
+
+$subjects = block_exacomp_get_competence_tree($courseid, null, true, null, false, array(), false, true);
 $modinfo = get_fast_modinfo($COURSE->id);
 $modules = $modinfo->get_cms();
 
