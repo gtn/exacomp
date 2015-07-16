@@ -66,6 +66,6 @@ foreach($course_crosssubjects as $crosssubject)
 	echo html_writer::checkbox('crosssubject',$crosssubject->id,isset($assigned_crosssubjects[$crosssubject->id]),$crosssubject->title);
 
 echo "</div>";
-echo html_writer::tag("input", '', array("type"=>"button","value"=>"Speichern","name"=>"crosssubjects"));
+echo html_writer::tag("input", '', array("type"=>"button","value"=>"Speichern","id"=>"crosssubjects"));
 
 echo $OUTPUT->footer();

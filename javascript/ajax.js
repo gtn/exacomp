@@ -262,7 +262,7 @@
 		}
 	});
 	// Add Descriptor to crosssubjects
-	$(document).on('click', 'input[name=crosssubjects]', function() {
+	$(document).on('click', '#crosssubjects', function() {
 		var crosssubjects = [];
 		var not_crosssubjects = [];
 		descrid = get_param('descrid');
@@ -278,10 +278,11 @@
 			crosssubjects : JSON.stringify(crosssubjects),
 			not_crosssubjects : JSON.stringify(not_crosssubjects),
 			descrid : descrid,
-			action : 'crosssubj-descriptors'
+			action : 'crosssubj-descriptors',
+			done: function() {window.close();}
 		});
 
- 		window.close();
+ 		
 	});
 
 	// Share crosssubject with students
