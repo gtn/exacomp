@@ -261,12 +261,13 @@
 			});
 		}
 	});
+	
 	// Add Descriptor to crosssubjects
-	$(document).on('click', '#crosssubjects', function() {
+	$(document).on('click', '#crosssubjects', function(event) {
+		event.preventDefault();
 		var crosssubjects = [];
 		var not_crosssubjects = [];
 		descrid = get_param('descrid');
-
 		$("input[name='crosssubject']").each(function() {
 			if (this.checked == "1")
 				crosssubjects.push($(this).val());
@@ -279,10 +280,9 @@
 			not_crosssubjects : JSON.stringify(not_crosssubjects),
 			descrid : descrid,
 			action : 'crosssubj-descriptors',
-			done: function() {window.close();}
+		}).done(function(msg) {
+			window.close();
 		});
-
- 		
 	});
 
 	// Share crosssubject with students
