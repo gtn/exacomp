@@ -152,7 +152,7 @@
 		description = $(this).val();
 	});
 	
-	$(document).on('click', '#assign-competencies input[type=submit]', function() {
+	$(document).on('click', '#assign-competencies input[type=submit]', function(event) {
 							event.preventDefault();
 							courseid = get_param('courseid');
 
@@ -321,7 +321,7 @@
 		}
 	});
 	
-	$(document).on('click', '#hide-descriptor', function() {
+	$(document).on('click', '#hide-descriptor', function(event) {
 		event.preventDefault();
 
 		var tr = $(this).closest('tr');
