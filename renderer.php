@@ -569,7 +569,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 	}
 	public function print_competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0,$studentid=0) {
-		global $CFG, $version;
+		global $CFG, $version, $DB;
 
 		$headFlag = false;
 
@@ -584,6 +584,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		$profoundness = block_exacomp_get_settings_by_course($courseid)->profoundness;
 
+		$spanningNiveaus = $DB->get_records(DB_NIVEAUS,array('span' => 1));
+		
 		$rows = array();
 
 		foreach($data as $skillid => $skill) {
@@ -618,6 +620,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$row->cells[] = $cell2;
 
 				foreach($niveaus as $niveauid => $niveau) {
+					print_r($niveau);
 					if(isset($data[$skillid][$topicid][$niveauid])) {
 						$cell = new html_table_cell();
 						$compdiv = "";
@@ -1251,7 +1254,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	function print_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class, $profoundness = false, $editmode=false, $lwl="", $counter = null) {
-		global $version, $PAGE, $USER, $COURSE, $CFG;
+		global $version, $PAGE, $USER, $COURSE, $CFG, $OUTPUT;
 
 		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
 
@@ -1339,7 +1342,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				//Adding to crosssubject only for "teilkompetenzen"
 				$titleCell->text .= html_writer::link(
 						new moodle_url('/blocks/exacomp/select_crosssubjects.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id)),
-						'T',
+						$OUTPUT->pix_icon("i/withsubcat", "Thematischer Zugang"),
 						array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 			}
 			//if hidden in course, cannot be shown to one student
@@ -1347,10 +1350,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			if(!$descriptor_used){
 				if($editmode || ($one_student && $descriptor->visible && $data->role == ROLE_TEACHER)){
 					if($visible)
-						$value_vis = '-';
+						$value_vis = $OUTPUT->pix_icon("i/show", "hide");
 					else 
-						$value_vis = '+';
-					$titleCell->text .= html_writer::link("", $value_vis,array('name' => 'hide-descriptor','descrid' => $descriptor->id, 'id' => 'hide-descriptor'));
+						$value_vis = $OUTPUT->pix_icon("i/hide", "show", "block_exacomp");
+					
+					$titleCell->text .= html_writer::link("", $value_vis,array('name' => 'hide-descriptor','descrid' => $descriptor->id, 'id' => 'hide-descriptor', 'state' => ($visible) ? '-' : '+',
+							'showurl' => $OUTPUT->pix_url("i/show"), 'hideurl' => $OUTPUT->pix_url("i/hide")
+					));
 					//$titleCell->text .= html_writer::empty_tag("input", array('type'=>'button', 'value'=>$value_vis, 'name'=>'hide-descriptor', 'descrid'=>$descriptor->id));
 				}
 			}
@@ -1518,14 +1524,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				if(isset($example->creatorid) && $example->creatorid == $USER->id) {
 				    $titleCell->text .= html_writer::link(
 				            new moodle_url('/blocks/exacomp/example_upload.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id,"topicid"=>$descriptor->topicid,"exampleid"=>$example->id)),
-				            html_writer::empty_tag('img', array('src'=>'pix/edit.png', 'alt'=>'upload')),
+				            $OUTPUT->pix_icon("i/edit", "edit"),
 				            array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 				
-				    $titleCell->text .= html_writer::link($PAGE->url . "&delete=" . $example->id, html_writer::empty_tag("img", array("src" => "pix/x_11x11_redsmall.png", "alt" => "Delete", "onclick" => "return confirm('" . get_string('delete_confirmation','block_exacomp') . "')")));
+				    $titleCell->text .= html_writer::link($PAGE->url . "&delete=" . $example->id, $OUTPUT->pix_icon("t/delete", "Löschen", "", array("onclick" => "return confirm('" . get_string('delete_confirmation','block_exacomp') . "')")));
 				}
 				
 				if($example->task)
-					$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->task), html_writer::empty_tag('img', array('src'=>'pix/i_11x11.png', 'alt'=>'link')),array("target" => "_blank"));
+					$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->task), $OUTPUT->pix_icon("i/preview", "Angabe"),array("target" => "_blank"));
 				
 				if($example->iseditable==7){
 					$iconforlink="pix/elc20_1.png";
@@ -1624,7 +1630,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	public function print_submission_icon($courseid, $exampleid, $studentid = 0) {
-		global $CFG;
+		global $CFG, $OUTPUT;
 		
 		$context = context_course::instance($courseid);
 		$isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
@@ -1632,30 +1638,36 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		if(!$isTeacher)
 			return html_writer::link(
 					new moodle_url('/blocks/exacomp/example_submission.php',array("courseid"=>$courseid,"exampleid"=>$exampleid)),
-					'L',
+					$OUTPUT->pix_icon("i/manual_item", "Lösung"),
 					array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 		else if($studentid > 0) {
 			$url = block_exacomp_get_viewurl_for_example($studentid,$exampleid);
 			if($url)
 				return html_writer::link(
 					$CFG->wwwroot . ('/blocks/exaport/shared_item.php?access='.$url),
-					'L',
+					$OUTPUT->pix_icon("i/manual_item", "Lösung"),
 					array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 		}
 	}
 	public function print_schedule_icon($exampleid, $studentid, $courseid) {
+		global $OUTPUT;
+		
 		return html_writer::link(
 							"#",
-							'W',
+							$OUTPUT->pix_icon("e/insert_date", "Wochenplan"),
 							array('id' => 'add-example-to-schedule', 'exampleid' => $exampleid, 'studentid' => $studentid, 'courseid' => $courseid));
 	}
 	public function print_competence_association_icon($exampleid, $courseid) {
+		global $OUTPUT;
+		
 		return html_writer::link(
 				new moodle_url('/blocks/exacomp/competence_associations.php',array("courseid"=>$courseid,"exampleid"=>$exampleid)),
-				'V', array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+				 $OUTPUT->pix_icon("e/insert_edit_link", "Verknüpfungen"), array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 	}
 	public function print_example_solution_icon($solution) {
-		return html_writer::link(str_replace('&amp;','&',$solution), "M" ,array("target" => "_blank"));
+		global $OUTPUT;
+		
+		return html_writer::link(str_replace('&amp;','&',$solution), $OUTPUT->pix_icon("e/fullpage", "Musterlösung") ,array("target" => "_blank"));
 	}
 	
 	private function print_student_example_evaluation_form($exampleid, $studentid, $courseid) {

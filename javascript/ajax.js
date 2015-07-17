@@ -330,13 +330,13 @@
 		courseid = get_param('courseid');
 		studentid = get_param('studentid');
 		descrid = $(this).attr('descrid');
-		val = $(this).text();
+		val = $(this).attr('state');
 		
 		if(studentid==null)
 			studentid = 0;
 		
 		if(val=='-'){
-			$(this).text('+');
+			$(this).attr('state','+');
 			visible = 0;
 			tr.addClass('hidden_temp');
 			
@@ -347,8 +347,11 @@
 			//disable checkbox for teacher, when hiding descriptor for student
 			if(studentid > 0)
 				$('input[name=data-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", true ); 
+			
+			var img = $("img", this);
+			img.attr('src',$(this).attr('hideurl'));
 		}else{
-			$(this).text('-');
+			$(this).attr('state','-');
 			visible = 1;
 			tr.removeClass('hidden_temp');
 			
@@ -357,6 +360,9 @@
 			
 			//enable checkbox for teacher, when showing descriptor for student
 			$('input[name=data-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
+			
+			var img = $("img", this);
+			img.attr('src',$(this).attr('showurl'));
 		}
 		
 		call_ajax({
