@@ -63,8 +63,13 @@ if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
     }
 	else if(isset($_POST['draft'])){
         $drafts_to_save = $_POST['draft'];
-        block_exacomp_save_drafts_to_course($drafts_to_save, $courseid);
-        redirect(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid)));
+        //if more than one draft added redirect to first selected
+        $current_id = block_exacomp_save_drafts_to_course($drafts_to_save, $courseid);
+        redirect(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$current_id)));
+    }
+    else if(isset($_POST['new_crosssub'])){
+    	$current_id = block_exacomp_create_new_crosssub($courseid);
+    	redirect(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$current_id)));
     }
 }
 
@@ -79,7 +84,7 @@ $isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
 if($isTeacher)
     echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_cross_subjects($context, $courseid), $page_identifier);
 
-block_exacomp_init_cross_subjects();
+//block_exacomp_init_cross_subjects();
 
 $drafts = block_exacomp_get_cross_subjects_drafts();
 

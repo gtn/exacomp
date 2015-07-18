@@ -397,8 +397,8 @@ $string['block_exacomp_external_trainer'] = 'Ausbilder: ';
 $string['block_exacomp_external_trainer_student'] = 'Auszubildender: ';
 
 //Crosssubjects
-$string['empty_draft'] = 'Leere Vorlage';
-$string['empty_draft_description'] = 'Erstelle dein eigenes Thema auf Basis einer leeren Vorlage.';
+$string['empty_draft'] = 'Neues Thema';
+$string['empty_draft_description'] = 'Erstelle dein eigenes Thema - ändere die Beschreibung hier';
 $string['add_drafts_to_course'] = 'Vorlagen zum Kurs hinzufügen';
 $string['choosecrosssubject'] = 'Thema auswählen';
 $string['crosssubject'] = "Thema";
@@ -414,6 +414,7 @@ $string['delete_drafts'] = 'Ausgewählte Vorlagen löschen';
 $string['share_crosssub'] = 'Thema für Teilnehmer freigeben';
 $string['share_crosssub_with_students'] = 'Das Thema "{$a}" für folgende Teilnehmer freigeben: ';
 $string['share_crosssub_with_all'] = 'Das Thema "{$a}" für <b>alle</b> Teilnehmer freigeben: ';
+$string['new_crosssub'] = "Neues Thema erstellen";
 
 //Associations
 $string['competence_associations_explaination'] = 'Das Lernmaterial {$a} ist mit den folgenden Kompetenzen verknpüpft:';

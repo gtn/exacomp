@@ -796,3 +796,10 @@ td.contentcell {
     margin-bottom: 20px;
 }
 
+#exacomp div.associated_div li {
+	 color: #7f7f7f;
+}
+
+#exacomp div.associated_div li.associated {
+	 color: #000;
+}

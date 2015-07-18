@@ -3730,17 +3730,7 @@ function block_exacomp_get_schooltypetree_by_subjects($subjects, $competencegrid
     }
     return $tree;
 }
-function block_exacomp_init_cross_subjects(){
-    global $DB;
-    $draft = $DB->get_records(DB_CROSSSUBJECTS, array('sourceid'=>0));
-    if(!$draft){
-        $insert = new stdClass();
-        $insert->title = get_string('empty_draft', 'block_exacomp');
-        $insert->description = get_string('empty_draft_description', 'block_exacomp');
-        $insert->sourceid = 0;
-        $DB->insert_record(DB_CROSSSUBJECTS, $insert);
-    } 
-}
+
 function block_exacomp_get_cross_subjects_drafts(){
     global $DB;
     return $DB->get_records(DB_CROSSSUBJECTS, array('courseid'=>0));
@@ -3753,6 +3743,7 @@ function block_exacomp_get_cross_subjects_drafts(){
  */
 function block_exacomp_save_drafts_to_course($drafts_to_save, $courseid){
     global $DB, $USER;
+    $redirect_crosssubjid = 0;
     foreach($drafts_to_save as $draftid){
         $draft = $DB->get_record(DB_CROSSSUBJECTS, array('id'=>$draftid));
         $draft->courseid = $courseid;
@@ -3760,6 +3751,8 @@ function block_exacomp_save_drafts_to_course($drafts_to_save, $courseid){
 		$draft->sourceid = 0;
         $draft->source = IMPORT_SOURCE_SPECIFIC;
         $crosssubjid = $DB->insert_record(DB_CROSSSUBJECTS, $draft);
+        
+        if($redirect_crosssubjid == 0) $redirect_crosssubjid = $crosssubjid;
         
         //assign competencies
         $comps = $DB->get_records(DB_DESCCROSS, array('crosssubjid'=>$draftid));
@@ -3781,6 +3774,19 @@ function block_exacomp_save_drafts_to_course($drafts_to_save, $courseid){
         	}
         }
     }
+    return $redirect_crosssubjid;
+}
+function block_exacomp_create_new_crosssub($courseid){
+	global $DB, $USER;
+	
+	$insert = new stdClass();
+    $insert->title = get_string('empty_draft', 'block_exacomp');
+    $insert->description = get_string('empty_draft_description', 'block_exacomp');
+    $insert->courseid = $courseid;
+    $insert->creatorid = $USER->id;
+	$insert->sourceid = 0;
+    $insert->source = IMPORT_SOURCE_SPECIFIC;
+    return $DB->insert_record(DB_CROSSSUBJECTS, $insert);
 }
 function block_exacomp_delete_crosssubject_drafts($drafts_to_delete){
 	global $DB;
@@ -4156,4 +4162,54 @@ function block_exacomp_optional_param_array($parname, array $definition) {
     }
 
     return block_exacomp_clean_array($param, $definition);
+}
+
+function block_exacomp_build_example_association_tree($courseid, $example_descriptors = array(), $exampleid=0){
+	//get all subjects, topics, descriptors and examples
+	$tree = block_exacomp_get_competence_tree($courseid, null, false, SHOW_ALL_TOPICS, true, block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies);
+	
+	// unset all descriptors, topics and subjects that do not contain the example descriptors
+	foreach($tree as $skey => $subject) {
+		$subject->associated = 0;
+		foreach ( $subject->subs as $tkey => $topic ) {
+			$topic->associated = 0;
+			if(isset($topic->descriptors)) {
+				foreach ( $topic->descriptors as $dkey => $descriptor ) {
+					$descriptor = block_exacomp_check_child_descriptors($descriptor, $example_descriptors, $exampleid);
+					
+					if($descriptor->associated == 1)
+						$topic->associated = 1;
+				}
+			}
+			
+			if($topic->associated == 1)
+				$subject->associated = 1;
+		}
+	}
+	return $tree;
+}
+function block_exacomp_check_child_descriptors($descriptor, $example_descriptors, $exampleid) {
+
+	$descriptor->associated = 0;
+	foreach($descriptor->children as $ckey => $cvalue) {
+		$keepDescriptor = false;
+		if (array_key_exists ( $cvalue->id, $example_descriptors )) {
+			$keepDescriptor = true;
+			$descriptor->associated = 1;
+		}
+		$descriptor->children[$ckey]->associated = 1;
+		$descriptor->children[$ckey]->direct_associated = 1;
+		if (! $keepDescriptor) {
+			$descriptor->children[$ckey]->associated = 0;
+			$descriptor->children[$ckey]->direct_associated = 0;
+			continue;
+		}
+		foreach($cvalue->examples as $ekey => $example) {
+			$cvalue->examples[$ekey]->associated = 1;
+			if($example->id != $exampleid)
+				$cvalue->examples[$ekey]->associated = 0;
+		}
+	}
+	
+	return $descriptor;
 }

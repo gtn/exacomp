@@ -82,6 +82,12 @@ $taxonomies = array_merge(array("0" => ""),$taxonomies);
 $topicsub = $DB->get_record("block_exacomptopics", array("id"=>$topicid));
 $topics = $DB->get_records("block_exacomptopics", array("subjid"=>$topicsub->subjid), null, 'title,id');
 
+$example_descriptors = array();
+if($exampleid>0)
+	$example_descriptors = $DB->get_records(DB_DESCEXAMP,array('exampid'=>$exampleid),'','descrid');
+
+$tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid);
+
 foreach($topics as $topic){
     $topic->descriptors = $DB->get_records_sql("SELECT d.id, d.title, n.title as niveautitle FROM {block_exacompdescriptors} d
             JOIN {block_exacompdescrtopic_mm} dt ON dt.descrid = d.id
@@ -95,7 +101,7 @@ foreach($topics as $topic){
     }
 }
 
-$form = new block_exacomp_example_upload_form($_SERVER['REQUEST_URI'], array("descrid" => $descrid,"taxonomies"=>$taxonomies,"topics"=>$topics,"topicid"=>$topicid, "exampleid"=>$exampleid, "task"=>isset($example->task) ? $example->task : null,
+$form = new block_exacomp_example_upload_form($_SERVER['REQUEST_URI'], array("descrid" => $descrid,"taxonomies"=>$taxonomies,"tree"=>$tree,"topics"=>$topics,"topicid"=>$topicid, "exampleid"=>$exampleid, "task"=>isset($example->task) ? $example->task : null,
         "solution"=>isset($example->solution) ? $example->solution : null) );
 
 if($formdata = $form->get_data()) {
@@ -182,6 +188,7 @@ if($formdata = $form->get_data()) {
         $DB->delete_records('block_exacompdescrexamp_mm',array('exampid' => $newExample->id));
     }
 
+    //add descriptor association
     foreach($formdata->descriptors as $descr)
         $DB->insert_record('block_exacompdescrexamp_mm', array('descrid' => $descr, 'exampid' => $newExample->id));
 

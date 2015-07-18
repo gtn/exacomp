@@ -354,8 +354,8 @@ $string['block_exacomp_external_trainer'] = 'Trainer';
 $string['block_exacomp_external_trainer_student'] = 'Student';
 
 //Crosssubjects
-$string['empty_draft'] = 'Empty draft';
-$string['empty_draft_description'] = 'Create your own cross-subject based on an empty draft.';
+$string['empty_draft'] = 'new crosssubject';
+$string['empty_draft_description'] = 'Create your own cross-subject - insert new description';
 $string['add_drafts_to_course'] = 'Add drafts to course';
 $string['choosecrosssubject'] = 'Choose cross-subject';
 $string['crosssubject'] = "Cross-Subject";
@@ -373,6 +373,7 @@ $string['delete_drafts'] = 'Delete selected crosssubjects';
 $string['share_crosssub'] = 'Share crosssubject with participants';
 $string['share_crosssub_with_students'] = 'Share crosssubject "{$a}" with the following participants: ';
 $string['share_crosssub_with_all'] = 'Share crosssubject "{$a}" with all participants: ';
+$string['new_crosssub'] = "Create new crosssubject";
 
 //Associations
 $string['competence_associations_explaination'] = 'The material {$a} is associated wih the following standards:';

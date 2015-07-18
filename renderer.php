@@ -584,7 +584,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		$profoundness = block_exacomp_get_settings_by_course($courseid)->profoundness;
 
-		$spanningNiveaus = $DB->get_records(DB_NIVEAUS,array('span' => 1));
+		//$spanningNiveaus = $DB->get_records(DB_NIVEAUS,array('span' => 1));
 		
 		$rows = array();
 
@@ -1560,10 +1560,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					
 				} else if($data->role == ROLE_TEACHER) {
 					$studentid = optional_param("studentid", 0, PARAM_INT);
+	
 					if($studentid > 0 && $studentid != SHOW_ALL_STUDENTS) {
 						$titleCell->text .= $this->print_submission_icon($data->courseid, $example->id, $studentid);
 						$titleCell->text .= $this->print_schedule_icon($example->id, $studentid, $data->courseid);
+						
 					}
+					$titleCell->text .= $this->print_competence_association_icon($example->id, $data->courseid, $editmode);
+				
 				}
 				
 				$exampleRow->cells[] = $titleCell;
@@ -1641,12 +1645,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$OUTPUT->pix_icon("i/manual_item", "Lösung"),
 					array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 		else if($studentid > 0) {
-			$url = block_exacomp_get_viewurl_for_example($studentid,$exampleid);
-			if($url)
-				return html_writer::link(
-					$CFG->wwwroot . ('/blocks/exaport/shared_item.php?access='.$url),
-					$OUTPUT->pix_icon("i/manual_item", "Lösung"),
-					array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+			//works only if exaport is installed
+			if(block_exacomp_exaportexists()){
+				$url = block_exacomp_get_viewurl_for_example($studentid,$exampleid);
+				if($url)
+					return html_writer::link(
+						$CFG->wwwroot . ('/blocks/exaport/shared_item.php?access='.$url),
+						$OUTPUT->pix_icon("i/manual_item", "Lösung"),
+						array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+			}else{
+				return "";
+			}
 		}
 	}
 	public function print_schedule_icon($exampleid, $studentid, $courseid) {
@@ -1657,11 +1666,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$OUTPUT->pix_icon("e/insert_date", "Wochenplan"),
 							array('id' => 'add-example-to-schedule', 'exampleid' => $exampleid, 'studentid' => $studentid, 'courseid' => $courseid));
 	}
-	public function print_competence_association_icon($exampleid, $courseid) {
+	public function print_competence_association_icon($exampleid, $courseid, $editmode) {
 		global $OUTPUT;
 		
 		return html_writer::link(
-				new moodle_url('/blocks/exacomp/competence_associations.php',array("courseid"=>$courseid,"exampleid"=>$exampleid)),
+				new moodle_url('/blocks/exacomp/competence_associations.php',array("courseid"=>$courseid,"exampleid"=>$exampleid, "editmode"=>($editmode)?1:0)),
 				 $OUTPUT->pix_icon("e/insert_edit_link", "Verknüpfungen"), array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 	}
 	public function print_example_solution_icon($solution) {
@@ -3742,8 +3751,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 	public function print_cross_subjects_drafts($drafts, $isAdmin=false){
 	    global $PAGE, $USER;
-	    $content = html_writer::start_tag('script', array('type'=>'text/javascript', 'src'=>'javascript/wz_tooltip.js'));
-		$content .= html_writer::end_tag('script');
 		
 	    $drafts_checkboxes = "";
 	    foreach($drafts as $draft){
@@ -3755,17 +3762,21 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$text = str_replace(":","\:",$text);
 
 			$draft_checkbox = html_writer::checkbox('draft['.$draft->id.']', $draft->id, false, $draft->title);
-	        $drafts_checkboxes .= html_writer::span($draft_checkbox, '', array('onmouseover'=>'Tip(\''.$text.'\')', 'onmouseout'=>'UnTip()'));
+	        $drafts_checkboxes .= html_writer::span($draft_checkbox, '', array('title'=>$text));
 	        $drafts_checkboxes .= html_writer::empty_tag('br');
 	    }
 	    
-	    $submit = html_writer::empty_tag('input', array('name'=>'btn_submit', 'type'=>'submit', 'value'=>get_string('add_drafts_to_course', 'block_exacomp')));
-	    if($isAdmin) $submit .= html_writer::empty_tag('input', array('name'=>'delete_crosssubs', 'type'=>'submit', 'value'=>get_string('delete_drafts', 'block_exacomp')));
-
-	    $submit = html_writer::div($submit, '', array('id'=>'exabis_save_button')); 
-	    //$submit = html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('add_drafts_to_course', 'block_exacomp')));
-	    $content .= html_writer::tag('form', $drafts_checkboxes.$submit, array('method'=>'post', 'action'=>$PAGE->url.'&action=save', 'name'=>'add_drafts_to_course'));
-		//$div_exabis_competences_block = html_writer::div($content, array('id'=>'exabis_competences_block'));
+	    $submit = "";
+	    if($drafts_checkboxes){
+		    $submit .= html_writer::empty_tag('input', array('name'=>'btn_submit', 'type'=>'submit', 'value'=>get_string('add_drafts_to_course', 'block_exacomp')));
+		    if($isAdmin) $submit .= html_writer::empty_tag('input', array('name'=>'delete_crosssubs', 'type'=>'submit', 'value'=>get_string('delete_drafts', 'block_exacomp')));
+		}
+		$submit .= html_writer::empty_tag('br');
+		$submit .= html_writer::empty_tag('input', array('name'=>'new_crosssub', 'type'=>'submit', 'value'=>get_string('new_crosssub', 'block_exacomp')));
+	
+		$submit = html_writer::div($submit, '', array('id'=>'exabis_save_button')); 
+		$content = html_writer::tag('form', $drafts_checkboxes.$submit, array('method'=>'post', 'action'=>$PAGE->url.'&action=save', 'name'=>'add_drafts_to_course'));
+		
 		$div_exabis_competences_block = html_writer::div($content, "", array('id'=>'exabis_competences_block'));
 		return $div_exabis_competences_block;
 	}
@@ -3869,50 +3880,60 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 	
-	public function print_competence_based_list_tree($tree) {
+	public function print_competence_based_list_tree($tree, $isTeacher, $editmode) {
+		global $PAGE;
+		
 		$html_tree = "";
 		$html_tree .= html_writer::start_tag("ul",array("class"=>"collapsibleList"));
 		foreach($tree as $skey => $subject) {
-			$html_tree .= html_writer::start_tag("li");
-			$html_tree .= $subject->title;
-			
-			if(!empty($subject->subs))
-				$html_tree .= html_writer::start_tag("ul");
-			
-			foreach ( $subject->subs as $tkey => $topic ) {
-				$html_tree .= html_writer::start_tag("li");
-				$html_tree .= $topic->title;
+			if($subject->associated == 1 || ($isTeacher && $editmode==1)){
+				$html_tree .= html_writer::start_tag("li", array('class'=>($subject->associated == 1)?"associated":""));
+				$html_tree .= $subject->title;
 				
-				if(!empty($topic->descriptors))
+				if(!empty($subject->subs))
 					$html_tree .= html_writer::start_tag("ul");
 				
-				foreach ( $topic->descriptors as $dkey => $descriptor ) {
-					$html_tree .= $this->print_competence_for_list_tree($descriptor);
+				foreach ( $subject->subs as $tkey => $topic ) {
+					if($topic->associated == 1 || ($isTeacher && $editmode==1)){
+						$html_tree .= html_writer::start_tag("li", array('class'=>($topic->associated == 1)?"associated":""));
+						$html_tree .= $topic->title;
+						
+						if(!empty($topic->descriptors))
+							$html_tree .= html_writer::start_tag("ul");
+						
+						foreach ( $topic->descriptors as $dkey => $descriptor ) {
+							if($descriptor->associated == 1 || ($isTeacher && $editmode==1))
+								$html_tree .= $this->print_competence_for_list_tree($descriptor, $isTeacher, $editmode);
+						}
+						
+						if(!empty($topic->descriptors))
+							$html_tree .= html_writer::end_tag("ul");
+					}
+					
 				}
-				
-				if(!empty($topic->descriptors))
+				if(!empty($subject->subs))
 					$html_tree .= html_writer::end_tag("ul");
 				
+				$html_tree .= html_writer::end_tag("li");
 			}
-			if(!empty($subject->subs))
-				$html_tree .= html_writer::end_tag("ul");
-			
-			$html_tree .= html_writer::end_tag("li");
 		}
 		$html_tree .= html_writer::end_tag("ul");
-		
 		return $html_tree;
 	}
 	
-	private function print_competence_for_list_tree($descriptor) {
-		$html_tree = html_writer::start_tag("li");
+	private function print_competence_for_list_tree($descriptor, $isTeacher, $editmode) {
+		$html_tree = html_writer::start_tag("li", array('class'=>($descriptor->associated == 1)?"associated":""));
+		if($isTeacher && $editmode==1 && isset($descriptor->direct_associated))
+			$html_tree .= html_writer::checkbox("descriptor[]", $descriptor->id, ($descriptor->direct_associated==1)?true:false);
+		
 		$html_tree .= $descriptor->title;
 			
 		if(!empty($descriptor->examples))
 			$html_tree .= html_writer::start_tag("ul");
 			
 		foreach($descriptor->examples as $example) {
-			$html_tree .= html_writer::tag("li", $example->title);
+			if($example->associated == 1 || ($isTeacher && $editmode==1))
+				$html_tree .= html_writer::tag("li", $example->title, array('class'=>($example->associated == 1)?"associated":""));
 		}
 			
 		if(!empty($descriptor->examples))
@@ -3922,7 +3943,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$html_tree .= html_writer::start_tag("ul");
 			
 			foreach($descriptor->children as $child)
-				$html_tree .= $this->print_competence_for_list_tree($child);
+				if($child->associated == 1 || ($isTeacher && $editmode==1))
+					$html_tree .= $this->print_competence_for_list_tree($child, $isTeacher, $editmode);
 			
 			$html_tree .= html_writer::end_tag("ul");
 		}

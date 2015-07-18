@@ -29,8 +29,10 @@ require_once $CFG->libdir . '/formslib.php';
 class block_exacomp_example_upload_form extends moodleform {
 
 	function definition() {
-		global $CFG, $USER, $DB, $version;
+		global $CFG, $USER, $DB, $version, $PAGE;
 
+		$output = $PAGE->get_renderer('block_exacomp');
+		
 		$mform = & $this->_form;
 
 		$descrid = $this->_customdata['descrid'];
@@ -41,6 +43,11 @@ class block_exacomp_example_upload_form extends moodleform {
 		$mform->addElement('hidden', 'id');
 		$mform->setType('id', PARAM_INT);
 		$mform->setDefault('id', 0);
+		
+		$tree = $this->_customdata['tree'];
+		//$html_tree = $output->print_competence_based_list_tree($tree, true, 1);
+		
+		//$mform->addElement('list', 'descriptors', get_string('descriptors', 'block_exacomp'), $html_tree);
 		
 		$descriptorgroups = array();
 		foreach($this->_customdata['topics'] as $topic){

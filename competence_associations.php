@@ -32,6 +32,7 @@ global $DB, $OUTPUT, $PAGE, $USER;
 
 $courseid = required_param('courseid', PARAM_INT);
 $exampleid = required_param('exampleid', PARAM_INT);
+$editmode = optional_param('editmode', 0, PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
     print_error('invalidcourse', 'block_exacomp', $courseid);
@@ -47,7 +48,7 @@ require_login($course);
 $context = context_course::instance($courseid);
 
 /* PAGE URL - MUST BE CHANGED */
-$PAGE->set_url('/blocks/exacomp/competence_association.php', array('courseid' => $courseid,'exampleid' => $exampleid));
+$PAGE->set_url('/blocks/exacomp/competence_associations.php', array('courseid' => $courseid));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 
 block_exacomp_init_js_css();
@@ -61,53 +62,42 @@ $blocknode->make_active();
 
 // build tab navigation & print header
 echo $OUTPUT->header();
+
+// CHECK TEACHER
+$isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
+
 echo '<div id="exacomp">';
 /* CONTENT REGION */
+if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
+	if(isset($_POST['descriptor']) && !empty($_POST['descriptor'])){
+		foreach($_POST['descriptor'] as $descriptorid){
+			//check if record already exists -> if not insert new 
+			$record = $DB->get_records(DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$exampleid));
+			if(!$record){
+				$insert = new stdClass();
+				$insert->descrid = $descriptorid;
+				$insert->exampid = $exampleid;
+				$DB->insert_record(DB_DESCEXAMP, $insert);
+			}	
+		}
+	}
+}
 
 //get descriptors for the given example
 $example_descriptors = $DB->get_records(DB_DESCEXAMP,array('exampid'=>$exampleid),'','descrid');
-//get all subjects, topics, descriptors and examples
-$tree = block_exacomp_get_competence_tree($courseid, null, false, SHOW_ALL_TOPICS, true, block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies);
-// unset all descriptors, topics and subjects hat do not contain the example descriptors
-foreach($tree as $skey => $subject) {
-	foreach ( $subject->subs as $tkey => $topic ) {
-		if(isset($topic->descriptors)) {
-		foreach ( $topic->descriptors as $dkey => $descriptor ) {
-			$descriptor = block_exacomp_check_child_descriptors($descriptor, $example_descriptors, $exampleid);
-			
-			if(count($descriptor->children) == 0)
-				unset($topic->descriptors[$dkey]);
-		}}
-		if(!isset($topic->descriptors) || count($topic->descriptors) == 0)
-			unset($subject->subs[$tkey]);
-	}
-	if(count($subject->subs) == 0)
-		unset($tree[$skey]);
-}
 
-function block_exacomp_check_child_descriptors($descriptor, $example_descriptors, $exampleid) {
+$tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid);
 
-	foreach($descriptor->children as $ckey => $cvalue) {
-		$keepDescriptor = false;
-		if (array_key_exists ( $cvalue->id, $example_descriptors )) {
-			$keepDescriptor = true;
-		}
-		if (! $keepDescriptor) {
-			unset ( $descriptor->children[$ckey] );
-			continue;
-		}
-		foreach($cvalue->examples as $ekey => $example) {
-			if($example->id != $exampleid)
-				unset($cvalue->examples[$ekey]);
-		}
-	}
-	
-	return $descriptor;
-}
 $output = $PAGE->get_renderer('block_exacomp');
-echo html_writer::tag("p",get_string("competence_associations_explaination","block_exacomp",$example->title));
-echo $output->print_competence_based_list_tree($tree);
 
+echo html_writer::tag("p",get_string("competence_associations_explaination","block_exacomp",$example->title));
+$html_tree = $output->print_competence_based_list_tree($tree, $isTeacher, $editmode);
+$content = html_writer::div($html_tree, "associated_div", array('id'=>"associated_div"));
+if($editmode==1)
+	$content.= html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp')));
+
+echo  html_writer::tag('form', $content, array('method'=>'post', 'action'=>$PAGE->url.'&exampleid='.$exampleid.'&editmode='.$editmode.'&action=save', 'name'=>'add_association'));
+		
 /* END CONTENT REGION */
 echo '</div>';
 echo $OUTPUT->footer();

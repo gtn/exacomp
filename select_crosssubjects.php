@@ -60,12 +60,15 @@ if(!$course_crosssubjects) {
 }
 $assigned_crosssubjects = $DB->get_records_menu(DB_DESCCROSS,array('descrid'=>$descrid),'','crosssubjid,descrid');
 echo get_string('assign_descriptor_to_crosssubject','block_exacomp',$descriptor->title);
+echo html_writer::empty_tag('br');
 
 echo "<div>";
 foreach($course_crosssubjects as $crosssubject)
-	echo html_writer::checkbox('crosssubject',$crosssubject->id,isset($assigned_crosssubjects[$crosssubject->id]),$crosssubject->title);
+	echo html_writer::checkbox('crosssubject',$crosssubject->id,isset($assigned_crosssubjects[$crosssubject->id]),$crosssubject->title)
+		.html_writer::empty_tag('br');
 
 echo "</div>";
-echo html_writer::tag("input", '', array("type"=>"button","value"=>"Speichern","id"=>"crosssubjects"));
+
+echo html_writer::div(html_writer::tag("input", '', array("type"=>"button","value"=>get_string('save_selection', 'block_exacomp'),"id"=>"crosssubjects")), '', array('id'=>'exabis_save_button'));
 
 echo $OUTPUT->footer();
