@@ -44,29 +44,10 @@ class block_exacomp_example_upload_form extends moodleform {
 		$mform->setType('id', PARAM_INT);
 		$mform->setDefault('id', 0);
 		
+		//add html tree -> different treated in example_upload -> mform does not support a tree structure
 		$tree = $this->_customdata['tree'];
-		//$html_tree = $output->print_competence_based_list_tree($tree, true, 1);
-		
-		//$mform->addElement('list', 'descriptors', get_string('descriptors', 'block_exacomp'), $html_tree);
-		
-		$descriptorgroups = array();
-		foreach($this->_customdata['topics'] as $topic){
-			foreach($topic->descriptors as $id=>$descriptor) {
-				$descriptor->title = $descriptor->niveautitle . ": " . $descriptor->title;
-				$descriptorgroups[$descriptor->title] = array();
-				foreach($descriptor->descriptors as $cid => $child)
-					$descriptorgroups[$descriptor->title][$cid] = $child->title;
-			}
-		}
-		$select = $mform->addElement('selectgroups', 'descriptors',  get_string('descriptors','block_exacomp'), $descriptorgroups);
-		$select->setMultiple(true);
-		$select->setSelected($descrid);
-		$select->setSize(8);
-		$mform->addHelpButton('descriptors', 'descriptors', 'block_exacomp');
-		/*
-		$mform->addElement('hidden', 'descrid');
-		$mform->setType('descrid', PARAM_INT);
-		$mform->setDefault('descrid', $descrid); */
+		$html_tree = $output->print_competence_based_list_tree($tree, true, 1);
+		$mform->addElement('html', $html_tree);
 
 		$mform->addElement('hidden', 'action');
 		$mform->setType('action', PARAM_ACTION);
@@ -126,5 +107,76 @@ class block_exacomp_example_upload_form extends moodleform {
 		}
 	
 		return $errors;
+	}
+	public function print_competence_based_list_tree_for_form($tree, $mform) {
+		global $PAGE;
+		
+		$mform->addElement('html', '<ul>');
+		foreach($tree as $skey => $subject) {
+			$mform->addElement('html', '<li>');
+			$mform->addElement('static', 'subjecttitle', $subject->title);
+			
+			if(!empty($subject->subs))
+				$mform->addElement('html', '<ul>');
+			
+			foreach ( $subject->subs as $tkey => $topic ) {
+					$mform->addElement('html', '<li>');
+					$mform->addElement('static', 'subjecttitle', $subject->title);
+			
+					if(!empty($topic->descriptors))
+						$mform->addElement('html', '<ul>');
+					
+					foreach ( $topic->descriptors as $dkey => $descriptor ) {
+						$mform = $this->print_competence_for_list_tree_for_form($descriptor, $mform);
+					}
+					
+					if(!empty($topic->descriptors))
+						$mform->addElement('html', '</ul>');
+				
+			}
+			if(!empty($subject->subs))
+				$mform->addElement('html', '</ul>');
+			
+			$mform->addElement('html', '</li>');
+			
+		}
+		$mform->addElement('html', '</ul>');
+		return $mform;
+	}
+	
+	private function print_competence_for_list_tree_for_form($descriptor, $mform) {
+		$mform->addElement('html', '<li>');
+		
+		if(isset($descriptor->direct_associated))
+			$mform->addElement('advcheckbox', 'descriptor[]', 'Kompetenzen', $descriptor->title, array('group'=>'descriptor'));
+			//$mform->setDefault('d');
+			/*$html_tree .= html_writer::div(html_writer::div(
+				html_writer::checkbox("descriptor[]", $descriptor->id, ($descriptor->direct_associated==1)?true:false, $descriptor->title),
+				"felement fcheckbox"), "fitem fitem_fcheckbox ", array('id'=>'fitem_id_descriptor'));
+	*/	else 
+			$mform->addElement('static', 'descriptortitle', $descriptor->title);
+			
+		if(!empty($descriptor->examples))
+			$mform->addElement('html', '<ul>');
+			
+		foreach($descriptor->examples as $example) {
+			$mform->addElement('html', '<li>');
+			$mform->addElement('static', 'exampletitle', $example->title);
+		}
+			
+		if(!empty($descriptor->examples))
+			$mform->addElement('html', '</ul>');
+			
+		if(!empty($descriptor->children)) {
+			$mform->addElement('html', '<ul>');
+			
+			foreach($descriptor->children as $child)
+				$mform = $this->print_competence_for_list_tree_for_form($child, $mform);
+			
+			$mform->addElement('html', '</ul>');
+		}
+		$mform->addElement('html', '</li>');
+		
+		return $mform;
 	}
 }

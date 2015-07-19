@@ -3953,7 +3953,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 		}
 		$html_tree .= html_writer::end_tag("ul");
-		return $html_tree;
+		return html_writer::div($html_tree, "associated_div", array('id'=>"associated_div"));
 	}
 	
 	private function print_competence_for_list_tree($descriptor, $isTeacher, $editmode) {
@@ -3967,6 +3967,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$html_tree .= html_writer::start_tag("ul");
 			
 		foreach($descriptor->examples as $example) {
+			if(!isset($example->associated)) $example->associated = 0;
 			if($example->associated == 1 || ($isTeacher && $editmode==1))
 				$html_tree .= html_writer::tag("li", $example->title, array('class'=>($example->associated == 1)?"associated":""));
 		}

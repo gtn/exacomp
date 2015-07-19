@@ -70,6 +70,7 @@ echo '<div id="exacomp">';
 /* CONTENT REGION */
 if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 	if(isset($_POST['descriptor']) && !empty($_POST['descriptor'])){
+		$DB->delete_records(DB_DESCEXAMP,array('exampid' => $exampleid));
 		foreach($_POST['descriptor'] as $descriptorid){
 			//check if record already exists -> if not insert new 
 			$record = $DB->get_records(DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$exampleid));
@@ -81,6 +82,12 @@ if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 			}	
 		}
 	}
+	
+	?>
+<script type="text/javascript">
+		window.close();
+	</script>
+<?php 
 }
 
 //get descriptors for the given example
@@ -91,8 +98,8 @@ $tree = block_exacomp_build_example_association_tree($courseid, $example_descrip
 $output = $PAGE->get_renderer('block_exacomp');
 
 echo html_writer::tag("p",get_string("competence_associations_explaination","block_exacomp",$example->title));
-$html_tree = $output->print_competence_based_list_tree($tree, $isTeacher, $editmode);
-$content = html_writer::div($html_tree, "associated_div", array('id'=>"associated_div"));
+$content = $output->print_competence_based_list_tree($tree, $isTeacher, $editmode);
+
 if($editmode==1)
 	$content.= html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp')));
 

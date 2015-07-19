@@ -52,6 +52,8 @@ $PAGE->set_url('/blocks/exacomp/example_upload.php', array('courseid' => $course
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 
 block_exacomp_init_js_css();
+$PAGE->requires->js("/blocks/exacomp/javascript/CollapsibleLists.compressed.js");
+$PAGE->requires->css("/blocks/exacomp/css/CollapsibleLists.css");
 
 // build breadcrumbs navigation
 $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
@@ -86,26 +88,13 @@ $example_descriptors = array();
 if($exampleid>0)
 	$example_descriptors = $DB->get_records(DB_DESCEXAMP,array('exampid'=>$exampleid),'','descrid');
 
-$tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid);
+$tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid, $descrid);
 
-foreach($topics as $topic){
-    $topic->descriptors = $DB->get_records_sql("SELECT d.id, d.title, n.title as niveautitle FROM {block_exacompdescriptors} d
-            JOIN {block_exacompdescrtopic_mm} dt ON dt.descrid = d.id
-            JOIN {block_exacomptopics} t ON dt.topicid = t.id
-    		JOIN {block_exacompniveaus} n ON d.niveauid = n.id
-            WHERE t.id = ?",array($topic->id));
-
-    foreach($topic->descriptors as $did => $dtitle) {
-    	$dtitle->descriptors = $DB->get_records_sql("SELECT d.id, d.title FROM {block_exacompdescriptors} d
-            WHERE d.parentid = ?",array($did));
-    }
-}
-
-$form = new block_exacomp_example_upload_form($_SERVER['REQUEST_URI'], array("descrid" => $descrid,"taxonomies"=>$taxonomies,"tree"=>$tree,"topics"=>$topics,"topicid"=>$topicid, "exampleid"=>$exampleid, "task"=>isset($example->task) ? $example->task : null,
+$form = new block_exacomp_example_upload_form($_SERVER['REQUEST_URI'], array("descrid" => $descrid,"taxonomies"=>$taxonomies,"tree"=>$tree,"topicid"=>$topicid, "exampleid"=>$exampleid, "task"=>isset($example->task) ? $example->task : null,
         "solution"=>isset($example->solution) ? $example->solution : null) );
 
 if($formdata = $form->get_data()) {
-
+	
     $newExample = new stdClass();
     $newExample->title = $formdata->title;
     $newExample->description = $formdata->description;
@@ -119,7 +108,7 @@ if($formdata = $form->get_data()) {
         $fs = get_file_storage();
 
         if($formdata->lisfilename == 1 && $form->get_new_filename('file')) {
-        	$descr = reset($formdata->descriptors);
+        	$descr = reset($_POST['descriptor']);
         	$descr = $DB->get_record(DB_DESCRIPTORS,array('id' => $descr));
             $filenameinfos = $DB->get_record_sql("SELECT t.numb, s.title as subjecttitle, n.title as cattitle, n.sorting as catid
             		FROM {block_exacompdescriptors} d
@@ -189,9 +178,14 @@ if($formdata = $form->get_data()) {
     }
 
     //add descriptor association
-    foreach($formdata->descriptors as $descr)
-        $DB->insert_record('block_exacompdescrexamp_mm', array('descrid' => $descr, 'exampid' => $newExample->id));
-
+    if(isset($_POST['descriptor'])){
+    	foreach($_POST['descriptor'] as $descriptorid){
+    		$record = $DB->get_record(DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
+			if(!$record)
+    			$DB->insert_record(DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=> $newExample->id));
+    	}
+    }
+        
     block_exacomp_settstamp();
     ?>
 <script type="text/javascript">
