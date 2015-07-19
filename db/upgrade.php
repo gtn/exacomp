@@ -1773,5 +1773,20 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2015070700, 'exacomp');
 	}
+	
+	if ($oldversion < 2015071700) {
+	
+		// Define field id to be added to block_exacompniveaus.
+		$table = new xmldb_table('block_exacompniveaus');
+		$field = new xmldb_field('span', XMLDB_TYPE_INTEGER, '1', null, null, null, '0', 'source');	
+		// Conditionally launch add field id.
+		if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+	
+		// Exacomp savepoint reached.
+		upgrade_block_savepoint(true, 2015071700, 'exacomp');
+	}
+	
 	return $result;
 }
