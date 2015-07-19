@@ -39,6 +39,7 @@ define('ROLE_STUDENT', 0);
  */
 define('TYPE_DESCRIPTOR', 0);
 define('TYPE_TOPIC', 1);
+define('TYPE_CROSSSUB', 2);
 
 define('SETTINGS_MAX_SCHEME', 10);
 define('CUSTOM_EXAMPLE_SOURCE', 3);
@@ -1050,6 +1051,9 @@ function block_exacomp_get_user_information_by_course($user, $courseid, $onlycom
 	$user = block_exacomp_get_user_competencies_by_course($user, $courseid);
 	// get student topics
 	$user = block_exacomp_get_user_topics_by_course($user, $courseid);
+	// get student crosssubs
+	$user = block_exacomp_get_user_crosssubs_by_course($user, $courseid);
+	
 	if(!$onlycomps){
 		// get student examples
 		$user = block_exacomp_get_user_examples_by_course($user, $courseid);
@@ -1061,7 +1065,23 @@ function block_exacomp_get_user_information_by_course($user, $courseid, $onlycom
 	}
 	return $user;
 }
+/**
+ * This method returns all user crosssubs for a particular user in the given course
 
+ * @param stdClass $user
+ * @param int $courseid
+ * @return stdClass user
+ */
+function block_exacomp_get_user_crosssubs_by_course($user, $courseid) {
+	global $DB;
+	$user->crosssubs = new stdClass();
+	$user->crosssubs->teacher = $DB->get_records_menu(DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => ROLE_TEACHER, "comptype" => TYPE_CROSSSUB),'','compid as id, value');
+	$user->crosssubs->student = $DB->get_records_menu(DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => ROLE_STUDENT, "comptype" => TYPE_CROSSSUB),'','compid as id, value');
+	$user->crosssubs->timestamp_teacher = $DB->get_records_menu(DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => ROLE_TEACHER, "comptype" => TYPE_CROSSSUB),'','compid as id, timestamp');
+	$user->crosssubs->timestamp_student = $DB->get_records_menu(DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => ROLE_STUDENT, "comptype" => TYPE_CROSSSUB),'','compid as id, timestamp');
+	
+	return $user;
+}
 /**
  * This method returns all user competencies for a particular user in the given course
 

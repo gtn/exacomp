@@ -1002,7 +1002,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		return $table_html.html_writer::end_tag('form');
 	}
-	public function print_competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $lis_singletopic = false, $crosssubs = false) {
+	public function print_competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $lis_singletopic = false, $crosssubs = false, $crosssubjid = 0) {
 		global $PAGE, $version;
 
 		$editmode = (!$students && $role == ROLE_TEACHER) ? true : false;
@@ -1110,6 +1110,41 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			);
 			$this->print_topics($rows, 0, $subject->subs, $data, $students, '', false, $editmode, $lwl);
 			
+			//total evaluation crosssub row
+			if($crosssubs && !$editmode){
+				$student = array_values($students)[0];
+				$studentid = $student->id;
+		
+				$totalRow = new html_table_row();
+	    		$totalRow->attributes['class'] = 'highlight';
+	    		$firstCol = new html_table_cell();
+	    		$firstCol->text = get_string('total', 'block_exacomp');
+				$totalRow->cells[] = $firstCol;
+				
+				$totalRow->cells[] = new html_table_cell();
+				
+				if($showevaluation){
+					$studentevalCol = new html_table_cell();
+					if($scheme == 1) {
+						$studentevalCol->text = $this->generate_checkbox('datacrosssubs', $crosssubjid, 'crosssubs', $student, 'student', $scheme, true);
+					}else{
+						$studentevalCol->text = $this->generate_select('datacrosssubs', $crosssubjid, 'crosssubs', $student, 'student', $scheme, true);
+					}
+					
+					$totalRow->cells[] = $studentevalCol;
+				}
+				foreach($students as $student){
+					$teacherevalCol = new html_table_cell();
+					if($scheme == 1) {
+						$teacherevalCol->text = $this->generate_checkbox('datacrosssubs', $crosssubjid, 'crosssubs', $student, 'teacher', $scheme, false);
+					}else{
+						$teacherevalCol->text = $this->generate_select('datacrosssubs', $crosssubjid, 'crosssubs', $student, 'teacher', $scheme, false);
+					}
+					$totalRow->cells[] = $teacherevalCol;
+				}
+				
+				$rows[] = $totalRow;
+			}
 			$table->data = $rows;
 			$first = false;
 		}

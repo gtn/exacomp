@@ -76,6 +76,41 @@
 			value : $(this).val()
 		};
 	});
+	
+	// # CROSSSUBJECTS
+	var crosssubs = [];
+	$(document).on('click', 'input[name^=datacrosssubs\-]', function() {
+		var values = $(this).attr("name").split("-");
+
+		if ($(this).prop("checked")) {
+			if (crosssubs[values[1]]) {
+				crosssubs[values[1]]['value'] = 1;
+			} else
+				crosssubs[values[1]] = {
+					userid : values[2],
+					compid : values[1],
+					value : 1
+				};
+		} else {
+			if (crosssubs[values[1]])
+				crosssubs[values[1]]['value'] = 0;
+			else
+				crosssubs[values[1]] = {
+					userid : values[2],
+					compid : values[1],
+					value : 0
+				};
+		}
+	});
+	$(document).on('change', 'select[name^=datacrosssubs\-]', function() {
+		var values = $(this).attr("name").split("-");
+		crosssubs[values[1]] = {
+			userid : values[2],
+			compid : values[1],
+			value : $(this).val()
+		};
+	});
+	
 	// # EXAMPLES
 	var examples = [];
 	$(document).on('click', 'input[name^=dataexamples\-]', function() {
@@ -194,6 +229,19 @@
 									topics = [];
 								}
 								
+								if (crosssubs.length > 0) {
+									call_ajax({
+										competencies : JSON
+												.stringify(crosssubs),
+										comptype : 2,
+										action : 'competencies_array'
+									}).done(function(msg) {
+										console.log("Crosssubs Saved: " + msg);
+									});
+
+									crosssubs = [];
+								}
+								
 								if (examples.length > 0) {
 									call_ajax({
 										examples : JSON.stringify(examples),
@@ -297,6 +345,8 @@
 				crosssubjid : crosssubjid,
 				value : 1,
 				action : 'crosssubj-share'
+			}).done(function(msg) {
+				window.close();
 			});
 		} else {
 			call_ajax({
@@ -317,6 +367,8 @@
 				not_students : JSON.stringify(not_students),
 				crosssubjid : crosssubjid,
 				action : 'crosssubj-students'
+			}).done(function(msg) {
+				window.close();
 			});
 		}
 	});
