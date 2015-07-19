@@ -584,7 +584,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		$profoundness = block_exacomp_get_settings_by_course($courseid)->profoundness;
 
-		//$spanningNiveaus = $DB->get_records(DB_NIVEAUS,array('span' => 1));
+		$spanningNiveaus = $DB->get_records(DB_NIVEAUS,array('span' => 1));
+		//calculate the col span for spanning niveaus
+		$spanningColspan = block_exacomp_calculate_spanning_niveau_colspan($niveaus, $spanningNiveaus);
 		
 		$rows = array();
 
@@ -606,7 +608,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			if(!$headFlag) {
 				$head[] = "";
-				$head = array_merge($head,$niveaus);
+				$head = array_merge($head,array_diff_key($niveaus, $spanningNiveaus));
 				$table->head = $head;
 				$headFlag = true;
 			}
@@ -620,7 +622,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$row->cells[] = $cell2;
 
 				foreach($niveaus as $niveauid => $niveau) {
-					print_r($niveau);
+					
 					if(isset($data[$skillid][$topicid][$niveauid])) {
 						$cell = new html_table_cell();
 						$compdiv = "";
@@ -724,10 +726,20 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						else if($allTeachercomps)
 							$cell->attributes['class'] = "content competenceok";
 
+						
+						// apply colspan for spanning niveaus
+						if(array_key_exists($niveauid,$spanningNiveaus)) {
+							$cell->colspan = $spanningColspan;
+						}
+						
 						$cell->text = $compdiv;
-
 						$row->cells[] = $cell;
-					} else
+						
+						// do not print other cells for spanning niveaus
+						if(array_key_exists($niveauid,$spanningNiveaus))
+							break;
+						
+					} elseif(!array_key_exists($niveauid,$spanningNiveaus))
 						$row->cells[] = "";
 				}
 				$rows[] = $row;
@@ -1306,18 +1318,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$one_student = true;
 			}
 			$descriptor_used = block_exacomp_descriptor_used($data->courseid, $descriptor, $studentid);
-			if(!$descriptor_used){
-				$visible = $descriptor->visible;
-				if($one_student||$data->role==ROLE_STUDENT){
-					$visible = block_exacomp_descriptor_visible($data->courseid, $descriptor, $studentid);
-				}
-			}else{
-				$visible = 1;
-			}
 			
-			$visible_css = '';
-			if(!$visible)
-				($data->role == ROLE_TEACHER) ? $visible_css = ' hidden_temp' : $visible_css = ' hidden';
+			$visible = block_exacomp_check_descriptor_visibility($data->courseid, $descriptor, $studentid, ($one_student||$data->role==ROLE_STUDENT) );
+			
+			$visible_css = block_exacomp_get_descriptor_visible_css($visible, $data->role);
 				
 			$checkboxname = "data";
 			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor, false, (count($descriptor->children) > 0) ? true : false);
@@ -1384,15 +1388,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			//TODO without $descriptor->visible kann deskriptor f�r einzelnen sch�ler eingeblendet werden --> sinnvoll?
 			if(!$descriptor_used){
 				if($editmode || ($one_student && $descriptor->visible && $data->role == ROLE_TEACHER)){
-					if($visible)
-						$value_vis = $OUTPUT->pix_icon("i/show", get_string("hide"));
-					else 
-						$value_vis = $OUTPUT->pix_icon("i/hide", get_string("show"));
-					
-					$titleCell->text .= html_writer::link("", $value_vis,array('name' => 'hide-descriptor','descrid' => $descriptor->id, 'id' => 'hide-descriptor', 'state' => ($visible) ? '-' : '+',
-							'showurl' => $OUTPUT->pix_url("i/show"), 'hideurl' => $OUTPUT->pix_url("i/hide")
-					));
-					//$titleCell->text .= html_writer::empty_tag("input", array('type'=>'button', 'value'=>$value_vis, 'name'=>'hide-descriptor', 'descrid'=>$descriptor->id));
+					$titleCell->text .= $this->print_visibility_icon($visible, $descriptor->id);
 				}
 			}
 			$descriptorRow->cells[] = $titleCell;
@@ -1713,7 +1709,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		return html_writer::link(str_replace('&amp;','&',$solution), $OUTPUT->pix_icon("e/fullpage", get_string('solution','block_exacomp')) ,array("target" => "_blank"));
 	}
-	
+	public function print_visibility_icon($visible, $descriptorid) {
+		global $OUTPUT;
+		
+		if($visible)
+			$icon = $OUTPUT->pix_icon("i/show", get_string("hide"));
+		else
+			$icon = $OUTPUT->pix_icon("i/hide", get_string("show"));
+			
+		return html_writer::link("", $icon, array('name' => 'hide-descriptor','descrid' => $descriptorid, 'id' => 'hide-descriptor', 'state' => ($visible) ? '-' : '+',
+				'showurl' => $OUTPUT->pix_url("i/show"), 'hideurl' => $OUTPUT->pix_url("i/hide")
+		));
+		
+	}
 	private function print_student_example_evaluation_form($exampleid, $studentid, $courseid) {
 		global $DB;
 		$exampleInfo = $DB->get_record(DB_EXAMPLEEVAL, array("exampleid" => $exampleid, "studentid" => $studentid, "courseid" => $courseid));

@@ -4239,3 +4239,38 @@ function block_exacomp_check_child_descriptors($descriptor, $example_descriptors
 	
 	return $descriptor;
 }
+function block_exacomp_calculate_spanning_niveau_colspan($niveaus, $spanningNiveaus) {
+	
+	$colspan = count($niveaus);
+	
+	foreach($niveaus as $id => $niveau) {
+		if(array_key_exists($id, $spanningNiveaus)) {
+			$colspan--;
+		}
+	}
+	
+	return $colspan;
+}
+
+function block_exacomp_check_descriptor_visibility($courseid, $descriptor, $studentid, $one) {
+	$descriptor_used = block_exacomp_descriptor_used($courseid, $descriptor, $studentid);
+	
+	if(!$descriptor_used){
+		$visible = $descriptor->visible;
+		if($one){
+			$visible = block_exacomp_descriptor_visible($courseid, $descriptor, $studentid);
+		}
+	}else{
+		$visible = 1;
+	}
+	
+	return $visible;
+}
+
+function block_exacomp_get_descriptor_visible_css($visible, $role) {
+	$visible_css = '';
+	if(!$visible)
+		($role == ROLE_TEACHER) ? $visible_css = ' hidden_temp' : $visible_css = ' hidden';
+	
+	return $visible_css;
+}
