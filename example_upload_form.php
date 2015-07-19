@@ -45,10 +45,17 @@ class block_exacomp_example_upload_form extends moodleform {
 		$mform->setDefault('id', 0);
 		
 		//add html tree -> different treated in example_upload -> mform does not support a tree structure
+		$treetitle = html_writer::start_div('fitem');
+		$treetitle .= html_writer::start_div('fitemtitle') . html_writer::label(get_string('descriptors','block_exacomp'), 'tree'). html_writer::end_div();
+		$treetitle .= html_writer::start_div('felement ftext');
 		$tree = $this->_customdata['tree'];
 		$html_tree = $output->print_competence_based_list_tree($tree, true, 1);
+		$mform->addElement('html', $treetitle);
 		$mform->addElement('html', $html_tree);
 
+		$treetitle = html_writer::end_div() . html_writer::end_div();
+		$mform->addElement('html', $treetitle);
+		
 		$mform->addElement('hidden', 'action');
 		$mform->setType('action', PARAM_ACTION);
 		$mform->setDefault('action', 'add');

@@ -76,6 +76,10 @@ function block_exacomp_init_js_css(){
 	$PAGE->requires->js('/blocks/exacomp/javascript/exacomp.js', true);
 	$PAGE->requires->js('/blocks/exacomp/javascript/ajax.js', true);
 
+	// Strings can be used in JavaScript: M.util.get_string(identifier, component)
+	$PAGE->requires->string_for_js('show', 'moodle');
+	$PAGE->requires->string_for_js('hide', 'moodle');
+	
 	$scriptName = preg_replace('!\.[^\.]+$!', '', basename($_SERVER['PHP_SELF']));
 	if (file_exists($CFG->dirroot.'/blocks/exacomp/css/'.$scriptName.'.css'))
 		$PAGE->requires->css('/blocks/exacomp/css/'.$scriptName.'.css');

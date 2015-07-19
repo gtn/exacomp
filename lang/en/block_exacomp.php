@@ -198,6 +198,7 @@ $string['filerequired'] = 'A file must be selected.';
 $string['titlenotemtpy'] = 'A name is required.';
 $string['lisfilename'] = 'Use LIS filename template';
 $string['solution'] = 'Solution';
+$string['submission'] = 'Submission';
 $string['link'] = 'Link';
 $string['dataerr'] = 'At least a link or a file are required!';
 $string['linkerr'] = 'The given link is not valid!';
@@ -376,7 +377,11 @@ $string['share_crosssub_with_all'] = 'Share crosssubject "{$a}" with all partici
 $string['new_crosssub'] = "Create new crosssubject";
 
 //Associations
+$string['competence_associations'] = 'Associations';
 $string['competence_associations_explaination'] = 'The material {$a} is associated wih the following standards:';
+
+//Weeky schedule
+$string['weekly_schedule'] = 'Weekly schedule';
 
 //metadata
 $string['subject_singular'] = 'Field of competence';

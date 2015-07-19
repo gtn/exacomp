@@ -223,7 +223,9 @@ $string['descriptors_help'] = 'Es k&ouml;nnen mehrere Kompetenzen ausgew&auml;hl
 $string['filerequired'] = 'Es muss eine Datei ausgew&auml;hlt sein.';
 $string['titlenotemtpy'] = 'Es muss ein Name eingegeben werden.';
 $string['lisfilename'] = 'Dateiname nach LS Vorgabe generieren';
-$string['solution'] = 'Lösung';
+$string['solution'] = 'Musterlösung';
+$string['submission'] = 'Lösung';
+
 $string['link'] = 'Link';
 $string['dataerr'] = 'Es muss zumindest ein Link oder eine Datei hochgeladen werden!';
 $string['linkerr'] = 'Bitte geben Sie einen korrekten Link ein!';
@@ -417,9 +419,11 @@ $string['share_crosssub_with_all'] = 'Das Thema "{$a}" für <b>alle</b> Teilnehm
 $string['new_crosssub'] = "Neues Thema erstellen";
 
 //Associations
+$string['competence_associations'] = 'Verknüpfungen';
 $string['competence_associations_explaination'] = 'Das Lernmaterial {$a} ist mit den folgenden Kompetenzen verknpüpft:';
 
-
+//Weeky schedule
+$string['weekly_schedule'] = 'Wochenplan';
 
 //LIS Strings
 if(get_config('exacomp','alternativedatamodel')) {

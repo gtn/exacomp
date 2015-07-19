@@ -402,6 +402,8 @@
 			
 			var img = $("img", this);
 			img.attr('src',$(this).attr('hideurl'));
+			img.attr('alt', M.util.get_string('show','moodle'));
+			img.attr('title', M.util.get_string('show','moodle'));
 		}else{
 			$(this).attr('state','-');
 			visible = 1;
@@ -415,6 +417,8 @@
 			
 			var img = $("img", this);
 			img.attr('src',$(this).attr('showurl'));
+			img.attr('alt', M.util.get_string('hide','moodle'));
+			img.attr('title', M.util.get_string('hide','moodle'));
 		}
 		
 		call_ajax({
