@@ -367,8 +367,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		if($isTeacher){
     		$content .= html_writer::empty_tag("br");
-    
     		$content .= get_string("choosestudent", "block_exacomp");
+    		/*
     		$options = array();
     		$options[0] = get_string('no_student_edit', 'block_exacomp');
     		
@@ -379,6 +379,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
     		
     		$content .= html_writer::select($options, "lis_crosssubs_students", $selectedStudent, false,
     				array("onchange" => "document.location.href='".$PAGE->url."&subjectid=".$selectedSubject."&topicid=".$selectedTopic."&studentid='+this.value;"));
+    		*/
+    		$content .= block_exacomp_studentselector($students,$selectedStudent,$PAGE->url."&subjectid=".$selectedSubject."&topicid=".$selectedTopic,true,true,true);
 		}	
 		
 		return $content;
@@ -574,8 +576,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		global $CFG, $version, $DB;
 
 		$headFlag = false;
-
+		
 		$context = context_course::instance($courseid);
+		$role = has_capability('block/exacomp:teacher', $context) ? ROLE_TEACHER : ROLE_STUDENT;
+		$editmode = ($studentid == 0 && $role == ROLE_TEACHER) ? true : false;
 
 		$table = new html_table();
 		$table->attributes['class'] = 'competence_grid';
@@ -718,6 +722,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$cssClass = (isset($descriptor->teachercomp) && $descriptor->teachercomp >= $satisfied) ? "content competenceok" : ((isset($descriptor->studentcomp) && $descriptor->studentcomp >= $satisfied) ? "content competenceyellow" : "content ");
 							if($descriptor->parentid > 0)
 							    $cssClass .= ' child';
+							
+							/*
+							 * TODO: print visibility icon for descriptors in grid
+							$descriptor_used = block_exacomp_descriptor_used($courseid, $descriptor, $studentid);
+							$visible = block_exacomp_check_descriptor_visibility($courseid, $descriptor, $studentid, (!$editmode||$role == ROLE_STUDENT) );
+							$visible_css = block_exacomp_get_descriptor_visible_css($visible, $role);
+							
+							if(!$descriptor_used){
+								if($editmode || ($descriptor->visible && $data->role == ROLE_TEACHER)){
+									$compString .= $this->print_visibility_icon($visible, $descriptor->id);
+								}
+							}
+							*/							
 							$compdiv .= html_writer::tag('div', $compString,array('class'=>$cssClass));
 						}
 

@@ -1409,7 +1409,7 @@ function block_exacomp_build_breadcrum_navigation($courseid) {
  * @param object $selected
  * @param moodle_url $url
  */
-function block_exacomp_studentselector($students,$selected,$url, $editmode = true){
+function block_exacomp_studentselector($students,$selected,$url, $editmode = true, $allstudents = false, $statistic = false){
 	global $CFG;
 
 	$studentsAssociativeArray = array();
@@ -1422,6 +1422,12 @@ function block_exacomp_studentselector($students,$selected,$url, $editmode = tru
 	foreach($students as $student) {
 		$studentsAssociativeArray[$student->id] = fullname($student);
 	}
+	
+	if($allstudents)
+		$studentsAssociativeArray[SHOW_ALL_STUDENTS] = get_string('allstudents', 'block_exacomp');
+	if($statistic)
+		$studentsAssociativeArray[SHOW_STATISTIC] = get_string('statistic', 'block_exacomp');
+	
 	return html_writer::select($studentsAssociativeArray, 'exacomp_competence_grid_select_student',$selected,true,
 			array("onchange"=>"document.location.href='".($url instanceof moodle_url ? $url->out(false) : $url)."&studentid='+this.value;"));
 }
@@ -4274,6 +4280,8 @@ function block_exacomp_calculate_spanning_niveau_colspan($niveaus, $spanningNive
 
 function block_exacomp_check_descriptor_visibility($courseid, $descriptor, $studentid, $one) {
 	$descriptor_used = block_exacomp_descriptor_used($courseid, $descriptor, $studentid);
+	
+	$descriptor->visible = block_exacomp_descriptor_visible($courseid, $descriptor, $studentid);
 	
 	if(!$descriptor_used){
 		$visible = $descriptor->visible;
