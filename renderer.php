@@ -1371,6 +1371,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$descriptorRow->cells[] = $exampleuploadCell;
 
 			$titleCell = new html_table_cell();
+			
 			if(($descriptor->examples || $descriptor->children) && !is_null($data->rowgroup))
 				$titleCell->attributes['class'] = 'rowgroup-arrow';
 			$titleCell->style = "padding-left: ".$padding."px";
