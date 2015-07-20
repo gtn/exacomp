@@ -89,7 +89,7 @@ jQueryExacomp(function($) {
 			
 			if (ret !== 'ok') {
 				saveButton.value = 'Fehler';
-				console.log(ret);
+				console.error(ret);
 			} else {
 				var i = 0;
 				(function pulse(){
@@ -108,7 +108,7 @@ jQueryExacomp(function($) {
 		}).fail(function(ret){
 			saveButton.disabled =  false;
 			saveButton.value = 'Fehler';
-			console.log(ret);
+			console.error(ret);
 		});
 		
 		console.log('save', data);

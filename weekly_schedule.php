@@ -27,6 +27,8 @@ $my_url = new moodle_url('/blocks/exacomp/weekly_schedule.php',
 if (optional_param('action', '', PARAM_TEXT) == 'save') {
 
     require_sesskey();
+    
+    if (!$studentid) die('no studentid');
 
     $itemsDefinition = array(
         PARAM_INT => array(
@@ -118,17 +120,28 @@ $PAGE->set_title(get_string("tab_learning_agenda", 'block_exacomp'));
 block_exacomp_init_js_css();
 $PAGE->requires->jquery_plugin('ui');
 
+
+if($isTeacher){
+	$students = block_exacomp_get_students_by_course($courseid);
+
+    if ($students && empty($students[$studentid])) {
+        // empty id or wrongid, redirect to first student
+        $my_url->param('studentid', reset($students)->id);
+        redirect($my_url);
+    }
+}
+
 echo $OUTPUT->header();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), "tab_learning_agenda");
 echo '<div id="exacomp">';
-if($isTeacher){
-	
-	$students = block_exacomp_get_students_by_course($courseid);
 
-	if($studentid == 0)
-		$studentid = reset($students)->id;
-	
-	echo html_writer::empty_tag("br");
+if($isTeacher){
+	if (!$students) {
+        // TODO no students
+        die('no students found');
+    }
+
+    echo html_writer::empty_tag("br");
 
 	echo get_string("choosestudent", "block_exacomp");
 	$options = array();
