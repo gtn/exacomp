@@ -1418,7 +1418,7 @@ function block_exacomp_studentselector($students,$selected,$url, $editmode = tru
 		$studentsAssociativeArray[$student->id] = fullname($student);
 	}
 	return html_writer::select($studentsAssociativeArray, 'exacomp_competence_grid_select_student',$selected,true,
-			array("onchange"=>"document.location.href='".$url."&studentid='+this.value;"));
+			array("onchange"=>"document.location.href='".($url instanceof moodle_url ? $url->out(false) : $url)."&studentid='+this.value;"));
 }
 /**
  *

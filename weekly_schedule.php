@@ -121,38 +121,32 @@ block_exacomp_init_js_css();
 $PAGE->requires->jquery_plugin('ui');
 
 
-if($isTeacher){
-	$students = block_exacomp_get_students_by_course($courseid);
-
-    if ($students && empty($students[$studentid])) {
-        // empty id or wrongid, redirect to first student
-        $my_url->param('studentid', reset($students)->id);
-        redirect($my_url);
-    }
-}
-
 echo $OUTPUT->header();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), "tab_learning_agenda");
 echo '<div id="exacomp">';
 
 if($isTeacher){
+	$students = block_exacomp_get_students_by_course($courseid);
+
 	if (!$students) {
         // TODO no students
-        die('no students found');
+        echo 'no students found';
+        echo $OUTPUT->footer();
+        exit;
     }
 
-    echo html_writer::empty_tag("br");
-
-	echo get_string("choosestudent", "block_exacomp");
-	$options = array();
-
-	foreach($students as $student)
-		$options[$student->id] = fullname($student);
-	
     $url = clone $my_url;
     $url->remove_params('studentid');
-    echo html_writer::select($options, "lis_crosssubs_students", $studentid, false,
-			array("onchange" => "document.location.href='".$url."&studentid='+this.value;"));
+
+    echo html_writer::empty_tag("br");
+	echo get_string("choosestudent", "block_exacomp");
+    echo block_exacomp_studentselector($students, $studentid, $url, false);
+    
+    if (empty($students[$studentid])) {
+        // empty id or wrongid, first select a student
+        echo $OUTPUT->footer();
+        exit;
+    }
 }
 
 $sql = "select s.*, e.title, eval.student_evaluation, eval.teacher_evaluation
