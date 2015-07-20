@@ -4288,3 +4288,12 @@ function block_exacomp_get_descriptor_visible_css($visible, $role) {
 	
 	return $visible_css;
 }
+function block_exacomp_init_cross_subjects(){
+    global $DB;
+    $emptydrafts = $DB->get_records(DB_CROSSSUBJECTS, array('sourceid'=>0, 'source'=>1, 'creatorid'=>0, 'courseid'=>0));
+   
+    foreach($emptydrafts as $emptydraft){
+    	if(strcmp($emptydraft->title, 'Leere Vorlage')==0 || strcmp($emptydraft->title, 'new crosssubject')==0)
+    		$DB->delete_records(DB_CROSSSUBJECTS, array('id'=>$emptydraft->id));
+    } 
+}

@@ -84,7 +84,7 @@ $isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
 if($isTeacher)
     echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_cross_subjects($context, $courseid), $page_identifier);
 
-//block_exacomp_init_cross_subjects();
+block_exacomp_init_cross_subjects();
 
 $drafts = block_exacomp_get_cross_subjects_drafts();
 
