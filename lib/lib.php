@@ -799,8 +799,13 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescrip
 	*/
 	$sql .= ' WHERE  d.parentid = ?';
 	
+	$params = array();
+	if($mindvisibility)
+		$params[] = $courseid;
+		
+	$params[]= $parent->id;
 	//$descriptors = $DB->get_records_sql($sql, ($showalldescriptors) ? array($parent->id) : array($courseid,$parent->id));
-	$descriptors = $DB->get_records_sql($sql,  array($courseid, $parent->id) );
+	$descriptors = $DB->get_records_sql($sql,  $params);
 	
 	foreach($descriptors as &$descriptor) {
 		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples);
