@@ -746,7 +746,7 @@ function block_exacomp_get_descritors_list($courseid, $onlywithactivitys = 0) {
  * returns all descriptors
  * @param $courseid if course id =0 all possible descriptors are returned
  */
-function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = false, $subjectid = 0, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES)) {
+function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = false, $subjectid = 0, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $showonlyvisible=false) {
 	global $DB;
 	
 	if(!$showalldescriptors)
@@ -758,6 +758,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
 	.'JOIN {'.DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id '
 	.'JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=? '
+	.($showonlyvisible?'AND dvis.visible = 1 ':'') 
 	.'LEFT JOIN {'.DB_NIVEAUS.'} n ON d.niveauid = n.id '		
 	.($showalldescriptors ? '' : '
 			JOIN {'.DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
@@ -769,12 +770,12 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 		//get examples
 		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples);
 		//check for child-descriptors
-		$descriptor->children = block_exacomp_get_child_descriptors($descriptor,$courseid, $showalldescriptors, $filteredtaxonomies, $showallexamples);
+		$descriptor->children = block_exacomp_get_child_descriptors($descriptor,$courseid, $showalldescriptors, $filteredtaxonomies, $showallexamples, true, $showonlyvisible);
 	}
 	return $descriptors;
 }
 
-function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescriptors = false, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $showallexamples = true ) {
+function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescriptors = false, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $showallexamples = true, $mindvisibility = true, $showonlyvisible=false ) {
 	global $DB;
 	
 	if(!$DB->record_exists(DB_DESCRIPTORS, array("parentid" => $parent->id))) {
@@ -784,8 +785,11 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescrip
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = 'SELECT d.id, d.title, d.niveauid, \'descriptor\' as tabletype, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, 1 as visible, d.sorting
-			FROM {'.DB_DESCRIPTORS.'} d ';
+	$sql = 'SELECT d.id, d.title, d.niveauid, \'descriptor\' as tabletype, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, '.
+			($mindvisibility?'dvis.visible as visible,':'').' d.sorting
+			FROM {'.DB_DESCRIPTORS.'} d '
+			.($mindvisibility ? 'JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 '
+			.($showonlyvisible? 'AND dvis.visible=1 ':'') : '');
 	
 	/* activity association only for parent descriptors
 			.($showalldescriptors ? '' : '
@@ -795,13 +799,12 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescrip
 	$sql .= ' WHERE  d.parentid = ?';
 	
 	//$descriptors = $DB->get_records_sql($sql, ($showalldescriptors) ? array($parent->id) : array($courseid,$parent->id));
-	$descriptors = $DB->get_records_sql($sql,  array($parent->id) );
+	$descriptors = $DB->get_records_sql($sql,  array($courseid, $parent->id) );
 	
 	foreach($descriptors as &$descriptor) {
 		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples);
 		$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid,$showalldescriptors,$filteredtaxonomies);
 	}
-	
 	return $descriptors;
 }
 
@@ -884,7 +887,7 @@ function block_exacomp_get_descriptors_by_example($exampleid) {
  * @param int $subjectid
  * @return associative_array
  */
-function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $showalldescriptors = false, $topicid = null, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $calledfromoverview = false, $calledfromactivities = false) {
+function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $showalldescriptors = false, $topicid = null, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $calledfromoverview = false, $calledfromactivities = false, $showonlyvisible=false) {
 	global $DB, $version;
 
 	if(!$showalldescriptors)
@@ -919,7 +922,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 	}
 	
 	// 3. GET DESCRIPTORS
-	$allDescriptors = block_exacomp_get_descriptors($courseid, $showalldescriptors,0,$showallexamples);
+	$allDescriptors = block_exacomp_get_descriptors($courseid, $showalldescriptors,0,$showallexamples, array(SHOW_ALL_TAXONOMIES), $showonlyvisible);
 	
 	foreach ($allDescriptors as $descriptor) {
 	
@@ -2308,16 +2311,27 @@ function block_exacomp_set_coursetopics($courseid, $values) {
 			}
 		}
 		
+		$finaldescriptors=$descriptors;
 		//manage visibility, do not delete user visibility, but delete unused entries
 		foreach($descriptors as $descriptor){
 			//new descriptors in table
 			if(!in_array($descriptor->id, $visibilities))
 				$DB->insert_record(DB_DESCVISIBILITY, array("courseid"=>$courseid, "descrid"=>$descriptor->id, "studentid"=>0, "visible"=>1));
+		
+			$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid, true, array(SHOW_ALL_TAXONOMIES), true, false);
+			
+			foreach($descriptor->children as $childdescriptor){
+				if(!in_array($childdescriptor->id, $visibilities))
+					$DB->insert_record(DB_DESCVISIBILITY, array("courseid"=>$courseid, "descrid"=>$childdescriptor->id, "studentid"=>0, "visible"=>1));
+		
+				if(!array_key_exists($childdescriptor->id, $finaldescriptors))
+					$finaldescriptors[$childdescriptor->id] = $childdescriptor;
+			}
 		}
 		
 		foreach($visibilities as $visible){
 			//delete ununsed descriptors for course and for special students
-			if(!array_key_exists($visible, $descriptors)){
+			if(!array_key_exists($visible, $finaldescriptors)){
 				//check if used in cross-subjects --> then it must still be visible
 				if(!in_array($visible, $cross_subjects_descriptors))
 					$DB->delete_records(DB_DESCVISIBILITY, array("courseid"=>$courseid, "descrid"=>$visible));
@@ -4190,7 +4204,7 @@ function block_exacomp_optional_param_array($parname, array $definition) {
 
 function block_exacomp_build_example_association_tree($courseid, $example_descriptors = array(), $exampleid=0, $descriptorid = 0){
 	//get all subjects, topics, descriptors and examples
-	$tree = block_exacomp_get_competence_tree($courseid, null, false, SHOW_ALL_TOPICS, true, block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies);
+	$tree = block_exacomp_get_competence_tree($courseid, null, false, SHOW_ALL_TOPICS, true, block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies, false, false, true);
 	
 	// unset all descriptors, topics and subjects that do not contain the example descriptors
 	foreach($tree as $skey => $subject) {

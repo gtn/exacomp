@@ -1583,7 +1583,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					
 					$titleCell->text .= $this->print_submission_icon($data->courseid, $example->id, $USER->id);
 						
-					$titleCell->text .= $this->print_competence_association_icon($example->id, $data->courseid);
+					$titleCell->text .= $this->print_competence_association_icon($example->id, $data->courseid, false);
 					
 					if($example->solution)
 						$titleCell->text .= $this->print_example_solution_icon($example->solution);
