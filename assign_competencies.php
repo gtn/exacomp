@@ -130,11 +130,14 @@ else{
 	if($course_settings->nostudents != 1)
 	    echo $output->print_overview_legend($isTeacher);
 	    
+	$statistic = false;
     if($isTeacher){
     	if($studentid == SHOW_ALL_STUDENTS)
     	    echo $output->print_column_selector(count($students));
     	elseif ($studentid == 0)
     	    $students = array();
+    	elseif($studentid == SHOW_STATISTIC)
+    		$statistic = true;
     	else 
     	    $students = array($students[$studentid]);
 	}
@@ -145,7 +148,7 @@ else{
 	$firstvalue = reset($subjects);
 	$firstvalue->title = $selectedSubject->title;
 	
-	echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? ROLE_TEACHER : ROLE_STUDENT, $scheme, ($version && $selectedTopic->id != SHOW_ALL_TOPICS));
+	echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? ROLE_TEACHER : ROLE_STUDENT, $scheme, ($version && $selectedTopic->id != SHOW_ALL_TOPICS), false, 0, $statistic);
 
 }
 

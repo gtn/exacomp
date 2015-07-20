@@ -277,6 +277,9 @@ $string['hideevaluation_student'] = 'Um die Einsch&auml;tzung des Trainers zu de
 $string['columnselect'] = 'Spaltenauswahl';
 $string['allstudents'] = 'Alle  Kursteilnehmer/innen';
 $string['nostudents'] = 'Keine  Kursteilnehmer/innen';
+$string['statistic'] = 'Gesamtübersicht';
+$string['niveau'] = "Niveau";
+$string['groupsize'] = 'Gruppengröße: ';
 
 $string['assigndone'] = 'Aufgabe erledigt: ';
 $string['assignmyself'] = 'selbst';
@@ -424,6 +427,10 @@ $string['competence_associations_explaination'] = 'Das Lernmaterial {$a} ist mit
 
 //Weeky schedule
 $string['weekly_schedule'] = 'Wochenplan';
+
+//Statistics
+$string['process'] = 'Bearbeitungsstand';
+$string['niveauclass'] = 'Niveaueinstufung';
 
 //LIS Strings
 if(get_config('exacomp','alternativedatamodel')) {

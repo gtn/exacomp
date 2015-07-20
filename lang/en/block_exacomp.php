@@ -249,6 +249,9 @@ $string['hideevaluation_student'] = 'To hide trainer-assessment click <a href="{
 $string['columnselect'] = 'Column selection';
 $string['allstudents'] = 'All students';
 $string['nostudents'] = 'No students';
+$string['statistic'] = 'Overview';
+$string['niveau'] = "Niveau";
+$string['groupsize'] = 'Size of group: ';
 
 $string['assigndone'] = 'task done: ';
 $string['assignmyself'] = 'by myself';
@@ -382,6 +385,10 @@ $string['competence_associations_explaination'] = 'The material {$a} is associat
 
 //Weeky schedule
 $string['weekly_schedule'] = 'Weekly schedule';
+
+//Statistics
+$string['process'] = 'State of process';
+$string['niveauclass'] = 'Niveau classification';
 
 //metadata
 $string['subject_singular'] = 'Field of competence';

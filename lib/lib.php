@@ -64,6 +64,7 @@ $specificimport = get_config('exacomp','enableteacherimport');
 define("SHOW_ALL_TOPICS",99999999);
 define("SHOW_ALL_TAXONOMIES",100000000);
 define("SHOW_ALL_STUDENTS", 100000);
+define("SHOW_STATISTIC", 99999);
 
 /**
  *
@@ -4296,4 +4297,23 @@ function block_exacomp_init_cross_subjects(){
     	if(strcmp($emptydraft->title, 'Leere Vorlage')==0 || strcmp($emptydraft->title, 'new crosssubject')==0)
     		$DB->delete_records(DB_CROSSSUBJECTS, array('id'=>$emptydraft->id));
     } 
+}
+function block_exacomp_get_student_statistic_for_descriptor($courseid, $students, $descriptor){
+	$process_B = 0; $process_iA = 0; $process_nB = 0;
+	$self_1 = 0; $self_2 = 0; $self_3 = 0; $self_0 = 0;
+	$niv_class_G = 0; $niv_class_M = 0; $niv_class_E = 0; $niv_class_nE = 0; $niv_class_oB = 0;
+	
+	//process
+	$statistic = get_string('process', 'block_exacomp')." B: ".$process_B." iA: ".$process_iA." nB: ".$process_nB;
+	
+	$statistic .= html_writer::empty_tag('br');
+	
+	//self evaluation
+	$statistic .= get_string('selfevaluation', 'block_exacomp')." 1: ".$self_1." 2: ".$self_2." 3: ".$self_3." 0: ".$self_0;
+	
+	$statistic .= html_writer::empty_tag('br');
+	
+	//niveau classification
+	$statistic .= get_string('niveauclass', 'block_exacomp')." &sum;G: ".$niv_class_G." &sum;M: ".$niv_class_M." &sum;E: ".$niv_class_E." &sum;nE: ".$niv_class_nE." &sum;oB: ".$niv_class_oB;
+	return $statistic;
 }
