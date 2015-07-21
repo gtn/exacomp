@@ -4360,6 +4360,9 @@ function block_exacomp_calculate_statistic_for_descriptor($courseid, $students, 
 				$self_3++;
 				$self_3_title .= $student->firstname." ".$student->lastname."\n";
 			}
+		}else{
+			$student_oB++;
+			$student_oB_title .= $student->firstname." ".$student->lastname."\n";
 		}
 		if(isset($student->competencies->teacher[$descriptor->id])){
 			//count different levels
@@ -4372,10 +4375,13 @@ function block_exacomp_calculate_statistic_for_descriptor($courseid, $students, 
 			}elseif($student->competencies->teacher[$descriptor->id]==3){
 				$niv_class_G++;
 				$niv_class_G_title .= $student->firstname." ".$student->lastname."\n";
+			}elseif($student->competencies->teacher[$descriptor->id]==0){
+				$niv_class_nE++;
+				$niv_class_nE_title .= $student->firstname." ".$student->lastname."\n";
 			}
 		}else{
-			$niv_class_nE++;
-			$niv_class_nE_title .= $student->firstname." ".$student->lastname."\n";
+			$niv_class_oB++;
+			$niv_class_oB_title .= $student->firstname." ".$student->lastname."\n";
 		}
 		
 		//TODO in arbeit
@@ -4408,6 +4414,9 @@ function block_exacomp_calculate_statistic_for_example($courseid, $students, $ex
 				$self_3++;
 				$self_3_title .= $student->firstname." ".$student->lastname."\n";
 			}
+		}else{
+			$student_oB++;
+			$student_oB_title .= $student->firstname." ".$student->lastname."\n";
 		}
 		if(isset($student->examples->teacher[$example->id])){
 			//count different levels
@@ -4420,10 +4429,13 @@ function block_exacomp_calculate_statistic_for_example($courseid, $students, $ex
 			}elseif($student->examples->teacher[$example->id]==3){
 				$niv_class_G++;
 				$niv_class_G_title .= $student->firstname." ".$student->lastname."\n";
+			}elseif($student->examples->teacher[$example->id]==0){
+				$niv_class_nE++;
+				$niv_class_nE_title .= $student->firstname." ".$student->lastname."\n";
 			}
 		}else{
-			$niv_class_nE++;
-			$niv_class_nE_title .= $student->firstname." ".$student->lastname."\n";
+			$niv_class_oB++;
+			$niv_class_oB_title .= $student->firstname." ".$student->lastname."\n";
 		}
 		
 		//TODO in arbeit
