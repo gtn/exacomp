@@ -242,6 +242,7 @@ $string['choosesubject'] = "Fach ausw&auml;hlen: ";
 $string['choosetopic'] = "Teilkompetenzbereich/Leitidee ausw&auml;hlen";
 $string['choosestudent'] = "Kursteilnehmer ausw&auml;hlen: ";
 $string['selectall'] = 'Alle ausw&auml;hlen';
+$string['own_additions'] = 'Schulische Ergänzung: ';
 
 //Example Submission
 $string['example_submission_header']  = 'Aufgabe {$a} bearbeiten';

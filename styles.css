@@ -803,3 +803,17 @@ td.contentcell {
 #exacomp div.associated_div li.associated {
 	 color: #000;
 }
+#exacomp table.statistic{
+	width: 100%;
+    border: 1px solid #E3DFD4;
+    border-collapse: collapse;
+}
+#exacomp table.statistic tr.statistic_head {
+   background-color: #E6E6E6  !important
+}
+#exacomp table.statistic td{
+	padding: 0.5em;
+    border: 1px solid #cacaca;
+    border-collapse: collapse;
+    vertical-align: top;
+}

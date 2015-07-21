@@ -215,6 +215,7 @@ $string['choosesubject'] = "Choose subject: ";
 $string['choosetopic'] = "Choose topic";
 $string['choosestudent'] = "Choose student: ";
 $string['selectall'] = 'Select all';
+$string['own_additions'] = 'Curricular additions: ';
 
 //Example Submission
 $string['example_submission_header']  = 'Aufgabe {$a} bearbeiten';
