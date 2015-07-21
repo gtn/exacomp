@@ -1788,5 +1788,73 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		upgrade_block_savepoint(true, 2015071700, 'exacomp');
 	}
 	
+	if($oldversion < 2015072102){
+		global $DB;
+	
+		//insert child descriptors in visibility table if not already done
+		
+		//has to be done for all available courses where exacomp is used
+		$courses = block_exacomp_get_courses();
+		
+		foreach($courses as $course){
+			$visibilities = $DB->get_fieldset_select(DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=0', array($course));
+			
+			//get all cross subject descriptors - to support cross-course subjects descriptor visibility must be kept
+			$cross_subjects = $DB->get_records(DB_CROSSSUBJECTS, array('courseid'=>$course));
+			$cross_subjects_descriptors = array();
+			foreach($cross_subjects as $crosssub){
+				$cross_subject_descriptors = $DB->get_fieldset_select(DB_DESCCROSS, 'descrid', 'crosssubjid=?', array($crosssub->id));
+				foreach($cross_subject_descriptors as $descriptor)
+				if(!in_array($descriptor, $cross_subjects_descriptors)){
+					$cross_subjects_descriptors[] = $descriptor;
+				}
+			}
+			
+			$descriptors = array();
+			$course_topics = block_exacomp_get_topics_by_course($course);
+			
+			foreach ($course_topics as $topic) {
+				$topicid = $topic->id;
+				
+				//insert descriptors in block_exacompdescrvisibility
+				$descriptors_topic = block_exacomp_get_descriptors_by_topic($course, $topicid);
+				foreach($descriptors_topic as $descriptor){
+					if(!array_key_exists($descriptor->id, $descriptors))
+					$descriptors[$descriptor->id] = $descriptor;	
+				}
+			}
+			
+			$finaldescriptors=$descriptors;
+			//manage visibility, do not delete user visibility, but delete unused entries
+			foreach($descriptors as $descriptor){
+				//new descriptors in table
+				if(!in_array($descriptor->id, $visibilities))
+					$DB->insert_record(DB_DESCVISIBILITY, array("courseid"=>$course, "descrid"=>$descriptor->id, "studentid"=>0, "visible"=>1));
+			
+				$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $course, true, array(SHOW_ALL_TAXONOMIES), true, false);
+				
+				foreach($descriptor->children as $childdescriptor){
+					if(!in_array($childdescriptor->id, $visibilities))
+						$DB->insert_record(DB_DESCVISIBILITY, array("courseid"=>$course, "descrid"=>$childdescriptor->id, "studentid"=>0, "visible"=>1));
+			
+					if(!array_key_exists($childdescriptor->id, $finaldescriptors))
+						$finaldescriptors[$childdescriptor->id] = $childdescriptor;
+				}
+			}
+			
+			foreach($visibilities as $visible){
+				//delete ununsed descriptors for course and for special students
+				if(!array_key_exists($visible, $finaldescriptors)){
+					//check if used in cross-subjects --> then it must still be visible
+					if(!in_array($visible, $cross_subjects_descriptors))
+						$DB->delete_records(DB_DESCVISIBILITY, array("courseid"=>$course, "descrid"=>$visible));
+				}
+			}	
+		}
+		
+		// Exacomp savepoint reached.
+		upgrade_block_savepoint(true, 2015072102, 'exacomp');
+	}
+	
 	return $result;
 }
