@@ -1960,7 +1960,7 @@ class block_exacomp_external extends external_api {
 		$example->externaltask = isset ( $example_task ) ? $example_task : null;
 		$example->creatorid = $USER->id;
 		$example->timestamp = date ();
-		$example->source = CUSTOM_EXAMPLE_SOURCE;
+		$example->source = EXAMPLE_SOURCE_USER;
 		
 		$id = $DB->insert_record ( DB_EXAMPLES, $example );
 		

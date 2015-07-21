@@ -101,7 +101,7 @@ if($formdata = $form->get_data()) {
     $newExample->taxid = $formdata->taxid;
     $newExample->creatorid = $USER->id;
     $newExample->externalurl = $formdata->externalurl;
-    $newExample->source = CUSTOM_EXAMPLE_SOURCE;
+    $newExample->source = EXAMPLE_SOURCE_TEACHER;
     if(isset($formdata->file) || isset($formdata->solution)) {
         // save file
         $context = context_user::instance($USER->id);

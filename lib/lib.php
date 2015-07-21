@@ -42,8 +42,8 @@ define('TYPE_TOPIC', 1);
 define('TYPE_CROSSSUB', 2);
 
 define('SETTINGS_MAX_SCHEME', 10);
-define('CUSTOM_EXAMPLE_SOURCE', 3);
-define('ELOVE_EXAMPLE_SOURCE', 4);
+define('EXAMPLE_SOURCE_TEACHER', 3);
+define('EXAMPLE_SOURCE_USER', 4);
 
 
 define("IMPORT_SOURCE_SPECIFIC", 2);
@@ -839,7 +839,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 				JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
 				LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id"
 			. " WHERE "
-			. " e.source != " . ELOVE_EXAMPLE_SOURCE . " AND "
+			. " e.source != " . EXAMPLE_SOURCE_USER . " AND "
 			. (($showallexamples) ? " 1=1 " : " e.creatorid > 0")
 			. ((in_array(SHOW_ALL_TAXONOMIES, $filteredtaxonomies)) ? "" : " AND e.taxid IN (".implode(",", $filteredtaxonomies) .")" )
 			, array($descriptor->id));
