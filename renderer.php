@@ -3870,7 +3870,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::div($content,"competence_profile_coursedata");
 	}
     public function print_wrapperdivstart(){
-  	    return html_writer::start_tag('div',array('id'=>'exacomp'));
+  	    return html_writer::start_tag('div',array('id'=>'block_exacomp'));
   }
     public function print_wrapperdivend(){
       	return html_writer::end_tag('div');

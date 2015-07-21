@@ -75,7 +75,7 @@ if ($show_all_examples != 0)
 echo '<div id="block_exacomp">';
 
 // get all subjects, topics, descriptors and examples
-$tree = block_exacomp_get_competence_tree ( $courseid, null, false, SHOW_ALL_TOPICS, true, block_exacomp_get_settings_by_course ( $courseid )->filteredtaxonomies );
+/*$tree = block_exacomp_get_competence_tree ( $courseid, null, false, SHOW_ALL_TOPICS, true, block_exacomp_get_settings_by_course ( $courseid )->filteredtaxonomies );
 
 // unset all descriptors without any examples
 foreach ( $tree as $skey => $subject ) {
@@ -104,10 +104,12 @@ function block_exacomp_check_child_descriptors($descriptor) {
 	}
 	
 	return $descriptor;
-}
+}*/
+
+$tree = block_exacomp_build_example_association_tree($courseid);
 
 $output = $PAGE->get_renderer ( 'block_exacomp' );
-echo $output->print_competence_based_list_tree ( $tree );
+echo $output->print_competence_based_list_tree ( $tree , true, true);
 echo '</div>';
 
 /*
