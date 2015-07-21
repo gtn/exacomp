@@ -1654,6 +1654,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				}elseif($example->externaltask){
 					$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->externaltask), $OUTPUT->pix_icon("i/preview", get_string("preview")),array("target" => "_blank"));
 				}
+				if($example->solution)
+					$titleCell->text .= $this->print_example_solution_icon($example->solution);
 				
 				if($data->role == ROLE_STUDENT) {
 					$titleCell->text .= $this->print_schedule_icon($example->id, $USER->id, $data->courseid);
@@ -1661,10 +1663,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$titleCell->text .= $this->print_submission_icon($data->courseid, $example->id, $USER->id);
 						
 					$titleCell->text .= $this->print_competence_association_icon($example->id, $data->courseid, false);
-					
-					if($example->solution)
-						$titleCell->text .= $this->print_example_solution_icon($example->solution);
-					
 					
 				} else if($data->role == ROLE_TEACHER) {
 					$studentid = optional_param("studentid", 0, PARAM_INT);

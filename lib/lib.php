@@ -102,7 +102,7 @@ function block_exacomp_is_admin($context) {
     return has_capability('block/exacomp:admin', $context);
 }
 function block_exacomp_require_teacher($context) {
-    return require_capability('block/exacomp:admin', $context);
+    return require_capability('block/exacomp:teacher', $context);
 }
 function block_exacomp_require_admin($context) {
     return require_capability('block/exacomp:admin', $context);
