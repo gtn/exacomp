@@ -735,18 +735,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							if($descriptor->parentid > 0)
 							    $cssClass .= ' child';
 							
-							/*
-							 * TODO: print visibility icon for descriptors in grid
+							// Check visibility
 							$descriptor_used = block_exacomp_descriptor_used($courseid, $descriptor, $studentid);
 							$visible = block_exacomp_check_descriptor_visibility($courseid, $descriptor, $studentid, (!$editmode||$role == ROLE_STUDENT) );
 							$visible_css = block_exacomp_get_descriptor_visible_css($visible, $role);
-							
+							if(!isset($descriptor->visible))
+								$descriptor->visible = $DB->get_field(DB_DESCVISIBILITY, 'visible', array('courseid'=>$courseid, 'descrid'=>$descriptor->id, 'studentid'=>0));
+								
 							if(!$descriptor_used){
-								if($editmode || ($descriptor->visible && $data->role == ROLE_TEACHER)){
+								if($editmode || ($descriptor->visible == 1 && $role == ROLE_TEACHER)){
 									$compString .= $this->print_visibility_icon($visible, $descriptor->id);
 								}
 							}
-							*/							
 							$compdiv .= html_writer::tag('div', $compString,array('class'=>$cssClass));
 						}
 
@@ -1378,6 +1378,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$descriptor_used = block_exacomp_descriptor_used($data->courseid, $descriptor, $studentid);
 			
 			$visible = block_exacomp_check_descriptor_visibility($data->courseid, $descriptor, $studentid, ($one_student||$data->role==ROLE_STUDENT) );
+			//echo $descriptor->visible . " / " . $visible . " <br/> ";
 			
 			$visible_css = block_exacomp_get_descriptor_visible_css($visible, $data->role);
 				

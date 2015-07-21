@@ -4099,7 +4099,15 @@ function block_exacomp_set_descriptor_visibility($descrid, $courseid, $value, $s
 function block_exacomp_descriptor_visible($courseid, $descriptor, $studentid){
 	global $DB;
 	$record = $DB->get_record(DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$descriptor->id, 'studentid'=>$studentid));
-	return ($record)?$record->visible:$descriptor->visible;
+	
+	if($record)
+		return $record->visible;
+	else 
+		if(isset($descriptor->visible))
+			return $descriptor->visible;
+		else if($studentid > 0)
+			return block_exacomp_descriptor_visible($courseid, $descriptor, 0);
+		
 }
 function block_exacomp_descriptor_used($courseid, $descriptor, $studentid){
 	global $DB;
@@ -4306,20 +4314,29 @@ function block_exacomp_calculate_spanning_niveau_colspan($niveaus, $spanningNive
 }
 
 function block_exacomp_check_descriptor_visibility($courseid, $descriptor, $studentid, $one) {
+	global $DB;
+	
 	$descriptor_used = block_exacomp_descriptor_used($courseid, $descriptor, $studentid);
 	
-	$descriptor->visible = block_exacomp_descriptor_visible($courseid, $descriptor, $studentid);
+	// if descriptor is used, hidding is impossible
+	if($descriptor_used)
+		return 1;
 	
-	if(!$descriptor_used){
-		$visible = $descriptor->visible;
-		if($one){
-			$visible = block_exacomp_descriptor_visible($courseid, $descriptor, $studentid);
-		}
-	}else{
-		$visible = 1;
+	// if we are in editmode, use global descriptor value
+	if($studentid == 0) {
+		if(isset($descriptor->visible))
+			return $descriptor->visible;
 	}
 	
-	return $visible;
+	// if we are in student mode, we use student value
+	// or if we are in edit mode and do not have a global descriptor value, we get it here
+	$record = $DB->get_record(DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$descriptor->id, 'studentid'=>$studentid));
+	if($record)
+		return $record->visible;
+	else
+		if(isset($descriptor->visible))
+			return $descriptor->visible;
+	
 }
 
 function block_exacomp_get_descriptor_visible_css($visible, $role) {

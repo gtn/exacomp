@@ -38,7 +38,7 @@
 	margin: 10px;
 	background: white;
 	cursor: pointer;
-	background: #5ba803;
+	background: #0784eb;
 	color: #fff;
 	-webkit-box-shadow: 1px 1px 1px 0px rgba(0,0,0,0.4);
 	-moz-box-shadow: 1px 1px 1px 0px rgba(0,0,0,0.4);
@@ -47,7 +47,7 @@
 }
 
 #block_exacomp .item .header {
-	background-color: #5ba803 !important;
+	background-color: #0784eb !important;
 	border: none;
 }
 
