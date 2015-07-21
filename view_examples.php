@@ -72,7 +72,7 @@ if ($show_all_examples != 0)
 	$courseid_for_tree = 0;
 	
 	/* CONTENT REGION */
-echo '<div id="exacomp">';
+echo '<div id="block_exacomp">';
 
 // get all subjects, topics, descriptors and examples
 $tree = block_exacomp_get_competence_tree ( $courseid, null, false, SHOW_ALL_TOPICS, true, block_exacomp_get_settings_by_course ( $courseid )->filteredtaxonomies );

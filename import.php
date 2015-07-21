@@ -102,7 +102,7 @@ $pagenode->make_active();
 
 // build tab navigation & print header
 echo $OUTPUT->header();
-echo '<div id="exacomp">';
+echo '<div id="block_exacomp">';
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($course_context,$courseid), $page_identifier);
 /* CONTENT REGION */
 

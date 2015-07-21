@@ -66,7 +66,7 @@ echo $OUTPUT->header();
 // CHECK TEACHER
 $isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
 
-echo '<div id="exacomp">';
+echo '<div id="block_exacomp">';
 /* CONTENT REGION */
 if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 	if(isset($_POST['descriptor']) && !empty($_POST['descriptor'])){

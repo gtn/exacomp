@@ -123,7 +123,7 @@ $PAGE->requires->jquery_plugin('ui');
 
 echo $OUTPUT->header();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), "tab_learning_agenda");
-echo '<div id="exacomp">';
+echo '<div id="block_exacomp">';
 
 if($isTeacher){
 	$students = block_exacomp_get_students_by_course($courseid);

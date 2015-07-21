@@ -72,7 +72,7 @@ if($action == 'serve') {
 }
 // build tab navigation & print header
 echo $OUTPUT->header();
-echo '<div id="exacomp">';
+echo '<div id="block_exacomp">';
 /* CONTENT REGION */
 
 require_capability('block/exacomp:teacher', $context);

@@ -68,7 +68,7 @@ $blocknode->make_active();
 
 // build tab navigation & print header
 echo $OUTPUT->header();
-echo '<div id="exacomp">';
+echo '<div id="block_exacomp">';
 /* CONTENT REGION */
 
 $form = new block_exacomp_example_submission_form($_SERVER['REQUEST_URI'], array("exampleid"=>$exampleid));
