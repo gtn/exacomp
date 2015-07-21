@@ -189,7 +189,7 @@ if($formdata = $form->get_data()) {
     block_exacomp_settstamp();
     ?>
 <script type="text/javascript">
-		window.opener.Exacomp.newExampleAdded();
+		window.opener.block_exacomp.newExampleAdded();
 		window.close();
 	</script>
 <?php 

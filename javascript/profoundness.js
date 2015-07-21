@@ -1,9 +1,9 @@
 (function($){
 	$( window ).load(function() {
-		var group = Exacomp.getParameterByName('group');
-		Exacomp.onlyShowColumnGroup(group);
+		var group = block_exacomp.getParameterByName('group');
+		block_exacomp.onlyShowColumnGroup(group);
 	});
-	window.Exacomp.onlyShowColumnGroup = function(group) {
+	window.block_exacomp.onlyShowColumnGroup = function(group) {
 		if (group === null || group==0) {
 			$('.colgroup').not('.colgroup-0').hide();
 			$('.colgroup-0').show();
@@ -116,12 +116,6 @@
 		$('.colgroup-button').css('font-weight', 'normal');
 		$('.colgroup-button-'+(group===null?'0':(group==(-1)?'all':group))).css('font-weight', 'bold');
 	}
-	window.Exacomp.getParameterByName = function(name) {
-	    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-	    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-	        results = regex.exec(location.search);
-	    return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
-	}
 	$(document).on('click', '.rowgroup-header .rowgroup-arrow', function(){
 		var tr = $(this).closest('tr');
 		tr.toggleClass('open');
@@ -167,7 +161,7 @@
 	});
 	
 	// called from the add example popup-window, after the example was added
-	window.Exacomp.newExampleAdded = function() {
+	window.block_exacomp.newExampleAdded = function() {
 		// reload form by submitting it
 		var $form = $('#assign-competencies');
 		$form.submit();

@@ -55,7 +55,7 @@ foreach($noneditingteachers as $noneditingteacher) {
 $trainerid = optional_param('trainerid', 0, PARAM_INT);
 $studentid = optional_param('studentid', 0, PARAM_INT);
 
-if($trainerid > 0 && $studentid > 0) {
+if($trainerid > 0 && $studentid) {
     if(!$DB->record_exists('block_exacompexternaltrainer', array('trainerid'=>$trainerid,'studentid'=>$studentid)))  
         $DB->insert_record('block_exacompexternaltrainer', array('trainerid'=>$trainerid,'studentid'=>$studentid));  
 }

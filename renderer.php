@@ -1843,17 +1843,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content = html_writer::tag("b", get_string('columnselect','block_exacomp'));
 		for($i=0; $i < ceil($students / STUDENTS_PER_COLUMN); $i++) {
 			$content .= " ";
-			$content .= html_writer::link('javascript:Exacomp.onlyShowColumnGroup('.$i.');',
+			$content .= html_writer::link('javascript:block_exacomp.onlyShowColumnGroup('.$i.');',
 					($i*STUDENTS_PER_COLUMN+1).'-'.min($students, ($i+1)*STUDENTS_PER_COLUMN),
 					array('class' => 'colgroup-button colgroup-button-'.$i));
 		}
-		$content .= " " . html_writer::link('javascript:Exacomp.onlyShowColumnGroup(-1);',
+		$content .= " " . html_writer::link('javascript:block_exacomp.onlyShowColumnGroup(-1);',
 				get_string('allstudents','block_exacomp'),
 				array('class' => 'colgroup-button colgroup-button-all'));
 		
 		global $COURSE;
 		if(block_exacomp_get_settings_by_course($COURSE->id)->nostudents) {
-		    $content .= " " . html_writer::link('javascript:Exacomp.onlyShowColumnGroup(-2);',
+		    $content .= " " . html_writer::link('javascript:block_exacomp.onlyShowColumnGroup(-2);',
 		        get_string('nostudents','block_exacomp'),
 		        array('class' => 'colgroup-button colgroup-button-no'));
 		}
