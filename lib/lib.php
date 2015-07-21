@@ -63,8 +63,8 @@ $specificimport = get_config('exacomp','enableteacherimport');
 
 define("SHOW_ALL_TOPICS",99999999);
 define("SHOW_ALL_TAXONOMIES",100000000);
-define("BLOCK_EXACOMP_SHOW_ALL_STUDENTS", 100000);
-define("BLOCK_EXACOMP_SHOW_STATISTIC", 99999);
+define("BLOCK_EXACOMP_SHOW_ALL_STUDENTS", -1);
+define("BLOCK_EXACOMP_SHOW_STATISTIC", -2);
 
 /**
  *
@@ -2553,7 +2553,7 @@ function block_exacomp_get_activities_by_course($courseid){
 function block_exacomp_init_competence_grid_data($courseid, $subjectid, $studentid, $showallexamples = false, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES)) {
 	global $version, $DB;
 
-	if($studentid > 0) {
+	if($studentid) {
 		$cm_mm = block_exacomp_get_course_module_association($courseid);
 		$course_mods = get_fast_modinfo($courseid)->get_cms();
 	}
@@ -2566,7 +2566,7 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 		$niveaus = $DB->get_records_menu(DB_CATEGORIES, array("lvl" => 4),"id,title","id,title");
 
 		$data = array();
-		if($studentid > 0)
+		if($studentid)
 			$competencies = array("studentcomps"=>$DB->get_records(DB_COMPETENCIES,array("role"=>ROLE_STUDENT,"courseid"=>$courseid,"userid"=>$studentid,"comptype"=>TYPE_TOPIC),"","compid,userid,reviewerid,value"),
 					"teachercomps"=>$DB->get_records(DB_COMPETENCIES,array("role"=>ROLE_TEACHER,"courseid"=>$courseid,"userid"=>$studentid,"comptype"=>TYPE_TOPIC),"","compid,userid,reviewerid,value"));
 
@@ -2577,7 +2577,7 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 			foreach($topics as $topic) {
 				if($topic->catid == 0) continue;
 
-				if($studentid > 0) {
+				if($studentid) {
 					$topic->studentcomp = (array_key_exists($topic->id, $competencies['studentcomps'])) ? $competencies['studentcomps'][$topic->id]->value : false;
 					$topic->teachercomp = (array_key_exists($topic->id, $competencies['teachercomps'])) ? $competencies['teachercomps'][$topic->id]->value : false;
 
@@ -2610,7 +2610,7 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 		$supported = block_exacomp_get_supported_modules();
 		
 		$data = array();
-		if($studentid > 0)
+		if($studentid)
 			$competencies = array("studentcomps"=>$DB->get_records(DB_COMPETENCIES,array("role"=>ROLE_STUDENT,"courseid"=>$courseid,"userid"=>$studentid,"comptype"=>TYPE_DESCRIPTOR),"","compid,userid,reviewerid,value"),
 					"teachercomps"=>$DB->get_records(DB_COMPETENCIES,array("role"=>ROLE_TEACHER,"courseid"=>$courseid,"userid"=>$studentid,"comptype"=>TYPE_DESCRIPTOR),"","compid,userid,reviewerid,value"));
 
@@ -2637,7 +2637,7 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 			
 			$descriptor->examples = $examples;
 				
-			if($studentid > 0) {
+			if($studentid) {
 				$descriptor->studentcomp = (array_key_exists($descriptor->id, $competencies['studentcomps'])) ? $competencies['studentcomps'][$descriptor->id]->value : false;
 				$descriptor->teachercomp = (array_key_exists($descriptor->id, $competencies['teachercomps'])) ? $competencies['teachercomps'][$descriptor->id]->value : false;
 				// ICONS

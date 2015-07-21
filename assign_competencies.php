@@ -125,7 +125,7 @@ else{
 		}
 	}
 	
-	if(!$version && $course_settings->nostudents != 1 && $studentid >0) echo $output->print_student_evaluation($showevaluation, $isTeacher,$selectedTopic->id,$selectedSubject->id, $studentid);
+	if(!$version && $course_settings->nostudents != 1 && $studentid) echo $output->print_student_evaluation($showevaluation, $isTeacher,$selectedTopic->id,$selectedSubject->id, $studentid);
 	
 	if($course_settings->nostudents != 1)
 	    echo $output->print_overview_legend($isTeacher);
@@ -134,12 +134,12 @@ else{
     if($isTeacher){
     	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS)
     	    echo $output->print_column_selector(count($students));
-    	elseif ($studentid == 0)
+    	elseif (!$studentid)
     	    $students = array();
     	elseif($studentid == BLOCK_EXACOMP_SHOW_STATISTIC)
     		$statistic = true;
     	else 
-    	    $students = array($students[$studentid]);
+    	    $students = !empty($students[$studentid]) ? array($students[$studentid]) : array();
 	}
 
 	$subjects = block_exacomp_get_competence_tree($courseid,(isset($selectedSubject))?$selectedSubject->id:null,false,(isset($selectedTopic))?$selectedTopic->id:null,

@@ -345,7 +345,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 		
 		$content .= html_writer::select($array, "lis_subjects",$selectedSubject, false,
-				array("onchange" => "document.location.href='".$PAGE->url. ($studentid > 0 ? "&studentid=".$studentid : "") ."&subjectid='+this.value;"));
+				array("onchange" => "document.location.href='".$PAGE->url. ($studentid ? "&studentid=".$studentid : "") ."&subjectid='+this.value;"));
 		
 		return $content;
 	}
@@ -1657,7 +1657,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				} else if($data->role == ROLE_TEACHER) {
 					$studentid = optional_param("studentid", 0, PARAM_INT);
 	
-					if($studentid > 0 && $studentid != BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
+					if($studentid && $studentid != BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
 						$titleCell->text .= $this->print_submission_icon($data->courseid, $example->id, $studentid);
 						$titleCell->text .= $this->print_schedule_icon($example->id, $studentid, $data->courseid);
 						
@@ -1763,7 +1763,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					new moodle_url('/blocks/exacomp/example_submission.php',array("courseid"=>$courseid,"exampleid"=>$exampleid)),
 					$OUTPUT->pix_icon("i/manual_item", get_string('submission','block_exacomp')),
 					array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
-		else if($studentid > 0) {
+		else if($studentid) {
 			//works only if exaport is installed
 			if(block_exacomp_exaportexists()){
 				$url = block_exacomp_get_viewurl_for_example($studentid,$exampleid);
