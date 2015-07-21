@@ -1596,7 +1596,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				    
 				$statCell = new html_table_cell();
 				if(!is_null($counter))
-					$statCell->text = $this->print_statistic_table($data->courseid, $students, $descriptor, true);
+					$statCell->text = block_exacomp_get_student_statistic_for_descriptor($data->courseid, $students, $descriptor);
 				else
 					$statCell->text = "";
 
@@ -1726,7 +1726,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$exampleRow->cells[] = $nivCell;
 					    
 					$statCell = new html_table_cell();
-					$statCell->text = $this->print_statistic_table($data->courseid, $students, $example, false);
+					$statCell->text = "Statistic";
 					
 	
 					$exampleRow->cells[] = $statCell;
@@ -4072,156 +4072,5 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		return $html_tree;
 	}
-function print_statistic_table($courseid, $students, $item, $descriptor=true){
-		
-		if($descriptor)
-			list($self_1, $self_2, $self_3, $student_oB, $student_iA, $niv_class_G, $niv_class_M, 
-				$niv_class_E, $niv_class_nE, $niv_class_oB, $niv_class_iA,
-				$self_1_title, $self_2_title, $self_3_title, $student_oB_title, $student_iA_title, $niv_class_G_title, $niv_class_M_title, 
-				$niv_class_E_title, $niv_class_nE_title, $niv_class_oB_title, $niv_class_iA_title) = block_exacomp_calculate_statistic_for_descriptor($courseid, $students, $item);
-		else
-			list($self_1, $self_2, $self_3, $student_oB, $student_iA, $niv_class_G, $niv_class_M, 
-				$niv_class_E, $niv_class_nE, $niv_class_oB, $niv_class_iA,
-				$self_1_title, $self_2_title, $self_3_title, $student_oB_title, $student_iA_title, $niv_class_G_title, $niv_class_M_title, 
-				$niv_class_E_title, $niv_class_nE_title, $niv_class_oB_title, $niv_class_iA_title) = block_exacomp_calculate_statistic_for_example($courseid, $students, $item);
-			
-		
-		$table = new html_table();
-		$table->attributes['class'] = 'statistic';
-		$table->border = 3;
-		
-		$rows = array();
-		
-		$self_row_header = new html_table_row();
-		$self_row_header->attributes['class'] = 'statistic_head';
-		
-		$empty_cell = new html_table_cell();
-		$self_row_header->cells[] = $empty_cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = "1";
-		$self_row_header->cells[] = $cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = "2";
-		$self_row_header->cells[] = $cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = "3";
-		$self_row_header->cells[] = $cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = "iA";
-		$self_row_header->cells[] = $cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = "oB";
-		$self_row_header->cells[] = $cell;
-		
-		$empty_cell = new html_table_cell();
-		$self_row_header->cells[] = $empty_cell;
-
-		$rows[] = $self_row_header;
-		
-		$self_row = new html_table_row();
-		$self_row->attributes['class'] = '';
-		
-		$cell = new html_table_cell();
-		$cell->text = "S";
-		$self_row->cells[] = $cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = ($self_1>0)?html_writer::tag('span', $self_1, array('title'=>$self_1_title)):$self_1;
-		$self_row->cells[] = $cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = ($self_2>0)?html_writer::tag('span', $self_2, array('title'=>$self_2_title)):$self_2;
-		$self_row->cells[] = $cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = ($self_3>0)?html_writer::tag('span', $self_3, array('title'=>$self_3_title)):$self_3;
-		$self_row->cells[] = $cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = ($student_iA>0)?html_writer::tag('span', $student_iA, array('title'=>$student_iA_title)):$student_iA;
-		$self_row->cells[] = $cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = ($student_oB>0)?html_writer::tag('span', $student_oB, array('title'=>$student_oB_title)):$student_oB;
-		$self_row->cells[] = $cell;
-		
-		$empty_cell = new html_table_cell();
-		$self_row->cells[] = $empty_cell;
-
-		$rows[] = $self_row;
-		
-		$teacher_row_header = new html_table_row();
-		$teacher_row_header->attributes['class'] = 'statistic_head';
-		
-		$empty_cell = new html_table_cell();
-		$teacher_row_header->cells[] = $empty_cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = "G";
-		$teacher_row_header->cells[] = $cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = "M";
-		$teacher_row_header->cells[] = $cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = "E";
-		$teacher_row_header->cells[] = $cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = "nE";
-		$teacher_row_header->cells[] = $cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = "oB";
-		$teacher_row_header->cells[] = $cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = "iA";
-		$teacher_row_header->cells[] = $cell;
-
-		$rows[] = $teacher_row_header;
-		
-		$teacher_row = new html_table_row();
-		$teacher_row->attributes['class'] = '';
-		
-		$cell = new html_table_cell();
-		$cell->text = "L";
-		$teacher_row->cells[] = $cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = ($niv_class_G>0)?html_writer::tag('span', $niv_class_G, array('title'=>$niv_class_G_title)):$niv_class_G;
-		$teacher_row->cells[] = $cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = ($niv_class_M>0)?html_writer::tag('span', $niv_class_M, array('title'=>$niv_class_M_title)):$niv_class_M;
-		$teacher_row->cells[] = $cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = ($niv_class_E>0)?html_writer::tag('span', $niv_class_E, array('title'=>$niv_class_E_title)):$niv_class_E;
-		$teacher_row->cells[] = $cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = ($niv_class_nE>0)?html_writer::tag('span', $niv_class_nE, array('title'=>$niv_class_nE_title)):$niv_class_nE;
-		$teacher_row->cells[] = $cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = ($niv_class_oB>0)?html_writer::tag('span', $niv_class_oB, array('title'=>$niv_class_oB_title)):$niv_class_oB;
-		$teacher_row->cells[] = $cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = ($niv_class_iA>0)?html_writer::tag('span', $niv_class_iA, array('title'=>$niv_class_iA_title)):$niv_class_iA;
-		$teacher_row->cells[] = $cell;
-
-		$rows[] = $teacher_row;
-		
-		$table->data = $rows;
-		return html_writer::table($table);
-}
 }
 ?>

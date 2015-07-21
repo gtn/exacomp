@@ -4311,99 +4311,22 @@ function block_exacomp_init_cross_subjects(){
     		$DB->delete_records(DB_CROSSSUBJECTS, array('id'=>$emptydraft->id));
     } 
 }
-function block_exacomp_calculate_statistic_for_descriptor($courseid, $students, $descriptor){
-	global $DB;
-	$student_oB = 0; $student_iA = 0;
-	$student_oB_title = ""; $student_iA_title = "";	
-	$self_1 = 0; $self_2 = 0; $self_3 = 0;
-	$self_1_title = ""; $self_2_title = ""; $self_3_title = "";
-	$niv_class_G = 0; $niv_class_M = 0; $niv_class_E = 0; $niv_class_nE = 0; $niv_class_oB = 0; $niv_class_iA = 0;
-	$niv_class_G_title = ""; $niv_class_M_title = ""; $niv_class_E_title = ""; $niv_class_nE_title = ""; $niv_class_oB_title = ""; $niv_class_iA_title = "";
-		
-	foreach($students as $student){
-		if(isset($student->competencies->student[$descriptor->id])){
-			//count different levels
-			if($student->competencies->student[$descriptor->id]==1){
-				$self_1++;
-				$self_1_title .= $student->firstname." ".$student->lastname."\n";
-			}elseif($student->competencies->student[$descriptor->id]==2){
-				$self_2++;
-				$self_2_title .= $student->firstname." ".$student->lastname."\n";
-			}elseif($student->competencies->student[$descriptor->id]==3){
-				$self_3++;
-				$self_3_title .= $student->firstname." ".$student->lastname."\n";
-			}
-		}
-		if(isset($student->competencies->teacher[$descriptor->id])){
-			//count different levels
-			if($student->competencies->teacher[$descriptor->id]==1){
-				$niv_class_E++;
-				$niv_class_E_title .= $student->firstname." ".$student->lastname."\n";
-			}elseif($student->competencies->teacher[$descriptor->id]==2){
-				$niv_class_M++;
-				$niv_class_M_title .= $student->firstname." ".$student->lastname."\n";
-			}elseif($student->competencies->teacher[$descriptor->id]==3){
-				$niv_class_G++;
-				$niv_class_G_title .= $student->firstname." ".$student->lastname."\n";
-			}
-		}else{
-			$niv_class_nE++;
-			$niv_class_nE_title .= $student->firstname." ".$student->lastname."\n";
-		}
-		
-		//TODO in arbeit
-	}
+function block_exacomp_get_student_statistic_for_descriptor($courseid, $students, $descriptor){
+	$process_B = 0; $process_iA = 0; $process_nB = 0;
+	$self_1 = 0; $self_2 = 0; $self_3 = 0; $self_0 = 0;
+	$niv_class_G = 0; $niv_class_M = 0; $niv_class_E = 0; $niv_class_nE = 0; $niv_class_oB = 0;
 	
-	return array($self_1, $self_2, $self_3, $student_oB, $student_iA, $niv_class_G, $niv_class_M, 
-		$niv_class_E, $niv_class_nE, $niv_class_oB, $niv_class_iA,
-		$self_1_title, $self_2_title, $self_3_title, $student_oB_title, $student_iA_title, $niv_class_G_title, $niv_class_M_title, 
-		$niv_class_E_title, $niv_class_nE_title, $niv_class_oB_title, $niv_class_iA_title);
-}
-function block_exacomp_calculate_statistic_for_example($courseid, $students, $example){
-	global $DB;
-	$student_oB = 0; $student_iA = 0;
-	$student_oB_title = ""; $student_iA_title = "";	
-	$self_1 = 0; $self_2 = 0; $self_3 = 0;
-	$self_1_title = ""; $self_2_title = ""; $self_3_title = "";
-	$niv_class_G = 0; $niv_class_M = 0; $niv_class_E = 0; $niv_class_nE = 0; $niv_class_oB = 0; $niv_class_iA = 0;
-	$niv_class_G_title = ""; $niv_class_M_title = ""; $niv_class_E_title = ""; $niv_class_nE_title = ""; $niv_class_oB_title = ""; $niv_class_iA_title = "";
-		
-	foreach($students as $student){
-		if(isset($student->examples->student[$example->id])){
-			//count different levels
-			if($student->examples->student[$example->id]==1){
-				$self_1++;
-				$self_1_title .= $student->firstname." ".$student->lastname."\n";
-			}elseif($student->examples->student[$example->id]==2){
-				$self_2++;
-				$self_2_title .= $student->firstname." ".$student->lastname."\n";
-			}elseif($student->examples->student[$example->id]==3){
-				$self_3++;
-				$self_3_title .= $student->firstname." ".$student->lastname."\n";
-			}
-		}
-		if(isset($student->examples->teacher[$example->id])){
-			//count different levels
-			if($student->examples->teacher[$example->id]==1){
-				$niv_class_E++;
-				$niv_class_E_title .= $student->firstname." ".$student->lastname."\n";
-			}elseif($student->examples->teacher[$example->id]==2){
-				$niv_class_M++;
-				$niv_class_M_title .= $student->firstname." ".$student->lastname."\n";
-			}elseif($student->examples->teacher[$example->id]==3){
-				$niv_class_G++;
-				$niv_class_G_title .= $student->firstname." ".$student->lastname."\n";
-			}
-		}else{
-			$niv_class_nE++;
-			$niv_class_nE_title .= $student->firstname." ".$student->lastname."\n";
-		}
-		
-		//TODO in arbeit
-	}
+	//process
+	$statistic = get_string('process', 'block_exacomp')." B: ".$process_B." iA: ".$process_iA." nB: ".$process_nB;
 	
-	return array($self_1, $self_2, $self_3, $student_oB, $student_iA, $niv_class_G, $niv_class_M, 
-		$niv_class_E, $niv_class_nE, $niv_class_oB, $niv_class_iA,
-		$self_1_title, $self_2_title, $self_3_title, $student_oB_title, $student_iA_title, $niv_class_G_title, $niv_class_M_title, 
-		$niv_class_E_title, $niv_class_nE_title, $niv_class_oB_title, $niv_class_iA_title);
+	$statistic .= html_writer::empty_tag('br');
+	
+	//self evaluation
+	$statistic .= get_string('selfevaluation', 'block_exacomp')." 1: ".$self_1." 2: ".$self_2." 3: ".$self_3." 0: ".$self_0;
+	
+	$statistic .= html_writer::empty_tag('br');
+	
+	//niveau classification
+	$statistic .= get_string('niveauclass', 'block_exacomp')." &sum;G: ".$niv_class_G." &sum;M: ".$niv_class_M." &sum;E: ".$niv_class_E." &sum;nE: ".$niv_class_nE." &sum;oB: ".$niv_class_oB;
+	return $statistic;
 }
