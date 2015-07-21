@@ -134,7 +134,7 @@ else{
 	echo $output->print_overview_legend($isTeacher);
 	
 	if($isTeacher){
-    	if($studentid == SHOW_ALL_STUDENTS){
+    	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
     		$showevaluation = false;
     	    echo $output->print_column_selector(count($students));
     	}elseif ($studentid == 0)

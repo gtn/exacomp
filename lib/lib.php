@@ -63,8 +63,8 @@ $specificimport = get_config('exacomp','enableteacherimport');
 
 define("SHOW_ALL_TOPICS",99999999);
 define("SHOW_ALL_TAXONOMIES",100000000);
-define("SHOW_ALL_STUDENTS", 100000);
-define("SHOW_STATISTIC", 99999);
+define("BLOCK_EXACOMP_SHOW_ALL_STUDENTS", 100000);
+define("BLOCK_EXACOMP_SHOW_STATISTIC", 99999);
 
 /**
  *
@@ -1031,6 +1031,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $stud
  */
 function block_exacomp_get_students_by_course($courseid) {
 	$context = context_course::instance($courseid);
+    // TODO: wie werden studenten definiert, kann man den rollen capabilities zuweisen damit sie als studenten gelten? -- prieler
 	return get_role_users(5, $context);
 }
 /**
@@ -1040,6 +1041,7 @@ function block_exacomp_get_students_by_course($courseid) {
  */
 function block_exacomp_get_teachers_by_course($courseid) {
 	$context = context_course::instance($courseid);
+    // TODO: wie werden lehrer definiert, kann man den rollen capabilities zuweisen damit sie als lehrer gelten? -- prieler
 	return get_role_users(array(1,2,3,4), $context);
 }
 
@@ -1402,6 +1404,10 @@ function block_exacomp_build_breadcrum_navigation($courseid) {
 	$coursenode->add($blocknode);
 	$blocknode->make_active();
 }
+
+class block_exacomp_url extends moodle_url {
+}
+
 /**
  * Generates html dropdown for students
  * 
@@ -1409,12 +1415,20 @@ function block_exacomp_build_breadcrum_navigation($courseid) {
  * @param object $selected
  * @param moodle_url $url
  */
-function block_exacomp_studentselector($students,$selected,$url, $editmode = true, $allstudents = false, $statistic = false){
+var_dump(optional_param('studentid', 0, PARAM_INT));
+exit;
+define('BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_EDITMODE', 1);
+define('BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN', 2);
+function block_exacomp_studentselector($students, $selected, $url, $option) {
 	global $CFG;
 
 	$studentsAssociativeArray = array();
+    
+    // make copy
+    $url = new block_exacomp_url($url);
+    $url->remove_params('studentid');
 	
-	if($editmode)
+	if ($option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_EDITMODE || $option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN)
 		$studentsAssociativeArray[0]=get_string('no_student_edit', 'block_exacomp');
 	else 
 		$studentsAssociativeArray[0]=get_string('no_student', 'block_exacomp');
@@ -1423,13 +1437,13 @@ function block_exacomp_studentselector($students,$selected,$url, $editmode = tru
 		$studentsAssociativeArray[$student->id] = fullname($student);
 	}
 	
-	if($allstudents)
-		$studentsAssociativeArray[SHOW_ALL_STUDENTS] = get_string('allstudents', 'block_exacomp');
-	if($statistic)
-		$studentsAssociativeArray[SHOW_STATISTIC] = get_string('statistic', 'block_exacomp');
+	if ($option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN) {
+		$studentsAssociativeArray[BLOCK_EXACOMP_SHOW_ALL_STUDENTS] = get_string('allstudents', 'block_exacomp');
+		$studentsAssociativeArray[BLOCK_EXACOMP_SHOW_STATISTIC] = get_string('statistic', 'block_exacomp');
+    }
 	
 	return html_writer::select($studentsAssociativeArray, 'exacomp_competence_grid_select_student',$selected,true,
-			array("onchange"=>"document.location.href='".($url instanceof moodle_url ? $url->out(false) : $url)."&studentid='+this.value;"));
+			array("onchange"=>"document.location.href='".$url->out(false)."&studentid='+this.value;"));
 }
 /**
  *

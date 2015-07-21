@@ -132,11 +132,11 @@ else{
 	    
 	$statistic = false;
     if($isTeacher){
-    	if($studentid == SHOW_ALL_STUDENTS)
+    	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS)
     	    echo $output->print_column_selector(count($students));
     	elseif ($studentid == 0)
     	    $students = array();
-    	elseif($studentid == SHOW_STATISTIC)
+    	elseif($studentid == BLOCK_EXACOMP_SHOW_STATISTIC)
     		$statistic = true;
     	else 
     	    $students = array($students[$studentid]);

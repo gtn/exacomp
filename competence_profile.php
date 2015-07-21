@@ -75,7 +75,7 @@ if(!$isTeacher){
 		echo html_writer::tag("p", get_string("select_student","block_exacomp"));
 		//print student selector
 		echo get_string("choosestudent","block_exacomp");
-		echo block_exacomp_studentselector($coursestudents,$studentid,$PAGE->url, false);
+		echo block_exacomp_studentselector($coursestudents,$studentid,$PAGE->url);
 		echo $OUTPUT->footer();
 		die;
 	}else{
@@ -85,7 +85,7 @@ if(!$isTeacher){
 		
 		//print student selector
 		echo get_string("choosestudent","block_exacomp");
-		echo block_exacomp_studentselector($coursestudents,$studentid,$PAGE->url, false);
+		echo block_exacomp_studentselector($coursestudents,$studentid,$PAGE->url);
 	}
 }
 $student = $DB->get_record('user',array('id' => $studentid));

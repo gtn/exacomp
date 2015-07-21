@@ -135,12 +135,9 @@ if($isTeacher){
         exit;
     }
 
-    $url = clone $my_url;
-    $url->remove_params('studentid');
-
     echo html_writer::empty_tag("br");
 	echo get_string("choosestudent", "block_exacomp");
-    echo block_exacomp_studentselector($students, $studentid, $url, false);
+    echo block_exacomp_studentselector($students, $studentid, $url);
     
     if (empty($students[$studentid])) {
         // empty id or wrongid, first select a student

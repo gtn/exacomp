@@ -98,7 +98,7 @@ else{
 	if ($isTeacher) {
 		echo ' '.get_string("choosestudent","block_exacomp").' ';
 		echo block_exacomp_studentselector($coursestudents,$studentid,$PAGE->url . ($selectedSubject->id > 0 ? "&subjectid=".$selectedSubject->id : "")
-				. ($selectedTopic->id > 0 ? "&topicid=".$selectedTopic->id : ""), false);
+				. ($selectedTopic->id > 0 ? "&topicid=".$selectedTopic->id : ""));
 	}
 	
 	$schooltype = block_exacomp_get_schooltype_title_by_subject($selectedSubject);

@@ -374,13 +374,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
     		
     		foreach($students as $student)
     			$options[$student->id] = $student->firstname." ".$student->lastname;
-    		$options[SHOW_ALL_STUDENTS] = get_string('allstudents', 'block_exacomp');
-    		$options[SHOW_STATISTIC] = get_string('statistic', 'block_exacomp');
+    		$options[BLOCK_EXACOMP_SHOW_ALL_STUDENTS] = get_string('allstudents', 'block_exacomp');
+    		$options[BLOCK_EXACOMP_SHOW_STATISTIC] = get_string('statistic', 'block_exacomp');
     		
     		$content .= html_writer::select($options, "lis_crosssubs_students", $selectedStudent, false,
     				array("onchange" => "document.location.href='".$PAGE->url."&subjectid=".$selectedSubject."&topicid=".$selectedTopic."&studentid='+this.value;"));
     		*/
-    		$content .= block_exacomp_studentselector($students,$selectedStudent,$PAGE->url."&subjectid=".$selectedSubject."&topicid=".$selectedTopic,true,true,true);
+    		$content .= block_exacomp_studentselector($students,$selectedStudent,$PAGE->url."&subjectid=".$selectedSubject."&topicid=".$selectedTopic,  BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
 		}	
 		
 		return $content;
@@ -1657,7 +1657,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				} else if($data->role == ROLE_TEACHER) {
 					$studentid = optional_param("studentid", 0, PARAM_INT);
 	
-					if($studentid > 0 && $studentid != SHOW_ALL_STUDENTS) {
+					if($studentid > 0 && $studentid != BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
 						$titleCell->text .= $this->print_submission_icon($data->courseid, $example->id, $studentid);
 						$titleCell->text .= $this->print_schedule_icon($example->id, $studentid, $data->courseid);
 						
@@ -3946,7 +3946,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     		
     		foreach($students as $student)
     			$options[$student->id] = $student->firstname." ".$student->lastname;
-    		$options[SHOW_ALL_STUDENTS] = get_string('allstudents', 'block_exacomp');
+    		$options[BLOCK_EXACOMP_SHOW_ALL_STUDENTS] = get_string('allstudents', 'block_exacomp');
     		$content .= html_writer::select($options, "lis_crosssubs_students", $selectedStudent, false,
     				array("onchange" => "document.location.href='".$PAGE->url."&crosssubjid=".$selectedCrosssubject."&studentid='+this.value;"));
 		}	
