@@ -64,7 +64,7 @@ $blocknode->make_active();
 echo $OUTPUT->header();
 
 // CHECK TEACHER
-$isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
+$isTeacher = block_exacomp_is_teacher($context);
 
 echo '<div id="block_exacomp">';
 /* CONTENT REGION */

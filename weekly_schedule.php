@@ -11,7 +11,7 @@ if (! $course = $DB->get_record ( 'course', array (
 
 require_login ( $course );
 $context = context_course::instance ( $courseid );
-$isTeacher = has_capability( 'block/exacomp:teacher', $context);
+$isTeacher = block_exacomp_is_teacher($context);
 $studentid = $isTeacher ? optional_param("studentid", 0, PARAM_INT) : $USER->id;
 
 $week = optional_param('week', time(), PARAM_INT);
@@ -137,7 +137,7 @@ if($isTeacher){
 
     echo html_writer::empty_tag("br");
 	echo get_string("choosestudent", "block_exacomp");
-    echo block_exacomp_studentselector($students, $studentid, $url);
+    echo block_exacomp_studentselector($students, $studentid, $my_url);
     
     if (empty($students[$studentid])) {
         // empty id or wrongid, first select a student

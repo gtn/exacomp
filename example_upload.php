@@ -75,7 +75,7 @@ echo $OUTPUT->header();
 echo '<div id="block_exacomp">';
 /* CONTENT REGION */
 
-require_capability('block/exacomp:teacher', $context);
+block_exacomp_require_teacher($context);
 $descrid = required_param('descrid', PARAM_INT);
 $topicid = required_param('topicid', PARAM_INT);
 

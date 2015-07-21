@@ -578,7 +578,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$headFlag = false;
 		
 		$context = context_course::instance($courseid);
-		$role = has_capability('block/exacomp:teacher', $context) ? ROLE_TEACHER : ROLE_STUDENT;
+		$role = block_exacomp_is_teacher($context) ? ROLE_TEACHER : ROLE_STUDENT;
 		$editmode = ($studentid == 0 && $role == ROLE_TEACHER) ? true : false;
 
 		$table = new html_table();
@@ -636,7 +636,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$allStudentcomps = true;
 						foreach($data[$skillid][$topicid][$niveauid] as $descriptor) {
 							$compString = "";
-							if (has_capability('block/exacomp:teacher', $context)) {
+							if (block_exacomp_is_teacher($context)) {
 								if(isset($descriptor->teachercomp) && array_key_exists($descriptor->topicid, $selection)) {
 									$compString .= "L: ";
 									if($schema == 1) {
@@ -1756,7 +1756,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		global $CFG, $OUTPUT;
 		
 		$context = context_course::instance($courseid);
-		$isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
+        $isTeacher = block_exacomp_is_teacher($context);
 		
 		if(!$isTeacher)
 			return html_writer::link(
@@ -2150,7 +2150,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		.html_writer::link($url.'&sort=desc', $text_link1)." "
 		.html_writer::link($url.'&sort=tax', $text_link2);
 
-		if(has_capability('block/exacomp:teacher', $context) OR has_capability('block/exacomp:admin', $context)){
+		if(block_exacomp_is_teacher($context) || block_exacomp_is_admin($context)){
 			$input = '';
 			if($show_all_examples != 0)
 				$input = html_writer::empty_tag('input', array('type'=>'checkbox', 'name'=>'showallexamples_check', 'value'=>1, 'onClick'=>'showallexamples_form.submit();', 'checked'=>'checked'));

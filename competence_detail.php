@@ -63,7 +63,7 @@ echo $output->print_wrapperdivstart();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
 // CHECK TEACHER
-$isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
+$isTeacher = block_exacomp_is_teacher($context);
 
 if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 	// DESCRIPTOR DATA
@@ -86,7 +86,7 @@ else{
 		block_exacomp_get_user_information_by_course($student, $courseid);
 	}
 	
-	echo $output->print_detail_content($tree, $courseid, $students, $showevaluation, (has_capability('block/exacomp:teacher', $context)) ? ROLE_TEACHER : ROLE_STUDENT, block_exacomp_get_grading_scheme($courseid));
+	echo $output->print_detail_content($tree, $courseid, $students, $showevaluation, $isTeacher ? ROLE_TEACHER : ROLE_STUDENT, block_exacomp_get_grading_scheme($courseid));
 }
 
 

@@ -92,7 +92,22 @@ function block_exacomp_init_js_css(){
 	}
 }
 
-
+function block_exacomp_is_teacher($context) {
+    return has_capability('block/exacomp:teacher', $context);
+}
+function block_exacomp_is_student($context) {
+    return has_capability('block/exacomp:student', $context);
+}
+function block_exacomp_is_admin($context) {
+    return has_capability('block/exacomp:admin', $context);
+}
+function block_exacomp_require_teacher($context) {
+    return require_capability('block/exacomp:admin', $context);
+}
+function block_exacomp_require_admin($context) {
+    return require_capability('block/exacomp:admin', $context);
+}
+ 
 /**
  * Gets one particular subject
  * 
@@ -1215,7 +1230,7 @@ function block_exacomp_build_navigation_tabs_settings($courseid){
 	return $settings_subtree;
 }
 function block_exacomp_build_navigation_tabs_profile($context,$courseid){
-	if (has_capability('block/exacomp:teacher', $context)) 
+	if (block_exacomp_is_teacher($context)) 
 		return array();
 	
 	$profile_subtree = array();
@@ -1225,7 +1240,7 @@ function block_exacomp_build_navigation_tabs_profile($context,$courseid){
 	return $profile_subtree;
 }
 function block_exacomp_build_navigation_tabs_cross_subjects($context,$courseid){
-	if (!has_capability('block/exacomp:teacher', $context)) 
+	if (!block_exacomp_is_teacher($context)) 
 		return array();
 	
 	$crosssubs = block_exacomp_get_cross_subjects_by_course($courseid);
@@ -1266,7 +1281,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 
 	$rows = array();
 
-	if (has_capability('block/exacomp:teacher', $context)) {
+	if (block_exacomp_is_teacher($context)) {
 		$crosssubs = block_exacomp_get_cross_subjects_by_course($courseid);
 		if($checkImport){
 			if($version){ //teacher tabs LIS
@@ -1301,7 +1316,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 					$rows[] = new tabobject('tab_help', new moodle_url('/blocks/exacomp/help.php', array("courseid"=>$courseid)), get_string('tab_help', 'block_exacomp'));
 			}else{	//teacher tabs !LIS
 				//if use skill management
-				if($skillmanagement && has_capability('block/exacomp:teacher', $context)){
+				if($skillmanagement && block_exacomp_is_teacher($context)){
 					$rows[] = new tabobject('tab_skillmanagement', new moodle_url('/blocks/exacomp/skillmanagement.php', array('courseid'=>$courseid)),get_string('tab_skillmanagement','block_exacomp'));
 				}
 				if($checkConfig){
@@ -1415,11 +1430,9 @@ class block_exacomp_url extends moodle_url {
  * @param object $selected
  * @param moodle_url $url
  */
-var_dump(optional_param('studentid', 0, PARAM_INT));
-exit;
 define('BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_EDITMODE', 1);
 define('BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN', 2);
-function block_exacomp_studentselector($students, $selected, $url, $option) {
+function block_exacomp_studentselector($students, $selected, $url, $option = null) {
 	global $CFG;
 
 	$studentsAssociativeArray = array();

@@ -42,7 +42,7 @@ require_login($course);
 
 $context = context_course::instance($courseid);
 
-require_capability('block/exacomp:teacher', $context);
+block_exacomp_require_teacher($context);
 
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_teacher_settings_configuration';

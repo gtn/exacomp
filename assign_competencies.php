@@ -62,7 +62,7 @@ echo $output->print_wrapperdivstart();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
 // CHECK TEACHER
-$isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
+$isTeacher = block_exacomp_is_teacher($context);
 // IF DELETE > 0 DELTE CUSTOM EXAMPLE
 if(($delete = optional_param("delete", 0, PARAM_INT)) > 0 && $isTeacher)
 	block_exacomp_delete_custom_example($delete);

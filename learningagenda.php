@@ -60,7 +60,7 @@ block_exacomp_build_breadcrum_navigation($courseid);
 /* ADDITIONAL FOR LEARNINGAGENDA
  * check if teacher or student, if teacher: display student selection
  */
-if (has_capability('block/exacomp:teacher', $context)) {
+if (block_exacomp_is_teacher($context)) {
 	$role = "teacher";
 	//lib function
 	$stundentselect = block_exacomp_studentselector(get_role_users(5, $context),$studentid,$PAGE->url);

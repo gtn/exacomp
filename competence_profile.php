@@ -60,7 +60,7 @@ echo $output->print_wrapperdivstart();
 
 /* CONTENT REGION */
 $studentid = optional_param('studentid', 0, PARAM_INT);
-$isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
+$isTeacher = block_exacomp_is_teacher($context);
 
 if(!$isTeacher){ 
 	$studentid = $USER->id;

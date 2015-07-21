@@ -44,7 +44,7 @@ if ($descrid > 0 && (!$descriptor = $DB->get_record('block_exacompdescriptors', 
 
 require_login($course);
 $context = context_course::instance($courseid);
-require_capability('block/exacomp:teacher', $context);
+block_exacomp_require_teacher($context);
 
 $PAGE->set_url('/blocks/exacomp/select_crosssubjects.php', array('courseid' => $courseid));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));

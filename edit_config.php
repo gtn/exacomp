@@ -46,7 +46,7 @@ if (! $course = $DB->get_record ( 'course', array (
 require_login ( $course );
 
 $context = context_system::instance ();
-require_capability ( 'block/exacomp:admin', $context );
+block_exacomp_require_admin($context);
 
 $check = block_exacomp_xml_check_import ();
 if (! $check) {

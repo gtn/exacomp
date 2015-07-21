@@ -37,7 +37,7 @@ if (! $course = $DB->get_record ( 'course', array (
 
 require_login ( $course );
 $context = context_course::instance ( $courseid );
-$isTeacher = (has_capability ( 'block/exacomp:teacher', $context )) ? true : false;
+$isTeacher = block_exacomp_is_teacher($context);
 
 require_sesskey();
 

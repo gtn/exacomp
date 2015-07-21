@@ -62,7 +62,7 @@ echo $output->print_wrapperdivstart();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
 // CHECK TEACHER
-$isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
+$isTeacher = block_exacomp_is_teacher($context);
 
 $activities = block_exacomp_get_activities_by_course($courseid);
 $course_settings = block_exacomp_get_settings_by_course($courseid);

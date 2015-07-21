@@ -93,7 +93,7 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), '
 
 /* CONTENT REGION */
 $studentid = optional_param('studentid', $USER->id, PARAM_INT);
-$isTeacher = (has_capability('block/exacomp:teacher', $context)) ? true : false;
+$isTeacher = block_exacomp_is_teacher($context);
 if(!$isTeacher) $studentid = $USER->id;
 $student = $DB->get_record('user',array('id' => $studentid));
 

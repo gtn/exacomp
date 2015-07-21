@@ -63,7 +63,7 @@ $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 block_exacomp_init_js_css();
 
 $isAdmin = has_capability('block/exacomp:admin', $context);
-require_capability('block/exacomp:teacher', $course_context);
+block_exacomp_require_teacher($context);
 
 $action = optional_param('action', "", PARAM_ALPHA);
 $importoption = optional_param('importoption', "", PARAM_ALPHA);
