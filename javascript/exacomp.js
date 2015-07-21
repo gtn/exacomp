@@ -1,7 +1,7 @@
-window.jQueryExacomp = jQuery.noConflict(true);
+window.jQueryExacomp = jQuery;
 
 (function($) {
-	window.Exacomp = {};
+	window.block_exacomp = {};
 
 	$(function() {
 		// handle: de-du, de, en, en-us,... and strip -du, ...
@@ -63,4 +63,12 @@ window.jQueryExacomp = jQuery.noConflict(true);
 			});
 		});
 	}
+	
+	// student selector
+	$(function(){
+		$('select[name=exacomp_competence_grid_select_student]').change(function(){
+			document.location.href = this.getAttribute('data-url') + '&studentid='+this.value;
+		});
+	});
+	
 })(jQueryExacomp);

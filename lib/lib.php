@@ -72,7 +72,7 @@ define("BLOCK_EXACOMP_SHOW_STATISTIC", -2);
  */
 function block_exacomp_init_js_css(){
 	global $PAGE, $CFG;
-	$PAGE->requires->css('/blocks/exacomp/styles.css');
+	$PAGE->requires->css('/blocks/exacomp/css/styles.css');
 	$PAGE->requires->jquery();
 	$PAGE->requires->js('/blocks/exacomp/javascript/exacomp.js', true);
 	$PAGE->requires->js('/blocks/exacomp/javascript/ajax.js', true);
@@ -1456,7 +1456,7 @@ function block_exacomp_studentselector($students, $selected, $url, $option = nul
     }
 	
 	return html_writer::select($studentsAssociativeArray, 'exacomp_competence_grid_select_student',$selected,true,
-			array("onchange"=>"document.location.href='".$url->out(false)."&studentid='+this.value;"));
+			array("data-url"=>$url));
 }
 /**
  *
