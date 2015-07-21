@@ -54,7 +54,7 @@ block_exacomp_build_breadcrum_navigation($courseid);
 
 // build tab navigation & print header
 echo $OUTPUT->header();
-echo '<div id="block_exacomp">';
+echo $PAGE->get_renderer('block_exacomp')->print_wrapperdivstart();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
 /* CONTENT REGION */

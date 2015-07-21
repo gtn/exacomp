@@ -66,7 +66,7 @@ echo $OUTPUT->header();
 // CHECK TEACHER
 $isTeacher = block_exacomp_is_teacher($context);
 
-echo '<div id="block_exacomp">';
+echo $PAGE->get_renderer('block_exacomp')->print_wrapperdivstart();
 /* CONTENT REGION */
 if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 	if(isset($_POST['descriptor']) && !empty($_POST['descriptor'])){
@@ -106,6 +106,6 @@ if($editmode==1)
 echo  html_writer::tag('form', $content, array('method'=>'post', 'action'=>$PAGE->url.'&exampleid='.$exampleid.'&editmode='.$editmode.'&action=save', 'name'=>'add_association'));
 		
 /* END CONTENT REGION */
-echo '</div>';
+echo $PAGE->get_renderer('block_exacomp')->print_wrapperdivend();
 echo $OUTPUT->footer();
 ?>

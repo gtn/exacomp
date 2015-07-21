@@ -54,8 +54,7 @@ block_exacomp_build_breadcrum_navigation($courseid);
 
 // build tab navigation & print header
 $output = $PAGE->get_renderer('block_exacomp');
-echo $OUTPUT->header();
-echo $output->print_wrapperdivstart();
+echo $output->header();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
 /* CONTENT REGION */
@@ -72,6 +71,4 @@ echo $output->print_my_badges($badges);
 
 /* END CONTENT REGION */
 
-echo $OUTPUT->footer();
-
-?>
+echo $output->footer();

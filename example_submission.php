@@ -68,7 +68,7 @@ $blocknode->make_active();
 
 // build tab navigation & print header
 echo $OUTPUT->header();
-echo '<div id="block_exacomp">';
+echo $PAGE->get_renderer('block_exacomp')->print_wrapperdivstart();
 /* CONTENT REGION */
 
 $form = new block_exacomp_example_submission_form($_SERVER['REQUEST_URI'], array("exampleid"=>$exampleid));
@@ -166,7 +166,7 @@ if($formdata = $form->get_data()) {
 $form->display();
 
 /* END CONTENT REGION */
-echo '</div>';
+echo $PAGE->get_renderer('block_exacomp')->print_wrapperdivend();
 echo $OUTPUT->footer();
 
 ?>

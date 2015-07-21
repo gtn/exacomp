@@ -72,7 +72,7 @@ if($action == 'serve') {
 }
 // build tab navigation & print header
 echo $OUTPUT->header();
-echo '<div id="block_exacomp">';
+echo $PAGE->get_renderer('block_exacomp')->print_wrapperdivstart();
 /* CONTENT REGION */
 
 block_exacomp_require_teacher($context);
@@ -203,7 +203,7 @@ if($exampleid > 0) {
 $form->display();
 
 /* END CONTENT REGION */
-echo '</div>';
+echo $PAGE->get_renderer('block_exacomp')->print_wrapperdivend();
 echo $OUTPUT->footer();
 
 ?>

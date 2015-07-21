@@ -26,6 +26,18 @@ defined('MOODLE_INTERNAL') || die;
 define('STUDENTS_PER_COLUMN', 5);
 
 class block_exacomp_renderer extends plugin_renderer_base {
+    public function header() {
+        return
+            parent::header().
+            $this->print_wrapperdivstart();
+    }
+    
+    public function footer() {
+        return
+            $this->print_wrapperdivend().
+            parent::footer();
+    }
+    
 	public function form_week_learningagenda($selectstudent,$action,$studentid, $view, $date = ''){
 		global $COURSE, $CFG;
 

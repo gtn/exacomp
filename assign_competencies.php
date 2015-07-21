@@ -57,8 +57,7 @@ block_exacomp_build_breadcrum_navigation($courseid);
 $output = $PAGE->get_renderer('block_exacomp');
 
 // build tab navigation & print header
-echo $OUTPUT->header();
-echo $output->print_wrapperdivstart();
+echo $output->header();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 
 // CHECK TEACHER
@@ -153,7 +152,4 @@ else{
 }
 
 /* END CONTENT REGION */
-echo $output->print_wrapperdivend();
-echo $OUTPUT->footer();
-
-?>
+echo $output->footer();
