@@ -4236,4 +4236,3 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::table($table);
 }
 }
-?>
