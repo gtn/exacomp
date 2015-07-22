@@ -4511,3 +4511,35 @@ function block_exacomp_calculate_statistic_for_example($courseid, $students, $ex
 		$self_1_title, $self_2_title, $self_3_title, $student_oB_title, $student_iA_title, $niv_class_G_title, $niv_class_M_title, 
 		$niv_class_E_title, $niv_class_nE_title, $niv_class_oB_title, $niv_class_iA_title);
 }
+function block_exacomp_get_descriptor_numbering($descriptor){
+	global $DB;
+	$topicid = $descriptor->topicid;
+	
+	$numbering = block_exacomp_get_topic_numbering($topicid);
+	
+	if($descriptor->parentid == 0){
+		//Descriptor im Topic
+		$desctopicmm = $DB->get_record(DB_DESCTOPICS, array('descrid'=>$descriptor->id, 'topicid'=>$topicid));
+		$numbering .= $desctopicmm->sorting;
+	}else{
+		//Parent-Descriptor im Topic
+		$desctopicmm = $DB->get_record(DB_DESCTOPICS, array('descrid'=>$descriptor->parentid, 'topicid'=>$topicid));
+		$numbering .= $desctopicmm->sorting.'.';
+		
+		$numbering .= $descriptor->sorting;
+	}
+		
+	return $numbering;
+}
+function block_exacomp_get_topic_numbering($topicid){
+	$topic = block_exacomp_get_topic_by_id($topicid);
+	
+	//Subject
+	$lwl_subject = block_exacomp_get_topic_by_id($topicid);
+	$numbering = substr(block_exacomp_get_subject_by_id(reset($lwl_subject)->subjid)->title, 0,1).'.';
+	
+	//topic
+	$numbering .= reset($lwl_subject)->numb.'.';
+	
+	return $numbering;
+}
