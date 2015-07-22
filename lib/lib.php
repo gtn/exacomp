@@ -45,8 +45,8 @@ define('SETTINGS_MAX_SCHEME', 10);
 define('CUSTOM_EXAMPLE_SOURCE', 3);
 define('ELOVE_EXAMPLE_SOURCE', 4);
 
-
 define("IMPORT_SOURCE_SPECIFIC", 2);
+define("CUSTOM_CREATED_DESCRIPTOR", 3);
 
 if (block_exacomp_moodle_badges_enabled()) {
 	require_once($CFG->libdir . '/badgeslib.php');
@@ -768,7 +768,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.catid, d.parentid, n.sorting niveau, dvis.visible as visible, d.sorting '
+	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.catid, d.parentid, n.sorting niveau, dvis.visible as visible, d.sorting '
 	.'FROM {'.DB_TOPICS.'} t '
 	.(($courseid>0)?'JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
@@ -801,7 +801,7 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescrip
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = 'SELECT d.id, d.title, d.niveauid, \'descriptor\' as tabletype, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, '.
+	$sql = 'SELECT d.id, d.title, d.niveauid, d.source, \'descriptor\' as tabletype, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, '.
 			($mindvisibility?'dvis.visible as visible,':'').' d.sorting
 			FROM {'.DB_DESCRIPTORS.'} d '
 			.($mindvisibility ? 'JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 '
@@ -3988,7 +3988,7 @@ function block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid
     if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.parentid, dvis.visible as visible, n.sorting as niveau, d.catid '
+	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.source, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.parentid, dvis.visible as visible, n.sorting as niveau, d.catid '
 	.'FROM {'.DB_TOPICS.'} t '
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
 	.'JOIN {'.DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id '

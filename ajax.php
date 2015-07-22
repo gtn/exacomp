@@ -78,6 +78,12 @@ switch($action){
 		block_exacomp_set_cross_subject_descriptor($subj_id,$descrid);
 			
 		break;
+	case ('crosssubj-descriptors-single'):
+		$descrid = required_param('descrid', PARAM_INT);
+		$crosssubjectid = required_param('crosssubjectid', PARAM_INT);
+		
+		block_exacomp_set_cross_subject_descriptor($crosssubjectid,$descrid);
+		break;	
 	case ('crosssubj-students'):
 		$crosssubjid = required_param('crosssubjid', PARAM_INT);
 		$students = required_param('students', PARAM_TEXT);
@@ -169,5 +175,25 @@ switch($action){
 			echo "inserted";
 		else
 			echo "already exists";
+		break;
+	case('new-comp'):
+		$parentid = required_param('descriptorid', PARAM_INT);
+		$title = required_param('title', PARAM_TEXT);
+		
+		$descriptor = new stdClass();
+		$descriptor->title = $title;
+		$descriptor->source = CUSTOM_CREATED_DESCRIPTOR;
+		$descriptor->parentid = $parentid;
+		
+		$id = $DB->insert_record(DB_DESCRIPTORS, $descriptor);
+		
+		$visibility = new stdClass();
+		$visibility->courseid = $courseid;
+		$visibility->descrid = $id;
+		$visibility->studentid = 0;
+		$visibility->visible = 1;
+		
+		$DB->insert_record(DB_DESCVISIBILITY, $visibility);
+		echo $id;
 		break;
 }
