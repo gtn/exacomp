@@ -1017,7 +1017,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $stud
 	}
 
 	if($version){
-		$topics = block_exacomp_get_descriptors_by_topic($courseid, $selectedSubject->id, false, ($student)?true:false, true);
+		$topics = block_exacomp_get_descriptors_by_topic($courseid, $selectedSubject->id, false, true, true);
 		if($student){
 			foreach($topics as $topic){
 				$invisible = $DB->get_record(DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$topic->id, 'studentid'=>$studentid, 'visible'=>0));
