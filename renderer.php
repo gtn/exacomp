@@ -1050,8 +1050,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		global $PAGE, $version;
 
 		$editmode = (!$students && $role == ROLE_TEACHER) ? true : false;
-		//$rowgroup = ($lis_singletopic) ? null : 0;
-		$rowgroup=0;
+		$rowgroup = ($lis_singletopic) ? null : 0;
+		//$rowgroup=0;
 		$table = new html_table();
 		$rows = array();
 		$studentsColspan = $showevaluation ? 2 : 1;
@@ -1603,18 +1603,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					}
 				}else{
 					$nivCell = new html_table_cell();
-					if(!is_null($counter))
-						$nivCell->text = "Niveau";
-					else
-						$nivCell->text = "";
-	
+					$nivCell->text = "Niveau";
+					
 					$descriptorRow->cells[] = $nivCell;
 					    
 					$statCell = new html_table_cell();
-					if(!is_null($counter))
-						$statCell->text = $this->print_statistic_table($data->courseid, $students, $descriptor, true);
-					else
-						$statCell->text = "";
+					$statCell->text = $this->print_statistic_table($data->courseid, $students, $descriptor, true);
+			
 	
 					$descriptorRow->cells[] = $statCell;
 				}
@@ -1766,7 +1761,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$rows[] = $own_additionRow;
 					
 					$this->print_descriptors($rows, $level+1, $descriptor->children, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $lwl_print, $counter, $statistic, true);
-				
+					$counter=null;
 					
 					$own_additionRow = new html_table_row();
 					$own_additionRow->attributes['class'] = 'exabis_comp_aufgabe ' . $sub_rowgroup_class;
