@@ -1,15 +1,15 @@
 window.jQueryExacomp = jQuery;
 
-(function($) {
-	window.block_exacomp = {
-		getParameterByName: function(name) {
-				name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-				var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-					results = regex.exec(location.search);
-				return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
-		}
-	};
+window.block_exacomp = {
+	getParameterByName: function(name) {
+			name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+			var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+				results = regex.exec(location.search);
+			return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
+	}
+};
 
+(function($) {
 	$(function() {
 		// handle: de-du, de, en, en-us,... and strip -du, ...
 		var lang = $('html').prop('lang').replace(/\-.*/, '');

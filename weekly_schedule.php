@@ -121,9 +121,8 @@ block_exacomp_init_js_css();
 $PAGE->requires->jquery_plugin('ui');
 
 
-echo $OUTPUT->header();
+echo $PAGE->get_renderer('block_exacomp')->header();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), "tab_learning_agenda");
-echo $PAGE->get_renderer('block_exacomp')->print_wrapperdivstart();
 
 if($isTeacher){
 	$students = block_exacomp_get_students_by_course($courseid);
@@ -146,7 +145,9 @@ if($isTeacher){
     }
 }
 
-$sql = "select s.*, e.title, eval.student_evaluation, eval.teacher_evaluation
+$sql = "select s.*,
+			e.title, e.source AS example_source,
+			eval.student_evaluation, eval.teacher_evaluation
 		FROM {block_exacompschedule} s 
 		JOIN {block_exacompexamples} e ON e.id = s.exampleid 
 		LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid
@@ -160,7 +161,7 @@ $sql = "select s.*, e.title, eval.student_evaluation, eval.teacher_evaluation
 $items = $DB->get_records_sql($sql,array($studentid));
 
 function block_exacomp_weekly_schedule_print_items($items) {
-    global $isTeacher;
+    global $isTeacher, $courseid;
     
 	echo '<div class="items">';
     foreach ($items as $item) {
@@ -174,7 +175,14 @@ function block_exacomp_weekly_schedule_print_items($items) {
                     (!$isTeacher ? 'disabled="disabled"':'').
                     ($item->teacher_evaluation?'checked="checked"':'').' /></label>';
 		echo    '</div>';
-        echo '</div>';
+
+   	    if ($item->example_source == EXAMPLE_SOURCE_USER) {
+				?>
+			        <a href="<?php echo (new moodle_url('/blocks/exacomp/example_upload_student.php',array("courseid"=>$courseid, "exampleid"=>$item->exampleid))); ?>"
+			        	target="_blank", onclick="window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;">edit example</a>
+    		    <?php
+		}
+		echo '</div>';
     }
 	echo '</div>';
 }
@@ -186,6 +194,12 @@ function block_exacomp_weekly_schedule_print_items($items) {
 			<div id="save-button">
 	            <input type="button" value="Speichern" style="width: 90%;" />
 	        </div>
+	        
+	        <?php if (block_exacomp_is_student($context)) { ?>
+	        <a href="<?php echo (new moodle_url('/blocks/exacomp/example_upload_student.php',array("courseid"=>$courseid))); ?>"
+	        	target="_blank", onclick="window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;">Eigene Beispiele</a>
+	        <?php } ?>
+	        
 			<div id="items">
 				<div class="header">items</div>
 				<div class="empty">Keine Einträge</div>
@@ -214,7 +228,9 @@ function block_exacomp_weekly_schedule_print_items($items) {
 	                    echo '<div class="day" id="day-'.$day.'">';
 	                    echo '<div class="header">'.date('l, d.m.', $day).'</div>';
 	                    
-	                    $sql = "select s.*, e.title, eval.student_evaluation, eval.teacher_evaluation
+	                    $sql = "select s.*,
+									e.title, e.source AS example_source,
+									eval.student_evaluation, eval.teacher_evaluation
 	                            FROM {block_exacompschedule} s 
 	                            JOIN {block_exacompexamples} e ON e.id = s.exampleid 
 	                            LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid
@@ -231,4 +247,4 @@ function block_exacomp_weekly_schedule_print_items($items) {
 </div>
 <?php
 
-echo $OUTPUT->footer();
+echo $PAGE->get_renderer('block_exacomp')->footer();

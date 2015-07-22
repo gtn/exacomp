@@ -26,7 +26,7 @@
 * ************************************************************* */
 
 require_once dirname(__FILE__)."/inc.php";
-require_once dirname(__FILE__) . '/example_upload_form.php';
+require_once dirname(__FILE__) . '/example_upload_student_form.php';
 
 global $DB, $OUTPUT, $PAGE, $USER;
 
@@ -48,7 +48,7 @@ require_login($course);
 $context = context_course::instance($courseid);
 
 /* PAGE URL - MUST BE CHANGED */
-$PAGE->set_url('/blocks/exacomp/example_upload.php', array('courseid' => $courseid));
+$PAGE->set_url('/blocks/exacomp/example_upload_student.php', array('courseid' => $courseid));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 
 block_exacomp_init_js_css();
@@ -74,22 +74,16 @@ if($action == 'serve') {
 echo $PAGE->get_renderer('block_exacomp')->header();
 /* CONTENT REGION */
 
-block_exacomp_require_teacher($context);
-$descrid = required_param('descrid', PARAM_INT);
-$topicid = required_param('topicid', PARAM_INT);
-
 $taxonomies = $DB->get_records_menu("block_exacomptaxonomies",null,"","id, title");
 $taxonomies = array_merge(array("0" => ""),$taxonomies);
-$topicsub = $DB->get_record("block_exacomptopics", array("id"=>$topicid));
-$topics = $DB->get_records("block_exacomptopics", array("subjid"=>$topicsub->subjid), null, 'title,id');
 
 $example_descriptors = array();
 if($exampleid>0)
 	$example_descriptors = $DB->get_records(DB_DESCEXAMP,array('exampid'=>$exampleid),'','descrid');
 
-$tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid, $descrid);
+$tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid, 0);
 
-$form = new block_exacomp_example_upload_form($_SERVER['REQUEST_URI'], array("descrid" => $descrid,"taxonomies"=>$taxonomies,"tree"=>$tree,"topicid"=>$topicid, "exampleid"=>$exampleid, "task"=>isset($example->task) ? $example->task : null,
+$form = new block_exacomp_example_upload_student_form($_SERVER['REQUEST_URI'], array("taxonomies"=>$taxonomies,"tree"=>$tree,"exampleid"=>$exampleid, "task"=>isset($example->task) ? $example->task : null,
         "solution"=>isset($example->solution) ? $example->solution : null) );
 
 if($formdata = $form->get_data()) {
@@ -100,7 +94,8 @@ if($formdata = $form->get_data()) {
     $newExample->taxid = $formdata->taxid;
     $newExample->creatorid = $USER->id;
     $newExample->externalurl = $formdata->externalurl;
-    $newExample->source = EXAMPLE_SOURCE_TEACHER;
+	$newExample->source = EXAMPLE_SOURCE_USER;
+	
     if(isset($formdata->file) || isset($formdata->solution)) {
         // save file
         $context = context_user::instance($USER->id);
@@ -184,14 +179,17 @@ if($formdata = $form->get_data()) {
     			$DB->insert_record(DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=> $newExample->id));
     	}
     }
-        
+    
+    // add to weekly schedule
+    block_exacomp_add_example_to_schedule($USER->id, $newExample->id, $USER->id, $courseid);
+    
     block_exacomp_settstamp();
     ?>
 <script type="text/javascript">
 		window.opener.block_exacomp.newExampleAdded();
 		window.close();
 	</script>
-<?php 
+<?php
 	exit;
 }
 

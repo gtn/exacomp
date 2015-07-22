@@ -132,10 +132,8 @@ switch($action){
 		$studentid = required_param('studentid', PARAM_INT);
 		$exampleid = required_param('exampleid', PARAM_INT);
 		$creatorid = $USER->id;
-		$timecreated = time();
-		$timemodified = time();
 		
-		if ( block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid,$timecreated,$timemodified) )
+		if ( block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid) )
 			echo "inserted";
 		else
 			echo "already exists";

@@ -46,7 +46,10 @@ jQueryExacomp(function($) {
 	
 	// save button
 	$(saveButton).click(function(){
-		
+		save_data(false);
+	});
+	
+	function save_data(reload) {
 		function numberic_id(item) {
 			return item.id.replace(/^.*-([0-9])/, '$1');
 		}
@@ -91,6 +94,15 @@ jQueryExacomp(function($) {
 				saveButton.value = 'Fehler';
 				console.error(ret);
 			} else {
+				if (reload) {
+					// reload page
+					location.reload(true);
+					return;
+				}
+				
+				// update ui
+				
+				// flash save button
 				var i = 0;
 				(function pulse(){
 					if (++i > 3) return;
@@ -112,5 +124,13 @@ jQueryExacomp(function($) {
 		});
 		
 		console.log('save', data);
-	});
+	}
+
+	// called from the add example popup-window, after the example was added
+	window.block_exacomp.newExampleAdded = function() {
+		// save and reload
+		save_data(true);
+	}
 });
+
+

@@ -72,6 +72,13 @@ define("BLOCK_EXACOMP_SHOW_STATISTIC", -2);
  */
 function block_exacomp_init_js_css(){
 	global $PAGE, $CFG;
+	
+	// only allowed to be called once
+	static $js_inited = false;
+	if ($js_inited) return;
+	$js_inited = true;
+	
+	// js/css for whole block
 	$PAGE->requires->css('/blocks/exacomp/css/styles.css');
 	$PAGE->requires->jquery();
 	$PAGE->requires->js('/blocks/exacomp/javascript/exacomp.js', true);
@@ -81,6 +88,7 @@ function block_exacomp_init_js_css(){
 	$PAGE->requires->string_for_js('show', 'moodle');
 	$PAGE->requires->string_for_js('hide', 'moodle');
 	
+	// page specific js/css
 	$scriptName = preg_replace('!\.[^\.]+$!', '', basename($_SERVER['PHP_SELF']));
 	if (file_exists($CFG->dirroot.'/blocks/exacomp/css/'.$scriptName.'.css'))
 		$PAGE->requires->css('/blocks/exacomp/css/'.$scriptName.'.css');
@@ -96,7 +104,8 @@ function block_exacomp_is_teacher($context) {
     return has_capability('block/exacomp:teacher', $context);
 }
 function block_exacomp_is_student($context) {
-    return has_capability('block/exacomp:student', $context);
+	// a teacher can not be a student in the same course
+    return has_capability('block/exacomp:student', $context) && !has_capability('block/exacomp:teacher', $context);
 }
 function block_exacomp_is_admin($context) {
     return has_capability('block/exacomp:admin', $context);
@@ -4182,8 +4191,10 @@ function block_exacomp_get_viewurl_for_example($studentid,$exampleid) {
 	
 	return $access;
 }
-function block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid,$timecreated,$timemodified) {
+function block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid) {
 	global $DB;
+	
+	$timecreated = $timemodified = time();
 	
 	if(!$DB->record_exists('block_exacompschedule', array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid))) {
 		$DB->insert_record('block_exacompschedule', array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid,'creatorid' => $creatorid, 'timecreated' => $timecreated, 'timemodified' => $timemodified));
