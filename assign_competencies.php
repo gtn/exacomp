@@ -72,7 +72,7 @@ $course_settings = block_exacomp_get_settings_by_course($courseid);
 if($course_settings->uses_activities && !$activities && !$course_settings->show_all_descriptors)
 	echo $output->print_no_activities_warning($isTeacher);
 else{
-	list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_overview_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', SHOW_ALL_TOPICS, PARAM_INT));
+	list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_overview_data($courseid, optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', SHOW_ALL_TOPICS, PARAM_INT), !$isTeacher,  ($isTeacher?0:$USER->id));
 	
 	//Delete timestamp (end|start) from example
 	if($example_del = optional_param('exampleid', 0, PARAM_INT)){

@@ -64,12 +64,26 @@ switch($action){
 		$not_subj_ids = json_decode($not_crosssubjects);
 		
 		foreach($not_subj_ids as $not_subj_id)
+			if(!is_numeric($not_subj_id))
+				print_error('invalidparameter', 'block_exacomp', $not_subj_id);
+		
+		foreach($subj_ids as $subj_id)
+			if(!is_numeric($subj_id))		
+				print_error('invalidparameter', 'block_exacomp', $subj_id);
+		
+		foreach($not_subj_ids as $not_subj_id)
 		block_exacomp_unset_cross_subject_descriptor($not_subj_id, $descrid);
 			
 		foreach($subj_ids as $subj_id)
 		block_exacomp_set_cross_subject_descriptor($subj_id,$descrid);
 			
 		break;
+	case ('crosssubj-descriptors-single'):
+		$descrid = required_param('descrid', PARAM_INT);
+		$crosssubjectid = required_param('crosssubjectid', PARAM_INT);
+		
+		block_exacomp_set_cross_subject_descriptor($crosssubjectid,$descrid);
+		break;	
 	case ('crosssubj-students'):
 		$crosssubjid = required_param('crosssubjid', PARAM_INT);
 		$students = required_param('students', PARAM_TEXT);
@@ -78,6 +92,14 @@ switch($action){
 		$not_students = required_param('not_students', PARAM_TEXT);
 		$not_students_ids = json_decode($not_students);
 
+		foreach($not_students_ids as $studentid)
+			if(!is_numeric($studentid))
+				print_error('invalidparameter', 'block_exacomp', $studentid);
+				
+		foreach($student_ids as $studentid)
+			if(!is_numeric($studentid))
+				print_error('invalidparameter', 'block_exacomp', $studentid);
+		
 		foreach($student_ids as $studentid)
 			block_exacomp_set_cross_subject_student($crosssubjid, $studentid);
 		
@@ -95,6 +117,13 @@ switch($action){
 		$comptype = required_param ( 'comptype', PARAM_INT );
 
 		$comps = json_decode($competencies);
+		
+		foreach($comps as $comp){
+			if($comp)
+				if(!is_numeric($comp->compid) || !is_numeric($comp->userid) || !is_numeric($comp->value))
+					print_error('invalidparameter', 'block_exacomp', $comp);
+		}
+		
 		$saved = "";
 		foreach($comps as $comp){
 			if($comp){
@@ -107,6 +136,13 @@ switch($action){
 		$examples_json = required_param('examples', PARAM_TEXT);
 		
 		$examples = json_decode($examples_json);
+		
+		foreach($examples as $example){
+			if($example)
+				if(!is_numeric($example->exampleid) || !is_numeric($example->userid) || !is_numeric($example->value))
+					print_error('invalidparameter', 'block_exacomp', $example);
+		}
+		
 		$saved = "";
 		foreach($examples as $example){
 			if($example){
@@ -137,5 +173,37 @@ switch($action){
 			echo "inserted";
 		else
 			echo "already exists";
+		break;
+	case('new-comp'):
+		$parentid = required_param('descriptorid', PARAM_INT);
+		$title = required_param('title', PARAM_TEXT);
+		
+		//create sorting 
+		$parent_descriptor = $DB->get_record(DB_DESCRIPTORS, array('id'=>$parentid));
+		$descriptor_topic_mm = $DB->get_record(DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
+		$parent_descriptor->topicid = $descriptor_topic_mm->topicid;
+		$siblings = block_exacomp_get_child_descriptors($parent_descriptor, $courseid);
+		
+		$max_sorting = 0;
+		foreach($siblings as $sibling){
+			if($sibling->sorting > $max_sorting) $max_sorting = $sibling->sorting;
+		}
+		
+		$descriptor = new stdClass();
+		$descriptor->title = $title;
+		$descriptor->source = CUSTOM_CREATED_DESCRIPTOR;
+		$descriptor->parentid = $parentid;
+		$descriptor->sorting = ++$max_sorting;
+		
+		$id = $DB->insert_record(DB_DESCRIPTORS, $descriptor);
+		
+		$visibility = new stdClass();
+		$visibility->courseid = $courseid;
+		$visibility->descrid = $id;
+		$visibility->studentid = 0;
+		$visibility->visible = 1;
+		
+		$DB->insert_record(DB_DESCVISIBILITY, $visibility);
+		echo $id;
 		break;
 }

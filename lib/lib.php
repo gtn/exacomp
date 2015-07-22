@@ -45,8 +45,8 @@ define('SETTINGS_MAX_SCHEME', 10);
 define('EXAMPLE_SOURCE_TEACHER', 3);
 define('EXAMPLE_SOURCE_USER', 4);
 
-
 define("IMPORT_SOURCE_SPECIFIC", 2);
+define("CUSTOM_CREATED_DESCRIPTOR", 3);
 
 if (block_exacomp_moodle_badges_enabled()) {
 	require_once($CFG->libdir . '/badgeslib.php');
@@ -777,7 +777,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.catid, d.parentid, n.sorting niveau, dvis.visible as visible, d.sorting '
+	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.catid, d.parentid, n.sorting niveau, dvis.visible as visible, d.sorting '
 	.'FROM {'.DB_TOPICS.'} t '
 	.(($courseid>0)?'JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
@@ -797,7 +797,9 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 		//check for child-descriptors
 		$descriptor->children = block_exacomp_get_child_descriptors($descriptor,$courseid, $showalldescriptors, $filteredtaxonomies, $showallexamples, true, $showonlyvisible);
 	}
+	
 	return $descriptors;
+
 }
 
 function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescriptors = false, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $showallexamples = true, $mindvisibility = true, $showonlyvisible=false ) {
@@ -810,8 +812,8 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescrip
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = 'SELECT d.id, d.title, d.niveauid, \'descriptor\' as tabletype, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, '.
-			($mindvisibility?'dvis.visible as visible,':'').' d.sorting
+	$sql = 'SELECT d.id, d.title, d.niveauid, d.source, \'descriptor\' as tabletype, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, '.
+			($mindvisibility?'dvis.visible as visible, ':'').' d.sorting
 			FROM {'.DB_DESCRIPTORS.'} d '
 			.($mindvisibility ? 'JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 '
 			.($showonlyvisible? 'AND dvis.visible=1 ':'') : '');
@@ -867,7 +869,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
  * @param int $topicid
  * @param bool $showalldescriptors
  */
-function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldescriptors = false, $mind_visibility=false) {
+function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldescriptors = false, $mind_visibility=false, $showonlyvisible=true) {
 	global $DB;
 	
 	if(!$showalldescriptors)
@@ -878,7 +880,8 @@ function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldes
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
 	.'JOIN {'.DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id '
 	. 'LEFT JOIN {'.DB_NIVEAUS.'} n ON n.id = d.niveauid '
-	.($mind_visibility ? 'JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 AND dvis.visible=1 ' : '')
+	.($mind_visibility?'JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=? '
+	.($showonlyvisible?'AND dvis.visible = 1 ':''):'')
 	.($showalldescriptors ? '' : '
 			JOIN {'.DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
 			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':'')).')';
@@ -1010,12 +1013,12 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 
 	return $subjects;
 }
-function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $student=false) {
-	global $version;
+function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $student=false, $studentid=0) {
+	global $version, $DB;
 	
-	if($version)
+	if($version){
 		$subjects = block_exacomp_get_topics_by_course($courseid);
-	else
+	}else
 		$subjects = block_exacomp_get_subjects_by_course($courseid);
 	
 	if (isset($subjects[$subjectid])) {
@@ -1024,9 +1027,16 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $stud
 		$selectedSubject = reset($subjects);
 	}
 
-	if($version)
-		$topics = block_exacomp_get_descriptors_by_topic($courseid, $selectedSubject->id);
-	else
+	if($version){
+		$topics = block_exacomp_get_descriptors_by_topic($courseid, $selectedSubject->id, false, true, true);
+		if($student){
+			foreach($topics as $topic){
+				$invisible = $DB->get_record(DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$topic->id, 'studentid'=>$studentid, 'visible'=>0));
+				if($invisible)
+					unset($topics[$topic->id]);
+			}
+		}
+	}else
 		$topics = block_exacomp_get_topics_by_subject($courseid,$selectedSubject->id);
 	
 	if (isset($topics[$topicid])) {
@@ -3997,7 +4007,7 @@ function block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid
     if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.parentid, dvis.visible as visible, n.sorting as niveau, d.catid '
+	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.source, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.parentid, dvis.visible as visible, n.sorting as niveau, d.catid '
 	.'FROM {'.DB_TOPICS.'} t '
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
 	.'JOIN {'.DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id '
@@ -4260,7 +4270,7 @@ function block_exacomp_optional_param_array($parname, array $definition) {
     return block_exacomp_clean_array($param, $definition);
 }
 
-function block_exacomp_build_example_association_tree($courseid, $example_descriptors = array(), $exampleid=0, $descriptorid = 0){
+function block_exacomp_build_example_association_tree($courseid, $example_descriptors = array(), $exampleid=0, $descriptorid = 0, $showallexamples=false){
 	//get all subjects, topics, descriptors and examples
 	$tree = block_exacomp_get_competence_tree($courseid, null, false, SHOW_ALL_TOPICS, true, block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies, false, false, true);
 	
@@ -4272,7 +4282,7 @@ function block_exacomp_build_example_association_tree($courseid, $example_descri
 			if(isset($topic->descriptors)) {
 				foreach ( $topic->descriptors as $dkey => $descriptor ) {
 					
-					$descriptor = block_exacomp_check_child_descriptors($descriptor, $example_descriptors, $exampleid, $descriptorid);
+					$descriptor = block_exacomp_check_child_descriptors($descriptor, $example_descriptors, $exampleid, $descriptorid, $showallexamples);
 					
 					if($descriptor->associated == 1)
 						$topic->associated = 1;
@@ -4285,13 +4295,13 @@ function block_exacomp_build_example_association_tree($courseid, $example_descri
 	}
 	return $tree;
 }
-function block_exacomp_check_child_descriptors($descriptor, $example_descriptors, $exampleid, $descriptorid = 0) {
+function block_exacomp_check_child_descriptors($descriptor, $example_descriptors, $exampleid, $descriptorid = 0, $showallexamples=false) {
 
 	$descriptor->associated = 0;
 	foreach($descriptor->children as $ckey => $cvalue) {
 		$keepDescriptor = false;
 		
-		if (array_key_exists ( $cvalue->id, $example_descriptors ) || $descriptorid == $ckey) {
+		if (array_key_exists ( $cvalue->id, $example_descriptors ) || $descriptorid == $ckey || ($showallexamples && !empty($cvalue->examples))) {
 			$keepDescriptor = true;
 			$descriptor->associated = 1;
 		}
@@ -4304,7 +4314,7 @@ function block_exacomp_check_child_descriptors($descriptor, $example_descriptors
 		}
 		foreach($cvalue->examples as $ekey => $example) {
 			$cvalue->examples[$ekey]->associated = 1;
-			if($example->id != $exampleid)
+			if($example->id != $exampleid && !$showallexamples)
 				$cvalue->examples[$ekey]->associated = 0;
 		}
 	}
@@ -4412,7 +4422,26 @@ function block_exacomp_calculate_statistic_for_descriptor($courseid, $students, 
 			$niv_class_oB_title .= $student->firstname." ".$student->lastname."\n";
 		}
 		
-		//TODO in arbeit
+		//$examples = block_exacomp_get_examples_for_descriptor($descriptor);
+		$example_inwork = false;
+		foreach($descriptor->examples as $example){
+			if($DB->record_exists('block_exacompschedule', array('studentid' => $student->id, 'exampleid' => $example->id, 'courseid' => $courseid))) {
+				$example_inwork = true;
+			}	
+		}
+		foreach($descriptor->children as $children){
+			foreach($children->examples as $example){
+				if($DB->record_exists('block_exacompschedule', array('studentid' => $student->id, 'exampleid' => $example->id, 'courseid' => $courseid))) {
+					$example_inwork = true;
+				}	
+			}
+		}
+		if($example_inwork){
+			$student_iA++;
+			$student_iA_title .= $student->firstname." ".$student->lastname."\n";
+			$niv_class_iA++;
+			$niv_class_iA_title .= $student->firstname." ".$student->lastname."\n";
+		}
 	}
 	
 	return array($self_1, $self_2, $self_3, $student_oB, $student_iA, $niv_class_G, $niv_class_M, 
@@ -4464,9 +4493,17 @@ function block_exacomp_calculate_statistic_for_example($courseid, $students, $ex
 		}else{
 			$niv_class_oB++;
 			$niv_class_oB_title .= $student->firstname." ".$student->lastname."\n";
+			
 		}
 		
 		//TODO in arbeit
+		if($DB->record_exists('block_exacompschedule', array('studentid' => $student->id, 'exampleid' => $example->id, 'courseid' => $courseid))) {
+			$student_iA++;
+			$student_iA_title .= $student->firstname." ".$student->lastname."\n";
+			$niv_class_iA++;
+			$niv_class_iA_title .= $student->firstname." ".$student->lastname."\n";
+		}
+		
 	}
 	
 	return array($self_1, $self_2, $self_3, $student_oB, $student_iA, $niv_class_G, $niv_class_M, 

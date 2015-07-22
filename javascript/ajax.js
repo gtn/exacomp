@@ -187,6 +187,39 @@
 		description = $(this).val();
 	});
 	
+	$(document).on('keydown', 'input[name^=new_comp]', function(event) {
+		if(event.which == 13){
+			title_new_comp = $(this).val();
+			descriptorid = $(this).attr('descrid');
+			
+			call_ajax({
+				descriptorid: descriptorid,
+				title : title_new_comp,
+				action : 'new-comp'
+			}).done(function(msg) {
+				//im crosssubject neue Teilkompetenz erstellt -> gleich thema zuordnen
+				var select = document
+				.getElementById("menulis_crosssubs");
+
+				if (get_param("crosssubjid") !== null || select) {
+					if (select) {
+						crosssubjid = select.options[select.selectedIndex].value;
+					} else if (get_param("crosssubjid") !== null) {
+						crosssubjid = get_param('crosssubjid');
+					}
+					console.log(crosssubjid);
+					call_ajax({
+						descrid: msg,
+						crosssubjectid : crosssubjid,
+						action : 'crosssubj-descriptors-single'
+					});
+				}
+				location.reload();
+			});
+			
+		}
+	});
+	
 	$(document).on('click', '#assign-competencies input[type=submit]', function(event) {
 							event.preventDefault();
 							courseid = get_param('courseid');
@@ -373,6 +406,12 @@
 		}
 	});
 	
+	$(document).on('click', 'a[id^=competence-grid-link]', function(event) {
+		if($(this).hasClass('deactivated')){
+            event.preventDefault();
+        }
+	});
+	
 	$(document).on('click', '#hide-descriptor', function(event) {
 		event.preventDefault();
 
@@ -404,6 +443,12 @@
 			img.attr('src',$(this).attr('hideurl'));
 			img.attr('alt', M.util.get_string('show','moodle'));
 			img.attr('title', M.util.get_string('show','moodle'));
+			
+			//only for competence grid
+			var link = $('#competence-grid-link-'+descrid);
+			if(link) {
+				 link.addClass('deactivated');
+			}
 		}else{
 			$(this).attr('state','-');
 			visible = 1;
@@ -419,6 +464,12 @@
 			img.attr('src',$(this).attr('showurl'));
 			img.attr('alt', M.util.get_string('hide','moodle'));
 			img.attr('title', M.util.get_string('hide','moodle'));
+			
+			//only for competence grid
+			var link = $('#competence-grid-link-'+descrid);
+			if(link) {
+				 link.removeClass('deactivated');
+			}
 		}
 		
 		call_ajax({
@@ -455,6 +506,7 @@
 			console.log(data.action + ': ' + msg);
 			if (done) done(msg);
 		}).error(function(msg) {
+			console.log(msg);
 			console.log("Error: " + data.action + ': ' + msg);
 			if (error) error(msg);
 		});
