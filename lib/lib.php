@@ -4401,7 +4401,17 @@ function block_exacomp_calculate_statistic_for_descriptor($courseid, $students, 
 			$niv_class_oB_title .= $student->firstname." ".$student->lastname."\n";
 		}
 		
-		//TODO in arbeit
+		//$examples = block_exacomp_get_examples_for_descriptor($descriptor);
+		$example_inwork = false;
+		foreach($descriptor->examples as $example){
+			if($DB->record_exists('block_exacompschedule', array('studentid' => $student->id, 'exampleid' => $example->id, 'courseid' => $courseid))) {
+				$example_inwork = true;
+			}	
+		}
+		if($example_inwork){
+			$student_iA++;
+			$student_iA_title .= $student->firstname." ".$student->lastname."\n";
+		}
 	}
 	
 	return array($self_1, $self_2, $self_3, $student_oB, $student_iA, $niv_class_G, $niv_class_M, 
@@ -4456,6 +4466,11 @@ function block_exacomp_calculate_statistic_for_example($courseid, $students, $ex
 		}
 		
 		//TODO in arbeit
+		if($DB->record_exists('block_exacompschedule', array('studentid' => $student->id, 'exampleid' => $example->id, 'courseid' => $courseid))) {
+			$student_iA++;
+			$student_iA_title .= $student->firstname." ".$student->lastname."\n";
+		}
+		
 	}
 	
 	return array($self_1, $self_2, $self_3, $student_oB, $student_iA, $niv_class_G, $niv_class_M, 

@@ -1630,53 +1630,54 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$titleCell->style = "padding-left: ". ($padding + 20 )."px";
 				$titleCell->text = $example->title;
 
-				if(isset($example->creatorid) && $example->creatorid == $USER->id) {
-				    $titleCell->text .= html_writer::link(
-				            new moodle_url('/blocks/exacomp/example_upload.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id,"topicid"=>$descriptor->topicid,"exampleid"=>$example->id)),
-				            $OUTPUT->pix_icon("i/edit", get_string("edit")),
-				            array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
-				
-				    $titleCell->text .= html_writer::link($PAGE->url . "&delete=" . $example->id, $OUTPUT->pix_icon("t/delete", get_string("delete"), "", array("onclick" => "return confirm('" . get_string('delete_confirmation','block_exacomp') . "')")));
-				}
-				
-				if($example->task)
-					$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->task), $OUTPUT->pix_icon("i/preview", get_string("preview")),array("target" => "_blank"));
-				
-				if($example->iseditable==7){
-					$iconforlink="pix/elc20_1.png";
-					$titleiconforlink='ELC 20 Etapa';
-				}else{
-					$iconforlink="pix/i_11x11.png";
-					$titleiconforlink='Link';
-				}
-				
-				if($example->externalurl){
-					$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->externalurl), $OUTPUT->pix_icon("i/preview", get_string("preview")),array("target" => "_blank"));
-				}elseif($example->externaltask){
-					$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->externaltask), $OUTPUT->pix_icon("i/preview", get_string("preview")),array("target" => "_blank"));
-				}
-				if($example->solution)
-					$titleCell->text .= $this->print_example_solution_icon($example->solution);
-				
-				if($data->role == ROLE_STUDENT) {
-					$titleCell->text .= $this->print_schedule_icon($example->id, $USER->id, $data->courseid);
+				if(!$statistic){
+					if(isset($example->creatorid) && $example->creatorid == $USER->id) {
+					    $titleCell->text .= html_writer::link(
+					            new moodle_url('/blocks/exacomp/example_upload.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id,"topicid"=>$descriptor->topicid,"exampleid"=>$example->id)),
+					            $OUTPUT->pix_icon("i/edit", get_string("edit")),
+					            array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 					
-					$titleCell->text .= $this->print_submission_icon($data->courseid, $example->id, $USER->id);
-						
-					$titleCell->text .= $this->print_competence_association_icon($example->id, $data->courseid, false);
-					
-				} else if($data->role == ROLE_TEACHER) {
-					$studentid = optional_param("studentid", 0, PARAM_INT);
-	
-					if($studentid && $studentid != BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
-						$titleCell->text .= $this->print_submission_icon($data->courseid, $example->id, $studentid);
-						$titleCell->text .= $this->print_schedule_icon($example->id, $studentid, $data->courseid);
-						
+					    $titleCell->text .= html_writer::link($PAGE->url . "&delete=" . $example->id, $OUTPUT->pix_icon("t/delete", get_string("delete"), "", array("onclick" => "return confirm('" . get_string('delete_confirmation','block_exacomp') . "')")));
 					}
-					$titleCell->text .= $this->print_competence_association_icon($example->id, $data->courseid, $editmode);
-				
+					
+					if($example->task)
+						$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->task), $OUTPUT->pix_icon("i/preview", get_string("preview")),array("target" => "_blank"));
+					
+					if($example->iseditable==7){
+						$iconforlink="pix/elc20_1.png";
+						$titleiconforlink='ELC 20 Etapa';
+					}else{
+						$iconforlink="pix/i_11x11.png";
+						$titleiconforlink='Link';
+					}
+					
+					if($example->externalurl){
+						$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->externalurl), $OUTPUT->pix_icon("i/preview", get_string("preview")),array("target" => "_blank"));
+					}elseif($example->externaltask){
+						$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->externaltask), $OUTPUT->pix_icon("i/preview", get_string("preview")),array("target" => "_blank"));
+					}
+					if($example->solution)
+						$titleCell->text .= $this->print_example_solution_icon($example->solution);
+					
+					if($data->role == ROLE_STUDENT) {
+						$titleCell->text .= $this->print_schedule_icon($example->id, $USER->id, $data->courseid);
+						
+						$titleCell->text .= $this->print_submission_icon($data->courseid, $example->id, $USER->id);
+							
+						$titleCell->text .= $this->print_competence_association_icon($example->id, $data->courseid, false);
+						
+					} else if($data->role == ROLE_TEACHER) {
+						$studentid = optional_param("studentid", 0, PARAM_INT);
+		
+						if($studentid && $studentid != BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
+							$titleCell->text .= $this->print_submission_icon($data->courseid, $example->id, $studentid);
+							$titleCell->text .= $this->print_schedule_icon($example->id, $studentid, $data->courseid);
+							
+						}
+						$titleCell->text .= $this->print_competence_association_icon($example->id, $data->courseid, $editmode);
+					
+					}
 				}
-				
 				$exampleRow->cells[] = $titleCell;
 
 				if(!$statistic){
