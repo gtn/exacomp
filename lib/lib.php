@@ -788,7 +788,9 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 		//check for child-descriptors
 		$descriptor->children = block_exacomp_get_child_descriptors($descriptor,$courseid, $showalldescriptors, $filteredtaxonomies, $showallexamples, true, $showonlyvisible);
 	}
+	
 	return $descriptors;
+
 }
 
 function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescriptors = false, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $showallexamples = true, $mindvisibility = true, $showonlyvisible=false ) {
@@ -802,7 +804,7 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescrip
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
 	$sql = 'SELECT d.id, d.title, d.niveauid, d.source, \'descriptor\' as tabletype, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, '.
-			($mindvisibility?'dvis.visible as visible,':'').' d.sorting
+			($mindvisibility?'dvis.visible as visible, ':'').' d.sorting
 			FROM {'.DB_DESCRIPTORS.'} d '
 			.($mindvisibility ? 'JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 '
 			.($showonlyvisible? 'AND dvis.visible=1 ':'') : '');

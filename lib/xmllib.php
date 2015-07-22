@@ -186,13 +186,15 @@ function block_exacomp_insert_edulevel(&$edulevel) {
 	} else
 		$edulevel->id = $DB->insert_record(DB_EDULEVELS, simpleXMLElementToArray($edulevel));
 }
-function block_exacomp_insert_descriptor($descriptor, $parent = 0) {
+function block_exacomp_insert_descriptor($descriptor, $parent = 0, $sorting = 0) {
 	global $DB, $source;
 	$descriptor->sourceid = $descriptor['id']->__toString();
 	$descriptor->source = $source;
     
-	if($parent > 0)
+	if($parent > 0){
 	    $descriptor->parentid = $parent;
+		$descriptor->sorting = $sorting;
+	}
 	
 	if($descriptor['skillid'])
 		$descriptor->skillid = $descriptor['skillid']->__toString();
@@ -238,8 +240,11 @@ function block_exacomp_insert_descriptor($descriptor, $parent = 0) {
 	}
 	
 	if($descriptor->children) {
-		foreach($descriptor->children->descriptor as $child)
-			block_exacomp_insert_descriptor($child,$descriptor->id);
+		$sorting = 1;
+		foreach($descriptor->children->descriptor as $child){
+			block_exacomp_insert_descriptor($child,$descriptor->id, $sorting);
+			$sorting++;
+		}
 	}
 
 }

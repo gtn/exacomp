@@ -180,10 +180,22 @@ switch($action){
 		$parentid = required_param('descriptorid', PARAM_INT);
 		$title = required_param('title', PARAM_TEXT);
 		
+		//create sorting 
+		$parent_descriptor = $DB->get_record(DB_DESCRIPTORS, array('id'=>$parentid));
+		$descriptor_topic_mm = $DB->get_record(DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
+		$parent_descriptor->topicid = $descriptor_topic_mm->topicid;
+		$siblings = block_exacomp_get_child_descriptors($parent_descriptor, $courseid);
+		
+		$max_sorting = 0;
+		foreach($siblings as $sibling){
+			if($sibling->sorting > $max_sorting) $max_sorting = $sibling->sorting;
+		}
+		
 		$descriptor = new stdClass();
 		$descriptor->title = $title;
 		$descriptor->source = CUSTOM_CREATED_DESCRIPTOR;
 		$descriptor->parentid = $parentid;
+		$descriptor->sorting = ++$max_sorting;
 		
 		$id = $DB->insert_record(DB_DESCRIPTORS, $descriptor);
 		
