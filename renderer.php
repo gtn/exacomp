@@ -1050,7 +1050,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		global $PAGE, $version;
 
 		$editmode = (!$students && $role == ROLE_TEACHER) ? true : false;
-		$rowgroup = ($lis_singletopic) ? null : 0;
+		//$rowgroup = ($lis_singletopic) ? null : 0;
+		$rowgroup=0;
 		$table = new html_table();
 		$rows = array();
 		$studentsColspan = $showevaluation ? 2 : 1;
