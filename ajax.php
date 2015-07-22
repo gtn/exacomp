@@ -64,6 +64,14 @@ switch($action){
 		$not_subj_ids = json_decode($not_crosssubjects);
 		
 		foreach($not_subj_ids as $not_subj_id)
+			if(!is_numeric($not_subj_id))
+				print_error('invalidparameter', 'block_exacomp', $not_subj_id);
+		
+		foreach($subj_ids as $subj_id)
+			if(!is_numeric($subj_id))		
+				print_error('invalidparameter', 'block_exacomp', $subj_id);
+		
+		foreach($not_subj_ids as $not_subj_id)
 		block_exacomp_unset_cross_subject_descriptor($not_subj_id, $descrid);
 			
 		foreach($subj_ids as $subj_id)
@@ -78,6 +86,14 @@ switch($action){
 		$not_students = required_param('not_students', PARAM_TEXT);
 		$not_students_ids = json_decode($not_students);
 
+		foreach($not_students_ids as $studentid)
+			if(!is_numeric($studentid))
+				print_error('invalidparameter', 'block_exacomp', $studentid);
+				
+		foreach($student_ids as $studentid)
+			if(!is_numeric($studentid))
+				print_error('invalidparameter', 'block_exacomp', $studentid);
+		
 		foreach($student_ids as $studentid)
 			block_exacomp_set_cross_subject_student($crosssubjid, $studentid);
 		
@@ -95,6 +111,13 @@ switch($action){
 		$comptype = required_param ( 'comptype', PARAM_INT );
 
 		$comps = json_decode($competencies);
+		
+		foreach($comps as $comp){
+			if($comp)
+				if(!is_numeric($comp->compid) || !is_numeric($comp->userid) || !is_numeric($comp->value))
+					print_error('invalidparameter', 'block_exacomp', $comp);
+		}
+		
 		$saved = "";
 		foreach($comps as $comp){
 			if($comp){
@@ -107,6 +130,13 @@ switch($action){
 		$examples_json = required_param('examples', PARAM_TEXT);
 		
 		$examples = json_decode($examples_json);
+		
+		foreach($examples as $example){
+			if($example)
+				if(!is_numeric($example->exampleid) || !is_numeric($example->userid) || !is_numeric($example->value))
+					print_error('invalidparameter', 'block_exacomp', $example);
+		}
+		
 		$saved = "";
 		foreach($examples as $example){
 			if($example){

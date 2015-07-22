@@ -106,10 +106,11 @@ function block_exacomp_check_child_descriptors($descriptor) {
 	return $descriptor;
 }*/
 
-$tree = block_exacomp_build_example_association_tree($courseid);
+$tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
+//print_r($tree);
 
 $output = $PAGE->get_renderer ( 'block_exacomp' );
-echo $output->print_competence_based_list_tree ( $tree , true, true);
+echo $output->print_competence_based_list_tree ( $tree , true, false);
 echo '</div>';
 
 /*

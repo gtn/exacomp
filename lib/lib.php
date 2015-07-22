@@ -4249,7 +4249,7 @@ function block_exacomp_optional_param_array($parname, array $definition) {
     return block_exacomp_clean_array($param, $definition);
 }
 
-function block_exacomp_build_example_association_tree($courseid, $example_descriptors = array(), $exampleid=0, $descriptorid = 0){
+function block_exacomp_build_example_association_tree($courseid, $example_descriptors = array(), $exampleid=0, $descriptorid = 0, $showallexamples=false){
 	//get all subjects, topics, descriptors and examples
 	$tree = block_exacomp_get_competence_tree($courseid, null, false, SHOW_ALL_TOPICS, true, block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies, false, false, true);
 	
@@ -4261,7 +4261,7 @@ function block_exacomp_build_example_association_tree($courseid, $example_descri
 			if(isset($topic->descriptors)) {
 				foreach ( $topic->descriptors as $dkey => $descriptor ) {
 					
-					$descriptor = block_exacomp_check_child_descriptors($descriptor, $example_descriptors, $exampleid, $descriptorid);
+					$descriptor = block_exacomp_check_child_descriptors($descriptor, $example_descriptors, $exampleid, $descriptorid, $showallexamples);
 					
 					if($descriptor->associated == 1)
 						$topic->associated = 1;
@@ -4274,13 +4274,13 @@ function block_exacomp_build_example_association_tree($courseid, $example_descri
 	}
 	return $tree;
 }
-function block_exacomp_check_child_descriptors($descriptor, $example_descriptors, $exampleid, $descriptorid = 0) {
+function block_exacomp_check_child_descriptors($descriptor, $example_descriptors, $exampleid, $descriptorid = 0, $showallexamples=false) {
 
 	$descriptor->associated = 0;
 	foreach($descriptor->children as $ckey => $cvalue) {
 		$keepDescriptor = false;
 		
-		if (array_key_exists ( $cvalue->id, $example_descriptors ) || $descriptorid == $ckey) {
+		if (array_key_exists ( $cvalue->id, $example_descriptors ) || $descriptorid == $ckey || ($showallexamples && !empty($cvalue->examples))) {
 			$keepDescriptor = true;
 			$descriptor->associated = 1;
 		}
@@ -4293,7 +4293,7 @@ function block_exacomp_check_child_descriptors($descriptor, $example_descriptors
 		}
 		foreach($cvalue->examples as $ekey => $example) {
 			$cvalue->examples[$ekey]->associated = 1;
-			if($example->id != $exampleid)
+			if($example->id != $exampleid && !$showallexamples)
 				$cvalue->examples[$ekey]->associated = 0;
 		}
 	}
