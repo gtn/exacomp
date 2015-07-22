@@ -372,8 +372,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$content .= get_string("choosetopic", "block_exacomp").': ';
 		$options = array();
-		foreach($topics as $topic)
+		foreach($topics as $topic){
 			$options[$topic->id] = (isset($topic->cattitle)?$topic->cattitle.": " :" ")  . $topic->title;
+		}
 		$content .= html_writer::select($options, "lis_topics", $selectedTopic, false,
 				array("onchange" => "document.location.href='".$PAGE->url."&studentid=".$selectedStudent."&subjectid=".$selectedSubject."&topicid='+this.value;"));
 

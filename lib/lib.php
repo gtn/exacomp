@@ -858,7 +858,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
  * @param int $topicid
  * @param bool $showalldescriptors
  */
-function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldescriptors = false, $mind_visibility=false) {
+function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldescriptors = false, $mind_visibility=false, $showonlyvisible=true) {
 	global $DB;
 	
 	if(!$showalldescriptors)
@@ -869,7 +869,8 @@ function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldes
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
 	.'JOIN {'.DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id '
 	. 'LEFT JOIN {'.DB_NIVEAUS.'} n ON n.id = d.niveauid '
-	.($mind_visibility ? 'JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 AND dvis.visible=1 ' : '')
+	.($mind_visibility?'JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=? '
+	.($showonlyvisible?'AND dvis.visible = 1 ':''):'')
 	.($showalldescriptors ? '' : '
 			JOIN {'.DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
 			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':'')).')';
@@ -1001,12 +1002,12 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 
 	return $subjects;
 }
-function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $student=false) {
-	global $version;
+function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $student=false, $studentid=0) {
+	global $version, $DB;
 	
-	if($version)
+	if($version){
 		$subjects = block_exacomp_get_topics_by_course($courseid);
-	else
+	}else
 		$subjects = block_exacomp_get_subjects_by_course($courseid);
 	
 	if (isset($subjects[$subjectid])) {
@@ -1015,9 +1016,16 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $stud
 		$selectedSubject = reset($subjects);
 	}
 
-	if($version)
-		$topics = block_exacomp_get_descriptors_by_topic($courseid, $selectedSubject->id);
-	else
+	if($version){
+		$topics = block_exacomp_get_descriptors_by_topic($courseid, $selectedSubject->id, false, ($student)?true:false, true);
+		if($student){
+			foreach($topics as $topic){
+				$invisible = $DB->get_record(DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$topic->id, 'studentid'=>$studentid, 'visible'=>0));
+				if($invisible)
+					unset($topics[$topic->id]);
+			}
+		}
+	}else
 		$topics = block_exacomp_get_topics_by_subject($courseid,$selectedSubject->id);
 	
 	if (isset($topics[$topicid])) {
