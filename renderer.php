@@ -649,6 +649,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$allStudentcomps = true;
 						foreach($data[$skillid][$topicid][$niveauid] as $descriptor) {
 							$compString = "";
+							
+							// Check visibility
+							$descriptor_used = block_exacomp_descriptor_used($courseid, $descriptor, $studentid);
+							$visible = block_exacomp_check_descriptor_visibility($courseid, $descriptor, $studentid, (!$editmode||$role == ROLE_STUDENT) );
+							$visible_css = block_exacomp_get_descriptor_visible_css($visible, $role);
+							if(!isset($descriptor->visible))
+								$descriptor->visible = $DB->get_field(DB_DESCVISIBILITY, 'visible', array('courseid'=>$courseid, 'descrid'=>$descriptor->id, 'studentid'=>0));
+							
 							if (block_exacomp_is_teacher($context)) {
 								if(isset($descriptor->teachercomp) && array_key_exists($descriptor->topicid, $selection)) {
 									$compString .= "L: ";
@@ -694,7 +702,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 							$text = $descriptor->title;
 							if(array_key_exists($descriptor->topicid, $selection)) {
-								$text = html_writer::link(new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid"=>$courseid,"subjectid"=>$topicid,"topicid"=>$descriptor->id,"studentid"=>$studentid)),$text);
+								$text = html_writer::link(new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid"=>$courseid,"subjectid"=>$topicid,"topicid"=>$descriptor->id,"studentid"=>$studentid)),$text,array("id" => "competence-grid-link-".$descriptor->id,"class" => ($visible) ? '' : 'deactivated'));
 							}
 
 							if(isset($descriptor->examples)) {
@@ -737,13 +745,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							    $cssClass .= ' child';
 							
 							// Check visibility
-							$descriptor_used = block_exacomp_descriptor_used($courseid, $descriptor, $studentid);
-							$visible = block_exacomp_check_descriptor_visibility($courseid, $descriptor, $studentid, (!$editmode||$role == ROLE_STUDENT) );
-							$visible_css = block_exacomp_get_descriptor_visible_css($visible, $role);
-							if(!isset($descriptor->visible))
-								$descriptor->visible = $DB->get_field(DB_DESCVISIBILITY, 'visible', array('courseid'=>$courseid, 'descrid'=>$descriptor->id, 'studentid'=>0));
-								
-							if(!$descriptor_used){
+							if(!$descriptor_used && array_key_exists($descriptor->topicid, $selection) ){
 								if($editmode || ($descriptor->visible == 1 && $role == ROLE_TEACHER)){
 									$compString .= $this->print_visibility_icon($visible, $descriptor->id);
 								}

@@ -406,6 +406,12 @@
 		}
 	});
 	
+	$(document).on('click', 'a[id^=competence-grid-link]', function(event) {
+		if($(this).hasClass('deactivated')){
+            event.preventDefault();
+        }
+	});
+	
 	$(document).on('click', '#hide-descriptor', function(event) {
 		event.preventDefault();
 
@@ -437,6 +443,12 @@
 			img.attr('src',$(this).attr('hideurl'));
 			img.attr('alt', M.util.get_string('show','moodle'));
 			img.attr('title', M.util.get_string('show','moodle'));
+			
+			//only for competence grid
+			var link = $('#competence-grid-link-'+descrid);
+			if(link) {
+				 link.addClass('deactivated');
+			}
 		}else{
 			$(this).attr('state','-');
 			visible = 1;
@@ -452,6 +464,12 @@
 			img.attr('src',$(this).attr('showurl'));
 			img.attr('alt', M.util.get_string('hide','moodle'));
 			img.attr('title', M.util.get_string('hide','moodle'));
+			
+			//only for competence grid
+			var link = $('#competence-grid-link-'+descrid);
+			if(link) {
+				 link.removeClass('deactivated');
+			}
 		}
 		
 		call_ajax({
