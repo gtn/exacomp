@@ -706,7 +706,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 								$text = html_writer::link(new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid"=>$courseid,"subjectid"=>$topicid,"topicid"=>$descriptor->id,"studentid"=>$studentid)),$text,array("id" => "competence-grid-link-".$descriptor->id,"class" => ($visible) ? '' : 'deactivated'));
 							}
 
-							if(isset($descriptor->examples)) {
+							/*if(isset($descriptor->examples)) {
 								$text .= '<br/>';
 								foreach($descriptor->examples as $example) {
 									$img = '<img src="pix/i_11x11.png" alt="Beispiel" />';
@@ -716,7 +716,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 									if($example->externalurl)
 										$text .= "<a target='_blank' alt='".$example->title."' title='".$example->title."' href='".$example->externalurl."'>".$img."</a>";
 								}
-							}
+							}*/
 							if(isset($descriptor->children) && count($descriptor->children) > 0 && !$version) {
 							    $children = '<ul class="childdescriptors">';
 							    foreach($descriptor->children as $child)
@@ -1670,6 +1670,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				$checkboxname = "dataexamples";
 	
 				foreach($descriptor->examples as $example) {
+					
 					$studentsCount = 0;
 					$exampleRow = new html_table_row();
 					$exampleRow->attributes['class'] = 'exabis_comp_aufgabe ' . $sub_rowgroup_class;
@@ -1726,6 +1727,16 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 							$titleCell->text .= $this->print_competence_association_icon($example->id, $data->courseid, $editmode);
 						
 						}
+						
+						$titleCell->attributes['title'] = '';
+						
+						if(!empty($example->description))
+							$titleCell->attributes['title'] .= $example->description;
+						if(!empty($example->timeframe))
+							$titleCell->attributes['title'] .= '&#013;' . $example->timeframe;
+						if(!empty($example->tips))
+							$titleCell->attributes['title'] .= '&#013;' . $example->tips;
+						
 					}
 					$exampleRow->cells[] = $titleCell;
 	

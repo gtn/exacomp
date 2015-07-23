@@ -101,7 +101,7 @@ if($formdata = $form->get_data()) {
     $newExample->creatorid = $USER->id;
     $newExample->externalurl = $formdata->externalurl;
     $newExample->source = EXAMPLE_SOURCE_TEACHER;
-    if(isset($formdata->file) || isset($formdata->solution)) {
+    if(!empty($form->get_new_filename('file')) || !empty($form->get_new_filename('solution'))) {
         // save file
         $context = context_user::instance($USER->id);
         $fs = get_file_storage();
@@ -139,11 +139,11 @@ if($formdata = $form->get_data()) {
         $solutionpathnamehash = $fs->get_pathname_hash($context->id, 'user', 'private', 0, '/', $newsolutionname);
 
         // insert example
-        if($newfilename) {
+        if(!empty($form->get_new_filename('file'))) {
             $task = new moodle_url($CFG->wwwroot.'/blocks/exacomp/example_upload.php',array("action"=>"serve","c"=>$context->id,"i"=>$pathnamehash,"courseid"=>$courseid));
             $newExample->task = $task->out(false);
         }
-        if($newsolutionname) {
+        if(!empty($form->get_new_filename('solution'))) {
             $solution = new moodle_url($CFG->wwwroot.'/blocks/exacomp/example_upload.php',array("action"=>"serve","c"=>$context->id,"i"=>$solutionpathnamehash,"courseid"=>$courseid));
             $newExample->solution = $solution->out(false);
         }
