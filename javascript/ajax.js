@@ -3,17 +3,24 @@
 	// ## AJAX
 	// # COMPETENCIES
 	//cannot hide anymore, as soon as competency is checked
-	var competencies = [];
+	var competencies = {};
+	Object.size = function(obj) {
+	    var size = 0, key;
+	    for (key in obj) {
+	        if (obj.hasOwnProperty(key)) size++;
+	    }
+	    return size;
+	};
 	$(document).on('click', 'input[name^=data\-]', function() {
 		var values = $(this).attr("name").split("-");
 		var tr = $(this).closest('tr');
 		var hide = $(tr).find('input[name~="hide-descriptor"]');
 		
 		if ($(this).prop("checked")) {
-			if (competencies[values[1]]) {
-				competencies[values[1]]['value'] = 1;
+			if (competencies[values[1]+"-"+values[2]]) {
+				competencies[values[1]+"-"+values[2]]['value'] = 1;
 			} else {
-				competencies[values[1]] = {
+				competencies[values[1]+"-"+values[2]] = {
 					userid : values[2],
 					compid : values[1],
 					value : 1
@@ -22,10 +29,10 @@
 			//check comp->hide descriptor not possible
 			hide.addClass("hidden");
 		} else {
-			if (competencies[values[1]]) {
-				competencies[values[1]]['value'] = 0;
+			if (competencies[values[1]+"-"+values[2]]) {
+				competencies[values[1]+"-"+values[2]]['value'] = 0;
 			} else {
-				competencies[values[1]] = {
+				competencies[values[1]+"-"+values[2]] = {
 					userid : values[2],
 					compid : values[1],
 					value : 0
@@ -37,31 +44,31 @@
 	});
 	  $(document).on('change', 'select[name^=data\-]', function() {
 		var values = $(this).attr("name").split("-");
-		competencies[values[1]] = {
+		competencies[values[1]+"-"+values[2]] = {
 			userid : values[2],
 			compid : values[1],
 			value : $(this).val()
 		};
 	});
 	// # TOPICS
-	var topics = [];
+	var topics = {};
 	$(document).on('click', 'input[name^=datatopics\-]', function() {
 		var values = $(this).attr("name").split("-");
 
 		if ($(this).prop("checked")) {
-			if (topics[values[1]]) {
-				topics[values[1]]['value'] = 1;
+			if (topics[values[1]+"-"+values[2]]) {
+				topics[values[1]+"-"+values[2]]['value'] = 1;
 			} else
-				topics[values[1]] = {
+				topics[values[1]+"-"+values[2]] = {
 					userid : values[2],
 					compid : values[1],
 					value : 1
 				};
 		} else {
-			if (topics[values[1]])
+			if (topics[values[1]+"-"+values[2]])
 				topics[values[1]]['value'] = 0;
 			else
-				topics[values[1]] = {
+				topics[values[1]+"-"+values[2]] = {
 					userid : values[2],
 					compid : values[1],
 					value : 0
@@ -70,7 +77,7 @@
 	});
 	$(document).on('change', 'select[name^=datatopics\-]', function() {
 		var values = $(this).attr("name").split("-");
-		topics[values[1]] = {
+		topics[values[1]+"-"+values[2]] = {
 			userid : values[2],
 			compid : values[1],
 			value : $(this).val()
@@ -78,24 +85,24 @@
 	});
 	
 	// # CROSSSUBJECTS
-	var crosssubs = [];
+	var crosssubs = {};
 	$(document).on('click', 'input[name^=datacrosssubs\-]', function() {
 		var values = $(this).attr("name").split("-");
 
 		if ($(this).prop("checked")) {
-			if (crosssubs[values[1]]) {
-				crosssubs[values[1]]['value'] = 1;
+			if (crosssubs[values[1]+"-"+values[2]]) {
+				crosssubs[values[1]+"-"+values[2]]['value'] = 1;
 			} else
-				crosssubs[values[1]] = {
+				crosssubs[values[1]+"-"+values[2]] = {
 					userid : values[2],
 					compid : values[1],
 					value : 1
 				};
 		} else {
-			if (crosssubs[values[1]])
-				crosssubs[values[1]]['value'] = 0;
+			if (crosssubs[values[1]+"-"+values[2]])
+				crosssubs[values[1]+"-"+values[2]]['value'] = 0;
 			else
-				crosssubs[values[1]] = {
+				crosssubs[values[1]+"-"+values[2]] = {
 					userid : values[2],
 					compid : values[1],
 					value : 0
@@ -104,7 +111,7 @@
 	});
 	$(document).on('change', 'select[name^=datacrosssubs\-]', function() {
 		var values = $(this).attr("name").split("-");
-		crosssubs[values[1]] = {
+		crosssubs[values[1]+"-"+values[2]] = {
 			userid : values[2],
 			compid : values[1],
 			value : $(this).val()
@@ -112,17 +119,17 @@
 	});
 	
 	// # EXAMPLES
-	var examples = [];
+	var examples = {};
 	$(document).on('click', 'input[name^=dataexamples\-]', function() {
 		var values = $(this).attr("name").split("-");
 		var tr = $(this).closest('tr');
 		var hide = $(tr).find('input[name~="hide-descriptor"]');
 		
 		if ($(this).prop("checked")) {
-			if (examples[values[1]]) {
-				examples[values[1]]['value'] = 1;
+			if (examples[values[1]+"-"+values[2]]) {
+				examples[values[1]+"-"+values[2]]['value'] = 1;
 			} else
-				examples[values[1]] = {
+				examples[values[1]+"-"+values[2]] = {
 					userid : values[2],
 					exampleid : values[1],
 					value : 1
@@ -131,10 +138,10 @@
 			//check comp->hide descriptor not possible
 			hide.addClass("hidden");
 		} else {
-			if (examples[values[1]])
-				examples[values[1]]['value'] = 0;
+			if (examples[values[1]+"-"+values[2]])
+				examples[values[1]+"-"+values[2]]['value'] = 0;
 			else
-				examples[values[1]] = {
+				examples[values[1]+"-"+values[2]] = {
 					userid : values[2],
 					exampleid : values[1],
 					value : 0
@@ -150,25 +157,25 @@
 		var values = $(this).attr("name").split("-");
 
 		if (values[3] == 'studypartner')
-			examples[values[1]] = {
+			examples[values[1]+"-"+values[2]] = {
 				userid : values[2],
 				exampleid : values[1],
 				studypartner : $(this).val()
 			};
 		else if (values[3] == 'starttime')
-			examples[values[1]] = {
+			examples[values[1]+"-"+values[2]] = {
 				userid : values[2],
 				exampleid : values[1],
 				starttime : $(this).val()
 			};
 		else if (values[3] == 'endtime')
-			examples[values[1]] = {
+			examples[values[1]+"-"+values[2]] = {
 				userid : values[2],
 				exampleid : values[1],
 				endtime : $(this).val()
 			};
 		else
-			examples[values[1]] = {
+			examples[values[1]+"-"+values[2]] = {
 				userid : values[2],
 				exampleid : values[1],
 				value : $(this).val()
@@ -217,19 +224,17 @@
 
 							switch ($(this).attr('id')) {
 							case 'btn_submit':
-								
-								if (competencies.length > 0) {
+								if (Object.size(competencies) > 0) {
 									call_ajax({
 										competencies : JSON
 												.stringify(competencies),
 										comptype : 0,
 										action : 'competencies_array'
 									});
-
 									competencies = [];
 								}
 
-								if (topics.length > 0) {
+								if (Object.size(topics) > 0) {
 									call_ajax({
 										competencies : JSON
 												.stringify(topics),
@@ -242,7 +247,7 @@
 									topics = [];
 								}
 								
-								if (crosssubs.length > 0) {
+								if (Object.size(crosssubs) > 0) {
 									call_ajax({
 										competencies : JSON
 												.stringify(crosssubs),
@@ -255,7 +260,7 @@
 									crosssubs = [];
 								}
 								
-								if (examples.length > 0) {
+								if (Object.size(examples) > 0) {
 									call_ajax({
 										examples : JSON.stringify(examples),
 										action : 'examples_array'
@@ -305,7 +310,6 @@
 										  insert_descriptor(title_new_comp, descriptorid);
 									  }
 								});
-								
 								
 								alert('Änderungen wurden gespeichert!');
 								break;
