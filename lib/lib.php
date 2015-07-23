@@ -845,7 +845,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 	
 	$examples = $DB->get_records_sql(
 			"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
-				e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid, e.iseditable, e.tips, e.timeframe
+				e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.creatorid, e.iseditable, e.tips, e.timeframe
 				FROM {" . DB_EXAMPLES . "} e
 				JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
 				LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id"
@@ -2645,7 +2645,7 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 		    
 			$examples = $DB->get_records_sql(
 					"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
-					e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.attachement, e.creatorid
+					e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.creatorid
 					FROM {" . DB_EXAMPLES . "} e
 					JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
 					LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id"

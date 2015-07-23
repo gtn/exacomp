@@ -2354,12 +2354,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			$icon .= html_writer::link($example->solution, $img,
 					array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('solution_example', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
 		}
-		if($example->attachement) {
-			$example->attachement = str_replace('&amp;','&',$example->attachement);
-			$img = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/attach_2.png'), 'alt'=>get_string("task_example", "block_exacomp"), 'height'=>16, 'width'=>16));
-			$icon .= html_writer::link($example->attachement, $img,
-					array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('attachement_example', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
-		}if($example->externaltask) {
+		if($example->externaltask) {
 			$example->externaltask = str_replace('&amp;','&',$example->externaltask);
 			$img = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/link.png'), 'alt'=>get_string("task_example", "block_exacomp"), 'height'=>16, 'width'=>16));
 			$icon .= html_writer::link($example->externaltask, $img,
