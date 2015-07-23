@@ -109,43 +109,24 @@ if($formdata = $form->get_data()) {
         if($formdata->lisfilename == 1 && $form->get_new_filename('file')) {
         	$descr = reset($_POST['descriptor']);
         	$descr = $DB->get_record(DB_DESCRIPTORS,array('id' => $descr));
-            $filenameinfos = $DB->get_record_sql("SELECT t.numb, s.title as subjecttitle, n.title as cattitle, n.sorting as catid
-            		FROM {block_exacompdescriptors} d
-            		JOIN {block_exacompdescrtopic_mm} dt ON dt.descrid = d.id
-                    JOIN {block_exacomptopics} t ON t.id = dt.topicid
-            		JOIN {block_exacompsubjects} s ON s.id = t.subjid
-                    JOIN {block_exacompniveaus} n ON d.niveauid = n.id
-            		WHERE d.id = ?
-                    ", array($descr->parentid));
-            //Fachkürzel
-            $newfilename = substr($filenameinfos->subjecttitle,0,1);
-            //$newfilename .= '_';
-            //Nr Kompetenzbereich sprintf(%02d, $var);
-            $newfilename .= sprintf("%02d", $filenameinfos->numb);
-            $newfilename .= '.';
-            //Nr Lernfortschritt
-
-            $newfilename .= sprintf("%02d", substr($filenameinfos->cattitle,4,1));
+			$descr->topicid = $topicid;
+        	$newfilename = block_exacomp_get_descriptor_numbering($descr).' ';
             
-            //Nr Lernwegeliste
-            //$newfilename .= sprintf("%02d", $filenameinfos->catid);
-            $newfilename .= '_';
-            //Taxonomie
-            $taxname = $DB->get_field('block_exacomptaxonomies', 'title', array("id"=>$formdata->tax));
-            if($taxname) {
-                $newfilename .= $taxname;
-                $newfilename .= '.';
-            }
-            //Dateiname
-            $temp_filename = $newfilename;
-
+        	$temp_filename = $newfilename;
             $newfilename .= $formdata->title . "." . pathinfo($form->get_new_filename('file'), PATHINFO_EXTENSION);
             $newsolutionname = $temp_filename . $formdata->name . "_SOLUTION." . pathinfo($form->get_new_filename('solution'), PATHINFO_EXTENSION);
             $newExample->title = $newfilename;
         }
         else {
-            $newfilename = $form->get_new_filename('file');
-            $newsolutionname = $form->get_new_filename('solution');
+        	$newfilename = "";
+        	if($formdata->lisfilename==1){
+	        	$descr = reset($_POST['descriptor']);
+	        	$descr = $DB->get_record(DB_DESCRIPTORS,array('id' => $descr));
+				$descr->topicid = $topicid;
+	        	$newfilename = block_exacomp_get_descriptor_numbering($descr).' ';
+        	}
+            $newfilename = $newfilename.$form->get_new_filename('file');
+            $newsolutionname =  $newfilename.$form->get_new_filename('solution');
         }
 
         if(!$fs->file_exists($context->id, 'user', 'private', 0, '/', $newfilename))

@@ -1410,7 +1410,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					
 				
 				$exampleuploadCell = new html_table_cell();
-				if($data->role == ROLE_TEACHER && !$profoundness && (empty($descriptor->children) || !$version)) {
+				if($data->role == ROLE_TEACHER && !$profoundness ) {
 					$exampleuploadCell->text = html_writer::link(
 							new moodle_url('/blocks/exacomp/example_upload.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id,"topicid"=>$descriptor->topicid)),
 							html_writer::empty_tag('img', array('src'=>'pix/upload_12x12.png', 'alt'=>'upload')),
@@ -4100,7 +4100,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	
 	private function print_competence_for_list_tree($descriptor, $isTeacher, $editmode) {
 		$html_tree = html_writer::start_tag("li", array('class'=>($descriptor->associated == 1)?"associated":""));
-		if($isTeacher && $editmode==1 && isset($descriptor->direct_associated))
+		if($isTeacher && $editmode==1)
 			$html_tree .= html_writer::checkbox("descriptor[]", $descriptor->id, ($descriptor->direct_associated==1)?true:false);
 		
 		$html_tree .= block_exacomp_get_descriptor_numbering($descriptor).' '.$descriptor->title;

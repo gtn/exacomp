@@ -4298,16 +4298,30 @@ function block_exacomp_build_example_association_tree($courseid, $example_descri
 function block_exacomp_check_child_descriptors($descriptor, $example_descriptors, $exampleid, $descriptorid = 0, $showallexamples=false) {
 
 	$descriptor->associated = 0;
+	$descriptor->direct_associated = 0;
+	
+	if (array_key_exists ( $descriptor->id, $example_descriptors ) || $descriptorid == $descriptor->id){
+			$descriptor->associated = 1;
+			$descriptor->direct_associated = 1;
+	}
+	
+	//check descriptor examples
+	foreach($descriptor->examples as $ekey => $example) {
+		$descriptor->examples[$ekey]->associated = 1;
+		if($example->id != $exampleid && !$showallexamples)
+			$descriptor->examples[$ekey]->associated = 0;
+	}
+	
+	//check children and their examples
 	foreach($descriptor->children as $ckey => $cvalue) {
-		$keepDescriptor = false;
-		
+		$keepDescriptor_child = false;
 		if (array_key_exists ( $cvalue->id, $example_descriptors ) || $descriptorid == $ckey || ($showallexamples && !empty($cvalue->examples))) {
-			$keepDescriptor = true;
+			$keepDescriptor_child = true;
 			$descriptor->associated = 1;
 		}
 		$descriptor->children[$ckey]->associated = 1;
 		$descriptor->children[$ckey]->direct_associated = 1;
-		if (! $keepDescriptor) {
+		if (! $keepDescriptor_child) {
 			$descriptor->children[$ckey]->associated = 0;
 			$descriptor->children[$ckey]->direct_associated = 0;
 			continue;
