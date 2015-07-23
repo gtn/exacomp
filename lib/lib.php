@@ -308,7 +308,7 @@ function block_exacomp_get_all_topics($subjectid = null) {
 					-- only show active ones
 					WHERE s.id = ?
 					').'
-			ORDER BY t.sorting, t.subjid
+			ORDER BY t.id, t.sorting, t.subjid
 			', array($subjectid));
 
 	return $topics;

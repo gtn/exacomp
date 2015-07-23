@@ -662,7 +662,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 								if(isset($descriptor->teachercomp) && array_key_exists($descriptor->topicid, $selection)) {
 									$compString .= "L: ";
 									if($schema == 1) {
-										$compString .= html_writer::checkbox("data-".$descriptor->id."-".$studentid."-teacher", 1,$descriptor->teachercomp).'&nbsp; ';
+										$compString .= html_writer::checkbox("data-".$descriptor->id."-".$studentid."-teacher", 1,$descriptor->teachercomp, '',($visible) ? array() : array("disabled"=>"disabled")).'&nbsp; ';
 										
 										$compString .= " S: ". html_writer::checkbox("data".$topicid."-".$descriptor->id."-student", 1,($descriptor->studentcomp >= $satisfied),"",array("disabled"=>"disabled")).'&nbsp; ';
 									}else {
