@@ -435,6 +435,8 @@
 		studentid = get_param('studentid');
 		descrid = $(this).attr('descrid');
 		val = $(this).attr('state');
+		var select = document
+			.getElementById("menulis_topics");
 		
 		if(studentid==null)
 			studentid = 0;
@@ -462,6 +464,13 @@
 			if(link) {
 				 link.addClass('deactivated');
 			}
+			
+			if (select) {
+				for(i=0; i<select.options.length; i++){
+					if(select.options[i].value == descrid)
+						$(select.options[i]).attr('disabled', 'disabled');
+				}
+			} 
 		}else{
 			$(this).attr('state','-');
 			visible = 1;
@@ -483,6 +492,13 @@
 			if(link) {
 				 link.removeClass('deactivated');
 			}
+			
+			if (select) {
+				for(i=0; i<select.options.length; i++){
+					if(select.options[i].value == descrid)
+						$(select.options[i]).removeAttr('disabled');
+				}
+			} 
 		}
 		
 		call_ajax({
