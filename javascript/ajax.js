@@ -187,35 +187,15 @@
 		description = $(this).val();
 	});
 	
+	var already_added = [];
 	$(document).on('keydown', 'input[name^=new_comp]', function(event) {
 		if(event.which == 13){
 			title_new_comp = $(this).val();
 			descriptorid = $(this).attr('descrid');
 			
-			call_ajax({
-				descriptorid: descriptorid,
-				title : title_new_comp,
-				action : 'new-comp'
-			}).done(function(msg) {
-				//im crosssubject neue Teilkompetenz erstellt -> gleich thema zuordnen
-				var select = document
-				.getElementById("menulis_crosssubs");
-
-				if (get_param("crosssubjid") !== null || select) {
-					if (select) {
-						crosssubjid = select.options[select.selectedIndex].value;
-					} else if (get_param("crosssubjid") !== null) {
-						crosssubjid = get_param('crosssubjid');
-					}
-					console.log(crosssubjid);
-					call_ajax({
-						descrid: msg,
-						crosssubjectid : crosssubjid,
-						action : 'crosssubj-descriptors-single'
-					});
-				}
-				location.reload();
-			});
+			insert_descriptor(title_new_comp, descriptorid);
+			
+			already_added[descriptorid] = descriptorid;
 			
 		}
 	});
@@ -316,9 +296,17 @@
 									});
 								}
 
-								//reload to display hide-buttons properly, especially when the descriptor is formerly used-> hide button not displayed
-								//if evaluation removed->hide button should be shown.
-								//alert is not necessary any more
+								//check all new_comp text fields if somewhere new text is entered when saving and create new descriptor
+								$( "input[name^=new_comp]" ).each(function( event ) {
+									  if($(this).val() && !already_added[$(this).attr('descrid')]){
+										  title_new_comp = $(this).val();
+										  descriptorid = $(this).attr('descrid');
+											
+										  insert_descriptor(title_new_comp, descriptorid);
+									  }
+								});
+								
+								
 								alert('Änderungen wurden gespeichert!');
 								break;
 							case 'save_as_draft':
@@ -541,6 +529,33 @@
 		});
 	}
 	
+	function insert_descriptor(title_new_comp, descriptorid){
+		call_ajax({
+			descriptorid: descriptorid,
+			title : title_new_comp,
+			action : 'new-comp'
+		}).done(function(msg) {
+			//im crosssubject neue Teilkompetenz erstellt -> gleich thema zuordnen
+			var select = document
+			.getElementById("menulis_crosssubs");
+
+			if (get_param("crosssubjid") !== null || select) {
+				if (select) {
+					crosssubjid = select.options[select.selectedIndex].value;
+				} else if (get_param("crosssubjid") !== null) {
+					crosssubjid = get_param('crosssubjid');
+				}
+				console.log(crosssubjid);
+				call_ajax({
+					descrid: msg,
+					crosssubjectid : crosssubjid,
+					action : 'crosssubj-descriptors-single'
+				});
+			}
+			location.reload();
+		});
+
+	}
 	// Read a page's GET URL variables and return them as an associative array.
 	function get_param(param) {
 		var vars = getUrlVars();
