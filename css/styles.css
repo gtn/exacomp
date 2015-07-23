@@ -809,11 +809,14 @@ td.contentcell {
     border-collapse: collapse;
 }
 #block_exacomp table.statistic tr.statistic_head {
-   background-color: #E6E6E6  !important
+   background-color: #dfdfdf;font-weight:bold;
 }
 #block_exacomp table.statistic td{
 	padding: 0.5em;
     border: 1px solid #cacaca;
     border-collapse: collapse;
     vertical-align: top;
+}
+#block_exacomp table.statistic td.c0{
+	background-color: #dfdfdf;font-weight:bold;
 }
