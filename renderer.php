@@ -585,7 +585,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 		}
 	}
-	public function print_competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0,$studentid=0) {
+public function print_competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0,$studentid=0) {
 		global $CFG, $version, $DB;
 
 		$headFlag = false;
@@ -650,12 +650,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						foreach($data[$skillid][$topicid][$niveauid] as $descriptor) {
 							$compString = "";
 							
-							// Check visibility
-							$descriptor_used = block_exacomp_descriptor_used($courseid, $descriptor, $studentid);
-							$visible = block_exacomp_check_descriptor_visibility($courseid, $descriptor, $studentid, (!$editmode||$role == ROLE_STUDENT) );
-							$visible_css = block_exacomp_get_descriptor_visible_css($visible, $role);
 							if(!isset($descriptor->visible))
 								$descriptor->visible = $DB->get_field(DB_DESCVISIBILITY, 'visible', array('courseid'=>$courseid, 'descrid'=>$descriptor->id, 'studentid'=>0));
+							
+							// Check visibility
+							$descriptor_used = block_exacomp_descriptor_used($courseid, $descriptor, $studentid);
+							$visible = block_exacomp_check_descriptor_visibility($courseid, $descriptor, $studentid);
+							$visible_css = block_exacomp_get_descriptor_visible_css($visible, $role);
 							
 							if (block_exacomp_is_teacher($context)) {
 								if(isset($descriptor->teachercomp) && array_key_exists($descriptor->topicid, $selection)) {
@@ -740,7 +741,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							if(!isset($descriptor->studentcomp) || !($descriptor->studentcomp) || ($descriptor->teachercomp))
 								$allStudentcomps = false;
 
-							$cssClass = (isset($descriptor->teachercomp) && $descriptor->teachercomp >= $satisfied) ? "content competenceok" : ((isset($descriptor->studentcomp) && $descriptor->studentcomp >= $satisfied) ? "content competenceyellow" : "content ");
+							//$cssClass = (isset($descriptor->teachercomp) && $descriptor->teachercomp >= $satisfied) ? "content competenceok" : ((isset($descriptor->studentcomp) && $descriptor->studentcomp >= $satisfied) ? "content competenceyellow" : "content ");
+							$cssClass = "content";
 							if($descriptor->parentid > 0)
 							    $cssClass .= ' child';
 							
@@ -751,8 +753,66 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								}
 							}
 							$compdiv .= html_writer::tag('div', $compString,array('class'=>$cssClass));
+							
+							$crosssubjects = block_exacomp_get_cross_subjects_for_descriptor($courseid, $descriptor->id);
+								
+							if($crosssubjects) {
+								$compdiv .= html_writer::start_div('crosssubjects');
+								$table_head = new html_table_row();
+								$table_head->attributes['class'] = 'statistic_head';
+								
+								$scheme = block_exacomp_get_grading_scheme($courseid);
+								$table_head->cells[] = new html_table_cell("");
+								if($studentid != 0)
+									$table_head->cells[] = new html_table_cell("&Sigma;");
+								for($i=0;$i<=$scheme;$i++)
+									$table_head->cells[] = $i > 0 ? new html_table_cell($i) : new html_table_cell("nE");
+								$table_head->cells[] = new html_table_cell("oB");
+								$table_head->cells[] = new html_table_cell("iA");
+								if($studentid != 0)
+									$table_head->cells[] = new html_table_cell("Abschluss");
+										
+								$crossubject_statistic = new html_table();
+								$crossubject_statistic_rows = array();
+								$crossubject_statistic_rows[] = $table_head;
+								
+								foreach($crosssubjects as $crosssubject) {
+									list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_descriptor_statistic_for_crosssubject($courseid, $crosssubject->id, $studentid);
+									$table_entry = new html_table_row();
+									$table_entry->cells[] = new html_table_cell(html_writer::link(new moodle_url("/blocks/exacomp/cross_subjects.php", array("courseid" => $courseid, "crosssubjid" => $crosssubject->id)), $crosssubject->title));
+									if($studentid != 0)
+										$table_entry->cells[] = new html_table_cell($total);
+									foreach($gradings as $key => $grading)
+										$table_entry->cells[] = new html_table_cell($grading);
+									$table_entry->cells[] = new html_table_cell($notEvaluated);
+									$table_entry->cells[] = new html_table_cell($inWork);
+									if($studentid != 0)
+										$table_entry->cells[] = new html_table_cell($totalGrade);
+									
+									$crossubject_statistic_rows[] = $table_entry;
+								}
+								list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_descriptor_statistic($courseid, $descriptor->id, $studentid);
+								$table_entry = new html_table_row();
+								$table_entry->cells[] = new html_table_cell("LWL " . block_exacomp_get_descriptor_numbering($descriptor));
+								if($studentid != 0)
+									$table_entry->cells[] = new html_table_cell($total);
+								foreach($gradings as $key => $grading)
+									$table_entry->cells[] = new html_table_cell($grading);
+								$table_entry->cells[] = new html_table_cell($notEvaluated);
+								$table_entry->cells[] = new html_table_cell($inWork);
+								if($studentid != 0)
+									$table_entry->cells[] = new html_table_cell($totalGrade);
+									
+								$crossubject_statistic_rows[] = $table_entry;
+								
+								$crossubject_statistic->data = $crossubject_statistic_rows;
+								$compdiv .= html_writer::table($crossubject_statistic);
+								$compdiv .= html_writer::end_div();
+							}
 						}
 
+						/*
+						disable coloring
 						if(count($data[$skillid][$topicid][$niveauid]) == 1)
 							$cell->attributes['class'] = $cssClass;
 						else if($allStudentcomps)
@@ -760,6 +820,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						else if($allTeachercomps)
 							$cell->attributes['class'] = "content competenceok";
 
+						*/
 						
 						// apply colspan for spanning niveaus
 						if(array_key_exists($niveauid,$spanningNiveaus)) {
@@ -1359,7 +1420,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	function print_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class, $profoundness = false, $editmode=false, $statistic=false, $custom_created_descriptors=false) {
-		global $version, $PAGE, $USER, $COURSE, $CFG, $OUTPUT;
+		global $version, $PAGE, $USER, $COURSE, $CFG, $OUTPUT, $DB;
 
 		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
 
@@ -1593,7 +1654,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				}else{
 					$nivCell = new html_table_cell();
 					$nivCell->text = "Niveau";
-					
+					$nivCell->text = $DB->get_field(DB_CATEGORIES,"title",array("lvl" => 5, "id" => $descriptor->catid));
 					$descriptorRow->cells[] = $nivCell;
 					    
 					$statCell = new html_table_cell();

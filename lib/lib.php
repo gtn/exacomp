@@ -777,7 +777,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.catid, d.parentid, n.sorting niveau, dvis.visible as visible, d.sorting '
+	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.catid, d.parentid, n.sorting niveau, dvis.visible as visible, d.sorting, d.catid '
 	.'FROM {'.DB_TOPICS.'} t '
 	.(($courseid>0)?'JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
@@ -812,7 +812,7 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescrip
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = 'SELECT d.id, d.title, d.niveauid, d.source, \'descriptor\' as tabletype, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, '.
+	$sql = 'SELECT d.id, d.title, d.niveauid, d.source, \'descriptor\' as tabletype, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, d.catid, '.
 			($mindvisibility?'dvis.visible as visible, ':'').' d.sorting
 			FROM {'.DB_DESCRIPTORS.'} d '
 			.($mindvisibility ? 'JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 '
@@ -4140,7 +4140,7 @@ function block_exacomp_descriptor_used($courseid, $descriptor, $studentid){
 		$records = $DB->get_records(DB_COMPETENCIES, array('courseid'=>$courseid, 'compid'=>$descriptor->id, 'comptype'=>TYPE_DESCRIPTOR, 'value'=>1));
 		if($records) return true;
 		
-		if($descriptor->examples){
+		if(isset($descriptor->examples) && $descriptor->examples){
 			foreach($descriptor->examples as $example){
 				$records = $DB->get_records(DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'teacher_evaluation'=>1));
 				if($records) return true;
@@ -4154,7 +4154,7 @@ function block_exacomp_descriptor_used($courseid, $descriptor, $studentid){
 	$records = $DB->get_records(DB_COMPETENCIES, array('courseid'=>$courseid, 'compid'=>$descriptor->id, 'comptype'=>TYPE_DESCRIPTOR, 'userid'=>$studentid, 'value'=>1));
 		if($records) return true;
 		
-		if($descriptor->examples){
+		if(isset($descriptor->examples) && $descriptor->examples){
 			foreach($descriptor->examples as $example){
 				$records = $DB->get_records(DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'studentid'=>$studentid, 'student_evaluation'=>1));
 				if($records) return true;
@@ -4348,7 +4348,7 @@ function block_exacomp_calculate_spanning_niveau_colspan($niveaus, $spanningNive
 	return $colspan;
 }
 
-function block_exacomp_check_descriptor_visibility($courseid, $descriptor, $studentid, $one) {
+function block_exacomp_check_descriptor_visibility($courseid, $descriptor, $studentid) {
 	global $DB;
 	
 	$descriptor_used = block_exacomp_descriptor_used($courseid, $descriptor, $studentid);
@@ -4559,4 +4559,195 @@ function block_exacomp_get_cross_subjects_drafts_sorted_by_subjects(){
 	}
 	
 	return $subjects;
+}
+
+function block_exacomp_get_cross_subjects_for_descriptor($courseid, $descriptorid) {
+	global $DB;
+
+	$sql = "SELECT cs.id, cs.title FROM {block_exacompcrosssubjects} cs
+			JOIN {block_exacompdescrcross_mm} dc ON dc.crosssubjid = cs.id
+			WHERE dc.descrid = ? AND cs.courseid = ?";
+
+	$crosssubjects = $DB->get_records_sql($sql,array("descrid" => $descriptorid, "courseid" => $courseid));
+
+	$children = $DB->get_records(DB_DESCRIPTORS,array("parentid" => $descriptorid));
+
+	foreach($children as $child) {
+		$child_crosssubjects = block_exacomp_get_cross_subjects_for_descriptor($courseid, $child->id);
+		$crosssubjects += $child_crosssubjects;
+	}
+
+	return $crosssubjects;
+}
+
+function block_exacomp_get_cross_subject_descriptors($crosssubjid) {
+	global $DB;
+	$sql = "SELECT d.* from {".DB_DESCRIPTORS."} d
+			JOIN {".DB_DESCCROSS."} dc ON dc.descrid = d.id
+			WHERE dc.crosssubjid = ?";
+	$descriptors = $DB->get_records_sql($sql, array("crosssubjid" => $crosssubjid));
+
+	foreach($descriptors as $descriptor) {
+		if($descriptor->parentid) {
+			$parent = $DB->get_record(DB_DESCRIPTORS, array('id' => $descriptor->parentid));
+			$descriptors[$parent->id] = $parent;
+		}
+	}
+
+	return $descriptors;
+}
+function block_exacomp_get_descriptor_statistic_for_crosssubject($courseid, $crosssubjid, $studentid) {
+	global $DB;
+	// get total amount of descriptors for the given crosssubject
+
+	$descriptors = block_exacomp_get_cross_subject_descriptors($crosssubjid);
+
+	$descriptor_where_string = "";
+
+	$inWork = 0;
+
+	foreach($descriptors as $descriptor) {
+		$descriptor->visible = $DB->get_field(DB_DESCVISIBILITY, 'visible', array('courseid'=>$courseid, 'descrid'=>$descriptor->id, 'studentid'=>0));
+		$visible = block_exacomp_check_descriptor_visibility($courseid, $descriptor, $studentid);
+		if(!$visible) {
+			unset($descriptor);
+			continue;
+		}
+		$descriptor_where_string .= $descriptor->id . ",";
+
+		$sql = "SELECT count(e.id) FROM {".DB_EXAMPLES."} e
+				JOIN {".DB_DESCEXAMP."} de ON de.exampid = e.id
+				JOIN {".DB_DESCRIPTORS."} d ON de.descrid = d.id
+				JOIN {block_exacompschedule} s ON s.exampleid = e.id
+				WHERE s.courseid = ? AND d.id = ?";
+		if($studentid != 0) {
+			$sql .= " AND s.studentid = ?";
+			$conditions = array($courseid, $descriptor->id,$studentid);
+		} else
+			$conditions = array($courseid, $descriptor->id);
+
+		// count the descriptors that are "in work", therefore one or more of their examples are on the weekly schedule
+		$inWork += $DB->count_records_sql($sql,$conditions);
+	}
+	$descriptor_where_string = rtrim($descriptor_where_string, ",");
+	$total = count($descriptors);
+
+	$notEvaluated = $total;
+	// if summary, multiply total amount with the number of students within the course
+	if($studentid == 0)
+		$notEvaluated *= count(block_exacomp_get_students_by_course($courseid));
+	
+	// iterative over grading scheme and get the amount for each grade
+	$scheme = block_exacomp_get_grading_scheme($courseid);
+	$gradings = array();
+	for($i=0;$i<=$scheme;$i++) {
+		$conditions = array();
+		$conditions[] = $courseid;
+		$conditions[] = TYPE_DESCRIPTOR;
+		$conditions[] = ROLE_TEACHER;
+		$conditions[] = $i;
+
+		if($studentid != 0)
+			$conditions[] = $studentid;
+
+		$sql = "SELECT count(c.id) as count FROM {".DB_COMPETENCIES."} c
+				WHERE courseid = ?
+				AND comptype = ?
+				AND role = ?
+				AND value = ?
+				AND compid IN (".$descriptor_where_string.")";
+		if($studentid != 0)
+			$sql .= ' AND userid = ?';
+
+		$gradings[$i] = $DB->count_records_sql($sql, $conditions);
+
+		$notEvaluated -= $gradings[$i];
+	}
+
+
+	//check for the crosssubj grade
+	if($studentid != 0)
+		$totalGrade = $DB->get_field(DB_COMPETENCIES,'value',array('userid' => $studentid, 'comptype' => TYPE_CROSSSUB, 'courseid' => $courseid, 'compid' => $crosssubjid, 'role' => ROLE_TEACHER));
+	else
+		$totalGrade = 0;
+
+	return array($total, $gradings, $notEvaluated, $inWork,$totalGrade);
+}
+function block_exacomp_get_descriptor_statistic($courseid, $descrid, $studentid) {
+	global $DB;
+	// get total amount of descriptors for the given crosssubject
+	$descriptor = $DB->get_record(DB_DESCRIPTORS,array("id" => $descrid));
+	$children = $DB->get_records(DB_DESCRIPTORS,array("parentid" => $descrid));
+
+	$descriptor_where_string = "";
+
+	$inWork = 0;
+
+	foreach($children as $child) {
+		$child->visible = $DB->get_field(DB_DESCVISIBILITY, 'visible', array('courseid'=>$courseid, 'descrid'=>$child->id, 'studentid'=>0));
+		$visible = block_exacomp_check_descriptor_visibility($courseid, $child, $studentid);
+		if(!$visible) {
+			unset($child);
+			continue;
+		}
+		$descriptor_where_string .= $child->id . ",";
+
+		$sql = "SELECT count(e.id) FROM {".DB_EXAMPLES."} e
+				JOIN {".DB_DESCEXAMP."} de ON de.exampid = e.id
+				JOIN {".DB_DESCRIPTORS."} d ON de.descrid = d.id
+				JOIN {block_exacompschedule} s ON s.exampleid = e.id
+				WHERE s.courseid = ? AND d.id = ?";
+		if($studentid != 0) {
+			$sql .= " AND s.studentid = ?";
+			$conditions = array($courseid, $child->id,$studentid);
+		} else
+			$conditions = array($courseid, $child->id);
+
+		// count the descriptors that are "in work", therefore one or more of their examples are on the weekly schedule
+		$inWork += $DB->count_records_sql($sql,$conditions);
+	}
+	$descriptor_where_string = rtrim($descriptor_where_string, ",");
+	$total = count($children) + 1;
+
+	$notEvaluated = $total;
+	// if summary, multiply total amount with the number of students within the course
+	if($studentid == 0)
+		$notEvaluated *= count(block_exacomp_get_students_by_course($courseid));
+	
+	// iterative over grading scheme and get the amount for each grade
+	$scheme = block_exacomp_get_grading_scheme($courseid);
+	$gradings = array();
+	for($i=0;$i<=$scheme;$i++) {
+		$conditions = array();
+		$conditions[] = $courseid;
+		$conditions[] = TYPE_DESCRIPTOR;
+		$conditions[] = ROLE_TEACHER;
+		$conditions[] = $i;
+
+		if($studentid != 0)
+			$conditions[] = $studentid;
+
+		$sql = "SELECT count(c.id) as count FROM {".DB_COMPETENCIES."} c
+				WHERE courseid = ?
+				AND comptype = ?
+				AND role = ?
+				AND value = ?
+				AND compid IN (".$descriptor_where_string.")";
+		if($studentid != 0)
+			$sql .= ' AND userid = ?';
+
+		$gradings[$i] = $DB->count_records_sql($sql, $conditions);
+
+		$notEvaluated -= $gradings[$i];
+	}
+
+
+	//check for the crosssubj grade
+	if($studentid != 0)
+		$totalGrade = $DB->get_field(DB_COMPETENCIES,'value',array('userid' => $studentid, 'comptype' => TYPE_DESCRIPTOR, 'courseid' => $courseid, 'compid' => $descrid, 'role' => ROLE_TEACHER));
+	
+	if($studentid > 0 || !isset($totalGrade))
+		$totalGrade = 0;
+
+	return array($total, $gradings, $notEvaluated, $inWork,$totalGrade);
 }
