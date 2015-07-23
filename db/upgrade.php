@@ -1855,6 +1855,35 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2015072102, 'exacomp');
 	}
+	if($oldversion < 2015072300){
+		//update descriptor children sorting if not existing
+		
+		//has to be done for all available courses where exacomp is used
+		$courses = block_exacomp_get_courses();
+		
+		foreach($courses as $course){
+			$descriptors = block_exacomp_get_descriptors($course, true);
+			foreach($descriptors as $descriptor){
+				if($descriptor->parentid==0){
+					$max_sorting = 0;
+					foreach($descriptor->children as $child){
+						if($child->sorting>$max_sorting) $max_sorting = $child->sorting;
+					}
+					
+					foreach($descriptor->children as $child){
+						if($child->sorting==0){
+							$max_sorting++;
+							$child->sorting = $max_sorting;
+							$child_descriptor = $DB->get_record(DB_DESCRIPTORS, array('id'=>$child->id));
+							$child_descriptor->sorting = $max_sorting;
+							$DB->update_record(DB_DESCRIPTORS, $child_descriptor);
+						}
+					}
+				}
+			}
+		}
+		upgrade_block_savepoint(true, 2015072300, 'exacomp');
+	}
 	
 	return $result;
 }

@@ -4042,7 +4042,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				foreach ( $subject->subs as $tkey => $topic ) {
 					if($topic->associated == 1 || ($isTeacher && $editmode==1)){
 						$html_tree .= html_writer::start_tag("li", array('class'=>($topic->associated == 1)?"associated":""));
-						$html_tree .= $topic->title;
+						$html_tree .= block_exacomp_get_topic_numbering($topic->id).' '.$topic->title;
 						
 						if(!empty($topic->descriptors))
 							$html_tree .= html_writer::start_tag("ul");
@@ -4072,7 +4072,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		if($isTeacher && $editmode==1 && isset($descriptor->direct_associated))
 			$html_tree .= html_writer::checkbox("descriptor[]", $descriptor->id, ($descriptor->direct_associated==1)?true:false);
 		
-		$html_tree .= $descriptor->title;
+		$html_tree .= block_exacomp_get_descriptor_numbering($descriptor).' '.$descriptor->title;
 			
 		if(!empty($descriptor->examples))
 			$html_tree .= html_writer::start_tag("ul");
