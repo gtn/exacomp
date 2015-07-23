@@ -6,7 +6,6 @@ $string['tab_competence_overview'] = 'Lernwegeliste';
 $string['tab_competence_details'] = 'Moodle Aktivit&auml;ten';
 
 $string['subject'] = 'Kompetenzbereiche';
-$string['attachement_example'] = 'Zusatzmaterial';
 $string['importpending'] = 'Bitte importieren Sie jetzt die allgemeinen Bildungsstandards und w&auml;hlen Sie anschließend im Tab Bildungsstandard die anzuzeigenden Lernlistenbereiche aus.';
 $string['usernosubmission'] = ' hat keine Moodle-Aufgaben zu dieser Lernliste abgegeben und keinen Test durchgef&uuml;hrt.';
 $string['usernosubmission_topic'] = ' hat keine Moodle-Aufgaben zu dieser Teilkompetenz abgegeben und keinen Test durchgef&uuml;hrt.';

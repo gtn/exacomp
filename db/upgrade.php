@@ -1896,5 +1896,15 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2015072301, 'exacomp');
 	}
+	if($oldversion < 2015072302){
+		$table = new xmldb_table('block_exacompexamples');
+		$field = new xmldb_field('attachement', XMLDB_TYPE_CHAR, '255', null, null, null, '1');
+		$dbman->drop_field($table, $field);
+		$field = new xmldb_field('ressources', XMLDB_TYPE_CHAR, '255', null, null, null, '1');
+		$dbman->drop_field($table, $field);
+		
+		
+		upgrade_block_savepoint(true, 2015072302, 'exacomp');
+	}
 	return $result;
 }
