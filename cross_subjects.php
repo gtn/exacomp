@@ -107,14 +107,15 @@ else{
 	echo $output->print_dropdowns_cross_subjects($crosssubjects, $selectedCrosssubject->id, $students, $studentid, $isTeacher);
 	
 	//schooltypes
-	$schooltypes = block_exacomp_get_schooltypes_by_course($courseid);
+	/*$schooltypes = block_exacomp_get_schooltypes_by_course($courseid);
 	    
 	$schooltype_title = "";
 	foreach($schooltypes as $schooltype){
 	    $schooltype_title .= $schooltype->title . ", ";
 	}
 	$schooltype = substr($schooltype_title, 0, strlen($schooltype_title)-1);
-	echo $output->print_overview_metadata_cross_subjects($schooltype, $selectedCrosssubject, $isTeacher, $studentid);
+	*/
+	echo $output->print_overview_metadata_cross_subjects($selectedCrosssubject, $isTeacher, $studentid);
 		
 	$scheme = block_exacomp_get_grading_scheme($courseid);
 	

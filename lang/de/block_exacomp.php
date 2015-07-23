@@ -421,6 +421,7 @@ $string['share_crosssub'] = 'Thema für Teilnehmer freigeben';
 $string['share_crosssub_with_students'] = 'Das Thema "{$a}" für folgende Teilnehmer freigeben: ';
 $string['share_crosssub_with_all'] = 'Das Thema "{$a}" für <b>alle</b> Teilnehmer freigeben: ';
 $string['new_crosssub'] = "Neues Thema erstellen";
+$string['nocrosssubsub'] = "Kein Fach zugeteilt";
 
 //Associations
 $string['competence_associations'] = 'Verknüpfungen';

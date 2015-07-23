@@ -49,6 +49,8 @@ $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
 block_exacomp_init_js_css();
+$PAGE->requires->js("/blocks/exacomp/javascript/CollapsibleLists.compressed.js");
+$PAGE->requires->css("/blocks/exacomp/css/CollapsibleLists.css");
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
@@ -86,9 +88,9 @@ if($isTeacher)
 
 block_exacomp_init_cross_subjects();
 
-$drafts = block_exacomp_get_cross_subjects_drafts();
+$subjectdrafts = block_exacomp_get_cross_subjects_drafts_sorted_by_subjects();
 
-echo $output->print_cross_subjects_drafts($drafts, $isAdmin);
+echo $output->print_cross_subjects_drafts($subjectdrafts, $isAdmin);
 
 /* END CONTENT REGION */
 echo $output->print_wrapperdivend();

@@ -1884,6 +1884,17 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		}
 		upgrade_block_savepoint(true, 2015072300, 'exacomp');
 	}
+	if($oldversion < 2015072301){
+		// Define field id to be added to block_exacompcrosssubjects.
+		$table = new xmldb_table(DB_CROSSSUBJECTS);
+		$field = new xmldb_field('subjectid', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'shared');	
+		// Conditionally launch add field id.
+		if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
 	
+		// Exacomp savepoint reached.
+		upgrade_block_savepoint(true, 2015072301, 'exacomp');
+	}
 	return $result;
 }

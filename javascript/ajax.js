@@ -284,6 +284,19 @@
 									examples = [];
 								}
 
+								var select = document
+								.getElementById("menulis_crosssubject_subject");
+
+								// Cross-Suject subject
+								if (select && crosssubjid > 0) {
+									crosssubj_subjectid = select.options[select.selectedIndex].value;
+								
+									call_ajax({
+										crosssubjid: crosssubjid,
+										subjectid: crosssubj_subjectid,
+										action: 'crosssubj-subject'
+									});
+								}
 								// Cross-Subject title & description
 								
 								if (title && crosssubjid > 0) {

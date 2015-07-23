@@ -4543,3 +4543,21 @@ function block_exacomp_get_topic_numbering($topicid){
 	
 	return $numbering;
 }
+function block_exacomp_get_cross_subjects_drafts_sorted_by_subjects(){
+	global $DB;
+	$subjects = block_exacomp_get_subjects();
+	
+	$default_subject = new stdClass();
+	$default_subject->id = 0;
+	$default_subject->title = get_string('nocrosssubsub', 'block_exacomp');
+	
+	$subjects[0] = $default_subject;
+	
+	foreach($subjects as $subject){
+		$drafts = $DB->get_records(DB_CROSSSUBJECTS, array('subjectid'=>$subject->id, 'courseid'=>0));
+		if($drafts)
+			$subject->crosssub_drafts = $drafts; 
+	}
+	
+	return $subjects;
+}

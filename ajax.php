@@ -209,4 +209,14 @@ switch($action){
 		$DB->insert_record(DB_DESCVISIBILITY, $visibility);
 		echo $id;
 		break;
+	case 'crosssubj-subject':
+		$crosssubjectid = required_param('crosssubjid', PARAM_INT);
+		$subjectid = required_param('subjectid', PARAM_INT);
+		
+		$crosssubject = $DB->get_record(DB_CROSSSUBJECTS, array('id'=>$crosssubjectid));
+		$crosssubject->subjectid = $subjectid;
+		$DB->update_record(DB_CROSSSUBJECTS, $crosssubject);
+		
+		echo $crosssubjectid.' subject:'.$subjectid;
+		break;
 }
