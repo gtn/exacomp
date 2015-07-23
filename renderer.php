@@ -754,9 +754,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 							}
 							$compdiv .= html_writer::tag('div', $compString,array('class'=>$cssClass));
 							
-							$crosssubjects = block_exacomp_get_cross_subjects_for_descriptor($courseid, $descriptor->id);
 								
-							if($crosssubjects) {
+							if(array_key_exists($descriptor->topicid, $selection) && $visible) {
 								$compdiv .= html_writer::start_div('crosssubjects');
 								$table_head = new html_table_row();
 								$table_head->attributes['class'] = 'statistic_head';
@@ -775,6 +774,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 								$crossubject_statistic = new html_table();
 								$crossubject_statistic_rows = array();
 								$crossubject_statistic_rows[] = $table_head;
+								
+								$crosssubjects = block_exacomp_get_cross_subjects_for_descriptor($courseid, $descriptor->id);
 								
 								foreach($crosssubjects as $crosssubject) {
 									list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_descriptor_statistic_for_crosssubject($courseid, $crosssubject->id, $studentid);

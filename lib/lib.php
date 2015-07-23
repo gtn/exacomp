@@ -4741,13 +4741,13 @@ function block_exacomp_get_descriptor_statistic($courseid, $descrid, $studentid)
 		$notEvaluated -= $gradings[$i];
 	}
 
-
+	$totalGrade = null;
 	//check for the crosssubj grade
 	if($studentid != 0)
 		$totalGrade = $DB->get_field(DB_COMPETENCIES,'value',array('userid' => $studentid, 'comptype' => TYPE_DESCRIPTOR, 'courseid' => $courseid, 'compid' => $descrid, 'role' => ROLE_TEACHER));
 	
-	if($studentid > 0 || !isset($totalGrade))
+	if($totalGrade == null)
 		$totalGrade = 0;
-
+	
 	return array($total, $gradings, $notEvaluated, $inWork,$totalGrade);
 }
