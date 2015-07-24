@@ -35,7 +35,7 @@ $group = optional_param('group', 0, PARAM_INT);
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
-$studentid = optional_param('studentid', 0, PARAM_INT);
+$studentid = optional_param('studentid', BLOCK_EXACOMP_SHOW_ALL_STUDENTS, PARAM_INT);
 
 require_login($course);
 
