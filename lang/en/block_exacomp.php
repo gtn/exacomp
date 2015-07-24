@@ -283,6 +283,8 @@ $string['textalign'] = "Switch text align";
 $string['selfevaluation'] = 'Self assessment';
 $string['teacherevaluation'] = 'Trainer assessment';
 $string['competencegrid_nodata'] = 'In case the competency grid is empty the outcomes for the chosen subject were not assigned to a level in the datafile. This can be fixed by associating outcomes with levels at www.edustandards.org and re-importing the xml-file.';
+$string['statistic_type_descriptor'] = 'Change to descriptor statistics';
+$string['statistic_type_example'] = 'Change to example statistics';
 
 //Detail view
 $string['detail_description'] = 'Use Moodle activities to evaluate competencies.';

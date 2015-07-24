@@ -1451,6 +1451,7 @@ class block_exacomp_url extends moodle_url {
  */
 define('BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_EDITMODE', 1);
 define('BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN', 2);
+define('BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN', 3);
 function block_exacomp_studentselector($students, $selected, $url, $option = null) {
 	global $CFG;
 
@@ -1460,7 +1461,8 @@ function block_exacomp_studentselector($students, $selected, $url, $option = nul
     $url = new block_exacomp_url($url);
     $url->remove_params('studentid');
 	
-	if ($option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_EDITMODE || $option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN)
+	if ($option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_EDITMODE || $option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN
+			|| $option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN)
 		$studentsAssociativeArray[0]=get_string('no_student_edit', 'block_exacomp');
 	else 
 		$studentsAssociativeArray[0]=get_string('no_student', 'block_exacomp');
@@ -1471,7 +1473,9 @@ function block_exacomp_studentselector($students, $selected, $url, $option = nul
 	
 	if ($option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN) {
 		$studentsAssociativeArray[BLOCK_EXACOMP_SHOW_ALL_STUDENTS] = get_string('allstudents', 'block_exacomp');
-		$studentsAssociativeArray[BLOCK_EXACOMP_SHOW_STATISTIC] = get_string('statistic', 'block_exacomp');
+    }
+    if($option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN || $option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN) {
+    	$studentsAssociativeArray[BLOCK_EXACOMP_SHOW_STATISTIC] = get_string('statistic', 'block_exacomp');
     }
 	
 	return html_writer::select($studentsAssociativeArray, 'exacomp_competence_grid_select_student',$selected,true,
@@ -4627,17 +4631,23 @@ function block_exacomp_get_cross_subject_descriptors($crosssubjid) {
 			WHERE dc.crosssubjid = ?";
 	$descriptors = $DB->get_records_sql($sql, array("crosssubjid" => $crosssubjid));
 
+	/*
 	foreach($descriptors as $descriptor) {
 		if($descriptor->parentid) {
 			$parent = $DB->get_record(DB_DESCRIPTORS, array('id' => $descriptor->parentid));
 			$descriptors[$parent->id] = $parent;
 		}
 	}
+	*/
 
 	return $descriptors;
 }
 function block_exacomp_get_descriptor_statistic_for_crosssubject($courseid, $crosssubjid, $studentid) {
 	global $DB;
+	
+	if($studentid == BLOCK_EXACOMP_SHOW_STATISTIC) 
+		$studentid = 0;
+	
 	// get total amount of descriptors for the given crosssubject
 
 	$descriptors = block_exacomp_get_cross_subject_descriptors($crosssubjid);
@@ -4713,8 +4723,15 @@ function block_exacomp_get_descriptor_statistic_for_crosssubject($courseid, $cro
 
 	return array($total, $gradings, $notEvaluated, $inWork,$totalGrade);
 }
+define('BLOCK_EXACOMP_DESCRIPTOR_STATISTIC', 0);
+define('BLOCK_EXACOMP_EXAMPLE_STATISTIC', 1);
+
 function block_exacomp_get_descriptor_statistic($courseid, $descrid, $studentid) {
 	global $DB;
+	
+	if($studentid == BLOCK_EXACOMP_SHOW_STATISTIC)
+		$studentid = 0;
+	
 	// get total amount of descriptors for the given crosssubject
 	$descriptor = $DB->get_record(DB_DESCRIPTORS,array("id" => $descrid));
 	$children = $DB->get_records(DB_DESCRIPTORS,array("parentid" => $descrid));
@@ -4747,7 +4764,7 @@ function block_exacomp_get_descriptor_statistic($courseid, $descrid, $studentid)
 		$inWork += $DB->count_records_sql($sql,$conditions);
 	}
 	$descriptor_where_string = rtrim($descriptor_where_string, ",");
-	$total = count($children) + 1;
+	$total = count($children);
 
 	$notEvaluated = $total;
 	// if summary, multiply total amount with the number of students within the course
@@ -4804,3 +4821,172 @@ function block_exacomp_delete_custom_descriptor($descriptorid){
 	$DB->delete_records(DB_DESCRIPTORS, array('id'=>$descriptorid));
 	
 }	
+function block_exacomp_get_cross_subject_examples($crosssubjid) {
+	global $DB;
+	$sql = "SELECT e.* from {".DB_EXAMPLES."} e
+			JOIN {".DB_DESCEXAMP."} de ON de.exampid = e.id
+			JOIN {".DB_DESCRIPTORS."} d ON de.descrid = d.id
+			JOIN {".DB_DESCCROSS."} dc ON dc.descrid = d.id
+			WHERE dc.crosssubjid = ?";
+	return $DB->get_records_sql($sql, array("crosssubjid" => $crosssubjid));
+}
+function block_exacomp_get_example_statistic_for_crosssubject($courseid, $crosssubjid, $studentid) {
+	global $DB;
+
+	if($studentid == BLOCK_EXACOMP_SHOW_STATISTIC)
+		$studentid = 0;
+
+	// get total amount of descriptors for the given crosssubject
+
+	$examples = block_exacomp_get_cross_subject_examples($crosssubjid);
+
+	$example_where_string = "";
+
+	$inWork = 0;
+
+	foreach($examples as $example) {
+		
+		// TODO check visibility
+		
+		$example_where_string .= $example->id . ",";
+
+		$sql = "SELECT count(e.id) FROM {".DB_EXAMPLES."} e
+				JOIN {block_exacompschedule} s ON s.exampleid = e.id
+				WHERE s.courseid = ? AND e.id = ?";
+		
+		if($studentid != 0) {
+			$sql .= " AND s.studentid = ?";
+			$conditions = array($courseid, $example->id,$studentid);
+		} else
+			$conditions = array($courseid, $example->id);
+
+		// count the descriptors that are "in work", therefore one or more of their examples are on the weekly schedule
+		$inWork += $DB->count_records_sql($sql,$conditions);
+	}
+	$example_where_string = rtrim($example_where_string, ",");
+	$total = count($examples);
+
+	$notEvaluated = $total;
+	// if summary, multiply total amount with the number of students within the course
+	if($studentid == 0)
+		$notEvaluated *= count(block_exacomp_get_students_by_course($courseid));
+
+	// iterative over grading scheme and get the amount for each grade
+	$scheme = block_exacomp_get_grading_scheme($courseid);
+	$gradings = array();
+	for($i=0;$i<=$scheme;$i++) {
+		$conditions = array();
+		$conditions[] = $courseid;
+		$conditions[] = $i;
+
+		if($studentid != 0)
+			$conditions[] = $studentid;
+
+		$sql = "SELECT count(e.id) as count FROM {".DB_EXAMPLEEVAL."} e
+				WHERE courseid = ?
+				AND teacher_evaluation = ?
+				AND exampleid IN (".$example_where_string.")";
+		if($studentid != 0)
+			$sql .= ' AND studentid = ?';
+
+		$gradings[$i] = $DB->count_records_sql($sql, $conditions);
+
+		$notEvaluated -= $gradings[$i];
+	}
+
+
+	//check for the crosssubj grade
+	if($studentid != 0)
+		$totalGrade = $DB->get_field(DB_COMPETENCIES,'value',array('userid' => $studentid, 'comptype' => TYPE_CROSSSUB, 'courseid' => $courseid, 'compid' => $crosssubjid, 'role' => ROLE_TEACHER));
+	else
+		$totalGrade = 0;
+
+	return array($total, $gradings, $notEvaluated, $inWork,$totalGrade);
+}
+function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid, $studentid) {
+	global $DB;
+
+	if($studentid == BLOCK_EXACOMP_SHOW_STATISTIC)
+		$studentid = 0;
+
+	// get total amount of descriptors for the given crosssubject
+	$descriptor = $DB->get_record(DB_DESCRIPTORS,array("id" => $descrid));
+	$children = $DB->get_records(DB_DESCRIPTORS,array("parentid" => $descrid));
+
+	$children[] = $descriptor;
+	
+	$example_where_string = "";
+
+	$inWork = 0;
+	$total = 0;
+	foreach($children as $child) {
+		$child->visible = $DB->get_field(DB_DESCVISIBILITY, 'visible', array('courseid'=>$courseid, 'descrid'=>$child->id, 'studentid'=>0));
+		$visible = block_exacomp_check_descriptor_visibility($courseid, $child, $studentid);
+		if(!$visible) {
+			unset($child);
+			continue;
+		}
+		
+		$examples = $DB->get_records(DB_DESCEXAMP,array('descrid' => $child->id));
+		$total += count($examples);
+		foreach($examples as $example)
+			$example_where_string .= $example->exampid . ",";
+			
+		$sql = "SELECT count(e.id) FROM {".DB_EXAMPLES."} e
+				JOIN {".DB_DESCEXAMP."} de ON de.exampid = e.id
+				JOIN {".DB_DESCRIPTORS."} d ON de.descrid = d.id
+				JOIN {block_exacompschedule} s ON s.exampleid = e.id
+				WHERE s.courseid = ? AND d.id = ?";
+		if($studentid != 0) {
+			$sql .= " AND s.studentid = ?";
+			$conditions = array($courseid, $child->id,$studentid);
+		} else
+			$conditions = array($courseid, $child->id);
+
+		// count the descriptors that are "in work", therefore one or more of their examples are on the weekly schedule
+		$inWork += $DB->count_records_sql($sql,$conditions);
+	}
+	$example_where_string = rtrim($example_where_string, ",");
+
+	$notEvaluated = $total;
+	// if summary, multiply total amount with the number of students within the course
+	if($studentid == 0)
+		$notEvaluated *= count(block_exacomp_get_students_by_course($courseid));
+
+	// iterative over grading scheme and get the amount for each grade
+	$scheme = block_exacomp_get_grading_scheme($courseid);
+	$gradings = array();
+	for($i=0;$i<=$scheme;$i++) {
+		$conditions = array();
+		$conditions[] = $courseid;
+		$conditions[] = $i;
+
+		if($studentid != 0)
+			$conditions[] = $studentid;
+
+		if($total > 0) {
+		$sql = "SELECT count(e.id) as count FROM {".DB_EXAMPLEEVAL."} e
+				WHERE courseid = ?
+				AND teacher_evaluation = ?
+				AND exampleid IN (".$example_where_string.")";
+		if($studentid != 0)
+			$sql .= ' AND studentid = ?';
+		
+		$gradings[$i] = $DB->count_records_sql($sql, $conditions);
+		}
+		else 
+			$gradings[$i] = 0;
+		
+		$notEvaluated -= $gradings[$i];
+	}
+
+	$totalGrade = null;
+	//check for the crosssubj grade
+	if($studentid != 0)
+		$totalGrade = $DB->get_field(DB_COMPETENCIES,'value',array('userid' => $studentid, 'comptype' => TYPE_DESCRIPTOR, 'courseid' => $courseid, 'compid' => $descrid, 'role' => ROLE_TEACHER));
+
+	if($totalGrade == null)
+		$totalGrade = 0;
+
+	return array($total, $gradings, $notEvaluated, $inWork,$totalGrade);
+}

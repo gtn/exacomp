@@ -63,6 +63,7 @@ $isTeacher = block_exacomp_is_teacher($context);
 
 $subjectid = optional_param('subjectid', 0, PARAM_INT);
 $studentid = optional_param("studentid", 0, PARAM_INT);
+$statistic_type = optional_param('stattype', BLOCK_EXACOMP_DESCRIPTOR_STATISTIC, PARAM_INT);
 
 if(!$isTeacher) $studentid = $USER->id;
 
@@ -80,13 +81,20 @@ echo $output->print_subject_dropdown(block_exacomp_get_schooltypetree_by_subject
 if($data) {
 	if (block_exacomp_is_teacher($context) && !block_exacomp_get_settings_by_course($courseid)->nostudents) {
 		echo ' '.get_string("choosestudent","block_exacomp").' ';
-		echo block_exacomp_studentselector(block_exacomp_get_students_by_course($courseid),$studentid,$PAGE->url . ($subjectid > 0 ? "&subjectid=".$subjectid : ""), BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_EDITMODE);
+		echo block_exacomp_studentselector(block_exacomp_get_students_by_course($courseid),$studentid,$PAGE->url . ($subjectid > 0 ? "&subjectid=".$subjectid : "") . "&stattype=".$statistic_type, BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN);
 	}
 	echo html_writer::start_div();
 	if(!$version && isset($dropdown_subjects[$subjectid]->infolink))
 		echo html_writer::tag("p",get_string('infolink','block_exacomp') . html_writer::link($dropdown_subjects[$subjectid]->infolink, $dropdown_subjects[$subjectid]->infolink,array('target'=>'_blank')));
 	echo html_writer::tag("a", get_string("textalign","block_exacomp"),array("class" => "switchtextalign"));
-	echo html_writer::div($output->print_competence_grid_legend());
+	echo html_writer::tag("br", "");
+	
+	if($statistic_type == BLOCK_EXACOMP_DESCRIPTOR_STATISTIC)
+		echo html_writer::link($PAGE->url . "&subjectid=".$subjectid . "&studentid=".$studentid . "&stattype=".BLOCK_EXACOMP_EXAMPLE_STATISTIC , get_string("statistic_type_example","block_exacomp"));
+	else
+		echo html_writer::link($PAGE->url . "&subjectid=".$subjectid . "&studentid=".$studentid . "&stattype=".BLOCK_EXACOMP_DESCRIPTOR_STATISTIC , get_string("statistic_type_descriptor","block_exacomp"));
+		
+	//echo html_writer::div($output->print_competence_grid_legend());
 	echo html_writer::start_tag("form", array("method"=>"post", "id" => "assign-competencies"));
 	echo $output->print_competence_grid($niveaus, $skills, $subjects, $data, $selection, $courseid,$studentid);
 	if($version)
