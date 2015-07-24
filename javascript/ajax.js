@@ -330,6 +330,19 @@
 								window.open(url, '_blank',
 										'width=880,height=660, scrollbars=yes');
 								break;
+							case 'delete_crosssub':
+								message = $(this).attr('message');
+								if (confirm(message)) {
+									if (crosssubjid > 0) {
+										call_ajax({
+											crosssubjid : crosssubjid,
+											action : 'delete-crosssubject'
+										});
+									}
+
+									location.reload();
+								} 
+								break;
 							}
 
 						});

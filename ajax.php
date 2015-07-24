@@ -219,4 +219,19 @@ switch($action){
 		
 		echo $crosssubjectid.' subject:'.$subjectid;
 		break;
+	case 'delete-crosssubject':
+		$crosssubjectid = required_param('crosssubjid', PARAM_INT);
+		
+		//delete student-crosssubject association
+		$DB->delete_records(DB_CROSSSTUD, array('crosssubjid'=>$crosssubjectid));
+		
+		//delete descriptor-crosssubject association
+		$DB->delete_records(DB_DESCCROSS, array('crosssubjid'=>$crosssubjectid));
+		
+		//delete crosssubject overall evaluations
+		$DB->delete_records(DB_COMPETENCIES, array('compid'=>$crosssubjectid, 'comptype'=>TYPE_CROSSSUB));
+		
+		//delete crosssubject
+		$DB->delete_records(DB_CROSSSUBJECTS, array('id'=>$crosssubjectid));
+		break;
 }

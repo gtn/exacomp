@@ -380,6 +380,8 @@ $string['share_crosssub_with_students'] = 'Share crosssubject "{$a}" with the fo
 $string['share_crosssub_with_all'] = 'Share crosssubject "{$a}" with all participants: ';
 $string['new_crosssub'] = "Create new crosssubject";
 $string['nocrosssubsub'] = "no subject selected";
+$string['delete_crosssub'] = 'delete crosssubject';
+$string['confirm_delete'] = 'Do you really want to delete this crosssubject?';
 
 //Associations
 $string['competence_associations'] = 'Associations';
