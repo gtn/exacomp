@@ -5,9 +5,6 @@ require_once $CFG->dirroot . '/mod/assign/submission/file/locallib.php';
 require_once $CFG->dirroot . '/lib/filelib.php';
 require_once dirname ( __FILE__ ) . "/inc.php";
 
-// DB COMPETENCE TYPE CONSTANTS
-define ( 'TYPE_DESCRIPTOR', 0 );
-define ( 'TYPE_TOPIC', 1 );
 class block_exacomp_external extends external_api {
 	
 	/**
@@ -1959,7 +1956,7 @@ class block_exacomp_external extends external_api {
 		$example->task = $task;
 		$example->externaltask = isset ( $example_task ) ? $example_task : null;
 		$example->creatorid = $USER->id;
-		$example->timestamp = date ();
+		$example->timestamp = time();
 		$example->source = EXAMPLE_SOURCE_USER;
 		
 		$id = $DB->insert_record ( DB_EXAMPLES, $example );
