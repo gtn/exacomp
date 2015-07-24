@@ -4019,7 +4019,10 @@ function block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid
    
 	foreach($descriptors as &$descriptor) {
 		//get examples
-		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
+		if(array_key_exists($descriptor->id, $comps))
+			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
+		else $descriptor->examples = array();
+		
 		//check for child-descriptors
 		$descriptor->children = block_exacomp_get_child_descriptors($descriptor,$courseid, $showalldescriptors);
 		foreach($descriptor->children as $cid => $cvalue) {
