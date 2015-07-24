@@ -196,8 +196,8 @@ function block_exacomp_weekly_schedule_print_items($items) {
 	        </div>
 	        
 	        <?php if (block_exacomp_is_student($context)) { ?>
-	        <a href="<?php echo (new moodle_url('/blocks/exacomp/example_upload_student.php',array("courseid"=>$courseid))); ?>"
-	        	target="_blank", onclick="window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;">Eigene Beispiele</a>
+	        <input type="button" id="own-example"
+	        	target="_blank", onclick="window.open('<?php echo (new moodle_url('/blocks/exacomp/example_upload_student.php',array("courseid"=>$courseid))); ?>',this.target,'width=880,height=660, scrollbars=yes'); return false;" value="Eigene Beispiele" />
 	        <?php } ?>
 	        
 			<div id="items">
