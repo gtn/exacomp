@@ -4572,6 +4572,32 @@ function block_exacomp_get_cross_subjects_drafts_sorted_by_subjects(){
 	return $subjects;
 }
 
+function block_exacomp_get_cross_subjects_sorted_by_subjects(){
+	global $DB;
+	
+	$subjects = block_exacomp_get_subjects();
+	
+	$default_subject = new stdClass();
+	$default_subject->id = 0;
+	$default_subject->title = get_string('nocrosssubsub', 'block_exacomp');
+	
+	$subjects[0] = $default_subject;
+	
+	foreach($subjects as $subject){
+		$all_crosssubjects = $DB->get_records(DB_CROSSSUBJECTS, array('subjectid'=>$subject->id));
+		$without_draft = array();
+		if($all_crosssubjects){
+			foreach($all_crosssubjects as $crosssubject)
+				if($crosssubject->courseid > 0)
+					$without_draft[$crosssubject->id] = $crosssubject;
+		
+			$subject->crosssubjects = $without_draft;
+		}
+	}
+	
+	return $subjects;
+}
+
 function block_exacomp_get_cross_subjects_for_descriptor($courseid, $descriptorid) {
 	global $DB;
 
