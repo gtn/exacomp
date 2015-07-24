@@ -1151,6 +1151,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
     			$subjectRow->cells[] = $title;
 			}
     		
+			$nivCell = new html_table_cell();
+			$nivCell->text = get_string('niveau', 'block_exacomp');
+
+			if($first)
+			    $subjectRow->cells[] = $nivCell;
+			    
 			$studentsCount = 0;
 			
 			if(!$statistic){
@@ -1166,12 +1172,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					    $subjectRow->cells[] = $studentCell;
 				}
 			}else{
-				$nivCell = new html_table_cell();
-				$nivCell->text = get_string('niveau', 'block_exacomp');
-
-				if($first)
-				    $subjectRow->cells[] = $nivCell;
-				    
 				$groupCell = new html_table_cell();
 				$groupCell->text = get_string('groupsize', 'block_exacomp').count($students);
 
@@ -1186,7 +1186,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
 				$evaluationRow = new html_table_row();
 				$emptyCell = new html_table_cell();
-				$emptyCell->colspan = 2;
+				$emptyCell->colspan = 3;
 				$evaluationRow->cells[] = $emptyCell;
 
 				if(!$statistic){
@@ -1244,6 +1244,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				$totalRow->cells[] = $firstCol;
 				
 				$totalRow->cells[] = new html_table_cell();
+				
+				$nivCell = new html_table_cell();
+				$nivCell->text = "";
+				$totalRow->cells[] = $nivCell;
 				
 				if($showevaluation){
 					$studentevalCol = new html_table_cell();
@@ -1326,6 +1330,11 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				$outputnameCell->text = html_writer::div((($outputid) ? ($outputid.': ') : '').$outputname,"desctitle");
 			$topicRow->cells[] = $outputnameCell;
 
+			$nivCell = new html_table_cell();
+			$nivCell->text = "";
+
+			$topicRow->cells[] = $nivCell;
+			
 			if(!$statistic){
 				foreach($students as $student) {
 					$studentCell = new html_table_cell();
@@ -1392,11 +1401,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					$topicRow->cells[] = $studentCell;
 				}
 			}else{
-				$nivCell = new html_table_cell();
-				$nivCell->text = "";
-
-				$topicRow->cells[] = $nivCell;
-				    
 				$statCell = new html_table_cell();
 				$statCell->text = "";
 
@@ -1506,6 +1510,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					}
 				}
 				$descriptorRow->cells[] = $titleCell;
+				
+				$nivCell = new html_table_cell();
+				$nivCell->text = $DB->get_field(DB_CATEGORIES,"title",array("lvl" => 5, "id" => $descriptor->catid));
+				$descriptorRow->cells[] = $nivCell;
+					    
+				
 				$visible_student = $visible;
 				if(!$statistic){
 					foreach($students as $student) {
@@ -1653,11 +1663,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 						}
 					}
 				}else{
-					$nivCell = new html_table_cell();
-					$nivCell->text = "Niveau";
-					$nivCell->text = $DB->get_field(DB_CATEGORIES,"title",array("lvl" => 5, "id" => $descriptor->catid));
-					$descriptorRow->cells[] = $nivCell;
-					    
+					
 					$statCell = new html_table_cell();
 					$statCell->text = $this->print_statistic_table($data->courseid, $students, $descriptor, true, $data->scheme);
 			
@@ -1740,6 +1746,11 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					}
 					$exampleRow->cells[] = $titleCell;
 	
+					$nivCell = new html_table_cell();
+					$nivCell->text = "";
+	
+					$exampleRow->cells[] = $nivCell;
+					
 					if(!$statistic){
 						foreach($students as $student) {
 							
@@ -1791,12 +1802,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 							
 							$exampleRow->cells[] = $studentCell;
 						}
-					}else{
-						$nivCell = new html_table_cell();
-						$nivCell->text = "Niveau";
-		
-						$exampleRow->cells[] = $nivCell;
-						    
+					}else{ 
 						$statCell = new html_table_cell();
 						$statCell->text = $this->print_statistic_table($data->courseid, $students, $example, false, $data->scheme);
 						
@@ -1820,6 +1826,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					$cell->text = get_string('own_additions', 'block_exacomp');
 					$own_additionRow->cells[] = $cell;
 					
+					$own_additionRow->cells[] = new html_table_cell();
+					
 					$rows[] = $own_additionRow;
 					
 					$this->print_descriptors($rows, $level+1, $descriptor->children, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $statistic, true);
@@ -1833,7 +1841,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					$cell->style = "padding-left: ". ($padding + 20 )."px";
 					$cell->text = html_writer::empty_tag('input', array('name'=>'new_comp'.$descriptor->id, 'type'=>'textfield', 'placeholder'=>'[neue Teilkompetenz]', 'descrid'=>$descriptor->id));
 					$own_additionRow->cells[] = $cell;
-					
+					$own_additionRow->cells[] = new html_table_cell();
 					$rows[] = $own_additionRow;
 				}	
 			}
