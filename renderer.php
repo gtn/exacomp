@@ -1233,7 +1233,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			$this->print_topics($rows, 0, $subject->subs, $data, $students, '', false, $editmode, $statistic);
 			
 			//total evaluation crosssub row
-			if($crosssubs && !$editmode){
+			if($crosssubs && !$editmode && !$statistic){
 				$student = array_values($students)[0];
 				$studentid = $student->id;
 		
@@ -4047,6 +4047,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
     		foreach($students as $student)
     			$options[$student->id] = $student->firstname." ".$student->lastname;
     		$options[BLOCK_EXACOMP_SHOW_ALL_STUDENTS] = get_string('allstudents', 'block_exacomp');
+    		$options[BLOCK_EXACOMP_SHOW_STATISTIC] = get_string('statistic', 'block_exacomp');
     		$content .= html_writer::select($options, "lis_crosssubs_students", $selectedStudent, false,
     				array("onchange" => "document.location.href='".$PAGE->url."&crosssubjid=".$selectedCrosssubject."&studentid='+this.value;"));
 		}	
@@ -4222,6 +4223,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$empty_cell = new html_table_cell();
 		$self_row_header->cells[] = $empty_cell;
 		
+		$empty_cell = new html_table_cell();
+		$self_row_header->cells[] = $empty_cell;
+		
 		foreach($self as $self_key => $self_value){
 			$cell = new html_table_cell();
 			$cell->text = $self_key;
@@ -4229,16 +4233,13 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		}
 		
 		$cell = new html_table_cell();
-		$cell->text = "iA";
-		$self_row_header->cells[] = $cell;
-		
-		$cell = new html_table_cell();
 		$cell->text = "oB";
 		$self_row_header->cells[] = $cell;
 		
-		$empty_cell = new html_table_cell();
-		$self_row_header->cells[] = $empty_cell;
-
+		$cell = new html_table_cell();
+		$cell->text = "iA";
+		$self_row_header->cells[] = $cell;
+		
 		$rows[] = $self_row_header;
 		
 		$self_row = new html_table_row();
@@ -4248,23 +4249,23 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$cell->text = "S";
 		$self_row->cells[] = $cell;
 		
+		$empty_cell = new html_table_cell();
+		$self_row->cells[] = $empty_cell;
+		
 		foreach($self as $self_key => $self_value){
 			$cell = new html_table_cell();
 			$cell->text =($self_value>0)?html_writer::tag('span', $self_value, array('title'=>$self_title[$self_key])):$self_value;
 			$self_row->cells[] = $cell;
 		}
+	
+		$cell = new html_table_cell();
+		$cell->text = ($student_oB>0)?html_writer::tag('span', $student_oB, array('title'=>$student_oB_title)):$student_oB;
+		$self_row->cells[] = $cell;
 		
 		$cell = new html_table_cell();
 		$cell->text = ($student_iA>0)?html_writer::tag('span', $student_iA, array('title'=>$student_iA_title)):$student_iA;
 		$self_row->cells[] = $cell;
 		
-		$cell = new html_table_cell();
-		$cell->text = ($student_oB>0)?html_writer::tag('span', $student_oB, array('title'=>$student_oB_title)):$student_oB;
-		$self_row->cells[] = $cell;
-		
-		$empty_cell = new html_table_cell();
-		$self_row->cells[] = $empty_cell;
-
 		$rows[] = $self_row;
 		
 		$teacher_row_header = new html_table_row();

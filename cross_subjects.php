@@ -134,12 +134,15 @@ else{
 	
 	echo $output->print_overview_legend($isTeacher);
 	
+	$statistic = false;
 	if($isTeacher){
     	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
     		$showevaluation = false;
     	    echo $output->print_column_selector(count($students));
     	}elseif ($studentid == 0)
     	    $students = array();
+    	elseif($studentid == BLOCK_EXACOMP_SHOW_STATISTIC)
+    		$statistic = true;
     	else{ 
     	    $students = array($students[$studentid]);
     	    $showevaluation = true;
@@ -150,7 +153,7 @@ else{
 	
 	$subjects = block_exacomp_get_competence_tree_for_cross_subject($courseid,(isset($selectedCrosssubject))?$selectedCrosssubject->id:null,false, !($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies);
 	
-	echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? ROLE_TEACHER : ROLE_STUDENT, $scheme, false, true, $selectedCrosssubject->id);
+	echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? ROLE_TEACHER : ROLE_STUDENT, $scheme, false, true, $selectedCrosssubject->id, $statistic);
 	
 }
 /* END CONTENT REGION */

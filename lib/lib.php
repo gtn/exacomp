@@ -4390,6 +4390,17 @@ function block_exacomp_init_cross_subjects(){
     		$DB->delete_records(DB_CROSSSUBJECTS, array('id'=>$emptydraft->id));
     } 
 }
+/**
+ * 
+ * Calculate number of students which have achieved a certain evaluation (depending on scheme) 
+ * and number of students working on this descriptor (working on one the examples)
+ * Same for overview and crosssubject (only printed descriptors considered)
+ * 
+ * @param unknown_type $courseid
+ * @param unknown_type $students
+ * @param unknown_type $descriptor
+ * @param unknown_type $scheme
+ */
 function block_exacomp_calculate_statistic_for_descriptor($courseid, $students, $descriptor, $scheme){
 	global $DB;
 	$student_oB = 0; $student_iA = 0;
@@ -4429,13 +4440,13 @@ function block_exacomp_calculate_statistic_for_descriptor($courseid, $students, 
 			$teacher_oB_title .= $student->firstname." ".$student->lastname."\n";
 		}
 		
-		//$examples = block_exacomp_get_examples_for_descriptor($descriptor);
 		$example_inwork = false;
 		foreach($descriptor->examples as $example){
 			if($DB->record_exists('block_exacompschedule', array('studentid' => $student->id, 'exampleid' => $example->id, 'courseid' => $courseid))) {
 				$example_inwork = true;
 			}	
 		}
+		
 		foreach($descriptor->children as $children){
 			foreach($children->examples as $example){
 				if($DB->record_exists('block_exacompschedule', array('studentid' => $student->id, 'exampleid' => $example->id, 'courseid' => $courseid))) {
