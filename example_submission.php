@@ -46,11 +46,9 @@ require_login($course);
 
 
 $item = $DB->get_record('block_exacompitemexample', array("exampleid"=>$exampleid),'*',IGNORE_MULTIPLE);
-if($item != null)
-{
+if ($item) {
 	$url = new moodle_url("/blocks/exaport/item.php",array("courseid"=>$courseid,"action"=>"edit","sesskey"=>sesskey(),"id"=>$item->itemid));
-	header("Location: " . str_replace('amp;','', $url->__toString()) );
-	die();
+	redirect($url);
 }
 
 $context = context_course::instance($courseid);

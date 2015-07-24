@@ -35,9 +35,7 @@ class block_exacomp_example_upload_student_form extends moodleform {
 		
 		$mform = & $this->_form;
 
-		$descrid = $this->_customdata['descrid'];
-		
-		$descrTitle = $DB->get_field('block_exacompdescriptors','title',array("id"=>$descrid));
+		$descrTitle = '';
 		$mform->addElement('header', 'general', get_string("example_upload_header", "block_exacomp", $descrTitle));
 
 		$mform->addElement('hidden', 'id');
@@ -70,32 +68,11 @@ class block_exacomp_example_upload_student_form extends moodleform {
 		$mform->addElement('text', 'externalurl', get_string("link","block_exacomp"), 'maxlength="255" size="60"');
 		$mform->setType('externalurl', PARAM_TEXT);
 		
-		$mform->addElement('select', 'taxid', get_string('taxonomy', 'block_exacomp'),$this->_customdata['taxonomies']);
+		// $mform->addElement('select', 'taxid', get_string('taxonomy', 'block_exacomp'),$this->_customdata['taxonomies']);
 		
 		$editexample = $this->_customdata['exampleid'] > 0;
 		
-		if(!$editexample || ($editexample && !$this->_customdata['task'])) {
-    		$mform->addElement('filepicker', 'file', get_string('file'), null, array('subdirs' => false, 'maxfiles' => 1));
-		} else {
-		    $mform->addElement('static', 'filelabel', get_string('file'));
-		    $mform->addElement('html', '<img width="50%" src="'.$this->_customdata['task'].'"/>',get_string('file'));
-		}
-		
-		if(!$editexample || ($editexample && !$this->_customdata['solution'])) {
-		    $mform->addElement('filepicker', 'solution', get_string('solution','block_exacomp'), null, array('subdirs' => false, 'maxfiles' => 1));
-		
-		    if($version) {
-		        $mform->addElement('checkbox', 'lisfilename', get_string('lisfilename', 'block_exacomp'));
-		        $mform->setDefault('lisfilename', 1);
-		    }
-		} else {
-		    $mform->addElement('static', 'solutionlabel', get_string('solution','block_exacomp'));
-		    $mform->addElement('html', '<img width="50%" src="'.$this->_customdata['solution'].'"/>',get_string('solution','block_exacomp'));
-		}
-		
-		$mform->addElement('hidden','topicid');
-		$mform->setType('topicid', PARAM_INT);
-		$mform->setDefault('topicid',$this->_customdata['topicid']);
+   		$mform->addElement('filepicker', 'file', get_string('file'), null, array('subdirs' => false, 'maxfiles' => 1));
 		
 		$mform->addElement('hidden','exampleid');
 		$mform->setType('exampleid', PARAM_INT);

@@ -38,12 +38,19 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 }
 
 // error if example does not exist or was created by somebody else
-if ($exampleid > 0 && (!$example = $DB->get_record('block_exacompexamples', array('id' => $exampleid)))
+if ($exampleid && (!$example = $DB->get_record('block_exacompexamples', array('id' => $exampleid)))
         && $example->creatorid != $USER->id) {
     print_error('invalidexample', 'block_exacomp', $exampleid);
 }
 
 require_login($course);
+
+$item = $DB->get_record('block_exacompitemexample', array("exampleid"=>$exampleid),'*',IGNORE_MULTIPLE);
+if($exampleid && $item) {
+	$url = new moodle_url("/blocks/exaport/item.php",array("courseid"=>$courseid,"action"=>"edit","sesskey"=>sesskey(),"id"=>$item->itemid));
+	redirect($url);
+}
+
 
 $context = context_course::instance($courseid);
 
@@ -91,77 +98,10 @@ if($formdata = $form->get_data()) {
     $newExample = new stdClass();
     $newExample->title = $formdata->title;
     $newExample->description = $formdata->description;
-    $newExample->taxid = $formdata->taxid;
     $newExample->creatorid = $USER->id;
     $newExample->externalurl = $formdata->externalurl;
 	$newExample->source = EXAMPLE_SOURCE_USER;
 	
-    if(isset($formdata->file) || isset($formdata->solution)) {
-        // save file
-        $context = context_user::instance($USER->id);
-        $fs = get_file_storage();
-
-        if($formdata->lisfilename == 1 && $form->get_new_filename('file')) {
-        	$descr = reset($_POST['descriptor']);
-        	$descr = $DB->get_record(DB_DESCRIPTORS,array('id' => $descr));
-            $filenameinfos = $DB->get_record_sql("SELECT t.numb, s.title as subjecttitle, n.title as cattitle, n.sorting as catid
-            		FROM {block_exacompdescriptors} d
-            		JOIN {block_exacompdescrtopic_mm} dt ON dt.descrid = d.id
-                    JOIN {block_exacomptopics} t ON t.id = dt.topicid
-            		JOIN {block_exacompsubjects} s ON s.id = t.subjid
-                    JOIN {block_exacompniveaus} n ON d.niveauid = n.id
-            		WHERE d.id = ?
-                    ", array($descr->parentid));
-            //Fachkürzel
-            $newfilename = substr($filenameinfos->subjecttitle,0,1);
-            //$newfilename .= '_';
-            //Nr Kompetenzbereich sprintf(%02d, $var);
-            $newfilename .= sprintf("%02d", $filenameinfos->numb);
-            $newfilename .= '.';
-            //Nr Lernfortschritt
-
-            $newfilename .= sprintf("%02d", substr($filenameinfos->cattitle,4,1));
-            
-            //Nr Lernwegeliste
-            //$newfilename .= sprintf("%02d", $filenameinfos->catid);
-            $newfilename .= '_';
-            //Taxonomie
-            $taxname = $DB->get_field('block_exacomptaxonomies', 'title', array("id"=>$formdata->tax));
-            if($taxname) {
-                $newfilename .= $taxname;
-                $newfilename .= '.';
-            }
-            //Dateiname
-            $temp_filename = $newfilename;
-
-            $newfilename .= $formdata->title . "." . pathinfo($form->get_new_filename('file'), PATHINFO_EXTENSION);
-            $newsolutionname = $temp_filename . $formdata->name . "_SOLUTION." . pathinfo($form->get_new_filename('solution'), PATHINFO_EXTENSION);
-            $newExample->title = $newfilename;
-        }
-        else {
-            $newfilename = $form->get_new_filename('file');
-            $newsolutionname = $form->get_new_filename('solution');
-        }
-
-        if(!$fs->file_exists($context->id, 'user', 'private', 0, '/', $newfilename))
-            $form->save_stored_file('file', $context->id, 'user', 'private', 0, '/', $newfilename, true);
-
-        $pathnamehash = $fs->get_pathname_hash($context->id, 'user', 'private', 0, '/', $newfilename);
-
-        if(!$fs->file_exists($context->id, 'user', 'private', 0, '/', $newsolutionname))
-            $form->save_stored_file('solution', $context->id, 'user', 'private', 0, '/', $newsolutionname, true);
-        $solutionpathnamehash = $fs->get_pathname_hash($context->id, 'user', 'private', 0, '/', $newsolutionname);
-
-        // insert example
-        if($newfilename) {
-            $task = new moodle_url($CFG->wwwroot.'/blocks/exacomp/example_upload.php',array("action"=>"serve","c"=>$context->id,"i"=>$pathnamehash,"courseid"=>$courseid));
-            $newExample->task = $task->out(false);
-        }
-        if($newsolutionname) {
-            $solution = new moodle_url($CFG->wwwroot.'/blocks/exacomp/example_upload.php',array("action"=>"serve","c"=>$context->id,"i"=>$solutionpathnamehash,"courseid"=>$courseid));
-            $newExample->solution = $solution->out(false);
-        }
-    }
     if($formdata->exampleid == 0)
         $newExample->id = $DB->insert_record('block_exacompexamples', $newExample);
     else {
@@ -179,6 +119,64 @@ if($formdata = $form->get_data()) {
     			$DB->insert_record(DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=> $newExample->id));
     	}
     }
+    
+    // save file
+   require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
+
+	if ($form->get_new_filename('file'))
+		$type = 'file';
+	else
+		$type = 'url';
+	
+   //store item in the right portfolio category
+    $course_category = block_exaport_get_user_category($course->fullname, $USER->id);
+    if(!$course_category) {
+        $course_category = block_exaport_create_user_category($course->fullname, $USER->id);
+    }
+
+    $subjecttitle = block_exacomp_get_subjecttitle_by_example($newExample->id);
+    $subject_category = block_exaport_get_user_category($subjecttitle, $USER->id);
+    if(!$subject_category) {
+        $subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
+    }
+    
+    $itemid = $DB->insert_record("block_exaportitem", array('userid'=>$USER->id,'name'=>$formdata->title,'url'=>$formdata->externalurl,'intro'=>$formdata->description,'type'=>$type,'timemodified'=>time(),'categoryid'=>$subject_category->id));
+    
+    {
+        // autogenerate a published view for the new item
+        $dbView = new stdClass();
+        $dbView->userid = $USER->id;
+        $dbView->name =  $newExample->title;
+        $dbView->timemodified = time();
+        $dbView->layout = 1;
+        // generate view hash
+        do {
+            $hash = substr(md5(microtime()), 3, 8);
+        } while ($DB->record_exists("block_exaportview", array("hash"=>$hash)));
+        $dbView->hash = $hash;
+        
+        $dbView->id = $DB->insert_record('block_exaportview', $dbView);
+        //share the view with teachers
+        $teachers = share_view_to_teachers($dbView->id, $courseid);
+        
+        //add item to view
+        $DB->insert_record('block_exaportviewblock',array('viewid'=>$dbView->id,'positionx'=>1, 'positiony'=>1, 'type'=>'item', 'itemid'=>$itemid));
+    }
+    
+    if ($filename = $form->get_new_filename('file')) {
+        $fs = get_file_storage();
+    
+        $filename = $form->get_new_filename('file');
+        $pathnamehash = $fs->get_pathname_hash($context->id, 'user', 'private', 0, '/', $filename);
+        $context = context_user::instance($USER->id);
+        try {
+            $form->save_stored_file('file', $context->id, 'block_exaport', 'item_file', $itemid, '/', $filename, true);
+        } catch (Exception $e) {
+            //some problem with the file occured
+        }
+    }
+    
+    $DB->insert_record('block_exacompitemexample',array('exampleid'=>$newExample->id,'itemid'=>$itemid,'timecreated'=>time(),'status'=>0));
     
     // add to weekly schedule
     block_exacomp_add_example_to_schedule($USER->id, $newExample->id, $USER->id, $courseid);
