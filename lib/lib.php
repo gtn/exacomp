@@ -886,6 +886,7 @@ function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldes
 			JOIN {'.DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
 			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':'')).')';
 	
+	$sql .= ' ORDER BY d.sorting';
 	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid));
 	
 	return $descriptors;
