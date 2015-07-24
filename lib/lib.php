@@ -4788,3 +4788,16 @@ function block_exacomp_get_descriptor_statistic($courseid, $descrid, $studentid)
 	
 	return array($total, $gradings, $notEvaluated, $inWork,$totalGrade);
 }
+function block_exacomp_delete_custom_descriptor($descriptorid){
+	global $DB;
+	
+	//delete descriptor evaluation
+	$DB->delete_records(DB_COMPETENCIES, array('compid'=>$descriptorid, 'comptype'=>TYPE_DESCRIPTOR));
+	
+	//delete crosssubject association
+	$DB->delete_records(DB_DESCCROSS, array('descrid'=>$descriptorid));
+	
+	//delete descriptor
+	$DB->delete_records(DB_DESCRIPTORS, array('id'=>$descriptorid));
+	
+}	

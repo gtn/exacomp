@@ -1509,6 +1509,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					if($editmode || ($one_student && $descriptor->visible && $data->role == ROLE_TEACHER)){
 						$titleCell->text .= $this->print_visibility_icon($visible, $descriptor->id);
 					}
+					if($editmode && $custom_created_descriptors){
+						$titleCell->text .= html_writer::link($PAGE->url . "&delete_descr=" . $descriptor->id, $OUTPUT->pix_icon("t/delete", get_string("delete"), "", array("onclick" => "return confirm('" . get_string('delete_confirmation_descr','block_exacomp') . "')")));
+					}
+							
 				}
 				$descriptorRow->cells[] = $titleCell;
 				

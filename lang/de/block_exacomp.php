@@ -243,6 +243,7 @@ $string['choosetopic'] = "Teilkompetenzbereich/Leitidee ausw&auml;hlen";
 $string['choosestudent'] = "Kursteilnehmer ausw&auml;hlen: ";
 $string['selectall'] = 'Alle ausw&auml;hlen';
 $string['own_additions'] = 'Schulische Ergänzung: ';
+$string['delete_confirmation_descr'] = 'Soll diese Teilkompetenz wirklich für den ganzen Kurs gelöscht werden?';
 
 //Example Submission
 $string['example_submission_header']  = 'Aufgabe {$a} bearbeiten';
@@ -423,7 +424,7 @@ $string['share_crosssub_with_all'] = 'Das Thema "{$a}" für <b>alle</b> Teilnehm
 $string['new_crosssub'] = "Neues Thema erstellen";
 $string['nocrosssubsub'] = "Kein Fach zugeteilt";
 $string['delete_crosssub'] = 'Thema löschen';
-$string['confirm_delete'] = 'Thema wirklich löschen?';
+$string['confirm_delete'] = 'Soll dieses Thema wirklich gelöscht werden?';
 
 //Associations
 $string['competence_associations'] = 'Verknüpfungen';

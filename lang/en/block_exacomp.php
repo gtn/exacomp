@@ -216,6 +216,7 @@ $string['choosetopic'] = "Choose topic";
 $string['choosestudent'] = "Choose student: ";
 $string['selectall'] = 'Select all';
 $string['own_additions'] = 'Curricular additions: ';
+$string['delete_confirmation_descr'] = 'Do you really want to delete this competence?';
 
 //Example Submission
 $string['example_submission_header']  = 'Aufgabe {$a} bearbeiten';

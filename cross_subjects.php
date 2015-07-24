@@ -73,6 +73,9 @@ if($isTeacher){
 if(($delete = optional_param("delete", 0, PARAM_INT)) > 0 && $isTeacher)
 	block_exacomp_delete_custom_example($delete);
 
+if(($delete = optional_param("delete_descr", 0, PARAM_INT)) > 0 && $isTeacher)
+	block_exacomp_delete_custom_descriptor($delete);	
+	
 
 $activities = block_exacomp_get_activities_by_course($courseid);
 $course_settings = block_exacomp_get_settings_by_course($courseid);
