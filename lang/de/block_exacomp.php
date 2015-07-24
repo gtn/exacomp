@@ -434,6 +434,8 @@ $string['competence_associations_explaination'] = 'Das Lernmaterial {$a} ist mit
 
 //Weeky schedule
 $string['weekly_schedule'] = 'Wochenplan';
+$string['weekly_schedule_added'] = 'Die Aufgabe wurde in den Wochenplan hinzugefügt.';
+$string['weekly_schedule_already_exists'] = 'Die Aufgabe ist bereits im Wochenplan.';
 
 //Statistics
 $string['process'] = 'Bearbeitungsstand';

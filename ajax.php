@@ -173,9 +173,10 @@ switch($action){
 		$creatorid = $USER->id;
 		
 		if ( block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid) )
-			echo "inserted";
+			echo get_string("weekly_schedule_added","block_exacomp");
 		else
-			echo "already exists";
+			echo get_string("weekly_schedule_already_exists","block_exacomp");
+		
 		break;
 	case('new-comp'):
 		$parentid = required_param('descriptorid', PARAM_INT);

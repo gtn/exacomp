@@ -392,6 +392,8 @@ $string['competence_associations_explaination'] = 'The material {$a} is associat
 
 //Weeky schedule
 $string['weekly_schedule'] = 'Weekly schedule';
+$string['weekly_schedule_added'] = 'Example added to the weekly schedule';
+$string['weekly_schedule_already_exists'] = 'Example is already in the weekly schedule';
 
 //Statistics
 $string['process'] = 'State of process';
