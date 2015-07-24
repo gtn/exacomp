@@ -1708,7 +1708,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 						            $OUTPUT->pix_icon("i/edit", get_string("edit")),
 						            array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 						
-						    $titleCell->text .= html_writer::link($PAGE->url . "&delete=" . $example->id, $OUTPUT->pix_icon("t/delete", get_string("delete"), "", array("onclick" => "return confirm('" . get_string('delete_confirmation','block_exacomp') . "')")));
+						    
+						    $titleCell->text .= html_writer::link($PAGE->url . "&delete=" . $example->id. "&studentid=" . optional_param('studentid',BLOCK_EXACOMP_SHOW_ALL_STUDENTS, PARAM_INT). "&subjectid=" . optional_param('subjectid', 0, PARAM_INT). "&topicid=" . optional_param('topicid', 0, PARAM_INT), $OUTPUT->pix_icon("t/delete", get_string("delete"), "", array("onclick" => "return confirm('" . get_string('delete_confirmation','block_exacomp') . "')")));
 						}
 						
 						if($example->task)

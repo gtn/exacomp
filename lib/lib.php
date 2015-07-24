@@ -4883,15 +4883,19 @@ function block_exacomp_get_example_statistic_for_crosssubject($courseid, $crosss
 		if($studentid != 0)
 			$conditions[] = $studentid;
 
-		$sql = "SELECT count(e.id) as count FROM {".DB_EXAMPLEEVAL."} e
-				WHERE courseid = ?
-				AND teacher_evaluation = ?
-				AND exampleid IN (".$example_where_string.")";
-		if($studentid != 0)
-			$sql .= ' AND studentid = ?';
-
-		$gradings[$i] = $DB->count_records_sql($sql, $conditions);
-
+		if($total > 0) {
+			$sql = "SELECT count(e.id) as count FROM {".DB_EXAMPLEEVAL."} e
+					WHERE courseid = ?
+					AND teacher_evaluation = ?
+					AND exampleid IN (".$example_where_string.")";
+			if($studentid != 0)
+				$sql .= ' AND studentid = ?';
+	
+			$gradings[$i] = $DB->count_records_sql($sql, $conditions);
+		}
+		else
+			$gradings[$i] = 0;
+		
 		$notEvaluated -= $gradings[$i];
 	}
 
