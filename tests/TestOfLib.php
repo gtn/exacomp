@@ -13,7 +13,7 @@ class TestOfLib extends UnitTestCase {
     	block_exacomp_truncate_all_data();
     	// 2. import XML
     	$data = file_get_contents("exacomp_data.xml");
-    	block_exacomp_xml_do_import($data);
+    	block_exacomp_data_importer::do_import($data);
     	// 3. specify course id of the Moodle course where the block is used
     	$this->courseid = 2;
     	

@@ -11,7 +11,7 @@ $lang = optional_param('lang', 'en', PARAM_TEXT);
 global $DB;
 
 $data = file_get_contents($xmlname);
-$success = block_exacomp_xml_do_import($data);
+$success = block_exacomp_data_importer::do_import($data);
 foreach($schooltypes as &$schooltype)
 	$schooltype = $DB->get_field('block_exacompschooltypes','id',array('sourceid'=>$schooltype));
 

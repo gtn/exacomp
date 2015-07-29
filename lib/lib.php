@@ -45,7 +45,9 @@ define('SETTINGS_MAX_SCHEME', 10);
 define('EXAMPLE_SOURCE_TEACHER', 3);
 define('EXAMPLE_SOURCE_USER', 4);
 
+define('IMPORT_SOURCE_DEFAULT', 1);
 define("IMPORT_SOURCE_SPECIFIC", 2);
+
 define("CUSTOM_CREATED_DESCRIPTOR", 3);
 
 if (block_exacomp_moodle_badges_enabled()) {
@@ -4231,6 +4233,25 @@ function block_exacomp_optional_param_parse_key_type($type) {
     return null;
 }
 
+function block_exacomp_clean_object($values, $definition) {
+    // some value => type
+    $ret = new stdClass;
+    $values = (object)$values;
+    
+    foreach ($definition as $key => $valueType) {
+        $value = isset($values->$key) ? $values->$key : null;
+        if (is_object($valueType)) {
+            $ret->$key = block_exacomp_clean_object($value, $valueType);
+        } elseif (is_array($valueType)) {
+            $ret->$key = block_exacomp_clean_array($value, $valueType);
+        } else {
+            $ret->$key = clean_param($value, $valueType);
+        }
+    }
+    
+    return $ret;
+}
+
 function block_exacomp_clean_array($values, $definition) {
 
     if ((count($definition) == 1) && ($keyType = block_exacomp_optional_param_parse_key_type(key($definition))))  {
@@ -4248,20 +4269,11 @@ function block_exacomp_clean_array($values, $definition) {
                 $ret[clean_param($key, $keyType)] = clean_param($value, $valueType);
             }
         }
-    } else {
-        // some value => type
-        $ret = new stdClass;
         
-        foreach ($definition as $key => $valueType) {
-            $value = isset($values[$key]) ? $values[$key] : null;
-            if (is_array($valueType)) {
-                $ret->$key = block_exacomp_clean_array($value, $valueType);
-            } else {
-                $ret->$key = clean_param($value, $valueType);
-            }
-        }
+        return $ret;
+    } else {
+        return block_exacomp_clean_object();
     }
-    return $ret;
 }
 
 function block_exacomp_optional_param_array($parname, array $definition) {
