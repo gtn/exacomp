@@ -2920,6 +2920,9 @@ function block_exacomp_truncate_all_data() {
 	$sql = "TRUNCATE {block_exacompsubjects}"; $DB->execute($sql);
 	$sql = "TRUNCATE {block_exacomptaxonomies}"; $DB->execute($sql);
 	$sql = "TRUNCATE {block_exacomptopics}"; $DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompdatasources}"; $DB->execute($sql);
+	
+	// TODO: tabellen block_exacompdescrvisibility, block_exacompitemexample, block_exacompschedule gehören auch gelöscht?
 }
 
 /**
@@ -4401,6 +4404,8 @@ function block_exacomp_get_descriptor_visible_css($visible, $role) {
 	
 	return $visible_css;
 }
+
+// TODO: was macht die funktion?
 function block_exacomp_init_cross_subjects(){
     global $DB;
     $emptydrafts = $DB->get_records(DB_CROSSSUBJECTS, array('sourceid'=>0, 'source'=>1, 'creatorid'=>0, 'courseid'=>0));
