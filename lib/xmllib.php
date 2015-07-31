@@ -1,18 +1,7 @@
 <?php
 
 class block_exacomp_data {
-    protected static function parse_sourceid($id) {
-        if (!$id) return;
-        
-        $id = explode("::", $id);
 
-        if (count($id) == 2) {
-            return array('source' => $id[0], 'sourceid' => $id[1]);
-        }
-        
-        die('parse_sourceid: wrong source id: '.print_r($id, true));
-    }
-    
     protected static function get_my_source() {
         global $CFG;
         return $CFG->wwwroot;
@@ -400,9 +389,6 @@ class block_exacomp_data_importer extends block_exacomp_data {
         $insertedTopics = array();
         if(isset($xml->edulevels)) {
             foreach($xml->edulevels->edulevel as $edulevel) {
-                // TODO:
-                // eigentlich immer ausführen, oder?
-                // brauchen wir nicht mehr: if(self::$import_source_type == IMPORT_SOURCE_DEFAULT)
                 $dbEdulevel = self::insert_edulevel($edulevel);
         
                 foreach($edulevel->schooltypes->schooltype as $schooltype) {
@@ -487,36 +473,14 @@ class block_exacomp_data_importer extends block_exacomp_data {
         
         $item = self::parse_xml_item($xmlItem);
         $item->parentid = $parent;
-
-        // TODO:
-        if (isset($item->taxid)) {
-            $item->taxid = self::get_database_id(DB_TAXONOMIES, $item->taxid); 
-        }
-
-        // TODO: brauchen wir das noch?
-        /*
-        if (self::$import_source_type != IMPORT_SOURCE_DEFAULT && $item->source == IMPORT_SOURCE_DEFAULT) {
-            if ($exampleObj = $DB->get_record(DB_EXAMPLES, array("sourceid"=>$item->sourceid, "source" => $item->sourceid)))
-                return;
-        }
-        */
         
+        if ($xmlItem->taxonomyid) {
+            $item->taxid = self::get_database_id($xmlItem->taxonomyid); 
+        }
+
         self::insert_or_update_item(DB_EXAMPLES, $item);
         self::kompetenzraster_mark_item_used(DB_EXAMPLES, $item);
         
-        // OLD:
-        /*
-        if ($dbItem = $DB->get_record(DB_EXAMPLES, array("sourceid"=>$item->source, 'sourceid'=>$item->sourceid))) {
-            $item->id = $dbItem->id;
-            $DB->update_record(DB_EXAMPLES, $item);
-        } elseif ($item->source == IMPORT_SOURCE_SPECIFIC && $dbItem = $DB->get_record(DB_EXAMPLES, array("id"=>$item->sourceid))) {
-            $item->id = $dbItem->id;
-            $DB->update_record(DB_EXAMPLES, $item);
-        } else {
-            $item->id = $DB->insert_record(DB_EXAMPLES, $item);
-        }
-        */
-
         if ($xmlItem->children) {
             foreach ($xmlItem->children->example as $child) {
                 self::insert_example($child, $item->id);
@@ -570,9 +534,9 @@ class block_exacomp_data_importer extends block_exacomp_data {
         }
         
         if (!empty($descriptor->niveauid))
-            $descriptor->niveauid = self::get_database_id(DB_NIVEAUS, $descriptor->niveauid);
+            $descriptor->niveauid = self::get_database_id($xmlItem->niveau);
         if (!empty($descriptor->catid))
-            $descriptor->catid = self::get_database_id(DB_CATEGORIES, $descriptor->catid);
+            $descriptor->catid = self::get_database_id($xmlItem->category);
         if (!isset($descriptor->profoundness))
             $descriptor->profoundness = 0;
         
@@ -602,7 +566,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         
         if ($xmlItem->examples) {
             foreach ($xmlItem->examples->exampleid as $example) {
-                if ($exampleid = self::get_database_id(DB_EXAMPLES, $example['id'] /* that's the sourceid */)) {
+                if ($exampleid = self::get_database_id($example)) {
                     $conditions = array("descrid"=>$descriptor->id, "exampid"=> $exampleid);
                     $DB->insert_record(DB_DESCEXAMP, $conditions);
                 }
@@ -635,7 +599,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
             $DB->delete_records(DB_DESCCROSS,array("crosssubjid"=>$crosssubject->id));
             
             foreach($xmlItem->descriptors->descriptorid as $descriptor) {
-                if ($descriptorid = self::get_database_id(DB_DESCRIPTORS, $descriptor['id'] /* that's the sourceid */)) {
+                if ($descriptorid = self::get_database_id($descriptor)) {
                     $DB->insert_record(DB_DESCCROSS, array("crosssubjid"=>$crosssubject->id,"descrid"=>$descriptorid));
                 }
             }
@@ -676,7 +640,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
     
             $i=1;
             foreach($xmlItem->descriptors->descriptorid as $descriptor) {
-                if ($descriptorid = self::get_database_id(DB_DESCRIPTORS, $descriptor['id'] /* that's the sourceid */)) {
+                if ($descriptorid = self::get_database_id($descriptor)) {
                     $DB->insert_record(DB_DESCTOPICS, array("topicid"=>$topic->id,"descrid"=>$descriptorid, "sorting"=>$i));
                     $i++;
                 }
@@ -696,9 +660,8 @@ class block_exacomp_data_importer extends block_exacomp_data {
     
         $subject = self::parse_xml_item($xmlItem);
 
-        if (isset($subject->categoryid)) {
-            die('todo categoryid');
-            $subject->catid = block_exacomp_get_database_id(DB_CATEGORIES,$subject['categoryid']->__toString());
+        if (isset($xmlItem->categoryid)) {
+            $subject->catid = self::get_database_id($xmlItem->categoryid);
         }
     
         self::insert_or_update_item(DB_SUBJECTS, $subject);
@@ -748,45 +711,58 @@ class block_exacomp_data_importer extends block_exacomp_data {
             $item = $item['@attributes'] + $item;
             unset($item['@attributes']);
         }
+        
+        $item = (object)$item;
 
-        if (isset($item['id'])) {
-            $item = self::parse_sourceid($item['id']) + $item;
-            unset($item['id']);
+        if (!isset($item->id)) {
+            die('parse_xml_item: no id');
         }
         
-        if (!empty($item['source'])) {
-            if ($item['source'] === 'default') {
-                $item['source'] = IMPORT_SOURCE_DEFAULT;
-            } elseif ($item['source'] === self::get_my_source()) {
-                $item['source'] = IMPORT_SOURCE_SPECIFIC;
-            } else {
-                $item['source'] = self::add_source_if_not_exists($item['source']);
-            }
+        // foreign source to local source
+        if (empty($item->source)) {
+            // default to file source
+            $item->source = self::$import_source_local_id;
+        } elseif ($item->source === self::get_my_source()) {
+            // source is own moodle, eg. export and import in same moodle, set it to specific
+            $item->source = IMPORT_SOURCE_SPECIFIC;
         } else {
-            die('get_xml_item: no item source '.print_r($item, true));
+            // load local source id
+            $item->source = self::add_source_if_not_exists($item->source);
         }
+        
+        // put sourceid and source on top of object properties, easier to read :)
+        $item = (object)(array('sourceid' => $item->id, 'source' => $item->source) + (array)$item);
+        unset($item->id);
         
         /*
         echo 'item: ';
         var_dump($item);
         */
         
-        return (object)$item;
+        return $item;
     }
 
-    private static function get_database_id($table, $sourceid) {
+    private static function get_database_id(SimpleXMLElement $element) {
         global $DB;
         
-        $item = self::parse_sourceid($sourceid);
+        $tableMapping = array(
+            'taxonomyid' => DB_TAXONOMIES,
+            'exampleid' => DB_EXAMPLES,
+            'descriptorid' => DB_DESCRIPTORS,
+            'categoryid' => DB_CATEGORIES,
+        );
         
-        if ($item['source'] === self::get_my_source()) {
-            $item['source'] = IMPORT_SOURCE_SPECIFIC;
+        if (isset($tableMapping[$element->getName()])) {
+            $table = $tableMapping[$element->getName()];
         } else {
-            $item['source'] = self::add_source_if_not_exists($item['source']);
+            die('get_database_id: wrong element name: '.$element->getName());
         }
         
-        return $DB->get_field($table, "id", array("sourceid" => $item['sourceid'], "source" => $item['source']));
+        $item = self::parse_xml_item($element);
+        
+        return $DB->get_field($table, "id", array("sourceid" => $item->sourceid, "source" => $item->source));
     }
+    
     
 
     
@@ -823,7 +799,8 @@ class block_exacomp_data_importer extends block_exacomp_data {
         foreach (self::$kompetenzraster_unused_data_ids as $table => $ids) {
             foreach ($ids as $localid => $sourceid) {
                 // echo "delete old entry in table $table, local_id $localid, global_id $sourceid";
-                $DB->delete_records($table, array("id"=>$localid));
+                // TODO: derzeit deaktiviert, es soll nichts gelöscht werden
+                // $DB->delete_records($table, array("id"=>$localid));
             }
         }
     }
