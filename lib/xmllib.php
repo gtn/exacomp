@@ -648,9 +648,14 @@ class block_exacomp_data_importer extends block_exacomp_data {
         self::kompetenzraster_mark_item_used(DB_TOPICS, $topic);
         
         if ($xmlItem->descriptors) {
-            print_error('todo del desc1');
-            $DB->delete_records(DB_DESCTOPICS, array("topicid"=>$topic->id));
-    
+            // delete all descriptor-topic associations for this source and add them again
+            // TODO: currently never delete anything
+            /*
+            $DB->execute("DELETE FROM {".DB_DESCTOPICS."} WHERE topicid=? AND descrid IN (
+                    SELECT id FROM {".DB_DESCRIPTORS."} WHERE source=?
+                )", array($topic->id, self::$import_source_local_id));
+            */
+            
             $i=1;
             foreach($xmlItem->descriptors->descriptorid as $descriptor) {
                 if ($descriptorid = self::get_database_id($descriptor)) {
