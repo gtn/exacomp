@@ -121,7 +121,7 @@
 	width: 50px;
 }
 
-#block_exacomp .rowgroup-header .rowgroup-arrow {
+#block_exacomp .rowgroup-header .rowgroup-arrow div {
 	cursor: pointer;
 	font-weight: bold;
 	text-decoration: underline;

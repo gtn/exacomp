@@ -86,7 +86,7 @@ class block_exacomp_data {
     public static function has_data() {
         global $DB;
         
-        return (bool)$DB->get_records('block_exacompdescriptors', array(), null, 'id', 0, 1);
+        return (bool)$DB->get_records_select('block_exacompdescriptors', 'source!='.EXAMPLE_SOURCE_TEACHER, array(), null, 'id', 0, 1);
     }
     /*
      * check if there is still data in the old source format
@@ -418,7 +418,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
             self::move_items_to_source(IMPORT_SOURCE_SPECIFIC, self::$import_source_local_id);
         }
         
-        self::kompetenzraster_load_current_data_for_source();
+        // self::kompetenzraster_load_current_data_for_source();
         
         
         if(isset($xml->skills)) {
@@ -491,6 +491,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
     
         self::delete_unused_descriptors(self::$import_source_local_id, self::$import_time, implode(",", $insertedTopics));
     
+        // TODO: was ist mit desccross?
         //self::deleteIfNoSubcategories("block_exacompdescrexamp_mm","block_exacompdescriptors","id",self::$import_source_local_id,1,0,"descrid");
         self::deleteIfNoSubcategories("block_exacompexamples","block_exacompdescrexamp_mm","exampid",self::$import_source_local_id,0);
         //self::deleteIfNoSubcategories("block_exacompdescrtopic_mm","block_exacompdescriptors","id",self::$import_source_local_id,1,0,"descrid");

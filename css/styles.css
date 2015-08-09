@@ -135,7 +135,7 @@
     /* Style for LI that contains sub lists (other ULs). */
     background: white url(../pix/closed.gif) no-repeat left 1px;
     background-image: url([[pix:i/closed]]);
-    cursor: hand !important;
+    cursor: hand !important; /* TODO: was jetzt? */
     cursor: pointer !important;
 }
 
@@ -196,6 +196,7 @@ td.contentcell {
     hyphens: auto;
     word-wrap: break-word;
     font-size: 1em;
+    cursor: default;
 }
 
 #block_exacomp .cell {
@@ -504,7 +505,7 @@ td.contentcell {
     width: 50px
 }
 
-#block_exacomp .rowgroup-header .rowgroup-arrow {
+#block_exacomp .rowgroup-header .rowgroup-arrow div {
     cursor: pointer;
     font-weight: bold;
     text-decoration: underline;
@@ -512,11 +513,11 @@ td.contentcell {
 
 #block_exacomp .rowgroup-header .rowgroup-arrow div {
     padding-left: 12px;
-    background: url(pix/pfeil_show.png) 0 6px no-repeat;
+    background: url(../pix/pfeil_show.png) 0 6px no-repeat;
 }
 
 #block_exacomp .rowgroup-header.open .rowgroup-arrow div {
-    background: url(pix/pfeil_hide.png) 0 6px no-repeat
+    background: url(../pix/pfeil_hide.png) 0 6px no-repeat
 }
 
 #block_exacomp .rowgroup-content {
@@ -741,12 +742,12 @@ td.contentcell {
 }
 
 #block_exacomp .competence_profile_coursedata li.complistshow {
-    background: transparent url(pfeil_show.png) no-repeat left center
+    background: transparent url(../pix/pfeil_show.png) no-repeat left center
 }
 
 #block_exacomp .competence_profile_coursedata li.complisthide,
 #block_exacomp .competence_profile_artefacts ul.competence_profile_complist li {
-    background: transparent url(pfeil_hide.png) no-repeat left center
+    background: transparent url(../pix/pfeil_hide.png) no-repeat left center
 }
 
 #block_exacomp .competence_profile_coursedata {
@@ -776,17 +777,17 @@ td.contentcell {
 }
 
 #block_exacomp .plusimageapply {
-    list-style-image: url(pix/pfeil_show.png);
+    list-style-image: url(../pix/pfeil_show.png);
     cursor: pointer;
 }
 
 #block_exacomp .minusimageapply {
-    list-style-image: url(pix/pfeil_hide.png);
+    list-style-image: url(../pix/pfeil_hide.png);
     cursor: pointer;
 }
 
 #block_exacomp .selectedimage {
-    list-style-image: url(pix/selected.png);
+    list-style-image: url(../pix/selected.png);
     cursor: pointer;
 }
 

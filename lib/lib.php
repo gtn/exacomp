@@ -825,7 +825,7 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescrip
 				JOIN {'.DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
 				JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':''));
 	*/
-	$sql .= ' WHERE  d.parentid = ?';
+	$sql .= ' WHERE d.parentid = ?';
 	
 	$params = array();
 	if($mindvisibility)
@@ -1592,7 +1592,8 @@ function block_exacomp_clean_course_topics($values, $courseid){
 	global $DB;
 	
 	if($courseid == 0)
-		$coutopics = $DB->get_records(DB_COURSETOPICS);
+        // TODO: ist das korrekt so? sollte man nicht courseid=0 auslesen?
+	    $coutopics = $DB->get_records(DB_COURSETOPICS);
 	else 
 		$coutopics = $DB->get_records(DB_COURSETOPICS, array('courseid'=>$courseid));
 		
@@ -1603,7 +1604,7 @@ function block_exacomp_clean_course_topics($values, $courseid){
 		
 		$schooltype = $DB->get_record_sql($sql, array($coutopic->topicid));
 		
-		if(!array_key_exists($schooltype->stid, $values)){
+		if($schooltype && !array_key_exists($schooltype->stid, $values)){
 			$DB->delete_records(DB_COURSETOPICS, array('id'=>$coutopic->id));
 		}
 	}

@@ -1872,28 +1872,51 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	}
 
 
-    public function print_source_info($source) {
+    public function print_source_color($sourceid) {
         global $DB;
-        if ($source && $source = $DB->get_record("block_exacompdatasources", array('id'=>$source))) {
+        
+        if (!$sourceid) {
+            return;
+        } elseif ($sourceid == EXAMPLE_SOURCE_TEACHER) {
+            $color = '#FFFF00';
+        } else {
+            $cnt = $DB->get_field_sql("SELECT COUNT(*) FROM {block_exacompdatasources} WHERE id!=".block_exacomp_data::DUMMY_SOURCE_ID." AND id < ?", array($sourceid));
+            $colors = array('#FF0000', '#00FF00', '#0000FF', '#FF00FF', '#00FFFF', '#800000', '#008000', '#000080', '#808000', '#800080', '#008080', '#C0C0C0', '#808080', '#9999FF', '#993366', '#FFFFCC', '#CCFFFF', '#660066', '#FF8080', '#0066CC', '#CCCCFF', '#000080');
+            $color = $colors[$cnt%count($colors)];
+        }
+
+        return '<span style="border: 1px solid black; background: '.$color.'; margin-right: 5px;">&nbsp;&nbsp;&nbsp;</span>';
+    }
+	
+	public function print_source_info($sourceid) {
+        global $DB;
+        if ($sourceid == EXAMPLE_SOURCE_TEACHER) {
+            $info = 'local';
+            $source_color = $this->print_source_color($sourceid);
+        } elseif ($sourceid && $source = $DB->get_record("block_exacompdatasources", array('id'=>$sourceid))) {
             $info = $source->name;
+            $source_color = $this->print_source_color($source->id);
         } else {
             $info = 'unknown source';
+            $source_color = '';
         }
-        return '<span style="font-weight: normal; text-decoration: none;">' // TODO: change stylesheet
+        return $source_color.'<span>' // TODO: change stylesheet
                 .$info.'</span>';
     }
 
     public function print_sources() {
         global $DB, $OUTPUT, $courseid;
         
-        $sources = $DB->get_records("block_exacompdatasources", null, 'name');
+        $sources = $DB->get_records_sql("
+            SELECT * FROM {block_exacompdatasources} WHERE id!=".block_exacomp_data::DUMMY_SOURCE_ID." ORDER BY NAME"
+        );
         
         if (!$sources) return;
         
         $ret = '<div>';
         foreach ($sources as $source) {
             $name = ($source->name ? $source->name : $source->source);
-            $ret .= $OUTPUT->box($name.' '.html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'action'=>'delete', 'source'=>$source->id)), 
+            $ret .= $OUTPUT->box($this->print_source_color($source->id).' '.$name.' '.html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'action'=>'delete', 'source'=>$source->id)), 
                     get_string('delete'),
                     array( "onclick" => "return confirm('Really delete \"'+this.getAttribute('data-name')+'\"?')", 'data-name' => $name)));
         }
