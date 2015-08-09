@@ -1883,6 +1883,24 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                 .$info.'</span>';
     }
 
+    public function print_sources() {
+        global $DB, $OUTPUT, $courseid;
+        
+        $sources = $DB->get_records("block_exacompdatasources", null, 'name');
+        
+        if (!$sources) return;
+        
+        $ret = '<div>';
+        foreach ($sources as $source) {
+            $name = ($source->name ? $source->name : $source->source);
+            $ret .= $OUTPUT->box($name.' '.html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'action'=>'delete', 'source'=>$source->id)), 
+                    get_string('delete'),
+                    array( "onclick" => "return confirm('Really delete \"'+this.getAttribute('data-name')+'\"?')", 'data-name' => $name)));
+        }
+        $ret .= '</div>';
+        return $ret;
+    }
+
     public function print_submission_icon($courseid, $exampleid, $studentid = 0) {
 		global $CFG, $OUTPUT;
 		

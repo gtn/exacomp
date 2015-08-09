@@ -1907,7 +1907,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		upgrade_block_savepoint(true, 2015072302, 'exacomp');
 	}
 	
-    if ($oldversion < 2015080401) {
+    if ($oldversion < 2015080900) {
 
         // Define table block_exacompdatasources to be created.
         $table = new xmldb_table('block_exacompdatasources');
@@ -1916,6 +1916,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('source', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
         $table->add_field('name', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('type', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
         
         // Adding keys to table block_exacompdatasources.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
@@ -1926,7 +1927,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         }
 
         // Exacomp savepoint reached.
-        upgrade_block_savepoint(true, 2015080401, 'exacomp');
+        upgrade_block_savepoint(true, 2015080900, 'exacomp');
     }
 	
 	

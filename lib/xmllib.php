@@ -2,6 +2,10 @@
 
 class block_exacomp_data {
 
+    protected static $sourceTables = array(DB_SKILLS, DB_NIVEAUS, DB_TAXONOMIES, DB_CATEGORIES, DB_EXAMPLES,
+                    DB_DESCRIPTORS, DB_CROSSSUBJECTS, DB_EDULEVELS, DB_SCHOOLTYPES, DB_SUBJECTS,
+                    DB_TOPICS);
+    
     protected static function get_my_source() {
         global $CFG;
         return $CFG->wwwroot;
@@ -75,6 +79,58 @@ class block_exacomp_data {
         
         return self::$sources;
     }
+
+    /**
+     * checks if data is imported
+     */
+    public static function has_data() {
+        global $DB;
+        
+        return (bool)$DB->get_records('block_exacompdescriptors', array(), null, 'id', 0, 1);
+    }
+    /*
+     * check if there is still data in the old source format
+     */
+    public static function has_old_data($source) {
+        global $DB;
+        
+        return (bool)$DB->get_records('block_exacompdescriptors', array("source" => $source), null, 'id', 0, 1);
+    }
+    protected static function move_items_to_source($oldSource, $newSource) {
+        global $DB;
+        
+        foreach (self::$sourceTables as $table) {
+            $DB->execute("UPDATE {{$table}} SET source=? WHERE source=?", array($newSource, $oldSource));
+        }
+    }
+    
+    public static function delete_source($source) {
+        global $DB;
+        
+        foreach (self::$sourceTables as $table) {
+            $DB->delete_records($table, array('source' => $source));
+        }
+        
+        $DB->delete_records("block_exacompdatasources", array('id' => $source));
+
+        return true;
+    }
+    /*
+    public static function delete_custom_competencies() {
+        global $DB;
+        
+        // TODO: geht so nicht mehr
+        $DB->delete_records(DB_SUBJECTS,array('source' => IMPORT_SOURCE_SPECIFIC));
+        $DB->delete_records(DB_TOPICS,array('source' => IMPORT_SOURCE_SPECIFIC));
+        $DB->delete_records(DB_DESCRIPTORS,array('source' => IMPORT_SOURCE_SPECIFIC));
+        $examples = $DB->get_records(DB_EXAMPLES,array('source' => IMPORT_SOURCE_SPECIFIC));
+        foreach($examples as $example) 
+            block_exacomp_delete_custom_example($example->id);
+        
+        return true;
+    }
+    */
+    
 }
 
 class block_exacomp_data_exporter extends block_exacomp_data {
@@ -347,7 +403,20 @@ class block_exacomp_data_importer extends block_exacomp_data {
         self::$import_source_local_id = self::add_source_if_not_exists(self::$import_source_global_id);
         
         // save source name
-        $DB->update_record("block_exacompdatasources", array('id'=>self::$import_source_local_id, 'name'=>(string)$xml['sourcename']));
+        $DB->update_record("block_exacompdatasources", array('id'=>self::$import_source_local_id, 'name'=>(string)$xml['sourcename'], 'type'=>self::$import_source_type));
+        
+        
+        // update scripts for new source format
+        if (self::has_old_data(IMPORT_SOURCE_DEFAULT)) {
+            if (self::$import_source_type != IMPORT_SOURCE_DEFAULT) {
+                print_error('you first need to import the default sources!');
+            }
+            self::move_items_to_source(IMPORT_SOURCE_DEFAULT, self::$import_source_local_id);
+        }
+        else {
+            // always move old specific data
+            self::move_items_to_source(IMPORT_SOURCE_SPECIFIC, self::$import_source_local_id);
+        }
         
         self::kompetenzraster_load_current_data_for_source();
         
@@ -418,7 +487,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
             }
         }
         
-        self::kompetenzraster_clean_unused_data_from_source();
+        // self::kompetenzraster_clean_unused_data_from_source();
     
         self::delete_unused_descriptors(self::$import_source_local_id, self::$import_time, implode(",", $insertedTopics));
     
@@ -790,16 +859,14 @@ class block_exacomp_data_importer extends block_exacomp_data {
     
     
 
-    private static $kompetenzraster_tables = array(DB_SKILLS, DB_NIVEAUS, DB_TAXONOMIES, DB_CATEGORIES, DB_EXAMPLES, 
-                                                   DB_DESCRIPTORS, DB_CROSSSUBJECTS, DB_EDULEVELS, DB_SCHOOLTYPES, DB_SUBJECTS, 
-                                                   DB_TOPICS);
+    /*
     private static $kompetenzraster_data_ids = array();
     private static $kompetenzraster_unused_data_ids = array();
     
     private static function kompetenzraster_load_current_data_for_source() {
         global $DB;
         
-        foreach (self::$kompetenzraster_tables as $table) {
+        foreach (self::$sourceTables as $table) {
             self::$kompetenzraster_data_ids[$table] = $DB->get_records_menu($table, array('source'=>self::$import_source_local_id), null, 'id, sourceid AS tmp');
         }
         
@@ -832,7 +899,11 @@ class block_exacomp_data_importer extends block_exacomp_data {
         // mark used
         unset(self::$kompetenzraster_unused_data_ids[$table][$item->id]);
     }
+    */
 
+    private static function kompetenzraster_mark_item_used($table, $item) {
+        // deactivated for now
+    }
 
 
 
@@ -915,35 +986,6 @@ function simpleXMLElementToArray(SimpleXMLElement $xmlobject) {
 }
 
 
-/**
- * checks if data is imported
- */
-function block_exacomp_xml_check_import() {
-    global $DB;
-    
-    // TODO: optimieren only first record lesen? count?
-    return ($DB->get_records('block_exacompdescriptors')) ? true : false;
-}
-function block_exacomp_xml_check_custom_import() {
-    global $DB;
-    
-    // TODO: geht so nicht mehr
-    return ($DB->get_records(DB_DESCRIPTORS,array("source" => IMPORT_SOURCE_SPECIFIC))) ? true : false;
-}
-function block_exacomp_delete_custom_competencies() {
-    global $DB;
-    
-    // TODO: geht so nicht mehr
-    $DB->delete_records(DB_SUBJECTS,array('source' => IMPORT_SOURCE_SPECIFIC));
-    $DB->delete_records(DB_TOPICS,array('source' => IMPORT_SOURCE_SPECIFIC));
-    $DB->delete_records(DB_DESCRIPTORS,array('source' => IMPORT_SOURCE_SPECIFIC));
-    $examples = $DB->get_records(DB_EXAMPLES,array('source' => IMPORT_SOURCE_SPECIFIC));
-    foreach($examples as $example) 
-        block_exacomp_delete_custom_example($example->id);
-    
-    return true;
-}
-
 global $CFG;
 require_once $CFG->libdir . '/formslib.php';
 
@@ -974,7 +1016,7 @@ class block_exacomp_generalxml_upload_form extends moodleform {
         $importtype = optional_param('importtype', 'normal', PARAM_TEXT);
 
         $this->_form->_attributes['action'] = $_SERVER['REQUEST_URI'];
-        $check = block_exacomp_xml_check_import();
+        $check = block_exacomp_data::has_data();
         if($importtype == 'custom') {
             $mform->addElement('header', 'comment', get_string("doimport_own", "block_exacomp"));
         }
