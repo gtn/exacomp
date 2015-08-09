@@ -48,7 +48,7 @@ require_login ( $course );
 $context = context_system::instance ();
 block_exacomp_require_admin($context);
 
-$check = block_exacomp_xml_check_import ();
+$check = block_exacomp_data::has_data();
 if (! $check) {
 	redirect ( new moodle_url ( '/blocks/exacomp/import.php', array (
 			'courseid' => $courseid 

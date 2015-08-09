@@ -45,7 +45,9 @@ define('SETTINGS_MAX_SCHEME', 10);
 define('EXAMPLE_SOURCE_TEACHER', 3);
 define('EXAMPLE_SOURCE_USER', 4);
 
+define('IMPORT_SOURCE_DEFAULT', 1);
 define("IMPORT_SOURCE_SPECIFIC", 2);
+
 define("CUSTOM_CREATED_DESCRIPTOR", 3);
 
 if (block_exacomp_moodle_badges_enabled()) {
@@ -2918,6 +2920,9 @@ function block_exacomp_truncate_all_data() {
 	$sql = "TRUNCATE {block_exacompsubjects}"; $DB->execute($sql);
 	$sql = "TRUNCATE {block_exacomptaxonomies}"; $DB->execute($sql);
 	$sql = "TRUNCATE {block_exacomptopics}"; $DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompdatasources}"; $DB->execute($sql);
+	
+	// TODO: tabellen block_exacompdescrvisibility, block_exacompitemexample, block_exacompschedule gehören auch gelöscht?
 }
 
 /**
@@ -4231,6 +4236,25 @@ function block_exacomp_optional_param_parse_key_type($type) {
     return null;
 }
 
+function block_exacomp_clean_object($values, $definition) {
+    // some value => type
+    $ret = new stdClass;
+    $values = (object)$values;
+    
+    foreach ($definition as $key => $valueType) {
+        $value = isset($values->$key) ? $values->$key : null;
+        if (is_object($valueType)) {
+            $ret->$key = block_exacomp_clean_object($value, $valueType);
+        } elseif (is_array($valueType)) {
+            $ret->$key = block_exacomp_clean_array($value, $valueType);
+        } else {
+            $ret->$key = clean_param($value, $valueType);
+        }
+    }
+    
+    return $ret;
+}
+
 function block_exacomp_clean_array($values, $definition) {
 
     if ((count($definition) == 1) && ($keyType = block_exacomp_optional_param_parse_key_type(key($definition))))  {
@@ -4248,20 +4272,11 @@ function block_exacomp_clean_array($values, $definition) {
                 $ret[clean_param($key, $keyType)] = clean_param($value, $valueType);
             }
         }
-    } else {
-        // some value => type
-        $ret = new stdClass;
         
-        foreach ($definition as $key => $valueType) {
-            $value = isset($values[$key]) ? $values[$key] : null;
-            if (is_array($valueType)) {
-                $ret->$key = block_exacomp_clean_array($value, $valueType);
-            } else {
-                $ret->$key = clean_param($value, $valueType);
-            }
-        }
+        return $ret;
+    } else {
+        return block_exacomp_clean_object();
     }
-    return $ret;
 }
 
 function block_exacomp_optional_param_array($parname, array $definition) {
@@ -4389,6 +4404,8 @@ function block_exacomp_get_descriptor_visible_css($visible, $role) {
 	
 	return $visible_css;
 }
+
+// TODO: was macht die funktion?
 function block_exacomp_init_cross_subjects(){
     global $DB;
     $emptydrafts = $DB->get_records(DB_CROSSSUBJECTS, array('sourceid'=>0, 'source'=>1, 'creatorid'=>0, 'courseid'=>0));

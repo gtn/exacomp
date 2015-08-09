@@ -359,7 +359,7 @@ class block_exacomp extends block_list {
 			if($xml) {
 				require_once dirname(__FILE__) . '/lib/xmllib.php';
 
-				if(block_exacomp_xml_do_import($xml,1,1)) {
+				if(block_exacomp_data_importer::do_import($xml, IMPORT_SOURCE_DEFAULT, true)) {
 					mtrace("import done");
 					block_exacomp_settstamp();
 				}

@@ -1522,8 +1522,11 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					if($editmode && $custom_created_descriptors){
 						$titleCell->text .= html_writer::link($PAGE->url . "&delete_descr=" . $descriptor->id, $OUTPUT->pix_icon("t/delete", get_string("delete"), "", array("onclick" => "return confirm('" . get_string('delete_confirmation_descr','block_exacomp') . "')")));
 					}
-							
 				}
+				if ($editmode) {
+				    $titleCell->text .= ' '.$this->print_source_info($descriptor->source);
+				}
+				
 				$descriptorRow->cells[] = $titleCell;
 				
 				$nivCell = new html_table_cell();
@@ -1750,7 +1753,11 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 						
 						}
 						
-						$titleCell->attributes['title'] = '';
+						if ($editmode) {
+				            $titleCell->text .= ' '.$this->print_source_info($descriptor->source);
+				        }
+						
+				        $titleCell->attributes['title'] = '';
 						
 						if(!empty($example->description))
 							$titleCell->attributes['title'] .= $example->description;
@@ -1864,7 +1871,37 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		}
 	}
 
-	public function print_submission_icon($courseid, $exampleid, $studentid = 0) {
+
+    public function print_source_info($source) {
+        global $DB;
+        if ($source && $source = $DB->get_record("block_exacompdatasources", array('id'=>$source))) {
+            $info = $source->name;
+        } else {
+            $info = 'unknown source';
+        }
+        return '<span style="font-weight: normal; text-decoration: none;">' // TODO: change stylesheet
+                .$info.'</span>';
+    }
+
+    public function print_sources() {
+        global $DB, $OUTPUT, $courseid;
+        
+        $sources = $DB->get_records("block_exacompdatasources", null, 'name');
+        
+        if (!$sources) return;
+        
+        $ret = '<div>';
+        foreach ($sources as $source) {
+            $name = ($source->name ? $source->name : $source->source);
+            $ret .= $OUTPUT->box($name.' '.html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'action'=>'delete', 'source'=>$source->id)), 
+                    get_string('delete'),
+                    array( "onclick" => "return confirm('Really delete \"'+this.getAttribute('data-name')+'\"?')", 'data-name' => $name)));
+        }
+        $ret .= '</div>';
+        return $ret;
+    }
+
+    public function print_submission_icon($courseid, $exampleid, $studentid = 0) {
 		global $CFG, $OUTPUT;
 		
 		$context = context_course::instance($courseid);
