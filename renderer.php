@@ -25,6 +25,8 @@ defined('MOODLE_INTERNAL') || die;
 
 define('STUDENTS_PER_COLUMN', 5);
 
+require_once dirname(__FILE__)."/lib/xmllib.php";
+
 class block_exacomp_renderer extends plugin_renderer_base {
     public function header() {
         return
@@ -1705,7 +1707,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					$titleCell->text = $example->title;
 	
 					if(!$statistic){
-						if(isset($example->creatorid) && $example->creatorid == $USER->id) {
+						$titleCell->text .= '<span style="padding-left: 10px;" class="todo-change-stylesheet-icons">';
+					    
+					    if(isset($example->creatorid) && $example->creatorid == $USER->id) {
 						    $titleCell->text .= html_writer::link(
 						            new moodle_url('/blocks/exacomp/example_upload.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id,"topicid"=>$descriptor->topicid,"exampleid"=>$example->id)),
 						            $OUTPUT->pix_icon("i/edit", get_string("edit")),
@@ -1731,6 +1735,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 						}elseif($example->externaltask){
 							$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->externaltask), $OUTPUT->pix_icon("i/preview", get_string("preview")),array("target" => "_blank"));
 						}
+						
 						if($example->solution)
 							$titleCell->text .= $this->print_example_solution_icon($example->solution);
 						
@@ -1752,6 +1757,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 							$titleCell->text .= $this->print_competence_association_icon($example->id, $data->courseid, $editmode);
 						
 						}
+						$titleCell->text .= '</span>';
 						
 						if ($editmode) {
 				            $titleCell->text .= ' '.$this->print_source_info($descriptor->source);

@@ -512,6 +512,19 @@ class block_exacomp_data_importer extends block_exacomp_data {
     
     
     
+    private static function insert_or_update_record($table, $where, $data = array()) {
+        global $DB;
+        
+        if ($dbItem = $DB->get_record($table, $where)) {
+            if ($data) {
+                $data['id'] = $dbItem->id;
+                $DB->update_record($table, $data);
+            }
+        } else {
+            $DB->insert_record($table, $where + $data);
+        }
+    }
+    
     private static function insert_or_update_item($table, $item) {
         global $DB;
         
@@ -562,12 +575,12 @@ class block_exacomp_data_importer extends block_exacomp_data {
         self::kompetenzraster_mark_item_used(DB_EXAMPLES, $item);
         
         if ($xmlItem->descriptors) {
-            if ($item->source == self::$import_source_global_id)
+            if ($item->source == self::$import_source_local_id)
                 $DB->delete_records(DB_DESCEXAMP,array("exampid"=>$item->id));
 
             foreach($xmlItem->descriptors->descriptorid as $descriptor) {
                 if ($descriptorid = self::get_database_id($descriptor)) {
-                    $DB->insert_record(DB_DESCEXAMP, array("exampid"=>$item->id, "descrid"=>$descriptorid));
+                    self::insert_or_update_record(DB_DESCEXAMP, array("exampid"=>$item->id, "descrid"=>$descriptorid));
                 }
             }
         }
@@ -679,12 +692,12 @@ class block_exacomp_data_importer extends block_exacomp_data {
         //insert descriptors
         
         if ($xmlItem->descriptors) {
-            if ($crosssubject->source == self::$import_source_global_id)
+            if ($crosssubject->source == self::$import_source_local_id)
                 $DB->delete_records(DB_DESCCROSS,array("crosssubjid"=>$crosssubject->id));
 
             foreach($xmlItem->descriptors->descriptorid as $descriptor) {
                 if ($descriptorid = self::get_database_id($descriptor)) {
-                    $DB->insert_record(DB_DESCCROSS, array("crosssubjid"=>$crosssubject->id,"descrid"=>$descriptorid));
+                    self::insert_or_update_record(DB_DESCCROSS, array("crosssubjid"=>$crosssubject->id,"descrid"=>$descriptorid));
                 }
             }
         }
@@ -729,7 +742,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
             $i=1;
             foreach($xmlItem->descriptors->descriptorid as $descriptor) {
                 if ($descriptorid = self::get_database_id($descriptor)) {
-                    $DB->insert_record(DB_DESCTOPICS, array("topicid"=>$topic->id,"descrid"=>$descriptorid, "sorting"=>$i));
+                    self::insert_or_update_record(DB_DESCTOPICS, array("topicid"=>$topic->id,"descrid"=>$descriptorid), array("sorting"=>$i));
                     $i++;
                 }
             }
