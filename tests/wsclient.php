@@ -7,16 +7,15 @@
 // (at your option) any later version.
 //
 
-$token = 'dc4c9e77294d901f8247d1dccf63ce30';
-$domainname = 'http://localhost/moodle271/';
-$functionname = 'block_exacomp_get_courses';
+$domainname = 'http://gtn-solutions.com/moodle29';
+
 
 $params = new stdClass();
 
 require_once('./curl.php');
 $curl = new curl;
 
-$serverurl = 'http://localhost/moodle271/login/token.php?username=schueler&password=Schueler123!&service=exacompservices';
+$serverurl = 'http://gtn-solutions.com/moodle29/login/token.php?username=student2&password=Student2!&token=364497&service=exacompservices';
 $resp = $curl->get($serverurl);
 $resp = json_decode($resp)->token;
 $token = $resp;
@@ -24,17 +23,23 @@ print_r($token);
 
 /// REST CALL BLOCK_EXACOMP_GET_COURSES
 header('Content-Type: text/plain');
+
+$functionname = 'dakora_get_courses';
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
-$resp = $curl->get($serverurl);
+
+$params = new stdClass();
+$params->userid = 0;
+
+$resp = $curl->get($serverurl, $params);
 print_r($resp);
 
 
-/// REST CALL BLOCK_EXACOMP_GET_SUBJECTS
+/*/// REST CALL BLOCK_EXACOMP_GET_SUBJECTS
 
 $functionname = 'block_exacomp_get_subjects';
 
 $params = new stdClass();
-$params->courseid = 2;
+$params->courseid = 3;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
@@ -45,6 +50,7 @@ echo "
 
 
 ";
+/*
 /// REST CALL BLOCK_EXACOMP_GET_TOPICS
 
 $functionname = 'block_exacomp_get_topics';
@@ -227,4 +233,4 @@ $params->assignid = 1;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
-print_r($resp);
+print_r($resp);*/

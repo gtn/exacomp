@@ -33,7 +33,8 @@ $services = array(
 						'block_exacomp_update_example',
 						'block_exacomp_get_competencies_by_topic',
 						'block_exacomp_delete_item',
-						'block_exacomp_delete_example'), 	//web service functions of this service
+						'block_exacomp_delete_example', 
+						'dakora_get_courses'), 	//web service functions of this service
 				'restrictedusers' =>0,                      //if enabled, the Moodle administrator must link some user to this service
 				//into the administration
 				'enabled'=>1,                               //if enabled, the service can be reachable on a default installation
@@ -267,5 +268,12 @@ $functions = array(
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'delete a custom item',    //human readable description of the web service function
 				'type'        => 'write'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_courses' => array (
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_courses',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get courses for user for dakora app',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
 		)
 );

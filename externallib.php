@@ -2897,5 +2897,38 @@ class block_exacomp_external extends external_api {
 				'descriptortitle' => new external_value ( PARAM_TEXT, 'title of example' ) 
 		) ) );
 	}
+	
+	/**
+	 * Returns description of method parameters
+	 * 
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_courses_parameters() {
+		return new external_function_parameters ( array (
+				'userid' => new external_value ( PARAM_INT, 'id of user' ) 
+		) );
+	}
+	
+	/**
+	 * get courses
+	 * 
+	 * @return array of user courses
+	 */
+	public static function dakora_get_courses($userid) {
+		return block_exacomp_external::get_courses ( $userid );
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_courses_returns() {
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
+				'fullname' => new external_value ( PARAM_TEXT, 'fullname of course' ),
+				'shortname' => new external_value ( PARAM_RAW, 'shortname of course' ) 
+		) ) );
+	}
 
 }
