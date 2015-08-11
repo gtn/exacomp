@@ -187,6 +187,11 @@ if($isAdmin || block_exacomp_check_customupload()) {
                 echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'custom')), get_string('doimport_own', 'block_exacomp')));
             }
     
+            // export
+            echo '<br />';
+            echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/export.php', array('courseid'=>$courseid)), 'Export all educational standards as xml', array('target'=>'_blank')));
+            
+            
             if ($isAdmin) {
                 echo '<br /><br /><br />';
                 echo $PAGE->get_renderer('block_exacomp')->print_sources();

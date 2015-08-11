@@ -1,5 +1,39 @@
 <?php
 
+class block_exacomp_SimpleXMLElement extends SimpleXMLElement {
+    /**
+     * Adds a child with $value inside CDATA
+     * @param unknown $name
+     * @param unknown $value
+     */
+    public function addChildWithCDATA($name, $value = NULL) {
+        $new_child = $this->addChild($name);
+
+        if ($new_child !== NULL) {
+            $node = dom_import_simplexml($new_child);
+            $no   = $node->ownerDocument;
+            $node->appendChild($no->createCDATASection($value));
+        }
+
+        return $new_child;
+    }
+
+    public function addChildWithCDATAIfValue($name, $value = NULL) {
+        if ($value) {
+            return $this->addChildWithCDATA($name, $value);
+        } else {
+            return $this->addChild($name, $value);
+        }
+    }
+    
+    public function asPrettyXML() {
+        $dom = dom_import_simplexml($this)->ownerDocument;
+        $dom->formatOutput = true;
+        return $dom->saveXML();
+    }
+    
+}
+
 class block_exacomp_data {
 
     protected static $sourceTables = array(DB_SKILLS, DB_NIVEAUS, DB_TAXONOMIES, DB_CATEGORIES, DB_EXAMPLES,
@@ -11,28 +45,6 @@ class block_exacomp_data {
         return $CFG->wwwroot;
     }
     
-    protected static function create_sourceid($item) {
-        if (!$item) {
-            return;
-        }
-        if ($item->source && $item->sourceid) {
-            if ($item->source == IMPORT_SOURCE_DEFAULT) {
-                // source und sourceid vorhanden -> von wo anders erhalten
-                return 'default::'.$item->sourceid;
-            } elseif ($item->source == IMPORT_SOURCE_SPECIFIC) {
-                // local source -> von dieser moodle instanz selbst
-                return self::get_my_source().'::'.$item->sourceid;
-            } elseif ($source = self::get_source_global_id($item->source)) {
-                return $source.'::'.$item->sourceid;
-            }
-            
-            print_error('database error, unknown source '.$item->source);
-        } else {
-            // local source -> set new id
-            return self::get_my_source().'::'.$item->id;
-        }
-    }
-
     
     
     
@@ -178,17 +190,18 @@ class block_exacomp_data {
 class block_exacomp_data_exporter extends block_exacomp_data {
     
     public static function do_export($type = null /* TODO alles exportieren, nur aktuelles moodle exportieren... */) {
-        global $DB;
+        global $DB, $SITE;
         
         core_php_time_limit::raise();
         raise_memory_limit(MEMORY_HUGE);
         
-        $xml = new SimpleXMLElement(
+        $xml = new block_exacomp_SimpleXMLElement(
             '<?xml version="1.0" encoding="UTF-8"?>'.
             '<exacomp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://github.com/gtn/edustandards/blob/master/new%20schema/exacomp.xsd" />'
         );
         
         $xml['source'] = self::get_my_source();
+        $xml['sourcename'] = $SITE->fullname;
         
         // TODO: skills
         /*
@@ -210,14 +223,70 @@ $skill->source = IMPORT_SOURCE_DEFAULT;
     $DB->insert_record(DB_SKILLS, simpleXMLElementToArray($skill));
         */
     
+        self::export_skills($xml);
         self::export_niveaus($xml);
+        // TODO: export taxonomies
+        // TODO: export categoriesn
         self::export_examples($xml);
         self::export_descriptors($xml);
+        // TODO: crosssubjects
         self::export_edulevels($xml);
-        
-        header('Content-Type: text/xml');
-        echo self::format_xml($xml);
+
+        if (!optional_param('as_text', '', PARAM_INT)) {
+            $filename = 'moodle_exacomp_export.xml';
+            header('Content-Type: application/xml; charset=utf-8');
+            header('Content-Disposition: attachment; filename='.$filename);
+        }
+        echo $xml->asPrettyXML();
         exit;
+    }
+    
+    private static function assign_source($xmlItem, $dbItem) {
+        if ($dbItem->source && $dbItem->sourceid) {
+            if ($dbItem->source == IMPORT_SOURCE_DEFAULT) {
+                // source und sourceid vorhanden -> von wo anders erhalten
+                print_error('database error, has default source #69fvk3');
+            } elseif ($dbItem->source == IMPORT_SOURCE_SPECIFIC) {
+                // local source -> von dieser moodle instanz selbst
+                print_error('database error, has specific source #yt8d21');
+            } elseif ($source = self::get_source_global_id($dbItem->source)) {
+                $xmlItem['source'] = $source;
+                $xmlItem['id'] = $dbItem->sourceid;
+            } else {
+                print_error('database error, unknown source '.$dbItem->source.' #f9ssaa8');
+            }
+        } else {
+            // local source -> set new id
+            $xmlItem['source'] = self::get_my_source();
+            $xmlItem['id'] = $dbItem->id;
+        }
+    }
+    
+    private static function assign_value_source($xmlItem, $valueName, $table, $id) {
+        global $DB;
+        
+        if ($dbItem = $DB->get_record($table, array("id" => $id))) {
+            self::assign_source($xmlItem->addChild($valueName), $dbItem);
+        } else {
+            $xmlItem->addChild($valueName);
+        }
+    }
+    
+    private static function export_skills($xmlParent) {
+        global $DB;
+        
+        $dbItems = $DB->get_records(DB_SKILLS); // , array("source"=>self::$source));
+        
+        if (!$dbItems) return;
+        
+        $xmlItems = $xmlParent->addChild('skills');
+        
+        foreach ($dbItems as $dbItem) {
+            $xmlItem = $xmlItems->addChild('skill');
+            self::assign_source($xmlItem, $dbItem);
+            $xmlItem->addChildWithCDATAIfValue('title', $dbItem->title);
+            $xmlItem->sorting = $dbItem->sorting;
+        }
     }
     
     private static function export_niveaus($xmlParent, $parentid = 0) {
@@ -241,8 +310,8 @@ $skill->source = IMPORT_SOURCE_DEFAULT;
         // var_dump($dbItems);
         foreach ($dbItems as $dbItem) {
             $xmlItem = $xmlItems->addChild('niveau');
-            $xmlItem['id'] = self::create_sourceid($dbItem);
-            $xmlItem->title = $dbItem->title;
+            self::assign_source($xmlItem, $dbItem);
+            $xmlItem->addChildWithCDATAIfValue('title', $dbItem->title);
             $xmlItem->sorting = $dbItem->sorting;
             
             // children
@@ -290,10 +359,41 @@ $skill->source = IMPORT_SOURCE_DEFAULT;
 
         foreach ($dbItems as $dbItem) {
             $xmlItem = $xmlItems->addChild('example');
-            $xmlItem['id'] = self::create_sourceid($dbItem);
-            $xmlItem->title = $dbItem->title;
-            $xmlItem->titleshort = $dbItem->titleshort;
-            $xmlItem->description = $dbItem->description;
+            self::assign_source($xmlItem, $dbItem);
+            $xmlItem->addChildWithCDATAIfValue('title', $dbItem->title);
+            $xmlItem->addChildWithCDATAIfValue('titleshort', $dbItem->titleshort);
+            $xmlItem->addChildWithCDATAIfValue('description', $dbItem->description);
+            $xmlItem->sorting = $dbItem->sorting;
+            $xmlItem->timeframe = $dbItem->timeframe;
+            $xmlItem->addChildWithCDATAIfValue('task', $dbItem->task);
+            $xmlItem->addChildWithCDATAIfValue('externaltask', $dbItem->externaltask);
+            $xmlItem->addChildWithCDATAIfValue('solution', $dbItem->solution);
+            $xmlItem->addChildWithCDATAIfValue('completefile', $dbItem->completefile);
+            $xmlItem->epop = $dbItem->epop;
+            
+            $xmlItem->addChildWithCDATAIfValue('metalink', $dbItem->metalink);
+            $xmlItem->addChildWithCDATAIfValue('packagelink', $dbItem->packagelink);
+            $xmlItem->addChildWithCDATAIfValue('restorelink', $dbItem->restorelink);
+            
+            $xmlItem->addChildWithCDATAIfValue('externalurl', $dbItem->externalurl);
+            $xmlItem->addChildWithCDATAIfValue('externalsolution', $dbItem->externalsolution);
+            $xmlItem->addChildWithCDATAIfValue('tips', $dbItem->tips);
+            
+            
+            $descriptors = $DB->get_records_sql("
+                SELECT DISTINCT d.id, d.source, d.sourceid
+                FROM {".DB_DESCRIPTORS."} d
+                JOIN {".DB_DESCEXAMP."} de ON d.id = de.descrid
+                WHERE de.exampid = ?
+            ", array($dbItem->id));
+            
+            if ($descriptors) {
+                $xmlDescripors = $xmlItem->addChild('descriptors');
+                foreach ($descriptors as $descriptor) {
+                    $xmlDescripor = $xmlDescripors->addChild('descriptorid');
+                    self::assign_source($xmlDescripor, $descriptor);
+                }
+            }
             
             // children
             self::export_examples($xmlItem, $dbItem->id);
@@ -303,24 +403,6 @@ $skill->source = IMPORT_SOURCE_DEFAULT;
     private static function export_descriptors($xmlParent, $parentid = 0) {
         global $DB;
         
-        /*
-        <descriptors>
-            <descriptor id="1" skillid="1" niveauid="2">
-                <title><![CDATA[1.1. Ich kann Hardware-Komponenten unterscheiden und deren Funktionen erklären]]></title>
-                <sorting>184320</sorting>
-                <profoundness>0</profoundness>
-                <epop>0</epop>
-            <examples>
-                <exampleid id="4"/>
-                <exampleid id="3"/>
-                <exampleid id="37"/>
-                <exampleid id="38"/>
-                <exampleid id="72"/>
-                <exampleid id="126"/>
-                <exampleid id="1957"/>
-            </examples>
-        </descriptor>
-        */
         $dbItems = $DB->get_records(DB_DESCRIPTORS, array('parentid'=>$parentid));
         
         if (!$dbItems) return;
@@ -329,73 +411,102 @@ $skill->source = IMPORT_SOURCE_DEFAULT;
         //var_dump($dbItems);
         foreach ($dbItems as $dbItem) {
             $xmlItem = $xmlItems->addChild('descriptor');
-            $xmlItem['id'] = self::create_sourceid($dbItem);
-            // TODO: skillid="1"
-            if ($id = self::db_get_item_sourceid(DB_NIVEAUS, $dbItem->niveauid))
-                $xmlItem['niveauid'] = $id;
-            $xmlItem->title = $dbItem->title;
+            self::assign_source($xmlItem, $dbItem);
+            
+            self::assign_value_source($xmlItem, 'skillid', DB_SKILLS, $dbItem->skillid);
+            self::assign_value_source($xmlItem, 'niveauid', DB_NIVEAUS, $dbItem->niveauid);
+            
+            $xmlItem->addChildWithCDATAIfValue('title', $dbItem->title);
             $xmlItem->sorting = $dbItem->sorting;
             $xmlItem->profoundness = $dbItem->profoundness;
             $xmlItem->epop = $dbItem->epop;
 
-            $examples = $DB->get_records_sql("
-                SELECT e.id, e.source, e.sourceid
-                FROM {".DB_EXAMPLES."} e
-                JOIN {".DB_DESCEXAMP."} de ON e.id = de.exampid
-                WHERE de.descrid = ?
-                GROUP BY e.id, e.source, e.sourceid
-            ", array($dbItem->id));
-
-            if ($examples) {
-                $xmlExamples = $xmlItem->addChild('examples');
-                foreach ($examples as $example) {
-                    $xmlExample = $xmlExamples->addChild('exampleid');
-                    $xmlExample['id'] =  self::create_sourceid($example);
-                }
-            }
-            
             // children
             self::export_descriptors($xmlItem, $dbItem->id);
         }
     }
     
     private static function export_edulevels($xmlParent, $parentid = 0) {
-        global $DB;
-        
-        // TODO: definieren was wir exportieren
-        return;
-    
-        // TODO: nur jene exportieren, welche in dieser schule verwendet werden?
         $dbEdulevels = block_exacomp_get_edulevels();
-        
+        $xmlParent->addChild('edulevels');
+
         foreach ($dbEdulevels as $dbEdulevel) {
-            var_dump($dbEdulevels);
-            $schooltypes = block_exacomp_get_schooltypes($dbEdulevel->id);
-            var_dump($schooltypes);
-        }
-        
-        return;
-        
-        if (!$dbItems) return;
-        
-        $xmlItems = $xmlParent->addChild($parentid ? 'children' : 'descriptors');
-        //var_dump($dbItems);
-        foreach ($dbItems as $dbItem) {
-            $xmlItem = $xmlItems->addChild('descriptor');
-            $xmlItem['id'] = self::create_sourceid($dbItem);
-            // TODO: skillid="1"
+            $xmlEdulevel = $xmlParent->edulevels->addchild('edulevel');
+            self::assign_source($xmlEdulevel, $dbEdulevel);
+            
+            $xmlEdulevel->addChildWithCDATAIfValue('title', $dbEdulevel->title);
+            
+            self::export_schooltypes($xmlEdulevel, $dbEdulevel);
         }
     }
     
-    private static function db_get_item_sourceid($table, $id) {
-        global $DB;
-        return self::create_sourceid($DB->get_record($table, array("id" => $id)));
+    private static function export_schooltypes($xmlEdulevel, $dbEdulevel) {
+        $xmlEdulevel->addChild('schooltypes');
+        $dbSchooltypes = block_exacomp_get_schooltypes($dbEdulevel->id);
+
+        foreach ($dbSchooltypes as $dbSchooltype) {
+            $xmlSchooltype = $xmlEdulevel->schooltypes->addChild('schooltype');
+            self::assign_source($xmlSchooltype, $dbSchooltype);
+            
+            $xmlSchooltype->addChildWithCDATAIfValue('title', $dbSchooltype->title);
+            $xmlSchooltype->sorting = $dbSchooltype->sorting;
+            $xmlSchooltype->isoez = $dbSchooltype->isoez;
+            $xmlSchooltype->epop = $dbSchooltype->epop;
+            
+            self::export_subjects($xmlSchooltype, $dbSchooltype);
+        }
     }
 
-    private static function format_xml($xml) {
-        $dom = dom_import_simplexml($xml)->ownerDocument;
-        $dom->formatOutput = true;
-        return $dom->saveXML();
+    private static function export_subjects($xmlSchooltype, $dbSchooltype) {
+        global $DB;
+        
+        $xmlSchooltype->addChild('subjects');
+        $dbSubjects = $DB->get_records(DB_SUBJECTS, array('stid' => $dbSchooltype->id));
+        foreach($dbSubjects as $dbSubject){
+            $xmlSubject = $xmlSchooltype->subjects->addChild('subject');
+            self::assign_source($xmlSubject, $dbSubject);
+            
+            $xmlSubject->addChildWithCDATAIfValue('title', $dbSubject->title);
+            $xmlSubject->addChildWithCDATAIfValue('titleshort', $dbSubject->titleshort);
+            $xmlSubject->addChildWithCDATAIfValue('infolink', $dbSubject->infolink);
+            $xmlSubject->sorting = $dbSubject->sorting;
+            $xmlSubject->epop = $dbSubject->epop;
+            
+            self::export_topics($xmlSubject, $dbSubject);
+        }
+    }
+    
+    private static function export_topics($xmlSubject, $dbSubject) {
+        global $DB;
+        
+        $xmlSubject->addChild('topics');
+        $dbTopics = $DB->get_records(DB_TOPICS, array('subjid' => $dbSubject->id));
+        foreach($dbTopics as $dbTopic){
+            $xmlTopic = $xmlSubject->topics->addChild('topic');
+            self::assign_source($xmlTopic, $dbTopic);
+            
+            $xmlTopic->addChildWithCDATAIfValue('title', $dbTopic->title);
+            $xmlTopic->addChildWithCDATAIfValue('titleshort', $dbTopic->titleshort);
+            $xmlTopic->addChildWithCDATAIfValue('description', $dbTopic->description);
+            $xmlTopic->sorting = $dbTopic->sorting;
+            $xmlTopic->epop = $dbTopic->epop;
+            $xmlTopic->numb = $dbTopic->numb;
+            
+            $descriptors = $DB->get_records_sql("
+                SELECT DISTINCT d.id, d.source, d.sourceid
+                FROM {".DB_DESCRIPTORS."} d
+                JOIN {".DB_DESCTOPICS."} dt ON d.id = dt.descrid
+                WHERE dt.topicid = ?
+            ", array($dbTopic->id));
+            
+            if ($descriptors) {
+                $xmlDescripors = $xmlTopic->addChild('descriptors');
+                foreach ($descriptors as $descriptor) {
+                    $xmlDescripor = $xmlDescripors->addChild('descriptorid');
+                    self::assign_source($xmlDescripor, $descriptor);
+                }
+            }
+        }
     }
 }
 
@@ -422,7 +533,6 @@ class block_exacomp_data_importer extends block_exacomp_data {
         core_php_time_limit::raise();
         raise_memory_limit(MEMORY_HUGE);
         
-        // TODO: source typ haben wir dann nicht mehr
         self::$import_source_type = $par_source;
         self::$import_time = time();
         /*
@@ -769,14 +879,6 @@ class block_exacomp_data_importer extends block_exacomp_data {
         self::kompetenzraster_mark_item_used(DB_TOPICS, $topic);
         
         if ($xmlItem->descriptors) {
-            // delete all descriptor-topic associations for this source and add them again
-            // TODO: currently never delete anything
-            /*
-            $DB->execute("DELETE FROM {".DB_DESCTOPICS."} WHERE topicid=? AND descrid IN (
-                    SELECT id FROM {".DB_DESCRIPTORS."} WHERE source=?
-                )", array($topic->id, self::$import_source_local_id));
-            */
-            
             $i=1;
             foreach($xmlItem->descriptors->descriptorid as $descriptor) {
                 if ($descriptorid = self::get_database_id($descriptor)) {
