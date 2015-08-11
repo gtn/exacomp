@@ -1929,6 +1929,64 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2015080900, 'exacomp');
     }
+ 	if ($oldversion < 2015081101) {
+
+        // Define table block_exacompdatasources to be created.
+        $table = new xmldb_table('block_exacompdescrcat_mm');
+
+        // Adding fields to table block_exacompdatasources.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('descrid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('catid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        
+        // Adding keys to table block_exacompdatasources.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+		$table->add_key('descrid', XMLDB_KEY_FOREIGN, array('descrid'), 'block_exacompdescriptors', array('id'));
+        $table->add_key('catid', XMLDB_KEY_FOREIGN, array('catid'), 'block_exacompcategories', array('id'));
+        
+        // Conditionally launch create table for block_exacompdatasources.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        
+        //update table
+        $descriptors = $DB->get_records(DB_DESCRIPTORS);
+        foreach($descriptors as $descriptor){
+        	$insert = new stdClass();
+        	$insert->descrid = $descriptor->id;
+        	$insert->catid = $descriptor->catid;
+        	$DB->insert_record('block_exacompdescrcat_mm', $insert);
+        }
+        
+ 		// Define table block_exacompdatasources to be created.
+        $table = new xmldb_table('block_exacompexampletax_mm');
+
+        // Adding fields to table block_exacompdatasources.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('exampleid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('taxid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        
+        // Adding keys to table block_exacompdatasources.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+		$table->add_key('exampleid', XMLDB_KEY_FOREIGN, array('exampleid'), 'block_exacompexamples', array('id'));
+        $table->add_key('taxid', XMLDB_KEY_FOREIGN, array('taxid'), 'block_exacomptaxonomies', array('id'));
+        
+        // Conditionally launch create table for block_exacompdatasources.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+ 		//update table
+        $examples = $DB->get_records(DB_EXAMPLES);
+        foreach($examples as $example){
+        	$insert = new stdClass();
+        	$insert->exampleid = $example->id;
+        	$insert->taxid = $example->taxid;
+        	$DB->insert_record('block_exacompexampletax_mm', $insert);
+        }
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2015081101, 'exacomp');
+    }
 	
 	
 	
