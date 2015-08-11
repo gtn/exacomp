@@ -1428,7 +1428,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			$rows[] = $topicRow;
 
 			if (!empty($topic->descriptors)) {
-				$this->print_descriptors($rows, $level+1, $topic->descriptors, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $statistic);
+				$this->print_descriptors($rows, $level+1, $topic->descriptors, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $statistic, false,  true);
 			}
 
 			if (!empty($topic->subs)) {
@@ -1437,7 +1437,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		}
 	}
 
-	function print_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class, $profoundness = false, $editmode=false, $statistic=false, $custom_created_descriptors=false) {
+	function print_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class, $profoundness = false, $editmode=false, $statistic=false, $custom_created_descriptors=false, $parent = false) {
 		global $version, $PAGE, $USER, $COURSE, $CFG, $OUTPUT, $DB;
 
 		$evaluation = ($data->role == ROLE_TEACHER) ? "teacher" : "student";
@@ -1463,7 +1463,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				$visible_css = block_exacomp_get_descriptor_visible_css($visible, $data->role);
 					
 				$checkboxname = "data";
-				list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor, false, (count($descriptor->children) > 0) ? true : false);
+				list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor, false, $parent);
 				$studentsCount = 0;
 	
 				$padding = ($level) * 20 + 4;
@@ -1471,7 +1471,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				//if($descriptor->parentid > 0)
 				    //$padding += 20;
 	
-				if($descriptor->examples || (!is_null($data->rowgroup) && $descriptor->children)) {
+				if($descriptor->examples || (!is_null($data->rowgroup) && $parent)) {
 					$data->rowgroup++;
 					$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$rowgroup_class.$visible_css;
 					$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$data->rowgroup.' '.$rowgroup_class;
@@ -1484,7 +1484,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				
 				
 				$descriptorRow->attributes['class'] = 'exabis_comp_aufgabe ' . $this_rowgroup_class;
-				if($version && count($descriptor->children) > 0)
+				if($version && $parent)
 					$descriptorRow->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rowgroup_class . ' highlight';
 					
 				
@@ -1502,13 +1502,13 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	
 				$titleCell = new html_table_cell();
 				
-				if(($descriptor->examples || $descriptor->children) && !is_null($data->rowgroup))
+				if(($descriptor->examples || $descriptor->children || ($parent && $editmode)) && !is_null($data->rowgroup))
 					$titleCell->attributes['class'] = 'rowgroup-arrow';
 				$titleCell->style = "padding-left: ".$padding."px";
 				$titleCell->text = html_writer::div($outputname);
 	
 				// EDIT MODE BUTTONS 
-				if($editmode && !$descriptor->children) {
+				if($editmode && !$parent) {
 					//Adding to crosssubject only for "teilkompetenzen"
 					$titleCell->text .= html_writer::link(
 							new moodle_url('/blocks/exacomp/select_crosssubjects.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id)),
@@ -1845,7 +1845,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					$this->print_descriptors($rows, $level+1, $descriptor->children, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $statistic);
 				}
 				//schulische ergänzungen und neue teilkompetenz
-				if($editmode && !empty($descriptor->children)){
+				if($editmode && $parent){
 					
 					$own_additionRow = new html_table_row();
 					$own_additionRow->attributes['class'] = 'exabis_comp_aufgabe ' . $sub_rowgroup_class;
