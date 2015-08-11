@@ -2381,14 +2381,18 @@ function block_exacomp_set_coursetopics($courseid, $values) {
 		//manage visibility, do not delete user visibility, but delete unused entries
 		foreach($descriptors as $descriptor){
 			//new descriptors in table
-			if(!in_array($descriptor->id, $visibilities))
-				$DB->insert_record(DB_DESCVISIBILITY, array("courseid"=>$courseid, "descrid"=>$descriptor->id, "studentid"=>0, "visible"=>1));
+			if(!in_array($descriptor->id, $visibilities)) {
+				$visibilities[] = $descriptor->id;
+			    $DB->insert_record(DB_DESCVISIBILITY, array("courseid"=>$courseid, "descrid"=>$descriptor->id, "studentid"=>0, "visible"=>1));
+			}
 		
 			$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid, true, array(SHOW_ALL_TAXONOMIES), true, false);
 			
 			foreach($descriptor->children as $childdescriptor){
-				if(!in_array($childdescriptor->id, $visibilities))
-					$DB->insert_record(DB_DESCVISIBILITY, array("courseid"=>$courseid, "descrid"=>$childdescriptor->id, "studentid"=>0, "visible"=>1));
+				if(!in_array($childdescriptor->id, $visibilities)) {
+				    $visibilities[] = $childdescriptor->id;
+				    $DB->insert_record(DB_DESCVISIBILITY, array("courseid"=>$courseid, "descrid"=>$childdescriptor->id, "studentid"=>0, "visible"=>1));
+				}
 		
 				if(!array_key_exists($childdescriptor->id, $finaldescriptors))
 					$finaldescriptors[$childdescriptor->id] = $childdescriptor;
