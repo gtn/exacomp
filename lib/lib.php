@@ -2348,20 +2348,7 @@ function block_exacomp_set_coursetopics($courseid, $values) {
 	global $DB;
 
 	$DB->delete_records(DB_COURSETOPICS, array("courseid" => $courseid));
-	
-	$visibilities = $DB->get_fieldset_select(DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=0', array($courseid));
-	
-	//get all cross subject descriptors - to support cross-course subjects descriptor visibility must be kept
-	$cross_subjects = $DB->get_records(DB_CROSSSUBJECTS, array('courseid'=>$courseid));
-	$cross_subjects_descriptors = array();
-	foreach($cross_subjects as $crosssub){
-		$cross_subject_descriptors = $DB->get_fieldset_select(DB_DESCCROSS, 'descrid', 'crosssubjid=?', array($crosssub->id));
-		foreach($cross_subject_descriptors as $descriptor)
-		if(!in_array($descriptor, $cross_subjects_descriptors)){
-			$cross_subjects_descriptors[] = $descriptor;
-		}
-	}
-	
+
 	$descriptors = array();
 	if(isset($values)){
 		foreach ($values as $value) {
@@ -2377,35 +2364,54 @@ function block_exacomp_set_coursetopics($courseid, $values) {
 			}
 		}
 		
-		$finaldescriptors=$descriptors;
-		//manage visibility, do not delete user visibility, but delete unused entries
-		foreach($descriptors as $descriptor){
-			//new descriptors in table
-			if(!in_array($descriptor->id, $visibilities)) {
-				$visibilities[] = $descriptor->id;
-			    $DB->insert_record(DB_DESCVISIBILITY, array("courseid"=>$courseid, "descrid"=>$descriptor->id, "studentid"=>0, "visible"=>1));
-			}
-		
-			$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid, true, array(SHOW_ALL_TAXONOMIES), true, false);
-			
-			foreach($descriptor->children as $childdescriptor){
-				if(!in_array($childdescriptor->id, $visibilities)) {
-				    $visibilities[] = $childdescriptor->id;
-				    $DB->insert_record(DB_DESCVISIBILITY, array("courseid"=>$courseid, "descrid"=>$childdescriptor->id, "studentid"=>0, "visible"=>1));
-				}
-		
-				if(!array_key_exists($childdescriptor->id, $finaldescriptors))
-					$finaldescriptors[$childdescriptor->id] = $childdescriptor;
-			}
+		block_exacomp_update_descriptor_visibilities($courseid, $descriptors);
+
+	}
+}
+function block_exacomp_update_descriptor_visibilities($courseid, $descriptors){
+	global $DB;
+	
+	$visibilities = $DB->get_fieldset_select(DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=0', array($courseid));
+	
+	//get all cross subject descriptors - to support cross-course subjects descriptor visibility must be kept
+	$cross_subjects = $DB->get_records(DB_CROSSSUBJECTS, array('courseid'=>$courseid));
+	$cross_subjects_descriptors = array();
+	foreach($cross_subjects as $crosssub){
+		$cross_subject_descriptors = $DB->get_fieldset_select(DB_DESCCROSS, 'descrid', 'crosssubjid=?', array($crosssub->id));
+		foreach($cross_subject_descriptors as $descriptor)
+		if(!in_array($descriptor, $cross_subjects_descriptors)){
+			$cross_subjects_descriptors[] = $descriptor;
 		}
+	}
+	
+	$finaldescriptors=$descriptors;
+	//manage visibility, do not delete user visibility, but delete unused entries
+	foreach($descriptors as $descriptor){
+		//new descriptors in table
+		if(!in_array($descriptor->id, $visibilities)) {
+			$visibilities[] = $descriptor->id;
+		    $DB->insert_record(DB_DESCVISIBILITY, array("courseid"=>$courseid, "descrid"=>$descriptor->id, "studentid"=>0, "visible"=>1));
+		}
+	
+		$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid, true, array(SHOW_ALL_TAXONOMIES), true, false);
 		
-		foreach($visibilities as $visible){
-			//delete ununsed descriptors for course and for special students
-			if(!array_key_exists($visible, $finaldescriptors)){
-				//check if used in cross-subjects --> then it must still be visible
-				if(!in_array($visible, $cross_subjects_descriptors))
-					$DB->delete_records(DB_DESCVISIBILITY, array("courseid"=>$courseid, "descrid"=>$visible));
+		foreach($descriptor->children as $childdescriptor){
+			if(!in_array($childdescriptor->id, $visibilities)) {
+			    $visibilities[] = $childdescriptor->id;
+			    $DB->insert_record(DB_DESCVISIBILITY, array("courseid"=>$courseid, "descrid"=>$childdescriptor->id, "studentid"=>0, "visible"=>1));
 			}
+	
+			if(!array_key_exists($childdescriptor->id, $finaldescriptors))
+				$finaldescriptors[$childdescriptor->id] = $childdescriptor;
+		}
+	}
+	
+	foreach($visibilities as $visible){
+		//delete ununsed descriptors for course and for special students
+		if(!array_key_exists($visible, $finaldescriptors)){
+			//check if used in cross-subjects --> then it must still be visible
+			if(!in_array($visible, $cross_subjects_descriptors))
+				$DB->delete_records(DB_DESCVISIBILITY, array("courseid"=>$courseid, "descrid"=>$visible));
 		}
 	}
 }
