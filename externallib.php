@@ -2951,4 +2951,171 @@ class block_exacomp_external extends external_api {
 		) ) );
 	}
 
+	/**
+	 * Returns description of method parameters
+	 * 
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_topics_by_course_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ) 
+		) );
+	}
+	
+	/**
+	 * get courses
+	 * 
+	 * @return array of user courses
+	 */
+	public static function dakora_get_topics_by_course($courseid) {
+	
+		$params = self::validate_parameters ( self::dakora_get_topics_by_course_parameters (), array (
+				'courseid' => $courseid 
+		) );
+		
+		$topics = block_exacomp_get_topics_by_course($courseid);
+		
+		$topics_return = array();
+		foreach($topics as $topic){
+			$topic_return = new stdClass();
+			$topic_return->topicid = $topic->id;
+			$topic_return->topictitle = $topic->title;
+			$topics_return[] = $topic_return;
+		}
+		
+		return $topics_return;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_topics_by_course_returns() {
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'topicid' => new external_value ( PARAM_INT, 'id of topic' ),
+				'topictitle' => new external_value ( PARAM_TEXT, 'title of topic' ) 
+		) ) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 * 
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_descriptors_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course'),
+				'topicid' => new external_value ( PARAM_INT, 'id of topic' ) 
+		) );
+	}
+	
+	/**
+	 * get courses
+	 * 
+	 * @return array of user courses
+	 */
+	public static function dakora_get_descriptors($courseid, $topicid) {
+	
+		$params = self::validate_parameters ( self::dakora_get_descriptors_parameters (), array (
+				'courseid' => $courseid,
+				'topicid' => $topicid
+		) );
+		
+		$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $topicid);
+		
+		$descriptors_return = array();
+		foreach($descriptors as $descriptor){
+			$descriptor_return = new stdClass();
+			$descriptor_return->descriptorid = $descriptor->id;
+			$descriptor_return->descriptortitle = $descriptor->title;
+			$descriptors_return[] = $descriptor_return;
+		}
+		
+		return $descriptors_return;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_descriptors_returns() {
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'descriptorid' => new external_value ( PARAM_INT, 'id of descriptor' ),
+				'descriptortitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ) 
+		) ) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 * 
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_descriptor_children_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value( PARAM_INT, 'id of course' ),
+				'descriptorid' => new external_value ( PARAM_INT, 'id of parent descriptor' ) 
+		) );
+	}
+	
+	/**
+	 * get courses
+	 * 
+	 * @return array of user courses
+	 */
+	public static function dakora_get_descriptor_children($courseid, $descriptorid) {
+		global $DB;
+		$params = self::validate_parameters ( self::dakora_get_descriptor_children_parameters (), array (
+				'courseid' => $courseid,
+				'descriptorid' => $descriptorid
+		) );
+		
+		$parent_descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptorid));
+		$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
+		$parent_descriptor->topicid = $descriptor_topic_mm->topicid;
+		
+		$children = block_exacomp_get_child_descriptors($parent_descriptor, $courseid);
+		
+		$children_return = array();
+		foreach($children as $child){
+			$child_return = new stdClass();
+			$child_return->childid = $child->id;
+			$child_return->childtitle = $child->title;
+			$children_return[] = $child_return;
+		}
+		
+		$parent_descriptor = block_exacomp_get_examples_for_descriptor($parent_descriptor);
+		
+		$examples_return = array();
+		foreach($parent_descriptor->examples as $example){
+			$example_return = new stdClass();
+			$example_return->exampleid = $example->id;
+			$example_return->exampletitle = $example->title;
+			$examples_return[] = $example_return;
+		}
+		$return = new stdClass();
+		$return->children = $children_return;
+		$return->examples = $examples_return;
+		return $return;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_descriptor_children_returns() {
+		return new external_single_structure ( array (
+			'children' => new external_multiple_structure ( new external_single_structure ( array (
+					'childid' => new external_value ( PARAM_INT, 'id of child' ),
+					'childtitle' => new external_value ( PARAM_TEXT, 'title of child' )
+			) ) ) ,
+			'examples' => new external_multiple_structure ( new external_single_structure ( array (
+					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
+					'exampletitle' => new external_value ( PARAM_TEXT, 'title of example' )
+			) ) ) 
+		) ) ;
+	}
+
 }

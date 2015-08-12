@@ -9,17 +9,48 @@
 
 $domainname = 'http://gtn-solutions.com/moodle29';
 
-
 $params = new stdClass();
 
 require_once('./curl.php');
 $curl = new curl;
+$token_google = 801241;
 
-$serverurl = 'http://gtn-solutions.com/moodle29/login/token.php?username=student2&password=Student2!&token=364497&service=exacompservices';
+print_r($token_google);
+echo "
+
+
+
+";
+$serverurl = 'http://gtn-solutions.com/moodle29/login/token.php?username=student2&password=Student2!&token='.$token_google.'&service=exacompservices';
 $resp = $curl->get($serverurl);
 $resp = json_decode($resp)->token;
 $token = $resp;
 print_r($token);
+echo "
+
+
+
+";
+
+$serverurl_exaport = 'http://gtn-solutions.com/moodle29/login/token.php?username=student2&password=Student2!&token='.$token_google.'&service=exaportservices';
+$resp_exaport = $curl->get($serverurl_exaport);
+$resp_exaport = json_decode($resp_exaport)->token;
+print_r($resp_exaport);
+echo "
+
+
+
+";
+
+$serverurl_moodle = 'http://gtn-solutions.com/moodle29/login/token.php?username=student2&password=Student2!&token='.$token_google.'&service=moodle_mobile_app';
+$resp_moodle = $curl->get($serverurl_exaport);
+$resp_moodle = json_decode($resp_moodle)->token;
+print_r($resp_moodle);
+echo "
+
+
+
+";
 
 /// REST CALL BLOCK_EXACOMP_GET_COURSES
 header('Content-Type: text/plain');
@@ -34,12 +65,47 @@ $resp = $curl->get($serverurl, $params);
 print_r($resp);
 
 
-/*/// REST CALL BLOCK_EXACOMP_GET_SUBJECTS
+/// REST CALL BLOCK_EXACOMP_GET_TOPICS_BY_COURSE
 
-$functionname = 'block_exacomp_get_subjects';
+$functionname = 'dakora_get_topics_by_course';
 
 $params = new stdClass();
 $params->courseid = 3;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+
+
+
+";
+
+/// REST CALL dakora_get_descriptors
+
+$functionname = 'dakora_get_descriptors';
+
+$params = new stdClass();
+$params->courseid = 3;
+$params->topicid = 13;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+
+
+
+";
+
+/// REST CALL dakora_get_descriptor_children
+$functionname = 'dakora_get_descriptor_children';
+
+$params = new stdClass();
+$params->courseid = 3;
+$params->descriptorid = 326;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
