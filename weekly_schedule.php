@@ -176,7 +176,7 @@ function block_exacomp_weekly_schedule_print_items($items) {
                     ($item->teacher_evaluation?'checked="checked"':'').' /></label>';
 		echo    '</div>';
 
-   	    if ($item->example_source == EXAMPLE_SOURCE_USER) {
+   	    if ($item->example_source == block_exacomp::EXAMPLE_SOURCE_USER) {
 				?>
 			        <a href="<?php echo (new moodle_url('/blocks/exacomp/example_upload_student.php',array("courseid"=>$courseid, "exampleid"=>$item->exampleid))); ?>"
 			        	target="_blank", onclick="window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;">edit example</a>

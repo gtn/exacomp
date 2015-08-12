@@ -86,7 +86,7 @@ $taxonomies = array_merge(array("0" => ""),$taxonomies);
 
 $example_descriptors = array();
 if($exampleid>0)
-	$example_descriptors = $DB->get_records(DB_DESCEXAMP,array('exampid'=>$exampleid),'','descrid');
+	$example_descriptors = $DB->get_records(block_exacomp::DB_DESCEXAMP,array('exampid'=>$exampleid),'','descrid');
 
 $tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid, 0);
 
@@ -100,7 +100,7 @@ if($formdata = $form->get_data()) {
     $newExample->description = $formdata->description;
     $newExample->creatorid = $USER->id;
     $newExample->externalurl = $formdata->externalurl;
-	$newExample->source = EXAMPLE_SOURCE_USER;
+	$newExample->source = block_exacomp::EXAMPLE_SOURCE_USER;
 	
     if($formdata->exampleid == 0)
         $newExample->id = $DB->insert_record('block_exacompexamples', $newExample);
@@ -114,9 +114,9 @@ if($formdata = $form->get_data()) {
     //add descriptor association
     if(isset($_POST['descriptor'])){
     	foreach($_POST['descriptor'] as $descriptorid){
-    		$record = $DB->get_record(DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
+    		$record = $DB->get_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
 			if(!$record)
-    			$DB->insert_record(DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=> $newExample->id));
+    			$DB->insert_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=> $newExample->id));
     	}
     }
     

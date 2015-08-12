@@ -1103,8 +1103,8 @@ class block_exacomp_external extends external_api {
 			foreach ( $descriptors as $descriptor ) {
 				$examples = $DB->get_records_sql ( "SELECT de.id as deid, e.id, e.title, e.task, e.externalurl,
                         e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.creatorid
-                        FROM {" . DB_EXAMPLES . "} e
-                        JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
+                        FROM {" . block_exacomp::DB_EXAMPLES . "} e
+                        JOIN {" . block_exacomp::DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
                         ", array (
 						$descriptor->id 
 				) );
@@ -1204,7 +1204,7 @@ class block_exacomp_external extends external_api {
 				'exampleid' => $exampleid 
 		) );
 		
-		$example = $DB->get_record ( DB_EXAMPLES, array (
+		$example = $DB->get_record (block_exacomp::DB_EXAMPLES, array (
 				'id' => $exampleid 
 		) );
 		$example->description = htmlentities ( $example->description );
@@ -1260,21 +1260,21 @@ class block_exacomp_external extends external_api {
 				'userid' => $userid 
 		) );
 		
-		$descriptors_exam_mm = $DB->get_records ( DB_DESCEXAMP, array (
+		$descriptors_exam_mm = $DB->get_records (block_exacomp::DB_DESCEXAMP, array (
 				'exampid' => $exampleid 
 		) );
 		
 		$descriptors = array ();
 		foreach ( $descriptors_exam_mm as $descriptor_mm ) {
-			$descriptors [$descriptor_mm->descrid] = $DB->get_record ( DB_DESCRIPTORS, array (
+			$descriptors [$descriptor_mm->descrid] = $DB->get_record (block_exacomp::DB_DESCRIPTORS, array (
 					'id' => $descriptor_mm->descrid 
 			) );
 			
-			$eval = $DB->get_record ( DB_COMPETENCIES, array (
+			$eval = $DB->get_record (block_exacomp::DB_COMPETENCIES, array (
 					'userid' => $userid,
 					'compid' => $descriptor_mm->descrid,
 					'courseid' => $courseid,
-					'role' => ROLE_TEACHER 
+					'role' => block_exacomp::ROLE_TEACHER 
 			) );
 			if ($eval) {
 				$descriptors [$descriptor_mm->descrid]->evaluation = $eval->value;
@@ -1968,16 +1968,16 @@ class block_exacomp_external extends external_api {
 		$example->externaltask = isset ( $example_task ) ? $example_task : null;
 		$example->creatorid = $USER->id;
 		$example->timestamp = time();
-		$example->source = EXAMPLE_SOURCE_USER;
+		$example->source = block_exacomp::EXAMPLE_SOURCE_USER;
 		
-		$id = $DB->insert_record ( DB_EXAMPLES, $example );
+		$id = $DB->insert_record (block_exacomp::DB_EXAMPLES, $example );
 		
 		$descriptors = explode ( ',', $comps );
 		foreach ( $descriptors as $descriptor ) {
 			$insert = new stdClass ();
 			$insert->exampid = $id;
 			$insert->descrid = $descriptor;
-			$DB->insert_record ( DB_DESCEXAMP, $insert );
+			$DB->insert_record (block_exacomp::DB_DESCEXAMP, $insert );
 		}
 		
 		return array (
@@ -2090,7 +2090,7 @@ class block_exacomp_external extends external_api {
 		$DB->insert_record ( 'block_exaportitemcomm', $insert );
 		
 		// get all available descriptors and unset them who are not received via web service
-		$descriptors_exam_mm = $DB->get_records ( DB_DESCEXAMP, array (
+		$descriptors_exam_mm = $DB->get_records (block_exacomp::DB_DESCEXAMP, array (
 				'exampid' => $exampleid 
 		) );
 		
@@ -2106,58 +2106,58 @@ class block_exacomp_external extends external_api {
 		// set positive graded competencies
 		foreach ( $descriptors as $descriptor ) {
 			if ($descriptor != 0) {
-				$entry = $DB->get_record ( DB_COMPETENCIES, array (
+				$entry = $DB->get_record (block_exacomp::DB_COMPETENCIES, array (
 						'userid' => $userid,
 						'compid' => $descriptor,
 						'courseid' => $courseid,
-						'role' => ROLE_TEACHER 
+						'role' => block_exacomp::ROLE_TEACHER 
 				) );
 				
 				if ($entry) {
 					$entry->reviewerid = $USER->id;
 					$entry->value = 1;
 					$entry->timestamp = time ();
-					$DB->update_record ( DB_COMPETENCIES, $entry );
+					$DB->update_record (block_exacomp::DB_COMPETENCIES, $entry );
 				} else {
 					$insert = new stdClass ();
 					$insert->userid = $userid;
 					$insert->compid = $descriptor;
 					$insert->reviewerid = $USER->id;
-					$insert->role = ROLE_TEACHER;
+					$insert->role = block_exacomp::ROLE_TEACHER;
 					$insert->courseid = $courseid;
 					$insert->value = 1;
 					$insert->timestamp = time ();
 					
-					$DB->insert_record ( DB_COMPETENCIES, $insert );
+					$DB->insert_record (block_exacomp::DB_COMPETENCIES, $insert );
 				}
 			}
 		}
 		
 		// set negative graded competencies
 		foreach ( $unset_descriptors as $descriptor ) {
-			$entry = $DB->get_record ( DB_COMPETENCIES, array (
+			$entry = $DB->get_record (block_exacomp::DB_COMPETENCIES, array (
 					'userid' => $userid,
 					'compid' => $descriptor,
 					'courseid' => $courseid,
-					'role' => ROLE_TEACHER 
+					'role' => block_exacomp::ROLE_TEACHER 
 			) );
 			
 			if ($entry) {
 				$entry->reviewerid = $USER->id;
 				$entry->value = 0;
 				$entry->timestamp = time ();
-				$DB->update_record ( DB_COMPETENCIES, $entry );
+				$DB->update_record (block_exacomp::DB_COMPETENCIES, $entry );
 			} else {
 				$insert = new stdClass ();
 				$insert->userid = $userid;
 				$insert->compid = $descriptor;
 				$insert->reviewerid = $USER->id;
-				$insert->role = ROLE_TEACHER;
+				$insert->role = block_exacomp::ROLE_TEACHER;
 				$insert->courseid = $courseid;
 				$insert->value = 0;
 				$insert->timestamp = time ();
 				
-				$DB->insert_record ( DB_COMPETENCIES, $insert );
+				$DB->insert_record (block_exacomp::DB_COMPETENCIES, $insert );
 			}
 		}
 		
@@ -2421,8 +2421,8 @@ class block_exacomp_external extends external_api {
 						
 						$examples = $DB->get_records_sql ( "SELECT de.id as deid, e.id, e.title, e.task, e.externalurl,
                         e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.creatorid
-                        FROM {" . DB_EXAMPLES . "} e
-                        JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=? ", array (
+                        FROM {" . block_exacomp::DB_EXAMPLES . "} e
+                        JOIN {" . block_exacomp::DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=? ", array (
 								$descriptor->id 
 						) );
 						
@@ -2749,7 +2749,7 @@ class block_exacomp_external extends external_api {
 			$example_task = $temp_task->out ( false );
 		}
 		
-		$example = $DB->get_record ( DB_EXAMPLES, array (
+		$example = $DB->get_record (block_exacomp::DB_EXAMPLES, array (
 				'id' => $exampleid 
 		) );
 		
@@ -2760,10 +2760,10 @@ class block_exacomp_external extends external_api {
 		if($type == 'file')
 			$example->externaltask = $example_task;
 		
-		$id = $DB->update_record ( DB_EXAMPLES, $example );
+		$id = $DB->update_record (block_exacomp::DB_EXAMPLES, $example );
 		
 		if (! empty ( $comps )) {
-			$DB->delete_records ( DB_DESCEXAMP, array (
+			$DB->delete_records (block_exacomp::DB_DESCEXAMP, array (
 					'exampid' => $exampleid 
 			) );
 			
@@ -2772,7 +2772,7 @@ class block_exacomp_external extends external_api {
 				$insert = new stdClass ();
 				$insert->exampid = $exampleid;
 				$insert->descrid = $descriptor;
-				$DB->insert_record ( DB_DESCEXAMP, $insert );
+				$DB->insert_record (block_exacomp::DB_DESCEXAMP, $insert );
 			}
 		}
 		

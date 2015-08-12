@@ -57,7 +57,7 @@ echo $OUTPUT->header();
 
 $subjects = block_exacomp_get_cross_subjects_sorted_by_subjects();
 
-$assigned_crosssubjects = $DB->get_records_menu(DB_DESCCROSS,array('descrid'=>$descrid),'','crosssubjid,descrid');
+$assigned_crosssubjects = $DB->get_records_menu(block_exacomp::DB_DESCCROSS,array('descrid'=>$descrid),'','crosssubjid,descrid');
 
 $content = "";
 $crosssubjects_exist = false;

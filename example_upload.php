@@ -85,7 +85,7 @@ $topics = $DB->get_records("block_exacomptopics", array("subjid"=>$topicsub->sub
 
 $example_descriptors = array();
 if($exampleid>0)
-	$example_descriptors = $DB->get_records(DB_DESCEXAMP,array('exampid'=>$exampleid),'','descrid');
+	$example_descriptors = $DB->get_records(block_exacomp::DB_DESCEXAMP,array('exampid'=>$exampleid),'','descrid');
 
 $tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid, $descrid);
 
@@ -99,7 +99,7 @@ if($formdata = $form->get_data()) {
     $newExample->description = $formdata->description;
     $newExample->creatorid = $USER->id;
     $newExample->externalurl = $formdata->externalurl;
-    $newExample->source = EXAMPLE_SOURCE_TEACHER;
+    $newExample->source = block_exacomp::EXAMPLE_SOURCE_TEACHER;
     if($form->get_new_filename('file') || $form->get_new_filename('solution')) {
         // save file
         $context = context_user::instance($USER->id);
@@ -107,7 +107,7 @@ if($formdata = $form->get_data()) {
 
         if($formdata->lisfilename == 1 && $form->get_new_filename('file')) {
         	$descr = reset($_POST['descriptor']);
-        	$descr = $DB->get_record(DB_DESCRIPTORS,array('id' => $descr));
+        	$descr = $DB->get_record(block_exacomp::DB_DESCRIPTORS,array('id' => $descr));
 			$descr->topicid = $topicid;
         	$newfilename = block_exacomp_get_descriptor_numbering($descr).' ';
             
@@ -120,7 +120,7 @@ if($formdata = $form->get_data()) {
         	$newfilename = "";
         	if($formdata->lisfilename==1){
 	        	$descr = reset($_POST['descriptor']);
-	        	$descr = $DB->get_record(DB_DESCRIPTORS,array('id' => $descr));
+	        	$descr = $DB->get_record(block_exacomp::DB_DESCRIPTORS,array('id' => $descr));
 				$descr->topicid = $topicid;
 	        	$newfilename = block_exacomp_get_descriptor_numbering($descr).' ';
         	}
@@ -161,14 +161,14 @@ if($formdata = $form->get_data()) {
     $new_mm = new stdClass();
     $new_mm->exampleid = $newExample->id;
     $new_mm->taxid = $formdata->taxid;
-    $DB->insert_record(DB_EXAMPTAX, $new_mm);
+    $DB->insert_record(block_exacomp::DB_EXAMPTAX, $new_mm);
     
     //add descriptor association
     if(isset($_POST['descriptor'])){
     	foreach($_POST['descriptor'] as $descriptorid){
-    		$record = $DB->get_record(DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
+    		$record = $DB->get_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
 			if(!$record)
-    			$DB->insert_record(DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=> $newExample->id));
+    			$DB->insert_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=> $newExample->id));
     	}
     }
         

@@ -75,7 +75,7 @@ else{
 	// SAVA DATA
 	if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 		// DESCRIPTOR DATA
-		block_exacomp_save_competencies(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_DESCRIPTOR, $selectedTopic->id, $selectedSubject->id);
+		block_exacomp_save_competencies(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, TYPE_DESCRIPTOR, $selectedTopic->id, $selectedSubject->id);
 		
 	}
 	//Delete timestamp (end|start) from example
@@ -112,7 +112,7 @@ else{
 	$subjects = block_exacomp_get_competence_tree($courseid,(isset($selectedSubject))?$selectedSubject->id:null,false,(isset($selectedTopic))?$selectedTopic->id:null,
 			false);
 
-	echo $output->print_profoundness($subjects, $courseid, $students, $isTeacher ? ROLE_TEACHER : ROLE_STUDENT);
+	echo $output->print_profoundness($subjects, $courseid, $students, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT);
 }
 /* END CONTENT REGION */
 echo $output->print_wrapperdivend();

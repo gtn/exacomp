@@ -73,7 +73,7 @@ if($dropdown_subjects && $subjectid == 0)
 	$subjectid = key($dropdown_subjects);
 /* SAVE DATA */
 if($version	&& $studentid && isset($_POST['btn_submit']) && $subjectid > 0)
-	block_exacomp_save_competencies(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_TOPIC, null, $subjectid);
+	block_exacomp_save_competencies(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, TYPE_TOPIC, null, $subjectid);
 
 list($niveaus, $skills, $subjects, $data, $selection) = block_exacomp_init_competence_grid_data($courseid, $subjectid, $studentid, (block_exacomp_get_settings_by_course($courseid)->show_all_examples != 0 || $isTeacher), block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies);
 

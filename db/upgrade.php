@@ -1571,7 +1571,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    	}
 	    	//only one entry, even descriptor belongs to more than one topic
 	    	foreach($descriptors as $descriptor){
-	    		$DB->insert_record(DB_DESCVISIBILITY, array('courseid'=>$course, 'descrid'=>$descriptor->id, 'studentid'=>0, 'visible'=>1));
+	    		$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$course, 'descrid'=>$descriptor->id, 'studentid'=>0, 'visible'=>1));
 	    	}
 	    }
 		upgrade_block_savepoint(true, 2015051400, 'exacomp');
@@ -1797,13 +1797,13 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		$courses = block_exacomp_get_courses();
 		
 		foreach($courses as $course){
-			$visibilities = $DB->get_fieldset_select(DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=0', array($course));
+			$visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=0', array($course));
 			
 			//get all cross subject descriptors - to support cross-course subjects descriptor visibility must be kept
-			$cross_subjects = $DB->get_records(DB_CROSSSUBJECTS, array('courseid'=>$course));
+			$cross_subjects = $DB->get_records(block_exacomp::DB_CROSSSUBJECTS, array('courseid'=>$course));
 			$cross_subjects_descriptors = array();
 			foreach($cross_subjects as $crosssub){
-				$cross_subject_descriptors = $DB->get_fieldset_select(DB_DESCCROSS, 'descrid', 'crosssubjid=?', array($crosssub->id));
+				$cross_subject_descriptors = $DB->get_fieldset_select(block_exacomp::DB_DESCCROSS, 'descrid', 'crosssubjid=?', array($crosssub->id));
 				foreach($cross_subject_descriptors as $descriptor)
 				if(!in_array($descriptor, $cross_subjects_descriptors)){
 					$cross_subjects_descriptors[] = $descriptor;
@@ -1829,13 +1829,13 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			foreach($descriptors as $descriptor){
 				//new descriptors in table
 				if(!in_array($descriptor->id, $visibilities))
-					$DB->insert_record(DB_DESCVISIBILITY, array("courseid"=>$course, "descrid"=>$descriptor->id, "studentid"=>0, "visible"=>1));
+					$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, array("courseid"=>$course, "descrid"=>$descriptor->id, "studentid"=>0, "visible"=>1));
 			
 				$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $course, true, array(SHOW_ALL_TAXONOMIES), true, false);
 				
 				foreach($descriptor->children as $childdescriptor){
 					if(!in_array($childdescriptor->id, $visibilities))
-						$DB->insert_record(DB_DESCVISIBILITY, array("courseid"=>$course, "descrid"=>$childdescriptor->id, "studentid"=>0, "visible"=>1));
+						$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, array("courseid"=>$course, "descrid"=>$childdescriptor->id, "studentid"=>0, "visible"=>1));
 			
 					if(!array_key_exists($childdescriptor->id, $finaldescriptors))
 						$finaldescriptors[$childdescriptor->id] = $childdescriptor;
@@ -1847,7 +1847,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 				if(!array_key_exists($visible, $finaldescriptors)){
 					//check if used in cross-subjects --> then it must still be visible
 					if(!in_array($visible, $cross_subjects_descriptors))
-						$DB->delete_records(DB_DESCVISIBILITY, array("courseid"=>$course, "descrid"=>$visible));
+						$DB->delete_records(block_exacomp::DB_DESCVISIBILITY, array("courseid"=>$course, "descrid"=>$visible));
 				}
 			}	
 		}
@@ -1874,9 +1874,9 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 						if($child->sorting==0){
 							$max_sorting++;
 							$child->sorting = $max_sorting;
-							$child_descriptor = $DB->get_record(DB_DESCRIPTORS, array('id'=>$child->id));
+							$child_descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$child->id));
 							$child_descriptor->sorting = $max_sorting;
-							$DB->update_record(DB_DESCRIPTORS, $child_descriptor);
+							$DB->update_record(block_exacomp::DB_DESCRIPTORS, $child_descriptor);
 						}
 					}
 				}
@@ -1886,7 +1886,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	}
 	if($oldversion < 2015072301){
 		// Define field id to be added to block_exacompcrosssubjects.
-		$table = new xmldb_table(DB_CROSSSUBJECTS);
+		$table = new xmldb_table(block_exacomp::DB_CROSSSUBJECTS);
 		$field = new xmldb_field('subjectid', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'shared');	
 		// Conditionally launch add field id.
 		if (!$dbman->field_exists($table, $field)) {
@@ -1950,7 +1950,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         }
         
         //update table
-        $descriptors = $DB->get_records(DB_DESCRIPTORS);
+        $descriptors = $DB->get_records(block_exacomp::DB_DESCRIPTORS);
         foreach($descriptors as $descriptor){
         	$insert = new stdClass();
         	$insert->descrid = $descriptor->id;
@@ -1977,7 +1977,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         }
 
  		//update table
-        $examples = $DB->get_records(DB_EXAMPLES);
+        $examples = $DB->get_records(block_exacomp::DB_EXAMPLES);
         foreach($examples as $example){
         	$insert = new stdClass();
         	$insert->exampleid = $example->id;

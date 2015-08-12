@@ -70,15 +70,15 @@ echo $PAGE->get_renderer('block_exacomp')->print_wrapperdivstart();
 /* CONTENT REGION */
 if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 	if(isset($_POST['descriptor']) && !empty($_POST['descriptor'])){
-		$DB->delete_records(DB_DESCEXAMP,array('exampid' => $exampleid));
+		$DB->delete_records(block_exacomp::DB_DESCEXAMP,array('exampid' => $exampleid));
 		foreach($_POST['descriptor'] as $descriptorid){
 			//check if record already exists -> if not insert new 
-			$record = $DB->get_records(DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$exampleid));
+			$record = $DB->get_records(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$exampleid));
 			if(!$record){
 				$insert = new stdClass();
 				$insert->descrid = $descriptorid;
 				$insert->exampid = $exampleid;
-				$DB->insert_record(DB_DESCEXAMP, $insert);
+				$DB->insert_record(block_exacomp::DB_DESCEXAMP, $insert);
 			}	
 		}
 	}
@@ -91,7 +91,7 @@ if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 }
 
 //get descriptors for the given example
-$example_descriptors = $DB->get_records(DB_DESCEXAMP,array('exampid'=>$exampleid),'','descrid');
+$example_descriptors = $DB->get_records(block_exacomp::DB_DESCEXAMP,array('exampid'=>$exampleid),'','descrid');
 
 $tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid);
 

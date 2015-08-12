@@ -150,7 +150,7 @@ else{
 	$firstvalue = reset($subjects);
 	$firstvalue->title = $selectedSubject->title;
 	
-	echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? ROLE_TEACHER : ROLE_STUDENT, $scheme, ($version && $selectedTopic->id != SHOW_ALL_TOPICS), false, 0, $statistic);
+	echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, ($version && $selectedTopic->id != SHOW_ALL_TOPICS), false, 0, $statistic);
 
 }
 

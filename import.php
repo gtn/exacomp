@@ -76,9 +76,9 @@ $importSuccess = false;
 
 // TODO
 if (($importtype == 'custom') && $data = $mform->get_file_content('file')) {
-    $importSuccess = block_exacomp_data_importer::do_import($data, IMPORT_SOURCE_SPECIFIC);
+    $importSuccess = block_exacomp_data_importer::do_import($data, block_exacomp::IMPORT_SOURCE_SPECIFIC);
 } elseif ($isAdmin && ($importtype == 'normal') && $data = $mform->get_file_content('file')) {
-    $importSuccess = block_exacomp_data_importer::do_import($data, IMPORT_SOURCE_DEFAULT);
+    $importSuccess = block_exacomp_data_importer::do_import($data, block_exacomp::IMPORT_SOURCE_DEFAULT);
 } elseif ($isAdmin && ($importtype == 'demo')) {
     //do demo import
     
@@ -87,7 +87,7 @@ if (($importtype == 'custom') && $data = $mform->get_file_content('file')) {
     if (!$xml) {
         die('xml not found');
     } else {
-        if (block_exacomp_data_importer::do_import($xml, IMPORT_SOURCE_DEFAULT, true)) {
+        if (block_exacomp_data_importer::do_import($xml, block_exacomp::IMPORT_SOURCE_DEFAULT, true)) {
             $importSuccess = true;
             block_exacomp_settstamp();
         }
@@ -154,14 +154,14 @@ if($isAdmin || block_exacomp_check_customupload()) {
         }
     } else {
 
-        if (block_exacomp_data::has_old_data(IMPORT_SOURCE_DEFAULT)) {
+        if (block_exacomp_data::has_old_data(block_exacomp::IMPORT_SOURCE_DEFAULT)) {
             if (!$isAdmin) {
                 print_error('pls contact your admin');
             }
             
             echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'normal')), 'For the latest exacomp version you need to reimport global educational standards'));
         }
-        elseif (block_exacomp_data::has_old_data(IMPORT_SOURCE_SPECIFIC)) {
+        elseif (block_exacomp_data::has_old_data(block_exacomp::IMPORT_SOURCE_SPECIFIC)) {
             if (!$isAdmin) {
                 print_error('pls contact your admin');
             }

@@ -130,7 +130,7 @@ switch($action){
 		$saved = "";
 		foreach($comps as $comp){
 			if($comp){
-				$saved .= block_exacomp_set_user_competence ( $comp->userid, $comp->compid, $comptype, $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, $comp->value );
+				$saved .= block_exacomp_set_user_competence ( $comp->userid, $comp->compid, $comptype, $courseid, ($isTeacher) ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $comp->value );
 			}
 		}
 		echo $saved;
@@ -150,7 +150,7 @@ switch($action){
 		foreach($examples as $example){
 			if($example){
 				$saved.="value: ".$example->value.$isTeacher." id: ";
-				$saved .= block_exacomp_set_user_example($example->userid, $example->exampleid, $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, $example->value);
+				$saved .= block_exacomp_set_user_example($example->userid, $example->exampleid, $courseid, ($isTeacher) ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $example->value);
 			}
 		}
 		echo $saved;
@@ -183,8 +183,8 @@ switch($action){
 		$title = required_param('title', PARAM_TEXT);
 		
 		//create sorting 
-		$parent_descriptor = $DB->get_record(DB_DESCRIPTORS, array('id'=>$parentid));
-		$descriptor_topic_mm = $DB->get_record(DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
+		$parent_descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$parentid));
+		$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
 		$parent_descriptor->topicid = $descriptor_topic_mm->topicid;
 		$siblings = block_exacomp_get_child_descriptors($parent_descriptor, $courseid);
 		
@@ -195,11 +195,11 @@ switch($action){
 		
 		$descriptor = new stdClass();
 		$descriptor->title = $title;
-		$descriptor->source = CUSTOM_CREATED_DESCRIPTOR;
+		$descriptor->source = block_exacomp::CUSTOM_CREATED_DESCRIPTOR;
 		$descriptor->parentid = $parentid;
 		$descriptor->sorting = ++$max_sorting;
 		
-		$id = $DB->insert_record(DB_DESCRIPTORS, $descriptor);
+		$id = $DB->insert_record(block_exacomp::DB_DESCRIPTORS, $descriptor);
 		
 		$visibility = new stdClass();
 		$visibility->courseid = $courseid;
@@ -207,16 +207,16 @@ switch($action){
 		$visibility->studentid = 0;
 		$visibility->visible = 1;
 		
-		$DB->insert_record(DB_DESCVISIBILITY, $visibility);
+		$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, $visibility);
 		echo $id;
 		break;
 	case 'crosssubj-subject':
 		$crosssubjectid = required_param('crosssubjid', PARAM_INT);
 		$subjectid = required_param('subjectid', PARAM_INT);
 		
-		$crosssubject = $DB->get_record(DB_CROSSSUBJECTS, array('id'=>$crosssubjectid));
+		$crosssubject = $DB->get_record(block_exacomp::DB_CROSSSUBJECTS, array('id'=>$crosssubjectid));
 		$crosssubject->subjectid = $subjectid;
-		$DB->update_record(DB_CROSSSUBJECTS, $crosssubject);
+		$DB->update_record(block_exacomp::DB_CROSSSUBJECTS, $crosssubject);
 		
 		echo $crosssubjectid.' subject:'.$subjectid;
 		break;
@@ -224,15 +224,15 @@ switch($action){
 		$crosssubjectid = required_param('crosssubjid', PARAM_INT);
 		
 		//delete student-crosssubject association
-		$DB->delete_records(DB_CROSSSTUD, array('crosssubjid'=>$crosssubjectid));
+		$DB->delete_records(block_exacomp::DB_CROSSSTUD, array('crosssubjid'=>$crosssubjectid));
 		
 		//delete descriptor-crosssubject association
-		$DB->delete_records(DB_DESCCROSS, array('crosssubjid'=>$crosssubjectid));
+		$DB->delete_records(block_exacomp::DB_DESCCROSS, array('crosssubjid'=>$crosssubjectid));
 		
 		//delete crosssubject overall evaluations
-		$DB->delete_records(DB_COMPETENCIES, array('compid'=>$crosssubjectid, 'comptype'=>TYPE_CROSSSUB));
+		$DB->delete_records(block_exacomp::DB_COMPETENCIES, array('compid'=>$crosssubjectid, 'comptype'=>TYPE_CROSSSUB));
 		
 		//delete crosssubject
-		$DB->delete_records(DB_CROSSSUBJECTS, array('id'=>$crosssubjectid));
+		$DB->delete_records(block_exacomp::DB_CROSSSUBJECTS, array('id'=>$crosssubjectid));
 		break;
 }

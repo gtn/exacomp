@@ -67,9 +67,9 @@ $isTeacher = block_exacomp_is_teacher($context);
 
 if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 	// DESCRIPTOR DATA
-	block_exacomp_save_competencies_activities_detail(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_DESCRIPTOR);
+	block_exacomp_save_competencies_activities_detail(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, TYPE_DESCRIPTOR);
 	// TOPIC DATA
-	block_exacomp_save_competencies_activities_detail(isset($_POST['datatopics']) ? $_POST['datatopics'] : array(), $courseid, ($isTeacher) ? ROLE_TEACHER : ROLE_STUDENT, TYPE_TOPIC);	
+	block_exacomp_save_competencies_activities_detail(isset($_POST['datatopics']) ? $_POST['datatopics'] : array(), $courseid, ($isTeacher) ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, TYPE_TOPIC);	
 }
 
 /* CONTENT REGION */
@@ -86,7 +86,7 @@ else{
 		block_exacomp_get_user_information_by_course($student, $courseid);
 	}
 	
-	echo $output->print_detail_content($tree, $courseid, $students, $showevaluation, $isTeacher ? ROLE_TEACHER : ROLE_STUDENT, block_exacomp_get_grading_scheme($courseid));
+	echo $output->print_detail_content($tree, $courseid, $students, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, block_exacomp_get_grading_scheme($courseid));
 }
 
 
