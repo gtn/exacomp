@@ -13,7 +13,7 @@ $params = new stdClass();
 
 require_once('./curl.php');
 $curl = new curl;
-$token_google = 801241;
+$token_google = 694278;
 
 print_r($token_google);
 echo "
@@ -106,6 +106,39 @@ $functionname = 'dakora_get_descriptor_children';
 $params = new stdClass();
 $params->courseid = 3;
 $params->descriptorid = 326;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+
+
+
+";
+
+/// REST CALL dakora_get_descriptor_children
+$functionname = 'dakora_get_examples_for_descriptor';
+
+$params = new stdClass();
+$params->courseid = 3;
+$params->descriptorid = 327;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+
+
+
+";
+
+/// REST CALL dakora_get_descriptor_children
+$functionname = 'dakora_get_example_overview';
+
+$params = new stdClass();
+$params->exampleid = 34;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);

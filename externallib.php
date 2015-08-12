@@ -3094,6 +3094,7 @@ class block_exacomp_external extends external_api {
 			$example_return->exampletitle = $example->title;
 			$examples_return[] = $example_return;
 		}
+		
 		$return = new stdClass();
 		$return->children = $children_return;
 		$return->examples = $examples_return;
@@ -3118,4 +3119,72 @@ class block_exacomp_external extends external_api {
 		) ) ;
 	}
 
+	public static function dakora_get_examples_for_descriptor_parameters(){
+		return new external_function_parameters ( array (
+				'courseid' => new external_value( PARAM_INT, 'id of course' ),
+				'descriptorid' => new external_value ( PARAM_INT, 'id of parent descriptor' ) 
+		) );
+	}
+	
+	public static function dakora_get_examples_for_descriptor($courseid, $descriptorid){
+		global $DB;
+		$params = self::validate_parameters ( self::dakora_get_examples_for_descriptor_parameters (), array (
+				'courseid' => $courseid,
+				'descriptorid' => $descriptorid
+		) );
+		
+		$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptorid));
+		
+		if($descriptor->parentid != 0){ //parent descriptor
+			$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$descriptor->id));
+			$descriptor->topicid = $descriptor_topic_mm->topicid;
+		
+			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
+		}else{ //child descriptor
+			
+			$parent_descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptor->parentid));
+			$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
+			$descriptor->topicid = $descriptor_topic_mm->topicid;
+			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
+			
+		}
+		
+		$examples_return = array();
+		foreach($descriptor->examples as $example){
+			$example_return = new stdClass();
+			$example_return->exampleid = $example->id;
+			$example_return->exampletitle = $example->title;
+			$examples_return[] = $example_return;
+		}
+		
+		return $examples_return;
+	}
+	
+	public static function dakora_get_examples_for_descriptor_returns(){
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'exampleid' => new external_value ( PARAM_INT, 'id of descriptor' ),
+				'exampletitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ) 
+		) ) );
+	}
+	
+	public static function dakora_get_example_overview_parameters(){
+		return new external_function_parameters ( array (
+				'exampleid' => new external_value( PARAM_INT, 'id of example' )
+		) );
+	}
+	
+	public static function dakora_get_example_overview($exampleid){
+		return block_exacomp_external::get_example_by_id ( $exampleid );
+	}
+	
+	public static function dakora_get_example_overview_returns(){
+		return new external_single_structure ( array (
+				'title' => new external_value ( PARAM_TEXT, 'title of example' ),
+				'description' => new external_value ( PARAM_TEXT, 'description of example' ),
+				'task' => new external_value ( PARAM_TEXT, 'task(url/description) of example' ),
+				'externaltask' => new external_value ( PARAM_TEXT, 'externaltask(url/description) of example' ),
+				'externalurl' => new external_value ( PARAM_TEXT, 'externalurl of example' ),
+				'hassubmissions' => new external_value ( PARAM_BOOL, 'true if example has already submissions' )
+		) );
+	}
 }

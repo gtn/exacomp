@@ -37,7 +37,10 @@ $services = array(
 						'dakora_get_courses', 
 						'dakora_get_topics_by_course',
 						'dakora_get_descriptors', 
-						'dakora_get_descriptor_children'), 	//web service functions of this service
+						'dakora_get_descriptor_children',
+						'dakora_get_examples_for_descriptor', 
+						'dakora_get_example_overview'
+						), 	//web service functions of this service
 				'restrictedusers' =>0,                      //if enabled, the Moodle administrator must link some user to this service
 				//into the administration
 				'enabled'=>1,                               //if enabled, the service can be reachable on a default installation
@@ -297,7 +300,21 @@ $functions = array(
 				'classname'   => 'block_exacomp_external',  //class containing the external function
 				'methodname'  => 'dakora_get_descriptor_children',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
-				'description' => 'get children for descriptor for dakora app',    //human readable description of the web service function
+				'description' => 'get children (childdescriptor and examples) for descriptor for dakora app',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_examples_for_descriptor' => array (
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_examples_for_descriptor',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get examples for descriptor for dakora app',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_example_overview' => array (
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_example_overview',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get example overview for dakora app',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)
 		)
 );
