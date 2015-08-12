@@ -1987,8 +1987,17 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2015081101, 'exacomp');
     }
-	
-	
-	
+    if ($oldversion < 2015081201) {
+		 $table = new xmldb_table('block_exacompdescriptors');
+		 $field = new xmldb_field('catid');
+		$key = new xmldb_key('catid', XMLDB_KEY_FOREIGN, array('catid'));
+ 		// Launch drop key primary.
+ 		$dbman->drop_key($table, $key);
+		 //var_dump($dbman->index_exists($table, $key));
+		 $dbman->drop_field($table, $field);
+		 
+    	// Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2015081201, 'exacomp');
+    }
 	return $result;
 }

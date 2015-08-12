@@ -27,7 +27,8 @@ define('DB_CROSSSUBJECTS', 'block_exacompcrosssubjects');
 define('DB_DESCCROSS', 'block_exacompdescrcross_mm');
 define('DB_CROSSSTUD', 'block_exacompcrossstud_mm');
 define('DB_DESCVISIBILITY', 'block_exacompdescrvisibility');
-
+define('DB_DESCCAT', 'block_exacompdescrcat_mm');
+define('DB_EXAMPTAX', 'block_exacompexampletax_mm');
 /**
  * PLUGIN ROLES
  */
@@ -779,7 +780,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.catid, d.parentid, n.sorting niveau, dvis.visible as visible, d.sorting, d.catid '
+	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.parentid, n.sorting niveau, dvis.visible as visible, d.sorting '
 	.'FROM {'.DB_TOPICS.'} t '
 	.(($courseid>0)?'JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
@@ -798,12 +799,25 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples);
 		//check for child-descriptors
 		$descriptor->children = block_exacomp_get_child_descriptors($descriptor,$courseid, $showalldescriptors, $filteredtaxonomies, $showallexamples, true, $showonlyvisible);
+
+		//get categories
+		$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
 	}
 	
 	return $descriptors;
 
 }
-
+function block_exacomp_get_categories_for_descriptor($descriptor){
+	global $DB;
+	$records = $DB->get_records(DB_DESCCAT, array('descrid'=>$descriptor->id));
+	$categories = array();
+	
+	foreach($records as $record){
+		if($record->catid)
+			$categories[] = $DB->get_record(DB_CATEGORIES, array('id'=>$record->catid));
+	}
+	return $categories;	
+}
 function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescriptors = false, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $showallexamples = true, $mindvisibility = true, $showonlyvisible=false ) {
 	global $DB;
 	
@@ -814,7 +828,7 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescrip
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = 'SELECT d.id, d.title, d.niveauid, d.source, \'descriptor\' as tabletype, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, d.catid, '.
+	$sql = 'SELECT d.id, d.title, d.niveauid, d.source, \'descriptor\' as tabletype, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, '.
 			($mindvisibility?'dvis.visible as visible, ':'').' d.sorting
 			FROM {'.DB_DESCRIPTORS.'} d '
 			.($mindvisibility ? 'JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 '
@@ -838,6 +852,7 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescrip
 	foreach($descriptors as &$descriptor) {
 		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples);
 		$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid,$showalldescriptors,$filteredtaxonomies);
+		$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
 	}
 	return $descriptors;
 }
@@ -877,7 +892,7 @@ function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldes
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = '(SELECT DISTINCT d.id, desctopmm.id as u_id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.catid, d.requirement, d.knowledgecheck, d.benefit, n.title as cattitle '
+	$sql = '(SELECT DISTINCT d.id, desctopmm.id as u_id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.requirement, d.knowledgecheck, d.benefit, n.title as cattitle '
 	.'FROM {'.DB_TOPICS.'} t JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($topicid > 0) ? ' AND t.id = '.$topicid.' ' : '')
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
 	.'JOIN {'.DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id '
@@ -891,6 +906,10 @@ function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldes
 	$sql .= ' ORDER BY d.sorting';
 	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid));
 	
+
+	foreach($descriptors as $descriptor){
+		$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
+	}
 	return $descriptors;
 }
 /**
@@ -2368,6 +2387,12 @@ function block_exacomp_set_coursetopics($courseid, $values) {
 
 	}
 }
+/**
+ * 
+ * given descriptor list is visible in cour
+ * @param unknown_type $courseid
+ * @param unknown_type $descriptors
+ */
 function block_exacomp_update_descriptor_visibilities($courseid, $descriptors){
 	global $DB;
 	
@@ -2596,50 +2621,7 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 	}
 
 	$selection = array();
-	
-	/* if($version) {
-		$skills = array();
-		$subjects = $DB->get_records_menu(DB_SUBJECTS,array("stid" => $subjectid),null,"id, title");
-		$niveaus = $DB->get_records_menu(DB_CATEGORIES, array("lvl" => 4),"id,title","id,title");
 
-		$data = array();
-		if($studentid)
-			$competencies = array("studentcomps"=>$DB->get_records(DB_COMPETENCIES,array("role"=>ROLE_STUDENT,"courseid"=>$courseid,"userid"=>$studentid,"comptype"=>TYPE_TOPIC),"","compid,userid,reviewerid,value"),
-					"teachercomps"=>$DB->get_records(DB_COMPETENCIES,array("role"=>ROLE_TEACHER,"courseid"=>$courseid,"userid"=>$studentid,"comptype"=>TYPE_TOPIC),"","compid,userid,reviewerid,value"));
-
-		$selection = array();
-		// Arrange data in associative array for easier use
-		foreach($subjects as $subjid => $subject) {
-			$topics = $DB->get_records('block_exacomptopics',array("subjid"=>$subjid),"catid");
-			foreach($topics as $topic) {
-				if($topic->catid == 0) continue;
-
-				if($studentid) {
-					$topic->studentcomp = (array_key_exists($topic->id, $competencies['studentcomps'])) ? $competencies['studentcomps'][$topic->id]->value : false;
-					$topic->teachercomp = (array_key_exists($topic->id, $competencies['teachercomps'])) ? $competencies['teachercomps'][$topic->id]->value : false;
-
-					// ICONS
-					if(isset($cm_mm->topics[$topic->id])) {
-						//get CM instances
-						$cm_temp = array();
-						foreach($cm_mm->topics[$topic->id] as $cmid)
-							$cm_temp[] = $course_mods[$cmid];
-							
-						$icon = block_exacomp_get_icon_for_user($cm_temp, $DB->get_record("user",array("id"=>$studentid)));
-						$topic->icon = '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>';
-					}
-				}
-				$data[1][$subjid][$topic->catid][] = $topic;
-			}
-			$selection_temp = block_exacomp_get_topics_by_subject($courseid,$subjid);
-			$selection = $selection + $selection_temp;
-		}
-		if(block_exacomp_get_settings_by_course($courseid)->show_all_descriptors)
-			$selection = $DB->get_records(DB_COURSETOPICS,array('courseid'=>$courseid),'','topicid');
-
-		return array($niveaus, $skills, $subjects, $data, $selection);
-	}
-	else { */
 		$niveaus = block_exacomp_get_niveaus_for_subject($subjectid);
 		$skills = $DB->get_records_menu('block_exacompskills',null,null,"id, title");
 		$descriptors = block_exacomp_get_descriptors_by_subject($subjectid);
@@ -2692,11 +2674,10 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 			$topics[$descriptor->topicid] = $descriptor->topic;
 		}
 		
-		//if(block_exacomp_get_settings_by_course($courseid)->show_all_descriptors)
-			$selection = $DB->get_records(DB_COURSETOPICS,array('courseid'=>$courseid),'','topicid');
+		$selection = $DB->get_records(DB_COURSETOPICS,array('courseid'=>$courseid),'','topicid');
 		
 		return array($niveaus, $skills, $topics, $data, $selection);
-	//}
+
 }
 function block_exacomp_get_niveaus_for_subject($subjectid) {
 	global $DB;
@@ -4028,7 +4009,7 @@ function block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid
     if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.source, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.parentid, dvis.visible as visible, n.sorting as niveau, d.catid '
+	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.source, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.parentid, dvis.visible as visible, n.sorting as niveau '
 	.'FROM {'.DB_TOPICS.'} t '
 	.'JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
 	.'JOIN {'.DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id '
@@ -4050,6 +4031,7 @@ function block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid
 			if(!array_key_exists($cid, $comps))
 				unset($descriptor->children[$cid]);
 		}
+		$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
 	}
 	
 	return $descriptors;

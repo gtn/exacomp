@@ -1532,7 +1532,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				$descriptorRow->cells[] = $titleCell;
 				
 				$nivCell = new html_table_cell();
-				$nivCell->text = $DB->get_field(DB_CATEGORIES,"title",array("lvl" => 5, "id" => $descriptor->catid));
+				
+				$nivText = "";
+				foreach($descriptor->categories as $cat){
+					$nivText .= $cat->title;
+				}
+				$nivCell->text = $nivText;
 				$descriptorRow->cells[] = $nivCell;
 					    
 				
