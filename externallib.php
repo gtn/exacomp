@@ -3022,7 +3022,7 @@ class block_exacomp_external extends external_api {
 				'topicid' => $topicid
 		) );
 		
-		$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $topicid);
+		$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $topicid, false, true, true);
 		
 		$descriptors_return = array();
 		foreach($descriptors as $descriptor){
@@ -3075,7 +3075,7 @@ class block_exacomp_external extends external_api {
 		$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
 		$parent_descriptor->topicid = $descriptor_topic_mm->topicid;
 		
-		$children = block_exacomp_get_child_descriptors($parent_descriptor, $courseid);
+		$children = block_exacomp_get_child_descriptors($parent_descriptor, $courseid, false, array(SHOW_ALL_TAXONOMIES), true, true, true);
 		
 		$children_return = array();
 		foreach($children as $child){
