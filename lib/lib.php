@@ -861,23 +861,61 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 	global $DB;
 	
 	$examples = $DB->get_records_sql(
-			"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
-				e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.creatorid, e.iseditable, e.tips, e.timeframe
+			"SELECT de.id as deid, e.id, e.title, e.task, e.externalurl,
+				e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe
 				FROM {" . DB_EXAMPLES . "} e
-				JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
-				LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id"
+				JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?"
 			. " WHERE "
 			. " e.source != " . EXAMPLE_SOURCE_USER . " AND "
 			. (($showallexamples) ? " 1=1 " : " e.creatorid > 0")
-			. ((in_array(SHOW_ALL_TAXONOMIES, $filteredtaxonomies)) ? "" : " AND e.taxid IN (".implode(",", $filteredtaxonomies) .")" )
 			, array($descriptor->id));
 	
-	$descriptor->examples = array();
 	foreach($examples as $example){
+		$example->taxonomies = block_exacomp_get_taxonomies_by_example($example);
+		
+		$taxtitle = "";
+		foreach($example->taxonomies as $taxonomy){
+			$taxtitle .= $taxonomy->title.", ";
+		}
+		
+		$taxtitle = substr($taxtitle, 0, strlen($taxtitle)-1);
+		$example->tax = $taxtitle;
+	}
+	$filtered_examples = array();
+	if(!in_array(SHOW_ALL_TAXONOMIES, $filteredtaxonomies)){
+		$filtered_taxonomies = implode(",", $filteredtaxonomies);
+		
+		foreach($examples as $example){
+			foreach($examples->taxonomies as $taxonomy){
+				if(in_array($taxonomy->id, $filtered_taxonomies)){
+					if(!array_key_exists($example->id, $filtered_examples))
+						$filtered_examples[$example->id] = $example;
+					continue;
+				}
+			}
+		}
+	}else{
+		$filtered_examples = $examples;
+	}
+	
+	$descriptor->examples = array();
+	foreach($filtered_examples as $example){
 		$descriptor->examples[$example->id] = $example;
 	}
 	
 	return $descriptor;
+}
+
+function block_exacomp_get_taxonomies_by_example($example){
+	global $DB;
+	$records = $DB->get_records(DB_EXAMPTAX, array('exampleid'=>$example->id));
+	$taxonomies = array();
+	
+	foreach($records as $record){
+		if($record->taxid)
+			$taxonomies[] = $DB->get_record(DB_TAXONOMIES, array('id'=>$record->taxid));
+	}
+	return $taxonomies;	
 }
 /**
  * Returns descriptors for a given topic
@@ -2036,121 +2074,7 @@ function block_exacomp_build_rec_topic_example_tree_desc(&$subs){
 
 	return $sub_has_examples;
 }
-/**
- * Build tree for learning materials with sort order "taxonomy"
- * Enter description here ...
- * @param unknown_type $courseid
- */
-function block_exacomp_build_example_tree_tax($courseid){
 
-	//get all subjects, topics, descriptor and examples
-	$tree = block_exacomp_build_example_tree_desc($courseid);
-
-	//extract all used taxonomies
-	$taxonomies = block_exacomp_get_taxonomies($tree);
-
-	//append the whole tree to every taxonomy
-	foreach($taxonomies as $taxonomy){
-		$tree = block_exacomp_build_example_tree_desc($courseid);
-		$taxonomy->subs = $tree;
-	}
-
-	//unset every examples, descriptor, topic and subject where the taxonomy-id is not used
-	foreach($taxonomies as $taxonomy){
-		foreach($taxonomy->subs as $subject){
-			$subject_has_examples = block_exacomp_build_rec_topic_example_tree_tax($subject->subs, $taxonomy->id);
-
-			if(!$subject_has_examples)
-				unset($taxonomy->subs[$subject->id]);
-		}
-	}
-	return $taxonomies;
-}
-/**
- * helper function to traverse tree recursively because of endless topic structure
- */
-function block_exacomp_build_rec_topic_example_tree_tax(&$subs, $taxid){
-	$sub_has_examples = false;
-	$sub_topics_have_examples = false;
-	foreach($subs as $topic){
-		$topic_has_examples = false;
-		if(isset($topic->descriptors) && !empty($topic->descriptors)){
-			foreach($topic->descriptors as $descriptor){
-				$descriptor_has_examples = false;
-				foreach($descriptor->examples as $example){
-					if($example->taxid != $taxid){
-						unset($descriptor->examples[$example->id]);
-					}
-					else{
-						$descriptor_has_examples = true;
-						$topic_has_examples = true;
-						$sub_has_examples = true;
-					}
-				}
-				if(!$descriptor_has_examples){
-					unset($topic->descriptors[$descriptor->id]);
-				}
-			}
-		}
-		if(isset($topic->subs)){
-			$sub_topic_has_examples = block_exacomp_build_rec_topic_example_tree_tax($topic->subs, $taxid);
-			if($sub_topic_has_examples) 
-				$sub_topics_have_examples = true;
-		}
-		elseif(!isset($topic->subs) && !$topic_has_examples){
-			unset($subs[$topic->id]);
-		}
-		
-		if(!$topic_has_examples && !$sub_topics_have_examples){
-			unset($subs[$topic->id]);
-		}
-	}
-	
-	return $sub_has_examples;
-}
-/**
- *
- * Extract used taxonomies from given subject tree
- * @param unknown_type $tree
- */
-function block_exacomp_get_taxonomies($tree){
-	global $DB;
-
-	$taxonomies = array();
-	//extract all taxonomies from given structure, do it recursively because of topic structure
-	foreach($tree as $subject){
-		$taxonomies = block_exacomp_get_taxonomies_rek_topics($subject->subs, $taxonomies);
-	}
-	return $taxonomies;
-}
-/**
- * helper function for traversing through tree recursively
- */
-function block_exacomp_get_taxonomies_rek_topics($subs, $taxonomies){
-	global $DB;
-	foreach($subs as $topic){
-		if(isset($topic->descriptors)){
-			foreach($topic->descriptors as $descriptor){
-				foreach($descriptor->examples as $example){
-					if($example->taxid > 0 && !in_array($example->taxid, $taxonomies)){
-						$taxonomy = new stdClass();
-						$taxonomy->id = $example->taxid;
-						$taxonomy->title = $DB->get_record(DB_TAXONOMIES, array('id'=>$example->taxid), $fields='title');
-						$taxonomies[$example->taxid]= $taxonomy;
-					}
-				}
-			}
-		}
-		if(isset($topic->subs)){
-			$taxonomies_sub = block_exacomp_get_taxonomies_rek_topics($topic->subs, $taxonomies);
-			foreach($taxonomies_sub as $sub){
-				if(!in_array($sub, $taxonomies))
-					$taxonomies[$sub->id] = $sub;
-			}
-		}
-	}
-	return $taxonomies;
-}
 /**
  *
  * Gets supported modules for assigning activities
@@ -2644,17 +2568,46 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 		    $descriptor->children = $DB->get_records('block_exacompdescriptors',array('parentid'=>$descriptor->id));
 		    
 			$examples = $DB->get_records_sql(
-					"SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
-					e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.creatorid
+					"SELECT de.id as deid, e.id, e.title, e.task, e.externalurl,
+					e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.creatorid
 					FROM {" . DB_EXAMPLES . "} e
-					JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
-					LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id"
+					JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?"
 					. ((!$showallexamples || !in_array(SHOW_ALL_TAXONOMIES, $filteredtaxonomies)) ? " WHERE " : "")
 					. (($showallexamples) ? "" : " e.creatorid > 0")
-					. ((in_array(SHOW_ALL_TAXONOMIES, $filteredtaxonomies)) ? "" : " e.taxid IN (".implode(",", $filteredtaxonomies) .")" )
 					, array($descriptor->id));
 			
-			$descriptor->examples = $examples;
+			foreach($examples as $example){
+				$example->taxonomies = block_exacomp_get_taxonomies_by_example($example);
+				
+				$taxtitle = "";
+				foreach($example->taxonomies as $taxonomy){
+					$taxtitle .= $taxonomy->title.", ";
+				}
+				
+				$taxtitle = substr($taxtitle, 0, strlen($taxtitle)-1);
+				$example->tax = $taxtitle;
+			}
+			$filtered_examples = array();
+			if(!in_array(SHOW_ALL_TAXONOMIES, $filteredtaxonomies)){
+				$filtered_taxonomies = implode(",", $filteredtaxonomies);
+				
+				foreach($examples as $example){
+					foreach($examples->taxonomies as $taxonomy){
+						if(in_array($taxonomy->id, $filtered_taxonomies)){
+							if(!array_key_exists($example->id, $filtered_examples))
+								$filtered_examples[$example->id] = $example;
+							continue;
+						}
+					}
+				}
+			}else{
+				$filtered_examples = $examples;
+			}
+			
+			$descriptor->examples = array();
+			foreach($filtered_examples as $example){
+				$descriptor->examples[$example->id] = $example;
+			}
 				
 			if($studentid) {
 				$descriptor->studentcomp = (array_key_exists($descriptor->id, $competencies['studentcomps'])) ? $competencies['studentcomps'][$descriptor->id]->value : false;

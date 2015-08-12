@@ -1101,15 +1101,26 @@ class block_exacomp_external extends external_api {
 			$descriptors = block_exacomp_get_descriptors_by_topic ( $courseid, $topic->id, false, true );
 			
 			foreach ( $descriptors as $descriptor ) {
-				$examples = $DB->get_records_sql ( "SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
-                        e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.creatorid
+				$examples = $DB->get_records_sql ( "SELECT de.id as deid, e.id, e.title, e.task, e.externalurl,
+                        e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.creatorid
                         FROM {" . DB_EXAMPLES . "} e
                         JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
-                        LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id", array (
+                        ", array (
 						$descriptor->id 
 				) );
 				
 				foreach ( $examples as $example ) {
+					$taxonomies = block_exacomp_get_taxonomies_by_example($example);
+					if(!empty($taxonomies)){
+						$taxonomy = reset($taxonomies);
+						
+						$example->taxid = $taxonomy->id;
+						$example->tax = $taxonomy->title;
+					}else{
+						$example->taxid = null;
+						$example->tax = "";
+					}
+					
 					if (! array_key_exists ( $example->id, $structure [$topic->id]->examples )) {
 						$structure [$topic->id]->examples [$example->id] = new stdClass ();
 						$structure [$topic->id]->examples [$example->id]->exampleid = $example->id;
@@ -2408,15 +2419,24 @@ class block_exacomp_external extends external_api {
 							}
 						}
 						
-						$examples = $DB->get_records_sql ( "SELECT de.id as deid, e.id, e.title, tax.title as tax, e.task, e.externalurl,
-                        e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.taxid, e.creatorid
+						$examples = $DB->get_records_sql ( "SELECT de.id as deid, e.id, e.title, e.task, e.externalurl,
+                        e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.creatorid
                         FROM {" . DB_EXAMPLES . "} e
-                        JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
-                        LEFT JOIN {" . DB_TAXONOMIES . "} tax ON e.taxid=tax.id", array (
+                        JOIN {" . DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=? ", array (
 								$descriptor->id 
 						) );
 						
 						foreach ( $examples as $example ) {
+							$taxonomies = block_exacomp_get_taxonomies_by_example($example);
+							if(!empty($taxonomies)){
+								$taxonomy = reset($taxonomies);
+								
+								$example->taxid = $taxonomy->id;
+								$example->tax = $taxonomy->title;
+							}else{
+								$example->taxid = null;
+								$example->tax = "";
+							}
 							if (! in_array ( $example->id, $total_examples )) {
 								$total_examples [] = $example->id;
 								$topic_total_examples ++;

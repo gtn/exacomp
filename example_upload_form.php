@@ -70,6 +70,7 @@ class block_exacomp_example_upload_form extends moodleform {
 		$mform->addElement('text', 'externalurl', get_string("link","block_exacomp"), 'maxlength="255" size="60"');
 		$mform->setType('externalurl', PARAM_TEXT);
 		
+		//TODO mehrfachauswahl
 		$mform->addElement('select', 'taxid', get_string('taxonomy', 'block_exacomp'),$this->_customdata['taxonomies']);
 		
 		$editexample = $this->_customdata['exampleid'] > 0;

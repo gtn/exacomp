@@ -97,7 +97,6 @@ if($formdata = $form->get_data()) {
     $newExample = new stdClass();
     $newExample->title = $formdata->title;
     $newExample->description = $formdata->description;
-    $newExample->taxid = $formdata->taxid;
     $newExample->creatorid = $USER->id;
     $newExample->externalurl = $formdata->externalurl;
     $newExample->source = EXAMPLE_SOURCE_TEACHER;
@@ -157,6 +156,13 @@ if($formdata = $form->get_data()) {
         $DB->delete_records('block_exacompdescrexamp_mm',array('exampid' => $newExample->id));
     }
 
+    //TODO mehrfachauswahl
+    //insert taxid in exampletax_mm
+    $new_mm = new stdClass();
+    $new_mm->exampleid = $newExample->id;
+    $new_mm->taxid = $formdata->taxid;
+    $DB->insert_record(DB_EXAMPTAX, $new_mm);
+    
     //add descriptor association
     if(isset($_POST['descriptor'])){
     	foreach($_POST['descriptor'] as $descriptorid){

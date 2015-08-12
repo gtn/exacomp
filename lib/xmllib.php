@@ -721,6 +721,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         $item = self::parse_xml_item($xmlItem);
         $item->parentid = $parent;
         
+        //TODO change insert -> mm table
         if ($xmlItem->taxonomyid) {
             $item->taxid = self::get_database_id($xmlItem->taxonomyid); 
         }
