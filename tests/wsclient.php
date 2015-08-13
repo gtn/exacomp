@@ -13,7 +13,7 @@ $params = new stdClass();
 
 require_once('./curl.php');
 $curl = new curl;
-$token_google = 694278;
+$token_google = 762568;
 
 print_r($token_google);
 echo "
@@ -48,7 +48,7 @@ $resp_moodle = json_decode($resp_moodle)->token;
 print_r($resp_moodle);
 echo "
 
-
+courses:
 
 ";
 
@@ -63,7 +63,11 @@ $params->userid = 0;
 
 $resp = $curl->get($serverurl, $params);
 print_r($resp);
+echo "
 
+topics:
+
+";
 
 /// REST CALL BLOCK_EXACOMP_GET_TOPICS_BY_COURSE
 
@@ -78,7 +82,7 @@ print_r($resp);
 
 echo "
 
-
+descriptors:
 
 ";
 
@@ -89,6 +93,7 @@ $functionname = 'dakora_get_descriptors';
 $params = new stdClass();
 $params->courseid = 3;
 $params->topicid = 13;
+$params->userid = 0;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
@@ -96,7 +101,7 @@ print_r($resp);
 
 echo "
 
-
+descriptors children:
 
 ";
 
@@ -106,6 +111,7 @@ $functionname = 'dakora_get_descriptor_children';
 $params = new stdClass();
 $params->courseid = 3;
 $params->descriptorid = 326;
+$params->userid = 0;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
@@ -113,7 +119,7 @@ print_r($resp);
 
 echo "
 
-
+examples
 
 ";
 
@@ -130,7 +136,7 @@ print_r($resp);
 
 echo "
 
-
+example overview
 
 ";
 

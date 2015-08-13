@@ -3006,7 +3006,8 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_descriptors_parameters() {
 		return new external_function_parameters ( array (
 				'courseid' => new external_value ( PARAM_INT, 'id of course'),
-				'topicid' => new external_value ( PARAM_INT, 'id of topic' ) 
+				'topicid' => new external_value ( PARAM_INT, 'id of topic' ),
+				'userid' => new external_value ( PARAM_INT, 'id of user if 0 all visible descriptors')
 		) );
 	}
 	
@@ -3015,21 +3016,25 @@ class block_exacomp_external extends external_api {
 	 * 
 	 * @return array of user courses
 	 */
-	public static function dakora_get_descriptors($courseid, $topicid) {
-	
+	public static function dakora_get_descriptors($courseid, $topicid, $userid) {
+		global $DB;
 		$params = self::validate_parameters ( self::dakora_get_descriptors_parameters (), array (
 				'courseid' => $courseid,
-				'topicid' => $topicid
+				'topicid' => $topicid,
+				'userid' => $userid
 		) );
 		
 		$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $topicid, false, true, true);
 		
+		$non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+
 		$descriptors_return = array();
 		foreach($descriptors as $descriptor){
 			$descriptor_return = new stdClass();
 			$descriptor_return->descriptorid = $descriptor->id;
 			$descriptor_return->descriptortitle = $descriptor->title;
-			$descriptors_return[] = $descriptor_return;
+			if(!in_array($descriptor->id, $non_visibilities))
+				$descriptors_return[] = $descriptor_return;
 		}
 		
 		return $descriptors_return;
@@ -3055,7 +3060,8 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_descriptor_children_parameters() {
 		return new external_function_parameters ( array (
 				'courseid' => new external_value( PARAM_INT, 'id of course' ),
-				'descriptorid' => new external_value ( PARAM_INT, 'id of parent descriptor' ) 
+				'descriptorid' => new external_value ( PARAM_INT, 'id of parent descriptor' ),
+				'userid' => new external_value ( PARAM_INT, 'id of user, if 0 all visible child descriptors')
 		) );
 	}
 	
@@ -3064,11 +3070,12 @@ class block_exacomp_external extends external_api {
 	 * 
 	 * @return array of user courses
 	 */
-	public static function dakora_get_descriptor_children($courseid, $descriptorid) {
+	public static function dakora_get_descriptor_children($courseid, $descriptorid, $userid) {
 		global $DB;
 		$params = self::validate_parameters ( self::dakora_get_descriptor_children_parameters (), array (
 				'courseid' => $courseid,
-				'descriptorid' => $descriptorid
+				'descriptorid' => $descriptorid,
+				'userid' => $userid
 		) );
 		
 		$parent_descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptorid));
@@ -3076,13 +3083,15 @@ class block_exacomp_external extends external_api {
 		$parent_descriptor->topicid = $descriptor_topic_mm->topicid;
 		
 		$children = block_exacomp_get_child_descriptors($parent_descriptor, $courseid, false, array(SHOW_ALL_TAXONOMIES), true, true, true);
-		
+		$non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+
 		$children_return = array();
 		foreach($children as $child){
 			$child_return = new stdClass();
 			$child_return->childid = $child->id;
 			$child_return->childtitle = $child->title;
-			$children_return[] = $child_return;
+			if(!in_array($child->id, $non_visibilities))
+				$children_return[] = $child_return;
 		}
 		
 		$parent_descriptor = block_exacomp_get_examples_for_descriptor($parent_descriptor);
