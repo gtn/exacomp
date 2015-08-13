@@ -36,6 +36,7 @@ class block_exacomp extends block_list {
     const DB_DESCVISIBILITY = 'block_exacompdescrvisibility';
     const DB_DESCCAT = 'block_exacompdescrcat_mm';
     const DB_EXAMPTAX = 'block_exacompexampletax_mm';    
+    const DB_DATASOURCES = 'block_exacompdatasources';
     
     /**
      * PLUGIN ROLES

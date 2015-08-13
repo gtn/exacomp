@@ -28,4 +28,8 @@
 require_once dirname(__FILE__)."/inc.php";
 require_once dirname(__FILE__)."/lib/xmllib.php";
 
+require_login();
+
+require_capability('block/exacomp:admin', context_system::instance());
+
 block_exacomp_data_exporter::do_export();

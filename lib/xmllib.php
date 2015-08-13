@@ -58,6 +58,18 @@ class block_exacomp_data {
         return isset(self::$sources[$source_local_id]) ? self::$sources[$source_local_id] : null;
     }
     
+    protected static function get_source_from_global_id($global_id) {
+        global $DB;
+        
+        self::load_sources();
+        
+        if (!$source_local_id = array_search($global_id, self::$sources)) {
+            return null;
+        }
+        
+        return $DB->get_record(block_exacomp::DB_DATASOURCES, array('id' => $source_local_id));
+    }
+    
     protected static function add_source_if_not_exists($source_global_id) {
         self::load_sources();
         
@@ -68,11 +80,12 @@ class block_exacomp_data {
         global $DB;
         // add dummy source, so sources start at a higher id
         if (!isset(self::$sources[self::DUMMY_SOURCE_ID])) {
-            $DB->execute("INSERT INTO {block_exacompdatasources} (id, source) VALUES (".self::DUMMY_SOURCE_ID.", 'dummy source')");
+            $DB->execute("INSERT INTO {".block_exacomp::DB_DATASOURCES."} (id, source) VALUES (".self::DUMMY_SOURCE_ID.", 'dummy source')");
+            self::$sources[self::DUMMY_SOURCE_ID] = 'dummy';
         }
         
         // add new source
-        $source_local_id = $DB->insert_record("block_exacompdatasources", array('source' => $source_global_id));
+        $source_local_id = $DB->insert_record(block_exacomp::DB_DATASOURCES, array('source' => $source_global_id));
         
         self::$sources[$source_local_id] = $source_global_id;
         
@@ -85,7 +98,7 @@ class block_exacomp_data {
         if (self::$sources === null) {
             self::$sources = $DB->get_records_sql_menu("
                 SELECT id, source AS global_id
-                FROM {block_exacompdatasources}
+                FROM {".block_exacomp::DB_DATASOURCES."}
             ");
         }
         
@@ -127,7 +140,7 @@ class block_exacomp_data {
             $DB->delete_records($table, array('source' => $source));
         }
         
-        $DB->delete_records("block_exacompdatasources", array('id' => $source));
+        $DB->delete_records(block_exacomp::DB_DATASOURCES, array('id' => $source));
 
         return true;
     }
@@ -230,17 +243,21 @@ $skill->source = block_exacomp::IMPORT_SOURCE_DEFAULT;
     
         self::export_skills($xml);
         self::export_niveaus($xml);
-        // TODO: export taxonomies
+        self::export_taxonomies($xml);
         // TODO: export categoriesn
         self::export_examples($xml);
         self::export_descriptors($xml);
         // TODO: crosssubjects
         self::export_edulevels($xml);
+        self::export_sources($xml);
 
         if (!optional_param('as_text', '', PARAM_INT)) {
             $filename = 'moodle_exacomp_export.xml';
             header('Content-Type: application/xml; charset=utf-8');
             header('Content-Disposition: attachment; filename='.$filename);
+            
+            // maybe export as a zip file
+            // http://stackoverflow.com/questions/1061710/php-zip-files-on-the-fly
         }
         echo $xml->asPrettyXML();
         exit;
@@ -267,13 +284,11 @@ $skill->source = block_exacomp::IMPORT_SOURCE_DEFAULT;
         }
     }
     
-    private static function assign_value_source($xmlItem, $valueName, $table, $id) {
+    private static function add_child_with_source($xmlItem, $childName, $table, $id) {
         global $DB;
         
         if ($dbItem = $DB->get_record($table, array("id" => $id))) {
-            self::assign_source($xmlItem->addChild($valueName), $dbItem);
-        } else {
-            $xmlItem->addChild($valueName);
+            self::assign_source($xmlItem->addChild($childName), $dbItem);
         }
     }
     
@@ -321,6 +336,27 @@ $skill->source = block_exacomp::IMPORT_SOURCE_DEFAULT;
             
             // children
             self::export_niveaus($xmlItem, $dbItem->id);
+        }
+    }
+    
+    private static function export_taxonomies($xmlParent, $parentid = 0) {
+        global $DB;
+        
+        $dbItems = $DB->get_records(block_exacomp::DB_TAXONOMIES, array('parentid'=>$parentid)); // , array("source"=>self::$source));
+        
+        if (!$dbItems) return;
+        
+        $xmlItems = $xmlParent->addChild($parentid ? 'children' : 'taxonomies');
+        
+        // var_dump($dbItems);
+        foreach ($dbItems as $dbItem) {
+            $xmlItem = $xmlItems->addChild('taxonomy');
+            self::assign_source($xmlItem, $dbItem);
+            $xmlItem->addChildWithCDATAIfValue('title', $dbItem->title);
+            $xmlItem->sorting = $dbItem->sorting;
+            
+            // children
+            self::export_taxonomies($xmlItem, $dbItem->id);
         }
     }
     
@@ -418,8 +454,8 @@ $skill->source = block_exacomp::IMPORT_SOURCE_DEFAULT;
             $xmlItem = $xmlItems->addChild('descriptor');
             self::assign_source($xmlItem, $dbItem);
             
-            self::assign_value_source($xmlItem, 'skillid', block_exacomp::DB_SKILLS, $dbItem->skillid);
-            self::assign_value_source($xmlItem, 'niveauid', block_exacomp::DB_NIVEAUS, $dbItem->niveauid);
+            self::add_child_with_source($xmlItem, 'skillid', block_exacomp::DB_SKILLS, $dbItem->skillid);
+            self::add_child_with_source($xmlItem, 'niveauid', block_exacomp::DB_NIVEAUS, $dbItem->niveauid);
             
             $xmlItem->addChildWithCDATAIfValue('title', $dbItem->title);
             $xmlItem->sorting = $dbItem->sorting;
@@ -513,6 +549,37 @@ $skill->source = block_exacomp::IMPORT_SOURCE_DEFAULT;
             }
         }
     }
+
+    private static function export_sources(block_exacomp_SimpleXMLElement $xmlParent) {
+        global $DB;
+        
+        // rather then exporting all sources in the database
+        // we only export the sources used in the xml
+        // this helps later, when only partial exports are made.
+        // eg. only one course
+        
+        // get sources
+        $sources = array();
+        // find all sources used in the xml (under /exacomp, which has a source, but we don't need it here)
+        foreach ($xmlParent->xpath("/exacomp//*/@source") as $source) {
+            $sources[(string)$source] = 1;
+        }
+        $sources = array_keys($sources);
+        
+        if (!$sources) return;
+        
+        $xmlParent->addChild('sources');
+
+        foreach ($sources as $source) {
+            if (!$source = self::get_source_from_global_id($source)) {
+                continue;
+            }
+            
+            $xmlSource = $xmlParent->sources->addchild('source');
+            $xmlSource['id'] = $source->source;
+            $xmlSource->name = $source->name;
+        }
+    }
 }
 
 class block_exacomp_data_importer extends block_exacomp_data {
@@ -558,10 +625,6 @@ class block_exacomp_data_importer extends block_exacomp_data {
         
         self::$import_source_global_id = (string)$xml['source'];
         self::$import_source_local_id = self::add_source_if_not_exists(self::$import_source_global_id);
-        
-        // save source name
-        $DB->update_record("block_exacompdatasources", array('id'=>self::$import_source_local_id, 'name'=>(string)$xml['sourcename'], 'type'=>self::$import_source_type));
-        
         
         // update scripts for new source format
         if (self::has_old_data(block_exacomp::IMPORT_SOURCE_DEFAULT)) {
@@ -646,6 +709,12 @@ class block_exacomp_data_importer extends block_exacomp_data {
             }
         }
         
+        if(isset($xml->sources)) {
+            foreach($xml->sources->source as $source) {
+                self::insert_source($source);
+            }
+        }
+        
         // self::kompetenzraster_clean_unused_data_from_source();
     
         self::delete_unused_descriptors(self::$import_source_local_id, self::$import_time, implode(",", $insertedTopics));
@@ -724,6 +793,21 @@ class block_exacomp_data_importer extends block_exacomp_data {
         } else {
             $item->id = $DB->insert_record($table, $item);
         }
+    }
+    
+    private static function insert_source($xmlItem) {
+        
+        if (!$dbSource = self::get_source_from_global_id($xmlItem['id'])) {
+            // only for already inserted sources, update them
+            return;
+        }
+        
+        global $DB;
+        
+        $DB->update_record(block_exacomp::DB_DATASOURCES, array(
+            'id' => $dbSource->id,
+            'name' => $dbSource->name
+        ));
     }
     
     private static function insert_niveau($xmlItem, $parent = 0) {
