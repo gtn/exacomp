@@ -2,7 +2,7 @@
 function xmldb_block_exacomp_upgrade($oldversion) {
 	global $DB,$CFG;
 	$dbman = $DB->get_manager();
-	$result=true;
+	$return_result=true;
 	
 	/// Add a new column newcol to the mdl_question_myqtype
 	if ($oldversion < 2012021606) {
@@ -809,7 +809,8 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		/* block_exacomptopics, change field cat to catid, add key catid */
 		$table = new xmldb_table('block_exacomptopics');
 		$field = new xmldb_field('cat', XMLDB_TYPE_INTEGER, '11');
-		$dbman->rename_field($table, $field, 'catid');
+		if($dbman->field_exists($table, $field))
+			$dbman->rename_field($table, $field, 'catid');
 	
 		$key = new xmldb_key('catid', XMLDB_KEY_FOREIGN, array('catid'), 'block_exacompcategories', array('id'));
 		$dbman->add_key($table, $key);
@@ -818,10 +819,12 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		/* block_exacompsubjects, change field cat to catid, add key catid */
 		$table = new xmldb_table('block_exacompsubjects');
 		$field = new xmldb_field('cat', XMLDB_TYPE_INTEGER, '11');
-		$dbman->rename_field($table, $field, 'catid');
+		if($dbman->field_exists($table, $field))
+			$dbman->rename_field($table, $field, 'catid');
 	
 		$field = new xmldb_field('number', XMLDB_TYPE_INTEGER, '11');
-		$dbman->rename_field($table, $field, 'numb');
+		if($dbman->field_exists($table, $field))
+			$dbman->rename_field($table, $field, 'numb');
 		
 		$key = new xmldb_key('catid', XMLDB_KEY_FOREIGN, array('catid'), 'block_exacompcategories', array('id'));
 		$dbman->add_key($table, $key);
@@ -2011,5 +2014,5 @@ function xmldb_block_exacomp_upgrade($oldversion) {
     	// Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2015081202, 'exacomp');
     }
-	return $result;
+	return $return_result;
 }
