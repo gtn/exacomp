@@ -359,7 +359,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 		
 		$content .= html_writer::select($array, "lis_subjects",$selectedSubject, false,
-				array("onchange" => "document.location.href='".$PAGE->url. ($studentid ? "&studentid=".$studentid : "") ."&subjectid='+this.value;"));
+				array("onchange" => "document.location.href='".$PAGE->url."&studentid=".$studentid."&subjectid='+this.value;"));
 		
 		return $content;
 	}
