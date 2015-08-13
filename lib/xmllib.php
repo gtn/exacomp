@@ -141,8 +141,8 @@ class block_exacomp_data {
         $tables = array(
             array(
                 'table' => block_exacomp::DB_DESCTOPICS,
-                'mm1' => array('descrid', DB_DESCRIPTORS),
-                'mm2' => array('topicid', DB_TOPICS),
+                'mm1' => array('descrid', block_exacomp::DB_DESCRIPTORS),
+                'mm2' => array('topicid', block_exacomp::DB_TOPICS),
             ),
             array(
                 'table' => block_exacomp::DB_DESCEXAMP,
@@ -153,6 +153,11 @@ class block_exacomp_data {
                 'table' => block_exacomp::DB_DESCCROSS,
                 'mm1' => array('descrid', block_exacomp::DB_DESCRIPTORS),
                 'mm2' => array('crosssubjid', block_exacomp::DB_CROSSSUBJECTS),
+            ),
+            array(
+                'table' => block_exacomp::DB_EXAMPTAX,
+                'mm1' => array('exampleid', block_exacomp::DB_EXAMPLES),
+                'mm2' => array('taxid', block_exacomp::DB_TAXONOMIES),
             ),
         );
         
@@ -721,13 +726,16 @@ class block_exacomp_data_importer extends block_exacomp_data {
         $item = self::parse_xml_item($xmlItem);
         $item->parentid = $parent;
         
-        //TODO change insert -> mm table
-        if ($xmlItem->taxonomyid) {
-            $item->taxid = self::get_database_id($xmlItem->taxonomyid); 
-        }
-
         self::insert_or_update_item(block_exacomp::DB_EXAMPLES, $item);
         self::kompetenzraster_mark_item_used(block_exacomp::DB_EXAMPLES, $item);
+        
+        if ($xmlItem->taxonomies) {
+            foreach ($xmlItem->taxonomies->taxonomyid as $taxonomy) {
+                if ($taxonomyid = self::get_database_id($taxonomy)) {
+                    self::insert_or_update_record(block_exacomp::DB_EXAMPTAX, array("exampleid"=>$item->id, "taxid"=>$taxonomyid));
+                }
+            }
+        }
         
         if ($xmlItem->descriptors) {
             foreach($xmlItem->descriptors->descriptorid as $descriptor) {
@@ -791,8 +799,6 @@ class block_exacomp_data_importer extends block_exacomp_data {
         
         if ($xmlItem->niveauid)
             $descriptor->niveauid = self::get_database_id($xmlItem->niveauid);
-        if ($xmlItem->categoryid)
-            $descriptor->catid = self::get_database_id($xmlItem->categoryid);
         if ($xmlItem->skillid)
             $descriptor->skillid = self::get_database_id($xmlItem->skillid);
         if (!isset($descriptor->profoundness))
@@ -814,11 +820,20 @@ class block_exacomp_data_importer extends block_exacomp_data {
         
         */
         
+
         self::insert_or_update_item(block_exacomp::DB_DESCRIPTORS, $descriptor);
         self::kompetenzraster_mark_item_used(block_exacomp::DB_DESCRIPTORS, $descriptor);
         
         if ($xmlItem->examples) {
             print_error('wrong format');
+        }
+        
+        if ($xmlItem->categories) {
+            foreach ($xmlItem->categories->categoryid as $category) {
+                if ($categoryid = self::get_database_id($category)) {
+                    self::insert_or_update_record(block_exacomp::DB_DESCCAT, array("descrid"=>$item->id, "catid"=>$categoryid));
+                }
+            }
         }
         
         if ($xmlItem->children) {
