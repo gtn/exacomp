@@ -13,7 +13,7 @@ $params = new stdClass();
 
 require_once('./curl.php');
 $curl = new curl;
-$token_google = 762568;
+$token_google = 879878;
 
 print_r($token_google);
 echo "
@@ -144,7 +144,7 @@ example overview
 $functionname = 'dakora_get_example_overview';
 
 $params = new stdClass();
-$params->exampleid = 34;
+$params->exampleid = 33;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
@@ -152,91 +152,18 @@ print_r($resp);
 
 echo "
 
-
-
-";
-/*
-/// REST CALL BLOCK_EXACOMP_GET_TOPICS
-
-$functionname = 'block_exacomp_get_topics';
-
-$params = new stdClass();
-$params->subjectid = 2;
-$params->courseid = 2;
-
-$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
-$resp = $curl->post($serverurl, $params);
-print_r($resp);
-
-echo "
-
-
+add example to schedule
 
 ";
 
-/// REST CALL BLOCK_EXACOMP_GET_SUBTOPICS
-
-$functionname = 'block_exacomp_get_subtopics';
-
-$params = new stdClass();
-
-$params->courseid = 2;
-$params->topicid = 14;
-
-$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
-$resp = $curl->post($serverurl, $params);
-print_r($resp);
-
-echo "
-
-
-
-";
-
-/// REST CALL BLOCK_EXACOMP_SET_SUBTOPIC
-
-$functionname = 'block_exacomp_set_subtopic';
-$params = new stdClass();
-$params->courseid = 2;
-$params->subtopicid = 70;
-$params->value = 0;
-
-$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
-$resp = $curl->post($serverurl, $params);
-print_r($resp);
-
-echo "
-
-
-
-";
-
-/// REST CALL BLOCK_EXACOMP_GET_COMPETENCIES
-
-$functionname = 'block_exacomp_get_competencies';
+/// REST CALL dakora_add_example_to_learning_calendar
+$functionname = 'dakora_add_example_to_learning_calendar';
 
 $params = new stdClass();
-
-$params->courseid = 2;
-$params->subtopicid = 70;
-
-$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
-$resp = $curl->post($serverurl, $params);
-print_r($resp);
-
-echo "
-
-
-
-";
-/// REST CALL BLOCK_EXACOMP_SET_COMPETENCE
-
-$functionname = 'block_exacomp_set_competence';
-
-$params = new stdClass();
-$params->courseid = 2;
-$params->descriptorid = 552;
-$params->value = 1;
+$params->courseid = 3;
+$params->exampleid = 33;
+$params->creatorid = 5;
+$params->studentid = 0;
 
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
@@ -245,82 +172,54 @@ print_r($resp);
 
 echo "
 
-
+descriptors for example
 
 ";
-/// REST CALL BLOCK_EXACOMP_GET_ASSOCIATED_CONTENT
 
-$functionname = 'block_exacomp_get_associated_content';
+
+
+// REST CALL dakora_get_descriptors_for_example
+$functionname = 'dakora_get_descriptors_for_example';
 
 $params = new stdClass();
-$params->courseid = 2;
-$params->descriptorid = 552;
+$params->exampleid = 33;
+$params->courseid = 3;
+$params->userid = 4;
+
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
 print_r($resp);
-
 
 echo "
 
-
+example grading:
 
 ";
-
-/// REST CALL BLOCK_EXACOMP_GET_ASSOCIATED_CONTENT
-
-$functionname = 'block_exacomp_get_competence_by_id';
+// REST CALL dakora_get_example_grading
+$functionname = 'dakora_get_example_grading';
 
 $params = new stdClass();
-$params->competenceid = 552;
+$params->exampleid = 33;
+$params->courseid = 3;
+$params->studentid = 4;
+
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
 print_r($resp);
-
 
 echo "
 
-
-
-";
-
-/// REST CALL BLOCK_EXACOMP_GET_ASSOCIATED_CONTENT
-
-$functionname = 'block_exacomp_get_topic_by_id';
-
-$params = new stdClass();
-$params->topicid = 70;
-
-$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
-$resp = $curl->post($serverurl, $params);
-print_r($resp);
-
-
-echo "
-
-
+user role:
 
 ";
 
-/// REST CALL BLOCK_EXACOMP_GET_ASSIGN_INFORMATION
-$functionname = 'block_exacomp_get_assign_information';
+//REST CALL dakora_get_user_role
+$functionname = 'dakora_get_user_role';
 
 $params = new stdClass();
-$params->assignid = 1;
-
-$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
-$resp = $curl->post($serverurl, $params);
-print_r($resp);
-
-
-/// REST CALL BLOCK_EXACOMP_UPDATE_ASSIGN_SUBMISSION
-$functionname = 'block_exacomp_update_assign_submission';
-
-$params = new stdClass();
-$params->assignid = 1;
-$params->onlinetext = "texteingabe";
-$params->filename = "";
+$params->courseid = 3;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
@@ -329,13 +228,4 @@ print_r($resp);
 echo "
 
 
-
 ";
-$functionname = 'block_exacomp_get_assign_information';
-
-$params = new stdClass();
-$params->assignid = 1;
-
-$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
-$resp = $curl->post($serverurl, $params);
-print_r($resp);*/

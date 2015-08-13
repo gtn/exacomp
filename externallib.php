@@ -1225,6 +1225,7 @@ class block_exacomp_external extends external_api {
 				'task' => new external_value ( PARAM_TEXT, 'task(url/description) of example' ),
 				'externaltask' => new external_value ( PARAM_TEXT, 'externaltask(url/description) of example' ),
 				'externalurl' => new external_value ( PARAM_TEXT, 'externalurl of example' ),
+				'timeframe' => new external_value ( PARAM_INT, 'timeframe in minutes' ),
 				'hassubmissions' => new external_value ( PARAM_BOOL, 'true if example has already submissions' )
 		) );
 	}
@@ -3183,6 +3184,7 @@ class block_exacomp_external extends external_api {
 	}
 	
 	public static function dakora_get_example_overview($exampleid){
+		//TODO add timeframe
 		return block_exacomp_external::get_example_by_id ( $exampleid );
 	}
 	
@@ -3193,7 +3195,219 @@ class block_exacomp_external extends external_api {
 				'task' => new external_value ( PARAM_TEXT, 'task(url/description) of example' ),
 				'externaltask' => new external_value ( PARAM_TEXT, 'externaltask(url/description) of example' ),
 				'externalurl' => new external_value ( PARAM_TEXT, 'externalurl of example' ),
+				'timeframe' => new external_value ( PARAM_INT, 'timeframe in minutes' ),
 				'hassubmissions' => new external_value ( PARAM_BOOL, 'true if example has already submissions' )
+		) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 * 
+	 * @return external_function_parameters
+	 */
+	public static function dakora_add_example_to_learning_calendar_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course'),
+				'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
+				'creatorid' => new external_value ( PARAM_INT, 'id of creator'),
+				'studentid' => new external_value ( PARAM_INT, 'id of student, if 0 -> add example to all user')
+		) );
+	}
+	
+	/**
+	 * get courses
+	 * 
+	 * @return array of user courses
+	 */
+	public static function dakora_add_example_to_learning_calendar($courseid, $exampleid, $creatorid, $studentid) {
+		global $DB, $USER;
+		$params = self::validate_parameters ( self::dakora_add_example_to_learning_calendar_parameters (), array (
+				'courseid' => $courseid,
+				'exampleid' => $exampleid,
+				'creatorid' => $creatorid,
+				'studentid' => $studentid
+		) );
+		
+		if($creatorid == 0)
+			$creatorid = $USER->id;
+		
+		if($studentid == 0){
+			$students = block_exacomp_get_students_by_course($courseid);
+			foreach($students as $student){
+				block_exacomp_add_example_to_schedule($student->id,$exampleid,$creatorid,$courseid);
+			}
+		}else{
+			block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid);
+		}
+		
+		return array (
+				"success" => true
+		);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_add_example_to_learning_calendar_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' ) 
+		) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 * 
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_descriptors_for_example_parameters() {
+		return new external_function_parameters ( array (
+				'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
+				'userid' => new external_value ( PARAM_INT, 'id of user' ) 
+		) );
+	}
+	
+	/**
+	 * Get descriptors for example
+	 * 
+	 * @param
+	 *        	int exampleid
+	 * @return list of descriptors
+	 */
+	public static function dakora_get_descriptors_for_example($exampleid, $courseid, $userid) {
+		return block_exacomp_external::get_descriptors_for_example( $exampleid, $courseid, $userid);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_descriptors_for_example_returns() {
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'descriptorid' => new external_value ( PARAM_INT, 'id of descriptor' ),
+				'title' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
+				'evaluation' => new external_value ( PARAM_INT, 'evaluation of descriptor' ) 
+		) ) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 * 
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_example_grading_parameters() {
+		return new external_function_parameters ( array (
+				'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
+				'studentid' => new external_value ( PARAM_INT, 'id of student' ) 
+		) );
+	}
+	
+	/**
+	 * Get descriptors for example
+	 * 
+	 * @param
+	 *        	int exampleid
+	 * @return list of descriptors
+	 */
+	public static function dakora_get_example_grading($exampleid, $courseid, $studentid) {
+		global $DB;
+		
+		$params = self::validate_parameters ( self::dakora_get_example_grading_parameters (), array (
+				'exampleid' => $exampleid,
+				'courseid' => $courseid,
+				'studentid' => $studentid
+		) );
+		
+		if ($studentid == 0)
+			$studentid = $USER->id;
+		
+		$student = $DB->get_record ( 'user', array (
+				'id' => $studentid 
+		) );
+		
+		$student = block_exacomp_get_user_examples_by_course($student, $courseid);
+		
+		$teacherevaluation = 0;
+		if(isset($student->examples->teacher[$exampleid])){
+			$teacherevaluation = $student->examples->teacher[$exampleid];
+		}
+		
+		$studentevaluation = 0;
+		if(isset($student->examples->student[$exampleid])){
+			$studentevaluation = $student->examples->student[$exampleid];
+		}
+		
+		return array (
+				'teacherevaluation' => $teacherevaluation,
+				'studentevaluation' => $studentevaluation
+		);
+		//return block_exacomp_external::get_descriptors_for_example( $exampleid, $courseid, $userid);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_example_grading_returns() {
+		return new external_single_structure ( array (
+				'teacherevaluation' => new external_value ( PARAM_INT, 'teacher evaluation for student and example' ),
+				'studentevaluation' => new external_value ( PARAM_TEXT, 'self evaluation for example' )
+		) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 * 
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_user_role_parameters() {
+		return new external_function_parameters ( array (
+			'courseid' => new external_value ( PARAM_INT, 'id of course' )
+		) );
+	}
+	
+	/**
+	 * return 1 for trainer
+	 * 2 for student
+	 * 0 if false
+	 * 
+	 * @return int
+	 */
+	public static function dakora_get_user_role($courseid) {
+		global $CFG, $DB, $USER;
+		
+		$params = self::validate_parameters ( self::dakora_get_user_role_parameters (), array (
+				'courseid'=>$courseid
+			) );
+
+		$context = context_course::instance($courseid);
+		
+		$isTeacher = block_exacomp_is_teacher($context);
+		
+		if($isTeacher)
+			return array (
+					"role" => 1 
+			);
+		else
+			return array (
+					"role" => 2 
+			);
+			
+	}
+	
+	/**
+	 * Returns description of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_user_role_returns() {
+		return new external_function_parameters ( array (
+				'role' => new external_value ( PARAM_INT, '1=trainer, 2=student' ) 
 		) );
 	}
 }

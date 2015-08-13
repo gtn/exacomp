@@ -39,7 +39,11 @@ $services = array(
 						'dakora_get_descriptors', 
 						'dakora_get_descriptor_children',
 						'dakora_get_examples_for_descriptor', 
-						'dakora_get_example_overview'
+						'dakora_get_example_overview',
+						'dakora_add_example_to_learning_calendar',
+						'dakora_get_descriptors_for_example',
+						'dakora_get_example_grading',
+						'dakora_get_user_role'
 						), 	//web service functions of this service
 				'restrictedusers' =>0,                      //if enabled, the Moodle administrator must link some user to this service
 				//into the administration
@@ -315,6 +319,34 @@ $functions = array(
 				'methodname'  => 'dakora_get_example_overview',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'get example overview for dakora app',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_add_example_to_learning_calendar'  => array (
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_add_example_to_learning_calendar',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'add example to learning calendar for dakora',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_descriptors_for_example' => array (
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_descriptors_for_example',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get descriptors where example is associated',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_example_grading' => array (
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_example_grading',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get student and teacher evaluation for example',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_user_role' => array (
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_user_role',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get user role 1= trainer, 2= student',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)
 		)
 );
