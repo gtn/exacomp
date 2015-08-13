@@ -659,6 +659,37 @@ class block_exacomp_data_importer extends block_exacomp_data {
         self::deleteIfNoSubcategories("block_exacompschooltypes","block_exacompsubjects","stid",self::$import_source_local_id);
         self::deleteIfNoSubcategories("block_exacompedulevels","block_exacompschooltypes","elid",self::$import_source_local_id);
     
+
+        // after topics, descriptors and their mm are imported
+        // check if new descriptors should be visible in the courses
+        // 1. descriptors directly under the topic
+        $sql = "
+            INSERT INTO {".block_exacomp::DB_DESCVISIBILITY."}
+            (courseid, descrid, studentid, visible)
+            SELECT ct.courseid, dt.descrid, 0, 1
+            FROM {".block_exacomp::DB_COURSETOPICS."} ct
+            JOIN {".block_exacomp::DB_DESCTOPICS."} dt ON ct.topicid = dt.topicid
+            LEFT JOIN {".block_exacomp::DB_DESCVISIBILITY."} dv ON dv.descrid=dt.descrid AND dv.studentid=0
+            WHERE dv.id IS NULL -- only for those, who have no visibility yet
+        ";
+        $DB->execute($sql);
+        // 2. child descriptors
+        // TODO: this logic only works for one child level now, do we need more?
+        // TODO: i think child descriptors also have an mm with the topics. so this logic is not needed?
+        /*
+        $sql = "
+            INSERT INTO {".block_exacomp::DB_DESCVISIBILITY."}
+            (courseid, descrid, studentid, visible)
+            SELECT ct.courseid, dt.descrid, 0, 1
+            FROM {".block_exacomp::DB_COURSETOPICS."} ct
+            JOIN {".block_exacomp::DB_DESCTOPICS."} dt_parent ON ct.topicid = dt_parent.topicid
+            JOIN {".block_exacomp::DB_DESCTOPICS."} dt ON dt_parent.id = dt.parentid
+            LEFT JOIN {".block_exacomp::DB_DESCVISIBILITY."} dv ON dv.descrid=dt.descrid AND dv.studentid=0
+            WHERE dv.id IS NULL -- only for those, who have no visibility yet
+        ";
+        $DB->execute($sql);
+        */
+        
         block_exacomp_settstamp();
         
         return true;
