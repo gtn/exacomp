@@ -967,7 +967,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         if ($xmlItem->categories) {
             foreach ($xmlItem->categories->categoryid as $category) {
                 if ($categoryid = self::get_database_id($category)) {
-                    self::insert_or_update_record(block_exacomp::DB_DESCCAT, array("descrid"=>$item->id, "catid"=>$categoryid));
+                    self::insert_or_update_record(block_exacomp::DB_DESCCAT, array("descrid"=>$descriptor->id, "catid"=>$categoryid));
                 }
             }
         }
