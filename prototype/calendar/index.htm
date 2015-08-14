@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8' />
+<link href='fullcalendar.css' rel='stylesheet' />
+<script src='moment.min.js'></script>
+<script src='jquery.min.js'></script>
+<script src='jquery-ui.min.js'></script>
+<script src='fullcalendar.min.js'></script>
+<script src='lang-all.js'></script>
+<script src='jquery.ui.touch.js'></script>
+
+<script>
+
+	$(document).ready(function() {
+
+
+		/* initialize the external events
+		-----------------------------------------------------------------*/
+
+		function init_external_event(el) {
+			el = $(el);
+			el.draggable({
+			  zIndex: 999,
+			  revert: true, 
+			  revertDuration: 0 
+			});
+			el.addTouch();
+		}
+		$('#external-events .fc-event').each(function() {
+
+			// store data so the calendar knows to render an event upon drop
+			$(this).data('event', {
+				title: $.trim($(this).text()), // use the element's text as the event title
+				stick: true // maintain when user navigates (see docs on the renderEvent method)
+			});
+
+			// make the event draggable using jQuery UI
+			init_external_event(this);
+		});
+
+
+		/* initialize the calendar
+		-----------------------------------------------------------------*/
+		var $eventDiv = $( '#external-events' );
+		var $trash = $( '#trash' );
+		
+		$trash.droppable({
+			// accept: ".special"
+			drop: function(event, ui ) {
+				if (confirm('Wirklich löschen?')) {
+					ui.draggable.remove();
+				}
+			},
+			
+			hoverClass: 'hover',
+		});
+		
+		function hover_check(e) {
+			if (e && isEventOverDiv($eventDiv, e)) {
+				$eventDiv.addClass('hover');
+			} else {
+				$eventDiv.removeClass('hover');
+			}
+
+			if (e && isEventOverDiv($trash, e)) {
+				$trash.addClass('hover');
+			} else {
+				$trash.removeClass('hover');
+			}
+		}
+		
+        function isEventOverDiv($div, event) {
+
+			var x = event.pageX, y = event.pageY;
+            var offset = $div.offset();
+            offset.right = $div.outerWidth() + offset.left;
+            offset.bottom = $div.outerHeight() + offset.top;
+
+            // Compare
+            return (x >= offset.left
+                && y >= offset.top
+                && x <= offset.right
+                && y <= offset .bottom);
+        }
+
+		$('#calendar').fullCalendar({
+			header: {
+				left: 'today prev,next',
+				center: 'title',
+				right: '' // 'month,agendaWeek,agendaDay'
+			},
+			lang: 'de',
+			defaultView: 'agendaWeek',
+			minTime: "8:00:00",
+			maxTime: "22:00:00",
+			slotDuration: "01:00:00",
+			hiddenDays: [ 0, 6 ], // no sunday and saturday
+			allDaySlot: false,
+			defaultTimedEventDuration: '01:00:00', // default event length
+
+			editable: true,
+			droppable: true, // this allows things to be dropped onto the calendar
+            dragRevertDuration: 0,
+			
+			drop: function() {
+				$(this).remove();
+			},
+			
+			events: [
+					{
+						title: 'All Day Event',
+						start: '2015-07-29T14:30:00'
+					},
+					{
+						title: 'Long Event Long Event Long Event',
+						start: '2015-07-28T14:30:00'
+					}
+					/*,
+					{
+						title: 'Very long event',
+						start: '2015-07-28T14:30:00',
+						end: '2015-08-28T14:30:00'
+					}
+					*/
+			],
+			
+			eventRender: function(event, element) {
+				// console.log(element.html());
+				// element.find(".fc-event-title").remove();
+				// element.find(".fc-event-time").remove();
+				element.find(".fc-content").append(
+					'	<div class="event-extra">' +
+					'	<div>L: <input type="checkbox" /> S: <input type="checkbox" /></div>' +
+					'	<div><a href="#">edit</a></div>' +
+					'</div>');
+				
+				$(element).addTouch();
+			},
+			
+			eventDragStart: function() {
+				$("html").bind('mousemove', hover_check);
+			},
+			
+            eventDragStop: function( event, jsEvent, ui, view ) {
+				$("html").unbind('mousemove', hover_check);
+				hover_check(false);
+			
+                console.log(jsEvent);
+				if(isEventOverDiv($eventDiv, jsEvent)) {
+                    $('#calendar').fullCalendar('removeEvents', event._id);
+                    var el = $( "<div class='fc-event'>" ).appendTo( $eventDiv ).text( event.title );
+                    el.data('event', { title: event.title, id :event.id, stick: true });
+					
+					init_external_event(el);
+                }
+
+                if(isEventOverDiv($trash, jsEvent)) {
+                    if (confirm('Wirklich löschen?')) {
+						$('#calendar').fullCalendar('removeEvents', event._id);
+					}
+                }
+			}
+		});
+	});
+
+</script>
+<style>
+
+	.fc-time-grid .fc-slats td {
+		height: 5em;
+	}
+	
+	body {
+		margin-top: 40px;
+		text-align: center;
+		font-size: 14px;
+		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+	}
+		
+	#wrap {
+		width: 1100px;
+		margin: 0 auto;
+	}
+		
+	#external-events {
+		float: left;
+		width: 150px;
+		padding: 0 10px;
+		border: 1px solid #ccc;
+		background: #eee;
+		text-align: left;
+	}
+	#external-events.hover {
+		background: blue;
+	}
+	
+	#trash {
+		float: left;
+		width: 150px;
+		padding: 0 10px;
+		border: 1px solid #ccc;
+		background: #eee;
+		text-align: left;
+		margin-top: 20px;
+	}
+	#trash.hover {
+		background: blue;
+	}
+
+	#external-events h4 {
+		font-size: 16px;
+		margin-top: 0;
+		padding-top: 1em;
+	}
+		
+	#external-events .fc-event {
+		margin: 10px 0;
+		cursor: pointer;
+		min-height: 50px;
+	}
+	.fc-event .event-extra {
+		border-top: 1px solid white;
+		margin-top: 5px;
+		padding: 5px;
+	}
+	
+	#external-events p {
+		margin: 1.5em 0;
+		font-size: 11px;
+		color: #666;
+	}
+		
+	#external-events p input {
+		margin: 0;
+		vertical-align: middle;
+	}
+
+	#calendar {
+		float: right;
+		width: 900px;
+	}
+
+</style>
+</head>
+<body>
+	<div id='wrap'>
+
+		<div id='external-events'>
+			<h4>Events</h4>
+			<div class='fc-event'>My Event 1</div>
+			<div class='fc-event'>My Event 2</div>
+			<div class='fc-event'>My Event 3</div>
+			<div class='fc-event'>My Event 4</div>
+			<div class='fc-event'>My Event 5</div>
+		</div>
+
+		<div id='calendar'></div>
+
+		<div id='trash'>
+			<h4>Papierkorb</h4>
+		</div>
+
+		<div style='clear:both'></div>
+
+	</div>
+</body>
+</html>
