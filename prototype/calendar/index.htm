@@ -6,7 +6,7 @@
 <script src='moment.min.js'></script>
 <script src='jquery.min.js'></script>
 <script src='jquery-ui.min.js'></script>
-<script src='fullcalendar.min.js'></script>
+<script src='fullcalendar.js'></script>
 <script src='lang-all.js'></script>
 <script src='jquery.ui.touch.js'></script>
 
@@ -92,8 +92,9 @@
 			},
 			lang: 'de',
 			defaultView: 'agendaWeek',
-			minTime: "8:00:00",
-			maxTime: "22:00:00",
+			minTime: "01:00:00",
+			maxTime: "10:00:00",
+			axisWidth: 40,
 			slotDuration: "01:00:00",
 			hiddenDays: [ 0, 6 ], // no sunday and saturday
 			allDaySlot: false,
@@ -109,8 +110,9 @@
 			
 			events: [
 					{
-						title: 'All Day Event',
-						start: '2015-07-29T14:30:00'
+						title: 'Test Event',
+						start: '2015-08-10T04:00:00',
+						end: '2015-08-10T08:00:00'
 					},
 					{
 						title: 'Long Event Long Event Long Event',
@@ -127,7 +129,7 @@
 			
 			eventRender: function(event, element) {
 				// console.log(element.html());
-				// element.find(".fc-event-title").remove();
+				element.find(".fc-time").remove();
 				// element.find(".fc-event-time").remove();
 				element.find(".fc-content").append(
 					'	<div class="event-extra">' +
@@ -160,8 +162,39 @@
 						$('#calendar').fullCalendar('removeEvents', event._id);
 					}
                 }
-			}
+			},
+			
+			eventDrop: function(event, delta, revertFunc) {
+			
+				// TODO: only allow moving event before 1am and 10am
+				console.log(event.start, event.end);
+				var eventStartSlot = event.start.format('H');
+				var eventEndSlot = event.end ? event.end.format('H') : (eventStartSlot /* it's a string */ * 1 + 1); // new dragged in events have no end
+				console.log(event.start, event.end, eventStartSlot, eventEndSlot);
+				
+				if (eventStartSlot >= 1 && eventStartSlot <= 10
+					&& eventEndSlot >= 1 && eventEndSlot <= 10) {
+					// ok
+				} else {
+					return revertFunc();
+				}
+			}			
 		});
+		
+		var calendar = $('#calendar').fullCalendar( 'getView' );
+		
+		// reset axis labels
+		var i = 0;
+		$('.fc-time span').each(function(){
+			i++;
+			this.innerHTML = i + '. Einheit';
+		});
+		calendar.updateSize();
+		
+		// restrict
+		
+		console.log($('.fc-time'));
+		
 	});
 
 </script>
