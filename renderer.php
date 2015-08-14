@@ -1443,7 +1443,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$evaluation = ($data->role == block_exacomp::ROLE_TEACHER) ? "teacher" : "student";
 
 		foreach($descriptors as $descriptor) {
-			if(!$editmode || !$custom_created_descriptors && $descriptor->source != block_exacomp::CUSTOM_CREATED_DESCRIPTOR || ($custom_created_descriptors && $descriptor->source == CUSTOM_CREATED_DESCRIPTOR)){
+			if(!$editmode || !$custom_created_descriptors && $descriptor->source != block_exacomp::CUSTOM_CREATED_DESCRIPTOR || ($custom_created_descriptors && $descriptor->source == block_exacomp::CUSTOM_CREATED_DESCRIPTOR)){
 				//visibility
 				//visible if 
 				//		- visible in whole course 
