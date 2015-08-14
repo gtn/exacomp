@@ -1918,9 +1918,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
     public function print_sources() {
         global $DB, $OUTPUT, $courseid;
         
-        $sources = $DB->get_records_sql("
-            SELECT * FROM {block_exacompdatasources} WHERE id!=".block_exacomp_data::DUMMY_SOURCE_ID." ORDER BY NAME"
-        );
+        $sources = block_exacomp_data::get_all_used_sources();
         
         if (!$sources) return;
         

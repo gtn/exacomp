@@ -121,6 +121,27 @@ class block_exacomp_data {
         
         return (bool)$DB->get_records('block_exacompdescriptors', array("source" => $source), null, 'id', 0, 1);
     }
+    public static function get_all_used_sources() {
+        global $DB;
+        
+        $tablesSql = array();
+        foreach (self::$sourceTables as $table) {
+            $tablesSql[] = "SELECT DISTINCT source FROM {{$table}}";
+        }
+
+        $sources = $DB->get_records_sql("
+            SELECT *
+            FROM {".block_exacomp::DB_DATASOURCES."}
+            WHERE id!=".block_exacomp_data::DUMMY_SOURCE_ID."
+            AND id IN (
+                ".join(' union ', $tablesSql)."
+            )
+            ORDER BY NAME
+        ");
+        
+        return $sources;
+    }
+    
     protected static function move_items_to_source($oldSource, $newSource) {
         global $DB;
         
