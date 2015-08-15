@@ -2014,5 +2014,12 @@ function xmldb_block_exacomp_upgrade($oldversion) {
     	// Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2015081202, 'exacomp');
     }
+    
+    /**
+     * TODO
+     * go through all examples and move the files into a mod_exacomp filestorage
+     * see function block_exacomp_get_local_file() how to parse the urls and get the files
+     */
+    
 	return $return_result;
 }
