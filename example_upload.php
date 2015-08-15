@@ -63,7 +63,7 @@ $blocknode->make_active();
 $action = optional_param('action', 'add', PARAM_TEXT);
 
 if($action == 'serve') {
-
+    // TODO security: example id und typ übergeben und dann erst laden, nicht mit hash!
     $contextid = required_param('c', PARAM_INT);
     $itempathnamehash = required_param('i', PARAM_TEXT);
     $fs = get_file_storage();

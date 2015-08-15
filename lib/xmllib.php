@@ -34,6 +34,35 @@ class block_exacomp_SimpleXMLElement extends SimpleXMLElement {
     
 }
 
+class block_exacomp_ZipArchive extends ZipArchive {
+    /**
+     * @return block_exacomp_ZipArchive
+     */
+    public static function create_temp_file() {
+        global $CFG;
+
+        $file = tempnam($CFG->tempdir, "zip");
+        $zip = new block_exacomp_ZipArchive();
+        $zip->open($file, ZipArchive::OVERWRITE);
+        
+        return $zip;
+    }
+    
+    public function delete() {
+        unlink($this->filename);
+    }
+    
+    public function serve($filename) {
+        $zipfile = $this->filename;
+        $this->close();
+
+        header('Content-Type: application/zip');
+        header('Content-Length: ' . filesize($zipfile));
+        header('Content-Disposition: attachment; filename="'.$filename.'"');
+        readfile($zipfile);
+    }
+}
+
 class block_exacomp_data {
 
     protected static $sourceTables = array(block_exacomp::DB_SKILLS, block_exacomp::DB_NIVEAUS, block_exacomp::DB_TAXONOMIES, block_exacomp::DB_CATEGORIES, block_exacomp::DB_EXAMPLES,
@@ -228,6 +257,9 @@ class block_exacomp_data {
 
 class block_exacomp_data_exporter extends block_exacomp_data {
     
+    static $xml;
+    static $zip;
+    
     public static function do_export($type = null /* TODO alles exportieren, nur aktuelles moodle exportieren... */) {
         global $DB, $SITE;
         
@@ -239,9 +271,17 @@ class block_exacomp_data_exporter extends block_exacomp_data {
             '<exacomp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://github.com/gtn/edustandards/blob/master/new%20schema/exacomp.xsd" />'
         );
         
+        $xml['version'] = '2015081400';
+        $xml['date'] = date('c');
         $xml['source'] = self::get_my_source();
         $xml['sourcename'] = $SITE->fullname;
         
+        $zip = block_exacomp_ZipArchive::create_temp_file();
+        $zip->addEmptyDir('files');
+        
+        self::$xml = $xml;
+        self::$zip = $zip;
+
         // TODO: skills
         /*
             <skill id="1">
@@ -272,15 +312,18 @@ $skill->source = block_exacomp::IMPORT_SOURCE_DEFAULT;
         self::export_edulevels($xml);
         self::export_sources($xml);
 
-        if (!optional_param('as_text', '', PARAM_INT)) {
-            $filename = 'moodle_exacomp_export.xml';
-            header('Content-Type: application/xml; charset=utf-8');
-            header('Content-Disposition: attachment; filename='.$filename);
+        if (optional_param('as_text', '', PARAM_INT)) {
+            $zip->delete();
             
-            // maybe export as a zip file
-            // http://stackoverflow.com/questions/1061710/php-zip-files-on-the-fly
+            echo $xml->asPrettyXML();
+            
+            exit;
         }
-        echo $xml->asPrettyXML();
+        
+        $zip->addFromString('data.xml', $xml->asPrettyXML());
+        
+        $zip->serve('exacomp-'.strftime('%Y-%m-%d %H%M').'.zip');
+        $zip->delete();
         exit;
     }
     
@@ -311,6 +354,38 @@ $skill->source = block_exacomp::IMPORT_SOURCE_DEFAULT;
         if ($dbItem = $DB->get_record($table, array("id" => $id))) {
             self::assign_source($xmlItem->addChild($childName), $dbItem);
         }
+    }
+    
+    private static function export_file(block_exacomp_SimpleXMLElement $xmlItem, stored_file $file) {
+        // add file to zip
+
+        static $filesAdded = array();
+        if (isset($filesAdded[$file->get_contenthash()])) {
+            // already added
+            $filepath = $filesAdded[$file->get_contenthash()];
+        } else {
+            $filepath = 'files/'.$file->get_contenthash();
+            if (preg_match("!\.([^\.]+)$!", $file->get_filename(), $matches)) {
+                // get extension
+                $filepath .= '.'.$matches[1];
+            }
+            
+            // mark added
+            $filesAdded[$file->get_contenthash()] = $filepath;
+            
+            // add
+            self::$zip->addFromString($filepath, $file->get_content());
+        }
+        
+        
+        // data for xml item
+        $xmlItem->filepath = $filepath;
+        $xmlItem->filename = $file->get_filename();
+        $xmlItem->mimetype = $file->get_mimetype();
+        $xmlItem->author = $file->get_author();
+        $xmlItem->license = $file->get_license();
+        $xmlItem->timecreated = $file->get_timecreated();
+        $xmlItem->timemodified = $file->get_timemodified();
     }
     
     private static function export_skills($xmlParent) {
@@ -427,9 +502,20 @@ $skill->source = block_exacomp::IMPORT_SOURCE_DEFAULT;
             $xmlItem->addChildWithCDATAIfValue('description', $dbItem->description);
             $xmlItem->sorting = $dbItem->sorting;
             $xmlItem->timeframe = $dbItem->timeframe;
-            $xmlItem->addChildWithCDATAIfValue('task', $dbItem->task);
-            $xmlItem->addChildWithCDATAIfValue('externaltask', $dbItem->externaltask);
-            $xmlItem->addChildWithCDATAIfValue('solution', $dbItem->solution);
+            
+            if ($file = block_exacomp_get_local_file($dbItem, 'example_task')) {
+                self::export_file($xmlItem->addChild('filetask'), $file);
+            } else {
+                $xmlItem->addChildWithCDATAIfValue('task', $dbItem->task);
+            }
+            if ($file = block_exacomp_get_local_file($dbItem, 'example_solution')) {
+                self::export_file($xmlItem->addChild('filesolution'), $file);
+            } else {
+                $xmlItem->addChildWithCDATAIfValue('solution', $dbItem->solution);
+            }
+            
+            // get solution file
+            
             $xmlItem->addChildWithCDATAIfValue('completefile', $dbItem->completefile);
             $xmlItem->epop = $dbItem->epop;
             
@@ -438,6 +524,7 @@ $skill->source = block_exacomp::IMPORT_SOURCE_DEFAULT;
             $xmlItem->addChildWithCDATAIfValue('restorelink', $dbItem->restorelink);
             
             $xmlItem->addChildWithCDATAIfValue('externalurl', $dbItem->externalurl);
+            $xmlItem->addChildWithCDATAIfValue('externaltask', $dbItem->externaltask);
             $xmlItem->addChildWithCDATAIfValue('externalsolution', $dbItem->externalsolution);
             $xmlItem->addChildWithCDATAIfValue('tips', $dbItem->tips);
             
@@ -450,13 +537,23 @@ $skill->source = block_exacomp::IMPORT_SOURCE_DEFAULT;
             ", array($dbItem->id));
             
             if ($descriptors) {
-                $xmlDescripors = $xmlItem->addChild('descriptors');
+                $xmlItem->addChild('descriptors');
                 foreach ($descriptors as $descriptor) {
-                    $xmlDescripor = $xmlDescripors->addChild('descriptorid');
+                    $xmlDescripor = $xmlItem->descriptors->addChild('descriptorid');
                     self::assign_source($xmlDescripor, $descriptor);
                 }
             }
+
+            $taxonomies = block_exacomp_get_taxonomies_by_example($dbItem);
             
+            if ($taxonomies) {
+                $xmlItem->addChild('taxonomies');
+                foreach ($taxonomies as $taxonomy) {
+                    $xmlTaxonomy = $xmlItem->taxonomies->addChild('taxonomyid');
+                    self::assign_source($xmlTaxonomy, $taxonomy);
+                }
+            }
+
             // children
             self::export_examples($xmlItem, $dbItem->id);
         }
@@ -611,29 +708,86 @@ class block_exacomp_data_importer extends block_exacomp_data {
     
     private static $import_time = null;
     
+    private static $zip;
+    
+    public static function do_import_string($data = null, $par_source = 1, $cron = false) {
+        global $CFG;
+
+        if (!$data)
+            return false;
+        
+        $file = tempnam($CFG->tempdir, "zip");
+        file_put_contents($file, $data);
+        
+        $ret = self::do_import_file($file, $par_source, $cron);
+        
+        @unlink($file);
+        
+        return $ret;
+    }
+    
     /**
      *
      * @param String $data xml content
      * @param int $source default is 1, for specific import 2 is used. A specific import can be done by teachers and only effects data from topic leven downwards (topics, descriptors, examples)
      * @param int $cron should always be 0, 1 if method is called by the cron job
      */
-    public static function do_import($data = null, $par_source = 1, $cron = false) {
+    public static function do_import_file($file = null, $par_source = 1, $cron = false) {
         global $DB, $CFG;
     
-        if($data == null)
+        if(!$file)
             return false;
+        
+        if (!file_exists($file)) {
+            echo 'file not found';
+            return false;
+        }
         
         core_php_time_limit::raise();
         raise_memory_limit(MEMORY_HUGE);
         
         self::$import_source_type = $par_source;
         self::$import_time = time();
-        /*
-         * LIBXML_NOCDATA is important at this point, because it converts CDATA Elements to Strings for
-         * immediate useage
-         */
-        $xml = simplexml_load_string($data,'SimpleXMLElement', LIBXML_NOCDATA);
-    
+        
+        // guess it's a zip file
+        $zip = new block_exacomp_ZipArchive();
+        $ret = $zip->open($file, ZipArchive::CHECKCONS);
+        
+        if ($ret === true) {
+            // a zip file
+            self::$zip = $zip;
+            
+            if (!$xml = $zip->getFromName('data.xml')) {
+                echo 'wrong zip file';
+                return false;
+            }
+            
+            /*
+             * LIBXML_NOCDATA is important at this point, because it converts CDATA Elements to Strings for
+             * immediate useage
+             */
+            $xml = simplexml_load_string($xml,'block_exacomp_SimpleXMLElement', LIBXML_NOCDATA);
+
+            if (!$xml) {
+                echo 'wrong zip file content';
+                return false;
+            }
+        } else {
+            // on error -> try as xml
+
+            /*
+             * LIBXML_NOCDATA is important at this point, because it converts CDATA Elements to Strings for
+             * immediate useage
+             */
+            $xml = simplexml_load_file($file,'block_exacomp_SimpleXMLElement', LIBXML_NOCDATA);
+            
+            if (!$xml) {
+                echo 'wrong file';
+                return false;
+            }
+        }
+        
+
         if(isset($xml->table)){
             echo get_string('oldxmlfile', 'block_exacomp');
             return false;
@@ -831,6 +985,35 @@ class block_exacomp_data_importer extends block_exacomp_data {
         ));
     }
     
+    private static function insert_file($filearea, block_exacomp_SimpleXMLElement $xmlItem, $item) {
+        if (!self::$zip) {
+            return;
+        }
+        
+        $filecontent = self::$zip->getFromName($xmlItem->filepath);
+
+        $fs = get_file_storage();
+        
+        // delete old file
+        $fs->delete_area_files(context_system::instance()->id, 'mod_exacomp', $filearea, $item->id);
+        
+        // reimport
+        $file = $fs->create_file_from_string(array(
+            'contextid' => context_system::instance()->id,
+            'component' => 'mod_exacomp',
+            'filearea' => $filearea,
+            'itemid' => $item->id,
+            'filepath' => '/',
+                        
+            'filename' => (string)$xmlItem->filename,
+            'mimetype' => (string)$xmlItem->mimetype,
+            'author' => (string)$xmlItem->author,
+            'license' => (string)$xmlItem->license,
+            'timecreated' => (int)$xmlItem->timecreated,
+            'timemodified' => (int)$xmlItem->timemodified
+        ), $filecontent);
+    }
+    
     private static function insert_niveau($xmlItem, $parent = 0) {
         $item = self::parse_xml_item($xmlItem);
 
@@ -864,6 +1047,14 @@ class block_exacomp_data_importer extends block_exacomp_data {
         
         self::insert_or_update_item(block_exacomp::DB_EXAMPLES, $item);
         self::kompetenzraster_mark_item_used(block_exacomp::DB_EXAMPLES, $item);
+        
+        // has to be called after inserting the example, because the id is needed!
+        if ($xmlItem->filesolution) {
+            self::insert_file('example_solution', $xmlItem->filesolution, $item);
+        }
+        if ($xmlItem->filetask) {
+            self::insert_file('example_task', $xmlItem->filetask, $item);
+        }
         
         if ($xmlItem->taxonomies) {
             foreach ($xmlItem->taxonomies->taxonomyid as $taxonomy) {
@@ -1109,9 +1300,12 @@ class block_exacomp_data_importer extends block_exacomp_data {
         if (empty($item->source)) {
             // default to file source
             $item->source = self::$import_source_local_id;
+        // TODO: for now if i export an xml from my own moodle and reimport it there, it will show up as another source. maybe change?
+        /*
         } elseif ($item->source === self::get_my_source()) {
             // source is own moodle, eg. export and import in same moodle, set it to specific
             $item->source = block_exacomp::IMPORT_SOURCE_SPECIFIC;
+        */
         } else {
             // load local source id
             $item->source = self::add_source_if_not_exists($item->source);

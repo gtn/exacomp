@@ -76,18 +76,18 @@ $importSuccess = false;
 
 // TODO
 if (($importtype == 'custom') && $data = $mform->get_file_content('file')) {
-    $importSuccess = block_exacomp_data_importer::do_import($data, block_exacomp::IMPORT_SOURCE_SPECIFIC);
+    $importSuccess = block_exacomp_data_importer::do_import_string($data, block_exacomp::IMPORT_SOURCE_SPECIFIC);
 } elseif ($isAdmin && ($importtype == 'normal') && $data = $mform->get_file_content('file')) {
-    $importSuccess = block_exacomp_data_importer::do_import($data, block_exacomp::IMPORT_SOURCE_DEFAULT);
+    $importSuccess = block_exacomp_data_importer::do_import_string($data, block_exacomp::IMPORT_SOURCE_DEFAULT);
 } elseif ($isAdmin && ($importtype == 'demo')) {
     //do demo import
     
-    $xml = file_get_contents(optional_param('file', DEMO_XML_PATH, PARAM_TEXT));
+    $file = optional_param('file', DEMO_XML_PATH, PARAM_TEXT);
     
-    if (!$xml) {
+    if (!file_exists($file)) {
         die('xml not found');
     } else {
-        if (block_exacomp_data_importer::do_import($xml, block_exacomp::IMPORT_SOURCE_DEFAULT, true)) {
+        if (block_exacomp_data_importer::do_import_file($file, block_exacomp::IMPORT_SOURCE_DEFAULT, true)) {
             $importSuccess = true;
             block_exacomp_settstamp();
         }

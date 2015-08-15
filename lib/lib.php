@@ -867,15 +867,14 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 }
 
 function block_exacomp_get_taxonomies_by_example($example){
-	global $DB;
-	$records = $DB->get_records(block_exacomp::DB_EXAMPTAX, array('exampleid'=>$example->id));
-	$taxonomies = array();
-	
-	foreach($records as $record){
-		if($record->taxid)
-			$taxonomies[] = $DB->get_record(block_exacomp::DB_TAXONOMIES, array('id'=>$record->taxid));
-	}
-	return $taxonomies;	
+    global $DB;
+    
+    return $DB->get_records_sql("
+        SELECT t.*
+        FROM {".block_exacomp::DB_TAXONOMIES."} t
+        JOIN {".block_exacomp::DB_EXAMPTAX."} et ON t.id = et.taxid
+        WHERE et.exampleid = ?
+    ", array($example->id));
 }
 /**
  * Returns descriptors for a given topic
@@ -4917,4 +4916,43 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 		$totalGrade = 0;
 
 	return array($total, $gradings, $notEvaluated, $inWork,$totalGrade);
+}
+
+function block_exacomp_get_local_file($item, $type) {
+    global $CFG;
+    
+    // TODO: this function should read the associated file from the moodle files database
+    // for now we only have the url -> this is a big hack
+    // parse the url and get the file
+
+    if ($type == 'example_task') {
+        $url = $item->task;
+    } elseif ($type == 'example_solution') {
+        $url = $item->solution;
+    } else {
+        print_error('wrong type '.$type);
+    }
+
+    if (!$url) return;
+    
+    if (strpos($url, $CFG->wwwroot.'/blocks/exacomp/example_upload.php') === false) {
+        // it is not a local moodle url
+        return;
+    }
+    
+    if (!$url = parse_url($url)) {
+        return;
+    }
+    
+    parse_str($url['query'], $params);
+    if (isset($params['action']) && $params['action'] == 'serve' && isset($params['i'])) {
+        // ok
+    } else {
+        return;
+    }
+    
+    $fs = get_file_storage();
+    $file = $fs->get_file_by_hash($params['i']);
+    
+    return $file;
 }
