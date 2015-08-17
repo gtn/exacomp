@@ -3986,16 +3986,66 @@ function block_exacomp_cross_subjects_exists(){
 	return $dbman->table_exists($table);
 }
 function block_exacomp_set_cross_subject_descriptor($crosssubjid,$descrid) {
-	global $DB;
+	global $DB, $version;
 	$record = $DB->get_record(block_exacomp::DB_DESCCROSS,array('crosssubjid'=>$crosssubjid,'descrid'=>$descrid));
 	if(!$record)
 		$DB->insert_record(block_exacomp::DB_DESCCROSS,array('crosssubjid'=>$crosssubjid,'descrid'=>$descrid));
+		
+	//insert visibility if cross course
+	$cross_subject = $DB->get_record(block_exacomp::DB_CROSSSUBJECTS, array('id'=>$crosssubjid));
+	$visibility = $DB->get_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$cross_subject->courseid, 'descrid'=>$descrid, 'studentid'=>0));
+	if(!$visibility){
+		$insert = new stdClass();
+		$insert->courseid = $cross_subject->courseid;
+		$insert->descrid = $descrid;
+		$insert->studentid = 0;
+		$insert->visible = 1;
+		$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, $insert);
+	}
+	
+	if($version){ //check parent visibility
+		$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descrid));
+		$visibility = $DB->get_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$cross_subject->courseid, 'descrid'=>$descriptor->parentid, 'studentid'=>0));
+		if(!$visibility){
+			$insert = new stdClass();
+			$insert->courseid = $cross_subject->courseid;
+			$insert->descrid = $descriptor->parentid;
+			$insert->studentid = 0;
+			$insert->visible = 1;
+			$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, $insert);
+		}
+	}
 }
 function block_exacomp_unset_cross_subject_descriptor($crosssubjid, $descrid){
-	global $DB;
+	global $DB, $COURSE;
 	$record = $DB->get_record(block_exacomp::DB_DESCCROSS,array('crosssubjid'=>$crosssubjid,'descrid'=>$descrid));
 	if($record)
 		$DB->delete_records(block_exacomp::DB_DESCCROSS,array('crosssubjid'=>$crosssubjid,'descrid'=>$descrid));	
+		
+	//delete visibility of non course descriptors, not connected to another course crosssubject 
+	$cross_subject = $DB->get_record(block_exacomp::DB_CROSSSUBJECTS, array('id'=>$crosssubjid));
+	$cross_courseid = $cross_subject->courseid;
+	
+	if($cross_courseid != $COURSE->id){	//not current course
+		$course_descriptors = block_exacomp_get_descriptors($cross_courseid);
+	
+		if(!array_key_exists($course_descriptors, $descrid)){	// no course descriptor -> cross course 
+			$descriptor_crosssubs_mm = $DB->get_records(block_exacomp::DB_DESCCROSS, array('descrid'=>$descrid));
+			$course_cross_subjects = block_exacomp_get_cross_subjects_by_course($cross_courseid);
+		
+			$used_in_other_crosssub = false;
+			foreach($descriptor_crosssubs_mm as $entry){
+				if($entry->crosssubjid != $cross_subject->id){
+					if(array_key_exists($course_cross_subjects, $entry->crosssubjid))
+						$used_in_other_crosssub = true;
+				}
+			}
+	
+			if(!$used_in_other_crosssub){ // delete visibility if not used in other cross subject in this course
+				$DB->delete_records(block_exacomp::DB_DESCVISIBILITY, array('descrid'=>$descrid, 'courseid'=>$cross_courseid, 'studentid'=>0));
+			}
+		}
+	}
 }
 function block_exacomp_set_cross_subject_student($crosssubjid, $studentid){
 	global $DB;
