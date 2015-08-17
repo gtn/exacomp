@@ -99,6 +99,12 @@ $blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
 $pagenode = $blocknode->add(get_string($page_identifier,'block_exacomp'), $PAGE->url);
 $pagenode->make_active();
 
+$delete = false;
+if(($isAdmin || block_exacomp_check_customupload()) && $action == 'delete') {
+        block_exacomp_data::delete_source(required_param('source', PARAM_INT));
+		$delete = true;
+}
+
 // build tab navigation & print header
 echo $PAGE->get_renderer('block_exacomp')->header();
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($course_context,$courseid), $page_identifier);
@@ -106,13 +112,8 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($course_context,$cours
 
 /* Admins are allowed to import data, or a special capability for custom imports */
 if($isAdmin || block_exacomp_check_customupload()) {
-
-    if($action == 'delete') {
-        block_exacomp_data::delete_source(required_param('source', PARAM_INT));
-        echo $OUTPUT->box(get_string("delete_success", "block_exacomp"));
-    }
     
-    elseif($importtype) {
+    if($importtype) {
         if(($importtype=='normal') || ($importtype=='custom')){
             if ($mform->is_cancelled()) {
                 redirect($PAGE->url);
@@ -175,6 +176,8 @@ if($isAdmin || block_exacomp_check_customupload()) {
                 echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'normal')), get_string('doimport_again', 'block_exacomp')));
             }
             elseif ($isAdmin) {
+            	if($delete)
+            		echo $OUTPUT->box(get_string("delete_success", "block_exacomp"));
                 // no data yet, allow import or import demo data
                 echo $OUTPUT->box(html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one_admin.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).get_string('first_configuration_step', 'block_exacomp'));
                 echo $OUTPUT->box(get_string("importpending", "block_exacomp"));
