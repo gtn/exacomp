@@ -4921,6 +4921,14 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 function block_exacomp_get_local_file($item, $type) {
     global $CFG;
     
+    // testing lots of small files, just return a file
+    /*
+    $fs = get_file_storage();
+    $file = $fs->get_file_by_hash('cee2f56d25c0c86c1001cc13adc48660a57f3345');
+    return $file;
+    */
+    
+    
     // TODO: this function should read the associated file from the moodle files database
     // for now we only have the url -> this is a big hack
     // parse the url and get the file

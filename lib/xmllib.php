@@ -358,20 +358,24 @@ $skill->source = block_exacomp::IMPORT_SOURCE_DEFAULT;
     
     private static function export_file(block_exacomp_SimpleXMLElement $xmlItem, stored_file $file) {
         // add file to zip
+        
+        // testing for big archive with lots of files
+        // $contenthash = md5(microtime());
+        $contenthash = $file->get_contenthash();
 
         static $filesAdded = array();
-        if (isset($filesAdded[$file->get_contenthash()])) {
+        if (isset($filesAdded[$contenthash])) {
             // already added
-            $filepath = $filesAdded[$file->get_contenthash()];
+            $filepath = $filesAdded[$contenthash];
         } else {
-            $filepath = 'files/'.$file->get_contenthash();
+            $filepath = 'files/'.$contenthash;
             if (preg_match("!\.([^\.]+)$!", $file->get_filename(), $matches)) {
                 // get extension
                 $filepath .= '.'.$matches[1];
             }
             
             // mark added
-            $filesAdded[$file->get_contenthash()] = $filepath;
+            $filesAdded[$contenthash] = $filepath;
             
             // add
             self::$zip->addFromString($filepath, $file->get_content());
