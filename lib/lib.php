@@ -3804,6 +3804,11 @@ function block_exacomp_delete_crosssubject_drafts($drafts_to_delete){
 		$DB->delete_records(block_exacomp::DB_CROSSSUBJECTS, array('id'=>$draftid));
 	}
 }
+
+function block_exacomp_get_crosssubjects(){
+	global $DB;
+	return $DB->get_records(block_exacomp::DB_CROSSSUBJECTS);
+}
 function block_exacomp_get_cross_subjects_by_course($courseid, $studentid=0){
     global $DB;
     $crosssubs = $DB->get_records(block_exacomp::DB_CROSSSUBJECTS, array('courseid'=>$courseid));
@@ -4016,6 +4021,7 @@ function block_exacomp_set_cross_subject_descriptor($crosssubjid,$descrid) {
 		}
 	}
 }
+
 function block_exacomp_unset_cross_subject_descriptor($crosssubjid, $descrid){
 	global $DB, $COURSE;
 	$record = $DB->get_record(block_exacomp::DB_DESCCROSS,array('crosssubjid'=>$crosssubjid,'descrid'=>$descrid));

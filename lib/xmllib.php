@@ -308,6 +308,7 @@ $skill->source = block_exacomp::IMPORT_SOURCE_DEFAULT;
         // TODO: export categoriesn
         self::export_examples($xml);
         self::export_descriptors($xml);
+        self::export_crosssubjects($xml);
         // TODO: crosssubjects
         self::export_edulevels($xml);
         self::export_sources($xml);
@@ -600,6 +601,37 @@ $skill->source = block_exacomp::IMPORT_SOURCE_DEFAULT;
             $xmlEdulevel->addChildWithCDATAIfValue('title', $dbEdulevel->title);
             
             self::export_schooltypes($xmlEdulevel, $dbEdulevel);
+        }
+    }
+    
+	private static function export_crosssubjects($xmlParent, $parentid = 0) {
+		global $DB;
+		
+        $dbCrosssubjects = block_exacomp_get_crosssubjects();
+        $xmlParent->addChild('crosssubjects');
+
+        foreach ($dbCrosssubjects as $dbCrosssubject) {
+            $xmlCrosssubject = $xmlParent->crosssubjects->addchild('crosssubject');
+            self::assign_source($xmlCrosssubject, $dbCrosssubject);
+            
+            $xmlCrosssubject->addChildWithCDATAIfValue('title', $dbCrosssubject->title);
+            $xmlCrosssubject->addChildWithCDATAIfValue('description', $dbCrosssubject->description);
+            $xmlCrosssubject->courseid = $dbCrosssubject->courseid;
+            
+       	 	 $descriptors = $DB->get_records_sql("
+                SELECT DISTINCT d.id, d.source, d.sourceid
+                FROM {".block_exacomp::DB_DESCRIPTORS."} d
+                JOIN {".block_exacomp::DB_DESCCROSS."} dc ON d.id = dc.descrid
+                WHERE dc.crosssubjid = ?
+            ", array($dbCrosssubject->id));
+       	 	 
+            if ($descriptors) {
+                $xmlDescriptors = $xmlCrosssubject->addChild('descriptors');
+                foreach ($descriptors as $descriptor) {
+                    $xmlDescripor = $xmlDescriptors->addChild('descriptorid');
+                    self::assign_source($xmlDescripor, $descriptor);
+                }
+            }
         }
     }
     
