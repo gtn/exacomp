@@ -3851,6 +3851,7 @@ function block_exacomp_get_competence_tree_for_cross_subject($courseid, $crosssu
 	$allSubjects = block_exacomp_get_subjects();
 	
 	$allDescriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid, $showalldescriptors);
+	
 	$courseTopics = block_exacomp_get_topics_for_cross_subject_by_descriptors($allDescriptors);
 	
 	foreach ($allDescriptors as $descriptor) {
@@ -3906,7 +3907,7 @@ function block_exacomp_get_competence_tree_for_cross_subject($courseid, $crosssu
 }
 
 function block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid, $showalldescriptors = false){
-    global $DB;
+    global $DB, $version;
     $comps = $DB->get_records(block_exacomp::DB_DESCCROSS, array('crosssubjid'=>$crosssubjid),'','descrid,crosssubjid');
     
     if(!$comps) return array();
@@ -3914,7 +3915,7 @@ function block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid
     $WHERE = "";
     foreach($comps as $comp){
     	$cross_descr = $DB->get_record(block_exacomp::DB_DESCRIPTORS,array('id'=>$comp->descrid));
-        $WHERE .=  $cross_descr->parentid.",";
+        $WHERE .=  (($version)?$cross_descr->parentid:$cross_descr->id).",";
     }
     $WHERE = substr($WHERE, 0, strlen($WHERE)-1);
     
