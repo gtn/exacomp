@@ -923,16 +923,16 @@ class block_exacomp_data_importer extends block_exacomp_data {
         $DB->execute($sql);
         
         // 2. cross course descriptors used in crosssubjects 
-        /*$sql = "
+        $sql = "
             INSERT INTO {".block_exacomp::DB_DESCVISIBILITY."}
             (courseid, descrid, studentid, visible)
             SELECT cs.courseid, dc.descrid, 0, 1
             FROM {".block_exacomp::DB_CROSSSUBJECTS."} cs 
-            JOIN {".block_exacomp::DB_DESCCROSS."} dc ON cs.crosssubjid = dc.crosssubjid
+            JOIN {".block_exacomp::DB_DESCCROSS."} dc ON cs.id = dc.crosssubjid
             LEFT JOIN {".block_exacomp::DB_DESCVISIBILITY."} dv ON dv.descrid=dc.descrid AND dv.studentid=0
             WHERE dv.id IS NULL AND cs.courseid != 0  -- only for those, who have no visibility yet
         ";
-        $DB->execute($sql);*/ //only necessary if we save courseinformation as well -> existing crosssubjects imported  only as drafts -> not needed
+        $DB->execute($sql); //only necessary if we save courseinformation as well -> existing crosssubjects imported  only as drafts -> not needed
         // 2. child descriptors
         // TODO: this logic only works for one child level now, do we need more?
         // TODO: i think child descriptors also have an mm with the topics. so this logic is not needed?
