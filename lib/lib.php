@@ -4285,7 +4285,7 @@ function block_exacomp_check_child_descriptors($descriptor, $example_descriptors
 	$descriptor->associated = 0;
 	$descriptor->direct_associated = 0;
 	
-	if (array_key_exists ( $descriptor->id, $example_descriptors ) || $descriptorid == $descriptor->id){
+	if (array_key_exists ( $descriptor->id, $example_descriptors ) || $descriptorid == $descriptor->id || ($showallexamples && !empty($descriptor->examples))){
 			$descriptor->associated = 1;
 			$descriptor->direct_associated = 1;
 	}

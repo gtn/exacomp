@@ -2974,14 +2974,19 @@ class block_exacomp_external extends external_api {
 				'courseid' => $courseid 
 		) );
 		
-		$topics = block_exacomp_get_topics_by_course($courseid);
-		
+		$tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
+
 		$topics_return = array();
-		foreach($topics as $topic){
-			$topic_return = new stdClass();
-			$topic_return->topicid = $topic->id;
-			$topic_return->topictitle = $topic->title;
-			$topics_return[] = $topic_return;
+		foreach($tree as $subject){
+			foreach($subject->subs as $topic){
+				if($topic->associated == 1){
+					$topic_return = new stdClass();
+					$topic_return->topicid = $topic->id;
+					$topic_return->topictitle = $topic->title;
+					$topic_return->numbering = block_exacomp_get_topic_numbering($topic->id);
+					$topics_return[] = $topic_return;
+				}
+			}
 		}
 		
 		return $topics_return;
@@ -2995,7 +3000,8 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_topics_by_course_returns() {
 		return new external_multiple_structure ( new external_single_structure ( array (
 				'topicid' => new external_value ( PARAM_INT, 'id of topic' ),
-				'topictitle' => new external_value ( PARAM_TEXT, 'title of topic' ) 
+				'topictitle' => new external_value ( PARAM_TEXT, 'title of topic' ),
+				'numbering' => new external_value ( PARAM_TEXT, 'numbering for topic')
 		) ) );
 	}
 	
@@ -3025,17 +3031,26 @@ class block_exacomp_external extends external_api {
 				'userid' => $userid
 		) );
 		
-		$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $topicid, false, true, true);
-		
-		$non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+		$tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
 
+		$non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+		
 		$descriptors_return = array();
-		foreach($descriptors as $descriptor){
-			$descriptor_return = new stdClass();
-			$descriptor_return->descriptorid = $descriptor->id;
-			$descriptor_return->descriptortitle = $descriptor->title;
-			if(!in_array($descriptor->id, $non_visibilities))
-				$descriptors_return[] = $descriptor_return;
+		foreach($tree as $subject){
+			foreach($subject->subs as $topic){
+				if($topic->id == $topicid){
+					foreach($topic->descriptors as $descriptor){
+						if($descriptor->associated == 1){
+							$descriptor_return = new stdClass();
+							$descriptor_return->descriptorid = $descriptor->id;
+							$descriptor_return->descriptortitle = $descriptor->title;
+							$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
+							if(!in_array($descriptor->id, $non_visibilities))
+								$descriptors_return[] = $descriptor_return;
+						}
+					}
+				}
+			}
 		}
 		
 		return $descriptors_return;
@@ -3049,7 +3064,8 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_descriptors_returns() {
 		return new external_multiple_structure ( new external_single_structure ( array (
 				'descriptorid' => new external_value ( PARAM_INT, 'id of descriptor' ),
-				'descriptortitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ) 
+				'descriptortitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
+				'numbering' => new external_value ( PARAM_TEXT, 'numbering for descriptor')
 		) ) );
 	}
 	
@@ -3088,11 +3104,14 @@ class block_exacomp_external extends external_api {
 
 		$children_return = array();
 		foreach($children as $child){
-			$child_return = new stdClass();
-			$child_return->childid = $child->id;
-			$child_return->childtitle = $child->title;
-			if(!in_array($child->id, $non_visibilities))
-				$children_return[] = $child_return;
+			if($child->examples){
+				$child_return = new stdClass();
+				$child_return->childid = $child->id;
+				$child_return->childtitle = $child->title;
+				$child_return->numbering = block_exacomp_get_descriptor_numbering($child);
+				if(!in_array($child->id, $non_visibilities))
+					$children_return[] = $child_return;
+			}
 		}
 		
 		$parent_descriptor = block_exacomp_get_examples_for_descriptor($parent_descriptor);
@@ -3120,7 +3139,8 @@ class block_exacomp_external extends external_api {
 		return new external_single_structure ( array (
 			'children' => new external_multiple_structure ( new external_single_structure ( array (
 					'childid' => new external_value ( PARAM_INT, 'id of child' ),
-					'childtitle' => new external_value ( PARAM_TEXT, 'title of child' )
+					'childtitle' => new external_value ( PARAM_TEXT, 'title of child' ),
+					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child')
 			) ) ) ,
 			'examples' => new external_multiple_structure ( new external_single_structure ( array (
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
@@ -3409,5 +3429,54 @@ class block_exacomp_external extends external_api {
 		return new external_function_parameters ( array (
 				'role' => new external_value ( PARAM_INT, '1=trainer, 2=student' ) 
 		) );
+	}
+	
+		/**
+	 * Returns description of method parameters
+	 * 
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_students_for_course_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' )
+		) );
+	}
+	
+	/**
+	 * Get descriptors for example
+	 * 
+	 * @param
+	 *        	int exampleid
+	 * @return list of descriptors
+	 */
+	public static function dakora_get_students_for_course($courseid) {
+		global $PAGE;
+		$params = self::validate_parameters ( self::dakora_get_students_for_course_parameters (), array (
+				'courseid'=>$courseid
+			) );
+			
+		$students = block_exacomp_get_students_by_course($courseid);
+		
+		foreach($students as $student){
+			$student->studentid = $student->id;
+			$picture = new user_picture($student);
+			$picture->size = 50;
+			$student->profilepicture = $picture->get_url($PAGE)->out();
+		}
+		return $students;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_students_for_course_returns() {
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'studentid' => new external_value ( PARAM_INT, 'id of student' ),
+				'firstname' => new external_value ( PARAM_TEXT, 'firstname of student' ),
+				'lastname' => new external_value ( PARAM_TEXT, 'lastname of student' ),
+				'profilepicture' => new external_value( PARAM_TEXT, 'link to  profile picture')
+		) ) );
 	}
 }

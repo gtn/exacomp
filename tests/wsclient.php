@@ -13,7 +13,7 @@ $params = new stdClass();
 
 require_once('./curl.php');
 $curl = new curl;
-$token_google = 879878;
+$token_google = 741558;
 
 print_r($token_google);
 echo "
@@ -59,7 +59,7 @@ $functionname = 'dakora_get_courses';
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 
 $params = new stdClass();
-$params->userid = 0;
+$params->userid = 4;
 
 $resp = $curl->get($serverurl, $params);
 print_r($resp);
@@ -74,7 +74,7 @@ topics:
 $functionname = 'dakora_get_topics_by_course';
 
 $params = new stdClass();
-$params->courseid = 3;
+$params->courseid = 4;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
@@ -217,6 +217,21 @@ user role:
 
 //REST CALL dakora_get_user_role
 $functionname = 'dakora_get_user_role';
+
+$params = new stdClass();
+$params->courseid = 3;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+
+
+";
+
+//REST CALL dakora_get_students_for_course
+$functionname = 'dakora_get_students_for_course';
 
 $params = new stdClass();
 $params->courseid = 3;

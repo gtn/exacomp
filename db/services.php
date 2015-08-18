@@ -43,7 +43,8 @@ $services = array(
 						'dakora_add_example_to_learning_calendar',
 						'dakora_get_descriptors_for_example',
 						'dakora_get_example_grading',
-						'dakora_get_user_role'
+						'dakora_get_user_role',
+						'dakora_get_students_for_course'
 						), 	//web service functions of this service
 				'restrictedusers' =>0,                      //if enabled, the Moodle administrator must link some user to this service
 				//into the administration
@@ -347,6 +348,13 @@ $functions = array(
 				'methodname'  => 'dakora_get_user_role',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'get user role 1= trainer, 2= student',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_students_for_course'=> array (
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_students_for_course',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get list of students for course',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)
 		)
 );
