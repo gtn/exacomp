@@ -3387,7 +3387,6 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_user_role_parameters() {
 		return new external_function_parameters ( array (
-			'courseid' => new external_value ( PARAM_INT, 'id of course' )
 		) );
 	}
 	
@@ -3398,25 +3397,28 @@ class block_exacomp_external extends external_api {
 	 * 
 	 * @return int
 	 */
-	public static function dakora_get_user_role($courseid) {
+	public static function dakora_get_user_role() {
 		global $CFG, $DB, $USER;
 		
 		$params = self::validate_parameters ( self::dakora_get_user_role_parameters (), array (
-				'courseid'=>$courseid
 			) );
 
-		$context = context_course::instance($courseid);
+		$courses = block_exacomp_external::get_courses($USER->id);
 		
-		$isTeacher = block_exacomp_is_teacher($context);
+		foreach($courses as $course){
+			$context = context_course::instance($course["courseid"]);
+			
+			$isTeacher = block_exacomp_is_teacher($context);
+			
+			if($isTeacher)
+				return array (
+						"role" => 1 
+				);
+		}
 		
-		if($isTeacher)
-			return array (
-					"role" => 1 
-			);
-		else
-			return array (
-					"role" => 2 
-			);
+		return array (
+				"role" => 2 
+		);
 			
 	}
 	

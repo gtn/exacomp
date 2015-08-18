@@ -13,7 +13,7 @@ $params = new stdClass();
 
 require_once('./curl.php');
 $curl = new curl;
-$token_google = 741558;
+$token_google = 621006;
 
 print_r($token_google);
 echo "
@@ -219,7 +219,6 @@ user role:
 $functionname = 'dakora_get_user_role';
 
 $params = new stdClass();
-$params->courseid = 3;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
