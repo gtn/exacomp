@@ -44,7 +44,11 @@ $services = array(
 						'dakora_get_descriptors_for_example',
 						'dakora_get_example_grading',
 						'dakora_get_user_role',
-						'dakora_get_students_for_course'
+						'dakora_get_students_for_course',
+						'dakora_get_examples_pool_for_week',
+						'dakora_set_example_time_slot',
+						'dakora_remove_example_from_schedule',
+						'dakora_get_examples_for_time_slot'
 						), 	//web service functions of this service
 				'restrictedusers' =>0,                      //if enabled, the Moodle administrator must link some user to this service
 				//into the administration
@@ -327,7 +331,7 @@ $functions = array(
 				'methodname'  => 'dakora_add_example_to_learning_calendar',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'add example to learning calendar for dakora',    //human readable description of the web service function
-				'type'        => 'read'                  //database rights of the web service function (read, write)
+				'type'        => 'write'                  //database rights of the web service function (read, write)
 		),
 		'dakora_get_descriptors_for_example' => array (
 				'classname'   => 'block_exacomp_external',  //class containing the external function
@@ -355,6 +359,34 @@ $functions = array(
 				'methodname'  => 'dakora_get_students_for_course',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'get list of students for course',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_examples_pool_for_week' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_examples_pool_for_week',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get list of examples for weekly schedule pool',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_set_example_time_slot' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_set_example_time_slot',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'set start and end time for example',    //human readable description of the web service function
+				'type'        => 'write'                  //database rights of the web service function (read, write)
+		),
+		'dakora_remove_example_from_schedule' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_remove_example_from_schedule',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'remove example from weekly schedule',    //human readable description of the web service function
+				'type'        => 'write'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_examples_for_time_slot' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_examples_for_time_slot',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get examples for a special start to end period (e.g. day)',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)
 		)
 );

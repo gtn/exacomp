@@ -3481,4 +3481,206 @@ class block_exacomp_external extends external_api {
 				'profilepicture' => new external_value( PARAM_TEXT, 'link to  profile picture')
 		) ) );
 	}
+	
+	/**
+	 * Returns description of method parameters
+	 * 
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_examples_pool_for_week_parameters() {
+		return new external_function_parameters ( array (
+				'studentid' => new external_value ( PARAM_INT, 'id of student' ),
+				'week' => new external_value(PARAM_INT, 'start timestamp of week')
+		) );
+	}
+	
+	/**
+	 * Get examples for pool
+	 * 
+	 * @param
+	 *        	int studentid
+	 *			int week
+	 * @return list of descriptors
+	 */
+	public static function dakora_get_examples_pool_for_week($studentid, $week) {
+		
+		$params = self::validate_parameters ( self::dakora_get_examples_pool_for_week_parameters (), array (
+				'studentid'=>$studentid,
+				'week'=>$week
+			) );
+			
+		$examples = block_exacomp_get_examples_for_pool($studentid, $week);
+		
+		return $examples;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_examples_pool_for_week_returns() {
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
+				'title' => new external_value ( PARAM_TEXT, 'title of example' ),
+				'student_evaluation' => new external_value ( PARAM_INT, 'self evaluation of student' ),
+				'teacher_evaluation' => new external_value( PARAM_TEXT, 'evaluation of teacher')
+		) ) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 * 
+	 * @return external_function_parameters
+	 */
+	public static function dakora_set_example_time_slot_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value(PARAM_INT, 'id of course'),
+				'exampleid' => new external_value(PARAM_INT, 'id of example'),
+				'studentid' => new external_value ( PARAM_INT, 'id of student' ),
+				'start' => new external_value(PARAM_INT, 'start timestamp'),
+				'end'=> new external_value(PARAM_INT, 'end timestamp')
+		) );
+	}
+	
+	/**
+	 * set example time slot
+	 * 
+	 * @param
+	 *			int courseid
+	 * 			int exampleid
+	 *        	int studentid
+	 *			int start
+	 *			int end
+	 * @return list of descriptors
+	 */
+	public static function dakora_set_example_time_slot($courseid, $exampleid, $studentid, $start, $end) {
+		
+		$params = self::validate_parameters ( self::dakora_set_example_time_slot_parameters (), array (
+				'courseid'=>$courseid,
+				'exampleid'=>$exampleid,
+				'studentid'=>$studentid,
+				'start'=>$start,
+				'end'=>$end
+			) );
+			
+		block_exacomp_set_example_time_slot($courseid, $exampleid, $studentid, $start, $end);
+		
+		return array (
+				"success" => true
+		);
+	
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_set_example_time_slot_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' ) 
+		) );
+	}
+	
+		
+	/**
+	 * Returns description of method parameters
+	 * 
+	 * @return external_function_parameters
+	 */
+	public static function dakora_remove_example_from_schedule_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value(PARAM_INT, 'id of course'),
+				'exampleid' => new external_value(PARAM_INT, 'id of example'),
+				'studentid' => new external_value ( PARAM_INT, 'id of student' )
+		) );
+	}
+	
+	/**
+	 * set example time slot
+	 * 
+	 * @param
+	 *			int courseid
+	 * 			int exampleid
+	 *        	int studentid
+	 *			int start
+	 *			int end
+	 * @return list of descriptors
+	 */
+	public static function dakora_remove_example_from_schedule($courseid, $exampleid, $studentid) {
+		
+		$params = self::validate_parameters ( self::dakora_remove_example_from_schedule_parameters (), array (
+				'courseid'=>$courseid,
+				'exampleid'=>$exampleid,
+				'studentid'=>$studentid
+			) );
+			
+		block_exacomp_remove_example_from_schedule($courseid, $exampleid, $studentid);
+		
+		return array (
+				"success" => true
+		);
+	
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_remove_example_from_schedule_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' ) 
+		) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 * 
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_examples_for_time_slot_parameters() {
+		return new external_function_parameters ( array (
+				'studentid' => new external_value ( PARAM_INT, 'id of student' ),
+				'start' => new external_value(PARAM_INT, 'start timestamp'),
+				'end' => new external_value(PARAM_INT, 'end timestamp')
+		) );
+	}
+	
+	/**
+	 * Get examples for time slot
+	 * 
+	 * @param
+	 *        	int studentid
+	 *			int start
+	 *			int end
+	 * @return list of descriptors
+	 */
+	public static function dakora_get_examples_for_time_slot($studentid, $start, $end) {
+		
+		$params = self::validate_parameters ( self::dakora_get_examples_for_time_slot_parameters (), array (
+				'studentid'=>$studentid,
+				'start'=>$start,
+				'end'=>$end
+			) );
+			
+		$examples = block_exacomp_get_examples_for_time_slot($studentid, $start, $end);
+		
+		return $examples;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_examples_for_time_slot_returns() {
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
+				'title' => new external_value ( PARAM_TEXT, 'title of example' ),
+				'student_evaluation' => new external_value ( PARAM_INT, 'self evaluation of student' ),
+				'teacher_evaluation' => new external_value( PARAM_TEXT, 'evaluation of teacher')
+		) ) );
+	}
 }
