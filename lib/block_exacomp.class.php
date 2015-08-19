@@ -37,6 +37,7 @@ class block_exacomp extends block_list {
     const DB_DESCCAT = 'block_exacompdescrcat_mm';
     const DB_EXAMPTAX = 'block_exacompexampletax_mm';    
     const DB_DATASOURCES = 'block_exacompdatasources';
+    const DB_SCHEDULE = 'block_exacompschedule';
     
     /**
      * PLUGIN ROLES
@@ -188,8 +189,13 @@ class block_exacomp extends block_list {
                             $this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/examples_and_tasks.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
 
                             //Lernagenda
-                            $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/learningagenda.php', array('courseid'=>$courseid)), get_string('tab_learning_agenda', 'block_exacomp'), array('title'=>get_string('tab_learning_agenda', 'block_exacomp')));
+                            //$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/learningagenda.php', array('courseid'=>$courseid)), get_string('tab_learning_agenda', 'block_exacomp'), array('title'=>get_string('tab_learning_agenda', 'block_exacomp')));
+                            //$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/subject.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
+                        
+                            //Wochenplan
+                            $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/weekly_schedule.php', array('courseid'=>$courseid)), get_string('tab_weekly_schedule', 'block_exacomp'), array('title'=>get_string('tab_weekly_schedule', 'block_exacomp')));
                             $this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/subject.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
+                       
                         }
                         //Meine Auszeichnungen
                         //if (block_exacomp_moodle_badges_enabled() && $usebadges) {
@@ -241,9 +247,13 @@ class block_exacomp extends block_list {
                         $this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/examples_and_tasks.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
                         	
                         //Lernagenda
-                        $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/learningagenda.php', array('courseid'=>$courseid)), get_string('tab_learning_agenda', 'block_exacomp'), array('title'=>get_string('tab_learning_agenda', 'block_exacomp')));
-                        $this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/subject.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
+                        //$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/learningagenda.php', array('courseid'=>$courseid)), get_string('tab_learning_agenda', 'block_exacomp'), array('title'=>get_string('tab_learning_agenda', 'block_exacomp')));
+                        //$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/subject.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
                         	
+                        //Wochenplan
+                        $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/weekly_schedule.php', array('courseid'=>$courseid)), get_string('tab_weekly_schedule', 'block_exacomp'), array('title'=>get_string('tab_weekly_schedule', 'block_exacomp')));
+                        $this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/subject.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
+                       
                         if($courseSettings->profoundness == 1) {
                             $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/profoundness.php', array('courseid'=>$courseid)), get_string('tab_profoundness', 'block_exacomp'), array('title'=>get_string('tab_profoundness', 'block_exacomp')));
                             $this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/subject.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
@@ -296,9 +306,13 @@ class block_exacomp extends block_list {
                             }
 
                             //Lernagenda
-                            $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/learningagenda.php', array('courseid'=>$courseid)), get_string('tab_learning_agenda', 'block_exacomp'), array('title'=>get_string('tab_learning_agenda', 'block_exacomp')));
-                            $this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/subject.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
+                            //$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/learningagenda.php', array('courseid'=>$courseid)), get_string('tab_learning_agenda', 'block_exacomp'), array('title'=>get_string('tab_learning_agenda', 'block_exacomp')));
+                            //$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/subject.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
 
+                            //Wochenplan
+                            $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/weekly_schedule.php', array('courseid'=>$courseid)), get_string('tab_weekly_schedule', 'block_exacomp'), array('title'=>get_string('tab_weekly_schedule', 'block_exacomp')));
+                            $this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/subject.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
+                       
                             //Kompetenzprofil
                             $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/competence_profile.php', array('courseid'=>$courseid)), get_string('tab_competence_profile', 'block_exacomp'), array('title'=>get_string('tab_competence_profile', 'block_exacomp')));
                             $this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/area.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
@@ -346,9 +360,13 @@ class block_exacomp extends block_list {
                     }
                     if($ready_for_use && $courseSettings->nostudents != 1){
                         //Lernagenda
-                        $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/learningagenda.php', array('courseid'=>$courseid)), get_string('tab_learning_agenda', 'block_exacomp'), array('title'=>get_string('tab_learning_agenda', 'block_exacomp')));
-                        $this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/subject.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
+                        //$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/learningagenda.php', array('courseid'=>$courseid)), get_string('tab_learning_agenda', 'block_exacomp'), array('title'=>get_string('tab_learning_agenda', 'block_exacomp')));
+                        //$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/subject.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
 
+                        //Wochenplan
+                        $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/weekly_schedule.php', array('courseid'=>$courseid)), get_string('tab_weekly_schedule', 'block_exacomp'), array('title'=>get_string('tab_weekly_schedule', 'block_exacomp')));
+                        $this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/subject.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
+                       
                         //Meine Auszeichnungen
                         //if (block_exacomp_moodle_badges_enabled() && $usebadges) {
                         //$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/my_badges.php', array('courseid'=>$courseid)), get_string('tab_badges', 'block_exacomp'), array('title'=>get_string('tab_badges', 'block_exacomp')));

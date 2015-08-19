@@ -67,6 +67,7 @@ $string['tab_profoundness'] = 'Basic & Extended Competencies';
 $string['tab_cross_subjects'] = 'Cross-Subjects';
 $string['tab_cross_subjects_overview'] = 'Drafts';
 $string['tab_cross_subjects_course'] = 'Course Cross-Subjects';
+$string['tab_weekly_schedule'] = 'Weekly Schedule';
 
 $string['first_configuration_step'] = 'The first step of the configuration is to import some data to Exabis Competencies.';
 $string['second_configuration_step'] = 'In this configuration step you have to pre-select standards.';
@@ -394,6 +395,9 @@ $string['competence_associations_explaination'] = 'The material {$a} is associat
 $string['weekly_schedule'] = 'Weekly schedule';
 $string['weekly_schedule_added'] = 'Example added to the weekly schedule';
 $string['weekly_schedule_already_exists'] = 'Example is already in the weekly schedule';
+$string['select_student_weekly_schedule'] = 'Please select a student to view his/her weekly schedule.';
+$string['example_pool'] = 'Example pool';
+$string['example_trash'] = 'Trash bin';
 
 //Statistics
 $string['process'] = 'State of process';

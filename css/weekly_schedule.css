@@ -1,4 +1,4 @@
-#block_exacomp #main-content {
+/*#block_exacomp #main-content {
 	display: table;
 	width: 100%;
 }
@@ -87,14 +87,6 @@
 	min-height: 200px;
 }
 
-#block_exacomp #trash {
-	border: 1px solid #cacaca;
-	margin-top: 20px;
-}
-#block_exacomp #trash .items {
-	min-height: 80px;
-}
-
 #block_exacomp .placeholder {
 	margin: 10px;
 	padding: 5px;
@@ -140,4 +132,69 @@
 
 #block_exacomp #days .day:nth-child(2n+1) .item .header {
 	background-color: transparent;
+}
+*/
+#block_exacomp #external-events {
+	float: left;
+	width: 150px;
+	padding: 0 10px;
+	border: 1px solid #ccc;
+	background: #eee;
+	text-align: left;
+}
+#block_exacomp #external-events.hover {
+	background: blue;
+}
+
+#block_exacomp #trash {
+	float: left;
+	width: 150px;
+	padding: 0 10px;
+	border: 1px solid #ccc;
+	background: #eee;
+	text-align: left;
+	margin-top: 20px;
+}
+
+#block_exacomp #trash.hover {
+	background: blue;
+}
+
+#block_exacomp #external-events h4 {
+	font-size: 16px;
+	margin-top: 0;
+	padding-top: 1em;
+}
+	
+#block_exacomp #external-events .fc-event {
+	margin: 10px 0;
+	cursor: pointer;
+	min-height: 50px;
+}
+#block_exacomp .fc-event .event-extra {
+	border-top: 1px solid white;
+	margin-top: 5px;
+	padding: 5px;
+}
+
+#block_exacomp #external-events p {
+	margin: 1.5em 0;
+	font-size: 11px;
+	color: #666;
+}
+	
+#block_exacomp #external-events p input {
+	margin: 0;
+	vertical-align: middle;
+}
+#block_exacomp #wrap {
+	width: 1100px;
+	margin: 0 auto;
+}
+#block_exacomp .fc-time-grid .fc-slats td {
+	height: 5em;
+}
+#block_exacomp #calendar {
+	float: right;
+	width: 900px;
 }

@@ -4409,4 +4409,31 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$table->data = $rows;
 		return html_writer::table($table);
 	}
+	public function print_example_pool($examples){
+		$content = html_writer::tag('h4', get_string('example_pool', 'block_exacomp'));
+	
+		foreach($examples as $example){
+			$content .= html_writer::div($example->title, 'fc-event', array('exampleid'=>$example->exampleid));
+		}
+	
+		return html_writer::div($content, '', array('id'=>'external-events'));
+	}
+
+	public function print_side_wrap_weekly_schedule($examples, $trash_examples){
+		$pool = $this->print_example_pool($examples);
+		$calendar = html_writer::div('', '', array('id'=>'calendar'));
+		$trash = $this->print_example_trash($trash_examples);
+		
+		return html_writer::div($pool.$calendar.$trash, '', array('id'=>'wrap'));
+	}
+	
+	public function print_example_trash($trash_examples = array()){
+		$content = html_writer::tag('h4', get_string('example_trash', 'block_exacomp'));
+		
+		foreach($trash_examples as $example){
+			$content .= html_writer::div($example->title, 'fc-event');
+		}
+	
+		return html_writer::div($content, '', array('id'=>'trash'));
+	}
 }

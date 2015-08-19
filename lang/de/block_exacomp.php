@@ -66,6 +66,7 @@ $string['tab_profoundness'] = 'Grund/Erweiterungskompetenzen';
 $string['tab_cross_subjects'] = 'Themen';
 $string['tab_cross_subjects_overview'] = 'Vorlagen';
 $string['tab_cross_subjects_course'] = 'Kursthemen';
+$string['tab_weekly_schedule'] = 'Wochenplan';
 
 $string['assign_descriptor_to_crosssubject'] = 'Die Teilkompetenz {$a} den folgenden Themen zuordnen:';
 $string['assign_descriptor_no_crosssubjects_available'] = 'Es sind keine Themen vorhanden, legen Sie welche an.';
@@ -436,6 +437,9 @@ $string['competence_associations_explaination'] = 'Das Lernmaterial {$a} ist mit
 $string['weekly_schedule'] = 'Wochenplan';
 $string['weekly_schedule_added'] = 'Die Aufgabe wurde in den Wochenplan hinzugefügt.';
 $string['weekly_schedule_already_exists'] = 'Die Aufgabe ist bereits im Wochenplan.';
+$string['select_student_weekly_schedule'] = 'Wählen Sie einen Kursteilnehmer aus, dessen Wochenplan Sie sehen möchten.';
+$string['example_pool'] = 'Planungsspeicher';
+$string['example_trash'] = 'Papierkorb';
 
 //Statistics
 $string['process'] = 'Bearbeitungsstand';

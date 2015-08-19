@@ -1,250 +1,110 @@
 <?php
 
+/* * *************************************************************
+ *  Copyright notice
+*
+*  (c) 2014 exabis internet solutions <info@exabis.at>
+*  All rights reserved
+*
+*  You can redistribute it and/or modify
+*  it under the terms of the GNU General Public License as published by
+*  the Free Software Foundation; either version 2 of the License, or
+*  (at your option) any later version.
+*
+*  This module is based on the Collaborative Moodle Modules from
+*  NCSA Education Division (http://www.ncsa.uiuc.edu)
+*
+*  The GNU General Public License can be found at
+*  http://www.gnu.org/copyleft/gpl.html.
+*
+*  This script is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*  GNU General Public License for more details.
+*
+*  This copyright notice MUST APPEAR in all copies of the script!
+* ************************************************************* */
+
 require_once dirname(__FILE__)."/inc.php";
 
-$courseid = required_param ( 'courseid', PARAM_INT );
-if (! $course = $DB->get_record ( 'course', array (
-		'id' => $courseid 
-) )) {
-	print_error ( 'invalidcourse', 'block_simplehtml', $courseid );
+global $DB, $OUTPUT, $PAGE;
+
+$courseid = required_param('courseid', PARAM_INT);
+
+if (!$course = $DB->get_record('course', array('id' => $courseid))) {
+	print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
 
-require_login ( $course );
-$context = context_course::instance ( $courseid );
-$isTeacher = block_exacomp_is_teacher($context);
-$studentid = $isTeacher ? optional_param("studentid", 0, PARAM_INT) : $USER->id;
+require_login($course);
 
+$context = context_course::instance($courseid);
+
+/* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
+$page_identifier = 'tab_weekly_schedule';
+
+/* PAGE URL - MUST BE CHANGED */
+$PAGE->set_url('/blocks/exacomp/weekly_schedule.php', array('courseid' => $courseid));
+$PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
+$PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
+
+
+block_exacomp_init_js_css();
+
+block_exacomp_init_js_weekly_schedule();
+// build breadcrumbs navigation
+$coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
+$blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
+$pagenode = $blocknode->add(get_string($page_identifier,'block_exacomp'), $PAGE->url);
+$pagenode->make_active();
+
+// build tab navigation & print header
+echo $OUTPUT->header();
+echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
+
+//TODO week von calendar
 $week = optional_param('week', time(), PARAM_INT);
 $week = block_exacomp_add_days($week, 1 - date('N', $week));
 
-$lastWeek = block_exacomp_add_days($week, -7);
-$nextWeek = block_exacomp_add_days($week, +7);
+$isTeacher = block_exacomp_is_teacher($context);
+$studentid = $isTeacher ? optional_param("studentid", 0, PARAM_INT) : $USER->id;
 
-$my_url = new moodle_url('/blocks/exacomp/weekly_schedule.php',
-        array('courseid'=>$courseid, 'week'=>$week) + ($isTeacher ? array('studentid'=>$studentid) : array())
-    );
-
-if (optional_param('action', '', PARAM_TEXT) == 'save') {
-
-    require_sesskey();
-    
-    if (!$studentid) die('no studentid');
-
-    $itemsDefinition = array(
-        PARAM_INT => array(
-            'id' => PARAM_INT,
-            'student_evaluation' => PARAM_BOOL,
-            'teacher_evaluation' => PARAM_BOOL
-        )
-    );
-    $items = block_exacomp_optional_param_array('items', $itemsDefinition);
-    $trash = block_exacomp_optional_param_array('trash', $itemsDefinition);
-    
-    $days = block_exacomp_optional_param_array('days', array(
-        PARAM_INT => $itemsDefinition
-    ));
-
-    // trash
-    foreach ($trash as $item) {
-        // items loeschen
-		$DB->delete_records('block_exacompschedule', array('studentid'=>$studentid, 'id'=>$item->id));
-        
-        // todo: evaluation loeschen?
-    }
-    
-    // day items auf einen tag verschieben
-    foreach ($days as $day => $dayItems) {
-        $i = 0;
-        foreach ($dayItems as $item) {
-            $schedule = $DB->get_record('block_exacompschedule', array('id'=>$item->id, 'studentid'=>$studentid));
-            if (!$schedule) {
-                // ignore error
-                continue;
-            }
-            
-            // day speichern
-            $DB->update_record('block_exacompschedule', array('id'=>$schedule->id, 'sorting' => ++$i, 'day'=>$day));
-        
-            // evaluation speichern
-            if ($isTeacher) {
-                $updates = array('teacher_evaluation'=>$item->teacher_evaluation);
-            } else {
-                $updates = array('student_evaluation'=>$item->student_evaluation);
-            }
-            $where = array(
-                'exampleid' => $schedule->exampleid,
-                'courseid' => $courseid,
-                'studentid' => $studentid 
-            );
-            $exameval = $DB->get_record('block_exacompexameval', $where);
-            
-            if ($exameval) {
-                $DB->update_record('block_exacompexameval', array('id'=>$exameval->id) + $updates);
-            } else {
-                $DB->insert_record('block_exacompexameval', $where + $updates);
-            }
-        }
-    }
-  
-    // items
-    foreach ($items as $item) {
-        // datum loeschen
-        $DB->execute('UPDATE {block_exacompschedule} SET
-            day = NULL
-        WHERE id=? AND studentid=?', array($item->id, $studentid));
-        
-        // todo: evaluation loeschen?
-        /*
-        if ($isTeacher) {
-            $DB->execute('UPDATE {block_exacompexameval} SET
-                teach_evaluation = 0
-            WHERE id=? AND studentid=?', array($item->teach_evaluation, $item->id, $studentid));
-        } else {
-            $DB->execute('UPDATE {block_exacompexameval} SET
-                student_evaluation = 0
-            WHERE id=? AND studentid=?', array($item->student_evaluation, $item->id, $studentid));
-        }
-        */
-    }
-    
-    die('ok');
-}
-
-
-
-$PAGE->set_url($my_url);
-$PAGE->set_context(context_system::instance());
-$PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
-$PAGE->set_title(get_string("tab_learning_agenda", 'block_exacomp'));
-
-block_exacomp_init_js_css();
-$PAGE->requires->jquery_plugin('ui');
-
-
-echo $PAGE->get_renderer('block_exacomp')->header();
-echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), "tab_learning_agenda");
+/* CONTENT REGION */
+$output = $PAGE->get_renderer('block_exacomp');
+echo $output->print_wrapperdivstart();
 
 if($isTeacher){
-	$students = block_exacomp_get_students_by_course($courseid);
-
-	if (!$students) {
-        // TODO no students
-        echo 'no students found';
-        echo $OUTPUT->footer();
-        exit;
-    }
-
-    echo html_writer::empty_tag("br");
-	echo get_string("choosestudent", "block_exacomp");
-    echo block_exacomp_studentselector($students, $studentid, $my_url);
-    
-    if (empty($students[$studentid])) {
-        // empty id or wrongid, first select a student
-        echo $OUTPUT->footer();
-        exit;
-    }
+	$coursestudents = block_exacomp_get_students_by_course($courseid);
+	
+	if($studentid == 0) {
+		echo html_writer::tag("p", get_string("select_student_weekly_schedule","block_exacomp"));
+		//print student selector
+		echo get_string("choosestudent","block_exacomp");
+		echo block_exacomp_studentselector($coursestudents,$studentid,$PAGE->url);
+		echo $OUTPUT->footer();
+		die;
+	}else{
+		//check permission for viewing students profile
+		if(!array_key_exists($studentid, $coursestudents))
+			print_error("nopermissions","","","Show student profile");
+		
+		//print student selector
+		echo get_string("choosestudent","block_exacomp");
+		echo block_exacomp_studentselector($coursestudents,$studentid,$PAGE->url);
+	}
 }
 
-$sql = "select s.*,
-			e.title, e.source AS example_source,
-			eval.student_evaluation, eval.teacher_evaluation
-		FROM {block_exacompschedule} s 
-		JOIN {block_exacompexamples} e ON e.id = s.exampleid 
-		LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid
-		WHERE s.studentid = ? AND (
-            -- noch nicht auf einen tag geleg
-            (s.day IS null OR s.day=0)
-            -- oder auf einen tag der vorwoche gelegt und noch nicht evaluiert
-            OR (s.day < $week AND (eval.teacher_evaluation IS NULL OR eval.teacher_evaluation=0))
-        )
-        ORDER BY e.title";
-$items = $DB->get_records_sql($sql,array($studentid));
+$student = $DB->get_record('user',array('id' => $studentid));
 
-function block_exacomp_weekly_schedule_print_items($items) {
-    global $isTeacher, $courseid;
-    
-	echo '<div class="items">';
-    foreach ($items as $item) {
-        echo '<div class="item" id="item-'.$item->id.'">';
-        echo    '<div class="header">'.$item->title.'</div>';
-		echo    '<div class="buttons">';
-		echo        '<label>S: <input type="checkbox" class="student_evaluation" value="1" '.
-                    ($isTeacher ? 'disabled="disabled"':'').
-                    ($item->student_evaluation?'checked="checked"':'').' /></label>';
-		echo       	'<label>L: <input type="checkbox" class="teacher_evaluation" value="1" '.
-                    (!$isTeacher ? 'disabled="disabled"':'').
-                    ($item->teacher_evaluation?'checked="checked"':'').' /></label>';
-		echo    '</div>';
+$examples = block_exacomp_get_examples_for_pool($studentid, $week);
 
-   	    if ($item->example_source == block_exacomp::EXAMPLE_SOURCE_USER) {
-				?>
-			        <a href="<?php echo (new moodle_url('/blocks/exacomp/example_upload_student.php',array("courseid"=>$courseid, "exampleid"=>$item->exampleid))); ?>"
-			        	target="_blank", onclick="window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;">edit example</a>
-    		    <?php
-		}
-		echo '</div>';
-    }
-	echo '</div>';
-}
+echo $output->print_side_wrap_weekly_schedule($examples, array());
+
+//$examples = block_exacomp_get_examples_for_time_slot($studentid, $start, $end);
+
+
+/* END CONTENT REGION */
+
+echo $output->print_wrapperdivend();
+echo $OUTPUT->footer();
 
 ?>
-
-	<div id="main-content">
-		<div class="column">
-			<div id="save-button">
-	            <input type="button" value="Speichern" style="width: 90%;" />
-	        </div>
-	        
-	        <?php if (block_exacomp_is_student($context)) { ?>
-	        <input type="button" id="own-example"
-	        	target="_blank", onclick="window.open('<?php echo (new moodle_url('/blocks/exacomp/example_upload_student.php',array("courseid"=>$courseid))); ?>',this.target,'width=880,height=660, scrollbars=yes'); return false;" value="Eigene Beispiele" />
-	        <?php } ?>
-	        
-			<div id="items">
-				<div class="header">items</div>
-				<div class="empty">Keine Einträge</div>
-	            <?php block_exacomp_weekly_schedule_print_items($items); ?>
-			</div>
-			<div id="trash">
-				<div class="header">papierkorb</div>
-				<div class="empty">Leer</div>
-				<div class="items">
-				</div>
-			</div>
-		</div>
-		<div class="column">
-			<div id="navi">
-				<a href="<?php echo $my_url->out(true, array('week'=>$lastWeek)); ?>">&lt; vorige</a>
-	            &nbsp;&nbsp;&nbsp;&nbsp;
-	            Kalenderwoche <?php echo date('Y/W', block_exacomp_add_days($week, 6) /* 1.1. kann der sonntag sein, dann ist die woche die 1te woche! */); ?>
-	            &nbsp;&nbsp;&nbsp;&nbsp;
-				<a href="<?php echo $my_url->out(true, array('week'=>$nextWeek)); ?>">nächste &gt;</a>
-			</div>
-			<div id="days">
-	            <?php
-	                for ($i = 0; $i < 5; $i++) {
-	                    $day = block_exacomp_add_days($week, $i);
-	
-	                    echo '<div class="day" id="day-'.$day.'">';
-	                    echo '<div class="header">'.date('l, d.m.', $day).'</div>';
-	                    
-	                    $sql = "select s.*,
-									e.title, e.source AS example_source,
-									eval.student_evaluation, eval.teacher_evaluation
-	                            FROM {block_exacompschedule} s 
-	                            JOIN {block_exacompexamples} e ON e.id = s.exampleid 
-	                            LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid
-	                            WHERE s.studentid = ? AND s.day = ?
-	                            ORDER BY s.sorting";
-	                    $items = $DB->get_records_sql($sql,array($studentid, $day));
-	                    block_exacomp_weekly_schedule_print_items($items);
-	                    echo '</div>';
-	                }
-	            ?>
-			</div>
-		</div>
-	</div>
-</div>
-<?php
-
-echo $PAGE->get_renderer('block_exacomp')->footer();

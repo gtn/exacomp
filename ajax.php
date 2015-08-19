@@ -235,4 +235,18 @@ switch($action){
 		//delete crosssubject
 		$DB->delete_records(block_exacomp::DB_CROSSSUBJECTS, array('id'=>$crosssubjectid));
 		break;
+	case 'add-example-to-time-slot':
+		$exampleid = required_param('exampleid', PARAM_INT);
+		$studentid = required_param('studentid', PARAM_INT);
+		$start = required_param('start', PARAM_INT);
+		$end = required_param('end', PARAM_INT);
+		
+		block_exacomp_set_example_time_slot($courseid, $exampleid, $studentid, $start, $end);
+		break;
+	case 'remove-example-from-schedule':
+		$exampleid = required_param('exampleid', PARAM_INT);
+		$studentid = required_param('studentid', PARAM_INT);
+		
+		block_exacomp_remove_example_from_schedule($courseid, $exampleid, $studentid);
+		break;
 }

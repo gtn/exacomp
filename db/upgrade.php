@@ -2014,7 +2014,31 @@ function xmldb_block_exacomp_upgrade($oldversion) {
     	// Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2015081202, 'exacomp');
     }
-    
+    if($oldversion < 2015081900){
+    	$table = new xmldb_table('block_exacompschedule');
+		$field = new xmldb_field('day');
+		$dbman->drop_field($table, $field);
+		
+		// Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2015081900, 'exacomp');
+    }
+    if($oldversion < 2015081901){
+    	$table = new xmldb_table('block_exacompschedule');
+		$field = new xmldb_field('start', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+           	
+    	if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+		
+		$field = new xmldb_field('end', XMLDB_TYPE_INTEGER, '10', null, null, null, null); 
+		
+    	if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+		
+		// Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2015081901, 'exacomp');
+    }
     /**
      * TODO
      * go through all examples and move the files into a mod_exacomp filestorage

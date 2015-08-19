@@ -62,7 +62,19 @@ function block_exacomp_init_js_css(){
 		$PAGE->requires->js('/blocks/exacomp/javascript/competence_profile_msie.js', true);
 	}
 }
-
+function block_exacomp_init_js_weekly_schedule(){
+	global $PAGE, $CFG;
+	
+	$PAGE->requires->css('/blocks/exacomp/fullcalendar/fullcalendar.css');
+	
+	$PAGE->requires->js('/blocks/exacomp/fullcalendar/moment.min.js', true);
+	//$PAGE->requires->js('/blocks/exacomp/javascript/jquery.js');
+	$PAGE->requires->js('/blocks/exacomp/javascript/jquery-ui.js', true);
+	$PAGE->requires->js('/blocks/exacomp/fullcalendar/fullcalendar.js', true);
+	$PAGE->requires->js('/blocks/exacomp/fullcalendar/lang-all.js', true);
+	
+	$PAGE->requires->js('/blocks/exacomp/fullcalendar/jquery.ui.touch.js');
+}
 function block_exacomp_is_teacher($context) {
     return has_capability('block/exacomp:teacher', $context);
 }
@@ -1339,7 +1351,8 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 					if($courseSettings->nostudents != 1) {
 					    $rows[] = new tabobject('tab_competence_profile_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid"=>$courseid)), get_string('tab_competence_profile',  'block_exacomp'));
 					    $rows[] = new tabobject('tab_examples', new moodle_url('/blocks/exacomp/view_examples.php',array("courseid"=>$courseid)),get_string('tab_examples','block_exacomp'));
-					    $rows[] = new tabobject('tab_learning_agenda', new moodle_url('/blocks/exacomp/weekly_schedule.php',array("courseid"=>$courseid)),get_string('tab_learning_agenda','block_exacomp'));
+					    //$rows[] = new tabobject('tab_learning_agenda', new moodle_url('/blocks/exacomp/weekly_schedule.php',array("courseid"=>$courseid)),get_string('tab_learning_agenda','block_exacomp'));
+						$rows[] = new tabobject('tab_weekly_schedule', new moodle_url('/blocks/exacomp/weekly_schedule.php',array("courseid"=>$courseid)),get_string('tab_weekly_schedule','block_exacomp'));
 					}//if (block_exacomp_moodle_badges_enabled() && $usebadges)
 						//$rows[] = new tabobject('tab_badges', new moodle_url('/blocks/exacomp/my_badges.php',array("courseid"=>$courseid)),get_string('tab_badges','block_exacomp'));
 				}
@@ -1374,7 +1387,8 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 					if($ready_for_use && $courseSettings->nostudents != 1){
 						$rows[] = new tabobject('tab_competence_profile_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid"=>$courseid)), get_string('tab_competence_profile',  'block_exacomp'));
 						$rows[] = new tabobject('tab_examples', new moodle_url('/blocks/exacomp/view_examples.php',array("courseid"=>$courseid)),get_string('tab_examples','block_exacomp'));
-						$rows[] = new tabobject('tab_learning_agenda', new moodle_url('/blocks/exacomp/learningagenda.php',array("courseid"=>$courseid)),get_string('tab_learning_agenda','block_exacomp'));
+						//$rows[] = new tabobject('tab_learning_agenda', new moodle_url('/blocks/exacomp/learningagenda.php',array("courseid"=>$courseid)),get_string('tab_learning_agenda','block_exacomp'));
+						$rows[] = new tabobject('tab_weekly_schedule', new moodle_url('/blocks/exacomp/weekly_schedule.php',array("courseid"=>$courseid)),get_string('tab_weekly_schedule','block_exacomp'));
 						if($courseSettings->profoundness == 1)
 							$rows[] = new tabobject('tab_profoundness', new moodle_url('/blocks/exacomp/profoundness.php',array("courseid"=>$courseid)),get_string('tab_profoundness','block_exacomp'));
 					}
@@ -1412,7 +1426,8 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 					if ($courseSettings->uses_activities && $usedetailpage)
 						$rows[] = new tabobject('tab_competence_details', new moodle_url('/blocks/exacomp/competence_detail.php',array("courseid"=>$courseid)),get_string('tab_competence_details','block_exacomp'));
 					
-					$rows[] = new tabobject('tab_learning_agenda', new moodle_url('/blocks/exacomp/weekly_schedule.php',array("courseid"=>$courseid)),get_string('tab_learning_agenda','block_exacomp'));
+					//$rows[] = new tabobject('tab_learning_agenda', new moodle_url('/blocks/exacomp/weekly_schedule.php',array("courseid"=>$courseid)),get_string('tab_learning_agenda','block_exacomp'));
+					$rows[] = new tabobject('tab_weekly_schedule', new moodle_url('/blocks/exacomp/weekly_schedule.php',array("courseid"=>$courseid)),get_string('tab_weekly_schedule','block_exacomp'));
 					
 					$profile = new tabobject('tab_competence_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid"=>$courseid)), get_string('tab_competence_profile',  'block_exacomp'));
 					$rows[] = $profile;
@@ -1437,7 +1452,8 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 					$rows[] = new tabobject('tab_competence_grid', new moodle_url('/blocks/exacomp/competence_grid.php',array("courseid"=>$courseid)),get_string('tab_competence_grid','block_exacomp'));
 					
 				if($ready_for_use && $courseSettings->nostudents != 1){
-					$rows[] = new tabobject('tab_learning_agenda', new moodle_url('/blocks/exacomp/learningagenda.php',array("courseid"=>$courseid)),get_string('tab_learning_agenda','block_exacomp'));
+					//$rows[] = new tabobject('tab_learning_agenda', new moodle_url('/blocks/exacomp/learningagenda.php',array("courseid"=>$courseid)),get_string('tab_learning_agenda','block_exacomp'));
+					$rows[] = new tabobject('tab_weekly_schedule', new moodle_url('/blocks/exacomp/weekly_schedule.php',array("courseid"=>$courseid)),get_string('tab_weekly_schedule','block_exacomp'));
 					//if(block_exacomp_moodle_badges_enabled() && $usebadges)
 						//$rows[] = new tabobject('tab_badges', new moodle_url('/blocks/exacomp/my_badges.php',array("courseid"=>$courseid)),get_string('tab_badges','block_exacomp'));
 				}
@@ -4181,8 +4197,8 @@ function block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,
 	
 	$timecreated = $timemodified = time();
 	
-	if(!$DB->record_exists('block_exacompschedule', array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid))) {
-		$DB->insert_record('block_exacompschedule', array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid,'creatorid' => $creatorid, 'timecreated' => $timecreated, 'timemodified' => $timemodified));
+	if(!$DB->record_exists(block_exacomp::DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid))) {
+		$DB->insert_record(block_exacomp::DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid,'creatorid' => $creatorid, 'timecreated' => $timecreated, 'timemodified' => $timemodified));
 		return true;
 	} else 
 		return false;
@@ -5020,4 +5036,53 @@ function block_exacomp_get_local_file($item, $type) {
     $file = $fs->get_file_by_hash($params['i']);
     
     return $file;
+}
+
+function block_exacomp_get_examples_for_pool($studentid, $week){
+	global $DB;
+	$sql = "select s.*,
+				e.title, e.id as exampleid, e.source AS example_source,
+				eval.student_evaluation, eval.teacher_evaluation
+			FROM {block_exacompschedule} s 
+			JOIN {block_exacompexamples} e ON e.id = s.exampleid 
+			LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid
+			WHERE s.studentid = ? AND (
+				-- noch nicht auf einen tag geleg
+				(s.start IS null OR s.start=0)
+				-- oder auf einen tag der vorwoche gelegt und noch nicht evaluiert
+				OR (s.start < ? AND (eval.teacher_evaluation IS NULL OR eval.teacher_evaluation=0))
+			)
+			ORDER BY e.title";
+	return $DB->get_records_sql($sql,array($studentid, $week));
+}
+function block_exacomp_set_example_time_slot($courseid, $exampleid, $studentid, $start, $end){
+	global $DB;
+	
+	$entry = $DB->get_record(block_exacomp::DB_SCHEDULE, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>$studentid));
+	$entry->start = $start;
+	$entry->end = $end;
+	
+	$DB->update_record(block_exacomp::DB_SCHEDULE, $entry);
+}
+
+function block_exacomp_remove_example_from_schedule($courseid, $exampleid, $studentid){
+	global $DB;
+	
+	$DB->delete_records(block_exacomp::DB_SCHEDULE, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>$studentid));
+}
+
+function block_exacomp_get_examples_for_time_slot($studentid, $start, $end){
+	global $DB;
+	$sql = "select s.*,
+				e.title, e.id as exampleid, e.source AS example_source,
+				eval.student_evaluation, eval.teacher_evaluation
+			FROM {block_exacompschedule} s 
+			JOIN {block_exacompexamples} e ON e.id = s.exampleid 
+			LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid
+			WHERE s.studentid = ? AND (
+				-- innerhalb end und start
+				(s.start > ? AND s.end < ?)
+			)
+			ORDER BY e.title";
+	return $DB->get_records_sql($sql,array($studentid, $start, $end));
 }
