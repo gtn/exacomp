@@ -82,15 +82,14 @@
 	}
 	
 	function block_exacomp_get_examples_for_pool(callback) {
-		// load
-		var agenda_items = [
-			{ id: 1, title: 'My Event 1' },
-			{ id: 2, title: 'My Event 2' },
-			{ id: 3, title: 'My Event 3' },
-			{ id: 4, title: 'My Event 4' },
-			{ id: 5, title: 'My Event 5' },
-		];
+		var agenda_items = [];
 		
+		block_exacomp.call_ajax({
+			studentid : block_exacomp.get_param('studentid'),
+			action : 'get-examples-for-pool'
+		},function(examples) { agenda_items = examples });
+		
+		// load
 		callback(agenda_items);
 	}
 	

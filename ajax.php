@@ -257,4 +257,13 @@ switch($action){
 		
 		block_exacomp_remove_example_from_schedule($courseid, $exampleid, $studentid);
 		break;
+	case 'get-examples-for-pool':
+		$studentid = required_param('studentid', PARAM_INT);
+		$week = optional_param('week', time(), PARAM_INT);
+		$week = block_exacomp_add_days($week, 1 - date('N', $week));
+		
+		$examples = block_exacomp_get_examples_for_pool($studentid, $week, $courseid);
+		var_dump($examples);
+		echo json_encode($examples);
+		break;
 }

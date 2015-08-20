@@ -965,6 +965,34 @@ class block_exacomp_data_importer extends block_exacomp_data {
             WHERE dv.id IS NULL AND cs.courseid != 0  -- only for those, who have no visibility yet
         ";
         $DB->execute($sql); //only necessary if we save courseinformation as well -> existing crosssubjects imported  only as drafts -> not needed
+        
+        //example visibility
+        $sql = "
+            INSERT INTO {".block_exacomp::DB_EXAMPVISIBILITY."}
+            (courseid, exampleid, studentid, visible)
+            SELECT ct.courseid, dc.exampid, 0, 1
+            FROM {".block_exacomp::DB_COURSETOPICS."} ct
+            JOIN {".block_exacomp::DB_DESCTOPICS."} dt ON ct.topicid = dt.topicid
+            LEFT JOIN {".block_exacomp::DB_DESCVISIBILITY."} dv ON dv.descrid=dt.descrid AND dv.studentid=0
+			JOIN {".block_exacomp::DB_DESCEXAMP."} dc ON dc.descrid=dt.descrid 
+			LEFT JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} ev ON ev.exampleid=dc.exampid AND ev.studentid=0
+            WHERE ev.id IS NULL -- only for those, who have no visibility yet
+        ";
+        $DB->execute($sql);
+        
+        $sql = "
+            INSERT INTO {".block_exacomp::DB_EXAMPVISIBILITY."}
+            (courseid, exampleid, studentid, visible)
+            SELECT cs.courseid, de.exampid, 0, 1
+            FROM {".block_exacomp::DB_CROSSSUBJECTS."} cs 
+            JOIN {".block_exacomp::DB_DESCCROSS."} dc ON cs.id = dc.crosssubjid
+            LEFT JOIN {".block_exacomp::DB_DESCVISIBILITY."} dv ON dv.descrid=dc.descrid AND dv.studentid=0
+			JOIN {".block_exacomp::DB_DESCEXAMP."} de ON de.descrid=dv.descrid 
+			LEFT JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} ev ON ev.exampleid=de.exampid AND ev.studentid=0
+            WHERE ev.id IS NULL AND cs.courseid != 0  -- only for those, who have no visibility yet
+        ";
+        $DB->execute($sql); //only necessary if we save courseinformation as well -> existing crosssubjects imported  only as drafts -> not needed
+        
         // 2. child descriptors
         // TODO: this logic only works for one child level now, do we need more?
         // TODO: i think child descriptors also have an mm with the topics. so this logic is not needed?

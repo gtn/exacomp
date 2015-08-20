@@ -2068,14 +2068,14 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    	foreach($topics as $topic){
 	    		$descriptors_topic = block_exacomp_get_descriptors_by_topic($course, $topic->id);
 	    		foreach($descriptors_topic as $descriptor){
-	    			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
+	    			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, $course);
 	    			foreach($descriptor->examples as $example)
 	    				if(!array_key_exists($example->id, $examples))
 	    					$examples[$example->id] = $example;
 	    			
 	    			$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $course);
 	    			foreach($descriptor->children as $child){
-	    				$child = block_exacomp_get_examples_for_descriptor($child);
+	    				$child = block_exacomp_get_examples_for_descriptor($child, array(SHOW_ALL_TAXONOMIES), true, $course);
 	    				foreach($child->examples as $example)
 	    					if(!array_key_exists($example->id, $examples))
 	    						$examples[$example->id] = $example;

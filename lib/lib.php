@@ -837,7 +837,8 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 		$courseid = $COURSE->id;
 		
 	$examples = $DB->get_records_sql(
-			"SELECT de.id as deid, e.id, e.title, e.task, e.externalurl, evis.visible,
+			"SELECT de.id as deid, e.id, e.title, e.task, e.externalurl, ".
+				($mind_visibility?"evis.visible,":"")."
 				e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe
 				FROM {" . block_exacomp::DB_EXAMPLES . "} e
 				JOIN {" . block_exacomp::DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?"
@@ -5218,6 +5219,7 @@ function block_exacomp_get_examples_for_pool($studentid, $week, $courseid){
 				OR (s.start < ? AND (eval.teacher_evaluation IS NULL OR eval.teacher_evaluation=0))
 			)
 			ORDER BY e.title";
+	print_r($sql);
 	return $DB->get_records_sql($sql,array($courseid, $studentid, $week));
 }
 function block_exacomp_set_example_time_slot($courseid, $exampleid, $studentid, $start, $end){
