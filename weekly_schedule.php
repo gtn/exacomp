@@ -95,9 +95,25 @@ if($isTeacher){
 
 $student = $DB->get_record('user',array('id' => $studentid));
 
-$examples = block_exacomp_get_examples_for_pool($studentid, $week);
+?>
+	<div id='wrap'>
 
-echo $output->print_side_wrap_weekly_schedule($examples, array());
+		<div id='external-events'>
+			<h4>Events</h4>
+		</div>
+
+		<div id='calendar'></div>
+
+		<div id='trash'>
+			<h4>Papierkorb</h4>
+		</div>
+
+		<div style='clear:both'></div>
+
+	</div>
+<?php
+
+// echo $output->print_side_wrap_weekly_schedule(array(), array());
 
 //$examples = block_exacomp_get_examples_for_time_slot($studentid, $start, $end);
 

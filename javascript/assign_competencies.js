@@ -1,7 +1,7 @@
 
 (function($){
 	$( window ).load(function() {
-		var group = block_exacomp.getParameterByName('group');
+		var group = block_exacomp.get_param('group');
 		block_exacomp.onlyShowColumnGroup(group);
 	});
 	window.block_exacomp.onlyShowColumnGroup = function(group) {

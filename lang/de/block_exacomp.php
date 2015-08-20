@@ -34,7 +34,7 @@ $string['exacomp:deleteexamples'] = 'Beispiele löschen';
 
 // TABS and PAGE IDENTIFIERS
 // Admin Tabs
-$string['tab_admin_import'] = 'Import';
+$string['tab_admin_import'] = 'Import/Export';
 $string['tab_admin_configuration'] = 'Vorauswahl der Standards';
 $string['admin_config_pending'] = 'Vorauswahl der Kompetenzen durch den Administrator notwendig';
 

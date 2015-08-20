@@ -192,7 +192,7 @@ if($isAdmin || block_exacomp_check_customupload()) {
     
             // export
             echo '<br />';
-            echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/export.php', array('courseid'=>$courseid)), 'Export all educational standards as xml', array('target'=>'_blank')));
+            echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/export.php', array('courseid'=>$courseid)), 'Gesamten Kompetenzraster exportieren', array('target'=>'_blank')));
             
             
             if ($isAdmin) {

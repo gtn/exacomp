@@ -92,6 +92,7 @@ function block_exacomp_require_admin($context) {
     return require_capability('block/exacomp:admin', $context);
 }
  
+
 /**
  * Gets one particular subject
  * 
@@ -5199,6 +5200,7 @@ function block_exacomp_get_file_url($item, $type) {
         $file->get_itemid(), $file->get_filepath(), $file->get_filename());
 }
 
+// TODO: wir brauchen hier keine wochennummer
 function block_exacomp_get_examples_for_pool($studentid, $week, $courseid){
 	global $DB;
 	$sql = "select s.*,

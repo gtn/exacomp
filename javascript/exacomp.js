@@ -1,12 +1,30 @@
 window.jQueryExacomp = jQuery;
 
 window.block_exacomp = {
-	getParameterByName: function(name) {
+	get_param: function(name) {
 			name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
 			var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
 				results = regex.exec(location.search);
 			return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
-	}
+	},
+	
+	call_ajax: function(data, done, error) {
+		data.courseid = block_exacomp.get_param('courseid');
+		data.sesskey = M.cfg.sesskey;
+		
+		return $.ajax({
+			method : "POST",
+			url : "ajax.php",
+			data : data
+		})
+		.done(function(msg) {
+			console.log(data.action, 'msg', msg);
+			if (done) done(msg);
+		}).error(function(msg) {
+			console.log("Error: " + data.action, 'msg', msg);
+			if (error) error(msg);
+		});
+	},
 };
 
 (function($) {
@@ -60,7 +78,7 @@ window.block_exacomp = {
 			$(".datepicker.datepicker-mindate").datepicker("option", "minDate", 0);
 		}
 	});
-
+	
 	if ($().tooltip) {
 		// only if we have the tooltip function
 		$(function() {

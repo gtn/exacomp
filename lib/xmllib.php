@@ -508,12 +508,12 @@ $skill->source = block_exacomp::IMPORT_SOURCE_DEFAULT;
             $xmlItem->sorting = $dbItem->sorting;
             $xmlItem->timeframe = $dbItem->timeframe;
             
-            if ($file = block_exacomp_get_local_file($dbItem, 'example_task')) {
+            if ($file = block_exacomp_get_file($dbItem, 'example_task')) {
                 self::export_file($xmlItem->addChild('filetask'), $file);
             } else {
                 $xmlItem->addChildWithCDATAIfValue('task', $dbItem->task);
             }
-            if ($file = block_exacomp_get_local_file($dbItem, 'example_solution')) {
+            if ($file = block_exacomp_get_file($dbItem, 'example_solution')) {
                 self::export_file($xmlItem->addChild('filesolution'), $file);
             } else {
                 $xmlItem->addChildWithCDATAIfValue('solution', $dbItem->solution);

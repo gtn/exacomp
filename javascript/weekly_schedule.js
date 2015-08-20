@@ -1,88 +1,151 @@
 (function($){
 	
-	function exacomp_calendar_update_event(event) {
-		var event = exacomp_calcendar.event_slot_to_time(event);
-		console.log('event change', event.start, event.end);
-		
-		studentid = get_param('studentid');
-		
-		if(studentid != null){
-			var title = event.title;
-			var id = event.id;
-			
-			var start_split = event.start.split(" ");
-			var start_date = start_split[0].split("-");
-			var start_time = start_split[1].split(":");
-			var start_msc = new Date(start_date[0], start_date[1]-1, start_date[2], start_time[0], start_time[1]);
-			var start = start_msc/1000;
-			
-			var end = start;
-			if(event.end != null){
-				var end_split = event.end.split(" ");
-				var end_date = end_split[0].split("-");
-				var end_time = end_split[1].split(":");
-				var end_msc = new Date(end_date[0], end_date[1]-1, end_date[2], end_time[0], end_time[1]);
-				end = end_msc/1000;
-			}
-	
-			call_ajax({
-				exampleid : id,
-				studentid : studentid,
-				start: start,
-				end: end,
-				action : 'add-example-to-time-slot'
-			},function(msg) { alert(msg) });
-			
-			//TODO remove event from pool
-		}
+	function exacomp_calendar_add_event(event) {
+		console.log('exacomp_calendar_add_event', event.id, event.title, event.start, event.end);
 	}
+	
+	function exacomp_calendar_update_event_time(event) {
+		console.log('exacomp_calendar_update_event_time', event.id, event.title, event.start, event.end);
 
+		block_exacomp.call_ajax({
+			exampleid : event.id,
+			studentid : block_exacomp.get_param('studentid'),
+			start: event.start.format('X'),
+			end: event.end.format('X'),
+			action : 'add-example-to-time-slot'
+		},function(msg) { alert(msg) });
+	}
+	
+	function exacomp_calendar_delete_event(event) {
+		console.log('exacomp_calendar_delete_event', event.id, event.title, event.start, event.end);
+	}
+	
+	function exacomp_calendar_remove_event(event) {
+		console.log('exacomp_calendar_remove_event', event.id, event.title, event.start, event.end);
+	}
+	
+	function exacomp_calendar_load_events(start, end, timezone, callback) {
+		
+		// need start + end
+		// ignore timezone
+		
+		var eventsFromMoodle = [
+
+			{
+				id: 123,
+				title: 'Test Event',
+				start: 1439963100,
+			},
+            {
+				id: 123,
+				title: 'Test Event',
+				start: '2015-08-18 08:10:00',
+				end: '2015-08-18 09:00:00'
+			},
+			{
+				id: 432,
+				title: 'test Event',
+				start: '2015-08-19 10:35:00'
+			},
+			{
+				id: 100,
+				title: 'Long event',
+				start: '2015-08-18 8:35:00',
+				end: '2015-08-18 11:55:00'
+			}
+		];
+		
+		// load them
+		callback(eventsFromMoodle);
+		
+		/*
+		$.ajax({
+			url: 'myxmlfeed.php',
+			dataType: 'xml',
+			data: {
+				// our hypothetical feed requires UNIX timestamps
+				start: start.unix(),
+				end: end.unix()
+			},
+			success: function(doc) {
+				var events = [];
+				$(doc).find('event').each(function() {
+					events.push({
+						title: $(this).attr('title'),
+						start: $(this).attr('start') // will be parsed
+					});
+				});
+				callback(events);
+			}
+		});
+		*/
+	}
+	
+	function block_exacomp_get_examples_for_pool(callback) {
+		// load
+		var agenda_items = [
+			{ id: 1, title: 'My Event 1' },
+			{ id: 2, title: 'My Event 2' },
+			{ id: 3, title: 'My Event 3' },
+			{ id: 4, title: 'My Event 4' },
+			{ id: 5, title: 'My Event 5' },
+		];
+		
+		callback(agenda_items);
+	}
+	
 	var exacomp_calcendar_config = {
 		slots: [
 			{
 				name: '1. Einheit',
-				start: '08:00',
-				end: '08:25'
+				start: '07:45',
+				end: '08:10'
 			}, {
 				name: '',
-				start: '08:25',
-				end: '08:50'
+				start: '08:10',
+				end: '08:35'
 			}, {
 				name: '2. Einheit',
-				start: '08:55',
-				end: '09:20'
+				start: '08:35',
+				end: '09:00'
 			}, {
 				name: '',
-				start: '09:20',
-				end: '09:45'
+				start: '09:00',
+				end: '09:25'
 			}, {
 				name: '3. Einheit',
-				start: '10:00',
-				end: '10:25'
+				start: '09:30',
+				end: '09:55'
 			}, {
 				name: '',
-				start: '10:25',
-				end: '11:50'
+				start: '09:55',
+				end: '10:20'
 			}, {
-				name: 'test Einheit',
-				start: '10:00',
-				end: '13:25'
+				name: '4. Einheit',
+				start: '10:35',
+				end: '11:00'
 			}, {
-				name: '3. Einheit',
-				start: '10:00',
-				end: '14:15'
+				name: '',
+				start: '11:00',
+				end: '11:25'
 			}, {
-				name: '3. Einheit',
-				start: '10:00',
-				end: '14:20'
+				name: '5. Einheit',
+				start: '11:30',
+				end: '11:55'
 			}, {
-				name: '8. Einheit',
-				start: '10:00',
-				end: '14:25'
-			}
+				name: '',
+				start: '11:55',
+				end: '12:20'
+			},
 		]
 	};
-
+	
+	
+	
+	
+	
+	
+	
 	exacomp_calcendar = {
 		event_slot_to_time: function(origEvent) {
 			// clone event
@@ -115,13 +178,13 @@
 				slot = exacomp_calcendar_config.slots[0];
 			}
 			
-			return m.format('YYYY-MM-DD')+' '+slot[type];
+			return moment(m.format('YYYY-MM-DD')+' '+slot[type]);
 		},
 		time_to_slot: function(time, type /* start or end */ ) {
-			var m = moment(time);
+			var m = ((time*1) == time ? moment.unix(time) : moment(time));
 			var time = m.format('HH:mm');
 			var found_slot_i = null;
-
+	
 			$.each(exacomp_calcendar_config.slots, function(i, slot) {
 				if (time == slot[type]) {
 					found_slot_i = i;
@@ -134,19 +197,33 @@
 			}
 			
 			return m.format('YYYY-MM-DD')+' 00:'+(type == 'end' ? found_slot_i+1 : found_slot_i)+':00';
-		}
+		},
 	};
-
-	var eventsFromMoodle = [
-		
-	];
-
-	$( window ).load(function() {
+	
+	$(function() {
+	
 		/* initialize the external events
 		-----------------------------------------------------------------*/
-
-		function init_external_event(el) {
-			el = $(el);
+	
+		var $eventDiv = $( '#external-events' );
+		var $trash = $( '#trash' );
+	
+		block_exacomp_get_examples_for_pool(function(agenda_items) {
+			$.each(agenda_items, function(i, item){ add_pool_item(item); });
+		});
+		
+		function add_pool_item(data) {
+			var el = $( "<div class='fc-event'>" ).appendTo( $eventDiv ).text( data.title );
+			el.data('event', data);
+			
+			// store data so the calendar knows to render an event upon drop
+			/*
+			$(this).data('event', {
+				title: $.trim($(this).text()), // use the element's text as the event title
+				stick: true // maintain when user navigates (see docs on the renderEvent method)
+			});
+			*/
+	
 			el.draggable({
 			  zIndex: 999,
 			  revert: true, 
@@ -154,48 +231,16 @@
 			});
 			el.addTouch();
 		}
-		$('#external-events .fc-event').each(function() {
-			
-			// store data so the calendar knows to render an event upon drop
-			$(this).data('event', {
-				title: $.trim($(this).text()), // use the element's text as the event title
-				stick: true, // maintain when user navigates (see docs on the renderEvent method)
-				id: $(this).attr('exampleid')
-			});
-
-			// make the event draggable using jQuery UI
-			init_external_event(this);
-		});
-
-
+	
+	
 		/* initialize the calendar
 		-----------------------------------------------------------------*/
-		var $eventDiv = $( '#external-events' );
-		var $trash = $( '#trash' );
 		
 		$trash.droppable({
 			// accept: ".special"
 			drop: function(event, ui ) {
-				//TODO delete element 
-				//nicht sofort löschen, in papierkorb sammeln, symbol zum papierkorb leeren
 				if (confirm('Wirklich löschen?')) {
-					
-					studentid = get_param('studentid');
-					
-					if(studentid != null){
-						//TODO event has no id in here - where to add?
-						var id = event.id;
-						
-						if(id != null){
-							call_ajax({
-								exampleid : id,
-								studentid : studentid,
-								action : 'remove-example-from-schedule'
-							}).done(function(msg) {
-								ui.draggable.remove();
-							});
-						}
-					}
+					ui.draggable.remove();
 				}
 			},
 			
@@ -208,7 +253,7 @@
 			} else {
 				$eventDiv.removeClass('hover');
 			}
-
+	
 			if (e && isEventOverDiv($trash, e)) {
 				$trash.addClass('hover');
 			} else {
@@ -217,19 +262,19 @@
 		}
 		
 		function isEventOverDiv($div, event) {
-
+	
 			var x = event.pageX, y = event.pageY;
 			var offset = $div.offset();
 			offset.right = $div.outerWidth() + offset.left;
 			offset.bottom = $div.outerHeight() + offset.top;
-
+	
 			// Compare
 			return (x >= offset.left
 				&& y >= offset.top
 				&& x <= offset.right
 				&& y <= offset .bottom);
 		}
-
+	
 		$('#calendar').fullCalendar({
 			header: {
 				left: 'today prev,next',
@@ -252,23 +297,32 @@
 				start: '00:00:00', // a start time (10am in this example)
 				end: "00:"+exacomp_calcendar_config.slots.length+":00"
 			},
-
+	
 			editable: true,
 			droppable: true, // this allows things to be dropped onto the calendar
 			dragRevertDuration: 0,
 			
-			/*
 			drop: function() {
+				// when dropping an external element remove it
 				$(this).remove();
 			},
-			*/
-			
-			events: $.map(eventsFromMoodle, function(o){ return exacomp_calcendar.event_time_to_slot(o); }),
+	
+			events: function(start, end, timezone, callback){
+				exacomp_calendar_load_events(start, end, timezone, function(events){
+					// convert to calendar timeslots
+					events = $.map(events, function(o){ return exacomp_calcendar.event_time_to_slot(o); })
+					
+					callback(events);
+				})
+			},
 			
 			eventRender: function(event, element) {
 				// console.log(element.html());
+	
+				// delete time (actually slot time)
 				element.find(".fc-time").remove();
-				// element.find(".fc-event-time").remove();
+	
+				// TODO:
 				element.find(".fc-content").append(
 					'	<div class="event-extra">' +
 					'	<div>L: <input type="checkbox" /> S: <input type="checkbox" /></div>' +
@@ -286,18 +340,20 @@
 				$("html").unbind('mousemove', hover_check);
 				hover_check(false);
 			
-				// console.log(jsEvent);
-				if(isEventOverDiv($eventDiv, jsEvent)) {
+				if (isEventOverDiv($eventDiv, jsEvent)) {
 					$('#calendar').fullCalendar('removeEvents', event._id);
-					var el = $( "<div class='fc-event'>" ).appendTo( $eventDiv ).text( event.title );
-					el.data('event', { title: event.title, id :event.id, stick: true });
-					
-					init_external_event(el);
+	
+					add_pool_item(event);
+					var event = exacomp_calcendar.event_slot_to_time(event);
+					exacomp_calendar_remove_event(event);
 				}
-
-				if(isEventOverDiv($trash, jsEvent)) {
+	
+				if (isEventOverDiv($trash, jsEvent)) {
 					if (confirm('Wirklich löschen?')) {
 						$('#calendar').fullCalendar('removeEvents', event._id);
+						
+						var event = exacomp_calcendar.event_slot_to_time(event);
+						exacomp_calendar_delete_event(event);
 					}
 				}
 			},
@@ -306,87 +362,30 @@
 				// reset axis labels
 				var i = 0, einheit = 0;
 				element.find('.fc-time span').each(function(){
-					this.innerHTML = exacomp_calcendar_config.slots[i].name;
+					var slot = exacomp_calcendar_config.slots[i];
+					this.innerHTML = (slot.name ? '<b>' + slot.name + '</b><br />' : '')
+						+ '<span style="font-size: 85%">'+slot.start+'-'+slot.end+'</span>';
 					i++;
-					/*
+					if (slot.name) einheit++;
 					if (einheit%2)
-						$(this).closest('tr').css('background-color', 'rgba(255, 0, 0, 0.2)');
-					*/
+						$(this).closest('tr').css('background-color', 'rgba(0, 0, 0, 0.08)');
 				});
 				
 				view.updateSize();
 			},
 			
 			eventResize: function(event, delta, revertFunc) {
-				exacomp_calendar_update_event(event);
+				var event = exacomp_calcendar.event_slot_to_time(event);
+				exacomp_calendar_update_event_time(event);
 			},
 			eventDrop: function(event, delta, revertFunc) {
-				exacomp_calendar_update_event(event);
+				var event = exacomp_calcendar.event_slot_to_time(event);
+				exacomp_calendar_update_event_time(event);
 			},
-			/*
-				Called when an external element, containing event data, is dropped on the calendar.
-			*/
 			eventReceive: function(event) {
-				exacomp_calendar_update_event(event);
+				var event = exacomp_calcendar.event_slot_to_time(event);
+				exacomp_calendar_add_event(event);
 			},
-			/*
-			eventDrop: function(event, delta, revertFunc) {
-			
-				// TODO: only allow moving event before 1am and 10am
-				return;
-				console.log(event.start, event.end);
-				var eventStartSlot = event.start.format('H');
-				var eventEndSlot = event.end ? event.end.format('H') : (eventStartSlot /* it's a string * / * 1 + 1); // new dragged in events have no end
-				console.log(event.start, event.end, eventStartSlot, eventEndSlot);
-				
-				if (eventStartSlot >= 1 && eventStartSlot <= 10
-					&& eventEndSlot >= 1 && eventEndSlot <= 10) {
-					// ok
-				} else {
-					return revertFunc();
-				}
-			}
-			*/
 		});
-		
-		// restrict
-		
 	});
-	
-	// Read a page's GET URL variables and return them as an associative array.
-	function get_param(param) {
-		var vars = getUrlVars();
-		return typeof vars[param] == 'undefined' ? null : vars[param];
-	}
-	
-	function getUrlVars() {
-		var vars = [], hash;
-		var hashes = window.location.href.slice(
-				window.location.href.indexOf('?') + 1).split('&');
-		for ( var i = 0; i < hashes.length; i++) {
-			hash = hashes[i].split('=');
-			vars.push(hash[0]);
-			vars[hash[0]] = hash[1];
-		}
-		return vars;
-	}
-	
-	function call_ajax(data, done, error) {
-		data.courseid = get_param('courseid');
-		data.sesskey = M.cfg.sesskey;
-		
-		return $.ajax({
-			method : "POST",
-			url : "ajax.php",
-			data : data
-		})
-		.done(function(msg) {
-			console.log(data.action + ': ' + msg);
-			if (done) done(msg);
-		}).error(function(msg) {
-			console.log(msg);
-			console.log("Error: " + data.action + ': ' + msg);
-			if (error) error(msg);
-		});
-	}
 })(jQueryExacomp);

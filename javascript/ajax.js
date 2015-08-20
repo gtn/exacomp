@@ -209,7 +209,7 @@
 	
 	$(document).on('click', '#assign-competencies input[type=submit]', function(event) {
 							event.preventDefault();
-							courseid = get_param('courseid');
+							courseid = block_exacomp.get_param('courseid');
 
 							// only for crosssubjects
 							var crosssubjid = 0;
@@ -218,14 +218,14 @@
 
 							if (select) {
 								crosssubjid = select.options[select.selectedIndex].value;
-							} else if (get_param("crosssubjid") !== null) {
-								crosssubjid = get_param('crosssubjid');
+							} else if (block_exacomp.get_param("crosssubjid") !== null) {
+								crosssubjid = block_exacomp.get_param('crosssubjid');
 							}
 
 							switch ($(this).attr('id')) {
 							case 'btn_submit':
 								if (Object.size(competencies) > 0) {
-									call_ajax({
+									block_exacomp.call_ajax({
 										competencies : JSON
 												.stringify(competencies),
 										comptype : 0,
@@ -235,7 +235,7 @@
 								}
 
 								if (Object.size(topics) > 0) {
-									call_ajax({
+									block_exacomp.call_ajax({
 										competencies : JSON
 												.stringify(topics),
 										comptype : 1,
@@ -248,7 +248,7 @@
 								}
 								
 								if (Object.size(crosssubs) > 0) {
-									call_ajax({
+									block_exacomp.call_ajax({
 										competencies : JSON
 												.stringify(crosssubs),
 										comptype : 2,
@@ -261,7 +261,7 @@
 								}
 								
 								if (Object.size(examples) > 0) {
-									call_ajax({
+									block_exacomp.call_ajax({
 										examples : JSON.stringify(examples),
 										action : 'examples_array'
 									});
@@ -276,7 +276,7 @@
 								if (select && crosssubjid > 0) {
 									crosssubj_subjectid = select.options[select.selectedIndex].value;
 								
-									call_ajax({
+									block_exacomp.call_ajax({
 										crosssubjid: crosssubjid,
 										subjectid: crosssubj_subjectid,
 										action: 'crosssubj-subject'
@@ -286,7 +286,7 @@
 								
 								if (title && crosssubjid > 0) {
 									
-									call_ajax({
+									block_exacomp.call_ajax({
 										crosssubjid : crosssubjid,
 										title : title,
 										action : 'crosssubj-title'
@@ -294,7 +294,7 @@
 
 								}
 								if (description && crosssubjid > 0) {
-									call_ajax({
+									block_exacomp.call_ajax({
 										crosssubjid : crosssubjid,
 										description : description,
 										action : 'crosssubj-description'
@@ -315,7 +315,7 @@
 								break;
 							case 'save_as_draft':
 								if (crosssubjid > 0) {
-									call_ajax({
+									block_exacomp.call_ajax({
 										crosssubjid : crosssubjid,
 										action : 'save_as_draft'
 									});
@@ -334,7 +334,7 @@
 								message = $(this).attr('message');
 								if (confirm(message)) {
 									if (crosssubjid > 0) {
-										call_ajax({
+										block_exacomp.call_ajax({
 											crosssubjid : crosssubjid,
 											action : 'delete-crosssubject'
 										});
@@ -366,7 +366,7 @@
 		event.preventDefault();
 		var crosssubjects = [];
 		var not_crosssubjects = [];
-		descrid = get_param('descrid');
+		descrid = block_exacomp.get_param('descrid');
 		$("input[name='crosssubject']").each(function() {
 			if (this.checked == "1")
 				crosssubjects.push($(this).val());
@@ -374,7 +374,7 @@
 				not_crosssubjects.push($(this).val());
 		});
 
-		call_ajax({
+		block_exacomp.call_ajax({
 			crosssubjects : JSON.stringify(crosssubjects),
 			not_crosssubjects : JSON.stringify(not_crosssubjects),
 			descrid : descrid,
@@ -388,11 +388,11 @@
 	$(document).on('click', 'input[name=students]', function() {
 		var students = [];
 		var not_students = [];
-		courseid = get_param('courseid');
-		crosssubjid = get_param('crosssubjid');
+		courseid = block_exacomp.get_param('courseid');
+		crosssubjid = block_exacomp.get_param('crosssubjid');
 
 		if ($("input[name='share_all']").is(':checked')) {
-			call_ajax({
+			block_exacomp.call_ajax({
 				crosssubjid : crosssubjid,
 				value : 1,
 				action : 'crosssubj-share'
@@ -400,7 +400,7 @@
 				window.close();
 			});
 		} else {
-			call_ajax({
+			block_exacomp.call_ajax({
 				crosssubjid : crosssubjid,
 				value : 0,
 				action : 'crosssubj-share'
@@ -413,7 +413,7 @@
 					not_students.push($(this).val());
 			});
 
-			call_ajax({
+			block_exacomp.call_ajax({
 				students : JSON.stringify(students),
 				not_students : JSON.stringify(not_students),
 				crosssubjid : crosssubjid,
@@ -436,8 +436,8 @@
 		var tr = $(this).closest('tr');
 		var id = tr[0].className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
 		
-		courseid = get_param('courseid');
-		studentid = get_param('studentid');
+		courseid = block_exacomp.get_param('courseid');
+		studentid = block_exacomp.get_param('studentid');
 		descrid = $(this).attr('descrid');
 		val = $(this).attr('state');
 		var select = document
@@ -506,7 +506,7 @@
 			} 
 		}
 		
-		call_ajax({
+		block_exacomp.call_ajax({
 			descrid : descrid,
 			value : visible,
 			studentid : studentid,
@@ -521,8 +521,8 @@
 		var tr = $(this).closest('tr');
 		var id = tr[0].className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
 		
-		courseid = get_param('courseid');
-		studentid = get_param('studentid');
+		courseid = block_exacomp.get_param('courseid');
+		studentid = block_exacomp.get_param('studentid');
 		exampleid = $(this).attr('exampleid');
 		val = $(this).attr('state');
 		
@@ -575,7 +575,7 @@
 			}
 		}
 		
-		call_ajax({
+		block_exacomp.call_ajax({
 			exampleid : exampleid,
 			value : visible,
 			studentid : studentid,
@@ -588,7 +588,7 @@
 		exampleid = $(this).attr('exampleid');
 		studentid = $(this).attr('studentid');
 		
-		call_ajax({
+		block_exacomp.call_ajax({
 			exampleid : exampleid,
 			studentid : studentid,
 			action : 'add-example-to-schedule'
@@ -596,27 +596,8 @@
 
 	});
 	
-	function call_ajax(data, done, error) {
-		data.courseid = get_param('courseid');
-		data.sesskey = M.cfg.sesskey;
-		
-		return $.ajax({
-			method : "POST",
-			url : "ajax.php",
-			data : data
-		})
-		.done(function(msg) {
-			console.log(data.action + ': ' + msg);
-			if (done) done(msg);
-		}).error(function(msg) {
-			console.log(msg);
-			console.log("Error: " + data.action + ': ' + msg);
-			if (error) error(msg);
-		});
-	}
-	
 	function insert_descriptor(title_new_comp, descriptorid){
-		call_ajax({
+		block_exacomp.call_ajax({
 			descriptorid: descriptorid,
 			title : title_new_comp,
 			action : 'new-comp'
@@ -625,14 +606,14 @@
 			var select = document
 			.getElementById("menulis_crosssubs");
 
-			if (get_param("crosssubjid") !== null || select) {
+			if (block_exacomp.get_param("crosssubjid") !== null || select) {
 				if (select) {
 					crosssubjid = select.options[select.selectedIndex].value;
-				} else if (get_param("crosssubjid") !== null) {
-					crosssubjid = get_param('crosssubjid');
+				} else if (block_exacomp.get_param("crosssubjid") !== null) {
+					crosssubjid = block_exacomp.get_param('crosssubjid');
 				}
 				console.log(crosssubjid);
-				call_ajax({
+				block_exacomp.call_ajax({
 					descrid: msg,
 					crosssubjectid : crosssubjid,
 					action : 'crosssubj-descriptors-single'
@@ -641,23 +622,6 @@
 			location.reload();
 		});
 
-	}
-	// Read a page's GET URL variables and return them as an associative array.
-	function get_param(param) {
-		var vars = getUrlVars();
-		return typeof vars[param] == 'undefined' ? null : vars[param];
-	}
-	
-	function getUrlVars() {
-		var vars = [], hash;
-		var hashes = window.location.href.slice(
-				window.location.href.indexOf('?') + 1).split('&');
-		for ( var i = 0; i < hashes.length; i++) {
-			hash = hashes[i].split('=');
-			vars.push(hash[0]);
-			vars[hash[0]] = hash[1];
-		}
-		return vars;
 	}
 
 	$(window).bind(

@@ -3504,6 +3504,7 @@ class block_exacomp_external extends external_api {
 	 *			int week
 	 * @return list of descriptors
 	 */
+    // TODO: wir brauchen hier keine wochennummer
 	public static function dakora_get_examples_pool_for_week($studentid, $week, $courseid) {
 		
 		$params = self::validate_parameters ( self::dakora_get_examples_pool_for_week_parameters (), array (

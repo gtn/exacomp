@@ -1944,8 +1944,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         $ret = '<div>';
         foreach ($sources as $source) {
             $name = ($source->name ? $source->name : $source->source);
-            $ret .= $OUTPUT->box($this->print_source_color($source->id).' '.$name.' '.html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'action'=>'delete', 'source'=>$source->id)), 
-                    get_string('delete'),
+            $ret .= $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'action'=>'delete', 'source'=>$source->id)), 
+                    "Importierte Daten von $name löschen",
                     array( "onclick" => "return confirm('Really delete \"'+this.getAttribute('data-name')+'\"?')", 'data-name' => $name)));
         }
         $ret .= '</div>';
@@ -4452,10 +4452,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		return html_writer::div($content, '', array('id'=>'external-events'));
 	}
 
-	public function print_side_wrap_weekly_schedule($examples, $trash_examples){
+	public function print_side_wrap_weekly_schedule(){
 		$pool = $this->print_example_pool($examples);
 		$calendar = html_writer::div('', '', array('id'=>'calendar'));
-		$trash = $this->print_example_trash($trash_examples);
+		$trash = $this->print_example_trash();
 		
 		return html_writer::div($pool.$calendar.$trash, '', array('id'=>'wrap'));
 	}
