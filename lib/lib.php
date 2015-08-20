@@ -4991,51 +4991,35 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 	return array($total, $gradings, $notEvaluated, $inWork,$totalGrade);
 }
 
-function block_exacomp_get_local_file($item, $type) {
-    global $CFG;
-    
-    // testing lots of small files, just return a file
-    /*
-    $fs = get_file_storage();
-    $file = $fs->get_file_by_hash('cee2f56d25c0c86c1001cc13adc48660a57f3345');
-    return $file;
-    */
-    
-    
-    // TODO: this function should read the associated file from the moodle files database
-    // for now we only have the url -> this is a big hack
-    // parse the url and get the file
+/**
+ * @return stored_file
+ * @param array|object $item database item
+ * @param string $type
+ */
+function block_exacomp_get_file($item, $type) {
+    // this function reads the associated file from the moodle file storage
 
-    if ($type == 'example_task') {
-        $url = $item->task;
-    } elseif ($type == 'example_solution') {
-        $url = $item->solution;
-    } else {
-        print_error('wrong type '.$type);
-    }
-
-    if (!$url) return;
-    
-    if (strpos($url, $CFG->wwwroot.'/blocks/exacomp/example_upload.php') === false) {
-        // it is not a local moodle url
-        return;
-    }
-    
-    if (!$url = parse_url($url)) {
-        return;
-    }
-    
-    parse_str($url['query'], $params);
-    if (isset($params['action']) && $params['action'] == 'serve' && isset($params['i'])) {
-        // ok
-    } else {
-        return;
-    }
-    
     $fs = get_file_storage();
-    $file = $fs->get_file_by_hash($params['i']);
+    $files = $fs->get_area_files(context_system::instance()->id, 'block_exacomp', $type, $item->id, null, false);
     
-    return $file;
+    // return first file
+    return reset($files);
+}
+
+/**
+ * @return moodle_url
+ * @param array|object $item database item
+ * @param string $type
+ */
+function block_exacomp_get_file_url($item, $type) {
+    global $COURSE;
+    
+    $file = block_exacomp_get_file($item, $type);
+    
+    if (!$file) return null;
+    
+    return moodle_url::make_pluginfile_url(context_course::instance($COURSE->id)->id, $file->get_component(), $file->get_filearea(),
+        $file->get_itemid(), $file->get_filepath(), $file->get_filename());
 }
 
 function block_exacomp_get_examples_for_pool($studentid, $week){

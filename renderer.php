@@ -1724,8 +1724,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 						    $titleCell->text .= html_writer::link($PAGE->url . "&delete=" . $example->id. "&studentid=" . optional_param('studentid',BLOCK_EXACOMP_SHOW_ALL_STUDENTS, PARAM_INT). "&subjectid=" . optional_param('subjectid', 0, PARAM_INT). "&topicid=" . optional_param('topicid', 0, PARAM_INT), $OUTPUT->pix_icon("t/delete", get_string("delete"), "", array("onclick" => "return confirm('" . get_string('delete_confirmation','block_exacomp') . "')")));
 						}
 						
-						if($example->task)
-							$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->task), $OUTPUT->pix_icon("i/preview", get_string("preview")),array("target" => "_blank"));
+						if ($url = block_exacomp_get_file_url($example, 'example_task')) {
+							$titleCell->text .= html_writer::link($url, $OUTPUT->pix_icon("i/preview", get_string("preview")),array("target" => "_blank"));
+						}
+						
 						
 						if($example->iseditable==7){
 							$iconforlink="pix/elc20_1.png";
@@ -2436,6 +2438,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	}
 	public function example_tree_get_exampleicon($example) {
 		$icon="";
+		
 		if($example->task) {
 			$example->task = str_replace('&amp;','&',$example->task);
 			$img = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pdf.gif'), 'alt'=>get_string("assigned_example", "block_exacomp"), 'width'=>16, 'height'=>16));

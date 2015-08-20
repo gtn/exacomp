@@ -2039,11 +2039,94 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2015081901, 'exacomp');
     }
-    /**
-     * TODO
-     * go through all examples and move the files into a mod_exacomp filestorage
-     * see function block_exacomp_get_local_file() how to parse the urls and get the files
-     */
+    if($oldversion < 2015082001){
+        /**
+         * go through all examples and move the files into a mod_exacomp filestorage
+         */
+
+        function block_exacomp_upgrade_20150820_move_to_file_storage($item, $type) {
+            global $CFG;
+            
+            if ($type == 'example_task') {
+                $localurlfield = 'task';
+                $externalurlfield = 'externaltask';
+            } elseif ($type == 'example_solution') {
+                $localurlfield = 'solution';
+                $externalurlfield = 'externalsolution';
+            } else {
+                print_error('wrong type '.$type);
+            }
+        
+            $url = $item->$localurlfield;
+            
+            if (!$url) {
+                // no url, no update
+                return array();
+            }
+            
+            if (strpos($url, $CFG->wwwroot.'/blocks/exacomp/example_upload.php') === false) {
+                // it is not a local moodle url
+                if ($item->$externalurlfield) {
+                    die('TODO block_exacomp_upgrade_2015082000_move_local_file: local file and external file?');
+                }
+                
+                return array(
+                    $externalurlfield => $item->task,
+                    $localurlfield => '',
+                );
+            }
+            
+            if (!$url = parse_url($url)) {
+                die('TODO block_exacomp_upgrade_2015082000_move_local_file: wrong url?');
+            }
+            
+            parse_str($url['query'], $params);
+            if (isset($params['action']) && $params['action'] == 'serve' && isset($params['i'])) {
+                // ok
+            } else {
+                die('TODO block_exacomp_upgrade_2015082000_move_local_file: wrong file format');
+            }
+            
+            $fs = get_file_storage();
+            $file = $fs->get_file_by_hash($params['i']);
+            
+            if (!$file) {
+                die('TODO block_exacomp_upgrade_2015082000_move_local_file: file not found anymore');
+            }
+            
+            // move to exacomp filestorage
+            $fs->delete_area_files(context_system::instance()->id, 'block_exacomp', $type, $item->id);
+            
+            // reimport
+            $file = $fs->create_file_from_storedfile(array(
+                'contextid' => context_system::instance()->id,
+                'component' => 'block_exacomp',
+                'filearea' => $type,
+                'itemid' => $item->id,
+            ), $file);
+            
+            return array(
+                $localurlfield => ''
+            );
+        }
+        
+        $examples = $DB->get_records(block_exacomp::DB_EXAMPLES);
+        foreach($examples as $example){
+            $update = block_exacomp_upgrade_20150820_move_to_file_storage($example, 'example_task');
+            $update += block_exacomp_upgrade_20150820_move_to_file_storage($example, 'example_solution');
+            
+            if (!$update) continue;
+            
+            $update['id'] = $example->id;
+            
+            $DB->update_record(block_exacomp::DB_EXAMPLES, $update);
+        }
+        
+        // TODO: delete file url fields (task, solution)
+        
+		// Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2015082001, 'exacomp');
+    }
     
 	return $return_result;
 }

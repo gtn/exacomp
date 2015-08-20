@@ -1043,12 +1043,12 @@ class block_exacomp_data_importer extends block_exacomp_data {
         $fs = get_file_storage();
         
         // delete old file
-        $fs->delete_area_files(context_system::instance()->id, 'mod_exacomp', $filearea, $item->id);
+        $fs->delete_area_files(context_system::instance()->id, 'block_exacomp', $filearea, $item->id);
         
         // reimport
         $file = $fs->create_file_from_string(array(
             'contextid' => context_system::instance()->id,
-            'component' => 'mod_exacomp',
+            'component' => 'block_exacomp',
             'filearea' => $filearea,
             'itemid' => $item->id,
             'filepath' => '/',
