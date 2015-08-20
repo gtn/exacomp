@@ -1505,7 +1505,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				if(($descriptor->examples || $descriptor->children || ($parent && $editmode)) && !is_null($data->rowgroup))
 					$titleCell->attributes['class'] = 'rowgroup-arrow';
 				$titleCell->style = "padding-left: ".$padding."px";
-				$titleCell->text = html_writer::div($outputname);
+				$titleCell->text = html_writer::div(html_writer::tag('span', $outputname, array('title'=>get_string('import_source', 'block_exacomp').$this->print_source_info($descriptor->source))));
+	
 	
 				// EDIT MODE BUTTONS 
 				if ($editmode && (($version && !$parent) || !$version)){
@@ -1525,9 +1526,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 						$titleCell->text .= html_writer::link($PAGE->url . "&delete_descr=" . $descriptor->id, $OUTPUT->pix_icon("t/delete", get_string("delete"), "", array("onclick" => "return confirm('" . get_string('delete_confirmation_descr','block_exacomp') . "')")));
 					}
 				}
-				if ($editmode) {
+				/*if ($editmode) {
 				    $titleCell->text .= ' '.$this->print_source_info($descriptor->source);
-				}
+				}*/
 				
 				$descriptorRow->cells[] = $titleCell;
 				
@@ -1714,7 +1715,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	
 					$titleCell = new html_table_cell();
 					$titleCell->style = "padding-left: ". ($padding + 20 )."px";
-					$titleCell->text = $example->title;
+					$titleCell->text = html_writer::div(html_writer::tag('span', $example->title, array('title'=>get_string('import_source', 'block_exacomp').$this->print_source_info($descriptor->source))));
+	
 	
 					if(!$statistic){
 						
@@ -1777,9 +1779,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 						}
 						$titleCell->text .= '</span>';
 						
-						if ($editmode) {
+						/*if ($editmode) {
 				            $titleCell->text .= ' '.$this->print_source_info($descriptor->source);
-				        }
+				        }*/
 						
 				        $titleCell->attributes['title'] = '';
 						
@@ -1919,17 +1921,16 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	public function print_source_info($sourceid) {
         global $DB;
         if ($sourceid == block_exacomp::EXAMPLE_SOURCE_TEACHER) {
-            $info = 'local';
+            $info = get_string('local', 'block_exacomp');
             $source_color = $this->print_source_color($sourceid);
         } elseif ($sourceid && $source = $DB->get_record("block_exacompdatasources", array('id'=>$sourceid))) {
             $info = $source->name;
             $source_color = $this->print_source_color($source->id);
         } else {
-            $info = 'unknown source';
+            $info = get_string('unknown_src', 'block_exacomp');
             $source_color = '';
         }
-        return $source_color.'<span>' // TODO: change stylesheet
-                .$info.'</span>';
+        return $info;
     }
 
     public function print_sources() {

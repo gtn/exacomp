@@ -218,6 +218,9 @@ $string['choosestudent'] = "Choose student: ";
 $string['selectall'] = 'Select all';
 $string['own_additions'] = 'Curricular additions: ';
 $string['delete_confirmation_descr'] = 'Do you really want to delete this competence?';
+$string['import_source'] = "Imported from: ";
+$string['local'] = "local";
+$string['unknown_src'] = 'unknown source';
 
 //Example Submission
 $string['example_submission_header']  = 'Aufgabe {$a} bearbeiten';

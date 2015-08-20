@@ -245,6 +245,9 @@ $string['choosestudent'] = "Kursteilnehmer ausw&auml;hlen: ";
 $string['selectall'] = 'Alle ausw&auml;hlen';
 $string['own_additions'] = 'Schulische Ergänzung: ';
 $string['delete_confirmation_descr'] = 'Soll diese Teilkompetenz wirklich für den ganzen Kurs gelöscht werden?';
+$string['import_source'] = "Importiert von: ";
+$string['local'] = "lokal";
+$string['unknown_src'] = 'unbekannte Quelle';
 
 //Example Submission
 $string['example_submission_header']  = 'Aufgabe {$a} bearbeiten';
