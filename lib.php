@@ -2,6 +2,10 @@
 
 // this file needs to be here!
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once __DIR__.'/lib/lib.php';
+
 function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
 //  Check the contextlevel is as expected - if your plugin is a block, this becomes CONTEXT_BLOCK, etc.
     if ($context->contextlevel != CONTEXT_COURSE) {
@@ -42,11 +46,12 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
     // Retrieve the file from the Files API.
     $fs = get_file_storage();
     $file = $fs->get_file(context_system::instance()->id, 'block_exacomp', $filearea, $itemid, $filepath, $filename);
+
     if (!$file) {
         echo context_system::instance()->id.", $filearea, $itemid, $filepath, $filename";
         return false; // The file does not exist.
     }
- 
+    
     // We can now send the file back to the browser - in this case with a cache lifetime of 1 day and no filtering. 
     // From Moodle 2.3, use send_stored_file instead.
     send_stored_file($file, 86400, 0, $forcedownload, $options);

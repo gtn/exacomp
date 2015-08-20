@@ -5180,6 +5180,17 @@ function block_exacomp_get_file($item, $type) {
 function block_exacomp_get_file_url($item, $type) {
     global $COURSE;
     
+    // TODO: hacked here, delete fields and delete this code!
+    if (($type == 'example_task') && $item->task) {
+        return $item->task;
+    }
+    if (($type == 'example_solution') && $item->solution) {
+        return $item->solution;
+    }
+    
+    
+    
+    // get from filestorage
     $file = block_exacomp_get_file($item, $type);
     
     if (!$file) return null;

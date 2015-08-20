@@ -2143,7 +2143,9 @@ function xmldb_block_exacomp_upgrade($oldversion) {
             $file = $fs->get_file_by_hash($params['i']);
             
             if (!$file) {
-                die('TODO block_exacomp_upgrade_2015082000_move_local_file: file not found anymore');
+                array(
+                    $localurlfield => ''
+                );
             }
             
             // move to exacomp filestorage

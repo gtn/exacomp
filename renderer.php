@@ -1756,8 +1756,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 							$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->externaltask), $OUTPUT->pix_icon("i/preview", get_string("preview")),array("target" => "_blank"));
 						}
 						
-						if($example->solution)
-							$titleCell->text .= $this->print_example_solution_icon($example->solution);
+						if ($url = block_exacomp_get_file_url($example, 'example_solution')) {
+							$titleCell->text .= $this->print_example_solution_icon($url);
+						}
 						
 						if($data->role == block_exacomp::ROLE_STUDENT) {
 							$titleCell->text .= $this->print_schedule_icon($example->id, $USER->id, $data->courseid);
