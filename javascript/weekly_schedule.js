@@ -59,38 +59,18 @@
 		callback(eventsFromMoodle);
 		
 		/*
-		$.ajax({
-			url: 'myxmlfeed.php',
-			dataType: 'xml',
-			data: {
-				// our hypothetical feed requires UNIX timestamps
-				start: start.unix(),
-				end: end.unix()
-			},
-			success: function(doc) {
-				var events = [];
-				$(doc).find('event').each(function() {
-					events.push({
-						title: $(this).attr('title'),
-						start: $(this).attr('start') // will be parsed
-					});
-				});
-				callback(events);
-			}
-		});
+		block_exacomp.call_ajax({
+			studentid : block_exacomp.get_param('studentid'),
+			action : 'get-examples-for-pool'
+		}, callback);
 		*/
 	}
 	
 	function block_exacomp_get_examples_for_pool(callback) {
-		var agenda_items = [];
-		
 		block_exacomp.call_ajax({
 			studentid : block_exacomp.get_param('studentid'),
 			action : 'get-examples-for-pool'
-		},function(examples) { agenda_items = examples });
-		
-		// load
-		callback(agenda_items);
+		}, callback);
 	}
 	
 	var exacomp_calcendar_config = {
