@@ -2268,6 +2268,7 @@ function block_exacomp_set_coursetopics($courseid, $values) {
 	$DB->delete_records(block_exacomp::DB_COURSETOPICS, array("courseid" => $courseid));
 
 	$descriptors = array();
+	$examples = array();
 	if(isset($values)){
 		foreach ($values as $value) {
 			$topicid = intval($value);
@@ -2278,11 +2279,27 @@ function block_exacomp_set_coursetopics($courseid, $values) {
 			$descriptors_topic = block_exacomp_get_descriptors_by_topic($courseid, $topicid);
 			foreach($descriptors_topic as $descriptor){
 				if(!array_key_exists($descriptor->id, $descriptors))
-				$descriptors[$descriptor->id] = $descriptor;	
+					$descriptors[$descriptor->id] = $descriptor;
 			}
 		}
 		
 		block_exacomp_update_descriptor_visibilities($courseid, $descriptors);
+		
+		foreach($descriptors as $descriptor){
+			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
+    			foreach($descriptor->examples as $example)
+    				if(!array_key_exists($example->id, $examples))
+    					$examples[$example->id] = $example;
+    			
+    			$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid);
+    			foreach($descriptor->children as $child){
+    				$child = block_exacomp_get_examples_for_descriptor($child);
+    				foreach($child->examples as $example)
+    					if(!array_key_exists($example->id, $examples))
+    						$examples[$example->id] = $example;
+    			}
+		}
+		block_exacomp_update_example_visibilities($courseid, $examples);
 
 	}
 }
@@ -2300,12 +2317,13 @@ function block_exacomp_update_descriptor_visibilities($courseid, $descriptors){
 	//get all cross subject descriptors - to support cross-course subjects descriptor visibility must be kept
 	$cross_subjects = $DB->get_records(block_exacomp::DB_CROSSSUBJECTS, array('courseid'=>$courseid));
 	$cross_subjects_descriptors = array();
+	
 	foreach($cross_subjects as $crosssub){
 		$cross_subject_descriptors = $DB->get_fieldset_select(block_exacomp::DB_DESCCROSS, 'descrid', 'crosssubjid=?', array($crosssub->id));
 		foreach($cross_subject_descriptors as $descriptor)
-		if(!in_array($descriptor, $cross_subjects_descriptors)){
-			$cross_subjects_descriptors[] = $descriptor;
-		}
+			if(!in_array($descriptor, $cross_subjects_descriptors)){
+				$cross_subjects_descriptors[] = $descriptor;
+			}
 	}
 	
 	$finaldescriptors=$descriptors;
@@ -2336,6 +2354,65 @@ function block_exacomp_update_descriptor_visibilities($courseid, $descriptors){
 			//check if used in cross-subjects --> then it must still be visible
 			if(!in_array($visible, $cross_subjects_descriptors))
 				$DB->delete_records(block_exacomp::DB_DESCVISIBILITY, array("courseid"=>$courseid, "descrid"=>$visible));
+		}
+	}
+}
+
+/**
+ * 
+ * given example list is visible in cour
+ * @param unknown_type $courseid
+ * @param unknown_type $descriptors
+ */
+function block_exacomp_update_example_visibilities($courseid, $examples){
+	global $DB;
+	
+	$visibilities = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY,'exampleid', 'courseid=? AND studentid=0', array($courseid));
+	
+	//get all cross subject examples - to support cross-course subjects exampels visibility must be kept
+	$cross_subjects = $DB->get_records(block_exacomp::DB_CROSSSUBJECTS, array('courseid'=>$courseid));
+	$cross_subject_examples = array();
+	
+	foreach($cross_subjects as $crosssub){
+		$cross_subject_descriptors = $DB->get_fieldset_select(block_exacomp::DB_DESCCROSS, 'descrid', 'crosssubjid=?', array($crosssub->id));
+		foreach($cross_subject_descriptors as $descriptor){
+			$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptor));
+			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
+			foreach($descriptor->examples as $example)
+				if(!in_array($example->id, $cross_subject_examples))
+					$cross_subject_examples[] = $example->id;
+			
+			if($descriptor->parentid == 0){
+				$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$descriptor->id));
+				
+				$descriptor->topicid = $descriptor_topic_mm->topicid;
+				$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid);
+				foreach($descriptor->children as $child){
+					$child = block_exacomp_get_examples_for_descriptor($child);
+					foreach($child->examples as $example)
+						if(!in_array($example->id, $cross_subject_examples))
+							$cross_subject_examples[] = $example->id;
+				}
+			}
+		}
+	}
+	
+	$finalexamples = $examples;
+	//manage visibility, do not delete user visibility, but delete unused entries
+	foreach($examples as $example){
+		//new example in table
+		if(!in_array($example->id, $visibilities)) {
+			$visibilities[] = $example->id;
+		    $DB->insert_record(block_exacomp::DB_EXAMPVISIBILITY, array("courseid"=>$courseid, "exampleid"=>$example->id, "studentid"=>0, "visible"=>1));
+		}
+	}
+	
+	foreach($visibilities as $visible){
+		//delete ununsed descriptors for course and for special students
+		if(!array_key_exists($visible, $finalexamples)){
+			//check if used in cross-subjects --> then it must still be visible
+			if(!in_array($visible, $cross_subject_examples))
+				$DB->delete_records(block_exacomp::DB_EXAMPVISIBILITY, array("courseid"=>$courseid, "exampleid"=>$visible));
 		}
 	}
 }

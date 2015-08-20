@@ -13,7 +13,7 @@ $params = new stdClass();
 
 require_once('./curl.php');
 $curl = new curl;
-$token_google = 621006;
+$token_google = 523167;
 
 print_r($token_google);
 echo "
@@ -234,6 +234,76 @@ $functionname = 'dakora_get_students_for_course';
 
 $params = new stdClass();
 $params->courseid = 3;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+
+
+";
+
+//REST CALL dakora_get_examples_pool_for_week
+$functionname = 'dakora_get_examples_pool_for_week';
+
+$params = new stdClass();
+$params->studentid = 4;
+$params->week = 1439762400;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+
+
+";
+
+
+//REST CALL dakora_set_example_time_slot
+$functionname = 'dakora_set_example_time_slot';
+
+$params = new stdClass();
+$params->courseid = 3;
+$params->exampleid = 31;
+$params->studentid = 4;
+$params->start = 1439794800;
+$params->end = 1439796600;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+
+
+";
+
+//REST CALL dakora_remove_example_from_schedule
+$functionname = 'dakora_remove_example_from_schedule';
+
+$params = new stdClass();
+$params->courseid = 3;
+$params->exampleid = 3;
+$params->studentid = 4;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+
+
+";
+
+//REST CALL dakora_get_examples_for_time_slot
+$functionname = 'dakora_get_examples_for_time_slot';
+
+$params = new stdClass();
+$params->studentid = 4;
+$params->start = 1439944200;
+$params->end = 1439994600;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
