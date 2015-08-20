@@ -3114,14 +3114,15 @@ class block_exacomp_external extends external_api {
 			}
 		}
 		
-		$parent_descriptor = block_exacomp_get_examples_for_descriptor($parent_descriptor);
+		$parent_descriptor = block_exacomp_get_examples_for_descriptor($parent_descriptor, array(SHOW_ALL_TAXONOMIES), true, $courseid);
 		
 		$examples_return = array();
 		foreach($parent_descriptor->examples as $example){
 			$example_return = new stdClass();
 			$example_return->exampleid = $example->id;
 			$example_return->exampletitle = $example->title;
-			$examples_return[] = $example_return;
+			if(!array_key_exists($example->id, $examples_return))
+				$examples_return[$example->id] = $example_return;
 		}
 		
 		$return = new stdClass();
@@ -3169,13 +3170,13 @@ class block_exacomp_external extends external_api {
 			$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$descriptor->id));
 			$descriptor->topicid = $descriptor_topic_mm->topicid;
 		
-			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
+			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, $courseid);
 		}else{ //child descriptor
 			
 			$parent_descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptor->parentid));
 			$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
 			$descriptor->topicid = $descriptor_topic_mm->topicid;
-			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
+			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, $courseid);
 			
 		}
 		
@@ -3184,7 +3185,8 @@ class block_exacomp_external extends external_api {
 			$example_return = new stdClass();
 			$example_return->exampleid = $example->id;
 			$example_return->exampletitle = $example->title;
-			$examples_return[] = $example_return;
+			if(!array_key_exists($example->id, $examples_return))
+				$examples_return[$example->id] = $example_return;
 		}
 		
 		return $examples_return;

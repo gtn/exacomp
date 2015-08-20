@@ -172,6 +172,8 @@ if($formdata = $form->get_data()) {
     	}
     }
         
+	//add visibility
+	$DB->insert_record(block_exacomp::DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$newExample->id, 'studentid'=>0, 'visible'=>1));
     block_exacomp_settstamp();
     ?>
 <script type="text/javascript">

@@ -769,7 +769,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 
 	foreach($descriptors as &$descriptor) {
 		//get examples
-		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples);
+		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples, $courseid);
 		//check for child-descriptors
 		$descriptor->children = block_exacomp_get_child_descriptors($descriptor,$courseid, $showalldescriptors, $filteredtaxonomies, $showallexamples, true, $showonlyvisible);
 
@@ -823,7 +823,7 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescrip
 	$descriptors = $DB->get_records_sql($sql,  $params);
 	
 	foreach($descriptors as &$descriptor) {
-		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples);
+		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples, $courseid);
 		$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid,$showalldescriptors,$filteredtaxonomies);
 		$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
 	}
@@ -2292,14 +2292,14 @@ function block_exacomp_set_coursetopics($courseid, $values) {
 		block_exacomp_update_descriptor_visibilities($courseid, $descriptors);
 		
 		foreach($descriptors as $descriptor){
-			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, null, false);
+			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, $courseid, false);
     			foreach($descriptor->examples as $example)
     				if(!array_key_exists($example->id, $examples))
     					$examples[$example->id] = $example;
     			
     			$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid);
     			foreach($descriptor->children as $child){
-    				$child = block_exacomp_get_examples_for_descriptor($child, array(SHOW_ALL_TAXONOMIES), true, null, false);
+    				$child = block_exacomp_get_examples_for_descriptor($child, array(SHOW_ALL_TAXONOMIES), true, $courseid, false);
     				foreach($child->examples as $example)
     					if(!array_key_exists($example->id, $examples))
     						$examples[$example->id] = $example;
@@ -2384,7 +2384,7 @@ function block_exacomp_update_example_visibilities($courseid, $examples){
 		$cross_subject_descriptors = $DB->get_fieldset_select(block_exacomp::DB_DESCCROSS, 'descrid', 'crosssubjid=?', array($crosssub->id));
 		foreach($cross_subject_descriptors as $descriptor){
 			$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptor));
-			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, null, false);
+			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, $courseid, false);
 			foreach($descriptor->examples as $example)
 				if(!in_array($example->id, $cross_subject_examples))
 					$cross_subject_examples[] = $example->id;
@@ -2395,7 +2395,7 @@ function block_exacomp_update_example_visibilities($courseid, $examples){
 				$descriptor->topicid = $descriptor_topic_mm->topicid;
 				$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid);
 				foreach($descriptor->children as $child){
-					$child = block_exacomp_get_examples_for_descriptor($child,  array(SHOW_ALL_TAXONOMIES), true, null, false);
+					$child = block_exacomp_get_examples_for_descriptor($child,  array(SHOW_ALL_TAXONOMIES), true, $courseid, false);
 					foreach($child->examples as $example)
 						if(!in_array($example->id, $cross_subject_examples))
 							$cross_subject_examples[] = $example->id;
@@ -4040,7 +4040,7 @@ function block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid
 	foreach($descriptors as &$descriptor) {
 		//get examples
 		if(array_key_exists($descriptor->id, $comps))
-			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
+			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor,array(SHOW_ALL_TAXONOMIES), true, $courseid);
 		else $descriptor->examples = array();
 		
 		//check for child-descriptors
