@@ -514,7 +514,76 @@
 		});
 
 	});
-	
+
+	$(document).on('click', '#hide-example', function(event) {
+		event.preventDefault();
+
+		var tr = $(this).closest('tr');
+		var id = tr[0].className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
+		
+		courseid = get_param('courseid');
+		studentid = get_param('studentid');
+		exampleid = $(this).attr('exampleid');
+		val = $(this).attr('state');
+		
+		if(studentid==null)
+			studentid = 0;
+		
+		if(val=='-'){
+			$(this).attr('state','+');
+			visible = 0;
+			tr.addClass('hidden_temp');
+			
+			//hide subs 
+			tr.removeClass('open');
+			$('.rowgroup-content-'+id).hide();
+			
+			//disable checkbox for teacher, when hiding descriptor for student
+			if(studentid > 0)
+				$('input[name=dataexamples-'+exampleid+'-'+studentid+'-'+'teacher]').prop( "disabled", true ); 
+			
+			var img = $("img", this);
+			img.attr('src',$(this).attr('hideurl'));
+			img.attr('alt', M.util.get_string('show','moodle'));
+			img.attr('title', M.util.get_string('show','moodle'));
+			
+			//only for competence grid
+			var link = $('#competence-grid-link-'+exampleid);
+			if(link) {
+				 link.addClass('deactivated');
+			}
+		}else{
+			$(this).attr('state','-');
+			visible = 1;
+			tr.removeClass('hidden_temp');
+			
+			//do not show subs
+			tr.toggleClass('open');
+			
+			//enable checkbox for teacher, when showing descriptor for student
+			$('input[name=dataexamples-'+exampleid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
+			
+			var img = $("img", this);
+			img.attr('src',$(this).attr('showurl'));
+			img.attr('alt', M.util.get_string('hide','moodle'));
+			img.attr('title', M.util.get_string('hide','moodle'));
+			
+			//only for competence grid
+			var link = $('#competence-grid-link-'+exampleid);
+			if(link) {
+				 link.removeClass('deactivated');
+			}
+		}
+		
+		call_ajax({
+			exampleid : exampleid,
+			value : visible,
+			studentid : studentid,
+			action : 'hide-example'
+		});
+
+	});
+
 	$(document).on('click','#add-example-to-schedule', function() {
 		exampleid = $(this).attr('exampleid');
 		studentid = $(this).attr('studentid');

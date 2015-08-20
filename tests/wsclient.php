@@ -248,8 +248,10 @@ echo "
 $functionname = 'dakora_get_examples_pool_for_week';
 
 $params = new stdClass();
+$params->courseid = 3;
 $params->studentid = 4;
 $params->week = 1439762400;
+
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);

@@ -167,6 +167,14 @@ switch($action){
 		
 		block_exacomp_set_descriptor_visibility($descrid, $courseid, $visible, $studentid);
 		break;
+	case('hide-example'):
+		$exampleid = required_param('exampleid', PARAM_INT);
+		$courseid = required_param('courseid', PARAM_INT);
+		$visible = required_param('value', PARAM_INT);
+		$studentid = required_param('studentid', PARAM_INT);
+		
+		block_exacomp_set_example_visibility($exampleid, $courseid, $visible, $studentid);
+		break;
 	case('add-example-to-schedule'):
 		$studentid = required_param('studentid', PARAM_INT);
 		$exampleid = required_param('exampleid', PARAM_INT);

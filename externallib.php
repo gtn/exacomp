@@ -3489,6 +3489,7 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_examples_pool_for_week_parameters() {
 		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course'),
 				'studentid' => new external_value ( PARAM_INT, 'id of student' ),
 				'week' => new external_value(PARAM_INT, 'start timestamp of week')
 		) );
@@ -3498,18 +3499,20 @@ class block_exacomp_external extends external_api {
 	 * Get examples for pool
 	 * 
 	 * @param
+	 * 			int courseid
 	 *        	int studentid
 	 *			int week
 	 * @return list of descriptors
 	 */
-	public static function dakora_get_examples_pool_for_week($studentid, $week) {
+	public static function dakora_get_examples_pool_for_week($studentid, $week, $courseid) {
 		
 		$params = self::validate_parameters ( self::dakora_get_examples_pool_for_week_parameters (), array (
+				'courseid'=>$courseid,
 				'studentid'=>$studentid,
 				'week'=>$week
 			) );
 			
-		$examples = block_exacomp_get_examples_for_pool($studentid, $week);
+		$examples = block_exacomp_get_examples_for_pool($studentid, $week, $courseid);
 		
 		return $examples;
 	}
@@ -3665,7 +3668,7 @@ class block_exacomp_external extends external_api {
 				'end'=>$end
 			) );
 			
-		$examples = block_exacomp_get_examples_for_time_slot($studentid, $start, $end);
+		$examples = block_exacomp_get_examples_for_time_slot_all_courses($studentid, $start, $end);
 		
 		return $examples;
 	}

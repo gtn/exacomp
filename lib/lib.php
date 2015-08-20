@@ -829,18 +829,23 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescrip
 	return $descriptors;
 }
 
-function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES),$showallexamples = true) {
-	global $DB;
+function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES),$showallexamples = true, $courseid = null, $showonlyvisible = false ) {
+	global $DB, $COURSE;
 	
+	if($courseid == null)
+		$courseid = $COURSE->id;
+		
 	$examples = $DB->get_records_sql(
 			"SELECT de.id as deid, e.id, e.title, e.task, e.externalurl,
 				e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe
 				FROM {" . block_exacomp::DB_EXAMPLES . "} e
 				JOIN {" . block_exacomp::DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?"
+			.'JOIN {'.block_exacomp::DB_EXAMPVISIBILITY.'} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.courseid=? '
+			.($showonlyvisible?'AND evis.visible = 1 ':'') 
 			. " WHERE "
 			. " e.source != " . block_exacomp::EXAMPLE_SOURCE_USER . " AND "
 			. (($showallexamples) ? " 1=1 " : " e.creatorid > 0")
-			, array($descriptor->id));
+			, array($descriptor->id, $courseid));
 	
 	foreach($examples as $example){
 		$example->taxonomies = block_exacomp_get_taxonomies_by_example($example);
@@ -4183,6 +4188,20 @@ function block_exacomp_set_descriptor_visibility($descrid, $courseid, $value, $s
 		$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, $insert);
 	}
 }
+function block_exacomp_set_example_visibility($exampleid, $courseid, $value, $studentid){
+	global $DB;
+	$record = $DB->get_record(block_exacomp::DB_EXAMPVISIBILITY, array('exampleid'=>$exampleid, 'courseid'=>$courseid, 'studentid'=>$studentid));
+	if($record){
+		$record->visible = $value;
+		$DB->update_record(block_exacomp::DB_EXAMPVISIBILITY, $record);
+	}else{
+		$insert->exampleid = $exampleid;
+		$insert->courseid = $courseid;
+		$insert->studentid = $studentid;
+		$insert->visible = $value;
+		$DB->insert_record(block_exacomp::DB_EXAMPVISIBILITY, $insert);
+	}
+}
 function block_exacomp_descriptor_visible($courseid, $descriptor, $studentid){
 	global $DB;
 	$record = $DB->get_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$descriptor->id, 'studentid'=>$studentid));
@@ -4194,6 +4213,19 @@ function block_exacomp_descriptor_visible($courseid, $descriptor, $studentid){
 			return $descriptor->visible;
 		else if($studentid > 0)
 			return block_exacomp_descriptor_visible($courseid, $descriptor, 0);
+		
+}
+function block_exacomp_example_visible($courseid, $example, $studentid){
+	global $DB;
+	$record = $DB->get_record(block_exacomp::DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'studentid'=>$studentid));
+	
+	if($record)
+		return $record->visible;
+	else 
+		if(isset($example->visible))
+			return $example->visible;
+		else if($studentid > 0)
+			return block_exacomp_example_visible($courseid, $example, 0);
 		
 }
 function block_exacomp_descriptor_used($courseid, $descriptor, $studentid){
@@ -4232,6 +4264,33 @@ function block_exacomp_descriptor_used($courseid, $descriptor, $studentid){
 			}
 		}
 		
+		//TODO submissions & avtivities
+	}
+	
+	return false;
+}
+
+function block_exacomp_example_used($courseid, $example, $studentid){
+	global $DB;
+	//if studentid == 0 used = true, if no evaluation/submission for this example
+	 			
+	//if studentid != 0 used = true, if no evaluation/submission for this examples for this student
+	
+	if($studentid == 0){
+		$records = $DB->get_records(block_exacomp::DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'teacher_evaluation'=>1));
+		if($records) return true;
+		
+		$records = $DB->get_records(block_exacomp::DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'student_evaluation'=>1));
+		if($records) return true;
+	
+		//TODO submission //activities
+	}else{
+		$records = $DB->get_records(block_exacomp::DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'studentid'=>$studentid, 'student_evaluation'=>1));
+		if($records) return true;
+		
+		$records = $DB->get_records(block_exacomp::DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'studentid'=>$studentid, 'teacher_evaluation'=>1));
+		if($records) return true;
+				
 		//TODO submissions & avtivities
 	}
 	
@@ -4451,7 +4510,31 @@ function block_exacomp_check_descriptor_visibility($courseid, $descriptor, $stud
 			return $descriptor->visible;
 	
 }
-
+function block_exacomp_check_example_visibility($courseid, $example, $studentid) {
+	global $DB;
+	
+	$example_used = block_exacomp_example_used($courseid, $example, $studentid);
+	
+	// if descriptor is used, hidding is impossible
+	if($example_used)
+		return 1;
+	
+	// if we are in editmode, use global descriptor value
+	if($studentid == 0) {
+		if(isset($example->visible))
+			return $example->visible;
+	}
+	
+	// if we are in student mode, we use student value
+	// or if we are in edit mode and do not have a global descriptor value, we get it here
+	$record = $DB->get_record(block_exacomp::DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'studentid'=>$studentid));
+	if($record)
+		return $record->visible;
+	else
+		if(isset($example->visible))
+			return $example->visible;
+	
+}
 function block_exacomp_get_descriptor_visible_css($visible, $role) {
 	$visible_css = '';
 	if(!$visible)
@@ -4459,7 +4542,13 @@ function block_exacomp_get_descriptor_visible_css($visible, $role) {
 	
 	return $visible_css;
 }
-
+function block_exacomp_get_example_visible_css($visible, $role) {
+	$visible_css = '';
+	if(!$visible)
+		($role == block_exacomp::ROLE_TEACHER) ? $visible_css = ' hidden_temp' : $visible_css = ' hidden';
+	
+	return $visible_css;
+}
 // TODO: was macht die funktion?
 function block_exacomp_init_cross_subjects(){
     global $DB;
@@ -5099,13 +5188,14 @@ function block_exacomp_get_file_url($item, $type) {
         $file->get_itemid(), $file->get_filepath(), $file->get_filename());
 }
 
-function block_exacomp_get_examples_for_pool($studentid, $week){
+function block_exacomp_get_examples_for_pool($studentid, $week, $courseid){
 	global $DB;
 	$sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source,
 				eval.student_evaluation, eval.teacher_evaluation
 			FROM {block_exacompschedule} s 
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid 
+			JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=? 
 			LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid
 			WHERE s.studentid = ? AND (
 				-- noch nicht auf einen tag geleg
@@ -5114,7 +5204,7 @@ function block_exacomp_get_examples_for_pool($studentid, $week){
 				OR (s.start < ? AND (eval.teacher_evaluation IS NULL OR eval.teacher_evaluation=0))
 			)
 			ORDER BY e.title";
-	return $DB->get_records_sql($sql,array($studentid, $week));
+	return $DB->get_records_sql($sql,array($courseid, $studentid, $week));
 }
 function block_exacomp_set_example_time_slot($courseid, $exampleid, $studentid, $start, $end){
 	global $DB;
@@ -5132,18 +5222,33 @@ function block_exacomp_remove_example_from_schedule($courseid, $exampleid, $stud
 	$DB->delete_records(block_exacomp::DB_SCHEDULE, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>$studentid));
 }
 
-function block_exacomp_get_examples_for_time_slot($studentid, $start, $end){
+function block_exacomp_get_examples_for_time_slot($courseid, $studentid, $start, $end){
 	global $DB;
 	$sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source,
 				eval.student_evaluation, eval.teacher_evaluation
 			FROM {block_exacompschedule} s 
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid 
+			JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=? 
 			LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid
 			WHERE s.studentid = ? AND (
 				-- innerhalb end und start
 				(s.start > ? AND s.end < ?)
 			)
 			ORDER BY e.title";
-	return $DB->get_records_sql($sql,array($studentid, $start, $end));
+	return $DB->get_records_sql($sql,array($courseid, $studentid, $start, $end));
+}
+
+function block_exacomp_get_examples_for_time_slot_all_courses($studentid, $start, $end){
+	$courses = block_exacomp_get_courses();
+	$examples = array();
+	foreach($courses as $course){
+		$course_examples = block_exacomp_get_examples_for_time_slot($course, $studentid, $start, $end);
+		foreach($course_examples as $example){
+			if(!array_key_exists($example->exampleid, $examples))
+				$examples[$example->exampleid] = $example;
+		}
+	}
+	
+	return $examples;
 }

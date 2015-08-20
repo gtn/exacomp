@@ -1701,10 +1701,15 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				$checkboxname = "dataexamples";
 	
 				foreach($descriptor->examples as $example) {
+					$example_used = block_exacomp_example_used($data->courseid, $example, $studentid);
+				
+					$visible_example = block_exacomp_check_example_visibility($data->courseid, $example, $studentid, ($one_student||$data->role==block_exacomp::ROLE_STUDENT) );
+					
+					$visible_example_css = block_exacomp_get_example_visible_css($visible_example, $data->role);
 					
 					$studentsCount = 0;
 					$exampleRow = new html_table_row();
-					$exampleRow->attributes['class'] = 'exabis_comp_aufgabe ' . $sub_rowgroup_class;
+					$exampleRow->attributes['class'] = 'exabis_comp_aufgabe ' . $sub_rowgroup_class.$visible_example_css;
 					$exampleRow->cells[] = new html_table_cell();
 	
 					$titleCell = new html_table_cell();
@@ -1712,8 +1717,14 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					$titleCell->text = $example->title;
 	
 					if(!$statistic){
+						
 						$titleCell->text .= '<span style="padding-left: 10px;" class="todo-change-stylesheet-icons">';
 					    
+						if(!$descriptor_used){
+							if($editmode || ($one_student && $example->visible && $data->role == block_exacomp::ROLE_TEACHER)){
+								$titleCell->text .= $this->print_visibility_icon_example($visible_example, $example->id);
+							}
+						}
 					    if(isset($example->creatorid) && $example->creatorid == $USER->id) {
 						    $titleCell->text .= html_writer::link(
 						            new moodle_url('/blocks/exacomp/example_upload.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id,"topicid"=>$descriptor->topicid,"exampleid"=>$example->id)),
@@ -1787,9 +1798,13 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	
 					$exampleRow->cells[] = $nivCell;
 					
+					$visible_student_example = $visible_example;
 					if(!$statistic){
 						foreach($students as $student) {
 							
+							if(!$one_student && !$editmode)
+								$visible_student_example = block_exacomp_example_visible($data->courseid, $example, $student->id);
+						
 							$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
 							$studentCell = new html_table_cell();
 							$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
@@ -1811,12 +1826,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 									
 								if($data->role == block_exacomp::ROLE_STUDENT) {
 									$studentCell->text .= get_string('assigndone','block_exacomp');
-									$studentCell->text .= $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme);
+									$studentCell->text .= $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, ($visible_student_example)?false:true);
 		
 									//$studentCell->text .= $this->print_student_example_evaluation_form($example->id, $student->id, $data->courseid);
 								}
 								else {
-									$studentCell->text .= $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme);
+									$studentCell->text .= $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, ($visible_student_example)?false:true);
 								}
 							}
 							/*
@@ -1827,7 +1842,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 								if($data->showevaluation)
 									$studentCellEvaluation->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
 		
-								$studentCell->text .= $this->generate_select($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, false, $data->profoundness);
+								$studentCell->text .= $this->generate_select($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, ($visible_student_example)?false:true, $data->profoundness);
 		
 								//if($data->role == block_exacomp::ROLE_STUDENT)
 									//$studentCell->text .= $this->print_student_example_evaluation_form($example->id, $student->id, $data->courseid);
@@ -1989,6 +2004,19 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			$icon = $OUTPUT->pix_icon("i/hide", get_string("show"));
 			
 		return html_writer::link("", $icon, array('name' => 'hide-descriptor','descrid' => $descriptorid, 'id' => 'hide-descriptor', 'state' => ($visible) ? '-' : '+',
+				'showurl' => $OUTPUT->pix_url("i/show"), 'hideurl' => $OUTPUT->pix_url("i/hide")
+		));
+		
+	}
+	public function print_visibility_icon_example($visible, $exampleid) {
+		global $OUTPUT;
+		
+		if($visible)
+			$icon = $OUTPUT->pix_icon("i/show", get_string("hide"));
+		else
+			$icon = $OUTPUT->pix_icon("i/hide", get_string("show"));
+			
+		return html_writer::link("", $icon, array('name' => 'hide-example','exampleid' => $exampleid, 'id' => 'hide-example', 'state' => ($visible) ? '-' : '+',
 				'showurl' => $OUTPUT->pix_url("i/show"), 'hideurl' => $OUTPUT->pix_url("i/hide")
 		));
 		

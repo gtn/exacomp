@@ -2073,7 +2073,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    				if(!array_key_exists($example->id, $examples))
 	    					$examples[$example->id] = $example;
 	    			
-	    			$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid);
+	    			$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $course);
 	    			foreach($descriptor->children as $child){
 	    				$child = block_exacomp_get_examples_for_descriptor($child);
 	    				foreach($child->examples as $example)
