@@ -2039,6 +2039,58 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2015081901, 'exacomp');
     }
+    if($oldversion < 2015082900){
+    	$table = new xmldb_table('block_exacompexampvisibility');
+		
+	  	// Adding fields to table block_exacompdescrcross_mm.
+	    $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+	    $table->add_field('courseid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+	    $table->add_field('exampleid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+	    $table->add_field('studentid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+		$table->add_field('visible', XMLDB_TYPE_INTEGER, '2', null, null, null, '1');
+		
+	    // Adding keys to table block_exacompcdescrross_mm.
+	    $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+	    $table->add_key('courseid', XMLDB_KEY_FOREIGN, array('courseid'), 'course', array('id'));
+	    $table->add_key('exampleid', XMLDB_KEY_FOREIGN, array('exampleid'), 'block_exacompexamples', array('id'));
+	    $table->add_key('studentid', XMLDB_KEY_FOREIGN, array('studentid'), 'user', array('id'));
+
+	    // Conditionally launch create table for block_exacompdescrcros_mm.
+	    if (!$dbman->table_exists($table)) {
+	        $dbman->create_table($table);
+	    }
+	    
+	    //create entry for all existing courses 
+    	$courses = block_exacomp_get_courses();
+	    foreach($courses as $course){
+	    	$examples = array();
+	    	$topics = block_exacomp_get_topics_by_course($course);
+	    	foreach($topics as $topic){
+	    		$descriptors_topic = block_exacomp_get_descriptors_by_topic($course, $topic->id);
+	    		foreach($descriptors_topic as $descriptor){
+	    			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
+	    			foreach($descriptor->examples as $example)
+	    				if(!array_key_exists($example->id, $examples))
+	    					$examples[$example->id] = $example;
+	    			
+	    			$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid);
+	    			foreach($descriptor->children as $child){
+	    				$child = block_exacomp_get_examples_for_descriptor($child);
+	    				foreach($child->examples as $example)
+	    					if(!array_key_exists($example->id, $examples))
+	    						$examples[$example->id] = $example;
+	    			}
+	    		}
+	    	}
+	    	//only one entry, even descriptor belongs to more than one topic
+	    	foreach($examples as $example){
+	    		$DB->insert_record(block_exacomp::DB_EXAMPVISIBILITY, array('courseid'=>$course, 'exampleid'=>$example->id, 'studentid'=>0, 'visible'=>1));
+	    	}
+	    }
+	    
+		upgrade_block_savepoint(true, 2015082000, 'exacomp');
+	
+    }
     /**
      * TODO
      * go through all examples and move the files into a mod_exacomp filestorage

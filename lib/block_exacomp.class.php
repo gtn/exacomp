@@ -38,6 +38,7 @@ class block_exacomp extends block_list {
     const DB_EXAMPTAX = 'block_exacompexampletax_mm';    
     const DB_DATASOURCES = 'block_exacompdatasources';
     const DB_SCHEDULE = 'block_exacompschedule';
+    const DB_EXAMPVISIBILITY = 'block_exacompexampvisibility';
     
     /**
      * PLUGIN ROLES
