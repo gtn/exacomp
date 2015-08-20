@@ -830,7 +830,7 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescrip
 	return $descriptors;
 }
 
-function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES),$showallexamples = true, $courseid = null, $showonlyvisible = false ) {
+function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES),$showallexamples = true, $courseid = null, $mind_visibility=true, $showonlyvisible = false ) {
 	global $DB, $COURSE;
 	
 	if($courseid == null)
@@ -841,8 +841,8 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 				e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe
 				FROM {" . block_exacomp::DB_EXAMPLES . "} e
 				JOIN {" . block_exacomp::DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?"
-			.'JOIN {'.block_exacomp::DB_EXAMPVISIBILITY.'} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.courseid=? '
-			.($showonlyvisible?'AND evis.visible = 1 ':'') 
+			.($mind_visibility?'JOIN {'.block_exacomp::DB_EXAMPVISIBILITY.'} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.courseid=? '
+			.($showonlyvisible?'AND evis.visible = 1 ':''):'') 
 			. " WHERE "
 			. " e.source != " . block_exacomp::EXAMPLE_SOURCE_USER . " AND "
 			. (($showallexamples) ? " 1=1 " : " e.creatorid > 0")
@@ -2292,19 +2292,20 @@ function block_exacomp_set_coursetopics($courseid, $values) {
 		block_exacomp_update_descriptor_visibilities($courseid, $descriptors);
 		
 		foreach($descriptors as $descriptor){
-			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
+			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, null, false);
     			foreach($descriptor->examples as $example)
     				if(!array_key_exists($example->id, $examples))
     					$examples[$example->id] = $example;
     			
     			$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid);
     			foreach($descriptor->children as $child){
-    				$child = block_exacomp_get_examples_for_descriptor($child);
+    				$child = block_exacomp_get_examples_for_descriptor($child, array(SHOW_ALL_TAXONOMIES), true, null, false);
     				foreach($child->examples as $example)
     					if(!array_key_exists($example->id, $examples))
     						$examples[$example->id] = $example;
     			}
 		}
+	
 		block_exacomp_update_example_visibilities($courseid, $examples);
 
 	}
@@ -2383,7 +2384,7 @@ function block_exacomp_update_example_visibilities($courseid, $examples){
 		$cross_subject_descriptors = $DB->get_fieldset_select(block_exacomp::DB_DESCCROSS, 'descrid', 'crosssubjid=?', array($crosssub->id));
 		foreach($cross_subject_descriptors as $descriptor){
 			$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptor));
-			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
+			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, null, false);
 			foreach($descriptor->examples as $example)
 				if(!in_array($example->id, $cross_subject_examples))
 					$cross_subject_examples[] = $example->id;
@@ -2394,7 +2395,7 @@ function block_exacomp_update_example_visibilities($courseid, $examples){
 				$descriptor->topicid = $descriptor_topic_mm->topicid;
 				$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid);
 				foreach($descriptor->children as $child){
-					$child = block_exacomp_get_examples_for_descriptor($child);
+					$child = block_exacomp_get_examples_for_descriptor($child,  array(SHOW_ALL_TAXONOMIES), true, null, false);
 					foreach($child->examples as $example)
 						if(!in_array($example->id, $cross_subject_examples))
 							$cross_subject_examples[] = $example->id;
