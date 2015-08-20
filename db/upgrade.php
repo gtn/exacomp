@@ -2143,7 +2143,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
             $file = $fs->get_file_by_hash($params['i']);
             
             if (!$file) {
-                array(
+                return array(
                     $localurlfield => ''
                 );
             }
