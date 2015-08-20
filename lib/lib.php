@@ -837,7 +837,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 		$courseid = $COURSE->id;
 		
 	$examples = $DB->get_records_sql(
-			"SELECT de.id as deid, e.id, e.title, e.task, e.externalurl,
+			"SELECT de.id as deid, e.id, e.title, e.task, e.externalurl, evis.visible,
 				e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe
 				FROM {" . block_exacomp::DB_EXAMPLES . "} e
 				JOIN {" . block_exacomp::DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?"
@@ -5204,7 +5204,7 @@ function block_exacomp_get_file_url($item, $type) {
 function block_exacomp_get_examples_for_pool($studentid, $week, $courseid){
 	global $DB;
 	$sql = "select s.*,
-				e.title, e.id as exampleid, e.source AS example_source,
+				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
 				eval.student_evaluation, eval.teacher_evaluation
 			FROM {block_exacompschedule} s 
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid 
@@ -5238,7 +5238,7 @@ function block_exacomp_remove_example_from_schedule($courseid, $exampleid, $stud
 function block_exacomp_get_examples_for_time_slot($courseid, $studentid, $start, $end){
 	global $DB;
 	$sql = "select s.*,
-				e.title, e.id as exampleid, e.source AS example_source,
+				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
 				eval.student_evaluation, eval.teacher_evaluation
 			FROM {block_exacompschedule} s 
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid 

@@ -1722,8 +1722,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 						
 						$titleCell->text .= '<span style="padding-left: 10px;" class="todo-change-stylesheet-icons">';
 					    
-						if(!$descriptor_used){
-							if($editmode || ($one_student && $example->visible && $data->role == block_exacomp::ROLE_TEACHER)){
+						if(!$example_used){
+							if($editmode || ($one_student && $visible_example && $data->role == block_exacomp::ROLE_TEACHER)){
 								$titleCell->text .= $this->print_visibility_icon_example($visible_example, $example->id);
 							}
 						}
