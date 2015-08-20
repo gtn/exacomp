@@ -1921,16 +1921,17 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	
 	public function print_source_info($sourceid) {
         global $DB;
+		$info="";
         if ($sourceid == block_exacomp::EXAMPLE_SOURCE_TEACHER) {
             $info = get_string('local', 'block_exacomp');
             $source_color = $this->print_source_color($sourceid);
         } elseif ($sourceid && $source = $DB->get_record("block_exacompdatasources", array('id'=>$sourceid))) {
             $info = $source->name;
             $source_color = $this->print_source_color($source->id);
-        } else {
+        } 
+		if(empty($info))
             $info = get_string('unknown_src', 'block_exacomp');
-            $source_color = '';
-        }
+           
         return $info;
     }
 
