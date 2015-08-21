@@ -47,21 +47,15 @@
 	}
 	
 	function exacomp_calendar_load_events(start, end, timezone, callback) {
-		// need start + end
-		// ignore timezone
-		block_exacomp_get_examples_for_time_slot(start, end, function(calendar_items) {
-			//load them
-			callback($.parseJSON(calendar_items));
-		});
-	}
-	
-	function block_exacomp_get_examples_for_time_slot(start, end, callback){
 		block_exacomp.call_ajax({
 			studentid : block_exacomp.get_param('studentid'),
 			start: start.format('X'),
 			end: end.format('X'),
 			action : 'get-examples-for-time-slot'
-		}, callback);
+		}, function(calendar_items) {
+			//load them
+			callback($.parseJSON(calendar_items));
+		});
 	}
 	function block_exacomp_get_examples_for_pool(callback) {
 		block_exacomp.call_ajax({
@@ -211,10 +205,8 @@
 			// accept: ".special"
 			drop: function(event, ui ) {
 				if (confirm('Wirklich löschen?')) {
-					//console.log($(this));
-					//console.log(ui);
-					//exacomp_calendar_delete_event(event);
-					//ui.draggable.remove();
+					exacomp_calendar_delete_event(ui.draggable.data('event'));
+					ui.draggable.remove();
 				}
 			},
 			
