@@ -5294,6 +5294,7 @@ function block_exacomp_get_json_examples($examples, $courseid){
 		$example_array['id'] = $example->exampleid;
 		$example_array['title'] = $example->title;
 		$example_array['start'] = $example->start;
+		$example_array['end'] = $example->end;
 		$example_array['student_evaluation'] = $example->student_evaluation;
 		$example_array['teacher_evaluation'] = $example->teacher_evaluation;
 		$example_array['studentid'] = $example->studentid;
