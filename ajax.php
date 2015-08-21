@@ -248,7 +248,7 @@ switch($action){
 		$studentid = required_param('studentid', PARAM_INT);
 		$start = required_param('start', PARAM_INT);
 		$end = required_param('end', PARAM_INT);
-		
+		echo $start;
 		block_exacomp_set_example_time_slot($courseid, $exampleid, $studentid, $start, $end);
 		break;
 	case 'remove-example-from-schedule':
@@ -263,7 +263,18 @@ switch($action){
 		$week = block_exacomp_add_days($week, 1 - date('N', $week));
 		
 		$examples = block_exacomp_get_examples_for_pool($studentid, $week, $courseid);
-		var_dump($examples);
-		echo json_encode($examples);
+		$json_examples = block_exacomp_get_json_examples($examples, $courseid);
+		
+		echo json_encode($json_examples);
+		break;
+	case 'get-examples-for-time-slot':
+		$studentid = required_param('studentid', PARAM_INT);
+		$start = required_param('start', PARAM_INT);
+		$end = required_param('end', PARAM_INT);
+		
+		$examples = block_exacomp_get_examples_for_time_slot($courseid, $studentid, $start, $end);
+		$json_examples = block_exacomp_get_json_examples($examples, $courseid);
+		
+		echo json_encode($json_examples);
 		break;
 }

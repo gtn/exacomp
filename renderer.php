@@ -4443,7 +4443,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$table->data = $rows;
 		return html_writer::table($table);
 	}
-	public function print_example_pool($examples){
+	public function print_example_pool($examples=array()){
 		$content = html_writer::tag('h4', get_string('example_pool', 'block_exacomp'));
 	
 		foreach($examples as $example){
@@ -4454,11 +4454,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	}
 
 	public function print_side_wrap_weekly_schedule(){
-		$pool = $this->print_example_pool($examples);
+		$pool = $this->print_example_pool();
 		$calendar = html_writer::div('', '', array('id'=>'calendar'));
 		$trash = $this->print_example_trash();
+		$clear = html_writer::div('', '', array('style'=>'clear:both'));
 		
-		return html_writer::div($pool.$calendar.$trash, '', array('id'=>'wrap'));
+		return html_writer::div($pool.$calendar.$trash.$clear, '', array('id'=>'wrap'));
 	}
 	
 	public function print_example_trash($trash_examples = array()){

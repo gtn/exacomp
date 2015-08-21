@@ -1,7 +1,14 @@
 (function($){
 	
 	function exacomp_calendar_add_event(event) {
-		console.log('exacomp_calendar_add_event', event.id, event.title, event.start, event.end);
+		console.log('exacomp_calendar_add_event', event.id, event.title, event.start.format('X'), event.end.format('X'));
+		block_exacomp.call_ajax({
+			exampleid : event.id,
+			studentid : block_exacomp.get_param('studentid'),
+			start: event.start.format('X'),
+			end: event.end.format('X'),
+			action : 'add-example-to-time-slot'
+		},function(msg) {});
 	}
 	
 	function exacomp_calendar_update_event_time(event) {
@@ -13,59 +20,49 @@
 			start: event.start.format('X'),
 			end: event.end.format('X'),
 			action : 'add-example-to-time-slot'
-		},function(msg) { alert(msg) });
+		},function(msg) {});
 	}
 	
 	function exacomp_calendar_delete_event(event) {
+		//aus schedule löschen
+		block_exacomp.call_ajax({
+			exampleid : event.id,
+			studentid : block_exacomp.get_param('studentid'),
+			action : 'remove-example-from-schedule'
+		},function(msg) {});
+		
 		console.log('exacomp_calendar_delete_event', event.id, event.title, event.start, event.end);
 	}
 	
 	function exacomp_calendar_remove_event(event) {
+		//in pool zurück legen -> timestamps auf null setzen
+		block_exacomp.call_ajax({
+			exampleid : event.id,
+			studentid : block_exacomp.get_param('studentid'),
+			start: 0,
+			end: 0,
+			action : 'add-example-to-time-slot'
+		},function(msg) { });
 		console.log('exacomp_calendar_remove_event', event.id, event.title, event.start, event.end);
 	}
 	
 	function exacomp_calendar_load_events(start, end, timezone, callback) {
-		
 		// need start + end
 		// ignore timezone
-		
-		var eventsFromMoodle = [
-
-			{
-				id: 123,
-				title: 'Test Event',
-				start: 1439963100,
-			},
-            {
-				id: 123,
-				title: 'Test Event',
-				start: '2015-08-18 08:10:00',
-				end: '2015-08-18 09:00:00'
-			},
-			{
-				id: 432,
-				title: 'test Event',
-				start: '2015-08-19 10:35:00'
-			},
-			{
-				id: 100,
-				title: 'Long event',
-				start: '2015-08-18 8:35:00',
-				end: '2015-08-18 11:55:00'
-			}
-		];
-		
-		// load them
-		callback(eventsFromMoodle);
-		
-		/*
-		block_exacomp.call_ajax({
-			studentid : block_exacomp.get_param('studentid'),
-			action : 'get-examples-for-pool'
-		}, callback);
-		*/
+		block_exacomp_get_examples_for_time_slot(start, end, function(calendar_items) {
+			//load them
+			callback($.parseJSON(calendar_items));
+		});
 	}
 	
+	function block_exacomp_get_examples_for_time_slot(start, end, callback){
+		block_exacomp.call_ajax({
+			studentid : block_exacomp.get_param('studentid'),
+			start: start.format('X'),
+			end: end.format('X'),
+			action : 'get-examples-for-time-slot'
+		}, callback);
+	}
 	function block_exacomp_get_examples_for_pool(callback) {
 		block_exacomp.call_ajax({
 			studentid : block_exacomp.get_param('studentid'),
@@ -118,12 +115,6 @@
 			},
 		]
 	};
-	
-	
-	
-	
-	
-	
 	
 	exacomp_calcendar = {
 		event_slot_to_time: function(origEvent) {
@@ -188,6 +179,7 @@
 		var $trash = $( '#trash' );
 	
 		block_exacomp_get_examples_for_pool(function(agenda_items) {
+			agenda_items = $.parseJSON(agenda_items);
 			$.each(agenda_items, function(i, item){ add_pool_item(item); });
 		});
 		
@@ -196,12 +188,12 @@
 			el.data('event', data);
 			
 			// store data so the calendar knows to render an event upon drop
-			/*
-			$(this).data('event', {
-				title: $.trim($(this).text()), // use the element's text as the event title
+			
+			/*$(this).data('event', {
+				id: $.trim($(this).text()), // use the element's text as the event title
 				stick: true // maintain when user navigates (see docs on the renderEvent method)
-			});
-			*/
+			})*/;
+			
 	
 			el.draggable({
 			  zIndex: 999,
@@ -219,7 +211,10 @@
 			// accept: ".special"
 			drop: function(event, ui ) {
 				if (confirm('Wirklich löschen?')) {
-					ui.draggable.remove();
+					//console.log($(this));
+					//console.log(ui);
+					//exacomp_calendar_delete_event(event);
+					//ui.draggable.remove();
 				}
 			},
 			
@@ -297,15 +292,16 @@
 			
 			eventRender: function(event, element) {
 				// console.log(element.html());
-	
+				
 				// delete time (actually slot time)
 				element.find(".fc-time").remove();
 	
 				// TODO:
 				element.find(".fc-content").append(
 					'	<div class="event-extra">' +
-					'	<div>L: <input type="checkbox" /> S: <input type="checkbox" /></div>' +
-					'	<div><a href="#">edit</a></div>' +
+					'	<div>Kurs: '+event.courseinfo+'</div>'+
+					//'	<div>L: <input type="checkbox" '+((event.teacher_evaluation>0)?'checked=checked':'')+'/> S: <input type="checkbox" '+((event.student_evaluation>0)?'checked=checked':'')+'/></div>' +
+					'	<div>'+event.assoc_url+/*((event.solution)?event.solution:'')+*/'</div>' +
 					'</div>');
 				
 				$(element).addTouch();

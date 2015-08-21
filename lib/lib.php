@@ -5223,7 +5223,7 @@ function block_exacomp_get_file_url($item, $type) {
 function block_exacomp_get_examples_for_pool($studentid, $week, $courseid){
 	global $DB;
 	$sql = "select s.*,
-				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
+				e.title, e.id as exampleid, e.source AS example_source, e.solution, evis.visible,
 				eval.student_evaluation, eval.teacher_evaluation
 			FROM {block_exacompschedule} s 
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid 
@@ -5236,7 +5236,7 @@ function block_exacomp_get_examples_for_pool($studentid, $week, $courseid){
 				OR (s.start < ? AND (eval.teacher_evaluation IS NULL OR eval.teacher_evaluation=0))
 			)
 			ORDER BY e.title";
-	print_r($sql);
+	
 	return $DB->get_records_sql($sql,array($courseid, $studentid, $week));
 }
 function block_exacomp_set_example_time_slot($courseid, $exampleid, $studentid, $start, $end){
@@ -5258,7 +5258,7 @@ function block_exacomp_remove_example_from_schedule($courseid, $exampleid, $stud
 function block_exacomp_get_examples_for_time_slot($courseid, $studentid, $start, $end){
 	global $DB;
 	$sql = "select s.*,
-				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
+				e.title, e.id as exampleid, e.source AS example_source, e.solution, evis.visible,
 				eval.student_evaluation, eval.teacher_evaluation
 			FROM {block_exacompschedule} s 
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid 
@@ -5284,4 +5284,31 @@ function block_exacomp_get_examples_for_time_slot_all_courses($studentid, $start
 	}
 	
 	return $examples;
+}
+function block_exacomp_get_json_examples($examples, $courseid){
+	global $OUTPUT, $DB;
+	
+	$array = array();
+	foreach($examples as $example){
+		$example_array = array();
+		$example_array['id'] = $example->exampleid;
+		$example_array['title'] = $example->title;
+		$example_array['start'] = $example->start;
+		$example_array['student_evaluation'] = $example->student_evaluation;
+		$example_array['teacher_evaluation'] = $example->teacher_evaluation;
+		$example_array['studentid'] = $example->studentid;
+		$example_array['assoc_url'] = html_writer::link(
+				new moodle_url('/blocks/exacomp/competence_associations.php',array("courseid"=>$courseid,"exampleid"=>$example->exampleid, "editmode"=>0)),
+				 $OUTPUT->pix_icon("e/insert_edit_link", get_string('competence_associations','block_exacomp')), array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+		
+		if(block_exacomp_get_file_url($example, 'example_solution'))
+			$example_array['solution'] = html_writer::link(str_replace('&amp;','&',block_exacomp_get_file_url($example, 'example_solution')), $OUTPUT->pix_icon("e/fullpage", get_string('solution','block_exacomp')) ,array("target" => "_blank"));
+	
+		$course_info = $DB->get_record('course', array('id'=>$courseid));
+		$example_array['courseinfo'] = $course_info->shortname;
+		
+		$array[] = $example_array;
+	}
+	
+	return $array;
 }
