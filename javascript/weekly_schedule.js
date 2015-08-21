@@ -2,6 +2,7 @@
 	
 	function exacomp_calendar_add_event(event) {
 		console.log('exacomp_calendar_add_event', event.id, event.title, event.start.format('X'), event.end.format('X'));
+		
 		block_exacomp.call_ajax({
 			exampleid : event.id,
 			studentid : block_exacomp.get_param('studentid'),
@@ -24,17 +25,19 @@
 	}
 	
 	function exacomp_calendar_delete_event(event) {
+		console.log('exacomp_calendar_delete_event', event.id, event.title, event.start, event.end);
+
 		//aus schedule löschen
 		block_exacomp.call_ajax({
 			exampleid : event.id,
 			studentid : block_exacomp.get_param('studentid'),
 			action : 'remove-example-from-schedule'
 		},function(msg) {});
-		
-		console.log('exacomp_calendar_delete_event', event.id, event.title, event.start, event.end);
 	}
 	
 	function exacomp_calendar_remove_event(event) {
+		console.log('exacomp_calendar_remove_event', event.id, event.title, event.start, event.end);
+
 		//in pool zurück legen -> timestamps auf null setzen
 		block_exacomp.call_ajax({
 			exampleid : event.id,
@@ -43,7 +46,6 @@
 			end: 0,
 			action : 'add-example-to-time-slot'
 		},function(msg) { });
-		console.log('exacomp_calendar_remove_event', event.id, event.title, event.start, event.end);
 	}
 	
 	function exacomp_calendar_load_events(start, end, timezone, callback) {
@@ -61,7 +63,10 @@
 		block_exacomp.call_ajax({
 			studentid : block_exacomp.get_param('studentid'),
 			action : 'get-examples-for-pool'
-		}, callback);
+		}, function(calendar_items) {
+			//load them
+			callback($.parseJSON(calendar_items));
+		});
 	}
 	
 	var exacomp_calcendar_config = {
@@ -160,7 +165,10 @@
 				found_slot_i = 0;
 			}
 			
-			return m.format('YYYY-MM-DD')+' 00:'+(type == 'end' ? found_slot_i+1 : found_slot_i)+':00';
+			return m.format('YYYY-MM-DD')+' '+exacomp_calcendar.slot_time(type == 'end' ? found_slot_i+1 : found_slot_i);
+		},
+		slot_time: function(slot) {
+			return "00:"+("0"+slot).substr(-2)+":00";
 		},
 	};
 	
@@ -173,7 +181,6 @@
 		var $trash = $( '#trash' );
 	
 		block_exacomp_get_examples_for_pool(function(agenda_items) {
-			agenda_items = $.parseJSON(agenda_items);
 			$.each(agenda_items, function(i, item){ add_pool_item(item); });
 		});
 		
@@ -254,7 +261,7 @@
 			lang: 'de',
 			defaultView: 'agendaWeek',
 			minTime: "00:00:00",
-			maxTime: "00:"+exacomp_calcendar_config.slots.length+":00",
+			maxTime: exacomp_calcendar.slot_time(exacomp_calcendar_config.slots.length),
 			axisWidth: 40,
 			slotDuration: "00:01:00",
 			hiddenDays: [ 0, 6 ], // no sunday and saturday
@@ -265,7 +272,7 @@
 			
 			eventConstraint: {
 				start: '00:00:00', // a start time (10am in this example)
-				end: "00:"+exacomp_calcendar_config.slots.length+":00"
+				end: exacomp_calcendar.slot_time(exacomp_calcendar_config.slots.length)
 			},
 	
 			editable: true,
@@ -280,8 +287,11 @@
 			events: function(start, end, timezone, callback){
 				exacomp_calendar_load_events(start, end, timezone, function(events){
 					// convert to calendar timeslots
-					events = $.map(events, function(o){ return exacomp_calcendar.event_time_to_slot(o); })
-					
+					events = $.map(events, function(o){
+						var event = exacomp_calcendar.event_time_to_slot(o);
+						event.original = event;
+						return event;
+					})
 					callback(events);
 				})
 			},
@@ -314,8 +324,10 @@
 				if (isEventOverDiv($eventDiv, jsEvent)) {
 					$('#calendar').fullCalendar('removeEvents', event._id);
 	
+					// fullcalendar bug
+					delete event.source;
+
 					add_pool_item(event);
-					var event = exacomp_calcendar.event_slot_to_time(event);
 					exacomp_calendar_remove_event(event);
 				}
 	
@@ -332,10 +344,10 @@
 			viewRender: function(view, element) {
 				// reset axis labels
 				var i = 0, einheit = 0;
-				element.find('.fc-time span').each(function(){
+				element.find('.fc-time').each(function(){
 					var slot = exacomp_calcendar_config.slots[i];
-					this.innerHTML = (slot.name ? '<b>' + slot.name + '</b><br />' : '')
-						+ '<span style="font-size: 85%">'+slot.start+'-'+slot.end+'</span>';
+					this.innerHTML = '<span>'+(slot.name ? '<b>' + slot.name + '</b><br />' : '')
+						+ '<span style="font-size: 85%">'+slot.start+'-'+slot.end+'</span>'+'</span>';
 					i++;
 					if (slot.name) einheit++;
 					if (einheit%2)
