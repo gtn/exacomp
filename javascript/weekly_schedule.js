@@ -111,6 +111,30 @@
 				name: '',
 				start: '11:55',
 				end: '12:20'
+			},{
+				name: '6. Einheit',
+				start: '12:25',
+				end: '12:50'
+			}, {
+				name: '',
+				start: '12:50',
+				end: '13:15'
+			},{
+				name: '7. Einheit',
+				start: '13:20',
+				end: '13:45'
+			}, {
+				name: '',
+				start: '13:45',
+				end: '14:10'
+			},{
+				name: '8. Einheit',
+				start: '14:15',
+				end: '14:40'
+			}, {
+				name: '',
+				start: '14:40',
+				end: '15:05'
 			},
 		]
 	};

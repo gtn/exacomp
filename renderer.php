@@ -779,9 +779,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 								$crossubject_statistic_rows[] = $table_head;
 								
 								$crosssubjects = block_exacomp_get_cross_subjects_for_descriptor($courseid, $descriptor->id);
-								
+								$statistic_type = optional_param('stattype', BLOCK_EXACOMP_DESCRIPTOR_STATISTIC, PARAM_INT);
+									
 								foreach($crosssubjects as $crosssubject) {
-									$statistic_type = optional_param('stattype', BLOCK_EXACOMP_DESCRIPTOR_STATISTIC, PARAM_INT);
 									if($statistic_type == BLOCK_EXACOMP_DESCRIPTOR_STATISTIC)
 										list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_descriptor_statistic_for_crosssubject($courseid, $crosssubject->id, $studentid);
 									else
@@ -2002,12 +2002,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		global $OUTPUT;
 		
 		if($visible)
-			$icon = $OUTPUT->pix_icon("i/show", get_string("hide"));
+			$icon = $OUTPUT->pix_icon("i/hide", get_string("hide"));
 		else
-			$icon = $OUTPUT->pix_icon("i/hide", get_string("show"));
+			$icon = $OUTPUT->pix_icon("i/show", get_string("show"));
 			
 		return html_writer::link("", $icon, array('name' => 'hide-descriptor','descrid' => $descriptorid, 'id' => 'hide-descriptor', 'state' => ($visible) ? '-' : '+',
-				'showurl' => $OUTPUT->pix_url("i/show"), 'hideurl' => $OUTPUT->pix_url("i/hide")
+				'showurl' => $OUTPUT->pix_url("i/hide"), 'hideurl' => $OUTPUT->pix_url("i/show")
 		));
 		
 	}
@@ -2015,12 +2015,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		global $OUTPUT;
 		
 		if($visible)
-			$icon = $OUTPUT->pix_icon("i/show", get_string("hide"));
+			$icon = $OUTPUT->pix_icon("i/hide", get_string("hide"));
 		else
-			$icon = $OUTPUT->pix_icon("i/hide", get_string("show"));
+			$icon = $OUTPUT->pix_icon("i/show", get_string("show"));
 			
 		return html_writer::link("", $icon, array('name' => 'hide-example','exampleid' => $exampleid, 'id' => 'hide-example', 'state' => ($visible) ? '-' : '+',
-				'showurl' => $OUTPUT->pix_url("i/show"), 'hideurl' => $OUTPUT->pix_url("i/hide")
+				'showurl' => $OUTPUT->pix_url("i/hide"), 'hideurl' => $OUTPUT->pix_url("i/show")
 		));
 		
 	}

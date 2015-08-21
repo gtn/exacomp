@@ -4966,17 +4966,19 @@ function block_exacomp_get_descriptor_statistic($courseid, $descrid, $studentid)
 		if($studentid != 0)
 			$conditions[] = $studentid;
 
-		$sql = "SELECT count(c.id) as count FROM {".block_exacomp::DB_COMPETENCIES."} c
-				WHERE courseid = ?
-				AND comptype = ?
-				AND role = ?
-				AND value = ?
-				AND compid IN (".$descriptor_where_string.")";
-		if($studentid != 0)
-			$sql .= ' AND userid = ?';
+		$gradings[$i] = 0;
+		if(!empty($descriptor_where_string)){
+			$sql = "SELECT count(c.id) as count FROM {".block_exacomp::DB_COMPETENCIES."} c
+					WHERE courseid = ?
+					AND comptype = ?
+					AND role = ?
+					AND value = ?
+					AND compid IN (".$descriptor_where_string.")";
+			if($studentid != 0)
+				$sql .= ' AND userid = ?';
 
-		$gradings[$i] = $DB->count_records_sql($sql, $conditions);
-
+			$gradings[$i] = $DB->count_records_sql($sql, $conditions);
+		}
 		$notEvaluated -= $gradings[$i];
 	}
 
@@ -5298,9 +5300,11 @@ function block_exacomp_get_json_examples($examples, $courseid){
 		$example_array['student_evaluation'] = $example->student_evaluation;
 		$example_array['teacher_evaluation'] = $example->teacher_evaluation;
 		$example_array['studentid'] = $example->studentid;
+		$img = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/assoc_icon.png'), 'alt'=>get_string("competence_associations", "block_exacomp"), 'width'=>16, 'height'=>16));
+		
 		$example_array['assoc_url'] = html_writer::link(
 				new moodle_url('/blocks/exacomp/competence_associations.php',array("courseid"=>$courseid,"exampleid"=>$example->exampleid, "editmode"=>0)),
-				 $OUTPUT->pix_icon("e/insert_edit_link", get_string('competence_associations','block_exacomp')), array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+				 $img, array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 		
 		if(block_exacomp_get_file_url($example, 'example_solution'))
 			$example_array['solution'] = html_writer::link(str_replace('&amp;','&',block_exacomp_get_file_url($example, 'example_solution')), $OUTPUT->pix_icon("e/fullpage", get_string('solution','block_exacomp')) ,array("target" => "_blank"));
