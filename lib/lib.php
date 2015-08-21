@@ -4966,17 +4966,19 @@ function block_exacomp_get_descriptor_statistic($courseid, $descrid, $studentid)
 		if($studentid != 0)
 			$conditions[] = $studentid;
 
-		$sql = "SELECT count(c.id) as count FROM {".block_exacomp::DB_COMPETENCIES."} c
-				WHERE courseid = ?
-				AND comptype = ?
-				AND role = ?
-				AND value = ?
-				AND compid IN (".$descriptor_where_string.")";
-		if($studentid != 0)
-			$sql .= ' AND userid = ?';
+		$gradings[$i] = 0;
+		if(!empty($descriptor_where_string)){
+			$sql = "SELECT count(c.id) as count FROM {".block_exacomp::DB_COMPETENCIES."} c
+					WHERE courseid = ?
+					AND comptype = ?
+					AND role = ?
+					AND value = ?
+					AND compid IN (".$descriptor_where_string.")";
+			if($studentid != 0)
+				$sql .= ' AND userid = ?';
 
-		$gradings[$i] = $DB->count_records_sql($sql, $conditions);
-
+			$gradings[$i] = $DB->count_records_sql($sql, $conditions);
+		}
 		$notEvaluated -= $gradings[$i];
 	}
 

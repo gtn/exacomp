@@ -779,9 +779,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 								$crossubject_statistic_rows[] = $table_head;
 								
 								$crosssubjects = block_exacomp_get_cross_subjects_for_descriptor($courseid, $descriptor->id);
-								
+								$statistic_type = optional_param('stattype', BLOCK_EXACOMP_DESCRIPTOR_STATISTIC, PARAM_INT);
+									
 								foreach($crosssubjects as $crosssubject) {
-									$statistic_type = optional_param('stattype', BLOCK_EXACOMP_DESCRIPTOR_STATISTIC, PARAM_INT);
 									if($statistic_type == BLOCK_EXACOMP_DESCRIPTOR_STATISTIC)
 										list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_descriptor_statistic_for_crosssubject($courseid, $crosssubject->id, $studentid);
 									else
