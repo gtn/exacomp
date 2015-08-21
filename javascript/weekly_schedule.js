@@ -178,7 +178,11 @@
 		});
 		
 		function add_pool_item(data) {
-			var el = $( "<div class='fc-event'>" ).appendTo( $eventDiv ).text( data.title );
+			var el = $( "<div class='fc-event'>" ).appendTo( $eventDiv ).text( 
+					data.title);
+			
+			el.append('	<div>'+data.assoc_url+/*((event.solution)?event.solution:'')+*/'</div>');
+			
 			el.data('event', data);
 			
 			// store data so the calendar knows to render an event upon drop

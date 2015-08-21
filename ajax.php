@@ -246,6 +246,8 @@ switch($action){
 	case 'add-example-to-time-slot':
 		$exampleid = required_param('exampleid', PARAM_INT);
 		$studentid = required_param('studentid', PARAM_INT);
+		if(!$studentid) $studentid = $USER->id;
+		
 		$start = required_param('start', PARAM_INT);
 		$end = required_param('end', PARAM_INT);
 		echo $start;
@@ -254,11 +256,13 @@ switch($action){
 	case 'remove-example-from-schedule':
 		$exampleid = required_param('exampleid', PARAM_INT);
 		$studentid = required_param('studentid', PARAM_INT);
+		if(!$studentid) $studentid = $USER->id;
 		
 		block_exacomp_remove_example_from_schedule($courseid, $exampleid, $studentid);
 		break;
 	case 'get-examples-for-pool':
 		$studentid = required_param('studentid', PARAM_INT);
+		if(!$studentid) $studentid = $USER->id;
 		$week = optional_param('week', time(), PARAM_INT);
 		$week = block_exacomp_add_days($week, 1 - date('N', $week));
 		
@@ -269,6 +273,7 @@ switch($action){
 		break;
 	case 'get-examples-for-time-slot':
 		$studentid = required_param('studentid', PARAM_INT);
+		if(!$studentid) $studentid = $USER->id;
 		$start = required_param('start', PARAM_INT);
 		$end = required_param('end', PARAM_INT);
 		
