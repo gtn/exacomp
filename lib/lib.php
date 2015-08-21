@@ -4092,7 +4092,7 @@ function block_exacomp_cross_subjects_exists(){
 	return $dbman->table_exists($table);
 }
 function block_exacomp_set_cross_subject_descriptor($crosssubjid,$descrid) {
-	global $DB, $version;
+	global $DB, $version, $COURSE;
 	$record = $DB->get_record(block_exacomp::DB_DESCCROSS,array('crosssubjid'=>$crosssubjid,'descrid'=>$descrid));
 	if(!$record)
 		$DB->insert_record(block_exacomp::DB_DESCCROSS,array('crosssubjid'=>$crosssubjid,'descrid'=>$descrid));
@@ -4109,8 +4109,9 @@ function block_exacomp_set_cross_subject_descriptor($crosssubjid,$descrid) {
 		$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, $insert);
 	}
 	
+	$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descrid));
+		
 	if($version){ //check parent visibility
-		$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descrid));
 		$visibility = $DB->get_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$cross_subject->courseid, 'descrid'=>$descriptor->parentid, 'studentid'=>0));
 		if(!$visibility){
 			$insert = new stdClass();
@@ -4120,6 +4121,22 @@ function block_exacomp_set_cross_subject_descriptor($crosssubjid,$descrid) {
 			$insert->visible = 1;
 			$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, $insert);
 		}
+	}
+	
+	//example visibility
+	$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, $COURSE->id);
+	
+	foreach($descriptor->examples as $example){
+		$record = $DB->get_records(block_exacomp::DB_EXAMPVISIBILITY, array('courseid'=>$cross_subject->courseid, 'exampleid'=>$example->id,'studentid'=>0));
+		if(!$record){
+			$insert = new stdClass();
+			$insert->courseid = $cross_subject->courseid;
+			$insert->exampleid = $example->id;
+			$insert->studentid = 0;
+			$insert->visible = 1;
+			
+			$DB->insert_record(block_exacomp::DB_EXAMPVISIBILITY, $insert);
+		}	
 	}
 }
 
