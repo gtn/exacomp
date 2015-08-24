@@ -5238,7 +5238,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid){
 	
 	return $DB->get_records_sql($sql,array($courseid, $studentid));
 }
-function block_exacomp_set_example_time_slot($courseid, $exampleid, $studentid, $start, $end){
+function block_exacomp_set_example_start_end($courseid, $exampleid, $studentid, $start, $end){
 	global $DB;
 	
 	$entry = $DB->get_record(block_exacomp::DB_SCHEDULE, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>$studentid));
@@ -5254,7 +5254,7 @@ function block_exacomp_remove_example_from_schedule($courseid, $exampleid, $stud
 	$DB->delete_records(block_exacomp::DB_SCHEDULE, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>$studentid));
 }
 
-function block_exacomp_get_examples_for_time_slot($courseid, $studentid, $start, $end){
+function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start, $end){
 	global $DB;
 	$sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, e.solution, evis.visible,
@@ -5271,11 +5271,11 @@ function block_exacomp_get_examples_for_time_slot($courseid, $studentid, $start,
 	return $DB->get_records_sql($sql,array($courseid, $studentid, $start, $end));
 }
 
-function block_exacomp_get_examples_for_time_slot_all_courses($studentid, $start, $end){
+function block_exacomp_get_examples_for_start_end_all_courses($studentid, $start, $end){
 	$courses = block_exacomp_get_courses();
 	$examples = array();
 	foreach($courses as $course){
-		$course_examples = block_exacomp_get_examples_for_time_slot($course, $studentid, $start, $end);
+		$course_examples = block_exacomp_get_examples_for_start_end($course, $studentid, $start, $end);
 		foreach($course_examples as $example){
 			if(!array_key_exists($example->exampleid, $examples))
 				$examples[$example->exampleid] = $example;
@@ -5430,8 +5430,5 @@ function block_exacomp_build_json_time_slots(){
 	
 	$slots[] = $entry;
 	
-	$return = new stdClass();
-	$return->slots = $slots;
-	
-	return $return;
+	return $slots;
 }

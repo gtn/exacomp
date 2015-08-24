@@ -9,7 +9,7 @@
 			start: event.start.format('X'),
 			end: event.end.format('X'),
 			event_course: event.courseid,
-			action : 'add-example-to-time-slot'
+			action : 'set-example-start-end'
 		},function(msg) {});
 	}
 	
@@ -22,7 +22,7 @@
 			start: event.start.format('X'),
 			end: event.end.format('X'),
 			event_course: event.courseid,
-			action : 'add-example-to-time-slot'
+			action : 'set-example-start-end'
 		},function(msg) {});
 	}
 	
@@ -48,7 +48,7 @@
 			start: 0,
 			end: 0,
 			event_course: event.courseid,
-			action : 'add-example-to-time-slot'
+			action : 'set-example-start-end'
 		},function(msg) { });
 	}
 	
@@ -66,114 +66,21 @@
 			studentid : block_exacomp.get_param('studentid'),
 			start: start.format('X'),
 			end: end.format('X'),
-			action : 'get-examples-for-time-slot'
+			action : 'get-examples-for-start-end'
 		}, function(calendar_items) {
 			//load them
 			callback($.parseJSON(calendar_items));
-			loading_done('slot');
 		});
 	}
-	function block_exacomp_get_examples_for_pool(callback) {
-		block_exacomp.call_ajax({
-			studentid : block_exacomp.get_param('studentid'),
-			pool_course: block_exacomp.get_param('pool_course'),
-			action : 'get-examples-for-pool'
-		}, function(calendar_items) {
-			//load them
-			callback($.parseJSON(calendar_items));
-			loading_done('pool');
-		});
-	}
-	
-	var loadingStat = {
-		pool: false,
-		slot: false,
-		done: false,
-	};
-	function loading_done(type) {
-		if (loadingStat.done) {
-			return;
-		}
-		loadingStat[type] = true;
-		
-		if (!loadingStat.pool || !loadingStat.slot) {
-			return;
-		}
-		
+
+	function exacomp_calendar_loading_done(type) {
 		console.log('loading done');
-		loadingStat.done = true;
-		$("#wrap").addClass('loaded');
 	}
 	console.log('loading');
 	
+	// loaded from server]
 	var exacomp_calcendar_config = {
-		slots: [
-			{
-				name: '1. Einheit',
-				start: '07:45',
-				end: '08:10'
-			}, {
-				name: '',
-				start: '08:10',
-				end: '08:35'
-			}, {
-				name: '2. Einheit',
-				start: '08:35',
-				end: '09:00'
-			}, {
-				name: '',
-				start: '09:00',
-				end: '09:25'
-			}, {
-				name: '3. Einheit',
-				start: '09:30',
-				end: '09:55'
-			}, {
-				name: '',
-				start: '09:55',
-				end: '10:20'
-			}, {
-				name: '4. Einheit',
-				start: '10:35',
-				end: '11:00'
-			}, {
-				name: '',
-				start: '11:00',
-				end: '11:25'
-			}, {
-				name: '5. Einheit',
-				start: '11:30',
-				end: '11:55'
-			}, {
-				name: '',
-				start: '11:55',
-				end: '12:20'
-			},{
-				name: '6. Einheit',
-				start: '12:25',
-				end: '12:50'
-			}, {
-				name: '',
-				start: '12:50',
-				end: '13:15'
-			},{
-				name: '7. Einheit',
-				start: '13:20',
-				end: '13:45'
-			}, {
-				name: '',
-				start: '13:45',
-				end: '14:10'
-			},{
-				name: '8. Einheit',
-				start: '14:15',
-				end: '14:40'
-			}, {
-				name: '',
-				start: '14:40',
-				end: '15:05'
-			},
-		]
+		loading_done: false
 	};
 
 	
@@ -243,21 +150,13 @@
 		var $trash = $( '#trash' );
 	
 		var pool_items;
-		/*var calendar_items;
-		
-		block_exacomp_load_all_events(start, end, timezone, function(all_events){
-			pool_items = all_events['pool'];
-			calendar_items = all_events['time_slots'];
-		});
-		*/
-		/*block_exacomp_get_configuration(function(configuration) {
-			exacomp_calcendar_config = configuration['time_slots'];
-			pool_items = configuration['pool'];
-			$.each(pool_items, function(i, item){ add_pool_item(item); });
-		});*/
-		
-		block_exacomp_get_examples_for_pool(function(agenda_items) {
-			$.each(agenda_items, function(i, item){ add_pool_item(item); });
+
+		block_exacomp_get_configuration(function(configuration) {
+			$.extend(exacomp_calcendar_config, configuration);
+			
+			$.each(configuration.pool, function(i, item){ add_pool_item(item); });
+			
+			create_calendar();
 		});
 		
 		function add_pool_item(data) {
@@ -328,123 +227,132 @@
 				&& y <= offset .bottom);
 		}
 	
-		$('#calendar').fullCalendar({
-			header: {
-				left: 'today prev,next',
-				center: 'title',
-				right: 'month,agendaWeek,agendaDay'
-			},
-			lang: 'de',
-			defaultView: 'agendaWeek',
-			minTime: "00:00:00",
-			maxTime: exacomp_calcendar.slot_time(exacomp_calcendar_config.slots.length),
-			axisWidth: 40,
-			slotDuration: "00:01:00",
-			hiddenDays: [ 0, 6 ], // no sunday and saturday
-			allDaySlot: false,
-			defaultTimedEventDuration: '00:01:00', // default event length
-			
-			contentHeight: "auto",
-			
-			eventConstraint: {
-				start: '00:00:00', // a start time (10am in this example)
-				end: exacomp_calcendar.slot_time(exacomp_calcendar_config.slots.length)
-			},
-	
-			editable: true,
-			droppable: true, // this allows things to be dropped onto the calendar
-			dragRevertDuration: 0,
-			
-			drop: function() {
-				// when dropping an external element remove it
-				$(this).remove();
-			},
-	
-			events: function(start, end, timezone, callback){
-				exacomp_calendar_load_events(start, end, timezone, function(events){
-					// convert to calendar timeslots
-					events = $.map(events, function(o){
-						var event = exacomp_calcendar.event_time_to_slot(o);
-						event.original = event;
-						return event;
-					})
-					callback(events);
-				})
-			},
-			
-			eventRender: function(event, element) {
-				// console.log(element.html());
+		function create_calendar() {
+			$('#calendar').fullCalendar({
+				header: {
+					left: 'today prev,next',
+					center: 'title',
+					right: 'month,agendaWeek,agendaDay'
+				},
+				lang: 'de',
+				defaultView: 'agendaWeek',
+				minTime: "00:00:00",
+				maxTime: exacomp_calcendar.slot_time(exacomp_calcendar_config.slots.length),
+				axisWidth: 40,
+				slotDuration: "00:01:00",
+				hiddenDays: [ 0, 6 ], // no sunday and saturday
+				allDaySlot: false,
+				defaultTimedEventDuration: '00:01:00', // default event length
 				
-				// delete time (actually slot time)
-				element.find(".fc-time").remove();
-	
-				// TODO:
-				element.find(".fc-content").append(
-					'	<div class="event-extra">' +
-					'	<div>Kurs: '+event.courseinfo+'</div>'+
-					//'	<div>L: <input type="checkbox" '+((event.teacher_evaluation>0)?'checked=checked':'')+'/> S: <input type="checkbox" '+((event.student_evaluation>0)?'checked=checked':'')+'/></div>' +
-					'	<div>'+event.assoc_url+/*((event.solution)?event.solution:'')+*/'</div>' +
-					'</div>');
+				contentHeight: "auto",
 				
-				$(element).addTouch();
-			},
-			
-			eventDragStart: function() {
-				$("html").bind('mousemove', hover_check);
-			},
-			
-			eventDragStop: function( event, jsEvent, ui, view ) {
-				$("html").unbind('mousemove', hover_check);
-				hover_check(false);
-			
-				if (isEventOverDiv($eventDiv, jsEvent)) {
-					$('#calendar').fullCalendar('removeEvents', event._id);
-	
-					// fullcalendar bug
-					delete event.source;
+				eventConstraint: {
+					start: '00:00:00', // a start time (10am in this example)
+					end: exacomp_calcendar.slot_time(exacomp_calcendar_config.slots.length)
+				},
+		
+				editable: true,
+				droppable: true, // this allows things to be dropped onto the calendar
+				dragRevertDuration: 0,
+				
+				drop: function() {
+					// when dropping an external element remove it
+					$(this).remove();
+				},
+		
+				events: function(start, end, timezone, callback){
+					exacomp_calendar_load_events(start, end, timezone, function(events){
+						// convert to calendar timeslots
+						events = $.map(events, function(o){
+							var event = exacomp_calcendar.event_time_to_slot(o);
+							event.original = event;
+							return event;
+						});
 
-					add_pool_item(event);
-					exacomp_calendar_remove_event(event);
-				}
-	
-				if (isEventOverDiv($trash, jsEvent)) {
-					if (confirm('Wirklich löschen?')) {
-						$('#calendar').fullCalendar('removeEvents', event._id);
+						// first time we load events, loading is done
+						if (!exacomp_calcendar_config.loading_done) {
+							exacomp_calcendar_config.loading_done = true;
+							exacomp_calendar_loading_done();
+						}
 						
-						var event = exacomp_calcendar.event_slot_to_time(event);
-						exacomp_calendar_delete_event(event);
-					}
-				}
-			},
-			
-			viewRender: function(view, element) {
-				// reset axis labels
-				var i = 0, einheit = 0;
-				element.find('.fc-time').each(function(){
-					var slot = exacomp_calcendar_config.slots[i];
-					this.innerHTML = '<span>'+(slot.name ? '<b>' + slot.name + '</b><br />' : '')
-						+ '<span style="font-size: 85%">'+slot.start+'-'+slot.end+'</span>'+'</span>';
-					i++;
-					if (slot.name) einheit++;
-					if (einheit%2)
-						$(this).closest('tr').css('background-color', 'rgba(0, 0, 0, 0.08)');
-				});
+						callback(events);
+					})
+				},
 				
-				view.updateSize();
-			},
-			
-			eventResize: function(event, delta, revertFunc) {
-				var event = exacomp_calcendar.event_slot_to_time(event);
-				exacomp_calendar_update_event_time(event);
-			},
-			eventDrop: function(event, delta, revertFunc) {
-				var event = exacomp_calcendar.event_slot_to_time(event);
-				exacomp_calendar_update_event_time(event);
-			},
-			eventReceive: function(event) {
-				var event = exacomp_calcendar.event_slot_to_time(event);
-				exacomp_calendar_add_event(event);
-			},
-		});
+				eventRender: function(event, element) {
+					// console.log(element.html());
+					
+					// delete time (actually slot time)
+					element.find(".fc-time").remove();
+		
+					// TODO:
+					element.find(".fc-content").append(
+						'	<div class="event-extra">' +
+						'	<div>Kurs: '+event.courseinfo+'</div>'+
+						//'	<div>L: <input type="checkbox" '+((event.teacher_evaluation>0)?'checked=checked':'')+'/> S: <input type="checkbox" '+((event.student_evaluation>0)?'checked=checked':'')+'/></div>' +
+						'	<div>'+event.assoc_url+/*((event.solution)?event.solution:'')+*/'</div>' +
+						'</div>');
+					
+					$(element).addTouch();
+				},
+				
+				eventDragStart: function() {
+					$("html").bind('mousemove', hover_check);
+				},
+				
+				eventDragStop: function( event, jsEvent, ui, view ) {
+					$("html").unbind('mousemove', hover_check);
+					hover_check(false);
+				
+					if (isEventOverDiv($eventDiv, jsEvent)) {
+						$('#calendar').fullCalendar('removeEvents', event._id);
+		
+						// fullcalendar bug
+						delete event.source;
+	
+						add_pool_item(event);
+						exacomp_calendar_remove_event(event);
+					}
+		
+					if (isEventOverDiv($trash, jsEvent)) {
+						if (confirm('Wirklich löschen?')) {
+							$('#calendar').fullCalendar('removeEvents', event._id);
+							
+							var event = exacomp_calcendar.event_slot_to_time(event);
+							exacomp_calendar_delete_event(event);
+						}
+					}
+				},
+				
+				viewRender: function(view, element) {
+					// reset axis labels
+					var i = 0, einheit = 0;
+					element.find('.fc-time').each(function(){
+						var slot = exacomp_calcendar_config.slots[i];
+						this.innerHTML = '<span>'+(slot.name ? '<b>' + slot.name + '</b><br />' : '')
+							+ '<span style="font-size: 85%">'+slot.start+'-'+slot.end+'</span>'+'</span>';
+						i++;
+						if (slot.name) einheit++;
+						if (einheit%2)
+							$(this).closest('tr').css('background-color', 'rgba(0, 0, 0, 0.08)');
+					});
+					
+					view.updateSize();
+				},
+				
+				eventResize: function(event, delta, revertFunc) {
+					var event = exacomp_calcendar.event_slot_to_time(event);
+					exacomp_calendar_update_event_time(event);
+				},
+				eventDrop: function(event, delta, revertFunc) {
+					var event = exacomp_calcendar.event_slot_to_time(event);
+					exacomp_calendar_update_event_time(event);
+				},
+				eventReceive: function(event) {
+					var event = exacomp_calcendar.event_slot_to_time(event);
+					exacomp_calendar_add_event(event);
+				},
+			});
+		}
 	});
 })(jQueryExacomp);

@@ -243,7 +243,7 @@ switch($action){
 		//delete crosssubject
 		$DB->delete_records(block_exacomp::DB_CROSSSUBJECTS, array('id'=>$crosssubjectid));
 		break;
-	case 'add-example-to-time-slot':
+	case 'set-example-start-end':
 		$exampleid = required_param('exampleid', PARAM_INT);
 		$studentid = required_param('studentid', PARAM_INT);
 		if(!$studentid) $studentid = $USER->id;
@@ -252,7 +252,7 @@ switch($action){
 		$start = required_param('start', PARAM_INT);
 		$end = required_param('end', PARAM_INT);
 		echo $start;
-		block_exacomp_set_example_time_slot($event_course, $exampleid, $studentid, $start, $end);
+		block_exacomp_set_example_start_end($event_course, $exampleid, $studentid, $start, $end);
 		break;
 	case 'remove-example-from-schedule':
 		$exampleid = required_param('exampleid', PARAM_INT);
@@ -262,6 +262,8 @@ switch($action){
 		
 		block_exacomp_remove_example_from_schedule($event_course, $exampleid, $studentid);
 		break;
+	// not needed anymore -- Daniel
+	/*
 	case 'get-examples-for-pool':
 		$studentid = required_param('studentid', PARAM_INT);
 		if(!$studentid) $studentid = $USER->id;
@@ -274,13 +276,14 @@ switch($action){
 		
 		echo json_encode($json_examples);
 		break;
-	case 'get-examples-for-time-slot':
+	*/
+	case 'get-examples-for-start-end':
 		$studentid = required_param('studentid', PARAM_INT);
 		if(!$studentid) $studentid = $USER->id;
 		$start = required_param('start', PARAM_INT);
 		$end = required_param('end', PARAM_INT);
 		
-		$examples = block_exacomp_get_examples_for_time_slot_all_courses($studentid, $start, $end);
+		$examples = block_exacomp_get_examples_for_start_end_all_courses($studentid, $start, $end);
 		$json_examples = block_exacomp_get_json_examples($examples);
 		
 		echo json_encode($json_examples);
@@ -292,17 +295,14 @@ switch($action){
 		$pool_course = required_param('pool_course', PARAM_INT);
 		if(!$pool_course)$pool_course = $courseid;
 		
-		$week = optional_param('week', time(), PARAM_INT);
-		$week = block_exacomp_add_days($week, 1 - date('N', $week));
-		
-		$examples_pool = block_exacomp_get_examples_for_pool($studentid, $week, $pool_course);
+		$examples_pool = block_exacomp_get_examples_for_pool($studentid, $pool_course);
 		$json_examples_pool = block_exacomp_get_json_examples($examples_pool);
 		
 		$json_time_slots = block_exacomp_build_json_time_slots();
 		
 		$configuration = array();
 		$configuration['pool'] = $json_examples_pool; //for pool
-		$configuration['time_slots'] = $json_time_slots; //for calendar
+		$configuration['slots'] = $json_time_slots; //for calendar
 		
 		echo json_encode($configuration);
 		
