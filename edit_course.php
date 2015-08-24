@@ -86,7 +86,10 @@ if ($action == 'save_coursesettings') {
 		.html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))				
 		. html_writer::link(new moodle_url($url, array('courseid'=>$courseid)), get_string('next_step', 'block_exacomp'));
 }else{
-	$headertext = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).get_string('teacher_first_configuration_step', 'block_exacomp');
+	$url = 'courseselection.php';
+	
+	$headertext = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).get_string('teacher_first_configuration_step', 'block_exacomp')
+		.' '.html_writer::link(new moodle_url($url, array('courseid'=>$courseid)), get_string('next_step_first_teacher_step', 'block_exacomp'));
 } 
 
 // build tab navigation & print header
