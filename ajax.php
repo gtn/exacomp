@@ -288,4 +288,30 @@ switch($action){
 		
 		echo json_encode($json_examples);
 		break;
+	case 'get-weekly-schedule-events':
+		$studentid = required_param('studentid', PARAM_INT);
+		if(!$studentid) $studentid = $USER->id;
+		
+		$pool_course = required_param('pool_course', PARAM_INT);
+		if(!$pool_course)$pool_course = $courseid;
+		
+		$week = optional_param('week', time(), PARAM_INT);
+		$week = block_exacomp_add_days($week, 1 - date('N', $week));
+		
+		$start = required_param('start', PARAM_INT);
+		$end = required_param('end', PARAM_INT);
+		
+		$examples_pool = block_exacomp_get_examples_for_pool($studentid, $week, $pool_course);
+		$json_examples_pool = block_exacomp_get_json_examples($examples);
+		
+		$examples_time_slots = block_exacomp_get_examples_for_time_slot_all_courses($studentid, $start, $end);
+		$json_examples_time_slots = block_exacomp_get_json_examples($examples);
+		
+		$examples = array();
+		$examples['pool'] = $json_examples_pool; //for pool
+		$examples['time_slot'] = $json_examples_time_slots; //for calendar
+		
+		echo json_encode($examples);
+		
+		break;
 }

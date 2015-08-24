@@ -52,6 +52,17 @@
 		},function(msg) { });
 	}
 	
+	function exacomp_load_all_events(start, end, timezone, callback){
+		block_exacomp.call_ajax({
+			studentid : block_exacomp.get_param('studentid'),
+			start: start.format('X'),
+			end: end.format('X'),
+			pool_course: block_exacomp.get_param('pool_course'),
+			action : 'get-weekly-schedule-events'
+			}, function(events) {
+				callback($.parseJSON(events));
+			});
+	}
 	function exacomp_calendar_load_events(start, end, timezone, callback) {
 		block_exacomp.call_ajax({
 			studentid : block_exacomp.get_param('studentid'),
@@ -209,6 +220,15 @@
 		var $eventDiv = $( '#external-events' );
 		var $trash = $( '#trash' );
 	
+		/*var pool_items;
+		var calendar_items;
+		
+		block_exacomp_load_all_events(start, end, timezone, function(all_events){
+			pool_items = all_events['pool'];
+			calendar_items = all_events['time_slots'];
+		});
+		*/
+		
 		block_exacomp_get_examples_for_pool(function(agenda_items) {
 			$.each(agenda_items, function(i, item){ add_pool_item(item); });
 		});
