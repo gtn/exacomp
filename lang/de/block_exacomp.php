@@ -443,6 +443,7 @@ $string['weekly_schedule_already_exists'] = 'Die Aufgabe ist bereits im Wochenpl
 $string['select_student_weekly_schedule'] = 'Wählen Sie einen Kursteilnehmer aus, dessen Wochenplan Sie sehen möchten.';
 $string['example_pool'] = 'Planungsspeicher';
 $string['example_trash'] = 'Papierkorb';
+$string['choosecourse'] = 'Kurs auswählen: ';
 
 //Statistics
 $string['process'] = 'Bearbeitungsstand';

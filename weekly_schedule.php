@@ -68,6 +68,8 @@ $week = block_exacomp_add_days($week, 1 - date('N', $week));
 $isTeacher = block_exacomp_is_teacher($context);
 $studentid = $isTeacher ? optional_param("studentid", 0, PARAM_INT) : $USER->id;
 
+$selectedCourse = optional_param('pool_course', $courseid, PARAM_INT);
+
 /* CONTENT REGION */
 $output = $PAGE->get_renderer('block_exacomp');
 echo $output->print_wrapperdivstart();
@@ -95,6 +97,7 @@ if($isTeacher){
 
 $student = $DB->get_record('user',array('id' => $studentid));
 
+echo $output->print_course_dropdown($selectedCourse, $studentid);
 echo $output->print_side_wrap_weekly_schedule();
 
 /* END CONTENT REGION */

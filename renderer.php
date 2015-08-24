@@ -4471,4 +4471,22 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	
 		return html_writer::div($content, '', array('id'=>'trash'));
 	}
+	public function print_course_dropdown($selectedCourse, $studentid=0){
+		global $PAGE, $version, $DB;
+		$content = get_string("choosecourse", "block_exacomp");
+		$options = array();
+		
+		$courses = block_exacomp_get_courses();
+		
+		foreach($courses as $course){
+			$course_db = $DB->get_record('course', array('id'=>$course));
+			
+		    $options[$course] = $course_db->fullname;
+		}
+		
+		$content .= html_writer::select($options, "lis_courses",$selectedCourse, false,
+				array("onchange" => "document.location.href='".$PAGE->url."&studentid=".$studentid."&pool_course='+this.value;"));
+		
+		return $content;
+	}
 }

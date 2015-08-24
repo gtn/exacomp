@@ -8,6 +8,7 @@
 			studentid : block_exacomp.get_param('studentid'),
 			start: event.start.format('X'),
 			end: event.end.format('X'),
+			event_course: event.courseid,
 			action : 'add-example-to-time-slot'
 		},function(msg) {});
 	}
@@ -20,6 +21,7 @@
 			studentid : block_exacomp.get_param('studentid'),
 			start: event.start.format('X'),
 			end: event.end.format('X'),
+			event_course: event.courseid,
 			action : 'add-example-to-time-slot'
 		},function(msg) {});
 	}
@@ -31,6 +33,7 @@
 		block_exacomp.call_ajax({
 			exampleid : event.id,
 			studentid : block_exacomp.get_param('studentid'),
+			event_course: event.courseid,
 			action : 'remove-example-from-schedule'
 		},function(msg) {});
 	}
@@ -44,6 +47,7 @@
 			studentid : block_exacomp.get_param('studentid'),
 			start: 0,
 			end: 0,
+			event_course: event.courseid,
 			action : 'add-example-to-time-slot'
 		},function(msg) { });
 	}
@@ -62,6 +66,7 @@
 	function block_exacomp_get_examples_for_pool(callback) {
 		block_exacomp.call_ajax({
 			studentid : block_exacomp.get_param('studentid'),
+			pool_course: block_exacomp.get_param('pool_course'),
 			action : 'get-examples-for-pool'
 		}, function(calendar_items) {
 			//load them

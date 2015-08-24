@@ -401,6 +401,7 @@ $string['weekly_schedule_already_exists'] = 'Example is already in the weekly sc
 $string['select_student_weekly_schedule'] = 'Please select a student to view his/her weekly schedule.';
 $string['example_pool'] = 'Example pool';
 $string['example_trash'] = 'Trash bin';
+$string['choosecourse'] = 'Select course: ';
 
 //Statistics
 $string['process'] = 'State of process';

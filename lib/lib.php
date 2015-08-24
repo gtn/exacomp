@@ -5261,7 +5261,7 @@ function block_exacomp_get_examples_for_time_slot($courseid, $studentid, $start,
 	global $DB;
 	$sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, e.solution, evis.visible,
-				eval.student_evaluation, eval.teacher_evaluation
+				eval.student_evaluation, eval.teacher_evaluation, evis.courseid
 			FROM {block_exacompschedule} s 
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid 
 			JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=? 
@@ -5287,7 +5287,7 @@ function block_exacomp_get_examples_for_time_slot_all_courses($studentid, $start
 	
 	return $examples;
 }
-function block_exacomp_get_json_examples($examples, $courseid){
+function block_exacomp_get_json_examples($examples){
 	global $OUTPUT, $DB;
 	
 	$array = array();
@@ -5300,16 +5300,17 @@ function block_exacomp_get_json_examples($examples, $courseid){
 		$example_array['student_evaluation'] = $example->student_evaluation;
 		$example_array['teacher_evaluation'] = $example->teacher_evaluation;
 		$example_array['studentid'] = $example->studentid;
-		$img = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/assoc_icon.png'), 'alt'=>get_string("competence_associations", "block_exacomp"), 'width'=>16, 'height'=>16));
+		$example_array['courseid'] = $example->courseid;
+		$img = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/assoc_icon.png'), 'alt'=>get_string("competence_associations", "block_exacomp")));
 		
 		$example_array['assoc_url'] = html_writer::link(
-				new moodle_url('/blocks/exacomp/competence_associations.php',array("courseid"=>$courseid,"exampleid"=>$example->exampleid, "editmode"=>0)),
+				new moodle_url('/blocks/exacomp/competence_associations.php',array("courseid"=>$example->courseid,"exampleid"=>$example->exampleid, "editmode"=>0)),
 				 $img, array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 		
 		if(block_exacomp_get_file_url($example, 'example_solution'))
 			$example_array['solution'] = html_writer::link(str_replace('&amp;','&',block_exacomp_get_file_url($example, 'example_solution')), $OUTPUT->pix_icon("e/fullpage", get_string('solution','block_exacomp')) ,array("target" => "_blank"));
 	
-		$course_info = $DB->get_record('course', array('id'=>$courseid));
+		$course_info = $DB->get_record('course', array('id'=>$example->courseid));
 		$example_array['courseinfo'] = $course_info->shortname;
 		
 		$array[] = $example_array;
