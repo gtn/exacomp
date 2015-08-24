@@ -5226,7 +5226,7 @@ function block_exacomp_get_examples_for_pool($studentid, $week, $courseid){
 	global $DB;
 	$sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, e.solution, evis.visible,
-				eval.student_evaluation, eval.teacher_evaluation
+				eval.student_evaluation, eval.teacher_evaluation, evis.courseid
 			FROM {block_exacompschedule} s 
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid 
 			JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=? 
