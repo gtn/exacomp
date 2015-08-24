@@ -5221,8 +5221,7 @@ function block_exacomp_get_file_url($item, $type) {
         $file->get_itemid(), $file->get_filepath(), $file->get_filename());
 }
 
-// TODO: wir brauchen hier keine wochennummer
-function block_exacomp_get_examples_for_pool($studentid, $week, $courseid){
+function block_exacomp_get_examples_for_pool($studentid, $courseid){
 	global $DB;
 	$sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, e.solution, evis.visible,
@@ -5233,9 +5232,7 @@ function block_exacomp_get_examples_for_pool($studentid, $week, $courseid){
 			LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid
 			WHERE s.studentid = ? AND (
 				-- noch nicht auf einen tag geleg
-				(s.start IS null OR s.start=0)
-				-- oder auf einen tag der vorwoche gelegt und noch nicht evaluiert
-				OR (s.start < ? AND (eval.teacher_evaluation IS NULL OR eval.teacher_evaluation=0))
+				(s.start IS null OR s.start=0))
 			)
 			ORDER BY e.title";
 	
