@@ -3530,7 +3530,8 @@ class block_exacomp_external extends external_api {
 				'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
 				'title' => new external_value ( PARAM_TEXT, 'title of example' ),
 				'student_evaluation' => new external_value ( PARAM_INT, 'self evaluation of student' ),
-				'teacher_evaluation' => new external_value( PARAM_TEXT, 'evaluation of teacher')
+				'teacher_evaluation' => new external_value( PARAM_TEXT, 'evaluation of teacher'),
+				'courseid' => new external_value(PARAM_INT, 'example course')
 		) ) );
 	}
 	
@@ -3686,7 +3687,8 @@ class block_exacomp_external extends external_api {
 				'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
 				'title' => new external_value ( PARAM_TEXT, 'title of example' ),
 				'student_evaluation' => new external_value ( PARAM_INT, 'self evaluation of student' ),
-				'teacher_evaluation' => new external_value( PARAM_TEXT, 'evaluation of teacher')
+				'teacher_evaluation' => new external_value( PARAM_TEXT, 'evaluation of teacher'),
+				'courseid' => new external_value(PARAM_INT, 'example course')
 		) ) );
 	}
 }
