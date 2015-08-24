@@ -5318,3 +5318,123 @@ function block_exacomp_get_json_examples($examples){
 	
 	return $array;
 }
+function block_exacomp_build_json_time_slots(){
+	$slots = array();
+	
+	$entry = array();
+	$entry['name'] = '1. Einheit';
+	$entry['start'] = '07:45';
+	$entry['end'] = '08:10';
+	
+	$slots[] = $entry;
+	
+	$entry = array();
+	$entry['name'] = '';
+	$entry['start'] = '08:10';
+	$entry['end'] = '08:35';
+	
+	$slots[] = $entry;
+	
+	$entry = array();
+	$entry['name'] = '2. Einheit';
+	$entry['start'] = '08:35';
+	$entry['end'] = '09:00';
+	
+	$slots[] = $entry;
+	
+	$entry = array();
+	$entry['name'] = '';
+	$entry['start'] = '09:00';
+	$entry['end'] = '09:25';
+	
+	$slots[] = $entry;
+	
+	$entry = array();
+	$entry['name'] = '3. Einheit';
+	$entry['start'] = '09:30';
+	$entry['end'] = '09:55';
+	
+	$slots[] = $entry;
+	
+	$entry = array();
+	$entry['name'] = '';
+	$entry['start'] = '09:55';
+	$entry['end'] = '10:20';
+	
+	$slots[] = $entry;
+	
+	$entry = array();
+	$entry['name'] = '4. Einheit';
+	$entry['start'] = '10:35';
+	$entry['end'] = '11:00';
+	
+	$slots[] = $entry;
+	
+	$entry = array();
+	$entry['name'] = '';
+	$entry['start'] = '11:00';
+	$entry['end'] = '11:25';
+	
+	$slots[] = $entry;
+	
+	$entry = array();
+	$entry['name'] = '5. Einheit';
+	$entry['start'] = '11:30';
+	$entry['end'] = '11:55';
+	
+	$slots[] = $entry;
+	
+	$entry = array();
+	$entry['name'] = '';
+	$entry['start'] = '11:55';
+	$entry['end'] = '12:20';
+	
+	$slots[] = $entry;
+	
+	$entry = array();
+	$entry['name'] = '6. Einheit';
+	$entry['start'] = '12:25';
+	$entry['end'] = '12:50';
+	
+	$slots[] = $entry;
+	
+	$entry = array();
+	$entry['name'] = '';
+	$entry['start'] = '12:50';
+	$entry['end'] = '13:15';
+	
+	$slots[] = $entry;
+	
+	$entry = array();
+	$entry['name'] = '7. Einheit';
+	$entry['start'] = '13:20';
+	$entry['end'] = '13:45';
+	
+	$slots[] = $entry;
+	
+	$entry = array();
+	$entry['name'] = '';
+	$entry['start'] = '13:45';
+	$entry['end'] = '14:10';
+	
+	$slots[] = $entry;
+	
+	$entry = array();
+	$entry['name'] = '8. Einheit';
+	$entry['start'] = '14:15';
+	$entry['end'] = '14:40';
+	
+	$slots[] = $entry;
+	
+	$entry = array();
+	$entry['name'] = '';
+	$entry['start'] = '14:40';
+	$entry['end'] = '15:05';
+	
+	$slots[] = $entry;
+	
+	$return = new stdClass();
+	$return->slots = $slots;
+	
+	return $return;
+}
