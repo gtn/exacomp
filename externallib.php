@@ -3489,11 +3489,10 @@ class block_exacomp_external extends external_api {
 	 * 
 	 * @return external_function_parameters
 	 */
-	public static function dakora_get_examples_pool_for_week_parameters() {
+	public static function dakora_get_examples_pool_parameters() {
 		return new external_function_parameters ( array (
 				'courseid' => new external_value ( PARAM_INT, 'id of course'),
-				'studentid' => new external_value ( PARAM_INT, 'id of student' ),
-				'week' => new external_value(PARAM_INT, 'start timestamp of week')
+				'studentid' => new external_value ( PARAM_INT, 'id of student' )
 		) );
 	}
 	
@@ -3507,15 +3506,18 @@ class block_exacomp_external extends external_api {
 	 * @return list of descriptors
 	 */
     // TODO: wir brauchen hier keine wochennummer
-	public static function dakora_get_examples_pool_for_week($studentid, $courseid, $week) {
+	public static function dakora_get_examples_pool($studentid, $courseid) {
+		global $USER;
 		
-		$params = self::validate_parameters ( self::dakora_get_examples_pool_for_week_parameters (), array (
+		$params = self::validate_parameters ( self::dakora_get_examples_pool_parameters (), array (
 				'courseid'=>$courseid,
-				'studentid'=>$studentid,
-				'week'=>$week
+				'studentid'=>$studentid
 			) );
 			
-		$examples = block_exacomp_get_examples_for_pool($studentid, $week, $courseid);
+		if($studentid == 0)
+			$studentid = $USER->id;
+			
+		$examples = block_exacomp_get_examples_for_pool($studentid, $courseid);
 		
 		return $examples;
 	}
@@ -3525,7 +3527,7 @@ class block_exacomp_external extends external_api {
 	 * 
 	 * @return external_multiple_structure
 	 */
-	public static function dakora_get_examples_pool_for_week_returns() {
+	public static function dakora_get_examples_pool_returns() {
 		return new external_multiple_structure ( new external_single_structure ( array (
 				'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
 				'title' => new external_value ( PARAM_TEXT, 'title of example' ),
@@ -3562,7 +3564,7 @@ class block_exacomp_external extends external_api {
 	 * @return list of descriptors
 	 */
 	public static function dakora_set_example_time_slot($courseid, $exampleid, $studentid, $start, $end) {
-		
+		global $USER;
 		$params = self::validate_parameters ( self::dakora_set_example_time_slot_parameters (), array (
 				'courseid'=>$courseid,
 				'exampleid'=>$exampleid,
@@ -3571,6 +3573,9 @@ class block_exacomp_external extends external_api {
 				'end'=>$end
 			) );
 			
+		if($studentid == 0)
+			$studentid = $USER->id;
+		
 		block_exacomp_set_example_time_slot($courseid, $exampleid, $studentid, $start, $end);
 		
 		return array (
@@ -3616,12 +3621,16 @@ class block_exacomp_external extends external_api {
 	 * @return list of descriptors
 	 */
 	public static function dakora_remove_example_from_schedule($courseid, $exampleid, $studentid) {
+		global $USER;
 		
 		$params = self::validate_parameters ( self::dakora_remove_example_from_schedule_parameters (), array (
 				'courseid'=>$courseid,
 				'exampleid'=>$exampleid,
 				'studentid'=>$studentid
 			) );
+			
+		if($studentid == 0)
+			$studentid = $USER->id;
 			
 		block_exacomp_remove_example_from_schedule($courseid, $exampleid, $studentid);
 		
@@ -3665,13 +3674,16 @@ class block_exacomp_external extends external_api {
 	 * @return list of descriptors
 	 */
 	public static function dakora_get_examples_for_time_slot($studentid, $start, $end) {
-		
+		global $USER;
 		$params = self::validate_parameters ( self::dakora_get_examples_for_time_slot_parameters (), array (
 				'studentid'=>$studentid,
 				'start'=>$start,
 				'end'=>$end
 			) );
 			
+		if($studentid == 0)
+			$studentid = $USER->id;
+		
 		$examples = block_exacomp_get_examples_for_time_slot_all_courses($studentid, $start, $end);
 		
 		return $examples;

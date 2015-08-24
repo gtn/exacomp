@@ -13,7 +13,7 @@ $params = new stdClass();
 
 require_once('./curl.php');
 $curl = new curl;
-$token_google = 279891;
+$token_google = 821423;
 
 print_r($token_google);
 echo "
@@ -245,12 +245,11 @@ echo "
 ";
 
 //REST CALL dakora_get_examples_pool_for_week
-$functionname = 'dakora_get_examples_pool_for_week';
+$functionname = 'dakora_get_examples_pool';
 
 $params = new stdClass();
-$params->courseid = 3;
+$params->courseid = 4;
 $params->studentid = 4;
-$params->week = 1439762400;
 
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
@@ -263,7 +262,7 @@ echo "
 ";
 
 
-//REST CALL dakora_set_example_time_slot
+/*//REST CALL dakora_set_example_time_slot
 $functionname = 'dakora_set_example_time_slot';
 
 $params = new stdClass();
@@ -297,15 +296,31 @@ print_r($resp);
 echo "
 
 
-";
+";*/
 
 //REST CALL dakora_get_examples_for_time_slot
 $functionname = 'dakora_get_examples_for_time_slot';
 
 $params = new stdClass();
 $params->studentid = 4;
-$params->start = 1439944200;
-$params->end = 1439994600;
+$params->start = 1440453602;
+$params->end = 1440525602;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+
+
+";
+
+//REST CALL dakora_get_cross_subjects
+$functionname = 'dakora_get_cross_subjects';
+
+$params = new stdClass();
+$params->studentid = 4;
+$params->courseid = 4;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);

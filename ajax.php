@@ -269,10 +269,7 @@ switch($action){
 		$pool_course = required_param('pool_course', PARAM_INT);
 		if(!$pool_course)$pool_course = $courseid;
 		
-		$week = optional_param('week', time(), PARAM_INT);
-		$week = block_exacomp_add_days($week, 1 - date('N', $week));
-		
-		$examples = block_exacomp_get_examples_for_pool($studentid, $week, $pool_course);
+		$examples = block_exacomp_get_examples_for_pool($studentid, $pool_course);
 		$json_examples = block_exacomp_get_json_examples($examples);
 		
 		echo json_encode($json_examples);

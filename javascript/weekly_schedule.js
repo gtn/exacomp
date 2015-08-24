@@ -83,7 +83,76 @@
 		});
 	}
 	
-	var exacomp_calcendar_config = [];
+	var exacomp_calcendar_config = {
+		slots: [
+			{
+				name: '1. Einheit',
+				start: '07:45',
+				end: '08:10'
+			}, {
+				name: '',
+				start: '08:10',
+				end: '08:35'
+			}, {
+				name: '2. Einheit',
+				start: '08:35',
+				end: '09:00'
+			}, {
+				name: '',
+				start: '09:00',
+				end: '09:25'
+			}, {
+				name: '3. Einheit',
+				start: '09:30',
+				end: '09:55'
+			}, {
+				name: '',
+				start: '09:55',
+				end: '10:20'
+			}, {
+				name: '4. Einheit',
+				start: '10:35',
+				end: '11:00'
+			}, {
+				name: '',
+				start: '11:00',
+				end: '11:25'
+			}, {
+				name: '5. Einheit',
+				start: '11:30',
+				end: '11:55'
+			}, {
+				name: '',
+				start: '11:55',
+				end: '12:20'
+			},{
+				name: '6. Einheit',
+				start: '12:25',
+				end: '12:50'
+			}, {
+				name: '',
+				start: '12:50',
+				end: '13:15'
+			},{
+				name: '7. Einheit',
+				start: '13:20',
+				end: '13:45'
+			}, {
+				name: '',
+				start: '13:45',
+				end: '14:10'
+			},{
+				name: '8. Einheit',
+				start: '14:15',
+				end: '14:40'
+			}, {
+				name: '',
+				start: '14:40',
+				end: '15:05'
+			},
+		]
+	};
+
 	
 	exacomp_calcendar = {
 		event_slot_to_time: function(origEvent) {
@@ -158,15 +227,15 @@
 			calendar_items = all_events['time_slots'];
 		});
 		*/
-		block_exacomp_get_configuration(function(configuration) {
+		/*block_exacomp_get_configuration(function(configuration) {
 			exacomp_calcendar_config = configuration['time_slots'];
 			pool_items = configuration['pool'];
 			$.each(pool_items, function(i, item){ add_pool_item(item); });
-		});
-		
-		/*block_exacomp_get_examples_for_pool(function(agenda_items) {
-			$.each(agenda_items, function(i, item){ add_pool_item(item); });
 		});*/
+		
+		block_exacomp_get_examples_for_pool(function(agenda_items) {
+			$.each(agenda_items, function(i, item){ add_pool_item(item); });
+		});
 		
 		function add_pool_item(data) {
 			var el = $( "<div class='fc-event'>" ).appendTo( $eventDiv ).text( 

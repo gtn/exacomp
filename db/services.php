@@ -45,7 +45,7 @@ $services = array(
 						'dakora_get_example_grading',
 						'dakora_get_user_role',
 						'dakora_get_students_for_course',
-						'dakora_get_examples_pool_for_week',
+						'dakora_get_examples_pool',
 						'dakora_set_example_time_slot',
 						'dakora_remove_example_from_schedule',
 						'dakora_get_examples_for_time_slot'
@@ -361,9 +361,9 @@ $functions = array(
 				'description' => 'get list of students for course',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)
 		),
-		'dakora_get_examples_pool_for_week' => array(
+		'dakora_get_examples_pool' => array(
 				'classname'   => 'block_exacomp_external',  //class containing the external function
-				'methodname'  => 'dakora_get_examples_pool_for_week',          //external function name
+				'methodname'  => 'dakora_get_examples_pool',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'get list of examples for weekly schedule pool',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)

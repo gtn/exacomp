@@ -5232,11 +5232,11 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid){
 			LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid
 			WHERE s.studentid = ? AND (
 				-- noch nicht auf einen tag geleg
-				(s.start IS null OR s.start=0))
+				(s.start IS null OR s.start=0)
 			)
 			ORDER BY e.title";
 	
-	return $DB->get_records_sql($sql,array($courseid, $studentid, $week));
+	return $DB->get_records_sql($sql,array($courseid, $studentid));
 }
 function block_exacomp_set_example_time_slot($courseid, $exampleid, $studentid, $start, $end){
 	global $DB;
