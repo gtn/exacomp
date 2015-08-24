@@ -5301,7 +5301,7 @@ function block_exacomp_get_json_examples($examples){
 		$example_array['teacher_evaluation'] = $example->teacher_evaluation;
 		$example_array['studentid'] = $example->studentid;
 		$example_array['courseid'] = $example->courseid;
-		$img = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/assoc_icon.png'), 'alt'=>get_string("competence_associations", "block_exacomp")));
+		$img = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/assoc_icon.png'), 'alt'=>get_string("competence_associations", "block_exacomp"), 'height'=>16, 'width'=>16));
 		
 		$example_array['assoc_url'] = html_writer::link(
 				new moodle_url('/blocks/exacomp/competence_associations.php',array("courseid"=>$example->courseid,"exampleid"=>$example->exampleid, "editmode"=>0)),
