@@ -70,6 +70,7 @@
 		}, function(calendar_items) {
 			//load them
 			callback($.parseJSON(calendar_items));
+			loading_done('slot');
 		});
 	}
 	function block_exacomp_get_examples_for_pool(callback) {
@@ -80,8 +81,30 @@
 		}, function(calendar_items) {
 			//load them
 			callback($.parseJSON(calendar_items));
+			loading_done('pool');
 		});
 	}
+	
+	var loadingStat = {
+		pool: false,
+		slot: false,
+		done: false,
+	};
+	function loading_done(type) {
+		if (loadingStat.done) {
+			return;
+		}
+		loadingStat[type] = true;
+		
+		if (!loadingStat.pool || !loadingStat.slot) {
+			return;
+		}
+		
+		console.log('loading done');
+		loadingStat.done = true;
+		$("#wrap").addClass('loaded');
+	}
+	console.log('loading');
 	
 	var exacomp_calcendar_config = {
 		slots: [
