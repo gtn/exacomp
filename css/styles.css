@@ -207,6 +207,16 @@ td.contentcell {
     -webkit-hyphens: auto;
     hyphens: auto;
     word-wrap: break-word;
+    vertical-align: top;
+}
+
+#block_exacomp .cell .statistic_head .cell, #block_exacomp .cell .crosssubjects .cell {
+	vertical-align: middle;
+	font-size: 0.85em;
+}
+
+#block_exacomp .cell .crosssubjects .c1, #block_exacomp .cell .crosssubjects .c2,#block_exacomp .cell .crosssubjects .c3,#block_exacomp .cell .crosssubjects .c4, #block_exacomp .cell .crosssubjects .c5, #block_exacomp .cell .crosssubjects .c6, #block_exacomp .cell .crosssubjects .c7, #block_exacomp .cell .crosssubjects .c8, #block_exacomp .cell .crosssubjects .c9, #block_exacomp .cell .crosssubjects .c10, #block_exacomp .cell .crosssubjects .c11 {
+	text-align: center;
 }
 
 #block_exacomp .cell .content {
