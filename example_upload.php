@@ -133,30 +133,33 @@ if($formdata = $form->get_data()) {
     
     // rename file according to LIS
     // TODO: lis renaming
-    /*
+
     if($formdata->lisfilename) {
-        $descr = reset($_POST['descriptor']);
-        $descr = $DB->get_record(block_exacomp::DB_DESCRIPTORS,array('id' => $descr));
-        $descr->topicid = $topicid;
-        $newfilename = block_exacomp_get_descriptor_numbering($descr).' ';
+        if (!$formdata->exampleid) {
+            // update
+            $descr = reset($_POST['descriptor']);
+            $descr = $DB->get_record(block_exacomp::DB_DESCRIPTORS,array('id' => $descr));
+            $descr->topicid = $topicid;
+            $filename_prefix = block_exacomp_get_descriptor_numbering($descr).' '. $formdata->title;
+        } else {
+            // get fileprefix from title
+            $filename_prefix = preg_replace('!\.[^\.]{2,4}$!i', '', $formdata->title);
+        }
+        
+
+        $filename_solution = $filename_prefix . "_SOLUTION." . pathinfo($form->get_new_filename('solution'), PATHINFO_EXTENSION);
         
         if ($file = block_exacomp_get_file($newExample, 'example_task')) {
-            $filename_task = $newfilename . $formdata->title . "." . pathinfo($form->get_new_filename('file'), PATHINFO_EXTENSION);
-            $file->rename('/', $filename_task);
+            $filename = $filename_prefix . "." . pathinfo($file->get_filename(), PATHINFO_EXTENSION);
+            $file->rename('/', $filename);
+            
+            $DB->update_record('block_exacompexamples', array('id' => $newExample->id, 'title' => $filename));
         }
-        
-    
-        if ($form->get_new_filename('file')) {
-            $newExample->title = $filename_task;
-        }
-        if ($form->get_new_filename('solution')) {
-            $filename_solution = $newfilename . $formdata->title . "_SOLUTION." . pathinfo($form->get_new_filename('solution'), PATHINFO_EXTENSION);
+        if ($file = block_exacomp_get_file($newExample, 'example_solution')) {
+            $filename = $filename_prefix . "_SOLUTION." . pathinfo($file->get_filename(), PATHINFO_EXTENSION);
+            $file->rename('/', $filename);
         }
     }
-    if ($filename_solution && $file = block_exacomp_get_file($newExample, 'example_solution')) {
-        $file->rename('/', $filename_solution);
-    }
-    */
     
     
     ?>
