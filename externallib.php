@@ -2926,7 +2926,7 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_courses_parameters() {
 		return new external_function_parameters ( array (
-				'userid' => new external_value ( PARAM_INT, 'id of user' ) 
+				'userid' => new external_value ( PARAM_INT, 'id of user, 0 for current user' ) 
 		) );
 	}
 	
@@ -2974,6 +2974,7 @@ class block_exacomp_external extends external_api {
 				'courseid' => $courseid 
 		) );
 		
+		//TODO if added for 1 student -> mind visibility for this student
 		$tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
 
 		$topics_return = array();
@@ -3005,7 +3006,7 @@ class block_exacomp_external extends external_api {
 		) ) );
 	}
 	
-	/**
+	/*
 	 * Returns description of method parameters
 	 * 
 	 * @return external_function_parameters
@@ -3014,7 +3015,8 @@ class block_exacomp_external extends external_api {
 		return new external_function_parameters ( array (
 				'courseid' => new external_value ( PARAM_INT, 'id of course'),
 				'topicid' => new external_value ( PARAM_INT, 'id of topic' ),
-				'userid' => new external_value ( PARAM_INT, 'id of user if 0 all visible descriptors')
+				'userid' => new external_value ( PARAM_INT, 'id of user, 0 for current user'),
+				'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false')
 		) );
 	}
 	
@@ -3023,17 +3025,24 @@ class block_exacomp_external extends external_api {
 	 * 
 	 * @return array of user courses
 	 */
-	public static function dakora_get_descriptors($courseid, $topicid, $userid) {
-		global $DB;
+	public static function dakora_get_descriptors($courseid, $topicid, $userid, $forall) {
+		global $DB, $USER;
 		$params = self::validate_parameters ( self::dakora_get_descriptors_parameters (), array (
 				'courseid' => $courseid,
 				'topicid' => $topicid,
-				'userid' => $userid
+				'userid' => $userid,
+				'forall'=> $forall
 		) );
+		
+		if($userid == 0 && $forall == false)
+			$userid = $USER->id;
 		
 		$tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
 
-		$non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+		$non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
+		
+		if(!$forall)
+			$non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
 		
 		$descriptors_return = array();
 		foreach($tree as $subject){
@@ -3045,7 +3054,7 @@ class block_exacomp_external extends external_api {
 							$descriptor_return->descriptorid = $descriptor->id;
 							$descriptor_return->descriptortitle = $descriptor->title;
 							$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
-							if(!in_array($descriptor->id, $non_visibilities))
+							if(!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student))||$forall))
 								$descriptors_return[] = $descriptor_return;
 						}
 					}
@@ -3078,7 +3087,8 @@ class block_exacomp_external extends external_api {
 		return new external_function_parameters ( array (
 				'courseid' => new external_value( PARAM_INT, 'id of course' ),
 				'descriptorid' => new external_value ( PARAM_INT, 'id of parent descriptor' ),
-				'userid' => new external_value ( PARAM_INT, 'id of user, if 0 all visible child descriptors')
+				'userid' => new external_value ( PARAM_INT, 'id of user, 0 for current user'),
+				'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false')
 		) );
 	}
 	
@@ -3087,21 +3097,28 @@ class block_exacomp_external extends external_api {
 	 * 
 	 * @return array of user courses
 	 */
-	public static function dakora_get_descriptor_children($courseid, $descriptorid, $userid) {
-		global $DB;
+	public static function dakora_get_descriptor_children($courseid, $descriptorid, $userid, $forall) {
+		global $DB, $USER;
 		$params = self::validate_parameters ( self::dakora_get_descriptor_children_parameters (), array (
 				'courseid' => $courseid,
 				'descriptorid' => $descriptorid,
-				'userid' => $userid
+				'userid' => $userid,
+				'forall' => $forall
 		) );
 		
-		//TODO visibilities für student und für alle
+		if($userid == 0 && !$forall)
+			$userid = $USER->id;
+			
 		$parent_descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptorid));
 		$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
 		$parent_descriptor->topicid = $descriptor_topic_mm->topicid;
 		
 		$children = block_exacomp_get_child_descriptors($parent_descriptor, $courseid, false, array(SHOW_ALL_TAXONOMIES), true, true, true);
-		$non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+		
+		$non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
+		
+		if(!$forall)
+			$non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
 
 		$children_return = array();
 		foreach($children as $child){
@@ -3110,20 +3127,23 @@ class block_exacomp_external extends external_api {
 				$child_return->childid = $child->id;
 				$child_return->childtitle = $child->title;
 				$child_return->numbering = block_exacomp_get_descriptor_numbering($child);
-				if(!in_array($child->id, $non_visibilities))
+				if(!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, non_visibilities_student))||$forall))
 					$children_return[] = $child_return;
 			}
 		}
 		
 		$parent_descriptor = block_exacomp_get_examples_for_descriptor($parent_descriptor, array(SHOW_ALL_TAXONOMIES), true, $courseid);
-		$example_non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+		
+		$example_non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
+		if(!$forall)
+			$example_non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
 
 		$examples_return = array();
 		foreach($parent_descriptor->examples as $example){
 			$example_return = new stdClass();
 			$example_return->exampleid = $example->id;
 			$example_return->exampletitle = $example->title;
-			if(!array_key_exists($example->id, $examples_return) && (!in_array($example->id, $example_non_visibilities)))
+			if(!array_key_exists($example->id, $examples_return) && (!in_array($example->id, $example_non_visibilities)) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))
 				$examples_return[$example->id] = $example_return;
 		}
 		
@@ -3156,17 +3176,22 @@ class block_exacomp_external extends external_api {
 		return new external_function_parameters ( array (
 				'courseid' => new external_value( PARAM_INT, 'id of course' ),
 				'descriptorid' => new external_value ( PARAM_INT, 'id of parent descriptor' ), 
-				'studentid' => new external_value (PARAM_INT, 'id of student')
+				'userid' => new external_value (PARAM_INT, 'id of user, if 0 current user'),
+				'forall' => new external_value (PARAM_BOOL, 'if all users = true, only one user = false')
 		) );
 	}
 	
-	public static function dakora_get_examples_for_descriptor($courseid, $descriptorid, $studentid){
+	public static function dakora_get_examples_for_descriptor($courseid, $descriptorid, $userid, $forall){
 		global $DB;
 		$params = self::validate_parameters ( self::dakora_get_examples_for_descriptor_parameters (), array (
 				'courseid' => $courseid,
 				'descriptorid' => $descriptorid,
-				'studentid' => $studentid
+				'userid' => $userid,
+				'forall' => $forall
 		) );
+		
+		if($userid == 0 && !$forall)
+			$userid = $USER->id;
 		
 		$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptorid));
 		
@@ -3183,15 +3208,18 @@ class block_exacomp_external extends external_api {
 			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, $courseid);
 			
 		}
-
-		$example_non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=0 AND visible=0', array($courseid, $userid));
+		
+		$example_non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
+		if(!$forall)
+			$example_non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+		
 		
 		$examples_return = array();
 		foreach($descriptor->examples as $example){
 			$example_return = new stdClass();
 			$example_return->exampleid = $example->id;
 			$example_return->exampletitle = $example->title;
-			if(!array_key_exists($example->id, $examples_return) && (!in_array($example->id, $example_non_visibilities)))
+			if(!array_key_exists($example->id, $examples_return) && (!in_array($example->id, $example_non_visibilities)) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))
 				$examples_return[$example->id] = $example_return;
 		}
 		
@@ -3212,7 +3240,6 @@ class block_exacomp_external extends external_api {
 	}
 	
 	public static function dakora_get_example_overview($exampleid){
-		//TODO add timeframe
 		return block_exacomp_external::get_example_by_id ( $exampleid );
 	}
 	
@@ -3238,7 +3265,8 @@ class block_exacomp_external extends external_api {
 				'courseid' => new external_value ( PARAM_INT, 'id of course'),
 				'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
 				'creatorid' => new external_value ( PARAM_INT, 'id of creator'),
-				'studentid' => new external_value ( PARAM_INT, 'id of student, if 0 -> add example to all user')
+				'userid' => new external_value ( PARAM_INT, 'id of user, if 0 current user'),
+				'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false')
 		) );
 	}
 	
@@ -3247,25 +3275,34 @@ class block_exacomp_external extends external_api {
 	 * 
 	 * @return array of user courses
 	 */
-	public static function dakora_add_example_to_learning_calendar($courseid, $exampleid, $creatorid, $studentid) {
+	public static function dakora_add_example_to_learning_calendar($courseid, $exampleid, $creatorid, $userid, $forall) {
 		global $DB, $USER;
 		$params = self::validate_parameters ( self::dakora_add_example_to_learning_calendar_parameters (), array (
 				'courseid' => $courseid,
 				'exampleid' => $exampleid,
 				'creatorid' => $creatorid,
-				'studentid' => $studentid
+				'userid' => $userid,
+				'forall' => $forall
 		) );
 		
 		if($creatorid == 0)
 			$creatorid = $USER->id;
 		
-		if($studentid == 0){
+		if($userid == 0 && !$forall)
+			$userid = $USER->id;
+			
+		$example = $DB->get_record(block_exacomp::DB_EXAMPLES, array('id'=>$exampleid));
+	
+		if($forall){
 			$students = block_exacomp_get_students_by_course($courseid);
+			
 			foreach($students as $student){
-				block_exacomp_add_example_to_schedule($student->id,$exampleid,$creatorid,$courseid);
+				if(block_exacomp_example_visible($courseid, $example, $student->id))
+					block_exacomp_add_example_to_schedule($student->id,$exampleid,$creatorid,$courseid);
 			}
 		}else{
-			block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid);
+			if(block_exacomp_example_visible($courseid, $example, $userid))
+				block_exacomp_add_example_to_schedule($userid,$exampleid,$creatorid,$courseid);
 		}
 		
 		return array (
@@ -3293,7 +3330,8 @@ class block_exacomp_external extends external_api {
 		return new external_function_parameters ( array (
 				'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
 				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
-				'userid' => new external_value ( PARAM_INT, 'id of user' ) 
+				'userid' => new external_value ( PARAM_INT, 'id of user' ),
+				'forall' => new external_value ( PARAM_BOOL, 'for all users = true, for one user = false' )
 		) );
 	}
 	
@@ -3304,8 +3342,32 @@ class block_exacomp_external extends external_api {
 	 *        	int exampleid
 	 * @return list of descriptors
 	 */
-	public static function dakora_get_descriptors_for_example($exampleid, $courseid, $userid) {
-		return block_exacomp_external::get_descriptors_for_example( $exampleid, $courseid, $userid);
+	public static function dakora_get_descriptors_for_example($exampleid, $courseid, $userid, $forall) {
+		global $DB, $USER; 
+		
+		$params = self::validate_parameters ( self::dakora_get_descriptors_for_example_parameters (), array (
+				'exampleid' => $exampleid,
+				'courseid' => $courseid,
+				'userid' => $userid,
+				'forall' => $forall
+		) );
+		
+		if($userid == 0 && !$forall)
+			$userid = $USER->id;
+		
+		$non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
+		
+		if(!$forall)
+			$non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+
+		$descriptors = block_exacomp_external::get_descriptors_for_example( $exampleid, $courseid, $userid);
+		
+		$final_descriptors = array();
+		foreach($descriptors as $descriptor)
+			if(!in_array($descriptor->descriptorid, $non_visibilities) && ((!$forall && !in_array($descriptor->descriptorid, $non_visibilities_student))||$forall))
+				$final_descriptors[] = $descriptor;
+		
+		return $final_descriptors;
 	}
 	
 	/**
@@ -3330,31 +3392,33 @@ class block_exacomp_external extends external_api {
 		return new external_function_parameters ( array (
 				'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
 				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
-				'studentid' => new external_value ( PARAM_INT, 'id of student' ) 
+				'userid' => new external_value ( PARAM_INT, 'id of user, if 0 current user' ) 
 		) );
 	}
 	
 	/**
-	 * Get descriptors for example
+	 * Get example grading for user
 	 * 
 	 * @param
 	 *        	int exampleid
+	 *			int courseid
+	 *			int userid
 	 * @return list of descriptors
 	 */
-	public static function dakora_get_example_grading($exampleid, $courseid, $studentid) {
+	public static function dakora_get_example_grading($exampleid, $courseid, $userid) {
 		global $DB;
 		
 		$params = self::validate_parameters ( self::dakora_get_example_grading_parameters (), array (
 				'exampleid' => $exampleid,
 				'courseid' => $courseid,
-				'studentid' => $studentid
+				'userid' => $userid
 		) );
 		
-		if ($studentid == 0)
-			$studentid = $USER->id;
+		if ($userid == 0)
+			$userid = $USER->id;
 		
 		$student = $DB->get_record ( 'user', array (
-				'id' => $studentid 
+				'id' => $userid 
 		) );
 		
 		$student = block_exacomp_get_user_examples_by_course($student, $courseid);
@@ -3373,7 +3437,6 @@ class block_exacomp_external extends external_api {
 				'teacherevaluation' => $teacherevaluation,
 				'studentevaluation' => $studentevaluation
 		);
-		//return block_exacomp_external::get_descriptors_for_example( $exampleid, $courseid, $userid);
 	}
 	
 	/**
@@ -3498,7 +3561,7 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_examples_pool_parameters() {
 		return new external_function_parameters ( array (
 				'courseid' => new external_value ( PARAM_INT, 'id of course'),
-				'studentid' => new external_value ( PARAM_INT, 'id of student' )
+				'userid' => new external_value ( PARAM_INT, 'id of user, if 0 current user' )
 		) );
 	}
 	
@@ -3507,23 +3570,21 @@ class block_exacomp_external extends external_api {
 	 * 
 	 * @param
 	 * 			int courseid
-	 *        	int studentid
-	 *			int week
+	 *        	int userid
 	 * @return list of descriptors
 	 */
-    // TODO: wir brauchen hier keine wochennummer
-	public static function dakora_get_examples_pool($studentid, $courseid) {
+	public static function dakora_get_examples_pool($userid, $courseid) {
 		global $USER;
 		
 		$params = self::validate_parameters ( self::dakora_get_examples_pool_parameters (), array (
 				'courseid'=>$courseid,
-				'studentid'=>$studentid
+				'userid'=>$userid
 			) );
 			
-		if($studentid == 0)
-			$studentid = $USER->id;
+		if($userid == 0)
+			$userid = $USER->id;
 			
-		$examples = block_exacomp_get_examples_for_pool($studentid, $courseid);
+		$examples = block_exacomp_get_examples_for_pool($userid, $courseid);
 		
 		return $examples;
 	}
@@ -3552,7 +3613,7 @@ class block_exacomp_external extends external_api {
 		return new external_function_parameters ( array (
 				'courseid' => new external_value(PARAM_INT, 'id of course'),
 				'exampleid' => new external_value(PARAM_INT, 'id of example'),
-				'studentid' => new external_value ( PARAM_INT, 'id of student' ),
+				'userid' => new external_value ( PARAM_INT, 'id of user, if 0 current user' ),
 				'start' => new external_value(PARAM_INT, 'start timestamp'),
 				'end'=> new external_value(PARAM_INT, 'end timestamp')
 		) );
@@ -3564,25 +3625,25 @@ class block_exacomp_external extends external_api {
 	 * @param
 	 *			int courseid
 	 * 			int exampleid
-	 *        	int studentid
+	 *        	int userid
 	 *			int start
 	 *			int end
 	 * @return list of descriptors
 	 */
-	public static function dakora_set_example_time_slot($courseid, $exampleid, $studentid, $start, $end) {
+	public static function dakora_set_example_time_slot($courseid, $exampleid, $userid, $start, $end) {
 		global $USER;
 		$params = self::validate_parameters ( self::dakora_set_example_time_slot_parameters (), array (
 				'courseid'=>$courseid,
 				'exampleid'=>$exampleid,
-				'studentid'=>$studentid,
+				'userid'=>$userid,
 				'start'=>$start,
 				'end'=>$end
 			) );
 			
-		if($studentid == 0)
-			$studentid = $USER->id;
+		if($userid == 0)
+			$userid = $USER->id;
 		
-		block_exacomp_set_example_time_slot($courseid, $exampleid, $studentid, $start, $end);
+		block_exacomp_set_example_time_slot($courseid, $exampleid, $userid, $start, $end);
 		
 		return array (
 				"success" => true
@@ -3611,7 +3672,7 @@ class block_exacomp_external extends external_api {
 		return new external_function_parameters ( array (
 				'courseid' => new external_value(PARAM_INT, 'id of course'),
 				'exampleid' => new external_value(PARAM_INT, 'id of example'),
-				'studentid' => new external_value ( PARAM_INT, 'id of student' )
+				'userid' => new external_value ( PARAM_INT, 'id of user, if 0 current user' )
 		) );
 	}
 	
@@ -3621,24 +3682,24 @@ class block_exacomp_external extends external_api {
 	 * @param
 	 *			int courseid
 	 * 			int exampleid
-	 *        	int studentid
+	 *        	int userid
 	 *			int start
 	 *			int end
 	 * @return list of descriptors
 	 */
-	public static function dakora_remove_example_from_schedule($courseid, $exampleid, $studentid) {
+	public static function dakora_remove_example_from_schedule($courseid, $exampleid, $userid) {
 		global $USER;
 		
 		$params = self::validate_parameters ( self::dakora_remove_example_from_schedule_parameters (), array (
 				'courseid'=>$courseid,
 				'exampleid'=>$exampleid,
-				'studentid'=>$studentid
+				'userid'=>$userid
 			) );
 			
-		if($studentid == 0)
-			$studentid = $USER->id;
+		if($userid == 0)
+			$userid = $USER->id;
 			
-		block_exacomp_remove_example_from_schedule($courseid, $exampleid, $studentid);
+		block_exacomp_remove_example_from_schedule($courseid, $exampleid, $userid);
 		
 		return array (
 				"success" => true
@@ -3664,7 +3725,7 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_examples_for_time_slot_parameters() {
 		return new external_function_parameters ( array (
-				'studentid' => new external_value ( PARAM_INT, 'id of student' ),
+				'userid' => new external_value ( PARAM_INT, 'id of user, if 0 current user' ),
 				'start' => new external_value(PARAM_INT, 'start timestamp'),
 				'end' => new external_value(PARAM_INT, 'end timestamp')
 		) );
@@ -3674,23 +3735,23 @@ class block_exacomp_external extends external_api {
 	 * Get examples for time slot
 	 * 
 	 * @param
-	 *        	int studentid
+	 *        	int userid
 	 *			int start
 	 *			int end
 	 * @return list of descriptors
 	 */
-	public static function dakora_get_examples_for_time_slot($studentid, $start, $end) {
+	public static function dakora_get_examples_for_time_slot($userid, $start, $end) {
 		global $USER;
 		$params = self::validate_parameters ( self::dakora_get_examples_for_time_slot_parameters (), array (
-				'studentid'=>$studentid,
+				'userid'=>$userid,
 				'start'=>$start,
 				'end'=>$end
 			) );
 			
-		if($studentid == 0)
-			$studentid = $USER->id;
+		if($userid == 0)
+			$userid = $USER->id;
 		
-		$examples = block_exacomp_get_examples_for_time_slot_all_courses($studentid, $start, $end);
+		$examples = block_exacomp_get_examples_for_time_slot_all_courses($userid, $start, $end);
 		
 		return $examples;
 	}

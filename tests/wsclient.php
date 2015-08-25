@@ -13,7 +13,7 @@ $params = new stdClass();
 
 require_once('./curl.php');
 $curl = new curl;
-$token_google = 155625;
+$token_google = 844659;
 
 print_r($token_google);
 echo "
@@ -94,6 +94,7 @@ $params = new stdClass();
 $params->courseid = 3;
 $params->topicid = 13;
 $params->userid = 0;
+$params->forall = 1;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
@@ -101,7 +102,46 @@ print_r($resp);
 
 echo "
 
-descriptors children:
+descriptors !for all:
+
+";
+
+
+/// REST CALL dakora_get_descriptors
+
+$functionname = 'dakora_get_descriptors';
+
+$params = new stdClass();
+$params->courseid = 3;
+$params->topicid = 13;
+$params->userid = 0;
+$params->forall = 0;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+
+descriptors children for all:
+
+";
+/// REST CALL dakora_get_descriptor_children
+$functionname = 'dakora_get_descriptor_children';
+
+$params = new stdClass();
+$params->courseid = 3;
+$params->descriptorid = 326;
+$params->userid = 0;
+$params->forall = 1;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+
+children !forall
 
 ";
 
@@ -112,6 +152,7 @@ $params = new stdClass();
 $params->courseid = 3;
 $params->descriptorid = 326;
 $params->userid = 0;
+$params->forall = 0;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
@@ -123,13 +164,34 @@ examples
 
 ";
 
+
 /// REST CALL dakora_get_descriptor_children
 $functionname = 'dakora_get_examples_for_descriptor';
 
 $params = new stdClass();
 $params->courseid = 4;
 $params->descriptorid = 1184;
-$params->studentid = 4;
+$params->userid = 0;
+$params->forall = 0;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+
+examples for all 
+
+";
+
+/// REST CALL dakora_get_descriptor_children
+$functionname = 'dakora_get_examples_for_descriptor';
+
+$params = new stdClass();
+$params->courseid = 4;
+$params->descriptorid = 1184;
+$params->userid = 0;
+$params->forall = 1;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
@@ -140,6 +202,8 @@ echo "
 example overview
 
 ";
+
+
 
 /// REST CALL dakora_get_descriptor_children
 $functionname = 'dakora_get_example_overview';
@@ -164,12 +228,34 @@ $params = new stdClass();
 $params->courseid = 4;
 $params->exampleid = 55;
 $params->creatorid = 0;
-$params->studentid = 4;
+$params->userid = 4;
+$params->forall = 0;
 
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
 print_r($resp);
+
+echo "
+
+add example to all
+";
+
+/// REST CALL dakora_add_example_to_learning_calendar
+$functionname = 'dakora_add_example_to_learning_calendar';
+
+$params = new stdClass();
+$params->courseid = 4;
+$params->exampleid = 55;
+$params->creatorid = 0;
+$params->userid = 0;
+$params->forall = 1;
+
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
 
 echo "
 
@@ -186,11 +272,33 @@ $params = new stdClass();
 $params->exampleid = 33;
 $params->courseid = 3;
 $params->userid = 4;
+$params->forall = 0;
 
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
 print_r($resp);
+
+
+echo " get descriptors for examples for all 
+
+
+";
+
+// REST CALL dakora_get_descriptors_for_example
+$functionname = 'dakora_get_descriptors_for_example';
+
+$params = new stdClass();
+$params->exampleid = 33;
+$params->courseid = 3;
+$params->userid = 0;
+$params->forall = 1;
+
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
 
 echo "
 
@@ -203,7 +311,7 @@ $functionname = 'dakora_get_example_grading';
 $params = new stdClass();
 $params->exampleid = 33;
 $params->courseid = 3;
-$params->studentid = 4;
+$params->userid = 4;
 
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
@@ -250,7 +358,7 @@ $functionname = 'dakora_get_examples_pool';
 
 $params = new stdClass();
 $params->courseid = 4;
-$params->studentid = 4;
+$params->userid =4;
 
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
@@ -303,9 +411,9 @@ echo "
 $functionname = 'dakora_get_examples_for_time_slot';
 
 $params = new stdClass();
-$params->studentid = 4;
-$params->start = 1440453602;
-$params->end = 1440525602;
+$params->userid = 0;
+$params->start = 1440542464;
+$params->end = 1440628864;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
@@ -317,10 +425,10 @@ echo "
 ";
 
 //REST CALL dakora_get_cross_subjects
-$functionname = 'dakora_get_cross_subjects';
+/*$functionname = 'dakora_get_cross_subjects';
 
 $params = new stdClass();
-$params->studentid = 4;
+$params->userid = 0;
 $params->courseid = 4;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
@@ -331,3 +439,4 @@ echo "
 
 
 ";
+*/
