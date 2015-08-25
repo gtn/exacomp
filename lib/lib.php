@@ -757,7 +757,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 	.'FROM {'.block_exacomp::DB_TOPICS.'} t '
 	.(($courseid>0)?'JOIN {'.block_exacomp::DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
 	.'JOIN {'.block_exacomp::DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
-	.'JOIN {'.block_exacomp::DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id '
+	.'JOIN {'.block_exacomp::DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid=0 '
 	.'JOIN {'.block_exacomp::DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=? '
 	.($showonlyvisible?'AND dvis.visible = 1 ':'') 
 	.'LEFT JOIN {'.block_exacomp::DB_NIVEAUS.'} n ON d.niveauid = n.id '		
@@ -911,7 +911,7 @@ function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldes
 	$sql = '(SELECT DISTINCT d.id, desctopmm.id as u_id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.requirement, d.knowledgecheck, d.benefit, n.title as cattitle '
 	.'FROM {'.block_exacomp::DB_TOPICS.'} t JOIN {'.block_exacomp::DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($topicid > 0) ? ' AND t.id = '.$topicid.' ' : '')
 	.'JOIN {'.block_exacomp::DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
-	.'JOIN {'.block_exacomp::DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id '
+	.'JOIN {'.block_exacomp::DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid=0 '
 	. 'LEFT JOIN {'.block_exacomp::DB_NIVEAUS.'} n ON n.id = d.niveauid '
 	.($mind_visibility?'JOIN {'.block_exacomp::DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=? '
 	.($showonlyvisible?'AND dvis.visible = 1 ':''):'')
@@ -938,7 +938,7 @@ function block_exacomp_get_descriptors_by_subject($subjectid,$niveaus = true) {
 	global $DB;
 
 	$sql = "SELECT d.*, dt.topicid, t.title as topic FROM {".block_exacomp::DB_DESCRIPTORS."} d, {".block_exacomp::DB_DESCTOPICS."} dt, {".block_exacomp::DB_TOPICS."} t
-	WHERE d.id=dt.descrid AND dt.topicid IN (SELECT id FROM {".block_exacomp::DB_TOPICS."} WHERE subjid=?)";
+	WHERE d.id=dt.descrid AND d.parentid =0 AND dt.topicid IN (SELECT id FROM {".block_exacomp::DB_TOPICS."} WHERE subjid=?)";
 	if($niveaus) $sql .= " AND d.niveauid > 0";
 	$sql .= " AND dt.topicid = t.id order by d.skillid, dt.topicid, d.niveauid";
 
@@ -4031,7 +4031,7 @@ function block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid
 	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.source, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.parentid, dvis.visible as visible, n.sorting as niveau '
 	.'FROM {'.block_exacomp::DB_TOPICS.'} t '
 	.'JOIN {'.block_exacomp::DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
-	.'JOIN {'.block_exacomp::DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id '
+	.'JOIN {'.block_exacomp::DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid = 0 '
 	.'JOIN {'.block_exacomp::DB_DESCVISIBILITY.'} dvis ON dvis.descrid = d.id AND dvis.studentid=0 AND dvis.courseid=? '
 	.'LEFT JOIN {'.block_exacomp::DB_NIVEAUS.'} n ON n.id = d.niveauid '  
 	.'WHERE d.id IN('.$WHERE.')'.')';
