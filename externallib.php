@@ -3095,6 +3095,7 @@ class block_exacomp_external extends external_api {
 				'userid' => $userid
 		) );
 		
+		//TODO visibilities für student und für alle
 		$parent_descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptorid));
 		$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
 		$parent_descriptor->topicid = $descriptor_topic_mm->topicid;
@@ -3115,13 +3116,14 @@ class block_exacomp_external extends external_api {
 		}
 		
 		$parent_descriptor = block_exacomp_get_examples_for_descriptor($parent_descriptor, array(SHOW_ALL_TAXONOMIES), true, $courseid);
-		
+		$example_non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+
 		$examples_return = array();
 		foreach($parent_descriptor->examples as $example){
 			$example_return = new stdClass();
 			$example_return->exampleid = $example->id;
 			$example_return->exampletitle = $example->title;
-			if(!array_key_exists($example->id, $examples_return))
+			if(!array_key_exists($example->id, $examples_return) && (!in_array($example->id, $example_non_visibilities)))
 				$examples_return[$example->id] = $example_return;
 		}
 		
@@ -3153,15 +3155,17 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_examples_for_descriptor_parameters(){
 		return new external_function_parameters ( array (
 				'courseid' => new external_value( PARAM_INT, 'id of course' ),
-				'descriptorid' => new external_value ( PARAM_INT, 'id of parent descriptor' ) 
+				'descriptorid' => new external_value ( PARAM_INT, 'id of parent descriptor' ), 
+				'studentid' => new external_value (PARAM_INT, 'id of student')
 		) );
 	}
 	
-	public static function dakora_get_examples_for_descriptor($courseid, $descriptorid){
+	public static function dakora_get_examples_for_descriptor($courseid, $descriptorid, $studentid){
 		global $DB;
 		$params = self::validate_parameters ( self::dakora_get_examples_for_descriptor_parameters (), array (
 				'courseid' => $courseid,
-				'descriptorid' => $descriptorid
+				'descriptorid' => $descriptorid,
+				'studentid' => $studentid
 		) );
 		
 		$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptorid));
@@ -3179,13 +3183,15 @@ class block_exacomp_external extends external_api {
 			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, $courseid);
 			
 		}
+
+		$example_non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=0 AND visible=0', array($courseid, $userid));
 		
 		$examples_return = array();
 		foreach($descriptor->examples as $example){
 			$example_return = new stdClass();
 			$example_return->exampleid = $example->id;
 			$example_return->exampletitle = $example->title;
-			if(!array_key_exists($example->id, $examples_return))
+			if(!array_key_exists($example->id, $examples_return) && (!in_array($example->id, $example_non_visibilities)))
 				$examples_return[$example->id] = $example_return;
 		}
 		
@@ -3698,6 +3704,8 @@ class block_exacomp_external extends external_api {
 		return new external_multiple_structure ( new external_single_structure ( array (
 				'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
 				'title' => new external_value ( PARAM_TEXT, 'title of example' ),
+				'start' => new external_value (PARAM_INT, 'start of event'),
+				'end' => new external_value (PARAM_INT, 'end of event'),
 				'student_evaluation' => new external_value ( PARAM_INT, 'self evaluation of student' ),
 				'teacher_evaluation' => new external_value( PARAM_TEXT, 'evaluation of teacher'),
 				'courseid' => new external_value(PARAM_INT, 'example course')

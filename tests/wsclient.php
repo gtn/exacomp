@@ -13,7 +13,7 @@ $params = new stdClass();
 
 require_once('./curl.php');
 $curl = new curl;
-$token_google = 821423;
+$token_google = 155625;
 
 print_r($token_google);
 echo "
@@ -127,8 +127,9 @@ examples
 $functionname = 'dakora_get_examples_for_descriptor';
 
 $params = new stdClass();
-$params->courseid = 3;
-$params->descriptorid = 327;
+$params->courseid = 4;
+$params->descriptorid = 1184;
+$params->studentid = 4;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
@@ -160,10 +161,10 @@ add example to schedule
 $functionname = 'dakora_add_example_to_learning_calendar';
 
 $params = new stdClass();
-$params->courseid = 3;
-$params->exampleid = 33;
-$params->creatorid = 5;
-$params->studentid = 0;
+$params->courseid = 4;
+$params->exampleid = 55;
+$params->creatorid = 0;
+$params->studentid = 4;
 
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
