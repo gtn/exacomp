@@ -73,26 +73,13 @@ class block_exacomp_example_upload_form extends moodleform {
 		//TODO mehrfachauswahl
 		$mform->addElement('select', 'taxid', get_string('taxonomy', 'block_exacomp'),$this->_customdata['taxonomies']);
 		
-		$editexample = $this->_customdata['exampleid'] > 0;
+		$mform->addElement('filemanager', 'file', get_string('file'), null, array('subdirs' => false, 'maxfiles' => 1));
+		$mform->addElement('filemanager', 'solution', get_string('solution','block_exacomp'), null, array('subdirs' => false, 'maxfiles' => 1));
 		
-		if(!$editexample || ($editexample && !$this->_customdata['task'])) {
-    		$mform->addElement('filepicker', 'file', get_string('file'), null, array('subdirs' => false, 'maxfiles' => 1));
-		} else {
-		    $mform->addElement('static', 'filelabel', get_string('file'));
-		    $mform->addElement('html', '<img width="50%" src="'.$this->_customdata['task'].'"/>',get_string('file'));
-		}
-		
-		if(!$editexample || ($editexample && !$this->_customdata['solution'])) {
-		    $mform->addElement('filepicker', 'solution', get_string('solution','block_exacomp'), null, array('subdirs' => false, 'maxfiles' => 1));
-		
-		    if($version) {
-		        $mform->addElement('checkbox', 'lisfilename', get_string('lisfilename', 'block_exacomp'));
-		        $mform->setDefault('lisfilename', 1);
-		    }
-		} else {
-		    $mform->addElement('static', 'solutionlabel', get_string('solution','block_exacomp'));
-		    $mform->addElement('html', '<img width="50%" src="'.$this->_customdata['solution'].'"/>',get_string('solution','block_exacomp'));
-		}
+	    if($version) {
+	        $mform->addElement('checkbox', 'lisfilename', get_string('lisfilename', 'block_exacomp'));
+	        $mform->setDefault('lisfilename', 1);
+	    }
 		
 		$mform->addElement('hidden','topicid');
 		$mform->setType('topicid', PARAM_INT);

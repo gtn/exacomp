@@ -2091,12 +2091,12 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		upgrade_block_savepoint(true, 2015082000, 'exacomp');
 	
     }
-    if($oldversion < 2015082001){
+    if($oldversion < 2015082500){
         /**
          * go through all examples and move the files into a mod_exacomp filestorage
          */
 
-        function block_exacomp_upgrade_20150820_move_to_file_storage($item, $type) {
+        function block_exacomp_upgrade_move_to_file_storage($item, $type) {
             global $CFG;
             
             if ($type == 'example_task') {
@@ -2166,8 +2166,8 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         
         $examples = $DB->get_records(block_exacomp::DB_EXAMPLES);
         foreach($examples as $example){
-            $update = block_exacomp_upgrade_20150820_move_to_file_storage($example, 'example_task');
-            $update += block_exacomp_upgrade_20150820_move_to_file_storage($example, 'example_solution');
+            $update = block_exacomp_upgrade_move_to_file_storage($example, 'example_task');
+            $update += block_exacomp_upgrade_move_to_file_storage($example, 'example_solution');
             
             if (!$update) continue;
             
@@ -2179,7 +2179,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // TODO: delete file url fields (task, solution)
         
 		// Exacomp savepoint reached.
-        upgrade_block_savepoint(true, 2015082001, 'exacomp');
+        upgrade_block_savepoint(true, 2015082500, 'exacomp');
     }
     
 	return $return_result;

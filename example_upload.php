@@ -63,12 +63,7 @@ $blocknode->make_active();
 $action = optional_param('action', 'add', PARAM_TEXT);
 
 if($action == 'serve') {
-    // TODO security: example id und typ übergeben und dann erst laden, nicht mit hash!
-    $contextid = required_param('c', PARAM_INT);
-    $itempathnamehash = required_param('i', PARAM_TEXT);
-    $fs = get_file_storage();
-    send_stored_file($fs->get_file_by_hash($itempathnamehash));
-    die;
+    print_error('this function is not available anymore');
 }
 // build tab navigation & print header
 echo $PAGE->get_renderer('block_exacomp')->header();
@@ -89,8 +84,8 @@ if($exampleid>0)
 
 $tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid, $descrid);
 
-$form = new block_exacomp_example_upload_form($_SERVER['REQUEST_URI'], array("descrid" => $descrid,"taxonomies"=>$taxonomies,"tree"=>$tree,"topicid"=>$topicid, "exampleid"=>$exampleid, "task"=>isset($example->task) ? $example->task : null,
-        "solution"=>isset($example->solution) ? $example->solution : null) );
+$form = new block_exacomp_example_upload_form($_SERVER['REQUEST_URI'],
+            array("descrid" => $descrid,"taxonomies"=>$taxonomies,"tree"=>$tree,"topicid"=>$topicid, "exampleid"=>$exampleid));
 
 if($formdata = $form->get_data()) {
 	
@@ -100,53 +95,7 @@ if($formdata = $form->get_data()) {
     $newExample->creatorid = $USER->id;
     $newExample->externalurl = $formdata->externalurl;
     $newExample->source = block_exacomp::EXAMPLE_SOURCE_TEACHER;
-    if($form->get_new_filename('file') || $form->get_new_filename('solution')) {
-        // save file
-        $context = context_user::instance($USER->id);
-        $fs = get_file_storage();
-
-        if($formdata->lisfilename == 1 && $form->get_new_filename('file')) {
-        	$descr = reset($_POST['descriptor']);
-        	$descr = $DB->get_record(block_exacomp::DB_DESCRIPTORS,array('id' => $descr));
-			$descr->topicid = $topicid;
-        	$newfilename = block_exacomp_get_descriptor_numbering($descr).' ';
-            
-        	$temp_filename = $newfilename;
-            $newfilename .= $formdata->title . "." . pathinfo($form->get_new_filename('file'), PATHINFO_EXTENSION);
-            $newsolutionname = $temp_filename . $formdata->name . "_SOLUTION." . pathinfo($form->get_new_filename('solution'), PATHINFO_EXTENSION);
-            $newExample->title = $newfilename;
-        }
-        else {
-        	$newfilename = "";
-        	if($formdata->lisfilename==1){
-	        	$descr = reset($_POST['descriptor']);
-	        	$descr = $DB->get_record(block_exacomp::DB_DESCRIPTORS,array('id' => $descr));
-				$descr->topicid = $topicid;
-	        	$newfilename = block_exacomp_get_descriptor_numbering($descr).' ';
-        	}
-            $newfilename = $newfilename.$form->get_new_filename('file');
-            $newsolutionname =  $newfilename.$form->get_new_filename('solution');
-        }
-
-        if(!$fs->file_exists($context->id, 'user', 'private', 0, '/', $newfilename))
-            $form->save_stored_file('file', $context->id, 'user', 'private', 0, '/', $newfilename, true);
-
-        $pathnamehash = $fs->get_pathname_hash($context->id, 'user', 'private', 0, '/', $newfilename);
-
-        if(!$fs->file_exists($context->id, 'user', 'private', 0, '/', $newsolutionname))
-            $form->save_stored_file('solution', $context->id, 'user', 'private', 0, '/', $newsolutionname, true);
-        $solutionpathnamehash = $fs->get_pathname_hash($context->id, 'user', 'private', 0, '/', $newsolutionname);
-
-        // insert example
-        if($form->get_new_filename('file')) {
-            $task = new moodle_url($CFG->wwwroot.'/blocks/exacomp/example_upload.php',array("action"=>"serve","c"=>$context->id,"i"=>$pathnamehash,"courseid"=>$courseid));
-            $newExample->task = $task->out(false);
-        }
-        if($form->get_new_filename('solution')) {
-            $solution = new moodle_url($CFG->wwwroot.'/blocks/exacomp/example_upload.php',array("action"=>"serve","c"=>$context->id,"i"=>$solutionpathnamehash,"courseid"=>$courseid));
-            $newExample->solution = $solution->out(false);
-        }
-    }
+    
     if($formdata->exampleid == 0)
         $newExample->id = $DB->insert_record('block_exacompexamples', $newExample);
     else {
@@ -171,10 +120,45 @@ if($formdata = $form->get_data()) {
     			$DB->insert_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=> $newExample->id));
     	}
     }
-        
-	//add visibility
+
+    //add visibility
 	$DB->insert_record(block_exacomp::DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$newExample->id, 'studentid'=>0, 'visible'=>1));
     block_exacomp_settstamp();
+    
+    // save file
+    file_save_draft_area_files($formdata->file, context_system::instance()->id, 'block_exacomp', 'example_task',
+            $newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
+    file_save_draft_area_files($formdata->solution, context_system::instance()->id, 'block_exacomp', 'example_solution',
+            $newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
+    
+    // rename file according to LIS
+    // TODO: lis renaming
+    /*
+    if($formdata->lisfilename) {
+        $descr = reset($_POST['descriptor']);
+        $descr = $DB->get_record(block_exacomp::DB_DESCRIPTORS,array('id' => $descr));
+        $descr->topicid = $topicid;
+        $newfilename = block_exacomp_get_descriptor_numbering($descr).' ';
+        
+        if ($file = block_exacomp_get_file($newExample, 'example_task')) {
+            $filename_task = $newfilename . $formdata->title . "." . pathinfo($form->get_new_filename('file'), PATHINFO_EXTENSION);
+            $file->rename('/', $filename_task);
+        }
+        
+    
+        if ($form->get_new_filename('file')) {
+            $newExample->title = $filename_task;
+        }
+        if ($form->get_new_filename('solution')) {
+            $filename_solution = $newfilename . $formdata->title . "_SOLUTION." . pathinfo($form->get_new_filename('solution'), PATHINFO_EXTENSION);
+        }
+    }
+    if ($filename_solution && $file = block_exacomp_get_file($newExample, 'example_solution')) {
+        $file->rename('/', $filename_solution);
+    }
+    */
+    
+    
     ?>
 <script type="text/javascript">
 		window.opener.block_exacomp.newExampleAdded();
@@ -186,6 +170,17 @@ if($formdata = $form->get_data()) {
 
 if($exampleid > 0) {
     $example->descriptors = $DB->get_fieldset_select('block_exacompdescrexamp_mm', 'descrid', 'exampid = ?',array($exampleid));
+    
+    $draftitemid = file_get_submitted_draft_itemid('file');
+    file_prepare_draft_area($draftitemid, context_system::instance()->id, 'block_exacomp', 'example_task', $exampleid,
+            array('subdirs' => 0, 'maxfiles' => 1));
+    $example->file = $draftitemid;
+    
+    $draftitemid = file_get_submitted_draft_itemid('solution');
+    file_prepare_draft_area($draftitemid, context_system::instance()->id, 'block_exacomp', 'example_solution', $exampleid,
+            array('subdirs' => 0, 'maxfiles' => 1));
+    $example->solution = $draftitemid;
+    
     $form->set_data($example);
 }
 

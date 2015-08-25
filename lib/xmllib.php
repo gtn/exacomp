@@ -925,7 +925,18 @@ class block_exacomp_data_importer extends block_exacomp_data {
         self::deleteIfNoSubcategories("block_exacompschooltypes","block_exacompsubjects","stid",self::$import_source_local_id);
         self::deleteIfNoSubcategories("block_exacompedulevels","block_exacompschooltypes","elid",self::$import_source_local_id);
     
-
+        // add subdescriptors to topics
+        $sql = "
+            INSERT INTO {".block_exacomp::DB_DESCTOPICS."}
+            (topicid, descrid)
+            SELECT dt_parent.topicid, d.id
+            FROM {".block_exacomp::DB_DESCRIPTORS."} d
+            JOIN {".block_exacomp::DB_DESCTOPICS."} dt_parent ON dt_parent.descrid=d.parentid
+            LEFT JOIN {".block_exacomp::DB_DESCTOPICS."} dt ON dt.descrid=d.id
+            WHERE dt.id IS NULL -- only for those, who have no topic yet
+        ";
+        $DB->execute($sql);
+        
         // after topics, descriptors and their mm are imported
         // check if new descriptors should be visible in the courses
         // 1. descriptors directly under the topic
@@ -959,7 +970,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
             SELECT DISTINCT ct.courseid, dc.exampid, 0, 1
             FROM {".block_exacomp::DB_COURSETOPICS."} ct
             JOIN {".block_exacomp::DB_DESCTOPICS."} dt ON ct.topicid = dt.topicid
-            LEFT JOIN {".block_exacomp::DB_DESCVISIBILITY."} dv ON dv.descrid=dt.descrid AND dv.studentid=0
+            JOIN {".block_exacomp::DB_DESCVISIBILITY."} dv ON dv.descrid=dt.descrid AND dv.studentid=0
 			JOIN {".block_exacomp::DB_DESCEXAMP."} dc ON dc.descrid=dt.descrid 
 			LEFT JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} ev ON ev.exampleid=dc.exampid AND ev.studentid=0 AND ev.courseid=ct.courseid
             WHERE ev.id IS NULL -- only for those, who have no visibility yet
@@ -972,7 +983,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
             SELECT DISTINCT cs.courseid, de.exampid, 0, 1
             FROM {".block_exacomp::DB_CROSSSUBJECTS."} cs 
             JOIN {".block_exacomp::DB_DESCCROSS."} dc ON cs.id = dc.crosssubjid
-            LEFT JOIN {".block_exacomp::DB_DESCVISIBILITY."} dv ON dv.descrid=dc.descrid AND dv.studentid=0
+            JOIN {".block_exacomp::DB_DESCVISIBILITY."} dv ON dv.descrid=dc.descrid AND dv.studentid=0
 			JOIN {".block_exacomp::DB_DESCEXAMP."} de ON de.descrid=dv.descrid 
 			LEFT JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} ev ON ev.exampleid=de.exampid AND ev.studentid=0 AND ev.courseid=cs.courseid
             WHERE ev.id IS NULL AND cs.courseid != 0  -- only for those, who have no visibility yet

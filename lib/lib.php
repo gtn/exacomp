@@ -75,20 +75,59 @@ function block_exacomp_init_js_weekly_schedule(){
 	
 	$PAGE->requires->js('/blocks/exacomp/fullcalendar/jquery.ui.touch.js');
 }
-function block_exacomp_is_teacher($context) {
+
+function block_exacomp_get_context_from_courseid($courseid) {
+    if ($courseid instanceof context) {
+        // already context
+        return $courseid;
+    } else if (is_numeric($courseid)) { // don't use is_int, because eg. moodle $COURSE->id is a string!
+        return context_course::instance($courseid);
+    } else if ($courseid === null) {
+        global $COURSE;
+        return context_course::instance($COURSE->id);
+    } else {
+        print_error('wrong courseid type '.gettype($courseid));
+    }
+}
+/**
+ * 
+ * @param courseid or context $context
+ */
+function block_exacomp_is_teacher($context = null) {
+    $context = block_exacomp_get_context_from_courseid($context);
     return has_capability('block/exacomp:teacher', $context);
 }
-function block_exacomp_is_student($context) {
-	// a teacher can not be a student in the same course
+/**
+ * 
+ * @param courseid or context $context
+ */
+function block_exacomp_is_student($context = null) {
+    $context = block_exacomp_get_context_from_courseid($context);
+    // a teacher can not be a student in the same course
     return has_capability('block/exacomp:student', $context) && !has_capability('block/exacomp:teacher', $context);
 }
-function block_exacomp_is_admin($context) {
+/**
+ * 
+ * @param courseid or context $context
+ */
+function block_exacomp_is_admin($context = null) {
+    $context = block_exacomp_get_context_from_courseid($context);
     return has_capability('block/exacomp:admin', $context);
 }
-function block_exacomp_require_teacher($context) {
+/**
+ * 
+ * @param courseid or context $context
+ */
+function block_exacomp_require_teacher($context = null) {
+    $context = block_exacomp_get_context_from_courseid($context);
     return require_capability('block/exacomp:teacher', $context);
 }
-function block_exacomp_require_admin($context) {
+/**
+ * 
+ * @param courseid or context $context
+ */
+function block_exacomp_require_admin($context = null) {
+    $context = block_exacomp_get_context_from_courseid($context);
     return require_capability('block/exacomp:admin', $context);
 }
  
@@ -5202,14 +5241,14 @@ function block_exacomp_get_file_url($item, $type) {
     global $COURSE;
     
     // TODO: hacked here, delete fields and delete this code!
+    /*
     if (($type == 'example_task') && $item->task) {
         return $item->task;
     }
     if (($type == 'example_solution') && $item->solution) {
         return $item->solution;
     }
-    
-    
+    */
     
     // get from filestorage
     $file = block_exacomp_get_file($item, $type);
