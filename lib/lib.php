@@ -842,13 +842,12 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 				e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe
 				FROM {" . block_exacomp::DB_EXAMPLES . "} e
 				JOIN {" . block_exacomp::DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?"
-			.($mind_visibility?'JOIN {'.block_exacomp::DB_EXAMPVISIBILITY.'} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.courseid=? '
-			.($showonlyvisible?'AND evis.visible = 1 ':''):'') 
+			.($mind_visibility?' JOIN {'.block_exacomp::DB_EXAMPVISIBILITY.'} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.courseid=? '
+			.($showonlyvisible?' AND evis.visible = 1 ':''):'') 
 			. " WHERE "
 			. " e.source != " . block_exacomp::EXAMPLE_SOURCE_USER . " AND "
 			. (($showallexamples) ? " 1=1 " : " e.creatorid > 0")
 			, array($descriptor->id, $courseid));
-	
 	foreach($examples as $example){
 		$example->taxonomies = block_exacomp_get_taxonomies_by_example($example);
 		

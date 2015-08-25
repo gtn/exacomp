@@ -2,14 +2,19 @@
 
 class exabis_special_id_generator {
     /*
-    generates a 30 digit id
-    25 digits = unique id (base 36 = a-z0-9)
-    5 digits = checksum (crc32 of id in base 36)
+    generates a 25 digit id
+    21 digits = unique id (base 64 = A-Za-z0-9_-)
+    4 digits = checksum (crc32 of id in base 64)
     */
     
-    const ID_LENGTH = 25;
-    const CHECK_LENGTH = 5;
-
+    const ID_LENGTH = 21;
+    const CHECK_LENGTH = 4;
+    const BASE = 64;
+    private static $BASE64 = array(
+                "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
+                "a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",
+                "0","1","2","3","4","5","6","7","8","9","_","-");
+    
     /* from http://php.net/manual/de/function.base-convert.php */
     static private function str_baseconvert($str, $frombase=10, $tobase=36) { 
         $str = trim($str); 
@@ -27,7 +32,11 @@ class exabis_special_id_generator {
             $s = ''; 
             while (bccomp($q, '0', 0) > 0) { 
                 $r = intval(bcmod($q, $tobase)); 
-                $s = base_convert($r, 10, $tobase) . $s; 
+                if ($tobase == 64) {
+                    $s = self::$BASE64[$r].$s;
+                } else {
+                    $s = base_convert($r, 10, $tobase) . $s; 
+                }
                 $q = bcdiv($q, $tobase, 0); 
             } 
         } 
@@ -35,36 +44,32 @@ class exabis_special_id_generator {
 
         return $s; 
     }
-
+    
     // make a string longer/shorter but cutting, or adding zeros to the left
     static private function make_length($str, $len) {
-        return str_pad(substr($str, -$len), $len, "0" , STR_PAD_LEFT);
+        return str_pad(substr($str, -$len), $len, self::BASE == 64 ? self::$BASE64[0] : "0" , STR_PAD_LEFT);
     }
 
-    static private function generate_check($id) {
-        $check = base_convert(abs(crc32($id)), 10, 36);
+    static private function generate_checksum($id) {
+        $check = self::str_baseconvert(abs(crc32($id)), 10, self::BASE);
         $check = self::make_length($check, self::CHECK_LENGTH);
         
         return $check;
     }
-    static public function generate_id() {
-        $md5 = md5('some random string '.microtime(false));
-        $id = self::make_length(self::str_baseconvert($md5, 16, 36), self::ID_LENGTH);
+    static public function generate_random_id() {
+        $md5 = md5(microtime(false));
+        $id = self::make_length(self::str_baseconvert($md5, 16, self::BASE), self::ID_LENGTH);
 
-        // return whole id (id + checksum)
-        return $id.self::generate_check($id);
+        return $id.self::generate_checksum($id);
     }
 
-    static public function check_id($id) {
-        // is correct length?
+    static public function validate_id($id) {
         if (strlen($id) !== self::ID_LENGTH+self::CHECK_LENGTH) return false;
 
-        // explode parts
         $check = substr($id, self::ID_LENGTH);
         $id = substr($id, 0, self::ID_LENGTH);
         
-        // check it
-        return (self::generate_check($id) === $check);
+        return self::generate_checksum($id) === $check;
     }
 }
 
@@ -72,9 +77,8 @@ class exabis_special_id_generator {
 echo "<pre>";
 
 for ($i = 0; $i< 10000; $i++) {
-    $id = exabis_special_code_generator::generate_id();
+    $id = exabis_special_id_generator::generate_random_id();
     
-    // if (!check_id($id))
-    echo 'id: '.$i.' '.$id.' '.(my_code::check_id($id)?'':' bad no ').'<br />';
+    echo 'id: '.$i.' '.$id.' '.(exabis_special_id_generator::validate_id($id)?'':' bad no ').'<br />';
 }
 */

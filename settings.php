@@ -2,6 +2,28 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+require_once __DIR__.'/lib/exabis_special_id_generator.php';
+
+if (!class_exists('block_exacomp_admin_setting_source')) {
+    // check needed, because moodle includes this file twice
+
+    class block_exacomp_admin_setting_source extends admin_setting_configtext {
+        public function validate($data) {
+            $ret = parent::validate($data);
+            if ($ret !== true) {
+                return $ret;
+            }
+            
+            if (exabis_special_id_generator::validate_id($data)) {
+                return true;
+            } else {
+                return 'wrong id';
+                // return get_string('validateerror', 'admin');
+            }
+        }
+    }
+}
+
 $settings->add(new admin_setting_configtext('exacomp/xmlserverurl', get_string('settings_xmlserverurl', 'block_exacomp'),
 		get_string('settings_configxmlserverurl', 'block_exacomp'), "", PARAM_URL));
 
@@ -25,3 +47,6 @@ $settings->add(new admin_setting_configcheckbox('exacomp/enableteacherimport', g
 
 $settings->add(new admin_setting_configcheckbox('exacomp/external_trainer_assign', get_string('block_exacomp_external_trainer_assign_head', 'block_exacomp'),
         get_string('block_exacomp_external_trainer_assign_body', 'block_exacomp'), 0));
+
+$settings->add(new block_exacomp_admin_setting_source('exacomp/mysource', 'Source ID', "", PARAM_TEXT));
+

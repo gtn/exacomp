@@ -70,8 +70,7 @@ class block_exacomp_data {
                     block_exacomp::DB_TOPICS);
     
     protected static function get_my_source() {
-        global $CFG;
-        return $CFG->wwwroot;
+        return get_config('exacomp', 'mysource');
     }
     
     
@@ -266,6 +265,12 @@ class block_exacomp_data_exporter extends block_exacomp_data {
         core_php_time_limit::raise();
         raise_memory_limit(MEMORY_HUGE);
         
+        if (!self::get_my_source()) {
+            print_error('source not configured, go to block settings');
+            // '<a href="'.$CFG->wwwroot.'/admin/settings.php?section=blocksettingexacomp">settings</a>'
+            return;
+        }
+        
         $xml = new block_exacomp_SimpleXMLElement(
             '<?xml version="1.0" encoding="UTF-8"?>'.
             '<exacomp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://github.com/gtn/edustandards/blob/master/new%20schema/exacomp.xsd" />'
@@ -282,26 +287,6 @@ class block_exacomp_data_exporter extends block_exacomp_data {
         self::$xml = $xml;
         self::$zip = $zip;
 
-        // TODO: skills
-        /*
-            <skill id="1">
-            <title><![CDATA[Hören]]></title>
-            <sorting>6656</sorting>
-            </skill>
-        */
-        /*
-        $xmlSkills = $xml->addChild('skills');
-        $dbSkills = $DB->get_records(block_exacomp::DB_SKILLS);
-        var_dump($dbSkills);
-        foreach ($dbSkills as $dbSkill) {
-            $xmlSkill = $xmlSkills->addChild('skill');
-        }
-        /*
-        $skill->sourceid = $skill['id']->__toString();
-$skill->source = block_exacomp::IMPORT_SOURCE_DEFAULT;
-    $DB->insert_record(block_exacomp::DB_SKILLS, simpleXMLElementToArray($skill));
-        */
-    
         self::export_skills($xml);
         self::export_niveaus($xml);
         self::export_taxonomies($xml);
@@ -835,7 +820,8 @@ class block_exacomp_data_importer extends block_exacomp_data {
         }
         
         self::$import_source_global_id = (string)$xml['source'];
-        self::$import_source_local_id = self::add_source_if_not_exists(self::$import_source_global_id);
+        self::$import_source_local_id = 
+            self::$import_source_global_id == self::get_my_source() ? 0 : self::add_source_if_not_exists(self::$import_source_global_id);
         
         // update scripts for new source format
         if (self::has_old_data(block_exacomp::IMPORT_SOURCE_DEFAULT)) {
@@ -970,12 +956,12 @@ class block_exacomp_data_importer extends block_exacomp_data {
         $sql = "
             INSERT INTO {".block_exacomp::DB_EXAMPVISIBILITY."}
             (courseid, exampleid, studentid, visible)
-            SELECT ct.courseid, dc.exampid, 0, 1
+            SELECT DISTINCT ct.courseid, dc.exampid, 0, 1
             FROM {".block_exacomp::DB_COURSETOPICS."} ct
             JOIN {".block_exacomp::DB_DESCTOPICS."} dt ON ct.topicid = dt.topicid
             LEFT JOIN {".block_exacomp::DB_DESCVISIBILITY."} dv ON dv.descrid=dt.descrid AND dv.studentid=0
 			JOIN {".block_exacomp::DB_DESCEXAMP."} dc ON dc.descrid=dt.descrid 
-			LEFT JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} ev ON ev.exampleid=dc.exampid AND ev.studentid=0
+			LEFT JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} ev ON ev.exampleid=dc.exampid AND ev.studentid=0 AND ev.courseid=ct.courseid
             WHERE ev.id IS NULL -- only for those, who have no visibility yet
         ";
         $DB->execute($sql);
@@ -983,12 +969,12 @@ class block_exacomp_data_importer extends block_exacomp_data {
         $sql = "
             INSERT INTO {".block_exacomp::DB_EXAMPVISIBILITY."}
             (courseid, exampleid, studentid, visible)
-            SELECT cs.courseid, de.exampid, 0, 1
+            SELECT DISTINCT cs.courseid, de.exampid, 0, 1
             FROM {".block_exacomp::DB_CROSSSUBJECTS."} cs 
             JOIN {".block_exacomp::DB_DESCCROSS."} dc ON cs.id = dc.crosssubjid
             LEFT JOIN {".block_exacomp::DB_DESCVISIBILITY."} dv ON dv.descrid=dc.descrid AND dv.studentid=0
 			JOIN {".block_exacomp::DB_DESCEXAMP."} de ON de.descrid=dv.descrid 
-			LEFT JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} ev ON ev.exampleid=de.exampid AND ev.studentid=0
+			LEFT JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} ev ON ev.exampleid=de.exampid AND ev.studentid=0 AND ev.courseid=cs.courseid
             WHERE ev.id IS NULL AND cs.courseid != 0  -- only for those, who have no visibility yet
         ";
         $DB->execute($sql); //only necessary if we save courseinformation as well -> existing crosssubjects imported  only as drafts -> not needed
@@ -1038,11 +1024,25 @@ class block_exacomp_data_importer extends block_exacomp_data {
     private static function insert_or_update_item($table, $item) {
         global $DB;
         
-        if ($dbItem = $DB->get_record($table, array('source'=>$item->source, 'sourceid'=>$item->sourceid))) {
+        $where = $item->source ? array('source' => $item->source, 'sourceid' => $item->sourceid) : array('id'=>$item->id);
+        if ($dbItem = $DB->get_record($table, $where)) {
             $item->id = $dbItem->id;
-            $DB->update_record($table, $item);
+            
+            if ($item->source == self::$import_source_local_id) {
+                // only update, if coming from same source as xml
+                $DB->update_record($table, $item);
+            } else {
+                // source not xml source -> skip update
+            }
         } else {
-            $item->id = $DB->insert_record($table, $item);
+            $new_id = $DB->insert_record($table, $item);
+            if ($item->source) {
+                // foreign source
+                $item->id = $new_id;
+            } else {
+                // move to specified id
+                $DB->execute("UPDATE {".$table."} SET id=? WHERE id=?", array($item->id, $new_id));
+            }
         }
     }
     
@@ -1124,6 +1124,11 @@ class block_exacomp_data_importer extends block_exacomp_data {
         self::insert_or_update_item(block_exacomp::DB_EXAMPLES, $item);
         self::kompetenzraster_mark_item_used(block_exacomp::DB_EXAMPLES, $item);
         
+        // if local example, move to source teacher
+        if (!$item->source) {
+            self::insert_or_update_record(block_exacomp::DB_EXAMPLES, array("id"=>$item->id), array('source' => block_exacomp::EXAMPLE_SOURCE_TEACHER));
+        }
+        
         // has to be called after inserting the example, because the id is needed!
         if ($xmlItem->filesolution) {
             self::insert_file('example_solution', $xmlItem->filesolution, $item);
@@ -1144,6 +1149,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
             foreach($xmlItem->descriptors->descriptorid as $descriptor) {
                 if ($descriptorid = self::get_database_id($descriptor)) {
                     self::insert_or_update_record(block_exacomp::DB_DESCEXAMP, array("exampid"=>$item->id, "descrid"=>$descriptorid));
+                } else {
                 }
             }
         }
@@ -1226,6 +1232,11 @@ class block_exacomp_data_importer extends block_exacomp_data {
 
         self::insert_or_update_item(block_exacomp::DB_DESCRIPTORS, $descriptor);
         self::kompetenzraster_mark_item_used(block_exacomp::DB_DESCRIPTORS, $descriptor);
+        
+        // if local descriptor, move to custom source
+        if (!$descriptor->source) {
+            self::insert_or_update_record(block_exacomp::DB_DESCRIPTORS, array("id"=>$descriptor->id), array('source' => block_exacomp::CUSTOM_CREATED_DESCRIPTOR));
+        }
         
         if ($xmlItem->examples) {
             print_error('wrong format');
@@ -1376,12 +1387,12 @@ class block_exacomp_data_importer extends block_exacomp_data {
         if (empty($item->source)) {
             // default to file source
             $item->source = self::$import_source_local_id;
-        // TODO: for now if i export an xml from my own moodle and reimport it there, it will show up as another source. maybe change?
-        /*
         } elseif ($item->source === self::get_my_source()) {
-            // source is own moodle, eg. export and import in same moodle, set it to specific
-            $item->source = block_exacomp::IMPORT_SOURCE_SPECIFIC;
-        */
+            // source is own moodle, eg. export and import in same moodle
+            $item->source = 0;
+            $item->sourceid = 0;
+            // keep $item->id
+            return $item;
         } else {
             // load local source id
             $item->source = self::add_source_if_not_exists($item->source);
@@ -1390,11 +1401,6 @@ class block_exacomp_data_importer extends block_exacomp_data {
         // put sourceid and source on top of object properties, easier to read :)
         $item = (object)(array('sourceid' => $item->id, 'source' => $item->source) + (array)$item);
         unset($item->id);
-        
-        /*
-        echo 'item: ';
-        var_dump($item);
-        */
         
         return $item;
     }
@@ -1419,7 +1425,8 @@ class block_exacomp_data_importer extends block_exacomp_data {
         
         $item = self::parse_xml_item($element);
         
-        return $DB->get_field($table, "id", array("sourceid" => $item->sourceid, "source" => $item->source));
+        $where = $item->source ? array('source' => $item->source, 'sourceid' => $item->sourceid) : array('id'=>$item->id);
+        return $DB->get_field($table, "id", $where);
     }
     
     
