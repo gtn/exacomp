@@ -81,6 +81,7 @@ $string['teacher_third_configuration_step'] = 'Im nächsten Schritt werden Moodl
 $string['teacher_third_configuration_step_link'] = '(Optional: Wenn Sie nicht mit Moodle-Aktivit&auml;ten arbeiten m&ouml;chten, dann entfernen Sie das Häkchen "Ich m&ouml;chte mit Moodle-Aktivit&auml;ten arbeiten" im Tab "Konfiguration".)';
 $string['completed_config'] = 'Die Exabis Competencies Konfiguration wurde abgeschlossen.';
 $string['optional_step'] = 'In Ihrem Kurs sind noch keine Teilnehmer eingeschrieben, bet&auml;tigen Sie diesen Link wenn Sie das jetzt machen m&ouml;chten.';
+$string['next_step_first_teacher_step'] = 'Klicken Sie hier um zum n&auml;chsten Schritt zu gelangen.';
 
 //Block Settings
 $string['settings_xmlserverurl'] = 'Server-URL';
