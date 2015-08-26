@@ -3573,7 +3573,7 @@ class block_exacomp_external extends external_api {
 	 *        	int userid
 	 * @return list of descriptors
 	 */
-	public static function dakora_get_examples_pool($userid, $courseid) {
+	public static function dakora_get_examples_pool($courseid, $userid) {
 		global $USER;
 		
 		$params = self::validate_parameters ( self::dakora_get_examples_pool_parameters (), array (
