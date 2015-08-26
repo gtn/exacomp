@@ -142,11 +142,10 @@ if($formdata = $form->get_data()) {
             $descr->topicid = $topicid;
             $filename_prefix = block_exacomp_get_descriptor_numbering($descr).' '. $formdata->title;
         } else {
-            // get fileprefix from title
+            // get fileprefix from title (= strip extension)
             $filename_prefix = preg_replace('!\.[^\.]{2,4}$!i', '', $formdata->title);
         }
         
-
         $filename_solution = $filename_prefix . "_SOLUTION." . pathinfo($form->get_new_filename('solution'), PATHINFO_EXTENSION);
         
         if ($file = block_exacomp_get_file($newExample, 'example_task')) {

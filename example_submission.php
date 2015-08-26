@@ -118,11 +118,7 @@ if($formdata = $form->get_data()) {
 	
 	
 	if($type == "file") {
-		
-		$fs = get_file_storage();
-
 		$filename = $form->get_new_filename('file');
-		$pathnamehash = $fs->get_pathname_hash($context->id, 'user', 'private', 0, '/', $filename);
 		$context = context_user::instance($USER->id);
 		try {
 			$form->save_stored_file('file', $context->id, 'block_exaport', 'item_file', $itemid, '/', $filename, true);

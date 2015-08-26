@@ -70,12 +70,7 @@ $blocknode->make_active();
 $action = optional_param('action', 'add', PARAM_TEXT);
 
 if($action == 'serve') {
-
-    $contextid = required_param('c', PARAM_INT);
-    $itempathnamehash = required_param('i', PARAM_TEXT);
-    $fs = get_file_storage();
-    send_stored_file($fs->get_file_by_hash($itempathnamehash));
-    die;
+    print_error('this function is not available anymore');
 }
 // build tab navigation & print header
 echo $PAGE->get_renderer('block_exacomp')->header();
@@ -164,10 +159,6 @@ if($formdata = $form->get_data()) {
     }
     
     if ($filename = $form->get_new_filename('file')) {
-        $fs = get_file_storage();
-    
-        $filename = $form->get_new_filename('file');
-        $pathnamehash = $fs->get_pathname_hash($context->id, 'user', 'private', 0, '/', $filename);
         $context = context_user::instance($USER->id);
         try {
             $form->save_stored_file('file', $context->id, 'block_exaport', 'item_file', $itemid, '/', $filename, true);
