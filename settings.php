@@ -14,6 +14,10 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                 return $ret;
             }
             
+            if (empty($data)) {
+                // no id
+                return true;
+            }
             if (exabis_special_id_generator::validate_id($data)) {
                 return true;
             } else {
