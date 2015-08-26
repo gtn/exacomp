@@ -731,8 +731,6 @@ class block_exacomp_data_exporter extends block_exacomp_data {
             $dbTopics = $DB->get_records(block_exacomp::DB_TOPICS, array('subjid' => $dbSubject->id));
         }
         
-        var_dump(self::$filter_descriptors);
-        
         foreach($dbTopics as $dbTopic){
             
             $xmlTopic = $xmlSubject->topics->addChild('topic');
