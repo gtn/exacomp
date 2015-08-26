@@ -1998,7 +1998,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	public function print_example_solution_icon($solution) {
 		global $OUTPUT;
 		
-		return html_writer::link(str_replace('&amp;','&',$solution), $OUTPUT->pix_icon("e/fullpage", get_string('solution','block_exacomp')) ,array("target" => "_blank"));
+		return html_writer::link($solution, $OUTPUT->pix_icon("e/fullpage", get_string('solution','block_exacomp')) ,array("target" => "_blank"));
 	}
 	public function print_visibility_icon($visible, $descriptorid) {
 		global $OUTPUT;
@@ -2472,15 +2472,14 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	public function example_tree_get_exampleicon($example) {
 		$icon="";
 		
-		if($example->task) {
-			$example->task = str_replace('&amp;','&',$example->task);
+		if($url = block_exacomp_get_file_url($example, 'example_task')) {
 			$img = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pdf.gif'), 'alt'=>get_string("assigned_example", "block_exacomp"), 'width'=>16, 'height'=>16));
-			$icon .= html_writer::link($example->task, $img,
+			$icon .= html_writer::link($url, $img,
 					array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('task_example', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
-		} if($example->solution) {
-			$example->solution = str_replace('&amp;','&',$example->solution);
+		} 
+		if($url = block_exacomp_get_file_url($example, 'example_solution')) {
 			$img = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pdf solution.gif'), 'alt'=>get_string("assigned_example", "block_exacomp"), 'height'=>16, 'width'=>16));
-			$icon .= html_writer::link($example->solution, $img,
+			$icon .= html_writer::link($url, $img,
 					array('target'=>'_blank', 'onmouseover'=>'Tip(\''.get_string('solution_example', 'block_exacomp').'\')', 'onmouseout'=>'UnTip()')).' ';
 		}
 		if($example->externaltask) {

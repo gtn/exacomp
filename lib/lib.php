@@ -5342,9 +5342,9 @@ function block_exacomp_get_json_examples($examples){
 				new moodle_url('/blocks/exacomp/competence_associations.php',array("courseid"=>$example->courseid,"exampleid"=>$example->exampleid, "editmode"=>0)),
 				 $img, array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 		
-		if(block_exacomp_get_file_url($example, 'example_solution'))
-			$example_array['solution'] = html_writer::link(str_replace('&amp;','&',block_exacomp_get_file_url($example, 'example_solution')), $OUTPUT->pix_icon("e/fullpage", get_string('solution','block_exacomp')) ,array("target" => "_blank"));
-	
+		if($url = block_exacomp_get_file_url($example, 'example_solution'))
+			$example_array['solution'] = html_writer::link($url, $OUTPUT->pix_icon("e/fullpage", get_string('solution','block_exacomp')) ,array("target" => "_blank"));
+				 
 		$course_info = $DB->get_record('course', array('id'=>$example->courseid));
 		$example_array['courseinfo'] = $course_info->shortname;
 		
