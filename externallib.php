@@ -3643,7 +3643,7 @@ class block_exacomp_external extends external_api {
 		if($userid == 0)
 			$userid = $USER->id;
 		
-		block_exacomp_set_example_time_slot($courseid, $exampleid, $userid, $start, $end);
+		block_exacomp_set_example_start_end($courseid, $exampleid, $userid, $start, $end);
 		
 		return array (
 				"success" => true
@@ -3751,7 +3751,7 @@ class block_exacomp_external extends external_api {
 		if($userid == 0)
 			$userid = $USER->id;
 		
-		$examples = block_exacomp_get_examples_for_time_slot_all_courses($userid, $start, $end);
+		$examples = block_exacomp_get_examples_for_start_end_all_courses($userid, $start, $end);
 		
 		return $examples;
 	}

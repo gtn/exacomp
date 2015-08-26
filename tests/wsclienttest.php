@@ -13,7 +13,7 @@ $params = new stdClass();
 
 require_once('./curl.php');
 $curl = new curl;
-$token_google = 147806;
+$token_google = 670511;
 
 print_r($token_google);
 echo "
@@ -91,8 +91,8 @@ descriptors:
 $functionname = 'dakora_get_descriptors';
 
 $params = new stdClass();
-$params->courseid = 3;
-$params->topicid = 13;
+$params->courseid = 4;
+$params->topicid = 132;
 $params->userid = 0;
 $params->forall = 1;
 
@@ -112,8 +112,8 @@ descriptors !for all:
 $functionname = 'dakora_get_descriptors';
 
 $params = new stdClass();
-$params->courseid = 3;
-$params->topicid = 13;
+$params->courseid = 4;
+$params->topicid = 132;
 $params->userid = 0;
 $params->forall = 0;
 
@@ -130,8 +130,8 @@ descriptors children for all:
 $functionname = 'dakora_get_descriptor_children';
 
 $params = new stdClass();
-$params->courseid = 3;
-$params->descriptorid = 326;
+$params->courseid = 4;
+$params->descriptorid = 5533;
 $params->userid = 0;
 $params->forall = 1;
 
@@ -149,8 +149,8 @@ children !forall
 $functionname = 'dakora_get_descriptor_children';
 
 $params = new stdClass();
-$params->courseid = 3;
-$params->descriptorid = 326;
+$params->courseid = 4;
+$params->descriptorid = 5533;
 $params->userid = 0;
 $params->forall = 0;
 
@@ -170,7 +170,7 @@ $functionname = 'dakora_get_examples_for_descriptor';
 
 $params = new stdClass();
 $params->courseid = 4;
-$params->descriptorid = 1184;
+$params->descriptorid = 5534;
 $params->userid = 0;
 $params->forall = 0;
 
@@ -189,7 +189,7 @@ $functionname = 'dakora_get_examples_for_descriptor';
 
 $params = new stdClass();
 $params->courseid = 4;
-$params->descriptorid = 1184;
+$params->descriptorid = 5534;
 $params->userid = 0;
 $params->forall = 1;
 
@@ -222,11 +222,11 @@ add example to schedule
 ";
 
 /// REST CALL dakora_add_example_to_learning_calendar
-$functionname = 'dakora_add_example_to_learning_calendar';
+/*$functionname = 'dakora_add_example_to_learning_calendar';
 
 $params = new stdClass();
 $params->courseid = 4;
-$params->exampleid = 55;
+$params->exampleid = 33;
 $params->creatorid = 0;
 $params->userid = 4;
 $params->forall = 0;
@@ -240,13 +240,13 @@ echo "
 
 add example to all
 ";
-
+*/
 /// REST CALL dakora_add_example_to_learning_calendar
 $functionname = 'dakora_add_example_to_learning_calendar';
 
 $params = new stdClass();
 $params->courseid = 4;
-$params->exampleid = 55;
+$params->exampleid = 34;
 $params->creatorid = 0;
 $params->userid = 0;
 $params->forall = 1;
@@ -366,20 +366,20 @@ $resp = $curl->post($serverurl, $params);
 print_r($resp);
 
 echo "
-
+set to timeslot:
 
 ";
 
 
-/*//REST CALL dakora_set_example_time_slot
+//REST CALL dakora_set_example_time_slot
 $functionname = 'dakora_set_example_time_slot';
 
 $params = new stdClass();
-$params->courseid = 3;
-$params->exampleid = 31;
-$params->studentid = 4;
-$params->start = 1439794800;
-$params->end = 1439796600;
+$params->courseid = 4;
+$params->exampleid = 34;
+$params->userid = 0;
+$params->start = 1440568800;
+$params->end = 1440576000;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
@@ -389,14 +389,14 @@ echo "
 
 
 ";
-
+/*
 //REST CALL dakora_remove_example_from_schedule
 $functionname = 'dakora_remove_example_from_schedule';
 
 $params = new stdClass();
-$params->courseid = 3;
-$params->exampleid = 3;
-$params->studentid = 4;
+$params->courseid = 4;
+$params->exampleid = 34;
+$params->userid = 0;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
@@ -405,15 +405,15 @@ print_r($resp);
 echo "
 
 
-";*/
-
+";
+*/
 //REST CALL dakora_get_examples_for_time_slot
 $functionname = 'dakora_get_examples_for_time_slot';
 
 $params = new stdClass();
 $params->userid = 0;
-$params->start = 1440542464;
-$params->end = 1440628864;
+$params->start = 1440561600;
+$params->end = 1440604800;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
