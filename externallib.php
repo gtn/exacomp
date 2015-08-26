@@ -3447,7 +3447,7 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_example_grading_returns() {
 		return new external_single_structure ( array (
 				'teacherevaluation' => new external_value ( PARAM_INT, 'teacher evaluation for student and example' ),
-				'studentevaluation' => new external_value ( PARAM_TEXT, 'self evaluation for example' )
+				'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation for example' )
 		) );
 	}
 	
