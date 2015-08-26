@@ -491,10 +491,9 @@ class block_exacomp_data_exporter extends block_exacomp_data {
             SELECT e.*
             FROM {".block_exacomp::DB_EXAMPLES."} e
             WHERE (e.source IS NULL OR e.source != ".block_exacomp::EXAMPLE_SOURCE_USER.") AND
-            ".($parentid ? "e.parentid = $parentid" : "(e.parentid=0 OR e.parentid IS NULL)
+            ".($parentid ? "e.parentid = $parentid" : "(e.parentid=0 OR e.parentid IS NULL)")."
             $filter
-        ")
-        );
+        ");
         
         if (!$dbItems) return;
         
@@ -574,6 +573,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
                 SELECT d.*
                 FROM {".block_exacomp::DB_DESCRIPTORS."} d
                 JOIN {".block_exacomp::DB_DESCTOPICS."} dt ON dt.descrid = d.id AND dt.topicid IN (".join(',', self::$filter_topics).")
+                WHERE parentid=0
             ");
         } else {
             $dbItems = $DB->get_records(block_exacomp::DB_DESCRIPTORS, array('parentid'=>$parentid));
