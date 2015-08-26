@@ -258,8 +258,9 @@ class block_exacomp_data_exporter extends block_exacomp_data {
     
     static $xml;
     static $zip;
+    static $filter_topics;
     
-    public static function do_export($type = null /* TODO alles exportieren, nur aktuelles moodle exportieren... */) {
+    public static function do_export($filter_topics = null) {
         global $DB, $SITE;
         
         core_php_time_limit::raise();
@@ -286,6 +287,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
         
         self::$xml = $xml;
         self::$zip = $zip;
+        self::$filter_topics = $filter_topics;
 
         self::export_skills($xml);
         self::export_niveaus($xml);
@@ -473,11 +475,25 @@ class block_exacomp_data_exporter extends block_exacomp_data {
         */
 
         // ignore user examples
+        if (!$parentid && self::$filter_topics) {
+            $filter = "
+                AND e.id IN (
+                    SELECT de.exampid
+                    FROM {".block_exacomp::DB_DESCEXAMP."} de
+                    JOIN {".block_exacomp::DB_DESCTOPICS."} dt ON dt.descrid = de.descrid AND dt.topicid IN (".join(',', self::$filter_topics).")
+                )
+            ";
+        } else {
+            $filter = "";
+        }
+        
         $dbItems = $DB->get_records_sql("
             SELECT e.*
             FROM {".block_exacomp::DB_EXAMPLES."} e
-            WHERE (source IS NULL OR source != ".block_exacomp::EXAMPLE_SOURCE_USER.") AND
-            ".($parentid ? "parentid = $parentid" : "(parentid=0 OR parentid IS NULL)")
+            WHERE (e.source IS NULL OR e.source != ".block_exacomp::EXAMPLE_SOURCE_USER.") AND
+            ".($parentid ? "e.parentid = $parentid" : "(e.parentid=0 OR e.parentid IS NULL)
+            $filter
+        ")
         );
         
         if (!$dbItems) return;
@@ -552,7 +568,16 @@ class block_exacomp_data_exporter extends block_exacomp_data {
     private static function export_descriptors($xmlParent, $parentid = 0) {
         global $DB;
         
-        $dbItems = $DB->get_records(block_exacomp::DB_DESCRIPTORS, array('parentid'=>$parentid));
+        
+        if (!$parentid && self::$filter_topics) {
+            $dbItems = $DB->get_records_sql("
+                SELECT d.*
+                FROM {".block_exacomp::DB_DESCRIPTORS."} d
+                JOIN {".block_exacomp::DB_DESCTOPICS."} dt ON dt.descrid = d.id AND dt.topicid IN (".join(',', self::$filter_topics).")
+            ");
+        } else {
+            $dbItems = $DB->get_records(block_exacomp::DB_DESCRIPTORS, array('parentid'=>$parentid));
+        }
         
         if (!$dbItems) return;
         
@@ -662,6 +687,11 @@ class block_exacomp_data_exporter extends block_exacomp_data {
         $xmlSubject->addChild('topics');
         $dbTopics = $DB->get_records(block_exacomp::DB_TOPICS, array('subjid' => $dbSubject->id));
         foreach($dbTopics as $dbTopic){
+            
+            if (self::$filter_topics && !in_array($dbTopic->id, self::$filter_topics)) {
+                continue;
+            }
+            
             $xmlTopic = $xmlSubject->topics->addChild('topic');
             self::assign_source($xmlTopic, $dbTopic);
             

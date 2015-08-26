@@ -29,6 +29,8 @@ require_once dirname(__FILE__)."/lib/xmllib.php";
 
 class block_exacomp_renderer extends plugin_renderer_base {
     public function header() {
+        block_exacomp_init_js_css();
+
         return
             parent::header().
             $this->print_wrapperdivstart();
@@ -1945,8 +1947,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         $ret = '<div>';
         foreach ($sources as $source) {
             $name = ($source->name ? $source->name : $source->source);
-            $ret .= $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'action'=>'delete', 'source'=>$source->id)), 
-                    "Importierte Daten von $name löschen",
+            $ret .= $OUTPUT->box("Importierte Daten von $name ".html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'action'=>'delete', 'source'=>$source->id)), 
+                    "löschen",
                     array( "onclick" => "return confirm('Really delete \"'+this.getAttribute('data-name')+'\"?')", 'data-name' => $name)));
         }
         $ret .= '</div>';
@@ -2581,6 +2583,71 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$table_html .= html_writer::tag("input", "", array("name" => "open_row_groups", "type" => "hidden", "value" => (optional_param('open_row_groups', "", PARAM_TEXT))));
 
 		return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url . "&action=save", "id" => "course-selection"));
+	}
+	public function print_courseselection_export($schooltypes){
+		global $PAGE;
+		
+		$headertext = "Bitte wählen";
+		$topics_activ = array();
+
+		$header = html_writer::tag('p', $headertext).html_writer::empty_tag('br');
+
+		$table = new html_table();
+		$table->attributes['class'] = 'exabis_comp_comp rowgroup';
+		$rowgroup = 0;
+		$rows = array();
+		foreach($schooltypes as $schooltype){
+			
+			$row = new html_table_row();
+			$row->attributes['class'] = 'exabis_comp_teilcomp highlight';
+	
+			$cell = new html_table_cell();
+			$cell->text = html_writer::div(html_writer::tag('b', $schooltype->title));
+			$cell->attributes['class'] = 'rowgroup-arrow';
+					
+			$cell->colspan = 3;
+			$row->cells[] = $cell;
+			
+			$rows[] = $row;
+					
+			foreach($schooltype->subs as $subject){
+				$hasSubs = !empty($subject->subs);
+					
+				if ($hasSubs) {
+					$rowgroup++;
+					$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$rowgroup;
+					$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$rowgroup;
+				} else {
+					$this_rowgroup_class = $rowgroup_class;
+					$sub_rowgroup_class = '';
+				}
+				$row = new html_table_row();
+				$row->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rowgroup_class . ' highlight';
+
+				$cell = new html_table_cell();
+				$cell->text = html_writer::div(html_writer::tag('b', $subject->title));
+				$cell->attributes['class'] = 'rowgroup-arrow';
+				
+				$cell->colspan = 2;
+				$row->cells[] = $cell;
+				
+				$selectAllCell = new html_table_cell();
+				$selectAllCell->text = html_writer::tag("a", get_string('selectall','block_exacomp'),array("class" => "selectall"));
+				$row->cells[] = $selectAllCell;
+
+				$rows[] = $row;
+				$this->print_topics_courseselection($rows, 0, $subject->subs, $rowgroup, $sub_rowgroup_class, $topics_activ);
+				
+			}
+		}
+		
+		$table->data = $rows;
+
+
+		$table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
+		$table_html .= html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>'Exportieren')), '', array('id'=>'exabis_save_button'));
+
+		return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url->out(false, array('action'=>'export_selected')), "id" => "course-selection"));
 	}
 	public function print_topics_courseselection(&$rows, $level, $topics, &$rowgroup, $rowgroup_class = '', $topics_activ){
 		global $version;

@@ -1,5 +1,7 @@
 
 (function($){
+	var storageid = document.location.pathname;
+
 	$( window ).load(function() {
 		var group = block_exacomp.get_param('group');
 		block_exacomp.onlyShowColumnGroup(group);
@@ -140,6 +142,14 @@
 				// closing: hide all subs
 				$('.rowgroup-content-'+id).hide();
 			}
+			
+			var ids = [];
+			$('#assign-competencies').find('.rowgroup-header.open').each(function(){
+				var id = this.className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
+				ids.push(id);
+			});
+			console.log(ids);
+			localStorage.setObject(storageid, ids);
 		}
 	});
 
@@ -177,6 +187,14 @@
 				$form.find('.rowgroup-content-'+id).show();
 			});
 		});
+		// reopen saved states
+		var ids;
+		if (ids = localStorage.getObject(storageid)) {
+			$.each(ids, function(tmp, id){
+				$form.find('.rowgroup-header-'+id).addClass('open');
+				$form.find('.rowgroup-content-'+id).show();
+			});
+		}
 		// opening: hide all subs which are still closed
 		$('.rowgroup-header').not('.open').each(function(){
 			var id = this.className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');

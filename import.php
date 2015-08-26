@@ -171,32 +171,35 @@ if($isAdmin || block_exacomp_check_customupload()) {
         } else {
             $hasData = block_exacomp_data::has_data();
             
-            if ($hasData && $isAdmin){
-                echo $OUTPUT->box(get_string("importdone", "block_exacomp"));
-                echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'normal')), get_string('doimport_again', 'block_exacomp')));
-            }
-            elseif ($isAdmin) {
-            	if($delete)
-            		echo $OUTPUT->box(get_string("delete_success", "block_exacomp"));
-                // no data yet, allow import or import demo data
-                echo $OUTPUT->box(html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one_admin.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).get_string('first_configuration_step', 'block_exacomp'));
-                echo $OUTPUT->box(get_string("importpending", "block_exacomp"));
-                echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'normal')), get_string('doimport', 'block_exacomp')));
-                echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'demo')), get_string('do_demo_import', 'block_exacomp')));
-            }
-    
-            if($hasData) {
-                // custom import only of there is no old data anymore
-                echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'custom')), get_string('doimport_own', 'block_exacomp')));
+            if($delete)
+                echo $OUTPUT->box(get_string("delete_success", "block_exacomp"));
+            
+            if ($isAdmin) {
+                if ($hasData){
+                    echo $OUTPUT->box(get_string("importdone", "block_exacomp"));
+                    echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'normal')), get_string('doimport_again', 'block_exacomp')));
+
+                    // custom import only of there is no old data anymore
+                    echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'custom')), get_string('doimport_own', 'block_exacomp')));
+                } else {
+                    // no data yet, allow import or import demo data
+                    echo $OUTPUT->box(html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one_admin.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).get_string('first_configuration_step', 'block_exacomp'));
+                    echo $OUTPUT->box(get_string("importpending", "block_exacomp"));
+                    echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'normal')), get_string('doimport', 'block_exacomp')));
+                    echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'demo')), get_string('do_demo_import', 'block_exacomp')));
+                }
             }
     
             // export
-            echo '<br />';
-            echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/export.php', array('courseid'=>$courseid)), 'Alle Kompetenzraster dieser Moodle Instanz exportieren', array('target'=>'_blank')));
+            if($hasData) {
+                echo '<hr />';
+                echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/export.php', array('action'=>'export_all', 'courseid'=>$courseid)), 'Alle Kompetenzraster dieser Moodle Instanz exportieren'));
+                echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/export.php', array('action'=>'select', 'courseid'=>$courseid)), 'Selektiver Export'));
+            }
             
             
             if ($isAdmin) {
-                echo '<br /><br /><br />';
+                echo '<hr />';
                 echo $PAGE->get_renderer('block_exacomp')->print_sources();
             }
         }
