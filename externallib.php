@@ -3772,4 +3772,53 @@ class block_exacomp_external extends external_api {
 				'courseid' => new external_value(PARAM_INT, 'example course')
 		) ) );
 	}
+	
+	/**
+	 * Returns description of method parameters
+	 * 
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_cross_subjects_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
+				'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user')
+		) );
+	}
+	
+	/**
+	 * Get cross subjects
+	 * 
+	 * @param
+	 *        	int courseid
+	 *			int userid
+	 * @return list of descriptors
+	 */
+	public static function dakora_get_cross_subjects($courseid, $userid) {
+		global $USER;
+		$params = self::validate_parameters ( self::dakora_get_cross_subjects_parameters (), array (
+				'courseid'=>$courseid,
+				'userid'=>$userid
+			) );
+			
+		if($userid == 0)
+			$userid = $USER->id;
+		
+		$cross_subjects = block_exacomp_get_cross_subjects_by_course($courseid, $userid);
+		
+		return $cross_subjects;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_cross_subjects_returns() {
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'id' => new external_value ( PARAM_INT, 'id of cross subject' ),
+				'title' => new external_value ( PARAM_TEXT, 'title of cross subject' ),
+				'description' => new external_value ( PARAM_TEXT, 'description of cross subject'),
+				'subjectid' => new external_value (PARAM_INT, 'subject id, cross subject is associated with')
+		) ) );
+	}
 }

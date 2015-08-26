@@ -13,7 +13,7 @@ $params = new stdClass();
 
 require_once('./curl.php');
 $curl = new curl;
-$token_google = 432174;
+$token_google = 202331;
 
 print_r($token_google);
 echo "
@@ -47,17 +47,16 @@ $resp_moodle = $curl->get($serverurl_exaport);
 $resp_moodle = json_decode($resp_moodle)->token;
 print_r($resp_moodle);
 echo "
-
-courses:
+cross subjects:
 
 ";
 header('Content-Type: text/plain');
 //REST CALL dakora_get_examples_pool_for_week
-$functionname = 'dakora_get_examples_pool';
+$functionname = 'dakora_get_cross_subjects';
 
 $params = new stdClass();
 $params->courseid = 3;
-$params->userid =5;
+$params->userid =0;
 
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
