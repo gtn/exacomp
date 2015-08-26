@@ -1,5 +1,6 @@
 <?php
 
+use tool_templatelibrary\api;
 class block_exacomp_SimpleXMLElement extends SimpleXMLElement {
     /**
      * Adds a child with $value inside CDATA
@@ -18,11 +19,30 @@ class block_exacomp_SimpleXMLElement extends SimpleXMLElement {
         return $new_child;
     }
 
+    public static function create($rootElement) {
+        return new self('<?xml version="1.0" encoding="UTF-8"?><'.$rootElement.' />');
+    }
+    
     public function addChildWithCDATAIfValue($name, $value = NULL) {
         if ($value) {
             return $this->addChildWithCDATA($name, $value);
         } else {
             return $this->addChild($name, $value);
+        }
+    }
+    
+    public function addChild($name, $value = null, $namespace = null) {
+        if ($name instanceof SimpleXMLElement) {
+            $newNode = $name;
+            $node = dom_import_simplexml($this);
+            $newNode = $node->ownerDocument->importNode(dom_import_simplexml($newNode), true);
+            $node->appendChild($newNode);
+
+            // return last children, this is the added child!
+            $children = $this->children();
+            return $children[count($children)-1];
+        } else {
+            return parent::addChild($name, $value, $namespace);
         }
     }
     
@@ -258,9 +278,9 @@ class block_exacomp_data_exporter extends block_exacomp_data {
     
     static $xml;
     static $zip;
-    static $filter_topics;
+    static $filter_descriptors;
     
-    public static function do_export($filter_topics = null) {
+    public static function do_export($filter_descriptors = null) {
         global $DB, $SITE;
         
         core_php_time_limit::raise();
@@ -287,7 +307,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
         
         self::$xml = $xml;
         self::$zip = $zip;
-        self::$filter_topics = $filter_topics;
+        self::$filter_descriptors = $filter_descriptors;
 
         self::export_skills($xml);
         self::export_niveaus($xml);
@@ -475,12 +495,12 @@ class block_exacomp_data_exporter extends block_exacomp_data {
         */
 
         // ignore user examples
-        if (!$parentid && self::$filter_topics) {
+        if (!$parentid && self::$filter_descriptors) {
             $filter = "
                 AND e.id IN (
                     SELECT de.exampid
                     FROM {".block_exacomp::DB_DESCEXAMP."} de
-                    JOIN {".block_exacomp::DB_DESCTOPICS."} dt ON dt.descrid = de.descrid AND dt.topicid IN (".join(',', self::$filter_topics).")
+                    WHERE de.descrid IN (".join(',', self::$filter_descriptors).")
                 )
             ";
         } else {
@@ -568,12 +588,11 @@ class block_exacomp_data_exporter extends block_exacomp_data {
         global $DB;
         
         
-        if (!$parentid && self::$filter_topics) {
+        if (!$parentid && self::$filter_descriptors) {
             $dbItems = $DB->get_records_sql("
                 SELECT d.*
                 FROM {".block_exacomp::DB_DESCRIPTORS."} d
-                JOIN {".block_exacomp::DB_DESCTOPICS."} dt ON dt.descrid = d.id AND dt.topicid IN (".join(',', self::$filter_topics).")
-                WHERE parentid=0
+                WHERE parentid=0 AND d.id IN (".join(',', self::$filter_descriptors).")
             ");
         } else {
             $dbItems = $DB->get_records(block_exacomp::DB_DESCRIPTORS, array('parentid'=>$parentid));
@@ -605,18 +624,22 @@ class block_exacomp_data_exporter extends block_exacomp_data {
         $xmlParent->addChild('edulevels');
 
         foreach ($dbEdulevels as $dbEdulevel) {
-            $xmlEdulevel = $xmlParent->edulevels->addchild('edulevel');
+            $xmlEdulevel = block_exacomp_SimpleXMLElement::create('edulevel');
             self::assign_source($xmlEdulevel, $dbEdulevel);
             
             $xmlEdulevel->addChildWithCDATAIfValue('title', $dbEdulevel->title);
             
             self::export_schooltypes($xmlEdulevel, $dbEdulevel);
+            
+            if (!empty($xmlEdulevel->schooltypes)) {
+                $xmlParent->edulevels->addChild($xmlEdulevel);
+            }
         }
     }
     
-	private static function export_crosssubjects($xmlParent, $parentid = 0) {
-		global $DB;
-		
+    private static function export_crosssubjects($xmlParent, $parentid = 0) {
+        global $DB;
+        
         $dbCrosssubjects = block_exacomp_get_crosssubjects();
         $xmlParent->addChild('crosssubjects');
 
@@ -628,13 +651,13 @@ class block_exacomp_data_exporter extends block_exacomp_data {
             $xmlCrosssubject->addChildWithCDATAIfValue('description', $dbCrosssubject->description);
             $xmlCrosssubject->courseid = $dbCrosssubject->courseid;
             
-       	 	 $descriptors = $DB->get_records_sql("
+                 $descriptors = $DB->get_records_sql("
                 SELECT DISTINCT d.id, d.source, d.sourceid
                 FROM {".block_exacomp::DB_DESCRIPTORS."} d
                 JOIN {".block_exacomp::DB_DESCCROSS."} dc ON d.id = dc.descrid
                 WHERE dc.crosssubjid = ?
             ", array($dbCrosssubject->id));
-       	 	 
+                 
             if ($descriptors) {
                 $xmlDescriptors = $xmlCrosssubject->addChild('descriptors');
                 foreach ($descriptors as $descriptor) {
@@ -650,7 +673,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
         $dbSchooltypes = block_exacomp_get_schooltypes($dbEdulevel->id);
 
         foreach ($dbSchooltypes as $dbSchooltype) {
-            $xmlSchooltype = $xmlEdulevel->schooltypes->addChild('schooltype');
+            $xmlSchooltype = block_exacomp_SimpleXMLElement::create('schooltype');
             self::assign_source($xmlSchooltype, $dbSchooltype);
             
             $xmlSchooltype->addChildWithCDATAIfValue('title', $dbSchooltype->title);
@@ -659,6 +682,10 @@ class block_exacomp_data_exporter extends block_exacomp_data {
             $xmlSchooltype->epop = $dbSchooltype->epop;
             
             self::export_subjects($xmlSchooltype, $dbSchooltype);
+
+            if (!empty($xmlSchooltype->subjects)) {
+                $xmlEdulevel->schooltypes->addChild($xmlSchooltype);
+            }
         }
     }
 
@@ -668,7 +695,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
         $xmlSchooltype->addChild('subjects');
         $dbSubjects = $DB->get_records(block_exacomp::DB_SUBJECTS, array('stid' => $dbSchooltype->id));
         foreach($dbSubjects as $dbSubject){
-            $xmlSubject = $xmlSchooltype->subjects->addChild('subject');
+            $xmlSubject = block_exacomp_SimpleXMLElement::create('subject');
             self::assign_source($xmlSubject, $dbSubject);
             
             $xmlSubject->addChildWithCDATAIfValue('title', $dbSubject->title);
@@ -678,6 +705,10 @@ class block_exacomp_data_exporter extends block_exacomp_data {
             $xmlSubject->epop = $dbSubject->epop;
             
             self::export_topics($xmlSubject, $dbSubject);
+        
+            if (!empty($xmlSubject->topics)) {
+                $xmlSchooltype->subjects->addChild($xmlSubject);
+            }
         }
     }
     
@@ -685,12 +716,24 @@ class block_exacomp_data_exporter extends block_exacomp_data {
         global $DB;
         
         $xmlSubject->addChild('topics');
-        $dbTopics = $DB->get_records(block_exacomp::DB_TOPICS, array('subjid' => $dbSubject->id));
+        if (self::$filter_descriptors) {
+            $dbTopics = $DB->get_records_sql("
+                SELECT t.*
+                FROM {".block_exacomp::DB_TOPICS."} t
+                WHERE t.subjid = ? AND
+                    t.id IN (
+                    SELECT dt.topicid
+                    FROM {".block_exacomp::DB_DESCTOPICS."} dt
+                    WHERE dt.descrid IN (".join(',', self::$filter_descriptors).")
+                )
+            ", array($dbSubject->id));
+        } else {
+            $dbTopics = $DB->get_records(block_exacomp::DB_TOPICS, array('subjid' => $dbSubject->id));
+        }
+        
+        var_dump(self::$filter_descriptors);
+        
         foreach($dbTopics as $dbTopic){
-            
-            if (self::$filter_topics && !in_array($dbTopic->id, self::$filter_topics)) {
-                continue;
-            }
             
             $xmlTopic = $xmlSubject->topics->addChild('topic');
             self::assign_source($xmlTopic, $dbTopic);
@@ -702,11 +745,18 @@ class block_exacomp_data_exporter extends block_exacomp_data {
             $xmlTopic->epop = $dbTopic->epop;
             $xmlTopic->numb = $dbTopic->numb;
             
+            if (self::$filter_descriptors) {
+                $filter = " AND d.id IN (".join(',', self::$filter_descriptors).")";
+            } else {
+                $filter = "";
+            }
+            
             $descriptors = $DB->get_records_sql("
                 SELECT DISTINCT d.id, d.source, d.sourceid
                 FROM {".block_exacomp::DB_DESCRIPTORS."} d
                 JOIN {".block_exacomp::DB_DESCTOPICS."} dt ON d.id = dt.descrid
                 WHERE dt.topicid = ?
+                    $filter
             ", array($dbTopic->id));
             
             if ($descriptors) {
@@ -1001,8 +1051,8 @@ class block_exacomp_data_importer extends block_exacomp_data {
             FROM {".block_exacomp::DB_COURSETOPICS."} ct
             JOIN {".block_exacomp::DB_DESCTOPICS."} dt ON ct.topicid = dt.topicid
             JOIN {".block_exacomp::DB_DESCVISIBILITY."} dv ON dv.descrid=dt.descrid AND dv.studentid=0
-			JOIN {".block_exacomp::DB_DESCEXAMP."} dc ON dc.descrid=dt.descrid 
-			LEFT JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} ev ON ev.exampleid=dc.exampid AND ev.studentid=0 AND ev.courseid=ct.courseid
+            JOIN {".block_exacomp::DB_DESCEXAMP."} dc ON dc.descrid=dt.descrid 
+            LEFT JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} ev ON ev.exampleid=dc.exampid AND ev.studentid=0 AND ev.courseid=ct.courseid
             WHERE ev.id IS NULL -- only for those, who have no visibility yet
         ";
         $DB->execute($sql);
@@ -1014,8 +1064,8 @@ class block_exacomp_data_importer extends block_exacomp_data {
             FROM {".block_exacomp::DB_CROSSSUBJECTS."} cs 
             JOIN {".block_exacomp::DB_DESCCROSS."} dc ON cs.id = dc.crosssubjid
             JOIN {".block_exacomp::DB_DESCVISIBILITY."} dv ON dv.descrid=dc.descrid AND dv.studentid=0
-			JOIN {".block_exacomp::DB_DESCEXAMP."} de ON de.descrid=dv.descrid 
-			LEFT JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} ev ON ev.exampleid=de.exampid AND ev.studentid=0 AND ev.courseid=cs.courseid
+            JOIN {".block_exacomp::DB_DESCEXAMP."} de ON de.descrid=dv.descrid 
+            LEFT JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} ev ON ev.exampleid=de.exampid AND ev.studentid=0 AND ev.courseid=cs.courseid
             WHERE ev.id IS NULL AND cs.courseid != 0  -- only for those, who have no visibility yet
         ";
         $DB->execute($sql); //only necessary if we save courseinformation as well -> existing crosssubjects imported  only as drafts -> not needed

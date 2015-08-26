@@ -1,8 +1,28 @@
 (function($){
 	
 	$(function(){
+		$('.rowgroup-level-0').addClass('open');
+
+		$('table.rowgroup :checkbox').click(function(event){
+			// subs
+			var row = rowgroup_parse_row(this);
+			$('table.rowgroup tr.rowgroup-content-for-'+row.id+' :checkbox')
+				.prop('checked', $(this).prop('checked'));
+
+			// parents, only for uncheck
+			if (!$(this).prop('checked')) {
+				var parents = rowgroup_get_parents(this);
+				$.each(parents, function(){
+					$(this.dom).find(':checkbox').prop('checked', false);
+				})
+			}
+			
+			event.stopPropagation();
+		});
+		/*
 		$('.exabis_comp_teilcomp.rowgroup-header').addClass('rowgroup-level-0');
 		$('.exabis_comp_aufgabe.rowgroup-content').addClass('rowgroup-level-1');
+		*/
 	});
 	
 	var reopen_selector = ':checkbox:checked';
@@ -41,16 +61,26 @@
 		return data;
 	}
 	
-	function rowgroup_open_parents(dom) {
-		var row, level;
+	function rowgroup_get_parents(dom) {
+		var row, level, parents = [];
 		if (!(row = rowgroup_parse_row(dom))) return;
-		
+
 		level = row.level - 1;
-		$(dom).prevAll().eachRow(function(row){
+		$(row.dom).prevAll().eachRow(function(row){
 			if (row.level == level) {
-				$(this).addClass('open');
+				parents[level] = row;
 				level--;
 			}
+		});
+		return parents;
+	}
+	
+	function rowgroup_open_parents(dom) {
+		var parents = rowgroup_get_parents(dom);
+		
+		$.each(parents, function(){
+			$(this.dom).addClass('open');
+			level--;
 		});
 	}
 	

@@ -47,9 +47,9 @@ $output = $PAGE->get_renderer('block_exacomp');
 if ($action == 'export_all') {
     block_exacomp_data_exporter::do_export();
 } else if ($action == 'export_selected') {
-    $topics = block_exacomp_clean_array(isset($_REQUEST['data'])?$_REQUEST['data']:array(), array(PARAM_INT=>PARAM_INT));
+    $descriptors = block_exacomp_clean_array(isset($_REQUEST['descriptors'])?$_REQUEST['descriptors']:array(), array(PARAM_INT=>PARAM_INT));
     
-    block_exacomp_data_exporter::do_export($topics);
+    block_exacomp_data_exporter::do_export($descriptors);
 } else if ($action == 'select') {
     
     /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
@@ -69,18 +69,7 @@ if ($action == 'export_all') {
     echo $output->header();
     echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($course_context,$courseid), $page_identifier);
     
-    
-    
-    // $tree = block_exacomp_get_competence_tree(0, null, true, SHOW_ALL_TOPICS, true);
-    $schooltypes = block_exacomp_build_schooltype_tree(0);
-    
-    echo $output->print_courseselection_export($schooltypes);
-    
-    /*
-    $tree = block_exacomp_build_example_association_tree(0, array(), 0, 0);
-    
-    echo $output->print_competence_based_list_tree($tree, true, 1);
-    */
+    echo $output->print_descriptor_selection_export();
     
     echo $output->footer();
 } else {
