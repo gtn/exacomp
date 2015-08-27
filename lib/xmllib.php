@@ -649,6 +649,14 @@ class block_exacomp_data_exporter extends block_exacomp_data {
             
             $xmlCrosssubject->addChildWithCDATAIfValue('title', $dbCrosssubject->title);
             $xmlCrosssubject->addChildWithCDATAIfValue('description', $dbCrosssubject->description);
+            
+            $subject = $DB->get_record(block_exacomp::DB_SUBJECTS, array('id'=>$dbCrosssubject->subjectid));
+            
+            if($subject){
+            	$xmlSubject = $xmlCrosssubject->addChild('subjectid');
+            	self::assign_source($xmlSubject, $subject);
+            }
+
             $xmlCrosssubject->courseid = $dbCrosssubject->courseid;
             
                  $descriptors = $DB->get_records_sql("
@@ -954,13 +962,6 @@ class block_exacomp_data_importer extends block_exacomp_data {
             }
         }
         
-        if(isset($xml->crosssubjects)) {
-            //insert empty draft as first entry
-            block_exacomp_init_cross_subjects();
-            foreach($xml->crosssubjects->crosssubject as $crosssubject) {
-                self::insert_crosssubject($crosssubject);
-            }
-        }
 
         $insertedTopics = array();
         if(isset($xml->edulevels)) {
@@ -981,6 +982,14 @@ class block_exacomp_data_importer extends block_exacomp_data {
                         }
                     }
                 }
+            }
+        }
+        
+     	if(isset($xml->crosssubjects)) {
+            //insert empty draft as first entry
+            block_exacomp_init_cross_subjects();
+            foreach($xml->crosssubjects->crosssubject as $crosssubject) {
+                self::insert_crosssubject($crosssubject);
             }
         }
         
@@ -1355,6 +1364,9 @@ class block_exacomp_data_importer extends block_exacomp_data {
         
         $crosssubject = self::parse_xml_item($xmlItem);
         
+    	if ($xmlItem->subjectid) {
+            $crosssubject->subjectid = self::get_database_id($xmlItem->subjectid);
+        }
         self::insert_or_update_item(block_exacomp::DB_CROSSSUBJECTS, $crosssubject);
         self::kompetenzraster_mark_item_used(block_exacomp::DB_CROSSSUBJECTS, $crosssubject);
 
@@ -1504,6 +1516,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
             'categoryid' => block_exacomp::DB_CATEGORIES,
             'niveauid' => block_exacomp::DB_NIVEAUS,
             'skillid' => block_exacomp::DB_SKILLS,
+        	'subjectid' => block_exacomp::DB_SUBJECTS
         );
         
         if (isset($tableMapping[$element->getName()])) {

@@ -1774,9 +1774,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             
                             if($studentid && $studentid != BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
                                 $titleCell->text .= $this->print_submission_icon($data->courseid, $example->id, $studentid);
-                                $titleCell->text .= $this->print_schedule_icon($example->id, $studentid, $data->courseid);
                                 
                             }
+                            //auch für alle schüler auf wochenplan legen
+                            if(!$editmode)
+                            	$titleCell->text .= $this->print_schedule_icon($example->id, ($studentid)?$studentid:BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $data->courseid);
+                                
                             $titleCell->text .= $this->print_competence_association_icon($example->id, $data->courseid, $editmode);
                         
                         }
