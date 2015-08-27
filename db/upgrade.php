@@ -1504,7 +1504,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    // Exacomp savepoint reached.
 	    upgrade_block_savepoint(true, 2015032500, 'exacomp');
 	}
-	if($oldversion < 2015051400){
+	if($oldversion < 2015052900){
 		 $table = new xmldb_table('block_exacompcrosssubjects');
 		 $field = new xmldb_field('shared', XMLDB_TYPE_INTEGER, '1', null, null, null, '0');
 		 
@@ -1577,7 +1577,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    		$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$course, 'descrid'=>$descriptor->id, 'studentid'=>0, 'visible'=>1));
 	    	}
 	    }
-		upgrade_block_savepoint(true, 2015051400, 'exacomp');
+		upgrade_block_savepoint(true, 2015052900, 'exacomp');
 	}
 	
 	if ($oldversion < 2015070200) {
