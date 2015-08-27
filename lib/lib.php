@@ -29,6 +29,20 @@ define("SHOW_ALL_TAXONOMIES",100000000);
 define("BLOCK_EXACOMP_SHOW_ALL_STUDENTS", -1);
 define("BLOCK_EXACOMP_SHOW_STATISTIC", -2);
 
+class block_exacomp_exception extends moodle_exception {
+    function __construct($errorcode, $module='', $link='', $a=NULL, $debuginfo=null) {
+
+        // try to get exacomp error message
+        if (empty($module)) {
+            if (get_string_manager()->string_exists($errorcode, 'block_exacomp')) {
+                $module = 'block_exacomp';
+            }
+        }
+
+        return parent::__construct($errorcode, $module, $link, $a, $debuginfo);
+    }
+}
+
 /**
  *
  * Includes all neccessary JavaScript files

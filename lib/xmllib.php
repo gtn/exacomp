@@ -287,9 +287,8 @@ class block_exacomp_data_exporter extends block_exacomp_data {
         raise_memory_limit(MEMORY_HUGE);
         
         if (!self::get_my_source()) {
-            print_error('source not configured, go to block settings');
+            throw new block_exacomp_exception('source not configured, go to block settings');
             // '<a href="'.$CFG->wwwroot.'/admin/settings.php?section=blocksettingexacomp">settings</a>'
-            return;
         }
         
         $xml = new block_exacomp_SimpleXMLElement(
@@ -820,8 +819,9 @@ class block_exacomp_data_importer extends block_exacomp_data {
     public static function do_import_string($data = null, $par_source = 1, $cron = false) {
         global $CFG;
 
-        if (!$data)
-            return false;
+        if (!$data) {
+            throw new block_exacomp_exception('filenotfound');
+        }
         
         $file = tempnam($CFG->tempdir, "zip");
         file_put_contents($file, $data);
@@ -842,12 +842,12 @@ class block_exacomp_data_importer extends block_exacomp_data {
     public static function do_import_file($file = null, $par_source = 1, $cron = false) {
         global $DB, $CFG;
     
-        if(!$file)
-            return false;
-        
+        if (!$file) {
+            throw new block_exacomp_exception('filenotfound');
+        }
+            
         if (!file_exists($file)) {
-            echo 'file not found';
-            return false;
+            throw new block_exacomp_exception('filenotfound');
         }
         
         core_php_time_limit::raise();
@@ -865,8 +865,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
             self::$zip = $zip;
             
             if (!$xml = $zip->getFromName('data.xml')) {
-                echo 'wrong zip file';
-                return false;
+                throw new block_exacomp_exception('wrong zip file');
             }
             
             /*
@@ -876,8 +875,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
             $xml = simplexml_load_string($xml,'block_exacomp_SimpleXMLElement', LIBXML_NOCDATA);
 
             if (!$xml) {
-                echo 'wrong zip file content';
-                return false;
+                throw new block_exacomp_exception('wrong zip file content');
             }
         } else {
             // on error -> try as xml
@@ -889,20 +887,17 @@ class block_exacomp_data_importer extends block_exacomp_data {
             $xml = simplexml_load_file($file,'block_exacomp_SimpleXMLElement', LIBXML_NOCDATA);
             
             if (!$xml) {
-                echo 'wrong file';
-                return false;
+                throw new block_exacomp_exception('wrong file');
             }
         }
         
 
         if(isset($xml->table)){
-            echo get_string('oldxmlfile', 'block_exacomp');
-            return false;
+            throw new block_exacomp_exception('oldxmlfile');
         }
         
         if (empty($xml['source'])) {
-            echo get_string('oldxmlfile', 'block_exacomp');
-            return false;
+            throw new block_exacomp_exception('oldxmlfile');
         }
         
         self::$import_source_global_id = (string)$xml['source'];
@@ -1337,7 +1332,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         }
         
         if ($xmlItem->examples) {
-            print_error('wrong format');
+            throw new block_exacomp_exception('oldxmlfile');
         }
         
         if ($xmlItem->categories) {
@@ -1481,7 +1476,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         $item = (object)$item;
 
         if (!isset($item->id)) {
-            print_error('parse_xml_item: no id');
+            throw new block_exacomp_exception('wrong xml format');
         }
         
         // foreign source to local source

@@ -3407,6 +3407,20 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             
         return html_writer::div($namediv.$imgdiv.$citydiv, 'competence_profile_metadata clearfix');
     }
+    
+    function box_error($message) {
+        global $OUTPUT;
+        
+        if (!$message) {
+            $message = get_string('unknownerror');
+        } elseif ($message instanceof moodle_exception) {
+            $message = $message->getMessage();
+        }
+        
+        $message = get_string('error').': '.$message;
+        return $OUTPUT->notification($message);
+    }
+    
     function print_competene_profile_overview($student, $courses, $possible_courses, $badges, $exaport, $exaportitems, $exastud, $exastudperiods, $onlygainedbadges=false) {
 
         $table = $this->print_competence_profile_overview_table($student, $courses, $possible_courses);

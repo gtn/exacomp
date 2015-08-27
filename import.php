@@ -73,26 +73,29 @@ $action = optional_param('action', '', PARAM_TEXT);
 $mform = new block_exacomp_generalxml_upload_form();
 
 $importSuccess = false;
+$importException = null;
 
-// TODO
-if (($importtype == 'custom') && $data = $mform->get_file_content('file')) {
-    $importSuccess = block_exacomp_data_importer::do_import_string($data, block_exacomp::IMPORT_SOURCE_SPECIFIC);
-} elseif ($isAdmin && ($importtype == 'normal') && $data = $mform->get_file_content('file')) {
-    $importSuccess = block_exacomp_data_importer::do_import_string($data, block_exacomp::IMPORT_SOURCE_DEFAULT);
-} elseif ($isAdmin && ($importtype == 'demo')) {
-    //do demo import
-    
-    $file = optional_param('file', DEMO_XML_PATH, PARAM_TEXT);
-    
-    if (!file_exists($file)) {
-        die('xml not found');
-    } else {
-        if (block_exacomp_data_importer::do_import_file($file, block_exacomp::IMPORT_SOURCE_DEFAULT, true)) {
-            $importSuccess = true;
-            block_exacomp_settstamp();
+try {
+    if (($importtype == 'custom') && $data = $mform->get_file_content('file')) {
+        $importSuccess = block_exacomp_data_importer::do_import_string($data, block_exacomp::IMPORT_SOURCE_SPECIFIC);
+    } elseif ($isAdmin && ($importtype == 'normal') && $data = $mform->get_file_content('file')) {
+        $importSuccess = block_exacomp_data_importer::do_import_string($data, block_exacomp::IMPORT_SOURCE_DEFAULT);
+    } elseif ($isAdmin && ($importtype == 'demo')) {
+        //do demo import
+        
+        $file = optional_param('file', DEMO_XML_PATH, PARAM_TEXT);
+        
+        if (!file_exists($file)) {
+            die('xml not found');
+        } else {
+            if ($importSuccess = block_exacomp_data_importer::do_import_file($file, block_exacomp::IMPORT_SOURCE_DEFAULT, true)) {
+                block_exacomp_settstamp();
+            }
         }
     }
+} catch (block_exacomp_exception $importException) {
 }
+
 // build breadcrumbs navigation
 $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
 $blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
@@ -129,9 +132,8 @@ if($isAdmin || block_exacomp_check_customupload()) {
                             .html_writer::link(new moodle_url($url, array('courseid'=>$courseid, 'fromimport'=>1)), $string);
                         
                         echo $OUTPUT->box($html);
-                    }
-                    else {
-                        echo $OUTPUT->box(get_string("importfail", "block_exacomp"));
+                    } else {
+                        echo $PAGE->get_renderer('block_exacomp')->box_error($importException);
                         $mform->display();
                     }
                 } else {
