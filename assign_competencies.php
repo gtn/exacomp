@@ -63,8 +63,9 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $
 // CHECK TEACHER
 $isTeacher = block_exacomp_is_teacher($context);
 // IF DELETE > 0 DELTE CUSTOM EXAMPLE
-if(($delete = optional_param("delete", 0, PARAM_INT)) > 0 && $isTeacher)
+if(($delete = optional_param("delete", 0, PARAM_INT)) > 0 && $isTeacher){
 	block_exacomp_delete_custom_example($delete);
+}
 
 if(($delete = optional_param("delete_descr", 0, PARAM_INT)) > 0 && $isTeacher)
 	block_exacomp_delete_custom_descriptor($delete);	

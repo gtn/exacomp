@@ -649,6 +649,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
             
             $xmlCrosssubject->addChildWithCDATAIfValue('title', $dbCrosssubject->title);
             $xmlCrosssubject->addChildWithCDATAIfValue('description', $dbCrosssubject->description);
+            $xmlCrosssubject->subjectid = $dbCrosssubject->subjectid;
             $xmlCrosssubject->courseid = $dbCrosssubject->courseid;
             
                  $descriptors = $DB->get_records_sql("

@@ -180,10 +180,25 @@ switch($action){
 		$exampleid = required_param('exampleid', PARAM_INT);
 		$creatorid = $USER->id;
 		
-		if ( block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid) )
-			echo get_string("weekly_schedule_added","block_exacomp");
-		else
-			echo get_string("weekly_schedule_already_exists","block_exacomp");
+		if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS || $studentid == 0){
+			$course_students = block_exacomp_get_students_by_course($courseid);
+			$added_to_all = true;
+			foreach($course_students as $student){
+				$added_to_student = block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid);
+				if(!$added_to_student)
+					$added_to_all = false;
+			}
+			
+			if($added_to_all)
+				echo get_string('weekly_schedule_added_all', 'block_exacomp');
+			else 
+				echo get_string('weekly_schedule_already_existing_for_one', 'block_exacomp');
+		}else{
+			if ( block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid) )
+				echo get_string("weekly_schedule_added","block_exacomp");
+			else
+				echo get_string("weekly_schedule_already_exists","block_exacomp");
+		}
 		
 		break;
 	case('new-comp'):
