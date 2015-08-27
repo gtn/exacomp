@@ -593,7 +593,7 @@ class block_exacomp_external extends external_api {
 		$results = array ();
 		
 		$examples = $DB->get_records_sql ( '
-                SELECT e.id, e.title, e.task, e.externalurl
+                SELECT e.id, e.title, e.externalurl
                 FROM {block_exacompexamples} e
                 JOIN {block_exacompdescrexamp_mm} mm ON mm.descrid=? AND mm.exampid = e.id
                 ', array (
@@ -604,7 +604,7 @@ class block_exacomp_external extends external_api {
 			$result = new stdClass ();
 			$result->type = "example";
 			$result->title = $example->title;
-			$result->link = ($example->task) ? $example->task : $example->externalurl;
+			$result->link = ($url = block_exacomp_get_file_url($example, 'example_task')) ? $url : $example->externalurl;
 			$result->contentid = $example->id;
 			
 			$results [] = $result;
@@ -1101,8 +1101,8 @@ class block_exacomp_external extends external_api {
 			$descriptors = block_exacomp_get_descriptors_by_topic ( $courseid, $topic->id, false, true );
 			
 			foreach ( $descriptors as $descriptor ) {
-				$examples = $DB->get_records_sql ( "SELECT de.id as deid, e.id, e.title, e.task, e.externalurl,
-                        e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.creatorid
+				$examples = $DB->get_records_sql ( "SELECT de.id as deid, e.id, e.title, e.externalurl,
+                        e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid
                         FROM {" . block_exacomp::DB_EXAMPLES . "} e
                         JOIN {" . block_exacomp::DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
                         ", array (
@@ -1210,6 +1210,8 @@ class block_exacomp_external extends external_api {
 		$example->description = htmlentities ( $example->description );
 		$example->hassubmissions = ($DB->get_records('block_exacompitemexample',array('exampleid'=>$exampleid))) ? true : false;
 		
+		$example->task = block_exacomp_get_file_url($example, 'example_task');
+		$example->solution =  block_exacomp_get_file_url($example, 'example_solution');
 		return $example;
 	}
 	
@@ -2420,8 +2422,8 @@ class block_exacomp_external extends external_api {
 							}
 						}
 						
-						$examples = $DB->get_records_sql ( "SELECT de.id as deid, e.id, e.title, e.task, e.externalurl,
-                        e.externalsolution, e.externaltask, e.solution, e.completefile, e.description, e.creatorid
+						$examples = $DB->get_records_sql ( "SELECT de.id as deid, e.id, e.title, e.externalurl,
+                        e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid
                         FROM {" . block_exacomp::DB_EXAMPLES . "} e
                         JOIN {" . block_exacomp::DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=? ", array (
 								$descriptor->id 
@@ -3447,7 +3449,7 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_example_grading_returns() {
 		return new external_single_structure ( array (
 				'teacherevaluation' => new external_value ( PARAM_INT, 'teacher evaluation for student and example' ),
-				'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation for example' )
+				'studentevaluation' => new external_value ( PARAM_TEXT, 'self evaluation for example' )
 		) );
 	}
 	
@@ -3773,7 +3775,7 @@ class block_exacomp_external extends external_api {
 		) ) );
 	}
 	
-	/**
+/**
 	 * Returns description of method parameters
 	 * 
 	 * @return external_function_parameters

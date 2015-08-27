@@ -156,10 +156,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
                         $row->cells[] = $cell;
                         foreach($subjectdata as $example){
                             $cell = new html_table_cell();
-                            if(isset($example->task))
-                                $cell->text = html_writer::tag("p", html_writer::tag("b", $example->desc.": ").(($example->numb > 0) ? $example->schooltype.$example->numb : "")." "
-                                        .html_writer::tag("a", $example->title, array("href"=>$example->task, "target"=>"_blank")).(($example->cat) ? " (".$example->cat.")" : ""));
-                            elseif(isset($example->externalurl))
+                            if($task = block_exacomp_get_file_url($example, 'example_task'))
+								$cell->text = html_writer::tag("p", html_writer::tag("b", $example->desc.": ").(($example->numb > 0) ? $example->schooltype.$example->numb : "")." "
+										.html_writer::tag("a", $example->title, array("href"=>$task, "target"=>"_blank")).(($example->cat) ? " (".$example->cat.")" : ""));
+							elseif(isset($example->externalurl))
                             $cell->text = html_writer::tag("p", html_writer::tag("b", $example->desc.": ").(($example->numb > 0) ? $example->schooltype.$example->numb : "")." "
                                     .html_writer::tag("a", $example->title, array("href"=>$example->externalurl, "target"=>"_blank")).(($example->cat) ? " (".$example->cat.")" : ""));
                             else
@@ -931,9 +931,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             //$img = html_writer::img('pix/i_11x11.png', 'Beispiel');
             $img = html_writer::tag('img','',array('src'=>'pix/i_11x11.png','alt'=>'Beispiel'));
             
-            if(isset($example->task))
-                $cell->text .= html_writer::link($example->task, $img, array('target'=>'_blank'));
-            elseif(isset($example->externalurl))
+            if($task = block_exacomp_get_file_url($example, 'example_task'))
+				$cell->text .= html_writer::link($task, $img, array('target'=>'_blank'));
+			elseif(isset($example->externalurl))
             $cell->text .= html_writer::link($example->externalurl, $img);
 
             $row->cells[] = $cell;

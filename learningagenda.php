@@ -153,6 +153,7 @@ foreach($weekdays as $weekday=>$tag){
 			if($result->starttime == $tag || !isset($result->endtime))	{
 				$example_count_week++;
 				$example->title = $result->example;
+				//TODO examples
 				$example->task = $result->exampletask;
 				$example->externalurl = $result->exampleurl;
 				$example->desc = $result->title;

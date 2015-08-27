@@ -85,8 +85,8 @@ if($exampleid>0)
 
 $tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid, 0);
 
-$form = new block_exacomp_example_upload_student_form($_SERVER['REQUEST_URI'], array("taxonomies"=>$taxonomies,"tree"=>$tree,"exampleid"=>$exampleid, "task"=>isset($example->task) ? $example->task : null,
-        "solution"=>isset($example->solution) ? $example->solution : null) );
+$form = new block_exacomp_example_upload_student_form($_SERVER['REQUEST_URI'], array("taxonomies"=>$taxonomies,"tree"=>$tree,"exampleid"=>$exampleid, "task"=>($task = block_exacomp_get_file_url($example, 'example_task')) ? $task : null,
+        "solution"=>($solution = block_exacomp_get_file_url($example, 'example_solution')) ? $solution : null) );
 
 if($formdata = $form->get_data()) {
 	
