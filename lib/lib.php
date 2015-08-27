@@ -821,14 +821,21 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 }
 function block_exacomp_get_categories_for_descriptor($descriptor){
 	global $DB;
-	$records = $DB->get_records(block_exacomp::DB_DESCCAT, array('descrid'=>$descriptor->id));
-	$categories = array();
+	//im upgrade skript zugriff auf diese funktion obwohl die tabelle erst später akutalisiert wird
+	$dbman = $DB->get_manager();
+	$table = new xmldb_table('block_exacompdescrcat_mm');
+	if( $dbman->table_exists($table)) {
 	
-	foreach($records as $record){
-		if($record->catid)
-			$categories[] = $DB->get_record(block_exacomp::DB_CATEGORIES, array('id'=>$record->catid));
+		$records = $DB->get_records(block_exacomp::DB_DESCCAT, array('descrid'=>$descriptor->id));
+		$categories = array();
+		
+		foreach($records as $record){
+			if($record->catid)
+				$categories[] = $DB->get_record(block_exacomp::DB_CATEGORIES, array('id'=>$record->catid));
+		}
+		return $categories;	
 	}
-	return $categories;	
+	return array();
 }
 function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescriptors = false, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $showallexamples = true, $mindvisibility = true, $showonlyvisible=false ) {
 	global $DB;
