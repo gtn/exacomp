@@ -43,6 +43,46 @@ class block_exacomp_exception extends moodle_exception {
     }
 }
 
+class block_exacomp_db {
+    public static function update_record($table, $where, $data = array()) {
+        global $DB;
+    
+        $where = (array)$where;
+        $data = (array)$data;
+        
+        if ($dbItem = $DB->get_record($table, $where)) {
+            if ($data) {
+                $data['id'] = $dbItem->id;
+                $DB->update_record($table, $data);
+            }
+            
+            return (object)($data + $where);
+        }
+        
+        return null;
+    }
+    
+    public static function insert_or_update_record($table, $where, $data = array()) {
+        global $DB;
+        
+        $where = (array)$where;
+        $data = (array)$data;
+        
+        if ($dbItem = $DB->get_record($table, $where)) {
+            if ($data) {
+                $data['id'] = $dbItem->id;
+                $DB->update_record($table, $data);
+            }
+        } else {
+            $data = $data + $where;
+            $id = $DB->insert_record($table, $data);
+            $data['id'] = $id;
+        }
+        
+        return (object)$data;
+    }
+}
+
 /**
  *
  * Includes all neccessary JavaScript files
@@ -803,21 +843,28 @@ function block_exacomp_get_descritors_list($courseid, $onlywithactivitys = 0) {
 function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = false, $subjectid = 0, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $showonlyvisible=false) {
 	global $DB;
 	
+	if (!$courseid) {
+	    $showalldescriptors = true;
+	    $showonlyvisible = false;
+	    $mindvisibility = false;
+	}
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.parentid, n.sorting niveau, dvis.visible as visible, d.sorting '
-	.'FROM {'.block_exacomp::DB_TOPICS.'} t '
-	.(($courseid>0)?'JOIN {'.block_exacomp::DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
-	.'JOIN {'.block_exacomp::DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
-	.'JOIN {'.block_exacomp::DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid=0 '
-	.'JOIN {'.block_exacomp::DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=? '
-	.($showonlyvisible?'AND dvis.visible = 1 ':'') 
-	.'LEFT JOIN {'.block_exacomp::DB_NIVEAUS.'} n ON d.niveauid = n.id '		
+	
+	$sql = 'SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.parentid, n.sorting niveau, dvis.visible as visible, d.sorting '
+	.' FROM {'.block_exacomp::DB_TOPICS.'} t '
+	.(($courseid>0)?' JOIN {'.block_exacomp::DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
+	.' JOIN {'.block_exacomp::DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
+	.' JOIN {'.block_exacomp::DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid=0 '
+	.' -- left join, because courseid=0 has no descvisibility!
+		LEFT JOIN {'.block_exacomp::DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=?'
+	.($showonlyvisible?' AND dvis.visible = 1 ':'') 
+	.' LEFT JOIN {'.block_exacomp::DB_NIVEAUS.'} n ON d.niveauid = n.id '		
 	.($showalldescriptors ? '' : '
 			JOIN {'.block_exacomp::DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
-			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':'')).')';
-
+			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':''));
+    
 	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid, $courseid));
 
 	foreach($descriptors as &$descriptor) {
@@ -835,7 +882,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 }
 function block_exacomp_get_categories_for_descriptor($descriptor){
 	global $DB;
-	//im upgrade skript zugriff auf diese funktion obwohl die tabelle erst später akutalisiert wird
+	//im upgrade skript zugriff auf diese funktion obwohl die tabelle erst spï¿½ter akutalisiert wird
 	$dbman = $DB->get_manager();
 	$table = new xmldb_table('block_exacompdescrcat_mm');
 	if( $dbman->table_exists($table)) {
@@ -858,6 +905,11 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescrip
 		return array();
 	}
 	
+	if (!$courseid) {
+	    $showalldescriptors = true;
+	    $showonlyvisible = false;
+	    $mindvisibility = false;
+	}
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	

@@ -67,20 +67,6 @@ class block_exacomp_ZipArchive extends ZipArchive {
         
         return $zip;
     }
-    
-    public function delete() {
-        unlink($this->filename);
-    }
-    
-    public function serve($filename) {
-        $zipfile = $this->filename;
-        $this->close();
-
-        header('Content-Type: application/zip');
-        header('Content-Length: ' . filesize($zipfile));
-        header('Content-Disposition: attachment; filename="'.$filename.'"');
-        readfile($zipfile);
-    }
 }
 
 class block_exacomp_data {
@@ -127,7 +113,7 @@ class block_exacomp_data {
         
         global $DB;
         
-        $maxId = max(array_keys(self::$sources));
+        $maxId = self::$sources ? max(array_keys(self::$sources)) : 0;
         $source_local_id = max($maxId + 1, self::MIN_SOURCE_ID);
 
         // add new source
@@ -441,8 +427,12 @@ class block_exacomp_data_exporter extends block_exacomp_data {
         self::export_edulevels($xml);
         self::export_sources($xml);
 
-        if (optional_param('as_text', '', PARAM_INT)) {
-            $zip->delete();
+        $zipfile = $zip->filename;
+        
+        if (optional_param('as_text', false, PARAM_INT)) {
+            echo 'zip file size: '.filesize($zipfile)."\n\n\n";
+            $zip->close();
+            unlink($zipfile);
             
             echo $xml->asPrettyXML();
             
@@ -450,9 +440,16 @@ class block_exacomp_data_exporter extends block_exacomp_data {
         }
         
         $zip->addFromString('data.xml', $xml->asPrettyXML());
+        $zip->close();
         
-        $zip->serve('exacomp-'.strftime('%Y-%m-%d %H%M').'.zip');
-        $zip->delete();
+        $filename = 'exacomp-'.strftime('%Y-%m-%d %H%M').'.zip';
+        header('Content-Type: application/zip');
+        header('Content-Length: ' . filesize($zipfile));
+        header('Content-Disposition: attachment; filename="'.$filename.'"');
+        readfile($zipfile);
+
+        unlink($zipfile);
+        
         exit;
     }
     
@@ -1006,8 +1003,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
              * LIBXML_NOCDATA is important at this point, because it converts CDATA Elements to Strings for
              * immediate useage
              */
-            $xml = simplexml_load_file($file,'block_exacomp_SimpleXMLElement', LIBXML_NOCDATA);
-            
+            $xml = @simplexml_load_file($file,'block_exacomp_SimpleXMLElement', LIBXML_NOCDATA);
             if (!$xml) {
                 throw new block_exacomp_exception('wrong file');
             }
@@ -1140,32 +1136,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
     
     
     
-    
-    
-    
-    private static function update_record($table, $where, $data = array()) {
-        global $DB;
-        
-        if ($dbItem = $DB->get_record($table, $where)) {
-            if ($data) {
-                $data['id'] = $dbItem->id;
-                $DB->update_record($table, $data);
-            }
-        }
-    }
-    
-    private static function insert_or_update_record($table, $where, $data = array()) {
-        global $DB;
-        
-        if ($dbItem = $DB->get_record($table, $where)) {
-            if ($data) {
-                $data['id'] = $dbItem->id;
-                $DB->update_record($table, $data);
-            }
-        } else {
-            $DB->insert_record($table, $where + $data);
-        }
-    }
+
     
     private static function insert_or_update_item($table, $item) {
         global $DB;
@@ -1199,9 +1170,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
             return;
         }
         
-        global $DB;
-        
-        self::update_record(block_exacomp::DB_DATASOURCES, array(
+        block_exacomp_db::update_record(block_exacomp::DB_DATASOURCES, array(
             'id' => $dbSource->id,
         ), array(
             'name' => (string)$xmlItem->name
@@ -1273,7 +1242,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         
         // if local example, move to source teacher
         if (!$item->source) {
-            self::insert_or_update_record(block_exacomp::DB_EXAMPLES, array("id"=>$item->id), array('source' => block_exacomp::EXAMPLE_SOURCE_TEACHER));
+            block_exacomp_db::insert_or_update_record(block_exacomp::DB_EXAMPLES, array("id"=>$item->id), array('source' => block_exacomp::EXAMPLE_SOURCE_TEACHER));
         }
         
         // has to be called after inserting the example, because the id is needed!
@@ -1287,7 +1256,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         if ($xmlItem->taxonomies) {
             foreach ($xmlItem->taxonomies->taxonomyid as $taxonomy) {
                 if ($taxonomyid = self::get_database_id($taxonomy)) {
-                    self::insert_or_update_record(block_exacomp::DB_EXAMPTAX, array("exampleid"=>$item->id, "taxid"=>$taxonomyid));
+                    block_exacomp_db::insert_or_update_record(block_exacomp::DB_EXAMPTAX, array("exampleid"=>$item->id, "taxid"=>$taxonomyid));
                 }
             }
         }
@@ -1295,7 +1264,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         if ($xmlItem->descriptors) {
             foreach($xmlItem->descriptors->descriptorid as $descriptor) {
                 if ($descriptorid = self::get_database_id($descriptor)) {
-                    self::insert_or_update_record(block_exacomp::DB_DESCEXAMP, array("exampid"=>$item->id, "descrid"=>$descriptorid));
+                    block_exacomp_db::insert_or_update_record(block_exacomp::DB_DESCEXAMP, array("exampid"=>$item->id, "descrid"=>$descriptorid));
                 } else {
                 }
             }
@@ -1382,7 +1351,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         
         // if local descriptor, move to custom source
         if (!$descriptor->source) {
-            self::insert_or_update_record(block_exacomp::DB_DESCRIPTORS, array("id"=>$descriptor->id), array('source' => block_exacomp::CUSTOM_CREATED_DESCRIPTOR));
+            block_exacomp_db::insert_or_update_record(block_exacomp::DB_DESCRIPTORS, array("id"=>$descriptor->id), array('source' => block_exacomp::CUSTOM_CREATED_DESCRIPTOR));
         }
         
         if ($xmlItem->examples) {
@@ -1392,7 +1361,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         if ($xmlItem->categories) {
             foreach ($xmlItem->categories->categoryid as $category) {
                 if ($categoryid = self::get_database_id($category)) {
-                    self::insert_or_update_record(block_exacomp::DB_DESCCAT, array("descrid"=>$descriptor->id, "catid"=>$categoryid));
+                    block_exacomp_db::insert_or_update_record(block_exacomp::DB_DESCCAT, array("descrid"=>$descriptor->id, "catid"=>$categoryid));
                 }
             }
         }
@@ -1425,7 +1394,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         if ($xmlItem->descriptors) {
             foreach($xmlItem->descriptors->descriptorid as $descriptor) {
                 if ($descriptorid = self::get_database_id($descriptor)) {
-                    self::insert_or_update_record(block_exacomp::DB_DESCCROSS, array("crosssubjid"=>$crosssubject->id,"descrid"=>$descriptorid));
+                    block_exacomp_db::insert_or_update_record(block_exacomp::DB_DESCCROSS, array("crosssubjid"=>$crosssubject->id,"descrid"=>$descriptorid));
                 }
             }
         }
@@ -1462,7 +1431,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
             $i=1;
             foreach($xmlItem->descriptors->descriptorid as $descriptor) {
                 if ($descriptorid = self::get_database_id($descriptor)) {
-                    self::insert_or_update_record(block_exacomp::DB_DESCTOPICS, array("topicid"=>$topic->id,"descrid"=>$descriptorid), array("sorting"=>$i));
+                    block_exacomp_db::insert_or_update_record(block_exacomp::DB_DESCTOPICS, array("topicid"=>$topic->id,"descrid"=>$descriptorid), array("sorting"=>$i));
                     $i++;
                 }
             }

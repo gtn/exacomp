@@ -2612,8 +2612,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             $rows[] = $row;
             
             $topics = block_exacomp_get_all_topics($subject->id);
-            $descriptors = block_exacomp_get_descriptors_by_subject($subject->id, false);
-            
+            $descriptors = block_exacomp_get_descriptors(0, true, $subject->id);
+           
             foreach($topics as $topic){
                 
                 $padding = 20;
@@ -2645,6 +2645,23 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     $row->cells[] = $cell;
                     
                     $rows[] = $row;
+                    
+                    // child descriptors
+                    foreach($descriptor->children as $descriptor){
+                        
+                        $padding = 60;
+                    
+                        $row = new html_table_row();
+                        $row->attributes['class'] = 'rowgroup-level-3';
+                        
+                        $cell = new html_table_cell();
+                        $cell->attributes['class'] = 'rowgroup-arrow';
+                        $cell->style = "padding-left: ".$padding."px";
+                        $cell->text = html_writer::div('<input type="checkbox" name="descriptors['.$descriptor->id.']" value="'.$descriptor->id.'" />'.$descriptor->title,"desctitle");
+                        $row->cells[] = $cell;
+                        
+                        $rows[] = $row;
+                    }
                 }
             }
         }
@@ -2656,30 +2673,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         $table_html .= html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>'Exportieren')), '', array('id'=>'exabis_save_button'));
 
         return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url->out(false, array('action'=>'export_selected')), "id" => "course-selection"));
-        
-        exit;
-
-        foreach($schooltypes as $schooltype){
-            
-    
-
-                
-                
-                $subj_descriptors = block_exacomp_get_descriptors_by_subject($subject->id);
-                foreach($topics as $topic){
-                    foreach($subj_descriptors as $descriptor){
-                        if($descriptor->topicid == $topic->id){
-                            //to something
-                        }
-                    
-                }
-                
-                
-                
-                $this->print_topics_courseselection($rows, 0, $subject->subs, $rowgroup, $sub_rowgroup_class, $topics_activ);
-                
-            }
-        }
     }
     public function print_topics_courseselection(&$rows, $level, $topics, &$rowgroup, $rowgroup_class = '', $topics_activ){
         global $version;

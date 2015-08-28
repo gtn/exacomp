@@ -105,24 +105,23 @@ if($formdata = $form->get_data()) {
         $DB->delete_records('block_exacompdescrexamp_mm',array('exampid' => $newExample->id));
     }
 
-    //TODO mehrfachauswahl
     //insert taxid in exampletax_mm
-    $new_mm = new stdClass();
-    $new_mm->exampleid = $newExample->id;
-    $new_mm->taxid = $formdata->taxid;
-    $DB->insert_record(block_exacomp::DB_EXAMPTAX, $new_mm);
+    block_exacomp_db::insert_or_update_record(block_exacomp::DB_EXAMPTAX, array(
+        'exampleid' => $newExample->id,
+        'taxid' => $formdata->taxid
+    ));
     
     //add descriptor association
-    if(isset($_POST['descriptor'])){
-    	foreach($_POST['descriptor'] as $descriptorid){
-    		$record = $DB->get_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
-			if(!$record)
-    			$DB->insert_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=> $newExample->id));
+    if(!empty($_POST['descriptor'])){
+    	foreach(block_exacomp_clean_array($_POST['descriptor'], array(PARAM_INT=>PARAM_INT)) as $descriptorid){
+            block_exacomp_db::insert_or_update_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
     	}
     }
-
-    //add visibility
-	$DB->insert_record(block_exacomp::DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$newExample->id, 'studentid'=>0, 'visible'=>1));
+    
+    //add visibility if not exists
+    if (!$DB->get_record(block_exacomp::DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$newExample->id, 'studentid'=>0))) {
+        $DB->insert_record(block_exacomp::DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$newExample->id, 'studentid'=>0, 'visible'=>1));
+    }
     block_exacomp_settstamp();
     
     // save file
@@ -132,8 +131,6 @@ if($formdata = $form->get_data()) {
             $newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
     
     // rename file according to LIS
-    // TODO: lis renaming
-
     if($formdata->lisfilename) {
         if (!$formdata->exampleid) {
             // update
@@ -146,17 +143,19 @@ if($formdata = $form->get_data()) {
             $filename_prefix = preg_replace('!\.[^\.]{2,4}$!i', '', $formdata->title);
         }
         
-        $filename_solution = $filename_prefix . "_SOLUTION." . pathinfo($form->get_new_filename('solution'), PATHINFO_EXTENSION);
-        
         if ($file = block_exacomp_get_file($newExample, 'example_task')) {
             $filename = $filename_prefix . "." . pathinfo($file->get_filename(), PATHINFO_EXTENSION);
-            $file->rename('/', $filename);
+            if ($filename != $file->get_filename()) {
+                $file->rename('/', $filename);
+            }
             
             $DB->update_record('block_exacompexamples', array('id' => $newExample->id, 'title' => $filename));
         }
         if ($file = block_exacomp_get_file($newExample, 'example_solution')) {
             $filename = $filename_prefix . "_SOLUTION." . pathinfo($file->get_filename(), PATHINFO_EXTENSION);
-            $file->rename('/', $filename);
+            if ($filename != $file->get_filename()) {
+                $file->rename('/', $filename);
+            }
         }
     }
     
