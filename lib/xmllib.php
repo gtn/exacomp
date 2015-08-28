@@ -98,7 +98,7 @@ class block_exacomp_data {
     
     
     private static $sources = null; // array(local_id => global_id)
-    const DUMMY_SOURCE_ID = 100;
+    const MIN_SOURCE_ID = 101;
     
     protected static function get_source_global_id($source_local_id) {
         self::load_sources();
@@ -126,14 +126,12 @@ class block_exacomp_data {
         }
         
         global $DB;
-        // add dummy source, so sources start at a higher id
-        if (!isset(self::$sources[self::DUMMY_SOURCE_ID])) {
-            $DB->execute("INSERT INTO {".block_exacomp::DB_DATASOURCES."} (id, source) VALUES (".self::DUMMY_SOURCE_ID.", 'dummy source')");
-            self::$sources[self::DUMMY_SOURCE_ID] = 'dummy';
-        }
         
+        $maxId = max(array_keys(self::$sources));
+        $source_local_id = max($maxId + 1, self::MIN_SOURCE_ID);
+
         // add new source
-        $source_local_id = $DB->insert_record(block_exacomp::DB_DATASOURCES, array('source' => $source_global_id));
+        $DB->execute("INSERT INTO {".block_exacomp::DB_DATASOURCES."} (id, source) VALUES (?, ?)", array($source_local_id, $source_global_id));
         
         self::$sources[$source_local_id] = $source_global_id;
         
@@ -172,18 +170,8 @@ class block_exacomp_data {
     public static function get_all_used_sources() {
         global $DB;
         
-        $tablesSql = array();
-        foreach (self::$sourceTables as $table) {
-            $tablesSql[] = "SELECT DISTINCT source FROM {{$table}}";
-        }
-
         $sources = $DB->get_records_sql("
-            SELECT *
-            FROM {".block_exacomp::DB_DATASOURCES."}
-            WHERE id!=".block_exacomp_data::DUMMY_SOURCE_ID."
-            AND id IN (
-                ".join(' union ', $tablesSql)."
-            )
+            SELECT * FROM {".block_exacomp::DB_DATASOURCES."}
             ORDER BY NAME
         ");
         
@@ -202,14 +190,14 @@ class block_exacomp_data {
         global $DB;
         
         self::delete_mm_records($source);
-        self::truncate_table($source, block_exacomp::DB_SKILLS);
-        self::truncate_table($source, block_exacomp::DB_TAXONOMIES);
         
         foreach (self::$sourceTables as $table) {
-            $DB->delete_records($table, array('source' => $source));
+            self::truncate_table($source, $table);
         }
         
         $DB->delete_records(block_exacomp::DB_DATASOURCES, array('id' => $source));
+        
+        self::normalize_database();
 
         return true;
     }
@@ -272,6 +260,140 @@ class block_exacomp_data {
     }
     */
     
+    public static function normalize_database() {
+        global $DB;
+
+        // delete entries with no source anymore
+        foreach (self::$sourceTables as $table) {
+            $sql = "DELETE FROM {{$table}} 
+                        WHERE source >= ".block_exacomp_data::MIN_SOURCE_ID."
+                        AND source NOT IN (SELECT id FROM {".block_exacomp::DB_DATASOURCES."})
+                    ";
+            $DB->execute($sql);
+        }
+        
+        // delete unused mms 
+        $tables = array(
+            array(
+                'table' => block_exacomp::DB_DESCTOPICS,
+                'mm1' => array('descrid', block_exacomp::DB_DESCRIPTORS),
+                'mm2' => array('topicid', block_exacomp::DB_TOPICS),
+            ),
+            array(
+                'table' => block_exacomp::DB_DESCEXAMP,
+                'mm1' => array('descrid', block_exacomp::DB_DESCRIPTORS),
+                'mm2' => array('exampid', block_exacomp::DB_EXAMPLES),
+            ),
+            array(
+                'table' => block_exacomp::DB_DESCCROSS,
+                'mm1' => array('descrid', block_exacomp::DB_DESCRIPTORS),
+                'mm2' => array('crosssubjid', block_exacomp::DB_CROSSSUBJECTS),
+            ),
+            array(
+                'table' => block_exacomp::DB_EXAMPTAX,
+                'mm1' => array('exampleid', block_exacomp::DB_EXAMPLES),
+                'mm2' => array('taxid', block_exacomp::DB_TAXONOMIES),
+            ),
+            array(
+                'table' => block_exacomp::DB_EXAMPVISIBILITY,
+                'mm1' => array('exampleid', block_exacomp::DB_EXAMPLES),
+                // course / studentid exclusive!
+            ),
+            array(
+                'table' => block_exacomp::DB_DESCVISIBILITY,
+                'mm1' => array('descrid', block_exacomp::DB_DESCRIPTORS),
+                // course / studentid exclusive!
+            ),
+            array(
+                'table' => block_exacomp::DB_DESCCAT,
+                'mm1' => array('descrid', block_exacomp::DB_DESCRIPTORS),
+                'mm2' => array('catid', block_exacomp::DB_CATEGORIES),
+            ),
+            array(
+                'table' => block_exacomp::DB_COURSETOPICS,
+                'mm1' => array('topicid', block_exacomp::DB_TOPICS),
+                'mm2' => array('courseid', "course"),
+            ),
+        );
+        
+        foreach ($tables as $table) {
+            $sql = "DELETE FROM {{$table['table']}} WHERE";
+            $sql .= " {$table['mm1'][0]} NOT IN (SELECT id FROM {{$table['mm1'][1]}})";
+            if (!empty($table['mm2'])) {
+                $sql .= " OR {$table['mm2'][0]} NOT IN (SELECT id FROM {{$table['mm2'][1]}})";
+            }
+            if (!empty($table['mm3'])) {
+                $sql .= " OR {$table['mm3'][0]} NOT IN (SELECT id FROM {{$table['mm3'][1]}})";
+            }
+            $DB->execute($sql);
+        }
+        
+        // add subdescriptors to topics
+        $sql = "
+            INSERT INTO {".block_exacomp::DB_DESCTOPICS."}
+            (topicid, descrid)
+            SELECT dt_parent.topicid, d.id
+            FROM {".block_exacomp::DB_DESCRIPTORS."} d
+            JOIN {".block_exacomp::DB_DESCTOPICS."} dt_parent ON dt_parent.descrid=d.parentid
+            LEFT JOIN {".block_exacomp::DB_DESCTOPICS."} dt ON dt.descrid=d.id
+            WHERE dt.id IS NULL -- only for those, who have no topic yet
+        ";
+        $DB->execute($sql);
+        
+        // after topics, descriptors and their mm are imported
+        // check if new descriptors should be visible in the courses
+        // 1. descriptors directly under the topic
+        $sql = "
+            INSERT INTO {".block_exacomp::DB_DESCVISIBILITY."}
+            (courseid, descrid, studentid, visible)
+            SELECT ct.courseid, dt.descrid, 0, 1
+            FROM {".block_exacomp::DB_COURSETOPICS."} ct
+            JOIN {".block_exacomp::DB_DESCTOPICS."} dt ON ct.topicid = dt.topicid
+            LEFT JOIN {".block_exacomp::DB_DESCVISIBILITY."} dv ON dv.descrid=dt.descrid AND dv.studentid=0
+            WHERE dv.id IS NULL -- only for those, who have no visibility yet
+        ";
+        $DB->execute($sql);
+        
+        // 2. cross course descriptors used in crosssubjects
+        $sql = "
+            INSERT INTO {".block_exacomp::DB_DESCVISIBILITY."}
+            (courseid, descrid, studentid, visible)
+            SELECT cs.courseid, dc.descrid, 0, 1
+            FROM {".block_exacomp::DB_CROSSSUBJECTS."} cs
+            JOIN {".block_exacomp::DB_DESCCROSS."} dc ON cs.id = dc.crosssubjid
+            LEFT JOIN {".block_exacomp::DB_DESCVISIBILITY."} dv ON dv.descrid=dc.descrid AND dv.studentid=0
+            WHERE dv.id IS NULL AND cs.courseid != 0  -- only for those, who have no visibility yet
+        ";
+        $DB->execute($sql); //only necessary if we save courseinformation as well -> existing crosssubjects imported  only as drafts -> not needed
+        
+        //example visibility
+        $sql = "
+            INSERT INTO {".block_exacomp::DB_EXAMPVISIBILITY."}
+            (courseid, exampleid, studentid, visible)
+            SELECT DISTINCT ct.courseid, dc.exampid, 0, 1
+            FROM {".block_exacomp::DB_COURSETOPICS."} ct
+            JOIN {".block_exacomp::DB_DESCTOPICS."} dt ON ct.topicid = dt.topicid
+            JOIN {".block_exacomp::DB_DESCVISIBILITY."} dv ON dv.descrid=dt.descrid AND dv.studentid=0
+            JOIN {".block_exacomp::DB_DESCEXAMP."} dc ON dc.descrid=dt.descrid
+            LEFT JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} ev ON ev.exampleid=dc.exampid AND ev.studentid=0 AND ev.courseid=ct.courseid
+            WHERE ev.id IS NULL -- only for those, who have no visibility yet
+        ";
+        $DB->execute($sql);
+        
+        //example visibility： crosssubjects
+        $sql = "
+            INSERT INTO {".block_exacomp::DB_EXAMPVISIBILITY."}
+            (courseid, exampleid, studentid, visible)
+            SELECT DISTINCT cs.courseid, de.exampid, 0, 1
+            FROM {".block_exacomp::DB_CROSSSUBJECTS."} cs
+            JOIN {".block_exacomp::DB_DESCCROSS."} dc ON cs.id = dc.crosssubjid
+            JOIN {".block_exacomp::DB_DESCVISIBILITY."} dv ON dv.descrid=dc.descrid AND dv.studentid=0
+            JOIN {".block_exacomp::DB_DESCEXAMP."} de ON de.descrid=dv.descrid
+            LEFT JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} ev ON ev.exampleid=de.exampid AND ev.studentid=0 AND ev.courseid=cs.courseid
+            WHERE ev.id IS NULL AND cs.courseid != 0  -- only for those, who have no visibility yet
+        ";
+        $DB->execute($sql); //only necessary if we save courseinformation as well -> existing crosssubjects imported  only as drafts -> not needed
+    }
 }
 
 class block_exacomp_data_exporter extends block_exacomp_data {
@@ -995,7 +1117,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         }
         
         // self::kompetenzraster_clean_unused_data_from_source();
-    
+        
         self::delete_unused_descriptors(self::$import_source_local_id, self::$import_time, implode(",", $insertedTopics));
     
         // TODO: was ist mit desccross?
@@ -1006,89 +1128,9 @@ class block_exacomp_data_importer extends block_exacomp_data {
         self::deleteIfNoSubcategories("block_exacompsubjects","block_exacomptopics","subjid",self::$import_source_local_id);
         self::deleteIfNoSubcategories("block_exacompschooltypes","block_exacompsubjects","stid",self::$import_source_local_id);
         self::deleteIfNoSubcategories("block_exacompedulevels","block_exacompschooltypes","elid",self::$import_source_local_id);
+
+        self::normalize_database();
     
-        // add subdescriptors to topics
-        $sql = "
-            INSERT INTO {".block_exacomp::DB_DESCTOPICS."}
-            (topicid, descrid)
-            SELECT dt_parent.topicid, d.id
-            FROM {".block_exacomp::DB_DESCRIPTORS."} d
-            JOIN {".block_exacomp::DB_DESCTOPICS."} dt_parent ON dt_parent.descrid=d.parentid
-            LEFT JOIN {".block_exacomp::DB_DESCTOPICS."} dt ON dt.descrid=d.id
-            WHERE dt.id IS NULL -- only for those, who have no topic yet
-        ";
-        $DB->execute($sql);
-        
-        // after topics, descriptors and their mm are imported
-        // check if new descriptors should be visible in the courses
-        // 1. descriptors directly under the topic
-        $sql = "
-            INSERT INTO {".block_exacomp::DB_DESCVISIBILITY."}
-            (courseid, descrid, studentid, visible)
-            SELECT ct.courseid, dt.descrid, 0, 1
-            FROM {".block_exacomp::DB_COURSETOPICS."} ct
-            JOIN {".block_exacomp::DB_DESCTOPICS."} dt ON ct.topicid = dt.topicid
-            LEFT JOIN {".block_exacomp::DB_DESCVISIBILITY."} dv ON dv.descrid=dt.descrid AND dv.studentid=0
-            WHERE dv.id IS NULL -- only for those, who have no visibility yet
-        ";
-        $DB->execute($sql);
-        
-        // 2. cross course descriptors used in crosssubjects 
-        $sql = "
-            INSERT INTO {".block_exacomp::DB_DESCVISIBILITY."}
-            (courseid, descrid, studentid, visible)
-            SELECT cs.courseid, dc.descrid, 0, 1
-            FROM {".block_exacomp::DB_CROSSSUBJECTS."} cs 
-            JOIN {".block_exacomp::DB_DESCCROSS."} dc ON cs.id = dc.crosssubjid
-            LEFT JOIN {".block_exacomp::DB_DESCVISIBILITY."} dv ON dv.descrid=dc.descrid AND dv.studentid=0
-            WHERE dv.id IS NULL AND cs.courseid != 0  -- only for those, who have no visibility yet
-        ";
-        $DB->execute($sql); //only necessary if we save courseinformation as well -> existing crosssubjects imported  only as drafts -> not needed
-        
-        //example visibility
-        $sql = "
-            INSERT INTO {".block_exacomp::DB_EXAMPVISIBILITY."}
-            (courseid, exampleid, studentid, visible)
-            SELECT DISTINCT ct.courseid, dc.exampid, 0, 1
-            FROM {".block_exacomp::DB_COURSETOPICS."} ct
-            JOIN {".block_exacomp::DB_DESCTOPICS."} dt ON ct.topicid = dt.topicid
-            JOIN {".block_exacomp::DB_DESCVISIBILITY."} dv ON dv.descrid=dt.descrid AND dv.studentid=0
-            JOIN {".block_exacomp::DB_DESCEXAMP."} dc ON dc.descrid=dt.descrid 
-            LEFT JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} ev ON ev.exampleid=dc.exampid AND ev.studentid=0 AND ev.courseid=ct.courseid
-            WHERE ev.id IS NULL -- only for those, who have no visibility yet
-        ";
-        $DB->execute($sql);
-        
-        $sql = "
-            INSERT INTO {".block_exacomp::DB_EXAMPVISIBILITY."}
-            (courseid, exampleid, studentid, visible)
-            SELECT DISTINCT cs.courseid, de.exampid, 0, 1
-            FROM {".block_exacomp::DB_CROSSSUBJECTS."} cs 
-            JOIN {".block_exacomp::DB_DESCCROSS."} dc ON cs.id = dc.crosssubjid
-            JOIN {".block_exacomp::DB_DESCVISIBILITY."} dv ON dv.descrid=dc.descrid AND dv.studentid=0
-            JOIN {".block_exacomp::DB_DESCEXAMP."} de ON de.descrid=dv.descrid 
-            LEFT JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} ev ON ev.exampleid=de.exampid AND ev.studentid=0 AND ev.courseid=cs.courseid
-            WHERE ev.id IS NULL AND cs.courseid != 0  -- only for those, who have no visibility yet
-        ";
-        $DB->execute($sql); //only necessary if we save courseinformation as well -> existing crosssubjects imported  only as drafts -> not needed
-        
-        // 2. child descriptors
-        // TODO: this logic only works for one child level now, do we need more?
-        // TODO: i think child descriptors also have an mm with the topics. so this logic is not needed?
-        /*
-        $sql = "
-            INSERT INTO {".block_exacomp::DB_DESCVISIBILITY."}
-            (courseid, descrid, studentid, visible)
-            SELECT ct.courseid, dt.descrid, 0, 1
-            FROM {".block_exacomp::DB_COURSETOPICS."} ct
-            JOIN {".block_exacomp::DB_DESCTOPICS."} dt_parent ON ct.topicid = dt_parent.topicid
-            JOIN {".block_exacomp::DB_DESCTOPICS."} dt ON dt_parent.id = dt.parentid
-            LEFT JOIN {".block_exacomp::DB_DESCVISIBILITY."} dv ON dv.descrid=dt.descrid AND dv.studentid=0
-            WHERE dv.id IS NULL -- only for those, who have no visibility yet
-        ";
-        $DB->execute($sql);
-        */
-        
         block_exacomp_settstamp();
         
         return true;
@@ -1100,6 +1142,17 @@ class block_exacomp_data_importer extends block_exacomp_data {
     
     
     
+    
+    private static function update_record($table, $where, $data = array()) {
+        global $DB;
+        
+        if ($dbItem = $DB->get_record($table, $where)) {
+            if ($data) {
+                $data['id'] = $dbItem->id;
+                $DB->update_record($table, $data);
+            }
+        }
+    }
     
     private static function insert_or_update_record($table, $where, $data = array()) {
         global $DB;
@@ -1148,9 +1201,10 @@ class block_exacomp_data_importer extends block_exacomp_data {
         
         global $DB;
         
-        $DB->update_record(block_exacomp::DB_DATASOURCES, array(
+        self::update_record(block_exacomp::DB_DATASOURCES, array(
             'id' => $dbSource->id,
-            'name' => $dbSource->name
+        ), array(
+            'name' => (string)$xmlItem->name
         ));
     }
     

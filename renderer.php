@@ -109,7 +109,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         $rows = array();
 
-        //erste Reihe->�berschriften
+        //erste Reihe->Überschriften
         $row = new html_table_row();
         $cell = new html_table_cell();
         $cell->text = "";
@@ -246,7 +246,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         $rows = array();
 
-        //erste Reihe->�berschriften
+        //erste Reihe->Überschriften
         $row = new html_table_row();
         $cell = new html_table_cell();
         $cell->text = "";
@@ -1519,7 +1519,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                             array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
                 }
                 //if hidden in course, cannot be shown to one student
-                //TODO without $descriptor->visible kann deskriptor f�r einzelnen sch�ler eingeblendet werden --> sinnvoll?
+                //TODO without $descriptor->visible kann deskriptor für einzelnen sch�ler eingeblendet werden --> sinnvoll?
                 if(!$descriptor_used){
                     if($editmode || ($one_student && $descriptor->visible && $data->role == block_exacomp::ROLE_TEACHER)){
                         $titleCell->text .= $this->print_visibility_icon($visible, $descriptor->id);
@@ -1776,7 +1776,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                 $titleCell->text .= $this->print_submission_icon($data->courseid, $example->id, $studentid);
                                 
                             }
-                            //auch f�r alle sch�ler auf wochenplan legen
+                            //auch für alle schüler auf wochenplan legen
                             if(!$editmode)
                             	$titleCell->text .= $this->print_schedule_icon($example->id, ($studentid)?$studentid:BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $data->courseid);
                                 
@@ -1908,6 +1908,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
     }
 
 
+    /*
     public function print_source_color($sourceid) {
         global $DB;
         
@@ -1916,26 +1917,26 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         } elseif ($sourceid == block_exacomp::EXAMPLE_SOURCE_TEACHER) {
             $color = '#FFFF00';
         } else {
-            $cnt = $DB->get_field_sql("SELECT COUNT(*) FROM {block_exacompdatasources} WHERE id!=".block_exacomp_data::DUMMY_SOURCE_ID." AND id < ?", array($sourceid));
+            $cnt = $DB->get_field_sql("SELECT COUNT(*) FROM {block_exacompdatasources} WHERE id < ?", array($sourceid));
             $colors = array('#FF0000', '#00FF00', '#0000FF', '#FF00FF', '#00FFFF', '#800000', '#008000', '#000080', '#808000', '#800080', '#008080', '#C0C0C0', '#808080', '#9999FF', '#993366', '#FFFFCC', '#CCFFFF', '#660066', '#FF8080', '#0066CC', '#CCCCFF', '#000080');
             $color = $colors[$cnt%count($colors)];
         }
 
         return '<span style="border: 1px solid black; background: '.$color.'; margin-right: 5px;">&nbsp;&nbsp;&nbsp;</span>';
     }
+    */
     
     public function print_source_info($sourceid) {
         global $DB;
         $info="";
         if ($sourceid == block_exacomp::EXAMPLE_SOURCE_TEACHER) {
             $info = get_string('local', 'block_exacomp');
-            $source_color = $this->print_source_color($sourceid);
         } elseif ($sourceid && $source = $DB->get_record("block_exacompdatasources", array('id'=>$sourceid))) {
             $info = $source->name;
-            $source_color = $this->print_source_color($source->id);
-        } 
-        if(empty($info))
-            $info = get_string('unknown_src', 'block_exacomp');
+        }
+        if(empty($info)) {
+            $info = get_string('unknown_src', 'block_exacomp')." ($sourceid)";
+        }
            
         return $info;
     }
