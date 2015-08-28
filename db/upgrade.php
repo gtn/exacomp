@@ -2181,6 +2181,16 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2015082500, 'exacomp');
     }
+
+    if($oldversion < 2015082800){
+    
+        // normalize database
+        require_once(__DIR__.'/../lib/lib.php');
+        require_once(__DIR__.'/../lib/xmllib.php');
+        block_exacomp_data::normalize_database();
+        
+        upgrade_block_savepoint(true, 2015082800, 'exacomp');
+    }
     
 	return $return_result;
 }
