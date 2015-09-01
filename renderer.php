@@ -2624,7 +2624,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                 $cell = new html_table_cell();
                 $cell->attributes['class'] = 'rowgroup-arrow';
                 $cell->style = "padding-left: ".$padding."px";
-                $cell->text = html_writer::div('<input type="checkbox" />'.$topic->title,"desctitle");
+                $cell->text = html_writer::div('<input type="checkbox" />'.block_exacomp_get_topic_numbering($topic).' '.$topic->title,"desctitle");
                 $row->cells[] = $cell;
                 
                 $rows[] = $row;
@@ -2641,7 +2641,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     $cell = new html_table_cell();
                     $cell->attributes['class'] = 'rowgroup-arrow';
                     $cell->style = "padding-left: ".$padding."px";
-                    $cell->text = html_writer::div('<input type="checkbox" name="descriptors['.$descriptor->id.']" value="'.$descriptor->id.'" />'.$descriptor->title,"desctitle");
+                    $cell->text = html_writer::div('<input type="checkbox" name="descriptors['.$descriptor->id.']" value="'.$descriptor->id.'" />'.block_exacomp_get_descriptor_numbering($descriptor).' '.$descriptor->title,"desctitle");
                     $row->cells[] = $cell;
                     
                     $rows[] = $row;
@@ -2657,7 +2657,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                         $cell = new html_table_cell();
                         $cell->attributes['class'] = 'rowgroup-arrow';
                         $cell->style = "padding-left: ".$padding."px";
-                        $cell->text = html_writer::div('<input type="checkbox" name="descriptors['.$descriptor->id.']" value="'.$descriptor->id.'" />'.$descriptor->title,"desctitle");
+                        $cell->text = html_writer::div('<input type="checkbox" name="descriptors['.$descriptor->id.']" value="'.$descriptor->id.'" />'.block_exacomp_get_descriptor_numbering($descriptor).' '.$descriptor->title,"desctitle");
                         $row->cells[] = $cell;
                         
                         $rows[] = $row;

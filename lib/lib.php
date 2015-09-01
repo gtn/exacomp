@@ -390,14 +390,14 @@ function block_exacomp_get_all_topics($subjectid = null) {
 function block_exacomp_get_topic_by_id($topicid) {
 	global $DB;
 
-	$topics = $DB->get_records_sql('
+	$topic = $DB->get_record_sql('
 			SELECT t.id, t.title, t.parentid, t.subjid, \'topic\' as tabletype, t.numb
 			FROM {'.block_exacomp::DB_TOPICS.'} t
 			WHERE t.id = ?
 			ORDER BY t.sorting
 			', array($topicid));
 
-	return $topics;
+	return $topic;
 }
 
 /**
@@ -1101,6 +1101,13 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 			$courseTopics = block_exacomp_get_topic_by_id($topicid);
 		else 
 			$courseTopics = block_exacomp_get_topic_by_id($selectedTopic->id);
+		
+		if (!$courseTopics) {
+		    $courseTopics = array();
+		} elseif (is_object($courseTopics)) {
+		    // could be only one topic, see block_exacomp_get_topic_by_id above
+		    $courseTopics = array($courseTopics->id => $courseTopics);
+		}
 	}
 	
 	// 3. GET DESCRIPTORS
@@ -4841,15 +4848,22 @@ function block_exacomp_get_descriptor_numbering($descriptor){
 		
 	return $numbering;
 }
-function block_exacomp_get_topic_numbering($topicid){
-	$topic = block_exacomp_get_topic_by_id($topicid);
+/**
+ * 
+ * @param $topic id or object
+ * @return string
+ */
+function block_exacomp_get_topic_numbering($topic){
+    if (is_object($topic)) {
+        // ok
+    } else {
+	   $topic = block_exacomp_get_topic_by_id($topic);
+    }
 	
-	//Subject
-	$lwl_subject = block_exacomp_get_topic_by_id($topicid);
-	$numbering = substr(block_exacomp_get_subject_by_id(reset($lwl_subject)->subjid)->title, 0,1).'.';
+	$numbering = substr(block_exacomp_get_subject_by_id($topic->subjid)->title, 0,1).'.';
 	
 	//topic
-	$numbering .= reset($lwl_subject)->numb.'.';
+	$numbering .= $topic->numb.'.';
 	
 	return $numbering;
 }
