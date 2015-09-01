@@ -2,6 +2,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once __DIR__.'/classes.php';
 require_once __DIR__.'/block_exacomp.class.php';
 
 /**
@@ -389,7 +390,7 @@ function block_exacomp_get_all_topics($subjectid = null) {
  */
 function block_exacomp_get_topic_by_id($topicid) {
 	global $DB;
-
+	
 	$topic = $DB->get_record_sql('
 			SELECT t.id, t.title, t.parentid, t.subjid, \'topic\' as tabletype, t.numb
 			FROM {'.block_exacomp::DB_TOPICS.'} t
@@ -1098,9 +1099,9 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 		elseif($topicid == null)
 			$courseTopics = block_exacomp_get_topics_by_course($courseid, $showalldescriptors);
 		else if(!$version)
-			$courseTopics = block_exacomp_get_topic_by_id($topicid);
+			$courseTopics = block_exacomp_topic::get_record($topicid);
 		else 
-			$courseTopics = block_exacomp_get_topic_by_id($selectedTopic->id);
+			$courseTopics = block_exacomp_topic::get_record($selectedTopic->id);
 		
 		if (!$courseTopics) {
 		    $courseTopics = array();

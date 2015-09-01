@@ -1951,9 +1951,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         $ret = '<div>';
         foreach ($sources as $source) {
             $name = ($source->name ? $source->name : $source->source);
-            $ret .= $OUTPUT->box("Importierte Daten von $name ".html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'action'=>'delete', 'source'=>$source->id)), 
-                    "löschen",
-                    array( "onclick" => "return confirm('Really delete \"'+this.getAttribute('data-name')+'\"?')", 'data-name' => $name)));
+            $ret .= $OUTPUT->box("Importierte Daten von \"$name\" ".html_writer::link(new moodle_url('/blocks/exacomp/source_delete.php', array('courseid'=>$courseid, 'action'=>'select', 'source'=>$source->id)), 
+                    "löschen"));
         }
         $ret .= '</div>';
         return $ret;
@@ -2611,9 +2610,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             $row->cells[] = $cell;
             $rows[] = $row;
             
-            $topics = block_exacomp_get_all_topics($subject->id);
-            $descriptors = block_exacomp_get_descriptors(0, true, $subject->id);
-           
+            $topics = block_exacomp_topic::get_records_by_subject($subject->id);
+            
             foreach($topics as $topic){
                 
                 $padding = 20;
@@ -2624,14 +2622,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                 $cell = new html_table_cell();
                 $cell->attributes['class'] = 'rowgroup-arrow';
                 $cell->style = "padding-left: ".$padding."px";
-                $cell->text = html_writer::div('<input type="checkbox" />'.block_exacomp_get_topic_numbering($topic).' '.$topic->title,"desctitle");
+                $cell->text = html_writer::div('<input type="checkbox" />'.$topic->numbering.' '.$topic->title,"desctitle");
                 $row->cells[] = $cell;
                 
                 $rows[] = $row;
                 
-                foreach($descriptors as $descriptor){
-                    
-                    if ($descriptor->topicid != $topic->id) continue;
+                foreach($topic->descriptors as $descriptor){
                     
                     $padding = 40;
                 
@@ -2641,7 +2637,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     $cell = new html_table_cell();
                     $cell->attributes['class'] = 'rowgroup-arrow';
                     $cell->style = "padding-left: ".$padding."px";
-                    $cell->text = html_writer::div('<input type="checkbox" name="descriptors['.$descriptor->id.']" value="'.$descriptor->id.'" />'.block_exacomp_get_descriptor_numbering($descriptor).' '.$descriptor->title,"desctitle");
+                    $cell->text = html_writer::div('<input type="checkbox" name="descriptors['.$descriptor->id.']" value="'.$descriptor->id.'" />'.$descriptor->numbering.' '.$descriptor->title,"desctitle");
                     $row->cells[] = $cell;
                     
                     $rows[] = $row;
@@ -2657,7 +2653,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                         $cell = new html_table_cell();
                         $cell->attributes['class'] = 'rowgroup-arrow';
                         $cell->style = "padding-left: ".$padding."px";
-                        $cell->text = html_writer::div('<input type="checkbox" name="descriptors['.$descriptor->id.']" value="'.$descriptor->id.'" />'.block_exacomp_get_descriptor_numbering($descriptor).' '.$descriptor->title,"desctitle");
+                        $cell->text = html_writer::div('<input type="checkbox" name="descriptors['.$descriptor->id.']" value="'.$descriptor->id.'" />'.$descriptor->numbering.' '.$descriptor->title,"desctitle");
                         $row->cells[] = $cell;
                         
                         $rows[] = $row;
@@ -2674,6 +2670,93 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
         return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url->out(false, array('action'=>'export_selected')), "id" => "course-selection"));
     }
+
+    public function print_descriptor_selection_source_delete($source){
+        global $PAGE;
+        
+        $headertext = "Bitte wählen";
+        $topics_activ = array();
+
+        $header = html_writer::tag('p', $headertext).html_writer::empty_tag('br');
+
+        $table = new html_table();
+        $table->attributes['class'] = 'exabis_comp_comp rowgroup';
+        $rowgroup = 0;
+        $rows = array();
+        
+        $subjects = block_exacomp_get_all_subjects();
+        foreach ($subjects as $subject) {
+            $row = new html_table_row();
+            $row->attributes['class'] = 'exabis_comp_teilcomp highlight rowgroup-level-0';
+            
+            $cell = new html_table_cell();
+            $cell->text = html_writer::div('<input type="checkbox" />'.html_writer::tag('b', $subject->title));
+            $cell->attributes['class'] = 'rowgroup-arrow';
+            $row->cells[] = $cell;
+            $rows[] = $row;
+            
+            $topics = block_exacomp_topic::get_records_by_subject($subject->id);
+            
+            foreach($topics as $topic){
+                
+                $padding = 20;
+                
+                $row = new html_table_row();
+                $row->attributes['class'] = 'exabis_comp_teilcomp rowgroup-level-1';
+                
+                $cell = new html_table_cell();
+                $cell->attributes['class'] = 'rowgroup-arrow';
+                $cell->style = "padding-left: ".$padding."px";
+                $cell->text = html_writer::div('<input type="checkbox" />'.$topic->numbering.' '.$topic->title,"desctitle");
+                $row->cells[] = $cell;
+                
+                $rows[] = $row;
+                
+                foreach($topic->descriptors as $descriptor){
+                    
+                    $padding = 40;
+                
+                    $row = new html_table_row();
+                    $row->attributes['class'] = 'rowgroup-level-2';
+                    
+                    $cell = new html_table_cell();
+                    $cell->attributes['class'] = 'rowgroup-arrow';
+                    $cell->style = "padding-left: ".$padding."px";
+                    $cell->text = html_writer::div('<input type="checkbox" name="descriptors['.$descriptor->id.']" value="'.$descriptor->id.'" />'.$descriptor->numbering.' '.$descriptor->title,"desctitle");
+                    $row->cells[] = $cell;
+                    
+                    $rows[] = $row;
+                    
+                    // child descriptors
+                    foreach($descriptor->children as $descriptor){
+                        $padding = 60;
+                    
+                        $row = new html_table_row();
+                        $row->attributes['class'] = 'rowgroup-level-3';
+                        
+                        $cell = new html_table_cell();
+                        $cell->attributes['class'] = 'rowgroup-arrow';
+                        $cell->style = "padding-left: ".$padding."px";
+                        $cell->text = html_writer::div('<input type="checkbox" name="descriptors['.$descriptor->id.']" value="'.$descriptor->id.'" />'.$descriptor->numbering.' '.$descriptor->title,"desctitle");
+                        $row->cells[] = $cell;
+                        
+                        $rows[] = $row;
+                    }
+                    
+                    $rows[] = $row;
+                }
+            }
+        }
+        
+        $table->data = $rows;
+
+
+        $table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
+        $table_html .= html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>'Löschen')), '', array('id'=>'exabis_save_button'));
+
+        return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url->out(false, array('action'=>'export_selected')), "id" => "course-selection"));
+    }
+    
     public function print_topics_courseselection(&$rows, $level, $topics, &$rowgroup, $rowgroup_class = '', $topics_activ){
         global $version;
 
