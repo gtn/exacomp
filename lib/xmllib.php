@@ -1113,10 +1113,11 @@ class block_exacomp_data_importer extends block_exacomp_data {
         }
         
         // self::kompetenzraster_clean_unused_data_from_source();
-        
+        // TODO: was ist mit desccross?
         self::delete_unused_descriptors(self::$import_source_local_id, self::$import_time, implode(",", $insertedTopics));
     
-        // TODO: was ist mit desccross?
+		self::delete_unused_taxonomies();
+        
         //self::deleteIfNoSubcategories("block_exacompdescrexamp_mm","block_exacompdescriptors","id",self::$import_source_local_id,1,0,"descrid");
         self::deleteIfNoSubcategories("block_exacompexamples","block_exacompdescrexamp_mm","exampid",self::$import_source_local_id,0);
         //self::deleteIfNoSubcategories("block_exacompdescrtopic_mm","block_exacompdescriptors","id",self::$import_source_local_id,1,0,"descrid");
@@ -1629,6 +1630,19 @@ class block_exacomp_data_importer extends block_exacomp_data {
             $DB->delete_records($parenttable, array("id" => $todelete->id));
         }
     }
+	
+	private static function delete_unused_taxonomies(){
+		global $DB; 
+		
+		$sql = 'SELECT * FROM {'.block_exacomp::DB_TAXONOMIES.'} WHERE id NOT IN( SELECT taxid FROM {'
+			.block_exacomp::DB_EXAMPTAX.'} et INNER JOIN {'.block_exacomp::DB_EXAMPLES.'} ex WHERE et.exampleid = ex.id)';
+		
+		$todeletes = $DB->get_records_sql($sql);
+		foreach ($todeletes as $todelete) {
+            $DB->delete_records(block_exacomp::DB_TAXONOMIES, array("id" => $todelete->id));
+        }
+	}
+	
     private static function delete_unused_descriptors($source, $crdate, $topiclist){
         global $DB;
     
