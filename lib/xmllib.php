@@ -262,58 +262,74 @@ class block_exacomp_data {
         $tables = array(
             array(
                 'table' => block_exacomp::DB_DESCTOPICS,
-                'mm1' => array('descrid', block_exacomp::DB_DESCRIPTORS),
-                'mm2' => array('topicid', block_exacomp::DB_TOPICS),
+                'needed1' => array('descrid', block_exacomp::DB_DESCRIPTORS),
+                'needed2' => array('topicid', block_exacomp::DB_TOPICS),
             ),
             array(
                 'table' => block_exacomp::DB_DESCEXAMP,
-                'mm1' => array('descrid', block_exacomp::DB_DESCRIPTORS),
-                'mm2' => array('exampid', block_exacomp::DB_EXAMPLES),
+                'needed1' => array('descrid', block_exacomp::DB_DESCRIPTORS),
+                'needed2' => array('exampid', block_exacomp::DB_EXAMPLES),
             ),
             array(
                 'table' => block_exacomp::DB_DESCCROSS,
-                'mm1' => array('descrid', block_exacomp::DB_DESCRIPTORS),
-                'mm2' => array('crosssubjid', block_exacomp::DB_CROSSSUBJECTS),
+                'needed1' => array('descrid', block_exacomp::DB_DESCRIPTORS),
+                'needed2' => array('crosssubjid', block_exacomp::DB_CROSSSUBJECTS),
             ),
             array(
                 'table' => block_exacomp::DB_EXAMPTAX,
-                'mm1' => array('exampleid', block_exacomp::DB_EXAMPLES),
-                'mm2' => array('taxid', block_exacomp::DB_TAXONOMIES),
+                'needed1' => array('exampleid', block_exacomp::DB_EXAMPLES),
+                'needed2' => array('taxid', block_exacomp::DB_TAXONOMIES),
             ),
             array(
                 'table' => block_exacomp::DB_EXAMPVISIBILITY,
-                'mm1' => array('exampleid', block_exacomp::DB_EXAMPLES),
+                'needed1' => array('exampleid', block_exacomp::DB_EXAMPLES),
                 // course / studentid exclusive!
             ),
             array(
                 'table' => block_exacomp::DB_DESCVISIBILITY,
-                'mm1' => array('descrid', block_exacomp::DB_DESCRIPTORS),
+                'needed1' => array('descrid', block_exacomp::DB_DESCRIPTORS),
                 // course / studentid exclusive!
             ),
             array(
                 'table' => block_exacomp::DB_DESCCAT,
-                'mm1' => array('descrid', block_exacomp::DB_DESCRIPTORS),
-                'mm2' => array('catid', block_exacomp::DB_CATEGORIES),
+                'needed1' => array('descrid', block_exacomp::DB_DESCRIPTORS),
+                'needed2' => array('catid', block_exacomp::DB_CATEGORIES),
             ),
             array(
                 'table' => block_exacomp::DB_COURSETOPICS,
-                'mm1' => array('topicid', block_exacomp::DB_TOPICS),
-                'mm2' => array('courseid', "course"),
+                'needed1' => array('topicid', block_exacomp::DB_TOPICS),
+                'needed2' => array('courseid', "course"),
+            ),
+            // after examples and examptax, delete unused DB_TAXONOMIES
+            array(
+                'table' => block_exacomp::DB_TAXONOMIES,
+                'needed1' => array('id', 'SELECT taxid FROM {'.block_exacomp::DB_EXAMPTAX.'}'),
             ),
         );
         
+        $make_select = function($select) {
+            if (strpos($select, ' ')) {
+                return $select;
+            } else {
+                // is a table name
+                return "SELECT id FROM {{$select}}";
+            }
+        };
         foreach ($tables as $table) {
-            $sql = "DELETE FROM {{$table['table']}} WHERE";
-            $sql .= " {$table['mm1'][0]} NOT IN (SELECT id FROM {{$table['mm1'][1]}})";
-            if (!empty($table['mm2'])) {
-                $sql .= " OR {$table['mm2'][0]} NOT IN (SELECT id FROM {{$table['mm2'][1]}})";
+            $sql = "DELETE FROM {{$table['table']}} WHERE 1!=1";
+            if (!empty($table['needed1'])) {
+                $sql .= " OR {$table['needed1'][0]} NOT IN ({$make_select($table['needed1'][1])})";
             }
-            if (!empty($table['mm3'])) {
-                $sql .= " OR {$table['mm3'][0]} NOT IN (SELECT id FROM {{$table['mm3'][1]}})";
+            if (!empty($table['needed2'])) {
+                $sql .= " OR {$table['needed2'][0]} NOT IN ({$make_select($table['needed2'][1])})";
             }
+            if (!empty($table['needed3'])) {
+                $sql .= " OR {$table['needed3'][0]} NOT IN ({$make_select($table['needed3'][1])})";
+            }
+            echo $sql;
             $DB->execute($sql);
         }
-        
+
         // add subdescriptors to topics
         $sql = "
             INSERT INTO {".block_exacomp::DB_DESCTOPICS."}
@@ -1116,8 +1132,6 @@ class block_exacomp_data_importer extends block_exacomp_data {
         // TODO: was ist mit desccross?
         self::delete_unused_descriptors(self::$import_source_local_id, self::$import_time, implode(",", $insertedTopics));
     
-		self::delete_unused_taxonomies();
-        
         //self::deleteIfNoSubcategories("block_exacompdescrexamp_mm","block_exacompdescriptors","id",self::$import_source_local_id,1,0,"descrid");
         self::deleteIfNoSubcategories("block_exacompexamples","block_exacompdescrexamp_mm","exampid",self::$import_source_local_id,0);
         //self::deleteIfNoSubcategories("block_exacompdescrtopic_mm","block_exacompdescriptors","id",self::$import_source_local_id,1,0,"descrid");
@@ -1630,18 +1644,6 @@ class block_exacomp_data_importer extends block_exacomp_data {
             $DB->delete_records($parenttable, array("id" => $todelete->id));
         }
     }
-	
-	private static function delete_unused_taxonomies(){
-		global $DB; 
-		
-		$sql = 'SELECT * FROM {'.block_exacomp::DB_TAXONOMIES.'} WHERE id NOT IN( SELECT taxid FROM {'
-			.block_exacomp::DB_EXAMPTAX.'} et INNER JOIN {'.block_exacomp::DB_EXAMPLES.'} ex WHERE et.exampleid = ex.id)';
-		
-		$todeletes = $DB->get_records_sql($sql);
-		foreach ($todeletes as $todelete) {
-            $DB->delete_records(block_exacomp::DB_TAXONOMIES, array("id" => $todelete->id));
-        }
-	}
 	
     private static function delete_unused_descriptors($source, $crdate, $topiclist){
         global $DB;
