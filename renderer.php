@@ -416,7 +416,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     	return html_writer::empty_tag('input', array('type'=>'submit', 'id'=>'edit_mode_submit', 'name'=> 'edit_mode_submit', 'value'=>get_string(($edit) ? 'editmode_off' : 'editmode_on','block_exacomp'),
     			 "onclick" => "document.location.href='".$PAGE->url."&editmode=" . (!$edit).$url."'"));
     }
-    public function print_subjects_menu($subjects,$selectedSubject) {
+    public function print_subjects_menu($types,$selectedSubject) {
     	global $PAGE;
     	
     	$edit = optional_param('editmode', 0, PARAM_BOOL);
@@ -425,8 +425,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
     	$content = html_writer::start_div('subjects_menu');
     	$content .= html_writer::start_tag('ul');
     	
-    	foreach($subjects as $subject) {
+    	foreach($types as $type) {
     		$content .= html_writer::tag('li',
+    				html_writer::link("#",
+    						$type->title, array('class' => 'type'))
+    		);
+    		
+    		foreach($type->subjects as $subject)
+    			$content .= html_writer::tag('li',
     				html_writer::link($PAGE->url . "&studentid=" . $studentid . "&editmode=" . $edit . "&subjectid=" . $subject->id,
     						$subject->title, array('class' => ($subject->id == $selectedSubject->id) ? 'current' : ''))
     				);

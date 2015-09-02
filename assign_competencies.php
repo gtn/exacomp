@@ -138,7 +138,7 @@ else{
 	echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
 	echo html_writer::start_tag("div", array("class"=>"gridlayout"));
 	
-	echo $output->print_subjects_menu($subjects,$selectedSubject); 
+	echo $output->print_subjects_menu(block_exacomp_get_schooltypetree_by_subjects($subjects),$selectedSubject); 
 	echo $output->print_topics_menu($topics,$selectedTopic,$selectedSubject);
 	if($course_settings->nostudents != 1)
 		echo $output->print_overview_legend($isTeacher);

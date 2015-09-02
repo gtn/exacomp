@@ -860,7 +860,9 @@ td.contentcell {
 .subjects_menu ul li a:visited {
     color: white;
 }
- 
+.subjects_menu ul li .type, subjects_menu ul li .type a:hover {
+	background-color: #336699;
+} 
 .subjects_menu ul li a:hover, .subjects_menu ul li .current {
     color: white;
     background-color: #6699cc;
