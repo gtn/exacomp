@@ -222,6 +222,8 @@ $string['delete_confirmation_descr'] = 'Do you really want to delete this compet
 $string['import_source'] = "Imported from: ";
 $string['local'] = "local";
 $string['unknown_src'] = 'unknown source';
+$string['editmode_on'] = 'Editmode on';
+$string['editmode_off'] = 'Editmode off';
 
 //Example Submission
 $string['example_submission_header']  = 'Aufgabe {$a} bearbeiten';

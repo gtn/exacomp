@@ -2,7 +2,7 @@
 $string['tab_teacher_settings_selection_st'] = 'Bildungsstandard-Auswahl';
 $string['tab_examples'] = 'Lernmaterialien';
 $string['tab_teacher_settings_selection'] = 'Kompetenzbereiche-Auswahl';
-$string['tab_competence_overview'] = 'Lernwegeliste';
+$string['tab_competence_overview'] = 'Kompetenzraster';
 $string['tab_competence_details'] = 'Moodle Aktivit&auml;ten';
 
 $string['subject'] = 'Kompetenzbereiche';

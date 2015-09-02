@@ -371,6 +371,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
     public function print_overview_dropdowns($schooltypetree, $topics, $selectedSubject, $selectedTopic, $students, $selectedStudent = 0, $isTeacher = false) {
         global $PAGE;
 
+        $content = "";
+        /*
         $content = $this->print_subject_dropdown($schooltypetree, $selectedSubject, $selectedStudent);
         $content .= html_writer::empty_tag("br");
 
@@ -381,7 +383,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
         }
         $content .= html_writer::select($options, "lis_topics", $selectedTopic, false,
                 array("onchange" => "document.location.href='".$PAGE->url."&studentid=".$selectedStudent."&subjectid=".$selectedSubject."&topicid='+this.value;"));
-
+		*/
+        
         if($isTeacher){
             $content .= html_writer::empty_tag("br");
             $content .= get_string("choosestudent", "block_exacomp");
@@ -398,9 +401,61 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     array("onchange" => "document.location.href='".$PAGE->url."&subjectid=".$selectedSubject."&topicid=".$selectedTopic."&studentid='+this.value;"));
             */
             $content .= block_exacomp_studentselector($students,$selectedStudent,$PAGE->url."&subjectid=".$selectedSubject."&topicid=".$selectedTopic,  BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
+
+            $content .= $this->print_edit_mode_button("&studentid=".$selectedStudent."&subjectid=".$selectedSubject."&topicid=".$selectedTopic);
         }    
         
         return $content;
+    }
+    public function print_edit_mode_button($url) {
+    	global $PAGE;
+    	
+    	$edit = optional_param('editmode', 0, PARAM_BOOL);
+    	
+    	
+    	return html_writer::empty_tag('input', array('type'=>'submit', 'id'=>'edit_mode_submit', 'name'=> 'edit_mode_submit', 'value'=>get_string(($edit) ? 'editmode_off' : 'editmode_on','block_exacomp'),
+    			 "onclick" => "document.location.href='".$PAGE->url."&editmode=" . (!$edit).$url."'"));
+    }
+    public function print_subjects_menu($subjects,$selectedSubject) {
+    	global $PAGE;
+    	
+    	$edit = optional_param('editmode', 0, PARAM_BOOL);
+    	$studentid = optional_param('studentid', BLOCK_EXACOMP_SHOW_ALL_STUDENTS,PARAM_INT);
+    	
+    	$content = html_writer::start_div('subjects_menu');
+    	$content .= html_writer::start_tag('ul');
+    	
+    	foreach($subjects as $subject) {
+    		$content .= html_writer::tag('li',
+    				html_writer::link($PAGE->url . "&studentid=" . $studentid . "&editmode=" . $edit . "&subjectid=" . $subject->id,
+    						$subject->title, array('class' => ($subject->id == $selectedSubject->id) ? 'current' : ''))
+    				);
+    	}
+    	
+    	$content .= html_writer::end_tag('ul');
+    	$content .= html_writer::end_tag('div');    	
+    	return $content;
+    }
+    public function print_topics_menu($topics,$selectedTopic,$selectedSubject) {
+    	   	global $PAGE;
+    	
+    	$edit = optional_param('editmode', 0, PARAM_BOOL);
+    	$studentid = optional_param('studentid', BLOCK_EXACOMP_SHOW_ALL_STUDENTS,PARAM_INT);
+    	$subjectid = 
+    	
+    	$content = html_writer::start_div('topics_menu');
+    	$content .= html_writer::start_tag('ul');
+    	
+    	foreach($topics as $topic) {
+    		$content .= html_writer::tag('li',
+    				html_writer::link($PAGE->url . "&studentid=" . $studentid . "&editmode=" . $edit . "&subjectid=" . $selectedSubject->id . "&topicid=" . $topic->id,
+    						isset($topic->cattitle) ? $topic->cattitle : $topic->title, array('class' => ($topic->id == $selectedTopic->id) ? 'current' : ''))
+    				);
+    	}
+    	
+    	$content .= html_writer::end_tag('ul');
+    	$content .= html_writer::end_tag('div');    	
+    	return $content;
     }
     public function print_overview_metadata_teacher($subject,$topic){
 
@@ -1289,7 +1344,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             $first = false;
         }
 
-        $table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
+        $table_html = html_writer::table($table);
         
         if($crosssubs && $role == block_exacomp::ROLE_TEACHER && !$students)
             $table_html .= html_writer::div(html_writer::tag("input", "", array("id"=>"btn_submit", "name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp")))
@@ -1463,7 +1518,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                 //echo $descriptor->visible . " / " . $visible . " <br/> ";
                 
                 $visible_css = block_exacomp_get_descriptor_visible_css($visible, $data->role);
-                    
+                
                 $checkboxname = "data";
                 list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor, false, $parent);
                 $studentsCount = 0;
@@ -1508,8 +1563,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     $titleCell->attributes['class'] = 'rowgroup-arrow';
                 $titleCell->style = "padding-left: ".$padding."px";
                 $titleCell->text = html_writer::div(html_writer::tag('span', $outputname, array('title'=>get_string('import_source', 'block_exacomp').$this->print_source_info($descriptor->source))));
-    
-    
+                
+    			//$titleCell->attributes['title'] = $this->print_statistic_table($data->courseid, $students, $descriptor, true, $data->scheme);
+    			 
                 // EDIT MODE BUTTONS 
                 if ($editmode && (($version && !$parent) || !$version)){
                     //Adding to crosssubject only for "teilkompetenzen"
@@ -1695,7 +1751,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     $statCell = new html_table_cell();
                     $statCell->text = $this->print_statistic_table($data->courseid, $students, $descriptor, true, $data->scheme);
             
-    
                     $descriptorRow->cells[] = $statCell;
                 }
     
@@ -1735,8 +1790,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                     $OUTPUT->pix_icon("i/edit", get_string("edit")),
                                     array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
                         
-                            
-                            $titleCell->text .= html_writer::link($PAGE->url . "&delete=" . $example->id. "&studentid=" . optional_param('studentid',BLOCK_EXACOMP_SHOW_ALL_STUDENTS, PARAM_INT). "&subjectid=" . optional_param('subjectid', 0, PARAM_INT). "&topicid=" . optional_param('topicid', 0, PARAM_INT), $OUTPUT->pix_icon("t/delete", get_string("delete"), "", array("onclick" => "return confirm('" . get_string('delete_confirmation','block_exacomp') . "')")));
+                            if(!$example_used)
+                           		$titleCell->text .= html_writer::link($PAGE->url . "&delete=" . $example->id. "&studentid=" . optional_param('studentid',BLOCK_EXACOMP_SHOW_ALL_STUDENTS, PARAM_INT). "&subjectid=" . optional_param('subjectid', 0, PARAM_INT). "&topicid=" . optional_param('topicid', 0, PARAM_INT), $OUTPUT->pix_icon("t/delete", get_string("delete"), "", array("onclick" => "return confirm('" . get_string('delete_confirmation','block_exacomp') . "')")));
                         }
                         
                         if ($url = block_exacomp_get_file_url($example, 'example_task')) {
@@ -4341,7 +4396,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         return html_writer::start_tag('form',array('id'=>'assign-competencies', "action" => $url, 'method'=>'post'));
     }
     
-    public function print_dropdowns_cross_subjects($crosssubjects, $selectedCrosssubject, $students, $selectedStudent = 0, $isTeacher = false){
+    public function print_dropdowns_cross_subjects($crosssubjects, $selectedCrosssubject, $students, $selectedStudent = BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $isTeacher = false){
         global $PAGE;
         
         $content = html_writer::empty_tag("br");
@@ -4357,15 +4412,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             $content .= html_writer::empty_tag("br");
     
             $content .= get_string("choosestudent", "block_exacomp");
-            $options = array();
-            $options[0] = get_string('no_student_edit', 'block_exacomp');
+            $content .= block_exacomp_studentselector($students,$selectedStudent,$PAGE->url."&crosssubjid=".$selectedCrosssubject,  BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
             
-            foreach($students as $student)
-                $options[$student->id] = $student->firstname." ".$student->lastname;
-            $options[BLOCK_EXACOMP_SHOW_ALL_STUDENTS] = get_string('allstudents', 'block_exacomp');
-            $options[BLOCK_EXACOMP_SHOW_STATISTIC] = get_string('statistic', 'block_exacomp');
-            $content .= html_writer::select($options, "lis_crosssubs_students", $selectedStudent, false,
-                    array("onchange" => "document.location.href='".$PAGE->url."&crosssubjid=".$selectedCrosssubject."&studentid='+this.value;"));
+            $content .= $this->print_edit_mode_button("&crosssubjid=".$selectedCrosssubject."&studentid=".$selectedStudent);
         }    
         return $content;
     }

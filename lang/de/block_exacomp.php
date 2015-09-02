@@ -50,8 +50,8 @@ $string['tab_teacher_settings_badges'] = 'Auszeichnungen bearbeiten';
 $string['tab_student_all'] = 'Alle erworbenen Kompetenzen';
 
 //Generic Tabs (used by Teacher and Students)
-$string['tab_competence_grid'] = 'Kompetenzraster';
-$string['tab_competence_overview'] = 'Kompetenz-&Uuml;berblick';
+$string['tab_competence_grid'] = 'Berichte';
+$string['tab_competence_overview'] = 'Kompetenzraster';
 $string['tab_competence_details'] = 'Kompetenz-Detailansicht';
 $string['tab_examples'] = 'Beispiele und Aufgaben';
 $string['tab_learning_agenda'] = 'Wochenplan';
@@ -249,6 +249,9 @@ $string['delete_confirmation_descr'] = 'Soll diese Teilkompetenz wirklich für d
 $string['import_source'] = "Importiert von: ";
 $string['local'] = "lokal";
 $string['unknown_src'] = 'unbekannte Quelle';
+$string['editmode_on'] = 'Editiermodus ein';
+$string['editmode_off'] = 'Editiermodus aus';
+
 
 //Example Submission
 $string['example_submission_header']  = 'Aufgabe {$a} bearbeiten';

@@ -35,7 +35,14 @@ $group = optional_param('group', 0, PARAM_INT);
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
+$edit = optional_param('editmode', 0, PARAM_BOOL);
+
+//if edit mode is on, do not allow to work with students
 $studentid = optional_param('studentid', BLOCK_EXACOMP_SHOW_ALL_STUDENTS, PARAM_INT);
+if($edit) {
+	$selectedStudentid = $studentid;
+	$studentid = 0;
+}
 
 require_login($course);
 
@@ -96,8 +103,7 @@ else{
 	echo $output->print_competence_overview_form_start((isset($selectedTopic))?$selectedTopic:null, (isset($selectedSubject))?$selectedSubject:null, $studentid);
 
 	//dropdowns for subjects and topics and students -> if user is teacher
-	echo $output->print_overview_dropdowns(block_exacomp_get_schooltypetree_by_subjects($subjects), $topics, $selectedSubject->id, $selectedTopic->id, $students, $studentid, $isTeacher);
-	
+	echo $output->print_overview_dropdowns(block_exacomp_get_schooltypetree_by_subjects($subjects), $topics, $selectedSubject->id, $selectedTopic->id, $students, (!$edit) ? $studentid : $selectedStudentid, $isTeacher);
 	if($version)
 		$metasubject = block_exacomp_get_subject_by_id($selectedSubject->subjid);
 	else {
@@ -127,24 +133,29 @@ else{
 				echo $output->print_overview_metadata_student($selectedSubject, $selectedTopic, $students[$USER->id]->topics, $showevaluation, $scheme, block_exacomp_get_icon_for_user($activities_student, $USER, block_exacomp_get_supported_modules()));
 		}
 	}
+
+	echo html_writer::start_tag("div", array("id"=>"exabis_competences_block"));
+	echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
+	echo html_writer::start_tag("div", array("class"=>"gridlayout"));
 	
+	echo $output->print_subjects_menu($subjects,$selectedSubject); 
+	echo $output->print_topics_menu($topics,$selectedTopic,$selectedSubject);
+	if($course_settings->nostudents != 1)
+		echo $output->print_overview_legend($isTeacher);
 	if(!$version && $course_settings->nostudents != 1 && $studentid) echo $output->print_student_evaluation($showevaluation, $isTeacher,$selectedTopic->id,$selectedSubject->id, $studentid);
 	
-	if($course_settings->nostudents != 1)
-	    echo $output->print_overview_legend($isTeacher);
-	    
 	$statistic = false;
-    if($isTeacher){
-    	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS)
-    	    echo $output->print_column_selector(count($students));
-    	elseif (!$studentid)
-    	    $students = array();
-    	elseif($studentid == BLOCK_EXACOMP_SHOW_STATISTIC)
-    		$statistic = true;
-    	else 
-    	    $students = !empty($students[$studentid]) ? array($students[$studentid]) : array();
+	if($isTeacher){
+		if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS)
+			echo $output->print_column_selector(count($students));
+		elseif (!$studentid)
+		$students = array();
+		elseif($studentid == BLOCK_EXACOMP_SHOW_STATISTIC)
+		$statistic = true;
+		else
+			$students = !empty($students[$studentid]) ? array($students[$studentid]) : array();
 	}
-
+	
 	$subjects = block_exacomp_get_competence_tree($courseid,(isset($selectedSubject))?$selectedSubject->id:null,false,(isset($selectedTopic))?$selectedTopic->id:null,
 			!($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies, true);
 	
@@ -152,7 +163,10 @@ else{
 	$firstvalue->title = $selectedSubject->title;
 	
 	echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, ($version && $selectedTopic->id != SHOW_ALL_TOPICS), false, 0, $statistic);
-
+	
+	echo html_writer::end_tag("div");
+	echo html_writer::end_tag("div");
+	echo html_writer::end_tag("div");
 }
 
 /* END CONTENT REGION */

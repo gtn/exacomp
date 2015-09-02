@@ -831,3 +831,66 @@ td.contentcell {
 #block_exacomp table.statistic td.c0{
 	background-color: #dfdfdf;font-weight:bold;
 }
+.exabis_competencies_lis .gridlayout {
+    display: table;
+}
+.row  {
+    display: table-row;
+}
+   
+.subjects_menu {
+    width: 185px;
+    display: table-cell;
+    padding: 10px;
+}
+.subjects_menu ul {
+    margin: 0; 
+    padding: 0;
+    list-style-type: none;
+}
+
+.subjects_menu ul li a {
+    text-decoration: none;
+    color: white; 
+    padding: 10.5px 11px;
+    background-color: #cccccc;
+    display: block;
+}
+ 
+.subjects_menu ul li a:visited {
+    color: white;
+}
+ 
+.subjects_menu ul li a:hover, .subjects_menu ul li .current {
+    color: white;
+    background-color: #6699cc;
+}
+
+.topics_menu {
+    width: 100%;
+    background-color: #cccccc;
+}
+
+.topics_menu ul {
+    margin: 0; padding: 0;
+}
+
+.topics_menu ul li {
+    display: inline;
+}
+
+.topics_menu ul li a {
+    float: left; text-decoration: none;
+    color: white; 
+    padding: 10.5px 11px;
+    background-color:  #cccccc;
+}
+ 
+.topics_menu ul li a:visited {
+    color: white;
+}
+ 
+.topics_menu ul li a:hover, .topics_menu ul li .current {
+    color: white;
+    background-color: #6699cc;
+}

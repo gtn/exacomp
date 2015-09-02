@@ -1622,10 +1622,10 @@ function block_exacomp_studentselector($students, $selected, $url, $option = nul
     $url = new block_exacomp_url($url);
     $url->remove_params('studentid');
 	
-	if ($option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_EDITMODE || $option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN
+	if ($option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_EDITMODE
 			|| $option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN)
 		$studentsAssociativeArray[0]=get_string('no_student_edit', 'block_exacomp');
-	else 
+     else if($option != BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN)
 		$studentsAssociativeArray[0]=get_string('no_student', 'block_exacomp');
 		
 	foreach($students as $student) {
@@ -1639,8 +1639,10 @@ function block_exacomp_studentselector($students, $selected, $url, $option = nul
     	$studentsAssociativeArray[BLOCK_EXACOMP_SHOW_STATISTIC] = get_string('statistic', 'block_exacomp');
     }
 	
+    $edit = optional_param('editmode', 0, PARAM_BOOL);
+    
 	return html_writer::select($studentsAssociativeArray, 'exacomp_competence_grid_select_student',$selected,true,
-			array("data-url"=>$url));
+			array("data-url"=>$url,"disabled" => ($edit) ? "disabled" : ""));
 }
 /**
  *
@@ -4446,6 +4448,11 @@ function block_exacomp_example_used($courseid, $example, $studentid){
 				
 		//TODO submissions & avtivities
 	}
+	
+
+	$onSchedule = $DB->record_exists(block_exacomp::DB_SCHEDULE, array('exampleid' => $example->id));
+	if($onSchedule)
+		return true;
 	
 	return false;
 }

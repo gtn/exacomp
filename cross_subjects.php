@@ -35,7 +35,13 @@ $group = optional_param('group', 0, PARAM_INT);
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
-$studentid = optional_param('studentid', 0, PARAM_INT);
+$studentid = optional_param('studentid', BLOCK_EXACOMP_SHOW_ALL_STUDENTS, PARAM_INT);
+$edit = optional_param('editmode', 0, PARAM_BOOL);
+
+if($edit) {
+	$selectedStudentid = $studentid;
+	$studentid = 0;
+}
 require_login($course);
 
 $context = context_course::instance($courseid);
@@ -107,7 +113,7 @@ else{
 	echo $output->print_cross_subjects_form_start((isset($selectedCrosssubject))?$selectedCrosssubject:null, $studentid);
 
 	//dropdowns for crosssubjects
-	echo $output->print_dropdowns_cross_subjects($crosssubjects, $selectedCrosssubject->id, $students, $studentid, $isTeacher);
+	echo $output->print_dropdowns_cross_subjects($crosssubjects, $selectedCrosssubject->id, $students, (!$edit) ? $studentid : $selectedStudentid, $isTeacher);
 	
 	//schooltypes
 	/*$schooltypes = block_exacomp_get_schooltypes_by_course($courseid);
@@ -155,9 +161,9 @@ else{
 	}
 	
 	$subjects = block_exacomp_get_competence_tree_for_cross_subject($courseid,(isset($selectedCrosssubject))?$selectedCrosssubject->id:null,false, !($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies);
-	
+	echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
 	echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, false, true, $selectedCrosssubject->id, $statistic);
-	
+	echo html_writer::end_tag("div");
 }
 /* END CONTENT REGION */
 echo $output->print_wrapperdivend();
