@@ -3550,8 +3550,9 @@ class block_exacomp_external extends external_api {
 			
 		$examples = block_exacomp_get_examples_for_pool($userid, $courseid);
 		
-		foreach($examples as $example)
-			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->id, $userid);
+		foreach($examples as $example){
+			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
+		}
 		
 		return $examples;
 	}
@@ -3721,8 +3722,9 @@ class block_exacomp_external extends external_api {
 		
 		$examples = block_exacomp_get_examples_for_start_end_all_courses($userid, $start, $end);
 		
-		foreach($examples as $example)
-			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->id, $userid);
+		foreach($examples as $example){
+			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
+		}
 		
 		return $examples;
 	}
