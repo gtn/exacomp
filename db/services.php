@@ -49,7 +49,8 @@ $services = array(
 						'dakora_set_example_time_slot',
 						'dakora_remove_example_from_schedule',
 						'dakora_get_examples_for_time_slot',
-						'dakora_get_cross_subjects'
+						'dakora_get_cross_subjects_by_course',
+						'dakora_get_descriptors_by_cross_subject'
 						), 	//web service functions of this service
 				'restrictedusers' =>0,                      //if enabled, the Moodle administrator must link some user to this service
 				//into the administration
@@ -390,11 +391,18 @@ $functions = array(
 				'description' => 'get examples for a special start to end period (e.g. day)',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)
 		),
-		'dakora_get_cross_subjects' => array(
+		'dakora_get_cross_subjects_by_course' => array(
 				'classname'   => 'block_exacomp_external',  //class containing the external function
-				'methodname'  => 'dakora_get_cross_subjects',          //external function name
+				'methodname'  => 'dakora_get_cross_subjects_by_course',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
-				'description' => 'get cross subjects',    //human readable description of the web service function
+				'description' => 'get cross subjects for an user in course context',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_descriptors_by_cross_subject' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_descriptors_by_cross_subject',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get descriptors for a cross subject',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)
 		)
 );

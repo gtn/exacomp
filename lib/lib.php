@@ -4002,6 +4002,20 @@ function block_exacomp_save_drafts_to_course($drafts_to_save, $courseid){
         		$insert->visible = 1;
         		$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, $insert);
         	}
+			
+			//check if descriptor has parent and if parent is visible in course
+			$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$comp->descrid));
+			if($descriptor->parentid != 0){ //has parent
+					$parent_visibility = $DB->get_recod(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$descriptor->parentid, 'studentid'=>0));
+					if(!$parent_visibility){ //not visible insert in table
+						$insert = new stdClass();
+						$insert->courseid = $courseid;
+						$insert->descrid = $descriptor->parentid;
+						$insert->studentid=0;
+						$insert->visible = 1;
+						$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, $insert);
+					}
+			}
         }
     }
     return $redirect_crosssubjid;

@@ -13,7 +13,7 @@ $params = new stdClass();
 
 require_once('./curl.php');
 $curl = new curl;
-$token_google = 202331;
+$token_google = 199809;
 
 print_r($token_google);
 echo "
@@ -42,7 +42,7 @@ echo "
 
 ";
 
-$serverurl_moodle = 'http://gtn-solutions.com/moodle29/login/token.php?username=student2&password=Student2!&token='.$token_google.'&service=moodle_mobile_app';
+$serverurl_moodle = 'http://gtn-solutions.com/moodle29test/login/token.php?username=student2&password=Student2!&token='.$token_google.'&service=moodle_mobile_app';
 $resp_moodle = $curl->get($serverurl_exaport);
 $resp_moodle = json_decode($resp_moodle)->token;
 print_r($resp_moodle);
@@ -52,12 +52,32 @@ cross subjects:
 ";
 header('Content-Type: text/plain');
 //REST CALL dakora_get_examples_pool_for_week
-$functionname = 'dakora_get_cross_subjects';
+$functionname = 'dakora_get_cross_subjects_by_course';
 
 $params = new stdClass();
-$params->courseid = 3;
+$params->courseid = 4;
 $params->userid =0;
+$params->forall = 0;
 
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+cross subject descriptors:
+
+";
+
+
+//REST CALL dakora_get_examples_pool_for_week
+$functionname = 'dakora_get_descriptors_by_cross_subject';
+
+$params = new stdClass();
+$params->courseid = 4;
+$params->crosssubjid = 30;
+$params->userid =20;
+$params->forall = 0;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
