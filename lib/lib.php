@@ -5574,3 +5574,42 @@ function block_exacomp_build_json_time_slots(){
 	
 	return $slots;
 }
+
+function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $studentid){
+	global $DB;
+	//state 0 = never used in weakly schedule, no evaluation
+	//state 1 = planned to work with example -> example is in pool
+	//state 2 = example is in work -> in calendar
+	//state 3 = submission for example / example closed (for submission no file upload etc is necessary) -> closed
+	//state 4 = evaluated -> only from teacher TODO: item or exacomp evaluation?
+	
+	
+	$comp = $DB->get_record(block_exacomp::DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>$studentid));
+
+	if($comp && $comp->teacher_evaluation > 0)
+		return 4;
+		
+	$items_examp = $DB->get_records ( 'block_exacompitemexample', array (
+								'exampleid' => $example->id 
+						) );
+	
+	if($items_examp)
+		return 3;
+	
+	$schedule = $DB->get_records(block_exacomp::DB_SCHEDULE, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>$studentid));
+		
+	if($schedule){
+		$in_work = false;
+		foreach($schedule as $entry){
+			if((isset($entry->start) && $entry->start>0) && (isset($entry->end) && $entry->end > 0))
+				$in_work = true;
+		}
+		
+		if($in_work)
+			return 2;
+		else
+			return 1;
+	}
+	
+	return 0;	
+}

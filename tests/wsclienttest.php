@@ -13,7 +13,7 @@ $params = new stdClass();
 
 require_once('./curl.php');
 $curl = new curl;
-$token_google = 199809;
+$token_google = 521737;
 
 print_r($token_google);
 echo "
@@ -77,6 +77,43 @@ $params = new stdClass();
 $params->courseid = 4;
 $params->crosssubjid = 30;
 $params->userid =20;
+$params->forall = 0;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+descriptor children:
+
+";
+
+//REST CALL dakora_get_examples_pool_for_week ($courseid, $descriptorid, $userid, $forall)
+$functionname = 'dakora_get_descriptor_children_for_cross_subject';
+
+$params = new stdClass();
+$params->courseid = 4;
+$params->descriptorid = 9480;
+$params->userid = 20;
+$params->forall = 0;
+$params->crosssubjid = 30;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+descriptor example:
+
+";
+
+//REST CALL dakora_get_examples_pool_for_week ($courseid, $descriptorid, $userid, $forall)
+$functionname = 'dakora_get_examples_for_descriptor';
+
+$params = new stdClass();
+$params->courseid = 4;
+$params->descriptorid = 9481;
+$params->userid = 0;
 $params->forall = 0;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;

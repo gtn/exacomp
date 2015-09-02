@@ -50,7 +50,8 @@ $services = array(
 						'dakora_remove_example_from_schedule',
 						'dakora_get_examples_for_time_slot',
 						'dakora_get_cross_subjects_by_course',
-						'dakora_get_descriptors_by_cross_subject'
+						'dakora_get_descriptors_by_cross_subject',
+						'dakora_get_descriptor_children_for_cross_subject'
 						), 	//web service functions of this service
 				'restrictedusers' =>0,                      //if enabled, the Moodle administrator must link some user to this service
 				//into the administration
@@ -403,6 +404,13 @@ $functions = array(
 				'methodname'  => 'dakora_get_descriptors_by_cross_subject',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'get descriptors for a cross subject',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_descriptor_children_for_cross_subject' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_descriptor_children_for_cross_subject',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get children in context of cross subject',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)
 		)
 );
