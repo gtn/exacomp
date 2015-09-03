@@ -2659,7 +2659,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         $rowgroup = 0;
         $rows = array();
         
-        $subjects = block_exacomp_get_all_subjects();
+        $subjects = block_exacomp_subject::get_records();
         foreach ($subjects as $subject) {
             $row = new html_table_row();
             $row->attributes['class'] = 'exabis_comp_teilcomp highlight rowgroup-level-0';
@@ -2670,10 +2670,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             $row->cells[] = $cell;
             $rows[] = $row;
             
-            $topics = block_exacomp_topic::get_records_by_subject($subject->id);
-            
-            foreach($topics as $topic){
-                
+            foreach ($subject->topics as $topic) {
                 $padding = 20;
                 
                 $row = new html_table_row();
@@ -2744,7 +2741,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         $rowgroup = 0;
         $rows = array();
         
-        $subjects = block_exacomp_get_all_subjects();
+        $subjects = block_exacomp_subject::get_records();
         foreach ($subjects as $subject) {
             $row = new html_table_row();
             $row->attributes['class'] = 'exabis_comp_teilcomp highlight rowgroup-level-0';
@@ -2757,8 +2754,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             
             $topics = block_exacomp_topic::get_records_by_subject($subject->id);
             
-            foreach($topics as $topic){
-                
+            foreach ($subject->topics as $topic) {
                 $padding = 20;
                 
                 $row = new html_table_row();

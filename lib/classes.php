@@ -1,18 +1,25 @@
 <?php
 
 class block_exacomp_db_record {
-    var $data = array();
+    private $functionValues = null;
+    private $data = null;
     
     const TABLE = 'todo';
     
     function __construct($data) {
         $this->data = $data;
+        $this->functionValues = (object)array();
     }
     function __get($name) {
         if (property_exists($this->data, $name)) {
             return $this->data->$name;
+        } elseif (property_exists($this->functionValues, $name)) {
+            return $this->functionValues->$name;
         } elseif (($method = 'get_'.$name) && method_exists($this, $method)) {
-            return $this->$method();
+            // store
+            $this->functionValues->$name = $this->$method();
+            // return 
+            return $this->functionValues->$name;
         } else {
             print_error("property not found ".get_class($this)."::$name");
         }
@@ -20,9 +27,13 @@ class block_exacomp_db_record {
     
     function __isset($name) {
         if (property_exists($this->data, $name)) {
-            return true;
+            return isset($this->data->$name);
+        } elseif (property_exists($this->functionValues, $name)) {
+            return isset($this->functionValues->$name);
         } elseif (($method = 'get_'.$name) && method_exists($this, $method)) {
-            return true;
+            // store
+            $this->functionValues->$name = $this->$method();
+            return isset($this->functionValues->$name);
         } else {
             return false;
         }
@@ -30,6 +41,10 @@ class block_exacomp_db_record {
     
     function __set($name, $value) {
         $this->data->$name = $value;
+    }
+    public function __unset($name) {
+        unset($this->data->$name);
+        unset($this->functionValues->$name);
     }
     
     static function get($conditions, $fields='*') {
@@ -64,9 +79,11 @@ class block_exacomp_db_record {
     }
 
     static function _get_records(array $conditions=null, $sort='', $fields='*', $limitfrom=0, $limitnum=0) {
-        print_error('not implemented');
+        global $DB;
+        
+        return $DB->get_records(static::TABLE, $conditions, $sort, $fields, $limitfrom, $limitnum);
     }
-    
+
     static function create_records($records) {
         $records = array_map([get_called_class(), 'create'], $records);
         return $records;
@@ -80,6 +97,14 @@ class block_exacomp_db_record {
         }
 
         return new $class($data);
+    }
+}
+
+class block_exacomp_subject extends block_exacomp_db_record {
+    const TABLE = block_exacomp::DB_SUBJECTS;
+
+    function get_topics() {
+        return block_exacomp_topic::get_records_by_subject($this->id);
     }
 }
 
@@ -107,12 +132,6 @@ class block_exacomp_topic extends block_exacomp_db_record {
                     WHERE s.id = ?
                 ORDER BY t.id, t.sorting, t.subjid
                 ', array($subjectid)));
-    }
-
-    static function _get_records(array $conditions=null, $sort='', $fields='*', $limitfrom=0, $limitnum=0) {
-        global $DB;
-        
-        return $DB->get_records(self::TABLE, $conditions, $sort, $fields, $limitfrom, $limitnum);
     }
 
     function get_numbering() {
