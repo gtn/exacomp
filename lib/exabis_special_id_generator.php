@@ -56,18 +56,23 @@ class exabis_special_id_generator {
         
         return $check;
     }
-    static public function generate_random_id() {
+    static public function generate_random_id($prefix = '') {
         $md5 = md5(microtime(false));
         $id = self::make_length(self::str_baseconvert($md5, 16, self::BASE), self::ID_LENGTH);
-
+        
+        if ($prefix) {
+            $id = $prefix.'-'.$id;
+        }
+        
         return $id.self::generate_checksum($id);
     }
 
     static public function validate_id($id) {
-        if (strlen($id) !== self::ID_LENGTH+self::CHECK_LENGTH) return false;
+        // does id without prefix have correct length?
+        if (strlen(preg_replace('!^.*\-!', '', $id)) !== self::ID_LENGTH+self::CHECK_LENGTH) return false;
 
-        $check = substr($id, self::ID_LENGTH);
-        $id = substr($id, 0, self::ID_LENGTH);
+        $check = substr($id, -self::CHECK_LENGTH);
+        $id = substr($id, 0, -self::CHECK_LENGTH);
         
         return self::generate_checksum($id) === $check;
     }

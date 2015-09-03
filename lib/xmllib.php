@@ -1,6 +1,9 @@
 <?php
 
 use tool_templatelibrary\api;
+
+require_once __DIR__.'/exabis_special_id_generator.php';
+
 class block_exacomp_SimpleXMLElement extends SimpleXMLElement {
     /**
      * Adds a child with $value inside CDATA
@@ -77,6 +80,15 @@ class block_exacomp_data {
     
     protected static function get_my_source() {
         return get_config('exacomp', 'mysource');
+    }
+    
+    public static function generate_my_source() {
+        $id = get_config('exacomp', 'mysource');
+        
+        if (!$id || !exabis_special_id_generator::validate_id($id)) {
+            die('generate');
+            set_config('mysource', exabis_special_id_generator::generate_random_id('EXACOMP'), 'exacomp');
+        }
     }
     
     
@@ -411,6 +423,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
         raise_memory_limit(MEMORY_HUGE);
         
         if (!self::get_my_source()) {
+            // this can't happen anymore, because a source is automatically generated
             throw new block_exacomp_exception('source not configured, go to block settings');
             // '<a href="'.$CFG->wwwroot.'/admin/settings.php?section=blocksettingexacomp">settings</a>'
         }
@@ -439,7 +452,6 @@ class block_exacomp_data_exporter extends block_exacomp_data {
         self::export_examples($xml);
         self::export_descriptors($xml);
         self::export_crosssubjects($xml);
-        // TODO: crosssubjects
         self::export_edulevels($xml);
         self::export_sources($xml);
 
