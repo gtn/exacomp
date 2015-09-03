@@ -42,15 +42,18 @@ $settings->add(new admin_setting_configtext('exacomp/testlimit', get_string('set
 	
 $settings->add(new admin_setting_configcheckbox('exacomp/usebadges', get_string('settings_usebadges', 'block_exacomp'), 
 		get_string('settings_usebadges_description', 'block_exacomp'), 0, 1, 0));
-		
+/*		
 $settings->add(new admin_setting_configcheckbox('exacomp/skillmanagement', get_string('settings_skillmanagement', 'block_exacomp'),
 		get_string('settings_skillmanagement_description', 'block_exacomp'), 0, 1, 0));
 
 $settings->add(new admin_setting_configcheckbox('exacomp/enableteacherimport', get_string('settings_enableteacherimport', 'block_exacomp'),
 		get_string('settings_enableteacherimport_description', 'block_exacomp'), 0, 1, 0));
-
+*/
 $settings->add(new admin_setting_configcheckbox('exacomp/external_trainer_assign', get_string('block_exacomp_external_trainer_assign_head', 'block_exacomp'),
         get_string('block_exacomp_external_trainer_assign_body', 'block_exacomp'), 0));
 
 $settings->add(new block_exacomp_admin_setting_source('exacomp/mysource', 'Source ID', "", PARAM_TEXT));
 
+$settings->add(new admin_setting_configtext('exacomp/scheduleinterval', get_string('settings_interval','block_exacomp'), get_string('settings_interval_description','block_exacomp'), 15, PARAM_INT));
+$settings->add(new admin_setting_configtext('exacomp/scheduleunits', get_string('settings_scheduleunits','block_exacomp'), get_string('settings_scheduleunits_description','block_exacomp'), 8, PARAM_INT));
+$settings->add(new admin_setting_configtext('exacomp/schedulebegin', get_string('settings_schedulebegin','block_exacomp'), get_string('settings_schedulebegin_description','block_exacomp'), "07:45", PARAM_TEXT));

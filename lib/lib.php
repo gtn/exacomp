@@ -5465,123 +5465,46 @@ function block_exacomp_get_json_examples($examples){
 	return $array;
 }
 function block_exacomp_build_json_time_slots(){
+	
+	$units = (get_config("exacomp","scheduleunits")) ? get_config("exacomp","scheduleunits") : 8;
+	$interval = (get_config("exacomp","scheduleinterval")) ? get_config("exacomp","scheduleinterval") : 15;
+	$time =  (get_config("exacomp","schedulebegin")) ? get_config("exacomp","schedulebegin") : "07:45";
+	
+	list($h,$m) = explode(":",$time);
+	$secTime = $h * 3600 + $m * 60;
+	
 	$slots = array();
 	
-	$entry = array();
-	$entry['name'] = '1. Einheit';
-	$entry['start'] = '07:45';
-	$entry['end'] = '08:10';
-	
-	$slots[] = $entry;
-	
-	$entry = array();
-	$entry['name'] = '';
-	$entry['start'] = '08:10';
-	$entry['end'] = '08:35';
-	
-	$slots[] = $entry;
-	
-	$entry = array();
-	$entry['name'] = '2. Einheit';
-	$entry['start'] = '08:35';
-	$entry['end'] = '09:00';
-	
-	$slots[] = $entry;
-	
-	$entry = array();
-	$entry['name'] = '';
-	$entry['start'] = '09:00';
-	$entry['end'] = '09:25';
-	
-	$slots[] = $entry;
-	
-	$entry = array();
-	$entry['name'] = '3. Einheit';
-	$entry['start'] = '09:30';
-	$entry['end'] = '09:55';
-	
-	$slots[] = $entry;
-	
-	$entry = array();
-	$entry['name'] = '';
-	$entry['start'] = '09:55';
-	$entry['end'] = '10:20';
-	
-	$slots[] = $entry;
-	
-	$entry = array();
-	$entry['name'] = '4. Einheit';
-	$entry['start'] = '10:35';
-	$entry['end'] = '11:00';
-	
-	$slots[] = $entry;
-	
-	$entry = array();
-	$entry['name'] = '';
-	$entry['start'] = '11:00';
-	$entry['end'] = '11:25';
-	
-	$slots[] = $entry;
-	
-	$entry = array();
-	$entry['name'] = '5. Einheit';
-	$entry['start'] = '11:30';
-	$entry['end'] = '11:55';
-	
-	$slots[] = $entry;
-	
-	$entry = array();
-	$entry['name'] = '';
-	$entry['start'] = '11:55';
-	$entry['end'] = '12:20';
-	
-	$slots[] = $entry;
-	
-	$entry = array();
-	$entry['name'] = '6. Einheit';
-	$entry['start'] = '12:25';
-	$entry['end'] = '12:50';
-	
-	$slots[] = $entry;
-	
-	$entry = array();
-	$entry['name'] = '';
-	$entry['start'] = '12:50';
-	$entry['end'] = '13:15';
-	
-	$slots[] = $entry;
-	
-	$entry = array();
-	$entry['name'] = '7. Einheit';
-	$entry['start'] = '13:20';
-	$entry['end'] = '13:45';
-	
-	$slots[] = $entry;
-	
-	$entry = array();
-	$entry['name'] = '';
-	$entry['start'] = '13:45';
-	$entry['end'] = '14:10';
-	
-	$slots[] = $entry;
-	
-	$entry = array();
-	$entry['name'] = '8. Einheit';
-	$entry['start'] = '14:15';
-	$entry['end'] = '14:40';
-	
-	$slots[] = $entry;
-	
-	$entry = array();
-	$entry['name'] = '';
-	$entry['start'] = '14:40';
-	$entry['end'] = '15:05';
-	
-	$slots[] = $entry;
+	/*
+	 * Split every unit into 4 pieces
+	 */
+	for($i=0; $i < $units * 4; $i++) {
+		
+		$entry = array();
+		
+		//only write at the begin of every unit
+		if($i%4 == 0)
+			$entry['name'] = ($i/4 + 1) . '. Einheit';
+		else
+			$entry['name'] = '';
+		
+		$entry['start'] = block_exacomp_parse_seconds_to_timestring($secTime);
+		
+		//calculate end of current time frame
+		$secTime += (($interval / 4) * 60);
+		
+		$entry['end'] = block_exacomp_parse_seconds_to_timestring($secTime);
+		
+		$slots[] = $entry;
+	}
 	
 	return $slots;
 }
-
+function block_exacomp_parse_seconds_to_timestring($secTime) {
+	$hours = floor($secTime / 3600);
+	$mins = floor(($secTime - ($hours*3600)) / 60);
+	return sprintf('%02d', $hours) . ":" . sprintf('%02d', $mins) ;
+}
 function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $studentid){
 	global $DB;
 	//state 0 = never used in weakly schedule, no evaluation

@@ -2359,9 +2359,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         $input_examples = html_writer::checkbox('show_all_examples', 1, $settings->show_all_examples == 1, get_string('show_all_examples', 'block_exacomp'))
         .html_writer::empty_tag('br');
 
-        $input_detailpage = html_writer::checkbox('usedetailpage', 1, $settings->usedetailpage==1, get_string('usedetailpage', 'block_exacomp'))
-        .html_writer::empty_tag('br');
-            
         $input_profoundness = html_writer::checkbox('profoundness', 1, $settings->profoundness==1, get_string('useprofoundness', 'block_exacomp'))
         .html_writer::empty_tag('br');
         
@@ -2377,7 +2374,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         $hiddenaction = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'action', 'value'=>'save_coursesettings'));
 
         $div = html_writer::div(html_writer::tag('form',
-                $input_grading.$input_activities.$input_descriptors.$input_examples.$input_detailpage.$hiddenaction.$input_profoundness.$input_taxonomies.$input_submit,
+                $input_grading.$input_activities.$input_descriptors.$input_examples.$hiddenaction.$input_profoundness.$input_taxonomies.$input_submit,
                 array('action'=>'edit_course.php?courseid='.$courseid, 'method'=>'post')), 'block_excomp_center');
 
         $content = html_writer::tag("div",$header.$div, array("id"=>"exabis_competences_block"));

@@ -96,6 +96,12 @@ $string['settings_skillmanagement'] = 'Use skills-management';
 $string['settings_skillmanagement_description'] = 'Check to use skills-management-tool instead of import';
 $string['settings_enableteacherimport'] = 'Use school specific standards';
 $string['settings_enableteacherimport_description'] = 'Check to enable school specific standard import for trainers';
+$string['settings_interval'] = 'Unit duration';
+$string['settings_interval_description'] = 'Duration of the units in the schedule';
+$string['settings_scheduleunits'] = 'Anmount of units';
+$string['settings_scheduleunits_description'] = 'Amount of units in the schedule';
+$string['settings_schedulebegin'] = 'Schedule begin';
+$string['settings_schedulebegin_description'] = 'Begin time for the first unit in the schedule. Format hh:mm';
 
 //Learning agenda
 $string['LA_MON'] = "MON";

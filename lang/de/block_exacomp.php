@@ -98,6 +98,12 @@ $string['settings_skillmanagement'] = 'Skills-Management verwenden';
 $string['settings_skillmanagement_description'] = 'Anhaken um Skills-Management-Tool anstelle des Imports verwenden';
 $string['settings_enableteacherimport'] = 'Schulspezifische Standards verwenden';
 $string['settings_enableteacherimport_description'] = 'Anhaken um Lehrern/Kurstrainern zu erlauben, eigene, schulspezifische Standards zu importieren';
+$string['settings_interval'] = 'Einheitenlänge';
+$string['settings_interval_description'] = 'Die Länge der Einheiten im Wochenplan in Minuten';
+$string['settings_scheduleunits'] = 'Anzahl der Einheiten';
+$string['settings_scheduleunits_description'] = 'Anzahl der Einheiten im Wochenplan';
+$string['settings_schedulebegin'] = 'Beginn der Einheiten';
+$string['settings_schedulebegin_description'] = 'Beginnzeitpunkt der ersten Einheit im Wochenplan. Format hh:mm';
 
 //Learning agenda
 $string['LA_MON'] = "Mo";
