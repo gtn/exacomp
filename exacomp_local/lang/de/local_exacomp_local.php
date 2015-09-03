@@ -30,3 +30,7 @@ $string['pluginname'] = 'Exabis Competencies Hilfs-Skripten';
 $string['if_enabled'] = 'Wenn Sie alle restlichen Schritte, die in der Datei "webservices-info.txt" aufgelistet sind, erledigt haben, sind die Exabis Competencies Webservices hiermit aktiviert.';
 $string['something_went_wrong'] = 'Es trat ein Problem auf.';
 $string['exacomp_local:checkforcomp'] = 'Exabis Competencies: Automatischen Kompetenzerwerb ausfÃ¼hren';
+$string['shortname_exacomp_done'] = 'Kurzbezeichnung für die Webservices von Exabis Competencies wurde gesetzt.';
+$string['shortname_exaport_done'] = 'Kurzbezeichnung für die Webservices von Exabis ePortfolio wurde gesetzt.';
+$string['exacompservices_failed'] = 'Webservices von Exabis Competencies sind nicht vorhanden oder wurden nicht richtig konfiguriert.';
+$string['exaportservices_failed'] = 'Webservices von Exabis ePortfolio sind nicht vorhanden oder wurden nicht richtig konfiguriert.';

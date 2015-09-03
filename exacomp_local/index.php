@@ -36,15 +36,28 @@ if (!has_capability('local/exacomp_local:execute', context_system::instance())) 
 echo $OUTPUT->header();
 
 if($action == 'ws') {
-	//set shortname for external service exacompservices
+	//set shortname for external service exacompservices and exaportservices
 	$exacomp_service = $DB->get_record('external_services', array('name'=>'exacompservices'));
 	if($exacomp_service){
 		$exacomp_service->shortname = 'exacompservices';
 		$DB->update_record('external_services', $exacomp_service);
-		echo get_string('if_enabled', 'local_exacomp_local');
-	}else{
-		echo get_string('something_went_wrong', 'local_exacomp_local');
-	}
+		echo get_string('shortname_exacomp_done', 'local_exacomp_local').'</br>';
+	}else 
+		echo get_string('exacompservices_failed', 'local_exacomp_local').'</br>';
+	
+	$exaport_service = $DB->get_record('external_services', array('name'=>'exaportservices'));
+	if($exaport_service){
+		$exaport_service->shortname = 'exaportservices';
+		$DB->update_record('external_services', $exaport_service);	
+		echo get_string('shortname_exaport_done', 'local_exacomp_local').'</br>';
+	}else 	
+		echo get_string('exaportservices_failed', 'local_exacomp_local').'</br>';
+	
+	if($exacomp_service && $exaport_service)
+		echo get_string('if_enabled', 'local_exacomp_local').'</br>';
+	else 
+		echo get_string('something_went_wrong', 'local_exacomp_local').'</br>';
+		
 } else if($action == 'comp') {
 	global $CFG;
 	

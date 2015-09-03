@@ -117,7 +117,7 @@ if($action == 'digicomps') {
 $courseid_temp = $courseid;
 $courseid_temp = 0;
 
-$schooltypes = block_exacomp_build_schooltype_tree($courseid_temp);
+$schooltypes = block_exacomp_build_schooltype_tree($courseid_temp, true);
 
 $topics = block_exacomp_get_topics_by_subject($courseid, 0, true);
 
