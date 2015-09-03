@@ -50,7 +50,8 @@ $string['howtocheck'] = 'Wie du dein K&ouml;nnen pr&uuml;fen kannst: ';
 $string['reached_topic'] = 'Ich habe diese Kompetenz erreicht: ';
 $string['taxonomies'] = 'Niveaustufen';
 $string['taxonomy'] = 'Niveaustufe';
-$string['name_example'] = 'Dateiname / Schulbuchverweis';
+$string['name_example'] = 'Name';
+$string['description_example'] = 'Beschreibung / Schulbuchverweis';
 
 //nicht verwendete und doppelt deklarierte Strings
 //$string['descnoassignment'] = 'Dieser Lernliste sind keine Aufgaben zugeordnet.';

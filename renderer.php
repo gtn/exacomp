@@ -1823,6 +1823,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                             $titleCell->text .= $this->print_example_solution_icon($url);
                         }
                         
+                        if(!$example->externalurl && !$example->externaltask && !block_exacomp_get_file_url($example, 'example_solution') && !block_exacomp_get_file_url($example, 'example_task') && $example->description) 
+                        	$titleCell->text .= $OUTPUT->pix_icon("i/preview", $example->description);
+                        	 
                         if($data->role == block_exacomp::ROLE_STUDENT) {
                             $titleCell->text .= $this->print_schedule_icon($example->id, $USER->id, $data->courseid);
                             

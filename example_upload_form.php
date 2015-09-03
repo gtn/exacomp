@@ -64,22 +64,32 @@ class block_exacomp_example_upload_form extends moodleform {
 		$mform->setType('title', PARAM_TEXT);
 		$mform->addRule('title', get_string("titlenotemtpy", "block_exacomp"), 'required', null, 'client');
 
-		$mform->addElement('text', 'description', get_string("moduleintro"), 'maxlength="255" size="60"');
+		$mform->addElement('text', 'description', get_string("description_example","block_exacomp"), 'maxlength="255" size="60"');
 		$mform->setType('description', PARAM_TEXT);
+
+		$tselect = $mform->addElement('select', 'taxid', get_string('taxonomy', 'block_exacomp'),$this->_customdata['taxonomies']);
+		$tselect->setMultiple(true);
+		$tselect->setSelected(array_keys($DB->get_records(block_exacomp::DB_EXAMPTAX,array("exampleid" => $this->_customdata['exampleid']),"","taxid")));
+
+		$mform->addElement('header', 'link', get_string('link','block_exacomp'));
 		
 		$mform->addElement('text', 'externalurl', get_string("link","block_exacomp"), 'maxlength="255" size="60"');
 		$mform->setType('externalurl', PARAM_TEXT);
 		
-		//TODO mehrfachauswahl
-		$mform->addElement('select', 'taxid', get_string('taxonomy', 'block_exacomp'),$this->_customdata['taxonomies']);
+		$mform->addElement('header', 'files', get_string('files','block_exacomp'));
 		
 		$mform->addElement('filemanager', 'file', get_string('file'), null, array('subdirs' => false, 'maxfiles' => 1));
 		$mform->addElement('filemanager', 'solution', get_string('solution','block_exacomp'), null, array('subdirs' => false, 'maxfiles' => 1));
 		
-	    if($version) {
+		if( $this->_customdata['uses_activities'] ) {
+		
+			$mform->addElement('header', 'assignments', get_string('assignments','block_exacomp'));
+			$mform->addElement('select', 'assignment', get_string('assignments','block_exacomp'), $this->_customdata['activities']);
+		}
+	    /* if($version) {
 	        $mform->addElement('checkbox', 'lisfilename', get_string('lisfilename', 'block_exacomp'));
 	        $mform->setDefault('lisfilename', 1);
-	    }
+	    } */
 		
 		$mform->addElement('hidden','topicid');
 		$mform->setType('topicid', PARAM_INT);

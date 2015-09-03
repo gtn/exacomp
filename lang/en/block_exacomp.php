@@ -183,6 +183,8 @@ $string['show_all_course_examples'] = 'Show examples from all courses';
 $string['expandcomps'] = 'expand all';
 $string['contactcomps'] = 'contract all';
 $string['name_example'] = 'Name';
+$string['description_example'] = 'Description';
+
 //Icons
 $string['assigned_example'] = 'Assigned Example';
 $string['task_example'] = 'Tasks';
@@ -201,6 +203,8 @@ $string['titlenotemtpy'] = 'A name is required.';
 $string['lisfilename'] = 'Use LIS filename template';
 $string['solution'] = 'Solution';
 $string['submission'] = 'Submission';
+$string['assignments'] = 'Assignments';
+$string['files'] = 'Files';
 $string['link'] = 'Link';
 $string['dataerr'] = 'At least a link or a file are required!';
 $string['linkerr'] = 'The given link is not valid!';

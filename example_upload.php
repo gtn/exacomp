@@ -74,7 +74,6 @@ $descrid = required_param('descrid', PARAM_INT);
 $topicid = required_param('topicid', PARAM_INT);
 
 $taxonomies = $DB->get_records_menu("block_exacomptaxonomies",null,"","id, title");
-$taxonomies = array_merge(array("0" => ""),$taxonomies);
 $topicsub = $DB->get_record("block_exacomptopics", array("id"=>$topicid));
 $topics = $DB->get_records("block_exacomptopics", array("subjid"=>$topicsub->subjid), null, 'title,id');
 
@@ -83,9 +82,41 @@ if($exampleid>0)
 	$example_descriptors = $DB->get_records(block_exacomp::DB_DESCEXAMP,array('exampid'=>$exampleid),'','descrid');
 
 $tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid, $descrid);
+$csettings = block_exacomp_get_settings_by_course($courseid);
+$example_activities = array();
 
+if($csettings->uses_activities) {
+	$example_activities[0] = get_string('none');
+	
+	$supported_modules = block_exacomp_get_supported_modules();
+	
+	$modinfo = get_fast_modinfo($COURSE->id);
+	$modules = $modinfo->get_cms();
+	foreach($modules as $mod){
+	
+		$module = block_exacomp_get_coursemodule($mod);
+	
+		//Skip Nachrichtenforum
+		if(strcmp($module->name, get_string('namenews','mod_forum'))==0){
+			continue;
+		}
+		
+		$module_type = $DB->get_record('course_modules', array('id'=>$module->id));
+		
+		//skip News forum in any language, supported_modules[1] == forum
+		if($module_type->module == $supported_modules[1]){
+			$forum = $DB->get_record('forum', array('id'=>$module->instance));
+			if(strcmp($forum->type, 'news')==0){
+				continue;
+			}
+		}
+		if(in_array($module_type->module, $supported_modules)){
+			$example_activities[$module->id] = $module->name;
+		}
+	}
+}
 $form = new block_exacomp_example_upload_form($_SERVER['REQUEST_URI'],
-            array("descrid" => $descrid,"taxonomies"=>$taxonomies,"tree"=>$tree,"topicid"=>$topicid, "exampleid"=>$exampleid));
+            array("descrid" => $descrid,"taxonomies"=>$taxonomies,"tree"=>$tree,"topicid"=>$topicid, "exampleid"=>$exampleid, "uses_activities" => $csettings->uses_activities, "activities" => $example_activities));
 
 if($formdata = $form->get_data()) {
 	
@@ -95,7 +126,11 @@ if($formdata = $form->get_data()) {
     $newExample->creatorid = $USER->id;
     $newExample->externalurl = $formdata->externalurl;
     $newExample->source = block_exacomp::EXAMPLE_SOURCE_TEACHER;
-    
+
+    if($formdata->assignment) {
+    	$module = get_coursemodule_from_id(null, $formdata->assignment);
+    	$newExample->externaltask = $CFG->wwwroot . '/' . block_exacomp_get_activityurl($module)->__toString();
+    }
     if($formdata->exampleid == 0)
         $newExample->id = $DB->insert_record('block_exacompexamples', $newExample);
     else {
@@ -106,10 +141,11 @@ if($formdata = $form->get_data()) {
     }
 
     //insert taxid in exampletax_mm
-    block_exacomp_db::insert_or_update_record(block_exacomp::DB_EXAMPTAX, array(
-        'exampleid' => $newExample->id,
-        'taxid' => $formdata->taxid
-    ));
+    foreach($formdata->taxid as $tax => $taxid)
+	    block_exacomp_db::insert_or_update_record(block_exacomp::DB_EXAMPTAX, array(
+	        'exampleid' => $newExample->id,
+	        'taxid' => $taxid
+	    ));
     
     //add descriptor association
     if(!empty($_POST['descriptor'])){
@@ -130,6 +166,7 @@ if($formdata = $form->get_data()) {
     file_save_draft_area_files($formdata->solution, context_system::instance()->id, 'block_exacomp', 'example_solution',
             $newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
     
+    /*
     // rename file according to LIS
     if($formdata->lisfilename) {
         if (!$formdata->exampleid) {
@@ -157,7 +194,7 @@ if($formdata = $form->get_data()) {
                 $file->rename('/', $filename);
             }
         }
-    }
+    }*/
     
     
     ?>

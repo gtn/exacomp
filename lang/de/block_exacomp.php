@@ -218,7 +218,7 @@ $string['extern_task'] = 'Externe Aufgabenstellung';
 $string['total_example'] = 'Gesamtbeispiel';
 
 //Example Upload
-$string['example_upload_header']  = 'Eigenes Beispiel hochladen';
+$string['example_upload_header']  = 'Eigenes Lernmaterial hochladen';
 $string['taxonomy'] = 'Taxonomie';
 $string['descriptors'] = 'Kompetenzen';
 $string['descriptors_help'] = 'Es k&ouml;nnen mehrere Kompetenzen ausgew&auml;hlt werden.';
@@ -227,7 +227,8 @@ $string['titlenotemtpy'] = 'Es muss ein Name eingegeben werden.';
 $string['lisfilename'] = 'Dateiname nach LS Vorgabe generieren';
 $string['solution'] = 'Musterlösung';
 $string['submission'] = 'Lösung';
-
+$string['assignments'] = 'Kurs-Aufgaben';
+$string['files'] = 'Dateien';
 $string['link'] = 'Link';
 $string['dataerr'] = 'Es muss zumindest ein Link oder eine Datei hochgeladen werden!';
 $string['linkerr'] = 'Bitte geben Sie einen korrekten Link ein!';
