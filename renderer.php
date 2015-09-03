@@ -2157,8 +2157,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         return $evaluation;
     }
     public function print_overview_legend($teacher) {
-        $legend = html_writer::empty_tag('br').html_writer::tag("img", "", array("src" => "pix/list_12x11.png", "alt" => get_string('legend_activities','block_exacomp')));
-        $legend .= ' '.get_string('legend_activities','block_exacomp') . " - ";
+        $legend = html_writer::empty_tag('br'). html_writer::empty_tag('br'). html_writer::empty_tag('br').html_writer::tag("img", "", array("src" => "pix/list_12x11.png", "alt" => get_string('legend_activities','block_exacomp')));
+		$legend .= ' '.get_string('legend_activities','block_exacomp') . " - ";
 
         $legend .= html_writer::tag("img", "", array("src" => "pix/folder_fill_12x12.png", "alt" => get_string('legend_eportfolio','block_exacomp')));
         $legend .= ' '.get_string('legend_eportfolio','block_exacomp') . " - ";

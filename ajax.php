@@ -231,6 +231,14 @@ switch($action){
 		$visibility->visible = 1;
 		
 		$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, $visibility);
+		
+		//topic association
+		$childdesctopic_mm = new stdClass();
+		$childdesctopic_mm->topicid = $descriptor_topic_mm->topicid;
+		$childdesctopic_mm->descrid = $id;
+
+		$DB->insert_record(block_exacomp::DB_DESCTOPICS, $childdesctopic_mm);
+		
 		echo $id;
 		break;
 	case 'crosssubj-subject':
@@ -271,21 +279,6 @@ switch($action){
 		
 		block_exacomp_remove_example_from_schedule($scheduleid);
 		break;
-	// not needed anymore -- Daniel
-	/*
-	case 'get-examples-for-pool':
-		$studentid = required_param('studentid', PARAM_INT);
-		if(!$studentid) $studentid = $USER->id;
-		
-		$pool_course = required_param('pool_course', PARAM_INT);
-		if(!$pool_course)$pool_course = $courseid;
-		
-		$examples = block_exacomp_get_examples_for_pool($studentid, $pool_course);
-		$json_examples = block_exacomp_get_json_examples($examples);
-		
-		echo json_encode($json_examples);
-		break;
-	*/
 	case 'get-examples-for-start-end':
 		$studentid = required_param('studentid', PARAM_INT);
 		if(!$studentid) $studentid = $USER->id;
