@@ -3959,6 +3959,44 @@ class block_exacomp_external extends external_api {
 		) ) ;
 	}
 	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_schedule_config_parameters() {
+		return new external_function_parameters ( array (
+		) );
+	}
+	
+	/**
+	 * get children for descriptor in cross subject context
+	 *
+	 * @return array of user courses
+	 */
+	public static function dakora_get_schedule_config() {
+		global $DB, $USER;
+	
+		$units = (get_config("exacomp","scheduleunits")) ? get_config("exacomp","scheduleunits") : 8;
+		$interval = (get_config("exacomp","scheduleinterval")) ? get_config("exacomp","scheduleinterval") : 15;
+		$time =  (get_config("exacomp","schedulebegin")) ? get_config("exacomp","schedulebegin") : "07:45";
+		
+		return array("units" => $units, "interval" => $interval, "begin" => $time);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_schedule_config_returns() {
+		return new external_single_structure ( array (
+						'units' => new external_value ( PARAM_INT, 'number of units per day' ),
+						'interval' => new external_value ( PARAM_TEXT, 'duration of unit in minutes' ),
+						'begin' => new external_value ( PARAM_TEXT, 'begin time for the first unit, format hh:mm')
+				));
+	}
+	
 	/** 
 	* helper function to use same code for 2 ws
 	*/

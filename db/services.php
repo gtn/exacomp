@@ -51,14 +51,14 @@ $services = array(
 						'dakora_get_examples_for_time_slot',
 						'dakora_get_cross_subjects_by_course',
 						'dakora_get_descriptors_by_cross_subject',
-						'dakora_get_descriptor_children_for_cross_subject'
+						'dakora_get_descriptor_children_for_cross_subject',
+						'dakora_get_schedule_config'
 						), 	//web service functions of this service
 				'restrictedusers' =>0,                      //if enabled, the Moodle administrator must link some user to this service
 				//into the administration
 				'enabled'=>1,                               //if enabled, the service can be reachable on a default installation
 		)
 );
-
 
 $functions = array(
 		'block_exacomp_get_courses' => array(         //web service function name
@@ -411,6 +411,13 @@ $functions = array(
 				'methodname'  => 'dakora_get_descriptor_children_for_cross_subject',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'get children in context of cross subject',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_schedule_config' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_schedule_config',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get configuration options for schedule units',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)
 		)
 );
