@@ -936,7 +936,7 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescrip
 	//$descriptors = $DB->get_records_sql($sql, ($showalldescriptors) ? array($parent->id) : array($courseid,$parent->id));
 	$descriptors = $DB->get_records_sql($sql,  $params);
 	
-	foreach($descriptors as &$descriptor) {
+	foreach($descriptors as $descriptor) {
 		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples, $courseid);
 		$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid,$showalldescriptors,$filteredtaxonomies);
 		$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
@@ -1071,7 +1071,7 @@ function block_exacomp_get_descriptors_by_example($exampleid) {
  * @param int $subjectid
  * @return associative_array
  */
-function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $showalldescriptors = false, $topicid = null, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $calledfromoverview = false, $calledfromactivities = false, $showonlyvisible=false) {
+function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $showalldescriptors = false, $topicid = null, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $calledfromoverview = false, $calledfromactivities = false, $showonlyvisible=false, $without_descriptors=false) {
 	global $DB, $version;
 
 	if(!$showalldescriptors)
@@ -1113,7 +1113,10 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 	}
 	
 	// 3. GET DESCRIPTORS
-	$allDescriptors = block_exacomp_get_descriptors($courseid, $showalldescriptors,0,$showallexamples, array(SHOW_ALL_TAXONOMIES), $showonlyvisible);
+	if($without_descriptors)
+		$allDescriptors = array();
+	else
+		$allDescriptors = block_exacomp_get_descriptors($courseid, $showalldescriptors,0,$showallexamples, array(SHOW_ALL_TAXONOMIES), $showonlyvisible);
 	
 	foreach ($allDescriptors as $descriptor) {
 	
@@ -1170,6 +1173,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 	}
 
 	return $subjects;
+	return array();
 }
 function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $student=false, $studentid=0) {
 	global $version, $DB;
@@ -3647,7 +3651,7 @@ function block_exacomp_get_tipp_string($compid, $user, $scheme, $type, $comptype
  * Gets tree with schooltype on highest level
  * @param unknown_type $courseid
  */
-function block_exacomp_build_schooltype_tree($courseid=0){
+function block_exacomp_build_schooltype_tree($courseid=0, $without_descriptors = false){
 	global $version,$skillmanagement;
 	$schooltypes = block_exacomp_get_schooltypes_by_course($courseid);
 	
@@ -3657,7 +3661,7 @@ function block_exacomp_build_schooltype_tree($courseid=0){
 		$schooltype->subs = array();
 		foreach($subjects as $subject){
 			$param = $courseid;
-			$tree = block_exacomp_get_competence_tree($param, $subject->id, true);
+			$tree = block_exacomp_get_competence_tree($param, $subject->id, true, null, true, array(SHOW_ALL_TAXONOMIES), false, false, false, $without_descriptors);
 			$schooltype->subs += $tree;
 		}
 	}
