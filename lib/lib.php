@@ -864,7 +864,8 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 	.' LEFT JOIN {'.block_exacomp::DB_NIVEAUS.'} n ON d.niveauid = n.id '		
 	.($showalldescriptors ? '' : '
 			JOIN {'.block_exacomp::DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
-			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':''));
+			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':''))
+	.' ORDER BY d.sorting';
     
 	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid, $courseid));
 
@@ -4856,17 +4857,11 @@ function block_exacomp_get_descriptor_numbering($descriptor){
 	
 	$numbering = block_exacomp_get_topic_numbering($topicid);
 	
-	if($descriptor->parentid == 0){
-		//Descriptor im Topic
-		$desctopicmm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$descriptor->id, 'topicid'=>$topicid));
-		$numbering .= $desctopicmm->sorting;
-	}else{
-		//Parent-Descriptor im Topic
-		$desctopicmm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$descriptor->parentid, 'topicid'=>$topicid));
-		$numbering .= $desctopicmm->sorting.'.';
-		
-		$numbering .= $descriptor->sorting;
+	if($descriptor->parentid != 0){
+		$numbering .= $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id' => $descriptor->parentid))->sorting . ".";
 	}
+	
+	$numbering .= $descriptor->sorting;
 		
 	return $numbering;
 }
