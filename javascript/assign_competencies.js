@@ -23,6 +23,7 @@
 				return value + "&group=0";
 			});
 			//change onchange from selects
+			/*
 			var value = String(document.getElementById('menulis_subjects').onchange);
 			value = value.substr(value.indexOf('href')+6);
 			if(value.indexOf("group") > -1){
@@ -45,7 +46,7 @@
 				value = value + '+\'&group=0';
 			}
 			value = "document.location.href='"+value+"';";
-			$("#menulis_topics")[0].setAttribute("onchange", value);
+			$("#menulis_topics")[0].setAttribute("onchange", value);*/
 		} else if(group== -1){
 			$('.colgroup').show();
 			$('#assign-competencies').attr('action', function(i, value) {

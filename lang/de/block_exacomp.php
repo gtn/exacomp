@@ -451,6 +451,7 @@ $string['example_trash'] = 'Papierkorb';
 $string['choosecourse'] = 'Kurs auswählen: ';
 $string['weekly_schedule_added_all'] = 'Die Aufgabe wurde bei allen Teilnehmern auf den Wochenplan gelegt.';
 $string['weekly_schedule_already_existing_for_one'] = 'Die Aufgabe ist bei mindestens einem Sch&uuml;ler bereits im Wochenplan.';
+$string['weekly_schedule_link_to_grid'] = 'Um den Wochenplan zu befüllen in den Kompetenzraster wechseln';
 
 //Statistics
 $string['process'] = 'Bearbeitungsstand';

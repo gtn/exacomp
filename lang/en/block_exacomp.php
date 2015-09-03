@@ -411,7 +411,7 @@ $string['example_trash'] = 'Trash bin';
 $string['choosecourse'] = 'Select course: ';
 $string['weekly_schedule_added_all'] = 'Example added to the weekly schedule of all students.';
 $string['weekly_schedule_already_existing_for_one'] = 'Example has already been added to at least one student\'s weekly schedule.';
-
+$string['weekly_schedule_link_to_grid'] = 'For adding examples to the schedule, please use the overview';
 
 //Statistics
 $string['process'] = 'State of process';
