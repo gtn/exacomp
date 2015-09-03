@@ -5467,7 +5467,7 @@ function block_exacomp_get_json_examples($examples){
 function block_exacomp_build_json_time_slots(){
 	
 	$units = (get_config("exacomp","scheduleunits")) ? get_config("exacomp","scheduleunits") : 8;
-	$interval = (get_config("exacomp","scheduleinterval")) ? get_config("exacomp","scheduleinterval") : 15;
+	$interval = (get_config("exacomp","scheduleinterval")) ? get_config("exacomp","scheduleinterval") : 50;
 	$time =  (get_config("exacomp","schedulebegin")) ? get_config("exacomp","schedulebegin") : "07:45";
 	
 	list($h,$m) = explode(":",$time);

@@ -3978,7 +3978,7 @@ class block_exacomp_external extends external_api {
 		global $DB, $USER;
 	
 		$units = (get_config("exacomp","scheduleunits")) ? get_config("exacomp","scheduleunits") : 8;
-		$interval = (get_config("exacomp","scheduleinterval")) ? get_config("exacomp","scheduleinterval") : 15;
+		$interval = (get_config("exacomp","scheduleinterval")) ? get_config("exacomp","scheduleinterval") : 50;
 		$time =  (get_config("exacomp","schedulebegin")) ? get_config("exacomp","schedulebegin") : "07:45";
 		
 		return array("units" => $units, "interval" => $interval, "begin" => $time);
