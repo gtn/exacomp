@@ -1,50 +1,43 @@
 (function($){
 	
 	function exacomp_calendar_add_event(event) {
-		console.log('exacomp_calendar_add_event', event.id, event.title, event.start.format('X'), event.end.format('X'));
+		console.log('exacomp_calendar_add_event', event.id, event.title, event.start.format('X'), event.end.format('X'), event.scheduleid);
 		
 		block_exacomp.call_ajax({
-			exampleid : event.id,
-			studentid : block_exacomp.get_param('studentid'),
+			scheduleid : event.scheduleid,
 			start: event.start.format('X'),
 			end: event.end.format('X'),
-			event_course: event.courseid,
 			action : 'set-example-start-end'
 		},function(msg) {});
 	}
 	
 	function exacomp_calendar_update_event_time(event) {
-		console.log('exacomp_calendar_update_event_time', event.id, event.title, event.start, event.end);
+		console.log('exacomp_calendar_update_event_time', event.id, event.title, event.start, event.end, event.scheduleid);
 
 		block_exacomp.call_ajax({
-			exampleid : event.id,
-			studentid : block_exacomp.get_param('studentid'),
+			scheduleid : event.scheduleid,
 			start: event.start.format('X'),
 			end: event.end.format('X'),
-			event_course: event.courseid,
 			action : 'set-example-start-end'
 		},function(msg) {});
 	}
 	
 	function exacomp_calendar_delete_event(event) {
-		console.log('exacomp_calendar_delete_event', event.id, event.title, event.start, event.end);
+		console.log('exacomp_calendar_delete_event', event.id, event.title, event.start, event.end, event.scheduleid);
 
 		//aus schedule löschen
 		block_exacomp.call_ajax({
-			exampleid : event.id,
-			studentid : block_exacomp.get_param('studentid'),
-			event_course: event.courseid,
+			scheduleid : event.scheduleid,
 			action : 'remove-example-from-schedule'
 		},function(msg) {});
 	}
 	
 	function exacomp_calendar_remove_event(event) {
-		console.log('exacomp_calendar_remove_event', event.id, event.title, event.start, event.end);
+		console.log('exacomp_calendar_remove_event', event.id, event.title, event.start, event.end, event-scheduleid);
 
 		//in pool zurück legen -> timestamps auf null setzen
 		block_exacomp.call_ajax({
-			exampleid : event.id,
-			studentid : block_exacomp.get_param('studentid'),
+			scheduleid : event.scheduleid,
 			start: 0,
 			end: 0,
 			event_course: event.courseid,

@@ -13,7 +13,7 @@ $params = new stdClass();
 
 require_once('./curl.php');
 $curl = new curl;
-$token_google = 521737;
+//$token_google = 548260;
 
 print_r($token_google);
 echo "
@@ -21,7 +21,7 @@ echo "
 
 
 ";
-$serverurl = 'http://gtn-solutions.com/moodle29test/login/token.php?username=student2&password=Student2!&token='.$token_google.'&service=exacompservices';
+$serverurl = 'http://gtn-solutions.com/moodle29test/login/token.php?username=testws&password=Testws123!&service=exacompservices';
 $resp = $curl->get($serverurl);
 $resp = json_decode($resp)->token;
 $token = $resp;
@@ -32,7 +32,7 @@ echo "
 
 ";
 
-$serverurl_exaport = 'http://gtn-solutions.com/moodle29test/login/token.php?username=student2&password=Student2!&token='.$token_google.'&service=exaportservices';
+$serverurl_exaport = 'http://gtn-solutions.com/moodle29test/login/token.php?username=testws&password=Testws123!&service=exaportservices';
 $resp_exaport = $curl->get($serverurl_exaport);
 $resp_exaport = json_decode($resp_exaport)->token;
 print_r($resp_exaport);
@@ -119,3 +119,108 @@ $params->forall = 0;
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
 print_r($resp);
+
+echo "
+examples pool:
+
+";
+
+//REST CALL dakora_get_examples_pool_for_week ($courseid, $descriptorid, $userid, $forall)
+$functionname = 'dakora_get_examples_pool';
+
+$params = new stdClass();
+$params->courseid = 4;
+$params->userid = 0;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+add example to time slot:
+
+";
+
+//REST CALL dakora_get_examples_pool_for_week ($courseid, $descriptorid, $userid, $forall)
+/*$functionname = 'dakora_add_example_to_learning_calendar';
+
+$params = new stdClass();
+$params->courseid = 4;
+$params->exampleid = 73;
+$params->creatorid = 0;
+$params->userid = 0;
+$params->forall = 0;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+*/
+echo "
+donnerstag:
+
+";
+
+$functionname = 'dakora_get_examples_for_time_slot';
+
+$params = new stdClass();
+$params->userid = 0;
+$params->start = 1441234800;
+$params->end = 1441299600;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+freitag:
+
+";
+
+$functionname = 'dakora_get_examples_for_time_slot';
+
+$params = new stdClass();
+$params->userid = 0;
+$params->start = 1441317600;
+$params->end = 1441386000;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+echo "
+
+set time slot to 0
+
+";
+
+//REST CALL dakora_get_examples_pool_for_week ($courseid, $descriptorid, $userid, $forall)
+$functionname = 'dakora_set_example_time_slot';
+
+$params = new stdClass();
+$params->scheduleid = 100;
+$params->start = 0;
+$params->end = 0;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+remove from schedule:
+
+";
+
+
+//REST CALL dakora_get_examples_pool_for_week ($courseid, $descriptorid, $userid, $forall)
+/*$functionname = 'dakora_remove_example_from_schedule';
+
+$params = new stdClass();
+$params->scheduleid = 103;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+add example:
+
+";*/

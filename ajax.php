@@ -259,23 +259,17 @@ switch($action){
 		$DB->delete_records(block_exacomp::DB_CROSSSUBJECTS, array('id'=>$crosssubjectid));
 		break;
 	case 'set-example-start-end':
-		$exampleid = required_param('exampleid', PARAM_INT);
-		$studentid = required_param('studentid', PARAM_INT);
-		if(!$studentid) $studentid = $USER->id;
-		$event_course = required_param('event_course', PARAM_INT);
-		
+		$scheduleid = required_param('scheduleid', PARAM_INT);
 		$start = required_param('start', PARAM_INT);
 		$end = required_param('end', PARAM_INT);
 		echo $start;
-		block_exacomp_set_example_start_end($event_course, $exampleid, $studentid, $start, $end);
+		
+		block_exacomp_set_example_start_end($scheduleid, $start, $end);
 		break;
 	case 'remove-example-from-schedule':
-		$exampleid = required_param('exampleid', PARAM_INT);
-		$studentid = required_param('studentid', PARAM_INT);
-		if(!$studentid) $studentid = $USER->id;
-		$event_course = required_param('event_course', PARAM_INT);
+		$scheduleid = required_param('scheduleid', PARAM_INT);
 		
-		block_exacomp_remove_example_from_schedule($event_course, $exampleid, $studentid);
+		block_exacomp_remove_example_from_schedule($scheduleid);
 		break;
 	// not needed anymore -- Daniel
 	/*

@@ -5368,7 +5368,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid){
 	
 	$sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
-				eval.student_evaluation, eval.teacher_evaluation, evis.courseid
+				eval.student_evaluation, eval.teacher_evaluation, evis.courseid, s.id as scheduleid
 			FROM {block_exacompschedule} s 
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid 
 			JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=? 
@@ -5381,20 +5381,20 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid){
 	
 	return $DB->get_records_sql($sql,array($courseid, $studentid));
 }
-function block_exacomp_set_example_start_end($courseid, $exampleid, $studentid, $start, $end){
+function block_exacomp_set_example_start_end($scheduleid, $start, $end){
 	global $DB;
 	
-	$entry = $DB->get_record(block_exacomp::DB_SCHEDULE, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>$studentid));
+	$entry = $DB->get_record(block_exacomp::DB_SCHEDULE, array('id'=>$scheduleid));
 	$entry->start = $start;
 	$entry->end = $end;
 	
 	$DB->update_record(block_exacomp::DB_SCHEDULE, $entry);
 }
 
-function block_exacomp_remove_example_from_schedule($courseid, $exampleid, $studentid){
+function block_exacomp_remove_example_from_schedule($scheduleid){
 	global $DB;
 	
-	$DB->delete_records(block_exacomp::DB_SCHEDULE, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>$studentid));
+	$DB->delete_records(block_exacomp::DB_SCHEDULE, array('id'=>$scheduleid));
 }
 
 function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start, $end){
@@ -5402,7 +5402,7 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
 	
 	$sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
-				eval.student_evaluation, eval.teacher_evaluation, evis.courseid
+				eval.student_evaluation, eval.teacher_evaluation, evis.courseid, s.id as scheduleid
 			FROM {block_exacompschedule} s 
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid 
 			JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=? 
@@ -5434,7 +5434,7 @@ function block_exacomp_get_json_examples($examples){
 	$array = array();
 	foreach($examples as $example){
 		$example_array = array();
-		$example_array['id'] = $example->exampleid;
+		$example_array['id'] = $example->scheduleid;
 		$example_array['title'] = $example->title;
 		$example_array['start'] = $example->start;
 		$example_array['end'] = $example->end;
@@ -5442,6 +5442,7 @@ function block_exacomp_get_json_examples($examples){
 		$example_array['teacher_evaluation'] = $example->teacher_evaluation;
 		$example_array['studentid'] = $example->studentid;
 		$example_array['courseid'] = $example->courseid;
+		$example_array['scheduleid'] = $example->scheduleid; 
 		$img = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/assoc_icon.png'), 'alt'=>get_string("competence_associations", "block_exacomp"), 'height'=>16, 'width'=>16));
 		
 		$example_array['assoc_url'] = html_writer::link(
