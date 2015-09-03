@@ -831,6 +831,17 @@ td.contentcell {
 #block_exacomp table.statistic td.c0{
 	background-color: #dfdfdf;font-weight:bold;
 }
+
+#block_exacomp div#view_examples_header {
+	margin-bottom: 20px;
+	margin-left: 20px;
+	margin-top: 20px;
+}
+
+#block_exacomp .view_examples_icon {
+	margin-right:10px;
+}
+
 .exabis_competencies_lis .gridlayout {
     display: table;
 }

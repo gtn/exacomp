@@ -34,6 +34,7 @@ $courseid = required_param ( 'courseid', PARAM_INT );
 $courseid_for_tree = $courseid;
 $sort = optional_param ( 'sort', "desc", PARAM_ALPHA );
 $show_all_examples = optional_param ( 'showallexamples_check', '0', PARAM_INT );
+$style = optional_param('style', 0, PARAM_INT);
 
 if (! $course = $DB->get_record ( 'course', array (
 		'id' => $courseid 
@@ -74,63 +75,44 @@ if ($show_all_examples != 0)
 	/* CONTENT REGION */
 echo $PAGE->get_renderer('block_exacomp')->print_wrapperdivstart();
 
-// get all subjects, topics, descriptors and examples
-/*$tree = block_exacomp_get_competence_tree ( $courseid, null, false, SHOW_ALL_TOPICS, true, block_exacomp_get_settings_by_course ( $courseid )->filteredtaxonomies );
-
-// unset all descriptors without any examples
-foreach ( $tree as $skey => $subject ) {
-	foreach ( $subject->subs as $tkey => $topic ) {
-		if (isset ( $topic->descriptors )) {
-			foreach ( $topic->descriptors as $dkey => $descriptor ) {
-				$descriptor = block_exacomp_check_child_descriptors ( $descriptor );
-				
-				if (count ( $descriptor->children ) == 0)
-					unset ( $topic->descriptors [$dkey] );
-			}
-		}
-		if (!isset($topic->descriptors) || count ( $topic->descriptors ) == 0)
-			unset ( $subject->subs [$tkey] );
-	}
-	if (count ( $subject->subs ) == 0)
-		unset ( $tree [$skey] );
-}
-function block_exacomp_check_child_descriptors($descriptor) {
-	foreach ( $descriptor->children as $ckey => $cvalue ) {
-		$keepDescriptor = false;
-		if (count ( $cvalue->examples ) == 0) {
-			unset ( $descriptor->children [$ckey] );
-			continue;
-		}
-	}
-	
-	return $descriptor;
-}*/
-
 $tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
-//print_r($tree);
 
 $output = $PAGE->get_renderer ( 'block_exacomp' );
-echo $output->print_competence_based_list_tree ( $tree , true, false);
+echo $output->print_view_example_header();
+if($style==0)
+	echo $output->print_competence_based_list_tree ( $tree , true, false);
+if($style==1){
+	$sql = 'SELECT DISTINCT e.*
+		FROM {'.block_exacomp::DB_COURSETOPICS.'} ct
+		JOIN {'.block_exacomp::DB_DESCTOPICS.'} dt ON ct.topicid = dt.topicid 
+		JOIN {'.block_exacomp::DB_DESCEXAMP.'} de ON dt.descrid = de.descrid
+		JOIN {'.block_exacomp::DB_EXAMPLES.'} e ON e.id = de.exampid
+		WHERE ct.courseid = ?';
+
+	$comp_examples = $DB->get_records_sql($sql, array($courseid));
+	
+	$content = '';
+	foreach($comp_examples as $example){
+		$tree = block_exacomp_build_example_association_tree($courseid, block_exacomp_get_descriptors_by_example($example->id), $example->id, 0, true);
+		$content .= $output->print_example_based_list_tree($example, $tree, true, false);
+	}
+	
+	echo html_writer::div($content, '', array('id'=>'associated_div'));
+	/*$sql = 'SELECT e.*
+		FROM {'.block_exacomp::DB_CROSSSUBJECTS.'} cs
+		JOIN {'.block_exacomp::DB_DESCCROSS.'} dc ON cs.crosssubjid = dc.crosssubjid 
+		JOIN {'.block_exacomp::DB_DESCEXAMP.'} de ON dc.descrid = de.descrid
+		JOIN {'.block_exacomp::DB_EXAMPLES.'} e ON e.id = de.exampid
+		WHERE cs.courseid = ?';
+	
+	$crosssub_examples = $DB->get_record_sql($sql, $courseid);*/
+	
+	
+	
+	//echo $output->print_example_based_list_tree();
+}
 echo '</div>';
 
-/*
- * echo $output->print_head_view_examples($sort, $show_all_examples, $PAGE->url, $context);
- *
- * $example_tree = '';
- * if($sort == 'desc')
- * $example_tree = block_exacomp_build_example_tree_desc($courseid_for_tree);
- * else
- * $example_tree = block_exacomp_build_example_tree_tax($courseid_for_tree);
- *
- * echo $output->print_tree_head();
- *
- * if($sort == 'desc')
- * echo $output->print_tree_view_examples_desc($example_tree);
- * else
- * echo $output->print_tree_view_examples_tax($example_tree);
- *
- * echo $output->print_foot_view_examples();
- */
 /* END CONTENT REGION */
 echo $output->print_wrapperdivend ();
 echo $OUTPUT->footer ();

@@ -4497,7 +4497,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         return $content;
     }
     
-    public function print_competence_based_list_tree($tree, $isTeacher, $editmode) {
+    public function print_competence_based_list_tree($tree, $isTeacher, $editmode, $show_examples = true) {
         global $PAGE;
         
         $html_tree = "";
@@ -4520,7 +4520,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                         
                         foreach ( $topic->descriptors as $dkey => $descriptor ) {
                             if($descriptor->associated == 1 || ($isTeacher && $editmode==1))
-                                $html_tree .= $this->print_competence_for_list_tree($descriptor, $isTeacher, $editmode);
+                                $html_tree .= $this->print_competence_for_list_tree($descriptor, $isTeacher, $editmode, $show_examples);
                         }
                         
                         if(!empty($topic->descriptors))
@@ -4538,31 +4538,32 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         return html_writer::div($html_tree, "associated_div", array('id'=>"associated_div"));
     }
     
-    private function print_competence_for_list_tree($descriptor, $isTeacher, $editmode) {
+    private function print_competence_for_list_tree($descriptor, $isTeacher, $editmode, $show_examples) {
         $html_tree = html_writer::start_tag("li", array('class'=>($descriptor->associated == 1)?"associated":""));
         if($isTeacher && $editmode==1)
             $html_tree .= html_writer::checkbox("descriptor[]", $descriptor->id, ($descriptor->direct_associated==1)?true:false);
         
         $html_tree .= block_exacomp_get_descriptor_numbering($descriptor).' '.$descriptor->title;
             
-        if(!empty($descriptor->examples))
-            $html_tree .= html_writer::start_tag("ul");
-            
-        foreach($descriptor->examples as $example) {
-            if(!isset($example->associated)) $example->associated = 0;
-            if($example->associated == 1 || ($isTeacher && $editmode==1))
-                $html_tree .= html_writer::tag("li", $example->title, array('class'=>($example->associated == 1)?"associated":""));
+        if($show_examples){
+	        if(!empty($descriptor->examples))
+	            $html_tree .= html_writer::start_tag("ul");
+	            
+	        foreach($descriptor->examples as $example) {
+	            if(!isset($example->associated)) $example->associated = 0;
+	            if($example->associated == 1 || ($isTeacher && $editmode==1))
+	                $html_tree .= html_writer::tag("li", $example->title, array('class'=>($example->associated == 1)?"associated":""));
+	        }
+	            
+	        if(!empty($descriptor->examples))
+	            $html_tree .= html_writer::end_tag("ul");
         }
-            
-        if(!empty($descriptor->examples))
-            $html_tree .= html_writer::end_tag("ul");
-            
         if(!empty($descriptor->children)) {
             $html_tree .= html_writer::start_tag("ul");
             
             foreach($descriptor->children as $child)
                 if($child->associated == 1 || ($isTeacher && $editmode==1))
-                    $html_tree .= $this->print_competence_for_list_tree($child, $isTeacher, $editmode);
+                    $html_tree .= $this->print_competence_for_list_tree($child, $isTeacher, $editmode, $show_examples);
             
             $html_tree .= html_writer::end_tag("ul");
         }
@@ -4733,4 +4734,28 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         
         return $content;
     }
+	
+	public function print_view_example_header(){
+		global $PAGE;
+		$content = html_writer::empty_tag('input', array('type'=>'image', 'src'=>new moodle_url('/pix/i/withsubcat.png'), 'name'=>'comp_based', 'id'=>'comp_based', 
+			'value'=>'comp_based', 'class'=>'view_examples_icon', 'onclick'=>"document.location.href='".$PAGE->url."&style=0';"))
+			. html_writer::empty_tag('input', array('type'=>'image', 'src'=>new moodle_url('/pix/e/bullet_list.png'), 'name'=>'examp_based', 'id'=>'examp_based', 
+			'value'=>'examp_based', 'class'=>'view_examples_icon', 'onclick'=>"document.location.href='".$PAGE->url."&style=1';"));
+
+		return html_writer::div($content, '', array('id'=>'view_examples_header'));
+	}
+	
+	public function print_example_based_list_tree($example, $tree, $isTeacher, $editmode, $showexamples = false){
+		$html_tree = "";
+        $html_tree .= html_writer::start_tag("ul",array("class"=>"collapsibleList"));
+        
+        $html_tree .= html_writer::start_tag("li", array('class'=>"associated"));
+        $html_tree .= $example->title;
+        
+        $html_tree .= $this->print_competence_based_list_tree($tree, $isTeacher, $editmode, $showexamples);
+        
+        $html_tree .= html_writer::end_tag('li');
+        $html_tree .= html_writer::end_tag('ul');
+        return $html_tree;        
+	}
 }
