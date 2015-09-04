@@ -4504,11 +4504,8 @@ function block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,
 	
 	$timecreated = $timemodified = time();
 	
-	if(!$DB->record_exists(block_exacomp::DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid))) {
-		$DB->insert_record(block_exacomp::DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid,'creatorid' => $creatorid, 'timecreated' => $timecreated, 'timemodified' => $timemodified));
-		return true;
-	} else 
-		return false;
+	$DB->insert_record(block_exacomp::DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid,'creatorid' => $creatorid, 'timecreated' => $timecreated, 'timemodified' => $timemodified));
+	return true;
 }
 
 function block_exacomp_add_days($date, $days) {
@@ -5438,7 +5435,7 @@ function block_exacomp_get_examples_for_start_end_all_courses($studentid, $start
 	
 	return $examples;
 }
-function block_exacomp_get_json_examples($examples){
+function block_exacomp_get_json_examples($examples, $mind_eval = true){
 	global $OUTPUT, $DB;
 	
 	$array = array();
@@ -5448,8 +5445,11 @@ function block_exacomp_get_json_examples($examples){
 		$example_array['title'] = $example->title;
 		$example_array['start'] = $example->start;
 		$example_array['end'] = $example->end;
-		$example_array['student_evaluation'] = $example->student_evaluation;
-		$example_array['teacher_evaluation'] = $example->teacher_evaluation;
+		$example_array['exampleid'] = $example->exampleid;
+		if($mind_eval){
+			$example_array['student_evaluation'] = $example->student_evaluation;
+			$example_array['teacher_evaluation'] = $example->teacher_evaluation;
+		}
 		$example_array['studentid'] = $example->studentid;
 		$example_array['courseid'] = $example->courseid;
 		$example_array['scheduleid'] = $example->scheduleid; 
@@ -5548,4 +5548,42 @@ function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $stud
 	}
 	
 	return 0;	
+}
+function block_exacomp_in_pre_planing_storage($exampleid, $creatorid, $courseid){
+	global $DB;
+
+	if($DB->get_record(block_exacomp::DB_SCHEDULE, array('exampleid'=>$exampleid, 'creatorid'=>$creatorid, 'courseid'=>$courseid, 'studentid'=>0)))
+		return true;
+		
+	return false;
+}
+function block_exacomp_has_items_pre_planning_storage($creatorid, $courseid){
+	global $DB;
+	
+	return $DB->get_records(block_exacomp::DB_SCHEDULE, array('creatorid'=>$creatorid, 'courseid'=>$courseid, 'studentid'=>0));
+}
+function block_exacomp_get_pre_planning_storage($creatorid, $courseid){
+	global $DB;
+	
+	$sql = "select s.*,
+				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
+				evis.courseid, s.id as scheduleid
+			FROM {".block_exacomp::DB_SCHEDULE."} s 
+			JOIN {".block_exacomp::DB_EXAMPLES."} e ON e.id = s.exampleid 
+			JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=? 
+			WHERE s.creatorid = ? AND s.studentid=0 AND (
+				-- noch nicht auf einen tag geleg
+				(s.start IS null OR s.start=0)
+			)
+			ORDER BY e.title";
+	
+	return $DB->get_records_sql($sql,array($courseid, $creatorid));
+}
+function block_exacomp_get_student_pool_examples($students, $courseid){
+	global $DB;
+	
+	foreach($students as $student){
+		$student->pool_examples = block_exacomp_get_examples_for_pool($student->id, $courseid);
+	}
+	return $students;
 }
