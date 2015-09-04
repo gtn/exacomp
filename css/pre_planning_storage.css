@@ -1,0 +1,208 @@
+/*#block_exacomp #main-content {
+	display: table;
+	width: 100%;
+}
+#block_exacomp #main-content  > .column {
+	display: table-cell;
+}
+#block_exacomp #main-content  > .column:first-child {
+	width: 20%;
+}
+#block_exacomp #main-content  > .column:last-child {
+	padding-left: 20px;
+}
+
+#block_exacomp .header {
+	background-color: #e6e6e6;
+	color: #000;
+	padding: 5px 5px 5px 15px;
+	border-bottom: 1px solid #cacaca;
+	border-left: none;
+	border-right: none;
+	border-top: none;
+}
+
+#block_exacomp .header
+
+#block_exacomp .ui-sortable .header {
+	border-bottom: none;
+}
+
+#block_exacomp .items {
+	margin: 0;
+	min-height: 10px;
+	max-height: 600px;
+	overflow: auto;
+}
+#block_exacomp .item {
+	margin: 10px;
+	background: white;
+	cursor: pointer;
+	background: #0784eb;
+	color: #fff;
+	-webkit-box-shadow: 1px 1px 1px 0px rgba(0,0,0,0.4);
+	-moz-box-shadow: 1px 1px 1px 0px rgba(0,0,0,0.4);
+	box-shadow: 1px 1px 1px 0px rgba(0,0,0,0.4);
+	border-radius: 3px;
+}
+
+#block_exacomp .item .header {
+	background-color: #0784eb !important;
+	border: none;
+}
+
+#block_exacomp .item .header {
+	color: #fff;
+	border-radius: 3px;
+}
+#block_exacomp .item .buttons {
+	display: none;
+}
+#block_exacomp .item .buttons label:first-child {
+	float: left;
+}
+#block_exacomp .day .item .buttons {
+	display: block;
+	margin-top: 0;
+	padding: 5px 5px 5px 15px;
+}
+
+#block_exacomp .day .item .buttons input[type="radio"][disabled], #block_exacomp .day .item .buttons input[type="checkbox"][disabled], #block_exacomp .day .item .buttons input[type="radio"][readonly], #block_exacomp .day .item .buttons input[type="checkbox"][readonly] {
+    background-color: #d1d1d1;
+}
+
+#block_exacomp .empty {
+	margin: 10px;
+	padding: 5px;
+	height: 40px;
+	display: none;
+	position: absolute;
+}
+
+#block_exacomp #items {
+	border: 1px solid #cacaca;
+	min-height: 200px;
+}
+#block_exacomp #items .items {
+	min-height: 200px;
+}
+
+#block_exacomp .placeholder {
+	margin: 10px;
+	padding: 5px;
+	background: rgba(102, 175, 233, 0.6);
+	border-radius:3px;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(102, 175, 233, 0.3);
+}
+
+#block_exacomp #save-button {
+	height: 55px;
+	text-align: center;
+}
+#block_exacomp #save-button input {
+	margin-top: 3px;
+}
+#block_exacomp #navi {
+	margin-bottom: 20px;
+	text-align: center;
+	padding: 5px 0;
+}
+#block_exacomp #days {
+	border: 1px solid #cacaca;
+	display: table;
+	border-collapse: collapse;
+	width: 100%;
+}
+#block_exacomp .day {
+	display: table-cell;
+	width: 20%;
+	border: 1px solid #cacaca;
+}
+#block_exacomp #days .items {
+	min-height: 200px;
+}
+
+#block_exacomp #days .day:nth-child(2n+1) {
+	background-color: #f6f6f6;
+}
+
+#block_exacomp #days .day:nth-child(2n+1) .header {
+	background-color: #dfdfdf;
+}
+
+#block_exacomp #days .day:nth-child(2n+1) .item .header {
+	background-color: transparent;
+}
+*/
+#block_exacomp #external-events {
+	float: left;
+	width: 250px;
+	padding: 0 10px;
+	border: 1px solid #ccc;
+	background: #eee;
+	text-align: left;
+}
+
+#block_exacomp #external-students {
+	float: left;
+	width: 250px;
+	padding: 0 10px;
+	border: 1px solid #ccc;
+	background: #eee;
+	text-align: left;
+}
+#block_exacomp #external-events.hover {
+	background: #bbb;
+}
+
+#block_exacomp #external-events h4 {
+	font-size: 16px;
+	margin-top: 0;
+	padding-top: 1em;
+}
+	
+#block_exacomp #external-events .fc-event {
+	margin: 10px 0;
+	cursor: pointer;
+	min-height: 50px;
+}
+
+#block_exacomp #external-events .not-used {
+	opacity: 0.4;
+}
+
+#block_exacomp #save_button {
+	margin-top: 10px;
+}
+
+#block_exacomp #external-students li.has_examples {
+	color: #bbb;
+}
+
+#block_exacomp .fc-event .event-extra {
+	border-top: 1px solid white;
+	margin-top: 5px;
+	padding: 5px;
+}
+
+#block_exacomp #external-events p {
+	margin: 1.5em 0;
+	font-size: 11px;
+	color: #666;
+}
+	
+#block_exacomp #external-events p input {
+	margin: 0;
+	vertical-align: middle;
+}
+#block_exacomp #wrap {
+	width: 1100px;
+	margin: 0 auto;
+}
+#block_exacomp .fc-time-grid .fc-slats td {
+	height: 5em;
+}
+#block_exacomp #calendar {
+	float: right;
+	width: 900px;
+}
