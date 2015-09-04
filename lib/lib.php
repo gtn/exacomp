@@ -875,8 +875,8 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 
 	foreach($descriptors as &$descriptor) {
 		//get examples
-		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples, $courseid);
-		//check for child-descriptors
+	    $descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples, $courseid);
+	       //check for child-descriptors
 		$descriptor->children = block_exacomp_get_child_descriptors($descriptor,$courseid, $showalldescriptors, $filteredtaxonomies, $showallexamples, true, $showonlyvisible);
 
 		//get categories
@@ -889,20 +889,23 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 function block_exacomp_get_categories_for_descriptor($descriptor){
 	global $DB;
 	//im upgrade skript zugriff auf diese funktion obwohl die tabelle erst sp�ter akutalisiert wird
-	$dbman = $DB->get_manager();
-	$table = new xmldb_table('block_exacompdescrcat_mm');
-	if( $dbman->table_exists($table)) {
-	
-		$records = $DB->get_records(block_exacomp::DB_DESCCAT, array('descrid'=>$descriptor->id));
-		$categories = array();
-		
-		foreach($records as $record){
-			if($record->catid)
-				$categories[] = $DB->get_record(block_exacomp::DB_CATEGORIES, array('id'=>$record->catid));
-		}
-		return $categories;	
+	static $table_exists = false;
+	if (!$table_exists) {
+	   $dbman = $DB->get_manager();
+	   $table = new xmldb_table('block_exacompdescrcat_mm');
+	   if (!$table_exists = $dbman->table_exists($table)) {
+	       return array();
+	   }
 	}
-	return array();
+	
+	$records = $DB->get_records(block_exacomp::DB_DESCCAT, array('descrid'=>$descriptor->id));
+	$categories = array();
+	
+	foreach($records as $record){
+		if($record->catid)
+			$categories[] = $DB->get_record(block_exacomp::DB_CATEGORIES, array('id'=>$record->catid));
+	}
+	return $categories;	
 }
 function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescriptors = false, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $showallexamples = true, $mindvisibility = true, $showonlyvisible=false ) {
 	global $DB;
@@ -955,7 +958,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 		$courseid = $COURSE->id;
 		
 	$examples = $DB->get_records_sql(
-			"SELECT de.id as deid, e.id, e.title, e.externalurl, ".
+			"SELECT de.id as deid, e.id, e.title, e.externalurl, e.source, ".
 				($mind_visibility?"evis.visible,":"")."
 				e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe
 				FROM {" . block_exacomp::DB_EXAMPLES . "} e

@@ -69,7 +69,10 @@ class exabis_special_id_generator {
 
     static public function validate_id($id) {
         // does id without prefix have correct length?
-        if (strlen(preg_replace('!^.*\-!', '', $id)) !== self::ID_LENGTH+self::CHECK_LENGTH) return false;
+        $length = self::ID_LENGTH+self::CHECK_LENGTH;
+        if (!preg_match("!^(.*\-)?[A-Za-z0-9_\-]{{$length}}$!", $id)) {
+            return false;
+        }
 
         $check = substr($id, -self::CHECK_LENGTH);
         $id = substr($id, 0, -self::CHECK_LENGTH);

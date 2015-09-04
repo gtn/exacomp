@@ -68,7 +68,54 @@ if ($action == 'delete_selected') {
     echo $output->header();
     echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($course_context,$courseid), $page_identifier);
     
-    echo $output->print_descriptor_selection_source_delete($source);
+    //$DB->set_debug(true);
+    $subjects = block_exacomp_subject::get_records();
+    
+    // $subjects = array_values($subjects);
+    // $subjects = array($subjects[0], $subjects[1]);
+    
+    // check delete
+    foreach ($subjects as $subject) {
+        $subject->can_delete = ($subject->source == $source);
+    
+        foreach ($subject->topics as $topic) {
+            $topic->can_delete = ($topic->source == $source);
+            
+            foreach($topic->descriptors as $descriptor){
+                $descriptor->can_delete = ($descriptor->source == $source);
+                
+                // child descriptors
+                foreach($descriptor->children as $child_descriptor){
+                    $child_descriptor->can_delete = ($child_descriptor->source == $source);
+    
+                    foreach ($child_descriptor->examples as $example){
+                        $example->can_delete = ($example->source == $source);
+        
+                        if (!$example->can_delete)
+                            $child_descriptor->can_delete = false;
+                    }
+
+                    if (!$child_descriptor->can_delete)
+                        $descriptor->can_delete = false;
+                }
+
+                foreach ($descriptor->examples as $example){
+                    $example->can_delete = ($example->source == $source);
+
+                    if (!$example->can_delete)
+                        $descriptor->can_delete = false;
+                }
+        
+                if (!$descriptor->can_delete)
+                    $topic->can_delete = false;
+            }
+    
+            if (!$topic->can_delete)
+                $subject->can_delete = false;
+        }
+    }
+    
+    echo $output->print_descriptor_selection_source_delete($source, $subjects);
     
     echo $output->footer();
 } else {

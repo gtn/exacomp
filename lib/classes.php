@@ -1,25 +1,36 @@
 <?php
 
 class block_exacomp_db_record {
-    private $functionValues = null;
-    private $data = null;
+    protected $funcData = null;
+    protected $data = null;
     
     const TABLE = 'todo';
     
     function __construct($data) {
-        $this->data = $data;
-        $this->functionValues = (object)array();
+        $this->funcData = (object)array();
+        $this->data = (object)array();
+        
+        foreach ($data as $key => $value) {
+            $this->$key = $value;
+        }
+        
+        /*
+        global $xcounts;
+        $xcounts[get_called_class()."_cnt"]++;
+        $xcounts[get_called_class()][$data->id]++;
+        $this->debug = array_merge(array(), debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS));
+        */
     }
-    function __get($name) {
+    function &__get($name) {
         if (property_exists($this->data, $name)) {
             return $this->data->$name;
-        } elseif (property_exists($this->functionValues, $name)) {
-            return $this->functionValues->$name;
+        } elseif (property_exists($this->funcData, $name)) {
+            return $this->funcData->$name;
         } elseif (($method = 'get_'.$name) && method_exists($this, $method)) {
             // store
-            $this->functionValues->$name = $this->$method();
+            $this->funcData->$name = $this->$method();
             // return 
-            return $this->functionValues->$name;
+            return $this->funcData->$name;
         } else {
             print_error("property not found ".get_class($this)."::$name");
         }
@@ -28,23 +39,30 @@ class block_exacomp_db_record {
     function __isset($name) {
         if (property_exists($this->data, $name)) {
             return isset($this->data->$name);
-        } elseif (property_exists($this->functionValues, $name)) {
-            return isset($this->functionValues->$name);
+        } elseif (property_exists($this->funcData, $name)) {
+            return isset($this->funcData->$name);
         } elseif (($method = 'get_'.$name) && method_exists($this, $method)) {
             // store
-            $this->functionValues->$name = $this->$method();
-            return isset($this->functionValues->$name);
+            $this->funcData->$name = $this->$method();
+            return isset($this->funcData->$name);
         } else {
             return false;
         }
     }
     
     function __set($name, $value) {
-        $this->data->$name = $value;
+        if (($method = 'set_'.$name) && method_exists($this, $method)) {
+            $ret = $this->$method($value);
+            if ($ret !== null) {
+                $this->funcData->$name = $ret;
+            }
+        } else {
+            $this->data->$name = $value;
+        }
     }
     public function __unset($name) {
         unset($this->data->$name);
-        unset($this->functionValues->$name);
+        unset($this->funcData->$name);
     }
     
     static function get($conditions, $fields='*') {
@@ -104,7 +122,13 @@ class block_exacomp_subject extends block_exacomp_db_record {
     const TABLE = block_exacomp::DB_SUBJECTS;
 
     function get_topics() {
-        return block_exacomp_topic::get_records_by_subject($this->id);
+        $topics = block_exacomp_topic::get_records_by_subject($this->id);
+
+        array_walk($topics, function($topic) {
+            $topic->subject = $this;
+        });
+        
+        return $topics;
     }
 }
 
@@ -125,7 +149,7 @@ class block_exacomp_topic extends block_exacomp_db_record {
         global $DB;
         
         return self::create_records($DB->get_records_sql('
-                SELECT t.id, t.title, t.parentid, t.subjid, \'topic\' as tabletype, t.numb
+                SELECT t.id, t.title, t.parentid, t.subjid, t.source, t.numb
                 FROM {'.block_exacomp::DB_SUBJECTS.'} s
                 JOIN {'.block_exacomp::DB_TOPICS.'} t ON t.subjid = s.id
                     -- only show active ones
@@ -135,7 +159,13 @@ class block_exacomp_topic extends block_exacomp_db_record {
     }
 
     function get_numbering() {
-        $numbering = substr(block_exacomp_get_subject_by_id($this->subjid)->title, 0,1).'.';
+        if (!isset($this->subject)) {
+            print_r($this->debug);
+            var_dump($this);
+            die('subj');
+        }
+        
+        $numbering = $this->subject->titleshort.'.';
         
         //topic
         $numbering .= $this->numb.'.';
@@ -145,28 +175,38 @@ class block_exacomp_topic extends block_exacomp_db_record {
     
     function get_descriptors() {
         // a little hacky, but it's so
-        $descriptors = block_exacomp_descriptor::get_records_by_subject($this->id);
+        static $subjectDescriptors = array();
+        if (!isset($subjectDescriptors[$this->subjid])) {
+            $subjectDescriptors[$this->subjid] = block_exacomp_descriptor::get_records_by_subject($this->subjid);
+        }
         
-        return array_filter($descriptors, function($descriptor) {
+        $descriptors = array_filter($subjectDescriptors[$this->subjid], function($descriptor) {
             return $descriptor->topicid == $this->id;
         });
+        
+        array_walk($descriptors, function($descriptor) {
+            $descriptor->topic = $this;
+            array_walk($descriptor->children, function($descriptor) {
+                $descriptor->topic = $this;
+            });
+        });
+        
+        return $descriptors;
     }
 }
 
 class block_exacomp_descriptor extends block_exacomp_db_record {
+    const TABLE = block_exacomp::DB_DESCRIPTORS;
+    
     static function get_records_by_subject($subjectid) {
-        $records = self::create_records($descriptors = block_exacomp_get_descriptors(0, true, $subjectid));
-        
-        foreach ($records as $record) {
-            $record->children = self::create_records($record->children);
-        }
+        $records = self::create_records(block_exacomp_get_descriptors(0, true, $subjectid));
         
         return $records;
     }
 
     function get_numbering() {
         global $DB;
-        $topic = $this->get_topic();
+        $topic = $this->topic;
 
         $numbering = $topic->numbering;
 
@@ -192,5 +232,31 @@ class block_exacomp_descriptor extends block_exacomp_db_record {
         }
         
         return block_exacomp_topic::get($this->topicid);
+    }
+    
+    function set_examples($examples) {
+        $this->funcData->examples = block_exacomp_example::create_records($examples);
+
+        // set descriptor in example
+        array_walk($this->funcData->examples, function($example) {
+            $example->descriptor = $this;
+        });
+    }
+    
+    function set_children($children) {
+        $this->funcData->children = self::create_records($children);
+    }
+}
+
+class block_exacomp_example extends block_exacomp_db_record {
+    const TABLE = block_exacomp::DB_EXAMPLES;
+    
+    function get_numbering() {
+        if (!isset($this->descriptor)) {
+            // required that descriptor is set
+            print_error('no descriptor loaded');
+        }
+        
+        return $this->descriptor->numbering;
     }
 }

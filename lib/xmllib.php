@@ -338,7 +338,6 @@ class block_exacomp_data {
             if (!empty($table['needed3'])) {
                 $sql .= " OR {$table['needed3'][0]} NOT IN ({$make_select($table['needed3'][1])})";
             }
-            echo $sql;
             $DB->execute($sql);
         }
 
