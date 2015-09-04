@@ -4174,7 +4174,7 @@ function block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid
     if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.source, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.parentid, dvis.visible as visible, n.sorting as niveau '
+	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.source, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.sorting, d.parentid, dvis.visible as visible, n.sorting as niveau '
 	.'FROM {'.block_exacomp::DB_TOPICS.'} t '
 	.'JOIN {'.block_exacomp::DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
 	.'JOIN {'.block_exacomp::DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid = 0 '
