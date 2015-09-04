@@ -605,6 +605,22 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $content .= ' '.get_string("teacherevaluation","block_exacomp").' ';
         return $content;
     }
+    public function print_competence_grid_reports_dropdown() {
+    	global $PAGE;
+    	
+    	$options = array();
+    	
+    	$options[BLOCK_EXACOMP_REPORT1] = get_string("report_competence","block_exacomp");
+    	$options[BLOCK_EXACOMP_REPORT2] = get_string("report_detailcompetence","block_exacomp");
+    	$options[BLOCK_EXACOMP_REPORT3] = get_string("report_examples","block_exacomp");
+    	
+    	$url = new block_exacomp_url($PAGE->url);
+		$url->param("subjectid",optional_param("subjectid", 0, PARAM_INT));
+		$url->param("studentid",optional_param("studentid", 0, PARAM_INT));
+		
+    	return get_string('reports','block_exacomp') . ": " . html_writer::select($options, "exacomp_competence_grid_report", optional_param("report", BLOCK_EXACOMP_REPORT1, PARAM_INT), true, array("data-url"=>$url));
+    	 
+    }
     public function print_competence_overview_LIS_student_topics($subs, &$row, &$columns, &$column_count, $scheme, $profoundness = false){
         global $USER, $COURSE;
         $supported = block_exacomp_get_supported_modules();
@@ -672,6 +688,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         //calculate the col span for spanning niveaus
         $spanningColspan = block_exacomp_calculate_spanning_niveau_colspan($niveaus, $spanningNiveaus);
         
+        $report = optional_param('report', BLOCK_EXACOMP_REPORT1, PARAM_INT);
+        
         $rows = array();
 
         foreach($data as $skillid => $skill) {
@@ -723,6 +741,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                             $visible = block_exacomp_check_descriptor_visibility($courseid, $descriptor, ($studentid != BLOCK_EXACOMP_SHOW_STATISTIC) ? $studentid : 0);
                             $visible_css = block_exacomp_get_descriptor_visible_css($visible, $role);
                             
+                            /*
                             if (block_exacomp_is_teacher($context)) {
                                 if(isset($descriptor->teachercomp) && array_key_exists($descriptor->topicid, $selection)) {
                                     $compString .= "L: ";
@@ -760,12 +779,13 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
                                     $compString .= "&nbsp;L: " . (($descriptor->teachercomp) ? $descriptor->teachercomp : 0);
                                 }
-
-                                    
-                            }
+                            }*/
+                            
+                            /*
                             if(isset($descriptor->icon))
                                 $compString .= $descriptor->icon;
-
+							*/
+                            
                             $text = $descriptor->title;
                             if(array_key_exists($descriptor->topicid, $selection)) {
                                 $text = html_writer::link(new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid"=>$courseid,"subjectid"=>$topicid,"topicid"=>$descriptor->id,"studentid"=>$studentid)),$text,array("id" => "competence-grid-link-".$descriptor->id,"class" => ($visible) ? '' : 'deactivated'));
@@ -792,34 +812,24 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
                             if(isset($descriptor->children) && count($descriptor->children) > 0 && !$version)
                                 $compString .= $children;
-                            /*else {
-                             if(isset($descriptor->teachercomp) && $descriptor->teachercomp)
-                                //$compString .= "T";
-                            $cssClass = "teachercomp";
-                            }
-                            //if(isset($descriptor->studentcomp) && $descriptor->studentcomp)
-                                //    $compString .= "S";
-                            */
 
-                            if(!isset($descriptor->teachercomp) || !($descriptor->teachercomp))
-                                $allTeachercomps = false;
-                            if(!isset($descriptor->studentcomp) || !($descriptor->studentcomp) || ($descriptor->teachercomp))
-                                $allStudentcomps = false;
-
-                            //$cssClass = (isset($descriptor->teachercomp) && $descriptor->teachercomp >= $satisfied) ? "content competenceok" : ((isset($descriptor->studentcomp) && $descriptor->studentcomp >= $satisfied) ? "content competenceyellow" : "content ");
                             $cssClass = "content";
                             if($descriptor->parentid > 0)
                                 $cssClass .= ' child';
                             
+                            if(isset($descriptor->teachercomp) && $descriptor->teachercomp)
+                            	$cssClass = "contentok";
+                            
                             // Check visibility
+                            /*
                             if(!$descriptor_used && array_key_exists($descriptor->topicid, $selection) ){
                                 if($editmode || ($descriptor->visible == 1 && $role == block_exacomp::ROLE_TEACHER)){
                                     $compString .= $this->print_visibility_icon($visible, $descriptor->id);
                                 }
-                            }
+                            } */
                             $compdiv .= html_writer::tag('div', $compString,array('class'=>$cssClass));
                             
-                                
+                            if($report != BLOCK_EXACOMP_REPORT1)    
                             if(array_key_exists($descriptor->topicid, $selection) && $visible && $studentid != 0) {
                                 
                                 $compdiv .= html_writer::start_div('crosssubjects');
@@ -842,8 +852,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                 $crossubject_statistic_rows[] = $table_head;
                                 
                                 $crosssubjects = block_exacomp_get_cross_subjects_for_descriptor($courseid, $descriptor->id);
-                                $statistic_type = optional_param('stattype', BLOCK_EXACOMP_DESCRIPTOR_STATISTIC, PARAM_INT);
-                                    
+                                $statistic_type = ($report == BLOCK_EXACOMP_REPORT2) ? BLOCK_EXACOMP_DESCRIPTOR_STATISTIC : BLOCK_EXACOMP_EXAMPLE_STATISTIC;
+
                                 foreach($crosssubjects as $crosssubject) {
                                     if($statistic_type == BLOCK_EXACOMP_DESCRIPTOR_STATISTIC)
                                         list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_descriptor_statistic_for_crosssubject($courseid, $crosssubject->id, $studentid);
@@ -886,17 +896,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                 $compdiv .= html_writer::end_div();
                             }
                         }
-
-                        /*
-                        disable coloring
-                        if(count($data[$skillid][$topicid][$niveauid]) == 1)
-                            $cell->attributes['class'] = $cssClass;
-                        else if($allStudentcomps)
-                            $cell->attributes['class'] = "content competenceyellow";
-                        else if($allTeachercomps)
-                            $cell->attributes['class'] = "content competenceok";
-
-                        */
                         
                         // apply colspan for spanning niveaus
                         if(array_key_exists($niveauid,$spanningNiveaus)) {

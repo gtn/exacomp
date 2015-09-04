@@ -12,11 +12,10 @@
     padding: 10px
 }
 
-#block_exacomp  #competenceok,
+#exabis_competencies_block  .content .competenceok,
 #block_exacomp .competenceok {
     background-color: #48a53f !important
 }
-
 #block_exacomp #competenceyellow,
 #block_exacomp .competenceyellow {
     background-color: #f9b233 !important
@@ -223,6 +222,13 @@ td.contentcell {
     padding: 0.7rem;
     font-size: 1em;
     border: 1px solid #cacaca;
+    border-radius: 5px;
+    margin-bottom: 3px;
+}
+#block_exacomp .cell .contentok {
+    padding: 0.7rem;
+    font-size: 1em;
+    border: 2px solid #99cc66;
     border-radius: 5px;
     margin-bottom: 3px;
 }

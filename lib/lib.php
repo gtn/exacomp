@@ -30,6 +30,10 @@ define("SHOW_ALL_TAXONOMIES",100000000);
 define("BLOCK_EXACOMP_SHOW_ALL_STUDENTS", -1);
 define("BLOCK_EXACOMP_SHOW_STATISTIC", -2);
 
+define("BLOCK_EXACOMP_REPORT1",1);
+define("BLOCK_EXACOMP_REPORT2",2);
+define("BLOCK_EXACOMP_REPORT3",3);
+
 class block_exacomp_exception extends moodle_exception {
     function __construct($errorcode, $module='', $link='', $a=NULL, $debuginfo=null) {
 
@@ -1627,8 +1631,7 @@ function block_exacomp_studentselector($students, $selected, $url, $option = nul
     $url = new block_exacomp_url($url);
     $url->remove_params('studentid');
 	
-	if ($option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_EDITMODE
-			|| $option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN)
+	if ($option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_EDITMODE)
 		$studentsAssociativeArray[0]=get_string('no_student_edit', 'block_exacomp');
      else if($option != BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN)
 		$studentsAssociativeArray[0]=get_string('no_student', 'block_exacomp');
@@ -2795,7 +2798,7 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 				$descriptor->examples[$example->id] = $example;
 			}
 				
-			if($studentid) {
+			if($studentid && $studentid != BLOCK_EXACOMP_SHOW_STATISTIC) {
 				$descriptor->studentcomp = (array_key_exists($descriptor->id, $competencies['studentcomps'])) ? $competencies['studentcomps'][$descriptor->id]->value : false;
 				$descriptor->teachercomp = (array_key_exists($descriptor->id, $competencies['teachercomps'])) ? $competencies['teachercomps'][$descriptor->id]->value : false;
 				// ICONS

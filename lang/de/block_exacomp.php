@@ -344,6 +344,10 @@ $string['teacherevaluation'] = 'Einschätzung des Beurteilenden';
 $string['competencegrid_nodata'] = 'Sollte der Kompetenzraster leer sein, wurden für die Deskriptoren des ausgewählten Gegenstands keine Niveaus in den Daten definiert';
 $string['statistic_type_descriptor'] = 'Wechsel zur Statistik der Teilkompetenzen';
 $string['statistic_type_example'] = 'Wechsel zur Statistik der Aufgaben';
+$string['reports'] = 'Bericht';
+$string['report_competence'] = 'Kompetenzen';
+$string['report_detailcompetence'] = 'Teilkompetenzen';
+$string['report_examples'] = 'Lernmaterialien';
 
 //Detail view
 $string['detail_description'] = 'Hier kann mit Hilfe von Aktivitäten eine Kompetenz beurteilt werden.';
