@@ -93,7 +93,13 @@ if($style==1){
 	
 	$content = '';
 	foreach($comp_examples as $example){
-		$tree = block_exacomp_build_example_association_tree($courseid, block_exacomp_get_descriptors_by_example($example->id), $example->id, 0, true);
+		$descexamp_mm = block_exacomp_get_descriptors_by_example($example->id);
+		$descriptors = array();
+		foreach($descexamp_mm as $descexamp){
+			if(!in_array($descexamp->descrid, $descriptors))
+				$descriptors[$descexamp->descrid] = $descexamp->descrid;
+		}
+		$tree = block_exacomp_build_example_association_tree($courseid, $descriptors, $example->id, 0, false);
 		$content .= $output->print_example_based_list_tree($example, $tree, true, false);
 	}
 	
