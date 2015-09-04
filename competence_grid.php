@@ -63,6 +63,7 @@ $isTeacher = block_exacomp_is_teacher($context);
 
 $subjectid = optional_param('subjectid', 0, PARAM_INT);
 $studentid = optional_param("studentid", 0, PARAM_INT);
+$report = optional_param("report", BLOCK_EXACOMP_REPORT1, PARAM_INT);
 
 if(!$isTeacher) $studentid = $USER->id;
 
@@ -77,7 +78,7 @@ echo $output->print_subject_dropdown(block_exacomp_get_schooltypetree_by_subject
 if($data) {
 	if (block_exacomp_is_teacher($context) && !block_exacomp_get_settings_by_course($courseid)->nostudents) {
 		echo ' '.get_string("choosestudent","block_exacomp").' ';
-		echo block_exacomp_studentselector(block_exacomp_get_students_by_course($courseid),$studentid,$PAGE->url . ($subjectid > 0 ? "&subjectid=".$subjectid : ""), BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN);
+		echo block_exacomp_studentselector(block_exacomp_get_students_by_course($courseid),$studentid,$PAGE->url . ($subjectid > 0 ? "&subjectid=".$subjectid : "") . ($report > 0 ? "&report=".$report : ""), BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN);
 	}
 	
 	echo $output->print_competence_grid_reports_dropdown();
