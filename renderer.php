@@ -1608,6 +1608,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                 $visible_student = $visible;
                 if(!$statistic){
                     foreach($students as $student) {
+                    	
+
+                    	//check reviewerid for teacher
+                    	if($data->role == block_exacomp::ROLE_TEACHER)
+                    		$reviewerid = $DB->get_field(block_exacomp::DB_COMPETENCIES,"reviewerid",array("userid" => $student->id, "compid" => $descriptor->id, "role" => block_exacomp::ROLE_TEACHER));
+                    	
                         //check visibility for every student in overview
                         
                         if(!$one_student && !$editmode)
@@ -1686,7 +1692,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                 if($data->showevaluation)
                                     $studentCellEvaluation->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
             
-                                $studentCell->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme, ($visible_student)?false:true);
+                                $studentCell->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme, ($visible_student)?false:true, null, ($data->role == block_exacomp::ROLE_TEACHER) ? $reviewerid : null);
                             }
                             /*
                              * if scheme != 1, !version: print select
@@ -2186,14 +2192,22 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
      *
      * @return String $checkbox html code for checkbox
      */
-    public function generate_checkbox($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false, $activityid = null) {
+	public function generate_checkbox($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false, $activityid = null, $reviewerid = null) {
+    	global $USER;
+    	
+    	$attributes = array();
+    	if($disabled)
+    		$attributes["disabled"] = "disabled";
+    	if($reviewerid && $reviewerid != $USER->id)
+    		$attributes["reviewerid"] = $reviewerid;
+    	
         return html_writer::checkbox(
                 ((isset($activityid)) ? 
                         $name . '-' .$compid .'-' . $student->id .'-' . $activityid . '-' . $evaluation
                         : $name . '-' . $compid . '-' . $student->id . '-' . $evaluation),
                 $scheme,
                 (isset($student->{$type}->{$evaluation}[$compid])) && $student->{$type}->{$evaluation}[$compid] >= ceil($scheme/2), null,
-                (!$disabled) ? null : array("disabled"=>"disabled"));
+                $attributes);
     }
     public function generate_checkbox_old($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false, $activityid = null) {
         return html_writer::checkbox(

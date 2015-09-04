@@ -11,7 +11,26 @@
 	    }
 	    return size;
 	};
-	$(document).on('click', 'input[name^=data\-]', function() {
+	
+	var prev_val;
+	
+	$(document).on('focus', 'input[name^=data\-]', function() {
+	    prev_val = $(this).val();
+	});
+	$(document).on('change', 'input[name^=data\-]', function() {
+		
+		// check if anyone else has edited the competence before. if so, ask for confirmation
+		if($(this).attr("reviewerid")) {
+			if(!confirm("Diese Kompetenz wurde von jemand anderem bearbeitet. Wirklich ändern?")){
+				$(this).prop("checked",prev_val);
+		        return;
+		    }
+			else {
+				//remove reviewer attribute
+				$(this).removeAttr("reviewerid");
+			}
+		}
+		
 		var values = $(this).attr("name").split("-");
 		var tr = $(this).closest('tr');
 		var hide = $(tr).find('input[name~="hide-descriptor"]');
@@ -41,6 +60,7 @@
 			//uncheck comp -> hide possible again
 			hide.removeClass("hidden");
 		}
+		
 	});
 	  $(document).on('change', 'select[name^=data\-]', function() {
 		var values = $(this).attr("name").split("-");
@@ -596,6 +616,12 @@
 
 	});
 	
+	$(window).bind('beforeunload', function(){
+		if (competencies.length > 0 || topics.length > 0
+				|| examples.length > 0)
+			return 'Ungespeicherte Änderungen gehen verloren';
+	});
+	
 	function insert_descriptor(title_new_comp, descriptorid){
 		block_exacomp.call_ajax({
 			descriptorid: descriptorid,
@@ -624,11 +650,4 @@
 
 	}
 
-	$(window).bind(
-			'beforeunload',
-			function() {
-				if (competencies.length > 0 || topics.length > 0
-						|| examples.length > 0)
-					return 'Ungespeicherte Änderungen gehen verloren';
-			});
 })(jQueryExacomp);
