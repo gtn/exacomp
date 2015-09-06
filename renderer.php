@@ -784,12 +784,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                     $compString .= "&nbsp;L: " . (($descriptor->teachercomp) ? $descriptor->teachercomp : 0);
                                 }
                             }*/
-                            
+
                             /*
                             if(isset($descriptor->icon))
                                 $compString .= $descriptor->icon;
 							*/
-                            
+
                             $text = $descriptor->title;
                             if(array_key_exists($descriptor->topicid, $selection)) {
                                 $text = html_writer::link(new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid"=>$courseid,"subjectid"=>$topicid,"topicid"=>$descriptor->id,"studentid"=>$studentid)),$text,array("id" => "competence-grid-link-".$descriptor->id,"class" => ($visible) ? '' : 'deactivated'));
@@ -857,7 +857,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                 
                                 $crosssubjects = block_exacomp_get_cross_subjects_for_descriptor($courseid, $descriptor->id);
                                 $statistic_type = ($report == BLOCK_EXACOMP_REPORT2) ? BLOCK_EXACOMP_DESCRIPTOR_STATISTIC : BLOCK_EXACOMP_EXAMPLE_STATISTIC;
-
+                                    
                                 foreach($crosssubjects as $crosssubject) {
                                     if($statistic_type == BLOCK_EXACOMP_DESCRIPTOR_STATISTIC)
                                         list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_descriptor_statistic_for_crosssubject($courseid, $crosssubject->id, $studentid);
@@ -900,7 +900,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                 $compdiv .= html_writer::end_div();
                             }
                         }
-                        
+
                         // apply colspan for spanning niveaus
                         if(array_key_exists($niveauid,$spanningNiveaus)) {
                             $cell->colspan = $spanningColspan;
@@ -2684,7 +2684,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         $rowgroup = 0;
         $rows = array();
         
-        $subjects = block_exacomp_subject::get_records();
+        $subjects = block_exacomp_subject::get_objects();
+        
         foreach ($subjects as $subject) {
             $row = new html_table_row();
             $row->attributes['class'] = 'exabis_comp_teilcomp highlight rowgroup-level-0';
@@ -2777,8 +2778,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             $row->cells[] = $cell;
             $rows[] = $row;
             
-            $topics = block_exacomp_topic::get_records_by_subject($subject->id);
-            
             foreach ($subject->topics as $topic) {
                 $padding = 20;
                 
@@ -2870,7 +2869,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         $table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
         $table_html .= html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>'Löschen')), '', array('id'=>'exabis_save_button'));
 
-        return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url->out(false, array('action'=>'export_selected')), "id" => "course-selection"));
+        return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url->out(false, array('action'=>'delete_selected')), "id" => "course-selection"));
     }
     
     public function print_topics_courseselection(&$rows, $level, $topics, &$rowgroup, $rowgroup_class = '', $topics_activ){

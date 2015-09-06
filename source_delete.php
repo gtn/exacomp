@@ -45,19 +45,43 @@ $source = required_param('source', PARAM_INT);
 
 $output = $PAGE->get_renderer('block_exacomp');
 
+/* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
+$page_identifier = 'tab_admin_import';
+
+/* PAGE URL - MUST BE CHANGED */
+$PAGE->set_url('/blocks/exacomp/source_delete.php', array('courseid' => $courseid, 'source' => $source, 'action' => 'select'));
+$PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
+$PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
+
+
 if ($action == 'delete_selected') {
+    $examples = block_exacomp_clean_array(isset($_REQUEST['examples'])?$_REQUEST['examples']:array(), array(PARAM_INT=>PARAM_INT));
     $descriptors = block_exacomp_clean_array(isset($_REQUEST['descriptors'])?$_REQUEST['descriptors']:array(), array(PARAM_INT=>PARAM_INT));
+    $topics = block_exacomp_clean_array(isset($_REQUEST['topics'])?$_REQUEST['topics']:array(), array(PARAM_INT=>PARAM_INT));
+    $subjects = block_exacomp_clean_array(isset($_REQUEST['subjects'])?$_REQUEST['subjects']:array(), array(PARAM_INT=>PARAM_INT));
     
-    die('todo');
+    // TODO: rechte hier nochmal pruefen!
+    
+    if ($examples) {
+        // TODO auch filestorage loeschen
+        $DB->delete_records_list(block_exacomp::DB_EXAMPLES, 'id', $examples);
+    }
+    if ($descriptors) {
+        $DB->delete_records_list(block_exacomp::DB_DESCRIPTORS, 'id', $descriptors);
+    }
+    if ($topics) {
+        $DB->delete_records_list(block_exacomp::DB_TOPICS, 'id', $topics);
+    }
+    if ($subjects) {
+        var_dump($subjects);
+        print_error('todo');
+    }
+    
+    block_exacomp_data::normalize_database();
+    
+    redirect($PAGE->url);
+    exit;
 } else if ($action == 'select') {
-    
-    /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
-    $page_identifier = 'tab_admin_import';
-    
-    /* PAGE URL - MUST BE CHANGED */
-    $PAGE->set_url('/blocks/exacomp/source_delete.php', array('courseid' => $courseid));
-    $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
-    $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
     
     // build breadcrumbs navigation
     $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
@@ -69,10 +93,10 @@ if ($action == 'delete_selected') {
     echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($course_context,$courseid), $page_identifier);
     
     //$DB->set_debug(true);
-    $subjects = block_exacomp_subject::get_records();
-    
+    $subjects = block_exacomp_db_layer::get()->get_subjects();
+
     // $subjects = array_values($subjects);
-    // $subjects = array($subjects[0], $subjects[1]);
+    // $subjects = array($subjects[10]); // , $subjects[1]);
     
     // check delete
     foreach ($subjects as $subject) {

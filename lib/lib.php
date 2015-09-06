@@ -1107,9 +1107,9 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 		elseif($topicid == null)
 			$courseTopics = block_exacomp_get_topics_by_course($courseid, $showalldescriptors);
 		else if(!$version)
-			$courseTopics = block_exacomp_topic::get_record($topicid);
+			$courseTopics = block_exacomp_topic::get($topicid);
 		else 
-			$courseTopics = block_exacomp_topic::get_record($selectedTopic->id);
+			$courseTopics = block_exacomp_topic::get($selectedTopic->id);
 		
 		if (!$courseTopics) {
 		    $courseTopics = array();
