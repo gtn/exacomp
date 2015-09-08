@@ -111,6 +111,7 @@ function block_exacomp_init_js_css(){
 	$PAGE->requires->string_for_js('hide', 'moodle');
 	$PAGE->requires->string_for_js('override_notice', 'block_exacomp');
 	$PAGE->requires->string_for_js('unload_notice', 'block_exacomp');
+	$PAGE->requires->string_for_js('example_sorting_notice', 'block_exacomp');
 	
 	// page specific js/css
 	$scriptName = preg_replace('!\.[^\.]+$!', '', basename($_SERVER['PHP_SELF']));
@@ -971,6 +972,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 			. " WHERE "
 			. " e.source != " . block_exacomp::EXAMPLE_SOURCE_USER . " AND "
 			. (($showallexamples) ? " 1=1 " : " e.creatorid > 0")
+			. " ORDER BY e.sorting"
 			, array($descriptor->id, $courseid));
 	foreach($examples as $example){
 		$example->taxonomies = block_exacomp_get_taxonomies_by_example($example);
@@ -5589,4 +5591,41 @@ function block_exacomp_get_student_pool_examples($students, $courseid){
 		$student->pool_examples = block_exacomp_get_examples_for_pool($student->id, $courseid);
 	}
 	return $students;
+}
+function block_exacomp_example_up($exampleid, $descrid) {
+	return block_exacomp_example_order($exampleid, $descrid, "<");
+}
+function block_exacomp_example_down($exampleid, $descrid) {
+	return block_exacomp_example_order($exampleid, $descrid, ">");
+}
+function block_exacomp_example_order($exampleid, $descrid, $operator = "<") {
+	global $DB, $USER, $COURSE;
+	
+	$example = $DB->get_record(block_exacomp::DB_EXAMPLES,array('id' => $exampleid));
+	if(!$example || !$DB->record_exists(block_exacomp::DB_DESCEXAMP, array('exampid' => $exampleid,'descrid' => $descrid)))
+		return false;
+	
+	if(block_exacomp_is_admin($COURSE->id) || (isset($example->creatorid) && $example->creatorid == $USER->id)) {
+		$sql = 'SELECT e.* FROM {block_exacompexamples} e
+			JOIN {block_exacompdescrexamp_mm} de ON de.exampid = e.id
+			WHERE e.sorting ' . ((strcmp($operator,"<") == 0) ? "<" : ">") . ' ? AND de.descrid = ?
+			ORDER BY e.sorting DESC
+			LIMIT 1';
+		
+		$switchWith = $DB->get_record_sql($sql,array($example->sorting, $descrid));
+
+		if($switchWith) {
+			$oldSorting = ($example->sorting) ? $example->sorting : 0;
+
+			$example->sorting = ($switchWith->sorting) ? $switchWith->sorting : 0;
+
+			$switchWith->sorting = $oldSorting;
+			
+			$DB->update_record(block_exacomp::DB_EXAMPLES, $example);
+			$DB->update_record(block_exacomp::DB_EXAMPLES, $switchWith);
+			
+			return true;
+		}
+	}
+	return false;
 }

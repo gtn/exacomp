@@ -260,6 +260,7 @@ $string['editmode_on'] = 'Editiermodus ein';
 $string['editmode_off'] = 'Editiermodus aus';
 $string['override_notice'] = 'Dieser Eintrag wurde von jemand anderem bearbeitet. Wirklich ändern?';
 $string['unload_notice'] = 'Die Seite wirklich verlassen? Ungespeicherte Änderungen gehen verloren.';
+$string['example_sorting_notice'] = 'Bitte zuerst die aktuellen Bewertungen speichern';
 
 //Example Submission
 $string['example_submission_header']  = 'Aufgabe {$a} bearbeiten';

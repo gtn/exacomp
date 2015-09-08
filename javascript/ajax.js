@@ -553,6 +553,32 @@
 
 	});
 
+	$(document).on('click', '#example-up', function(event) {
+		if (Object.keys(competencies).length > 0 || Object.keys(topics).length > 0
+				|| Object.keys(examples).length > 0)
+			alert( M.util.get_string('example_sorting_notice', 'block_exacomp') );
+		else
+		block_exacomp.call_ajax({
+			descrid : $(this).attr('descrid'),
+			exampleid : $(this).attr('exampleid'),
+			action : 'example-up'
+		});
+		location.reload();
+	});
+	
+	$(document).on('click', '#example-down', function(event) {
+		if (Object.keys(competencies).length > 0 || Object.keys(topics).length > 0
+				|| Object.keys(examples).length > 0)
+			alert( M.util.get_string('example_sorting_notice', 'block_exacomp') );
+		else
+		block_exacomp.call_ajax({
+			descrid : $(this).attr('descrid'),
+			exampleid : $(this).attr('exampleid'),
+			action : 'example-down'
+		});
+		location.reload();
+	});
+	
 	$(document).on('click', '#hide-example', function(event) {
 		event.preventDefault();
 

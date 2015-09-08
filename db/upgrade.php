@@ -2192,5 +2192,24 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2015082800, 'exacomp');
     }
     
+    if ($oldversion < 2015090801) {
+    
+    	// Changing the default of field sorting on table block_exacompexamples to 0.
+    	$table = new xmldb_table('block_exacompexamples');
+    	$field = new xmldb_field('sorting', XMLDB_TYPE_INTEGER, '11', null, null, null, '0', 'id');
+    
+    	// Launch change of default for field sorting.
+    	$dbman->change_field_default($table, $field);
+    
+    	$examplesWithoutSorting = $DB->get_records_select(block_exacomp::DB_EXAMPLES,"sorting is null");
+    	foreach($examplesWithoutSorting as $exampleWithoutSorting) {
+    		$exampleWithoutSorting->sorting = $exampleWithoutSorting->id;
+    		$DB->update_record(block_exacomp::DB_EXAMPLES, $exampleWithoutSorting);
+    	}
+    	
+    	// Exacomp savepoint reached.
+    	upgrade_block_savepoint(true, 2015090801, 'exacomp');
+    }
+    
 	return $return_result;
 }

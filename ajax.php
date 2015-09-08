@@ -316,4 +316,16 @@ switch($action){
 		
 		echo json_encode($json_examples);
 		break;
+	case('example-up'):
+		$exampleid = required_param('exampleid', PARAM_INT);
+		$descrid = required_param('descrid', PARAM_INT);
+		
+		echo block_exacomp_example_up($exampleid, $descrid);
+		break;
+	case ('example-down') :
+		$exampleid = required_param ( 'exampleid', PARAM_INT );
+		$descrid = required_param ( 'descrid', PARAM_INT );
+		
+		echo block_exacomp_example_down ( $exampleid, $descrid );
+		break;
 }

@@ -236,6 +236,7 @@ $string['editmode_on'] = 'Editmode on';
 $string['editmode_off'] = 'Editmode off';
 $string['override_notice'] = 'This entry was editied by someone else before. Continue?';
 $string['unload_notice'] = 'Are you sure? Unsaved changes will be lost.';
+$string['example_sorting_notice'] = 'Please save the changes first.';
 
 //Example Submission
 $string['example_submission_header']  = 'Aufgabe {$a} bearbeiten';
