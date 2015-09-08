@@ -470,6 +470,7 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 	if($record = $DB->get_record(block_exacomp::DB_COMPETENCIES, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, "courseid" => $courseid, "role" => $role))) {
 		$record->value = $value;
 		$record->timestamp = time();
+		$record->reviewerid = $USER->id;
 		$DB->update_record(block_exacomp::DB_COMPETENCIES, $record);
 		return $record->id;
 	} else {
