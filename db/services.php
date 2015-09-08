@@ -52,7 +52,8 @@ $services = array(
 						'dakora_get_cross_subjects_by_course',
 						'dakora_get_descriptors_by_cross_subject',
 						'dakora_get_descriptor_children_for_cross_subject',
-						'dakora_get_schedule_config'
+						'dakora_get_schedule_config',
+						'dakora_get_user_fullname'
 						), 	//web service functions of this service
 				'restrictedusers' =>0,                      //if enabled, the Moodle administrator must link some user to this service
 				//into the administration
@@ -418,6 +419,13 @@ $functions = array(
 				'methodname'  => 'dakora_get_schedule_config',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'get configuration options for schedule units',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_user_fullname' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_user_fullname',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get fullname of the current user',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)
 		)
 );

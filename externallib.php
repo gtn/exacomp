@@ -3997,6 +3997,39 @@ class block_exacomp_external extends external_api {
 				));
 	}
 	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_user_fullname_parameters() {
+		return new external_function_parameters ( array (
+		) );
+	}
+	
+	/**
+	 * get children for descriptor in cross subject context
+	 *
+	 * @return array of user courses
+	 */
+	public static function dakora_get_user_fullname() {
+		global $USER;
+	
+		return array("firstname" => $USER->firstname, "lastname" => $USER->lastname, "fullname" => fullname($USER));
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_user_fullname_returns() {
+		return new external_single_structure ( array (
+				'firstname' => new external_value ( PARAM_TEXT, 'User firstname' ),
+				'lastname' => new external_value ( PARAM_TEXT, 'User lastname' ),
+				'fullname' => new external_value ( PARAM_TEXT, 'User fullname')
+		));
+	}
 	/** 
 	* helper function to use same code for 2 ws
 	*/

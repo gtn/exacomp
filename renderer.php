@@ -369,7 +369,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
      * Prints 2 select inputs for subjects and topics
      */
     public function print_overview_dropdowns($schooltypetree, $topics, $selectedSubject, $selectedTopic, $students, $selectedStudent = 0, $isTeacher = false) {
-        global $PAGE;
+        global $PAGE, $COURSE, $USER;
 
         $content = "";
         /*
