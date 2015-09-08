@@ -259,6 +259,7 @@ $string['unknown_src'] = 'unbekannte Quelle';
 $string['editmode_on'] = 'Editiermodus ein';
 $string['editmode_off'] = 'Editiermodus aus';
 $string['override_notice'] = 'Dieser Eintrag wurde von jemand anderem bearbeitet. Wirklich ändern?';
+$string['unload_notice'] = 'Die Seite wirklich verlassen? Ungespeicherte Änderungen gehen verloren.';
 
 //Example Submission
 $string['example_submission_header']  = 'Aufgabe {$a} bearbeiten';

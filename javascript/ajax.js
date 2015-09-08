@@ -634,12 +634,11 @@
 
 	});
 	
-	$(window).bind('beforeunload', function(){
-		if (competencies.length > 0 || topics.length > 0
-				|| examples.length > 0)
-			return 'Ungespeicherte Änderungen gehen verloren';
+	$(window).on('beforeunload', function (){
+		if (Object.keys(competencies).length > 0 || Object.keys(topics).length > 0
+				|| Object.keys(examples).length > 0)
+			return M.util.get_string('unload_notice', 'block_exacomp');
 	});
-	
 	function insert_descriptor(title_new_comp, descriptorid){
 		block_exacomp.call_ajax({
 			descriptorid: descriptorid,
