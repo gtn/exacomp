@@ -86,7 +86,6 @@ class block_exacomp_data {
         $id = get_config('exacomp', 'mysource');
         
         if (!$id || !exabis_special_id_generator::validate_id($id)) {
-            die('generate');
             set_config('mysource', exabis_special_id_generator::generate_random_id('EXACOMP'), 'exacomp');
         }
     }
