@@ -109,6 +109,7 @@ function block_exacomp_init_js_css(){
 	// Strings can be used in JavaScript: M.util.get_string(identifier, component)
 	$PAGE->requires->string_for_js('show', 'moodle');
 	$PAGE->requires->string_for_js('hide', 'moodle');
+	$PAGE->requires->string_for_js('override_notice', 'block_exacomp');
 	
 	// page specific js/css
 	$scriptName = preg_replace('!\.[^\.]+$!', '', basename($_SERVER['PHP_SELF']));

@@ -17,6 +17,7 @@
 	$(document).on('focus', 'input[name^=data\-]', function() {
 	    prev_val = $(this).val();
 	});
+	
 	$(document).on('change', 'input[name^=data\-]', function() {
 		
 		// check if anyone else has edited the competence before. if so, ask for confirmation
@@ -62,7 +63,24 @@
 		}
 		
 	});
-	  $(document).on('change', 'select[name^=data\-]', function() {
+	$(document).on('focus', 'select[name^=data\-]', function() {
+	    prev_val = $(this).val();
+	});
+	
+	$(document).on('change', 'select[name^=data\-]', function() {
+								  
+		// check if anyone else has edited the competence before. if so, ask for
+		// confirmation
+		if ($(this).attr("reviewerid")) {
+			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+				$(this).val(prev_val);
+					return;
+			} else {
+			// remove reviewer attribute
+				$(this).removeAttr("reviewerid");
+			}
+		}
+			
 		var values = $(this).attr("name").split("-");
 		competencies[values[1]+"-"+values[2]] = {
 			userid : values[2],

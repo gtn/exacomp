@@ -1706,7 +1706,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                 if($data->showevaluation)
                                     $studentCellEvaluation->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
             
-                                $studentCell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme, ($visible_student)?false:true, $data->profoundness);
+                                $studentCell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme, ($visible_student)?false:true, $data->profoundness, ($data->role == block_exacomp::ROLE_TEACHER) ? $reviewerid : null);
                             }
             
                             // ICONS
@@ -2288,7 +2288,15 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
      *
      * @return String $select html code for select
      */
-    public function generate_select($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false, $profoundness = false) {
+    public function generate_select($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false, $profoundness = false, $reviewerid = null) {
+    	global $USER;
+    	
+    	$attributes = array();
+    	if($disabled)
+    		$attributes["disabled"] = "disabled";
+    	if($reviewerid && $reviewerid != $USER->id)
+    		$attributes["reviewerid"] = $reviewerid;
+    	
         $options = array();
         for($i=0;$i<=$scheme;$i++)
             $options[$i] = (!$profoundness) ? $i : get_string('profoundness_'.$i,'block_exacomp');
@@ -2297,7 +2305,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                 $options,
                 $name . '-' . $compid . '-' . $student->id . '-' . $evaluation,
                 (isset($student->{$type}->{$evaluation}[$compid])) ? $student->{$type}->{$evaluation}[$compid] : 0,
-                false,($disabled) ? array("disabled"=>"disabled") : null);
+                false,$attributes);
     }
 
     public function print_edit_config($data, $courseid, $fromimport=0){

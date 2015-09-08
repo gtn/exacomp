@@ -234,6 +234,7 @@ $string['local'] = "local";
 $string['unknown_src'] = 'unknown source';
 $string['editmode_on'] = 'Editmode on';
 $string['editmode_off'] = 'Editmode off';
+$string['override_notice'] = 'This entry was editied by someone else before. Continue?';
 
 //Example Submission
 $string['example_submission_header']  = 'Aufgabe {$a} bearbeiten';
