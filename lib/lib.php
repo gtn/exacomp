@@ -5580,7 +5580,7 @@ function block_exacomp_get_pre_planning_storage($creatorid, $courseid){
 				-- noch nicht auf einen tag geleg
 				(s.start IS null OR s.start=0)
 			)
-			ORDER BY e.title";
+			ORDER BY s.id";
 	
 	return $DB->get_records_sql($sql,array($courseid, $creatorid));
 }
