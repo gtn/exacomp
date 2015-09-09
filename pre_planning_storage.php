@@ -80,13 +80,14 @@ $output = $PAGE->get_renderer('block_exacomp');
 echo $output->print_wrapperdivstart();
 echo html_writer::start_tag('form', array('action'=>$PAGE->url->out(false).'&action=empty', 'method'=>'post'));
 
-echo $output->print_example_pool(array());
-
+echo $output->print_pre_planning_storage_pool();
 echo $output->print_pre_planning_storage_students($students, $examples);
+echo $output->print_example_trash();
 
-echo html_writer::div(html_writer::empty_tag('input', array('type'=>'button', 'id'=>'save_pre_planning_storage', 'value'=>get_string('save_pre_planning_selection', 'block_exacomp'))),'', array('id'=>'save_button'));
-echo html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'id'=>'empty_pre_planning_storage', 
-	'value'=>get_string('empty_pre_planning_storage', 'block_exacomp'))));
+echo html_writer::div(html_writer::empty_tag('input', array('type'=>'button', 'id'=>'save_pre_planning_storage', 
+	'value'=>get_string('save_pre_planning_selection', 'block_exacomp'))).
+	html_writer::empty_tag('input', array('type'=>'submit', 'id'=>'empty_pre_planning_storage', 
+	'value'=>get_string('empty_pre_planning_storage', 'block_exacomp'))),'', array('id'=>'save_button'));
 
 echo html_writer::end_tag('form');
 echo "</div>";

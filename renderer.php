@@ -4765,6 +4765,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         return html_writer::div($content, '', array('id'=>'external-events'));
     }
 
+    
     public function print_side_wrap_weekly_schedule(){
         $pool = $this->print_example_pool();
         $calendar = html_writer::div('', '', array('id'=>'calendar'));
@@ -4844,4 +4845,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		
 		return html_writer::div($content, 'external-students', array('id'=>'external-students'));
 	}
+	public function print_pre_planning_storage_pool(){
+        $content = html_writer::tag('h4', get_string('example_pool', 'block_exacomp'));
+    
+        $content .= html_writer::tag('ul', '', array('id'=>'sortable'));
+        return html_writer::div($content, 'external-events', array('id'=>'external-events'));
+	}	
 }
