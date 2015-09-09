@@ -131,8 +131,11 @@ if($formdata = $form->get_data()) {
     	$module = get_coursemodule_from_id(null, $formdata->assignment);
     	$newExample->externaltask = $CFG->wwwroot . '/' . block_exacomp_get_activityurl($module)->__toString();
     }
-    if($formdata->exampleid == 0)
+    if($formdata->exampleid == 0) {
         $newExample->id = $DB->insert_record('block_exacompexamples', $newExample);
+    	$newExample->sorting = $newExample->id;
+    	$DB->update_record('block_exacompexamples', $newExample);
+    }
     else {
         //update example
         $newExample->id = $formdata->exampleid;
@@ -141,12 +144,13 @@ if($formdata = $form->get_data()) {
     }
 
     //insert taxid in exampletax_mm
-    foreach($formdata->taxid as $tax => $taxid)
-	    block_exacomp_db::insert_or_update_record(block_exacomp::DB_EXAMPTAX, array(
-	        'exampleid' => $newExample->id,
-	        'taxid' => $taxid
-	    ));
-    
+    if(isset($formdata->taxid)) {
+	    foreach($formdata->taxid as $tax => $taxid)
+		    block_exacomp_db::insert_or_update_record(block_exacomp::DB_EXAMPTAX, array(
+		        'exampleid' => $newExample->id,
+		        'taxid' => $taxid
+		    ));
+    }
     //add descriptor association
     if(!empty($_POST['descriptor'])){
     	foreach(block_exacomp_clean_array($_POST['descriptor'], array(PARAM_INT=>PARAM_INT)) as $descriptorid){
