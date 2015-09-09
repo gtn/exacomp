@@ -53,7 +53,8 @@ $services = array(
 						'dakora_get_descriptors_by_cross_subject',
 						'dakora_get_descriptor_children_for_cross_subject',
 						'dakora_get_schedule_config',
-						'dakora_get_user_fullname'
+						'dakora_get_user_fullname',
+						'dakora_set_competence'
 						), 	//web service functions of this service
 				'restrictedusers' =>0,                      //if enabled, the Moodle administrator must link some user to this service
 				//into the administration
@@ -427,5 +428,12 @@ $functions = array(
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'get fullname of the current user',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_set_competence' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_set_competence',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'set a user competence',    //human readable description of the web service function
+				'type'        => 'write'                  //database rights of the web service function (read, write)
 		)
 );

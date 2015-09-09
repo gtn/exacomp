@@ -4030,6 +4030,63 @@ class block_exacomp_external extends external_api {
 				'fullname' => new external_value ( PARAM_TEXT, 'User fullname')
 		));
 	}
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 * 
+	 */
+	public static function dakora_set_competence_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
+				'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
+				'compid' => new external_value(PARAM_INT, 'competence id'),
+				'role' => new external_value(PARAM_INT, 'user role (0 == student, 1 == teacher)'),
+				'value' => new external_value(PARAM_INT, 'evaluation value (0, 1, 2 or 3)')
+		) );
+	}
+	
+	/**
+	 * Set a competence for a user
+	 *
+	 * @param
+	 *        	int courseid
+	 *			int userid
+	 *			int compid
+	 *			int role
+	 *			int value
+	 * @return success
+	 */
+	public static function dakora_set_competence($courseid, $userid, $compid, $role, $value) {
+		global $USER, $DB;
+		$params = self::validate_parameters ( self::dakora_set_competence_parameters (), array (
+				'courseid'=>$courseid,
+				'userid'=>$userid,
+				'compid'=>$compid,
+				'role'=>$role,
+				'value'=>$value
+		) );
+		
+		if(block_exacomp_set_user_competence($userid, $compid, block_exacomp::TYPE_DESCRIPTOR, $courseid, $role, $value) == -1)
+			throw new invalid_parameter_exception ( 'Not allowed' );
+	
+		return array (
+				"success" => true 
+			);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_set_competence_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' ) 
+		) );
+	}
+	
 	/** 
 	* helper function to use same code for 2 ws
 	*/
