@@ -54,7 +54,8 @@ $services = array(
 						'dakora_get_descriptor_children_for_cross_subject',
 						'dakora_get_schedule_config',
 						'dakora_get_user_fullname',
-						'dakora_set_competence'
+						'dakora_set_competence',
+						'dakora_get_examples_trash'
 						), 	//web service functions of this service
 				'restrictedusers' =>0,                      //if enabled, the Moodle administrator must link some user to this service
 				//into the administration
@@ -435,5 +436,12 @@ $functions = array(
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'set a user competence',    //human readable description of the web service function
 				'type'        => 'write'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_examples_trash' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_examples_trash',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get examples for trash bin',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
 		)
 );

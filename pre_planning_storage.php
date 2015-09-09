@@ -82,7 +82,7 @@ echo html_writer::start_tag('form', array('action'=>$PAGE->url->out(false).'&act
 
 echo $output->print_pre_planning_storage_pool();
 echo $output->print_pre_planning_storage_students($students, $examples);
-echo $output->print_example_trash();
+echo $output->print_example_trash(array(), false);
 
 echo html_writer::div(html_writer::empty_tag('input', array('type'=>'button', 'id'=>'save_pre_planning_storage', 
 	'value'=>get_string('save_pre_planning_selection', 'block_exacomp'))).

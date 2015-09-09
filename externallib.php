@@ -3579,11 +3579,69 @@ class block_exacomp_external extends external_api {
 	 * 
 	 * @return external_function_parameters
 	 */
+	public static function dakora_get_examples_trash_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course'),
+				'userid' => new external_value ( PARAM_INT, 'id of user, if 0 current user' )
+		) );
+	}
+	
+	/**
+	 * Get examples for trash
+	 * 
+	 * @param
+	 * 			int courseid
+	 *        	int userid
+	 * @return list of descriptors
+	 */
+	public static function dakora_get_examples_trash($courseid, $userid) {
+		global $USER;
+		
+		$params = self::validate_parameters ( self::dakora_get_examples_trash_parameters (), array (
+				'courseid'=>$courseid,
+				'userid'=>$userid
+			) );
+			
+		if($userid == 0)
+			$userid = $USER->id;
+			
+		$examples = block_exacomp_get_examples_for_trash($userid, $courseid);
+		
+		foreach($examples as $example){
+			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
+		}
+		
+		return $examples;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_examples_trash_returns() {
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
+				'title' => new external_value ( PARAM_TEXT, 'title of example' ),
+				'student_evaluation' => new external_value ( PARAM_INT, 'self evaluation of student' ),
+				'teacher_evaluation' => new external_value( PARAM_TEXT, 'evaluation of teacher'),
+				'courseid' => new external_value(PARAM_INT, 'example course'),
+				'state' => new external_value (PARAM_INT, 'state of example'),
+				'scheduleid' => new external_value (PARAM_INT, 'id in schedule context')
+		) ) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 * 
+	 * @return external_function_parameters
+	 */
 	public static function dakora_set_example_time_slot_parameters() {
 		return new external_function_parameters ( array (
 				'scheduleid' => new external_value (PARAM_INT, 'id in schedule context'),
 				'start' => new external_value(PARAM_INT, 'start timestamp'),
-				'end'=> new external_value(PARAM_INT, 'end timestamp')
+				'end'=> new external_value(PARAM_INT, 'end timestamp'),
+				'deleted' => new external_value(PARAM_INT, 'delete item')
 		) );
 	}
 	
@@ -3598,14 +3656,15 @@ class block_exacomp_external extends external_api {
 	 *			int end
 	 * @return list of descriptors
 	 */
-	public static function dakora_set_example_time_slot($scheduleid, $start, $end) {
+	public static function dakora_set_example_time_slot($scheduleid, $start, $end, $deleted) {
 		$params = self::validate_parameters ( self::dakora_set_example_time_slot_parameters (), array (
 				'scheduleid' => $scheduleid,
 				'start'=>$start,
-				'end'=>$end
+				'end'=>$end,
+				'deleted'=>$deleted
 			) );
 			
-		block_exacomp_set_example_start_end($scheduleid, $start, $end);
+		block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted);
 		
 		return array (
 				"success" => true
