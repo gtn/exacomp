@@ -429,6 +429,8 @@ $string['pre_planning_storage'] = 'pre-planning storage';
 $string['pre_planning_storage_added'] = 'Example added to the pre-planning storage.';
 $string['pre_planning_storage_already_contains'] = 'Example is already in pre-planning storage.';
 $string['save_pre_planning_selection'] = 'Add selected examples to weekly schedule of selected students';
+$string['empty_pre_planning_storage'] = 'Empty pre-planning storage';
+$string['noschedules_pre_planning_storage'] = 'Pre-planning storage has been emptied, use the competence grid to put new examples in the pre-planning storage.';
 
 //Statistics
 $string['process'] = 'State of process';

@@ -48,6 +48,7 @@
 		    	});
 		    }
 		});
+		location.reload();
 	});
 	
 	function block_exacomp_add_to_learning_calendar(studentid, exampleid) {

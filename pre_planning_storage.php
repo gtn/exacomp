@@ -31,6 +31,7 @@ global $DB, $OUTPUT, $PAGE, $USER;
 
 $courseid = required_param('courseid', PARAM_INT);
 $creatorid = required_param('creatorid', PARAM_INT);
+$action = optional_param('action', '', PARAM_TEXT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
     print_error('invalidcourse', 'block_exacomp', $courseid);
@@ -55,7 +56,17 @@ if(!$students) {
 	exit;
 }
 
+if(strcmp($action, 'empty')==0){
+	block_exacomp_empty_pre_planning_storage($creatorid, $courseid);
+}
+
 $schedules = block_exacomp_get_pre_planning_storage($creatorid, $courseid);
+if(!$schedules) {
+	echo get_string('noschedules_pre_planning_storage','block_exacomp');
+	echo $OUTPUT->footer();
+	exit;
+}
+
 $students = block_exacomp_get_student_pool_examples($students, $courseid);
 
 $examples = array();
@@ -67,13 +78,17 @@ foreach($schedules as $schedule){
 /* CONTENT REGION */
 $output = $PAGE->get_renderer('block_exacomp');
 echo $output->print_wrapperdivstart();
+echo html_writer::start_tag('form', array('action'=>$PAGE->url->out(false).'&action=empty', 'method'=>'post'));
 
 echo $output->print_example_pool(array());
 
 echo $output->print_pre_planning_storage_students($students, $examples);
 
 echo html_writer::div(html_writer::empty_tag('input', array('type'=>'button', 'id'=>'save_pre_planning_storage', 'value'=>get_string('save_pre_planning_selection', 'block_exacomp'))),'', array('id'=>'save_button'));
+echo html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'id'=>'empty_pre_planning_storage', 
+	'value'=>get_string('empty_pre_planning_storage', 'block_exacomp'))));
 
+echo html_writer::end_tag('form');
 echo "</div>";
 
 echo $OUTPUT->footer();

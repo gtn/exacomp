@@ -652,6 +652,10 @@
 		exampleid = $(this).attr('exampleid');
 		studentid = $(this).attr('studentid');
 		
+		if(studentid==0){
+			$('#pre_planning_storage_submit').prop("disabled", false);
+		}
+		
 		block_exacomp.call_ajax({
 			exampleid : exampleid,
 			studentid : studentid,

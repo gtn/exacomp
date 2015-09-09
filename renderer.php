@@ -404,8 +404,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
             $content .= $this->print_edit_mode_button("&studentid=".$selectedStudent."&subjectid=".$selectedSubject."&topicid=".$selectedTopic);
 			$url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid'=>$COURSE->id, 'creatorid'=>$USER->id));
-    		//$content .= html_writer::empty_tag('input', array('type'=>'submit', 'id'=>'pre_planning_storage_submit', 'name'=> 'pre_planning_storage_submit', 'value'=>get_string('pre_planning_storage','block_exacomp'), ((block_exacomp_has_items_pre_planning_storage($USER->id, $COURSE->id))?"enabled":"disabled")=>"", 
-    			//"onclick" => "window.open('".$url->out(false)."','_blank','width=880,height=660, scrollbars=yes'); return false;"));
+    		$content .= html_writer::empty_tag('input', array('type'=>'submit', 'id'=>'pre_planning_storage_submit', 'name'=> 'pre_planning_storage_submit', 'value'=>get_string('pre_planning_storage','block_exacomp'), ((block_exacomp_has_items_pre_planning_storage($USER->id, $COURSE->id))?"enabled":"disabled")=>"", 
+    			"onclick" => "window.open('".$url->out(false)."','_blank','width=880,height=660, scrollbars=yes'); return false;"));
         
 		}    
         
@@ -1848,7 +1848,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                             $titleCell->text .= $this->print_competence_association_icon($example->id, $data->courseid, false);
                             
                         } else if($data->role == block_exacomp::ROLE_TEACHER) {
-                            $studentid = optional_param("studentid", 0, PARAM_INT);
+                            $studentid = optional_param("studentid", BLOCK_EXACOMP_SHOW_ALL_STUDENTS, PARAM_INT);
             
                             if($studentid && $studentid != BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
                                 $titleCell->text .= $this->print_submission_icon($data->courseid, $example->id, $studentid);
@@ -1858,12 +1858,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                             if(!$editmode){
                             	$titleCell->text .= $this->print_schedule_icon($example->id, ($studentid)?$studentid:BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $data->courseid);
 								
-								/*if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
+								if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
                             		$titleCell->text .= html_writer::link("#",
 			                            $OUTPUT->pix_icon("e/increase_indent", get_string("pre_planning_storage","block_exacomp")),
 			                            array('id' => 'add-example-to-schedule', 'exampleid' => $example->id, 'studentid' => 0, 'courseid' => $data->courseid));
     
-                            	}*/
+                            	}
 							}
                             $titleCell->text .= $this->print_competence_association_icon($example->id, $data->courseid, $editmode);
                         

@@ -5629,3 +5629,8 @@ function block_exacomp_example_order($exampleid, $descrid, $operator = "<") {
 	}
 	return false;
 }
+function block_exacomp_empty_pre_planning_storage($creatorid, $courseid){
+	global $DB;
+	
+	$DB->delete_records(block_exacomp::DB_SCHEDULE, array('creatorid'=>$creatorid, 'courseid'=>$courseid, 'studentid'=>0));
+}
