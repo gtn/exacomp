@@ -2210,6 +2210,15 @@ function xmldb_block_exacomp_upgrade($oldversion) {
     	// Exacomp savepoint reached.
     	upgrade_block_savepoint(true, 2015090801, 'exacomp');
     }
-    
+    if($oldversion < 2015090901){
+    	$table = new xmldb_table('block_exacompschedule');
+		$field = new xmldb_field('deleted', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', null);
+           	
+    	if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+	    upgrade_block_savepoint(true, 2015090901, 'exacomp');
+	   
+    }
 	return $return_result;
 }

@@ -4782,6 +4782,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             $content .= html_writer::div($example->title, 'fc-event');
         }
     
+         $content .= html_writer::empty_tag('input', array('type'=>'button', 'id'=>'empty_trash', 'value'=>get_string('empty_trash', 'block_exacomp')));
         return html_writer::div($content, '', array('id'=>'trash'));
     }
     public function print_course_dropdown($selectedCourse, $studentid=0){

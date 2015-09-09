@@ -165,7 +165,13 @@
 	margin-top: 0;
 	padding-top: 1em;
 }
-	
+
+#block_exacomp #trash .fc-event {
+	margin: 10px 0;
+	cursor: pointer;
+	min-height: 50px;
+}
+
 #block_exacomp #external-events .fc-event {
 	margin: 10px 0;
 	cursor: pointer;

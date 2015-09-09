@@ -5385,7 +5385,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid){
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid 
 			JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=? 
 			LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid
-			WHERE s.studentid = ? AND (
+			WHERE s.studentid = ? AND s.deleted = 0 AND (
 				-- noch nicht auf einen tag geleg
 				(s.start IS null OR s.start=0)
 			)
@@ -5393,12 +5393,32 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid){
 	
 	return $DB->get_records_sql($sql,array($courseid, $studentid));
 }
-function block_exacomp_set_example_start_end($scheduleid, $start, $end){
+
+function block_exacomp_get_examples_for_trash($studentid, $courseid){
+	global $DB;
+	
+	$sql = "select s.*,
+				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
+				eval.student_evaluation, eval.teacher_evaluation, evis.courseid, s.id as scheduleid
+			FROM {block_exacompschedule} s 
+			JOIN {block_exacompexamples} e ON e.id = s.exampleid 
+			JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=? 
+			LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid
+			WHERE s.studentid = ? AND s.deleted = 1 AND (
+				-- noch nicht auf einen tag geleg
+				(s.start IS null OR s.start=0)
+			)
+			ORDER BY s.id";
+	
+	return $DB->get_records_sql($sql,array($courseid, $studentid));
+}
+function block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted = 0){
 	global $DB;
 	
 	$entry = $DB->get_record(block_exacomp::DB_SCHEDULE, array('id'=>$scheduleid));
 	$entry->start = $start;
 	$entry->end = $end;
+	$entry->deleted = $deleted;
 	
 	$DB->update_record(block_exacomp::DB_SCHEDULE, $entry);
 }
