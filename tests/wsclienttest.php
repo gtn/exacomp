@@ -192,72 +192,24 @@ set time slot to 0
 
 ";
 
+
+
+
 //REST CALL dakora_get_examples_pool_for_week ($courseid, $descriptorid, $userid, $forall)
-$functionname = 'dakora_get_pre_planning_storage_examples';
+$functionname = 'dakora_add_examples_to_students_schedule';
+
+$examples = array();
+$examples[] = 72;
+$examples[] = 73;
+
+$students = array();
+$students[] = 20;
+$students[] = 4;
 
 $params = new stdClass();
 $params->courseid = 4;
-
-$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
-$resp = $curl->post($serverurl, $params);
-print_r($resp);
-
-echo "
-remove from schedule:
-
-";
-
-//REST CALL dakora_get_examples_pool_for_week ($courseid, $descriptorid, $userid, $forall)
-$functionname = 'dakora_get_pre_planning_storage_students';
-
-$params = new stdClass();
-$params->courseid = 4;
-
-$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
-$resp = $curl->post($serverurl, $params);
-print_r($resp);
-
-echo "
-remove from schedule:
-
-";
-
-//REST CALL dakora_get_examples_pool_for_week ($courseid, $descriptorid, $userid, $forall)
-$functionname = 'dakora_has_items_in_pre_planning_storage';
-
-$params = new stdClass();
-$params->courseid = 4;
-
-$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
-$resp = $curl->post($serverurl, $params);
-print_r($resp);
-
-echo "
-remove from schedule:
-
-";
-
-//REST CALL dakora_get_examples_pool_for_week ($courseid, $descriptorid, $userid, $forall)
-$functionname = 'dakora_empty_pre_planning_storage';
-
-$params = new stdClass();
-$params->courseid = 4;
-
-$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
-$resp = $curl->post($serverurl, $params);
-print_r($resp);
-
-echo "
-remove from schedule:
-
-";
-
-//REST CALL dakora_get_examples_pool_for_week ($courseid, $descriptorid, $userid, $forall)
-$functionname = 'dakora_add_example_to_pre_planning_storage';
-
-$params = new stdClass();
-$params->courseid = 4;
-$params->exampleid = 72;
+$params->examples = json_encode($examples);
+$params->students = json_encode($students);
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
 print_r($resp);

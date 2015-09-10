@@ -4399,6 +4399,60 @@ class block_exacomp_external extends external_api {
 				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' ) 
 		) );
 	}
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 * 
+	 */
+	public static function dakora_add_examples_to_students_schedule_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
+				'examples' => new external_value ( PARAM_TEXT, 'json array of examples'),
+				'students' => new external_value ( PARAM_TEXT, 'json array of students')
+		) );
+	}
+	
+	/**
+	 * add example to current pre planning storage
+	 *
+	 * @param
+	 *        	int courseid
+	 * @return examples
+	 */
+	public static function dakora_add_examples_to_students_schedule($courseid, $examples, $students) {
+		global $USER;
+		$params = self::validate_parameters ( self::dakora_add_examples_to_students_schedule_parameters (), array (
+				'courseid'=>$courseid,
+				'examples' => $examples,
+				'students' => $students
+		) );
+		
+		$creatorid = $USER->id;
+		
+		$examples = json_decode($examples);
+		$students = json_decode($students);
+		
+		foreach($examples as $example){
+			foreach($students as $student)
+				block_exacomp_add_example_to_schedule($student, $example, $creatorid, $courseid);
+		}
+		
+		return array (
+				"success" => true
+		);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_add_examples_to_students_schedule_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' ) 
+		) );
+	}
 	
 	/** 
 	* helper function to use same code for 2 ws
