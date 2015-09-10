@@ -1192,6 +1192,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         global $PAGE, $version;
 
         $editmode = (!$students && $role == block_exacomp::ROLE_TEACHER) ? true : false;
+        
         $rowgroup = ($lis_singletopic) ? null : 0;
         //$rowgroup=0;
         $table = new html_table();
@@ -4470,7 +4471,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
     }
     
     public function print_dropdowns_cross_subjects($crosssubjects, $selectedCrosssubject, $students, $selectedStudent = BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $isTeacher = false){
-        global $PAGE;
+        global $PAGE, $COURSE, $USER;
         
         $content = html_writer::empty_tag("br");
 
@@ -4488,6 +4489,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             $content .= block_exacomp_studentselector($students,$selectedStudent,$PAGE->url."&crosssubjid=".$selectedCrosssubject,  BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
             
             $content .= $this->print_edit_mode_button("&crosssubjid=".$selectedCrosssubject."&studentid=".$selectedStudent);
+			$url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid'=>$COURSE->id, 'creatorid'=>$USER->id, 'crosssubj'=>$selectedCrosssubject));
+    		$content .= html_writer::empty_tag('input', array('type'=>'submit', 'id'=>'pre_planning_storage_submit', 'name'=> 'pre_planning_storage_submit', 'value'=>get_string('pre_planning_storage','block_exacomp'), ((block_exacomp_has_items_pre_planning_storage($USER->id, $COURSE->id))?"enabled":"disabled")=>"", 
+    			"onclick" => "window.open('".$url->out(false)."','_blank','width=880,height=660, scrollbars=yes'); return false;"));
+        
         }    
         return $content;
     }

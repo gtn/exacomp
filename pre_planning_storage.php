@@ -32,6 +32,7 @@ global $DB, $OUTPUT, $PAGE, $USER;
 $courseid = required_param('courseid', PARAM_INT);
 $creatorid = required_param('creatorid', PARAM_INT);
 $action = optional_param('action', '', PARAM_TEXT);
+$crosssubj = optional_param('crosssubj', 0, PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
     print_error('invalidcourse', 'block_exacomp', $courseid);
@@ -49,7 +50,11 @@ block_exacomp_init_js_css();
 block_exacomp_init_js_weekly_schedule();
 echo $OUTPUT->header();
 
-$students = block_exacomp_get_students_by_course($courseid);
+if($crosssubj == 0)
+	$students = block_exacomp_get_students_by_course($courseid);
+else
+	$students = block_exacomp_get_students_for_crosssubject($courseid, $DB->get_record(block_exacomp::DB_CROSSSUBJECTS, array('id'=>$crosssubj)));
+	
 if(!$students) {
 	echo get_string('nostudents','block_exacomp');
 	echo $OUTPUT->footer();
