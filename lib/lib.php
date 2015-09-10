@@ -5378,6 +5378,11 @@ function block_exacomp_get_file_url($item, $type) {
 function block_exacomp_get_examples_for_pool($studentid, $courseid){
 	global $DB;
 	
+	 if (date('w', time()) == 1)
+         $beginning_of_week = strtotime('Today',time()); 
+     else 
+         $beginning_of_week = strtotime('last Monday',time()); 
+	
 	$sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
 				eval.student_evaluation, eval.teacher_evaluation, evis.courseid, s.id as scheduleid
@@ -5388,10 +5393,12 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid){
 			WHERE s.studentid = ? AND s.deleted = 0 AND (
 				-- noch nicht auf einen tag geleg
 				(s.start IS null OR s.start=0)
+				-- oder auf einen tag der vorwoche gelegt und noch nicht evaluiert
+				OR (s.start < ? AND (eval.teacher_evaluation IS NULL OR eval.teacher_evaluation=0))
 			)
 			ORDER BY s.id";
 	
-	return $DB->get_records_sql($sql,array($courseid, $studentid));
+	return $DB->get_records_sql($sql,array($courseid, $studentid, $beginning_of_week));
 }
 
 function block_exacomp_get_examples_for_trash($studentid, $courseid){
