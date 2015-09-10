@@ -4146,6 +4146,260 @@ class block_exacomp_external extends external_api {
 		) );
 	}
 	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 * 
+	 */
+	public static function dakora_get_pre_planning_storage_examples_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' )
+		) );
+	}
+	
+	/**
+	 * get pre planning storage examples for current teacher
+	 *
+	 * @param
+	 *        	int courseid
+	 * @return examples
+	 */
+	public static function dakora_get_pre_planning_storage_examples($courseid) {
+		global $USER;
+		$params = self::validate_parameters ( self::dakora_get_pre_planning_storage_examples_parameters (), array (
+				'courseid'=>$courseid
+		) );
+		
+		$creatorid = $USER->id;
+		
+		$examples = block_exacomp_get_pre_planning_storage($creatorid, $courseid);
+			
+		foreach($examples as $example){
+			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
+		}
+		
+		return $examples;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_pre_planning_storage_examples_returns() {
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
+				'title' => new external_value ( PARAM_TEXT, 'title of example' ),
+				'courseid' => new external_value(PARAM_INT, 'example course'),
+				'state' => new external_value (PARAM_INT, 'state of example'),
+				'scheduleid' => new external_value (PARAM_INT, 'id in schedule context')
+		) ) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 * 
+	 */
+	public static function dakora_get_pre_planning_storage_students_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' )
+		) );
+	}
+	
+	/**
+	 * get pre planning storage students for current teacher
+	 *
+	 * @param
+	 *        	int courseid
+	 * @return examples
+	 */
+	public static function dakora_get_pre_planning_storage_students($courseid) {
+		global $USER;
+		$params = self::validate_parameters ( self::dakora_get_pre_planning_storage_students_parameters (), array (
+				'courseid'=>$courseid
+		) );
+		
+		$creatorid = $USER->id;
+		
+		$examples = array();
+		$schedules = block_exacomp_get_pre_planning_storage($creatorid, $courseid);
+		foreach($schedules as $schedule){
+			if(!in_array($schedule->exampleid, $examples))
+				$examples[] = $schedule->exampleid;
+		}
+			
+		$students = block_exacomp_get_students_by_course($courseid);
+		$students = block_exacomp_get_student_pool_examples($students, $courseid);
+		
+		foreach($students as $student){
+			$student_has_examples = false;
+			foreach($student->pool_examples as $example){
+				if(in_array($example->exampleid, $examples))
+					$student_has_examples = true;
+			}
+			$student->studentid = $student->id;
+			$student->has_examples = $student_has_examples; 
+		}
+		
+		return $students;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_pre_planning_storage_students_returns() {
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'studentid' => new external_value ( PARAM_INT, 'id of student' ),
+				'firstname' => new external_value ( PARAM_TEXT, 'firstname of student' ),
+				'lastname' => new external_value ( PARAM_TEXT, 'lastname of student' ),
+				'has_examples' => new external_value( PARAM_BOOL, 'already has examples from current pre planning storage')
+		) ) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 * 
+	 */
+	public static function dakora_has_items_in_pre_planning_storage_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' )
+		) );
+	}
+	
+	/**
+	 * get pre planning storage students for current teacher
+	 *
+	 * @param
+	 *        	int courseid
+	 * @return examples
+	 */
+	public static function dakora_has_items_in_pre_planning_storage($courseid) {
+		global $USER;
+		$params = self::validate_parameters ( self::dakora_has_items_in_pre_planning_storage_parameters (), array (
+				'courseid'=>$courseid
+		) );
+		
+		$creatorid = $USER->id;
+		
+		$items = false;
+		if(block_exacomp_has_items_pre_planning_storage($creatorid, $courseid))
+			$items = true;
+		
+		return array (
+				"success" => $items 
+		);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_has_items_in_pre_planning_storage_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' ) 
+		) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 * 
+	 */
+	public static function dakora_empty_pre_planning_storage_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' )
+		) );
+	}
+	
+	/**
+	 * empty pre planning storage for current teacher
+	 *
+	 * @param
+	 *        	int courseid
+	 * @return examples
+	 */
+	public static function dakora_empty_pre_planning_storage($courseid) {
+		global $USER;
+		$params = self::validate_parameters ( self::dakora_empty_pre_planning_storage_parameters (), array (
+				'courseid'=>$courseid
+		) );
+		
+		$creatorid = $USER->id;
+		
+		block_exacomp_empty_pre_planning_storage($creatorid, $courseid);
+		
+		return array (
+				"success" => true
+		);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_empty_pre_planning_storage_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' ) 
+		) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 * 
+	 */
+	public static function dakora_add_example_to_pre_planning_storage_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
+				'exampleid' => new external_value (PARAM_INT, 'id of example')
+		) );
+	}
+	
+	/**
+	 * add example to current pre planning storage
+	 *
+	 * @param
+	 *        	int courseid
+	 * @return examples
+	 */
+	public static function dakora_add_example_to_pre_planning_storage($courseid, $exampleid) {
+		global $USER;
+		$params = self::validate_parameters ( self::dakora_add_example_to_pre_planning_storage_parameters (), array (
+				'courseid'=>$courseid,
+				'exampleid' => $exampleid
+		) );
+		
+		$creatorid = $USER->id;
+		
+		block_exacomp_add_example_to_schedule(0, $exampleid, $creatorid, $courseid);
+		
+		return array (
+				"success" => true
+		);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_add_example_to_pre_planning_storage_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' ) 
+		) );
+	}
+	
 	/** 
 	* helper function to use same code for 2 ws
 	*/

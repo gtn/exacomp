@@ -193,12 +193,10 @@ set time slot to 0
 ";
 
 //REST CALL dakora_get_examples_pool_for_week ($courseid, $descriptorid, $userid, $forall)
-$functionname = 'dakora_set_example_time_slot';
+$functionname = 'dakora_get_pre_planning_storage_examples';
 
 $params = new stdClass();
-$params->scheduleid = 100;
-$params->start = 0;
-$params->end = 0;
+$params->courseid = 4;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
@@ -209,7 +207,65 @@ remove from schedule:
 
 ";
 
+//REST CALL dakora_get_examples_pool_for_week ($courseid, $descriptorid, $userid, $forall)
+$functionname = 'dakora_get_pre_planning_storage_students';
 
+$params = new stdClass();
+$params->courseid = 4;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+remove from schedule:
+
+";
+
+//REST CALL dakora_get_examples_pool_for_week ($courseid, $descriptorid, $userid, $forall)
+$functionname = 'dakora_has_items_in_pre_planning_storage';
+
+$params = new stdClass();
+$params->courseid = 4;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+remove from schedule:
+
+";
+
+//REST CALL dakora_get_examples_pool_for_week ($courseid, $descriptorid, $userid, $forall)
+$functionname = 'dakora_empty_pre_planning_storage';
+
+$params = new stdClass();
+$params->courseid = 4;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+remove from schedule:
+
+";
+
+//REST CALL dakora_get_examples_pool_for_week ($courseid, $descriptorid, $userid, $forall)
+$functionname = 'dakora_add_example_to_pre_planning_storage';
+
+$params = new stdClass();
+$params->courseid = 4;
+$params->exampleid = 72;
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+remove from schedule:
+
+";
 //REST CALL dakora_get_examples_pool_for_week ($courseid, $descriptorid, $userid, $forall)
 /*$functionname = 'dakora_remove_example_from_schedule';
 
