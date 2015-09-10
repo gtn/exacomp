@@ -4833,6 +4833,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         return $html_tree;        
 	}
 	public function print_pre_planning_storage_students($students, $examples){
+		global $COURSE;
+	
 		$content = html_writer::start_tag('ul');
 		foreach($students as $student){
 			$student_has_examples = false;
@@ -4843,7 +4845,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			
 			$content .= html_writer::start_tag('li', array('class'=>($student_has_examples)?'has_examples':''));
 			$content .= html_writer::empty_tag('input', array('type'=>'checkbox', 'id'=>'student_examp_mm', 'studentid'=>$student->id));
-			$content .= $student->firstname." ".$student->lastname;
+			$content .= html_writer::link( new moodle_url('/blocks/exacomp/weekly_schedule.php', array('courseid'=>$COURSE->id, 'studentid'=>$student->id)), 
+				$student->firstname." ".$student->lastname, array('target'=>'_blank', 'title'=>get_string('to_weekly_schedule', 'block_exacomp')));
 			$content .= html_writer::end_tag('li');
 		}
 		

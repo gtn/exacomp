@@ -448,6 +448,7 @@ $string['new_crosssub'] = "Neues Thema erstellen";
 $string['nocrosssubsub'] = "Kein Fach zugeteilt";
 $string['delete_crosssub'] = 'Thema löschen';
 $string['confirm_delete'] = 'Soll dieses Thema wirklich gelöscht werden?';
+$string['no_students_crosssub'] = 'Es sind keine Teilnehmer zu diesem Thema zugeteilt.';
 
 //Associations
 $string['competence_associations'] = 'Verknüpfungen';
@@ -471,6 +472,7 @@ $string['save_pre_planning_selection'] = 'Ausgewählte Beispiele auf den Wochenp
 $string['empty_pre_planning_storage'] = 'Vorplanungsspeicher leeren';
 $string['noschedules_pre_planning_storage'] = 'Vorplanungsspeicher wurde geleert, legen Sie über die Kompetenzraster neue Lernmaterialien in den Vorplanungsspeicher.';
 $string['empty_trash'] = 'Papierkorb leeren';
+$string['to_weekly_schedule'] = 'Zum Wochenplan';
 
 //Statistics
 $string['process'] = 'Bearbeitungsstand';

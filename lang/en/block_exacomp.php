@@ -409,6 +409,7 @@ $string['new_crosssub'] = "Create new crosssubject";
 $string['nocrosssubsub'] = "no subject selected";
 $string['delete_crosssub'] = 'delete crosssubject';
 $string['confirm_delete'] = 'Do you really want to delete this crosssubject?';
+$string['no_students_crosssub'] = 'No students are assigend to this crosssubject.';
 
 //Associations
 $string['competence_associations'] = 'Associations';
@@ -432,6 +433,7 @@ $string['save_pre_planning_selection'] = 'Add selected examples to weekly schedu
 $string['empty_pre_planning_storage'] = 'Empty pre-planning storage';
 $string['noschedules_pre_planning_storage'] = 'Pre-planning storage has been emptied, use the competence grid to put new examples in the pre-planning storage.';
 $string['empty_trash'] = 'Empty trash bin';
+$string['to_weekly_schedule'] = 'To weekly schedule';
 
 //Statistics
 $string['process'] = 'State of process';

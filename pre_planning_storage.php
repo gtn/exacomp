@@ -56,7 +56,11 @@ else
 	$students = block_exacomp_get_students_for_crosssubject($courseid, $DB->get_record(block_exacomp::DB_CROSSSUBJECTS, array('id'=>$crosssubj)));
 	
 if(!$students) {
-	echo get_string('nostudents','block_exacomp');
+	if($crosssubj == 0)
+		echo get_string('nostudents','block_exacomp');
+	else
+		echo get_string('no_students_crosssub', 'block_exacomp');
+		
 	echo $OUTPUT->footer();
 	exit;
 }
