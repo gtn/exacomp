@@ -3056,6 +3056,13 @@ class block_exacomp_external extends external_api {
 							$descriptor_return->descriptorid = $descriptor->id;
 							$descriptor_return->descriptortitle = $descriptor->title;
 							$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
+							$descriptor_return->niveautitle = "";
+							$descriptor_return->niveauid = 0;
+							if($descriptor->niveauid){
+								$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
+								$descriptor_return->niveautitle = $niveau->title;
+								$descriptor_return->niveauid = $niveau->id;
+							}
 							if(!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student))||$forall))
 								$descriptors_return[] = $descriptor_return;
 						}
@@ -3077,6 +3084,8 @@ class block_exacomp_external extends external_api {
 				'descriptorid' => new external_value ( PARAM_INT, 'id of descriptor' ),
 				'descriptortitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
 				'numbering' => new external_value ( PARAM_TEXT, 'numbering for descriptor')
+				'niveautitle' => new external_value ( PARAM_TEXT, 'title of niveau'),
+				'niveauid' => new external_value ( PARAM_INT, 'id of niveau')
 		) ) );
 	}
 	
@@ -3940,6 +3949,13 @@ class block_exacomp_external extends external_api {
 						$descriptor_return->descriptorid = $descriptor->id;
 						$descriptor_return->descriptortitle = $descriptor->title;
 						$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
+						$descriptor_return->niveautitle = "";
+						$descriptor_return->niveauid = 0;
+						if($descriptor->niveauid){
+							$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
+							$descriptor_return->niveautitle = $niveau->title;
+							$descriptor_return->niveauid = $niveau->id;
+						}
 						$descriptors_return[] = $descriptor_return;
 				}
 			}
@@ -3957,7 +3973,9 @@ class block_exacomp_external extends external_api {
 		return new external_multiple_structure ( new external_single_structure ( array (
 				'descriptorid' => new external_value ( PARAM_INT, 'id of descriptor' ),
 				'descriptortitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
-				'numbering' => new external_value ( PARAM_TEXT, 'numbering for descriptor')
+				'numbering' => new external_value ( PARAM_TEXT, 'numbering for descriptor'),
+				'niveautitle' => new external_value ( PARAM_TEXT, 'title of nivaue'),
+				'niveauid' => new external_value ( PARAM_INT, 'id of niveau')
 		) ) );
 	}
 
