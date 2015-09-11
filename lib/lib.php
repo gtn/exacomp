@@ -470,7 +470,7 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 		return -1;
 	
 	if($record = $DB->get_record(block_exacomp::DB_COMPETENCIES, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, "courseid" => $courseid, "role" => $role))) {
-		$record->value = $value;
+		$record->value = ($value != -1) ? $value : null;
 		$record->timestamp = time();
 		$record->reviewerid = $USER->id;
 		$DB->update_record(block_exacomp::DB_COMPETENCIES, $record);
@@ -487,7 +487,7 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 	$updateEvaluation = new stdClass();
 	
 	if ($role == block_exacomp::ROLE_TEACHER) {
-		$updateEvaluation->teacher_evaluation = intval($value);
+		$updateEvaluation->teacher_evaluation = ($value != -1) ? $value : null;
 		$updateEvaluation->teacher_reviewerid = $USER->id;
 	} else {
 		if ($userid != $USER->id)
@@ -509,7 +509,7 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 		}
 			
 		if($value != null)
-		$updateEvaluation->student_evaluation = intval($value);
+		$updateEvaluation->student_evaluation = intval(($value != -1) ? $value : null);
 			
 		$updateEvaluation->starttime = $starttime;
 		$updateEvaluation->endtime = $endtime;

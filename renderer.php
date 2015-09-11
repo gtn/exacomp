@@ -2304,14 +2304,15 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
     		$attributes["reviewerid"] = $reviewerid;
     	
         $options = array();
+        $options[-1] = ' ';
         for($i=0;$i<=$scheme;$i++)
             $options[$i] = (!$profoundness) ? $i : get_string('profoundness_'.$i,'block_exacomp');
 
         return html_writer::select(
                 $options,
                 $name . '-' . $compid . '-' . $student->id . '-' . $evaluation,
-                (isset($student->{$type}->{$evaluation}[$compid])) ? $student->{$type}->{$evaluation}[$compid] : 0,
-                false,$attributes);
+                (isset($student->{$type}->{$evaluation}[$compid])) ? $student->{$type}->{$evaluation}[$compid] : -1,
+                true,$attributes);
     }
 
     public function print_edit_config($data, $courseid, $fromimport=0){
