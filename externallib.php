@@ -4485,7 +4485,6 @@ class block_exacomp_external extends external_api {
 				'url' => new external_value ( PARAM_URL, 'url' ),
 				'filename' => new external_value ( PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area' ),
 				'studentcomment' => new external_value ( PARAM_TEXT, 'studentcomment' ),
-				'title' => new external_value ( PARAM_TEXT, 'title' ),
 				'itemid' => new external_value ( PARAM_INT, 'itemid (0 for insert, >0 for update)' ),
 				'courseid' => new external_value ( PARAM_INT, 'courseid' )
 		) );
@@ -4497,7 +4496,7 @@ class block_exacomp_external extends external_api {
 	 * @param int itemid (0 for new, >0 for existing)
 	 * @return array of course subjects
 	 */
-	public static function dakora_submit_example($exampleid,$studentvalue = null,$url,$filename,$studentcomment,$title,$itemid=0,$courseid=0) {
+	public static function dakora_submit_example($exampleid,$studentvalue = null,$url,$filename,$studentcomment,$itemid=0,$courseid=0) {
 		global $CFG,$DB,$USER;
 	
 		$params = self::validate_parameters(self::dakora_submit_example_parameters(), array('title'=>$title,'exampleid'=>$exampleid,'url'=>$url,'filename'=>$filename,'studentcomment'=>$studentcomment,'studentvalue'=>$studentvalue,'itemid'=>$itemid,'courseid'=>$courseid));
@@ -4553,7 +4552,6 @@ class block_exacomp_external extends external_api {
 	
 		} else {
 			$item = $DB->get_record('block_exaportitem',array('id'=>$itemid));
-			$item->name = $title;
 			if($url != '')
 				$item->url = $url;
 			$item->timemodified = time();
