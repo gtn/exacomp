@@ -3083,7 +3083,7 @@ class block_exacomp_external extends external_api {
 		return new external_multiple_structure ( new external_single_structure ( array (
 				'descriptorid' => new external_value ( PARAM_INT, 'id of descriptor' ),
 				'descriptortitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
-				'numbering' => new external_value ( PARAM_TEXT, 'numbering for descriptor')
+				'numbering' => new external_value ( PARAM_TEXT, 'numbering for descriptor'),
 				'niveautitle' => new external_value ( PARAM_TEXT, 'title of niveau'),
 				'niveauid' => new external_value ( PARAM_INT, 'id of niveau')
 		) ) );
@@ -3134,7 +3134,8 @@ class block_exacomp_external extends external_api {
 			'children' => new external_multiple_structure ( new external_single_structure ( array (
 					'childid' => new external_value ( PARAM_INT, 'id of child' ),
 					'childtitle' => new external_value ( PARAM_TEXT, 'title of child' ),
-					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child')
+					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
+					'grading' => new external_value ( PARAM_INT, 'grading of child')
 			) ) ) ,
 			'examples' => new external_multiple_structure ( new external_single_structure ( array (
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
@@ -4026,7 +4027,8 @@ class block_exacomp_external extends external_api {
 			'children' => new external_multiple_structure ( new external_single_structure ( array (
 					'childid' => new external_value ( PARAM_INT, 'id of child' ),
 					'childtitle' => new external_value ( PARAM_TEXT, 'title of child' ),
-					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child')
+					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
+					'grading' => new external_value ( PARAM_INT, 'grading of children')
 			) ) ) ,
 			'examples' => new external_multiple_structure ( new external_single_structure ( array (
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
@@ -4686,6 +4688,55 @@ class block_exacomp_external extends external_api {
 		) );
 	}
 	
+	public static function dakora_get_descriptor_details_parameters(){
+	return new external_function_parameters ( array (
+				'courseid' => new external_value( PARAM_INT, 'courseid'),
+				'descriptorid' => new external_value( PARAM_INT, 'descriptorid'),
+				'userid' => new external_value ( PARAM_INT, 'userid' ),
+				'forall' => new external_value ( PARAM_BOOL, 'forall')
+		) );
+	}
+	
+	public static function dakora_get_descriptor_details($courseid, $descriptorid, $userid, $forall){
+		global $DB, $USER;
+		$params = self::validate_parameters(self::dakora_get_descriptor_details_parameters(), 
+			array('courseid'=>$courseid, 'descriptorid'=>$descriptorid, 'userid'=>$userid,'forall'=>$forall));
+			
+		if(!$forall && $userid == 0)
+			$userid = $USER->id;
+			
+		$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptorid));
+		
+		
+		
+		$descriptor_return = new stdClass();
+		$descriptor_return->descriptorid = $descriptorid;
+		$descriptor_return->descriptortitle = $descriptor->title;
+		$descriptor_return->grading = 0;
+		if(!$forall)
+			$descriptor_return->grading = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$descriptorid, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_TEACHER)))? $grading->value:0;
+
+		$childsandexamples = block_exacomp_external::get_descriptor_children($courseid, $descriptorid, $userid, $forall);
+		
+		$descriptor_return->children = $childsandexamples->children;
+
+		return $descriptor_return;
+	}
+	
+	public static function dakora_get_descriptor_details_returns(){
+		return new external_single_structure ( array (
+			'descriptorid' => new external_value( PARAM_INT, 'id of descriptor'),
+			'descriptortitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
+			'grading'=> new external_value( PARAM_INT, 'grading of descriptor'),
+			'children' => new external_multiple_structure ( new external_single_structure ( array (
+					'childid' => new external_value ( PARAM_INT, 'id of child' ),
+					'childtitle' => new external_value ( PARAM_TEXT, 'title of child' ),
+					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
+					'grading' => new external_value ( PARAM_INT, 'grading of children')
+			) ) )
+		) ) ;
+	}
+	
 	/** 
 	* helper function to use same code for 2 ws
 	*/
@@ -4712,6 +4763,9 @@ class block_exacomp_external extends external_api {
 				$child_return->childid = $child->id;
 				$child_return->childtitle = $child->title;
 				$child_return->numbering = block_exacomp_get_descriptor_numbering($child);
+				$child_return->grading = 0;
+				if(!$forall)
+					$child_return->grading = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$child->id, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_TEACHER)))? $grading->value:0;
 				if(!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, non_visibilities_student))||$forall))
 					if($crosssubjid == 0 || in_array($child->id, $crossdesc))
 						$children_return[] = $child_return;

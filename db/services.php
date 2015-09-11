@@ -63,7 +63,8 @@ $services = array(
 						'dakora_add_example_to_pre_planning_storage',
 						'dakora_add_examples_to_students_schedule',
 						'dakora_submit_example',
-						'dakora_grade_example'
+						'dakora_grade_example',
+						'dakora_get_descriptor_details'
 						), 	//web service functions of this service
 				'restrictedusers' =>0,                      //if enabled, the Moodle administrator must link some user to this service
 				//into the administration
@@ -507,5 +508,12 @@ $functions = array(
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'grade example solution',    //human readable description of the web service function
 				'type'        => 'write'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_descriptor_details' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_descriptor_details',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get descriptor details incl. grading and children',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
 		)
 );
