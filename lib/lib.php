@@ -5460,8 +5460,8 @@ function block_exacomp_get_examples_for_start_end_all_courses($studentid, $start
 	foreach($courses as $course){
 		$course_examples = block_exacomp_get_examples_for_start_end($course, $studentid, $start, $end);
 		foreach($course_examples as $example){
-			if(!array_key_exists($example->exampleid, $examples))
-				$examples[$example->exampleid] = $example;
+			if(!array_key_exists($example->scheduleid, $examples))
+				$examples[$example->scheduleid] = $example;
 		}
 	}
 	
