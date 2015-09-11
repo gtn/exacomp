@@ -61,7 +61,9 @@ $services = array(
 						'dakora_has_items_in_pre_planning_storage',
 						'dakora_empty_pre_planning_storage',
 						'dakora_add_example_to_pre_planning_storage',
-						'dakora_add_examples_to_students_schedule'
+						'dakora_add_examples_to_students_schedule',
+						'dakora_submit_example',
+						'dakora_grade_example'
 						), 	//web service functions of this service
 				'restrictedusers' =>0,                      //if enabled, the Moodle administrator must link some user to this service
 				//into the administration
@@ -490,6 +492,20 @@ $functions = array(
 				'methodname'  => 'dakora_add_examples_to_students_schedule',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'add examples from current pre planning storage to students weekly schedule',    //human readable description of the web service function
+				'type'        => 'write'                  //database rights of the web service function (read, write)
+		),
+		'dakora_submit_example' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_submit_example',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'submit example solution',    //human readable description of the web service function
+				'type'        => 'write'                  //database rights of the web service function (read, write)
+		),
+		'dakora_grade_example' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_grade_example',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'grade example solution',    //human readable description of the web service function
 				'type'        => 'write'                  //database rights of the web service function (read, write)
 		)
 );

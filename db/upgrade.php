@@ -2220,5 +2220,24 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    upgrade_block_savepoint(true, 2015090901, 'exacomp');
 	   
     }
+    if ($oldversion < 2015091100) {
+    
+    	// Changing the default of field teachervalue on table block_exacompitemexample to drop it.
+    	$table = new xmldb_table('block_exacompitemexample');
+    	$field = new xmldb_field('teachervalue', XMLDB_TYPE_INTEGER, '5', null, null, null, null, 'status');
+    
+    	// Launch change of default for field teachervalue.
+    	$dbman->change_field_default($table, $field);
+    
+    	// Changing the default of field studentvalue on table block_exacompitemexample to drop it.
+    	$table = new xmldb_table('block_exacompitemexample');
+    	$field = new xmldb_field('studentvalue', XMLDB_TYPE_INTEGER, '5', null, null, null, null, 'teachervalue');
+    	
+    	// Launch change of default for field studentvalue.
+    	$dbman->change_field_default($table, $field);
+    	
+    	// Exacomp savepoint reached.
+    	upgrade_block_savepoint(true, 2015091100, 'exacomp');
+    }
 	return $return_result;
 }

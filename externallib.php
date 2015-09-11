@@ -4472,6 +4472,222 @@ class block_exacomp_external extends external_api {
 		) );
 	}
 	
+
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_submit_example_parameters() {
+		return new external_function_parameters ( array (
+				'exampleid' => new external_value ( PARAM_INT, 'exampleid' ),
+				'studentvalue' => new external_value ( PARAM_INT, 'studentvalue' , VALUE_DEFAULT, -1),
+				'url' => new external_value ( PARAM_URL, 'url' ),
+				'filename' => new external_value ( PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area' ),
+				'studentcomment' => new external_value ( PARAM_TEXT, 'studentcomment' ),
+				'title' => new external_value ( PARAM_TEXT, 'title' ),
+				'itemid' => new external_value ( PARAM_INT, 'itemid (0 for insert, >0 for update)' ),
+				'courseid' => new external_value ( PARAM_INT, 'courseid' )
+		) );
+	}
+	
+	/**
+	 * Add student submission to example.
+	 *
+	 * @param int itemid (0 for new, >0 for existing)
+	 * @return array of course subjects
+	 */
+	public static function dakora_submit_example($exampleid,$studentvalue = null,$url,$filename,$studentcomment,$title,$itemid=0,$courseid=0) {
+		global $CFG,$DB,$USER;
+	
+		$params = self::validate_parameters(self::dakora_submit_example_parameters(), array('title'=>$title,'exampleid'=>$exampleid,'url'=>$url,'filename'=>$filename,'studentcomment'=>$studentcomment,'studentvalue'=>$studentvalue,'itemid'=>$itemid,'courseid'=>$courseid));
+	
+		if (!isset($type)) {
+			$type = ($filename != '') ? 'file' : 'url';
+		};
+	
+		//insert: if itemid == 0 OR status != 0
+		$insert = true;
+		if($itemid != 0) {
+			$itemexample = $DB->get_record('block_exacompitemexample', array('itemid'=>$itemid));
+			if($itemexample->teachervalue == null || $itemexample->status == 0)
+				$insert = false;
+		}
+		require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
+	
+		if($insert) {
+			//store item in the right portfolio category
+			$course_category = block_exaport_get_user_category($course->fullname, $USER->id);
+	
+			if(!$course_category) {
+				$course_category = block_exaport_create_user_category($course->fullname, $USER->id);
+			}
+	
+			$exampletitle = $DB->get_field('block_exacompexamples', 'title', array('id'=>$exampleid));
+			$subjecttitle = block_exacomp_get_subjecttitle_by_example($exampleid);
+			$subject_category = block_exaport_get_user_category($subjecttitle, $USER->id);
+			if(!$subject_category) {
+				$subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
+			}
+	
+			$itemid = $DB->insert_record("block_exaportitem", array('userid'=>$USER->id,'name'=>$exampletitle,'intro' => $exampletitle, 'url'=>$url, 'type'=>$type,'timemodified'=>time(),'categoryid'=>$subject_category->id,'teachervalue' => null, 'studentvalue' => null));
+			//autogenerate a published view for the new item
+			$dbView = new stdClass();
+			$dbView->userid = $USER->id;
+			$dbView->name = $exampletitle;
+			$dbView->timemodified = time();
+			$dbView->layout = 1;
+			// generate view hash
+			do {
+				$hash = substr(md5(microtime()), 3, 8);
+			} while ($DB->record_exists("block_exaportview", array("hash"=>$hash)));
+			$dbView->hash = $hash;
+	
+			$dbView->id = $DB->insert_record('block_exaportview', $dbView);
+	
+			//share the view with teachers
+			share_view_to_teachers($dbView->id, $courseid);
+	
+			//add item to view
+			$DB->insert_record('block_exaportviewblock',array('viewid'=>$dbView->id,'positionx'=>1, 'positiony'=>1, 'type'=>'item', 'itemid'=>$itemid));
+	
+		} else {
+			$item = $DB->get_record('block_exaportitem',array('id'=>$itemid));
+			$item->name = $title;
+			if($url != '')
+				$item->url = $url;
+			$item->timemodified = time();
+	
+			if($type == 'file')
+				block_exaport_file_remove($DB->get_record("block_exaportitem",array("id"=>$itemid)));
+	
+			$DB->update_record('block_exaportitem', $item);
+		}
+	
+		//if a file is added we need to copy the file from the user/private filearea to block_exaport/item_file with the itemid from above
+		if($type == "file") {
+				
+			$context = context_user::instance($USER->id);
+			$fs = get_file_storage();
+			try {
+				$old = $fs->get_file($context->id, "user", "private", 0, "/", $filename);
+	
+				if($old) {
+					$file_record = array('contextid'=>$context->id, 'component'=>'block_exaport', 'filearea'=>'item_file',
+							'itemid'=>$itemid, 'filepath'=>'/', 'filename'=>$old->get_filename(),
+							'timecreated'=>time(), 'timemodified'=>time());
+					$fs->create_file_from_storedfile($file_record, $old->get_id());
+	
+					$old->delete();
+				}
+			} catch (Exception $e) {
+				//some problem with the file occured
+			}
+		}
+	
+		if($insert) {
+			$DB->insert_record('block_exacompitemexample',array('exampleid'=>$exampleid,'itemid'=>$itemid,'timecreated'=>time(),'status'=>0));
+			if($studentcomment != '')
+				$DB->insert_record('block_exaportitemcomm',array('itemid'=>$itemid,'userid'=>$USER->id,'entry'=>$studentcomment,'timemodified'=>time()));
+		} else {
+			$itemexample->timemodified = time();
+			$itemexample->studentvalue = $studentvalue;
+			$DB->update_record('block_exacompitemexample', $itemexample);
+	
+			if($studentcomment != '') {
+				$DB->delete_records('block_exaportitemcomm',array('itemid'=>$itemid,'userid'=>$USER->id));
+				$DB->insert_record('block_exaportitemcomm',array('itemid'=>$itemid,'userid'=>$USER->id,'entry'=>$studentcomment,'timemodified'=>time()));
+			}
+		}
+	
+		if($studentvalue > -1)
+			block_exacomp_set_user_example($USER->id, $exampleid, $courseid, block_exacomp::ROLE_STUDENT, $studentvalue);
+	
+		return array("success"=>true,"itemid"=>$itemid);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_single_structure
+	 */
+	public static function dakora_submit_example_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status' ),
+				'itemid' => new external_value ( PARAM_INT, 'itemid' )
+		) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_grade_example_parameters() {
+		return new external_function_parameters ( array (
+				'userid' => new external_value ( PARAM_INT, 'userid' ),
+				'courseid' => new external_value ( PARAM_INT, 'courseid' ),
+				'exampleid' => new external_value ( PARAM_INT, 'exampleid' ),
+				'examplevalue' => new external_value ( PARAM_INT, 'examplevalue' ),
+				'itemid' => new external_value ( PARAM_INT, 'itemid' , VALUE_DEFAULT, -1),
+				'itemvalue' => new external_value ( PARAM_INT, 'itemvalue' , VALUE_DEFAULT, -1),
+				'comment' => new external_value ( PARAM_TEXT, 'teachercomment' , VALUE_DEFAULT, "")
+		) );
+	}
+	
+	/**
+	 * Add student submission to example.
+	 *
+	 * @param int itemid (0 for new, >0 for existing)
+	 * @return array of course subjects
+	 */
+	public static function dakora_grade_example($userid, $courseid, $exampleid, $examplevalue, $itemid, $itemvalue, $comment) {
+		global $CFG,$DB,$USER;
+	
+		$params = self::validate_parameters(self::dakora_grade_example_parameters(), array('userid'=>$userid,'courseid'=>$courseid,'exampleid'=>$exampleid,'examplevalue'=>$examplevalue,'itemid'=>$itemid,'itemvalue'=>$itemvalue,'comment'=>$comment));
+	
+		if($examplevalue > -1)
+			block_exacomp_set_user_example(($userid == 0) ? $USER->id : $userid, $exampleid, $courseid, ($userid == 0) ? block_exacomp::ROLE_STUDENT : block_exacomp::ROLE_TEACHER, $examplevalue);
+	
+		if($itemid > 0 && $userid > 0) {
+				
+			$itemexample = $DB->get_record('block_exacompitemexample', array('exampleid' => $exampleid, 'itemid' => $itemid));
+			$itemexample->teachervalue = $itemvalue;
+			$itemexample->datemodified = time();
+			$itemexample->status = 1;
+				
+			$DB->update_record('block_exacompitemexample', $itemexample);
+				
+			if($comment) {
+				$insert = new stdClass ();
+				$insert->itemid = $itemid;
+				$insert->userid = $USER->id;
+				$insert->entry = $comment;
+				$insert->timemodified = time ();
+	
+				$DB->delete_records ( 'block_exaportitemcomm', array (
+						'itemid' => $itemid,
+						'userid' => $USER->id
+				) );
+				$DB->insert_record ( 'block_exaportitemcomm', $insert );
+			}
+		}
+	
+		return array("success"=>true,"exampleid"=>$exampleid);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_single_structure
+	 */
+	public static function dakora_grade_example_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status' ),
+				'exampleid' => new external_value ( PARAM_INT, 'exampleid' )
+		) );
+	}
+	
 	/** 
 	* helper function to use same code for 2 ws
 	*/
