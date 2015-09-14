@@ -50,7 +50,7 @@
 			hide.addClass("hidden");
 		} else {
 			if (competencies[values[1]+"-"+values[2]]) {
-				competencies[values[1]+"-"+values[2]]['value'] = 0;
+				competencies[values[1]+"-"+values[2]]['value'] = -1;
 			} else {
 				competencies[values[1]+"-"+values[2]] = {
 					userid : values[2],
@@ -104,7 +104,7 @@
 				};
 		} else {
 			if (topics[values[1]+"-"+values[2]])
-				topics[values[1]]['value'] = 0;
+				topics[values[1]]['value'] = -1;
 			else
 				topics[values[1]+"-"+values[2]] = {
 					userid : values[2],
@@ -143,7 +143,7 @@
 				crosssubs[values[1]+"-"+values[2]] = {
 					userid : values[2],
 					compid : values[1],
-					value : 0
+					value : -1
 				};
 		}
 	});
@@ -182,7 +182,7 @@
 				examples[values[1]+"-"+values[2]] = {
 					userid : values[2],
 					exampleid : values[1],
-					value : 0
+					value : -1
 				};
 			
 			//uncheck comp -> hide possible again
