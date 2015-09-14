@@ -402,11 +402,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
             */
             $content .= block_exacomp_studentselector($students,$selectedStudent,$PAGE->url."&subjectid=".$selectedSubject."&topicid=".$selectedTopic,  BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
 
-            $content .= $this->print_edit_mode_button("&studentid=".$selectedStudent."&subjectid=".$selectedSubject."&topicid=".$selectedTopic);
-			$url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid'=>$COURSE->id, 'creatorid'=>$USER->id));
+            $url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid'=>$COURSE->id, 'creatorid'=>$USER->id));
     		$content .= html_writer::empty_tag('input', array('type'=>'submit', 'id'=>'pre_planning_storage_submit', 'name'=> 'pre_planning_storage_submit', 'value'=>get_string('pre_planning_storage','block_exacomp'), ((block_exacomp_has_items_pre_planning_storage($USER->id, $COURSE->id))?"enabled":"disabled")=>"", 
     			"onclick" => "window.open('".$url->out(false)."','_blank','width=880,height=660, scrollbars=yes'); return false;"));
-        
+         	
+    		$content .= $this->print_edit_mode_button("&studentid=".$selectedStudent."&subjectid=".$selectedSubject."&topicid=".$selectedTopic);
+			
 		}    
         
         return $content;
@@ -438,7 +439,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     		foreach($type->subjects as $subject)
     			$content .= html_writer::tag('li',
     				html_writer::link($PAGE->url . "&studentid=" . $studentid . "&editmode=" . $edit . "&subjectid=" . $subject->id,
-    						$subject->title, array('class' => ($subject->id == $selectedSubject->id) ? 'current' : ''))
+    						block_exacomp_get_topic_numbering($subject).' '.$subject->title, array('class' => ($subject->id == $selectedSubject->id) ? 'current' : ''))
     				);
     	}
     	
