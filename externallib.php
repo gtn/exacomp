@@ -4758,6 +4758,127 @@ class block_exacomp_external extends external_api {
 		) ) ;
 	}
 	
+
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_example_information_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
+				'userid' => new external_value ( PARAM_INT, 'id of user' ),
+				'exampleid' => new external_value ( PARAM_INT, 'id of example' )
+		) );
+	}
+	
+	/**
+	 * get example with all submission details and gradings
+	 *
+	 * @return
+	 */
+	public static function dakora_get_example_information($courseid, $userid, $exampleid) {
+		global $CFG, $DB, $USER;
+		if ($userid == 0)
+			$userid = $USER->id;
+	
+		$params = self::validate_parameters ( self::dakora_get_example_information_parameters (), array (
+				'courseid' => $courseid,
+				'userid' => $userid,
+				'exampleid' => $exampleid
+		) );
+	
+		$example = $DB->get_record(block_exacomp::DB_EXAMPLES, array('id'=>$exampleid));
+		if(!$example)
+			throw new invalid_parameter_exception ( 'Example does not exist' );
+	
+		$itemInformation = block_exacomp_get_current_item_for_example($userid, $exampleid);
+		$exampleEvaluation = $DB->get_record(block_exacomp::DB_EXAMPLEEVAL,array("studentid" => $userid, "courseid" => $courseid, "exampleid" => $exampleid));
+	
+		$data = array();
+	
+		if($itemInformation) {
+			//item exists
+			$data['itemid'] = $itemInformation->id;	
+			$data['file'] = "";
+			$data['isimage'] = false;
+			$data['filename'] = "";
+			$data['teachervalue'] = isset ( $exampleEvaluation->teacher_evaluation ) ? $exampleEvaluation->teacher_evaluation : -1;
+			$data['studentvalue'] = isset ( $exampleEvaluation->student_evaluation ) ? $exampleEvaluation->student_evaluation : -1;
+			$data['status'] = isset ( $itemInformation->status ) ? $itemInformation->status : -1;
+			$data['name'] = $itemInformation->name;
+			$data['type'] = $itemInformation->type;
+			$data['url'] = $itemInformation->url;
+			$data['teacheritemvalue'] = isset( $itemInformation->teachervalue ) ? $itemInformation->teachervalue : -1;
+				
+			if ($itemInformation->type == 'file') {
+				require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
+					
+				if ($file = block_exaport_get_item_file ( $itemInformation )) {
+					$data['file'] = ("{$CFG->wwwroot}/blocks/exaport/portfoliofile.php?access=portfolio/id/" . $userid . "&itemid=" . $itemInformation->id);
+					$data['isimage'] = $file->is_valid_image ();
+					$data['filename'] = $file->get_filename ();
+				}
+			}
+	
+			$data['studentcomment'] = '';
+			$data['teachercomment'] = '';
+			
+			$itemcomments = $DB->get_records ( 'block_exaportitemcomm', array (
+					'itemid' => $itemInformation->id
+			), 'timemodified ASC', 'entry, userid', 0, 2 );
+			if ($itemcomments) {
+				foreach ( $itemcomments as $itemcomment ) {
+					if ($userid == $itemcomment->userid) {
+						$data['studentcomment'] = $itemcomment->entry;
+					} else {
+						$data['teachercomment'] = $itemcomment->entry;
+					}
+				}
+			}
+		} else {
+			//no item and therefore no submission exists
+			$data['itemid'] = 0;
+			$data['status'] = -1;
+			$data['name'] = "";
+			$data['file'] = "";
+			$data['filename'] = "";
+			$data['url'] = "";
+			$data['type'] = "";
+			$data['isimage'] = false;
+			$data['teachercomment'] = "";
+			$data['studentcomment'] = "";
+			$data['teachervalue'] = isset ( $exampleEvaluation->teacher_evaluation ) ? $exampleEvaluation->teacher_evaluation : -1;
+			$data['studentvalue'] = isset ( $exampleEvaluation->student_evaluation ) ? $exampleEvaluation->student_evaluation : -1;
+			$data['teacheritemvalue'] = -1;
+		}
+	
+		return $data;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_example_information_returns() {
+		return new external_single_structure ( array (
+				'itemid' => new external_value ( PARAM_INT, 'id of item' ),
+				'status' => new external_value ( PARAM_INT, 'status of the submission (-1 == no submission; 0 == not graded; 1 == graded' ),
+				'name' => new external_value ( PARAM_TEXT, 'title of item' ),
+				'type' => new external_value ( PARAM_TEXT, 'type of item (note,file,link)' ),
+				'url' => new external_value ( PARAM_TEXT, 'url' ),
+				'filename' => new external_value ( PARAM_TEXT, 'title of item' ),
+				'file' => new external_value ( PARAM_URL, 'file url' ),
+				'isimage' => new external_value ( PARAM_BOOL, 'true if file is image' ),
+				'teachervalue' => new external_value ( PARAM_INT, 'teacher grading' ),
+				'studentvalue' => new external_value ( PARAM_INT, 'student grading' ),
+				'teachercomment' => new external_value ( PARAM_TEXT, 'teacher comment' ),
+				'studentcomment' => new external_value ( PARAM_TEXT, 'student comment' ),
+				'teacheritemvalue' => new external_value ( PARAM_INT, 'item teacher grading' )
+		) );
+	}
+	
 	/** 
 	* helper function to use same code for 2 ws
 	*/

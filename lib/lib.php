@@ -5666,3 +5666,16 @@ function block_exacomp_empty_pre_planning_storage($creatorid, $courseid){
 	
 	$DB->delete_records(block_exacomp::DB_SCHEDULE, array('creatorid'=>$creatorid, 'courseid'=>$courseid, 'studentid'=>0));
 }
+function block_exacomp_get_current_item_for_example($userid, $exampleid) {
+	global $DB;
+
+	$sql = 'SELECT i.*, ie.status, ie.teachervalue, ie.studentvalue FROM {block_exacompexamples} e
+			JOIN {block_exacompitemexample} ie ON ie.exampleid = e.id
+			JOIN {block_exaportitem} i ON ie.itemid = i.id
+			WHERE e.id = ?
+			AND i.userid = ?
+			ORDER BY ie.timecreated DESC
+			LIMIT 1';
+
+	return $DB->get_record_sql($sql,array($exampleid, $userid));
+}
