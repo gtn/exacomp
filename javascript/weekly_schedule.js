@@ -182,7 +182,7 @@
 			var el = $( "<div class='fc-event'>" ).appendTo( $trash ).text( 
 					data.title);
 			
-			el.append('	<div>'+data.assoc_url+'</div>');
+			el.append('	<div class="event-assoc">'+data.assoc_url+'</div>');
 			
 			el.data('event', data);
 			
@@ -313,9 +313,9 @@
 					// TODO:
 					element.find(".fc-content").append(
 						'	<div class="event-extra">' +
-						'	<div>Kurs: '+event.courseinfo+'</div>'+
+						'	<div class="event-course">Kurs: '+event.courseinfo+'</div>'+
 						//'	<div>L: <input type="checkbox" '+((event.teacher_evaluation>0)?'checked=checked':'')+'/> S: <input type="checkbox" '+((event.student_evaluation>0)?'checked=checked':'')+'/></div>' +
-						'	<div>'+event.assoc_url+/*((event.solution)?event.solution:'')+*/'</div>' +
+						'	<div class="event-assoc">'+event.assoc_url+/*((event.solution)?event.solution:'')+*/'</div>' +
 						'</div>');
 					
 					$(element).addTouch();
