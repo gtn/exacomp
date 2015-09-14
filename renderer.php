@@ -1577,8 +1577,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
     			//$titleCell->attributes['title'] = $this->print_statistic_table($data->courseid, $students, $descriptor, true, $data->scheme);
     			 
                 // EDIT MODE BUTTONS 
-                if ($editmode && (($version && !$parent) || !$version)){
-                    //Adding to crosssubject only for "teilkompetenzen"
+                if ($editmode){
+                    
                     $titleCell->text .= html_writer::link(
                             new moodle_url('/blocks/exacomp/select_crosssubjects.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id)),
                             $OUTPUT->pix_icon("i/withsubcat", get_string("crosssubject","block_exacomp")),

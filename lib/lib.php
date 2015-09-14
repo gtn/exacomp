@@ -4169,10 +4169,15 @@ function block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid
     
     if(!$comps) return array();
     
+    $show_childs = array();
     $WHERE = "";
     foreach($comps as $comp){
     	$cross_descr = $DB->get_record(block_exacomp::DB_DESCRIPTORS,array('id'=>$comp->descrid));
-        $WHERE .=  ((get_config('exacomp', 'alternativedatamodel'))?$cross_descr->parentid:$cross_descr->id).",";
+		
+		$WHERE .= (($cross_descr->parentid == 0)?$cross_descr->id:$cross_descr->parentid).',';  
+		
+		if($cross_descr->parentid == 0) //parent deskriptor -> show all childs
+			$show_childs[$cross_descr->id] = true; 
     }
     $WHERE = substr($WHERE, 0, strlen($WHERE)-1);
     
@@ -4191,15 +4196,15 @@ function block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid
    
 	foreach($descriptors as &$descriptor) {
 		//get examples
-		if(array_key_exists($descriptor->id, $comps))
+		if(array_key_exists($descriptor->id, $comps) || (isset($show_childs[$descriptor->id]) && $show_childs[$descriptor->id]))
 			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor,array(SHOW_ALL_TAXONOMIES), true, $courseid);
 		else $descriptor->examples = array();
 		
 		//check for child-descriptors
 		$descriptor->children = block_exacomp_get_child_descriptors($descriptor,$courseid, $showalldescriptors);
 		foreach($descriptor->children as $cid => $cvalue) {
-			if(!array_key_exists($cid, $comps))
-				unset($descriptor->children[$cid]);
+			if(!array_key_exists($cid, $comps) && (!isset($show_childs[$descriptor->id])||!($show_childs[$descriptor->id])))
+	unset($descriptor->children[$cid]);
 		}
 		$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
 	}

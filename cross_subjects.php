@@ -161,6 +161,7 @@ else{
 	}
 	
 	$subjects = block_exacomp_get_competence_tree_for_cross_subject($courseid,(isset($selectedCrosssubject))?$selectedCrosssubject->id:null,false, !($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies);
+
 	echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
 	echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, false, true, $selectedCrosssubject->id, $statistic);
 	echo html_writer::end_tag("div");
