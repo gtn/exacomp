@@ -34,7 +34,7 @@
 		    		 var exampleid = checkbox.attr('exampleid');
 		    		 
 		    		 students.forEach(function(student){
-		    			if(student != 0){
+		    			if(student && student != 0){
 		    				block_exacomp_add_to_learning_calendar(student, exampleid);
 		    			}
 		    		 });
