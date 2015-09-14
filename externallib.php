@@ -3135,7 +3135,8 @@ class block_exacomp_external extends external_api {
 					'childid' => new external_value ( PARAM_INT, 'id of child' ),
 					'childtitle' => new external_value ( PARAM_TEXT, 'title of child' ),
 					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
-					'grading' => new external_value ( PARAM_INT, 'grading of child')
+					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of child'),
+					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of child'),
 			) ) ) ,
 			'examples' => new external_multiple_structure ( new external_single_structure ( array (
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
@@ -4028,7 +4029,8 @@ class block_exacomp_external extends external_api {
 					'childid' => new external_value ( PARAM_INT, 'id of child' ),
 					'childtitle' => new external_value ( PARAM_TEXT, 'title of child' ),
 					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
-					'grading' => new external_value ( PARAM_INT, 'grading of children')
+					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of children'),
+					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of children'),
 			) ) ) ,
 			'examples' => new external_multiple_structure ( new external_single_structure ( array (
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
@@ -4706,16 +4708,30 @@ class block_exacomp_external extends external_api {
 			$userid = $USER->id;
 			
 		$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptorid));
-		
-		
+		$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$descriptor->id));
+		$descriptor->topicid = $descriptor_topic_mm->topicid;
 		
 		$descriptor_return = new stdClass();
 		$descriptor_return->descriptorid = $descriptorid;
 		$descriptor_return->descriptortitle = $descriptor->title;
-		$descriptor_return->grading = 0;
+		$descriptor_return->teacherevaluation = 0;
 		if(!$forall)
-			$descriptor_return->grading = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$descriptorid, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_TEACHER)))? $grading->value:0;
+			$descriptor_return->teacherevaluation = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$descriptorid, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_TEACHER)))? $grading->value:0;
 
+		$descriptor_return->studentevaluation = 0;
+		if(!$forall)
+			$descriptor_return->studentevaluation = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$descriptorid, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_STUDENT)))? $grading->value:0;
+		
+		$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
+		
+		$descriptor_return->niveautitle = "";
+		$descriptor_return->niveauid = 0;
+		if($descriptor->niveauid){
+			$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
+			$descriptor_return->niveautitle = $niveau->title;
+			$descriptor_return->niveauid = $niveau->id;
+		}
+		
 		$childsandexamples = block_exacomp_external::get_descriptor_children($courseid, $descriptorid, $userid, $forall);
 		
 		$descriptor_return->children = $childsandexamples->children;
@@ -4727,12 +4743,17 @@ class block_exacomp_external extends external_api {
 		return new external_single_structure ( array (
 			'descriptorid' => new external_value( PARAM_INT, 'id of descriptor'),
 			'descriptortitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
-			'grading'=> new external_value( PARAM_INT, 'grading of descriptor'),
+			'teacherevaluation'=> new external_value( PARAM_INT, 'teacher evaluation of descriptor'),
+			'studentevaluation'=> new external_value( PARAM_INT, 'student evaluation of descriptor'),
+			'numbering' => new external_value ( PARAM_TEXT, 'numbering'),
+			'niveauid' => new external_value ( PARAM_INT, 'id of niveau'),
+			'niveautitle' => new external_value ( PARAM_TEXT, 'title of niveau'),
 			'children' => new external_multiple_structure ( new external_single_structure ( array (
 					'childid' => new external_value ( PARAM_INT, 'id of child' ),
 					'childtitle' => new external_value ( PARAM_TEXT, 'title of child' ),
 					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
-					'grading' => new external_value ( PARAM_INT, 'grading of children')
+					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of children'),
+					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of children')
 			) ) )
 		) ) ;
 	}
@@ -4763,9 +4784,12 @@ class block_exacomp_external extends external_api {
 				$child_return->childid = $child->id;
 				$child_return->childtitle = $child->title;
 				$child_return->numbering = block_exacomp_get_descriptor_numbering($child);
-				$child_return->grading = 0;
+				$child_return->teacherevaluation = 0;
 				if(!$forall)
-					$child_return->grading = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$child->id, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_TEACHER)))? $grading->value:0;
+					$child_return->teacherevaluation = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$child->id, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_TEACHER)))? $grading->value:0;
+				$child_return->studentevaluation = 0;
+				if(!$forall)
+					$child_return->studentevaluation = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$child->id, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_STUDENT))) ? $grading->value:0;
 				if(!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, non_visibilities_student))||$forall))
 					if($crosssubjid == 0 || in_array($child->id, $crossdesc))
 						$children_return[] = $child_return;
