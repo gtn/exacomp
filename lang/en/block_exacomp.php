@@ -51,8 +51,8 @@ $string['tab_teacher_settings_badges'] = 'Edit badges';
 $string['tab_student_all'] = 'All gained competencies';
 
 //Generic Tabs (used by Teacher and Students)
-$string['tab_competence_grid'] = 'Competence grid';
-$string['tab_competence_overview'] = 'Overview of competencies';
+$string['tab_competence_grid'] = 'Reports';
+$string['tab_competence_overview'] = 'Competence grid';
 $string['tab_competence_details'] = 'Detailed competence-view';
 $string['tab_examples'] = 'Examples and tasks';
 $string['tab_learning_agenda'] = 'Learning agenda';
