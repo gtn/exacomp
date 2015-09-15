@@ -166,7 +166,7 @@
 			var el = $( "<div class='fc-event'>" ).appendTo( $eventDiv ).text( 
 					data.title);
 			
-			el.append('	<div>'+data.assoc_url+/*((event.solution)?event.solution:'')+*/'</div>');
+			el.append('	<div class="event-assoc">'+data.assoc_url+/*((event.solution)?event.solution:'')+*/'</div>');
 			
 			el.data('event', data);
 	

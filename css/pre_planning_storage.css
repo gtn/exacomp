@@ -5,6 +5,8 @@
 	border: 1px solid #ccc;
 	background: #eee;
 	text-align: left;
+	margin-right: 25px;
+	margin-bottom: 25px;
 }
 
 #block_exacomp #external-students {
@@ -14,6 +16,8 @@
 	border: 1px solid #ccc;
 	background: #eee;
 	text-align: left;
+	margin-right: 25px;
+	margin-bottom: 25px;
 }
 #block_exacomp #external-events.hover {
 	background: #bbb;
@@ -26,7 +30,7 @@
 	border: 1px solid #ccc;
 	background: #eee;
 	text-align: left;
-	margin-top: 20px;
+	margin-bottom: 25px;
 }
 
 #block_exacomp #trash.hover {
@@ -43,6 +47,7 @@
 	margin: 10px 0;
 	cursor: pointer;
 	min-height: 50px;
+	padding: 6px;
 }
 
 #block_exacomp #external-events .not-used {
@@ -83,4 +88,40 @@
 #block_exacomp #calendar {
 	float: right;
 	width: 900px;
+}
+
+#block_exacomp #external-events ul {
+	margin-left: 0;
+}
+
+#block_exacomp .fc-event {
+	background-color: #026cc5;
+	border-color: #026cc5;
+}
+
+#block_exacomp .event-assoc {
+	margin-top: 5px;
+	text-align: right;
+}
+
+#block_exacomp #external-students ul {
+	list-style-type: none;
+	margin-left: 0;
+	margin-top: 10px;
+}
+
+#block_exacomp #external-events h4, #block_exacomp #trash h4 {
+	font-size: 0.9em;
+    margin-top: 0;
+    padding-top: 10px;
+}
+
+#block_exacomp #trash h4 {
+	text-indent: -99999px;
+	background: transparent url(../pix/pre_planning_storage_trash.png) no-repeat right bottom;
+	width: 33px;
+	height: 39px;
+	margin: 0 auto;
+	padding-top: 15px;
+	margin-bottom: 15px;
 }
