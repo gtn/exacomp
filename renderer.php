@@ -4866,7 +4866,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		}
 		
 		$content .= html_writer::end_tag('ul');
-		
+		$content .= html_writer::tag('span', html_writer::start_tag('fieldset', array('class'=>'gray')).html_writer::end_tag('fieldset').'Material aus Vorplanungsspeicher erhalten', array('class'=>'pre_planning_storage_legend_gray'));
+		$content .= html_writer::tag('span', html_writer::start_tag('fieldset', array('class'=>'blue')).html_writer::end_tag('fieldset').'Noch kein Material erhalten', array('class'=>'pre_planning_storage_legend_blue'));
 		return html_writer::div($content, 'external-students', array('id'=>'external-students'));
 	}
 	public function print_pre_planning_storage_pool(){

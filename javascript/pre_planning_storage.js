@@ -16,9 +16,11 @@
 		
 		if(this.checked){
 			students[studentid] = studentid;
+			$(this).parent().addClass('has_examples_temp');
 		}
 		else{
 			students[studentid] = 0;
+			$(this).parent().removeClass('has_examples_temp');
 		}
 	});
 	
@@ -44,7 +46,8 @@
 		   
 		});
 		
-		location.reload();
+		alert('Ausgewählte Materialien wurden den ausgewählten Schülern zugeteilt.');
+		$("input:checkbox").attr('checked', false);
 	});
 	
 	function block_exacomp_add_to_learning_calendar(studentid, exampleid) {
