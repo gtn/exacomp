@@ -24,7 +24,7 @@
 	font-weight: bold;
 }
 
-#block_exacomp #edit_mode_submit {
+#block_exacomp div.edit_buttons_float_right {
 	float: right;
 }
 
