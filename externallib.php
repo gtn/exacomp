@@ -4912,7 +4912,7 @@ class block_exacomp_external extends external_api {
 				if(!$forall)
 					$child_return->studentevaluation = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$child->id, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_STUDENT))) ? $grading->value:0;
 				if(!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, non_visibilities_student))||$forall))
-					if($crosssubjid == 0 || in_array($child->id, $crossdesc))
+					if($crosssubjid == 0 || in_array($child->id, $crossdesc) || in_array($descriptor->id, $crossdesc))
 						$children_return[] = $child_return;
 			}
 		}

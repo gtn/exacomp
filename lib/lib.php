@@ -4267,15 +4267,49 @@ function block_exacomp_set_cross_subject_descriptor($crosssubjid,$descrid) {
 	
 	$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descrid));
 		
-	if($version){ //check parent visibility
-		$visibility = $DB->get_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$cross_subject->courseid, 'descrid'=>$descriptor->parentid, 'studentid'=>0));
-		if(!$visibility){
-			$insert = new stdClass();
-			$insert->courseid = $cross_subject->courseid;
-			$insert->descrid = $descriptor->parentid;
-			$insert->studentid = 0;
-			$insert->visible = 1;
-			$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, $insert);
+	if($version){ //check parent or child visibility
+		if($descriptor->parentid == 0){	//insert children into visibility table
+			//get topicid
+			$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$descriptor->id));
+			$descriptor->topicid = $descriptor_topic_mm->topicid;
+			
+			$children = block_exacomp_get_child_descriptors($descriptor);
+			foreach($children as $child){
+				$visibility = $DB->get_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$cross_subject->courseid, 'descrid'=>$child->id, 'studentid'=>0));
+				if(!$visibility){
+					$insert = new stdClass();
+					$insert->courseid = $cross_subject->courseid;
+					$insert->descrid = $child->id;
+					$insert->studentid = 0;
+					$insert->visible = 1;
+					$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, $insert);
+					
+					//insert example visibility if not existent
+					$child = block_exacomp_get_examples_for_descriptor($child, array(SHOW_ALL_TAXONOMIES), true, $COURSE->id);
+					foreach($child->examples as $example){
+						$record = $DB->get_records(block_exacomp::DB_EXAMPVISIBILITY, array('courseid'=>$cross_subject->courseid, 'exampleid'=>$example->id, 'studentid'=>0));
+						if(!$record){
+							$insert = new stdClass();
+							$insert->courseid = $cross_subject->courseid;
+							$insert->exampleid = $example->id;
+							$insert->studentid = 0;
+							$insert->visible = 1;
+							$DB->insert_record(block_exacomp::DB_EXAMPVISIBILITY, $insert);
+						}
+					}
+				}
+			}
+		}
+		else{ //insert parent into visibility table
+			$visibility = $DB->get_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$cross_subject->courseid, 'descrid'=>$descriptor->parentid, 'studentid'=>0));
+			if(!$visibility){
+				$insert = new stdClass();
+				$insert->courseid = $cross_subject->courseid;
+				$insert->descrid = $descriptor->parentid;
+				$insert->studentid = 0;
+				$insert->visible = 1;
+				$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, $insert);
+			}
 		}
 	}
 	

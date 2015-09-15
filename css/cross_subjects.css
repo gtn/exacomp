@@ -156,3 +156,6 @@
 #block_exacomp #exabis_competences_block .exabis_assign_student{
 	display:none;
 }
+#block_exacomp div.edit_buttons_float_right {
+	float: right;
+}
