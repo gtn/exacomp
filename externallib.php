@@ -4816,7 +4816,7 @@ class block_exacomp_external extends external_api {
 					
 				if ($file = block_exaport_get_item_file ( $itemInformation )) {
 					$data['file'] = ("{$CFG->wwwroot}/blocks/exaport/portfoliofile.php?access=portfolio/id/" . $userid . "&itemid=" . $itemInformation->id);
-					$data['isimage'] = $file->is_valid_image ();
+					$data['mimetype'] = $file->get_mimetype();
 					$data['filename'] = $file->get_filename ();
 				}
 			}
@@ -4845,7 +4845,7 @@ class block_exacomp_external extends external_api {
 			$data['filename'] = "";
 			$data['url'] = "";
 			$data['type'] = "";
-			$data['isimage'] = false;
+			$data['mimetype'] = false;
 			$data['teachercomment'] = "";
 			$data['studentcomment'] = "";
 			$data['teachervalue'] = isset ( $exampleEvaluation->teacher_evaluation ) ? $exampleEvaluation->teacher_evaluation : -1;
@@ -4870,7 +4870,7 @@ class block_exacomp_external extends external_api {
 				'url' => new external_value ( PARAM_TEXT, 'url' ),
 				'filename' => new external_value ( PARAM_TEXT, 'title of item' ),
 				'file' => new external_value ( PARAM_URL, 'file url' ),
-				'isimage' => new external_value ( PARAM_BOOL, 'true if file is image' ),
+				'mimetype' => new external_value ( PARAM_TEXT, 'mime type for file' ),
 				'teachervalue' => new external_value ( PARAM_INT, 'teacher grading' ),
 				'studentvalue' => new external_value ( PARAM_INT, 'student grading' ),
 				'teachercomment' => new external_value ( PARAM_TEXT, 'teacher comment' ),
