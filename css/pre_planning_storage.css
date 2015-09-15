@@ -2,7 +2,6 @@
 	float: left;
 	width: 250px;
 	padding: 0 10px;
-	border: 1px solid #ccc;
 	background: #eee;
 	text-align: left;
 	margin-right: 25px;
@@ -11,13 +10,13 @@
 
 #block_exacomp #external-students {
 	float: left;
-	width: 250px;
+	width: 270px;
 	padding: 0 10px;
-	border: 1px solid #ccc;
 	background: #eee;
 	text-align: left;
 	margin-right: 25px;
 	margin-bottom: 25px;
+	padding-bottom: 10px;
 }
 #block_exacomp #external-events.hover {
 	background: #bbb;
@@ -27,14 +26,13 @@
 	float: left;
 	width: 150px;
 	padding: 0 10px;
-	border: 1px solid #ccc;
 	background: #eee;
 	text-align: left;
 	margin-bottom: 25px;
 }
 
 #block_exacomp #trash.hover {
-	background: #bbb;
+	background: #fddedd;
 }
 
 #block_exacomp #external-events h4 {
@@ -58,20 +56,12 @@
 	margin-top: 10px;
 }
 
-#block_exacomp #external-students li.has_examples a:link{
-	color: #999;
+#block_exacomp #external-students li.has_examples, #block_exacomp #external-students li.has_examples_temp a {
+	color: #7e7e7e;
 }
 
-#block_exacomp #external-students li.has_examples_temp a:link{
-	color: #999;
-}
-
-#block_exacomp #external-students li.has_examples a:visited{
-	color: #999;
-}
-
-#block_exacomp #external-students li.has_examples_temp a:visited{
-	color: #999;
+#block_exacomp #external-students li.has_examples input[type="checkbox"] {
+	opacity: 0.5;
 }
 
 #block_exacomp .fc-event .event-extra {
@@ -120,6 +110,7 @@
 	list-style-type: none;
 	margin-left: 0;
 	margin-top: 10px;
+	margin-bottom: 20px;
 }
 
 #block_exacomp #external-events h4, #block_exacomp #trash h4 {
@@ -142,28 +133,37 @@
 	width: 10px;
 	height: 10px;
 	background-color: #0070a8;
-	border: none;
+	border: 1px solid #b2b2b2;
 	-moz-border-radius:3px;  
 	border-radius: 3px;  
 	-webkit-border-radius: 3px;
+	margin-right: 6px;
+	display: inline;
 }
 
 #block_exacomp fieldset.gray {
 	width: 10px;
 	height: 10px;
 	background-color: #999;
-	border: none;
+	border: 1px solid #b2b2b2;
 	-moz-border-radius:3px;  
 	border-radius: 3px;  
 	-webkit-border-radius: 3px;
+	margin-right: 6px;
+	opacity: 0.5;
+	display: inline;
 }
 
 #block_exacomp .pre_planning_storage_legend_gray{
 	font-size: 0.85em;
 	color: #999;
+	display: block;
+	margin-left: 2px;
 }
 
 #block_exacomp .pre_planning_storage_legend_blue{
 	font-size: 0.85em;
 	color: #0070a8;
+	display: block;
+	margin-left: 2px;
 }

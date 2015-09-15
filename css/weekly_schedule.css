@@ -138,32 +138,43 @@
 	float: left;
 	width: 20%;
 	padding: 17px 10px 0;
-	border: 1px solid #ccc;
-	background: #eeeeee;
+	/* border: 1px solid #ccc;
+	background: #eeeeee; */
 	text-align: left;
+	min-height: 100px;
+	background: #eee; 
 }
 #block_exacomp #external-events.hover {
-	background: #bbb;
+	background: #d5ecff;
 }
 
 #block_exacomp #trash {
 	width: 20%;
-	padding: 80px 10px 0 10px;
-	 border: 1px solid #ccc;
+	padding: 17px 10px 0 10px;
+	/* border: 1px solid #ccc; */
 	background: #eee; 
 	text-align: left;
-	margin-top: 20px;
+	margin-top: 25px;
+	float: left;
 }
 
 #block_exacomp #trash.hover {
-	background: #bbb;
+	background: #fddedd;
+	border-color: #fddedd;
 }
 
 #block_exacomp #external-events h4, #block_exacomp #trash h4 {
 	font-size: 0.9em;
 	margin-top: 0;
-	padding-top: 1em;
 }
+
+#block_exacomp #trash h4 {
+    background: transparent url("../pix/exacomp_week_trash.png") no-repeat scroll right bottom;
+    height: 28px;
+    margin: 0 auto 15px;
+}
+
+
 
 #block_exacomp #trash .fc-event {
 	margin: 10px 0;
@@ -256,10 +267,6 @@
 }
 
 #block_exacomp .fc-unthemed .fc-today {
-    background: #fcf8e3 none repeat scroll 0 0;
-}
-
-#block_exacomp .fc-unthemed .fc-today {
     background: #d6ecff none repeat scroll 0 0;
 }
 
@@ -277,24 +284,4 @@
 	border-color: #7e91a2;
 }
 
-#trash:after {
-    visibility: hidden;
-    display: block;
-    content: "";
-    clear: both;
-    height: 0;
-}
-* html #trash            { zoom: 1; } /* IE6 */
-*:first-child+html #trash { zoom: 1; } /* IE7 */
 
-#trash:before,
-#trash:after {
-    content:"";
-    display:table;
-}
-#trash:after {
-    clear:both;
-}
-#trash {
-    zoom:1; /* For IE 6/7 (trigger hasLayout) */
-}
