@@ -4204,7 +4204,7 @@ function block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid
 		$descriptor->children = block_exacomp_get_child_descriptors($descriptor,$courseid, $showalldescriptors);
 		foreach($descriptor->children as $cid => $cvalue) {
 			if(!array_key_exists($cid, $comps) && (!isset($show_childs[$descriptor->id])||!($show_childs[$descriptor->id])))
-	unset($descriptor->children[$cid]);
+				unset($descriptor->children[$cid]);
 		}
 		$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
 	}

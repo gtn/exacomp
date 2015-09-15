@@ -4732,7 +4732,7 @@ class block_exacomp_external extends external_api {
 			$descriptor_return->niveauid = $niveau->id;
 		}
 		
-		$childsandexamples = block_exacomp_external::get_descriptor_children($courseid, $descriptorid, $userid, $forall);
+		$childsandexamples = block_exacomp_external::get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid, true);
 		
 		$descriptor_return->children = $childsandexamples->children;
 
@@ -4882,7 +4882,7 @@ class block_exacomp_external extends external_api {
 	/** 
 	* helper function to use same code for 2 ws
 	*/
-	private static function get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid = 0) {
+	private static function get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid = 0, $show_all = false) {
 		global $DB;
 		$parent_descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptorid));
 		$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
@@ -4892,15 +4892,22 @@ class block_exacomp_external extends external_api {
 		
 		$non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
 		
+		if(!$non_visibilites)
+			$non_visibilites = array();
+		
 		if($crosssubjid > 0)
 			$crossdesc = $DB->get_fieldset_select(block_exacomp::DB_DESCCROSS, 'descrid', 'crosssubjid=?', array($crosssubjid));
+		
 		
 		if(!$forall)
 			$non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
 
+		if(!$non_visibilites_student)
+			$non_visibilites_student = array();
+			
 		$children_return = array();
 		foreach($children as $child){
-			if($child->examples){
+			if($child->examples || $show_all){
 				$child_return = new stdClass();
 				$child_return->childid = $child->id;
 				$child_return->childtitle = $child->title;
@@ -4911,12 +4918,13 @@ class block_exacomp_external extends external_api {
 				$child_return->studentevaluation = 0;
 				if(!$forall)
 					$child_return->studentevaluation = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$child->id, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_STUDENT))) ? $grading->value:0;
-				if(!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, non_visibilities_student))||$forall))
-					if($crosssubjid == 0 || in_array($child->id, $crossdesc) || in_array($descriptor->id, $crossdesc))
+				
+				if(!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, non_visibilities_student))||$forall)){
+					if($crosssubjid == 0 || in_array($child->id, $crossdesc) || in_array($descriptorid, $crossdesc))
 						$children_return[] = $child_return;
+				}
 			}
 		}
-		
 		
 		$examples_return = array();
 
@@ -4945,5 +4953,6 @@ class block_exacomp_external extends external_api {
 		
 		return $return;
 	}
+	
 	
 }
