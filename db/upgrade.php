@@ -2239,5 +2239,15 @@ function xmldb_block_exacomp_upgrade($oldversion) {
     	// Exacomp savepoint reached.
     	upgrade_block_savepoint(true, 2015091100, 'exacomp');
     }
+    
+    if($oldversion < 2015091500){
+    	$table = new xmldb_table('block_exacompniveaus');
+		$field = new xmldb_field('numb', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', null);
+           	
+    	if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+	    upgrade_block_savepoint(true, 2015091500, 'exacomp');
+    }
 	return $return_result;
 }

@@ -4908,11 +4908,16 @@ function block_exacomp_get_descriptor_numbering($descriptor){
 	
 	$numbering = block_exacomp_get_topic_numbering($topicid);
 	
-	if($descriptor->parentid != 0){
-		$numbering .= $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id' => $descriptor->parentid))->sorting . ".";
+	if($descriptor->parentid == 0){
+		$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
+		$numbering .= $niveau->numb;
 	}
-	
-	$numbering .= $descriptor->sorting;
+	if($descriptor->parentid != 0){
+		$parent_descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptor->parentid));
+		$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$parent_descriptor->niveauid));
+		$numbering .= $niveau->numb.'.';
+		$numbering .= $descriptor->sorting;
+	}
 		
 	return $numbering;
 }
