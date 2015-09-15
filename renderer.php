@@ -2060,11 +2060,15 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         $context = context_course::instance($courseid);
         $isTeacher = block_exacomp_is_teacher($context);
         
-        if(!$isTeacher)
-            return html_writer::link(
-                    new moodle_url('/blocks/exacomp/example_submission.php',array("courseid"=>$courseid,"exampleid"=>$exampleid)),
-                    $OUTPUT->pix_icon("i/manual_item", get_string('submission','block_exacomp')),
-                    array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+	    if(!$isTeacher) {
+	       	//if student, check for existing item
+	        $itemExists = block_exacomp_get_current_item_for_example($studentid, $exampleid);
+	        	
+	    	return html_writer::link(
+	                    new moodle_url('/blocks/exacomp/example_submission.php',array("courseid"=>$courseid,"exampleid"=>$exampleid)),
+	                    $OUTPUT->pix_icon((!$itemExists) ? "i/manual_item" : "i/reload", get_string('submission','block_exacomp')),
+	                    array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+	    }
         else if($studentid) {
             //works only if exaport is installed
             if(block_exacomp_exaportexists()){
