@@ -4504,7 +4504,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					'title'=> get_string('pre_planning_storage', 'block_exacomp'))), array('type'=>'button', 'id'=>'pre_planning_storage_submit', 'name'=> 'pre_planning_storage_submit', 
 			    	"onclick" => "window.open('".$url->out(false)."','_blank','width=880,height=660, scrollbars=yes'); return false;"));
          			
-			$right_content .= $this->print_edit_mode_button("&studentid=".$selectedStudent."&subjectid=".$selectedSubject."&topicid=".$selectedTopic);
+			$right_content .= $this->print_edit_mode_button("&studentid=".$selectedStudent."&crosssubjid=".$selectedCrosssubject);
 			
 			$content .= html_writer::div($right_content, 'edit_buttons_float_right');
         
