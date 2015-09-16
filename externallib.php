@@ -4695,14 +4695,15 @@ class block_exacomp_external extends external_api {
 				'courseid' => new external_value( PARAM_INT, 'courseid'),
 				'descriptorid' => new external_value( PARAM_INT, 'descriptorid'),
 				'userid' => new external_value ( PARAM_INT, 'userid' ),
-				'forall' => new external_value ( PARAM_BOOL, 'forall')
+				'forall' => new external_value ( PARAM_BOOL, 'forall'),
+				'crosssubjid' => new external_value ( PARAM_INT, 'crosssubjid')
 		) );
 	}
 	
-	public static function dakora_get_descriptor_details($courseid, $descriptorid, $userid, $forall){
+	public static function dakora_get_descriptor_details($courseid, $descriptorid, $userid, $forall, $crosssubjid){
 		global $DB, $USER;
 		$params = self::validate_parameters(self::dakora_get_descriptor_details_parameters(), 
-			array('courseid'=>$courseid, 'descriptorid'=>$descriptorid, 'userid'=>$userid,'forall'=>$forall));
+			array('courseid'=>$courseid, 'descriptorid'=>$descriptorid, 'userid'=>$userid,'forall'=>$forall, 'crosssubjid'=>$crosssubjid));
 			
 		if(!$forall && $userid == 0)
 			$userid = $USER->id;
