@@ -47,22 +47,18 @@ $PAGE->set_url('/blocks/exacomp/help.php', array('courseid' => $courseid));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
-block_exacomp_init_js_css();
-
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
 
 // build tab navigation & print header
-echo $OUTPUT->header();
-echo $PAGE->get_renderer('block_exacomp')->print_wrapperdivstart();
-echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
+$output = $PAGE->get_renderer('block_exacomp');
+echo $output->header($context,$courseid, $page_identifier);
 
 /* CONTENT REGION */
 
 echo $OUTPUT->box('<div class="helpdiv">'.text_to_html(get_string("help_content", "block_exacomp")).'</div>');
 
 /* END CONTENT REGION */
-echo '</div>';
-echo $OUTPUT->footer();
+echo $output->footer();
 
 ?>

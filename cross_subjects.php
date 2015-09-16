@@ -54,18 +54,13 @@ $PAGE->set_url('/blocks/exacomp/cross_subjects.php', array('courseid' => $course
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
-block_exacomp_init_js_css();
-
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
 
 $output = $PAGE->get_renderer('block_exacomp');
 
 // build tab navigation & print header
-echo $OUTPUT->header();
-echo $output->print_wrapperdivstart();
-echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), 'tab_cross_subjects');
-
+echo $output->header($context, $courseid, 'tab_cross_subjects');
 
 // CHECK TEACHER
 $isTeacher = block_exacomp_is_teacher($context);
@@ -167,7 +162,6 @@ else{
 	echo html_writer::end_tag("div");
 }
 /* END CONTENT REGION */
-echo $output->print_wrapperdivend();
-echo $OUTPUT->footer();
+echo $output->footer();
 
 ?>

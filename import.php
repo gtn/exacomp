@@ -60,8 +60,6 @@ $PAGE->set_url('/blocks/exacomp/import.php', array('courseid' => $courseid));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
-block_exacomp_init_js_css();
-
 $isAdmin = has_capability('block/exacomp:admin', $context);
 block_exacomp_require_teacher($context);
 
@@ -109,8 +107,8 @@ if(($isAdmin || block_exacomp_check_customupload()) && $action == 'delete') {
 }
 
 // build tab navigation & print header
-echo $PAGE->get_renderer('block_exacomp')->header();
-echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($course_context,$courseid), $page_identifier);
+$output = $PAGE->get_renderer('block_exacomp');
+echo $output->header($context, $courseid, $page_identifier);
 /* CONTENT REGION */
 
 /* Admins are allowed to import data, or a special capability for custom imports */
@@ -202,11 +200,11 @@ if($isAdmin || block_exacomp_check_customupload()) {
             
             if ($isAdmin) {
                 echo '<hr />';
-                echo $PAGE->get_renderer('block_exacomp')->print_sources();
+                echo $output->print_sources();
             }
         }
     }
 }
 
 /* END CONTENT REGION */
-echo $PAGE->get_renderer('block_exacomp')->footer();
+echo $output->footer();

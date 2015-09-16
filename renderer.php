@@ -28,11 +28,11 @@ define('STUDENTS_PER_COLUMN', 5);
 require_once dirname(__FILE__)."/lib/xmllib.php";
 
 class block_exacomp_renderer extends plugin_renderer_base {
-    public function header() {
+	public function header($context, $courseid, $page_identifier="", $tabtree=true) {
         block_exacomp_init_js_css();
 
         return
-            parent::header().
+            parent::header().(($tabtree)?parent::tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier):'').
             $this->print_wrapperdivstart();
     }
     

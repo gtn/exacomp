@@ -58,7 +58,6 @@ $context = context_course::instance($courseid);
 $PAGE->set_url('/blocks/exacomp/example_upload_student.php', array('courseid' => $courseid));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 
-block_exacomp_init_js_css();
 $PAGE->requires->js("/blocks/exacomp/javascript/CollapsibleLists.compressed.js");
 $PAGE->requires->css("/blocks/exacomp/css/CollapsibleLists.css");
 
@@ -73,7 +72,8 @@ if($action == 'serve') {
     print_error('this function is not available anymore');
 }
 // build tab navigation & print header
-echo $PAGE->get_renderer('block_exacomp')->header();
+$output= $PAGE->get_renderer('block_exacomp');
+$output->header($context, $course, '', false);
 /* CONTENT REGION */
 
 $taxonomies = $DB->get_records_menu("block_exacomptaxonomies",null,"","id, title");
@@ -190,4 +190,4 @@ if($exampleid > 0) {
 $form->display();
 
 /* END CONTENT REGION */
-echo $PAGE->get_renderer('block_exacomp')->footer();
+echo $output->footer();

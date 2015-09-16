@@ -46,7 +46,6 @@ $page_identifier = 'tab_competence_grid';
 $PAGE->set_url('/blocks/exacomp/competence_grid.php', array('courseid' => $courseid));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier,'block_exacomp'));
-block_exacomp_init_js_css();
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
@@ -54,8 +53,7 @@ block_exacomp_build_breadcrum_navigation($courseid);
 $output = $PAGE->get_renderer('block_exacomp');
 
 // build tab navigation & print header
-echo $output->header();
-echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
+echo $output->header($context, $courseid, $page_identifier);
 
 // CHECK TEACHER
 $isTeacher = block_exacomp_is_teacher($context);

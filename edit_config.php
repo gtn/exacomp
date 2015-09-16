@@ -65,8 +65,6 @@ $PAGE->set_url ( '/blocks/exacomp/edit_config.php', array (
 $PAGE->set_heading ( get_string ( 'pluginname', 'block_exacomp' ) );
 $PAGE->set_title ( get_string ( $page_identifier, 'block_exacomp' ) );
 
-block_exacomp_init_js_css ();
-
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation ( $courseid );
 
@@ -112,10 +110,7 @@ if (isset ( $action ) && $action == 'save') {
 
 // build tab navigation & print header
 $output = $PAGE->get_renderer ( 'block_exacomp' );
-echo $OUTPUT->header ();
-echo $output->print_wrapperdivstart ();
-
-echo $OUTPUT->tabtree ( block_exacomp_build_navigation_tabs ( $context, $courseid ), $page_identifier );
+echo $output->header ( $context, $courseid, $page_identifier );
 
 /* CONTENT REGION */
 
@@ -145,7 +140,6 @@ foreach ( $levels as $level ) {
 echo $output->print_edit_config ( $data, $courseid, $fromimport );
 
 /* END CONTENT REGION */
-echo $output->print_wrapperdivend ();
-echo $OUTPUT->footer ();
+echo $output->footer();
 
 ?>

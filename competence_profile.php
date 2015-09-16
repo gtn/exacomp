@@ -47,7 +47,6 @@ $PAGE->set_url('/blocks/exacomp/competence_profile.php', array('courseid' => $co
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
-block_exacomp_init_js_css();
 $PAGE->requires->js('/blocks/exacomp/javascript/Chart.js', true);
 
 // build breadcrumbs navigation
@@ -55,19 +54,16 @@ block_exacomp_build_breadcrum_navigation($courseid);
 
 $output = $PAGE->get_renderer('block_exacomp');
 // build tab navigation & print header
-echo $OUTPUT->header();
-echo $output->print_wrapperdivstart();
+$isTeacher = block_exacomp_is_teacher($context);
+echo $output->header($context, $courseid, (!$isTeacher)?'tab_competence_profile':$page_identifier);
 
 /* CONTENT REGION */
 $studentid = optional_param('studentid', 0, PARAM_INT);
-$isTeacher = block_exacomp_is_teacher($context);
 
 if(!$isTeacher){ 
 	$studentid = $USER->id;
-	echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), 'tab_competence_profile');
 	echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_profile($context, $courseid), $page_identifier);
 }else {
-	echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
 	
 	$coursestudents = block_exacomp_get_students_by_course($courseid);
 	
@@ -158,9 +154,7 @@ if($profile_settings->useexastud == 1){
 	echo $output->print_competence_profile_exastud($profile_settings, $student, $periods, $reviews);
 }
 
-//echo html_writer::end_div();
 /* END CONTENT REGION */
-echo $output->print_wrapperdivend();
-echo $OUTPUT->footer();
+echo $output->footer();
 
 ?>

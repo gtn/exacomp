@@ -47,16 +47,12 @@ $PAGE->set_url('/blocks/exacomp/skillmanagement.php', array('courseid' => $cours
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
-block_exacomp_init_js_css();
-
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
 
 // build tab navigation & print header
 $output = $PAGE->get_renderer('block_exacomp');
-echo $OUTPUT->header();
-echo $output->print_wrapperdivstart();
-echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
+echo $output->header($context,$courseid, $page_identifier);
 
 /* CONTENT REGION */
 
@@ -69,7 +65,6 @@ echo html_writer::tag('iframe', $contents, array('src'=>new moodle_url('http://w
 	array('courseid'=>$courseid, 'L'=>($USER->lang == 'de') ? 1 : 0, 'uname'=>$USER->username, 'uhash'=>md5($USER->firstaccess))), 'width'=>"99%", 'height'=>500, 'name'=>'iXmlTool'));
 
 /* END CONTENT REGION */
-echo $output->print_wrapperdivend();
-echo $OUTPUT->footer();
+echo $output->footer();
 
 ?>

@@ -49,11 +49,12 @@ block_exacomp_require_teacher($context);
 $PAGE->set_url('/blocks/exacomp/select_students.php', array('courseid' => $courseid));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 
-block_exacomp_init_js_css();
-echo $OUTPUT->header();
+// build breadcrumbs navigation
+block_exacomp_build_breadcrum_navigation($courseid);
 
-//TODO add share all
-//$course_crosssubjects = block_exacomp_get_cross_subjects_by_course($courseid);
+$output = $PAGE->get_renderer('block_exacomp');
+echo $output->header($context, $courseid, '', false);
+
 $students = block_exacomp_get_students_by_course($courseid);
 if(!$students) {
 	echo get_string('nostudents','block_exacomp');
@@ -75,4 +76,4 @@ foreach($students as $student)
 echo "</div>";
 echo html_writer::empty_tag('br').html_writer::tag("input", '', array("type"=>"button","value"=>get_string('save_selection', 'block_exacomp'),"name"=>"students"));
 
-echo $OUTPUT->footer();
+echo $output->footer();

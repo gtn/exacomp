@@ -56,7 +56,6 @@ $PAGE->set_url ( '/blocks/exacomp/view_examples.php', array (
 $PAGE->set_heading ( get_string ( 'pluginname', 'block_exacomp' ) );
 $PAGE->set_title ( get_string ( $page_identifier, 'block_exacomp' ) );
 
-block_exacomp_init_js_css ();
 $PAGE->requires->js ( "/blocks/exacomp/javascript/CollapsibleLists.compressed.js" );
 $PAGE->requires->css ( "/blocks/exacomp/css/CollapsibleLists.css" );
 
@@ -65,20 +64,17 @@ block_exacomp_build_breadcrum_navigation ( $courseid );
 
 // build tab navigation & print header
 $output = $PAGE->get_renderer ( 'block_exacomp' );
-echo $output->print_wrapperdivstart ();
-echo $OUTPUT->header ();
-echo $OUTPUT->tabtree ( block_exacomp_build_navigation_tabs ( $context, $courseid ), $page_identifier );
+echo $output->header($context, $courseid , $page_identifier );
 
 if ($show_all_examples != 0)
 	$courseid_for_tree = 0;
 	
 	/* CONTENT REGION */
-echo $PAGE->get_renderer('block_exacomp')->print_wrapperdivstart();
 
 $tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
 
-$output = $PAGE->get_renderer ( 'block_exacomp' );
 echo $output->print_view_example_header();
+
 if($style==0)
 	echo $output->print_competence_based_list_tree ( $tree , true, false);
 if($style==1){
@@ -104,23 +100,11 @@ if($style==1){
 	}
 	
 	echo html_writer::div($content, '', array('id'=>'associated_div'));
-	/*$sql = 'SELECT e.*
-		FROM {'.block_exacomp::DB_CROSSSUBJECTS.'} cs
-		JOIN {'.block_exacomp::DB_DESCCROSS.'} dc ON cs.crosssubjid = dc.crosssubjid 
-		JOIN {'.block_exacomp::DB_DESCEXAMP.'} de ON dc.descrid = de.descrid
-		JOIN {'.block_exacomp::DB_EXAMPLES.'} e ON e.id = de.exampid
-		WHERE cs.courseid = ?';
 	
-	$crosssub_examples = $DB->get_record_sql($sql, $courseid);*/
-	
-	
-	
-	//echo $output->print_example_based_list_tree();
 }
 echo '</div>';
 
 /* END CONTENT REGION */
-echo $output->print_wrapperdivend ();
-echo $OUTPUT->footer ();
+echo $output->footer ();
 
 ?>
