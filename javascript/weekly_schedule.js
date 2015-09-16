@@ -305,6 +305,12 @@
 				},
 				
 				eventRender: function(event, element) {
+
+					var courseid = block_exacomp.get_param('courseid');
+					
+					if(event.courseid != courseid)
+						element.addClass('different-course');
+							
 					// console.log(element.html());
 					
 					// delete time (actually slot time)
