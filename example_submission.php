@@ -46,7 +46,7 @@ require_login($course);
 
 
 $item = $DB->get_record('block_exacompitemexample', array("exampleid"=>$exampleid),'*',IGNORE_MULTIPLE);
-if ($item) {
+if ($item && !optional_param('newsubmission', false, PARAM_BOOL)) {
 	$url = new moodle_url("/blocks/exaport/item.php",array("courseid"=>$courseid,"action"=>"edit","sesskey"=>sesskey(),"id"=>$item->itemid));
 	redirect($url);
 }
