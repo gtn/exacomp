@@ -214,6 +214,8 @@ $string['show_all_course_examples'] = 'Beispiele aus allen Kursen anzeigen';
 $string['expandcomps'] = 'Alle &ouml;ffnen';
 $string['contactcomps'] = 'Alle schlie&szlig;en';
 $string['name_example'] = 'Name';
+$string['comp_based'] = 'Nach Kompetenzen sortieren';
+$string['examp_based'] = 'Nach Lernmaterialien sortieren';
 
 //Icons
 $string['assigned_example'] = 'Assigned Example';

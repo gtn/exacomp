@@ -4830,11 +4830,14 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	
 	public function print_view_example_header(){
 		global $PAGE;
-		$content = html_writer::empty_tag('input', array('type'=>'image', 'src'=>new moodle_url('/pix/i/withsubcat.png'), 'name'=>'comp_based', 'id'=>'comp_based', 
-			'value'=>'comp_based', 'class'=>'view_examples_icon', 'onclick'=>"document.location.href='".$PAGE->url."&style=0';"))
-			. html_writer::empty_tag('input', array('type'=>'image', 'src'=>new moodle_url('/pix/e/bullet_list.png'), 'name'=>'examp_based', 'id'=>'examp_based', 
-			'value'=>'examp_based', 'class'=>'view_examples_icon', 'onclick'=>"document.location.href='".$PAGE->url."&style=1';"));
-
+		$content = html_writer::tag('button', html_writer::empty_tag('img', array('src'=>new moodle_url('/pix/i/withsubcat.png'), 
+			'title'=> get_string('comp_based', 'block_exacomp'))).' '.get_string('comp_based', 'block_exacomp'), array('type'=>'button', 'id'=>'comp_based', 'name'=> 'comp_based', 'class'=>'view_examples_icon',
+			"onclick" => "document.location.href='".$PAGE->url."&style=0';"));
+         	
+		$content .= html_writer::tag('button', html_writer::empty_tag('img', array('src'=>new moodle_url('/pix/e/bullet_list.png'), 
+			'title'=> get_string('examp_based', 'block_exacomp'))).' '.get_string('examp_based', 'block_exacomp'), array('type'=>'button', 'id'=>'examp_based', 'name'=> 'examp_based', 'class'=>'view_examples_icon',
+			"onclick" => "document.location.href='".$PAGE->url."&style=1';"));
+		
 		return html_writer::div($content, '', array('id'=>'view_examples_header'));
 	}
 	

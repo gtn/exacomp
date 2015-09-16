@@ -190,6 +190,8 @@ $string['expandcomps'] = 'expand all';
 $string['contactcomps'] = 'contract all';
 $string['name_example'] = 'Name';
 $string['description_example'] = 'Description';
+$string['comp_based'] = 'sort by competencies';
+$string['examp_based'] = 'sort by examples';
 
 //Icons
 $string['assigned_example'] = 'Assigned Example';
