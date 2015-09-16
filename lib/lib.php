@@ -509,7 +509,7 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 		}
 			
 		if($value != null)
-		$updateEvaluation->student_evaluation = intval(($value != -1) ? $value : null);
+		$updateEvaluation->student_evaluation = ($value != -1) ? $value : null;
 			
 		$updateEvaluation->starttime = $starttime;
 		$updateEvaluation->endtime = $endtime;
@@ -1219,16 +1219,16 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $stud
 		$selectedTopic = reset($topics);
 	}
 
-	if(!$student){
-		$defaultTopic = new stdClass();
-		$defaultTopic->id=SHOW_ALL_TOPICS;
-		$defaultTopic->title= get_string('alltopics','block_exacomp');
-
-		$topics = array_merge(array($defaultTopic),$topics);
-
-		if($topicid == SHOW_ALL_TOPICS)
-			$selectedTopic = $defaultTopic;
-	}
+	$defaultTopic = new stdClass ();
+	$defaultTopic->id = SHOW_ALL_TOPICS;
+	$defaultTopic->title = get_string ( 'alltopics', 'block_exacomp' );
+	
+	$topics = array_merge ( array (
+			$defaultTopic 
+	), $topics );
+	
+	if ($topicid == SHOW_ALL_TOPICS)
+		$selectedTopic = $defaultTopic;
 	
 	return array($subjects, $topics, $selectedSubject, $selectedTopic);
 }

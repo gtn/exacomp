@@ -526,7 +526,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $cell->attributes['class'] = 'comp_grey_97';
         $cell->text = html_writer::tag('b', get_string('howtocheck', 'block_exacomp'))
         .html_writer::tag('p', $topic->knowledgecheck);
-            
+
+        /*
         $p_content = get_string('reached_topic', 'block_exacomp');
 
         if($scheme == 1)
@@ -543,11 +544,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
             
         if(isset($icon))
             $p_content .= " ".html_writer::span($icon->img, 'exabis-tooltip', array('title'=>s($icon->text)));
-
         $p_content .= html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'topiccompid', 'value'=>$topic->id));
         $p_content .= html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'subjectcompid', 'value'=>$subject->id));
             
         $cell->text .= html_writer::tag('p', $p_content);
+		*/
 
         $row->cells[] = $cell;
         $rows[] = $row;
@@ -1701,19 +1702,17 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                         if(!$profoundness) {
                             /*
                              * if scheme == 1: print checkbox
-                            * if scheme != 1, role = student, version = LIS
                             */
-                            if($data->scheme == 1 || ($data->scheme != 1 && $data->role == block_exacomp::ROLE_STUDENT && $version)) {
+                            if($data->scheme == 1) {
                                 if($data->showevaluation)
                                     $studentCellEvaluation->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
             
                                 $studentCell->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme, ($visible_student)?false:true, null, ($data->role == block_exacomp::ROLE_TEACHER) ? $reviewerid : null);
                             }
                             /*
-                             * if scheme != 1, !version: print select
-                            * if scheme != 1, version = LIS, role = teacher
+                             * if scheme != 1: print select
                             */
-                            elseif(!$version || ($version && $data->role == block_exacomp::ROLE_TEACHER)) {
+                            else {
                                 if($data->showevaluation)
                                     $studentCellEvaluation->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
             
@@ -1924,7 +1923,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                              * if scheme == 1: print checkbox
                             * if scheme != 1, role = student, version = LIS
                             */
-                            if($data->scheme == 1 || ($data->scheme != 1 && $data->role == block_exacomp::ROLE_STUDENT && $version)) {
+                            if($data->scheme == 1) {
                                 if($data->showevaluation)
                                     $studentCellEvaluation->text = $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
                                     
@@ -1942,7 +1941,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                              * if scheme != 1, !version: print select
                             * if scheme != 1, version = LIS, role = teacher
                             */
-                            elseif(!$version || ($version && $data->role == block_exacomp::ROLE_TEACHER)) {
+                            else {
                                 if($data->showevaluation)
                                     $studentCellEvaluation->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
         
