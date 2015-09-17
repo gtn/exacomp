@@ -95,16 +95,4 @@ echo $output->print_side_wrap_weekly_schedule();
 /* END CONTENT REGION */
 
 echo $output->footer();
-?>studentid));
-
-echo $output->print_course_dropdown($selectedCourse, $studentid);
-
-echo $OUTPUT->box(get_string('weekly_schedule_link_to_grid','block_exacomp'));
-
-echo $output->print_side_wrap_weekly_schedule();
-/* END CONTENT REGION */
-
-echo $output->print_wrapperdivend();
-echo $OUTPUT->footer();
-
 ?>
