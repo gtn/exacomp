@@ -4149,6 +4149,11 @@ class block_exacomp_external extends external_api {
 				'value'=>$value
 		) );
 		
+		if($userid == 0 && $role == block_exacomp::ROLE_STUDENT)
+			$userid = $USER->id;
+		else if($userid == 0)
+			throw new invalid_parameter_exception ( 'Userid can not be 0 for teacher grading' );
+		
 		if(block_exacomp_set_user_competence($userid, $compid, block_exacomp::TYPE_DESCRIPTOR, $courseid, $role, $value) == -1)
 			throw new invalid_parameter_exception ( 'Not allowed' );
 	
