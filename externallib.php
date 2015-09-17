@@ -4508,7 +4508,7 @@ class block_exacomp_external extends external_api {
 	public static function dakora_submit_example($exampleid,$studentvalue = null,$url,$filename,$studentcomment,$itemid=0,$courseid=0) {
 		global $CFG,$DB,$USER;
 	
-		$params = self::validate_parameters(self::dakora_submit_example_parameters(), array('title'=>$title,'exampleid'=>$exampleid,'url'=>$url,'filename'=>$filename,'studentcomment'=>$studentcomment,'studentvalue'=>$studentvalue,'itemid'=>$itemid,'courseid'=>$courseid));
+		$params = self::validate_parameters(self::dakora_submit_example_parameters(), array('exampleid'=>$exampleid,'url'=>$url,'filename'=>$filename,'studentcomment'=>$studentcomment,'studentvalue'=>$studentvalue,'itemid'=>$itemid,'courseid'=>$courseid));
 	
 		if (!isset($type)) {
 			$type = ($filename != '') ? 'file' : 'url';
@@ -4607,8 +4607,7 @@ class block_exacomp_external extends external_api {
 			}
 		}
 	
-		if($studentvalue > -1)
-			block_exacomp_set_user_example($USER->id, $exampleid, $courseid, block_exacomp::ROLE_STUDENT, $studentvalue);
+		block_exacomp_set_user_example($USER->id, $exampleid, $courseid, block_exacomp::ROLE_STUDENT, $studentvalue);
 	
 		return array("success"=>true,"itemid"=>$itemid);
 	}
@@ -4653,12 +4652,17 @@ class block_exacomp_external extends external_api {
 	
 		$params = self::validate_parameters(self::dakora_grade_example_parameters(), array('userid'=>$userid,'courseid'=>$courseid,'exampleid'=>$exampleid,'examplevalue'=>$examplevalue,'itemid'=>$itemid,'itemvalue'=>$itemvalue,'comment'=>$comment));
 	
-		if($examplevalue > -1)
-			block_exacomp_set_user_example(($userid == 0) ? $USER->id : $userid, $exampleid, $courseid, ($userid == 0) ? block_exacomp::ROLE_STUDENT : block_exacomp::ROLE_TEACHER, $examplevalue);
+		block_exacomp_set_user_example(($userid == 0) ? $USER->id : $userid, $exampleid, $courseid, ($userid == 0) ? block_exacomp::ROLE_STUDENT : block_exacomp::ROLE_TEACHER, $examplevalue);
 	
 		if($itemid > 0 && $userid > 0) {
 				
 			$itemexample = $DB->get_record('block_exacompitemexample', array('exampleid' => $exampleid, 'itemid' => $itemid));
+			if(!$itemexample)
+				throw new invalid_parameter_exception("Wrong itemid given");
+			
+			if($itemvalue < 0 && $itemvalue > 100)
+				throw new invalid_parameter_exception("Item value must be between 0 and 100");
+				
 			$itemexample->teachervalue = $itemvalue;
 			$itemexample->datemodified = time();
 			$itemexample->status = 1;
