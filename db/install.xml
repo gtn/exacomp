@@ -300,6 +300,7 @@
         <FIELD NAME="sourceid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="source" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
         <FIELD NAME="span" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="span tells if the niveau is a link over multiple niveaus"/>
+		<FIELD NAME="numb" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>     
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

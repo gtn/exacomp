@@ -2242,7 +2242,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
     
     if($oldversion < 2015091500){
     	$table = new xmldb_table('block_exacompniveaus');
-		$field = new xmldb_field('numb', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', null);
+		$field = new xmldb_field('numb', XMLDB_TYPE_INTEGER, '10', null, null, null, '1', null);
            	
     	if (!$dbman->field_exists($table, $field)) {
 			$dbman->add_field($table, $field);
