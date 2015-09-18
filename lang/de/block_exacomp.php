@@ -473,7 +473,7 @@ $string['pre_planning_storage_added'] = 'Lernmaterial wurde zum Vorplanungsspeic
 $string['pre_planning_storage_already_contains'] = 'Lernmateriel bereits im Vorplanungsspeicher enthalten.';
 $string['save_pre_planning_selection'] = 'Ausgewählte Beispiele auf den Wochenplan der ausgewählten Schüler/innen legen';
 $string['empty_pre_planning_storage'] = 'Vorplanungsspeicher leeren';
-$string['noschedules_pre_planning_storage'] = 'Vorplanungsspeicher wurde geleert, legen Sie über die Kompetenzraster neue Lernmaterialien in den Vorplanungsspeicher.';
+$string['noschedules_pre_planning_storage'] = 'Der Vorplanungsspeicher ist leer. Bitte legen Sie über die Kompetenzraster neue Lernmaterialien in den Vorplanungsspeicher.';
 $string['empty_trash'] = 'Papierkorb leeren';
 $string['to_weekly_schedule'] = 'Zum Wochenplan';
 
