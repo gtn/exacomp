@@ -32,13 +32,16 @@ global $DB, $OUTPUT, $PAGE, $USER, $version;
 $courseid = required_param('courseid', PARAM_INT);
 $showevaluation = ($version) ? true : optional_param("showevaluation", false, PARAM_BOOL);
 $group = optional_param('group', 0, PARAM_INT);
+
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
+
 $edit = optional_param('editmode', 0, PARAM_BOOL);
 
 //if edit mode is on, do not allow to work with students
 $studentid = optional_param('studentid', BLOCK_EXACOMP_SHOW_ALL_STUDENTS, PARAM_INT);
+
 if($edit) {
 	$selectedStudentid = $studentid;
 	$studentid = 0;
@@ -48,7 +51,6 @@ require_login($course);
 
 $context = context_course::instance($courseid);
 
-/* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_competence_overview';
 
 /* PAGE URL - MUST BE CHANGED */
@@ -56,16 +58,12 @@ $PAGE->set_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $c
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
-block_exacomp_init_js_css();
-
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
 
 $output = $PAGE->get_renderer('block_exacomp');
-
 // build tab navigation & print header
-echo $output->header();
-echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
+echo $output->header($context, $courseid, $page_identifier);
 
 // CHECK TEACHER
 $isTeacher = block_exacomp_is_teacher($context);
@@ -111,7 +109,6 @@ else{
 		$metasubject->title = block_exacomp_get_schooltype_title_by_subject($selectedSubject);
 	}
 	
-		
 	$scheme = block_exacomp_get_grading_scheme($courseid);
 	
 	if($selectedTopic->id != SHOW_ALL_TOPICS){

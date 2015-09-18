@@ -3056,6 +3056,13 @@ class block_exacomp_external extends external_api {
 							$descriptor_return->descriptorid = $descriptor->id;
 							$descriptor_return->descriptortitle = $descriptor->title;
 							$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
+							$descriptor_return->niveautitle = "";
+							$descriptor_return->niveauid = 0;
+							if($descriptor->niveauid){
+								$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
+								$descriptor_return->niveautitle = $niveau->title;
+								$descriptor_return->niveauid = $niveau->id;
+							}
 							if(!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student))||$forall))
 								$descriptors_return[] = $descriptor_return;
 						}
@@ -3076,7 +3083,9 @@ class block_exacomp_external extends external_api {
 		return new external_multiple_structure ( new external_single_structure ( array (
 				'descriptorid' => new external_value ( PARAM_INT, 'id of descriptor' ),
 				'descriptortitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
-				'numbering' => new external_value ( PARAM_TEXT, 'numbering for descriptor')
+				'numbering' => new external_value ( PARAM_TEXT, 'numbering for descriptor'),
+				'niveautitle' => new external_value ( PARAM_TEXT, 'title of niveau'),
+				'niveauid' => new external_value ( PARAM_INT, 'id of niveau')
 		) ) );
 	}
 	
@@ -3125,7 +3134,9 @@ class block_exacomp_external extends external_api {
 			'children' => new external_multiple_structure ( new external_single_structure ( array (
 					'childid' => new external_value ( PARAM_INT, 'id of child' ),
 					'childtitle' => new external_value ( PARAM_TEXT, 'title of child' ),
-					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child')
+					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
+					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of child'),
+					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of child'),
 			) ) ) ,
 			'examples' => new external_multiple_structure ( new external_single_structure ( array (
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
@@ -3579,11 +3590,69 @@ class block_exacomp_external extends external_api {
 	 * 
 	 * @return external_function_parameters
 	 */
+	public static function dakora_get_examples_trash_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course'),
+				'userid' => new external_value ( PARAM_INT, 'id of user, if 0 current user' )
+		) );
+	}
+	
+	/**
+	 * Get examples for trash
+	 * 
+	 * @param
+	 * 			int courseid
+	 *        	int userid
+	 * @return list of descriptors
+	 */
+	public static function dakora_get_examples_trash($courseid, $userid) {
+		global $USER;
+		
+		$params = self::validate_parameters ( self::dakora_get_examples_trash_parameters (), array (
+				'courseid'=>$courseid,
+				'userid'=>$userid
+			) );
+			
+		if($userid == 0)
+			$userid = $USER->id;
+			
+		$examples = block_exacomp_get_examples_for_trash($userid, $courseid);
+		
+		foreach($examples as $example){
+			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
+		}
+		
+		return $examples;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_examples_trash_returns() {
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
+				'title' => new external_value ( PARAM_TEXT, 'title of example' ),
+				'student_evaluation' => new external_value ( PARAM_INT, 'self evaluation of student' ),
+				'teacher_evaluation' => new external_value( PARAM_TEXT, 'evaluation of teacher'),
+				'courseid' => new external_value(PARAM_INT, 'example course'),
+				'state' => new external_value (PARAM_INT, 'state of example'),
+				'scheduleid' => new external_value (PARAM_INT, 'id in schedule context')
+		) ) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 * 
+	 * @return external_function_parameters
+	 */
 	public static function dakora_set_example_time_slot_parameters() {
 		return new external_function_parameters ( array (
 				'scheduleid' => new external_value (PARAM_INT, 'id in schedule context'),
 				'start' => new external_value(PARAM_INT, 'start timestamp'),
-				'end'=> new external_value(PARAM_INT, 'end timestamp')
+				'end'=> new external_value(PARAM_INT, 'end timestamp'),
+				'deleted' => new external_value(PARAM_INT, 'delete item')
 		) );
 	}
 	
@@ -3598,14 +3667,15 @@ class block_exacomp_external extends external_api {
 	 *			int end
 	 * @return list of descriptors
 	 */
-	public static function dakora_set_example_time_slot($scheduleid, $start, $end) {
+	public static function dakora_set_example_time_slot($scheduleid, $start, $end, $deleted) {
 		$params = self::validate_parameters ( self::dakora_set_example_time_slot_parameters (), array (
 				'scheduleid' => $scheduleid,
 				'start'=>$start,
-				'end'=>$end
+				'end'=>$end,
+				'deleted'=>$deleted
 			) );
 			
-		block_exacomp_set_example_start_end($scheduleid, $start, $end);
+		block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted);
 		
 		return array (
 				"success" => true
@@ -3881,6 +3951,13 @@ class block_exacomp_external extends external_api {
 						$descriptor_return->descriptorid = $descriptor->id;
 						$descriptor_return->descriptortitle = $descriptor->title;
 						$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
+						$descriptor_return->niveautitle = "";
+						$descriptor_return->niveauid = 0;
+						if($descriptor->niveauid){
+							$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
+							$descriptor_return->niveautitle = $niveau->title;
+							$descriptor_return->niveauid = $niveau->id;
+						}
 						$descriptors_return[] = $descriptor_return;
 				}
 			}
@@ -3898,7 +3975,9 @@ class block_exacomp_external extends external_api {
 		return new external_multiple_structure ( new external_single_structure ( array (
 				'descriptorid' => new external_value ( PARAM_INT, 'id of descriptor' ),
 				'descriptortitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
-				'numbering' => new external_value ( PARAM_TEXT, 'numbering for descriptor')
+				'numbering' => new external_value ( PARAM_TEXT, 'numbering for descriptor'),
+				'niveautitle' => new external_value ( PARAM_TEXT, 'title of nivaue'),
+				'niveauid' => new external_value ( PARAM_INT, 'id of niveau')
 		) ) );
 	}
 
@@ -3949,7 +4028,9 @@ class block_exacomp_external extends external_api {
 			'children' => new external_multiple_structure ( new external_single_structure ( array (
 					'childid' => new external_value ( PARAM_INT, 'id of child' ),
 					'childtitle' => new external_value ( PARAM_TEXT, 'title of child' ),
-					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child')
+					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
+					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of children'),
+					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of children'),
 			) ) ) ,
 			'examples' => new external_multiple_structure ( new external_single_structure ( array (
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
@@ -4030,10 +4111,788 @@ class block_exacomp_external extends external_api {
 				'fullname' => new external_value ( PARAM_TEXT, 'User fullname')
 		));
 	}
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 * 
+	 */
+	public static function dakora_set_competence_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
+				'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
+				'compid' => new external_value(PARAM_INT, 'competence id'),
+				'role' => new external_value(PARAM_INT, 'user role (0 == student, 1 == teacher)'),
+				'value' => new external_value(PARAM_INT, 'evaluation value (0, 1, 2 or 3)')
+		) );
+	}
+	
+	/**
+	 * Set a competence for a user
+	 *
+	 * @param
+	 *        	int courseid
+	 *			int userid
+	 *			int compid
+	 *			int role
+	 *			int value
+	 * @return success
+	 */
+	public static function dakora_set_competence($courseid, $userid, $compid, $role, $value) {
+		global $USER, $DB;
+		$params = self::validate_parameters ( self::dakora_set_competence_parameters (), array (
+				'courseid'=>$courseid,
+				'userid'=>$userid,
+				'compid'=>$compid,
+				'role'=>$role,
+				'value'=>$value
+		) );
+		
+		if($userid == 0 && $role == block_exacomp::ROLE_STUDENT)
+			$userid = $USER->id;
+		else if($userid == 0)
+			throw new invalid_parameter_exception ( 'Userid can not be 0 for teacher grading' );
+		
+		if(block_exacomp_set_user_competence($userid, $compid, block_exacomp::TYPE_DESCRIPTOR, $courseid, $role, $value) == -1)
+			throw new invalid_parameter_exception ( 'Not allowed' );
+	
+		return array (
+				"success" => true 
+			);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_set_competence_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' ) 
+		) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 * 
+	 */
+	public static function dakora_get_pre_planning_storage_examples_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' )
+		) );
+	}
+	
+	/**
+	 * get pre planning storage examples for current teacher
+	 *
+	 * @param
+	 *        	int courseid
+	 * @return examples
+	 */
+	public static function dakora_get_pre_planning_storage_examples($courseid) {
+		global $USER;
+		$params = self::validate_parameters ( self::dakora_get_pre_planning_storage_examples_parameters (), array (
+				'courseid'=>$courseid
+		) );
+		
+		$creatorid = $USER->id;
+		
+		$examples = block_exacomp_get_pre_planning_storage($creatorid, $courseid);
+			
+		foreach($examples as $example){
+			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
+		}
+		
+		return $examples;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_pre_planning_storage_examples_returns() {
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
+				'title' => new external_value ( PARAM_TEXT, 'title of example' ),
+				'courseid' => new external_value(PARAM_INT, 'example course'),
+				'state' => new external_value (PARAM_INT, 'state of example'),
+				'scheduleid' => new external_value (PARAM_INT, 'id in schedule context')
+		) ) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 * 
+	 */
+	public static function dakora_get_pre_planning_storage_students_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' )
+		) );
+	}
+	
+	/**
+	 * get pre planning storage students for current teacher
+	 *
+	 * @param
+	 *        	int courseid
+	 * @return examples
+	 */
+	public static function dakora_get_pre_planning_storage_students($courseid) {
+		global $USER;
+		$params = self::validate_parameters ( self::dakora_get_pre_planning_storage_students_parameters (), array (
+				'courseid'=>$courseid
+		) );
+		
+		$creatorid = $USER->id;
+		
+		$examples = array();
+		$schedules = block_exacomp_get_pre_planning_storage($creatorid, $courseid);
+		foreach($schedules as $schedule){
+			if(!in_array($schedule->exampleid, $examples))
+				$examples[] = $schedule->exampleid;
+		}
+			
+		$students = block_exacomp_get_students_by_course($courseid);
+		$students = block_exacomp_get_student_pool_examples($students, $courseid);
+		
+		foreach($students as $student){
+			$student_has_examples = false;
+			foreach($student->pool_examples as $example){
+				if(in_array($example->exampleid, $examples))
+					$student_has_examples = true;
+			}
+			$student->studentid = $student->id;
+			$student->has_examples = $student_has_examples; 
+		}
+		
+		return $students;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_pre_planning_storage_students_returns() {
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'studentid' => new external_value ( PARAM_INT, 'id of student' ),
+				'firstname' => new external_value ( PARAM_TEXT, 'firstname of student' ),
+				'lastname' => new external_value ( PARAM_TEXT, 'lastname of student' ),
+				'has_examples' => new external_value( PARAM_BOOL, 'already has examples from current pre planning storage')
+		) ) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 * 
+	 */
+	public static function dakora_has_items_in_pre_planning_storage_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' )
+		) );
+	}
+	
+	/**
+	 * get pre planning storage students for current teacher
+	 *
+	 * @param
+	 *        	int courseid
+	 * @return examples
+	 */
+	public static function dakora_has_items_in_pre_planning_storage($courseid) {
+		global $USER;
+		$params = self::validate_parameters ( self::dakora_has_items_in_pre_planning_storage_parameters (), array (
+				'courseid'=>$courseid
+		) );
+		
+		$creatorid = $USER->id;
+		
+		$items = false;
+		if(block_exacomp_has_items_pre_planning_storage($creatorid, $courseid))
+			$items = true;
+		
+		return array (
+				"success" => $items 
+		);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_has_items_in_pre_planning_storage_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' ) 
+		) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 * 
+	 */
+	public static function dakora_empty_pre_planning_storage_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' )
+		) );
+	}
+	
+	/**
+	 * empty pre planning storage for current teacher
+	 *
+	 * @param
+	 *        	int courseid
+	 * @return examples
+	 */
+	public static function dakora_empty_pre_planning_storage($courseid) {
+		global $USER;
+		$params = self::validate_parameters ( self::dakora_empty_pre_planning_storage_parameters (), array (
+				'courseid'=>$courseid
+		) );
+		
+		$creatorid = $USER->id;
+		
+		block_exacomp_empty_pre_planning_storage($creatorid, $courseid);
+		
+		return array (
+				"success" => true
+		);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_empty_pre_planning_storage_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' ) 
+		) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 * 
+	 */
+	public static function dakora_add_example_to_pre_planning_storage_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
+				'exampleid' => new external_value (PARAM_INT, 'id of example')
+		) );
+	}
+	
+	/**
+	 * add example to current pre planning storage
+	 *
+	 * @param
+	 *        	int courseid
+	 * @return examples
+	 */
+	public static function dakora_add_example_to_pre_planning_storage($courseid, $exampleid) {
+		global $USER;
+		$params = self::validate_parameters ( self::dakora_add_example_to_pre_planning_storage_parameters (), array (
+				'courseid'=>$courseid,
+				'exampleid' => $exampleid
+		) );
+		
+		$creatorid = $USER->id;
+		
+		block_exacomp_add_example_to_schedule(0, $exampleid, $creatorid, $courseid);
+		
+		return array (
+				"success" => true
+		);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_add_example_to_pre_planning_storage_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' ) 
+		) );
+	}
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 * 
+	 */
+	public static function dakora_add_examples_to_students_schedule_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
+				'examples' => new external_value ( PARAM_TEXT, 'json array of examples'),
+				'students' => new external_value ( PARAM_TEXT, 'json array of students')
+		) );
+	}
+	
+	/**
+	 * add example to current pre planning storage
+	 *
+	 * @param
+	 *        	int courseid
+	 * @return examples
+	 */
+	public static function dakora_add_examples_to_students_schedule($courseid, $examples, $students) {
+		global $USER;
+		$params = self::validate_parameters ( self::dakora_add_examples_to_students_schedule_parameters (), array (
+				'courseid'=>$courseid,
+				'examples' => $examples,
+				'students' => $students
+		) );
+		
+		$creatorid = $USER->id;
+		
+		$examples = json_decode($examples);
+		$students = json_decode($students);
+		
+		foreach($examples as $example){
+			foreach($students as $student)
+				block_exacomp_add_example_to_schedule($student, $example, $creatorid, $courseid);
+		}
+		
+		return array (
+				"success" => true
+		);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_add_examples_to_students_schedule_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' ) 
+		) );
+	}
+	
+
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_submit_example_parameters() {
+		return new external_function_parameters ( array (
+				'exampleid' => new external_value ( PARAM_INT, 'exampleid' ),
+				'studentvalue' => new external_value ( PARAM_INT, 'studentvalue' , VALUE_DEFAULT, -1),
+				'url' => new external_value ( PARAM_URL, 'url' ),
+				'filename' => new external_value ( PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area' ),
+				'studentcomment' => new external_value ( PARAM_TEXT, 'studentcomment' ),
+				'itemid' => new external_value ( PARAM_INT, 'itemid (0 for insert, >0 for update)' ),
+				'courseid' => new external_value ( PARAM_INT, 'courseid' )
+		) );
+	}
+	
+	/**
+	 * Add student submission to example.
+	 *
+	 * @param int itemid (0 for new, >0 for existing)
+	 * @return array of course subjects
+	 */
+	public static function dakora_submit_example($exampleid,$studentvalue = null,$url,$filename,$studentcomment,$itemid=0,$courseid=0) {
+		global $CFG,$DB,$USER;
+	
+		$params = self::validate_parameters(self::dakora_submit_example_parameters(), array('exampleid'=>$exampleid,'url'=>$url,'filename'=>$filename,'studentcomment'=>$studentcomment,'studentvalue'=>$studentvalue,'itemid'=>$itemid,'courseid'=>$courseid));
+	
+		if (!isset($type)) {
+			$type = ($filename != '') ? 'file' : 'url';
+		};
+	
+		//insert: if itemid == 0 OR status != 0
+		$insert = true;
+		if($itemid != 0) {
+			$itemexample = $DB->get_record('block_exacompitemexample', array('itemid'=>$itemid));
+			if($itemexample->teachervalue == null || $itemexample->status == 0)
+				$insert = false;
+		}
+		require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
+	
+		if($insert) {
+			//store item in the right portfolio category
+			$course_category = block_exaport_get_user_category($course->fullname, $USER->id);
+	
+			if(!$course_category) {
+				$course_category = block_exaport_create_user_category($course->fullname, $USER->id);
+			}
+	
+			$exampletitle = $DB->get_field('block_exacompexamples', 'title', array('id'=>$exampleid));
+			$subjecttitle = block_exacomp_get_subjecttitle_by_example($exampleid);
+			$subject_category = block_exaport_get_user_category($subjecttitle, $USER->id);
+			if(!$subject_category) {
+				$subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
+			}
+	
+			$itemid = $DB->insert_record("block_exaportitem", array('userid'=>$USER->id,'name'=>$exampletitle,'intro' => $exampletitle, 'url'=>$url, 'type'=>$type,'timemodified'=>time(),'categoryid'=>$subject_category->id,'teachervalue' => null, 'studentvalue' => null));
+			//autogenerate a published view for the new item
+			$dbView = new stdClass();
+			$dbView->userid = $USER->id;
+			$dbView->name = $exampletitle;
+			$dbView->timemodified = time();
+			$dbView->layout = 1;
+			// generate view hash
+			do {
+				$hash = substr(md5(microtime()), 3, 8);
+			} while ($DB->record_exists("block_exaportview", array("hash"=>$hash)));
+			$dbView->hash = $hash;
+	
+			$dbView->id = $DB->insert_record('block_exaportview', $dbView);
+	
+			//share the view with teachers
+			share_view_to_teachers($dbView->id, $courseid);
+	
+			//add item to view
+			$DB->insert_record('block_exaportviewblock',array('viewid'=>$dbView->id,'positionx'=>1, 'positiony'=>1, 'type'=>'item', 'itemid'=>$itemid));
+	
+		} else {
+			$item = $DB->get_record('block_exaportitem',array('id'=>$itemid));
+			if($url != '')
+				$item->url = $url;
+			$item->timemodified = time();
+	
+			if($type == 'file')
+				block_exaport_file_remove($DB->get_record("block_exaportitem",array("id"=>$itemid)));
+	
+			$DB->update_record('block_exaportitem', $item);
+		}
+	
+		//if a file is added we need to copy the file from the user/private filearea to block_exaport/item_file with the itemid from above
+		if($type == "file") {
+				
+			$context = context_user::instance($USER->id);
+			$fs = get_file_storage();
+			try {
+				$old = $fs->get_file($context->id, "user", "private", 0, "/", $filename);
+	
+				if($old) {
+					$file_record = array('contextid'=>$context->id, 'component'=>'block_exaport', 'filearea'=>'item_file',
+							'itemid'=>$itemid, 'filepath'=>'/', 'filename'=>$old->get_filename(),
+							'timecreated'=>time(), 'timemodified'=>time());
+					$fs->create_file_from_storedfile($file_record, $old->get_id());
+	
+					$old->delete();
+				}
+			} catch (Exception $e) {
+				//some problem with the file occured
+			}
+		}
+	
+		if($insert) {
+			$DB->insert_record('block_exacompitemexample',array('exampleid'=>$exampleid,'itemid'=>$itemid,'timecreated'=>time(),'status'=>0));
+			if($studentcomment != '')
+				$DB->insert_record('block_exaportitemcomm',array('itemid'=>$itemid,'userid'=>$USER->id,'entry'=>$studentcomment,'timemodified'=>time()));
+		} else {
+			$itemexample->timemodified = time();
+			$itemexample->studentvalue = $studentvalue;
+			$DB->update_record('block_exacompitemexample', $itemexample);
+	
+			if($studentcomment != '') {
+				$DB->delete_records('block_exaportitemcomm',array('itemid'=>$itemid,'userid'=>$USER->id));
+				$DB->insert_record('block_exaportitemcomm',array('itemid'=>$itemid,'userid'=>$USER->id,'entry'=>$studentcomment,'timemodified'=>time()));
+			}
+		}
+	
+		block_exacomp_set_user_example($USER->id, $exampleid, $courseid, block_exacomp::ROLE_STUDENT, $studentvalue);
+	
+		return array("success"=>true,"itemid"=>$itemid);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_single_structure
+	 */
+	public static function dakora_submit_example_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status' ),
+				'itemid' => new external_value ( PARAM_INT, 'itemid' )
+		) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_grade_example_parameters() {
+		return new external_function_parameters ( array (
+				'userid' => new external_value ( PARAM_INT, 'userid' ),
+				'courseid' => new external_value ( PARAM_INT, 'courseid' ),
+				'exampleid' => new external_value ( PARAM_INT, 'exampleid' ),
+				'examplevalue' => new external_value ( PARAM_INT, 'examplevalue' ),
+				'itemid' => new external_value ( PARAM_INT, 'itemid' , VALUE_DEFAULT, -1),
+				'itemvalue' => new external_value ( PARAM_INT, 'itemvalue' , VALUE_DEFAULT, -1),
+				'comment' => new external_value ( PARAM_TEXT, 'teachercomment' , VALUE_DEFAULT, "")
+		) );
+	}
+	
+	/**
+	 * Add student submission to example.
+	 *
+	 * @param int itemid (0 for new, >0 for existing)
+	 * @return array of course subjects
+	 */
+	public static function dakora_grade_example($userid, $courseid, $exampleid, $examplevalue, $itemid, $itemvalue, $comment) {
+		global $CFG,$DB,$USER;
+	
+		$params = self::validate_parameters(self::dakora_grade_example_parameters(), array('userid'=>$userid,'courseid'=>$courseid,'exampleid'=>$exampleid,'examplevalue'=>$examplevalue,'itemid'=>$itemid,'itemvalue'=>$itemvalue,'comment'=>$comment));
+	
+		block_exacomp_set_user_example(($userid == 0) ? $USER->id : $userid, $exampleid, $courseid, ($userid == 0) ? block_exacomp::ROLE_STUDENT : block_exacomp::ROLE_TEACHER, $examplevalue);
+	
+		if($itemid > 0 && $userid > 0) {
+				
+			$itemexample = $DB->get_record('block_exacompitemexample', array('exampleid' => $exampleid, 'itemid' => $itemid));
+			if(!$itemexample)
+				throw new invalid_parameter_exception("Wrong itemid given");
+			
+			if($itemvalue < 0 && $itemvalue > 100)
+				throw new invalid_parameter_exception("Item value must be between 0 and 100");
+				
+			$itemexample->teachervalue = $itemvalue;
+			$itemexample->datemodified = time();
+			$itemexample->status = 1;
+				
+			$DB->update_record('block_exacompitemexample', $itemexample);
+				
+			if($comment) {
+				$insert = new stdClass ();
+				$insert->itemid = $itemid;
+				$insert->userid = $USER->id;
+				$insert->entry = $comment;
+				$insert->timemodified = time ();
+	
+				$DB->delete_records ( 'block_exaportitemcomm', array (
+						'itemid' => $itemid,
+						'userid' => $USER->id
+				) );
+				$DB->insert_record ( 'block_exaportitemcomm', $insert );
+			}
+		}
+	
+		return array("success"=>true,"exampleid"=>$exampleid);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_single_structure
+	 */
+	public static function dakora_grade_example_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status' ),
+				'exampleid' => new external_value ( PARAM_INT, 'exampleid' )
+		) );
+	}
+	
+	public static function dakora_get_descriptor_details_parameters(){
+	return new external_function_parameters ( array (
+				'courseid' => new external_value( PARAM_INT, 'courseid'),
+				'descriptorid' => new external_value( PARAM_INT, 'descriptorid'),
+				'userid' => new external_value ( PARAM_INT, 'userid' ),
+				'forall' => new external_value ( PARAM_BOOL, 'forall'),
+				'crosssubjid' => new external_value ( PARAM_INT, 'crosssubjid')
+		) );
+	}
+	
+	public static function dakora_get_descriptor_details($courseid, $descriptorid, $userid, $forall, $crosssubjid){
+		global $DB, $USER;
+		$params = self::validate_parameters(self::dakora_get_descriptor_details_parameters(), 
+			array('courseid'=>$courseid, 'descriptorid'=>$descriptorid, 'userid'=>$userid,'forall'=>$forall, 'crosssubjid'=>$crosssubjid));
+			
+		if(!$forall && $userid == 0)
+			$userid = $USER->id;
+			
+		$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptorid));
+		$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$descriptor->id));
+		$descriptor->topicid = $descriptor_topic_mm->topicid;
+		
+		$descriptor_return = new stdClass();
+		$descriptor_return->descriptorid = $descriptorid;
+		$descriptor_return->descriptortitle = $descriptor->title;
+		$descriptor_return->teacherevaluation = 0;
+		if(!$forall)
+			$descriptor_return->teacherevaluation = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$descriptorid, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_TEACHER)))? $grading->value:0;
+
+		$descriptor_return->studentevaluation = 0;
+		if(!$forall)
+			$descriptor_return->studentevaluation = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$descriptorid, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_STUDENT)))? $grading->value:0;
+		
+		$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
+		
+		$descriptor_return->niveautitle = "";
+		$descriptor_return->niveauid = 0;
+		if($descriptor->niveauid){
+			$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
+			$descriptor_return->niveautitle = $niveau->title;
+			$descriptor_return->niveauid = $niveau->id;
+		}
+		
+		$childsandexamples = block_exacomp_external::get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid, true);
+		
+		$descriptor_return->children = $childsandexamples->children;
+
+		return $descriptor_return;
+	}
+	
+	public static function dakora_get_descriptor_details_returns(){
+		return new external_single_structure ( array (
+			'descriptorid' => new external_value( PARAM_INT, 'id of descriptor'),
+			'descriptortitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
+			'teacherevaluation'=> new external_value( PARAM_INT, 'teacher evaluation of descriptor'),
+			'studentevaluation'=> new external_value( PARAM_INT, 'student evaluation of descriptor'),
+			'numbering' => new external_value ( PARAM_TEXT, 'numbering'),
+			'niveauid' => new external_value ( PARAM_INT, 'id of niveau'),
+			'niveautitle' => new external_value ( PARAM_TEXT, 'title of niveau'),
+			'children' => new external_multiple_structure ( new external_single_structure ( array (
+					'childid' => new external_value ( PARAM_INT, 'id of child' ),
+					'childtitle' => new external_value ( PARAM_TEXT, 'title of child' ),
+					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
+					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of children'),
+					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of children')
+			) ) )
+		) ) ;
+	}
+	
+
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_example_information_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
+				'userid' => new external_value ( PARAM_INT, 'id of user' ),
+				'exampleid' => new external_value ( PARAM_INT, 'id of example' )
+		) );
+	}
+	
+	/**
+	 * get example with all submission details and gradings
+	 *
+	 * @return
+	 */
+	public static function dakora_get_example_information($courseid, $userid, $exampleid) {
+		global $CFG, $DB, $USER;
+		if ($userid == 0)
+			$userid = $USER->id;
+	
+		$params = self::validate_parameters ( self::dakora_get_example_information_parameters (), array (
+				'courseid' => $courseid,
+				'userid' => $userid,
+				'exampleid' => $exampleid
+		) );
+	
+		$example = $DB->get_record(block_exacomp::DB_EXAMPLES, array('id'=>$exampleid));
+		if(!$example)
+			throw new invalid_parameter_exception ( 'Example does not exist' );
+	
+		$itemInformation = block_exacomp_get_current_item_for_example($userid, $exampleid);
+		$exampleEvaluation = $DB->get_record(block_exacomp::DB_EXAMPLEEVAL,array("studentid" => $userid, "courseid" => $courseid, "exampleid" => $exampleid));
+	
+		$data = array();
+	
+		if($itemInformation) {
+			//item exists
+			$data['itemid'] = $itemInformation->id;	
+			$data['file'] = "";
+			$data['isimage'] = false;
+			$data['filename'] = "";
+			$data['teachervalue'] = isset ( $exampleEvaluation->teacher_evaluation ) ? $exampleEvaluation->teacher_evaluation : -1;
+			$data['studentvalue'] = isset ( $exampleEvaluation->student_evaluation ) ? $exampleEvaluation->student_evaluation : -1;
+			$data['status'] = isset ( $itemInformation->status ) ? $itemInformation->status : -1;
+			$data['name'] = $itemInformation->name;
+			$data['type'] = $itemInformation->type;
+			$data['url'] = $itemInformation->url;
+			$data['teacheritemvalue'] = isset( $itemInformation->teachervalue ) ? $itemInformation->teachervalue : -1;
+				
+			if ($itemInformation->type == 'file') {
+				require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
+					
+				if ($file = block_exaport_get_item_file ( $itemInformation )) {
+					$data['file'] = ("{$CFG->wwwroot}/blocks/exaport/portfoliofile.php?access=portfolio/id/" . $userid . "&itemid=" . $itemInformation->id);
+					$data['mimetype'] = $file->get_mimetype();
+					$data['filename'] = $file->get_filename ();
+				}
+			}
+	
+			$data['studentcomment'] = '';
+			$data['teachercomment'] = '';
+			
+			$itemcomments = $DB->get_records ( 'block_exaportitemcomm', array (
+					'itemid' => $itemInformation->id
+			), 'timemodified ASC', 'entry, userid', 0, 2 );
+			if ($itemcomments) {
+				foreach ( $itemcomments as $itemcomment ) {
+					if ($userid == $itemcomment->userid) {
+						$data['studentcomment'] = $itemcomment->entry;
+					} else {
+						$data['teachercomment'] = $itemcomment->entry;
+					}
+				}
+			}
+		} else {
+			//no item and therefore no submission exists
+			$data['itemid'] = 0;
+			$data['status'] = -1;
+			$data['name'] = "";
+			$data['file'] = "";
+			$data['filename'] = "";
+			$data['url'] = "";
+			$data['type'] = "";
+			$data['mimetype'] = false;
+			$data['teachercomment'] = "";
+			$data['studentcomment'] = "";
+			$data['teachervalue'] = isset ( $exampleEvaluation->teacher_evaluation ) ? $exampleEvaluation->teacher_evaluation : -1;
+			$data['studentvalue'] = isset ( $exampleEvaluation->student_evaluation ) ? $exampleEvaluation->student_evaluation : -1;
+			$data['teacheritemvalue'] = -1;
+		}
+	
+		return $data;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_example_information_returns() {
+		return new external_single_structure ( array (
+				'itemid' => new external_value ( PARAM_INT, 'id of item' ),
+				'status' => new external_value ( PARAM_INT, 'status of the submission (-1 == no submission; 0 == not graded; 1 == graded' ),
+				'name' => new external_value ( PARAM_TEXT, 'title of item' ),
+				'type' => new external_value ( PARAM_TEXT, 'type of item (note,file,link)' ),
+				'url' => new external_value ( PARAM_TEXT, 'url' ),
+				'filename' => new external_value ( PARAM_TEXT, 'title of item' ),
+				'file' => new external_value ( PARAM_URL, 'file url' ),
+				'mimetype' => new external_value ( PARAM_TEXT, 'mime type for file' ),
+				'teachervalue' => new external_value ( PARAM_INT, 'teacher grading' ),
+				'studentvalue' => new external_value ( PARAM_INT, 'student grading' ),
+				'teachercomment' => new external_value ( PARAM_TEXT, 'teacher comment' ),
+				'studentcomment' => new external_value ( PARAM_TEXT, 'student comment' ),
+				'teacheritemvalue' => new external_value ( PARAM_INT, 'item teacher grading' )
+		) );
+	}
+	
 	/** 
 	* helper function to use same code for 2 ws
 	*/
-	private static function get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid = 0) {
+	private static function get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid = 0, $show_all = false) {
 		global $DB;
 		$parent_descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptorid));
 		$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
@@ -4043,25 +4902,39 @@ class block_exacomp_external extends external_api {
 		
 		$non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
 		
+		if(!$non_visibilites)
+			$non_visibilites = array();
+		
 		if($crosssubjid > 0)
 			$crossdesc = $DB->get_fieldset_select(block_exacomp::DB_DESCCROSS, 'descrid', 'crosssubjid=?', array($crosssubjid));
+		
 		
 		if(!$forall)
 			$non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
 
+		if(!$non_visibilites_student)
+			$non_visibilites_student = array();
+			
 		$children_return = array();
 		foreach($children as $child){
-			if($child->examples){
+			if($child->examples || $show_all){
 				$child_return = new stdClass();
 				$child_return->childid = $child->id;
 				$child_return->childtitle = $child->title;
 				$child_return->numbering = block_exacomp_get_descriptor_numbering($child);
-				if(!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, non_visibilities_student))||$forall))
-					if($crosssubjid == 0 || in_array($child->id, $crossdesc))
+				$child_return->teacherevaluation = 0;
+				if(!$forall)
+					$child_return->teacherevaluation = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$child->id, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_TEACHER)))? $grading->value:0;
+				$child_return->studentevaluation = 0;
+				if(!$forall)
+					$child_return->studentevaluation = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$child->id, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_STUDENT))) ? $grading->value:0;
+				
+				if(!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, non_visibilities_student))||$forall)){
+					if($crosssubjid == 0 || in_array($child->id, $crossdesc) || in_array($descriptorid, $crossdesc))
 						$children_return[] = $child_return;
+				}
 			}
 		}
-		
 		
 		$examples_return = array();
 
@@ -4090,5 +4963,6 @@ class block_exacomp_external extends external_api {
 		
 		return $return;
 	}
+	
 	
 }

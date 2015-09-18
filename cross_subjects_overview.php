@@ -48,7 +48,6 @@ $PAGE->set_url('/blocks/exacomp/cross_subjects_overview.php', array('courseid' =
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
-block_exacomp_init_js_css();
 $PAGE->requires->js("/blocks/exacomp/javascript/CollapsibleLists.compressed.js");
 $PAGE->requires->css("/blocks/exacomp/css/CollapsibleLists.css");
 
@@ -76,10 +75,7 @@ if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 }
 
 // build tab navigation & print header
-echo $OUTPUT->header();
-echo $output->print_wrapperdivstart();
-echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), 'tab_cross_subjects');
-
+echo $output->header($context, $courseid, 'tab_cross_subjects');
 
 // CHECK TEACHER
 $isTeacher = block_exacomp_is_teacher($context);
@@ -93,7 +89,6 @@ $subjectdrafts = block_exacomp_get_cross_subjects_drafts_sorted_by_subjects();
 echo $output->print_cross_subjects_drafts($subjectdrafts, $isAdmin);
 
 /* END CONTENT REGION */
-echo $output->print_wrapperdivend();
-echo $OUTPUT->footer();
+echo $output->footer();
 
 ?>

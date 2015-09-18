@@ -46,7 +46,7 @@ require_login($course);
 
 
 $item = $DB->get_record('block_exacompitemexample', array("exampleid"=>$exampleid),'*',IGNORE_MULTIPLE);
-if ($item) {
+if ($item && !optional_param('newsubmission', false, PARAM_BOOL)) {
 	$url = new moodle_url("/blocks/exaport/item.php",array("courseid"=>$courseid,"action"=>"edit","sesskey"=>sesskey(),"id"=>$item->itemid));
 	redirect($url);
 }
@@ -57,16 +57,15 @@ $context = context_course::instance($courseid);
 $PAGE->set_url('/blocks/exacomp/example_submission.php', array('courseid' => $courseid,'exampleid' => $exampleid));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 
-block_exacomp_init_js_css();
-
 // build breadcrumbs navigation
 $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
 $blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
 $blocknode->make_active();
 
 // build tab navigation & print header
-echo $OUTPUT->header();
-echo $PAGE->get_renderer('block_exacomp')->print_wrapperdivstart();
+$output = $PAGE->get_renderer('block_exacomp');
+echo $output->header($context, $courseid, '', false);
+
 /* CONTENT REGION */
 
 $form = new block_exacomp_example_submission_form($_SERVER['REQUEST_URI'], array("exampleid"=>$exampleid));
@@ -160,7 +159,6 @@ if($formdata = $form->get_data()) {
 $form->display();
 
 /* END CONTENT REGION */
-echo $PAGE->get_renderer('block_exacomp')->print_wrapperdivend();
-echo $OUTPUT->footer();
+echo $output->footer();
 
 ?>

@@ -214,6 +214,8 @@ $string['show_all_course_examples'] = 'Beispiele aus allen Kursen anzeigen';
 $string['expandcomps'] = 'Alle &ouml;ffnen';
 $string['contactcomps'] = 'Alle schlie&szlig;en';
 $string['name_example'] = 'Name';
+$string['comp_based'] = 'Nach Kompetenzen sortieren';
+$string['examp_based'] = 'Nach Lernmaterialien sortieren';
 
 //Icons
 $string['assigned_example'] = 'Assigned Example';
@@ -256,16 +258,18 @@ $string['delete_confirmation_descr'] = 'Soll diese Teilkompetenz wirklich für d
 $string['import_source'] = "Importiert von: ";
 $string['local'] = "lokal";
 $string['unknown_src'] = 'unbekannte Quelle';
-$string['editmode_on'] = 'Editiermodus ein';
-$string['editmode_off'] = 'Editiermodus aus';
+$string['editmode_on'] = 'Bearbeiten einschalten';
+$string['editmode_off'] = 'Bearbeiten ausschalten';
 $string['override_notice'] = 'Dieser Eintrag wurde von jemand anderem bearbeitet. Wirklich ändern?';
 $string['unload_notice'] = 'Die Seite wirklich verlassen? Ungespeicherte Änderungen gehen verloren.';
+$string['example_sorting_notice'] = 'Bitte zuerst die aktuellen Bewertungen speichern';
+$string['newsubmission'] = 'Erneute Abgabe';
 
 //Example Submission
 $string['example_submission_header']  = 'Aufgabe {$a} bearbeiten';
 $string['example_submission_info'] = 'Du bist dabei die Aufgabe {$a} zu bearbeiten. Deine Abgabe landet im ePortfolio und kann dort von dir und deinem Lehrern eingesehen werden.';
 $string['example_submission_subject'] = 'Neue Abgabe';
-$string['example_submission_message'] = 'Im Kurs {$a->course} wurde vom Schüler {$a->student} eine neue Abgabe eingereicht.';
+$string['example_submission_message'] = 'Im Kurs {$a->course} wurde vom Schüler/innen {$a->student} eine neue Abgabe eingereicht.';
 
 $string['submissionmissing']  = 'Es müssen zumindest ein Link oder eine Datei abgegeben werden';
 
@@ -447,6 +451,7 @@ $string['new_crosssub'] = "Neues Thema erstellen";
 $string['nocrosssubsub'] = "Kein Fach zugeteilt";
 $string['delete_crosssub'] = 'Thema löschen';
 $string['confirm_delete'] = 'Soll dieses Thema wirklich gelöscht werden?';
+$string['no_students_crosssub'] = 'Es sind keine Teilnehmer zu diesem Thema zugeteilt.';
 
 //Associations
 $string['competence_associations'] = 'Verknüpfungen';
@@ -466,7 +471,11 @@ $string['weekly_schedule_link_to_grid'] = 'Um den Wochenplan zu befüllen in den
 $string['pre_planning_storage'] = 'Vorplanungsspeicher';
 $string['pre_planning_storage_added'] = 'Lernmaterial wurde zum Vorplanungsspeicher hinzugefügt.';
 $string['pre_planning_storage_already_contains'] = 'Lernmateriel bereits im Vorplanungsspeicher enthalten.';
-$string['save_pre_planning_selection'] = 'Ausgewählte Beispiele auf den Wochenplan der ausgewählten Schüler legen';
+$string['save_pre_planning_selection'] = 'Ausgewählte Beispiele auf den Wochenplan der ausgewählten Schüler/innen legen';
+$string['empty_pre_planning_storage'] = 'Vorplanungsspeicher leeren';
+$string['noschedules_pre_planning_storage'] = 'Vorplanungsspeicher wurde geleert, legen Sie über die Kompetenzraster neue Lernmaterialien in den Vorplanungsspeicher.';
+$string['empty_trash'] = 'Papierkorb leeren';
+$string['to_weekly_schedule'] = 'Zum Wochenplan';
 
 //Statistics
 $string['process'] = 'Bearbeitungsstand';

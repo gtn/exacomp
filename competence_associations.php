@@ -51,23 +51,19 @@ $context = context_course::instance($courseid);
 $PAGE->set_url('/blocks/exacomp/competence_associations.php', array('courseid' => $courseid));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 
-block_exacomp_init_js_css();
 $PAGE->requires->js("/blocks/exacomp/javascript/CollapsibleLists.compressed.js");
 $PAGE->requires->css("/blocks/exacomp/css/CollapsibleLists.css");
 
 // build breadcrumbs navigation
-$coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
-$blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
-$blocknode->make_active();
+block_exacomp_build_breadcrum_navigation($courseid);
 
+$output = $PAGE->get_renderer('block_exacomp');
 // build tab navigation & print header
-echo $OUTPUT->header();
+echo $output->header($context, $courseid, "", false);
 
 // CHECK TEACHER
 $isTeacher = block_exacomp_is_teacher($context);
 
-echo $PAGE->get_renderer('block_exacomp')->print_wrapperdivstart();
-/* CONTENT REGION */
 if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 	if(isset($_POST['descriptor']) && !empty($_POST['descriptor'])){
 		$DB->delete_records(block_exacomp::DB_DESCEXAMP,array('exampid' => $exampleid));
@@ -89,13 +85,11 @@ if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 	</script>
 <?php 
 }
-
+/* CONTENT REGION */
 //get descriptors for the given example
 $example_descriptors = $DB->get_records(block_exacomp::DB_DESCEXAMP,array('exampid'=>$exampleid),'','descrid');
 
 $tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid);
-
-$output = $PAGE->get_renderer('block_exacomp');
 
 echo html_writer::tag("p",get_string("competence_associations_explaination","block_exacomp",$example->title));
 $content = $output->print_competence_based_list_tree($tree, $isTeacher, $editmode);
@@ -106,6 +100,5 @@ if($editmode==1)
 echo  html_writer::tag('form', $content, array('method'=>'post', 'action'=>$PAGE->url.'&exampleid='.$exampleid.'&editmode='.$editmode.'&action=save', 'name'=>'add_association'));
 		
 /* END CONTENT REGION */
-echo $PAGE->get_renderer('block_exacomp')->print_wrapperdivend();
-echo $OUTPUT->footer();
+echo $output->footer();
 ?>

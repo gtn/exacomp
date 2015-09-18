@@ -136,45 +136,64 @@
 */
 #block_exacomp #external-events {
 	float: left;
-	width: 150px;
-	padding: 0 10px;
-	border: 1px solid #ccc;
-	background: #eee;
+	width: 20%;
+	padding: 17px 10px 0;
+	/* border: 1px solid #ccc;
+	background: #eeeeee; */
 	text-align: left;
+	min-height: 100px;
+	background: #eee; 
 }
 #block_exacomp #external-events.hover {
-	background: #bbb;
+	background: #d5ecff;
 }
 
 #block_exacomp #trash {
-	float: left;
-	width: 150px;
-	padding: 0 10px;
-	border: 1px solid #ccc;
-	background: #eee;
+	width: 20%;
+	padding: 17px 10px 0 10px;
+	/* border: 1px solid #ccc; */
+	background: #eee; 
 	text-align: left;
-	margin-top: 20px;
+	margin-top: 25px;
+	float: left;
 }
 
 #block_exacomp #trash.hover {
-	background: #bbb;
+	background: #fddedd;
+	border-color: #fddedd;
 }
 
-#block_exacomp #external-events h4 {
-	font-size: 16px;
+#block_exacomp #external-events h4, #block_exacomp #trash h4 {
+	font-size: 0.9em;
 	margin-top: 0;
-	padding-top: 1em;
 }
-	
+
+#block_exacomp #trash h4 {
+    background: transparent url("../pix/exacomp_week_trash.png") no-repeat scroll right bottom;
+    height: 28px;
+    margin: 0 auto 15px;
+}
+
+
+
+#block_exacomp #trash .fc-event {
+	margin: 10px 0;
+	cursor: pointer;
+	min-height: 50px;
+	padding: 6px;
+}
+
 #block_exacomp #external-events .fc-event {
 	margin: 10px 0;
 	cursor: pointer;
 	min-height: 50px;
+	padding: 6px;
 }
 #block_exacomp .fc-event .event-extra {
-	border-top: 1px solid white;
+	border-top: 1px solid rgba(255, 255, 255, .5);;
 	margin-top: 5px;
-	padding: 5px;
+	padding-top: 5px;
+	padding-bottom: 5px;
 }
 
 #block_exacomp #external-events p {
@@ -188,13 +207,85 @@
 	vertical-align: middle;
 }
 #block_exacomp #wrap {
-	width: 1100px;
-	margin: 0 auto;
+	margin: 40px auto 0;
 }
 #block_exacomp .fc-time-grid .fc-slats td {
-	height: 5em;
+	height: 6em;
 }
 #block_exacomp #calendar {
 	float: right;
-	width: 900px;
+	width: 76%;
+	width: calc(80% - 45px)
 }
+
+#block_exacomp .fc-event .fc-content {
+	padding: 6px;
+}
+
+#block_exacomp .different-course {
+	opacity: 0.5;
+}
+
+#block_exacomp .fc-ltr .fc-axis {
+	text-align: left;
+}
+
+#block_exacomp .fc-ltr .fc-axis span span {
+	color: #7e7e7e;
+}
+
+#block_exacomp .fc th {
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+#block_exacomp .fc-toolbar .fc-left .fc-button {
+	margin-right: 5px;
+}
+
+#block_exacomp .fc-toolbar .fc-right .fc-button {
+	margin-left: 5px;
+}
+
+#block_exacomp .fc-event {
+	background-color: #026cc5;
+    border: 1px solid #0162b3;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    /*border: 1px solid #96a7b7;*/
+}
+
+#block_exacomp #calendar .fc-event {
+	-webkit-box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.7);
+	-moz-box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.7);
+	box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.7);
+}
+
+#block_exacomp #external-events .fc-event {
+	border: 1px solid #026cc5;
+}
+
+#block_exacomp #calendar .fc-toolbar h2 {
+	font-size: 20px;
+	font-weight: normal;
+}
+
+#block_exacomp .fc-unthemed .fc-today {
+    background: #d6ecff none repeat scroll 0 0;
+}
+
+#block_exacomp .fc-ltr .fc-time-grid .fc-event-container  {
+    margin: 0 2.5% 0 2.5% !important;
+}
+
+#block_exacomp .event-assoc {
+	text-align: right;
+	margin-top: 5px;
+}
+
+#block_exacomp #trash .fc-event {
+	background-color: #7e91a2;
+	border-color: #7e91a2;
+}
+
+

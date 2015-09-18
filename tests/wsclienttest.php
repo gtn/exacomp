@@ -121,12 +121,30 @@ $resp = $curl->post($serverurl, $params);
 print_r($resp);
 
 echo "
+descriptor details:
+
+";
+
+$functionname = 'dakora_get_descriptor_details';
+
+$params = new stdClass();
+$params->courseid = 4;
+$params->descriptorid = 9480;
+$params->userid = 0;
+$params->forall = 0;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
 examples pool:
 
 ";
 
+
 //REST CALL dakora_get_examples_pool_for_week ($courseid, $descriptorid, $userid, $forall)
-$functionname = 'dakora_get_examples_pool';
+/*$functionname = 'dakora_get_examples_pool';
 
 $params = new stdClass();
 $params->courseid = 4;
@@ -155,7 +173,7 @@ $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token .
 $resp = $curl->post($serverurl, $params);
 print_r($resp);
 */
-echo "
+/*echo "
 donnerstag:
 
 ";
@@ -192,14 +210,24 @@ set time slot to 0
 
 ";
 
+
+
+
 //REST CALL dakora_get_examples_pool_for_week ($courseid, $descriptorid, $userid, $forall)
-$functionname = 'dakora_set_example_time_slot';
+/*$functionname = 'dakora_add_examples_to_students_schedule';
+
+$examples = array();
+$examples[] = 72;
+$examples[] = 73;
+
+$students = array();
+$students[] = 20;
+$students[] = 4;
 
 $params = new stdClass();
-$params->scheduleid = 100;
-$params->start = 0;
-$params->end = 0;
-
+$params->courseid = 4;
+$params->examples = json_encode($examples);
+$params->students = json_encode($students);
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
 print_r($resp);
@@ -207,9 +235,8 @@ print_r($resp);
 echo "
 remove from schedule:
 
-";
 
-
+";*/
 //REST CALL dakora_get_examples_pool_for_week ($courseid, $descriptorid, $userid, $forall)
 /*$functionname = 'dakora_remove_example_from_schedule';
 

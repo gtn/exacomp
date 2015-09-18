@@ -51,8 +51,8 @@ $string['tab_teacher_settings_badges'] = 'Edit badges';
 $string['tab_student_all'] = 'All gained competencies';
 
 //Generic Tabs (used by Teacher and Students)
-$string['tab_competence_grid'] = 'Competence grid';
-$string['tab_competence_overview'] = 'Overview of competencies';
+$string['tab_competence_grid'] = 'Reports';
+$string['tab_competence_overview'] = 'Competence grid';
 $string['tab_competence_details'] = 'Detailed competence-view';
 $string['tab_examples'] = 'Examples and tasks';
 $string['tab_learning_agenda'] = 'Learning agenda';
@@ -190,6 +190,8 @@ $string['expandcomps'] = 'expand all';
 $string['contactcomps'] = 'contract all';
 $string['name_example'] = 'Name';
 $string['description_example'] = 'Description';
+$string['comp_based'] = 'sort by competencies';
+$string['examp_based'] = 'sort by examples';
 
 //Icons
 $string['assigned_example'] = 'Assigned Example';
@@ -236,6 +238,8 @@ $string['editmode_on'] = 'Editmode on';
 $string['editmode_off'] = 'Editmode off';
 $string['override_notice'] = 'This entry was editied by someone else before. Continue?';
 $string['unload_notice'] = 'Are you sure? Unsaved changes will be lost.';
+$string['example_sorting_notice'] = 'Please save the changes first.';
+$string['newsubmission'] = 'New Submission';
 
 //Example Submission
 $string['example_submission_header']  = 'Aufgabe {$a} bearbeiten';
@@ -408,6 +412,7 @@ $string['new_crosssub'] = "Create new crosssubject";
 $string['nocrosssubsub'] = "no subject selected";
 $string['delete_crosssub'] = 'delete crosssubject';
 $string['confirm_delete'] = 'Do you really want to delete this crosssubject?';
+$string['no_students_crosssub'] = 'No students are assigend to this crosssubject.';
 
 //Associations
 $string['competence_associations'] = 'Associations';
@@ -428,6 +433,10 @@ $string['pre_planning_storage'] = 'pre-planning storage';
 $string['pre_planning_storage_added'] = 'Example added to the pre-planning storage.';
 $string['pre_planning_storage_already_contains'] = 'Example is already in pre-planning storage.';
 $string['save_pre_planning_selection'] = 'Add selected examples to weekly schedule of selected students';
+$string['empty_pre_planning_storage'] = 'Empty pre-planning storage';
+$string['noschedules_pre_planning_storage'] = 'Pre-planning storage has been emptied, use the competence grid to put new examples in the pre-planning storage.';
+$string['empty_trash'] = 'Empty trash bin';
+$string['to_weekly_schedule'] = 'To weekly schedule';
 
 //Statistics
 $string['process'] = 'State of process';

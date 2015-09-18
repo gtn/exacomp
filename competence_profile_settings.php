@@ -47,8 +47,6 @@ $PAGE->set_url('/blocks/exacomp/competence_profile_settings.php', array('coursei
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
-block_exacomp_init_js_css();
-
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
 
@@ -87,9 +85,7 @@ if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 }
 $output = $PAGE->get_renderer('block_exacomp');
 // build tab navigation & print header
-echo $OUTPUT->header();
-echo $output->print_wrapperdivstart();
-echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), 'tab_competence_profile');
+echo $output->header($context, $courseid, 'tab_competence_profile');
 
 /* CONTENT REGION */
 $studentid = optional_param('studentid', $USER->id, PARAM_INT);
@@ -105,8 +101,6 @@ $exaport = block_exacomp_exaportexists();
 $exastud = block_exacomp_exastudexists();
 
 $user_courses = block_exacomp_get_exacomp_courses($student);
-//if(!block_exacomp_check_profile_config($student->id))
-	//block_exacomp_init_profile($user_courses, $student->id);
 
 if($exaport)
 	$exaport_items = block_exacomp_get_exaport_items();
@@ -124,7 +118,6 @@ $profile_settings = block_exacomp_get_profile_settings();
 echo $output->print_profile_settings($user_courses, $profile_settings, $profile_usebadges, $exaport, $exastud, (isset($exastud_periods))?$exastud_periods:array());
 
 /* END CONTENT REGION */
-echo $output->print_wrapperdivend();
-echo $OUTPUT->footer();
+echo $output->footer();
 
 ?>

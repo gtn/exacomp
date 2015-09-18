@@ -54,18 +54,13 @@ $PAGE->set_url('/blocks/exacomp/cross_subjects.php', array('courseid' => $course
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
-block_exacomp_init_js_css();
-
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
 
 $output = $PAGE->get_renderer('block_exacomp');
 
 // build tab navigation & print header
-echo $OUTPUT->header();
-echo $output->print_wrapperdivstart();
-echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), 'tab_cross_subjects');
-
+echo $output->header($context, $courseid, 'tab_cross_subjects');
 
 // CHECK TEACHER
 $isTeacher = block_exacomp_is_teacher($context);
@@ -161,12 +156,12 @@ else{
 	}
 	
 	$subjects = block_exacomp_get_competence_tree_for_cross_subject($courseid,(isset($selectedCrosssubject))?$selectedCrosssubject->id:null,false, !($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies);
+
 	echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
 	echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, false, true, $selectedCrosssubject->id, $statistic);
 	echo html_writer::end_tag("div");
 }
 /* END CONTENT REGION */
-echo $output->print_wrapperdivend();
-echo $OUTPUT->footer();
+echo $output->footer();
 
 ?>

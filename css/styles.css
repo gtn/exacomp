@@ -815,7 +815,12 @@ td.contentcell {
 
 #block_exacomp div.associated_div li {
 	 color: #7f7f7f;
+	 padding: 5px 0;
 }
+
+#block_exacomp div.associated_div li:last-child, #block_exacomp div.associated_div li li:last-child, #block_exacomp div.associated_div li li li:last-child {
+	padding-bottom: 0px;
+} 
 
 #block_exacomp div.associated_div li.associated {
 	 color: #000;
@@ -844,6 +849,10 @@ td.contentcell {
 	margin-top: 20px;
 }
 
+#block_exacomp  a {
+   outline: 0;
+}
+
 #block_exacomp .view_examples_icon {
 	margin-right:10px;
 }
@@ -851,65 +860,93 @@ td.contentcell {
 .exabis_competencies_lis .gridlayout {
     display: table;
 }
-.row  {
+#block_exacomp .row  {
     display: table-row;
 }
    
-.subjects_menu {
+#block_exacomp .subjects_menu {
     width: 185px;
     display: table-cell;
-    padding: 10px;
+    padding: 10px 25px 10px 0;
 }
-.subjects_menu ul {
+#block_exacomp .subjects_menu ul {
     margin: 0; 
     padding: 0;
     list-style-type: none;
 }
 
-.subjects_menu ul li a {
+#block_exacomp .subjects_menu ul li a {
     text-decoration: none;
-    color: white; 
+    color: #000; 
     padding: 10.5px 11px;
-    background-color: #cccccc;
+    background-color: #eeeeee;
     display: block;
-}
- 
-.subjects_menu ul li a:visited {
-    color: white;
-}
-.subjects_menu ul li .type, subjects_menu ul li .type a:hover {
-	background-color: #336699;
-} 
-.subjects_menu ul li a:hover, .subjects_menu ul li .current {
-    color: white;
-    background-color: #6699cc;
+    font-size: 0.9em;
 }
 
-.topics_menu {
+#block_exacomp .subjects_menu li a {
+	border-style: solid;
+	border-width: 1px;
+	border-color: #cacaca;
+	border-width: 1px 0 0 1px;
+}
+
+#block_exacomp .subjects_menu li:last-child a {
+	border-bottom: 1px solid #cacaca;
+}
+ 
+#block_exacomp .subjects_menu ul li .type, subjects_menu ul li .type a:hover {
+	background-color: #1c4e79;
+	color: #fff;
+	border-color: #1c4e79;
+	font-size: 1em;
+} 
+#block_exacomp .subjects_menu ul li a:hover, #block_exacomp .subjects_menu ul li .current {
+    color: white;
+    background-color: #026cc5;
+}
+
+#block_exacomp .topics_menu {
     width: 100%;
     background-color: #cccccc;
 }
 
-.topics_menu ul {
+#block_exacomp .topics_menu ul {
     margin: 0; padding: 0;
+    list-style: none;
 }
 
-.topics_menu ul li {
-    display: inline;
+#block_exacomp .topics_menu ul li {
+    float: left;
 }
 
-.topics_menu ul li a {
-    float: left; text-decoration: none;
-    color: white; 
+#block_exacomp .topics_menu ul li a {
+    text-decoration: none;
+    color: #000; 
     padding: 10.5px 11px;
-    background-color:  #cccccc;
+    background-color:  #eeeeee;
+    border-style: solid;
+	border-width: 1px;
+	border-color: #cacaca;
+	border-width: 1px 0 1px 1px;
+}
+
+#block_exacomp .topics_menu ul li:last-child a {
+	border-right: 1px solid #cacaca;
+}
+
+#block_exacomp .subjects_menu ul {
+	border-right: 1px solid #cacaca;
 }
  
-.topics_menu ul li a:visited {
+#block_exacomp .topics_menu ul li a:hover, #block_exacomp .topics_menu ul li .current {
     color: white;
+    background-color: #026cc5;
+    border-color: #026cc5;
 }
- 
-.topics_menu ul li a:hover, .topics_menu ul li .current {
-    color: white;
-    background-color: #6699cc;
+
+#block_exacomp select#menuexacomp_competence_grid_select_student, #block_exacomp select#menulis_courses {
+	margin-right: 15px;
 }
+
+

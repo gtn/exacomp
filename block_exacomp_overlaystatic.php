@@ -52,19 +52,4 @@ $string['taxonomies'] = 'Niveaustufen';
 $string['taxonomy'] = 'Niveaustufe';
 $string['name_example'] = 'Name';
 $string['description_example'] = 'Beschreibung / Schulbuchverweis';
-
-//nicht verwendete und doppelt deklarierte Strings
-//$string['descnoassignment'] = 'Dieser Lernliste sind keine Aufgaben zugeordnet.';
-//$string['specificsubject'] = 'Schulbezogene Kompetenzbereiche';
-//$string['explainconfigcourse'] = 'Bitte w&auml;hlen Sie die Kompetenzbereiche aus aus, denen Ihr Kurs zugeordnet werden kann.';
-//$string['explainconfigcourse_subjects'] = 'Bitte w&auml;hlen Sie die Lernfortschritte aus, mit denen sich Ihr Kurs befasst.';
-//$string['explainconfigcourse'] = 'Um den Aufgaben dieses Kurses Lernlisten zuordnen zu können, m&uuml;ssen hier die Lernfortschritte gew&auml;hlt werden.';
-//$string['explainconfigcourse_subjects'] = 'Um den Aufgaben dieses Kurses Lernlisten zuordnen zu können, m&uuml;ssen hier die Kompetenzbereiche und im n&auml;chsten Schritt die Lernfortschritte gew&auml;hlt werden.';
-//$string['explainstudenteditingon'] = 'Hier haben Sie eine Auflistung aller Sch&uuml;lerInnen samt Aufgaben mit den jeweiligen Lernlisten, wo beurteilt werden kann, welche Kompetenzen die Sch&uuml;ler erworben haben.<br/>Um zus&auml;tzlich eine &Uuml;bersicht &Uuml;ber die Selbsteinsch&auml;tzung der Sch&Uuml;lerInnen zu erhalten, klicken Sie ';
-//$string['explainstudenteditingoff'] = 'Hier haben Sie eine Auflistung aller Sch&uuml;lerInnen samt Aufgaben mit den jeweiligen Lernlisten, wo beurteilt werden kann, welche Kompetenzen die Sch&uuml;ler erworben haben.<br/>Um die Selbsteinsch&auml;tzung der Sch&Uuml;lerInnen zu deaktivieren, klicken Sie ';
-//$string['subject'] = 'Kompetenzbereiche';
-//$string['descriptor_task'] = 'Die Lernliste ist folgenden Aufgaben zugeordnet';
-//$string['topic_selection'] = 'zur Kompetenz Auswahl';
-
-
 ?>

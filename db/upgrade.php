@@ -2192,5 +2192,62 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2015082800, 'exacomp');
     }
     
+    if ($oldversion < 2015090801) {
+    
+    	// Changing the default of field sorting on table block_exacompexamples to 0.
+    	$table = new xmldb_table('block_exacompexamples');
+    	$field = new xmldb_field('sorting', XMLDB_TYPE_INTEGER, '11', null, null, null, '0', 'id');
+    
+    	// Launch change of default for field sorting.
+    	$dbman->change_field_default($table, $field);
+    
+    	$examplesWithoutSorting = $DB->get_records_select(block_exacomp::DB_EXAMPLES,"sorting is null");
+    	foreach($examplesWithoutSorting as $exampleWithoutSorting) {
+    		$exampleWithoutSorting->sorting = $exampleWithoutSorting->id;
+    		$DB->update_record(block_exacomp::DB_EXAMPLES, $exampleWithoutSorting);
+    	}
+    	
+    	// Exacomp savepoint reached.
+    	upgrade_block_savepoint(true, 2015090801, 'exacomp');
+    }
+    if($oldversion < 2015090901){
+    	$table = new xmldb_table('block_exacompschedule');
+		$field = new xmldb_field('deleted', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', null);
+           	
+    	if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+	    upgrade_block_savepoint(true, 2015090901, 'exacomp');
+	   
+    }
+    if ($oldversion < 2015091100) {
+    
+    	// Changing the default of field teachervalue on table block_exacompitemexample to drop it.
+    	$table = new xmldb_table('block_exacompitemexample');
+    	$field = new xmldb_field('teachervalue', XMLDB_TYPE_INTEGER, '5', null, null, null, null, 'status');
+    
+    	// Launch change of default for field teachervalue.
+    	$dbman->change_field_default($table, $field);
+    
+    	// Changing the default of field studentvalue on table block_exacompitemexample to drop it.
+    	$table = new xmldb_table('block_exacompitemexample');
+    	$field = new xmldb_field('studentvalue', XMLDB_TYPE_INTEGER, '5', null, null, null, null, 'teachervalue');
+    	
+    	// Launch change of default for field studentvalue.
+    	$dbman->change_field_default($table, $field);
+    	
+    	// Exacomp savepoint reached.
+    	upgrade_block_savepoint(true, 2015091100, 'exacomp');
+    }
+    
+    if($oldversion < 2015091500){
+    	$table = new xmldb_table('block_exacompniveaus');
+		$field = new xmldb_field('numb', XMLDB_TYPE_INTEGER, '10', null, null, null, '1', null);
+           	
+    	if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+	    upgrade_block_savepoint(true, 2015091500, 'exacomp');
+    }
 	return $return_result;
 }

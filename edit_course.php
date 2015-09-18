@@ -52,8 +52,6 @@ $PAGE->set_url('/blocks/exacomp/edit_course.php', array('courseid' => $courseid)
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
-block_exacomp_init_js_css();
-
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
 
@@ -94,9 +92,7 @@ if ($action == 'save_coursesettings') {
 
 // build tab navigation & print header
 $output = $PAGE->get_renderer('block_exacomp');
-echo $OUTPUT->header();
-echo $output->print_wrapperdivstart();
-echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), 'tab_teacher_settings');
+echo $output->header($context,$courseid, 'tab_teacher_settings');
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $page_identifier);
 /* CONTENT REGION */
 $courseSettings = block_exacomp_get_settings_by_course($courseid);
@@ -105,6 +101,5 @@ $courseSettings = block_exacomp_get_settings_by_course($courseid);
 echo $output->print_edit_course($courseSettings, $courseid, $headertext);
 
 /* END CONTENT REGION */
-echo $output->print_wrapperdivend();
-echo $OUTPUT->footer();
+echo $output->footer();
 ?>

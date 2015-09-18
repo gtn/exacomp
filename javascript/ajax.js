@@ -50,7 +50,7 @@
 			hide.addClass("hidden");
 		} else {
 			if (competencies[values[1]+"-"+values[2]]) {
-				competencies[values[1]+"-"+values[2]]['value'] = 0;
+				competencies[values[1]+"-"+values[2]]['value'] = -1;
 			} else {
 				competencies[values[1]+"-"+values[2]] = {
 					userid : values[2],
@@ -104,7 +104,7 @@
 				};
 		} else {
 			if (topics[values[1]+"-"+values[2]])
-				topics[values[1]]['value'] = 0;
+				topics[values[1]]['value'] = -1;
 			else
 				topics[values[1]+"-"+values[2]] = {
 					userid : values[2],
@@ -143,7 +143,7 @@
 				crosssubs[values[1]+"-"+values[2]] = {
 					userid : values[2],
 					compid : values[1],
-					value : 0
+					value : -1
 				};
 		}
 	});
@@ -182,7 +182,7 @@
 				examples[values[1]+"-"+values[2]] = {
 					userid : values[2],
 					exampleid : values[1],
-					value : 0
+					value : -1
 				};
 			
 			//uncheck comp -> hide possible again
@@ -553,6 +553,32 @@
 
 	});
 
+	$(document).on('click', '#example-up', function(event) {
+		if (Object.keys(competencies).length > 0 || Object.keys(topics).length > 0
+				|| Object.keys(examples).length > 0)
+			alert( M.util.get_string('example_sorting_notice', 'block_exacomp') );
+		else
+		block_exacomp.call_ajax({
+			descrid : $(this).attr('descrid'),
+			exampleid : $(this).attr('exampleid'),
+			action : 'example-up'
+		});
+		location.reload();
+	});
+	
+	$(document).on('click', '#example-down', function(event) {
+		if (Object.keys(competencies).length > 0 || Object.keys(topics).length > 0
+				|| Object.keys(examples).length > 0)
+			alert( M.util.get_string('example_sorting_notice', 'block_exacomp') );
+		else
+		block_exacomp.call_ajax({
+			descrid : $(this).attr('descrid'),
+			exampleid : $(this).attr('exampleid'),
+			action : 'example-down'
+		});
+		location.reload();
+	});
+	
 	$(document).on('click', '#hide-example', function(event) {
 		event.preventDefault();
 
@@ -625,6 +651,10 @@
 	$(document).on('click','#add-example-to-schedule', function() {
 		exampleid = $(this).attr('exampleid');
 		studentid = $(this).attr('studentid');
+		
+		if(studentid==0){
+			$('#pre_planning_storage_submit').prop("disabled", false);
+		}
 		
 		block_exacomp.call_ajax({
 			exampleid : exampleid,

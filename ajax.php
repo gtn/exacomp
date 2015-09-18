@@ -269,9 +269,10 @@ switch($action){
 		$scheduleid = required_param('scheduleid', PARAM_INT);
 		$start = required_param('start', PARAM_INT);
 		$end = required_param('end', PARAM_INT);
+		$deleted = optional_param('deleted', 0, PARAM_INT);
 		echo $start;
 		
-		block_exacomp_set_example_start_end($scheduleid, $start, $end);
+		block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted);
 		break;
 	case 'remove-example-from-schedule':
 		$scheduleid = required_param('scheduleid', PARAM_INT);
@@ -299,14 +300,27 @@ switch($action){
 		$examples_pool = block_exacomp_get_examples_for_pool($studentid, $pool_course);
 		$json_examples_pool = block_exacomp_get_json_examples($examples_pool);
 		
+		$examples_trash = block_exacomp_get_examples_for_trash($studentid, $pool_course);
+		$json_examples_trash = block_exacomp_get_json_examples($examples_trash);
+		
 		$json_time_slots = block_exacomp_build_json_time_slots();
 		
 		$configuration = array();
 		$configuration['pool'] = $json_examples_pool; //for pool
+		$configuration['trash'] = $json_examples_trash; //for trash
 		$configuration['slots'] = $json_time_slots; //for calendar
 		
 		echo json_encode($configuration);
 		
+		break;
+	case 'empty-trash':
+		$studentid = required_param('studentid', PARAM_INT);
+		if(!$studentid) $studentid = $USER->id;
+		
+		$schedules = block_exacomp_get_examples_for_trash($studentid, $courseid);
+		foreach($schedules as $schedule){
+			block_exacomp_remove_example_from_schedule($schedule->id);
+		}
 		break;
 	case 'get-pre-planning-storage':
 		$creatorid = required_param('creatorid', PARAM_INT);
@@ -315,5 +329,17 @@ switch($action){
 		$json_examples = block_exacomp_get_json_examples($examples, false);
 		
 		echo json_encode($json_examples);
+		break;
+	case('example-up'):
+		$exampleid = required_param('exampleid', PARAM_INT);
+		$descrid = required_param('descrid', PARAM_INT);
+		
+		echo block_exacomp_example_up($exampleid, $descrid);
+		break;
+	case ('example-down') :
+		$exampleid = required_param ( 'exampleid', PARAM_INT );
+		$descrid = required_param ( 'descrid', PARAM_INT );
+		
+		echo block_exacomp_example_down ( $exampleid, $descrid );
 		break;
 }

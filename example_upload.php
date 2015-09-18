@@ -51,7 +51,6 @@ $context = context_course::instance($courseid);
 $PAGE->set_url('/blocks/exacomp/example_upload.php', array('courseid' => $courseid));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 
-block_exacomp_init_js_css();
 $PAGE->requires->js("/blocks/exacomp/javascript/CollapsibleLists.compressed.js");
 $PAGE->requires->css("/blocks/exacomp/css/CollapsibleLists.css");
 
@@ -66,7 +65,8 @@ if($action == 'serve') {
     print_error('this function is not available anymore');
 }
 // build tab navigation & print header
-echo $PAGE->get_renderer('block_exacomp')->header();
+$output = $PAGE->get_renderer('block_exacomp');
+echo $output->header($context, $courseid, '', false);
 /* CONTENT REGION */
 
 block_exacomp_require_teacher($context);
@@ -131,8 +131,11 @@ if($formdata = $form->get_data()) {
     	$module = get_coursemodule_from_id(null, $formdata->assignment);
     	$newExample->externaltask = $CFG->wwwroot . '/' . block_exacomp_get_activityurl($module)->__toString();
     }
-    if($formdata->exampleid == 0)
+    if($formdata->exampleid == 0) {
         $newExample->id = $DB->insert_record('block_exacompexamples', $newExample);
+    	$newExample->sorting = $newExample->id;
+    	$DB->update_record('block_exacompexamples', $newExample);
+    }
     else {
         //update example
         $newExample->id = $formdata->exampleid;
@@ -141,12 +144,13 @@ if($formdata = $form->get_data()) {
     }
 
     //insert taxid in exampletax_mm
-    foreach($formdata->taxid as $tax => $taxid)
-	    block_exacomp_db::insert_or_update_record(block_exacomp::DB_EXAMPTAX, array(
-	        'exampleid' => $newExample->id,
-	        'taxid' => $taxid
-	    ));
-    
+    if(isset($formdata->taxid)) {
+	    foreach($formdata->taxid as $tax => $taxid)
+		    block_exacomp_db::insert_or_update_record(block_exacomp::DB_EXAMPTAX, array(
+		        'exampleid' => $newExample->id,
+		        'taxid' => $taxid
+		    ));
+    }
     //add descriptor association
     if(!empty($_POST['descriptor'])){
     	foreach(block_exacomp_clean_array($_POST['descriptor'], array(PARAM_INT=>PARAM_INT)) as $descriptorid){
@@ -165,37 +169,6 @@ if($formdata = $form->get_data()) {
             $newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
     file_save_draft_area_files($formdata->solution, context_system::instance()->id, 'block_exacomp', 'example_solution',
             $newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
-    
-    /*
-    // rename file according to LIS
-    if($formdata->lisfilename) {
-        if (!$formdata->exampleid) {
-            // update
-            $descr = reset($_POST['descriptor']);
-            $descr = $DB->get_record(block_exacomp::DB_DESCRIPTORS,array('id' => $descr));
-            $descr->topicid = $topicid;
-            $filename_prefix = block_exacomp_get_descriptor_numbering($descr).' '. $formdata->title;
-        } else {
-            // get fileprefix from title (= strip extension)
-            $filename_prefix = preg_replace('!\.[^\.]{2,4}$!i', '', $formdata->title);
-        }
-        
-        if ($file = block_exacomp_get_file($newExample, 'example_task')) {
-            $filename = $filename_prefix . "." . pathinfo($file->get_filename(), PATHINFO_EXTENSION);
-            if ($filename != $file->get_filename()) {
-                $file->rename('/', $filename);
-            }
-            
-            $DB->update_record('block_exacompexamples', array('id' => $newExample->id, 'title' => $filename));
-        }
-        if ($file = block_exacomp_get_file($newExample, 'example_solution')) {
-            $filename = $filename_prefix . "_SOLUTION." . pathinfo($file->get_filename(), PATHINFO_EXTENSION);
-            if ($filename != $file->get_filename()) {
-                $file->rename('/', $filename);
-            }
-        }
-    }*/
-    
     
     ?>
 <script type="text/javascript">
@@ -225,4 +198,4 @@ if($exampleid > 0) {
 $form->display();
 
 /* END CONTENT REGION */
-echo $PAGE->get_renderer('block_exacomp')->footer();
+echo $output->footer();

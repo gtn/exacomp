@@ -1,5 +1,13 @@
 (function($){
 	
+	$(document).on('click', '#empty_trash', function(event) {
+		block_exacomp.call_ajax({
+			studentid: block_exacomp.get_param('studentid'),
+			action : 'empty-trash'
+		},function(msg) {
+			location.reload();
+		});
+	});
 	function exacomp_calendar_add_event(event) {
 		console.log('exacomp_calendar_add_event', event.id, event.title, event.start.format('X'), event.end.format('X'), event.scheduleid);
 		
@@ -32,14 +40,15 @@
 		},function(msg) {});
 	}
 	
-	function exacomp_calendar_remove_event(event) {
-		console.log('exacomp_calendar_remove_event', event.id, event.title, event.start, event.end, event-scheduleid);
+	function exacomp_calendar_remove_event(event, deleted) {
+		console.log('exacomp_calendar_remove_event', event.id, event.title, event.start, event.end, event.scheduleid);
 
 		//in pool zurück legen -> timestamps auf null setzen
 		block_exacomp.call_ajax({
 			scheduleid : event.scheduleid,
 			start: 0,
 			end: 0,
+			deleted: deleted,
 			event_course: event.courseid,
 			action : 'set-example-start-end'
 		},function(msg) { });
@@ -148,6 +157,7 @@
 			$.extend(exacomp_calcendar_config, configuration);
 			
 			$.each(configuration.pool, function(i, item){ add_pool_item(item); });
+			$.each(configuration.trash, function(i, item){ add_trash_item(item); });
 			
 			create_calendar();
 		});
@@ -156,17 +166,9 @@
 			var el = $( "<div class='fc-event'>" ).appendTo( $eventDiv ).text( 
 					data.title);
 			
-			el.append('	<div>'+data.assoc_url+/*((event.solution)?event.solution:'')+*/'</div>');
+			el.append('	<div class="event-assoc">'+data.assoc_url+/*((event.solution)?event.solution:'')+*/'</div>');
 			
 			el.data('event', data);
-			
-			// store data so the calendar knows to render an event upon drop
-			
-			/*$(this).data('event', {
-				id: $.trim($(this).text()), // use the element's text as the event title
-				stick: true // maintain when user navigates (see docs on the renderEvent method)
-			})*/;
-			
 	
 			el.draggable({
 			  zIndex: 999,
@@ -175,18 +177,48 @@
 			});
 			el.addTouch();
 		}
-	
+		
+		function add_trash_item(data){
+			var el = $( "<div class='fc-event'>" ).appendTo( $trash ).text( 
+					data.title);
+			
+			el.append('	<div class="event-assoc">'+data.assoc_url+'</div>');
+			
+			el.data('event', data);
+			
+			el.draggable({
+				  zIndex: 999,
+				  revert: true, 
+				  revertDuration: 0 
+			});
+			el.addTouch();
+			
+			schedules_to_delete[data.id] = data.id;
+			
+		}
 	
 		/* initialize the calendar
 		-----------------------------------------------------------------*/
+		var schedules_to_delete = [];
+		
+		$eventDiv.droppable({
+			drop: function(event, ui){
+				var data = ui.draggable.data('event');
+				add_pool_item(data);
+				exacomp_calendar_remove_event(data, 0);
+				ui.draggable.remove();
+			},
+			hoverClass: 'hover',
+		});
 		
 		$trash.droppable({
 			// accept: ".special"
 			drop: function(event, ui ) {
-				if (confirm('Wirklich löschen?')) {
-					exacomp_calendar_delete_event(ui.draggable.data('event'));
-					ui.draggable.remove();
-				}
+				var data = ui.draggable.data('event');
+				
+				add_trash_item(data);
+				exacomp_calendar_remove_event(data, 1);
+				ui.draggable.remove();
 			},
 			
 			hoverClass: 'hover',
@@ -273,6 +305,12 @@
 				},
 				
 				eventRender: function(event, element) {
+
+					var courseid = block_exacomp.get_param('courseid');
+					
+					if(event.courseid != courseid)
+						element.addClass('different-course');
+							
 					// console.log(element.html());
 					
 					// delete time (actually slot time)
@@ -281,9 +319,9 @@
 					// TODO:
 					element.find(".fc-content").append(
 						'	<div class="event-extra">' +
-						'	<div>Kurs: '+event.courseinfo+'</div>'+
+						'	<div class="event-course">Kurs: '+event.courseinfo+'</div>'+
 						//'	<div>L: <input type="checkbox" '+((event.teacher_evaluation>0)?'checked=checked':'')+'/> S: <input type="checkbox" '+((event.student_evaluation>0)?'checked=checked':'')+'/></div>' +
-						'	<div>'+event.assoc_url+/*((event.solution)?event.solution:'')+*/'</div>' +
+						'	<div class="event-assoc">'+event.assoc_url+/*((event.solution)?event.solution:'')+*/'</div>' +
 						'</div>');
 					
 					$(element).addTouch();
@@ -304,16 +342,20 @@
 						delete event.source;
 	
 						add_pool_item(event);
-						exacomp_calendar_remove_event(event);
+						exacomp_calendar_remove_event(event, 0);
 					}
 		
 					if (isEventOverDiv($trash, jsEvent)) {
-						if (confirm('Wirklich löschen?')) {
+						$('#calendar').fullCalendar('removeEvents', event._id);
+						add_trash_item(event);
+						exacomp_calendar_remove_event(event, 1);
+						
+						/*if (confirm('Wirklich löschen?')) {
 							$('#calendar').fullCalendar('removeEvents', event._id);
 							
 							var event = exacomp_calcendar.event_slot_to_time(event);
 							exacomp_calendar_delete_event(event);
-						}
+						}*/
 					}
 				},
 				

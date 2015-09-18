@@ -47,23 +47,14 @@ $PAGE->set_url('/blocks/exacomp/weekly_schedule.php', array('courseid' => $cours
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
-
-block_exacomp_init_js_css();
-
 block_exacomp_init_js_weekly_schedule();
+
 // build breadcrumbs navigation
-$coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
-$blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
-$pagenode = $blocknode->add(get_string($page_identifier,'block_exacomp'), $PAGE->url);
-$pagenode->make_active();
+block_exacomp_build_breadcrum_navigation($courseid);
 
 // build tab navigation & print header
-echo $OUTPUT->header();
-echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier);
-
-//TODO week von calendar
-$week = optional_param('week', time(), PARAM_INT);
-$week = block_exacomp_add_days($week, 1 - date('N', $week));
+$output = $PAGE->get_renderer('block_exacomp');
+echo $output->header($context, $courseid, $page_identifier);
 
 $isTeacher = block_exacomp_is_teacher($context);
 $studentid = $isTeacher ? optional_param("studentid", 0, PARAM_INT) : $USER->id;
@@ -71,14 +62,12 @@ $studentid = $isTeacher ? optional_param("studentid", 0, PARAM_INT) : $USER->id;
 $selectedCourse = optional_param('pool_course', $courseid, PARAM_INT);
 
 /* CONTENT REGION */
-$output = $PAGE->get_renderer('block_exacomp');
-echo $output->print_wrapperdivstart();
-
 if($isTeacher){
 	$coursestudents = block_exacomp_get_students_by_course($courseid);
 	
 	if($studentid == 0) {
 		echo html_writer::tag("p", get_string("select_student_weekly_schedule","block_exacomp"));
+		
 		//print student selector
 		echo get_string("choosestudent","block_exacomp");
 		echo block_exacomp_studentselector($coursestudents,$studentid,$PAGE->url);
@@ -102,9 +91,8 @@ echo $output->print_course_dropdown($selectedCourse, $studentid);
 echo $OUTPUT->box(get_string('weekly_schedule_link_to_grid','block_exacomp'));
 
 echo $output->print_side_wrap_weekly_schedule();
+
 /* END CONTENT REGION */
 
-echo $output->print_wrapperdivend();
-echo $OUTPUT->footer();
-
+echo $output->footer();
 ?>

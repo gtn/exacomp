@@ -49,11 +49,14 @@ block_exacomp_require_teacher($context);
 $PAGE->set_url('/blocks/exacomp/select_crosssubjects.php', array('courseid' => $courseid));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 
-block_exacomp_init_js_css();
+// build breadcrumbs navigation
+block_exacomp_build_breadcrum_navigation($courseid);
+
 $PAGE->requires->js("/blocks/exacomp/javascript/CollapsibleLists.compressed.js");
 $PAGE->requires->css("/blocks/exacomp/css/CollapsibleLists.css");
 
-echo $OUTPUT->header();
+$output = $PAGE->get_renderer('block_exacomp');
+echo $output->header($context, $courseid, '', false);
 
 $subjects = block_exacomp_get_cross_subjects_sorted_by_subjects();
 
@@ -102,4 +105,4 @@ echo "</div>";
 
 echo html_writer::div(html_writer::tag("input", '', array("type"=>"button","value"=>get_string('save_selection', 'block_exacomp'),"id"=>"crosssubjects")), '', array('id'=>'exabis_save_button'));
 
-echo $OUTPUT->footer();
+echo $output->footer();

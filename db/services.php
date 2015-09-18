@@ -53,7 +53,19 @@ $services = array(
 						'dakora_get_descriptors_by_cross_subject',
 						'dakora_get_descriptor_children_for_cross_subject',
 						'dakora_get_schedule_config',
-						'dakora_get_user_fullname'
+						'dakora_get_user_fullname',
+						'dakora_set_competence',
+						'dakora_get_examples_trash',
+						'dakora_get_pre_planning_storage_examples',
+						'dakora_get_pre_planning_storage_students',
+						'dakora_has_items_in_pre_planning_storage',
+						'dakora_empty_pre_planning_storage',
+						'dakora_add_example_to_pre_planning_storage',
+						'dakora_add_examples_to_students_schedule',
+						'dakora_submit_example',
+						'dakora_grade_example',
+						'dakora_get_descriptor_details',
+						'dakora_get_example_information'
 						), 	//web service functions of this service
 				'restrictedusers' =>0,                      //if enabled, the Moodle administrator must link some user to this service
 				//into the administration
@@ -426,6 +438,90 @@ $functions = array(
 				'methodname'  => 'dakora_get_user_fullname',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'get fullname of the current user',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_set_competence' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_set_competence',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'set a user competence',    //human readable description of the web service function
+				'type'        => 'write'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_examples_trash' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_examples_trash',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get examples for trash bin',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_pre_planning_storage_examples' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_pre_planning_storage_examples',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get examples for pre planning storage',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_pre_planning_storage_students' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_pre_planning_storage_students',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get students for pre planning storage',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_has_items_in_pre_planning_storage' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_has_items_in_pre_planning_storage',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'return 0 if no items, 1 otherwise',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_empty_pre_planning_storage' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_empty_pre_planning_storage',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'delte all items from current pre planning storage',    //human readable description of the web service function
+				'type'        => 'write'                  //database rights of the web service function (read, write)
+		),
+		'dakora_add_example_to_pre_planning_storage' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_add_example_to_pre_planning_storage',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'add example to current pre planning storage',    //human readable description of the web service function
+				'type'        => 'write'                  //database rights of the web service function (read, write)
+		),
+		'dakora_add_examples_to_students_schedule' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_add_examples_to_students_schedule',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'add examples from current pre planning storage to students weekly schedule',    //human readable description of the web service function
+				'type'        => 'write'                  //database rights of the web service function (read, write)
+		),
+		'dakora_submit_example' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_submit_example',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'submit example solution',    //human readable description of the web service function
+				'type'        => 'write'                  //database rights of the web service function (read, write)
+		),
+		'dakora_grade_example' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_grade_example',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'grade example solution',    //human readable description of the web service function
+				'type'        => 'write'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_descriptor_details' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_descriptor_details',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get descriptor details incl. grading and children',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_example_information' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_example_information',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get information and submission for example',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)
 		)
 );
