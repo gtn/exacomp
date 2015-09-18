@@ -475,14 +475,16 @@
 		var id = tr[0].className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
 		
 		courseid = block_exacomp.get_param('courseid');
-		studentid = block_exacomp.get_param('studentid');
+		studentid = block_exacomp.get_param('studentid') || 0;
 		descrid = $(this).attr('descrid');
 		val = $(this).attr('state');
 		var select = document
 			.getElementById("menulis_topics");
 		
-		if(studentid==null)
+		if(studentid < 0) {
+			// no negative studentid: (all users, gesamtübersicht,...)
 			studentid = 0;
+		}
 		
 		if(val=='-'){
 			$(this).attr('state','+');

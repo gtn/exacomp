@@ -166,7 +166,7 @@ switch($action){
 		$studentid = required_param('studentid', PARAM_INT);
 		
 		block_exacomp_set_descriptor_visibility($descrid, $courseid, $visible, $studentid);
-		break;
+		die('ok');
 	case('hide-example'):
 		$exampleid = required_param('exampleid', PARAM_INT);
 		$courseid = required_param('courseid', PARAM_INT);
