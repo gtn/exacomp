@@ -190,8 +190,8 @@
 	padding: 6px;
 }
 #block_exacomp .fc-event .event-extra {
-	border-top: 1px solid rgba(255, 255, 255, .5);;
-	margin-top: 5px;
+	/* border-top: 1px solid rgba(255, 255, 255, .5);;
+	margin-top: 5px;  */
 	padding-top: 5px;
 	padding-bottom: 5px;
 }
@@ -210,7 +210,7 @@
 	margin: 40px auto 0;
 }
 #block_exacomp .fc-time-grid .fc-slats td {
-	height: 6em;
+	height: 4em;
 }
 #block_exacomp #calendar {
 	float: right;
@@ -220,10 +220,6 @@
 
 #block_exacomp .fc-event .fc-content {
 	padding: 6px;
-}
-
-#block_exacomp .different-course {
-	opacity: 0.5;
 }
 
 #block_exacomp .fc-ltr .fc-axis {
@@ -255,6 +251,11 @@
     /*border: 1px solid #96a7b7;*/
 }
 
+#block_exacomp .different-course {
+	background-color: #acbcca;
+	border: 1px solid #acbcca;
+}
+
 #block_exacomp #calendar .fc-event {
 	-webkit-box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.7);
 	-moz-box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.7);
@@ -281,6 +282,10 @@
 #block_exacomp .event-assoc {
 	text-align: right;
 	margin-top: 5px;
+	position: absolute;
+    right: 8px;
+    text-align: right;
+    top: 3px;
 }
 
 #block_exacomp #trash .fc-event {
@@ -288,4 +293,6 @@
 	border-color: #7e91a2;
 }
 
-
+.fc-time-grid-event .fc-time, .fc-time-grid-event .fc-title {
+	margin-right: 20px;
+}
