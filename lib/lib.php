@@ -4560,7 +4560,7 @@ function block_exacomp_clean_array($values, $definition) {
         
         return $ret;
     } else {
-        return block_exacomp_clean_object();
+        return block_exacomp_clean_object($values, $definition);
     }
 }
 

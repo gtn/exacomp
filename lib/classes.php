@@ -2,12 +2,12 @@
 
 class block_exacomp_db_layer {
     
-    protected $courseid = 0;
-    protected $showalldescriptors = true;
-    protected $showallexamples = true;
-    protected $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES);
-    protected $showonlyvisible = false;
-    protected $mindvisibility = false;
+    public $courseid = 0;
+    public $showalldescriptors = true;
+    public $showallexamples = true;
+    public $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES);
+    public $showonlyvisible = false;
+    public $mindvisibility = false;
     
     static function get() {
         static $default = null;
@@ -176,12 +176,12 @@ class block_exacomp_db_layer {
 }
 
 class block_exacomp_db_layer_assign_competencies extends block_exacomp_db_layer {
-    protected $courseid = 0;
-    protected $showalldescriptors = false;
-    protected $showallexamples = false;
-    protected $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES);
-    protected $showonlyvisible = false;
-    protected $mindvisibility = true;
+    public $courseid = 0;
+    public $showalldescriptors = false;
+    public $showallexamples = false;
+    public $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES);
+    public $showonlyvisible = false;
+    public $mindvisibility = true;
     
     function __construct($courseid) {
         $this->courseid = $courseid;
