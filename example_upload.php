@@ -152,8 +152,8 @@ if($formdata = $form->get_data()) {
 		    ));
     }
     //add descriptor association
-    if(!empty($_POST['descriptor'])){
-    	foreach(block_exacomp_clean_array($_POST['descriptor'], array(PARAM_INT=>PARAM_INT)) as $descriptorid){
+    if ($descriptors = block_exacomp_param::optional_array('descriptor', array(PARAM_INT=>PARAM_INT))) {
+    	foreach($descriptors as $descriptorid){
             block_exacomp_db::insert_or_update_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
     	}
     }

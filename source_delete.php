@@ -107,10 +107,10 @@ function block_exacomp_source_delete_get_subjects($source) {
 $subjects = block_exacomp_source_delete_get_subjects($source);
 
 if ($action == 'delete_selected') {
-    $examples = block_exacomp_clean_array(isset($_REQUEST['examples'])?$_REQUEST['examples']:array(), array(PARAM_INT=>PARAM_INT));
-    $descriptors = block_exacomp_clean_array(isset($_REQUEST['descriptors'])?$_REQUEST['descriptors']:array(), array(PARAM_INT=>PARAM_INT));
-    $topics = block_exacomp_clean_array(isset($_REQUEST['topics'])?$_REQUEST['topics']:array(), array(PARAM_INT=>PARAM_INT));
-    $subjects = block_exacomp_clean_array(isset($_REQUEST['subjects'])?$_REQUEST['subjects']:array(), array(PARAM_INT=>PARAM_INT));
+    $examples = block_exacomp_param::optional_array('examples', array(PARAM_INT=>PARAM_INT));
+    $descriptors = block_exacomp_param::optional_array('descriptors', array(PARAM_INT=>PARAM_INT));
+    $topics = block_exacomp_param::optional_array('topics', array(PARAM_INT=>PARAM_INT));
+    $subjects = block_exacomp_param::optional_array('subjects', array(PARAM_INT=>PARAM_INT));
     
     $delete_examples = array();
     $delete_descriptors = array();

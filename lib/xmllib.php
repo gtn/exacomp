@@ -1236,7 +1236,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 
         // TODO: check erweitern und überall reingeben
         /*
-        $item = block_exacomp_clean_object($item, array(
+        $item = block_exacomp_param::clean_object($item, array(
             'source' => PARAM_TEXT,
             'sourceid' => PARAM_INT,
             'title' => PARAM_TEXT

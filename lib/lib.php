@@ -2,6 +2,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once __DIR__.'/common.php';
 require_once __DIR__.'/classes.php';
 require_once __DIR__.'/block_exacomp.class.php';
 
@@ -33,60 +34,6 @@ define("BLOCK_EXACOMP_SHOW_STATISTIC", -2);
 define("BLOCK_EXACOMP_REPORT1",1);
 define("BLOCK_EXACOMP_REPORT2",2);
 define("BLOCK_EXACOMP_REPORT3",3);
-
-class block_exacomp_exception extends moodle_exception {
-    function __construct($errorcode, $module='', $link='', $a=NULL, $debuginfo=null) {
-
-        // try to get exacomp error message
-        if (empty($module)) {
-            if (get_string_manager()->string_exists($errorcode, 'block_exacomp')) {
-                $module = 'block_exacomp';
-            }
-        }
-
-        return parent::__construct($errorcode, $module, $link, $a, $debuginfo);
-    }
-}
-
-class block_exacomp_db {
-    public static function update_record($table, $where, $data = array()) {
-        global $DB;
-    
-        $where = (array)$where;
-        $data = (array)$data;
-        
-        if ($dbItem = $DB->get_record($table, $where)) {
-            if ($data) {
-                $data['id'] = $dbItem->id;
-                $DB->update_record($table, $data);
-            }
-            
-            return (object)($data + $where);
-        }
-        
-        return null;
-    }
-    
-    public static function insert_or_update_record($table, $where, $data = array()) {
-        global $DB;
-        
-        $where = (array)$where;
-        $data = (array)$data;
-        
-        if ($dbItem = $DB->get_record($table, $where)) {
-            if ($data) {
-                $data['id'] = $dbItem->id;
-                $DB->update_record($table, $data);
-            }
-        } else {
-            $data = $data + $where;
-            $id = $DB->insert_record($table, $data);
-            $data['id'] = $id;
-        }
-        
-        return (object)$data;
-    }
-}
 
 /**
  *
@@ -4549,69 +4496,6 @@ function block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,
 
 function block_exacomp_add_days($date, $days) {
     return mktime(0,0,0,date('m', $date), date('d', $date)+$days, date('Y', $date));
-}
-
-function block_exacomp_optional_param_parse_key_type($type) {
-    if (is_array($type)) return $type;
-    if ($type === PARAM_INT || $type === PARAM_TEXT) return $type;
-    return null;
-}
-
-function block_exacomp_clean_object($values, $definition) {
-    // some value => type
-    $ret = new stdClass;
-    $values = (object)$values;
-    
-    foreach ($definition as $key => $valueType) {
-        $value = isset($values->$key) ? $values->$key : null;
-        if (is_object($valueType)) {
-            $ret->$key = block_exacomp_clean_object($value, $valueType);
-        } elseif (is_array($valueType)) {
-            $ret->$key = block_exacomp_clean_array($value, $valueType);
-        } else {
-            $ret->$key = clean_param($value, $valueType);
-        }
-    }
-    
-    return $ret;
-}
-
-function block_exacomp_clean_array($values, $definition) {
-
-    if ((count($definition) == 1) && ($keyType = block_exacomp_optional_param_parse_key_type(key($definition))))  {
-        // type => type
-        $ret = array();
-        
-        $valueType = reset($definition);
-        
-        if (is_array($valueType)) {
-            foreach ($values as $key=>$value) {
-                $ret[clean_param($key, $keyType)] = block_exacomp_clean_array($value, $valueType);
-            }
-        } else {
-            foreach ($values as $key=>$value) {
-                $ret[clean_param($key, $keyType)] = clean_param($value, $valueType);
-            }
-        }
-        
-        return $ret;
-    } else {
-        return block_exacomp_clean_object($values, $definition);
-    }
-}
-
-function block_exacomp_optional_param_array($parname, array $definition) {
-
-    // POST has precedence.
-    if (isset($_POST[$parname])) {
-        $param = $_POST[$parname];
-    } else if (isset($_GET[$parname])) {
-        $param = $_GET[$parname];
-    } else {
-        return array();
-    }
-
-    return block_exacomp_clean_array($param, $definition);
 }
 
 function block_exacomp_build_example_association_tree($courseid, $example_descriptors = array(), $exampleid=0, $descriptorid = 0, $showallexamples=false){
