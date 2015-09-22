@@ -192,8 +192,11 @@
 		var ids;
 		if (ids = localStorage.getObject(storageid)) {
 			$.each(ids, function(tmp, id){
-				$form.find('.rowgroup-header-'+id).addClass('open');
-				$form.find('.rowgroup-content-'+id).show();
+				// only open if not hidden?
+				if(!$form.find('.rowgroup-header-'+id).hasClass('hidden_temp')) {
+					$form.find('.rowgroup-header-'+id).addClass('open');
+					$form.find('.rowgroup-content-'+id).show();
+				}
 			});
 		}
 		// opening: hide all subs which are still closed
@@ -219,8 +222,10 @@
 		
 		// reopen open groups
 		$.each($form.find('input[name=open_row_groups]').val().split(','), function(tmp, id){
-			$form.find('.rowgroup-header-'+id).addClass('open');
-			$form.find('.rowgroup-content-'+id).show();
+			if(!$form.find('.rowgroup-header-'+id).hasClass('hidden_temp')) {
+				$form.find('.rowgroup-header-'+id).addClass('open');
+				$form.find('.rowgroup-content-'+id).show();
+			}
 		});
 		// opening: hide all subs which are still closed
 		$('.rowgroup-header').not('.open').each(function(){
