@@ -869,7 +869,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                         list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_example_statistic_for_crosssubject($courseid, $crosssubject->id, $studentid);
                                         
                                     $table_entry = new html_table_row();
-                                    $table_entry->cells[] = new html_table_cell(html_writer::link(new moodle_url("/blocks/exacomp/cross_subjects.php", array("courseid" => $courseid, "crosssubjid" => $crosssubject->id)), $crosssubject->title));
+                                    $table_entry->cells[] = new html_table_cell(html_writer::link(new moodle_url("/blocks/exacomp/cross_subjects.php", array("courseid" => $courseid, "crosssubjid" => $crosssubject->id)), $crosssubject->title, array('title' => get_string('crosssubject','block_exacomp'))));
                                     if($studentid != BLOCK_EXACOMP_SHOW_STATISTIC)
                                         $table_entry->cells[] = new html_table_cell($total);
                                     foreach($gradings as $key => $grading)

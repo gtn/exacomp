@@ -107,7 +107,8 @@ class block_exacomp_example_upload_form extends moodleform {
 	
 		$errors= array();
 	
-		if (!empty($data['link']) && filter_var($data['link'], FILTER_VALIDATE_URL) === FALSE) {
+		if (!empty($data['link']) && filter_var($data['link'], FILTER_VALIDATE_URL) === FALSE
+				&& filter_var("http://" . $data['link'], FILTER_VALIDATE_URL) === FALSE) {
 			$errors['link'] = get_string('linkerr','block_exacomp');
 		}
 	

@@ -124,7 +124,7 @@ if($formdata = $form->get_data()) {
     $newExample->title = $formdata->title;
     $newExample->description = $formdata->description;
     $newExample->creatorid = $USER->id;
-    $newExample->externalurl = $formdata->externalurl;
+    $newExample->externalurl = (filter_var($formdata->externalurl, FILTER_VALIDATE_URL) === TRUE) ? $formdata->externalurl : "http://" . $formdata->externalurl;
     $newExample->source = block_exacomp::EXAMPLE_SOURCE_TEACHER;
 
     if($formdata->assignment) {
