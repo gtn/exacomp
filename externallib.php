@@ -1210,8 +1210,14 @@ class block_exacomp_external extends external_api {
 		$example->description = htmlentities ( $example->description );
 		$example->hassubmissions = ($DB->get_records('block_exacompitemexample',array('exampleid'=>$exampleid))) ? true : false;
 		
-		$example->task = block_exacomp_get_file_url($example, 'example_task');
-		$example->solution =  block_exacomp_get_file_url($example, 'example_solution');
+		$task = block_exacomp_get_file_url($example, 'example_task');
+		if(isset($task))
+			$example->task = $task->__toString();
+		
+		$solution = block_exacomp_get_file_url($example, 'example_solution');
+		if(isset($solution))
+			$example->solution = $solution->__toString();
+		
 		return $example;
 	}
 	
@@ -3223,6 +3229,8 @@ class block_exacomp_external extends external_api {
 				'title' => new external_value ( PARAM_TEXT, 'title of example' ),
 				'description' => new external_value ( PARAM_TEXT, 'description of example' ),
 				'task' => new external_value ( PARAM_TEXT, 'task(url/description) of example' ),
+				'solution' => new external_value ( PARAM_TEXT, 'task(url/description) of example' ),
+				'externalsolution' => new external_value ( PARAM_TEXT, 'solution(url/description) of example' ),
 				'externaltask' => new external_value ( PARAM_TEXT, 'externaltask(url/description) of example' ),
 				'externalurl' => new external_value ( PARAM_TEXT, 'externalurl of example' ),
 				'timeframe' => new external_value ( PARAM_INT, 'timeframe in minutes' ),
