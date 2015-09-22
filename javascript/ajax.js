@@ -457,6 +457,7 @@
 				crosssubjid : crosssubjid,
 				action : 'crosssubj-students'
 			}).done(function(msg) {
+				window.opener.location.reload(true);
 				window.close();
 			});
 		}

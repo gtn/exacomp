@@ -4501,16 +4501,19 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             $content .= html_writer::empty_tag("br");
     
             $content .= get_string("choosestudent", "block_exacomp");
-            $content .= block_exacomp_studentselector($students,$selectedStudent,$PAGE->url."&crosssubjid=".$selectedCrosssubject,  BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
+            $content .= block_exacomp_studentselector($students,$selectedStudent,$PAGE->url."&crosssubjid=".$selectedCrosssubject,  ($students)?BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN:BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_EDITMODE);
             
-            $url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid'=>$COURSE->id, 'creatorid'=>$USER->id));
-    		$right_content = html_writer::tag('button', html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'), 
-					'title'=> get_string('pre_planning_storage', 'block_exacomp'))), array('type'=>'button', 'id'=>'pre_planning_storage_submit', 'name'=> 'pre_planning_storage_submit', 
-			    	"onclick" => "window.open('".$url->out(false)."','_blank','width=880,height=660, scrollbars=yes'); return false;"));
-         			
-			$right_content .= $this->print_edit_mode_button("&studentid=".$selectedStudent."&crosssubjid=".$selectedCrosssubject);
-			
-			$content .= html_writer::div($right_content, 'edit_buttons_float_right');
+            if($students){
+	            $url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid'=>$COURSE->id, 'creatorid'=>$USER->id));
+	    		$right_content = html_writer::tag('button', html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'), 
+						'title'=> get_string('pre_planning_storage', 'block_exacomp'))), array('type'=>'button', 'id'=>'pre_planning_storage_submit', 'name'=> 'pre_planning_storage_submit', 
+				    	"onclick" => "window.open('".$url->out(false)."','_blank','width=880,height=660, scrollbars=yes'); return false;"));
+	
+	    		
+				$right_content .= $this->print_edit_mode_button("&studentid=".$selectedStudent."&crosssubjid=".$selectedCrosssubject);
+				
+				$content .= html_writer::div($right_content, 'edit_buttons_float_right');
+            }
         
         }    
         return $content;
