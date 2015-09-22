@@ -4813,6 +4813,7 @@ class block_exacomp_external extends external_api {
 			$data['file'] = "";
 			$data['isimage'] = false;
 			$data['filename'] = "";
+			$data['mimetype'] = "";
 			$data['teachervalue'] = isset ( $exampleEvaluation->teacher_evaluation ) ? $exampleEvaluation->teacher_evaluation : -1;
 			$data['studentvalue'] = isset ( $exampleEvaluation->student_evaluation ) ? $exampleEvaluation->student_evaluation : -1;
 			$data['status'] = isset ( $itemInformation->status ) ? $itemInformation->status : -1;
@@ -4855,7 +4856,7 @@ class block_exacomp_external extends external_api {
 			$data['filename'] = "";
 			$data['url'] = "";
 			$data['type'] = "";
-			$data['mimetype'] = false;
+			$data['mimetype'] = "";
 			$data['teachercomment'] = "";
 			$data['studentcomment'] = "";
 			$data['teachervalue'] = isset ( $exampleEvaluation->teacher_evaluation ) ? $exampleEvaluation->teacher_evaluation : -1;
