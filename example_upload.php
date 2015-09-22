@@ -75,7 +75,7 @@ $topicid = required_param('topicid', PARAM_INT);
 
 $taxonomies = $DB->get_records_menu("block_exacomptaxonomies",null,"","id, title");
 $topicsub = $DB->get_record("block_exacomptopics", array("id"=>$topicid));
-$topics = $DB->get_records("block_exacomptopics", array("subjid"=>$topicsub->subjid), null, 'title,id');
+$topics = $DB->get_records("block_exacomptopics", array("subjid"=>$topicsub->subjid), null, 'id, title');
 
 $example_descriptors = array();
 if($exampleid>0)
