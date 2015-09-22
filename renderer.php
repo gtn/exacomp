@@ -1567,7 +1567,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     
                 
                 $exampleuploadCell = new html_table_cell();
-                if($data->role == block_exacomp::ROLE_TEACHER && !$profoundness ) {
+                if($data->role == block_exacomp::ROLE_TEACHER && !$profoundness && ($editmode || !$one_student)) {
                     $exampleuploadCell->text = html_writer::link(
                             new moodle_url('/blocks/exacomp/example_upload.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id,"topicid"=>$descriptor->topicid)),
                             html_writer::empty_tag('img', array('src'=>'pix/upload_12x12.png', 'alt'=>'upload')),
