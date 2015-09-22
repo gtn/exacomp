@@ -654,16 +654,21 @@
 		exampleid = $(this).attr('exampleid');
 		studentid = $(this).attr('studentid');
 		
-		if(studentid==0){
-			$('#pre_planning_storage_submit').prop("disabled", false);
+		if(studentid == -1){
+			if (confirm("Möchten Sie das Beispiel wirklich bei allen Schülern auf den Planungsspeicher legen?")) {
+				block_exacomp.call_ajax({
+					exampleid : exampleid,
+					studentid : studentid,
+					action : 'add-example-to-schedule'
+				},function(msg) { alert(msg) });
+			} 
+		}else {
+			block_exacomp.call_ajax({
+				exampleid : exampleid,
+				studentid : studentid,
+				action : 'add-example-to-schedule'
+			},function(msg) { alert(msg) });
 		}
-		
-		block_exacomp.call_ajax({
-			exampleid : exampleid,
-			studentid : studentid,
-			action : 'add-example-to-schedule'
-		},function(msg) { alert(msg) });
-
 	});
 	
 	$(window).on('beforeunload', function (){
