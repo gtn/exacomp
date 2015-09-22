@@ -41,6 +41,8 @@ $edit = optional_param('editmode', 0, PARAM_BOOL);
 
 //if edit mode is on, do not allow to work with students
 $studentid = optional_param('studentid', BLOCK_EXACOMP_SHOW_ALL_STUDENTS, PARAM_INT);
+if($studentid == 0)
+	$studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
 
 if($edit) {
 	$selectedStudentid = $studentid;
