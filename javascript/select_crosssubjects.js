@@ -6,13 +6,13 @@
 		CollapsibleLists.apply();
 		
 		// reopen selected li
-		$( "input[type=checkbox]" ).each(function( ) {
-			if($(this).attr('checked')){
-				$(this).parents('ul').addClass('collapsibleListOpen');
-				$(this).parents('ul').removeClass('collapsibleListClosed');
-				$(this).parents('ul').attr('style', 'display:block');
-				
-			}
+		$( ".add_open" ).each(function( ) {
+			$(this).addClass('collapsibleListOpen');
+			$(this).removeClass('collapsibleListClosed');
+		});
+		
+		$(".add_style").each(function( ){
+			$(this).attr('style', 'display:block');
 		});
 	});
 })(jQueryExacomp);

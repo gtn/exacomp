@@ -64,16 +64,15 @@ $assigned_crosssubjects = $DB->get_records_menu(block_exacomp::DB_DESCCROSS,arra
 
 $content = "";
 $crosssubjects_exist = false;
-$content .= html_writer::start_tag('ul', array("class"=>"collapsibleList"));
+$content .= html_writer::start_tag('ul', array("class"=>" collapsibleList"));
 		
 foreach($subjects as $subject){
 	if(isset($subject->crosssubjects) && !empty($subject->crosssubjects)){
-		$content .= html_writer::start_tag('li');
+		$content .= html_writer::start_tag('li', array("class"=>"add_open"));
 		$content .= $subject->title;
 		
-		$content .= html_writer::start_tag('ul');
+		$content .= html_writer::start_tag('ul', array("class"=>"add_style"));
 		
-		//print_r($subject->crosssub_drafts);
 		foreach($subject->crosssubjects as $crosssubject){
 			
 			$course = $DB->get_record('course', array('id'=>$crosssubject->courseid));
