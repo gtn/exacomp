@@ -321,7 +321,7 @@
 					// TODO:
 					element.find(".fc-content").append(
 						'	<div class="event-extra">' +
-						'	<div class="event-course">Kurs: '+event.courseinfo+'</div>'+
+						//'	<div class="event-course">Kurs: '+event.courseinfo+'</div>'+
 						//'	<div>L: <input type="checkbox" '+((event.teacher_evaluation>0)?'checked=checked':'')+'/> S: <input type="checkbox" '+((event.student_evaluation>0)?'checked=checked':'')+'/></div>' +
 						'	<div class="event-assoc">'+event.assoc_url+/*((event.solution)?event.solution:'')+*/'</div>' +
 						'</div>');
@@ -367,7 +367,7 @@
 					element.find('.fc-time').each(function(){
 						var slot = exacomp_calcendar_config.slots[i];
 						this.innerHTML = '<span>'+(slot.name ? '<b>' + slot.name + '</b><br />' : '')
-							+ '<span style="font-size: 85%">'+slot.start+'-'+slot.end+'</span>'+'</span>';
+							+ '<span style="font-size: 85%">'+'</span>'+'</span>';
 						i++;
 						if (slot.name) einheit++;
 						if (einheit%2)
