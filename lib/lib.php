@@ -1598,7 +1598,7 @@ function block_exacomp_studentselector($students, $selected, $url, $option = nul
 	if ($option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN) {
 		$studentsAssociativeArray[BLOCK_EXACOMP_SHOW_ALL_STUDENTS] = get_string('allstudents', 'block_exacomp');
     }
-    if($option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN) {
+    if($option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN || $option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN) {
     	$studentsAssociativeArray[BLOCK_EXACOMP_SHOW_STATISTIC] = get_string('statistic', 'block_exacomp');
     }
 	
@@ -4742,7 +4742,7 @@ function block_exacomp_calculate_statistic_for_example($courseid, $students, $ex
 		if(isset($student->examples->student[$example->id])){
 			$counter = 1;
 			while($counter < $scheme){
-				if($student->examples->student[$example->id]==$counter){
+				if($student->exammples->student[$example->id]==$counter){
 					$self[$counter]++;
 					$self_title[$counter] .= $student->firstname." ".$student->lastname."\n";
 				}
