@@ -5482,10 +5482,12 @@ function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $stud
 	if($comp && $comp->teacher_evaluation > 0)
 		return 4;
 		
-	$items_examp = $DB->get_records ( 'block_exacompitemexample', array (
-								'exampleid' => $example->id 
-						) );
-	
+	$sql = "select * FROM {block_exacompitemexample} ie  
+			JOIN {block_exaportitem} i ON i.id = ie.itemid 
+			WHERE ie.exampleid = ? AND i.userid = ?";
+			
+	$items_examp = $DB->get_records_sql($sql,array($exampleid, $studentid));
+
 	if($items_examp)
 		return 3;
 	
