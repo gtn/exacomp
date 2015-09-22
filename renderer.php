@@ -727,7 +727,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                 $row = new html_table_row();
 
                 $cell2 = new html_table_cell();
-                $cell2->text = html_writer::tag("span",html_writer::tag("span",$topics[$topicid],array('class'=>'rotated-text__inner')),array('class'=>'rotated-text'));
+               
+                $cell2->text = html_writer::tag("span",html_writer::tag("span",block_exacomp_get_topic_numbering( block_exacomp_get_topic_by_id($topicid))." ".$topics[$topicid],array('class'=>'rotated-text__inner')),array('class'=>'rotated-text'));
                 $cell2->attributes['class'] = 'topic';
                 $row->cells[] = $cell2;
 
@@ -794,7 +795,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                 $compString .= $descriptor->icon;
 							*/
 
-                            $text = $descriptor->title;
+                            $text = block_exacomp_get_descriptor_numbering($descriptor)." ".$descriptor->title;
                             if(array_key_exists($descriptor->topicid, $selection)) {
                                 $text = html_writer::link(new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid"=>$courseid,"subjectid"=>$topicid,"topicid"=>$descriptor->id,"studentid"=>$studentid)),$text,array("id" => "competence-grid-link-".$descriptor->id,"class" => ($visible) ? '' : 'deactivated'));
                             }
@@ -813,7 +814,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                             if(isset($descriptor->children) && count($descriptor->children) > 0 && !$version) {
                                 $children = '<ul class="childdescriptors">';
                                 foreach($descriptor->children as $child)
-                                    $children .= '<li>' . $child->title . '</li>';
+                                    $children .= '<li>' . block_exacomp_get_descriptor_numbering($descriptor)." ".$child->title . '</li>';
                                 $children .= '</ul>';
                             }
                             $compString .= $text;
@@ -1567,7 +1568,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     
                 
                 $exampleuploadCell = new html_table_cell();
-                if($data->role == block_exacomp::ROLE_TEACHER && !$profoundness && ($editmode || !$one_student)) {
+                if($data->role == block_exacomp::ROLE_TEACHER && !$profoundness ) {
                     $exampleuploadCell->text = html_writer::link(
                             new moodle_url('/blocks/exacomp/example_upload.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id,"topicid"=>$descriptor->topicid)),
                             html_writer::empty_tag('img', array('src'=>'pix/upload_12x12.png', 'alt'=>'upload')),
