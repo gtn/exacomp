@@ -3963,7 +3963,7 @@ class block_exacomp_external extends external_api {
 						$descriptor_return->niveauid = 0;
 						if($descriptor->niveauid){
 							$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
-							$descriptor_return->niveautitle = $niveau->title;
+							$descriptor_return->niveautitle = substr(block_exacomp_get_descriptor_numbering($descriptor),0,1).": ".$niveau->title;
 							$descriptor_return->niveauid = $niveau->id;
 						}
 						$descriptors_return[] = $descriptor_return;
