@@ -54,7 +54,7 @@ class block_exacomp_db {
     }
 }
 
-class block_exascomp_param {
+class block_exacomp_param {
     public static function clean_object($values, $definition) {
         // some value => type
         $ret = new stdClass;
