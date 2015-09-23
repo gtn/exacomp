@@ -15,8 +15,60 @@ class exabis_special_id_generator {
                 "a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",
                 "0","1","2","3","4","5","6","7","8","9","_","-");
     
+    static private function str_baseconvert($str, $frombase=10, $tobase=36) {
+        // convert to binary
+        if ($frombase == 16) {
+            // base 16, use own logic.
+            // because numbers are large and can't find in an integer!
+            $binary = '';
+            for ($i = 0; $i < strlen($str); $i++) {
+                $binary .= sprintf("%0".($frombase/2)."d", base_convert($str[$i], $frombase, 2));
+            }
+        } elseif ($frombase == 10) {
+            // our base 10 numbers are small, they fit in an integer.
+            $binary = base_convert($str, $frombase, 2);
+        } else {
+            die("wrong base $frombase");
+        }
+        
+        if ($tobase != 64) {
+            die("only base64 supported for now");
+        }
+        
+        // delete leading zeros
+        $binary = ltrim($binary, '0');
+        
+        // make length
+        $part_length = log($tobase, 2);
+        $length = ceil(strlen($binary) / $part_length) * $part_length;
+        $binary = str_pad($binary, $length, '0', STR_PAD_LEFT);
+        
+        $ret = '';
+        $part_i = 0;
+        $val = 0;
+        
+        for ($i = 0; $i< strlen($binary); $i++) {
+            $val = $val * 2 + $binary[$i];
+            
+            $part_i++;
+            if ($part_i < $part_length) {
+                continue;
+            }
+            
+            if ($tobase == 64) {
+                $val = self::$BASE64[$val];
+            }
+            $ret .= $val;
+            $val = 0;
+            $part_i = 0;
+        }
+        
+        return $ret;
+    }
+    
     /* from http://php.net/manual/de/function.base-convert.php */
-    static private function str_baseconvert($str, $frombase=10, $tobase=36) { 
+    /*
+    static private function str_baseconvert_bcmath($str, $frombase=10, $tobase=36) { 
         $str = trim($str); 
         if (intval($frombase) != 10) { 
             $len = strlen($str); 
@@ -44,6 +96,7 @@ class exabis_special_id_generator {
 
         return $s; 
     }
+    */
     
     // make a string longer/shorter but cutting, or adding zeros to the left
     static private function make_length($str, $len) {
@@ -57,15 +110,14 @@ class exabis_special_id_generator {
         return $check;
     }
     static public function generate_random_id($prefix = '') {
-       return $prefix.'s0RyUGhhoN36WW6O0mDI-_hm9';  
-	   /*$md5 = md5(microtime(false));
+        $md5 = md5(microtime(false));
         $id = self::make_length(self::str_baseconvert($md5, 16, self::BASE), self::ID_LENGTH);
         
         if ($prefix) {
             $id = $prefix.'-'.$id;
         }
         
-        return $id.self::generate_checksum($id);*/
+        return $id.self::generate_checksum($id);
     }
 
     static public function validate_id($id) {
@@ -86,7 +138,7 @@ class exabis_special_id_generator {
 echo "<pre>";
 
 for ($i = 0; $i< 10000; $i++) {
-    $id = exabis_special_id_generator::generate_random_id();
+    $id = exabis_special_id_generator::generate_random_id('BLOCK-EXACOMP');
     
     echo 'id: '.$i.' '.$id.' '.(exabis_special_id_generator::validate_id($id)?'':' bad no ').'<br />';
 }
