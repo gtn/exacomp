@@ -342,4 +342,13 @@ switch($action){
 		
 		echo block_exacomp_example_down ( $exampleid, $descrid );
 		break;
+	case ('edit-descriptor-title') :
+		$descriptorid = required_param ('descrid', PARAM_INT);
+		$title = required_param ('title', PARAM_TEXT);
+		
+		$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptorid));
+		$descriptor->title = $title;
+		
+		$DB->update_record(block_exacomp::DB_DESCRIPTORS, $descriptor);
+		break;
 }

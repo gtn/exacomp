@@ -1603,6 +1603,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                         $titleCell->text .= $this->print_visibility_icon($visible, $descriptor->id);
                     }
                     if($editmode && $custom_created_descriptors){
+                    	$titleCell->text .= html_writer::link("", $OUTPUT->pix_icon("i/edit", get_string("edit")), array('name' => 'edit-descriptor','descrid' => $descriptor->id, 'id' => 'edit-descriptor'));
+      
                         $titleCell->text .= html_writer::link($PAGE->url . "&delete_descr=" . $descriptor->id."&editmode=1", $OUTPUT->pix_icon("t/delete", get_string("delete"), "", array("onclick" => "return confirm('" . get_string('delete_confirmation_descr','block_exacomp') . "')")));
                     }
                 }

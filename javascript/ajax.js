@@ -349,6 +349,23 @@
 									  }
 								});
 								
+								//check all edit-descriptor text fields if somewhere new text is entered when saving and change descriptor
+								$( "input[name^=change-title]" ).each(function( event ) {
+									  if($(this).val()){
+										  title = $(this).val();
+										  descrid = $(this).attr('descrid');
+										  
+										  block_exacomp.call_ajax({
+												descrid : descrid,
+												title : title,
+												action : 'edit-descriptor-title'
+										  });
+										  
+										  var span = $(this).parent('span');
+										  span.text($(this).val());
+									  }
+								});
+								
 								alert('Änderungen wurden gespeichert!');
 								break;
 							case 'save_as_draft':
@@ -467,6 +484,36 @@
 		if($(this).hasClass('deactivated')){
             event.preventDefault();
         }
+	});
+	
+	$(document).on('click', '#edit-descriptor', function(event) {
+		event.preventDefault();
+		var td = $(this).closest('td');
+		var span = td.find('span');
+		var old_text = span.text();
+		var descrid = $(this).attr('descrid');
+		
+		var input = '<input type="text" length="150" value="'+span.text()+'" id="change-title" name="change-title" descrid="'+descrid+'"/>';
+		span.text("");
+		span.append(input);
+	});
+	
+	$(document).on('keydown', 'input[name^=change-title]', function(event) {
+		if(event.which == 13){
+			event.preventDefault();
+			
+			var text = $(this).val();
+			var descrid = $(this).attr('descrid');
+			
+			block_exacomp.call_ajax({
+				descrid : descrid,
+				title : text,
+				action : 'edit-descriptor-title'
+			});
+			
+			var span = $(this).parent('span');
+			span.text($(this).val());
+		}
 	});
 	
 	$(document).on('click', '#hide-descriptor', function(event) {
