@@ -114,9 +114,6 @@ else{
 	$students = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : $students_single;
 	if($course_settings->nostudents) $students = array();
 	
-	foreach($students as $student)
-		$student = block_exacomp_get_user_information_by_course($student, $courseid);
-
 	echo $output->print_competence_overview_form_start((isset($selectedTopic))?$selectedTopic:null, (isset($selectedSubject))?$selectedSubject:null, $studentid);
 
 	//dropdowns for subjects and topics and students -> if user is teacher
@@ -171,6 +168,9 @@ else{
 		else
 			$students = !empty($students[$studentid]) ? array($students[$studentid]) : $students;
 	}
+	
+	foreach($students as $student)
+		$student = block_exacomp_get_user_information_by_course($student, $courseid);
 	
 	$subjects = block_exacomp_get_competence_tree($courseid,(isset($selectedSubject))?$selectedSubject->id:null,false,(isset($selectedTopic))?$selectedTopic->id:null,
 			!($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies, true);
