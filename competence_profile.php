@@ -39,6 +39,10 @@ require_login($course);
 
 $context = context_course::instance($courseid);
 
+// CHECK TEACHER
+$isTeacher = block_exacomp_is_teacher($context);
+
+$studentid = block_exacomp_get_studentid($isTeacher) ;
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_competence_profile_profile';
 
@@ -54,11 +58,9 @@ block_exacomp_build_breadcrum_navigation($courseid);
 
 $output = $PAGE->get_renderer('block_exacomp');
 // build tab navigation & print header
-$isTeacher = block_exacomp_is_teacher($context);
 echo $output->header($context, $courseid, (!$isTeacher)?'tab_competence_profile':$page_identifier);
 
 /* CONTENT REGION */
-$studentid = optional_param('studentid', 0, PARAM_INT);
 
 if(!$isTeacher){ 
 	$studentid = $USER->id;

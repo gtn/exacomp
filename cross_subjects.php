@@ -36,6 +36,13 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
 $studentid = optional_param('studentid', BLOCK_EXACOMP_SHOW_ALL_STUDENTS, PARAM_INT);
+
+$context = context_course::instance($courseid);
+
+// CHECK TEACHER
+$isTeacher = block_exacomp_is_teacher($context);
+
+$studentid = block_exacomp_get_studentid($isTeacher) ;
 $edit = optional_param('editmode', 0, PARAM_BOOL);
 
 if($edit) {
@@ -43,8 +50,6 @@ if($edit) {
 	$studentid = 0;
 }
 require_login($course);
-
-$context = context_course::instance($courseid);
 
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_cross_subjects_course';
@@ -62,13 +67,10 @@ $output = $PAGE->get_renderer('block_exacomp');
 // build tab navigation & print header
 echo $output->header($context, $courseid, 'tab_cross_subjects');
 
-// CHECK TEACHER
-$isTeacher = block_exacomp_is_teacher($context);
 
 if($isTeacher){
     echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_cross_subjects($context, $courseid), $page_identifier);
-}else 
-	$studentid = $USER->id;
+}
 	
 // IF DELETE > 0 DELTE CUSTOM EXAMPLE
 if(($delete = optional_param("delete", 0, PARAM_INT)) > 0 && $isTeacher)

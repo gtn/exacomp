@@ -30,6 +30,7 @@ define("SHOW_ALL_TOPICS",99999999);
 define("SHOW_ALL_TAXONOMIES",100000000);
 define("BLOCK_EXACOMP_SHOW_ALL_STUDENTS", -1);
 define("BLOCK_EXACOMP_SHOW_STATISTIC", -2);
+define("BLOCK_EXACOMP_DEFAULT_STUDENT", -5);
 
 define("BLOCK_EXACOMP_REPORT1",1);
 define("BLOCK_EXACOMP_REPORT2",2);
@@ -5603,4 +5604,25 @@ function block_exacomp_get_current_item_for_example($userid, $exampleid) {
 			LIMIT 1';
 
 	return $DB->get_record_sql($sql,array($exampleid, $userid));
+}
+/**
+ * keeps selected studentid in the session
+ */
+function block_exacomp_get_studentid($isTeacher) {
+	global $USER;
+	
+	if(!$isTeacher)
+		return $USER->id;
+	
+	$studentid = optional_param('studentid', BLOCK_EXACOMP_DEFAULT_STUDENT, PARAM_INT);
+	
+	if($studentid == BLOCK_EXACOMP_DEFAULT_STUDENT) {
+		if(isset($_SESSION['studentid']))
+			$studentid = $_SESSION['studentid'];
+		else
+			$studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
+	} else {
+		$_SESSION['studentid'] = $studentid;
+	}
+	return $studentid;
 }

@@ -40,7 +40,29 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 $edit = optional_param('editmode', 0, PARAM_BOOL);
 
 //if edit mode is on, do not allow to work with students
-$studentid = optional_param('studentid', BLOCK_EXACOMP_SHOW_ALL_STUDENTS, PARAM_INT);
+/*
+$studentid = optional_param('studentid', BLOCK_EXACOMP_DEFAULT_STUDENT, PARAM_INT);
+if($studentid == 0)
+	$studentid = BLOCK_EXACOMP_DEFAULT_STUDENT;
+
+if($studentid == BLOCK_EXACOMP_DEFAULT_STUDENT) {
+	if(isset($_SESSION['studentid']))
+		//if default check for session
+		$studentid = $_SESSION['studentid'];
+	else
+		$studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
+} else {
+	$_SESSION['studentid'] = $studentid;
+}*/
+
+require_login($course);
+
+$context = context_course::instance($courseid);
+
+// CHECK TEACHER
+$isTeacher = block_exacomp_is_teacher($context);
+
+$studentid = block_exacomp_get_studentid($isTeacher) ;
 if($studentid == 0)
 	$studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
 
@@ -48,10 +70,6 @@ if($edit) {
 	$selectedStudentid = $studentid;
 	$studentid = 0;
 }
-
-require_login($course);
-
-$context = context_course::instance($courseid);
 
 $page_identifier = 'tab_competence_overview';
 
@@ -67,8 +85,7 @@ $output = $PAGE->get_renderer('block_exacomp');
 // build tab navigation & print header
 echo $output->header($context, $courseid, $page_identifier);
 
-// CHECK TEACHER
-$isTeacher = block_exacomp_is_teacher($context);
+
 // IF DELETE > 0 DELTE CUSTOM EXAMPLE
 if(($delete = optional_param("delete", 0, PARAM_INT)) > 0 && $isTeacher){
 	block_exacomp_delete_custom_example($delete);
@@ -148,11 +165,11 @@ else{
 		if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS)
 			echo $output->print_column_selector(count($students));
 		elseif (!$studentid)
-		$students = array();
+			$students = array();
 		elseif($studentid == BLOCK_EXACOMP_SHOW_STATISTIC)
-		$statistic = true;
+			$statistic = true;
 		else
-			$students = !empty($students[$studentid]) ? array($students[$studentid]) : array();
+			$students = !empty($students[$studentid]) ? array($students[$studentid]) : $students;
 	}
 	
 	$subjects = block_exacomp_get_competence_tree($courseid,(isset($selectedSubject))?$selectedSubject->id:null,false,(isset($selectedTopic))?$selectedTopic->id:null,

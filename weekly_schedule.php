@@ -39,6 +39,11 @@ require_login($course);
 
 $context = context_course::instance($courseid);
 
+// CHECK TEACHER
+$isTeacher = block_exacomp_is_teacher($context);
+
+$studentid = block_exacomp_get_studentid($isTeacher) ;
+
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_weekly_schedule';
 
@@ -56,8 +61,6 @@ block_exacomp_build_breadcrum_navigation($courseid);
 $output = $PAGE->get_renderer('block_exacomp');
 echo $output->header($context, $courseid, $page_identifier);
 
-$isTeacher = block_exacomp_is_teacher($context);
-$studentid = $isTeacher ? optional_param("studentid", 0, PARAM_INT) : $USER->id;
 
 $selectedCourse = optional_param('pool_course', $courseid, PARAM_INT);
 
