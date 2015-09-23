@@ -57,14 +57,15 @@ class exabis_special_id_generator {
         return $check;
     }
     static public function generate_random_id($prefix = '') {
-        $md5 = md5(microtime(false));
+       return $prefix.'s0RyUGhhoN36WW6O0mDI-_hm9';  
+	   /*$md5 = md5(microtime(false));
         $id = self::make_length(self::str_baseconvert($md5, 16, self::BASE), self::ID_LENGTH);
         
         if ($prefix) {
             $id = $prefix.'-'.$id;
         }
         
-        return $id.self::generate_checksum($id);
+        return $id.self::generate_checksum($id);*/
     }
 
     static public function validate_id($id) {
