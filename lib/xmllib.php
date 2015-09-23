@@ -1061,7 +1061,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         }
         
         // self::kompetenzraster_load_current_data_for_source();
-        self::delete_mm_records(self::$import_source_local_id);
+        // self::delete_mm_records(self::$import_source_local_id);
 
         self::truncate_table(self::$import_source_local_id, block_exacomp::DB_SKILLS);
         if(isset($xml->skills)) {
@@ -1290,7 +1290,6 @@ class block_exacomp_data_importer extends block_exacomp_data {
             foreach($xmlItem->descriptors->descriptorid as $descriptor) {
                 if ($descriptorid = self::get_database_id($descriptor)) {
                     block_exacomp_db::insert_or_update_record(block_exacomp::DB_DESCEXAMP, array("exampid"=>$item->id, "descrid"=>$descriptorid));
-                } else {
                 }
             }
         }
