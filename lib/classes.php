@@ -9,6 +9,9 @@ class block_exacomp_db_layer {
     public $showonlyvisible = false;
     public $mindvisibility = false;
     
+    /**
+     * @return block_exacomp_db_layer
+     */
     static function get() {
         static $default = null;
         
@@ -135,6 +138,83 @@ class block_exacomp_db_layer {
         $subjects = block_exacomp_subject::get_records();
         
         return $this->create_objects('block_exacomp_subject', $subjects);
+    }
+    
+    function get_subjects_for_source($source) {
+        $subjects = $this->get_subjects();
+        // $subjects = array_values($subjects);
+        // $subjects = array($subjects[10]); // , $subjects[1]);
+        
+        // check delete
+        foreach ($subjects as $subject) {
+            $subject->can_delete = ($subject->source == $source);
+        
+            foreach ($subject->topics as $topic) {
+                $topic->can_delete = ($topic->source == $source);
+        
+                foreach($topic->descriptors as $descriptor){
+                    $descriptor->can_delete = ($descriptor->source == $source);
+        
+                    // child descriptors
+                    foreach($descriptor->children as $child_descriptor){
+                        $child_descriptor->can_delete = ($child_descriptor->source == $source);
+        
+                        $examples = array();
+                        foreach ($child_descriptor->examples as $example){
+                            $example->can_delete = ($example->source == $source);
+                            if (!$example->can_delete) {
+                                $child_descriptor->can_delete = false;
+                            }
+        
+                            if ($example->source != $source) {
+                                unset($child_descriptor->examples[$example->id]);
+                            }
+                        }
+                        $child_descriptor->examples = $examples;
+        
+                        if (!$child_descriptor->can_delete) {
+                            $descriptor->can_delete = false;
+                        }
+                        if ($child_descriptor->source != $source && empty($child_descriptor->examples)) {
+                            unset($descriptor->children[$child_descriptor->id]);
+                        }
+                    }
+        
+                    foreach ($descriptor->examples as $example){
+                        $example->can_delete = ($example->source == $source);
+                        if (!$example->can_delete) {
+                            $descriptor->can_delete = false;
+                        }
+                        if ($example->source != $source) {
+                            unset($descriptor->examples[$example->id]);
+                        }
+                        if ($child_descriptor->source == $source || !empty($child_descriptor->examples)) {
+                            unset($descriptor->children[$child_descriptor->id]);
+                        }
+                    }
+                    
+                    if (!$descriptor->can_delete) {
+                        $topic->can_delete = false;
+                    }
+                    if ($descriptor->source != $source && empty($descriptor->examples)) {
+                        unset($topic->descriptors[$descriptor->id]);
+                    }
+                }
+        
+                if (!$topic->can_delete) {
+                    $subject->can_delete = false;
+                }
+                if ($topic->source != $source && empty($topic->descriptors)) {
+                    unset($subject->topics[$topic->id]);
+                }
+            }
+            
+            if ($subject->source != $source && empty($subject->topics)) {
+                unset($subjects[$subject->id]);
+            }
+        }
+        
+        return $subjects;
     }
     
     function get_topics_for_subject($subject) {

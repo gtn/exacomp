@@ -55,51 +55,7 @@ $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
 function block_exacomp_source_delete_get_subjects($source) {
     //$DB->set_debug(true);
-    $subjects = block_exacomp_db_layer::get()->get_subjects();
-    
-    // $subjects = array_values($subjects);
-    // $subjects = array($subjects[10]); // , $subjects[1]);
-    
-    // check delete
-    foreach ($subjects as $subject) {
-        $subject->can_delete = ($subject->source == $source);
-    
-        foreach ($subject->topics as $topic) {
-            $topic->can_delete = ($topic->source == $source);
-    
-            foreach($topic->descriptors as $descriptor){
-                $descriptor->can_delete = ($descriptor->source == $source);
-    
-                // child descriptors
-                foreach($descriptor->children as $child_descriptor){
-                    $child_descriptor->can_delete = ($child_descriptor->source == $source);
-    
-                    foreach ($child_descriptor->examples as $example){
-                        $example->can_delete = ($example->source == $source);
-    
-                        if (!$example->can_delete)
-                            $child_descriptor->can_delete = false;
-                    }
-    
-                    if (!$child_descriptor->can_delete)
-                        $descriptor->can_delete = false;
-                }
-    
-                foreach ($descriptor->examples as $example){
-                    $example->can_delete = ($example->source == $source);
-    
-                    if (!$example->can_delete)
-                        $descriptor->can_delete = false;
-                }
-    
-                if (!$descriptor->can_delete)
-                    $topic->can_delete = false;
-            }
-    
-            if (!$topic->can_delete)
-                $subject->can_delete = false;
-        }
-    }
+    $subjects = block_exacomp_db_layer::get()->get_subjects_for_source($source);
     
     return $subjects;
 }
@@ -107,10 +63,10 @@ function block_exacomp_source_delete_get_subjects($source) {
 $subjects = block_exacomp_source_delete_get_subjects($source);
 
 if ($action == 'delete_selected') {
-    $examples = block_exacomp_param::optional_array('examples', array(PARAM_INT=>PARAM_INT));
-    $descriptors = block_exacomp_param::optional_array('descriptors', array(PARAM_INT=>PARAM_INT));
-    $topics = block_exacomp_param::optional_array('topics', array(PARAM_INT=>PARAM_INT));
-    $subjects = block_exacomp_param::optional_array('subjects', array(PARAM_INT=>PARAM_INT));
+    $post_examples = block_exacomp_param::optional_array('examples', array(PARAM_INT=>PARAM_INT));
+    $post_descriptors = block_exacomp_param::optional_array('descriptors', array(PARAM_INT=>PARAM_INT));
+    $post_topics = block_exacomp_param::optional_array('topics', array(PARAM_INT=>PARAM_INT));
+    $post_subjects = block_exacomp_param::optional_array('subjects', array(PARAM_INT=>PARAM_INT));
     
     $delete_examples = array();
     $delete_descriptors = array();
@@ -119,34 +75,34 @@ if ($action == 'delete_selected') {
     
     // rechte hier nochmal pruefen!
     foreach ($subjects as $subject) {
-        if (!empty($subjects[$subject->id]) && $subject->can_delete) {
+        if (!empty($post_subjects[$subject->id]) && $subject->can_delete) {
             $delete_subjects[$subject->id] = $subject->id;
         }
     
         foreach ($subject->topics as $topic) {
-            if (!empty($topics[$topic->id]) && $topic->can_delete) {
+            if (!empty($post_topics[$topic->id]) && $topic->can_delete) {
                 $delete_topics[$topic->id] = $topic->id;
             }
             
             foreach($topic->descriptors as $descriptor){
-                if (!empty($descriptors[$descriptor->id]) && $descriptor->can_delete) {
+                if (!empty($post_descriptors[$descriptor->id]) && $descriptor->can_delete) {
                     $delete_descriptors[$descriptor->id] = $descriptor->id;
                 }
                 
                 foreach($descriptor->children as $child_descriptor){
-                    if (!empty($descriptors[$descriptor->id]) && $descriptor->can_delete) {
+                    if (!empty($post_descriptors[$descriptor->id]) && $descriptor->can_delete) {
                         $delete_descriptors[$descriptor->id] = $descriptor->id;
                     }
                     
                     foreach ($child_descriptor->examples as $example){
-                        if (!empty($examples[$example->id]) && $example->can_delete) {
+                        if (!empty($post_examples[$example->id]) && $example->can_delete) {
                             $delete_examples[$example->id] = $example->id;
                         }
                     }
                 }
     
                 foreach ($descriptor->examples as $example){
-                    if (!empty($examples[$example->id]) && $example->can_delete) {
+                    if (!empty($post_examples[$example->id]) && $example->can_delete) {
                         $delete_examples[$example->id] = $example->id;
                     }
                 }
