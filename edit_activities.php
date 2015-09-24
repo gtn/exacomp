@@ -60,10 +60,7 @@ $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 block_exacomp_build_breadcrum_navigation($courseid);
 
 $headertext = "";
-if(!$version)
-	$img = new moodle_url('/blocks/exacomp/pix/three.png');
-else 
- 	$img = new moodle_url('/blocks/exacomp/pix/four.png');
+$img = new moodle_url('/blocks/exacomp/pix/three.png');
 	 
 if (($action = optional_param("action", "", PARAM_TEXT) )== "save") {
 	block_exacomp_delete_competencies_activities();
