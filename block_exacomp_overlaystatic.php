@@ -21,7 +21,6 @@ $string['choosesubject']='Kompetenzbereich ausw&auml;hlen';
 $string['choosetopic'] = "Lernfortschritte ausw&auml;hlen";
 
 $string['second_configuration_step'] = 'Im zweiten Konfigurationsschritt m&uuml;ssen Bildungsstandards ausgew&auml;hlt werden.';
-$string['teacher_second_configuration_step'] = 'Im dritten Konfigurationsschritt m&uuml;ssen Themenbereiche ausgew&auml;hlt werden, mit denen Sie in diesem Kurs arbeiten m&ouml;chten';
 
 $string['help_content'] = '<h1>Video zur Einführung</h1>
 <iframe width="640" height="360" src="//www.youtube.com/embed/EL4Vb3_17EM?feature=player_embedded" frameborder="0" allowfullscreen></iframe>
