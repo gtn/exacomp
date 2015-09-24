@@ -52,6 +52,7 @@ $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
 $PAGE->requires->js('/blocks/exacomp/javascript/Chart.js', true);
+$PAGE->requires->js('/blocks/exacomp/javascript/d3.min.js', true);
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
@@ -129,8 +130,8 @@ foreach($possible_courses as $course){
 		$user_courses[$course->id] = $course; 
 }
 
-echo $output->print_competene_profile_overview($student, $user_courses, $possible_courses, $badges, 
-	$profile_settings->useexaport, $items, $profile_settings->useexastud, $periods,  $profile_settings->onlygainedbadges);
+//echo $output->print_competene_profile_overview($student, $user_courses, $possible_courses, $badges, 
+	//$profile_settings->useexaport, $items, $profile_settings->useexastud, $periods,  $profile_settings->onlygainedbadges);
 
 if(!empty($profile_settings->exacomp) || $profile_settings->showallcomps == 1)
 	echo html_writer::tag('h3', get_string('my_comps', 'block_exacomp'), array('class'=>'competence_profile_sectiontitle'));
@@ -141,14 +142,14 @@ foreach($user_courses as $course) {
 		echo $output->print_competence_profile_course($course,$student);
 }
 
-if($profile_settings->showallcomps == 1){
+/*if($profile_settings->showallcomps == 1){
 	if(empty($user_courses))
 		$overview_courses = $possible_courses;
 	else 	
 		$overview_courses = $user_courses;
 		
 	echo $output->print_competence_profile_course_all($overview_courses, $student);
-}
+}*/
 if($profile_settings->useexaport == 1){
 	echo $output->print_competence_profile_exaport($profile_settings, $student, $items);
 }

@@ -3810,6 +3810,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
     function print_competence_profile_course($course, $student, $showall = true) {
         $scheme = block_exacomp_get_grading_scheme($course->id);
         $compTree = block_exacomp_get_competence_tree($course->id);
+		
         //print heading
         $content = html_writer::tag("h4", html_writer::tag('a', $course->fullname, array('name'=>$course->fullname.$course->id)), array("class" => "competence_profile_coursetitle"));
         if(!$compTree) {
@@ -3817,36 +3818,36 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             return html_writer::div($content, 'competence_profile_coursedata');
         }
         //print graphs
-        $topics = block_exacomp_get_topics_for_radar_graph($course->id, $student->id);
-        $radar_graph = html_writer::div($this->print_radar_graph($topics,$course->id),"competence_profile_radargraph");
+        //$topics = block_exacomp_get_topics_for_radar_graph($course->id, $student->id);
+        //$radar_graph = html_writer::div($this->print_radar_graph($topics,$course->id),"competence_profile_radargraph");
 
-        list($teachercomp,$studentcomp,$pendingcomp) = block_exacomp_get_competencies_for_pie_chart($course->id,$student, $scheme, 0, true);
-        $pie_graph = html_writer::div($this->print_pie_graph($teachercomp, $studentcomp, $pendingcomp, $course->id),"competence_profile_radargraph");
+        //list($teachercomp,$studentcomp,$pendingcomp) = block_exacomp_get_competencies_for_pie_chart($course->id,$student, $scheme, 0, true);
+        //$pie_graph = html_writer::div($this->print_pie_graph($teachercomp, $studentcomp, $pendingcomp, $course->id),"competence_profile_radargraph");
         
-        $total_comps = $teachercomp+$studentcomp+$pendingcomp;
-        $timeline_data= block_exacomp_get_timeline_data(array($course), $student, $total_comps);
+        //$total_comps = $teachercomp+$studentcomp+$pendingcomp;
+        //$timeline_data= block_exacomp_get_timeline_data(array($course), $student, $total_comps);
         
-        if($timeline_data)
-            $timeline_graph =  html_writer::div($this->print_timeline_graph($timeline_data->x_values, $timeline_data->y_values_teacher, $timeline_data->y_values_student, $timeline_data->y_values_total, $course->id),"competence_profile_timelinegraph");
-        else
-            $timeline_graph = "";
+        //if($timeline_data)
+          //  $timeline_graph =  html_writer::div($this->print_timeline_graph($timeline_data->x_values, $timeline_data->y_values_teacher, $timeline_data->y_values_student, $timeline_data->y_values_total, $course->id),"competence_profile_timelinegraph");
+        //else
+           // $timeline_graph = "";
             
-        $content .= html_writer::div($radar_graph.$pie_graph.$timeline_graph, 'competence_profile_graphbox clearfix');
-        $content .= html_writer::div($this->print_radar_graph_legend(),"radargraph_legend");
+        //$content .= html_writer::div($radar_graph.$pie_graph.$timeline_graph, 'competence_profile_graphbox clearfix');
+        //$content .= html_writer::div($this->print_radar_graph_legend(),"radargraph_legend");
             
         //print list
         $student = block_exacomp_get_user_information_by_course($student, $course->id);
 
         $items = false;
-        if($student != null && block_exacomp_get_profile_settings($student->id)->useexaport == 1) {
-            $items = block_exacomp_get_exaport_items($student->id);
-        }
-        $content .= $this->print_competence_profile_tree($compTree,$course->id, $student,$scheme, false, $items);
+        // if($student != null && block_exacomp_get_profile_settings($student->id)->useexaport == 1) {
+        //    $items = block_exacomp_get_exaport_items($student->id);
+        //}
+        $content .= $this->print_competence_profile_tree_v2($compTree,$course->id, $student,$scheme, false, $items);
 
         return html_writer::div($content,"competence_profile_coursedata");
     }
 
-    private function print_competence_profile_tree($in, $courseid, $student = null,$scheme = 1, $showonlyreached = false, $eportfolioitems = false) {
+private function print_competence_profile_tree_v2($in, $courseid, $student = null,$scheme = 1, $showonlyreached = false, $eportfolioitems = false) {
         global $DB;
         if($student != null){
             $profile_settings = block_exacomp_get_profile_settings($student->id);
@@ -3857,65 +3858,192 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         $showonlyreached_total = false;
         if($showonlyreached || ($student != null && $profile_settings->showonlyreached ==1))
             $showonlyreached_total = true;
-            
-        $ul_items = '';
-        $content = "<ul>";
-        
-        foreach($in as $v) {
-            if($v->tabletype =="descriptor"){
-                $visibility = $DB->get_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$v->id, 'studentid'=>$studentid));
-                
-                $v->visible = ($visibility)?$visibility->visible:($DB->get_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$v->id, 'studentid'=>0))->visible);
-                
-            }
-            if(($v->tabletype=="descriptor" && $v->visible == 1) || $v->tabletype!="descriptor"){
-                $class = 'competence_profile_' . $v->tabletype;
-                $reached = false;
-                if($v->tabletype == "subject")
-                    $class .= " reached";
-                if(($v->tabletype == "topic" && isset($student->topics->teacher[$v->id]) && $student->topics->teacher[$v->id] >= ceil($scheme/2)) || $student == null){
-                    $class .= " reached";
-                    $reached = true;
-                }
-                if($v->tabletype == "descriptor" && isset($student->competencies->teacher[$v->id]) && $student->competencies->teacher[$v->id] >= ceil($scheme/2)){
-                    $class .= " reached";
-                    $reached = true;
-                }
-                if($eportfolioitems && $v->tabletype == "descriptor"){
-                    //check for exaportitem
-                    $items = $DB->get_records(block_exacomp::DB_COMPETENCE_ACTIVITY, array('compid'=>$v->id, 'comptype'=>TYPE_DESCRIPTOR, 'eportfolioitem'=>1));
-                    
-                    if($items){
-                        $li_items = '';
-                        foreach($items as $item){
-                            if(!is_array($eportfolioitems) || (is_array($eportfolioitems) && !array_key_exists($item->activityid, $eportfolioitems)))
-                                continue;
-                            
-                            $li_items .= html_writer::tag('li', html_writer::link('#'.$item->activitytitle.$item->activityid,
-                                html_writer::empty_tag('img', array('src'=> new moodle_url('/blocks/exacomp/pix/folder_shared.png'), 'alt'=>''))
-                                .' '.$item->activitytitle));
-                        }
-                        $ul_items = html_writer::tag('ul', $li_items, array('class'=>'competence_profile_complist_items'));
-                    }
-                }
-                if($v->tabletype != "descriptor" && (isset($v->subs) && is_array($v->subs)) || isset($v->descriptors) && is_array($v->descriptors))
-                    $class .= " category";
-                
-                if(!$showonlyreached_total || ($showonlyreached_total == 1 && $reached || $v->tabletype == 'subject')){
-                    $content .= '<li class="'.$class.'">' . $v->title . $ul_items;
-                    $ul_items = '';
-                }
-                if( isset($v->subs) && is_array($v->subs)) $content .= $this->print_competence_profile_tree($v->subs, $courseid, $student,$scheme, $showonlyreached_total, $eportfolioitems);
-                if( isset($v->descriptors) && is_array($v->descriptors)) $content .= $this->print_competence_profile_tree($v->descriptors, $courseid, $student,$scheme, $showonlyreached_total, $eportfolioitems);
-                
-                if(!$showonlyreached_total || ($showonlyreached_total == 1 && $reached || $v->tabletype == 'subject'))
-                    $content .= '</li>';
-            }
-        }
-        $content .= "</ul>";
+          
+		$content="";	
+		foreach($in as $subject){
+			foreach($subject->subs as $topic){
+				$fieldset_content = html_writer::tag('legend', block_exacomp_get_topic_numbering($topic).' '.$topic->title, array('class'=>'togglefield'));
+				
+				$desc_content = "";
+				$niveaus = array();
+				$student_eval = array();
+				$teacher_eval = array();
+				foreach($topic->descriptors as $descriptor){
+					$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
+					$content_div = html_writer::tag('span', $niveau->title);
+					$desc_content .= html_writer::div($content_div, '', array('id'=>'svgdesc'.$descriptor->id));
+					$data = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, $niveau->title);
+					$desc_content .= $this->print_example_stacked_bar($data, $descriptor->id);
+					
+					$niveaus[] = '"'.$niveau->title.'"';
+					$student_eval[] = (isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:0;
+					$teacher_eval[] = (isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:0;
+				}
+				
+				$div_content = "";
+				if(count($niveaus)>2 && count($niveaus)<9){
+					$radar_graph = html_writer::empty_tag('canvas', array('id'=>'canvas'.$topic->id, 'height'=>'450', 'width'=>'450'));
+					$radar_graph .=  $this->print_radar_graph_topic(implode(",", $niveaus),implode(",", $teacher_eval),implode(",", $student_eval),'canvas'.$topic->id);
+					$radar_graph .= $this->print_radar_graph_legend();
+					$div_content = html_writer::div($radar_graph, 'radar_graph', array('style'=>'width:30%'));
+				}
+				
+				$div_content .= html_writer::div(html_writer::tag('p', html_writer::empty_tag('span', array('id'=>'value'))), 'hidden', array('id'=>'tooltip'));
+				$div_content .= $desc_content;
+				
+				$fieldset_content .= html_writer::div($div_content, 'content_div');
+				$content .= html_writer::tag('fieldset', $fieldset_content, array('id'=>'topic_field'.$topic->id));
+			}
+		}
+		
         return $content;
     }
-    function print_radar_graph($records,$courseid) {
+	
+	private function print_radar_graph_topic($labels, $data1, $data2, $canvasid){
+	return '<script>
+	var radarChartData = {
+		labels: ['.$labels.'],
+		datasets: [
+			{
+				label: "Lehrerbeurteilung",
+				fillColor: "rgba(72,165,63,0.2)",
+	            strokeColor: "rgba(72,165,63,1)",
+	            pointColor: "rgba(72,165,63,1)",
+	            pointStrokeColor: "#fff",
+	            pointHighlightFill: "#fff",
+	            pointHighlightStroke: "rgba(151,187,205,1)",
+				data: ['.$data1.']
+			},
+			{
+				label: "Schülerbeurteilung",
+				fillColor: "rgba(249,178,51,0.2)",
+	            strokeColor: "#f9b233",
+	            pointColor: "#f9b233",
+	            pointStrokeColor: "#fff",
+	            pointHighlightFill: "#fff",
+	            pointHighlightStroke: "rgba(151,187,205,1)",
+				data: ['.$data2.']
+			}
+		]
+	};
+
+	window.myRadar = new Chart(document.getElementById("'.$canvasid.'").getContext("2d")).Radar(radarChartData, {
+		responsive: true,
+		showScale: true,
+		scaleShowLabels: true,
+		scaleLabel: "<%if (value == 1){%><%=\'G\'%><%}%><%if (value == 2){%><%=\'M\'%> <%}%><%if (value == 3){%><%=\'E\'%><%}%><%if (value == 0){%><%=\'0\'%><%}%>",
+		multiTooltipTemplate: "<%if (value == 1){%><%=\'G\'%><%}%><%if (value == 2){%><%=\'M\'%> <%}%><%if (value == 3){%><%=\'E\'%><%}%><%if (value == 0){%><%=\'0\'%><%}%>",
+		scaleLineColor: "rgba(0,0,0,.3)",
+		angleLineColor : "rgba(0,0,0,.3)"
+	});
+
+	</script>';
+	}
+	
+	private function print_example_stacked_bar($dataset, $descrid){
+	return "<script>var margins = {
+    top: 20,
+    left: 10,
+    right: 10,
+    bottom: 0
+},
+width =200,
+    height = 20,
+    dataset =  ".$dataset.",
+    series = dataset.map(function (d) {
+        return d.name;
+    }),
+    dataset = dataset.map(function (d) {console.log(d);
+        return d.data.map(function (o, i) {
+            // Structure it so that your numeric
+            // axis (the stacked amount) is y
+            return {
+                y: o.count,
+                x: o.niveau,
+	title: d.name
+            };
+        });
+    }),
+    stack = d3.layout.stack();
+
+stack(dataset);
+
+var dataset = dataset.map(function (group) {
+    return group.map(function (d) {console.log(d);
+        // Invert the x and y values, and y0 becomes x0
+        return {
+            x: d.y,
+            y: d.x,
+            x0: d.y0,
+            title: d.title
+        };
+    });
+}),
+    svg = d3.select('#svgdesc".$descrid."')
+        .append('svg')
+        .attr('width', width + margins.left + margins.right)
+        .attr('height', height + margins.top + margins.bottom)
+        .append('g')
+        .attr('transform', 'translate(' + margins.left + ',' + (margins.top + 5) + ')'),
+    xMax = d3.max(dataset, function (group) {
+        return d3.max(group, function (d) {
+            return d.x + d.x0;
+        });
+    }),
+    xScale = d3.scale.linear()
+        .domain([0, xMax])
+        .range([0, width]),
+    niveaus = dataset[0].map(function (d) {
+        return d.y;
+    }),
+    yScale = d3.scale.ordinal()
+        .domain(niveaus)
+        .rangeRoundBands([0, height], .1),
+  
+    colours = [\"#B8B894\", \"#3a87ad\", \"#990000\", \"#33aa00\", \"#00CC00\", \"#008F00\", \"#003900\", \"#dddd22\", \"#ff0033\", \"#345678\"],
+    
+    groups = svg.selectAll('g')
+        .data(dataset)
+        .enter()
+        .append('g')
+        .style('fill', function (d, i) {
+        return colours[i];
+    }),
+    rects = groups.selectAll('rect')
+        .data(function (d) {
+        return d;
+    })
+        .enter()
+        .append('rect')
+        .attr('x', function (d) {
+        return xScale(d.x0);
+    })
+       
+        .attr('height', function (d) {
+        return yScale.rangeBand();
+    })
+        .attr('width', function (d) {
+        return xScale(d.x);
+    })
+        .on('mouseover', function (d) {console.log(d);
+        var xPos = parseFloat(d3.select(this).attr('x')) / 2 + width / 2;
+        var yPos = parseFloat(d3.select(this).attr('y')) + yScale.rangeBand() / 2;
+
+        d3.select('#tooltip')
+            .style('left', xPos + 'px')
+            .style('top', yPos + 'px')
+            .select('#value')
+            .text(d.x+d.title);
+
+        d3.select('#tooltip').classed('hidden', false);
+    })
+        .on('mouseout', function () {
+        d3.select('#tooltip').classed('hidden', true);
+    })
+</script>";
+	}	    
+
+	function print_radar_graph($records,$courseid) {
         global $CFG;
         
         if(count($records) >= 3 && count($records) <= 7) {

@@ -5258,8 +5258,10 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 
 	if($totalGrade == null)
 		$totalGrade = 0;
+		
+	$notInWork = (($total-$inWork)<0)?0:($total-$inWork);	
 
-	return array($total, $gradings, $notEvaluated, $inWork,$totalGrade);
+	return array($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork);
 }
 
 /**
@@ -5625,4 +5627,23 @@ function block_exacomp_get_studentid($isTeacher) {
 		$_SESSION['studentid'] = $studentid;
 	}
 	return $studentid;
+}
+
+function block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, $niveautitle){
+	list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork) = block_exacomp_get_example_statistic_for_descriptor($courseid, $descriptor->id, $student->id);
+	
+	$string = "[";
+	
+	$string .= "{data:[{niveau:'".$niveautitle."',count:".$notInWork."}],name:' nB'},";
+	$string .= "{data:[{niveau:'".$niveautitle."',count:".$notEvaluated."}],name:' oB'},";
+	
+	 $i = 0;
+	foreach($gradings as $grading){
+		$string .= "{data:[{niveau:'".$niveautitle."',count:".$grading."}],name:' ".(($i == 0)?"nE":$i)."'},";
+		$i++;
+    }
+	
+	$string = substr($string, 0, strlen($string)-1);
+	$string .= "]";
+	return $string;
 }
