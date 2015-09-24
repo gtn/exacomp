@@ -150,7 +150,7 @@ function block_exacomp_require_admin($context = null) {
  */
 function block_exacomp_get_subject_by_id($subjectid) {
 	global $DB;
-	return $DB->get_record(block_exacomp::DB_SUBJECTS,array("id" => $subjectid),'id, title, \'subject\' as tabletype');
+	return $DB->get_record(block_exacomp::DB_SUBJECTS,array("id" => $subjectid),'id, title, titleshort, \'subject\' as tabletype');
 }
 /**
  * Gets all subjects that are in use in a particular course.
@@ -3738,7 +3738,7 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 			$no_data = false;
 			if($competence->comptype == TYPE_DESCRIPTOR){
 				foreach($descriptors as $descriptor){
-					if(block_exacomp_descriptor_visible($courseid, $descriptor, $student->id)){
+					if(block_exacomp_descriptor_visible($course->id, $descriptor, $student->id)){
 						if($descriptor->id == $competence->compid){
 							if($competence->timestamp != null && $competence->timestamp<$min_timestamp)
 								$min_timestamp = $competence->timestamp;
@@ -4818,7 +4818,7 @@ function block_exacomp_get_topic_numbering($topic){
 	   $topic = block_exacomp_get_topic_by_id($topic);
     }
 	
-	$numbering = substr(block_exacomp_get_subject_by_id($topic->subjid)->title, 0,1).'.';
+	$numbering = block_exacomp_get_subject_by_id($topic->subjid)->titleshort.'.';
 	
 	//topic
 	$numbering .= $topic->numb.'.';

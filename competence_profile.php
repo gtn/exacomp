@@ -69,7 +69,7 @@ if(!$isTeacher){
 	
 	$coursestudents = block_exacomp_get_students_by_course($courseid);
 	
-	if($studentid == 0) {
+	if($studentid == 0 || $studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
 		echo html_writer::tag("p", get_string("select_student","block_exacomp"));
 		//print student selector
 		echo get_string("choosestudent","block_exacomp");
