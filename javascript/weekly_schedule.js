@@ -1,8 +1,12 @@
 (function($){
 	
 	$(document).on('click', '#empty_trash', function(event) {
+		studentid = block_exacomp.get_param('studentid');
+		if(studentid == null)
+			studentid = $( "#menuexacomp_competence_grid_select_student" ).val();
+		
 		block_exacomp.call_ajax({
-			studentid: block_exacomp.get_param('studentid'),
+			studentid: studentid,
 			action : 'empty-trash'
 		},function(msg) {
 			location.reload();
@@ -55,8 +59,12 @@
 	}
 	
 	function block_exacomp_get_configuration(callback){
+		studentid = block_exacomp.get_param('studentid');
+		if(studentid == null)
+			studentid = $( "#menuexacomp_competence_grid_select_student" ).val();
+		
 		block_exacomp.call_ajax({
-			studentid : block_exacomp.get_param('studentid'),
+			studentid : studentid,
 			pool_course: block_exacomp.get_param('pool_course'),
 			action : 'get-weekly-schedule-configuration'
 			}, function(config) {
@@ -64,8 +72,12 @@
 			});
 	}
 	function exacomp_calendar_load_events(start, end, timezone, callback) {
+		studentid = block_exacomp.get_param('studentid');
+		if(studentid == null)
+			studentid = $( "#menuexacomp_competence_grid_select_student" ).val();
+		
 		block_exacomp.call_ajax({
-			studentid : block_exacomp.get_param('studentid'),
+			studentid : studentid,
 			start: start.format('X'),
 			end: end.format('X'),
 			action : 'get-examples-for-start-end'
