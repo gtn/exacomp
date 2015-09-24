@@ -82,13 +82,8 @@ try {
         //do demo import
         
         $file = optional_param('file', DEMO_XML_PATH, PARAM_TEXT);
-        
-        if (!file_exists($file)) {
-            die('xml not found');
-        } else {
-            if ($importSuccess = block_exacomp_data_importer::do_import_file($file, block_exacomp::IMPORT_SOURCE_DEFAULT, true)) {
-                block_exacomp_settstamp();
-            }
+        if ($importSuccess = block_exacomp_data_importer::do_import_url($file, block_exacomp::IMPORT_SOURCE_DEFAULT, true)) {
+            block_exacomp_settstamp();
         }
     }
 } catch (block_exacomp_exception $importException) {
@@ -151,6 +146,7 @@ if($isAdmin || block_exacomp_check_customupload()) {
                     .html_writer::link(new moodle_url('edit_config.php', array('courseid'=>$courseid, 'fromimport'=>1)), $string));
             }else{
                 echo $OUTPUT->box(get_string("importfail", "block_exacomp"));
+                echo $PAGE->get_renderer('block_exacomp')->box_error($importException);
             }
         }
     } else {

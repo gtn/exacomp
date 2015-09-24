@@ -1013,6 +1013,23 @@ class block_exacomp_data_importer extends block_exacomp_data {
         return $ret;
     }
     
+    public static function do_import_url($url = null, $par_source = 1, $cron = false) {
+        global $CFG;
+
+        if (!$url) {
+            throw new block_exacomp_exception('filenotfound');
+        }
+        
+        $file = tempnam($CFG->tempdir, "zip");
+        file_put_contents($file, fopen($url, 'r'));
+        
+        $ret = self::do_import_file($file, $par_source, $cron);
+        
+        @unlink($file);
+        
+        return $ret;
+    }
+    
     /**
      *
      * @param String $data xml content
