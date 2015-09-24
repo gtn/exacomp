@@ -90,8 +90,8 @@ if ($action == 'delete_selected') {
                 }
                 
                 foreach($descriptor->children as $child_descriptor){
-                    if (!empty($post_descriptors[$descriptor->id]) && $descriptor->can_delete) {
-                        $delete_descriptors[$descriptor->id] = $descriptor->id;
+                    if (!empty($post_descriptors[$child_descriptor->id]) && $child_descriptor->can_delete) {
+                        $delete_descriptors[$child_descriptor->id] = $child_descriptor->id;
                     }
                     
                     foreach ($child_descriptor->examples as $example){
@@ -109,7 +109,6 @@ if ($action == 'delete_selected') {
             }
         }
     }
-    
     if ($delete_examples) {
         // TODO auch filestorage loeschen
         $DB->delete_records_list(block_exacomp::DB_EXAMPLES, 'id', $delete_examples);
@@ -126,7 +125,7 @@ if ($action == 'delete_selected') {
     
     block_exacomp_data::normalize_database();
     
-    redirect($PAGE->url);
+    redirect($CFG->wwwroot.'/blocks/exacomp/import.php?courseid='.$courseid);
     exit;
 } else if ($action == 'select') {
     

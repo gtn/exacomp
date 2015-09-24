@@ -178,9 +178,6 @@ if($isAdmin || block_exacomp_check_customupload()) {
                 if ($hasData){
                     echo $OUTPUT->box(get_string("importdone", "block_exacomp"));
                     echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'normal')), get_string('doimport_again', 'block_exacomp')));
-
-                    // custom import only of there is no old data anymore
-                    echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'custom')), get_string('doimport_own', 'block_exacomp')));
                 } else {
                     // no data yet, allow import or import demo data
                     echo $OUTPUT->box(html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one_admin.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).get_string('first_configuration_step', 'block_exacomp'));

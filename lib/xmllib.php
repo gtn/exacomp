@@ -167,8 +167,11 @@ class block_exacomp_data {
     public static function get_all_used_sources() {
         global $DB;
         
+        // check if source is used in descriptor table
         $sources = $DB->get_records_sql("
-            SELECT * FROM {".block_exacomp::DB_DATASOURCES."}
+            SELECT s.*
+            FROM {".block_exacomp::DB_DATASOURCES."} s
+            WHERE s.id IN (SELECT DISTINCT source FROM {".block_exacomp::DB_DESCRIPTORS."})
             ORDER BY NAME
         ");
         
@@ -316,6 +319,22 @@ class block_exacomp_data {
                 'table' => block_exacomp::DB_TAXONOMIES,
                 'needed1' => array('id', 'SELECT taxid FROM {'.block_exacomp::DB_EXAMPTAX.'}'),
             ),
+            array(
+                'table' => block_exacomp::DB_NIVEAUS,
+                'needed1' => array('id', 'SELECT niveauid FROM {'.block_exacomp::DB_DESCRIPTORS.'}'),
+            ),
+            array(
+                'table' => block_exacomp::DB_CATEGORIES,
+                'needed1' => array('id', 'SELECT catid FROM {'.block_exacomp::DB_SUBJECTS.'}'),
+            ),
+            array(
+                'table' => block_exacomp::DB_SCHOOLTYPES,
+                'needed1' => array('id', 'SELECT stid FROM {'.block_exacomp::DB_SUBJECTS.'}'),
+            ),
+            array(
+                'table' => block_exacomp::DB_EDULEVELS,
+                'needed1' => array('id', 'SELECT elid FROM {'.block_exacomp::DB_SCHOOLTYPES.'}'),
+            ),
         );
         
         $make_select = function($select) {
@@ -340,6 +359,22 @@ class block_exacomp_data {
             $DB->execute($sql);
         }
 
+        // delete unused sources
+        /*
+        $sql = [];
+        foreach (self::$sourceTables as $table) {
+            $sql[] = "SELECT CONCAT(source, '{$table}') AS id, count(*) FROM {{$table}} WHERE source >= ".block_exacomp_data::MIN_SOURCE_ID.' GROUP BY source';
+        }
+        $sql = join(" UNION ", $sql);
+        print_r($DB->get_records_sql($sql));
+        exit;
+        */
+        /*
+         $sql = "SELECT * FROM {".block_exacomp::DB_DATASOURCES."} WHERE id NOT IN (
+         ".join(" UNION ", $sql)."
+         )";
+         */
+        
         // add subdescriptors to topics
         $sql = "
             INSERT INTO {".block_exacomp::DB_DESCTOPICS."}
@@ -1061,6 +1096,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         }
         
         // self::kompetenzraster_load_current_data_for_source();
+        // don't delete all mm_records, because if you import 2 partial xml files the 2nd would overwrite the 1st
         // self::delete_mm_records(self::$import_source_local_id);
 
         self::truncate_table(self::$import_source_local_id, block_exacomp::DB_SKILLS);
@@ -1231,6 +1267,54 @@ class block_exacomp_data_importer extends block_exacomp_data {
         ), $filecontent);
     }
     
+    protected static function delete_mm_record_for_item($table, $field, $id) {
+        global $DB;
+        
+        $tables = array(
+            array(
+                'table' => block_exacomp::DB_DESCTOPICS,
+                'mm1' => array('descrid', block_exacomp::DB_DESCRIPTORS),
+                'mm2' => array('topicid', block_exacomp::DB_TOPICS),
+            ),
+            array(
+                'table' => block_exacomp::DB_DESCEXAMP,
+                'mm1' => array('descrid', block_exacomp::DB_DESCRIPTORS),
+                'mm2' => array('exampid', block_exacomp::DB_EXAMPLES),
+            ),
+            array(
+                'table' => block_exacomp::DB_DESCCROSS,
+                'mm1' => array('descrid', block_exacomp::DB_DESCRIPTORS),
+                'mm2' => array('crosssubjid', block_exacomp::DB_CROSSSUBJECTS),
+            ),
+            array(
+                'table' => block_exacomp::DB_EXAMPTAX,
+                'mm1' => array('exampleid', block_exacomp::DB_EXAMPLES),
+                'mm2' => array('taxid', block_exacomp::DB_TAXONOMIES),
+            ),
+        );
+        
+        $tables = array_filter($tables, function($t) use ($table) { return $t['table'] == $table; });
+        if (empty($tables)) {
+            print_error("delete_mm_record_for_item: wrong table $table");
+        }
+        
+        $table = reset($tables);
+        
+        $sql = "DELETE FROM {{$table['table']}}
+            WHERE ";
+        if ($table['mm1'][0] == $field) {
+            $sql .= "{$table['mm1'][0]}=? AND ";
+            $sql .= "{$table['mm2'][0]} IN (SELECT id FROM {{$table['mm2'][1]}} WHERE source=?)";
+        } elseif ($table['mm2'][0] == $field) {
+            $sql .= "{$table['mm2'][0]}=? AND ";
+            $sql .= "{$table['mm1'][0]} IN (SELECT id FROM {{$table['mm1'][1]}} WHERE source=?)";
+        } else {
+            print_error('delete_mm_record_for_item: error');
+        }
+        
+        $DB->execute($sql, array($id, self::$import_source_local_id));
+    }
+    
     private static function insert_niveau($xmlItem, $parent = 0) {
         $item = self::parse_xml_item($xmlItem);
 
@@ -1278,6 +1362,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
             self::insert_file('example_task', $xmlItem->filetask, $item);
         }
         
+        self::delete_mm_record_for_item(block_exacomp::DB_EXAMPTAX, 'exampleid', $item->id);
         if ($xmlItem->taxonomies) {
             foreach ($xmlItem->taxonomies->taxonomyid as $taxonomy) {
                 if ($taxonomyid = self::get_database_id($taxonomy)) {
@@ -1286,6 +1371,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
             }
         }
         
+        self::delete_mm_record_for_item(block_exacomp::DB_DESCEXAMP, 'exampid', $item->id);
         if ($xmlItem->descriptors) {
             foreach($xmlItem->descriptors->descriptorid as $descriptor) {
                 if ($descriptorid = self::get_database_id($descriptor)) {
@@ -1415,6 +1501,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         //crosssubject in DB
         //insert descriptors
         
+        self::delete_mm_record_for_item(block_exacomp::DB_DESCCROSS, 'crosssubjid', $crosssubject->id);
         if ($xmlItem->descriptors) {
             foreach($xmlItem->descriptors->descriptorid as $descriptor) {
                 if ($descriptorid = self::get_database_id($descriptor)) {
@@ -1451,6 +1538,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         self::insert_or_update_item(block_exacomp::DB_TOPICS, $topic);
         self::kompetenzraster_mark_item_used(block_exacomp::DB_TOPICS, $topic);
         
+        self::delete_mm_record_for_item(block_exacomp::DB_DESCTOPICS, 'topicid', $topic->id);
         if ($xmlItem->descriptors) {
             $i=1;
             foreach($xmlItem->descriptors->descriptorid as $descriptor) {

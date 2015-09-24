@@ -137,9 +137,9 @@ $string['importinfo'] = 'Please create your outcomes/standards at <a href="http:
 $string['importwebservice'] = 'It is possible to keep the data up to date via a <a href="{$a}">webservice</a>.';
 $string['importdone'] = 'data has already been imported from xml';
 $string['importpending'] = 'no data has been imported yet!';
-$string['doimport'] = 'import outcomes/standards';
-$string['doimport_again'] = 're-import outcomes/standards';
-$string['doimport_own'] = 'import individual outcomes/standards';
+$string['doimport'] = 'Import outcomes/standards';
+$string['doimport_again'] = 'Import additional outcomes/standards';
+$string['doimport_own'] = 'Import individual outcomes/standards';
 $string['delete_own'] = 'Delete individual outcomes/standards';
 $string['delete_success'] = 'Individual outcomes/standards have been deleted';
 $string['delete_own_confirm'] = 'Are you sure to delete the individual outcomes/standards?';
