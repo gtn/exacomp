@@ -73,10 +73,7 @@ $form = new block_exacomp_example_submission_form($_SERVER['REQUEST_URI'], array
 if($formdata = $form->get_data()) {
 	require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
 	
-	if(isset($formdata->file))
-		$type = 'file';
-	else
-		$type = 'url';
+	$type = 'file';
 	
 	//store item in the right portfolio category
 	$course_category = block_exaport_get_user_category($course->fullname, $USER->id);
@@ -115,8 +112,7 @@ if($formdata = $form->get_data()) {
 	//add item to view
 	$DB->insert_record('block_exaportviewblock',array('viewid'=>$dbView->id,'positionx'=>1, 'positiony'=>1, 'type'=>'item', 'itemid'=>$itemid));
 	
-	
-	if($type == "file") {
+	if(isset($formdata->file)) {
 		$filename = $form->get_new_filename('file');
 		$context = context_user::instance($USER->id);
 		try {
