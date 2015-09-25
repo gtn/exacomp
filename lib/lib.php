@@ -1197,8 +1197,7 @@ function block_exacomp_get_students_by_course($courseid) {
  */
 function block_exacomp_get_teachers_by_course($courseid) {
 	$context = context_course::instance($courseid);
-    // TODO: wie werden lehrer definiert, kann man den rollen capabilities zuweisen damit sie als lehrer gelten? -- prieler
-	return get_role_users(array(1,2,3,4), $context);
+	return get_enrolled_users($context,'block/exacomp:teacher');
 }
 
 /**
@@ -5666,4 +5665,51 @@ function block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $st
 	$string = substr($string, 0, strlen($string)-1);
 	$string .= "]";
 	return $string;
+}
+function block_exacomp_get_message_icon($userid) {
+	global $DB, $CFG;
+	require_once($CFG->dirroot . '/message/lib.php');
+
+	$userto = $DB->get_record('user', array('id' => $userid));
+
+	message_messenger_requirejs();
+	$url = new moodle_url('message/index.php', array('id' => $userto->id));
+	$attributes = message_messenger_sendmessage_link_params($userto);
+
+	return html_writer::link($url, html_writer::tag('button',html_writer::img(new moodle_url('/blocks/exacomp/pix/envelope.png'), get_string('message','message'),array('title' => fullname($userto)))), $attributes);
+}
+function block_exacomp_send_notification($notificationtype, $userfrom, $userto, $subject, $message, $context, $contexturl) {
+	global $CFG;
+
+	require_once($CFG->dirroot . '/message/lib.php');
+
+	$eventdata = new stdClass ();
+	$eventdata->modulename = 'block_exacomp';
+	$eventdata->userfrom = $userfrom;
+	$eventdata->userto = $userto;
+	$eventdata->subject = $subject;
+	$eventdata->fullmessageformat = FORMAT_HTML;
+	$eventdata->fullmessagehtml = $message;
+	$eventdata->fullmessage = $message;
+	$eventdata->smallmessage = $subject;
+
+	$eventdata->name = $notificationtype;
+	$eventdata->component = 'block_exacomp';
+	$eventdata->notification = 1;
+	$eventdata->contexturl = $contexturl;
+	$eventdata->contexturlname = $context;
+
+	message_send ( $eventdata );
+	die;
+}
+function block_exacomp_send_submission_notification($userfrom, $userto, $example, $date, $time) {
+	global $CFG,$USER;
+
+	$subject = get_string('notification_submission_subject','block_exacomp',array('student' => fullname($userfrom), 'example' => $example->title));
+
+	$viewurl = $CFG->wwwroot . ('/blocks/exaport/shared_item.php?access=' . block_exacomp_get_viewurl_for_example($userfrom->id,$example->id));
+	$message = get_string('notification_submission_body','block_exacomp',array('student' => fullname($userfrom), 'example' => $example->title, 'date' => $date, 'time' => $time, 'viewurl' => $viewurl));
+	$context = get_string('notification_submission_context','block_exacomp');
+
+	block_exacomp_send_notification("submission", $userfrom, $userto, $subject, $message, $context, $viewurl);
 }
