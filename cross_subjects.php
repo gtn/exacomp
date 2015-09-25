@@ -35,21 +35,21 @@ $group = optional_param('group', 0, PARAM_INT);
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
-$studentid = optional_param('studentid', BLOCK_EXACOMP_SHOW_ALL_STUDENTS, PARAM_INT);
-
 $context = context_course::instance($courseid);
 
 // CHECK TEACHER
+require_login($course);
 $isTeacher = block_exacomp_is_teacher($context);
 
 $studentid = block_exacomp_get_studentid($isTeacher) ;
+
 $edit = optional_param('editmode', 0, PARAM_BOOL);
 
 if($edit) {
 	$selectedStudentid = $studentid;
 	$studentid = 0;
 }
-require_login($course);
+
 
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_cross_subjects_course';
