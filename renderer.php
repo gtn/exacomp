@@ -3872,12 +3872,18 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 					$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
 					$content_div = html_writer::tag('span', $niveau->title);
 					$desc_content .= html_writer::div($content_div, '', array('id'=>'svgdesc'.$descriptor->id));
+					$desc_content .= "Lehrerbewertung: ".((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:'oB');
+					$desc_content .= "Schülerbewertung: ".((isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:'oB');
 					$data = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, $niveau->title);
+					$desc_content .= html_writer::div(html_writer::tag('p', html_writer::empty_tag('span', array('id'=>'value'))), 'tooltip hidden', array('id'=>'tooltip'.$descriptor->id));
+					
 					$desc_content .= $this->print_example_stacked_bar($data, $descriptor->id);
 					
-					$niveaus[] = '"'.$niveau->title.'"';
-					$student_eval[] = (isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:0;
-					$teacher_eval[] = (isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:0;
+					if((isset($student->competencies->student[$descriptor->id])) && (isset($student->competencies->teacher[$descriptor->id]))){
+						$niveaus[] = '"'.$niveau->title.'"';
+						$student_eval[] = $student->competencies->student[$descriptor->id];
+						$teacher_eval[] = $student->competencies->teacher[$descriptor->id];
+					}
 				}
 				
 				$div_content = "";
@@ -3888,7 +3894,6 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 					$div_content = html_writer::div($radar_graph, 'radar_graph', array('style'=>'width:30%'));
 				}
 				
-				$div_content .= html_writer::div(html_writer::tag('p', html_writer::empty_tag('span', array('id'=>'value'))), 'hidden', array('id'=>'tooltip'));
 				$div_content .= $desc_content;
 				
 				$fieldset_content .= html_writer::div($div_content, 'content_div');
@@ -4029,16 +4034,16 @@ var dataset = dataset.map(function (group) {
         var xPos = parseFloat(d3.select(this).attr('x')) / 2 + width / 2;
         var yPos = parseFloat(d3.select(this).attr('y')) + yScale.rangeBand() / 2;
 
-        d3.select('#tooltip')
+        d3.select('#tooltip".$descrid."')
             .style('left', xPos + 'px')
             .style('top', yPos + 'px')
             .select('#value')
             .text(d.x+d.title);
 
-        d3.select('#tooltip').classed('hidden', false);
+        d3.select('#tooltip".$descrid."').classed('hidden', false);
     })
         .on('mouseout', function () {
-        d3.select('#tooltip').classed('hidden', true);
+        d3.select('#tooltip".$descrid."').classed('hidden', true);
     })
 </script>";
 	}	    
