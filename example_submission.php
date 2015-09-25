@@ -107,7 +107,7 @@ if($formdata = $form->get_data()) {
 	$dbView->id = $DB->insert_record('block_exaportview', $dbView);
 		
 	//share the view with teachers
-	$teachers = share_view_to_teachers($dbView->id, $courseid);
+	share_view_to_teachers($dbView->id, $courseid);
 		
 	//add item to view
 	$DB->insert_record('block_exaportviewblock',array('viewid'=>$dbView->id,'positionx'=>1, 'positiony'=>1, 'type'=>'item', 'itemid'=>$itemid));
@@ -121,26 +121,13 @@ if($formdata = $form->get_data()) {
 			//some problem with the file occured
 		}
 	}
-	
-	$DB->insert_record('block_exacompitemexample',array('exampleid'=>$exampleid,'itemid'=>$itemid,'timecreated'=>time(),'status'=>0));
+	$timecreated = time();
+	$DB->insert_record('block_exacompitemexample',array('exampleid'=>$exampleid,'itemid'=>$itemid,'timecreated'=>$timecreated,'status'=>0));
 
+	$teachers = block_exacomp_get_teachers_by_course($courseid);
 	if($teachers) {
 		foreach($teachers as $teacher) {
-			
- 			$notification = new stdClass();
-			$notification->component        = 'block_exacomp';
-			$notification->name             = 'submission';
-			$notification->userfrom         = $USER;
-			$notification->userto           = $DB->get_record('user', array('id' => $teacher));
-			$notification->subject          = get_string('example_submission_subject', 'block_exacomp');
-			$notification->fullmessageformat 	= FORMAT_HTML;
-			$notification->fullmessage  	= get_string('example_submission_message', 'block_exacomp', array('course' => $COURSE->fullname, 'student' => fullname($USER)));
-			$notification->fullmessagehtml = $notification->fullmessage;
-			$notification->smallmessage     = '';
-			$notification->notification     = 1;
-			
-			$mailtext = get_string('example_submission_message', 'block_exacomp', array('course' => $COURSE->fullname, 'student' => fullname($USER)));
-			email_to_user($DB->get_record('user', array('id' => $teacher)), $USER, get_string('example_submission_subject', 'block_exacomp'), strip_tags($mailtext), $mailtext);
+ 			block_exacomp_send_submission_notification($USER, $teacher, $DB->get_record(block_exacomp::DB_EXAMPLES,array('id'=>$exampleid)), date("D, d.m.Y",$timecreated), date("H:s",$timecreated));
 		}
 		
 	}

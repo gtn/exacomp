@@ -372,45 +372,35 @@ class block_exacomp_renderer extends plugin_renderer_base {
         global $PAGE, $COURSE, $USER;
 
         $content = "";
-        /*
-        $content = $this->print_subject_dropdown($schooltypetree, $selectedSubject, $selectedStudent);
-        $content .= html_writer::empty_tag("br");
 
-        $content .= get_string("choosetopic", "block_exacomp").': ';
-        $options = array();
-        foreach($topics as $topic){
-            $options[$topic->id] = (isset($topic->cattitle)?$topic->cattitle.": " :" ")  . $topic->title;
-        }
-        $content .= html_writer::select($options, "lis_topics", $selectedTopic, false,
-                array("onchange" => "document.location.href='".$PAGE->url."&studentid=".$selectedStudent."&subjectid=".$selectedSubject."&topicid='+this.value;"));
-		*/
-        
         if($isTeacher){
             $content .= html_writer::empty_tag("br");
             $content .= get_string("choosestudent", "block_exacomp");
-            /*
-            $options = array();
-            $options[0] = get_string('no_student_edit', 'block_exacomp');
-            
-            foreach($students as $student)
-                $options[$student->id] = $student->firstname." ".$student->lastname;
-            $options[BLOCK_EXACOMP_SHOW_ALL_STUDENTS] = get_string('allstudents', 'block_exacomp');
-            $options[BLOCK_EXACOMP_SHOW_STATISTIC] = get_string('statistic', 'block_exacomp');
-            
-            $content .= html_writer::select($options, "lis_crosssubs_students", $selectedStudent, false,
-                    array("onchange" => "document.location.href='".$PAGE->url."&subjectid=".$selectedSubject."&topicid=".$selectedTopic."&studentid='+this.value;"));
-            */
+
             $content .= block_exacomp_studentselector($students,$selectedStudent,$PAGE->url."&subjectid=".$selectedSubject."&topicid=".$selectedTopic,  BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
 
+            $right_content = "";
+            if($selectedStudent != BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
+	            $right_content .= block_exacomp_get_message_icon($selectedStudent);
+            }
+            
             $url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid'=>$COURSE->id, 'creatorid'=>$USER->id));
-    		$right_content = html_writer::tag('button', html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'), 
+    		$right_content .= html_writer::tag('button', html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'), 
 					'title'=> get_string('pre_planning_storage', 'block_exacomp'))), array('type'=>'button', 'id'=>'pre_planning_storage_submit', 'name'=> 'pre_planning_storage_submit', 
 			    	"onclick" => "window.open('".$url->out(false)."','_blank','width=880,height=660, scrollbars=yes'); return false;"));
          			
 			$right_content .= $this->print_edit_mode_button("&studentid=".$selectedStudent."&subjectid=".$selectedSubject."&topicid=".$selectedTopic);
 			
 			$content .= html_writer::div($right_content, 'edit_buttons_float_right');
-		}    
+		} else {
+			$right_content = "";
+				
+			foreach(block_exacomp_get_teachers_by_course($COURSE->id) as $teacher) {
+				$right_content .= block_exacomp_get_message_icon($teacher->id);
+				
+			}
+			$content .= html_writer::div($right_content, 'edit_buttons_float_right');
+		}
         
         return $content;
     }
@@ -929,7 +919,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
         return html_writer::tag("div", html_writer::table($table), array("id"=>"exabis_competences_block"));
     }
-    public function print_competence_overview_form_start($selectedTopic=null, $selectedSubject=null, $studentid=null){
+	public function print_competence_overview_form_start($selectedTopic=null, $selectedSubject=null, $studentid=null, $editmode=null){
         global $PAGE, $COURSE;
         $url_params = array();
         $url_params['action'] = 'save';
@@ -939,7 +929,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             $url_params['subjectid'] = $selectedSubject->id;
         if(isset($studentid))
             $url_params['studentid'] = $studentid;
-                
+        if(isset($editmode))
+        	$url_params['editmode'] = $editmode;
+        
         $url = new moodle_url($PAGE->url, $url_params);
         return html_writer::start_tag('form',array('id'=>'assign-competencies', "action" => $url, 'method'=>'post'));
     }
@@ -1800,9 +1792,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
     
                     $titleCell = new html_table_cell();
                     $titleCell->style = "padding-left: ". ($padding + 20 )."px";
-                    $titleCell->text = html_writer::div(html_writer::tag('span', $example->title, array('title'=>get_string('import_source', 'block_exacomp').$this->print_source_info($descriptor->source))));
-    
-    
+                    $titleCell->text = html_writer::div(html_writer::tag('span', $example->title, array('title'=>$example->description)));
+                    
                     if(!$statistic){
                         
                         $titleCell->text .= '<span style="padding-left: 10px;" class="todo-change-stylesheet-icons">';
@@ -1841,9 +1832,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                         }
                         
                         if($example->externalurl){
-                            $titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->externalurl), $OUTPUT->pix_icon("i/preview", get_string("preview")),array("target" => "_blank"));
+                            $titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->externalurl), $OUTPUT->pix_icon("i/preview", $example->externalurl),array("target" => "_blank"));
                         }elseif($example->externaltask){
-                            $titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->externaltask), $OUTPUT->pix_icon("i/preview", get_string("preview")),array("target" => "_blank"));
+                            $titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->externaltask), $OUTPUT->pix_icon("i/preview", $example->externaltask),array("target" => "_blank"));
                         }
                         
                         if ($url = block_exacomp_get_file_url($example, 'example_solution')) {

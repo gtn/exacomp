@@ -442,6 +442,11 @@ $string['to_weekly_schedule'] = 'To weekly schedule';
 $string['process'] = 'State of process';
 $string['niveauclass'] = 'Niveau classification';
 
+//Notifications
+$string['notification_submission_subject'] = '{$a->student} submitted a solution for {$a->example}.';
+$string['notification_submission_body'] = '{$a->student} submitted {$a->example} on {$a->date} at {$a->time}. The submission can be seen in ePortfolio: <a href="{$viewurl}">{$a->example}</a>';
+$string['notification_submission_context'] = 'Submission';
+
 //metadata
 $string['subject_singular'] = 'Field of competence';
 $string['comp_field_idea'] = 'Skill';

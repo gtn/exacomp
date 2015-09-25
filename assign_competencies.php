@@ -108,13 +108,10 @@ else{
 	}
 
 	// IF TEACHER SHOW ALL COURSE STUDENTS, IF NOT ONLY CURRENT USER
-	$students_single = array();
-	$students_single[$USER->id] = $USER;
-	
-	$students = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : $students_single;
+	$students = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : array($USER->id => $USER);
 	if($course_settings->nostudents) $students = array();
 	
-	echo $output->print_competence_overview_form_start((isset($selectedTopic))?$selectedTopic:null, (isset($selectedSubject))?$selectedSubject:null, $studentid);
+	echo $output->print_competence_overview_form_start((isset($selectedTopic))?$selectedTopic:null, (isset($selectedSubject))?$selectedSubject:null, $studentid, $edit);
 
 	//dropdowns for subjects and topics and students -> if user is teacher
 	echo $output->print_overview_dropdowns(block_exacomp_get_schooltypetree_by_subjects($subjects), $topics, $selectedSubject->id, $selectedTopic->id, $students, (!$edit) ? $studentid : $selectedStudentid, $isTeacher);

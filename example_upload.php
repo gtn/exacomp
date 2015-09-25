@@ -124,10 +124,10 @@ if($formdata = $form->get_data()) {
     $newExample->title = $formdata->title;
     $newExample->description = $formdata->description;
     $newExample->creatorid = $USER->id;
-    $newExample->externalurl = (filter_var($formdata->externalurl, FILTER_VALIDATE_URL) === TRUE) ? $formdata->externalurl : "http://" . $formdata->externalurl;
+    $newExample->externalurl = (filter_var($formdata->externalurl, FILTER_VALIDATE_URL) == TRUE) ? $formdata->externalurl : "http://" . $formdata->externalurl;
     $newExample->source = block_exacomp::EXAMPLE_SOURCE_TEACHER;
 
-    if($formdata->assignment) {
+    if(isset($formdata->assignment)) {
     	$module = get_coursemodule_from_id(null, $formdata->assignment);
     	$newExample->externaltask = $CFG->wwwroot . '/' . block_exacomp_get_activityurl($module)->__toString();
     }
@@ -169,7 +169,6 @@ if($formdata = $form->get_data()) {
             $newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
     file_save_draft_area_files($formdata->solution, context_system::instance()->id, 'block_exacomp', 'example_solution',
             $newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
-    
     ?>
 <script type="text/javascript">
 		window.opener.block_exacomp.newExampleAdded();

@@ -477,6 +477,10 @@ $string['noschedules_pre_planning_storage'] = 'Der Vorplanungsspeicher ist leer.
 $string['empty_trash'] = 'Papierkorb leeren';
 $string['to_weekly_schedule'] = 'Zum Wochenplan';
 
+//Notifications
+$string['notification_submission_subject'] = '{$a->student} hat eine Lösung zum Beispiel {$a->example} eingereicht.';
+$string['notification_submission_body'] = '{$a->student} hat die Aufgabe {$a->example} bearbeitet und am {$a->date} um {$a->time} hochgeladen. Die Abgabe kann im ePortfolio eingesehen werden: <a href="{$viewurl}">{$a->example}</a>';
+$string['notification_submission_context'] = 'Abgabe';
 //Statistics
 $string['process'] = 'Bearbeitungsstand';
 $string['niveauclass'] = 'Niveaueinstufung';
