@@ -5630,20 +5630,20 @@ function block_exacomp_get_current_item_for_example($userid, $exampleid) {
  * keeps selected studentid in the session
  */
 function block_exacomp_get_studentid($isTeacher) {
-	global $USER;
-	
+	global $USER, $COURSE;
+
 	if(!$isTeacher)
 		return $USER->id;
 	
 	$studentid = optional_param('studentid', BLOCK_EXACOMP_DEFAULT_STUDENT, PARAM_INT);
 	
 	if($studentid == BLOCK_EXACOMP_DEFAULT_STUDENT) {
-		if(isset($_SESSION['studentid']))
-			$studentid = $_SESSION['studentid'];
+		if(isset($_SESSION['studentid-'.$COURSE->id]))
+			$studentid = $_SESSION['studentid-'.$COURSE->id];
 		else
 			$studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
 	} else {
-		$_SESSION['studentid'] = $studentid;
+		$_SESSION['studentid-'.$COURSE->id] = $studentid;
 	}
 	return $studentid;
 }
