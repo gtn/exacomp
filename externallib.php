@@ -2982,23 +2982,7 @@ class block_exacomp_external extends external_api {
 				'courseid' => $courseid 
 		) );
 		
-		//TODO if added for 1 student -> mind visibility for this student
-		$tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
-
-		$topics_return = array();
-		foreach($tree as $subject){
-			foreach($subject->subs as $topic){
-				if($topic->associated == 1){
-					$topic_return = new stdClass();
-					$topic_return->topicid = $topic->id;
-					$topic_return->topictitle = $topic->title;
-					$topic_return->numbering = block_exacomp_get_topic_numbering($topic->id);
-					$topics_return[] = $topic_return;
-				}
-			}
-		}
-		
-		return $topics_return;
+		return block_exacomp_external::dakora_get_topics_by_course_common($courseid, true);
 	}
 	
 	/**
@@ -3007,6 +2991,44 @@ class block_exacomp_external extends external_api {
 	 * @return external_multiple_structure
 	 */
 	public static function dakora_get_topics_by_course_returns() {
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'topicid' => new external_value ( PARAM_INT, 'id of topic' ),
+				'topictitle' => new external_value ( PARAM_TEXT, 'title of topic' ),
+				'numbering' => new external_value ( PARAM_TEXT, 'numbering for topic')
+		) ) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 * 
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_all_topics_by_course_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ) 
+		) );
+	}
+	
+	/**
+	 * get courses
+	 * 
+	 * @return array of user courses
+	 */
+	public static function dakora_get_all_topics_by_course($courseid) {
+	
+		$params = self::validate_parameters ( self::dakora_get_all_topics_by_course_parameters (), array (
+				'courseid' => $courseid 
+		) );
+		
+		return block_exacomp_external::dakora_get_topics_by_course_common($courseid, false);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_all_topics_by_course_returns() {
 		return new external_multiple_structure ( new external_single_structure ( array (
 				'topicid' => new external_value ( PARAM_INT, 'id of topic' ),
 				'topictitle' => new external_value ( PARAM_TEXT, 'title of topic' ),
@@ -3027,57 +3049,25 @@ class block_exacomp_external extends external_api {
 				'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false')
 		) );
 	}
-	
+
 	/**
 	 * get courses
 	 * 
 	 * @return array of user courses
 	 */
 	public static function dakora_get_descriptors($courseid, $topicid, $userid, $forall) {
-		global $DB, $USER;
+		global $USER;
 		$params = self::validate_parameters ( self::dakora_get_descriptors_parameters (), array (
 				'courseid' => $courseid,
 				'topicid' => $topicid,
 				'userid' => $userid,
 				'forall'=> $forall
 		) );
-		
+	
 		if($userid == 0 && $forall == false)
 			$userid = $USER->id;
 		
-		$tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
-
-		$non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
-		
-		if(!$forall)
-			$non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
-		
-		$descriptors_return = array();
-		foreach($tree as $subject){
-			foreach($subject->subs as $topic){
-				if($topic->id == $topicid){
-					foreach($topic->descriptors as $descriptor){
-						if($descriptor->associated == 1){
-							$descriptor_return = new stdClass();
-							$descriptor_return->descriptorid = $descriptor->id;
-							$descriptor_return->descriptortitle = $descriptor->title;
-							$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
-							$descriptor_return->niveautitle = "";
-							$descriptor_return->niveauid = 0;
-							if($descriptor->niveauid){
-								$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
-								$descriptor_return->niveautitle = $niveau->title;
-								$descriptor_return->niveauid = $niveau->id;
-							}
-							if(!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student))||$forall))
-								$descriptors_return[] = $descriptor_return;
-						}
-					}
-				}
-			}
-		}
-		
-		return $descriptors_return;
+		return block_exacomp_external::dakora_get_descriptors_common($courseid, $topicid, $userid, $forall, true);	
 	}
 	
 	/**
@@ -3086,6 +3076,55 @@ class block_exacomp_external extends external_api {
 	 * @return external_multiple_structure
 	 */
 	public static function dakora_get_descriptors_returns() {
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'descriptorid' => new external_value ( PARAM_INT, 'id of descriptor' ),
+				'descriptortitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
+				'numbering' => new external_value ( PARAM_TEXT, 'numbering for descriptor'),
+				'niveautitle' => new external_value ( PARAM_TEXT, 'title of niveau'),
+				'niveauid' => new external_value ( PARAM_INT, 'id of niveau')
+		) ) );
+	}
+	
+	/*
+	 * Returns description of method parameters
+	 * 
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_all_descriptors_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course'),
+				'topicid' => new external_value ( PARAM_INT, 'id of topic' ),
+				'userid' => new external_value ( PARAM_INT, 'id of user, 0 for current user'),
+				'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false')
+		) );
+	}
+
+	/**
+	 * get courses
+	 * 
+	 * @return array of user courses
+	 */
+	public static function dakora_get_all_descriptors($courseid, $topicid, $userid, $forall) {
+		global $USER;
+		$params = self::validate_parameters ( self::dakora_get_all_descriptors_parameters (), array (
+				'courseid' => $courseid,
+				'topicid' => $topicid,
+				'userid' => $userid,
+				'forall'=> $forall
+		) );
+	
+		if($userid == 0 && $forall == false)
+			$userid = $USER->id;
+		
+		return block_exacomp_external::dakora_get_descriptors_common($courseid, $topicid, $userid, $forall, false);	
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_all_descriptors_returns() {
 		return new external_multiple_structure ( new external_single_structure ( array (
 				'descriptorid' => new external_value ( PARAM_INT, 'id of descriptor' ),
 				'descriptortitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
@@ -3151,6 +3190,63 @@ class block_exacomp_external extends external_api {
 			) ) ) 
 		) ) ;
 	}
+	/**
+	 * Returns description of method parameters
+	 * 
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_all_descriptor_children_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value( PARAM_INT, 'id of course' ),
+				'descriptorid' => new external_value ( PARAM_INT, 'id of parent descriptor' ),
+				'userid' => new external_value ( PARAM_INT, 'id of user, 0 for current user'),
+				'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false')
+		) );
+	}
+	
+	/**
+	 * get courses
+	 * 
+	 * @return array of user courses
+	 */
+	public static function dakora_get_all_descriptor_children($courseid, $descriptorid, $userid, $forall) {
+		global $DB, $USER;
+		$params = self::validate_parameters ( self::dakora_get_all_descriptor_children_parameters (), array (
+				'courseid' => $courseid,
+				'descriptorid' => $descriptorid,
+				'userid' => $userid,
+				'forall' => $forall
+		) );
+		
+		if($userid == 0 && !$forall)
+			$userid = $USER->id;
+			
+		return block_exacomp_external::get_descriptor_children($courseid, $descriptorid, $userid, $forall, 0, true);
+		
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_all_descriptor_children_returns() {
+		return new external_single_structure ( array (
+			'children' => new external_multiple_structure ( new external_single_structure ( array (
+					'childid' => new external_value ( PARAM_INT, 'id of child' ),
+					'childtitle' => new external_value ( PARAM_TEXT, 'title of child' ),
+					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
+					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of child'),
+					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of child'),
+			) ) ) ,
+			'examples' => new external_multiple_structure ( new external_single_structure ( array (
+					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
+					'exampletitle' => new external_value ( PARAM_TEXT, 'title of example' ),
+					'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' )
+			) ) ) 
+		) ) ;
+	}
+
 
 	public static function dakora_get_examples_for_descriptor_parameters(){
 		return new external_function_parameters ( array (
@@ -3162,7 +3258,7 @@ class block_exacomp_external extends external_api {
 	}
 	
 	public static function dakora_get_examples_for_descriptor($courseid, $descriptorid, $userid, $forall){
-		global $DB, $USER;
+		global $USER;
 		$params = self::validate_parameters ( self::dakora_get_examples_for_descriptor_parameters (), array (
 				'courseid' => $courseid,
 				'descriptorid' => $descriptorid,
@@ -3173,40 +3269,43 @@ class block_exacomp_external extends external_api {
 		if($userid == 0 && !$forall)
 			$userid = $USER->id;
 		
-		$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptorid));
-		
-		if($descriptor->parentid != 0){ //parent descriptor
-			$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$descriptor->id));
-			$descriptor->topicid = $descriptor_topic_mm->topicid;
-		
-			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, $courseid);
-		}else{ //child descriptor
-			
-			$parent_descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptor->parentid));
-			$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
-			$descriptor->topicid = $descriptor_topic_mm->topicid;
-			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, $courseid);
-			
-		}
-		
-		$example_non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
-		if(!$forall)
-			$example_non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
-		
-		$examples_return = array();
-		foreach($descriptor->examples as $example){
-			$example_return = new stdClass();
-			$example_return->exampleid = $example->id;
-			$example_return->exampletitle = $example->title;
-			$example_return->examplestate = ($forall)?0:block_exacomp_get_dakora_state_for_example($courseid, $example->id, $userid);
-			if(!array_key_exists($example->id, $examples_return) && (!in_array($example->id, $example_non_visibilities)) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))
-				$examples_return[$example->id] = $example_return;
-		}
-		
-		return $examples_return;
+		return block_exacomp_external::dakora_get_examples_for_descriptor_common($courseid, $descriptorid, $userid, $forall, 0);
 	}
 	
 	public static function dakora_get_examples_for_descriptor_returns(){
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'exampleid' => new external_value ( PARAM_INT, 'id of descriptor' ),
+				'exampletitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
+				'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' )
+		) ) );
+	}
+	public static function dakora_get_examples_for_descriptor_for_crosssubject_parameters(){
+		return new external_function_parameters ( array (
+				'courseid' => new external_value( PARAM_INT, 'id of course' ),
+				'descriptorid' => new external_value ( PARAM_INT, 'id of parent descriptor' ), 
+				'userid' => new external_value (PARAM_INT, 'id of user, if 0 current user'),
+				'forall' => new external_value (PARAM_BOOL, 'if all users = true, only one user = false'),
+				'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject')
+		) );
+	}
+	
+	public static function dakora_get_examples_for_descriptor_for_crosssubject($courseid, $descriptorid, $userid, $forall, $crosssubjid){
+		global $USER;
+		$params = self::validate_parameters ( self::dakora_get_examples_for_descriptor_for_crosssubject_parameters (), array (
+				'courseid' => $courseid,
+				'descriptorid' => $descriptorid,
+				'userid' => $userid,
+				'forall' => $forall,
+				'crosssubjid'=>$crosssubjid
+		) );
+		
+		if($userid == 0 && !$forall)
+			$userid = $USER->id;
+		
+		return block_exacomp_external::dakora_get_examples_for_descriptor_common($courseid, $descriptorid, $userid, $forall, $crosssubjid);
+	}
+	
+	public static function dakora_get_examples_for_descriptor_for_crosssubject_returns(){
 		return new external_multiple_structure ( new external_single_structure ( array (
 				'exampleid' => new external_value ( PARAM_INT, 'id of descriptor' ),
 				'exampletitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
@@ -3904,7 +4003,7 @@ class block_exacomp_external extends external_api {
 	 * @return list of descriptors
 	 */
 	public static function dakora_get_descriptors_by_cross_subject($courseid, $crosssubjid, $userid, $forall) {
-		global $DB, $USER;
+		global $USER;
 		$params = self::validate_parameters ( self::dakora_get_descriptors_by_cross_subject_parameters (), array (
 				'courseid' => $courseid,
 				'crosssubjid'=>$crosssubjid,
@@ -3915,63 +4014,7 @@ class block_exacomp_external extends external_api {
 		if($userid == 0 && $forall == false)
 			$userid = $USER->id;
 		
-		$descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid, true);
-		
-		$non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
-		
-		if(!$forall)
-			$non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
-		
-		$descriptors_return = array();
-		foreach($descriptors as $descriptor){
-			if(!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student))||$forall)){ 	//descriptor is visibile
-				$has_visible_examples = false;
-				$has_children_with_visible_examples = false;
-				
-				$example_non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
-					if(!$forall)
-						$example_non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
-					
-				
-				if(isset($descriptor->examples)){	//descriptor has examples
-					foreach($descriptor->examples as $example){
-						if(!in_array($example->id, $example_non_visibilities) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))
-							$has_visible_examples = true;	//descriptor has visible examples
-						
-					}				
-				}
-				
-				if(isset($descriptor->children)){
-					foreach($descriptor->children as $child){
-						if((!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, $non_visibilities_student))||$forall))){ //child is visible
-							if(isset($child->examples)){	//descriptor has children
-								foreach($child->examples as $example){
-									if(!in_array($example->id, $example_non_visibilities) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))
-										$has_children_with_visible_examples = true;	//descriptor has children with visible examples
-								}				
-							}
-						}
-					}
-				}
-				
-				if($has_visible_examples || $has_children_with_visible_examples){
-						$descriptor_return = new stdClass();
-						$descriptor_return->descriptorid = $descriptor->id;
-						$descriptor_return->descriptortitle = $descriptor->title;
-						$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
-						$descriptor_return->niveautitle = "";
-						$descriptor_return->niveauid = 0;
-						if($descriptor->niveauid){
-							$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
-							$descriptor_return->niveautitle = substr(block_exacomp_get_descriptor_numbering($descriptor),0,1).": ".$niveau->title;
-							$descriptor_return->niveauid = $niveau->id;
-						}
-						$descriptors_return[] = $descriptor_return;
-				}
-			}
-		}
-		
-		return $descriptors_return;
+		return block_exacomp_external::dakora_get_descriptors_by_cross_subject_common($courseid, $crosssubjid, $userid, $forall, true);
 	}
 	
 	/**
@@ -3980,6 +4023,60 @@ class block_exacomp_external extends external_api {
 	 * @return external_multiple_structure
 	 */
 	public static function dakora_get_descriptors_by_cross_subject_returns() {
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'descriptorid' => new external_value ( PARAM_INT, 'id of descriptor' ),
+				'descriptortitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
+				'numbering' => new external_value ( PARAM_TEXT, 'numbering for descriptor'),
+				'niveautitle' => new external_value ( PARAM_TEXT, 'title of nivaue'),
+				'niveauid' => new external_value ( PARAM_INT, 'id of niveau')
+		) ) );
+	}
+
+	/**
+	 * Returns description of method parameters
+	 * 
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_all_descriptors_by_cross_subject_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value (PARAM_INT, 'id of course'),
+				'crosssubjid' => new external_value ( PARAM_INT, 'id of cross subject' ),
+				'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
+				'forall' => new external_value(PARAM_BOOL, 'for all users = true, for one user = false')
+		) );
+	}
+	
+	/**
+	 * Get cross subjects
+	 * 
+	 * @param
+	 *        	int courseid
+	 *			int crosssubjid
+	 *			int userid
+	 *			boolean forall
+	 * @return list of descriptors
+	 */
+	public static function dakora_get_all_descriptors_by_cross_subject($courseid, $crosssubjid, $userid, $forall) {
+		global $USER;
+		$params = self::validate_parameters ( self::dakora_get_all_descriptors_by_cross_subject_parameters (), array (
+				'courseid' => $courseid,
+				'crosssubjid'=>$crosssubjid,
+				'userid'=>$userid,
+				'forall' => $forall
+			) );
+			
+		if($userid == 0 && $forall == false)
+			$userid = $USER->id;
+		
+		return block_exacomp_external::dakora_get_descriptors_by_cross_subject_common($courseid, $crosssubjid, $userid, $forall, false);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_all_descriptors_by_cross_subject_returns() {
 		return new external_multiple_structure ( new external_single_structure ( array (
 				'descriptorid' => new external_value ( PARAM_INT, 'id of descriptor' ),
 				'descriptortitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
@@ -4032,6 +4129,64 @@ class block_exacomp_external extends external_api {
 	 * @return external_multiple_structure
 	 */
 	public static function dakora_get_descriptor_children_for_cross_subject_returns() {
+		return new external_single_structure ( array (
+			'children' => new external_multiple_structure ( new external_single_structure ( array (
+					'childid' => new external_value ( PARAM_INT, 'id of child' ),
+					'childtitle' => new external_value ( PARAM_TEXT, 'title of child' ),
+					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
+					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of children'),
+					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of children'),
+			) ) ) ,
+			'examples' => new external_multiple_structure ( new external_single_structure ( array (
+					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
+					'exampletitle' => new external_value ( PARAM_TEXT, 'title of example' ),
+					'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' )
+			) ) ) 
+		) ) ;
+	}
+	/**
+	 * Returns description of method parameters
+	 * 
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_all_descriptor_children_for_cross_subject_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value( PARAM_INT, 'id of course' ),
+				'descriptorid' => new external_value ( PARAM_INT, 'id of parent descriptor' ),
+				'userid' => new external_value ( PARAM_INT, 'id of user, 0 for current user'),
+				'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
+				'crosssubjid' => new external_value (PARAM_INT, 'id of cross subject')
+		) );
+	}
+	
+	/**
+	 * get children for descriptor in cross subject context
+	 * 
+	 * @return array of user courses
+	 */
+	public static function dakora_get_all_descriptor_children_for_cross_subject($courseid, $descriptorid, $userid, $forall, $crosssubjid) {
+		global $DB, $USER;
+		$params = self::validate_parameters ( self::dakora_get_all_descriptor_children_for_cross_subject_parameters (), array (
+				'courseid' => $courseid,
+				'descriptorid' => $descriptorid,
+				'userid' => $userid,
+				'forall' => $forall,
+				'crosssubjid' => $crosssubjid
+		) );
+		
+		if($userid == 0 && !$forall)
+			$userid = $USER->id;
+			
+		return block_exacomp_external::get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid, true);
+		
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_all_descriptor_children_for_cross_subject_returns() {
 		return new external_single_structure ( array (
 			'children' => new external_multiple_structure ( new external_single_structure ( array (
 					'childid' => new external_value ( PARAM_INT, 'id of child' ),
@@ -4973,5 +5128,182 @@ class block_exacomp_external extends external_api {
 		return $return;
 	}
 	
+	private function dakora_get_topics_by_course_common($courseid, $only_associated){
+		//TODO if added for 1 student -> mind visibility for this student
+		$tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
+		
+		$topics_return = array();
+		foreach($tree as $subject){
+			foreach($subject->subs as $topic){
+				if(!$only_associated || ($only_associated && $topic->associated == 1)){
+					$topic_return = new stdClass();
+					$topic_return->topicid = $topic->id;
+					$topic_return->topictitle = $topic->title;
+					$topic_return->numbering = block_exacomp_get_topic_numbering($topic->id);
+					$topics_return[] = $topic_return;
+				}
+			}
+		}
+			
+		return $topics_return;
+	}
 	
+		
+	private function dakora_get_descriptors_common($courseid, $topicid, $userid, $forall, $only_associated){
+		global $DB;
+		
+		$tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
+
+		$non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
+		
+		if(!$forall)
+			$non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+		
+		$descriptors_return = array();
+		foreach($tree as $subject){
+			foreach($subject->subs as $topic){
+				if($topic->id == $topicid){
+					foreach($topic->descriptors as $descriptor){
+						if(!$only_associated || ($only_associated && $descriptor->associated == 1)){
+							$descriptor_return = new stdClass();
+							$descriptor_return->descriptorid = $descriptor->id;
+							$descriptor_return->descriptortitle = $descriptor->title;
+							$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
+							$descriptor_return->niveautitle = "";
+							$descriptor_return->niveauid = 0;
+							if($descriptor->niveauid){
+								$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
+								$descriptor_return->niveautitle = $niveau->title;
+								$descriptor_return->niveauid = $niveau->id;
+							}
+							if(!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student))||$forall))
+								$descriptors_return[] = $descriptor_return;
+						}
+					}
+				}
+			}
+		}
+		
+		return $descriptors_return;
+	}
+	
+	private function dakora_get_descriptors_by_cross_subject_common($courseid, $crosssubjid, $userid, $forall, $only_associated){
+		global $DB;
+		
+		$descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid, true);
+		
+		$non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
+		
+		if(!$forall)
+			$non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+		
+		$descriptors_return = array();
+		foreach($descriptors as $descriptor){
+			if(!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student))||$forall)){ 	//descriptor is visibile
+				if($only_associated){
+					$has_visible_examples = false;
+					$has_children_with_visible_examples = false;
+					
+					$example_non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
+						if(!$forall)
+							$example_non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+						
+					
+					if(isset($descriptor->examples)){	//descriptor has examples
+						foreach($descriptor->examples as $example){
+							if(!in_array($example->id, $example_non_visibilities) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))
+								$has_visible_examples = true;	//descriptor has visible examples
+							
+						}				
+					}
+					
+					if(isset($descriptor->children)){
+						foreach($descriptor->children as $child){
+							if((!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, $non_visibilities_student))||$forall))){ //child is visible
+								if(isset($child->examples)){	//descriptor has children
+									foreach($child->examples as $example){
+										if(!in_array($example->id, $example_non_visibilities) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))
+											$has_children_with_visible_examples = true;	//descriptor has children with visible examples
+									}				
+								}
+							}
+						}
+					}
+					
+					if($has_visible_examples || $has_children_with_visible_examples){
+							$descriptor_return = new stdClass();
+							$descriptor_return->descriptorid = $descriptor->id;
+							$descriptor_return->descriptortitle = $descriptor->title;
+							$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
+							$descriptor_return->niveautitle = "";
+							$descriptor_return->niveauid = 0;
+							if($descriptor->niveauid){
+								$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
+								$descriptor_return->niveautitle = substr(block_exacomp_get_descriptor_numbering($descriptor),0,1).": ".$niveau->title;
+								$descriptor_return->niveauid = $niveau->id;
+							}
+							$descriptors_return[] = $descriptor_return;
+					}
+				}else{
+					$descriptor_return = new stdClass();
+					$descriptor_return->descriptorid = $descriptor->id;
+					$descriptor_return->descriptortitle = $descriptor->title;
+					$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
+					$descriptor_return->niveautitle = "";
+					$descriptor_return->niveauid = 0;
+					if($descriptor->niveauid){
+						$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
+						$descriptor_return->niveautitle = substr(block_exacomp_get_descriptor_numbering($descriptor),0,1).": ".$niveau->title;
+						$descriptor_return->niveauid = $niveau->id;
+					}
+					$descriptors_return[] = $descriptor_return;
+				}
+			}
+		}
+		
+		return $descriptors_return;
+	}
+	
+	private function dakora_get_examples_for_descriptor_common($courseid, $descriptorid, $userid, $forall, $crosssubjid=0){
+		global $DB;
+		
+		$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptorid));
+		
+		if($crosssubjid > 0){
+			$cross_subject_descriptors = block_exacomp_get_cross_subject_descriptors($crosssubjid);
+			if(!array_key_exists($descriptor->id, $cross_subject_descriptors))
+				return array();
+		}
+		
+		if($descriptor->parentid != 0){ //parent descriptor
+			$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$descriptor->id));
+			$descriptor->topicid = $descriptor_topic_mm->topicid;
+		
+			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, $courseid);
+		}else{ //child descriptor
+			
+			$parent_descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptor->parentid));
+			$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
+			$descriptor->topicid = $descriptor_topic_mm->topicid;
+			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, $courseid);
+			
+		}
+		
+		$example_non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
+		if(!$forall)
+			$example_non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+		
+		$examples_return = array();
+		foreach($descriptor->examples as $example){
+			$example_return = new stdClass();
+			$example_return->exampleid = $example->id;
+			$example_return->exampletitle = $example->title;
+			$example_return->examplestate = ($forall)?0:block_exacomp_get_dakora_state_for_example($courseid, $example->id, $userid);
+			if(!array_key_exists($example->id, $examples_return) && (!in_array($example->id, $example_non_visibilities)) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))
+				$examples_return[$example->id] = $example_return;
+		}
+		
+		return $examples_return;
+	}
+
 }

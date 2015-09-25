@@ -36,9 +36,13 @@ $services = array(
 						'block_exacomp_delete_example', 
 						'dakora_get_courses', 
 						'dakora_get_topics_by_course',
+						'dakora_get_all_topics_by_course',
 						'dakora_get_descriptors', 
+						'dakora_get_all_descriptors', 
 						'dakora_get_descriptor_children',
+						'dakora_get_all_descriptor_children',
 						'dakora_get_examples_for_descriptor', 
+						'dakora_get_examples_for_descriptor_for_crosssubject',
 						'dakora_get_example_overview',
 						'dakora_add_example_to_learning_calendar',
 						'dakora_get_descriptors_for_example',
@@ -51,7 +55,9 @@ $services = array(
 						'dakora_get_examples_for_time_slot',
 						'dakora_get_cross_subjects_by_course',
 						'dakora_get_descriptors_by_cross_subject',
+						'dakora_get_all_descriptors_by_cross_subject',
 						'dakora_get_descriptor_children_for_cross_subject',
+						'dakora_get_all_descriptor_children_for_cross_subject',
 						'dakora_get_schedule_config',
 						'dakora_get_user_fullname',
 						'dakora_set_competence',
@@ -311,12 +317,26 @@ $functions = array(
 				'classname'   => 'block_exacomp_external',  //class containing the external function
 				'methodname'  => 'dakora_get_topics_by_course',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get topics for course for dakora app associated with examples',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_all_topics_by_course'=> array (
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_all_topics_by_course',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'get topics for course for dakora app',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)
 		),
 		'dakora_get_descriptors'=> array (
 				'classname'   => 'block_exacomp_external',  //class containing the external function
 				'methodname'  => 'dakora_get_descriptors',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get descriptors for topic for dakora app associated with examples',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_all_descriptors'=> array (
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_all_descriptors',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'get descriptors for topic for dakora app',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)
@@ -325,12 +345,26 @@ $functions = array(
 				'classname'   => 'block_exacomp_external',  //class containing the external function
 				'methodname'  => 'dakora_get_descriptor_children',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get children (childdescriptor and examples) for descriptor for dakora app (only childs associated with examples)',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_all_descriptor_children' => array (
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_all_descriptor_children',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'get children (childdescriptor and examples) for descriptor for dakora app',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)
 		),
 		'dakora_get_examples_for_descriptor' => array (
 				'classname'   => 'block_exacomp_external',  //class containing the external function
 				'methodname'  => 'dakora_get_examples_for_descriptor',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get examples for descriptor for dakora app',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_examples_for_descriptor_for_crosssubject' => array (
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_examples_for_descriptor_for_crosssubject',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'get examples for descriptor for dakora app',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)
@@ -409,12 +443,19 @@ $functions = array(
 				'classname'   => 'block_exacomp_external',  //class containing the external function
 				'methodname'  => 'dakora_get_cross_subjects_by_course',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
-				'description' => 'get cross subjects for an user in course context',    //human readable description of the web service function
+				'description' => 'get cross subjects for an user in course context (allways all crosssubjs, even if not associated)',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)
 		),
 		'dakora_get_descriptors_by_cross_subject' => array(
 				'classname'   => 'block_exacomp_external',  //class containing the external function
 				'methodname'  => 'dakora_get_descriptors_by_cross_subject',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get descriptors for a cross subject associated with examples',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_all_descriptors_by_cross_subject' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_all_descriptors_by_cross_subject',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'get descriptors for a cross subject',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)
@@ -422,6 +463,13 @@ $functions = array(
 		'dakora_get_descriptor_children_for_cross_subject' => array(
 				'classname'   => 'block_exacomp_external',  //class containing the external function
 				'methodname'  => 'dakora_get_descriptor_children_for_cross_subject',          //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'get children in context of cross subject, associated with examples',    //human readable description of the web service function
+				'type'        => 'read'                  //database rights of the web service function (read, write)
+		),
+		'dakora_get_all_descriptor_children_for_cross_subject' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_all_descriptor_children_for_cross_subject',          //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'get children in context of cross subject',    //human readable description of the web service function
 				'type'        => 'read'                  //database rights of the web service function (read, write)

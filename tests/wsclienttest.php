@@ -47,6 +47,43 @@ $resp_moodle = $curl->get($serverurl_exaport);
 $resp_moodle = json_decode($resp_moodle)->token;
 print_r($resp_moodle);
 echo "
+associated topics:
+";
+header('Content-Type: text/plain');
+//REST CALL dakora_get_examples_pool_for_week
+$functionname = 'dakora_get_descriptors_by_cross_subject';
+
+$params = new stdClass();
+$params->courseid = 4;
+$params->crosssubjid = 30;
+$params->userid=0;
+$params->forall=0;
+
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+all topics:
+
+";
+header('Content-Type: text/plain');
+//REST CALL dakora_get_examples_pool_for_week
+$functionname = 'dakora_get_all_descriptors_by_cross_subject';
+
+$params = new stdClass();
+$params->courseid = 4;
+$params->crosssubjid = 30;
+$params->userid=0;
+$params->forall=0;
+
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
 cross subjects:
 
 ";
@@ -93,7 +130,26 @@ $functionname = 'dakora_get_descriptor_children_for_cross_subject';
 
 $params = new stdClass();
 $params->courseid = 4;
-$params->descriptorid = 9480;
+$params->descriptorid = 9512;
+$params->userid = 20;
+$params->forall = 0;
+$params->crosssubjid = 30;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+descriptor children all
+
+";
+
+//REST CALL dakora_get_examples_pool_for_week ($courseid, $descriptorid, $userid, $forall)
+$functionname = 'dakora_get_all_descriptor_children_for_cross_subject';
+
+$params = new stdClass();
+$params->courseid = 4;
+$params->descriptorid = 9512;
 $params->userid = 20;
 $params->forall = 0;
 $params->crosssubjid = 30;
@@ -112,9 +168,28 @@ $functionname = 'dakora_get_examples_for_descriptor';
 
 $params = new stdClass();
 $params->courseid = 4;
-$params->descriptorid = 9481;
+$params->descriptorid = 9512;
 $params->userid = 0;
 $params->forall = 0;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+descriptor details:
+
+";
+
+//REST CALL dakora_get_examples_pool_for_week ($courseid, $descriptorid, $userid, $forall)
+$functionname = 'dakora_get_examples_for_descriptor_for_crosssubject';
+
+$params = new stdClass();
+$params->courseid = 4;
+$params->descriptorid = 9512;
+$params->userid = 0;
+$params->forall = 0;
+$params->crosssubjid = 30;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
@@ -132,6 +207,7 @@ $params->courseid = 4;
 $params->descriptorid = 9480;
 $params->userid = 0;
 $params->forall = 0;
+$params->crosssubjid = 30;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
