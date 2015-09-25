@@ -4000,7 +4000,7 @@ var dataset = dataset.map(function (group) {
         .domain(niveaus)
         .rangeRoundBands([0, height], .1),
   
-    colours = [\"#B8B894\", \"#3a87ad\", \"#990000\", \"#33aa00\", \"#00CC00\", \"#008F00\", \"#003900\", \"#dddd22\", \"#ff0033\", \"#345678\"],
+    colours = [\"#B8B894\", \"#3a87ad\", \"#990000\",  \"#00CC00\", \"#008F00\", \"#006D00\", \"#dddd22\", \"#ff0033\", \"#345678\"],
     
     groups = svg.selectAll('g')
         .data(dataset)

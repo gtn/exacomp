@@ -5185,11 +5185,12 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 	$children = $DB->get_records(block_exacomp::DB_DESCRIPTORS,array("parentid" => $descrid));
 
 	$children[] = $descriptor;
-	
+
 	$example_where_string = "";
 
-	$inWork = 0;
-	$total = 0;
+	$inWorkArray = array();
+	$totalArray = array();
+	
 	foreach($children as $child) {
 		$child->visible = $DB->get_field(block_exacomp::DB_DESCVISIBILITY, 'visible', array('courseid'=>$courseid, 'descrid'=>$child->id, 'studentid'=>0));
 		$visible = block_exacomp_check_descriptor_visibility($courseid, $child, $studentid);
@@ -5199,27 +5200,47 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 		}
 		
 		$examples = $DB->get_records(block_exacomp::DB_DESCEXAMP,array('descrid' => $child->id));
-		$total += count($examples);
-		foreach($examples as $example)
-			$example_where_string .= $example->exampid . ",";
-			
-		$sql = "SELECT count(e.id) FROM {".block_exacomp::DB_EXAMPLES."} e
+		
+		foreach($examples as $example){
+			$example->visible = $DB->get_field(block_exacomp::DB_EXAMPVISIBILITY, 'visible', array('courseid'=>$courseid, 'exampleid'=>$example->exampid, 'studentid'=>0));
+		
+			$visible_example = block_exacomp_check_example_visibility($courseid, $example, $studentid);
+			if($visible_example && !array_key_exists( $example->exampid, $totalArray)){
+				$totalArray[$example->exampid] = $example;
+			}
+		}
+		
+		foreach($totalArray as $example)
+			$example_where_string .= $example->exampid.",";
+		
+		$sql = "SELECT s.id, e.id as exampid FROM {".block_exacomp::DB_EXAMPLES."} e
 				JOIN {".block_exacomp::DB_DESCEXAMP."} de ON de.exampid = e.id
 				JOIN {".block_exacomp::DB_DESCRIPTORS."} d ON de.descrid = d.id
 				JOIN {block_exacompschedule} s ON s.exampleid = e.id
-				WHERE s.courseid = ? AND d.id = ?";
+				WHERE s.courseid = ? AND d.id = ? ";
+		
 		if($studentid != 0) {
 			$sql .= " AND s.studentid = ?";
 			$conditions = array($courseid, $child->id,$studentid);
 		} else
 			$conditions = array($courseid, $child->id);
 
-		// count the descriptors that are "in work", therefore one or more of their examples are on the weekly schedule
-		$inWork += $DB->count_records_sql($sql,$conditions);
+		$schedule_examples = $DB->get_records_sql($sql, $conditions);
+		
+		foreach($schedule_examples as $sched){
+			$example = $totalArray[$sched->exampid];
+			if(block_exacomp_check_example_visibility($courseid, $example, $studentid) && !array_key_exists($example->exampid, $inWorkArray))
+				$inWorkArray[$example->exampid] = $example;
+		}
 	}
-	$example_where_string = rtrim($example_where_string, ",");
+	
+	$total = count($totalArray);
+	$inWork = count($inWorkArray);
+	
+	$example_where_string = substr($example_where_string, 0, strlen($example_where_string)-1);
 
 	$notEvaluated = $total;
+	
 	// if summary, multiply total amount with the number of students within the course
 	if($studentid == 0)
 		$notEvaluated *= count(block_exacomp_get_students_by_course($courseid));
@@ -5259,8 +5280,7 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 	if($totalGrade == null)
 		$totalGrade = 0;
 		
-	$notInWork = (($total-$inWork)<0)?0:($total-$inWork);	
-
+	$notInWork = $total-$inWork;
 	return array($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork);
 }
 
