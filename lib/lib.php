@@ -36,6 +36,8 @@ if($global_scheme == 1){
 	$global_scheme_values = array('nE', 'A', 'B', 'C');
 }else if($global_scheme == 3){
 	$global_scheme_values = array('nE', '*', '**', '***');
+}else{
+	$global_scheme_values = array('0', '1', '2', '3');
 }
 
 define("SHOW_ALL_TOPICS",99999999);
@@ -5675,6 +5677,7 @@ function block_exacomp_get_studentid($isTeacher) {
 }
 
 function block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, $niveautitle){
+	global $global_scheme, $global_scheme_values;
 	list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork) = block_exacomp_get_example_statistic_for_descriptor($courseid, $descriptor->id, $student->id);
 	
 	$string = "[";
@@ -5684,7 +5687,7 @@ function block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $st
 	
 	 $i = 0;
 	foreach($gradings as $grading){
-		$string .= "{data:[{niveau:'".$niveautitle."',count:".$grading."}],name:' ".(($i == 0)?"nE":$i)."'},";
+		$string .= "{data:[{niveau:'".$niveautitle."',count:".$grading."}],name:' ".(($global_scheme==0)?$i:$global_scheme_values[$i])."'},";
 		$i++;
     }
 	

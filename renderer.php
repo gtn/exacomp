@@ -3897,44 +3897,46 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
     }
 	
 	private function print_radar_graph_topic($labels, $data1, $data2, $canvasid){
-	return '<script>
-	var radarChartData = {
-		labels: ['.$labels.'],
-		datasets: [
-			{
-				label: "Lehrerbeurteilung",
-				fillColor: "rgba(72,165,63,0.2)",
-	            strokeColor: "rgba(72,165,63,1)",
-	            pointColor: "rgba(72,165,63,1)",
-	            pointStrokeColor: "#fff",
-	            pointHighlightFill: "#fff",
-	            pointHighlightStroke: "rgba(151,187,205,1)",
-				data: ['.$data1.']
-			},
-			{
-				label: "Schülerbeurteilung",
-				fillColor: "rgba(249,178,51,0.2)",
-	            strokeColor: "#f9b233",
-	            pointColor: "#f9b233",
-	            pointStrokeColor: "#fff",
-	            pointHighlightFill: "#fff",
-	            pointHighlightStroke: "rgba(151,187,205,1)",
-				data: ['.$data2.']
-			}
-		]
-	};
-
-	window.myRadar = new Chart(document.getElementById("'.$canvasid.'").getContext("2d")).Radar(radarChartData, {
-		responsive: true,
-		showScale: true,
-		scaleShowLabels: true,
-		scaleLabel: "<%if (value == 1){%><%=\'G\'%><%}%><%if (value == 2){%><%=\'M\'%> <%}%><%if (value == 3){%><%=\'E\'%><%}%><%if (value == 0){%><%=\'0\'%><%}%>",
-		multiTooltipTemplate: "<%if (value == 1){%><%=\'G\'%><%}%><%if (value == 2){%><%=\'M\'%> <%}%><%if (value == 3){%><%=\'E\'%><%}%><%if (value == 0){%><%=\'0\'%><%}%>",
-		scaleLineColor: "rgba(0,0,0,.3)",
-		angleLineColor : "rgba(0,0,0,.3)"
-	});
-
-	</script>';
+		global $global_scheme_values;
+		
+		return '<script>
+		var radarChartData = {
+			labels: ['.$labels.'],
+			datasets: [
+				{
+					label: "Lehrerbeurteilung",
+					fillColor: "rgba(72,165,63,0.2)",
+		            strokeColor: "rgba(72,165,63,1)",
+		            pointColor: "rgba(72,165,63,1)",
+		            pointStrokeColor: "#fff",
+		            pointHighlightFill: "#fff",
+		            pointHighlightStroke: "rgba(151,187,205,1)",
+					data: ['.$data1.']
+				},
+				{
+					label: "Schülerbeurteilung",
+					fillColor: "rgba(249,178,51,0.2)",
+		            strokeColor: "#f9b233",
+		            pointColor: "#f9b233",
+		            pointStrokeColor: "#fff",
+		            pointHighlightFill: "#fff",
+		            pointHighlightStroke: "rgba(151,187,205,1)",
+					data: ['.$data2.']
+				}
+			]
+		};
+	
+		window.myRadar = new Chart(document.getElementById("'.$canvasid.'").getContext("2d")).Radar(radarChartData, {
+			responsive: true,
+			showScale: true,
+			scaleShowLabels: true,
+			scaleLabel: "<%if (value == 1){%><%=\''.$global_scheme_values[1].'\'%><%}%><%if (value == 2){%><%=\''.$global_scheme_values[2].'\'%> <%}%><%if (value == 3){%><%=\''.$global_scheme_values[3].'\'%><%}if(value>3){%><%=value%><%}%>",
+			multiTooltipTemplate: "<%if (value == 1){%><%=\''.$global_scheme_values[1].'\'%><%}%><%if (value == 2){%><%=\''.$global_scheme_values[2].'\'%> <%}%><%if (value == 3){%><%=\''.$global_scheme_values[3].'\'%><%}%><%if (value == 0){%><%=\''.$global_scheme_values[0].'\'%><%}if(value>3){%><%=value%><%}%>",
+			scaleLineColor: "rgba(0,0,0,.3)",
+			angleLineColor : "rgba(0,0,0,.3)"
+		});
+	
+		</script>';
 	}
 	
 	private function print_example_stacked_bar($dataset, $descrid){
