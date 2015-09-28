@@ -459,6 +459,11 @@ $string['notification_grading_context'] = 'Grading';
 $string['notification_self_assessment_subject'] = 'New self assessments in {$a->course}';
 $string['notification_self_assessment_body'] = '{$a->student} has new self assessments in {$a->course}.';
 $string['notification_self_assessment_context'] = 'Self assessment';
+
+$string['notification_weekly_schedule_subject'] = 'New example on the schedule';
+$string['notification_weekly_schedule_body'] = '{$a->teacher} added an example {$a->example} in {$a->course} to your weekly schedule.';
+$string['notification_weekly_schedule_context'] = 'Weekly schedule';
+
 //Logging
 $string['block_exacomp_logging_head'] = 'Logging';
 $string['block_exacomp_logging_body'] = 'Relevant actions will get logged.';

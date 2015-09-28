@@ -429,15 +429,24 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 	if($role == block_exacomp::ROLE_STUDENT && $userid != $USER->id)
 		return -1;
 	
+	$id = -1;
+	
 	if($record = $DB->get_record(block_exacomp::DB_COMPETENCIES, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, "courseid" => $courseid, "role" => $role))) {
 		$record->value = ($value != -1) ? $value : null;
 		$record->timestamp = time();
 		$record->reviewerid = $USER->id;
 		$DB->update_record(block_exacomp::DB_COMPETENCIES, $record);
-		return $record->id;
+		$id = $record->id;
 	} else {
-		return $DB->insert_record(block_exacomp::DB_COMPETENCIES, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, "courseid" => $courseid, "role" => $role, "value" => $value, "reviewerid" => $USER->id, "timestamp" => time()));
+		$id = $DB->insert_record(block_exacomp::DB_COMPETENCIES, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, "courseid" => $courseid, "role" => $role, "value" => $value, "reviewerid" => $USER->id, "timestamp" => time()));
 	}
+	
+	if($role == block_exacomp::ROLE_TEACHER)
+		block_exacomp_send_grading_notification($USER, $DB->get_record('user',array('id'=>$userid)), $courseid);
+	else 
+		block_exacomp_notify_all_teachers_about_self_assessment($courseid);
+		
+	return $id;
 }
 
 function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $value = null, $starttime = 0, $endtime = 0, $studypartner = 'self') {
@@ -4501,13 +4510,16 @@ function block_exacomp_get_viewurl_for_example($studentid,$exampleid) {
 	return $access;
 }
 function block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid) {
-	global $DB;
+	global $USER, $DB;
 	
 	$timecreated = $timemodified = time();
 	
 	$DB->insert_record(block_exacomp::DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid,'creatorid' => $creatorid, 'timecreated' => $timecreated, 'timemodified' => $timemodified));
 	
-	//TODO: send notification
+	//only send a notification if a teacher adds an example for a student
+	if($USER->id != $studentid)
+		block_exacomp_send_weekly_schedule_notification($USER,$DB->get_record('user', array('id' => $studentid)), $courseid, $exampleid);
+	
 	return true;
 }
 
@@ -5693,11 +5705,16 @@ function block_exacomp_get_message_icon($userid) {
 	return html_writer::link($url, html_writer::tag('button',html_writer::img(new moodle_url('/blocks/exacomp/pix/envelope.png'), get_string('message','message'),array('title' => fullname($userto)))), $attributes);
 }
 function block_exacomp_send_notification($notificationtype, $userfrom, $userto, $subject, $message, $context, $contexturl) {
-	global $CFG, $notifications;
+	global $CFG, $DB, $notifications;
 
 	if(!$notifications)
 		return;
 	
+	// do not send too many notifications. therefore check if user has got same notification within the last 5 minutes
+	if($DB->get_records_select('message_read', "useridfrom = ? AND useridto = ? AND contexturlname = ? AND timecreated > ?",
+		array('useridfrom' => $userfrom->id, 'useridto' => $userto->id, 'contexturlname' => $context, (time()-5*60))))
+		return;
+			
 	require_once($CFG->dirroot . '/message/lib.php');
 
 	$eventdata = new stdClass ();
@@ -5783,4 +5800,17 @@ function block_exacomp_notify_students_about_grading($courseid, $students) {
 			block_exacomp_send_grading_notification($USER, $DB->get_record('user', array('id' => $student)), $courseid);
 		}
 	}
+}
+function block_exacomp_send_weekly_schedule_notification($userfrom, $userto, $courseid, $exampleid) {
+	global $CFG,$USER,$DB;
+
+	$course = get_course($courseid);
+	$example = $DB->get_record(block_exacomp::DB_EXAMPLES,array('id' => $exampleid));
+	$subject = get_string('notification_weekly_schedule_subject','block_exacomp');
+	$message = get_string('notification_weekly_schedule_body','block_exacomp',array('course' => $course->fullname, 'teacher' => fullname($userfrom), 'example' => $example->title));
+	$context = get_string('notification_weekly_schedule_context','block_exacomp');
+
+	$viewurl = new moodle_url('/blocks/exacomp/weekly_schedule.php',array('courseid' => $courseid));
+
+	block_exacomp_send_notification("weekly_schedule", $userfrom, $userto, $subject, $message, $context, $viewurl);
 }

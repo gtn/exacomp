@@ -124,7 +124,7 @@ if($formdata = $form->get_data()) {
 	$timecreated = time();
 	$DB->insert_record('block_exacompitemexample',array('exampleid'=>$exampleid,'itemid'=>$itemid,'timecreated'=>$timecreated,'status'=>0));
 
-	block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, $timecreated)
+	block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, $timecreated);
 ?>
 <script type="text/javascript">
 		window.opener.block_exacomp.newExampleAdded();

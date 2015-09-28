@@ -9,5 +9,8 @@ $messageproviders = array (
 		),
 		// Student assessed some of his competencies
 		'self_assessment' => array (
+		),
+		// Teacher adds new example to weekly schedule
+		'weekly_schedule' => array(
 		)
 );

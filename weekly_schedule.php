@@ -61,7 +61,6 @@ block_exacomp_build_breadcrum_navigation($courseid);
 $output = $PAGE->get_renderer('block_exacomp');
 echo $output->header($context, $courseid, $page_identifier);
 
-
 $selectedCourse = optional_param('pool_course', $courseid, PARAM_INT);
 
 /* CONTENT REGION */
@@ -85,6 +84,8 @@ if($isTeacher){
 		echo get_string("choosestudent","block_exacomp");
 		echo block_exacomp_studentselector($coursestudents,$studentid,$PAGE->url);
 	}
+} else {
+	echo html_writer::tag("input", null, array("type" => "hidden", "value" => $studentid, "id" => "menuexacomp_competence_grid_select_student"));
 }
 
 $student = $DB->get_record('user',array('id' => $studentid));

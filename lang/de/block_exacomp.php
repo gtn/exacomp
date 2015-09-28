@@ -493,6 +493,10 @@ $string['notification_self_assessment_subject'] = 'Neue Selbsteinschätzung im K
 $string['notification_self_assessment_body'] = '{$a->student} hat im Kurs {$a->course} neue Selbsteinschätzungen gemacht.';
 $string['notification_self_assessment_context'] = 'Selbsteinschätzung';
 
+$string['notification_weekly_schedule_subject'] = 'Neue Aufgabe am Wochenplan';
+$string['notification_weekly_schedule_body'] = '{$a->teacher} hat dir im Kurs {$a->course} die Aufgabe {$a->example} auf den Wochenplan gelegt.';
+$string['notification_weekly_schedule_context'] = 'Wochenplan';
+
 $string['block_exacomp_notifications_head'] = 'Mitteilungen und Benachrichtigungen';
 $string['block_exacomp_notifications_body'] = 'Bei Aktionen wie einer Beispiel-Einreichung oder einer Beurteilung werden Nachrichten an die zuständigen Benutzer gesendet.';
 
