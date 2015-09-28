@@ -3870,11 +3870,10 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 					
 					$desc_content .= $this->print_example_stacked_bar($data, $descriptor->id);
 					
-					if((isset($student->competencies->student[$descriptor->id])) && (isset($student->competencies->teacher[$descriptor->id]))){
-						$niveaus[] = '"'.$niveau->title.'"';
-						$student_eval[] = $student->competencies->student[$descriptor->id];
-						$teacher_eval[] = $student->competencies->teacher[$descriptor->id];
-					}
+					$niveaus[] = '"'.$niveau->title.'"';
+					$student_eval[] = (isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:0;
+					$teacher_eval[] = (isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:0;
+					
 				}
 				
 				$div_content = "";
