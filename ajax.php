@@ -128,11 +128,20 @@ switch($action){
 		}
 		
 		$saved = "";
+		$affectedUsers = array();
+		
 		foreach($comps as $comp){
 			if($comp){
 				$saved .= block_exacomp_set_user_competence ( $comp->userid, $comp->compid, $comptype, $courseid, ($isTeacher) ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $comp->value );
+				$affectedUsers[$comp->userid] = $comp->userid;
 			}
 		}
+		
+		if(!$isTeacher && count($comps) > 0)
+			block_exacomp_notify_all_teachers_about_self_assessment($courseid);
+		elseif($isTeacher && count($affectedUsers) > 0)
+			block_exacomp_notify_students_about_grading($courseid,array_keys($affectedUsers));
+
 		echo $saved;
 		break;
 	case('examples_array'):
@@ -153,6 +162,8 @@ switch($action){
 				$saved .= block_exacomp_set_user_example($example->userid, $example->exampleid, $courseid, ($isTeacher) ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $example->value);
 			}
 		}
+		//TODO: send notification
+		
 		echo $saved;
 		break;
 	case('save_as_draft'):

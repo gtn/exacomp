@@ -446,6 +446,19 @@ $string['niveauclass'] = 'Niveau classification';
 $string['notification_submission_subject'] = '{$a->student} submitted a solution for {$a->example}.';
 $string['notification_submission_body'] = '{$a->student} submitted {$a->example} on {$a->date} at {$a->time}. The submission can be seen in ePortfolio: <a href="{$viewurl}">{$a->example}</a>';
 $string['notification_submission_context'] = 'Submission';
+$string['block_exacomp_notifications_head'] = 'Notifications and Messages';
+$string['block_exacomp_notifications_body'] = 'Users will get notified after relevant actions.';
+
+$string['notification_grading_subject'] = 'New grading in course {$a->course}';
+$string['notification_grading_body'] = 'You have got new gradings in {$a->course} from {$a->teacher}.';
+$string['notification_grading_context'] = 'Grading';
+
+$string['notification_self_assessment_subject'] = 'New self assessments in {$a->course}';
+$string['notification_self_assessment_body'] = '{$a->student} has new self assessments in {$a->course}.';
+$string['notification_self_assessment_context'] = 'Self assessment';
+//Logging
+$string['block_exacomp_logging_head'] = 'Logging';
+$string['block_exacomp_logging_body'] = 'Relevant actions will get logged.';
 
 //metadata
 $string['subject_singular'] = 'Field of competence';

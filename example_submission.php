@@ -124,13 +124,7 @@ if($formdata = $form->get_data()) {
 	$timecreated = time();
 	$DB->insert_record('block_exacompitemexample',array('exampleid'=>$exampleid,'itemid'=>$itemid,'timecreated'=>$timecreated,'status'=>0));
 
-	$teachers = block_exacomp_get_teachers_by_course($courseid);
-	if($teachers) {
-		foreach($teachers as $teacher) {
- 			block_exacomp_send_submission_notification($USER, $teacher, $DB->get_record(block_exacomp::DB_EXAMPLES,array('id'=>$exampleid)), date("D, d.m.Y",$timecreated), date("H:s",$timecreated));
-		}
-		
-	}
+	block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, $timecreated)
 ?>
 <script type="text/javascript">
 		window.opener.block_exacomp.newExampleAdded();

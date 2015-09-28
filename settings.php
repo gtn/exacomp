@@ -55,3 +55,9 @@ $settings->add(new block_exacomp_admin_setting_source('exacomp/mysource', 'Sourc
 $settings->add(new admin_setting_configtext('exacomp/scheduleinterval', get_string('settings_interval','block_exacomp'), get_string('settings_interval_description','block_exacomp'), 50, PARAM_INT));
 $settings->add(new admin_setting_configtext('exacomp/scheduleunits', get_string('settings_scheduleunits','block_exacomp'), get_string('settings_scheduleunits_description','block_exacomp'), 8, PARAM_INT));
 $settings->add(new admin_setting_configtext('exacomp/schedulebegin', get_string('settings_schedulebegin','block_exacomp'), get_string('settings_schedulebegin_description','block_exacomp'), "07:45", PARAM_TEXT));
+
+$settings->add(new admin_setting_configcheckbox('exacomp/notifications', get_string('block_exacomp_notifications_head', 'block_exacomp'),
+		get_string('block_exacomp_notifications_body', 'block_exacomp'), 0));
+
+$settings->add(new admin_setting_configcheckbox('exacomp/logging', get_string('block_exacomp_logging_head', 'block_exacomp'),
+		get_string('block_exacomp_logging_body', 'block_exacomp'), 0));

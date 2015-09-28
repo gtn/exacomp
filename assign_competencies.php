@@ -39,22 +39,6 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 
 $edit = optional_param('editmode', 0, PARAM_BOOL);
 
-//if edit mode is on, do not allow to work with students
-/*
-$studentid = optional_param('studentid', BLOCK_EXACOMP_DEFAULT_STUDENT, PARAM_INT);
-if($studentid == 0)
-	$studentid = BLOCK_EXACOMP_DEFAULT_STUDENT;
-
-if($studentid == BLOCK_EXACOMP_DEFAULT_STUDENT) {
-	if(isset($_SESSION['studentid']))
-		//if default check for session
-		$studentid = $_SESSION['studentid'];
-	else
-		$studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
-} else {
-	$_SESSION['studentid'] = $studentid;
-}*/
-
 require_login($course);
 
 $context = context_course::instance($courseid);

@@ -269,7 +269,7 @@
 										comptype : 0,
 										action : 'competencies_array'
 									});
-									competencies = [];
+									competencies = {};
 								}
 
 								if (Object.size(topics) > 0) {
@@ -282,7 +282,7 @@
 										console.log("Topics Saved: " + msg);
 									});
 
-									topics = [];
+									topics = {};
 								}
 								
 								if (Object.size(crosssubs) > 0) {
@@ -295,7 +295,7 @@
 										console.log("Crosssubs Saved: " + msg);
 									});
 
-									crosssubs = [];
+									crosssubs = {};
 								}
 								
 								if (Object.size(examples) > 0) {
@@ -304,7 +304,7 @@
 										action : 'examples_array'
 									});
 
-									examples = [];
+									examples = {};
 								}
 
 								var select = document

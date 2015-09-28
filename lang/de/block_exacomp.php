@@ -481,6 +481,22 @@ $string['to_weekly_schedule'] = 'Zum Wochenplan';
 $string['notification_submission_subject'] = '{$a->student} hat eine Lösung zum Beispiel {$a->example} eingereicht.';
 $string['notification_submission_body'] = '{$a->student} hat die Aufgabe {$a->example} bearbeitet und am {$a->date} um {$a->time} hochgeladen. Die Abgabe kann im ePortfolio eingesehen werden: <a href="{$viewurl}">{$a->example}</a>';
 $string['notification_submission_context'] = 'Abgabe';
+
+$string['notification_grading_subject'] = 'Neue Beurteilungen im Kurs {$a->course}';
+$string['notification_grading_body'] = 'Du hast im Kurs {$a->course} neue Beurteilungen von {$a->teacher} erhalten.';
+$string['notification_grading_context'] = 'Beurteilung';
+
+$string['notification_self_assessment_subject'] = 'Neue Selbsteinschätzung im Kurs {$a->course}';
+$string['notification_self_assessment_body'] = '{$a->student} hat im Kurs {$a->course} neue Selbsteinschätzungen gemacht.';
+$string['notification_self_assessment_context'] = 'Selbsteinschätzung';
+
+$string['block_exacomp_notifications_head'] = 'Mitteilungen und Benachrichtigungen';
+$string['block_exacomp_notifications_body'] = 'Bei Aktionen wie einer Beispiel-Einreichung oder einer Beurteilung werden Nachrichten an die zuständigen Benutzer gesendet.';
+
+//Logging
+$string['block_exacomp_logging_head'] = 'Logging';
+$string['block_exacomp_logging_body'] = 'Relevante Aktionen werden geloggt.';
+
 //Statistics
 $string['process'] = 'Bearbeitungsstand';
 $string['niveauclass'] = 'Niveaueinstufung';

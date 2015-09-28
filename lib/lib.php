@@ -25,6 +25,8 @@ $xmlserverurl = get_config('exacomp', 'xmlserverurl');
 $autotest = get_config('exacomp', 'autotest');
 $testlimit = get_config('exacomp', 'testlimit');
 $specificimport = get_config('exacomp','enableteacherimport');
+$notifications = get_config('exacomp','notifications');
+
 
 define("SHOW_ALL_TOPICS",99999999);
 define("SHOW_ALL_TAXONOMIES",100000000);
@@ -4494,6 +4496,8 @@ function block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,
 	$timecreated = $timemodified = time();
 	
 	$DB->insert_record(block_exacomp::DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid,'creatorid' => $creatorid, 'timecreated' => $timecreated, 'timemodified' => $timemodified));
+	
+	//TODO: send notification
 	return true;
 }
 
@@ -5679,8 +5683,11 @@ function block_exacomp_get_message_icon($userid) {
 	return html_writer::link($url, html_writer::tag('button',html_writer::img(new moodle_url('/blocks/exacomp/pix/envelope.png'), get_string('message','message'),array('title' => fullname($userto)))), $attributes);
 }
 function block_exacomp_send_notification($notificationtype, $userfrom, $userto, $subject, $message, $context, $contexturl) {
-	global $CFG;
+	global $CFG, $notifications;
 
+	if(!$notifications)
+		return;
+	
 	require_once($CFG->dirroot . '/message/lib.php');
 
 	$eventdata = new stdClass ();
@@ -5700,7 +5707,6 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
 	$eventdata->contexturlname = $context;
 
 	message_send ( $eventdata );
-	die;
 }
 function block_exacomp_send_submission_notification($userfrom, $userto, $example, $date, $time) {
 	global $CFG,$USER;
@@ -5712,4 +5718,59 @@ function block_exacomp_send_submission_notification($userfrom, $userto, $example
 	$context = get_string('notification_submission_context','block_exacomp');
 
 	block_exacomp_send_notification("submission", $userfrom, $userto, $subject, $message, $context, $viewurl);
+}
+function block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, $timecreated) {
+	global $USER, $DB;
+	
+	$teachers = block_exacomp_get_teachers_by_course($courseid);
+	if($teachers) {
+		foreach($teachers as $teacher) {
+			block_exacomp_send_submission_notification($USER, $teacher, $DB->get_record(block_exacomp::DB_EXAMPLES,array('id'=>$exampleid)), date("D, d.m.Y",$timecreated), date("H:s",$timecreated));
+		}
+	}
+}
+function block_exacomp_send_self_assessment_notification($userfrom, $userto, $courseid) {
+	global $CFG,$USER;
+
+	$course = get_course($courseid);
+	
+	$subject = get_string('notification_self_assessment_subject','block_exacomp',array('course' => $course->shortname));
+	$message = get_string('notification_self_assessment_body','block_exacomp',array('course' => $course->fullname, 'student' => fullname($userfrom)));
+	$context = get_string('notification_self_assessment_context','block_exacomp');
+
+	$viewurl = new moodle_url('/blocks/exacomp/assign_competencies.php',array('courseid' => $courseid));
+	
+	block_exacomp_send_notification("self_assessment", $userfrom, $userto, $subject, $message, $context, $viewurl);
+}
+function block_exacomp_notify_all_teachers_about_self_assessment($courseid) {
+	global $USER, $DB;
+
+	$teachers = block_exacomp_get_teachers_by_course($courseid);
+	if($teachers) {
+		foreach($teachers as $teacher) {
+			block_exacomp_send_self_assessment_notification($USER, $teacher, $courseid);
+		}
+	}
+}
+function block_exacomp_send_grading_notification($userfrom, $userto, $courseid) {
+	global $CFG,$USER;
+
+	$course = get_course($courseid);
+
+	$subject = get_string('notification_grading_subject','block_exacomp',array('course' => $course->shortname));
+	$message = get_string('notification_grading_body','block_exacomp',array('course' => $course->fullname, 'teacher' => fullname($userfrom)));
+	$context = get_string('notification_grading_context','block_exacomp');
+
+	$viewurl = new moodle_url('/blocks/exacomp/assign_competencies.php',array('courseid' => $courseid));
+
+	block_exacomp_send_notification("grading", $userfrom, $userto, $subject, $message, $context, $viewurl);
+}
+function block_exacomp_notify_students_about_grading($courseid, $students) {
+	global $USER, $DB;
+
+	if($students) {
+		foreach($students as $student) {
+			block_exacomp_send_grading_notification($USER, $DB->get_record('user', array('id' => $student)), $courseid);
+		}
+	}
 }
