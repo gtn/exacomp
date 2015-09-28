@@ -66,7 +66,8 @@ class block_exacomp_example_submission_form extends moodleform {
 	
 		$errors= array();
 	
-		if (!empty($data['url']) && filter_var($data['url'], FILTER_VALIDATE_URL) === FALSE) {
+		if (!empty($data['url']) && filter_var($data['url'], FILTER_VALIDATE_URL) === FALSE &&
+				filter_var("http://" . $data['url'], FILTER_VALIDATE_URL) === FALSE) {
 			$errors['url'] = get_string('linkerr','block_exacomp');
 		}
 	
