@@ -943,7 +943,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 			. " WHERE "
 			. " e.source != " . block_exacomp::EXAMPLE_SOURCE_USER . " AND "
 			. (($showallexamples) ? " 1=1 " : " e.creatorid > 0")
-			. " ORDER BY e.sorting"
+			. " ORDER BY de.sorting"
 			, array($descriptor->id, $courseid));
 	foreach($examples as $example){
 		$example->taxonomies = block_exacomp_get_taxonomies_by_example($example);
@@ -5612,24 +5612,30 @@ function block_exacomp_example_order($exampleid, $descrid, $operator = "<") {
 	if(!$example || !$DB->record_exists(block_exacomp::DB_DESCEXAMP, array('exampid' => $exampleid,'descrid' => $descrid)))
 		return false;
 	
+	$desc_examp = $DB->get_record(block_exacomp::DB_DESCEXAMP, array('exampid' => $exampleid,'descrid' => $descrid));	
+	$example->descsorting = $desc_examp->sorting;
+		
 	if(block_exacomp_is_admin($COURSE->id) || (isset($example->creatorid) && $example->creatorid == $USER->id)) {
-		$sql = 'SELECT e.* FROM {block_exacompexamples} e
+		$sql = 'SELECT e.*, de.sorting as descsorting FROM {block_exacompexamples} e
 			JOIN {block_exacompdescrexamp_mm} de ON de.exampid = e.id
-			WHERE e.sorting ' . ((strcmp($operator,"<") == 0) ? "<" : ">") . ' ? AND de.descrid = ?
-			ORDER BY e.sorting DESC
+			WHERE de.sorting ' . ((strcmp($operator,"<") == 0) ? "<" : ">") . ' ? AND de.descrid = ?
+			ORDER BY de.sorting ' . ((strcmp($operator,"<") == 0) ? "DESC" : "ASC") . '
 			LIMIT 1';
 		
-		$switchWith = $DB->get_record_sql($sql,array($example->sorting, $descrid));
+		$switchWith = $DB->get_record_sql($sql,array($example->descsorting, $descrid));
 
 		if($switchWith) {
-			$oldSorting = ($example->sorting) ? $example->sorting : 0;
+			$oldSorting = ($example->descsorting) ? $example->descsorting : 0;
 
-			$example->sorting = ($switchWith->sorting) ? $switchWith->sorting : 0;
-
-			$switchWith->sorting = $oldSorting;
+			$example->descsorting = ($switchWith->descsorting) ? $switchWith->descsorting : 0;
+			$switchWith->descsorting = $oldSorting;
 			
-			$DB->update_record(block_exacomp::DB_EXAMPLES, $example);
-			$DB->update_record(block_exacomp::DB_EXAMPLES, $switchWith);
+			$desc_examp->sorting = $example->descsorting; 
+			$DB->update_record(block_exacomp::DB_DESCEXAMP, $desc_examp);
+			
+			$desc_examp = $DB->get_record(block_exacomp::DB_DESCEXAMP, array('exampid' => $switchWith->id,'descrid' => $descrid));	
+			$desc_examp->sorting = $switchWith->descsorting;
+			$DB->update_record(block_exacomp::DB_DESCEXAMP, $desc_examp);
 			
 			return true;
 		}
