@@ -66,21 +66,31 @@ $isTeacher = block_exacomp_is_teacher($context);
 
 if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 	if(isset($_POST['descriptor']) && !empty($_POST['descriptor'])){
-		$DB->delete_records(block_exacomp::DB_DESCEXAMP,array('exampid' => $exampleid));
+		//$DB->delete_records(block_exacomp::DB_DESCEXAMP,array('exampid' => $exampleid));
+		$not_in = "";
 		foreach($_POST['descriptor'] as $descriptorid){
 			//check if record already exists -> if not insert new 
 			$record = $DB->get_records(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$exampleid));
 			if(!$record){
+				$sql = "SELECT MAX(sorting) as sorting FROM {".block_exacomp::DB_DESCEXAMP."} WHERE descrid=?";
+    			$max_sorting = $DB->get_record_sql($sql, array($descriptorid)); 
+    			$sorting = intval($max_sorting->sorting)+1;
+    			
 				$insert = new stdClass();
 				$insert->descrid = $descriptorid;
 				$insert->exampid = $exampleid;
+				$insert->sorting = $sorting;
 				$DB->insert_record(block_exacomp::DB_DESCEXAMP, $insert);
 			}	
+			$not_in .= $descriptorid.",";
 		}
+		$not_in = substr($not_in, 0, strlen($not_in)-1);
+		$deleted = $DB->delete_records_select(block_exacomp::DB_DESCEXAMP, 'exampid = ? AND descrid NOT IN('.$not_in.')', array($exampleid));
 	}
 	
 	?>
 <script type="text/javascript">
+		window.opener.location.reload(true);
 		window.close();
 	</script>
 <?php 

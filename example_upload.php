@@ -154,7 +154,19 @@ if($formdata = $form->get_data()) {
     //add descriptor association
     if ($descriptors = block_exacomp_param::optional_array('descriptor', array(PARAM_INT=>PARAM_INT))) {
     	foreach($descriptors as $descriptorid){
-            block_exacomp_db::insert_or_update_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
+    		$desc_examp = $DB->get_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
+    		if(!$desc_examp){
+    			$sql = "SELECT MAX(sorting) as sorting FROM {".block_exacomp::DB_DESCEXAMP."} WHERE descrid=?";
+    			$max_sorting = $DB->get_record_sql($sql, array($descriptorid)); 
+    			$sorting = intval($max_sorting->sorting)+1;
+    			$insert = new stdClass();
+    			$insert->descrid = $descriptorid;
+    			$insert->exampid = $newExample->id;
+    			$insert->sorting = $sorting;
+    			
+    			$DB->insert_record(block_exacomp::DB_DESCEXAMP, $insert);
+    		}
+            //block_exacomp_db::insert_or_update_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
     	}
     }
     

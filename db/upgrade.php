@@ -2249,5 +2249,31 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		}
 	    upgrade_block_savepoint(true, 2015091500, 'exacomp');
     }
+     if ($oldversion < 2015092803) {
+		global $DB;
+		
+        // Define field sorting to be added to block_exacompdescrexamp_mm.
+        $table = new xmldb_table('block_exacompdescrexamp_mm');
+        $field = new xmldb_field('sorting', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'exampid');
+
+        // Conditionally launch add field sorting.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        //initialize sorting 
+        $descriptors = $DB->get_records(block_exacomp::DB_DESCRIPTORS);
+        foreach($descriptors as $descriptor){
+        	$desc_examp_mm = $DB->get_records(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptor->id));
+        	$i = 1;
+        	foreach($desc_examp_mm as $desc_examp){
+        		$desc_examp->sorting = $i;
+        		$DB->update_record(block_exacomp::DB_DESCEXAMP, $desc_examp);
+        	}
+        }
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2015092803, 'exacomp');
+    }
+    
 	return $return_result;
 }
