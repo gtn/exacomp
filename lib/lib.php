@@ -27,6 +27,16 @@ $testlimit = get_config('exacomp', 'testlimit');
 $specificimport = get_config('exacomp','enableteacherimport');
 $notifications = get_config('exacomp','notifications');
 
+$global_scheme = get_config('exacomp', 'adminscheme');
+$global_scheme_values = array();
+
+if($global_scheme == 1){
+	$global_scheme_values = array('nE', 'G', 'M', 'E');
+}else if($global_scheme == 2){
+	$global_scheme_values = array('nE', 'A', 'B', 'C');
+}else if($global_scheme == 3){
+	$global_scheme_values = array('nE', '*', '**', '***');
+}
 
 define("SHOW_ALL_TOPICS",99999999);
 define("SHOW_ALL_TAXONOMIES",100000000);

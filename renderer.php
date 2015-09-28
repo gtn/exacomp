@@ -2302,7 +2302,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
      * @return String $select html code for select
      */
     public function generate_select($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false, $profoundness = false, $reviewerid = null) {
-    	global $USER;
+    	global $USER, $global_scheme, $global_scheme_values;
     	
     	$attributes = array();
     	if($disabled)
@@ -2313,7 +2313,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         $options = array();
         $options[-1] = ' ';
         for($i=0;$i<=$scheme;$i++)
-            $options[$i] = (!$profoundness) ? $i : get_string('profoundness_'.$i,'block_exacomp');
+            $options[$i] = (!$profoundness) ? (($global_scheme==0)?$i:$global_scheme_values[$i]) : get_string('profoundness_'.$i,'block_exacomp');
 
         return html_writer::select(
                 $options,
@@ -2389,12 +2389,14 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         return $content;
     }
     public function print_edit_course($settings, $courseid, $headertext){
-        global $DB;
+        global $DB, $global_scheme;
         $header = html_writer::tag('p', $headertext).html_writer::empty_tag('br');
-            
-        $input_grading = get_string('grading_scheme', 'block_exacomp').": &nbsp"
-        .html_writer::empty_tag('input', array('type'=>'text', 'size'=>2, 'name'=>'grading', 'value'=>block_exacomp_get_grading_scheme($courseid)))
-        .html_writer::empty_tag('br');
+
+        $input_grading = "";
+        if($global_scheme == 0)
+	        $input_grading = get_string('grading_scheme', 'block_exacomp').": &nbsp"
+	        .html_writer::empty_tag('input', array('type'=>'text', 'size'=>2, 'name'=>'grading', 'value'=>block_exacomp_get_grading_scheme($courseid)))
+	        .html_writer::empty_tag('br');
 
         $input_activities = html_writer::checkbox('uses_activities', 1, $settings->uses_activities == 1, get_string('uses_activities', 'block_exacomp'))
         .html_writer::empty_tag('br');

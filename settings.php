@@ -4,6 +4,7 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once __DIR__.'/lib/exabis_special_id_generator.php';
 require_once __DIR__.'/lib/xmllib.php';
+require_once __DIR__.'/lib/lib.php';
 
 if (!class_exists('block_exacomp_admin_setting_source')) {
     // check needed, because moodle includes this file twice
@@ -25,6 +26,28 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
                 return 'wrong id';
                 // return get_string('validateerror', 'admin');
             }
+        }
+    }
+    
+	class block_exacomp_admin_setting_scheme extends admin_setting_configselect {
+        public function write_setting($data) {
+            $ret = parent::write_setting($data);
+           
+            if ($ret != '') {
+                return $ret;
+            }
+            
+            if($data != '0'){
+            	foreach(block_exacomp_get_courses() as $course){
+            		$course_settings = block_exacomp_get_settings_by_course($course);
+	            	if($course_settings->grading != 3){ //change course grading
+	            		$course_settings->grading = 3;
+	            		$course_settings->filteredtaxonomies = json_encode($course_settings->filteredtaxonomies);
+	            		block_exacomp_save_coursesettings($course, $course_settings);
+	            	}
+            	}
+            }
+            return '';
         }
     }
 }
@@ -61,3 +84,6 @@ $settings->add(new admin_setting_configcheckbox('exacomp/notifications', get_str
 
 $settings->add(new admin_setting_configcheckbox('exacomp/logging', get_string('block_exacomp_logging_head', 'block_exacomp'),
 		get_string('block_exacomp_logging_body', 'block_exacomp'), 0));
+		
+$settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme', get_string('settings_admin_scheme', 'block_exacomp'),
+		get_string('settings_admin_scheme_description', 'block_exacomp'), get_string('settings_admin_scheme_none', 'block_exacomp'), array(get_string('settings_admin_scheme_none', 'block_exacomp'), 'G/M/E', 'A/B/C', '*/**/***')));	

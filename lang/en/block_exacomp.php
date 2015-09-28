@@ -102,6 +102,9 @@ $string['settings_scheduleunits'] = 'Anmount of units';
 $string['settings_scheduleunits_description'] = 'Amount of units in the schedule';
 $string['settings_schedulebegin'] = 'Schedule begin';
 $string['settings_schedulebegin_description'] = 'Begin time for the first unit in the schedule. Format hh:mm';
+$string['settings_admin_scheme'] = 'Global grading scheme';
+$string['settings_admin_scheme_description'] = 'Choose a grading scheme for all courses, if not every teacher can select an own grading scheme for every course based on numbers.';
+$string['settings_admin_scheme_none'] = 'no global grading';
 
 //Learning agenda
 $string['LA_MON'] = "MON";

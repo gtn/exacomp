@@ -104,6 +104,9 @@ $string['settings_scheduleunits'] = 'Anzahl der Einheiten';
 $string['settings_scheduleunits_description'] = 'Anzahl der Einheiten im Wochenplan';
 $string['settings_schedulebegin'] = 'Beginn der Einheiten';
 $string['settings_schedulebegin_description'] = 'Beginnzeitpunkt der ersten Einheit im Wochenplan. Format hh:mm';
+$string['settings_admin_scheme'] = 'Globales Bewertungsschema';
+$string['settings_admin_scheme_description'] = 'Wählen Sie ein kursübergreifendes Bewertungsschema, andernfalls kann der Lehrer pro Kurs ein zahlen basiertes Bewertungsschema festlegen.';
+$string['settings_admin_scheme_none'] = 'keine globale Bewertung';
 
 //Learning agenda
 $string['LA_MON'] = "Mo";

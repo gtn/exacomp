@@ -63,13 +63,7 @@ class block_exacomp extends block_list {
     
     const CUSTOM_CREATED_DESCRIPTOR = 3;
 
-
-
-
-
-
-
-    function init() {
+	function init() {
         $this->title = get_string('pluginname', 'block_exacomp');
     }
 

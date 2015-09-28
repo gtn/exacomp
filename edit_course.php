@@ -59,10 +59,10 @@ $headertext = '';
 
 if ($action == 'save_coursesettings') {
 	$settings = new stdClass;
-	$settings->grading = optional_param('grading', 1, PARAM_INT);
+	$settings->grading = optional_param('grading', 3, PARAM_INT);
 	
 	if($settings->grading == 0)
-		$settings->grading = 1;
+		$settings->grading = 3;
 	
 	$settings->uses_activities = optional_param('uses_activities', "", PARAM_INT);
 	$settings->show_all_descriptors = optional_param('show_all_descriptors', "", PARAM_INT);
