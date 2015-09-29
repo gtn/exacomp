@@ -1,4 +1,4 @@
-.tooltip {
+#block_exacomp .tooltip {
     position: absolute;
     text-align: center;
     width: 40px;
@@ -13,16 +13,42 @@
     box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
     pointer-events: none;
 }
-.tooltip.hidden {
+#block_exacomp .tooltip.hidden {
     display: none;
 }
-.tooltip p {
+#block_exacomp .tooltip p {
     margin: 0;
     font-family: sans-serif;
     font-size: 16px;
     line-height: 20px;
     color: #fff;
 }
-div.content_div{
-	
+#block_exacomp  div.content_div{
+	margin-bottom: 40px;
+}
+
+#block_exacomp .compprof_barchart {
+	display: inline;
+	width: 40%;
+}
+
+#block_exacomp .compprof_barchart span {
+	font-weight: bold;
+}
+
+#block_exacomp .compprof_barchart_legend {
+	display: inline;
+}
+
+#block_exacomp .compprof_barchart_legend:after {
+    content: ".";
+    clear: both;
+    display: block;
+    visibility: hidden;
+    height: 0px;
+    margin-bottom: 20px;
+}
+
+#block_exacomp .compprof_barchart_teacher {
+	margin-right: 10px;
 }
