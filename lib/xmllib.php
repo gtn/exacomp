@@ -1392,7 +1392,10 @@ class block_exacomp_data_importer extends block_exacomp_data {
         if ($xmlItem->descriptors) {
             foreach($xmlItem->descriptors->descriptorid as $descriptor) {
                 if ($descriptorid = self::get_database_id($descriptor)) {
-                    block_exacomp_db::insert_or_update_record(block_exacomp::DB_DESCEXAMP, array("exampid"=>$item->id, "descrid"=>$descriptorid));
+                	$sql = "SELECT MAX(sorting) as sorting FROM {".block_exacomp::DB_DESCEXAMP."} WHERE descrid=?";
+    				$max_sorting = $DB->get_record_sql($sql, array($descriptorid)); 
+    				$sorting = intval($max_sorting->sorting)+1;
+                    block_exacomp_db::insert_or_update_record(block_exacomp::DB_DESCEXAMP, array("exampid"=>$item->id, "descrid"=>$descriptorid, "sorting"=>$sorting));
                 }
             }
         }

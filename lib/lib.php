@@ -4814,24 +4814,29 @@ function block_exacomp_calculate_statistic_for_example($courseid, $students, $ex
 
 function block_exacomp_get_descriptor_numbering($descriptor){
 	global $DB;
-	$topicid = $descriptor->topicid;
+	$version = get_config('exacomp','alternativedatamodel');
 	
-	$numbering = block_exacomp_get_topic_numbering($topicid);
-	
-	if($descriptor->parentid == 0){
-		$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
-		if ($niveau)
-            $numbering .= $niveau->numb;
-	}
-	if($descriptor->parentid != 0){
-		$parent_descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptor->parentid));
-		$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$parent_descriptor->niveauid));
-		if ($niveau)
-            $numbering .= $niveau->numb.'.';
-		$numbering .= $descriptor->sorting;
-	}
+	if($version){
+		$topicid = $descriptor->topicid;
 		
-	return $numbering;
+		$numbering = block_exacomp_get_topic_numbering($topicid);
+		
+		if($descriptor->parentid == 0){
+			$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
+			if ($niveau)
+	            $numbering .= $niveau->numb;
+		}
+		if($descriptor->parentid != 0){
+			$parent_descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptor->parentid));
+			$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$parent_descriptor->niveauid));
+			if ($niveau)
+	            $numbering .= $niveau->numb.'.';
+			$numbering .= $descriptor->sorting;
+		}
+			
+		return $numbering;
+	}
+	return "";
 }
 /**
  * 
@@ -4844,13 +4849,17 @@ function block_exacomp_get_topic_numbering($topic){
     } else {
 	   $topic = block_exacomp_get_topic_by_id($topic);
     }
+    $version = get_config('exacomp','alternativedatamodel');
 	
-	$numbering = block_exacomp_get_subject_by_id($topic->subjid)->titleshort.'.';
-	
-	//topic
-	$numbering .= $topic->numb.'.';
-	
-	return $numbering;
+	if($version){
+		$numbering = block_exacomp_get_subject_by_id($topic->subjid)->titleshort.'.';
+		
+		//topic
+		$numbering .= $topic->numb.'.';
+		
+		return $numbering;
+    }
+    return "";
 }
 function block_exacomp_get_cross_subjects_drafts_sorted_by_subjects(){
 	global $DB;
@@ -5212,104 +5221,98 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 	$children = $DB->get_records(block_exacomp::DB_DESCRIPTORS,array("parentid" => $descrid));
 
 	$children[] = $descriptor;
-
-	$example_where_string = "";
-
-	$inWorkArray = array();
-	$totalArray = array();
 	
-	foreach($children as $child) {
-		$child->visible = $DB->get_field(block_exacomp::DB_DESCVISIBILITY, 'visible', array('courseid'=>$courseid, 'descrid'=>$child->id, 'studentid'=>0));
-		$visible = block_exacomp_check_descriptor_visibility($courseid, $child, $studentid);
-		if(!$visible) {
-			unset($child);
-			continue;
-		}
-		
-		$examples = $DB->get_records(block_exacomp::DB_DESCEXAMP,array('descrid' => $child->id));
-		
-		foreach($examples as $example){
+	if($studentid == 0)
+		$students =  block_exacomp_get_students_by_course($courseid);
+	else
+		$students = array($DB->get_record('user', array('id'=>$studentid)));
+	
+	foreach($children as $child){
+		$child->examples = $DB->get_records(block_exacomp::DB_DESCEXAMP,array('descrid' => $child->id));
+		$child->visible =  $DB->get_field(block_exacomp::DB_DESCVISIBILITY, 'visible', array('courseid'=>$courseid, 'descrid'=>$child->id, 'studentid'=>0));
+		foreach($child->examples as $example)
 			$example->visible = $DB->get_field(block_exacomp::DB_EXAMPVISIBILITY, 'visible', array('courseid'=>$courseid, 'exampleid'=>$example->exampid, 'studentid'=>0));
-		
-			$visible_example = block_exacomp_check_example_visibility($courseid, $example, $studentid);
-			if($visible_example && !array_key_exists( $example->exampid, $totalArray)){
-				$totalArray[$example->exampid] = $example;
-			}
-		}
-		
-		foreach($totalArray as $example)
-			$example_where_string .= $example->exampid.",";
-		
-		$sql = "SELECT s.id, e.id as exampid FROM {".block_exacomp::DB_EXAMPLES."} e
-				JOIN {".block_exacomp::DB_DESCEXAMP."} de ON de.exampid = e.id
-				JOIN {".block_exacomp::DB_DESCRIPTORS."} d ON de.descrid = d.id
-				JOIN {block_exacompschedule} s ON s.exampleid = e.id
-				WHERE s.courseid = ? AND d.id = ? ";
-		
-		if($studentid != 0) {
-			$sql .= " AND s.studentid = ?";
-			$conditions = array($courseid, $child->id,$studentid);
-		} else
-			$conditions = array($courseid, $child->id);
-
-		$schedule_examples = $DB->get_records_sql($sql, $conditions);
-		
-		foreach($schedule_examples as $sched){
-			$example = $totalArray[$sched->exampid];
-			if(block_exacomp_check_example_visibility($courseid, $example, $studentid) && !array_key_exists($example->exampid, $inWorkArray))
-				$inWorkArray[$example->exampid] = $example;
-		}
 	}
 	
-	$total = count($totalArray);
-	$inWork = count($inWorkArray);
-	
-	$example_where_string = substr($example_where_string, 0, strlen($example_where_string)-1);
-
-	$notEvaluated = $total;
-	
-	// if summary, multiply total amount with the number of students within the course
-	if($studentid == 0)
-		$notEvaluated *= count(block_exacomp_get_students_by_course($courseid));
-
-	// iterative over grading scheme and get the amount for each grade
+	$total = 0;
+	$inWork = 0;
+	$notInWork = 0;
 	$scheme = block_exacomp_get_grading_scheme($courseid);
+	
 	$gradings = array();
-	for($i=0;$i<=$scheme;$i++) {
-		$conditions = array();
-		$conditions[] = $courseid;
-		$conditions[] = $i;
-
-		if($studentid != 0)
-			$conditions[] = $studentid;
-
-		if($total > 0) {
-		$sql = "SELECT count(e.id) as count FROM {".block_exacomp::DB_EXAMPLEEVAL."} e
-				WHERE courseid = ?
-				AND teacher_evaluation = ?
-				AND exampleid IN (".$example_where_string.")";
-		if($studentid != 0)
-			$sql .= ' AND studentid = ?';
+	for($i=0; $i<=$scheme; $i++)
+		$gradings[$i] = 0;
+	
+	foreach($students as $student){
+		$totalArray = array();
+		$inWorkArray = array();
+		$example_where_string = "";
+		foreach($children as $child){
+			$visible = block_exacomp_check_descriptor_visibility($courseid, $child, $student->id);
+			if(!$visible) {
+				continue;
+			}
+			
+			foreach($child->examples as $example){
+				$visible_example = block_exacomp_check_example_visibility($courseid, $example, $student->id);
+				if($visible_example && !array_key_exists( $example->exampid, $totalArray)){
+					$totalArray[$example->exampid] = $example;
+					$example->hidden = false;
+				}else
+					$example->hidden = true;
+			}
+			
+			$sql = "SELECT s.id, e.id as exampid FROM {".block_exacomp::DB_EXAMPLES."} e
+					JOIN {".block_exacomp::DB_DESCEXAMP."} de ON de.exampid = e.id
+					JOIN {".block_exacomp::DB_DESCRIPTORS."} d ON de.descrid = d.id
+					JOIN {block_exacompschedule} s ON s.exampleid = e.id
+					WHERE s.courseid = ? 
+					AND d.id = ? AND s.studentid = ? ";
 		
-		$gradings[$i] = $DB->count_records_sql($sql, $conditions);
+			$schedule_examples = $DB->get_records_sql($sql, array($courseid, $child->id,$student->id));
+			
+			foreach($schedule_examples as $sched){
+				$example = $totalArray[$sched->exampid];
+				if(!$example->hidden && !array_key_exists($example->exampid, $inWorkArray))
+					$inWorkArray[$example->exampid] = $example;
+			}
+
+		}	
+		
+		foreach($totalArray as $example)
+				$example_where_string .= $example->exampid.",";
+		
+		$example_where_string = substr($example_where_string, 0, strlen($example_where_string)-1);
+		$total += count ($totalArray);
+		$inWork += count ($inWorkArray);
+		
+		$notInWork = $total - $inWork;
+		$notEvaluated = $total;
+		
+		if(!empty($totalArray)){
+			$sql = "SELECT * FROM {".block_exacomp::DB_EXAMPLEEVAL."} 
+				WHERE courseid = ? AND studentid = ? AND exampleid IN (".$example_where_string.")";
+			$examp_evals = $DB->get_records_sql($sql, array($courseid, $student->id));
+			
+			foreach($examp_evals as $examp_eval){
+				$gradings[$examp_eval->value]++;
+			}
+			$notEvaluated = $total - count($examp_evals);
 		}
-		else 
-			$gradings[$i] = 0;
 		
-		$notEvaluated -= $gradings[$i];
 	}
 
 	$totalGrade = null;
-	//check for the crosssubj grade
+	
 	if($studentid != 0)
 		$totalGrade = $DB->get_field(block_exacomp::DB_COMPETENCIES,'value',array('userid' => $studentid, 'comptype' => TYPE_DESCRIPTOR, 'courseid' => $courseid, 'compid' => $descrid, 'role' => block_exacomp::ROLE_TEACHER));
 
 	if($totalGrade == null)
 		$totalGrade = 0;
-		
-	$notInWork = $total-$inWork;
+					
 	return array($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork);
 }
+
 
 /**
  * @return stored_file
@@ -5688,7 +5691,7 @@ function block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $st
 	
 	$string = "[";
 	
-	$string .= "{data:[{niveau:'".$niveautitle."',count:".$notInWork."}],name:' nB'},";
+	//$string .= "{data:[{niveau:'".$niveautitle."',count:".$notInWork."}],name:' nB'},";
 	$string .= "{data:[{niveau:'".$niveautitle."',count:".$notEvaluated."}],name:' oB'},";
 	
 	 $i = 0;
@@ -5699,7 +5702,11 @@ function block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $st
 	
 	$string = substr($string, 0, strlen($string)-1);
 	$string .= "]";
-	return $string;
+	$return = new stdClass();
+	$return->data = $string;
+	$return->total = $total;
+	$return->inWork = $inWork;
+	return $return;
 }
 function block_exacomp_get_message_icon($userid) {
 	global $DB, $CFG;

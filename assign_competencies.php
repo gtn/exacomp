@@ -109,7 +109,7 @@ else{
 	$scheme = block_exacomp_get_grading_scheme($courseid);
 	
 	if($selectedTopic->id != SHOW_ALL_TOPICS){
-		$cat = block_exacomp_get_niveau($selectedTopic->niveauid);
+		$cat = ($version)?block_exacomp_get_niveau($selectedTopic->niveauid):'';
 		echo $output->print_overview_metadata($metasubject->title, $selectedSubject, $selectedTopic, $cat);
 				
 		if($isTeacher)

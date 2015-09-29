@@ -380,7 +380,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $content .= block_exacomp_studentselector($students,$selectedStudent,$PAGE->url."&subjectid=".$selectedSubject."&topicid=".$selectedTopic,  BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
 
             $right_content = "";
-            if($selectedStudent != BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
+            if($selectedStudent != BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $selectedStudent != BLOCK_EXACOMP_SHOW_STATISTIC) {
 	            $right_content .= block_exacomp_get_message_icon($selectedStudent);
             }
             
@@ -444,15 +444,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
     	
     	$edit = optional_param('editmode', 0, PARAM_BOOL);
     	$studentid = optional_param('studentid', BLOCK_EXACOMP_SHOW_ALL_STUDENTS,PARAM_INT);
-    	$subjectid = 
+    	//$subjectid = 
     	
     	$content = html_writer::start_div('topics_menu');
     	$content .= html_writer::start_tag('ul');
     	
     	foreach($topics as $topic) {
+    		$title = isset($topic->cattitle) ? $topic->cattitle : $topic->title;
+    		$title_short = (strlen($title)>15)?substr($title, 0, 15).'...':$title;
     		$content .= html_writer::tag('li',
     				html_writer::link($PAGE->url . "&studentid=" . $studentid . "&editmode=" . $edit . "&subjectid=" . $selectedSubject->id . "&topicid=" . $topic->id,
-    						isset($topic->cattitle) ? $topic->cattitle : $topic->title, array('class' => ($topic->id == $selectedTopic->id) ? 'current' : ''))
+    						$title_short, array('class' => ($topic->id == $selectedTopic->id) ? 'current' : '', 'title'=>$title))
     				);
     	}
     	
@@ -855,9 +857,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                     
                                 foreach($crosssubjects as $crosssubject) {
                                     if($statistic_type == BLOCK_EXACOMP_DESCRIPTOR_STATISTIC)
-                                        list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_descriptor_statistic_for_crosssubject($courseid, $crosssubject->id, $studentid);
+                                        list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork) = block_exacomp_get_descriptor_statistic_for_crosssubject($courseid, $crosssubject->id, $studentid);
                                     else
-                                        list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_example_statistic_for_crosssubject($courseid, $crosssubject->id, $studentid);
+                                        list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork) = block_exacomp_get_example_statistic_for_crosssubject($courseid, $crosssubject->id, $studentid);
                                         
                                     $table_entry = new html_table_row();
                                     $table_entry->cells[] = new html_table_cell(html_writer::link(new moodle_url("/blocks/exacomp/cross_subjects.php", array("courseid" => $courseid, "crosssubjid" => $crosssubject->id)), $crosssubject->title, array('title' => get_string('crosssubject','block_exacomp'))));
@@ -873,9 +875,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                     $crossubject_statistic_rows[] = $table_entry;
                                 }
                                 if($statistic_type == BLOCK_EXACOMP_DESCRIPTOR_STATISTIC)
-                                    list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_descriptor_statistic($courseid, $descriptor->id, $studentid);
+                                    list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork) = block_exacomp_get_descriptor_statistic($courseid, $descriptor->id, $studentid);
                                 else
-                                    list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_example_statistic_for_descriptor($courseid, $descriptor->id, $studentid);
+                                    list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork) = block_exacomp_get_example_statistic_for_descriptor($courseid, $descriptor->id, $studentid);
                                         
                                 $table_entry = new html_table_row();
                                 $table_entry->cells[] = new html_table_cell("LWL " . block_exacomp_get_descriptor_numbering($descriptor));
@@ -1330,6 +1332,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			
 			$studentsCount = 0;
 			foreach($students as $student){
+				
+				$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
+				
 				if($showevaluation){
 					$studentevalCol = new html_table_cell();
 					$studentevalCol->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
@@ -1343,7 +1348,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					$totalRow->cells[] = $studentevalCol;
 				}
 			
-				$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
 				$teacherevalCol = new html_table_cell();
 				$teacherevalCol->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
 				if($scheme == 1) {
@@ -3841,7 +3845,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
     }
 
 private function print_competence_profile_tree_v2($in, $courseid, $student = null,$scheme = 1, $showonlyreached = false, $eportfolioitems = false) {
-        global $DB;
+        global $DB, $version;
         if($student != null){
             $profile_settings = block_exacomp_get_profile_settings($student->id);
             $studentid= $student->id;
@@ -3863,16 +3867,21 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 				$teacher_eval = array();
 				foreach($topic->descriptors as $descriptor){
 					$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
-					$content_div = html_writer::tag('span', $niveau->title);
+					$content_div = html_writer::tag('span', ($version)?$niveau->title:$descriptor->title);
+					$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, (($version)?$niveau->title:$descriptor->title));
+					
 					$desc_content .= html_writer::div($content_div, '', array('id'=>'svgdesc'.$descriptor->id));
-					$desc_content .= "Lehrerbewertung: ".((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:'oB');
-					$desc_content .= "Schülerbewertung: ".((isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:'oB');
-					$data = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, $niveau->title);
+					$desc_content .= $return->inWork."/".$return->total." ".get_string('inwork', 'block_exacomp')." ";
+					$span_teacher = html_writer::tag('span', "Lehrerbewertung: ".((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:'oB'), array('class'=>"compprof_barchart_teacher"));
+					$span_student = html_writer::tag('span', "Schülerbewertung: ".((isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:'oB'), array('class'=>"compprof_barchart_teacher"));
+					
+					$desc_content .= html_writer::div($span_teacher.$span_student, 'compprof_barchart_legend');		
+					$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, (($version)?$niveau->title:$descriptor->title));
 					$desc_content .= html_writer::div(html_writer::tag('p', html_writer::empty_tag('span', array('id'=>'value'))), 'tooltip hidden', array('id'=>'tooltip'.$descriptor->id));
 					
-					$desc_content .= $this->print_example_stacked_bar($data, $descriptor->id);
+					$desc_content .= $this->print_example_stacked_bar($return->data, $descriptor->id);
 					
-					$niveaus[] = '"'.$niveau->title.'"';
+					$niveaus[] = '"'.(($version)?$niveau->title:$descriptor->title).'"';
 					$student_eval[] = (isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:0;
 					$teacher_eval[] = (isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:0;
 					
@@ -3882,8 +3891,8 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 				if(count($niveaus)>2 && count($niveaus)<9){
 					$radar_graph = html_writer::empty_tag('canvas', array('id'=>'canvas'.$topic->id, 'height'=>'450', 'width'=>'450'));
 					$radar_graph .=  $this->print_radar_graph_topic(implode(",", $niveaus),implode(",", $teacher_eval),implode(",", $student_eval),'canvas'.$topic->id);
-					$radar_graph .= $this->print_radar_graph_legend();
 					$div_content = html_writer::div($radar_graph, 'radar_graph', array('style'=>'width:30%'));
+					$div_content .= $this->print_radar_graph_legend();
 				}
 				
 				$div_content .= $desc_content;

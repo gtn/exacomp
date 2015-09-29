@@ -463,7 +463,7 @@ $string['notification_self_assessment_context'] = 'Self assessment';
 $string['notification_weekly_schedule_subject'] = 'New example on the schedule';
 $string['notification_weekly_schedule_body'] = '{$a->teacher} added an example {$a->example} in {$a->course} to your weekly schedule.';
 $string['notification_weekly_schedule_context'] = 'Weekly schedule';
-
+$string['inwork'] = 'in work';
 //Logging
 $string['block_exacomp_logging_head'] = 'Logging';
 $string['block_exacomp_logging_body'] = 'Relevant actions will get logged.';
