@@ -1473,9 +1473,12 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 
 				$rows[] = $settings;
 
-				if(!$skillmanagement && has_capability('block/exacomp:admin', $context))
+				if(!$skillmanagement && has_capability('block/exacomp:admin', $context)){
 					$rows[] = new tabobject('tab_admin_import', new moodle_url('/blocks/exacomp/import.php',array("courseid"=>$courseid)),get_string('tab_admin_import','block_exacomp'));
-
+					if($checkImport && has_capability('block/exacomp:admin', $global_context))
+							$rows[] = new tabobject('tab_admin_configuration', new moodle_url('/blocks/exacomp/edit_config.php',array("courseid"=>$courseid)),get_string('tab_admin_configuration','block_exacomp'));
+				
+				}
 				if($de && !$skillmanagement)
 					$rows[] = new tabobject('tab_help', new moodle_url('/blocks/exacomp/help.php', array("courseid"=>$courseid)), get_string('tab_help', 'block_exacomp'));
 			}else{	//teacher tabs !LIS
