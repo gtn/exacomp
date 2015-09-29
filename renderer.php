@@ -667,7 +667,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         }
     }
 public function print_competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0,$studentid=0) {
-        global $CFG, $version, $DB;
+        global $CFG, $version, $DB, $global_scheme, $global_scheme_values;
 
         $headFlag = false;
         
@@ -842,7 +842,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                 if($studentid != BLOCK_EXACOMP_SHOW_STATISTIC)
                                     $table_head->cells[] = new html_table_cell("&Sigma;");
                                 for($i=0;$i<=$scheme;$i++)
-                                    $table_head->cells[] = $i > 0 ? new html_table_cell($i) : new html_table_cell("nE");
+                                    $table_head->cells[] = new html_table_cell(($global_scheme==0)?$i:$global_scheme_values[$i]);
                                 $table_head->cells[] = new html_table_cell("oB");
                                 $table_head->cells[] = new html_table_cell("iA");
                                 if($studentid != BLOCK_EXACOMP_SHOW_STATISTIC)
@@ -857,9 +857,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                     
                                 foreach($crosssubjects as $crosssubject) {
                                     if($statistic_type == BLOCK_EXACOMP_DESCRIPTOR_STATISTIC)
-                                        list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork) = block_exacomp_get_descriptor_statistic_for_crosssubject($courseid, $crosssubject->id, $studentid);
+                                        list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_descriptor_statistic_for_crosssubject($courseid, $crosssubject->id, $studentid);
                                     else
-                                        list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork) = block_exacomp_get_example_statistic_for_crosssubject($courseid, $crosssubject->id, $studentid);
+                                        list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_example_statistic_for_crosssubject($courseid, $crosssubject->id, $studentid);
                                         
                                     $table_entry = new html_table_row();
                                     $table_entry->cells[] = new html_table_cell(html_writer::link(new moodle_url("/blocks/exacomp/cross_subjects.php", array("courseid" => $courseid, "crosssubjid" => $crosssubject->id)), $crosssubject->title, array('title' => get_string('crosssubject','block_exacomp'))));
@@ -875,7 +875,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                     $crossubject_statistic_rows[] = $table_entry;
                                 }
                                 if($statistic_type == BLOCK_EXACOMP_DESCRIPTOR_STATISTIC)
-                                    list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork) = block_exacomp_get_descriptor_statistic($courseid, $descriptor->id, $studentid);
+                                    list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_descriptor_statistic($courseid, $descriptor->id, $studentid);
                                 else
                                     list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork) = block_exacomp_get_example_statistic_for_descriptor($courseid, $descriptor->id, $studentid);
                                         
@@ -3870,7 +3870,7 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 					$content_div = html_writer::tag('span', ($version)?$niveau->title:$descriptor->title);
 					$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, (($version)?$niveau->title:$descriptor->title));
 					
-					$desc_content .= html_writer::div($content_div, '', array('id'=>'svgdesc'.$descriptor->id));
+					$desc_content .= html_writer::div($content_div, 'compprof_barchart', array('id'=>'svgdesc'.$descriptor->id));
 					
 					$span_in_work = html_writer::tag('span', $return->inWork."/".$return->total." ".get_string('inwork', 'block_exacomp'), array('class'=>"compprof_barchart_teacher"));
 					$span_teacher = html_writer::tag('span', get_string('teacher_eval', 'block_exacomp').": ".((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:'oB'), array('class'=>"compprof_barchart_teacher"));
@@ -4805,7 +4805,7 @@ var dataset = dataset.map(function (group) {
         return $html_tree;
     }
     function print_statistic_table($courseid, $students, $item, $descriptor=true, $scheme=1){
-        
+        global $global_scheme, $global_scheme_values;
         if($descriptor)
             list($self, $student_oB, $student_iA, $teacher, $teacher_oB, $teacher_iA,
                         $self_title, $student_oB_title, $student_iA_title, $teacher_title, 
@@ -4833,7 +4833,7 @@ var dataset = dataset.map(function (group) {
         
         foreach($self as $self_key => $self_value){
             $cell = new html_table_cell();
-            $cell->text = $self_key;
+            $cell->text = ($global_scheme==0)?$self_key:$global_scheme_values[$self_key];
             $self_row_header->cells[] = $cell;
         }
         
@@ -4881,7 +4881,7 @@ var dataset = dataset.map(function (group) {
         
         foreach($teacher as $teacher_key => $teacher_value){
             $cell = new html_table_cell();
-            $cell->text = $teacher_key;
+            $cell->text = ($global_scheme==0)?$teacher_key:$global_scheme_values[$teacher_key];
             $teacher_row_header->cells[] = $cell;
         }
         
