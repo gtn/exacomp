@@ -3872,7 +3872,10 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 					
 					$desc_content .= html_writer::div($content_div, 'compprof_barchart', array('id'=>'svgdesc'.$descriptor->id));
 					
-					$span_in_work = html_writer::tag('span', $return->inWork."/".$return->total." ".get_string('inwork', 'block_exacomp'), array('class'=>"compprof_barchart_teacher"));
+					$span_in_work = "";
+					if($return->total > 0)
+						$span_in_work = html_writer::tag('span', $return->inWork."/".$return->total." ".get_string('inwork', 'block_exacomp'), array('class'=>"compprof_barchart_teacher"));
+					
 					$img_teacher = "";	
 					if(isset($student->competencies->teacher[$descriptor->id])){
 						$img_teacher_src = 	'/blocks/exacomp/pix/compprof_rating_teacher_'.$student->competencies->teacher[$descriptor->id].'.png';			
@@ -4021,7 +4024,7 @@ var dataset = dataset.map(function (group) {
         .domain(niveaus)
         .rangeRoundBands([0, height], .1),
   
-    colours = [\"#B8B894\", \"#3a87ad\", \"#990000\",  \"#00CC00\", \"#008F00\", \"#006D00\", \"#dddd22\", \"#ff0033\", \"#345678\"],
+    colours = [\"#B8B894\", \"#990000\",  \"#00CC00\", \"#008F00\", \"#006D00\", \"#dddd22\", \"#ff0033\", \"#345678\"],
     
     groups = svg.selectAll('g')
         .data(dataset)
@@ -4130,7 +4133,7 @@ var dataset = dataset.map(function (group) {
         $content = html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","competenceyellow");
         $content .= ' '.get_string("studentcomp","block_exacomp").' ';
         $content .= html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","competenceok");
-        $content .= ' '.get_string("teachercomp","block_exacomp").' ';
+        $content .= ' '.get_string("teachercomp","block_exacomp").' '.html_writer::empty_tag('br');
         return $content;
     }
     
