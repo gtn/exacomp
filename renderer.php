@@ -5025,4 +5025,22 @@ var dataset = dataset.map(function (group) {
         $content .= html_writer::tag('ul', '', array('id'=>'sortable'));
         return html_writer::div($content, 'external-events', array('id'=>'external-events'));
 	}	
+	
+	public function print_lm_graph_legend() {
+		global $global_scheme, $global_scheme_values;
+        $content = html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","lmoB");
+        $content .= ' '.get_string("oB","block_exacomp").' ';
+
+		if($global_scheme != 0){
+			$content .= html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","lmnE");
+			$content .= ' '.get_string("nE","block_exacomp").' ';
+			
+			for($i=1;$i<=3;$i++){
+				$content .= html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","green".$i);
+				$content .= ' '.$global_scheme_values[$i].' ';
+			}
+		}
+		
+        return $content;
+    }
 }

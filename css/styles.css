@@ -20,9 +20,38 @@
 #block_exacomp .competenceyellow {
     background-color: #f9b233 !important
 }
+#block_exacomp #lmoB,
+#block_exacomp .lmoB {
+    background-color: #B8B894 !important
+}
+
+#block_exacomp #lmnE,
+#block_exacomp .lmnE {
+    background-color: #990000 !important
+}
+
+#block_exacomp #green1,
+#block_exacomp .green1 {
+    background-color: #00CC00 !important
+}
+
+#block_exacomp #green2,
+#block_exacomp .green2 {
+    background-color: #008F00 !important
+}
+
+#block_exacomp #green3,
+#block_exacomp .green3 {
+    background-color: #006D00 !important
+}
 
 #block_exacomp span.competenceyellow,
-#block_exacomp span.competenceok {
+#block_exacomp span.competenceok,
+#block_exacomp span.lmoB,
+#block_exacomp span.lmNe,
+#block_exacomp span.green1,
+#block_exacomp span.green2,
+#block_exacomp span.green3 {
     width: 20px;
     border: 1px gray solid;
 }

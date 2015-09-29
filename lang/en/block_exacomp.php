@@ -360,6 +360,8 @@ $string['November'] = 'November';
 $string['December'] = 'December';
 $string['teacher_eval'] = 'teacher evaluation';
 $string['student_eval'] = 'student evaluation';
+$string['oB'] = 'without evaluation';
+$string['nE'] = 'not gained';
 
 //Competence Profile Settings
 $string['profile_settings_showonlyreached'] = 'I only want to see already gained outcomes in my competence profile';

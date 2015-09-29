@@ -401,6 +401,8 @@ $string['November'] = 'November';
 $string['December'] = 'Dezember';
 $string['teacher_eval'] = 'Lehrerbewertung';
 $string['student_eval'] = 'Schülerbewertung';
+$string['oB'] = 'ohne Bewertung';
+$string['nE'] = 'nicht erreicht';
 
 //Competence Profile Settings
 $string['profile_settings_showonlyreached'] = 'Ich möchte in meinem Kompetenzprofil nur bereits erreichte Kompetenzen sehen.';
