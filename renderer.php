@@ -3873,9 +3873,21 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 					$desc_content .= html_writer::div($content_div, 'compprof_barchart', array('id'=>'svgdesc'.$descriptor->id));
 					
 					$span_in_work = html_writer::tag('span', $return->inWork."/".$return->total." ".get_string('inwork', 'block_exacomp'), array('class'=>"compprof_barchart_teacher"));
-					$span_teacher = html_writer::tag('span', get_string('teacher_eval', 'block_exacomp').": ".((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:'oB'), array('class'=>"compprof_barchart_teacher"));
-					$span_student = html_writer::tag('span', get_string('student_eval', 'block_exacomp').": ".((isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:'oB'), array('class'=>"compprof_barchart_teacher"));
+					$img_teacher = "";	
+					if(isset($student->competencies->teacher[$descriptor->id])){
+						$img_teacher_src = 	'/blocks/exacomp/pix/compprof_rating_teacher_'.$student->competencies->teacher[$descriptor->id].'.png';			
+						$img_teacher = html_writer::empty_tag('img', array('src'=>new moodle_url($img_teacher_src)));
+					}
 					
+					$span_teacher = html_writer::tag('span', get_string('teacher_eval', 'block_exacomp').": ".((isset($student->competencies->teacher[$descriptor->id]))?$img_teacher:'oB'), array('class'=>"compprof_barchart_teacher"));
+										
+					$img_student = "";
+					if(isset($student->competencies->student[$descriptor->id])){
+						$img_student_src = '/blocks/exacomp/pix/compprof_rating_student_'.$student->competencies->student[$descriptor->id].'.png';
+						$img_student = html_writer::empty_tag('img', array('src'=>new moodle_url($img_student_src)));
+					}				
+					$span_student = html_writer::tag('span', get_string('student_eval', 'block_exacomp').": ".((isset($student->competencies->student[$descriptor->id]))?$img_student:'oB'), array('class'=>"compprof_barchart_teacher"));
+						
 					$desc_content .= html_writer::div($span_in_work.$span_teacher.$span_student, 'compprof_barchart_legend');		
 					$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, (($version)?$niveau->title:$descriptor->title));
 					$desc_content .= html_writer::div(html_writer::tag('p', html_writer::empty_tag('span', array('id'=>'value'))), 'tooltip hidden', array('id'=>'tooltip'.$descriptor->id));
