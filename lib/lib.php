@@ -448,6 +448,10 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 	else 
 		block_exacomp_notify_all_teachers_about_self_assessment($courseid);
 		
+	//$event = \block_exacomp
+	//$event = \mod_myplugin\event\something_happened::create(array('context' => $context, 'objectid' => YYY, 'other' => ZZZ));
+	//$event->trigger();
+	
 	return $id;
 }
 
@@ -1586,7 +1590,6 @@ function block_exacomp_build_breadcrum_navigation($courseid) {
 	global $PAGE;
 	$coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
 	$blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
-	$coursenode->add($blocknode);
 	$blocknode->make_active();
 }
 
