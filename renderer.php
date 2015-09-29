@@ -3871,11 +3871,12 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 					$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, (($version)?$niveau->title:$descriptor->title));
 					
 					$desc_content .= html_writer::div($content_div, '', array('id'=>'svgdesc'.$descriptor->id));
-					$desc_content .= $return->inWork."/".$return->total." ".get_string('inwork', 'block_exacomp')." ";
-					$span_teacher = html_writer::tag('span', "Lehrerbewertung: ".((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:'oB'), array('class'=>"compprof_barchart_teacher"));
-					$span_student = html_writer::tag('span', "Schülerbewertung: ".((isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:'oB'), array('class'=>"compprof_barchart_teacher"));
 					
-					$desc_content .= html_writer::div($span_teacher.$span_student, 'compprof_barchart_legend');		
+					$span_in_work = html_writer::tag('span', $return->inWork."/".$return->total." ".get_string('inwork', 'block_exacomp'), array('class'=>"compprof_barchart_teacher"));
+					$span_teacher = html_writer::tag('span', get_string('teacher_eval', 'block_exacomp').": ".((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:'oB'), array('class'=>"compprof_barchart_teacher"));
+					$span_student = html_writer::tag('span', get_string('student_eval', 'block_exacomp').": ".((isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:'oB'), array('class'=>"compprof_barchart_teacher"));
+					
+					$desc_content .= html_writer::div($span_in_work.$span_teacher.$span_student, 'compprof_barchart_legend');		
 					$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, (($version)?$niveau->title:$descriptor->title));
 					$desc_content .= html_writer::div(html_writer::tag('p', html_writer::empty_tag('span', array('id'=>'value'))), 'tooltip hidden', array('id'=>'tooltip'.$descriptor->id));
 					
