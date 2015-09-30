@@ -62,13 +62,8 @@ class block_exacomp_param {
 
         foreach ($definition as $key => $valueType) {
             $value = isset($values->$key) ? $values->$key : null;
-            if (is_object($valueType)) {
-                $ret->$key = static::clean_object($value, $valueType);
-            } elseif (is_array($valueType)) {
-                $ret->$key = static::clean_array($value, $valueType);
-            } else {
-                $ret->$key = clean_param($value, $valueType);
-            }
+            
+            $ret->$key = static::clean($value, $valueType);
         }
 
         return $ret;
@@ -82,26 +77,31 @@ class block_exacomp_param {
 
         $keyType = key($definition);
         $valueType = reset($definition);
+        
+        // allow clean_array(PARAM_TEXT): which means PARAM_INT=>PARAM_TEXT
+        if ($keyType === 0) {
+            $keyType = PARAM_INT;
+        }
 
         if ($keyType !== PARAM_INT && $keyType !== PARAM_TEXT) {
             print_error('wrong key type: '.$keyType);
         }
 
-        if (is_array($valueType)) {
-            foreach ($values as $key=>$value) {
-                $ret[clean_param($key, $keyType)] = static::clean_array($value, $valueType);
-            }
-        } elseif (is_object($valueType)) {
-            foreach ($values as $key=>$value) {
-                $ret[clean_param($key, $keyType)] = static::clean_object($value, $valueType);
-            }
-        } else {
-            foreach ($values as $key=>$value) {
-                $ret[clean_param($key, $keyType)] = clean_param($value, $valueType);
-            }
+        foreach ($values as $key=>$value) {
+            $ret[clean_param($key, $keyType)] = static::clean($value, $valueType);
         }
 
         return $ret;
+    }
+    
+    public static function clean($value, $definition) {
+        if (is_object($definition)) {
+            return static::clean_object($value, $definition);
+        } elseif (is_array($definition)) {
+            return static::clean_array($value, $definition);
+        } else {
+            return clean_param($value, $definition);
+        }
     }
 
     public static function get_param($parname) {
@@ -134,5 +134,19 @@ class block_exacomp_param {
             return static::clean_array($param, $definition);
         }
     }
+    
+    public static function required_json($parname, $definition = null) {
+        $data = required_param($parname, PARAM_RAW);
+        
+        $data = json_decode($data, true);
+        if ($data === null) {
+            print_error('missingparam', '', '', $parname);
+        }
+        
+        if ($definition === null) {
+            return $data;
+        } else {
+            return static::clean($data, $definition);
+        }
+    }
 }
-

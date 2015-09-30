@@ -2800,7 +2800,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             $row->attributes['class'] = 'exabis_comp_teilcomp highlight rowgroup-level-0';
             
             $cell = new html_table_cell();
-            $cell->text = html_writer::div('<input type="checkbox" name="subjects['.$subject->id.']" value="'.$subject->id.'"'.(!$subject->can_delete?' disabled="disabled"':'').' />'.
+            $cell->text = html_writer::div('<input type="checkbox" exa-name="subjects" value="'.$subject->id.'"'.(!$subject->can_delete?' disabled="disabled"':'').' />'.
                     html_writer::tag('b', $subject->title));
             $cell->attributes['class'] = 'rowgroup-arrow';
             $row->cells[] = $cell;
@@ -2815,7 +2815,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                 $cell = new html_table_cell();
                 $cell->attributes['class'] = 'rowgroup-arrow';
                 $cell->style = "padding-left: ".$padding."px";
-                $cell->text = html_writer::div('<input type="checkbox" name="topics['.$topic->id.']" value="'.$topic->id.'"'.(!$topic->can_delete?' disabled="disabled"':'').' />'.
+                $cell->text = html_writer::div('<input type="checkbox" exa-name="topics" value="'.$topic->id.'"'.(!$topic->can_delete?' disabled="disabled"':'').' />'.
                         $topic->numbering.' '.$topic->title,"desctitle");
                 $row->cells[] = $cell;
                 
@@ -2831,7 +2831,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     $cell = new html_table_cell();
                     $cell->attributes['class'] = 'rowgroup-arrow';
                     $cell->style = "padding-left: ".$padding."px";
-                    $cell->text = html_writer::div('<input type="checkbox" name="descriptors['.$descriptor->id.']" value="'.$descriptor->id.'"'.(!$descriptor->can_delete?' disabled="disabled"':'').' />'.
+                    $cell->text = html_writer::div('<input type="checkbox" exa-name="descriptors" value="'.$descriptor->id.'"'.(!$descriptor->can_delete?' disabled="disabled"':'').' />'.
                             $descriptor->numbering.' '.$descriptor->title,"desctitle");
                     $row->cells[] = $cell;
                     
@@ -2847,7 +2847,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                         $cell = new html_table_cell();
                         $cell->attributes['class'] = 'rowgroup-arrow';
                         $cell->style = "padding-left: ".$padding."px";
-                        $cell->text = html_writer::div('<input type="checkbox" name="descriptors['.$child_descriptor->id.']" value="'.$child_descriptor->id.'"'.(!$child_descriptor->can_delete?' disabled="disabled"':'').' />'.
+                        $cell->text = html_writer::div('<input type="checkbox" exa-name="descriptors" value="'.$child_descriptor->id.'"'.(!$child_descriptor->can_delete?' disabled="disabled"':'').' />'.
                                 $child_descriptor->numbering.' '.$child_descriptor->title,"desctitle");
                         $row->cells[] = $cell;
                         
@@ -2863,7 +2863,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                             $cell = new html_table_cell();
                             $cell->attributes['class'] = 'rowgroup-arrow';
                             $cell->style = "padding-left: ".$padding."px";
-                            $cell->text = html_writer::div('<input type="checkbox" name="examples['.$example->id.']" value="'.$example->id.'"'.(!$example->can_delete?' disabled="disabled"':'').' />'.
+                            $cell->text = html_writer::div('<input type="checkbox" exa-name="examples" value="'.$example->id.'"'.(!$example->can_delete?' disabled="disabled"':'').' />'.
                                     $example->numbering.' '.$example->title,"desctitle");
                             $row->cells[] = $cell;
                             
@@ -2881,7 +2881,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                         $cell = new html_table_cell();
                         $cell->attributes['class'] = 'rowgroup-arrow';
                         $cell->style = "padding-left: ".$padding."px";
-                        $cell->text = html_writer::div('<input type="checkbox" name="examples['.$example->id.']" value="'.$example->id.'"'.(!$example->can_delete?' disabled="disabled"':'').' />'.
+                        $cell->text = html_writer::div('<input type="checkbox" exa-name="examples" value="'.$example->id.'"'.(!$example->can_delete?' disabled="disabled"':'').' />'.
                                 $example->numbering.' '.$example->title,"desctitle");
                         $row->cells[] = $cell;
                         
@@ -2897,7 +2897,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         $table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
         $table_html .= html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>'Löschen')), '', array('id'=>'exabis_save_button'));
 
-        return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url->out(false, array('action'=>'delete_selected')), "id" => "course-selection"));
+        return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url->out(false, array('action'=>'delete_selected')), "id" => "exa-selector"));
     }
     
     public function print_topics_courseselection(&$rows, $level, $topics, &$rowgroup, $rowgroup_class = '', $topics_activ){

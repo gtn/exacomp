@@ -63,10 +63,17 @@ function block_exacomp_source_delete_get_subjects($source) {
 $subjects = block_exacomp_source_delete_get_subjects($source);
 
 if ($action == 'delete_selected') {
-    $post_examples = block_exacomp_param::optional_array('examples', array(PARAM_INT=>PARAM_INT));
-    $post_descriptors = block_exacomp_param::optional_array('descriptors', array(PARAM_INT=>PARAM_INT));
-    $post_topics = block_exacomp_param::optional_array('topics', array(PARAM_INT=>PARAM_INT));
-    $post_subjects = block_exacomp_param::optional_array('subjects', array(PARAM_INT=>PARAM_INT));
+    $json_data = block_exacomp_param::required_json('json_data', (object)array(
+        'subjects' => array(PARAM_INT),
+        'topics' => array(PARAM_INT),
+        'descriptors' => array(PARAM_INT),
+        'examples' => array(PARAM_INT)
+    ));
+    
+    $post_examples = array_combine($json_data->examples, $json_data->examples);
+    $post_descriptors = array_combine($json_data->descriptors, $json_data->descriptors);
+    $post_topics = array_combine($json_data->topics, $json_data->topics);
+    $post_subjects = array_combine($json_data->subjects, $json_data->subjects);
     
     $delete_examples = array();
     $delete_descriptors = array();
