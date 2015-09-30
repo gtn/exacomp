@@ -47,7 +47,7 @@ $output = $PAGE->get_renderer('block_exacomp');
 if ($action == 'export_all') {
     block_exacomp_data_exporter::do_export();
 } else if ($action == 'export_selected') {
-    $descriptors = block_exacomp_param::optional_array('descriptors', array(PARAM_INT=>PARAM_INT));
+    $descriptors = block_exacomp\param::optional_array('descriptors', array(PARAM_INT=>PARAM_INT));
     
     block_exacomp_data_exporter::do_export($descriptors);
 } else if ($action == 'select') {

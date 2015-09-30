@@ -86,7 +86,7 @@ try {
             block_exacomp_settstamp();
         }
     }
-} catch (block_exacomp_exception $importException) {
+} catch (block_exacomp\exception $importException) {
 }
 
 // build breadcrumbs navigation

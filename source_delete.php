@@ -63,7 +63,7 @@ function block_exacomp_source_delete_get_subjects($source) {
 $subjects = block_exacomp_source_delete_get_subjects($source);
 
 if ($action == 'delete_selected') {
-    $json_data = block_exacomp_param::required_json('json_data', (object)array(
+    $json_data = block_exacomp\param::required_json('json_data', (object)array(
         'subjects' => array(PARAM_INT),
         'topics' => array(PARAM_INT),
         'descriptors' => array(PARAM_INT),

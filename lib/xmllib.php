@@ -457,7 +457,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
         
         if (!self::get_my_source()) {
             // this can't happen anymore, because a source is automatically generated
-            throw new block_exacomp_exception('source not configured, go to block settings');
+            throw new block_exacomp\exception('source not configured, go to block settings');
             // '<a href="'.$CFG->wwwroot.'/admin/settings.php?section=blocksettingexacomp">settings</a>'
         }
         
@@ -1000,7 +1000,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         global $CFG;
 
         if (!$data) {
-            throw new block_exacomp_exception('filenotfound');
+            throw new block_exacomp\exception('filenotfound');
         }
         
         $file = tempnam($CFG->tempdir, "zip");
@@ -1017,7 +1017,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         global $CFG;
 
         if (!$url) {
-            throw new block_exacomp_exception('filenotfound');
+            throw new block_exacomp\exception('filenotfound');
         }
         
         $file = tempnam($CFG->tempdir, "zip");
@@ -1040,11 +1040,11 @@ class block_exacomp_data_importer extends block_exacomp_data {
         global $DB, $CFG;
     
         if (!$file) {
-            throw new block_exacomp_exception('filenotfound');
+            throw new block_exacomp\exception('filenotfound');
         }
             
         if (!file_exists($file)) {
-            throw new block_exacomp_exception('filenotfound');
+            throw new block_exacomp\exception('filenotfound');
         }
         
         core_php_time_limit::raise();
@@ -1062,7 +1062,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
             self::$zip = $zip;
             
             if (!$xml = $zip->getFromName('data.xml')) {
-                throw new block_exacomp_exception('wrong zip file');
+                throw new block_exacomp\exception('wrong zip file');
             }
             
             /*
@@ -1072,7 +1072,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
             $xml = simplexml_load_string($xml,'block_exacomp_SimpleXMLElement', LIBXML_NOCDATA);
 
             if (!$xml) {
-                throw new block_exacomp_exception('wrong zip file content');
+                throw new block_exacomp\exception('wrong zip file content');
             }
         } else {
             // on error -> try as xml
@@ -1083,17 +1083,17 @@ class block_exacomp_data_importer extends block_exacomp_data {
              */
             $xml = @simplexml_load_file($file,'block_exacomp_SimpleXMLElement', LIBXML_NOCDATA);
             if (!$xml) {
-                throw new block_exacomp_exception('wrong file');
+                throw new block_exacomp\exception('wrong file');
             }
         }
         
 
         if(isset($xml->table)){
-            throw new block_exacomp_exception('oldxmlfile');
+            throw new block_exacomp\exception('oldxmlfile');
         }
         
         if (empty($xml['source'])) {
-            throw new block_exacomp_exception('oldxmlfile');
+            throw new block_exacomp\exception('oldxmlfile');
         }
         
         self::$import_source_global_id = (string)$xml['source'];
@@ -1248,7 +1248,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
             return;
         }
         
-        block_exacomp_db::update_record(block_exacomp::DB_DATASOURCES, array(
+        block_exacomp\db::update_record(block_exacomp::DB_DATASOURCES, array(
             'id' => $dbSource->id,
         ), array(
             'name' => (string)$xmlItem->name
@@ -1337,7 +1337,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 
         // TODO: check erweitern und überall reingeben
         /*
-        $item = block_exacomp_param::clean_object($item, array(
+        $item = block_exacomp\param::clean_object($item, array(
             'source' => PARAM_TEXT,
             'sourceid' => PARAM_INT,
             'title' => PARAM_TEXT
@@ -1368,7 +1368,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         
         // if local example, move to source teacher
         if (!$item->source) {
-            block_exacomp_db::insert_or_update_record(block_exacomp::DB_EXAMPLES, array("id"=>$item->id), array('source' => block_exacomp::EXAMPLE_SOURCE_TEACHER));
+            block_exacomp\db::insert_or_update_record(block_exacomp::DB_EXAMPLES, array("id"=>$item->id), array('source' => block_exacomp::EXAMPLE_SOURCE_TEACHER));
         }
         
         // has to be called after inserting the example, because the id is needed!
@@ -1383,7 +1383,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         if ($xmlItem->taxonomies) {
             foreach ($xmlItem->taxonomies->taxonomyid as $taxonomy) {
                 if ($taxonomyid = self::get_database_id($taxonomy)) {
-                    block_exacomp_db::insert_or_update_record(block_exacomp::DB_EXAMPTAX, array("exampleid"=>$item->id, "taxid"=>$taxonomyid));
+                    block_exacomp\db::insert_or_update_record(block_exacomp::DB_EXAMPTAX, array("exampleid"=>$item->id, "taxid"=>$taxonomyid));
                 }
             }
         }
@@ -1395,7 +1395,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
                 	$sql = "SELECT MAX(sorting) as sorting FROM {".block_exacomp::DB_DESCEXAMP."} WHERE descrid=?";
     				$max_sorting = $DB->get_record_sql($sql, array($descriptorid)); 
     				$sorting = intval($max_sorting->sorting)+1;
-                    block_exacomp_db::insert_or_update_record(block_exacomp::DB_DESCEXAMP, array("exampid"=>$item->id, "descrid"=>$descriptorid, "sorting"=>$sorting));
+                    block_exacomp\db::insert_or_update_record(block_exacomp::DB_DESCEXAMP, array("exampid"=>$item->id, "descrid"=>$descriptorid, "sorting"=>$sorting));
                 }
             }
         }
@@ -1481,17 +1481,17 @@ class block_exacomp_data_importer extends block_exacomp_data {
         
         // if local descriptor, move to custom source
         if (!$descriptor->source) {
-            block_exacomp_db::insert_or_update_record(block_exacomp::DB_DESCRIPTORS, array("id"=>$descriptor->id), array('source' => block_exacomp::CUSTOM_CREATED_DESCRIPTOR));
+            block_exacomp\db::insert_or_update_record(block_exacomp::DB_DESCRIPTORS, array("id"=>$descriptor->id), array('source' => block_exacomp::CUSTOM_CREATED_DESCRIPTOR));
         }
         
         if ($xmlItem->examples) {
-            throw new block_exacomp_exception('oldxmlfile');
+            throw new block_exacomp\exception('oldxmlfile');
         }
         
         if ($xmlItem->categories) {
             foreach ($xmlItem->categories->categoryid as $category) {
                 if ($categoryid = self::get_database_id($category)) {
-                    block_exacomp_db::insert_or_update_record(block_exacomp::DB_DESCCAT, array("descrid"=>$descriptor->id, "catid"=>$categoryid));
+                    block_exacomp\db::insert_or_update_record(block_exacomp::DB_DESCCAT, array("descrid"=>$descriptor->id, "catid"=>$categoryid));
                 }
             }
         }
@@ -1525,7 +1525,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         if ($xmlItem->descriptors) {
             foreach($xmlItem->descriptors->descriptorid as $descriptor) {
                 if ($descriptorid = self::get_database_id($descriptor)) {
-                    block_exacomp_db::insert_or_update_record(block_exacomp::DB_DESCCROSS, array("crosssubjid"=>$crosssubject->id,"descrid"=>$descriptorid));
+                    block_exacomp\db::insert_or_update_record(block_exacomp::DB_DESCCROSS, array("crosssubjid"=>$crosssubject->id,"descrid"=>$descriptorid));
                 }
             }
         }
@@ -1563,7 +1563,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
             $i=1;
             foreach($xmlItem->descriptors->descriptorid as $descriptor) {
                 if ($descriptorid = self::get_database_id($descriptor)) {
-                    block_exacomp_db::insert_or_update_record(block_exacomp::DB_DESCTOPICS, array("topicid"=>$topic->id,"descrid"=>$descriptorid), array("sorting"=>$i));
+                    block_exacomp\db::insert_or_update_record(block_exacomp::DB_DESCTOPICS, array("topicid"=>$topic->id,"descrid"=>$descriptorid), array("sorting"=>$i));
                     $i++;
                 }
             }
@@ -1631,7 +1631,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         $item = (object)$item;
 
         if (!isset($item->id)) {
-            throw new block_exacomp_exception('wrong xml format');
+            throw new block_exacomp\exception('wrong xml format');
         }
         
         // foreign source to local source

@@ -93,7 +93,7 @@ switch($action){
 		$not_students_ids = json_decode($not_students);
 
         // TODO: kann man erstzen durch
-        // $not_students_ids = block_exacomp_param::clean_array($not_students_ids, array(PARAM_INT=>PARAM_INT));
+        // $not_students_ids = block_exacomp\param::clean_array($not_students_ids, array(PARAM_INT=>PARAM_INT));
         // -- daniel
 		foreach($not_students_ids as $studentid)
 			if(!is_numeric($studentid))

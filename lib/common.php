@@ -1,12 +1,16 @@
 <?php
 
-class block_exacomp_exception extends moodle_exception {
+namespace block_exacomp;
+
+defined('MOODLE_INTERNAL') || die();
+
+class exception extends \moodle_exception {
     function __construct($errorcode, $module='', $link='', $a=NULL, $debuginfo=null) {
 
-        // try to get exacomp error message
+        // try to get local error message (use namespace as $component)
         if (empty($module)) {
-            if (get_string_manager()->string_exists($errorcode, 'block_exacomp')) {
-                $module = 'block_exacomp';
+            if (get_string_manager()->string_exists($errorcode, __NAMESPACE__)) {
+                $module = __NAMESPACE__;
             }
         }
 
@@ -14,7 +18,7 @@ class block_exacomp_exception extends moodle_exception {
     }
 }
 
-class block_exacomp_db {
+class db {
     public static function update_record($table, $where, $data = array()) {
         global $DB;
 
@@ -54,10 +58,10 @@ class block_exacomp_db {
     }
 }
 
-class block_exacomp_param {
+class param {
     public static function clean_object($values, $definition) {
         // some value => type
-        $ret = new stdClass;
+        $ret = new \stdClass;
         $values = (object)$values;
 
         foreach ($definition as $key => $valueType) {
@@ -87,6 +91,7 @@ class block_exacomp_param {
             print_error('wrong key type: '.$keyType);
         }
 
+        $ret = array();
         foreach ($values as $key=>$value) {
             $ret[clean_param($key, $keyType)] = static::clean($value, $valueType);
         }
