@@ -289,6 +289,9 @@ switch($action){
 		$end = required_param('end', PARAM_INT);
 		
 		$examples = block_exacomp_get_examples_for_start_end_all_courses($studentid, $start, $end);
+		foreach($examples as &$example){
+			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $studentid);
+		}
 		$json_examples = block_exacomp_get_json_examples($examples);
 		
 		echo json_encode($json_examples);
@@ -301,6 +304,9 @@ switch($action){
 		if(!$pool_course)$pool_course = $courseid;
 		
 		$examples_pool = block_exacomp_get_examples_for_pool($studentid, $pool_course);
+		foreach($examples_pool as &$example_pool){
+			$example_pool->state = block_exacomp_get_dakora_state_for_example($example_pool->courseid, $example_pool->exampleid, $studentid);
+		}
 		$json_examples_pool = block_exacomp_get_json_examples($examples_pool);
 		
 		$examples_trash = block_exacomp_get_examples_for_trash($studentid, $pool_course);

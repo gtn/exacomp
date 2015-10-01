@@ -4786,7 +4786,9 @@ var dataset = dataset.map(function (group) {
         return html_writer::div($html_tree, "associated_div", array('id'=>"associated_div"));
     }
     
-    private function print_competence_for_list_tree($descriptor, $isTeacher, $editmode, $show_examples) {
+	private function print_competence_for_list_tree($descriptor, $isTeacher, $editmode, $show_examples) {
+    	global $OUTPUT;
+    	
         $html_tree = html_writer::start_tag("li", array('class'=>($descriptor->associated == 1)?"associated":""));
         if($isTeacher && $editmode==1)
             $html_tree .= html_writer::checkbox("descriptor[]", $descriptor->id, ($descriptor->direct_associated==1)?true:false);
@@ -4799,8 +4801,25 @@ var dataset = dataset.map(function (group) {
 	            
 	        foreach($descriptor->examples as $example) {
 	            if(!isset($example->associated)) $example->associated = 0;
-	            if($example->associated == 1 || ($isTeacher && $editmode==1))
-	                $html_tree .= html_writer::tag("li", $example->title, array('class'=>($example->associated == 1)?"associated":""));
+	            if($example->associated == 1 || ($isTeacher && $editmode==1)) {
+	                $exampleIcons = " ";
+	                
+	                if ($url = block_exacomp_get_file_url($example, 'example_task')) {
+	                	$exampleIcons = html_writer::link($url, $OUTPUT->pix_icon("i/preview", get_string("preview")),array("target" => "_blank"));
+	                }
+	                
+	                if($example->externalurl){
+	                	$exampleIcons .= html_writer::link(str_replace('&amp;','&',$example->externalurl), $OUTPUT->pix_icon("i/preview", $example->externalurl),array("target" => "_blank"));
+	                }elseif($example->externaltask){
+	                	$exampleIcons.= html_writer::link(str_replace('&amp;','&',$example->externaltask), $OUTPUT->pix_icon("i/preview", $example->externaltask),array("target" => "_blank"));
+	                }
+	                
+	                if ($url = block_exacomp_get_file_url($example, 'example_solution')) {
+	                	$exampleIcons .= $this->print_example_solution_icon($url);
+	                }	    
+
+	                $html_tree .= html_writer::tag("li", $example->title . $exampleIcons, array('class'=>($example->associated == 1)?"associated":""));
+	            }
 	        }
 	            
 	        if(!empty($descriptor->examples))
@@ -4999,11 +5018,29 @@ var dataset = dataset.map(function (group) {
 	}
 	
 	public function print_example_based_list_tree($example, $tree, $isTeacher, $editmode, $showexamples = false){
+		global $OUTPUT;
+		
 		$html_tree = "";
         $html_tree .= html_writer::start_tag("ul",array("class"=>"collapsibleList"));
         
         $html_tree .= html_writer::start_tag("li", array('class'=>"associated"));
-        $html_tree .= $example->title;
+        
+        $exampleIcons = " ";
+        if ($url = block_exacomp_get_file_url($example, 'example_task')) {
+        	$exampleIcons = html_writer::link($url, $OUTPUT->pix_icon("i/preview", get_string("preview")),array("target" => "_blank"));
+        }
+         
+        if($example->externalurl){
+        	$exampleIcons .= html_writer::link(str_replace('&amp;','&',$example->externalurl), $OUTPUT->pix_icon("i/preview", $example->externalurl),array("target" => "_blank"));
+        }elseif($example->externaltask){
+        	$exampleIcons.= html_writer::link(str_replace('&amp;','&',$example->externaltask), $OUTPUT->pix_icon("i/preview", $example->externaltask),array("target" => "_blank"));
+        }
+         
+        if ($url = block_exacomp_get_file_url($example, 'example_solution')) {
+        	$exampleIcons .= $this->print_example_solution_icon($url);
+        }
+        
+        $html_tree .= $example->title . $exampleIcons;
         
         $html_tree .= $this->print_competence_based_list_tree($tree, $isTeacher, $editmode, $showexamples);
         

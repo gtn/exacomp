@@ -26,6 +26,7 @@ $autotest = get_config('exacomp', 'autotest');
 $testlimit = get_config('exacomp', 'testlimit');
 $specificimport = get_config('exacomp','enableteacherimport');
 $notifications = get_config('exacomp','notifications');
+$logging = get_config('exacomp','logging');
 
 $global_scheme = get_config('exacomp', 'adminscheme');
 $global_scheme_values = array();
@@ -426,7 +427,7 @@ function block_exacomp_delete_custom_example($delete) {
  * @param int $value
  */
 function block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value) {
-	global $DB,$USER;
+	global $DB,$USER, $logging;
 
 	if($role == block_exacomp::ROLE_STUDENT && $userid != $USER->id)
 		return -1;
@@ -448,15 +449,14 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 	else 
 		block_exacomp_notify_all_teachers_about_self_assessment($courseid);
 		
-	//$event = \block_exacomp
-	//$event = \mod_myplugin\event\something_happened::create(array('context' => $context, 'objectid' => YYY, 'other' => ZZZ));
-	//$event->trigger();
+	if($logging)
+		$event = \block_exacomp\event\competence_assigned::create(array('objecttable' => ($comptype == block_exacomp::TYPE_DESCRIPTOR) ? 'block_exacompdescriptors' : 'block_exacomptopics', 'objectid' => $compid, 'contextid' => context_course::instance($courseid)->id, 'relateduserid' => $userid))->trigger();
 	
 	return $id;
 }
 
 function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $value = null, $starttime = 0, $endtime = 0, $studypartner = 'self') {
-	global $DB,$USER,$version;
+	global $DB,$USER,$version,$logging;
 	
 	
 	$updateEvaluation = new stdClass();
@@ -513,7 +513,8 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 		return $DB->insert_record(block_exacomp::DB_EXAMPLEEVAL, $updateEvaluation);
 	}
 	
-	
+	if($logging && $role == block_exacomp::ROLE_TEACHER)
+		$event = \block_exacomp\event\competence_assigned::create(array('objectid' => $exampleid, 'contextid' => context_course::instance($courseid)->id, 'relateduserid' => $userid))->trigger();
 }
 /**
  * Set one competence for one user for one activity in one course
@@ -4366,7 +4367,7 @@ function block_exacomp_get_descr_topic_sorting($topicid, $descid){
 function block_exacomp_set_descriptor_visibility($descrid, $courseid, $visible, $studentid){
 	global $DB;
 	
-    block_exacomp\db::insert_or_update_record(
+	block_exacomp\db::insert_or_update_record(
         block_exacomp::DB_DESCVISIBILITY,
         array('descrid'=>$descrid, 'courseid'=>$courseid, 'studentid'=>$studentid),
         array('visible'=>$visible)
@@ -5455,7 +5456,7 @@ function block_exacomp_get_examples_for_start_end_all_courses($studentid, $start
 	return $examples;
 }
 function block_exacomp_get_json_examples($examples, $mind_eval = true){
-	global $OUTPUT, $DB;
+	global $OUTPUT, $DB, $CFG, $USER;
 	
 	$array = array();
 	foreach($examples as $example){
@@ -5469,6 +5470,9 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true){
 			$example_array['student_evaluation'] = $example->student_evaluation;
 			$example_array['teacher_evaluation'] = $example->teacher_evaluation;
 		}
+		if(isset($example->state))
+			$example_array['state'] = $example->state;
+
 		$example_array['studentid'] = $example->studentid;
 		$example_array['courseid'] = $example->courseid;
 		$example_array['scheduleid'] = $example->scheduleid; 
@@ -5480,7 +5484,24 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true){
 		
 		if($url = block_exacomp_get_file_url($example, 'example_solution'))
 			$example_array['solution'] = html_writer::link($url, $OUTPUT->pix_icon("e/fullpage", get_string('solution','block_exacomp')) ,array("target" => "_blank"));
-				 
+		if (block_exacomp_exaportexists ()) {
+			if ($USER->id == $example->studentid) {
+				$itemExists = block_exacomp_get_current_item_for_example($USER->id, $example->exampleid);
+				
+				$example_array ['submission_url'] = html_writer::link(
+						new moodle_url('/blocks/exacomp/example_submission.php',array("courseid"=>$example->courseid,"exampleid"=>$example->exampleid)),
+						html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/' . ((!$itemExists) ? 'manual_item.png' : 'reload.png')), 'alt'=>get_string("submission", "block_exacomp"))),
+						array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+			} else {
+				$url = block_exacomp_get_viewurl_for_example ( $example->studentid, $example->exampleid );
+				if ($url)
+					$example_array ['submission_url'] = html_writer::link ( $CFG->wwwroot . ('/blocks/exaport/shared_item.php?access=' . $url), html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/manual_item.png'), 'alt'=>get_string("submission", "block_exacomp"))), array (
+							"target" => "_blank",
+							"onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;" 
+					) );
+			}
+		}
+		
 		$course_info = $DB->get_record('course', array('id'=>$example->courseid));
 		$example_array['courseinfo'] = $course_info->shortname;
 		

@@ -180,6 +180,15 @@
 			
 			el.append('	<div class="event-assoc">'+data.assoc_url+/*((event.solution)?event.solution:'')+*/'</div>');
 			
+			if(data.submission_url != null)
+				el.append('<div class="event-submission">'+data.submission_url+'</div>');
+
+			if(data.state == 3)
+				el.addClass('state3');
+						
+			if(data.state == 4)
+				el.addClass('state4');	
+						
 			el.data('event', data);
 	
 			el.draggable({
@@ -324,7 +333,13 @@
 					
 					if(event.courseid != courseid)
 						element.addClass('different-course');
-							
+						
+					if(event.state == 3)
+						element.addClass('state3');
+						
+					if(event.state == 4)
+						element.addClass('state4');	
+						
 					// console.log(element.html());
 					
 					// delete time (actually slot time)
@@ -336,6 +351,7 @@
 						//'	<div class="event-course">Kurs: '+event.courseinfo+'</div>'+
 						//'	<div>L: <input type="checkbox" '+((event.teacher_evaluation>0)?'checked=checked':'')+'/> S: <input type="checkbox" '+((event.student_evaluation>0)?'checked=checked':'')+'/></div>' +
 						'	<div class="event-assoc">'+event.assoc_url+/*((event.solution)?event.solution:'')+*/'</div>' +
+						((event.submission_url != null) ? '	<div class="event-submission">'+event.submission_url+'</div>' : '' )+
 						'</div>');
 					
 					$(element).addTouch();

@@ -43,6 +43,8 @@ $context = context_course::instance($courseid);
 $isTeacher = block_exacomp_is_teacher($context);
 
 $studentid = block_exacomp_get_studentid($isTeacher) ;
+if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS)
+	$studentid = 0;
 
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_weekly_schedule';

@@ -508,6 +508,10 @@ $string['block_exacomp_notifications_body'] = 'Bei Aktionen wie einer Beispiel-E
 $string['block_exacomp_logging_head'] = 'Logging';
 $string['block_exacomp_logging_body'] = 'Relevante Aktionen werden geloggt.';
 
+$string['eventscompetenceassigned'] = 'Kompetenz zugeteilt';
+$string['eventsexamplesubmitted'] = 'Aufgabe abgegeben';
+$string['eventsexamplegraded'] = 'Aufgabe beurteilt';
+
 //Statistics
 $string['process'] = 'Bearbeitungsstand';
 $string['niveauclass'] = 'Niveaueinstufung';

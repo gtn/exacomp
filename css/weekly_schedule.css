@@ -288,6 +288,15 @@
     top: 3px;
 }
 
+#block_exacomp .event-submission {
+    text-align: right;
+    margin-top: 5px;
+    position: absolute;
+    right: 30px;
+    text-align: right;
+    top: 3px;
+}
+
 #block_exacomp #trash .fc-event {
 	background-color: #7e91a2;
 	border-color: #7e91a2;
@@ -296,4 +305,15 @@
 .fc-time-grid-event .fc-time, .fc-time-grid-event .fc-title {
 	margin-right: 20px;
 	line-height: 1.2;
+}
+
+#block_exacomp .state4 {
+    background-color: rgb(24, 164, 6);
+    border: 1px solid rgb(24, 164, 6) !important;
+    
+}
+
+#block_exacomp .state3 {
+    background-color: rgb(189, 189, 189);
+    border: 1px solid rgb(189, 189, 189) !important;
 }

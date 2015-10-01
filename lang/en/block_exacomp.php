@@ -472,6 +472,10 @@ $string['inwork'] = 'in work';
 $string['block_exacomp_logging_head'] = 'Logging';
 $string['block_exacomp_logging_body'] = 'Relevant actions will get logged.';
 
+$string['eventscompetenceassigned'] = 'Competence assigned';
+$string['eventsexamplesubmitted'] = 'Example submitted';
+$string['eventsexamplegraded'] = 'Example graded';
+
 //metadata
 $string['subject_singular'] = 'Field of competence';
 $string['comp_field_idea'] = 'Skill';

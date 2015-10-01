@@ -4773,6 +4773,9 @@ class block_exacomp_external extends external_api {
 		block_exacomp_set_user_example($USER->id, $exampleid, $courseid, block_exacomp::ROLE_STUDENT, $studentvalue);
 	
 		block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, time());
+		if(get_config('exacomp','logging'))
+			$event = \block_exacomp\event\example_submitted::create(array('objectid' => $exampleid, 'contextid' => context_course::instance($courseid)->id))->trigger();
+		
 		return array("success"=>true,"itemid"=>$itemid);
 	}
 	
