@@ -497,6 +497,10 @@ $string['notification_self_assessment_subject'] = 'Neue Selbsteinschätzung im K
 $string['notification_self_assessment_body'] = '{$a->student} hat im Kurs {$a->course} neue Selbsteinschätzungen gemacht.';
 $string['notification_self_assessment_context'] = 'Selbsteinschätzung';
 
+$string['notification_example_comment_subject'] = 'Neuer Kommentar bei Aufgabe {$a->example}';
+$string['notification_example_comment_body'] = '{$a->teacher} hat im Kurs {$a->course} die Aufgabe {$a->example} kommentiert.';
+$string['notification_example_comment_context'] = 'Kommentar';
+
 $string['notification_weekly_schedule_subject'] = 'Neue Aufgabe am Wochenplan';
 $string['notification_weekly_schedule_body'] = '{$a->teacher} hat dir im Kurs {$a->course} die Aufgabe {$a->example} auf den Wochenplan gelegt.';
 $string['notification_weekly_schedule_context'] = 'Wochenplan';
@@ -511,6 +515,10 @@ $string['block_exacomp_logging_body'] = 'Relevante Aktionen werden geloggt.';
 $string['eventscompetenceassigned'] = 'Kompetenz zugeteilt';
 $string['eventsexamplesubmitted'] = 'Aufgabe abgegeben';
 $string['eventsexamplegraded'] = 'Aufgabe beurteilt';
+$string['eventsexamplecommented'] = 'Aufgabe kommentiert';
+$string['eventsexampleadded'] = 'Aufgabe zu Wochenplan hinzugefügt';
+$string['eventsimportcompleted'] = 'Import durchgeführt';
+$string['eventscrosssubjectadded'] = 'Thema freigegeben';
 
 //Statistics
 $string['process'] = 'Bearbeitungsstand';

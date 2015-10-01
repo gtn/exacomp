@@ -26,7 +26,7 @@
  * *************************************************************
  */
 require_once dirname ( __FILE__ ) . "/inc.php";
-global $DB, $USER;
+global $DB, $USER, $logging;
 
 $courseid = required_param ( 'courseid', PARAM_INT );
 if (! $course = $DB->get_record ( 'course', array (
@@ -109,11 +109,18 @@ switch($action){
 		foreach($not_students_ids as $studentid)
 			block_exacomp_unset_cross_subject_student($crosssubjid, $studentid);
 		
+		if($logging)
+			$event = \block_exacomp\event\crosssubject_added::create(array('objectid' => $exampleid, 'contextid' => context_course::instance($courseid)->id))->trigger();
+		
 		break;
 	case ('crosssubj-share'):
 		$crosssubjid = required_param('crosssubjid', PARAM_TEXT);
 		$value = required_param('value', PARAM_INT);
 		echo block_exacomp_share_crosssubject($crosssubjid, $value);
+		
+		if($logging)
+			$event = \block_exacomp\event\crosssubject_added::create(array('objectid' => $exampleid, 'contextid' => context_course::instance($courseid)->id))->trigger();
+		
 		break;
 	case('competencies_array'):
 		$competencies = required_param('competencies', PARAM_TEXT);

@@ -4848,6 +4848,10 @@ class block_exacomp_external extends external_api {
 						'userid' => $USER->id
 				) );
 				$DB->insert_record ( 'block_exaportitemcomm', $insert );
+				
+				block_exacomp_send_example_comment_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid, $exampleid);
+				if(get_config('exacomp','logging'))
+					$event = \block_exacomp\event\example_commented::create(array('objectid' => $exampleid, 'contextid' => context_course::instance($courseid)->id))->trigger();
 			}
 		}
 	

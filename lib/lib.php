@@ -4519,7 +4519,7 @@ function block_exacomp_get_viewurl_for_example($studentid,$exampleid) {
 	return $access;
 }
 function block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid) {
-	global $USER, $DB;
+	global $USER, $DB, $logging;
 	
 	$timecreated = $timemodified = time();
 	
@@ -4528,6 +4528,9 @@ function block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,
 	//only send a notification if a teacher adds an example for a student
 	if($USER->id != $studentid)
 		block_exacomp_send_weekly_schedule_notification($USER,$DB->get_record('user', array('id' => $studentid)), $courseid, $exampleid);
+	
+	if($logging)
+		$event = \block_exacomp\event\example_added::create(array('objectid' => $exampleid, 'contextid' => context_course::instance($courseid)->id, 'relateduserid' => $studentid))->trigger();
 	
 	return true;
 }
@@ -5856,4 +5859,17 @@ function block_exacomp_send_weekly_schedule_notification($userfrom, $userto, $co
 	$viewurl = new moodle_url('/blocks/exacomp/weekly_schedule.php',array('courseid' => $courseid));
 
 	block_exacomp_send_notification("weekly_schedule", $userfrom, $userto, $subject, $message, $context, $viewurl);
+}
+function block_exacomp_send_example_comment_notification($userfrom, $userto, $courseid, $exampleid) {
+	global $CFG,$USER,$DB;
+
+	$course = get_course($courseid);
+	$example = $DB->get_record(block_exacomp::DB_EXAMPLES,array('id' => $exampleid));
+	$subject = get_string('notification_example_comment_subject','block_exacomp');
+	$message = get_string('notification_example_comment_body','block_exacomp',array('course' => $course->fullname, 'teacher' => fullname($userfrom), 'example' => $example->title));
+	$context = get_string('notification_example_comment_context','block_exacomp');
+
+	$viewurl = $CFG->wwwroot . ('/blocks/exaport/shared_item.php?access=' . block_exacomp_get_viewurl_for_example($userto->id,$example->id));
+	
+	block_exacomp_send_notification("comment", $userfrom, $userto, $subject, $message, $context, $viewurl);
 }

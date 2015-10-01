@@ -12,5 +12,8 @@ $messageproviders = array (
 		),
 		// Teacher adds new example to weekly schedule
 		'weekly_schedule' => array(
+		),
+		// Teacher comments an example
+		'comment' => array(
 		)
 );

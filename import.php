@@ -86,6 +86,11 @@ try {
             block_exacomp_settstamp();
         }
     }
+    
+    if($importSuccess)
+    	if(get_config('exacomp','logging'))
+    		$event = \block_exacomp\event\import_completed::create(array('contextid' => context_course::instance($courseid)->id))->trigger();
+    	
 } catch (block_exacomp\exception $importException) {
 }
 

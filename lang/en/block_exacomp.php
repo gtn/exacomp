@@ -464,6 +464,10 @@ $string['notification_self_assessment_subject'] = 'New self assessments in {$a->
 $string['notification_self_assessment_body'] = '{$a->student} has new self assessments in {$a->course}.';
 $string['notification_self_assessment_context'] = 'Self assessment';
 
+$string['notification_example_comment_subject'] = 'New comment for example {$a->example}';
+$string['notification_example_comment_body'] = '{$a->teacher} commented in {$a->course} the example {$a->example}.';
+$string['notification_example_comment_context'] = 'Comment';
+
 $string['notification_weekly_schedule_subject'] = 'New example on the schedule';
 $string['notification_weekly_schedule_body'] = '{$a->teacher} added an example {$a->example} in {$a->course} to your weekly schedule.';
 $string['notification_weekly_schedule_context'] = 'Weekly schedule';
@@ -475,6 +479,10 @@ $string['block_exacomp_logging_body'] = 'Relevant actions will get logged.';
 $string['eventscompetenceassigned'] = 'Competence assigned';
 $string['eventsexamplesubmitted'] = 'Example submitted';
 $string['eventsexamplegraded'] = 'Example graded';
+$string['eventsexamplecommented'] = 'Example commented';
+$string['eventsexampleadded'] = 'Example added to weekly schedule';
+$string['eventsimportcompleted'] = 'Import completed';
+$string['eventscrosssubjectadded'] = 'Crosssubject added';
 
 //metadata
 $string['subject_singular'] = 'Field of competence';
