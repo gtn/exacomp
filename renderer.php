@@ -1291,24 +1291,28 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
 				
 				if($showevaluation){
+					$evaluation = ($role == block_exacomp::ROLE_TEACHER) ? 'student' : 'teacher';
+					
 					$studentevalCol = new html_table_cell();
 					$studentevalCol->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
 					
 					if($scheme == 1) {
-						$studentevalCol->text = $this->generate_checkbox('datacrosssubs', $crosssubjid, 'crosssubs', $student, 'student', $scheme, true);
+						$studentevalCol->text = $this->generate_checkbox('datacrosssubs', $crosssubjid, 'crosssubs', $student, $evaluation, $scheme, true);
 					}else{
-						$studentevalCol->text = $this->generate_select('datacrosssubs', $crosssubjid, 'crosssubs', $student, 'student', $scheme, true);
+						$studentevalCol->text = $this->generate_select('datacrosssubs', $crosssubjid, 'crosssubs', $student, $evaluation, $scheme, true);
 					}
 					
 					$totalRow->cells[] = $studentevalCol;
 				}
 			
+				$evaluation = ($role == block_exacomp::ROLE_TEACHER) ? 'teacher' : 'student';
+				
 				$teacherevalCol = new html_table_cell();
 				$teacherevalCol->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
 				if($scheme == 1) {
-					$teacherevalCol->text = $this->generate_checkbox('datacrosssubs', $crosssubjid, 'crosssubs', $student, 'teacher', $scheme, false);
+					$teacherevalCol->text = $this->generate_checkbox('datacrosssubs', $crosssubjid, 'crosssubs', $student, $evaluation, $scheme, false);
 				}else{
-					$teacherevalCol->text = $this->generate_select('datacrosssubs', $crosssubjid, 'crosssubs', $student, 'teacher', $scheme, false);
+					$teacherevalCol->text = $this->generate_select('datacrosssubs', $crosssubjid, 'crosssubs', $student, $evaluation, $scheme, false);
 				}
 				$totalRow->cells[] = $teacherevalCol;
 			}
