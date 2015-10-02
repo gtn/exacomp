@@ -4375,6 +4375,9 @@ function block_exacomp_set_descriptor_visibility($descrid, $courseid, $visible, 
 }
 function block_exacomp_set_example_visibility($exampleid, $courseid, $value, $studentid){
 	global $DB;
+	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS)
+		$studentid = 0;
+	
 	$record = $DB->get_record(block_exacomp::DB_EXAMPVISIBILITY, array('exampleid'=>$exampleid, 'courseid'=>$courseid, 'studentid'=>$studentid));
 	if($record){
 		$record->visible = $value;
