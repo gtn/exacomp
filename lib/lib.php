@@ -4366,7 +4366,12 @@ function block_exacomp_get_descr_topic_sorting($topicid, $descid){
 }
 function block_exacomp_set_descriptor_visibility($descrid, $courseid, $visible, $studentid){
 	global $DB;
-	
+	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS || $studentid ==0){//if visibility changed for all: delete individual settings
+		$studentid = 0;
+		$sql = "DELETE FROM {".block_exacomp::DB_DESCVISIBILITY."} WHERE descrid = ? AND courseid = ? and studentid <> 0"; 
+		
+		$DB->execute($sql, array($descrid, $courseid));
+	}
 	block_exacomp\db::insert_or_update_record(
         block_exacomp::DB_DESCVISIBILITY,
         array('descrid'=>$descrid, 'courseid'=>$courseid, 'studentid'=>$studentid),
@@ -4375,8 +4380,11 @@ function block_exacomp_set_descriptor_visibility($descrid, $courseid, $visible, 
 }
 function block_exacomp_set_example_visibility($exampleid, $courseid, $value, $studentid){
 	global $DB;
-	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS)
+	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS || $studentid == 0){//if visibility changed for all: delete individual settings
 		$studentid = 0;
+		$sql = "DELETE FROM {".block_exacomp::DB_EXAMPVISIBILITY."} WHERE exampleid = ? AND courseid = ? and studentid <> 0"; 
+		$DB->execute($sql, array($exampleid, $courseid));
+	}
 	
 	$record = $DB->get_record(block_exacomp::DB_EXAMPVISIBILITY, array('exampleid'=>$exampleid, 'courseid'=>$courseid, 'studentid'=>$studentid));
 	if($record){
@@ -4425,29 +4433,35 @@ function block_exacomp_descriptor_used($courseid, $descriptor, $studentid){
 	//							     if no evaluation/submission for the examples of this descriptor
 	
 	if($studentid == 0){
-		$records = $DB->get_records(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'compid'=>$descriptor->id, 'comptype'=>TYPE_DESCRIPTOR, 'value'=>1));
+		$sql = "SELECT * FROM {".block_exacomp::DB_COMPETENCIES."} WHERE courseid = ? AND compid = ? AND comptype=? AND value>0";
+		$records = $DB->get_records_sql($sql, array($courseid, $descriptor->id, TYPE_DESCRIPTOR));
 		if($records) return true;
 		
 		if(isset($descriptor->examples) && $descriptor->examples){
 			foreach($descriptor->examples as $example){
-				$records = $DB->get_records(block_exacomp::DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'teacher_evaluation'=>1));
+				$sql = "SELECT * FROM {".block_exacomp::DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND teacher_evaluation>0";
+				$records = $DB->get_records_sql($sql, array($courseid, $example->id));
 				if($records) return true;
 				
-				$records = $DB->get_records(block_exacomp::DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'student_evaluation'=>1));
+				$sql = "SELECT * FROM {".block_exacomp::DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND student_evaluation>0";
+				$records = $DB->get_records_sql($sql, array($courseid, $example->id));
 				if($records) return true;
 			}
 		}
 		//TODO submission //activities
 	}else{
-	$records = $DB->get_records(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'compid'=>$descriptor->id, 'comptype'=>TYPE_DESCRIPTOR, 'userid'=>$studentid, 'value'=>1));
+		$sql = "SELECT * FROM {".block_exacomp::DB_COMPETENCIES."} WHERE courseid = ? AND compid = ? AND comptype=? AND userid = ? AND value>0";
+		$records = $DB->get_records_sql($sql, array($courseid, $descriptor->id, TYPE_DESCRIPTOR, $studentid));
 		if($records) return true;
 		
 		if(isset($descriptor->examples) && $descriptor->examples){
 			foreach($descriptor->examples as $example){
-				$records = $DB->get_records(block_exacomp::DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'studentid'=>$studentid, 'student_evaluation'=>1));
+				$sql = "SELECT * FROM {".block_exacomp::DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND studentid=? AND teacher_evaluation>0";
+				$records = $DB->get_records_sql($sql, array($courseid, $example->id, $studentid));
 				if($records) return true;
 				
-				$records = $DB->get_records(block_exacomp::DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'studentid'=>$studentid, 'teacher_evaluation'=>1));
+				$sql = "SELECT * FROM {".block_exacomp::DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND studentid = ? AND student_evaluation>0";
+				$records = $DB->get_records_sql($sql, array($courseid, $example->id, $studentid));
 				if($records) return true;
 			}
 		}
@@ -4465,18 +4479,22 @@ function block_exacomp_example_used($courseid, $example, $studentid){
 	//if studentid != 0 used = true, if no evaluation/submission for this examples for this student
 	
 	if($studentid == 0){
-		$records = $DB->get_records(block_exacomp::DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'teacher_evaluation'=>1));
+		$sql = "SELECT * FROM {".block_exacomp::DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND teacher_evaluation>0";
+		$records = $DB->get_records_sql($sql, array($courseid, $example->id));
 		if($records) return true;
 		
-		$records = $DB->get_records(block_exacomp::DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'student_evaluation'=>1));
+		$sql = "SELECT * FROM {".block_exacomp::DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND student_evaluation>0";
+		$records = $DB->get_records_sql($sql, array($courseid, $example->id));
 		if($records) return true;
 	
 		//TODO submission //activities
 	}else{
-		$records = $DB->get_records(block_exacomp::DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'studentid'=>$studentid, 'student_evaluation'=>1));
+		$sql = "SELECT * FROM {".block_exacomp::DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND studentid=? AND teacher_evaluation>0";
+		$records = $DB->get_records_sql($sql, array($courseid, $example->id, $studentid));
 		if($records) return true;
 		
-		$records = $DB->get_records(block_exacomp::DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'studentid'=>$studentid, 'teacher_evaluation'=>1));
+		$sql = "SELECT * FROM {".block_exacomp::DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND studentid = ? AND student_evaluation>0";
+		$records = $DB->get_records_sql($sql, array($courseid, $example->id, $studentid));
 		if($records) return true;
 				
 		//TODO submissions & avtivities

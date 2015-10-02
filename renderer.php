@@ -1494,6 +1494,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                 $visible = block_exacomp_check_descriptor_visibility($data->courseid, $descriptor, $studentid, ($one_student||$data->role==block_exacomp::ROLE_STUDENT) );
                 //echo $descriptor->visible . " / " . $visible . " <br/> ";
                 
+                if($data->role == block_exacomp::ROLE_TEACHER || $visible){
                 $visible_css = block_exacomp_get_descriptor_visible_css($visible, $data->role);
                 
                 $checkboxname = "data";
@@ -1745,6 +1746,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                 
                     $visible_example = block_exacomp_check_example_visibility($data->courseid, $example, $studentid, ($one_student||$data->role==block_exacomp::ROLE_STUDENT) );
                     
+                    if($data->role == block_exacomp::ROLE_TEACHER || $visible_example){
                     $visible_example_css = block_exacomp_get_example_visible_css($visible_example, $data->role);
                     
                     $studentsCount = 0;
@@ -1921,7 +1923,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     }
                     $rows[] = $exampleRow;
                 }
-                
+                }
                 if (!empty($descriptor->children)) {
                     $this->print_descriptors($rows, $level+1, $descriptor->children, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $statistic);
                 }
@@ -1954,6 +1956,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     $own_additionRow->cells[] = new html_table_cell();
                     $rows[] = $own_additionRow;
                 }    
+            }
             }
         }
     }
