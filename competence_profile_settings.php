@@ -104,8 +104,8 @@ $user_courses = block_exacomp_get_exacomp_courses($student);
 
 if($exaport)
 	$exaport_items = block_exacomp_get_exaport_items();
-if($exastud)
-	$exastud_periods = block_exacomp_get_exastud_periods();
+//if($exastud)
+	//$exastud_periods = block_exacomp_get_exastud_periods();
 
 $usebadges = get_config('exacomp', 'usebadges');
 
