@@ -687,7 +687,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         $spanningNiveaus = $DB->get_records(block_exacomp::DB_NIVEAUS,array('span' => 1));
         //calculate the col span for spanning niveaus
         $spanningColspan = block_exacomp_calculate_spanning_niveau_colspan($niveaus, $spanningNiveaus);
-        
         $report = optional_param('report', BLOCK_EXACOMP_REPORT1, PARAM_INT);
         
         $rows = array();
@@ -725,7 +724,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                 $row->cells[] = $cell2;
 
                 foreach($niveaus as $niveauid => $niveau) {
-                    
                     if(isset($data[$skillid][$topicid][$niveauid])) {
                         $cell = new html_table_cell();
                         $compdiv = "";
@@ -741,68 +739,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                             $descriptor_used = block_exacomp_descriptor_used($courseid, $descriptor, ($studentid != BLOCK_EXACOMP_SHOW_STATISTIC) ? $studentid : 0);
                             $visible = block_exacomp_check_descriptor_visibility($courseid, $descriptor, ($studentid != BLOCK_EXACOMP_SHOW_STATISTIC) ? $studentid : 0);
                             $visible_css = block_exacomp_get_descriptor_visible_css($visible, $role);
-                            
-                            /*
-                            if (block_exacomp_is_teacher($context)) {
-                                if(isset($descriptor->teachercomp) && array_key_exists($descriptor->topicid, $selection)) {
-                                    $compString .= "L: ";
-                                    if($schema == 1) {
-                                        $compString .= html_writer::checkbox("data-".$descriptor->id."-".$studentid."-teacher", 1,$descriptor->teachercomp, '',($visible) ? array() : array("disabled"=>"disabled")).'&nbsp; ';
-                                        
-                                        $compString .= " S: ". html_writer::checkbox("data".$topicid."-".$descriptor->id."-student", 1,($descriptor->studentcomp >= $satisfied),"",array("disabled"=>"disabled")).'&nbsp; ';
-                                    }else {
-                                        $options = array();
-                                        for($i=0;$i<=$schema;$i++)
-                                            $options[] = (!$profoundness) ? $i : get_string('profoundness_'.$i,'block_exacomp');
-
-                                        $name = "data-".$descriptor->id."-".$studentid."-teacher";
-                                        $compString .= html_writer::select($options, $name, $descriptor->teachercomp, false);
-
-                                        //$compString .= "&nbsp;S: " . html_writer::select($options,"student".$name, $descriptor->studentcomp,false,array("disabled"=>"disabled")).'&nbsp; ';
-                                        $compString .= "&nbsp;S: " . html_writer::checkbox("student".$name, 0,$descriptor->studentcomp >= $satisfied,"",array("disabled"=>"disabled")).'&nbsp; ';
-                                    }
-                                }
-
-                            } else if(has_capability('block/exacomp:student', $context) && array_key_exists($descriptor->topicid, $selection)) {
-                                $compString.="S: ";
-                                if($schema == 1) {
-                                    $compString .= html_writer::checkbox("data-".$descriptor->id."-".$studentid."-student", 1,$descriptor->studentcomp).'&nbsp; ';
-                                        
-                                    $compString .= "&nbsp;L: " . html_writer::checkbox("data-".$studentid."-".$descriptor->id."-teacher", 0,$descriptor->teachercomp >= $satisfied,"",array("disabled"=>"disabled")).'&nbsp; ';
-                                } else {
-                                    $options = array();
-                                    for($i=0;$i<=$schema;$i++)
-                                        $options[] = $i;
-
-                                    $name = "data[".$topicid."][".$descriptor->id."][student]";
-                                    //$compString .= html_writer::select($options, $name, $descriptor->studentcomp, false);
-                                    $compString .= html_writer::checkbox("data-".$descriptor->id."-".$studentid."-student", $schema,$descriptor->studentcomp).'&nbsp; ';
-
-                                    $compString .= "&nbsp;L: " . (($descriptor->teachercomp) ? $descriptor->teachercomp : 0);
-                                }
-                            }*/
-
-                            /*
-                            if(isset($descriptor->icon))
-                                $compString .= $descriptor->icon;
-							*/
 
                             $text = block_exacomp_get_descriptor_numbering($descriptor)." ".$descriptor->title;
                             if(array_key_exists($descriptor->topicid, $selection)) {
                                 $text = html_writer::link(new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid"=>$courseid,"subjectid"=>$topicid,"topicid"=>$descriptor->id,"studentid"=>$studentid)),$text,array("id" => "competence-grid-link-".$descriptor->id,"class" => ($visible) ? '' : 'deactivated'));
                             }
 
-                            /*if(isset($descriptor->examples)) {
-                                $text .= '<br/>';
-                                foreach($descriptor->examples as $example) {
-                                    $img = '<img src="pix/i_11x11.png" alt="Beispiel" />';
-                                    
-                                    if($example->task)
-                                        $text .= "<a target='_blank' alt='".$example->title."' title='".$example->title."' href='".$example->task."'>".$img."</a>";
-                                    if($example->externalurl)
-                                        $text .= "<a target='_blank' alt='".$example->title."' title='".$example->title."' href='".$example->externalurl."'>".$img."</a>";
-                                }
-                            }*/
                             if(isset($descriptor->children) && count($descriptor->children) > 0 && !$version) {
                                 $children = '<ul class="childdescriptors">';
                                 foreach($descriptor->children as $child)
@@ -910,8 +852,21 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                         if(array_key_exists($niveauid,$spanningNiveaus))
                             break;
                         
-                    } elseif(!array_key_exists($niveauid,$spanningNiveaus))
-                        $row->cells[] = "";
+                    } else {
+                    	$printCell = true;
+                    	if(array_key_exists($niveauid,$spanningNiveaus))
+                    	 	$printCell = false;
+                    	if($printCell)
+	                    	foreach(array_keys($data[$skillid][$topicid]) as $nid) {
+	                    		if(array_key_exists($nid,$spanningNiveaus)) {
+	                    			$printCell = false;
+	                    			break;
+	                    		}
+	                    	}
+                        if($printCell)
+                        	$row->cells[] = "";
+                    }
+                    	
                 }
                 $rows[] = $row;
             }
