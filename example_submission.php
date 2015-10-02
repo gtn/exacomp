@@ -89,7 +89,8 @@ if($formdata = $form->get_data()) {
 		$subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
 	}
 	
-	$formdata->url = (filter_var($formdata->url, FILTER_VALIDATE_URL) == TRUE) ? $formdata->url : "http://" . $formdata->url;
+	if(!empty($formdata->url))
+		$formdata->url = (filter_var($formdata->url, FILTER_VALIDATE_URL) == TRUE) ? $formdata->url : "http://" . $formdata->url;
 	
 	$itemid = $DB->insert_record("block_exaportitem", array('userid'=>$USER->id,'name'=>$formdata->name,'url'=>$formdata->url,'intro'=>$formdata->intro,'type'=>$type,'timemodified'=>time(),'categoryid'=>$subject_category->id));
 	//autogenerate a published view for the new item
