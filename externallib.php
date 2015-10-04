@@ -5061,6 +5061,50 @@ class block_exacomp_external extends external_api {
 		) );
 	}
 	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_user_information_parameters() {
+		return new external_function_parameters ( array ( ) );
+	}
+	
+	/**
+	 * get example with all submission details and gradings
+	 *
+	 * @return
+	 */
+	public static function dakora_get_user_information() {
+		global $CFG, $USER;
+		require_once($CFG->dirroot . "/user/lib.php");
+		
+		return user_get_user_details_courses($USER);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_user_information_returns() {
+		return new external_single_structure ( array(
+            'id'    => new external_value(PARAM_INT, 'ID of the user'),
+            'username'    => new external_value(PARAM_RAW, 'The username', VALUE_OPTIONAL),
+            'firstname'   => new external_value(PARAM_NOTAGS, 'The first name(s) of the user', VALUE_OPTIONAL),
+            'lastname'    => new external_value(PARAM_NOTAGS, 'The family name of the user', VALUE_OPTIONAL),
+            'fullname'    => new external_value(PARAM_NOTAGS, 'The fullname of the user'),
+            'email'       => new external_value(PARAM_TEXT, 'An email address - allow email as root@localhost', VALUE_OPTIONAL),
+            'firstaccess' => new external_value(PARAM_INT, 'first access to the site (0 if never)', VALUE_OPTIONAL),
+            'lastaccess'  => new external_value(PARAM_INT, 'last access to the site (0 if never)', VALUE_OPTIONAL),
+            'auth'        => new external_value(PARAM_PLUGIN, 'Auth plugins include manual, ldap, imap, etc', VALUE_OPTIONAL),
+            'confirmed'   => new external_value(PARAM_INT, 'Active user: 1 if confirmed, 0 otherwise', VALUE_OPTIONAL),
+            'lang'        => new external_value(PARAM_SAFEDIR, 'Language code such as "en", must exist on server', VALUE_OPTIONAL),
+            'url'         => new external_value(PARAM_URL, 'URL of the user', VALUE_OPTIONAL),
+            'profileimageurlsmall' => new external_value(PARAM_URL, 'User image profile URL - small version'),
+            'profileimageurl' => new external_value(PARAM_URL, 'User image profile URL - big version')
+        ) );
+	}
 	/** 
 	* helper function to use same code for 2 ws
 	*/
