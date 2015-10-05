@@ -127,28 +127,6 @@ class block_exacomp extends block_list {
             $this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/module_config.png'), 'alt'=>'', 'height'=>16, 'width'=>23));
         }
 
-        //if checkImport && checkSubjects -> Modul wurde konfiguriert
-        //else nur admin sieht block und hat nur den link Modulkonfiguration
-        if((has_capability('block/exacomp:admin', $globalcontext))){	//Admin sieht immer Modulkonfiguration
-            //Modulkonfiguration
-            if(!$skillmanagement){
-                //Wenn Import schon erledigt, weiterleitung zu edit_config, ansonsten import.
-                if($checkImport){
-                    $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/edit_config.php', array('courseid'=>$courseid)), get_string('tab_admin_configuration', 'block_exacomp'), array('title'=>get_string('tab_admin_configuration', 'block_exacomp')));
-                    $this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/standardpreselect.png'), 'alt'=>'', 'height'=>16, 'width'=>23));
-                }
-                
-                // always show import/export
-                $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid)), get_string('tab_admin_settings', 'block_exacomp'), array('title'=>get_string('tab_admin_settings', 'block_exacomp')));
-                $this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/importexport.png'), 'alt'=>'', 'height'=>16, 'width'=>23));
-
-                if(get_config('exacomp','external_trainer_assign') != false) {
-                    $this->content->items[]='<a title="' . get_string('block_exacomp_external_trainer_assign', 'block_exacomp') . '" href="' . $CFG->wwwroot . '/blocks/exacomp/externaltrainers.php?courseid=' . $COURSE->id . '">' . get_string('block_exacomp_external_trainer_assign', 'block_exacomp') . '</a>';
-                    $this->content->icons[]='<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/personal.png" height="16" width="23" alt="'.get_string("block_exacomp_external_trainer_assign", "block_exacomp").'" />';
-                }
-            }
-        }
-
         if($checkConfig && $checkImport){	//Modul wurde konfiguriert
             if (block_exacomp_is_teacher($currentcontext) && $courseid != 1){
                 $crosssubs = block_exacomp_cross_subjects_exists()?block_exacomp_get_cross_subjects_by_course($courseid):false;
@@ -386,6 +364,29 @@ class block_exacomp extends block_list {
                 $this->content->icons[] = '';
             }
         }
+        
+        //if checkImport && checkSubjects -> Modul wurde konfiguriert
+        //else nur admin sieht block und hat nur den link Modulkonfiguration
+        if((has_capability('block/exacomp:admin', $globalcontext))){	//Admin sieht immer Modulkonfiguration
+            //Modulkonfiguration
+            if(!$skillmanagement){
+                //Wenn Import schon erledigt, weiterleitung zu edit_config, ansonsten import.
+                if($checkImport){
+                    $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/edit_config.php', array('courseid'=>$courseid)), get_string('tab_admin_configuration', 'block_exacomp'), array('title'=>get_string('tab_admin_configuration', 'block_exacomp')));
+                    $this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/standardpreselect.png'), 'alt'=>'', 'height'=>16, 'width'=>23));
+                }
+        
+                // always show import/export
+                $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid)), get_string('tab_admin_import', 'block_exacomp'), array('title'=>get_string('tab_admin_import', 'block_exacomp')));
+                $this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/importexport.png'), 'alt'=>'', 'height'=>16, 'width'=>23));
+        
+                if(get_config('exacomp','external_trainer_assign') != false) {
+                    $this->content->items[]='<a title="' . get_string('block_exacomp_external_trainer_assign', 'block_exacomp') . '" href="' . $CFG->wwwroot . '/blocks/exacomp/externaltrainers.php?courseid=' . $COURSE->id . '">' . get_string('block_exacomp_external_trainer_assign', 'block_exacomp') . '</a>';
+                    $this->content->icons[]='<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/personal.png" height="16" width="23" alt="'.get_string("block_exacomp_external_trainer_assign", "block_exacomp").'" />';
+                }
+            }
+        }
+        
         return $this->content;
     }
 
