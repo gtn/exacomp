@@ -7,7 +7,7 @@
 // (at your option) any later version.
 //
 
-$domainname = 'http://gtn-solutions.com/moodle29test';
+$domainname = 'https://gtn-solutions.com/moodle29test';
 
 $params = new stdClass();
 
@@ -21,7 +21,7 @@ echo "
 
 
 ";
-$serverurl = 'http://gtn-solutions.com/moodle29test/login/token.php?username=testws&password=Testws123!&service=exacompservices';
+$serverurl = 'https://gtn-solutions.com/moodle29test/login/token.php?username=testws&password=Testws123!&service=exacompservices';
 $resp = $curl->get($serverurl);
 $resp = json_decode($resp)->token;
 $token = $resp;
@@ -32,7 +32,7 @@ echo "
 
 ";
 
-$serverurl_exaport = 'http://gtn-solutions.com/moodle29test/login/token.php?username=testws&password=Testws123!&service=exaportservices';
+$serverurl_exaport = 'https://gtn-solutions.com/moodle29test/login/token.php?username=testws&password=Testws123!&service=exaportservices';
 $resp_exaport = $curl->get($serverurl_exaport);
 $resp_exaport = json_decode($resp_exaport)->token;
 print_r($resp_exaport);
@@ -46,10 +46,49 @@ $serverurl_moodle = 'http://gtn-solutions.com/moodle29test/login/token.php?usern
 $resp_moodle = $curl->get($serverurl_exaport);
 $resp_moodle = json_decode($resp_moodle)->token;
 print_r($resp_moodle);
-echo "
-associated topics:
-";
+
+
 header('Content-Type: text/plain');
+
+echo "
+topics:
+";
+
+//REST CALL dakora_get_examples_pool_for_week
+$functionname = 'dakora_get_topics_by_course';
+
+$params = new stdClass();
+$params->courseid = 4;
+
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+profile:
+
+";
+
+//REST CALL dakora_get_examples_pool_for_week
+$functionname = 'dakora_get_competence_profile_for_topic';
+
+$params = new stdClass();
+$params->courseid = 4;
+$params->topicid = 231;
+$params->userid = 0;
+
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+all topics:
+
+";
+
+/*
 //REST CALL dakora_get_examples_pool_for_week
 $functionname = 'dakora_get_descriptors_by_cross_subject';
 
@@ -216,7 +255,7 @@ print_r($resp);
 echo "
 examples pool:
 
-";
+";*/
 
 
 //REST CALL dakora_get_examples_pool_for_week ($courseid, $descriptorid, $userid, $forall)

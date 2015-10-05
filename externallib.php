@@ -5105,6 +5105,86 @@ class block_exacomp_external extends external_api {
             'profileimageurl' => new external_value(PARAM_URL, 'User image profile URL - big version')
         ) );
 	}
+	
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_competence_profile_for_topic_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
+				'userid' => new external_value ( PARAM_INT, 'id of user' ),
+				'topicid' => new external_value ( PARAM_INT, 'id of topic' )
+		) );
+	}
+	
+	/**
+	 * get example with all submission details and gradings
+	 *
+	 * @return
+	 */
+	public static function dakora_get_competence_profile_for_topic($courseid, $userid, $topicid) {
+		global $CFG, $DB, $USER;
+		if ($userid == 0)
+			$userid = $USER->id;
+	
+		$params = self::validate_parameters ( self::dakora_get_competence_profile_for_topic_parameters (), array (
+				'courseid' => $courseid,
+				'userid' => $userid,
+				'topicid' => $topicid
+		) );
+
+		$data = new stdClass();
+	
+		$topic = block_exacomp_get_topic_by_id($topicid);
+		$user = $DB->get_record('user', array('id'=>$userid));
+		$user = block_exacomp_get_user_information_by_course($user, $courseid);
+		$scheme = block_exacomp_get_grading_scheme($courseid);
+		
+		$data->topictitle = $topic->title;
+		$data->topicnumbering = block_exacomp_get_topic_numbering($topic);
+		$data->descriptordata = array();
+		
+		$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $topicid, false, true, true);
+		foreach($descriptors as $descriptor){
+			$data_content = new stdClass();
+			$data_content->descriptorid = $descriptor->id;
+			$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
+			$data_content->lfstitle = $niveau->title;
+			$lmdata = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $user, $scheme, $niveau->title);
+			$data_content->lfsgraphdata = $lmdata->data;
+			$data_content->totallmnumb = $lmdata->total;
+			$data_content->inworklmnumb = $lmdata->inWork;
+			$data_content->teacherevaluation = (isset($user->competencies->teacher[$descriptor->id]))?$user->competencies->teacher[$descriptor->id]:-1;
+			$data_content->studentevaluation = (isset($user->competencies->student[$descriptor->id]))?$user->competencies->student[$descriptor->id]:-1;
+			$data->descriptordata[] = $data_content;
+		}
+		
+		return $data;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_competence_profile_for_topic_returns() {
+		return new external_single_structure ( array (
+			'topictitle' => new external_value(PARAM_TEXT, 'title of topic'),
+			'topicnumbering' => new external_value (PARAM_TEXT, 'numbering for topic'),
+			'descriptordata' => new external_multiple_structure ( new external_single_structure ( array (
+					'descriptorid' => new external_value( PARAM_INT, 'id of descriptor'),
+					'lfstitle' => new external_value ( PARAM_TEXT, 'title of lfs' ),
+					'lfsgraphdata' => new external_value ( PARAM_TEXT, 'data in javascript/json format for graph' ),
+					'totallmnumb' => new external_value ( PARAM_INT, 'number of learning material in total'),
+					'inworklmnumb' => new external_value (PARAM_INT, 'number of learning material in work'),
+					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of descriptor'),
+					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of descriptor')
+			) ) ) 
+		) );
+	}
 	/** 
 	* helper function to use same code for 2 ws
 	*/
