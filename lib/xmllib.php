@@ -323,6 +323,22 @@ class block_exacomp_data {
                 'table' => block_exacomp::DB_NIVEAUS,
                 'needed1' => array('id', 'SELECT niveauid FROM {'.block_exacomp::DB_DESCRIPTORS.'}'),
             ),
+                        
+            // delete examples without descriptors
+            array(
+                'table' => block_exacomp::DB_EXAMPLES,
+                'needed1' => array('id', 'SELECT exampid FROM {'.block_exacomp::DB_DESCEXAMP.'}'),
+            ),
+            // delete topics without descriptors
+            array(
+                'table' => block_exacomp::DB_TOPICS,
+                'needed1' => array('id', 'SELECT topicid FROM {'.block_exacomp::DB_DESCTOPICS.'}'),
+            ),
+            array(
+                'table' => block_exacomp::DB_SUBJECTS,
+                'needed1' => array('id', 'SELECT subjid FROM {'.block_exacomp::DB_TOPICS.'}'),
+            ),
+            
             array(
                 'table' => block_exacomp::DB_CATEGORIES,
                 'needed1' => array('id', 'SELECT catid FROM {'.block_exacomp::DB_SUBJECTS.'}'),
@@ -1193,16 +1209,11 @@ class block_exacomp_data_importer extends block_exacomp_data {
         
         // self::kompetenzraster_clean_unused_data_from_source();
         // TODO: was ist mit desccross?
-        self::delete_unused_descriptors(self::$import_source_local_id, self::$import_time, implode(",", $insertedTopics));
+        
+        // deaktiviert, das geht so nicht mehr
+        // wenn von mehreren xmls mit gleichem source importiert wird, dann loescht der 2te import die descr vom 1ten
+        // self::delete_unused_descriptors(self::$import_source_local_id, self::$import_time, implode(",", $insertedTopics));
     
-        //self::deleteIfNoSubcategories("block_exacompdescrexamp_mm","block_exacompdescriptors","id",self::$import_source_local_id,1,0,"descrid");
-        self::deleteIfNoSubcategories("block_exacompexamples","block_exacompdescrexamp_mm","exampid",self::$import_source_local_id,0);
-        //self::deleteIfNoSubcategories("block_exacompdescrtopic_mm","block_exacompdescriptors","id",self::$import_source_local_id,1,0,"descrid");
-        self::deleteIfNoSubcategories("block_exacomptopics","block_exacompdescrtopic_mm","topicid",self::$import_source_local_id,0,implode(",", $insertedTopics));
-        self::deleteIfNoSubcategories("block_exacompsubjects","block_exacomptopics","subjid",self::$import_source_local_id);
-        self::deleteIfNoSubcategories("block_exacompschooltypes","block_exacompsubjects","stid",self::$import_source_local_id);
-        self::deleteIfNoSubcategories("block_exacompedulevels","block_exacompschooltypes","elid",self::$import_source_local_id);
-
         self::normalize_database();
     
         block_exacomp_settstamp();
@@ -1741,27 +1752,6 @@ class block_exacomp_data_importer extends block_exacomp_data {
     }
 
 
-
-    
-    
-    /* this function deletes all categories if there are no subcategories
-     i.e. if there are no topics to a subject, the subject can be deleted*/
-    private static function deleteIfNoSubcategories($parenttable,$subtable,$subforeignfield,$source,$use_source_in_subtable=1,$pidlist="") {
-        global $DB;
-        $wherepid="";
-        if ($use_source_in_subtable==1) $wheresource="source"; //zb source=1
-        else $wheresource=$source; //zb 1=1
-        if ($pidlist!="" AND $pidlist!="0") {
-            $wherepid="AND (parentid NOT IN (".$pidlist.") OR parentid IS NULL)";
-        }
-        $sql='SELECT * FROM {'.$parenttable.'} pt WHERE source=? '.$wherepid.' AND id NOT IN(Select '.$subforeignfield.' FROM {'.$subtable.'} WHERE '.$wheresource.'=?)';
-    
-        $todeletes = $DB->get_records_sql($sql,array($source,$source));
-        foreach ($todeletes as $todelete) {
-            $DB->delete_records($parenttable, array("id" => $todelete->id));
-        }
-    }
-	
     private static function delete_unused_descriptors($source, $crdate, $topiclist){
         global $DB;
     
