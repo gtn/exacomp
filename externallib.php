@@ -5154,7 +5154,7 @@ class block_exacomp_external extends external_api {
 			$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
 			$data_content->lfstitle = $niveau->title;
 			$lmdata = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $user, $scheme, $niveau->title);
-			$data_content->lfsgraphdata = $lmdata->data;
+			$data_content->lfsgraphdata = $lmdata->dataobject;
 			$data_content->totallmnumb = $lmdata->total;
 			$data_content->inworklmnumb = $lmdata->inWork;
 			$data_content->teacherevaluation = (isset($user->competencies->teacher[$descriptor->id]))?$user->competencies->teacher[$descriptor->id]:-1;
@@ -5177,7 +5177,13 @@ class block_exacomp_external extends external_api {
 			'descriptordata' => new external_multiple_structure ( new external_single_structure ( array (
 					'descriptorid' => new external_value( PARAM_INT, 'id of descriptor'),
 					'lfstitle' => new external_value ( PARAM_TEXT, 'title of lfs' ),
-					'lfsgraphdata' => new external_value ( PARAM_TEXT, 'data in javascript/json format for graph' ),
+					'lfsgraphdata' => new external_multiple_structure ( new external_single_structure( array (
+						'data' => new external_single_structure ( array (
+							'niveau' => new external_value ( PARAM_TEXT, 'title of niveau'),
+							'count' => new external_value ( PARAM_TEXT, 'amount of lm in this category' )
+							)),
+						'name' => new external_value ( PARAM_TEXT, 'name of dataset' )
+						) ) ),
 					'totallmnumb' => new external_value ( PARAM_INT, 'number of learning material in total'),
 					'inworklmnumb' => new external_value (PARAM_INT, 'number of learning material in work'),
 					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of descriptor'),

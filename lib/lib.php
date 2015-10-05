@@ -5759,16 +5759,41 @@ function block_exacomp_get_studentid($isTeacher) {
 }
 
 function block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, $niveautitle){
-	global $global_scheme, $global_scheme_values;
+	$global_scheme = get_config('exacomp', 'adminscheme');
+	$global_scheme_values = array();
+
+	if($global_scheme == 1){
+		$global_scheme_values = array('nE', 'G', 'M', 'E');
+	}else if($global_scheme == 2){
+		$global_scheme_values = array('nE', 'A', 'B', 'C');
+	}else if($global_scheme == 3){
+		$global_scheme_values = array('nE', '*', '**', '***');
+	}else{
+		$global_scheme_values = array('0', '1', '2', '3');
+	}
 	list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork) = block_exacomp_get_example_statistic_for_descriptor($courseid, $descriptor->id, $student->id);
 	
 	$string = "[";
+	$object = array();
+	$object_data = new stdClass();
+	$object_data->data = array();
+	$object_data->data["niveau"] = $niveautitle;
+	$object_data->data["count"] = $notInWork;
+	$object_data->name = ' oB';
+	$object[] = $object_data;
 	
 	//$string .= "{data:[{niveau:'".$niveautitle."',count:".$notInWork."}],name:' nB'},";
 	$string .= "{data:[{niveau:'".$niveautitle."',count:".$notEvaluated."}],name:' oB'},";
 	
 	 $i = 0;
 	foreach($gradings as $grading){
+		$object_data = new stdClass();
+		$object_data->data = array();
+		$object_data->data["niveau"] = $niveautitle;
+		$object_data->data["count"] = $grading;
+		$object_data->name = (($global_scheme==0)?$i:$global_scheme_values[$i]);
+		$object[] = $object_data;
+		
 		$string .= "{data:[{niveau:'".$niveautitle."',count:".$grading."}],name:' ".(($global_scheme==0)?$i:$global_scheme_values[$i])."'},";
 		$i++;
     }
@@ -5777,6 +5802,7 @@ function block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $st
 	$string .= "]";
 	$return = new stdClass();
 	$return->data = $string;
+	$return->dataobject = $object;
 	$return->total = $total;
 	$return->inWork = $inWork;
 	return $return;
