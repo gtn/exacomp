@@ -5185,6 +5185,37 @@ class block_exacomp_external extends external_api {
 			) ) ) 
 		) );
 	}
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_admin_grading_scheme_parameters() {
+		return new external_function_parameters ( array () );
+	}
+	
+	/**
+	 * get example with all submission details and gradings
+	 *
+	 * @return
+	 */
+	public static function dakora_get_admin_grading_scheme() {
+		$params = self::validate_parameters ( self::dakora_get_admin_grading_scheme_parameters (), array () );
+		$admin_scheme = get_config('exacomp', 'adminscheme');
+		
+		return ($admin_scheme==1 || $admin_scheme == 2 || $admin_scheme == 3)?$admin_scheme:0;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_admin_grading_scheme_returns() {
+		return new external_value ( PARAM_INT, 'identity of grading scheme' );
+	}
+	
 	/** 
 	* helper function to use same code for 2 ws
 	*/

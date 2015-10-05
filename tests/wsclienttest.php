@@ -87,6 +87,21 @@ echo "
 all topics:
 
 ";
+//REST CALL dakora_get_examples_pool_for_week
+$functionname = 'dakora_get_admin_grading_scheme';
+
+$params = new stdClass();
+
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+all topics:
+
+";
+
 
 /*
 //REST CALL dakora_get_examples_pool_for_week
