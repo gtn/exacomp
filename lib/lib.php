@@ -4558,7 +4558,7 @@ function block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,
 	$DB->insert_record(block_exacomp::DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid,'creatorid' => $creatorid, 'timecreated' => $timecreated, 'timemodified' => $timemodified));
 	
 	//only send a notification if a teacher adds an example for a student
-	if($USER->id != $studentid)
+	if($creatorid != $studentid)
 		block_exacomp_send_weekly_schedule_notification($USER,$DB->get_record('user', array('id' => $studentid)), $courseid, $exampleid);
 	
 	if($logging)
@@ -5794,9 +5794,9 @@ function block_exacomp_get_message_icon($userid) {
 	return html_writer::link($url, html_writer::tag('button',html_writer::img(new moodle_url('/blocks/exacomp/pix/envelope.png'), get_string('message','message'),array('title' => fullname($userto)))), $attributes);
 }
 function block_exacomp_send_notification($notificationtype, $userfrom, $userto, $subject, $message, $context, $contexturl) {
-	global $CFG, $DB, $notifications;
+	global $CFG, $DB;
 
-	if(!$notifications)
+	if(!get_config('exacomp','notifications'))
 		return;
 	
 	// do not send too many notifications. therefore check if user has got same notification within the last 5 minutes
@@ -5818,7 +5818,7 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
 
 	$eventdata->name = $notificationtype;
 	$eventdata->component = 'block_exacomp';
-	$eventdata->notification = 1;
+	$eventdata->notification = 0;
 	$eventdata->contexturl = $contexturl;
 	$eventdata->contexturlname = $context;
 
