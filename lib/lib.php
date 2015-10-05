@@ -1384,17 +1384,32 @@ function block_exacomp_build_navigation_tabs_settings($courseid){
 	$courseSettings = block_exacomp_get_settings_by_course($courseid);
 	$settings_subtree = array();
 
-		$settings_subtree[] = new tabobject('tab_teacher_settings_configuration', new moodle_url('/blocks/exacomp/edit_course.php', array('courseid'=>$courseid)), get_string("tab_teacher_settings_configuration", "block_exacomp"));
-		if(!$skillmanagement)
-			$settings_subtree[] = new tabobject('tab_teacher_settings_selection', new moodle_url('/blocks/exacomp/courseselection.php', array('courseid'=>$courseid)), get_string("tab_teacher_settings_selection", "block_exacomp"));
+	$settings_subtree[] = new tabobject('tab_teacher_settings_configuration', new moodle_url('/blocks/exacomp/edit_course.php', array('courseid'=>$courseid)), get_string("tab_teacher_settings_configuration", "block_exacomp"));
+	if(!$skillmanagement)
+		$settings_subtree[] = new tabobject('tab_teacher_settings_selection', new moodle_url('/blocks/exacomp/courseselection.php', array('courseid'=>$courseid)), get_string("tab_teacher_settings_selection", "block_exacomp"));
 
-		if (block_exacomp_is_activated($courseid))
-			if ($courseSettings->uses_activities)
-				$settings_subtree[] = new tabobject('tab_teacher_settings_assignactivities', new moodle_url('/blocks/exacomp/edit_activities.php', array('courseid'=>$courseid)), get_string("tab_teacher_settings_assignactivities", "block_exacomp"));
+	if (block_exacomp_is_activated($courseid))
+		if ($courseSettings->uses_activities)
+			$settings_subtree[] = new tabobject('tab_teacher_settings_assignactivities', new moodle_url('/blocks/exacomp/edit_activities.php', array('courseid'=>$courseid)), get_string("tab_teacher_settings_assignactivities", "block_exacomp"));
 
-		if (block_exacomp_moodle_badges_enabled() && $usebadges) {
-			$settings_subtree[] = new tabobject('tab_teacher_settings_badges', new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid'=>$courseid)), get_string("tab_teacher_settings_badges", "block_exacomp"));
-		}
+	if (block_exacomp_moodle_badges_enabled() && $usebadges) {
+		$settings_subtree[] = new tabobject('tab_teacher_settings_badges', new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid'=>$courseid)), get_string("tab_teacher_settings_badges", "block_exacomp"));
+	}
+
+	return $settings_subtree;
+}
+function block_exacomp_build_navigation_tabs_admin_settings($courseid){
+    global $DB;
+    
+    $checkImport = block_exacomp_data::has_data();
+	
+	$settings_subtree = array();
+
+	$settings_subtree[] = new tabobject('tab_admin_import', new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid)), get_string("tab_admin_import", "block_exacomp"));
+
+	if ($checkImport && has_capability('block/exacomp:admin', context_system::instance()))
+	    $settings_subtree[] = new tabobject('tab_admin_configuration', new moodle_url('/blocks/exacomp/edit_config.php',array("courseid"=>$courseid)),get_string('tab_admin_configuration','block_exacomp'));
+	
 	return $settings_subtree;
 }
 function block_exacomp_build_navigation_tabs_profile($context,$courseid){
@@ -1445,7 +1460,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 	else
 		$checkConfig = block_exacomp_is_configured();
 	
-	$checkImport = $DB->get_records(block_exacomp::DB_DESCRIPTORS);
+	$checkImport = block_exacomp_data::has_data();
 
 	$rows = array();
 
@@ -1474,14 +1489,10 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 					}//if (block_exacomp_moodle_badges_enabled() && $usebadges)
 						//$rows[] = new tabobject('tab_badges', new moodle_url('/blocks/exacomp/my_badges.php',array("courseid"=>$courseid)),get_string('tab_badges','block_exacomp'));
 				}
-				$settings = new tabobject('tab_teacher_settings', new moodle_url('/blocks/exacomp/edit_course.php',array("courseid"=>$courseid)),get_string('tab_teacher_settings','block_exacomp'));
-
-				$rows[] = $settings;
+				$rows[] = new tabobject('tab_teacher_settings', new moodle_url('/blocks/exacomp/edit_course.php',array("courseid"=>$courseid)),get_string('tab_teacher_settings','block_exacomp'));
 
 				if(!$skillmanagement && has_capability('block/exacomp:admin', $context)){
-					$rows[] = new tabobject('tab_admin_import', new moodle_url('/blocks/exacomp/import.php',array("courseid"=>$courseid)),get_string('tab_admin_import','block_exacomp'));
-					if($checkImport && has_capability('block/exacomp:admin', $global_context))
-							$rows[] = new tabobject('tab_admin_configuration', new moodle_url('/blocks/exacomp/edit_config.php',array("courseid"=>$courseid)),get_string('tab_admin_configuration','block_exacomp'));
+					$rows[] = new tabobject('tab_admin_settings', new moodle_url('/blocks/exacomp/import.php',array("courseid"=>$courseid)),get_string('tab_admin_settings','block_exacomp'));
 				
 				}
 				if($de && !$skillmanagement)
@@ -1518,7 +1529,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 					$rows[] = $settings;
 				}
 				if((has_capability('block/exacomp:admin', $global_context) || $specificimport) && !$skillmanagement){
-					$rows[] = new tabobject('tab_admin_import', new moodle_url('/blocks/exacomp/import.php',array("courseid"=>$courseid)),get_string('tab_admin_import','block_exacomp'));
+					$rows[] = new tabobject('tab_admin_settings', new moodle_url('/blocks/exacomp/import.php',array("courseid"=>$courseid)),get_string('tab_admin_settings','block_exacomp'));
 					if($checkImport && has_capability('block/exacomp:admin', $global_context))
 						$rows[] = new tabobject('tab_admin_configuration', new moodle_url('/blocks/exacomp/edit_config.php',array("courseid"=>$courseid)),get_string('tab_admin_configuration','block_exacomp'));
 				}
@@ -1528,7 +1539,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 			}
 		}else{
 			if(has_capability('block/exacomp:admin', $global_context) || $specificimport){
-				$rows[] = new tabobject('tab_admin_import', new moodle_url('/blocks/exacomp/import.php',array("courseid"=>$courseid)),get_string('tab_admin_import','block_exacomp'));
+				$rows[] = new tabobject('tab_admin_settings', new moodle_url('/blocks/exacomp/import.php',array("courseid"=>$courseid)),get_string('tab_admin_settings','block_exacomp'));
 				if($checkImport && !$version && has_capability('block/exacomp:admin', $global_context))
 					$rows[] = new tabobject('tab_admin_configuration', new moodle_url('/blocks/exacomp/edit_config.php',array("courseid"=>$courseid)),get_string('tab_admin_configuration','block_exacomp'));
 			}

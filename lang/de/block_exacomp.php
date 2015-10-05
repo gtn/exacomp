@@ -35,11 +35,12 @@ $string['exacomp:deleteexamples'] = 'Beispiele löschen';
 // TABS and PAGE IDENTIFIERS
 // Admin Tabs
 $string['tab_admin_import'] = 'Import/Export';
+$string['tab_admin_settings'] = 'Bildungsstandards';
 $string['tab_admin_configuration'] = 'Vorauswahl der Standards';
 $string['admin_config_pending'] = 'Vorauswahl der Kompetenzen durch den Administrator notwendig';
 
 //Teacher Tabs
-$string['tab_teacher_settings'] = 'Einstellungen';
+$string['tab_teacher_settings'] = 'Kurseinstellungen';
 $string['tab_teacher_settings_configuration'] = 'Konfiguration';
 $string['tab_teacher_settings_selection_st'] = 'Schultyp-Auswahl';
 $string['tab_teacher_settings_selection'] = 'Gegenstands-Auswahl';

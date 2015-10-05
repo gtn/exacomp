@@ -29,7 +29,7 @@ $string['pluginname'] = 'Competències Exabis';
 
 // TABS and PAGE IDENTIFIERS
 // Admin Tabs
-$string['tab_admin_import'] = 'Importar';
+$string['tab_admin_settings'] = 'Importar';
 $string['tab_admin_configuration'] = 'Configuració';
 
 //Teacher Tabs

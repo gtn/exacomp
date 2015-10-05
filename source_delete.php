@@ -46,7 +46,7 @@ $source = required_param('source', PARAM_INT);
 $output = $PAGE->get_renderer('block_exacomp');
 
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
-$page_identifier = 'tab_admin_import';
+$page_identifier = 'tab_admin_settings';
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/source_delete.php', array('courseid' => $courseid, 'source' => $source, 'action' => 'select'));
@@ -142,7 +142,8 @@ if ($action == 'delete_selected') {
     $pagenode = $blocknode->add(get_string($page_identifier,'block_exacomp'), $PAGE->url);
     $pagenode->make_active();
     
-    echo $output->header($course_context,$courseid, $page_identifier);
+    echo $output->header($course_context,$courseid, 'tab_admin_settings');
+    echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_admin_settings($courseid), $page_identifier);
     
     echo $output->print_descriptor_selection_source_delete($source, $subjects);
     
