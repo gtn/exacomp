@@ -5397,7 +5397,8 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid){
 	
 	$sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
-				eval.student_evaluation, eval.teacher_evaluation, evis.courseid, s.id as scheduleid
+				eval.student_evaluation, eval.teacher_evaluation, evis.courseid, s.id as scheduleid,
+				e.externalurl, e.externaltask, e.description
 			FROM {block_exacompschedule} s 
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid 
 			JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=? 
@@ -5453,7 +5454,8 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
 	
 	$sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
-				eval.student_evaluation, eval.teacher_evaluation, evis.courseid, s.id as scheduleid
+				eval.student_evaluation, eval.teacher_evaluation, evis.courseid, s.id as scheduleid,
+				e.externalurl, e.externaltask, e.description
 			FROM {block_exacompschedule} s 
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid 
 			JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=? 
@@ -5480,7 +5482,8 @@ function block_exacomp_get_examples_for_start_end_all_courses($studentid, $start
 	return $examples;
 }
 function block_exacomp_get_json_examples($examples, $mind_eval = true){
-	global $OUTPUT, $DB, $CFG, $USER;
+	global $OUTPUT, $DB, $CFG, $USER, $PAGE;
+	$output = $PAGE->get_renderer('block_exacomp');
 	
 	$array = array();
 	foreach($examples as $example){
@@ -5524,6 +5527,14 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true){
 							"onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;" 
 					) );
 			}
+		}
+		if ($url = block_exacomp_get_file_url((object)array('id' => $example->exampleid), 'example_task')) {
+			$example_array['task'] = html_writer::link($url, $output->print_preview_icon(),array("target" => "_blank"));
+		}
+		elseif(isset($example->externalurl)){
+			$example_array['externalurl'] = html_writer::link(str_replace('&amp;','&',$example->externalurl), $output->print_preview_icon(),array("target" => "_blank"));
+		}elseif(isset($example->externaltask)) {
+			$example_array['externaltask'] = html_writer::link(str_replace('&amp;','&',$example->externaltask), $output->print_preview_icon(),array("target" => "_blank"));
 		}
 		
 		$course_info = $DB->get_record('course', array('id'=>$example->courseid));

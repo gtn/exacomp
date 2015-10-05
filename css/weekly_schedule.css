@@ -291,6 +291,16 @@
 #block_exacomp .event-submission {
     text-align: right;
     margin-top: 5px;
+    margin-right: 23px;
+    position: absolute;
+    right: 30px;
+    text-align: right;
+    top: 3px;
+}
+
+#block_exacomp .event-task {
+    text-align: right;
+    margin-top: 5px;
     position: absolute;
     right: 30px;
     text-align: right;

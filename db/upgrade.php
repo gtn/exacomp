@@ -1564,7 +1564,14 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	    $courses = block_exacomp_get_courses();
 	    foreach($courses as $course){
 	    	$descriptors = array();
-	    	$topics = block_exacomp_get_topics_by_course($course);
+	    	
+	    	$sql = 'SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description
+				FROM {'.block_exacomp::DB_TOPICS.'} t
+				JOIN {'.block_exacomp::DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.
+						'ORDER BY t.sorting, t.subjid
+						';
+	    	//GROUP By funktioniert nur mit allen feldern im select, aber nicht mit strings
+	    	$topics = $DB->get_records_sql($sql, array($course->id));
 	    	foreach($topics as $topic){
 	    		$descriptors_topic = block_exacomp_get_descriptors_by_topic($course, $topic->id);
 	    		foreach($descriptors_topic as $descriptor){

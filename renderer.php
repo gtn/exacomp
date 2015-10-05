@@ -1961,7 +1961,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         }
     }
 
-
+	public function print_preview_icon($alt = null) {
+		if($alt == null)
+			$alt = get_string("preview");
+		
+		return html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/preview.png'), 'alt'=>$alt));
+	}
     /*
     public function print_source_color($sourceid) {
         global $DB;
