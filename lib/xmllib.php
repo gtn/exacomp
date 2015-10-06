@@ -330,6 +330,10 @@ class block_exacomp_data {
                 'needed1' => array('id', 'SELECT exampid FROM {'.block_exacomp::DB_DESCEXAMP.'}'),
             ),
             // delete topics without descriptors
+            // ist so nicht mehr richtig
+            // eigentlich: topics loeschen, wenn das subject nicht existiert
+            // subjects loeschen, wenn der schooltype nicht existiert
+            /*
             array(
                 'table' => block_exacomp::DB_TOPICS,
                 'needed1' => array('id', 'SELECT topicid FROM {'.block_exacomp::DB_DESCTOPICS.'}'),
@@ -351,6 +355,7 @@ class block_exacomp_data {
                 'table' => block_exacomp::DB_EDULEVELS,
                 'needed1' => array('id', 'SELECT elid FROM {'.block_exacomp::DB_SCHOOLTYPES.'}'),
             ),
+            */
         );
         
         $make_select = function($select) {
@@ -1212,6 +1217,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         
         // deaktiviert, das geht so nicht mehr
         // wenn von mehreren xmls mit gleichem source importiert wird, dann loescht der 2te import die descr vom 1ten
+        // besprechung 2015-10-06, logic zu delete source uebernehmen und kann dann geloescht werden.
         // self::delete_unused_descriptors(self::$import_source_local_id, self::$import_time, implode(",", $insertedTopics));
     
         self::normalize_database();
