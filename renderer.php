@@ -1200,6 +1200,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     $studentCell->attributes['class'] = 'exabis_comp_top_studentcol colgroup colgroup-' . $columnGroup;
                     $studentCell->colspan = $studentsColspan;
                     $studentCell->text = fullname($student);
+                    if (block_exacomp_exastudexists() && ($info = block_exastud_api::get_student_review_link_info_for_teacher($student->id))) {
+                        $studentCell->text .= ' <a href="'.$info->url.'" title="'.block_exastud_t('de:Schülerbewertung').'">'.'<img src="pix/review_student.png" />'.'</a>';
+                    }
     
                     if($first)
                         $subjectRow->cells[] = $studentCell;
