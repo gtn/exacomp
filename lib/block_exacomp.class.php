@@ -428,4 +428,12 @@ class block_exacomp extends block_list {
 
         return true;
     }
+    
+    public static function t() {
+        return call_user_func_array(__CLASS__.'\\'.__FUNCTION__, func_get_args());
+    }
+
+    public static function get_string() {
+        return call_user_func_array(__CLASS__.'\\'.__FUNCTION__, func_get_args());
+    }
 }

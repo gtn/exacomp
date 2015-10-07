@@ -211,25 +211,36 @@ switch($action){
 		
 		break;
 	case('new-comp'):
-		$parentid = required_param('descriptorid', PARAM_INT);
+		$parent_descriptor = block_exacomp_descriptor::get(optional_param('descriptorid', 0, PARAM_INT));
+		$topic = block_exacomp_topic::get(optional_param('topicid', 0, PARAM_INT));
 		$title = required_param('title', PARAM_TEXT);
 		
-		//create sorting 
-		$parent_descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$parentid));
-		$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
-		$parent_descriptor->topicid = $descriptor_topic_mm->topicid;
-		$siblings = block_exacomp_get_child_descriptors($parent_descriptor, $courseid);
+		if ($parent_descriptor) {
+		    $descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
+		    $topicid = $descriptor_topic_mm->topicid;
 		
-		$max_sorting = 0;
-		foreach($siblings as $sibling){
-			if($sibling->sorting > $max_sorting) $max_sorting = $sibling->sorting;
+		    $parent_descriptor->topicid = $topicid;
+	        $siblings = block_exacomp_get_child_descriptors($parent_descriptor, $courseid);
+		} elseif ($topic) {
+		    $topicid = $topic->id;
+		    
+		    // TODO
+		    $siblings = block_exacomp_get_descriptors_by_topic($courseid, $topicid);
+		} else {
+		    print_error('not descriptorid or topicid submitted');
 		}
+		
+		
+		//create sorting 
+		
+		// get $max_sorting
+		$max_sorting = $siblings ? max(array_map(function($x) { return $x->sorting; }, $siblings)) : 0;
 		
 		$descriptor = new stdClass();
 		$descriptor->title = $title;
 		$descriptor->source = block_exacomp::CUSTOM_CREATED_DESCRIPTOR;
-		$descriptor->parentid = $parentid;
-		$descriptor->sorting = ++$max_sorting;
+	    $descriptor->parentid = $parent_descriptor ? $parent_descriptor->id : 0;
+		$descriptor->sorting = $max_sorting + 1;
 		
 		$id = $DB->insert_record(block_exacomp::DB_DESCRIPTORS, $descriptor);
 		
@@ -243,7 +254,7 @@ switch($action){
 		
 		//topic association
 		$childdesctopic_mm = new stdClass();
-		$childdesctopic_mm->topicid = $descriptor_topic_mm->topicid;
+		$childdesctopic_mm->topicid = $topicid;
 		$childdesctopic_mm->descrid = $id;
 
 		$DB->insert_record(block_exacomp::DB_DESCTOPICS, $childdesctopic_mm);
@@ -367,4 +378,13 @@ switch($action){
 		
 		$DB->update_record(block_exacomp::DB_DESCRIPTORS, $descriptor);
 		break;
+	case 'delete-descriptor':
+	    if (!$isTeacher) {
+	        print_error('noteacher');
+	    }
+	    
+	    block_exacomp_delete_custom_descriptor(required_param('id', PARAM_INT));
+	    break;
+	default:
+	    print_error('wrong action: '.$action);
 }

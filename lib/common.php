@@ -173,42 +173,111 @@ function get_string($identifier, $component = null, $a = null, $lazyload = false
     return $manager->get_string($identifier, '', $a);
 }
 
+function _t_check_identifier($string) {
+    if (preg_match('!^([^:]+):(.*)$!', $string, $matches))
+        return $matches;
+    else
+        return null;
+}
+function _t_parse_string($string, $a) {
+    // copy from moodle/lib/classes/string_manager_standard.php
+    // Process array's and objects (except lang_strings).
+    if (is_array($a) or (is_object($a) && !($a instanceof lang_string))) {
+        $a = (array)$a;
+        $search = array();
+        $replace = array();
+        foreach ($a as $key => $value) {
+            if (is_int($key)) {
+                // We do not support numeric keys - sorry!
+                continue;
+            }
+            if (is_array($value) or (is_object($value) && !($value instanceof lang_string))) {
+                // We support just string or lang_string as value.
+                continue;
+            }
+            $search[]  = '{$a->'.$key.'}';
+            $replace[] = (string)$value;
+        }
+        if ($search) {
+            $string = str_replace($search, $replace, $string);
+        }
+    } else {
+        $string = str_replace('{$a}', (string)$a, $string);
+    }
+    
+    return $string;
+}
 /*
  * translator function
  */
 function t() {
-    $args = func_get_args();
-
-    $languagestrings = array();
+    
+    $origArgs = $args = func_get_args();
+    
+    $languagestrings = null;
     $identifier = '';
     $a = null;
     
-    // extra parameters at the end?
-    if (count($args) >= 2) {
-        $last = end($args);
-        if (!is_string($last)) {
-            $a = array_pop($args);
+    if (empty($args)) {
+        print_error('no args');
+    }
+    
+    $arg = array_shift($args);
+    if (is_string($arg) && !_t_check_identifier($arg)) {
+        $identifier = $arg;
+
+        $arg = array_shift($args);
+    }
+    
+    if ($arg === null) {
+        // just id submitted
+        $languagestrings = array();
+    } elseif (is_array($arg)) {
+        $languagestrings = $arg;
+    } elseif (is_string($arg) && $matches = _t_check_identifier($arg)) {
+        $languagestrings = array($matches[1] => $matches[2]);
+    } else {
+        print_error('wrong args: '.print_r($origArgs, true));
+    }
+    
+    if (!empty($args)) {
+        $a = array_shift($args);
+    }
+    
+    // parse $languagestrings
+    foreach ($languagestrings as $lang => $string) {
+        if (is_number($lang)) {
+            if ($matches = _t_check_identifier($string)) {
+                $languagestrings[$matches[1]] = $matches[2];
+            } else {
+                print_error('wrong language string: '.$origArgs);
+            }
         }
     }
     
-    foreach ($args as $i => $string) {
-        if (preg_match('!^([^:]+):(.*)$!', $string, $matches)) {
-            $languagestrings[$matches[1]] = $matches[2];
-        } else if ($i == 0) {
-            // ... first entry is default.
-            $identifier = $string;
-        } else {
-            print_error('wrong string format: '.$string);
-        }
-        
+    if (!empty($args)) {
+        print_error('too many args: '.print_r($origArgs, true));
     }
-
+    
     $lang = current_language();
     if (isset($languagestrings[$lang])) {
-        return $languagestrings[$lang];
+        return _t_parse_string($languagestrings[$lang], $a);
     } elseif ($languagestrings) {
-        return reset($languagestrings);
+        return _t_parse_string(reset($languagestrings), $a);
     } else {
         return get_string($identifier, null, $a);
     }
 }
+// tests:
+/*
+echo t('edit')."<br />";
+echo t('de:xxx')."<br />";
+echo t('id', 'de:xxx')."<br />";
+echo t('id', ['de:xxx', 'en:yyy'])."<br />";
+echo t('de:xxx {$a} xxx', 'arg')."<br />";
+echo t('id', 'de:xxx {$a} xxx', 'arg')."<br />";
+echo t('id', ['de:xxx {$a} xxx', 'en:xxx {$a} xxx'], 'arg')."<br />";
+echo t('id', 'de:xxx {$a->arg} xxx', ['arg' => 'test'])."<br />";
+echo t('id', ['de:xxx {$a->arg} xxx', 'en:xxx {$a->arg} xxx'], ['arg' => 'test'])."<br />";
+exit;
+/* */

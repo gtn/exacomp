@@ -28,7 +28,7 @@ define('STUDENTS_PER_COLUMN', 5);
 require_once dirname(__FILE__)."/lib/xmllib.php";
 
 class block_exacomp_renderer extends plugin_renderer_base {
-	public function header($context, $courseid, $page_identifier="", $tabtree=true) {
+	public function header($context=null, $courseid=0, $page_identifier="", $tabtree=true) {
 	    global $PAGE;
 	    
         block_exacomp_init_js_css();
@@ -50,7 +50,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         }
 
         return
-            parent::header().$extras.(($tabtree)?parent::tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier):'').
+            parent::header().$extras.(($tabtree && $context)?parent::tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier):'').
             $this->print_wrapperdivstart();
     }
     
@@ -402,8 +402,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	            $right_content .= block_exacomp_get_message_icon($selectedStudent);
             }
             
-            //$right_content .= html_writer::empty_tag('input', array('type'=>'submit', 'id'=>'add_raster_submit', 'name'=> 'add_raster_submit', 'value'=>block_exacomp\t('add_raster', 'de:Kompetenzraster hinzufügen'),
-    		//	 "onclick" => "block_exacomp.popup_iframe('subject.php?courseid={$COURSE->id}&show=add');"));
+            $right_content .= html_writer::empty_tag('input', array('type'=>'button', 'id'=>'add_raster_submit', 'name'=> 'add_raster_submit', 'value'=>block_exacomp::t('add_raster', 'de:Kompetenzraster anlegen'),
+    			 "onclick" => "block_exacomp.popup_iframe('subject.php?courseid={$COURSE->id}&show=add');"));
             
 			$url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid'=>$COURSE->id, 'creatorid'=>$USER->id));
     		$right_content .= html_writer::tag('button', html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'), 
@@ -440,8 +440,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
     	return html_writer::empty_tag('input', array('type'=>'submit', 'id'=>'edit_mode_submit', 'name'=> 'edit_mode_submit', 'value'=>get_string(($edit) ? 'editmode_off' : 'editmode_on','block_exacomp'),
     			 "onclick" => "document.location.href='".$PAGE->url."&editmode=" . (!$edit).$url."'"));
     }
+    
+    // TOOD: rename to print_topics_menu
     public function print_subjects_menu($types,$selectedSubject) {
-    	global $PAGE;
+    	global $PAGE, $CFG, $COURSE;
     	
     	$edit = $this->is_edit_mode();
     	$studentid = optional_param('studentid', BLOCK_EXACOMP_SHOW_ALL_STUDENTS,PARAM_INT);
@@ -450,16 +452,38 @@ class block_exacomp_renderer extends plugin_renderer_base {
     	$content .= html_writer::start_tag('ul');
     	
     	foreach($types as $type) {
-    		$content .= html_writer::tag('li',
-    				html_writer::link("#",
-    						$type->title, array('class' => 'type'))
+    	    $extra = '';
+    	    if ($this->is_edit_mode() && $type->source == block_exacomp::DATA_SOURCE_CUSTOM) {
+		        $extra .= ' <img src="pix/edit.png" title="'.block_exacomp::t('edit').'" onclick="block_exacomp.popup_iframe(\'subject.php?courseid='.$COURSE->id.'&id='.$type->id.'\'); return false;" />';
+		    
+    	    }
+    	    $content .= html_writer::tag('li',
+    				html_writer::link(
+    				        // edit mode: allow seleting only one subject
+    				        ($this->is_edit_mode() ? $PAGE->url . "&studentid=" . $studentid . "&editmode=" . $edit . "&ng_subjectid=" . $type->id : "#"),
+    						$type->title.$extra, array('class' => 'type'))
     		);
     		
-    		foreach($type->subjects as $subject)
-    			$content .= html_writer::tag('li',
+    		foreach($type->subjects as $subject) {
+    		    $extra = '';
+    		    if ($this->is_edit_mode() && $subject->source == block_exacomp::DATA_SOURCE_CUSTOM) {
+    		        $extra .= ' <img src="pix/edit.png" title="'.block_exacomp::t('edit').'" onclick="block_exacomp.popup_iframe(\'topic.php?courseid='.$COURSE->id.'&id='.$subject->id.'\'); return false;" />';
+    		    }
+    		    
+    		    $content .= html_writer::tag('li',
     				html_writer::link($PAGE->url . "&studentid=" . $studentid . "&editmode=" . $edit . "&subjectid=" . $subject->id,
-    						block_exacomp_get_topic_numbering($subject).' '.$subject->title, array('class' => ($subject->id == $selectedSubject->id) ? 'current' : ''))
+    						block_exacomp_get_topic_numbering($subject).' '.$subject->title.$extra, array('class' => ($subject->id == $selectedSubject->id) ? 'current' : ''))
     				);
+    		}
+       		if ($this->is_edit_mode() && $type->source == block_exacomp::DATA_SOURCE_CUSTOM) {
+        	    // only if editing and if subject was added by teacher
+    			$content .= html_writer::tag('li',
+    				html_writer::link("topic.php?show=add&courseid={$COURSE->id}&subjectid={$type->id}",
+    						"<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".
+    				        block_exacomp::t('de:Neuer Kompetenzbereich'), array("onclick" => "block_exacomp.popup_iframe(this.href); return false;"))
+    				);
+        	}
+    	
     	}
     	
     	$content .= html_writer::end_tag('ul');
@@ -932,7 +956,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
         $cell = new html_table_cell();
         $cell->colspan = 4;
-        $cell->text = html_writer::tag('h5', 'Teilkompetenzen', array('style'=>'float:right;'));
+        $cell->text = html_writer::tag('h5', block_exacomp::t('de:Teilkompetenzen'), array('style'=>'float:right;'));
 
         $row->cells[] = $cell;
 
@@ -1492,11 +1516,27 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             $rows[] = $topicRow;
 
             if (!empty($topic->descriptors)) {
-                $this->print_descriptors($rows, $level+1, $topic->descriptors, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $statistic, false,  true);
+                $this->print_descriptors($rows, $level+1, $topic->descriptors, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $statistic, false, true);
+                $this->print_descriptors($rows, $level+1, $topic->descriptors, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $statistic, true, true);
             }
 
             if (!empty($topic->subs)) {
                 $this->print_topics($rows, $level+1, $topic->subs, $data, $students, $sub_rowgroup_class,$profoundness, $editmode);
+            }
+
+            if($editmode) {
+                // kompetenz hinzufuegen
+                $own_additionRow = new html_table_row();
+                $own_additionRow->attributes['class'] = 'exabis_comp_aufgabe highlight ' . $sub_rowgroup_class;
+                
+                $own_additionRow->cells[] = new html_table_cell();
+                
+                $cell = new html_table_cell();
+                $cell->style = "padding-left: ". $padding."px";
+                $cell->text = html_writer::empty_tag('input', array('exa-type'=>'new-comp', 'type'=>'textfield', 'placeholder'=>block_exacomp::t('de:[Neue Kompetenz]'), 'topicid'=>$topic->id));
+                $own_additionRow->cells[] = $cell;
+                $own_additionRow->cells[] = new html_table_cell();
+                $rows[] = $own_additionRow;
             }
         }
     }
@@ -1591,7 +1631,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     if($editmode && $custom_created_descriptors){
                     	$titleCell->text .= html_writer::link("", $OUTPUT->pix_icon("i/edit", get_string("edit")), array('name' => 'edit-descriptor','descrid' => $descriptor->id, 'id' => 'edit-descriptor'));
       
-                        $titleCell->text .= html_writer::link($PAGE->url . "&delete_descr=" . $descriptor->id."&editmode=1", $OUTPUT->pix_icon("t/delete", get_string("delete"), "", array("onclick" => "return confirm('" . get_string('delete_confirmation_descr','block_exacomp') . "')")));
+                        $titleCell->text .= html_writer::link("", $OUTPUT->pix_icon("t/delete", get_string("delete")), array("onclick" => "if (confirm('" . get_string('delete_confirmation_descr','block_exacomp') . "')) block_exacomp.delete_descriptor(".$descriptor->id."); return false;"));
                     }
                 }
                 /*if ($editmode) {
@@ -1958,7 +1998,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     $this->print_descriptors($rows, $level+1, $descriptor->children, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $statistic);
                 }
                 //schulische ergänzungen und neue teilkompetenz
-                if($editmode && $parent){
+                if($editmode && $parent) {
                     
                     $own_additionRow = new html_table_row();
                     $own_additionRow->attributes['class'] = 'exabis_comp_aufgabe ' . $sub_rowgroup_class;
@@ -1972,6 +2012,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     
                     $rows[] = $own_additionRow;
                     
+                    // is this was a bug? it's printed twice?
+                    // no, first print the imported descriptors, then print the user created ones
                     $this->print_descriptors($rows, $level+1, $descriptor->children, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $statistic, true);
                     
                     $own_additionRow = new html_table_row();
@@ -1981,7 +2023,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     
                     $cell = new html_table_cell();
                     $cell->style = "padding-left: ". ($padding + 20 )."px";
-                    $cell->text = html_writer::empty_tag('input', array('name'=>'new_comp'.$descriptor->id, 'type'=>'textfield', 'placeholder'=>'[neue Teilkompetenz]', 'descrid'=>$descriptor->id));
+                    $cell->text = html_writer::empty_tag('input', array('exa-type'=>'new-comp', 'name'=>'new_comp'.$descriptor->id, 'type'=>'textfield', 'placeholder'=>block_exacomp::t('de:[Neue Teilkompetenz]'), 'descrid'=>$descriptor->id));
                     $own_additionRow->cells[] = $cell;
                     $own_additionRow->cells[] = new html_table_cell();
                     $rows[] = $own_additionRow;
@@ -5097,6 +5139,30 @@ var dataset = dataset.map(function (group) {
         ?>
         <script type="text/javascript">
         		block_exacomp.popup_close();
+        </script>
+        <?php
+        return ob_get_clean();
+    }
+    
+    public function popup_close_and_reload() {
+        ob_start();
+        ?>
+        <script type="text/javascript">
+        		block_exacomp.popup_close();
+            	// reload
+            	top.location.reload();
+        </script>
+        <?php
+        return ob_get_clean();
+    }
+    
+    public function popup_close_and_forward($url) {
+        ob_start();
+        ?>
+        <script type="text/javascript">
+        		block_exacomp.popup_close();
+            	// reload
+            	top.location.href = <?php echo json_encode($url); ?>;
         </script>
         <?php
         return ob_get_clean();

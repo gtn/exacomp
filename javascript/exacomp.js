@@ -1,4 +1,8 @@
+
+(function() {
+
 window.jQueryExacomp = jQuery;
+var $ = jQuery;
 
 Storage.prototype.setObject = function(key, value) {
     this.setItem(key, JSON.stringify(value));
@@ -8,6 +12,14 @@ Storage.prototype.getObject = function(key) {
     return value && JSON.parse(value);
 };
 
+/**
+ * $.disablescroll
+ * Author: Josh Harrison - aloof.co
+ *
+ * Disables scroll events from mousewheels, touchmoves and keypresses.
+ * Use while jQuery is animating the scroll position for a guaranteed super-smooth ride!
+ */(function(e){"use strict";function r(t,n){this.opts=e.extend({handleWheel:!0,handleScrollbar:!0,handleKeys:!0,scrollEventKeys:[32,33,34,35,36,37,38,39,40]},n);this.$container=t;this.$document=e(document);this.lockToScrollPos=[0,0];this.disable()}var t,n;n=r.prototype;n.disable=function(){var e=this;e.opts.handleWheel&&e.$container.on("mousewheel.disablescroll DOMMouseScroll.disablescroll touchmove.disablescroll",e._handleWheel);if(e.opts.handleScrollbar){e.lockToScrollPos=[e.$container.scrollLeft(),e.$container.scrollTop()];e.$container.on("scroll.disablescroll",function(){e._handleScrollbar.call(e)})}e.opts.handleKeys&&e.$document.on("keydown.disablescroll",function(t){e._handleKeydown.call(e,t)})};n.undo=function(){var e=this;e.$container.off(".disablescroll");e.opts.handleKeys&&e.$document.off(".disablescroll")};n._handleWheel=function(e){e.preventDefault()};n._handleScrollbar=function(){this.$container.scrollLeft(this.lockToScrollPos[0]);this.$container.scrollTop(this.lockToScrollPos[1])};n._handleKeydown=function(e){for(var t=0;t<this.opts.scrollEventKeys.length;t++)if(e.keyCode===this.opts.scrollEventKeys[t]){e.preventDefault();return}};e.fn.disablescroll=function(e){!t&&(typeof e=="object"||!e)&&(t=new r(this,e));t&&typeof e=="undefined"?t.disable():t&&t[e]&&t[e].call(t)};window.UserScrollDisabler=r})(jQuery);
+ 
 window.block_exacomp = {
 	get_param: function(name) {
 			name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
@@ -20,18 +32,26 @@ window.block_exacomp = {
 		data.courseid = block_exacomp.get_param('courseid');
 		data.sesskey = M.cfg.sesskey;
 		
-		return $.ajax({
+		var ajax = $.ajax({
 			method : "POST",
 			url : "ajax.php",
 			data : data
 		})
-		.done(function(msg) {
-			console.log(data.action, 'msg', msg);
+		.done(function(ret) {
+			console.log(data.action, 'ret', ret);
 			if (done) done(msg);
-		}).error(function(msg) {
-			console.log("Error: " + data.action, 'msg', msg);
-			if (error) error(msg);
+		}).error(function(ret) {
+			var errorMsg = '';
+			if (ret.responseText[0] == '<') {
+				// html
+				errorMsg = $(ret.responseText).find('.errormessage').text();
+			}
+			console.log("Error in action '" + data.action +"'", errorMsg, 'ret', ret);
+			
+			if (error) error(ret);
 		});
+		
+		return ajax;
 	},
 	
 	popup_iframe: function(config) {
@@ -54,10 +74,35 @@ window.block_exacomp = {
             // ok: width: '80%',
             // ok: width: '500px',
             // ok: width: null, = automatic
-            height: '90%',
-            width: '90%',
+            height: '80%',
+            width: '85%',
             // closeButtonTitle: 'clooose'
     	});
+		
+		// disable scrollbars
+		$(window).disablescroll();
+		
+		// hack my own overlay, because moodle dialogue modal is not working
+		var overlay = $('<div style="opacity:0.7; filter: alpha(opacity=20); background-color:#000; width:100%; height:100%; z-index:10; top:0; left:0; position:fixed;"></div>')
+			.appendTo('body');
+		// hide popup when clicking overlay
+		overlay.click(function(){
+			popup.hide();
+		});
+		
+		
+		var orig_hide = popup.hide;
+		popup.hide = function() {
+			// remove overlay, when hiding popup
+			overlay.remove();
+			
+			// enable scrolling
+			$(window).disablescroll('undo');
+			
+			// call original popup.hide()
+			orig_hide.call(popup);
+		};
+
 		
 		this.last_popup = popup;
 		
@@ -79,82 +124,82 @@ window.block_exacomp = {
 	popup_close_and_notify: function(func, args) {
 		var parent = window.opener || window.parent;
 	
-		// notify parent
+		// first notify parent
 		parent.block_exacomp[func].apply(parent.block_exacomp, args);
 
+		// then close popup and unload iframe etc.
 		this.popup_close();
 	}
 };
 
-(function($) {
-	$(function() {
-		// handle: de-du, de, en, en-us,... and strip -du, ...
-		var lang = $('html').prop('lang').replace(/\-.*/, '');
-		
-		if ($.datepicker) {
+$(function() {
+	// handle: de-du, de, en, en-us,... and strip -du, ...
+	var lang = $('html').prop('lang').replace(/\-.*/, '');
+	
+	if ($.datepicker) {
+		$.datepicker.setDefaults({
+			dateFormat : 'yy-mm-dd'
+		});
+
+		if (lang == 'de') {
 			$.datepicker.setDefaults({
-				dateFormat : 'yy-mm-dd'
+				showOn : "both",
+				buttonImageOnly : true,
+				buttonImage : "pix/calendar_alt_stroke_12x12.png",
+				buttonText : "Calendar",
+				prevText : '&#x3c;zurück',
+				prevStatus : '',
+				prevJumpText : '&#x3c;&#x3c;',
+				prevJumpStatus : '',
+				nextText : 'Vor&#x3e;',
+				nextStatus : '',
+				nextJumpText : '&#x3e;&#x3e;',
+				nextJumpStatus : '',
+				currentText : 'heute',
+				currentStatus : '',
+				todayText : 'heute',
+				todayStatus : '',
+				clearText : '-',
+				clearStatus : '',
+				closeText : 'schließen',
+				closeStatus : '',
+				monthNames : [ 'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+						'Juli', 'August', 'September', 'Oktober', 'November',
+						'Dezember' ],
+				monthNamesShort : [ 'Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun',
+						'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez' ],
+				dayNames : [ 'Sonntag', 'Montag', 'Dienstag', 'Mittwoch',
+						'Donnerstag', 'Freitag', 'Samstag' ],
+				dayNamesShort : [ 'So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa' ],
+				dayNamesMin : [ 'So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa' ],
+				showMonthAfterYear : false,
+				showOn : 'both'
 			});
-
-			if (lang == 'de') {
-				$.datepicker.setDefaults({
-					showOn : "both",
-					buttonImageOnly : true,
-					buttonImage : "pix/calendar_alt_stroke_12x12.png",
-					buttonText : "Calendar",
-					prevText : '&#x3c;zurück',
-					prevStatus : '',
-					prevJumpText : '&#x3c;&#x3c;',
-					prevJumpStatus : '',
-					nextText : 'Vor&#x3e;',
-					nextStatus : '',
-					nextJumpText : '&#x3e;&#x3e;',
-					nextJumpStatus : '',
-					currentText : 'heute',
-					currentStatus : '',
-					todayText : 'heute',
-					todayStatus : '',
-					clearText : '-',
-					clearStatus : '',
-					closeText : 'schließen',
-					closeStatus : '',
-					monthNames : [ 'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
-							'Juli', 'August', 'September', 'Oktober', 'November',
-							'Dezember' ],
-					monthNamesShort : [ 'Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun',
-							'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez' ],
-					dayNames : [ 'Sonntag', 'Montag', 'Dienstag', 'Mittwoch',
-							'Donnerstag', 'Freitag', 'Samstag' ],
-					dayNamesShort : [ 'So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa' ],
-					dayNamesMin : [ 'So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa' ],
-					showMonthAfterYear : false,
-					showOn : 'both'
-				});
-			}
-			$(".datepicker").datepicker();
-
-			// set minDate to today for datepicker-mindate class
-			$(".datepicker.datepicker-mindate").datepicker("option", "minDate", 0);
 		}
-	});
-	
-	if ($().tooltip) {
-		// only if we have the tooltip function
-		$(function() {
-			$('.exabis-tooltip').tooltip({
-				// retreave content as html
-				content : function() {
-					return $(this).prop('title');
-				}
-			});
-		});
+		$(".datepicker").datepicker();
+
+		// set minDate to today for datepicker-mindate class
+		$(".datepicker.datepicker-mindate").datepicker("option", "minDate", 0);
 	}
-	
-	// student selector
-	$(function(){
-		$('select[name=exacomp_competence_grid_select_student]').change(function(){
-			document.location.href = this.getAttribute('data-url') + '&studentid='+this.value;
+});
+
+if ($().tooltip) {
+	// only if we have the tooltip function
+	$(function() {
+		$('.exabis-tooltip').tooltip({
+			// retreave content as html
+			content : function() {
+				return $(this).prop('title');
+			}
 		});
 	});
+}
+
+// student selector
+$(function(){
+	$('select[name=exacomp_competence_grid_select_student]').change(function(){
+		document.location.href = this.getAttribute('data-url') + '&studentid='+this.value;
+	});
+});
 	
-})(jQueryExacomp);
+})();

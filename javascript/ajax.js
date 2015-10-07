@@ -232,175 +232,170 @@
 		description = $(this).val();
 	});
 	
-	var already_added = [];
-	$(document).on('keydown', 'input[name^=new_comp]', function(event) {
+	$(document).on('keypress', 'input[exa-type=new-comp]', function(event) {
 		if(event.which == 13){
-			title_new_comp = $(this).val();
-			descriptorid = $(this).attr('descrid');
+			// hitting enter in a new-competency field
+			// prevent form submit, save and reload
+			event.preventDefault();
+			insert_descriptor(this);
+			// hack: first wait ajax calls, then reload
+			window.setTimeout(function() { location.reload() }, 50);
 			
-			insert_descriptor(title_new_comp, descriptorid);
-			
-			already_added[descriptorid] = descriptorid;
-			
+			return false;
 		}
 	});
-	
 	$(document).on('click', '#assign-competencies input[type=submit]', function(event) {
-							event.preventDefault();
-							courseid = block_exacomp.get_param('courseid');
+		event.preventDefault();
+		courseid = block_exacomp.get_param('courseid');
 
-							// only for crosssubjects
-							var crosssubjid = 0;
-							var select = document
-									.getElementById("menulis_crosssubs");
+		// only for crosssubjects
+		var crosssubjid = 0;
+		var select = document
+				.getElementById("menulis_crosssubs");
 
-							if (select) {
-								crosssubjid = select.options[select.selectedIndex].value;
-							} else if (block_exacomp.get_param("crosssubjid") !== null) {
-								crosssubjid = block_exacomp.get_param('crosssubjid');
-							}
+		if (select) {
+			crosssubjid = select.options[select.selectedIndex].value;
+		} else if (block_exacomp.get_param("crosssubjid") !== null) {
+			crosssubjid = block_exacomp.get_param('crosssubjid');
+		}
 
-							switch ($(this).attr('id')) {
-							case 'btn_submit':
-								if (Object.size(competencies) > 0) {
-									block_exacomp.call_ajax({
-										competencies : JSON
-												.stringify(competencies),
-										comptype : 0,
-										action : 'competencies_array'
-									});
-									competencies = {};
-								}
+		switch ($(this).attr('id')) {
+		case 'btn_submit':
+			if (Object.size(competencies) > 0) {
+				block_exacomp.call_ajax({
+					competencies : JSON
+							.stringify(competencies),
+					comptype : 0,
+					action : 'competencies_array'
+				});
+				competencies = {};
+			}
 
-								if (Object.size(topics) > 0) {
-									block_exacomp.call_ajax({
-										competencies : JSON
-												.stringify(topics),
-										comptype : 1,
-										action : 'competencies_array'
-									}).done(function(msg) {
-										console.log("Topics Saved: " + msg);
-									});
+			if (Object.size(topics) > 0) {
+				block_exacomp.call_ajax({
+					competencies : JSON
+							.stringify(topics),
+					comptype : 1,
+					action : 'competencies_array'
+				}).done(function(msg) {
+					console.log("Topics Saved: " + msg);
+				});
 
-									topics = {};
-								}
-								
-								if (Object.size(crosssubs) > 0) {
-									block_exacomp.call_ajax({
-										competencies : JSON
-												.stringify(crosssubs),
-										comptype : 2,
-										action : 'competencies_array'
-									}).done(function(msg) {
-										console.log("Crosssubs Saved: " + msg);
-									});
+				topics = {};
+			}
+			
+			if (Object.size(crosssubs) > 0) {
+				block_exacomp.call_ajax({
+					competencies : JSON
+							.stringify(crosssubs),
+					comptype : 2,
+					action : 'competencies_array'
+				}).done(function(msg) {
+					console.log("Crosssubs Saved: " + msg);
+				});
 
-									crosssubs = {};
-								}
-								
-								if (Object.size(examples) > 0) {
-									block_exacomp.call_ajax({
-										examples : JSON.stringify(examples),
-										action : 'examples_array'
-									});
+				crosssubs = {};
+			}
+			
+			if (Object.size(examples) > 0) {
+				block_exacomp.call_ajax({
+					examples : JSON.stringify(examples),
+					action : 'examples_array'
+				});
 
-									examples = {};
-								}
+				examples = {};
+			}
 
-								var select = document
-								.getElementById("menulis_crosssubject_subject");
+			var select = document
+			.getElementById("menulis_crosssubject_subject");
 
-								// Cross-Suject subject
-								if (select && crosssubjid > 0) {
-									crosssubj_subjectid = select.options[select.selectedIndex].value;
-								
-									block_exacomp.call_ajax({
-										crosssubjid: crosssubjid,
-										subjectid: crosssubj_subjectid,
-										action: 'crosssubj-subject'
-									});
-								}
-								// Cross-Subject title & description
-								
-								if (title && crosssubjid > 0) {
-									
-									block_exacomp.call_ajax({
-										crosssubjid : crosssubjid,
-										title : title,
-										action : 'crosssubj-title'
-									});
+			// Cross-Suject subject
+			if (select && crosssubjid > 0) {
+				crosssubj_subjectid = select.options[select.selectedIndex].value;
+			
+				block_exacomp.call_ajax({
+					crosssubjid: crosssubjid,
+					subjectid: crosssubj_subjectid,
+					action: 'crosssubj-subject'
+				});
+			}
+			// Cross-Subject title & description
+			
+			if (title && crosssubjid > 0) {
+				
+				block_exacomp.call_ajax({
+					crosssubjid : crosssubjid,
+					title : title,
+					action : 'crosssubj-title'
+				});
 
-								}
-								if (description && crosssubjid > 0) {
-									block_exacomp.call_ajax({
-										crosssubjid : crosssubjid,
-										description : description,
-										action : 'crosssubj-description'
-									});
-								}
+			}
+			if (description && crosssubjid > 0) {
+				block_exacomp.call_ajax({
+					crosssubjid : crosssubjid,
+					description : description,
+					action : 'crosssubj-description'
+				});
+			}
 
-								//check all new_comp text fields if somewhere new text is entered when saving and create new descriptor
-								$( "input[name^=new_comp]" ).each(function( event ) {
-									  if($(this).val() && !already_added[$(this).attr('descrid')]){
-										  title_new_comp = $(this).val();
-										  descriptorid = $(this).attr('descrid');
-											
-										  insert_descriptor(title_new_comp, descriptorid);
-									  }
-								});
-								
-								//check all edit-descriptor text fields if somewhere new text is entered when saving and change descriptor
-								$( "input[name^=change-title]" ).each(function( event ) {
-									  if($(this).val()){
-										  title = $(this).val();
-										  descrid = $(this).attr('descrid');
-										  
-										  block_exacomp.call_ajax({
-												descrid : descrid,
-												title : title,
-												action : 'edit-descriptor-title'
-										  });
-										  
-										  var span = $(this).parent('span');
-										  span.text($(this).val());
-									  }
-								});
-								
-								alert('Änderungen wurden gespeichert!');
-								break;
-							case 'save_as_draft':
-								if (crosssubjid > 0) {
-									block_exacomp.call_ajax({
-										crosssubjid : crosssubjid,
-										action : 'save_as_draft'
-									});
-								}
-								event.preventDefault();
-								alert("Thema wurde als Vorlage gespeichert!");
-								break;
-							case 'share_crosssub':
-								url = 'select_students.php?courseid='
-										+ courseid + '&crosssubjid='
-										+ crosssubjid;
-								window.open(url, '_blank',
-										'width=880,height=660, scrollbars=yes');
-								break;
-							case 'delete_crosssub':
-								message = $(this).attr('message');
-								if (confirm(message)) {
-									if (crosssubjid > 0) {
-										block_exacomp.call_ajax({
-											crosssubjid : crosssubjid,
-											action : 'delete-crosssubject'
-										});
-									}
+			//check all new_comp text fields if somewhere new text is entered when saving and create new descriptor
+			$( "input[exa-type=new-comp]" ).each(function(){ insert_descriptor(this); });
+			
+			//check all edit-descriptor text fields if somewhere new text is entered when saving and change descriptor
+			$( "input[name^=change-title]" ).each(function( event ) {
+				  if($(this).val()){
+					  title = $(this).val();
+					  descrid = $(this).attr('descrid');
+					  
+					  block_exacomp.call_ajax({
+							descrid : descrid,
+							title : title,
+							action : 'edit-descriptor-title'
+					  });
+					  
+					  var span = $(this).parent('span');
+					  span.text($(this).val());
+				  }
+			});
+			
+			alert('Änderungen wurden gespeichert!');
+			// hack: first wait ajax calls, then reload
+			window.setTimeout(function() { location.reload() }, 50);
+			break;
+		case 'save_as_draft':
+			if (crosssubjid > 0) {
+				block_exacomp.call_ajax({
+					crosssubjid : crosssubjid,
+					action : 'save_as_draft'
+				});
+			}
+			event.preventDefault();
+			alert("Thema wurde als Vorlage gespeichert!");
+			break;
+		case 'share_crosssub':
+			url = 'select_students.php?courseid='
+					+ courseid + '&crosssubjid='
+					+ crosssubjid;
+			window.open(url, '_blank',
+					'width=880,height=660, scrollbars=yes');
+			break;
+		case 'delete_crosssub':
+			message = $(this).attr('message');
+			if (confirm(message)) {
+				if (crosssubjid > 0) {
+					block_exacomp.call_ajax({
+						crosssubjid : crosssubjid,
+						action : 'delete-crosssubject'
+					});
+				}
 
-									location.reload();
-								} 
-								break;
-							}
-
-						});
+				location.reload();
+			} 
+			break;
+		}
+		
+		return false;
+	});
 
 	$(document).on('click', 'input[name=share_all]', function(){
 		if(this.checked == "1"){
@@ -726,10 +721,13 @@
 				|| Object.keys(examples).length > 0)
 			return M.util.get_string('unload_notice', 'block_exacomp');
 	});
-	function insert_descriptor(title_new_comp, descriptorid){
+	function insert_descriptor(element){
+		if (!element.value) return;
+		
 		block_exacomp.call_ajax({
-			descriptorid: descriptorid,
-			title : title_new_comp,
+			descriptorid: element.getAttribute('descrid'),
+			topicid: element.getAttribute('topicid'),
+			title: element.value,
 			action : 'new-comp'
 		}).done(function(msg) {
 			//im crosssubject neue Teilkompetenz erstellt -> gleich thema zuordnen
@@ -749,9 +747,17 @@
 					action : 'crosssubj-descriptors-single'
 				});
 			}
-			location.reload();
 		});
 
+	}
+	
+	block_exacomp.delete_descriptor = function(id) {
+		block_exacomp.call_ajax({
+			id: id,
+			action : 'delete-descriptor'
+		}).done(function(msg) {
+			location.reload();
+		});
 	}
 
 })(jQueryExacomp);

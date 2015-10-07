@@ -41,11 +41,11 @@ $context = context_course::instance($courseid);
 $output = $PAGE->get_renderer('block_exacomp');
 
 $id = optional_param('id', 0, PARAM_INT);
-$item = $id ? block_exacomp_subject::get($id) : null;
+$item = $id ? block_exacomp_topic::get($id) : null;
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/subject.php', array('courseid' => $courseid));
-$PAGE->set_heading(block_exacomp::t($item ? 'de:Kompetenzraster bearbeiten' : 'de:Neuen Kompetenzraster anlegen'));
+$PAGE->set_heading(block_exacomp::t($item ? 'de:Kompetenzbereich bearbeiten' : 'de:Neuen Kompetenzbereich anlegen'));
 $PAGE->set_pagelayout('popup');
 
 // build tab navigation & print header
@@ -71,21 +71,16 @@ require_once $CFG->libdir . '/formslib.php';
 class block_exacomp_local_item_form extends moodleform {
 
     function definition() {
-        global $CFG, $USER, $DB, $version, $PAGE, $item;
+        global $CFG, $USER, $DB, $version, $PAGE;
 
         $output = $PAGE->get_renderer('block_exacomp');
 
         $mform = & $this->_form;
 
-        // $mform->addElement('header', 'general', get_string("example_upload_header", "block_exacomp", $descrTitle));
-
         $mform->addElement('text', 'title', block_exacomp\get_string('name'), 'maxlength="255" size="60"');
         $mform->setType('title', PARAM_TEXT);
         $mform->addRule('title', block_exacomp\get_string("titlenotemtpy"), 'required', null, 'client');
 
-        $tselect = $mform->addElement('select', 'stid', block_exacomp\get_string('tab_teacher_settings_selection_st'), $DB->get_records_menu(block_exacomp::DB_SCHOOLTYPES, null, null, 'id, title'));
-        // $tselect->setSelected(array_keys($DB->get_records(block_exacomp::DB_EXAMPTAX,array("exampleid" => $this->_customdata['exampleid']),"","taxid")));
-        
         $this->add_action_buttons(false);
     }
 }
@@ -97,57 +92,30 @@ if($formdata = $form->get_data()) {
     
     $new = new stdClass();
     $new->title = $formdata->title;
-    $new->stid = $formdata->stid;
-    $new->titleshort = substr($formdata->title, 0, 1);
     
     if (!$item) {
         $new->source = block_exacomp::DATA_SOURCE_CUSTOM;
         $new->sourceid = 0;
-    
-        $new->id = $DB->insert_record(block_exacomp::DB_SUBJECTS, $new);
+        $new->subjid = required_param('subjectid', PARAM_INT);
         
-        // add one dummy topic
-        $topicid = $DB->insert_record(block_exacomp::DB_TOPICS, array(
-            'title' => block_exacomp::t('de:Neuer Raster'),
-            'subjid' => $new->id,
-            'source' => block_exacomp::DATA_SOURCE_CUSTOM,
-            'sourceid' => 0
-        ));
-    
-        // add dummy topic to course
+        $new->id = $DB->insert_record(block_exacomp::DB_TOPICS, $new);
+        
+        // add topic to course
         $DB->insert_record(block_exacomp::DB_COURSETOPICS, array(
             'courseid' => $courseid,
-            'topicid' => $topicid
+            'topicid' => $new->id
         ));
     } else {
         $new->id = $item->id;
-        $DB->update_record(block_exacomp::DB_SUBJECTS, $new);
+        $DB->update_record(block_exacomp::DB_TOPICS, $new);
     }
     
     echo $output->header();
-    echo $output->popup_close_and_forward($CFG->wwwroot."/blocks/exacomp/assign_competencies.php?courseid=".$courseid."&editmode=1&ng_subjectid={$new->id}");
+    echo $output->popup_close_and_reload();
     echo $output->footer();
     
 	exit;
 }
-
-/*
-if ($exampleid > 0) {
-    $example->descriptors = $DB->get_fieldset_select('block_exacompdescrexamp_mm', 'descrid', 'exampid = ?',array($exampleid));
-    
-    $draftitemid = file_get_submitted_draft_itemid('file');
-    file_prepare_draft_area($draftitemid, context_system::instance()->id, 'block_exacomp', 'example_task', $exampleid,
-            array('subdirs' => 0, 'maxfiles' => 1));
-    $example->file = $draftitemid;
-    
-    $draftitemid = file_get_submitted_draft_itemid('solution');
-    file_prepare_draft_area($draftitemid, context_system::instance()->id, 'block_exacomp', 'example_solution', $exampleid,
-            array('subdirs' => 0, 'maxfiles' => 1));
-    $example->solution = $draftitemid;
-    
-    $form->set_data($example);
-}
-*/
 
 echo $output->header($context, $courseid, '', false);
 

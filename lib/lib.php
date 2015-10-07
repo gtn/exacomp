@@ -165,7 +165,7 @@ function block_exacomp_require_admin($context = null) {
  */
 function block_exacomp_get_subject_by_id($subjectid) {
 	global $DB;
-	return $DB->get_record(block_exacomp::DB_SUBJECTS,array("id" => $subjectid),'id, title, titleshort, \'subject\' as tabletype');
+	return $DB->get_record(block_exacomp::DB_SUBJECTS,array("id" => $subjectid),'id, title, titleshort, \'subject\' as tabletype, source');
 }
 /**
  * Gets all subjects that are in use in a particular course.
@@ -319,7 +319,7 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
-	$sql = 'SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description, t.numb
+	$sql = 'SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description, t.numb, t.source
 	FROM {'.block_exacomp::DB_TOPICS.'} t
 	JOIN {'.block_exacomp::DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.(($subjectid > 0) ? 'AND t.subjid = ? ': '')
 	.($showalldescriptors ? '' : '
@@ -1009,7 +1009,7 @@ function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldes
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 	
-	$sql = '(SELECT DISTINCT d.id, desctopmm.id as u_id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.requirement, d.knowledgecheck, d.benefit, n.title as cattitle '
+	$sql = '(SELECT DISTINCT d.id, desctopmm.id as u_id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.requirement, d.knowledgecheck, d.benefit, d.sorting, n.title as cattitle '
 	.'FROM {'.block_exacomp::DB_TOPICS.'} t JOIN {'.block_exacomp::DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($topicid > 0) ? ' AND t.id = '.$topicid.' ' : '')
 	.'JOIN {'.block_exacomp::DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
 	.'JOIN {'.block_exacomp::DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid=0 '
@@ -1176,10 +1176,14 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 function block_exacomp_init_overview_data($courseid, $ng_subjectid, $subjectid, $topicid, $student=false, $studentid=0) {
 	global $version, $DB;
 	
-	if($version){
+	if ($ng_subjectid) {
+	    // a subjectid was submitted, so we only want to show that one!
+	    $subjects = block_exacomp_get_topics_by_subject($courseid, $ng_subjectid);
+	} else if($version){
 		$subjects = block_exacomp_get_topics_by_course($courseid);
-	}else
+	}else {
 		$subjects = block_exacomp_get_subjects_by_course($courseid);
+	}
 	
 	if (isset($subjects[$subjectid])) {
 		$selectedSubject = $subjects[$subjectid];
@@ -3973,6 +3977,7 @@ function block_exacomp_get_schooltypetree_by_subjects($subjects, $competencegrid
             $tree[$schooltype->id] = new stdClass();
             $tree[$schooltype->id]->id = $schooltype->id;
             $tree[$schooltype->id]->title = $schooltype->title; 
+            $tree[$schooltype->id]->source = !empty($schooltype->source) ? $schooltype->source : null; 
             $tree[$schooltype->id]->subjects = array();
         }
         $tree[$schooltype->id]->subjects[$subject->id] = $subject; 
