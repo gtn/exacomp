@@ -33,6 +33,57 @@ window.block_exacomp = {
 			if (error) error(msg);
 		});
 	},
+	
+	popup_iframe: function(config) {
+		
+		// allow passing of an url
+		if (typeof config == 'string') {
+			config = {
+				url: config
+			};
+		}
+		
+		var popup = new M.core.dialogue({
+            headerContent: config.headerContent || config.title || 'Popup', // M.str.moodle.loadinghelp, // previousimagelink + '<div id=\"imagenumber\" class=\"imagetitle\"><h1> Image '
+            // + screennumber + ' / ' + this.imageidnumbers[imageid] + ' </h1></div>' + nextimagelink,
+            
+			bodyContent: '<iframe src="'+config.url+'" width="100%" height="100%" frameborder="0"></iframe>',
+            visible: true, //by default it is not displayed
+            modal: true,
+            zIndex: 100,
+            // ok: width: '80%',
+            // ok: width: '500px',
+            // ok: width: null, = automatic
+            height: '80%',
+            width: '80%',
+            // closeButtonTitle: 'clooose'
+    	});
+		
+		this.last_popup = popup;
+		
+		return popup;
+	},
+	
+	popup_close: function() {
+		var parent = window.opener || window.parent;
+		
+		// close inline popup
+		if (parent.block_exacomp.last_popup) {
+			parent.block_exacomp.last_popup.hide();
+		} else {
+			// OR close real window
+			window.close();
+		}
+	},
+
+	popup_close_and_notify: function(func, args) {
+		var parent = window.opener || window.parent;
+	
+		// notify parent
+		parent.block_exacomp[func].apply(parent.block_exacomp, args);
+
+		this.popup_close();
+	}
 };
 
 (function($) {

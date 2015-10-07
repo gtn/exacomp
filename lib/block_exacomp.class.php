@@ -55,6 +55,7 @@ class block_exacomp extends block_list {
     const TYPE_CROSSSUB = 2;
     
     const SETTINGS_MAX_SCHEME = 10;
+    const DATA_SOURCE_CUSTOM = 3;
     const EXAMPLE_SOURCE_TEACHER = 3;
     const EXAMPLE_SOURCE_USER = 4;
     

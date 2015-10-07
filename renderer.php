@@ -29,10 +29,28 @@ require_once dirname(__FILE__)."/lib/xmllib.php";
 
 class block_exacomp_renderer extends plugin_renderer_base {
 	public function header($context, $courseid, $page_identifier="", $tabtree=true) {
+	    global $PAGE;
+	    
         block_exacomp_init_js_css();
+        
+        $extras = "";
+        if ($PAGE->pagelayout == 'popup') {
+            ob_start();
+            
+            $title = $PAGE->heading ?: $PAGE->title;
+            ?>
+            <script type="text/javascript">
+            	if (window.parent && window.parent.block_exacomp && window.parent.block_exacomp.last_popup) {
+                	// set popup title
+            		window.parent.block_exacomp.last_popup.set('headerContent', <?php echo json_encode($title); ?>);
+            	}
+            </script>
+            <?php
+            $extras .= ob_get_clean();
+        }
 
         return
-            parent::header().(($tabtree)?parent::tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier):'').
+            parent::header().$extras.(($tabtree)?parent::tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier):'').
             $this->print_wrapperdivstart();
     }
     
@@ -384,13 +402,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	            $right_content .= block_exacomp_get_message_icon($selectedStudent);
             }
             
-            $url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid'=>$COURSE->id, 'creatorid'=>$USER->id));
+            $right_content .= html_writer::empty_tag('input', array('type'=>'submit', 'id'=>'add_raster_submit', 'name'=> 'add_raster_submit', 'value'=>block_exacomp\t('add_raster', 'de:Kompetenzraster hinzufügen'),
+    			 "onclick" => "block_exacomp.popup_iframe('subject.php?courseid={$COURSE->id}&show=add');"));
+            
+			$url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid'=>$COURSE->id, 'creatorid'=>$USER->id));
     		$right_content .= html_writer::tag('button', html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'), 
 					'title'=> get_string('pre_planning_storage', 'block_exacomp'))), array('type'=>'button', 'id'=>'pre_planning_storage_submit', 'name'=> 'pre_planning_storage_submit', 
 			    	"onclick" => "window.open('".$url->out(false)."','_blank','width=880,height=660, scrollbars=yes'); return false;"));
          			
 			$right_content .= $this->print_edit_mode_button("&studentid=".$selectedStudent."&subjectid=".$selectedSubject."&topicid=".$selectedTopic);
-			
+				
 			$content .= html_writer::div($right_content, 'edit_buttons_float_right');
 		} else {
 			$right_content = "";
@@ -404,11 +425,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
         
         return $content;
     }
+    
+    public function is_edit_mode() {
+        // hacked here
+        // TODO: set in assign_competencies
+        return optional_param('editmode', 0, PARAM_BOOL);
+    }
+    
     public function print_edit_mode_button($url) {
     	global $PAGE;
     	
-    	$edit = optional_param('editmode', 0, PARAM_BOOL);
-    	
+    	$edit = $this->is_edit_mode();
     	
     	return html_writer::empty_tag('input', array('type'=>'submit', 'id'=>'edit_mode_submit', 'name'=> 'edit_mode_submit', 'value'=>get_string(($edit) ? 'editmode_off' : 'editmode_on','block_exacomp'),
     			 "onclick" => "document.location.href='".$PAGE->url."&editmode=" . (!$edit).$url."'"));
@@ -416,7 +443,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     public function print_subjects_menu($types,$selectedSubject) {
     	global $PAGE;
     	
-    	$edit = optional_param('editmode', 0, PARAM_BOOL);
+    	$edit = $this->is_edit_mode();
     	$studentid = optional_param('studentid', BLOCK_EXACOMP_SHOW_ALL_STUDENTS,PARAM_INT);
     	
     	$content = html_writer::start_div('subjects_menu');
@@ -442,7 +469,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     public function print_topics_menu($topics,$selectedTopic,$selectedSubject) {
     	   	global $PAGE;
     	
-    	$edit = optional_param('editmode', 0, PARAM_BOOL);
+    	$edit = $this->is_edit_mode();
     	$studentid = optional_param('studentid', BLOCK_EXACOMP_SHOW_ALL_STUDENTS,PARAM_INT);
     	//$subjectid = 
     	
@@ -1531,7 +1558,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     $exampleuploadCell->text = html_writer::link(
                             new moodle_url('/blocks/exacomp/example_upload.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id,"topicid"=>$descriptor->topicid)),
                             html_writer::empty_tag('img', array('src'=>'pix/upload_12x12.png', 'alt'=>'upload')),
-                            array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+                            array("target" => "_blank", "onclick" => "block_exacomp.popup_iframe(this.href); return false;"));
                 }
     
                 $exampleuploadCell->text .= $outputid . ($version) ? block_exacomp_get_descriptor_numbering($descriptor) :"";
@@ -5063,5 +5090,25 @@ var dataset = dataset.map(function (group) {
 		}
 		
         return $content;
+    }
+    
+    public function popup_close() {
+        ob_start();
+        ?>
+        <script type="text/javascript">
+        		block_exacomp.popup_close();
+        </script>
+        <?php
+        return ob_get_clean();
+    }
+    
+    public function popup_close_and_notify($func) {
+        ob_start();
+        ?>
+        <script type="text/javascript">
+        		block_exacomp.popup_close_and_notify(<?php echo json_encode($func); ?>);
+        </script>
+        <?php
+        return ob_get_clean();
     }
 }

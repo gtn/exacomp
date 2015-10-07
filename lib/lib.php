@@ -1163,7 +1163,17 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 	return $subjects;
 	return array();
 }
-function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $student=false, $studentid=0) {
+/**
+ * 
+ * @param unknown $courseid
+ * @param unknown $ng_subjectid the subjectid
+ * @param unknown $subjectid the topicid
+ * @param unknown $topicid the descriptorid
+ * @param string $student
+ * @param number $studentid
+ * @return multitype:unknown Ambigous <stdClass, unknown>
+ */
+function block_exacomp_init_overview_data($courseid, $ng_subjectid, $subjectid, $topicid, $student=false, $studentid=0) {
 	global $version, $DB;
 	
 	if($version){
@@ -4015,7 +4025,7 @@ function block_exacomp_save_drafts_to_course($drafts_to_save, $courseid){
 			//check if descriptor has parent and if parent is visible in course
 			$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$comp->descrid));
 			if($descriptor->parentid != 0){ //has parent
-					$parent_visibility = $DB->get_recod(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$descriptor->parentid, 'studentid'=>0));
+					$parent_visibility = $DB->get_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$descriptor->parentid, 'studentid'=>0));
 					if(!$parent_visibility){ //not visible insert in table
 						$insert = new stdClass();
 						$insert->courseid = $courseid;

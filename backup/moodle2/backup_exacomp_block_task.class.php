@@ -34,7 +34,7 @@ class backup_exacomp_block_task extends backup_block_task {
     }
     
     public function get_fileareas() {
-    
+        return array();
     }
     public function get_configdata_encoded_attributes() {
     

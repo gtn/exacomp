@@ -155,3 +155,60 @@ class param {
         }
     }
 }
+
+/**
+ * Returns a localized string.
+ * This method is neccessary because a project based evaluation is available in the current exastud
+ * version, which requires a different naming.
+ */
+function get_string($identifier, $component = null, $a = null, $lazyload = false) {
+    $manager = get_string_manager();
+
+    if ($component === null)
+        $component = __NAMESPACE__;
+
+    if ($manager->string_exists($identifier, $component))
+        return $manager->get_string($identifier, $component, $a);
+
+    return $manager->get_string($identifier, '', $a);
+}
+
+/*
+ * translator function
+ */
+function t() {
+    $args = func_get_args();
+
+    $languagestrings = array();
+    $identifier = '';
+    $a = null;
+    
+    // extra parameters at the end?
+    if (count($args) >= 2) {
+        $last = end($args);
+        if (!is_string($last)) {
+            $a = array_pop($args);
+        }
+    }
+    
+    foreach ($args as $i => $string) {
+        if (preg_match('!^([^:]+):(.*)$!', $string, $matches)) {
+            $languagestrings[$matches[1]] = $matches[2];
+        } else if ($i == 0) {
+            // ... first entry is default.
+            $identifier = $string;
+        } else {
+            print_error('wrong string format: '.$string);
+        }
+        
+    }
+
+    $lang = current_language();
+    if (isset($languagestrings[$lang])) {
+        return $languagestrings[$lang];
+    } elseif ($languagestrings) {
+        return reset($languagestrings);
+    } else {
+        return get_string($identifier, null, $a);
+    }
+}
