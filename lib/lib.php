@@ -4274,7 +4274,8 @@ function block_exacomp_set_cross_subject_descriptor($crosssubjid,$descrid) {
 			$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$descriptor->id));
 			$descriptor->topicid = $descriptor_topic_mm->topicid;
 			
-			$children = block_exacomp_get_child_descriptors($descriptor);
+			$children = block_exacomp_get_child_descriptors($descriptor, $COURSE->id);
+			
 			foreach($children as $child){
 				$visibility = $DB->get_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$cross_subject->courseid, 'descrid'=>$child->id, 'studentid'=>0));
 				if(!$visibility){
@@ -4344,14 +4345,14 @@ function block_exacomp_unset_cross_subject_descriptor($crosssubjid, $descrid){
 	if($cross_courseid != $COURSE->id){	//not current course
 		$course_descriptors = block_exacomp_get_descriptors($cross_courseid);
 	
-		if(!array_key_exists($course_descriptors, $descrid)){	// no course descriptor -> cross course 
+		if(!array_key_exists($descrid, $course_descriptors)){	// no course descriptor -> cross course 
 			$descriptor_crosssubs_mm = $DB->get_records(block_exacomp::DB_DESCCROSS, array('descrid'=>$descrid));
 			$course_cross_subjects = block_exacomp_get_cross_subjects_by_course($cross_courseid);
 		
 			$used_in_other_crosssub = false;
 			foreach($descriptor_crosssubs_mm as $entry){
 				if($entry->crosssubjid != $cross_subject->id){
-					if(array_key_exists($course_cross_subjects, $entry->crosssubjid))
+					if(array_key_exists($entry->crosssubjid, $course_cross_subjects))
 						$used_in_other_crosssub = true;
 				}
 			}
