@@ -402,8 +402,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	            $right_content .= block_exacomp_get_message_icon($selectedStudent);
             }
             
-            $right_content .= html_writer::empty_tag('input', array('type'=>'submit', 'id'=>'add_raster_submit', 'name'=> 'add_raster_submit', 'value'=>block_exacomp\t('add_raster', 'de:Kompetenzraster hinzufügen'),
-    			 "onclick" => "block_exacomp.popup_iframe('subject.php?courseid={$COURSE->id}&show=add');"));
+            //$right_content .= html_writer::empty_tag('input', array('type'=>'submit', 'id'=>'add_raster_submit', 'name'=> 'add_raster_submit', 'value'=>block_exacomp\t('add_raster', 'de:Kompetenzraster hinzufügen'),
+    		//	 "onclick" => "block_exacomp.popup_iframe('subject.php?courseid={$COURSE->id}&show=add');"));
             
 			$url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid'=>$COURSE->id, 'creatorid'=>$USER->id));
     		$right_content .= html_writer::tag('button', html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'), 
@@ -1228,7 +1228,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     $studentCell->colspan = $studentsColspan;
                     $studentCell->text = fullname($student);
                     if (block_exacomp_exastudexists() && ($info = block_exastud_api::get_student_review_link_info_for_teacher($student->id))) {
-                        $studentCell->text .= ' <a href="'.$info->url.'" title="'.block_exastud_t('de:Schülerbewertung').'">'.'<img src="pix/review_student.png" />'.'</a>';
+                        $studentCell->text .= ' <a href="'.$info->url.'" title="'.block_exastud_t('de:Überfachliche Bewertung').'" onclick="window.open(this.href,this.target,\'width=880,height=660,scrollbars=yes\'); return false;">'.'<img src="pix/review_student.png" />'.'</a>';
                     }
     
                     if($first)

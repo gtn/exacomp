@@ -49,13 +49,13 @@ window.block_exacomp = {
             
 			bodyContent: '<iframe src="'+config.url+'" width="100%" height="100%" frameborder="0"></iframe>',
             visible: true, //by default it is not displayed
-            modal: true,
-            zIndex: 100,
+            modal: false, // sollte true sein, aber wegen moodle bug springt dann das fenster immer nach oben
+            zIndex: 1000,
             // ok: width: '80%',
             // ok: width: '500px',
             // ok: width: null, = automatic
-            height: '80%',
-            width: '80%',
+            height: '90%',
+            width: '90%',
             // closeButtonTitle: 'clooose'
     	});
 		
