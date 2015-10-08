@@ -5348,7 +5348,10 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 			$examp_evals = $DB->get_records_sql($sql, array($courseid, $student->id));
 			
 			foreach($examp_evals as $examp_eval){
-				$gradings[$examp_eval->teacher_evaluation]++;
+				if(isset($examp_eval->teacher_evaluation))
+					$gradings[$examp_eval->teacher_evaluation]++;
+				else	
+					unset($examp_eval);
 			}
 			$notEvaluated = $total - count($examp_evals);
 		}
