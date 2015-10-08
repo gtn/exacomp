@@ -4568,8 +4568,8 @@ function block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,
 	
 	$DB->insert_record(block_exacomp::DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid,'creatorid' => $creatorid, 'timecreated' => $timecreated, 'timemodified' => $timemodified));
 	
-	//only send a notification if a teacher adds an example for a student
-	if($creatorid != $studentid)
+	//only send a notification if a teacher adds an example for a student and not for pre planning storage
+	if($creatorid != $studentid && $studentid >0)
 		block_exacomp_send_weekly_schedule_notification($USER,$DB->get_record('user', array('id' => $studentid)), $courseid, $exampleid);
 	
 	if($logging)
