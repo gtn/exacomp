@@ -435,6 +435,7 @@
 			descrid : descrid,
 			action : 'crosssubj-descriptors',
 		}).done(function(msg) {
+			window.opener.location.reload(true);
 			window.close();
 		});
 	});
@@ -452,6 +453,7 @@
 				value : 1,
 				action : 'crosssubj-share'
 			}).done(function(msg) {
+				window.opener.location.reload(true);
 				window.close();
 			});
 		} else {
