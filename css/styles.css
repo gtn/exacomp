@@ -977,5 +977,7 @@ td.contentcell {
 #block_exacomp select#menuexacomp_competence_grid_select_student, #block_exacomp select#menulis_courses {
 	margin-right: 15px;
 }
-
+#block_exacomp .togglefield {
+	cursor: pointer;
+}
 
