@@ -57,7 +57,7 @@ block_exacomp_require_teacher($context);
 // TODO: check permissions, check if item is block_exacomp::DATA_SOURCE_CUSTOM
 
 if ($item && optional_param('action', '', PARAM_TEXT) == 'delete') {
-    $DB->delete_records(block_exacomp::DB_TOPICS, array('id' => $item->id));
+    $item->delete();
 
     echo $output->header();
     echo $output->popup_close_and_reload();
@@ -81,6 +81,10 @@ class block_exacomp_local_item_form extends moodleform {
         $mform->setType('title', PARAM_TEXT);
         $mform->addRule('title', block_exacomp\get_string("titlenotemtpy"), 'required', null, 'client');
 
+        $mform->addElement('text', 'numb', block_exacomp\t('de:Nummer'), 'maxlength="4" size="4"');
+        $mform->setType('numb', PARAM_INT);
+        $mform->addRule('numb', block_exacomp\get_string('err_numeric', 'form'), 'required', null, 'client');
+
         $this->add_action_buttons(false);
     }
 }
@@ -92,6 +96,7 @@ if($formdata = $form->get_data()) {
     
     $new = new stdClass();
     $new->title = $formdata->title;
+    $new->numb = $formdata->numb;
     
     if (!$item) {
         $new->source = block_exacomp::DATA_SOURCE_CUSTOM;

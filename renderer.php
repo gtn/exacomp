@@ -451,6 +451,24 @@ class block_exacomp_renderer extends plugin_renderer_base {
     	$content = html_writer::start_div('subjects_menu');
     	$content .= html_writer::start_tag('ul');
     	
+    	// sort subjects
+    	uasort($types, function($a, $b) {
+    	    // first imported, then generated
+    	    if ($a->source != block_exacomp::DATA_SOURCE_CUSTOM && $b->source == block_exacomp::DATA_SOURCE_CUSTOM)
+    	        return -1;
+    	    if ($a->source == block_exacomp::DATA_SOURCE_CUSTOM && $b->source != block_exacomp::DATA_SOURCE_CUSTOM)
+    	        return 1;
+    	    // then sorting, disabled for now, because sorting doesn't get imported and is not set here?
+    	    /*
+    	    if ($a->sorting < $b->sorting)
+    	        return -1;
+    	    if ($a->sorting > $b->sorting)
+    	        return 1;
+    	    */
+    	    // last by title
+    	    return strcmp($a->title, $b->title);
+    	});
+    	
     	foreach($types as $type) {
     	    $extra = '';
     	    if ($this->is_edit_mode() && $type->source == block_exacomp::DATA_SOURCE_CUSTOM) {

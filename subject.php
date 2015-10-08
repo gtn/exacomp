@@ -57,7 +57,7 @@ block_exacomp_require_teacher($context);
 // TODO: check permissions, check if item is block_exacomp::DATA_SOURCE_CUSTOM
 
 if ($item && optional_param('action', '', PARAM_TEXT) == 'delete') {
-    $DB->delete_records(block_exacomp::DB_TOPICS, array('id' => $item->id));
+    $item->delete();
 
     echo $output->header();
     echo $output->popup_close_and_reload();

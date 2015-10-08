@@ -368,6 +368,17 @@ class block_exacomp_db_record {
         $this->dbLayer = $dbLayer;
     }
     
+    // delete this node and all subnodes
+    public function delete() {
+        $this->delete_record();
+    }
+    
+    // just delete the record
+    public function delete_record() {
+        global $DB;
+        $DB->delete_records(static::TABLE, array('id' => $this->id));
+    }
+    
     static function get($conditions, $fields='*') {
         if (is_string($conditions) || is_int($conditions)) {
             // id

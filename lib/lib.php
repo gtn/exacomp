@@ -321,15 +321,16 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
 
 	$sql = 'SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description, t.numb, t.source
 	FROM {'.block_exacomp::DB_TOPICS.'} t
-	JOIN {'.block_exacomp::DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.(($subjectid > 0) ? 'AND t.subjid = ? ': '')
-	.($showalldescriptors ? '' : '
+	JOIN {'.block_exacomp::DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.(($subjectid > 0) ? 'AND t.subjid = ? ': '').'
+    JOIN {'.block_exacomp::DB_SUBJECTS.'} s ON t.subjid=s.id -- join subject here, to make sure only topics with existing subject are loaded
+	'.($showalldescriptors ? '' : '
 			-- only show active ones
 			JOIN {'.block_exacomp::DB_DESCTOPICS.'} topmm ON topmm.topicid=t.id
 			JOIN {'.block_exacomp::DB_DESCRIPTORS.'} d ON topmm.descrid=d.id
 			JOIN {'.block_exacomp::DB_COMPETENCE_ACTIVITY.'} da ON (d.id=da.compid AND da.comptype = '.TYPE_DESCRIPTOR.') OR (t.id=da.compid AND da.comptype = '.TYPE_TOPIC.')
 			JOIN {course_modules} a ON da.activityid=a.id AND a.course=ct.courseid
 			').'
-			ORDER BY t.sorting, t.subjid
+			ORDER BY t.sorting, t.numb
 			';
 	//GROUP By funktioniert nur mit allen feldern im select, aber nicht mit strings
 	return $DB->get_records_sql($sql, array($courseid, $subjectid));
