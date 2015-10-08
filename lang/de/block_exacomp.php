@@ -463,7 +463,7 @@ $string['no_students_crosssub'] = 'Es sind keine Teilnehmer zu diesem Thema zuge
 
 //Associations
 $string['competence_associations'] = 'Verknüpfungen';
-$string['competence_associations_explaination'] = 'Das Lernmaterial {$a} ist mit den folgenden Kompetenzen verknpüpft:';
+$string['competence_associations_explaination'] = 'Das Lernmaterial {$a} ist mit den folgenden Kompetenzen verknüpft:';
 
 //Weeky schedule
 $string['weekly_schedule'] = 'Wochenplan';
