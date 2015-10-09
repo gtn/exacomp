@@ -370,14 +370,57 @@ namespace {
         }
         
         // delete this node and all subnodes
+        public function insert() {
+            return $this->insert_record();
+        }
+        
+        // just delete the record
+        public function insert_record() {
+            global $DB;
+            
+            return $this->id = $DB->insert_record(static::TABLE, $this->data);
+        }
+        
+        public function update($data = null) {
+            return $this->update_record($data);
+        }
+        
+        // just update the record
+        public function update_record($data = null) {
+            global $DB;
+
+            if (!isset($this->id)) {
+                throw new block_exacomp\exception('id not set');
+            }
+            
+            if ($data === null) {
+                die('TODO: testing');
+                // update all my data 
+                return $DB->update_record(static::TABLE, $this->data);
+            }
+            
+            $data = (array)$data;
+            foreach ($data as $key => $value) {
+                $this->$key = $value;
+            }
+            
+            $data['id'] = $this->id;
+            return $DB->update_record(static::TABLE, $data);
+        }
+        
+        // delete this node and all subnodes
         public function delete() {
-            $this->delete_record();
+            return $this->delete_record();
         }
         
         // just delete the record
         public function delete_record() {
             global $DB;
-            $DB->delete_records(static::TABLE, array('id' => $this->id));
+            
+            if (!isset($this->id)) {
+                throw new block_exacomp\exception('id not set');
+            }
+            return $DB->delete_records(static::TABLE, array('id' => $this->id));
         }
         
         static function get($conditions, $fields='*') {

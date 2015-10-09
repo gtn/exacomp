@@ -369,6 +369,8 @@ switch($action){
 		
 		echo block_exacomp_example_down ( $exampleid, $descrid );
 		break;
+	// not needed anymore:
+	/*
 	case ('edit-descriptor-title') :
 		$descriptorid = required_param ('descrid', PARAM_INT);
 		$title = required_param ('title', PARAM_TEXT);
@@ -378,6 +380,7 @@ switch($action){
 		
 		$DB->update_record(block_exacomp::DB_DESCRIPTORS, $descriptor);
 		break;
+	*/
 	case 'delete-descriptor':
 	    if (!$isTeacher) {
 	        print_error('noteacher');

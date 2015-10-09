@@ -402,8 +402,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	            $right_content .= block_exacomp_get_message_icon($selectedStudent);
             }
             
-            $right_content .= html_writer::empty_tag('input', array('type'=>'button', 'id'=>'add_raster_submit', 'name'=> 'add_raster_submit', 'value'=>block_exacomp::t('add_raster', 'de:Kompetenzraster anlegen'),
-    			 "onclick" => "block_exacomp.popup_iframe('subject.php?courseid={$COURSE->id}&show=add');"));
+            $right_content .= html_writer::empty_tag('input', array('type'=>'button', 'id'=>'add_subject', 'value'=>block_exacomp::t('add_subject', 'de:Kompetenzraster anlegen'),
+    			 'exa-type' => 'iframe-popup', 'exa-url' => "subject.php?courseid={$COURSE->id}&show=add"));
             
 			$url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid'=>$COURSE->id, 'creatorid'=>$USER->id));
     		$right_content .= html_writer::tag('button', html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'), 
@@ -437,7 +437,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     	
     	$edit = $this->is_edit_mode();
     	
-    	return html_writer::empty_tag('input', array('type'=>'submit', 'id'=>'edit_mode_submit', 'name'=> 'edit_mode_submit', 'value'=>block_exacomp::t(($edit) ? 'turneditingoff' : 'turneditingon'),
+    	return html_writer::empty_tag('input', array('type'=>'button', 'id'=>'edit_mode_submit', 'name'=> 'edit_mode_submit', 'value'=>block_exacomp::t(($edit) ? 'turneditingoff' : 'turneditingon'),
     			 "onclick" => "document.location.href='".$PAGE->url."&editmode=" . (!$edit).$url."'"));
     }
     
@@ -472,7 +472,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     	foreach($types as $type) {
     	    $extra = '';
     	    if ($this->is_edit_mode() && $type->source == block_exacomp::DATA_SOURCE_CUSTOM) {
-		        $extra .= ' <img src="pix/edit.png" title="'.block_exacomp::t('edit').'" onclick="block_exacomp.popup_iframe(\'subject.php?courseid='.$COURSE->id.'&id='.$type->id.'\'); return false;" />';
+		        $extra .= ' <img src="pix/edit.png" title="'.block_exacomp::t('edit').'" exa-type="iframe-popup" exa-url="subject.php?courseid='.$COURSE->id.'&id='.$type->id.'" />';
 		    
     	    }
     	    $content .= html_writer::tag('li',
@@ -485,7 +485,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     		foreach($type->subjects as $subject) {
     		    $extra = '';
     		    if ($this->is_edit_mode() && $subject->source == block_exacomp::DATA_SOURCE_CUSTOM) {
-    		        $extra .= ' <img src="pix/edit.png" title="'.block_exacomp::t('edit').'" onclick="block_exacomp.popup_iframe(\'topic.php?courseid='.$COURSE->id.'&id='.$subject->id.'\'); return false;" />';
+    		        $extra .= ' <img src="pix/edit.png" title="'.block_exacomp::t('edit').'" exa-type="iframe-popup" exa-url="topic.php?courseid='.$COURSE->id.'&id='.$subject->id.'" />';
     		    }
     		    
     		    $content .= html_writer::tag('li',
@@ -498,7 +498,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     			$content .= html_writer::tag('li',
     				html_writer::link("topic.php?show=add&courseid={$COURSE->id}&subjectid={$type->id}",
     						"<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".
-    				        block_exacomp::t('de:Neuer Kompetenzbereich'), array("onclick" => "block_exacomp.popup_iframe(this.href); return false;"))
+    				        block_exacomp::t('de:Neuer Kompetenzbereich'), array('exa-type' => 'iframe-popup'))
     				);
         	}
     	
@@ -1616,7 +1616,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     $exampleuploadCell->text = html_writer::link(
                             new moodle_url('/blocks/exacomp/example_upload.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id,"topicid"=>$descriptor->topicid)),
                             html_writer::empty_tag('img', array('src'=>'pix/upload_12x12.png', 'alt'=>'upload')),
-                            array("target" => "_blank", "onclick" => "block_exacomp.popup_iframe(this.href); return false;"));
+                            array("target" => "_blank", 'exa-type' => 'iframe-popup'));
                 }
     
                 $exampleuploadCell->text .= $outputid . ($version) ? block_exacomp_get_descriptor_numbering($descriptor) :"";
@@ -1647,9 +1647,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                         $titleCell->text .= $this->print_visibility_icon($visible, $descriptor->id);
                     }
                     if($editmode && $custom_created_descriptors){
-                    	$titleCell->text .= html_writer::link("", $OUTPUT->pix_icon("i/edit", get_string("edit")), array('name' => 'edit-descriptor','descrid' => $descriptor->id, 'id' => 'edit-descriptor'));
+                    	$titleCell->text .= html_writer::link("", $OUTPUT->pix_icon("i/edit", get_string("edit")), array('exa-type' => 'iframe-popup', 'exa-url' => 'descriptor.php?courseid='.$COURSE->id.'&id='.$descriptor->id));
       
-                        $titleCell->text .= html_writer::link("", $OUTPUT->pix_icon("t/delete", get_string("delete")), array("onclick" => "if (confirm('" . get_string('delete_confirmation_descr','block_exacomp') . "')) block_exacomp.delete_descriptor(".$descriptor->id."); return false;"));
+                    	// deactivate for now, the iframe popup has a delete link too
+                        // $titleCell->text .= html_writer::link("", $OUTPUT->pix_icon("t/delete", get_string("delete")), array("onclick" => "if (confirm('" . get_string('delete_confirmation_descr','block_exacomp') . "')) block_exacomp.delete_descriptor(".$descriptor->id."); return false;"));
                     }
                 }
                 /*if ($editmode) {
@@ -4819,16 +4820,16 @@ var dataset = dataset.map(function (group) {
                         $html_tree .= html_writer::start_tag("li", array('class'=>($topic->associated == 1)?"associated":""));
                         $html_tree .= block_exacomp_get_topic_numbering($topic->id).' '.$topic->title;
                         
-                        if(!empty($topic->descriptors))
+                        if(!empty($topic->descriptors)) {
                             $html_tree .= html_writer::start_tag("ul");
                         
-                        foreach ( $topic->descriptors as $dkey => $descriptor ) {
-                            if($descriptor->associated == 1 || ($isTeacher && $editmode==1))
-                                $html_tree .= $this->print_competence_for_list_tree($descriptor, $isTeacher, $editmode, $show_examples);
-                        }
+                            foreach ( $topic->descriptors as $dkey => $descriptor ) {
+                                if($descriptor->associated == 1 || ($isTeacher && $editmode==1))
+                                    $html_tree .= $this->print_competence_for_list_tree($descriptor, $isTeacher, $editmode, $show_examples);
+                            }
                         
-                        if(!empty($topic->descriptors))
                             $html_tree .= html_writer::end_tag("ul");
+                        }
                     }
                     
                 }

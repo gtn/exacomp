@@ -41,11 +41,11 @@ $context = context_course::instance($courseid);
 $output = $PAGE->get_renderer('block_exacomp');
 
 $id = optional_param('id', 0, PARAM_INT);
-$item = $id ? block_exacomp_topic::get($id) : null;
+$item = $id ? block_exacomp_descriptor::get($id) : null;
 
 /* PAGE URL - MUST BE CHANGED */
-$PAGE->set_url('/blocks/exacomp/topic.php', array('courseid' => $courseid));
-$PAGE->set_heading(block_exacomp::t($item ? 'de:Kompetenzbereich bearbeiten' : 'de:Neuen Kompetenzbereich anlegen'));
+$PAGE->set_url('/blocks/exacomp/descriptor.php', array('courseid' => $courseid));
+$PAGE->set_heading(block_exacomp::t($item ? 'de:Kompetenz bearbeiten' : 'de:Neue Kompetenz anlegen'));
 $PAGE->set_pagelayout('popup');
 
 // build tab navigation & print header
@@ -81,9 +81,7 @@ class block_exacomp_local_item_form extends moodleform {
         $mform->setType('title', PARAM_TEXT);
         $mform->addRule('title', block_exacomp::get_string("titlenotemtpy"), 'required', null, 'client');
 
-        $mform->addElement('text', 'numb', block_exacomp::t('de:Nummer'), 'maxlength="4" size="4"');
-        $mform->setType('numb', PARAM_INT);
-        $mform->addRule('numb', block_exacomp::get_string('err_numeric', 'form'), 'required', null, 'client');
+        $mform->addElement('select', 'niveauid', block_exacomp::get_string('niveau'), array(''=>'')+$DB->get_records_menu(block_exacomp::DB_NIVEAUS, null, 'sorting', 'id, title'));
 
         $this->add_action_buttons(false);
     }
@@ -96,9 +94,10 @@ if($formdata = $form->get_data()) {
     
     $new = new stdClass();
     $new->title = $formdata->title;
-    $new->numb = $formdata->numb;
+    $new->niveauid = $formdata->niveauid;
     
     if (!$item) {
+        die('TODO');
         $new->source = block_exacomp::DATA_SOURCE_CUSTOM;
         $new->sourceid = 0;
         $new->subjid = required_param('subjectid', PARAM_INT);
