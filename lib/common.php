@@ -1,6 +1,7 @@
 <?php
 
-namespace block_exacomp;
+namespace block_exacomp\common;
+/* functions common accross exabis plugins */
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -9,8 +10,8 @@ class exception extends \moodle_exception {
 
         // try to get local error message (use namespace as $component)
         if (empty($module)) {
-            if (get_string_manager()->string_exists($errorcode, __NAMESPACE__)) {
-                $module = __NAMESPACE__;
+            if (get_string_manager()->string_exists($errorcode, _plugin_name())) {
+                $module = _plugin_name();
             }
         }
 
@@ -156,6 +157,10 @@ class param {
     }
 }
 
+function _plugin_name() {
+    return preg_replace('!\\\\.*$!', '', __NAMESPACE__); // the \\\\ syntax matches a \ (backslash)!
+}
+
 /**
  * Returns a localized string.
  * This method is neccessary because a project based evaluation is available in the current exastud
@@ -165,7 +170,7 @@ function get_string($identifier, $component = null, $a = null, $lazyload = false
     $manager = get_string_manager();
 
     if ($component === null)
-        $component = __NAMESPACE__;
+        $component = _plugin_name();
 
     if ($manager->string_exists($identifier, $component))
         return $manager->get_string($identifier, $component, $a);
