@@ -1060,7 +1060,7 @@ function block_exacomp_get_descriptors_by_example($exampleid) {
  * @param int $subjectid
  * @return associative_array
  */
-function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $showalldescriptors = false, $topicid = null, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $calledfromoverview = false, $calledfromactivities = false, $showonlyvisible=false, $without_descriptors=false) {
+function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $showalldescriptors = false, $niveauid = null, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $calledfromoverview = false, $calledfromactivities = false, $showonlyvisible=false, $without_descriptors=false) {
 	global $DB, $version;
 
 	if(!$showalldescriptors)
@@ -1069,7 +1069,6 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 	if($version && $subjectid != null && $calledfromoverview) {
 		$selectedTopic = $DB->get_record(block_exacomp::DB_TOPICS,array('id'=>$subjectid));
 		$subjectid = $selectedTopic->subjid;
-		$selectedParent = $DB->get_record(block_exacomp::DB_DESCRIPTORS,array('id'=>$topicid));
 	}
 	 
 	// 1. GET SUBJECTS
@@ -1084,12 +1083,12 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 	// 2. GET TOPICS
 	$allTopics = block_exacomp_get_all_topics($subjectid);
 	if($courseid > 0) {
-		if(($topicid == SHOW_ALL_TOPICS && !$version) || ($version && !$calledfromoverview && !$calledfromactivities))
+		if(($niveauid == SHOW_ALL_TOPICS && !$version) || ($version && !$calledfromoverview && !$calledfromactivities))
 			$courseTopics = block_exacomp_get_topics_by_subject($courseid, $subjectid);
-		elseif($topicid == null)
+		elseif($niveauid == null)
 			$courseTopics = block_exacomp_get_topics_by_course($courseid, $showalldescriptors);
 		else if(!$version)
-			$courseTopics = block_exacomp_topic::get($topicid);
+			$courseTopics = block_exacomp_topic::get($niveauid);
 		else 
 			$courseTopics = block_exacomp_topic::get($selectedTopic->id);
 		
@@ -1109,8 +1108,8 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 	
 	foreach ($allDescriptors as $descriptor) {
 	
-		if($version && $topicid != SHOW_ALL_TOPICS && $calledfromoverview)
-			if($descriptor->id != $selectedParent->id)
+		if($version && $niveauid != SHOW_ALL_TOPICS && $calledfromoverview)
+			if($descriptor->niveauid != $niveauid)
 				continue;
 			
 		// get descriptor topic
@@ -1162,7 +1161,6 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 	}
 
 	return $subjects;
-	return array();
 }
 /**
  * 
@@ -1174,54 +1172,59 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
  * @param number $studentid
  * @return multitype:unknown Ambigous <stdClass, unknown>
  */
-function block_exacomp_init_overview_data($courseid, $ng_subjectid, $subjectid, $topicid, $student=false, $studentid=0) {
+function block_exacomp_init_overview_data($courseid, $ng_subjectid, $topicid, $niveauid, $student=false, $studentid=0) {
 	global $version, $DB;
 	
 	if ($ng_subjectid) {
 	    // a subjectid was submitted, so we only want to show that one!
-	    $subjects = block_exacomp_get_topics_by_subject($courseid, $ng_subjectid);
+	    $topics = block_exacomp_get_topics_by_subject($courseid, $ng_subjectid);
 	} else if($version){
-		$subjects = block_exacomp_get_topics_by_course($courseid);
+		$topics = block_exacomp_get_topics_by_course($courseid);
 	}else {
-		$subjects = block_exacomp_get_subjects_by_course($courseid);
+		$topics = block_exacomp_get_subjects_by_course($courseid);
 	}
 	
-	if (isset($subjects[$subjectid])) {
-		$selectedSubject = $subjects[$subjectid];
-	} elseif ($subjects) {
-		$selectedSubject = reset($subjects);
+	if (isset($topics[$topicid])) {
+		$selectedSubject = $topics[$topicid];
+	} elseif ($topics) {
+		$selectedSubject = reset($topics);
 	}
 
 	if($version){
-		$topics = block_exacomp_get_descriptors_by_topic($courseid, $selectedSubject->id, false, true, true);
+		$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $selectedSubject->id, false, true, true);
 		if($student){
-			foreach($topics as $topic){
-				$invisible = $DB->get_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$topic->id, 'studentid'=>$studentid, 'visible'=>0));
+			foreach($descriptors as $descriptor){
+				$invisible = $DB->get_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$descriptor->id, 'studentid'=>$studentid, 'visible'=>0));
 				if($invisible)
-					unset($topics[$topic->id]);
+					unset($descriptors[$descriptor->id]);
 			}
 		}
 	}else
-		$topics = block_exacomp_get_topics_by_subject($courseid,$selectedSubject->id);
+		$descriptors = block_exacomp_get_topics_by_subject($courseid,$selectedSubject->id);
 	
-	if (isset($topics[$topicid])) {
-		$selectedTopic = $topics[$topicid];
-	} elseif ($topics) {
-		$selectedTopic = reset($topics);
+	// get niveau ids from descriptors
+	$niveau_ids = array();
+	foreach ($descriptors as $descriptor) {
+	    $niveau_ids[$descriptor->niveauid] = $descriptor->niveauid;
+	}
+	
+	// load niveaus from db
+	$niveaus = $DB->get_records_list(block_exacomp::DB_NIVEAUS, 'id', $niveau_ids, 'sorting');
+	
+	$defaultNiveau = new stdClass ();
+	$defaultNiveau->id = SHOW_ALL_TOPICS;
+	$defaultNiveau->title = get_string ( 'alltopics', 'block_exacomp' );
+	
+	$niveaus = array($defaultNiveau->id => $defaultNiveau) + $niveaus;
+	
+	if (isset($niveaus[$niveauid])) {
+		$selectedNiveau = $niveaus[$niveauid];
+	} else {
+	    // default: show all
+		$selectedNiveau = reset($niveaus);
 	}
 
-	$defaultTopic = new stdClass ();
-	$defaultTopic->id = SHOW_ALL_TOPICS;
-	$defaultTopic->title = get_string ( 'alltopics', 'block_exacomp' );
-	
-	$topics = array_merge ( array (
-			$defaultTopic 
-	), $topics );
-	
-	if ($topicid == SHOW_ALL_TOPICS)
-		$selectedTopic = $defaultTopic;
-	
-	return array($subjects, $topics, $selectedSubject, $selectedTopic);
+	return array($topics, $niveaus, $selectedSubject, $selectedNiveau);
 }
 /**
  *

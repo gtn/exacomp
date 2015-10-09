@@ -89,7 +89,7 @@ else{
 	echo $output->print_competence_overview_form_start((isset($selectedTopic))?$selectedTopic:null, (isset($selectedSubject))?$selectedSubject:null,$studentid);
 
 	//dropdowns for subjects and topics
-	echo $output->print_overview_dropdowns(block_exacomp_get_schooltypetree_by_subjects($subjects), $topics, $selectedSubject->id, $selectedTopic->id, $students);
+	echo $output->print_overview_dropdowns(block_exacomp_get_schooltypetree_by_subjects($subjects), $selectedSubject->id, $selectedTopic->id, $students);
 	
 	if ($isTeacher) {
 		echo ' '.get_string("choosestudent","block_exacomp").' ';

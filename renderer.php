@@ -386,7 +386,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     /**
      * Prints 2 select inputs for subjects and topics
      */
-    public function print_overview_dropdowns($schooltypetree, $topics, $selectedSubject, $selectedTopic, $students, $selectedStudent = 0, $isTeacher = false) {
+    public function print_overview_dropdowns($schooltypetree, $selectedSubject, $selectedTopic, $students, $selectedStudent = 0, $isTeacher = false) {
         global $PAGE, $COURSE, $USER;
 
         $content = "";
@@ -1590,24 +1590,34 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         $evaluation = ($data->role == block_exacomp::ROLE_TEACHER) ? "teacher" : "student";
 
         foreach($descriptors as $descriptor) {
-            if(!$editmode || !$custom_created_descriptors && $descriptor->source != block_exacomp::CUSTOM_CREATED_DESCRIPTOR || ($custom_created_descriptors && $descriptor->source == block_exacomp::CUSTOM_CREATED_DESCRIPTOR)){
-                //visibility
-                //visible if 
-                //        - visible in whole course 
-                //    and - visible for specific student
-                
-                $one_student = false;
-                $studentid = 0;
-                if(!$editmode && count($students)==1){
-                    $studentid = array_values($students)[0]->id;
-                    $one_student = true;
+            if (!$editmode) {
+                if ($custom_created_descriptors) {
+                    continue;
                 }
-                $descriptor_used = block_exacomp_descriptor_used($data->courseid, $descriptor, $studentid);
+            } else {
+                if(!$custom_created_descriptors && $descriptor->source != block_exacomp::CUSTOM_CREATED_DESCRIPTOR || ($custom_created_descriptors && $descriptor->source == block_exacomp::CUSTOM_CREATED_DESCRIPTOR)){
+                } else {
+                    continue;
+                }
+            }
+            
+            //visibility
+            //visible if 
+            //        - visible in whole course 
+            //    and - visible for specific student
+            
+            $one_student = false;
+            $studentid = 0;
+            if(!$editmode && count($students)==1){
+                $studentid = array_values($students)[0]->id;
+                $one_student = true;
+            }
+            $descriptor_used = block_exacomp_descriptor_used($data->courseid, $descriptor, $studentid);
+            
+            $visible = block_exacomp_check_descriptor_visibility($data->courseid, $descriptor, $studentid, ($one_student||$data->role==block_exacomp::ROLE_STUDENT) );
+            //echo $descriptor->visible . " / " . $visible . " <br/> ";
                 
-                $visible = block_exacomp_check_descriptor_visibility($data->courseid, $descriptor, $studentid, ($one_student||$data->role==block_exacomp::ROLE_STUDENT) );
-                //echo $descriptor->visible . " / " . $visible . " <br/> ";
-                
-                if($data->role == block_exacomp::ROLE_TEACHER || $visible){
+            if($data->role == block_exacomp::ROLE_TEACHER || $visible){
                 $visible_css = block_exacomp_get_descriptor_visible_css($visible, $data->role);
                 
                 $checkboxname = "data";
@@ -2072,7 +2082,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     $own_additionRow->cells[] = new html_table_cell();
                     $rows[] = $own_additionRow;
                 }    
-            }
             }
         }
     }

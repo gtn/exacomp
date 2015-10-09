@@ -37,7 +37,7 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
 
-$edit = optional_param('editmode', 0, PARAM_BOOL);
+$editmode = optional_param('editmode', 0, PARAM_BOOL);
 
 require_login($course);
 
@@ -50,7 +50,7 @@ $studentid = block_exacomp_get_studentid($isTeacher) ;
 if($studentid == 0)
 	$studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
 
-if($edit) {
+if($editmode) {
 	$selectedStudentid = $studentid;
 	$studentid = 0;
 }
@@ -84,7 +84,7 @@ $course_settings = block_exacomp_get_settings_by_course($courseid);
 if($course_settings->uses_activities && !$activities && !$course_settings->show_all_descriptors)
 	echo $output->print_no_activities_warning($isTeacher);
 else{
-	list($subjects, $topics, $selectedSubject, $selectedTopic) = block_exacomp_init_overview_data($courseid, optional_param('ng_subjectid', 0, PARAM_INT), optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', SHOW_ALL_TOPICS, PARAM_INT), !$isTeacher,  ($isTeacher?0:$USER->id));
+	list($subjects, $topics, $selectedSubject, $selectedNiveau) = block_exacomp_init_overview_data($courseid, optional_param('ng_subjectid', 0, PARAM_INT), optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', SHOW_ALL_TOPICS, PARAM_INT), !$isTeacher,  ($isTeacher?0:$USER->id));
 	
 	//Delete timestamp (end|start) from example
 	if($example_del = optional_param('exampleid', 0, PARAM_INT)){
@@ -95,10 +95,10 @@ else{
 	$students = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : array($USER->id => $USER);
 	if($course_settings->nostudents) $students = array();
 	
-	echo $output->print_competence_overview_form_start((isset($selectedTopic))?$selectedTopic:null, (isset($selectedSubject))?$selectedSubject:null, $studentid, $edit);
+	echo $output->print_competence_overview_form_start((isset($selectedNiveau))?$selectedNiveau:null, (isset($selectedSubject))?$selectedSubject:null, $studentid, $editmode);
 
 	//dropdowns for subjects and topics and students -> if user is teacher
-	echo $output->print_overview_dropdowns(block_exacomp_get_schooltypetree_by_subjects($subjects), $topics, $selectedSubject->id, $selectedTopic->id, $students, (!$edit) ? $studentid : $selectedStudentid, $isTeacher);
+	echo $output->print_overview_dropdowns(block_exacomp_get_schooltypetree_by_subjects($subjects), $selectedSubject->id, $selectedNiveau->id, $students, (!$editmode) ? $studentid : $selectedStudentid, $isTeacher);
 	if($version)
 		$metasubject = block_exacomp_get_subject_by_id($selectedSubject->subjid);
 	else {
@@ -108,23 +108,23 @@ else{
 	
 	$scheme = block_exacomp_get_grading_scheme($courseid);
 	
-	if($selectedTopic->id != SHOW_ALL_TOPICS){
-		$cat = ($version)?block_exacomp_get_niveau($selectedTopic->niveauid):'';
-		echo $output->print_overview_metadata($metasubject->title, $selectedSubject, $selectedTopic, $cat);
+	if($selectedNiveau->id != SHOW_ALL_TOPICS){
+		$cat = ($version)?block_exacomp_get_niveau($selectedNiveau->id):'';
+		echo $output->print_overview_metadata($metasubject->title, $selectedSubject, $selectedNiveau, $cat);
 				
 		if($isTeacher)
-			echo $output->print_overview_metadata_teacher($selectedSubject,$selectedTopic);
+			echo $output->print_overview_metadata_teacher($selectedSubject,$selectedNiveau);
 		else{
 			$cm_mm = block_exacomp_get_course_module_association($courseid);
 			$course_mods = get_fast_modinfo($courseid)->get_cms();
 	
 			$activities_student = array();
-			if(isset($cm_mm->topics[$selectedTopic->id]))
-				foreach($cm_mm->topics[$selectedTopic->id] as $cmid)
+			if(isset($cm_mm->topics[$selectedNiveau->id]))
+				foreach($cm_mm->topics[$selectedNiveau->id] as $cmid)
 					$activities_student[] = $course_mods[$cmid];
 		    
 			if($version)
-				echo $output->print_overview_metadata_student($selectedSubject, $selectedTopic, $students[$USER->id]->topics, $showevaluation, $scheme, block_exacomp_get_icon_for_user($activities_student, $USER, block_exacomp_get_supported_modules()));
+				echo $output->print_overview_metadata_student($selectedSubject, $selectedNiveau, $students[$USER->id]->topics, $showevaluation, $scheme, block_exacomp_get_icon_for_user($activities_student, $USER, block_exacomp_get_supported_modules()));
 		}
 	}
 
@@ -133,10 +133,10 @@ else{
 	echo html_writer::start_tag("div", array("class"=>"gridlayout"));
 	
 	echo $output->print_subjects_menu(block_exacomp_get_schooltypetree_by_subjects($subjects),$selectedSubject); 
-	echo $output->print_topics_menu($topics,$selectedTopic,$selectedSubject);
+	echo $output->print_topics_menu($topics,$selectedNiveau,$selectedSubject);
 	if($course_settings->nostudents != 1)
 		echo $output->print_overview_legend($isTeacher);
-	if(!$version && $course_settings->nostudents != 1 && $studentid) echo $output->print_student_evaluation($showevaluation, $isTeacher,$selectedTopic->id,$selectedSubject->id, $studentid);
+	if(!$version && $course_settings->nostudents != 1 && $studentid) echo $output->print_student_evaluation($showevaluation, $isTeacher,$selectedNiveau->id,$selectedSubject->id, $studentid);
 	
 	$statistic = false;
 	if($isTeacher){
@@ -153,13 +153,13 @@ else{
 	foreach($students as $student)
 		$student = block_exacomp_get_user_information_by_course($student, $courseid);
 	
-	$subjects = block_exacomp_get_competence_tree($courseid,(isset($selectedSubject))?$selectedSubject->id:null,false,(isset($selectedTopic))?$selectedTopic->id:null,
+	$subjects = block_exacomp_get_competence_tree($courseid,(isset($selectedSubject))?$selectedSubject->id:null,false,(isset($selectedNiveau))?$selectedNiveau->id:null,
 			!($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies, true);
 	
 	$firstvalue = reset($subjects);
 	$firstvalue->title = $selectedSubject->title;
 	
-	echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, ($version && $selectedTopic->id != SHOW_ALL_TOPICS), false, 0, $statistic);
+	echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, ($version && $selectedNiveau->id != SHOW_ALL_TOPICS), false, 0, $statistic);
 	
 	echo html_writer::end_tag("div");
 	echo html_writer::end_tag("div");
