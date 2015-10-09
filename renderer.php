@@ -518,6 +518,31 @@ class block_exacomp_renderer extends plugin_renderer_base {
     	$content = html_writer::start_div('topics_menu');
     	$content .= html_writer::start_tag('ul');
     	
+    	// TODO:sorting
+    	/*
+    	echo "<pre>"; var_dump($topics);
+    	// sort topics
+    	uasort($topics, function($a, $b) {
+    	    // tabletype (there can be descriptors and topics in the $topics array)
+    	    $ret = strcmp($a->tabletype, $b->tabletype);
+    	    if ($ret !== 0)
+    	        return $ret;
+    	    // first imported, then generated
+    	    if ($a->source != block_exacomp::DATA_SOURCE_CUSTOM && $b->source == block_exacomp::DATA_SOURCE_CUSTOM)
+    	        return -1;
+    	    if ($a->source == block_exacomp::DATA_SOURCE_CUSTOM && $b->source != block_exacomp::DATA_SOURCE_CUSTOM)
+    	        return 1;
+    	    // then sorting
+    	    if ($a->sorting < $b->sorting)
+    	        return -1;
+    	    if ($a->sorting > $b->sorting)
+    	        return 1;
+
+    	    // last by title
+    	    return strcmp($a->title, $b->title);
+    	});
+    	*/
+    	
     	foreach($topics as $topic) {
     		$title = isset($topic->cattitle) ? $topic->cattitle : $topic->title;
     		$title_short = (strlen($title)>15)?substr($title, 0, 15).'...':$title;
@@ -1551,7 +1576,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                 
                 $cell = new html_table_cell();
                 $cell->style = "padding-left: ". $padding."px";
-                $cell->text = html_writer::empty_tag('input', array('exa-type'=>'new-comp', 'type'=>'textfield', 'placeholder'=>block_exacomp::t('de:[Neue Kompetenz]'), 'topicid'=>$topic->id));
+                $cell->text = html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'type'=>'textfield', 'placeholder'=>block_exacomp::t('de:[Neue Kompetenz]'), 'topicid'=>$topic->id));
                 $own_additionRow->cells[] = $cell;
                 $own_additionRow->cells[] = new html_table_cell();
                 $rows[] = $own_additionRow;
@@ -1860,7 +1885,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                             $titleCell->text .= html_writer::link(
                                     new moodle_url('/blocks/exacomp/example_upload.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id,"topicid"=>$descriptor->topicid,"exampleid"=>$example->id)),
                                     $OUTPUT->pix_icon("i/edit", get_string("edit")),
-                                    array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+                                    array("target" => "_blank", 'exa-type' => 'iframe-popup'));
                         
                             if(!$example_used)
                            		$titleCell->text .= html_writer::link($PAGE->url . "&delete=" . $example->id. "&studentid=" . optional_param('studentid',BLOCK_EXACOMP_SHOW_ALL_STUDENTS, PARAM_INT). "&subjectid=" . optional_param('subjectid', 0, PARAM_INT). "&topicid=" . optional_param('topicid', 0, PARAM_INT), $OUTPUT->pix_icon("t/delete", get_string("delete"), "", array("onclick" => "return confirm('" . get_string('delete_confirmation','block_exacomp') . "')")));
@@ -2042,7 +2067,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     
                     $cell = new html_table_cell();
                     $cell->style = "padding-left: ". ($padding + 20 )."px";
-                    $cell->text = html_writer::empty_tag('input', array('exa-type'=>'new-comp', 'name'=>'new_comp'.$descriptor->id, 'type'=>'textfield', 'placeholder'=>block_exacomp::t('de:[Neue Teilkompetenz]'), 'descrid'=>$descriptor->id));
+                    $cell->text = html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'name'=>'new_comp'.$descriptor->id, 'type'=>'textfield', 'placeholder'=>block_exacomp::t('de:[Neue Teilkompetenz]'), 'parentid'=>$descriptor->id));
                     $own_additionRow->cells[] = $cell;
                     $own_additionRow->cells[] = new html_table_cell();
                     $rows[] = $own_additionRow;

@@ -232,9 +232,11 @@
 		description = $(this).val();
 	});
 	
-	$(document).on('keypress', 'input[exa-type=new-comp]', function(event) {
+	// not needed anymore
+	/*
+	$(document).on('keypress', 'input[exa-type=new-descriptor]', function(event) {
 		if(event.which == 13){
-			// hitting enter in a new-competency field
+			// hitting enter in a new-descriptor field
 			// prevent form submit, save and reload
 			event.preventDefault();
 			insert_descriptor(this);
@@ -244,6 +246,8 @@
 			return false;
 		}
 	});
+	*/
+	
 	$(document).on('click', '#assign-competencies input[type=submit]', function(event) {
 		event.preventDefault();
 		courseid = block_exacomp.get_param('courseid');
@@ -258,9 +262,12 @@
 		} else if (block_exacomp.get_param("crosssubjid") !== null) {
 			crosssubjid = block_exacomp.get_param('crosssubjid');
 		}
+		
 
 		switch ($(this).attr('id')) {
 		case 'btn_submit':
+			var show_changes_saved = true;
+			
 			if (Object.size(competencies) > 0) {
 				block_exacomp.call_ajax({
 					competencies : JSON
@@ -339,7 +346,53 @@
 			}
 
 			//check all new_comp text fields if somewhere new text is entered when saving and create new descriptor
-			$( "input[exa-type=new-comp]" ).each(function(){ insert_descriptor(this); });
+			var new_descriptors = [];
+			$( "input[exa-type=new-descriptor]" ).each(function (){
+				if (!this.value) return;
+				
+				new_descriptors.push({
+					parentid: this.getAttribute('parentid'),
+					topicid: this.getAttribute('topicid'),
+					title: this.value
+				});
+			});
+			
+			if (new_descriptors.length) {
+				show_changes_saved = false;
+				
+				block_exacomp.call_ajax({
+					action: 'multi',
+					'new-descriptors': new_descriptors,
+				}).done(function(msg) {
+					location.reload();
+
+					//im crosssubject neue Teilkompetenz erstellt -> gleich thema zuordnen
+					// TODO: was macht das?
+					// brauchen wir nicht, weil wir die seite eh nue laden?
+					/*
+					??? var msg = new_competencies[0].descriptorid
+
+					var select = document
+					.getElementById("menulis_crosssubs");
+
+					if (block_exacomp.get_param("crosssubjid") !== null || select) {
+						alert('TODO');
+						if (select) {
+							crosssubjid = select.options[select.selectedIndex].value;
+						} else if (block_exacomp.get_param("crosssubjid") !== null) {
+							crosssubjid = block_exacomp.get_param('crosssubjid');
+						}
+						console.log(crosssubjid);
+						block_exacomp.call_ajax({
+							descrid: msg,
+							crosssubjectid : crosssubjid,
+							action : 'crosssubj-descriptors-single'
+						});
+					}
+					*/
+				});
+			}
+			
 			
 			//check all edit-descriptor text fields if somewhere new text is entered when saving and change descriptor
 			// not needed anymore
@@ -361,9 +414,10 @@
 			});
 			*/
 			
-			alert('Änderungen wurden gespeichert!');
-			// hack: first wait ajax calls, then reload
-			window.setTimeout(function() { location.reload() }, 50);
+			if (show_changes_saved) {
+				alert('Änderungen wurden gespeichert!');
+			}
+			
 			break;
 		case 'save_as_draft':
 			if (crosssubjid > 0) {
@@ -734,35 +788,6 @@
 				|| Object.keys(examples).length > 0)
 			return M.util.get_string('unload_notice', 'block_exacomp');
 	});
-	function insert_descriptor(element){
-		if (!element.value) return;
-		
-		block_exacomp.call_ajax({
-			descriptorid: element.getAttribute('descrid'),
-			topicid: element.getAttribute('topicid'),
-			title: element.value,
-			action : 'new-comp'
-		}).done(function(msg) {
-			//im crosssubject neue Teilkompetenz erstellt -> gleich thema zuordnen
-			var select = document
-			.getElementById("menulis_crosssubs");
-
-			if (block_exacomp.get_param("crosssubjid") !== null || select) {
-				if (select) {
-					crosssubjid = select.options[select.selectedIndex].value;
-				} else if (block_exacomp.get_param("crosssubjid") !== null) {
-					crosssubjid = block_exacomp.get_param('crosssubjid');
-				}
-				console.log(crosssubjid);
-				block_exacomp.call_ajax({
-					descrid: msg,
-					crosssubjectid : crosssubjid,
-					action : 'crosssubj-descriptors-single'
-				});
-			}
-		});
-
-	}
 	
 	block_exacomp.delete_descriptor = function(id) {
 		block_exacomp.call_ajax({
