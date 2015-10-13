@@ -587,4 +587,5 @@ namespace block_exacomp {
     class exception extends common\exception {}
     class db extends common\db {}
     class param extends common\param {}
+    class url extends common\url {}
 }

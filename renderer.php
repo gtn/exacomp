@@ -443,10 +443,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     
     // TOOD: rename to print_topics_menu
     public function print_subjects_menu($types,$selectedSubject) {
-    	global $PAGE, $CFG, $COURSE;
-    	
-    	$edit = $this->is_edit_mode();
-    	$studentid = optional_param('studentid', BLOCK_EXACOMP_SHOW_ALL_STUDENTS,PARAM_INT);
+    	global $NG_PAGE, $CFG, $COURSE;
     	
     	$content = html_writer::start_div('subjects_menu');
     	$content .= html_writer::start_tag('ul');
@@ -476,10 +473,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		    
     	    }
     	    $content .= html_writer::tag('li',
+    	            $this->is_edit_mode() ?
     				html_writer::link(
-    				        // edit mode: allow seleting only one subject
-    				        ($this->is_edit_mode() ? $PAGE->url . "&studentid=" . $studentid . "&editmode=" . $edit . "&ng_subjectid=" . $type->id : "#"),
+    				        // edit mode: allow selecting only one subject
+    				        $NG_PAGE->url->copy(array('ng_subjectid' => $type->id)),
     						$type->title.$extra, array('class' => 'type'))
+    	            // link ohne href attribut => nicht klickbar!
+    	            : html_writer::tag('a', $type->title.$extra, array('class' => 'type'))
     		);
     		
     		foreach($type->subjects as $subject) {
@@ -489,7 +489,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     		    }
     		    
     		    $content .= html_writer::tag('li',
-    				html_writer::link($PAGE->url . "&studentid=" . $studentid . "&editmode=" . $edit . "&subjectid=" . $subject->id,
+    				html_writer::link($NG_PAGE->url->copy(array('subjectid' => $subject->id)),
     						block_exacomp_get_topic_numbering($subject).' '.$subject->title.$extra, array('class' => ($subject->id == $selectedSubject->id) ? 'current' : ''))
     				);
     		}
@@ -509,7 +509,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     	return $content;
     }
     public function print_topics_menu($topics,$selectedTopic,$selectedSubject) {
-    	   	global $PAGE;
+    	   	global $NG_PAGE;
     	
     	$edit = $this->is_edit_mode();
     	$studentid = optional_param('studentid', BLOCK_EXACOMP_SHOW_ALL_STUDENTS,PARAM_INT);
@@ -547,7 +547,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     		$title = isset($topic->cattitle) ? $topic->cattitle : $topic->title;
     		$title_short = (strlen($title)>15)?substr($title, 0, 15).'...':$title;
     		$content .= html_writer::tag('li',
-    				html_writer::link($PAGE->url . "&studentid=" . $studentid . "&editmode=" . $edit . "&subjectid=" . $selectedSubject->id . "&topicid=" . $topic->id,
+    				html_writer::link($NG_PAGE->url->copy(array('topicid' => $topic->id)),
     						$title_short, array('class' => ($topic->id == $selectedTopic->id) ? 'current' : '', 'title'=>$title))
     				);
     	}
@@ -708,7 +708,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     	$options[BLOCK_EXACOMP_REPORT2] = get_string("report_detailcompetence","block_exacomp");
     	$options[BLOCK_EXACOMP_REPORT3] = get_string("report_examples","block_exacomp");
     	
-    	$url = new block_exacomp_url($PAGE->url);
+    	$url = new block_exacomp\url($PAGE->url);
 		$url->param("subjectid",optional_param("subjectid", 0, PARAM_INT));
 		$url->param("studentid",optional_param("studentid", 0, PARAM_INT));
 		

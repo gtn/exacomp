@@ -5,6 +5,17 @@ namespace block_exacomp\common;
 
 defined('MOODLE_INTERNAL') || die();
 
+class url extends \moodle_url {
+    public function copy(array $overrideparams = null) {
+        $class = get_class();
+        $object = new $class($this);
+        if ($overrideparams) {
+            $object->params($overrideparams);
+        }
+        return $object;
+    }
+}
+
 class exception extends \moodle_exception {
     function __construct($errorcode, $module='', $link='', $a=NULL, $debuginfo=null) {
 

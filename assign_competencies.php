@@ -38,6 +38,9 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 }
 
 $editmode = optional_param('editmode', 0, PARAM_BOOL);
+$ng_subjectid = optional_param('ng_subjectid', 0, PARAM_INT);
+$subjectid = optional_param('subjectid', 0, PARAM_INT);
+$topicid = optional_param('topicid', SHOW_ALL_TOPICS, PARAM_INT);
 
 require_login($course);
 
@@ -61,6 +64,15 @@ $page_identifier = 'tab_competence_overview';
 $PAGE->set_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid, 'showevaluation'=>$showevaluation));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
+$NG_PAGE = (object)[ 'url' => new block_exacomp\url('/blocks/exacomp/assign_competencies.php', array(
+                'courseid' => $courseid,
+                'showevaluation' => $showevaluation,
+                'studentid' => $studentid,
+                'editmode' => $editmode,
+                'subjectid' => $subjectid,
+                'ng_subjectid' => $ng_subjectid,
+                'topicid' => $topicid,
+            )) ];
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
@@ -84,7 +96,7 @@ $course_settings = block_exacomp_get_settings_by_course($courseid);
 if($course_settings->uses_activities && !$activities && !$course_settings->show_all_descriptors)
 	echo $output->print_no_activities_warning($isTeacher);
 else{
-	list($subjects, $topics, $selectedSubject, $selectedNiveau) = block_exacomp_init_overview_data($courseid, optional_param('ng_subjectid', 0, PARAM_INT), optional_param('subjectid', 0, PARAM_INT), optional_param('topicid', SHOW_ALL_TOPICS, PARAM_INT), !$isTeacher,  ($isTeacher?0:$USER->id));
+	list($subjects, $topics, $selectedSubject, $selectedNiveau) = block_exacomp_init_overview_data($courseid, $ng_subjectid, $subjectid, $topicid, !$isTeacher, ($isTeacher?0:$USER->id));
 	
 	//Delete timestamp (end|start) from example
 	if($example_del = optional_param('exampleid', 0, PARAM_INT)){

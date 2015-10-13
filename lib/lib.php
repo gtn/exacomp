@@ -1623,9 +1623,6 @@ function block_exacomp_build_breadcrum_navigation($courseid) {
 	$blocknode->make_active();
 }
 
-class block_exacomp_url extends moodle_url {
-}
-
 /**
  * Generates html dropdown for students
  * 
@@ -1642,7 +1639,7 @@ function block_exacomp_studentselector($students, $selected, $url, $option = nul
 	$studentsAssociativeArray = array();
     
     // make copy
-    $url = new block_exacomp_url($url);
+    $url = new block_exacomp\url($url);
     $url->remove_params('studentid');
 	
 	if ($option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_EDITMODE)
