@@ -107,6 +107,7 @@ if($formdata = $form->get_data()) {
         $topicid = $DB->insert_record(block_exacomp::DB_TOPICS, array(
             'title' => block_exacomp::t('de:Neuer Raster'),
             'subjid' => $new->id,
+            'numb' => 1,
             'source' => block_exacomp::DATA_SOURCE_CUSTOM,
             'sourceid' => 0
         ));
