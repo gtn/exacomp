@@ -438,7 +438,7 @@ $string['block_exacomp_external_trainer_student'] = 'Auszubildender: ';
 //Crosssubjects
 $string['empty_draft'] = 'Neues Thema';
 $string['empty_draft_description'] = 'Erstelle dein eigenes Thema - ändere die Beschreibung hier';
-$string['add_drafts_to_course'] = 'Vorlagen zum Kurs hinzufügen';
+$string['add_drafts_to_course'] = 'Ausgewählte Themen im Kurs verwenden';
 $string['choosecrosssubject'] = 'Thema auswählen';
 $string['crosssubject'] = "Thema";
 $string['student_name'] = "Teilnehmer";
@@ -446,18 +446,25 @@ $string['help_crosssubject'] = "Die Zusammenstellung des Themas erfolgt für die
 $string['description'] = "Beschreibung";
 $string['no_student'] = '-- kein Kursteilnehmer ausgew&auml;hlt --';
 $string['no_student_edit'] = "Editiermodus - kein Teilnehmer";
-$string['save_as_draft'] = "Thema als Vorlage freigeben";
+$string['save_as_draft'] = "Thema für Lehrer/innen freigeben";
 $string['comps_and_material'] = "Kompetenzen und Lernmaterial";
-$string['no_crosssubjs'] = 'Keine Cross-Subjects verfügbar.';
-$string['delete_drafts'] = 'Ausgewählte Vorlagen löschen';
-$string['share_crosssub'] = 'Thema für Teilnehmer freigeben';
+$string['no_crosssubjs'] = 'In diesem Kurs gibt es noch kein Thema.';
+$string['delete_drafts'] = 'Ausgewählte Themen-Vorlagen löschen';
+$string['share_crosssub'] = 'Thema für Schüler/innen freigeben';
 $string['share_crosssub_with_students'] = 'Das Thema "{$a}" für folgende Teilnehmer freigeben: ';
 $string['share_crosssub_with_all'] = 'Das Thema "{$a}" für <b>alle</b> Teilnehmer freigeben: ';
-$string['new_crosssub'] = "Neues Thema erstellen";
+$string['new_crosssub'] = "Eigenes Thema erstellen";
+$string['add_crosssub'] = 'Thema hinzufügen';
 $string['nocrosssubsub'] = "Kein Fach zugeteilt";
 $string['delete_crosssub'] = 'Thema löschen';
 $string['confirm_delete'] = 'Soll dieses Thema wirklich gelöscht werden?';
 $string['no_students_crosssub'] = 'Es sind keine Teilnehmer zu diesem Thema zugeteilt.';
+$string['use_available_crosssub'] = 'Ein bestehendes Thema für den Kurs verwenden';
+$string['save_crosssub'] = 'Thema speichern';
+$string['add_content_to_crosssub'] = 'Das Thema ist noch nicht befüllt. <a href="{$a}">Über den Kompetenzraster Inhalte hinzufügen.</a>';
+$string['add_descriptors_to_crosssub'] = 'Teilkompetenz mit Thema verknüpfen';
+$string['manage_crosssubs'] = 'Themen verwalten';
+$string['show_course_crosssubs'] = 'Kurs-Themen ansehen';
 
 //Associations
 $string['competence_associations'] = 'Verknüpfungen';

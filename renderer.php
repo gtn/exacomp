@@ -1360,7 +1360,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     'supported_modules'=>block_exacomp_get_supported_modules(),
                     'showalldescriptors' => block_exacomp_get_settings_by_course($courseid)->show_all_descriptors
             );
-            $this->print_topics($rows, 0, $subject->subs, $data, $students, '', false, $editmode, $statistic);
+            $this->print_topics($rows, 0, $subject->subs, $data, $students, '', false, $editmode, $statistic, $crosssubs);
                 
             
             $first = false;
@@ -1420,12 +1420,21 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$table->data = $rows;
         $table_html = html_writer::table($table);
         
-        if($crosssubs && $role == block_exacomp::ROLE_TEACHER && !$students)
-            $table_html .= html_writer::div(html_writer::tag("input", "", array("id"=>"btn_submit", "name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp")))
-            .html_writer::tag("input", "", array("id"=>"save_as_draft", "name" => "save_as_draft", "type" => "submit", "value" => get_string("save_as_draft", "block_exacomp")))
-            .html_writer::tag("input", "", array("id"=>"share_crosssub", "name"=>"share_crosssub", "type"=>"submit", "value"=>get_string("share_crosssub", "block_exacomp")))
-            .html_writer::tag("input", "", array("id"=>"delete_crosssub", "name"=>"delete_crosssub", "type"=>"submit", "value"=>get_string("delete_crosssub", "block_exacomp"), 'message'=>get_string('confirm_delete', 'block_exacomp'))),'', array('id'=>'exabis_save_button'));
+        if(count($rows) == 0 && $crosssubs) {
+        	global $OUTPUT;
+        	
+			$table_html .= html_writer::div(get_string('add_content_to_crosssub','block_exacomp',(new moodle_url('assign_competencies.php',array('courseid'=>$courseid,'editmode'=>1)))->__toString()),
+					"alert alert-warning");
+        }
+        	
+		$new = optional_param('new', false, PARAM_BOOL);
         
+        if($crosssubs && $role == block_exacomp::ROLE_TEACHER && !$students)
+            $table_html .= html_writer::div(html_writer::tag("input", "", array("id"=>"btn_submit", "name" => "btn_submit", "type" => "submit", "value" => get_string("save_crosssub", "block_exacomp")))
+            . ((!$new) ? html_writer::tag("input", "", array("id"=>"save_as_draft", "name" => "save_as_draft", "type" => "submit", "value" => get_string("save_as_draft", "block_exacomp"))) : '')
+            . ((!$new) ? html_writer::tag("input", "", array("id"=>"share_crosssub", "name"=>"share_crosssub", "type"=>"submit", "value"=>get_string("share_crosssub", "block_exacomp"))) : '')
+            . ((!$new) ? html_writer::tag("input", "", array("id"=>"delete_crosssub", "name"=>"delete_crosssub", "type"=>"submit", "value"=>get_string("delete_crosssub", "block_exacomp"), 'message'=>get_string('confirm_delete', 'block_exacomp')), array('id'=>'exabis_save_button')) : '')
+           );
         else
             $table_html .= html_writer::div(html_writer::tag("input", "", array("id"=>"btn_submit", "name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp"))),'', array('id'=>'exabis_save_button'));
         
@@ -1434,7 +1443,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         return $table_html.html_writer::end_tag('form');
     }
 
-    public function print_topics(&$rows, $level, $topics, &$data, $students, $rowgroup_class = '', $profoundness = false, $editmode = false, $statistic = false) {
+    public function print_topics(&$rows, $level, $topics, &$data, $students, $rowgroup_class = '', $profoundness = false, $editmode = false, $statistic = false, $crosssubs = false) {
         
         global $version;
         $topicparam = optional_param('topicid', 0, PARAM_INT);
@@ -1567,8 +1576,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                 $this->print_topics($rows, $level+1, $topic->subs, $data, $students, $sub_rowgroup_class,$profoundness, $editmode);
             }
 
-            if($editmode) {
-                // kompetenz hinzufuegen
+            if($editmode && !$crosssubs) {
+                // kompetenz hinzufuegen (nicht bei themen)
                 $own_additionRow = new html_table_row();
                 $own_additionRow->attributes['class'] = 'exabis_comp_aufgabe highlight ' . $sub_rowgroup_class;
                 
@@ -2280,8 +2289,13 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
         return $evaluation;
     }
-    public function print_overview_legend($teacher) {
-        $legend = html_writer::empty_tag('br'). html_writer::empty_tag('br'). html_writer::empty_tag('br').html_writer::tag("img", "", array("src" => "pix/list_12x11.png", "alt" => get_string('legend_activities','block_exacomp')));
+    public function print_overview_legend($teacher, $isCrosssub = false) {
+    	$legend = "";
+    	
+    	if(!$isCrosssub)
+        	$legend = html_writer::empty_tag('br'). html_writer::empty_tag('br'). html_writer::empty_tag('br');
+    	
+        $legend .= html_writer::tag("img", "", array("src" => "pix/list_12x11.png", "alt" => get_string('legend_activities','block_exacomp')));
 		$legend .= ' '.get_string('legend_activities','block_exacomp') . " - ";
 
         $legend .= html_writer::tag("img", "", array("src" => "pix/folder_fill_12x12.png", "alt" => get_string('legend_eportfolio','block_exacomp')));
@@ -4671,8 +4685,9 @@ var dataset = dataset.map(function (group) {
     public function print_cross_subjects_drafts($subjects, $isAdmin=false){
         global $PAGE, $USER;
         
-        $draft_content = "";
+        $draft_content = "<h4>" . get_string('use_available_crosssub','block_exacomp') . "</h4>";
         $drafts_exist = false;
+
         $draft_content .= html_writer::start_tag('ul', array("class"=>"collapsibleList"));
                 
         foreach($subjects as $subject){
@@ -4707,7 +4722,8 @@ var dataset = dataset.map(function (group) {
             if($isAdmin) $submit .= html_writer::empty_tag('input', array('name'=>'delete_crosssubs', 'type'=>'submit', 'value'=>get_string('delete_drafts', 'block_exacomp')));
         }
         $submit .= html_writer::empty_tag('br');
-        $submit .= html_writer::empty_tag('input', array('name'=>'new_crosssub', 'type'=>'submit', 'value'=>get_string('new_crosssub', 'block_exacomp')));
+        $submit .= html_writer::tag("h4", get_string('new_crosssub','block_exacomp'));
+        $submit .= html_writer::empty_tag('input', array('name'=>'new_crosssub', 'type'=>'submit', 'value'=>get_string('add_crosssub', 'block_exacomp')));
     
         $submit = html_writer::div($submit, '', array('id'=>'exabis_save_button')); 
         $content = html_writer::tag('form', $draft_content.$submit, array('method'=>'post', 'action'=>$PAGE->url.'&action=save', 'name'=>'add_drafts_to_course'));
@@ -4748,17 +4764,20 @@ var dataset = dataset.map(function (group) {
             $content .= get_string("choosestudent", "block_exacomp");
             $content .= block_exacomp_studentselector($students,$selectedStudent,$PAGE->url."&crosssubjid=".$selectedCrosssubject,  ($students)?BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN:BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_EDITMODE);
             
+            $right_content = html_writer::empty_tag('input', array('type'=>'button', 'id'=>'edit_crossubs', 'name'=> 'edit_crossubs', 'value' => get_string('manage_crosssubs','block_exacomp'),
+    			 "onclick" => "document.location.href='".(new moodle_url('/blocks/exacomp/cross_subjects_overview.php',array('courseid' => $COURSE->id)))->__toString()."'"));
+            
             if($students){
 	            $url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid'=>$COURSE->id, 'creatorid'=>$USER->id));
-	    		$right_content = html_writer::tag('button', html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'), 
+	    		$right_content .= html_writer::tag('button', html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'), 
 						'title'=> get_string('pre_planning_storage', 'block_exacomp'))), array('type'=>'button', 'id'=>'pre_planning_storage_submit', 'name'=> 'pre_planning_storage_submit', 
 				    	"onclick" => "window.open('".$url->out(false)."','_blank','width=880,height=660, scrollbars=yes'); return false;"));
 	
 	    		
 				$right_content .= $this->print_edit_mode_button("&studentid=".$selectedStudent."&crosssubjid=".$selectedCrosssubject);
 				
-				$content .= html_writer::div($right_content, 'edit_buttons_float_right');
             }
+			$content .= html_writer::div($right_content, 'edit_buttons_float_right');
         
         }    
         return $content;

@@ -102,6 +102,6 @@ echo $content;
 
 echo "</div>";
 
-echo html_writer::div(html_writer::tag("input", '', array("type"=>"button","value"=>get_string('save_selection', 'block_exacomp'),"id"=>"crosssubjects")), '', array('id'=>'exabis_save_button'));
+echo html_writer::div(html_writer::tag("input", '', array("type"=>"button","value"=>get_string('add_descriptors_to_crosssub', 'block_exacomp'),"id"=>"crosssubjects")), '', array('id'=>'exabis_save_button'));
 
 echo $output->footer();

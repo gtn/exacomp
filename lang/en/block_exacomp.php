@@ -415,10 +415,17 @@ $string['share_crosssub'] = 'Share crosssubject with participants';
 $string['share_crosssub_with_students'] = 'Share crosssubject "{$a}" with the following participants: ';
 $string['share_crosssub_with_all'] = 'Share crosssubject "{$a}" with all participants: ';
 $string['new_crosssub'] = "Create new crosssubject";
+$string['add_crosssub'] = 'Add crosssubject';
 $string['nocrosssubsub'] = "no subject selected";
 $string['delete_crosssub'] = 'delete crosssubject';
 $string['confirm_delete'] = 'Do you really want to delete this crosssubject?';
 $string['no_students_crosssub'] = 'No students are assigend to this crosssubject.';
+$string['use_available_crosssub'] = 'Use available cross subject for this course:';
+$string['save_crosssub'] = 'Save crosssubject';
+$string['add_content_to_crosssub'] = 'The crosssubject is still empty. <a href="{$a}">Add content via the competence grid</a>.';
+$string['add_descriptors_to_crosssub'] = 'Add descriptor to crosssubject';
+$string['manage_crosssubs'] = 'Manage crosssubjects';
+$string['show_course_crosssubs'] = 'Show used crosssubjects';
 
 //Associations
 $string['competence_associations'] = 'Associations';

@@ -29,6 +29,7 @@ require_once dirname(__FILE__)."/inc.php";
 
 global $DB, $OUTPUT, $PAGE, $USER, $version;
 
+$new = optional_param('new', false, PARAM_BOOL);
 $courseid = required_param('courseid', PARAM_INT);
 $showevaluation = ($version) ? true : optional_param("showevaluation", false, PARAM_BOOL);
 $group = optional_param('group', 0, PARAM_INT);
@@ -66,11 +67,6 @@ $output = $PAGE->get_renderer('block_exacomp');
 
 // build tab navigation & print header
 echo $output->header($context, $courseid, 'tab_cross_subjects');
-
-
-if($isTeacher){
-    echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_cross_subjects($context, $courseid), $page_identifier);
-}
 	
 // IF DELETE > 0 DELTE CUSTOM EXAMPLE
 if(($delete = optional_param("delete", 0, PARAM_INT)) > 0 && $isTeacher)
@@ -87,6 +83,15 @@ else{
 	//no crosssubjects available -> end 
 	if(empty($crosssubjects)){
 		echo get_string('no_crosssubjs', 'block_exacomp');
+		
+		$submit = html_writer::empty_tag('br');
+		$submit .= html_writer::empty_tag('input', array('name'=>'new_crosssub', 'type'=>'submit', 'value'=>get_string('add_crosssub', 'block_exacomp')));
+		
+		$submit = html_writer::div($submit, '', array('id'=>'exabis_save_button'));
+		$content = html_writer::tag('form', $submit, array('method'=>'post', 'action'=>new moodle_url('/blocks/exacomp/cross_subjects_overview.php',array('courseid'=>$courseid)), 'name'=>'add_drafts_to_course'));
+		
+		echo $content;
+		
 		echo $output->print_wrapperdivend();
 		echo $OUTPUT->footer();
 		die;
@@ -112,8 +117,14 @@ else{
 	echo $output->print_cross_subjects_form_start((isset($selectedCrosssubject))?$selectedCrosssubject:null, $studentid);
 
 	//dropdowns for crosssubjects
-	echo $output->print_dropdowns_cross_subjects($crosssubjects, $selectedCrosssubject->id, $students, (!$edit) ? $studentid : $selectedStudentid, $isTeacher);
-	
+	//do not display if user is currently adding a new crosssubject
+	if(!$new)
+		echo $output->print_dropdowns_cross_subjects($crosssubjects, $selectedCrosssubject->id, $students, (!$edit) ? $studentid : $selectedStudentid, $isTeacher);
+	else {
+		$right_content = html_writer::empty_tag('input', array('type'=>'button', 'id'=>'edit_crossubs', 'name'=> 'edit_crossubs', 'value' => get_string('manage_crosssubs','block_exacomp'),
+				"onclick" => "document.location.href='".(new moodle_url('/blocks/exacomp/cross_subjects_overview.php',array('courseid' => $COURSE->id)))->__toString()."'"));
+		echo html_writer::div($right_content, 'edit_buttons_float_right');
+	}
 	//schooltypes
 	/*$schooltypes = block_exacomp_get_schooltypes_by_course($courseid);
 	    
@@ -140,7 +151,7 @@ else{
     			$activities_student[] = $course_mods[$cmid];*/
 	}
 	
-	echo $output->print_overview_legend($isTeacher);
+	echo $output->print_overview_legend($isTeacher, true);
 	
 	$statistic = false;
 	if($isTeacher){
