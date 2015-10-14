@@ -39,7 +39,7 @@ window.block_exacomp = {
 		})
 		.done(function(ret) {
 			console.log(data.action, 'ret', ret);
-			if (done) done(msg);
+			if (done) done(ret);
 		}).error(function(ret) {
 			var errorMsg = '';
 			if (ret.responseText[0] == '<') {
