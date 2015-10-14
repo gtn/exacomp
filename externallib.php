@@ -5222,6 +5222,55 @@ class block_exacomp_external extends external_api {
 		return new external_value ( PARAM_INT, 'identity of grading scheme' );
 	}
 	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_comp_grid_for_example_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
+				'exampleid' => new external_value ( PARAM_INT, 'id of example' )
+		) );
+	}
+	
+	/**
+	 * get example with all submission details and gradings
+	 *
+	 * @return
+	 */
+	public static function dakora_get_comp_grid_for_example($courseid, $exampleid) {
+		$params = self::validate_parameters ( self::dakora_get_comp_grid_for_example_parameters (), array (
+				'courseid' => $courseid,
+				'exampleid' => $exampleid) 
+			);
+			
+		$topics = block_exacomp_get_topics_by_course($courseid);
+		foreach($topics as $topic){
+		var_dump($topic->title);
+			$descriptors = block_exacomp_get_descriptors_by_topic($topic->id);
+			var_dump($descriptors);
+			foreach($descriptors as $descriptor){
+				
+				$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
+				var_dump($niveau->id);
+			}
+		}
+			
+			
+		return null;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_comp_grid_for_example_returns() {
+		return new external_value ( PARAM_INT, 'identity of grading scheme' );
+	}
+	
+	
 	/** 
 	* helper function to use same code for 2 ws
 	*/

@@ -102,7 +102,21 @@ all topics:
 
 ";
 
+//REST CALL dakora_get_examples_pool_for_week
+$functionname = 'dakora_get_comp_grid_for_example';
 
+$params = new stdClass();
+$params->courseid = 2;
+$params->exampleid = 0;
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+all topics:
+
+";
 /*
 //REST CALL dakora_get_examples_pool_for_week
 $functionname = 'dakora_get_descriptors_by_cross_subject';
