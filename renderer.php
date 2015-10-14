@@ -398,8 +398,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $content .= block_exacomp_studentselector($students,($this->is_edit_mode()==1)?BLOCK_EXACOMP_SHOW_ALL_STUDENTS:$selectedStudent,$PAGE->url."&subjectid=".$selectedSubject."&topicid=".$selectedTopic,  BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
 
             $right_content = "";
-            if($selectedStudent != BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $selectedStudent != BLOCK_EXACOMP_SHOW_STATISTIC) {
-	            $right_content .= block_exacomp_get_message_icon($selectedStudent);
+            if(($this->is_edit_mode()==0) && $selectedStudent != BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $selectedStudent != BLOCK_EXACOMP_SHOW_STATISTIC) {
+	           $right_content .= block_exacomp_get_message_icon($selectedStudent);
             }
             
             $right_content .= html_writer::empty_tag('input', array('type'=>'button', 'id'=>'add_subject', 'value'=>block_exacomp::t('add_subject', 'de:Kompetenzraster anlegen'),
