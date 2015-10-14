@@ -395,10 +395,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $content .= html_writer::empty_tag("br");
             $content .= get_string("choosestudent", "block_exacomp");
 
-            $content .= block_exacomp_studentselector($students,($this->is_edit_mode()==1)?BLOCK_EXACOMP_SHOW_ALL_STUDENTS:$selectedStudent,$PAGE->url."&subjectid=".$selectedSubject."&topicid=".$selectedTopic,  BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
+            $content .= block_exacomp_studentselector($students,$this->is_edit_mode()?BLOCK_EXACOMP_SHOW_ALL_STUDENTS:$selectedStudent,$PAGE->url."&subjectid=".$selectedSubject."&topicid=".$selectedTopic,  BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
 
             $right_content = "";
-            if(($this->is_edit_mode()==0) && $selectedStudent != BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $selectedStudent != BLOCK_EXACOMP_SHOW_STATISTIC) {
+            if(!$this->is_edit_mode() && $selectedStudent != BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $selectedStudent != BLOCK_EXACOMP_SHOW_STATISTIC) {
 	           $right_content .= block_exacomp_get_message_icon($selectedStudent);
             }
             
@@ -1609,7 +1609,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     continue;
                 }
             }
-            $descriptor_in_crosssubj = ($crosssubjid>0)? (array_key_exists($descriptor->id, block_exacomp_get_cross_subject_descriptors($crosssubjid))?true:false) :true;
+            $descriptor_in_crosssubj = ($crosssubjid > 0) || array_key_exists($descriptor->id, block_exacomp_get_cross_subject_descriptors($crosssubjid));
        
             //visibility
             //visible if 
@@ -4765,7 +4765,7 @@ var dataset = dataset.map(function (group) {
             $content .= html_writer::empty_tag("br");
     
             $content .= get_string("choosestudent", "block_exacomp");
-            $content .= block_exacomp_studentselector($students,($this->is_edit_mode()==1)?BLOCK_EXACOMP_SHOW_ALL_STUDENTS:$selectedStudent,$PAGE->url."&crosssubjid=".$selectedCrosssubject,  ($students)?BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN:BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_EDITMODE);
+            $content .= block_exacomp_studentselector($students,$this->is_edit_mode()?BLOCK_EXACOMP_SHOW_ALL_STUDENTS:$selectedStudent,$PAGE->url."&crosssubjid=".$selectedCrosssubject,  ($students)?BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN:BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_EDITMODE);
 
             $right_content = html_writer::empty_tag('input', array('type'=>'button', 'id'=>'edit_crossubs', 'name'=> 'edit_crossubs', 'value' => get_string('manage_crosssubs','block_exacomp'),
     			 "onclick" => "document.location.href='".(new moodle_url('/blocks/exacomp/cross_subjects_overview.php',array('courseid' => $COURSE->id)))->__toString()."'"));
