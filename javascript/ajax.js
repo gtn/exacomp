@@ -443,10 +443,10 @@
 					block_exacomp.call_ajax({
 						crosssubjid : crosssubjid,
 						action : 'delete-crosssubject'
+					}).done(function(msg) {
+						location.reload();
 					});
 				}
-
-				location.reload();
 			} 
 			break;
 		}

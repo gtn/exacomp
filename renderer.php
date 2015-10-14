@@ -1360,7 +1360,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     'supported_modules'=>block_exacomp_get_supported_modules(),
                     'showalldescriptors' => block_exacomp_get_settings_by_course($courseid)->show_all_descriptors
             );
-            $this->print_topics($rows, 0, $subject->subs, $data, $students, '', false, $editmode, $statistic, $crosssubs);
+            $this->print_topics($rows, 0, $subject->subs, $data, $students, '', false, $editmode, $statistic, $crosssubs, $crosssubjid);
                 
             
             $first = false;
@@ -1443,7 +1443,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         return $table_html.html_writer::end_tag('form');
     }
 
-    public function print_topics(&$rows, $level, $topics, &$data, $students, $rowgroup_class = '', $profoundness = false, $editmode = false, $statistic = false, $crosssubs = false) {
+    public function print_topics(&$rows, $level, $topics, &$data, $students, $rowgroup_class = '', $profoundness = false, $editmode = false, $statistic = false, $crosssubs = false, $crosssubjid=0) {
         
         global $version;
         $topicparam = optional_param('topicid', 0, PARAM_INT);
@@ -1568,12 +1568,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             $rows[] = $topicRow;
 
             if (!empty($topic->descriptors)) {
-                $this->print_descriptors($rows, $level+1, $topic->descriptors, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $statistic, false, true);
-                $this->print_descriptors($rows, $level+1, $topic->descriptors, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $statistic, true, true);
+                $this->print_descriptors($rows, $level+1, $topic->descriptors, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $statistic, false, true, $crosssubjid);
+                $this->print_descriptors($rows, $level+1, $topic->descriptors, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $statistic, true, true, $crosssubjid);
             }
 
             if (!empty($topic->subs)) {
-                $this->print_topics($rows, $level+1, $topic->subs, $data, $students, $sub_rowgroup_class,$profoundness, $editmode);
+                $this->print_topics($rows, $level+1, $topic->subs, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $crosssubjid);
             }
 
             if($editmode && !$crosssubs) {
@@ -1593,12 +1593,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         }
     }
 
-    function print_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class, $profoundness = false, $editmode=false, $statistic=false, $custom_created_descriptors=false, $parent = false) {
+    function print_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class, $profoundness = false, $editmode=false, $statistic=false, $custom_created_descriptors=false, $parent = false, $crosssubjid = 0) {
         global $version, $PAGE, $USER, $COURSE, $CFG, $OUTPUT, $DB;
 
         $evaluation = ($data->role == block_exacomp::ROLE_TEACHER) ? "teacher" : "student";
-
-        foreach($descriptors as $descriptor) {
+		
+		foreach($descriptors as $descriptor) {
             if (!$editmode) {
                 if ($custom_created_descriptors) {
                     continue;
@@ -1609,7 +1609,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     continue;
                 }
             }
-            
+            $descriptor_in_crosssubj = ($crosssubjid>0)? (array_key_exists($descriptor->id, block_exacomp_get_cross_subject_descriptors($crosssubjid))?true:false) :true;
+       
             //visibility
             //visible if 
             //        - visible in whole course 
@@ -1656,7 +1657,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     
                 
                 $exampleuploadCell = new html_table_cell();
-                if($data->role == block_exacomp::ROLE_TEACHER && !$profoundness ) {
+                if($data->role == block_exacomp::ROLE_TEACHER && !$profoundness && $descriptor_in_crosssubj) {
                     $exampleuploadCell->text = html_writer::link(
                             new moodle_url('/blocks/exacomp/example_upload.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id,"topicid"=>$descriptor->topicid)),
                             html_writer::empty_tag('img', array('src'=>'pix/upload_12x12.png', 'alt'=>'upload')),
@@ -2084,10 +2085,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     
                     $own_additionRow->cells[] = new html_table_cell();
                     
-                    $cell = new html_table_cell();
-                    $cell->style = "padding-left: ". ($padding + 20 )."px";
-                    $cell->text = html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'name'=>'new_comp'.$descriptor->id, 'type'=>'textfield', 'placeholder'=>block_exacomp::t('de:[Neue Teilkompetenz]'), 'parentid'=>$descriptor->id));
-                    $own_additionRow->cells[] = $cell;
+                    if($descriptor_in_crosssubj){
+	                    $cell = new html_table_cell();
+	                    $cell->style = "padding-left: ". ($padding + 20 )."px";
+	                    $cell->text = html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'name'=>'new_comp'.$descriptor->id, 'type'=>'textfield', 'placeholder'=>block_exacomp::t('de:[Neue Teilkompetenz]'), 'parentid'=>$descriptor->id));
+	                    $own_additionRow->cells[] = $cell;
+                    }
                     $own_additionRow->cells[] = new html_table_cell();
                     $rows[] = $own_additionRow;
                 }    
