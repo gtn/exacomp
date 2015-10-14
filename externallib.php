@@ -5240,25 +5240,56 @@ class block_exacomp_external extends external_api {
 	 * @return
 	 */
 	public static function dakora_get_comp_grid_for_example($courseid, $exampleid) {
+		global $DB;
 		$params = self::validate_parameters ( self::dakora_get_comp_grid_for_example_parameters (), array (
 				'courseid' => $courseid,
 				'exampleid' => $exampleid) 
 			);
 			
+		$data = new stdClass();
+		$data->topics = array();
+		
 		$topics = block_exacomp_get_topics_by_course($courseid);
 		foreach($topics as $topic){
-		var_dump($topic->title);
-			$descriptors = block_exacomp_get_descriptors_by_topic($topic->id);
-			var_dump($descriptors);
+			$topicdata = new stdClass();
+			$topicdata->topicid = $topic->id;
+			$topicdata->topictitle = $topic->title;
+			$topicdata->topicnumbering = block_exacomp_get_topic_numbering($topic);
+			$topicdata->niveaus = array();
+			
+			$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $topic->id);
+			$example_descriptors = block_exacomp_get_descriptors_by_example($exampleid);
+			
 			foreach($descriptors as $descriptor){
-				
 				$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
-				var_dump($niveau->id);
+				
+				$niveaudata = new stdClass();
+				$niveaudata->niveauid = $niveau->id;
+				$niveaudata->niveautitle = $niveau->title;
+				$niveaudata->association = 0;
+				
+				foreach($example_descriptors as $examp_desc){
+					if($descriptor->id == $examp_desc->descrid){
+						$niveaudata->association = 1;
+						continue;
+					}
+					//check parent descriptor
+					$example_descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$examp_desc->descrid));
+					if($example_descriptor->parentid == $descriptor->id){
+						$niveaudata->association = 1;
+						continue;
+					}
+				}
+				
+				$niveaudata->span = $niveau->span;
+				$topicdata->span = $niveau->span;
+				$topicdata->niveaus[$niveau->id] = $niveaudata;
 			}
+			
+			$data->topics[$topic->id] = $topicdata;
 		}
 			
-			
-		return null;
+		return $data->topics;
 	}
 	
 	/**
@@ -5267,8 +5298,20 @@ class block_exacomp_external extends external_api {
 	 * @return external_multiple_structure
 	 */
 	public static function dakora_get_comp_grid_for_example_returns() {
-		return new external_value ( PARAM_INT, 'identity of grading scheme' );
+		return new external_multiple_structure ( new external_single_structure ( array (
+			'topicid' => new external_value(PARAM_INT, 'id of topic'),
+			'topictitle' => new external_value(PARAM_TEXT, 'title of topic'),
+			'topicnumbering' => new external_value (PARAM_TEXT, 'numbering for topic'),
+			'niveaus' => new external_multiple_structure ( new external_single_structure ( array (
+					'niveauid' => new external_value( PARAM_INT, 'id of niveau'),
+					'niveautitle' => new external_value ( PARAM_TEXT, 'title of niveau' ),
+					'association' => new external_value ( PARAM_INT, 'association to example'),
+					'span' => new external_value ( PARAM_INT, 'row spanning')
+			) ) ),
+			'span' => new external_value ( PARAM_INT, 'row spanning')
+		) ) );
 	}
+	
 	
 	
 	/** 

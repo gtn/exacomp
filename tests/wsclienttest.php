@@ -107,7 +107,7 @@ $functionname = 'dakora_get_comp_grid_for_example';
 
 $params = new stdClass();
 $params->courseid = 2;
-$params->exampleid = 0;
+$params->exampleid = 175;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);
