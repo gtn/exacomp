@@ -395,7 +395,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             $content .= html_writer::empty_tag("br");
             $content .= get_string("choosestudent", "block_exacomp");
 
-            $content .= block_exacomp_studentselector($students,$selectedStudent,$PAGE->url."&subjectid=".$selectedSubject."&topicid=".$selectedTopic,  BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
+            $content .= block_exacomp_studentselector($students,($this->is_edit_mode()==1)?BLOCK_EXACOMP_SHOW_ALL_STUDENTS:$selectedStudent,$PAGE->url."&subjectid=".$selectedSubject."&topicid=".$selectedTopic,  BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
 
             $right_content = "";
             if($selectedStudent != BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $selectedStudent != BLOCK_EXACOMP_SHOW_STATISTIC) {
