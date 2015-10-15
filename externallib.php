@@ -4997,7 +4997,7 @@ class block_exacomp_external extends external_api {
 				require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
 					
 				if ($file = block_exaport_get_item_file ( $itemInformation )) {
-					$data['file'] = ("{$CFG->wwwroot}/blocks/exaport/portfoliofile.php?access=portfolio/id/" . $userid . "&itemid=" . $itemInformation->id);
+					$data['file'] = ("{$CFG->wwwroot}/blocks/exaport/portfoliofile.php?access=view/id/" . $userid . "-" . $itemInformation->id. "&itemid=" . $itemInformation->id);
 					$data['mimetype'] = $file->get_mimetype();
 					$data['filename'] = $file->get_filename ();
 				}
