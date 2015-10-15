@@ -1609,7 +1609,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     continue;
                 }
             }
-          $descriptor_in_crosssubj = ($crosssubjid>0)? (array_key_exists($descriptor->id, block_exacomp_get_cross_subject_descriptors($crosssubjid))?true:false) :true;
+            $descriptor_in_crosssubj = ($crosssubjid <= 0) || array_key_exists($descriptor->id, block_exacomp_get_cross_subject_descriptors($crosssubjid));
           
             //visibility
             //visible if 
