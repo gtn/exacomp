@@ -61,7 +61,8 @@ class db {
                 $DB->update_record($table, $data);
             }
         } else {
-            $data = $data + $where;
+            unset($data['id']);
+            $data = $where + $data; // first the values of $where, then of $data, but don't override $where
             $id = $DB->insert_record($table, $data);
             $data['id'] = $id;
         }

@@ -78,7 +78,7 @@ class block_exacomp_data {
                     block_exacomp::DB_DESCRIPTORS, block_exacomp::DB_CROSSSUBJECTS, block_exacomp::DB_EDULEVELS, block_exacomp::DB_SCHOOLTYPES, block_exacomp::DB_SUBJECTS,
                     block_exacomp::DB_TOPICS);
     
-    protected static function get_my_source() {
+    public static function get_my_source() {
         return get_config('exacomp', 'mysource');
     }
     
@@ -97,7 +97,7 @@ class block_exacomp_data {
     private static $sources = null; // array(local_id => global_id)
     const MIN_SOURCE_ID = 101;
     
-    protected static function get_source_global_id($source_local_id) {
+    public static function get_source_global_id($source_local_id) {
         self::load_sources();
 
         return isset(self::$sources[$source_local_id]) ? self::$sources[$source_local_id] : null;
@@ -1004,6 +1004,54 @@ class block_exacomp_data_exporter extends block_exacomp_data {
             $xmlSource['id'] = $source->source;
             $xmlSource->name = $source->name;
         }
+    }
+}
+
+class block_exacomp_data_course_backup extends block_exacomp_data {
+    public static function assign_source_array($items, $prefix = "") {
+        $fld_source = "{$prefix}source";
+        $fld_sourceid = "{$prefix}sourceid";
+        $fld_id = "{$prefix}id";
+        
+        foreach ($items as $dbItem) {
+            if ($dbItem->$fld_source >= self::MIN_SOURCE_ID) {
+                if ($source = block_exacomp_data::get_source_global_id($dbItem->$fld_source)) {
+                    $dbItem->$fld_source = $source;
+                } else {
+                    print_error('database error, unknown source '.$dbItem->$fld_source.' #5555aa8');
+                }
+            } else {
+                // local source -> set new id
+                $dbItem->$fld_source = self::get_my_source();
+                $dbItem->$fld_sourceid = $dbItem->$fld_id;
+            }
+        }
+        
+        return $items;
+    }
+    
+    public static function parse_sourceid($item, $prefix = "") {
+        $fld_source = "{$prefix}source";
+        $fld_sourceid = "{$prefix}sourceid";
+        
+        if ($item->$fld_source == self::get_my_source()) {
+            $where = array('id' => $item->$fld_sourceid);
+        } else {
+            if (!$source = self::get_source_from_global_id($item->$fld_source)) {
+                return null;
+            }
+            
+            $where = array('source' => $source->id, 'sourceid' => $item->$fld_sourceid);
+        }
+        
+        return $where;
+    }
+    
+    public static function get_course_mod_list() {
+        $modules = $DB->get_records_sql("SELECT cm.*, m.name as modname
+				FROM {modules} m, {course_modules} cm
+				WHERE cm.course = ? AND cm.module = m.id AND m.name NOT IN ('label')",
+                array($this->get_courseid()));
     }
 }
 
