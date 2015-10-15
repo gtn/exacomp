@@ -42,8 +42,11 @@ $context = context_course::instance($courseid);
 // CHECK TEACHER
 $isTeacher = block_exacomp_is_teacher($context);
 
-$studentid = block_exacomp_get_studentid($isTeacher) ;
-
+if($isTeacher && !isset($_SESSION['studentid-'.$COURSE->id]))
+	$studentid = BLOCK_EXACOMP_SHOW_STATISTIC;
+else
+	$studentid = block_exacomp_get_studentid($isTeacher) ;
+	
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_competence_grid';
 
