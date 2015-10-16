@@ -10,7 +10,7 @@ class restore_exacomp_block_task extends restore_block_task {
     protected function define_my_settings() {
         // No particular settings for this activity
     }
-	
+    
     /**
      * Define (add) particular steps this activity can have
      */
@@ -19,55 +19,60 @@ class restore_exacomp_block_task extends restore_block_task {
         $this->add_step(new restore_exacomp_block_structure_step('exacomp_structure', 'exacomp.xml'));
     }
 
-	public function get_fileareas() {
-		return array(); // No associated fileareas
-	}
+    public function get_fileareas() {
+        return array(); // No associated fileareas
+    }
 
-	public function get_configdata_encoded_attributes() {
-		return array(); // No special handling of configdata
-	}
+    public function get_configdata_encoded_attributes() {
+        return array(); // No special handling of configdata
+    }
 
-	static public function define_decode_contents() {
-		return array();
-	}
+    static public function define_decode_contents() {
+        return array();
+    }
 
-	static public function define_decode_rules() {
-		return array();
-	}
+    static public function define_decode_rules() {
+        return array();
+    }
 
-	public function after_restore() {
-		global $DB;
+    public function after_restore() {
+        global $DB;
 
-
-		// read all the modules except 'label', because this one is just text!
-		$modules = $DB->get_records_sql("SELECT cm.*, m.name as modname
-				FROM {modules} m, {course_modules} cm
-				WHERE cm.course = ? AND cm.module = m.id AND m.name NOT IN ('label')",
-				array($this->get_courseid()));
-
-		foreach($modules as $module) {
-			$module->name = $DB->get_field($module->modname, "name", array('id' => $module->instance));
-		}
-
-		$course = $DB->get_record("course",array("id"=>$this->get_courseid()));
-
-		$modulesByName = array();
-		foreach ($modules as $module) {
-			$modulesByName[$module->name] = $module;
-		}
-
-		$activities = $DB->get_records_sql("SELECT * FROM {block_exacompcompactiv_mm} WHERE activityid = ? AND " . $DB->sql_compare_text('coursetitle') . " = ?", array(-12345, $course->shortname));
-
-		foreach($activities as $activity) {
-			if (isset($modulesByName[$activity->activitytitle])) {
-				// activity found
-				$activity->activityid = $modulesByName[$activity->activitytitle]->id;
-				$DB->update_record("block_exacompcompactiv_mm", $activity);
-			} else {
-				// activity not found, delete it
-				$DB->delete_records("block_exacompcompactiv_mm", array('id' => $activity->id));
-			}
-		}
-	}
-
+            var_dump(restore_dbops::get_backup_ids_record($this->get_restoreid(), 'question', 4));
+            var_dump(restore_dbops::get_backup_ids_record($this->get_restoreid(), 'course_module', 4));
+            var_dump(restore_dbops::get_backup_ids_record($this->get_restoreid(), 'course_module', 234));
+            var_dump(restore_dbops::get_backup_ids_record($this->get_restoreid(), 'course_moduleref', 4));
+            exit;
+        
+        if (!empty($GLOBALS['block_exacomp_imported_activities'])) {
+            $modinfo = get_fast_modinfo($this->get_courseid());
+            
+            $modulesByName = array();
+            $modulesBySectionAndName = array();
+            foreach ($modinfo->get_cms() as $module) {
+                $modulesByName[$module->name] = $module;
+                $modulesBySectionAndName[$module->sectionnum.'-'.$module->name] = $module;
+            }
+            
+            foreach ($GLOBALS['block_exacomp_imported_activities'] as $activity) {
+                
+                if (isset($modulesBySectionAndName[$activity->sectionnum.'-'.$activity->activitytitle])) {
+                    $cm = $modulesBySectionAndName[$activity->sectionnum.'-'.$activity->activitytitle];
+                } else if (isset($modulesByName[$activity->activitytitle])) {
+                    $cm = $modulesByName[$activity->activitytitle];
+                } else {
+                    // activity not found, delete it
+                    $cm = null;
+                    $DB->delete_records("block_exacompcompactiv_mm", array('id' => $activity->id));
+                }
+                
+                if ($cm) {
+                    // activity found
+                    $activity->activityid = $cm->id;
+                    $activity->activitytitle = $cm->name;
+                    $DB->update_record("block_exacompcompactiv_mm", $activity);
+                }
+            }
+        }
+    }
 }

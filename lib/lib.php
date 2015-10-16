@@ -5962,3 +5962,18 @@ function block_exacomp_send_example_comment_notification($userfrom, $userto, $co
 	
 	block_exacomp_send_notification("comment", $userfrom, $userto, $subject, $message, $context, $viewurl);
 }
+
+/**
+ * 
+ * @param int $cmid
+ * @return cm_info
+ */
+function block_exacomp_get_cm_from_cmid($cmid) {
+    try {
+        // get_course_and_cm_from_cmid() throws moodle_exception if cm not found
+        list($course, $cm) = get_course_and_cm_from_cmid($cmid);
+        return $cm;
+    } catch (moodle_exception $e) {
+        return null;
+    }
+}

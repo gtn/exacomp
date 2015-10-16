@@ -1,6 +1,7 @@
 <?php
  
-require_once __DIR__."/inc.php";
+require_once __DIR__."/../../lib/lib.php";
+require_once __DIR__."/../../lib/xmllib.php";
 
 /**
  * Define all the backup steps that will be used by the backup_choice_activity_task
@@ -31,7 +32,7 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
         $taxonomy= new backup_nested_element('taxonomy', array('source', 'sourceid'), array('dummy')); // for importing moodle needs a dummy value
         
         $activities = new backup_nested_element('activities');
-        $compactiv_mm = new backup_nested_element('compactiv_mm', array('activityid', 'comptype', 'compsource', 'compsourceid'), array('activitytitle'));
+        $compactiv_mm = new backup_nested_element('compactiv_mm', array('comptype', 'compsource', 'compsourceid', 'sectionnum'), array('activityid', 'activityid2', 'activityid3', 'activitytitle'));
         
         // Build the tree
 
@@ -80,23 +81,41 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
         
         
         // backup descractiv_mm
+        /*
         $dbActivities = $DB->get_recordset_sql("
-                (
-                SELECT d.id as compid, d.source as compsource, d.sourceid as compsourceid, ca.activityid, ca.activitytitle, ca.comptype
+                SELECT d.id as compid, d.source as compsource, d.sourceid as compsourceid, ca.activityid, ca.comptype
                 FROM {block_exacompcompactiv_mm} ca
                 JOIN {block_exacompdescriptors} d ON d.id=ca.compid AND ca.comptype = 0 AND ca.eportfolioitem = 0
-                JOIN {course_modules} cm ON  ca.activityid=cm.id AND cm.course = ?
-                )
+                JOIN {course_modules} cm ON ca.activityid=cm.id AND cm.course = ?
                 UNION
-                (
-                SELECT d.id as compid, d.source as compsource, d.sourceid as compsourceid, ca.activityid, ca.activitytitle, ca.comptype
+                SELECT d.id as compid, d.source as compsource, d.sourceid as compsourceid, ca.activityid, ca.comptype
                 FROM {block_exacompcompactiv_mm} ca
                 JOIN {block_exacomptopics} d ON d.id=ca.compid AND ca.comptype = 1 AND ca.eportfolioitem = 0
                 JOIN {course_modules} cm ON ca.activityid=cm.id AND cm.course = ?
-                )
             ", array($this->get_courseid(), $this->get_courseid()));
         $dbActivities = iterator_to_array($dbActivities);
+        foreach ($dbActivities as $key=>$dbActivity) {
+            $cm = block_exacomp_get_cm_from_cmid($dbActivity->activityid);
+            if ($cm) {
+                $dbActivity->sectionnum = $cm->sectionnum;
+                $dbActivity->activitytitle = $cm->name;
+            } else {
+                unset($dbActivities[$key]);
+            }
+        }
         $compactiv_mm->set_source_array(block_exacomp_data_course_backup::assign_source_array($dbActivities, 'comp'));
+        */
+        $compactiv_mm->set_source_sql("
+                SELECT ca.id, d.id as compid, d.source as compsource, d.sourceid as compsourceid, 5 AS activityid, 6 AS activityid2, 4 AS activityid3, ca.comptype
+                FROM {block_exacompcompactiv_mm} ca
+                JOIN {block_exacompdescriptors} d ON d.id=ca.compid AND ca.comptype = 0 AND ca.eportfolioitem = 0
+                JOIN {course_modules} cm ON ca.activityid=cm.id AND cm.course = ?
+                UNION
+                SELECT ca.id, d.id as compid, d.source as compsource, d.sourceid as compsourceid, ca.activityid, ca.activityid AS activityid2, ca.activityid AS activityid3, ca.comptype
+                FROM {block_exacompcompactiv_mm} ca
+                JOIN {block_exacomptopics} d ON d.id=ca.compid AND ca.comptype = 1 AND ca.eportfolioitem = 0
+                JOIN {course_modules} cm ON ca.activityid=cm.id AND cm.course = ?
+            ", array(backup::VAR_COURSEID, backup::VAR_COURSEID));
 
         // All the rest of elements only happen if we are including user info
         /*
@@ -106,8 +125,10 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
         */
 
         // Define id annotations
-        // $answer->annotate_ids('user', 'userid');
-
+        $compactiv_mm->annotate_ids('question_category', 'activityid');
+        $compactiv_mm->annotate_ids('question_category', 'activityid2');
+        $compactiv_mm->annotate_ids('question_category', 'activityid3');
+        
         // Define file annotations
         // $choice->annotate_files('mod_choice', 'intro', null); // This file area hasn't itemid
 
