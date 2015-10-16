@@ -38,39 +38,19 @@ class restore_exacomp_block_task extends restore_block_task {
     public function after_restore() {
         global $DB;
 
-            var_dump(restore_dbops::get_backup_ids_record($this->get_restoreid(), 'question', 4));
-            var_dump(restore_dbops::get_backup_ids_record($this->get_restoreid(), 'course_module', 4));
-            var_dump(restore_dbops::get_backup_ids_record($this->get_restoreid(), 'course_module', 234));
-            var_dump(restore_dbops::get_backup_ids_record($this->get_restoreid(), 'course_moduleref', 4));
-            exit;
-        
+        // this part needs to run after all activites have been added
         if (!empty($GLOBALS['block_exacomp_imported_activities'])) {
-            $modinfo = get_fast_modinfo($this->get_courseid());
-            
-            $modulesByName = array();
-            $modulesBySectionAndName = array();
-            foreach ($modinfo->get_cms() as $module) {
-                $modulesByName[$module->name] = $module;
-                $modulesBySectionAndName[$module->sectionnum.'-'.$module->name] = $module;
-            }
-            
             foreach ($GLOBALS['block_exacomp_imported_activities'] as $activity) {
                 
-                if (isset($modulesBySectionAndName[$activity->sectionnum.'-'.$activity->activitytitle])) {
-                    $cm = $modulesBySectionAndName[$activity->sectionnum.'-'.$activity->activitytitle];
-                } else if (isset($modulesByName[$activity->activitytitle])) {
-                    $cm = $modulesByName[$activity->activitytitle];
-                } else {
-                    // activity not found, delete it
-                    $cm = null;
-                    $DB->delete_records("block_exacompcompactiv_mm", array('id' => $activity->id));
-                }
-                
-                if ($cm) {
+                $idrecord = restore_dbops::get_backup_ids_record($this->get_restoreid(), 'course_module', $activity->oldactivityid);
+                if ($idrecord && ($cm = block_exacomp_get_cm_from_cmid($idrecord->newitemid))) {
                     // activity found
                     $activity->activityid = $cm->id;
                     $activity->activitytitle = $cm->name;
                     $DB->update_record("block_exacompcompactiv_mm", $activity);
+                } else {
+                    // activity not found, delete it
+                    $DB->delete_records("block_exacompcompactiv_mm", array('id' => $activity->id));
                 }
             }
         }

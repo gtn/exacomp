@@ -100,14 +100,6 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
             foreach ($data->exacomp['activities']['compactiv_mm'] as $descractiv_mm) {
                 $descractiv_mm = (object)$descractiv_mm;
                 
-                var_dump($this->get_mappingid('question_category', $descractiv_mm->activityid));
-                var_dump($DB->get_records('backup_ids_temp'));
-                var_dump($this->get_mappingid('question_category', $descractiv_mm->activityid2));
-                var_dump($this->get_mappingid('question_category', $descractiv_mm->activityid3));
-                var_dump($descractiv_mm->activityid);
-                var_dump($descractiv_mm->activityid2);
-                var_dump($descractiv_mm->activityid3);
-                
                 if ($descractiv_mm->comptype == block_exacomp::TYPE_DESCRIPTOR) {
                     $table = block_exacomp::DB_DESCRIPTORS;
                 } else if ($descractiv_mm->comptype == block_exacomp::TYPE_TOPIC) {
@@ -122,6 +114,7 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
                 
                 $descractiv_mm->compid = $source_desc->id;
                 // temporary activityid, will be overwritten in restore_exacomp_block_task.class.php::after_restore()
+                $descractiv_mm->oldactivityid = $descractiv_mm->activityid;
                 $descractiv_mm->activityid = -12345;
                 $descractiv_mm->coursetitle = $course->shortname;
                     
