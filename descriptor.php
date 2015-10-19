@@ -83,12 +83,21 @@ class block_exacomp_local_item_form extends moodleform {
 
         $mform->addElement('select', 'niveauid', block_exacomp::get_string('niveau'), array(''=>'')+$DB->get_records_menu(block_exacomp::DB_NIVEAUS, null, 'sorting', 'id, title'));
 
+        $element = $mform->addElement('select', 'categories', block_exacomp::get_string('categories'), $DB->get_records_menu(block_exacomp::DB_CATEGORIES, null, 'title', 'id, title'));
+        $element->setMultiple(true);
+        
         $this->add_action_buttons(false);
     }
 }
 
 $form = new block_exacomp_local_item_form($_SERVER['REQUEST_URI']);
-if ($item) $form->set_data($item->getData());
+
+if ($item) {
+    $data = $item->getData();
+    // also load category ids for form
+    $data->categories = $item->category_ids;
+    $form->set_data($data);
+}
 
 if($formdata = $form->get_data()) {
     
@@ -112,6 +121,8 @@ if($formdata = $form->get_data()) {
     } else {
         $item->update($new);
     }
+    
+    $item->set_categories($formdata->categories);
     
     echo $output->header();
     echo $output->popup_close_and_reload();

@@ -303,6 +303,7 @@ $string['allstudents'] = 'Alle  Kursteilnehmer/innen';
 $string['nostudents'] = 'Keine  Kursteilnehmer/innen';
 $string['statistic'] = 'Gesamtübersicht';
 $string['niveau'] = "Niveau";
+$string['descriptor'] = 'Kompetenz';
 $string['groupsize'] = 'Gruppengröße: ';
 
 $string['assigndone'] = 'Aufgabe erledigt: ';

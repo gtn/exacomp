@@ -427,9 +427,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     }
     
     public function is_edit_mode() {
-        // hacked here
-        // TODO: set in assign_competencies
-        return optional_param('editmode', 0, PARAM_BOOL);
+        return $this->editmode;
     }
     
     public function print_edit_mode_button($url) {
@@ -476,7 +474,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     	            $this->is_edit_mode() ?
     				html_writer::link(
     				        // edit mode: allow selecting only one subject
-    				        $NG_PAGE->url->copy(array('ng_subjectid' => $type->id)),
+    				        $NG_PAGE->url->copy(array('ng_subjectid' => $type->id, 'subjectid'=>null)),
     						$type->title.$extra, array('class' => 'type'))
     	            // link ohne href attribut => nicht klickbar!
     	            : html_writer::tag('a', $type->title.$extra, array('class' => 'type'))
@@ -508,8 +506,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
     	$content .= html_writer::end_tag('div');    	
     	return $content;
     }
-    public function print_topics_menu($topics,$selectedTopic,$selectedSubject) {
-    	   	global $NG_PAGE;
+    public function print_niveaus_menu($niveaus,$selectedNiveau,$selectedTopic) {
+    	global $NG_PAGE, $CFG, $COURSE;
     	
     	$edit = $this->is_edit_mode();
     	$studentid = optional_param('studentid', BLOCK_EXACOMP_SHOW_ALL_STUDENTS,PARAM_INT);
@@ -520,10 +518,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
     	
     	// TODO:sorting
     	/*
-    	echo "<pre>"; var_dump($topics);
+    	echo "<pre>"; var_dump($niveaus);
     	// sort topics
-    	uasort($topics, function($a, $b) {
-    	    // tabletype (there can be descriptors and topics in the $topics array)
+    	uasort($niveaus, function($a, $b) {
+    	    // tabletype (there can be descriptors and topics in the $niveaus array)
     	    $ret = strcmp($a->tabletype, $b->tabletype);
     	    if ($ret !== 0)
     	        return $ret;
@@ -543,17 +541,25 @@ class block_exacomp_renderer extends plugin_renderer_base {
     	});
     	*/
     	
-    	foreach($topics as $topic) {
+    	foreach($niveaus as $topic) {
     		$title = isset($topic->cattitle) ? $topic->cattitle : $topic->title;
     		$title_short = (strlen($title)>15)?substr($title, 0, 15).'...':$title;
     		$content .= html_writer::tag('li',
     				html_writer::link($NG_PAGE->url->copy(array('topicid' => $topic->id)),
-    						$title_short, array('class' => ($topic->id == $selectedTopic->id) ? 'current' : '', 'title'=>$title))
+    						$title_short, array('class' => ($topic->id == $selectedNiveau->id) ? 'current' : '', 'title'=>$title))
     				);
     	}
     	
+    	if ($this->is_edit_mode()) {
+    	    // add niveau button
+    	    $content .= html_writer::tag('li',
+        				html_writer::link("niveau.php?show=add&courseid={$COURSE->id}&topicid={$selectedTopic->id}",
+        				        "<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".block_exacomp::t('de:Neues Niveau'), array('exa-type' => 'iframe-popup'))
+    	    );
+    	}
+    	
     	$content .= html_writer::end_tag('ul');
-    	$content .= html_writer::end_tag('div');    	
+    	$content .= html_writer::end_tag('div');
     	return $content;
     }
     public function print_overview_metadata_teacher($subject,$topic){
@@ -1239,8 +1245,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
     public function print_competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $lis_singletopic = false, $crosssubs = false, $crosssubjid = 0, $statistic = false) {
         global $PAGE, $version;
 
-        $editmode = (!$students && $role == block_exacomp::ROLE_TEACHER) ? true : false;
-        
         $rowgroup = ($lis_singletopic) ? null : 0;
         //$rowgroup=0;
         $table = new html_table();
@@ -1360,13 +1364,13 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     'supported_modules'=>block_exacomp_get_supported_modules(),
                     'showalldescriptors' => block_exacomp_get_settings_by_course($courseid)->show_all_descriptors
             );
-            $this->print_topics($rows, 0, $subject->subs, $data, $students, '', false, $editmode, $statistic, $crosssubs, $crosssubjid);
+            $this->print_topics($rows, 0, $subject->subs, $data, $students, '', false, $this->is_edit_mode(), $statistic, $crosssubs, $crosssubjid);
                 
             
             $first = false;
         }
 		//total evaluation crosssub row
-		if($crosssubs && !$editmode && !$statistic){
+		if($crosssubs && !$this->is_edit_mode() && !$statistic){
 			$student = array_values($students)[0];
 			$studentid = $student->id;
 	
@@ -1683,7 +1687,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     $titleCell->text .= html_writer::link(
                             new moodle_url('/blocks/exacomp/select_crosssubjects.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id)),
                             $OUTPUT->pix_icon("i/withsubcat", get_string("crosssubject","block_exacomp")),
-                            array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+                            array("target" => "_blank", 'exa-type' => 'iframe-popup'));
                 }
                 //if hidden in course, cannot be shown to one student
                 //TODO without $descriptor->visible kann deskriptor für einzelnen sch�ler eingeblendet werden --> sinnvoll?
@@ -1692,7 +1696,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                         $titleCell->text .= $this->print_visibility_icon($visible, $descriptor->id);
                     }
                     if($editmode && $custom_created_descriptors){
-                    	$titleCell->text .= html_writer::link("", $OUTPUT->pix_icon("i/edit", get_string("edit")), array('exa-type' => 'iframe-popup', 'exa-url' => 'descriptor.php?courseid='.$COURSE->id.'&id='.$descriptor->id));
+                    	$titleCell->text .= html_writer::link('descriptor.php?courseid='.$COURSE->id.'&id='.$descriptor->id, $OUTPUT->pix_icon("i/edit", get_string("edit")), array('exa-type' => 'iframe-popup', 'target'=>'_blank'));
       
                     	// deactivate for now, the iframe popup has a delete link too
                         // $titleCell->text .= html_writer::link("", $OUTPUT->pix_icon("t/delete", get_string("delete")), array("onclick" => "if (confirm('" . get_string('delete_confirmation_descr','block_exacomp') . "')) block_exacomp.delete_descriptor(".$descriptor->id."); return false;"));
@@ -1706,11 +1710,11 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                 
                 $nivCell = new html_table_cell();
                 
-                $nivText = "";
+                $nivText = [];
                 foreach($descriptor->categories as $cat){
-                    $nivText .= $cat->title;
+                    $nivText[] = $cat->title;
                 }
-                $nivCell->text = $nivText;
+                $nivCell->text = join(' ', $nivText);
                 $descriptorRow->cells[] = $nivCell;
                         
                 
@@ -5224,9 +5228,7 @@ var dataset = dataset.map(function (group) {
         ob_start();
         ?>
         <script type="text/javascript">
-        		block_exacomp.popup_close();
-            	// reload
-            	top.location.reload();
+        		block_exacomp.popup_close_and_reload();
         </script>
         <?php
         return ob_get_clean();
@@ -5236,9 +5238,7 @@ var dataset = dataset.map(function (group) {
         ob_start();
         ?>
         <script type="text/javascript">
-        		block_exacomp.popup_close();
-            	// reload
-            	top.location.href = <?php echo json_encode($url); ?>;
+        		block_exacomp.popup_close_and_forward(<?php echo json_encode($url); ?>);
         </script>
         <?php
         return ob_get_clean();

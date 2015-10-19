@@ -81,6 +81,8 @@ block_exacomp_build_breadcrum_navigation($courseid);
  * @var block_exacomp_renderer
  */
 $output = $PAGE->get_renderer('block_exacomp');
+$output->editmode = $editmode;
+
 // build tab navigation & print header
 echo $output->header($context, $courseid, $page_identifier);
 
@@ -145,7 +147,7 @@ else{
 	echo html_writer::start_tag("div", array("class"=>"gridlayout"));
 	
 	echo $output->print_subjects_menu(block_exacomp_get_schooltypetree_by_subjects($subjects),$selectedSubject); 
-	echo $output->print_topics_menu($topics,$selectedNiveau,$selectedSubject);
+	echo $output->print_niveaus_menu($topics,$selectedNiveau,$selectedSubject);
 	if($course_settings->nostudents != 1)
 		echo $output->print_overview_legend($isTeacher);
 	if(!$version && $course_settings->nostudents != 1 && $studentid) echo $output->print_student_evaluation($showevaluation, $isTeacher,$selectedNiveau->id,$selectedSubject->id, $studentid);

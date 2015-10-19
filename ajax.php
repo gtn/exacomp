@@ -219,47 +219,7 @@ switch($action){
 		)));
 	    if ($new_descriptors) {
 	       foreach ($new_descriptors as $descriptor) {
-	           $parent_descriptor = block_exacomp_descriptor::get($descriptor->parentid);
-	           $topic = block_exacomp_topic::get($descriptor->topicid);
-	           
-	           if ($parent_descriptor) {
-	               $descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
-	               $topicid = $descriptor_topic_mm->topicid;
-	           
-	               $parent_descriptor->topicid = $topicid;
-	               $siblings = block_exacomp_get_child_descriptors($parent_descriptor, $courseid);
-	           } elseif ($topic) {
-	               $topicid = $topic->id;
-	               $descriptor->parentid = 0;
-	               
-	               // TODO
-	               $siblings = block_exacomp_get_descriptors_by_topic($courseid, $topicid);
-	           } else {
-	               print_error('parentid or topicid not submitted');
-	           }
-	           
-	           // get $max_sorting
-	           $max_sorting = $siblings ? max(array_map(function($x) { return $x->sorting; }, $siblings)) : 0;
-	           
-	           $descriptor->source = block_exacomp::CUSTOM_CREATED_DESCRIPTOR;
-	           $descriptor->sorting = $max_sorting + 1;
-	           
-	           $id = $DB->insert_record(block_exacomp::DB_DESCRIPTORS, $descriptor);
-	           
-	           $visibility = new stdClass();
-	           $visibility->courseid = $courseid;
-	           $visibility->descrid = $id;
-	           $visibility->studentid = 0;
-	           $visibility->visible = 1;
-	           
-	           $DB->insert_record(block_exacomp::DB_DESCVISIBILITY, $visibility);
-	           
-	           //topic association
-	           $childdesctopic_mm = new stdClass();
-	           $childdesctopic_mm->topicid = $topicid;
-	           $childdesctopic_mm->descrid = $id;
-	           
-	           $DB->insert_record(block_exacomp::DB_DESCTOPICS, $childdesctopic_mm);
+	           block_exacomp_descriptor::insertInCourse($courseid, $descriptor);
 	       }
 	    }
 		

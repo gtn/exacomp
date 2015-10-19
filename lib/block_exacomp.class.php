@@ -63,7 +63,7 @@ class block_exacomp extends block_list {
     const IMPORT_SOURCE_SPECIFIC = 2;
     
     const CUSTOM_CREATED_DESCRIPTOR = 3;
-
+    
 	function init() {
         $this->title = get_string('pluginname', 'block_exacomp');
     }

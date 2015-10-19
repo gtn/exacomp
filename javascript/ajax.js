@@ -487,8 +487,7 @@
 			descrid : descrid,
 			action : 'crosssubj-descriptors',
 		}).done(function(msg) {
-			window.opener.location.reload(true);
-			window.close();
+			block_exacomp.popup_close_and_reload();
 		});
 	});
 
@@ -545,40 +544,7 @@
 
 		// open iframe from exa-url OR href attribute
 		block_exacomp.popup_iframe(this.getAttribute('exa-url') || this.getAttribute('href'));
-		
-		// not needed anymore
-		/*
-		var td = $(this).closest('td');
-		var span = td.find('span');
-		var old_text = span.text();
-		var descrid = $(this).attr('descrid');
-		
-		var input = '<input type="text" length="150" value="'+span.text()+'" id="change-title" name="change-title" descrid="'+descrid+'"/>';
-		span.text("");
-		span.append(input);
-		*/
 	});
-	
-	// not needed anymore
-	/*
-	$(document).on('keydown', 'input[name^=change-title]', function(event) {
-		if(event.which == 13){
-			event.preventDefault();
-			
-			var text = $(this).val();
-			var descrid = $(this).attr('descrid');
-			
-			block_exacomp.call_ajax({
-				descrid : descrid,
-				title : text,
-				action : 'edit-descriptor-title'
-			});
-			
-			var span = $(this).parent('span');
-			span.text($(this).val());
-		}
-	});
-	*/
 	
 	$(document).on('click', '#hide-descriptor', function(event) {
 		event.preventDefault();

@@ -423,7 +423,7 @@ namespace {
             return $DB->delete_records(static::TABLE, array('id' => $this->id));
         }
         
-        static function get($conditions, $fields='*') {
+        static function get($conditions, $fields=null, $strictness=null) {
             if (is_string($conditions) || is_int($conditions)) {
                 // id
                 $conditions = array('id' => $conditions);
@@ -433,17 +433,25 @@ namespace {
                 print_error('wrong fields');
             }
             
-            $data = static::get_record($conditions, $fields);
+            $data = static::get_record($conditions, $fields, $strictness);
             
             if (!$data) return null;
             
             return static::create($data);
         }
         
-        static function get_record(array $conditions, $fields='*') {
+        static function get_record(array $conditions, $fields=null, $strictness=null) {
             global $DB;
             
-            return $DB->get_record(static::TABLE, $conditions, $fields);
+            // allow to just pass strictness
+            if ($strictness === null && in_array($fields, array(IGNORE_MISSING, IGNORE_MULTIPLE, MUST_EXIST), true)) {
+                $strictness = $fields;
+                $fields = null;
+            }
+            if ($fields === null) $fields = '*';
+            if ($strictness === null) $strictness = IGNORE_MISSING;
+            
+            return $DB->get_record(static::TABLE, $conditions, $fields, $strictness);
         }
     
         static function get_objects(array $conditions=null, $sort='', $fields='*', $limitfrom=0, $limitnum=0) {
@@ -556,6 +564,79 @@ namespace {
             die('no');
             
             return block_exacomp_topic::get($this->topicid);
+        }
+        
+        static function insertInCourse($courseid, $data) {
+            global $DB;
+            
+            $descriptor = static::create($data);
+            $parent_descriptor = isset($descriptor->parentid) ? block_exacomp_descriptor::get($descriptor->parentid) : null;
+            $topic = isset($descriptor->topicid) ? block_exacomp_topic::get($descriptor->topicid) : null;
+            
+            if ($parent_descriptor) {
+               $descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
+               $topicid = $descriptor_topic_mm->topicid;
+            
+               $parent_descriptor->topicid = $topicid;
+               $siblings = block_exacomp_get_child_descriptors($parent_descriptor, $courseid);
+            } elseif ($topic) {
+               $topicid = $topic->id;
+               $descriptor->parentid = 0;
+               
+               // TODO
+               $siblings = block_exacomp_get_descriptors_by_topic($courseid, $topicid);
+            } else {
+               print_error('parentid or topicid not submitted');
+            }
+            
+            // get $max_sorting
+            $max_sorting = $siblings ? max(array_map(function($x) { return $x->sorting; }, $siblings)) : 0;
+            
+            $descriptor->source = block_exacomp::CUSTOM_CREATED_DESCRIPTOR;
+            $descriptor->sorting = $max_sorting + 1;
+            $descriptor->insert();
+            
+            $visibility = new stdClass();
+            $visibility->courseid = $courseid;
+            $visibility->descrid = $descriptor->id;
+            $visibility->studentid = 0;
+            $visibility->visible = 1;
+            
+            $DB->insert_record(block_exacomp::DB_DESCVISIBILITY, $visibility);
+            
+            //topic association
+            $childdesctopic_mm = new stdClass();
+            $childdesctopic_mm->topicid = $topicid;
+            $childdesctopic_mm->descrid = $descriptor->id;
+            
+            $DB->insert_record(block_exacomp::DB_DESCTOPICS, $childdesctopic_mm);
+            
+            return $descriptor;
+        }
+        
+        
+        function set_categories($categories) {
+            global $DB;
+            
+            // read current
+            $to_delete = $current = $DB->get_records_menu(block_exacomp::DB_DESCCAT, array('descrid' => $this->id), null, 'catid, id');
+            
+            // add new ones
+            foreach ($categories as $id) {
+                if (!isset($current[$id])) {
+                    $DB->insert_record(block_exacomp::DB_DESCCAT, array('descrid' => $this->id, 'catid' => $id));
+                } else {
+                    unset($to_delete[$id]);
+                }
+            }
+            
+            // delete old ones
+            $DB->delete_records_list(block_exacomp::DB_DESCCAT, 'id', $to_delete);
+        }
+        
+        function fill_category_ids() {
+            global $DB;
+            return $DB->get_records_menu(block_exacomp::DB_DESCCAT, array('descrid' => $this->id), null, 'catid, catid AS tmp');
         }
         
         function fill_children() {
