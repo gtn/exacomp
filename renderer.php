@@ -1717,7 +1717,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                 $visible_student = $visible;
                 if(!$statistic){
                     foreach($students as $student) {
-                    	
+                    	$icontext = "";
                     	//check reviewerid for teacher
                     	if($data->role == block_exacomp::ROLE_TEACHER)
                     		$reviewerid = $DB->get_field(block_exacomp::DB_COMPETENCIES,"reviewerid",array("userid" => $student->id, "compid" => $descriptor->id, "role" => block_exacomp::ROLE_TEACHER, "comptype" => block_exacomp::TYPE_DESCRIPTOR));
