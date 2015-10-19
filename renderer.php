@@ -1901,19 +1901,20 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                 $titleCell->text .= $this->print_visibility_icon_example($visible_example, $example->id);
                             }
                         }
-                        if((block_exacomp_is_admin($COURSE->id) || (isset($example->creatorid) && $example->creatorid == $USER->id)) && $editmode) {
+                        if((block_exacomp_is_admin($COURSE->id) || (isset($example->creatorid) && $example->creatorid == $USER->id))) {
                             $titleCell->text .= html_writer::link(
                                     new moodle_url('/blocks/exacomp/example_upload.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id,"topicid"=>$descriptor->topicid,"exampleid"=>$example->id)),
                                     $OUTPUT->pix_icon("i/edit", get_string("edit")),
                                     array("target" => "_blank", 'exa-type' => 'iframe-popup'));
                         
-                            if(!$example_used)
-                           		$titleCell->text .= html_writer::link($PAGE->url . "&delete=" . $example->id. "&studentid=" . optional_param('studentid',BLOCK_EXACOMP_SHOW_ALL_STUDENTS, PARAM_INT). "&subjectid=" . optional_param('subjectid', 0, PARAM_INT). "&topicid=" . optional_param('topicid', 0, PARAM_INT), $OUTPUT->pix_icon("t/delete", get_string("delete"), "", array("onclick" => "return confirm('" . get_string('delete_confirmation','block_exacomp') . "')")));
-                        
-                        	//print up & down icons
-                            $titleCell->text .= html_writer::link("#", $OUTPUT->pix_icon("t/up", get_string('up')), array("id" => "example-up", "exampleid" => $example->id, "descrid" => $descriptor->id));
-                            $titleCell->text .= html_writer::link("#", $OUTPUT->pix_icon("t/down", get_string('down')), array("id" => "example-down", "exampleid" => $example->id, "descrid" => $descriptor->id));
-                            
+                            if($editmode) {
+	                            if(!$example_used)
+	                           		$titleCell->text .= html_writer::link($PAGE->url . "&delete=" . $example->id. "&studentid=" . optional_param('studentid',BLOCK_EXACOMP_SHOW_ALL_STUDENTS, PARAM_INT). "&subjectid=" . optional_param('subjectid', 0, PARAM_INT). "&topicid=" . optional_param('topicid', 0, PARAM_INT), $OUTPUT->pix_icon("t/delete", get_string("delete"), "", array("onclick" => "return confirm('" . get_string('delete_confirmation','block_exacomp') . "')")));
+	                        
+	                        	//print up & down icons
+	                            $titleCell->text .= html_writer::link("#", $OUTPUT->pix_icon("t/up", get_string('up')), array("id" => "example-up", "exampleid" => $example->id, "descrid" => $descriptor->id));
+	                            $titleCell->text .= html_writer::link("#", $OUTPUT->pix_icon("t/down", get_string('down')), array("id" => "example-down", "exampleid" => $example->id, "descrid" => $descriptor->id));
+	                        }
                         }
                         
                         if ($url = block_exacomp_get_file_url($example, 'example_task')) {
