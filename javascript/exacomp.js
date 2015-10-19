@@ -26,6 +26,7 @@ window.block_exacomp = {
 			var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
 				results = regex.exec(location.search);
 			
+			// TODO: hack, move to own function get_studentid() or so
 			// sepcial case: studentid
 			if(name == 'studentid' && results === null) {
 				studentid = $( "#menuexacomp_competence_grid_select_student" ).val();
