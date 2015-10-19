@@ -4688,6 +4688,7 @@ class block_exacomp_external extends external_api {
 	
 		if($insert) {
 			//store item in the right portfolio category
+			$course = get_course($courseid);
 			$course_category = block_exaport_get_user_category($course->fullname, $USER->id);
 	
 			if(!$course_category) {
