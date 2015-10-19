@@ -1951,8 +1951,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                             $titleCell->text .= $this->print_competence_association_icon($example->id, $data->courseid, false);
                             
                         } else if($data->role == block_exacomp::ROLE_TEACHER) {
-                            $studentid = optional_param("studentid", BLOCK_EXACOMP_SHOW_ALL_STUDENTS, PARAM_INT);
-            
+                            $studentid = block_exacomp_get_studentid(true);
+                            
                             if($studentid && $studentid != BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
                                 $titleCell->text .= $this->print_submission_icon($data->courseid, $example->id, $studentid);
                                 

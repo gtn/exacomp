@@ -25,6 +25,14 @@ window.block_exacomp = {
 			name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
 			var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
 				results = regex.exec(location.search);
+			
+			// sepcial case: studentid
+			if(name == 'studentid' && results === null) {
+				studentid = $( "#menuexacomp_competence_grid_select_student" ).val();
+				if(studentid != null)
+					return studentid;
+			}
+			
 			return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
 	},
 	
