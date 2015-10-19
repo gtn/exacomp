@@ -2781,7 +2781,7 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
                 
                 $taxtitle = "";
                 foreach($example->taxonomies as $taxonomy){
-                    $taxtitle .= $taxonomy->title.", ";
+                    $taxtitle .= $taxonomy->title.", "; // TODO: beistrich am ende?
                 }
                 
                 $taxtitle = substr($taxtitle, 0, strlen($taxtitle)-1);
@@ -2835,6 +2835,7 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 function block_exacomp_get_niveaus_for_subject($subjectid) {
     global $DB;
 
+    // TODO: besser formatieren und sql optimieren
     $niveaus = "SELECT DISTINCT n.id as id, n.title, n.sorting FROM {block_exacompdescriptors} d, {block_exacompdescrtopic_mm} dt, {block_exacompniveaus} n
     WHERE d.id=dt.descrid AND dt.topicid IN (SELECT id FROM {block_exacomptopics} WHERE subjid=?)
     AND d.niveauid > 0 AND d.niveauid = n.id order by n.sorting, n.id";
