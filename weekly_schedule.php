@@ -101,4 +101,3 @@ echo $output->print_side_wrap_weekly_schedule();
 /* END CONTENT REGION */
 
 echo $output->footer();
-?>

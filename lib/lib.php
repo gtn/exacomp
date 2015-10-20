@@ -5577,7 +5577,7 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true){
     
     return $array;
 }
-function block_exacomp_build_json_time_slots(){
+function block_exacomp_build_json_time_slots($date = null){
     
     $units = (get_config("exacomp","scheduleunits")) ? get_config("exacomp","scheduleunits") : 8;
     $interval = (get_config("exacomp","scheduleinterval")) ? get_config("exacomp","scheduleinterval") : 50;
@@ -5602,11 +5602,16 @@ function block_exacomp_build_json_time_slots(){
             $entry['name'] = '';
         
         $entry['start'] = block_exacomp_parse_seconds_to_timestring($secTime);
-        
+        if ($date) {
+            $entry['start_time'] = $date + $secTime;
+        }
         //calculate end of current time frame
         $secTime += (($interval / 4) * 60);
         
         $entry['end'] = block_exacomp_parse_seconds_to_timestring($secTime);
+        if ($date) {
+            $entry['end_time'] = $date + $secTime;
+        }
         
         $slots[] = $entry;
     }
