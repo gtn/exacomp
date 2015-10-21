@@ -122,28 +122,6 @@ switch($action){
 			$event = \block_exacomp\event\crosssubject_added::create(array('objectid' => $exampleid, 'contextid' => context_course::instance($courseid)->id))->trigger();
 		
 		break;
-	case('competencies_array'):
-		$competencies = required_param('competencies', PARAM_TEXT);
-		$comptype = required_param ( 'comptype', PARAM_INT );
-
-		$comps = json_decode($competencies);
-		
-		foreach($comps as $comp){
-			if($comp)
-				if(!is_numeric($comp->compid) || !is_numeric($comp->userid) || !is_numeric($comp->value))
-					print_error('invalidparameter', 'block_exacomp', $comp);
-		}
-		
-		$saved = "";
-		
-		foreach($comps as $comp){
-			if($comp){
-				$saved .= block_exacomp_set_user_competence ( $comp->userid, $comp->compid, $comptype, $courseid, ($isTeacher) ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $comp->value );
-			}
-		}
-		
-		echo $saved;
-		break;
 	case('examples_array'):
 		$examples_json = required_param('examples', PARAM_TEXT);
 		
@@ -212,7 +190,7 @@ switch($action){
 		break;
 	case 'multi':
 	    
-	    $new_descriptors = block_exacomp\param::optional_array('new-descriptors', array((object)array(
+	    $new_descriptors = block_exacomp\param::optional_array('new_descriptors', array((object)array(
 			'parentid' => PARAM_INT,
 			'topicid' => PARAM_INT,
 			'title' => PARAM_TEXT
@@ -223,7 +201,20 @@ switch($action){
 	       }
 	    }
 		
-		break;
+
+	    $competencies_by_type = block_exacomp\param::optional_array('competencies_by_type', array(array((object)array(
+			'compid' => PARAM_INT,
+			'userid' => PARAM_INT,
+			'value' => PARAM_INT
+		))));
+	    
+	    foreach ($competencies_by_type as $comptype => $competencies) {
+    	    foreach($competencies as $comp){
+	            block_exacomp_set_user_competence ( $comp->userid, $comp->compid, $comptype, $courseid, ($isTeacher) ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $comp->value );
+    	    }
+	    }
+	    
+	    die('ok');
 	case 'crosssubj-subject':
 		$crosssubjectid = required_param('crosssubjid', PARAM_INT);
 		$subjectid = required_param('subjectid', PARAM_INT);

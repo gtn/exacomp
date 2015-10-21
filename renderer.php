@@ -402,8 +402,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	           $right_content .= block_exacomp_get_message_icon($selectedStudent);
             }
             
-            $right_content .= html_writer::empty_tag('input', array('type'=>'button', 'id'=>'add_subject', 'value'=>block_exacomp::t('add_subject', 'de:Kompetenzraster anlegen'),
-    			 'exa-type' => 'iframe-popup', 'exa-url' => "subject.php?courseid={$COURSE->id}&show=add"));
+            if ($this->is_edit_mode()) {
+                $right_content .= html_writer::empty_tag('input', array('type'=>'button', 'id'=>'add_subject', 'value'=>block_exacomp::t('add_subject', 'de:Kompetenzraster anlegen'),
+                    'exa-type' => 'iframe-popup', 'exa-url' => "subject.php?courseid={$COURSE->id}&show=add"));
+            } else {
+                $right_content .= html_writer::empty_tag('input', array('type'=>'button', 'id'=>'print', 'value'=>block_exacomp::t('de:Drucken'), 'onclick' => "window.open(location.href+'&print=1');"));
+            }
             
 			$url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid'=>$COURSE->id, 'creatorid'=>$USER->id));
     		$right_content .= html_writer::tag('button', html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'), 
@@ -427,7 +431,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
     }
     
     public function is_edit_mode() {
-        return $this->editmode;
+        return isset($this->editmode) && $this->editmode;
+    }
+    
+    public function is_print_mode() {
+        return isset($this->print) && $this->print;
     }
     
     public function print_edit_mode_button($url) {
@@ -1298,7 +1306,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     $studentCell->attributes['class'] = 'exabis_comp_top_studentcol colgroup colgroup-' . $columnGroup;
                     $studentCell->colspan = $studentsColspan;
                     $studentCell->text = fullname($student);
-                    if (block_exacomp_exastudexists() && ($info = block_exastud_api::get_student_review_link_info_for_teacher($student->id))) {
+                    if (!$this->is_print_mode() && block_exacomp_exastudexists() && ($info = block_exastud_api::get_student_review_link_info_for_teacher($student->id))) {
                         $studentCell->text .= ' <a href="'.$info->url.'" title="'.block_exastud_t('de:Überfachliche Bewertung').'" onclick="window.open(this.href,this.target,\'width=880,height=660,scrollbars=yes\'); return false;">'.'<img src="pix/review_student.png" />'.'</a>';
                     }
     
@@ -1433,18 +1441,21 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         	
 		$new = optional_param('new', false, PARAM_BOOL);
         
-        if($crosssubs && $role == block_exacomp::ROLE_TEACHER && !$students)
-            $table_html .= html_writer::div(html_writer::tag("input", "", array("id"=>"btn_submit", "name" => "btn_submit", "type" => "submit", "value" => get_string("save_crosssub", "block_exacomp")))
-            . ((!$new) ? html_writer::tag("input", "", array("id"=>"save_as_draft", "name" => "save_as_draft", "type" => "submit", "value" => get_string("save_as_draft", "block_exacomp"))) : '')
-            . ((!$new) ? html_writer::tag("input", "", array("id"=>"share_crosssub", "name"=>"share_crosssub", "type"=>"submit", "value"=>get_string("share_crosssub", "block_exacomp"))) : '')
-            . ((!$new) ? html_writer::tag("input", "", array("id"=>"delete_crosssub", "name"=>"delete_crosssub", "type"=>"submit", "value"=>get_string("delete_crosssub", "block_exacomp"), 'message'=>get_string('confirm_delete', 'block_exacomp')), array('id'=>'exabis_save_button')) : '')
-           );
-        else
-            $table_html .= html_writer::div(html_writer::tag("input", "", array("id"=>"btn_submit", "name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp"))),'', array('id'=>'exabis_save_button'));
+		if (!$this->is_print_mode()) {
+            if($crosssubs && $role == block_exacomp::ROLE_TEACHER && !$students)
+                $table_html .= html_writer::div(html_writer::tag("input", "", array("id"=>"btn_submit", "name" => "btn_submit", "type" => "submit", "value" => get_string("save_crosssub", "block_exacomp")))
+                . ((!$new) ? html_writer::tag("input", "", array("id"=>"save_as_draft", "name" => "save_as_draft", "type" => "submit", "value" => get_string("save_as_draft", "block_exacomp"))) : '')
+                . ((!$new) ? html_writer::tag("input", "", array("id"=>"share_crosssub", "name"=>"share_crosssub", "type"=>"submit", "value"=>get_string("share_crosssub", "block_exacomp"))) : '')
+                . ((!$new) ? html_writer::tag("input", "", array("id"=>"delete_crosssub", "name"=>"delete_crosssub", "type"=>"submit", "value"=>get_string("delete_crosssub", "block_exacomp"), 'message'=>get_string('confirm_delete', 'block_exacomp')), array('id'=>'exabis_save_button')) : '')
+               );
+            else
+                $table_html .= html_writer::div(html_writer::tag("input", "", array("id"=>"btn_submit", "name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp"))),'', array('id'=>'exabis_save_button'));
         
-        $table_html .= html_writer::tag("input", "", array("name" => "open_row_groups", "type" => "hidden", "value" => (optional_param('open_row_groups', "", PARAM_TEXT))));
-
-        return $table_html.html_writer::end_tag('form');
+            $table_html .= html_writer::tag("input", "", array("name" => "open_row_groups", "type" => "hidden", "value" => (optional_param('open_row_groups', "", PARAM_TEXT))));
+            $table_html .= html_writer::end_tag('form');
+		}
+        
+        return $table_html;
     }
 
     public function print_topics(&$rows, $level, $topics, &$data, $students, $rowgroup_class = '', $profoundness = false, $editmode = false, $statistic = false, $crosssubs = false, $crosssubjid=0) {
@@ -1661,7 +1672,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     
                 
                 $exampleuploadCell = new html_table_cell();
-                if($data->role == block_exacomp::ROLE_TEACHER && !$profoundness && $descriptor_in_crosssubj) {
+                if(!$this->is_print_mode() && $data->role == block_exacomp::ROLE_TEACHER && !$profoundness && $descriptor_in_crosssubj) {
                     $exampleuploadCell->text = html_writer::link(
                             new moodle_url('/blocks/exacomp/example_upload.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id,"topicid"=>$descriptor->topicid)),
                             html_writer::empty_tag('img', array('src'=>'pix/upload_12x12.png', 'alt'=>'upload')),
@@ -1944,36 +1955,40 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                             $titleCell->text .= $this->print_example_solution_icon($url);
                         }
                         
-                        if(!$example->externalurl && !$example->externaltask && !block_exacomp_get_file_url($example, 'example_solution') && !block_exacomp_get_file_url($example, 'example_task') && $example->description) 
+                        if ($this->is_print_mode()) {
+                            // no icons in print mode
+                        } else {
+                            if(!$example->externalurl && !$example->externaltask && !block_exacomp_get_file_url($example, 'example_solution') && !block_exacomp_get_file_url($example, 'example_task') && $example->description) 
                         	$titleCell->text .= $OUTPUT->pix_icon("i/preview", $example->description);
                         	 
-                        if($data->role == block_exacomp::ROLE_STUDENT) {
-                            $titleCell->text .= $this->print_schedule_icon($example->id, $USER->id, $data->courseid);
-                            
-                            $titleCell->text .= $this->print_submission_icon($data->courseid, $example->id, $USER->id);
+                            if($data->role == block_exacomp::ROLE_STUDENT) {
+                                $titleCell->text .= $this->print_schedule_icon($example->id, $USER->id, $data->courseid);
                                 
-                            $titleCell->text .= $this->print_competence_association_icon($example->id, $data->courseid, false);
-                            
-                        } else if($data->role == block_exacomp::ROLE_TEACHER) {
-                            $studentid = block_exacomp_get_studentid(true);
-                            
-                            if($studentid && $studentid != BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
-                                $titleCell->text .= $this->print_submission_icon($data->courseid, $example->id, $studentid);
+                                $titleCell->text .= $this->print_submission_icon($data->courseid, $example->id, $USER->id);
+                                    
+                                $titleCell->text .= $this->print_competence_association_icon($example->id, $data->courseid, false);
                                 
+                            } else if($data->role == block_exacomp::ROLE_TEACHER) {
+                                $studentid = block_exacomp_get_studentid(true);
+                                
+                                if($studentid && $studentid != BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
+                                    $titleCell->text .= $this->print_submission_icon($data->courseid, $example->id, $studentid);
+                                    
+                                }
+                                //auch für alle schüler auf wochenplan legen
+                                if(!$this->is_edit_mode()){
+                                	$titleCell->text .= $this->print_schedule_icon($example->id, ($studentid)?$studentid:BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $data->courseid);
+    								
+    								if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
+                                		$titleCell->text .= html_writer::link("#",
+    			                            html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'), 'title'=> get_string('pre_planning_storage', 'block_exacomp'))),
+    			                            array('id' => 'add-example-to-schedule', 'exampleid' => $example->id, 'studentid' => 0, 'courseid' => $data->courseid));
+        
+                                	}
+    							}
+                                $titleCell->text .= $this->print_competence_association_icon($example->id, $data->courseid, $editmode);
+                            
                             }
-                            //auch für alle schüler auf wochenplan legen
-                            if(!$editmode){
-                            	$titleCell->text .= $this->print_schedule_icon($example->id, ($studentid)?$studentid:BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $data->courseid);
-								
-								if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
-                            		$titleCell->text .= html_writer::link("#",
-			                            html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'), 'title'=> get_string('pre_planning_storage', 'block_exacomp'))),
-			                            array('id' => 'add-example-to-schedule', 'exampleid' => $example->id, 'studentid' => 0, 'courseid' => $data->courseid));
-    
-                            	}
-							}
-                            $titleCell->text .= $this->print_competence_association_icon($example->id, $data->courseid, $editmode);
-                        
                         }
                         $titleCell->text .= '</span>';
                         
@@ -2421,12 +2436,20 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
     public function generate_select($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false, $profoundness = false, $reviewerid = null) {
     	global $USER, $global_scheme, $global_scheme_values;
     	
+    	if ($this->is_print_mode()) {
+    	    return (isset($student->{$type}->{$evaluation}[$compid])) ? $student->{$type}->{$evaluation}[$compid] : '';
+    	}
+    	
     	$attributes = array();
     	if($disabled)
     		$attributes["disabled"] = "disabled";
     	if($reviewerid && $reviewerid != $USER->id)
     		$attributes["reviewerid"] = $reviewerid;
     	
+    	$attributes['exa-compid'] = $compid;
+    	$attributes['exa-userid'] = $student->id;
+    	$attributes['exa-evaluation'] = $evaluation;
+    	 
         $options = array();
         $options[-1] = ' ';
         for($i=0;$i<=$scheme;$i++)

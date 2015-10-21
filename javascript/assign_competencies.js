@@ -149,7 +149,6 @@
 				var id = this.className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
 				ids.push(id);
 			});
-			console.log(ids);
 			localStorage.setObject(storageid, ids);
 		}
 	});

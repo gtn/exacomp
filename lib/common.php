@@ -97,16 +97,20 @@ class param {
         
         // allow clean_array(PARAM_TEXT): which means PARAM_INT=>PARAM_TEXT
         if ($keyType === 0) {
-            $keyType = PARAM_INT;
+            $keyType = PARAM_SEQUENCE;
         }
 
-        if ($keyType !== PARAM_INT && $keyType !== PARAM_TEXT) {
+        if ($keyType !== PARAM_INT && $keyType !== PARAM_TEXT && $keyType !== PARAM_SEQUENCE) {
             print_error('wrong key type: '.$keyType);
         }
 
         $ret = array();
         foreach ($values as $key=>$value) {
-            $ret[clean_param($key, $keyType)] = static::clean($value, $valueType);
+            if ($keyType == PARAM_SEQUENCE) {
+                $ret[] = static::clean($value, $valueType);
+            } else {
+                $ret[clean_param($key, $keyType)] = static::clean($value, $valueType);
+            }
         }
 
         return $ret;

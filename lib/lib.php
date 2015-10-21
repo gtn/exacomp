@@ -3979,7 +3979,7 @@ function block_exacomp_check_user_evaluation_exists($courseid){
  *  schooltype2
  *      - subject 3 
  */
-function block_exacomp_get_schooltypetree_by_subjects($subjects, $competencegrid = false){
+function block_exacomp_get_schooltypetree_by_topics($subjects, $competencegrid = false){
     global $version;
     
     $tree = array();

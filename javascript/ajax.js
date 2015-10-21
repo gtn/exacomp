@@ -4,13 +4,6 @@
 	// # COMPETENCIES
 	//cannot hide anymore, as soon as competency is checked
 	var competencies = {};
-	Object.size = function(obj) {
-	    var size = 0, key;
-	    for (key in obj) {
-	        if (obj.hasOwnProperty(key)) size++;
-	    }
-	    return size;
-	};
 	
 	var prev_val;
 	
@@ -22,7 +15,7 @@
 		
 		// check if anyone else has edited the competence before. if so, ask for confirmation
 		if($(this).attr("reviewerid")) {
-			if(!confirm("Diese Kompetenz wurde von jemand anderem bearbeitet. Wirklich ändern?")){
+			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
 				$(this).prop("checked",prev_val);
 		        return;
 		    }
@@ -81,10 +74,9 @@
 			}
 		}
 			
-		var values = $(this).attr("name").split("-");
-		competencies[values[1]+"-"+values[2]] = {
-			userid : values[2],
-			compid : values[1],
+		competencies[this.getAttribute('exa-compid')+"-"+this.getAttribute('exa-userid')] = {
+			userid : this.getAttribute('exa-userid'),
+			compid : this.getAttribute('exa-compid'),
 			value : $(this).val()
 		};
 	});
@@ -266,45 +258,14 @@
 
 		switch ($(this).attr('id')) {
 		case 'btn_submit':
-			var show_changes_saved = true;
+			var deprecated_show_changes_saved = true;
+			var reload = false;
 			
-			if (Object.size(competencies) > 0) {
-				block_exacomp.call_ajax({
-					competencies : JSON
-							.stringify(competencies),
-					comptype : 0,
-					action : 'competencies_array'
-				});
-				competencies = {};
-			}
-
-			if (Object.size(topics) > 0) {
-				block_exacomp.call_ajax({
-					competencies : JSON
-							.stringify(topics),
-					comptype : 1,
-					action : 'competencies_array'
-				}).done(function(msg) {
-					console.log("Topics Saved: " + msg);
-				});
-
-				topics = {};
+			function saved_alert() {
+				alert('Änderungen wurden gespeichert!');
 			}
 			
-			if (Object.size(crosssubs) > 0) {
-				block_exacomp.call_ajax({
-					competencies : JSON
-							.stringify(crosssubs),
-					comptype : 2,
-					action : 'competencies_array'
-				}).done(function(msg) {
-					console.log("Crosssubs Saved: " + msg);
-				});
-
-				crosssubs = {};
-			}
-			
-			if (Object.size(examples) > 0) {
+			if (!$.isEmptyObject(examples)) {
 				block_exacomp.call_ajax({
 					examples : JSON.stringify(examples),
 					action : 'examples_array'
@@ -345,9 +306,33 @@
 				});
 			}
 
+			var multiQueryData = {};
+			
+			var competencies_by_type = [];
+			if (!$.isEmptyObject(competencies)) {
+				competencies_by_type[0] = competencies;
+				competencies = {};
+			}
+
+			if (!$.isEmptyObject(topics)) {
+				competencies_by_type[1] = topics;
+				topics = {};
+			}
+			
+			if (!$.isEmptyObject(crosssubs)) {
+				competencies_by_type[2] = crosssubs;
+				crosssubs = {};
+			}
+			
+			if (competencies_by_type.length) {
+				multiQueryData.competencies_by_type = competencies_by_type
+			}
+
 			//check all new_comp text fields if somewhere new text is entered when saving and create new descriptor
 			var new_descriptors = [];
 			$( "input[exa-type=new-descriptor]" ).each(function (){
+				show_changes_saved = false;
+
 				if (!this.value) return;
 				
 				new_descriptors.push({
@@ -355,16 +340,23 @@
 					topicid: this.getAttribute('topicid'),
 					title: this.value
 				});
+
+				if (new_descriptors.length) {
+					multiQueryData.new_descriptors = new_descriptors;
+					reload = true;
+				}
 			});
 			
-			if (new_descriptors.length) {
-				show_changes_saved = false;
+			if (!$.isEmptyObject(multiQueryData)) {
+				deprecated_show_changes_saved = false;
 				
-				block_exacomp.call_ajax({
-					action: 'multi',
-					'new-descriptors': new_descriptors,
-				}).done(function(msg) {
-					location.reload();
+				multiQueryData.action = 'multi';
+				block_exacomp.call_ajax(multiQueryData).done(function(msg) {
+					if (reload) {
+						location.reload();
+					} else {
+						saved_alert();
+					}
 
 					//im crosssubject neue Teilkompetenz erstellt -> gleich thema zuordnen
 					// TODO: was macht das?
@@ -414,8 +406,8 @@
 			});
 			*/
 			
-			if (show_changes_saved) {
-				alert('Änderungen wurden gespeichert!');
+			if (deprecated_show_changes_saved) {
+				saved_alert();
 			}
 			
 			break;
