@@ -58,9 +58,12 @@
 	font-size: 15px;
 }
 
-#block_exacomp span.exabis_comp_top_small {
-	display: block;
-	font-size: 0.84em;
+#block_exacomp .exabis_comp_top_name {
+    display: block;
+    font-size: 0.84em;
+}
+#block_exacomp .exabis_comp_top_value {
+    font-weight: bold;
 }
 
 #block_exacomp .exabis_competencies_lis div.exabis_comp_top_indentation {

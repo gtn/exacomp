@@ -390,14 +390,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
         global $PAGE, $COURSE, $USER;
 
         $content = "";
-
+        $right_content = "";
+        
+        if (!$this->is_edit_mode()) {
+            $right_content .= html_writer::empty_tag('input', array('type'=>'button', 'id'=>'print', 'value'=>block_exacomp::t('de:Drucken'), 'onclick' => "window.open(location.href+'&print=1');"));
+        }
+        
         if($isTeacher){
             $content .= html_writer::empty_tag("br");
             $content .= get_string("choosestudent", "block_exacomp");
 
             $content .= block_exacomp_studentselector($students,$this->is_edit_mode()?BLOCK_EXACOMP_SHOW_ALL_STUDENTS:$selectedStudent,$PAGE->url."&subjectid=".$selectedSubject."&topicid=".$selectedTopic,  BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
 
-            $right_content = "";
             if(!$this->is_edit_mode() && $selectedStudent != BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $selectedStudent != BLOCK_EXACOMP_SHOW_STATISTIC) {
 	           $right_content .= block_exacomp_get_message_icon($selectedStudent);
             }
@@ -405,8 +409,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
             if ($this->is_edit_mode()) {
                 $right_content .= html_writer::empty_tag('input', array('type'=>'button', 'id'=>'add_subject', 'value'=>block_exacomp::t('add_subject', 'de:Kompetenzraster anlegen'),
                     'exa-type' => 'iframe-popup', 'exa-url' => "subject.php?courseid={$COURSE->id}&show=add"));
-            } else {
-                $right_content .= html_writer::empty_tag('input', array('type'=>'button', 'id'=>'print', 'value'=>block_exacomp::t('de:Drucken'), 'onclick' => "window.open(location.href+'&print=1');"));
             }
             
 			$url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid'=>$COURSE->id, 'creatorid'=>$USER->id));
@@ -415,18 +417,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			    	"onclick" => "window.open('".$url->out(false)."','_blank','width=880,height=660, scrollbars=yes'); return false;"));
          			
 			$right_content .= $this->print_edit_mode_button("&studentid=".$selectedStudent."&subjectid=".$selectedSubject."&topicid=".$selectedTopic);
-				
-			$content .= html_writer::div($right_content, 'edit_buttons_float_right');
 		} else {
-			$right_content = "";
-				
 			foreach(block_exacomp_get_teachers_by_course($COURSE->id) as $teacher) {
 				$right_content .= block_exacomp_get_message_icon($teacher->id);
 				
 			}
-			$content .= html_writer::div($right_content, 'edit_buttons_float_right');
 		}
-        
+		$content .= html_writer::div($right_content, 'edit_buttons_float_right');
+		
         return $content;
     }
     
@@ -657,7 +655,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
         return html_writer::table($table).html_writer::empty_tag('br');
     }
-    public function print_overview_metadata($schooltype, $subject, $topic, $cat){
+    public function print_overview_metadata($schooltype, $subject, $descriptor, $cat){
         global $version;
         
         $table = new html_table();
@@ -668,33 +666,35 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $row = new html_table_row();
 
         $cell = new html_table_cell();
-        $cell->text = html_writer::span(get_string('subject_singular', 'block_exacomp'), 'exabis_comp_top_small')
-        . html_writer::tag('b', $schooltype);
+        $cell->text = html_writer::span(get_string('subject_singular', 'block_exacomp'), 'exabis_comp_top_name')
+        . html_writer::div($schooltype, 'exabis_comp_top_value');
 
         $row->cells[] = $cell;
-
+        
         $cell = new html_table_cell();
-        $cell->text = html_writer::span(get_string('comp_field_idea', 'block_exacomp'), 'exabis_comp_top_small')
-        . html_writer::tag('b', (isset($subject->numb) && strcmp($subject->numb, '')!=0)?$subject->numb." - ".$subject->title:$subject->title);
+        $cell->text = html_writer::span(get_string('comp_field_idea', 'block_exacomp'), 'exabis_comp_top_name')
+        . html_writer::div((isset($subject->numb) && strcmp($subject->numb, '')!=0)?$subject->numb." - ".$subject->title:$subject->title, 'exabis_comp_top_value');
 
         $row->cells[] = $cell;
 
-        $cell = new html_table_cell();
-        $cell->text = html_writer::span(get_string('comp', 'block_exacomp'), 'exabis_comp_top_small')
-        . html_writer::tag('b', $topic->title);
-
-        $row->cells[] = $cell;
+        if ($descriptor) {
+            $cell = new html_table_cell();
+            $cell->text = html_writer::span(get_string('comp', 'block_exacomp'), 'exabis_comp_top_name')
+            . html_writer::div($descriptor->title, 'exabis_comp_top_value');
+    
+            $row->cells[] = $cell;
+        }
 
         if($version){
             $cell = new html_table_cell();
-            $cell->text = html_writer::span(get_string('progress', 'block_exacomp'), 'exabis_comp_top_small')
-            . html_writer::tag('b', (($cat)?$cat->title:''));
+            $cell->text = html_writer::span(get_string('progress', 'block_exacomp'), 'exabis_comp_top_name')
+            . html_writer::div($cat?$cat->title:'', 'exabis_comp_top_value');
     
             $row->cells[] = $cell;
     
             $cell = new html_table_cell();
-            $cell->text = html_writer::span(get_string('tab_competence_overview', 'block_exacomp'), 'exabis_comp_top_small')
-            . html_writer::tag('b', substr($schooltype, 0,1).$subject->numb.(($cat)?".".$cat->sourceid:''));
+            $cell->text = html_writer::span(get_string('tab_competence_overview', 'block_exacomp'), 'exabis_comp_top_name')
+            . html_writer::div(substr($schooltype, 0,1).$subject->numb.(($cat && isset($cat->sourceid))?".".$cat->sourceid:''), 'exabis_comp_top_value');
     
             $row->cells[] = $cell;
         }
@@ -1702,7 +1702,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                 }
                 //if hidden in course, cannot be shown to one student
                 //TODO without $descriptor->visible kann deskriptor für einzelnen sch�ler eingeblendet werden --> sinnvoll?
-                if(!$descriptor_used){
+                if(!$this->is_print_mode() && !$descriptor_used){
                     if($editmode || ($one_student && $descriptor->visible && $data->role == block_exacomp::ROLE_TEACHER)){
                         $titleCell->text .= $this->print_visibility_icon($visible, $descriptor->id);
                     }
@@ -4839,7 +4839,7 @@ var dataset = dataset.map(function (group) {
             $subject_title = $subject->title;
         }
         $cell = new html_table_cell();
-        $cell->text = html_writer::span(get_string('subject_singular', 'block_exacomp'), 'exabis_comp_top_small')
+        $cell->text = html_writer::span(get_string('subject_singular', 'block_exacomp'), 'exabis_comp_top_name')
         . (($selectedStudent == 0)?$this->print_crosssub_subject_dropdown($crosssubject):html_writer::tag('b',$subject_title));
 
         $row->cells[] = $cell;
@@ -4847,11 +4847,11 @@ var dataset = dataset.map(function (group) {
         $cell = new html_table_cell();
         
         if($selectedStudent == 0)
-            $cell->text = html_writer::span(get_string('crosssubject', 'block_exacomp'), 'exabis_comp_top_small')
+            $cell->text = html_writer::span(get_string('crosssubject', 'block_exacomp'), 'exabis_comp_top_name')
                 . html_writer::empty_tag('input', array('type'=>'text', 'value'=>$crosssubject->title, 'name'=>'crosssub-title'));
         else 
-            $cell->text = html_writer::span(get_string('crosssubject', 'block_exacomp'), 'exabis_comp_top_small')
-                . html_writer::tag('b', $crosssubject->title);
+            $cell->text = html_writer::span(get_string('crosssubject', 'block_exacomp'), 'exabis_comp_top_name')
+                . html_writer::tag('div', $crosssubject->title);
                 
         $row->cells[] = $cell;
         
@@ -4861,10 +4861,10 @@ var dataset = dataset.map(function (group) {
         $cell = new html_table_cell();
         $cell->colspan = (isset($selectedStudent))?3:2;
         if($selectedStudent == 0)
-            $cell->text = html_writer::span(get_string('description', 'block_exacomp'), 'exabis_comp_top_small')
+            $cell->text = html_writer::span(get_string('description', 'block_exacomp'), 'exabis_comp_top_name')
                 . html_writer::empty_tag('input', array('type'=>'textarea', 'size'=>200, 'value'=>$crosssubject->description, 'name'=>'crosssub-description'));
         else
-             $cell->text = html_writer::span(get_string('description', 'block_exacomp'), 'exabis_comp_top_small')
+             $cell->text = html_writer::span(get_string('description', 'block_exacomp'), 'exabis_comp_top_name')
                 . html_writer::tag('b', $crosssubject->description);
                 
         $row->cells[] = $cell;  
@@ -4874,7 +4874,7 @@ var dataset = dataset.map(function (group) {
             $row = new html_table_row();
             $cell = new html_table_cell();
             $cell->colspan = 2;
-            $cell->text = html_writer::span(get_string('tab_help', 'block_exacomp'), 'exabis_comp_top_small')
+            $cell->text = html_writer::span(get_string('tab_help', 'block_exacomp'), 'exabis_comp_top_name')
                 . get_string('help_crosssubject', 'block_exacomp');    
             $row->cells[] = $cell;  
             $rows[] = $row;   

@@ -6,7 +6,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once $CFG->dirroot.'/lib/tcpdf/tcpdf.php';
 
 class printer {
-    static function competence_overview($output) {
+    static function competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, $selectedStudent, $html_content) {
         $pdf = new \TCPDF('L');
 
         $pdf->SetPrintHeader(false);
@@ -19,24 +19,40 @@ class printer {
         
         $style  = '
             <style>
+                div {
+                    padding: 0;
+                    margin: 0;
+                }
                 table td {
                     border: 0.2pt solid #555;
                 }
                 table {
                     padding: 1px 2px; /* tcpdf only accepts padding on table tag, which gets applied to all cells */
                 }
+                
+                .exabis_comp_info {
+                    background-color: #efefef;
+                }
+                .exabis_comp_top_name {
+                }
+                .exabis_comp_top_value {
+                    font-weight: bold;
+                }
                 </style>
         ';
         
-        // convert padding to spaces, because tcpdf doesn't support padding
-        $output = preg_replace_callback('!padding-left:\s*([0-9]+)[^>]+>(<div[^>]*>)?!', function($matches){
-            return $matches[0].str_repeat('&nbsp;', round($matches[1]/7));
-        }, $output);
+        $html = '';
+        // $html = $selectedSubject->title.' &gt; '.$selectedTopic->title.' &gt; '.$selectedNiveau->title.'<br />';
         
-        // echo $output;
+        // convert padding to spaces, because tcpdf doesn't support padding
+        $html_content = preg_replace_callback('!padding-left:\s*([0-9]+)[^>]+>(<div[^>]*>)?!', function($matches){
+            return $matches[0].str_repeat('&nbsp;', round($matches[1]/7));
+        }, $html_content);
+        
+        // echo $html_content;
         
         // @ = suppress html warnings from tcpdf
-        @$pdf->writeHTML($style.$output);
+        @$pdf->writeHTML($style.$html.$html_content);
         $pdf->Output();
         
         exit;

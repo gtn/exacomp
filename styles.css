@@ -462,11 +462,13 @@ td.contentcell {
     font-size: 15px;
 }
 
-#exacomp .exabis_competencies_lis span.exabis_comp_top_small {
+#exacomp .exabis_competencies_lis .exabis_comp_top_name {
     display: block;
     font-size: 0.84em;
 }
-
+#exacomp .exabis_competencies_lis .exabis_comp_top_value {
+    font-weight: bold;
+}
 #exacomp .exabis_competencies_lis div.exabis_comp_top_indentation {
     margin-left: 20px
 }
