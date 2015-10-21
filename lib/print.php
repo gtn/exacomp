@@ -22,6 +22,8 @@ function block_exacomp_print_weekly_schedule($course, $student, $interval /* wee
         $examples = block_exacomp_get_examples_for_start_end_all_courses($studentid, $day->time, block_exacomp_add_days($day->time, 1)-1);
         
         foreach($examples as $example){
+            // get data
+            $example->descriptors = block_exacomp_get_descriptors_by_example($example->id);
             $example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $studentid);
             
             // find start slot
@@ -42,7 +44,6 @@ function block_exacomp_print_weekly_schedule($course, $student, $interval /* wee
             }
             
             $example->rowspan = $example->end_slot - $example->start_slot + 1;
-            
         }
     
         // first sort by start time, then by duration (same as fullcalendar)
@@ -63,7 +64,7 @@ function block_exacomp_print_weekly_schedule($course, $student, $interval /* wee
         $day->colspan = 1; // the max colspan for this day
         foreach ($examples as $example) {
             for ($col_i = 0; $col_i < 1000; $col_i++) {
-                // find if the event can be inserted into this column (all cells are free)
+                // check if the event can be inserted into this column (all cells are free)
                 $ok = true;
                 for ($slot_i = $example->start_slot; $slot_i <= $example->end_slot; $slot_i++) {
                     if ($day->slots[$slot_i]->cols[$col_i]) {
@@ -136,7 +137,6 @@ function block_exacomp_print_weekly_schedule($course, $student, $interval /* wee
                 background-color: #acbcca;
             }
         table td {
-            text-align: center;
             height: 14px;
         }
         </style>
@@ -149,7 +149,7 @@ function block_exacomp_print_weekly_schedule($course, $student, $interval /* wee
         <table border="0.1" style="padding: 1px">';
     $tbl .= '<tr><td></td>';
     foreach ($days as $day) {
-        $tbl .= '<td colspan="'.$day->colspan.'">'.$day->title.'</td>';
+        $tbl .= '<td colspan="'.$day->colspan.'" align="center">'.$day->title.'</td>';
     }
     $tbl .= '</tr>';
     
@@ -179,6 +179,13 @@ function block_exacomp_print_weekly_schedule($course, $student, $interval /* wee
                     
                     $tbl .= '<td rowspan="'.$example->rowspan.'" class="'.$class.'">';
                     $tbl .= $example->title;
+                    
+                    if ($example->descriptors) {
+                        foreach ($example->descriptors as $descriptor) {
+                            $tbl .= '<br />• '.$descriptor->title;
+                        }
+                    }
+                    
                     $tbl .= '</td>';
                 } else if (!$example) {
                     $tbl .= '<td></td>';

@@ -89,7 +89,7 @@ if($style==1){
 	
 	$content = '';
 	foreach($comp_examples as $example){
-		$descexamp_mm = block_exacomp_get_descriptors_by_example($example->id);
+		$descexamp_mm = block_exacomp_get_descriptor_mms_by_example($example->id);
 		$descriptors = array();
 		foreach($descexamp_mm as $descexamp){
 			if(!in_array($descexamp->descrid, $descriptors))

@@ -5259,7 +5259,7 @@ class block_exacomp_external extends external_api {
 			$topicdata->niveaus = array();
 			
 			$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $topic->id);
-			$example_descriptors = block_exacomp_get_descriptors_by_example($exampleid);
+			$example_descriptors = block_exacomp_get_descriptor_mms_by_example($exampleid);
 			
 			foreach($descriptors as $descriptor){
 				$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));

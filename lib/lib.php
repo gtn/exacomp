@@ -289,7 +289,8 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 function block_exacomp_get_subjecttitle_by_example($exampleid) {
     global $DB;
 
-    $descriptors = block_exacomp_get_descriptors_by_example($exampleid);
+    // TODO: refactor and use block_exacomp_get_descriptors_by_example()
+    $descriptors = block_exacomp_get_descriptor_mms_by_example($exampleid);
 
     foreach($descriptors as $descriptor) {
         
@@ -1047,10 +1048,21 @@ function block_exacomp_get_descriptors_by_subject($subjectid,$niveaus = true) {
     return $DB->get_records_sql($sql,array($subjectid));
 }
 
-function block_exacomp_get_descriptors_by_example($exampleid) {
+function block_exacomp_get_descriptor_mms_by_example($exampleid) {
     global $DB;
 
     return $DB->get_records('block_exacompdescrexamp_mm',array('exampid' => $exampleid));
+}
+
+function block_exacomp_get_descriptors_by_example($exampleid) {
+    global $DB;
+
+    return $DB->get_records_sql("
+        SELECT d.*, de.id AS descexampid
+        FROM {".block_exacomp::DB_DESCRIPTORS."} d
+        JOIN {".block_exacomp::DB_DESCEXAMP."} de ON de.descrid=d.id
+        WHERE de.exampid = ?
+    ", [$exampleid]);
 }
 
 /**
