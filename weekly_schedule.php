@@ -77,9 +77,9 @@ if($isTeacher){
 }
 
 // print?
-if (optional_param('print', false, PARAM_BOOL)) {
+if ($student && optional_param('print', false, PARAM_BOOL)) {
     require_once __DIR__.'/lib/print.php';
-    block_exacomp_print_weekly_schedule($course, $student);
+    block_exacomp_print_weekly_schedule($course, $student, optional_param('interval', 'month', PARAM_TEXT));
     exit;
 }
 // build tab navigation & print header
@@ -95,7 +95,7 @@ if($isTeacher){
 		
 		//print student selector
 		echo get_string("choosestudent","block_exacomp");
-		echo block_exacomp_studentselector($coursestudents,$student->id,$PAGE->url);
+		echo block_exacomp_studentselector($coursestudents,0,$PAGE->url);
 		echo $OUTPUT->footer();
 		die;
 	}else{

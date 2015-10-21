@@ -2,11 +2,18 @@
 
 require_once $CFG->dirroot.'/lib/tcpdf/tcpdf.php';
 
-function block_exacomp_print_weekly_schedule($course, $student) {
-    $monday = optional_param('time', time(), PARAM_INT);
-    $monday = block_exacomp_add_days($monday, 1 - date('N', $monday));
+function block_exacomp_print_weekly_schedule($course, $student, $interval /* week or day */) {
+    $first_day = optional_param('time', time(), PARAM_INT);
+    if ($interval == 'week') {
+        $first_day = block_exacomp_add_days($first_day, 1 - date('N', $first_day)); // get monday
+        $day_cnt = 5;
+    } elseif ($interval == 'day') {
+        $first_day = block_exacomp_add_days($first_day, 0); // get midnight
+        $day_cnt = 1;
+    } else {
+        print_error('wrong interval');
+    }
     
-    $day_cnt = 5;
     $days = [];
     
     function generate_day($day, $studentid) {
@@ -83,7 +90,7 @@ function block_exacomp_print_weekly_schedule($course, $student) {
     
     for ($i = 0; $i < $day_cnt; $i++) {
         // build the day object
-        $time = block_exacomp_add_days($monday, $i);
+        $time = block_exacomp_add_days($first_day, $i);
         $days[$time] = (object)[
             'time' => $time,
             'slots' => array_map(function($x){return (object)$x; }, block_exacomp_build_json_time_slots($time))
@@ -100,7 +107,7 @@ function block_exacomp_print_weekly_schedule($course, $student) {
     }
     
     // Instanciation of inherited class
-    $pdf = new PDF('L');
+    $pdf = new PDF($interval == 'week' ? 'L' : null /* landscape for weekly print */ );
     // $pdf->AliasNbPages();
     $pdf->SetPrintHeader(false);
     $pdf->SetPrintFooter(false);

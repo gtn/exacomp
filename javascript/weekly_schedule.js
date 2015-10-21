@@ -430,6 +430,10 @@
 	
 	window.weekly_schedule_print = function() {
 		var view = $('#calendar').fullCalendar('getView');
-		window.open(document.location.href+'&print=1&time='+view.start.format('X'));
+		if (view.intervalUnit != 'week' && view.intervalUnit != 'day') {
+			alert('Es können nur die Wochen und Tagesansicht gedruckt werden');
+			return;
+		}
+		window.open(document.location.href+'&print=1&time='+view.start.format('X')+'&interval='+view.intervalUnit);
 	}
 })(jQueryExacomp);
