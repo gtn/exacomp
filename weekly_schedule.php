@@ -59,6 +59,29 @@ block_exacomp_init_js_weekly_schedule();
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
 
+/* CONTENT REGION */
+if($isTeacher){
+    $coursestudents = block_exacomp_get_students_by_course($courseid);
+
+    if($studentid == 0) {
+        $student = null;
+    }else{
+        //check permission for viewing students profile
+        if(!array_key_exists($studentid, $coursestudents))
+            print_error("nopermissions","","","Show student profile");
+        
+        $student = $DB->get_record('user',array('id' => $studentid));
+    }
+} else {
+    $student = $USER;
+}
+
+// print?
+if (optional_param('print', false, PARAM_BOOL)) {
+    require_once __DIR__.'/lib/print.php';
+    block_exacomp_print_weekly_schedule($course, $student);
+    exit;
+}
 // build tab navigation & print header
 $output = $PAGE->get_renderer('block_exacomp');
 echo $output->header($context, $courseid, $page_identifier);
@@ -67,32 +90,28 @@ $selectedCourse = optional_param('pool_course', $courseid, PARAM_INT);
 
 /* CONTENT REGION */
 if($isTeacher){
-	$coursestudents = block_exacomp_get_students_by_course($courseid);
-	
-	if($studentid == 0) {
+	if(!$student) {
 		echo html_writer::tag("p", get_string("select_student_weekly_schedule","block_exacomp"));
 		
 		//print student selector
 		echo get_string("choosestudent","block_exacomp");
-		echo block_exacomp_studentselector($coursestudents,$studentid,$PAGE->url);
+		echo block_exacomp_studentselector($coursestudents,$student->id,$PAGE->url);
 		echo $OUTPUT->footer();
 		die;
 	}else{
-		//check permission for viewing students profile
-		if(!array_key_exists($studentid, $coursestudents))
-			print_error("nopermissions","","","Show student profile");
-		
 		//print student selector
 		echo get_string("choosestudent","block_exacomp");
-		echo block_exacomp_studentselector($coursestudents,$studentid,$PAGE->url);
+		echo block_exacomp_studentselector($coursestudents,$student->id,$PAGE->url);
 	}
 } else {
-	echo html_writer::tag("input", null, array("type" => "hidden", "value" => $studentid, "id" => "menuexacomp_competence_grid_select_student"));
+	echo html_writer::tag("input", null, array("type" => "hidden", "value" => $student->id, "id" => "menuexacomp_competence_grid_select_student"));
 }
 
 $student = $DB->get_record('user',array('id' => $studentid));
 
 echo $output->print_course_dropdown($selectedCourse, $studentid);
+
+echo '<input type="button" value="Drucken" onclick="weekly_schedule_print();" />';
 
 echo $OUTPUT->box(get_string('weekly_schedule_link_to_grid','block_exacomp'));
 

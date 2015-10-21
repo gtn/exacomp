@@ -427,4 +427,9 @@
 			});
 		}
 	});
+	
+	window.weekly_schedule_print = function() {
+		var view = $('#calendar').fullCalendar('getView');
+		window.open(document.location.href+'&print=1&time='+view.start.format('X'));
+	}
 })(jQueryExacomp);

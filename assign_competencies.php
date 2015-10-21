@@ -98,7 +98,11 @@ $course_settings = block_exacomp_get_settings_by_course($courseid);
 if($course_settings->uses_activities && !$activities && !$course_settings->show_all_descriptors)
 	echo $output->print_no_activities_warning($isTeacher);
 else{
-	list($subjects, $topics, $selectedSubject, $selectedNiveau) = block_exacomp_init_overview_data($courseid, $ng_subjectid, $subjectid, $topicid, !$isTeacher, ($isTeacher?0:$USER->id));
+    $ret = block_exacomp_init_overview_data($courseid, $ng_subjectid, $subjectid, $topicid, !$isTeacher, ($isTeacher?0:$USER->id));
+    if (!$ret) {
+        print_error('not configured');
+    }
+	list($subjects, $topics, $selectedSubject, $selectedNiveau) = $ret;
 	
 	//Delete timestamp (end|start) from example
 	if($example_del = optional_param('exampleid', 0, PARAM_INT)){

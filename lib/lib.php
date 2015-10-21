@@ -1188,6 +1188,9 @@ function block_exacomp_init_overview_data($courseid, $ng_subjectid, $topicid, $n
         $selectedSubject = $topics[$topicid];
     } elseif ($topics) {
         $selectedSubject = reset($topics);
+    } else {
+        // not configured
+        return null;
     }
 
     if($version){
@@ -5496,6 +5499,7 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
                 -- innerhalb end und start
                 (s.start > ? AND s.end < ?)
             )
+            GROUP BY s.id -- because a bug somewhere causes duplicate rows
             ORDER BY e.title";
     return $DB->get_records_sql($sql,array($courseid, $studentid, $start, $end));
 }
