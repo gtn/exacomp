@@ -1912,7 +1912,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     $titleCell->style = "padding-left: ". ($padding + 20 )."px";
                     $titleCell->text = html_writer::div(html_writer::tag('span', $example->title, array('title'=>$example->description)));
                     
-                    if(!$statistic){
+                    if(!$statistic && !$this->is_print_mode()){
                         
                         $titleCell->text .= '<span style="padding-left: 10px;" class="todo-change-stylesheet-icons">';
                         
@@ -1921,7 +1921,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                 $titleCell->text .= $this->print_visibility_icon_example($visible_example, $example->id);
                             }
                         }
-                        if((block_exacomp_is_admin($COURSE->id) || (isset($example->creatorid) && $example->creatorid == $USER->id))) {
+                        if(block_exacomp_is_admin($COURSE->id) || (isset($example->creatorid) && $example->creatorid == $USER->id)) {
                             $titleCell->text .= html_writer::link(
                                     new moodle_url('/blocks/exacomp/example_upload.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id,"topicid"=>$descriptor->topicid,"exampleid"=>$example->id)),
                                     $OUTPUT->pix_icon("i/edit", get_string("edit")),
