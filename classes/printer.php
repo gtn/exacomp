@@ -49,7 +49,7 @@ class printer {
             return $matches[0].str_repeat('&nbsp;', round($matches[1]/7));
         }, $html_content);
         
-        // echo $html_content;
+        //echo $style.$html.$html_content;
         
         // @ = suppress html warnings from tcpdf
         @$pdf->writeHTML($style.$html.$html_content);
