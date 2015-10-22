@@ -26,15 +26,16 @@ window.block_exacomp = {
 			var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
 				results = regex.exec(location.search);
 			
-			// TODO: hack, move to own function get_studentid() or so
-			// sepcial case: studentid
-			if(name == 'studentid' && results === null) {
-				studentid = $( "#menuexacomp_competence_grid_select_student" ).val();
-				if(studentid != null)
-					return studentid;
-			}
-			
 			return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
+	},
+	
+	get_studentid: function() {
+		studentid = block_exacomp.get_param('studentid');
+		
+		if(studentid === null)
+			studentid = $( "#menuexacomp_competence_grid_select_student" ).val();
+		
+		return studentid;
 	},
 	
 	call_ajax: function(data, done, error) {

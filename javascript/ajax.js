@@ -545,7 +545,7 @@
 		var id = tr[0].className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
 		
 		courseid = block_exacomp.get_param('courseid');
-		studentid = block_exacomp.get_param('studentid') || 0;
+		studentid = block_exacomp.get_studentid() || 0;
 		descrid = $(this).attr('descrid');
 		val = $(this).attr('state');
 		var select = document
@@ -658,7 +658,7 @@
 		var id = tr[0].className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
 		
 		courseid = block_exacomp.get_param('courseid');
-		studentid = block_exacomp.get_param('studentid');
+		studentid = block_exacomp.get_studentid();
 		exampleid = $(this).attr('exampleid');
 		val = $(this).attr('state');
 		

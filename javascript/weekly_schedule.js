@@ -1,9 +1,7 @@
 (function($){
 	
 	$(document).on('click', '#empty_trash', function(event) {
-		studentid = block_exacomp.get_param('studentid');
-		if(studentid == null)
-			studentid = $( "#menuexacomp_competence_grid_select_student" ).val();
+		studentid = block_exacomp.get_studentid();
 		
 		block_exacomp.call_ajax({
 			studentid: studentid,
@@ -59,9 +57,7 @@
 	}
 	
 	function block_exacomp_get_configuration(callback){
-		studentid = block_exacomp.get_param('studentid');
-		if(studentid == null)
-			studentid = $( "#menuexacomp_competence_grid_select_student" ).val();
+		studentid = block_exacomp.get_studentid();
 		
 		block_exacomp.call_ajax({
 			studentid : studentid,
@@ -72,9 +68,7 @@
 			});
 	}
 	function exacomp_calendar_load_events(start, end, timezone, callback) {
-		studentid = block_exacomp.get_param('studentid');
-		if(studentid == null)
-			studentid = $( "#menuexacomp_competence_grid_select_student" ).val();
+		studentid = block_exacomp.get_studentid();
 		
 		block_exacomp.call_ajax({
 			studentid : studentid,
