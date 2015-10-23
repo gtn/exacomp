@@ -193,6 +193,7 @@ switch($action){
 	    $new_descriptors = block_exacomp\param::optional_array('new_descriptors', array((object)array(
 			'parentid' => PARAM_INT,
 			'topicid' => PARAM_INT,
+			'niveauid' => PARAM_INT,
 			'title' => PARAM_TEXT
 		)));
 	    if ($new_descriptors) {

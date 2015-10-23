@@ -338,6 +338,7 @@
 				new_descriptors.push({
 					parentid: this.getAttribute('parentid'),
 					topicid: this.getAttribute('topicid'),
+					niveauid: this.getAttribute('niveauid'),
 					title: this.value
 				});
 

@@ -1593,6 +1593,11 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
             if($editmode && !$crosssubs) {
                 // kompetenz hinzufuegen (nicht bei themen)
+                $niveauid = optional_param('topicid', SHOW_ALL_TOPICS, PARAM_INT);
+                //do not set niveauid for new descriptor if "show all" niveaus is selected
+                if($niveauid == SHOW_ALL_TOPICS)
+                	$niveauid = 0;
+                
                 $own_additionRow = new html_table_row();
                 $own_additionRow->attributes['class'] = 'exabis_comp_aufgabe highlight ' . $sub_rowgroup_class;
                 
@@ -1600,7 +1605,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                 
                 $cell = new html_table_cell();
                 $cell->style = "padding-left: ". $padding."px";
-                $cell->text = html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'type'=>'textfield', 'placeholder'=>block_exacomp::t('de:[Neue Kompetenz]'), 'topicid'=>$topic->id));
+                $cell->text = html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'type'=>'textfield', 'placeholder'=>block_exacomp::t('de:[Neue Kompetenz]'), 'topicid'=>$topic->id, 'niveauid'=>$niveauid));
                 $own_additionRow->cells[] = $cell;
                 $own_additionRow->cells[] = new html_table_cell();
                 $rows[] = $own_additionRow;
