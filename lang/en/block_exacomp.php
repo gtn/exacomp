@@ -209,6 +209,7 @@ $string['total_example'] = 'Complete Example';
 $string['example_upload_header']  = 'Upload my own task/example';
 $string['taxonomy'] = 'taxonomy';
 $string['descriptors'] = 'outcomes/standards';
+$string['descriptor'] = 'outcome/standard';
 $string['descriptors_help'] = 'You can select multible outcomes/standards';
 $string['filerequired'] = 'A file must be selected.';
 $string['titlenotemtpy'] = 'A name is required.';

@@ -560,7 +560,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     	    // add niveau button
     	    $content .= html_writer::tag('li',
         				html_writer::link("niveau.php?show=add&courseid={$COURSE->id}&topicid={$selectedTopic->id}",
-        				        "<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".block_exacomp::t('de:Neues Niveau'), array('exa-type' => 'iframe-popup'))
+        				        "<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".block_exacomp::t('de:Neuer Lernfortschritt'), array('exa-type' => 'iframe-popup'))
     	    );
     	}
     	
