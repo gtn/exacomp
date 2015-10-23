@@ -66,7 +66,7 @@ $string['tab_skillmanagement'] = 'Manage competencies';
 $string['tab_teacher_demo_settings'] = 'work with demo data';
 $string['tab_profoundness'] = 'Basic & Extended Competencies';
 $string['tab_cross_subjects'] = 'Cross-Subjects';
-$string['tab_cross_subjects_overview'] = 'Drafts';
+$string['tab_cross_subjects_overview'] = 'Overview';
 $string['tab_cross_subjects_course'] = 'Course Cross-Subjects';
 $string['tab_weekly_schedule'] = 'Weekly Schedule';
 
@@ -395,6 +395,7 @@ $string['block_exacomp_external_trainer_assign_new'] = 'New assign: ';
 $string['block_exacomp_external_trainer'] = 'Trainer';
 $string['block_exacomp_external_trainer_student'] = 'Student';
 
+
 //Crosssubjects
 $string['empty_draft'] = 'new crosssubject';
 $string['empty_draft_description'] = 'Create your own cross-subject - insert new description';
@@ -411,22 +412,25 @@ $string['comps_and_material'] = "outcomes and exercises";
 $string['no_crosssubjs'] = 'No Cross-Subjects available.';
 $string['assign_descriptor_to_crosssubject'] = 'Assign the competence {a} to the following crosssubjects:';
 $string['assign_descriptor_no_crosssubjects_available'] = 'No crosssubjects are available.';
-$string['delete_drafts'] = 'Delete selected crosssubjects';
+$string['delete_drafts'] = 'Delete selected drafts';
 $string['share_crosssub'] = 'Share crosssubject with participants';
 $string['share_crosssub_with_students'] = 'Share crosssubject "{$a}" with the following participants: ';
 $string['share_crosssub_with_all'] = 'Share crosssubject "{$a}" with all participants: ';
 $string['new_crosssub'] = "Create new crosssubject";
-$string['add_crosssub'] = 'Add crosssubject';
-$string['nocrosssubsub'] = "no subject selected";
+$string['add_crosssub'] = 'Create crosssubject';
+$string['nocrosssubsub'] = "general crosssubjects";
 $string['delete_crosssub'] = 'delete crosssubject';
 $string['confirm_delete'] = 'Do you really want to delete this crosssubject?';
 $string['no_students_crosssub'] = 'No students are assigend to this crosssubject.';
-$string['use_available_crosssub'] = 'Use available cross subject for this course:';
-$string['save_crosssub'] = 'Save crosssubject';
+$string['use_available_crosssub'] = 'Use draft for creating new crosssubject:';
+$string['save_crosssub'] = 'Save changes';
 $string['add_content_to_crosssub'] = 'The crosssubject is still empty. <a href="{$a}">Add content via the competence grid</a>.';
 $string['add_descriptors_to_crosssub'] = 'Add descriptor to crosssubject';
-$string['manage_crosssubs'] = 'Manage crosssubjects';
+$string['manage_crosssubs'] = 'Back to overview';
 $string['show_course_crosssubs'] = 'Show used crosssubjects';
+$string['existing_crosssub'] = 'existing cross subjects in this course';
+$string['create_new_crosssub'] = 'Create new crosssubject';
+$string['share_crosssub_for_further_use'] = 'Share the crosssubject with students.';
 
 //Associations
 $string['competence_associations'] = 'Associations';

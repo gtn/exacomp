@@ -127,9 +127,10 @@ else{
 
     //dropdowns for crosssubjects
     //do not display if user is currently adding a new crosssubject
-    if(!$new)
+    if(!$new){
+		echo html_writer::div(get_string('share_crosssub_for_further_use','block_exacomp'),"alert alert-warning");
         echo $output->print_dropdowns_cross_subjects($crosssubjects, $selectedCrosssubject->id, $students, (!$edit) ? $studentid : $selectedStudentid /* TODO: braucht man nicht mehr */, $isTeacher);
-    else {
+    }else {
         $right_content = html_writer::empty_tag('input', array('type'=>'button', 'id'=>'edit_crossubs', 'name'=> 'edit_crossubs', 'value' => get_string('manage_crosssubs','block_exacomp'),
                 "onclick" => "document.location.href='".(new moodle_url('/blocks/exacomp/cross_subjects_overview.php',array('courseid' => $COURSE->id)))->__toString()."'"));
         echo html_writer::div($right_content, 'edit_buttons_float_right');

@@ -4721,7 +4721,8 @@ var dataset = dataset.map(function (group) {
     public function print_cross_subjects_drafts($subjects, $isAdmin=false){
         global $PAGE, $USER;
         
-        $draft_content = "<h4>" . get_string('use_available_crosssub','block_exacomp') . "</h4>";
+        $draft_content = html_writer::tag('h4', get_string('create_new_crosssub', 'block_exacomp'));
+        $draft_content .= "<h5>" . get_string('use_available_crosssub','block_exacomp') . "</h5>";
         $drafts_exist = false;
 
         $draft_content .= html_writer::start_tag('ul', array("class"=>"collapsibleList"));
@@ -4758,14 +4759,13 @@ var dataset = dataset.map(function (group) {
             if($isAdmin) $submit .= html_writer::empty_tag('input', array('name'=>'delete_crosssubs', 'type'=>'submit', 'value'=>get_string('delete_drafts', 'block_exacomp')));
         }
         $submit .= html_writer::empty_tag('br');
-        $submit .= html_writer::tag("h4", get_string('new_crosssub','block_exacomp'));
+        $submit .= html_writer::tag("h5", get_string('new_crosssub','block_exacomp'));
         $submit .= html_writer::empty_tag('input', array('name'=>'new_crosssub', 'type'=>'submit', 'value'=>get_string('add_crosssub', 'block_exacomp')));
     
-        $submit = html_writer::div($submit, '', array('id'=>'exabis_save_button')); 
+        $submit = html_writer::div($submit, ''); 
         $content = html_writer::tag('form', $draft_content.$submit, array('method'=>'post', 'action'=>$PAGE->url.'&action=save', 'name'=>'add_drafts_to_course'));
         
-        $div_exabis_competences_block = html_writer::div($content, "", array('id'=>'exabis_competences_block'));
-        return $div_exabis_competences_block;
+        return $content;
     }
     
     
@@ -4787,15 +4787,15 @@ var dataset = dataset.map(function (group) {
         
         $content = html_writer::empty_tag("br");
 
-        $content .= get_string("choosecrosssubject", "block_exacomp").': ';
+        /*$content .= get_string("choosecrosssubject", "block_exacomp").': ';
         $options = array();
         foreach($crosssubjects as $crosssub)
             $options[$crosssub->id] = $crosssub->title;
         $content .= html_writer::select($options, "lis_crosssubs", $selectedCrosssubject, false,
                 array("onchange" => "document.location.href='".$PAGE->url."&studentid=".$selectedStudent."&crosssubjid='+this.value;"));
-
+*/
         if($isTeacher){
-            $content .= html_writer::empty_tag("br");
+            //$content .= html_writer::empty_tag("br");
     
             $content .= get_string("choosestudent", "block_exacomp");
             $content .= block_exacomp_studentselector($students,$this->is_edit_mode()?BLOCK_EXACOMP_SHOW_ALL_STUDENTS:$selectedStudent,$PAGE->url."&crosssubjid=".$selectedCrosssubject,  ($students)?BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN:BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_EDITMODE);
@@ -5280,5 +5280,21 @@ var dataset = dataset.map(function (group) {
         </script>
         <?php
         return ob_get_clean();
+    }
+	 public function print_cross_subjects_list($course_crosssubs, $courseid){
+    	global $OUTPUT;
+    	$content = "<h4>" . get_string('existing_crosssub','block_exacomp') . "</h4>";
+    	
+    	if(empty($course_crosssubs))
+    		$content .= html_writer::div(get_string('no_crosssubjs', 'block_exacomp'), '');
+    		
+	    foreach($course_crosssubs as $crosssub){
+			$content .= html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$crosssub->id)), $crosssub->title);
+			$content .= html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$crosssub->id, 'editmode'=>1)),$OUTPUT->pix_icon("i/edit", get_string("edit")), array('class'=>'crosssub-icons'));
+			$content .= html_writer::link('', $OUTPUT->pix_icon("t/delete", get_string("delete")), array("onclick" => "if( confirm('".get_string('confirm_delete', 'block_exacomp')."')) block_exacomp.delete_crosssubj(".$crosssub->id."); return false;"), array('class'=>'crosssub-icons')); 
+			
+			$content .= html_writer::empty_tag('br');
+		}
+		return $content;
     }
 }

@@ -159,3 +159,11 @@
 #block_exacomp div.edit_buttons_float_right {
 	float: right;
 }
+#block_exacomp a.crosssub-icons {
+	padding-left: 10px;
+	padding-right: 5px;
+}
+#block_exacomp h5 {
+	font-size : 15px;
+}
+

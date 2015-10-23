@@ -219,11 +219,19 @@
 		title = $(this).val();
 	});
 
+	$(document).on('keypress', 'input[name^=crosssub-title]', function(event){
+		if(event.which == 13)
+			title = $(this).val();
+	});
 	var description = "";
 	$(document).on('focusout', 'input[name^=crosssub-description]', function() {
 		description = $(this).val();
 	});
 	
+	$(document).on('keypress', 'input[name^=crosssub-description]', function(){
+		if(event.which == 13)
+				description = $(this).val();
+	});
 	// not needed anymore
 	/*
 	$(document).on('keypress', 'input[exa-type=new-descriptor]', function(event) {
@@ -295,6 +303,8 @@
 					crosssubjid : crosssubjid,
 					title : title,
 					action : 'crosssubj-title'
+				}).done(function(msg) {
+					location.reload();
 				});
 
 			}
@@ -408,6 +418,10 @@
 			*/
 			
 			if (deprecated_show_changes_saved) {
+				if(crosssubjid>0){//go back to overview
+					window.location.href = 'cross_subjects_overview.php?courseid='+courseid;
+				}
+				else 
 				saved_alert();
 			}
 			
@@ -752,6 +766,15 @@
 		block_exacomp.call_ajax({
 			id: id,
 			action : 'delete-descriptor'
+		}).done(function(msg) {
+			location.reload();
+		});
+	}
+	
+	block_exacomp.delete_crosssubj = function(id) {
+		block_exacomp.call_ajax({
+			crosssubjid : id,
+			action : 'delete-crosssubject'
 		}).done(function(msg) {
 			location.reload();
 		});
