@@ -254,18 +254,18 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 
         return $DB->get_records_sql($sql);
     } else if($subjectid != null) {
-        $sql = 'SELECT s.id, s.title, s.numb, \'subject\' as tabletype
+        $sql = 'SELECT s.id, s.title, \'subject\' as tabletype
         FROM {'.block_exacomp::DB_SUBJECTS.'} s
         JOIN {'.block_exacomp::DB_TOPICS.'} t ON t.subjid = s.id
         WHERE s.id = ?
-        GROUP BY s.id, s.title, s.numb, s.stid
+        GROUP BY s.id, s.title, s.stid
         ORDER BY s.stid, s.sorting, s.title';
 
         return $DB->get_records_sql($sql,$subjectid);
     }
 
     $subjects = $DB->get_records_sql('
-            SELECT s.id, s.title, s.stid, s.numb, \'subject\' as tabletype
+            SELECT s.id, s.title, s.stid, \'subject\' as tabletype
             FROM {'.block_exacomp::DB_SUBJECTS.'} s
             JOIN {'.block_exacomp::DB_TOPICS.'} t ON t.subjid = s.id
             JOIN {'.block_exacomp::DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?
@@ -331,7 +331,7 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
             JOIN {'.block_exacomp::DB_COMPETENCE_ACTIVITY.'} da ON (d.id=da.compid AND da.comptype = '.TYPE_DESCRIPTOR.') OR (t.id=da.compid AND da.comptype = '.TYPE_TOPIC.')
             JOIN {course_modules} a ON da.activityid=a.id AND a.course=ct.courseid
             ').'
-            ORDER BY t.sorting, t.numb
+            ORDER BY t.sorting
             ';
     //GROUP By funktioniert nur mit allen feldern im select, aber nicht mit strings
     return $DB->get_records_sql($sql, array($courseid, $subjectid));

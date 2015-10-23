@@ -2281,6 +2281,18 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2015092803, 'exacomp');
     }
+    if ($oldversion < 2015102300) {
+    
+    	// Changing type of field numb on table block_exacomptopics to text.
+    	$table = new xmldb_table('block_exacomptopics');
+    	$field = new xmldb_field('numb', XMLDB_TYPE_TEXT, null, null, null, null, null, 'titleshort');
+    
+    	// Launch change of type for field numb.
+    	$dbman->change_field_type($table, $field);
+    
+    	// Exacomp savepoint reached.
+    	upgrade_block_savepoint(true, 2015102300, 'exacomp');
+    }
     
 	return $return_result;
 }
