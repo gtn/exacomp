@@ -41,7 +41,7 @@ if($global_scheme == 1){
     $global_scheme_values = array('0', '1', '2', '3');
 }
 
-define("SHOW_ALL_TOPICS",99999999);
+define("SHOW_ALL_NIVEAUS",99999999);
 define("SHOW_ALL_TAXONOMIES",100000000);
 define("BLOCK_EXACOMP_SHOW_ALL_STUDENTS", -1);
 define("BLOCK_EXACOMP_SHOW_STATISTIC", -2);
@@ -610,37 +610,6 @@ function block_exacomp_save_competencies_activities_detail($data, $courseid, $ro
         block_exacomp_set_user_competence_activity($value['user'], $value['compid'], $comptype, $value['activityid'], $role, $value['value']);
 }
 
-
-/**
- * Reset comp data for one comptype in one course
- *
- * @param int $courseid
- * @param int $role
- * @param int $comptype
- * @param int $userid
- * @param int $topicid
- */
-function block_exacomp_reset_comp_data($courseid, $role, $comptype, $userid = false, $topicid = null) {
-    global $DB;
-    if(!$topicid || $topicid == SHOW_ALL_TOPICS) {
-        if($role == block_exacomp::ROLE_TEACHER)
-            $DB->delete_records(block_exacomp::DB_COMPETENCIES, array("courseid" => $courseid, "role" => $role, "comptype" => $comptype));
-        else
-            $DB->delete_records(block_exacomp::DB_COMPETENCIES, array("courseid" => $courseid, "role" => $role,  "comptype" => $comptype, "userid"=>$userid));
-    } else {
-        $sql = "
-        DELETE FROM {block_exacompcompuser} c WHERE c.compid = ? AND ((c.compid IN
-        (SELECT d.id FROM {block_exacompdescriptors} d, {block_exacompdescrtopic_mm} dt
-        WHERE d.id = dt.descrid AND dt.topicid = ?) AND c.comptype = 0) OR (c.comp = ? AND c.comptype = 1))
-        ";
-        $select = " courseid = ? AND role = ? AND COMPTYPE = ? AND ((compid IN
-        (SELECT d.id FROM {block_exacompdescriptors} d, {block_exacompdescrtopic_mm} dt
-        WHERE d.id = dt.descrid AND dt.topicid = ?) AND comptype = 0) OR (compid = ? AND comptype = 1))";
-        if($userid)
-            $select .= " AND userid = ?";
-        $DB->delete_records_select("block_exacompcompuser", $select ,array($courseid, $role, $comptype, $topicid,$topicid, $userid));
-    }
-}
 /**
  * Is used to reset topics in the comp grid
  * 
@@ -1078,7 +1047,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
     if(!$showalldescriptors)
         $showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
-    if($version && $subjectid != null && $calledfromoverview) {
+    if($subjectid != null && $calledfromoverview) {
         $selectedTopic = $DB->get_record(block_exacomp::DB_TOPICS,array('id'=>$subjectid));
         $subjectid = $selectedTopic->subjid;
     }
@@ -1095,14 +1064,10 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
     // 2. GET TOPICS
     $allTopics = block_exacomp_get_all_topics($subjectid);
     if($courseid > 0) {
-        if(($niveauid == SHOW_ALL_TOPICS && !$version) || ($version && !$calledfromoverview && !$calledfromactivities))
-            $courseTopics = block_exacomp_get_topics_by_subject($courseid, $subjectid);
-        elseif($niveauid == null)
-            $courseTopics = block_exacomp_get_topics_by_course($courseid, $showalldescriptors);
-        else if(!$version)
-            $courseTopics = block_exacomp_topic::get($niveauid);
-        else 
-            $courseTopics = block_exacomp_topic::get($selectedTopic->id);
+        if((!$calledfromoverview && !$calledfromactivities) || !isset($selectedTopic))
+             $courseTopics = block_exacomp_get_topics_by_subject($courseid, $subjectid);
+		elseif(isset($selectedTopic))
+			$courseTopics = block_exacomp_topic::get($selectedTopic->id);
         
         if (!$courseTopics) {
             $courseTopics = array();
@@ -1120,7 +1085,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
     
     foreach ($allDescriptors as $descriptor) {
     
-        if($version && $niveauid != SHOW_ALL_TOPICS && $calledfromoverview)
+        if($niveauid != SHOW_ALL_NIVEAUS && $calledfromoverview)
             if($descriptor->niveauid != $niveauid)
                 continue;
             
@@ -1190,11 +1155,8 @@ function block_exacomp_init_overview_data($courseid, $ng_subjectid, $topicid, $n
     if ($ng_subjectid) {
         // a subjectid was submitted, so we only want to show that one!
         $topics = block_exacomp_get_topics_by_subject($courseid, $ng_subjectid);
-    } else if($version){
+    } else
         $topics = block_exacomp_get_topics_by_course($courseid);
-    }else {
-        $topics = block_exacomp_get_subjects_by_course($courseid);
-    }
     
     if (isset($topics[$topicid])) {
         $selectedSubject = $topics[$topicid];
@@ -1204,18 +1166,19 @@ function block_exacomp_init_overview_data($courseid, $ng_subjectid, $topicid, $n
         // not configured
         return null;
     }
-
-    if($version){
-        $descriptors = block_exacomp_get_descriptors_by_topic($courseid, $selectedSubject->id, false, true, true);
-        if($student){
-            foreach($descriptors as $descriptor){
-                $invisible = $DB->get_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$descriptor->id, 'studentid'=>$studentid, 'visible'=>0));
-                if($invisible)
-                    unset($descriptors[$descriptor->id]);
-            }
-        }
-    }else
-        $descriptors = block_exacomp_get_topics_by_subject($courseid,$selectedSubject->id);
+	$descriptors = block_exacomp_get_descriptors_by_topic ( $courseid, $selectedSubject->id, false, true, true );
+	if ($student) {
+		foreach ( $descriptors as $descriptor ) {
+			$invisible = $DB->get_record ( block_exacomp::DB_DESCVISIBILITY, array (
+					'courseid' => $courseid,
+					'descrid' => $descriptor->id,
+					'studentid' => $studentid,
+					'visible' => 0 
+			) );
+			if ($invisible)
+				unset ( $descriptors [$descriptor->id] );
+		}
+	}
     
     // get niveau ids from descriptors
     $niveau_ids = array();
@@ -1227,7 +1190,7 @@ function block_exacomp_init_overview_data($courseid, $ng_subjectid, $topicid, $n
     $niveaus = $DB->get_records_list(block_exacomp::DB_NIVEAUS, 'id', $niveau_ids, 'sorting');
     
     $defaultNiveau = new stdClass ();
-    $defaultNiveau->id = SHOW_ALL_TOPICS;
+    $defaultNiveau->id = SHOW_ALL_NIVEAUS;
     $defaultNiveau->title = get_string ( 'alltopics', 'block_exacomp' );
     
     $niveaus = array($defaultNiveau->id => $defaultNiveau) + $niveaus;
@@ -3984,7 +3947,7 @@ function block_exacomp_get_schooltypetree_by_topics($subjects, $competencegrid =
     
     $tree = array();
     foreach($subjects as $subject){
-        if($version && !$competencegrid) {
+        if(!$competencegrid) {
             $schooltype = block_exacomp_get_subject_by_id($subject->subjid);
         }
         else
@@ -4606,7 +4569,7 @@ function block_exacomp_add_days($date, $days) {
 
 function block_exacomp_build_example_association_tree($courseid, $example_descriptors = array(), $exampleid=0, $descriptorid = 0, $showallexamples=false){
     //get all subjects, topics, descriptors and examples
-    $tree = block_exacomp_get_competence_tree($courseid, null, false, SHOW_ALL_TOPICS, true, block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies, false, false, true);
+    $tree = block_exacomp_get_competence_tree($courseid, null, false, SHOW_ALL_NIVEAUS, true, block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies, false, false, true);
     
     // unset all descriptors, topics and subjects that do not contain the example descriptors
     foreach($tree as $skey => $subject) {

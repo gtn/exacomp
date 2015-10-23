@@ -445,8 +445,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     			 "onclick" => "document.location.href='".$PAGE->url."&editmode=" . (!$edit).$url."'"));
     }
     
-    // TOOD: rename to print_topics_menu
-    public function print_subjects_menu($types,$selectedSubject) {
+    public function print_topics_menu($types,$selectedSubject) {
     	global $NG_PAGE, $CFG, $COURSE;
     	
     	$content = html_writer::start_div('subjects_menu');
@@ -493,7 +492,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     		    }
     		    
     		    $content .= html_writer::tag('li',
-    				html_writer::link($NG_PAGE->url->copy(array('subjectid' => $subject->id)),
+    				html_writer::link($NG_PAGE->url->copy(array('topicid' => $subject->id)),
     						block_exacomp_get_topic_numbering($subject).' '.$subject->title.$extra, array('class' => ($subject->id == $selectedSubject->id) ? 'current' : ''))
     				);
     		}
@@ -551,7 +550,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
     		$title = isset($topic->cattitle) ? $topic->cattitle : $topic->title;
     		$title_short = (strlen($title)>15)?substr($title, 0, 15).'...':$title;
     		$content .= html_writer::tag('li',
-    				html_writer::link($NG_PAGE->url->copy(array('topicid' => $topic->id)),
+    				html_writer::link($NG_PAGE->url->copy(array('niveauid' => $topic->id)),
     						$title_short, array('class' => ($topic->id == $selectedNiveau->id) ? 'current' : '', 'title'=>$title))
     				);
     	}
@@ -1492,7 +1491,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             $outputnameCell = new html_table_cell();
             $outputnameCell->attributes['class'] = 'rowgroup-arrow';
             $outputnameCell->style = "padding-left: ".$padding."px";
-            if($version && $topicparam == SHOW_ALL_TOPICS)
+            if($version && $topicparam == SHOW_ALL_NIVEAUS)
                 $outputnameCell->text = html_writer::div($outputname,"desctitle");
             else
                 $outputnameCell->text = html_writer::div((($outputid) ? ($outputid.': ') : '').$outputname,"desctitle");
@@ -1593,9 +1592,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
             if($editmode && !$crosssubs) {
                 // kompetenz hinzufuegen (nicht bei themen)
-                $niveauid = optional_param('topicid', SHOW_ALL_TOPICS, PARAM_INT);
+                $niveauid = optional_param('niveauid', SHOW_ALL_NIVEAUS, PARAM_INT);
                 //do not set niveauid for new descriptor if "show all" niveaus is selected
-                if($niveauid == SHOW_ALL_TOPICS)
+                if($niveauid == SHOW_ALL_NIVEAUS)
                 	$niveauid = 0;
                 
                 $own_additionRow = new html_table_row();
@@ -2303,7 +2302,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         }
         return html_writer::div($content,'spaltenbrowser');
     }
-    public function print_student_evaluation($showevaluation, $isTeacher=true,$topic = SHOW_ALL_TOPICS,$subject=0, $studentid=0) {
+    public function print_student_evaluation($showevaluation, $isTeacher=true,$topic = SHOW_ALL_NIVEAUS,$subject=0, $studentid=0) {
         global $OUTPUT,$COURSE;
 
         $link = new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid" => $COURSE->id, "showevaluation" => (($showevaluation) ? "0" : "1"),'subjectid'=>$subject,'topicid'=>$topic, 'studentid'=>$studentid));
@@ -3603,7 +3602,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             list($outputid, $outputname) = block_exacomp_get_output_fields($topic);
             $studentsColspan = 1;
 
-            $hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) && (!$version || ($version && $topic->id == SHOW_ALL_TOPICS)));
+            $hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) && (!$version || ($version && $topic->id == SHOW_ALL_NIVEAUS)));
 
             if ($hasSubs) {
                 $data->rowgroup++;
