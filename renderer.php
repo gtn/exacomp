@@ -4815,7 +4815,11 @@ var dataset = dataset.map(function (group) {
             }
 			$content .= html_writer::div($right_content, 'edit_buttons_float_right');
         
-        }    
+        }else{
+        	$right_content = html_writer::empty_tag('input', array('type'=>'button', 'id'=>'edit_crossubs', 'name'=> 'edit_crossubs', 'value' => get_string('manage_crosssubs','block_exacomp'),
+    			 "onclick" => "document.location.href='".(new moodle_url('/blocks/exacomp/cross_subjects_overview.php',array('courseid' => $COURSE->id)))->__toString()."'"));
+            $content = html_writer::div($right_content, 'edit_buttons_float_right');
+        }   
         return $content;
     }
     public function print_crosssub_subject_dropdown($crosssubject){
@@ -5281,7 +5285,7 @@ var dataset = dataset.map(function (group) {
         <?php
         return ob_get_clean();
     }
-	 public function print_cross_subjects_list($course_crosssubs, $courseid){
+	public function print_cross_subjects_list($course_crosssubs, $courseid, $isTeacher){
     	global $OUTPUT;
     	$content = "<h4>" . get_string('existing_crosssub','block_exacomp') . "</h4>";
     	
@@ -5290,9 +5294,10 @@ var dataset = dataset.map(function (group) {
     		
 	    foreach($course_crosssubs as $crosssub){
 			$content .= html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$crosssub->id)), $crosssub->title);
-			$content .= html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$crosssub->id, 'editmode'=>1)),$OUTPUT->pix_icon("i/edit", get_string("edit")), array('class'=>'crosssub-icons'));
-			$content .= html_writer::link('', $OUTPUT->pix_icon("t/delete", get_string("delete")), array("onclick" => "if( confirm('".get_string('confirm_delete', 'block_exacomp')."')) block_exacomp.delete_crosssubj(".$crosssub->id."); return false;"), array('class'=>'crosssub-icons')); 
-			
+			if($isTeacher){
+				$content .= html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$crosssub->id, 'editmode'=>1)),$OUTPUT->pix_icon("i/edit", get_string("edit")), array('class'=>'crosssub-icons'));
+				$content .= html_writer::link('', $OUTPUT->pix_icon("t/delete", get_string("delete")), array("onclick" => "if( confirm('".get_string('confirm_delete', 'block_exacomp')."')) block_exacomp.delete_crosssubj(".$crosssub->id."); return false;"), array('class'=>'crosssub-icons')); 
+			}
 			$content .= html_writer::empty_tag('br');
 		}
 		return $content;

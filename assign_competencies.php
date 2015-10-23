@@ -48,7 +48,7 @@ $context = context_course::instance($courseid);
 
 // CHECK TEACHER
 $isTeacher = block_exacomp_is_teacher($context);
-
+if(!$isTeacher) $editmode = 0;
 $studentid = block_exacomp_get_studentid($isTeacher) ;
 if($studentid == 0)
 	$studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;

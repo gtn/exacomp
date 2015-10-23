@@ -30,6 +30,7 @@ require_once dirname(__FILE__)."/inc.php";
 global $DB, $OUTPUT, $PAGE, $USER, $version;
 
 $courseid = required_param('courseid', PARAM_INT);
+$studentid = optional_param('studentid', 0, PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_simplehtml', $courseid);
@@ -79,18 +80,21 @@ echo $output->header($context, $courseid, 'tab_cross_subjects');
 
 // CHECK TEACHER
 $isTeacher = block_exacomp_is_teacher($context);
+if(!$isTeacher)
+	$studentid = $USER->id;
 
 block_exacomp_init_cross_subjects();
 
 $subjectdrafts = block_exacomp_get_cross_subjects_drafts_sorted_by_subjects();
-$course_crosssubs = block_exacomp_get_cross_subjects_by_course($courseid);
+$course_crosssubs = block_exacomp_get_cross_subjects_by_course($courseid, $studentid);
 
 //$right_content = html_writer::empty_tag('input', array('type'=>'button', 'id'=>'edit_crossubs', 'name'=> 'edit_crossubs', 'value' => get_string('show_course_crosssubs','block_exacomp'),
 //		"onclick" => "document.location.href='".(new moodle_url('/blocks/exacomp/cross_subjects.php',array('courseid' => $COURSE->id)))->__toString()."'"));
 //echo html_writer::div($right_content, 'edit_buttons_float_right');
-$content = $output->print_cross_subjects_list($course_crosssubs, $courseid);
+$content = $output->print_cross_subjects_list($course_crosssubs, $courseid, $isTeacher);
 $content .=  '<hr />';
-$content .= $output->print_cross_subjects_drafts($subjectdrafts, $isAdmin);
+if($isTeacher)
+	$content .= $output->print_cross_subjects_drafts($subjectdrafts, $isAdmin);
 echo html_writer::div($content, "", array('id'=>'exabis_save_button'));
         
 /* END CONTENT REGION */
