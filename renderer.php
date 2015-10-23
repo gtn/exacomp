@@ -4003,8 +4003,8 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 				$teacher_eval = array();
 				foreach($topic->descriptors as $descriptor){
 					$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
-					$content_div = html_writer::tag('span', ($version)?$niveau->title:$descriptor->title);
-					$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, (($version)?$niveau->title:$descriptor->title));
+					$content_div = html_writer::tag('span', ($version && $niveau)?$niveau->title:$descriptor->title);
+					$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, (($version && $niveau)?$niveau->title:$descriptor->title));
 					
 					$desc_content .= html_writer::div($content_div, 'compprof_barchart', array('id'=>'svgdesc'.$descriptor->id));
 					
@@ -4028,12 +4028,12 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 					$span_student = html_writer::tag('span', get_string('student_eval', 'block_exacomp').": ".((isset($student->competencies->student[$descriptor->id]))?$img_student:'oB'), array('class'=>"compprof_barchart_teacher"));
 						
 					$desc_content .= html_writer::div($span_in_work.$span_teacher.$span_student, 'compprof_barchart_legend');		
-					$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, (($version)?$niveau->title:$descriptor->title));
+					$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, (($version && $niveau)?$niveau->title:$descriptor->title));
 					$desc_content .= html_writer::div(html_writer::tag('p', html_writer::empty_tag('span', array('id'=>'value'))), 'tooltip hidden', array('id'=>'tooltip'.$descriptor->id));
 					
 					$desc_content .= $this->print_example_stacked_bar($return->data, $descriptor->id);
 					
-					$niveaus[] = '"'.(($version)?$niveau->title:$descriptor->title).'"';
+					$niveaus[] = '"'.(($version && $niveau)?$niveau->title:$descriptor->title).'"';
 					$student_eval[] = (isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:0;
 					$teacher_eval[] = (isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:0;
 					
