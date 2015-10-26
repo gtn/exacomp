@@ -735,7 +735,7 @@
 
 	});
 
-	$(document).on('click','#add-example-to-schedule', function() {
+	$(document).on('click','[exa-type=add-example-to-schedule]', function(event) {
 		exampleid = $(this).attr('exampleid');
 		studentid = $(this).attr('studentid');
 		
@@ -754,6 +754,9 @@
 				action : 'add-example-to-schedule'
 			},function(msg) { alert(msg) });
 		}
+		
+		event.preventDefault();
+		return false;
 	});
 	
 	$(window).on('beforeunload', function (){

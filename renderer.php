@@ -1711,10 +1711,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                         $titleCell->text .= $this->print_visibility_icon($visible, $descriptor->id);
                     }
                     if($editmode && $custom_created_descriptors){
-                    	$titleCell->text .= html_writer::link('descriptor.php?courseid='.$COURSE->id.'&id='.$descriptor->id, $OUTPUT->pix_icon("i/edit", get_string("edit")), array('exa-type' => 'iframe-popup', 'target'=>'_blank'));
-      
-                    	// deactivate for now, the iframe popup has a delete link too
-                        // $titleCell->text .= html_writer::link("", $OUTPUT->pix_icon("t/delete", get_string("delete")), array("onclick" => "if (confirm('" . get_string('delete_confirmation_descr','block_exacomp') . "')) block_exacomp.delete_descriptor(".$descriptor->id."); return false;"));
+                        $titleCell->text .= html_writer::link('descriptor.php?courseid='.$COURSE->id.'&id='.$descriptor->id, $OUTPUT->pix_icon("i/edit", get_string("edit")), array('exa-type' => 'iframe-popup', 'target'=>'_blank'));
+                        $titleCell->text .= html_writer::link("", $OUTPUT->pix_icon("t/delete", get_string("delete")), array("onclick" => "if (confirm('" . get_string('delete_confirmation_descr','block_exacomp') . "')) block_exacomp.delete_descriptor(".$descriptor->id."); return false;"));
                     }
                 }
                 /*if ($editmode) {
@@ -1986,7 +1984,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
     								if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
                                 		$titleCell->text .= html_writer::link("#",
     			                            html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'), 'title'=> get_string('pre_planning_storage', 'block_exacomp'))),
-    			                            array('id' => 'add-example-to-schedule', 'exampleid' => $example->id, 'studentid' => 0, 'courseid' => $data->courseid));
+    			                            array('exa-type' => 'add-example-to-schedule', 'exampleid' => $example->id, 'studentid' => 0, 'courseid' => $data->courseid));
         
                                 	}
     							}
@@ -2191,7 +2189,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	    	return html_writer::link(
 	                    new moodle_url('/blocks/exacomp/example_submission.php',array("courseid"=>$courseid,"exampleid"=>$exampleid)),
 	                    $OUTPUT->pix_icon((!$itemExists) ? "i/manual_item" : "i/reload", get_string('submission','block_exacomp')),
-	                    array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+	                    array('exa-type' => 'iframe-popup'));
 	    }
         else if($studentid) {
             //works only if exaport is installed
@@ -2213,14 +2211,14 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         return html_writer::link(
                             "#",
                             $OUTPUT->pix_icon("e/insert_date", get_string("weekly_schedule","block_exacomp")),
-                            array('id' => 'add-example-to-schedule', 'exampleid' => $exampleid, 'studentid' => $studentid, 'courseid' => $courseid));
+                            array('exa-type' => 'add-example-to-schedule', 'exampleid' => $exampleid, 'studentid' => $studentid, 'courseid' => $courseid));
     }
     public function print_competence_association_icon($exampleid, $courseid, $editmode) {
         global $OUTPUT;
         
         return html_writer::link(
                 new moodle_url('/blocks/exacomp/competence_associations.php',array("courseid"=>$courseid,"exampleid"=>$exampleid, "editmode"=>($editmode)?1:0)),
-                 $OUTPUT->pix_icon("e/insert_edit_link", get_string('competence_associations','block_exacomp')), array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+                 $OUTPUT->pix_icon("e/insert_edit_link", get_string('competence_associations','block_exacomp')), array('exa-type' => 'iframe-popup'));
     }
     public function print_example_solution_icon($solution) {
         global $OUTPUT;

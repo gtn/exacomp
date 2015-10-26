@@ -50,6 +50,7 @@ $context = context_course::instance($courseid);
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/competence_associations.php', array('courseid' => $courseid));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
+$PAGE->set_pagelayout('popup');
 
 $PAGE->requires->js("/blocks/exacomp/javascript/CollapsibleLists.compressed.js");
 $PAGE->requires->css("/blocks/exacomp/css/CollapsibleLists.css");
@@ -88,12 +89,8 @@ if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 		$deleted = $DB->delete_records_select(block_exacomp::DB_DESCEXAMP, 'exampid = ? AND descrid NOT IN('.$not_in.')', array($exampleid));
 	}
 	
-	?>
-<script type="text/javascript">
-		window.opener.location.reload(true);
-		window.close();
-	</script>
-<?php 
+	echo $output->popup_close_and_reload();
+	exit;
 }
 /* CONTENT REGION */
 //get descriptors for the given example

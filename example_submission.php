@@ -56,6 +56,7 @@ $context = context_course::instance($courseid);
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/example_submission.php', array('courseid' => $courseid,'exampleid' => $exampleid));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
+$PAGE->set_pagelayout('popup');
 
 // build breadcrumbs navigation
 $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);

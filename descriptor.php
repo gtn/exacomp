@@ -133,6 +133,7 @@ if($formdata = $form->get_data()) {
 
 echo $output->header($context, $courseid, '', false);
 
+/*
 if ($item) {
     // TODO: also check $item->can_delete
     echo '<div style="position: absolute; top: 40px; right: 20px;">';
@@ -140,6 +141,7 @@ if ($item) {
     echo block_exacomp::get_string('delete');
     echo '</a></div>';
 }
+*/
 
 $form->display();
 

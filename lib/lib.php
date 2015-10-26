@@ -299,7 +299,7 @@ function block_exacomp_get_subjecttitle_by_example($exampleid) {
         WHERE dt.descrid = ? AND t.id = dt.topicid AND t.subjid = s.id";
 
         $subject = $DB->get_record_sql($sql,array($full->parentid),IGNORE_MULTIPLE);
-        return $subject->title;
+        if ($subject) return $subject->title;
     }
 }
 /**
