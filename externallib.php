@@ -3238,6 +3238,7 @@ class block_exacomp_external extends external_api {
 					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
 					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of child'),
 					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of child'),
+					'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if child has material')
 			) ) ) ,
 			'examples' => new external_multiple_structure ( new external_single_structure ( array (
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
@@ -4194,6 +4195,7 @@ class block_exacomp_external extends external_api {
 					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
 					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of children'),
 					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of children'),
+					'hasmaterial' => new external_value ( PARAM_BOOL, 'true or false if child has materials')
 			) ) ) ,
 			'examples' => new external_multiple_structure ( new external_single_structure ( array (
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
@@ -4918,6 +4920,10 @@ class block_exacomp_external extends external_api {
 		
 		$descriptor_return->children = $childsandexamples->children;
 
+		$descriptor_return->hasmaterial = true;
+		if(empty($childsandexamples->examples))
+			$descriptor_return->hasmaterial = false;
+			
 		return $descriptor_return;
 	}
 	
@@ -4930,6 +4936,7 @@ class block_exacomp_external extends external_api {
 			'numbering' => new external_value ( PARAM_TEXT, 'numbering'),
 			'niveauid' => new external_value ( PARAM_INT, 'id of niveau'),
 			'niveautitle' => new external_value ( PARAM_TEXT, 'title of niveau'),
+			'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if descriptor has material'),
 			'children' => new external_multiple_structure ( new external_single_structure ( array (
 					'childid' => new external_value ( PARAM_INT, 'id of child' ),
 					'childtitle' => new external_value ( PARAM_TEXT, 'title of child' ),
@@ -5354,6 +5361,10 @@ class block_exacomp_external extends external_api {
 				$child_return->studentevaluation = 0;
 				if(!$forall)
 					$child_return->studentevaluation = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$child->id, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_STUDENT))) ? $grading->value:0;
+				
+				if($show_all){
+					$child_return->hasmaterial = ($child->examples)?true:false;
+				}
 				
 				if(!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, non_visibilities_student))||$forall)){
 					if($crosssubjid == 0 || in_array($child->id, $crossdesc) || in_array($descriptorid, $crossdesc))
