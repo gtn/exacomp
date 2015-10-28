@@ -2284,19 +2284,19 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         $content = html_writer::tag("b", get_string('columnselect','block_exacomp'));
         for($i=0; $i < ceil($students / STUDENTS_PER_COLUMN); $i++) {
             $content .= " ";
-            $content .= html_writer::link('javascript:block_exacomp.onlyShowColumnGroup('.$i.');',
+            $content .= html_writer::link('',
                     ($i*STUDENTS_PER_COLUMN+1).'-'.min($students, ($i+1)*STUDENTS_PER_COLUMN),
-                    array('class' => 'colgroup-button colgroup-button-'.$i));
+                    array('class' => 'colgroup-button', 'exa-groupid'=>$i));
         }
-        $content .= " " . html_writer::link('javascript:block_exacomp.onlyShowColumnGroup(-1);',
+        $content .= " " . html_writer::link('',
                 get_string('allstudents','block_exacomp'),
-                array('class' => 'colgroup-button colgroup-button-all'));
+                array('class' => 'colgroup-button colgroup-button-all', 'exa-groupid'=>-1));
         
         global $COURSE;
         if(block_exacomp_get_settings_by_course($COURSE->id)->nostudents) {
-            $content .= " " . html_writer::link('javascript:block_exacomp.onlyShowColumnGroup(-2);',
+            $content .= " " . html_writer::link('',
                 get_string('nostudents','block_exacomp'),
-                array('class' => 'colgroup-button colgroup-button-no'));
+                array('class' => 'colgroup-button colgroup-button-no', 'exa-groupid'=>-2));
         }
         return html_writer::div($content,'spaltenbrowser');
     }

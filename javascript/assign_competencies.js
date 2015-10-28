@@ -6,123 +6,45 @@
 		var group = block_exacomp.get_param('group');
 		block_exacomp.onlyShowColumnGroup(group);
 	});
+	$(document).on('click', '.colgroup-button', function(){
+		block_exacomp.onlyShowColumnGroup(this.getAttribute('exa-groupid'));
+		return false;
+	});
 	window.block_exacomp.onlyShowColumnGroup = function(group) {
+		// block_exacomp.current_colgroup_id = group;
+		
 		if(group == -2) {
 			$('.colgroup').not('.colgroup-5555').hide();
 		}
-		if (group === null || group==0) {
+		if (!group) {
+			group = 0;
 			$('.colgroup').not('.colgroup-0').hide();
 			$('.colgroup-0').show();
-			//chage form 
-			$('#assign-competencies').attr('action', function(i, value) {
-				//if group is contained -> change value
-				if(value.indexOf("group") > -1){
-					value = value.substr(0, value.indexOf("group")+6);
-					return value + "0";
-				}
-				return value + "&group=0";
-			});
-			//change onchange from selects
-			/*
-			var value = String(document.getElementById('menulis_subjects').onchange);
-			value = value.substr(value.indexOf('href')+6);
-			if(value.indexOf("group") > -1){
-				value = value.substr(0, value.indexOf("group")+6);
-				value = value + "0";
-			}else{
-				value = value.substr(0, value.length-3);
-				value = value + '+\'&group=0';
-			}
-			value = "document.location.href='"+value+"';";
-			$("#menulis_subjects")[0].setAttribute("onchange", value);
-			
-			var value = String(document.getElementById('menulis_topics').onchange);
-			value = value.substr(value.indexOf('href')+6);
-			if(value.indexOf("group") > -1){
-				value = value.substr(0, value.indexOf("group")+6);
-				value = value + "0";
-			}else{
-				value = value.substr(0, value.length-3);
-				value = value + '+\'&group=0';
-			}
-			value = "document.location.href='"+value+"';";
-			$("#menulis_topics")[0].setAttribute("onchange", value);*/
 		} else if(group== -1){
+			// show all
 			$('.colgroup').show();
-			$('#assign-competencies').attr('action', function(i, value) {
-				//only append if action does not contain group already
-				//if group is contained -> change value
-				if(value.indexOf("group") > -1){
-					value = value.substr(0, value.indexOf("group")+6);
-					return value + "-1";
-				}
-			    return value + "&group=-1";
-			});
-			//change onchange from selects
-			var value = String(document.getElementById('menulis_subjects').onchange);
-			value = value.substr(value.indexOf('href')+6);
-			if(value.indexOf("group") > -1){
-				value = value.substr(0, value.indexOf("group")+6);
-				value = value + "-1";
-			}else{
-				value = value.substr(0, value.length-3);
-				value = value + '+\'&group=-1';
-			}
-			value = "document.location.href='"+value+"';";
-			$("#menulis_subjects")[0].setAttribute("onchange", value);
-			
-			var value = String(document.getElementById('menulis_topics').onchange);
-			value = value.substr(value.indexOf('href')+6);
-			if(value.indexOf("group") > -1){
-				value = value.substr(0, value.indexOf("group")+6);
-				value = value + "-1";
-			}else{
-				value = value.substr(0, value.length-3);
-				value = value + '+\'&group=-1';
-			}
-			value = "document.location.href='"+value+"';";
-			$("#menulis_topics")[0].setAttribute("onchange", value);
 		} else{
 			$('.colgroup').not('.colgroup-'+group).hide();
 			$('.colgroup-'+group).show();
-			$('#assign-competencies').attr('action', function(i, value) {
-				//only append if action does not contain group already
-				//if group is contained -> change value
-				if(value.indexOf("group") > -1){
-					value = value.substr(0, value.indexOf("group")+6);
-					return value + "1";
-				}
-			    return value + "&group=1";
-			});
-			//change onchange from selects
-			var value = String(document.getElementById('menulis_subjects').onchange);
-			value = value.substr(value.indexOf('href')+6);
-			if(value.indexOf("group") > -1){
-				value = value.substr(0, value.indexOf("group")+6);
-				value = value + "1";
-			}else{
-				value = value.substr(0, value.length-3);
-				value = value + '+\'&group=1';
-			}
-			value = "document.location.href='"+value+"';";
-			$("#menulis_subjects")[0].setAttribute("onchange", value);
-			
-			var value = String(document.getElementById('menulis_topics').onchange);
-			value = value.substr(value.indexOf('href')+6);
-			if(value.indexOf("group") > -1){
-				value = value.substr(0, value.indexOf("group")+6);
-				value = value + "1";
-			}else{
-				value = value.substr(0, value.length-3);
-				value = value + '+\'&group=1';
-			}
-			value = "document.location.href='"+value+"';";
-			$("#menulis_topics")[0].setAttribute("onchange", value);
 		}
 
+		//chage form 
+		$('#assign-competencies').attr('action', function(i, value) {
+			//if group is contained -> change value
+			if(value.indexOf("group") > -1){
+				value = value.substr(0, value.indexOf("group")+6);
+				return value + group;
+			}
+			return value + "&group=" + group;
+		});
+
+		// change url
+		history.replaceState(null, null, location.href.replace(/&group=[^&]*/i, '') + "&group=" + group);
+
 		$('.colgroup-button').css('font-weight', 'normal');
-		$('.colgroup-button-'+(group===null?'0':(group==(-1)?'all':group))).css('font-weight', 'bold');
+		$('.colgroup-button[exa-groupid='+(group*1)+']').css('font-weight', 'bold');
 	}
+	
 	$(document).on('click', '.rowgroup-header .rowgroup-arrow', function(){
 		var tr = $(this).closest('tr');
 		//only show subs if descriptor is not hidden
