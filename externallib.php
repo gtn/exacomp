@@ -3883,6 +3883,10 @@ class block_exacomp_external extends external_api {
 		
 		foreach($examples as $example){
 			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
+			
+			$example_course = $DB->get_record('course', array('id'=>$example->courseid));
+			$example->courseshortname = $example_course->shortname;
+			$example->coursefullname = $example_course->fullname;
 		}
 		
 		return $examples;
@@ -3903,7 +3907,9 @@ class block_exacomp_external extends external_api {
 				'teacher_evaluation' => new external_value( PARAM_TEXT, 'evaluation of teacher'),
 				'courseid' => new external_value(PARAM_INT, 'example course'),
 				'state' => new external_value (PARAM_INT, 'state of example'),
-				'scheduleid' => new external_value (PARAM_INT, 'id in schedule context')
+				'scheduleid' => new external_value (PARAM_INT, 'id in schedule context'),
+				'courseshortname' => new external_value (PARAM_TEXT, 'shortname of example course'),
+				'coursefullname' => new external_value (PARAM_TEXT, 'full name of example course')
 		) ) );
 	}
 	
