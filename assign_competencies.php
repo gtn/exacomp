@@ -120,11 +120,11 @@ $competence_tree = block_exacomp_get_competence_tree($courseid,(isset($selectedT
 		!($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies, true);
 
 $scheme = block_exacomp_get_grading_scheme($courseid);
-
+$colselector="";
 $statistic = false;
 if($isTeacher){
     if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS)
-        echo $output->print_column_selector(count($students));
+        $colselector=$output->print_column_selector(count($students));
     elseif (!$studentid)
     $students = array();
     elseif($studentid == BLOCK_EXACOMP_SHOW_STATISTIC)
@@ -144,7 +144,8 @@ $selectedSubject = block_exacomp_get_subject_by_id($selectedTopic->subjid);
 
 if (optional_param('print', false, PARAM_BOOL)) {
     $output->print = true;
-	$ret  = $output->print_overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
+    $ret=$colselector;
+	$ret.=$output->print_overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
 	$ret .= "&nbsp;<br />";
     $ret .= $output->print_competence_overview($competence_tree, $courseid, $students, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, ($version && $selectedNiveau->id != SHOW_ALL_NIVEAUS), false, 0, $statistic);
 
@@ -152,7 +153,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
 }
 
 echo $output->header($context, $courseid, $page_identifier);
-
+echo $colselector;
 echo $output->print_competence_overview_form_start((isset($selectedNiveau))?$selectedNiveau:null, (isset($selectedTopic))?$selectedTopic:null, $studentid, $editmode);
 
 //dropdowns for subjects and topics and students -> if user is teacher
