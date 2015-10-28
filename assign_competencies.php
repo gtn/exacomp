@@ -144,10 +144,30 @@ $selectedSubject = block_exacomp_get_subject_by_id($selectedTopic->subjid);
 
 if (optional_param('print', false, PARAM_BOOL)) {
     $output->print = true;
-    $ret=$colselector;
-	$ret.=$output->print_overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
-	$ret .= "&nbsp;<br />";
-    $ret .= $output->print_competence_overview($competence_tree, $courseid, $students, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, ($version && $selectedNiveau->id != SHOW_ALL_NIVEAUS), false, 0, $statistic);
+    $ret  = '';
+    
+    if ($group == -1) {
+        // all students, do nothing
+    } else {
+        // get the students on this group
+        $students = array_slice($students, $group*STUDENTS_PER_COLUMN, STUDENTS_PER_COLUMN, true);
+    }
+    
+    // TOOD: print column information for print
+    
+    // loop through all pages (eg. when all students should be printed)
+    for ($group_i = 0; $group_i < count($students); $group_i+=STUDENTS_PER_COLUMN) {
+        $students_to_print = array_slice($students, $group_i, STUDENTS_PER_COLUMN, true);
+        
+        if ($group_i) {
+            // after 2nd group add page break
+            $ret .= '<br pagebreak="true"/>';
+        }
+        
+        $ret .= $output->print_overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
+        $ret .= "&nbsp;<br />";
+        $ret .= $output->print_competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, ($version && $selectedNiveau->id != SHOW_ALL_NIVEAUS), false, 0, $statistic);
+    }
 
     block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $ret);
 }
