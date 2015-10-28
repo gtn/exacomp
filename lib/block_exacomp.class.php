@@ -111,6 +111,8 @@ class block_exacomp extends block_list {
         $checkImport = $DB->get_records('block_exacompdescriptors');
 
         $courseSettings = block_exacomp_get_settings_by_course($courseid);
+        // this is an old setting
+        // TODO: delete all occurences of usedetailpage in all files
         $usedetailpage = $courseSettings->usedetailpage;
         $useactivities = $courseSettings->uses_activities;
 

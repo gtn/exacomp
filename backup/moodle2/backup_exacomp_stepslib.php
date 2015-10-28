@@ -23,7 +23,10 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
  
          $exacomp = new backup_nested_element('exacomp', array('id'), null);
 
-        $settings = new backup_nested_element('settings', array(), array('courseid','grading','activities','tstamp','uses_activities','show_all_descriptors','show_all_examples','usedetailpage'));
+        $settings = new backup_nested_element('settings', array(), array('courseid','grading','tstamp','uses_activities','show_all_descriptors','show_all_examples','nostudents'
+            // TODO: is this one still needed? always null
+            ,'activities'
+        ));
         $mdltypes = new backup_nested_element('mdltypes');
         $mdltype = new backup_nested_element('mdltype', array(), array('source', 'sourceid')); // NOTE: set source/sourceid as xml-values, not attributes. because moodle needs at least one xml-value!
         $topics = new backup_nested_element('topics');
