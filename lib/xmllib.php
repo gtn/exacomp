@@ -171,7 +171,11 @@ class block_exacomp_data {
         $sources = $DB->get_records_sql("
             SELECT s.*
             FROM {".block_exacomp::DB_DATASOURCES."} s
-            WHERE s.id IN (SELECT DISTINCT source FROM {".block_exacomp::DB_DESCRIPTORS."})
+            WHERE s.id IN (
+                SELECT DISTINCT source FROM {".block_exacomp::DB_DESCRIPTORS."}
+                UNION
+                SELECT DISTINCT source FROM {".block_exacomp::DB_EXAMPLES."}
+            )
             ORDER BY NAME
         ");
         
@@ -1166,8 +1170,17 @@ class block_exacomp_data_importer extends block_exacomp_data {
         }
         
         self::$import_source_global_id = (string)$xml['source'];
+        // get local id
         self::$import_source_local_id = 
             self::$import_source_global_id == self::get_my_source() ? 0 : self::add_source_if_not_exists(self::$import_source_global_id);
+        // update source name
+        if (self::$import_source_local_id) {
+            block_exacomp\db::update_record(block_exacomp::DB_DATASOURCES, array(
+                'id' => self::$import_source_local_id
+            ), array(
+                'name' => (string)$xml['sourcename']
+            ));
+        }
         
         // update scripts for new source format
         if (self::has_old_data(block_exacomp::IMPORT_SOURCE_DEFAULT)) {
