@@ -1429,6 +1429,25 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		}
 		
 		$table->data = $rows;
+		
+		if ($this->is_print_mode()) {
+		    // private function
+		    $cell_width = function($row, $cell, $width) use ($rows) {
+		        $rows[$row]->cells[$cell]->attributes['width'] = $width.'%';
+		        // test print cell size
+		        // $rows[$row]->cells[$cell]->text = $width.' '.$rows[$row]->cells[$cell]->text;
+		    };
+		    // set table cell sizes for print mode
+		    $cnt = count($students);
+		    $cell_width(0, 0, 100-10-$cnt*12.5);
+		    $cell_width(0, 1, 10);
+		    for ($i = 0; $i < $cnt; $i++) {
+		        $cell_width(0, 2+$i, 12.5);
+		    }
+		    $cell_width(2, 0, 8);
+		    $cell_width(2, 1, 100-10-$cnt*12.5-8);
+		}
+		
         $table_html = html_writer::table($table);
         
         if(count($rows) == 0 && $crosssubs) {
@@ -1574,12 +1593,13 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                 $topicRow->cells[] = $statCell;
             }
             //do not display topic level for version
+            // TODO: refactor, delete whole topic row logic?
             if($version) {
                 $level--;                
-                $topicRow->style = "display:none;";
+                // $topicRow->style = "display:none;";
+            } else {
+                $rows[] = $topicRow;
             }
-            
-            $rows[] = $topicRow;
 
             if (!empty($topic->descriptors)) {
                 $this->print_descriptors($rows, $level+1, $topic->descriptors, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $statistic, false, true, $crosssubjid);

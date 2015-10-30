@@ -27,7 +27,7 @@ class printer {
                     border: 0.2pt solid #555;
                 }
                 table {
-                    padding: 1px 2px; /* tcpdf only accepts padding on table tag, which gets applied to all cells */
+                    padding: 1px 0 1px 1px; /* tcpdf only accepts padding on table tag, which gets applied to all cells */
                 }
                 
                 .exabis_comp_info {
@@ -46,9 +46,10 @@ class printer {
         
         // convert padding to spaces, because tcpdf doesn't support padding
         $html_content = preg_replace_callback('!padding-left:\s*([0-9]+)[^>]+>(<div[^>]*>)?!', function($matches){
-            return $matches[0].str_repeat('&nbsp;', round($matches[1]/7));
+            return $matches[0].str_repeat('&nbsp;', round($matches[1]/5));
         }, $html_content);
         
+        // $html_content = preg_replace('!\s*Ich kann\s*!', '...', $html_content);
         //echo $style.$html.$html_content;
         
         // @ = suppress html warnings from tcpdf
