@@ -229,6 +229,11 @@ class block_exacomp_data {
                 'mm2' => array('crosssubjid', block_exacomp::DB_CROSSSUBJECTS),
             ),
             array(
+                'table' => block_exacomp::DB_DESCCAT,
+                'mm1' => array('descrid', block_exacomp::DB_DESCRIPTORS),
+                'mm2' => array('catid', block_exacomp::DB_CATEGORIES),
+            ),
+            array(
                 'table' => block_exacomp::DB_EXAMPTAX,
                 'mm1' => array('exampleid', block_exacomp::DB_EXAMPLES),
                 'mm2' => array('taxid', block_exacomp::DB_TAXONOMIES),
@@ -1382,6 +1387,11 @@ class block_exacomp_data_importer extends block_exacomp_data {
                 'mm2' => array('crosssubjid', block_exacomp::DB_CROSSSUBJECTS),
             ),
             array(
+                'table' => block_exacomp::DB_DESCCAT,
+                'mm1' => array('descrid', block_exacomp::DB_DESCRIPTORS),
+                'mm2' => array('catid', block_exacomp::DB_CATEGORIES),
+            ),
+            array(
                 'table' => block_exacomp::DB_EXAMPTAX,
                 'mm1' => array('exampleid', block_exacomp::DB_EXAMPLES),
                 'mm2' => array('taxid', block_exacomp::DB_TAXONOMIES),
@@ -1566,6 +1576,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
             throw new block_exacomp\exception('oldxmlfile');
         }
         
+        self::delete_mm_record_for_item(block_exacomp::DB_DESCCAT, 'descrid', $descriptor->id);
         if ($xmlItem->categories) {
             foreach ($xmlItem->categories->categoryid as $category) {
                 if ($categoryid = self::get_database_id($category)) {

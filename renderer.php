@@ -2031,8 +2031,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     $exampleRow->cells[] = $titleCell;
     
                     $nivCell = new html_table_cell();
-                    $nivCell->text = "";
-    
+                    
+                    $nivText = [];
+                    foreach($example->taxonomies as $tax){
+                        $nivText[] = $tax->title;
+                    }
+                    $nivCell->text = join(' ', $nivText);
                     $exampleRow->cells[] = $nivCell;
                     
                     $visible_student_example = $visible_example;
@@ -2496,6 +2500,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         $temp = false;
         foreach($data->levels as $levelstruct){
             if($levelstruct->level->source > 1 && $temp == false){
+                // print table header for first source
                 $row = new html_table_row();
                 $row->attributes['class'] = 'highlight';
 
@@ -2514,7 +2519,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
             $cell = new html_table_cell();
             $cell->colspan = 2;
-            $cell->text = html_writer::tag('b', $levelstruct->level->title);
+            $cell->text = html_writer::tag('b', $levelstruct->level->title).' ('.$this->print_source_info($levelstruct->level->source).')';
 
             $row->cells[] = $cell;
             $rows[] = $row;
@@ -2583,7 +2588,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         .html_writer::empty_tag('br');
         
         $alltax = array(SHOW_ALL_TAXONOMIES => get_string('show_all_taxonomies','block_exacomp'));
-        $taxonomies = $DB->get_records_menu('block_exacomptaxonomies',null,'','id,title');
+        $taxonomies = $DB->get_records_menu('block_exacomptaxonomies',null,'sorting','id,title');
         $taxonomies = $alltax + $taxonomies;
         $input_taxonomies = html_writer::empty_tag('br').html_writer::select($taxonomies, 'filteredtaxonomies[]',$settings->filteredtaxonomies,false,array('multiple'=>'multiple'));
         $input_submit = html_writer::empty_tag('br').html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save', 'admin')));
@@ -2816,7 +2821,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             $row->attributes['class'] = 'exabis_comp_teilcomp highlight';
     
             $cell = new html_table_cell();
-            $cell->text = html_writer::div(html_writer::tag('b', $schooltype->title));
+            $cell->text = html_writer::div(html_writer::tag('b', $schooltype->title).' ('.$this->print_source_info($schooltype->source).')');
             $cell->attributes['class'] = 'rowgroup-arrow';
                     
             $cell->colspan = 3;

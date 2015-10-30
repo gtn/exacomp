@@ -210,11 +210,10 @@ function block_exacomp_get_all_subjects() {
 function block_exacomp_get_schooltypes_by_course($courseid) {
     global $DB;
     return $DB->get_records_sql('
-            SELECT s.id, s.title
+            SELECT DISTINCT s.id, s.title, s.source, s.sourceid
             FROM {'.block_exacomp::DB_SCHOOLTYPES.'} s
             JOIN {'.block_exacomp::DB_MDLTYPES.'} m ON m.stid = s.id AND m.courseid = ?
-            GROUP BY s.id, s.title
-            ORDER BY s.title
+            ORDER BY s.sorting, s.title
             ', array($courseid));
 }
 /**
@@ -849,14 +848,15 @@ function block_exacomp_get_categories_for_descriptor($descriptor){
        }
     }
     
-    $records = $DB->get_records(block_exacomp::DB_DESCCAT, array('descrid'=>$descriptor->id));
-    $categories = array();
+    $categories = $DB->get_records_sql("
+        SELECT c.*
+        FROM {".block_exacomp::DB_CATEGORIES."} c
+        JOIN {".block_exacomp::DB_DESCCAT."} dc ON dc.catid=c.id
+        WHERE dc.descrid=?
+        ORDER BY c.sorting
+    ", array($descriptor->id));
     
-    foreach($records as $record){
-        if($record->catid)
-            $categories[] = $DB->get_record(block_exacomp::DB_CATEGORIES, array('id'=>$record->catid));
-    }
-    return $categories;    
+    return $categories;
 }
 function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescriptors = false, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $showallexamples = true, $mindvisibility = true, $showonlyvisible=false ) {
     global $DB;
@@ -965,6 +965,7 @@ function block_exacomp_get_taxonomies_by_example($example){
         FROM {".block_exacomp::DB_TAXONOMIES."} t
         JOIN {".block_exacomp::DB_EXAMPTAX."} et ON t.id = et.taxid
         WHERE et.exampleid = ?
+        ORDER BY t.sorting
     ", array($example->id));
 }
 /**
