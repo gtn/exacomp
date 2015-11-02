@@ -77,6 +77,7 @@ function block_exacomp_init_js_css(){
     $PAGE->requires->string_for_js('override_notice', 'block_exacomp');
     $PAGE->requires->string_for_js('unload_notice', 'block_exacomp');
     $PAGE->requires->string_for_js('example_sorting_notice', 'block_exacomp');
+    $PAGE->requires->string_for_js('delete_unconnected_examples', 'block_exacomp');
     
     // page specific js/css
     $scriptName = preg_replace('!\.[^\.]+$!', '', basename($_SERVER['PHP_SELF']));
@@ -2412,24 +2413,40 @@ function block_exacomp_set_coursetopics($courseid, $values) {
         }
         
         block_exacomp_update_descriptor_visibilities($courseid, $descriptors);
-        
+   
+        $where = "";
         foreach($descriptors as $descriptor){
-            $descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, $courseid, false);
-                foreach($descriptor->examples as $example)
-                    if(!array_key_exists($example->id, $examples))
+        	 $descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, $courseid, false);
+                foreach($descriptor->examples as $example){
+                    if(!array_key_exists($example->id, $examples)){
                         $examples[$example->id] = $example;
+                    	$where .= $example->id.",";
+                    }
+                }
                 
                 $descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid);
                 foreach($descriptor->children as $child){
                     $child = block_exacomp_get_examples_for_descriptor($child, array(SHOW_ALL_TAXONOMIES), true, $courseid, false);
-                    foreach($child->examples as $example)
-                        if(!array_key_exists($example->id, $examples))
+                    foreach($child->examples as $example){
+                        if(!array_key_exists($example->id, $examples)){
                             $examples[$example->id] = $example;
+                            $where .= $example->id.",";
+                        }
+                    }
                 }
         }
     
         block_exacomp_update_example_visibilities($courseid, $examples);
-
+      
+        //delete unconnected examples
+        $where = substr($where, 0, strlen($where)-1);
+        
+        $sql = "SELECT * FROM {".block_exacomp::DB_SCHEDULE."} WHERE courseid = ? AND exampleid NOT IN(".$where.")";
+		$schedules = $DB->get_records_sql($sql, array($courseid));
+		
+	    foreach($schedules as $schedule){
+			$DB->delete_records(block_exacomp::DB_SCHEDULE, array('id'=>$schedule->id));
+		}
     }
 }
 /**

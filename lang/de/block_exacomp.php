@@ -200,6 +200,7 @@ $string['profoundness_2'] = 'Erreicht';
 $string['filteredtaxonomies'] = 'Beispiele werden anhand der ausgewählten Taxonomien verwendet:';
 $string['show_all_taxonomies'] = 'Alle Taxonomien';
 $string['warning_use_activities'] = 'Hinweis: Sie arbeiten jetzt mit Moodle-Aktivitäten die mit Kompetenzen verknüpft sind. Stellen Sie sicher, dass in diesem Kurs mit den selben Kompetenzen weitergearbeitet wird.';
+$string['delete_unconnected_examples'] = 'Wenn Sie Themenbereiche abwählen, mit denen Beispiele verknüpft sind die noch am Wochenplan liegen, werden diese aus dem Wochenplan entfernt.';
 
 //Badges
 $string['mybadges'] = 'Meine Auszeichnungen';

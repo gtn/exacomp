@@ -58,17 +58,20 @@
 		
 		// submit open groups
 		$form.submit(function(){
-			
-			// find ids
-			var ids = '';
-			$form.find('.rowgroup-header.open').each(function(){
-				if ($(this).prop('class').match(/rowgroup-header-([0-9]+)/)) {
-					ids += ','+RegExp.$1
-				}
-			});
-			
-			// save to hidden input
-			$form.find('input[name=open_row_groups]').val(ids);
+			if (confirm(M.util.get_string('delete_unconnected_examples', 'block_exacomp'))) {
+				// find ids
+				var ids = '';
+				$form.find('.rowgroup-header.open').each(function(){
+					if ($(this).prop('class').match(/rowgroup-header-([0-9]+)/)) {
+						ids += ','+RegExp.$1
+					}
+				});
+				
+				// save to hidden input
+				$form.find('input[name=open_row_groups]').val(ids);
+			}else {
+				event.preventDefault();
+			}
 		});
 		
 		// reopen open groups

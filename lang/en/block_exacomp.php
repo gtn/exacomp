@@ -175,6 +175,7 @@ $string['profoundness_2'] = 'fully gained';
 $string['filteredtaxonomies'] = 'Examples are filtered accordingly to the following taxonomies:';
 $string['show_all_taxonomies'] = 'All taxonomies';
 $string['warning_use_activities'] = 'Warning: you are now working with Moodle-activites that are associated with competences. Please verify that the same outcomes are used as before.';
+$string['delete_unconnected_examples'] = 'If you are deselecting topics which are associated with examples used in the weekly schedule, these examples will be removed.';
 
 //Badges
 $string['mybadges'] = 'My badges';
