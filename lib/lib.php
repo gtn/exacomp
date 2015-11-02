@@ -41,6 +41,8 @@ if($global_scheme == 1){
     $global_scheme_values = array('0', '1', '2', '3');
 }
 
+$additional_grading = get_config('exacomp', 'additional_grading');
+
 define("SHOW_ALL_NIVEAUS",99999999);
 define("SHOW_ALL_TAXONOMIES",100000000);
 define("BLOCK_EXACOMP_SHOW_ALL_STUDENTS", -1);
@@ -1291,7 +1293,7 @@ function block_exacomp_get_user_competencies_by_course($user, $courseid) {
     $user->competencies->student = $DB->get_records_menu(block_exacomp::DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => block_exacomp::ROLE_STUDENT, "comptype" => TYPE_DESCRIPTOR),'','compid as id, value');
     $user->competencies->timestamp_teacher = $DB->get_records_menu(block_exacomp::DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => block_exacomp::ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR),'','compid as id, timestamp');
     $user->competencies->timestamp_student = $DB->get_records_menu(block_exacomp::DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => block_exacomp::ROLE_STUDENT, "comptype" => TYPE_DESCRIPTOR),'','compid as id, timestamp');
-    
+    //$user->competencies->teacher_percentage = $DB->get_records_menu();
     return $user;
 }
 

@@ -1847,7 +1847,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             
                                 $studentCell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme, ($visible_student)?false:true, $data->profoundness, ($data->role == block_exacomp::ROLE_TEACHER) ? $reviewerid : null);
                             }
-            
+                            
                             // ICONS
                             if(isset($icontext)) 
                                 $studentCell->text .= $icontext;
@@ -2383,13 +2383,15 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
     	if($reviewerid && $reviewerid != $USER->id)
     		$attributes["reviewerid"] = $reviewerid;
     	
-        return html_writer::checkbox(
+        $content = html_writer::checkbox(
                 ((isset($activityid)) ? 
                         $name . '-' .$compid .'-' . $student->id .'-' . $activityid . '-' . $evaluation
                         : $name . '-' . $compid . '-' . $student->id . '-' . $evaluation),
                 $scheme,
                 (isset($student->{$type}->{$evaluation}[$compid])) && $student->{$type}->{$evaluation}[$compid] >= ceil($scheme/2), null,
                 $attributes);
+                
+        return $content;
     }
     public function generate_checkbox_old($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false, $activityid = null) {
         return html_writer::checkbox(
