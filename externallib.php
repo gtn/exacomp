@@ -3881,7 +3881,7 @@ class block_exacomp_external extends external_api {
 	 * @return list of descriptors
 	 */
 	public static function dakora_get_examples_for_time_slot($userid, $start, $end) {
-		global $USER;
+		global $USER, $DB;
 		$params = self::validate_parameters ( self::dakora_get_examples_for_time_slot_parameters (), array (
 				'userid'=>$userid,
 				'start'=>$start,
