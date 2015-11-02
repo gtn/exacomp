@@ -3657,7 +3657,7 @@ class block_exacomp_external extends external_api {
 	 * @return list of descriptors
 	 */
 	public static function dakora_get_examples_pool($courseid, $userid) {
-		global $USER;
+		global $USER, $DB;
 		
 		$params = self::validate_parameters ( self::dakora_get_examples_pool_parameters (), array (
 				'courseid'=>$courseid,
@@ -3671,6 +3671,10 @@ class block_exacomp_external extends external_api {
 		
 		foreach($examples as $example){
 			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
+			
+			$example_course = $DB->get_record('course', array('id'=>$example->courseid));
+			$example->courseshortname = $example_course->shortname;
+			$example->coursefullname = $example_course->fullname;
 		}
 		
 		return $examples;
@@ -3689,7 +3693,9 @@ class block_exacomp_external extends external_api {
 				'teacher_evaluation' => new external_value( PARAM_TEXT, 'evaluation of teacher'),
 				'courseid' => new external_value(PARAM_INT, 'example course'),
 				'state' => new external_value (PARAM_INT, 'state of example'),
-				'scheduleid' => new external_value (PARAM_INT, 'id in schedule context')
+				'scheduleid' => new external_value (PARAM_INT, 'id in schedule context'),
+				'courseshortname' => new external_value (PARAM_TEXT, 'shortname of example course'),
+				'coursefullname' => new external_value (PARAM_TEXT, 'full name of example course')
 		) ) );
 	}
 	
@@ -3714,7 +3720,7 @@ class block_exacomp_external extends external_api {
 	 * @return list of descriptors
 	 */
 	public static function dakora_get_examples_trash($courseid, $userid) {
-		global $USER;
+		global $USER, $DB;
 		
 		$params = self::validate_parameters ( self::dakora_get_examples_trash_parameters (), array (
 				'courseid'=>$courseid,
@@ -3728,6 +3734,10 @@ class block_exacomp_external extends external_api {
 		
 		foreach($examples as $example){
 			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
+			
+			$example_course = $DB->get_record('course', array('id'=>$example->courseid));
+			$example->courseshortname = $example_course->shortname;
+			$example->coursefullname = $example_course->fullname;
 		}
 		
 		return $examples;
@@ -3746,7 +3756,9 @@ class block_exacomp_external extends external_api {
 				'teacher_evaluation' => new external_value( PARAM_TEXT, 'evaluation of teacher'),
 				'courseid' => new external_value(PARAM_INT, 'example course'),
 				'state' => new external_value (PARAM_INT, 'state of example'),
-				'scheduleid' => new external_value (PARAM_INT, 'id in schedule context')
+				'scheduleid' => new external_value (PARAM_INT, 'id in schedule context'),
+				'courseshortname' => new external_value (PARAM_TEXT, 'shortname of example course'),
+				'coursefullname' => new external_value (PARAM_TEXT, 'full name of example course')
 		) ) );
 	}
 	
