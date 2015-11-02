@@ -106,6 +106,8 @@ $string['settings_schedulebegin_description'] = 'Begin time for the first unit i
 $string['settings_admin_scheme'] = 'Global grading scheme';
 $string['settings_admin_scheme_description'] = 'Choose a grading scheme for all courses, if not every teacher can select an own grading scheme for every course based on numbers.';
 $string['settings_admin_scheme_none'] = 'no global grading';
+$string['settings_additional_grading'] = 'Additional grading';
+$string['settings_additional_grading_description'] = 'Additional grading of outcomes/materials (0-100%)';
 
 //Learning agenda
 $string['LA_MON'] = "MON";

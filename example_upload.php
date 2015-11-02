@@ -161,7 +161,7 @@ if($formdata = $form->get_data()) {
     	if(!in_array($descrid, $descriptors)){
     		$descriptors[] = $descrid;
     	}
-		
+    	
     	foreach($descriptors as $descriptorid){
     		$desc_examp = $DB->get_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
     		if(!$desc_examp){

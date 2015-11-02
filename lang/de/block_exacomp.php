@@ -108,6 +108,8 @@ $string['settings_schedulebegin_description'] = 'Beginnzeitpunkt der ersten Einh
 $string['settings_admin_scheme'] = 'Globales Bewertungsschema';
 $string['settings_admin_scheme_description'] = 'Wählen Sie ein kursübergreifendes Bewertungsschema, andernfalls kann der Lehrer pro Kurs ein zahlen basiertes Bewertungsschema festlegen.';
 $string['settings_admin_scheme_none'] = 'keine globale Bewertung';
+$string['settings_additional_grading'] = 'Zus&auml;tzliche Bewertung';
+$string['settings_additional_grading_description'] = 'Zus&auml;tzliche Bewertung für Kompetenzen/Lernmaterialien (0-100%)';
 
 //Learning agenda
 $string['LA_MON'] = "Mo";

@@ -86,4 +86,7 @@ $settings->add(new admin_setting_configcheckbox('exacomp/logging', get_string('b
 		get_string('block_exacomp_logging_body', 'block_exacomp'), 0));
 		
 $settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme', get_string('settings_admin_scheme', 'block_exacomp'),
-		get_string('settings_admin_scheme_description', 'block_exacomp'), get_string('settings_admin_scheme_none', 'block_exacomp'), array(get_string('settings_admin_scheme_none', 'block_exacomp'), 'G/M/E', 'A/B/C', '*/**/***')));	
+		get_string('settings_admin_scheme_description', 'block_exacomp'), get_string('settings_admin_scheme_none', 'block_exacomp'), array(get_string('settings_admin_scheme_none', 'block_exacomp'), 'G/M/E', 'A/B/C', '*/**/***')));
+
+$settings->add(new admin_setting_configcheckbox('exacomp/additional_grading', get_string('settings_additional_grading', 'block_exacomp'), 
+		get_string('settings_additional_grading_description', 'block_exacomp'), 0));

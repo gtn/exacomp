@@ -2305,5 +2305,35 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         }
     }
     
+  if ($oldversion < 2015110201) {
+
+        // Define field id to be added to block_exacompcompuser_mm.
+        $table = new xmldb_table('block_exacompcompuser_mm');
+        $field = new xmldb_field('percentage', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0');
+
+        // Conditionally launch add field id.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2015110201, 'exacomp');
+    }
+    
+	if($oldversion < 2015110202) {
+
+        // Define field id to be added to block_exacompcompuser_mm.
+        $table = new xmldb_table('block_exacompcompuser');
+        $field = new xmldb_field('percentage', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0');
+
+        // Conditionally launch add field id.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2015110202, 'exacomp');
+    }
+    
 	return $return_result;
 }
