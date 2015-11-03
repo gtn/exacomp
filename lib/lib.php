@@ -4229,24 +4229,6 @@ function block_exacomp_get_topics_for_cross_subject_by_descriptors($descriptors)
    
     return $topics;
 }
-function block_exacomp_save_cross_subject_title($crosssubjid, $title){
-    global $DB;
-    
-    if(isset($title)){
-        $crosssub = $DB->get_record(block_exacomp::DB_CROSSSUBJECTS, array('id'=>$crosssubjid));
-        $crosssub->title = $title;
-        $DB->update_record(block_exacomp::DB_CROSSSUBJECTS, $crosssub);
-    }
-}
-function block_exacomp_save_cross_subject_description($crosssubjid, $description){
-    global $DB;
-    
-    if(isset($description)){
-        $crosssub = $DB->get_record(block_exacomp::DB_CROSSSUBJECTS, array('id'=>$crosssubjid));
-        $crosssub->description = $description;
-        $DB->update_record(block_exacomp::DB_CROSSSUBJECTS, $crosssub);
-    }
-}
 function block_exacomp_cross_subjects_exists(){
     global $DB;
     $dbman = $DB->get_manager();
@@ -4382,6 +4364,9 @@ function block_exacomp_unset_cross_subject_student($crosssubjid, $studentid){
 }
 function     block_exacomp_share_crosssubject($crosssubjid, $value = 0){
     global $DB;
+    
+    // TODO: check if my crosssubj?
+    
     $update = $DB->get_record(block_exacomp::DB_CROSSSUBJECTS, array('id'=>$crosssubjid));
     $update->shared = $value;
     return $DB->update_record(block_exacomp::DB_CROSSSUBJECTS, $update);

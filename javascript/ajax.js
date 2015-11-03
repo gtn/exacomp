@@ -213,42 +213,7 @@
 	});
 	 
 
-	// #CrossSubject Title & Description
-	var title = "";
-	$(document).on('focusout', 'input[name^=crosssub-title]', function() {
-		title = $(this).val();
-	});
-
-	$(document).on('keypress', 'input[name^=crosssub-title]', function(event){
-		if(event.which == 13)
-			title = $(this).val();
-	});
-	var description = "";
-	$(document).on('focusout', 'input[name^=crosssub-description]', function() {
-		description = $(this).val();
-	});
-	
-	$(document).on('keypress', 'input[name^=crosssub-description]', function(){
-		if(event.which == 13)
-				description = $(this).val();
-	});
-	// not needed anymore
-	/*
-	$(document).on('keypress', 'input[exa-type=new-descriptor]', function(event) {
-		if(event.which == 13){
-			// hitting enter in a new-descriptor field
-			// prevent form submit, save and reload
-			event.preventDefault();
-			insert_descriptor(this);
-			// hack: first wait ajax calls, then reload
-			window.setTimeout(function() { location.reload() }, 50);
-			
-			return false;
-		}
-	});
-	*/
-	
-	$(document).on('click', '#assign-competencies input[type=submit]', function(event) {
+	$(document).on('click', '#assign-competencies input[type=submit], #assign-competencies input[type=button]', function(event) {
 		event.preventDefault();
 		courseid = block_exacomp.get_param('courseid');
 
@@ -266,7 +231,6 @@
 
 		switch ($(this).attr('id')) {
 		case 'btn_submit':
-			var deprecated_show_changes_saved = true;
 			var reload = false;
 			
 			function saved_alert() {
@@ -282,42 +246,20 @@
 				examples = {};
 			}
 
-			var select = document
-			.getElementById("menulis_crosssubject_subject");
-
-			// Cross-Suject subject
-			if (select && crosssubjid > 0) {
-				crosssubj_subjectid = select.options[select.selectedIndex].value;
-			
-				block_exacomp.call_ajax({
-					crosssubjid: crosssubjid,
-					subjectid: crosssubj_subjectid,
-					action: 'crosssubj-subject'
-				});
-			}
-			// Cross-Subject title & description
-			
-			if (title && crosssubjid > 0) {
-				
-				block_exacomp.call_ajax({
-					crosssubjid : crosssubjid,
-					title : title,
-					action : 'crosssubj-title'
-				}).done(function(msg) {
-					location.reload();
-				});
-
-			}
-			if (description && crosssubjid > 0) {
-				block_exacomp.call_ajax({
-					crosssubjid : crosssubjid,
-					description : description,
-					action : 'crosssubj-description'
-				});
-			}
-
 			var multiQueryData = {};
 			
+			if (crosssubjid > 0 && $('input[name^=crosssub-title]').length) {
+				// in editmode
+				reload = true;
+
+				multiQueryData.update_crosssubj = {
+					id: crosssubjid,
+					subjectid: $("#menulis_crosssubject_subject option:selected").val(),
+					title: $('input[name^=crosssub-title]').val(),
+					description: $('input[name^=crosssub-description]').val()
+				};
+			}
+
 			var competencies_by_type = [];
 			if (!$.isEmptyObject(competencies)) {
 				competencies_by_type[0] = competencies;
@@ -341,8 +283,6 @@
 			//check all new_comp text fields if somewhere new text is entered when saving and create new descriptor
 			var new_descriptors = [];
 			$( "input[exa-type=new-descriptor]" ).each(function (){
-				show_changes_saved = false;
-
 				if (!this.value) return;
 				
 				new_descriptors.push({
@@ -359,8 +299,6 @@
 			});
 			
 			if (!$.isEmptyObject(multiQueryData)) {
-				deprecated_show_changes_saved = false;
-				
 				multiQueryData.action = 'multi';
 				block_exacomp.call_ajax(multiQueryData).done(function(msg) {
 					if (reload) {
@@ -396,35 +334,6 @@
 				});
 			}
 			
-			
-			//check all edit-descriptor text fields if somewhere new text is entered when saving and change descriptor
-			// not needed anymore
-			/*
-			$( "input[name^=change-title]" ).each(function( event ) {
-				  if($(this).val()){
-					  title = $(this).val();
-					  descrid = $(this).attr('descrid');
-					  
-					  block_exacomp.call_ajax({
-							descrid : descrid,
-							title : title,
-							action : 'edit-descriptor-title'
-					  });
-					  
-					  var span = $(this).parent('span');
-					  span.text($(this).val());
-				  }
-			});
-			*/
-			
-			if (deprecated_show_changes_saved) {
-				if(crosssubjid>0){//go back to overview
-					window.location.href = 'cross_subjects_overview.php?courseid='+courseid;
-				}
-				else 
-				saved_alert();
-			}
-			
 			break;
 		case 'save_as_draft':
 			if (crosssubjid > 0) {
@@ -436,24 +345,15 @@
 			event.preventDefault();
 			alert("Thema wurde als Vorlage gespeichert!");
 			break;
-		case 'share_crosssub':
-			url = 'select_students.php?courseid='
-					+ courseid + '&crosssubjid='
-					+ crosssubjid;
-			window.open(url, '_blank',
-					'width=880,height=660, scrollbars=yes');
-			break;
 		case 'delete_crosssub':
 			message = $(this).attr('message');
 			if (confirm(message)) {
-				if (crosssubjid > 0) {
-					block_exacomp.call_ajax({
-						crosssubjid : crosssubjid,
-						action : 'delete-crosssubject'
-					}).done(function(msg) {
-						location.reload();
-					});
-				}
+				block_exacomp.call_ajax({
+					crosssubjid : crosssubjid,
+					action : 'delete-crosssubject'
+				}).done(function(msg) {
+					location.href = 'cross_subjects_overview.php?courseid='+block_exacomp.get_param('courseid');
+				});
 			} 
 			break;
 		}
@@ -462,17 +362,8 @@
 	});
 
 	$(document).on('click', 'input[name=share_all]', function(){
-		if(this.checked == "1"){
-			console.log('checked');
-			$("input[name='student']").each(function() {
-				this.disabled = true;
-			});
-		}else{
-			console.log('not checked');
-			$("input[name='student']").each(function() {
-				this.disabled = false;
-			});
-		}
+		// disable if checked
+		$("input[name='student']").attr('disabled', this.checked);
 	});
 	
 	// Add Descriptor to crosssubjects
@@ -499,45 +390,33 @@
 	});
 
 	// Share crosssubject with students
-	$(document).on('click', 'input[name=students]', function() {
+	$(document).on('click', ':button[name=share_crosssubj_students]', function() {
 		var students = [];
 		var not_students = [];
 		courseid = block_exacomp.get_param('courseid');
 		crosssubjid = block_exacomp.get_param('crosssubjid');
 
-		if ($("input[name='share_all']").is(':checked')) {
-			block_exacomp.call_ajax({
-				crosssubjid : crosssubjid,
-				value : 1,
-				action : 'crosssubj-share'
-			}).done(function(msg) {
-				window.opener.location.reload(true);
-				window.close();
-			});
-		} else {
-			block_exacomp.call_ajax({
-				crosssubjid : crosssubjid,
-				value : 0,
-				action : 'crosssubj-share'
-			});
-			
+		var data = {
+			action: 'crosssubj-share',
+			crosssubjid : crosssubjid,
+			share_all: $("input[name='share_all']").is(':checked'),
+			students: [],
+			not_students: []
+		};
+		
+		if (!data.share_all) {
+			// send students array if not sharing to all
 			$("input[name='student']").each(function() {
-				if (this.checked == "1")
-					students.push($(this).val());
+				if (this.checked)
+					data.students.push($(this).val());
 				else
-					not_students.push($(this).val());
-			});
-
-			block_exacomp.call_ajax({
-				students : JSON.stringify(students),
-				not_students : JSON.stringify(not_students),
-				crosssubjid : crosssubjid,
-				action : 'crosssubj-students'
-			}).done(function(msg) {
-				window.opener.location.reload(true);
-				window.close();
+					data.not_students.push($(this).val());
 			});
 		}
+
+		block_exacomp.call_ajax(data).done(function(msg) {
+			block_exacomp.popup_close_and_reload();
+		});
 	});
 	
 	$(document).on('click', 'a[id^=competence-grid-link]', function(event) {

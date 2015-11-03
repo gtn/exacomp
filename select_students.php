@@ -48,6 +48,7 @@ block_exacomp_require_teacher($context);
 
 $PAGE->set_url('/blocks/exacomp/select_students.php', array('courseid' => $courseid));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
+$PAGE->set_pagelayout('popup');
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
@@ -74,6 +75,6 @@ foreach($students as $student)
 	echo html_writer::checkbox('student',$student->id,isset($assigned_students[$student->id]),$student->firstname." ".$student->lastname, ($shared==1)?array('disabled'=>true):array()).html_writer::empty_tag('br');
 
 echo "</div>";
-echo html_writer::empty_tag('br').html_writer::tag("input", '', array("type"=>"button","value"=>get_string('save_selection', 'block_exacomp'),"name"=>"students"));
+echo html_writer::empty_tag('br').html_writer::tag("input", '', array("type"=>"button","value"=>get_string('save_selection', 'block_exacomp'),"name"=>"share_crosssubj_students"));
 
 echo $output->footer();

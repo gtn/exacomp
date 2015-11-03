@@ -91,6 +91,9 @@ class param {
         if (count($definition) != 1) {
             print_error('no array definition');
         }
+        if (!is_array($values)) {
+            return array();
+        }
 
         $keyType = key($definition);
         $valueType = reset($definition);
@@ -154,6 +157,26 @@ class param {
             print_error('param not found: '.$parname);
         } else {
             return static::clean_array($param, $definition);
+        }
+    }
+    
+    public static function optional_object($parname, $definition) {
+        $param = static::get_param($parname);
+
+        if ($param === null) {
+            return null;
+        } else {
+            return static::clean_object($param, $definition);
+        }
+    }
+
+    public static function required_object($parname, $definition) {
+        $param = static::get_param($parname);
+
+        if ($param === null) {
+            print_error('param not found: '.$parname);
+        } else {
+            return static::clean_object($param, $definition);
         }
     }
     
