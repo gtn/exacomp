@@ -55,7 +55,7 @@ $PAGE->requires->css("/blocks/exacomp/css/CollapsibleLists.css");
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
 
-$output = $PAGE->get_renderer('block_exacomp');
+$output = block_exacomp_get_renderer();
 
 //SAVE DATA
 if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {

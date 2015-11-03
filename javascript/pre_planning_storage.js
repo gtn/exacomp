@@ -57,14 +57,14 @@
 			studentid : studentid,
 			exampleid: exampleid,
 			action : 'add-example-to-schedule'
-		},function(msg) {});
+		});
 	}
 	
 	function block_exacomp_get_pre_planning_storage(callback){
 		block_exacomp.call_ajax({
 			creatorid : block_exacomp.get_param('creatorid'),
 			action : 'get-pre-planning-storage'
-			}, function(storage) {
+			}).done(function(storage) {
 				callback($.parseJSON(storage));
 			});
 	}	
@@ -76,7 +76,7 @@
 		block_exacomp.call_ajax({
 			scheduleid : event.scheduleid,
 			action : 'remove-example-from-schedule'
-		},function(msg) {});
+		});
 	}
 	
 	$(function() {

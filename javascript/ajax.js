@@ -155,64 +155,20 @@
 		var tr = $(this).closest('tr');
 		var hide = $(tr).find('input[name~="hide-descriptor"]');
 		
+		examples[values[1]+"-"+values[2]] = {
+			userid : values[2],
+			exampleid : values[1],
+			value : $(this).prop("checked")
+		};
 		if ($(this).prop("checked")) {
-			if (examples[values[1]+"-"+values[2]]) {
-				examples[values[1]+"-"+values[2]]['value'] = 1;
-			} else
-				examples[values[1]+"-"+values[2]] = {
-					userid : values[2],
-					exampleid : values[1],
-					value : 1
-				};
-		
 			//check comp->hide descriptor not possible
 			hide.addClass("hidden");
 		} else {
-			if (examples[values[1]+"-"+values[2]])
-				examples[values[1]+"-"+values[2]]['value'] = 0;
-			else
-				examples[values[1]+"-"+values[2]] = {
-					userid : values[2],
-					exampleid : values[1],
-					value : -1
-				};
-			
 			//uncheck comp -> hide possible again
 			hide.removeClass("hidden");
 		}
 	});
 	
-
-	$(document).on('change', 'select[name^=dataexamples\-]', function() {
-		var values = $(this).attr("name").split("-");
-
-		if (values[3] == 'studypartner')
-			examples[values[1]+"-"+values[2]] = {
-				userid : values[2],
-				exampleid : values[1],
-				studypartner : $(this).val()
-			};
-		else if (values[3] == 'starttime')
-			examples[values[1]+"-"+values[2]] = {
-				userid : values[2],
-				exampleid : values[1],
-				starttime : $(this).val()
-			};
-		else if (values[3] == 'endtime')
-			examples[values[1]+"-"+values[2]] = {
-				userid : values[2],
-				exampleid : values[1],
-				endtime : $(this).val()
-			};
-		else
-			examples[values[1]+"-"+values[2]] = {
-				userid : values[2],
-				exampleid : values[1],
-				value : $(this).val()
-			};
-	});
-	 
-
 	$(document).on('click', '#assign-competencies input[type=submit], #assign-competencies input[type=button]', function(event) {
 		event.preventDefault();
 		courseid = block_exacomp.get_param('courseid');
@@ -241,15 +197,6 @@
 				}
 			}
 			
-			if (!$.isEmptyObject(examples)) {
-				block_exacomp.call_ajax({
-					examples : JSON.stringify(examples),
-					action : 'examples_array'
-				});
-
-				examples = {};
-			}
-
 			var multiQueryData = {};
 			
 			if (crosssubjid > 0 && $('input[name^=crosssub-title]').length) {
@@ -262,6 +209,11 @@
 					title: $('input[name^=crosssub-title]').val(),
 					description: $('input[name^=crosssub-description]').val()
 				};
+			}
+
+			if (!$.isEmptyObject(examples)) {
+				multiQueryData.examples = examples;
+				examples = {};
 			}
 
 			var competencies_by_type = [];
@@ -303,8 +255,11 @@
 			});
 			
 			if (!$.isEmptyObject(multiQueryData)) {
-				multiQueryData.action = 'multi';
-				block_exacomp.call_ajax(multiQueryData).done(function(msg) {
+				block_exacomp.call_ajax({
+					action: 'multi',
+					// send data as json, because php max input setting
+					data: JSON.stringify(multiQueryData)
+				}).done(function(msg) {
 					all_done();
 					
 					//im crosssubject neue Teilkompetenz erstellt -> gleich thema zuordnen
@@ -626,14 +581,14 @@
 					exampleid : exampleid,
 					studentid : studentid,
 					action : 'add-example-to-schedule'
-				},function(msg) { alert(msg) });
+				}).done(function(msg) { alert(msg) });
 			} 
 		}else {
 			block_exacomp.call_ajax({
 				exampleid : exampleid,
 				studentid : studentid,
 				action : 'add-example-to-schedule'
-			},function(msg) { alert(msg) });
+			}).done(function(msg) { alert(msg) });
 		}
 		
 		event.preventDefault();

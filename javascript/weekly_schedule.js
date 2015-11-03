@@ -6,7 +6,7 @@
 		block_exacomp.call_ajax({
 			studentid: studentid,
 			action : 'empty-trash'
-		},function(msg) {
+		}).done(function(msg) {
 			location.reload();
 		});
 	});
@@ -18,7 +18,7 @@
 			start: event.start.format('X'),
 			end: event.end.format('X'),
 			action : 'set-example-start-end'
-		},function(msg) {});
+		});
 	}
 	
 	function exacomp_calendar_update_event_time(event) {
@@ -29,7 +29,7 @@
 			start: event.start.format('X'),
 			end: event.end.format('X'),
 			action : 'set-example-start-end'
-		},function(msg) {});
+		});
 	}
 	
 	function exacomp_calendar_delete_event(event) {
@@ -39,7 +39,7 @@
 		block_exacomp.call_ajax({
 			scheduleid : event.scheduleid,
 			action : 'remove-example-from-schedule'
-		},function(msg) {});
+		});
 	}
 	
 	function exacomp_calendar_remove_event(event, deleted) {
@@ -53,7 +53,7 @@
 			deleted: deleted,
 			event_course: event.courseid,
 			action : 'set-example-start-end'
-		},function(msg) { });
+		});
 	}
 	
 	function block_exacomp_get_configuration(callback){
@@ -63,7 +63,7 @@
 			studentid : studentid,
 			pool_course: block_exacomp.get_param('pool_course'),
 			action : 'get-weekly-schedule-configuration'
-			}, function(config) {
+			}).done(function(config) {
 				callback($.parseJSON(config));
 			});
 	}
@@ -75,7 +75,7 @@
 			start: start.format('X'),
 			end: end.format('X'),
 			action : 'get-examples-for-start-end'
-		}, function(calendar_items) {
+		}).done(function(calendar_items) {
 			//load them
 			callback($.parseJSON(calendar_items));
 		});

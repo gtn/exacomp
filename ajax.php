@@ -93,27 +93,6 @@ switch($action){
             $event = \block_exacomp\event\crosssubject_added::create(array('objectid' => $exampleid, 'contextid' => context_course::instance($courseid)->id))->trigger();
         
         die('ok');
-    case('examples_array'):
-        $examples_json = required_param('examples', PARAM_TEXT);
-        
-        $examples = json_decode($examples_json);
-        
-        foreach($examples as $example){
-            if($example)
-                if(!is_numeric($example->exampleid) || !is_numeric($example->userid) || !is_numeric($example->value))
-                    print_error('invalidparameter', 'block_exacomp', $example);
-        }
-        
-        $saved = "";
-        foreach($examples as $example){
-            if($example){
-                $saved.="value: ".$example->value.$isTeacher." id: ";
-                $saved .= block_exacomp_set_user_example($example->userid, $example->exampleid, $courseid, ($isTeacher) ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $example->value);
-            }
-        }
-        
-        echo $saved;
-        break;
     case('save_as_draft'):
         $crosssubjid = required_param('crosssubjid', PARAM_INT);
         block_exacomp_save_drafts_to_course(array($crosssubjid), 0);
@@ -160,44 +139,60 @@ switch($action){
         
         break;
     case 'multi':
-        
-        $new_descriptors = block_exacomp\param::optional_array('new_descriptors', array((object)array(
-            'parentid' => PARAM_INT,
-            'topicid' => PARAM_INT,
-            'niveauid' => PARAM_INT,
-            'title' => PARAM_TEXT
-        )));
-        if ($new_descriptors) {
-           foreach ($new_descriptors as $descriptor) {
-               block_exacomp_descriptor::insertInCourse($courseid, $descriptor);
-           }
+        $data = (object)block_exacomp\param::required_json('data');
+
+        if (!empty($data->new_descriptors)) {
+            $new_descriptors = block_exacomp\param::clean_array($data->new_descriptors, array((object)array(
+                'parentid' => PARAM_INT,
+                'topicid' => PARAM_INT,
+                'niveauid' => PARAM_INT,
+                'title' => PARAM_TEXT
+            )));
+            foreach ($new_descriptors as $descriptor) {
+                block_exacomp_descriptor::insertInCourse($courseid, $descriptor);
+            }
         }
         
 
-        $competencies_by_type = block_exacomp\param::optional_array('competencies_by_type', array(PARAM_INT=>array((object)array(
-            'compid' => PARAM_INT,
-            'userid' => PARAM_INT,
-            'value' => PARAM_INT
-        ))));
-        foreach ($competencies_by_type as $comptype => $competencies) {
-            foreach($competencies as $comp){
-                block_exacomp_set_user_competence ( $comp->userid, $comp->compid, $comptype, $courseid, ($isTeacher) ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $comp->value );
+        if (!empty($data->competencies_by_type)) {
+            $competencies_by_type = block_exacomp\param::clean_array($data->competencies_by_type, array(PARAM_INT=>array((object)array(
+                'compid' => PARAM_INT,
+                'userid' => PARAM_INT,
+                'value' => PARAM_INT
+            ))));
+            foreach ($competencies_by_type as $comptype => $competencies) {
+                foreach($competencies as $comp){
+                    block_exacomp_set_user_competence ( $comp->userid, $comp->compid, $comptype, $courseid, ($isTeacher) ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $comp->value );
+                }
             }
         }
 
-        $update_crosssubj = block_exacomp\param::optional_object('update_crosssubj', array(
-            'id' => PARAM_INT,
-            'subjectid' => PARAM_INT,
-            'title' => PARAM_TEXT,
-            'description' => PARAM_TEXT
-        ));
-        
-        if ($update_crosssubj) {
-            // don't update title if empty
-            if (empty($update_crosssubj->title)) unset($update_crosssubj->title);
+        if (!empty($data->update_crosssubj)) {
+            $update_crosssubj = block_exacomp\param::clean_object($data->update_crosssubj, array(
+                'id' => PARAM_INT,
+                'subjectid' => PARAM_INT,
+                'title' => PARAM_TEXT,
+                'description' => PARAM_TEXT
+            ));
             
-            // TODO: pruefen ob mein crosssubj?
-            $DB->update_record(block_exacomp::DB_CROSSSUBJECTS, $update_crosssubj);
+            if ($update_crosssubj) {
+                // don't update title if empty
+                if (empty($update_crosssubj->title)) unset($update_crosssubj->title);
+                
+                // TODO: pruefen ob mein crosssubj?
+                $DB->update_record(block_exacomp::DB_CROSSSUBJECTS, $update_crosssubj);
+            }
+        }
+        
+        if (!empty($data->examples)) {
+            $examples = block_exacomp\param::clean_array($data->examples, array((object)array(
+                'userid' => PARAM_INT,
+                'exampleid' => PARAM_INT,
+                'value' => PARAM_INT
+            )));
+            foreach($examples as $example){
+                block_exacomp_set_user_example($example->userid, $example->exampleid, $courseid, ($isTeacher) ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $example->value);
+            }
         }
         
         die('ok');

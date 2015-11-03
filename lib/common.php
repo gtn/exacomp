@@ -91,7 +91,9 @@ class param {
         if (count($definition) != 1) {
             print_error('no array definition');
         }
-        if (!is_array($values)) {
+        if (is_object($values)) {
+            $values = (array)$values;
+        } elseif (!is_array($values)) {
             return array();
         }
 

@@ -38,7 +38,7 @@ window.block_exacomp = {
 		return studentid;
 	},
 	
-	call_ajax: function(data, done, error) {
+	call_ajax: function(data) {
 		data.courseid = block_exacomp.get_param('courseid');
 		data.sesskey = M.cfg.sesskey;
 		
@@ -49,7 +49,6 @@ window.block_exacomp = {
 		})
 		.done(function(ret) {
 			console.log(data.action, 'ret', ret);
-			if (done) done(ret);
 		}).error(function(ret) {
 			var errorMsg = '';
 			if (ret.responseText[0] == '<') {
@@ -57,8 +56,6 @@ window.block_exacomp = {
 				errorMsg = $(ret.responseText).find('.errormessage').text();
 			}
 			console.log("Error in action '" + data.action +"'", errorMsg, 'ret', ret);
-			
-			if (error) error(ret);
 		});
 		
 		return ajax;
