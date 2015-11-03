@@ -31,7 +31,7 @@ class block_exacomp_example_upload_form extends moodleform {
 	function definition() {
 		global $CFG, $USER, $DB, $version, $PAGE;
 
-		$output = $PAGE->get_renderer('block_exacomp');
+		$output = block_exacomp_get_renderer();
 		
 		$mform = & $this->_form;
 

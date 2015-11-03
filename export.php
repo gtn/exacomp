@@ -42,7 +42,7 @@ require_capability('block/exacomp:admin', context_system::instance());
 
 $action = required_param('action', PARAM_ALPHANUMEXT);
 
-$output = $PAGE->get_renderer('block_exacomp');
+$output = block_exacomp_get_renderer();
 
 if ($action == 'export_all') {
     block_exacomp_data_exporter::do_export();

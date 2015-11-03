@@ -83,7 +83,7 @@ if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 		(isset($_POST['profile_settings_periods']))?$_POST['profile_settings_periods']:array());
 	
 }
-$output = $PAGE->get_renderer('block_exacomp');
+$output = block_exacomp_get_renderer();
 // build tab navigation & print header
 echo $output->header($context, $courseid, 'tab_competence_profile');
 

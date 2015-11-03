@@ -38,7 +38,7 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 require_login($course);
 
 $context = context_course::instance($courseid);
-$output = $PAGE->get_renderer('block_exacomp');
+$output = block_exacomp_get_renderer();
 
 $id = optional_param('id', 0, PARAM_INT);
 $item = $id ? block_exacomp_subject::get($id) : null;
@@ -73,7 +73,7 @@ class block_exacomp_local_item_form extends moodleform {
     function definition() {
         global $CFG, $USER, $DB, $version, $PAGE, $item;
 
-        $output = $PAGE->get_renderer('block_exacomp');
+        $output = block_exacomp_get_renderer();
 
         $mform = & $this->_form;
 

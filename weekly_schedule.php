@@ -81,7 +81,7 @@ if ($student && optional_param('print', false, PARAM_BOOL)) {
     exit;
 }
 // build tab navigation & print header
-$output = $PAGE->get_renderer('block_exacomp');
+$output = block_exacomp_get_renderer();
 echo $output->header($context, $courseid, $page_identifier);
 
 $selectedCourse = optional_param('pool_course', $courseid, PARAM_INT);

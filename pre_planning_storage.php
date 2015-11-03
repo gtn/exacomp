@@ -49,7 +49,7 @@ $PAGE->set_pagelayout('popup');
 block_exacomp_build_breadcrum_navigation($courseid);
 block_exacomp_init_js_weekly_schedule();
 
-$output = $PAGE->get_renderer('block_exacomp');
+$output = block_exacomp_get_renderer();
 echo $output->header($context, $courseid, '', false);
 
 $students = block_exacomp_get_students_by_course($courseid);

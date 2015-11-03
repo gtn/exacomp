@@ -57,7 +57,7 @@ $PAGE->requires->js('/blocks/exacomp/javascript/d3.min.js', true);
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
 
-$output = $PAGE->get_renderer('block_exacomp');
+$output = block_exacomp_get_renderer();
 // build tab navigation & print header
 echo $output->header($context, $courseid, (!$isTeacher)?'tab_competence_profile':$page_identifier);
 

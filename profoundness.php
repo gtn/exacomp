@@ -52,7 +52,7 @@ $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
 
-$output = $PAGE->get_renderer('block_exacomp');
+$output = block_exacomp_get_renderer();
 
 // build tab navigation & print header
 echo $output->header($context,$courseid, $page_identifier);

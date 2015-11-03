@@ -73,7 +73,7 @@ if (block_exacomp_is_teacher($context)) {
 /*ADDITIONAL FOR LEARNINGAGENDA
  * print header only if learningagenda is not viewed in print version
  */
-$output = $PAGE->get_renderer('block_exacomp');
+$output = block_exacomp_get_renderer();
 if($print == 0){
 	// build tab navigation & print header
 	echo $OUTPUT->header();

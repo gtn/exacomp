@@ -60,6 +60,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
             parent::footer();
     }
     
+    public function requires() {
+        global $PAGE;
+        
+        // init default js / css
+        block_exacomp_init_js_css();
+        
+        return $PAGE->requires;
+    }
+    
     public function form_week_learningagenda($selectstudent,$action,$studentid, $view, $date = ''){
         global $COURSE, $CFG;
 

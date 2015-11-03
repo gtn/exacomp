@@ -51,7 +51,7 @@ $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 block_exacomp_build_breadcrum_navigation($courseid);
 
 // build tab navigation & print header
-$output = $PAGE->get_renderer('block_exacomp');
+$output = block_exacomp_get_renderer();
 echo $output->header($context,$courseid, $page_identifier);
 
 /* CONTENT REGION */

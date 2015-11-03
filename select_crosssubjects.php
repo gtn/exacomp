@@ -56,7 +56,7 @@ block_exacomp_build_breadcrum_navigation($courseid);
 $PAGE->requires->js("/blocks/exacomp/javascript/CollapsibleLists.compressed.js");
 $PAGE->requires->css("/blocks/exacomp/css/CollapsibleLists.css");
 
-$output = $PAGE->get_renderer('block_exacomp');
+$output = block_exacomp_get_renderer();
 echo $output->header($context, $courseid, '', false);
 
 $subjects = block_exacomp_get_cross_subjects_sorted_by_subjects();

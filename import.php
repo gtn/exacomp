@@ -107,7 +107,7 @@ if(($isAdmin || block_exacomp_check_customupload()) && $action == 'delete') {
 }
 
 // build tab navigation & print header
-$output = $PAGE->get_renderer('block_exacomp');
+$output = block_exacomp_get_renderer();
 echo $output->header($context, $courseid, 'tab_admin_settings');
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_admin_settings($courseid), $page_identifier);
 
@@ -133,7 +133,7 @@ if($isAdmin || block_exacomp_check_customupload()) {
                         
                         echo $OUTPUT->box($html);
                     } else {
-                        echo $PAGE->get_renderer('block_exacomp')->box_error($importException);
+                        echo block_exacomp_get_renderer()->box_error($importException);
                         $mform->display();
                     }
                 } else {
@@ -153,7 +153,7 @@ if($isAdmin || block_exacomp_check_customupload()) {
                     .html_writer::link(new moodle_url('edit_config.php', array('courseid'=>$courseid, 'fromimport'=>1)), $string));
             }else{
                 echo $OUTPUT->box(get_string("importfail", "block_exacomp"));
-                echo $PAGE->get_renderer('block_exacomp')->box_error($importException);
+                echo block_exacomp_get_renderer()->box_error($importException);
             }
         }
     } else {

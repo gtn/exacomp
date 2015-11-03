@@ -66,7 +66,7 @@ if($action == 'serve') {
     print_error('this function is not available anymore');
 }
 // build tab navigation & print header
-$output = $PAGE->get_renderer('block_exacomp');
+$output = block_exacomp_get_renderer();
 echo $output->header($context, $courseid, '', false);
 /* CONTENT REGION */
 

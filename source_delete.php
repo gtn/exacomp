@@ -43,7 +43,7 @@ require_capability('block/exacomp:admin', context_system::instance());
 $action = required_param('action', PARAM_ALPHANUMEXT);
 $source = required_param('source', PARAM_INT);
 
-$output = $PAGE->get_renderer('block_exacomp');
+$output = block_exacomp_get_renderer();
 
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_admin_settings';

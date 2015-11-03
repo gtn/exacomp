@@ -233,8 +233,12 @@
 		case 'btn_submit':
 			var reload = false;
 			
-			function saved_alert() {
-				alert('Änderungen wurden gespeichert!');
+			function all_done() {
+				if (reload) {
+					location.reload();
+				} else {
+					alert('Änderungen wurden gespeichert!');
+				}
 			}
 			
 			if (!$.isEmptyObject(examples)) {
@@ -301,12 +305,8 @@
 			if (!$.isEmptyObject(multiQueryData)) {
 				multiQueryData.action = 'multi';
 				block_exacomp.call_ajax(multiQueryData).done(function(msg) {
-					if (reload) {
-						location.reload();
-					} else {
-						saved_alert();
-					}
-
+					all_done();
+					
 					//im crosssubject neue Teilkompetenz erstellt -> gleich thema zuordnen
 					// TODO: was macht das?
 					// brauchen wir nicht, weil wir die seite eh nue laden?
@@ -332,6 +332,8 @@
 					}
 					*/
 				});
+			} else {
+				all_done();
 			}
 			
 			break;

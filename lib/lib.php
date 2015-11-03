@@ -54,6 +54,15 @@ define("BLOCK_EXACOMP_REPORT2",2);
 define("BLOCK_EXACOMP_REPORT3",3);
 
 /**
+ * wrote own function, so eclipse knows which type the output renderer is
+ * @return block_exacomp_renderer
+ */
+function block_exacomp_get_renderer() {
+    global $PAGE;
+    return $PAGE->get_renderer('block_exacomp');
+}
+
+/**
  *
  * Includes all neccessary JavaScript files
  */
@@ -5499,7 +5508,7 @@ function block_exacomp_get_examples_for_start_end_all_courses($studentid, $start
 }
 function block_exacomp_get_json_examples($examples, $mind_eval = true){
     global $OUTPUT, $DB, $CFG, $USER, $PAGE;
-    $output = $PAGE->get_renderer('block_exacomp');
+    $output = block_exacomp_get_renderer();
     
     $array = array();
     foreach($examples as $example){
