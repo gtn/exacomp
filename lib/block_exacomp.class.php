@@ -68,6 +68,11 @@ class block_exacomp extends block_list {
         $this->title = get_string('pluginname', 'block_exacomp');
     }
 
+    function applicable_formats() {
+        // block can only be installed in courses
+        return array('all' => true, 'mod' => false, 'tag' => false, 'my' => false);
+    }
+
     function get_content() {
         global $CFG, $USER, $COURSE, $DB, $OUTPUT, $version, $skillmanagement, $usebadges;
 
