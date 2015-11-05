@@ -669,4 +669,5 @@ namespace block_exacomp {
     class db extends common\db {}
     class param extends common\param {}
     class url extends common\url {}
+    class SimpleXMLElement extends common\SimpleXMLElement {}
 }

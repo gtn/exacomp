@@ -30,6 +30,58 @@ class exception extends \moodle_exception {
     }
 }
 
+class SimpleXMLElement extends \SimpleXMLElement {
+    /**
+     * Adds a child with $value inside CDATA
+     * @param unknown $name
+     * @param unknown $value
+     */
+    public function addChildWithCDATA($name, $value = NULL) {
+        $new_child = $this->addChild($name);
+
+        if ($new_child !== NULL) {
+            $node = dom_import_simplexml($new_child);
+            $no   = $node->ownerDocument;
+            $node->appendChild($no->createCDATASection($value));
+        }
+
+        return $new_child;
+    }
+
+    public static function create($rootElement) {
+        return new self('<?xml version="1.0" encoding="UTF-8"?><'.$rootElement.' />');
+    }
+
+    public function addChildWithCDATAIfValue($name, $value = NULL) {
+        if ($value) {
+            return $this->addChildWithCDATA($name, $value);
+        } else {
+            return $this->addChild($name, $value);
+        }
+    }
+
+    public function addChild($name, $value = null, $namespace = null) {
+        if ($name instanceof SimpleXMLElement) {
+            $newNode = $name;
+            $node = dom_import_simplexml($this);
+            $newNode = $node->ownerDocument->importNode(dom_import_simplexml($newNode), true);
+            $node->appendChild($newNode);
+
+            // return last children, this is the added child!
+            $children = $this->children();
+            return $children[count($children)-1];
+        } else {
+            return parent::addChild($name, $value, $namespace);
+        }
+    }
+
+    public function asPrettyXML() {
+        $dom = dom_import_simplexml($this)->ownerDocument;
+        $dom->formatOutput = true;
+        return $dom->saveXML();
+    }
+}
+
 class db {
     public static function update_record($table, $where, $data = array()) {
         global $DB;

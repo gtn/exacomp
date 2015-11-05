@@ -4,59 +4,6 @@ use tool_templatelibrary\api;
 
 require_once __DIR__.'/exabis_special_id_generator.php';
 
-class block_exacomp_SimpleXMLElement extends SimpleXMLElement {
-    /**
-     * Adds a child with $value inside CDATA
-     * @param unknown $name
-     * @param unknown $value
-     */
-    public function addChildWithCDATA($name, $value = NULL) {
-        $new_child = $this->addChild($name);
-
-        if ($new_child !== NULL) {
-            $node = dom_import_simplexml($new_child);
-            $no   = $node->ownerDocument;
-            $node->appendChild($no->createCDATASection($value));
-        }
-
-        return $new_child;
-    }
-
-    public static function create($rootElement) {
-        return new self('<?xml version="1.0" encoding="UTF-8"?><'.$rootElement.' />');
-    }
-    
-    public function addChildWithCDATAIfValue($name, $value = NULL) {
-        if ($value) {
-            return $this->addChildWithCDATA($name, $value);
-        } else {
-            return $this->addChild($name, $value);
-        }
-    }
-    
-    public function addChild($name, $value = null, $namespace = null) {
-        if ($name instanceof SimpleXMLElement) {
-            $newNode = $name;
-            $node = dom_import_simplexml($this);
-            $newNode = $node->ownerDocument->importNode(dom_import_simplexml($newNode), true);
-            $node->appendChild($newNode);
-
-            // return last children, this is the added child!
-            $children = $this->children();
-            return $children[count($children)-1];
-        } else {
-            return parent::addChild($name, $value, $namespace);
-        }
-    }
-    
-    public function asPrettyXML() {
-        $dom = dom_import_simplexml($this)->ownerDocument;
-        $dom->formatOutput = true;
-        return $dom->saveXML();
-    }
-    
-}
-
 class block_exacomp_ZipArchive extends ZipArchive {
     /**
      * @return block_exacomp_ZipArchive
@@ -491,7 +438,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
             // '<a href="'.$CFG->wwwroot.'/admin/settings.php?section=blocksettingexacomp">settings</a>'
         }
         
-        $xml = new block_exacomp_SimpleXMLElement(
+        $xml = new block_exacomp\SimpleXMLElement(
             '<?xml version="1.0" encoding="UTF-8"?>'.
             '<exacomp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://github.com/gtn/edustandards/blob/master/new%20schema/exacomp.xsd" />'
         );
@@ -573,7 +520,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
         }
     }
     
-    private static function export_file(block_exacomp_SimpleXMLElement $xmlItem, stored_file $file) {
+    private static function export_file(block_exacomp\SimpleXMLElement $xmlItem, stored_file $file) {
         // add file to zip
         
         // testing for big archive with lots of files
@@ -833,7 +780,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
         $xmlParent->addChild('edulevels');
 
         foreach ($dbEdulevels as $dbEdulevel) {
-            $xmlEdulevel = block_exacomp_SimpleXMLElement::create('edulevel');
+            $xmlEdulevel = block_exacomp\SimpleXMLElement::create('edulevel');
             self::assign_source($xmlEdulevel, $dbEdulevel);
             
             $xmlEdulevel->addChildWithCDATAIfValue('title', $dbEdulevel->title);
@@ -890,7 +837,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
         $dbSchooltypes = block_exacomp_get_schooltypes($dbEdulevel->id);
 
         foreach ($dbSchooltypes as $dbSchooltype) {
-            $xmlSchooltype = block_exacomp_SimpleXMLElement::create('schooltype');
+            $xmlSchooltype = block_exacomp\SimpleXMLElement::create('schooltype');
             self::assign_source($xmlSchooltype, $dbSchooltype);
             
             $xmlSchooltype->addChildWithCDATAIfValue('title', $dbSchooltype->title);
@@ -912,7 +859,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
         $xmlSchooltype->addChild('subjects');
         $dbSubjects = $DB->get_records(block_exacomp::DB_SUBJECTS, array('stid' => $dbSchooltype->id));
         foreach($dbSubjects as $dbSubject){
-            $xmlSubject = block_exacomp_SimpleXMLElement::create('subject');
+            $xmlSubject = block_exacomp\SimpleXMLElement::create('subject');
             self::assign_source($xmlSubject, $dbSubject);
             
             $xmlSubject->addChildWithCDATAIfValue('title', $dbSubject->title);
@@ -984,7 +931,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
         }
     }
 
-    private static function export_sources(block_exacomp_SimpleXMLElement $xmlParent) {
+    private static function export_sources(block_exacomp\SimpleXMLElement $xmlParent) {
         global $DB;
         
         // rather then exporting all sources in the database
@@ -1147,7 +1094,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
              * LIBXML_NOCDATA is important at this point, because it converts CDATA Elements to Strings for
              * immediate useage
              */
-            $xml = simplexml_load_string($xml,'block_exacomp_SimpleXMLElement', LIBXML_NOCDATA);
+            $xml = simplexml_load_string($xml,'block_exacomp\SimpleXMLElement', LIBXML_NOCDATA);
 
             if (!$xml) {
                 throw new block_exacomp\exception('wrong zip file content');
@@ -1159,7 +1106,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
              * LIBXML_NOCDATA is important at this point, because it converts CDATA Elements to Strings for
              * immediate useage
              */
-            $xml = @simplexml_load_file($file,'block_exacomp_SimpleXMLElement', LIBXML_NOCDATA);
+            $xml = @simplexml_load_file($file,'block_exacomp\SimpleXMLElement', LIBXML_NOCDATA);
             if (!$xml) {
                 throw new block_exacomp\exception('wrong file');
             }
@@ -1338,7 +1285,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         ));
     }
     
-    private static function insert_file($filearea, block_exacomp_SimpleXMLElement $xmlItem, $item) {
+    private static function insert_file($filearea, block_exacomp\SimpleXMLElement $xmlItem, $item) {
         if (!self::$zip) {
             return;
         }
