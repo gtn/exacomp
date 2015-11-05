@@ -282,6 +282,7 @@ $string['allstudents'] = 'All students';
 $string['nostudents'] = 'No students';
 $string['statistic'] = 'Overview';
 $string['niveau'] = "Niveau";
+$string['comptetence_grid_niveau'] = "Niveau";
 $string['groupsize'] = 'Size of group: ';
 
 $string['assigndone'] = 'task done: ';

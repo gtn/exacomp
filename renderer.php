@@ -1305,7 +1305,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             }
             
             $nivCell = new html_table_cell();
-            $nivCell->text = get_string('niveau', 'block_exacomp');
+            $nivCell->text = block_exacomp::get_string('comptetence_grid_niveau');
 
             if($first)
                 $subjectRow->cells[] = $nivCell;
