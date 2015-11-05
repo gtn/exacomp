@@ -42,7 +42,7 @@ $output = block_exacomp_get_renderer();
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/topic.php', array('courseid' => $courseid));
-$PAGE->set_heading(block_exacomp::t('de:Neuen Lernfortschritt anlegen'));
+$PAGE->set_heading(block_exacomp::t('de:Lernfortschritt hinzufügen'));
 $PAGE->set_pagelayout('popup');
 
 // build tab navigation & print header
@@ -65,18 +65,10 @@ class block_exacomp_local_item_form extends moodleform {
         $mform = & $this->_form;
         
         $radioarray=array();
-        $radioarray[] =& $mform->createElement('radio', 'descriptor_type', '', block_exacomp::t('de:vorhandene Kompetenz'), 'existing');
-        $radioarray[] =& $mform->createElement('radio', 'descriptor_type', '', block_exacomp::t('de:neue Kompetenz'), 'new');
-        $mform->addGroup($radioarray, 'radioar', '', array(' '), false);
-
-        $mform->addElement('text', 'descriptor_title', block_exacomp::t('de:Name der Kompetenz'), 'maxlength="255" size="60"');
-        $mform->setType('descriptor_title', PARAM_TEXT);
-        // $mform->addRule('descriptor_title', block_exacomp::get_string("titlenotemtpy"), 'required', null, 'client');
-        
-        $mform->addElement('select', 'descriptor_id', block_exacomp::get_string('descriptor'), $this->_customdata['descriptors']);
-        
-        $radioarray=array();
-        $radioarray[] =& $mform->createElement('radio', 'niveau_type', '', block_exacomp::t('de:vorhandener Lernfortschritt'), 'existing');
+        if ($this->_customdata['niveaus']) {
+            // disable if no niveaus
+            $radioarray[] =& $mform->createElement('radio', 'niveau_type', '', block_exacomp::t('de:vorhandener Lernfortschritt'), 'existing');
+        }
         $radioarray[] =& $mform->createElement('radio', 'niveau_type', '', block_exacomp::t('de:neuer Lernfortschritt'), 'new');
         $mform->addGroup($radioarray, 'radioar', '', array(' '), false);
         
@@ -86,20 +78,38 @@ class block_exacomp_local_item_form extends moodleform {
         
         $mform->addElement('select', 'niveau_id', block_exacomp::get_string('niveau'), $this->_customdata['niveaus']);
         
+        $mform->addElement('static', 'niveau_descriptor_description', block_exacomp::t('de:Bitte weisen sie diesem Lernfotschritt eine Kompetenz zu:'));
+        
+        $radioarray=array();
+        if ($this->_customdata['descriptors']) {
+            // disable if no descriptors
+            $radioarray[] =& $mform->createElement('radio', 'descriptor_type', '', block_exacomp::t('de:vorhandene Kompetenz'), 'existing');
+        }
+        $radioarray[] =& $mform->createElement('radio', 'descriptor_type', '', block_exacomp::t('de:neue Kompetenz'), 'new');
+        $mform->addGroup($radioarray, 'radioar', '', array(' '), false);
+
+        $mform->addElement('text', 'descriptor_title', block_exacomp::t('de:Name der Kompetenz'), 'maxlength="255" size="60"');
+        $mform->setType('descriptor_title', PARAM_TEXT);
+        // $mform->addRule('descriptor_title', block_exacomp::get_string("titlenotemtpy"), 'required', null, 'client');
+        
+        $mform->addElement('select', 'descriptor_id', block_exacomp::get_string('descriptor'), $this->_customdata['descriptors']);
+        
         $this->add_action_buttons(false);
     }
 }
 
 $topic = block_exacomp_topic::get(required_param('topicid', PARAM_INT));
 
+$descriptors = array_map(function($d){ return $d->title; }, $topic->descriptors);
+$niveaus = $DB->get_records_menu(block_exacomp::DB_NIVEAUS, null, 'sorting', 'id, title');
 $form = new block_exacomp_local_item_form($_SERVER['REQUEST_URI'], array(
-    'descriptors' => array_map(function($d){ return $d->title; }, $topic->descriptors),
-    'niveaus' => $DB->get_records_menu(block_exacomp::DB_NIVEAUS, null, 'sorting', 'id, title'),
+    'descriptors' => $descriptors,
+    'niveaus' => $niveaus,
 ));
 
 $data = new stdClass;
-$data->descriptor_type = 'existing';
-$data->niveau_type = 'existing';
+$data->descriptor_type = $descriptors ? 'existing' : 'new';
+$data->niveau_type = $niveaus ? 'existing' : 'new';
 $form->set_data($data);
 
 if($formdata = $form->get_data()) {
