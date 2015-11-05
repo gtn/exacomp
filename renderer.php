@@ -2868,8 +2868,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                 $row->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rowgroup_class . ' highlight';
 
                 $cell = new html_table_cell();
-                $cell->text = html_writer::div(html_writer::tag('b', $subject->title));
-                $cell->attributes['class'] = 'rowgroup-arrow';
+                $cell->text = html_writer::div(html_writer::span($subject->title, 'rowgroup-arrow-highlight').
+                        // wenn different source than parent
+                        ($subject->source != $schooltype->source ? ' ('.$this->print_source_info($subject->source).')' : ''));
+                $cell->attributes['class'] = 'rowgroup-arrow rowgroup-arrow-styled';
                 
                 $cell->colspan = 2;
                 $row->cells[] = $cell;

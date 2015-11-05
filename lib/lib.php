@@ -213,7 +213,7 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
  */
 function block_exacomp_get_all_subjects() {
     global $DB;
-    return $DB->get_records(block_exacomp::DB_SUBJECTS,array(),'','id, title, \'subject\' as tabletype');
+    return $DB->get_records(block_exacomp::DB_SUBJECTS,array(),'','id, title, \'subject\' as tabletype, source, sourceid');
 }
 /**
  * This method is only used in the LIS version

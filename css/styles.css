@@ -550,12 +550,19 @@ td.contentcell {
     width: 50px
 }
 
-#block_exacomp .rowgroup-header .rowgroup-arrow div {
+#block_exacomp .rowgroup-header .rowgroup-arrow {
     cursor: pointer;
     font-weight: bold;
     text-decoration: underline;
 }
-
+#block_exacomp .rowgroup-header .rowgroup-arrow-styled {
+    font-weight: inherit;
+    text-decoration: inherit;
+}
+#block_exacomp .rowgroup-header .rowgroup-arrow-styled .rowgroup-arrow-highlight {
+    font-weight: bold;
+    text-decoration: underline;
+}
 #block_exacomp .rowgroup-header .rowgroup-arrow div {
     padding-left: 12px;
     background: url(../pix/pfeil_show.png) 0 6px no-repeat;

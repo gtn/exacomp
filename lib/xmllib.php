@@ -503,7 +503,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
                 $xmlItem['source'] = $source;
                 $xmlItem['id'] = $dbItem->sourceid;
             } else {
-                print_error('database error, unknown source '.$dbItem->source.' #f9ssaa8');
+                print_error('database error, unknown source '.$dbItem->source.' for type '.$xmlItem->getName().' #f9ssaa8');
             }
         } else {
             // local source -> set new id
@@ -677,6 +677,12 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 
         foreach ($dbItems as $dbItem) {
             $xmlItem = $xmlItems->addChild('example');
+            
+            // special source handling for examples, if created as teacher, export as my source
+            if ($dbItem->source == block_exacomp::EXAMPLE_SOURCE_TEACHER) {
+                $dbItem->source = null;
+                $dbItem->sourceid = null;
+            }
             self::assign_source($xmlItem, $dbItem);
             $xmlItem->addChildWithCDATAIfValue('title', $dbItem->title);
             $xmlItem->addChildWithCDATAIfValue('titleshort', $dbItem->titleshort);
@@ -1403,7 +1409,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         
         // if local example, move to source teacher
         if (!$item->source) {
-            block_exacomp\db::insert_or_update_record(block_exacomp::DB_EXAMPLES, array("id"=>$item->id), array('source' => block_exacomp::EXAMPLE_SOURCE_TEACHER));
+            block_exacomp\db::insert_or_update_record(block_exacomp::DB_EXAMPLES, array("id"=>$item->id), array('source' => block_exacomp::EXAMPLE_SOURCE_TEACHER, 'sourceid'=>null));
         }
         
         // has to be called after inserting the example, because the id is needed!
