@@ -431,7 +431,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 )
             );
 
-            $right_content .= $this->print_edit_mode_button("&studentid=".$selectedStudent."&subjectid=".$selectedSubject."&topicid=".$selectedTopic);
+            $right_content .= $this->print_edit_mode_button();
         } else {
             foreach(block_exacomp_get_teachers_by_course($COURSE->id) as $teacher) {
                 $right_content .= block_exacomp_get_message_icon($teacher->id);
@@ -451,13 +451,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
         return isset($this->print) && $this->print;
     }
     
-    public function print_edit_mode_button($url) {
-        global $PAGE;
+    public function print_edit_mode_button() {
+        global $NG_PAGE;
         
+        $url = new block_exacomp\url($NG_PAGE->url);
+
         $edit = $this->is_edit_mode();
+        $url->param('editmode', !$edit);
         
         return html_writer::empty_tag('input', array('type'=>'button', 'id'=>'edit_mode_submit', 'name'=> 'edit_mode_submit', 'value'=>block_exacomp::t(($edit) ? 'turneditingoff' : 'turneditingon'),
-                 "onclick" => "document.location.href='".$PAGE->url."&editmode=" . (!$edit).$url."'"));
+                 "onclick" => "document.location.href='".$url->out(false)."'"));
     }
     
     public function print_topics_menu($types,$selectedSubject) {
@@ -4871,7 +4874,7 @@ var dataset = dataset.map(function (group) {
                 );
     
                 
-                $right_content .= $this->print_edit_mode_button("&studentid=".$selectedStudent."&crosssubjid=".$selectedCrosssubject);
+                $right_content .= $this->print_edit_mode_button();
                 
             }
             $content .= html_writer::div($right_content, 'edit_buttons_float_right');

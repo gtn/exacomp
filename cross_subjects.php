@@ -43,7 +43,7 @@ require_login($course);
 $isTeacher = block_exacomp_is_teacher($context);
 
 $studentid = block_exacomp_get_studentid($isTeacher) ;
-$edit = optional_param('editmode', 0, PARAM_BOOL);
+$editmode = optional_param('editmode', 0, PARAM_BOOL);
 
 
 
@@ -78,6 +78,14 @@ if($course_settings->uses_activities && !$activities && !$course_settings->show_
 else{
     list($crosssubjects, $selectedCrosssubject) = block_exacomp_init_course_crosssubjects($courseid, optional_param('crosssubjid', 0, PARAM_INT), ($isTeacher)?0:$studentid);
     
+    $NG_PAGE = (object)[ 'url' => new block_exacomp\url('/blocks/exacomp/cross_subjects.php', array(
+                    'courseid' => $courseid,
+                    'showevaluation' => $showevaluation,
+                    'studentid' => $studentid,
+                    'editmode' => $editmode,
+                    'crosssubjid' => $selectedCrosssubject->id,
+    )) ];
+    
     //no crosssubjects available -> end 
     if(empty($crosssubjects)){
         echo get_string('no_crosssubjs', 'block_exacomp');
@@ -107,22 +115,22 @@ else{
         $students = block_exacomp_get_students_for_crosssubject($courseid, $selectedCrosssubject);
         if(!$students) {
         	echo html_writer::div(get_string('share_crosssub_for_further_use','block_exacomp'),"alert alert-warning");
-            $edit = true;
+            $editmode = true;
             $selectedStudentid = 0;
             $studentid = 0;
-        } else if($edit) {
+        } else if($editmode) {
             $selectedStudentid = $studentid;
             $studentid = 0;
         }
     } else {
         $students = array($USER);
-        $edit = false;
+        $editmode = false;
         $selectedStudentid = $USER->id;
         $studentid = $USER->id;
     }
     
     
-    $output->editmode = $edit;
+    $output->editmode = $editmode;
     
     foreach($students as $student)
         $student = block_exacomp_get_user_information_by_course($student, $courseid);
@@ -132,7 +140,7 @@ else{
     //dropdowns for crosssubjects
     //do not display if user is currently adding a new crosssubject
     if(!$new){
-        echo $output->print_dropdowns_cross_subjects($crosssubjects, $selectedCrosssubject->id, $students, (!$edit) ? $studentid : $selectedStudentid /* TODO: braucht man nicht mehr */, $isTeacher);
+        echo $output->print_dropdowns_cross_subjects($crosssubjects, $selectedCrosssubject->id, $students, (!$editmode) ? $studentid : $selectedStudentid /* TODO: braucht man nicht mehr */, $isTeacher);
     }else {
         $right_content = html_writer::empty_tag('input', array('type'=>'button', 'id'=>'edit_crossubs', 'name'=> 'edit_crossubs', 'value' => get_string('manage_crosssubs','block_exacomp'),
                 "onclick" => "document.location.href='".(new moodle_url('/blocks/exacomp/cross_subjects_overview.php',array('courseid' => $COURSE->id)))->__toString()."'"));
