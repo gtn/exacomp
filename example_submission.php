@@ -132,13 +132,9 @@ if($formdata = $form->get_data()) {
 	
 	if($logging)
 		$event = \block_exacomp\event\example_submitted::create(array('objectid' => $exampleid, 'contextid' => context_course::instance($courseid)->id))->trigger();
-	
-?>
-<script type="text/javascript">
-		window.opener.block_exacomp.newExampleAdded();
-		window.close();
-	</script>
-<?php 
+
+    echo $output->popup_close_and_reload();
+    exit;
 }
 
 $form->display();

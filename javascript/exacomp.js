@@ -149,7 +149,11 @@ window.block_exacomp = {
 		var parent = window.opener || window.parent;
 
 		this.popup_close();
-		parent.location.reload(true);
+		if (parent.block_exacomp && parent.block_exacomp.reload_action) {
+			parent.block_exacomp.reload_action();
+		} else {
+			parent.location.reload(true);
+		}
 	}
 };
 

@@ -122,11 +122,9 @@ if($formdata = $form->get_data()) {
         $item->update($new);
     }
     
-    $item->set_categories($formdata->categories);
+    $item->set_categories(!empty($formdata->categories) ?: array());
     
-    echo $output->header();
     echo $output->popup_close_and_reload();
-    echo $output->footer();
     
 	exit;
 }

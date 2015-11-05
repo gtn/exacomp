@@ -5310,14 +5310,27 @@ var dataset = dataset.map(function (group) {
         return $content;
     }
     
+    private function popup_result_header() {
+        global $PAGE;
+        
+        if (!$PAGE->headerprinted) {
+            // print header if not printed yet
+            $PAGE->set_pagelayout('popup');
+            return $this->header();
+        }
+        
+        return '';
+    }
+    
     public function popup_close() {
+        
         ob_start();
         ?>
         <script type="text/javascript">
                 block_exacomp.popup_close();
         </script>
         <?php
-        return ob_get_clean();
+        return $this->popup_result_header().ob_get_clean();
     }
     
     public function popup_close_and_reload() {
@@ -5327,7 +5340,7 @@ var dataset = dataset.map(function (group) {
                 block_exacomp.popup_close_and_reload();
         </script>
         <?php
-        return ob_get_clean();
+        return $this->popup_result_header().ob_get_clean();
     }
     
     public function popup_close_and_forward($url) {
@@ -5337,7 +5350,7 @@ var dataset = dataset.map(function (group) {
                 block_exacomp.popup_close_and_forward(<?php echo json_encode($url); ?>);
         </script>
         <?php
-        return ob_get_clean();
+        return $this->popup_result_header().ob_get_clean();
     }
     
     public function popup_close_and_notify($func) {
@@ -5347,8 +5360,9 @@ var dataset = dataset.map(function (group) {
                 block_exacomp.popup_close_and_notify(<?php echo json_encode($func); ?>);
         </script>
         <?php
-        return ob_get_clean();
+        return $this->popup_result_header().ob_get_clean();
     }
+    
     public function print_cross_subjects_list($course_crosssubs, $courseid, $isTeacher){
         global $OUTPUT;
         $content = "<h4>" . get_string('existing_crosssub','block_exacomp') . "</h4>";

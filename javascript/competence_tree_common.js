@@ -1,6 +1,10 @@
 
 (function($){
 	var storageid = document.location.pathname;
+	
+	window.block_exacomp.reload_action = function() {
+		$('#assign-competencies :submit').click();
+	}
 
 	$( window ).load(function() {
 		var group = block_exacomp.get_param('group');
@@ -45,7 +49,12 @@
 		$('.colgroup-button[exa-groupid='+(group*1)+']').css('font-weight', 'bold');
 	}
 	
-	$(document).on('click', '.rowgroup-header .rowgroup-arrow', function(){
+	$(document).on('click', '.rowgroup-header .rowgroup-arrow', function(event){
+		if (event.isDefaultPrevented()) {
+			// the click handler on an edit button is called, so don't open/close menu
+			return;
+		}
+		
 		var tr = $(this).closest('tr');
 		//only show subs if descriptor is not hidden
 		if(!$(tr).is('.hidden_temp')){	
@@ -89,13 +98,6 @@
 		var $this = $(this);
 		$('input[name="'+$this.attr("name")+'"]').val($this.val());
 	});
-	
-	// called from the add example popup-window, after the example was added
-	window.block_exacomp.newExampleAdded = function() {
-		// reload form by submitting it
-		var $form = $('#assign-competencies');
-		$form.submit();
-	}
 	
 	$(function(){
 		var $form = $('#assign-competencies');

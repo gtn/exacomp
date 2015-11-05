@@ -173,12 +173,8 @@ if($formdata = $form->get_data()) {
     block_exacomp_add_example_to_schedule($USER->id, $newExample->id, $USER->id, $courseid);
     
     block_exacomp_settstamp();
-    ?>
-<script type="text/javascript">
-		window.opener.block_exacomp.newExampleAdded();
-		window.close();
-	</script>
-<?php
+    
+    echo $output->popup_close_and_reload();
 	exit;
 }
 

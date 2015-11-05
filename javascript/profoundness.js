@@ -160,13 +160,6 @@
 		$('input[name="'+$this.attr("name")+'"]').val($this.val());
 	});
 	
-	// called from the add example popup-window, after the example was added
-	window.block_exacomp.newExampleAdded = function() {
-		// reload form by submitting it
-		var $form = $('#assign-competencies');
-		$form.submit();
-	}
-	
 	$(function(){
 		var $form = $('#assign-competencies');
 
