@@ -259,7 +259,6 @@ $string['alltopics'] = 'Alle Teilbereiche';
 $string['choosesubject'] = "Fach ausw&auml;hlen: ";
 $string['choosetopic'] = "Teilkompetenzbereich/Leitidee ausw&auml;hlen";
 $string['choosestudent'] = "Kursteilnehmer ausw&auml;hlen: ";
-$string['selectall'] = 'Alle ausw&auml;hlen';
 $string['own_additions'] = 'Schulische Ergänzung: ';
 $string['delete_confirmation_descr'] = 'Soll diese Kompetenz wirklich für alle Kurse gelöscht werden?';
 $string['import_source'] = "Importiert von: ";

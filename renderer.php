@@ -2880,7 +2880,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                 $row->cells[] = $cell;
                 
                 $selectAllCell = new html_table_cell();
-                $selectAllCell->text = html_writer::tag("a", get_string('selectall','block_exacomp'),array("class" => "selectall"));
+                $selectAllCell->text = html_writer::tag("a", block_exacomp::get_string('selectallornone', 'form'),array("class" => "selectall"));
                 $row->cells[] = $selectAllCell;
 
                 $rows[] = $row;
@@ -2895,8 +2895,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         $table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
         $table_html .= html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))), '', array('id'=>'exabis_save_button'));
         $table_html .= html_writer::tag("input", "", array("name" => "open_row_groups", "type" => "hidden", "value" => (optional_param('open_row_groups', "", PARAM_TEXT))));
-
-        return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url . "&action=save", "id" => "course-selection"));
+        $table_html .= html_writer::tag("input", "", array("name" => "action", "type" => "hidden", "value" => 'save'));
+        
+        return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url, "id" => "course-selection"));
     }
     public function print_descriptor_selection_export(){
         global $PAGE;
@@ -3132,7 +3133,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             $topicRow->cells[] = $outputnameCell;
 
             $cell = new html_table_cell();
-            $cell->text = html_writer::checkbox('data['.$topic->id.']', $topic->id, ((isset($topics_activ[$topic->id]))?true:false), '', array('class'=>'topiccheckbox-'.$rowgroup));
+            $cell->text = html_writer::checkbox('topics['.$topic->id.']', $topic->id, !empty($topics_activ[$topic->id]), '', array('class'=>'topiccheckbox-'.$rowgroup));
             $topicRow->cells[] = $cell;
 
             $rows[] = $topicRow;

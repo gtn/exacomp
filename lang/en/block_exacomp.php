@@ -236,7 +236,6 @@ $string['alltopics'] = 'All topics';
 $string['choosesubject'] = "Choose subject: ";
 $string['choosetopic'] = "Choose topic";
 $string['choosestudent'] = "Choose student: ";
-$string['selectall'] = 'Select all';
 $string['own_additions'] = 'Curricular additions: ';
 $string['delete_confirmation_descr'] = 'Do you really want to delete this competence?';
 $string['import_source'] = "Imported from: ";

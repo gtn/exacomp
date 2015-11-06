@@ -23,7 +23,7 @@
 		var id = tr[0].className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
 
 		if (!$(tr).is('.open')) {
-			tr.toggleClass('open');
+			tr.addClass('open');
 
 			// opening: show all subs
 			$('.rowgroup-content-'+id).show();
@@ -34,7 +34,12 @@
 			});
 		}
 		
-		$('.topiccheckbox-'+id).prop('checked', true);
+		if ($('.topiccheckbox-'+id).length == $('.topiccheckbox-'+id+':checked').length) {
+			// if all checked, uncheck all
+			$('.topiccheckbox-'+id).prop('checked', false);
+		} else {
+			$('.topiccheckbox-'+id).prop('checked', true);
+		}
 	});
 	
 	$(function(){

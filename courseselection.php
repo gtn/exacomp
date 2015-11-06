@@ -53,15 +53,15 @@ block_exacomp_build_breadcrum_navigation($courseid);
 
 $headertext = "";
 
-	$img = new moodle_url('/blocks/exacomp/pix/two.png');
+$img = new moodle_url('/blocks/exacomp/pix/two.png');
 	 	
 if ($action == 'save') {
-    block_exacomp_set_coursetopics($courseid, (isset($_POST['data'])?$_POST['data']:array()));
-    $action="";
+    $topics = block_exacomp\param::optional_array('topics', array(PARAM_INT));
+    block_exacomp_set_coursetopics($courseid, $topics);
     
-    if(!isset($_POST['data']))
+    if(empty($topics)) {
     	$headertext = get_string('tick_some', 'block_exacomp');
-    else{
+    } else {
 	    $course_settings = block_exacomp_get_settings_by_course($courseid);
 	    if($course_settings->uses_activities){
 		    if (block_exacomp_is_activated($courseid))
@@ -99,5 +99,3 @@ echo $output->print_courseselection($schooltypes, $topics, $headertext);
 
 /* END CONTENT REGION */
 echo $output->footer();
-
-?>

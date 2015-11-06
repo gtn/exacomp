@@ -81,12 +81,12 @@ function block_exacomp_init_js_css(){
     $PAGE->requires->js('/blocks/exacomp/javascript/ajax.js', true);
 
     // Strings can be used in JavaScript: M.util.get_string(identifier, component)
-    $PAGE->requires->string_for_js('show', 'moodle');
-    $PAGE->requires->string_for_js('hide', 'moodle');
-    $PAGE->requires->string_for_js('override_notice', 'block_exacomp');
-    $PAGE->requires->string_for_js('unload_notice', 'block_exacomp');
-    $PAGE->requires->string_for_js('example_sorting_notice', 'block_exacomp');
-    $PAGE->requires->string_for_js('delete_unconnected_examples', 'block_exacomp');
+    $PAGE->requires->strings_for_js([
+        'show', 'hide' //, 'selectall', 'deselectall'
+    ], 'moodle');
+    $PAGE->requires->strings_for_js([
+        'override_notice', 'unload_notice', 'example_sorting_notice', 'delete_unconnected_examples'
+    ], 'block_exacomp');
     
     // page specific js/css
     $scriptName = preg_replace('!\.[^\.]+$!', '', basename($_SERVER['PHP_SELF']));
@@ -2400,64 +2400,48 @@ function block_exacomp_get_icon_data($courseid, $students) {
  * @param unknown_type $courseid
  * @param unknown_type $values
  */
-function block_exacomp_set_coursetopics($courseid, $values) {
+function block_exacomp_set_coursetopics($courseid, $topicids) {
     global $DB;
 
     $DB->delete_records(block_exacomp::DB_COURSETOPICS, array("courseid" => $courseid));
-
+    
     $descriptors = array();
     $examples = array();
-    if(isset($values)){
-        foreach ($values as $value) {
-            $topicid = intval($value);
-            
-            $DB->insert_record(block_exacomp::DB_COURSETOPICS, array("courseid" => $courseid, "topicid" => $topicid));
-            
-            //insert descriptors in block_exacompdescrvisibility
-            $descriptors_topic = block_exacomp_get_descriptors_by_topic($courseid, $topicid);
-            foreach($descriptors_topic as $descriptor){
-                if(!array_key_exists($descriptor->id, $descriptors))
-                    $descriptors[$descriptor->id] = $descriptor;
-            }
-        }
+    foreach ($topicids as $topicid) {
+        $DB->insert_record(block_exacomp::DB_COURSETOPICS, array("courseid" => $courseid, "topicid" => $topicid));
         
-        block_exacomp_update_descriptor_visibilities($courseid, $descriptors);
-   
-        $where = "";
-        foreach($descriptors as $descriptor){
-        	 $descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, $courseid, false);
-                foreach($descriptor->examples as $example){
-                    if(!array_key_exists($example->id, $examples)){
-                        $examples[$example->id] = $example;
-                    	$where .= $example->id.",";
-                    }
-                }
-                
-                $descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid);
-                foreach($descriptor->children as $child){
-                    $child = block_exacomp_get_examples_for_descriptor($child, array(SHOW_ALL_TAXONOMIES), true, $courseid, false);
-                    foreach($child->examples as $example){
-                        if(!array_key_exists($example->id, $examples)){
-                            $examples[$example->id] = $example;
-                            $where .= $example->id.",";
-                        }
-                    }
-                }
+        //insert descriptors in block_exacompdescrvisibility
+        $descriptors_topic = block_exacomp_get_descriptors_by_topic($courseid, $topicid);
+        foreach($descriptors_topic as $descriptor){
+            $descriptors[$descriptor->id] = $descriptor;
         }
-    
-        block_exacomp_update_example_visibilities($courseid, $examples);
-      
-        //delete unconnected examples
-        $where = substr($where, 0, strlen($where)-1);
-        
-        $sql = "SELECT * FROM {".block_exacomp::DB_SCHEDULE."} WHERE courseid = ? AND exampleid NOT IN(".$where.")";
-		$schedules = $DB->get_records_sql($sql, array($courseid));
-		
-	    foreach($schedules as $schedule){
-			$DB->delete_records(block_exacomp::DB_SCHEDULE, array('id'=>$schedule->id));
-		}
     }
+    
+    block_exacomp_update_descriptor_visibilities($courseid, $descriptors);
+
+    foreach($descriptors as $descriptor){
+    	 $descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, $courseid, false);
+            foreach($descriptor->examples as $example){
+                $examples[$example->id] = $example;
+            }
+            
+            $descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid);
+            foreach($descriptor->children as $child){
+                $child = block_exacomp_get_examples_for_descriptor($child, array(SHOW_ALL_TAXONOMIES), true, $courseid, false);
+                foreach($child->examples as $example){
+                    $examples[$example->id] = $example;
+                }
+            }
+    }
+
+    block_exacomp_update_example_visibilities($courseid, $examples);
+  
+    //delete unconnected examples
+    // TODO: maybe move this whole part to block_exacomp_data::normalize_database() or better a new normalize_course($courseid);
+    $where = $examples ? join(',', array_keys($examples)) : '-1';
+    $DB->execute("DELETE FROM {".block_exacomp::DB_SCHEDULE."} WHERE courseid = ? AND exampleid NOT IN($where)", array($courseid));
 }
+
 /**
  * 
  * given descriptor list is visible in cour
