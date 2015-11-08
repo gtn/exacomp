@@ -459,7 +459,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $edit = $this->is_edit_mode();
         $url->param('editmode', !$edit);
         
-        return html_writer::empty_tag('input', array('type'=>'button', 'id'=>'edit_mode_submit', 'name'=> 'edit_mode_submit', 'value'=>block_exacomp::t(($edit) ? 'turneditingoff' : 'turneditingon'),
+        return html_writer::empty_tag('input', array('type'=>'button', 'id'=>'edit_mode_submit', 'name'=> 'edit_mode_submit', 'value'=>block_exacomp::get_string(($edit) ? 'turneditingoff' : 'turneditingon'),
                  "onclick" => "document.location.href='".$url->out(false)."'"));
     }
     
