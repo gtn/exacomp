@@ -1134,9 +1134,9 @@ class block_exacomp_data_importer extends block_exacomp_data {
         // update source name
         if (self::$import_source_local_id) {
             block_exacomp\db::update_record(block_exacomp::DB_DATASOURCES, array(
-                'id' => self::$import_source_local_id
-            ), array(
                 'name' => (string)$xml['sourcename']
+            ), array(
+                'id' => self::$import_source_local_id
             ));
         }
         
@@ -1285,9 +1285,9 @@ class block_exacomp_data_importer extends block_exacomp_data {
         }
         
         block_exacomp\db::update_record(block_exacomp::DB_DATASOURCES, array(
-            'id' => $dbSource->id,
-        ), array(
             'name' => (string)$xmlItem->name
+        ), array(
+            'id' => $dbSource->id,
         ));
     }
     
@@ -1409,7 +1409,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         
         // if local example, move to source teacher
         if (!$item->source) {
-            block_exacomp\db::insert_or_update_record(block_exacomp::DB_EXAMPLES, array("id"=>$item->id), array('source' => block_exacomp::EXAMPLE_SOURCE_TEACHER, 'sourceid'=>null));
+            block_exacomp\db::insert_or_update_record(block_exacomp::DB_EXAMPLES, array('source' => block_exacomp::EXAMPLE_SOURCE_TEACHER, 'sourceid'=>null), array("id"=>$item->id));
         }
         
         // has to be called after inserting the example, because the id is needed!
@@ -1522,7 +1522,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
         
         // if local descriptor, move to custom source
         if (!$descriptor->source) {
-            block_exacomp\db::insert_or_update_record(block_exacomp::DB_DESCRIPTORS, array("id"=>$descriptor->id), array('source' => block_exacomp::CUSTOM_CREATED_DESCRIPTOR));
+            block_exacomp\db::insert_or_update_record(block_exacomp::DB_DESCRIPTORS, array('source' => block_exacomp::CUSTOM_CREATED_DESCRIPTOR), array("id"=>$descriptor->id));
         }
         
         if ($xmlItem->examples) {
@@ -1605,7 +1605,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
             $i=1;
             foreach($xmlItem->descriptors->descriptorid as $descriptor) {
                 if ($descriptorid = self::get_database_id($descriptor)) {
-                    block_exacomp\db::insert_or_update_record(block_exacomp::DB_DESCTOPICS, array("topicid"=>$topic->id,"descrid"=>$descriptorid), array("sorting"=>$i));
+                    block_exacomp\db::insert_or_update_record(block_exacomp::DB_DESCTOPICS, array("sorting"=>$i), array("topicid"=>$topic->id,"descrid"=>$descriptorid));
                     $i++;
                 }
             }

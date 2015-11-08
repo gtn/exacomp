@@ -6,6 +6,11 @@ namespace block_exacomp\common;
 defined('MOODLE_INTERNAL') || die();
 
 class url extends \moodle_url {
+    /**
+     * 
+     * @param array $overrideparams new attributes for object
+     * @return self
+     */
     public function copy(array $overrideparams = null) {
         $class = get_class();
         $object = new $class($this);
@@ -83,7 +88,7 @@ class SimpleXMLElement extends \SimpleXMLElement {
 }
 
 class db {
-    public static function update_record($table, $where, $data = array()) {
+    public static function update_record($table, $data, $where) {
         global $DB;
 
         $where = (array)$where;
@@ -101,20 +106,21 @@ class db {
         return null;
     }
 
-    public static function insert_or_update_record($table, $where, $data = array()) {
+    public static function insert_or_update_record($table, $data, $where = null) {
         global $DB;
 
-        $where = (array)$where;
         $data = (array)$data;
 
-        if ($dbItem = $DB->get_record($table, $where)) {
+        if ($dbItem = $DB->get_record($table, $where !== null ? $where : $data)) {
             if ($data) {
                 $data['id'] = $dbItem->id;
                 $DB->update_record($table, $data);
             }
         } else {
             unset($data['id']);
-            $data = $where + $data; // first the values of $where, then of $data, but don't override $where
+            if ($where !== null) {
+                $data = $data + $where; // first the values of $data, then of $where, but don't override $data
+            }
             $id = $DB->insert_record($table, $data);
             $data['id'] = $id;
         }
@@ -125,14 +131,19 @@ class db {
 
 class param {
     public static function clean_object($values, $definition) {
+        if (!is_object($values) && !is_array($values)) {
+            return null;
+        }
+        
         // some value => type
         $ret = new \stdClass;
         $values = (object)$values;
-
+        $definition = (array)$definition;
+        
         foreach ($definition as $key => $valueType) {
             $value = isset($values->$key) ? $values->$key : null;
             
-            $ret->$key = static::clean($value, $valueType);
+            $ret->$key = static::_clean($value, $valueType);
         }
 
         return $ret;
@@ -163,17 +174,20 @@ class param {
 
         $ret = array();
         foreach ($values as $key=>$value) {
+            $value = static::_clean($value, $valueType, true);
+            if ($value === null) continue;
+            
             if ($keyType == PARAM_SEQUENCE) {
-                $ret[] = static::clean($value, $valueType);
+                $ret[] = $value;
             } else {
-                $ret[clean_param($key, $keyType)] = static::clean($value, $valueType);
+                $ret[clean_param($key, $keyType)] = $value;
             }
         }
 
         return $ret;
     }
     
-    public static function clean($value, $definition) {
+    protected static function _clean($value, $definition) {
         if (is_object($definition)) {
             return static::clean_object($value, $definition);
         } elseif (is_array($definition)) {
@@ -245,7 +259,7 @@ class param {
         if ($definition === null) {
             return $data;
         } else {
-            return static::clean($data, $definition);
+            return static::_clean($data, $definition);
         }
     }
 }
@@ -363,19 +377,6 @@ function t() {
     } elseif ($languagestrings) {
         return _t_parse_string(reset($languagestrings), $a);
     } else {
-        return get_string($identifier, null, $a);
+        return _t_parse_string($identifier, $a);
     }
 }
-// tests:
-/*
-echo t('edit')."<br />";
-echo t('de:xxx')."<br />";
-echo t('id', 'de:xxx')."<br />";
-echo t('id', ['de:xxx', 'en:yyy'])."<br />";
-echo t('de:xxx {$a} xxx', 'arg')."<br />";
-echo t('id', 'de:xxx {$a} xxx', 'arg')."<br />";
-echo t('id', ['de:xxx {$a} xxx', 'en:xxx {$a} xxx'], 'arg')."<br />";
-echo t('id', 'de:xxx {$a->arg} xxx', ['arg' => 'test'])."<br />";
-echo t('id', ['de:xxx {$a->arg} xxx', 'en:xxx {$a->arg} xxx'], ['arg' => 'test'])."<br />";
-exit;
-/* */

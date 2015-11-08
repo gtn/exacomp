@@ -4379,8 +4379,8 @@ function block_exacomp_set_descriptor_visibility($descrid, $courseid, $visible, 
     }
     block_exacomp\db::insert_or_update_record(
         block_exacomp::DB_DESCVISIBILITY,
-        array('descrid'=>$descrid, 'courseid'=>$courseid, 'studentid'=>$studentid),
-        array('visible'=>$visible)
+        array('visible'=>$visible),
+        array('descrid'=>$descrid, 'courseid'=>$courseid, 'studentid'=>$studentid)
     );
 }
 function block_exacomp_set_example_visibility($exampleid, $courseid, $value, $studentid){
