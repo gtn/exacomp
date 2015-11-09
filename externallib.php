@@ -3280,6 +3280,45 @@ class block_exacomp_external extends external_api {
 				'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' )
 		) ) );
 	}
+	
+	public static function dakora_get_examples_for_descriptor_with_grading_parameters(){
+		return new external_function_parameters ( array (
+				'courseid' => new external_value( PARAM_INT, 'id of course' ),
+				'descriptorid' => new external_value ( PARAM_INT, 'id of parent descriptor' ), 
+				'userid' => new external_value (PARAM_INT, 'id of user, if 0 current user'),
+				'forall' => new external_value (PARAM_BOOL, 'if all users = true, only one user = false')
+		) );
+	}
+	
+	public static function dakora_get_examples_for_descriptor_with_grading($courseid, $descriptorid, $userid, $forall){
+		global $USER;
+		$params = self::validate_parameters ( self::dakora_get_examples_for_descriptor_with_grading_parameters (), array (
+				'courseid' => $courseid,
+				'descriptorid' => $descriptorid,
+				'userid' => $userid,
+				'forall' => $forall
+		) );
+		
+		if($userid == 0 && !$forall)
+			$userid = $USER->id;
+		
+		$examples = block_exacomp_external::dakora_get_examples_for_descriptor($courseid, $descriptorid, $userid, $forall);
+		
+		return $examples;
+	}
+	
+	public static function dakora_get_examples_for_descriptor_with_grading_returns(){
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'exampleid' => new external_value ( PARAM_INT, 'id of descriptor' ),
+				'exampletitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
+				'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
+				'teacherevaluation' => new external_value ( PARAM_INT, 'example evaluation of teacher'),
+				'studentevaluation' => new external_value ( PARAM_INT, 'example evaluation of student'),
+				'teacheritemvalue' => new external_value ( PARAM_INT, 'item evaluation of teacher')
+		) ) );
+	}
+	
+	
 	public static function dakora_get_examples_for_descriptor_for_crosssubject_parameters(){
 		return new external_function_parameters ( array (
 				'courseid' => new external_value( PARAM_INT, 'id of course' ),
@@ -3313,6 +3352,45 @@ class block_exacomp_external extends external_api {
 				'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' )
 		) ) );
 	}
+	
+	public static function dakora_get_examples_for_descriptor_for_crosssubject_with_grading_parameters(){
+		return new external_function_parameters ( array (
+				'courseid' => new external_value( PARAM_INT, 'id of course' ),
+				'descriptorid' => new external_value ( PARAM_INT, 'id of parent descriptor' ), 
+				'userid' => new external_value (PARAM_INT, 'id of user, if 0 current user'),
+				'forall' => new external_value (PARAM_BOOL, 'if all users = true, only one user = false'),
+				'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject')
+		) );
+	}
+	
+	public static function dakora_get_examples_for_descriptor_for_crosssubject_with_grading($courseid, $descriptorid, $userid, $forall, $crosssubjid){
+		global $USER;
+		$params = self::validate_parameters ( self::dakora_get_examples_for_descriptor_for_crosssubject_with_grading_parameters (), array (
+				'courseid' => $courseid,
+				'descriptorid' => $descriptorid,
+				'userid' => $userid,
+				'forall' => $forall,
+				'crosssubjid'=>$crosssubjid
+		) );
+		
+		if($userid == 0 && !$forall)
+			$userid = $USER->id;
+		
+		$examples = block_exacomp_external::dakora_get_examples_for_descriptor_for_crosssubject($courseid, $descriptorid, $userid, $forall, $crosssubjid);
+		return $examples;
+	}
+	
+	public static function dakora_get_examples_for_descriptor_for_crosssubject_with_grading_returns(){
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'exampleid' => new external_value ( PARAM_INT, 'id of descriptor' ),
+				'exampletitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
+				'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
+				'teacherevaluation' => new external_value ( PARAM_INT, 'example evaluation of teacher'),
+				'studentevaluation' => new external_value ( PARAM_INT, 'example evaluation of student'),
+				'teacheritemvalue' => new external_value ( PARAM_INT, 'item evaluation of teacher')
+		) ) );
+	}
+	
 	
 	public static function dakora_get_example_overview_parameters(){
 		return new external_function_parameters ( array (
@@ -5590,6 +5668,18 @@ class block_exacomp_external extends external_api {
 			$example_return->exampleid = $example->id;
 			$example_return->exampletitle = $example->title;
 			$example_return->examplestate = ($forall)?0:block_exacomp_get_dakora_state_for_example($courseid, $example->id, $userid);
+			
+			if($forall){
+				$example_return->teacherevaluation = -1;
+				$example_return->studentevaluation = -1;
+				$example_return->teacheritemvalue = -1;
+			}else{
+				$evaluation = block_exacomp_external::dakora_get_example_information($courseid, $userid, $example->id);
+				$example_return->teacherevaluation = $evaluation->teachervalue;
+				$example_return->studentevaluation = $evaluation->studentvalue;
+				$example_return->teacheritemvalue = $evaluation->teacheritemvalue;
+			}
+			
 			if(!array_key_exists($example->id, $examples_return) && (!in_array($example->id, $example_non_visibilities)) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))
 				$examples_return[$example->id] = $example_return;
 		}
