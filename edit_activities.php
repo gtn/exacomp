@@ -29,6 +29,7 @@ require_once dirname(__FILE__)."/inc.php";
 
 global $DB, $OUTPUT, $PAGE;
 
+// TODO: was macht das? wieso brauchen wir das?
 if(strcmp("mysql",$CFG->dbtype)==0){
 	$sql5="SET @@group_concat_max_len = 5012";
 

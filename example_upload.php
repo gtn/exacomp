@@ -192,7 +192,7 @@ if($formdata = $form->get_data()) {
             $newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
     
     echo $output->popup_close_and_reload();
-	exit;
+    exit;
 }
 
 if($exampleid > 0) {

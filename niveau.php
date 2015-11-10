@@ -156,11 +156,8 @@ if($formdata = $form->get_data()) {
     }
     */
     
-    echo $output->header();
     echo $output->popup_close_and_reload();
-    echo $output->footer();
-    
-	exit;
+    exit;
 }
 
 echo $output->header($context, $courseid, '', false);

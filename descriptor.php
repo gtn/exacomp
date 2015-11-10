@@ -59,10 +59,7 @@ block_exacomp_require_teacher($context);
 if ($item && optional_param('action', '', PARAM_TEXT) == 'delete') {
     $item->delete();
 
-    echo $output->header();
     echo $output->popup_close_and_reload();
-    echo $output->footer();
-
     exit;
 }
 
@@ -125,8 +122,7 @@ if($formdata = $form->get_data()) {
     $item->set_categories(!empty($formdata->categories) ?: array());
     
     echo $output->popup_close_and_reload();
-    
-	exit;
+    exit;
 }
 
 echo $output->header($context, $courseid, '', false);

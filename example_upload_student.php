@@ -175,7 +175,7 @@ if($formdata = $form->get_data()) {
     block_exacomp_settstamp();
     
     echo $output->popup_close_and_reload();
-	exit;
+    exit;
 }
 
 if($exampleid > 0) {
