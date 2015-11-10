@@ -27,10 +27,10 @@
 
 require_once dirname(__FILE__)."/inc.php";
 
-global $DB, $OUTPUT, $PAGE, $USER, $version;
+global $DB, $OUTPUT, $PAGE, $USER;
 
 $courseid = required_param('courseid', PARAM_INT);
-$showevaluation = ($version) ? true : optional_param("showevaluation", false, PARAM_BOOL);
+$showevaluation = (block_exacomp_is_altversion()) ? true : optional_param("showevaluation", false, PARAM_BOOL);
 $group = optional_param('group', 0, PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
@@ -167,7 +167,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
         
         $ret .= $output->print_overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
         $ret .= "&nbsp;<br />";
-        $ret .= $output->print_competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, ($version && $selectedNiveau->id != SHOW_ALL_NIVEAUS), false, 0, $statistic);
+        $ret .= $output->print_competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, (block_exacomp_is_altversion() && $selectedNiveau->id != SHOW_ALL_NIVEAUS), false, 0, $statistic);
     }
 
     block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $ret);
@@ -195,7 +195,7 @@ if($selectedNiveau->id != SHOW_ALL_NIVEAUS){
 				$activities_student[] = $course_mods[$cmid];
 	    
 		// TODO: disabled for now
-		// if($version)
+		// if(block_exacomp_is_altversion())
 		//	echo $output->print_overview_metadata_student($selectedTopic, $selectedNiveau, $students[$USER->id]->topics, $showevaluation, $scheme, block_exacomp_get_icon_for_user($activities_student, $USER, block_exacomp_get_supported_modules()));
 	}
 }
@@ -208,9 +208,9 @@ echo $output->print_topics_menu(block_exacomp_get_schooltypetree_by_topics($topi
 echo $output->print_niveaus_menu($niveaus,$selectedNiveau,$selectedTopic);
 if($course_settings->nostudents != 1)
 	echo $output->print_overview_legend($isTeacher);
-if(!$version && $course_settings->nostudents != 1 && $studentid) echo $output->print_student_evaluation($showevaluation, $isTeacher,$selectedNiveau->id,$selectedTopic->id, $studentid);
+if(!block_exacomp_is_altversion() && $course_settings->nostudents != 1 && $studentid) echo $output->print_student_evaluation($showevaluation, $isTeacher,$selectedNiveau->id,$selectedTopic->id, $studentid);
 
-echo $output->print_competence_overview($competence_tree, $courseid, $students, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, ($version && $selectedNiveau->id != SHOW_ALL_NIVEAUS), false, 0, $statistic);
+echo $output->print_competence_overview($competence_tree, $courseid, $students, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, (block_exacomp_is_altversion() && $selectedNiveau->id != SHOW_ALL_NIVEAUS), false, 0, $statistic);
 
 echo html_writer::end_tag("div");
 echo html_writer::end_tag("div");

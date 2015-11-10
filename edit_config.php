@@ -31,7 +31,7 @@ require_once dirname ( __FILE__ ) . '/lib/lib.php';
 require_once ($CFG->dirroot . "/lib/datalib.php");
 require_once dirname ( __FILE__ ) . '/lib/xmllib.php';
 
-global $DB, $OUTPUT, $PAGE, $COURSE, $CFG, $version;
+global $DB, $OUTPUT, $PAGE, $COURSE, $CFG;
 
 $courseid = required_param ( 'courseid', PARAM_INT );
 $action = optional_param ( 'action', "", PARAM_ALPHA );
@@ -83,7 +83,7 @@ if (isset ( $action ) && $action == 'save') {
 	if (! isset ( $_POST ['data'] ))
 		$headertext = get_string ( 'tick_some', 'block_exacomp' );
 	else {
-		if ($version)
+		if (block_exacomp_is_altversion())
 			$string = get_string ( 'next_step', 'block_exacomp' );
 		else
 			$string = get_string ( 'next_step_teacher', 'block_exacomp' );

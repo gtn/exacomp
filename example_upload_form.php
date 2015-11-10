@@ -29,7 +29,7 @@ require_once $CFG->libdir . '/formslib.php';
 class block_exacomp_example_upload_form extends moodleform {
 
 	function definition() {
-		global $CFG, $USER, $DB, $version, $PAGE;
+		global $CFG, $USER, $DB, $PAGE;
 
 		$output = block_exacomp_get_renderer();
 		
@@ -86,7 +86,7 @@ class block_exacomp_example_upload_form extends moodleform {
 			$mform->addElement('header', 'assignments', get_string('assignments','block_exacomp'));
 			$mform->addElement('select', 'assignment', get_string('assignments','block_exacomp'), $this->_customdata['activities']);
 		}
-	    /* if($version) {
+	    /* if(block_exacomp_is_altversion()) {
 	        $mform->addElement('checkbox', 'lisfilename', get_string('lisfilename', 'block_exacomp'));
 	        $mform->setDefault('lisfilename', 1);
 	    } */

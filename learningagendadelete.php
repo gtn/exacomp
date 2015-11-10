@@ -27,7 +27,7 @@
 
 require_once dirname(__FILE__)."/inc.php";
 
-global $DB, $OUTPUT, $PAGE, $version;
+global $DB, $OUTPUT, $PAGE;
 
 $courseid = required_param('courseid', PARAM_INT);
 
@@ -149,7 +149,7 @@ foreach($weekdays as $weekday=>$tag){
 	foreach($results as $result){
 		$example = new stdClass();
 		
-		if($version){
+		if(block_exacomp_is_altversion()){
 			if($result->starttime == $tag || !isset($result->endtime))	{
 				$example_count_week++;
 				$example->title = $result->example;

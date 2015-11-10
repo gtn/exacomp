@@ -74,12 +74,10 @@ class block_exacomp extends block_list {
     }
 
     function get_content() {
-        global $CFG, $USER, $COURSE, $DB, $OUTPUT, $version, $skillmanagement, $usebadges;
+        global $CFG, $USER, $COURSE, $DB, $OUTPUT, $usebadges;
 
         //does not work with global var, don't know why TODO
         $usebadges = get_config('exacomp', 'usebadges');
-        $skillmanagement = get_config('exacomp', 'skillmanagement');
-        $version = get_config('exacomp', 'alternativedatamodel');
 
         if ($this->content !== null) {
             return $this->content;
@@ -107,7 +105,7 @@ class block_exacomp extends block_list {
 
         $courseid = intval($COURSE->id);
 
-        if($skillmanagement)
+        if(block_exacomp_is_skillsmanagement())
             $checkConfig = block_exacomp_is_configured($courseid);
         else
             $checkConfig = block_exacomp_is_configured();
@@ -130,7 +128,7 @@ class block_exacomp extends block_list {
         }
 
         //if use skill management
-        if($skillmanagement && block_exacomp_is_teacher($currentcontext)){
+        if(block_exacomp_is_skillsmanagement() && block_exacomp_is_teacher($currentcontext)){
             $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/skillmanagement.php', array('courseid'=>$courseid)), get_string('tab_skillmanagement', 'block_exacomp'), array('title'=>get_string('tab_skillmanagement', 'block_exacomp')));
             $this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/module_config.png'), 'alt'=>'', 'height'=>16, 'width'=>23));
         }
@@ -139,7 +137,7 @@ class block_exacomp extends block_list {
             if (block_exacomp_is_teacher($currentcontext) && $courseid != 1){
                 $crosssubs = block_exacomp_cross_subjects_exists()?block_exacomp_get_cross_subjects_by_course($courseid):false;
                 //teacher LIS
-                if($version){
+                if(block_exacomp_is_altversion()){
                     if(block_exacomp_is_activated($courseid)){
                         //Kompetenzraster
                         $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/competence_grid.php', array('courseid'=>$courseid)), get_string('tab_competence_grid', 'block_exacomp'), array('title'=>get_string('tab_competence_grid', 'block_exacomp')));
@@ -193,7 +191,7 @@ class block_exacomp extends block_list {
                     $this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/subjects_topics.gif'), 'alt'=>"", 'height'=>16, 'width'=>23));
 
                     	
-                    if($de && !$skillmanagement){
+                    if($de && !block_exacomp_is_skillsmanagement()){
                         //Hilfe
                         $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/help.php', array('courseid'=>$courseid)), get_string('tab_help', 'block_exacomp'), array('title'=>get_string('tab_help', 'block_exacomp')));
                         $this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/info.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
@@ -251,13 +249,13 @@ class block_exacomp extends block_list {
                     }
 
                     $settings_string = get_string('tab_teacher_settings', 'block_exacomp');
-                    //if($skillmanagement)
+                    //if(block_exacomp_is_skillsmanagement())
                     //$settings_string = get_string('tab_teacher_demo_settings', 'block_exacomp');
                     //Einstellungen
                     $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/edit_course.php', array('courseid'=>$courseid)), $settings_string, array('title'=>get_string('tab_teacher_settings', 'block_exacomp')));
                     $this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/subjects_topics.gif'), 'alt'=>"", 'height'=>16, 'width'=>23));
 
-                    if($de && !$skillmanagement){
+                    if($de && !block_exacomp_is_skillsmanagement()){
                         //Hilfe
                         $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/help.php', array('courseid'=>$courseid)), get_string('tab_help', 'block_exacomp'), array('title'=>get_string('tab_help', 'block_exacomp')));
                         $this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/info.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
@@ -266,7 +264,7 @@ class block_exacomp extends block_list {
             }else if (has_capability('block/exacomp:student', $currentcontext) && $courseid != 1 && !has_capability('block/exacomp:admin', $currentcontext)){
                 $crosssubs = block_exacomp_cross_subjects_exists()?block_exacomp_get_cross_subjects_by_course($courseid, $USER->id):false;
                 //student LIS
-                if($version){
+                if(block_exacomp_is_altversion()){
                     if(block_exacomp_is_activated($courseid)){
                         //Kompetenzraster
                         $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/competence_grid.php', array('courseid'=>$courseid)), get_string('tab_competence_grid', 'block_exacomp'), array('title'=>get_string('tab_competence_grid', 'block_exacomp')));
@@ -308,7 +306,7 @@ class block_exacomp extends block_list {
                         //$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/pix/i/badge.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
                         //}
                     }
-                    if($de && !$skillmanagement){
+                    if($de && !block_exacomp_is_skillsmanagement()){
                         //Hilfe
                         $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/help.php', array('courseid'=>$courseid)), get_string('tab_help', 'block_exacomp'), array('title'=>get_string('tab_help', 'block_exacomp')));
                         $this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/info.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
@@ -359,7 +357,7 @@ class block_exacomp extends block_list {
                         //}
                     }
                     	
-                    if($de && !$skillmanagement){
+                    if($de && !block_exacomp_is_skillsmanagement()){
                         //Hilfe
                         $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/help.php', array('courseid'=>$courseid)), get_string('tab_help', 'block_exacomp'), array('title'=>get_string('tab_help', 'block_exacomp')));
                         $this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/info.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
@@ -377,7 +375,7 @@ class block_exacomp extends block_list {
         //else nur admin sieht block und hat nur den link Modulkonfiguration
         if((has_capability('block/exacomp:admin', $globalcontext))){	//Admin sieht immer Modulkonfiguration
             //Modulkonfiguration
-            if(!$skillmanagement){
+            if(!block_exacomp_is_skillsmanagement()){
                 //Wenn Import schon erledigt, weiterleitung zu edit_config, ansonsten import.
                 if($checkImport){
                     $this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/edit_config.php', array('courseid'=>$courseid)), get_string('tab_admin_configuration', 'block_exacomp'), array('title'=>get_string('tab_admin_configuration', 'block_exacomp')));

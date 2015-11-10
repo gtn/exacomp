@@ -27,12 +27,12 @@
 
 require_once dirname(__FILE__)."/inc.php";
 
-global $DB, $OUTPUT, $PAGE, $USER, $version;
+global $DB, $OUTPUT, $PAGE, $USER;
 
 $courseid = required_param('courseid', PARAM_INT);
 $studentid = optional_param('studentid', 0, PARAM_INT);
 
-$showevaluation = ($version) ? true : optional_param("showevaluation", false, PARAM_BOOL);
+$showevaluation = (block_exacomp_is_altversion()) ? true : optional_param("showevaluation", false, PARAM_BOOL);
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_simplehtml', $courseid);
 }

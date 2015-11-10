@@ -58,7 +58,7 @@ require_once $CFG->libdir . '/formslib.php';
 class block_exacomp_local_item_form extends moodleform {
 
     function definition() {
-        global $CFG, $USER, $DB, $version, $PAGE;
+        global $CFG, $USER, $DB, $PAGE;
 
         $output = block_exacomp_get_renderer();
 

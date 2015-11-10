@@ -130,7 +130,7 @@ foreach($possible_courses as $course){
 		$user_courses[$course->id] = $course; 
 }
 
-if(!$version)
+if(!block_exacomp_is_altversion())
 	echo $output->print_competene_profile_overview($student, $user_courses, $possible_courses, $badges, 
 		$profile_settings->useexaport, $items, $profile_settings->useexastud, $periods,  $profile_settings->onlygainedbadges);
 
@@ -144,7 +144,7 @@ foreach($user_courses as $course) {
 		echo $output->print_competence_profile_course($course,$student);
 }
 
-if(!$version){
+if(!block_exacomp_is_altversion()){
 	if($profile_settings->showallcomps == 1){
 		if(empty($user_courses))
 			$overview_courses = $possible_courses;

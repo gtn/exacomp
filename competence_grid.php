@@ -27,7 +27,7 @@
 
 require_once dirname(__FILE__)."/inc.php";
 
-global $DB, $OUTPUT, $PAGE, $USER, $version;
+global $DB, $OUTPUT, $PAGE, $USER;
 
 $courseid = required_param('courseid', PARAM_INT);
 
@@ -86,7 +86,7 @@ if($data) {
 	
 	echo html_writer::start_div();
 	
-	if(!$version && isset($dropdown_subjects[$subjectid]->infolink))
+	if(!block_exacomp_is_altversion() && isset($dropdown_subjects[$subjectid]->infolink))
 		echo html_writer::tag("p",get_string('infolink','block_exacomp') . html_writer::link($dropdown_subjects[$subjectid]->infolink, $dropdown_subjects[$subjectid]->infolink,array('target'=>'_blank')));
 
 	echo $output->print_competence_grid($niveaus, $skills, $subjects, $data, $selection, $courseid,$studentid);

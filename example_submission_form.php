@@ -29,7 +29,7 @@ require_once $CFG->libdir . '/formslib.php';
 class block_exacomp_example_submission_form extends moodleform {
 
 	function definition() {
-		global $CFG, $USER, $DB, $version;
+		global $CFG, $USER, $DB;
 
 		$mform = & $this->_form;
 
