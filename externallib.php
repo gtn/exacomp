@@ -4800,7 +4800,7 @@ class block_exacomp_external extends external_api {
 				$subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
 			}
 	
-			$itemid = $DB->insert_record("block_exaportitem", array('userid'=>$USER->id,'name'=>$exampletitle,'intro' => $exampletitle, 'url'=>$url, 'type'=>$type,'timemodified'=>time(),'categoryid'=>$subject_category->id,'teachervalue' => null, 'studentvalue' => null));
+			$itemid = $DB->insert_record("block_exaportitem", array('userid'=>$USER->id,'name'=>$exampletitle,'intro' => $exampletitle, 'url'=>$url, 'type'=>$type,'timemodified'=>time(),'categoryid'=>$subject_category->id,'teachervalue' => null, 'studentvalue' => null, 'courseid' => $courseid));
 			//autogenerate a published view for the new item
 			$dbView = new stdClass();
 			$dbView->userid = $USER->id;
