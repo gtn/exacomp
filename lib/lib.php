@@ -770,7 +770,7 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 }
 
 function block_exacomp_is_skillsmanagement() {
-    return false;
+    return get_config('exacomp', 'skillsmanagement');
 }
 function block_exacomp_is_altversion() {
     return get_config('exacomp', 'alternativedatamodel');
@@ -1513,10 +1513,6 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
                 if($de && !block_exacomp_is_skillsmanagement())
                     $rows[] = new tabobject('tab_help', new moodle_url('/blocks/exacomp/help.php', array("courseid"=>$courseid)), get_string('tab_help', 'block_exacomp'));
             }else{    //teacher tabs !LIS
-                //if use skill management
-                if(block_exacomp_is_skillsmanagement() && block_exacomp_is_teacher($context)){
-                    $rows[] = new tabobject('tab_skillmanagement', new moodle_url('/blocks/exacomp/skillmanagement.php', array('courseid'=>$courseid)),get_string('tab_skillmanagement','block_exacomp'));
-                }
                 if($checkConfig){
                     if($ready_for_use){
                         $rows[] = new tabobject('tab_competence_overview', new moodle_url('/blocks/exacomp/assign_competencies.php',array("courseid"=>$courseid)),get_string('tab_competence_overview','block_exacomp'));

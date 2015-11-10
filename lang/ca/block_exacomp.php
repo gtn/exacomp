@@ -54,7 +54,7 @@ $string['tab_competence_profile'] = 'Perfil competencial';
 $string['tab_competence_profile_profile'] = 'Perfil';
 $string['tab_competence_profile_settings'] = 'Propietats';
 $string['tab_help'] = 'help';
-$string['tab_skillmanagement'] = 'Create your competencies';
+$string['tab_skillsmanagement'] = 'Create your competencies';
 
 //Block Settings
 $string['settings_xmlserverurl'] = 'URL del servidor';
@@ -69,8 +69,8 @@ $string['settings_testlimit'] = 'Test limit';
 $string['settings_testlimit_description'] = 'Students have to reach this limit to gain competences';
 $string['settings_usebadges'] = 'Use Badges';
 $string['settings_usebadges_description'] = 'Work with Badges associated with competences';
-$string['settings_skillmanagement'] = 'Use skill managemnet';
-$string['settings_skillmanagement_description'] = 'Tick to use the skill management tool instead of import';
+$string['settings_skillsmanagement'] = 'Use skill managemnet';
+$string['settings_skillsmanagement_description'] = 'Tick to use the skill management tool instead of import';
 
 //Learning agenda
 $string['LA_MON'] = "DL";
