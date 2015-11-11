@@ -2485,8 +2485,15 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
     public function generate_select($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false, $profoundness = false, $reviewerid = null) {
         global $USER, $global_scheme, $global_scheme_values;
         
+        $options = array();
+        $options[-1] = ' ';
+        for($i=0;$i<=$scheme;$i++)
+            $options[$i] = (!$profoundness) ? (($global_scheme==0)?$i:$global_scheme_values[$i]) : get_string('profoundness_'.$i,'block_exacomp');
+
         if ($this->is_print_mode()) {
-            return (isset($student->{$type}->{$evaluation}[$compid])) ? $student->{$type}->{$evaluation}[$compid] : '';
+            // in print mode return the text itself, no select
+            $value = (isset($student->{$type}->{$evaluation}[$compid])) ? $student->{$type}->{$evaluation}[$compid] : '';
+            return !empty($options[$value]) ? $options[$value] : $value;
         }
         
         $attributes = array();
@@ -2499,11 +2506,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         $attributes['exa-userid'] = $student->id;
         $attributes['exa-evaluation'] = $evaluation;
          
-        $options = array();
-        $options[-1] = ' ';
-        for($i=0;$i<=$scheme;$i++)
-            $options[$i] = (!$profoundness) ? (($global_scheme==0)?$i:$global_scheme_values[$i]) : get_string('profoundness_'.$i,'block_exacomp');
-
         return html_writer::select(
                 $options,
                 $name . '-' . $compid . '-' . $student->id . '-' . $evaluation,
