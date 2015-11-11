@@ -169,8 +169,7 @@
 		});
 		
 		function add_pool_item(data) {
-			var el = $( "<div class='fc-event'>" ).appendTo( $eventDiv ).text( 
-					data.title);
+			var el = $( "<div class='fc-event'>" ).appendTo( $eventDiv ).text(data.title);
 			
 			el.append('	<div class="event-assoc">'+data.assoc_url+/*((event.solution)?event.solution:'')+*/'</div>');
 			
@@ -310,6 +309,9 @@
 						events = $.map(events, function(o){
 							var event = exacomp_calcendar.event_time_to_slot(o);
 							event.original = event;
+							
+							event.title = event.courseinfo+':\n'+event.title;
+							
 							return event;
 						});
 

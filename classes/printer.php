@@ -5,55 +5,104 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once $CFG->dirroot.'/lib/tcpdf/tcpdf.php';
 
-class printer {
-    static function competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, $selectedStudent, $html_content) {
-        $pdf = new \TCPDF('L');
+class printer_TCPDF extends \TCPDF {
+    private $_header = '';
+    private $_style = '';
+    
+    public function __construct($orientation) {
+        parent::__construct($orientation);
+        $this->setImageScale(0.25);
+        $this->SetFont('helvetica', '', 9);
+        $this->setHeaderFont(['helvetica', '', 9]);
+    }
+    
+    private function _initPage() {
+        if ($this->numpages == 0) {
+            // at least one page
+            $this->AddPage();
+        }
+    }
+    
+    public function setHeaderHTML($header) {
+        $this->_header = $header;
+    }
+    
+    public function setStyle($style) {
+        $this->_style = $style;
+    }
+    
+    public function writeHTML($html, $ln=true, $fill=false, $reseth=false, $cell=false, $align='') {
+        $this->_initPage();
+        
+        $style = '';
+        if ($this->_style) $style = "<style> $this->_style </style>";
+        return parent::writeHTML($style.$html, $ln, $fill, $reseth, $cell, $align);
+    }
+    
+    public function Header() {
+        if ($this->_header) {
+            $this->writeHTML($this->_header);
+        }
+    }
+    
+    public function Footer() {
+        return;
+    }
+}
 
-        $pdf->SetPrintHeader(false);
-        $pdf->SetPrintFooter(false);
-        
-        $pdf->setImageScale(0.25);
-        
-        $pdf->AddPage();
-        $pdf->SetFont('helvetica', '', 9);
-        
-        $style  = '
-            <style>
-                div {
-                    padding: 0;
-                    margin: 0;
-                }
-                table td {
-                    border: 0.2pt solid #555;
-                }
-                table {
-                    padding: 1px 0 1px 1px; /* tcpdf only accepts padding on table tag, which gets applied to all cells */
-                }
-                
-                .exabis_comp_info {
-                    background-color: #efefef;
-                }
-                .exabis_comp_top_name {
-                }
-                .exabis_comp_top_value {
-                    font-weight: bold;
-                }
-                </style>
-        ';
-        
-        $html = '';
-        // $html = $selectedSubject->title.' &gt; '.$selectedTopic->title.' &gt; '.$selectedNiveau->title.'<br />';
+class printer {
+    static function competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, $selectedStudent, $html_header, $html_content) {
+        $pdf = new printer_TCPDF('L');
         
         // convert padding to spaces, because tcpdf doesn't support padding
         $html_content = preg_replace_callback('!padding-left:\s*([0-9]+)[^>]+>(<div[^>]*>)?!', function($matches){
             return $matches[0].str_repeat('&nbsp;', round($matches[1]/5));
         }, $html_content);
         
-        // $html_content = preg_replace('!\s*Ich kann\s*!', '...', $html_content);
-        //echo $style.$html.$html_content;
+        // ersten beide zeilen in den header geben
+        if (!preg_match('!<table.*<tbody>.*(<tr.*<tr.*</tr>)!isU', $html_content, $matches)) {
+            die('error #gg98daa');
+        }
         
-        // @ = suppress html warnings from tcpdf
-        @$pdf->writeHTML($style.$html.$html_content);
+        $html_content = str_replace($matches[1], '', $html_content);
+        $html_content = str_replace('<tr ', '<tr nobr="true"', $html_content);
+        $html_header .= $matches[0].'</table>';
+        
+        $pdf->setStyle('
+            * {
+                font-size: 9pt;
+            }
+            div {
+                padding: 0;
+                margin: 0;
+            }
+            table td {
+                border: 0.2pt solid #555;
+            }
+            table {
+                padding: 1px 0 1px 1px; /* tcpdf only accepts padding on table tag, which gets applied to all cells */
+            }
+            
+            .exabis_comp_info {
+                background-color: #efefef;
+            }
+            .exabis_comp_top_name {
+            }
+            .exabis_comp_top_value {
+                font-weight: bold;
+            }
+                
+            tr.highlight {
+                background-color: #e6e6e6;
+            }
+                ');
+        
+        $pdf->setHeaderMargin(5);
+        $pdf->setHeaderHTML($html_header);
+        
+        $pdf->SetTopMargin(40);
+        
+        $pdf->writeHTML($html_content);
         $pdf->Output();
         
         exit;
@@ -162,51 +211,49 @@ class printer {
         
         
         // Instanciation of inherited class
-        $pdf = new \TCPDF($interval == 'week' ? 'L' : null /* landscape for weekly print */ );
-        // $pdf->AliasNbPages();
-        $pdf->SetPrintHeader(false);
-        $pdf->SetPrintFooter(false);
+        $pdf = new printer_TCPDF($interval == 'week' ? 'L' : null /* landscape for weekly print */ );
         
-        $pdf->AddPage();
-        $pdf->SetFont('helvetica', '', 9);
+        $pdf->setHeaderMargin(5);
+        $pdf->SetTopMargin(25);
         
-        $tbl  = '
-            <style>
-                .event-default {
-                    color: #fff;
-                    background-color: #026cc5;
-                }
-                .state4 {
-                    color: #fff;
-                    background-color: rgb(24, 164, 6);
-                    
-                }
-                
-                .state3 {
-                    color: #fff;
-                    background-color: rgb(189, 189, 189);
-                }
-                .different-course {
-                    color: #fff;
-                    background-color: #acbcca;
-                }
-            table td {
-                height: 14px;
+        $pdf->setStyle('
+            * {
+                font-size: 9pt;
             }
-            </style>
+            .event-default {
+                color: #fff;
+                background-color: #026cc5;
+            }
+            .state4 {
+                color: #fff;
+                background-color: rgb(24, 164, 6);
                 
+            }
+            .state3 {
+                color: #fff;
+                background-color: rgb(189, 189, 189);
+            }
+            .different-course {
+                color: #fff;
+                background-color: #acbcca;
+            }
+        ');
+        
+        $header = '
             <table><tr>
-                <td style="font-size: 10px;" align="left">Kurs: '.$course->fullname.'</td>
-                <td style="font-size: 10px;" align="right">Kursteilnehmer: '.fullname($student).'</td>
+                <td style="font-size: 12pt; font-weight: bold;" align="left">Wochenplan</td>
+                <td style="font-size: 12pt; font-weight: bold;" align="right">Kursteilnehmer: '.fullname($student).'</td>
             </tr></table>
             &nbsp;<br />
             <table border="0.1" style="padding: 1px">';
-        $tbl .= '<tr><td></td>';
+        $header .= '<tr><td></td>';
         foreach ($days as $day) {
-            $tbl .= '<td colspan="'.$day->colspan.'" align="center">'.$day->title.'</td>';
+            $header .= '<td colspan="'.$day->colspan.'" align="center">'.$day->title.'</td>';
         }
-        $tbl .= '</tr>';
+        $header .= '</tr></table>';
+        $pdf->setHeaderHTML($header);
         
+        $tbl = '<table border="0.1" style="padding: 1px">';
         $color_i = 0;
         foreach (block_exacomp_build_json_time_slots() as $slot_i=>$slot) {
             $tbl .= '<tr nobr="true"';
@@ -220,18 +267,25 @@ class printer {
                     $example = $day->slots[$slot_i]->cols[$col_i];
                     if (is_object($example)) {
                         
-                        if ($example->courseid != $course->id)
+                        if ($example->courseid != $course->id) {
+                            $state_text = '';
                             $class = 'different-course';
-                        elseif ($example->state == 3)
+                        } elseif ($example->state == 3) {
+                            $state_text = 'state3'; // TODO: change state text
                             $class = 'state3';
-                        elseif ($example->state == 4)
+                        } elseif ($example->state == 4) {
+                            $state_text = 'state4'; // TODO: change state text
                             $class = 'state4';
-                        else
+                        } else {
+                            $state_text = '';
                             $class = 'event-default';
+                        }
                         
                         
-                        
+                        $course = get_course($example->courseid);
                         $tbl .= '<td rowspan="'.$example->rowspan.'" class="'.$class.'">';
+                        if ($state_text) $tbl .= '<b>'.$state_text.':</b><br />';
+                        $tbl .= '<b>'.$course->shortname.':</b><br />';
                         $tbl .= $example->title;
                         
                         if ($example->descriptors) {
@@ -250,7 +304,9 @@ class printer {
         }
         $tbl .= '</table>';
         
-        $pdf->writeHTML($tbl, true, false, false, false, '');
+        // $tbl .= '<b>Legende:</b><br />';
+        
+        $pdf->writeHTML($tbl);
         
         $pdf->Output();
         exit;

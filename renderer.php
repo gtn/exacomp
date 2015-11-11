@@ -34,7 +34,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         block_exacomp_init_js_css();
         
         $extras = "";
-        if ($PAGE->pagelayout == 'popup') {
+        if (($PAGE->pagelayout == 'popup') || ($PAGE->pagelayout == 'embedded')) {
             ob_start();
             
             $title = $PAGE->heading ?: $PAGE->title;
@@ -1451,17 +1451,21 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             $cell_width = function($row, $cell, $width) use ($rows) {
                 $rows[$row]->cells[$cell]->attributes['width'] = $width.'%';
                 // test print cell size
-                // $rows[$row]->cells[$cell]->text = $width.' '.$rows[$row]->cells[$cell]->text;
+                //$rows[$row]->cells[$cell]->text = $width.' '.$rows[$row]->cells[$cell]->text;
             };
             // set table cell sizes for print mode
             $cnt = count($students);
-            $cell_width(0, 0, 100-10-$cnt*12.5);
-            $cell_width(0, 1, 10);
+            $cell_width(0, 0, 100-5-$cnt*12.5);
+            $cell_width(0, 1, 5);
             for ($i = 0; $i < $cnt; $i++) {
                 $cell_width(0, 2+$i, 12.5);
             }
             $cell_width(2, 0, 8);
-            $cell_width(2, 1, 100-10-$cnt*12.5-8);
+            $cell_width(2, 1, 100-5-$cnt*12.5-8);
+            $cell_width(2, 2, 5);
+            for ($i = 0; $i < $cnt*2; $i++) {
+                $cell_width(2, 3+$i, 12.5/2);
+            }
         }
         
         $table_html = html_writer::table($table);

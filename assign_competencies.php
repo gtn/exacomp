@@ -145,7 +145,7 @@ $selectedSubject = block_exacomp_get_subject_by_id($selectedTopic->subjid);
 
 if (optional_param('print', false, PARAM_BOOL)) {
     $output->print = true;
-    $ret  = '';
+    $html = '';
     
     if ($group == -1) {
         // all students, do nothing
@@ -165,12 +165,12 @@ if (optional_param('print', false, PARAM_BOOL)) {
             $ret .= '<br pagebreak="true"/>';
         }
         
-        $ret .= $output->print_overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
-        $ret .= "&nbsp;<br />";
-        $ret .= $output->print_competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, (block_exacomp_is_altversion() && $selectedNiveau->id != SHOW_ALL_NIVEAUS), false, 0, $statistic);
+        $html_header = $output->print_overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
+        // $html .= "&nbsp;<br />";
+        $html .= $output->print_competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, (block_exacomp_is_altversion() && $selectedNiveau->id != SHOW_ALL_NIVEAUS), false, 0, $statistic);
     }
 
-    block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $ret);
+    block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html);
 }
 
 echo $output->header($context, $courseid, $page_identifier);
