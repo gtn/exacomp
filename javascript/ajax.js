@@ -169,6 +169,9 @@
 		}
 	});
 	
+	// global var hack
+	i_want_my_reload = false;
+	
 	$(document).on('click', '#assign-competencies input[type=submit], #assign-competencies input[type=button]', function(event) {
 		event.preventDefault();
 		courseid = block_exacomp.get_param('courseid');
@@ -187,7 +190,7 @@
 
 		switch ($(this).attr('id')) {
 		case 'btn_submit':
-			var reload = false;
+			var reload = i_want_my_reload;
 			
 			function all_done() {
 				if (reload) {

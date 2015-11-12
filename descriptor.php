@@ -46,7 +46,7 @@ $item = $id ? block_exacomp_descriptor::get($id) : null;
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/descriptor.php', array('courseid' => $courseid));
 $PAGE->set_heading(block_exacomp::t($item ? 'de:Kompetenz bearbeiten' : 'de:Neue Kompetenz anlegen'));
-$PAGE->set_pagelayout('popup');
+$PAGE->set_pagelayout('embedded');
 
 // build tab navigation & print header
 

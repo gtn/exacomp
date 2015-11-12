@@ -43,7 +43,7 @@ block_exacomp_require_teacher($context);
 
 $PAGE->set_url('/blocks/exacomp/pre_planning_storage.php', array('courseid' => $courseid, 'creatorid'=>$creatorid));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
-$PAGE->set_pagelayout('popup');
+$PAGE->set_pagelayout('embedded');
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);

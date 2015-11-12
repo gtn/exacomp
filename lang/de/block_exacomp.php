@@ -305,7 +305,7 @@ $string['allstudents'] = 'Alle  Kursteilnehmer/innen';
 $string['nostudents'] = 'Keine  Kursteilnehmer/innen';
 $string['statistic'] = 'Gesamtübersicht';
 $string['niveau'] = "Lernfortschritt";
-$string['comptetence_grid_niveau'] = "Niveau";
+$string['competence_grid_niveau'] = "Niveau";
 $string['descriptor'] = 'Kompetenz';
 $string['groupsize'] = 'Gruppengröße: ';
 

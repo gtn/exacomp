@@ -46,7 +46,7 @@ $item = $id ? block_exacomp_subject::get($id) : null;
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/subject.php', array('courseid' => $courseid));
 $PAGE->set_heading(block_exacomp::t($item ? 'de:Kompetenzraster bearbeiten' : 'de:Neuen Kompetenzraster anlegen'));
-$PAGE->set_pagelayout('popup');
+$PAGE->set_pagelayout('embedded');
 
 // build tab navigation & print header
 

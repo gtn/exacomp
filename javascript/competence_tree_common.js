@@ -3,6 +3,7 @@
 	var storageid = document.location.pathname;
 	
 	window.block_exacomp.reload_action = function() {
+		i_want_my_reload = true;
 		$('#assign-competencies input[type="submit"]').click();
 	}
 

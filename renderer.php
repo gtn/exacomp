@@ -28,13 +28,14 @@ define('STUDENTS_PER_COLUMN', 5);
 require_once dirname(__FILE__)."/lib/xmllib.php";
 
 class block_exacomp_renderer extends plugin_renderer_base {
+    
     public function header($context=null, $courseid=0, $page_identifier="", $tabtree=true) {
         global $PAGE;
         
         block_exacomp_init_js_css();
         
         $extras = "";
-        if (($PAGE->pagelayout == 'popup') || ($PAGE->pagelayout == 'embedded')) {
+        if ($PAGE->pagelayout == 'embedded') {
             ob_start();
             
             $title = $PAGE->heading ?: $PAGE->title;
@@ -45,7 +46,22 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     window.parent.block_exacomp.last_popup.set('headerContent', <?php echo json_encode($title); ?>);
                 }
             </script>
-            <?php
+            <style>
+                body {
+                    /* because moodle embedded pagelayout always adds padding/margin on top */
+                    padding: 0 !important;
+                    margin: 0 !important;
+                }
+            </style>
+            <?php 
+            
+            if ($PAGE->heading) {
+                ?>
+                <!--  moodle doesn't print a title for embedded layout -->
+                <h2><?php echo $PAGE->heading; ?></h2>
+                <?php
+            }
+            
             $extras .= ob_get_clean();
         }
 
@@ -396,7 +412,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
      * Prints 2 select inputs for subjects and topics
      */
     public function print_overview_dropdowns($schooltypetree, $selectedSubject, $selectedTopic, $students, $selectedStudent = 0, $isTeacher = false) {
-        global $PAGE, $COURSE, $USER;
+        global $PAGE, $COURSE, $USER, $NG_PAGE;
 
         $content = "";
         $right_content = "";
@@ -406,10 +422,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
         }
         
         if($isTeacher){
-            $content .= html_writer::empty_tag("br");
-            $content .= get_string("choosestudent", "block_exacomp");
-
-            $content .= block_exacomp_studentselector($students,$this->is_edit_mode()?BLOCK_EXACOMP_SHOW_ALL_STUDENTS:$selectedStudent,$PAGE->url."&subjectid=".$selectedSubject."&topicid=".$selectedTopic,  BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
+            if (!$this->is_edit_mode()) {
+                /*
+                $content .= html_writer::empty_tag('input', array('type'=>'text', 'name'=>'exacomp_competence_grid_select_student', 'value'=>$selectedStudent));
+            } else {
+                */
+                $content .= html_writer::empty_tag("br");
+                $content .= get_string("choosestudent", "block_exacomp");
+                $content .= block_exacomp_studentselector($students,$selectedStudent,$NG_PAGE->url, BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
+            }
 
             if(!$this->is_edit_mode() && $selectedStudent != BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $selectedStudent != BLOCK_EXACOMP_SHOW_STATISTIC) {
                $right_content .= block_exacomp_get_message_icon($selectedStudent);
@@ -427,6 +448,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                     ),
                 array(
                     'id'=>'pre_planning_storage_submit', 'name'=> 'pre_planning_storage_submit',
+                    'type'=>'button', /* browser default setting for html buttons is submit */
                     'exa-type' => 'iframe-popup', 'exa-url' => $url->out(false)
                 )
             );
@@ -1306,7 +1328,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             }
             
             $nivCell = new html_table_cell();
-            $nivCell->text = block_exacomp::get_string('comptetence_grid_niveau');
+            $nivCell->text = block_exacomp::get_string('competence_grid_niveau');
 
             if($first)
                 $subjectRow->cells[] = $nivCell;
@@ -1937,21 +1959,25 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                 foreach($descriptor->examples as $example) {
                     $example_used = block_exacomp_example_used($data->courseid, $example, $studentid);
                 
-                    $visible_example = block_exacomp_check_example_visibility($data->courseid, $example, $studentid, ($one_student||$data->role==block_exacomp::ROLE_STUDENT) );
+                    $visible_example = block_exacomp_is_example_visible($data->courseid, $example, $studentid);
                     
-                    if($data->role == block_exacomp::ROLE_TEACHER || $visible_example){
+                    if ($data->role != block_exacomp::ROLE_TEACHER && !$visible_example) {
+                        // do not display
+                        continue;
+                    }
+                    
                     $visible_example_css = block_exacomp_get_example_visible_css($visible_example, $data->role);
                     
                     $studentsCount = 0;
                     $exampleRow = new html_table_row();
-                    $exampleRow->attributes['class'] = 'exabis_comp_aufgabe ' . $sub_rowgroup_class.$visible_example_css;
+                    $exampleRow->attributes['class'] = 'exabis_comp_aufgabe block_exacomp_example ' . $sub_rowgroup_class.$visible_example_css;
                     $exampleRow->cells[] = new html_table_cell();
     
                     $titleCell = new html_table_cell();
                     $titleCell->style = "padding-left: ". ($padding + 20 )."px";
                     $titleCell->text = html_writer::div(html_writer::tag('span', $example->title, array('title'=>$example->description)));
                     
-                    if(!$statistic && !$this->is_print_mode()){
+                   if(!$statistic && !$this->is_print_mode()){
                         
                         if ($editmode) {
                             $titleCell->text .= '<span style="padding-right: 15px;" class="todo-change-stylesheet-icons">';
@@ -1973,10 +1999,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                             $titleCell->text .= '</span>';
                         }
                         
-                        if(!$example_used){
-                            if($editmode || ($one_student && $visible_example && $data->role == block_exacomp::ROLE_TEACHER)){
-                                $titleCell->text .= $this->print_visibility_icon_example($visible_example, $example->id);
-                            }
+                        if (!$example_used && ($data->role == block_exacomp::ROLE_TEACHER) && ($studentid<=0 || block_exacomp_is_example_visible($data->courseid, $example, 0))) {
+                            $visible_example_edit = block_exacomp_get_example_visible_for_edit($data->courseid, $example, $studentid);
+                            $titleCell->text .= $this->print_visibility_icon_example($visible_example_edit, $example->id);
                         }
                         
                         if ($url = block_exacomp_get_file_url($example, 'example_task')) {
@@ -2069,7 +2094,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                         foreach($students as $student) {
                             
                             if(!$one_student && !$editmode)
-                                $visible_student_example = block_exacomp_example_visible($data->courseid, $example, $student->id);
+                                $visible_student_example = block_exacomp_is_example_visible($data->courseid, $example, $student->id);
                         
                             $columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
                             $studentCell = new html_table_cell();
@@ -2127,7 +2152,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                         $exampleRow->cells[] = $statCell;
                     }
                     $rows[] = $exampleRow;
-                }
                 }
                 if (!empty($descriptor->children)) {
                     $this->print_descriptors($rows, $level+1, $descriptor->children, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $statistic);
@@ -4866,6 +4890,7 @@ var dataset = dataset.map(function (group) {
                         ),
                     array(
                         'id'=>'pre_planning_storage_submit', 'name'=> 'pre_planning_storage_submit',
+                        'type'=>'button', /* browser default setting for html buttons is submit */
                         'exa-type' => 'iframe-popup', 'exa-url' => $url->out(false)
                     )
                 );
@@ -5312,7 +5337,7 @@ var dataset = dataset.map(function (group) {
         
         if (!$PAGE->headerprinted) {
             // print header if not printed yet
-            $PAGE->set_pagelayout('popup');
+            $PAGE->set_pagelayout('embedded');
             return $this->header();
         }
         

@@ -43,7 +43,7 @@ $output = block_exacomp_get_renderer();
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/topic.php', array('courseid' => $courseid));
 $PAGE->set_heading(block_exacomp::t('de:Lernfortschritt hinzufügen'));
-$PAGE->set_pagelayout('popup');
+$PAGE->set_pagelayout('embedded');
 
 // build tab navigation & print header
 

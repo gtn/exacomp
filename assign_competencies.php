@@ -114,24 +114,25 @@ if($example_del = optional_param('exampleid', 0, PARAM_INT)){
 }
 
 // IF TEACHER SHOW ALL COURSE STUDENTS, IF NOT ONLY CURRENT USER
-$students = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : array($USER->id => $USER);
-if($course_settings->nostudents) $students = array();
+$students = $allCourseStudents = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : array($USER->id => $USER);
+if($course_settings->nostudents) $allCourseStudents = array();
 
 $competence_tree = block_exacomp_get_competence_tree($courseid,(isset($selectedTopic))?$selectedTopic->id:null,false,(isset($selectedNiveau))?$selectedNiveau->id:null,
-		!($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies, true);
+		($course_settings->show_all_examples != 0 || $isTeacher),$course_settings->filteredtaxonomies, true);
 
 $scheme = block_exacomp_get_grading_scheme($courseid);
 $colselector="";
 $statistic = false;
 if($isTeacher){
-    if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS)
-        $colselector=$output->print_column_selector(count($students));
-    elseif (!$studentid)
-    $students = array();
-    elseif($studentid == BLOCK_EXACOMP_SHOW_STATISTIC)
-    $statistic = true;
-    else
+    if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
+        $colselector=$output->print_column_selector(count($allCourseStudents));
+    } elseif (!$studentid) {
+        $students = array();
+    } elseif ($studentid == BLOCK_EXACOMP_SHOW_STATISTIC) {
+        $statistic = true;
+    } else {
         $students = !empty($students[$studentid]) ? array($students[$studentid]) : $students;
+    }
 }
 
 foreach($students as $student) {
@@ -145,7 +146,7 @@ $selectedSubject = block_exacomp_get_subject_by_id($selectedTopic->subjid);
 
 if (optional_param('print', false, PARAM_BOOL)) {
     $output->print = true;
-    $html = '';
+    $html_tables = [];
     
     if ($group == -1) {
         // all students, do nothing
@@ -160,17 +161,13 @@ if (optional_param('print', false, PARAM_BOOL)) {
     for ($group_i = 0; $group_i < count($students); $group_i+=STUDENTS_PER_COLUMN) {
         $students_to_print = array_slice($students, $group_i, STUDENTS_PER_COLUMN, true);
         
-        if ($group_i) {
-            // after 2nd group add page break
-            $ret .= '<br pagebreak="true"/>';
-        }
-        
         $html_header = $output->print_overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
+
         // $html .= "&nbsp;<br />";
-        $html .= $output->print_competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, (block_exacomp_is_altversion() && $selectedNiveau->id != SHOW_ALL_NIVEAUS), false, 0, $statistic);
+        $html_tables[] = $output->print_competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, (block_exacomp_is_altversion() && $selectedNiveau->id != SHOW_ALL_NIVEAUS), false, 0, $statistic);
     }
 
-    block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html);
+    block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html_tables);
 }
 
 echo $output->header($context, $courseid, $page_identifier);
@@ -178,7 +175,7 @@ echo $colselector;
 echo $output->print_competence_overview_form_start((isset($selectedNiveau))?$selectedNiveau:null, (isset($selectedTopic))?$selectedTopic:null, $studentid, $editmode);
 
 //dropdowns for subjects and topics and students -> if user is teacher
-echo $output->print_overview_dropdowns(block_exacomp_get_schooltypetree_by_topics($topics), $selectedTopic->id, $selectedNiveau->id, $students, (!$editmode) ? $studentid : $selectedStudentid, $isTeacher);
+echo $output->print_overview_dropdowns(block_exacomp_get_schooltypetree_by_topics($topics), $selectedTopic->id, $selectedNiveau->id, $allCourseStudents, (!$editmode) ? $studentid : $selectedStudentid, $isTeacher);
 
 if($selectedNiveau->id != SHOW_ALL_NIVEAUS){
 	echo $output->print_overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);

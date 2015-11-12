@@ -51,22 +51,8 @@ class printer_TCPDF extends \TCPDF {
 }
 
 class printer {
-    static function competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, $selectedStudent, $html_header, $html_content) {
+    static function competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, $selectedStudent, $html_header, $html_tables) {
         $pdf = new printer_TCPDF('L');
-        
-        // convert padding to spaces, because tcpdf doesn't support padding
-        $html_content = preg_replace_callback('!padding-left:\s*([0-9]+)[^>]+>(<div[^>]*>)?!', function($matches){
-            return $matches[0].str_repeat('&nbsp;', round($matches[1]/5));
-        }, $html_content);
-        
-        // ersten beide zeilen in den header geben
-        if (!preg_match('!<table.*<tbody>.*(<tr.*<tr.*</tr>)!isU', $html_content, $matches)) {
-            die('error #gg98daa');
-        }
-        
-        $html_content = str_replace($matches[1], '', $html_content);
-        $html_content = str_replace('<tr ', '<tr nobr="true"', $html_content);
-        $html_header .= $matches[0].'</table>';
         
         $pdf->setStyle('
             * {
@@ -98,11 +84,33 @@ class printer {
                 ');
         
         $pdf->setHeaderMargin(5);
-        $pdf->setHeaderHTML($html_header);
-        
         $pdf->SetTopMargin(40);
         
-        $pdf->writeHTML($html_content);
+        foreach ($html_tables as $html_table) {
+            // convert padding to spaces, because tcpdf doesn't support padding
+            /*
+            $html_table = preg_replace_callback('!padding-left:\s*([0-9]+)[^>]+>(<div[^>]*>)?!', function($matches){
+                return $matches[0].str_repeat('&nbsp;', round($matches[1]/5));
+            }, $html_table);
+            */
+            
+            // add spacing for examples
+            $html_table = preg_replace('!block_exacomp_example.*c1.*<div[^>]*>!isU', '$0&nbsp;&nbsp;&nbsp;&nbsp;', $html_table);
+        
+            // ersten beide zeilen in den header geben
+            if (!preg_match('!<table.*<tbody>.*(<tr.*<tr.*</tr>)!isU', $html_table, $matches)) {
+                die('error #gg98daa');
+            }
+            
+            $html_table = str_replace($matches[1], '', $html_table);
+            $html_table = str_replace('<tr ', '<tr nobr="true"', $html_table);
+
+            $pdf->setHeaderHTML($html_header.$matches[0].'</table>');
+            
+            $pdf->AddPage();
+            $pdf->writeHTML($html_table);
+        }
+        
         $pdf->Output();
         
         exit;

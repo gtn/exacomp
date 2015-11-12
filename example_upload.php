@@ -49,8 +49,8 @@ $context = context_course::instance($courseid);
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/example_upload.php', array('courseid' => $courseid));
-$PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
-$PAGE->set_pagelayout('popup');
+$PAGE->set_title(get_string('pluginname', 'block_exacomp'));
+$PAGE->set_pagelayout('embedded');
 
 $PAGE->requires->js("/blocks/exacomp/javascript/CollapsibleLists.compressed.js");
 $PAGE->requires->css("/blocks/exacomp/css/CollapsibleLists.css");
