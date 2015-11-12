@@ -470,66 +470,68 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
     return $id;
 }
 
-function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $value = null, $starttime = 0, $endtime = 0, $studypartner = 'self') {
-    global $DB,$USER,$logging;
-    
-    
-    $updateEvaluation = new stdClass();
-    
-    if ($role == block_exacomp::ROLE_TEACHER) {
-        $updateEvaluation->teacher_evaluation = ($value != -1) ? $value : null;
-        $updateEvaluation->teacher_reviewerid = $USER->id;
-    } else {
-        if ($userid != $USER->id)
-            // student can only assess himself
-            continue;
-            
-        if (!empty($starttime)) {
-            $date = new DateTime(clean_param($values['starttime'], PARAM_SEQUENCE));
-            $starttime = $date->getTimestamp();
-        }else{
-            $starttime = null;
-        }
-            
-        if (!empty($endtime)) {
-            $date = new DateTime(clean_param($values['endtime'], PARAM_SEQUENCE));
-            $endtime = $date->getTimestamp();
-        }else{
-            $endtime = null;
-        }
-            
-        if($value != null)
-        $updateEvaluation->student_evaluation = ($value != -1) ? $value : null;
-            
-        $updateEvaluation->starttime = $starttime;
-        $updateEvaluation->endtime = $endtime;
-        $updateEvaluation->studypartner = (block_exacomp_is_altversion()) ? 'self' : $studypartner;
-    }
-    if($record = $DB->get_record(block_exacomp::DB_EXAMPLEEVAL,array("studentid" => $userid, "courseid" => $courseid, "exampleid" => $exampleid))) {
-        //if teacher keep studenteval
-        if($role == block_exacomp::ROLE_TEACHER) {
-            $record->teacher_evaluation = $updateEvaluation->teacher_evaluation;
-            $record->teacher_reviewerid = $updateEvaluation->teacher_reviewerid;
-            $DB->update_record(block_exacomp::DB_EXAMPLEEVAL,$record);
-        } else {
-            //if student keep teachereval
-            $updateEvaluation->teacher_evaluation = $record->teacher_evaluation;
-            $updateEvaluation->teacher_reviewerid = $record->teacher_reviewerid;
-            $updateEvaluation->id = $record->id;
-            $DB->update_record(block_exacomp::DB_EXAMPLEEVAL,$updateEvaluation);
-        }
-        return $record->id;
-    }
-    else {
-        $updateEvaluation->courseid = $courseid;
-        $updateEvaluation->exampleid = $exampleid;
-        $updateEvaluation->studentid = $userid;
-    
-        return $DB->insert_record(block_exacomp::DB_EXAMPLEEVAL, $updateEvaluation);
-    }
-    
-    if($logging && $role == block_exacomp::ROLE_TEACHER)
-        $event = \block_exacomp\event\competence_assigned::create(array('objectid' => $exampleid, 'contextid' => context_course::instance($courseid)->id, 'relateduserid' => $userid))->trigger();
+function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $value = null, $starttime = 0, $endtime = 0, $studypartner = 'self', $additionalinfo=null) {
+	global $DB,$USER,$logging;
+
+
+	$updateEvaluation = new stdClass();
+
+	if ($role == block_exacomp::ROLE_TEACHER) {
+		$updateEvaluation->teacher_evaluation = ($value != -1) ? $value : null;
+		$updateEvaluation->teacher_reviewerid = $USER->id;
+		$updateEvaluation->additionalinfo = $additionalinfo;
+	} else {
+		if ($userid != $USER->id)
+			// student can only assess himself
+			continue;
+
+			if (!empty($starttime)) {
+				$date = new DateTime(clean_param($values['starttime'], PARAM_SEQUENCE));
+				$starttime = $date->getTimestamp();
+			}else{
+				$starttime = null;
+			}
+
+			if (!empty($endtime)) {
+				$date = new DateTime(clean_param($values['endtime'], PARAM_SEQUENCE));
+				$endtime = $date->getTimestamp();
+			}else{
+				$endtime = null;
+			}
+
+			if($value != null)
+				$updateEvaluation->student_evaluation = ($value != -1) ? $value : null;
+
+				$updateEvaluation->starttime = $starttime;
+				$updateEvaluation->endtime = $endtime;
+				$updateEvaluation->studypartner = (block_exacomp_is_altversion()) ? 'self' : $studypartner;
+	}
+	if($record = $DB->get_record(block_exacomp::DB_EXAMPLEEVAL,array("studentid" => $userid, "courseid" => $courseid, "exampleid" => $exampleid))) {
+		//if teacher keep studenteval
+		if($role == block_exacomp::ROLE_TEACHER) {
+			$record->teacher_evaluation = $updateEvaluation->teacher_evaluation;
+			$record->teacher_reviewerid = $updateEvaluation->teacher_reviewerid;
+			$record->additionalinfo = $additionalinfo;
+			$DB->update_record(block_exacomp::DB_EXAMPLEEVAL,$record);
+		} else {
+			//if student keep teachereval
+			$updateEvaluation->teacher_evaluation = $record->teacher_evaluation;
+			$updateEvaluation->teacher_reviewerid = $record->teacher_reviewerid;
+			$updateEvaluation->id = $record->id;
+			$DB->update_record(block_exacomp::DB_EXAMPLEEVAL,$updateEvaluation);
+		}
+		return $record->id;
+	}
+	else {
+		$updateEvaluation->courseid = $courseid;
+		$updateEvaluation->exampleid = $exampleid;
+		$updateEvaluation->studentid = $userid;
+
+		return $DB->insert_record(block_exacomp::DB_EXAMPLEEVAL, $updateEvaluation);
+	}
+
+	if($logging && $role == block_exacomp::ROLE_TEACHER)
+		$event = \block_exacomp\event\competence_assigned::create(array('objectid' => $exampleid, 'contextid' => context_course::instance($courseid)->id, 'relateduserid' => $userid))->trigger();
 }
 /**
  * Set one competence for one user for one activity in one course

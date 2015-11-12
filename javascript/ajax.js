@@ -9,6 +9,8 @@
 	
 	var competencies_additional_grading = {};
 	
+	var examples_additional_grading = {};
+
 	$(document).on('focus', 'input[name^=data\-]', function() {
 	    prev_val = $(this).val();
 	});
@@ -246,6 +248,10 @@
 				multiQueryData.competencies_additional_grading = competencies_additional_grading;
 			}
 
+			if(!$.isEmptyObject(examples_additional_grading)){
+				multiQueryData.examples_additional_grading = examples_additional_grading;
+			}
+			
 			//check all new_comp text fields if somewhere new text is entered when saving and create new descriptor
 			var new_descriptors = [];
 			$( "input[exa-type=new-descriptor]" ).each(function (){
@@ -618,6 +624,16 @@
 		if(!competencies_additional_grading[descrid])
 			competencies_additional_grading[descrid] = {};
 		competencies_additional_grading[descrid][studentid] = value;
+	});
+	
+	$(document).on('focus', 'select[id^=additionalinfo\-]', function(event) {
+		exampleid = $(this).attr('exampleid');
+		studentid = $(this).attr('studentid');
+		value = $(this).val();
+		
+		if(!examples_additional_grading[exampleid])
+			examples_additional_grading[exampleid] = {};
+		examples_additional_grading[exampleid][studentid] = value;
 	});
 	
 	$(window).on('beforeunload', function (){

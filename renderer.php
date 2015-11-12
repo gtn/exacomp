@@ -2196,9 +2196,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                 $exampleRow->cells[] = $studentCellEvaluation;
 							
 							$additional_grading_cell = new html_table_cell();
-							//TODO Slider here
-							$additional_grading_cell->text = "";
-							$additional_grading_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+							
+							//TODO: optimize get_field query for each student for each example
+							$student_additional_grading = $DB->get_field(block_exacomp::DB_EXAMPLEEVAL, 'additionalinfo', array('studentid'=>$student->id,'exampleid'=>$example->id,'courseid'=>$data->courseid));
+							$additional_grading_cell->text = html_writer::select(range(0, 100),'additionalinfo',$student_additional_grading,false,array('id'=>'additionalinfo-'.$example->id . '-' . $descriptor->id,'exampleid'=>$example->id,'studentid'=>$student->id)) . html_writer::div(html_writer::div('','slider-'.$example->id . '-' . $descriptor->id),'dialog-'.$example->id . '-' . $descriptor->id);
 							
                             if($additional_grading && $data->showevaluation && $data->role == block_exacomp::ROLE_STUDENT)
                             	$exampleRow->cells[] = $additional_grading_cell;
