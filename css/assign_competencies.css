@@ -163,3 +163,13 @@
 #block_exacomp div.edit_buttons_float_right {
 	float: right;
 }
+
+
+#assign-competencies select {
+    padding: 0;
+    margin: 0;
+    width: auto;
+}
+#assign-competencies .percent-rating input {
+    width: 20px;
+}

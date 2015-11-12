@@ -422,11 +422,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
         }
         
         if($isTeacher){
-            if (!$this->is_edit_mode()) {
-                /*
-                $content .= html_writer::empty_tag('input', array('type'=>'text', 'name'=>'exacomp_competence_grid_select_student', 'value'=>$selectedStudent));
+            if ($this->is_edit_mode()) {
+                // display a hidden field? not needed, because the form never gets submitted (it's ajax)
+                // $content .= html_writer::empty_tag('input', array('type'=>'text', 'name'=>'exacomp_competence_grid_select_student', 'value'=>$selectedStudent));
+                $content .= '<h3>'.block_exacomp::t('de:Sie befinden sich im Bearbeiten Modus').'</h3>';
             } else {
-                */
                 $content .= html_writer::empty_tag("br");
                 $content .= get_string("choosestudent", "block_exacomp");
                 $content .= block_exacomp_studentselector($students,$selectedStudent,$NG_PAGE->url, BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
@@ -1888,8 +1888,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                 if($data->showevaluation)
                                     $studentCellEvaluation->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
             
-                                $studentCell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme, ($visible_student)?false:true, $data->profoundness, ($data->role == block_exacomp::ROLE_TEACHER) ? $reviewerid : null);
+                                $studentCell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme, !$visible_student, $data->profoundness, ($data->role == block_exacomp::ROLE_TEACHER) ? $reviewerid : null);
                             }
+                            
+                            $studentCell->text .= ' <span class="percent-rating">'.html_writer::empty_tag('input', $visible_student ? array() : array('disabled'=>'disabled')).' %</span>';
                             
                             // ICONS
                             if(isset($icontext)) 
@@ -2119,12 +2121,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                     
                                 if($data->role == block_exacomp::ROLE_STUDENT) {
                                     $studentCell->text .= get_string('assigndone','block_exacomp');
-                                    $studentCell->text .= $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, ($visible_student_example)?false:true);
+                                    $studentCell->text .= $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, !$visible_student_example);
         
                                     //$studentCell->text .= $this->print_student_example_evaluation_form($example->id, $student->id, $data->courseid);
                                 }
                                 else {
-                                    $studentCell->text .= $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, ($visible_student_example)?false:true);
+                                    $studentCell->text .= $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, !$visible_student_example);
                                 }
                             }
                             /*
@@ -2135,12 +2137,14 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                 if($data->showevaluation)
                                     $studentCellEvaluation->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
         
-                                $studentCell->text .= $this->generate_select($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, ($visible_student_example)?false:true, $data->profoundness);
+                                $studentCell->text .= $this->generate_select($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, !$visible_student_example, $data->profoundness);
         
                                 //if($data->role == block_exacomp::ROLE_STUDENT)
                                     //$studentCell->text .= $this->print_student_example_evaluation_form($example->id, $student->id, $data->courseid);
                             }
         
+                            $studentCell->text .= ' <span class="percent-rating">'.html_writer::empty_tag('input', $visible_student_example ? array() : array('disabled'=>'disabled')).' %</span>';
+                            
                             if($data->showevaluation)
                                 $exampleRow->cells[] = $studentCellEvaluation;
                             

@@ -75,6 +75,8 @@ function block_exacomp_init_js_css(){
     // js/css for whole block
     $PAGE->requires->css('/blocks/exacomp/css/styles.css');
     $PAGE->requires->jquery();
+    $PAGE->requires->jquery_plugin('ui');
+    $PAGE->requires->jquery_plugin('ui-css');
     $PAGE->requires->js('/blocks/exacomp/javascript/exacomp.js', true);
     $PAGE->requires->js('/blocks/exacomp/javascript/ajax.js', true);
 
