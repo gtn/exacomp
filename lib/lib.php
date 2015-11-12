@@ -5980,3 +5980,21 @@ function block_exacomp_save_additional_grading_for_descriptor($courseid, $descri
 		$DB->insert_record(block_exacomp::DB_COMPETENCIES, $insert);
 	}
 }
+
+function block_exacomp_save_additional_grading_for_example($courseid, $exampleid, $studentid, $additionalinfo){
+	global $DB, $USER;
+	
+	$record = $DB->get_record(block_exacomp::DB_EXAMPEVAL, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>$studentid));
+	if($record){
+		$record->additionalinfo = $additionalinfo;
+		$DB->update_record(block_exacomp::DB_EXAMPEVAL, $record);
+	}else{
+		$insert = new stdClass();
+		$insert->exampleid = $exampleid;
+		$insert->studentid = $studentid;
+		$insert->courseid = $courseid;
+		$insert->teacher_reviewerid = $USER->id;
+		$insert->additionalinfo = $additionalinfo;
+		$DB->insert_record(block_exacomp::DB_EXAMPEVAL, $insert);
+	}
+}

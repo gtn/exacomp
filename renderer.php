@@ -4167,8 +4167,10 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
                         $img_teacher = html_writer::empty_tag('img', array('src'=>new moodle_url($img_teacher_src)));
                     }
                     
-                    $span_teacher = html_writer::tag('span', get_string('teacher_eval', 'block_exacomp').": ".((isset($student->competencies->teacher[$descriptor->id]))?$img_teacher:'oB'), array('class'=>"compprof_barchart_teacher"));
-                                        
+                    $span_teacher = html_writer::tag('span', get_string('teacher_eval', 'block_exacomp').": ".
+						((isset($student->competencies->teacher[$descriptor->id]))?$img_teacher:'oB') . (isset($student->competencies->teacher_additional_grading[$descriptor->id])? " (".$student->competencies->teacher_additional_grading[$descriptor->id].") ":""), 
+						array('class'=>"compprof_barchart_teacher"));
+                                       
                     $img_student = "";
                     if(isset($student->competencies->student[$descriptor->id])){
                         $img_student_src = '/blocks/exacomp/pix/compprof_rating_student_'.$student->competencies->student[$descriptor->id].'.png';
