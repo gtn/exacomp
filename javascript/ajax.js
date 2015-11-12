@@ -420,8 +420,11 @@
 			$('.rowgroup-content-'+id).hide();
 			
 			//disable checkbox for teacher, when hiding descriptor for student
-			if(studentid > 0)
-				$('input[name=data-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", true ); 
+			if(studentid > 0){
+				$('input[name=data-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", true );
+				$('select[name=data-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", true );
+				$('input[name=add-grading-'+studentid+'-'+descrid+']').prop("disabled", true);
+			}
 			
 			var img = $("img", this);
 			img.attr('src',$(this).attr('hideurl'));
@@ -450,6 +453,8 @@
 			
 			//enable checkbox for teacher, when showing descriptor for student
 			$('input[name=data-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
+			$('input[name=add-grading-'+studentid+'-'+descrid+']').prop("disabled", false);
+			$('select[name=data-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
 			
 			var img = $("img", this);
 			img.attr('src',$(this).attr('showurl'));
