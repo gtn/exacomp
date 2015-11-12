@@ -5981,20 +5981,37 @@ function block_exacomp_save_additional_grading_for_descriptor($courseid, $descri
 	}
 }
 
-function block_exacomp_save_additional_grading_for_example($courseid, $exampleid, $studentid, $additionalinfo){
+function block_exacomp_save_additional_grading_for_example($courseid, $exampleid, $studentid, $additionalinfo) {
 	global $DB, $USER;
 	
-	$record = $DB->get_record(block_exacomp::DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>$studentid));
-	if($record){
+	$record = $DB->get_record ( block_exacomp::DB_EXAMPLEEVAL, array (
+			'courseid' => $courseid,
+			'exampleid' => $exampleid,
+			'studentid' => $studentid 
+	) );
+	if ($record) {
 		$record->additionalinfo = $additionalinfo;
-		$DB->update_record(block_exacomp::DB_EXAMPLEEVAL, $record);
-	}else{
-		$insert = new stdClass();
+		$DB->update_record ( block_exacomp::DB_EXAMPLEEVAL, $record );
+	} else {
+		$insert = new stdClass ();
 		$insert->exampleid = $exampleid;
 		$insert->studentid = $studentid;
 		$insert->courseid = $courseid;
 		$insert->teacher_reviewerid = $USER->id;
 		$insert->additionalinfo = $additionalinfo;
-		$DB->insert_record(block_exacomp::DB_EXAMPLEEVAL, $insert);
+		$DB->insert_record ( block_exacomp::DB_EXAMPLEEVAL, $insert );
+	}
+	
+	$item = block_exacomp_get_current_item_for_example ( $studentid, $exampleid );
+	if ($item) {
+		$itemexample = $DB->get_record ( 'block_exacompitemexample', array (
+				'exampleid' => $exampleid,
+				'itemid' => $item->id 
+		) );
+		
+		$itemexample->teachervalue = $additionalinfo;
+		$itemexample->datemodified = time ();
+		
+		$DB->update_record ( 'block_exacompitemexample', $itemexample );
 	}
 }
