@@ -2335,5 +2335,48 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2015110202, 'exacomp');
     }
     
+    if ($oldversion < 2015111200) {
+    
+    	// Define field additionalinfo to be added to block_exacompexameval.
+    	$table = new xmldb_table('block_exacompexameval');
+    	$field = new xmldb_field('additionalinfo', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'studypartner');
+    
+    	// Conditionally launch add field additionalinfo.
+    	if (!$dbman->field_exists($table, $field)) {
+    		$dbman->add_field($table, $field);
+    	}
+    
+    	// Rename field additionalinfo on table block_exacompcompuser to NEWNAMEGOESHERE.
+    	$table = new xmldb_table('block_exacompcompuser');
+    	$field = new xmldb_field('percentage', XMLDB_TYPE_TEXT, null, null, null, null, null, 'timestamp');
+    	
+    	// Launch rename field additionalinfo.
+    	$dbman->rename_field($table, $field, 'additionalinfo');
+    	
+    	// Changing type of field additionalinfo on table block_exacompcompuser to text.
+    	$table = new xmldb_table('block_exacompcompuser');
+    	$field = new xmldb_field('additionalinfo', XMLDB_TYPE_TEXT, null, null, null, null, null, 'timestamp');
+    	
+    	// Launch change of type for field additionalinfo.
+    	$dbman->change_field_type($table, $field);
+    	
+    	// Changing nullability of field additionalinfo on table block_exacompcompuser to null.
+    	$table = new xmldb_table('block_exacompcompuser');
+    	$field = new xmldb_field('additionalinfo', XMLDB_TYPE_TEXT, null, null, null, null, null, 'timestamp');
+    	
+    	// Launch change of nullability for field additionalinfo.
+    	$dbman->change_field_notnull($table, $field);
+    	
+    	// Changing the default of field additionalinfo on table block_exacompcompuser to drop it.
+    	$table = new xmldb_table('block_exacompcompuser');
+    	$field = new xmldb_field('additionalinfo', XMLDB_TYPE_TEXT, null, null, null, null, null, 'timestamp');
+    	
+    	// Launch change of default for field additionalinfo.
+    	$dbman->change_field_default($table, $field);
+    	
+    	// Exacomp savepoint reached.
+    	upgrade_block_savepoint(true, 2015111200, 'exacomp');
+    }
+    
 	return $return_result;
 }

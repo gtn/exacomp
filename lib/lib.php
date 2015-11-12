@@ -104,9 +104,11 @@ function block_exacomp_init_js_weekly_schedule(){
     
     $PAGE->requires->css('/blocks/exacomp/fullcalendar/fullcalendar.css');
     
+    $PAGE->requires->jquery_plugin('ui');
+    $PAGE->requires->jquery_plugin('ui-css');
+    
     $PAGE->requires->js('/blocks/exacomp/fullcalendar/moment.min.js', true);
     //$PAGE->requires->js('/blocks/exacomp/javascript/jquery.js');
-    $PAGE->requires->js('/blocks/exacomp/javascript/jquery-ui.js', true);
     $PAGE->requires->js('/blocks/exacomp/fullcalendar/fullcalendar.js', true);
     $PAGE->requires->js('/blocks/exacomp/fullcalendar/lang-all.js', true);
     
