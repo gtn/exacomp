@@ -195,6 +195,21 @@ switch($action){
             }
         }
         
+        if(!empty($data->competencies_additional_grading)){
+        	
+            $additional_grading = block_exacomp\param::clean_array($data->competencies_additional_grading, 
+            	array(PARAM_INT=>
+            		array(PARAM_INT=>PARAM_TEXT)
+            	)
+            );
+            
+            foreach($additional_grading as $descrid => $students){
+            	foreach($students as $studentid=>$value){
+            		block_exacomp_save_additional_grading_for_descriptor($courseid, $descrid, $studentid, $value);
+            	}
+            }
+        }
+        
         die('ok');
     case 'delete-crosssubject':
         $crosssubjectid = required_param('crosssubjid', PARAM_INT);

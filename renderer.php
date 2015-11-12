@@ -1938,8 +1938,17 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                 $descriptorRow->cells[] = $studentCellEvaluation;
                                 
 							$additional_grading_cell = new html_table_cell();
-							$additional_grading_cell->text = $parent ? ' <span class="percent-rating">'.html_writer::empty_tag('input', ($visible_student && $data->role == block_exacomp::ROLE_TEACHER) ? array('name'=>'add-grading-'.$student->id.'-'.$descriptor->id, 'type'=>'text', 'maxlength'=>3, 'class'=>'percent-rating-text', 'value'=>(isset($student->competencies->teacher_additional_grading[$descriptor->id]) && $student->competencies->teacher_additional_grading[$descriptor->id] != null)?$student->competencies->teacher_additional_grading[$descriptor->id]:"") : 
-								array('name'=>'add-grading-'.$student->id.'-'.$descriptor->id, 'disabled'=>'disabled', 'type'=>'text', 'maxlength'=>3, 'class'=>'percent-rating-text', 'value'=>(isset($student->competencies->teacher_additional_grading[$descriptor->id]) && $student->competencies->teacher_additional_grading[$descriptor->id] != null)?$student->competencies->teacher_additional_grading[$descriptor->id]:"")).' %</span>' : "";
+							$params = array('name'=>'add-grading-'.$student->id.'-'.$descriptor->id, 'type'=>'text', 
+								'maxlength'=>3, 'class'=>'percent-rating-text', 
+								'value'=>(isset($student->competencies->teacher_additional_grading[$descriptor->id]) && 
+									$student->competencies->teacher_additional_grading[$descriptor->id] != null)?
+										$student->competencies->teacher_additional_grading[$descriptor->id]:"",
+								'descrid'=>$descriptor->id, 'studentid'=>$student->id);
+								
+							if(!$visible_student || $data->role == block_exacomp::ROLE_STUDENT)
+								$params['disabled'] = 'disabled';
+							
+							$additional_grading_cell->text = $parent ? ' <span class="percent-rating">'.html_writer::empty_tag('input', $params).' %</span>' : "";
                             $additional_grading_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;    
 								
                             if($additional_grading && $data->showevaluation && $data->role == block_exacomp::ROLE_STUDENT)

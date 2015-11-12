@@ -7,6 +7,8 @@
 	
 	var prev_val;
 	
+	var competencies_additional_grading = {};
+	
 	$(document).on('focus', 'input[name^=data\-]', function() {
 	    prev_val = $(this).val();
 	});
@@ -220,6 +222,7 @@
 			}
 
 			var competencies_by_type = [];
+			
 			if (!$.isEmptyObject(competencies)) {
 				competencies_by_type[0] = competencies;
 				competencies = {};
@@ -237,6 +240,10 @@
 			
 			if (competencies_by_type.length) {
 				multiQueryData.competencies_by_type = competencies_by_type
+			}
+			
+			if(!$.isEmptyObject(competencies_additional_grading)){
+				multiQueryData.competencies_additional_grading = competencies_additional_grading;
 			}
 
 			//check all new_comp text fields if somewhere new text is entered when saving and create new descriptor
@@ -601,6 +608,16 @@
 		
 		event.preventDefault();
 		return false;
+	});
+	
+	$(document).on('change', 'input[name^=add-grading\-]', function(event) {
+		descrid = $(this).attr('descrid');
+		studentid = $(this).attr('studentid');
+		value = $(this).val();
+		
+		if(!competencies_additional_grading[descrid])
+			competencies_additional_grading[descrid] = {};
+		competencies_additional_grading[descrid][studentid] = value;
 	});
 	
 	$(window).on('beforeunload', function (){

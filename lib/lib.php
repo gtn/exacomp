@@ -4409,7 +4409,7 @@ function block_exacomp_descriptor_used($courseid, $descriptor, $studentid){
     //                                 if no evaluation/submission for the examples of this descriptor
     
     if($studentid == 0){
-        $sql = "SELECT * FROM {".block_exacomp::DB_COMPETENCIES."} WHERE courseid = ? AND compid = ? AND comptype=? AND value>0";
+        $sql = "SELECT * FROM {".block_exacomp::DB_COMPETENCIES."} WHERE courseid = ? AND compid = ? AND comptype=? AND ( value>0 OR additionalinfo IS NOT NULL)";
         $records = $DB->get_records_sql($sql, array($courseid, $descriptor->id, TYPE_DESCRIPTOR));
         if($records) return true;
         
@@ -4426,7 +4426,7 @@ function block_exacomp_descriptor_used($courseid, $descriptor, $studentid){
         }
         //TODO submission //activities
     }else{
-        $sql = "SELECT * FROM {".block_exacomp::DB_COMPETENCIES."} WHERE courseid = ? AND compid = ? AND comptype=? AND userid = ? AND value>0";
+        $sql = "SELECT * FROM {".block_exacomp::DB_COMPETENCIES."} WHERE courseid = ? AND compid = ? AND comptype=? AND userid = ? AND ( value>0 OR additionalinfo IS NOT NULL)";
         $records = $DB->get_records_sql($sql, array($courseid, $descriptor->id, TYPE_DESCRIPTOR, $studentid));
         if($records) return true;
         
@@ -5957,4 +5957,24 @@ function block_exacomp_get_cm_from_cmid($cmid) {
     } catch (moodle_exception $e) {
         return null;
     }
+}
+
+function block_exacomp_save_additional_grading_for_descriptor($courseid, $descriptorid, $studentid, $additionalinfo){
+	global $DB, $USER;
+	
+	$record = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'compid'=>$descriptorid, 'userid'=>$studentid, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_TEACHER));
+	if($record){
+		$record->additionalinfo = $additionalinfo;
+		$DB->update_record(block_exacomp::DB_COMPETENCIES, $record);
+	}else{
+		$insert = new stdClass();
+		$insert->compid = $descriptorid;
+		$insert->userid = $studentid;
+		$insert->courseid = $courseid;
+		$insert->comptype = block_exacomp::TYPE_DESCRIPTOR;
+		$insert->additionalinfo = $additionalinfo;
+		$insert->role = block_exacomp::ROLE_TEACHER;
+		$insert->reviewerid = $USER->id;
+		$DB->insert_record(block_exacomp::DB_COMPETENCIES, $insert);
+	}
 }
