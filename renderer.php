@@ -1938,8 +1938,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                 $descriptorRow->cells[] = $studentCellEvaluation;
                                 
 							$additional_grading_cell = new html_table_cell();
-							$additional_grading_cell->text = $parent ? ' <span class="percent-rating">'.html_writer::empty_tag('input', $visible_student ? array('type'=>'text', 'maxlength'=>3, 'class'=>'percent-rating-text') : array('disabled'=>'disabled', 'type'=>'text', 'maxlength'=>3)).' %</span>' : "";
-                            $additional_grading_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;    
+							$additional_grading_cell->text = $parent ? ' <span class="percent-rating">'.html_writer::empty_tag('input', $visible_student ? array('type'=>'text', 'maxlength'=>3, 'class'=>'percent-rating-text', 'value'=>(isset($student->competencies->teacher_additional_grading[$descriptor->id]) && $student->competencies->teacher_additional_grading[$descriptor->id] != null)?$student->competencies->teacher_additional_grading[$descriptor->id]:"") : array('disabled'=>'disabled', 'type'=>'text', 'maxlength'=>3, 'class'=>'percent-rating-text')).' %</span>' : "";
+							$additional_grading_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;    
 								
                             if($additional_grading && $data->showevaluation && $data->role == block_exacomp::ROLE_STUDENT)
                             	$descriptorRow->cells[] = $additional_grading_cell;
