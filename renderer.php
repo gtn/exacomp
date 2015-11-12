@@ -1346,7 +1346,11 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     if (!$this->is_print_mode() && block_exacomp_exastudexists() && ($info = block_exastud_api::get_student_review_link_info_for_teacher($student->id))) {
                         $studentCell->text .= ' <a href="'.$info->url.'" title="'.block_exastud_t('de:Überfachliche Bewertung').'" onclick="window.open(this.href,this.target,\'width=880,height=660,scrollbars=yes\'); return false;">'.'<img src="pix/review_student.png" />'.'</a>';
                     }
-    
+                    if ($this->is_print_mode()) {
+                        // zeilenumbruch im namen beim drucken: nur erstes leerzeichen durch <br> ersetzen
+                        $studentCell->text = preg_replace('!\s!', '<br />', $studentCell->text, 1);
+                    }
+                    
                     if($first)
                         $subjectRow->cells[] = $studentCell;
                 }
