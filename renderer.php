@@ -882,7 +882,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                             
                             // Check visibility
                             $descriptor_used = block_exacomp_descriptor_used($courseid, $descriptor, ($studentid != BLOCK_EXACOMP_SHOW_STATISTIC) ? $studentid : 0);
-                            $visible = block_exacomp_check_descriptor_visibility($courseid, $descriptor, ($studentid != BLOCK_EXACOMP_SHOW_STATISTIC) ? $studentid : 0);
+                            $visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, ($studentid != BLOCK_EXACOMP_SHOW_STATISTIC) ? $studentid : 0);
                             $visible_css = block_exacomp_get_descriptor_visible_css($visible, $role);
 
                             $text = block_exacomp_get_descriptor_numbering($descriptor)." ".$descriptor->title;
@@ -912,7 +912,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                             /*
                             if(!$descriptor_used && array_key_exists($descriptor->topicid, $selection) ){
                                 if($editmode || ($descriptor->visible == 1 && $role == block_exacomp::ROLE_TEACHER)){
-                                    $compString .= $this->print_visibility_icon($visible, $descriptor->id);
+                                    $compString .= $this->print_visibility_icon_descriptor($visible, $descriptor->id);
                                 }
                             } */
                             $compdiv .= html_writer::tag('div', $compString,array('class'=>$cssClass));
@@ -1707,7 +1707,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             }
             $descriptor_used = block_exacomp_descriptor_used($data->courseid, $descriptor, $studentid);
             
-            $visible = block_exacomp_check_descriptor_visibility($data->courseid, $descriptor, $studentid, ($one_student||$data->role==block_exacomp::ROLE_STUDENT) );
+            $visible = block_exacomp_is_descriptor_visible($data->courseid, $descriptor, $studentid, ($one_student||$data->role==block_exacomp::ROLE_STUDENT) );
             //echo $descriptor->visible . " / " . $visible . " <br/> ";
                 
             if($data->role == block_exacomp::ROLE_TEACHER || $visible){
@@ -1769,10 +1769,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                             array("target" => "_blank", 'exa-type' => 'iframe-popup'));
                 }
                 //if hidden in course, cannot be shown to one student
-                //TODO without $descriptor->visible kann deskriptor für einzelnen sch�ler eingeblendet werden --> sinnvoll?
                 if(!$this->is_print_mode() && !$descriptor_used){
                     if($editmode || ($one_student && $descriptor->visible && $data->role == block_exacomp::ROLE_TEACHER)){
-                        $titleCell->text .= $this->print_visibility_icon($visible, $descriptor->id);
+                        $titleCell->text .= $this->print_visibility_icon_descriptor($visible, $descriptor->id);
                     }
                     if($editmode && $custom_created_descriptors){
                         $titleCell->text .= html_writer::link('descriptor.php?courseid='.$COURSE->id.'&id='.$descriptor->id, $OUTPUT->pix_icon("i/edit", get_string("edit")), array('exa-type' => 'iframe-popup', 'target'=>'_blank'));
@@ -1806,7 +1805,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                         //check visibility for every student in overview
                         
                         if(!$one_student && !$editmode)
-                            $visible_student = block_exacomp_descriptor_visible($data->courseid, $descriptor, $student->id);
+                            $visible_student = block_exacomp_is_descriptor_visible($data->courseid, $descriptor, $student->id);
                                 
                         $studentCell = new html_table_cell();
                         $columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
@@ -1999,9 +1998,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                             $titleCell->text .= '</span>';
                         }
                         
-                        if (!$example_used && ($data->role == block_exacomp::ROLE_TEACHER) && ($studentid<=0 || block_exacomp_is_example_visible($data->courseid, $example, 0))) {
-                            $visible_example_edit = block_exacomp_get_example_visible_for_edit($data->courseid, $example, $studentid);
-                            $titleCell->text .= $this->print_visibility_icon_example($visible_example_edit, $example->id);
+                        if (!$example_used && ($data->role == block_exacomp::ROLE_TEACHER) && ($editmode || (!$editmode && $one_student && block_exacomp_is_example_visible($data->courseid, $example, 0)))) {
+                            $titleCell->text .= $this->print_visibility_icon_example($visible_example, $example->id);
+                        /*
+                        } else {
+                            $titleCell->text .= '<span style="display: inline-block; width: 16px; margin-right: 4px;">&nbsp;</span>';
+                        */
                         }
                         
                         if ($url = block_exacomp_get_file_url($example, 'example_task')) {
@@ -2298,7 +2300,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         
         return html_writer::link($solution, $OUTPUT->pix_icon("e/fullpage", get_string('solution','block_exacomp')) ,array("target" => "_blank"));
     }
-    public function print_visibility_icon($visible, $descriptorid) {
+    public function print_visibility_icon_descriptor($visible, $descriptorid) {
         global $OUTPUT;
         
         if($visible)

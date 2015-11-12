@@ -3132,7 +3132,7 @@ function block_exacomp_get_course_competence_statistics($courseid, $user, $schem
             }
         }
         foreach($descriptors as $descriptor){
-            if(block_exacomp_descriptor_visible($courseid, $descriptor, $student->id)){
+            if(block_exacomp_is_descriptor_visible($courseid, $descriptor, $student->id)){
                 if($student->id == $user->id)
                     if($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset($cm_mm->competencies[$descriptor->id])))
                         $total ++;
@@ -3338,7 +3338,7 @@ function block_exacomp_get_competencies_for_pie_chart($courseid,$user, $scheme, 
         }
     }
     foreach($descriptors as $descriptor){
-        if(block_exacomp_descriptor_visible($courseid, $descriptor, $user->id)){
+        if(block_exacomp_is_descriptor_visible($courseid, $descriptor, $user->id)){
             $teacher_eval = false;
             $student_eval = false;
             if(!$coursesettings->uses_activities || ($coursesettings->uses_activities && isset($cm_mm->competencies[$descriptor->id]))){
@@ -3763,7 +3763,7 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
             $no_data = false;
             if($competence->comptype == TYPE_DESCRIPTOR){
                 foreach($descriptors as $descriptor){
-                    if(block_exacomp_descriptor_visible($course->id, $descriptor, $student->id)){
+                    if(block_exacomp_is_descriptor_visible($course->id, $descriptor, $student->id)){
                         if($descriptor->id == $competence->compid){
                             if($competence->timestamp != null && $competence->timestamp<$min_timestamp)
                                 $min_timestamp = $competence->timestamp;
@@ -3786,7 +3786,7 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
             $no_data = false;
             if($competence->comptype == TYPE_DESCRIPTOR){
                 foreach($descriptors as $descriptor){
-                    if(block_exacomp_descriptor_visible($course->id, $descriptor, $student->id)){
+                    if(block_exacomp_is_descriptor_visible($course->id, $descriptor, $student->id)){
                         if($descriptor->id == $competence->compid){
                             if($competence->timestamp != null && $competence->timestamp<$min_timestamp)
                                 $min_timestamp = $competence->timestamp;
@@ -4376,10 +4376,9 @@ function block_exacomp_set_descriptor_visibility($descrid, $courseid, $visible, 
         
         $DB->execute($sql, array($descrid, $courseid));
     }
-    block_exacomp\db::insert_or_update_record(
-        block_exacomp::DB_DESCVISIBILITY,
-        array('visible'=>$visible),
-        array('descrid'=>$descrid, 'courseid'=>$courseid, 'studentid'=>$studentid)
+    block_exacomp\db::insert_or_update_record(block_exacomp::DB_DESCVISIBILITY,
+        ['visible'=>$visible],
+        ['descrid'=>$descrid, 'courseid'=>$courseid, 'studentid'=>$studentid]
     );
 }
 function block_exacomp_set_example_visibility($exampleid, $courseid, $visible, $studentid){
@@ -4395,19 +4394,6 @@ function block_exacomp_set_example_visibility($exampleid, $courseid, $visible, $
         ['visible'=>$visible],
         ['exampleid'=>$exampleid, 'courseid'=>$courseid, 'studentid'=>$studentid]
     );
-}
-function block_exacomp_descriptor_visible($courseid, $descriptor, $studentid){
-    global $DB;
-    $record = $DB->get_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$descriptor->id, 'studentid'=>$studentid));
-    
-    if($record)
-        return $record->visible;
-    else 
-        if(isset($descriptor->visible))
-            return $descriptor->visible;
-        else if($studentid > 0)
-            return block_exacomp_descriptor_visible($courseid, $descriptor, 0);
-        
 }
 function block_exacomp_descriptor_used($courseid, $descriptor, $studentid){
     global $DB;
@@ -4623,32 +4609,7 @@ function block_exacomp_calculate_spanning_niveau_colspan($niveaus, $spanningNive
     return $colspan;
 }
 
-function block_exacomp_check_descriptor_visibility($courseid, $descriptor, $studentid) {
-    global $DB;
-    
-    $descriptor_used = block_exacomp_descriptor_used($courseid, $descriptor, $studentid);
-    
-    // if descriptor is used, hidding is impossible
-    if($descriptor_used)
-        return 1;
-    
-    // if we are in editmode, use global descriptor value
-    if($studentid == 0) {
-        if(isset($descriptor->visible))
-            return $descriptor->visible;
-    }
-    
-    // if we are in student mode, we use student value
-    // or if we are in edit mode and do not have a global descriptor value, we get it here
-    $record = $DB->get_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$descriptor->id, 'studentid'=>$studentid));
-    if($record)
-        return $record->visible;
-    else
-        if(isset($descriptor->visible))
-            return $descriptor->visible;
-    
-}
-function block_exacomp_get_example_visible_for_edit($courseid, $example, $studentid) {
+function block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid) {
     global $DB;
     
     // $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
@@ -4656,16 +4617,37 @@ function block_exacomp_get_example_visible_for_edit($courseid, $example, $studen
         $studentid = 0;
     }
     
-    $visible = $DB->get_field(block_exacomp::DB_EXAMPVISIBILITY, 'visible',
-        ['courseid'=>$courseid, 'exampleid'=>$example->id, 'studentid'=>$studentid]);
-    // $DB->get_field() returns false if not found
-    if ($visible !== false) {
-        return $visible;
+    // if used, hiding is impossible
+    $descriptor_used = block_exacomp_descriptor_used($courseid, $descriptor, $studentid);
+    if($descriptor_used)
+        return true;
+    
+    // always use global value first (if set)
+    if (isset($descriptor->visible) && !$descriptor->visible) {
+        return false;
     }
     
+    // check if it is hidden for whole course?
+    $visible = $DB->get_field(block_exacomp::DB_DESCVISIBILITY, 'visible',
+        ['courseid'=>$courseid, 'descrid'=>$descriptor->id, 'studentid'=>0]);
+    // $DB->get_field() returns false if not found
+    if ($visible !== false && !$visible) {
+        return false;
+    }
+    
+    // then try for a student
+    if ($studentid > 0) {
+        $visible = $DB->get_field(block_exacomp::DB_DESCVISIBILITY, 'visible',
+            ['courseid'=>$courseid, 'descrid'=>$descriptor->id, 'studentid'=>$studentid]);
+        // $DB->get_field() returns false if not found
+        if ($visible !== false) {
+            return $visible;
+        }
+    }
+
+    // default is visible
     return true;
 }
-
 function block_exacomp_is_example_visible($courseid, $example, $studentid){
     global $DB;
 
@@ -4674,15 +4656,15 @@ function block_exacomp_is_example_visible($courseid, $example, $studentid){
         $studentid = 0;
     }
     
-    // if example is used, hiding is impossible
+    // if used, hiding is impossible
     $example_used = block_exacomp_example_used($courseid, $example, $studentid);
     if ($example_used) {
         return true;
     }
     
-    // always use example global value first (if set)
+    // always use global value first (if set)
     if (isset($example->visible) && !$example->visible) {
-        return $example->visible;
+        return false;
     }
     
     // check if it is hidden for whole course?
@@ -4690,7 +4672,7 @@ function block_exacomp_is_example_visible($courseid, $example, $studentid){
         ['courseid'=>$courseid, 'exampleid'=>$example->id, 'studentid'=>0]);
     // $DB->get_field() returns false if not found
     if ($visible !== false && !$visible) {
-        return $visible;
+        return false;
     }
     
     // then try for a student
@@ -5006,7 +4988,7 @@ function block_exacomp_get_descriptor_statistic_for_crosssubject($courseid, $cro
 
     foreach($descriptors as $descriptor) {
         $descriptor->visible = $DB->get_field(block_exacomp::DB_DESCVISIBILITY, 'visible', array('courseid'=>$courseid, 'descrid'=>$descriptor->id, 'studentid'=>0));
-        $visible = block_exacomp_check_descriptor_visibility($courseid, $descriptor, $studentid);
+        $visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid);
         if(!$visible) {
             unset($descriptor);
             continue;
@@ -5090,7 +5072,7 @@ function block_exacomp_get_descriptor_statistic($courseid, $descrid, $studentid)
 
     foreach($children as $child) {
         $child->visible = $DB->get_field(block_exacomp::DB_DESCVISIBILITY, 'visible', array('courseid'=>$courseid, 'descrid'=>$child->id, 'studentid'=>0));
-        $visible = block_exacomp_check_descriptor_visibility($courseid, $child, $studentid);
+        $visible = block_exacomp_is_descriptor_visible($courseid, $child, $studentid);
         if(!$visible) {
             unset($child);
             continue;
@@ -5295,7 +5277,7 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
         $inWorkArray = array();
         $example_where_string = "";
         foreach($children as $child){
-            $visible = block_exacomp_check_descriptor_visibility($courseid, $child, $student->id);
+            $visible = block_exacomp_is_descriptor_visible($courseid, $child, $student->id);
             if(!$visible) {
                 continue;
             }
