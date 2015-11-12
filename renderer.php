@@ -1938,7 +1938,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                 $descriptorRow->cells[] = $studentCellEvaluation;
                                 
 							$additional_grading_cell = new html_table_cell();
-							$additional_grading_cell->text = $parent ? ' <span class="percent-rating">'.html_writer::empty_tag('input', $visible_student ? array() : array('disabled'=>'disabled')).' %</span>' : "";
+							$additional_grading_cell->text = $parent ? ' <span class="percent-rating">'.html_writer::empty_tag('input', $visible_student ? array('type'=>'text', 'maxlength'=>3, 'class'=>'percent-rating-text') : array('disabled'=>'disabled', 'type'=>'text', 'maxlength'=>3)).' %</span>' : "";
                             $additional_grading_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;    
 								
                             if($additional_grading && $data->showevaluation && $data->role == block_exacomp::ROLE_STUDENT)
@@ -2187,8 +2187,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 							
 							$additional_grading_cell = new html_table_cell();
 							//TODO Slider here
-							$additional_grading_cell->text = ' <span class="percent-rating">'.html_writer::empty_tag('input', $visible_student_example ? array() : array('disabled'=>'disabled')).' %</span>';
-                            $additional_grading_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+							$additional_grading_cell->text = "";
+							$additional_grading_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
 							
                             if($additional_grading && $data->showevaluation && $data->role == block_exacomp::ROLE_STUDENT)
                             	$exampleRow->cells[] = $additional_grading_cell;

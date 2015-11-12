@@ -170,6 +170,6 @@
     margin: 0;
     width: auto;
 }
-#assign-competencies .percent-rating input {
-    width: 20px;
+#assign-competencies .percent-rating-text{
+    width: 35px;
 }

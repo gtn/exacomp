@@ -159,3 +159,6 @@
 #block_exacomp div.edit_buttons_float_right {
 	float: right;
 }
+#block_exacomp .percent-rating-text {
+    width: 35px;
+}
