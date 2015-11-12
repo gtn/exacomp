@@ -1288,13 +1288,15 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
         return $table_html.html_writer::end_tag('form');
     }
     public function print_competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $lis_singletopic = false, $crosssubjs = false, $crosssubjid = 0, $statistic = false) {
-        global $PAGE;
+        global $PAGE, $additional_grading;
 
         $rowgroup = ($lis_singletopic) ? null : 0;
         //$rowgroup=0;
         $table = new html_table();
         $rows = array();
         $studentsColspan = $showevaluation ? 2 : 1;
+        if($additional_grading && ($showevaluation || $role = block_exacomp::ROLE_TEACHER)) $studentsColspan++;
+        
         $table->attributes['class'] = 'exabis_comp_comp';
 
         if(block_exacomp_exaportexists())
@@ -1346,11 +1348,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     if (!$this->is_print_mode() && block_exacomp_exastudexists() && ($info = block_exastud_api::get_student_review_link_info_for_teacher($student->id))) {
                         $studentCell->text .= ' <a href="'.$info->url.'" title="'.block_exastud_t('de:Überfachliche Bewertung').'" onclick="window.open(this.href,this.target,\'width=880,height=660,scrollbars=yes\'); return false;">'.'<img src="pix/review_student.png" />'.'</a>';
                     }
-                    if ($this->is_print_mode()) {
+    
+					if ($this->is_print_mode()) {
                         // zeilenumbruch im namen beim drucken: nur erstes leerzeichen durch <br> ersetzen
                         $studentCell->text = preg_replace('!\s!', '<br />', $studentCell->text, 1);
                     }
-                    
+					
                     if($first)
                         $subjectRow->cells[] = $studentCell;
                 }
@@ -1384,8 +1387,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                         if($role == block_exacomp::ROLE_TEACHER) {
                             $firstCol->text = get_string('studentshortcut','block_exacomp');
                             $secCol->text = get_string('teachershortcut','block_exacomp');
+                            if($additional_grading) $secCol->colspan = 2;
                         } else {
                             $firstCol->text = get_string('teachershortcut','block_exacomp');
+                            if($additional_grading) $firstCol->colspan = 2;
                             $secCol->text = get_string('studentshortcut','block_exacomp');
                         }
     
@@ -1452,6 +1457,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                         $studentevalCol->text = $this->generate_select('datacrosssubs', $crosssubjid, 'crosssubs', $student, $evaluation, $scheme, true);
                     }
                     
+					if($role == block_exacomp::ROLE_STUDENT)
+						$studentevalCol->colspan = 2;
+						
                     $totalRow->cells[] = $studentevalCol;
                 }
             
@@ -1464,6 +1472,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                 }else{
                     $teacherevalCol->text = $this->generate_select('datacrosssubs', $crosssubjid, 'crosssubs', $student, $evaluation, $scheme, false);
                 }
+				
+				if($role == block_exacomp::ROLE_TEACHER)
+					$teacherevalCol->colspan = 2;
+					
                 $totalRow->cells[] = $teacherevalCol;
             }
             
@@ -1527,7 +1539,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
     }
 
     public function print_topics(&$rows, $level, $topics, &$data, $students, $rowgroup_class = '', $profoundness = false, $editmode = false, $statistic = false, $crosssubjs = false, $crosssubjid=0) {
-        $topicparam = optional_param('topicid', 0, PARAM_INT);
+        global $additional_grading;
+		$topicparam = optional_param('topicid', 0, PARAM_INT);
         $padding = $level * 20 + 12;
         $evaluation = ($data->role == block_exacomp::ROLE_TEACHER) ? "teacher" : "student";
 
@@ -1576,6 +1589,11 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     $studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
                     $studentCell->colspan = (!$profoundness) ? $studentsColspan : 4;
     
+					$additional_grading_cell = new html_table_cell();
+					$additional_grading_cell->text = "";
+					$additional_grading_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+							
+                             
                     if((isset($data->cm_mm->topics[$topic->id]) || $data->showalldescriptors) && !$profoundness) {
                         // SHOW EVALUATION
                         if($data->showevaluation) {
@@ -1632,7 +1650,15 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                             $topicRow->cells[] = new html_table_cell();
                     }
                     
-                    $topicRow->cells[] = $studentCell;
+					if($additional_grading && $data->showevaluation && $data->role == block_exacomp::ROLE_STUDENT)
+                        $topicRow->cells[] = $additional_grading_cell;
+            
+					$topicRow->cells[] = $studentCell;
+                            
+                    if($additional_grading && $data->role == block_exacomp::ROLE_TEACHER)
+                    	$topicRow->cells[] = $additional_grading_cell;
+					
+                   
                 }
             }else{
                 $statCell = new html_table_cell();
@@ -1681,7 +1707,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
     }
 
     function print_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class, $profoundness = false, $editmode=false, $statistic=false, $custom_created_descriptors=false, $parent = false, $crosssubjid = 0) {
-        global $PAGE, $USER, $COURSE, $CFG, $OUTPUT, $DB;
+        global $PAGE, $USER, $COURSE, $CFG, $OUTPUT, $DB, $additional_grading;
 
         $evaluation = ($data->role == block_exacomp::ROLE_TEACHER) ? "teacher" : "student";
         
@@ -1895,7 +1921,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                 $studentCell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme, !$visible_student, $data->profoundness, ($data->role == block_exacomp::ROLE_TEACHER) ? $reviewerid : null);
                             }
                             
-                            $studentCell->text .= ' <span class="percent-rating">'.html_writer::empty_tag('input', $visible_student ? array() : array('disabled'=>'disabled')).' %</span>';
                             
                             // ICONS
                             if(isset($icontext)) 
@@ -1911,8 +1936,18 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             
                             if($data->showevaluation)
                                 $descriptorRow->cells[] = $studentCellEvaluation;
+                                
+							$additional_grading_cell = new html_table_cell();
+							$additional_grading_cell->text = $parent ? ' <span class="percent-rating">'.html_writer::empty_tag('input', $visible_student ? array() : array('disabled'=>'disabled')).' %</span>' : "";
+                            $additional_grading_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;    
+								
+                            if($additional_grading && $data->showevaluation && $data->role == block_exacomp::ROLE_STUDENT)
+                            	$descriptorRow->cells[] = $additional_grading_cell;
             
                             $descriptorRow->cells[] = $studentCell;
+                            
+                            if($additional_grading && $data->role == block_exacomp::ROLE_TEACHER)
+                            	$descriptorRow->cells[] = $additional_grading_cell;
                         } else {
                             // ICONS
                             if(isset($icontext))
@@ -2147,12 +2182,21 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                     //$studentCell->text .= $this->print_student_example_evaluation_form($example->id, $student->id, $data->courseid);
                             }
         
-                            $studentCell->text .= ' <span class="percent-rating">'.html_writer::empty_tag('input', $visible_student_example ? array() : array('disabled'=>'disabled')).' %</span>';
-                            
                             if($data->showevaluation)
                                 $exampleRow->cells[] = $studentCellEvaluation;
+							
+							$additional_grading_cell = new html_table_cell();
+							//TODO Slider here
+							$additional_grading_cell->text = ' <span class="percent-rating">'.html_writer::empty_tag('input', $visible_student_example ? array() : array('disabled'=>'disabled')).' %</span>';
+                            $additional_grading_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+							
+                            if($additional_grading && $data->showevaluation && $data->role == block_exacomp::ROLE_STUDENT)
+                            	$exampleRow->cells[] = $additional_grading_cell;
+            
+                             $exampleRow->cells[] = $studentCell;
                             
-                            $exampleRow->cells[] = $studentCell;
+                            if($additional_grading && $data->role == block_exacomp::ROLE_TEACHER)
+                            	$exampleRow->cells[] = $additional_grading_cell;   
                         }
                     }else{ 
                         $statCell = new html_table_cell();
