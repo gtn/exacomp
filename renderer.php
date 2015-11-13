@@ -2096,10 +2096,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                             } else if($data->role == block_exacomp::ROLE_TEACHER) {
                                 $studentid = block_exacomp_get_studentid(true);
                                 
-                                if($studentid && $studentid != BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
-                                    $titleCell->text .= $this->print_submission_icon($data->courseid, $example->id, $studentid);
-                                    
-                                }
                                 //auch für alle schüler auf wochenplan legen
                                 if(!$this->is_edit_mode()){
                                     $titleCell->text .= $this->print_schedule_icon($example->id, ($studentid)?$studentid:BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $data->courseid);
@@ -2192,8 +2188,13 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                                     //$studentCell->text .= $this->print_student_example_evaluation_form($example->id, $student->id, $data->courseid);
                             }
         
-                            if($data->showevaluation)
+                            if ($data->role == block_exacomp::ROLE_TEACHER) {
+                                $studentCellEvaluation->text .= $this->print_submission_icon($data->courseid, $example->id, $student->id);
+                            }
+                            
+                            if($data->showevaluation) {
                                 $exampleRow->cells[] = $studentCellEvaluation;
+                            }
 							
 							$additional_grading_cell = new html_table_cell();
 							
@@ -2329,15 +2330,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                         $OUTPUT->pix_icon((!$itemExists) ? "i/manual_item" : "i/reload", get_string('submission','block_exacomp')),
                         array('exa-type' => 'iframe-popup'));
         }
-        else if($studentid) {
+        elseif($studentid) {
             //works only if exaport is installed
-            if(block_exacomp_exaportexists()){
-                $url = block_exacomp_get_viewurl_for_example($studentid,$exampleid);
-                if($url)
-                    return html_writer::link(
-                        $CFG->wwwroot . ('/blocks/exaport/shared_item.php?access='.$url),
-                        $OUTPUT->pix_icon("i/manual_item", get_string("submission","block_exacomp")),
-                        array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+            if ($url = block_exacomp_get_viewurl_for_example($studentid,$exampleid)) {
+                return html_writer::link($url,
+                    $OUTPUT->pix_icon("i/manual_item", get_string("submission","block_exacomp"), null, array('style' => 'margin: 0 0 0 5px;')),
+                    array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
             }else{
                 return "";
             }

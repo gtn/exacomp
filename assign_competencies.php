@@ -30,7 +30,7 @@ require_once dirname(__FILE__)."/inc.php";
 global $DB, $OUTPUT, $PAGE, $USER;
 
 $courseid = required_param('courseid', PARAM_INT);
-$showevaluation = (block_exacomp_is_altversion()) ? true : optional_param("showevaluation", false, PARAM_BOOL);
+$showevaluation = block_exacomp_is_altversion() || optional_param("showevaluation", false, PARAM_BOOL);
 $group = optional_param('group', 0, PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
