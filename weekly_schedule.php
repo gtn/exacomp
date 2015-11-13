@@ -77,7 +77,7 @@ if($isTeacher){
 
 // print?
 if ($student && optional_param('print', false, PARAM_BOOL)) {
-    block_exacomp\printer::weekly_schedule($course, $student, optional_param('interval', 'month', PARAM_TEXT));
+    block_exacomp\printer::weekly_schedule($course, $student, optional_param('interval', 'week', PARAM_TEXT));
     exit;
 }
 // build tab navigation & print header
