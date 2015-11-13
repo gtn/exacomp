@@ -1170,11 +1170,12 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
  * @param unknown $ng_subjectid the subjectid
  * @param unknown $subjectid the topicid
  * @param unknown $topicid the descriptorid
- * @param string $student
- * @param number $studentid
+ * @param unknown $editmode
+ * @param string $isTeacher
+ * @param number $studentid set if he is a student
  * @return multitype:unknown Ambigous <stdClass, unknown>
  */
-function block_exacomp_init_overview_data($courseid, $ng_subjectid, $topicid, $niveauid, $student=false, $studentid=0) {
+function block_exacomp_init_overview_data($courseid, $ng_subjectid, $topicid, $niveauid, $editmode, $isTeacher=true, $studentid=0) {
     global $DB;
     
     if ($ng_subjectid) {
@@ -1191,18 +1192,20 @@ function block_exacomp_init_overview_data($courseid, $ng_subjectid, $topicid, $n
         // not configured
         return null;
     }
-	$descriptors = block_exacomp_get_descriptors_by_topic ( $courseid, $selectedSubject->id, false, true, true );
-	if ($student) {
-		foreach ( $descriptors as $descriptor ) {
-			$invisible = $DB->get_record ( block_exacomp::DB_DESCVISIBILITY, array (
-					'courseid' => $courseid,
-					'descrid' => $descriptor->id,
-					'studentid' => $studentid,
-					'visible' => 0 
-			) );
-			if ($invisible)
-				unset ( $descriptors [$descriptor->id] );
-		}
+    
+    // load all descriptors first (needed for teacher)
+    if ($editmode) {
+        $descriptors = block_exacomp_get_descriptors_by_topic ( $courseid, $selectedSubject->id, true, false, false);
+    } else {
+        $descriptors = block_exacomp_get_descriptors_by_topic ( $courseid, $selectedSubject->id, false, true, true);
+    }
+	
+	if (!$isTeacher) {
+	    // for students check student visibility
+	    $descriptors = array_filter($descriptors,
+            function($descriptor) use ($courseid, $studentid) {
+                return block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid);
+            });
 	}
     
     // get niveau ids from descriptors
