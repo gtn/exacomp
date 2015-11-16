@@ -1346,7 +1346,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     $studentCell->colspan = $studentsColspan;
                     $studentCell->text = fullname($student);
                     if (!$this->is_print_mode() && block_exacomp_exastudexists() && ($info = block_exastud_api::get_student_review_link_info_for_teacher($student->id))) {
-                        $studentCell->text .= ' <a href="'.$info->url.'" title="'.block_exastud_t('de:Überfachliche Bewertung').'" onclick="window.open(this.href,this.target,\'width=880,height=660,scrollbars=yes\'); return false;">'.'<img src="pix/review_student.png" />'.'</a>';
+                        $studentCell->text .= ' <a href="'.$info->url.'" title="'.block_exacomp::t('de:Überfachliche Bewertung').'" onclick="window.open(this.href,this.target,\'width=880,height=660,scrollbars=yes\'); return false;">'.'<img src="pix/review_student.png" />'.'</a>';
                     }
     
 					if ($this->is_print_mode()) {
