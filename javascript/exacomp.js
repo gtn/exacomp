@@ -231,8 +231,9 @@ $(function(){
 	$('div[class^=slider\-]').each(function(){
 		var eid = $(this).attr('class').split("-")[1];
 		var did = $(this).attr('class').split("-")[2];
+		var studentid = $(this).attr('class').split("-")[3];
 		//get select
-    	var select = $('select[id=additionalinfo\-'+eid+'\-'+did+']');
+    	var select = $('select[id=additionalinfo\-'+eid+'\-'+did+'\-'+studentid+']');
     	var selects = $('select[id^=additionalinfo\-'+eid+']');
 
 		//bind to select
@@ -242,10 +243,10 @@ $(function(){
   	      range: "min",
   	      value: select[ 0 ].selectedIndex + 1,
   	      slide: function( event, ui ) {
-  	        //select[ 0 ].selectedIndex = ui.value - 1;
-  	        selects.each(function(index, value) {
+  	        select[ 0 ].selectedIndex = ui.value - 1;
+  	        /*selects.each(function(index, value) {
   	        	value.selectedIndex = ui.value - 1;
-  	        });
+  	        });*/
   	      }
   	    });
 	});
@@ -255,13 +256,15 @@ $(function(){
     $('select[id^=additionalinfo\-]').click(function(){
     	var eid = $(this).attr('id').split("-")[1];
     	var did = $(this).attr('id').split("-")[2];
-    	$('.dialog-'+eid+'-'+did).dialog('open');
+		var studentid = $(this).attr('id').split("-")[3];
+    	$('.dialog-'+eid+'-'+did+'-'+studentid).dialog('open');
     });
     
     $('select[id^=additionalinfo\-]').change(function() {
     	var eid = $(this).attr('id').split("-")[1];
     	var did = $(this).attr('id').split("-")[2];
-    	var slider = $('div[id=slider-'+eid+'-'+did+']');
+		var studentid = $(this).attr('id').split("-")[3];
+    	var slider = $('div[id=slider-'+eid+'-'+did+'-'+studentid+']');
 	    slider.slider( "value", this.selectedIndex + 1 );
 	});
 });
