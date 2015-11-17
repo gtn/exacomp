@@ -227,45 +227,50 @@ $(function(){
 	});
 });
 	
+$(document).on('mousedown', function(){
+	// remove old dialog
+	$('#exa-supa-dupa-dialog').remove();
+});
+
 $(function(){
-	$('div[class^=slider\-]').each(function(){
-		var sid = $(this).attr('class').split("-")[1];
-		var eid = $(this).attr('class').split("-")[2];
-		var did = $(this).attr('class').split("-")[3];
-		//get select
-    	var select = $('select[id=additionalinfo\-'+sid+'\-'+eid+'\-'+did+']');
-    	var selects = $('select[id^=additionalinfo\-'+sid+'\-'+eid+']');
-		//bind to select
-    	$(this).slider({
-  	      min: 0,
-  	      max: 100,
-  	      range: "min",
-  	      value: select[ 0 ].selectedIndex + 1,
-  	      slide: function( event, ui ) {
-  	        select[ 0 ].selectedIndex = ui.value - 1;
-  	        selects.each(function(index, value) {
-  	        	value.selectedIndex = ui.value - 1;
-  	        });
-  	      }
-  	    });
-	});
+	$('select[id^=additionalinfo\-]').mousedown(function(){
+		var has_dialog = $(this).parent().find('#exa-supa-dupa-dialog').length;
+		
+		// remove old dialog
+		$('#exa-supa-dupa-dialog').remove();
+		
+		if (has_dialog) {
+			// nur verstecken
+		} else {
+			// show it
+			$(this).parent().css('position', 'relative');
+			$(this).parent()
+				.append('<div id="exa-supa-dupa-dialog" style="position: absolute; z-index: 10000; top: 34px; right: 0; width: 120px; padding: 6px 8px; background: white; border: 1px solid black;"></div>')
+				.mousedown(function(){ /* prevent from bubbling and closing again */ return false;});
+			
+			var sid = $(this).attr('class').split("-")[1];
+			var eid = $(this).attr('class').split("-")[2];
+			var did = $(this).attr('class').split("-")[3];
 	
-    $( "div[class^=dialog]" ).dialog({autoOpen:false,height: 75});
-    
-    $('select[id^=additionalinfo\-]').click(function(){
-    	var sid = $(this).attr('id').split("-")[1];
-    	var eid = $(this).attr('id').split("-")[2];
-    	var did = $(this).attr('id').split("-")[3];
-    	
-    	$('.dialog-'+sid+'-'+eid+'-'+did).dialog('open');
-    });
-    
-    $('select[id^=additionalinfo\-]').change(function() {
-    	var sid = $(this).attr('id').split("-")[1];
-    	var eid = $(this).attr('id').split("-")[2];
-    	var did = $(this).attr('id').split("-")[3];
-    	var slider = $('div[id=slider-'+sid+'-'+eid+'-'+did+']');
-	    slider.slider( "value", this.selectedIndex + 1 );
+			var select = $(this);
+	    	var selects = $('select[id^=additionalinfo\-'+sid+'\-'+eid+']');
+	
+			$('<div />').appendTo('#exa-supa-dupa-dialog').slider({
+			  min: 0,
+			  max: 100,
+			  range: "min",
+			  value: select[ 0 ].selectedIndex + 1,
+			  slide: function( event, ui ) {
+			    select[ 0 ].selectedIndex = ui.value - 1;
+			    selects.each(function(index, value) {
+			    	value.selectedIndex = ui.value - 1;
+			    });
+			  }
+			});
+		}
+		
+		return false;
 	});
 });
+
 })();
