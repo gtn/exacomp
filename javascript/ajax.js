@@ -626,7 +626,7 @@
 		competencies_additional_grading[descrid][studentid] = value;
 	});
 	
-	$(document).on('focus', 'select[id^=additionalinfo\-]', function(event) {
+	$(document).on('select', 'select[id^=additionalinfo\-]', function(event) {
 		exampleid = $(this).attr('exampleid');
 		studentid = $(this).attr('studentid');
 		value = $(this).val();
