@@ -229,13 +229,12 @@ $(function(){
 	
 $(function(){
 	$('div[class^=slider\-]').each(function(){
-		var eid = $(this).attr('class').split("-")[1];
-		var did = $(this).attr('class').split("-")[2];
-		var studentid = $(this).attr('class').split("-")[3];
+		var sid = $(this).attr('class').split("-")[1];
+		var eid = $(this).attr('class').split("-")[2];
+		var did = $(this).attr('class').split("-")[3];
 		//get select
-    	var select = $('select[id=additionalinfo\-'+eid+'\-'+did+'\-'+studentid+']');
-    	var selects = $('select[id^=additionalinfo\-'+eid+']');
-
+    	var select = $('select[id=additionalinfo\-'+sid+'\-'+eid+'\-'+did+']');
+    	var selects = $('select[id^=additionalinfo\-'+sid+'\-'+eid+']');
 		//bind to select
     	$(this).slider({
   	      min: 0,
@@ -244,9 +243,9 @@ $(function(){
   	      value: select[ 0 ].selectedIndex + 1,
   	      slide: function( event, ui ) {
   	        select[ 0 ].selectedIndex = ui.value - 1;
-  	        /*selects.each(function(index, value) {
+  	        selects.each(function(index, value) {
   	        	value.selectedIndex = ui.value - 1;
-  	        });*/
+  	        });
   	      }
   	    });
 	});
@@ -254,17 +253,18 @@ $(function(){
     $( "div[class^=dialog]" ).dialog({autoOpen:false});
     
     $('select[id^=additionalinfo\-]').click(function(){
-    	var eid = $(this).attr('id').split("-")[1];
-    	var did = $(this).attr('id').split("-")[2];
-		var studentid = $(this).attr('id').split("-")[3];
-    	$('.dialog-'+eid+'-'+did+'-'+studentid).dialog('open');
+    	var sid = $(this).attr('id').split("-")[1];
+    	var eid = $(this).attr('id').split("-")[2];
+    	var did = $(this).attr('id').split("-")[3];
+    	
+    	$('.dialog-'+sid+'-'+eid+'-'+did).dialog('open');
     });
     
     $('select[id^=additionalinfo\-]').change(function() {
-    	var eid = $(this).attr('id').split("-")[1];
-    	var did = $(this).attr('id').split("-")[2];
-		var studentid = $(this).attr('id').split("-")[3];
-    	var slider = $('div[id=slider-'+eid+'-'+did+'-'+studentid+']');
+    	var sid = $(this).attr('id').split("-")[1];
+    	var eid = $(this).attr('id').split("-")[2];
+    	var did = $(this).attr('id').split("-")[3];
+    	var slider = $('div[id=slider-'+sid+'-'+eid+'-'+did+']');
 	    slider.slider( "value", this.selectedIndex + 1 );
 	});
 });
