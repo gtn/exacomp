@@ -250,7 +250,7 @@ $(function(){
   	    });
 	});
 	
-    $( "div[class^=dialog]" ).dialog({autoOpen:false});
+    $( "div[class^=dialog]" ).dialog({autoOpen:false,height: 75});
     
     $('select[id^=additionalinfo\-]').click(function(){
     	var sid = $(this).attr('id').split("-")[1];
