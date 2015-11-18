@@ -499,12 +499,12 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 				$endtime = null;
 			}
 
-			if($value != null)
+			if($value !== null)
 				$updateEvaluation->student_evaluation = ($value != -1) ? $value : null;
 
-				$updateEvaluation->starttime = $starttime;
-				$updateEvaluation->endtime = $endtime;
-				$updateEvaluation->studypartner = (block_exacomp_is_altversion()) ? 'self' : $studypartner;
+			$updateEvaluation->starttime = $starttime;
+			$updateEvaluation->endtime = $endtime;
+			$updateEvaluation->studypartner = (block_exacomp_is_altversion()) ? 'self' : $studypartner;
 	}
 	if($record = $DB->get_record(block_exacomp::DB_EXAMPLEEVAL,array("studentid" => $userid, "courseid" => $courseid, "exampleid" => $exampleid))) {
 		//if teacher keep studenteval

@@ -1894,12 +1894,13 @@ class block_exacomp_external extends external_api {
             $itemexample->timemodified = time();
             $itemexample->studentvalue = $studentvalue;
             $DB->update_record('block_exacompitemexample', $itemexample);
-			
             if($studentcomment != '') {
             	$DB->delete_records('block_exaportitemcomm',array('itemid'=>$itemid,'userid'=>$USER->id));
             	$DB->insert_record('block_exaportitemcomm',array('itemid'=>$itemid,'userid'=>$USER->id,'entry'=>$studentcomment,'timemodified'=>time()));
             }
         }
+		// studentvalue has to be stored in exameval
+        block_exacomp_set_user_example($USER->id, $exampleid, $courseid, block_exacomp::ROLE_STUDENT, $studentvalue);
         
         return array("success"=>true,"itemid"=>$itemid);
     }
