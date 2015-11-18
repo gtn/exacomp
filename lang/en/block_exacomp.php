@@ -31,7 +31,7 @@ $string['exacomp:admin'] = 'overview of administrator actions in a course';
 $string['exacomp:student'] = 'overview of student actions in a course';
 $string['exacomp:use'] = 'use Exabis Competencies';
 $string['exacomp:deleteexamples'] = 'delete examples';
-
+$string['exacomp:assignstudents'] = 'Assign external trainers';
 
 // TABS and PAGE IDENTIFIERS
 // Admin Tabs

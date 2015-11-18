@@ -31,6 +31,7 @@ $string['exacomp:admin'] = 'Übersicht der Administratorfunktionen in einem Kurs
 $string['exacomp:student'] = 'Übersicht der Teilnehmerfunktionen in einem Kurs';
 $string['exacomp:use'] = 'Nutzung';
 $string['exacomp:deleteexamples'] = 'Beispiele löschen';
+$string['exacomp:assignstudents'] = 'Externe Trailer zuordnen';
 
 // TABS and PAGE IDENTIFIERS
 // Admin Tabs
