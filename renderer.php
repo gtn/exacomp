@@ -2200,7 +2200,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 							$additional_grading_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
 							//TODO: optimize get_field query for each student for each example
 							$student_additional_grading = $DB->get_field(block_exacomp::DB_EXAMPLEEVAL, 'additionalinfo', array('studentid'=>$student->id,'exampleid'=>$example->id,'courseid'=>$data->courseid));
-							$additional_grading_cell->text = html_writer::select(range(0, 100),'additionalinfo',$student_additional_grading,false,array('id'=>'additionalinfo-'.$student->id.'-'.$example->id.'-'.$descriptor->id,'exampleid'=>$example->id,'studentid'=>$student->id, 'disabled'=>($visible_student_example && $data->role == block_exacomp::ROLE_TEACHER) ? '' : 'disabled')); 
+							$additional_grading_cell->text = html_writer::select(array(-1 => " ") + range(0, 100),'additionalinfo',$student_additional_grading,false,array('id'=>'additionalinfo-'.$student->id.'-'.$example->id.'-'.$descriptor->id,'exampleid'=>$example->id,'studentid'=>$student->id, 'disabled'=>($visible_student_example && $data->role == block_exacomp::ROLE_TEACHER) ? '' : 'disabled')); 
 							
                             if($additional_grading && $data->showevaluation && $data->role == block_exacomp::ROLE_STUDENT)
                             	$exampleRow->cells[] = $additional_grading_cell;

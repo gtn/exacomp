@@ -5992,6 +5992,9 @@ function block_exacomp_save_additional_grading_for_descriptor($courseid, $descri
 function block_exacomp_save_additional_grading_for_example($courseid, $exampleid, $studentid, $additionalinfo) {
 	global $DB, $USER;
 	
+	if($additionalinfo == -1)
+		$additionalinfo = null;
+	
 	$record = $DB->get_record ( block_exacomp::DB_EXAMPLEEVAL, array (
 			'courseid' => $courseid,
 			'exampleid' => $exampleid,

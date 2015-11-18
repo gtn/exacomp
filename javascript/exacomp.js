@@ -256,13 +256,13 @@ $(function(){
 	    	var selects = $('select[id^=additionalinfo\-'+sid+'\-'+eid+']');
 	
 			$('<div />').appendTo('#exa-additionalgrading-dialog').slider({
-			  min: 0,
+			  min: -1,
 			  max: 100,
 			  range: "min",
 			  value: select[ 0 ].selectedIndex,
 			  slide: function( event, ui ) {
 			    selects.each(function(index, value) {
-			    	value.selectedIndex = ui.value;
+			    	value.selectedIndex = ui.value + 1;
 			    });
 			    select.trigger( "select" );
 			  }
