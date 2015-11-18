@@ -4505,7 +4505,7 @@ function block_exacomp_get_students_for_crosssubject($courseid, $crosssub){
 function block_exacomp_get_viewurl_for_example($studentid,$exampleid) {
     global $CFG, $DB;
     
-    if (!block_exacomp_exastudexists()) {
+    if (!block_exacomp_exaportexists()) {
         return null;
     }
     
