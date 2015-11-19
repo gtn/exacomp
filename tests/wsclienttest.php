@@ -55,15 +55,13 @@ descriptor details:
 ";
 
 //REST CALL dakora_get_examples_pool_for_week
-$functionname = 'dakora_set_competence';
+$functionname = 'dakora_get_examples_for_descriptor';
 
 $params = new stdClass();
 $params->courseid = 4;
-$params->userid = 21;
-$params->compid = 2250;
-$params->role = 1;
-$params->value = 2;
-$params->additionalinfo='du1';
+$params->descriptorid = 2541;
+$params->userid = 0;
+$params->forall = 0;
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);

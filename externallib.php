@@ -5435,6 +5435,12 @@ class block_exacomp_external extends external_api {
 	*/
 	private static function get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid = 0, $show_all = false) {
 		global $DB;
+		
+		$coursesettings = block_exacomp_get_settings_by_course($courseid);
+		
+		$isTeacher = (block_exacomp_external::dakora_get_user_role()->role == 1)? true : false;
+		$showexamples = ($isTeacher)?true:$coursesettings->show_all_examples;
+		
 		$parent_descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptorid));
 		$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
 		$parent_descriptor->topicid = $descriptor_topic_mm->topicid;
@@ -5484,14 +5490,14 @@ class block_exacomp_external extends external_api {
 		$examples_return = array();
 
 		if($crosssubjid == 0 || in_array($parent_descriptor->id, $crossdesc)){
-			$parent_descriptor = block_exacomp_get_examples_for_descriptor($parent_descriptor, array(SHOW_ALL_TAXONOMIES), true, $courseid);
+			$parent_descriptor = block_exacomp_get_examples_for_descriptor($parent_descriptor, array(SHOW_ALL_TAXONOMIES), $showexamples, $courseid);
 			
 			$example_non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
 			if(!$forall)
 				$example_non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
 
-			
 			foreach($parent_descriptor->examples as $example){
+			
 				$example_return = new stdClass();
 				$example_return->exampleid = $example->id;
 				$example_return->exampletitle = $example->title;
@@ -5649,6 +5655,10 @@ class block_exacomp_external extends external_api {
 		global $DB;
 		
 		$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptorid));
+		$coursesettings = block_exacomp_get_settings_by_course($courseid);
+		
+		$isTeacher = (block_exacomp_external::dakora_get_user_role()->role == 1)? true : false;
+		$showexamples = ($isTeacher)?true:$coursesettings->show_all_examples;
 		
 		if($crosssubjid > 0){
 			$cross_subject_descriptors = block_exacomp_get_cross_subject_descriptors($crosssubjid);
@@ -5660,13 +5670,13 @@ class block_exacomp_external extends external_api {
 			$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$descriptor->id));
 			$descriptor->topicid = $descriptor_topic_mm->topicid;
 		
-			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, $courseid);
+			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), $showexamples, $courseid);
 		}else{ //child descriptor
 			
 			$parent_descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptor->parentid));
 			$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
 			$descriptor->topicid = $descriptor_topic_mm->topicid;
-			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, $courseid);
+			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), $showexamples, $courseid);
 			
 		}
 		
