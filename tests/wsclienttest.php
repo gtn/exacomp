@@ -21,7 +21,7 @@ echo "
 
 
 ";
-$serverurl = 'https://gtn-solutions.com/moodle29test/login/token.php?username=testws&password=Testws123!&service=exacompservices';
+$serverurl = 'https://gtn-solutions.com/moodle29test/login/token.php?username=testws&password=Test123!&service=exacompservices';
 $resp = $curl->get($serverurl);
 $resp = json_decode($resp)->token;
 $token = $resp;
@@ -32,7 +32,7 @@ echo "
 
 ";
 
-$serverurl_exaport = 'https://gtn-solutions.com/moodle29test/login/token.php?username=testws&password=Testws123!&service=exaportservices';
+$serverurl_exaport = 'https://gtn-solutions.com/moodle29test/login/token.php?username=testws&password=Test123!&service=exaportservices';
 $resp_exaport = $curl->get($serverurl_exaport);
 $resp_exaport = json_decode($resp_exaport)->token;
 print_r($resp_exaport);
@@ -42,7 +42,7 @@ echo "
 
 ";
 
-$serverurl_moodle = 'http://gtn-solutions.com/moodle29test/login/token.php?username=student2&password=Student2!&token='.$token_google.'&service=moodle_mobile_app';
+$serverurl_moodle = 'http://gtn-solutions.com/moodle29test/login/token.php?username=testws&password=Test123!&token='.$token_google.'&service=moodle_mobile_app';
 $resp_moodle = $curl->get($serverurl_exaport);
 $resp_moodle = json_decode($resp_moodle)->token;
 print_r($resp_moodle);
@@ -51,15 +51,19 @@ print_r($resp_moodle);
 header('Content-Type: text/plain');
 
 echo "
-topics:
+descriptor details:
 ";
 
 //REST CALL dakora_get_examples_pool_for_week
-$functionname = 'dakora_get_topics_by_course';
+$functionname = 'dakora_set_competence';
 
 $params = new stdClass();
 $params->courseid = 4;
-
+$params->userid = 21;
+$params->compid = 2250;
+$params->role = 1;
+$params->value = 2;
+$params->additionalinfo='du1';
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
 $resp = $curl->post($serverurl, $params);

@@ -3585,12 +3585,12 @@ class block_exacomp_external extends external_api {
 		
 		$student = block_exacomp_get_user_examples_by_course($student, $courseid);
 		
-		$teacherevaluation = 0;
+		$teacherevaluation = -1;
 		if(isset($student->examples->teacher[$exampleid])){
 			$teacherevaluation = $student->examples->teacher[$exampleid];
 		}
 		
-		$studentevaluation = 0;
+		$studentevaluation = -1;
 		if(isset($student->examples->student[$exampleid])){
 			$studentevaluation = $student->examples->student[$exampleid];
 		}
@@ -4386,7 +4386,8 @@ class block_exacomp_external extends external_api {
 				'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
 				'compid' => new external_value(PARAM_INT, 'competence id'),
 				'role' => new external_value(PARAM_INT, 'user role (0 == student, 1 == teacher)'),
-				'value' => new external_value(PARAM_INT, 'evaluation value (0, 1, 2 or 3)')
+				'value' => new external_value(PARAM_INT, 'evaluation value (0, 1, 2 or 3)'),
+				'additionalinfo' => new external_value(PARAM_TEXT, 'additional grading 3 letters')
 		) );
 	}
 	
@@ -4401,14 +4402,15 @@ class block_exacomp_external extends external_api {
 	 *			int value
 	 * @return success
 	 */
-	public static function dakora_set_competence($courseid, $userid, $compid, $role, $value) {
+	public static function dakora_set_competence($courseid, $userid, $compid, $role, $value, $additional_info) {
 		global $USER, $DB;
 		$params = self::validate_parameters ( self::dakora_set_competence_parameters (), array (
 				'courseid'=>$courseid,
 				'userid'=>$userid,
 				'compid'=>$compid,
 				'role'=>$role,
-				'value'=>$value
+				'value'=>$value,
+				'additionalinfo'=>$additional_info
 		) );
 		
 		if($userid == 0 && $role == block_exacomp::ROLE_STUDENT)
@@ -4418,6 +4420,10 @@ class block_exacomp_external extends external_api {
 		
 		if(block_exacomp_set_user_competence($userid, $compid, block_exacomp::TYPE_DESCRIPTOR, $courseid, $role, $value) == -1)
 			throw new invalid_parameter_exception ( 'Not allowed' );
+			
+		if($additional_info && $role == block_exacomp::ROLE_TEACHER){
+			block_exacomp_save_additional_grading_for_descriptor($courseid, $compid, $userid, $additional_info);
+		}
 	
 		return array (
 				"success" => true 
@@ -4995,13 +5001,15 @@ class block_exacomp_external extends external_api {
 		$descriptor_return = new stdClass();
 		$descriptor_return->descriptorid = $descriptorid;
 		$descriptor_return->descriptortitle = $descriptor->title;
-		$descriptor_return->teacherevaluation = 0;
+		$descriptor_return->teacherevaluation = -1;
+		$descriptor_return->additionalinfo = null;
+		if(!$forall){
+			$descriptor_return->teacherevaluation = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$descriptorid, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_TEACHER)))? $grading->value:-1;
+			$descriptor_return->additionalinfo = $grading->additionalinfo;
+		}
+		$descriptor_return->studentevaluation = -1;
 		if(!$forall)
-			$descriptor_return->teacherevaluation = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$descriptorid, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_TEACHER)))? $grading->value:0;
-
-		$descriptor_return->studentevaluation = 0;
-		if(!$forall)
-			$descriptor_return->studentevaluation = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$descriptorid, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_STUDENT)))? $grading->value:0;
+			$descriptor_return->studentevaluation = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$descriptorid, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_STUDENT)))? $grading->value:-1;
 		
 		$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
 		
@@ -5030,6 +5038,7 @@ class block_exacomp_external extends external_api {
 			'descriptortitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
 			'teacherevaluation'=> new external_value( PARAM_INT, 'teacher evaluation of descriptor'),
 			'studentevaluation'=> new external_value( PARAM_INT, 'student evaluation of descriptor'),
+			'additionalinfo'=> new external_value (PARAM_TEXT, 'additional grading for descriptor'),
 			'numbering' => new external_value ( PARAM_TEXT, 'numbering'),
 			'niveauid' => new external_value ( PARAM_INT, 'id of niveau'),
 			'niveautitle' => new external_value ( PARAM_TEXT, 'title of niveau'),
@@ -5263,6 +5272,7 @@ class block_exacomp_external extends external_api {
 			$data_content->totallmnumb = $lmdata->total;
 			$data_content->inworklmnumb = $lmdata->inWork;
 			$data_content->teacherevaluation = (isset($user->competencies->teacher[$descriptor->id]))?$user->competencies->teacher[$descriptor->id]:-1;
+			$data_content->additionalinfo = $user->competencies->teacher_additional_grading[$descriptor->id];
 			$data_content->studentevaluation = (isset($user->competencies->student[$descriptor->id]))?$user->competencies->student[$descriptor->id]:-1;
 			$data->descriptordata[] = $data_content;
 		}
@@ -5292,6 +5302,7 @@ class block_exacomp_external extends external_api {
 					'totallmnumb' => new external_value ( PARAM_INT, 'number of learning material in total'),
 					'inworklmnumb' => new external_value (PARAM_INT, 'number of learning material in work'),
 					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of descriptor'),
+					'additionalinfo' => new external_value (PARAM_TEXT, 'additional grading of descriptor'),
 					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of descriptor')
 			) ) ) 
 		) );
@@ -5452,12 +5463,12 @@ class block_exacomp_external extends external_api {
 				$child_return->childid = $child->id;
 				$child_return->childtitle = $child->title;
 				$child_return->numbering = block_exacomp_get_descriptor_numbering($child);
-				$child_return->teacherevaluation = 0;
+				$child_return->teacherevaluation = -1;
 				if(!$forall)
-					$child_return->teacherevaluation = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$child->id, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_TEACHER)))? $grading->value:0;
-				$child_return->studentevaluation = 0;
+					$child_return->teacherevaluation = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$child->id, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_TEACHER)))? $grading->value:-1;
+				$child_return->studentevaluation = -1;
 				if(!$forall)
-					$child_return->studentevaluation = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$child->id, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_STUDENT))) ? $grading->value:0;
+					$child_return->studentevaluation = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$child->id, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_STUDENT))) ? $grading->value:-1;
 				
 				if($show_all){
 					$child_return->hasmaterial = ($child->examples)?true:false;
