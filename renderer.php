@@ -2576,11 +2576,19 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
     public function generate_select($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false, $profoundness = false, $reviewerid = null) {
         global $USER, $global_scheme, $global_scheme_values;
         
-        $options = array();
-        $options[-1] = ' ';
-        for($i=0;$i<=$scheme;$i++)
-            $options[$i] = (!$profoundness) ? (($global_scheme==0)?$i:$global_scheme_values[$i]) : get_string('profoundness_'.$i,'block_exacomp');
-
+       if(strcmp($evaluation, 'teacher')==0){
+	        $options[-1] = ' ';
+	        for($i=0;$i<=$scheme;$i++)
+	            $options[$i] = (!$profoundness) ? (($global_scheme==0)?$i:$global_scheme_values[$i]) : get_string('profoundness_'.$i,'block_exacomp');
+        }else{
+			$options[0] = '';
+			$stars = '*';
+			for($i=1; $i<=$scheme; $i++){
+				$options[$i] = $stars;
+				$stars .= '*';
+			}
+		}
+		
         if ($this->is_print_mode()) {
             // in print mode return the text itself, no select
             $value = (isset($student->{$type}->{$evaluation}[$compid])) ? $student->{$type}->{$evaluation}[$compid] : '';
