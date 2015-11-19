@@ -172,6 +172,15 @@
 			hide.removeClass("hidden");
 		}
 	});
+	$(document).on('change', 'select[name^=dataexamples\-]', function() {
+		var values = $(this).attr("name").split("-");
+
+		examples[values[1]+"-"+values[2]] = {
+			userid : values[2],
+			exampleid : values[1],
+			value : $(this).val()
+		};
+	});
 	
 	// global var hack
 	i_want_my_reload = false;
