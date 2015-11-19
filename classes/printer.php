@@ -36,6 +36,19 @@ class printer_TCPDF extends \TCPDF {
         
         $style = '';
         if ($this->_style) $style = "<style> $this->_style </style>";
+        
+        // remove input and select fields
+        $html = preg_replace('!<input\s[^>]*type="text"[^>]*value="([^"]*)"[^>]*>!smiU', '$1', $html);
+        $html = preg_replace_callback('!<select\s.*</select>!smiU', function($matches){
+            if (preg_match('!<option\s[^>]*selected="[^"]+"[^>]*>([^<]*)<!smiU', $matches[0], $subMatches)) {
+                return $subMatches[1];
+            }
+            if (preg_match('!<option(\s[^>]*)?>([^<]*)<!smiU', $matches[0], $subMatches)) {
+                return $subMatches[2];
+            }
+            return $matches[0];
+        }, $html);
+        
         return parent::writeHTML($style.$html, $ln, $fill, $reseth, $cell, $align);
     }
     

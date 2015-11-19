@@ -1501,8 +1501,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
             $cell_width(2, 0, 8);
             $cell_width(2, 1, 100-5-$cnt*12.5-8);
             $cell_width(2, 2, 5);
-            for ($i = 0; $i < $cnt*2; $i++) {
-                $cell_width(2, 3+$i, 12.5/2);
+            for ($i = 0; $i < $cnt*3; $i++) {
+                $cell_width(2, 3+$i, 12.5/3);
             }
         }
         
@@ -1948,7 +1948,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 							if(!$visible_student || $data->role == block_exacomp::ROLE_STUDENT)
 								$params['disabled'] = 'disabled';
 							
-							$additional_grading_cell->text = $parent ? ' <span class="percent-rating">'.html_writer::empty_tag('input', $params).' %</span>' : "";
+							$additional_grading_cell->text = $parent ? ' <span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>' : "";
                             $additional_grading_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;    
 								
                             if($additional_grading && $data->showevaluation && $data->role == block_exacomp::ROLE_STUDENT)
@@ -2200,7 +2200,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 							$additional_grading_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
 							//TODO: optimize get_field query for each student for each example
 							$student_additional_grading = $DB->get_field(block_exacomp::DB_EXAMPLEEVAL, 'additionalinfo', array('studentid'=>$student->id,'exampleid'=>$example->id,'courseid'=>$data->courseid));
-							$additional_grading_cell->text = html_writer::select(array(-1 => " ") + range(0, 100),'additionalinfo',$student_additional_grading,false,array('id'=>'additionalinfo-'.$student->id.'-'.$example->id.'-'.$descriptor->id,'exampleid'=>$example->id,'studentid'=>$student->id, 'disabled'=>($visible_student_example && $data->role == block_exacomp::ROLE_TEACHER) ? '' : 'disabled')); 
+							$additional_grading_cell->text = html_writer::select(array(-1 => " ") + range(0, 100),'additionalinfo',$student_additional_grading,false,array('id'=>'additionalinfo-'.$student->id.'-'.$example->id.'-'.$descriptor->id,'exampleid'=>$example->id,'studentid'=>$student->id, 'disabled'=>($visible_student_example && $data->role == block_exacomp::ROLE_TEACHER) ? '' : 'disabled')).' %'; 
 							
                             if($additional_grading && $data->showevaluation && $data->role == block_exacomp::ROLE_STUDENT)
                             	$exampleRow->cells[] = $additional_grading_cell;
@@ -2318,6 +2318,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
     public function print_submission_icon($courseid, $exampleid, $studentid = 0) {
         global $CFG, $OUTPUT;
         
+        if ($this->is_print_mode()) {
+            return '';
+        }
+            
         $context = context_course::instance($courseid);
         $isTeacher = block_exacomp_is_teacher($context);
         
