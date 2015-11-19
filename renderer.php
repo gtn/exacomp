@@ -2584,8 +2584,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			$options[0] = '';
 			$stars = '*';
 			for($i=1; $i<=$scheme; $i++){
-				$options[$i] = $stars;
-				$stars .= '*';
+				if($global_scheme == 0) 
+					$options[$i] = $i;
+				else{
+					$options[$i] = $stars;
+					$stars .= '*';
+				}
 			}
 		}
 		
