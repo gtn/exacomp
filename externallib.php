@@ -4421,7 +4421,7 @@ class block_exacomp_external extends external_api {
 		if(block_exacomp_set_user_competence($userid, $compid, block_exacomp::TYPE_DESCRIPTOR, $courseid, $role, $value) == -1)
 			throw new invalid_parameter_exception ( 'Not allowed' );
 			
-		if($additional_info && $role == block_exacomp::ROLE_TEACHER){
+		if($role == block_exacomp::ROLE_TEACHER){
 			block_exacomp_save_additional_grading_for_descriptor($courseid, $compid, $userid, $additional_info);
 		}
 	
