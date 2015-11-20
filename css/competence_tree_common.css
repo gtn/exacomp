@@ -1,0 +1,8 @@
+#block_exacomp .percent-rating-text {
+    width: 30px;
+}
+#block_exacomp .percent-rating {
+    width: 40px;
+    cursor: pointer;
+    text-align: right;
+}

@@ -61,7 +61,9 @@ block_exacomp_build_breadcrum_navigation($courseid);
 /* @var $output block_exacomp_renderer */
 $output = block_exacomp_get_renderer();
 
+$output->requires()->js('/blocks/exacomp/javascript/jquery.inputmask.bundle.js', true);
 $output->requires()->js('/blocks/exacomp/javascript/competence_tree_common.js', true);
+$output->requires()->css('/blocks/exacomp/css/competence_tree_common.css');
 
 // build tab navigation & print header
 echo $output->header($context, $courseid, 'tab_cross_subjects');

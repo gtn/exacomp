@@ -156,5 +156,55 @@
 			var id = this.className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
 			$('.rowgroup-content-'+id).hide();
 		});
+	
+		function additionlgrading_int_val(value, add) {
+			value += ''; // to string
+			value = value.replace(/[^0-9]/g, '');
+			if (value != '') {
+				if (value > 100) {
+					value = 100;
+				}
+				if (add) {
+					value += ' %';
+				}
+			}
+			return value;
+		}
+
+		$(document).on('mousedown', function(){
+			// remove old dialog
+			$('#exa-additionalgrading-dialog').remove();
+		});
+
+		$('input.percent-rating')
+		.inputmask("9{1,3} %")
+		.change(function(){ this.value = additionlgrading_int_val(this.value, true); })
+		.click(function(){
+			// remove old dialog
+			$('#exa-additionalgrading-dialog').remove();
+			
+			$(this).parent().css('position', 'relative');
+			$(this).parent()
+				.append('<div id="exa-additionalgrading-dialog" style="position: absolute; z-index: 10000; top: 34px; right: 0; width: 120px; padding: 6px 8px; background: white; border: 1px solid black;"></div>')
+				.mousedown(function(e){ /* prevent from bubbling and closing again */ e.stopPropagation(); return true; });
+			
+			var sid = $(this).attr('id').split("-")[1];
+			var eid = $(this).attr('id').split("-")[2];
+			var did = $(this).attr('id').split("-")[3];
+
+	    	var input = $(this);
+	    	var allInputs = $('input[id^=additionalinfo\-'+sid+'\-'+eid+']');
+	
+			$('<div />').appendTo('#exa-additionalgrading-dialog').slider({
+			  min: 0,
+			  max: 100,
+			  range: "min",
+			  value: additionlgrading_int_val(this.value),
+			  slide: function( event, ui ) {
+				  allInputs.val(additionlgrading_int_val(ui.value, '%'));
+				  input.trigger( "change" );
+			  }
+			});
+		});
 	});
 })(jQueryExacomp);

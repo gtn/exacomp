@@ -187,7 +187,7 @@
 	
 	$(document).on('click', '#assign-competencies input[type=submit], #assign-competencies input[type=button]', function(event) {
 		event.preventDefault();
-		courseid = block_exacomp.get_param('courseid');
+		var courseid = block_exacomp.get_param('courseid');
 
 		// only for crosssubjects
 		var crosssubjid = 0;
@@ -353,7 +353,7 @@
 		event.preventDefault();
 		var crosssubjects = [];
 		var not_crosssubjects = [];
-		descrid = block_exacomp.get_param('descrid');
+		var descrid = block_exacomp.get_param('descrid');
 		$("input[name='crosssubject']").each(function() {
 			if (this.checked == "1")
 				crosssubjects.push($(this).val());
@@ -375,8 +375,8 @@
 	$(document).on('click', ':button[name=share_crosssubj_students]', function() {
 		var students = [];
 		var not_students = [];
-		courseid = block_exacomp.get_param('courseid');
-		crosssubjid = block_exacomp.get_param('crosssubjid');
+		var courseid = block_exacomp.get_param('courseid');
+		var crosssubjid = block_exacomp.get_param('crosssubjid');
 
 		var data = {
 			action: 'crosssubj-share',
@@ -420,10 +420,10 @@
 		var tr = $(this).closest('tr');
 		var id = tr[0].className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
 		
-		courseid = block_exacomp.get_param('courseid');
-		studentid = block_exacomp.get_studentid() || 0;
-		descrid = $(this).attr('descrid');
-		val = $(this).attr('state');
+		var courseid = block_exacomp.get_param('courseid');
+		var studentid = block_exacomp.get_studentid() || 0;
+		var descrid = $(this).attr('descrid');
+		var val = $(this).attr('state');
 		var select = document
 			.getElementById("menulis_topics");
 		
@@ -538,10 +538,10 @@
 		var tr = $(this).closest('tr');
 		var id = tr[0].className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
 		
-		courseid = block_exacomp.get_param('courseid');
-		studentid = block_exacomp.get_studentid();
-		exampleid = $(this).attr('exampleid');
-		val = $(this).attr('state');
+		var courseid = block_exacomp.get_param('courseid');
+		var studentid = block_exacomp.get_studentid();
+		var exampleid = $(this).attr('exampleid');
+		var val = $(this).attr('state');
 		
 		if(studentid==null)
 			studentid = 0;
@@ -602,8 +602,8 @@
 	});
 
 	$(document).on('click','[exa-type=add-example-to-schedule]', function(event) {
-		exampleid = $(this).attr('exampleid');
-		studentid = $(this).attr('studentid');
+		var exampleid = $(this).attr('exampleid');
+		var studentid = $(this).attr('studentid');
 		
 		if(studentid == -1){
 			if (confirm("Möchten Sie das Beispiel wirklich bei allen Schülern auf den Planungsspeicher legen?")) {
@@ -626,23 +626,22 @@
 	});
 	
 	$(document).on('change', 'input[name^=add-grading\-]', function(event) {
-		descrid = $(this).attr('descrid');
-		studentid = $(this).attr('studentid');
-		value = $(this).val();
+		var descrid = $(this).attr('descrid');
+		var studentid = $(this).attr('studentid');
+		var value = $(this).val();
 		
 		if(!competencies_additional_grading[descrid])
 			competencies_additional_grading[descrid] = {};
 		competencies_additional_grading[descrid][studentid] = value;
 	});
 	
-	$(document).on('select', 'select[id^=additionalinfo\-]', function(event) {
-		exampleid = $(this).attr('exampleid');
-		studentid = $(this).attr('studentid');
-		value = $(this).val();
+	$(document).on('change', 'input.percent-rating', function(event) {
+		var exampleid = $(this).attr('exampleid');
+		var studentid = $(this).attr('studentid');
 		
 		if(!examples_additional_grading[exampleid])
 			examples_additional_grading[exampleid] = {};
-		examples_additional_grading[exampleid][studentid] = value;
+		examples_additional_grading[exampleid][studentid] = this.value == '' ? -1 : this.value.replace(/[^0-9]/g, '');
 	});
 	
 	$(window).on('beforeunload', function (){

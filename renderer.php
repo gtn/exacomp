@@ -2200,14 +2200,18 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                             $additional_grading_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
                             //TODO: optimize get_field query for each student for each example
                             $student_additional_grading = $DB->get_field(block_exacomp::DB_EXAMPLEEVAL, 'additionalinfo', array('studentid'=>$student->id,'exampleid'=>$example->id,'courseid'=>$data->courseid));
+                            // hide percent sign when text is empty
+                            // $student_additional_grading can also be a zero!
+                            if ($student_additional_grading !== false /* row not found */ && $student_additional_grading !== null /* not set */) {
+                                $student_additional_grading .= ' %'; 
+                            }
                             if ($this->is_print_mode()) {
-                                // hide percent sign when printing and text is empty
-                                // $student_additional_grading can also be a zero!
-                                if ($student_additional_grading !== false /* row not found */ && $student_additional_grading !== null /* not set */) {
-                                    $additional_grading_cell->text = $student_additional_grading.' %'; 
-                                } 
+                                $additional_grading_cell->text = $student_additional_grading; 
                             } else {
-                                 $additional_grading_cell->text = html_writer::select(array(-1 => " ") + range(0, 100),'additionalinfo',$student_additional_grading,false,array('id'=>'additionalinfo-'.$student->id.'-'.$example->id.'-'.$descriptor->id,'exampleid'=>$example->id,'studentid'=>$student->id, 'disabled'=>($visible_student_example && $data->role == block_exacomp::ROLE_TEACHER) ? '' : 'disabled')).' %';
+                                $additional_grading_cell->text = html_writer::empty_tag('input', array(
+                                    'class'=>'percent-rating', 'type'=>'text', 'value'=>$student_additional_grading,
+                                    'id'=>'additionalinfo-'.$student->id.'-'.$example->id.'-'.$descriptor->id,'exampleid'=>$example->id,'studentid'=>$student->id)
+                                    + (($visible_student_example && $data->role == block_exacomp::ROLE_TEACHER) ? [] : ['disabled'=>'disabled']));
                             }
                             
                             if($additional_grading && $data->showevaluation && $data->role == block_exacomp::ROLE_STUDENT)
