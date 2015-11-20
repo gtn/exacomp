@@ -131,9 +131,11 @@ if($formdata = $form->get_data()) {
     	$newExample->externalurl = null;
     $newExample->source = block_exacomp::EXAMPLE_SOURCE_TEACHER;
 
-    if(isset($formdata->assignment)) {
-    	$module = get_coursemodule_from_id(null, $formdata->assignment);
-    	$newExample->externaltask = $CFG->wwwroot . '/' . block_exacomp_get_activityurl($module)->__toString();
+    $newExample->externaltask = '';
+    if(!empty($formdata->assignment)) {
+    	if ($module = get_coursemodule_from_id(null, $formdata->assignment)) {
+        	$newExample->externaltask = block_exacomp_get_activityurl($module)->out(false);
+    	}
     }
     if($formdata->exampleid == 0) {
         $newExample->id = $DB->insert_record('block_exacompexamples', $newExample);

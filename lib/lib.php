@@ -2644,7 +2644,7 @@ function block_exacomp_get_activityurl($activity,$student=false) {
 
     if($mod->name == "assignment" && !$student)
         return new moodle_url('/mod/assignment/submissions.php', array('id'=>$activity->id));
-    else return new moodle_url('mod/'.$mod->name.'/view.php', array('id'=>$activity->id));
+    else return new moodle_url('/mod/'.$mod->name.'/view.php', array('id'=>$activity->id));
 }
 /**
  *
