@@ -28,7 +28,7 @@
 require_once dirname(__FILE__)."/inc.php";
 require_once dirname(__FILE__) . '/example_submission_form.php';
 
-global $DB, $OUTPUT, $PAGE, $USER, $COURSE, $logging;
+global $DB, $OUTPUT, $PAGE, $USER, $COURSE;
 
 $courseid = required_param('courseid', PARAM_INT);
 $exampleid = required_param('exampleid', PARAM_INT);
@@ -130,8 +130,7 @@ if($formdata = $form->get_data()) {
 
 	block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, $timecreated);
 	
-	if($logging)
-		$event = \block_exacomp\event\example_submitted::create(array('objectid' => $exampleid, 'contextid' => context_course::instance($courseid)->id))->trigger();
+	\block_exacomp\log_event('example_submitted', ['objectid' => $exampleid, 'courseid' => $courseid]);
 
     echo $output->popup_close_and_reload();
     exit;

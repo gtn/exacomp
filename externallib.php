@@ -3996,7 +3996,8 @@ class block_exacomp_external extends external_api {
 				'end' => new external_value (PARAM_INT, 'end of event'),
 				'student_evaluation' => new external_value ( PARAM_INT, 'self evaluation of student' ),
 				'teacher_evaluation' => new external_value( PARAM_TEXT, 'evaluation of teacher'),
-				'courseid' => new external_value(PARAM_INT, 'example course'),
+				'teacher_percent_rating' => new external_value( PARAM_TEXT, 'additional evaluation of teacher'),
+                'courseid' => new external_value(PARAM_INT, 'example course'),
 				'state' => new external_value (PARAM_INT, 'state of example'),
 				'scheduleid' => new external_value (PARAM_INT, 'id in schedule context'),
 				'courseshortname' => new external_value (PARAM_TEXT, 'shortname of example course'),
@@ -4879,9 +4880,9 @@ class block_exacomp_external extends external_api {
 		block_exacomp_set_user_example($USER->id, $exampleid, $courseid, block_exacomp::ROLE_STUDENT, $studentvalue);
 	
 		block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, time());
-		if(get_config('exacomp','logging'))
-			$event = \block_exacomp\event\example_submitted::create(array('objectid' => $exampleid, 'contextid' => context_course::instance($courseid)->id))->trigger();
-		
+
+		\block_exacomp\log_event('example_submitted', ['objectid' => $exampleid, 'courseid' => $courseid]);
+				
 		return array("success"=>true,"itemid"=>$itemid);
 	}
 	
@@ -4956,8 +4957,8 @@ class block_exacomp_external extends external_api {
 				$DB->insert_record ( 'block_exaportitemcomm', $insert );
 				
 				block_exacomp_send_example_comment_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid, $exampleid);
-				if(get_config('exacomp','logging'))
-					$event = \block_exacomp\event\example_commented::create(array('objectid' => $exampleid, 'contextid' => context_course::instance($courseid)->id))->trigger();
+				
+				\block_exacomp\log_event('example_commented', ['objectid' => $exampleid, 'courseid' => $courseid]);
 			}
 		}
 	

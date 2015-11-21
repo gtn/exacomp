@@ -380,3 +380,51 @@ function t() {
         return _t_parse_string($identifier, $a);
     }
 }
+
+function trigger_event($event, array $data) {
+	// maybe check, if event starts with backslash, then it's a whole event class name
+	// maybe check, if event is an object, then we don't have to create one
+	$class = "\\"._plugin_name()."\\event\\$event";
+
+	if (!isset($data['contextid']) && isset($data['courseid'])) {
+		if ($data['courseid']) {
+			$data['contextid'] = \context_course::instance($data['courseid'])->id;
+		} else {
+			$data['contextid'] = \context_system::instance()->id;
+		}
+	}
+
+	return $class::create($data)->trigger();
+}
+
+/* the whole part below is done, so eclipse knows the common classes and functions */
+namespace block_exacomp;
+
+function _should_export_class($classname) {
+	return !class_exists('\\'.__NAMESPACE__.'\\'.$classname);
+}
+function _export_function($function) {
+	if (!function_exists('\\'.__NAMESPACE__.'\\'.$function)) {
+		eval('
+			namespace '.__NAMESPACE__.' {
+				function '.$function.'() {
+					return call_user_func_array(\'\\'.__NAMESPACE__.'\common\\'.$function.'\', func_get_args());
+				}
+			}
+		');
+		// return call_user_func_array(__CLASS__.'\common\\'.__FUNCTION__, func_get_args());
+	}
+	return false;
+}
+
+// export classnames, if not already existing
+if (_should_export_class('exception')) { class exception extends common\exception {} }
+if (_should_export_class('db')) { class db extends common\db {} }
+if (_should_export_class('param')) { class param extends common\param {} }
+if (_should_export_class('url')) { class url extends common\url {} }
+if (_should_export_class('SimpleXMLElement')) { class SimpleXMLElement extends common\SimpleXMLElement {} }
+
+if (_export_function('t')) { function t() {} }
+if (_export_function('get_string')) { function get_string($identifier) {} }
+if (_export_function('trigger_event')) { function trigger_event($event, array $data) {} }
+

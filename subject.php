@@ -45,7 +45,7 @@ $item = $id ? block_exacomp_subject::get($id) : null;
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/subject.php', array('courseid' => $courseid));
-$PAGE->set_heading(block_exacomp::t($item ? 'de:Kompetenzraster bearbeiten' : 'de:Neuen Kompetenzraster anlegen'));
+$PAGE->set_heading(\block_exacomp\t($item ? 'de:Kompetenzraster bearbeiten' : 'de:Neuen Kompetenzraster anlegen'));
 $PAGE->set_pagelayout('embedded');
 
 // build tab navigation & print header
@@ -74,11 +74,11 @@ class block_exacomp_local_item_form extends moodleform {
 
         $mform = & $this->_form;
 
-        $mform->addElement('text', 'title', block_exacomp::get_string('name'), 'maxlength="255" size="60"');
+        $mform->addElement('text', 'title', \block_exacomp\get_string('name'), 'maxlength="255" size="60"');
         $mform->setType('title', PARAM_TEXT);
-        $mform->addRule('title', block_exacomp::get_string("titlenotemtpy"), 'required', null, 'client');
+        $mform->addRule('title', \block_exacomp\get_string("titlenotemtpy"), 'required', null, 'client');
 
-        $mform->addElement('select', 'stid', block_exacomp::get_string('tab_teacher_settings_selection_st'), $DB->get_records_menu(block_exacomp::DB_SCHOOLTYPES, null, null, 'id, title'));
+        $mform->addElement('select', 'stid', \block_exacomp\get_string('tab_teacher_settings_selection_st'), $DB->get_records_menu(block_exacomp::DB_SCHOOLTYPES, null, null, 'id, title'));
         
         $this->add_action_buttons(false);
     }
@@ -102,7 +102,7 @@ if($formdata = $form->get_data()) {
         
         // add one dummy topic
         $topicid = $DB->insert_record(block_exacomp::DB_TOPICS, array(
-            'title' => block_exacomp::t('de:Neuer Raster'),
+            'title' => \block_exacomp\t('de:Neuer Raster'),
             'subjid' => $new->id,
             'numb' => 1,
             'source' => block_exacomp::DATA_SOURCE_CUSTOM,
@@ -130,8 +130,8 @@ echo $output->header($context, $courseid, '', false);
 if ($item) {
     // TODO: also check $item->can_delete
     echo '<div style="position: absolute; top: 40px; right: 20px;">';
-    echo '<a href="'.$_SERVER['REQUEST_URI'].'&action=delete" onclick="return confirm(\''.block_exacomp::t('de:Wirklich löschen?').'\');">';
-    echo block_exacomp::get_string('delete');
+    echo '<a href="'.$_SERVER['REQUEST_URI'].'&action=delete" onclick="return confirm(\''.\block_exacomp\t('de:Wirklich löschen?').'\');">';
+    echo \block_exacomp\get_string('delete');
     echo '</a></div>';
 }
 

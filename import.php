@@ -87,10 +87,10 @@ try {
         }
     }
     
-    if($importSuccess)
-    	if(get_config('exacomp','logging'))
-    		$event = \block_exacomp\event\import_completed::create(array('objectid' => $courseid, 'contextid' => context_course::instance($courseid)->id))->trigger();
-    	
+    if($importSuccess) {
+        \block_exacomp\log_event('import_completed', ['objectid' => $courseid, 'courseid' => $courseid]);
+    }
+
 } catch (block_exacomp\exception $importException) {
 }
 

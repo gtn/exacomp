@@ -310,8 +310,6 @@
 							var event = exacomp_calcendar.event_time_to_slot(o);
 							event.original = event;
 							
-							event.title = event.courseinfo+':\n'+event.title;
-							
 							return event;
 						});
 
@@ -344,8 +342,19 @@
 					
 					// delete time (actually slot time)
 					element.find(".fc-time").remove();
+					
+					element.find('.fc-title').prepend(event.courseinfo+':<br />');
 		
-					// TODO:
+					if (this.student_evaluation) {
+						element.find(".fc-content").append('<div>S: '+this.student_evaluation+'</div>');
+					}
+					var teacher_evaluation = [];
+					if (this.teacher_evaluation_title) teacher_evaluation.push(this.teacher_evaluation_title);
+					if (this.teacher_percent_rating!==null) teacher_evaluation.push(this.teacher_percent_rating+' %');
+					if (teacher_evaluation.length) {
+						element.find(".fc-content").append('<div>L: '+teacher_evaluation.join(' / ')+'</div>');
+					}
+
 					element.find(".fc-content").append(
 						'	<div class="event-extra">' +
 						//'	<div class="event-course">Kurs: '+event.courseinfo+'</div>'+

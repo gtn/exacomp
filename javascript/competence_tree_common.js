@@ -161,6 +161,7 @@
 			value += ''; // to string
 			value = value.replace(/[^0-9]/g, '');
 			if (value != '') {
+				value = parseInt(value);
 				if (value > 100) {
 					value = 100;
 				}

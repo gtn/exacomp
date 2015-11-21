@@ -45,7 +45,7 @@ $item = $id ? block_exacomp_descriptor::get($id) : null;
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/descriptor.php', array('courseid' => $courseid));
-$PAGE->set_heading(block_exacomp::t($item ? 'de:Kompetenz bearbeiten' : 'de:Neue Kompetenz anlegen'));
+$PAGE->set_heading(\block_exacomp\t($item ? 'de:Kompetenz bearbeiten' : 'de:Neue Kompetenz anlegen'));
 $PAGE->set_pagelayout('embedded');
 
 // build tab navigation & print header
@@ -74,13 +74,13 @@ class block_exacomp_local_item_form extends moodleform {
 
         $mform = & $this->_form;
 
-        $mform->addElement('text', 'title', block_exacomp::get_string('name'), 'maxlength="255" size="60"');
+        $mform->addElement('text', 'title', \block_exacomp\get_string('name'), 'maxlength="255" size="60"');
         $mform->setType('title', PARAM_TEXT);
-        $mform->addRule('title', block_exacomp::get_string("titlenotemtpy"), 'required', null, 'client');
+        $mform->addRule('title', \block_exacomp\get_string("titlenotemtpy"), 'required', null, 'client');
 
-        $mform->addElement('select', 'niveauid', block_exacomp::get_string('niveau'), array(''=>'')+$DB->get_records_menu(block_exacomp::DB_NIVEAUS, null, 'sorting', 'id, title'));
+        $mform->addElement('select', 'niveauid', \block_exacomp\get_string('niveau'), array(''=>'')+$DB->get_records_menu(block_exacomp::DB_NIVEAUS, null, 'sorting', 'id, title'));
 
-        $element = $mform->addElement('select', 'categories', block_exacomp::get_string('categories'), $DB->get_records_menu(block_exacomp::DB_CATEGORIES, null, 'title', 'id, title'));
+        $element = $mform->addElement('select', 'categories', \block_exacomp\get_string('categories'), $DB->get_records_menu(block_exacomp::DB_CATEGORIES, null, 'title', 'id, title'));
         $element->setMultiple(true);
         
         $this->add_action_buttons(false);
@@ -131,8 +131,8 @@ echo $output->header($context, $courseid, '', false);
 if ($item) {
     // TODO: also check $item->can_delete
     echo '<div style="position: absolute; top: 40px; right: 20px;">';
-    echo '<a href="'.$_SERVER['REQUEST_URI'].'&action=delete" onclick="return confirm(\''.block_exacomp::t('de:Wirklich löschen?').'\');">';
-    echo block_exacomp::get_string('delete');
+    echo '<a href="'.$_SERVER['REQUEST_URI'].'&action=delete" onclick="return confirm(\''.\block_exacomp\t('de:Wirklich löschen?').'\');">';
+    echo \block_exacomp\get_string('delete');
     echo '</a></div>';
 }
 */
