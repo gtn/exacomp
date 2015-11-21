@@ -185,8 +185,8 @@
 			$('#exa-additionalgrading-dialog').remove();
 			
 			$(this).parent().css('position', 'relative');
-			$(this).parent()
-				.append('<div id="exa-additionalgrading-dialog" style="position: absolute; z-index: 10000; top: 34px; right: 0; width: 120px; padding: 6px 8px; background: white; border: 1px solid black;"></div>')
+			$('<div id="exa-additionalgrading-dialog" style="position: absolute; z-index: 10000; top: 34px; right: 0; width: 120px; padding: 6px 8px; background: white; border: 1px solid black;"></div>')
+				.appendTo($(this).parent())
 				.mousedown(function(e){ /* prevent from bubbling and closing again */ e.stopPropagation(); return true; });
 			
 			var sid = $(this).attr('id').split("-")[1];
