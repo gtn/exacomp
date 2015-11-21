@@ -45,7 +45,7 @@ $item = $id ? block_exacomp_descriptor::get($id) : null;
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/descriptor.php', array('courseid' => $courseid));
-$PAGE->set_heading(\block_exacomp\t($item ? 'de:Kompetenz bearbeiten' : 'de:Neue Kompetenz anlegen'));
+$PAGE->set_heading(\block_exacomp\trans($item ? 'de:Kompetenz bearbeiten' : 'de:Neue Kompetenz anlegen'));
 $PAGE->set_pagelayout('embedded');
 
 // build tab navigation & print header
@@ -131,7 +131,7 @@ echo $output->header($context, $courseid, '', false);
 if ($item) {
     // TODO: also check $item->can_delete
     echo '<div style="position: absolute; top: 40px; right: 20px;">';
-    echo '<a href="'.$_SERVER['REQUEST_URI'].'&action=delete" onclick="return confirm(\''.\block_exacomp\t('de:Wirklich löschen?').'\');">';
+    echo '<a href="'.$_SERVER['REQUEST_URI'].'&action=delete" onclick="return confirm(\''.\block_exacomp\trans('de:Wirklich löschen?').'\');">';
     echo \block_exacomp\get_string('delete');
     echo '</a></div>';
 }

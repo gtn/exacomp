@@ -42,7 +42,7 @@ $output = block_exacomp_get_renderer();
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/topic.php', array('courseid' => $courseid));
-$PAGE->set_heading(\block_exacomp\t('de:Lernfortschritt hinzufügen'));
+$PAGE->set_heading(\block_exacomp\trans('de:Lernfortschritt hinzufügen'));
 $PAGE->set_pagelayout('embedded');
 
 // build tab navigation & print header
@@ -67,28 +67,28 @@ class block_exacomp_local_item_form extends moodleform {
         $radioarray=array();
         if ($this->_customdata['niveaus']) {
             // disable if no niveaus
-            $radioarray[] =& $mform->createElement('radio', 'niveau_type', '', \block_exacomp\t('de:vorhandener Lernfortschritt'), 'existing');
+            $radioarray[] =& $mform->createElement('radio', 'niveau_type', '', \block_exacomp\trans('de:vorhandener Lernfortschritt'), 'existing');
         }
-        $radioarray[] =& $mform->createElement('radio', 'niveau_type', '', \block_exacomp\t('de:neuer Lernfortschritt'), 'new');
+        $radioarray[] =& $mform->createElement('radio', 'niveau_type', '', \block_exacomp\trans('de:neuer Lernfortschritt'), 'new');
         $mform->addGroup($radioarray, 'radioar', '', array(' '), false);
         
-        $mform->addElement('text', 'niveau_title', \block_exacomp\t('de:Name des Lernfortschritts'), 'maxlength="255" size="60"');
+        $mform->addElement('text', 'niveau_title', \block_exacomp\trans('de:Name des Lernfortschritts'), 'maxlength="255" size="60"');
         $mform->setType('niveau_title', PARAM_TEXT);
         // $mform->addRule('niveau_title', \block_exacomp\get_string("titlenotemtpy"), 'required', null, 'client');
         
         $mform->addElement('select', 'niveau_id', \block_exacomp\get_string('niveau'), $this->_customdata['niveaus']);
         
-        $mform->addElement('static', 'niveau_descriptor_description', \block_exacomp\t('de:Bitte weisen sie diesem Lernfotschritt eine Kompetenz zu:'));
+        $mform->addElement('static', 'niveau_descriptor_description', \block_exacomp\trans('de:Bitte weisen sie diesem Lernfotschritt eine Kompetenz zu:'));
         
         $radioarray=array();
         if ($this->_customdata['descriptors']) {
             // disable if no descriptors
-            $radioarray[] =& $mform->createElement('radio', 'descriptor_type', '', \block_exacomp\t('de:vorhandene Kompetenz'), 'existing');
+            $radioarray[] =& $mform->createElement('radio', 'descriptor_type', '', \block_exacomp\trans('de:vorhandene Kompetenz'), 'existing');
         }
-        $radioarray[] =& $mform->createElement('radio', 'descriptor_type', '', \block_exacomp\t('de:neue Kompetenz'), 'new');
+        $radioarray[] =& $mform->createElement('radio', 'descriptor_type', '', \block_exacomp\trans('de:neue Kompetenz'), 'new');
         $mform->addGroup($radioarray, 'radioar', '', array(' '), false);
 
-        $mform->addElement('text', 'descriptor_title', \block_exacomp\t('de:Name der Kompetenz'), 'maxlength="255" size="60"');
+        $mform->addElement('text', 'descriptor_title', \block_exacomp\trans('de:Name der Kompetenz'), 'maxlength="255" size="60"');
         $mform->setType('descriptor_title', PARAM_TEXT);
         // $mform->addRule('descriptor_title', \block_exacomp\get_string("titlenotemtpy"), 'required', null, 'client');
         

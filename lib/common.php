@@ -322,7 +322,7 @@ function _t_parse_string($string, $a) {
 /*
  * translator function
  */
-function t() {
+function trans() {
     
     $origArgs = $args = func_get_args();
     
@@ -424,7 +424,7 @@ if (_should_export_class('param')) { class param extends common\param {} }
 if (_should_export_class('url')) { class url extends common\url {} }
 if (_should_export_class('SimpleXMLElement')) { class SimpleXMLElement extends common\SimpleXMLElement {} }
 
-if (_export_function('t')) { function t() {} }
+if (_export_function('trans')) { function trans() {} }
 if (_export_function('get_string')) { function get_string($identifier) {} }
 if (_export_function('trigger_event')) { function trigger_event($event, array $data) {} }
 

@@ -45,7 +45,7 @@ $item = $id ? block_exacomp_topic::get($id) : null;
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/topic.php', array('courseid' => $courseid));
-$PAGE->set_heading(\block_exacomp\t($item ? 'de:Kompetenzbereich bearbeiten' : 'de:Neuen Kompetenzbereich anlegen'));
+$PAGE->set_heading(\block_exacomp\trans($item ? 'de:Kompetenzbereich bearbeiten' : 'de:Neuen Kompetenzbereich anlegen'));
 $PAGE->set_pagelayout('embedded');
 
 // build tab navigation & print header
@@ -78,7 +78,7 @@ class block_exacomp_local_item_form extends moodleform {
         $mform->setType('title', PARAM_TEXT);
         $mform->addRule('title', \block_exacomp\get_string("titlenotemtpy"), 'required', null, 'client');
 
-        $mform->addElement('text', 'numb', \block_exacomp\t('de:Nummer'), 'maxlength="4" size="4"');
+        $mform->addElement('text', 'numb', \block_exacomp\trans('de:Nummer'), 'maxlength="4" size="4"');
         $mform->setType('numb', PARAM_INT);
         $mform->addRule('numb', \block_exacomp\get_string('err_numeric', 'form'), 'required', null, 'client');
 
@@ -120,7 +120,7 @@ echo $output->header($context, $courseid, '', false);
 if ($item) {
     // TODO: also check $item->can_delete
     echo '<div style="position: absolute; top: 40px; right: 20px;">';
-    echo '<a href="'.$_SERVER['REQUEST_URI'].'&action=delete" onclick="return confirm(\''.\block_exacomp\t('de:Wirklich löschen?').'\');">';
+    echo '<a href="'.$_SERVER['REQUEST_URI'].'&action=delete" onclick="return confirm(\''.\block_exacomp\trans('de:Wirklich löschen?').'\');">';
     echo \block_exacomp\get_string('delete');
     echo '</a></div>';
 }

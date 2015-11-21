@@ -418,14 +418,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
         $right_content = "";
         
         if (!$this->is_edit_mode()) {
-            $right_content .= html_writer::empty_tag('input', array('type'=>'button', 'id'=>'print', 'value'=>\block_exacomp\t('de:Drucken'), 'onclick' => "window.open(location.href+'&print=1');"));
+            $right_content .= html_writer::empty_tag('input', array('type'=>'button', 'id'=>'print', 'value'=>\block_exacomp\trans('de:Drucken'), 'onclick' => "window.open(location.href+'&print=1');"));
         }
         
         if($isTeacher){
             if ($this->is_edit_mode()) {
                 // display a hidden field? not needed, because the form never gets submitted (it's ajax)
                 // $content .= html_writer::empty_tag('input', array('type'=>'text', 'name'=>'exacomp_competence_grid_select_student', 'value'=>$selectedStudent));
-                $content .= '<h3>'.\block_exacomp\t('de:Sie befinden sich im Bearbeiten Modus').'</h3>';
+                $content .= '<h3>'.\block_exacomp\trans('de:Sie befinden sich im Bearbeiten Modus').'</h3>';
             } else {
                 $content .= html_writer::empty_tag("br");
                 $content .= get_string("choosestudent", "block_exacomp");
@@ -437,7 +437,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             }
             
             if ($this->is_edit_mode()) {
-                $right_content .= html_writer::empty_tag('input', array('type'=>'button', 'id'=>'add_subject', 'value'=>\block_exacomp\t('add_subject', 'de:Kompetenzraster anlegen'),
+                $right_content .= html_writer::empty_tag('input', array('type'=>'button', 'id'=>'add_subject', 'value'=>\block_exacomp\trans('add_subject', 'de:Kompetenzraster anlegen'),
                     'exa-type' => 'iframe-popup', 'exa-url' => "subject.php?courseid={$COURSE->id}&show=add"));
             }
             
@@ -512,7 +512,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
         foreach($types as $type) {
             $extra = '';
             if ($this->is_edit_mode() && $type->source == block_exacomp::DATA_SOURCE_CUSTOM) {
-                $extra .= ' <img src="pix/edit.png" title="'.\block_exacomp\t('edit').'" exa-type="iframe-popup" exa-url="subject.php?courseid='.$COURSE->id.'&id='.$type->id.'" />';
+                $extra .= ' <img src="pix/edit.png" title="'.\block_exacomp\trans('edit').'" exa-type="iframe-popup" exa-url="subject.php?courseid='.$COURSE->id.'&id='.$type->id.'" />';
             
             }
             $content .= html_writer::tag('li',
@@ -528,7 +528,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             foreach($type->subjects as $subject) {
                 $extra = '';
                 if ($this->is_edit_mode() && $subject->source == block_exacomp::DATA_SOURCE_CUSTOM) {
-                    $extra .= ' <img src="pix/edit.png" title="'.\block_exacomp\t('edit').'" exa-type="iframe-popup" exa-url="topic.php?courseid='.$COURSE->id.'&id='.$subject->id.'" />';
+                    $extra .= ' <img src="pix/edit.png" title="'.\block_exacomp\trans('edit').'" exa-type="iframe-popup" exa-url="topic.php?courseid='.$COURSE->id.'&id='.$subject->id.'" />';
                 }
                 
                 $content .= html_writer::tag('li',
@@ -541,7 +541,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
                 $content .= html_writer::tag('li',
                     html_writer::link("topic.php?show=add&courseid={$COURSE->id}&subjectid={$type->id}",
                             "<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".
-                            \block_exacomp\t('de:Neuer Kompetenzbereich'), array('exa-type' => 'iframe-popup'))
+                            \block_exacomp\trans('de:Neuer Kompetenzbereich'), array('exa-type' => 'iframe-popup'))
                     );
             }
         
@@ -599,7 +599,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             // add niveau button
             $content .= html_writer::tag('li',
                         html_writer::link("niveau.php?show=add&courseid={$COURSE->id}&topicid={$selectedTopic->id}",
-                                "<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".\block_exacomp\t('de:Neuer Lernfortschritt'), array('exa-type' => 'iframe-popup'))
+                                "<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".\block_exacomp\trans('de:Neuer Lernfortschritt'), array('exa-type' => 'iframe-popup'))
             );
         }
         
@@ -1050,7 +1050,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
         $cell = new html_table_cell();
         $cell->colspan = 4;
-        $cell->text = html_writer::tag('h5', \block_exacomp\t('de:Teilkompetenzen'), array('style'=>'float:right;'));
+        $cell->text = html_writer::tag('h5', \block_exacomp\trans('de:Teilkompetenzen'), array('style'=>'float:right;'));
 
         $row->cells[] = $cell;
 
@@ -1346,7 +1346,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     $studentCell->colspan = $studentsColspan;
                     $studentCell->text = fullname($student);
                     if (!$this->is_print_mode() && block_exacomp_exastudexists() && ($info = block_exastud_api::get_student_review_link_info_for_teacher($student->id))) {
-                        $studentCell->text .= ' <a href="'.$info->url.'" title="'.\block_exacomp\t('de:Überfachliche Bewertung').'" onclick="window.open(this.href,this.target,\'width=880,height=660,scrollbars=yes\'); return false;">'.'<img src="pix/review_student.png" />'.'</a>';
+                        $studentCell->text .= ' <a href="'.$info->url.'" title="'.\block_exacomp\trans('de:Überfachliche Bewertung').'" onclick="window.open(this.href,this.target,\'width=880,height=660,scrollbars=yes\'); return false;">'.'<img src="pix/review_student.png" />'.'</a>';
                     }
     
                     if ($this->is_print_mode()) {
@@ -1698,7 +1698,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                 
                 $cell = new html_table_cell();
                 $cell->style = "padding-left: ". $padding."px";
-                $cell->text = html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'type'=>'textfield', 'placeholder'=>\block_exacomp\t('de:[Neue Kompetenz]'), 'topicid'=>$topic->id, 'niveauid'=>$niveauid));
+                $cell->text = html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'type'=>'textfield', 'placeholder'=>\block_exacomp\trans('de:[Neue Kompetenz]'), 'topicid'=>$topic->id, 'niveauid'=>$niveauid));
                 $own_additionRow->cells[] = $cell;
                 $own_additionRow->cells[] = new html_table_cell();
                 $rows[] = $own_additionRow;
@@ -2261,7 +2261,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
                     if($descriptor_in_crosssubj){
                         $cell = new html_table_cell();
                         $cell->style = "padding-left: ". ($padding + 20 )."px";
-                        $cell->text = html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'name'=>'new_comp'.$descriptor->id, 'type'=>'textfield', 'placeholder'=>\block_exacomp\t('de:[Neue Teilkompetenz]'), 'parentid'=>$descriptor->id));
+                        $cell->text = html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'name'=>'new_comp'.$descriptor->id, 'type'=>'textfield', 'placeholder'=>\block_exacomp\trans('de:[Neue Teilkompetenz]'), 'parentid'=>$descriptor->id));
                         $own_additionRow->cells[] = $cell;
                     }
                     $own_additionRow->cells[] = new html_table_cell();
