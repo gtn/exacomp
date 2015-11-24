@@ -3568,7 +3568,7 @@ class block_exacomp_external extends external_api {
 	 * @return list of descriptors
 	 */
 	public static function dakora_get_example_grading($exampleid, $courseid, $userid) {
-		global $DB;
+		global $DB,$USER;
 		
 		$params = self::validate_parameters ( self::dakora_get_example_grading_parameters (), array (
 				'exampleid' => $exampleid,
