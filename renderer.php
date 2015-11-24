@@ -485,7 +485,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				 "onclick" => "document.location.href='".$url->out(false)."'"));
 	}
 	
-	public function print_topics_menu($types,$selectedSubject) {
+	public function print_topics_menu($types, $selectedSubject, $selectedTopic) {
 		global $NG_PAGE, $CFG, $COURSE;
 		
 		$content = html_writer::start_div('subjects_menu');
@@ -516,13 +516,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			
 			}
 			$content .= html_writer::tag('li',
-					$this->is_edit_mode() ?
 					html_writer::link(
-							// edit mode: allow selecting only one subject
-							$NG_PAGE->url->copy(array('ng_subjectid' => $type->id, 'subjectid'=>null)),
-							$type->title.$extra, array('class' => 'type'))
-					// link ohne href attribut => nicht klickbar!
-					: html_writer::tag('a', $type->title.$extra, array('class' => 'type'))
+						$NG_PAGE->url->copy(array('ng_subjectid' => $type->id, 'topicid'=>BLOCK_EXACOMP_SHOW_ALL)),
+						$type->title.$extra, array('class' => (!$selectedTopic && $type->id == $selectedSubject->id) ? 'type current' : 'type'))
 			);
 			
 			foreach($type->subjects as $subject) {
@@ -532,8 +528,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				}
 				
 				$content .= html_writer::tag('li',
-					html_writer::link($NG_PAGE->url->copy(array('topicid' => $subject->id)),
-							block_exacomp_get_topic_numbering($subject).' '.$subject->title.$extra, array('class' => ($subject->id == $selectedSubject->id) ? 'current' : ''))
+					html_writer::link($NG_PAGE->url->copy(array('ng_subjectid' => $type->id, 'topicid' => $subject->id)),
+							block_exacomp_get_topic_numbering($subject).' '.$subject->title.$extra, array('class' => ($selectedTopic && $subject->id == $selectedTopic->id) ? 'current' : ''))
 					);
 			}
 			   if ($this->is_edit_mode() && $type->source == block_exacomp::DATA_SOURCE_CUSTOM) {
@@ -710,7 +706,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		$cell = new html_table_cell();
 		$cell->text = html_writer::span(get_string('comp_field_idea', 'block_exacomp'), 'exabis_comp_top_name')
-		. html_writer::div((isset($subject->numb) && strcmp($subject->numb, '')!=0)?$subject->numb." - ".$subject->title:$subject->title, 'exabis_comp_top_value');
+		. html_writer::div($subject ? (!empty($subject->numb)?$subject->numb." - ":'').$subject->title : '', 'exabis_comp_top_value');
 
 		$row->cells[] = $cell;
 
@@ -731,7 +727,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	
 			$cell = new html_table_cell();
 			$cell->text = html_writer::span(get_string('tab_competence_overview', 'block_exacomp'), 'exabis_comp_top_name')
-			. html_writer::div(substr($schooltype, 0,1).$subject->numb.(($cat && isset($cat->sourceid))?".".$cat->sourceid:''), 'exabis_comp_top_value');
+			. html_writer::div(substr($schooltype, 0,1).($subject?$subject->numb:'').(($cat && isset($cat->sourceid))?".".$cat->sourceid:''), 'exabis_comp_top_value');
 	
 			$row->cells[] = $cell;
 		}

@@ -105,7 +105,7 @@ if(($action = optional_param("action", "", PARAM_TEXT) ) == "filter"){
 }
 
 
-$subjects = block_exacomp_get_competence_tree($courseid, null, true, null, false, array(), false, true);
+$subjects = block_exacomp_get_competence_tree($courseid, null, null, true, null, false, array(), false, true);
 $modinfo = get_fast_modinfo($COURSE->id);
 $modules = $modinfo->get_cms();
 

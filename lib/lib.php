@@ -56,6 +56,7 @@ $additional_grading = get_config('exacomp', 'additional_grading');
 
 define("SHOW_ALL_NIVEAUS",99999999);
 define("SHOW_ALL_TAXONOMIES",100000000);
+define("BLOCK_EXACOMP_SHOW_ALL", -1);
 define("BLOCK_EXACOMP_SHOW_ALL_STUDENTS", -1);
 define("BLOCK_EXACOMP_SHOW_STATISTIC", -2);
 define("BLOCK_EXACOMP_DEFAULT_STUDENT", -5);
@@ -1062,17 +1063,18 @@ function block_exacomp_get_descriptors_by_example($exampleid) {
  *
  * @param int $courseid
  * @param int $subjectid
+ * @param int $topicid
  * @return associative_array
  */
-function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $showalldescriptors = false, $niveauid = null, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $calledfromoverview = false, $calledfromactivities = false, $showonlyvisible=false, $without_descriptors=false) {
+function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $topicid = null, $showalldescriptors = false, $niveauid = null, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $calledfromoverview = false, $calledfromactivities = false, $showonlyvisible=false, $without_descriptors=false) {
 	global $DB;
 
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
-	if($subjectid != null && $calledfromoverview) {
-		$selectedTopic = $DB->get_record(block_exacomp::DB_TOPICS,array('id'=>$subjectid));
-		$subjectid = $selectedTopic->subjid;
+	$selectedTopic = null;
+	if($topicid && $calledfromoverview) {
+		$selectedTopic = $DB->get_record(block_exacomp::DB_TOPICS,array('id'=>$topicid));
 	}
 	 
 	// 1. GET SUBJECTS
@@ -1087,8 +1089,9 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 	// 2. GET TOPICS
 	$allTopics = block_exacomp_get_all_topics($subjectid);
 	if($courseid > 0) {
-		if((!$calledfromoverview && !$calledfromactivities) || !isset($selectedTopic))
-			 $courseTopics = block_exacomp_get_topics_by_subject($courseid, $subjectid);
+		if((!$calledfromoverview && !$calledfromactivities) || !$selectedTopic) {
+			$courseTopics = block_exacomp_get_topics_by_subject($courseid, $subjectid);
+		}
 		elseif(isset($selectedTopic))
 			$courseTopics = block_exacomp_topic::get($selectedTopic->id);
 		
@@ -1165,37 +1168,55 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $sh
 /**
  * 
  * @param unknown $courseid
- * @param unknown $ng_subjectid the subjectid
- * @param unknown $subjectid the topicid
+ * @param unknown $subjectid the subjectid
  * @param unknown $topicid the descriptorid
  * @param unknown $editmode
  * @param string $isTeacher
  * @param number $studentid set if he is a student
  * @return multitype:unknown Ambigous <stdClass, unknown>
  */
-function block_exacomp_init_overview_data($courseid, $ng_subjectid, $topicid, $niveauid, $editmode, $isTeacher=true, $studentid=0) {
+function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher=true, $studentid=0) {
 	global $DB;
 	
-	if ($ng_subjectid) {
-		// a subjectid was submitted, so we only want to show that one!
-		$topics = block_exacomp_get_topics_by_subject($courseid, $ng_subjectid);
-	} else
-		$topics = block_exacomp_get_topics_by_course($courseid);
+	$courseTopics = block_exacomp_get_topics_by_course($courseid);
+	$courseSubjects = block_exacomp_get_subjects_by_course($courseid);
 	
-	if (isset($topics[$topicid])) {
-		$selectedSubject = $topics[$topicid];
-	} elseif ($topics) {
-		$selectedSubject = reset($topics);
-	} else {
-		// not configured
-		return null;
+	$selectedSubject = null;
+	$selectedTopic = null;
+	
+	if ($subjectid) {
+		if (!empty($courseSubjects[$subjectid])) {
+			$selectedSubject = $courseSubjects[$subjectid];
+
+			$topics = block_exacomp_get_topics_by_subject($courseid, $selectedSubject->id);
+			if ($topicid == BLOCK_EXACOMP_SHOW_ALL) {
+				// no $selectedTopic
+			} elseif ($topicid && isset($topics[$topicid])) {
+				$selectedTopic = $topics[$topicid];
+			} else {
+				// select first
+				$selectedTopic = reset($topics);
+			}
+		}
+	} 
+	if (!$selectedSubject && $topicid) {
+		if (isset($courseTopics[$topicid])) {
+			$selectedTopic = $courseTopics[$topicid];
+			$selectedSubject = $courseSubjects[$selectedTopic->subjid];
+		}
+	}
+	if (!$selectedSubject) {
+		// select the first subject
+		$selectedSubject = reset($courseSubjects);
+		$topics = block_exacomp_get_topics_by_subject($courseid, $selectedSubject->id);
+		$selectedTopic = reset($topics);
 	}
 	
 	// load all descriptors first (needed for teacher)
 	if ($editmode) {
-		$descriptors = block_exacomp_get_descriptors_by_topic ( $courseid, $selectedSubject->id, true, false, false);
+		$descriptors = block_exacomp_get_descriptors_by_topic ( $courseid, $selectedTopic ? $selectedTopic->id : null, true, false, false);
 	} else {
-		$descriptors = block_exacomp_get_descriptors_by_topic ( $courseid, $selectedSubject->id, false, true, true);
+		$descriptors = block_exacomp_get_descriptors_by_topic ( $courseid, $selectedTopic ? $selectedTopic->id : null, false, true, true);
 	}
 	
 	if (!$isTeacher) {
@@ -1228,7 +1249,7 @@ function block_exacomp_init_overview_data($courseid, $ng_subjectid, $topicid, $n
 		$selectedNiveau = reset($niveaus);
 	}
 
-	return array($topics, $niveaus, $selectedSubject, $selectedNiveau);
+	return array($courseSubjects, $courseTopics, $niveaus, $selectedSubject, $selectedTopic, $selectedNiveau);
 }
 /**
  *
@@ -2149,7 +2170,7 @@ function block_exacomp_build_example_tree_desc($courseid){
 	global $DB;
 
 	//get all subjects, topics, descriptors and examples
-	$tree = block_exacomp_get_competence_tree($courseid, null, false, null, true, block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies);
+	$tree = block_exacomp_get_competence_tree($courseid, null, null, false, null, true, block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies);
 
 	//go through tree and unset every subject, topic and descriptor where no example is appended
 	foreach($tree as $subject){
@@ -3679,7 +3700,7 @@ function block_exacomp_build_schooltype_tree($courseid=0, $without_descriptors =
 		$schooltype->subs = array();
 		foreach($subjects as $subject){
 			$param = $courseid;
-			$tree = block_exacomp_get_competence_tree($param, $subject->id, true, null, true, array(SHOW_ALL_TAXONOMIES), false, false, false, $without_descriptors);
+			$tree = block_exacomp_get_competence_tree($param, $subject->id, null, true, null, true, array(SHOW_ALL_TAXONOMIES), false, false, false, $without_descriptors);
 			$schooltype->subs += $tree;
 		}
 	}
@@ -4545,7 +4566,7 @@ function block_exacomp_add_days($date, $days) {
 
 function block_exacomp_build_example_association_tree($courseid, $example_descriptors = array(), $exampleid=0, $descriptorid = 0, $showallexamples=false){
 	//get all subjects, topics, descriptors and examples
-	$tree = block_exacomp_get_competence_tree($courseid, null, false, SHOW_ALL_NIVEAUS, true, block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies, false, false, true);
+	$tree = block_exacomp_get_competence_tree($courseid, null, null, false, SHOW_ALL_NIVEAUS, true, block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies, false, false, true);
 	
 	// unset all descriptors, topics and subjects that do not contain the example descriptors
 	foreach($tree as $skey => $subject) {

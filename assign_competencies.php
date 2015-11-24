@@ -108,7 +108,7 @@ $ret = block_exacomp_init_overview_data($courseid, $ng_subjectid, $topicid, $niv
 if (!$ret) {
 	print_error('not configured');
 }
-list($topics, $niveaus, $selectedTopic, $selectedNiveau) = $ret;
+list($courseSubjects, $courseTopics, $niveaus, $selectedSubject, $selectedTopic, $selectedNiveau) = $ret;
 
 //Delete timestamp (end|start) from example
 if($example_del = optional_param('exampleid', 0, PARAM_INT)){
@@ -119,7 +119,7 @@ if($example_del = optional_param('exampleid', 0, PARAM_INT)){
 $students = $allCourseStudents = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : array($USER->id => $USER);
 if($course_settings->nostudents) $allCourseStudents = array();
 
-$competence_tree = block_exacomp_get_competence_tree($courseid,(isset($selectedTopic))?$selectedTopic->id:null,false,(isset($selectedNiveau))?$selectedNiveau->id:null,
+$competence_tree = block_exacomp_get_competence_tree($courseid,$selectedSubject?$selectedSubject->id:null,$selectedTopic?$selectedTopic->id:null,false,$selectedNiveau?$selectedNiveau->id:null,
 		($course_settings->show_all_examples != 0 || $isTeacher),$course_settings->filteredtaxonomies, true);
 
 $scheme = block_exacomp_get_grading_scheme($courseid);
@@ -140,11 +140,6 @@ if($isTeacher){
 foreach($students as $student) {
 	block_exacomp_get_user_information_by_course($student, $courseid);
 }
-
-$firstvalue = reset($competence_tree);
-$firstvalue->title = $selectedTopic->title;
-
-$selectedSubject = block_exacomp_get_subject_by_id($selectedTopic->subjid);
 
 if (optional_param('print', false, PARAM_BOOL)) {
 	$output->print = true;
@@ -174,10 +169,10 @@ if (optional_param('print', false, PARAM_BOOL)) {
 
 echo $output->header($context, $courseid, $page_identifier);
 echo $colselector;
-echo $output->print_competence_overview_form_start((isset($selectedNiveau))?$selectedNiveau:null, (isset($selectedTopic))?$selectedTopic:null, $studentid, $editmode);
+echo $output->print_competence_overview_form_start($selectedNiveau, $selectedTopic, $studentid, $editmode);
 
 //dropdowns for subjects and topics and students -> if user is teacher
-echo $output->print_overview_dropdowns(block_exacomp_get_schooltypetree_by_topics($topics), $selectedTopic->id, $selectedNiveau->id, $allCourseStudents, (!$editmode) ? $studentid : $selectedStudentid, $isTeacher);
+echo $output->print_overview_dropdowns(block_exacomp_get_schooltypetree_by_topics($courseTopics), $selectedTopic?$selectedTopic->id:null, $selectedNiveau->id, $allCourseStudents, (!$editmode) ? $studentid : $selectedStudentid, $isTeacher);
 
 if($selectedNiveau->id != SHOW_ALL_NIVEAUS){
 	echo $output->print_overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
@@ -203,7 +198,7 @@ echo html_writer::start_tag("div", array("id"=>"exabis_competences_block"));
 echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
 echo html_writer::start_tag("div", array("class"=>"gridlayout"));
 
-echo $output->print_topics_menu(block_exacomp_get_schooltypetree_by_topics($topics),$selectedTopic); 
+echo $output->print_topics_menu(block_exacomp_get_schooltypetree_by_topics($courseTopics), $selectedSubject, $selectedTopic); 
 echo $output->print_niveaus_menu($niveaus,$selectedNiveau,$selectedTopic);
 if($course_settings->nostudents != 1)
 	echo $output->print_overview_legend($isTeacher);
