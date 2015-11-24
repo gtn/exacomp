@@ -5838,10 +5838,10 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
 		return;
 	
 	// do not send too many notifications. therefore check if user has got same notification within the last 5 minutes
-	if($DB->get_records_select('message_read', "useridfrom = ? AND useridto = ? AND contexturlname = ? AND timecreated > ?",
+	/*if($DB->get_records_select('message_read', "useridfrom = ? AND useridto = ? AND contexturlname = ? AND timecreated > ?",
 		array('useridfrom' => $userfrom->id, 'useridto' => $userto->id, 'contexturlname' => $context, (time()-5*60))))
 		return;
-			
+	*/		
 	require_once($CFG->dirroot . '/message/lib.php');
 
 	$eventdata = new stdClass ();

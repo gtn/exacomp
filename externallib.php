@@ -3978,6 +3978,8 @@ class block_exacomp_external extends external_api {
 			$example_course = $DB->get_record('course', array('id'=>$example->courseid));
 			$example->courseshortname = $example_course->shortname;
 			$example->coursefullname = $example_course->fullname;
+			if(!isset($example->teacher_percent_rating))
+				$example->teacher_percent_rating = -1;
 		}
 		
 		return $examples;
@@ -3996,7 +3998,7 @@ class block_exacomp_external extends external_api {
 				'end' => new external_value (PARAM_INT, 'end of event'),
 				'student_evaluation' => new external_value ( PARAM_INT, 'self evaluation of student' ),
 				'teacher_evaluation' => new external_value( PARAM_TEXT, 'evaluation of teacher'),
-				'teacher_percent_rating' => new external_value( PARAM_TEXT, 'additional evaluation of teacher'),
+				'teacher_percent_rating' => new external_value( PARAM_INT, 'additional evaluation of teacher'),
 				'courseid' => new external_value(PARAM_INT, 'example course'),
 				'state' => new external_value (PARAM_INT, 'state of example'),
 				'scheduleid' => new external_value (PARAM_INT, 'id in schedule context'),
@@ -5106,8 +5108,9 @@ class block_exacomp_external extends external_api {
 			$data['name'] = $itemInformation->name;
 			$data['type'] = $itemInformation->type;
 			$data['url'] = $itemInformation->url;
-			$data['teacheritemvalue'] = isset( $itemInformation->teachervalue ) ? $itemInformation->teachervalue : -1;
-				
+			//$data['teacheritemvalue'] = isset( $itemInformation->teachervalue ) ? $itemInformation->teachervalue : -1;
+			$data['teacheritemvalue'] = isset ( $exampleEvaluation->additionalinfo ) ? $exampleEvaluation->additionalinfo : -1;
+			
 			if ($itemInformation->type == 'file') {
 				require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
 					
@@ -5147,7 +5150,7 @@ class block_exacomp_external extends external_api {
 			$data['studentcomment'] = "";
 			$data['teachervalue'] = isset ( $exampleEvaluation->teacher_evaluation ) ? $exampleEvaluation->teacher_evaluation : -1;
 			$data['studentvalue'] = isset ( $exampleEvaluation->student_evaluation ) ? $exampleEvaluation->student_evaluation : -1;
-			$data['teacheritemvalue'] = -1;
+			$data['teacheritemvalue'] = isset ( $exampleEvaluation->additionalinfo ) ? $exampleEvaluation->additionalinfo : -1;
 		}
 	
 		return $data;
