@@ -68,7 +68,7 @@
 }
 
 #block_exacomp .day .item .buttons input[type="radio"][disabled], #block_exacomp .day .item .buttons input[type="checkbox"][disabled], #block_exacomp .day .item .buttons input[type="radio"][readonly], #block_exacomp .day .item .buttons input[type="checkbox"][readonly] {
-    background-color: #d1d1d1;
+	background-color: #d1d1d1;
 }
 
 #block_exacomp .empty {
@@ -169,9 +169,9 @@
 }
 
 #block_exacomp #trash h4 {
-    background: transparent url("../pix/exacomp_week_trash.png") no-repeat scroll right bottom;
-    height: 28px;
-    margin: 0 auto 15px;
+	background: transparent url("../pix/exacomp_week_trash.png") no-repeat scroll right bottom;
+	height: 28px;
+	margin: 0 auto 15px;
 }
 
 
@@ -245,10 +245,10 @@
 
 #block_exacomp .fc-event {
 	background-color: #026cc5;
-    border: 1px solid #0162b3;
-    margin-top: 2px;
-    margin-bottom: 2px;
-    /*border: 1px solid #96a7b7;*/
+	border: 1px solid #0162b3;
+	margin-top: 2px;
+	margin-bottom: 2px;
+	/*border: 1px solid #96a7b7;*/
 }
 
 #block_exacomp .different-course {
@@ -272,39 +272,39 @@
 }
 
 #block_exacomp .fc-unthemed .fc-today {
-    background: #d6ecff none repeat scroll 0 0;
+	background: #d6ecff none repeat scroll 0 0;
 }
 
 #block_exacomp .fc-ltr .fc-time-grid .fc-event-container  {
-    margin: 0 2.5% 0 2.5% !important;
+	margin: 0 2.5% 0 2.5% !important;
 }
 
 #block_exacomp .event-assoc {
 	text-align: right;
 	margin-top: 5px;
 	position: absolute;
-    right: 8px;
-    text-align: right;
-    top: 3px;
+	right: 8px;
+	text-align: right;
+	top: 3px;
 }
 
 #block_exacomp .event-submission {
-    text-align: right;
-    margin-top: 5px;
-    margin-right: 23px;
-    position: absolute;
-    right: 30px;
-    text-align: right;
-    top: 3px;
+	text-align: right;
+	margin-top: 5px;
+	margin-right: 23px;
+	position: absolute;
+	right: 30px;
+	text-align: right;
+	top: 3px;
 }
 
 #block_exacomp .event-task {
-    text-align: right;
-    margin-top: 5px;
-    position: absolute;
-    right: 30px;
-    text-align: right;
-    top: 3px;
+	text-align: right;
+	margin-top: 5px;
+	position: absolute;
+	right: 30px;
+	text-align: right;
+	top: 3px;
 }
 
 #block_exacomp #trash .fc-event {
@@ -318,12 +318,12 @@
 }
 
 #block_exacomp .state4 {
-    background-color: rgb(24, 164, 6);
-    border: 1px solid rgb(24, 164, 6) !important;
-    
+	background-color: rgb(24, 164, 6);
+	border: 1px solid rgb(24, 164, 6) !important;
+	
 }
 
 #block_exacomp .state3 {
-    background-color: rgb(189, 189, 189);
-    border: 1px solid rgb(189, 189, 189) !important;
+	background-color: rgb(189, 189, 189);
+	border: 1px solid rgb(189, 189, 189) !important;
 }

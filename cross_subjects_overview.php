@@ -60,19 +60,19 @@ $output = block_exacomp_get_renderer();
 //SAVE DATA
 if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
  	if(isset($_POST['delete_crosssubs']) && isset($_POST['draft'])){
-    	$drafts_to_delete = $_POST['draft'];
-    	block_exacomp_delete_crosssubject_drafts($drafts_to_delete);
-    }
+		$drafts_to_delete = $_POST['draft'];
+		block_exacomp_delete_crosssubject_drafts($drafts_to_delete);
+	}
 	else if(isset($_POST['draft'])){
-        $drafts_to_save = $_POST['draft'];
-        //if more than one draft added redirect to first selected
-        $current_id = block_exacomp_save_drafts_to_course($drafts_to_save, $courseid);
-        redirect(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$current_id)));
-    }
-    else if(isset($_POST['new_crosssub'])){
-    	$current_id = block_exacomp_create_new_crosssub($courseid);
-    	redirect(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$current_id, 'new'=>1)));
-    }
+		$drafts_to_save = $_POST['draft'];
+		//if more than one draft added redirect to first selected
+		$current_id = block_exacomp_save_drafts_to_course($drafts_to_save, $courseid);
+		redirect(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$current_id)));
+	}
+	else if(isset($_POST['new_crosssub'])){
+		$current_id = block_exacomp_create_new_crosssub($courseid);
+		redirect(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$current_id, 'new'=>1)));
+	}
 }
 
 // build tab navigation & print header
@@ -96,7 +96,7 @@ $content .=  '<hr />';
 if($isTeacher)
 	$content .= $output->print_cross_subjects_drafts($subjectdrafts, $isAdmin);
 echo html_writer::div($content, "", array('id'=>'exabis_save_button'));
-        
+		
 /* END CONTENT REGION */
 echo $output->footer();
 

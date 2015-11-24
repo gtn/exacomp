@@ -35,12 +35,12 @@ $exampleid = required_param('exampleid', PARAM_INT);
 $editmode = optional_param('editmode', 0, PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('invalidcourse', 'block_exacomp', $courseid);
+	print_error('invalidcourse', 'block_exacomp', $courseid);
 }
 
 // error if example does not exist or was created by somebody else
 if (!$example = $DB->get_record('block_exacompexamples', array('id' => $exampleid))) {
-    print_error('invalidexample', 'block_exacomp', $exampleid);
+	print_error('invalidexample', 'block_exacomp', $exampleid);
 }
 
 require_login($course);
@@ -74,9 +74,9 @@ if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 			$record = $DB->get_records(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$exampleid));
 			if(!$record){
 				$sql = "SELECT MAX(sorting) as sorting FROM {".block_exacomp::DB_DESCEXAMP."} WHERE descrid=?";
-    			$max_sorting = $DB->get_record_sql($sql, array($descriptorid)); 
-    			$sorting = intval($max_sorting->sorting)+1;
-    			
+				$max_sorting = $DB->get_record_sql($sql, array($descriptorid)); 
+				$sorting = intval($max_sorting->sorting)+1;
+				
 				$insert = new stdClass();
 				$insert->descrid = $descriptorid;
 				$insert->exampid = $exampleid;

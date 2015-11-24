@@ -34,13 +34,13 @@ $courseid = required_param('courseid', PARAM_INT);
 $exampleid = optional_param('exampleid', 0, PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('invalidcourse', 'block_exacomp', $courseid);
+	print_error('invalidcourse', 'block_exacomp', $courseid);
 }
 
 // error if example does not exist or was created by somebody else
 if ($exampleid > 0 && (!$example = $DB->get_record('block_exacompexamples', array('id' => $exampleid)))
-        && $example->creatorid != $USER->id) {
-    print_error('invalidexample', 'block_exacomp', $exampleid);
+		&& $example->creatorid != $USER->id) {
+	print_error('invalidexample', 'block_exacomp', $exampleid);
 }
 
 require_login($course);
@@ -63,7 +63,7 @@ $blocknode->make_active();
 $action = optional_param('action', 'add', PARAM_TEXT);
 
 if($action == 'serve') {
-    print_error('this function is not available anymore');
+	print_error('this function is not available anymore');
 }
 // build tab navigation & print header
 $output = block_exacomp_get_renderer();
@@ -117,100 +117,100 @@ if($csettings->uses_activities) {
 	}
 }
 $form = new block_exacomp_example_upload_form($_SERVER['REQUEST_URI'],
-            array("descrid" => $descrid,"taxonomies"=>$taxonomies,"tree"=>$tree,"topicid"=>$topicid, "exampleid"=>$exampleid, "uses_activities" => $csettings->uses_activities, "activities" => $example_activities));
+			array("descrid" => $descrid,"taxonomies"=>$taxonomies,"tree"=>$tree,"topicid"=>$topicid, "exampleid"=>$exampleid, "uses_activities" => $csettings->uses_activities, "activities" => $example_activities));
 
 if($formdata = $form->get_data()) {
 	
-    $newExample = new stdClass();
-    $newExample->title = $formdata->title;
-    $newExample->description = $formdata->description;
-    $newExample->creatorid = $USER->id;
-    if(!empty($formdata->externalurl))
-    	$newExample->externalurl = (filter_var($formdata->externalurl, FILTER_VALIDATE_URL) == TRUE) ? $formdata->externalurl : "http://" . $formdata->externalurl;
-    else
-    	$newExample->externalurl = null;
-    $newExample->source = block_exacomp::EXAMPLE_SOURCE_TEACHER;
+	$newExample = new stdClass();
+	$newExample->title = $formdata->title;
+	$newExample->description = $formdata->description;
+	$newExample->creatorid = $USER->id;
+	if(!empty($formdata->externalurl))
+		$newExample->externalurl = (filter_var($formdata->externalurl, FILTER_VALIDATE_URL) == TRUE) ? $formdata->externalurl : "http://" . $formdata->externalurl;
+	else
+		$newExample->externalurl = null;
+	$newExample->source = block_exacomp::EXAMPLE_SOURCE_TEACHER;
 
-    $newExample->externaltask = '';
-    if(!empty($formdata->assignment)) {
-    	if ($module = get_coursemodule_from_id(null, $formdata->assignment)) {
-        	$newExample->externaltask = block_exacomp_get_activityurl($module)->out(false);
-    	}
-    }
-    if($formdata->exampleid == 0) {
-        $newExample->id = $DB->insert_record('block_exacompexamples', $newExample);
-    	$newExample->sorting = $newExample->id;
-    	$DB->update_record('block_exacompexamples', $newExample);
-    }
-    else {
-        //update example
-        $newExample->id = $formdata->exampleid;
-        $DB->update_record('block_exacompexamples', $newExample);
-        $DB->delete_records('block_exacompdescrexamp_mm',array('exampid' => $newExample->id));
-    }
+	$newExample->externaltask = '';
+	if(!empty($formdata->assignment)) {
+		if ($module = get_coursemodule_from_id(null, $formdata->assignment)) {
+			$newExample->externaltask = block_exacomp_get_activityurl($module)->out(false);
+		}
+	}
+	if($formdata->exampleid == 0) {
+		$newExample->id = $DB->insert_record('block_exacompexamples', $newExample);
+		$newExample->sorting = $newExample->id;
+		$DB->update_record('block_exacompexamples', $newExample);
+	}
+	else {
+		//update example
+		$newExample->id = $formdata->exampleid;
+		$DB->update_record('block_exacompexamples', $newExample);
+		$DB->delete_records('block_exacompdescrexamp_mm',array('exampid' => $newExample->id));
+	}
 
-    //insert taxid in exampletax_mm
-    if(isset($formdata->taxid)) {
-	    foreach($formdata->taxid as $tax => $taxid)
-		    block_exacomp\db::insert_or_update_record(block_exacomp::DB_EXAMPTAX, array(
-		        'exampleid' => $newExample->id,
-		        'taxid' => $taxid
-		    ));
-    }
-    //add descriptor association
-    $descriptors = block_exacomp\param::optional_array('descriptor', array(PARAM_INT=>PARAM_INT));
-    if ($descriptors || !in_array($descrid, $descriptors)) {
-    	if(!in_array($descrid, $descriptors)){
-    		$descriptors[] = $descrid;
-    	}
-    	
-    	foreach($descriptors as $descriptorid){
-    		$desc_examp = $DB->get_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
-    		if(!$desc_examp){
-    			$sql = "SELECT MAX(sorting) as sorting FROM {".block_exacomp::DB_DESCEXAMP."} WHERE descrid=?";
-    			$max_sorting = $DB->get_record_sql($sql, array($descriptorid)); 
-    			$sorting = intval($max_sorting->sorting)+1;
-    			$insert = new stdClass();
-    			$insert->descrid = $descriptorid;
-    			$insert->exampid = $newExample->id;
-    			$insert->sorting = $sorting;
-    			
-    			$DB->insert_record(block_exacomp::DB_DESCEXAMP, $insert);
-    	}
-            //block_exacomp_db::insert_or_update_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
-    }
-    }
-    
-    //add visibility if not exists
-    if (!$DB->get_record(block_exacomp::DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$newExample->id, 'studentid'=>0))) {
-        $DB->insert_record(block_exacomp::DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$newExample->id, 'studentid'=>0, 'visible'=>1));
-    }
-    block_exacomp_settstamp();
-    
-    // save file
-    file_save_draft_area_files($formdata->file, context_system::instance()->id, 'block_exacomp', 'example_task',
-            $newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
-    file_save_draft_area_files($formdata->solution, context_system::instance()->id, 'block_exacomp', 'example_solution',
-            $newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
-    
-    echo $output->popup_close_and_reload();
-    exit;
+	//insert taxid in exampletax_mm
+	if(isset($formdata->taxid)) {
+		foreach($formdata->taxid as $tax => $taxid)
+			block_exacomp\db::insert_or_update_record(block_exacomp::DB_EXAMPTAX, array(
+				'exampleid' => $newExample->id,
+				'taxid' => $taxid
+			));
+	}
+	//add descriptor association
+	$descriptors = block_exacomp\param::optional_array('descriptor', array(PARAM_INT=>PARAM_INT));
+	if ($descriptors || !in_array($descrid, $descriptors)) {
+		if(!in_array($descrid, $descriptors)){
+			$descriptors[] = $descrid;
+		}
+		
+		foreach($descriptors as $descriptorid){
+			$desc_examp = $DB->get_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
+			if(!$desc_examp){
+				$sql = "SELECT MAX(sorting) as sorting FROM {".block_exacomp::DB_DESCEXAMP."} WHERE descrid=?";
+				$max_sorting = $DB->get_record_sql($sql, array($descriptorid)); 
+				$sorting = intval($max_sorting->sorting)+1;
+				$insert = new stdClass();
+				$insert->descrid = $descriptorid;
+				$insert->exampid = $newExample->id;
+				$insert->sorting = $sorting;
+				
+				$DB->insert_record(block_exacomp::DB_DESCEXAMP, $insert);
+		}
+			//block_exacomp_db::insert_or_update_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
+	}
+	}
+	
+	//add visibility if not exists
+	if (!$DB->get_record(block_exacomp::DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$newExample->id, 'studentid'=>0))) {
+		$DB->insert_record(block_exacomp::DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$newExample->id, 'studentid'=>0, 'visible'=>1));
+	}
+	block_exacomp_settstamp();
+	
+	// save file
+	file_save_draft_area_files($formdata->file, context_system::instance()->id, 'block_exacomp', 'example_task',
+			$newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
+	file_save_draft_area_files($formdata->solution, context_system::instance()->id, 'block_exacomp', 'example_solution',
+			$newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
+	
+	echo $output->popup_close_and_reload();
+	exit;
 }
 
 if($exampleid > 0) {
-    $example->descriptors = $DB->get_fieldset_select('block_exacompdescrexamp_mm', 'descrid', 'exampid = ?',array($exampleid));
-    
-    $draftitemid = file_get_submitted_draft_itemid('file');
-    file_prepare_draft_area($draftitemid, context_system::instance()->id, 'block_exacomp', 'example_task', $exampleid,
-            array('subdirs' => 0, 'maxfiles' => 1));
-    $example->file = $draftitemid;
-    
-    $draftitemid = file_get_submitted_draft_itemid('solution');
-    file_prepare_draft_area($draftitemid, context_system::instance()->id, 'block_exacomp', 'example_solution', $exampleid,
-            array('subdirs' => 0, 'maxfiles' => 1));
-    $example->solution = $draftitemid;
-    
-    $form->set_data($example);
+	$example->descriptors = $DB->get_fieldset_select('block_exacompdescrexamp_mm', 'descrid', 'exampid = ?',array($exampleid));
+	
+	$draftitemid = file_get_submitted_draft_itemid('file');
+	file_prepare_draft_area($draftitemid, context_system::instance()->id, 'block_exacomp', 'example_task', $exampleid,
+			array('subdirs' => 0, 'maxfiles' => 1));
+	$example->file = $draftitemid;
+	
+	$draftitemid = file_get_submitted_draft_itemid('solution');
+	file_prepare_draft_area($draftitemid, context_system::instance()->id, 'block_exacomp', 'example_solution', $exampleid,
+			array('subdirs' => 0, 'maxfiles' => 1));
+	$example->solution = $draftitemid;
+	
+	$form->set_data($example);
 }
 
 $form->display();

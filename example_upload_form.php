@@ -86,10 +86,10 @@ class block_exacomp_example_upload_form extends moodleform {
 			$mform->addElement('header', 'assignments', get_string('assignments','block_exacomp'));
 			$mform->addElement('select', 'assignment', get_string('assignments','block_exacomp'), $this->_customdata['activities']);
 		}
-	    /* if(block_exacomp_is_altversion()) {
-	        $mform->addElement('checkbox', 'lisfilename', get_string('lisfilename', 'block_exacomp'));
-	        $mform->setDefault('lisfilename', 1);
-	    } */
+		/* if(block_exacomp_is_altversion()) {
+			$mform->addElement('checkbox', 'lisfilename', get_string('lisfilename', 'block_exacomp'));
+			$mform->setDefault('lisfilename', 1);
+		} */
 		
 		$mform->addElement('hidden','topicid');
 		$mform->setType('topicid', PARAM_INT);

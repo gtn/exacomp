@@ -34,7 +34,7 @@ $creatorid = required_param('creatorid', PARAM_INT);
 $action = optional_param('action', '', PARAM_TEXT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('invalidcourse', 'block_exacomp', $courseid);
+	print_error('invalidcourse', 'block_exacomp', $courseid);
 }
 
 require_login($course);

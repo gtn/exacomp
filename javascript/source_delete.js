@@ -12,10 +12,10 @@
 			var $json_data = $('<input type="hidden" name="json_data" />').appendTo($form);
 
 			var data = {
-				subjects:    $form.find('input[exa-name='+'subjects'   +']:checked').map(function(){return this.value;}).get(),
-				topics:      $form.find('input[exa-name='+'topics'     +']:checked').map(function(){return this.value;}).get(),
+				subjects:	$form.find('input[exa-name='+'subjects'   +']:checked').map(function(){return this.value;}).get(),
+				topics:	  $form.find('input[exa-name='+'topics'	 +']:checked').map(function(){return this.value;}).get(),
 				descriptors: $form.find('input[exa-name='+'descriptors'+']:checked').map(function(){return this.value;}).get(),
-				examples:    $form.find('input[exa-name='+'examples'   +']:checked').map(function(){return this.value;}).get()
+				examples:	$form.find('input[exa-name='+'examples'   +']:checked').map(function(){return this.value;}).get()
 			};
 			
 			$json_data.val(JSON.stringify(data));

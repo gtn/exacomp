@@ -34,13 +34,13 @@ $courseid = required_param('courseid', PARAM_INT);
 $exampleid = optional_param('exampleid', 0, PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('invalidcourse', 'block_exacomp', $courseid);
+	print_error('invalidcourse', 'block_exacomp', $courseid);
 }
 
 // error if example does not exist or was created by somebody else
 if ($exampleid && (!$example = $DB->get_record('block_exacompexamples', array('id' => $exampleid)))
-        && $example->creatorid != $USER->id) {
-    print_error('invalidexample', 'block_exacomp', $exampleid);
+		&& $example->creatorid != $USER->id) {
+	print_error('invalidexample', 'block_exacomp', $exampleid);
 }
 
 require_login($course);
@@ -69,7 +69,7 @@ $blocknode->make_active();
 $action = optional_param('action', 'add', PARAM_TEXT);
 
 if($action == 'serve') {
-    print_error('this function is not available anymore');
+	print_error('this function is not available anymore');
 }
 // build tab navigation & print header
 $output= block_exacomp_get_renderer();
@@ -86,36 +86,36 @@ if($exampleid>0)
 $tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid, 0);
 
 $form = new block_exacomp_example_upload_student_form($_SERVER['REQUEST_URI'], array("taxonomies"=>$taxonomies,"tree"=>$tree,"exampleid"=>$exampleid, "task"=>($task = block_exacomp_get_file_url($example, 'example_task')) ? $task : null,
-        "solution"=>($solution = block_exacomp_get_file_url($example, 'example_solution')) ? $solution : null) );
+		"solution"=>($solution = block_exacomp_get_file_url($example, 'example_solution')) ? $solution : null) );
 
 if($formdata = $form->get_data()) {
 	
-    $newExample = new stdClass();
-    $newExample->title = $formdata->title;
-    $newExample->description = $formdata->description;
-    $newExample->creatorid = $USER->id;
-    $newExample->externalurl = $formdata->externalurl;
+	$newExample = new stdClass();
+	$newExample->title = $formdata->title;
+	$newExample->description = $formdata->description;
+	$newExample->creatorid = $USER->id;
+	$newExample->externalurl = $formdata->externalurl;
 	$newExample->source = block_exacomp::EXAMPLE_SOURCE_USER;
 	
-    if($formdata->exampleid == 0)
-        $newExample->id = $DB->insert_record('block_exacompexamples', $newExample);
-    else {
-        //update example
-        $newExample->id = $formdata->exampleid;
-        $DB->update_record('block_exacompexamples', $newExample);
-        $DB->delete_records('block_exacompdescrexamp_mm',array('exampid' => $newExample->id));
-    }
+	if($formdata->exampleid == 0)
+		$newExample->id = $DB->insert_record('block_exacompexamples', $newExample);
+	else {
+		//update example
+		$newExample->id = $formdata->exampleid;
+		$DB->update_record('block_exacompexamples', $newExample);
+		$DB->delete_records('block_exacompdescrexamp_mm',array('exampid' => $newExample->id));
+	}
 
-    //add descriptor association
-    if(isset($_POST['descriptor'])){
-    	foreach($_POST['descriptor'] as $descriptorid){
-    		$record = $DB->get_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
+	//add descriptor association
+	if(isset($_POST['descriptor'])){
+		foreach($_POST['descriptor'] as $descriptorid){
+			$record = $DB->get_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
 			if(!$record)
-    			$DB->insert_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=> $newExample->id));
-    	}
-    }
-    
-    // save file
+				$DB->insert_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=> $newExample->id));
+		}
+	}
+	
+	// save file
    require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
 
 	if ($form->get_new_filename('file'))
@@ -124,63 +124,63 @@ if($formdata = $form->get_data()) {
 		$type = 'url';
 	
    //store item in the right portfolio category
-    $course_category = block_exaport_get_user_category($course->fullname, $USER->id);
-    if(!$course_category) {
-        $course_category = block_exaport_create_user_category($course->fullname, $USER->id);
-    }
+	$course_category = block_exaport_get_user_category($course->fullname, $USER->id);
+	if(!$course_category) {
+		$course_category = block_exaport_create_user_category($course->fullname, $USER->id);
+	}
 
-    $subjecttitle = block_exacomp_get_subjecttitle_by_example($newExample->id);
-    $subject_category = block_exaport_get_user_category($subjecttitle, $USER->id);
-    if(!$subject_category) {
-        $subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
-    }
-    
-    $itemid = $DB->insert_record("block_exaportitem", array('userid'=>$USER->id,'name'=>$formdata->title,'url'=>$formdata->externalurl,'intro'=>$formdata->description,'type'=>$type,'timemodified'=>time(),'categoryid'=>$subject_category->id));
-    
-    {
-        // autogenerate a published view for the new item
-        $dbView = new stdClass();
-        $dbView->userid = $USER->id;
-        $dbView->name =  $newExample->title;
-        $dbView->timemodified = time();
-        $dbView->layout = 1;
-        // generate view hash
-        do {
-            $hash = substr(md5(microtime()), 3, 8);
-        } while ($DB->record_exists("block_exaportview", array("hash"=>$hash)));
-        $dbView->hash = $hash;
-        
-        $dbView->id = $DB->insert_record('block_exaportview', $dbView);
-        //share the view with teachers
-        $teachers = share_view_to_teachers($dbView->id, $courseid);
-        
-        //add item to view
-        $DB->insert_record('block_exaportviewblock',array('viewid'=>$dbView->id,'positionx'=>1, 'positiony'=>1, 'type'=>'item', 'itemid'=>$itemid));
-    }
-    
-    if ($filename = $form->get_new_filename('file')) {
-        $context = context_user::instance($USER->id);
-        try {
-            $form->save_stored_file('file', $context->id, 'block_exaport', 'item_file', $itemid, '/', $filename, true);
-        } catch (Exception $e) {
-            //some problem with the file occured
-        }
-    }
-    
-    $DB->insert_record('block_exacompitemexample',array('exampleid'=>$newExample->id,'itemid'=>$itemid,'timecreated'=>time(),'status'=>0));
-    
-    // add to weekly schedule
-    block_exacomp_add_example_to_schedule($USER->id, $newExample->id, $USER->id, $courseid);
-    
-    block_exacomp_settstamp();
-    
-    echo $output->popup_close_and_reload();
-    exit;
+	$subjecttitle = block_exacomp_get_subjecttitle_by_example($newExample->id);
+	$subject_category = block_exaport_get_user_category($subjecttitle, $USER->id);
+	if(!$subject_category) {
+		$subject_category = block_exaport_create_user_category($subjecttitle, $USER->id, $course_category->id);
+	}
+	
+	$itemid = $DB->insert_record("block_exaportitem", array('userid'=>$USER->id,'name'=>$formdata->title,'url'=>$formdata->externalurl,'intro'=>$formdata->description,'type'=>$type,'timemodified'=>time(),'categoryid'=>$subject_category->id));
+	
+	{
+		// autogenerate a published view for the new item
+		$dbView = new stdClass();
+		$dbView->userid = $USER->id;
+		$dbView->name =  $newExample->title;
+		$dbView->timemodified = time();
+		$dbView->layout = 1;
+		// generate view hash
+		do {
+			$hash = substr(md5(microtime()), 3, 8);
+		} while ($DB->record_exists("block_exaportview", array("hash"=>$hash)));
+		$dbView->hash = $hash;
+		
+		$dbView->id = $DB->insert_record('block_exaportview', $dbView);
+		//share the view with teachers
+		$teachers = share_view_to_teachers($dbView->id, $courseid);
+		
+		//add item to view
+		$DB->insert_record('block_exaportviewblock',array('viewid'=>$dbView->id,'positionx'=>1, 'positiony'=>1, 'type'=>'item', 'itemid'=>$itemid));
+	}
+	
+	if ($filename = $form->get_new_filename('file')) {
+		$context = context_user::instance($USER->id);
+		try {
+			$form->save_stored_file('file', $context->id, 'block_exaport', 'item_file', $itemid, '/', $filename, true);
+		} catch (Exception $e) {
+			//some problem with the file occured
+		}
+	}
+	
+	$DB->insert_record('block_exacompitemexample',array('exampleid'=>$newExample->id,'itemid'=>$itemid,'timecreated'=>time(),'status'=>0));
+	
+	// add to weekly schedule
+	block_exacomp_add_example_to_schedule($USER->id, $newExample->id, $USER->id, $courseid);
+	
+	block_exacomp_settstamp();
+	
+	echo $output->popup_close_and_reload();
+	exit;
 }
 
 if($exampleid > 0) {
-    $example->descriptors = $DB->get_fieldset_select('block_exacompdescrexamp_mm', 'descrid', 'exampid = ?',array($exampleid));
-    $form->set_data($example);
+	$example->descriptors = $DB->get_fieldset_select('block_exacompdescrexamp_mm', 'descrid', 'exampid = ?',array($exampleid));
+	$form->set_data($example);
 }
 
 $form->display();

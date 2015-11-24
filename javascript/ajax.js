@@ -12,7 +12,7 @@
 	var examples_additional_grading = {};
 
 	$(document).on('focus', 'input[name^=data\-]', function() {
-	    prev_val = $(this).val();
+		prev_val = $(this).val();
 	});
 	
 	$(document).on('change', 'input[name^=data\-]', function() {
@@ -21,8 +21,8 @@
 		if($(this).attr("reviewerid")) {
 			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
 				$(this).prop("checked",prev_val);
-		        return;
-		    }
+				return;
+			}
 			else {
 				//remove reviewer attribute
 				$(this).removeAttr("reviewerid");
@@ -61,7 +61,7 @@
 		
 	});
 	$(document).on('focus', 'select[name^=data\-]', function() {
-	    prev_val = $(this).val();
+		prev_val = $(this).val();
 	});
 	
 	$(document).on('change', 'select[name^=data\-]', function() {
@@ -403,8 +403,8 @@
 	
 	$(document).on('click', 'a[id^=competence-grid-link]', function(event) {
 		if($(this).hasClass('deactivated')){
-            event.preventDefault();
-        }
+			event.preventDefault();
+		}
 	});
 	
 	$(document).on('click', '[exa-type=iframe-popup]', function(event) {

@@ -67,14 +67,14 @@ $PAGE->set_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $c
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 $NG_PAGE = (object)[ 'url' => new block_exacomp\url('/blocks/exacomp/assign_competencies.php', array(
-                'courseid' => $courseid,
-                'showevaluation' => $showevaluation,
-                'studentid' => $studentid,
-                'editmode' => $editmode,
-                'niveauid' => $niveauid,
-                'ng_subjectid' => $ng_subjectid,
-                'topicid' => $topicid,
-            )) ];
+				'courseid' => $courseid,
+				'showevaluation' => $showevaluation,
+				'studentid' => $studentid,
+				'editmode' => $editmode,
+				'niveauid' => $niveauid,
+				'ng_subjectid' => $ng_subjectid,
+				'topicid' => $topicid,
+			)) ];
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
@@ -98,15 +98,15 @@ $activities = block_exacomp_get_activities_by_course($courseid);
 $course_settings = block_exacomp_get_settings_by_course($courseid);
 
 if($course_settings->uses_activities && !$activities && !$course_settings->show_all_descriptors) {
-    echo $output->header($context, $courseid, $page_identifier);
-    echo $output->print_no_activities_warning($isTeacher);
+	echo $output->header($context, $courseid, $page_identifier);
+	echo $output->print_no_activities_warning($isTeacher);
 	echo $output->footer();
 	exit;
 }
 
 $ret = block_exacomp_init_overview_data($courseid, $ng_subjectid, $topicid, $niveauid, $editmode, $isTeacher, ($isTeacher?0:$USER->id));
 if (!$ret) {
-    print_error('not configured');
+	print_error('not configured');
 }
 list($topics, $niveaus, $selectedTopic, $selectedNiveau) = $ret;
 
@@ -126,19 +126,19 @@ $scheme = block_exacomp_get_grading_scheme($courseid);
 $colselector="";
 $statistic = false;
 if($isTeacher){
-    if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
-        $colselector=$output->print_column_selector(count($allCourseStudents));
-    } elseif (!$studentid) {
-        $students = array();
-    } elseif ($studentid == BLOCK_EXACOMP_SHOW_STATISTIC) {
-        $statistic = true;
-    } else {
-        $students = !empty($students[$studentid]) ? array($students[$studentid]) : $students;
-    }
+	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
+		$colselector=$output->print_column_selector(count($allCourseStudents));
+	} elseif (!$studentid) {
+		$students = array();
+	} elseif ($studentid == BLOCK_EXACOMP_SHOW_STATISTIC) {
+		$statistic = true;
+	} else {
+		$students = !empty($students[$studentid]) ? array($students[$studentid]) : $students;
+	}
 }
 
 foreach($students as $student) {
-    block_exacomp_get_user_information_by_course($student, $courseid);
+	block_exacomp_get_user_information_by_course($student, $courseid);
 }
 
 $firstvalue = reset($competence_tree);
@@ -147,29 +147,29 @@ $firstvalue->title = $selectedTopic->title;
 $selectedSubject = block_exacomp_get_subject_by_id($selectedTopic->subjid);
 
 if (optional_param('print', false, PARAM_BOOL)) {
-    $output->print = true;
-    $html_tables = [];
-    
-    if ($group == -1) {
-        // all students, do nothing
-    } else {
-        // get the students on this group
-        $students = array_slice($students, $group*STUDENTS_PER_COLUMN, STUDENTS_PER_COLUMN, true);
-    }
-    
-    // TOOD: print column information for print
-    
-    // loop through all pages (eg. when all students should be printed)
-    for ($group_i = 0; $group_i < count($students); $group_i+=STUDENTS_PER_COLUMN) {
-        $students_to_print = array_slice($students, $group_i, STUDENTS_PER_COLUMN, true);
-        
-        $html_header = $output->print_overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
+	$output->print = true;
+	$html_tables = [];
+	
+	if ($group == -1) {
+		// all students, do nothing
+	} else {
+		// get the students on this group
+		$students = array_slice($students, $group*STUDENTS_PER_COLUMN, STUDENTS_PER_COLUMN, true);
+	}
+	
+	// TOOD: print column information for print
+	
+	// loop through all pages (eg. when all students should be printed)
+	for ($group_i = 0; $group_i < count($students); $group_i+=STUDENTS_PER_COLUMN) {
+		$students_to_print = array_slice($students, $group_i, STUDENTS_PER_COLUMN, true);
+		
+		$html_header = $output->print_overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
 
-        // $html .= "&nbsp;<br />";
-        $html_tables[] = $output->print_competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, (block_exacomp_is_altversion() && $selectedNiveau->id != SHOW_ALL_NIVEAUS), false, 0, $statistic);
-    }
+		// $html .= "&nbsp;<br />";
+		$html_tables[] = $output->print_competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, (block_exacomp_is_altversion() && $selectedNiveau->id != SHOW_ALL_NIVEAUS), false, 0, $statistic);
+	}
 
-    block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html_tables);
+	block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html_tables);
 }
 
 echo $output->header($context, $courseid, $page_identifier);
@@ -192,7 +192,7 @@ if($selectedNiveau->id != SHOW_ALL_NIVEAUS){
 		if(isset($cm_mm->topics[$selectedNiveau->id]))
 			foreach($cm_mm->topics[$selectedNiveau->id] as $cmid)
 				$activities_student[] = $course_mods[$cmid];
-	    
+		
 		// TODO: disabled for now
 		// if(block_exacomp_is_altversion())
 		//	echo $output->print_overview_metadata_student($selectedTopic, $selectedNiveau, $students[$USER->id]->topics, $showevaluation, $scheme, block_exacomp_get_icon_for_user($activities_student, $USER, block_exacomp_get_supported_modules()));

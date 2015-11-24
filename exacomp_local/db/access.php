@@ -15,11 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $capabilities = array(
-    // Can run admin scripts
-    'local/exacomp_local:execute' => array(
-         'captype' => 'write',
-         'riskbitmask' => RISK_MANAGETRUST|RISK_DATALOSS|RISK_CONFIG|RISK_PERSONAL|RISK_SPAM|RISK_XSS,
-         'contextlevel' => CONTEXT_SYSTEM,
-         'legacy' => array() // Only site admins can run this
-    )
+	// Can run admin scripts
+	'local/exacomp_local:execute' => array(
+		 'captype' => 'write',
+		 'riskbitmask' => RISK_MANAGETRUST|RISK_DATALOSS|RISK_CONFIG|RISK_PERSONAL|RISK_SPAM|RISK_XSS,
+		 'contextlevel' => CONTEXT_SYSTEM,
+		 'legacy' => array() // Only site admins can run this
+	)
 );

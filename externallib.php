@@ -85,7 +85,7 @@ class block_exacomp_external extends external_api {
 	 * Get subjects
 	 * 
 	 * @param
-	 *        	int courseid
+	 *			int courseid
 	 * @return array of course subjects
 	 */
 	public static function get_subjects($courseid) {
@@ -99,12 +99,12 @@ class block_exacomp_external extends external_api {
 		) );
 		
 		$subjects = $DB->get_records_sql ( '
-                SELECT s.id as subjectid, s.title
-                FROM {block_exacompschooltypes} s
-                JOIN {block_exacompmdltype_mm} m ON m.stid = s.id AND m.courseid = ?
-                GROUP BY s.id
-                ORDER BY s.title
-                ', array (
+				SELECT s.id as subjectid, s.title
+				FROM {block_exacompschooltypes} s
+				JOIN {block_exacompmdltype_mm} m ON m.stid = s.id AND m.courseid = ?
+				GROUP BY s.id
+				ORDER BY s.title
+				', array (
 				$courseid 
 		) );
 		
@@ -139,7 +139,7 @@ class block_exacomp_external extends external_api {
 	 * Get subjects
 	 * 
 	 * @param
-	 *        	int courseid
+	 *			int courseid
 	 * @return array of course subjects
 	 */
 	public static function get_topics($subjectid, $courseid) {
@@ -163,21 +163,21 @@ class block_exacomp_external extends external_api {
 		 */
 		
 		$array = $DB->get_records_sql ( '
-                SELECT s.id as topicid, s.title
-                FROM {block_exacompsubjects} s
-                JOIN {block_exacomptopics} t ON t.subjid = s.id
-                JOIN {block_exacompcoutopi_mm} ct ON ct.topicid = t.id AND ct.courseid = ?
-                ' . (block_exacomp_get_settings_by_course ( $courseid )->show_all_descriptors ? '' : '
-                        -- only show active ones
-                        JOIN {block_exacompdescrtopic_mm} topmm ON topmm.topicid=t.id
-                        JOIN {block_exacompdescriptors} d ON topmm.descrid=d.id
-                        JOIN {block_exacompcompactiv_mm} ca ON (d.id=ca.compid AND ca.comptype = ' . TYPE_DESCRIPTOR . ') OR (t.id=ca.compid AND ca.comptype = ' . TYPE_TOPIC . ')
-                        JOIN {course_modules} a ON ca.activityid=a.id AND a.course=ct.courseid
-                        ') . '
-                WHERE s.stid = ?
-                GROUP BY s.id
-                ORDER BY s.title
-                ', array (
+				SELECT s.id as topicid, s.title
+				FROM {block_exacompsubjects} s
+				JOIN {block_exacomptopics} t ON t.subjid = s.id
+				JOIN {block_exacompcoutopi_mm} ct ON ct.topicid = t.id AND ct.courseid = ?
+				' . (block_exacomp_get_settings_by_course ( $courseid )->show_all_descriptors ? '' : '
+						-- only show active ones
+						JOIN {block_exacompdescrtopic_mm} topmm ON topmm.topicid=t.id
+						JOIN {block_exacompdescriptors} d ON topmm.descrid=d.id
+						JOIN {block_exacompcompactiv_mm} ca ON (d.id=ca.compid AND ca.comptype = ' . TYPE_DESCRIPTOR . ') OR (t.id=ca.compid AND ca.comptype = ' . TYPE_TOPIC . ')
+						JOIN {course_modules} a ON ca.activityid=a.id AND a.course=ct.courseid
+						') . '
+				WHERE s.stid = ?
+				GROUP BY s.id
+				ORDER BY s.title
+				', array (
 				$courseid,
 				$subjectid 
 		) );
@@ -213,9 +213,9 @@ class block_exacomp_external extends external_api {
 	 * Get subjects
 	 * 
 	 * @param
-	 *        	int courseid
+	 *			int courseid
 	 * @param
-	 *        	int topicid
+	 *			int topicid
 	 * @return array of course subjects
 	 */
 	public static function get_subtopics($courseid, $topicid) {
@@ -254,19 +254,19 @@ class block_exacomp_external extends external_api {
 		), 'catid', 'id as subtopicid, title, catid' );
 		
 		$subtopics = $DB->get_records_sql ( '
-                SELECT t.id as subtopicid, t.title, t.catid
-                FROM {block_exacomptopics} t
-                JOIN {block_exacompcoutopi_mm} ct ON ct.topicid = t.id AND t.subjid = ? AND ct.courseid = ?
-                ' . (block_exacomp_get_settings_by_course ( $courseid )->show_all_descriptors ? '' : '
-                        -- only show active ones
-                        JOIN {block_exacompdescrtopic_mm} topmm ON topmm.topicid=t.id
-                        JOIN {block_exacompdescriptors} d ON topmm.descrid=d.id
-                        JOIN {block_exacompcompactiv_mm} ca ON (d.id=ca.compid AND ca.comptype = ' . TYPE_DESCRIPTOR . ') OR (t.id=ca.compid AND ca.comptype = ' . TYPE_TOPIC . ')
-                        JOIN {course_modules} a ON ca.activityid=a.id AND a.course=ct.courseid
-                        ') . '
-                GROUP BY t.id
-                ORDER BY t.catid, t.title
-                ', array (
+				SELECT t.id as subtopicid, t.title, t.catid
+				FROM {block_exacomptopics} t
+				JOIN {block_exacompcoutopi_mm} ct ON ct.topicid = t.id AND t.subjid = ? AND ct.courseid = ?
+				' . (block_exacomp_get_settings_by_course ( $courseid )->show_all_descriptors ? '' : '
+						-- only show active ones
+						JOIN {block_exacompdescrtopic_mm} topmm ON topmm.topicid=t.id
+						JOIN {block_exacompdescriptors} d ON topmm.descrid=d.id
+						JOIN {block_exacompcompactiv_mm} ca ON (d.id=ca.compid AND ca.comptype = ' . TYPE_DESCRIPTOR . ') OR (t.id=ca.compid AND ca.comptype = ' . TYPE_TOPIC . ')
+						JOIN {course_modules} a ON ca.activityid=a.id AND a.course=ct.courseid
+						') . '
+				GROUP BY t.id
+				ORDER BY t.catid, t.title
+				', array (
 				$topicid,
 				$courseid 
 		) );
@@ -313,9 +313,9 @@ class block_exacomp_external extends external_api {
 	 * Set subtopic student evaluation
 	 * 
 	 * @param
-	 *        	int courseid
+	 *			int courseid
 	 * @param
-	 *        	int subtopicid
+	 *			int subtopicid
 	 * @return status
 	 */
 	public static function set_subtopic($courseid, $subtopicid, $value) {
@@ -385,9 +385,9 @@ class block_exacomp_external extends external_api {
 	 * Get competencies
 	 * 
 	 * @param
-	 *        	int courseid
+	 *			int courseid
 	 * @param
-	 *        	int subtopicid
+	 *			int subtopicid
 	 * @return external_multiple_structure
 	 */
 	public static function get_competencies($courseid, $subtopicid) {
@@ -405,17 +405,17 @@ class block_exacomp_external extends external_api {
 		$courseSettings = block_exacomp_get_settings_by_course ( $courseid );
 		
 		$descriptors = $DB->get_records_sql ( '
-                SELECT d.id as descriptorid, d.title, desctopmm.topicid AS topicid
-                FROM {block_exacompdescriptors} d
-                JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.descrid=d.id AND desctopmm.topicid = ?
-                ' . (block_exacomp_get_settings_by_course ( $courseid )->show_all_descriptors ? '' : '
-                        -- only show active ones
-                        JOIN {block_exacompcompactiv_mm} ca ON (d.id=ca.compid AND ca.comptype = ' . TYPE_DESCRIPTOR . ')
-                        JOIN {course_modules} a ON ca.activityid=a.id AND a.course=?
-                        ') . '
-                GROUP BY descriptorid
-                ORDER BY d.sorting
-                ', array (
+				SELECT d.id as descriptorid, d.title, desctopmm.topicid AS topicid
+				FROM {block_exacompdescriptors} d
+				JOIN {block_exacompdescrtopic_mm} desctopmm ON desctopmm.descrid=d.id AND desctopmm.topicid = ?
+				' . (block_exacomp_get_settings_by_course ( $courseid )->show_all_descriptors ? '' : '
+						-- only show active ones
+						JOIN {block_exacompcompactiv_mm} ca ON (d.id=ca.compid AND ca.comptype = ' . TYPE_DESCRIPTOR . ')
+						JOIN {course_modules} a ON ca.activityid=a.id AND a.course=?
+						') . '
+				GROUP BY descriptorid
+				ORDER BY d.sorting
+				', array (
 				$subtopicid,
 				$courseid 
 		) );
@@ -498,11 +498,11 @@ class block_exacomp_external extends external_api {
 	 * Set student evaluation
 	 * 
 	 * @param
-	 *        	int courseid
+	 *			int courseid
 	 * @param
-	 *        	int descriptorid
+	 *			int descriptorid
 	 * @param
-	 *        	int value
+	 *			int value
 	 * @return status
 	 */
 	public static function set_competence($courseid, $descriptorid, $value) {
@@ -572,9 +572,9 @@ class block_exacomp_external extends external_api {
 	 * Get content
 	 * 
 	 * @param
-	 *        	int courseid
+	 *			int courseid
 	 * @param
-	 *        	int subtopicid
+	 *			int subtopicid
 	 * @return external_multiple_structure
 	 */
 	public static function get_associated_content($courseid, $descriptorid) {
@@ -593,10 +593,10 @@ class block_exacomp_external extends external_api {
 		$results = array ();
 		
 		$examples = $DB->get_records_sql ( '
-                SELECT e.id, e.title, e.externalurl
-                FROM {block_exacompexamples} e
-                JOIN {block_exacompdescrexamp_mm} mm ON mm.descrid=? AND mm.exampid = e.id
-                ', array (
+				SELECT e.id, e.title, e.externalurl
+				FROM {block_exacompexamples} e
+				JOIN {block_exacompdescrexamp_mm} mm ON mm.descrid=? AND mm.exampid = e.id
+				', array (
 				$descriptorid 
 		) );
 		
@@ -682,7 +682,7 @@ class block_exacomp_external extends external_api {
 	 * Get assign information
 	 * 
 	 * @param
-	 *        	int assignid
+	 *			int assignid
 	 * @return external_multiple_structure
 	 */
 	public static function get_assign_information($assignid) {
@@ -794,11 +794,11 @@ class block_exacomp_external extends external_api {
 	 * user draft area, and then be submitted to the given assign.
 	 *
 	 * @param
-	 *        	int assignid
+	 *			int assignid
 	 * @param
-	 *        	string onlinetext
+	 *			string onlinetext
 	 * @param
-	 *        	string filename
+	 *			string filename
 	 * @return external_multiple_structure
 	 */
 	public static function update_assign_submission($assignid, $onlinetext, $filename) {
@@ -895,7 +895,7 @@ class block_exacomp_external extends external_api {
 	 * Get competence information
 	 * 
 	 * @param
-	 *        	int assignid
+	 *			int assignid
 	 * @return external_multiple_structure
 	 */
 	public static function get_competence_by_id($competenceid) {
@@ -940,7 +940,7 @@ class block_exacomp_external extends external_api {
 	 * Get competence information
 	 * 
 	 * @param
-	 *        	int assignid
+	 *			int assignid
 	 * @return external_multiple_structure
 	 */
 	public static function get_topic_by_id($topicid) {
@@ -984,7 +984,7 @@ class block_exacomp_external extends external_api {
 	 * Get subtopics
 	 * 
 	 * @param
-	 *        	int topicid
+	 *			int topicid
 	 * @return array of subtopics
 	 */
 	public static function get_subtopics_by_topic($topicid, $userid) {
@@ -1069,7 +1069,7 @@ class block_exacomp_external extends external_api {
 	 * Get examples
 	 * 
 	 * @param
-	 *        	int subjectid
+	 *			int subjectid
 	 * @return array of examples
 	 */
 	public static function get_examples_for_subject($subjectid, $courseid, $userid) {
@@ -1102,10 +1102,10 @@ class block_exacomp_external extends external_api {
 			
 			foreach ( $descriptors as $descriptor ) {
 				$examples = $DB->get_records_sql ( "SELECT de.id as deid, e.id, e.title, e.externalurl,
-                        e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid
-                        FROM {" . block_exacomp::DB_EXAMPLES . "} e
-                        JOIN {" . block_exacomp::DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
-                        ", array (
+						e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid
+						FROM {" . block_exacomp::DB_EXAMPLES . "} e
+						JOIN {" . block_exacomp::DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
+						", array (
 						$descriptor->id 
 				) );
 				
@@ -1190,7 +1190,7 @@ class block_exacomp_external extends external_api {
 	 * Get example
 	 * 
 	 * @param
-	 *        	int exampleid
+	 *			int exampleid
 	 * @return example
 	 */
 	public static function get_example_by_id($exampleid) {
@@ -1254,7 +1254,7 @@ class block_exacomp_external extends external_api {
 	 * Get descriptors for example
 	 * 
 	 * @param
-	 *        	int exampleid
+	 *			int exampleid
 	 * @return list of descriptors
 	 */
 	public static function get_descriptors_for_example($exampleid, $courseid, $userid) {
@@ -1323,7 +1323,7 @@ class block_exacomp_external extends external_api {
 	 * 0 if false
 	 * 
 	 * @param
-	 *        	int userid
+	 *			int userid
 	 * @return int
 	 */
 	public static function get_user_role() {
@@ -1685,7 +1685,7 @@ class block_exacomp_external extends external_api {
 	 * Get all available competencies
 	 * 
 	 * @param
-	 *        	int subjectid
+	 *			int subjectid
 	 * @return array of examples
 	 */
 	public static function get_competencies_for_upload($userid) {
@@ -1777,17 +1777,17 @@ class block_exacomp_external extends external_api {
 	}
 	
 	/**
-     * Add item
-     * @param int itemid
-     * @return array of course subjects
-     */
-    public static function submit_example($exampleid,$studentvalue,$url,$effort,$filename,$studentcomment,$title,$itemid=0,$courseid=0) {
-        global $CFG,$DB,$USER;
-    
-        $params = self::validate_parameters(self::submit_example_parameters(), array('title'=>$title,'exampleid'=>$exampleid,'url'=>$url,'effort'=>$effort,'filename'=>$filename,'studentcomment'=>$studentcomment,'studentvalue'=>$studentvalue,'itemid'=>$itemid,'courseid'=>$courseid));
-    
+	 * Add item
+	 * @param int itemid
+	 * @return array of course subjects
+	 */
+	public static function submit_example($exampleid,$studentvalue,$url,$effort,$filename,$studentcomment,$title,$itemid=0,$courseid=0) {
+		global $CFG,$DB,$USER;
+	
+		$params = self::validate_parameters(self::submit_example_parameters(), array('title'=>$title,'exampleid'=>$exampleid,'url'=>$url,'effort'=>$effort,'filename'=>$filename,'studentcomment'=>$studentcomment,'studentvalue'=>$studentvalue,'itemid'=>$itemid,'courseid'=>$courseid));
+	
 		if ($CFG->block_exaport_app_externaleportfolio) {			
-		    // export to Mahara
+			// export to Mahara
 			if ($filename != '') {
 				if ((include $CFG->dirroot.'/blocks/exacomp/upload_externalportfolio.php') == true) {
 					if ($maharaexport_success) {
@@ -1801,17 +1801,17 @@ class block_exacomp_external extends external_api {
 		if (!isset($type)) { 
 			$type = ($filename != '') ? 'file' : 'url';			
 		};
-        
-        //insert: if itemid == 0 OR status != 0
-        $insert = true;
-        if($itemid != 0) {
-            $itemexample = $DB->get_record('block_exacompitemexample', array('itemid'=>$itemid));
-            if ($itemexample->status == 0) 
-                $insert = false;
-        }
-        require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
-        
-        if($insert) {
+		
+		//insert: if itemid == 0 OR status != 0
+		$insert = true;
+		if($itemid != 0) {
+			$itemexample = $DB->get_record('block_exacompitemexample', array('itemid'=>$itemid));
+			if ($itemexample->status == 0) 
+				$insert = false;
+		}
+		require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
+		
+		if($insert) {
 			//store item in eLOVE portfolio category
 			$elove_category = block_exaport_get_user_category("eLOVE", $USER->id);
 			
@@ -1852,58 +1852,58 @@ class block_exacomp_external extends external_api {
 			foreach($comps as $comp) {
 				$DB->insert_record('block_exacompcompactiv_mm', array('compid'=>$comp->descrid,'comptype'=>0,'eportfolioitem'=>1,'activityid'=>$itemid));
 			}
-        } else {
-            $item = $DB->get_record('block_exaportitem',array('id'=>$itemid));
-            $item->name = $title;
-            if($url != '')
-            	$item->url = $url;
-            $item->intro = $effort;
-            $item->timemodified = time();
-            
-            if($type == 'file')
-                block_exaport_file_remove($DB->get_record("block_exaportitem",array("id"=>$itemid)));
-            
-            $DB->update_record('block_exaportitem', $item);
-        }
+		} else {
+			$item = $DB->get_record('block_exaportitem',array('id'=>$itemid));
+			$item->name = $title;
+			if($url != '')
+				$item->url = $url;
+			$item->intro = $effort;
+			$item->timemodified = time();
+			
+			if($type == 'file')
+				block_exaport_file_remove($DB->get_record("block_exaportitem",array("id"=>$itemid)));
+			
+			$DB->update_record('block_exaportitem', $item);
+		}
 
-        //if a file is added we need to copy the file from the user/private filearea to block_exaport/item_file with the itemid from above
-        if($type == "file") {
-            $context = context_user::instance($USER->id);
-            $fs = get_file_storage();
-            try {
-                $old = $fs->get_file($context->id, "user", "private", 0, "/", $filename);
-    
-                if($old) {
-                    $file_record = array('contextid'=>$context->id, 'component'=>'block_exaport', 'filearea'=>'item_file',
-                            'itemid'=>$itemid, 'filepath'=>'/', 'filename'=>$old->get_filename(),
-                            'timecreated'=>time(), 'timemodified'=>time());
-                    $fs->create_file_from_storedfile($file_record, $old->get_id());
-                    
-                    $old->delete();
-                }
-            } catch (Exception $e) {
-                //some problem with the file occured
-            }
-        }
-        
-        if($insert) {
-            $DB->insert_record('block_exacompitemexample',array('exampleid'=>$exampleid,'itemid'=>$itemid,'timecreated'=>time(),'status'=>0,'studentvalue'=>$studentvalue));
-            if($studentcomment != '')
+		//if a file is added we need to copy the file from the user/private filearea to block_exaport/item_file with the itemid from above
+		if($type == "file") {
+			$context = context_user::instance($USER->id);
+			$fs = get_file_storage();
+			try {
+				$old = $fs->get_file($context->id, "user", "private", 0, "/", $filename);
+	
+				if($old) {
+					$file_record = array('contextid'=>$context->id, 'component'=>'block_exaport', 'filearea'=>'item_file',
+							'itemid'=>$itemid, 'filepath'=>'/', 'filename'=>$old->get_filename(),
+							'timecreated'=>time(), 'timemodified'=>time());
+					$fs->create_file_from_storedfile($file_record, $old->get_id());
+					
+					$old->delete();
+				}
+			} catch (Exception $e) {
+				//some problem with the file occured
+			}
+		}
+		
+		if($insert) {
+			$DB->insert_record('block_exacompitemexample',array('exampleid'=>$exampleid,'itemid'=>$itemid,'timecreated'=>time(),'status'=>0,'studentvalue'=>$studentvalue));
+			if($studentcomment != '')
 				$DB->insert_record('block_exaportitemcomm',array('itemid'=>$itemid,'userid'=>$USER->id,'entry'=>$studentcomment,'timemodified'=>time()));
-        } else {
-            $itemexample->timemodified = time();
-            $itemexample->studentvalue = $studentvalue;
-            $DB->update_record('block_exacompitemexample', $itemexample);
-            if($studentcomment != '') {
-            	$DB->delete_records('block_exaportitemcomm',array('itemid'=>$itemid,'userid'=>$USER->id));
-            	$DB->insert_record('block_exaportitemcomm',array('itemid'=>$itemid,'userid'=>$USER->id,'entry'=>$studentcomment,'timemodified'=>time()));
-            }
-        }
+		} else {
+			$itemexample->timemodified = time();
+			$itemexample->studentvalue = $studentvalue;
+			$DB->update_record('block_exacompitemexample', $itemexample);
+			if($studentcomment != '') {
+				$DB->delete_records('block_exaportitemcomm',array('itemid'=>$itemid,'userid'=>$USER->id));
+				$DB->insert_record('block_exaportitemcomm',array('itemid'=>$itemid,'userid'=>$USER->id,'entry'=>$studentcomment,'timemodified'=>time()));
+			}
+		}
 		// studentvalue has to be stored in exameval
-        block_exacomp_set_user_example($USER->id, $exampleid, $courseid, block_exacomp::ROLE_STUDENT, $studentvalue);
-        
-        return array("success"=>true,"itemid"=>$itemid);
-    }
+		block_exacomp_set_user_example($USER->id, $exampleid, $courseid, block_exacomp::ROLE_STUDENT, $studentvalue);
+		
+		return array("success"=>true,"itemid"=>$itemid);
+	}
 	
 	/**
 	 * Returns desription of method return values
@@ -1933,7 +1933,7 @@ class block_exacomp_external extends external_api {
 	/**
 	 * create example
 	 * 
-	 * @param        	
+	 * @param			
 	 *
 	 * @return
 	 *
@@ -2024,7 +2024,7 @@ class block_exacomp_external extends external_api {
 	/**
 	 * grade an item
 	 * 
-	 * @param        	
+	 * @param			
 	 *
 	 * @return
 	 *
@@ -2200,7 +2200,7 @@ class block_exacomp_external extends external_api {
 	/**
 	 * grade an item
 	 * 
-	 * @param        	
+	 * @param			
 	 *
 	 * @return
 	 *
@@ -2266,7 +2266,7 @@ class block_exacomp_external extends external_api {
 	/**
 	 * grade an item
 	 * 
-	 * @param        	
+	 * @param			
 	 *
 	 * @return
 	 *
@@ -2430,9 +2430,9 @@ class block_exacomp_external extends external_api {
 						}
 						
 						$examples = $DB->get_records_sql ( "SELECT de.id as deid, e.id, e.title, e.externalurl,
-                        e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid
-                        FROM {" . block_exacomp::DB_EXAMPLES . "} e
-                        JOIN {" . block_exacomp::DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=? ", array (
+						e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid
+						FROM {" . block_exacomp::DB_EXAMPLES . "} e
+						JOIN {" . block_exacomp::DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=? ", array (
 								$descriptor->id 
 						) );
 						
@@ -2453,8 +2453,8 @@ class block_exacomp_external extends external_api {
 								
 								// CHECK FOR USER EXAMPLES
 								$sql = 'select * from {block_exacompitemexample} ie 
-	        							JOIN {block_exaportitem} i ON i.id = ie.itemid
-	        							WHERE ie.exampleid = ? AND i.userid=? AND ie.status=2';
+										JOIN {block_exaportitem} i ON i.id = ie.itemid
+										WHERE ie.exampleid = ? AND i.userid=? AND ie.status=2';
 								if ($DB->get_records_sql ( $sql, array (
 										$example->id,
 										$userid 
@@ -2720,7 +2720,7 @@ class block_exacomp_external extends external_api {
 	/**
 	 * create example
 	 * 
-	 * @param        	
+	 * @param			
 	 *
 	 * @return
 	 *
@@ -2870,7 +2870,7 @@ class block_exacomp_external extends external_api {
 	 * Get all available competencies
 	 * 
 	 * @param
-	 *        	int subjectid
+	 *			int subjectid
 	 * @return array of examples
 	 */
 	public static function get_competencies_by_topic($userid, $topicid) {
@@ -3501,7 +3501,7 @@ class block_exacomp_external extends external_api {
 	 * Get descriptors for example
 	 * 
 	 * @param
-	 *        	int exampleid
+	 *			int exampleid
 	 * @return list of descriptors
 	 */
 	public static function dakora_get_descriptors_for_example($exampleid, $courseid, $userid, $forall) {
@@ -3562,7 +3562,7 @@ class block_exacomp_external extends external_api {
 	 * Get example grading for user
 	 * 
 	 * @param
-	 *        	int exampleid
+	 *			int exampleid
 	 *			int courseid
 	 *			int userid
 	 * @return list of descriptors
@@ -3681,7 +3681,7 @@ class block_exacomp_external extends external_api {
 	 * Get descriptors for example
 	 * 
 	 * @param
-	 *        	int exampleid
+	 *			int exampleid
 	 * @return list of descriptors
 	 */
 	public static function dakora_get_students_for_course($courseid) {
@@ -3732,7 +3732,7 @@ class block_exacomp_external extends external_api {
 	 * 
 	 * @param
 	 * 			int courseid
-	 *        	int userid
+	 *			int userid
 	 * @return list of descriptors
 	 */
 	public static function dakora_get_examples_pool($courseid, $userid) {
@@ -3795,7 +3795,7 @@ class block_exacomp_external extends external_api {
 	 * 
 	 * @param
 	 * 			int courseid
-	 *        	int userid
+	 *			int userid
 	 * @return list of descriptors
 	 */
 	public static function dakora_get_examples_trash($courseid, $userid) {
@@ -3861,7 +3861,7 @@ class block_exacomp_external extends external_api {
 	 * @param
 	 *			int courseid
 	 * 			int exampleid
-	 *        	int userid
+	 *			int userid
 	 *			int start
 	 *			int end
 	 * @return list of descriptors
@@ -3954,7 +3954,7 @@ class block_exacomp_external extends external_api {
 	 * Get examples for time slot
 	 * 
 	 * @param
-	 *        	int userid
+	 *			int userid
 	 *			int start
 	 *			int end
 	 * @return list of descriptors
@@ -3997,7 +3997,7 @@ class block_exacomp_external extends external_api {
 				'student_evaluation' => new external_value ( PARAM_INT, 'self evaluation of student' ),
 				'teacher_evaluation' => new external_value( PARAM_TEXT, 'evaluation of teacher'),
 				'teacher_percent_rating' => new external_value( PARAM_TEXT, 'additional evaluation of teacher'),
-                'courseid' => new external_value(PARAM_INT, 'example course'),
+				'courseid' => new external_value(PARAM_INT, 'example course'),
 				'state' => new external_value (PARAM_INT, 'state of example'),
 				'scheduleid' => new external_value (PARAM_INT, 'id in schedule context'),
 				'courseshortname' => new external_value (PARAM_TEXT, 'shortname of example course'),
@@ -4022,7 +4022,7 @@ class block_exacomp_external extends external_api {
 	 * Get cross subjects
 	 * 
 	 * @param
-	 *        	int courseid
+	 *			int courseid
 	 *			int userid
 	 * @return list of descriptors
 	 */
@@ -4095,7 +4095,7 @@ class block_exacomp_external extends external_api {
 	 * Get cross subjects
 	 * 
 	 * @param
-	 *        	int courseid
+	 *			int courseid
 	 *			int crosssubjid
 	 *			int userid
 	 *			boolean forall
@@ -4149,7 +4149,7 @@ class block_exacomp_external extends external_api {
 	 * Get cross subjects
 	 * 
 	 * @param
-	 *        	int courseid
+	 *			int courseid
 	 *			int crosssubjid
 	 *			int userid
 	 *			boolean forall
@@ -4396,7 +4396,7 @@ class block_exacomp_external extends external_api {
 	 * Set a competence for a user
 	 *
 	 * @param
-	 *        	int courseid
+	 *			int courseid
 	 *			int userid
 	 *			int compid
 	 *			int role
@@ -4458,7 +4458,7 @@ class block_exacomp_external extends external_api {
 	 * get pre planning storage examples for current teacher
 	 *
 	 * @param
-	 *        	int courseid
+	 *			int courseid
 	 * @return examples
 	 */
 	public static function dakora_get_pre_planning_storage_examples($courseid) {
@@ -4509,7 +4509,7 @@ class block_exacomp_external extends external_api {
 	 * get pre planning storage students for current teacher
 	 *
 	 * @param
-	 *        	int courseid
+	 *			int courseid
 	 * @return examples
 	 */
 	public static function dakora_get_pre_planning_storage_students($courseid) {
@@ -4573,7 +4573,7 @@ class block_exacomp_external extends external_api {
 	 * get pre planning storage students for current teacher
 	 *
 	 * @param
-	 *        	int courseid
+	 *			int courseid
 	 * @return examples
 	 */
 	public static function dakora_has_items_in_pre_planning_storage($courseid) {
@@ -4620,7 +4620,7 @@ class block_exacomp_external extends external_api {
 	 * empty pre planning storage for current teacher
 	 *
 	 * @param
-	 *        	int courseid
+	 *			int courseid
 	 * @return examples
 	 */
 	public static function dakora_empty_pre_planning_storage($courseid) {
@@ -4666,7 +4666,7 @@ class block_exacomp_external extends external_api {
 	 * add example to current pre planning storage
 	 *
 	 * @param
-	 *        	int courseid
+	 *			int courseid
 	 * @return examples
 	 */
 	public static function dakora_add_example_to_pre_planning_storage($courseid, $exampleid) {
@@ -4713,7 +4713,7 @@ class block_exacomp_external extends external_api {
 	 * add example to current pre planning storage
 	 *
 	 * @param
-	 *        	int courseid
+	 *			int courseid
 	 * @return examples
 	 */
 	public static function dakora_add_examples_to_students_schedule($courseid, $examples, $students) {
@@ -5204,21 +5204,21 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_user_information_returns() {
 		return new external_single_structure ( array(
-            'id'    => new external_value(PARAM_INT, 'ID of the user'),
-            'username'    => new external_value(PARAM_RAW, 'The username', VALUE_OPTIONAL),
-            'firstname'   => new external_value(PARAM_NOTAGS, 'The first name(s) of the user', VALUE_OPTIONAL),
-            'lastname'    => new external_value(PARAM_NOTAGS, 'The family name of the user', VALUE_OPTIONAL),
-            'fullname'    => new external_value(PARAM_NOTAGS, 'The fullname of the user'),
-            'email'       => new external_value(PARAM_TEXT, 'An email address - allow email as root@localhost', VALUE_OPTIONAL),
-            'firstaccess' => new external_value(PARAM_INT, 'first access to the site (0 if never)', VALUE_OPTIONAL),
-            'lastaccess'  => new external_value(PARAM_INT, 'last access to the site (0 if never)', VALUE_OPTIONAL),
-            'auth'        => new external_value(PARAM_PLUGIN, 'Auth plugins include manual, ldap, imap, etc', VALUE_OPTIONAL),
-            'confirmed'   => new external_value(PARAM_INT, 'Active user: 1 if confirmed, 0 otherwise', VALUE_OPTIONAL),
-            'lang'        => new external_value(PARAM_SAFEDIR, 'Language code such as "en", must exist on server', VALUE_OPTIONAL),
-            'url'         => new external_value(PARAM_URL, 'URL of the user', VALUE_OPTIONAL),
-            'profileimageurlsmall' => new external_value(PARAM_URL, 'User image profile URL - small version'),
-            'profileimageurl' => new external_value(PARAM_URL, 'User image profile URL - big version')
-        ) );
+			'id'	=> new external_value(PARAM_INT, 'ID of the user'),
+			'username'	=> new external_value(PARAM_RAW, 'The username', VALUE_OPTIONAL),
+			'firstname'   => new external_value(PARAM_NOTAGS, 'The first name(s) of the user', VALUE_OPTIONAL),
+			'lastname'	=> new external_value(PARAM_NOTAGS, 'The family name of the user', VALUE_OPTIONAL),
+			'fullname'	=> new external_value(PARAM_NOTAGS, 'The fullname of the user'),
+			'email'	   => new external_value(PARAM_TEXT, 'An email address - allow email as root@localhost', VALUE_OPTIONAL),
+			'firstaccess' => new external_value(PARAM_INT, 'first access to the site (0 if never)', VALUE_OPTIONAL),
+			'lastaccess'  => new external_value(PARAM_INT, 'last access to the site (0 if never)', VALUE_OPTIONAL),
+			'auth'		=> new external_value(PARAM_PLUGIN, 'Auth plugins include manual, ldap, imap, etc', VALUE_OPTIONAL),
+			'confirmed'   => new external_value(PARAM_INT, 'Active user: 1 if confirmed, 0 otherwise', VALUE_OPTIONAL),
+			'lang'		=> new external_value(PARAM_SAFEDIR, 'Language code such as "en", must exist on server', VALUE_OPTIONAL),
+			'url'		 => new external_value(PARAM_URL, 'URL of the user', VALUE_OPTIONAL),
+			'profileimageurlsmall' => new external_value(PARAM_URL, 'User image profile URL - small version'),
+			'profileimageurl' => new external_value(PARAM_URL, 'User image profile URL - big version')
+		) );
 	}
 	
 	

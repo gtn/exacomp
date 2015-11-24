@@ -5,11 +5,11 @@ window.jQueryExacomp = jQuery;
 var $ = jQuery;
 
 Storage.prototype.setObject = function(key, value) {
-    this.setItem(key, JSON.stringify(value));
+	this.setItem(key, JSON.stringify(value));
 };
 Storage.prototype.getObject = function(key) {
-    var value = this.getItem(key);
-    return value && JSON.parse(value);
+	var value = this.getItem(key);
+	return value && JSON.parse(value);
 };
 
 /**
@@ -71,20 +71,20 @@ window.block_exacomp = {
 		}
 		
 		var popup = new M.core.dialogue({
-            headerContent: config.headerContent || config.title || 'Popup', // M.str.moodle.loadinghelp, // previousimagelink + '<div id=\"imagenumber\" class=\"imagetitle\"><h1> Image '
-            // + screennumber + ' / ' + this.imageidnumbers[imageid] + ' </h1></div>' + nextimagelink,
-            
+			headerContent: config.headerContent || config.title || 'Popup', // M.str.moodle.loadinghelp, // previousimagelink + '<div id=\"imagenumber\" class=\"imagetitle\"><h1> Image '
+			// + screennumber + ' / ' + this.imageidnumbers[imageid] + ' </h1></div>' + nextimagelink,
+			
 			bodyContent: '<iframe src="'+config.url+'" width="100%" height="100%" frameborder="0"></iframe>',
-            visible: true, //by default it is not displayed
-            modal: false, // sollte true sein, aber wegen moodle bug springt dann das fenster immer nach oben
-            zIndex: 1000,
-            // ok: width: '80%',
-            // ok: width: '500px',
-            // ok: width: null, = automatic
-            height: '80%',
-            width: '85%',
-            // closeButtonTitle: 'clooose'
-    	});
+			visible: true, //by default it is not displayed
+			modal: false, // sollte true sein, aber wegen moodle bug springt dann das fenster immer nach oben
+			zIndex: 1000,
+			// ok: width: '80%',
+			// ok: width: '500px',
+			// ok: width: null, = automatic
+			height: '80%',
+			width: '85%',
+			// closeButtonTitle: 'clooose'
+		});
 		
 		// disable scrollbars
 		$(window).disablescroll();

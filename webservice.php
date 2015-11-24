@@ -30,43 +30,43 @@ $authenticationinfo = $webservicelib->authenticate_user($token);
 
 
 if ($function == 'dakora_print_schedule') {
-    $courseid = required_param('courseid', PARAM_INT);
+	$courseid = required_param('courseid', PARAM_INT);
 
-    if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-        print_error('invalidcourse', 'block_simplehtml', $courseid);
-    }
+	if (!$course = $DB->get_record('course', array('id' => $courseid))) {
+		print_error('invalidcourse', 'block_simplehtml', $courseid);
+	}
 
-    require_login($course);
+	require_login($course);
 
-    $context = context_course::instance($courseid);
+	$context = context_course::instance($courseid);
 
-    // CHECK TEACHER
-    $isTeacher = block_exacomp_is_teacher($context);
+	// CHECK TEACHER
+	$isTeacher = block_exacomp_is_teacher($context);
 
-    $studentid = block_exacomp_get_studentid($isTeacher) ;
+	$studentid = block_exacomp_get_studentid($isTeacher) ;
 
-    /* CONTENT REGION */
-    if($isTeacher){
-        $coursestudents = block_exacomp_get_students_by_course($courseid);
-        if($studentid <= 0) {
-            $student = null;
-        }else{
-            //check permission for viewing students profile
-            if(!array_key_exists($studentid, $coursestudents))
-                print_error("nopermissions","","","Show student profile");
-            
-            $student = $DB->get_record('user',array('id' => $studentid));
-        }
-    } else {
-        $student = $USER;
-    }
-    
-    if (!$student) {
-        print_error("student not found");
-    }
+	/* CONTENT REGION */
+	if($isTeacher){
+		$coursestudents = block_exacomp_get_students_by_course($courseid);
+		if($studentid <= 0) {
+			$student = null;
+		}else{
+			//check permission for viewing students profile
+			if(!array_key_exists($studentid, $coursestudents))
+				print_error("nopermissions","","","Show student profile");
+			
+			$student = $DB->get_record('user',array('id' => $studentid));
+		}
+	} else {
+		$student = $USER;
+	}
+	
+	if (!$student) {
+		print_error("student not found");
+	}
 
-    block_exacomp\printer::weekly_schedule($course, $student, optional_param('interval', 'week', PARAM_TEXT));
-    die;
+	block_exacomp\printer::weekly_schedule($course, $student, optional_param('interval', 'week', PARAM_TEXT));
+	die;
 }
 
 throw new moodle_exception("wsfunction $function not found");

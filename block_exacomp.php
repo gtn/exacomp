@@ -17,9 +17,9 @@
 /**
  * Newblock block caps.
  *
- * @package    block_exacomp
+ * @package	block_exacomp
  * @copyright  Florian Jungwirth
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license	http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();

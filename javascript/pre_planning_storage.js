@@ -27,22 +27,22 @@
 	$(document).on('click', '#save_pre_planning_storage', function(event) {
 		
 		$('#sortable').each(function (event) {
-		    var list = $(this).find('li');
-		    list.each(function(){
-		    	 var checkbox = $(this).find('#use_example');
-		    	
-		    	 if(checkbox[0].checked){
-		    		 var scheduleid = checkbox.attr('scheduleid');
-		    		 var exampleid = checkbox.attr('exampleid');
-		    		 
-		    		 students.forEach(function(student){
-		    			if(student && student != 0){
-		    				block_exacomp_add_to_learning_calendar(student, exampleid);
-		    			}
-		    		 });
-		    		 
-		    	 }
-		    });
+			var list = $(this).find('li');
+			list.each(function(){
+				 var checkbox = $(this).find('#use_example');
+				
+				 if(checkbox[0].checked){
+					 var scheduleid = checkbox.attr('scheduleid');
+					 var exampleid = checkbox.attr('exampleid');
+					 
+					 students.forEach(function(student){
+						if(student && student != 0){
+							block_exacomp_add_to_learning_calendar(student, exampleid);
+						}
+					 });
+					 
+				 }
+			});
 		   
 		});
 		
@@ -85,8 +85,8 @@
 		-----------------------------------------------------------------*/
 	
 		$( "#sortable" ).sortable();
-	    $( "#sortable" ).disableSelection();
-	    
+		$( "#sortable" ).disableSelection();
+		
 		var $eventDiv = $( '#external-events' );
 		var $trash = $( '#trash' );
 		var $sortableUl = $( '#sortable' );

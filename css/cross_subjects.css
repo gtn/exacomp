@@ -16,8 +16,8 @@
 #block_exacomp table.exabis_comp_top td, #block_exacomp .exabis_competencies_lis table.exabis_comp_comp td, #block_exacomp .exabis_comp_info td {
 	padding: 0.5em;
 	border: 1px solid #cacaca;
-    border-collapse: collapse;
-    vertical-align: top;
+	border-collapse: collapse;
+	vertical-align: top;
 }
 
 #block_exacomp .desctitle {

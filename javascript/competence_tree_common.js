@@ -193,8 +193,8 @@
 			var eid = $(this).attr('id').split("-")[2];
 			var did = $(this).attr('id').split("-")[3];
 
-	    	var input = $(this);
-	    	var allInputs = $('input[id^=additionalinfo\-'+sid+'\-'+eid+']');
+			var input = $(this);
+			var allInputs = $('input[id^=additionalinfo\-'+sid+'\-'+eid+']');
 	
 			$('<div />').appendTo('#exa-additionalgrading-dialog').slider({
 			  min: 0,

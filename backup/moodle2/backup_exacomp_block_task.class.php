@@ -9,34 +9,34 @@ require_once($CFG->dirroot . '/blocks/exacomp/backup/moodle2/backup_exacomp_sett
  */
 class backup_exacomp_block_task extends backup_block_task {
  
-    /**
-     * Define (add) particular settings this activity can have
-     */
-    protected function define_my_settings() {
-        // No particular settings for this activity
-    }
+	/**
+	 * Define (add) particular settings this activity can have
+	 */
+	protected function define_my_settings() {
+		// No particular settings for this activity
+	}
  
-    /**
-     * Define (add) particular steps this activity can have
-     */
-    protected function define_my_steps() {
-        // exacomp only has one structure step
-    	$this->add_step(new backup_exacomp_block_structure_step('exacomp_structure', 'exacomp.xml'));
-    	 
-    }
+	/**
+	 * Define (add) particular steps this activity can have
+	 */
+	protected function define_my_steps() {
+		// exacomp only has one structure step
+		$this->add_step(new backup_exacomp_block_structure_step('exacomp_structure', 'exacomp.xml'));
+		 
+	}
  
-    /**
-     * Code the transformations to perform in the activity in
-     * order to get transportable (encoded) links
-     */
-    static public function encode_content_links($content) {
-        return $content;
-    }
-    
-    public function get_fileareas() {
-        return array();
-    }
-    public function get_configdata_encoded_attributes() {
-    
-    }
+	/**
+	 * Code the transformations to perform in the activity in
+	 * order to get transportable (encoded) links
+	 */
+	static public function encode_content_links($content) {
+		return $content;
+	}
+	
+	public function get_fileareas() {
+		return array();
+	}
+	public function get_configdata_encoded_attributes() {
+	
+	}
 }

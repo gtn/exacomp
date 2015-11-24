@@ -7,49 +7,49 @@ require_once __DIR__.'/lib/xmllib.php';
 require_once __DIR__.'/lib/lib.php';
 
 if (!class_exists('block_exacomp_admin_setting_source')) {
-    // check needed, because moodle includes this file twice
+	// check needed, because moodle includes this file twice
 
-    class block_exacomp_admin_setting_source extends admin_setting_configtext {
-        public function validate($data) {
-            $ret = parent::validate($data);
-            if ($ret !== true) {
-                return $ret;
-            }
-            
-            if (empty($data)) {
-                // no id -> id must always be set
-                return false;
-            }
-            if (exabis_special_id_generator::validate_id($data)) {
-                return true;
-            } else {
-                return 'wrong id';
-                // return get_string('validateerror', 'admin');
-            }
-        }
-    }
-    
+	class block_exacomp_admin_setting_source extends admin_setting_configtext {
+		public function validate($data) {
+			$ret = parent::validate($data);
+			if ($ret !== true) {
+				return $ret;
+			}
+			
+			if (empty($data)) {
+				// no id -> id must always be set
+				return false;
+			}
+			if (exabis_special_id_generator::validate_id($data)) {
+				return true;
+			} else {
+				return 'wrong id';
+				// return get_string('validateerror', 'admin');
+			}
+		}
+	}
+	
 	class block_exacomp_admin_setting_scheme extends admin_setting_configselect {
-        public function write_setting($data) {
-            $ret = parent::write_setting($data);
-           
-            if ($ret != '') {
-                return $ret;
-            }
-            
-            if($data != '0'){
-            	foreach(block_exacomp_get_courses() as $course){
-            		$course_settings = block_exacomp_get_settings_by_course($course);
-	            	if($course_settings->grading != 3){ //change course grading
-	            		$course_settings->grading = 3;
-	            		$course_settings->filteredtaxonomies = json_encode($course_settings->filteredtaxonomies);
-	            		block_exacomp_save_coursesettings($course, $course_settings);
-	            	}
-            	}
-            }
-            return '';
-        }
-    }
+		public function write_setting($data) {
+			$ret = parent::write_setting($data);
+		   
+			if ($ret != '') {
+				return $ret;
+			}
+			
+			if($data != '0'){
+				foreach(block_exacomp_get_courses() as $course){
+					$course_settings = block_exacomp_get_settings_by_course($course);
+					if($course_settings->grading != 3){ //change course grading
+						$course_settings->grading = 3;
+						$course_settings->filteredtaxonomies = json_encode($course_settings->filteredtaxonomies);
+						block_exacomp_save_coursesettings($course, $course_settings);
+					}
+				}
+			}
+			return '';
+		}
+	}
 }
 
 // generate id if not set
@@ -74,7 +74,7 @@ $settings->add(new admin_setting_configcheckbox('exacomp/skillsmanagement', get_
 		get_string('settings_skillsmanagement_description', 'block_exacomp'), 0, 1, 0));
 
 $settings->add(new admin_setting_configcheckbox('exacomp/external_trainer_assign', get_string('block_exacomp_external_trainer_assign_head', 'block_exacomp'),
-        get_string('block_exacomp_external_trainer_assign_body', 'block_exacomp'), 0));
+		get_string('block_exacomp_external_trainer_assign_body', 'block_exacomp'), 0));
 
 $settings->add(new block_exacomp_admin_setting_source('exacomp/mysource', 'Source ID', "", PARAM_TEXT));
 

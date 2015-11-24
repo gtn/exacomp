@@ -61,7 +61,7 @@
 		// Show a context menu
 		simulatedEvent = document.createEvent("MouseEvent");
 		simulatedEvent.initMouseEvent("contextmenu", true, true, window, 1, first.screenX + 50, first.screenY + 5, first.clientX + 50, first.clientY + 5,
-	                                  false, false, false, false, 2, null);
+									  false, false, false, false, 2, null);
 		first.target.dispatchEvent(simulatedEvent);
 
 		// Note: I don't mouse up the right click here however feel free to add if required
@@ -78,14 +78,14 @@
 
 		// Mouse over first - I have live events attached on mouse over
 		simulatedEvent.initMouseEvent(type, true, true, window, 1, first.screenX, first.screenY, first.clientX, first.clientY,
-	                            false, false, false, false, 0, null);
+								false, false, false, false, 0, null);
 		first.target.dispatchEvent(simulatedEvent);
 
 		type = "mousedown";
 		simulatedEvent = document.createEvent("MouseEvent");
 
 		simulatedEvent.initMouseEvent(type, true, true, window, 1, first.screenX, first.screenY, first.clientX, first.clientY,
-	                            false, false, false, false, 0, null);
+								false, false, false, false, 0, null);
 		first.target.dispatchEvent(simulatedEvent);
 
 
@@ -107,14 +107,14 @@
 				simulatedEvent = document.createEvent("MouseEvent");
 
 				simulatedEvent.initMouseEvent(type, true, true, window, 1, first.screenX, first.screenY, first.clientX, first.clientY,
-	                         	false, false, false, false, 0/*left*/, null);
+							 	false, false, false, false, 0/*left*/, null);
 				first.target.dispatchEvent(simulatedEvent);
 
 				type = "dblclick";
 				simulatedEvent = document.createEvent("MouseEvent");
 
 				simulatedEvent.initMouseEvent(type, true, true, window, 1, first.screenX, first.screenY, first.clientX, first.clientY,
-	                         	false, false, false, false, 0/*left*/, null);
+							 	false, false, false, false, 0/*left*/, null);
 				first.target.dispatchEvent(simulatedEvent);
 			}
 			else {
@@ -168,7 +168,7 @@
 			simulatedEvent = document.createEvent("MouseEvent");
 
 		simulatedEvent.initMouseEvent(type, true, true, window, 1, first.screenX, first.screenY, first.clientX, first.clientY,
-	                            false, false, false, false, button, null);
+								false, false, false, false, button, null);
 
 		first.target.dispatchEvent(simulatedEvent);
 
@@ -176,7 +176,7 @@
 			simulatedEvent = document.createEvent("MouseEvent");		// This check avoids click being emulated on a double tap
 
 			simulatedEvent.initMouseEvent("click", true, true, window, 1, first.screenX, first.screenY, first.clientX, first.clientY,
-	                            false, false, false, false, button, null);
+								false, false, false, false, button, null);
 
 			first.target.dispatchEvent(simulatedEvent);
 		}
@@ -187,14 +187,14 @@
 	});
 
 	$.fn.addTouch = function() {
-	    if ($.support.touch) {
-            this.each(function(i,el){
-                el.addEventListener("touchstart", iPadTouchHandler, false);
-                el.addEventListener("touchmove", iPadTouchHandler, false);
-                el.addEventListener("touchend", iPadTouchHandler, false);
-                el.addEventListener("touchcancel", iPadTouchHandler, false);
-            });
-	    }
+		if ($.support.touch) {
+			this.each(function(i,el){
+				el.addEventListener("touchstart", iPadTouchHandler, false);
+				el.addEventListener("touchmove", iPadTouchHandler, false);
+				el.addEventListener("touchend", iPadTouchHandler, false);
+				el.addEventListener("touchcancel", iPadTouchHandler, false);
+			});
+		}
 	};
 
 })(jQuery);

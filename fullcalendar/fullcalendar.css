@@ -237,8 +237,8 @@ NOTE: use percentage font sizes or else old IE chokes
 	background-position: 0 -15px;
 	-webkit-transition: background-position 0.1s linear;
 	   -moz-transition: background-position 0.1s linear;
-	     -o-transition: background-position 0.1s linear;
-	        transition: background-position 0.1s linear;
+		 -o-transition: background-position 0.1s linear;
+			transition: background-position 0.1s linear;
 }
 
 .fc-state-down,
@@ -744,7 +744,7 @@ a.fc-more:hover {
 .fc-view-container *:after {
 	-webkit-box-sizing: content-box;
 	   -moz-box-sizing: content-box;
-	        box-sizing: content-box;
+			box-sizing: content-box;
 }
 
 .fc-view, /* scope positioning and z-index's for everything within the view */

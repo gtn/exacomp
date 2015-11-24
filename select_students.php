@@ -33,13 +33,13 @@ $courseid = required_param('courseid', PARAM_INT);
 $crosssubjid = optional_param('crosssubjid', 0, PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('invalidcourse', 'block_exacomp', $courseid);
+	print_error('invalidcourse', 'block_exacomp', $courseid);
 }
 
 // error if example does not exist or was created by somebody else
 if ($crosssubjid > 0 && (!$crosssubject = $DB->get_record(block_exacomp::DB_CROSSSUBJECTS, array('id' => $crosssubjid))))
 {
-    print_error('invalidexample', 'block_exacomp', $exampleid);
+	print_error('invalidexample', 'block_exacomp', $exampleid);
 }
 
 require_login($course);

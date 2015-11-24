@@ -1018,8 +1018,8 @@ fc.moment.parseZone = function() {
 // Builds an enhanced moment from args. When given an existing moment, it clones. When given a
 // native Date, or called with no arguments (the current time), the resulting moment will be local.
 // Anything else needs to be "parsed" (a string or an array), and will be affected by:
-//    parseAsUTC - if there is no zone information, should we parse the input in UTC?
-//    parseZone - if there is zone information, should we force the zone of the moment?
+//	parseAsUTC - if there is no zone information, should we parse the input in UTC?
+//	parseZone - if there is zone information, should we force the zone of the moment?
 function makeMoment(args, parseAsUTC, parseZone) {
 	var input = args[0];
 	var isSingleString = args.length == 1 && typeof input === 'string';

@@ -16,8 +16,8 @@
 #block_exacomp table.exabis_comp_top td, #block_exacomp .exabis_competencies_lis table.exabis_comp_comp td, #block_exacomp .exabis_comp_info td {
 	padding: 0.5em;
 	border: 1px solid #cacaca;
-    border-collapse: collapse;
-    vertical-align: top;
+	border-collapse: collapse;
+	vertical-align: top;
 }
 
 #block_exacomp .desctitle {
@@ -59,11 +59,11 @@
 }
 
 #block_exacomp .exabis_comp_top_name {
-    display: block;
-    font-size: 0.84em;
+	display: block;
+	font-size: 0.84em;
 }
 #block_exacomp .exabis_comp_top_value {
-    font-weight: bold;
+	font-weight: bold;
 }
 
 #block_exacomp .exabis_competencies_lis div.exabis_comp_top_indentation {
@@ -166,7 +166,7 @@
 
 
 #assign-competencies select {
-    padding: 0;
-    margin: 0;
-    width: auto;
+	padding: 0;
+	margin: 0;
+	width: auto;
 }

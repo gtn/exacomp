@@ -49,7 +49,7 @@
 					value = value.substr(0, value.indexOf("group")+6);
 					return value + "-1";
 				}
-			    return value + "&group=-1";
+				return value + "&group=-1";
 			});
 			//change onchange from selects
 			var value = String(document.getElementById('menulis_subjects').onchange);
@@ -85,7 +85,7 @@
 					value = value.substr(0, value.indexOf("group")+6);
 					return value + "1";
 				}
-			    return value + "&group=1";
+				return value + "&group=1";
 			});
 			//change onchange from selects
 			var value = String(document.getElementById('menulis_subjects').onchange);

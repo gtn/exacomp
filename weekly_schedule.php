@@ -61,24 +61,24 @@ block_exacomp_build_breadcrum_navigation($courseid);
 
 /* CONTENT REGION */
 if($isTeacher){
-    $coursestudents = block_exacomp_get_students_by_course($courseid);
-    if($studentid <= 0) {
-        $student = null;
-    }else{
-        //check permission for viewing students profile
-        if(!array_key_exists($studentid, $coursestudents))
-            print_error("nopermissions","","","Show student profile");
-        
-        $student = $DB->get_record('user',array('id' => $studentid));
-    }
+	$coursestudents = block_exacomp_get_students_by_course($courseid);
+	if($studentid <= 0) {
+		$student = null;
+	}else{
+		//check permission for viewing students profile
+		if(!array_key_exists($studentid, $coursestudents))
+			print_error("nopermissions","","","Show student profile");
+		
+		$student = $DB->get_record('user',array('id' => $studentid));
+	}
 } else {
-    $student = $USER;
+	$student = $USER;
 }
 
 // print?
 if ($student && optional_param('print', false, PARAM_BOOL)) {
-    block_exacomp\printer::weekly_schedule($course, $student, optional_param('interval', 'week', PARAM_TEXT));
-    exit;
+	block_exacomp\printer::weekly_schedule($course, $student, optional_param('interval', 'week', PARAM_TEXT));
+	exit;
 }
 // build tab navigation & print header
 $output = block_exacomp_get_renderer();
