@@ -5005,7 +5005,8 @@ class block_exacomp_external extends external_api {
 		$descriptor_return->teacherevaluation = -1;
 		$descriptor_return->additionalinfo = null;
 		if(!$forall){
-			$descriptor_return->teacherevaluation = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$descriptorid, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_TEACHER)))? $grading->value:-1;
+			$grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$descriptorid, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_TEACHER));
+			$descriptor_return->teacherevaluation = ($grading && $grading->value !== null) ? $grading->value : -1;
 			$descriptor_return->additionalinfo = $grading->additionalinfo;
 		}
 		$descriptor_return->studentevaluation = -1;
