@@ -1,5 +1,6 @@
 <?php
 
+use function block_exacomp\get_string;
 /* * *************************************************************
  *  Copyright notice
 *
@@ -44,7 +45,6 @@ if (!$example = $DB->get_record('block_exacompexamples', array('id' => $examplei
 
 require_login($course);
 
-
 $itemInformation = block_exacomp_get_current_item_for_example($USER->id, $exampleid);
 if ($itemInformation && !optional_param('newsubmission', false, PARAM_BOOL)) {
 	$url = new moodle_url("/blocks/exaport/item.php",array("courseid"=>$courseid,"action"=>"edit","sesskey"=>sesskey(),"id"=>$itemInformation->id,"descriptorselection"=>false));
@@ -68,6 +68,11 @@ $output = block_exacomp_get_renderer();
 echo $output->header($context, $courseid, '', false);
 
 /* CONTENT REGION */
+
+$student = block_exacomp_get_user_examples_by_course($USER, $courseid);
+if($student->examples->teacher[$exampleid]) {
+	die(get_string('isgraded','block_exacomp'));
+}
 
 $form = new block_exacomp_example_submission_form($_SERVER['REQUEST_URI'], array("exampleid"=>$exampleid));
 

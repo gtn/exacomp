@@ -2377,6 +2377,19 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2015111200, 'exacomp');
 	}
+	if ($oldversion < 2015112401) {
 	
+		// Define field resubmission to be added to block_exacompexameval.
+		$table = new xmldb_table('block_exacompexameval');
+		$field = new xmldb_field('resubmission', XMLDB_TYPE_INTEGER, '5', null, null, null, '1', 'additionalinfo');
+	
+		// Conditionally launch add field resubmission.
+		if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+	
+		// Exacomp savepoint reached.
+		upgrade_block_savepoint(true, 2015112401, 'exacomp');
+	}
 	return $return_result;
 }

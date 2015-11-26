@@ -492,7 +492,8 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 	if ($role == block_exacomp::ROLE_TEACHER) {
 		$updateEvaluation->teacher_evaluation = ($value != -1) ? $value : null;
 		$updateEvaluation->teacher_reviewerid = $USER->id;
-		$updateEvaluation->additionalinfo = $additionalinfo;
+		if($additionalinfo !== null) $updateEvaluation->additionalinfo = $additionalinfo;
+		$updateEvaluation->resubmission = ($value != -1) ? false : true;
 	} else {
 		if ($userid != $USER->id)
 			// student can only assess himself
@@ -510,7 +511,9 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 		if($role == block_exacomp::ROLE_TEACHER) {
 			$record->teacher_evaluation = $updateEvaluation->teacher_evaluation;
 			$record->teacher_reviewerid = $updateEvaluation->teacher_reviewerid;
-			$record->additionalinfo = $additionalinfo;
+			if($additionalinfo !== null) $record->additionalinfo = $updateEvaluation->additionalinfo;
+			$record->resubmission = $updateEvaluation->resubmission;
+				
 			$DB->update_record(block_exacomp::DB_EXAMPLEEVAL,$record);
 		} else {
 			//if student keep teachereval

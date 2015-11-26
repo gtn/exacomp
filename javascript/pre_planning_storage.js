@@ -100,7 +100,7 @@
 		});
 		
 		function add_pool_item(data) {
-			var li = $( "<li class = 'not-used fc-event ui-state-default'>").appendTo($sortableUl).text(data.title);
+			var li = $( "<li class = 'not-used fc-event'>").appendTo($sortableUl).text(data.title);
 			
 			li.append('	<div class="event-assoc">'+data.assoc_url+' <input type="checkbox" id="use_example" exampleid="'+data.exampleid+'" scheduleid="'+data.id+'"/></div>');
 			
