@@ -7,6 +7,8 @@ require_once __DIR__.'/common.php';
 require_once __DIR__.'/classes.php';
 require_once __DIR__.'/block_exacomp.class.php';
 
+use \block_exacomp\globals as g;
+
 /**
  * COMPETENCE TYPES
  */
@@ -1179,8 +1181,6 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
  * @return multitype:unknown Ambigous <stdClass, unknown>
  */
 function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher=true, $studentid=0) {
-	global $DB;
-	
 	$courseTopics = block_exacomp_get_topics_by_course($courseid);
 	$courseSubjects = block_exacomp_get_subjects_by_course($courseid);
 	
@@ -1237,7 +1237,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 	}
 	
 	// load niveaus from db
-	$niveaus = $DB->get_records_list(block_exacomp::DB_NIVEAUS, 'id', $niveau_ids, 'sorting');
+	$niveaus = g::$DB->get_records_list(block_exacomp::DB_NIVEAUS, 'id', $niveau_ids, 'sorting');
 	
 	$defaultNiveau = new stdClass ();
 	$defaultNiveau->id = SHOW_ALL_NIVEAUS;
@@ -5776,20 +5776,18 @@ function block_exacomp_get_current_item_for_example($userid, $exampleid) {
  * keeps selected studentid in the session
  */
 function block_exacomp_get_studentid($isTeacher) {
-	global $USER, $COURSE;
-
 	if(!$isTeacher)
-		return $USER->id;
+		return g::$USER->id;
 	
 	$studentid = optional_param('studentid', BLOCK_EXACOMP_DEFAULT_STUDENT, PARAM_INT);
 	
 	if($studentid == BLOCK_EXACOMP_DEFAULT_STUDENT) {
-		if(isset($_SESSION['studentid-'.$COURSE->id]))
-			$studentid = $_SESSION['studentid-'.$COURSE->id];
+		if(isset($_SESSION['studentid-'.g::$COURSE->id]))
+			$studentid = $_SESSION['studentid-'.g::$COURSE->id];
 		else
 			$studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
 	} else {
-		$_SESSION['studentid-'.$COURSE->id] = $studentid;
+		$_SESSION['studentid-'.g::$COURSE->id] = $studentid;
 	}
 	return $studentid;
 }

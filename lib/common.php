@@ -264,6 +264,63 @@ class param {
 	}
 }
 
+/**
+ * @property string $wwwroot moodle url
+ * @property string $dirroot moodle path
+ * @property string $libdir lib path
+ */
+class _globals_dummy_CFG {
+}
+
+class globals {
+	/**
+	 * @var \moodle_database
+	 */
+	public static $DB;
+
+	/**
+	 * @var \moodle_page
+	 */
+	public static $PAGE;
+	
+	/**
+	 * @var \core_renderer
+	 */
+	public static $OUTPUT;
+
+	/**
+	 * @var \stdClass
+	 */
+	public static $COURSE;
+	
+	/**
+	 * @var \stdClass
+	 */
+	public static $USER;
+
+	/**
+	 * @var \stdClass
+	 */
+	public static $SITE;
+	
+	/**
+	 * @var _globals_dummy_CFG
+	 */
+	public static $CFG;
+	
+	public static function init() {
+		global $DB, $PAGE, $OUTPUT, $COURSE, $USER, $CFG, $SITE;
+		globals::$DB =& $DB;
+		globals::$PAGE =& $PAGE;
+		globals::$OUTPUT =& $OUTPUT;
+		globals::$COURSE =& $COURSE;
+		globals::$USER =& $USER;
+		globals::$CFG =& $CFG;
+		globals::$SITE =& $SITE;
+	}
+}
+globals::init();
+
 function _plugin_name() {
 	return preg_replace('!\\\\.*$!', '', __NAMESPACE__); // the \\\\ syntax matches a \ (backslash)!
 }
@@ -423,8 +480,8 @@ if (_should_export_class('db')) { class db extends common\db {} }
 if (_should_export_class('param')) { class param extends common\param {} }
 if (_should_export_class('url')) { class url extends common\url {} }
 if (_should_export_class('SimpleXMLElement')) { class SimpleXMLElement extends common\SimpleXMLElement {} }
+if (_should_export_class('globals')) { class globals extends common\globals {} }
 
 if (_export_function('trans')) { function trans() {} }
 if (_export_function('get_string')) { function get_string($identifier) {} }
 if (_export_function('trigger_event')) { function trigger_event($event, array $data) {} }
-
