@@ -3303,9 +3303,7 @@ class block_exacomp_external extends external_api {
 		if($userid == 0 && !$forall)
 			$userid = $USER->id;
 		
-		$examples = block_exacomp_external::dakora_get_examples_for_descriptor($courseid, $descriptorid, $userid, $forall);
-		
-		return $examples;
+		return block_exacomp_external::dakora_get_examples_for_descriptor_common($courseid, $descriptorid, $userid, $forall, 0);
 	}
 	
 	public static function dakora_get_examples_for_descriptor_with_grading_returns(){
@@ -5700,7 +5698,7 @@ class block_exacomp_external extends external_api {
 				$example_return->studentevaluation = -1;
 				$example_return->teacheritemvalue = -1;
 			}else{
-				$evaluation = block_exacomp_external::dakora_get_example_information($courseid, $userid, $example->id);
+				$evaluation = (object) block_exacomp_external::dakora_get_example_information($courseid, $userid, $example->id);
 				$example_return->teacherevaluation = $evaluation->teachervalue;
 				$example_return->studentevaluation = $evaluation->studentvalue;
 				$example_return->teacheritemvalue = $evaluation->teacheritemvalue;
