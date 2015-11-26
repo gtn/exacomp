@@ -88,12 +88,6 @@ $output->requires()->js('/blocks/exacomp/javascript/competence_tree_common.js', 
 $output->requires()->css('/blocks/exacomp/css/competence_tree_common.css');
 $output->editmode = $editmode;
 
-
-// IF DELETE > 0 DELTE CUSTOM EXAMPLE
-if(($delete = optional_param("delete", 0, PARAM_INT)) > 0 && $isTeacher){
-	block_exacomp_delete_custom_example($delete);
-}
-
 $activities = block_exacomp_get_activities_by_course($courseid);
 $course_settings = block_exacomp_get_settings_by_course($courseid);
 

@@ -47,6 +47,15 @@ require_login($course);
 
 $context = context_course::instance($courseid);
 
+// IF DELETE > 0 DELTE CUSTOM EXAMPLE
+if (($delete = optional_param("delete", 0, PARAM_INT)) > 0 && block_exacomp_is_teacher($context)) {
+	$returnurl = new \moodle_url(required_param('returnurl', PARAM_LOCALURL));
+	
+	block_exacomp_delete_custom_example($delete);
+	
+	redirect($returnurl);
+}
+
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/example_upload.php', array('courseid' => $courseid));
 $PAGE->set_title(get_string('pluginname', 'block_exacomp'));

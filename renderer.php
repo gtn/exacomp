@@ -1505,8 +1505,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$table_html = html_writer::table($table);
 		
 		if(count($rows) == 0 && $crosssubjs) {
-			global $OUTPUT;
-			
 			$table_html .= html_writer::div(get_string('add_content_to_crosssub','block_exacomp',(new moodle_url('assign_competencies.php',array('courseid'=>$courseid,'editmode'=>1)))->__toString()),
 					"alert alert-warning");
 		}
@@ -1703,7 +1701,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	}
 
 	function print_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class, $profoundness = false, $editmode=false, $statistic=false, $custom_created_descriptors=false, $parent = false, $crosssubjid = 0) {
-		global $PAGE, $USER, $COURSE, $CFG, $OUTPUT, $DB, $additional_grading;
+		global $NG_PAGE, $PAGE, $USER, $COURSE, $CFG, $DB, $additional_grading;
 
 		$evaluation = ($data->role == block_exacomp::ROLE_TEACHER) ? "teacher" : "student";
 		
@@ -1791,7 +1789,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					
 					$titleCell->text .= html_writer::link(
 							new moodle_url('/blocks/exacomp/select_crosssubjects.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id)),
-							$OUTPUT->pix_icon("i/withsubcat", get_string("crosssubject","block_exacomp")),
+							$this->pix_icon("i/withsubcat", get_string("crosssubject","block_exacomp")),
 							array("target" => "_blank", 'exa-type' => 'iframe-popup'));
 				}
 				//if hidden in course, cannot be shown to one student
@@ -1800,8 +1798,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 						$titleCell->text .= $this->print_visibility_icon_descriptor($visible, $descriptor->id);
 					}
 					if($editmode && $custom_created_descriptors){
-						$titleCell->text .= html_writer::link('descriptor.php?courseid='.$COURSE->id.'&id='.$descriptor->id, $OUTPUT->pix_icon("i/edit", get_string("edit")), array('exa-type' => 'iframe-popup', 'target'=>'_blank'));
-						$titleCell->text .= html_writer::link("", $OUTPUT->pix_icon("t/delete", get_string("delete")), array("onclick" => "if (confirm('" . get_string('delete_confirmation_descr','block_exacomp') . "')) block_exacomp.delete_descriptor(".$descriptor->id."); return false;"));
+						$titleCell->text .= html_writer::link('descriptor.php?courseid='.$COURSE->id.'&id='.$descriptor->id, $this->pix_icon("i/edit", get_string("edit")), array('exa-type' => 'iframe-popup', 'target'=>'_blank'));
+						$titleCell->text .= html_writer::link("", $this->pix_icon("t/delete", get_string("delete")), array("onclick" => "if (confirm('" . get_string('delete_confirmation_descr','block_exacomp') . "')) block_exacomp.delete_descriptor(".$descriptor->id."); return false;"));
 					}
 				}
 				/*if ($editmode) {
@@ -2031,16 +2029,18 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 							if (block_exacomp_is_admin($COURSE->id) || (isset($example->creatorid) && $example->creatorid == $USER->id)) {
 								$titleCell->text .= html_writer::link(
 									new moodle_url('/blocks/exacomp/example_upload.php',array("courseid"=>$data->courseid,"descrid"=>$descriptor->id,"topicid"=>$descriptor->topicid,"exampleid"=>$example->id)),
-									$OUTPUT->pix_icon("i/edit", get_string("edit")),
+									$this->pix_icon("i/edit", get_string("edit")),
 									array("target" => "_blank", 'exa-type' => 'iframe-popup'));
 							}
 
 							if(!$example_used)
-								$titleCell->text .= html_writer::link($PAGE->url . "&delete=" . $example->id. "&studentid=" . optional_param('studentid',BLOCK_EXACOMP_SHOW_ALL_STUDENTS, PARAM_INT). "&subjectid=" . optional_param('subjectid', 0, PARAM_INT). "&topicid=" . optional_param('topicid', 0, PARAM_INT), $OUTPUT->pix_icon("t/delete", get_string("delete"), "", array("onclick" => "return confirm('" . get_string('delete_confirmation','block_exacomp') . "')")));
+								$titleCell->text .= html_writer::link(new \block_exacomp\url('example_upload.php', ['delete' => $example->id, 'courseid'=>$COURSE->id, 'returnurl' => $NG_PAGE->url->out_as_local_url(false)]),
+									$this->pix_icon("t/delete", get_string("delete")),
+									array("onclick" => "return confirm('" . get_string('delete_confirmation','block_exacomp') . "')"));
 							
 							//print up & down icons
-							$titleCell->text .= html_writer::link("#", $OUTPUT->pix_icon("t/up", get_string('up')), array("id" => "example-up", "exampleid" => $example->id, "descrid" => $descriptor->id));
-							$titleCell->text .= html_writer::link("#", $OUTPUT->pix_icon("t/down", get_string('down')), array("id" => "example-down", "exampleid" => $example->id, "descrid" => $descriptor->id));
+							$titleCell->text .= html_writer::link("#", $this->pix_icon("t/up", get_string('up')), array("id" => "example-up", "exampleid" => $example->id, "descrid" => $descriptor->id));
+							$titleCell->text .= html_writer::link("#", $this->pix_icon("t/down", get_string('down')), array("id" => "example-down", "exampleid" => $example->id, "descrid" => $descriptor->id));
 
 							$titleCell->text .= '</span>';
 						}
@@ -2054,7 +2054,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 						}
 						
 						if ($url = block_exacomp_get_file_url($example, 'example_task')) {
-							$titleCell->text .= html_writer::link($url, $OUTPUT->pix_icon("i/preview", get_string("preview")),array("target" => "_blank"));
+							$titleCell->text .= html_writer::link($url, $this->pix_icon("i/preview", get_string("preview")),array("target" => "_blank"));
 						}
 						
 						
@@ -2067,9 +2067,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 						}
 						
 						if($example->externalurl){
-							$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->externalurl), $OUTPUT->pix_icon("i/preview", $example->externalurl),array("target" => "_blank"));
+							$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->externalurl), $this->pix_icon("i/preview", $example->externalurl),array("target" => "_blank"));
 						}elseif($example->externaltask){
-							$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->externaltask), $OUTPUT->pix_icon("i/preview", $example->externaltask),array("target" => "_blank"));
+							$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->externaltask), $this->pix_icon("i/preview", $example->externaltask),array("target" => "_blank"));
 						}
 						
 						if ($url = block_exacomp_get_file_url($example, 'example_solution')) {
@@ -2080,7 +2080,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 							// no icons in print mode
 						} else {
 							if(!$example->externalurl && !$example->externaltask && !block_exacomp_get_file_url($example, 'example_solution') && !block_exacomp_get_file_url($example, 'example_task') && $example->description) 
-							$titleCell->text .= $OUTPUT->pix_icon("i/preview", $example->description);
+							$titleCell->text .= $this->pix_icon("i/preview", $example->description);
 							 
 							if($data->role == block_exacomp::ROLE_STUDENT) {
 								$titleCell->text .= $this->print_schedule_icon($example->id, $USER->id, $data->courseid);
@@ -2307,7 +2307,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	}
 
 	public function print_sources() {
-		global $DB, $OUTPUT, $courseid;
+		global $courseid;
 		
 		$sources = block_exacomp_data::get_all_used_sources();
 		
@@ -2316,7 +2316,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$ret = '<div>';
 		foreach ($sources as $source) {
 			$name = ($source->name ? $source->name : $source->source);
-			$ret .= $OUTPUT->box("Importierte Daten von \"$name\" ".html_writer::link(new moodle_url('/blocks/exacomp/source_delete.php', array('courseid'=>$courseid, 'action'=>'select', 'source'=>$source->id)), 
+			$ret .= $this->box("Importierte Daten von \"$name\" ".html_writer::link(new moodle_url('/blocks/exacomp/source_delete.php', array('courseid'=>$courseid, 'action'=>'select', 'source'=>$source->id)), 
 					"löschen"));
 		}
 		$ret .= '</div>';
@@ -2324,7 +2324,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	}
 
 	public function print_submission_icon($courseid, $exampleid, $studentid = 0) {
-		global $CFG, $OUTPUT;
+		global $CFG;
 		
 		if ($this->is_print_mode()) {
 			return '';
@@ -2339,14 +2339,14 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				
 			return html_writer::link(
 						new moodle_url('/blocks/exacomp/example_submission.php',array("courseid"=>$courseid,"exampleid"=>$exampleid)),
-						$OUTPUT->pix_icon((!$itemExists) ? "i/manual_item" : "i/reload", get_string('submission','block_exacomp')),
+						$this->pix_icon((!$itemExists) ? "i/manual_item" : "i/reload", get_string('submission','block_exacomp')),
 						array('exa-type' => 'iframe-popup'));
 		}
 		elseif($studentid) {
 			//works only if exaport is installed
 			if ($url = block_exacomp_get_viewurl_for_example($studentid,$exampleid)) {
 				return html_writer::link($url,
-					$OUTPUT->pix_icon("i/manual_item", get_string("submission","block_exacomp"), null, array('style' => 'margin: 0 0 0 5px;')),
+					$this->pix_icon("i/manual_item", get_string("submission","block_exacomp"), null, array('style' => 'margin: 0 0 0 5px;')),
 					array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 			}else{
 				return "";
@@ -2354,48 +2354,38 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		}
 	}
 	public function print_schedule_icon($exampleid, $studentid, $courseid) {
-		global $OUTPUT;
-		
 		return html_writer::link(
 							"#",
-							$OUTPUT->pix_icon("e/insert_date", get_string("weekly_schedule","block_exacomp")),
+							$this->pix_icon("e/insert_date", get_string("weekly_schedule","block_exacomp")),
 							array('exa-type' => 'add-example-to-schedule', 'exampleid' => $exampleid, 'studentid' => $studentid, 'courseid' => $courseid));
 	}
 	public function print_competence_association_icon($exampleid, $courseid, $editmode) {
-		global $OUTPUT;
-		
 		return html_writer::link(
 				new moodle_url('/blocks/exacomp/competence_associations.php',array("courseid"=>$courseid,"exampleid"=>$exampleid, "editmode"=>($editmode)?1:0)),
-				 $OUTPUT->pix_icon("e/insert_edit_link", get_string('competence_associations','block_exacomp')), array('exa-type' => 'iframe-popup'));
+				 $this->pix_icon("e/insert_edit_link", get_string('competence_associations','block_exacomp')), array('exa-type' => 'iframe-popup'));
 	}
 	public function print_example_solution_icon($solution) {
-		global $OUTPUT;
-		
-		return html_writer::link($solution, $OUTPUT->pix_icon("e/fullpage", get_string('solution','block_exacomp')) ,array("target" => "_blank"));
+		return html_writer::link($solution, $this->pix_icon("e/fullpage", get_string('solution','block_exacomp')) ,array("target" => "_blank"));
 	}
 	public function print_visibility_icon_descriptor($visible, $descriptorid) {
-		global $OUTPUT;
-		
 		if($visible)
-			$icon = $OUTPUT->pix_icon("i/hide", get_string("hide"));
+			$icon = $this->pix_icon("i/hide", get_string("hide"));
 		else
-			$icon = $OUTPUT->pix_icon("i/show", get_string("show"));
+			$icon = $this->pix_icon("i/show", get_string("show"));
 			
 		return html_writer::link("", $icon, array('name' => 'hide-descriptor','descrid' => $descriptorid, 'id' => 'hide-descriptor', 'state' => ($visible) ? '-' : '+',
-				'showurl' => $OUTPUT->pix_url("i/hide"), 'hideurl' => $OUTPUT->pix_url("i/show")
+				'showurl' => $this->pix_url("i/hide"), 'hideurl' => $this->pix_url("i/show")
 		));
 		
 	}
 	public function print_visibility_icon_example($visible, $exampleid) {
-		global $OUTPUT;
-		
 		if($visible)
-			$icon = $OUTPUT->pix_icon("i/hide", get_string("hide"));
+			$icon = $this->pix_icon("i/hide", get_string("hide"));
 		else
-			$icon = $OUTPUT->pix_icon("i/show", get_string("show"));
+			$icon = $this->pix_icon("i/show", get_string("show"));
 			
 		return html_writer::link("", $icon, array('name' => 'hide-example','exampleid' => $exampleid, 'id' => 'hide-example', 'state' => ($visible) ? '-' : '+',
-				'showurl' => $OUTPUT->pix_url("i/hide"), 'hideurl' => $OUTPUT->pix_url("i/show")
+				'showurl' => $this->pix_url("i/hide"), 'hideurl' => $this->pix_url("i/show")
 		));
 		
 	}
@@ -2449,16 +2439,16 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		return html_writer::div($content,'spaltenbrowser');
 	}
 	public function print_student_evaluation($showevaluation, $isTeacher=true,$topic = SHOW_ALL_NIVEAUS,$subject=0, $studentid=0) {
-		global $OUTPUT,$COURSE;
+		global $COURSE;
 
 		$link = new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid" => $COURSE->id, "showevaluation" => (($showevaluation) ? "0" : "1"),'subjectid'=>$subject,'topicid'=>$topic, 'studentid'=>$studentid));
-		$evaluation = $OUTPUT->box_start();
+		$evaluation = $this->box_start();
 		$evaluation .= get_string('overview','block_exacomp');
 		$evaluation .= html_writer::empty_tag("br");
 		if($isTeacher)	$evaluation .= ($showevaluation) ? get_string('hideevaluation','block_exacomp',$link->__toString()) : get_string('showevaluation','block_exacomp',$link->__toString());
 		else $evaluation .= ($showevaluation) ? get_string('hideevaluation_student','block_exacomp',$link->__toString()) : get_string('showevaluation_student','block_exacomp',$link->__toString());
 
-		$evaluation .= $OUTPUT->box_end();
+		$evaluation .= $this->box_end();
 
 		return $evaluation;
 	}
@@ -2629,8 +2619,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	}
 
 	public function print_edit_config($data, $courseid, $fromimport=0){
-		global $OUTPUT;
-
 		$header = html_writer::tag('p', $data->headertext).html_writer::empty_tag('br');
 
 		$table = new html_table();
@@ -3632,10 +3620,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			return get_string("no_activities_selected_student", "block_exacomp");
 	}
 	public function print_detail_legend($showevaluation, $isTeacher=true){
-		global $OUTPUT, $COURSE;
+		global $COURSE;
 
 		$link = new moodle_url("/blocks/exacomp/competence_detail.php",array("courseid" => $COURSE->id, "showevaluation" => (($showevaluation) ? "0" : "1")));
-		$evaluation = $OUTPUT->box_start();
+		$evaluation = $this->box_start();
 		$evaluation .= get_string('detail_description','block_exacomp');
 		$evaluation .= html_writer::empty_tag("br");
 		if($isTeacher)
@@ -3643,7 +3631,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		else
 			$evaluation .= ($showevaluation) ? get_string('hideevaluation_student','block_exacomp',$link->__toString()) : get_string('showevaluation_student','block_exacomp',$link->__toString());
 
-		$evaluation .= $OUTPUT->box_end();
+		$evaluation .= $this->box_end();
 
 		return $evaluation;
 	}
@@ -3922,12 +3910,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		}
 	}
 	function print_competence_profile_metadata($student) {
-		global $OUTPUT;
-
 		$namediv = html_writer::div(html_writer::tag('b',$student->firstname . ' ' . $student->lastname)
 				.html_writer::div(get_string('name', 'block_exacomp'), ''), '');
 
-		$imgdiv = html_writer::div($OUTPUT->user_picture($student,array("size"=>100)), '');
+		$imgdiv = html_writer::div($this->user_picture($student,array("size"=>100)), '');
 
 		(!empty($student->city))?$citydiv = html_writer::div($student->city
 				.html_writer::div(get_string('city', 'block_exacomp'), ''), ''):$citydiv ='';
@@ -3936,8 +3922,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	}
 	
 	function box_error($message) {
-		global $OUTPUT;
-		
 		if (!$message) {
 			$message = get_string('unknownerror');
 		} elseif ($message instanceof moodle_exception) {
@@ -3945,7 +3929,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		}
 		
 		$message = get_string('error').': '.$message;
-		return $OUTPUT->notification($message);
+		return $this->notification($message);
 	}
 	
 	function print_competene_profile_overview($student, $courses, $possible_courses, $badges, $exaport, $exaportitems, $exastud, $exastudperiods, $onlygainedbadges=false) {
@@ -5112,8 +5096,6 @@ var dataset = dataset.map(function (group) {
 	}
 	
 	private function print_competence_for_list_tree($descriptor, $isTeacher, $editmode, $show_examples) {
-		global $OUTPUT;
-		
 		$html_tree = html_writer::start_tag("li", array('class'=>($descriptor->associated == 1)?"associated":""));
 		if($isTeacher && $editmode==1)
 			$html_tree .= html_writer::checkbox("descriptor[]", $descriptor->id, ($descriptor->direct_associated==1)?true:false);
@@ -5130,13 +5112,13 @@ var dataset = dataset.map(function (group) {
 					$exampleIcons = " ";
 					
 					if ($url = block_exacomp_get_file_url($example, 'example_task')) {
-						$exampleIcons = html_writer::link($url, $OUTPUT->pix_icon("i/preview", get_string("preview")),array("target" => "_blank"));
+						$exampleIcons = html_writer::link($url, $this->pix_icon("i/preview", get_string("preview")),array("target" => "_blank"));
 					}
 					
 					if($example->externalurl){
-						$exampleIcons .= html_writer::link(str_replace('&amp;','&',$example->externalurl), $OUTPUT->pix_icon("i/preview", $example->externalurl),array("target" => "_blank"));
+						$exampleIcons .= html_writer::link(str_replace('&amp;','&',$example->externalurl), $this->pix_icon("i/preview", $example->externalurl),array("target" => "_blank"));
 					}elseif($example->externaltask){
-						$exampleIcons.= html_writer::link(str_replace('&amp;','&',$example->externaltask), $OUTPUT->pix_icon("i/preview", $example->externaltask),array("target" => "_blank"));
+						$exampleIcons.= html_writer::link(str_replace('&amp;','&',$example->externaltask), $this->pix_icon("i/preview", $example->externaltask),array("target" => "_blank"));
 					}
 					
 					if ($url = block_exacomp_get_file_url($example, 'example_solution')) {
@@ -5343,8 +5325,6 @@ var dataset = dataset.map(function (group) {
 	}
 	
 	public function print_example_based_list_tree($example, $tree, $isTeacher, $editmode, $showexamples = false){
-		global $OUTPUT;
-		
 		$html_tree = "";
 		$html_tree .= html_writer::start_tag("ul",array("class"=>"collapsibleList"));
 		
@@ -5352,13 +5332,13 @@ var dataset = dataset.map(function (group) {
 		
 		$exampleIcons = " ";
 		if ($url = block_exacomp_get_file_url($example, 'example_task')) {
-			$exampleIcons = html_writer::link($url, $OUTPUT->pix_icon("i/preview", get_string("preview")),array("target" => "_blank"));
+			$exampleIcons = html_writer::link($url, $this->pix_icon("i/preview", get_string("preview")),array("target" => "_blank"));
 		}
 		 
 		if($example->externalurl){
-			$exampleIcons .= html_writer::link(str_replace('&amp;','&',$example->externalurl), $OUTPUT->pix_icon("i/preview", $example->externalurl),array("target" => "_blank"));
+			$exampleIcons .= html_writer::link(str_replace('&amp;','&',$example->externalurl), $this->pix_icon("i/preview", $example->externalurl),array("target" => "_blank"));
 		}elseif($example->externaltask){
-			$exampleIcons.= html_writer::link(str_replace('&amp;','&',$example->externaltask), $OUTPUT->pix_icon("i/preview", $example->externaltask),array("target" => "_blank"));
+			$exampleIcons.= html_writer::link(str_replace('&amp;','&',$example->externaltask), $this->pix_icon("i/preview", $example->externaltask),array("target" => "_blank"));
 		}
 		 
 		if ($url = block_exacomp_get_file_url($example, 'example_solution')) {
@@ -5475,7 +5455,6 @@ var dataset = dataset.map(function (group) {
 	}
 	
 	public function print_cross_subjects_list($course_crosssubs, $courseid, $isTeacher){
-		global $OUTPUT;
 		$content = "<h4>" . get_string('existing_crosssub','block_exacomp') . "</h4>";
 		
 		if(empty($course_crosssubs))
@@ -5484,8 +5463,8 @@ var dataset = dataset.map(function (group) {
 		foreach($course_crosssubs as $crosssub){
 			$content .= html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$crosssub->id)), $crosssub->title);
 			if($isTeacher){
-				$content .= html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$crosssub->id, 'editmode'=>1)),$OUTPUT->pix_icon("i/edit", get_string("edit")), array('class'=>'crosssub-icons'));
-				$content .= html_writer::link('', $OUTPUT->pix_icon("t/delete", get_string("delete")), array("onclick" => "if( confirm('".get_string('confirm_delete', 'block_exacomp')."')) block_exacomp.delete_crosssubj(".$crosssub->id."); return false;"), array('class'=>'crosssub-icons')); 
+				$content .= html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$crosssub->id, 'editmode'=>1)),$this->pix_icon("i/edit", get_string("edit")), array('class'=>'crosssub-icons'));
+				$content .= html_writer::link('', $this->pix_icon("t/delete", get_string("delete")), array("onclick" => "if( confirm('".get_string('confirm_delete', 'block_exacomp')."')) block_exacomp.delete_crosssubj(".$crosssub->id."); return false;"), array('class'=>'crosssub-icons')); 
 			}
 			$content .= html_writer::empty_tag('br');
 		}
