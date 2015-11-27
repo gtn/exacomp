@@ -38,7 +38,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 			}
 			
 			if($data != '0'){
-				foreach(block_exacomp_get_courses() as $course){
+				foreach(block_exacomp_get_courseids() as $course){
 					$course_settings = block_exacomp_get_settings_by_course($course);
 					if($course_settings->grading != 3){ //change course grading
 						$course_settings->grading = 3;

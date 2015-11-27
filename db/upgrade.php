@@ -1504,6 +1504,20 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2015032500, 'exacomp');
 	}
+	
+	function upgrade_block_exacomp_2015052900_get_descriptors_by_topic($courseid, $topicid) {
+		global $DB;
+	
+		$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype '
+				.'FROM {'.block_exacomp::DB_TOPICS.'} t JOIN {'.block_exacomp::DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($topicid > 0) ? ' AND t.id = '.$topicid.' ' : '')
+				.'JOIN {'.block_exacomp::DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
+						.'JOIN {'.block_exacomp::DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id '.')';
+
+		$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid));
+
+		return $descriptors;
+	}
+	
 	if($oldversion < 2015052900){
 		 $table = new xmldb_table('block_exacompcrosssubjects');
 		 $field = new xmldb_field('shared', XMLDB_TYPE_INTEGER, '1', null, null, null, '0');
@@ -1561,8 +1575,8 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		}
 		
 		//create entry for all existing courses 
-		$courses = block_exacomp_get_courses();
-		foreach($courses as $course){
+		$courses = block_exacomp_get_courseids();
+		foreach($courses as $courseid){
 			$descriptors = array();
 			
 			$sql = 'SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description
@@ -1571,9 +1585,9 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 						'ORDER BY t.sorting, t.subjid
 						';
 			//GROUP By funktioniert nur mit allen feldern im select, aber nicht mit strings
-			$topics = $DB->get_records_sql($sql, array($course->id));
+			$topics = $DB->get_records_sql($sql, array($courseid));
 			foreach($topics as $topic){
-				$descriptors_topic = block_exacomp_get_descriptors_by_topic($course, $topic->id);
+				$descriptors_topic = upgrade_block_exacomp_2015052900_get_descriptors_by_topic($courseid, $topic->id);
 				foreach($descriptors_topic as $descriptor){
 					if(!array_key_exists($descriptor->id, $descriptors))
 						$descriptors[$descriptor->id] = $descriptor;
@@ -1581,10 +1595,20 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			}
 			//only one entry, even descriptor belongs to more than one topic
 			foreach($descriptors as $descriptor){
-				$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$course, 'descrid'=>$descriptor->id, 'studentid'=>0, 'visible'=>1));
+				$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$descriptor->id, 'studentid'=>0, 'visible'=>1));
 			}
 		}
 		upgrade_block_savepoint(true, 2015052900, 'exacomp');
+	}
+	
+	if ($oldversion < 2015070200) {
+		// in v2 value 0 war nicht gesetzt, jetzt ist value 0 nicht erreicht und NULL nicht gesetzt
+		// 1. compuser mit 0 auf null setzen bzw. löschen
+		$DB->execute('UPDATE {block_exacompcompuser} SET value=NULL WHERE value=0');
+		
+		// 2. das gleiche in der exameval
+		$DB->execute('UPDATE {block_exacompexameval} SET teacher_evaluation=NULL WHERE teacher_evaluation=0');
+		$DB->execute('UPDATE {block_exacompexameval} SET student_evaluation=NULL WHERE student_evaluation=0');
 	}
 	
 	if ($oldversion < 2015070200) {
@@ -1798,13 +1822,33 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		upgrade_block_savepoint(true, 2015071700, 'exacomp');
 	}
 	
+	function upgrade_block_exacomp_2015072102_block_exacomp_get_topics_by_course_and_subject($courseid, $subjectid = 0, $showalldescriptors = false) {
+		global $DB;
+	
+		$sql = 'SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description, t.numb, t.source
+		FROM {'.block_exacomp::DB_TOPICS.'} t
+		JOIN {'.block_exacomp::DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.(($subjectid > 0) ? 'AND t.subjid = ? ': '').'
+		JOIN {'.block_exacomp::DB_SUBJECTS.'} s ON t.subjid=s.id -- join subject here, to make sure only topics with existing subject are loaded
+		'.($showalldescriptors ? '' : '
+		-- only show active ones
+		JOIN {'.block_exacomp::DB_DESCTOPICS.'} topmm ON topmm.topicid=t.id
+		JOIN {'.block_exacomp::DB_DESCRIPTORS.'} d ON topmm.descrid=d.id
+		JOIN {'.block_exacomp::DB_COMPETENCE_ACTIVITY.'} da ON (d.id=da.compid AND da.comptype = '.TYPE_DESCRIPTOR.') OR (t.id=da.compid AND da.comptype = '.TYPE_TOPIC.')
+		JOIN {course_modules} a ON da.activityid=a.id AND a.course=ct.courseid
+		').'
+		ORDER BY t.sorting
+		';
+		//GROUP By funktioniert nur mit allen feldern im select, aber nicht mit strings
+		return $DB->get_records_sql($sql, array($courseid, $subjectid));
+	}
+	
 	if($oldversion < 2015072102){
 		global $DB;
 	
 		//insert child descriptors in visibility table if not already done
 		
 		//has to be done for all available courses where exacomp is used
-		$courses = block_exacomp_get_courses();
+		$courses = block_exacomp_get_courseids();
 		
 		foreach($courses as $course){
 			$visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=0', array($course));
@@ -1821,13 +1865,13 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			}
 			
 			$descriptors = array();
-			$course_topics = block_exacomp_get_topics_by_course($course);
+			$course_topics = upgrade_block_exacomp_2015072102_block_exacomp_get_topics_by_course_and_subject($course);
 			
 			foreach ($course_topics as $topic) {
 				$topicid = $topic->id;
 				
 				//insert descriptors in block_exacompdescrvisibility
-				$descriptors_topic = block_exacomp_get_descriptors_by_topic($course, $topicid);
+				$descriptors_topic = upgrade_block_exacomp_2015052900_get_descriptors_by_topic($course, $topicid);
 				foreach($descriptors_topic as $descriptor){
 					if(!array_key_exists($descriptor->id, $descriptors))
 					$descriptors[$descriptor->id] = $descriptor;	
@@ -1865,14 +1909,78 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2015072102, 'exacomp');
 	}
+	
+	function upgrade_block_exacomp_2015072102_get_descriptors($courseid = 0) {
+		global $DB;
+		
+		$showalldescriptors = true;
+		$subjectid = 0; $showallexamples = true; $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES); $showonlyvisible=false;
+		
+		$sql = 'SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.parentid, n.sorting niveau, dvis.visible as visible, d.sorting '
+		.' FROM {'.block_exacomp::DB_TOPICS.'} t '
+		.(($courseid>0)?' JOIN {'.block_exacomp::DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
+		.' JOIN {'.block_exacomp::DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
+		.' JOIN {'.block_exacomp::DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid=0 '
+		.' -- left join, because courseid=0 has no descvisibility!
+			LEFT JOIN {'.block_exacomp::DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=?'
+		.($showonlyvisible?' AND dvis.visible = 1 ':'') 
+		.' LEFT JOIN {'.block_exacomp::DB_NIVEAUS.'} n ON d.niveauid = n.id '		
+		.($showalldescriptors ? '' : '
+				JOIN {'.block_exacomp::DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
+				JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':''))
+		.' ORDER BY d.sorting';
+		
+		$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid, $courseid));
+	
+		foreach($descriptors as &$descriptor) {
+			   //check for child-descriptors
+			$descriptor->children = upgrade_block_exacomp_2015072102_get_child_descriptors($descriptor,$courseid, $showalldescriptors, $filteredtaxonomies, $showallexamples, true, $showonlyvisible);
+		}
+		
+		return $descriptors;
+	}
+	function upgrade_block_exacomp_2015072102_get_child_descriptors($parent, $courseid, $showalldescriptors = false, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $showallexamples = true, $mindvisibility = true, $showonlyvisible=false ) {
+		global $DB;
+	
+		if(!$DB->record_exists(block_exacomp::DB_DESCRIPTORS, array("parentid" => $parent->id))) {
+			return array();
+		}
+	
+			$sql = 'SELECT d.id, d.title, d.niveauid, d.source, \'descriptor\' as tabletype, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, '.
+					($mindvisibility?'dvis.visible as visible, ':'').' d.sorting
+		FROM {'.block_exacomp::DB_DESCRIPTORS.'} d '
+	.($mindvisibility ? 'JOIN {'.block_exacomp::DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 '
+			.($showonlyvisible? 'AND dvis.visible=1 ':'') : '');
+
+		/* activity association only for parent descriptors
+		 .($showalldescriptors ? '' : '
+		 JOIN {'.block_exacomp::DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
+		 JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':''));
+		 */
+		$sql .= ' WHERE d.parentid = ?';
+
+		$params = array();
+		if($mindvisibility)
+			$params[] = $courseid;
+
+		$params[]= $parent->id;
+		//$descriptors = $DB->get_records_sql($sql, ($showalldescriptors) ? array($parent->id) : array($courseid,$parent->id));
+		$descriptors = $DB->get_records_sql($sql,  $params);
+
+		foreach($descriptors as $descriptor) {
+			$descriptor->children = upgrade_block_exacomp_2015072102_get_child_descriptors($descriptor, $courseid,$showalldescriptors,$filteredtaxonomies);
+		}
+		return $descriptors;
+	}
+	
 	if($oldversion < 2015072300){
 		//update descriptor children sorting if not existing
 		
 		//has to be done for all available courses where exacomp is used
-		$courses = block_exacomp_get_courses();
+		$courses = block_exacomp_get_courseids();
 		
 		foreach($courses as $course){
-			$descriptors = block_exacomp_get_descriptors($course, true);
+			$descriptors = upgrade_block_exacomp_2015072102_get_descriptors($course, true);
 			foreach($descriptors as $descriptor){
 				if($descriptor->parentid==0){
 					$max_sorting = 0;
@@ -1892,6 +2000,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 				}
 			}
 		}
+		
 		upgrade_block_savepoint(true, 2015072300, 'exacomp');
 	}
 	if($oldversion < 2015072301){
@@ -1939,6 +2048,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2015080900, 'exacomp');
 	}
+
  	if ($oldversion < 2015081101) {
 
 		// Define table block_exacompdatasources to be created.
@@ -2046,6 +2156,63 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2015081901, 'exacomp');
 	}
+		
+	function upgrade_block_exacomp_2015082000_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES),$showallexamples = true, $courseid = null, $mind_visibility=true, $showonlyvisible = false ) {
+		global $DB, $COURSE;
+		
+		if($courseid == null)
+			$courseid = $COURSE->id;
+			
+		$examples = $DB->get_records_sql(
+				"SELECT de.id as deid, e.id, e.title, e.externalurl, e.source, ".
+					($mind_visibility?"evis.visible,":"")."
+					e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe
+					FROM {" . block_exacomp::DB_EXAMPLES . "} e
+					JOIN {" . block_exacomp::DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?"
+				.($mind_visibility?' JOIN {'.block_exacomp::DB_EXAMPVISIBILITY.'} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.courseid=? '
+				.($showonlyvisible?' AND evis.visible = 1 ':''):'') 
+				. " WHERE "
+				. " e.source != " . block_exacomp::EXAMPLE_SOURCE_USER . " AND "
+				. (($showallexamples) ? " 1=1 " : " e.creatorid > 0")
+				. " ORDER BY de.sorting"
+				, array($descriptor->id, $courseid));
+		foreach($examples as $example){
+			$example->taxonomies = block_exacomp_get_taxonomies_by_example($example);
+			
+			$taxtitle = "";
+			foreach($example->taxonomies as $taxonomy){
+				$taxtitle .= $taxonomy->title.", ";
+			}
+			
+			$taxtitle = substr($taxtitle, 0, strlen($taxtitle)-1);
+			$example->tax = $taxtitle;
+		}
+		$filtered_examples = array();
+		if(!in_array(SHOW_ALL_TAXONOMIES, $filteredtaxonomies)){
+			$filtered_taxonomies = implode(",", $filteredtaxonomies);
+			
+			foreach($examples as $example){
+				foreach($examples->taxonomies as $taxonomy){
+					if(in_array($taxonomy->id, $filtered_taxonomies)){
+						if(!array_key_exists($example->id, $filtered_examples))
+							$filtered_examples[$example->id] = $example;
+						continue;
+					}
+				}
+			}
+		}else{
+			$filtered_examples = $examples;
+		}
+		
+		$descriptor->examples = array();
+		foreach($filtered_examples as $example){
+			$descriptor->examples[$example->id] = $example;
+		}
+		
+		return $descriptor;
+	}
+	
+		
 	if($oldversion < 2015082000){
 		$table = new xmldb_table('block_exacompexampvisibility');
 		
@@ -2068,21 +2235,21 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		}
 		
 		//create entry for all existing courses 
-		$courses = block_exacomp_get_courses();
+		$courses = block_exacomp_get_courseids();
 		foreach($courses as $course){
 			$examples = array();
-			$topics = block_exacomp_get_topics_by_course($course);
+			$topics = upgrade_block_exacomp_2015072102_block_exacomp_get_topics_by_course_and_subject($course);
 			foreach($topics as $topic){
-				$descriptors_topic = block_exacomp_get_descriptors_by_topic($course, $topic->id);
+				$descriptors_topic = upgrade_block_exacomp_2015052900_get_descriptors_by_topic($course, $topic->id);
 				foreach($descriptors_topic as $descriptor){
 					$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, $course);
 					foreach($descriptor->examples as $example)
 						if(!array_key_exists($example->id, $examples))
 							$examples[$example->id] = $example;
 					
-					$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $course);
+					$descriptor->children = upgrade_block_exacomp_2015072102_get_child_descriptors($descriptor, $course);
 					foreach($descriptor->children as $child){
-						$child = block_exacomp_get_examples_for_descriptor($child, array(SHOW_ALL_TAXONOMIES), true, $course);
+						$child = upgrade_block_exacomp_2015082000_get_examples_for_descriptor($child, array(SHOW_ALL_TAXONOMIES), true, $course);
 						foreach($child->examples as $example)
 							if(!array_key_exists($example->id, $examples))
 								$examples[$example->id] = $example;
@@ -2096,14 +2263,13 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		}
 		
 		upgrade_block_savepoint(true, 2015082000, 'exacomp');
-	
 	}
+	
 	if($oldversion < 2015082500){
 		/**
 		 * go through all examples and move the files into a mod_exacomp filestorage
 		 */
-
-		function block_exacomp_upgrade_move_to_file_storage($item, $type) {
+		function upgrade_block_exacomp_2015082500_move_to_file_storage($item, $type) {
 			global $CFG;
 			
 			if ($type == 'example_task') {
@@ -2173,8 +2339,8 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		
 		$examples = $DB->get_records(block_exacomp::DB_EXAMPLES);
 		foreach($examples as $example){
-			$update = block_exacomp_upgrade_move_to_file_storage($example, 'example_task');
-			$update += block_exacomp_upgrade_move_to_file_storage($example, 'example_solution');
+			$update = upgrade_block_exacomp_2015082500_move_to_file_storage($example, 'example_task');
+			$update += upgrade_block_exacomp_2015082500_move_to_file_storage($example, 'example_solution');
 			
 			if (!$update) continue;
 			
@@ -2391,5 +2557,10 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2015112401, 'exacomp');
 	}
+	
+	/*
+	 * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
+	 */
+
 	return $return_result;
 }

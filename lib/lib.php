@@ -2635,20 +2635,17 @@ function block_exacomp_get_active_tests_by_course($courseid){
 }
 /**
  *
- * Returns all courses where an instance of Exabis Competences is installed
+ * Returns all course ids where an instance of Exabis Competences is installed
  */
-function block_exacomp_get_courses(){
-	global $DB;
-	$courses = get_courses();
-
-	$instances = $DB->get_records('block_instances', array('blockname'=>'exacomp'));
-
+function block_exacomp_get_courseids(){
+	$instances = g::$DB->get_records('block_instances', array('blockname'=>'exacomp'));
+	
 	$exabis_competences_courses = array();
 
 	foreach($instances as $instance){
-		$context = $DB->get_record('context', array('id'=>$instance->parentcontextid, 'contextlevel'=>50));
+		$context = g::$DB->get_record('context', array('id'=>$instance->parentcontextid, 'contextlevel'=>CONTEXT_COURSE));
 		if($context)
-			$exabis_competences_courses[] = $context->instanceid;
+			$exabis_competences_courses[$context->instanceid] = $context->instanceid;
 	}
 
 	return $exabis_competences_courses;
@@ -3104,7 +3101,7 @@ function block_exacomp_get_exacomp_courses($user) {
 	global $DB;
 	$user_courses = array();
 	//get course id from all courses where exacomp is installed
-	$all_exacomp_courses = block_exacomp_get_courses();
+	$all_exacomp_courses = block_exacomp_get_courseids();
 	
 	foreach($all_exacomp_courses as $course){
 		$context = context_course::instance($course);
@@ -3741,7 +3738,7 @@ function block_exacomp_perform_auto_test() {
 		return;
 	
 	//for all courses where exacomp is used
-	$courses = block_exacomp_get_courses();
+	$courses = block_exacomp_get_courseids();
 		
 	foreach($courses as $courseid){
 		//tests associated with competences
@@ -5507,7 +5504,7 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
 }
 
 function block_exacomp_get_examples_for_start_end_all_courses($studentid, $start, $end){
-	$courses = block_exacomp_get_courses();
+	$courses = block_exacomp_get_courseids();
 	$examples = array();
 	foreach($courses as $course){
 		$course_examples = block_exacomp_get_examples_for_start_end($course, $studentid, $start, $end);

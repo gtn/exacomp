@@ -5297,7 +5297,7 @@ var dataset = dataset.map(function (group) {
 		$content = get_string("choosecourse", "block_exacomp");
 		$options = array();
 		
-		$courses = block_exacomp_get_courses();
+		$courses = block_exacomp_get_courseids();
 		
 		foreach($courses as $course){
 			$course_db = $DB->get_record('course', array('id'=>$course));
