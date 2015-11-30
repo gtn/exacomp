@@ -480,7 +480,7 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 	else 
 		block_exacomp_notify_all_teachers_about_self_assessment($courseid);
 		
-	\block_exacomp\log_event('competence_assigned', ['objecttable' => ($comptype == block_exacomp::TYPE_DESCRIPTOR) ? 'block_exacompdescriptors' : 'block_exacomptopics', 'objectid' => $compid, 'contextid' => $courseid, 'relateduserid' => $userid]);
+	\block_exacomp\event\competence_assigned::log(['objecttable' => ($comptype == block_exacomp::TYPE_DESCRIPTOR) ? 'block_exacompdescriptors' : 'block_exacomptopics', 'objectid' => $compid, 'contextid' => $courseid, 'relateduserid' => $userid]);
 	
 	return $id;
 }
@@ -535,7 +535,7 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 	}
 
 	if($role == block_exacomp::ROLE_TEACHER)
-		\block_exacomp\log_event('competence_assigned', ['objectid' => $exampleid, 'courseid' => $courseid, 'relateduserid' => $userid]);
+		\block_exacomp\event\competence_assigned::log(['objectid' => $exampleid, 'courseid' => $courseid, 'relateduserid' => $userid]);
 }
 /**
  * Set one competence for one user for one activity in one course
@@ -4555,7 +4555,7 @@ function block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,
 	if($creatorid != $studentid && $studentid >0)
 		block_exacomp_send_weekly_schedule_notification($USER,$DB->get_record('user', array('id' => $studentid)), $courseid, $exampleid);
 	
-	\block_exacomp\log_event('example_added', ['objectid' => $exampleid, 'courseid' => $courseid, 'relateduserid' => $studentid]);
+	\block_exacomp\event\example_added::log(['objectid' => $exampleid, 'courseid' => $courseid, 'relateduserid' => $studentid]);
 	
 	return true;
 }
@@ -6050,12 +6050,4 @@ function block_exacomp_save_additional_grading_for_example($courseid, $exampleid
 }
 
 namespace block_exacomp {
-	function log_event($event, array $data) {
-		// check if logging is enabled and then trigger the event
-		if (!get_config('exacomp','logging')) {
-			return null;
-		}
-
-		return \block_exacomp\common\trigger_event($event, $data);
-	}
 }

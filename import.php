@@ -89,7 +89,7 @@ try {
 	}
 	
 	if($importSuccess) {
-		\block_exacomp\log_event('import_completed', ['objectid' => $courseid, 'courseid' => $courseid]);
+		\block_exacomp\event\import_completed::log(['objectid' => $courseid, 'courseid' => $courseid]);
 	}
 
 } catch (block_exacomp\exception $importException) {

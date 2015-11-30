@@ -135,7 +135,7 @@ if($formdata = $form->get_data()) {
 
 	block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, $timecreated);
 	
-	\block_exacomp\log_event('example_submitted', ['objectid' => $exampleid, 'courseid' => $courseid]);
+	\block_exacomp\event\example_submitted::log(['objectid' => $exampleid, 'courseid' => $courseid]);
 
 	echo $output->popup_close_and_reload();
 	exit;

@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
  * @license	http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright  gtn gmbh <office@gtn-solutions.com>
  */
-class crosssubject_added extends \core\event\base {
+class crosssubject_added extends base {
 
 	/**
 	 * Init

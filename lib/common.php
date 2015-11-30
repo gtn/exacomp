@@ -21,6 +21,25 @@ class url extends \moodle_url {
 	}
 }
 
+abstract class event extends \core\event\base {
+	
+	protected static function prepareData(array &$data) {
+		if (!isset($data['contextid']) && isset($data['courseid'])) {
+			if ($data['courseid']) {
+				$data['contextid'] = \context_course::instance($data['courseid'])->id;
+			} else {
+				$data['contextid'] = \context_system::instance()->id;
+			}
+		}
+	}
+	
+	static function log(array $data) {
+		static::prepareData($data);
+		
+		return static::create($data)->trigger();
+	}
+}
+
 class exception extends \moodle_exception {
 	function __construct($errorcode, $module='', $link='', $a=NULL, $debuginfo=null) {
 
@@ -438,22 +457,6 @@ function trans() {
 	}
 }
 
-function trigger_event($event, array $data) {
-	// maybe check, if event starts with backslash, then it's a whole event class name
-	// maybe check, if event is an object, then we don't have to create one
-	$class = "\\"._plugin_name()."\\event\\$event";
-
-	if (!isset($data['contextid']) && isset($data['courseid'])) {
-		if ($data['courseid']) {
-			$data['contextid'] = \context_course::instance($data['courseid'])->id;
-		} else {
-			$data['contextid'] = \context_system::instance()->id;
-		}
-	}
-
-	return $class::create($data)->trigger();
-}
-
 /* the whole part below is done, so eclipse knows the common classes and functions */
 namespace block_exacomp;
 
@@ -475,13 +478,13 @@ function _export_function($function) {
 }
 
 // export classnames, if not already existing
-if (_should_export_class('exception')) { class exception extends common\exception {} }
 if (_should_export_class('db')) { class db extends common\db {} }
-if (_should_export_class('param')) { class param extends common\param {} }
-if (_should_export_class('url')) { class url extends common\url {} }
-if (_should_export_class('SimpleXMLElement')) { class SimpleXMLElement extends common\SimpleXMLElement {} }
+if (_should_export_class('event')) { abstract class event extends common\event {} }
+if (_should_export_class('exception')) { class exception extends common\exception {} }
 if (_should_export_class('globals')) { class globals extends common\globals {} }
+if (_should_export_class('param')) { class param extends common\param {} }
+if (_should_export_class('SimpleXMLElement')) { class SimpleXMLElement extends common\SimpleXMLElement {} }
+if (_should_export_class('url')) { class url extends common\url {} }
 
-if (_export_function('trans')) { function trans() {} }
 if (_export_function('get_string')) { function get_string($identifier) {} }
-if (_export_function('trigger_event')) { function trigger_event($event, array $data) {} }
+if (_export_function('trans')) { function trans() {} }

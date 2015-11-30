@@ -89,7 +89,7 @@ switch($action){
 				block_exacomp_unset_cross_subject_student($crosssubjid, $studentid);
 		}
 		
-		\block_exacomp\log_event('crosssubject_added', ['objectid' => $exampleid, 'courseid' => $courseid]);
+		\block_exacomp\event\crosssubject_added::log(['objectid' => $exampleid, 'courseid' => $courseid]);
 		
 		die('ok');
 	case('save_as_draft'):

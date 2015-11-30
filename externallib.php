@@ -4881,7 +4881,7 @@ class block_exacomp_external extends external_api {
 	
 		block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, time());
 
-		\block_exacomp\log_event('example_submitted', ['objectid' => $exampleid, 'courseid' => $courseid]);
+		\block_exacomp\event\example_submitted::log(['objectid' => $exampleid, 'courseid' => $courseid]);
 				
 		return array("success"=>true,"itemid"=>$itemid);
 	}
@@ -4958,7 +4958,7 @@ class block_exacomp_external extends external_api {
 				
 				block_exacomp_send_example_comment_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid, $exampleid);
 				
-				\block_exacomp\log_event('example_commented', ['objectid' => $exampleid, 'courseid' => $courseid]);
+				\block_exacomp\event\example_commented::log(['objectid' => $exampleid, 'courseid' => $courseid]);
 			}
 		}
 	

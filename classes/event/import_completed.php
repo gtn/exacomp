@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
  * @license	http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright  gtn gmbh <office@gtn-solutions.com>
  */
-class import_completed extends \core\event\base {
+class import_completed extends base {
 
 	/**
 	 * Init
