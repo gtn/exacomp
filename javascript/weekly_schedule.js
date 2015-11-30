@@ -1,5 +1,12 @@
 (function($){
 	
+	// constants
+	var EXAMPLE_STATE_NOT_SET = 0; // never used in weekly schedule, no evaluation
+	var EXAMPLE_STATE_IN_POOL = 1; // planned to work with example -> example is in pool
+	var EXAMPLE_STATE_IN_CALENDAR = 2; // example is in work -> in calendar
+	var EXAMPLE_STATE_SUBMITTED = 3; //state 3 = submission for example / example closed (for submission no file upload etc is necessary) -> closed
+	var EXAMPLE_STATE_EVALUATED = 4; // evaluated -> only from teacher TODO: item or exacomp evaluation?
+	
 	$(document).on('click', '#empty_trash', function(event) {
 		studentid = block_exacomp.get_studentid();
 		
@@ -180,11 +187,7 @@
 			if(data.submission_url != null)
 				el.append('<div class="event-submission">'+data.submission_url+'</div>');
 
-			if(data.state == 3)
-				el.addClass('state3');
-						
-			if(data.state == 4)
-				el.addClass('state4');	
+			el.addClass('state'+data.state);
 						
 			el.data('event', data);
 	
@@ -293,6 +296,12 @@
 					start: '00:00:00', // a start time (10am in this example)
 					end: exacomp_calcendar.slot_time(exacomp_calcendar_config.slots.length)
 				},
+				exabisEventConstraint: function(range, event) {
+					var today = moment().utc().startOf('day');
+					
+					// compare with strings, because fullcalendar moment 2.9 had a bug in isSame()
+					return range.start.format("YYYY-MM-DD") == today.format("YYYY-MM-DD") || range.start.isAfter(today);
+				},
 		
 				editable: true,
 				droppable: true, // this allows things to be dropped onto the calendar
@@ -309,6 +318,11 @@
 						events = $.map(events, function(o){
 							var event = exacomp_calcendar.event_time_to_slot(o);
 							event.original = event;
+							
+							// graded events can't be moved anymore
+							if (event.state == EXAMPLE_STATE_EVALUATED) {
+								event.editable = false;
+							}
 							
 							return event;
 						});
@@ -350,7 +364,7 @@
 					}
 					var teacher_evaluation = [];
 					if (this.teacher_evaluation_title) teacher_evaluation.push(this.teacher_evaluation_title);
-					if (this.teacher_percent_rating!==null) teacher_evaluation.push(this.teacher_percent_rating+' %');
+					if (this.additionalinfo!==null) teacher_evaluation.push(this.additionalinfo+' %');
 					if (teacher_evaluation.length) {
 						element.find(".fc-content").append('<div>L: '+teacher_evaluation.join(' / ')+'</div>');
 					}

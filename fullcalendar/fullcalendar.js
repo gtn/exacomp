@@ -10180,6 +10180,11 @@ function EventManager(options) { // assumed to be a calendar
 		);
 
 		range = ensureVisibleEventRange(range); // ensure a proper range with an end for isRangeAllowed
+		
+		// gtn/exabis additional event constraint function
+		if (options.exabisEventConstraint && !options.exabisEventConstraint(range, event)) {
+			return false;
+		}
 
 		return isRangeAllowed(range, constraint, overlap, event);
 	}

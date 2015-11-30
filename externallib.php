@@ -3976,8 +3976,8 @@ class block_exacomp_external extends external_api {
 			$example_course = $DB->get_record('course', array('id'=>$example->courseid));
 			$example->courseshortname = $example_course->shortname;
 			$example->coursefullname = $example_course->fullname;
-			if(!isset($example->teacher_percent_rating))
-				$example->teacher_percent_rating = -1;
+			if(!isset($example->additionalinfo))
+				$example->additionalinfo = -1;
 		}
 		
 		return $examples;
@@ -3996,7 +3996,7 @@ class block_exacomp_external extends external_api {
 				'end' => new external_value (PARAM_INT, 'end of event'),
 				'student_evaluation' => new external_value ( PARAM_INT, 'self evaluation of student' ),
 				'teacher_evaluation' => new external_value( PARAM_TEXT, 'evaluation of teacher'),
-				'teacher_percent_rating' => new external_value( PARAM_INT, 'additional evaluation of teacher'),
+				'additionalinfo' => new external_value( PARAM_INT, 'additional evaluation of teacher'),
 				'courseid' => new external_value(PARAM_INT, 'example course'),
 				'state' => new external_value (PARAM_INT, 'state of example'),
 				'scheduleid' => new external_value (PARAM_INT, 'id in schedule context'),

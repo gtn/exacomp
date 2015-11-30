@@ -5432,7 +5432,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid){
 	$sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
 				eval.student_evaluation, eval.teacher_evaluation, evis.courseid, s.id as scheduleid,
-				e.externalurl, e.externaltask, e.description
+				e.externalurl, e.externaltask, e.description, eval.additionalinfo
 			FROM {block_exacompschedule} s 
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid 
 			JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=? 
@@ -5488,7 +5488,7 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
 	
 	$sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
-				eval.student_evaluation, eval.teacher_evaluation, eval.additionalinfo AS teacher_percent_rating, evis.courseid, s.id as scheduleid,
+				eval.student_evaluation, eval.teacher_evaluation, eval.additionalinfo, evis.courseid, s.id as scheduleid,
 				e.externalurl, e.externaltask, e.description
 			FROM {block_exacompschedule} s 
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid 
@@ -5531,7 +5531,7 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true){
 		if($mind_eval){
 			$example_array['student_evaluation'] = $example->student_evaluation;
 			$example_array['teacher_evaluation'] = $example->teacher_evaluation;
-			$example_array['teacher_percent_rating'] = $example->teacher_percent_rating;
+			$example_array['additionalinfo'] = $example->additionalinfo;
 
 			$example_array['student_evaluation_title'] = get_global_scheme_item_title($example->student_evaluation);
 			$example_array['teacher_evaluation_title'] = get_global_scheme_item_title($example->teacher_evaluation);
@@ -5632,7 +5632,7 @@ function block_exacomp_parse_seconds_to_timestring($secTime) {
 }
 function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $studentid){
 	global $DB;
-	//state 0 = never used in weakly schedule, no evaluation
+	//state 0 = never used in weekly schedule, no evaluation
 	//state 1 = planned to work with example -> example is in pool
 	//state 2 = example is in work -> in calendar
 	//state 3 = submission for example / example closed (for submission no file upload etc is necessary) -> closed
@@ -5641,8 +5641,8 @@ function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $stud
 	
 	$comp = $DB->get_record(block_exacomp::DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>$studentid));
 
-	if($comp && $comp->teacher_evaluation > 0)
-		return 4;
+	if($comp && $comp->teacher_evaluation !== null)
+		return block_exacomp::EXAMPLE_STATE_EVALUATED;
 		
 	$sql = "select * FROM {block_exacompitemexample} ie  
 			JOIN {block_exaportitem} i ON i.id = ie.itemid 
@@ -5651,24 +5651,25 @@ function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $stud
 	$items_examp = $DB->get_records_sql($sql,array($exampleid, $studentid));
 
 	if($items_examp)
-		return 3;
+		return block_exacomp::EXAMPLE_STATE_SUBMITTED;
 	
 	$schedule = $DB->get_records(block_exacomp::DB_SCHEDULE, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>$studentid));
 		
 	if($schedule){
 		$in_work = false;
 		foreach($schedule as $entry){
-			if((isset($entry->start) && $entry->start>0) && (isset($entry->end) && $entry->end > 0))
+			if($entry->start>0 && $entry->end > 0) {
 				$in_work = true;
+			}
 		}
 		
 		if($in_work)
-			return 2;
+			return block_exacomp::EXAMPLE_STATE_IN_CALENDAR;
 		else
-			return 1;
+			return block_exacomp::EXAMPLE_STATE_IN_POOL;
 	}
 	
-	return 0;	
+	return block_exacomp::EXAMPLE_STATE_NOT_SET;
 }
 function block_exacomp_in_pre_planing_storage($exampleid, $creatorid, $courseid){
 	global $DB;

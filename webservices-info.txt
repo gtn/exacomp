@@ -5,7 +5,7 @@ If you want to use Exabis Competencies Web services there are a few steps to do:
 3) Enable web services for mobile devices at: Site administration/Plugins/Web services/Mobile
 4) Grant additional permission to the role "authenticated user" at: Site administration/Users/Permissions/Define roles
 	4.1 Select Authenticated User
-	4.2 Klick on "Edit"
+	4.2 Click on "Edit"
 	4.3 Filter for createtoken
 	4.4 Allow moodle/webservice:createtoken
 5) Go to Site administration/Server/Enable Exabis Competencies webservices to run the script to finish web service configuration
