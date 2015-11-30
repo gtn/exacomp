@@ -2354,16 +2354,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2015082500, 'exacomp');
 	}
-
-	if($oldversion < 2015082800){
-	
-		// normalize database
-		require_once(__DIR__.'/../lib/lib.php');
-		require_once(__DIR__.'/../lib/xmllib.php');
-		block_exacomp_data::normalize_database();
-		
-		upgrade_block_savepoint(true, 2015082800, 'exacomp');
-	}
 	
 	if ($oldversion < 2015090801) {
 	
@@ -2559,8 +2549,14 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	}
 	
 	/*
+	 * insert new upgrade scripts before this comment section
 	 * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
 	 */
-
+	
+	// always normalize database after upgrade
+	require_once __DIR__.'/../lib/lib.php';
+	require_once __DIR__.'/../lib/xmllib.php';
+	block_exacomp_data::normalize_database();
+	
 	return $return_result;
 }

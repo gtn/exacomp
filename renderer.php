@@ -2067,9 +2067,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 						}
 						
 						if($example->externalurl){
-							$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->externalurl), $this->pix_icon("i/preview", $example->externalurl),array("target" => "_blank"));
+							$titleCell->text .= html_writer::link($example->externalurl, $this->pix_icon("i/preview", $example->externalurl),array("target" => "_blank"));
 						}elseif($example->externaltask){
-							$titleCell->text .= html_writer::link(str_replace('&amp;','&',$example->externaltask), $this->pix_icon("i/preview", $example->externaltask),array("target" => "_blank"));
+							$titleCell->text .= html_writer::link($example->externaltask, $this->pix_icon("i/preview", $example->externaltask),array("target" => "_blank"));
 						}
 						
 						if ($url = block_exacomp_get_file_url($example, 'example_solution')) {
