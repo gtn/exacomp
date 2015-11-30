@@ -81,8 +81,9 @@ try {
 	} elseif ($isAdmin && ($importtype == 'demo')) {
 		//do demo import
 		
+		// TODO: catch exception
 		$file = optional_param('file', DEMO_XML_PATH, PARAM_TEXT);
-		if ($importSuccess = block_exacomp_data_importer::do_import_url($file, block_exacomp::IMPORT_SOURCE_DEFAULT, true)) {
+		if ($importSuccess = block_exacomp_data_importer::do_import_url($file, block_exacomp::IMPORT_SOURCE_DEFAULT)) {
 			block_exacomp_settstamp();
 		}
 	}

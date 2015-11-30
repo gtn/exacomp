@@ -1,7 +1,5 @@
 <?php
 
-use tool_templatelibrary\api;
-
 require_once __DIR__.'/exabis_special_id_generator.php';
 
 class block_exacomp_ZipArchive extends ZipArchive {
@@ -495,15 +493,15 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 		if ($dbItem->source && $dbItem->sourceid) {
 			if ($dbItem->source == block_exacomp::IMPORT_SOURCE_DEFAULT) {
 				// source und sourceid vorhanden -> von wo anders erhalten
-				print_error('database error, has default source #69fvk3');
+				throw new block_exacomp\exception('database error, has default source #69fvk3');
 			} elseif ($dbItem->source == block_exacomp::IMPORT_SOURCE_SPECIFIC) {
 				// local source -> von dieser moodle instanz selbst
-				print_error('database error, has specific source #yt8d21');
+				throw new block_exacomp\exception('database error, has specific source #yt8d21');
 			} elseif ($source = self::get_source_global_id($dbItem->source)) {
 				$xmlItem['source'] = $source;
 				$xmlItem['id'] = $dbItem->sourceid;
 			} else {
-				print_error('database error, unknown source '.$dbItem->source.' for type '.$xmlItem->getName().' #f9ssaa8');
+				throw new block_exacomp\exception('database error, unknown source '.$dbItem->source.' for type '.$xmlItem->getName().' #f9ssaa8');
 			}
 		} else {
 			// local source -> set new id
@@ -980,7 +978,7 @@ class block_exacomp_data_course_backup extends block_exacomp_data {
 				if ($source = block_exacomp_data::get_source_global_id($dbItem->$fld_source)) {
 					$dbItem->$fld_source = $source;
 				} else {
-					print_error('database error, unknown source '.$dbItem->$fld_source.' #5555aa8');
+					throw new block_exacomp\exception('database error, unknown source '.$dbItem->$fld_source.' #5555aa8');
 				}
 			} else {
 				// local source -> set new id
@@ -1027,7 +1025,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 	
 	private static $zip;
 	
-	public static function do_import_string($data = null, $par_source = 1, $cron = false) {
+	public static function do_import_string($data = null, $par_source = block_exacomp::IMPORT_SOURCE_DEFAULT) {
 		global $CFG;
 
 		if (!$data) {
@@ -1037,14 +1035,14 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		$file = tempnam($CFG->tempdir, "zip");
 		file_put_contents($file, $data);
 		
-		$ret = self::do_import_file($file, $par_source, $cron);
+		$ret = self::do_import_file($file, $par_source);
 		
 		@unlink($file);
 		
 		return $ret;
 	}
 	
-	public static function do_import_url($url = null, $par_source = 1, $cron = false) {
+	public static function do_import_url($url = null, $par_source = block_exacomp::IMPORT_SOURCE_DEFAULT) {
 		global $CFG;
 
 		if (!$url) {
@@ -1054,7 +1052,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		$file = tempnam($CFG->tempdir, "zip");
 		file_put_contents($file, fopen($url, 'r'));
 		
-		$ret = self::do_import_file($file, $par_source, $cron);
+		$ret = self::do_import_file($file, $par_source);
 		
 		@unlink($file);
 		
@@ -1065,9 +1063,8 @@ class block_exacomp_data_importer extends block_exacomp_data {
 	 *
 	 * @param String $data xml content
 	 * @param int $source default is 1, for specific import 2 is used. A specific import can be done by teachers and only effects data from topic leven downwards (topics, descriptors, examples)
-	 * @param int $cron should always be 0, 1 if method is called by the cron job
 	 */
-	public static function do_import_file($file = null, $par_source = 1, $cron = false) {
+	public static function do_import_file($file = null, $par_source = block_exacomp::IMPORT_SOURCE_DEFAULT) {
 		global $DB, $CFG;
 	
 		if (!$file) {
@@ -1143,7 +1140,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		// update scripts for new source format
 		if (self::has_old_data(block_exacomp::IMPORT_SOURCE_DEFAULT)) {
 			if (self::$import_source_type != block_exacomp::IMPORT_SOURCE_DEFAULT) {
-				print_error('you first need to import the default sources!');
+				throw new block_exacomp\exception('you first need to import the default sources!');
 			}
 			self::move_items_to_source(block_exacomp::IMPORT_SOURCE_DEFAULT, self::$import_source_local_id);
 		}
@@ -1353,7 +1350,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		
 		$tables = array_filter($tables, function($t) use ($table) { return $t['table'] == $table; });
 		if (empty($tables)) {
-			print_error("delete_mm_record_for_item: wrong table $table");
+			throw new block_exacomp\exception("delete_mm_record_for_item: wrong table $table");
 		}
 		
 		$table = reset($tables);
@@ -1367,7 +1364,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 			$sql .= "{$table['mm2'][0]}=? AND ";
 			$sql .= "{$table['mm1'][0]} IN (SELECT id FROM {{$table['mm1'][1]}} WHERE source=?)";
 		} else {
-			print_error('delete_mm_record_for_item: error');
+			throw new block_exacomp\exception('delete_mm_record_for_item: error');
 		}
 		
 		$DB->execute($sql, array($id, self::$import_source_local_id));
@@ -1714,7 +1711,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		if (isset($tableMapping[$element->getName()])) {
 			$table = $tableMapping[$element->getName()];
 		} else {
-			print_error('get_database_id: wrong element name: '.$element->getName().' '.print_r($element, true));
+			throw new block_exacomp\exception('get_database_id: wrong element name: '.$element->getName().' '.print_r($element, true));
 		}
 		
 		$item = self::parse_xml_item($element);
@@ -1770,7 +1767,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		}
 		
 		if (!isset(self::$kompetenzraster_unused_data_ids[$table])) {
-			print_error("unused data for table $table not found");
+			throw new block_exacomp\exception("unused data for table $table not found");
 		}
 		
 		// mark used

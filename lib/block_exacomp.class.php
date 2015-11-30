@@ -4,6 +4,8 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once __DIR__ . '/../../moodleblock.class.php';
 require_once __DIR__ . '/lib.php';
+require_once __DIR__ . '/xmllib.php';
+
 
 class block_exacomp extends block_list {
 	/**
@@ -411,15 +413,15 @@ class block_exacomp extends block_list {
 
 		//import xml with provided server url
 		if($xmlserverurl) {
-			$xml = file_get_contents($xmlserverurl);
-			if($xml) {
-				require_once dirname(__FILE__) . '/lib/xmllib.php';
-
-				if(block_exacomp_data_importer::do_import_string($xml, block_exacomp::IMPORT_SOURCE_DEFAULT, true)) {
+			try {
+				if (block_exacomp_data_importer::do_import_url($xmlserverurl, block_exacomp::IMPORT_SOURCE_DEFAULT)) {
 					mtrace("import done");
 					block_exacomp_settstamp();
+				} else {
+					mtrace("import failed: unknown error");
 				}
-				else mtrace("import failed");
+			} catch (block_exacomp\exception $e) {
+				mtrace("import failed: ".$e->getMessage());
 			}
 		}
 
