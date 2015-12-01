@@ -2205,7 +2205,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 								$additional_grading_cell->text = $student_additional_grading; 
 							} else {
 								$additional_grading_cell->text = html_writer::empty_tag('input', array(
-									'class'=>'percent-rating', 'type'=>'text', 'value'=>$student_additional_grading,
+									'class'=>'percent-rating', 'type'=>'text', 'value'=>($student_additional_grading !== false) ? $student_additional_grading : null,
 									'id'=>'additionalinfo-'.$student->id.'-'.$example->id.'-'.$descriptor->id,'exampleid'=>$example->id,'studentid'=>$student->id)
 									+ (($visible_student_example && $data->role == block_exacomp::ROLE_TEACHER) ? [] : ['disabled'=>'disabled']));
 							}
