@@ -346,16 +346,7 @@
 					if(event.courseid != courseid)
 						element.addClass('different-course');
 						
-					if(event.state == 3)
-						element.addClass('state3');
-						
-					if(event.state == 4)
-						element.addClass('state4');	
-					
-					if(event.state == 5)
-						element.addClass('state5');
-						
-					// console.log(element.html());
+					element.addClass('state'+event.state);
 					
 					// delete time (actually slot time)
 					element.find(".fc-time").remove();
