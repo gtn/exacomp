@@ -5300,9 +5300,10 @@ var dataset = dataset.map(function (group) {
 		$courses = block_exacomp_get_courseids();
 		
 		foreach($courses as $course){
-			$course_db = $DB->get_record('course', array('id'=>$course));
-			
-			$options[$course] = $course_db->fullname;
+			if(block_exacomp_course_has_examples($course)){
+				$course_db = $DB->get_record('course', array('id'=>$course));
+				$options[$course] = $course_db->fullname;
+			}
 		}
 		
 		$content .= html_writer::select($options, "lis_courses",$selectedCourse, false,

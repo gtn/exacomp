@@ -6052,6 +6052,18 @@ function block_exacomp_save_additional_grading_for_example($courseid, $exampleid
 		$DB->update_record ( 'block_exacompitemexample', $itemexample );
 	}
 }
+function block_exacomp_course_has_examples($courseid){
+	global $DB;
+	
+	$sql = 'SELECT ex.id '
+		. 'FROM {'.block_exacomp::DB_EXAMPLES.'} ex '
+		. 'JOIN {'.block_exacomp::DB_DESCEXAMP.'} dex ON ex.id = dex.exampid '
+		. 'JOIN {'.block_exacomp::DB_DESCTOPICS.'} det ON dex.descrid = det.descrid '
+		. 'JOIN {'.block_exacomp::DB_COURSETOPICS.'} ct ON det.topicid = ct.topicid '
+		. 'WHERE ct.courseid = ?';
+	
+	return $DB->get_records_sql($sql, array($courseid));
+}
 
 }
 
