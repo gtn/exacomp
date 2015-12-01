@@ -1247,7 +1247,7 @@ function block_exacomp_get_user_information_by_course($user, $courseid, $onlycom
 	
 	if(!$onlycomps){
 		// get student examples
-		$user = block_exacomp_get_user_examples_by_course($user, $courseid);
+		$user->examples = block_exacomp_get_user_examples_by_course($user, $courseid);
 		$activities = block_exacomp_get_activities_by_course($courseid);
 		// get student activities topics
 		$user = block_exacomp_get_user_activities_topics_by_course($user, $courseid, $activities);
@@ -1318,13 +1318,11 @@ function block_exacomp_get_user_topics_by_course($user, $courseid) {
  * @return stdClass $user
  */
 function block_exacomp_get_user_examples_by_course($user, $courseid) {
-	global $DB;
+	$examples = new stdClass();
+	$examples->teacher = g::$DB->get_records_menu(block_exacomp::DB_EXAMPLEEVAL,array("courseid" => $courseid, "studentid" => $user->id),'','exampleid as id, teacher_evaluation as value');
+	$examples->student = g::$DB->get_records_menu(block_exacomp::DB_EXAMPLEEVAL,array("courseid" => $courseid, "studentid" => $user->id),'','exampleid as id, student_evaluation as value');
 
-	$user->examples = new stdClass();
-	$user->examples->teacher = $DB->get_records_menu(block_exacomp::DB_EXAMPLEEVAL,array("courseid" => $courseid, "studentid" => $user->id),'','exampleid as id, teacher_evaluation as value');
-	$user->examples->student = $DB->get_records_menu(block_exacomp::DB_EXAMPLEEVAL,array("courseid" => $courseid, "studentid" => $user->id),'','exampleid as id, student_evaluation as value');
-
-	return $user;
+	return $examples;
 }
 /**
  *  This method returns all topics for the detailed view for a given user

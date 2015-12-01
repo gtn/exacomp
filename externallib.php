@@ -3581,7 +3581,7 @@ class block_exacomp_external extends external_api {
 				'id' => $userid 
 		) );
 		
-		$student = block_exacomp_get_user_examples_by_course($student, $courseid);
+		$student->examples = block_exacomp_get_user_examples_by_course($student, $courseid);
 		
 		$teacherevaluation = -1;
 		if(isset($student->examples->teacher[$exampleid])){

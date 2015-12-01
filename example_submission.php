@@ -29,7 +29,7 @@ use function block_exacomp\get_string;
 require_once dirname(__FILE__)."/inc.php";
 require_once dirname(__FILE__) . '/example_submission_form.php';
 
-global $DB, $OUTPUT, $PAGE, $USER, $COURSE;
+global $DB, $PAGE, $USER, $COURSE;
 
 $courseid = required_param('courseid', PARAM_INT);
 $exampleid = required_param('exampleid', PARAM_INT);
@@ -69,8 +69,8 @@ echo $output->header($context, $courseid, '', false);
 
 /* CONTENT REGION */
 
-$student = block_exacomp_get_user_examples_by_course($USER, $courseid);
-if($student->examples->teacher[$exampleid]) {
+$studentExamples = block_exacomp_get_user_examples_by_course($USER, $courseid);
+if(!empty($studentExamples->teacher[$exampleid])) {
 	die(get_string('isgraded','block_exacomp'));
 }
 
@@ -145,5 +145,3 @@ $form->display();
 
 /* END CONTENT REGION */
 echo $output->footer();
-
-?>
