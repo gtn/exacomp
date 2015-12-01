@@ -5031,6 +5031,11 @@ class block_exacomp_external extends external_api {
 		if(empty($childsandexamples->examples))
 			$descriptor_return->hasmaterial = false;
 			
+		$descriptor_example_statistic = block_exacomp_external::get_descriptor_example_statistic($courseid, $userid, $descriptorid, $forall, $crosssubjid);
+		$descriptor_return->examplestotal = $descriptor_example_statistic->total;
+		$descriptor_return->examplesvisible = $descriptor_example_statistic->visible;
+		$descriptor_return->exampleinwork = $descriptor_example_statistic->inwork;
+		
 		return $descriptor_return;
 	}
 	
@@ -5051,7 +5056,10 @@ class block_exacomp_external extends external_api {
 					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
 					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of children'),
 					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of children')
-			) ) )
+			) ) ),
+			'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
+			'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
+			'exampleinwork' => new external_value (PARAM_INT, 'edited number of material')
 		) ) ;
 	}
 	
@@ -5711,5 +5719,20 @@ class block_exacomp_external extends external_api {
 		
 		return $examples_return;
 	}
-
+	private function get_descriptor_example_statistic($courseid, $userid, $descriptorid, $forall, $crosssubjid){
+		global $DB;
+		$return = new stdClass();
+		$return->total = 0;
+		$return->visible = 0;
+		$return->inwork = 0;
+		
+		if($forall) return $return;
+		
+		list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork, $totalHidden) = block_exacomp_get_example_statistic_for_descriptor($courseid, $descriptorid, $userid, $crosssubjid);
+		
+		$return->total = $totalHidden;
+		$return->visible = $total;
+		$return->inwork = $inWork;
+		return $return;
+	}
 }

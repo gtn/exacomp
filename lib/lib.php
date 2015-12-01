@@ -5217,7 +5217,7 @@ function block_exacomp_get_example_statistic_for_crosssubject($courseid, $crosss
 
 	return array($total, $gradings, $notEvaluated, $inWork,$totalGrade);
 }
-function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid, $studentid) {
+function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid, $studentid, $crosssubjid = 0) {
 	global $DB;
 
 	if($studentid == BLOCK_EXACOMP_SHOW_STATISTIC)
@@ -5229,19 +5229,26 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 
 	$children[] = $descriptor;
 	
+	$crosssubjdescriptos = array();
+	if($crosssubjid > 0)
+		$crosssubjdescriptos = block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid);
+	
 	if($studentid == 0)
 		$students =  block_exacomp_get_students_by_course($courseid);
 	else
 		$students = array($DB->get_record('user', array('id'=>$studentid)));
 	
 	foreach($children as $child){
-		$child->examples = $DB->get_records(block_exacomp::DB_DESCEXAMP,array('descrid' => $child->id));
-		$child->visible =  $DB->get_field(block_exacomp::DB_DESCVISIBILITY, 'visible', array('courseid'=>$courseid, 'descrid'=>$child->id, 'studentid'=>0));
-		foreach($child->examples as $example)
-			$example->visible = $DB->get_field(block_exacomp::DB_EXAMPVISIBILITY, 'visible', array('courseid'=>$courseid, 'exampleid'=>$example->exampid, 'studentid'=>0));
+		if($crosssubjid == 0 || array_key_exists($child->id, $crosssubjdescriptos)){
+			$child->examples = $DB->get_records(block_exacomp::DB_DESCEXAMP,array('descrid' => $child->id));
+			$child->visible =  $DB->get_field(block_exacomp::DB_DESCVISIBILITY, 'visible', array('courseid'=>$courseid, 'descrid'=>$child->id, 'studentid'=>0));
+			foreach($child->examples as $example)
+				$example->visible = $DB->get_field(block_exacomp::DB_EXAMPVISIBILITY, 'visible', array('courseid'=>$courseid, 'exampleid'=>$example->exampid, 'studentid'=>0));
+		}
 	}
 	
 	$total = 0;
+	$totalHidden = 0;
 	$inWork = 0;
 	$notInWork = 0;
 	$scheme = block_exacomp_get_grading_scheme($courseid);
@@ -5251,6 +5258,7 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 		$gradings[$i] = 0;
 	
 	foreach($students as $student){
+		$totalHiddenArray = array();
 		$totalArray = array();
 		$inWorkArray = array();
 		$example_where_string = "";
@@ -5265,8 +5273,11 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 				if($visible_example && !array_key_exists( $example->exampid, $totalArray)){
 					$totalArray[$example->exampid] = $example;
 					$example->hidden = false;
-				}else
+				}else{
+					if (!array_key_exists( $example->exampid, $totalArray) && !array_key_exists( $example->exampid, $totalHiddenArray))
+						$totalHiddenArray[$example->exampid] = $example;
 					$example->hidden = true;
+				}
 			}
 			
 			$sql = "SELECT s.id, e.id as exampid FROM {".block_exacomp::DB_EXAMPLES."} e
@@ -5291,6 +5302,7 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 		
 		$example_where_string = substr($example_where_string, 0, strlen($example_where_string)-1);
 		$total += count ($totalArray);
+		$totalHidden = count($totalHiddenArray) + $total;
 		$inWork += count ($inWorkArray);
 		
 		$notInWork = $total - $inWork;
@@ -5320,7 +5332,7 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 	if($totalGrade == null)
 		$totalGrade = 0;
 					
-	return array($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork);
+	return array($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork, $totalHidden);
 }
 
 
