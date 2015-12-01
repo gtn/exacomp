@@ -625,6 +625,21 @@
 		return false;
 	});
 	
+	$(document).on('click','[exa-type=allow-resubmission]', function(event) {
+		var exampleid = $(this).attr('exampleid');
+		var studentid = $(this).attr('studentid');
+		
+		
+		block_exacomp.call_ajax({
+			exampleid : exampleid,
+			studentid : studentid,
+			action : 'allow-resubmission'
+		}).done(function(msg) { alert(msg) });
+		
+		event.preventDefault();
+		return false;
+	});
+	
 	$(document).on('change', 'input[name^=add-grading\-]', function(event) {
 		var descrid = $(this).attr('descrid');
 		var studentid = $(this).attr('studentid');

@@ -323,24 +323,22 @@ switch($action){
 		
 		echo block_exacomp_example_down ( $exampleid, $descrid );
 		break;
-	// not needed anymore:
-	/*
-	case ('edit-descriptor-title') :
-		$descriptorid = required_param ('descrid', PARAM_INT);
-		$title = required_param ('title', PARAM_TEXT);
-		
-		$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptorid));
-		$descriptor->title = $title;
-		
-		$DB->update_record(block_exacomp::DB_DESCRIPTORS, $descriptor);
-		break;
-	*/
 	case 'delete-descriptor':
 		if (!$isTeacher) {
 			print_error('noteacher');
 		}
 		
 		block_exacomp_delete_custom_descriptor(required_param('id', PARAM_INT));
+		break;
+	case 'allow-resubmission':
+		if (!$isTeacher) {
+			print_error('noteacher');
+		}
+		$studentid = required_param('studentid', PARAM_INT);
+		$exampleid = required_param('exampleid', PARAM_INT);
+		$courseid = required_param('courseid', PARAM_INT);
+		
+		echo block_exacomp_allow_resubmission($studentid, $exampleid, $courseid);
 		break;
 	default:
 		print_error('wrong action: '.$action);

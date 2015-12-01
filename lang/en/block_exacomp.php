@@ -246,6 +246,8 @@ $string['override_notice'] = 'This entry was editied by someone else before. Con
 $string['unload_notice'] = 'Are you sure? Unsaved changes will be lost.';
 $string['example_sorting_notice'] = 'Please save the changes first.';
 $string['newsubmission'] = 'New Submission';
+$string['allow_resubmission'] = 'Allow a new submission for this example';
+$string['allow_resubmission_info'] = 'The example is now allowed to be resubmited.';
 
 //Example Submission
 $string['example_submission_header']  = 'Aufgabe {$a} bearbeiten';

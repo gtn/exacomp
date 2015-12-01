@@ -249,7 +249,8 @@ $string['link'] = 'Link';
 $string['dataerr'] = 'Es muss zumindest ein Link oder eine Datei hochgeladen werden!';
 $string['linkerr'] = 'Bitte geben Sie einen korrekten Link ein!';
 $string['isgraded'] = 'Die Aufgabe wurde bereits beurteilt und kann daher nicht mehr eingereicht werden.';
-
+$string['allow_resubmission'] = 'Aufgabe zur erneuten Abgabe freigeben';
+$string['allow_resubmission_info'] = 'Die Aufgabe wurde zur erneuten Abgabe freigegeben.';
 //Assign competencies
 $string['save_selection'] = 'Auswahl speichern';
 $string['delete_confirmation'] = 'Soll das Beispiel wirklich gelöscht werden?';

@@ -488,7 +488,6 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $value = null, $starttime = 0, $endtime = 0, $studypartner = 'self', $additionalinfo=null) {
 	global $DB, $USER;
 
-
 	$updateEvaluation = new stdClass();
 
 	if ($role == block_exacomp::ROLE_TEACHER) {
@@ -535,6 +534,20 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 
 	if($role == block_exacomp::ROLE_TEACHER)
 		\block_exacomp\event\competence_assigned::log(['objectid' => $exampleid, 'courseid' => $courseid, 'relateduserid' => $userid]);
+}
+function block_exacomp_allow_resubmission($userid, $exampleid, $courseid) {
+	global $DB,$USER;
+	
+	block_exacomp_require_teacher($courseid);
+	
+	$exameval = $DB->get_record(block_exacomp::DB_EXAMPLEEVAL, array('courseid'=>$courseid,'studentid'=>$userid,'exampleid'=>$exampleid));
+	if($exameval) {
+		$exameval->resubmission = 1;
+		$DB->update_record(block_exacomp::DB_EXAMPLEEVAL, $exameval);
+		return get_string('allow_resubmission_info','block_exacomp');
+	}
+	
+	return false;
 }
 /**
  * Set one competence for one user for one activity in one course

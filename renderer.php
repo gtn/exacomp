@@ -2186,6 +2186,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		
 							if ($data->role == block_exacomp::ROLE_TEACHER) {
 								$studentCellEvaluation->text .= $this->print_submission_icon($data->courseid, $example->id, $student->id);
+								$studentCellEvaluation->text .= $this->print_resubmission_icon($example->id, $student->id, $data->courseid);
 							}
 							
 							if($data->showevaluation) {
@@ -2352,6 +2353,18 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				return "";
 			}
 		}
+	}
+	public function print_resubmission_icon($exampleid, $studentid, $courseid) {
+		global $DB;
+		
+		$exameval = $DB->get_record(block_exacomp::DB_EXAMPLEEVAL,array('exampleid'=>$exampleid,'studentid'=>$studentid,'courseid'=>$courseid));
+		if(!isset($exameval) || $exameval->resubmission == 1)
+			return "";
+		else
+			return html_writer::link(
+				"#",
+				$this->pix_icon("i/reload", get_string("allow_resubmission","block_exacomp")),
+				array('exa-type' => 'allow-resubmission', 'exampleid' => $exampleid, 'studentid' => $studentid, 'courseid' => $courseid));
 	}
 	public function print_schedule_icon($exampleid, $studentid, $courseid) {
 		return html_writer::link(
