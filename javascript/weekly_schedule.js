@@ -351,6 +351,9 @@
 						
 					if(event.state == 4)
 						element.addClass('state4');	
+					
+					if(event.state == 5)
+						element.addClass('state5');
 						
 					// console.log(element.html());
 					

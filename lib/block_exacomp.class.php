@@ -65,12 +65,14 @@ class block_exacomp extends block_list {
 	const IMPORT_SOURCE_SPECIFIC = 2;
 	
 	const CUSTOM_CREATED_DESCRIPTOR = 3;
-	
+
 	const EXAMPLE_STATE_NOT_SET = 0; // never used in weekly schedule, no evaluation
 	const EXAMPLE_STATE_IN_POOL = 1; // planned to work with example -> example is in pool
 	const EXAMPLE_STATE_IN_CALENDAR = 2; // example is in work -> in calendar
 	const EXAMPLE_STATE_SUBMITTED = 3; //state 3 = submission for example / example closed (for submission no file upload etc is necessary) -> closed
-	const EXAMPLE_STATE_EVALUATED = 4; // evaluated -> only from teacher TODO: item or exacomp evaluation?
+	const EXAMPLE_STATE_EVALUATED_NEGATIV = 4; // evaluated -> only from teacher-> exacomp evaluation nE
+	const EXAMPLE_STATE_EVALUATED_POSITIV = 5; //evaluated -> only from teacher -> exacomp evaluation > nE 
+	const EXAMPLE_STATE_LOCKED_TIME = 9; //handled like example entry on calender, but represent locked time
 	
 	function init() {
 		$this->title = get_string('pluginname', 'block_exacomp');

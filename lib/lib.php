@@ -5633,16 +5633,21 @@ function block_exacomp_parse_seconds_to_timestring($secTime) {
 function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $studentid){
 	global $DB;
 	//state 0 = never used in weekly schedule, no evaluation
-	//state 1 = planned to work with example -> example is in pool
+	//state 1 = planned to work with example -> example is in pool, but no 
 	//state 2 = example is in work -> in calendar
 	//state 3 = submission for example / example closed (for submission no file upload etc is necessary) -> closed
-	//state 4 = evaluated -> only from teacher TODO: item or exacomp evaluation?
-	
+	//state 4 = evaluated -> only from teacher exacomp evaluation nE
+	//state 5 = evaluated -> only from teacher exacomp evaluation > nE
+	//TODO state 9 = locked time
 	
 	$comp = $DB->get_record(block_exacomp::DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>$studentid));
 
-	if($comp && $comp->teacher_evaluation !== null)
-		return block_exacomp::EXAMPLE_STATE_EVALUATED;
+	if($comp && $comp->teacher_evaluation !== null){
+		if($comp->teacher_evaluation == 0)
+			return block_exacomp::EXAMPLE_STATE_EVALUATED_NEGATIV;
+		
+		return block_exacomp::EXAMPLE_STATE_EVALUATED_POSITIV;
+	}
 		
 	$sql = "select * FROM {block_exacompitemexample} ie  
 			JOIN {block_exaportitem} i ON i.id = ie.itemid 
