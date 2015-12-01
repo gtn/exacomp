@@ -506,7 +506,6 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 
 			$updateEvaluation->starttime = $starttime;
 			$updateEvaluation->endtime = $endtime;
-			$updateEvaluation->studypartner = block_exacomp_is_altversion() ? 'self' : $studypartner;
 	}
 	if($record = $DB->get_record(block_exacomp::DB_EXAMPLEEVAL,array("studentid" => $userid, "courseid" => $courseid, "exampleid" => $exampleid))) {
 		//if teacher keep studenteval
@@ -686,72 +685,7 @@ function block_exacomp_delete_timefield($exampleid, $deletestart, $deleteent){
 
 	$DB->update_record(block_exacomp::DB_EXAMPLEEVAL, $update);
 }
-/**
- * Saves example date from competence overview form
- *
- * @param array $data
- * @param int $courseid
- * @param int $role
- */
-function block_exacomp_save_example_evaluation($data, $courseid, $role, $topicid = null) {
-	global $DB,$USER;
-	$values = array();
 
-	foreach($data as $exampleidKey => $students) {
-		foreach($students as $studentidKey => $values) {
-			$updateEvaluation = new stdClass();
-
-			if ($role == block_exacomp::ROLE_TEACHER) {
-				$updateEvaluation->teacher_evaluation = intval($values['teacher']);
-				$updateEvaluation->teacher_reviewerid = $USER->id;
-			} else {
-				if ($studentidKey != $USER->id)
-					// student can only assess himself
-					continue;
-					
-				if (!empty($values['starttime'])) {
-					$date = new DateTime(clean_param($values['starttime'], PARAM_SEQUENCE));
-					$starttime = $date->getTimestamp();
-				}else{
-					$starttime = null;
-				}
-					
-				if (!empty($values['endtime'])) {
-					$date = new DateTime(clean_param($values['endtime'], PARAM_SEQUENCE));
-					$endtime = $date->getTimestamp();
-				}else{
-					$endtime = null;
-				}
-					
-				$updateEvaluation->student_evaluation = isset($values['student']) ? intval($values['student']) : 0;
-				$updateEvaluation->starttime = $starttime;
-				$updateEvaluation->endtime = $endtime;
-				$updateEvaluation->studypartner = (block_exacomp_is_altversion()) ? 'self' : $values['studypartner'];
-			}
-			if($record = $DB->get_record(block_exacomp::DB_EXAMPLEEVAL,array("studentid" => $studentidKey, "courseid" => $courseid, "exampleid" => $exampleidKey))) {
-				//if teacher keep studenteval
-				if($role == block_exacomp::ROLE_TEACHER) {
-					$record->teacher_evaluation = $updateEvaluation->teacher_evaluation;
-					$record->teacher_reviewerid = $updateEvaluation->teacher_reviewerid;
-					$DB->update_record(block_exacomp::DB_EXAMPLEEVAL,$record);
-				} else {
-					//if student keep teachereval
-					$updateEvaluation->teacher_evaluation = $record->teacher_evaluation;
-					$updateEvaluation->teacher_reviewerid = $record->teacher_reviewerid;
-					$updateEvaluation->id = $record->id;
-					$DB->update_record(block_exacomp::DB_EXAMPLEEVAL,$updateEvaluation);
-				}
-			}
-			else {
-				$updateEvaluation->courseid = $courseid;
-				$updateEvaluation->exampleid = $exampleidKey;
-				$updateEvaluation->studentid = $studentidKey;
-
-				$DB->insert_record(block_exacomp::DB_EXAMPLEEVAL, $updateEvaluation);
-			}
-		}
-	}
-}
 /**
  * Gets settings for the current course
  * @param int $courseid
@@ -4276,50 +4210,48 @@ function block_exacomp_set_cross_subject_descriptor($crosssubjid,$descrid) {
 	
 	$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descrid));
 		
-	if(block_exacomp_is_altversion()){ //check parent or child visibility
-		if($descriptor->parentid == 0){	//insert children into visibility table
-			//get topicid
-			$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$descriptor->id));
-			$descriptor->topicid = $descriptor_topic_mm->topicid;
-			
-			$children = block_exacomp_get_child_descriptors($descriptor, $COURSE->id);
-			
-			foreach($children as $child){
-				$visibility = $DB->get_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$cross_subject->courseid, 'descrid'=>$child->id, 'studentid'=>0));
-				if(!$visibility){
-					$insert = new stdClass();
-					$insert->courseid = $cross_subject->courseid;
-					$insert->descrid = $child->id;
-					$insert->studentid = 0;
-					$insert->visible = 1;
-					$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, $insert);
-					
-					//insert example visibility if not existent
-					$child = block_exacomp_get_examples_for_descriptor($child, array(SHOW_ALL_TAXONOMIES), true, $COURSE->id);
-					foreach($child->examples as $example){
-						$record = $DB->get_records(block_exacomp::DB_EXAMPVISIBILITY, array('courseid'=>$cross_subject->courseid, 'exampleid'=>$example->id, 'studentid'=>0));
-						if(!$record){
-							$insert = new stdClass();
-							$insert->courseid = $cross_subject->courseid;
-							$insert->exampleid = $example->id;
-							$insert->studentid = 0;
-							$insert->visible = 1;
-							$DB->insert_record(block_exacomp::DB_EXAMPVISIBILITY, $insert);
-						}
+	if($descriptor->parentid == 0){	//insert children into visibility table
+		//get topicid
+		$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$descriptor->id));
+		$descriptor->topicid = $descriptor_topic_mm->topicid;
+		
+		$children = block_exacomp_get_child_descriptors($descriptor, $COURSE->id);
+		
+		foreach($children as $child){
+			$visibility = $DB->get_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$cross_subject->courseid, 'descrid'=>$child->id, 'studentid'=>0));
+			if(!$visibility){
+				$insert = new stdClass();
+				$insert->courseid = $cross_subject->courseid;
+				$insert->descrid = $child->id;
+				$insert->studentid = 0;
+				$insert->visible = 1;
+				$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, $insert);
+				
+				//insert example visibility if not existent
+				$child = block_exacomp_get_examples_for_descriptor($child, array(SHOW_ALL_TAXONOMIES), true, $COURSE->id);
+				foreach($child->examples as $example){
+					$record = $DB->get_records(block_exacomp::DB_EXAMPVISIBILITY, array('courseid'=>$cross_subject->courseid, 'exampleid'=>$example->id, 'studentid'=>0));
+					if(!$record){
+						$insert = new stdClass();
+						$insert->courseid = $cross_subject->courseid;
+						$insert->exampleid = $example->id;
+						$insert->studentid = 0;
+						$insert->visible = 1;
+						$DB->insert_record(block_exacomp::DB_EXAMPVISIBILITY, $insert);
 					}
 				}
 			}
 		}
-		else{ //insert parent into visibility table
-			$visibility = $DB->get_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$cross_subject->courseid, 'descrid'=>$descriptor->parentid, 'studentid'=>0));
-			if(!$visibility){
-				$insert = new stdClass();
-				$insert->courseid = $cross_subject->courseid;
-				$insert->descrid = $descriptor->parentid;
-				$insert->studentid = 0;
-				$insert->visible = 1;
-				$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, $insert);
-			}
+	}
+	else{ //insert parent into visibility table
+		$visibility = $DB->get_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$cross_subject->courseid, 'descrid'=>$descriptor->parentid, 'studentid'=>0));
+		if(!$visibility){
+			$insert = new stdClass();
+			$insert->courseid = $cross_subject->courseid;
+			$insert->descrid = $descriptor->parentid;
+			$insert->studentid = 0;
+			$insert->visible = 1;
+			$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, $insert);
 		}
 	}
 	

@@ -146,8 +146,7 @@ if($isAdmin || block_exacomp_check_customupload()) {
 			}
 		} elseif (($importtype=='demo')){
 			if($importSuccess){
-				if(!block_exacomp_is_altversion()) $string = get_string('next_step', 'block_exacomp');
-				else $string = get_string('next_step_teacher', 'block_exacomp');
+				$string = get_string('next_step', 'block_exacomp');
 							
 				echo $OUTPUT->box(get_string("importsuccess", "block_exacomp").html_writer::empty_tag('br')
 					.html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one_admin.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))

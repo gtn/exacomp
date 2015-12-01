@@ -86,7 +86,7 @@ if($data) {
 	
 	echo html_writer::start_div();
 	
-	if(!block_exacomp_is_altversion() && isset($dropdown_subjects[$subjectid]->infolink))
+	if(isset($dropdown_subjects[$subjectid]->infolink))
 		echo html_writer::tag("p",get_string('infolink','block_exacomp') . html_writer::link($dropdown_subjects[$subjectid]->infolink, $dropdown_subjects[$subjectid]->infolink,array('target'=>'_blank')));
 
 	echo $output->print_competence_grid($niveaus, $skills, $subjects, $data, $selection, $courseid,$studentid);

@@ -83,10 +83,7 @@ if (isset ( $action ) && $action == 'save') {
 	if (! isset ( $_POST ['data'] ))
 		$headertext = get_string ( 'tick_some', 'block_exacomp' );
 	else {
-		if (block_exacomp_is_altversion())
-			$string = get_string ( 'next_step', 'block_exacomp' );
-		else
-			$string = get_string ( 'next_step_teacher', 'block_exacomp' );
+		$string = get_string ( 'next_step', 'block_exacomp' );
 		
 		$url = 'edit_course.php';
 		
