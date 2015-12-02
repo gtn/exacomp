@@ -11,7 +11,6 @@ class printer_TCPDF extends \TCPDF {
 	
 	public function __construct($orientation) {
 		parent::__construct($orientation);
-		$this->setImageScale(0.25);
 		$this->SetFont('helvetica', '', 9);
 		$this->setHeaderFont(['helvetica', '', 9]);
 	}
