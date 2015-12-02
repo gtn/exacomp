@@ -70,7 +70,7 @@ $string['tab_cross_subjects_overview'] = 'Übersicht';
 $string['tab_cross_subjects_course'] = 'Kursthemen';
 $string['tab_weekly_schedule'] = 'Wochenplan';
 
-$string['assign_descriptor_to_crosssubject'] = 'Die Teilkompetenz {$a} den folgenden Themen zuordnen:';
+$string['assign_descriptor_to_crosssubject'] = 'Die Teilkompetenz "{$a}" den folgenden Themen zuordnen:';
 $string['assign_descriptor_no_crosssubjects_available'] = 'Es sind keine Themen vorhanden, legen Sie welche an.';
 
 $string['first_configuration_step'] = 'Der erste Konfigurationsschritt besteht darin, Daten in das Exabis Competencies Modul zu importieren.';
@@ -274,7 +274,7 @@ $string['newsubmission'] = 'Erneute Abgabe';
 
 //Example Submission
 $string['example_submission_header']  = 'Aufgabe {$a} bearbeiten';
-$string['example_submission_info'] = 'Du bist dabei die Aufgabe {$a} zu bearbeiten. Deine Abgabe landet im ePortfolio und kann dort von dir und deinem Lehrern eingesehen werden.';
+$string['example_submission_info'] = 'Du bist dabei die Aufgabe "{$a}" zu bearbeiten. Deine Abgabe landet im ePortfolio und kann dort von dir und deinem Lehrern eingesehen werden.';
 $string['example_submission_subject'] = 'Neue Abgabe';
 $string['example_submission_message'] = 'Im Kurs {$a->course} wurde vom Schüler/innen {$a->student} eine neue Abgabe eingereicht.';
 

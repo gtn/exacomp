@@ -251,7 +251,7 @@ $string['allow_resubmission_info'] = 'The example is now allowed to be resubmite
 
 //Example Submission
 $string['example_submission_header']  = 'Aufgabe {$a} bearbeiten';
-$string['example_submission_info'] = 'Du bist dabei die Aufgabe {a} zu bearbeiten. Deine Abgabe landet im ePortfolio und kann dort von dir und deinem Lehrern eingesehen werden.';
+$string['example_submission_info'] = 'Du bist dabei die Aufgabe "{$a}" zu bearbeiten. Deine Abgabe landet im ePortfolio und kann dort von dir und deinem Lehrern eingesehen werden.';
 $string['submissionmissing']  = 'Es müssen zumindest ein Link oder eine Datei abgegeben werden';
 $string['example_submission_subject'] = 'New submission';
 $string['example_submission_message'] = 'Student {$a->student} handed in a new submission in {$a->course}.';
@@ -416,7 +416,7 @@ $string['no_student_edit'] = "edit mode - no participant";
 $string['save_as_draft'] = "share cross-subject as draft";
 $string['comps_and_material'] = "outcomes and exercises";
 $string['no_crosssubjs'] = 'No Cross-Subjects available.';
-$string['assign_descriptor_to_crosssubject'] = 'Assign the competence {a} to the following crosssubjects:';
+$string['assign_descriptor_to_crosssubject'] = 'Assign the competence "{$a}" to the following crosssubjects:';
 $string['assign_descriptor_no_crosssubjects_available'] = 'No crosssubjects are available.';
 $string['delete_drafts'] = 'Delete selected drafts';
 $string['share_crosssub'] = 'Share crosssubject with participants';
