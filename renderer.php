@@ -2358,7 +2358,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		global $DB;
 		
 		$exameval = $DB->get_record(block_exacomp::DB_EXAMPLEEVAL,array('exampleid'=>$exampleid,'studentid'=>$studentid,'courseid'=>$courseid));
-		if(!isset($exameval) || $exameval->resubmission == 1)
+		if(!$exameval || $exameval->resubmission)
 			return "";
 		else
 			return html_writer::link(
