@@ -25,7 +25,7 @@ defined('MOODLE_INTERNAL') || die;
 
 define('STUDENTS_PER_COLUMN', 5);
 
-require_once dirname(__FILE__)."/lib/xmllib.php";
+require_once __DIR__."/lib/xmllib.php";
 
 class block_exacomp_renderer extends plugin_renderer_base {
 	

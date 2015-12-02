@@ -1,6 +1,4 @@
 <?php
-
-use function block_exacomp\get_string;
 /* * *************************************************************
  *  Copyright notice
 *
@@ -26,10 +24,8 @@ use function block_exacomp\get_string;
 *  This copyright notice MUST APPEAR in all copies of the script!
 * ************************************************************* */
 
-require_once dirname(__FILE__)."/inc.php";
-require_once dirname(__FILE__) . '/example_submission_form.php';
-
-global $DB, $PAGE, $USER, $COURSE;
+require_once __DIR__.'/inc.php';
+require_once __DIR__.'/example_submission_form.php';
 
 $courseid = required_param('courseid', PARAM_INT);
 $exampleid = required_param('exampleid', PARAM_INT);

@@ -1,5 +1,7 @@
 <?php
 
+defined('MOODLE_INTERNAL') || die();
+
 class block_exacomp_db_layer {
 	
 	public $courseid = 0;

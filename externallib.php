@@ -1,9 +1,12 @@
 <?php
-require_once ("$CFG->libdir/externallib.php");
-require_once $CFG->dirroot . '/mod/assign/locallib.php';
-require_once $CFG->dirroot . '/mod/assign/submission/file/locallib.php';
-require_once $CFG->dirroot . '/lib/filelib.php';
-require_once dirname ( __FILE__ ) . "/inc.php";
+
+defined('MOODLE_INTERNAL') || die();
+
+require_once __DIR__.'/inc.php';
+require_once $CFG->libdir.'/externallib.php';
+require_once $CFG->dirroot.'/mod/assign/locallib.php';
+require_once $CFG->dirroot.'/mod/assign/submission/file/locallib.php';
+require_once $CFG->dirroot.'/lib/filelib.php';
 
 class block_exacomp_external extends external_api {
 	

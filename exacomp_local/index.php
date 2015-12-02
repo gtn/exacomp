@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-require_once(dirname(__FILE__).'/../../config.php');
+require_once(__DIR__.'/../../config.php');
 
 $site = get_site();
 $pluginname = get_string('pluginname', 'local_exacomp_local');

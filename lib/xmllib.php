@@ -1,5 +1,7 @@
 <?php
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once __DIR__.'/exabis_special_id_generator.php';
 
 class block_exacomp_ZipArchive extends ZipArchive {

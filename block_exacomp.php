@@ -24,4 +24,4 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once __DIR__ . '/lib/block_exacomp.class.php';
+require_once __DIR__.'/lib/block_exacomp.class.php';
