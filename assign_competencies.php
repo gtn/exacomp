@@ -66,7 +66,7 @@ $page_identifier = 'tab_competence_overview';
 $PAGE->set_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid, 'showevaluation'=>$showevaluation));
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
-$NG_PAGE = (object)[ 'url' => new block_exacomp\url('/blocks/exacomp/assign_competencies.php', array(
+$NG_PAGE = (object)[ 'url' => new moodle_url('/blocks/exacomp/assign_competencies.php', array(
 				'courseid' => $courseid,
 				'showevaluation' => $showevaluation,
 				'studentid' => $studentid,

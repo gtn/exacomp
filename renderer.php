@@ -519,7 +519,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 			$content .= html_writer::tag('li',
 					html_writer::link(
-						$NG_PAGE->url->copy(array('ng_subjectid' => $type->id, 'topicid'=>BLOCK_EXACOMP_SHOW_ALL)),
+						new block_exacomp\url($NG_PAGE->url, ['ng_subjectid' => $type->id, 'topicid'=>BLOCK_EXACOMP_SHOW_ALL]),
 						$type->title.$extra, array('class' => (!$selectedTopic && $type->id == $selectedSubject->id) ? 'type current' : 'type'))
 			);
 			
@@ -530,7 +530,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				}
 				
 				$content .= html_writer::tag('li',
-					html_writer::link($NG_PAGE->url->copy(array('ng_subjectid' => $type->id, 'topicid' => $subject->id)),
+					html_writer::link(new block_exacomp\url($NG_PAGE->url, ['ng_subjectid' => $type->id, 'topicid' => $subject->id]),
 							block_exacomp_get_topic_numbering($subject).' '.$subject->title.$extra, array('class' => ($selectedTopic && $subject->id == $selectedTopic->id) ? 'current' : ''))
 					);
 			}
@@ -588,7 +588,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$title = isset($topic->cattitle) ? $topic->cattitle : $topic->title;
 			$title_short = (strlen($title)>15)?substr($title, 0, 15).'...':$title;
 			$content .= html_writer::tag('li',
-					html_writer::link($NG_PAGE->url->copy(array('niveauid' => $topic->id)),
+					html_writer::link(new block_exacomp\url($NG_PAGE->url, ['niveauid' => $topic->id]),
 							$title_short, array('class' => ($topic->id == $selectedNiveau->id) ? 'current' : '', 'title'=>$title))
 					);
 		}

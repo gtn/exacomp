@@ -80,7 +80,7 @@ if($course_settings->uses_activities && !$activities && !$course_settings->show_
 else{
 	list($crosssubjects, $selectedCrosssubject) = block_exacomp_init_course_crosssubjects($courseid, optional_param('crosssubjid', 0, PARAM_INT), ($isTeacher)?0:$studentid);
 	
-	$NG_PAGE = (object)[ 'url' => new block_exacomp\url('/blocks/exacomp/cross_subjects.php', array(
+	$NG_PAGE = (object)[ 'url' => new moodle_url('/blocks/exacomp/cross_subjects.php', array(
 					'courseid' => $courseid,
 					'showevaluation' => $showevaluation,
 					'studentid' => $studentid,
