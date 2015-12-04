@@ -474,7 +474,7 @@
 			tr.toggleClass('open');
 			
 			//enable checkbox for teacher, when showing descriptor for student
-			$('input[name=data-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
+
 			$('input[name=add-grading-'+studentid+'-'+descrid+']').prop("disabled", false);
 			$('select[name=data-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
 			
@@ -637,6 +637,19 @@
 		}).done(function(msg) { alert(msg) });
 		
 		event.preventDefault();
+		return false;
+	});
+	
+	$(document).on('click','[exa-type=send-message-to-course]', function(event) {
+		
+		message = $('textarea[id=message]').val();
+		
+		block_exacomp.call_ajax({
+			message : message,
+			action : 'send-message-to-course'
+		});
+		
+		block_exacomp.popup_close();
 		return false;
 	});
 	

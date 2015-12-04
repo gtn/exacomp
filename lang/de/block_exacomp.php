@@ -541,6 +541,9 @@ $string['eventscrosssubjectadded'] = 'Thema freigegeben';
 $string['process'] = 'Bearbeitungsstand';
 $string['niveauclass'] = 'Niveaueinstufung';
 
+//Message
+$string['messagetocourse'] = 'Nachricht an alle Kursteilnehmer senden';
+
 //LIS Strings
 if(get_config('exacomp','alternativedatamodel')) {
 	/*langstrings for alternativedatamodel--*/

@@ -340,6 +340,15 @@ switch($action){
 		
 		echo block_exacomp_allow_resubmission($studentid, $exampleid, $courseid);
 		break;
+	case 'send-message-to-course':
+			if (!$isTeacher) {
+				print_error('noteacher');
+			}
+			$message = required_param('message', PARAM_TEXT);
+			$courseid = required_param('courseid', PARAM_INT);
+		
+			echo block_exacomp_send_message_to_course($courseid, $message);
+			break;
 	default:
 		print_error('wrong action: '.$action);
 }

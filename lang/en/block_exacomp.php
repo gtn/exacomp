@@ -516,3 +516,7 @@ $string['requirements'] = 'Was du schon k&ouml;nnen solltest: ';
 $string['forwhat'] = 'Wof&uuml;r du das brauchst: ';
 $string['howtocheck'] = 'Wie du dein K&ouml;nnen pr&uuml;fen kannst: ';
 $string['reached_topic'] = 'Ich habe diese Kompetenz erreicht: ';
+
+
+//Message
+$string['messagetocourse'] = 'Nachricht an alle Kursteilnehmer senden';

@@ -5800,16 +5800,23 @@ function block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $st
 	return $return;
 }
 function block_exacomp_get_message_icon($userid) {
-	global $DB, $CFG;
-	require_once($CFG->dirroot . '/message/lib.php');
-
-	$userto = $DB->get_record('user', array('id' => $userid));
-
-	message_messenger_requirejs();
-	$url = new moodle_url('message/index.php', array('id' => $userto->id));
-	$attributes = message_messenger_sendmessage_link_params($userto);
-
-	return html_writer::link($url, html_writer::tag('button',html_writer::img(new moodle_url('/blocks/exacomp/pix/envelope.png'), get_string('message','message'),array('title' => fullname($userto)))), $attributes);
+	global $DB, $CFG, $COURSE;
+	
+	if($userid != BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
+		require_once($CFG->dirroot . '/message/lib.php');
+	
+		$userto = $DB->get_record('user', array('id' => $userid));
+	
+		message_messenger_requirejs();
+		$url = new moodle_url('message/index.php', array('id' => $userto->id));
+		$attributes = message_messenger_sendmessage_link_params($userto);
+	
+		return html_writer::link($url, html_writer::tag('button',html_writer::img(new moodle_url('/blocks/exacomp/pix/envelope.png'), get_string('message','message'),array('title' => fullname($userto)))), $attributes);
+	} else {
+		$attributes = array('exa-type' => 'iframe-popup');
+		return html_writer::link(new moodle_url('message_to_course.php',array('courseid'=>$COURSE->id)),
+				html_writer::tag('button',html_writer::img(new moodle_url('/blocks/exacomp/pix/envelope.png'), get_string('message','message'),array('title' => get_string('messagetocourse','block_exacomp')))), $attributes);
+	}
 }
 function block_exacomp_send_notification($notificationtype, $userfrom, $userto, $subject, $message, $context, $contexturl) {
 	global $CFG, $DB;

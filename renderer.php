@@ -455,8 +455,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$content .= block_exacomp_studentselector($students,$selectedStudent,$NG_PAGE->url, BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
 			}
 
-			if(!$this->is_edit_mode() && $selectedStudent != BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $selectedStudent != BLOCK_EXACOMP_SHOW_STATISTIC) {
-			   $right_content .= block_exacomp_get_message_icon($selectedStudent);
+			if(!$this->is_edit_mode() && $selectedStudent != BLOCK_EXACOMP_SHOW_STATISTIC) {
+				$right_content .= block_exacomp_get_message_icon($selectedStudent);
 			}
 			
 			if ($this->is_edit_mode()) {
