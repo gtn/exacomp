@@ -19,6 +19,30 @@ class url extends \moodle_url {
 		}
 		return $object;
 	}
+	
+	protected function merge_overrideparams(array $overrideparams = null) {
+		$params = parent::merge_overrideparams($overrideparams);
+
+		$overrideparams = (array)$overrideparams;
+		foreach ($overrideparams as $key => $value) {
+			if ($value === null) {
+				unset($params[$key]);
+			}
+		}
+		return $params;
+	}
+	
+	public function params(array $params = null) {
+		parent::params($params);
+
+		$params = (array)$params;
+		foreach ($params as $key => $value) {
+			if ($value === null) {
+				unset($this->params[$key]);
+			}
+		}
+		return $this->params;
+	}
 }
 
 abstract class event extends \core\event\base {

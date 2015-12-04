@@ -46,11 +46,13 @@ $studentid = block_exacomp_get_studentid($isTeacher) ;
 if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS)
 	$studentid = 0;
 
+$selectedCourse = optional_param('pool_course', $courseid, PARAM_INT);
+
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_weekly_schedule';
 
 /* PAGE URL - MUST BE CHANGED */
-$PAGE->set_url('/blocks/exacomp/weekly_schedule.php', array('courseid' => $courseid));
+$PAGE->set_url('/blocks/exacomp/weekly_schedule.php', ['courseid' => $courseid, 'studentid'=>$studentid, 'pool_course'=>$selectedCourse]);
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
@@ -84,8 +86,6 @@ if ($student && optional_param('print', false, PARAM_BOOL)) {
 $output = block_exacomp_get_renderer();
 echo $output->header($context, $courseid, $page_identifier);
 
-$selectedCourse = optional_param('pool_course', $courseid, PARAM_INT);
-
 /* CONTENT REGION */
 if($isTeacher){
 	if(!$student) {
@@ -105,9 +105,7 @@ if($isTeacher){
 	echo html_writer::tag("input", null, array("type" => "hidden", "value" => $student->id, "id" => "menuexacomp_competence_grid_select_student"));
 }
 
-$student = $DB->get_record('user',array('id' => $studentid));
-
-echo $output->print_course_dropdown($selectedCourse, $studentid);
+echo $output->print_course_dropdown($selectedCourse);
 
 echo '<input type="button" value="Drucken" onclick="weekly_schedule_print();" />';
 

@@ -27,6 +27,8 @@ define('STUDENTS_PER_COLUMN', 5);
 
 require_once __DIR__."/lib/xmllib.php";
 
+use \block_exacomp\globals as g;
+
 class block_exacomp_renderer extends plugin_renderer_base {
 	
 	public function header($context=null, $courseid=0, $page_identifier="", $tabtree=true) {
@@ -5015,8 +5017,8 @@ var dataset = dataset.map(function (group) {
 		if($persistent_trash) $content .= html_writer::empty_tag('input', array('type'=>'button', 'id'=>'empty_trash', 'value'=>get_string('empty_trash', 'block_exacomp')));
 		return html_writer::div($content, '', array('id'=>'trash'));
 	}
-	public function print_course_dropdown($selectedCourse, $studentid=0){
-		global $PAGE, $DB;
+	public function print_course_dropdown($selectedCourse){
+		global $DB;
 		$content = get_string("choosecourse", "block_exacomp");
 		$options = array();
 		
@@ -5029,8 +5031,9 @@ var dataset = dataset.map(function (group) {
 			}
 		}
 		
+		$url = new block_exacomp\url(g::$PAGE->url, ['pool_course'=>null]);
 		$content .= html_writer::select($options, "lis_courses",$selectedCourse, false,
-				array("onchange" => "document.location.href='".$PAGE->url."&studentid=".$studentid."&pool_course='+this.value;"));
+				array("onchange" => "document.location.href='".$url->out()."&pool_course='+this.value;"));
 		
 		return $content;
 	}
