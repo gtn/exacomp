@@ -5813,9 +5813,15 @@ function block_exacomp_get_message_icon($userid) {
 	
 		return html_writer::link($url, html_writer::tag('button',html_writer::img(new moodle_url('/blocks/exacomp/pix/envelope.png'), get_string('message','message'),array('title' => fullname($userto)))), $attributes);
 	} else {
-		$attributes = array('exa-type' => 'iframe-popup');
-		return html_writer::link(new moodle_url('message_to_course.php',array('courseid'=>$COURSE->id)),
-				html_writer::tag('button',html_writer::img(new moodle_url('/blocks/exacomp/pix/envelope.png'), get_string('message','message'),array('title' => get_string('messagetocourse','block_exacomp')))), $attributes);
+		$attributes = array(
+			'exa-type' => 'iframe-popup',
+			'href'=>new moodle_url('message_to_course.php',array('courseid'=>$COURSE->id)),
+			'exa-width' => '340px',
+			'exa-height' => '340px',
+		);
+		return html_writer::tag('button',
+				html_writer::img(new moodle_url('/blocks/exacomp/pix/envelope.png'), get_string('message','message'),array('title' => get_string('messagetocourse','block_exacomp'))),
+				$attributes);
 	}
 }
 function block_exacomp_send_notification($notificationtype, $userfrom, $userto, $subject, $message, $context, $contexturl) {

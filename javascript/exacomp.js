@@ -81,8 +81,8 @@ window.block_exacomp = {
 			// ok: width: '80%',
 			// ok: width: '500px',
 			// ok: width: null, = automatic
-			height: '80%',
-			width: '85%',
+			height: config.height || '80%',
+			width: config.width || '85%',
 			// closeButtonTitle: 'clooose'
 		});
 		

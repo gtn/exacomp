@@ -411,7 +411,11 @@
 		event.preventDefault();
 
 		// open iframe from exa-url OR href attribute
-		block_exacomp.popup_iframe(this.getAttribute('exa-url') || this.getAttribute('href'));
+		block_exacomp.popup_iframe({
+			url: this.getAttribute('exa-url') || this.getAttribute('href'),
+			width: this.getAttribute('exa-width'),
+			height: this.getAttribute('exa-height'),
+		});
 	});
 	
 	$(document).on('click', '#hide-descriptor', function(event) {
