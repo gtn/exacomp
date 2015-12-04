@@ -87,6 +87,27 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $PAGE->requires;
 	}
 	
+	public function pix($image, $alt=null, $attributes=array()) {
+		$attributes += ["src" => g::$CFG->wwwroot.'/blocks/exacomp/pix/'.$image];
+		if ($alt) {
+			if (is_array($alt)) {
+				$attributes += $alt;
+			} else {
+				$attributes += ["alt" => $alt];
+			}
+		}
+		if (!empty($attributes['alt']) && !isset($attributes['title'])) {
+			// wenn alt, aber title nicht gesetzt: verwendung isset weil leerer '' title bedeutet kein title
+			$attributes['title'] = $attributes['alt'];
+		}
+
+		return html_writer::empty_tag("img", $attributes);
+	}
+	
+	public function local_pix_icon($image, $alt=null, $attributes=array()) {
+		return $this->pix($image, $alt=null, $attributes + ['class'=>'smallicon']);
+	}
+	
 	public function form_week_learningagenda($selectstudent,$action,$studentid, $view, $date = ''){
 		global $COURSE, $CFG;
 
@@ -2060,22 +2081,14 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 						}
 						
 						if ($url = block_exacomp_get_file_url($example, 'example_task')) {
-							$titleCell->text .= html_writer::link($url, $this->pix_icon("i/preview", get_string("preview")),array("target" => "_blank"));
+							$titleCell->text .= html_writer::link($url, $this->local_pix_icon("filesearch.png", get_string('preview')), array("target" => "_blank"));
 						}
 						
-						
-						if($example->iseditable==7){
-							$iconforlink="pix/elc20_1.png";
-							$titleiconforlink='ELC 20 Etapa';
-						}else{
-							$iconforlink="pix/i_11x11.png";
-							$titleiconforlink='Link';
-						}
 						
 						if($example->externalurl){
-							$titleCell->text .= html_writer::link($example->externalurl, $this->pix_icon("i/preview", $example->externalurl),array("target" => "_blank"));
+							$titleCell->text .= html_writer::link($example->externalurl, $this->local_pix_icon("globesearch.png", $example->externalurl),array("target" => "_blank"));
 						}elseif($example->externaltask){
-							$titleCell->text .= html_writer::link($example->externaltask, $this->pix_icon("i/preview", $example->externaltask),array("target" => "_blank"));
+							$titleCell->text .= html_writer::link($example->externaltask, $this->local_pix_icon("globesearch.png", $example->externaltask),array("target" => "_blank"));
 						}
 						
 						if ($url = block_exacomp_get_file_url($example, 'example_solution')) {
@@ -2086,8 +2099,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 							// no icons in print mode
 						} else {
 							if(!$example->externalurl && !$example->externaltask && !block_exacomp_get_file_url($example, 'example_solution') && !block_exacomp_get_file_url($example, 'example_task') && $example->description) 
-							$titleCell->text .= $this->pix_icon("i/preview", $example->description);
-							 
+								$titleCell->text .= $this->pix_icon("i/preview", $example->description);
+							
 							if($data->role == block_exacomp::ROLE_STUDENT) {
 								$titleCell->text .= $this->print_schedule_icon($example->id, $USER->id, $data->courseid);
 								
