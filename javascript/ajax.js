@@ -647,9 +647,8 @@
 		block_exacomp.call_ajax({
 			message : message,
 			action : 'send-message-to-course'
-		});
+		}).done(block_exacomp.popup_close());
 		
-		block_exacomp.popup_close();
 		return false;
 	});
 	
