@@ -6019,6 +6019,27 @@ function block_exacomp_course_has_examples($courseid){
 	
 	return (bool)$DB->get_field_sql($sql, array($courseid));
 }
+function block_exacomp_send_message_to_course($courseid, $message) {
+	global $USER;
+	
+	require_capability('moodle/site:sendmessage', context_system::instance());
+	block_exacomp_require_teacher($courseid);
+	
+	$students = block_exacomp_get_students_by_course($courseid);
+	
+	foreach($students as $student) {
+		if (empty($student->id) || isguestuser($student->id) || $student->id == $USER->id) {
+			continue;
+		}
+	
+		$messageid = message_post_message($USER, $student, $message, FORMAT_MOODLE);
+	
+		if (!$messageid) {
+			throw new moodle_exception('errorwhilesendingmessage', 'core_message');
+		}
+	
+	}
+}
 
 }
 

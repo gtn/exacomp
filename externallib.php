@@ -5442,7 +5442,44 @@ class block_exacomp_external extends external_api {
 		) ) );
 	}
 	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_send_message_to_course_parameters() {
+		return new external_function_parameters ( array (
+				'message' => new external_value ( PARAM_TEXT, 'message' ),
+				'courseid' => new external_value ( PARAM_INT, 'courseid' )
+		) );
+	}
 	
+	/**
+	 * Add student submission to example.
+	 *
+	 * @param int itemid (0 for new, >0 for existing)
+	 * @return array of course subjects
+	 */
+	public static function dakora_send_message_to_course($message, $courseid) {
+		global $CFG,$DB,$USER;
+	
+		$params = self::validate_parameters(self::dakora_send_message_to_course_parameters(), array('message'=>$messge,'courseid'=>$courseid));
+	
+		block_exacomp_send_message_to_course($courseid, $message);
+	
+		return array("success"=>true);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_single_structure
+	 */
+	public static function dakora_send_message_to_course_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status' )
+		) );
+	}
 	
 	/** 
 	* helper function to use same code for 2 ws
