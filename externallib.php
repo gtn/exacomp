@@ -3191,7 +3191,10 @@ class block_exacomp_external extends external_api {
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
 					'exampletitle' => new external_value ( PARAM_TEXT, 'title of example' ),
 					'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' )
-			) ) ) 
+			) ) ) ,
+			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
+			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
+			'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work')
 		) ) ;
 	}
 	/**
@@ -3248,7 +3251,10 @@ class block_exacomp_external extends external_api {
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
 					'exampletitle' => new external_value ( PARAM_TEXT, 'title of example' ),
 					'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' )
-			) ) ) 
+			) ) ),
+			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
+			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
+			'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work') 
 		) ) ;
 	}
 
@@ -4243,7 +4249,10 @@ class block_exacomp_external extends external_api {
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
 					'exampletitle' => new external_value ( PARAM_TEXT, 'title of example' ),
 					'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' )
-			) ) ) 
+			) ) ),
+			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
+			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
+			'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work') 
 		) ) ;
 	}
 	/**
@@ -4302,7 +4311,10 @@ class block_exacomp_external extends external_api {
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
 					'exampletitle' => new external_value ( PARAM_TEXT, 'title of example' ),
 					'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' )
-			) ) ) 
+			) ) ),
+			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
+			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
+			'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work') 
 		) ) ;
 	}
 	
@@ -5562,6 +5574,11 @@ class block_exacomp_external extends external_api {
 		$return = new stdClass();
 		$return->children = $children_return;
 		$return->examples = $examples_return;
+		
+		$descriptor_statistics = block_exacomp_external::get_descriptor_example_statistic($courseid, $userid, $descriptorid, $forall, $crosssubjid);
+		$return->examplestotal = $descriptor_example_statistic->total;
+		$return->examplesvisible = $descriptor_example_statistic->visible;
+		$return->exampleinwork = $descriptor_example_statistic->inwork;
 		
 		return $return;
 	}
