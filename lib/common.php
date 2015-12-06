@@ -131,6 +131,12 @@ class SimpleXMLElement extends \SimpleXMLElement {
 }
 
 class db {
+	/**
+	 * @param $table
+	 * @param $data
+	 * @param $where
+	 * @return null|object
+	 */
 	public static function update_record($table, $data, $where) {
 		global $DB;
 
@@ -143,22 +149,33 @@ class db {
 				$DB->update_record($table, $data);
 			}
 
-			return (object)($data + $where);
+			return (object)($data + (array)$dbItem);
 		}
 
 		return null;
 	}
 
+	/**
+	 * @param $table
+	 * @param $data
+	 * @param null $where
+	 * @return object
+	 * @throws exception
+	 */
 	public static function insert_or_update_record($table, $data, $where = null) {
 		global $DB;
 
 		$data = (array)$data;
 
 		if ($dbItem = $DB->get_record($table, $where !== null ? $where : $data)) {
-			if ($data) {
-				$data['id'] = $dbItem->id;
-				$DB->update_record($table, $data);
+			if (empty($data)) {
+				throw new exception('$data is empty');
 			}
+
+			$data['id'] = $dbItem->id;
+			$DB->update_record($table, $data);
+
+			return (object)($data + (array)$dbItem);
 		} else {
 			unset($data['id']);
 			if ($where !== null) {
@@ -166,9 +183,9 @@ class db {
 			}
 			$id = $DB->insert_record($table, $data);
 			$data['id'] = $id;
-		}
 
-		return (object)$data;
+			return (object)$data;
+		}
 	}
 }
 

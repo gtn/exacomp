@@ -12,6 +12,6 @@ run all tests
 vendor\bin\phpunit -c blocks/exacomp/tests/phpunit.xml
 
 run just one
-vendor\bin\phpunit block_exacomp_common_functions blocks\exacomp\tests\common_test.php
+vendor\bin\phpunit block_exacomp_common_db blocks\exacomp\tests\common\db_test.php
 
 
