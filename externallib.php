@@ -3194,7 +3194,7 @@ class block_exacomp_external extends external_api {
 			) ) ) ,
 			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
 			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
-			'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work')
+			//'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work')
 		) ) ;
 	}
 	/**
@@ -3254,7 +3254,7 @@ class block_exacomp_external extends external_api {
 			) ) ),
 			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
 			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
-			'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work') 
+			//'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work')
 		) ) ;
 	}
 
@@ -4252,7 +4252,7 @@ class block_exacomp_external extends external_api {
 			) ) ),
 			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
 			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
-			'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work') 
+			//'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work') 
 		) ) ;
 	}
 	/**
@@ -4314,10 +4314,10 @@ class block_exacomp_external extends external_api {
 			) ) ),
 			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
 			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
-			'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work') 
+			//'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work')
 		) ) ;
 	}
-	
+
 	/**
 	 * Returns description of method parameters
 	 *
