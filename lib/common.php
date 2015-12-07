@@ -12,8 +12,7 @@ class url extends \moodle_url {
 	 * @return self
 	 */
 	public function copy(array $overrideparams = null) {
-		$class = get_class();
-		$object = new $class($this);
+		$object = new static($this);
 		if ($overrideparams) {
 			$object->params($overrideparams);
 		}
@@ -81,8 +80,9 @@ class exception extends \moodle_exception {
 class SimpleXMLElement extends \SimpleXMLElement {
 	/**
 	 * Adds a child with $value inside CDATA
-	 * @param unknown $name
-	 * @param unknown $value
+	 * @param string $name
+	 * @param mixed $value
+	 * @return SimpleXMLElement
 	 */
 	public function addChildWithCDATA($name, $value = NULL) {
 		$new_child = $this->addChild($name);
@@ -115,9 +115,9 @@ class SimpleXMLElement extends \SimpleXMLElement {
 			$newNode = $node->ownerDocument->importNode(dom_import_simplexml($newNode), true);
 			$node->appendChild($newNode);
 
-			// return last children, this is the added child!
+			// return last child, this is the added child!
 			$children = $this->children();
-			return $children[count($children)-1];
+			return $children[$children->count()-1];
 		} else {
 			return parent::addChild($name, $value, $namespace);
 		}
@@ -146,7 +146,7 @@ class db {
 		if ($dbItem = $DB->get_record($table, $where)) {
 			if ($data) {
 				$data['id'] = $dbItem->id;
-				$DB->update_record($table, $data);
+				$DB->update_record($table, (object)$data);
 			}
 
 			return (object)($data + (array)$dbItem);
@@ -173,7 +173,7 @@ class db {
 			}
 
 			$data['id'] = $dbItem->id;
-			$DB->update_record($table, $data);
+			$DB->update_record($table, (object)$data);
 
 			return (object)($data + (array)$dbItem);
 		} else {
@@ -181,7 +181,7 @@ class db {
 			if ($where !== null) {
 				$data = $data + $where; // first the values of $data, then of $where, but don't override $data
 			}
-			$id = $DB->insert_record($table, $data);
+			$id = $DB->insert_record($table, (object)$data);
 			$data['id'] = $id;
 
 			return (object)$data;
@@ -234,7 +234,7 @@ class param {
 
 		$ret = array();
 		foreach ($values as $key=>$value) {
-			$value = static::_clean($value, $valueType, true);
+			$value = static::_clean($value, $valueType);
 			if ($value === null) continue;
 			
 			if ($keyType == PARAM_SEQUENCE) {
@@ -282,10 +282,10 @@ class param {
 		$param = static::get_param($parname);
 
 		if ($param === null) {
-			print_error('param not found: '.$parname);
-		} else {
-			return static::clean_array($param, $definition);
+			throw new exception('param not found: '.$parname);
 		}
+
+		return static::clean_array($param, $definition);
 	}
 	
 	public static function optional_object($parname, $definition) {
@@ -302,10 +302,10 @@ class param {
 		$param = static::get_param($parname);
 
 		if ($param === null) {
-			print_error('param not found: '.$parname);
-		} else {
-			return static::clean_object($param, $definition);
+			throw new exception('param not found: '.$parname);
 		}
+
+		return static::clean_object($param, $definition);
 	}
 	
 	public static function required_json($parname, $definition = null) {
@@ -390,7 +390,7 @@ function _plugin_name() {
  * This method is neccessary because a project based evaluation is available in the current exastud
  * version, which requires a different naming.
  */
-function get_string($identifier, $component = null, $a = null, $lazyload = false) {
+function get_string($identifier, $component = null, $a = null) {
 	$manager = get_string_manager();
 
 	if ($component === null)
@@ -411,7 +411,7 @@ function _t_check_identifier($string) {
 function _t_parse_string($string, $a) {
 	// copy from moodle/lib/classes/string_manager_standard.php
 	// Process array's and objects (except lang_strings).
-	if (is_array($a) or (is_object($a) && !($a instanceof lang_string))) {
+	if (is_array($a) or (is_object($a) && !($a instanceof \lang_string))) {
 		$a = (array)$a;
 		$search = array();
 		$replace = array();
@@ -420,7 +420,7 @@ function _t_parse_string($string, $a) {
 				// We do not support numeric keys - sorry!
 				continue;
 			}
-			if (is_array($value) or (is_object($value) && !($value instanceof lang_string))) {
+			if (is_array($value) or (is_object($value) && !($value instanceof \lang_string))) {
 				// We support just string or lang_string as value.
 				continue;
 			}

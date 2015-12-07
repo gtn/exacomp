@@ -92,12 +92,12 @@ class block_exacomp_external extends external_api {
 	 * @return array of course subjects
 	 */
 	public static function get_subjects($courseid) {
-		global $CFG, $DB;
+		global $DB;
 		
 		if (empty ( $courseid )) {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 		}
-		$params = self::validate_parameters ( self::get_subjects_parameters (), array (
+		self::validate_parameters ( self::get_subjects_parameters (), array (
 				'courseid' => $courseid 
 		) );
 		
@@ -252,10 +252,6 @@ class block_exacomp_external extends external_api {
 				), "", "compid,userid,reviewerid,value" ) 
 		);
 		
-		$subtopics = $DB->get_records ( 'block_exacomptopics', array (
-				'subjid' => $topicid 
-		), 'catid', 'id as subtopicid, title, catid' );
-		
 		$subtopics = $DB->get_records_sql ( '
 				SELECT t.id as subtopicid, t.title, t.catid
 				FROM {block_exacomptopics} t
@@ -400,7 +396,7 @@ class block_exacomp_external extends external_api {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 		}
 		
-		$params = self::validate_parameters ( self::get_competencies_parameters (), array (
+		self::validate_parameters ( self::get_competencies_parameters (), array (
 				'subtopicid' => $subtopicid,
 				'courseid' => $courseid 
 		) );
@@ -727,6 +723,7 @@ class block_exacomp_external extends external_api {
 		$filename = "";
 		
 		$conditions = $DB->sql_compare_text ( "plugin" ) . " = 'file' AND " . $DB->sql_compare_text ( "name" ) . " = 'enabled' AND value=1 AND assignment =" . $assignid;
+		$url = null;
 		if ($DB->get_record_select ( "assign_plugin_config", $conditions )) {
 			$fileenabled = true;
 			
@@ -752,7 +749,7 @@ class block_exacomp_external extends external_api {
 				"file" => $url,
 				"filename" => $filename,
 				"submissionenabled" => $assign->submissions_open (),
-				"grade" => $assign->get_user_grade ()->grade 
+				"grade" => $assign->get_user_grade()->grade // TODO: parameter missing
 		);
 	}
 	
@@ -902,13 +899,13 @@ class block_exacomp_external extends external_api {
 	 * @return external_multiple_structure
 	 */
 	public static function get_competence_by_id($competenceid) {
-		global $DB, $USER;
+		global $DB;
 		
 		if (empty ( $competenceid )) {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 		}
 		
-		$params = self::validate_parameters ( self::get_competence_by_id_parameters (), array (
+		self::validate_parameters ( self::get_competence_by_id_parameters (), array (
 				'competenceid' => $competenceid 
 		) );
 		
@@ -1197,7 +1194,7 @@ class block_exacomp_external extends external_api {
 	 * @return example
 	 */
 	public static function get_example_by_id($exampleid) {
-		global $CFG, $DB, $USER;
+		global $DB;
 		
 		if (empty ( $exampleid )) {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
@@ -1261,7 +1258,7 @@ class block_exacomp_external extends external_api {
 	 * @return list of descriptors
 	 */
 	public static function get_descriptors_for_example($exampleid, $courseid, $userid) {
-		global $CFG, $DB, $USER;
+		global $DB, $USER;
 		
 		if ($userid == 0)
 			$userid = $USER->id;
@@ -1380,10 +1377,10 @@ class block_exacomp_external extends external_api {
 	/**
 	 * Get all students for an external trainer
 	 * 
-	 * @return all items available
+	 * @return array all items available
 	 */
-	public static function get_external_trainer_students($trainerid) {
-		global $CFG, $DB, $USER;
+	public static function get_external_trainer_students() {
+		global $DB, $USER;
 		
 		$students = $DB->get_records ( 'block_exacompexternaltrainer', array (
 				'trainerid' => $USER->id 
@@ -1451,7 +1448,6 @@ class block_exacomp_external extends external_api {
 		return array (
 				"status" => $status 
 		);
-		;
 	}
 	
 	/**
@@ -1791,6 +1787,7 @@ class block_exacomp_external extends external_api {
 	
 		if ($CFG->block_exaport_app_externaleportfolio) {			
 			// export to Mahara
+			// TODO: besser als function call, nicht als include!
 			if ($filename != '') {
 				if ((include $CFG->dirroot.'/blocks/exacomp/upload_externalportfolio.php') == true) {
 					if ($maharaexport_success) {
@@ -1845,7 +1842,7 @@ class block_exacomp_external extends external_api {
 			$dbView->id = $DB->insert_record('block_exaportview', $dbView);
 			
 			//share the view with teachers
-			share_view_to_teachers($dbView->id, $courseid);
+			block_exaport_share_view_to_teachers($dbView->id);
 			
 			//add item to view
 			$DB->insert_record('block_exaportviewblock',array('viewid'=>$dbView->id,'positionx'=>1, 'positiony'=>1, 'type'=>'item', 'itemid'=>$itemid));
@@ -1960,9 +1957,11 @@ class block_exacomp_external extends external_api {
 			$context = context_user::instance ( $USER->id );
 			$fs = get_file_storage ();
 			
-			if (! $fs->file_exists ( $context->id, 'user', 'private', 0, '/', $filename ))
+			if (! $fs->file_exists ( $context->id, 'user', 'private', 0, '/', $filename )) {
+				// TODO: das geht so nicht
 				$form->save_stored_file ( 'file', $context->id, 'user', 'private', 0, '/', $filename, true );
-			
+			}
+
 			$pathnamehash = $fs->get_pathname_hash ( $context->id, 'user', 'private', 0, '/', $filename );
 			$temp_task = new moodle_url ( $CFG->wwwroot . '/blocks/exacomp/example_upload.php', array (
 					"action" => "serve",
@@ -2059,7 +2058,6 @@ class block_exacomp_external extends external_api {
 		}
 		
 		// insert into block_exacompitemexample
-		$update = new stdClass ();
 		$update = $DB->get_record ( 'block_exacompitemexample', array (
 				'itemid' => $itemid 
 		) );
@@ -2355,8 +2353,7 @@ class block_exacomp_external extends external_api {
 	public static function get_user_profile($userid) {
 		global $CFG, $DB, $USER;
 		require_once ("$CFG->dirroot/lib/enrollib.php");
-		require_once $CFG->dirroot . '/blocks/exacomp/lib/lib.php';
-		
+
 		$params = self::validate_parameters ( self::get_user_profile_parameters (), array (
 				'userid' => $userid 
 		) );
@@ -2376,16 +2373,12 @@ class block_exacomp_external extends external_api {
 		$user = $DB->get_record ( 'user', array (
 				'id' => $userid 
 		) );
-		$total = 0;
-		$reached = 0;
-		
+
 		// total data
 		$total_competencies = 0;
 		$total_examples = array ();
 		$total_user_competencies = 0;
 		$total_user_examples = array ();
-		
-		$response = array ();
 		
 		$courses = block_exacomp_external::get_courses ( $userid );
 		
@@ -2773,7 +2766,7 @@ class block_exacomp_external extends external_api {
 		if($type == 'file')
 			$example->externaltask = $example_task;
 		
-		$id = $DB->update_record (block_exacomp::DB_EXAMPLES, $example );
+		$DB->update_record (block_exacomp::DB_EXAMPLES, $example );
 		
 		if (! empty ( $comps )) {
 			$DB->delete_records (block_exacomp::DB_DESCEXAMP, array (
@@ -2834,7 +2827,6 @@ class block_exacomp_external extends external_api {
 		if(!$example)
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 				
-		require_once $CFG->dirroot . '/blocks/exacomp/lib/lib.php';
 		block_exacomp_delete_custom_example($exampleid);
 		
 		$items = $DB->get_records('block_exacompitemexample',array('exampleid' => $exampleid));
@@ -3194,7 +3186,7 @@ class block_exacomp_external extends external_api {
 			) ) ) ,
 			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
 			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
-			//'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work')
+			'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work')
 		) ) ;
 	}
 	/**
@@ -3254,7 +3246,7 @@ class block_exacomp_external extends external_api {
 			) ) ),
 			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
 			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
-			//'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work')
+			'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work')
 		) ) ;
 	}
 
@@ -3635,10 +3627,10 @@ class block_exacomp_external extends external_api {
 	 * 2 for student
 	 * 0 if false
 	 * 
-	 * @return int
+	 * @return array role
 	 */
 	public static function dakora_get_user_role() {
-		global $CFG, $DB, $USER;
+		global $USER;
 		
 		$params = self::validate_parameters ( self::dakora_get_user_role_parameters (), array (
 			) );
@@ -3807,12 +3799,12 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_examples_trash($courseid, $userid) {
 		global $USER, $DB;
-		
+
 		$params = self::validate_parameters ( self::dakora_get_examples_trash_parameters (), array (
 				'courseid'=>$courseid,
 				'userid'=>$userid
 			) );
-			
+
 		if($userid == 0)
 			$userid = $USER->id;
 			
@@ -4252,7 +4244,7 @@ class block_exacomp_external extends external_api {
 			) ) ),
 			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
 			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
-			//'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work') 
+			'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work')
 		) ) ;
 	}
 	/**
@@ -4314,7 +4306,7 @@ class block_exacomp_external extends external_api {
 			) ) ),
 			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
 			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
-			//'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work')
+			'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work')
 		) ) ;
 	}
 
@@ -4487,6 +4479,7 @@ class block_exacomp_external extends external_api {
 		$examples = block_exacomp_get_pre_planning_storage($creatorid, $courseid);
 			
 		foreach($examples as $example){
+			// TODO: was ist mit $userid?
 			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
 		}
 		
@@ -4839,7 +4832,7 @@ class block_exacomp_external extends external_api {
 			$dbView->id = $DB->insert_record('block_exaportview', $dbView);
 	
 			//share the view with teachers
-			share_view_to_teachers($dbView->id, $courseid);
+			block_exaport_share_view_to_teachers($dbView->id);
 	
 			//add item to view
 			$DB->insert_record('block_exaportviewblock',array('viewid'=>$dbView->id,'positionx'=>1, 'positiony'=>1, 'type'=>'item', 'itemid'=>$itemid));
@@ -5049,7 +5042,7 @@ class block_exacomp_external extends external_api {
 		$descriptor_example_statistic = block_exacomp_external::get_descriptor_example_statistic($courseid, $userid, $descriptorid, $forall, $crosssubjid);
 		$descriptor_return->examplestotal = $descriptor_example_statistic->total;
 		$descriptor_return->examplesvisible = $descriptor_example_statistic->visible;
-		$descriptor_return->exampleinwork = $descriptor_example_statistic->inwork;
+		$descriptor_return->examplesinwork = $descriptor_example_statistic->inwork;
 		
 		return $descriptor_return;
 	}
@@ -5074,7 +5067,7 @@ class block_exacomp_external extends external_api {
 			) ) ),
 			'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 			'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-			'exampleinwork' => new external_value (PARAM_INT, 'edited number of material')
+			'examplesinwork' => new external_value (PARAM_INT, 'edited number of material')
 		) ) ;
 	}
 	
@@ -5266,7 +5259,7 @@ class block_exacomp_external extends external_api {
 	 * @return
 	 */
 	public static function dakora_get_competence_profile_for_topic($courseid, $userid, $topicid) {
-		global $CFG, $DB, $USER;
+		global $DB, $USER;
 		if ($userid == 0)
 			$userid = $USER->id;
 	
@@ -5349,7 +5342,7 @@ class block_exacomp_external extends external_api {
 	 * @return
 	 */
 	public static function dakora_get_admin_grading_scheme() {
-		$params = self::validate_parameters ( self::dakora_get_admin_grading_scheme_parameters (), array () );
+		self::validate_parameters ( self::dakora_get_admin_grading_scheme_parameters (), array () );
 		$admin_scheme = get_config('exacomp', 'adminscheme');
 		
 		return ($admin_scheme==1 || $admin_scheme == 2 || $admin_scheme == 3)?$admin_scheme:0;
@@ -5473,9 +5466,7 @@ class block_exacomp_external extends external_api {
 	 * @return array of course subjects
 	 */
 	public static function dakora_send_message_to_course($message, $courseid) {
-		global $CFG,$DB,$USER;
-	
-		$params = self::validate_parameters(self::dakora_send_message_to_course_parameters(), array('message'=>$messge,'courseid'=>$courseid));
+		$params = self::validate_parameters(self::dakora_send_message_to_course_parameters(), array('message'=>$message,'courseid'=>$courseid));
 	
 		block_exacomp_send_message_to_course($courseid, $message);
 	
@@ -5512,19 +5503,18 @@ class block_exacomp_external extends external_api {
 		
 		$non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
 		
-		if(!$non_visibilites)
-			$non_visibilites = array();
-		
-		if($crosssubjid > 0)
+		if($crosssubjid > 0) {
 			$crossdesc = $DB->get_fieldset_select(block_exacomp::DB_DESCCROSS, 'descrid', 'crosssubjid=?', array($crosssubjid));
+		} else {
+			$crossdesc = [];
+		}
 		
-		
-		if(!$forall)
-			$non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+		if(!$forall) {
+			$non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY, 'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+		} else {
+			$non_visibilities_student = [];
+		}
 
-		if(!$non_visibilites_student)
-			$non_visibilites_student = array();
-			
 		$children_return = array();
 		foreach($children as $child){
 			if($child->examples || $show_all){
@@ -5543,7 +5533,7 @@ class block_exacomp_external extends external_api {
 					$child_return->hasmaterial = ($child->examples)?true:false;
 				}
 				
-				if(!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, non_visibilities_student))||$forall)){
+				if(!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, $non_visibilities_student))||$forall)){
 					if($crosssubjid == 0 || in_array($child->id, $crossdesc) || in_array($descriptorid, $crossdesc))
 						$children_return[] = $child_return;
 				}
@@ -5556,8 +5546,11 @@ class block_exacomp_external extends external_api {
 			$parent_descriptor = block_exacomp_get_examples_for_descriptor($parent_descriptor, array(SHOW_ALL_TAXONOMIES), $showexamples, $courseid);
 			
 			$example_non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
-			if(!$forall)
+			if(!$forall) {
 				$example_non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+			} else {
+				$example_non_visibilities_student = [];
+			}
 
 			foreach($parent_descriptor->examples as $example){
 			
@@ -5574,11 +5567,11 @@ class block_exacomp_external extends external_api {
 		$return = new stdClass();
 		$return->children = $children_return;
 		$return->examples = $examples_return;
-		
-		$descriptor_statistics = block_exacomp_external::get_descriptor_example_statistic($courseid, $userid, $descriptorid, $forall, $crosssubjid);
+
+		$descriptor_example_statistic = block_exacomp_external::get_descriptor_example_statistic($courseid, $userid, $descriptorid, $forall, $crosssubjid);
 		$return->examplestotal = $descriptor_example_statistic->total;
 		$return->examplesvisible = $descriptor_example_statistic->visible;
-		$return->exampleinwork = $descriptor_example_statistic->inwork;
+		$return->examplesinwork = $descriptor_example_statistic->inwork;
 		
 		return $return;
 	}
@@ -5649,8 +5642,11 @@ class block_exacomp_external extends external_api {
 		
 		$non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
 		
-		if(!$forall)
-			$non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+		if(!$forall) {
+			$non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY, 'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+		} else {
+			$non_visibilities_student = [];
+		}
 		
 		$descriptors_return = array();
 		foreach($descriptors as $descriptor){
@@ -5777,7 +5773,6 @@ class block_exacomp_external extends external_api {
 		return $examples_return;
 	}
 	private function get_descriptor_example_statistic($courseid, $userid, $descriptorid, $forall, $crosssubjid){
-		global $DB;
 		$return = new stdClass();
 		$return->total = 0;
 		$return->visible = 0;

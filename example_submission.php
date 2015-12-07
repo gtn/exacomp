@@ -112,7 +112,7 @@ if($formdata = $form->get_data()) {
 	$dbView->id = $DB->insert_record('block_exaportview', $dbView);
 		
 	//share the view with teachers
-	share_view_to_teachers($dbView->id, $courseid);
+	block_exaport_share_view_to_teachers($dbView->id, $courseid);
 		
 	//add item to view
 	$DB->insert_record('block_exaportviewblock',array('viewid'=>$dbView->id,'positionx'=>1, 'positiony'=>1, 'type'=>'item', 'itemid'=>$itemid));

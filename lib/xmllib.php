@@ -1008,13 +1008,6 @@ class block_exacomp_data_course_backup extends block_exacomp_data {
 		
 		return $where;
 	}
-	
-	public static function get_course_mod_list() {
-		$modules = $DB->get_records_sql("SELECT cm.*, m.name as modname
-				FROM {modules} m, {course_modules} cm
-				WHERE cm.course = ? AND cm.module = m.id AND m.name NOT IN ('label')",
-				array($this->get_courseid()));
-	}
 }
 
 class block_exacomp_data_importer extends block_exacomp_data {
