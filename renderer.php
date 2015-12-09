@@ -2202,13 +2202,13 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 								//if($data->role == block_exacomp::ROLE_STUDENT)
 									//$studentCell->text .= $this->print_student_example_evaluation_form($example->id, $student->id, $data->courseid);
 							}
-		
-							if ($data->role == block_exacomp::ROLE_TEACHER) {
-								$studentCellEvaluation->text .= $this->print_submission_icon($data->courseid, $example->id, $student->id);
-								$studentCellEvaluation->text .= $this->print_resubmission_icon($example->id, $student->id, $data->courseid);
-							}
-							
+
 							if($data->showevaluation) {
+								if ($data->role == block_exacomp::ROLE_TEACHER) {
+									$studentCellEvaluation->text .= $this->print_submission_icon($data->courseid, $example->id, $student->id);
+									$studentCellEvaluation->text .= $this->print_resubmission_icon($example->id, $student->id, $data->courseid);
+								}
+
 								$exampleRow->cells[] = $studentCellEvaluation;
 							}
 							
