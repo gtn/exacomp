@@ -3178,6 +3178,9 @@ class block_exacomp_external extends external_api {
 					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
 					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of child'),
 					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of child'),
+					'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
+					'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
+					'examplesinwork' => new external_value (PARAM_INT, 'edited number of material')
 			) ) ) ,
 			'examples' => new external_multiple_structure ( new external_single_structure ( array (
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
@@ -3237,7 +3240,10 @@ class block_exacomp_external extends external_api {
 					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
 					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of child'),
 					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of child'),
-					'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if child has material')
+					'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if child has material'),
+					'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
+					'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
+					'examplesinwork' => new external_value (PARAM_INT, 'edited number of material')
 			) ) ) ,
 			'examples' => new external_multiple_structure ( new external_single_structure ( array (
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
@@ -4236,6 +4242,9 @@ class block_exacomp_external extends external_api {
 					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
 					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of children'),
 					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of children'),
+					'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
+					'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
+					'examplesinwork' => new external_value (PARAM_INT, 'edited number of material')
 			) ) ) ,
 			'examples' => new external_multiple_structure ( new external_single_structure ( array (
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
@@ -4297,7 +4306,10 @@ class block_exacomp_external extends external_api {
 					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
 					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of children'),
 					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of children'),
-					'hasmaterial' => new external_value ( PARAM_BOOL, 'true or false if child has materials')
+					'hasmaterial' => new external_value ( PARAM_BOOL, 'true or false if child has materials'),
+					'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
+					'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
+					'examplesinwork' => new external_value (PARAM_INT, 'edited number of material')
 			) ) ) ,
 			'examples' => new external_multiple_structure ( new external_single_structure ( array (
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
@@ -5063,7 +5075,10 @@ class block_exacomp_external extends external_api {
 					'childtitle' => new external_value ( PARAM_TEXT, 'title of child' ),
 					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
 					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of children'),
-					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of children')
+					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of children'),
+					'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
+					'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
+					'examplesinwork' => new external_value (PARAM_INT, 'edited number of material')
 			) ) ),
 			'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 			'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
@@ -5520,7 +5535,6 @@ class block_exacomp_external extends external_api {
 		) );
 	}
 	
-	
 	/** 
 	* helper function to use same code for 2 ws
 	*/
@@ -5569,6 +5583,11 @@ class block_exacomp_external extends external_api {
 				if($show_all){
 					$child_return->hasmaterial = ($child->examples)?true:false;
 				}
+				
+				$result = block_exacomp_external::get_descriptor_example_statistic($courseid, $userid, $child->id, $forall, $crosssubjid);
+				$child_return->examplestotal = $result->total;
+				$child_return->examplesvisible = $result->visible;
+				$child_return->examplesinwork = $result->inwork;
 				
 				if(!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, $non_visibilities_student))||$forall)){
 					if($crosssubjid == 0 || in_array($child->id, $crossdesc) || in_array($descriptorid, $crossdesc))
