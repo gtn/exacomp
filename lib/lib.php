@@ -3357,10 +3357,10 @@ function block_exacomp_exaportexists(){
 	return $DB->get_record('block',array('name'=>'exaport'));
 }
 function block_exacomp_exastudexists(){
-	return class_exists('block_exastud_api') && block_exastud_api::active();
+	return class_exists('\block_exastud\api') && \block_exastud\api::active();
 }
 function block_exacomp_get_exastud_periods($userid = 0){
-	// TODO: change to block_exastud_api::get_student_periods_with_review(...);
+	// TODO: change to \block_exastud\api::get_student_periods_with_review(...);
 	
 	global $USER, $DB;
 	if($userid == 0)
@@ -3370,7 +3370,7 @@ function block_exacomp_get_exastud_periods($userid = 0){
 	return $DB->get_records_sql($sql,array("studentid"=>$userid));
 }
 function block_exacomp_get_exaport_items($userid = 0){
-	// TODO: change to block_exastud_api::....
+	// TODO: change to \block_exastud\api::....
 
 	global $USER, $DB;
 	if($userid == 0)

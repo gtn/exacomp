@@ -1364,7 +1364,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					$studentCell->attributes['class'] = 'exabis_comp_top_studentcol colgroup colgroup-' . $columnGroup;
 					$studentCell->colspan = $studentsColspan;
 					$studentCell->text = fullname($student);
-					if (!$this->is_print_mode() && block_exacomp_exastudexists() && ($info = block_exastud_api::get_student_review_link_info_for_teacher($student->id))) {
+					if (!$this->is_print_mode() && block_exacomp_exastudexists() && ($info = \block_exastud\api::get_student_review_link_info_for_teacher($student->id))) {
 						$studentCell->text .= ' <a href="'.$info->url.'" title="'.\block_exacomp\trans('de:Überfachliche Bewertung').'" onclick="window.open(this.href,this.target,\'width=880,height=660,scrollbars=yes\'); return false;">'.'<img src="pix/review_student.png" />'.'</a>';
 					}
 	
