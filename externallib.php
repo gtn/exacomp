@@ -5484,6 +5484,43 @@ class block_exacomp_external extends external_api {
 		) );
 	}
 	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_create_blocking_event_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value (PARAM_INT, 'id of course'),
+				'title' => new external_value ( PARAM_TEXT, 'title of new blocking event' )
+		) );
+	}
+	
+	/**
+	 * Create a new blocking event
+	 */
+	public static function dakora_create_blocking_event($courseid, $title) {
+		global $USER;
+		
+		$params = self::validate_parameters(self::dakora_create_blocking_event_parameters(), array('courseid'=>$courseid,'title'=>$title));
+	
+		block_exacomp_create_blocking_event($courseid, $title, $USER->id);
+	
+		return array("success"=>true);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_single_structure
+	 */
+	public static function dakora_create_blocking_event_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status' )
+		) );
+	}
+	
+	
 	/** 
 	* helper function to use same code for 2 ws
 	*/

@@ -353,28 +353,7 @@ switch($action){
 		$creatorid = required_param('creatorid', PARAM_INT);
 		$title = required_param('title', PARAM_TEXT);
 		
-		$example = new stdClass();
-		$example->title = $title;
-		$example->creatorid = $creatorid;
-		$example->blocking_event = 1;
-		
-		$exampleid = $DB->insert_record(block_exacomp::DB_EXAMPLES, $example);
-		
-		$schedule = new stdClass();
-		$schedule->studentid = 0;
-		$schedule->exampleid = $exampleid;
-		$schedule->creatorid = $creatorid;
-		$schedule->courseid = $courseid;
-
-		$scheduleid = $DB->insert_record(block_exacomp::DB_SCHEDULE, $schedule);
-		
-		$visibility = new stdClass();
-		$visibility->courseid = $courseid;
-		$visibility->exampleid = $exampleid;
-		$visibility->studentid = 0;
-		$visibility->visible = 1;
-		
-		$vibilityid = $DB->insert_record(block_exacomp::DB_EXAMPVISIBILITY, $visibility);
+		block_exacomp_create_blocking_event($courseid, $title, $creatorid);
 		
 		break;
 	default:

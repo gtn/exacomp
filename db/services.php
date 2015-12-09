@@ -78,7 +78,8 @@ $services = array(
 						'dakora_get_comp_grid_for_example',
 						'dakora_get_examples_for_descriptor_with_grading',
 						'dakora_get_examples_for_descriptor_for_crosssubject_with_grading',
-						'dakora_send_message_to_course'
+						'dakora_send_message_to_course',
+						'dakora_create_blocking_event'
 						), 	//web service functions of this service
 				'restrictedusers' =>0,					  //if enabled, the Moodle administrator must link some user to this service
 				//into the administration
@@ -626,6 +627,13 @@ $functions = array(
 				'methodname'  => 'dakora_send_message_to_course',		  //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'sends a message to all course students',	//human readable description of the web service function
+				'type'		=> 'write'				  //database rights of the web service function (read, write)
+		),
+		'dakora_create_blocking_event' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_create_blocking_event',		  //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'create a blocking event',	//human readable description of the web service function
 				'type'		=> 'write'				  //database rights of the web service function (read, write)
 		)
 );
