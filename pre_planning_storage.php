@@ -66,11 +66,11 @@ if(strcmp($action, 'empty')==0){
 }
 
 $schedules = block_exacomp_get_pre_planning_storage($creatorid, $courseid);
-if(!$schedules) {
-	echo get_string('noschedules_pre_planning_storage','block_exacomp');
-	echo $output->footer();
-	exit;
-}
+//if(!$schedules) {
+	//echo get_string('noschedules_pre_planning_storage','block_exacomp');
+	//echo $output->footer();
+	//exit;
+//}
 
 $students = block_exacomp_get_student_pool_examples($students, $courseid);
 
@@ -86,6 +86,7 @@ echo html_writer::start_tag('form', array('action'=>$PAGE->url->out(false).'&act
 echo $output->print_pre_planning_storage_pool();
 echo $output->print_pre_planning_storage_students($students, $examples);
 echo $output->print_example_trash(array(), false);
+echo $output->print_create_blocking_event();
 
 echo html_writer::div(html_writer::empty_tag('input', array('type'=>'button', 'id'=>'save_pre_planning_storage', 
 	'value'=>get_string('save_pre_planning_selection', 'block_exacomp'))).

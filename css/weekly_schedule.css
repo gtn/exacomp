@@ -331,3 +331,8 @@
 	background-color: rgb(246, 46, 39);
 	border: 1px solid rgb(246, 46, 39) !important;
 }
+
+#block_exacomp .state9 {
+	background-color: rgb(240, 230, 0);
+	border: 1px solid rgb(240, 230, 0) !important;
+}

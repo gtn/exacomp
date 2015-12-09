@@ -500,6 +500,9 @@ $string['empty_pre_planning_storage'] = 'Vorplanungsspeicher leeren';
 $string['noschedules_pre_planning_storage'] = 'Der Vorplanungsspeicher ist leer. Bitte legen Sie über die Kompetenzraster neue Lernmaterialien in den Vorplanungsspeicher.';
 $string['empty_trash'] = 'Papierkorb leeren';
 $string['to_weekly_schedule'] = 'Zum Wochenplan';
+$string['blocking_event'] = 'Sperrelement erstellen';
+$string['blocking_event_title'] = 'Titel';
+$string['blocking_event_create'] = 'Zum Vorplanungsspeicher hinzufügen';
 
 //Notifications
 $string['notification_submission_subject'] = '{$a->student} hat eine Lösung zum Beispiel {$a->example} eingereicht.';

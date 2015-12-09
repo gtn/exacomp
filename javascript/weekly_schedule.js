@@ -6,6 +6,7 @@
 	var EXAMPLE_STATE_IN_CALENDAR = 2; // example is in work -> in calendar
 	var EXAMPLE_STATE_SUBMITTED = 3; //state 3 = submission for example / example closed (for submission no file upload etc is necessary) -> closed
 	var EXAMPLE_STATE_EVALUATED = 4; // evaluated -> only from teacher TODO: item or exacomp evaluation?
+	var EXAMPLE_STATE_BLOCKED = 9; //blocking event
 	
 	$(document).on('click', '#empty_trash', function(event) {
 		studentid = block_exacomp.get_studentid();
@@ -178,7 +179,8 @@
 		function add_pool_item(data) {
 			var el = $( "<div class='fc-event'>" ).appendTo( $eventDiv ).text(data.title);
 			
-			el.append('	<div class="event-assoc">'+data.assoc_url+/*((event.solution)?event.solution:'')+*/'</div>');
+			if(data.state < 9)
+				el.append('	<div class="event-assoc">'+data.assoc_url+/*((event.solution)?event.solution:'')+*/'</div>');
 			
 			if(data.externalurl != null)
 				el.append('<div class="event-task">'+data.externalurl+'</div>');
@@ -203,7 +205,8 @@
 			var el = $( "<div class='fc-event'>" ).appendTo( $trash ).text( 
 					data.title);
 			
-			el.append('	<div class="event-assoc">'+data.assoc_url+'</div>');
+			if(data.state < 9)
+				el.append('	<div class="event-assoc">'+data.assoc_url+'</div>');
 			
 			el.data('event', data);
 			
@@ -367,7 +370,7 @@
 						'	<div class="event-extra">' +
 						//'	<div class="event-course">Kurs: '+event.courseinfo+'</div>'+
 						//'	<div>L: <input type="checkbox" '+((event.teacher_evaluation>0)?'checked=checked':'')+'/> S: <input type="checkbox" '+((event.student_evaluation>0)?'checked=checked':'')+'/></div>' +
-						'	<div class="event-assoc">'+event.assoc_url+/*((event.solution)?event.solution:'')+*/'</div>' +
+						((event.state < 9) ? '	<div class="event-assoc">'+event.assoc_url+/*((event.solution)?event.solution:'')+*/'</div>' : '') +
 						((event.externalurl != null) ? '	<div class="event-task">'+event.externalurl+'</div>' : '' )+
 						((event.task != null) ? '	<div class="event-task">'+event.task+'</div>' : '' )+
 						((event.submission_url != null) ? '	<div class="event-submission">'+event.submission_url+'</div>' : '' )+

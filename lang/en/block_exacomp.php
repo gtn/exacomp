@@ -461,6 +461,9 @@ $string['empty_pre_planning_storage'] = 'Empty pre-planning storage';
 $string['noschedules_pre_planning_storage'] = 'Pre-planning storage has been emptied, use the competence grid to put new examples in the pre-planning storage.';
 $string['empty_trash'] = 'Empty trash bin';
 $string['to_weekly_schedule'] = 'To weekly schedule';
+$string['blocking_event'] = 'Create blocking event';
+$string['blocking_event_title'] = 'title';
+$string['blocking_event_create'] = 'Add to pre-planning storage';
 
 //Statistics
 $string['process'] = 'State of process';

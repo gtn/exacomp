@@ -1,4 +1,11 @@
 (function($){
+	var $eventDiv = $( '#external-events' );
+	var $trash = $( '#trash' );
+	var $sortableUl = $( '#sortable' );
+	
+	var pool_items;
+
+	
 	$(document).on('click', '#use_example', function(event) {
 		
 		if(this.checked){
@@ -7,6 +14,24 @@
 		else{
 			$(this).parent().parent().addClass('not-used');
 		}
+	});
+	
+	$(document).on('click', '#blocking_event_create', function(event) {
+		title = $('#blocking_event_title').val();
+		creatorid = $(this).attr('creatorid');
+		
+		block_exacomp.call_ajax({
+			title : title,
+			creatorid : creatorid,
+			action : 'create_blocking_event'
+		}).done(function(msg) {
+			location.reload();
+			block_exacomp_get_pre_planning_storage(function(storage) {
+				$.each(storage, function(i, item){ 
+					add_pool_item(item); 
+				});
+			});
+		});
 	});
 	
 	var students = [];
@@ -78,9 +103,20 @@
 			action : 'remove-example-from-schedule'
 		});
 	}
-	
+	function add_pool_item(data) {
+		var li = $( "<li class = 'not-used fc-event'>").appendTo($sortableUl).text(data.title);
+		
+		li.append('	<div class="event-assoc">'+data.assoc_url+' <input type="checkbox" id="use_example" exampleid="'+data.exampleid+'" scheduleid="'+data.id+'"/></div>');
+		
+		li.data('event', data);
+	}
 	$(function() {
 	
+		var $eventDiv = $( '#external-events' );
+		var $trash = $( '#trash' );
+		var $sortableUl = $( '#sortable' );
+		
+		var pool_items;
 		/* initialize the external events
 		-----------------------------------------------------------------*/
 	

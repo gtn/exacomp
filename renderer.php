@@ -5214,4 +5214,12 @@ var dataset = dataset.map(function (group) {
 		}
 		return $content;
 	}
+	public function print_create_blocking_event(){
+		global $USER;
+		
+		$content = html_writer::tag('h4', get_string('blocking_event', 'block_exacomp'));
+		$content .= html_writer::empty_tag('input', array('type'=>'text', 'id'=>'blocking_event_title', 'placeholder'=>get_string('blocking_event_title', 'block_exacomp')));
+		$content .= html_writer::empty_tag('input', array('type'=>'button', 'id'=>'blocking_event_create', 'value'=>get_string('blocking_event_create', 'block_exacomp'), 'creatorid'=>$USER->id));
+		return html_writer::div($content, '', array('id'=>'blocking_event'));
+	}
 }

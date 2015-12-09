@@ -2415,8 +2415,16 @@ function block_exacomp_set_coursetopics($courseid, $topicids) {
 
 	block_exacomp_update_example_visibilities($courseid, $examples);
   
-	//delete unconnected examples
 	// TODO: maybe move this whole part to block_exacomp_data::normalize_database() or better a new normalize_course($courseid);
+	
+	//delete unconnected examples
+	//add blocking events to examples which are not deleted
+	$blocking_events = $DB->get_records(block_exacomp::DB_EXAMPLES, array('blocking_event'=>1));
+	
+	foreach($blocking_events as $event){
+		$examples[$event->id] = $event;
+	}
+	
 	$where = $examples ? join(',', array_keys($examples)) : '-1';
 	$DB->execute("DELETE FROM {".block_exacomp::DB_SCHEDULE."} WHERE courseid = ? AND exampleid NOT IN($where)", array($courseid));
 }
@@ -5594,6 +5602,10 @@ function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $stud
 	//state 4 = evaluated -> only from teacher exacomp evaluation nE
 	//state 5 = evaluated -> only from teacher exacomp evaluation > nE
 	//TODO state 9 = locked time
+	
+	$example = $DB->get_record(block_exacomp::DB_EXAMPLES, array('id'=>$exampleid));
+		if($example->blocking_event)
+			return block_exacomp::EXAMPLE_STATE_LOCKED_TIME;
 	
 	$comp = $DB->get_record(block_exacomp::DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>$studentid));
 

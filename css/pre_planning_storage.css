@@ -31,6 +31,16 @@
 	margin-bottom: 25px;
 }
 
+#block_exacomp #blocking_event {
+	float: left;
+	width: 300px;
+	padding: 0 10px;
+	background: #eee;
+	text-align: left;
+	margin-bottom: 25px;
+	margin-left: 25px;
+}
+
 #block_exacomp #trash.hover {
 	background: #fddedd;
 }
