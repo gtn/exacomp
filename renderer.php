@@ -831,10 +831,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 	}
 public function print_competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0,$studentid=0) {
-		global $CFG, $DB, $global_scheme, $global_scheme_values;
+		global $CFG, $DB;
+
+		$global_scheme = \block_exacomp\global_config::get_scheme_id();
+		$global_scheme_values = \block_exacomp\global_config::get_scheme_items();
+
 
 		$headFlag = false;
-		
+
 		$context = context_course::instance($courseid);
 		$role = block_exacomp_is_teacher($context) ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT;
 		$editmode = (($studentid == 0 || $studentid == BLOCK_EXACOMP_SHOW_STATISTIC) && $role == block_exacomp::ROLE_TEACHER) ? true : false;
@@ -1233,7 +1237,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		
 		$cell = new html_table_cell();
 		$cell->rowspan = 2;
-		$cell->colspan = 2;
+		$cell->colspan = 3;
 		$cell->text = get_string('profoundness_description','block_exacomp');
 		$headerrow->cells[] = $cell;
 		
@@ -2608,12 +2612,18 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	 * @return String $select html code for select
 	 */
 	public function generate_select($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false, $profoundness = false, $reviewerid = null) {
-		global $USER, $global_scheme, $global_scheme_values;
+		global $USER;
 		
-	   if(strcmp($evaluation, 'teacher')==0){
+		$global_scheme = \block_exacomp\global_config::get_scheme_id();
+		$global_scheme_values = \block_exacomp\global_config::get_scheme_items();
+
+		if(strcmp($evaluation, 'teacher')==0){
 			$options[-1] = ' ';
-			for($i=0;$i<=$scheme;$i++)
-				$options[$i] = (!$profoundness) ? (($global_scheme==0)?$i:$global_scheme_values[$i]) : get_string('profoundness_'.$i,'block_exacomp');
+			for($i=0;$i<=$scheme;$i++) {
+				// disable profoundness here for now
+				// $options[$i] = (!$profoundness) ? (($global_scheme==0)?$i:$global_scheme_values[$i]) : get_string('profoundness_'.$i,'block_exacomp');
+				 $options[$i] = ($global_scheme==0)?$i:$global_scheme_values[$i];
+			}
 		}else{
 			$options[0] = '';
 			$stars = '*';
@@ -2723,7 +2733,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	 * @param unknown $headertext
 	 */
 	public function print_edit_course($settings, $courseid, $headertext){
-		global $DB, $global_scheme;
+		global $DB;
+
+		$global_scheme = \block_exacomp\global_config::get_scheme_id();
+
 		$header = html_writer::tag('p', $headertext).html_writer::empty_tag('br');
 
 		$input_grading = "";
@@ -2741,8 +2754,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$input_examples = html_writer::checkbox('show_all_examples', 1, $settings->show_all_examples == 1, get_string('show_all_examples', 'block_exacomp'))
 		.html_writer::empty_tag('br');
 
-		// $input_profoundness = html_writer::checkbox('profoundness', 1, $settings->profoundness==1, get_string('useprofoundness', 'block_exacomp'))
-		// .html_writer::empty_tag('br');
+		$input_profoundness = html_writer::checkbox('profoundness', 1, $settings->profoundness==1, get_string('useprofoundness', 'block_exacomp'))
+		.html_writer::empty_tag('br');
 		
 		$input_nostudents = html_writer::checkbox('nostudents', 1, $settings->nostudents==1, get_string('usenostudents', 'block_exacomp'))
 		.html_writer::empty_tag('br');
@@ -2756,7 +2769,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$hiddenaction = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'action', 'value'=>'save_coursesettings'));
 
 		$div = html_writer::div(html_writer::tag('form',
-				$input_grading.$input_activities.$input_descriptors.$input_examples.$hiddenaction.$input_nostudents.$input_taxonomies.$input_submit,
+				$input_grading.$input_activities.$input_descriptors.$input_examples.$hiddenaction.$input_profoundness.$input_nostudents.$input_taxonomies.$input_submit,
 				array('action'=>'edit_course.php?courseid='.$courseid, 'method'=>'post')), 'block_excomp_center');
 
 		$content = html_writer::tag("div",$header.$div, array("id"=>"exabis_competences_block"));
@@ -2873,10 +2886,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 						//create description for on mouse over
 						$text=$example->description;
 						$text = str_replace("\"","",$text);
-						$text = str_replace("\'","",$text);
+						$text = str_replace("'","",$text);
 						$text = str_replace("\n"," ",$text);
 						$text = str_replace("\r"," ",$text);
-						$text = str_replace(":","\:",$text);
+						$text = str_replace(":",":",$text);
 							
 						$example_content = '';
 
@@ -3957,8 +3970,8 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 	}
 	
 	private function print_radar_graph_topic($labels, $data1, $data2, $canvasid){
-		global $global_scheme_values;
-		
+		$global_scheme_values = \block_exacomp\global_config::get_scheme_items();
+
 		return '<script>
 		var radarChartData = {
 			labels: ['.$labels.'],
@@ -4888,7 +4901,9 @@ var dataset = dataset.map(function (group) {
 		return $html_tree;
 	}
 	function print_statistic_table($courseid, $students, $item, $descriptor=true, $scheme=1){
-		global $global_scheme, $global_scheme_values;
+		$global_scheme = \block_exacomp\global_config::get_scheme_id();
+		$global_scheme_values = \block_exacomp\global_config::get_scheme_items();
+
 		if($descriptor)
 			list($self, $student_oB, $student_iA, $teacher, $teacher_oB, $teacher_iA,
 						$self_title, $student_oB_title, $student_iA_title, $teacher_title, 
@@ -5128,7 +5143,9 @@ var dataset = dataset.map(function (group) {
 	}	
 	
 	public function print_lm_graph_legend() {
-		global $global_scheme, $global_scheme_values;
+		$global_scheme = \block_exacomp\global_config::get_scheme_id();
+		$global_scheme_values = \block_exacomp\global_config::get_scheme_items();
+
 		$content = html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","lmoB");
 		$content .= ' '.get_string("oB","block_exacomp").' ';
 

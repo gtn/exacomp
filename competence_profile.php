@@ -59,7 +59,7 @@ block_exacomp_build_breadcrum_navigation($courseid);
 
 $output = block_exacomp_get_renderer();
 // build tab navigation & print header
-echo $output->header($context, $courseid, (!$isTeacher)?'tab_competence_profile':$page_identifier);
+echo $output->header($context, $courseid, $page_identifier);
 
 /* CONTENT REGION */
 
@@ -163,5 +163,3 @@ if($profile_settings->useexastud == 1){
 
 /* END CONTENT REGION */
 echo $output->footer();
-
-?>

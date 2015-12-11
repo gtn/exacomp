@@ -101,4 +101,3 @@ echo $output->print_edit_course($courseSettings, $courseid, $headertext);
 
 /* END CONTENT REGION */
 echo $output->footer();
-?>
