@@ -2050,7 +2050,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	
 					$titleCell = new html_table_cell();
 					$titleCell->style = "padding-left: ". ($padding + 20 )."px";
-					$titleCell->text = html_writer::div(html_writer::tag('span', $example->title, array('title'=>$example->description)));
+					$title = '';
+					if ($author = $example->get_author()) $title .= get_string('author', 'repository').": ".$author."\n";
+					$title .= strip_tags($example->description);
+					$titleCell->text = html_writer::div(html_writer::tag('span', $example->title, array('title'=>$title)));
 					
 				   if(!$statistic && !$this->is_print_mode()){
 						

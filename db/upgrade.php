@@ -1127,7 +1127,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		
 		/* block_exacomptopicuser_mm */
 		//transfer data from block_exacomptopicuser_mm to block_exacompcompuser_mm and delete table block_exacomptopicuser_mm
-		$results = $DB->get_records('block_exacomptopicuser_mm');
+		$result = $DB->get_records('block_exacomptopicuser_mm');
 		
 		foreach($result as $record){
 			$insert = new stdClass();
@@ -2325,7 +2325,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			$fs->delete_area_files(context_system::instance()->id, 'block_exacomp', $type, $item->id);
 			
 			// reimport
-			$file = $fs->create_file_from_storedfile(array(
+			$fs->create_file_from_storedfile(array(
 				'contextid' => context_system::instance()->id,
 				'component' => 'block_exacomp',
 				'filearea' => $type,
@@ -2560,7 +2560,21 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2015120901, 'exacomp');
 	}
-	
+    if ($oldversion < 2015121500) {
+
+        // Define field author to be added to block_exacompexamples.
+        $table = new xmldb_table('block_exacompexamples');
+        $field = new xmldb_field('author', XMLDB_TYPE_TEXT, null, null, null, null, null, 'blocking_event');
+
+        // Conditionally launch add field author.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2015121500, 'exacomp');
+    }
+
 	/*
 	 * insert new upgrade scripts before this comment section
 	 * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!

@@ -862,7 +862,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 	$examples = $DB->get_records_sql(
 			"SELECT de.id as deid, e.id, e.title, e.externalurl, e.source, ".
 				($mind_visibility?"evis.visible,":"")."
-				e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe
+				e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author
 				FROM {" . block_exacomp::DB_EXAMPLES . "} e
 				JOIN {" . block_exacomp::DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?"
 			.($mind_visibility?' JOIN {'.block_exacomp::DB_EXAMPVISIBILITY.'} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.courseid=? '
@@ -872,6 +872,9 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 			. (($showallexamples) ? " 1=1 " : " e.creatorid > 0")
 			. " ORDER BY de.sorting"
 			, array($descriptor->id, $courseid));
+
+	$examples = \block_exacomp\example::create_objects($examples);
+
 	foreach($examples as $example){
 		$example->taxonomies = block_exacomp_get_taxonomies_by_example($example);
 		
@@ -904,7 +907,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 	foreach($filtered_examples as $example){
 		$descriptor->examples[$example->id] = $example;
 	}
-	
+
 	return $descriptor;
 }
 
