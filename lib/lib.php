@@ -454,7 +454,7 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 	else 
 		block_exacomp_notify_all_teachers_about_self_assessment($courseid);
 		
-	\block_exacomp\event\competence_assigned::log(['objecttable' => ($comptype == block_exacomp::TYPE_DESCRIPTOR) ? 'block_exacompdescriptors' : 'block_exacomptopics', 'objectid' => $compid, 'contextid' => $courseid, 'relateduserid' => $userid]);
+	\block_exacomp\event\competence_assigned::log(['objecttable' => ($comptype == block_exacomp::TYPE_DESCRIPTOR) ? 'block_exacompdescriptors' : 'block_exacomptopics', 'objectid' => $compid, 'courseid' => $courseid, 'relateduserid' => $userid]);
 	
 	return $id;
 }
