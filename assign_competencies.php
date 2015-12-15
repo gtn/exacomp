@@ -168,6 +168,8 @@ echo $output->print_competence_overview_form_start($selectedNiveau, $selectedTop
 //dropdowns for subjects and topics and students -> if user is teacher
 echo $output->print_overview_dropdowns(block_exacomp_get_schooltypetree_by_topics($courseTopics), $selectedTopic?$selectedTopic->id:null, $selectedNiveau->id, $allCourseStudents, (!$editmode) ? $studentid : $selectedStudentid, $isTeacher);
 
+echo '<div class="clearfix"></div>';
+
 if($selectedNiveau->id != SHOW_ALL_NIVEAUS){
 	echo $output->print_overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
 			
@@ -190,15 +192,23 @@ if($selectedNiveau->id != SHOW_ALL_NIVEAUS){
 
 echo html_writer::start_tag("div", array("id"=>"exabis_competences_block"));
 echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
+
 echo html_writer::start_tag("div", array("class"=>"gridlayout"));
 
-echo $output->print_topics_menu(block_exacomp_get_schooltypetree_by_topics($courseTopics), $selectedSubject, $selectedTopic); 
+echo '<div class="gridlayout-left">';
+echo $output->print_topics_menu(block_exacomp_get_schooltypetree_by_topics($courseTopics), $selectedSubject, $selectedTopic);
+echo '</div>';
+echo '<div class="gridlayout-right">';
 echo $output->print_niveaus_menu($niveaus,$selectedNiveau,$selectedTopic);
+
+echo '<div class="clearfix"></div>';
+
 if($course_settings->nostudents != 1)
 	echo $output->print_overview_legend($isTeacher);
 if(!block_exacomp_is_altversion() && $course_settings->nostudents != 1 && $studentid) echo $output->print_student_evaluation($showevaluation, $isTeacher,$selectedNiveau->id,$selectedTopic->id, $studentid);
 
 echo $output->print_competence_overview($competence_tree, $courseid, $students, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, (block_exacomp_is_altversion() && $selectedNiveau->id != SHOW_ALL_NIVEAUS), false, 0, $statistic);
+echo '</div>';
 
 echo html_writer::end_tag("div");
 echo html_writer::end_tag("div");

@@ -577,40 +577,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$studentid = optional_param('studentid', BLOCK_EXACOMP_SHOW_ALL_STUDENTS,PARAM_INT);
 		//$subjectid = 
 		
-		$content = html_writer::start_div('topics_menu');
+		$content = html_writer::start_div('niveaus_menu');
 		$content .= html_writer::start_tag('ul');
-		
-		// TODO:sorting
-		/*
-		echo "<pre>"; var_dump($niveaus);
-		// sort topics
-		uasort($niveaus, function($a, $b) {
-			// tabletype (there can be descriptors and topics in the $niveaus array)
-			$ret = strcmp($a->tabletype, $b->tabletype);
-			if ($ret !== 0)
-				return $ret;
-			// first imported, then generated
-			if ($a->source != block_exacomp::DATA_SOURCE_CUSTOM && $b->source == block_exacomp::DATA_SOURCE_CUSTOM)
-				return -1;
-			if ($a->source == block_exacomp::DATA_SOURCE_CUSTOM && $b->source != block_exacomp::DATA_SOURCE_CUSTOM)
-				return 1;
-			// then sorting
-			if ($a->sorting < $b->sorting)
-				return -1;
-			if ($a->sorting > $b->sorting)
-				return 1;
 
-			// last by title
-			return strcmp($a->title, $b->title);
-		});
-		*/
-		
-		foreach($niveaus as $topic) {
-			$title = isset($topic->cattitle) ? $topic->cattitle : $topic->title;
-			$title_short = (strlen($title)>15)?substr($title, 0, 15).'...':$title;
+		foreach ($niveaus as $niveau) {
+			$title = isset($niveau->cattitle) ? $niveau->cattitle : $niveau->title;
+			$subtitle = $niveau->get_subtitle();
 			$content .= html_writer::tag('li',
-					html_writer::link(new block_exacomp\url($NG_PAGE->url, ['niveauid' => $topic->id]),
-							$title_short, array('class' => ($topic->id == $selectedNiveau->id) ? 'current' : '', 'title'=>$title))
+					html_writer::link(new block_exacomp\url($NG_PAGE->url, ['niveauid' => $niveau->id]),
+							$title.($subtitle?'<span class="subtitle">'.$subtitle.'</span>':''), array('class' => ($niveau->id == $selectedNiveau->id) ? 'current' : '', 'title'=>$title))
 					);
 		}
 		
@@ -2491,11 +2466,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
 		return $evaluation;
 	}
-	public function print_overview_legend($teacher, $isCrosssub = false) {
+	public function print_overview_legend($teacher) {
 		$legend = "";
-		
-		if(!$isCrosssub)
-			$legend = html_writer::empty_tag('br'). html_writer::empty_tag('br'). html_writer::empty_tag('br');
 		
 		$legend .= html_writer::tag("img", "", array("src" => "pix/list_12x11.png", "alt" => get_string('legend_activities','block_exacomp')));
 		$legend .= ' '.get_string('legend_activities','block_exacomp') . " - ";
@@ -2512,7 +2484,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			$legend .= ' '.get_string('legend_upload','block_exacomp');
 		}
 
-		return html_writer::tag("p", $legend);
+		return html_writer::div($legend, 'legend');
 	}
 	/**
 	 * Used to generate a checkbox for ticking topics/competencies/examples

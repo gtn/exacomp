@@ -1164,8 +1164,9 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 	
 	// load niveaus from db
 	$niveaus = g::$DB->get_records_list(block_exacomp::DB_NIVEAUS, 'id', $niveau_ids, 'sorting');
-	
-	$defaultNiveau = new stdClass ();
+	$niveaus = \block_exacomp\niveau::create_objects($niveaus);
+
+	$defaultNiveau = \block_exacomp\niveau::create();
 	$defaultNiveau->id = SHOW_ALL_NIVEAUS;
 	$defaultNiveau->title = get_string ( 'alltopics', 'block_exacomp' );
 	
@@ -1627,15 +1628,6 @@ function block_exacomp_get_category($topic){
 	global $DB;
 	if(isset($topic->catid))
 		return $DB->get_record(block_exacomp::DB_CATEGORIES,array("id"=>$topic->catid));
-}
-/**
- * Gets a niveau
- *
- * @param object $niveau
- */
-function block_exacomp_get_niveau($niveauid){
-	global $DB;
-	return $DB->get_record(block_exacomp::DB_NIVEAUS,array("id"=>$niveauid));
 }
 /**
  * Gets assigned schooltypes for particular courseid

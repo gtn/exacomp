@@ -26,17 +26,15 @@ class block_exacomp_db_layer {
 		}
 
 		if ($default === null) {
-			$class = get_called_class();
-			$default = new $class();
+			$default = new static();
 		}
 		return $default;
 	}
 
 	static function create() {
-		$class = get_called_class();
 		$args = func_get_args();
 
-		$reflection = new ReflectionClass($class);
+		$reflection = new ReflectionClass(static::class);
 		return $reflection->newInstanceArgs($args);
 	}
 
@@ -299,7 +297,7 @@ class block_exacomp_db_record {
 		$xcounts[get_called_class()."_cnt"]++;
 		$xcounts[get_called_class()][$data->id]++;
 		*/
-		$this->debug = print_r(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), true)."\n".print_r(array_keys((array)$data), true);
+		// $this->debug = print_r(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), true)."\n".print_r(array_keys((array)$data), true);
 	}
 
 	public function init() {
@@ -475,21 +473,22 @@ class block_exacomp_db_record {
 	}
 
 	static function create_objects($records, block_exacomp_db_layer $dbLayer = null) {
-		$records = array_map(function($data) use ($dbLayer) {
-			return static::create($data, $dbLayer);
+		$class = get_called_class();
+
+		$records = array_map(function($data) use ($class, $dbLayer) {
+			// before php 5.6 static:: in a closure does not work!
+			return $class::create($data, $dbLayer);
 		}, $records);
 		return $records;
 	}
 
-	static function create($data, block_exacomp_db_layer $dbLayer = null) {
-		$class = get_called_class();
-
-		if ($data instanceof $class) {
+	static function create($data = [], block_exacomp_db_layer $dbLayer = null) {
+		if ($data instanceof static) {
 			$data->setDbLayer($dbLayer);
 			return $data;
 		}
 
-		return new $class($data, $dbLayer);
+		return new static($data, $dbLayer);
 	}
 }
 
@@ -534,8 +533,8 @@ namespace block_exacomp {
 
 use block_exacomp\globals as g;
 use \block_exacomp;
-
-class db_record extends \block_exacomp_db_record {}
+use block_exacomp_topic as topic;
+use block_exacomp_db_record as db_record;
 
 class descriptor extends db_record {
 	const TABLE = block_exacomp::DB_DESCRIPTORS;
@@ -581,7 +580,7 @@ class descriptor extends db_record {
 
 		die('no');
 
-		return block_exacomp_topic::get($this->topicid);
+		return topic::get($this->topicid);
 	}
 
 	static function insertInCourse($courseid, $data) {
@@ -589,7 +588,7 @@ class descriptor extends db_record {
 
 		$descriptor = static::create($data);
 		$parent_descriptor = isset($descriptor->parentid) ? \block_exacomp\descriptor::get($descriptor->parentid) : null;
-		$topic = isset($descriptor->topicid) ? block_exacomp_topic::get($descriptor->topicid) : null;
+		$topic = isset($descriptor->topicid) ? topic::get($descriptor->topicid) : null;
 
 		if ($parent_descriptor) {
 		   $descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
@@ -614,7 +613,7 @@ class descriptor extends db_record {
 		$descriptor->sorting = $max_sorting + 1;
 		$descriptor->insert();
 
-		$visibility = new stdClass();
+		$visibility = new \stdClass();
 		$visibility->courseid = $courseid;
 		$visibility->descrid = $descriptor->id;
 		$visibility->studentid = 0;
@@ -623,7 +622,7 @@ class descriptor extends db_record {
 		$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, $visibility);
 
 		//topic association
-		$childdesctopic_mm = new stdClass();
+		$childdesctopic_mm = new \stdClass();
 		$childdesctopic_mm->topicid = $topicid;
 		$childdesctopic_mm->descrid = $descriptor->id;
 
@@ -684,6 +683,14 @@ class example extends db_record {
 		} else {
 			return $this->data->author;
 		}
+	}
+}
+
+class niveau extends db_record {
+	const TABLE = block_exacomp::DB_NIVEAUS;
+
+	function get_subtitle() {
+		return ''; // none for now
 	}
 }
 
