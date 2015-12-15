@@ -693,9 +693,11 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 	if (!isset($settings->usedetailpage)) $settings->usedetailpage = 0;
 	if (!$settings->uses_activities) $settings->show_all_descriptors = 1;
 	elseif (!isset($settings->show_all_descriptors)) $settings->show_all_descriptors = 0;
-	if (!isset($settings->profoundness)) $settings->profoundness = 0;
 	if(isset($settings->filteredtaxonomies)) $settings->filteredtaxonomies = json_decode($settings->filteredtaxonomies,true);
 	else $settings->filteredtaxonomies = array(SHOW_ALL_TAXONOMIES);
+
+	// actually this is a global setting now
+	$settings->useprofoundness = get_config('exacomp', 'useprofoundness');
 
 	return $settings;
 }
@@ -1472,7 +1474,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 			}
 
 			if ($isTeacher && !$courseSettings->nostudents) {
-				if ($courseSettings->profoundness) {
+				if ($courseSettings->useprofoundness) {
 					$rows[] = new tabobject('tab_profoundness', new moodle_url('/blocks/exacomp/profoundness.php',array("courseid"=>$courseid)),get_string('tab_profoundness','block_exacomp'));
 				}
 

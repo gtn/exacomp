@@ -850,7 +850,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$schema = ($courseid == 0) ? 1 : block_exacomp_get_grading_scheme($courseid);
 		$satisfied = ceil($schema/2);
 		
-		$profoundness = block_exacomp_get_settings_by_course($courseid)->profoundness;
+		$profoundness = block_exacomp_get_settings_by_course($courseid)->useprofoundness;
 
 		$spanningNiveaus = $DB->get_records(block_exacomp::DB_NIVEAUS,array('span' => 1));
 		//calculate the col span for spanning niveaus
@@ -1080,7 +1080,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$column_count = 0;
 		//print header
 		foreach($subjects as $subject){
-			$this->print_competence_overview_LIS_student_topics($subject->subs, $row, $columns, $column_count, $scheme, block_exacomp_get_settings_by_course($courseid)->profoundness);
+			$this->print_competence_overview_LIS_student_topics($subject->subs, $row, $columns, $column_count, $scheme, block_exacomp_get_settings_by_course($courseid)->useprofoundness);
 		}
 		$rows[] = $row;
 
@@ -1432,7 +1432,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					'showevaluation' => $showevaluation,
 					'role' => $role,
 					'scheme' => $scheme,
-					'profoundness' => block_exacomp_get_settings_by_course($courseid)->profoundness,
+					'profoundness' => block_exacomp_get_settings_by_course($courseid)->useprofoundness,
 					'cm_mm' => block_exacomp_get_course_module_association($courseid),
 					'eportfolioitems' => $eportfolioitems,
 					'exaport_exists'=>block_exacomp_exaportexists(),
@@ -2749,9 +2749,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$input_examples = html_writer::checkbox('show_all_examples', 1, $settings->show_all_examples == 1, get_string('show_all_examples', 'block_exacomp'))
 		.html_writer::empty_tag('br');
 
-		$input_profoundness = html_writer::checkbox('profoundness', 1, $settings->profoundness==1, get_string('useprofoundness', 'block_exacomp'))
-		.html_writer::empty_tag('br');
-		
 		$input_nostudents = html_writer::checkbox('nostudents', 1, $settings->nostudents==1, get_string('usenostudents', 'block_exacomp'))
 		.html_writer::empty_tag('br');
 		
@@ -2764,7 +2761,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$hiddenaction = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'action', 'value'=>'save_coursesettings'));
 
 		$div = html_writer::div(html_writer::tag('form',
-				$input_grading.$input_activities.$input_descriptors.$input_examples.$hiddenaction.$input_profoundness.$input_nostudents.$input_taxonomies.$input_submit,
+				$input_grading.$input_activities.$input_descriptors.$input_examples.$hiddenaction.$input_nostudents.$input_taxonomies.$input_submit,
 				array('action'=>'edit_course.php?courseid='.$courseid, 'method'=>'post')), 'block_excomp_center');
 
 		$content = html_writer::tag("div",$header.$div, array("id"=>"exabis_competences_block"));

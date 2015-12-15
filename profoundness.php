@@ -112,5 +112,3 @@ else{
 }
 /* END CONTENT REGION */
 echo $output->footer();
-
-?>

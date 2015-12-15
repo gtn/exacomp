@@ -67,7 +67,6 @@ if ($action == 'save_coursesettings') {
 	$settings->uses_activities = optional_param('uses_activities', "", PARAM_INT);
 	$settings->show_all_descriptors = optional_param('show_all_descriptors', "", PARAM_INT);
 	$settings->show_all_examples = optional_param('show_all_examples', "", PARAM_INT);
-	$settings->profoundness = optional_param('profoundness', 0, PARAM_INT);
 	$settings->nostudents = optional_param('nostudents', 0, PARAM_INT);
 	$settings->filteredtaxonomies = json_encode((isset($_POST['filteredtaxonomies'])) ? array_values($_POST['filteredtaxonomies']) : SHOW_ALL_TAXONOMIES);
 	
