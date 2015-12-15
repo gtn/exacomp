@@ -5419,7 +5419,7 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true){
 			$example_array['teacher_evaluation'] = $example->teacher_evaluation;
 			$example_array['additionalinfo'] = $example->additionalinfo;
 
-			$example_array['student_evaluation_title'] = \block_exacomp\global_config::get_scheme_item_title($example->student_evaluation);
+			$example_array['student_evaluation_title'] = \block_exacomp\global_config::get_student_scheme_item_title($example->student_evaluation);
 			$example_array['teacher_evaluation_title'] = \block_exacomp\global_config::get_scheme_item_title($example->teacher_evaluation);
 		}
 		if(isset($example->state))
@@ -6044,6 +6044,25 @@ namespace block_exacomp {
 			}
 
 			return $global_scheme_values;
+		}
+
+		static function get_student_scheme_item_title($id) {
+			$items = static::get_student_scheme_items();
+			if (!empty($items[$id])) {
+				return $items[$id];
+			} else {
+				return null;
+			}
+		}
+
+		static function get_student_scheme_items() {
+			$global_scheme = static::get_scheme_id();
+
+			if (!$global_scheme) {
+				return array('0', '1', '2', '3');
+			} else {
+				return array('', '*', '**', '***');
+			}
 		}
 
 		static function get_scheme_id() {

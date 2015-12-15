@@ -356,8 +356,8 @@
 					
 					element.find('.fc-title').prepend(event.courseinfo+':<br />');
 		
-					if (this.student_evaluation) {
-						element.find(".fc-content").append('<div>S: '+this.student_evaluation+'</div>');
+					if (this.student_evaluation_title) {
+						element.find(".fc-content").append('<div>S: '+this.student_evaluation_title+'</div>');
 					}
 					var teacher_evaluation = [];
 					if (this.teacher_evaluation_title) teacher_evaluation.push(this.teacher_evaluation_title);

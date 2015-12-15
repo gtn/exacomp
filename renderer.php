@@ -2613,27 +2613,22 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	 */
 	public function generate_select($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false, $profoundness = false, $reviewerid = null) {
 		global $USER;
-		
-		$global_scheme = \block_exacomp\global_config::get_scheme_id();
-		$global_scheme_values = \block_exacomp\global_config::get_scheme_items();
+
+		// TODO: diese $scheme brauchen wir nicht mehr? einfach $options = $scheme_values?
 
 		if(strcmp($evaluation, 'teacher')==0){
+			$scheme_values = \block_exacomp\global_config::get_scheme_items();
 			$options[-1] = ' ';
 			for($i=0;$i<=$scheme;$i++) {
-				// disable profoundness here for now
-				// $options[$i] = (!$profoundness) ? (($global_scheme==0)?$i:$global_scheme_values[$i]) : get_string('profoundness_'.$i,'block_exacomp');
-				 $options[$i] = ($global_scheme==0)?$i:$global_scheme_values[$i];
+				$options[$i] = $scheme_values[$i];
 			}
 		}else{
+			$scheme_values = \block_exacomp\global_config::get_student_scheme_items();
+
 			$options[0] = '';
 			$stars = '*';
 			for($i=1; $i<=$scheme; $i++){
-				if($global_scheme == 0) 
-					$options[$i] = $i;
-				else{
-					$options[$i] = $stars;
-					$stars .= '*';
-				}
+				$options[$i] = $scheme_values[$i];
 			}
 		}
 		

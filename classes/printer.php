@@ -159,7 +159,10 @@ class printer {
 			$day->title = strftime('%a %d.%m.', $day->time);
 		
 			$examples = block_exacomp_get_examples_for_start_end_all_courses($studentid, $day->time, block_exacomp_add_days($day->time, 1)-1);
-			
+
+			$examples = block_exacomp_get_json_examples($examples);
+			$examples = array_map(function($o) { return (object) $o; }, $examples);
+
 			foreach($examples as $example){
 				// get data
 				$example->descriptors = block_exacomp_get_descriptors_by_example($example->id);
@@ -184,7 +187,7 @@ class printer {
 				
 				$example->rowspan = $example->end_slot - $example->start_slot + 1;
 			}
-		
+
 			// first sort by start time, then by duration (same as fullcalendar)
 			usort($examples, function($a, $b) {
 				return 
@@ -258,16 +261,21 @@ class printer {
 				background-color: #026cc5;
 			}
 			.state4 {
-				color: #fff;
 				background-color: rgb(24, 164, 6);
-				
 			}
+
 			.state3 {
-				color: #fff;
 				background-color: rgb(189, 189, 189);
 			}
+
+			.state5 {
+				background-color: rgb(246, 46, 39);
+			}
+
+			.state9 {
+				background-color: rgb(240, 230, 0);
+			}
 			.different-course {
-				color: #fff;
 				background-color: #acbcca;
 			}
 		');
@@ -299,34 +307,44 @@ class printer {
 				for ($col_i = 0; $col_i < $day->colspan; $col_i++) {
 					$example = $day->slots[$slot_i]->cols[$col_i];
 					if (is_object($example)) {
-						
-						if ($example->courseid != $course->id) {
+
+						$class = 'event-default';
+						if (!empty($example->state)) {
+							$state_text = 'state'.$example->state; // TODO: change state text
+							$class .= ' state'.$example->state;
+						} elseif ($example->courseid != $course->id) {
 							$state_text = '';
-							$class = 'different-course';
-						} elseif ($example->state == 3) {
-							$state_text = 'state3'; // TODO: change state text
-							$class = 'state3';
-						} elseif ($example->state == 4) {
-							$state_text = 'state4'; // TODO: change state text
-							$class = 'state4';
+							$class .= ' different-course';
 						} else {
 							$state_text = '';
-							$class = 'event-default';
 						}
 						
 						
 						$course = get_course($example->courseid);
 						$tbl .= '<td rowspan="'.$example->rowspan.'" class="'.$class.'">';
-						if ($state_text) $tbl .= '<b>'.$state_text.':</b><br />';
+						// for now don't print state_text
+						// if ($state_text) $tbl .= '<b>'.$state_text.':</b><br />';
 						$tbl .= '<b>'.$course->shortname.':</b><br />';
 						$tbl .= $example->title;
-						
+
+						if ($example->student_evaluation_title) {
+							$tbl .= '<br />S: '.$example->student_evaluation_title;
+						}
+
+						$teacher_evaluation = [];
+						if ($example->teacher_evaluation_title) $teacher_evaluation[] = $example->teacher_evaluation_title;
+						if ($example->additionalinfo!==null) $teacher_evaluation[] = $example->additionalinfo.' %';
+						if ($teacher_evaluation) {
+							$tbl .= '<br />L: '.join(' / ', $teacher_evaluation);
+						}
+
 						if ($example->descriptors) {
+							$tbl .= '<br />';
 							foreach ($example->descriptors as $descriptor) {
 								$tbl .= '<br />• '.$descriptor->title;
 							}
 						}
-						
+
 						$tbl .= '</td>';
 					} else if (!$example) {
 						$tbl .= '<td></td>';
