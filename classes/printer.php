@@ -5,6 +5,8 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once $CFG->dirroot.'/lib/tcpdf/tcpdf.php';
 
+use \block_exacomp\globals as g;
+
 class printer_TCPDF extends \TCPDF {
 	private $_header = '';
 	private $_style = '';
@@ -29,7 +31,18 @@ class printer_TCPDF extends \TCPDF {
 	public function setStyle($style) {
 		$this->_style = $style;
 	}
-	
+
+	public function Image($file, $x='', $y='', $w=0, $h=0, $type='', $link='', $align='', $resize=false, $dpi=300, $palign='', $ismask=false, $imgmask=false, $border=0, $fitbox=false, $hidden=false, $fitonpage=false, $alt=false, $altimgs=array()) {
+		$args = func_get_args();
+
+		// replace moodle image urls with local urls
+		if (preg_match('!image.php/[^/]+/(?<component>[^/]+)/[^/]+/(?<imagename>.+)$!', $file, $matches)) {
+			$path = g::$PAGE->theme->resolve_image_location($matches['imagename'], $matches['component']);
+			$args[0] = $path;
+		}
+		return call_user_func_array(array('parent', __FUNCTION__), $args);
+	}
+
 	public function writeHTML($html, $ln=true, $fill=false, $reseth=false, $cell=false, $align='') {
 		$this->_initPage();
 		
