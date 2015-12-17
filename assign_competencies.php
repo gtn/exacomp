@@ -196,7 +196,7 @@ echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
 echo html_writer::start_tag("div", array("class"=>"gridlayout"));
 
 echo '<div class="gridlayout-left">';
-echo $output->print_topics_menu(block_exacomp_get_schooltypetree_by_topics($courseTopics), $selectedSubject, $selectedTopic);
+echo $output->print_subjects_menu($courseSubjects, $selectedSubject, $selectedTopic);
 echo '</div>';
 echo '<div class="gridlayout-right">';
 echo $output->print_niveaus_menu($niveaus,$selectedNiveau,$selectedTopic);

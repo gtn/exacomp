@@ -508,57 +508,39 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				 "onclick" => "document.location.href='".$url->out(false)."'"));
 	}
 	
-	public function print_topics_menu($types, $selectedSubject, $selectedTopic) {
+	public function print_subjects_menu($subjects, $selectedSubject, $selectedTopic) {
 		global $NG_PAGE, $CFG, $COURSE;
-		
+
 		$content = html_writer::start_div('subjects_menu');
 		$content .= html_writer::start_tag('ul');
-		
-		// sort subjects
-		uasort($types, function($a, $b) {
-			// first imported, then generated
-			if ($a->source != block_exacomp::DATA_SOURCE_CUSTOM && $b->source == block_exacomp::DATA_SOURCE_CUSTOM)
-				return -1;
-			if ($a->source == block_exacomp::DATA_SOURCE_CUSTOM && $b->source != block_exacomp::DATA_SOURCE_CUSTOM)
-				return 1;
-			// then sorting, disabled for now, because sorting doesn't get imported and is not set here?
-			/*
-			if ($a->sorting < $b->sorting)
-				return -1;
-			if ($a->sorting > $b->sorting)
-				return 1;
-			*/
-			// last by title
-			return strcmp($a->title, $b->title);
-		});
-		
-		foreach($types as $type) {
+
+		foreach($subjects as $subject) {
 			$extra = '';
-			if ($this->is_edit_mode() && $type->source == block_exacomp::DATA_SOURCE_CUSTOM) {
-				$extra .= ' <img src="pix/edit.png" title="'.\block_exacomp\trans('edit').'" exa-type="iframe-popup" exa-url="subject.php?courseid='.$COURSE->id.'&id='.$type->id.'" />';
-			
+			if ($this->is_edit_mode() && $subject->source == block_exacomp::DATA_SOURCE_CUSTOM) {
+				$extra .= ' <img src="pix/edit.png" title="'.\block_exacomp\trans('edit').'" exa-type="iframe-popup" exa-url="subject.php?courseid='.$COURSE->id.'&id='.$subject->id.'" />';
+
 			}
 			$content .= html_writer::tag('li',
 					html_writer::link(
-						new block_exacomp\url($NG_PAGE->url, ['ng_subjectid' => $type->id, 'topicid'=>BLOCK_EXACOMP_SHOW_ALL]),
-						$type->title.$extra, array('class' => (!$selectedTopic && $type->id == $selectedSubject->id) ? 'type current' : 'type'))
+						new block_exacomp\url($NG_PAGE->url, ['ng_subjectid' => $subject->id, 'topicid'=>BLOCK_EXACOMP_SHOW_ALL]),
+						$subject->title.$extra, array('class' => (!$selectedTopic && $subject->id == $selectedSubject->id) ? 'type current' : 'type'))
 			);
-			
-			foreach($type->subjects as $subject) {
+
+			foreach($subject->topics as $topic) {
 				$extra = '';
-				if ($this->is_edit_mode() && $subject->source == block_exacomp::DATA_SOURCE_CUSTOM) {
-					$extra .= ' <img src="pix/edit.png" title="'.\block_exacomp\trans('edit').'" exa-type="iframe-popup" exa-url="topic.php?courseid='.$COURSE->id.'&id='.$subject->id.'" />';
+				if ($this->is_edit_mode() && $topic->source == block_exacomp::DATA_SOURCE_CUSTOM) {
+					$extra .= ' <img src="pix/edit.png" title="'.\block_exacomp\trans('edit').'" exa-type="iframe-popup" exa-url="topic.php?courseid='.$COURSE->id.'&id='.$topic->id.'" />';
 				}
-				
+
 				$content .= html_writer::tag('li',
-					html_writer::link(new block_exacomp\url($NG_PAGE->url, ['ng_subjectid' => $type->id, 'topicid' => $subject->id]),
-							block_exacomp_get_topic_numbering($subject).' '.$subject->title.$extra, array('class' => ($selectedTopic && $subject->id == $selectedTopic->id) ? 'current' : ''))
+					html_writer::link(new block_exacomp\url($NG_PAGE->url, ['ng_subjectid' => $subject->id, 'topicid' => $topic->id]),
+							block_exacomp_get_topic_numbering($topic).' '.$topic->title.$extra, array('class' => ($selectedTopic && $topic->id == $selectedTopic->id) ? 'current' : ''))
 					);
 			}
-			   if ($this->is_edit_mode() && $type->source == block_exacomp::DATA_SOURCE_CUSTOM) {
+			   if ($this->is_edit_mode() && $subject->source == block_exacomp::DATA_SOURCE_CUSTOM) {
 				// only if editing and if subject was added by teacher
 				$content .= html_writer::tag('li',
-					html_writer::link("topic.php?show=add&courseid={$COURSE->id}&subjectid={$type->id}",
+					html_writer::link("topic.php?show=add&courseid={$COURSE->id}&subjectid={$subject->id}",
 							"<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".
 							\block_exacomp\trans('de:Neuer Kompetenzbereich'), array('exa-type' => 'iframe-popup'))
 					);
