@@ -6012,6 +6012,31 @@ function block_exacomp_create_blocking_event($courseid, $title, $creatorid){
 	
 	$vibilityid = $DB->insert_record(block_exacomp::DB_EXAMPVISIBILITY, $visibility);
 }
+function block_exacomp_delete_user_data($userid){
+	global $DB;
+	
+	$result = $DB->delete_records(block_exacomp::DB_COMPETENCIES, array("userid"=>$userid));
+	$result = $DB->delete_records(block_exacomp::DB_COMPETENCIES_USER_MM, array("userid"=>$userid));
+	$result = $DB->delete_records(block_exacomp::DB_PROFILESETTINGS, array("userid"=>$userid));
+	
+	$result = $DB->delete_records(block_exacomp::DB_CROSSSTUD, array("studentid"=>$userid));
+	$result = $DB->delete_records(block_exacomp::DB_DESCVISIBILITY, array("studentid"=>$userid));
+	$result = $DB->delete_records(block_exacomp::DB_EXAMPLEEVAL, array("studentid"=>$userid));
+	$result = $DB->delete_records(block_exacomp::DB_EXAMPVISIBILITY, array("studentid"=>$userid));
+	$result = $DB->delete_records("block_exacompexternaltrainer", array("studentid"=>$userid));
+	$result = $DB->delete_records(block_exacomp::DB_SCHEDULE, array("studentid"=>$userid));
+	
+	$result = $DB->delete_records(block_exacomp::DB_CROSSSUBJECTS, array("creatorid"=>$userid));
+	$result = $DB->delete_records(block_exacomp::DB_EXAMPLES, array("creatorid"=>$userid));
+	$result = $DB->delete_records(block_exacomp::DB_SCHEDULE, array("creatorid"=>$userid));
+	
+	$result = $DB->delete_records(block_exacomp::DB_EXAMPLEEVAL, array("teacher_reviewerid"=>$userid));
+	
+	$result = $DB->delete_records("block_exacompexternaltrainer", array("trainerid"=>$userid));
+	
+	$result = $DB->delete_records(block_exacomp::DB_COMPETENCIES, array("reviewerid"=>$userid));
+	$result = $DB->delete_records(block_exacomp::DB_COMPETENCIES_USER_MM, array("reviewerid"=>$userid));
+}
 
 
 }
