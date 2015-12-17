@@ -3869,7 +3869,7 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 					
 					$span_in_work = "";
 					if($return->total > 0)
-						$span_in_work = html_writer::tag('span', $return->inWork."/".$return->total." ".get_string('inwork', 'block_exacomp'), array('class'=>"compprof_barchart_teacher"));
+						$span_in_work = html_writer::tag('span', \block_exacomp\get_string('inwork', null, ['inWork' => $return->inWork, 'total' => $return->total]), array('class'=>"compprof_barchart_teacher"));
 					
 					$img_teacher = "";	
 					if(isset($student->competencies->teacher[$descriptor->id])){

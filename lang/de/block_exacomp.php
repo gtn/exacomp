@@ -406,7 +406,7 @@ $string['October'] = 'Oktober';
 $string['November'] = 'November';
 $string['December'] = 'Dezember';
 $string['teacher_eval'] = 'Lehrerbewertung';
-$string['student_eval'] = 'Schülerbewertung';
+$string['student_eval'] = 'Schülerselbsteinschätzung';
 $string['oB'] = 'ohne Bewertung';
 $string['nE'] = 'nicht erreicht';
 
@@ -524,7 +524,7 @@ $string['notification_example_comment_context'] = 'Kommentar';
 $string['notification_weekly_schedule_subject'] = 'Neue Aufgabe am Wochenplan';
 $string['notification_weekly_schedule_body'] = '{$a->teacher} hat dir im Kurs {$a->course} die Aufgabe {$a->example} auf den Wochenplan gelegt.';
 $string['notification_weekly_schedule_context'] = 'Wochenplan';
-$string['inwork'] = 'am Wochenplan';
+$string['inwork'] = '{$a->inWork}/{$a->total} Materialien in Arbeit';
 $string['block_exacomp_notifications_head'] = 'Mitteilungen und Benachrichtigungen';
 $string['block_exacomp_notifications_body'] = 'Bei Aktionen wie einer Beispiel-Einreichung oder einer Beurteilung werden Nachrichten an die zuständigen Benutzer gesendet.';
 
