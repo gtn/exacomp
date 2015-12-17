@@ -76,4 +76,30 @@ class api {
 
 		return $result;
 	}
+	
+	static function delete_user_data($user){
+		global $DB;
+		
+		$result = $DB->delete_records('block_exacompcompuser', array("userid"=>$user));
+		$result = $DB->delete_records('block_exacompcompuser_mm', array("userid"=>$user));
+		$result = $DB->delete_records('block_exacompprofilesettings', array("userid"=>$user));
+		
+		$result = $DB->delete_records('block_exacompcrossstud_mm', array("studentid"=>$user));
+		$result = $DB->delete_records('block_exacompdescrvisibility', array("studentid"=>$user));
+		$result = $DB->delete_records('block_exacompexameval', array("studentid"=>$user));
+		$result = $DB->delete_records('block_exacompexampvisibility', array("studentid"=>$user));
+		$result = $DB->delete_records('block_exacompexternaltrainer', array("studentid"=>$user));
+		$result = $DB->delete_records('block_exacompschedule', array("studentid"=>$user));
+		
+		$result = $DB->delete_records('block_exacompcrosssubjects', array("creatorid"=>$user));
+		$result = $DB->delete_records('block_exacompexamples', array("creatorid"=>$user));
+		$result = $DB->delete_records('block_exacompschedule', array("creatorid"=>$user));
+		
+		$result = $DB->delete_records('block_exacompexameval', array("teacher_reviewerid"=>$user));
+		
+		$result = $DB->delete_records('block_exacompexternaltrainer', array("trainerid"=>$user));
+		
+		$result = $DB->delete_records('block_exacompcompuser', array("reviewerid"=>$user));
+		$result = $DB->delete_records('block_exacompcompuser_mm', array("reviewerid"=>$user));	
+	}
 }
