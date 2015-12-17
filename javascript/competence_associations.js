@@ -2,7 +2,7 @@
  * 
  */
 (function($){
-	$( window ).load(function() {
+	$(function() {
 		CollapsibleLists.apply();
 		
 		// reopen selected li
@@ -14,5 +14,9 @@
 				
 			}
 		});
+
+		// start with open list
+		$('.collapsibleList li:has(li)').addClass('collapsibleListOpen').removeClass('collapsibleListClosed');
+		$('.collapsibleList ul').css('display', 'block');
 	});
 })(jQueryExacomp);
