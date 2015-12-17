@@ -2990,7 +2990,9 @@ class block_exacomp_external extends external_api {
 		return new external_multiple_structure ( new external_single_structure ( array (
 				'topicid' => new external_value ( PARAM_INT, 'id of topic' ),
 				'topictitle' => new external_value ( PARAM_TEXT, 'title of topic' ),
-				'numbering' => new external_value ( PARAM_TEXT, 'numbering for topic')
+				'numbering' => new external_value ( PARAM_TEXT, 'numbering for topic'),
+				'subjectid'=> new external_value (PARAM_INT, 'id of subject'),
+				'subjecttitle'=> new external_value (PARAM_TEXT, 'title of subject')
 		) ) );
 	}
 	
@@ -3028,7 +3030,9 @@ class block_exacomp_external extends external_api {
 		return new external_multiple_structure ( new external_single_structure ( array (
 				'topicid' => new external_value ( PARAM_INT, 'id of topic' ),
 				'topictitle' => new external_value ( PARAM_TEXT, 'title of topic' ),
-				'numbering' => new external_value ( PARAM_TEXT, 'numbering for topic')
+				'numbering' => new external_value ( PARAM_TEXT, 'numbering for topic'),
+				'subjectid' => new external_value (PARAM_INT, 'id of subject'),
+				'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject')
 		) ) );
 	}
 	
@@ -5535,6 +5539,136 @@ class block_exacomp_external extends external_api {
 		) );
 	}
 	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_examples_by_descriptor_and_grading_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value (PARAM_INT, 'id of course'),
+				'userid' => new external_value (PARAM_INT, 'id of user'),
+				'descriptorid' => new external_value ( PARAM_TEXT, 'id of descriptor' ),
+				'grading' => new external_value (PARAM_INT, 'grading value')
+		) );
+	}
+	
+	/**
+	 * Create a new blocking event
+	 */
+	public static function dakora_get_examples_by_descriptor_and_grading($courseid, $userid, $descriptorid, $grading) {
+		global $USER;
+		
+		$params = self::validate_parameters(self::dakora_get_examples_by_descriptor_and_grading_parameters(), array('courseid'=>$courseid,
+		'userid'=>$userid, 'descriptorid'=>$descriptorid, 'grading'=>$grading));
+		
+		$grading = $grading -1;
+		
+		$childsandexamples = block_exacomp_external::get_descriptor_children($courseid, $descriptorid, $userid, 0);
+		
+		$examples_return = array();
+		
+		//parent descriptor
+		$examples = block_exacomp_external::dakora_get_examples_for_descriptor_with_grading($courseid, $descriptorid, $userid, false);
+		
+		foreach($examples as $example){
+			if($example->teacherevaluation == $grading){
+				if(!array_key_exists($example->exampleid, $examples_return))
+					$examples_return[$example->exampleid] = $example;
+			}
+		}
+		
+		foreach($childsandexamples->children as $child){
+			$examples = block_exacomp_external::dakora_get_examples_for_descriptor_with_grading($courseid, $child->childid, $userid, false);
+			
+			foreach($examples as $example){
+				if($example->teacherevaluation == $grading){
+					if(!array_key_exists($example->exampleid, $examples_return))
+						$examples_return[$example->exampleid] = $example;
+				}
+			}
+		}
+	
+		return $examples_return;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_single_structure
+	 */
+	public static function dakora_get_examples_by_descriptor_and_grading_returns() {
+		return new external_multiple_structure ( new external_single_structure ( array (
+			'exampleid' => new external_value(PARAM_INT, 'id of topic'),
+			'exampletitle' => new external_value(PARAM_TEXT, 'title of topic')
+		) ) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_examples_by_descriptor_and_grading_for_crosssubject_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value (PARAM_INT, 'id of course'),
+				'userid' => new external_value (PARAM_INT, 'id of user'),
+				'descriptorid' => new external_value ( PARAM_TEXT, 'id of descriptor' ),
+				'grading' => new external_value (PARAM_INT, 'grading value'),
+				'crosssubjid'=> new external_value (PARAM_INT, 'id of crosssubjects')
+		) );
+	}
+	
+	/**
+	 * Create a new blocking event
+	 */
+	public static function dakora_get_examples_by_descriptor_and_grading_for_crosssubject($courseid, $userid, $descriptorid, $grading, $crosssubjid) {
+		global $USER;
+		
+		$params = self::validate_parameters(self::dakora_get_examples_by_descriptor_and_grading_for_crosssubject_parameters(), array('courseid'=>$courseid,
+		'userid'=>$userid, 'descriptorid'=>$descriptorid, 'grading'=>$grading, 'crosssubjid'=>$crosssubjid));
+		
+		$grading = $grading -1;
+	
+		$childsandexamples = block_exacomp_external::get_descriptor_children($courseid, $descriptorid, $userid, 0, $crosssubjid);
+		
+		$examples_return = array();
+		
+		//parent descriptor
+		$examples = block_exacomp_external::dakora_get_examples_for_descriptor_for_crosssubject_with_grading($courseid, $descriptorid, $userid, false, $crosssubjid);
+		
+		foreach($examples as $example){
+			if($example->teacherevaluation == $grading){
+				if(!array_key_exists($example->exampleid, $examples_return))
+					$examples_return[$example->exampleid] = $example;
+			}
+		}
+		
+		foreach($childsandexamples->children as $child){
+			$examples = block_exacomp_external::dakora_get_examples_for_descriptor_for_crosssubject_with_grading($courseid, $child->childid, $userid, false, $crosssubjid);
+			
+			foreach($examples as $example){
+				if($example->teacherevaluation == $grading){
+					if(!array_key_exists($example->exampleid, $examples_return))
+						$examples_return[$example->exampleid] = $example;
+				}
+			}
+		}
+		return $examples_return;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_single_structure
+	 */
+	public static function dakora_get_examples_by_descriptor_and_grading_for_crosssubject_returns() {
+		return new external_multiple_structure ( new external_single_structure ( array (
+			'exampleid' => new external_value(PARAM_INT, 'id of topic'),
+			'exampletitle' => new external_value(PARAM_TEXT, 'title of topic')
+		) ) );
+	}
+	
 	/** 
 	* helper function to use same code for 2 ws
 	*/
@@ -5644,6 +5778,8 @@ class block_exacomp_external extends external_api {
 					$topic_return->topicid = $topic->id;
 					$topic_return->topictitle = $topic->title;
 					$topic_return->numbering = block_exacomp_get_topic_numbering($topic->id);
+					$topic_return->subjectid = $subject->id;
+					$topic_return->subjecttitle = $subject->title;
 					$topics_return[] = $topic_return;
 				}
 			}

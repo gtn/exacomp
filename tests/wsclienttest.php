@@ -54,19 +54,6 @@ echo "
 descriptor details:
 ";
 
-//REST CALL dakora_get_examples_pool_for_week
-$functionname = 'dakora_get_descriptor_details';
-
-$params = new stdClass();
-$params->courseid = 4;
-$params->descriptorid = 2541;
-$params->userid = 0;
-$params->forall = 0;
-$params->crosssubjid = 0;
-
-$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
-$resp = $curl->post($serverurl, $params);
-print_r($resp);
 
 echo "
 profile:
@@ -74,12 +61,30 @@ profile:
 ";
 
 //REST CALL dakora_get_examples_pool_for_week
-$functionname = 'dakora_get_competence_profile_for_topic';
+$functionname = 'dakora_get_examples_by_descriptor_and_grading_for_crosssubject';
 
 $params = new stdClass();
 $params->courseid = 4;
-$params->topicid = 231;
-$params->userid = 0;
+$params->descriptorid = 2230;
+$params->userid = 4;
+$params->grading = 3;
+$params->crosssubjid = 5;
+
+
+$serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
+$resp = $curl->post($serverurl, $params);
+print_r($resp);
+
+echo "
+all topics:
+
+";
+
+//REST CALL dakora_get_examples_pool_for_week
+$functionname = 'dakora_get_all_topics_by_course';
+
+$params = new stdClass();
+$params->courseid = 4;
 
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;
