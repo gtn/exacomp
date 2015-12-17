@@ -508,57 +508,39 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				 "onclick" => "document.location.href='".$url->out(false)."'"));
 	}
 	
-	public function print_topics_menu($types, $selectedSubject, $selectedTopic) {
+	public function print_subjects_menu($subjects, $selectedSubject, $selectedTopic) {
 		global $NG_PAGE, $CFG, $COURSE;
-		
+
 		$content = html_writer::start_div('subjects_menu');
 		$content .= html_writer::start_tag('ul');
-		
-		// sort subjects
-		uasort($types, function($a, $b) {
-			// first imported, then generated
-			if ($a->source != block_exacomp::DATA_SOURCE_CUSTOM && $b->source == block_exacomp::DATA_SOURCE_CUSTOM)
-				return -1;
-			if ($a->source == block_exacomp::DATA_SOURCE_CUSTOM && $b->source != block_exacomp::DATA_SOURCE_CUSTOM)
-				return 1;
-			// then sorting, disabled for now, because sorting doesn't get imported and is not set here?
-			/*
-			if ($a->sorting < $b->sorting)
-				return -1;
-			if ($a->sorting > $b->sorting)
-				return 1;
-			*/
-			// last by title
-			return strcmp($a->title, $b->title);
-		});
-		
-		foreach($types as $type) {
+
+		foreach($subjects as $subject) {
 			$extra = '';
-			if ($this->is_edit_mode() && $type->source == block_exacomp::DATA_SOURCE_CUSTOM) {
-				$extra .= ' <img src="pix/edit.png" title="'.\block_exacomp\trans('edit').'" exa-type="iframe-popup" exa-url="subject.php?courseid='.$COURSE->id.'&id='.$type->id.'" />';
-			
+			if ($this->is_edit_mode() && $subject->source == block_exacomp::DATA_SOURCE_CUSTOM) {
+				$extra .= ' <img src="pix/edit.png" title="'.\block_exacomp\trans('edit').'" exa-type="iframe-popup" exa-url="subject.php?courseid='.$COURSE->id.'&id='.$subject->id.'" />';
+
 			}
 			$content .= html_writer::tag('li',
 					html_writer::link(
-						new block_exacomp\url($NG_PAGE->url, ['ng_subjectid' => $type->id, 'topicid'=>BLOCK_EXACOMP_SHOW_ALL]),
-						$type->title.$extra, array('class' => (!$selectedTopic && $type->id == $selectedSubject->id) ? 'type current' : 'type'))
+						new block_exacomp\url($NG_PAGE->url, ['ng_subjectid' => $subject->id, 'topicid'=>BLOCK_EXACOMP_SHOW_ALL]),
+						$subject->title.$extra, array('class' => (!$selectedTopic && $subject->id == $selectedSubject->id) ? 'type current' : 'type'))
 			);
-			
-			foreach($type->subjects as $subject) {
+
+			foreach($subject->topics as $topic) {
 				$extra = '';
-				if ($this->is_edit_mode() && $subject->source == block_exacomp::DATA_SOURCE_CUSTOM) {
-					$extra .= ' <img src="pix/edit.png" title="'.\block_exacomp\trans('edit').'" exa-type="iframe-popup" exa-url="topic.php?courseid='.$COURSE->id.'&id='.$subject->id.'" />';
+				if ($this->is_edit_mode() && $topic->source == block_exacomp::DATA_SOURCE_CUSTOM) {
+					$extra .= ' <img src="pix/edit.png" title="'.\block_exacomp\trans('edit').'" exa-type="iframe-popup" exa-url="topic.php?courseid='.$COURSE->id.'&id='.$topic->id.'" />';
 				}
-				
+
 				$content .= html_writer::tag('li',
-					html_writer::link(new block_exacomp\url($NG_PAGE->url, ['ng_subjectid' => $type->id, 'topicid' => $subject->id]),
-							block_exacomp_get_topic_numbering($subject).' '.$subject->title.$extra, array('class' => ($selectedTopic && $subject->id == $selectedTopic->id) ? 'current' : ''))
+					html_writer::link(new block_exacomp\url($NG_PAGE->url, ['ng_subjectid' => $subject->id, 'topicid' => $topic->id]),
+							block_exacomp_get_topic_numbering($topic).' '.$topic->title.$extra, array('class' => ($selectedTopic && $topic->id == $selectedTopic->id) ? 'current' : ''))
 					);
 			}
-			   if ($this->is_edit_mode() && $type->source == block_exacomp::DATA_SOURCE_CUSTOM) {
+			   if ($this->is_edit_mode() && $subject->source == block_exacomp::DATA_SOURCE_CUSTOM) {
 				// only if editing and if subject was added by teacher
 				$content .= html_writer::tag('li',
-					html_writer::link("topic.php?show=add&courseid={$COURSE->id}&subjectid={$type->id}",
+					html_writer::link("topic.php?show=add&courseid={$COURSE->id}&subjectid={$subject->id}",
 							"<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".
 							\block_exacomp\trans('de:Neuer Kompetenzbereich'), array('exa-type' => 'iframe-popup'))
 					);
@@ -577,40 +559,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$studentid = optional_param('studentid', BLOCK_EXACOMP_SHOW_ALL_STUDENTS,PARAM_INT);
 		//$subjectid = 
 		
-		$content = html_writer::start_div('topics_menu');
+		$content = html_writer::start_div('niveaus_menu');
 		$content .= html_writer::start_tag('ul');
-		
-		// TODO:sorting
-		/*
-		echo "<pre>"; var_dump($niveaus);
-		// sort topics
-		uasort($niveaus, function($a, $b) {
-			// tabletype (there can be descriptors and topics in the $niveaus array)
-			$ret = strcmp($a->tabletype, $b->tabletype);
-			if ($ret !== 0)
-				return $ret;
-			// first imported, then generated
-			if ($a->source != block_exacomp::DATA_SOURCE_CUSTOM && $b->source == block_exacomp::DATA_SOURCE_CUSTOM)
-				return -1;
-			if ($a->source == block_exacomp::DATA_SOURCE_CUSTOM && $b->source != block_exacomp::DATA_SOURCE_CUSTOM)
-				return 1;
-			// then sorting
-			if ($a->sorting < $b->sorting)
-				return -1;
-			if ($a->sorting > $b->sorting)
-				return 1;
 
-			// last by title
-			return strcmp($a->title, $b->title);
-		});
-		*/
-		
-		foreach($niveaus as $topic) {
-			$title = isset($topic->cattitle) ? $topic->cattitle : $topic->title;
-			$title_short = (strlen($title)>15)?substr($title, 0, 15).'...':$title;
+		foreach ($niveaus as $niveau) {
+			$title = isset($niveau->cattitle) ? $niveau->cattitle : $niveau->title;
+			$subtitle = $niveau->get_subtitle();
 			$content .= html_writer::tag('li',
-					html_writer::link(new block_exacomp\url($NG_PAGE->url, ['niveauid' => $topic->id]),
-							$title_short, array('class' => ($topic->id == $selectedNiveau->id) ? 'current' : '', 'title'=>$title))
+					html_writer::link(new block_exacomp\url($NG_PAGE->url, ['niveauid' => $niveau->id]),
+							$title.($subtitle?'<span class="subtitle">'.$subtitle.'</span>':''), array('class' => ($niveau->id == $selectedNiveau->id) ? 'current' : '', 'title'=>$title))
 					);
 		}
 		
@@ -831,10 +788,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 	}
 public function print_competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0,$studentid=0) {
-		global $CFG, $DB, $global_scheme, $global_scheme_values;
+		global $CFG, $DB;
+
+		$global_scheme = \block_exacomp\global_config::get_scheme_id();
+		$global_scheme_values = \block_exacomp\global_config::get_scheme_items();
+
 
 		$headFlag = false;
-		
+
 		$context = context_course::instance($courseid);
 		$role = block_exacomp_is_teacher($context) ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT;
 		$editmode = (($studentid == 0 || $studentid == BLOCK_EXACOMP_SHOW_STATISTIC) && $role == block_exacomp::ROLE_TEACHER) ? true : false;
@@ -846,7 +807,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$schema = ($courseid == 0) ? 1 : block_exacomp_get_grading_scheme($courseid);
 		$satisfied = ceil($schema/2);
 		
-		$profoundness = block_exacomp_get_settings_by_course($courseid)->profoundness;
+		$profoundness = block_exacomp_get_settings_by_course($courseid)->useprofoundness;
 
 		$spanningNiveaus = $DB->get_records(block_exacomp::DB_NIVEAUS,array('span' => 1));
 		//calculate the col span for spanning niveaus
@@ -1076,7 +1037,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$column_count = 0;
 		//print header
 		foreach($subjects as $subject){
-			$this->print_competence_overview_LIS_student_topics($subject->subs, $row, $columns, $column_count, $scheme, block_exacomp_get_settings_by_course($courseid)->profoundness);
+			$this->print_competence_overview_LIS_student_topics($subject->subs, $row, $columns, $column_count, $scheme, block_exacomp_get_settings_by_course($courseid)->useprofoundness);
 		}
 		$rows[] = $row;
 
@@ -1233,7 +1194,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		
 		$cell = new html_table_cell();
 		$cell->rowspan = 2;
-		$cell->colspan = 2;
+		$cell->colspan = 3;
 		$cell->text = get_string('profoundness_description','block_exacomp');
 		$headerrow->cells[] = $cell;
 		
@@ -1428,7 +1389,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					'showevaluation' => $showevaluation,
 					'role' => $role,
 					'scheme' => $scheme,
-					'profoundness' => block_exacomp_get_settings_by_course($courseid)->profoundness,
+					'profoundness' => block_exacomp_get_settings_by_course($courseid)->useprofoundness,
 					'cm_mm' => block_exacomp_get_course_module_association($courseid),
 					'eportfolioitems' => $eportfolioitems,
 					'exaport_exists'=>block_exacomp_exaportexists(),
@@ -2046,7 +2007,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	
 					$titleCell = new html_table_cell();
 					$titleCell->style = "padding-left: ". ($padding + 20 )."px";
-					$titleCell->text = html_writer::div(html_writer::tag('span', $example->title, array('title'=>$example->description)));
+					$title = '';
+					if ($author = $example->get_author()) $title .= get_string('author', 'repository').": ".$author."\n";
+					$title .= strip_tags($example->description);
+					$titleCell->text = html_writer::div(html_writer::tag('span', $example->title, array('title'=>$title)));
 					
 				   if(!$statistic && !$this->is_print_mode()){
 						
@@ -2484,11 +2448,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
 		return $evaluation;
 	}
-	public function print_overview_legend($teacher, $isCrosssub = false) {
+	public function print_overview_legend($teacher) {
 		$legend = "";
-		
-		if(!$isCrosssub)
-			$legend = html_writer::empty_tag('br'). html_writer::empty_tag('br'). html_writer::empty_tag('br');
 		
 		$legend .= html_writer::tag("img", "", array("src" => "pix/list_12x11.png", "alt" => get_string('legend_activities','block_exacomp')));
 		$legend .= ' '.get_string('legend_activities','block_exacomp') . " - ";
@@ -2505,7 +2466,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			$legend .= ' '.get_string('legend_upload','block_exacomp');
 		}
 
-		return html_writer::tag("p", $legend);
+		return html_writer::div($legend, 'legend');
 	}
 	/**
 	 * Used to generate a checkbox for ticking topics/competencies/examples
@@ -2608,22 +2569,23 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	 * @return String $select html code for select
 	 */
 	public function generate_select($name, $compid, $type, $student, $evaluation, $scheme, $disabled = false, $profoundness = false, $reviewerid = null) {
-		global $USER, $global_scheme, $global_scheme_values;
-		
-	   if(strcmp($evaluation, 'teacher')==0){
+		global $USER;
+
+		// TODO: diese $scheme brauchen wir nicht mehr? einfach $options = $scheme_values?
+
+		if(strcmp($evaluation, 'teacher')==0){
+			$scheme_values = \block_exacomp\global_config::get_scheme_items();
 			$options[-1] = ' ';
-			for($i=0;$i<=$scheme;$i++)
-				$options[$i] = (!$profoundness) ? (($global_scheme==0)?$i:$global_scheme_values[$i]) : get_string('profoundness_'.$i,'block_exacomp');
+			for($i=0;$i<=$scheme;$i++) {
+				$options[$i] = $scheme_values[$i];
+			}
 		}else{
+			$scheme_values = \block_exacomp\global_config::get_student_scheme_items();
+
 			$options[0] = '';
 			$stars = '*';
 			for($i=1; $i<=$scheme; $i++){
-				if($global_scheme == 0) 
-					$options[$i] = $i;
-				else{
-					$options[$i] = $stars;
-					$stars .= '*';
-				}
+				$options[$i] = $scheme_values[$i];
 			}
 		}
 		
@@ -2723,7 +2685,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	 * @param unknown $headertext
 	 */
 	public function print_edit_course($settings, $courseid, $headertext){
-		global $DB, $global_scheme;
+		global $DB;
+
+		$global_scheme = \block_exacomp\global_config::get_scheme_id();
+
 		$header = html_writer::tag('p', $headertext).html_writer::empty_tag('br');
 
 		$input_grading = "";
@@ -2741,9 +2706,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$input_examples = html_writer::checkbox('show_all_examples', 1, $settings->show_all_examples == 1, get_string('show_all_examples', 'block_exacomp'))
 		.html_writer::empty_tag('br');
 
-		// $input_profoundness = html_writer::checkbox('profoundness', 1, $settings->profoundness==1, get_string('useprofoundness', 'block_exacomp'))
-		// .html_writer::empty_tag('br');
-		
 		$input_nostudents = html_writer::checkbox('nostudents', 1, $settings->nostudents==1, get_string('usenostudents', 'block_exacomp'))
 		.html_writer::empty_tag('br');
 		
@@ -2873,10 +2835,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 						//create description for on mouse over
 						$text=$example->description;
 						$text = str_replace("\"","",$text);
-						$text = str_replace("\'","",$text);
+						$text = str_replace("'","",$text);
 						$text = str_replace("\n"," ",$text);
 						$text = str_replace("\r"," ",$text);
-						$text = str_replace(":","\:",$text);
+						$text = str_replace(":",":",$text);
 							
 						$example_content = '';
 
@@ -3907,7 +3869,7 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 					
 					$span_in_work = "";
 					if($return->total > 0)
-						$span_in_work = html_writer::tag('span', $return->inWork."/".$return->total." ".get_string('inwork', 'block_exacomp'), array('class'=>"compprof_barchart_teacher"));
+						$span_in_work = html_writer::tag('span', \block_exacomp\get_string('inwork', null, ['inWork' => $return->inWork, 'total' => $return->total]), array('class'=>"compprof_barchart_teacher"));
 					
 					$img_teacher = "";	
 					if(isset($student->competencies->teacher[$descriptor->id])){
@@ -3957,8 +3919,8 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 	}
 	
 	private function print_radar_graph_topic($labels, $data1, $data2, $canvasid){
-		global $global_scheme_values;
-		
+		$global_scheme_values = \block_exacomp\global_config::get_scheme_items();
+
 		return '<script>
 		var radarChartData = {
 			labels: ['.$labels.'],
@@ -4888,7 +4850,9 @@ var dataset = dataset.map(function (group) {
 		return $html_tree;
 	}
 	function print_statistic_table($courseid, $students, $item, $descriptor=true, $scheme=1){
-		global $global_scheme, $global_scheme_values;
+		$global_scheme = \block_exacomp\global_config::get_scheme_id();
+		$global_scheme_values = \block_exacomp\global_config::get_scheme_items();
+
 		if($descriptor)
 			list($self, $student_oB, $student_iA, $teacher, $teacher_oB, $teacher_iA,
 						$self_title, $student_oB_title, $student_iA_title, $teacher_title, 
@@ -5128,7 +5092,9 @@ var dataset = dataset.map(function (group) {
 	}	
 	
 	public function print_lm_graph_legend() {
-		global $global_scheme, $global_scheme_values;
+		$global_scheme = \block_exacomp\global_config::get_scheme_id();
+		$global_scheme_values = \block_exacomp\global_config::get_scheme_items();
+
 		$content = html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","lmoB");
 		$content .= ' '.get_string("oB","block_exacomp").' ';
 

@@ -663,14 +663,14 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 			$filter = "";
 		}
 		
-		$dbItems = $DB->get_records_sql("
+		$dbItems = \block_exacomp\example::get_objects_sql("
 			SELECT e.*
 			FROM {".block_exacomp::DB_EXAMPLES."} e
 			WHERE (e.source IS NULL OR e.source != ".block_exacomp::EXAMPLE_SOURCE_USER.") AND
 			".($parentid ? "e.parentid = $parentid" : "(e.parentid=0 OR e.parentid IS NULL)")."
 			$filter
 		");
-		
+
 		if (!$dbItems) return;
 		
 		$xmlItems = $xmlParent->addChild($parentid ? 'children' : 'examples');
@@ -687,6 +687,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 			$xmlItem->addChildWithCDATAIfValue('title', $dbItem->title);
 			$xmlItem->addChildWithCDATAIfValue('titleshort', $dbItem->titleshort);
 			$xmlItem->addChildWithCDATAIfValue('description', $dbItem->description);
+			$xmlItem->addChildWithCDATAIfValue('author', $dbItem->get_author());
 			$xmlItem->sorting = $dbItem->sorting;
 			$xmlItem->timeframe = $dbItem->timeframe;
 			
@@ -1250,7 +1251,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		$where = $item->source ? array('source' => $item->source, 'sourceid' => $item->sourceid) : array('id'=>$item->id);
 		if ($dbItem = $DB->get_record($table, $where)) {
 			$item->id = $dbItem->id;
-			
+
 			if ($item->source == self::$import_source_local_id) {
 				// only update, if coming from same source as xml
 				$DB->update_record($table, $item);

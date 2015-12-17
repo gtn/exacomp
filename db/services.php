@@ -79,7 +79,9 @@ $services = array(
 						'dakora_get_examples_for_descriptor_with_grading',
 						'dakora_get_examples_for_descriptor_for_crosssubject_with_grading',
 						'dakora_send_message_to_course',
-						'dakora_create_blocking_event'
+						'dakora_create_blocking_event',
+						'dakora_get_examples_by_descriptor_and_grading',
+						'dakora_get_examples_by_descriptor_and_grading_for_crosssubject'
 						), 	//web service functions of this service
 				'restrictedusers' =>0,					  //if enabled, the Moodle administrator must link some user to this service
 				//into the administration
@@ -635,5 +637,19 @@ $functions = array(
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'create a blocking event',	//human readable description of the web service function
 				'type'		=> 'write'				  //database rights of the web service function (read, write)
+		),
+		'dakora_get_examples_by_descriptor_and_grading' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_examples_by_descriptor_and_grading',		  //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'returns examples for given descriptor and grading',	//human readable description of the web service function
+				'type'		=> 'read'				  //database rights of the web service function (read, write)
+		),
+		'dakora_get_examples_by_descriptor_and_grading_for_crosssubject' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_get_examples_by_descriptor_and_grading_for_crosssubject',		  //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'returns examples for given descriptor and grading and crosssubject',	//human readable description of the web service function
+				'type'		=> 'read'				  //database rights of the web service function (read, write)
 		)
 );

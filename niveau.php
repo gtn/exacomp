@@ -124,13 +124,13 @@ if($formdata = $form->get_data()) {
 	}
 	
 	if ($formdata->descriptor_type == 'new') {
-		block_exacomp_descriptor::insertInCourse($courseid, array(
+		\block_exacomp\descriptor::insertInCourse($courseid, array(
 			'title' => $formdata->descriptor_title,
 			'topicid' => $topic->id,
 			'niveauid' => $niveau->id
 		));
 	} else {
-		$descriptor = block_exacomp_descriptor::get($formdata->descriptor_id, MUST_EXIST);
+		$descriptor = \block_exacomp\descriptor::get($formdata->descriptor_id, MUST_EXIST);
 		$descriptor->update(array('niveauid' => $niveau->id));
 	}
 

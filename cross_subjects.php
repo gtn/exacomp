@@ -174,7 +174,7 @@ else{
 				$activities_student[] = $course_mods[$cmid];*/
 	}
 	
-	echo $output->print_overview_legend($isTeacher, true);
+	echo $output->print_overview_legend($isTeacher);
 	
 	$statistic = false;
 	if($isTeacher){

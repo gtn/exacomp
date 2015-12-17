@@ -148,7 +148,7 @@ switch($action){
 				'title' => PARAM_TEXT
 			)));
 			foreach ($new_descriptors as $descriptor) {
-				block_exacomp_descriptor::insertInCourse($courseid, $descriptor);
+				\block_exacomp\descriptor::insertInCourse($courseid, $descriptor);
 			}
 		}
 		

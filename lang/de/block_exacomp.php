@@ -406,7 +406,7 @@ $string['October'] = 'Oktober';
 $string['November'] = 'November';
 $string['December'] = 'Dezember';
 $string['teacher_eval'] = 'Lehrerbewertung';
-$string['student_eval'] = 'Schülerbewertung';
+$string['student_eval'] = 'Schülerselbsteinschätzung';
 $string['oB'] = 'ohne Bewertung';
 $string['nE'] = 'nicht erreicht';
 
@@ -449,7 +449,7 @@ $string['add_drafts_to_course'] = 'Ausgewählte Vorlagen im Kurs verwenden';
 $string['choosecrosssubject'] = 'Thema auswählen';
 $string['crosssubject'] = "Thema";
 $string['student_name'] = "Teilnehmer";
-$string['help_crosssubject'] = "Die Zusammenstellung des Themas erfolgt für die ganze Schule über den Reiter Lernwegeliste. Sie können hier kursspezifisch Kompetenzen, Teilkompetenzen und Lernmaterial ausblenden. Lernmaterial kann hier ergänzt werden. Dieses wird automatisch in die Lernwegeliste integriert.";
+$string['help_crosssubject'] = "Die Zusammenstellung des Themas erfolgt für die ganze Schule über den Reiter Kompetenzraster. Sie können hier kursspezifisch Kompetenzen, Teilkompetenzen und Lernmaterial ausblenden. Lernmaterial kann hier ergänzt werden. Dieses wird automatisch in die Lernwegeliste integriert.";
 $string['description'] = "Beschreibung";
 $string['no_student'] = '-- kein Kursteilnehmer ausgew&auml;hlt --';
 $string['no_student_edit'] = "Editiermodus - kein Teilnehmer";
@@ -524,7 +524,7 @@ $string['notification_example_comment_context'] = 'Kommentar';
 $string['notification_weekly_schedule_subject'] = 'Neue Aufgabe am Wochenplan';
 $string['notification_weekly_schedule_body'] = '{$a->teacher} hat dir im Kurs {$a->course} die Aufgabe {$a->example} auf den Wochenplan gelegt.';
 $string['notification_weekly_schedule_context'] = 'Wochenplan';
-$string['inwork'] = 'am Wochenplan';
+$string['inwork'] = '{$a->inWork}/{$a->total} Materialien in Arbeit';
 $string['block_exacomp_notifications_head'] = 'Mitteilungen und Benachrichtigungen';
 $string['block_exacomp_notifications_body'] = 'Bei Aktionen wie einer Beispiel-Einreichung oder einer Beurteilung werden Nachrichten an die zuständigen Benutzer gesendet.';
 

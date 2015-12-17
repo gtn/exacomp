@@ -93,3 +93,6 @@ $settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme', get
 
 $settings->add(new admin_setting_configcheckbox('exacomp/additional_grading', get_string('settings_additional_grading', 'block_exacomp'), 
 		get_string('settings_additional_grading_description', 'block_exacomp'), 0));
+
+$settings->add(new admin_setting_configcheckbox('exacomp/useprofoundness', get_string('useprofoundness', 'block_exacomp'),
+		'' /* \block_exacomp\trans('en:todo') */, 0));
