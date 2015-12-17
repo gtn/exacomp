@@ -402,6 +402,23 @@ function block_exacomp_sort_items($items, $sortings) {
 				if ($a->{$prefix."title"} !== $b->{$prefix."title"}) {
 					return strcmp($a->{$prefix."title"}, $b->{$prefix."title"});
 				}
+			} elseif ($sorting == block_exacomp::DB_DESCRIPTORS) {
+				if (!array_key_exists($prefix."sorting", $a) || !array_key_exists($prefix."sorting", $b)) {
+					throw new \block_exacomp\Exception('col not found: '.$prefix."sorting");
+				}
+				if (!array_key_exists($prefix."title", $a) || !array_key_exists($prefix."title", $b)) {
+					throw new \block_exacomp\Exception('col not found: '.$prefix."title");
+				}
+
+				if ($a->{$prefix."sorting"} < $b->{$prefix."sorting"})
+					return -1;
+				if ($a->{$prefix."sorting"} > $b->{$prefix."sorting"})
+					return 1;
+
+				// last by title
+				if ($a->{$prefix."title"} !== $b->{$prefix."title"}) {
+					return strcmp($a->{$prefix."title"}, $b->{$prefix."title"});
+				}
 			} else {
 					throw new \block_exacomp\Exception('sorting type not found: '.$sorting);
 			}
@@ -840,8 +857,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 	.' LEFT JOIN {'.block_exacomp::DB_NIVEAUS.'} n ON d.niveauid = n.id '
 	.($showalldescriptors ? '' : '
 			JOIN {'.block_exacomp::DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
-			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':''))
-	.' ORDER BY d.sorting';
+			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':''));
 
 	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid, $courseid));
 
@@ -855,9 +871,9 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 		$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
 	}
 
-	return $descriptors;
-
+	return block_exacomp_sort_items($descriptors, block_exacomp::DB_DESCRIPTORS);
 }
+
 function block_exacomp_get_categories_for_descriptor($descriptor){
 	global $DB;
 	//im upgrade skript zugriff auf diese funktion obwohl die tabelle erst sp�ter akutalisiert wird
@@ -921,7 +937,8 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescrip
 		$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid,$showalldescriptors,$filteredtaxonomies);
 		$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
 	}
-	return $descriptors;
+
+	return block_exacomp_sort_items($descriptors, block_exacomp::DB_DESCRIPTORS);
 }
 
 function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES),$showallexamples = true, $courseid = null, $mind_visibility=true, $showonlyvisible = false ) {
@@ -6088,34 +6105,35 @@ function block_exacomp_create_blocking_event($courseid, $title, $creatorid){
 
 	$vibilityid = $DB->insert_record(block_exacomp::DB_EXAMPVISIBILITY, $visibility);
 }
+
 function block_exacomp_delete_user_data($userid){
 	global $DB;
-	
+
 	$result = $DB->delete_records(block_exacomp::DB_COMPETENCIES, array("userid"=>$userid));
 	$result = $DB->delete_records(block_exacomp::DB_COMPETENCIES_USER_MM, array("userid"=>$userid));
 	$result = $DB->delete_records(block_exacomp::DB_PROFILESETTINGS, array("userid"=>$userid));
-	
+
 	$result = $DB->delete_records(block_exacomp::DB_CROSSSTUD, array("studentid"=>$userid));
 	$result = $DB->delete_records(block_exacomp::DB_DESCVISIBILITY, array("studentid"=>$userid));
 	$result = $DB->delete_records(block_exacomp::DB_EXAMPLEEVAL, array("studentid"=>$userid));
 	$result = $DB->delete_records(block_exacomp::DB_EXAMPVISIBILITY, array("studentid"=>$userid));
 	$result = $DB->delete_records("block_exacompexternaltrainer", array("studentid"=>$userid));
 	$result = $DB->delete_records(block_exacomp::DB_SCHEDULE, array("studentid"=>$userid));
-	
+
 	$result = $DB->delete_records(block_exacomp::DB_CROSSSUBJECTS, array("creatorid"=>$userid));
 	$result = $DB->delete_records(block_exacomp::DB_EXAMPLES, array("creatorid"=>$userid));
 	$result = $DB->delete_records(block_exacomp::DB_SCHEDULE, array("creatorid"=>$userid));
-	
+
 	$result = $DB->delete_records(block_exacomp::DB_EXAMPLEEVAL, array("teacher_reviewerid"=>$userid));
-	
+
 	$result = $DB->delete_records("block_exacompexternaltrainer", array("trainerid"=>$userid));
-	
+
 	$result = $DB->delete_records(block_exacomp::DB_COMPETENCIES, array("reviewerid"=>$userid));
 	$result = $DB->delete_records(block_exacomp::DB_COMPETENCIES_USER_MM, array("reviewerid"=>$userid));
 }
 
 
-}
+		}
 
 namespace block_exacomp {
 	class global_config {
