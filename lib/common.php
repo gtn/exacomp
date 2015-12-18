@@ -403,7 +403,7 @@ function get_string($identifier, $component = null, $a = null) {
 }
 
 function _t_check_identifier($string) {
-	if (preg_match('!^([^:]+):(.*)$!', $string, $matches))
+	if (preg_match('!^([^:]+):(.*)$!s', $string, $matches))
 		return $matches;
 	else
 		return null;
