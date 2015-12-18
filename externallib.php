@@ -1931,10 +1931,10 @@ class block_exacomp_external extends external_api {
 		) );
 	}
 	/**
-	 * create example
+	 * create example. DO NOT USE
 	 * 
 	 * @param			
-	 *
+	 * 
 	 * @return
 	 *
 	 */
@@ -4495,8 +4495,7 @@ class block_exacomp_external extends external_api {
 		$examples = block_exacomp_get_pre_planning_storage($creatorid, $courseid);
 			
 		foreach($examples as $example){
-			// TODO: was ist mit $userid?
-			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
+			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $creatorid);
 		}
 		
 		return $examples;
