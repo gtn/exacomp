@@ -344,7 +344,6 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
 
 function block_exacomp_sort_items($items, $sortings) {
 	$sortings = (array)$sortings;
-	// var_dump($sortings);
 
 	uasort($items, function($a, $b) use ($sortings) {
 		foreach ($sortings as $prefix => $sorting) {
@@ -373,8 +372,7 @@ function block_exacomp_sort_items($items, $sortings) {
 				if ($a->{$prefix."sorting"} > $b->{$prefix."sorting"})
 					return 1;
 
-				// last by title
-				if ($a->{$prefix."title"} !== $b->{$prefix."title"}) {
+				if ($a->{$prefix."title"} != $b->{$prefix."title"}) {
 					return strcmp($a->{$prefix."title"}, $b->{$prefix."title"});
 				}
 			} elseif ($sorting == block_exacomp::DB_TOPICS) {
@@ -398,8 +396,7 @@ function block_exacomp_sort_items($items, $sortings) {
 				if ($a->{$prefix."numb"} > $b->{$prefix."numb"})
 					return 1;
 
-				// last by title
-				if ($a->{$prefix."title"} !== $b->{$prefix."title"}) {
+				if ($a->{$prefix."title"} != $b->{$prefix."title"}) {
 					return strcmp($a->{$prefix."title"}, $b->{$prefix."title"});
 				}
 			} elseif ($sorting == block_exacomp::DB_DESCRIPTORS) {
@@ -416,7 +413,23 @@ function block_exacomp_sort_items($items, $sortings) {
 					return 1;
 
 				// last by title
-				if ($a->{$prefix."title"} !== $b->{$prefix."title"}) {
+				if ($a->{$prefix."title"} != $b->{$prefix."title"}) {
+					return strcmp($a->{$prefix."title"}, $b->{$prefix."title"});
+				}
+			} elseif ($sorting == block_exacomp::DB_NIVEAUS) {
+				if (!array_key_exists($prefix."sorting", $a) || !array_key_exists($prefix."sorting", $b)) {
+					throw new \block_exacomp\Exception('col not found: '.$prefix."sorting");
+				}
+				if (!array_key_exists($prefix."title", $a) || !array_key_exists($prefix."title", $b)) {
+					throw new \block_exacomp\Exception('col not found: '.$prefix."title");
+				}
+
+				if ($a->{$prefix."sorting"} < $b->{$prefix."sorting"})
+					return -1;
+				if ($a->{$prefix."sorting"} > $b->{$prefix."sorting"})
+					return 1;
+
+				if ($a->{$prefix."title"} != $b->{$prefix."title"}) {
 					return strcmp($a->{$prefix."title"}, $b->{$prefix."title"});
 				}
 			} else {
@@ -846,7 +859,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
 
-	$sql = 'SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.parentid, n.sorting niveau, dvis.visible as visible, d.sorting '
+	$sql = 'SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.parentid, n.sorting AS niveau_sorting, n.title AS niveau_title, dvis.visible as visible, d.sorting '
 	.' FROM {'.block_exacomp::DB_TOPICS.'} t '
 	.(($courseid>0)?' JOIN {'.block_exacomp::DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
 	.' JOIN {'.block_exacomp::DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
@@ -857,8 +870,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 	.' LEFT JOIN {'.block_exacomp::DB_NIVEAUS.'} n ON d.niveauid = n.id '
 	.($showalldescriptors ? '' : '
 			JOIN {'.block_exacomp::DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
-			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':''))
-	.' ORDER BY topicid, niveau, d.sorting';
+			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':''));
 
 	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid, $courseid));
 
@@ -872,9 +884,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 		$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
 	}
 
-	//TODO: use sort_items with niveau
-	return $descriptors;
-	// return block_exacomp_sort_items($descriptors, block_exacomp::DB_DESCRIPTORS);
+	return block_exacomp_sort_items($descriptors, ['niveau_' => block_exacomp::DB_NIVEAUS, block_exacomp::DB_DESCRIPTORS]);
 }
 
 function block_exacomp_get_categories_for_descriptor($descriptor){
