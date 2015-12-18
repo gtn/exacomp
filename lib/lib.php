@@ -857,7 +857,8 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 	.' LEFT JOIN {'.block_exacomp::DB_NIVEAUS.'} n ON d.niveauid = n.id '
 	.($showalldescriptors ? '' : '
 			JOIN {'.block_exacomp::DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
-			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':''));
+			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':''))
+	.' ORDER BY topicid, niveau, d.sorting';
 
 	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid, $courseid));
 
@@ -871,7 +872,9 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 		$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
 	}
 
-	return block_exacomp_sort_items($descriptors, block_exacomp::DB_DESCRIPTORS);
+	//TODO: use sort_items with niveau
+	return $descriptors;
+	// return block_exacomp_sort_items($descriptors, block_exacomp::DB_DESCRIPTORS);
 }
 
 function block_exacomp_get_categories_for_descriptor($descriptor){
