@@ -37,6 +37,9 @@ class block_exacomp_common_param_testcase extends basic_testcase {
 	
 		$ret = block_exacomp\common\param::clean_array(['3'=>'key', '10'=>'more'], [PARAM_TEXT]);
 		$this->assertEquals([0=>'key', 1=>'more'], $ret);
+
+		$ret = block_exacomp\common\param::clean_array(['3'=>'key', '10'=>'more'], PARAM_TEXT);
+		$this->assertEquals([0=>'key', 1=>'more'], $ret);
 	}
 
 	public function test_optional_array() {
@@ -47,6 +50,10 @@ class block_exacomp_common_param_testcase extends basic_testcase {
 		unset($_POST['testparam']);
 		$ret = block_exacomp\common\param::optional_array('testparam', [PARAM_INT=>PARAM_TEXT]);
 		$this->assertEquals(array(), $ret);
+
+		$_POST['testparam'] = ['3'=>'key', '10'=>'more'];
+		$ret = block_exacomp\common\param::optional_array('testparam', PARAM_TEXT);
+		$this->assertEquals([0=>'key', 1=>'more'], $ret);
 	}
 	
 	public function test_required_array() {
@@ -54,9 +61,13 @@ class block_exacomp_common_param_testcase extends basic_testcase {
 		$ret = block_exacomp\common\param::required_array('testparam', [PARAM_INT=>PARAM_TEXT]);
 		$this->assertEquals([3=>'key', 10=>'more'], $ret);
 	
+		$_POST['testparam'] = ['3'=>'key', '10'=>'more'];
+		$ret = block_exacomp\common\param::required_array('testparam', PARAM_TEXT);
+		$this->assertEquals([0=>'key', 1=>'more'], $ret);
+
 		try {
 			unset($_POST['testparam']);
-			$ret = block_exacomp\common\param::required_array('testparam', [PARAM_INT=>PARAM_TEXT]);
+			block_exacomp\common\param::required_array('testparam', [PARAM_INT=>PARAM_TEXT]);
 			$this->fail('exception expected');
 		} catch (moodle_exception $e) {
 			$this->assertTrue(true);

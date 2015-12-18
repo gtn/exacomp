@@ -3379,15 +3379,12 @@ function block_exacomp_exaportexists(){
 function block_exacomp_exastudexists(){
 	return class_exists('\block_exastud\api') && \block_exastud\api::active();
 }
-function block_exacomp_get_exastud_periods($userid = 0){
-	// TODO: change to \block_exastud\api::get_student_periods_with_review(...);
-
-	global $USER, $DB;
-	if($userid == 0)
-		$userid = $USER->id;
-
-	$sql = "SELECT p.id,p.description FROM {block_exastudreview} r, {block_exastudperiod} p WHERE r.student_id = ? AND r.periods_id = p.id GROUP BY p.id";
-	return $DB->get_records_sql($sql,array("studentid"=>$userid));
+function block_exacomp_get_exastud_periods_with_review($userid){
+	if (!block_exacomp_exastudexists()) {
+		return [];
+	} else {
+		return \block_exastud\api::get_student_periods_with_review($userid);
+	}
 }
 function block_exacomp_get_exaport_items($userid = 0){
 	// TODO: change to \block_exastud\api::....
@@ -3478,6 +3475,9 @@ function block_exacomp_reset_profile_settings($userid){
 
 function block_exacomp_set_profile_settings($userid, $showonlyreached, $usebadges, $onlygainedbadges, $showallcomps, $useexaport, $useexastud, $courses, $periods){
 	global $DB;
+
+	block_exacomp_reset_profile_settings($userid);
+
 	//showonlyreached
 	$insert = new stdClass();
 	$insert->block = 'exacompdesc';
@@ -3536,7 +3536,7 @@ function block_exacomp_set_profile_settings($userid, $showonlyreached, $usebadge
 	foreach($courses as $course){
 		$insert = new stdClass();
 		$insert->block = 'exacomp';
-		$insert->itemid = intval($course);
+		$insert->itemid = $course;
 		$insert->feedback = '';
 		$insert->userid = $userid;
 
@@ -3548,7 +3548,7 @@ function block_exacomp_set_profile_settings($userid, $showonlyreached, $usebadge
 		foreach($periods as $period){
 			$insert = new stdClass();
 			$insert->block = 'exastud';
-			$insert->itemid = intval($period);
+			$insert->itemid = $period;
 			$insert->feedback = '';
 			$insert->userid = $userid;
 
@@ -3602,10 +3602,10 @@ function block_exacomp_get_exastud_reviews($periods, $student){
 		$reviews[$period->id] = new stdClass();
 		$reviews[$period->id]->id = $period->id;
 
-		$db_review = $DB->get_record('block_exastudreview', array('student_id'=>$student->id, 'periods_id'=>$period->id));
+		$db_review = $DB->get_record('block_exastudreview', array('studentid'=>$student->id, 'periodid'=>$period->id));
 
 		$reviews[$period->id]->feedback = $db_review->review;
-		$reviews[$period->id]->reviewer = $DB->get_record('user', array('id'=>$db_review->teacher_id));
+		$reviews[$period->id]->reviewer = $DB->get_record('user', array('id'=>$db_review->teacherid));
 		$exastud_comps = $DB->get_records('block_exastudreviewpos', array('reviewid'=>$db_review->id, 'categorysource'=>'exastud'));
 		$reviews[$period->id]->categories = array();
 		foreach($exastud_comps as $cat){

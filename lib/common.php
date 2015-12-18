@@ -97,7 +97,7 @@ class SimpleXMLElement extends \SimpleXMLElement {
 	}
 
 	public static function create($rootElement) {
-		return new self('<?xml version="1.0" encoding="UTF-8"?><'.$rootElement.' />');
+		return new static('<?xml version="1.0" encoding="UTF-8"?><'.$rootElement.' />');
 	}
 
 	public function addChildWithCDATAIfValue($name, $value = NULL) {
@@ -210,10 +210,8 @@ class param {
 	}
 
 	public static function clean_array($values, $definition) {
+		$definition = (array)$definition;
 
-		if (count($definition) != 1) {
-			print_error('no array definition');
-		}
 		if (is_object($values)) {
 			$values = (array)$values;
 		} elseif (!is_array($values)) {
@@ -268,7 +266,17 @@ class param {
 		}
 	}
 
-	public static function optional_array($parname, array $definition) {
+	public static function get_required_param($parname) {
+		$param = static::get_param($parname);
+
+		if ($param === null) {
+			throw new exception('param not found: '.$parname);
+		}
+
+		return $param;
+	}
+
+	public static function optional_array($parname, $definition) {
 		$param = static::get_param($parname);
 
 		if ($param === null) {
@@ -278,12 +286,8 @@ class param {
 		}
 	}
 
-	public static function required_array($parname, array $definition) {
-		$param = static::get_param($parname);
-
-		if ($param === null) {
-			throw new exception('param not found: '.$parname);
-		}
+	public static function required_array($parname, $definition) {
+		$param = static::get_required_param($parname);
 
 		return static::clean_array($param, $definition);
 	}
@@ -299,11 +303,7 @@ class param {
 	}
 
 	public static function required_object($parname, $definition) {
-		$param = static::get_param($parname);
-
-		if ($param === null) {
-			throw new exception('param not found: '.$parname);
-		}
+		$param = static::get_required_param($parname);
 
 		return static::clean_object($param, $definition);
 	}

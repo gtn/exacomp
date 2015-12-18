@@ -120,7 +120,7 @@ if($profile_settings->useexaport == 1){
 
 $periods = array();
 if($profile_settings->useexastud == 1){
-	$periods = block_exacomp_get_exastud_periods($studentid);
+	$periods = block_exacomp_get_exastud_periods_with_review($studentid);
 	$reviews = block_exacomp_get_exastud_reviews($periods, $student);
 }
 

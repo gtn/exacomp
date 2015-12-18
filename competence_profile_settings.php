@@ -76,11 +76,9 @@ if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 	if(isset($_POST['profile_settings_showallcomps']))
 		$profile_showallcomps = 1;
 	
-	block_exacomp_reset_profile_settings($USER->id);
-	
-	block_exacomp_set_profile_settings($USER->id, $showonlyreached, $profile_usebadges, $profile_onlygainedbadges, $profile_showallcomps, $useexaport, $useexastud, 
-		(isset($_POST['profile_settings_course']))?$_POST['profile_settings_course']:array(),
-		(isset($_POST['profile_settings_periods']))?$_POST['profile_settings_periods']:array());
+	block_exacomp_set_profile_settings($USER->id, $showonlyreached, $profile_usebadges, $profile_onlygainedbadges, $profile_showallcomps, $useexaport, $useexastud,
+		\block_exacomp\param::optional_array('profile_settings_course', PARAM_INT),
+		\block_exacomp\param::optional_array('profile_settings_periods', PARAM_INT));
 	
 }
 $output = block_exacomp_get_renderer();

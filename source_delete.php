@@ -64,10 +64,10 @@ $subjects = block_exacomp_source_delete_get_subjects($source);
 
 if ($action == 'delete_selected') {
 	$json_data = block_exacomp\param::required_json('json_data', (object)array(
-		'subjects' => array(PARAM_INT),
-		'topics' => array(PARAM_INT),
-		'descriptors' => array(PARAM_INT),
-		'examples' => array(PARAM_INT)
+		'subjects' => [PARAM_INT],
+		'topics' => [PARAM_INT],
+		'descriptors' => [PARAM_INT],
+		'examples' => [PARAM_INT]
 	));
 	
 	$post_examples = array_combine($json_data->examples, $json_data->examples);

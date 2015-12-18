@@ -79,8 +79,8 @@ switch($action){
 	
 		if (!$share_all) {
 			// save individual users
-			$student_ids = block_exacomp\param::optional_array('students', array(PARAM_INT));
-			$not_students_ids = block_exacomp\param::optional_array('not_students', array(PARAM_INT));
+			$student_ids = block_exacomp\param::optional_array('students', [PARAM_INT]);
+			$not_students_ids = block_exacomp\param::optional_array('not_students', [PARAM_INT]);
 	
 			foreach($student_ids as $studentid)
 				block_exacomp_set_cross_subject_student($crosssubjid, $studentid);

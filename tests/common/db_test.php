@@ -25,7 +25,7 @@ class block_exacomp_common_db_testcase extends advanced_testcase {
 		->will($this->returnValue((object)['id'=>1, 'field'=>'original', 'someothervalue'=>123]));
 		$DB->expects($this->at(1))
 		->method('update_record')
-		->with('table', ['id'=>1, 'field'=>'new']);
+		->with('table', (object)['id'=>1, 'field'=>'new']);
 	
 		$ret = db::update_record('table', ['field'=>'new'], ['id'=>1]);
 		$this->assertEquals((object)array('id'=>1, 'field'=>'new', 'someothervalue'=>123), $ret);
@@ -44,7 +44,7 @@ class block_exacomp_common_db_testcase extends advanced_testcase {
 			->will($this->returnValue((object)['id'=>1, 'field'=>'original', 'someothervalue'=>123]));
 		$DB->expects($this->at(1))
 			->method('update_record')
-			->with('table', ['id'=>1, 'field'=>'new']);
+			->with('table', (object)['id'=>1, 'field'=>'new']);
 		
 		$ret = db::insert_or_update_record('table', ['field'=>'new'], ['id'=>1]);
 		$this->assertEquals((object)array('id'=>1, 'field'=>'new', 'someothervalue'=>123), $ret);
@@ -56,7 +56,7 @@ class block_exacomp_common_db_testcase extends advanced_testcase {
 			->will($this->returnValue(null));
 		$DB->expects($this->at(1))
 			->method('insert_record')
-			->with('table', ['id'=>1, 'field'=>'new'])
+			->with('table', (object)['id'=>1, 'field'=>'new'])
 			->will($this->returnValue(2));
 		
 		$ret = db::insert_or_update_record('table', ['field'=>'new'], ['id'=>1]);
@@ -69,7 +69,7 @@ class block_exacomp_common_db_testcase extends advanced_testcase {
 		->will($this->returnValue((object)['id'=>1, 'field'=>'old', 'someothervalue'=>123]));
 		$DB->expects($this->at(1))
 		->method('update_record')
-		->with('table', ['id'=>1, 'field'=>'new']);
+		->with('table', (object)['id'=>1, 'field'=>'new']);
 		
 		$ret = db::insert_or_update_record('table', ['field'=>'new'], ['field'=>'old']);
 		$this->assertEquals((object)array('id'=>1, 'field'=>'new', 'someothervalue'=>123), $ret);
@@ -81,7 +81,7 @@ class block_exacomp_common_db_testcase extends advanced_testcase {
 			->will($this->returnValue(null));
 		$DB->expects($this->at(1))
 			->method('insert_record')
-			->with('table', ['field'=>'new'])
+			->with('table', (object)['field'=>'new'])
 			->will($this->returnValue(2));
 		
 		$ret = db::insert_or_update_record('table', ['field'=>'new'], ['field'=>'old']);
