@@ -118,6 +118,9 @@ if($profile_settings->useexaport == 1){
 	$items = block_exacomp_init_exaport_items($items);
 }
 
+//TODO: change this! ugly hack to avoid errors
+$profile_settings->useexastud = 0;
+
 $periods = array();
 if($profile_settings->useexastud == 1){
 	$periods = block_exacomp_get_exastud_periods_with_review($studentid);

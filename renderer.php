@@ -3860,6 +3860,7 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 				$niveaus = array();
 				$student_eval = array();
 				$teacher_eval = array();
+				if(!empty($topic->descriptors))
 				foreach($topic->descriptors as $descriptor){
 					$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
 					$content_div = html_writer::tag('span', (block_exacomp_is_altversion() && $niveau)?$niveau->title:$descriptor->title);
