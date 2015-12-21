@@ -52,3 +52,26 @@
 #block_exacomp .compprof_barchart_teacher {
 	margin-right: 10px;
 }
+
+.competence_profile_exastud table, .competence_profile_exastud tr {
+	padding: 0;
+	margin: 0;
+}
+.competence_profile_exastud td, .competence_profile_exastud th {
+	border: 1px solid #999;
+    padding: 6px 10px;
+	margin: 0;
+	min-width: 60px;
+}
+.competence_profile_exastud th.evaluation-header, .competence_profile_exastud td.evaluation {
+    text-align: center;
+}
+
+.competence_profile_exastud table th {
+	white-space: nowrap;
+}
+
+.competence_profile_exastud #ratingtable td {
+	text-align: left;
+	vertical-align: top;
+}

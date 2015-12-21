@@ -3392,13 +3392,7 @@ function block_exacomp_exaportexists(){
 function block_exacomp_exastudexists(){
 	return class_exists('\block_exastud\api') && \block_exastud\api::active();
 }
-function block_exacomp_get_exastud_periods_with_review($userid){
-	if (!block_exacomp_exastudexists()) {
-		return [];
-	} else {
-		return \block_exastud\api::get_student_periods_with_review($userid);
-	}
-}
+
 function block_exacomp_get_exaport_items($userid = 0){
 	// TODO: change to \block_exastud\api::....
 
@@ -3608,34 +3602,7 @@ function block_exacomp_init_exaport_items($items){
 
 	return $items;
 }
-function block_exacomp_get_exastud_reviews($periods, $student){
-	global $DB;
-	$reviews = array();
-	foreach($periods as $period){
-		$reviews[$period->id] = new stdClass();
-		$reviews[$period->id]->id = $period->id;
 
-		$db_review = $DB->get_record('block_exastudreview', array('studentid'=>$student->id, 'periodid'=>$period->id));
-
-		$reviews[$period->id]->feedback = $db_review->review;
-		$reviews[$period->id]->reviewer = $DB->get_record('user', array('id'=>$db_review->teacherid));
-		$exastud_comps = $DB->get_records('block_exastudreviewpos', array('reviewid'=>$db_review->id, 'categorysource'=>'exastud'));
-		$reviews[$period->id]->categories = array();
-		foreach($exastud_comps as $cat){
-			$reviews[$period->id]->categories[$cat->categoryid] = $DB->get_record('block_exastudcate', array('id'=>$cat->categoryid));
-			$reviews[$period->id]->categories[$cat->categoryid]->evaluation = $cat->value;
-		}
-
-		$exacomp_comps = $DB->get_records('block_exastudreviewpos', array('reviewid'=>$db_review->id, 'categorysource'=>'exacomp'));
-		$reviews[$period->id]->descriptors = array();
-		foreach($exacomp_comps as $comp){
-			$reviews[$period->id]->descriptors[$comp->categoryid] = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$comp->categoryid));
-			$reviews[$period->id]->descriptors[$comp->categoryid]->evaluation = isset($comp->value) ? $comp->value : 0;
-		}
-
-	}
-	return $reviews;
-}
 function block_exacomp_set_tipp($compid, $user, $type, $scheme){
 	global $COURSE;
 	//$user_information = block_exacomp_get_user_information_by_course($user, $COURSE->id);

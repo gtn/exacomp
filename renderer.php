@@ -3636,7 +3636,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		return $this->notification($message);
 	}
 	
-	function print_competene_profile_overview($student, $courses, $possible_courses, $badges, $exaport, $exaportitems, $exastud, $exastudperiods, $onlygainedbadges=false) {
+	function print_competene_profile_overview($student, $courses, $possible_courses, $badges, $exaport, $exaportitems, $exastud_competence_profile_data, $onlygainedbadges=false) {
 
 		$table = $this->print_competence_profile_overview_table($student, $courses, $possible_courses);
 		$overviewcontent = $table;
@@ -3655,9 +3655,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		}
 		
 		//my feedbacks
-		if($exastud){
+		if($exastud_competence_profile_data){
 			$exastud_content  = '';
-			foreach($exastudperiods as $period){
+			foreach($exastud_competence_profile_data->periods as $period){
 				$exastud_content .= html_writer::tag('li', html_writer::link('#'.$period->description.$period->id, $period->description));
 			}
 			$overviewcontent .= html_writer::div(html_writer::tag('h4', get_string('my_periods', 'block_exacomp'))
@@ -4438,81 +4438,28 @@ var dataset = dataset.map(function (group) {
 		
 		return html_writer::div($content.$list_heading.$list_descriptors, 'competence_profile_artefacts');
 	}
-	public function print_competence_profile_exastud($settings, $user, $periods, $reviews){
-		$header = html_writer::tag('h3', get_string('my_periods', 'block_exacomp'), array('class'=>'competence_profile_sectiontitle'));
-		
-		$profile_settings = block_exacomp_get_profile_settings();
-		
-		$content = '';
-		foreach($periods as $period){
-			
+	public function print_competence_profile_exastud($profile_settings, $user){
+		$exastud_periods = \block_exastud\api::get_student_periods_with_review();
+
+		$output = '';
+
+		foreach ($exastud_periods as $period) {
 			if(isset($profile_settings->exastud[$period->id])){
-				$content .= $this->print_exastud_period($period, $reviews);
+				$output .= html_writer::tag('h4', html_writer::tag('a', $period->description, array('name'=>$period->description.$period->id)), array('class'=>'competence_profile_coursetitle'));
+				$output .= \block_exastud\api::print_student_report($user->id, $period->id);
 			}
 		}
 
-		//$content .= html_writer::div($content, 'competence_profile_feedback');
-
-		return $header.$content;
-	}
-	private function print_exastud_period($period, $reviews){
-		$content = html_writer::tag('h4', html_writer::tag('a', $period->description, array('name'=>$period->description.$period->id)), array('class'=>'competence_profile_coursetitle'));
-		
-		$review = $reviews[$period->id];
-		
-		$table = new html_table();
-		$table->attributes['class'] = 'compstable flexible boxaligncenter generaltable';
-		$rows = array();
-		$row = new html_table_row();
-		$cell = new html_table_cell();
-		$cell->attributes['class'] = 'competence_tableright';
-		$cell->text = get_string('period_reviewer', 'block_exacomp').":";
-		$row->cells[] = $cell;
-		$cell = new html_table_cell();
-		$cell->text = $review->reviewer->firstname." ".$review->reviewer->lastname;
-		$row->cells[] = $cell;
-		$rows[] = $row;
-			
-		
-		foreach($review->categories as $category){
-			$row = new html_table_row();
-			$cell = new html_table_cell();
-			$cell->attributes['class'] = 'competence_tableright';
-			$cell->text = $category->title.":";
-			$row->cells[] = $cell;
-			$cell = new html_table_cell();
-			$cell->text = $category->evaluation."/10";
-			$row->cells[] = $cell;
-			$rows[] = $row;
+		if (!$output) {
+			return;
 		}
 
-		foreach($review->descriptors as $descriptor){
-			$row = new html_table_row();
-			$cell = new html_table_cell();
-			$cell->attributes['class'] = 'competence_tableright';
-			$cell->text = $descriptor->title.":";
-			$row->cells[] = $cell;
-			$cell = new html_table_cell();
-			$cell->text = $descriptor->evaluation."/10";
-			$row->cells[] = $cell;
-			$rows[] = $row;
-		}
+		$output = html_writer::div($output, 'competence_profile_exastud');
+		$output = html_writer::tag('h3', get_string('my_periods', 'block_exacomp'), array('class'=>'competence_profile_sectiontitle')).$output;
 
-		$row = new html_table_row();
-		$cell = new html_table_cell();
-		$cell->attributes['class'] = 'competence_tableright';
-		$cell->text = get_string('period_feedback', 'block_exacomp').":";
-		$row->cells[] = $cell;
-		$cell = new html_table_cell();
-		$cell->text = $review->feedback;
-		$row->cells[] = $cell;
-		$rows[] = $row;
-		
-		$table->data = $rows;
-		$content .= html_writer::table($table);
-		
-		return html_writer::div($content, 'competence_profile_feedback');
+		return $output;
 	}
+
 	public function print_competence_profile_course_all($courses, $student){
 		$subjects = block_exacomp_get_subjects_for_radar_graph($student->id);
 		

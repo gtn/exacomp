@@ -118,24 +118,15 @@ if($profile_settings->useexaport == 1){
 	$items = block_exacomp_init_exaport_items($items);
 }
 
-//TODO: change this! ugly hack to avoid errors
-$profile_settings->useexastud = 0;
-
-$periods = array();
-if($profile_settings->useexastud == 1){
-	$periods = block_exacomp_get_exastud_periods_with_review($studentid);
-	$reviews = block_exacomp_get_exastud_reviews($periods, $student);
-}
-
 $user_courses = array();
 foreach($possible_courses as $course){
 	if(isset($profile_settings->exacomp[$course->id]))
 		$user_courses[$course->id] = $course; 
 }
 
-if(!block_exacomp_is_altversion())
-	echo $output->print_competene_profile_overview($student, $user_courses, $possible_courses, $badges, 
-		$profile_settings->useexaport, $items, $profile_settings->useexastud, $periods,  $profile_settings->onlygainedbadges);
+//if(!block_exacomp_is_altversion())
+//	echo $output->print_competene_profile_overview($student, $user_courses, $possible_courses, $badges, 
+//		$profile_settings->useexaport, $items, $exastud_competence_profile_data, $profile_settings->onlygainedbadges);
 
 if(!empty($profile_settings->exacomp) || $profile_settings->showallcomps == 1)
 	echo html_writer::tag('h3', get_string('my_comps', 'block_exacomp'), array('class'=>'competence_profile_sectiontitle'));
@@ -157,11 +148,12 @@ if(!block_exacomp_is_altversion()){
 		echo $output->print_competence_profile_course_all($overview_courses, $student);
 	}
 }
-if($profile_settings->useexaport == 1){
+if($profile_settings->useexaport){
 	echo $output->print_competence_profile_exaport($profile_settings, $student, $items);
 }
-if($profile_settings->useexastud == 1){
-	echo $output->print_competence_profile_exastud($profile_settings, $student, $periods, $reviews);
+
+if($profile_settings->useexastud){
+	echo $output->print_competence_profile_exastud($profile_settings, $student);
 }
 
 /* END CONTENT REGION */
