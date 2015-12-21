@@ -1,7 +1,10 @@
 <?php
 
+/**
+ * functions common accross exabis plugins
+ */
+
 namespace block_exacomp\common;
-/* functions common accross exabis plugins */
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -386,9 +389,11 @@ function _plugin_name() {
 }
 
 /**
- * Returns a localized string.
- * This method is neccessary because a project based evaluation is available in the current exastud
- * version, which requires a different naming.
+ * get a language string from current plugin or else from global language strings
+ * @param $identifier
+ * @param null $component
+ * @param null $a
+ * @return string
  */
 function get_string($identifier, $component = null, $a = null) {
 	$manager = get_string_manager();
@@ -400,6 +405,10 @@ function get_string($identifier, $component = null, $a = null) {
 		return $manager->get_string($identifier, $component, $a);
 
 	return $manager->get_string($identifier, '', $a);
+}
+
+function print_error($errorcode, $module = 'error', $link = '', $a = null, $debuginfo = null) {
+	throw new exception($errorcode, $module, $link, $a, $debuginfo);
 }
 
 function _t_check_identifier($string) {
@@ -433,31 +442,32 @@ function _t_parse_string($string, $a) {
 	} else {
 		$string = str_replace('{$a}', (string)$a, $string);
 	}
-	
+
 	return $string;
 }
+
 /*
  * translator function
  */
 function trans() {
-	
+
 	$origArgs = $args = func_get_args();
-	
+
 	$languagestrings = null;
 	$identifier = '';
 	$a = null;
-	
+
 	if (empty($args)) {
 		print_error('no args');
 	}
-	
+
 	$arg = array_shift($args);
 	if (is_string($arg) && !_t_check_identifier($arg)) {
 		$identifier = $arg;
 
 		$arg = array_shift($args);
 	}
-	
+
 	if ($arg === null) {
 		// just id submitted
 		$languagestrings = array();
@@ -468,11 +478,11 @@ function trans() {
 	} else {
 		print_error('wrong args: '.print_r($origArgs, true));
 	}
-	
+
 	if (!empty($args)) {
 		$a = array_shift($args);
 	}
-	
+
 	// parse $languagestrings
 	foreach ($languagestrings as $lang => $string) {
 		if (is_number($lang)) {
@@ -483,11 +493,11 @@ function trans() {
 			}
 		}
 	}
-	
+
 	if (!empty($args)) {
 		print_error('too many args: '.print_r($origArgs, true));
 	}
-	
+
 	$lang = current_language();
 	if (isset($languagestrings[$lang])) {
 		return _t_parse_string($languagestrings[$lang], $a);
@@ -498,7 +508,10 @@ function trans() {
 	}
 }
 
-/* the whole part below is done, so eclipse knows the common classes and functions */
+/**
+ * exporting all classes and functions from the common namespace to the plugin namespace
+ * the whole part below is done, so eclipse knows the common classes and functions
+ */
 namespace block_exacomp;
 
 function _should_export_class($classname) {
@@ -527,5 +540,6 @@ if (_should_export_class('param')) { class param extends common\param {} }
 if (_should_export_class('SimpleXMLElement')) { class SimpleXMLElement extends common\SimpleXMLElement {} }
 if (_should_export_class('url')) { class url extends common\url {} }
 
-if (_export_function('get_string')) { function get_string($identifier) {} }
+if (_export_function('get_string')) { function get_string($identifier, $component = null, $a = null) {} }
+if (_export_function('print_error')) { function print_error($errorcode, $module = 'error', $link = '', $a = null, $debuginfo = null) {} }
 if (_export_function('trans')) { function trans() {} }
