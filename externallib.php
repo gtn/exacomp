@@ -5516,19 +5516,25 @@ class block_exacomp_external extends external_api {
 	public static function dakora_create_blocking_event_parameters() {
 		return new external_function_parameters ( array (
 				'courseid' => new external_value (PARAM_INT, 'id of course'),
-				'title' => new external_value ( PARAM_TEXT, 'title of new blocking event' )
+				'title' => new external_value ( PARAM_TEXT, 'title of new blocking event' ),
+				'userid'=> new external_value ( PARAM_INT, 'id of user'),
+				'preplanningstorage'=> new external_value (PARAM_BOOL, 'in pre planning storage or for specific student')
 		) );
 	}
 	
 	/**
 	 * Create a new blocking event
 	 */
-	public static function dakora_create_blocking_event($courseid, $title) {
+	public static function dakora_create_blocking_event($courseid, $title, $userid, $preplanningstorage) {
 		global $USER;
 		
-		$params = self::validate_parameters(self::dakora_create_blocking_event_parameters(), array('courseid'=>$courseid,'title'=>$title));
+		$params = self::validate_parameters(self::dakora_create_blocking_event_parameters(), array('courseid'=>$courseid,'title'=>$title
+			'userid'=>$userid, 'preplanningstorage'=>$preplanningstorage));
 	
-		block_exacomp_create_blocking_event($courseid, $title, $USER->id);
+		if($userid == 0 && !$preplanningstorage)
+			$userid = $USER->id;
+		
+		block_exacomp_create_blocking_event($courseid, $title, $USER->id, $userid);
 	
 		return array("success"=>true);
 	}
