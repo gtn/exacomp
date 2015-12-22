@@ -5185,7 +5185,12 @@ class block_exacomp_external extends external_api {
 			$data['studentvalue'] = isset ( $exampleEvaluation->student_evaluation ) ? $exampleEvaluation->student_evaluation : -1;
 			$data['teacheritemvalue'] = isset ( $exampleEvaluation->additionalinfo ) ? $exampleEvaluation->additionalinfo : -1;
 		}
-	
+		
+		if(!$exampleEvaluation || $exampleEvaluation->resubmission)
+			$data['resubmission'] = true;
+		else
+			$data['resubmission'] = false;
+		
 		return $data;
 	}
 	
@@ -5208,7 +5213,8 @@ class block_exacomp_external extends external_api {
 				'studentvalue' => new external_value ( PARAM_INT, 'student grading' ),
 				'teachercomment' => new external_value ( PARAM_TEXT, 'teacher comment' ),
 				'studentcomment' => new external_value ( PARAM_TEXT, 'student comment' ),
-				'teacheritemvalue' => new external_value ( PARAM_INT, 'item teacher grading' )
+				'teacheritemvalue' => new external_value ( PARAM_INT, 'item teacher grading' ),
+				'resubmission' => new external_value ( PARAM_BOOL, 'resubmission is allowed/not allowed' )
 		) );
 	}
 	
