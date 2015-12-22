@@ -4564,7 +4564,7 @@ var dataset = dataset.map(function (group) {
 		}
 		$submit .= html_writer::empty_tag('br');
 		$submit .= html_writer::tag("h5", get_string('new_crosssub','block_exacomp'));
-		$submit .= html_writer::empty_tag('input', array('name'=>'new_crosssub', 'type'=>'submit', 'value'=>get_string('add_crosssub', 'block_exacomp')));
+		$submit .= html_writer::empty_tag('input', array('name'=>'new_crosssub_overview', 'type'=>'submit', 'value'=>get_string('add_crosssub', 'block_exacomp')));
 	
 		$submit = html_writer::div($submit, ''); 
 		$content = html_writer::tag('form', $draft_content.$submit, array('method'=>'post', 'action'=>$PAGE->url.'&action=save', 'name'=>'add_drafts_to_course'));
@@ -4640,7 +4640,7 @@ var dataset = dataset.map(function (group) {
 		foreach($subjects as $subject){
 			$options[$subject->id] = $subject->title;
 		}
-		return html_writer::select($options, "lis_crosssubject_subject", $crosssubject->subjectid, false);
+		return html_writer::select($options, "lis_crosssubject_subject", ($crosssubject)?$crosssubject->subjectid:0, false);
 		
 	}
 	public function print_overview_metadata_cross_subjects($crosssubject, $isTeacher, $selectedStudent = null){
@@ -4654,7 +4654,7 @@ var dataset = dataset.map(function (group) {
 		$row = new html_table_row();
 
 		$subject_title = get_string('nocrosssubsub', 'block_exacomp');
-		if($crosssubject->subjectid != 0){
+		if($crosssubject && $crosssubject->subjectid != 0){
 			$subject = $DB->get_record(block_exacomp::DB_SUBJECTS, array('id'=>$crosssubject->subjectid));
 			$subject_title = $subject->title;
 		}
@@ -4668,10 +4668,10 @@ var dataset = dataset.map(function (group) {
 		
 		if($selectedStudent == 0)
 			$cell->text = html_writer::span(get_string('crosssubject', 'block_exacomp'), 'exabis_comp_top_name')
-				. html_writer::empty_tag('input', array('type'=>'text', 'value'=>$crosssubject->title, 'name'=>'crosssub-title'));
+				. html_writer::empty_tag('input', array('type'=>'text', 'value'=>($crosssubject)?$crosssubject->title:'', 'name'=>'crosssub-title'));
 		else 
 			$cell->text = html_writer::span(get_string('crosssubject', 'block_exacomp'), 'exabis_comp_top_name')
-				. html_writer::tag('div', $crosssubject->title);
+				. html_writer::tag('div', ($crosssubject)?$crosssubject->title:'');
 				
 		$row->cells[] = $cell;
 		
@@ -4682,10 +4682,10 @@ var dataset = dataset.map(function (group) {
 		$cell->colspan = (isset($selectedStudent))?3:2;
 		if($selectedStudent == 0)
 			$cell->text = html_writer::span(get_string('description', 'block_exacomp'), 'exabis_comp_top_name')
-				. html_writer::empty_tag('input', array('type'=>'textarea', 'size'=>200, 'value'=>$crosssubject->description, 'name'=>'crosssub-description'));
+				. html_writer::empty_tag('input', array('type'=>'textarea', 'size'=>200, 'value'=>($crosssubject)?$crosssubject->description:'', 'name'=>'crosssub-description'));
 		else
 			 $cell->text = html_writer::span(get_string('description', 'block_exacomp'), 'exabis_comp_top_name')
-				. html_writer::tag('b', $crosssubject->description);
+				. html_writer::tag('b', ($crosssubject)?$crosssubject->description:'');
 				
 		$row->cells[] = $cell;  
 		$rows[] = $row;

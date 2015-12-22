@@ -45,7 +45,8 @@ $isTeacher = block_exacomp_is_teacher($context);
 $studentid = block_exacomp_get_studentid($isTeacher) ;
 $editmode = optional_param('editmode', 0, PARAM_BOOL);
 
-
+$crosssubjid = optional_param('crosssubjid', 0, PARAM_INT);
+$action = optional_param('action', '', PARAM_TEXT);
 
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_cross_subjects_course';
@@ -72,25 +73,35 @@ echo $output->header($context, $courseid, 'tab_cross_subjects');
 if(($delete = optional_param("delete", 0, PARAM_INT)) > 0 && $isTeacher)
 	block_exacomp_delete_custom_example($delete);
 
+if($action == 'new_crosssub' && isset($_POST['crosssub-title'])){
+	$insert = new stdClass();
+	$insert->title = $_POST['crosssub-title'];
+	$insert->description = (isset($_POST['crosssub-description']))?$_POST['crosssub-description']:'';
+	$insert->subjectid = (isset($_POST['lis_crosssubject_subject']))?$_POST['lis_crosssubject_subject']:0;
+	$insert->courseid = $courseid;
+	
+	$crosssubjid = $DB->insert_record(block_exacomp::DB_CROSSSUBJECTS, $insert);
+}
+
 $activities = block_exacomp_get_activities_by_course($courseid);
 $course_settings = block_exacomp_get_settings_by_course($courseid);
 
 if($course_settings->uses_activities && !$activities && !$course_settings->show_all_descriptors)
 	echo $output->print_no_activities_warning($isTeacher);
 else{
-	list($crosssubjects, $selectedCrosssubject) = block_exacomp_init_course_crosssubjects($courseid, optional_param('crosssubjid', 0, PARAM_INT), ($isTeacher)?0:$studentid);
-	
+
+	list($crosssubjects, $selectedCrosssubject) = block_exacomp_init_course_crosssubjects($courseid, $crosssubjid, ($isTeacher)?0:$studentid);
 	$NG_PAGE = (object)[ 'url' => new moodle_url('/blocks/exacomp/cross_subjects.php', array(
 					'courseid' => $courseid,
 					'showevaluation' => $showevaluation,
 					'studentid' => $studentid,
 					'editmode' => $editmode,
-					'crosssubjid' => $selectedCrosssubject->id,
+					'crosssubjid' => ($selectedCrosssubject)?$selectedCrosssubject->id:0,
 	)) ];
 	
 	//no crosssubjects available -> end 
 	if(empty($crosssubjects)){
-		echo get_string('no_crosssubjs', 'block_exacomp');
+		/*echo get_string('no_crosssubjs', 'block_exacomp');
 		
 		$submit = html_writer::empty_tag('br');
 		$submit .= html_writer::empty_tag('input', array('name'=>'new_crosssub', 'type'=>'submit', 'value'=>get_string('add_crosssub', 'block_exacomp')));
@@ -102,7 +113,7 @@ else{
 		
 		echo $output->print_wrapperdivend();
 		echo $OUTPUT->footer();
-		die;
+		die;*/
 	}
 	
 	//Delete timestamp (end|start) from example
@@ -114,9 +125,10 @@ else{
 	// IF TEACHER SHOW ALL COURSE STUDENTS, IF NOT ONLY CURRENT USER
 	// TODO: logik hier kontrollieren
 	if ($isTeacher) {
-		$students = block_exacomp_get_students_for_crosssubject($courseid, $selectedCrosssubject);
+		$students = ($selectedCrosssubject)?block_exacomp_get_students_for_crosssubject($courseid, $selectedCrosssubject):array();
 		if(!$students) {
-			echo html_writer::div(get_string('share_crosssub_for_further_use','block_exacomp'),"alert alert-warning");
+			if($crosssubjid > 0)
+				echo html_writer::div(get_string('share_crosssub_for_further_use','block_exacomp'),"alert alert-warning");
 			$editmode = true;
 			$selectedStudentid = 0;
 			$studentid = 0;
@@ -137,8 +149,14 @@ else{
 	foreach($students as $student)
 		$student = block_exacomp_get_user_information_by_course($student, $courseid);
 
-	echo $output->print_cross_subjects_form_start(/* TODO: so nicht sicher */ (isset($selectedCrosssubject))?$selectedCrosssubject:null, $studentid);
-
+	if($selectedCrosssubject)
+		echo $output->print_cross_subjects_form_start(/* TODO: so nicht sicher */ (isset($selectedCrosssubject))?$selectedCrosssubject:null, $studentid);
+	else{ 
+		$url_params = array();
+		$url_params['action'] = 'new_crosssub';
+		$url = new moodle_url($PAGE->url, $url_params);
+		echo html_writer::start_tag('form',array('id'=>'new-crosssub', "action" => $url, 'method'=>'post'));
+	}
 	//dropdowns for crosssubjects
 	//do not display if user is currently adding a new crosssubject
 	if(!$new){
@@ -174,7 +192,8 @@ else{
 				$activities_student[] = $course_mods[$cmid];*/
 	}
 	
-	echo $output->print_overview_legend($isTeacher);
+	if($selectedCrosssubject)
+		echo $output->print_overview_legend($isTeacher);
 	
 	$statistic = false;
 	if($isTeacher){
@@ -195,9 +214,14 @@ else{
 	
 	$subjects = block_exacomp_get_competence_tree_for_cross_subject($courseid,(isset($selectedCrosssubject))?$selectedCrosssubject->id:null,false, !($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies);
 
-	echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
-	echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, false, true, $selectedCrosssubject->id, $statistic);
-	echo html_writer::end_tag("div");
+	if($selectedCrosssubject){
+		echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
+		echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, false, true, $selectedCrosssubject->id, $statistic);
+		echo html_writer::end_tag("div");
+	}else{
+		echo html_writer::empty_tag('input', array('name'=>'create_crosssub', 'type'=>'submit', 'value'=>get_string('add_crosssub', 'block_exacomp')));
+		echo html_writer::end_tag('form');
+	}
 }
 /* END CONTENT REGION */
 echo $output->footer();

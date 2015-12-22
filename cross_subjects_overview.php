@@ -69,9 +69,8 @@ if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 		$current_id = block_exacomp_save_drafts_to_course($drafts_to_save, $courseid);
 		redirect(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$current_id)));
 	}
-	else if(isset($_POST['new_crosssub'])){
-		$current_id = block_exacomp_create_new_crosssub($courseid);
-		redirect(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$current_id, 'new'=>1)));
+	else if(isset($_POST['new_crosssub_overview'])){
+		redirect(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>0, 'new'=>1)));
 	}
 }
 

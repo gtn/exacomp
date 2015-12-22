@@ -4056,10 +4056,12 @@ function block_exacomp_init_course_crosssubjects($courseid, $crosssubjid, $stude
 	$crosssubjects = block_exacomp_get_cross_subjects_by_course($courseid, $studentid);
 
 	$selectedCrosssubject = null;
-	if(isset($crosssubjects[$crosssubjid])){
-		$selectedCrosssubject = $crosssubjects[$crosssubjid];
-	} elseif ($crosssubjects) {
-		$selectedCrosssubject = reset($crosssubjects);
+	if($crosssubjid != 0){
+		if(isset($crosssubjects[$crosssubjid])){
+			$selectedCrosssubject = $crosssubjects[$crosssubjid];
+		} elseif ($crosssubjects) {
+			$selectedCrosssubject = reset($crosssubjects);
+		}
 	}
 
 	return array($crosssubjects, $selectedCrosssubject);
