@@ -34,7 +34,8 @@ class block_exacomp_db_layer {
 	static function create() {
 		$args = func_get_args();
 
-		$reflection = new ReflectionClass(static::class);
+		$class = get_called_class();
+ $reflection = new ReflectionClass($class);
 		return $reflection->newInstanceArgs($args);
 	}
 
@@ -43,7 +44,7 @@ class block_exacomp_db_layer {
 			return $descriptor->topicid == $topic->id;
 		});
 
-		$descriptors = $this->create_objects(\block_exacomp\descriptor::class, $descriptors, array(
+		$descriptors = $this->create_objects('\block_exacomp\descriptor', $descriptors, array(
 			'topic' => $topic,
 		));
 
@@ -91,7 +92,7 @@ class block_exacomp_db_layer {
 	function get_examples($descriptor) {
 		$dummy = $descriptor->getData();
 		block_exacomp_get_examples_for_descriptor($dummy, $this->filteredtaxonomies, $this->showallexamples, $this->courseid, false, false);
-		return $this->create_objects(\block_exacomp\example::class, $dummy->examples, array(
+		return $this->create_objects('\block_exacomp\example', $dummy->examples, array(
 			'descriptor' => $descriptor
 		));
 	}
@@ -128,7 +129,7 @@ class block_exacomp_db_layer {
 		//$descriptors = $DB->get_records_sql($sql, ($this->showalldescriptors) ? array($parent->id) : array($this->courseid,$parent->id));
 		$descriptors = $DB->get_records_sql($sql,  $params);
 
-		$descriptors = $this->create_objects(\block_exacomp\descriptor::class, $descriptors, array(
+		$descriptors = $this->create_objects('\block_exacomp\descriptor', $descriptors, array(
 			'parent' => $parent,
 			'topic' => $parent->topic
 		));
