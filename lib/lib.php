@@ -6074,13 +6074,16 @@ function block_exacomp_create_blocking_event($courseid, $title, $creatorid, $stu
 
 	$scheduleid = $DB->insert_record(block_exacomp::DB_SCHEDULE, $schedule);
 
-	$visibility = new stdClass();
-	$visibility->courseid = $courseid;
-	$visibility->exampleid = $exampleid;
-	$visibility->studentid = $studentid;
-	$visibility->visible = 1;
+	$record = $DB->get_records(block_exacomp::DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>0, 'visible'=>1));
+	if(!$record){
+		$visibility = new stdClass();
+		$visibility->courseid = $courseid;
+		$visibility->exampleid = $exampleid;
+		$visibility->studentid = 0;
+		$visibility->visible = 1;
 
-	$vibilityid = $DB->insert_record(block_exacomp::DB_EXAMPVISIBILITY, $visibility);
+		$vibilityid = $DB->insert_record(block_exacomp::DB_EXAMPVISIBILITY, $visibility);
+	}
 }
 
 }

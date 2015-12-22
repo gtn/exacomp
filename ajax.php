@@ -353,7 +353,7 @@ switch($action){
 		$creatorid = required_param('creatorid', PARAM_INT);
 		$title = required_param('title', PARAM_TEXT);
 		
-		block_exacomp_create_blocking_event($courseid, $title, $creatorid);
+		block_exacomp_create_blocking_event($courseid, $title, $creatorid, 0);
 		
 		break;
 	default:

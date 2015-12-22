@@ -5528,7 +5528,7 @@ class block_exacomp_external extends external_api {
 	public static function dakora_create_blocking_event($courseid, $title, $userid, $preplanningstorage) {
 		global $USER;
 		
-		$params = self::validate_parameters(self::dakora_create_blocking_event_parameters(), array('courseid'=>$courseid,'title'=>$title, 
+		$params = self::validate_parameters(self::dakora_create_blocking_event_parameters(), array('courseid'=>$courseid,'title'=>$title,
 			'userid'=>$userid, 'preplanningstorage'=>$preplanningstorage));
 	
 		if($userid == 0 && !$preplanningstorage)
