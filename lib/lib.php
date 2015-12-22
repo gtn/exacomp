@@ -4472,19 +4472,16 @@ function block_exacomp_get_viewurl_for_example($studentid,$exampleid) {
 		return null;
 	}
 
-	$sql = 'select *, max(timecreated) from {block_exacompitemexample} ie
-			JOIN {block_exaportitem} i ON i.id = ie.itemid
-			WHERE ie.exampleid = ? AND i.userid=?';
-
-	$item = $DB->get_record_sql($sql, array($exampleid,$studentid));
+	$item = block_exacomp_get_current_item_for_example($studentid, $exampleid);
+	
 	if(!$item)
 		return null;
 
-	$view = $DB->get_record('block_exaportviewblock', array("type"=>"item","itemid"=>$item->itemid));
+	$view = $DB->get_record('block_exaportviewblock', array("type"=>"item","itemid"=>$item->id));
 	if(!$view)
 		return null;
 
-	$access = "view/id/".$studentid."-".$view->viewid."&itemid=".$item->itemid;
+	$access = "view/id/".$studentid."-".$view->viewid."&itemid=".$item->id;
 
 	return $CFG->wwwroot.'/blocks/exaport/shared_item.php?access='.$access;
 }
