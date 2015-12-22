@@ -5656,7 +5656,7 @@ class block_exacomp_external extends external_api {
 		}
 		
 		foreach($childsandexamples->children as $child){
-			$examples = block_exacomp_external::dakora_get_examples_for_descriptor_for_crosssubject_with_grading($courseid, $child->childid, $userid, false, $crosssubjid);
+			$examples = block_exacomp_external::dakora_get_examples_for_descriptor_with_grading($courseid, $child->childid, $userid, false, $crosssubjid);
 			
 			foreach($examples as $example){
 				if($example->teacherevaluation == $grading){
