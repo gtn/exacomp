@@ -41,7 +41,7 @@ $context = context_course::instance($courseid);
 $output = block_exacomp_get_renderer();
 
 $id = optional_param('id', 0, PARAM_INT);
-$item = $id ? block_exacomp_subject::get($id) : null;
+$item = $id ? \block_exacomp\subject::get($id) : null;
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/subject.php', array('courseid' => $courseid));

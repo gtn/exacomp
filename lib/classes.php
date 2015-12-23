@@ -1,11 +1,13 @@
 <?php
 
-namespace {
+namespace block_exacomp;
+
+use globals as g;
+use \block_exacomp;
+
 defined('MOODLE_INTERNAL') || die();
 
-use block_exacomp\globals as g;
-
-class block_exacomp_db_layer {
+class db_layer {
 
 	public $courseid = 0;
 	public $showalldescriptors = true;
@@ -15,7 +17,7 @@ class block_exacomp_db_layer {
 	public $mindvisibility = false;
 
 	/**
-	 * @return block_exacomp_db_layer
+	 * @return db_layer
 	 */
 	static function get() {
 		static $default = null;
@@ -35,7 +37,7 @@ class block_exacomp_db_layer {
 		$args = func_get_args();
 
 		$class = get_called_class();
- $reflection = new ReflectionClass($class);
+		$reflection = new \ReflectionClass($class);
 		return $reflection->newInstanceArgs($args);
 	}
 
@@ -44,9 +46,7 @@ class block_exacomp_db_layer {
 			return $descriptor->topicid == $topic->id;
 		});
 
-		$descriptors = $this->create_objects('\block_exacomp\descriptor', $descriptors, array(
-			'topic' => $topic,
-		));
+		$descriptors = descriptor::create_objects($descriptors, [ 'topic' => $topic ], $this);
 
 		return $descriptors;
 	}
@@ -92,9 +92,10 @@ class block_exacomp_db_layer {
 	function get_examples($descriptor) {
 		$dummy = $descriptor->getData();
 		block_exacomp_get_examples_for_descriptor($dummy, $this->filteredtaxonomies, $this->showallexamples, $this->courseid, false, false);
-		return $this->create_objects('\block_exacomp\example', $dummy->examples, array(
+
+		return example::create_objects($dummy->examples, array(
 			'descriptor' => $descriptor
-		));
+		), $this);
 	}
 
 	function get_child_descriptors($parent) {
@@ -127,21 +128,18 @@ class block_exacomp_db_layer {
 
 		$params[]= $parent->id;
 		//$descriptors = $DB->get_records_sql($sql, ($this->showalldescriptors) ? array($parent->id) : array($this->courseid,$parent->id));
-		$descriptors = $DB->get_records_sql($sql,  $params);
+		$descriptors = $DB->get_records_sql($sql, $params);
 
-		$descriptors = $this->create_objects('\block_exacomp\descriptor', $descriptors, array(
+		$descriptors = descriptor::create_objects($descriptors, array(
 			'parent' => $parent,
 			'topic' => $parent->topic
-		));
+		), $this);
 
 		return $descriptors;
 	}
 
-
 	function get_subjects() {
-		$subjects = block_exacomp_subject::get_records();
-
-		return $this->create_objects('block_exacomp_subject', $subjects);
+		return $this->assignDbLayer(subject::get_objects());
 	}
 
 	function get_subjects_for_source($source) {
@@ -224,7 +222,7 @@ class block_exacomp_db_layer {
 	function get_topics_for_subject($subject) {
 		global $DB;
 
-		return $this->create_objects('block_exacomp_topic', $DB->get_records_sql('
+		return topic::create_objects($DB->get_records_sql('
 			SELECT t.id, t.title, t.parentid, t.subjid, t.source, t.numb
 			FROM {'.block_exacomp::DB_SUBJECTS.'} s
 			JOIN {'.block_exacomp::DB_TOPICS.'} t ON t.subjid = s.id
@@ -233,24 +231,35 @@ class block_exacomp_db_layer {
 			ORDER BY t.id, t.sorting, t.subjid
 		', array($subject->id)), array(
 			'subject' => $subject
-		));
+		), $this);
+	}
+
+	function assignDbLayer(array $objects) {
+		array_walk($objects, function($object) {
+			$object->setDbLayer($this);
+		});
+
+		return $objects;
 	}
 
 	function create_objects($class, array $records, $data = array()) {
 		$objects = array();
 
 		array_walk($records, function($record) use ($class, &$objects, $data) {
-			foreach ($data as $key => $value) {
-				$record->$key = $value;
+			if ($data) {
+				foreach ($data as $key => $value) {
+					$record->$key = $value;
+				}
 			}
 
 			if ($record instanceof $class) {
 				// already object
 				$objects[$record->id] = $record;
+				$objects[$record->id]->setDbLayer($this);
 			} else {
 				// create object
-				if ($o = $class::create($record, $this)) {
-					$objects[$o->id] = $o;
+				if ($object = $class::create($record, $this)) {
+					$objects[$object->id] = $object;
 				}
 			}
 		});
@@ -259,7 +268,7 @@ class block_exacomp_db_layer {
 	}
 }
 
-class block_exacomp_db_layer_assign_competencies extends block_exacomp_db_layer {
+class db_layer_course extends db_layer {
 	public $courseid = 0;
 	public $showalldescriptors = false;
 	public $showallexamples = false;
@@ -270,21 +279,31 @@ class block_exacomp_db_layer_assign_competencies extends block_exacomp_db_layer 
 	function __construct($courseid) {
 		$this->courseid = $courseid;
 	}
+
+	function get_subjects() {
+		return subject::create_objects(block_exacomp_get_subjects_by_course($this->courseid), null, $this);
+	}
 }
 
-class block_exacomp_db_record {
+class db_record {
+	/**
+	 * @var object
+	 */
 	protected $data = null;
+	/**
+	 * @var db_layer
+	 */
 	protected $dbLayer = null;
 
 	const TABLE = 'todo';
 
-	public function __construct($data, block_exacomp_db_layer $dbLayer = null) {
-		$this->data = (object)array();
+	public function __construct($data, db_layer $dbLayer = null) {
+		$this->data = (object)[];
 
 		if ($dbLayer) {
 			$this->setDbLayer($dbLayer);
 		} else {
-			$this->setDbLayer(block_exacomp_db_layer::get());
+			$this->setDbLayer(db_layer::get());
 		}
 
 		foreach ($data as $key => $value) {
@@ -368,7 +387,7 @@ class block_exacomp_db_record {
 		unset($this->data->$name);
 	}
 
-	public function setDbLayer(block_exacomp_db_layer $dbLayer) {
+	public function setDbLayer(db_layer $dbLayer) {
 		$this->dbLayer = $dbLayer;
 	}
 
@@ -473,17 +492,15 @@ class block_exacomp_db_record {
 		return g::$DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
 	}
 
-	static function create_objects($records, block_exacomp_db_layer $dbLayer = null) {
-		$class = get_called_class();
+	static function create_objects($records, $data = [], db_layer $dbLayer = null) {
+		if (!$dbLayer) {
+			$dbLayer = db_layer::get();
+		}
 
-		$records = array_map(function($data) use ($class, $dbLayer) {
-			// before php 5.6 static:: in a closure does not work!
-			return $class::create($data, $dbLayer);
-		}, $records);
-		return $records;
+		return $dbLayer->create_objects(get_called_class(), $records, $data);
 	}
 
-	static function create($data = [], block_exacomp_db_layer $dbLayer = null) {
+	static function create($data = [], db_layer $dbLayer = null) {
 		if ($data instanceof static) {
 			$data->setDbLayer($dbLayer);
 			return $data;
@@ -493,7 +510,7 @@ class block_exacomp_db_record {
 	}
 }
 
-class block_exacomp_subject extends block_exacomp_db_record {
+class subject extends db_record {
 	const TABLE = block_exacomp::DB_SUBJECTS;
 
 	function fill_topics() {
@@ -501,7 +518,7 @@ class block_exacomp_subject extends block_exacomp_db_record {
 	}
 }
 
-class block_exacomp_topic extends block_exacomp_db_record {
+class topic extends db_record {
 	const TABLE = block_exacomp::DB_TOPICS;
 
 	function get_numbering() {
@@ -528,14 +545,6 @@ class block_exacomp_topic extends block_exacomp_db_record {
 		return $this->dbLayer->get_descriptors_for_topic($this);
 	}
 }
-}
-
-namespace block_exacomp {
-
-use block_exacomp\globals as g;
-use \block_exacomp;
-use block_exacomp_topic as topic;
-use block_exacomp_db_record as db_record;
 
 class descriptor extends db_record {
 	const TABLE = block_exacomp::DB_DESCRIPTORS;
@@ -588,7 +597,7 @@ class descriptor extends db_record {
 		global $DB;
 
 		$descriptor = static::create($data);
-		$parent_descriptor = isset($descriptor->parentid) ? \block_exacomp\descriptor::get($descriptor->parentid) : null;
+		$parent_descriptor = isset($descriptor->parentid) ? descriptor::get($descriptor->parentid) : null;
 		$topic = isset($descriptor->topicid) ? topic::get($descriptor->topicid) : null;
 
 		if ($parent_descriptor) {
@@ -693,6 +702,4 @@ class niveau extends db_record {
 	function get_subtitle() {
 		return ''; // none for now
 	}
-}
-
 }

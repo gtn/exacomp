@@ -3007,7 +3007,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$rowgroup = 0;
 		$rows = array();
 		
-		$subjects = block_exacomp_subject::get_objects();
+		$subjects = \block_exacomp\subject::get_objects();
 		
 		foreach ($subjects as $subject) {
 			$row = new html_table_row();

@@ -98,7 +98,7 @@ class block_exacomp_local_item_form extends moodleform {
 	}
 }
 
-$topic = block_exacomp_topic::get(required_param('topicid', PARAM_INT));
+$topic = \block_exacomp\topic::get(required_param('topicid', PARAM_INT));
 
 $descriptors = array_map(function($d){ return $d->title; }, $topic->descriptors);
 $niveaus = $DB->get_records_menu(block_exacomp::DB_NIVEAUS, null, 'sorting', 'id, title');

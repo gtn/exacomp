@@ -1127,7 +1127,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 			$courseTopics = block_exacomp_get_topics_by_subject($courseid, $subjectid);
 		}
 		elseif(isset($selectedTopic))
-			$courseTopics = block_exacomp_topic::get($selectedTopic->id);
+			$courseTopics = \block_exacomp\topic::get($selectedTopic->id);
 
 		if (!$courseTopics) {
 			$courseTopics = array();
