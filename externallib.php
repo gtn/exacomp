@@ -2934,6 +2934,7 @@ class block_exacomp_external extends external_api {
 		) );
 	}
 	
+	
 	/**
 	 * get courses
 	 * 
@@ -2977,6 +2978,7 @@ class block_exacomp_external extends external_api {
 		$params = self::validate_parameters ( self::dakora_get_topics_by_course_parameters (), array (
 				'courseid' => $courseid 
 		) );
+		//TODO: $USER has to be in $courseid
 		
 		return block_exacomp_external::dakora_get_topics_by_course_common($courseid, true);
 	}
@@ -3017,6 +3019,7 @@ class block_exacomp_external extends external_api {
 		$params = self::validate_parameters ( self::dakora_get_all_topics_by_course_parameters (), array (
 				'courseid' => $courseid 
 		) );
+		//TODO: $USER has to be in $courseid
 		
 		return block_exacomp_external::dakora_get_topics_by_course_common($courseid, false);
 	}
@@ -3051,7 +3054,7 @@ class block_exacomp_external extends external_api {
 	}
 
 	/**
-	 * get courses
+	 * get descriptors for one topic, considering the visibility
 	 * 
 	 * @return array of user courses
 	 */
@@ -3165,6 +3168,8 @@ class block_exacomp_external extends external_api {
 		if($userid == 0 && !$forall)
 			$userid = $USER->id;
 			
+		block_exacomp_external::require_teacher_permission($courseid, $userid);
+		
 		return block_exacomp_external::get_descriptor_children($courseid, $descriptorid, $userid, $forall);
 		
 	}
@@ -3227,6 +3232,8 @@ class block_exacomp_external extends external_api {
 		if($userid == 0 && !$forall)
 			$userid = $USER->id;
 			
+		block_exacomp_external::require_teacher_permission($courseid, $userid);
+				
 		return block_exacomp_external::get_descriptor_children($courseid, $descriptorid, $userid, $forall, 0, true);
 		
 	}
@@ -3314,6 +3321,8 @@ class block_exacomp_external extends external_api {
 		if($userid == 0 && !$forall)
 			$userid = $USER->id;
 		
+		block_exacomp_external::require_teacher_permission($courseid, $userid);
+				
 		return block_exacomp_external::dakora_get_examples_for_descriptor_common($courseid, $descriptorid, $userid, $forall, 0);
 	}
 	
@@ -3386,6 +3395,8 @@ class block_exacomp_external extends external_api {
 		if($userid == 0 && !$forall)
 			$userid = $USER->id;
 		
+		block_exacomp_external::require_teacher_permission($courseid, $userid);
+				
 		$examples = block_exacomp_external::dakora_get_examples_for_descriptor_for_crosssubject($courseid, $descriptorid, $userid, $forall, $crosssubjid);
 		return $examples;
 	}
@@ -3462,6 +3473,8 @@ class block_exacomp_external extends external_api {
 		if($userid == 0 && !$forall)
 			$userid = $USER->id;
 			
+		block_exacomp_external::require_teacher_permission($courseid, $userid);
+			
 		$example = $DB->get_record(block_exacomp::DB_EXAMPLES, array('id'=>$exampleid));
 	
 		if($forall){
@@ -3526,6 +3539,8 @@ class block_exacomp_external extends external_api {
 		if($userid == 0 && !$forall)
 			$userid = $USER->id;
 		
+		block_exacomp_external::require_teacher_permission($courseid, $userid);
+			
 		$non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
 		
 		if(!$forall)
@@ -3588,6 +3603,8 @@ class block_exacomp_external extends external_api {
 		if ($userid == 0)
 			$userid = $USER->id;
 		
+		block_exacomp_external::require_teacher_permission($courseid, $userid);
+				
 		$student = $DB->get_record ( 'user', array (
 				'id' => $userid 
 		) );
@@ -3755,6 +3772,8 @@ class block_exacomp_external extends external_api {
 		if($userid == 0)
 			$userid = $USER->id;
 			
+		block_exacomp_external::require_teacher_permission($courseid, $userid);
+				
 		$examples = block_exacomp_get_examples_for_pool($userid, $courseid);
 		
 		foreach($examples as $example){
@@ -3817,7 +3836,9 @@ class block_exacomp_external extends external_api {
 
 		if($userid == 0)
 			$userid = $USER->id;
-			
+		
+		block_exacomp_external::require_teacher_permission($courseid, $userid);
+				
 		$examples = block_exacomp_get_examples_for_trash($userid, $courseid);
 		
 		foreach($examples as $example){
@@ -3882,7 +3903,7 @@ class block_exacomp_external extends external_api {
 				'end'=>$end,
 				'deleted'=>$deleted
 			) );
-			
+		
 		block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted);
 		
 		return array (
@@ -4048,6 +4069,8 @@ class block_exacomp_external extends external_api {
 		if($userid == 0 && !$forall)
 			$userid = $USER->id;
 		
+		block_exacomp_external::require_teacher_permission($courseid, $userid);
+				
 		$cross_subjects = block_exacomp_get_cross_subjects_by_course($courseid, $userid);
 		
 		//if for all return only common cross subjects
@@ -4124,6 +4147,8 @@ class block_exacomp_external extends external_api {
 		if($userid == 0 && $forall == false)
 			$userid = $USER->id;
 		
+		block_exacomp_external::require_teacher_permission($courseid, $userid);
+				
 		return block_exacomp_external::dakora_get_descriptors_by_cross_subject_common($courseid, $crosssubjid, $userid, $forall, true);
 	}
 	
@@ -4178,6 +4203,8 @@ class block_exacomp_external extends external_api {
 		if($userid == 0 && $forall == false)
 			$userid = $USER->id;
 		
+		block_exacomp_external::require_teacher_permission($courseid, $userid);
+				
 		return block_exacomp_external::dakora_get_descriptors_by_cross_subject_common($courseid, $crosssubjid, $userid, $forall, false);
 	}
 	
@@ -4228,7 +4255,9 @@ class block_exacomp_external extends external_api {
 		
 		if($userid == 0 && !$forall)
 			$userid = $USER->id;
-			
+		
+		block_exacomp_external::require_teacher_permission($courseid, $userid);
+				
 		return block_exacomp_external::get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid);
 		
 	}
@@ -4293,6 +4322,7 @@ class block_exacomp_external extends external_api {
 		if($userid == 0 && !$forall)
 			$userid = $USER->id;
 			
+		block_exacomp_external::require_teacher_permission($courseid, $userid);
 		return block_exacomp_external::get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid, true);
 		
 	}
@@ -4441,6 +4471,8 @@ class block_exacomp_external extends external_api {
 			$userid = $USER->id;
 		else if($userid == 0)
 			throw new invalid_parameter_exception ( 'Userid can not be 0 for teacher grading' );
+		
+		block_exacomp_external::require_teacher_permission($courseid, $userid);
 		
 		if(block_exacomp_set_user_competence($userid, $compid, block_exacomp::TYPE_DESCRIPTOR, $courseid, $role, $value) == -1)
 			throw new invalid_parameter_exception ( 'Not allowed' );
@@ -4747,6 +4779,8 @@ class block_exacomp_external extends external_api {
 				'students' => $students
 		) );
 		
+		block_exacomp_external::require_teacher_permission($courseid, $USER->id);
+		
 		$creatorid = $USER->id;
 		
 		$examples = json_decode($examples);
@@ -4949,6 +4983,8 @@ class block_exacomp_external extends external_api {
 	
 		$params = self::validate_parameters(self::dakora_grade_example_parameters(), array('userid'=>$userid,'courseid'=>$courseid,'exampleid'=>$exampleid,'examplevalue'=>$examplevalue,'itemid'=>$itemid,'itemvalue'=>$itemvalue,'comment'=>$comment));
 	
+		block_exacomp_external::require_teacher_permission($courseid, $userid);
+		
 		block_exacomp_set_user_example(($userid == 0) ? $USER->id : $userid, $exampleid, $courseid, ($userid == 0) ? block_exacomp::ROLE_STUDENT : block_exacomp::ROLE_TEACHER, $examplevalue,0,0,'self',$itemvalue);
 	
 		if($itemid > 0 && $userid > 0) {
@@ -5017,6 +5053,8 @@ class block_exacomp_external extends external_api {
 			
 		if(!$forall && $userid == 0)
 			$userid = $USER->id;
+			
+		block_exacomp_external::require_teacher_permission($courseid, $userid);
 			
 		$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptorid));
 		$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$descriptor->id));
@@ -5119,6 +5157,8 @@ class block_exacomp_external extends external_api {
 				'exampleid' => $exampleid
 		) );
 	
+		block_exacomp_external::require_teacher_permission($courseid, $userid);
+		
 		$example = $DB->get_record(block_exacomp::DB_EXAMPLES, array('id'=>$exampleid));
 		if(!$example)
 			throw new invalid_parameter_exception ( 'Example does not exist' );
@@ -5286,7 +5326,9 @@ class block_exacomp_external extends external_api {
 		global $DB, $USER;
 		if ($userid == 0)
 			$userid = $USER->id;
-	
+		
+		block_exacomp_external::require_teacher_permission($courseid, $userid);
+		
 		$params = self::validate_parameters ( self::dakora_get_competence_profile_for_topic_parameters (), array (
 				'courseid' => $courseid,
 				'userid' => $userid,
@@ -5490,8 +5532,9 @@ class block_exacomp_external extends external_api {
 	 * @return array of course subjects
 	 */
 	public static function dakora_send_message_to_course($message, $courseid) {
+		global $USER;
 		$params = self::validate_parameters(self::dakora_send_message_to_course_parameters(), array('message'=>$message,'courseid'=>$courseid));
-	
+		block_exacomp_external::require_teacher_permission($courseid, $USER->id);
 		block_exacomp_send_message_to_course($courseid, $message);
 	
 		return array("success"=>true);
@@ -5534,6 +5577,8 @@ class block_exacomp_external extends external_api {
 		if($userid == 0 && !$preplanningstorage)
 			$userid = $USER->id;
 		
+		block_exacomp_external::require_teacher_permission($courseid, $userid);
+		
 		block_exacomp_create_blocking_event($courseid, $title, $USER->id, $userid);
 	
 		return array("success"=>true);
@@ -5572,6 +5617,11 @@ class block_exacomp_external extends external_api {
 		
 		$params = self::validate_parameters(self::dakora_get_examples_by_descriptor_and_grading_parameters(), array('courseid'=>$courseid,
 		'userid'=>$userid, 'descriptorid'=>$descriptorid, 'grading'=>$grading));
+		
+		if($userid == 0)
+			$userid = $USER->id;
+		
+		block_exacomp_external::require_teacher_permission($courseid, $userid);
 		
 		$grading = $grading -1;
 		
@@ -5639,6 +5689,11 @@ class block_exacomp_external extends external_api {
 		$params = self::validate_parameters(self::dakora_get_examples_by_descriptor_and_grading_for_crosssubject_parameters(), array('courseid'=>$courseid,
 		'userid'=>$userid, 'descriptorid'=>$descriptorid, 'grading'=>$grading, 'crosssubjid'=>$crosssubjid));
 		
+		if($userid == 0)
+			$userid = $USER->id;
+		
+		block_exacomp_external::require_teacher_permission($courseid, $userid);
+			
 		$grading = $grading -1;
 	
 		$childsandexamples = block_exacomp_external::get_descriptor_children($courseid, $descriptorid, $userid, 0, $crosssubjid);
@@ -5989,5 +6044,18 @@ class block_exacomp_external extends external_api {
 		$return->visible = $total;
 		$return->inwork = $inWork;
 		return $return;
+	}
+	/**
+	 * Used to check the user's permission.
+	 * if userid differs from logged in $USER->id, then teacher capabilities are required
+	 *
+	 * @param unknown $userid
+	 * @throws invalid_parameter_exception
+	 */
+	private static function require_teacher_permission($courseid, $userid) {
+		global $USER;
+		
+		if ($userid != $USER->id && ! block_exacomp_is_teacher ( $courseid ))
+			throw new invalid_parameter_exception ( 'Not allowed for this userid' );
 	}
 }

@@ -522,6 +522,7 @@ function block_exacomp_delete_custom_example($delete) {
 		}
 	}
 }
+
 /**
  * Set one competence for one user in one course
  *
@@ -535,9 +536,10 @@ function block_exacomp_delete_custom_example($delete) {
 function block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value) {
 	global $DB, $USER;
 
+	// TODO: block_exacomp_external::require_teacher_permission($courseid, $userid);
 	if($role == block_exacomp::ROLE_STUDENT && $userid != $USER->id)
 		return -1;
-
+	
 	$id = -1;
 
 	if($record = $DB->get_record(block_exacomp::DB_COMPETENCIES, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, "courseid" => $courseid, "role" => $role))) {
@@ -5422,20 +5424,23 @@ function block_exacomp_get_examples_for_trash($studentid, $courseid){
 	return $DB->get_records_sql($sql,array($courseid, $studentid));
 }
 function block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted = 0){
-	global $DB;
+	global $DB, $USER;
 
 	$entry = $DB->get_record(block_exacomp::DB_SCHEDULE, array('id'=>$scheduleid));
 	$entry->start = $start;
 	$entry->end = $end;
 	$entry->deleted = $deleted;
 
-	$DB->update_record(block_exacomp::DB_SCHEDULE, $entry);
+	if($entry->studentid == $USER->id)
+		$DB->update_record(block_exacomp::DB_SCHEDULE, $entry);
 }
 
 function block_exacomp_remove_example_from_schedule($scheduleid){
-	global $DB;
+	global $DB, $USEr;
 
-	$DB->delete_records(block_exacomp::DB_SCHEDULE, array('id'=>$scheduleid));
+	$schedule = $DB->get_record(block_exacomp::DB_SCHEDULE, array('id' => $scheduleid));
+	if($schedule->studentid == $USER->id)
+		$DB->delete_records(block_exacomp::DB_SCHEDULE, array('id'=>$scheduleid));
 }
 
 function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start, $end){
@@ -6087,7 +6092,7 @@ function block_exacomp_create_blocking_event($courseid, $title, $creatorid, $stu
 		$vibilityid = $DB->insert_record(block_exacomp::DB_EXAMPVISIBILITY, $visibility);
 	}
 }
-
+	
 }
 
 namespace block_exacomp {
