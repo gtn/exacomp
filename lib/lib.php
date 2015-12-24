@@ -122,9 +122,9 @@ function block_exacomp_get_context_from_courseid($courseid) {
  * 
  * @param courseid or context $context
  */
-function block_exacomp_is_teacher($context = null) {
+function block_exacomp_is_teacher($context = null, $userid = null) {
 	$context = block_exacomp_get_context_from_courseid($context);
-	return has_capability('block/exacomp:teacher', $context);
+	return has_capability('block/exacomp:teacher', $context, $userid);
 }
 /**
  * 
