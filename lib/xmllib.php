@@ -53,15 +53,13 @@ class block_exacomp_data {
 	}
 	
 	protected static function get_source_from_global_id($global_id) {
-		global $DB;
-		
 		self::load_sources();
 		
 		if (!$source_local_id = array_search($global_id, self::$sources)) {
 			return null;
 		}
 		
-		return $DB->get_record(block_exacomp::DB_DATASOURCES, array('id' => $source_local_id));
+		return g::$DB->get_record(block_exacomp::DB_DATASOURCES, array('id' => $source_local_id));
 	}
 	
 	protected static function add_source_if_not_exists($source_global_id) {
@@ -71,13 +69,11 @@ class block_exacomp_data {
 			return $source_local_id;
 		}
 		
-		global $DB;
-		
 		$maxId = self::$sources ? max(array_keys(self::$sources)) : 0;
 		$source_local_id = max($maxId + 1, self::MIN_SOURCE_ID);
 
 		// add new source
-		$DB->execute("INSERT INTO {".block_exacomp::DB_DATASOURCES."} (id, source) VALUES (?, ?)", array($source_local_id, $source_global_id));
+		g::$DB->execute("INSERT INTO {".block_exacomp::DB_DATASOURCES."} (id, source) VALUES (?, ?)", array($source_local_id, $source_global_id));
 		
 		self::$sources[$source_local_id] = $source_global_id;
 		
@@ -85,10 +81,8 @@ class block_exacomp_data {
 	}
 	
 	private static function load_sources() {
-		global $DB;
-		
 		if (self::$sources === null) {
-			self::$sources = $DB->get_records_sql_menu("
+			self::$sources = g::$DB->get_records_sql_menu("
 				SELECT id, source AS global_id
 				FROM {".block_exacomp::DB_DATASOURCES."}
 			");
@@ -101,23 +95,17 @@ class block_exacomp_data {
 	 * checks if data is imported
 	 */
 	public static function has_data() {
-		global $DB;
-		
-		return (bool)$DB->get_records_select('block_exacompdescriptors', 'source!='.block_exacomp::EXAMPLE_SOURCE_TEACHER, array(), null, 'id', 0, 1);
+		return (bool)g::$DB->get_records_select('block_exacompdescriptors', 'source!='.block_exacomp::EXAMPLE_SOURCE_TEACHER, array(), null, 'id', 0, 1);
 	}
 	/*
 	 * check if there is still data in the old source format
 	 */
 	public static function has_old_data($source) {
-		global $DB;
-		
-		return (bool)$DB->get_records('block_exacompdescriptors', array("source" => $source), null, 'id', 0, 1);
+		return (bool)g::$DB->get_records('block_exacompdescriptors', array("source" => $source), null, 'id', 0, 1);
 	}
 	public static function get_all_used_sources() {
-		global $DB;
-		
 		// check if source is used in descriptor table
-		$sources = $DB->get_records_sql("
+		$sources = g::$DB->get_records_sql("
 			SELECT s.*
 			FROM {".block_exacomp::DB_DATASOURCES."} s
 			WHERE s.id IN (
@@ -132,23 +120,19 @@ class block_exacomp_data {
 	}
 	
 	protected static function move_items_to_source($oldSource, $newSource) {
-		global $DB;
-		
 		foreach (self::$sourceTables as $table) {
-			$DB->execute("UPDATE {{$table}} SET source=? WHERE source=?", array($newSource, $oldSource));
+			g::$DB->execute("UPDATE {{$table}} SET source=? WHERE source=?", array($newSource, $oldSource));
 		}
 	}
 	
 	public static function delete_source($source) {
-		global $DB;
-		
 		self::delete_mm_records($source);
 		
 		foreach (self::$sourceTables as $table) {
 			self::truncate_table($source, $table);
 		}
 		
-		$DB->delete_records(block_exacomp::DB_DATASOURCES, array('id' => $source));
+		g::$DB->delete_records(block_exacomp::DB_DATASOURCES, array('id' => $source));
 		
 		self::normalize_database();
 
@@ -159,8 +143,6 @@ class block_exacomp_data {
 	 * deletes all mm records for this source
 	 */
 	protected static function delete_mm_records($source) {
-		global $DB;
-		
 		$tables = array(
 			array(
 				'table' => block_exacomp::DB_DESCTOPICS,
@@ -190,7 +172,7 @@ class block_exacomp_data {
 		);
 		
 		foreach ($tables as $table) {
-			$DB->execute("DELETE FROM {{$table['table']}}
+			g::$DB->execute("DELETE FROM {{$table['table']}}
 				WHERE 
 				{$table['mm1'][0]} IN (SELECT id FROM {{$table['mm1'][1]}} WHERE source=?) AND
 				{$table['mm2'][0]} IN (SELECT id FROM {{$table['mm2'][1]}} WHERE source=?)
@@ -199,8 +181,7 @@ class block_exacomp_data {
 	}
 	
 	protected static function truncate_table($source, $table) {
-		global $DB;
-		$DB->delete_records($table, array("source" => $source));
+		g::$DB->delete_records($table, array("source" => $source));
 	}
 	/*
 	public static function delete_custom_competencies() {
@@ -219,15 +200,13 @@ class block_exacomp_data {
 	*/
 	
 	public static function normalize_database() {
-		global $DB;
-
 		// delete entries with no source anymore
 		foreach (self::$sourceTables as $table) {
 			$sql = "DELETE FROM {{$table}} 
 						WHERE source >= ".block_exacomp_data::MIN_SOURCE_ID."
 						AND source NOT IN (SELECT id FROM {".block_exacomp::DB_DATASOURCES."})
 					";
-			$DB->execute($sql);
+			g::$DB->execute($sql);
 		}
 		
 		// delete unused mms 
@@ -335,7 +314,7 @@ class block_exacomp_data {
 			if (!empty($table['needed3'])) {
 				$sql .= " OR {$table['needed3'][0]} NOT IN ({$make_select($table['needed3'][1])})";
 			}
-			$DB->execute($sql);
+			g::$DB->execute($sql);
 		}
 
 		// delete unused sources
@@ -364,7 +343,7 @@ class block_exacomp_data {
 			LEFT JOIN {".block_exacomp::DB_DESCTOPICS."} dt ON dt.descrid=d.id
 			WHERE dt.id IS NULL -- only for those, who have no topic yet
 		";
-		$DB->execute($sql);
+		g::$DB->execute($sql);
 		
 		// after topics, descriptors and their mm are imported
 		// check if new descriptors should be visible in the courses
@@ -378,7 +357,7 @@ class block_exacomp_data {
 			LEFT JOIN {".block_exacomp::DB_DESCVISIBILITY."} dv ON dv.descrid=dt.descrid AND dv.studentid=0
 			WHERE dv.id IS NULL -- only for those, who have no visibility yet
 		";
-		$DB->execute($sql);
+		g::$DB->execute($sql);
 		
 		// 2. cross course descriptors used in crosssubjects
 		$sql = "
@@ -390,7 +369,7 @@ class block_exacomp_data {
 			LEFT JOIN {".block_exacomp::DB_DESCVISIBILITY."} dv ON dv.descrid=dc.descrid AND dv.studentid=0
 			WHERE dv.id IS NULL AND cs.courseid != 0  -- only for those, who have no visibility yet
 		";
-		$DB->execute($sql); //only necessary if we save courseinformation as well -> existing crosssubjects imported  only as drafts -> not needed
+		g::$DB->execute($sql); //only necessary if we save courseinformation as well -> existing crosssubjects imported  only as drafts -> not needed
 		
 		//example visibility
 		$sql = "
@@ -404,7 +383,7 @@ class block_exacomp_data {
 			LEFT JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} ev ON ev.exampleid=dc.exampid AND ev.studentid=0 AND ev.courseid=ct.courseid
 			WHERE ev.id IS NULL -- only for those, who have no visibility yet
 		";
-		$DB->execute($sql);
+		g::$DB->execute($sql);
 		
 		//example visibility： crosssubjects
 		$sql = "
@@ -418,7 +397,7 @@ class block_exacomp_data {
 			LEFT JOIN {".block_exacomp::DB_EXAMPVISIBILITY."} ev ON ev.exampleid=de.exampid AND ev.studentid=0 AND ev.courseid=cs.courseid
 			WHERE ev.id IS NULL AND cs.courseid != 0  -- only for those, who have no visibility yet
 		";
-		$DB->execute($sql); //only necessary if we save courseinformation as well -> existing crosssubjects imported  only as drafts -> not needed
+		g::$DB->execute($sql); //only necessary if we save courseinformation as well -> existing crosssubjects imported  only as drafts -> not needed
 	}
 }
 
@@ -429,7 +408,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 	static $filter_descriptors;
 	
 	public static function do_export($filter_descriptors = null) {
-		global $DB, $SITE;
+		global $SITE;
 		
 		core_php_time_limit::raise();
 		raise_memory_limit(MEMORY_HUGE);
@@ -515,9 +494,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 	}
 	
 	private static function add_child_with_source($xmlItem, $childName, $table, $id) {
-		global $DB;
-		
-		if ($dbItem = $DB->get_record($table, array("id" => $id))) {
+		if ($dbItem = g::$DB->get_record($table, array("id" => $id))) {
 			self::assign_source($xmlItem->addChild($childName), $dbItem);
 		}
 	}
@@ -559,9 +536,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 	}
 	
 	private static function export_skills($xmlParent) {
-		global $DB;
-		
-		$dbItems = $DB->get_records(block_exacomp::DB_SKILLS); // , array("source"=>self::$source));
+		$dbItems = g::$DB->get_records(block_exacomp::DB_SKILLS); // , array("source"=>self::$source));
 		
 		if (!$dbItems) return;
 		
@@ -576,8 +551,6 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 	}
 	
 	private static function export_niveaus($xmlParent, $parentid = 0) {
-		global $DB;
-		
 		/*
 		<niveau id="4">
 			<title><![CDATA[B2]]></title>
@@ -587,7 +560,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 			</niveautexts>
 		</niveau>
 		*/
-		$dbItems = $DB->get_records(block_exacomp::DB_NIVEAUS, array('parentid'=>$parentid)); // , array("source"=>self::$source));
+		$dbItems = g::$DB->get_records(block_exacomp::DB_NIVEAUS, array('parentid'=>$parentid)); // , array("source"=>self::$source));
 		
 		if (!$dbItems) return;
 		
@@ -606,9 +579,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 	}
 	
 	private static function export_taxonomies($xmlParent, $parentid = 0) {
-		global $DB;
-		
-		$dbItems = $DB->get_records(block_exacomp::DB_TAXONOMIES, array('parentid'=>$parentid)); // , array("source"=>self::$source));
+		$dbItems = g::$DB->get_records(block_exacomp::DB_TAXONOMIES, array('parentid'=>$parentid)); // , array("source"=>self::$source));
 		
 		if (!$dbItems) return;
 		
@@ -627,8 +598,6 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 	}
 	
 	private static function export_examples($xmlParent, $parentid = 0) {
-		global $DB;
-		
 		/*
 		<example id="3" taxid="78">
 			<title><![CDATA[Hardware Anschaffungen]]></title>
@@ -719,7 +688,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 			$xmlItem->addChildWithCDATAIfValue('tips', $dbItem->tips);
 			
 			
-			$descriptors = $DB->get_records_sql("
+			$descriptors = g::$DB->get_records_sql("
 				SELECT DISTINCT d.id, d.source, d.sourceid
 				FROM {".block_exacomp::DB_DESCRIPTORS."} d
 				JOIN {".block_exacomp::DB_DESCEXAMP."} de ON d.id = de.descrid
@@ -750,17 +719,14 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 	}
 	
 	private static function export_descriptors($xmlParent, $parentid = 0) {
-		global $DB;
-		
-		
 		if (!$parentid && self::$filter_descriptors) {
-			$dbItems = $DB->get_records_sql("
+			$dbItems = g::$DB->get_records_sql("
 				SELECT d.*
 				FROM {".block_exacomp::DB_DESCRIPTORS."} d
 				WHERE parentid=0 AND d.id IN (".join(',', self::$filter_descriptors).")
 			");
 		} else {
-			$dbItems = $DB->get_records(block_exacomp::DB_DESCRIPTORS, array('parentid'=>$parentid));
+			$dbItems = g::$DB->get_records(block_exacomp::DB_DESCRIPTORS, array('parentid'=>$parentid));
 		}
 		
 		if (!$dbItems) return;
@@ -809,8 +775,6 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 	}
 	
 	private static function export_crosssubjects($xmlParent, $parentid = 0) {
-		global $DB;
-		
 		$dbCrosssubjects = block_exacomp_get_crosssubjects();
 		$xmlParent->addChild('crosssubjects');
 
@@ -821,7 +785,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 			$xmlCrosssubject->addChildWithCDATAIfValue('title', $dbCrosssubject->title);
 			$xmlCrosssubject->addChildWithCDATAIfValue('description', $dbCrosssubject->description);
 			
-			$subject = $DB->get_record(block_exacomp::DB_SUBJECTS, array('id'=>$dbCrosssubject->subjectid));
+			$subject = g::$DB->get_record(block_exacomp::DB_SUBJECTS, array('id'=>$dbCrosssubject->subjectid));
 			
 			if($subject){
 				$xmlSubject = $xmlCrosssubject->addChild('subjectid');
@@ -830,7 +794,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 
 			$xmlCrosssubject->courseid = $dbCrosssubject->courseid;
 			
-				 $descriptors = $DB->get_records_sql("
+				 $descriptors = g::$DB->get_records_sql("
 				SELECT DISTINCT d.id, d.source, d.sourceid
 				FROM {".block_exacomp::DB_DESCRIPTORS."} d
 				JOIN {".block_exacomp::DB_DESCCROSS."} dc ON d.id = dc.descrid
@@ -874,11 +838,9 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 	}
 
 	private static function export_subjects($dbSchooltype) {
-		global $DB;
-		
 		$xmlSubjects = block_exacomp\SimpleXMLElement::create('subjects');
 
-		$dbSubjects = $DB->get_records(block_exacomp::DB_SUBJECTS, array('stid' => $dbSchooltype->id));
+		$dbSubjects = g::$DB->get_records(block_exacomp::DB_SUBJECTS, array('stid' => $dbSchooltype->id));
 
 		foreach($dbSubjects as $dbSubject){
 			$xmlTopics = self::export_topics($dbSubject);
@@ -925,12 +887,10 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 	}
 
 	private static function export_topics($dbSubject) {
-		global $DB;
-
 		$xmlTopics = block_exacomp\SimpleXMLElement::create('topics');
 
 		if (self::$filter_descriptors) {
-			$dbTopics = $DB->get_records_sql("
+			$dbTopics = g::$DB->get_records_sql("
 				SELECT t.*
 				FROM {".block_exacomp::DB_TOPICS."} t
 				WHERE t.subjid = ? AND
@@ -941,7 +901,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 				)
 			", array($dbSubject->id));
 		} else {
-			$dbTopics = $DB->get_records(block_exacomp::DB_TOPICS, array('subjid' => $dbSubject->id));
+			$dbTopics = g::$DB->get_records(block_exacomp::DB_TOPICS, array('subjid' => $dbSubject->id));
 		}
 		
 		foreach($dbTopics as $dbTopic){
@@ -962,7 +922,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 				$filter = "";
 			}
 			
-			$descriptors = $DB->get_records_sql("
+			$descriptors = g::$DB->get_records_sql("
 				SELECT DISTINCT d.id, d.source, d.sourceid
 				FROM {".block_exacomp::DB_DESCRIPTORS."} d
 				JOIN {".block_exacomp::DB_DESCTOPICS."} dt ON d.id = dt.descrid
@@ -1103,8 +1063,6 @@ class block_exacomp_data_importer extends block_exacomp_data {
 	 * @param int $source default is 1, for specific import 2 is used. A specific import can be done by teachers and only effects data from topic leven downwards (topics, descriptors, examples)
 	 */
 	public static function do_import_file($file = null, $par_source = block_exacomp::IMPORT_SOURCE_DEFAULT) {
-		global $DB, $CFG;
-	
 		if (!$file) {
 			throw new block_exacomp\exception('filenotfound');
 		}
@@ -1168,7 +1126,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 			self::$import_source_global_id == self::get_my_source() ? 0 : self::add_source_if_not_exists(self::$import_source_global_id);
 		// update source name
 		if (self::$import_source_local_id) {
-			block_exacomp\db::update_record(block_exacomp::DB_DATASOURCES, array(
+			g::$DB->update_record(block_exacomp::DB_DATASOURCES, array(
 				'name' => (string)$xml['sourcename']
 			), array(
 				'id' => self::$import_source_local_id
@@ -1272,26 +1230,24 @@ class block_exacomp_data_importer extends block_exacomp_data {
 
 	
 	private static function insert_or_update_item($table, $item) {
-		global $DB;
-		
 		$where = $item->source ? array('source' => $item->source, 'sourceid' => $item->sourceid) : array('id'=>$item->id);
-		if ($dbItem = $DB->get_record($table, $where)) {
+		if ($dbItem = g::$DB->get_record($table, $where)) {
 			$item->id = $dbItem->id;
 
 			if ($item->source == self::$import_source_local_id) {
 				// only update, if coming from same source as xml
-				$DB->update_record($table, $item);
+				g::$DB->update_record($table, $item);
 			} else {
 				// source not xml source -> skip update
 			}
 		} else {
-			$new_id = $DB->insert_record($table, $item);
+			$new_id = g::$DB->insert_record($table, $item);
 			if ($item->source) {
 				// foreign source
 				$item->id = $new_id;
 			} else {
 				// move to specified id
-				$DB->execute("UPDATE {".$table."} SET id=? WHERE id=?", array($item->id, $new_id));
+				g::$DB->execute("UPDATE {".$table."} SET id=? WHERE id=?", array($item->id, $new_id));
 			}
 		}
 	}
@@ -1303,7 +1259,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 			return;
 		}
 		
-		block_exacomp\db::update_record(block_exacomp::DB_DATASOURCES, array(
+		g::$DB->update_record(block_exacomp::DB_DATASOURCES, array(
 			'name' => (string)$xmlItem->name
 		), array(
 			'id' => $dbSource->id,
@@ -1340,8 +1296,6 @@ class block_exacomp_data_importer extends block_exacomp_data {
 	}
 	
 	protected static function delete_mm_record_for_item($table, $field, $id) {
-		global $DB;
-		
 		$tables = array(
 			array(
 				'table' => block_exacomp::DB_DESCTOPICS,
@@ -1394,7 +1348,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 			throw new block_exacomp\exception('delete_mm_record_for_item: error');
 		}
 		
-		$DB->execute($sql, array($id, self::$import_source_local_id));
+		g::$DB->execute($sql, array($id, self::$import_source_local_id));
 	}
 	
 	private static function insert_niveau($xmlItem, $parent = 0) {
@@ -1423,8 +1377,6 @@ class block_exacomp_data_importer extends block_exacomp_data {
 	}
 	
 	private static function insert_example($xmlItem, $parent = 0) {
-		global $DB;
-		
 		$item = self::parse_xml_item($xmlItem);
 		$item->parentid = $parent;
 		
@@ -1433,7 +1385,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		
 		// if local example, move to source teacher
 		if (!$item->source) {
-			block_exacomp\db::insert_or_update_record(block_exacomp::DB_EXAMPLES, array('source' => block_exacomp::EXAMPLE_SOURCE_TEACHER, 'sourceid'=>null), array("id"=>$item->id));
+			g::$DB->insert_or_update_record(block_exacomp::DB_EXAMPLES, array('source' => block_exacomp::EXAMPLE_SOURCE_TEACHER, 'sourceid'=>null), array("id"=>$item->id));
 		}
 		
 		// has to be called after inserting the example, because the id is needed!
@@ -1448,7 +1400,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		if ($xmlItem->taxonomies) {
 			foreach ($xmlItem->taxonomies->taxonomyid as $taxonomy) {
 				if ($taxonomyid = self::get_database_id($taxonomy)) {
-					block_exacomp\db::insert_or_update_record(block_exacomp::DB_EXAMPTAX, array("exampleid"=>$item->id, "taxid"=>$taxonomyid));
+					g::$DB->insert_or_update_record(block_exacomp::DB_EXAMPTAX, array("exampleid"=>$item->id, "taxid"=>$taxonomyid));
 				}
 			}
 		}
@@ -1458,9 +1410,9 @@ class block_exacomp_data_importer extends block_exacomp_data {
 			foreach($xmlItem->descriptors->descriptorid as $descriptor) {
 				if ($descriptorid = self::get_database_id($descriptor)) {
 					$sql = "SELECT MAX(sorting) as sorting FROM {".block_exacomp::DB_DESCEXAMP."} WHERE descrid=?";
-					$max_sorting = $DB->get_record_sql($sql, array($descriptorid)); 
+					$max_sorting = g::$DB->get_record_sql($sql, array($descriptorid));
 					$sorting = intval($max_sorting->sorting)+1;
-					block_exacomp\db::insert_or_update_record(block_exacomp::DB_DESCEXAMP, array("exampid"=>$item->id, "descrid"=>$descriptorid, "sorting"=>$sorting));
+					g::$DB->insert_or_update_record(block_exacomp::DB_DESCEXAMP, array("exampid"=>$item->id, "descrid"=>$descriptorid, "sorting"=>$sorting));
 				}
 			}
 		}
@@ -1475,8 +1427,6 @@ class block_exacomp_data_importer extends block_exacomp_data {
 	}
 	
 	private static function insert_category($xmlItem, $parent = 0) {
-		global $DB;
-		
 		$item = self::parse_xml_item($xmlItem);
 		
 		$item->parentid = $parent;
@@ -1507,8 +1457,6 @@ class block_exacomp_data_importer extends block_exacomp_data {
 	}
 		
 	private static function insert_descriptor($xmlItem, $parent = 0, $sorting = 0) {
-		global $DB;
-		
 		$descriptor = self::parse_xml_item($xmlItem);
 		$descriptor->crdate = self::$import_time;
 		
@@ -1546,7 +1494,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		
 		// if local descriptor, move to custom source
 		if (!$descriptor->source) {
-			block_exacomp\db::insert_or_update_record(block_exacomp::DB_DESCRIPTORS, array('source' => block_exacomp::CUSTOM_CREATED_DESCRIPTOR), array("id"=>$descriptor->id));
+			g::$DB->insert_or_update_record(block_exacomp::DB_DESCRIPTORS, array('source' => block_exacomp::CUSTOM_CREATED_DESCRIPTOR), array("id"=>$descriptor->id));
 		}
 		
 		if ($xmlItem->examples) {
@@ -1557,7 +1505,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		if ($xmlItem->categories) {
 			foreach ($xmlItem->categories->categoryid as $category) {
 				if ($categoryid = self::get_database_id($category)) {
-					block_exacomp\db::insert_or_update_record(block_exacomp::DB_DESCCAT, array("descrid"=>$descriptor->id, "catid"=>$categoryid));
+					g::$DB->insert_or_update_record(block_exacomp::DB_DESCCAT, array("descrid"=>$descriptor->id, "catid"=>$categoryid));
 				}
 			}
 		}
@@ -1574,8 +1522,6 @@ class block_exacomp_data_importer extends block_exacomp_data {
 	}
 	
 	private static function insert_crosssubject($xmlItem) {
-		global $DB;
-		
 		$crosssubject = self::parse_xml_item($xmlItem);
 		
 		if ($xmlItem->subjectid) {
@@ -1591,7 +1537,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		if ($xmlItem->descriptors) {
 			foreach($xmlItem->descriptors->descriptorid as $descriptor) {
 				if ($descriptorid = self::get_database_id($descriptor)) {
-					block_exacomp\db::insert_or_update_record(block_exacomp::DB_DESCCROSS, array("crosssubjid"=>$crosssubject->id,"descrid"=>$descriptorid));
+					g::$DB->insert_or_update_record(block_exacomp::DB_DESCCROSS, array("crosssubjid"=>$crosssubject->id,"descrid"=>$descriptorid));
 				}
 			}
 		}
@@ -1616,8 +1562,6 @@ class block_exacomp_data_importer extends block_exacomp_data {
 	}
 	
 	private static function insert_topic($xmlItem, $parent = 0) {
-		global $DB;
-
 		$topic = self::parse_xml_item($xmlItem);
 		$topic->parentid = $parent;
 		
@@ -1629,7 +1573,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 			$i=1;
 			foreach($xmlItem->descriptors->descriptorid as $descriptor) {
 				if ($descriptorid = self::get_database_id($descriptor)) {
-					block_exacomp\db::insert_or_update_record(block_exacomp::DB_DESCTOPICS, array("sorting"=>$i), array("topicid"=>$topic->id,"descrid"=>$descriptorid));
+					g::$DB->insert_or_update_record(block_exacomp::DB_DESCTOPICS, array("sorting"=>$i), array("topicid"=>$topic->id,"descrid"=>$descriptorid));
 					$i++;
 				}
 			}
@@ -1665,7 +1609,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 
 		if ($xmlItem->niveaus) {
 			foreach ($xmlItem->niveaus->niveau as $niveau) {
-				\block_exacomp\db::insert_or_update_record(block_exacomp::DB_SUBJECT_NIVEAU_MM,
+				g::$DB->insert_or_update_record(block_exacomp::DB_SUBJECT_NIVEAU_MM,
 					simpleXMLElementToArray($niveau),
 					[
 						'subjectid' => $subject->id,
@@ -1755,8 +1699,6 @@ class block_exacomp_data_importer extends block_exacomp_data {
 	}
 
 	private static function get_database_id(SimpleXMLElement $element) {
-		global $DB;
-		
 		$tableMapping = array(
 			'taxonomyid' => block_exacomp::DB_TAXONOMIES,
 			'exampleid' => block_exacomp::DB_EXAMPLES,
@@ -1777,7 +1719,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		$item = self::parse_xml_item($element);
 		
 		$where = $item->source ? array('source' => $item->source, 'sourceid' => $item->sourceid) : array('id'=>$item->id);
-		return $DB->get_field($table, "id", $where);
+		return g::$DB->get_field($table, "id", $where);
 	}
 	
 	
@@ -1841,8 +1783,6 @@ class block_exacomp_data_importer extends block_exacomp_data {
 
 
 	private static function delete_unused_descriptors($source, $crdate, $topiclist){
-		global $DB;
-	
 		/* descriptoren löscent, wenn sie
 	
 		1) nicht im xml sind (crdate <> $crdate)
@@ -1867,13 +1807,13 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		LEFT JOIN {block_exacompcompactiv_mm} act ON act.compid=descr.id
 		WHERE typmm.id IS NULL AND ex.id IS NULL AND act.id IS NULL AND cou.id IS NULL AND  umm.id IS NULL AND u.id IS NULL AND descr.source=? AND descr.crdate <> (?)";
 	
-		$rs=$DB->get_records_sql($sql, array($source, $crdate));
+		$rs = g::$DB->get_records_sql($sql, array($source, $crdate));
 		foreach($rs as $row){
-			$DB->delete_records('block_exacompdescriptors', array("id" => $row->id));
+			g::$DB->delete_records('block_exacompdescriptors', array("id" => $row->id));
 			//topic, auch prüfen ob untertopics vorhanden, den dann nicht löschen
 			$sql="DELETE FROM {block_exacompdescrtopic_mm} WHERE descrid=? AND topicid NOT IN (".$topiclist.")";
-			$DB->Execute($sql, array($row->id));
-			$DB->delete_records('block_exacompdescrexamp_mm', array("descrid" => $row->id));
+			g::$DB->Execute($sql, array($row->id));
+			g::$DB->delete_records('block_exacompdescrexamp_mm', array("descrid" => $row->id));
 		}
 	}
 	

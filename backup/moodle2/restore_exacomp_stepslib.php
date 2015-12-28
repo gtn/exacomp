@@ -57,7 +57,7 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
 			
 			$settings->filteredtaxonomies = $taxonomies ? json_encode($taxonomies) : array(SHOW_ALL_TAXONOMIES);
 			
-			block_exacomp\db::insert_or_update_record(block_exacomp::DB_SETTINGS, $settings, array('courseid'=>$this->get_courseid()));
+			block_exacomp\globals::$DB->insert_or_update_record(block_exacomp::DB_SETTINGS, $settings, array('courseid'=>$this->get_courseid()));
 		}
 
 		if (isset($data->exacomp['mdltypes']['mdltype'])) {
@@ -83,7 +83,7 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
 					continue;
 				}
 				
-				block_exacomp\db::insert_or_update_record(block_exacomp::DB_COURSETOPICS, array('topicid' => $dbTopic->id, 'courseid' => $this->get_courseid()));
+				block_exacomp\globals::$DB->insert_or_update_record(block_exacomp::DB_COURSETOPICS, array('topicid' => $dbTopic->id, 'courseid' => $this->get_courseid()));
 			}
 		}
 		

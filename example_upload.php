@@ -161,7 +161,7 @@ if($formdata = $form->get_data()) {
 	//insert taxid in exampletax_mm
 	if(isset($formdata->taxid)) {
 		foreach($formdata->taxid as $tax => $taxid)
-			block_exacomp\db::insert_or_update_record(block_exacomp::DB_EXAMPTAX, array(
+			block_exacomp\globals::$DB->insert_or_update_record(block_exacomp::DB_EXAMPTAX, array(
 				'exampleid' => $newExample->id,
 				'taxid' => $taxid
 			));
@@ -186,7 +186,7 @@ if($formdata = $form->get_data()) {
 				
 				$DB->insert_record(block_exacomp::DB_DESCEXAMP, $insert);
 		}
-			//block_exacomp_db::insert_or_update_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
+			//block_exacomp_globals::$DB->insert_or_update_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
 	}
 	}
 	

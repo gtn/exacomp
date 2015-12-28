@@ -4353,21 +4353,19 @@ function block_exacomp_set_descriptor_visibility($descrid, $courseid, $visible, 
 
 		$DB->execute($sql, array($descrid, $courseid));
 	}
-	block_exacomp\db::insert_or_update_record(block_exacomp::DB_DESCVISIBILITY,
+	g::$DB->insert_or_update_record(block_exacomp::DB_DESCVISIBILITY,
 		['visible'=>$visible],
 		['descrid'=>$descrid, 'courseid'=>$courseid, 'studentid'=>$studentid]
 	);
 }
 function block_exacomp_set_example_visibility($exampleid, $courseid, $visible, $studentid){
-	global $DB;
-
 	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS || $studentid == 0){//if visibility changed for all: delete individual settings
 		$studentid = 0;
 		$sql = "DELETE FROM {".block_exacomp::DB_EXAMPVISIBILITY."} WHERE exampleid = ? AND courseid = ? and studentid <> 0";
-		$DB->execute($sql, array($exampleid, $courseid));
+		g::$DB->execute($sql, array($exampleid, $courseid));
 	}
 
-	block_exacomp\db::insert_or_update_record(block_exacomp::DB_EXAMPVISIBILITY,
+	g::$DB->insert_or_update_record(block_exacomp::DB_EXAMPVISIBILITY,
 		['visible'=>$visible],
 		['exampleid'=>$exampleid, 'courseid'=>$courseid, 'studentid'=>$studentid]
 	);
@@ -6142,7 +6140,9 @@ namespace block_exacomp {
 		}
 
 		static function get_scheme_id() {
-			return get_config('exacomp', 'adminscheme');
+			$id = (int)get_config('exacomp', 'adminscheme');
+
+			return $id > 0 && $id <= 3 ? $id : 0;
 		}
 	}
 }

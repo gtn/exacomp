@@ -133,23 +133,45 @@ class SimpleXMLElement extends \SimpleXMLElement {
 	}
 }
 
-class db {
+abstract class exadb extends \moodle_database {
+	public function update_record($table, $data, $where=null) {
+	}
+	public function insert_or_update_record($table, $data, $where = null) {
+	}
+}
+class exadb_forwarder {
+	function __call($func, $args) {
+		global $DB;
+
+		if (method_exists($DB, $func)) {
+		 	// in exadb class
+			return call_user_func_array([$DB, $func], $args);
+		}
+
+		throw new \coding_exception(" Call to undefined method g::\$DB->$func");
+	}
+}
+
+class exadb_extender extends exadb_forwarder {
+
 	/**
 	 * @param $table
 	 * @param $data
 	 * @param $where
-	 * @return null|object
+	 * @return null|bool|object
 	 */
-	public static function update_record($table, $data, $where) {
-		global $DB;
+	public function update_record($table, $data, $where=null) {
+		if ($where === null) {
+			return parent::update_record($table, $data);
+		}
 
 		$where = (array)$where;
 		$data = (array)$data;
 
-		if ($dbItem = $DB->get_record($table, $where)) {
+		if ($dbItem = $this->get_record($table, $where)) {
 			if ($data) {
 				$data['id'] = $dbItem->id;
-				$DB->update_record($table, (object)$data);
+				parent::update_record($table, (object)$data);
 			}
 
 			return (object)($data + (array)$dbItem);
@@ -165,18 +187,16 @@ class db {
 	 * @return object
 	 * @throws exception
 	 */
-	public static function insert_or_update_record($table, $data, $where = null) {
-		global $DB;
-
+	public function insert_or_update_record($table, $data, $where = null) {
 		$data = (array)$data;
 
-		if ($dbItem = $DB->get_record($table, $where !== null ? $where : $data)) {
+		if ($dbItem = $this->get_record($table, $where !== null ? $where : $data)) {
 			if (empty($data)) {
 				throw new exception('$data is empty');
 			}
 
 			$data['id'] = $dbItem->id;
-			$DB->update_record($table, (object)$data);
+			$this->update_record($table, (object)$data);
 
 			return (object)($data + (array)$dbItem);
 		} else {
@@ -184,7 +204,7 @@ class db {
 			if ($where !== null) {
 				$data = $data + $where; // first the values of $data, then of $where, but don't override $data
 			}
-			$id = $DB->insert_record($table, (object)$data);
+			$id = $this->insert_record($table, (object)$data);
 			$data['id'] = $id;
 
 			return (object)$data;
@@ -337,7 +357,7 @@ class _globals_dummy_CFG {
 
 class globals {
 	/**
-	 * @var \moodle_database
+	 * @var exadb
 	 */
 	public static $DB;
 
@@ -372,8 +392,8 @@ class globals {
 	public static $CFG;
 	
 	public static function init() {
-		global $DB, $PAGE, $OUTPUT, $COURSE, $USER, $CFG, $SITE;
-		globals::$DB =& $DB;
+		global $PAGE, $OUTPUT, $COURSE, $USER, $CFG, $SITE;
+		globals::$DB = new exadb_extender();
 		globals::$PAGE =& $PAGE;
 		globals::$OUTPUT =& $OUTPUT;
 		globals::$COURSE =& $COURSE;
@@ -532,7 +552,6 @@ function _export_function($function) {
 }
 
 // export classnames, if not already existing
-if (_should_export_class('db')) { class db extends common\db {} }
 if (_should_export_class('event')) { abstract class event extends common\event {} }
 if (_should_export_class('exception')) { class exception extends common\exception {} }
 if (_should_export_class('globals')) { class globals extends common\globals {} }
