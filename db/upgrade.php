@@ -2574,6 +2574,28 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2015121500, 'exacomp');
     }
+    if ($oldversion < 2015122800) {
+
+        // Define table block_exacompsubjniveau_mm to be created.
+        $table = new xmldb_table('block_exacompsubjniveau_mm');
+
+        // Adding fields to table block_exacompsubjniveau_mm.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('subjectid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('niveauid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('subtitle', XMLDB_TYPE_TEXT, null, null, null, null, null);
+
+        // Adding keys to table block_exacompsubjniveau_mm.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Conditionally launch create table for block_exacompsubjniveau_mm.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2015122800, 'exacomp');
+    }
 
 	/*
 	 * insert new upgrade scripts before this comment section

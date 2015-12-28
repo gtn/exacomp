@@ -42,6 +42,7 @@ class block_exacomp extends block_list {
 	const DB_SCHEDULE = 'block_exacompschedule';
 	const DB_EXAMPVISIBILITY = 'block_exacompexampvisibility';
 	const DB_ITEMEXAMPLE = 'block_exacompitemexample';
+	const DB_SUBJECT_NIVEAU_MM = 'block_exacompsubjniveau_mm';
 	
 	/**
 	 * PLUGIN ROLES

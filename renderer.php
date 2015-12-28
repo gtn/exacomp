@@ -564,10 +564,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		foreach ($niveaus as $niveau) {
 			$title = isset($niveau->cattitle) ? $niveau->cattitle : $niveau->title;
-			$subtitle = $niveau->get_subtitle();
+			$subtitle = $niveau->get_subtitle($selectedTopic->subjid);
 			$content .= html_writer::tag('li',
 					html_writer::link(new block_exacomp\url($NG_PAGE->url, ['niveauid' => $niveau->id]),
-							$title.($subtitle?'<span class="subtitle">'.$subtitle.'</span>':''), array('class' => ($niveau->id == $selectedNiveau->id) ? 'current' : '', 'title'=>$title))
+							$title.($subtitle?'<span class="subtitle">'.$subtitle.'</span>':''), array('class' => ($niveau->id == $selectedNiveau->id) ? 'current' : '', 'title'=>$title.($subtitle?': '.$subtitle:'')))
 					);
 		}
 		

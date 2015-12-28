@@ -4,6 +4,8 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once __DIR__.'/exabis_special_id_generator.php';
 
+use block_exacomp\globals as g;
+
 class block_exacomp_ZipArchive extends ZipArchive {
 	/**
 	 * @return block_exacomp_ZipArchive
@@ -784,19 +786,25 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 	
 	private static function export_edulevels($xmlParent, $parentid = 0) {
 		$dbEdulevels = block_exacomp_get_edulevels();
-		$xmlParent->addChild('edulevels');
+
+		$xmlEdulevels = block_exacomp\SimpleXMLElement::create('edulevels');
 
 		foreach ($dbEdulevels as $dbEdulevel) {
-			$xmlEdulevel = block_exacomp\SimpleXMLElement::create('edulevel');
+			$xmlSchooltypes = self::export_schooltypes($dbEdulevel);
+			if (!$xmlSchooltypes) {
+				continue;
+			}
+
+			$xmlEdulevel = $xmlEdulevels->addChild('edulevel');
 			self::assign_source($xmlEdulevel, $dbEdulevel);
 			
 			$xmlEdulevel->addChildWithCDATAIfValue('title', $dbEdulevel->title);
 			
-			self::export_schooltypes($xmlEdulevel, $dbEdulevel);
-			
-			if (!empty($xmlEdulevel->schooltypes)) {
-				$xmlParent->edulevels->addChild($xmlEdulevel);
-			}
+			$xmlEdulevel->addChild($xmlSchooltypes);
+		}
+
+		if ($xmlEdulevels) {
+			$xmlParent->addChild($xmlEdulevels);
 		}
 	}
 	
@@ -839,12 +847,19 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 		}
 	}
 	
-	private static function export_schooltypes($xmlEdulevel, $dbEdulevel) {
-		$xmlEdulevel->addChild('schooltypes');
+	private static function export_schooltypes($dbEdulevel) {
+
+		$xmlSchooltypes = block_exacomp\SimpleXMLElement::create('schooltypes');
+
 		$dbSchooltypes = block_exacomp_get_schooltypes($dbEdulevel->id);
 
 		foreach ($dbSchooltypes as $dbSchooltype) {
-			$xmlSchooltype = block_exacomp\SimpleXMLElement::create('schooltype');
+			$xmlSubjects = self::export_subjects($dbSchooltype);
+			if (!$xmlSubjects) {
+				continue;
+			}
+
+			$xmlSchooltype = $xmlSchooltypes->addChild('schooltype');
 			self::assign_source($xmlSchooltype, $dbSchooltype);
 			
 			$xmlSchooltype->addChildWithCDATAIfValue('title', $dbSchooltype->title);
@@ -852,21 +867,26 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 			$xmlSchooltype->isoez = $dbSchooltype->isoez;
 			$xmlSchooltype->epop = $dbSchooltype->epop;
 			
-			self::export_subjects($xmlSchooltype, $dbSchooltype);
-
-			if (!empty($xmlSchooltype->subjects)) {
-				$xmlEdulevel->schooltypes->addChild($xmlSchooltype);
-			}
+			$xmlSchooltype->addChild($xmlSubjects);
 		}
+
+		return $xmlSchooltypes;
 	}
 
-	private static function export_subjects($xmlSchooltype, $dbSchooltype) {
+	private static function export_subjects($dbSchooltype) {
 		global $DB;
 		
-		$xmlSchooltype->addChild('subjects');
+		$xmlSubjects = block_exacomp\SimpleXMLElement::create('subjects');
+
 		$dbSubjects = $DB->get_records(block_exacomp::DB_SUBJECTS, array('stid' => $dbSchooltype->id));
+
 		foreach($dbSubjects as $dbSubject){
-			$xmlSubject = block_exacomp\SimpleXMLElement::create('subject');
+			$xmlTopics = self::export_topics($dbSubject);
+			if (!$xmlTopics) {
+				continue;
+			}
+
+			$xmlSubject = $xmlSubjects->addChild('subject');
 			self::assign_source($xmlSubject, $dbSubject);
 			
 			$xmlSubject->addChildWithCDATAIfValue('title', $dbSubject->title);
@@ -874,19 +894,41 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 			$xmlSubject->addChildWithCDATAIfValue('infolink', $dbSubject->infolink);
 			$xmlSubject->sorting = $dbSubject->sorting;
 			$xmlSubject->epop = $dbSubject->epop;
-			
-			self::export_topics($xmlSubject, $dbSubject);
-		
-			if (!empty($xmlSubject->topics)) {
-				$xmlSchooltype->subjects->addChild($xmlSubject);
-			}
+
+			$xmlSubject->addChild($xmlTopics);
+
+			self::export_subject_niveau_mm($xmlSubject, $dbSubject);
+		}
+
+		return $xmlSubjects;
+	}
+
+	private static function export_subject_niveau_mm($xmlSubject, $dbSubject) {
+		$dbItems = g::$DB->get_records_sql("
+			SELECT n.id, n.source, n.sourceid, sn.subtitle
+			FROM {".block_exacomp::DB_NIVEAUS."} n
+			JOIN {".block_exacomp::DB_SUBJECT_NIVEAU_MM."} sn ON sn.niveauid=n.id
+			WHERE sn.subjectid = ?
+			ORDER BY n.sorting -- actually sorting is not important
+		", [$dbSubject->id]);
+
+		if (!$dbItems) {
+			return;
+		}
+
+		$xmlItems = $xmlSubject->addChild('niveaus');
+		foreach ($dbItems as $dbItem) {
+			$xmlItem = $xmlItems->addChild('niveau');
+			self::assign_source($xmlItem, $dbItem);
+			$xmlItem->addChildWithCDATAIfValue('subtitle', $dbItem->subtitle);
 		}
 	}
-	
-	private static function export_topics($xmlSubject, $dbSubject) {
+
+	private static function export_topics($dbSubject) {
 		global $DB;
-		
-		$xmlSubject->addChild('topics');
+
+		$xmlTopics = block_exacomp\SimpleXMLElement::create('topics');
+
 		if (self::$filter_descriptors) {
 			$dbTopics = $DB->get_records_sql("
 				SELECT t.*
@@ -904,7 +946,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 		
 		foreach($dbTopics as $dbTopic){
 			
-			$xmlTopic = $xmlSubject->topics->addChild('topic');
+			$xmlTopic = $xmlTopics->addChild('topic');
 			self::assign_source($xmlTopic, $dbTopic);
 			
 			$xmlTopic->addChildWithCDATAIfValue('title', $dbTopic->title);
@@ -936,11 +978,11 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 				}
 			}
 		}
+
+		return $xmlTopics;
 	}
 
 	private static function export_sources(block_exacomp\SimpleXMLElement $xmlParent) {
-		global $DB;
-		
 		// rather then exporting all sources in the database
 		// we only export the sources used in the xml
 		// this helps later, when only partial exports are made.
@@ -1188,25 +1230,9 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		}
 		
 
-		$insertedTopics = array();
 		if(isset($xml->edulevels)) {
 			foreach($xml->edulevels->edulevel as $edulevel) {
-				$dbEdulevel = self::insert_edulevel($edulevel);
-		
-				foreach($edulevel->schooltypes->schooltype as $schooltype) {
-					$schooltype->elid = $dbEdulevel->id;
-					$dbSchooltype = self::insert_schooltype($schooltype);
-		
-					foreach($schooltype->subjects->subject as $subject) {
-						$subject->stid = $dbSchooltype->id;
-						$dbSubject = self::insert_subject($subject);
-		
-						foreach($subject->topics->topic as $topic) {
-							$topic->subjid = $dbSubject->id;
-							$insertedTopics[] = self::insert_topic($topic)->id;
-						}
-					}
-				}
+				self::insert_edulevel($edulevel);
 			}
 		}
 		
@@ -1341,6 +1367,11 @@ class block_exacomp_data_importer extends block_exacomp_data {
 				'table' => block_exacomp::DB_EXAMPTAX,
 				'mm1' => array('exampleid', block_exacomp::DB_EXAMPLES),
 				'mm2' => array('taxid', block_exacomp::DB_TAXONOMIES),
+			),
+			array(
+				'table' => block_exacomp::DB_SUBJECT_NIVEAU_MM,
+				'mm1' => array('subjectid', block_exacomp::DB_SUBJECTS),
+				'mm2' => array('niveauid', block_exacomp::DB_NIVEAUS),
 			),
 		);
 		
@@ -1621,7 +1652,28 @@ class block_exacomp_data_importer extends block_exacomp_data {
 	
 		self::insert_or_update_item(block_exacomp::DB_SUBJECTS, $subject);
 		self::kompetenzraster_mark_item_used(block_exacomp::DB_SUBJECTS, $subject);
-		
+
+		foreach ($xmlItem->topics->topic as $topic) {
+			$topic->subjid = $subject->id;
+			self::insert_topic($topic);
+		}
+
+		if ($subject->source == self::$import_source_local_id) {
+			// delete and reinsert if coming from same source
+			self::delete_mm_record_for_item(block_exacomp::DB_SUBJECT_NIVEAU_MM, 'subjectid', $subject->id);
+		}
+
+		if ($xmlItem->niveaus) {
+			foreach ($xmlItem->niveaus->niveau as $niveau) {
+				\block_exacomp\db::insert_or_update_record(block_exacomp::DB_SUBJECT_NIVEAU_MM,
+					simpleXMLElementToArray($niveau),
+					[
+						'subjectid' => $subject->id,
+						'niveauid' => self::get_database_id($niveau)
+					]);
+			}
+		}
+
 		return $subject;
 	}
 	private static function insert_schooltype($xmlItem) {
@@ -1629,7 +1681,12 @@ class block_exacomp_data_importer extends block_exacomp_data {
 
 		self::insert_or_update_item(block_exacomp::DB_SCHOOLTYPES, $schooltype);
 		self::kompetenzraster_mark_item_used(block_exacomp::DB_SCHOOLTYPES, $schooltype);
-		
+
+		foreach($xmlItem->subjects->subject as $subject) {
+			$subject->stid = $schooltype->id;
+			self::insert_subject($subject);
+		}
+
 		return $schooltype;
 	}
 	private static function insert_edulevel($xmlItem) {
@@ -1638,6 +1695,12 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		self::insert_or_update_item(block_exacomp::DB_EDULEVELS, $edulevel);
 		self::kompetenzraster_mark_item_used(block_exacomp::DB_EDULEVELS, $edulevel);
 		
+
+		foreach($xmlItem->schooltypes->schooltype as $schooltype) {
+			$schooltype->elid = $edulevel->id;
+			self::insert_schooltype($schooltype);
+		}
+
 		return $edulevel;
 	}
 	
@@ -1700,6 +1763,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 			'descriptorid' => block_exacomp::DB_DESCRIPTORS,
 			'categoryid' => block_exacomp::DB_CATEGORIES,
 			'niveauid' => block_exacomp::DB_NIVEAUS,
+			'niveau' => block_exacomp::DB_NIVEAUS,
 			'skillid' => block_exacomp::DB_SKILLS,
 			'subjectid' => block_exacomp::DB_SUBJECTS
 		);
@@ -1835,32 +1899,11 @@ function simpleXMLElementToArray(SimpleXMLElement $xmlobject) {
 	return $array_final;
 }
 
-
-global $CFG;
 require_once $CFG->libdir . '/formslib.php';
-
-class block_exacomp_xml_upload_form extends moodleform {
-
-	function definition() {
-		global $CFG, $USER, $DB;
-		$mform = & $this->_form;
-
-		$this->_form->_attributes['action'] = $_SERVER['REQUEST_URI'];
-		$mform->addElement('header', 'comment', get_string("doimport_own", "block_exacomp"));
-
-		$mform->addElement('filepicker', 'file', get_string("file"),null);
-		$mform->addRule('file', get_string("commentshouldnotbeempty", "block_exacomp"), 'required', null, 'client');
-
-		$this->add_action_buttons(false, get_string('add'));
-
-	}
-
-}
 
 class block_exacomp_generalxml_upload_form extends moodleform {
 
 	function definition() {
-		global $CFG, $USER, $DB;
 		$mform = & $this->_form;
 
 		$importtype = optional_param('importtype', 'normal', PARAM_TEXT);
@@ -1882,5 +1925,4 @@ class block_exacomp_generalxml_upload_form extends moodleform {
 		$this->add_action_buttons(false, get_string('add'));
 
 	}
-
 }

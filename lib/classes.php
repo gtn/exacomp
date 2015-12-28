@@ -2,10 +2,10 @@
 
 namespace block_exacomp;
 
-use globals as g;
-use \block_exacomp;
-
 defined('MOODLE_INTERNAL') || die();
+
+use block_exacomp\globals as g;
+use \block_exacomp;
 
 class db_layer {
 
@@ -699,7 +699,7 @@ class example extends db_record {
 class niveau extends db_record {
 	const TABLE = block_exacomp::DB_NIVEAUS;
 
-	function get_subtitle() {
-		return ''; // none for now
+	function get_subtitle($subjectid) {
+		return g::$DB->get_field(block_exacomp::DB_SUBJECT_NIVEAU_MM, 'subtitle', ['subjectid' => $subjectid, 'niveauid' => $this->id]); // none for now
 	}
 }
