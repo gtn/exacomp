@@ -14,4 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 $plugin->version = 2015090300;
+$plugin->requires  = 2015051100;		// Requires this Moodle version 2.6
+$plugin->component = 'local_exacomp_local'; 	// Full name of the plugin (used for diagnostics)
+
+$plugin->maturity = MATURITY_STABLE;
