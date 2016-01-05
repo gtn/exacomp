@@ -23,8 +23,6 @@
  */
 defined('MOODLE_INTERNAL') || die;
 
-define('STUDENTS_PER_COLUMN', 5);
-
 require_once __DIR__."/lib/xmllib.php";
 
 use \block_exacomp\globals as g;
@@ -1320,7 +1318,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			if(!$statistic){
 				foreach($students as $student) {
 					$studentCell = new html_table_cell();
-					$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
+					$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
 	
 					$studentCell->attributes['class'] = 'exabis_comp_top_studentcol colgroup colgroup-' . $columnGroup;
 					$studentCell->colspan = $studentsColspan;
@@ -1357,7 +1355,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
 				if(!$statistic){
 					foreach($students as $student) {
-						$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
+						$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
 	
 						$firstCol = new html_table_cell();
 						$firstCol->attributes['class'] = 'exabis_comp_top_studentcol colgroup colgroup-' . $columnGroup;
@@ -1423,7 +1421,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			$studentsCount = 0;
 			foreach($students as $student){
 				
-				$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
+				$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
 				
 				if($showevaluation){
 					$evaluation = ($role == block_exacomp::ROLE_TEACHER) ? 'student' : 'teacher';
@@ -1563,7 +1561,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			if(!$statistic){
 				foreach($students as $student) {
 					$studentCell = new html_table_cell();
-					$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
+					$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
 					$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
 					$studentCell->colspan = (!$profoundness) ? $studentsColspan : 4;
 	
@@ -1816,7 +1814,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 							$visible_student = block_exacomp_is_descriptor_visible($data->courseid, $descriptor, $student->id);
 								
 						$studentCell = new html_table_cell();
-						$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
+						$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
 						$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
 		
 						// SHOW EVALUATION
@@ -2124,7 +2122,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 							if(!$one_student && !$editmode)
 								$visible_student_example = block_exacomp_is_example_visible($data->courseid, $example, $student->id);
 						
-							$columnGroup = floor($studentsCount++ / STUDENTS_PER_COLUMN);
+							$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
 							$studentCell = new html_table_cell();
 							$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
 		
@@ -2412,14 +2410,14 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	 * @param int $students Amount of students
 	 */
 	public function print_column_selector($students) {
-		if($students < STUDENTS_PER_COLUMN)
+		if($students < \block_exacomp\STUDENTS_PER_COLUMN)
 			return;
 
 		$content = html_writer::tag("b", get_string('columnselect','block_exacomp'));
-		for($i=0; $i < ceil($students / STUDENTS_PER_COLUMN); $i++) {
+		for($i=0; $i < ceil($students / \block_exacomp\STUDENTS_PER_COLUMN); $i++) {
 			$content .= " ";
 			$content .= html_writer::link('',
-					($i*STUDENTS_PER_COLUMN+1).'-'.min($students, ($i+1)*STUDENTS_PER_COLUMN),
+					($i*\block_exacomp\STUDENTS_PER_COLUMN+1).'-'.min($students, ($i+1)*\block_exacomp\STUDENTS_PER_COLUMN),
 					array('class' => 'colgroup-button', 'exa-groupid'=>$i));
 		}
 		$content .= " " . html_writer::link('',

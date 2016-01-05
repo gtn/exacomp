@@ -6094,6 +6094,9 @@ function block_exacomp_create_blocking_event($courseid, $title, $creatorid, $stu
 }
 
 namespace block_exacomp {
+
+	const STUDENTS_PER_COLUMN = 4;
+
 	class global_config {
 		static function get_scheme_item_title($id) {
 			$items = static::get_scheme_items();

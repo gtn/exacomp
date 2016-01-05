@@ -143,14 +143,14 @@ if (optional_param('print', false, PARAM_BOOL)) {
 		// all students, do nothing
 	} else {
 		// get the students on this group
-		$students = array_slice($students, $group*STUDENTS_PER_COLUMN, STUDENTS_PER_COLUMN, true);
+		$students = array_slice($students, $group*\block_exacomp\STUDENTS_PER_COLUMN, \block_exacomp\STUDENTS_PER_COLUMN, true);
 	}
 	
 	// TOOD: print column information for print
 	
 	// loop through all pages (eg. when all students should be printed)
-	for ($group_i = 0; $group_i < count($students); $group_i+=STUDENTS_PER_COLUMN) {
-		$students_to_print = array_slice($students, $group_i, STUDENTS_PER_COLUMN, true);
+	for ($group_i = 0; $group_i < count($students); $group_i+=\block_exacomp\STUDENTS_PER_COLUMN) {
+		$students_to_print = array_slice($students, $group_i, \block_exacomp\STUDENTS_PER_COLUMN, true);
 		
 		$html_header = $output->print_overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
 
