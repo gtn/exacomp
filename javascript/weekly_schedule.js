@@ -25,6 +25,7 @@
 			scheduleid : event.scheduleid,
 			start: event.start.format('X'),
 			end: event.end.format('X'),
+			deleted: 0,
 			action : 'set-example-start-end'
 		});
 	}
