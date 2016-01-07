@@ -342,7 +342,7 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
 	return block_exacomp_sort_items($topics, ['subj_' => block_exacomp::DB_SUBJECTS, '' => block_exacomp::DB_TOPICS]);
 }
 
-function block_exacomp_sort_items($items, $sortings) {
+function block_exacomp_sort_items(&$items, $sortings) {
 	$sortings = (array)$sortings;
 
 	uasort($items, function($a, $b) use ($sortings) {
@@ -1195,6 +1195,11 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 					break;
 				}
 			}
+	}
+
+	// sort topics
+	foreach ($subjects as $subject) {
+		block_exacomp_sort_items($subject->subs, block_exacomp::DB_TOPICS);
 	}
 
 	return $subjects;
@@ -4475,7 +4480,7 @@ function block_exacomp_get_viewurl_for_example($studentid,$exampleid) {
 	}
 
 	$item = block_exacomp_get_current_item_for_example($studentid, $exampleid);
-	
+
 	if(!$item)
 		return null;
 
@@ -4521,12 +4526,12 @@ function block_exacomp_build_example_association_tree($courseid, $example_descri
 
 					$descriptor = block_exacomp_check_child_descriptors($descriptor, $example_descriptors, $exampleid, $descriptorid, $showallexamples);
 
-					if($descriptor->associated == 1)
+					if ($descriptor->associated)
 						$topic->associated = 1;
 				}
 			}
 
-			if($topic->associated == 1)
+			if ($topic->associated)
 				$subject->associated = 1;
 		}
 	}
@@ -6090,7 +6095,7 @@ function block_exacomp_create_blocking_event($courseid, $title, $creatorid, $stu
 		$vibilityid = $DB->insert_record(block_exacomp::DB_EXAMPVISIBILITY, $visibility);
 	}
 }
-	
+
 }
 
 namespace block_exacomp {
