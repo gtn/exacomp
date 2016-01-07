@@ -5439,7 +5439,7 @@ function block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted
 }
 
 function block_exacomp_remove_example_from_schedule($scheduleid){
-	global $DB, $USEr;
+	global $DB, $USER;
 
 	$schedule = $DB->get_record(block_exacomp::DB_SCHEDULE, array('id' => $scheduleid));
 	if($schedule->studentid == $USER->id)

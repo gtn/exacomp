@@ -3623,7 +3623,7 @@ class block_exacomp_external extends external_api {
 			) );
 
 		self::check_can_access_course($courseid);
-		// TODO: only for teacher?
+		// TODO: only for teacher? fjungwirth: not necessary, students can also see other course participants in Moodle
 			
 		$students = block_exacomp_get_students_by_course($courseid);
 		
@@ -3847,7 +3847,7 @@ class block_exacomp_external extends external_api {
 	}
 	
 	/**
-	 * set example time slot
+	 * remove example from time slot
 	 * 
 	 * @param
 	 *			
@@ -3859,8 +3859,7 @@ class block_exacomp_external extends external_api {
 				'scheduleid' => $scheduleid
 			) );
 
-		// TODO: check
-
+		// TODO: check. fjungwirth: checked in lib.php
 		block_exacomp_remove_example_from_schedule($scheduleid);
 		
 		return array (
@@ -4492,7 +4491,9 @@ class block_exacomp_external extends external_api {
 		) );
 
 		// TODO: check if is teacher?
-
+		if(!block_exacomp_is_teacher ( $courseid ))
+			throw new invalid_parameter_exception('Required teacher capabilitiy missing');
+		
 		$creatorid = $USER->id;
 		
 		$examples = array();
@@ -4766,8 +4767,8 @@ class block_exacomp_external extends external_api {
 			$type = ($filename != '') ? 'file' : 'url';
 		};
 
-		// TODO: check courseid
-	
+		self::check_can_access_course($courseid);
+		
 		//insert: if itemid == 0 OR status != 0
 		$insert = true;
 		if($itemid != 0) {
@@ -6057,7 +6058,6 @@ class block_exacomp_external extends external_api {
 		}
 
 		// teacher can view other users
-		// TODO: can he also view other teachers in that course?
 		if (block_exacomp_is_teacher ( $courseid )) {
 			$users = get_enrolled_users(block_exacomp_get_context_from_courseid($courseid));
 			if (isset($users[$userid])) {
@@ -6068,6 +6068,7 @@ class block_exacomp_external extends external_api {
 		throw new invalid_parameter_exception ( 'Not allowed to view other user' );
 	}
 
+	// TODO: needs to be checked for one particular course -> courseid must be added
 	private static function check_can_access_example($exampleid) {
 
 	}
