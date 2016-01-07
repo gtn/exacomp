@@ -5494,7 +5494,7 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true){
 		if($mind_eval){
 			$example_array['student_evaluation'] = $example->student_evaluation;
 			$example_array['teacher_evaluation'] = $example->teacher_evaluation;
-			$example_array['additionalinfo'] = $example->additionalinfo;
+			$example_array['additionalinfo'] = (isset($example->additionalinfo)?$example->additionalinfo:'');
 
 			$example_array['student_evaluation_title'] = \block_exacomp\global_config::get_student_scheme_item_title($example->student_evaluation);
 			$example_array['teacher_evaluation_title'] = \block_exacomp\global_config::get_scheme_item_title($example->teacher_evaluation);
@@ -6143,7 +6143,7 @@ namespace block_exacomp {
 			}
 		}
 
-		static function get_student_scheme_items($scheme) {
+		static function get_student_scheme_items($scheme=3) {
 			$global_scheme = static::get_scheme_id();
 
 			if (!$global_scheme) {
