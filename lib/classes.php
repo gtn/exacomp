@@ -271,7 +271,7 @@ class db_layer {
 class db_layer_course extends db_layer {
 	public $courseid = 0;
 	public $showalldescriptors = false;
-	public $showallexamples = false;
+	public $showallexamples = true;
 	public $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES);
 	public $showonlyvisible = false;
 	public $mindvisibility = true;
@@ -386,6 +386,10 @@ class db_record {
 	public function __unset($name) {
 		unset($this->data->$name);
 	}
+
+    function __clone() {
+        $this->data = clone $this->data;
+    }
 
 	public function setDbLayer(db_layer $dbLayer) {
 		$this->dbLayer = $dbLayer;

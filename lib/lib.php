@@ -185,7 +185,7 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
 	$sql = '
-	SELECT DISTINCT s.id, s.title, s.stid, s.infolink, s.description, s.source, s.sorting, \'subject\' as tabletype
+	SELECT DISTINCT s.id, s.titleshort, s.title, s.stid, s.infolink, s.description, s.source, s.sorting, \'subject\' as tabletype
 	FROM {'.block_exacomp::DB_SUBJECTS.'} s
 	JOIN {'.block_exacomp::DB_TOPICS.'} t ON t.subjid = s.id
 	JOIN {'.block_exacomp::DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?
@@ -2130,7 +2130,7 @@ function block_exacomp_get_user_badges($courseid, $userid) {
 }
 /**
  *
- * Gets all desriptors assigned to a badge
+ * Gets all descriptors assigned to a badge
  * @param unknown_type $badgeid
  */
 function block_exacomp_get_badge_descriptors($badgeid){
@@ -6152,5 +6152,244 @@ namespace block_exacomp {
 
 			return $id > 0 && $id <= 3 ? $id : 0;
 		}
+	}
+
+	/**
+	 * gibt die gefundenen ergebnisse als liste zurück
+	 */
+	/*
+	function search_competence_grid_list($courseid, $q) {
+		$subjects = \block_exacomp\db_layer_course::create($courseid)->get_subjects();
+
+		$queryItems = preg_split('![\s,]+!', trim($q));
+		foreach ($queryItems as &$q) {
+			$q = \core_text::strtolower($q);
+		}
+		unset($q);
+
+		$searchResults = (object)[
+			'subjects' => [],
+			'topics' => [],
+			'descriptors' => [],
+			'examples' => [],
+		];
+		$find = function($object) use ($queryItems) {
+			foreach ($queryItems as $q) {
+				$found = false;
+				// for now, just search all fields for the search string
+				foreach ($object->getData() as $value) {
+					if (is_array($value) || is_object($value)) continue;
+
+					if (\core_text::strpos(\core_text::strtolower($value), $q) !== false) {
+						$found = true;
+						break;
+					}
+				}
+				if (!$found) {
+					return false;
+				}
+			}
+
+			return true;
+		};
+
+		$find_example = function($example) use ($searchResults, $find) {
+			if ($find($example)) {
+				$searchResults->examples[$example->id] = $example;
+			}
+		};
+		$find_descriptor = function($descriptor) use ($searchResults, $find, &$find_descriptor, $find_example) {
+			if ($find($descriptor)) {
+				$searchResults->descriptors[$descriptor->id] = $descriptor;
+			}
+
+			array_walk($descriptor->examples, $find_example);
+
+			array_walk($descriptor->children, $find_descriptor);
+		};
+		$find_topic = function($topic) use ($searchResults, $find, $find_descriptor) {
+			if ($find($topic)) {
+				$searchResults->topics[$topic->id] = $topic;
+			}
+
+			array_walk($topic->descriptors, $find_descriptor);
+		};
+		$find_subject = function($subject) use ($searchResults, $find, $find_topic) {
+			if ($find($subject)) {
+				$searchResults->subjects[$subject->id] = $subject;
+			}
+
+			array_walk($subject->topics, $find_topic);
+		};
+
+		array_walk($subjects, $find_subject);
+
+		$searchResults = (object)array_filter((array)$searchResults, function($tmp) { return !empty($tmp); });
+		return $searchResults;
+	}
+	*/
+
+	/**
+	 * searches the competence grid of one course and returns only the found items
+	 * @param $courseid
+	 * @param $q
+	 * @return array
+	 */
+	function search_competence_grid_as_tree($courseid, $q) {
+		$subjects = \block_exacomp\db_layer_course::create($courseid)->get_subjects();
+
+		if (!trim($q)) {
+			$queryItems = null;
+		} else {
+			$queryItems = preg_split('![\s,]+!', trim($q));
+			foreach ($queryItems as &$q) {
+				$q = \core_text::strtolower($q);
+			}
+			unset($q);
+		}
+
+		$find = function($object) use ($queryItems) {
+			if (!$queryItems) {
+				// no filter, so got found!
+				return true;
+			}
+
+			foreach ($queryItems as $q) {
+				$found = false;
+				// for now, just search all fields for the search string
+				foreach ($object->getData() as $value) {
+					if (is_array($value) || is_object($value)) continue;
+
+					if (\core_text::strpos(\core_text::strtolower($value), $q) !== false) {
+						$found = true;
+						break;
+					}
+				}
+				if (!$found) {
+					return false;
+				}
+			}
+
+			return true;
+		};
+
+		$filter_not_empty = function(&$items) use (&$filter_not_empty) {
+ 			$items = array_filter($items, function($item) use ($filter_not_empty) {
+				if ($item instanceof subject) {
+					$filter_not_empty($item->topics);
+					return !!$item->topics;
+				}
+				if ($item instanceof topic) {
+					$filter_not_empty($item->descriptors);
+					return !!$item->descriptors;
+				}
+				if ($item instanceof descriptor) {
+					$filter_not_empty($item->children);
+
+					return $item->examples || $item->children;
+				}
+			});
+		};
+
+		$filter = function(&$items) use ($find, &$filter, $filter_not_empty) {
+ 			$items = array_filter($items, function($item) use ($find, $filter, $filter_not_empty) {
+				if ($item instanceof subject) {
+					if ($find($item)) {
+						$filter_not_empty($item->topics);
+					} else {
+						$filter($item->topics);
+					}
+					return !!$item->topics;
+				}
+				if ($item instanceof topic) {
+					if ($find($item)) {
+						$filter_not_empty($item->descriptors);
+					} else {
+						$filter($item->descriptors);
+					}
+
+					return !!$item->descriptors;
+				}
+				if ($item instanceof descriptor) {
+					if ($find($item)) {
+						$filter_not_empty($item->children);
+					} else {
+						$filter($item->examples);
+						$filter($item->children);
+					}
+
+					return $item->examples || $item->children;
+				}
+				if ($item instanceof example) {
+					return $find($item);
+				}
+			});
+		};
+
+		if ($queryItems) {
+			$filter($subjects);
+		} else {
+			$filter_not_empty($subjects);
+		}
+
+		return $subjects;
+	}
+
+	function search_competence_grid_as_example_list($courseid, $q) {
+		$examples = [];
+		$data = (object)[];
+		$get_examples = function($items) use (&$get_examples, &$examples, &$data) {
+ 			array_walk($items, function($item) use (&$get_examples, &$examples, &$data) {
+				if ($item instanceof subject) {
+					$data->subject = $item;
+					$get_examples($item->topics);
+				}
+				if ($item instanceof topic) {
+					$data->topic = $item;
+					$get_examples($item->descriptors);
+				}
+				if ($item instanceof descriptor) {
+					$data->descriptors[] = $item;
+					$get_examples($item->children);
+					$get_examples($item->examples);
+					array_pop($data->descriptors);
+				}
+				if ($item instanceof example) {
+					if (empty($examples[$item->id])) {
+						$examples[$item->id] = $item;
+						$item->subjects = [];
+					}
+					$parent = $examples[$item->id];
+
+					if (empty($parent->subjects[$data->subject->id])) {
+						$parent->subjects[$data->subject->id] = clone $data->subject;
+						$parent->subjects[$data->subject->id]->topics = [ ];
+					}
+					$parent = $parent->subjects[$data->subject->id];
+
+					if (empty($parent->topics[$data->topic->id])) {
+						$parent->topics[$data->topic->id] = clone $data->topic;
+						$parent->topics[$data->topic->id]->descriptors = [];
+					}
+					$parent = $parent->topics[$data->topic->id];
+
+					if (empty($parent->descriptors[$data->descriptors[0]->id])) {
+						$parent->descriptors[$data->descriptors[0]->id] = clone $data->descriptors[0];
+						$parent->descriptors[$data->descriptors[0]->id]->children = [];
+					}
+					$parent = $parent->descriptors[$data->descriptors[0]->id];
+
+					if (!empty($data->descriptors[1]) && empty($parent->children[$data->descriptors[1]->id])) {
+						$parent->children[$data->descriptors[1]->id] = clone $data->descriptors[1];
+					}
+				}
+			});
+		};
+
+		$subjects = search_competence_grid_as_tree($courseid, $q);
+
+		$get_examples($subjects);
+
+		return $examples;
 	}
 }
