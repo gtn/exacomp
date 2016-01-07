@@ -119,9 +119,13 @@ if($profile_settings->useexaport == 1){
 }
 
 $user_courses = array();
+$max_scheme = 3;
 foreach($possible_courses as $course){
-	if(isset($profile_settings->exacomp[$course->id]))
+	if(isset($profile_settings->exacomp[$course->id])){
 		$user_courses[$course->id] = $course; 
+		if(($grading = block_exacomp_get_grading_scheme($course->id)) > $max_scheme)
+			$max_scheme = $grading;
+	}
 }
 
 //if(!block_exacomp_is_altversion())
@@ -130,8 +134,8 @@ foreach($possible_courses as $course){
 
 if(!empty($profile_settings->exacomp) || $profile_settings->showallcomps == 1)
 	echo html_writer::tag('h3', get_string('my_comps', 'block_exacomp'), array('class'=>'competence_profile_sectiontitle'));
-	
-echo $output->print_lm_graph_legend();
+
+echo $output->print_lm_graph_legend($max_scheme);
 foreach($user_courses as $course) {
 	//if selected
 	if(isset($profile_settings->exacomp[$course->id]))

@@ -6112,7 +6112,7 @@ namespace block_exacomp {
 			}
 		}
 
-		static function get_scheme_items() {
+		static function get_scheme_items($scheme = 3) {
 			$global_scheme = static::get_scheme_id();
 
 			if($global_scheme == 1){
@@ -6122,7 +6122,13 @@ namespace block_exacomp {
 			}else if($global_scheme == 3){
 				$global_scheme_values = array('nE', '*', '**', '***');
 			}else{
-				$global_scheme_values = array('0', '1', '2', '3');
+				if($scheme > 3){
+					$global_scheme_values = array();
+					for($i=0; $i<=$scheme; $i++)
+						$global_scheme_values[] = $i;
+						
+				}else
+					$global_scheme_values = array('0', '1', '2', '3');
 			}
 
 			return $global_scheme_values;
@@ -6137,10 +6143,18 @@ namespace block_exacomp {
 			}
 		}
 
-		static function get_student_scheme_items() {
+		static function get_student_scheme_items($scheme) {
 			$global_scheme = static::get_scheme_id();
 
 			if (!$global_scheme) {
+				if($scheme > 3){
+					$global_scheme_values = array();
+					for($i=0; $i<=$scheme; $i++)
+						$global_scheme_values[] = $i;
+					
+					return $global_scheme_values;
+				}
+				
 				return array('0', '1', '2', '3');
 			} else {
 				return array('', '*', '**', '***');

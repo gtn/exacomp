@@ -788,10 +788,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 public function print_competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0,$studentid=0) {
 		global $CFG, $DB;
 
-		$global_scheme = \block_exacomp\global_config::get_scheme_id();
-		$global_scheme_values = \block_exacomp\global_config::get_scheme_items();
-
-
 		$headFlag = false;
 
 		$context = context_course::instance($courseid);
@@ -803,6 +799,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$head = array();
 
 		$schema = ($courseid == 0) ? 1 : block_exacomp_get_grading_scheme($courseid);
+		$global_scheme = \block_exacomp\global_config::get_scheme_id();
+		$global_scheme_values = \block_exacomp\global_config::get_scheme_items($schema);
+		
 		$satisfied = ceil($schema/2);
 		
 		$profoundness = block_exacomp_get_settings_by_course($courseid)->useprofoundness;
@@ -2572,13 +2571,13 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		// TODO: diese $scheme brauchen wir nicht mehr? einfach $options = $scheme_values?
 
 		if(strcmp($evaluation, 'teacher')==0){
-			$scheme_values = \block_exacomp\global_config::get_scheme_items();
+			$scheme_values = \block_exacomp\global_config::get_scheme_items($scheme);
 			$options[-1] = ' ';
 			for($i=0;$i<=$scheme;$i++) {
 				$options[$i] = $scheme_values[$i];
 			}
 		}else{
-			$scheme_values = \block_exacomp\global_config::get_student_scheme_items();
+			$scheme_values = \block_exacomp\global_config::get_student_scheme_items($scheme);
 
 			$options[0] = '';
 			$stars = '*';
@@ -3902,7 +3901,7 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 				$div_content = "";
 				if(count($niveaus)>2 && count($niveaus)<9){
 					$radar_graph = html_writer::empty_tag('canvas', array('id'=>'canvas'.$topic->id, 'height'=>'450', 'width'=>'450'));
-					$radar_graph .=  $this->print_radar_graph_topic(implode(",", $niveaus),implode(",", $teacher_eval),implode(",", $student_eval),'canvas'.$topic->id);
+					$radar_graph .=  $this->print_radar_graph_topic(implode(",", $niveaus),implode(",", $teacher_eval),implode(",", $student_eval),'canvas'.$topic->id, $scheme);
 					$div_content = html_writer::div($radar_graph, 'radar_graph', array('style'=>'width:30%'));
 					$div_content .= $this->print_radar_graph_legend();
 				}
@@ -3917,8 +3916,8 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 		return $content;
 	}
 	
-	private function print_radar_graph_topic($labels, $data1, $data2, $canvasid){
-		$global_scheme_values = \block_exacomp\global_config::get_scheme_items();
+	private function print_radar_graph_topic($labels, $data1, $data2, $canvasid, $scheme){
+		$global_scheme_values = \block_exacomp\global_config::get_scheme_items($scheme);
 
 		return '<script>
 		var radarChartData = {
@@ -4797,7 +4796,7 @@ var dataset = dataset.map(function (group) {
 	}
 	function print_statistic_table($courseid, $students, $item, $descriptor=true, $scheme=1){
 		$global_scheme = \block_exacomp\global_config::get_scheme_id();
-		$global_scheme_values = \block_exacomp\global_config::get_scheme_items();
+		$global_scheme_values = \block_exacomp\global_config::get_scheme_items($scheme);
 
 		if($descriptor)
 			list($self, $student_oB, $student_iA, $teacher, $teacher_oB, $teacher_iA,
@@ -5037,21 +5036,18 @@ var dataset = dataset.map(function (group) {
 		return html_writer::div($content, 'external-events', array('id'=>'external-events'));
 	}	
 	
-	public function print_lm_graph_legend() {
+	public function print_lm_graph_legend($scheme) {
 		$global_scheme = \block_exacomp\global_config::get_scheme_id();
-		$global_scheme_values = \block_exacomp\global_config::get_scheme_items();
-
+		$global_scheme_values = \block_exacomp\global_config::get_scheme_items($scheme);
 		$content = html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","lmoB");
 		$content .= ' '.get_string("oB","block_exacomp").' ';
 
-		if($global_scheme != 0){
-			$content .= html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","lmnE");
-			$content .= ' '.get_string("nE","block_exacomp").' ';
-			
-			for($i=1;$i<=3;$i++){
-				$content .= html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","green".$i);
-				$content .= ' '.$global_scheme_values[$i].' ';
-			}
+		$content .= html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","lmnE");
+		$content .= ' '.get_string("nE","block_exacomp").' ';
+		
+		for($i=1;$i<=$scheme;$i++){
+			$content .= html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","green".(($i>3)?3:$i));
+			$content .= ' '.$global_scheme_values[$i].' ';
 		}
 		
 		return $content;
