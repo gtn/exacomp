@@ -6059,6 +6059,8 @@ class block_exacomp_external extends external_api {
 
 		// teacher can view other users
 		if (block_exacomp_is_teacher ( $courseid )) {
+			if ($userid == 0)
+				return; 
 			$users = get_enrolled_users(block_exacomp_get_context_from_courseid($courseid));
 			if (isset($users[$userid])) {
 				return;
