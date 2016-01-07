@@ -81,7 +81,8 @@ $services = array(
 						'dakora_send_message_to_course',
 						'dakora_create_blocking_event',
 						'dakora_get_examples_by_descriptor_and_grading',
-						'dakora_get_examples_by_descriptor_and_grading_for_crosssubject'
+						'dakora_get_examples_by_descriptor_and_grading_for_crosssubject',
+						'dakora_allow_example_resubmission'
 						), 	//web service functions of this service
 				'restrictedusers' =>0,					  //if enabled, the Moodle administrator must link some user to this service
 				//into the administration
@@ -650,6 +651,13 @@ $functions = array(
 				'methodname'  => 'dakora_get_examples_by_descriptor_and_grading_for_crosssubject',		  //external function name
 				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
 				'description' => 'returns examples for given descriptor and grading and crosssubject',	//human readable description of the web service function
+				'type'		=> 'read'				  //database rights of the web service function (read, write)
+		),
+		'dakora_allow_example_resubmission' => array(
+				'classname'   => 'block_exacomp_external',  //class containing the external function
+				'methodname'  => 'dakora_allow_example_resubmission',		  //external function name
+				'classpath'   => 'blocks/exacomp/externallib.php',  //file containing the class/external function
+				'description' => 'allow student to resubmit example',	//human readable description of the web service function
 				'type'		=> 'read'				  //database rights of the web service function (read, write)
 		)
 );

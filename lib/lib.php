@@ -386,14 +386,14 @@ function block_exacomp_sort_items(&$items, $sortings) {
 					throw new \block_exacomp\Exception('col not found: '.$prefix."title");
 				}
 
-				if ($a->{$prefix."sorting"} < $b->{$prefix."sorting"})
-					return -1;
-				if ($a->{$prefix."sorting"} > $b->{$prefix."sorting"})
-					return 1;
-
 				if ($a->{$prefix."numb"} < $b->{$prefix."numb"})
 					return -1;
 				if ($a->{$prefix."numb"} > $b->{$prefix."numb"})
+					return 1;
+
+				if ($a->{$prefix."sorting"} < $b->{$prefix."sorting"})
+					return -1;
+				if ($a->{$prefix."sorting"} > $b->{$prefix."sorting"})
 					return 1;
 
 				if ($a->{$prefix."title"} != $b->{$prefix."title"}) {

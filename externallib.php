@@ -5669,6 +5669,47 @@ class block_exacomp_external extends external_api {
 		) ) );
 	}
 	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_allow_example_resubmission_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value (PARAM_INT, 'id of course'),
+				'userid' => new external_value (PARAM_INT, 'id of user'),
+				'exampleid' => new external_value ( PARAM_INT, 'id of example' )
+		) );
+	}
+	
+	/**
+	 * Create a new blocking event
+	 */
+	public static function dakora_allow_example_resubmission($courseid, $userid, $exampleid) {
+		global $USER;
+	
+		self::validate_parameters(self::dakora_allow_example_resubmission_parameters(), array('courseid'=>$courseid,
+				'userid'=>$userid, 'exampleid'=>$exampleid));
+	
+		static::check_can_access_course_user($courseid, $userid);
+		
+		block_exacomp_allow_resubmission($userid, $exampleid, $courseid);
+		
+		return array('success' => true);
+
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_single_structure
+	 */
+	public static function dakora_allow_example_resubmission_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
+		) );
+	}
+	
 	/** 
 	* helper function to use same code for 2 ws
 	*/
