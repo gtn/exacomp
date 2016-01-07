@@ -5434,16 +5434,17 @@ function block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted
 	$entry->end = $end;
 	$entry->deleted = $deleted;
 
-	if($entry->studentid == $USER->id)
-		$DB->update_record(block_exacomp::DB_SCHEDULE, $entry);
+	// TODO: check for capability
+	$DB->update_record(block_exacomp::DB_SCHEDULE, $entry);
 }
 
 function block_exacomp_remove_example_from_schedule($scheduleid){
 	global $DB, $USER;
 
 	$schedule = $DB->get_record(block_exacomp::DB_SCHEDULE, array('id' => $scheduleid));
-	if($schedule->studentid == $USER->id)
-		$DB->delete_records(block_exacomp::DB_SCHEDULE, array('id'=>$scheduleid));
+	//if($schedule->studentid == $USER->id)
+	// TODO: check for capability
+	$DB->delete_records(block_exacomp::DB_SCHEDULE, array('id'=>$scheduleid));
 }
 
 function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start, $end){
