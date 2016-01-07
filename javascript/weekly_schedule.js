@@ -19,7 +19,7 @@
 		});
 	});
 	function exacomp_calendar_add_event(event) {
-		console.log('exacomp_calendar_add_event', event.id, event.title, event.start.format('X'), event.end.format('X'), event.scheduleid);
+		console.log('exacomp_calendar_add_event', event.id, event.title, event.start, event.end, event.scheduleid);
 		
 		block_exacomp.call_ajax({
 			scheduleid : event.scheduleid,
@@ -191,6 +191,7 @@
 				el.append('<div class="event-submission">'+data.submission_url+'</div>');
 
 			el.addClass('state'+data.state);
+			data.deleted = 0;
 						
 			el.data('event', data);
 	
@@ -209,6 +210,7 @@
 			if(data.state < 9)
 				el.append('	<div class="event-assoc">'+data.assoc_url+'</div>');
 			
+			data.deleted = 1;
 			el.data('event', data);
 			
 			el.draggable({
@@ -300,12 +302,6 @@
 					start: '00:00:00', // a start time (10am in this example)
 					end: exacomp_calcendar.slot_time(exacomp_calcendar_config.slots.length)
 				},
-				exabisEventConstraint: function(range, event) {
-					var today = moment().utc().startOf('day');
-					
-					// compare with strings, because fullcalendar moment 2.9 had a bug in isSame()
-					return range.start.format("YYYY-MM-DD") == today.format("YYYY-MM-DD") || range.start.isAfter(today);
-				},
 		
 				editable: true,
 				droppable: true, // this allows things to be dropped onto the calendar
@@ -324,8 +320,17 @@
 							event.original = event;
 							
 							// graded events can't be moved anymore
-							if (event.state == EXAMPLE_STATE_EVALUATED) {
+							if (event.state > 3 && event.state < 9) {
 								event.editable = false;
+								event.startEditable = false;
+								event.durationEditable = false;
+							}
+							
+							// past event 
+							if (moment(event.start).isBefore(moment(), "day")){
+								event.editable = false;
+								event.startEditable = false;
+								event.durationEditable = false;
 							}
 							
 							return event;
@@ -362,7 +367,7 @@
 					}
 					var teacher_evaluation = [];
 					if (this.teacher_evaluation_title) teacher_evaluation.push(this.teacher_evaluation_title);
-					if (this.additionalinfo) teacher_evaluation.push(this.additionalinfo+' %');
+					if (this.additionalinfo!==null) teacher_evaluation.push(this.additionalinfo+' %');
 					if (teacher_evaluation.length) {
 						element.find(".fc-content").append('<div>L: '+teacher_evaluation.join(' / ')+'</div>');
 					}
@@ -394,9 +399,10 @@
 		
 						// fullcalendar bug
 						delete event.source;
-	
+						
 						add_pool_item(event);
 						exacomp_calendar_remove_event(event, 0);
+						event.deleted = 0;
 					}
 		
 					if (isEventOverDiv($trash, jsEvent)) {
@@ -404,6 +410,7 @@
 						add_trash_item(event);
 						exacomp_calendar_remove_event(event, 1);
 						
+						event.deleted = 1;
 						/*if (confirm('Wirklich löschen?')) {
 							$('#calendar').fullCalendar('removeEvents', event._id);
 							
@@ -434,12 +441,35 @@
 					exacomp_calendar_update_event_time(event);
 				},
 				eventDrop: function(event, delta, revertFunc) {
+					if (moment(event.start).isBefore(moment(), "day")){
+						revertFunc();
+					}
+					
 					var event = exacomp_calcendar.event_slot_to_time(event);
 					exacomp_calendar_update_event_time(event);
 				},
 				eventReceive: function(event) {
-					var event = exacomp_calcendar.event_slot_to_time(event);
-					exacomp_calendar_add_event(event);
+					console.log(event);
+					if (moment(event.start).isBefore(moment(), "day")){
+						if(event.deleted == 0){
+							$('#calendar').fullCalendar('removeEvents', event._id);
+							// fullcalendar bug
+							delete event.source;
+		
+							add_pool_item(event);
+							exacomp_calendar_remove_event(event, 0);
+						}else if(event.deleted == 1){
+							$('#calendar').fullCalendar('removeEvents', event._id);
+							// fullcalendar bug
+							delete event.source;
+		
+							add_trash_item(event);
+							exacomp_calendar_remove_event(event, 1);
+						}
+					}else{
+						var event = exacomp_calcendar.event_slot_to_time(event);
+						exacomp_calendar_add_event(event);
+					}
 				},
 			});
 		}
