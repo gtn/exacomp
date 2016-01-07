@@ -361,7 +361,7 @@
 					}
 					var teacher_evaluation = [];
 					if (this.teacher_evaluation_title) teacher_evaluation.push(this.teacher_evaluation_title);
-					if (this.additionalinfo!==null) teacher_evaluation.push(this.additionalinfo+' %');
+					if (this.additionalinfo) teacher_evaluation.push(this.additionalinfo+' %');
 					if (teacher_evaluation.length) {
 						element.find(".fc-content").append('<div>L: '+teacher_evaluation.join(' / ')+'</div>');
 					}
