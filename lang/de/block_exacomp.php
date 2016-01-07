@@ -226,7 +226,7 @@ $string['comp_based'] = 'Nach Kompetenzen sortieren';
 $string['examp_based'] = 'Nach Lernmaterialien sortieren';
 
 //Icons
-$string['assigned_example'] = 'Assigned Example';
+$string['assigned_example'] = 'Zugeteiltes Beispiel';
 $string['task_example'] = 'Aufgabenstellung';
 $string['solution_example'] = 'L&ouml;sung';
 $string['attachement_example'] = 'Anhang';

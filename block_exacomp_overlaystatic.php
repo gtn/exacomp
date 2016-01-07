@@ -1,4 +1,6 @@
 <?php
+$string['exacomp:deleteexamples'] = 'Lernmaterialien löschen';
+
 $string['tab_teacher_settings_selection_st'] = 'Bildungsstandard-Auswahl';
 $string['tab_examples'] = 'Lernmaterialien';
 $string['tab_teacher_settings_selection'] = 'Kompetenzbereiche-Auswahl';
@@ -17,6 +19,11 @@ $string['showevaluation']= 'Um die Selbsteinschätzung einzusehen, klicken Sie <
 $string['hideevaluation']= 'Um die Selbsteinschätzung auszublenden, klicken Sie <a href="{$a}">hier</a>';
 $string['assigned_example'] = 'Lernmaterial zuordnen';
 $string['show_all_descriptors'] = 'Alle Lernlisten im &Uuml;berblick anzeigen';
+$string['show_all_examples'] = 'Externe Lernmaterialien für Teilnehmer anzeigen';
+$string['filteredtaxonomies'] = 'Lernmaterialien werden anhand der ausgewählten Taxonomien verwendet:';
+$string['delete_unconnected_examples'] = 'Wenn Sie Themenbereiche abwählen, mit denen Lernmaterialien verknüpft sind die noch am Wochenplan liegen, werden diese aus dem Wochenplan entfernt.';
+
+
 $string['choosesubject']='Kompetenzbereich ausw&auml;hlen';
 $string['choosetopic'] = "Lernfortschritte ausw&auml;hlen";
 
@@ -51,4 +58,15 @@ $string['taxonomies'] = 'Niveaustufen';
 $string['taxonomy'] = 'Niveaustufe';
 $string['name_example'] = 'Name';
 $string['description_example'] = 'Beschreibung / Schulbuchverweis';
+
+$string['LA_no_example'] = 'Kein Lernmaterial zugeordnet';
+$string['show_all_course_examples'] = 'Lernmaterialien aus allen Kursen anzeigen';
+$string['delete_confirmation'] = 'Soll das Lernmaterial wirklich gelöscht werden?';
+$string['legend_upload'] = 'Eigenes Lernmaterial hochladen';
+$string['save_pre_planning_selection'] = 'Ausgewählte Lernmaterialien auf den Wochenplan der ausgewählten Schüler/innen legen';
+$string['notification_submission_subject'] = '{$a->student} hat eine Lösung zum Lernmaterial {$a->example} eingereicht.';
+$string['block_exacomp_notifications_body'] = 'Bei Aktionen wie einer Lernmaterialien-Einreichung oder einer Beurteilung werden Nachrichten an die zuständigen Benutzer gesendet.';
+
+$string['assigned_example'] = 'Zugeteiltes Lernmaterial';
+$string['total_example'] = 'Gesamtmaterial';
 ?>
