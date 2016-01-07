@@ -539,6 +539,8 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 	// TODO: block_exacomp_external::require_teacher_permission($courseid, $userid);
 	if($role == block_exacomp::ROLE_STUDENT && $userid != $USER->id)
 		return -1;
+	if($role == block_exacomp::ROLE_TEACHER)
+		block_exacomp_require_teacher($courseid);
 	
 	$id = -1;
 
@@ -568,6 +570,7 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 	$updateEvaluation = new stdClass();
 
 	if ($role == block_exacomp::ROLE_TEACHER) {
+		block_exacomp_require_teacher($courseid);
 		$updateEvaluation->teacher_evaluation = ($value != -1) ? $value : null;
 		$updateEvaluation->teacher_reviewerid = $USER->id;
 		if($additionalinfo !== null) $updateEvaluation->additionalinfo = $additionalinfo;
@@ -5434,16 +5437,19 @@ function block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted
 	$entry->end = $end;
 	$entry->deleted = $deleted;
 
-	// TODO: check for capability
+	if($entry->studentid != $USER->id)
+		block_exacomp_require_teacher($entry->courseid);
+	
 	$DB->update_record(block_exacomp::DB_SCHEDULE, $entry);
 }
 
 function block_exacomp_remove_example_from_schedule($scheduleid){
 	global $DB, $USER;
 
-	$schedule = $DB->get_record(block_exacomp::DB_SCHEDULE, array('id' => $scheduleid));
-	//if($schedule->studentid == $USER->id)
-	// TODO: check for capability
+	$entry = $DB->get_record(block_exacomp::DB_SCHEDULE, array('id' => $scheduleid));
+	if($entry->studentid != $USER->id)
+		block_exacomp_require_teacher($entry->courseid);
+	
 	$DB->delete_records(block_exacomp::DB_SCHEDULE, array('id'=>$scheduleid));
 }
 
