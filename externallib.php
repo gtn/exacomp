@@ -4912,10 +4912,16 @@ class block_exacomp_external extends external_api {
 	
 		self::validate_parameters(self::dakora_grade_example_parameters(), array('userid'=>$userid,'courseid'=>$courseid,'exampleid'=>$exampleid,'examplevalue'=>$examplevalue,'itemid'=>$itemid,'itemvalue'=>$itemvalue,'comment'=>$comment));
 	
+		if($userid == 0) {
+			$role = block_exacomp::ROLE_STUDENT;
+			$userid = $USER->id;
+		} else 
+			$role = block_exacomp::ROLE_TEACHER;
+		
 		static::check_can_access_course_user($courseid, $userid);
 		// TODO: check example
 		
-		block_exacomp_set_user_example(($userid == 0) ? $USER->id : $userid, $exampleid, $courseid, ($userid == 0) ? block_exacomp::ROLE_STUDENT : block_exacomp::ROLE_TEACHER, $examplevalue,0,0,'self',$itemvalue);
+		block_exacomp_set_user_example(($userid == 0) ? $USER->id : $userid, $exampleid, $courseid, $role, $examplevalue,0,0,'self',$itemvalue);
 	
 		if($itemid > 0 && $userid > 0) {
 				
