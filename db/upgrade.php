@@ -2597,6 +2597,27 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2015122800, 'exacomp');
     }
 
+    if ($oldversion < 2016011500) {
+
+        // Changing type of field source on table block_exacompdatasources to char.
+        $table = new xmldb_table('block_exacompdatasources');
+        $field = new xmldb_field('source', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'id');
+
+        // Launch change of type for field source.
+        $dbman->change_field_type($table, $field);
+
+
+        // Changing type of field name on table block_exacompdatasources to char.
+        $table = new xmldb_table('block_exacompdatasources');
+        $field = new xmldb_field('name', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'source');
+
+        // Launch change of type for field name.
+        $dbman->change_field_type($table, $field);
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2016011500, 'exacomp');
+    }
+
 	/*
 	 * insert new upgrade scripts before this comment section
 	 * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
