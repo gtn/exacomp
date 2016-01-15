@@ -2174,7 +2174,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 				. " WHERE "
 				. " e.source != " . block_exacomp::EXAMPLE_SOURCE_USER . " AND "
 				. (($showallexamples) ? " 1=1 " : " e.creatorid > 0")
-				. " ORDER BY de.sorting"
+				// . " ORDER BY de.sorting" there is no sorting field yet
 				, array($descriptor->id, $courseid));
 		foreach($examples as $example){
 			$example->taxonomies = block_exacomp_get_taxonomies_by_example($example);
@@ -2211,6 +2211,65 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		
 		return $descriptor;
 	}
+
+	function upgrade_block_exacomp_2015072102_block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES),$showallexamples = true, $courseid = null, $mind_visibility=true, $showonlyvisible = false ) {
+	global $DB, $COURSE;
+
+	if($courseid == null)
+		$courseid = $COURSE->id;
+
+	$examples = $DB->get_records_sql(
+			"SELECT de.id as deid, e.id, e.title, e.externalurl, e.source, ".
+				($mind_visibility?"evis.visible,":"")."
+				e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe
+				FROM {" . block_exacomp::DB_EXAMPLES . "} e
+				JOIN {" . block_exacomp::DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?"
+			.($mind_visibility?' JOIN {'.block_exacomp::DB_EXAMPVISIBILITY.'} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.courseid=? '
+			.($showonlyvisible?' AND evis.visible = 1 ':''):'')
+			. " WHERE "
+			. " e.source != " . block_exacomp::EXAMPLE_SOURCE_USER . " AND "
+			. (($showallexamples) ? " 1=1 " : " e.creatorid > 0")
+				// . " ORDER BY de.sorting" there is no sorting field yet
+			, array($descriptor->id, $courseid));
+
+	$examples = \block_exacomp\example::create_objects($examples);
+
+	foreach($examples as $example){
+		$example->taxonomies = block_exacomp_get_taxonomies_by_example($example);
+
+		$taxtitle = "";
+		foreach($example->taxonomies as $taxonomy){
+			$taxtitle .= $taxonomy->title.", ";
+		}
+
+		$taxtitle = substr($taxtitle, 0, strlen($taxtitle)-1);
+		$example->tax = $taxtitle;
+	}
+	$filtered_examples = array();
+	if(!in_array(SHOW_ALL_TAXONOMIES, $filteredtaxonomies)){
+		$filtered_taxonomies = implode(",", $filteredtaxonomies);
+
+		foreach($examples as $example){
+			foreach($examples->taxonomies as $taxonomy){
+				if(in_array($taxonomy->id, $filtered_taxonomies)){
+					if(!array_key_exists($example->id, $filtered_examples))
+						$filtered_examples[$example->id] = $example;
+					continue;
+				}
+			}
+		}
+	}else{
+		$filtered_examples = $examples;
+	}
+
+	$descriptor->examples = array();
+	foreach($filtered_examples as $example){
+		$descriptor->examples[$example->id] = $example;
+	}
+
+	return $descriptor;
+}
+
 	
 		
 	if($oldversion < 2015082000){
@@ -2242,7 +2301,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			foreach($topics as $topic){
 				$descriptors_topic = upgrade_block_exacomp_2015052900_get_descriptors_by_topic($course, $topic->id);
 				foreach($descriptors_topic as $descriptor){
-					$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, $course);
+					$descriptor = upgrade_block_exacomp_2015072102_block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, $course);
 					foreach($descriptor->examples as $example)
 						if(!array_key_exists($example->id, $examples))
 							$examples[$example->id] = $example;
