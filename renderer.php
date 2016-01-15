@@ -411,7 +411,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 	public function print_subject_dropdown($schooltypetree, $selectedSubject, $studentid = 0) {
 		global $PAGE;
-		$content = get_string("choosesubject", "block_exacomp");
+		$content = get_string("choosesubject", "block_exacomp").': ';
 		$array = array();
 		$options = array();
 		
@@ -737,7 +737,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$url->param("subjectid",optional_param("subjectid", 0, PARAM_INT));
 		$url->param("studentid",optional_param("studentid", 0, PARAM_INT));
 		
-		return get_string('reports','block_exacomp') . ": " . html_writer::select($options, "exacomp_competence_grid_report", optional_param("report", BLOCK_EXACOMP_REPORT1, PARAM_INT), true, array("data-url"=>$url));
+		return get_string('reports','block_exacomp') . ": " .
+			html_writer::select($options, "exacomp_competence_grid_report", optional_param("report", BLOCK_EXACOMP_REPORT1, PARAM_INT), true, array("data-url"=>$url)).
+			$this->print_profile_print_button();
 		 
 	}
 	public function print_competence_overview_LIS_student_topics($subs, &$row, &$columns, &$column_count, $scheme, $profoundness = false){

@@ -83,7 +83,7 @@ if($data) {
 	}
 	
 	echo $output->print_competence_grid_reports_dropdown();
-	
+
 	echo html_writer::start_div();
 	
 	if(isset($dropdown_subjects[$subjectid]->infolink))

@@ -1,3 +1,6 @@
 .deactivated {
 	color: black;
 }
+select[name=lis_subjects] {
+	margin-right: 15px;
+}
