@@ -1162,7 +1162,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 
 	foreach ($allTopics as $topic) {
 		//topic must be coursetopic if courseid <> 0
-		if($courseid > 0 && !array_key_exists($topic->id, $courseTopics))
+		if($courseid && $showonlyvisible && !array_key_exists($topic->id, $courseTopics))
 			continue;
 
 		//if($courseid==0 || $showalldescriptors || block_exacomp_check_activity_association($topic->id, TYPE_TOPIC, $courseid)) {
@@ -1472,8 +1472,7 @@ function block_exacomp_build_navigation_tabs_settings($courseid){
 	$settings_subtree = array();
 
 	$settings_subtree[] = new tabobject('tab_teacher_settings_configuration', new moodle_url('/blocks/exacomp/edit_course.php', array('courseid'=>$courseid)), get_string("tab_teacher_settings_configuration", "block_exacomp"));
-	if(!block_exacomp_is_skillsmanagement())
-		$settings_subtree[] = new tabobject('tab_teacher_settings_selection', new moodle_url('/blocks/exacomp/courseselection.php', array('courseid'=>$courseid)), get_string("tab_teacher_settings_selection", "block_exacomp"));
+	$settings_subtree[] = new tabobject('tab_teacher_settings_selection', new moodle_url('/blocks/exacomp/courseselection.php', array('courseid'=>$courseid)), get_string("tab_teacher_settings_selection", "block_exacomp"));
 
 	if (block_exacomp_is_activated($courseid))
 		if ($courseSettings->uses_activities)
@@ -3654,8 +3653,7 @@ function block_exacomp_build_schooltype_tree($courseid=0, $without_descriptors =
 
 		$schooltype->subs = array();
 		foreach($subjects as $subject){
-			$param = $courseid;
-			$tree = block_exacomp_get_competence_tree($param, $subject->id, null, true, null, true, array(SHOW_ALL_TAXONOMIES), false, false, false, $without_descriptors);
+			$tree = block_exacomp_get_competence_tree($courseid, $subject->id, null, true, null, true, array(SHOW_ALL_TAXONOMIES), false, false, false, $without_descriptors);
 			$schooltype->subs += $tree;
 		}
 	}

@@ -86,14 +86,14 @@ echo $output->header($context,$courseid, 'tab_teacher_settings');
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $page_identifier);
 /* CONTENT REGION */
 
-//$courseid_temp = $courseid;
-$courseid_temp = 0;
+// skillsmanagemenet has a per course configuration, excaomp has a per moodle configuration (courseid = 0)
+$courseid_schooltype = block_exacomp_is_skillsmanagement() ? $courseid : 0;
 
-$schooltypes = block_exacomp_build_schooltype_tree($courseid_temp, true);
+$schooltypes = block_exacomp_build_schooltype_tree($courseid_schooltype, true);
 
-$topics = block_exacomp_get_topics_by_subject($courseid, 0, true);
+$active_topics = block_exacomp_get_topics_by_subject($courseid, 0, true);
 
-echo $output->print_courseselection($schooltypes, $topics, $headertext);
+echo $output->print_courseselection($schooltypes, $active_topics, $headertext);
 
 /* END CONTENT REGION */
 echo $output->footer();
