@@ -285,6 +285,43 @@ class db_layer_course extends db_layer {
 	}
 }
 
+class db_layer_all_user_courses extends db_layer {
+
+	var $userid;
+
+	function __construct($userid) {
+		$this->userid = $userid;
+	}
+
+	function get_subjects() {
+		$user_courses = block_exacomp_get_exacomp_courses($this->userid);
+		$subjects = array();
+
+		foreach($user_courses as $course) {
+			$courseSubjects = db_layer_course::create($course->id)->get_subjects();
+
+			foreach($courseSubjects as $courseSubject) {
+				if(!isset($subjects[$courseSubject->id]))
+					$subjects[$courseSubject->id] = $courseSubject;
+
+				foreach($courseSubject->topics as $topic) {
+					if(!isset($subjects[$courseSubject->id]->topics[$topic->id]))
+						$subjects[$courseSubject->id]->topics[$topic->id] = $topic;
+
+					foreach($topic->descriptors as $descriptor) {
+						if(!isset($subjects[$courseSubject->id]->topics[$topic->id]->descriptors[$descriptor->id])) {
+							$subjects[$courseSubject->id]->topics[$topic->id]->descriptors[$descriptor->id] = $descriptor;
+						}
+					}
+				}
+			}
+		}
+
+		return $subjects;
+		// subject::create_objects(block_exacomp_get_subjects_by_course(2), null, $this);
+	}
+}
+
 class db_record {
 	/**
 	 * @var object

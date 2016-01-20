@@ -23,7 +23,7 @@ class api {
 		return g::$DB->get_records_menu('block_exacompcompactiv_mm', array("activityid" => $itemid, "eportfolioitem" => 1), null, 'compid AS id, compid');
 	}
 
-	static function get_comp_tree_for_exastud($type) {
+	static function get_comp_tree_for_exastud($userid, $type) {
 
 		if ($type == 'resume') {
 			// filter only teacher accepted competencies (for resume)
@@ -41,10 +41,10 @@ class api {
 			}
 
 			return (object)[
-					'id' => $descriptor->id,
-					'title' => $descriptor->title,
-					'type' => 'item',
-					'subs' => $subs,
+				'id' => $descriptor->id,
+				'title' => $descriptor->title,
+				'type' => 'item',
+				'subs' => $subs,
 			];
 		};
 		$map_topic = function($topic) use ($map_descriptor) {
@@ -60,19 +60,21 @@ class api {
 			];
 		};
 		$map_subject = function($subject) use ($map_topic) {
-			$subs = array_filter(array_map($map_topic, $subject->subs));
+			$subs = array_filter(array_map($map_topic, $subject->topics));
 			if (!$subs) {
 				// no subs, they are filtered -> ignore
 				return;
 			}
 			return (object)[
-					'title' => $subject->title,
-					'type' => 'group',
-					'subs' => $subs
+				'title' => $subject->title,
+				'type' => 'group',
+				'subs' => $subs
 			];
 		};
 
-		$tree = block_exacomp_get_competence_tree(0, null, null, false, null);
+		$tree = db_layer_all_user_courses::create($userid)->get_subjects();
+
+		// map to different datastructure for exastud
 		$result = array_filter(array_map($map_subject, $tree));
 
 		return $result;

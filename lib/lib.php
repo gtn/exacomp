@@ -3084,17 +3084,17 @@ function block_exacomp_truncate_all_data() {
  *
  * This method returns all courses the user is entrolled to and exacomp is installed
  */
-function block_exacomp_get_exacomp_courses($user) {
-	global $DB;
-	$user_courses = array();
-	//get course id from all courses where exacomp is installed
+function block_exacomp_get_exacomp_courses($userid) {
 	$all_exacomp_courses = block_exacomp_get_courseids();
+	$user_courses = [];
 
-	foreach($all_exacomp_courses as $course){
+	//get all courses where exacomp is installed
+	foreach ($all_exacomp_courses as $course) {
 		$context = context_course::instance($course);
-		//only activte courses where user is enrolled
-		if(is_enrolled($context, $user, '', true) && has_capability('block/exacomp:student', $context, $user)){
-			$user_courses[$course] = $DB->get_record('course', array('id'=>$course));
+
+		// only active courses where user is enrolled
+		if(is_enrolled($context, $userid, '', true) && has_capability('block/exacomp:use', $context, $userid)){
+			$user_courses[$course] = g::$DB->get_record('course', array('id'=>$course));
 		}
 	}
 
