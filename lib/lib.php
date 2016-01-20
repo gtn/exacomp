@@ -1485,8 +1485,6 @@ function block_exacomp_build_navigation_tabs_settings($courseid){
 	return $settings_subtree;
 }
 function block_exacomp_build_navigation_tabs_admin_settings($courseid){
-	global $DB;
-
 	$checkImport = block_exacomp_data::has_data();
 
 	$settings_subtree = array();
@@ -1528,7 +1526,7 @@ function block_exacomp_build_navigation_tabs_cross_subjects($context,$courseid){
  * @param int $courseid
  */
 function block_exacomp_build_navigation_tabs($context,$courseid) {
-	global $DB, $USER, $usebadges, $specificimport;
+	global $USER;
 
 	$globalcontext = context_system::instance();
 
@@ -1612,11 +1610,11 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 
 	//if has_data && checkSubjects -> Modul wurde konfiguriert
 	//else nur admin sieht block und hat nur den link Modulkonfiguration
-	if (has_capability('block/exacomp:admin', $globalcontext) && !block_exacomp_is_skillsmanagement()) {
+	if (is_siteadmin() || (has_capability('block/exacomp:admin', $globalcontext) && !block_exacomp_is_skillsmanagement())) {
 		//Admin sieht immer Modulkonfiguration
 		//Wenn Import schon erledigt, weiterleitung zu edit_config, ansonsten import.
 		if($has_data){
-			$rows[] = new tabobject('tab_admin_configuration', new moodle_url('/blocks/exacomp/edit_config.php',array("courseid"=>$courseid)),get_string('tab_admin_configuration','block_exacomp'));
+			$rows[] = new tabobject('tab_admin_settings', new moodle_url('/blocks/exacomp/edit_config.php',array("courseid"=>$courseid)),get_string('tab_admin_settings','block_exacomp'));
 		}
 	}
 
@@ -6410,5 +6408,18 @@ namespace block_exacomp {
 		$get_examples($subjects);
 
 		return $examples;
+	}
+
+	function get_string($identifier, $component = null, $a = null) {
+		$manager = get_string_manager();
+
+		if ($component === null)
+			$component = __NAMESPACE__;
+
+		if ($component === __NAMESPACE__ && $manager->string_exists('skillsmanagement_'.$identifier, $component)) {
+			return $manager->get_string('skillsmanagement_'.$identifier, $component, $a);
+		}
+
+		return common\get_string($identifier, $component, $a);
 	}
 }

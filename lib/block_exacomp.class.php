@@ -218,11 +218,11 @@ class block_exacomp extends block_list {
 		
 		//if has_data && checkSubjects -> Modul wurde konfiguriert
 		//else nur admin sieht block und hat nur den link Modulkonfiguration
-		if (has_capability('block/exacomp:admin', $globalcontext) && !block_exacomp_is_skillsmanagement()) {
+		if (is_siteadmin() || (has_capability('block/exacomp:admin', $globalcontext) && !block_exacomp_is_skillsmanagement())) {
 			//Admin sieht immer Modulkonfiguration
 			//Wenn Import schon erledigt, weiterleitung zu edit_config, ansonsten import.
 			if($has_data){
-				$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/edit_config.php', array('courseid'=>$courseid)), get_string('tab_admin_configuration', 'block_exacomp'), array('title'=>get_string('tab_admin_configuration', 'block_exacomp')));
+				$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/edit_config.php', array('courseid'=>$courseid)), get_string('tab_admin_settings', 'block_exacomp'), array('title'=>get_string('tab_admin_settings', 'block_exacomp')));
 				$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/standardpreselect.png'), 'alt'=>'', 'height'=>16, 'width'=>23));
 			}
 

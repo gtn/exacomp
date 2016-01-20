@@ -69,4 +69,3 @@ $string['block_exacomp_notifications_body'] = 'Bei Aktionen wie einer Lernmateri
 
 $string['assigned_example'] = 'Zugeteiltes Lernmaterial';
 $string['total_example'] = 'Gesamtmaterial';
-?>

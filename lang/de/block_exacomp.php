@@ -1,27 +1,5 @@
 <?php
 
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
-/**
- * Strings for component 'block_exacomp', language 'de'
- *
- * @package   block_exacomp
- * @copyright Florian Jungwirth <danielneis@gmail.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 $string['pluginname'] = 'Exabis Competencies';
  
 $string['exacomp:addinstance'] = 'Exabis Competencies auf Kursseite anlegen';
@@ -547,14 +525,7 @@ $string['niveauclass'] = 'Niveaueinstufung';
 //Message
 $string['messagetocourse'] = 'Nachricht an alle Kursteilnehmer senden';
 
-//LIS Strings
-if(get_config('exacomp','alternativedatamodel')) {
-	/*langstrings for alternativedatamodel--*/
-	if (file_exists($CFG->dirroot . '/blocks/exacomp/block_exacomp_overlaystatic.php')){
-		require $CFG->dirroot . '/blocks/exacomp/block_exacomp_overlaystatic.php';
-	}
-	/*langstrings from other systems*/
-	if (file_exists($CFG->dirroot . '/blocks/exacomp/block_exacomp_overlaydynamic.php')){
-		$CFG->dirroot . '/blocks/exacomp/block_exacomp_overlaydynamic.php';
-	}
+// langstrings for alternativedatamodel
+if (get_config('exacomp','alternativedatamodel') && file_exists(__DIR__.'/block_exacomp_alternativedatamodel.php')){
+	require __DIR__.'/block_exacomp_alternativedatamodel.php';
 }

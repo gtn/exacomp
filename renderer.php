@@ -2221,7 +2221,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					$own_additionRow->cells[] = new html_table_cell();
 					
 					$cell = new html_table_cell();
-					$cell->text = get_string('own_additions', 'block_exacomp');
+					$cell->text = block_exacomp\get_string('own_additions');
 					$own_additionRow->cells[] = $cell;
 					
 					$own_additionRow->cells[] = new html_table_cell();
@@ -2707,11 +2707,16 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
 		$input_nostudents = html_writer::checkbox('nostudents', 1, $settings->nostudents==1, get_string('usenostudents', 'block_exacomp'))
 		.html_writer::empty_tag('br');
-		
-		$alltax = array(SHOW_ALL_TAXONOMIES => get_string('show_all_taxonomies','block_exacomp'));
-		$taxonomies = $DB->get_records_menu('block_exacomptaxonomies',null,'sorting','id,title');
-		$taxonomies = $alltax + $taxonomies;
-		$input_taxonomies = html_writer::empty_tag('br').html_writer::select($taxonomies, 'filteredtaxonomies[]',$settings->filteredtaxonomies,false,array('multiple'=>'multiple'));
+
+		if (!block_exacomp_is_skillsmanagement()) {
+			$alltax = array(SHOW_ALL_TAXONOMIES => get_string('show_all_taxonomies','block_exacomp'));
+			$taxonomies = $DB->get_records_menu('block_exacomptaxonomies',null,'sorting','id,title');
+			$taxonomies = $alltax + $taxonomies;
+			$input_taxonomies = html_writer::empty_tag('br').html_writer::select($taxonomies, 'filteredtaxonomies[]',$settings->filteredtaxonomies,false,array('multiple'=>'multiple'));
+		} else {
+			$input_taxonomies = '';
+		}
+
 		$input_submit = html_writer::empty_tag('br').html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save', 'admin')));
 
 		$hiddenaction = html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'action', 'value'=>'save_coursesettings'));

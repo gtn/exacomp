@@ -139,5 +139,3 @@ echo $output->print_edit_config ( $data, $courseid, $fromimport );
 
 /* END CONTENT REGION */
 echo $output->footer();
-
-?>

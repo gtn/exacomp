@@ -68,9 +68,7 @@ require_once $CFG->libdir . '/formslib.php';
 class block_exacomp_local_item_form extends moodleform {
 
 	function definition() {
-		global $CFG, $USER, $DB, $PAGE, $item;
-
-		$output = block_exacomp_get_renderer();
+		global $DB, $COURSE;
 
 		$mform = & $this->_form;
 
@@ -78,7 +76,12 @@ class block_exacomp_local_item_form extends moodleform {
 		$mform->setType('title', PARAM_TEXT);
 		$mform->addRule('title', \block_exacomp\get_string("titlenotemtpy"), 'required', null, 'client');
 
-		$mform->addElement('select', 'stid', \block_exacomp\get_string('tab_teacher_settings_selection_st'), $DB->get_records_menu(block_exacomp::DB_SCHOOLTYPES, null, null, 'id, title'));
+		$courseid_schooltype = block_exacomp_is_skillsmanagement() ? $COURSE->id : 0;
+		$schooltypes = block_exacomp_get_schooltypes_by_course($courseid_schooltype);
+
+		$schooltypes = array_map(function($st) { return $st->title; }, $schooltypes);
+
+		$mform->addElement('select', 'stid', \block_exacomp\get_string('tab_teacher_settings_selection_st'), $schooltypes);
 		
 		$this->add_action_buttons(false);
 	}
