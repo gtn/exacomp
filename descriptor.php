@@ -78,7 +78,16 @@ class block_exacomp_local_item_form extends moodleform {
 		$mform->setType('title', PARAM_TEXT);
 		$mform->addRule('title', \block_exacomp\get_string("titlenotemtpy"), 'required', null, 'client');
 
-		$mform->addElement('select', 'niveauid', \block_exacomp\get_string('niveau'), array(''=>'')+$DB->get_records_menu(block_exacomp::DB_NIVEAUS, null, 'sorting', 'id, title'));
+		$values = array(''=>array(''=>''));
+		$niveaus = block_exacomp\niveau::get_objects(null, 'sorting');
+		foreach ($niveaus as $niveau) {
+			$sourceName = block_exacomp_get_renderer()->print_source_info($niveau->source);
+			if (!isset($values[$sourceName])) $values[$sourceName] = [];
+			$values[$sourceName][$niveau->id] = $niveau->title;
+		}
+		ksort($values);
+
+		$mform->addElement('selectgroups', 'niveauid', \block_exacomp\get_string('niveau'), $values);
 
 		$element = $mform->addElement('select', 'categories', \block_exacomp\get_string('categories'), $DB->get_records_menu(block_exacomp::DB_CATEGORIES, null, 'title', 'id, title'));
 		$element->setMultiple(true);
