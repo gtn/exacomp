@@ -7,7 +7,7 @@ require_once __DIR__.'/common.php';
 require_once __DIR__.'/classes.php';
 require_once __DIR__.'/block_exacomp.class.php';
 
-use \block_exacomp\globals as g;
+use block_exacomp\globals as g;
 
 /**
  * COMPETENCE TYPES
@@ -185,7 +185,7 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
 	$sql = '
-	SELECT DISTINCT s.id, s.titleshort, s.title, s.stid, s.infolink, s.description, s.source, s.sorting, \'subject\' as tabletype
+	SELECT DISTINCT s.id, s.titleshort, s.title, s.stid, s.infolink, s.description, s.source, s.sorting, s.author, \'subject\' as tabletype
 	FROM {'.block_exacomp::DB_SUBJECTS.'} s
 	JOIN {'.block_exacomp::DB_TOPICS.'} t ON t.subjid = s.id
 	JOIN {'.block_exacomp::DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?
@@ -197,7 +197,8 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 			JOIN {course_modules} a ON ca.activityid=a.id AND a.course=ct.courseid
 			').'
 			';
-	$subjects = $DB->get_records_sql($sql, array($courseid));
+
+	$subjects = block_exacomp\subject::get_objects_sql($sql, array($courseid));
 
 	return block_exacomp_sort_items($subjects, block_exacomp::DB_SUBJECTS);
 }
@@ -342,6 +343,18 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
 	return block_exacomp_sort_items($topics, ['subj_' => block_exacomp::DB_SUBJECTS, '' => block_exacomp::DB_TOPICS]);
 }
 
+function block_exacomp_property_exists($var, $property) {
+	if ($var instanceof block_exacomp\db_record) {
+		return $var->property_exists($property);
+	} elseif (is_object($var)) {
+		return property_exists($var, $property);
+	} elseif (is_array($var)) {
+		return array_key_exists($property, $var);
+	} else {
+		throw new \coding_exception('wrong variable type');
+	}
+}
+
 function block_exacomp_sort_items(&$items, $sortings) {
 	$sortings = (array)$sortings;
 
@@ -350,13 +363,13 @@ function block_exacomp_sort_items(&$items, $sortings) {
 			if (is_int($prefix)) $prefix = '';
 
 			if ($sorting == block_exacomp::DB_SUBJECTS) {
-				if (!array_key_exists($prefix."source", $a) || !array_key_exists($prefix."source", $b)) {
+				if (!block_exacomp_property_exists($a, $prefix."source") || !block_exacomp_property_exists($b, $prefix."source")) {
 					throw new \block_exacomp\Exception('col not found: '.$prefix."source");
 				}
-				if (!array_key_exists($prefix."sorting", $a) || !array_key_exists($prefix."sorting", $b)) {
+				if (!block_exacomp_property_exists($a, $prefix."sorting") || !block_exacomp_property_exists($b, $prefix."sorting")) {
 					throw new \block_exacomp\Exception('col not found: '.$prefix."sorting");
 				}
-				if (!array_key_exists($prefix."title", $a) || !array_key_exists($prefix."title", $b)) {
+				if (!block_exacomp_property_exists($a, $prefix."title") || !block_exacomp_property_exists($b, $prefix."title")) {
 					throw new \block_exacomp\Exception('col not found: '.$prefix."title");
 				}
 
@@ -376,13 +389,13 @@ function block_exacomp_sort_items(&$items, $sortings) {
 					return strcmp($a->{$prefix."title"}, $b->{$prefix."title"});
 				}
 			} elseif ($sorting == block_exacomp::DB_TOPICS) {
-				if (!array_key_exists($prefix."sorting", $a) || !array_key_exists($prefix."sorting", $b)) {
+				if (!block_exacomp_property_exists($a, $prefix."sorting") || !block_exacomp_property_exists($b, $prefix."sorting")) {
 					throw new \block_exacomp\Exception('col not found: '.$prefix."sorting");
 				}
-				if (!array_key_exists($prefix."numb", $a) || !array_key_exists($prefix."numb", $b)) {
+				if (!block_exacomp_property_exists($a, $prefix."numb") || !block_exacomp_property_exists($b, $prefix."numb")) {
 					throw new \block_exacomp\Exception('col not found: '.$prefix."numb");
 				}
-				if (!array_key_exists($prefix."title", $a) || !array_key_exists($prefix."title", $b)) {
+				if (!block_exacomp_property_exists($a, $prefix."title") || !block_exacomp_property_exists($b, $prefix."title")) {
 					throw new \block_exacomp\Exception('col not found: '.$prefix."title");
 				}
 
@@ -400,10 +413,10 @@ function block_exacomp_sort_items(&$items, $sortings) {
 					return strcmp($a->{$prefix."title"}, $b->{$prefix."title"});
 				}
 			} elseif ($sorting == block_exacomp::DB_DESCRIPTORS) {
-				if (!array_key_exists($prefix."sorting", $a) || !array_key_exists($prefix."sorting", $b)) {
+				if (!block_exacomp_property_exists($a, $prefix."sorting") || !block_exacomp_property_exists($b, $prefix."sorting")) {
 					throw new \block_exacomp\Exception('col not found: '.$prefix."sorting");
 				}
-				if (!array_key_exists($prefix."title", $a) || !array_key_exists($prefix."title", $b)) {
+				if (!block_exacomp_property_exists($a, $prefix."title") || !block_exacomp_property_exists($b, $prefix."title")) {
 					throw new \block_exacomp\Exception('col not found: '.$prefix."title");
 				}
 
@@ -417,10 +430,10 @@ function block_exacomp_sort_items(&$items, $sortings) {
 					return strcmp($a->{$prefix."title"}, $b->{$prefix."title"});
 				}
 			} elseif ($sorting == block_exacomp::DB_NIVEAUS) {
-				if (!array_key_exists($prefix."sorting", $a) || !array_key_exists($prefix."sorting", $b)) {
+				if (!block_exacomp_property_exists($a, $prefix."sorting") || !block_exacomp_property_exists($b, $prefix."sorting")) {
 					throw new \block_exacomp\Exception('col not found: '.$prefix."sorting");
 				}
-				if (!array_key_exists($prefix."title", $a) || !array_key_exists($prefix."title", $b)) {
+				if (!block_exacomp_property_exists($a, $prefix."title") || !block_exacomp_property_exists($b, $prefix."title")) {
 					throw new \block_exacomp\Exception('col not found: '.$prefix."title");
 				}
 

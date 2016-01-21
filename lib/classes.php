@@ -406,6 +406,12 @@ class db_record {
 		return isset($this->data->$name);
 	}
 
+	public function property_exists($name) {
+		if ($this->__isset($name)) return true;
+
+		return property_exists($this->data, $name);
+	}
+
 	public function __set($name, $value) {
 		if (($method = 'set_'.$name) && method_exists($this, $method)) {
 			$this->$method($value);
@@ -556,6 +562,10 @@ class subject extends db_record {
 
 	function fill_topics() {
 		return $this->dbLayer->get_topics_for_subject($this);
+	}
+
+	function get_author() {
+		return $this->data->author;
 	}
 }
 

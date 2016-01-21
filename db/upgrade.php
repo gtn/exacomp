@@ -2676,6 +2676,22 @@ function xmldb_block_exacomp_upgrade($oldversion) {
         // Exacomp savepoint reached.
         upgrade_block_savepoint(true, 2016011500, 'exacomp');
     }
+    if ($oldversion < 2016012100) {
+
+        // Define field author to be added to block_exacompexamples.
+        $table = new xmldb_table('block_exacompsubjects');
+        $field = new xmldb_field('author', XMLDB_TYPE_TEXT, null, null, null, null, null, 'epop');
+
+        // Conditionally launch add field author.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Exacomp savepoint reached.
+        upgrade_block_savepoint(true, 2016012100, 'exacomp');
+    }
+
+
 
 	/*
 	 * insert new upgrade scripts before this comment section

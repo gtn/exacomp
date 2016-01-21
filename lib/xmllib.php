@@ -840,7 +840,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 	private static function export_subjects($dbSchooltype) {
 		$xmlSubjects = block_exacomp\SimpleXMLElement::create('subjects');
 
-		$dbSubjects = g::$DB->get_records(block_exacomp::DB_SUBJECTS, array('stid' => $dbSchooltype->id));
+		$dbSubjects = block_exacomp\subject::get_objects(array('stid' => $dbSchooltype->id));
 
 		foreach($dbSubjects as $dbSubject){
 			$xmlTopics = self::export_topics($dbSubject);
@@ -854,6 +854,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 			$xmlSubject->addChildWithCDATAIfValue('title', $dbSubject->title);
 			$xmlSubject->addChildWithCDATAIfValue('titleshort', $dbSubject->titleshort);
 			$xmlSubject->addChildWithCDATAIfValue('infolink', $dbSubject->infolink);
+			$xmlSubject->addChildWithCDATAIfValue('author', $dbSubject->get_author());
 			$xmlSubject->sorting = $dbSubject->sorting;
 			$xmlSubject->epop = $dbSubject->epop;
 

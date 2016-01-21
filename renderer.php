@@ -521,7 +521,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$content .= html_writer::tag('li',
 					html_writer::link(
 						new block_exacomp\url($NG_PAGE->url, ['ng_subjectid' => $subject->id, 'topicid'=>BLOCK_EXACOMP_SHOW_ALL]),
-						$subject->title.$extra, array('class' => (!$selectedTopic && $subject->id == $selectedSubject->id) ? 'type current' : 'type'))
+						$subject->title.$extra, [
+							'class' => (!$selectedTopic && $subject->id == $selectedSubject->id) ? 'type current' : 'type',
+							'title' => (($author = $subject->get_author()) ? get_string('author', 'repository').": ".$author : ''),
+						])
 			);
 
 			foreach($subject->topics as $topic) {
@@ -1684,7 +1687,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	}
 
 	function print_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class, $profoundness = false, $editmode=false, $statistic=false, $custom_created_descriptors=false, $parent = false, $crosssubjid = 0) {
-		global $NG_PAGE, $PAGE, $USER, $COURSE, $CFG, $DB, $additional_grading;
+		global $NG_PAGE, $USER, $COURSE, $DB, $additional_grading;
 
 		$evaluation = ($data->role == block_exacomp::ROLE_TEACHER) ? "teacher" : "student";
 		
