@@ -1204,8 +1204,9 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 
 					// found: add it to the subject result
 					$subject = $allSubjects[$topic->subjid];
+					if (!isset($subject->subs)) $subject->subs = [];
 					$subject->subs[$topic->id] = $topic;
-					$subjects[$topic->subjid] = $subject;
+					$subjects[$subject->id] = $subject;
 
 					// top found
 					break;

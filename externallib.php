@@ -6046,7 +6046,11 @@ class block_exacomp_external extends external_api {
 	}
 
 	private static function check_can_access_course($courseid) {
-		if (!can_access_course(g::$DB->get_record('course', ['id'=>$courseid]))) {
+		$course = g::$DB->get_record('course', ['id'=>$courseid]);
+		if (!$course) {
+			throw new invalid_parameter_exception ( 'Course not found' );
+		}
+		if (!can_access_course($course)) {
 			throw new invalid_parameter_exception ( 'Not allowed to access this course' );
 		}
 	}
@@ -6090,7 +6094,11 @@ class block_exacomp_external extends external_api {
 	 * @throws invalid_parameter_exception
 	 */
 	private static function check_can_access_course_user($courseid, $userid) {
-		if (!can_access_course(g::$DB->get_record('course', ['id'=>$courseid]))) {
+		$course = g::$DB->get_record('course', ['id'=>$courseid]);
+		if (!$course) {
+			throw new invalid_parameter_exception ( 'Course not found' );
+		}
+		if (!can_access_course($course)) {
 			throw new invalid_parameter_exception ( 'Not allowed to access this course' );
 		}
 
