@@ -8,7 +8,7 @@ require_once $CFG->dirroot.'/mod/assign/locallib.php';
 require_once $CFG->dirroot.'/mod/assign/submission/file/locallib.php';
 require_once $CFG->dirroot.'/lib/filelib.php';
 
-use \block_exacomp\globals as g;
+use block_exacomp\globals as g;
 
 class block_exacomp_external extends external_api {
 	
@@ -1313,14 +1313,9 @@ class block_exacomp_external extends external_api {
 			$descriptors [$descriptor_mm->descrid] = $DB->get_record (block_exacomp::DB_DESCRIPTORS, array (
 					'id' => $descriptor_mm->descrid 
 			) );
-			
-			$eval = $DB->get_record (block_exacomp::DB_COMPETENCIES, array (
-					'userid' => $userid,
-					'compid' => $descriptor_mm->descrid,
-					'courseid' => $courseid,
-					'role' => block_exacomp::ROLE_TEACHER 
-			) );
-			if ($eval) {
+
+			$eval = block_exacomp\get_comp_eval($courseid, block_exacomp::ROLE_TEACHER, $userid, block_exacomp::TYPE_DESCRIPTOR, $descriptor_mm->descrid);
+			if ($eval && $eval->value !== null) {
 				$descriptors [$descriptor_mm->descrid]->evaluation = $eval->value;
 			} else {
 				$descriptors [$descriptor_mm->descrid]->evaluation = 0;
@@ -2170,13 +2165,8 @@ class block_exacomp_external extends external_api {
 		// set positive graded competencies
 		foreach ( $descriptors as $descriptor ) {
 			if ($descriptor != 0) {
-				$entry = $DB->get_record (block_exacomp::DB_COMPETENCIES, array (
-						'userid' => $userid,
-						'compid' => $descriptor,
-						'courseid' => $courseid,
-						'role' => block_exacomp::ROLE_TEACHER 
-				) );
-				
+				$entry = block_exacomp\get_comp_eval($courseid, block_exacomp::ROLE_TEACHER, $userid, block_exacomp::TYPE_DESCRIPTOR, $descriptor);
+
 				if ($entry) {
 					$entry->reviewerid = $USER->id;
 					$entry->value = 1;
@@ -2199,13 +2189,8 @@ class block_exacomp_external extends external_api {
 		
 		// set negative graded competencies
 		foreach ( $unset_descriptors as $descriptor ) {
-			$entry = $DB->get_record (block_exacomp::DB_COMPETENCIES, array (
-					'userid' => $userid,
-					'compid' => $descriptor,
-					'courseid' => $courseid,
-					'role' => block_exacomp::ROLE_TEACHER 
-			) );
-			
+			$entry = block_exacomp\get_comp_eval($courseid, block_exacomp::ROLE_TEACHER, $userid, block_exacomp::TYPE_DESCRIPTOR, $descriptor);
+
 			if ($entry) {
 				$entry->reviewerid = $USER->id;
 				$entry->value = 0;
@@ -4981,37 +4966,41 @@ class block_exacomp_external extends external_api {
 				'crosssubjid' => new external_value ( PARAM_INT, 'crosssubjid')
 		) );
 	}
-	
+
 	public static function dakora_get_descriptor_details($courseid, $descriptorid, $userid, $forall, $crosssubjid){
 		global $DB, $USER;
-		self::validate_parameters(self::dakora_get_descriptor_details_parameters(), 
+		self::validate_parameters(self::dakora_get_descriptor_details_parameters(),
 			array('courseid'=>$courseid, 'descriptorid'=>$descriptorid, 'userid'=>$userid,'forall'=>$forall, 'crosssubjid'=>$crosssubjid));
-			
+
 		if(!$forall && $userid == 0)
 			$userid = $USER->id;
-			
+
 		static::check_can_access_course_user($courseid, $userid);
-			
+
 		$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptorid));
 		$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$descriptor->id));
 		$descriptor->topicid = $descriptor_topic_mm->topicid;
-		
+
 		$descriptor_return = new stdClass();
 		$descriptor_return->descriptorid = $descriptorid;
 		$descriptor_return->descriptortitle = $descriptor->title;
 		$descriptor_return->teacherevaluation = -1;
 		$descriptor_return->additionalinfo = null;
 		if(!$forall){
-			$grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$descriptorid, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_TEACHER));
-			$descriptor_return->teacherevaluation = ($grading && $grading->value !== null) ? $grading->value : -1;
-			$descriptor_return->additionalinfo = $grading->additionalinfo;
+			if ($grading = block_exacomp\get_comp_eval($courseid, block_exacomp::ROLE_TEACHER, $userid, block_exacomp::TYPE_DESCRIPTOR, $descriptorid)) {
+				$descriptor_return->teacherevaluation = ($grading->value !== null) ? $grading->value : -1;
+				$descriptor_return->additionalinfo = $grading->additionalinfo;
+			}
 		}
 		$descriptor_return->studentevaluation = -1;
-		if(!$forall)
-			$descriptor_return->studentevaluation = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$descriptorid, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_STUDENT)))? $grading->value:-1;
-		
+		if (!$forall) {
+			if ($grading = block_exacomp\get_comp_eval($courseid, block_exacomp::ROLE_STUDENT, $userid, block_exacomp::TYPE_DESCRIPTOR, $descriptorid)) {
+				$descriptor_return->studentevaluation = ($grading->value !== null) ? $grading->value : -1;
+			}
+		}
+
 		$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
-		
+
 		$descriptor_return->niveautitle = "";
 		$descriptor_return->niveauid = 0;
 		if($descriptor->niveauid){
@@ -5019,23 +5008,23 @@ class block_exacomp_external extends external_api {
 			$descriptor_return->niveautitle = $niveau->title;
 			$descriptor_return->niveauid = $niveau->id;
 		}
-		
+
 		$childsandexamples = static::get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid, true);
-		
+
 		$descriptor_return->children = $childsandexamples->children;
 
 		$descriptor_return->hasmaterial = true;
 		if(empty($childsandexamples->examples))
 			$descriptor_return->hasmaterial = false;
-			
+
 		$descriptor_example_statistic = static::get_descriptor_example_statistic($courseid, $userid, $descriptorid, $forall, $crosssubjid);
 		$descriptor_return->examplestotal = $descriptor_example_statistic->total;
 		$descriptor_return->examplesvisible = $descriptor_example_statistic->visible;
 		$descriptor_return->examplesinwork = $descriptor_example_statistic->inwork;
-		
+
 		return $descriptor_return;
 	}
-	
+
 	public static function dakora_get_descriptor_details_returns(){
 		return new external_single_structure ( array (
 			'descriptorid' => new external_value( PARAM_INT, 'id of descriptor'),
@@ -5062,7 +5051,7 @@ class block_exacomp_external extends external_api {
 			'examplesinwork' => new external_value (PARAM_INT, 'edited number of material')
 		) ) ;
 	}
-	
+
 
 	/**
 	 * Returns description of method parameters
@@ -5076,7 +5065,7 @@ class block_exacomp_external extends external_api {
 				'exampleid' => new external_value ( PARAM_INT, 'id of example' )
 		) );
 	}
-	
+
 	/**
 	 * get example with all submission details and gradings
 	 *
@@ -5086,27 +5075,27 @@ class block_exacomp_external extends external_api {
 		global $CFG, $DB, $USER;
 		if ($userid == 0)
 			$userid = $USER->id;
-	
+
 		self::validate_parameters ( self::dakora_get_example_information_parameters (), array (
 				'courseid' => $courseid,
 				'userid' => $userid,
 				'exampleid' => $exampleid
 		) );
-	
+
 		static::check_can_access_course_user($courseid, $userid);
-		
+
 		$example = $DB->get_record(block_exacomp::DB_EXAMPLES, array('id'=>$exampleid));
 		if(!$example)
 			throw new invalid_parameter_exception ( 'Example does not exist' );
-	
+
 		$itemInformation = block_exacomp_get_current_item_for_example($userid, $exampleid);
 		$exampleEvaluation = $DB->get_record(block_exacomp::DB_EXAMPLEEVAL,array("studentid" => $userid, "courseid" => $courseid, "exampleid" => $exampleid));
-	
+
 		$data = array();
-	
+
 		if($itemInformation) {
 			//item exists
-			$data['itemid'] = $itemInformation->id;	
+			$data['itemid'] = $itemInformation->id;
 			$data['file'] = "";
 			$data['isimage'] = false;
 			$data['filename'] = "";
@@ -5119,20 +5108,20 @@ class block_exacomp_external extends external_api {
 			$data['url'] = $itemInformation->url;
 			//$data['teacheritemvalue'] = isset( $itemInformation->teachervalue ) ? $itemInformation->teachervalue : -1;
 			$data['teacheritemvalue'] = isset ( $exampleEvaluation->additionalinfo ) ? $exampleEvaluation->additionalinfo : -1;
-			
+
 			if ($itemInformation->type == 'file') {
 				require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
-					
+
 				if ($file = block_exaport_get_item_file ( $itemInformation )) {
 					$data['file'] = ("{$CFG->wwwroot}/blocks/exaport/portfoliofile.php?access=view/id/" . $userid . "-" . $itemInformation->id. "&itemid=" . $itemInformation->id);
 					$data['mimetype'] = $file->get_mimetype();
 					$data['filename'] = $file->get_filename ();
 				}
 			}
-	
+
 			$data['studentcomment'] = '';
 			$data['teachercomment'] = '';
-			
+
 			$itemcomments = $DB->get_records ( 'block_exaportitemcomm', array (
 					'itemid' => $itemInformation->id
 			), 'timemodified ASC', 'entry, userid', 0, 2 );
@@ -5161,15 +5150,15 @@ class block_exacomp_external extends external_api {
 			$data['studentvalue'] = isset ( $exampleEvaluation->student_evaluation ) ? $exampleEvaluation->student_evaluation : -1;
 			$data['teacheritemvalue'] = isset ( $exampleEvaluation->additionalinfo ) ? $exampleEvaluation->additionalinfo : -1;
 		}
-		
+
 		if(!$exampleEvaluation || $exampleEvaluation->resubmission)
 			$data['resubmission'] = true;
 		else
 			$data['resubmission'] = false;
-		
+
 		return $data;
 	}
-	
+
 	/**
 	 * Returns desription of method return values
 	 *
@@ -5193,7 +5182,7 @@ class block_exacomp_external extends external_api {
 				'resubmission' => new external_value ( PARAM_BOOL, 'resubmission is allowed/not allowed' )
 		) );
 	}
-	
+
 	/**
 	 * Returns description of method parameters
 	 *
@@ -5202,7 +5191,7 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_user_information_parameters() {
 		return new external_function_parameters ( array ( ) );
 	}
-	
+
 	/**
 	 * get example with all submission details and gradings
 	 *
@@ -5211,10 +5200,10 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_user_information() {
 		global $CFG, $USER;
 		require_once($CFG->dirroot . "/user/lib.php");
-		
+
 		return user_get_user_details_courses($USER);
 	}
-	
+
 	/**
 	 * Returns desription of method return values
 	 *
@@ -5238,8 +5227,8 @@ class block_exacomp_external extends external_api {
 			'profileimageurl' => new external_value(PARAM_URL, 'User image profile URL - big version')
 		) );
 	}
-	
-	
+
+
 	/**
 	 * Returns description of method parameters
 	 *
@@ -5252,7 +5241,7 @@ class block_exacomp_external extends external_api {
 				'topicid' => new external_value ( PARAM_INT, 'id of topic' )
 		) );
 	}
-	
+
 	/**
 	 * get example with all submission details and gradings
 	 *
@@ -5273,16 +5262,16 @@ class block_exacomp_external extends external_api {
 		static::check_can_access_course_user($courseid, $userid);
 
 		$data = new stdClass();
-	
+
 		$topic = block_exacomp_get_topic_by_id($topicid);
 		$user = $DB->get_record('user', array('id'=>$userid));
 		$user = block_exacomp_get_user_information_by_course($user, $courseid);
-		$scheme = block_exacomp_get_grading_scheme($courseid);
-		
+		$scheme = block_exacomp\get_comp_eval_scheme($courseid);
+
 		$data->topictitle = $topic->title;
 		$data->topicnumbering = block_exacomp_get_topic_numbering($topic);
 		$data->descriptordata = array();
-		
+
 		$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $topicid, false, true, true);
 		foreach($descriptors as $descriptor){
 			$data_content = new stdClass();
@@ -5298,10 +5287,10 @@ class block_exacomp_external extends external_api {
 			$data_content->studentevaluation = (isset($user->competencies->student[$descriptor->id]))?$user->competencies->student[$descriptor->id]:-1;
 			$data->descriptordata[] = $data_content;
 		}
-		
+
 		return $data;
 	}
-	
+
 	/**
 	 * Returns desription of method return values
 	 *
@@ -5326,10 +5315,10 @@ class block_exacomp_external extends external_api {
 					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of descriptor'),
 					'additionalinfo' => new external_value (PARAM_TEXT, 'additional grading of descriptor'),
 					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of descriptor')
-			) ) ) 
+			) ) )
 		) );
 	}
-	
+
 	/**
 	 * Returns description of method parameters
 	 *
@@ -5338,7 +5327,7 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_admin_grading_scheme_parameters() {
 		return new external_function_parameters ( array () );
 	}
-	
+
 	/**
 	 * get example with all submission details and gradings
 	 *
@@ -5349,7 +5338,7 @@ class block_exacomp_external extends external_api {
 
 		return \block_exacomp\global_config::get_scheme_id();
 	}
-	
+
 	/**
 	 * Returns desription of method return values
 	 *
@@ -5358,7 +5347,7 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_admin_grading_scheme_returns() {
 		return new external_value ( PARAM_INT, 'identity of grading scheme' );
 	}
-	
+
 	/**
 	 * Returns description of method parameters
 	 *
@@ -5370,7 +5359,7 @@ class block_exacomp_external extends external_api {
 				'exampleid' => new external_value ( PARAM_INT, 'id of example' )
 		) );
 	}
-	
+
 	/**
 	 * get example with all submission details and gradings
 	 *
@@ -5380,15 +5369,15 @@ class block_exacomp_external extends external_api {
 		global $DB;
 		self::validate_parameters ( self::dakora_get_comp_grid_for_example_parameters (), array (
 				'courseid' => $courseid,
-				'exampleid' => $exampleid) 
+				'exampleid' => $exampleid)
 			);
 
 		static::check_can_access_course($courseid);
 		// TODO: check example
-			
+
 		$data = new stdClass();
 		$data->topics = array();
-		
+
 		$topics = block_exacomp_get_topics_by_course($courseid);
 		foreach($topics as $topic){
 			$topicdata = new stdClass();
@@ -5396,18 +5385,18 @@ class block_exacomp_external extends external_api {
 			$topicdata->topictitle = $topic->title;
 			$topicdata->topicnumbering = block_exacomp_get_topic_numbering($topic);
 			$topicdata->niveaus = array();
-			
+
 			$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $topic->id);
 			$example_descriptors = block_exacomp_get_descriptor_mms_by_example($exampleid);
-			
+
 			foreach($descriptors as $descriptor){
 				$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id'=>$descriptor->niveauid));
-				
+
 				$niveaudata = new stdClass();
 				$niveaudata->niveauid = $niveau->id;
 				$niveaudata->niveautitle = $niveau->title;
 				$niveaudata->association = 0;
-				
+
 				foreach($example_descriptors as $examp_desc){
 					if($descriptor->id == $examp_desc->descrid){
 						$niveaudata->association = 1;
@@ -5420,18 +5409,18 @@ class block_exacomp_external extends external_api {
 						continue;
 					}
 				}
-				
+
 				$niveaudata->span = $niveau->span;
 				$topicdata->span = $niveau->span;
 				$topicdata->niveaus[$niveau->id] = $niveaudata;
 			}
-			
+
 			$data->topics[$topic->id] = $topicdata;
 		}
-			
+
 		return $data->topics;
 	}
-	
+
 	/**
 	 * Returns desription of method return values
 	 *
@@ -5451,7 +5440,7 @@ class block_exacomp_external extends external_api {
 			'span' => new external_value ( PARAM_INT, 'row spanning')
 		) ) );
 	}
-	
+
 	/**
 	 * Returns description of method parameters
 	 *
@@ -5463,7 +5452,7 @@ class block_exacomp_external extends external_api {
 				'courseid' => new external_value ( PARAM_INT, 'courseid' )
 		) );
 	}
-	
+
 	/**
 	 * Add student submission to example.
 	 *
@@ -5476,10 +5465,10 @@ class block_exacomp_external extends external_api {
 		static::check_can_access_course($courseid);
 
 		block_exacomp_send_message_to_course($courseid, $message);
-	
+
 		return array("success"=>true);
 	}
-	
+
 	/**
 	 * Returns desription of method return values
 	 *
@@ -5490,7 +5479,7 @@ class block_exacomp_external extends external_api {
 				'success' => new external_value ( PARAM_BOOL, 'status' )
 		) );
 	}
-	
+
 	/**
 	 * Returns description of method parameters
 	 *
@@ -5504,26 +5493,26 @@ class block_exacomp_external extends external_api {
 				'preplanningstorage'=> new external_value (PARAM_BOOL, 'in pre planning storage or for specific student')
 		) );
 	}
-	
+
 	/**
 	 * Create a new blocking event
 	 */
 	public static function dakora_create_blocking_event($courseid, $title, $userid, $preplanningstorage) {
 		global $USER;
-		
+
 		self::validate_parameters(self::dakora_create_blocking_event_parameters(), array('courseid'=>$courseid,'title'=>$title,
 			'userid'=>$userid, 'preplanningstorage'=>$preplanningstorage));
-	
+
 		if($userid == 0 && !$preplanningstorage)
 			$userid = $USER->id;
-		
+
 		static::check_can_access_course_user($courseid, $userid);
-		
+
 		block_exacomp_create_blocking_event($courseid, $title, $USER->id, $userid);
-	
+
 		return array("success"=>true);
 	}
-	
+
 	/**
 	 * Returns desription of method return values
 	 *
@@ -5534,7 +5523,7 @@ class block_exacomp_external extends external_api {
 				'success' => new external_value ( PARAM_BOOL, 'status' )
 		) );
 	}
-	
+
 	/**
 	 * Returns description of method parameters
 	 *
@@ -5548,40 +5537,40 @@ class block_exacomp_external extends external_api {
 				'grading' => new external_value (PARAM_INT, 'grading value')
 		) );
 	}
-	
+
 	/**
 	 * Create a new blocking event
 	 */
 	public static function dakora_get_examples_by_descriptor_and_grading($courseid, $userid, $descriptorid, $grading) {
 		global $USER;
-		
+
 		self::validate_parameters(self::dakora_get_examples_by_descriptor_and_grading_parameters(), array('courseid'=>$courseid,
 		'userid'=>$userid, 'descriptorid'=>$descriptorid, 'grading'=>$grading));
-		
+
 		if($userid == 0)
 			$userid = $USER->id;
-		
+
 		static::check_can_access_course_user($courseid, $userid);
-		
+
 		$grading = $grading -1;
-		
+
 		$childsandexamples = static::get_descriptor_children($courseid, $descriptorid, $userid, 0);
-		
+
 		$examples_return = array();
-		
+
 		//parent descriptor
 		$examples = static::dakora_get_examples_for_descriptor_with_grading($courseid, $descriptorid, $userid, false);
-		
+
 		foreach($examples as $example){
 			if($example->teacherevaluation == $grading){
 				if(!array_key_exists($example->exampleid, $examples_return))
 					$examples_return[$example->exampleid] = $example;
 			}
 		}
-		
+
 		foreach($childsandexamples->children as $child){
 			$examples = static::dakora_get_examples_for_descriptor_with_grading($courseid, $child->childid, $userid, false);
-			
+
 			foreach($examples as $example){
 				if($example->teacherevaluation == $grading){
 					if(!array_key_exists($example->exampleid, $examples_return))
@@ -5589,10 +5578,10 @@ class block_exacomp_external extends external_api {
 				}
 			}
 		}
-	
+
 		return $examples_return;
 	}
-	
+
 	/**
 	 * Returns desription of method return values
 	 *
@@ -5604,7 +5593,7 @@ class block_exacomp_external extends external_api {
 			'exampletitle' => new external_value(PARAM_TEXT, 'title of topic')
 		) ) );
 	}
-	
+
 	/**
 	 * Returns description of method parameters
 	 *
@@ -5619,40 +5608,40 @@ class block_exacomp_external extends external_api {
 				'crosssubjid'=> new external_value (PARAM_INT, 'id of crosssubjects')
 		) );
 	}
-	
+
 	/**
 	 * Create a new blocking event
 	 */
 	public static function dakora_get_examples_by_descriptor_and_grading_for_crosssubject($courseid, $userid, $descriptorid, $grading, $crosssubjid) {
 		global $USER;
-		
+
 		self::validate_parameters(self::dakora_get_examples_by_descriptor_and_grading_for_crosssubject_parameters(), array('courseid'=>$courseid,
 		'userid'=>$userid, 'descriptorid'=>$descriptorid, 'grading'=>$grading, 'crosssubjid'=>$crosssubjid));
-		
+
 		if($userid == 0)
 			$userid = $USER->id;
-		
+
 		static::check_can_access_course_user($courseid, $userid);
-			
+
 		$grading = $grading -1;
-	
+
 		$childsandexamples = static::get_descriptor_children($courseid, $descriptorid, $userid, 0, $crosssubjid);
-		
+
 		$examples_return = array();
-		
+
 		//parent descriptor
 		$examples = static::dakora_get_examples_for_descriptor_for_crosssubject_with_grading($courseid, $descriptorid, $userid, false, $crosssubjid);
-		
+
 		foreach($examples as $example){
 			if($example->teacherevaluation == $grading){
 				if(!array_key_exists($example->exampleid, $examples_return))
 					$examples_return[$example->exampleid] = $example;
 			}
 		}
-		
+
 		foreach($childsandexamples->children as $child){
 			$examples = static::dakora_get_examples_for_descriptor_with_grading($courseid, $child->childid, $userid, false, $crosssubjid);
-			
+
 			foreach($examples as $example){
 				if($example->teacherevaluation == $grading){
 					if(!array_key_exists($example->exampleid, $examples_return))
@@ -5662,7 +5651,7 @@ class block_exacomp_external extends external_api {
 		}
 		return $examples_return;
 	}
-	
+
 	/**
 	 * Returns desription of method return values
 	 *
@@ -5674,7 +5663,7 @@ class block_exacomp_external extends external_api {
 			'exampletitle' => new external_value(PARAM_TEXT, 'title of topic')
 		) ) );
 	}
-	
+
 	/**
 	 * Returns description of method parameters
 	 *
@@ -5687,24 +5676,24 @@ class block_exacomp_external extends external_api {
 				'exampleid' => new external_value ( PARAM_INT, 'id of example' )
 		) );
 	}
-	
+
 	/**
 	 * Create a new blocking event
 	 */
 	public static function dakora_allow_example_resubmission($courseid, $userid, $exampleid) {
 		global $USER;
-	
+
 		self::validate_parameters(self::dakora_allow_example_resubmission_parameters(), array('courseid'=>$courseid,
 				'userid'=>$userid, 'exampleid'=>$exampleid));
-	
+
 		static::check_can_access_course_user($courseid, $userid);
-		
+
 		block_exacomp_allow_resubmission($userid, $exampleid, $courseid);
-		
+
 		return array('success' => true);
 
 	}
-	
+
 	/**
 	 * Returns desription of method return values
 	 *
@@ -5715,13 +5704,13 @@ class block_exacomp_external extends external_api {
 				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
 		) );
 	}
-	
-	/** 
+
+	/**
 	* helper function to use same code for 2 ws
 	*/
 	private static function get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid = 0, $show_all = false) {
 		global $DB;
-		
+
 		if ($forall) {
 			self::check_can_access_course($courseid);
 		} else {
@@ -5729,24 +5718,24 @@ class block_exacomp_external extends external_api {
 		}
 
 		$coursesettings = block_exacomp_get_settings_by_course($courseid);
-		
+
 		$isTeacher = (static::dakora_get_user_role()->role == 1)? true : false;
 		$showexamples = ($isTeacher)?true:$coursesettings->show_all_examples;
-		
+
 		$parent_descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptorid));
 		$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
 		$parent_descriptor->topicid = $descriptor_topic_mm->topicid;
-		
+
 		$children = block_exacomp_get_child_descriptors($parent_descriptor, $courseid, false, array(SHOW_ALL_TAXONOMIES), true, true, true);
-		
+
 		$non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
-		
+
 		if($crosssubjid > 0) {
 			$crossdesc = $DB->get_fieldset_select(block_exacomp::DB_DESCCROSS, 'descrid', 'crosssubjid=?', array($crosssubjid));
 		} else {
 			$crossdesc = [];
 		}
-		
+
 		if(!$forall) {
 			$non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY, 'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
 		} else {
@@ -5761,33 +5750,39 @@ class block_exacomp_external extends external_api {
 				$child_return->childtitle = $child->title;
 				$child_return->numbering = block_exacomp_get_descriptor_numbering($child);
 				$child_return->teacherevaluation = -1;
-				if(!$forall)
-					$child_return->teacherevaluation = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$child->id, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_TEACHER)))? $grading->value:-1;
+				if(!$forall) {
+					if ($grading = block_exacomp\get_comp_eval($courseid, block_exacomp::ROLE_TEACHER, $userid, block_exacomp::TYPE_DESCRIPTOR, $child->id)) {
+						$child_return->teacherevaluation = ($grading->value !== null) ? $grading->value : -1;
+					}
+				}
 				$child_return->studentevaluation = -1;
-				if(!$forall)
-					$child_return->studentevaluation = ($grading = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$child->id, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_STUDENT))) ? $grading->value:-1;
-				
+				if(!$forall) {
+					if ($grading = block_exacomp\get_comp_eval($courseid, block_exacomp::ROLE_STUDENT, $userid, block_exacomp::TYPE_DESCRIPTOR, $child->id)) {
+						$child_return->studentevaluation = ($grading->value !== null) ? $grading->value : -1;
+					}
+				}
+
 				if($show_all){
 					$child_return->hasmaterial = ($child->examples)?true:false;
 				}
-				
+
 				$result = static::get_descriptor_example_statistic($courseid, $userid, $child->id, $forall, $crosssubjid);
 				$child_return->examplestotal = $result->total;
 				$child_return->examplesvisible = $result->visible;
 				$child_return->examplesinwork = $result->inwork;
-				
+
 				if(!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, $non_visibilities_student))||$forall)){
 					if($crosssubjid == 0 || in_array($child->id, $crossdesc) || in_array($descriptorid, $crossdesc))
 						$children_return[] = $child_return;
 				}
 			}
 		}
-		
+
 		$examples_return = array();
 
 		if($crosssubjid == 0 || in_array($parent_descriptor->id, $crossdesc)){
 			$parent_descriptor = block_exacomp_get_examples_for_descriptor($parent_descriptor, array(SHOW_ALL_TAXONOMIES), $showexamples, $courseid);
-			
+
 			$example_non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
 			if(!$forall) {
 				$example_non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
@@ -5796,17 +5791,17 @@ class block_exacomp_external extends external_api {
 			}
 
 			foreach($parent_descriptor->examples as $example){
-			
+
 				$example_return = new stdClass();
 				$example_return->exampleid = $example->id;
 				$example_return->exampletitle = $example->title;
 				$example_return->examplestate = ($forall)?0:block_exacomp_get_dakora_state_for_example($courseid, $example->id, $userid);
-				
+
 				if(!array_key_exists($example->id, $examples_return) && (!in_array($example->id, $example_non_visibilities)) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))
 					$examples_return[$example->id] = $example_return;
 			}
 		}
-		
+
 		$return = new stdClass();
 		$return->children = $children_return;
 		$return->examples = $examples_return;
@@ -5815,17 +5810,17 @@ class block_exacomp_external extends external_api {
 		$return->examplestotal = $descriptor_example_statistic->total;
 		$return->examplesvisible = $descriptor_example_statistic->visible;
 		$return->examplesinwork = $descriptor_example_statistic->inwork;
-		
+
 		return $return;
 	}
-	
+
 	private function dakora_get_topics_by_course_common($courseid, $only_associated){
 
 		self::check_can_access_course($courseid);
 
 		//TODO if added for 1 student -> mind visibility for this student
 		$tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
-		
+
 		$topics_return = array();
 		foreach($tree as $subject){
 			foreach($subject->subs as $topic){
@@ -5840,11 +5835,11 @@ class block_exacomp_external extends external_api {
 				}
 			}
 		}
-			
+
 		return $topics_return;
 	}
-	
-		
+
+
 	private function dakora_get_descriptors_common($courseid, $topicid, $userid, $forall, $only_associated){
 		global $DB;
 
@@ -5857,10 +5852,10 @@ class block_exacomp_external extends external_api {
 		$tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
 
 		$non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
-		
+
 		if(!$forall)
 			$non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
-		
+
 		$descriptors_return = array();
 		foreach($tree as $subject){
 			foreach($subject->subs as $topic){
@@ -5885,43 +5880,43 @@ class block_exacomp_external extends external_api {
 				}
 			}
 		}
-		
+
 		return $descriptors_return;
 	}
-	
+
 	private function dakora_get_descriptors_by_cross_subject_common($courseid, $crosssubjid, $userid, $forall, $only_associated){
 		global $DB;
-		
+
 		$descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid, true);
-		
+
 		$non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
-		
+
 		if(!$forall) {
 			$non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY, 'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
 		} else {
 			$non_visibilities_student = [];
 		}
-		
+
 		$descriptors_return = array();
 		foreach($descriptors as $descriptor){
 			if(!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student))||$forall)){ 	//descriptor is visibile
 				if($only_associated){
 					$has_visible_examples = false;
 					$has_children_with_visible_examples = false;
-					
+
 					$example_non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
 						if(!$forall)
 							$example_non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
-						
-					
+
+
 					if(isset($descriptor->examples)){	//descriptor has examples
 						foreach($descriptor->examples as $example){
 							if(!in_array($example->id, $example_non_visibilities) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))
 								$has_visible_examples = true;	//descriptor has visible examples
-							
-						}				
+
+						}
 					}
-					
+
 					if(isset($descriptor->children)){
 						foreach($descriptor->children as $child){
 							if((!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, $non_visibilities_student))||$forall))){ //child is visible
@@ -5929,12 +5924,12 @@ class block_exacomp_external extends external_api {
 									foreach($child->examples as $example){
 										if(!in_array($example->id, $example_non_visibilities) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))
 											$has_children_with_visible_examples = true;	//descriptor has children with visible examples
-									}				
+									}
 								}
 							}
 						}
 					}
-					
+
 					if($has_visible_examples || $has_children_with_visible_examples){
 							$descriptor_return = new stdClass();
 							$descriptor_return->descriptorid = $descriptor->id;
@@ -5965,13 +5960,13 @@ class block_exacomp_external extends external_api {
 				}
 			}
 		}
-		
+
 		return $descriptors_return;
 	}
-	
+
 	private function dakora_get_examples_for_descriptor_common($courseid, $descriptorid, $userid, $forall, $crosssubjid=0){
 		global $DB;
-		
+
 		if ($forall) {
 			self::check_can_access_course($courseid);
 		} else {
@@ -5980,41 +5975,41 @@ class block_exacomp_external extends external_api {
 
 		$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptorid));
 		$coursesettings = block_exacomp_get_settings_by_course($courseid);
-		
+
 		$isTeacher = (static::dakora_get_user_role()->role == 1)? true : false;
 		$showexamples = ($isTeacher)?true:$coursesettings->show_all_examples;
-		
+
 		if($crosssubjid > 0){
 			$cross_subject_descriptors = block_exacomp_get_cross_subject_descriptors($crosssubjid);
 			if(!array_key_exists($descriptor->id, $cross_subject_descriptors))
 				return array();
 		}
-		
+
 		if($descriptor->parentid != 0){ //parent descriptor
 			$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$descriptor->id));
 			$descriptor->topicid = $descriptor_topic_mm->topicid;
-		
+
 			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), $showexamples, $courseid);
 		}else{ //child descriptor
-			
+
 			$parent_descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptor->parentid));
 			$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
 			$descriptor->topicid = $descriptor_topic_mm->topicid;
 			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), $showexamples, $courseid);
-			
+
 		}
-		
+
 		$example_non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
 		if(!$forall)
 			$example_non_visibilities_student = $DB->get_fieldset_select(block_exacomp::DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
-		
+
 		$examples_return = array();
 		foreach($descriptor->examples as $example){
 			$example_return = new stdClass();
 			$example_return->exampleid = $example->id;
 			$example_return->exampletitle = $example->title;
 			$example_return->examplestate = ($forall)?0:block_exacomp_get_dakora_state_for_example($courseid, $example->id, $userid);
-			
+
 			if($forall){
 				$example_return->teacherevaluation = -1;
 				$example_return->studentevaluation = -1;
@@ -6025,11 +6020,11 @@ class block_exacomp_external extends external_api {
 				$example_return->studentevaluation = $evaluation->studentvalue;
 				$example_return->teacheritemvalue = $evaluation->teacheritemvalue;
 			}
-			
+
 			if(!array_key_exists($example->id, $examples_return) && (!in_array($example->id, $example_non_visibilities)) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))
 				$examples_return[$example->id] = $example_return;
 		}
-		
+
 		return $examples_return;
 	}
 	private function get_descriptor_example_statistic($courseid, $userid, $descriptorid, $forall, $crosssubjid){
@@ -6037,13 +6032,13 @@ class block_exacomp_external extends external_api {
 		$return->total = 0;
 		$return->visible = 0;
 		$return->inwork = 0;
-		
+
 		if($forall) return $return;
 
 		self::check_can_access_course_user($courseid, $userid);
-		
+
 		list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork, $totalHidden) = block_exacomp_get_example_statistic_for_descriptor($courseid, $descriptorid, $userid, $crosssubjid);
-		
+
 		$return->total = $totalHidden;
 		$return->visible = $total;
 		$return->inwork = $inWork;
@@ -6107,7 +6102,7 @@ class block_exacomp_external extends external_api {
 		// teacher can view other users
 		if (block_exacomp_is_teacher ( $courseid )) {
 			if ($userid == 0)
-				return; 
+				return;
 			$users = get_enrolled_users(block_exacomp_get_context_from_courseid($courseid));
 			if (isset($users[$userid])) {
 				return;

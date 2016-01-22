@@ -557,7 +557,7 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 	
 	$id = -1;
 
-	if($record = $DB->get_record(block_exacomp::DB_COMPETENCIES, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, "courseid" => $courseid, "role" => $role))) {
+	if($record = block_exacomp\get_comp_eval($courseid, $role, $userid, $comptype, $compid)) {
 		$record->value = ($value != -1) ? $value : null;
 		$record->timestamp = time();
 		$record->reviewerid = $USER->id;
@@ -1390,6 +1390,7 @@ function block_exacomp_get_user_crosssubs_by_course($user, $courseid) {
  */
 function block_exacomp_get_user_competencies_by_course($user, $courseid) {
 	global $DB;
+
 	$user->competencies = new stdClass();
 	$user->competencies->teacher = $DB->get_records_menu(block_exacomp::DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => block_exacomp::ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR),'','compid as id, value');
 	$user->competencies->student = $DB->get_records_menu(block_exacomp::DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => block_exacomp::ROLE_STUDENT, "comptype" => TYPE_DESCRIPTOR),'','compid as id, value');
@@ -5040,7 +5041,7 @@ function block_exacomp_get_descriptor_statistic_for_crosssubject($courseid, $cro
 
 	//check for the crosssubj grade
 	if($studentid != 0)
-		$totalGrade = $DB->get_field(block_exacomp::DB_COMPETENCIES,'value',array('userid' => $studentid, 'comptype' => TYPE_CROSSSUB, 'courseid' => $courseid, 'compid' => $crosssubjid, 'role' => block_exacomp::ROLE_TEACHER));
+		$totalGrade = block_exacomp\get_comp_eval_value($courseid, block_exacomp::ROLE_TEACHER, $studentid, block_exacomp::TYPE_CROSSSUB, $crosssubjid);
 	else
 		$totalGrade = 0;
 
@@ -5126,7 +5127,7 @@ function block_exacomp_get_descriptor_statistic($courseid, $descrid, $studentid)
 	$totalGrade = null;
 	//check for the crosssubj grade
 	if($studentid != 0)
-		$totalGrade = $DB->get_field(block_exacomp::DB_COMPETENCIES,'value',array('userid' => $studentid, 'comptype' => TYPE_DESCRIPTOR, 'courseid' => $courseid, 'compid' => $descrid, 'role' => block_exacomp::ROLE_TEACHER));
+		$totalGrade = block_exacomp\get_comp_eval_value($courseid, block_exacomp::ROLE_TEACHER, $studentid, block_exacomp::TYPE_DESCRIPTOR, $descrid);
 
 	if($totalGrade == null)
 		$totalGrade = 0;
@@ -5226,7 +5227,7 @@ function block_exacomp_get_example_statistic_for_crosssubject($courseid, $crosss
 
 	//check for the crosssubj grade
 	if($studentid != 0)
-		$totalGrade = $DB->get_field(block_exacomp::DB_COMPETENCIES,'value',array('userid' => $studentid, 'comptype' => TYPE_CROSSSUB, 'courseid' => $courseid, 'compid' => $crosssubjid, 'role' => block_exacomp::ROLE_TEACHER));
+		$totalGrade = block_exacomp\get_comp_eval_value($courseid, block_exacomp::ROLE_TEACHER, $studentid, block_exacomp::TYPE_CROSSSUB, $crosssubjid);
 	else
 		$totalGrade = 0;
 
@@ -5342,7 +5343,7 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 	$totalGrade = null;
 
 	if($studentid != 0)
-		$totalGrade = $DB->get_field(block_exacomp::DB_COMPETENCIES,'value',array('userid' => $studentid, 'comptype' => TYPE_DESCRIPTOR, 'courseid' => $courseid, 'compid' => $descrid, 'role' => block_exacomp::ROLE_TEACHER));
+		$totalGrade = block_exacomp\get_comp_eval_value($courseid, block_exacomp::ROLE_TEACHER, $studentid, block_exacomp::TYPE_DESCRIPTOR, $descrid);
 
 	if($totalGrade == null)
 		$totalGrade = 0;
@@ -5994,7 +5995,7 @@ function block_exacomp_get_cm_from_cmid($cmid) {
 function block_exacomp_save_additional_grading_for_descriptor($courseid, $descriptorid, $studentid, $additionalinfo){
 	global $DB, $USER;
 
-	$record = $DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'compid'=>$descriptorid, 'userid'=>$studentid, 'comptype'=>block_exacomp::TYPE_DESCRIPTOR, 'role'=>block_exacomp::ROLE_TEACHER));
+	$record = block_exacomp\get_comp_eval($courseid, block_exacomp::ROLE_TEACHER, $studentid, block_exacomp::TYPE_DESCRIPTOR, $descriptorid);
 	if($record){
 		$record->additionalinfo = $additionalinfo;
 		$DB->update_record(block_exacomp::DB_COMPETENCIES, $record);
@@ -6115,6 +6116,9 @@ function block_exacomp_create_blocking_event($courseid, $title, $creatorid, $stu
 }
 
 namespace block_exacomp {
+
+	use block_exacomp\globals as g;
+	use block_exacomp;
 
 	const STUDENTS_PER_COLUMN = 4;
 
@@ -6266,7 +6270,7 @@ namespace block_exacomp {
 	 * @return array
 	 */
 	function search_competence_grid_as_tree($courseid, $q) {
-		$subjects = \block_exacomp\db_layer_course::create($courseid)->get_subjects();
+		$subjects = db_layer_course::create($courseid)->get_subjects();
 
 		if (!trim($q)) {
 			$queryItems = null;
@@ -6434,5 +6438,14 @@ namespace block_exacomp {
 		}
 
 		return common\get_string($identifier, $component, $a);
+	}
+
+
+	function get_comp_eval($courseid, $role, $userid, $comptype, $compid) {
+		return g::$DB->get_record(block_exacomp::DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$compid, 'comptype'=>$comptype, 'role'=>$role));
+	}
+
+	function get_comp_eval_value($courseid, $role, $userid, $comptype, $compid) {
+		return g::$DB->get_field(block_exacomp::DB_COMPETENCIES, 'value', array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$compid, 'comptype'=>$comptype, 'role'=>$role));
 	}
 }
