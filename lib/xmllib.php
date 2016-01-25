@@ -415,7 +415,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 		
 		if (!self::get_my_source()) {
 			// this can't happen anymore, because a source is automatically generated
-			throw new block_exacomp\exception('source not configured, go to block settings');
+			throw new block_exacomp\moodle_exception('source not configured, go to block settings');
 			// '<a href="'.$CFG->wwwroot.'/admin/settings.php?section=blocksettingexacomp">settings</a>'
 		}
 		
@@ -476,15 +476,15 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 		if ($dbItem->source && $dbItem->sourceid) {
 			if ($dbItem->source == block_exacomp::IMPORT_SOURCE_DEFAULT) {
 				// source und sourceid vorhanden -> von wo anders erhalten
-				throw new block_exacomp\exception('database error, has default source #69fvk3');
+				throw new block_exacomp\moodle_exception('database error, has default source #69fvk3');
 			} elseif ($dbItem->source == block_exacomp::IMPORT_SOURCE_SPECIFIC) {
 				// local source -> von dieser moodle instanz selbst
-				throw new block_exacomp\exception('database error, has specific source #yt8d21');
+				throw new block_exacomp\moodle_exception('database error, has specific source #yt8d21');
 			} elseif ($source = self::get_source_global_id($dbItem->source)) {
 				$xmlItem['source'] = $source;
 				$xmlItem['id'] = $dbItem->sourceid;
 			} else {
-				throw new block_exacomp\exception('database error, unknown source '.$dbItem->source.' for type '.$xmlItem->getName().' #f9ssaa8');
+				throw new block_exacomp\moodle_exception('database error, unknown source '.$dbItem->source.' for type '.$xmlItem->getName().' #f9ssaa8');
 			}
 		} else {
 			// local source -> set new id
@@ -984,7 +984,7 @@ class block_exacomp_data_course_backup extends block_exacomp_data {
 				if ($source = block_exacomp_data::get_source_global_id($dbItem->$fld_source)) {
 					$dbItem->$fld_source = $source;
 				} else {
-					throw new block_exacomp\exception('database error, unknown source '.$dbItem->$fld_source.' #5555aa8');
+					throw new block_exacomp\moodle_exception('database error, unknown source '.$dbItem->$fld_source.' #5555aa8');
 				}
 			} else {
 				// local source -> set new id
@@ -1028,7 +1028,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		global $CFG;
 
 		if (!$data) {
-			throw new block_exacomp\exception('filenotfound');
+			throw new block_exacomp\moodle_exception('filenotfound');
 		}
 		
 		$file = tempnam($CFG->tempdir, "zip");
@@ -1045,7 +1045,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		global $CFG;
 
 		if (!$url) {
-			throw new block_exacomp\exception('filenotfound');
+			throw new block_exacomp\moodle_exception('filenotfound');
 		}
 		
 		$file = tempnam($CFG->tempdir, "zip");
@@ -1065,11 +1065,11 @@ class block_exacomp_data_importer extends block_exacomp_data {
 	 */
 	public static function do_import_file($file = null, $par_source = block_exacomp::IMPORT_SOURCE_DEFAULT) {
 		if (!$file) {
-			throw new block_exacomp\exception('filenotfound');
+			throw new block_exacomp\moodle_exception('filenotfound');
 		}
 			
 		if (!file_exists($file)) {
-			throw new block_exacomp\exception('filenotfound');
+			throw new block_exacomp\moodle_exception('filenotfound');
 		}
 		
 		core_php_time_limit::raise();
@@ -1087,7 +1087,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 			self::$zip = $zip;
 			
 			if (!$xml = $zip->getFromName('data.xml')) {
-				throw new block_exacomp\exception('wrong zip file');
+				throw new block_exacomp\moodle_exception('wrong zip file');
 			}
 			
 			/*
@@ -1097,7 +1097,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 			$xml = simplexml_load_string($xml,'block_exacomp\SimpleXMLElement', LIBXML_NOCDATA);
 
 			if (!$xml) {
-				throw new block_exacomp\exception('wrong zip file content');
+				throw new block_exacomp\moodle_exception('wrong zip file content');
 			}
 		} else {
 			// on error -> try as xml
@@ -1108,17 +1108,17 @@ class block_exacomp_data_importer extends block_exacomp_data {
 			 */
 			$xml = @simplexml_load_file($file,'block_exacomp\SimpleXMLElement', LIBXML_NOCDATA);
 			if (!$xml) {
-				throw new block_exacomp\exception('wrong file');
+				throw new block_exacomp\moodle_exception('wrong file');
 			}
 		}
 		
 
 		if(isset($xml->table)){
-			throw new block_exacomp\exception('oldxmlfile');
+			throw new block_exacomp\moodle_exception('oldxmlfile');
 		}
 		
 		if (empty($xml['source'])) {
-			throw new block_exacomp\exception('oldxmlfile');
+			throw new block_exacomp\moodle_exception('oldxmlfile');
 		}
 		
 		self::$import_source_global_id = (string)$xml['source'];
@@ -1137,7 +1137,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		// update scripts for new source format
 		if (self::has_old_data(block_exacomp::IMPORT_SOURCE_DEFAULT)) {
 			if (self::$import_source_type != block_exacomp::IMPORT_SOURCE_DEFAULT) {
-				throw new block_exacomp\exception('you first need to import the default sources!');
+				throw new block_exacomp\moodle_exception('you first need to import the default sources!');
 			}
 			self::move_items_to_source(block_exacomp::IMPORT_SOURCE_DEFAULT, self::$import_source_local_id);
 		}
@@ -1332,7 +1332,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		
 		$tables = array_filter($tables, function($t) use ($table) { return $t['table'] == $table; });
 		if (empty($tables)) {
-			throw new block_exacomp\exception("delete_mm_record_for_item: wrong table $table");
+			throw new block_exacomp\moodle_exception("delete_mm_record_for_item: wrong table $table");
 		}
 		
 		$table = reset($tables);
@@ -1346,7 +1346,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 			$sql .= "{$table['mm2'][0]}=? AND ";
 			$sql .= "{$table['mm1'][0]} IN (SELECT id FROM {{$table['mm1'][1]}} WHERE source=?)";
 		} else {
-			throw new block_exacomp\exception('delete_mm_record_for_item: error');
+			throw new block_exacomp\moodle_exception('delete_mm_record_for_item: error');
 		}
 		
 		g::$DB->execute($sql, array($id, self::$import_source_local_id));
@@ -1499,7 +1499,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		}
 		
 		if ($xmlItem->examples) {
-			throw new block_exacomp\exception('oldxmlfile');
+			throw new block_exacomp\moodle_exception('oldxmlfile');
 		}
 		
 		self::delete_mm_record_for_item(block_exacomp::DB_DESCCAT, 'descrid', $descriptor->id);
@@ -1674,7 +1674,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		$item = (object)$item;
 
 		if (!isset($item->id)) {
-			throw new block_exacomp\exception('wrong xml format');
+			throw new block_exacomp\moodle_exception('wrong xml format');
 		}
 		
 		// foreign source to local source
@@ -1714,7 +1714,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		if (isset($tableMapping[$element->getName()])) {
 			$table = $tableMapping[$element->getName()];
 		} else {
-			throw new block_exacomp\exception('get_database_id: wrong element name: '.$element->getName().' '.print_r($element, true));
+			throw new block_exacomp\moodle_exception('get_database_id: wrong element name: '.$element->getName().' '.print_r($element, true));
 		}
 		
 		$item = self::parse_xml_item($element);
@@ -1770,7 +1770,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		}
 		
 		if (!isset(self::$kompetenzraster_unused_data_ids[$table])) {
-			throw new block_exacomp\exception("unused data for table $table not found");
+			throw new block_exacomp\moodle_exception("unused data for table $table not found");
 		}
 		
 		// mark used

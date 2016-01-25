@@ -34,7 +34,7 @@ $authenticationinfo = $webservicelib->authenticate_user($token);
 
 // check if it is a exacomp token
 if ($authenticationinfo['service']->name != 'exacompservices') {
-	throw new exception('not an exacomp webservice token');
+	throw new moodle_exception('not an exacomp webservice token');
 }
 
 class simple_service {

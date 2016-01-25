@@ -459,7 +459,7 @@ class db_record {
 		global $DB;
 
 		if (!isset($this->id)) {
-			throw new block_exacomp\exception('id not set');
+			throw new block_exacomp\moodle_exception('id not set');
 		}
 
 		if ($data === null) {
@@ -487,7 +487,7 @@ class db_record {
 		global $DB;
 
 		if (!isset($this->id)) {
-			throw new block_exacomp\exception('id not set');
+			throw new block_exacomp\moodle_exception('id not set');
 		}
 		return $DB->delete_records(static::TABLE, array('id' => $this->id));
 	}

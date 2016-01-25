@@ -66,7 +66,7 @@ abstract class event extends \core\event\base {
 	}
 }
 
-class exception extends \moodle_exception {
+class moodle_exception extends \moodle_exception {
 	function __construct($errorcode, $module='', $link='', $a=NULL, $debuginfo=null) {
 
 		// try to get local error message (use namespace as $component)
@@ -185,14 +185,14 @@ class exadb_extender extends exadb_forwarder {
 	 * @param $data
 	 * @param null $where
 	 * @return object
-	 * @throws exception
+	 * @throws moodle_exception
 	 */
 	public function insert_or_update_record($table, $data, $where = null) {
 		$data = (array)$data;
 
 		if ($dbItem = $this->get_record($table, $where !== null ? $where : $data)) {
 			if (empty($data)) {
-				throw new exception('$data is empty');
+				throw new moodle_exception('$data is empty');
 			}
 
 			$data['id'] = $dbItem->id;
@@ -293,7 +293,7 @@ class param {
 		$param = static::get_param($parname);
 
 		if ($param === null) {
-			throw new exception('param not found: '.$parname);
+			throw new moodle_exception('param not found: '.$parname);
 		}
 
 		return $param;
@@ -428,7 +428,7 @@ function get_string($identifier, $component = null, $a = null) {
 }
 
 function print_error($errorcode, $module = 'error', $link = '', $a = null, $debuginfo = null) {
-	throw new exception($errorcode, $module, $link, $a, $debuginfo);
+	throw new moodle_exception($errorcode, $module, $link, $a, $debuginfo);
 }
 
 function _t_check_identifier($string) {
@@ -553,7 +553,7 @@ function _export_function($function) {
 
 // export classnames, if not already existing
 if (_should_export_class('event')) { abstract class event extends common\event {} }
-if (_should_export_class('exception')) { class exception extends common\exception {} }
+if (_should_export_class('moodle_exception')) { class moodle_exception extends common\moodle_exception {} }
 if (_should_export_class('globals')) { class globals extends common\globals {} }
 if (_should_export_class('param')) { class param extends common\param {} }
 if (_should_export_class('SimpleXMLElement')) { class SimpleXMLElement extends common\SimpleXMLElement {} }

@@ -364,13 +364,13 @@ function block_exacomp_sort_items(&$items, $sortings) {
 
 			if ($sorting == block_exacomp::DB_SUBJECTS) {
 				if (!block_exacomp_property_exists($a, $prefix."source") || !block_exacomp_property_exists($b, $prefix."source")) {
-					throw new \block_exacomp\Exception('col not found: '.$prefix."source");
+					throw new \block_exacomp\moodle_exception('col not found: '.$prefix."source");
 				}
 				if (!block_exacomp_property_exists($a, $prefix."sorting") || !block_exacomp_property_exists($b, $prefix."sorting")) {
-					throw new \block_exacomp\Exception('col not found: '.$prefix."sorting");
+					throw new \block_exacomp\moodle_exception('col not found: '.$prefix."sorting");
 				}
 				if (!block_exacomp_property_exists($a, $prefix."title") || !block_exacomp_property_exists($b, $prefix."title")) {
-					throw new \block_exacomp\Exception('col not found: '.$prefix."title");
+					throw new \block_exacomp\moodle_exception('col not found: '.$prefix."title");
 				}
 
 				// sort subjects
@@ -390,13 +390,13 @@ function block_exacomp_sort_items(&$items, $sortings) {
 				}
 			} elseif ($sorting == block_exacomp::DB_TOPICS) {
 				if (!block_exacomp_property_exists($a, $prefix."sorting") || !block_exacomp_property_exists($b, $prefix."sorting")) {
-					throw new \block_exacomp\Exception('col not found: '.$prefix."sorting");
+					throw new \block_exacomp\moodle_exception('col not found: '.$prefix."sorting");
 				}
 				if (!block_exacomp_property_exists($a, $prefix."numb") || !block_exacomp_property_exists($b, $prefix."numb")) {
-					throw new \block_exacomp\Exception('col not found: '.$prefix."numb");
+					throw new \block_exacomp\moodle_exception('col not found: '.$prefix."numb");
 				}
 				if (!block_exacomp_property_exists($a, $prefix."title") || !block_exacomp_property_exists($b, $prefix."title")) {
-					throw new \block_exacomp\Exception('col not found: '.$prefix."title");
+					throw new \block_exacomp\moodle_exception('col not found: '.$prefix."title");
 				}
 
 				if ($a->{$prefix."numb"} < $b->{$prefix."numb"})
@@ -414,10 +414,10 @@ function block_exacomp_sort_items(&$items, $sortings) {
 				}
 			} elseif ($sorting == block_exacomp::DB_DESCRIPTORS) {
 				if (!block_exacomp_property_exists($a, $prefix."sorting") || !block_exacomp_property_exists($b, $prefix."sorting")) {
-					throw new \block_exacomp\Exception('col not found: '.$prefix."sorting");
+					throw new \block_exacomp\moodle_exception('col not found: '.$prefix."sorting");
 				}
 				if (!block_exacomp_property_exists($a, $prefix."title") || !block_exacomp_property_exists($b, $prefix."title")) {
-					throw new \block_exacomp\Exception('col not found: '.$prefix."title");
+					throw new \block_exacomp\moodle_exception('col not found: '.$prefix."title");
 				}
 
 				if ($a->{$prefix."sorting"} < $b->{$prefix."sorting"})
@@ -431,10 +431,10 @@ function block_exacomp_sort_items(&$items, $sortings) {
 				}
 			} elseif ($sorting == block_exacomp::DB_NIVEAUS) {
 				if (!block_exacomp_property_exists($a, $prefix."sorting") || !block_exacomp_property_exists($b, $prefix."sorting")) {
-					throw new \block_exacomp\Exception('col not found: '.$prefix."sorting");
+					throw new \block_exacomp\moodle_exception('col not found: '.$prefix."sorting");
 				}
 				if (!block_exacomp_property_exists($a, $prefix."title") || !block_exacomp_property_exists($b, $prefix."title")) {
-					throw new \block_exacomp\Exception('col not found: '.$prefix."title");
+					throw new \block_exacomp\moodle_exception('col not found: '.$prefix."title");
 				}
 
 				if ($a->{$prefix."sorting"} < $b->{$prefix."sorting"})
@@ -446,7 +446,7 @@ function block_exacomp_sort_items(&$items, $sortings) {
 					return strcmp($a->{$prefix."title"}, $b->{$prefix."title"});
 				}
 			} else {
-					throw new \block_exacomp\Exception('sorting type not found: '.$sorting);
+					throw new \block_exacomp\moodle_exception('sorting type not found: '.$sorting);
 			}
 		}
 	});
