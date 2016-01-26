@@ -45,7 +45,7 @@ $item = $id ? \block_exacomp\subject::get($id) : null;
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/subject.php', array('courseid' => $courseid));
-$PAGE->set_heading(\block_exacomp\trans($item ? 'de:Kompetenzraster bearbeiten' : 'de:Neuen Kompetenzraster anlegen'));
+$PAGE->set_heading($item ? \block_exacomp\trans(['de:Kompetenzraster bearbeiten', 'en:Modify competence grid']) : \block_exacomp\trans(['de:Neuen Kompetenzraster anlegen', 'en:Create new competence grid']));
 $PAGE->set_pagelayout('embedded');
 
 // build tab navigation & print header
@@ -105,7 +105,7 @@ if($formdata = $form->get_data()) {
 		
 		// add one dummy topic
 		$topicid = $DB->insert_record(block_exacomp::DB_TOPICS, array(
-			'title' => \block_exacomp\trans('de:Neuer Raster'),
+			'title' => \block_exacomp\trans(['de:Neuer Raster', 'en:New competence grid']),
 			'subjid' => $new->id,
 			'numb' => 1,
 			'source' => block_exacomp::DATA_SOURCE_CUSTOM,

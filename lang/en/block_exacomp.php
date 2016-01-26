@@ -188,9 +188,9 @@ $string['total_example'] = 'Complete Example';
 
 //Example Upload
 $string['example_upload_header']  = 'Upload my own task/example';
-$string['taxonomy'] = 'taxonomy';
-$string['descriptors'] = 'outcomes/standards';
-$string['descriptor'] = 'outcome/standard';
+$string['taxonomy'] = 'Taxonomy';
+$string['descriptors'] = 'Competencies';
+$string['descriptor'] = 'Competency';
 $string['descriptors_help'] = 'You can select multible outcomes/standards';
 $string['filerequired'] = 'A file must be selected.';
 $string['titlenotemtpy'] = 'A name is required.';
@@ -209,17 +209,17 @@ $string['save_selection'] = 'Save selection';
 $string['delete_confirmation'] = 'Do you really want to delete this example?';
 $string['legend_activities'] = 'Moodle activities';
 $string['legend_eportfolio'] = 'ePortfolio';
-$string['legend_notask'] = 'no Moodle activities/quiz has been submitted for this outcome';
+$string['legend_notask'] = 'No Moodle activities/quizzes have been submitted for this outcome';
 $string['legend_upload'] = 'Upload your own task/example';
-$string['alltopics'] = 'All topics';
+$string['allniveaus'] = 'All niveaus';
 $string['choosesubject'] = "Choose subject: ";
 $string['choosetopic'] = "Choose topic";
 $string['choosestudent'] = "Choose student: ";
 $string['own_additions'] = 'Curricular additions: ';
 $string['delete_confirmation_descr'] = 'Do you really want to delete this competence?';
 $string['import_source'] = "Imported from: ";
-$string['local'] = "local";
-$string['unknown_src'] = 'unknown source';
+$string['local'] = "Local";
+$string['unknown_src'] = 'Unknown source';
 $string['override_notice'] = 'This entry was editied by someone else before. Continue?';
 $string['unload_notice'] = 'Are you sure? Unsaved changes will be lost.';
 $string['example_sorting_notice'] = 'Please save the changes first.';
@@ -244,6 +244,7 @@ $string['teacher_tipp'] = 'tip';
 $string['teacher_tipp_1'] = 'This competence has been associated with ';
 $string['teacher_tipp_2'] = ' Moodle activities and has been reached with ';
 $string['teacher_tipp_3'] = ' outcomes.';
+$string['print'] = 'Print';
 
 $string['eportitems'] = 'This participant has submitted the following ePortfolio artifacts: ';
 $string['eportitem_shared'] = ' (shared)';
@@ -297,7 +298,7 @@ $string['statistic_type_descriptor'] = 'Change to descriptor statistics';
 $string['statistic_type_example'] = 'Change to example statistics';
 $string['reports'] = 'Type of report';
 $string['report_competence'] = 'Competencies';
-$string['report_detailcompetence'] = 'Child competencies';
+$string['report_detailcompetence'] = 'Child Competencies';
 $string['report_examples'] = 'Examples';
 
 //Detail view

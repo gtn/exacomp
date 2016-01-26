@@ -33,7 +33,7 @@ $string['help_content'] = '<h1>Video zur Einführung</h1>
 <iframe width="640" height="360" src="//www.youtube.com/embed/EL4Vb3_17EM?feature=player_embedded" frameborder="0" allowfullscreen></iframe>
 ';
 
-$string['alltopics'] = 'Alle Lernfortschritte';
+$string['allniveaus'] = 'Alle Lernfortschritte';
 $string['subject_singular'] = 'Fach';
 $string['comp_field_idea'] = 'Kompetenzbereich/Leitidee';
 $string['comp'] = 'Kompetenz';

@@ -45,7 +45,7 @@ $item = $id ? \block_exacomp\descriptor::get($id) : null;
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/descriptor.php', array('courseid' => $courseid));
-$PAGE->set_heading(\block_exacomp\trans($item ? 'de:Kompetenz bearbeiten' : 'de:Neue Kompetenz anlegen'));
+$PAGE->set_heading($item ? \block_exacomp\trans('competency_edit', ['de:Kompetenz bearbeiten', 'en:Edit competency']) : \block_exacomp\trans('competency_add', ['de:Neue Kompetenz anlegen', 'en:Create new competency']));
 $PAGE->set_pagelayout('embedded');
 
 // build tab navigation & print header
@@ -78,16 +78,7 @@ class block_exacomp_local_item_form extends moodleform {
 		$mform->setType('title', PARAM_TEXT);
 		$mform->addRule('title', \block_exacomp\get_string("titlenotemtpy"), 'required', null, 'client');
 
-		$values = array(''=>array(''=>''));
-		$niveaus = block_exacomp\niveau::get_objects(null, 'sorting');
-		foreach ($niveaus as $niveau) {
-			$sourceName = block_exacomp_get_renderer()->print_source_info($niveau->source);
-			if (!isset($values[$sourceName])) $values[$sourceName] = [];
-			$values[$sourceName][$niveau->id] = $niveau->title;
-		}
-		ksort($values);
-
-		$mform->addElement('selectgroups', 'niveauid', \block_exacomp\get_string('niveau'), $values);
+		$mform->addElement('selectgroups', 'niveauid', \block_exacomp\get_string('niveau'), block_exacomp\get_select_niveau_items());
 
 		$element = $mform->addElement('select', 'categories', \block_exacomp\get_string('categories'), $DB->get_records_menu(block_exacomp::DB_CATEGORIES, null, 'title', 'id, title'));
 		$element->setMultiple(true);

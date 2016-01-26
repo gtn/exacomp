@@ -64,7 +64,7 @@ class block_exacomp extends block_list {
 	
 	const IMPORT_SOURCE_DEFAULT = 1;
 	const IMPORT_SOURCE_SPECIFIC = 2;
-	
+
 	const CUSTOM_CREATED_DESCRIPTOR = 3;
 
 	const EXAMPLE_STATE_NOT_SET = 0; // never used in weekly schedule, no evaluation

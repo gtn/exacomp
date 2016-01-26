@@ -1293,7 +1293,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 
 	$defaultNiveau = \block_exacomp\niveau::create();
 	$defaultNiveau->id = SHOW_ALL_NIVEAUS;
-	$defaultNiveau->title = get_string ( 'alltopics', 'block_exacomp' );
+	$defaultNiveau->title = block_exacomp\get_string('allniveaus');
 
 	$niveaus = array($defaultNiveau->id => $defaultNiveau) + $niveaus;
 
@@ -6448,5 +6448,18 @@ namespace block_exacomp {
 
 	function get_comp_eval_value($courseid, $role, $userid, $comptype, $compid) {
 		return g::$DB->get_field(block_exacomp::DB_COMPETENCIES, 'value', array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$compid, 'comptype'=>$comptype, 'role'=>$role));
+	}
+
+	function get_select_niveau_items() {
+		$values = array(''=>array(''=>''));
+		$niveaus = niveau::get_objects(null, 'sorting');
+		foreach ($niveaus as $niveau) {
+			$sourceName = block_exacomp_get_renderer()->print_source_info($niveau->source);
+			if (!isset($values[$sourceName])) $values[$sourceName] = [];
+			$values[$sourceName][$niveau->id] = $niveau->title;
+		}
+		ksort($values);
+
+		return $values;
 	}
 }

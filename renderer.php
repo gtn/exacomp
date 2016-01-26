@@ -439,14 +439,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$right_content = "";
 		
 		if (!$this->is_edit_mode()) {
-			$right_content .= html_writer::empty_tag('input', array('type'=>'button', 'id'=>'print', 'value'=>\block_exacomp\trans('de:Drucken'), 'onclick' => "window.open(location.href+'&print=1');"));
+			$right_content .= html_writer::empty_tag('input', array('type'=>'button', 'id'=>'print', 'value'=>block_exacomp\get_string('print'), 'onclick' => "window.open(location.href+'&print=1');"));
 		}
 		
 		if($isTeacher){
 			if ($this->is_edit_mode()) {
 				// display a hidden field? not needed, because the form never gets submitted (it's ajax)
 				// $content .= html_writer::empty_tag('input', array('type'=>'text', 'name'=>'exacomp_competence_grid_select_student', 'value'=>$selectedStudent));
-				$content .= '<h3>'.\block_exacomp\trans('de:Sie befinden sich im Bearbeiten Modus').'</h3>';
+				$content .= '<h3>'.\block_exacomp\trans(['de:Sie befinden sich im Bearbeiten Modus', 'en:Editing mode is turned on']).'</h3>';
 			} else {
 				$content .= html_writer::empty_tag("br");
 				$content .= get_string("choosestudent", "block_exacomp");
@@ -458,7 +458,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 			
 			if ($this->is_edit_mode()) {
-				$right_content .= html_writer::empty_tag('input', array('type'=>'button', 'id'=>'add_subject', 'value'=>\block_exacomp\trans('add_subject', 'de:Kompetenzraster anlegen'),
+				$right_content .= html_writer::empty_tag('input', array('type'=>'button', 'id'=>'add_subject', 'value'=>\block_exacomp\trans('add_subject', ['de:Kompetenzraster anlegen', 'en:Create competence grid']),
 					'exa-type' => 'iframe-popup', 'exa-url' => "subject.php?courseid={$COURSE->id}&show=add"));
 			}
 			
@@ -576,7 +576,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			// add niveau button
 			$content .= html_writer::tag('li',
 						html_writer::link("niveau.php?show=add&courseid={$COURSE->id}&topicid={$selectedTopic->id}",
-								"<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".\block_exacomp\trans('de:Neuer Lernfortschritt'), array('exa-type' => 'iframe-popup'))
+								"<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".\block_exacomp\trans(['de:Neuer Lernfortschritt', 'en:New niveau']), array('exa-type' => 'iframe-popup'))
 			);
 		}
 		
@@ -1678,7 +1678,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				
 				$cell = new html_table_cell();
 				$cell->style = "padding-left: ". $padding."px";
-				$cell->text = html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'type'=>'textfield', 'placeholder'=>\block_exacomp\trans('de:[Neue Kompetenz]'), 'topicid'=>$topic->id, 'niveauid'=>$niveauid));
+				$cell->text = html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'type'=>'textfield', 'placeholder'=>\block_exacomp\trans(['de:Neue Kompetenz', 'en:New competency']), 'topicid'=>$topic->id, 'niveauid'=>$niveauid));
 				$own_additionRow->cells[] = $cell;
 				$own_additionRow->cells[] = new html_table_cell();
 				$rows[] = $own_additionRow;
@@ -2243,7 +2243,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					if($descriptor_in_crosssubj){
 						$cell = new html_table_cell();
 						$cell->style = "padding-left: ". ($padding + 20 )."px";
-						$cell->text = html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'name'=>'new_comp'.$descriptor->id, 'type'=>'textfield', 'placeholder'=>\block_exacomp\trans('de:[Neue Teilkompetenz]'), 'parentid'=>$descriptor->id));
+						$cell->text = html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'name'=>'new_comp'.$descriptor->id, 'type'=>'textfield', 'placeholder'=>\block_exacomp\trans(['de:Neue Teilkompetenz', 'en:New child competency']), 'parentid'=>$descriptor->id));
 						$own_additionRow->cells[] = $cell;
 					}
 					$own_additionRow->cells[] = new html_table_cell();
