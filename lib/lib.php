@@ -1,11 +1,17 @@
 <?php
 
 namespace {
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once __DIR__.'/common.php';
 require_once __DIR__.'/classes.php';
 require_once __DIR__.'/block_exacomp.class.php';
+
+if (block_exacomp_moodle_badges_enabled()) {
+	require_once($CFG->libdir . '/badgeslib.php');
+	require_once($CFG->dirroot . '/badges/lib/awardlib.php');
+}
 
 use block_exacomp\globals as g;
 
@@ -16,11 +22,6 @@ define('TYPE_DESCRIPTOR', 0);
 define('TYPE_TOPIC', 1);
 define('TYPE_CROSSSUB', 2);
 
-if (block_exacomp_moodle_badges_enabled()) {
-	require_once($CFG->libdir . '/badgeslib.php');
-	require_once($CFG->dirroot . '/badges/lib/awardlib.php');
-}
-
 $usebadges = get_config('exacomp', 'usebadges');
 $xmlserverurl = get_config('exacomp', 'xmlserverurl');
 $autotest = get_config('exacomp', 'autotest');
@@ -30,9 +31,7 @@ $notifications = get_config('exacomp','notifications');
 
 $additional_grading = get_config('exacomp', 'additional_grading');
 
-define("SHOW_ALL_NIVEAUS",99999999);
 define("SHOW_ALL_TAXONOMIES",100000000);
-define("BLOCK_EXACOMP_SHOW_ALL", -1);
 define("BLOCK_EXACOMP_SHOW_ALL_STUDENTS", -1);
 define("BLOCK_EXACOMP_SHOW_STATISTIC", -2);
 define("BLOCK_EXACOMP_DEFAULT_STUDENT", -5);
@@ -1142,14 +1141,13 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 		if((!$calledfromoverview && !$calledfromactivities) || !$selectedTopic) {
 			$courseTopics = block_exacomp_get_topics_by_subject($courseid, $subjectid);
 		}
-		elseif(isset($selectedTopic))
+		elseif(isset($selectedTopic)) {
 			$courseTopics = \block_exacomp\topic::get($selectedTopic->id);
-
-		if (!$courseTopics) {
-			$courseTopics = array();
-		} elseif (is_object($courseTopics)) {
-			// could be only one topic, see block_exacomp_get_topic_by_id above
-			$courseTopics = array($courseTopics->id => $courseTopics);
+			if (!$courseTopics) {
+				$courseTopics = array();
+			} else {
+				$courseTopics = array($courseTopics->id => $courseTopics);
+			}
 		}
 	}
 
@@ -1161,7 +1159,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 
 	foreach ($allDescriptors as $descriptor) {
 
-		if($niveauid != SHOW_ALL_NIVEAUS && $calledfromoverview)
+		if($niveauid != block_exacomp\SHOW_ALL_NIVEAUS && $calledfromoverview)
 			if($descriptor->niveauid != $niveauid)
 				continue;
 
@@ -1175,7 +1173,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 
 	foreach ($allTopics as $topic) {
 		//topic must be coursetopic if courseid <> 0
-		if($courseid && $showonlyvisible && !array_key_exists($topic->id, $courseTopics))
+		if ($courseid>0 && !array_key_exists($topic->id, $courseTopics))
 			continue;
 
 		//if($courseid==0 || $showalldescriptors || block_exacomp_check_activity_association($topic->id, TYPE_TOPIC, $courseid)) {
@@ -1243,7 +1241,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 			$selectedSubject = $courseSubjects[$subjectid];
 
 			$topics = block_exacomp_get_topics_by_subject($courseid, $selectedSubject->id);
-			if ($topicid == BLOCK_EXACOMP_SHOW_ALL) {
+			if ($topicid == block_exacomp\SHOW_ALL_TOPICS) {
 				// no $selectedTopic
 			} elseif ($topicid && isset($topics[$topicid])) {
 				$selectedTopic = $topics[$topicid];
@@ -1273,6 +1271,17 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 		$descriptors = block_exacomp_get_descriptors_by_topic ( $courseid, $selectedTopic ? $selectedTopic->id : null, false, true, true);
 	}
 
+	if (!$selectedTopic) {
+		// $descriptors contains all descriptors for this course, so filter it for just descriptors of selected subject
+		foreach ($descriptors as $key=>$descriptor) {
+			if (isset($courseTopics[$descriptor->topicid]) && ($courseTopics[$descriptor->topicid]->subjid == $selectedSubject->id)) {
+				// OK
+			} else {
+				unset($descriptors[$key]);
+			}
+		}
+	}
+
 	if (!$isTeacher) {
 		// for students check student visibility
 		$descriptors = array_filter($descriptors,
@@ -1291,8 +1300,8 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 	$niveaus = g::$DB->get_records_list(block_exacomp::DB_NIVEAUS, 'id', $niveau_ids, 'sorting');
 	$niveaus = \block_exacomp\niveau::create_objects($niveaus);
 
-	$defaultNiveau = \block_exacomp\niveau::create();
-	$defaultNiveau->id = SHOW_ALL_NIVEAUS;
+	$defaultNiveau = block_exacomp\niveau::create();
+	$defaultNiveau->id = block_exacomp\SHOW_ALL_NIVEAUS;
 	$defaultNiveau->title = block_exacomp\get_string('allniveaus');
 
 	$niveaus = array($defaultNiveau->id => $defaultNiveau) + $niveaus;
@@ -3658,15 +3667,15 @@ function block_exacomp_get_tipp_string($compid, $user, $scheme, $type, $comptype
  * Gets tree with schooltype on highest level
  * @param unknown_type $courseid
  */
-function block_exacomp_build_schooltype_tree($courseid=0, $without_descriptors = false){
-	$schooltypes = block_exacomp_get_schooltypes_by_course($courseid);
+function block_exacomp_build_schooltype_tree_for_courseselection($limit_courseid){
+	$schooltypes = block_exacomp_get_schooltypes_by_course($limit_courseid);
 
 	foreach($schooltypes as $schooltype){
-		$subjects = block_exacomp_get_subjects_for_schooltype($courseid, $schooltype->id);
+		$subjects = block_exacomp_get_subjects_for_schooltype($limit_courseid, $schooltype->id);
 
 		$schooltype->subs = array();
 		foreach($subjects as $subject){
-			$tree = block_exacomp_get_competence_tree($courseid, $subject->id, null, true, null, true, array(SHOW_ALL_TAXONOMIES), false, false, false, $without_descriptors);
+			$tree = block_exacomp_get_competence_tree(0, $subject->id, null, true, null, true, array(SHOW_ALL_TAXONOMIES), false, false, false, true);
 			$schooltype->subs += $tree;
 		}
 	}
@@ -4528,7 +4537,7 @@ function block_exacomp_add_days($date, $days) {
 
 function block_exacomp_build_example_association_tree($courseid, $example_descriptors = array(), $exampleid=0, $descriptorid = 0, $showallexamples=false){
 	//get all subjects, topics, descriptors and examples
-	$tree = block_exacomp_get_competence_tree($courseid, null, null, false, SHOW_ALL_NIVEAUS, true, block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies, false, false, true);
+	$tree = block_exacomp_get_competence_tree($courseid, null, null, false, block_exacomp\SHOW_ALL_NIVEAUS, true, block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies, false, false, true);
 
 	// unset all descriptors, topics and subjects that do not contain the example descriptors
 	foreach($tree as $skey => $subject) {
@@ -6122,6 +6131,8 @@ namespace block_exacomp {
 	use block_exacomp;
 
 	const STUDENTS_PER_COLUMN = 4;
+	const SHOW_ALL_TOPICS = -1;
+	const SHOW_ALL_NIVEAUS = 99999999;
 
 	class global_config {
 		static function get_scheme_item_title($id) {

@@ -101,7 +101,7 @@ else{
 	$cat = block_exacomp_get_category($selectedTopic);
 		
 	$scheme = block_exacomp_get_grading_scheme($courseid);
-	if($selectedTopic->id != BLOCK_EXACOMP_SHOW_ALL){
+	if($selectedTopic->id != block_exacomp\SHOW_ALL_TOPICS){
 		echo $output->print_overview_metadata($schooltype, $selectedSubject, $selectedTopic, $cat);
 	}
 	

@@ -520,7 +520,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 			$content .= html_writer::tag('li',
 					html_writer::link(
-						new block_exacomp\url($NG_PAGE->url, ['ng_subjectid' => $subject->id, 'topicid'=>BLOCK_EXACOMP_SHOW_ALL]),
+						new block_exacomp\url($NG_PAGE->url, ['ng_subjectid' => $subject->id, 'topicid'=>block_exacomp\SHOW_ALL_TOPICS]),
 						$subject->title.$extra, [
 							'class' => (!$selectedTopic && $subject->id == $selectedSubject->id) ? 'type current' : 'type',
 							'title' => (($author = $subject->get_author()) ? get_string('author', 'repository').": ".$author : ''),
@@ -565,7 +565,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		foreach ($niveaus as $niveau) {
 			$title = isset($niveau->cattitle) ? $niveau->cattitle : $niveau->title;
-			$subtitle = $niveau->get_subtitle($selectedTopic->subjid);
+			$subtitle = $selectedTopic ? $niveau->get_subtitle($selectedTopic->subjid) : null;
 			$content .= html_writer::tag('li',
 					html_writer::link(new block_exacomp\url($NG_PAGE->url, ['niveauid' => $niveau->id]),
 							$title.($subtitle?'<span class="subtitle">'.$subtitle.'</span>':''), array('class' => ($niveau->id == $selectedNiveau->id) ? 'current' : '', 'title'=>$title.($subtitle?': '.$subtitle:'')))
@@ -575,7 +575,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		if ($this->is_edit_mode()) {
 			// add niveau button
 			$content .= html_writer::tag('li',
-						html_writer::link("niveau.php?show=add&courseid={$COURSE->id}&topicid={$selectedTopic->id}",
+						html_writer::link("niveau.php?show=add&courseid={$COURSE->id}&topicid=".($selectedTopic?$selectedTopic->id:block_exacomp\SHOW_ALL_TOPICS),
 								"<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".\block_exacomp\trans(['de:Neuer Lernfortschritt', 'en:New niveau']), array('exa-type' => 'iframe-popup'))
 			);
 		}
@@ -1521,7 +1521,19 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	public function print_topics(&$rows, $level, $topics, &$data, $students, $rowgroup_class = '', $profoundness = false, $editmode = false, $statistic = false, $crosssubjs = false, $crosssubjid=0) {
 		global $additional_grading;
 		$topicparam = optional_param('topicid', 0, PARAM_INT);
+
+		if (count($topics) > 1 || $topicparam == block_exacomp\SHOW_ALL_TOPICS) {
+			// display topic row
+			$display_topic_header_row = true;
+			$child_level = $level+1;
+		} else {
+			$display_topic_header_row = false;
+			$child_level = $level;
+		}
+
 		$padding = $level * 20 + 12;
+		$child_padding = $child_level * 20 + 12;
+
 		$evaluation = ($data->role == block_exacomp::ROLE_TEACHER) ? "teacher" : "student";
 
 		foreach($topics as $topic) {
@@ -1532,7 +1544,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
 			$hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) && (!block_exacomp_is_altversion()));
 
-			if ($hasSubs && !is_null($data->rowgroup)) {
+			if ($display_topic_header_row && $hasSubs && !is_null($data->rowgroup)) {
 				$data->rowgroup++;
 				$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$data->rowgroup.' '.$rowgroup_class;
 				$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$data->rowgroup.' '.$rowgroup_class;
@@ -1551,7 +1563,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			$outputnameCell = new html_table_cell();
 			$outputnameCell->attributes['class'] = 'rowgroup-arrow';
 			$outputnameCell->style = "padding-left: ".$padding."px";
-			if(block_exacomp_is_altversion() && $topicparam == SHOW_ALL_NIVEAUS)
+			if(block_exacomp_is_altversion() && $topicparam == block_exacomp\SHOW_ALL_NIVEAUS)
 				$outputnameCell->text = html_writer::div($outputname,"desctitle");
 			else
 				$outputnameCell->text = html_writer::div((($outputid) ? ($outputid.': ') : '').$outputname,"desctitle");
@@ -1646,29 +1658,25 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
 				$topicRow->cells[] = $statCell;
 			}
-			//do not display topic level for version
-			// TODO: refactor, delete whole topic row logic?
-			if(block_exacomp_is_altversion()) {
-				$level--;				
-				// $topicRow->style = "display:none;";
-			} else {
+
+			if ($display_topic_header_row) {
 				$rows[] = $topicRow;
 			}
 
 			if (!empty($topic->descriptors)) {
-				$this->print_descriptors($rows, $level+1, $topic->descriptors, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $statistic, false, true, $crosssubjid);
-				$this->print_descriptors($rows, $level+1, $topic->descriptors, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $statistic, true, true, $crosssubjid);
+				$this->print_descriptors($rows, $child_level, $topic->descriptors, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $statistic, false, true, $crosssubjid);
+				$this->print_descriptors($rows, $child_level, $topic->descriptors, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $statistic, true, true, $crosssubjid);
 			}
 
 			if (!empty($topic->subs)) {
-				$this->print_topics($rows, $level+1, $topic->subs, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $crosssubjid);
+				$this->print_topics($rows, $child_level, $topic->subs, $data, $students, $sub_rowgroup_class,$profoundness, $editmode, $crosssubjid);
 			}
 
 			if($editmode && !$crosssubjs) {
 				// kompetenz hinzufuegen (nicht bei themen)
-				$niveauid = optional_param('niveauid', SHOW_ALL_NIVEAUS, PARAM_INT);
+				$niveauid = optional_param('niveauid', block_exacomp\SHOW_ALL_NIVEAUS, PARAM_INT);
 				//do not set niveauid for new descriptor if "show all" niveaus is selected
-				if($niveauid == SHOW_ALL_NIVEAUS)
+				if($niveauid == block_exacomp\SHOW_ALL_NIVEAUS)
 					$niveauid = 0;
 				
 				$own_additionRow = new html_table_row();
@@ -1677,7 +1685,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				$own_additionRow->cells[] = new html_table_cell();
 				
 				$cell = new html_table_cell();
-				$cell->style = "padding-left: ". $padding."px";
+				$cell->style = "padding-left: ". $child_padding."px";
 				$cell->text = html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'type'=>'textfield', 'placeholder'=>\block_exacomp\trans(['de:Neue Kompetenz', 'en:New competency']), 'topicid'=>$topic->id, 'niveauid'=>$niveauid));
 				$own_additionRow->cells[] = $cell;
 				$own_additionRow->cells[] = new html_table_cell();
@@ -2436,7 +2444,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		}
 		return html_writer::div($content,'spaltenbrowser');
 	}
-	public function print_student_evaluation($showevaluation, $isTeacher=true,$topic = SHOW_ALL_NIVEAUS,$subject=0, $studentid=0) {
+	public function print_student_evaluation($showevaluation, $isTeacher=true,$topic = block_exacomp\SHOW_ALL_NIVEAUS,$subject=0, $studentid=0) {
 		global $COURSE;
 
 		$link = new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid" => $COURSE->id, "showevaluation" => (($showevaluation) ? "0" : "1"),'subjectid'=>$subject,'topicid'=>$topic, 'studentid'=>$studentid));
