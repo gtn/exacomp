@@ -30,7 +30,7 @@ require_once __DIR__."/inc.php";
 global $DB, $OUTPUT, $PAGE, $USER;
 
 $courseid = required_param('courseid', PARAM_INT);
-$showevaluation = block_exacomp_is_altversion() || optional_param("showevaluation", false, PARAM_BOOL);
+$showevaluation = optional_param("showevaluation", true, PARAM_BOOL);
 $group = optional_param('group', 0, PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
@@ -205,8 +205,8 @@ echo '<div class="clearfix"></div>';
 
 if($course_settings->nostudents != 1)
 	echo $output->print_overview_legend($isTeacher);
-if(!block_exacomp_is_altversion() && !$course_settings->nostudents && $studentid > 0) echo $output->print_student_evaluation($showevaluation, $isTeacher,$selectedNiveau->id,$selectedTopic->id, $studentid);
-
+if($course_settings->nostudents != 1 && $studentid)
+	echo $output->print_student_evaluation($showevaluation, $isTeacher,$selectedNiveau->id,$selectedTopic->id, $studentid);
 echo $output->print_competence_overview($competence_tree, $courseid, $students, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, (block_exacomp_is_altversion() && $selectedNiveau->id != block_exacomp\SHOW_ALL_NIVEAUS), false, 0, $statistic);
 echo '</div>';
 

@@ -2444,10 +2444,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		}
 		return html_writer::div($content,'spaltenbrowser');
 	}
-	public function print_student_evaluation($showevaluation, $isTeacher=true,$topic = block_exacomp\SHOW_ALL_NIVEAUS,$subject=0, $studentid=0) {
+	public function print_student_evaluation($showevaluation, $isTeacher=true,$niveauid = SHOW_ALL_NIVEAUS, $topicid=0, $studentid=0) {
 		global $COURSE;
 
-		$link = new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid" => $COURSE->id, "showevaluation" => (($showevaluation) ? "0" : "1"),'subjectid'=>$subject,'topicid'=>$topic, 'studentid'=>$studentid));
+		$link = new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid" => $COURSE->id, "showevaluation" => (($showevaluation) ? "0" : "1"),'niveauid'=>$niveauid,'topicid'=>$topicid, 'studentid'=>$studentid));
 		$evaluation = $this->box_start();
 		$evaluation .= get_string('overview','block_exacomp');
 		$evaluation .= html_writer::empty_tag("br");
