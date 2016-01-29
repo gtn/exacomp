@@ -322,6 +322,11 @@ class db_layer_all_user_courses extends db_layer {
 	}
 }
 
+/**
+ * Class db_record
+ * @package block_exacomp
+ * @property int $id
+ */
 class db_record {
 	/**
 	 * @var object
@@ -492,11 +497,30 @@ class db_record {
 		return $DB->delete_records(static::TABLE, array('id' => $this->id));
 	}
 
+	/**
+	 * @param $conditions can be an
+	 * 			* (string,int)id OR (object,array)conditions, to load that record from the database
+	 * 			* OR db_record, which would just be returned
+	 * @param null $fields
+	 * @param null $strictness
+	 * @return db_record
+	 * @throws \coding_exception
+	 */
 	static function get($conditions, $fields=null, $strictness=null) {
 		if (is_string($conditions) || is_int($conditions)) {
 			// id
 			$conditions = array('id' => $conditions);
-		} elseif (is_object($conditions) || is_array($conditions)) {
+		} elseif (is_object($conditions)) {
+			if ($conditions instanceof static) {
+				// if db_record object is passed, just return it
+				// no loading from db needed
+				return $conditions;
+			} elseif ($conditions instanceof \stdClass) {
+				$conditions = (array)$conditions;
+			} else {
+				throw new \coding_exception('Wrong class for $conditions expected "'.get_called_class().'" got "'.get_class($conditions).'"');
+			}
+		} elseif (is_array($conditions)) {
 			// ok
 		} else {
 			print_error('wrong fields');

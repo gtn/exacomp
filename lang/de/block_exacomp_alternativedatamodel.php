@@ -1,5 +1,6 @@
 <?php
 $string['exacomp:deleteexamples'] = 'Lernmaterialien löschen';
+$string['tab_admin_settings'] = 'Bildungsstandards';
 
 $string['tab_teacher_settings_selection_st'] = 'Bildungsstandard-Auswahl';
 $string['tab_examples'] = 'Lernmaterialien';
@@ -61,7 +62,6 @@ $string['description_example'] = 'Beschreibung / Schulbuchverweis';
 
 $string['LA_no_example'] = 'Kein Lernmaterial zugeordnet';
 $string['show_all_course_examples'] = 'Lernmaterialien aus allen Kursen anzeigen';
-$string['delete_confirmation'] = 'Soll das Lernmaterial wirklich gelöscht werden?';
 $string['legend_upload'] = 'Eigenes Lernmaterial hochladen';
 $string['save_pre_planning_selection'] = 'Ausgewählte Lernmaterialien auf den Wochenplan der ausgewählten Schüler/innen legen';
 $string['notification_submission_subject'] = '{$a->student} hat eine Lösung zum Lernmaterial {$a->example} eingereicht.';

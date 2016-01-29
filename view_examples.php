@@ -106,5 +106,3 @@ echo '</div>';
 
 /* END CONTENT REGION */
 echo $output->footer ();
-
-?>

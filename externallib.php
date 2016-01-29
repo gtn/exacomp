@@ -32,14 +32,14 @@ class block_exacomp_external extends external_api {
 		global $CFG, $DB, $USER;
 		require_once ("$CFG->dirroot/lib/enrollib.php");
 		
-		self::validate_parameters ( self::get_courses_parameters (), array (
+		static::validate_parameters ( static::get_courses_parameters (), array (
 				'userid' => $userid 
 		) );
 		
 		if (!$userid)
 			$userid = $USER->id;
 
-		static::check_can_access_user($userid);
+		static::require_can_access_user($userid);
 
 		$mycourses = enrol_get_users_courses ( $userid, true );
 		$courses = array ();
@@ -99,11 +99,11 @@ class block_exacomp_external extends external_api {
 		if (empty ( $courseid )) {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 		}
-		self::validate_parameters ( self::get_subjects_parameters (), array (
+		static::validate_parameters ( static::get_subjects_parameters (), array (
 				'courseid' => $courseid 
 		) );
 		
-		static::check_can_access_course($courseid);
+		static::require_can_access_course($courseid);
 
 		$subjects = $DB->get_records_sql ( '
 				SELECT s.id as subjectid, s.title
@@ -156,12 +156,12 @@ class block_exacomp_external extends external_api {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 		}
 		
-		self::validate_parameters ( self::get_topics_parameters (), array (
+		static::validate_parameters ( static::get_topics_parameters (), array (
 				'subjectid' => $subjectid,
 				'courseid' => $courseid 
 		) );
 		
-		static::check_can_access_course($courseid);
+		static::require_can_access_course($courseid);
 
 		/*
 		 * $returnval = array();
@@ -234,12 +234,12 @@ class block_exacomp_external extends external_api {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 		}
 		
-		self::validate_parameters ( self::get_subtopics_parameters (), array (
+		static::validate_parameters ( static::get_subtopics_parameters (), array (
 				'courseid' => $courseid,
 				'topicid' => $topicid 
 		) );
 
-		static::check_can_access_course($courseid);
+		static::require_can_access_course($courseid);
 		
 		$cats = $DB->get_records_menu ( 'block_exacompcategories', array (
 				"lvl" => 4 
@@ -332,13 +332,13 @@ class block_exacomp_external extends external_api {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 		}
 		
-		self::validate_parameters ( self::set_subtopic_parameters (), array (
+		static::validate_parameters ( static::set_subtopic_parameters (), array (
 				'subtopicid' => $subtopicid,
 				'value' => $value,
 				'courseid' => $courseid 
 		) );
 		
-		static::check_can_access_course($courseid);
+		static::require_can_access_course($courseid);
 
 		$transaction = $DB->start_delegated_transaction (); // If an exception is thrown in the below code, all DB queries in this code will be rollback.
 		
@@ -406,12 +406,12 @@ class block_exacomp_external extends external_api {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 		}
 		
-		self::validate_parameters ( self::get_competencies_parameters (), array (
+		static::validate_parameters ( static::get_competencies_parameters (), array (
 				'subtopicid' => $subtopicid,
 				'courseid' => $courseid 
 		) );
 		
-		static::check_can_access_course($courseid);
+		static::require_can_access_course($courseid);
 		
 		$courseSettings = block_exacomp_get_settings_by_course ( $courseid );
 		
@@ -523,13 +523,13 @@ class block_exacomp_external extends external_api {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 		}
 		
-		self::validate_parameters ( self::set_competence_parameters (), array (
+		static::validate_parameters ( static::set_competence_parameters (), array (
 				'courseid' => $courseid,
 				'descriptorid' => $descriptorid,
 				'value' => $value 
 		) );
 		
-		static::check_can_access_course($courseid);
+		static::require_can_access_course($courseid);
 		
 		$transaction = $DB->start_delegated_transaction (); // If an exception is thrown in the below code, all DB queries in this code will be rollback.
 		
@@ -597,12 +597,12 @@ class block_exacomp_external extends external_api {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 		}
 		
-		self::validate_parameters ( self::get_associated_content_parameters (), array (
+		static::validate_parameters ( static::get_associated_content_parameters (), array (
 				'descriptorid' => $descriptorid,
 				'courseid' => $courseid 
 		) );
 		
-		static::check_can_access_course($courseid);
+		static::require_can_access_course($courseid);
 
 		$courseSettings = block_exacomp_get_settings_by_course ( $courseid );
 		$results = array ();
@@ -707,13 +707,13 @@ class block_exacomp_external extends external_api {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 		}
 		
-		self::validate_parameters ( self::get_assign_information_parameters (), array (
+		static::validate_parameters ( static::get_assign_information_parameters (), array (
 				'assignid' => $assignid 
 		) );
 		
 		$cm = get_coursemodule_from_instance ( 'assign', $assignid, 0, false, MUST_EXIST );
 
-		static::check_can_access_course($cm->course);
+		static::require_can_access_course($cm->course);
 		
 		$course = $DB->get_record ( 'course', array (
 				'id' => $cm->course 
@@ -827,7 +827,7 @@ class block_exacomp_external extends external_api {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 		}
 		
-		self::validate_parameters ( self::update_assign_submission_parameters (), array (
+		static::validate_parameters ( static::update_assign_submission_parameters (), array (
 				'assignid' => $assignid,
 				'onlinetext' => $onlinetext,
 				'filename' => $filename 
@@ -858,7 +858,7 @@ class block_exacomp_external extends external_api {
 		}
 		
 		$cm = get_coursemodule_from_instance ( 'assign', $assignid, 0, false, MUST_EXIST );
-		static::check_can_access_course($cm->course);
+		static::require_can_access_course($cm->course);
 
 		$course = $DB->get_record ( 'course', array (
 				'id' => $cm->course 
@@ -927,7 +927,7 @@ class block_exacomp_external extends external_api {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 		}
 		
-		self::validate_parameters ( self::get_competence_by_id_parameters (), array (
+		static::validate_parameters ( static::get_competence_by_id_parameters (), array (
 				'competenceid' => $competenceid 
 		) );
 		
@@ -972,7 +972,7 @@ class block_exacomp_external extends external_api {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 		}
 		
-		self::validate_parameters ( self::get_topic_by_id_parameters (), array (
+		static::validate_parameters ( static::get_topic_by_id_parameters (), array (
 				'topicid' => $topicid 
 		) );
 		
@@ -1018,7 +1018,7 @@ class block_exacomp_external extends external_api {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 		}
 		
-		self::validate_parameters ( self::get_subtopics_by_topic_parameters (), array (
+		static::validate_parameters ( static::get_subtopics_by_topic_parameters (), array (
 				'topicid' => $topicid,
 				'userid' => $userid 
 		) );
@@ -1026,7 +1026,7 @@ class block_exacomp_external extends external_api {
 		if ($userid == 0)
 			$userid = $USER->id;
 		
-		static::check_can_access_course_user($userid);
+		static::require_can_access_course_user($userid);
 
 		$mycourses = enrol_get_users_courses ( $USER->id );
 		// $mycourses = enrol_get_my_courses();
@@ -1099,13 +1099,13 @@ class block_exacomp_external extends external_api {
 	 * @return array of examples
 	 */
 	public static function get_examples_for_subject($subjectid, $courseid, $userid) {
-		global $CFG, $DB, $USER;
+		global $DB, $USER;
 		
 		if (empty ( $subjectid ) || empty ( $courseid )) {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 		}
 		
-		self::validate_parameters ( self::get_examples_for_subject_parameters (), array (
+		static::validate_parameters ( static::get_examples_for_subject_parameters (), array (
 				'subjectid' => $subjectid,
 				'courseid' => $courseid,
 				'userid' => $userid 
@@ -1114,7 +1114,7 @@ class block_exacomp_external extends external_api {
 		if ($userid == 0)
 			$userid = $USER->id;
 		
-		static::check_can_access_course_user($courseid, $userid);
+		static::require_can_access_course_user($courseid, $userid);
 		
 		$structure = array ();
 		
@@ -1229,12 +1229,12 @@ class block_exacomp_external extends external_api {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 		}
 		
-		self::validate_parameters ( self::get_example_by_id_parameters (), array (
+		static::validate_parameters ( static::get_example_by_id_parameters (), array (
 				'exampleid' => $exampleid 
 		) );
 
-		// TODO: can access example?
-		
+		static::require_can_access_example($exampleid, 0);
+
 		$example = $DB->get_record (block_exacomp::DB_EXAMPLES, array (
 				'id' => $exampleid 
 		) );
@@ -1296,14 +1296,15 @@ class block_exacomp_external extends external_api {
 		if ($userid == 0)
 			$userid = $USER->id;
 		
-		self::validate_parameters ( self::get_descriptors_for_example_parameters (), array (
+		static::validate_parameters ( static::get_descriptors_for_example_parameters (), array (
 				'exampleid' => $exampleid,
 				'courseid' => $courseid,
 				'userid' => $userid 
 		) );
 
-		self::check_can_access_course_user($courseid, $userid);
-		
+		static::require_can_access_course_user($courseid, $userid);
+		static::require_can_access_example($exampleid, $courseid);
+
 		$descriptors_exam_mm = $DB->get_records (block_exacomp::DB_DESCEXAMP, array (
 				'exampid' => $exampleid 
 		) );
@@ -1359,7 +1360,7 @@ class block_exacomp_external extends external_api {
 	public static function get_user_role() {
 		global $DB, $USER;
 		
-		self::validate_parameters ( self::get_user_role_parameters (), array () );
+		static::validate_parameters ( static::get_user_role_parameters (), array () );
 		
 		$trainer = $DB->get_records ( 'block_exacompexternaltrainer', array (
 				'trainerid' => $USER->id 
@@ -1460,11 +1461,11 @@ class block_exacomp_external extends external_api {
 	public static function get_item_example_status($exampleid) {
 		global $DB;
 		
-		self::validate_parameters ( self::get_item_example_status_parameters (), array (
+		static::validate_parameters ( static::get_item_example_status_parameters (), array (
 				'exampleid' => $exampleid 
 		) );
 
-		// TODO: can access example?
+		static::require_can_access_example($exampleid, 0);
 
 		$entries = $DB->get_records ( 'block_exacompitemexample', array (
 				'exampleid' => $exampleid 
@@ -1514,14 +1515,14 @@ class block_exacomp_external extends external_api {
 		global $CFG, $DB, $USER;
 		require_once ("$CFG->dirroot/lib/enrollib.php");
 		
-		self::validate_parameters ( self::get_subjects_for_user_parameters (), array (
+		static::validate_parameters ( static::get_subjects_for_user_parameters (), array (
 				'userid' => $userid 
 		) );
 		
 		if ($userid == 0)
 			$userid = $USER->id;
 
-		static::check_can_access_user($userid);
+		static::require_can_access_user($userid);
 		
 		$courses = static::get_courses ( $userid );
 		
@@ -1635,12 +1636,12 @@ class block_exacomp_external extends external_api {
 		if ($userid == 0)
 			$userid = $USER->id;
 		
-		self::validate_parameters ( self::get_item_for_example_parameters (), array (
+		static::validate_parameters ( static::get_item_for_example_parameters (), array (
 				'userid' => $userid,
 				'itemid' => $itemid 
 		) );
 		
-		static::check_can_access_user($userid);
+		static::require_can_access_user($userid);
 		// TODO: can access item? can user access all items of that user
 
 		$conditions = array (
@@ -1651,7 +1652,12 @@ class block_exacomp_external extends external_api {
 		$itemexample = $DB->get_record ( "block_exacompitemexample", array (
 				"itemid" => $itemid 
 		) );
-		
+
+		if (!$itemexample) {
+			throw new invalid_parameter_exception ( 'Item not found' );
+		}
+		static::require_can_access_example($itemexample->exampleid);
+
 		$item->file = "";
 		$item->isimage = false;
 		$item->filename = "";
@@ -1731,12 +1737,12 @@ class block_exacomp_external extends external_api {
 	public static function get_competencies_for_upload($userid) {
 		global $DB, $USER;
 		
-		self::validate_parameters ( self::get_competencies_for_upload_parameters (), array (
+		static::validate_parameters ( static::get_competencies_for_upload_parameters (), array (
 				'userid' => $userid 
 		) );
 
 		if (!$userid) $userid = $USER->id;
-		self::check_can_access_user($userid);
+		static::require_can_access_user($userid);
 
 		$structure = array ();
 		
@@ -1826,7 +1832,7 @@ class block_exacomp_external extends external_api {
 	public static function submit_example($exampleid,$studentvalue,$url,$effort,$filename,$studentcomment,$title,$itemid=0,$courseid=0) {
 		global $CFG,$DB,$USER;
 	
-		self::validate_parameters(self::submit_example_parameters(), array('title'=>$title,'exampleid'=>$exampleid,'url'=>$url,'effort'=>$effort,'filename'=>$filename,'studentcomment'=>$studentcomment,'studentvalue'=>$studentvalue,'itemid'=>$itemid,'courseid'=>$courseid));
+		static::validate_parameters(static::submit_example_parameters(), array('title'=>$title,'exampleid'=>$exampleid,'url'=>$url,'effort'=>$effort,'filename'=>$filename,'studentcomment'=>$studentcomment,'studentvalue'=>$studentvalue,'itemid'=>$itemid,'courseid'=>$courseid));
 	
 		if ($CFG->block_exaport_app_externaleportfolio) {			
 			// export to Mahara
@@ -1992,7 +1998,7 @@ class block_exacomp_external extends external_api {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 		}
 		
-		self::validate_parameters ( self::create_example_parameters (), array (
+		static::validate_parameters ( static::create_example_parameters (), array (
 				'name' => $name,
 				'description' => $description,
 				'task' => $task,
@@ -2092,7 +2098,7 @@ class block_exacomp_external extends external_api {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 		}
 		
-		self::validate_parameters ( self::grade_item_parameters (), array (
+		static::validate_parameters ( static::grade_item_parameters (), array (
 				'userid' => $userid,
 				'value' => $value,
 				'status' => $status,
@@ -2103,7 +2109,7 @@ class block_exacomp_external extends external_api {
 		) );
 
 		if (!$userid) $userid = $USER->id;
-		self::check_can_access_user($userid);
+		static::require_can_access_user($userid);
 
 		// insert into block_exacompitemexample
 		$update = $DB->get_record ( 'block_exacompitemexample', array (
@@ -2253,13 +2259,13 @@ class block_exacomp_external extends external_api {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 		}
 		
-		self::validate_parameters ( self::get_item_grading_parameters (), array (
+		static::validate_parameters ( static::get_item_grading_parameters (), array (
 				'itemid' => $itemid,
 				'userid' => $userid 
 		) );
 		
 		if (!$userid) $userid = $USER->id;
-		self::check_can_access_user($userid);
+		static::require_can_access_user($userid);
 
 		$entry = $DB->get_record ( 'block_exacompitemexample', array (
 				'itemid' => $itemid 
@@ -2306,7 +2312,7 @@ class block_exacomp_external extends external_api {
 	public static function get_user_examples() {
 		global $DB, $USER;
 		
-		self::validate_parameters ( self::get_user_examples_parameters (), array () );
+		static::validate_parameters ( static::get_user_examples_parameters (), array () );
 		
 		$subjects = static::get_subjects_for_user ( $USER->id );
 		
@@ -2385,12 +2391,12 @@ class block_exacomp_external extends external_api {
 		global $CFG, $DB, $USER;
 		require_once ("$CFG->dirroot/lib/enrollib.php");
 
-		self::validate_parameters ( self::get_user_profile_parameters (), array (
+		static::validate_parameters ( static::get_user_profile_parameters (), array (
 				'userid' => $userid 
 		) );
 		
 		if (!$userid) $userid = $USER->id;
-		self::check_can_access_user($userid);
+		static::require_can_access_user($userid);
 		
 		$user = $DB->get_record ( 'user', array (
 				'id' => $userid 
@@ -2637,7 +2643,7 @@ class block_exacomp_external extends external_api {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 		}
 		
-		self::validate_parameters ( self::update_example_parameters (), array (
+		static::validate_parameters ( static::update_example_parameters (), array (
 				'exampleid' => $exampleid,
 				'name' => $name,
 				'description' => $description,
@@ -2646,7 +2652,7 @@ class block_exacomp_external extends external_api {
 				'filename' => $filename 
 		) );
 
-		// TODO: check can modify example
+		block_exacomp\require_item_capability(block_exacomp\CAP_MODIFY, block_exacomp\example::get($exampleid));
 
 		$example_task = "";
 		$type = ($filename != '') ? 'file' : 'url';
@@ -2731,7 +2737,7 @@ class block_exacomp_external extends external_api {
 	public static function delete_example($exampleid) {
 		global $DB, $USER;
 	
-		self::validate_parameters ( self::delete_example_parameters (), array (
+		static::validate_parameters ( static::delete_example_parameters (), array (
 				'exampleid' => $exampleid
 		) );
 		
@@ -2739,12 +2745,13 @@ class block_exacomp_external extends external_api {
 		if(!$example)
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 				
+		// also checks for permissions
 		block_exacomp_delete_custom_example($exampleid);
 		
 		$items = $DB->get_records('block_exacompitemexample',array('exampleid' => $exampleid));
 		foreach($items as $item) {
 			$DB->delete_records('block_exacompitemexample', array('id'=>$item->id));
-			self::delete_item($item->itemid);	
+			static::delete_item($item->itemid);	
 		}
 		return array (
 				"success" => true
@@ -2783,13 +2790,13 @@ class block_exacomp_external extends external_api {
 	public static function get_competencies_by_topic($userid, $topicid) {
 		global $USER;
 		
-		self::validate_parameters ( self::get_competencies_by_topic_parameters (), array (
+		static::validate_parameters ( static::get_competencies_by_topic_parameters (), array (
 				'userid' => $userid,
 				'topicid' => $topicid 
 		) );
 
 		if (!$userid) $userid = $USER->id;
-		self::check_can_access_user($userid);
+		static::require_can_access_user($userid);
 
 		$structure = array ();
 		
@@ -2879,7 +2886,7 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_topics_by_course($courseid) {
 	
-		self::validate_parameters ( self::dakora_get_topics_by_course_parameters (), array (
+		static::validate_parameters ( static::dakora_get_topics_by_course_parameters (), array (
 				'courseid' => $courseid 
 		) );
 
@@ -2919,7 +2926,7 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_all_topics_by_course($courseid) {
 	
-		self::validate_parameters ( self::dakora_get_all_topics_by_course_parameters (), array (
+		static::validate_parameters ( static::dakora_get_all_topics_by_course_parameters (), array (
 				'courseid' => $courseid 
 		) );
 
@@ -2962,7 +2969,7 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_descriptors($courseid, $topicid, $userid, $forall) {
 		global $USER;
-		self::validate_parameters ( self::dakora_get_descriptors_parameters (), array (
+		static::validate_parameters ( static::dakora_get_descriptors_parameters (), array (
 				'courseid' => $courseid,
 				'topicid' => $topicid,
 				'userid' => $userid,
@@ -3011,7 +3018,7 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_all_descriptors($courseid, $topicid, $userid, $forall) {
 		global $USER;
-		self::validate_parameters ( self::dakora_get_all_descriptors_parameters (), array (
+		static::validate_parameters ( static::dakora_get_all_descriptors_parameters (), array (
 				'courseid' => $courseid,
 				'topicid' => $topicid,
 				'userid' => $userid,
@@ -3060,7 +3067,7 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_descriptor_children($courseid, $descriptorid, $userid, $forall) {
 		global $DB, $USER;
-		self::validate_parameters ( self::dakora_get_descriptor_children_parameters (), array (
+		static::validate_parameters ( static::dakora_get_descriptor_children_parameters (), array (
 				'courseid' => $courseid,
 				'descriptorid' => $descriptorid,
 				'userid' => $userid,
@@ -3122,7 +3129,7 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_all_descriptor_children($courseid, $descriptorid, $userid, $forall) {
 		global $DB, $USER;
-		self::validate_parameters ( self::dakora_get_all_descriptor_children_parameters (), array (
+		static::validate_parameters ( static::dakora_get_all_descriptor_children_parameters (), array (
 				'courseid' => $courseid,
 				'descriptorid' => $descriptorid,
 				'userid' => $userid,
@@ -3177,7 +3184,7 @@ class block_exacomp_external extends external_api {
 	
 	public static function dakora_get_examples_for_descriptor($courseid, $descriptorid, $userid, $forall){
 		global $USER;
-		self::validate_parameters ( self::dakora_get_examples_for_descriptor_parameters (), array (
+		static::validate_parameters ( static::dakora_get_examples_for_descriptor_parameters (), array (
 				'courseid' => $courseid,
 				'descriptorid' => $descriptorid,
 				'userid' => $userid,
@@ -3209,7 +3216,7 @@ class block_exacomp_external extends external_api {
 	
 	public static function dakora_get_examples_for_descriptor_with_grading($courseid, $descriptorid, $userid, $forall){
 		global $USER;
-		self::validate_parameters ( self::dakora_get_examples_for_descriptor_with_grading_parameters (), array (
+		static::validate_parameters ( static::dakora_get_examples_for_descriptor_with_grading_parameters (), array (
 				'courseid' => $courseid,
 				'descriptorid' => $descriptorid,
 				'userid' => $userid,
@@ -3246,7 +3253,7 @@ class block_exacomp_external extends external_api {
 	
 	public static function dakora_get_examples_for_descriptor_for_crosssubject($courseid, $descriptorid, $userid, $forall, $crosssubjid){
 		global $USER;
-		self::validate_parameters ( self::dakora_get_examples_for_descriptor_for_crosssubject_parameters (), array (
+		static::validate_parameters ( static::dakora_get_examples_for_descriptor_for_crosssubject_parameters (), array (
 				'courseid' => $courseid,
 				'descriptorid' => $descriptorid,
 				'userid' => $userid,
@@ -3280,7 +3287,7 @@ class block_exacomp_external extends external_api {
 	
 	public static function dakora_get_examples_for_descriptor_for_crosssubject_with_grading($courseid, $descriptorid, $userid, $forall, $crosssubjid){
 		global $USER;
-		self::validate_parameters ( self::dakora_get_examples_for_descriptor_for_crosssubject_with_grading_parameters (), array (
+		static::validate_parameters ( static::dakora_get_examples_for_descriptor_for_crosssubject_with_grading_parameters (), array (
 				'courseid' => $courseid,
 				'descriptorid' => $descriptorid,
 				'userid' => $userid,
@@ -3352,7 +3359,7 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_add_example_to_learning_calendar($courseid, $exampleid, $creatorid, $userid, $forall) {
 		global $DB, $USER;
-		self::validate_parameters ( self::dakora_add_example_to_learning_calendar_parameters (), array (
+		static::validate_parameters ( static::dakora_add_example_to_learning_calendar_parameters (), array (
 				'courseid' => $courseid,
 				'exampleid' => $exampleid,
 				'creatorid' => $creatorid,
@@ -3366,13 +3373,12 @@ class block_exacomp_external extends external_api {
 		if($userid == 0 && !$forall)
 			$userid = $USER->id;
 			
-		static::check_can_access_course_user($courseid, $creatorid);
-		static::check_can_access_course_user($courseid, $userid);
+		static::require_can_access_course_user($courseid, $creatorid);
+		static::require_can_access_course_user($courseid, $userid);
+		static::require_can_access_example($exampleid, $courseid);
 
 		$example = $DB->get_record(block_exacomp::DB_EXAMPLES, array('id'=>$exampleid));
-		
-		// TODO: can access example
-	
+
 		if($forall){
 			$students = block_exacomp_get_students_by_course($courseid);
 			
@@ -3425,7 +3431,7 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_descriptors_for_example($exampleid, $courseid, $userid, $forall) {
 		global $DB, $USER; 
 		
-		self::validate_parameters ( self::dakora_get_descriptors_for_example_parameters (), array (
+		static::validate_parameters ( static::dakora_get_descriptors_for_example_parameters (), array (
 				'exampleid' => $exampleid,
 				'courseid' => $courseid,
 				'userid' => $userid,
@@ -3435,7 +3441,7 @@ class block_exacomp_external extends external_api {
 		if($userid == 0 && !$forall)
 			$userid = $USER->id;
 		
-		static::check_can_access_course_user($courseid, $userid);
+		static::require_can_access_course_user($courseid, $userid);
 			
 		$non_visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
 		
@@ -3490,7 +3496,7 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_example_grading($exampleid, $courseid, $userid) {
 		global $DB,$USER;
 		
-		self::validate_parameters ( self::dakora_get_example_grading_parameters (), array (
+		static::validate_parameters ( static::dakora_get_example_grading_parameters (), array (
 				'exampleid' => $exampleid,
 				'courseid' => $courseid,
 				'userid' => $userid
@@ -3499,8 +3505,8 @@ class block_exacomp_external extends external_api {
 		if ($userid == 0)
 			$userid = $USER->id;
 		
-		static::check_can_access_course_user($courseid, $userid);
-		// TODO: check example
+		static::require_can_access_course_user($courseid, $userid);
+		static::require_can_access_example($exampleid, $courseid);
 				
 		$student = $DB->get_record ( 'user', array (
 				'id' => $userid 
@@ -3556,7 +3562,7 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_user_role() {
 		global $USER;
 		
-		self::validate_parameters ( self::dakora_get_user_role_parameters (), array (
+		static::validate_parameters ( static::dakora_get_user_role_parameters (), array (
 			) );
 
 		$courses = static::get_courses($USER->id);
@@ -3603,11 +3609,11 @@ class block_exacomp_external extends external_api {
 	
 	public static function dakora_get_students_for_course($courseid) {
 		global $PAGE;
-		self::validate_parameters ( self::dakora_get_students_for_course_parameters (), array (
+		static::validate_parameters ( static::dakora_get_students_for_course_parameters (), array (
 				'courseid'=>$courseid
 			) );
 
-		self::check_can_access_course($courseid);
+		static::require_can_access_course($courseid);
 		// TODO: only for teacher? fjungwirth: not necessary, students can also see other course participants in Moodle
 			
 		$students = block_exacomp_get_students_by_course($courseid);
@@ -3658,7 +3664,7 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_examples_pool($courseid, $userid) {
 		global $USER, $DB;
 		
-		self::validate_parameters ( self::dakora_get_examples_pool_parameters (), array (
+		static::validate_parameters ( static::dakora_get_examples_pool_parameters (), array (
 				'courseid'=>$courseid,
 				'userid'=>$userid
 			) );
@@ -3666,7 +3672,7 @@ class block_exacomp_external extends external_api {
 		if($userid == 0)
 			$userid = $USER->id;
 			
-		static::check_can_access_course_user($courseid, $userid);
+		static::require_can_access_course_user($courseid, $userid);
 				
 		$examples = block_exacomp_get_examples_for_pool($userid, $courseid);
 		
@@ -3723,7 +3729,7 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_examples_trash($courseid, $userid) {
 		global $USER, $DB;
 
-		self::validate_parameters ( self::dakora_get_examples_trash_parameters (), array (
+		static::validate_parameters ( static::dakora_get_examples_trash_parameters (), array (
 				'courseid'=>$courseid,
 				'userid'=>$userid
 			) );
@@ -3731,7 +3737,7 @@ class block_exacomp_external extends external_api {
 		if($userid == 0)
 			$userid = $USER->id;
 		
-		static::check_can_access_course_user($courseid, $userid);
+		static::require_can_access_course_user($courseid, $userid);
 				
 		$examples = block_exacomp_get_examples_for_trash($userid, $courseid);
 		
@@ -3791,7 +3797,7 @@ class block_exacomp_external extends external_api {
 	 * @return list of descriptors
 	 */
 	public static function dakora_set_example_time_slot($scheduleid, $start, $end, $deleted) {
-		self::validate_parameters ( self::dakora_set_example_time_slot_parameters (), array (
+		static::validate_parameters ( static::dakora_set_example_time_slot_parameters (), array (
 				'scheduleid' => $scheduleid,
 				'start'=>$start,
 				'end'=>$end,
@@ -3840,11 +3846,11 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_remove_example_from_schedule($scheduleid) {
 		
-		self::validate_parameters ( self::dakora_remove_example_from_schedule_parameters (), array (
+		static::validate_parameters ( static::dakora_remove_example_from_schedule_parameters (), array (
 				'scheduleid' => $scheduleid
 			) );
 
-		// TODO: check. fjungwirth: checked in lib.php
+		// fjungwirth: permissions are checked in lib.php
 		block_exacomp_remove_example_from_schedule($scheduleid);
 		
 		return array (
@@ -3888,7 +3894,7 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_examples_for_time_slot($userid, $start, $end) {
 		global $USER, $DB;
-		self::validate_parameters ( self::dakora_get_examples_for_time_slot_parameters (), array (
+		static::validate_parameters ( static::dakora_get_examples_for_time_slot_parameters (), array (
 				'userid'=>$userid,
 				'start'=>$start,
 				'end'=>$end
@@ -3897,7 +3903,7 @@ class block_exacomp_external extends external_api {
 		if($userid == 0)
 			$userid = $USER->id;
 
-		self::check_can_access_user($userid);
+		static::require_can_access_user($userid);
 		
 		$examples = block_exacomp_get_examples_for_start_end_all_courses($userid, $start, $end);
 		
@@ -3959,7 +3965,7 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_cross_subjects_by_course($courseid, $userid, $forall) {
 		global $USER, $DB;
-		self::validate_parameters ( self::dakora_get_cross_subjects_by_course_parameters (), array (
+		static::validate_parameters ( static::dakora_get_cross_subjects_by_course_parameters (), array (
 				'courseid'=>$courseid,
 				'userid'=>$userid,
 				'forall'=>$forall
@@ -3969,9 +3975,9 @@ class block_exacomp_external extends external_api {
 			$userid = $USER->id;
 
 		if ($forall) {
-			self::check_can_access_course($courseid);
+			static::require_can_access_course($courseid);
 		} else {
-			self::check_can_access_course_user($courseid, $userid);
+			static::require_can_access_course_user($courseid, $userid);
 		}
 
 		$cross_subjects = block_exacomp_get_cross_subjects_by_course($courseid, $userid);
@@ -4040,7 +4046,7 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_descriptors_by_cross_subject($courseid, $crosssubjid, $userid, $forall) {
 		global $USER;
-		self::validate_parameters ( self::dakora_get_descriptors_by_cross_subject_parameters (), array (
+		static::validate_parameters ( static::dakora_get_descriptors_by_cross_subject_parameters (), array (
 				'courseid' => $courseid,
 				'crosssubjid'=>$crosssubjid,
 				'userid'=>$userid,
@@ -4050,7 +4056,7 @@ class block_exacomp_external extends external_api {
 		if($userid == 0 && $forall == false)
 			$userid = $USER->id;
 		
-		static::check_can_access_course_user($courseid, $userid);
+		static::require_can_access_course_user($courseid, $userid);
 				
 		return static::dakora_get_descriptors_by_cross_subject_common($courseid, $crosssubjid, $userid, $forall, true);
 	}
@@ -4096,7 +4102,7 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_all_descriptors_by_cross_subject($courseid, $crosssubjid, $userid, $forall) {
 		global $USER;
-		self::validate_parameters ( self::dakora_get_all_descriptors_by_cross_subject_parameters (), array (
+		static::validate_parameters ( static::dakora_get_all_descriptors_by_cross_subject_parameters (), array (
 				'courseid' => $courseid,
 				'crosssubjid'=>$crosssubjid,
 				'userid'=>$userid,
@@ -4106,7 +4112,7 @@ class block_exacomp_external extends external_api {
 		if($userid == 0 && $forall == false)
 			$userid = $USER->id;
 		
-		static::check_can_access_course_user($courseid, $userid);
+		static::require_can_access_course_user($courseid, $userid);
 				
 		return static::dakora_get_descriptors_by_cross_subject_common($courseid, $crosssubjid, $userid, $forall, false);
 	}
@@ -4148,7 +4154,7 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_descriptor_children_for_cross_subject($courseid, $descriptorid, $userid, $forall, $crosssubjid) {
 		global $DB, $USER;
-		self::validate_parameters ( self::dakora_get_descriptor_children_for_cross_subject_parameters (), array (
+		static::validate_parameters ( static::dakora_get_descriptor_children_for_cross_subject_parameters (), array (
 				'courseid' => $courseid,
 				'descriptorid' => $descriptorid,
 				'userid' => $userid,
@@ -4159,7 +4165,7 @@ class block_exacomp_external extends external_api {
 		if($userid == 0 && !$forall)
 			$userid = $USER->id;
 		
-		static::check_can_access_course_user($courseid, $userid);
+		static::require_can_access_course_user($courseid, $userid);
 				
 		return static::get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid);
 		
@@ -4214,7 +4220,7 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_all_descriptor_children_for_cross_subject($courseid, $descriptorid, $userid, $forall, $crosssubjid) {
 		global $DB, $USER;
-		self::validate_parameters ( self::dakora_get_all_descriptor_children_for_cross_subject_parameters (), array (
+		static::validate_parameters ( static::dakora_get_all_descriptor_children_for_cross_subject_parameters (), array (
 				'courseid' => $courseid,
 				'descriptorid' => $descriptorid,
 				'userid' => $userid,
@@ -4225,7 +4231,7 @@ class block_exacomp_external extends external_api {
 		if($userid == 0 && !$forall)
 			$userid = $USER->id;
 			
-		static::check_can_access_course_user($courseid, $userid);
+		static::require_can_access_course_user($courseid, $userid);
 		return static::get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid, true);
 		
 	}
@@ -4359,7 +4365,7 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_set_competence($courseid, $userid, $compid, $role, $value, $additional_info) {
 		global $USER, $DB;
-		self::validate_parameters ( self::dakora_set_competence_parameters (), array (
+		static::validate_parameters ( static::dakora_set_competence_parameters (), array (
 				'courseid'=>$courseid,
 				'userid'=>$userid,
 				'compid'=>$compid,
@@ -4373,7 +4379,7 @@ class block_exacomp_external extends external_api {
 		else if($userid == 0)
 			throw new invalid_parameter_exception ( 'Userid can not be 0 for teacher grading' );
 		
-		static::check_can_access_course_user($courseid, $userid);
+		static::require_can_access_course_user($courseid, $userid);
 		
 		if(block_exacomp_set_user_competence($userid, $compid, block_exacomp::TYPE_DESCRIPTOR, $courseid, $role, $value) == -1)
 			throw new invalid_parameter_exception ( 'Not allowed' );
@@ -4419,12 +4425,12 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_pre_planning_storage_examples($courseid) {
 		global $USER;
-		self::validate_parameters ( self::dakora_get_pre_planning_storage_examples_parameters (), array (
+		static::validate_parameters ( static::dakora_get_pre_planning_storage_examples_parameters (), array (
 				'courseid'=>$courseid
 		) );
 		
 		$creatorid = $USER->id;
-		self::check_can_access_course($courseid);
+		static::require_can_access_course($courseid);
 		
 		$examples = block_exacomp_get_pre_planning_storage($creatorid, $courseid);
 			
@@ -4471,13 +4477,11 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_pre_planning_storage_students($courseid) {
 		global $USER;
-		self::validate_parameters ( self::dakora_get_pre_planning_storage_students_parameters (), array (
+		static::validate_parameters ( static::dakora_get_pre_planning_storage_students_parameters (), array (
 				'courseid'=>$courseid
 		) );
 
-		// TODO: check if is teacher?
-		if(!block_exacomp_is_teacher ( $courseid ))
-			throw new invalid_parameter_exception('Required teacher capabilitiy missing');
+		block_exacomp_require_teacher($courseid );
 		
 		$creatorid = $USER->id;
 		
@@ -4539,13 +4543,13 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_has_items_in_pre_planning_storage($courseid) {
 		global $USER;
-		self::validate_parameters ( self::dakora_has_items_in_pre_planning_storage_parameters (), array (
+		static::validate_parameters ( static::dakora_has_items_in_pre_planning_storage_parameters (), array (
 				'courseid'=>$courseid
 		) );
 		
 		$creatorid = $USER->id;
 
-		self::check_can_access_course($courseid);
+		static::require_can_access_course($courseid);
 		
 		$items = false;
 		if(block_exacomp_has_items_pre_planning_storage($creatorid, $courseid))
@@ -4588,12 +4592,12 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_empty_pre_planning_storage($courseid) {
 		global $USER;
-		self::validate_parameters ( self::dakora_empty_pre_planning_storage_parameters (), array (
+		static::validate_parameters ( static::dakora_empty_pre_planning_storage_parameters (), array (
 				'courseid'=>$courseid
 		) );
 		
 		$creatorid = $USER->id;
-		self::check_can_access_course($courseid);
+		static::require_can_access_course($courseid);
 		
 		block_exacomp_empty_pre_planning_storage($creatorid, $courseid);
 		
@@ -4635,15 +4639,15 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_add_example_to_pre_planning_storage($courseid, $exampleid) {
 		global $USER;
-		self::validate_parameters ( self::dakora_add_example_to_pre_planning_storage_parameters (), array (
+		static::validate_parameters ( static::dakora_add_example_to_pre_planning_storage_parameters (), array (
 				'courseid'=>$courseid,
 				'exampleid' => $exampleid
 		) );
 		
 		$creatorid = $USER->id;
 
-		self::check_can_access_course($courseid);
-		// TODO: check example
+		static::require_can_access_course($courseid);
+		static::require_can_access_example($exampleid);
 
 		block_exacomp_add_example_to_schedule(0, $exampleid, $creatorid, $courseid);
 		
@@ -4685,13 +4689,13 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_add_examples_to_students_schedule($courseid, $examples, $students) {
 		global $USER;
-		self::validate_parameters ( self::dakora_add_examples_to_students_schedule_parameters (), array (
+		static::validate_parameters ( static::dakora_add_examples_to_students_schedule_parameters (), array (
 				'courseid'=>$courseid,
 				'examples' => $examples,
 				'students' => $students
 		) );
 		
-		static::check_can_access_course_user($courseid, $USER->id);
+		static::require_can_access_course_user($courseid, $USER->id);
 		
 		$creatorid = $USER->id;
 		
@@ -4746,13 +4750,13 @@ class block_exacomp_external extends external_api {
 	public static function dakora_submit_example($exampleid,$studentvalue = null,$url,$filename,$studentcomment,$itemid=0,$courseid=0) {
 		global $CFG,$DB,$USER;
 	
-		self::validate_parameters(self::dakora_submit_example_parameters(), array('exampleid'=>$exampleid,'url'=>$url,'filename'=>$filename,'studentcomment'=>$studentcomment,'studentvalue'=>$studentvalue,'itemid'=>$itemid,'courseid'=>$courseid));
+		static::validate_parameters(static::dakora_submit_example_parameters(), array('exampleid'=>$exampleid,'url'=>$url,'filename'=>$filename,'studentcomment'=>$studentcomment,'studentvalue'=>$studentvalue,'itemid'=>$itemid,'courseid'=>$courseid));
 	
 		if (!isset($type)) {
 			$type = ($filename != '') ? 'file' : 'url';
 		};
 
-		self::check_can_access_course($courseid);
+		static::require_can_access_course($courseid);
 		
 		//insert: if itemid == 0 OR status != 0
 		$insert = true;
@@ -4895,7 +4899,7 @@ class block_exacomp_external extends external_api {
 	public static function dakora_grade_example($userid, $courseid, $exampleid, $examplevalue, $itemid, $itemvalue, $comment) {
 		global $DB,$USER;
 	
-		self::validate_parameters(self::dakora_grade_example_parameters(), array('userid'=>$userid,'courseid'=>$courseid,'exampleid'=>$exampleid,'examplevalue'=>$examplevalue,'itemid'=>$itemid,'itemvalue'=>$itemvalue,'comment'=>$comment));
+		static::validate_parameters(static::dakora_grade_example_parameters(), array('userid'=>$userid,'courseid'=>$courseid,'exampleid'=>$exampleid,'examplevalue'=>$examplevalue,'itemid'=>$itemid,'itemvalue'=>$itemvalue,'comment'=>$comment));
 	
 		if($userid == 0) {
 			$role = block_exacomp::ROLE_STUDENT;
@@ -4903,8 +4907,8 @@ class block_exacomp_external extends external_api {
 		} else 
 			$role = block_exacomp::ROLE_TEACHER;
 		
-		static::check_can_access_course_user($courseid, $userid);
-		// TODO: check example
+		static::require_can_access_course_user($courseid, $userid);
+		static::require_can_access_example($exampleid, $courseid);
 		
 		block_exacomp_set_user_example(($userid == 0) ? $USER->id : $userid, $exampleid, $courseid, $role, $examplevalue,0,0,'self',$itemvalue);
 	
@@ -4969,13 +4973,13 @@ class block_exacomp_external extends external_api {
 
 	public static function dakora_get_descriptor_details($courseid, $descriptorid, $userid, $forall, $crosssubjid){
 		global $DB, $USER;
-		self::validate_parameters(self::dakora_get_descriptor_details_parameters(),
+		static::validate_parameters(static::dakora_get_descriptor_details_parameters(),
 			array('courseid'=>$courseid, 'descriptorid'=>$descriptorid, 'userid'=>$userid,'forall'=>$forall, 'crosssubjid'=>$crosssubjid));
 
 		if(!$forall && $userid == 0)
 			$userid = $USER->id;
 
-		static::check_can_access_course_user($courseid, $userid);
+		static::require_can_access_course_user($courseid, $userid);
 
 		$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptorid));
 		$descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$descriptor->id));
@@ -5076,13 +5080,13 @@ class block_exacomp_external extends external_api {
 		if ($userid == 0)
 			$userid = $USER->id;
 
-		self::validate_parameters ( self::dakora_get_example_information_parameters (), array (
+		static::validate_parameters ( static::dakora_get_example_information_parameters (), array (
 				'courseid' => $courseid,
 				'userid' => $userid,
 				'exampleid' => $exampleid
 		) );
 
-		static::check_can_access_course_user($courseid, $userid);
+		static::require_can_access_course_user($courseid, $userid);
 
 		$example = $DB->get_record(block_exacomp::DB_EXAMPLES, array('id'=>$exampleid));
 		if(!$example)
@@ -5250,7 +5254,7 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_competence_profile_for_topic($courseid, $userid, $topicid) {
 		global $DB, $USER;
 
-		self::validate_parameters ( self::dakora_get_competence_profile_for_topic_parameters (), array (
+		static::validate_parameters ( static::dakora_get_competence_profile_for_topic_parameters (), array (
 				'courseid' => $courseid,
 				'userid' => $userid,
 				'topicid' => $topicid
@@ -5259,7 +5263,7 @@ class block_exacomp_external extends external_api {
 		if ($userid == 0)
 			$userid = $USER->id;
 
-		static::check_can_access_course_user($courseid, $userid);
+		static::require_can_access_course_user($courseid, $userid);
 
 		$data = new stdClass();
 
@@ -5334,7 +5338,7 @@ class block_exacomp_external extends external_api {
 	 * @return
 	 */
 	public static function dakora_get_admin_grading_scheme() {
-		self::validate_parameters ( self::dakora_get_admin_grading_scheme_parameters (), array () );
+		static::validate_parameters ( static::dakora_get_admin_grading_scheme_parameters (), array () );
 
 		return \block_exacomp\global_config::get_scheme_id();
 	}
@@ -5367,13 +5371,13 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_comp_grid_for_example($courseid, $exampleid) {
 		global $DB;
-		self::validate_parameters ( self::dakora_get_comp_grid_for_example_parameters (), array (
+		static::validate_parameters ( static::dakora_get_comp_grid_for_example_parameters (), array (
 				'courseid' => $courseid,
 				'exampleid' => $exampleid)
 			);
 
-		static::check_can_access_course($courseid);
-		// TODO: check example
+		static::require_can_access_course($courseid);
+		static::require_can_access_example($exampleid, $courseid);
 
 		$data = new stdClass();
 		$data->topics = array();
@@ -5460,9 +5464,9 @@ class block_exacomp_external extends external_api {
 	 * @return array of course subjects
 	 */
 	public static function dakora_send_message_to_course($message, $courseid) {
-		self::validate_parameters(self::dakora_send_message_to_course_parameters(), array('message'=>$message,'courseid'=>$courseid));
+		static::validate_parameters(static::dakora_send_message_to_course_parameters(), array('message'=>$message,'courseid'=>$courseid));
 
-		static::check_can_access_course($courseid);
+		static::require_can_access_course($courseid);
 
 		block_exacomp_send_message_to_course($courseid, $message);
 
@@ -5500,13 +5504,13 @@ class block_exacomp_external extends external_api {
 	public static function dakora_create_blocking_event($courseid, $title, $userid, $preplanningstorage) {
 		global $USER;
 
-		self::validate_parameters(self::dakora_create_blocking_event_parameters(), array('courseid'=>$courseid,'title'=>$title,
+		static::validate_parameters(static::dakora_create_blocking_event_parameters(), array('courseid'=>$courseid,'title'=>$title,
 			'userid'=>$userid, 'preplanningstorage'=>$preplanningstorage));
 
 		if($userid == 0 && !$preplanningstorage)
 			$userid = $USER->id;
 
-		static::check_can_access_course_user($courseid, $userid);
+		static::require_can_access_course_user($courseid, $userid);
 
 		block_exacomp_create_blocking_event($courseid, $title, $USER->id, $userid);
 
@@ -5544,13 +5548,13 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_examples_by_descriptor_and_grading($courseid, $userid, $descriptorid, $grading) {
 		global $USER;
 
-		self::validate_parameters(self::dakora_get_examples_by_descriptor_and_grading_parameters(), array('courseid'=>$courseid,
+		static::validate_parameters(static::dakora_get_examples_by_descriptor_and_grading_parameters(), array('courseid'=>$courseid,
 		'userid'=>$userid, 'descriptorid'=>$descriptorid, 'grading'=>$grading));
 
 		if($userid == 0)
 			$userid = $USER->id;
 
-		static::check_can_access_course_user($courseid, $userid);
+		static::require_can_access_course_user($courseid, $userid);
 
 		$grading = $grading -1;
 
@@ -5615,13 +5619,13 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_examples_by_descriptor_and_grading_for_crosssubject($courseid, $userid, $descriptorid, $grading, $crosssubjid) {
 		global $USER;
 
-		self::validate_parameters(self::dakora_get_examples_by_descriptor_and_grading_for_crosssubject_parameters(), array('courseid'=>$courseid,
+		static::validate_parameters(static::dakora_get_examples_by_descriptor_and_grading_for_crosssubject_parameters(), array('courseid'=>$courseid,
 		'userid'=>$userid, 'descriptorid'=>$descriptorid, 'grading'=>$grading, 'crosssubjid'=>$crosssubjid));
 
 		if($userid == 0)
 			$userid = $USER->id;
 
-		static::check_can_access_course_user($courseid, $userid);
+		static::require_can_access_course_user($courseid, $userid);
 
 		$grading = $grading -1;
 
@@ -5683,10 +5687,10 @@ class block_exacomp_external extends external_api {
 	public static function dakora_allow_example_resubmission($courseid, $userid, $exampleid) {
 		global $USER;
 
-		self::validate_parameters(self::dakora_allow_example_resubmission_parameters(), array('courseid'=>$courseid,
+		static::validate_parameters(static::dakora_allow_example_resubmission_parameters(), array('courseid'=>$courseid,
 				'userid'=>$userid, 'exampleid'=>$exampleid));
 
-		static::check_can_access_course_user($courseid, $userid);
+		static::require_can_access_course_user($courseid, $userid);
 
 		block_exacomp_allow_resubmission($userid, $exampleid, $courseid);
 
@@ -5712,9 +5716,9 @@ class block_exacomp_external extends external_api {
 		global $DB;
 
 		if ($forall) {
-			self::check_can_access_course($courseid);
+			static::require_can_access_course($courseid);
 		} else {
-			self::check_can_access_course_user($courseid, $userid);
+			static::require_can_access_course_user($courseid, $userid);
 		}
 
 		$coursesettings = block_exacomp_get_settings_by_course($courseid);
@@ -5816,7 +5820,7 @@ class block_exacomp_external extends external_api {
 
 	private function dakora_get_topics_by_course_common($courseid, $only_associated){
 
-		self::check_can_access_course($courseid);
+		static::require_can_access_course($courseid);
 
 		//TODO if added for 1 student -> mind visibility for this student
 		$tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
@@ -5844,9 +5848,9 @@ class block_exacomp_external extends external_api {
 		global $DB;
 
 		if ($forall) {
-			self::check_can_access_course($courseid);
+			static::require_can_access_course($courseid);
 		} else {
-			self::check_can_access_course_user($courseid, $userid);
+			static::require_can_access_course_user($courseid, $userid);
 		}
 
 		$tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
@@ -5968,9 +5972,9 @@ class block_exacomp_external extends external_api {
 		global $DB;
 
 		if ($forall) {
-			self::check_can_access_course($courseid);
+			static::require_can_access_course($courseid);
 		} else {
-			self::check_can_access_course_user($courseid, $userid);
+			static::require_can_access_course_user($courseid, $userid);
 		}
 
 		$descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$descriptorid));
@@ -6035,7 +6039,7 @@ class block_exacomp_external extends external_api {
 
 		if($forall) return $return;
 
-		self::check_can_access_course_user($courseid, $userid);
+		static::require_can_access_course_user($courseid, $userid);
 
 		list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork, $totalHidden) = block_exacomp_get_example_statistic_for_descriptor($courseid, $descriptorid, $userid, $crosssubjid);
 
@@ -6045,7 +6049,7 @@ class block_exacomp_external extends external_api {
 		return $return;
 	}
 
-	private static function check_can_access_course($courseid) {
+	private static function require_can_access_course($courseid) {
 		$course = g::$DB->get_record('course', ['id'=>$courseid]);
 		if (!$course) {
 			throw new invalid_parameter_exception ( 'Course not found' );
@@ -6055,7 +6059,7 @@ class block_exacomp_external extends external_api {
 		}
 	}
 
-	private static function check_can_access_user($userid) {
+	private static function require_can_access_user($userid) {
 		// can view myself
 		if ($userid == g::$USER->id) {
 			return;
@@ -6093,13 +6097,18 @@ class block_exacomp_external extends external_api {
 	 * @param int|object $userid
 	 * @throws invalid_parameter_exception
 	 */
-	private static function check_can_access_course_user($courseid, $userid) {
-		$course = g::$DB->get_record('course', ['id'=>$courseid]);
-		if (!$course) {
-			throw new invalid_parameter_exception ( 'Course not found' );
-		}
-		if (!can_access_course($course)) {
-			throw new invalid_parameter_exception ( 'Not allowed to access this course' );
+	private static function require_can_access_course_user($courseid, $userid) {
+		if ($courseid) {
+			// because in webservice block_exacomp_get_descriptors_for_example $courseid = 0
+
+			$course = g::$DB->get_record('course', ['id'=>$courseid]);
+			if (!$course) {
+				throw new invalid_parameter_exception ( 'Course not found' );
+			}
+
+			if (!can_access_course($course)) {
+				throw new invalid_parameter_exception ( 'Not allowed to access this course' );
+			}
 		}
 
 		// can view myself
@@ -6120,8 +6129,29 @@ class block_exacomp_external extends external_api {
 		throw new invalid_parameter_exception ( 'Not allowed to view other user' );
 	}
 
-	// TODO: needs to be checked for one particular course -> courseid must be added
-	private static function check_can_access_example($exampleid) {
+	private static function require_can_access_example($exampleid, $courseid=null) {
+		// go through all courses
+		// and all subjects
+		// and all examples
+		// and try to find it
+		$example = call_user_func(function() use ($exampleid) {
+			$subjects = static::get_subjects_for_user ( g::$USER->id );
+			foreach ($subjects as $subject) {
+				$topics = static::get_examples_for_subject($subject->subjectid, $subject->courseid, 0 );
+				foreach ( $topics as $topic ) {
+					foreach ( $topic->examples as $example ) {
+						if ($example->exampleid == $exampleid) {
+							return $example;
+						}
+					}
+				}
+			}
 
+			return null;
+		});
+
+		if (!$example) {
+			throw new \block_exacomp\permission_exception();
+		}
 	}
 }

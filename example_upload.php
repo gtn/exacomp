@@ -1,34 +1,7 @@
 <?php
 
-/* * *************************************************************
- *  Copyright notice
-*
-*  (c) 2014 exabis internet solutions <info@exabis.at>
-*  All rights reserved
-*
-*  You can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  This module is based on the Collaborative Moodle Modules from
-*  NCSA Education Division (http://www.ncsa.uiuc.edu)
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-* ************************************************************* */
-
 require_once __DIR__."/inc.php";
 require_once __DIR__.'/example_upload_form.php';
-
-global $DB, $OUTPUT, $PAGE, $USER;
 
 $courseid = required_param('courseid', PARAM_INT);
 $exampleid = optional_param('exampleid', 0, PARAM_INT);
@@ -37,10 +10,14 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_exacomp', $courseid);
 }
 
-// error if example does not exist or was created by somebody else
-if ($exampleid > 0 && (!$example = $DB->get_record('block_exacompexamples', array('id' => $exampleid)))
-		&& $example->creatorid != $USER->id) {
-	print_error('invalidexample', 'block_exacomp', $exampleid);
+if ($exampleid) {
+	if (!$example = block_exacomp\example::get($exampleid)) {
+		print_error('invalidexample', 'block_exacomp', $exampleid);
+	}
+	block_exacomp\require_item_capability(block_exacomp\CAP_MODIFY, $example);
+} else {
+	block_exacomp\require_capability(block_exacomp\CAP_ADD_EXAMPLE, $courseid);
+	$example = null;
 }
 
 require_login($course);
@@ -48,10 +25,13 @@ require_login($course);
 $context = context_course::instance($courseid);
 
 // IF DELETE > 0 DELTE CUSTOM EXAMPLE
-if (($delete = optional_param("delete", 0, PARAM_INT)) > 0 && block_exacomp_is_teacher($context)) {
+if (optional_param('action', '', PARAM_TEXT) == 'delete') {
+	if (!$example) {
+		print_error('invalidexample', 'block_exacomp', $exampleid);
+	}
 	$returnurl = new \moodle_url(required_param('returnurl', PARAM_LOCALURL));
 	
-	block_exacomp_delete_custom_example($delete);
+	block_exacomp_delete_custom_example($example);
 	
 	redirect($returnurl);
 }
@@ -219,7 +199,7 @@ if($exampleid > 0) {
 			array('subdirs' => 0, 'maxfiles' => 1));
 	$example->solution = $draftitemid;
 	
-	$form->set_data($example);
+	$form->set_data($example->getData());
 }
 
 $form->display();

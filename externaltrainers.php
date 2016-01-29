@@ -57,29 +57,21 @@ $studentid = optional_param('studentid', 0, PARAM_INT);
 
 if($trainerid > 0 && $studentid) {
 	if(!$DB->record_exists('block_exacompexternaltrainer', array('trainerid'=>$trainerid,'studentid'=>$studentid)))  
-		$DB->insert_record('block_exacompexternaltrainer', array('trainerid'=>$trainerid,'studentid'=>$studentid));  
+		$DB->insert_record('block_exacompexternaltrainer', array('trainerid'=>$trainerid,'studentid'=>$studentid));
 }
 if(($delete = optional_param('delete',0,PARAM_INT)) > 0) {
 	$DB->delete_records('block_exacompexternaltrainer',array('id'=>$delete));
 }
+
 $externaltrainers = $DB->get_records('block_exacompexternaltrainer');
 
-$html = '<table>';
-$html .= '<tr><th>Trainer</th><th>Schüler</th><th></th></tr>';
-foreach($externaltrainers as $trainer) {
-	$html .= '<tr>';
-		$html .= '<td>' . fullname($DB->get_record('user', array('id'=>$trainer->trainerid))) . '</td>';
-		$html .= '<td>' . fullname($DB->get_record('user', array('id'=>$trainer->studentid))) . '</td>';
-		$html .= '<td> <a href="'.$CFG->wwwroot.'/blocks/exacomp/externaltrainers.php?delete='.$trainer->id.'&courseid='.$courseid.'">'.
-		'<img src="pix/del.png" /></a></td>';
-		
-	$html .= '</tr>';
-}
-$html .= '</table>';
-
 $PAGE->set_title(get_string('block_exacomp_external_trainer_assign','block_exacomp'));
-echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('block_exacomp_external_trainer_assign','block_exacomp'));
+
+$output = block_exacomp_get_renderer();
+echo $output->header($context, $courseid, 'tab_admin_settings');
+echo $output->tabtree(block_exacomp_build_navigation_tabs_admin_settings($courseid), 'tab_external_trainer_assign');
+
+echo $output->heading(get_string('block_exacomp_external_trainer_assign','block_exacomp'));
 echo '<form method="post">';
 echo get_string('block_exacomp_external_trainer','block_exacomp');
 echo html_writer::select($selectteachers, 'trainerid');
@@ -87,5 +79,18 @@ echo get_string('block_exacomp_external_trainer_student','block_exacomp');
 echo html_writer::select($selectstudents, 'studentid');
 echo '<input type="submit">';
 echo '</form>';
-echo $html;
-echo $OUTPUT->footer();
+
+echo '<table>';
+echo '<tr><th>Trainer</th><th>Schüler</th><th></th></tr>';
+foreach($externaltrainers as $trainer) {
+	echo '<tr>';
+		echo '<td>' . fullname($DB->get_record('user', array('id'=>$trainer->trainerid))) . '</td>';
+		echo '<td>' . fullname($DB->get_record('user', array('id'=>$trainer->studentid))) . '</td>';
+		echo '<td> <a href="'.$CFG->wwwroot.'/blocks/exacomp/externaltrainers.php?delete='.$trainer->id.'&courseid='.$courseid.'">'.
+		'<img src="pix/del.png" /></a></td>';
+
+	echo '</tr>';
+}
+echo '</table>';
+
+echo $output->footer();

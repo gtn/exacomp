@@ -517,22 +517,23 @@ function block_exacomp_check_activity_association($compid, $comptype, $courseid)
  * Deletes an uploaded example and all it's database/filesystem entries
  * @param int $delete exampleid
  */
-function block_exacomp_delete_custom_example($delete) {
-	global $DB,$USER;
+function block_exacomp_delete_custom_example($example_object_or_id) {
+	global $DB;
 
-	$example = $DB->get_record(block_exacomp::DB_EXAMPLES, array('id'=>$delete));
-	if($example && $example->creatorid == $USER->id) {
-		$DB->delete_records(block_exacomp::DB_EXAMPLES, array('id' => $delete));
-		$DB->delete_records(block_exacomp::DB_DESCEXAMP, array('exampid' => $delete));
-		$DB->delete_records(block_exacomp::DB_EXAMPLEEVAL, array('exampleid' => $delete));
-
-		$fs = get_file_storage();
-		$fileinstance = $DB->get_record('files',array("userid"=>$example->creatorid,"itemid"=>$example->id),'*',IGNORE_MULTIPLE);
-		if($fileinstance) {
-			$file = $fs->get_file_instance($fileinstance);
-			$file->delete();
-		}
+	$example = block_exacomp\example::get($example_object_or_id);
+	if (!$example) {
+		throw new \moodle_exception('Example not found');
 	}
+
+	block_exacomp\require_item_capability(block_exacomp\CAP_DELETE, $example);
+
+	$DB->delete_records(block_exacomp::DB_EXAMPLES, array('id' => $example->id));
+	$DB->delete_records(block_exacomp::DB_DESCEXAMP, array('exampid' => $example->id));
+	$DB->delete_records(block_exacomp::DB_EXAMPLEEVAL, array('exampleid' => $example->id));
+
+	$fs = get_file_storage();
+	$fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_task', $example->id);
+	$fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_solution', $example->id);
 }
 
 /**
@@ -1515,10 +1516,14 @@ function block_exacomp_build_navigation_tabs_admin_settings($courseid){
 
 	$settings_subtree = array();
 
-	$settings_subtree[] = new tabobject('tab_admin_import', new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid)), get_string("tab_admin_import", "block_exacomp"));
-
 	if ($checkImport && has_capability('block/exacomp:admin', context_system::instance()))
 		$settings_subtree[] = new tabobject('tab_admin_configuration', new moodle_url('/blocks/exacomp/edit_config.php',array("courseid"=>$courseid)),get_string('tab_admin_configuration','block_exacomp'));
+
+	$settings_subtree[] = new tabobject('tab_admin_import', new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid)), get_string("tab_admin_import", "block_exacomp"));
+
+	if (get_config('exacomp','external_trainer_assign') && has_capability('block/exacomp:assignstudents', context_system::instance())) {
+		$settings_subtree[] = new tabobject('tab_external_trainer_assign', new moodle_url('/blocks/exacomp/externaltrainers.php', array('courseid'=>$courseid)), get_string("block_exacomp_external_trainer_assign", "block_exacomp"));
+	}
 
 	return $settings_subtree;
 }
@@ -5726,6 +5731,7 @@ function block_exacomp_example_order($exampleid, $descrid, $operator = "<") {
 	$desc_examp = $DB->get_record(block_exacomp::DB_DESCEXAMP, array('exampid' => $exampleid,'descrid' => $descrid));
 	$example->descsorting = $desc_examp->sorting;
 
+	// TODO: use block_exacomp\require_item_capability()
 	if(block_exacomp_is_admin($COURSE->id) || (isset($example->creatorid) && $example->creatorid == $USER->id)) {
 		$sql = 'SELECT e.*, de.sorting as descsorting FROM {block_exacompexamples} e
 			JOIN {block_exacompdescrexamp_mm} de ON de.exampid = e.id
@@ -6136,6 +6142,10 @@ namespace block_exacomp {
 	const SHOW_ALL_TOPICS = -1;
 	const SHOW_ALL_NIVEAUS = 99999999;
 
+	const CAP_ADD_EXAMPLE = 'add_example';
+	const CAP_MODIFY = 'modify';
+	const CAP_DELETE = 'delete';
+
 	class global_config {
 		static function get_scheme_item_title($id) {
 			$items = static::get_scheme_items();
@@ -6474,5 +6484,48 @@ namespace block_exacomp {
 		ksort($values);
 
 		return $values;
+	}
+
+	class permission_exception extends moodle_exception {
+		function __construct($errorcode = 'Not allowed', $module='', $link='', $a=NULL, $debuginfo=null) {
+			return parent::__construct($errorcode, $module, $link, $a, $debuginfo);
+		}
+	}
+
+	function has_capability($cap, $data) {
+		if ($cap == CAP_ADD_EXAMPLE) {
+			$courseid = $data;
+			if (!block_exacomp_is_teacher($courseid)) {
+				return false;
+			}
+		} else {
+			throw new \coding_exception("Capability $cap not found");
+		}
+
+		return true;
+	}
+
+	function require_capability($cap, $data) {
+		if (!has_capability($cap, $data)) {
+			throw new permission_exception();
+		}
+	}
+
+	function has_item_capability($cap, $item) {
+		if ($item instanceof example && in_array($cap, [CAP_MODIFY, CAP_DELETE])) {
+			if ($item->creatorid != g::$USER->id) {
+				return false;
+			}
+		} else {
+			throw new \coding_exception("Capability $cap for item ".print_r($item, true)." not found");
+		}
+
+		return true;
+	}
+
+	function require_item_capability($cap, $item) {
+		if (!has_item_capability($cap, $item)) {
+			throw new permission_exception();
+		}
 	}
 }

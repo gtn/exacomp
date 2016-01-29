@@ -207,7 +207,7 @@ $string['isgraded'] = 'The example is already graded and therefore a submission 
 
 //Assign competencies
 $string['save_selection'] = 'Save selection';
-$string['delete_confirmation'] = 'Do you really want to delete this example?';
+$string['delete_confirmation'] = 'Do you really want to delete "{$a}"?';
 $string['legend_activities'] = 'Moodle activities';
 $string['legend_eportfolio'] = 'ePortfolio';
 $string['legend_notask'] = 'No Moodle activities/quizzes have been submitted for this outcome';

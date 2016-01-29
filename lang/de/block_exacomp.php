@@ -14,7 +14,7 @@ $string['exacomp:assignstudents'] = 'Externe Trailer zuordnen';
 // TABS and PAGE IDENTIFIERS
 // Admin Tabs
 $string['tab_admin_import'] = 'Import/Export';
-$string['tab_admin_settings'] = 'Bildungsstandards';
+$string['tab_admin_settings'] = 'Einstellungen';
 $string['tab_admin_configuration'] = 'Vorauswahl der Standards';
 $string['admin_config_pending'] = 'Vorauswahl der Kompetenzen durch den Administrator notwendig';
 
@@ -232,7 +232,7 @@ $string['allow_resubmission'] = 'Aufgabe zur erneuten Abgabe freigeben';
 $string['allow_resubmission_info'] = 'Die Aufgabe wurde zur erneuten Abgabe freigegeben.';
 //Assign competencies
 $string['save_selection'] = 'Auswahl speichern';
-$string['delete_confirmation'] = 'Soll das Beispiel wirklich gelöscht werden?';
+$string['delete_confirmation'] = 'Soll "{$a}" wirklich gelöscht werden?';
 $string['legend_activities'] = 'Moodle-Aktivit&auml;ten';
 $string['legend_eportfolio'] = 'ePortfolio';
 $string['legend_notask'] = 'Keine Moodle-Aktivit&auml;t/Quiz f&uuml;r diese Kompetenz abgegeben';

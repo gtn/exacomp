@@ -155,7 +155,7 @@ $string['titlenotemtpy'] = 'A name is required.';
 
 //Assign competencies
 $string['save_selection'] = 'guardar sel·lecció';
-$string['delete_confirmation'] = 'Do you really want to delete this example?';
+$string['delete_confirmation'] = 'Do you really want to delete "{$a}"?';
 $string['legend_activities'] = 'activitats';
 $string['legend_eportfolio'] = 'ePortfolio';
 $string['legend_notask'] = 'no s\'ha enviat res per a aquest descriptor/no s\'ha fet cap quiz';

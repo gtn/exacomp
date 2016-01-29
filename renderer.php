@@ -2036,9 +2036,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 							}
 
 							if(!$example_used)
-								$titleCell->text .= html_writer::link(new \block_exacomp\url('example_upload.php', ['delete' => $example->id, 'courseid'=>$COURSE->id, 'returnurl' => $NG_PAGE->url->out_as_local_url(false)]),
+								$titleCell->text .= html_writer::link(new \block_exacomp\url('example_upload.php', ['action' => 'delete', 'exampleid' => $example->id, 'courseid'=>$COURSE->id, 'returnurl' => $NG_PAGE->url->out_as_local_url(false)]),
 									$this->pix_icon("t/delete", get_string("delete")),
-									array("onclick" => "return confirm('" . get_string('delete_confirmation','block_exacomp') . "')"));
+									array("onclick" => "return confirm(".json_encode(block_exacomp\get_string('delete_confirmation', null, $example->title)).")"));
 							
 							//print up & down icons
 							$titleCell->text .= html_writer::link("#", $this->pix_icon("t/up", get_string('up')), array("id" => "example-up", "exampleid" => $example->id, "descrid" => $descriptor->id));
