@@ -146,6 +146,7 @@ $string['show_all_descriptors'] = 'Show all outcomes in overview';
 $string['show_all_examples'] = 'Show external examples for students';
 $string['usedetailpage'] = 'Use detailed overview of competencies';
 $string['useprofoundness'] = 'Use basic and extended competencies';
+$string['usetopicgrading'] = 'Enable topic gradings';
 $string['usenostudents'] = 'use without students';
 $string['profoundness_0'] = 'not reached';
 $string['profoundness_1'] = 'partially gained';

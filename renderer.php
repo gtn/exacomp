@@ -1522,7 +1522,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		global $additional_grading;
 		$topicparam = optional_param('topicid', 0, PARAM_INT);
 
-		if (count($topics) > 1 || $topicparam == block_exacomp\SHOW_ALL_TOPICS) {
+		if (block_exacomp_is_topicgrading_enabled() || count($topics) > 1 || $topicparam == block_exacomp\SHOW_ALL_TOPICS) {
 			// display topic row
 			$display_topic_header_row = true;
 			$child_level = $level+1;
@@ -1574,7 +1574,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
 			$topicRow->cells[] = $nivCell;
 			
-			if(!$statistic){
+			if(!$statistic && block_exacomp_is_topicgrading_enabled()){
 				foreach($students as $student) {
 					$studentCell = new html_table_cell();
 					$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
@@ -1652,14 +1652,15 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					
 				   
 				}
-			}else{
+			}elseif(!$editmode) {
 				$statCell = new html_table_cell();
 				$statCell->text = "";
-
+				$statCell->colspan = ($data->showevaluation) ? count($students) * 3 : count($students) * 2;
+				
 				$topicRow->cells[] = $statCell;
 			}
 
-			if ($display_topic_header_row) {
+			if (!empty($topic->descriptors) && $display_topic_header_row) {
 				$rows[] = $topicRow;
 			}
 
@@ -2215,7 +2216,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					}else{ 
 						$statCell = new html_table_cell();
 						$statCell->text = $this->print_statistic_table($data->courseid, $students, $example, false, $data->scheme);
-						
 		
 						$exampleRow->cells[] = $statCell;
 					}
@@ -2444,10 +2444,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		}
 		return html_writer::div($content,'spaltenbrowser');
 	}
-	public function print_student_evaluation($showevaluation, $isTeacher=true,$niveauid = SHOW_ALL_NIVEAUS, $topicid=0, $studentid=0) {
+	public function print_student_evaluation($showevaluation, $isTeacher=true,$niveauid = SHOW_ALL_NIVEAUS, $subjectid=0, $topicid=-1, $studentid=0) {
 		global $COURSE;
 
-		$link = new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid" => $COURSE->id, "showevaluation" => (($showevaluation) ? "0" : "1"),'niveauid'=>$niveauid,'topicid'=>$topicid, 'studentid'=>$studentid));
+		$link = new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid" => $COURSE->id, "showevaluation" => (($showevaluation) ? "0" : "1"),'niveauid'=>$niveauid,'topicid'=>$topicid, 'studentid'=>$studentid, 'ng_subjectid'=>$subjectid));
 		$evaluation = $this->box_start();
 		$evaluation .= get_string('overview','block_exacomp');
 		$evaluation .= html_writer::empty_tag("br");

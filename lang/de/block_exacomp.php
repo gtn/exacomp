@@ -172,6 +172,7 @@ $string['show_all_descriptors'] = 'Alle Deskriptoren im &Uuml;berblick anzeigen'
 $string['show_all_examples'] = 'Externe Beispiele für Teilnehmer anzeigen';
 $string['usedetailpage'] = 'Detaillierte Kompetenzansicht verwenden';
 $string['useprofoundness'] = 'Erweiterungs- und Grundkompetenzen verwenden';
+$string['usetopicgrading'] = 'Beurteilung von Teilbereichen ermöglichen';
 $string['usenostudents'] = 'Ohne Kursteilnehmer/innen arbeiten';
 $string['profoundness_0'] = 'Nicht erreicht';
 $string['profoundness_1'] = 'Zum Teil erreicht';

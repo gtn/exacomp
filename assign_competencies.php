@@ -206,7 +206,7 @@ echo '<div class="clearfix"></div>';
 if($course_settings->nostudents != 1)
 	echo $output->print_overview_legend($isTeacher);
 if($course_settings->nostudents != 1 && $studentid)
-	echo $output->print_student_evaluation($showevaluation, $isTeacher,$selectedNiveau->id,$selectedTopic->id, $studentid);
+	echo $output->print_student_evaluation($showevaluation, $isTeacher,$selectedNiveau->id,$ng_subjectid, $topicid, $studentid);
 echo $output->print_competence_overview($competence_tree, $courseid, $students, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, (block_exacomp_is_altversion() && $selectedNiveau->id != block_exacomp\SHOW_ALL_NIVEAUS), false, 0, $statistic);
 echo '</div>';
 

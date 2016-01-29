@@ -826,7 +826,9 @@ function block_exacomp_is_skillsmanagement() {
 function block_exacomp_is_altversion() {
 	return get_config('exacomp', 'alternativedatamodel');
 }
-
+function block_exacomp_is_topicgrading_enabled() {
+	return get_config('exacomp', 'usetopicgrading');
+}
 /**
  * Returns a list of descriptors from a particular course
  *
