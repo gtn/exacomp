@@ -1,3 +1,6 @@
+.collapsibleList {
+  display: none;
+}
 .collapsibleList li{
   list-style-image:url('button.png');
   cursor:auto;
