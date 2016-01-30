@@ -95,4 +95,3 @@ $capabilities = array(
 				)
 		)
 );
-?>

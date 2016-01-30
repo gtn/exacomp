@@ -26,10 +26,10 @@
 global $DB;
 require_once __DIR__.'/inc.php';
 
-$courseid = optional_param('courseid', 0, PARAM_INT);
+$courseid = required_param('courseid', PARAM_INT);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-	error("That's an invalid course id");
+	print_error("That's an invalid course id");
 }
 
 require_login($course);
@@ -41,12 +41,14 @@ $url = '/blocks/exacomp/externaltrainers.php';
 $PAGE->set_url($url);
 
 $coursecontext = context_course::instance($courseid);
-$students = get_role_users(5, $coursecontext);
+
+$students = get_users_by_capability($coursecontext, 'block/exacomp:student');
+
 $selectstudents = array();
 foreach($students as $student) {
 	$selectstudents[$student->id] = fullname($student); 
 }
-$noneditingteachers = get_role_users(4, $coursecontext);
+$noneditingteachers = get_users_by_capability($coursecontext, 'block/exacomp:teacher');
 $selectteachers= array();
 foreach($noneditingteachers as $noneditingteacher) {
 	$selectteachers[$noneditingteacher->id] = fullname($noneditingteacher);
@@ -75,12 +77,12 @@ echo $output->heading(get_string('block_exacomp_external_trainer_assign','block_
 echo '<form method="post">';
 echo get_string('block_exacomp_external_trainer','block_exacomp');
 echo html_writer::select($selectteachers, 'trainerid');
-echo get_string('block_exacomp_external_trainer_student','block_exacomp');
+echo '&nbsp;&nbsp;&nbsp;&nbsp;'.get_string('block_exacomp_external_trainer_student','block_exacomp');
 echo html_writer::select($selectstudents, 'studentid');
 echo '<input type="submit">';
 echo '</form>';
 
-echo '<table>';
+echo '<table id="user-table">';
 echo '<tr><th>Trainer</th><th>Schüler</th><th></th></tr>';
 foreach($externaltrainers as $trainer) {
 	echo '<tr>';
