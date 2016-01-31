@@ -1,4 +1,7 @@
 <?php
+
+require_once __DIR__.'/../lib/lib.php';
+
 function xmldb_block_exacomp_upgrade($oldversion) {
 	global $DB,$CFG;
 	$dbman = $DB->get_manager();
@@ -1509,9 +1512,9 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		global $DB;
 	
 		$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype '
-				.'FROM {'.block_exacomp::DB_TOPICS.'} t JOIN {'.block_exacomp::DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($topicid > 0) ? ' AND t.id = '.$topicid.' ' : '')
-				.'JOIN {'.block_exacomp::DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
-						.'JOIN {'.block_exacomp::DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id '.')';
+				.'FROM {'.\block_exacomp\DB_TOPICS.'} t JOIN {'.\block_exacomp\DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($topicid > 0) ? ' AND t.id = '.$topicid.' ' : '')
+				.'JOIN {'.\block_exacomp\DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
+						.'JOIN {'.\block_exacomp\DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id '.')';
 
 		$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid));
 
@@ -1580,8 +1583,8 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			$descriptors = array();
 			
 			$sql = 'SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description
-				FROM {'.block_exacomp::DB_TOPICS.'} t
-				JOIN {'.block_exacomp::DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.
+				FROM {'.\block_exacomp\DB_TOPICS.'} t
+				JOIN {'.\block_exacomp\DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.
 						'ORDER BY t.sorting, t.subjid
 						';
 			//GROUP By funktioniert nur mit allen feldern im select, aber nicht mit strings
@@ -1595,7 +1598,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			}
 			//only one entry, even descriptor belongs to more than one topic
 			foreach($descriptors as $descriptor){
-				$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$descriptor->id, 'studentid'=>0, 'visible'=>1));
+				$DB->insert_record(\block_exacomp\DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$descriptor->id, 'studentid'=>0, 'visible'=>1));
 			}
 		}
 		upgrade_block_savepoint(true, 2015052900, 'exacomp');
@@ -1826,14 +1829,14 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		global $DB;
 	
 		$sql = 'SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description, t.numb, t.source
-		FROM {'.block_exacomp::DB_TOPICS.'} t
-		JOIN {'.block_exacomp::DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.(($subjectid > 0) ? 'AND t.subjid = ? ': '').'
-		JOIN {'.block_exacomp::DB_SUBJECTS.'} s ON t.subjid=s.id -- join subject here, to make sure only topics with existing subject are loaded
+		FROM {'.\block_exacomp\DB_TOPICS.'} t
+		JOIN {'.\block_exacomp\DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.(($subjectid > 0) ? 'AND t.subjid = ? ': '').'
+		JOIN {'.\block_exacomp\DB_SUBJECTS.'} s ON t.subjid=s.id -- join subject here, to make sure only topics with existing subject are loaded
 		'.($showalldescriptors ? '' : '
 		-- only show active ones
-		JOIN {'.block_exacomp::DB_DESCTOPICS.'} topmm ON topmm.topicid=t.id
-		JOIN {'.block_exacomp::DB_DESCRIPTORS.'} d ON topmm.descrid=d.id
-		JOIN {'.block_exacomp::DB_COMPETENCE_ACTIVITY.'} da ON (d.id=da.compid AND da.comptype = '.TYPE_DESCRIPTOR.') OR (t.id=da.compid AND da.comptype = '.TYPE_TOPIC.')
+		JOIN {'.\block_exacomp\DB_DESCTOPICS.'} topmm ON topmm.topicid=t.id
+		JOIN {'.\block_exacomp\DB_DESCRIPTORS.'} d ON topmm.descrid=d.id
+		JOIN {'.\block_exacomp\DB_COMPETENCE_ACTIVITY.'} da ON (d.id=da.compid AND da.comptype = '.TYPE_DESCRIPTOR.') OR (t.id=da.compid AND da.comptype = '.TYPE_TOPIC.')
 		JOIN {course_modules} a ON da.activityid=a.id AND a.course=ct.courseid
 		').'
 		ORDER BY t.sorting
@@ -1851,13 +1854,13 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		$courses = block_exacomp_get_courseids();
 		
 		foreach($courses as $course){
-			$visibilities = $DB->get_fieldset_select(block_exacomp::DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=0', array($course));
+			$visibilities = $DB->get_fieldset_select(\block_exacomp\DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=0', array($course));
 			
 			//get all cross subject descriptors - to support cross-course subjects descriptor visibility must be kept
-			$cross_subjects = $DB->get_records(block_exacomp::DB_CROSSSUBJECTS, array('courseid'=>$course));
+			$cross_subjects = $DB->get_records(\block_exacomp\DB_CROSSSUBJECTS, array('courseid'=>$course));
 			$cross_subjects_descriptors = array();
 			foreach($cross_subjects as $crosssub){
-				$cross_subject_descriptors = $DB->get_fieldset_select(block_exacomp::DB_DESCCROSS, 'descrid', 'crosssubjid=?', array($crosssub->id));
+				$cross_subject_descriptors = $DB->get_fieldset_select(\block_exacomp\DB_DESCCROSS, 'descrid', 'crosssubjid=?', array($crosssub->id));
 				foreach($cross_subject_descriptors as $descriptor)
 				if(!in_array($descriptor, $cross_subjects_descriptors)){
 					$cross_subjects_descriptors[] = $descriptor;
@@ -1883,13 +1886,13 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			foreach($descriptors as $descriptor){
 				//new descriptors in table
 				if(!in_array($descriptor->id, $visibilities))
-					$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, array("courseid"=>$course, "descrid"=>$descriptor->id, "studentid"=>0, "visible"=>1));
+					$DB->insert_record(\block_exacomp\DB_DESCVISIBILITY, array("courseid"=>$course, "descrid"=>$descriptor->id, "studentid"=>0, "visible"=>1));
 			
 				$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $course, true, array(SHOW_ALL_TAXONOMIES), true, false);
 				
 				foreach($descriptor->children as $childdescriptor){
 					if(!in_array($childdescriptor->id, $visibilities))
-						$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, array("courseid"=>$course, "descrid"=>$childdescriptor->id, "studentid"=>0, "visible"=>1));
+						$DB->insert_record(\block_exacomp\DB_DESCVISIBILITY, array("courseid"=>$course, "descrid"=>$childdescriptor->id, "studentid"=>0, "visible"=>1));
 			
 					if(!array_key_exists($childdescriptor->id, $finaldescriptors))
 						$finaldescriptors[$childdescriptor->id] = $childdescriptor;
@@ -1901,7 +1904,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 				if(!array_key_exists($visible, $finaldescriptors)){
 					//check if used in cross-subjects --> then it must still be visible
 					if(!in_array($visible, $cross_subjects_descriptors))
-						$DB->delete_records(block_exacomp::DB_DESCVISIBILITY, array("courseid"=>$course, "descrid"=>$visible));
+						$DB->delete_records(\block_exacomp\DB_DESCVISIBILITY, array("courseid"=>$course, "descrid"=>$visible));
 				}
 			}	
 		}
@@ -1917,16 +1920,16 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		$subjectid = 0; $showallexamples = true; $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES); $showonlyvisible=false;
 		
 		$sql = 'SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.parentid, n.sorting niveau, dvis.visible as visible, d.sorting '
-		.' FROM {'.block_exacomp::DB_TOPICS.'} t '
-		.(($courseid>0)?' JOIN {'.block_exacomp::DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
-		.' JOIN {'.block_exacomp::DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
-		.' JOIN {'.block_exacomp::DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid=0 '
+		.' FROM {'.\block_exacomp\DB_TOPICS.'} t '
+		.(($courseid>0)?' JOIN {'.\block_exacomp\DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
+		.' JOIN {'.\block_exacomp\DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
+		.' JOIN {'.\block_exacomp\DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid=0 '
 		.' -- left join, because courseid=0 has no descvisibility!
-			LEFT JOIN {'.block_exacomp::DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=?'
+			LEFT JOIN {'.\block_exacomp\DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=?'
 		.($showonlyvisible?' AND dvis.visible = 1 ':'') 
-		.' LEFT JOIN {'.block_exacomp::DB_NIVEAUS.'} n ON d.niveauid = n.id '		
+		.' LEFT JOIN {'.\block_exacomp\DB_NIVEAUS.'} n ON d.niveauid = n.id '
 		.($showalldescriptors ? '' : '
-				JOIN {'.block_exacomp::DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
+				JOIN {'.\block_exacomp\DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
 				JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':''))
 		.' ORDER BY d.sorting';
 		
@@ -1942,19 +1945,19 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	function upgrade_block_exacomp_2015072102_get_child_descriptors($parent, $courseid, $showalldescriptors = false, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $showallexamples = true, $mindvisibility = true, $showonlyvisible=false ) {
 		global $DB;
 	
-		if(!$DB->record_exists(block_exacomp::DB_DESCRIPTORS, array("parentid" => $parent->id))) {
+		if(!$DB->record_exists(\block_exacomp\DB_DESCRIPTORS, array("parentid" => $parent->id))) {
 			return array();
 		}
 	
 			$sql = 'SELECT d.id, d.title, d.niveauid, d.source, \'descriptor\' as tabletype, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, '.
 					($mindvisibility?'dvis.visible as visible, ':'').' d.sorting
-		FROM {'.block_exacomp::DB_DESCRIPTORS.'} d '
-	.($mindvisibility ? 'JOIN {'.block_exacomp::DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 '
+		FROM {'.\block_exacomp\DB_DESCRIPTORS.'} d '
+	.($mindvisibility ? 'JOIN {'.\block_exacomp\DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 '
 			.($showonlyvisible? 'AND dvis.visible=1 ':'') : '');
 
 		/* activity association only for parent descriptors
 		 .($showalldescriptors ? '' : '
-		 JOIN {'.block_exacomp::DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
+		 JOIN {'.\block_exacomp\DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
 		 JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':''));
 		 */
 		$sql .= ' WHERE d.parentid = ?';
@@ -1992,9 +1995,9 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 						if($child->sorting==0){
 							$max_sorting++;
 							$child->sorting = $max_sorting;
-							$child_descriptor = $DB->get_record(block_exacomp::DB_DESCRIPTORS, array('id'=>$child->id));
+							$child_descriptor = $DB->get_record(\block_exacomp\DB_DESCRIPTORS, array('id'=>$child->id));
 							$child_descriptor->sorting = $max_sorting;
-							$DB->update_record(block_exacomp::DB_DESCRIPTORS, $child_descriptor);
+							$DB->update_record(\block_exacomp\DB_DESCRIPTORS, $child_descriptor);
 						}
 					}
 				}
@@ -2005,7 +2008,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	}
 	if($oldversion < 2015072301){
 		// Define field id to be added to block_exacompcrosssubjects.
-		$table = new xmldb_table(block_exacomp::DB_CROSSSUBJECTS);
+		$table = new xmldb_table(\block_exacomp\DB_CROSSSUBJECTS);
 		$field = new xmldb_field('subjectid', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'shared');	
 		// Conditionally launch add field id.
 		if (!$dbman->field_exists($table, $field)) {
@@ -2070,7 +2073,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		}
 		
 		//update table
-		$descriptors = $DB->get_records(block_exacomp::DB_DESCRIPTORS);
+		$descriptors = $DB->get_records(\block_exacomp\DB_DESCRIPTORS);
 		foreach($descriptors as $descriptor){
 			$insert = new stdClass();
 			$insert->descrid = $descriptor->id;
@@ -2097,7 +2100,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		}
 
  		//update table
-		$examples = $DB->get_records(block_exacomp::DB_EXAMPLES);
+		$examples = $DB->get_records(\block_exacomp\DB_EXAMPLES);
 		foreach($examples as $example){
 			$insert = new stdClass();
 			$insert->exampleid = $example->id;
@@ -2167,12 +2170,12 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 				"SELECT de.id as deid, e.id, e.title, e.externalurl, e.source, ".
 					($mind_visibility?"evis.visible,":"")."
 					e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe
-					FROM {" . block_exacomp::DB_EXAMPLES . "} e
-					JOIN {" . block_exacomp::DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?"
-				.($mind_visibility?' JOIN {'.block_exacomp::DB_EXAMPVISIBILITY.'} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.courseid=? '
+					FROM {" . \block_exacomp\DB_EXAMPLES . "} e
+					JOIN {" . \block_exacomp\DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?"
+				.($mind_visibility?' JOIN {'.\block_exacomp\DB_EXAMPVISIBILITY.'} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.courseid=? '
 				.($showonlyvisible?' AND evis.visible = 1 ':''):'') 
 				. " WHERE "
-				. " e.source != " . block_exacomp::EXAMPLE_SOURCE_USER . " AND "
+				. " e.source != " . \block_exacomp\EXAMPLE_SOURCE_USER . " AND "
 				. (($showallexamples) ? " 1=1 " : " e.creatorid > 0")
 				// . " ORDER BY de.sorting" there is no sorting field yet
 				, array($descriptor->id, $courseid));
@@ -2222,12 +2225,12 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			"SELECT de.id as deid, e.id, e.title, e.externalurl, e.source, ".
 				($mind_visibility?"evis.visible,":"")."
 				e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe
-				FROM {" . block_exacomp::DB_EXAMPLES . "} e
-				JOIN {" . block_exacomp::DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?"
-			.($mind_visibility?' JOIN {'.block_exacomp::DB_EXAMPVISIBILITY.'} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.courseid=? '
+				FROM {" . \block_exacomp\DB_EXAMPLES . "} e
+				JOIN {" . \block_exacomp\DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?"
+			.($mind_visibility?' JOIN {'.\block_exacomp\DB_EXAMPVISIBILITY.'} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.courseid=? '
 			.($showonlyvisible?' AND evis.visible = 1 ':''):'')
 			. " WHERE "
-			. " e.source != " . block_exacomp::EXAMPLE_SOURCE_USER . " AND "
+			. " e.source != " . \block_exacomp\EXAMPLE_SOURCE_USER . " AND "
 			. (($showallexamples) ? " 1=1 " : " e.creatorid > 0")
 				// . " ORDER BY de.sorting" there is no sorting field yet
 			, array($descriptor->id, $courseid));
@@ -2317,7 +2320,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			}
 			//only one entry, even descriptor belongs to more than one topic
 			foreach($examples as $example){
-				$DB->insert_record(block_exacomp::DB_EXAMPVISIBILITY, array('courseid'=>$course, 'exampleid'=>$example->id, 'studentid'=>0, 'visible'=>1));
+				$DB->insert_record(\block_exacomp\DB_EXAMPVISIBILITY, array('courseid'=>$course, 'exampleid'=>$example->id, 'studentid'=>0, 'visible'=>1));
 			}
 		}
 		
@@ -2396,7 +2399,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			);
 		}
 		
-		$examples = $DB->get_records(block_exacomp::DB_EXAMPLES);
+		$examples = $DB->get_records(\block_exacomp\DB_EXAMPLES);
 		foreach($examples as $example){
 			$update = upgrade_block_exacomp_2015082500_move_to_file_storage($example, 'example_task');
 			$update += upgrade_block_exacomp_2015082500_move_to_file_storage($example, 'example_solution');
@@ -2405,7 +2408,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			
 			$update['id'] = $example->id;
 			
-			$DB->update_record(block_exacomp::DB_EXAMPLES, $update);
+			$DB->update_record(\block_exacomp\DB_EXAMPLES, $update);
 		}
 		
 		// TODO: delete file url fields (task, solution)
@@ -2423,10 +2426,10 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Launch change of default for field sorting.
 		$dbman->change_field_default($table, $field);
 	
-		$examplesWithoutSorting = $DB->get_records_select(block_exacomp::DB_EXAMPLES,"sorting is null");
+		$examplesWithoutSorting = $DB->get_records_select(\block_exacomp\DB_EXAMPLES,"sorting is null");
 		foreach($examplesWithoutSorting as $exampleWithoutSorting) {
 			$exampleWithoutSorting->sorting = $exampleWithoutSorting->id;
-			$DB->update_record(block_exacomp::DB_EXAMPLES, $exampleWithoutSorting);
+			$DB->update_record(\block_exacomp\DB_EXAMPLES, $exampleWithoutSorting);
 		}
 		
 		// Exacomp savepoint reached.
@@ -2484,13 +2487,13 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		}
 
 		//initialize sorting 
-		$descriptors = $DB->get_records(block_exacomp::DB_DESCRIPTORS);
+		$descriptors = $DB->get_records(\block_exacomp\DB_DESCRIPTORS);
 		foreach($descriptors as $descriptor){
-			$desc_examp_mm = $DB->get_records(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptor->id));
+			$desc_examp_mm = $DB->get_records(\block_exacomp\DB_DESCEXAMP, array('descrid'=>$descriptor->id));
 			$i = 1;
 			foreach($desc_examp_mm as $desc_examp){
 				$desc_examp->sorting = $i;
-				$DB->update_record(block_exacomp::DB_DESCEXAMP, $desc_examp);
+				$DB->update_record(\block_exacomp\DB_DESCEXAMP, $desc_examp);
 			}
 		}
 		// Exacomp savepoint reached.

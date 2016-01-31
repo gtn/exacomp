@@ -40,7 +40,7 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
 			foreach($data->exacomp['taxonomies']['taxonomy'] as $taxonomy) {
 				$taxonomy = (object)$taxonomy;
 				
-				if (!$dbTaxonomy = $this->get_db_record(block_exacomp::DB_TAXONOMIES, $taxonomy)) {
+				if (!$dbTaxonomy = $this->get_db_record(\block_exacomp\DB_TAXONOMIES, $taxonomy)) {
 					continue;
 				}
 				
@@ -57,13 +57,13 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
 			
 			$settings->filteredtaxonomies = $taxonomies ? json_encode($taxonomies) : array(SHOW_ALL_TAXONOMIES);
 			
-			block_exacomp\globals::$DB->insert_or_update_record(block_exacomp::DB_SETTINGS, $settings, array('courseid'=>$this->get_courseid()));
+			block_exacomp\globals::$DB->insert_or_update_record(\block_exacomp\DB_SETTINGS, $settings, array('courseid'=>$this->get_courseid()));
 		}
 
 		if (isset($data->exacomp['mdltypes']['mdltype'])) {
 			foreach ($data->exacomp['mdltypes']['mdltype'] as $mdltype) {
 				$mdltype = (object)$mdltype;
-				if (!$schooltype = $this->get_db_record(block_exacomp::DB_SCHOOLTYPES, $mdltype)) {
+				if (!$schooltype = $this->get_db_record(\block_exacomp\DB_SCHOOLTYPES, $mdltype)) {
 					continue;
 				}
 
@@ -79,11 +79,11 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
 			foreach($data->exacomp['topics']['topic'] as $topic) {
 				$topic = (object)$topic;
 				
-				if (!$dbTopic = $this->get_db_record(block_exacomp::DB_TOPICS, $topic)) {
+				if (!$dbTopic = $this->get_db_record(\block_exacomp\DB_TOPICS, $topic)) {
 					continue;
 				}
 				
-				block_exacomp\globals::$DB->insert_or_update_record(block_exacomp::DB_COURSETOPICS, array('topicid' => $dbTopic->id, 'courseid' => $this->get_courseid()));
+				block_exacomp\globals::$DB->insert_or_update_record(\block_exacomp\DB_COURSETOPICS, array('topicid' => $dbTopic->id, 'courseid' => $this->get_courseid()));
 			}
 		}
 		
@@ -100,10 +100,10 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
 			foreach ($data->exacomp['activities']['compactiv_mm'] as $descractiv_mm) {
 				$descractiv_mm = (object)$descractiv_mm;
 				
-				if ($descractiv_mm->comptype == block_exacomp::TYPE_DESCRIPTOR) {
-					$table = block_exacomp::DB_DESCRIPTORS;
-				} else if ($descractiv_mm->comptype == block_exacomp::TYPE_TOPIC) {
-					$table = block_exacomp::DB_TOPICS;
+				if ($descractiv_mm->comptype == \block_exacomp\TYPE_DESCRIPTOR) {
+					$table = \block_exacomp\DB_DESCRIPTORS;
+				} else if ($descractiv_mm->comptype == \block_exacomp\TYPE_TOPIC) {
+					$table = \block_exacomp\DB_TOPICS;
 				} else {
 					print_error("unknown comptype {$descractiv_mm->comptype}");
 				}

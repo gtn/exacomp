@@ -37,7 +37,7 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 }
 
 // error if example does not exist or was created by somebody else
-if ($crosssubjid > 0 && (!$crosssubject = $DB->get_record(block_exacomp::DB_CROSSSUBJECTS, array('id' => $crosssubjid))))
+if ($crosssubjid > 0 && (!$crosssubject = $DB->get_record(\block_exacomp\DB_CROSSSUBJECTS, array('id' => $crosssubjid))))
 {
 	print_error('invalidexample', 'block_exacomp', $exampleid);
 }
@@ -63,7 +63,7 @@ if(!$students) {
 	exit;
 }
 
-$assigned_students = $DB->get_records_menu(block_exacomp::DB_CROSSSTUD,array('crosssubjid'=>$crosssubjid),'','studentid,crosssubjid');
+$assigned_students = $DB->get_records_menu(\block_exacomp\DB_CROSSSTUD,array('crosssubjid'=>$crosssubjid),'','studentid,crosssubjid');
 $shared = $crosssubject->shared;
 echo "<div>";
 echo get_string('share_crosssub_with_all', 'block_exacomp', $crosssubject->title);

@@ -54,7 +54,7 @@ $PAGE->set_pagelayout('embedded');
 
 block_exacomp_require_teacher($context);
 
-// TODO: check permissions, check if item is block_exacomp::DATA_SOURCE_CUSTOM
+// TODO: check permissions, check if item is \block_exacomp\DATA_SOURCE_CUSTOM
 
 if ($item && optional_param('action', '', PARAM_TEXT) == 'delete') {
 	$item->delete();
@@ -80,7 +80,7 @@ class block_exacomp_local_item_form extends moodleform {
 
 		$mform->addElement('selectgroups', 'niveauid', \block_exacomp\get_string('niveau'), block_exacomp\get_select_niveau_items());
 
-		$element = $mform->addElement('select', 'categories', \block_exacomp\get_string('categories'), $DB->get_records_menu(block_exacomp::DB_CATEGORIES, null, 'title', 'id, title'));
+		$element = $mform->addElement('select', 'categories', \block_exacomp\get_string('categories'), $DB->get_records_menu(\block_exacomp\DB_CATEGORIES, null, 'title', 'id, title'));
 		$element->setMultiple(true);
 		
 		$this->add_action_buttons(false);
@@ -90,7 +90,7 @@ class block_exacomp_local_item_form extends moodleform {
 $form = new block_exacomp_local_item_form($_SERVER['REQUEST_URI']);
 
 if ($item) {
-	$data = $item->getData();
+	$data = $item->get_data();
 	// also load category ids for form
 	$data->categories = $item->category_ids;
 	$form->set_data($data);
@@ -104,14 +104,14 @@ if($formdata = $form->get_data()) {
 	
 	if (!$item) {
 		die('TODO');
-		$new->source = block_exacomp::DATA_SOURCE_CUSTOM;
+		$new->source = \block_exacomp\DATA_SOURCE_CUSTOM;
 		$new->sourceid = 0;
 		$new->subjid = required_param('subjectid', PARAM_INT);
 		
-		$new->id = $DB->insert_record(block_exacomp::DB_TOPICS, $new);
+		$new->id = $DB->insert_record(\block_exacomp\DB_TOPICS, $new);
 		
 		// add topic to course
-		$DB->insert_record(block_exacomp::DB_COURSETOPICS, array(
+		$DB->insert_record(\block_exacomp\DB_COURSETOPICS, array(
 			'courseid' => $courseid,
 			'topicid' => $new->id
 		));

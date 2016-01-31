@@ -2,7 +2,7 @@
 
 require_once __DIR__.'/inc.php';
 
-use \block_exacomp\common\url as url;
+use block_exacomp\common\url as url;
 
 class block_exacomp_common_url_testcase extends basic_testcase {
 	public function test_copy() {

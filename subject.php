@@ -54,7 +54,7 @@ $PAGE->set_pagelayout('embedded');
 
 block_exacomp_require_teacher($context);
 
-// TODO: check permissions, check if item is block_exacomp::DATA_SOURCE_CUSTOM
+// TODO: check permissions, check if item is \block_exacomp\DATA_SOURCE_CUSTOM
 
 if ($item && optional_param('action', '', PARAM_TEXT) == 'delete') {
 	$item->delete();
@@ -88,7 +88,7 @@ class block_exacomp_local_item_form extends moodleform {
 }
 
 $form = new block_exacomp_local_item_form($_SERVER['REQUEST_URI']);
-if ($item) $form->set_data($item->getData());
+if ($item) $form->set_data($item->get_data());
 
 if($formdata = $form->get_data()) {
 	
@@ -98,22 +98,22 @@ if($formdata = $form->get_data()) {
 	$new->titleshort = substr($formdata->title, 0, 1);
 	
 	if (!$item) {
-		$new->source = block_exacomp::DATA_SOURCE_CUSTOM;
+		$new->source = \block_exacomp\DATA_SOURCE_CUSTOM;
 		$new->sourceid = 0;
 	
-		$new->id = $DB->insert_record(block_exacomp::DB_SUBJECTS, $new);
+		$new->id = $DB->insert_record(\block_exacomp\DB_SUBJECTS, $new);
 		
 		// add one dummy topic
-		$topicid = $DB->insert_record(block_exacomp::DB_TOPICS, array(
+		$topicid = $DB->insert_record(\block_exacomp\DB_TOPICS, array(
 			'title' => \block_exacomp\trans(['de:Neuer Raster', 'en:New competence grid']),
 			'subjid' => $new->id,
 			'numb' => 1,
-			'source' => block_exacomp::DATA_SOURCE_CUSTOM,
+			'source' => \block_exacomp\DATA_SOURCE_CUSTOM,
 			'sourceid' => 0
 		));
 	
 		// add dummy topic to course
-		$DB->insert_record(block_exacomp::DB_COURSETOPICS, array(
+		$DB->insert_record(\block_exacomp\DB_COURSETOPICS, array(
 			'courseid' => $courseid,
 			'topicid' => $topicid
 		));

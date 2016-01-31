@@ -5,7 +5,6 @@ namespace block_exacomp;
 defined('MOODLE_INTERNAL') || die();
 
 use block_exacomp\globals as g;
-use \block_exacomp;
 
 class db_layer {
 
@@ -69,16 +68,16 @@ class db_layer {
 
 
 		$sql = 'SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.parentid, n.sorting niveau, dvis.visible as visible, d.sorting '
-					.' FROM {'.block_exacomp::DB_TOPICS.'} t '
-							.(($this->courseid>0)?' JOIN {'.block_exacomp::DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
-							.' JOIN {'.block_exacomp::DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
-									.' JOIN {'.block_exacomp::DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid=0 '
+					.' FROM {'.DB_TOPICS.'} t '
+							.(($this->courseid>0)?' JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
+							.' JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
+									.' JOIN {'.DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid=0 '
 											.' -- left join, because courseid=0 has no descvisibility!
-		LEFT JOIN {'.block_exacomp::DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=?'
+		LEFT JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=?'
 						.($this->showonlyvisible?' AND dvis.visible = 1 ':'')
-						.' LEFT JOIN {'.block_exacomp::DB_NIVEAUS.'} n ON d.niveauid = n.id '
+						.' LEFT JOIN {'.DB_NIVEAUS.'} n ON d.niveauid = n.id '
 								.($this->showalldescriptors ? '' : '
-			JOIN {'.block_exacomp::DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
+			JOIN {'.DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
 			JOIN {course_modules} a ON da.activityid=a.id '.(($this->courseid>0)?'AND a.course=?':''))
 					.' ORDER BY d.sorting';
 
@@ -90,7 +89,7 @@ class db_layer {
 	}
 
 	function get_examples($descriptor) {
-		$dummy = $descriptor->getData();
+		$dummy = $descriptor->get_data();
 		block_exacomp_get_examples_for_descriptor($dummy, $this->filteredtaxonomies, $this->showallexamples, $this->courseid, false, false);
 
 		return example::create_objects($dummy->examples, array(
@@ -111,13 +110,13 @@ class db_layer {
 
 		$sql = 'SELECT d.id, d.title, d.niveauid, d.source, \'descriptor\' as tabletype, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, '.
 				($this->mindvisibility?'dvis.visible as visible, ':'').' d.sorting
-			FROM {'.block_exacomp::DB_DESCRIPTORS.'} d '
-						.($this->mindvisibility ? 'JOIN {'.block_exacomp::DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 '
+			FROM {'.DB_DESCRIPTORS.'} d '
+						.($this->mindvisibility ? 'JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 '
 								.($this->showonlyvisible? 'AND dvis.visible=1 ':'') : '');
 
 		/* activity association only for parent descriptors
 		 .($this->showalldescriptors ? '' : '
-		 JOIN {'.block_exacomp::DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
+		 JOIN {'.DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
 		 JOIN {course_modules} a ON da.activityid=a.id '.(($this->courseid>0)?'AND a.course=?':''));
 		*/
 		$sql .= ' WHERE d.parentid = ?';
@@ -224,8 +223,8 @@ class db_layer {
 
 		return topic::create_objects($DB->get_records_sql('
 			SELECT t.id, t.title, t.parentid, t.subjid, t.source, t.numb
-			FROM {'.block_exacomp::DB_SUBJECTS.'} s
-			JOIN {'.block_exacomp::DB_TOPICS.'} t ON t.subjid = s.id
+			FROM {'.DB_SUBJECTS.'} s
+			JOIN {'.DB_TOPICS.'} t ON t.subjid = s.id
 				-- only show active ones
 				WHERE s.id = ?
 			ORDER BY t.id, t.sorting, t.subjid
@@ -365,7 +364,7 @@ class db_record {
 	public function init() {
 	}
 
-	public function getData() {
+	public function get_data() {
 		return clone $this->data;
 	}
 
@@ -582,7 +581,7 @@ class db_record {
 }
 
 class subject extends db_record {
-	const TABLE = block_exacomp::DB_SUBJECTS;
+	const TABLE = DB_SUBJECTS;
 
 	function fill_topics() {
 		return $this->dbLayer->get_topics_for_subject($this);
@@ -594,7 +593,7 @@ class subject extends db_record {
 }
 
 class topic extends db_record {
-	const TABLE = block_exacomp::DB_TOPICS;
+	const TABLE = DB_TOPICS;
 
 	function get_numbering() {
 		if (!isset($this->subject)) {
@@ -622,7 +621,7 @@ class topic extends db_record {
 }
 
 class descriptor extends db_record {
-	const TABLE = block_exacomp::DB_DESCRIPTORS;
+	const TABLE = DB_DESCRIPTORS;
 
 	function init() {
 		if (!isset($this->data->parent)) {
@@ -640,11 +639,11 @@ class descriptor extends db_record {
 
 		if($this->parentid == 0){
 			//Descriptor im Topic
-			$desctopicmm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$this->id, 'topicid'=>$topic->id));
+			$desctopicmm = $DB->get_record(DB_DESCTOPICS, array('descrid'=>$this->id, 'topicid'=>$topic->id));
 			$numbering .= $desctopicmm->sorting;
 		}else{
 			//Parent-Descriptor im Topic
-			$desctopicmm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$this->parentid, 'topicid'=>$topic->id));
+			$desctopicmm = $DB->get_record(DB_DESCTOPICS, array('descrid'=>$this->parentid, 'topicid'=>$topic->id));
 			$numbering .= $desctopicmm->sorting.'.';
 
 			$numbering .= $this->sorting;
@@ -676,7 +675,7 @@ class descriptor extends db_record {
 		$topic = isset($descriptor->topicid) ? topic::get($descriptor->topicid) : null;
 
 		if ($parent_descriptor) {
-		   $descriptor_topic_mm = $DB->get_record(block_exacomp::DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
+		   $descriptor_topic_mm = $DB->get_record(DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
 		   $topicid = $descriptor_topic_mm->topicid;
 
 		   $parent_descriptor->topicid = $topicid;
@@ -694,7 +693,7 @@ class descriptor extends db_record {
 		// get $max_sorting
 		$max_sorting = $siblings ? max(array_map(function($x) { return $x->sorting; }, $siblings)) : 0;
 
-		$descriptor->source = block_exacomp::CUSTOM_CREATED_DESCRIPTOR;
+		$descriptor->source = CUSTOM_CREATED_DESCRIPTOR;
 		$descriptor->sorting = $max_sorting + 1;
 		$descriptor->insert();
 
@@ -704,14 +703,14 @@ class descriptor extends db_record {
 		$visibility->studentid = 0;
 		$visibility->visible = 1;
 
-		$DB->insert_record(block_exacomp::DB_DESCVISIBILITY, $visibility);
+		$DB->insert_record(DB_DESCVISIBILITY, $visibility);
 
 		//topic association
 		$childdesctopic_mm = new \stdClass();
 		$childdesctopic_mm->topicid = $topicid;
 		$childdesctopic_mm->descrid = $descriptor->id;
 
-		$DB->insert_record(block_exacomp::DB_DESCTOPICS, $childdesctopic_mm);
+		$DB->insert_record(DB_DESCTOPICS, $childdesctopic_mm);
 
 		return $descriptor;
 	}
@@ -721,24 +720,24 @@ class descriptor extends db_record {
 		global $DB;
 
 		// read current
-		$to_delete = $current = $DB->get_records_menu(block_exacomp::DB_DESCCAT, array('descrid' => $this->id), null, 'catid, id');
+		$to_delete = $current = $DB->get_records_menu(DB_DESCCAT, array('descrid' => $this->id), null, 'catid, id');
 
 		// add new ones
 		foreach ($categories as $id) {
 			if (!isset($current[$id])) {
-				$DB->insert_record(block_exacomp::DB_DESCCAT, array('descrid' => $this->id, 'catid' => $id));
+				$DB->insert_record(DB_DESCCAT, array('descrid' => $this->id, 'catid' => $id));
 			} else {
 				unset($to_delete[$id]);
 			}
 		}
 
 		// delete old ones
-		$DB->delete_records_list(block_exacomp::DB_DESCCAT, 'id', $to_delete);
+		$DB->delete_records_list(DB_DESCCAT, 'id', $to_delete);
 	}
 
 	function fill_category_ids() {
 		global $DB;
-		return $DB->get_records_menu(block_exacomp::DB_DESCCAT, array('descrid' => $this->id), null, 'catid, catid AS tmp');
+		return $DB->get_records_menu(DB_DESCCAT, array('descrid' => $this->id), null, 'catid, catid AS tmp');
 	}
 
 	function fill_children() {
@@ -751,7 +750,7 @@ class descriptor extends db_record {
 }
 
 class example extends db_record {
-	const TABLE = block_exacomp::DB_EXAMPLES;
+	const TABLE = DB_EXAMPLES;
 
 	function get_numbering() {
 		if (!isset($this->descriptor)) {
@@ -772,9 +771,9 @@ class example extends db_record {
 }
 
 class niveau extends db_record {
-	const TABLE = block_exacomp::DB_NIVEAUS;
+	const TABLE = DB_NIVEAUS;
 
 	function get_subtitle($subjectid) {
-		return g::$DB->get_field(block_exacomp::DB_SUBJECT_NIVEAU_MM, 'subtitle', ['subjectid' => $subjectid, 'niveauid' => $this->id]); // none for now
+		return g::$DB->get_field(DB_SUBJECT_NIVEAU_MM, 'subtitle', ['subjectid' => $subjectid, 'niveauid' => $this->id]); // none for now
 	}
 }

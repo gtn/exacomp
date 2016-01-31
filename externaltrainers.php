@@ -58,14 +58,14 @@ $trainerid = optional_param('trainerid', 0, PARAM_INT);
 $studentid = optional_param('studentid', 0, PARAM_INT);
 
 if($trainerid > 0 && $studentid) {
-	if(!$DB->record_exists('block_exacompexternaltrainer', array('trainerid'=>$trainerid,'studentid'=>$studentid)))  
-		$DB->insert_record('block_exacompexternaltrainer', array('trainerid'=>$trainerid,'studentid'=>$studentid));
+	if(!$DB->record_exists(\block_exacomp\DB_EXTERNAL_TRAINERS, array('trainerid'=>$trainerid,'studentid'=>$studentid)))
+		$DB->insert_record(\block_exacomp\DB_EXTERNAL_TRAINERS, array('trainerid'=>$trainerid,'studentid'=>$studentid));
 }
 if(($delete = optional_param('delete',0,PARAM_INT)) > 0) {
-	$DB->delete_records('block_exacompexternaltrainer',array('id'=>$delete));
+	$DB->delete_records(\block_exacomp\DB_EXTERNAL_TRAINERS,array('id'=>$delete));
 }
 
-$externaltrainers = $DB->get_records('block_exacompexternaltrainer');
+$externaltrainers = $DB->get_records(\block_exacomp\DB_EXTERNAL_TRAINERS);
 
 $PAGE->set_title(get_string('block_exacomp_external_trainer_assign','block_exacomp'));
 

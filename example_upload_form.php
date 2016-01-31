@@ -69,7 +69,7 @@ class block_exacomp_example_upload_form extends moodleform {
 
 		$tselect = $mform->addElement('select', 'taxid', get_string('taxonomy', 'block_exacomp'),$this->_customdata['taxonomies']);
 		$tselect->setMultiple(true);
-		$tselect->setSelected(array_keys($DB->get_records(block_exacomp::DB_EXAMPTAX,array("exampleid" => $this->_customdata['exampleid']),"","taxid")));
+		$tselect->setSelected(array_keys($DB->get_records(\block_exacomp\DB_EXAMPTAX,array("exampleid" => $this->_customdata['exampleid']),"","taxid")));
 
 		$mform->addElement('header', 'link', get_string('link','block_exacomp'));
 		

@@ -161,7 +161,7 @@ switch($action){
 			))));
 			foreach ($competencies_by_type as $comptype => $competencies) {
 				foreach($competencies as $comp){
-					block_exacomp_set_user_competence ( $comp->userid, $comp->compid, $comptype, $courseid, ($isTeacher) ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $comp->value );
+					block_exacomp_set_user_competence ( $comp->userid, $comp->compid, $comptype, $courseid, ($isTeacher) ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $comp->value );
 				}
 			}
 		}
@@ -179,7 +179,7 @@ switch($action){
 				if (empty($update_crosssubj->title)) unset($update_crosssubj->title);
 				
 				// TODO: pruefen ob mein crosssubj?
-				$DB->update_record(block_exacomp::DB_CROSSSUBJECTS, $update_crosssubj);
+				$DB->update_record(\block_exacomp\DB_CROSSSUBJECTS, $update_crosssubj);
 			}
 		}
 		
@@ -190,7 +190,7 @@ switch($action){
 				'value' => PARAM_INT
 			)));
 			foreach($examples as $example){
-				block_exacomp_set_user_example($example->userid, $example->exampleid, $courseid, ($isTeacher) ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $example->value);
+				block_exacomp_set_user_example($example->userid, $example->exampleid, $courseid, ($isTeacher) ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $example->value);
 			}
 		}
 		
@@ -229,16 +229,16 @@ switch($action){
 		// TODO: pruefen ob mein crosssubj?
 		
 		//delete student-crosssubject association
-		$DB->delete_records(block_exacomp::DB_CROSSSTUD, array('crosssubjid'=>$crosssubjectid));
+		$DB->delete_records(\block_exacomp\DB_CROSSSTUD, array('crosssubjid'=>$crosssubjectid));
 		
 		//delete descriptor-crosssubject association
-		$DB->delete_records(block_exacomp::DB_DESCCROSS, array('crosssubjid'=>$crosssubjectid));
+		$DB->delete_records(\block_exacomp\DB_DESCCROSS, array('crosssubjid'=>$crosssubjectid));
 		
 		//delete crosssubject overall evaluations
-		$DB->delete_records(block_exacomp::DB_COMPETENCIES, array('compid'=>$crosssubjectid, 'comptype'=>TYPE_CROSSSUB));
+		$DB->delete_records(\block_exacomp\DB_COMPETENCIES, array('compid'=>$crosssubjectid, 'comptype'=>TYPE_CROSSSUB));
 		
 		//delete crosssubject
-		$DB->delete_records(block_exacomp::DB_CROSSSUBJECTS, array('id'=>$crosssubjectid));
+		$DB->delete_records(\block_exacomp\DB_CROSSSUBJECTS, array('id'=>$crosssubjectid));
 		break;
 	case 'set-example-start-end':
 		$scheduleid = required_param('scheduleid', PARAM_INT);

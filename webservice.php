@@ -91,7 +91,7 @@ class simple_service {
 
 		$subjects = search_competence_grid_as_tree($courseid, $q);
 
-		return static::json_items($subjects, \block_exacomp::DB_SUBJECTS);
+		return static::json_items($subjects, \block_exacomp\DB_SUBJECTS);
 	}
 
 	static function get_examples_as_list() {
@@ -106,7 +106,7 @@ class simple_service {
 
 		$examples = search_competence_grid_as_example_list($courseid, $q);
 
-		return static::json_items($examples, \block_exacomp::DB_EXAMPLES);
+		return static::json_items($examples, \block_exacomp\DB_EXAMPLES);
 	}
 
 	private static function json_items($items, $by) {
@@ -135,7 +135,7 @@ class simple_service {
 					'title' => $item->title,
 					'children' => static::json_items($item->children, $by),
 				];
-				if ($by == \block_exacomp::DB_SUBJECTS) {
+				if ($by == \block_exacomp\DB_SUBJECTS) {
 					$results[$item->id]->examples = static::json_items($item->examples, $by);
 				}
 			}
@@ -144,7 +144,7 @@ class simple_service {
 					'id' => $item->id,
 					'title' => $item->title,
 				];
-				if ($by == \block_exacomp::DB_EXAMPLES) {
+				if ($by == \block_exacomp\DB_EXAMPLES) {
 					// for example list
 					$results[$item->id]->subjects = static::json_items($item->subjects, $by);
 				}

@@ -80,7 +80,7 @@ if($action == 'new_crosssub' && isset($_POST['crosssub-title'])){
 	$insert->subjectid = (isset($_POST['lis_crosssubject_subject']))?$_POST['lis_crosssubject_subject']:0;
 	$insert->courseid = $courseid;
 	
-	$crosssubjid = $DB->insert_record(block_exacomp::DB_CROSSSUBJECTS, $insert);
+	$crosssubjid = $DB->insert_record(\block_exacomp\DB_CROSSSUBJECTS, $insert);
 }
 
 $activities = block_exacomp_get_activities_by_course($courseid);
@@ -216,7 +216,7 @@ else{
 
 	if($selectedCrosssubject){
 		echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
-		echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? block_exacomp::ROLE_TEACHER : block_exacomp::ROLE_STUDENT, $scheme, false, true, $selectedCrosssubject->id, $statistic);
+		echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $scheme, false, true, $selectedCrosssubject->id, $statistic);
 		echo html_writer::end_tag("div");
 	}else{
 		echo html_writer::empty_tag('input', array('name'=>'create_crosssub', 'type'=>'submit', 'value'=>get_string('add_crosssub', 'block_exacomp')));

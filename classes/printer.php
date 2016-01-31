@@ -5,7 +5,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once $CFG->dirroot.'/lib/tcpdf/tcpdf.php';
 
-use \block_exacomp\globals as g;
+use block_exacomp\globals as g;
 
 class printer_TCPDF extends \TCPDF {
 	private $_header = '';

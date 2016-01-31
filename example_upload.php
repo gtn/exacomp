@@ -69,7 +69,7 @@ $topics = $DB->get_records("block_exacomptopics", array("subjid"=>$topicsub->sub
 
 $example_descriptors = array();
 if($exampleid>0)
-	$example_descriptors = $DB->get_records(block_exacomp::DB_DESCEXAMP,array('exampid'=>$exampleid),'','descrid');
+	$example_descriptors = $DB->get_records(\block_exacomp\DB_DESCEXAMP,array('exampid'=>$exampleid),'','descrid');
 
 $tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid, $descrid);
 $csettings = block_exacomp_get_settings_by_course($courseid);
@@ -118,7 +118,7 @@ if($formdata = $form->get_data()) {
 		$newExample->externalurl = (filter_var($formdata->externalurl, FILTER_VALIDATE_URL) == TRUE) ? $formdata->externalurl : "http://" . $formdata->externalurl;
 	else
 		$newExample->externalurl = null;
-	$newExample->source = block_exacomp::EXAMPLE_SOURCE_TEACHER;
+	$newExample->source = \block_exacomp\EXAMPLE_SOURCE_TEACHER;
 
 	$newExample->externaltask = '';
 	if(!empty($formdata->assignment)) {
@@ -141,7 +141,7 @@ if($formdata = $form->get_data()) {
 	//insert taxid in exampletax_mm
 	if(isset($formdata->taxid)) {
 		foreach($formdata->taxid as $tax => $taxid)
-			block_exacomp\globals::$DB->insert_or_update_record(block_exacomp::DB_EXAMPTAX, array(
+			block_exacomp\globals::$DB->insert_or_update_record(\block_exacomp\DB_EXAMPTAX, array(
 				'exampleid' => $newExample->id,
 				'taxid' => $taxid
 			));
@@ -154,9 +154,9 @@ if($formdata = $form->get_data()) {
 		}
 		
 		foreach($descriptors as $descriptorid){
-			$desc_examp = $DB->get_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
+			$desc_examp = $DB->get_record(\block_exacomp\DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
 			if(!$desc_examp){
-				$sql = "SELECT MAX(sorting) as sorting FROM {".block_exacomp::DB_DESCEXAMP."} WHERE descrid=?";
+				$sql = "SELECT MAX(sorting) as sorting FROM {".\block_exacomp\DB_DESCEXAMP."} WHERE descrid=?";
 				$max_sorting = $DB->get_record_sql($sql, array($descriptorid)); 
 				$sorting = intval($max_sorting->sorting)+1;
 				$insert = new stdClass();
@@ -164,15 +164,15 @@ if($formdata = $form->get_data()) {
 				$insert->exampid = $newExample->id;
 				$insert->sorting = $sorting;
 				
-				$DB->insert_record(block_exacomp::DB_DESCEXAMP, $insert);
+				$DB->insert_record(\block_exacomp\DB_DESCEXAMP, $insert);
 		}
-			//block_exacomp_globals::$DB->insert_or_update_record(block_exacomp::DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
+			//block_exacomp_globals::$DB->insert_or_update_record(\block_exacomp\DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
 	}
 	}
 	
 	//add visibility if not exists
-	if (!$DB->get_record(block_exacomp::DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$newExample->id, 'studentid'=>0))) {
-		$DB->insert_record(block_exacomp::DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$newExample->id, 'studentid'=>0, 'visible'=>1));
+	if (!$DB->get_record(\block_exacomp\DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$newExample->id, 'studentid'=>0))) {
+		$DB->insert_record(\block_exacomp\DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$newExample->id, 'studentid'=>0, 'visible'=>1));
 	}
 	block_exacomp_settstamp();
 	
@@ -199,7 +199,7 @@ if($exampleid > 0) {
 			array('subdirs' => 0, 'maxfiles' => 1));
 	$example->solution = $draftitemid;
 	
-	$form->set_data($example->getData());
+	$form->set_data($example->get_data());
 }
 
 $form->display();

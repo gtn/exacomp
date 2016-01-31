@@ -118,16 +118,16 @@ if ($action == 'delete_selected') {
 	}
 	if ($delete_examples) {
 		// TODO auch filestorage loeschen
-		$DB->delete_records_list(block_exacomp::DB_EXAMPLES, 'id', $delete_examples);
+		$DB->delete_records_list(\block_exacomp\DB_EXAMPLES, 'id', $delete_examples);
 	}
 	if ($delete_descriptors) {
-		$DB->delete_records_list(block_exacomp::DB_DESCRIPTORS, 'id', $delete_descriptors);
+		$DB->delete_records_list(\block_exacomp\DB_DESCRIPTORS, 'id', $delete_descriptors);
 	}
 	if ($delete_topics) {
-		$DB->delete_records_list(block_exacomp::DB_TOPICS, 'id', $delete_topics);
+		$DB->delete_records_list(\block_exacomp\DB_TOPICS, 'id', $delete_topics);
 	}
 	if ($delete_subjects) {
-		$DB->delete_records_list(block_exacomp::DB_SUBJECTS, 'id', $delete_subjects);
+		$DB->delete_records_list(\block_exacomp\DB_SUBJECTS, 'id', $delete_subjects);
 	}
 	
 	block_exacomp_data::normalize_database();

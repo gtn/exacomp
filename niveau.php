@@ -51,7 +51,7 @@ $PAGE->set_pagelayout('embedded');
 
 block_exacomp_require_teacher($context);
 
-// TODO: check permissions, check if item is block_exacomp::DATA_SOURCE_CUSTOM
+// TODO: check permissions, check if item is \block_exacomp\DATA_SOURCE_CUSTOM
 
 require_once $CFG->libdir . '/formslib.php';
 
@@ -115,12 +115,12 @@ if($formdata = $form->get_data()) {
 	
 	if ($formdata->niveau_type == 'new') {
 		$niveau = new stdClass;
-		$niveau->sorting = $DB->get_field(block_exacomp::DB_NIVEAUS, 'MAX(sorting)', array()) + 1;
-		$niveau->source = block_exacomp::EXAMPLE_SOURCE_TEACHER;
+		$niveau->sorting = $DB->get_field(\block_exacomp\DB_NIVEAUS, 'MAX(sorting)', array()) + 1;
+		$niveau->source = \block_exacomp\EXAMPLE_SOURCE_TEACHER;
 		$niveau->title = $formdata->niveau_title;
-		$niveau->id = $DB->insert_record(block_exacomp::DB_NIVEAUS, $niveau);
+		$niveau->id = $DB->insert_record(\block_exacomp\DB_NIVEAUS, $niveau);
 	} else {
-		$niveau = $DB->get_record(block_exacomp::DB_NIVEAUS, array('id' => $formdata->niveau_id), '*', MUST_EXIST);
+		$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id' => $formdata->niveau_id), '*', MUST_EXIST);
 	}
 	
 	if ($formdata->descriptor_type == 'new') {
@@ -140,14 +140,14 @@ if($formdata = $form->get_data()) {
 	$mm->catid = $formdata->category;
 	
 	if (!$item) {
-		$new->source = block_exacomp::DATA_SOURCE_CUSTOM;
+		$new->source = \block_exacomp\DATA_SOURCE_CUSTOM;
 		$new->sourceid = 0;
 		$new->subjid = required_param('subjectid', PARAM_INT);
 		
-		$new->id = $DB->insert_record(block_exacomp::DB_TOPICS, $new);
+		$new->id = $DB->insert_record(\block_exacomp\DB_TOPICS, $new);
 		
 		// add topic to course
-		$DB->insert_record(block_exacomp::DB_COURSETOPICS, array(
+		$DB->insert_record(\block_exacomp\DB_COURSETOPICS, array(
 			'courseid' => $courseid,
 			'topicid' => $new->id
 		));
