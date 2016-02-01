@@ -9,6 +9,10 @@ namespace block_exacomp\common;
 defined('MOODLE_INTERNAL') || die();
 
 class url extends \moodle_url {
+	public static function create($url, array $params = null, $anchor = null) {
+		return new static($url, $params, $anchor);
+	}
+
 	/**
 	 * 
 	 * @param array $overrideparams new attributes for object
