@@ -172,7 +172,7 @@ function block_exacomp_get_subject_by_id($subjectid) {
 }
 /**
  * Gets all subjects that are in use in a particular course.
- * 
+ *
  * @param int $courseid
  * @param bool $showalldescriptors default false, show only comps with activities
  * @return array $subjects
@@ -554,7 +554,7 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 		return -1;
 	if($role == \block_exacomp\ROLE_TEACHER)
 		block_exacomp_require_teacher($courseid);
-	
+
 	$id = -1;
 
 	if($record = block_exacomp\get_comp_eval($courseid, $role, $userid, $comptype, $compid)) {
@@ -5466,7 +5466,7 @@ function block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted
 
 	if($entry->studentid != $USER->id)
 		block_exacomp_require_teacher($entry->courseid);
-	
+
 	$DB->update_record(\block_exacomp\DB_SCHEDULE, $entry);
 }
 
@@ -5476,7 +5476,7 @@ function block_exacomp_remove_example_from_schedule($scheduleid){
 	$entry = $DB->get_record(\block_exacomp\DB_SCHEDULE, array('id' => $scheduleid));
 	if($entry->studentid != $USER->id)
 		block_exacomp_require_teacher($entry->courseid);
-	
+
 	$DB->delete_records(\block_exacomp\DB_SCHEDULE, array('id'=>$scheduleid));
 }
 
@@ -6237,7 +6237,7 @@ namespace block_exacomp {
 					$global_scheme_values = array();
 					for($i=0; $i<=$scheme; $i++)
 						$global_scheme_values[] = $i;
-						
+
 				}else
 					$global_scheme_values = array('0', '1', '2', '3');
 			}
@@ -6262,10 +6262,10 @@ namespace block_exacomp {
 					$global_scheme_values = array();
 					for($i=0; $i<=$scheme; $i++)
 						$global_scheme_values[] = $i;
-					
+
 					return $global_scheme_values;
 				}
-				
+
 				return array('0', '1', '2', '3');
 			} else {
 				return array('', '*', '**', '***');
@@ -6438,12 +6438,12 @@ namespace block_exacomp {
 				if ($item instanceof descriptor) {
 					if ($find($item)) {
 						$filter_not_empty($item->children);
+						return true;
 					} else {
 						$filter($item->examples);
 						$filter($item->children);
+						return $item->examples || $item->children;
 					}
-
-					return $item->examples || $item->children;
 				}
 				if ($item instanceof example) {
 					return $find($item);
