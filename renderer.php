@@ -872,16 +872,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 								$text = html_writer::link(new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid"=>$courseid,"subjectid"=>$topicid,"topicid"=>$descriptor->id,"studentid"=>$studentid)),$text,array("id" => "competence-grid-link-".$descriptor->id,"class" => ($visible) ? '' : 'deactivated'));
 							}
 
-							if(isset($descriptor->children) && count($descriptor->children) > 0 && !block_exacomp_is_altversion()) {
-								$children = '<ul class="childdescriptors">';
-								foreach($descriptor->children as $child)
-									$children .= '<li>' . block_exacomp_get_descriptor_numbering($descriptor)." ".$child->title . '</li>';
-								$children .= '</ul>';
-							}
 							$compString .= $text;
-
-							if(isset($descriptor->children) && count($descriptor->children) > 0 && !block_exacomp_is_altversion())
-								$compString .= $children;
 
 							$cssClass = "content";
 							if($descriptor->parentid > 0)
