@@ -830,6 +830,9 @@ function block_exacomp_is_altversion() {
 function block_exacomp_is_topicgrading_enabled() {
 	return get_config('exacomp', 'usetopicgrading');
 }
+function block_exacomp_is_numbering_enabled() {
+	return get_config('exacomp', 'usenumbering');
+}
 /**
  * Returns a list of descriptors from a particular course
  *
@@ -4858,7 +4861,7 @@ function block_exacomp_calculate_statistic_for_example($courseid, $students, $ex
 function block_exacomp_get_descriptor_numbering($descriptor){
 	global $DB;
 
-	if(block_exacomp_is_altversion()){
+	if(block_exacomp_is_numbering_enabled()){
 		$topicid = $descriptor->topicid;
 
 		$numbering = block_exacomp_get_topic_numbering($topicid);
@@ -4891,7 +4894,7 @@ function block_exacomp_get_topic_numbering($topic){
 	} else {
 	   $topic = block_exacomp_get_topic_by_id($topic);
 	}
-	if(block_exacomp_is_altversion()){
+	if(block_exacomp_is_numbering_enabled()){
 		$numbering = block_exacomp_get_subject_by_id($topic->subjid)->titleshort.'.';
 
 		//topic

@@ -99,3 +99,6 @@ $settings->add(new admin_setting_configcheckbox('exacomp/useprofoundness', get_s
 
 $settings->add(new admin_setting_configcheckbox('exacomp/usetopicgrading', get_string('usetopicgrading', 'block_exacomp'),
 		'' /* \block_exacomp\trans('en:todo') */, 0));
+
+$settings->add(new admin_setting_configcheckbox('exacomp/usenumbering', get_string('usenumbering', 'block_exacomp'),
+		'' /* \block_exacomp\trans('en:todo') */, 1));
