@@ -35,16 +35,16 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 require_login($course);
 
 $context = context_system::instance();
+$coursecontext = context_course::instance($courseid);
 
-require_capability('block/exacomp:assignstudents', $context);
+require_capability('block/exacomp:teacher', $coursecontext);
 $url = '/blocks/exacomp/externaltrainers.php';
 $PAGE->set_url($url);
-
-$coursecontext = context_course::instance($courseid);
 
 $students = get_users_by_capability($coursecontext, 'block/exacomp:student');
 
 $selectstudents = array();
+$selectstudents[0] = get_string('block_exacomp_external_trainer_allstudents','block_exacomp');
 foreach($students as $student) {
 	$selectstudents[$student->id] = fullname($student); 
 }
@@ -54,13 +54,20 @@ foreach($noneditingteachers as $noneditingteacher) {
 	$selectteachers[$noneditingteacher->id] = fullname($noneditingteacher);
 }
 
-$trainerid = optional_param('trainerid', 0, PARAM_INT);
-$studentid = optional_param('studentid', 0, PARAM_INT);
+$trainerid = optional_param('trainerid', -1, PARAM_INT);
+$studentid = optional_param('studentid', -1, PARAM_INT);
 
-if($trainerid > 0 && $studentid) {
-	if(!$DB->record_exists(\block_exacomp\DB_EXTERNAL_TRAINERS, array('trainerid'=>$trainerid,'studentid'=>$studentid)))
-		$DB->insert_record(\block_exacomp\DB_EXTERNAL_TRAINERS, array('trainerid'=>$trainerid,'studentid'=>$studentid));
+
+if($trainerid > 0 && $studentid > 0) {
+    if(!$DB->record_exists('block_exacompexternaltrainer', array('trainerid'=>$trainerid,'studentid'=>$studentid)))  
+        $DB->insert_record('block_exacompexternaltrainer', array('trainerid'=>$trainerid,'studentid'=>$studentid));  
+} elseif($trainerid > 0 && $studentid == 0) {
+	foreach($students as $student) {
+		if(!$DB->record_exists('block_exacompexternaltrainer', array('trainerid'=>$trainerid,'studentid'=>$student->id)))
+			$DB->insert_record('block_exacompexternaltrainer', array('trainerid'=>$trainerid,'studentid'=>$student->id));
+	}
 }
+
 if(($delete = optional_param('delete',0,PARAM_INT)) > 0) {
 	$DB->delete_records(\block_exacomp\DB_EXTERNAL_TRAINERS,array('id'=>$delete));
 }

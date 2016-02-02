@@ -421,6 +421,7 @@ $string['block_exacomp_external_trainer_assign'] = 'Externe Trainer zuordnen';
 $string['block_exacomp_external_trainer_assign_new'] = 'Neue Zuordnung: ';
 $string['block_exacomp_external_trainer'] = 'Ausbilder: ';
 $string['block_exacomp_external_trainer_student'] = 'Auszubildender: ';
+$string['block_exacomp_external_trainer_allstudents'] = 'Alle Teilnehmer';
 
 //Crosssubjects
 $string['empty_draft'] = 'Neues Thema';

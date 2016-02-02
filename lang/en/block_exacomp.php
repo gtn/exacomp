@@ -380,6 +380,7 @@ $string['block_exacomp_external_trainer_assign'] = 'Assign external trainers';
 $string['block_exacomp_external_trainer_assign_new'] = 'New assign: ';
 $string['block_exacomp_external_trainer'] = 'Trainer';
 $string['block_exacomp_external_trainer_student'] = 'Student';
+$string['block_exacomp_external_trainer_allstudents'] = 'All Students';
 
 
 //Crosssubjects
