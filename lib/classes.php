@@ -67,7 +67,7 @@ class db_layer {
 			$this->showalldescriptors = block_exacomp_get_settings_by_course($this->courseid)->show_all_descriptors;
 
 
-		$sql = 'SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.parentid, n.sorting niveau, dvis.visible as visible, d.sorting '
+		$sql = 'SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, d.profoundness, d.parentid, n.sorting niveau, dvis.visible as visible, d.sorting '
 					.' FROM {'.DB_TOPICS.'} t '
 							.(($this->courseid>0)?' JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
 							.' JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
@@ -108,7 +108,7 @@ class db_layer {
 		if(!$this->showalldescriptors)
 			$this->showalldescriptors = block_exacomp_get_settings_by_course($this->courseid)->show_all_descriptors;
 
-		$sql = 'SELECT d.id, d.title, d.niveauid, d.source, \'descriptor\' as tabletype, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, '.
+		$sql = 'SELECT d.id, d.title, d.niveauid, d.source, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, '.
 				($this->mindvisibility?'dvis.visible as visible, ':'').' d.sorting
 			FROM {'.DB_DESCRIPTORS.'} d '
 						.($this->mindvisibility ? 'JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 '

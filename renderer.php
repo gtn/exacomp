@@ -4404,7 +4404,6 @@ var dataset = dataset.map(function (group) {
 		$usedTopics = array();
 		foreach ($allDescriptors as $descriptor) {
 			$descriptor->topicid = $DB->get_field(\block_exacomp\DB_DESCTOPICS, 'topicid', array('descrid' => $descriptor->id), IGNORE_MULTIPLE);
-			$descriptor->tabletype = 'descriptor';
 			// get descriptor topic
 			if (empty($allTopics[$descriptor->topicid])) continue;
 			$topic = $allTopics[$descriptor->topicid];

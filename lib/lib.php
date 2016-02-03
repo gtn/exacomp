@@ -168,7 +168,7 @@ function block_exacomp_require_admin($context = null) {
  */
 function block_exacomp_get_subject_by_id($subjectid) {
 	global $DB;
-	return $DB->get_record(\block_exacomp\DB_SUBJECTS,array("id" => $subjectid),'id, title, titleshort, \'subject\' as tabletype, source, author');
+	return $DB->get_record(\block_exacomp\DB_SUBJECTS,array("id" => $subjectid),'id, title, titleshort, source, author');
 }
 /**
  * Gets all subjects that are in use in a particular course.
@@ -184,7 +184,7 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
 	$sql = '
-	SELECT DISTINCT s.id, s.titleshort, s.title, s.stid, s.infolink, s.description, s.source, s.sorting, s.author, \'subject\' as tabletype
+	SELECT DISTINCT s.id, s.titleshort, s.title, s.stid, s.infolink, s.description, s.source, s.sorting, s.author
 	FROM {'.\block_exacomp\DB_SUBJECTS.'} s
 	JOIN {'.\block_exacomp\DB_TOPICS.'} t ON t.subjid = s.id
 	JOIN {'.\block_exacomp\DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?
@@ -206,7 +206,7 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
  */
 function block_exacomp_get_all_subjects() {
 	global $DB;
-	return $DB->get_records(\block_exacomp\DB_SUBJECTS,array(),'','id, title, \'subject\' as tabletype, source, sourceid, author');
+	return $DB->get_records(\block_exacomp\DB_SUBJECTS,array(),'','id, title, source, sourceid, author');
 }
 /**
  * This method is only used in the LIS version
@@ -249,7 +249,7 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 	global $DB;
 
 	if($courseid == 0) {
-		$sql = 'SELECT s.id, s.title, \'subject\' as tabletype
+		$sql = 'SELECT s.id, s.title
 		FROM {'.\block_exacomp\DB_SUBJECTS.'} s
 		JOIN {'.\block_exacomp\DB_TOPICS.'} t ON t.subjid = s.id
 		GROUP BY s.id, s.title, s.stid
@@ -258,7 +258,7 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 
 		return $DB->get_records_sql($sql);
 	} else if($subjectid != null) {
-		$sql = 'SELECT s.id, s.title, \'subject\' as tabletype
+		$sql = 'SELECT s.id, s.title
 		FROM {'.\block_exacomp\DB_SUBJECTS.'} s
 		JOIN {'.\block_exacomp\DB_TOPICS.'} t ON t.subjid = s.id
 		WHERE s.id = ?
@@ -269,7 +269,7 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 	}
 
 	$subjects = $DB->get_records_sql('
-			SELECT s.id, s.title, s.stid, \'subject\' as tabletype
+			SELECT s.id, s.title, s.stid
 			FROM {'.\block_exacomp\DB_SUBJECTS.'} s
 			JOIN {'.\block_exacomp\DB_TOPICS.'} t ON t.subjid = s.id
 			JOIN {'.\block_exacomp\DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?
@@ -461,7 +461,7 @@ function block_exacomp_get_all_topics($subjectid = null) {
 	global $DB;
 
 	$topics = $DB->get_records_sql('
-			SELECT t.id, t.sorting, t.numb, t.title, t.parentid, t.subjid, \'topic\' as tabletype, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
+			SELECT t.id, t.sorting, t.numb, t.title, t.parentid, t.subjid, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
 			FROM {'.\block_exacomp\DB_SUBJECTS.'} s
 			JOIN {'.\block_exacomp\DB_TOPICS.'} t ON t.subjid = s.id
 			'.($subjectid == null ? '' : '
@@ -481,7 +481,7 @@ function block_exacomp_get_topic_by_id($topicid) {
 	global $DB;
 
 	$topic = $DB->get_record_sql('
-			SELECT t.id, t.title, t.parentid, t.subjid, \'topic\' as tabletype, t.numb
+			SELECT t.id, t.title, t.parentid, t.subjid, t.numb
 			FROM {'.\block_exacomp\DB_TOPICS.'} t
 			WHERE t.id = ?
 			', array($topicid));
@@ -882,7 +882,7 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
 
-	$sql = 'SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.parentid, n.sorting AS niveau_sorting, n.title AS niveau_title, dvis.visible as visible, d.sorting '
+	$sql = 'SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, d.profoundness, d.parentid, n.sorting AS niveau_sorting, n.title AS niveau_title, dvis.visible as visible, d.sorting '
 	.' FROM {'.\block_exacomp\DB_TOPICS.'} t '
 	.(($courseid>0)?' JOIN {'.\block_exacomp\DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
 	.' JOIN {'.\block_exacomp\DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
@@ -947,7 +947,7 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescrip
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
-	$sql = 'SELECT d.id, d.title, d.niveauid, d.source, \'descriptor\' as tabletype, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, '.
+	$sql = 'SELECT d.id, d.title, d.niveauid, d.source, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, '.
 			($mindvisibility?'dvis.visible as visible, ':'').' d.sorting
 			FROM {'.\block_exacomp\DB_DESCRIPTORS.'} d '
 			.($mindvisibility ? 'JOIN {'.\block_exacomp\DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 '
@@ -1059,7 +1059,7 @@ function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldes
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
-	$sql = '(SELECT DISTINCT d.id, desctopmm.id as u_id, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.requirement, d.knowledgecheck, d.benefit, d.sorting, n.title as cattitle '
+	$sql = '(SELECT DISTINCT d.id, desctopmm.id as u_id, d.title, d.niveauid, t.id AS topicid, d.requirement, d.knowledgecheck, d.benefit, d.sorting, n.title as cattitle '
 	.'FROM {'.\block_exacomp\DB_TOPICS.'} t JOIN {'.\block_exacomp\DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($topicid > 0) ? ' AND t.id = '.$topicid.' ' : '')
 	.'JOIN {'.\block_exacomp\DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
 	.'JOIN {'.\block_exacomp\DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid=0 '
@@ -3632,7 +3632,6 @@ function block_exacomp_init_exaport_items($items){
 		if($item_comps){
 			$item->hascomps = true;
 			$item->descriptors = array();
-			$item->tabletype = 'item';
 			foreach($item_comps as $item_comp){
 				$item->descriptors[$item_comp->compid]  = $DB->get_record(\block_exacomp\DB_DESCRIPTORS, array('id'=>$item_comp->compid));
 			}
@@ -4199,7 +4198,7 @@ function block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
-	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.source, d.title, d.niveauid, t.id AS topicid, \'descriptor\' as tabletype, d.profoundness, d.sorting, d.parentid, dvis.visible as visible, n.sorting as niveau '
+	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.source, d.title, d.niveauid, t.id AS topicid, d.profoundness, d.sorting, d.parentid, dvis.visible as visible, n.sorting as niveau '
 	.'FROM {'.\block_exacomp\DB_TOPICS.'} t '
 	.'JOIN {'.\block_exacomp\DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
 	.'JOIN {'.\block_exacomp\DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid = 0 '
