@@ -111,8 +111,7 @@ function block_exacomp_get_context_from_courseid($courseid) {
 	} else if (is_numeric($courseid)) { // don't use is_int, because eg. moodle $COURSE->id is a string!
 		return context_course::instance($courseid);
 	} else if ($courseid === null) {
-		global $COURSE;
-		return context_course::instance($COURSE->id);
+		return context_course::instance(g::$COURSE->id);
 	} else {
 		print_error('wrong courseid type '.gettype($courseid));
 	}
@@ -269,7 +268,7 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 	}
 
 	$subjects = $DB->get_records_sql('
-			SELECT s.id, s.title, s.stid
+			SELECT DISTINCT s.id, s.title, s.stid
 			FROM {'.\block_exacomp\DB_SUBJECTS.'} s
 			JOIN {'.\block_exacomp\DB_TOPICS.'} t ON t.subjid = s.id
 			JOIN {'.\block_exacomp\DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?
@@ -280,7 +279,6 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 					JOIN {'.\block_exacomp\DB_COMPETENCE_ACTIVITY.'} ca ON (d.id=ca.compid AND ca.comptype = '.TYPE_DESCRIPTOR.') OR (t.id=ca.compid AND ca.comptype = '.TYPE_TOPIC.')
 					JOIN {course_modules} a ON ca.activityid=a.id AND a.course=ct.courseid
 					').'
-			GROUP BY id
 			ORDER BY s.sorting, s.title
 			', array($courseid));
 
@@ -3133,6 +3131,15 @@ function block_exacomp_get_exacomp_courses($userid) {
 	return $user_courses;
 }
 
+function block_exacomp_get_teacher_courses($userid) {
+	$courses = block_exacomp_get_exacomp_courses($userid);
+	foreach ($courses as $key=>$course) {
+		if (!block_exacomp_is_teacher(context_course::instance($course->id))) {
+			// unset($courses[$key]);
+		}
+	}
+	return $courses;
+}
 /**
  *
  * This method is used to display course information in the profile overview
@@ -6580,10 +6587,66 @@ namespace block_exacomp {
 		}
 	}
 
-	function has_item_capability($cap, $item) {
+	function require_item_capability($cap, $item) {
 		if ($item instanceof example && in_array($cap, [CAP_MODIFY, CAP_DELETE])) {
 			if ($item->creatorid != g::$USER->id) {
-				return false;
+				throw new permission_exception('User is not creator');
+			}
+		} elseif ($item instanceof subject && in_array($cap, [CAP_MODIFY, CAP_DELETE])) {
+			if (!block_exacomp_is_teacher(g::$COURSE->id)) {
+				throw new permission_exception('User is no teacher');
+			}
+
+			$subjects = block_exacomp_get_subjects(g::$COURSE->id);
+			if (!isset($subjects[$item->id])) {
+				throw new permission_exception('No course subject');
+			}
+
+
+			if ($item->source != DATA_SOURCE_CUSTOM) {
+				throw new permission_exception('Not a custom subject');
+			}
+		} elseif ($item instanceof topic && in_array($cap, [CAP_MODIFY, CAP_DELETE])) {
+			if (!block_exacomp_is_teacher(g::$COURSE->id)) {
+				throw new permission_exception('User is no teacher');
+			}
+
+			$topics = block_exacomp_get_topics_by_course(g::$COURSE->id);
+			if (!isset($topics[$item->id])) {
+				throw new permission_exception('No course topic');
+			}
+
+
+			if ($item->source != DATA_SOURCE_CUSTOM) {
+				throw new permission_exception('Not a custom topic');
+			}
+		} elseif ($item instanceof descriptor && in_array($cap, [CAP_MODIFY, CAP_DELETE])) {
+			if (!block_exacomp_is_teacher(g::$COURSE->id)) {
+				throw new permission_exception('User is no teacher');
+			}
+
+			// find descriptor in course
+			$descriptors = block_exacomp_get_descriptors(g::$COURSE->id);
+			$found = false;
+			foreach ($descriptors as $descriptor) {
+				if ($descriptor->id == $item->id) {
+					$found = true;
+					break;
+				}
+				foreach ($descriptor->children as $descriptor) {
+					if ($descriptor->id == $item->id) {
+						$found = true;
+						break;
+					}
+				}
+				if ($found) break;
+			}
+			if (!$found) {
+				throw new permission_exception('No course descriptor');
+			}
+
+			if ($item->source != DATA_SOURCE_CUSTOM) {
+				throw new permission_exception('Not a custom descriptor');
 			}
 		} else {
 			throw new \coding_exception("Capability $cap for item ".print_r($item, true)." not found");
@@ -6592,9 +6655,15 @@ namespace block_exacomp {
 		return true;
 	}
 
-	function require_item_capability($cap, $item) {
-		if (!has_item_capability($cap, $item)) {
-			throw new permission_exception();
+	function has_item_capability($cap, $item) {
+		die("TODO: test");
+		/*
+		try {
+			require_item_capability($cap, $item);
+			return true;
+		} catch (permission_exception $e) {
+			return false;
 		}
+		*/
 	}
 }

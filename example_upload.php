@@ -24,7 +24,6 @@ require_login($course);
 
 $context = context_course::instance($courseid);
 
-// IF DELETE > 0 DELTE CUSTOM EXAMPLE
 if (optional_param('action', '', PARAM_TEXT) == 'delete') {
 	if (!$example) {
 		print_error('invalidexample', 'block_exacomp', $exampleid);

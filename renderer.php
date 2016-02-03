@@ -487,11 +487,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 	
 	public function is_edit_mode() {
-		return isset($this->editmode) && $this->editmode;
+		return !empty($this->editmode);
 	}
 	
 	public function is_print_mode() {
-		return isset($this->print) && $this->print;
+		return !empty($this->print);
 	}
 	
 	public function print_edit_mode_button() {
@@ -515,8 +515,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		foreach($subjects as $subject) {
 			$extra = '';
 			if ($this->is_edit_mode() && $subject->source == \block_exacomp\DATA_SOURCE_CUSTOM) {
-				$extra .= ' <img src="pix/edit.png" title="'.\block_exacomp\trans('edit').'" exa-type="iframe-popup" exa-url="subject.php?courseid='.$COURSE->id.'&id='.$subject->id.'" />';
-
+				$extra .= ' '.$this->pix_icon("i/edit", get_string("edit"), null, ['exa-type' => "iframe-popup", 'exa-url' => 'subject.php?courseid='.$COURSE->id.'&id='.$subject->id]);
 			}
 			$content .= html_writer::tag('li',
 					html_writer::link(
@@ -530,7 +529,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			foreach($subject->topics as $topic) {
 				$extra = '';
 				if ($this->is_edit_mode() && $topic->source == \block_exacomp\DATA_SOURCE_CUSTOM) {
-					$extra .= ' <img src="pix/edit.png" title="'.\block_exacomp\trans('edit').'" exa-type="iframe-popup" exa-url="topic.php?courseid='.$COURSE->id.'&id='.$topic->id.'" />';
+					$extra .= ' '.$this->pix_icon("i/edit", get_string("edit"), null, ['exa-type' => "iframe-popup", 'exa-url' => 'topic.php?courseid='.$COURSE->id.'&id='.$topic->id]);
 				}
 
 				$content .= html_writer::tag('li',
@@ -1096,6 +1095,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					'value' => (isset($exampleInfo->starttime) ? date("Y-m-d",$exampleInfo->starttime) : null)));
 			$content .= ' '.html_writer::link(new moodle_url($PAGE->url, array('exampleid'=>$example->id, 'deletestart'=>1)),
 					html_writer::tag('img','',array('src'=>'pix/x_11x11.png','alt'=>'delete')));
+
 			$content .= html_writer::empty_tag('br');
 			$content .= get_string('assignuntil','block_exacomp');
 			$content .= ' '.html_writer::empty_tag('input', array('class' => 'datepicker', 'type' => 'text', 'name' => 'dataexamples[' . $example->id . '][' . $USER->id . '][endtime]', 'disabled',
@@ -1791,7 +1791,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					}
 					if($editmode && $custom_created_descriptors){
 						$titleCell->text .= html_writer::link('descriptor.php?courseid='.$COURSE->id.'&id='.$descriptor->id, $this->pix_icon("i/edit", get_string("edit")), array('exa-type' => 'iframe-popup', 'target'=>'_blank'));
-						$titleCell->text .= html_writer::link("", $this->pix_icon("t/delete", get_string("delete")), array("onclick" => "if (confirm('" . get_string('delete_confirmation_descr','block_exacomp') . "')) block_exacomp.delete_descriptor(".$descriptor->id."); return false;"));
+						$titleCell->text .= html_writer::link("", $this->pix_icon("t/delete", get_string("delete")), array("onclick" => "if (confirm(" . json_encode(block_exacomp\get_string('delete_confirmation_descr',null, $descriptor->title)) . ")) block_exacomp.delete_descriptor(".$descriptor->id."); return false;"));
 					}
 				}
 				/*if ($editmode) {

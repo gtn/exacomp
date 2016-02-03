@@ -53,10 +53,14 @@ $PAGE->set_pagelayout('embedded');
 /* CONTENT REGION */
 
 block_exacomp_require_teacher($context);
+if ($item) {
+	block_exacomp\require_item_capability(block_exacomp\CAP_MODIFY, $item);
+}
 
 // TODO: check permissions, check if item is \block_exacomp\DATA_SOURCE_CUSTOM
 
 if ($item && optional_param('action', '', PARAM_TEXT) == 'delete') {
+	block_exacomp\require_item_capability(block_exacomp\CAP_DELETE, $item);
 	$item->delete();
 
 	echo $output->popup_close_and_reload();
@@ -68,7 +72,7 @@ require_once $CFG->libdir . '/formslib.php';
 class block_exacomp_local_item_form extends moodleform {
 
 	function definition() {
-		global $DB, $COURSE;
+		global $COURSE;
 
 		$mform = & $this->_form;
 
@@ -117,12 +121,14 @@ if($formdata = $form->get_data()) {
 			'courseid' => $courseid,
 			'topicid' => $topicid
 		));
+		$subjectid = $new->id;
 	} else {
 		$item->update($new);
+		$subjectid = $item->id;
 	}
 	
 	echo $output->header();
-	echo $output->popup_close_and_forward($CFG->wwwroot."/blocks/exacomp/assign_competencies.php?courseid=".$courseid."&editmode=1&ng_subjectid={$new->id}");
+	echo $output->popup_close_and_forward($CFG->wwwroot."/blocks/exacomp/assign_competencies.php?courseid=".$courseid."&editmode=1&ng_subjectid={$subjectid}");
 	echo $output->footer();
 	
 	exit;

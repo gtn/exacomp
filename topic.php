@@ -53,10 +53,14 @@ $PAGE->set_pagelayout('embedded');
 /* CONTENT REGION */
 
 block_exacomp_require_teacher($context);
+if ($item) {
+	block_exacomp\require_item_capability(block_exacomp\CAP_MODIFY, $item);
+}
 
 // TODO: check permissions, check if item is \block_exacomp\DATA_SOURCE_CUSTOM
 
 if ($item && optional_param('action', '', PARAM_TEXT) == 'delete') {
+	block_exacomp\require_item_capability(block_exacomp\CAP_DELETE, $item);
 	$item->delete();
 
 	echo $output->popup_close_and_reload();
