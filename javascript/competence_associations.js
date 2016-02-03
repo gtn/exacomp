@@ -3,9 +3,8 @@
  */
 (function($){
 	$(function() {
-		CollapsibleLists.apply();
-		
 		// reopen selected li
+		/*
 		$( "input[type=checkbox]" ).each(function( ) {
 			if($(this).attr('checked')){
 				$(this).parents('ul').addClass('collapsibleListOpen');
@@ -14,6 +13,7 @@
 				
 			}
 		});
+		*/
 
 		// start with open list
 		$('.collapsibleList li:has(li)').addClass('collapsibleListOpen').removeClass('collapsibleListClosed');

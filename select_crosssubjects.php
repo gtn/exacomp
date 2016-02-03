@@ -53,13 +53,13 @@ $PAGE->set_pagelayout('embedded');
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
 
-$PAGE->requires->js("/blocks/exacomp/javascript/CollapsibleLists.compressed.js");
+$PAGE->requires->js("/blocks/exacomp/javascript/CollapsibleLists.js");
 $PAGE->requires->css("/blocks/exacomp/css/CollapsibleLists.css");
 
 $output = block_exacomp_get_renderer();
 echo $output->header($context, $courseid, '', false);
 
-$subjects = block_exacomp_get_cross_subjects_sorted_by_subjects();
+$subjects = block_exacomp_get_cross_subjects_grouped_by_subjects();
 
 $assigned_crosssubjects = $DB->get_records_menu(\block_exacomp\DB_DESCCROSS,array('descrid'=>$descrid),'','crosssubjid,descrid');
 
@@ -68,25 +68,23 @@ $crosssubjects_exist = false;
 $content .= html_writer::start_tag('ul', array("class"=>" collapsibleList"));
 		
 foreach($subjects as $subject){
-	if(isset($subject->crosssubjects) && !empty($subject->crosssubjects)){
-		$content .= html_writer::start_tag('li', array("class"=>"add_open"));
-		$content .= $subject->title;
-		
-		$content .= html_writer::start_tag('ul', array("class"=>"add_style"));
-		
-		foreach($subject->crosssubjects as $crosssubject){
-			
-			$course = $DB->get_record('course', array('id'=>$crosssubject->courseid));
-			
-			$crosssubjects_exist = true;
-			$content .= html_writer::start_tag('li');
-			$content .= html_writer::checkbox('crosssubject',$crosssubject->id,isset($assigned_crosssubjects[$crosssubject->id]),
-				$crosssubject->title." (".$course->fullname.') ');
-			$content .= html_writer::end_tag('li');
-		}
-		$content .= html_writer::end_tag('ul');
+	$content .= html_writer::start_tag('li', array("class"=>"add_open"));
+	$content .= $subject->title;
+
+	$content .= html_writer::start_tag('ul', array("class"=>"add_style"));
+
+	foreach($subject->crosssubjects as $crosssubject){
+
+		$course = $DB->get_record('course', array('id'=>$crosssubject->courseid));
+
+		$crosssubjects_exist = true;
+		$content .= html_writer::start_tag('li');
+		$content .= html_writer::checkbox('crosssubject',$crosssubject->id,isset($assigned_crosssubjects[$crosssubject->id]),
+			$crosssubject->title." (".$course->fullname.') ');
 		$content .= html_writer::end_tag('li');
 	}
+	$content .= html_writer::end_tag('ul');
+	$content .= html_writer::end_tag('li');
 }
 $content .= html_writer::end_tag('ul');
 

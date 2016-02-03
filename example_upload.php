@@ -40,7 +40,7 @@ $PAGE->set_url('/blocks/exacomp/example_upload.php', array('courseid' => $course
 $PAGE->set_title(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_pagelayout('embedded');
 
-$PAGE->requires->js("/blocks/exacomp/javascript/CollapsibleLists.compressed.js");
+$PAGE->requires->js("/blocks/exacomp/javascript/CollapsibleLists.js");
 $PAGE->requires->css("/blocks/exacomp/css/CollapsibleLists.css");
 
 // build breadcrumbs navigation

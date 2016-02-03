@@ -154,7 +154,7 @@ window.block_exacomp = {
 		} else {
 			parent.location.reload(true);
 		}
-	}
+	},
 };
 
 $(function() {
@@ -206,25 +206,27 @@ $(function() {
 		// set minDate to today for datepicker-mindate class
 		$(".datepicker.datepicker-mindate").datepicker("option", "minDate", 0);
 	}
-});
 
-if ($().tooltip) {
-	// only if we have the tooltip function
-	$(function() {
+	if ($().tooltip) {
+		// only if we have the tooltip function
 		$('.exabis-tooltip').tooltip({
 			// retreave content as html
 			content : function() {
 				return $(this).prop('title');
 			}
 		});
-	});
-}
+	}
 
-// student selector
-$(function(){
+	// student selector
 	$('select[name=exacomp_competence_grid_select_student]').change(function(){
 		document.location.href = this.getAttribute('data-url') + '&studentid='+this.value;
 	});
+
+	// show collapsable lists
+	// first get the list, because .apply() adds .collapsibleList to all subitems/sublists!
+	var lists = $('ul.collapsibleList');
+	CollapsibleLists.apply();
+	lists.show();
 });
 	
 })();

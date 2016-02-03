@@ -2,9 +2,7 @@
  * 
  */
 (function($){
-	$( window ).load(function() {
-		CollapsibleLists.apply();
-		
+	$(function() {
 		// reopen selected li
 		$( ".add_open" ).each(function( ) {
 			$(this).addClass('collapsibleListOpen');
