@@ -1,1 +1,0 @@
-// no special programming for assign_competencies.php

@@ -1,1 +1,0 @@
-// no special programming for cross_subjects.php

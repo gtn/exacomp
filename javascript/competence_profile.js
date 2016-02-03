@@ -1,8 +1,6 @@
 (function($){
-	$( window ).load(function() {
-		$('.content_div').each(function(event){
-			$(this).hide();
-		});
+	$(function() {
+		$('.content_div').hide();
 	});
 	
 	$(document).on('click', '.togglefield', function(event){
