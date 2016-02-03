@@ -49,9 +49,6 @@ $PAGE->set_url('/blocks/exacomp/cross_subjects_overview.php', array('courseid' =
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
-$PAGE->requires->js("/blocks/exacomp/javascript/CollapsibleLists.js");
-$PAGE->requires->css("/blocks/exacomp/css/CollapsibleLists.css");
-
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
 

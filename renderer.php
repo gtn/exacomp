@@ -1493,7 +1493,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			if($crosssubjs && $role == \block_exacomp\ROLE_TEACHER && !$students) {
 				$buttons = html_writer::tag("input", "", array("id"=>"btn_submit", "name" => "btn_submit", "type" => "submit", "value" => get_string("save_crosssub", "block_exacomp")));
 				if (!$new) {
-					$buttons .= html_writer::tag("input", "", array("id"=>"save_as_draft", "name" => "save_as_draft", "type" => "button", "value" => get_string("save_as_draft", "block_exacomp"))).
+					$buttons .= html_writer::tag("input", "", array("id"=>"add_content", "name" => "add_content", "type" => "button", "value" => block_exacomp\get_string('add_descriptors_to_crosssub'), 'exa-type' => "iframe-popup", 'exa-url' => 'cross_subjects.php?courseid='.$courseid.'&action=descriptor_selector&crosssubjid='.$crosssubjid)).
+								html_writer::tag("input", "", array("id"=>"save_as_draft", "name" => "save_as_draft", "type" => "button", "value" => get_string("save_as_draft", "block_exacomp"))).
 								html_writer::tag("input", "", array("id"=>"share_crosssub", "name"=>"share_crosssub", "type"=>"button", "value"=>get_string("share_crosssub", "block_exacomp"), 'exa-type'=>'iframe-popup', 'exa-url'=>'select_students.php?courseid='.$courseid.'&crosssubjid='.$crosssubjid)).
 								html_writer::tag("input", "", array("id"=>"delete_crosssub", "name"=>"delete_crosssub", "type"=>"button", "value"=>get_string("delete_crosssub", "block_exacomp"), 'message'=>get_string('confirm_delete', 'block_exacomp')), array('id'=>'exabis_save_button'));
 				}
@@ -4539,7 +4540,7 @@ var dataset = dataset.map(function (group) {
 		$draft_content .= "<h5>" . get_string('use_available_crosssub','block_exacomp') . "</h5>";
 		$drafts_exist = false;
 
-		$draft_content .= html_writer::start_tag('ul', array("class"=>"collapsibleList"));
+		$draft_content .= html_writer::start_tag('ul', array("class"=>"exa-tree"));
 				
 		foreach($subjects as $subject){
 			if(isset($subject->crosssub_drafts)){
@@ -4720,7 +4721,7 @@ var dataset = dataset.map(function (group) {
 		global $PAGE;
 		
 		$html_tree = "";
-		$html_tree .= html_writer::start_tag("ul",array("class"=>"collapsibleList"));
+		$html_tree .= html_writer::start_tag("ul",array("class"=>"exa-tree exa-tree-open-checked"));
 		foreach($tree as $skey => $subject) {
 			if($subject->associated == 1 || ($isTeacher && $editmode==1)){
 				$html_tree .= html_writer::start_tag("li", array('class'=>($subject->associated == 1)?"associated":""));
@@ -4992,7 +4993,7 @@ var dataset = dataset.map(function (group) {
 	
 	public function print_example_based_list_tree($example, $tree, $isTeacher, $editmode, $showexamples = false){
 		$html_tree = "";
-		$html_tree .= html_writer::start_tag("ul",array("class"=>"collapsibleList"));
+		$html_tree .= html_writer::start_tag("ul",array("class"=>"exa-tree"));
 		
 		$html_tree .= html_writer::start_tag("li", array('class'=>"associated"));
 		

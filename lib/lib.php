@@ -66,6 +66,8 @@ function block_exacomp_init_js_css(){
 	$PAGE->requires->jquery();
 	$PAGE->requires->jquery_plugin('ui');
 	$PAGE->requires->jquery_plugin('ui-css');
+	$PAGE->requires->js("/blocks/exacomp/javascript/CollapsibleLists.js", true);
+	$PAGE->requires->css("/blocks/exacomp/css/CollapsibleLists.css", true);
 	$PAGE->requires->js('/blocks/exacomp/javascript/exacomp.js', true);
 	$PAGE->requires->js('/blocks/exacomp/javascript/ajax.js', true);
 
@@ -248,7 +250,7 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 	global $DB;
 
 	if($courseid == 0) {
-		$sql = 'SELECT s.id, s.title
+		$sql = 'SELECT s.id, s.title, s.author
 		FROM {'.\block_exacomp\DB_SUBJECTS.'} s
 		JOIN {'.\block_exacomp\DB_TOPICS.'} t ON t.subjid = s.id
 		GROUP BY s.id, s.title, s.stid
@@ -257,7 +259,7 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 
 		return $DB->get_records_sql($sql);
 	} else if($subjectid != null) {
-		$sql = 'SELECT s.id, s.title
+		$sql = 'SELECT s.id, s.title, s.author
 		FROM {'.\block_exacomp\DB_SUBJECTS.'} s
 		JOIN {'.\block_exacomp\DB_TOPICS.'} t ON t.subjid = s.id
 		WHERE s.id = ?
@@ -4120,8 +4122,6 @@ function block_exacomp_init_course_crosssubjects($courseid, $crosssubjid, $stude
  * @return associative_array
  */
 function block_exacomp_get_competence_tree_for_cross_subject($courseid, $crosssubjid, $showalldescriptors = false, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES)) {
-	global $DB;
-
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
@@ -4181,7 +4181,7 @@ function block_exacomp_get_competence_tree_for_cross_subject($courseid, $crosssu
 				}
 			}
 	}
-	return $subjects;
+	return block_exacomp\subject::create_objects($subjects);
 }
 
 function block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid, $showalldescriptors = false){

@@ -222,11 +222,30 @@ $(function() {
 		document.location.href = this.getAttribute('data-url') + '&studentid='+this.value;
 	});
 
+
+
 	// show collapsable lists
 	// first get the list, because .apply() adds .collapsibleList to all subitems/sublists!
-	var lists = $('ul.collapsibleList');
+	var trees = $('ul.exa-tree');
+	trees.addClass('collapsibleList');
 	CollapsibleLists.apply();
-	lists.show();
+	trees.show();
+
+	// prevent item from open/close when clicking checkbox
+	trees.find('input').click(function(e){
+		e.stopPropagation();
+	})
+
+	var checked_items = trees.filter('.exa-tree-open-checked').find("input[type=checkbox]:checked").closest('li');
+	checked_items.parents('ul')
+				.addClass('collapsibleListOpen')
+				.removeClass('collapsibleListClosed')
+				.show();
+	checked_items.parents('li').addClass('collapsibleListOpen').removeClass('collapsibleListClosed');
+
+	var trees_open_all = trees.filter('.exa-tree-open-all');
+	trees_open_all.find('ul').show()
+	trees_open_all.find('li:has(li)').addClass('collapsibleListOpen').removeClass('collapsibleListClosed');
 });
 	
 })();

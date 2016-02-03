@@ -53,9 +53,6 @@ $PAGE->set_pagelayout('embedded');
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
 
-$PAGE->requires->js("/blocks/exacomp/javascript/CollapsibleLists.js");
-$PAGE->requires->css("/blocks/exacomp/css/CollapsibleLists.css");
-
 $output = block_exacomp_get_renderer();
 echo $output->header($context, $courseid, '', false);
 
@@ -65,13 +62,13 @@ $assigned_crosssubjects = $DB->get_records_menu(\block_exacomp\DB_DESCCROSS,arra
 
 $content = "";
 $crosssubjects_exist = false;
-$content .= html_writer::start_tag('ul', array("class"=>" collapsibleList"));
+$content .= html_writer::start_tag('ul', array("class"=>"exa-tree exa-tree-open-all"));
 		
 foreach($subjects as $subject){
-	$content .= html_writer::start_tag('li', array("class"=>"add_open"));
+	$content .= html_writer::start_tag('li');
 	$content .= $subject->title;
 
-	$content .= html_writer::start_tag('ul', array("class"=>"add_style"));
+	$content .= html_writer::start_tag('ul');
 
 	foreach($subject->crosssubjects as $crosssubject){
 

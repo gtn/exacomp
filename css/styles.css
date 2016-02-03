@@ -1006,3 +1006,6 @@ td.contentcell {
 	cursor: pointer;
 }
 
+.exa-tree {
+	display: none;
+}

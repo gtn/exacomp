@@ -52,9 +52,6 @@ $PAGE->set_url('/blocks/exacomp/competence_associations.php', array('courseid' =
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_pagelayout('embedded');
 
-$PAGE->requires->js("/blocks/exacomp/javascript/CollapsibleLists.js");
-$PAGE->requires->css("/blocks/exacomp/css/CollapsibleLists.css");
-
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
 
