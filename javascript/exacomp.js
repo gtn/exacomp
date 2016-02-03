@@ -226,6 +226,9 @@ $(function() {
 
 	// show tree menus
 	var trees = $('ul.exa-tree');
+	// ddtree needs those, why didn't they do it with css?
+	ddtreemenu.closefolder = M.cfg.wwwroot+"/blocks/exacomp/javascript/simpletreemenu/closed.gif";
+	ddtreemenu.openfolder = M.cfg.wwwroot+"/blocks/exacomp/javascript/simpletreemenu/open.gif";
 
 	// mark open elements, ddtreemenu opens them automatically
 	trees.filter('.exa-tree-open-checked').find('ul').has("input[type=checkbox]:checked").attr('rel', 'open');
@@ -249,4 +252,9 @@ $(function() {
 	})
 });
 	
+// collapsible
+$(document).on('click', '.exa-collapsible > legend', function(){
+	$(this).parent().toggleClass('exa-collapsible-open');
+});
+
 })();

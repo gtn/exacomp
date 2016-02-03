@@ -144,41 +144,20 @@
 	border: 1px transparent solid
 }
 
+/* this prevents open/close when clicking on empty space to the right of a tree item */
 #block_exacomp .treeview ul {
-	/*CSS for Simple Tree Menu*/
-	margin: 0;
-	padding: 0;
-}
-
-/*
-#block_exacomp .treeview li {
-	/*Style for LI elements in general (excludes an LI that contains sub lists)*
-	background: white url(../pix/list.gif) no-repeat left center;
-	background-image: url([[pix:a/em1_bwgreater]]);
-	list-style-type: none;
+	margin-left: -22px;
 	padding-left: 22px;
-	margin-bottom: 3px;
-}
-
-/*
-#block_exacomp .treeview li.submenu {
-	/* Style for LI that contains sub lists (other ULs). *
-	background: white url(../pix/closed.gif) no-repeat left 1px;
-	background-image: url([[pix:i/closed]]);
-	cursor: hand !important; /* TODO: was jetzt? *
-	cursor: pointer !important;
-}
-
-#block_exacomp .treeview li.submenu ul {
-	/*Style for ULs that are children of LIs (submenu) *
-	display: none; /*Hide them by default. Don't delete. *
-}
-
-#block_exacomp .treeview .submenu ul li {
-	/*Style for LIs of ULs that are children of LIs (submenu) *
 	cursor: default;
 }
-*/
+
+/* no paddin and margin on first level, and all sublevels */
+#block_exacomp .treeview, #block_exacomp .treeview ul {
+	padding: 0;
+	margin: 0;
+}
+
+
 
 #block_exacomp div.ladebalken {
 	width: 425px;
@@ -1007,8 +986,15 @@ td.contentcell {
 #block_exacomp select#menuexacomp_competence_grid_select_student, #block_exacomp select#menulis_courses {
 	margin-right: 15px;
 }
-#block_exacomp .togglefield {
+
+#block_exacomp .exa-collapsible > legend {
 	cursor: pointer;
+}
+#block_exacomp .exa-collapsible > div {
+	display: none;
+}
+#block_exacomp .exa-collapsible.exa-collapsible-open > div {
+	display: block;
 }
 
 .exa-tree {

@@ -3863,10 +3863,10 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 		if($showonlyreached || ($student != null && $profile_settings->showonlyreached ==1))
 			$showonlyreached_total = true;
 		  
-		$content="";	
+		$content="";
 		foreach($in as $subject){
 			foreach($subject->subs as $topic){
-				$fieldset_content = html_writer::tag('legend', block_exacomp_get_topic_numbering($topic).' '.$topic->title, array('class'=>'togglefield'));
+				$fieldset_content = html_writer::tag('legend', block_exacomp_get_topic_numbering($topic).' '.$topic->title);
 				
 				$desc_content = "";
 				$niveaus = array();
@@ -3923,8 +3923,8 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 				
 				$div_content .= $desc_content;
 				
-				$fieldset_content .= html_writer::div($div_content, 'content_div');
-				$content .= html_writer::tag('fieldset', $fieldset_content, array('id'=>'topic_field'.$topic->id));
+				$fieldset_content .= html_writer::div($div_content);
+				$content .= html_writer::tag('fieldset', $fieldset_content, array('class'=>'exa-collapsible', 'id'=>'topic_field'.$topic->id));
 			}
 		}
 		
