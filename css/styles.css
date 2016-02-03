@@ -150,8 +150,9 @@
 	padding: 0;
 }
 
+/*
 #block_exacomp .treeview li {
-	/*Style for LI elements in general (excludes an LI that contains sub lists)*/
+	/*Style for LI elements in general (excludes an LI that contains sub lists)*
 	background: white url(../pix/list.gif) no-repeat left center;
 	background-image: url([[pix:a/em1_bwgreater]]);
 	list-style-type: none;
@@ -159,23 +160,25 @@
 	margin-bottom: 3px;
 }
 
+/*
 #block_exacomp .treeview li.submenu {
-	/* Style for LI that contains sub lists (other ULs). */
+	/* Style for LI that contains sub lists (other ULs). *
 	background: white url(../pix/closed.gif) no-repeat left 1px;
 	background-image: url([[pix:i/closed]]);
-	cursor: hand !important; /* TODO: was jetzt? */
+	cursor: hand !important; /* TODO: was jetzt? *
 	cursor: pointer !important;
 }
 
 #block_exacomp .treeview li.submenu ul {
-	/*Style for ULs that are children of LIs (submenu) */
-	display: none; /*Hide them by default. Don't delete. */
+	/*Style for ULs that are children of LIs (submenu) *
+	display: none; /*Hide them by default. Don't delete. *
 }
 
 #block_exacomp .treeview .submenu ul li {
-	/*Style for LIs of ULs that are children of LIs (submenu) */
+	/*Style for LIs of ULs that are children of LIs (submenu) *
 	cursor: default;
 }
+*/
 
 #block_exacomp div.ladebalken {
 	width: 425px;
@@ -851,13 +854,15 @@ td.contentcell {
 
 #block_exacomp div.associated_div li {
 	 color: #7f7f7f;
+/*
 	 padding: 5px 0;
+*/
 }
-
+/*
 #block_exacomp div.associated_div li:last-child, #block_exacomp div.associated_div li li:last-child, #block_exacomp div.associated_div li li li:last-child {
 	padding-bottom: 0px;
 } 
-
+*/
 #block_exacomp div.associated_div li.associated {
 	 color: #000;
 }

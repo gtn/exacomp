@@ -66,8 +66,8 @@ function block_exacomp_init_js_css(){
 	$PAGE->requires->jquery();
 	$PAGE->requires->jquery_plugin('ui');
 	$PAGE->requires->jquery_plugin('ui-css');
-	$PAGE->requires->js("/blocks/exacomp/javascript/CollapsibleLists.js", true);
-	$PAGE->requires->css("/blocks/exacomp/css/CollapsibleLists.css", true);
+	$PAGE->requires->js("/blocks/exacomp/javascript/simpletreemenu/simpletreemenu.js", true);
+	$PAGE->requires->css("/blocks/exacomp/javascript/simpletreemenu/simpletree.css", true);
 	$PAGE->requires->js('/blocks/exacomp/javascript/exacomp.js', true);
 	$PAGE->requires->js('/blocks/exacomp/javascript/ajax.js', true);
 

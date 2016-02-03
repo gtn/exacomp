@@ -224,11 +224,18 @@ $(function() {
 
 
 
-	// show collapsable lists
-	// first get the list, because .apply() adds .collapsibleList to all subitems/sublists!
+	// show tree menus
 	var trees = $('ul.exa-tree');
-	trees.addClass('collapsibleList');
-	CollapsibleLists.apply();
+
+	// mark open elements, ddtreemenu opens them automatically
+	trees.filter('.exa-tree-open-checked').find('ul').has("input[type=checkbox]:checked").attr('rel', 'open');
+
+	// init the trees
+	trees.addClass('treeview').each(function(i){
+		var id = 'simple-tree-'+i;
+		$(this).attr('id', id);
+		ddtreemenu.createTree(id, false);
+	});
 	trees.show();
 
 	// prevent item from open/close when clicking checkbox
@@ -236,16 +243,10 @@ $(function() {
 		e.stopPropagation();
 	})
 
-	var checked_items = trees.filter('.exa-tree-open-checked').find("input[type=checkbox]:checked").closest('li');
-	checked_items.parents('ul')
-				.addClass('collapsibleListOpen')
-				.removeClass('collapsibleListClosed')
-				.show();
-	checked_items.parents('li').addClass('collapsibleListOpen').removeClass('collapsibleListClosed');
-
-	var trees_open_all = trees.filter('.exa-tree-open-all');
-	trees_open_all.find('ul').show()
-	trees_open_all.find('li:has(li)').addClass('collapsibleListOpen').removeClass('collapsibleListClosed');
+	// open all
+	trees.filter('.exa-tree-open-all').each(function(){
+		ddtreemenu.flatten($(this).attr('id'), 'expand');
+	})
 });
 	
 })();

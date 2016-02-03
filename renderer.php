@@ -2775,10 +2775,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		}
 		return html_writer::div($content, 'exacomp_profile_badges');
 	}
+	/*
 	public function print_head_view_examples($sort, $show_all_examples, $url, $context){
 		$content = html_writer::start_tag('script', array('type'=>'text/javascript', 'src'=>'javascript/wz_tooltip.js'));
-		$content .= html_writer::end_tag('script');
-		$content .= html_writer::start_tag('script', array('type'=>'text/javascript', 'src'=>'javascript/simpletreemenu.js'));
 		$content .= html_writer::end_tag('script');
 		$text_link1 = ($sort=="desc") ? html_writer::tag('b', get_string("subject", "block_exacomp")) : get_string("subject", "block_exacomp");
 		$text_link2 = ($sort=="tax") ? html_writer::tag('b', get_string("taxonomies", "block_exacomp")) : get_string("taxonomies", "block_exacomp");
@@ -2807,6 +2806,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$content .= html_writer::link("javascript:ddtreemenu.flatten('comptree', 'contact')", get_string("contactcomps", "block_exacomp"));
 		return $content;
 	}
+	*/
 
 	public function print_tree_view_examples_desc($tree, $do_form = true){
 		$li_subjects = '';
