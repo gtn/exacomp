@@ -1261,7 +1261,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		return $table_html.html_writer::end_tag('form');
 	}
 	public function print_competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $lis_singletopic = false, $crosssubjs = false, $crosssubjid = 0, $statistic = false) {
-		global $PAGE, $additional_grading;
+		global $additional_grading;
 
 		$rowgroup = ($lis_singletopic) ? null : 0;
 		//$rowgroup=0;
@@ -1377,7 +1377,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			/* TOPICS */
 			//for every topic
 			$data = (object)array(
-					'rowgroup' => &$rowgroup,
+					'subject' => $subject,
+					'rowgroup' => $rowgroup,
 					'courseid' => $courseid,
 					'showevaluation' => $showevaluation,
 					'role' => $role,
@@ -1389,7 +1390,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					'course_mods' => get_fast_modinfo($courseid)->get_cms(),
 					'selected_topicid' => null,
 					'supported_modules'=>block_exacomp_get_supported_modules(),
-					'showalldescriptors' => block_exacomp_get_settings_by_course($courseid)->show_all_descriptors
+					'showalldescriptors' => block_exacomp_get_settings_by_course($courseid)->show_all_descriptors,
 			);
 			$this->print_topics($rows, 0, $subject->subs, $data, $students, '', false, $this->is_edit_mode(), $statistic, $crosssubjs, $crosssubjid);
 				
@@ -1509,7 +1510,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		return $table_html;
 	}
 
-	public function print_topics(&$rows, $level, $topics, &$data, $students, $rowgroup_class = '', $profoundness = false, $editmode = false, $statistic = false, $crosssubjs = false, $crosssubjid=0) {
+	public function print_topics(&$rows, $level, $topics, $data, $students, $rowgroup_class = '', $profoundness = false, $editmode = false, $statistic = false, $crosssubjs = false, $crosssubjid=0) {
 		global $additional_grading;
 		$topicparam = optional_param('topicid', 0, PARAM_INT);
 
@@ -1686,7 +1687,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		}
 	}
 
-	function print_descriptors(&$rows, $level, $descriptors, &$data, $students, $rowgroup_class, $profoundness = false, $editmode=false, $statistic=false, $custom_created_descriptors=false, $parent = false, $crosssubjid = 0) {
+	function print_descriptors(&$rows, $level, $descriptors, $data, $students, $rowgroup_class, $profoundness = false, $editmode=false, $statistic=false, $custom_created_descriptors=false, $parent = false, $crosssubjid = 0) {
 		global $NG_PAGE, $USER, $COURSE, $DB, $additional_grading;
 
 		$evaluation = ($data->role == \block_exacomp\ROLE_TEACHER) ? "teacher" : "student";
@@ -1766,7 +1767,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				if(($descriptor->examples || $descriptor->children || ($parent && $editmode)) && !is_null($data->rowgroup))
 					$titleCell->attributes['class'] = 'rowgroup-arrow';
 				$titleCell->style = "padding-left: ".$padding."px";
-				$titleCell->text = html_writer::div(html_writer::tag('span', $outputname, array('title'=>get_string('import_source', 'block_exacomp').$this->print_source_info($descriptor->source))));
+
+				$title = block_exacomp\get_string('import_source', null, $this->print_source_info($descriptor->source));
+				if (isset($data->subject)) // var_dump($data); exit;
+				if (isset($data->subject) && $author = $data->subject->get_author()) $title .= ', '.get_string('author', 'repository').": ".$author."\n";
+
+				$titleCell->text = html_writer::div(html_writer::tag('span', $outputname, array('title'=>$title)));
 				
 				//$titleCell->attributes['title'] = $this->print_statistic_table($data->courseid, $students, $descriptor, true, $data->scheme);
 				 

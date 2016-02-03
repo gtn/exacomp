@@ -168,7 +168,7 @@ function block_exacomp_require_admin($context = null) {
  */
 function block_exacomp_get_subject_by_id($subjectid) {
 	global $DB;
-	return $DB->get_record(\block_exacomp\DB_SUBJECTS,array("id" => $subjectid),'id, title, titleshort, \'subject\' as tabletype, source');
+	return $DB->get_record(\block_exacomp\DB_SUBJECTS,array("id" => $subjectid),'id, title, titleshort, \'subject\' as tabletype, source, author');
 }
 /**
  * Gets all subjects that are in use in a particular course.
@@ -206,7 +206,7 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
  */
 function block_exacomp_get_all_subjects() {
 	global $DB;
-	return $DB->get_records(\block_exacomp\DB_SUBJECTS,array(),'','id, title, \'subject\' as tabletype, source, sourceid');
+	return $DB->get_records(\block_exacomp\DB_SUBJECTS,array(),'','id, title, \'subject\' as tabletype, source, sourceid, author');
 }
 /**
  * This method is only used in the LIS version
@@ -1223,7 +1223,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 		block_exacomp_sort_items($subject->subs, \block_exacomp\DB_TOPICS);
 	}
 
-	return $subjects;
+	return block_exacomp\subject::create_objects($subjects);
 }
 /**
  *
