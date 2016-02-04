@@ -139,13 +139,9 @@ if ($action == 'descriptor_selector') {
 				$output .= '<input type="checkbox" name="descriptors[]" ' . $checked . ' value="' . $item->id . '">';
 			}
 			$output .= $item->title;
-			if ($item instanceof block_exacomp\subject) {
-				$output .= $print_tree($item->topics, $level+1);
-			} elseif ($item instanceof block_exacomp\topic) {
-				$output .= $print_tree($item->descriptors, $level+1);
-			} elseif ($item instanceof block_exacomp\descriptor) {
-				$output .= $print_tree($item->children, $level+1);
-			}
+
+			$output .= $print_tree($item->get_subs(), $level+1);
+
 			$output .= '</li>';
 		}
 

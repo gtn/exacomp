@@ -282,6 +282,10 @@ class db_layer_course extends db_layer {
 	function get_subjects() {
 		return subject::create_objects(block_exacomp_get_subjects_by_course($this->courseid), null, $this);
 	}
+
+	function get_topics_for_subject($subject) {
+ 		return topic::create_objects(block_exacomp_get_topics_by_subject($this->courseid, $subject->id), $this);
+	}
 }
 
 class db_layer_all_user_courses extends db_layer {
@@ -337,6 +341,7 @@ class db_record {
 	protected $dbLayer = null;
 
 	const TABLE = 'todo';
+	const SUBS = null;
 
 	public function __construct($data, db_layer $dbLayer = null) {
 		$this->data = (object)[];
@@ -491,9 +496,23 @@ class db_record {
 		global $DB;
 
 		if (!isset($this->id)) {
-			throw new block_exacomp\moodle_exception('id not set');
+			throw new moodle_exception('id not set');
 		}
 		return $DB->delete_records(static::TABLE, array('id' => $this->id));
+	}
+
+	public function get_subs() {
+		if (empty(static::SUBS)) {
+			throw new \coding_exception('const SUBS not set');
+		}
+		return $this->{static::SUBS};
+	}
+
+	public function set_subs($value) {
+		if (empty(static::SUBS)) {
+			throw new \coding_exception('const SUBS not set');
+		}
+		$this->{static::SUBS} = $value;
 	}
 
 	/**
@@ -582,6 +601,7 @@ class db_record {
 
 class subject extends db_record {
 	const TABLE = DB_SUBJECTS;
+	const SUBS = 'topics';
 
 	function fill_topics() {
 		return $this->dbLayer->get_topics_for_subject($this);
@@ -594,6 +614,7 @@ class subject extends db_record {
 
 class topic extends db_record {
 	const TABLE = DB_TOPICS;
+	const SUBS = 'descriptors';
 
 	function get_numbering() {
 		if (!isset($this->subject)) {
@@ -622,6 +643,7 @@ class topic extends db_record {
 
 class descriptor extends db_record {
 	const TABLE = DB_DESCRIPTORS;
+	const SUBS = 'children';
 
 	function init() {
 		if (!isset($this->data->parent)) {

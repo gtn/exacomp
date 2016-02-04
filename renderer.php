@@ -2971,7 +2971,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					$this_rowgroup_class = 'rowgroup-header rowgroup-header-'.$rowgroup;
 					$sub_rowgroup_class = 'rowgroup-content rowgroup-content-'.$rowgroup;
 				} else {
-					$this_rowgroup_class = $rowgroup_class;
+					$this_rowgroup_class = '';
 					$sub_rowgroup_class = '';
 				}
 				$row = new html_table_row();
