@@ -85,25 +85,18 @@ function block_exacomp_init_js_css(){
 		$PAGE->requires->css('/blocks/exacomp/css/'.$scriptName.'.css');
 	if (file_exists($CFG->dirroot.'/blocks/exacomp/javascript/'.$scriptName.'.js'))
 		$PAGE->requires->js('/blocks/exacomp/javascript/'.$scriptName.'.js', true);
-		
-	if(preg_match('/(?i)Trident|msie/',$_SERVER['HTTP_USER_AGENT']) && strcmp($scriptName, 'competence_profile')==0){
-		$PAGE->requires->js('/blocks/exacomp/javascript/competence_profile_msie.js', true);
-	}
 }
 function block_exacomp_init_js_weekly_schedule(){
 	global $PAGE, $CFG;
 	
-	$PAGE->requires->css('/blocks/exacomp/fullcalendar/fullcalendar.css');
-	
 	$PAGE->requires->jquery_plugin('ui');
 	$PAGE->requires->jquery_plugin('ui-css');
 	
-	$PAGE->requires->js('/blocks/exacomp/fullcalendar/moment.min.js', true);
-	//$PAGE->requires->js('/blocks/exacomp/javascript/jquery.js');
-	$PAGE->requires->js('/blocks/exacomp/fullcalendar/fullcalendar.js', true);
-	$PAGE->requires->js('/blocks/exacomp/fullcalendar/lang-all.js', true);
-	
-	$PAGE->requires->js('/blocks/exacomp/fullcalendar/jquery.ui.touch.js');
+	$PAGE->requires->css('/blocks/exacomp/javascript/fullcalendar/fullcalendar.css');
+	$PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/moment.min.js', true);
+	$PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/fullcalendar.js', true);
+	$PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/lang-all.js', true);
+	$PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/jquery.ui.touch.js');
 }
 
 function block_exacomp_get_context_from_courseid($courseid) {

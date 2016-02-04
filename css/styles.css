@@ -810,6 +810,8 @@ td.contentcell {
 	font-size: 0.7em;
 }
 
+/*
+not used anymore?
 #block_exacomp .plusimageapply {
 	list-style-image: url(../pix/pfeil_show.png);
 	cursor: pointer;
@@ -824,6 +826,7 @@ td.contentcell {
 	list-style-image: url(../pix/selected.png);
 	cursor: pointer;
 }
+*/
 
 #block_exacomp .exacomp_profile_badges {
 	border: 1px solid #ddd;
