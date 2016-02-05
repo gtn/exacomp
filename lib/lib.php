@@ -1201,8 +1201,8 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 
 					// found: add it to the subject result
 					$subject = $allSubjects[$topic->subjid];
-					if (!isset($subject->subs)) $subject->subs = [];
-					$subject->subs[$topic->id] = $topic;
+					if (block_exacomp_property_exists($subject, 'topics')) $subject->topics = [];
+					$subject->topics[$topic->id] = $topic;
 					$subjects[$subject->id] = $subject;
 
 					// top found
@@ -1213,7 +1213,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 
 	// sort topics
 	foreach ($subjects as $subject) {
-		block_exacomp_sort_items($subject->subs, \block_exacomp\DB_TOPICS);
+		block_exacomp_sort_items($subject->topics, \block_exacomp\DB_TOPICS);
 	}
 
 	return block_exacomp\subject::create_objects($subjects);

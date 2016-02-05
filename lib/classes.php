@@ -403,11 +403,11 @@ class db_record {
 
 	public function __isset($name) {
 		if (($method = 'get_'.$name) && method_exists($this, $method)) {
-			return !!$this->__get($name);
+			return $this->__get($name) !== null;
 		} elseif (property_exists($this->data, $name)) {
 			// ok
 		} elseif (($method = 'fill_'.$name) && method_exists($this, $method)) {
-			return !!$this->__get($name);
+			return $this->__get($name) !== null;
 		} else {
 			return false;
 		}
@@ -416,8 +416,6 @@ class db_record {
 	}
 
 	public function property_exists($name) {
-		if ($this->__isset($name)) return true;
-
 		return property_exists($this->data, $name);
 	}
 
