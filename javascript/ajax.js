@@ -422,8 +422,7 @@
 		event.preventDefault();
 
 		var tr = $(this).closest('tr');
-		var id = tr[0].className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
-		
+
 		var courseid = block_exacomp.get_param('courseid');
 		var studentid = block_exacomp.get_studentid() || 0;
 		var descrid = $(this).attr('descrid');
@@ -439,12 +438,10 @@
 		if(val=='-'){
 			$(this).attr('state','+');
 			visible = 0;
-			tr.addClass('hidden_temp');
-			
-			//hide subs 
-			tr.removeClass('open');
-			$('.rowgroup-content-'+id).hide();
-			
+
+			$(this).trigger('rg2.close');
+			tr.addClass('rg2-locked');
+
 			//disable checkbox for teacher, when hiding descriptor for student
 			if(studentid > 0){
 				$('input[name=data-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", true );
@@ -472,11 +469,8 @@
 		}else{
 			$(this).attr('state','-');
 			visible = 1;
-			tr.removeClass('hidden_temp');
-			
-			//do not show subs
-			tr.toggleClass('open');
-			
+			tr.removeClass('rg2-locked');
+
 			//enable checkbox for teacher, when showing descriptor for student
 
 			$('input[name=add-grading-'+studentid+'-'+descrid+']').prop("disabled", false);
@@ -540,8 +534,7 @@
 		event.preventDefault();
 
 		var tr = $(this).closest('tr');
-		var id = tr[0].className.replace(/^.*rowgroup-header-([0-9]+).*$/, '$1');
-		
+
 		var courseid = block_exacomp.get_param('courseid');
 		var studentid = block_exacomp.get_studentid();
 		var exampleid = $(this).attr('exampleid');
@@ -553,12 +546,11 @@
 		if(val=='-'){
 			$(this).attr('state','+');
 			visible = 0;
-			tr.addClass('hidden_temp');
-			
-			//hide subs 
-			tr.removeClass('open');
-			$('.rowgroup-content-'+id).hide();
-			
+
+			exabis_rg2.get_row(this)
+				.trigger('rg2.close')
+				.addClass('rg2-locked');
+
 			//disable checkbox for teacher, when hiding descriptor for student
 			if(studentid > 0)
 				$('input[name=dataexamples-'+exampleid+'-'+studentid+'-'+'teacher]').prop( "disabled", true ); 
@@ -576,10 +568,7 @@
 		}else{
 			$(this).attr('state','-');
 			visible = 1;
-			tr.removeClass('hidden_temp');
-			
-			//do not show subs
-			tr.toggleClass('open');
+			tr.removeClass('rg2-locked');
 			
 			//enable checkbox for teacher, when showing descriptor for student
 			$('input[name=dataexamples-'+exampleid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );

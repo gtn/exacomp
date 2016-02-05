@@ -180,5 +180,3 @@ if($modules){
 
 /* END CONTENT REGION */
 echo $output->footer();
-
-?>

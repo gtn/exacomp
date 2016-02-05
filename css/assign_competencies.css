@@ -124,6 +124,7 @@
 	width: 50px;
 }
 
+/*
 #block_exacomp .rowgroup-header .rowgroup-arrow div {
 	cursor: pointer;
 	font-weight: bold;
@@ -142,6 +143,8 @@
 #block_exacomp .rowgroup-content {
 	display: none;
 }
+*/
+
 #block_exacomp #exabis_competences_block .exabis_comp_top_student{
 	text-align: center;
 }

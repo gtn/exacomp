@@ -251,8 +251,6 @@ function block_exacomp_get_subject_by_id($subjectid) {
  * @return array $subjects
  */
 function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = false) {
-	global $DB;
-
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
@@ -1249,45 +1247,24 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 
 	$subjects = array();
 
+	foreach ($allSubjects as $subject) {
+		$subject->topics = [];
+	}
+
 	foreach ($allTopics as $topic) {
 		//topic must be coursetopic if courseid <> 0
 		if ($courseid>0 && !array_key_exists($topic->id, $courseTopics))
 			continue;
 
-		//if($courseid==0 || $showalldescriptors || block_exacomp_check_activity_association($topic->id, TYPE_TOPIC, $courseid)) {
-			// found: add it to the subject result, even if no descriptor from the topic is used
-			// find all parent topics
-			$found = true;
-			for ($i = 0; $i < 10; $i++) {
-				if ($topic->parentid) {
-					// parent is topic, find it
-					if (empty($allTopics[$topic->parentid])) {
-						$found = false;
-						break;
-					}
+		// find subject
+		if (empty($allSubjects[$topic->subjid])) {
+			continue;
+		}
+		$subject = $allSubjects[$topic->subjid];
 
-					// found it
-					$allTopics[$topic->parentid]->subs[$topic->id] = $topic;
-
-					// go up
-					$topic = $allTopics[$topic->parentid];
-				} else {
-					// parent is subject, find it
-					if (empty($allSubjects[$topic->subjid])) {
-						$found = false;
-						break;
-					}
-
-					// found: add it to the subject result
-					$subject = $allSubjects[$topic->subjid];
-					if (block_exacomp_property_exists($subject, 'topics')) $subject->topics = [];
-					$subject->topics[$topic->id] = $topic;
-					$subjects[$subject->id] = $subject;
-
-					// top found
-					break;
-				}
-			}
+		// found: add it to the subject result
+		$subject->topics[$topic->id] = $topic;
+		$subjects[$subject->id] = $subject;
 	}
 
 	// sort topics
@@ -4784,14 +4761,14 @@ function block_exacomp_is_example_visible($courseid, $example, $studentid){
 function block_exacomp_get_descriptor_visible_css($visible, $role) {
 	$visible_css = '';
 	if(!$visible)
-		($role == \block_exacomp\ROLE_TEACHER) ? $visible_css = ' hidden_temp' : $visible_css = ' hidden';
+		($role == \block_exacomp\ROLE_TEACHER) ? $visible_css = ' rg2-locked' : $visible_css = ' hidden';
 
 	return $visible_css;
 }
 function block_exacomp_get_example_visible_css($visible, $role) {
 	$visible_css = '';
 	if(!$visible)
-		($role == \block_exacomp\ROLE_TEACHER) ? $visible_css = ' hidden_temp' : $visible_css = ' hidden';
+		($role == \block_exacomp\ROLE_TEACHER) ? $visible_css = ' rg2-locked' : $visible_css = ' hidden';
 
 	return $visible_css;
 }

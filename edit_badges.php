@@ -108,5 +108,3 @@ foreach ($badges as $badge) {
 
 /* END CONTENT REGION */
 echo $output->footer();
-
-?>

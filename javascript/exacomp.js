@@ -244,17 +244,202 @@ $(function() {
 	// prevent item from open/close when clicking checkbox
 	trees.find('input').click(function(e){
 		e.stopPropagation();
-	})
+	});
 
 	// open all
 	trees.filter('.exa-tree-open-all').each(function(){
 		ddtreemenu.flatten($(this).attr('id'), 'expand');
-	})
+	});
 });
 	
 // collapsible
 $(document).on('click', '.exa-collapsible > legend', function(){
 	$(this).parent().toggleClass('exa-collapsible-open');
 });
+
+
+// rowgroup2
+(function(){
+
+	var options = {
+		storageid: document.location.pathname,
+		check_uncheck_parents_children: false,
+		reopen_checked: false,
+		// var remember_state = ['action', 'courseid'];
+	};
+	window.exabis_rg2 = {
+		options: options,
+		get_row: get_row,
+		update: update,
+		get_children: get_children,
+		get_parents: get_parents,
+	};
+
+	var id_i = 0;
+	function get_row(dom) {
+		var $tr = $(dom).closest('tr.rg2');
+		$tr.level = get_level($tr) || 0;
+		if ($tr.attr('exa-rg2-id')) {
+			$tr.id = $tr.attr('exa-rg2-id');
+		} else {
+			id_i++;
+			$tr.id = 'no-id-'+id_i;
+			$tr.attr('exa-rg2-id', $tr.id);
+		}
+		return $tr;
+	}
+	function get_level($tr) {
+		$tr = $($tr);
+		if (!$tr.attr('class')) return null;
+		var matches = $tr.attr('class').match(/(^|\s)rg2-level-([0-9]+)(\s|$)/);
+		return matches ? parseInt(matches[2]) : null;
+	}
+	function get_parents(item) {
+		var $row = get_row(item),
+			level = $row.level - 1,
+			parents = [];
+		$row.prevAll('tr.rg2').each(function(){
+			if (get_row(this).level == level) {
+				parents[level] = this;
+				level--;
+			}
+		});
+		return $(parents);
+	}
+	function get_children(item, deep) {
+		var $row = get_row(item);
+		var children = [];
+		$row.nextAll('tr.rg2').each(function(){
+			var $child_row = get_row(this);
+			if ($child_row.level > $row.level + 1) {
+				if (deep) {
+					children.push(this);
+				}
+			} else if ($child_row.level == $row.level + 1) {
+				children.push(this);
+			} else {
+				return false;
+			}
+		});
+		return $(children);
+	}
+	function update() {
+		get_tables().each(function(){
+			var visible_level = 0,
+				$table = $(this);
+
+			$table.find('tr.rg2').each(function() {
+				var $tr = $(this),
+					level = get_level($tr);
+
+				if (level === null) {
+					visible_level = 0;
+					return;
+				}
+
+				if (level+1 === get_level($tr.next())) {
+					// is header
+					$tr.addClass('rg2-header');
+					if (visible_level >= level) {
+						if ($tr.is('.open')) {
+							visible_level = level + 1;
+						} else {
+							visible_level = level;
+						}
+					}
+				}
+
+				if (visible_level >= level) {
+					$tr.show();
+				} else {
+					$tr.hide();
+				}
+			});
+		});
+	}
+	function get_tables() {
+		return $('table.rg2');
+	}
+
+	$(document).on('click', '.rg2-header .rg2-arrow', function(event){
+		if (event.isDefaultPrevented() || $(event.target).is('input, select') || $(this).closest('.rg2-locked').length) {
+			// the click handler on an edit button is called, so don't open/close menu
+			return;
+		}
+
+		$(this).closest('.rg2-header').toggleClass('open');
+		update();
+	});
+
+	$(window).unload(function(){
+		// save state before unload
+		var ids = get_tables().find('.rg2.open:not(.rg2-locked)').map(function(){ return get_row(this).id; }).toArray();
+		localStorage.setObject(options.storageid, ids);
+	});
+
+	$(document).on('click', '.rg2 .selectallornone', function(){
+		$(this).trigger('rg2.open');
+
+		var $children = get_children(this);
+		$children.find(':checkbox').prop('checked', $children.find(':checkbox:not(:checked)').length > 0);
+	});
+
+	// init
+	$(function(){
+		// add class to tables
+		$('tr.rg2, table.rg2, .rg2-level-0').closest('table').addClass('rg2');
+		// add class to rows
+		$('table.rg2 > tr, table.rg2 > tbody > tr').addClass('rg2');
+		var $tables = get_tables();
+		console.log('table cnt', $tables.length);
+
+		$tables.on('rg2.update', function(){
+			update();
+		});
+		$tables.on('rg2.open', 'tr.rg2', function(){
+			$(this).addClass('open');
+			update();
+		});
+		$tables.on('rg2.close', 'tr.rg2', function(){
+			$(this).removeClass('open');
+			update();
+		});
+		$tables.on('rg2.open-parents', 'tr.rg2', function(){
+			get_parents(this).addClass('open');
+			update();
+		});
+
+		$('.rg2-level-0').show();
+
+		if (options.check_uncheck_parents_children) {
+			$(function(){
+				$('table.rg2 :checkbox').click(function(event){
+					get_children(this, true).find(":checkbox").prop('checked', $(this).prop('checked'));
+					if (!$(this).prop('checked')) {
+						// parents, only for uncheck
+						get_parents(this).find(":checkbox").prop('checked', false);
+					}
+				});
+			});
+		}
+
+		// reopen saved states
+		var ids;
+		if (ids = localStorage.getObject(options.storageid)) {
+			$.each(ids, function(tmp, id){
+				// only open if not locked
+				$tables.find('.rg2:not(.rg2-locked)[exa-rg2-id="'+id+'"]').addClass('open');
+			});
+		}
+
+		// reopen checked
+		if (options.reopen_checked) {
+			$('.rg2 :checkbox:checked').trigger('rg2.open-parents');
+		}
+
+		update();
+	});
+})();
+
 
 })();
