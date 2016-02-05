@@ -1,6 +1,6 @@
 <?php
 
-namespace {
+namespace block_exacomp {
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -12,6 +12,85 @@ if (block_exacomp_moodle_badges_enabled()) {
 	require_once($CFG->libdir . '/badgeslib.php');
 	require_once($CFG->dirroot . '/badges/lib/awardlib.php');
 }
+
+/**
+ * DATABSE TABLE NAMES
+ */
+const DB_SKILLS = 'block_exacompskills';
+const DB_NIVEAUS = 'block_exacompniveaus';
+const DB_TAXONOMIES = 'block_exacomptaxonomies';
+const DB_EXAMPLES = 'block_exacompexamples';
+const DB_EXAMPLEEVAL = 'block_exacompexameval';
+const DB_DESCRIPTORS = 'block_exacompdescriptors';
+const DB_DESCEXAMP = 'block_exacompdescrexamp_mm';
+const DB_EDULEVELS = 'block_exacompedulevels';
+const DB_SCHOOLTYPES = 'block_exacompschooltypes';
+const DB_SUBJECTS = 'block_exacompsubjects';
+const DB_TOPICS = 'block_exacomptopics';
+const DB_COURSETOPICS = 'block_exacompcoutopi_mm';
+const DB_DESCTOPICS = 'block_exacompdescrtopic_mm';
+const DB_CATEGORIES = 'block_exacompcategories';
+const DB_COMPETENCE_ACTIVITY = 'block_exacompcompactiv_mm';
+const DB_COMPETENCIES = 'block_exacompcompuser';
+const DB_COMPETENCIES_USER_MM = 'block_exacompcompuser_mm';
+const DB_SETTINGS = 'block_exacompsettings';
+const DB_MDLTYPES = 'block_exacompmdltype_mm';
+const DB_DESCBADGE = 'block_exacompdescbadge_mm';
+const DB_PROFILESETTINGS = 'block_exacompprofilesettings';
+const DB_CROSSSUBJECTS = 'block_exacompcrosssubjects';
+const DB_DESCCROSS = 'block_exacompdescrcross_mm';
+const DB_CROSSSTUD = 'block_exacompcrossstud_mm';
+const DB_DESCVISIBILITY = 'block_exacompdescrvisibility';
+const DB_DESCCAT = 'block_exacompdescrcat_mm';
+const DB_EXAMPTAX = 'block_exacompexampletax_mm';
+const DB_DATASOURCES = 'block_exacompdatasources';
+const DB_SCHEDULE = 'block_exacompschedule';
+const DB_EXAMPVISIBILITY = 'block_exacompexampvisibility';
+const DB_ITEMEXAMPLE = 'block_exacompitemexample';
+const DB_SUBJECT_NIVEAU_MM = 'block_exacompsubjniveau_mm';
+const DB_EXTERNAL_TRAINERS = 'block_exacompexternaltrainer';
+
+/**
+ * PLUGIN ROLES
+ */
+const ROLE_TEACHER = 1;
+const ROLE_STUDENT = 0;
+
+/**
+ * COMPETENCE TYPES
+ */
+const TYPE_DESCRIPTOR = 0;
+const TYPE_TOPIC = 1;
+const TYPE_CROSSSUB = 2;
+
+const SETTINGS_MAX_SCHEME = 10;
+const DATA_SOURCE_CUSTOM = 3;
+const EXAMPLE_SOURCE_TEACHER = 3;
+const EXAMPLE_SOURCE_USER = 4;
+
+const IMPORT_SOURCE_DEFAULT = 1;
+const IMPORT_SOURCE_SPECIFIC = 2;
+
+const CUSTOM_CREATED_DESCRIPTOR = 3;
+
+const EXAMPLE_STATE_NOT_SET = 0; // never used in weekly schedule, no evaluation
+const EXAMPLE_STATE_IN_POOL = 1; // planned to work with example -> example is in pool
+const EXAMPLE_STATE_IN_CALENDAR = 2; // example is in work -> in calendar
+const EXAMPLE_STATE_SUBMITTED = 3; //state 3 = submission for example / example closed (for submission no file upload etc is necessary) -> closed
+const EXAMPLE_STATE_EVALUATED_NEGATIV = 4; // evaluated -> only from teacher-> exacomp evaluation nE
+const EXAMPLE_STATE_EVALUATED_POSITIV = 5; //evaluated -> only from teacher -> exacomp evaluation > nE
+const EXAMPLE_STATE_LOCKED_TIME = 9; //handled like example entry on calender, but represent locked time
+
+const STUDENTS_PER_COLUMN = 4;
+const SHOW_ALL_TOPICS = -1;
+const SHOW_ALL_NIVEAUS = 99999999;
+
+const CAP_ADD_EXAMPLE = 'add_example';
+const CAP_MODIFY = 'modify';
+const CAP_DELETE = 'delete';
+}
+
+namespace {
 
 use block_exacomp\globals as g;
 
@@ -6138,82 +6217,6 @@ function block_exacomp_create_blocking_event($courseid, $title, $creatorid, $stu
 namespace block_exacomp {
 
 	use block_exacomp\globals as g;
-
-	/**
-	 * DATABSE TABLE NAMES
-	 */
-	const DB_SKILLS = 'block_exacompskills';
-	const DB_NIVEAUS = 'block_exacompniveaus';
-	const DB_TAXONOMIES = 'block_exacomptaxonomies';
-	const DB_EXAMPLES = 'block_exacompexamples';
-	const DB_EXAMPLEEVAL = 'block_exacompexameval';
-	const DB_DESCRIPTORS = 'block_exacompdescriptors';
-	const DB_DESCEXAMP = 'block_exacompdescrexamp_mm';
-	const DB_EDULEVELS = 'block_exacompedulevels';
-	const DB_SCHOOLTYPES = 'block_exacompschooltypes';
-	const DB_SUBJECTS = 'block_exacompsubjects';
-	const DB_TOPICS = 'block_exacomptopics';
-	const DB_COURSETOPICS = 'block_exacompcoutopi_mm';
-	const DB_DESCTOPICS = 'block_exacompdescrtopic_mm';
-	const DB_CATEGORIES = 'block_exacompcategories';
-	const DB_COMPETENCE_ACTIVITY = 'block_exacompcompactiv_mm';
-	const DB_COMPETENCIES = 'block_exacompcompuser';
-	const DB_COMPETENCIES_USER_MM = 'block_exacompcompuser_mm';
-	const DB_SETTINGS = 'block_exacompsettings';
-	const DB_MDLTYPES = 'block_exacompmdltype_mm';
-	const DB_DESCBADGE = 'block_exacompdescbadge_mm';
-	const DB_PROFILESETTINGS = 'block_exacompprofilesettings';
-	const DB_CROSSSUBJECTS = 'block_exacompcrosssubjects';
-	const DB_DESCCROSS = 'block_exacompdescrcross_mm';
-	const DB_CROSSSTUD = 'block_exacompcrossstud_mm';
-	const DB_DESCVISIBILITY = 'block_exacompdescrvisibility';
-	const DB_DESCCAT = 'block_exacompdescrcat_mm';
-	const DB_EXAMPTAX = 'block_exacompexampletax_mm';
-	const DB_DATASOURCES = 'block_exacompdatasources';
-	const DB_SCHEDULE = 'block_exacompschedule';
-	const DB_EXAMPVISIBILITY = 'block_exacompexampvisibility';
-	const DB_ITEMEXAMPLE = 'block_exacompitemexample';
-	const DB_SUBJECT_NIVEAU_MM = 'block_exacompsubjniveau_mm';
-	const DB_EXTERNAL_TRAINERS = 'block_exacompexternaltrainer';
-
-	/**
-	 * PLUGIN ROLES
-	 */
-	const ROLE_TEACHER = 1;
-	const ROLE_STUDENT = 0;
-
-	/**
-	 * COMPETENCE TYPES
-	 */
-	const TYPE_DESCRIPTOR = 0;
-	const TYPE_TOPIC = 1;
-	const TYPE_CROSSSUB = 2;
-
-	const SETTINGS_MAX_SCHEME = 10;
-	const DATA_SOURCE_CUSTOM = 3;
-	const EXAMPLE_SOURCE_TEACHER = 3;
-	const EXAMPLE_SOURCE_USER = 4;
-
-	const IMPORT_SOURCE_DEFAULT = 1;
-	const IMPORT_SOURCE_SPECIFIC = 2;
-
-	const CUSTOM_CREATED_DESCRIPTOR = 3;
-
-	const EXAMPLE_STATE_NOT_SET = 0; // never used in weekly schedule, no evaluation
-	const EXAMPLE_STATE_IN_POOL = 1; // planned to work with example -> example is in pool
-	const EXAMPLE_STATE_IN_CALENDAR = 2; // example is in work -> in calendar
-	const EXAMPLE_STATE_SUBMITTED = 3; //state 3 = submission for example / example closed (for submission no file upload etc is necessary) -> closed
-	const EXAMPLE_STATE_EVALUATED_NEGATIV = 4; // evaluated -> only from teacher-> exacomp evaluation nE
-	const EXAMPLE_STATE_EVALUATED_POSITIV = 5; //evaluated -> only from teacher -> exacomp evaluation > nE
-	const EXAMPLE_STATE_LOCKED_TIME = 9; //handled like example entry on calender, but represent locked time
-
-	const STUDENTS_PER_COLUMN = 4;
-	const SHOW_ALL_TOPICS = -1;
-	const SHOW_ALL_NIVEAUS = 99999999;
-
-	const CAP_ADD_EXAMPLE = 'add_example';
-	const CAP_MODIFY = 'modify';
-	const CAP_DELETE = 'delete';
 
 	class global_config {
 		static function get_scheme_item_title($id) {
