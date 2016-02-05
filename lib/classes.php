@@ -375,7 +375,7 @@ class db_record {
 
 	public function &__get($name) {
 		if (($method = 'get_'.$name) && method_exists($this, $method)) {
-			$ret = $this->$method();
+			@$ret =& $this->$method();
 
 			// check if __get is recursively called at the same property
 			if (property_exists($this, $name)) {
@@ -403,11 +403,11 @@ class db_record {
 
 	public function __isset($name) {
 		if (($method = 'get_'.$name) && method_exists($this, $method)) {
-			$this->__get($name);
+			return !!$this->__get($name);
 		} elseif (property_exists($this->data, $name)) {
 			// ok
 		} elseif (($method = 'fill_'.$name) && method_exists($this, $method)) {
-			$this->__get($name);
+			return !!$this->__get($name);
 		} else {
 			return false;
 		}
@@ -501,11 +501,12 @@ class db_record {
 		return $DB->delete_records(static::TABLE, array('id' => $this->id));
 	}
 
-	public function get_subs() {
+	public function &get_subs() {
 		if (empty(static::SUBS)) {
 			throw new \coding_exception('const SUBS not set');
 		}
-		return $this->{static::SUBS};
+		$tmp =& $this->{static::SUBS};
+		return $tmp;
 	}
 
 	public function set_subs($value) {
