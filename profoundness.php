@@ -75,9 +75,11 @@ else{
 		
 	}
 	//Delete timestamp (end|start) from example
+	/*
 	if($example_del = optional_param('exampleid', 0, PARAM_INT)){
 		block_exacomp_delete_timefield($example_del, optional_param('deletestart', 0, PARAM_INT), optional_param('deleteend', 0, PARAM_INT));
 	}
+	*/
 
 	$coursestudents = block_exacomp_get_students_by_course($courseid);
 	if($studentid == 0) $studentid = reset($coursestudents)->id;

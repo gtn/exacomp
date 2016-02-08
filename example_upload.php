@@ -135,12 +135,13 @@ if($formdata = $form->get_data()) {
 	}
 
 	//insert taxid in exampletax_mm
-	if(isset($formdata->taxid)) {
+	$DB->delete_records(\block_exacomp\DB_EXAMPTAX, ['exampleid' => $newExample->id]);
+	if (!empty($formdata->taxid)) {
 		foreach($formdata->taxid as $tax => $taxid)
-			block_exacomp\globals::$DB->insert_or_update_record(\block_exacomp\DB_EXAMPTAX, array(
+			$DB->insert_record(\block_exacomp\DB_EXAMPTAX, [
 				'exampleid' => $newExample->id,
 				'taxid' => $taxid
-			));
+			]);
 	}
 	//add descriptor association
 	$descriptors = block_exacomp\param::optional_array('descriptor', array(PARAM_INT=>PARAM_INT));

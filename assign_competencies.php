@@ -105,9 +105,11 @@ if (!$ret) {
 list($courseSubjects, $courseTopics, $niveaus, $selectedSubject, $selectedTopic, $selectedNiveau) = $ret;
 
 //Delete timestamp (end|start) from example
+/*
 if($example_del = optional_param('exampleid', 0, PARAM_INT)){
 	block_exacomp_delete_timefield($example_del, optional_param('deletestart', 0, PARAM_INT), optional_param('deleteend', 0, PARAM_INT));
 }
+*/
 
 // IF TEACHER SHOW ALL COURSE STUDENTS, IF NOT ONLY CURRENT USER
 $students = $allCourseStudents = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : array($USER->id => $USER);

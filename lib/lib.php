@@ -661,7 +661,7 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 	} else {
 		if ($userid != $USER->id)
 			// student can only assess himself
-			continue;
+			return;
 
 			if($value !== null)
 				$updateEvaluation->student_evaluation = ($value != -1) ? $value : null;
@@ -848,8 +848,9 @@ function block_exacomp_reset_comp_activity_data($courseid, $role, $comptype, $us
 /**
  * Delete timestamp for exampleid
  */
+/*
 function block_exacomp_delete_timefield($exampleid, $deletestart, $deleteent){
-	global $USER;
+	global $DB, $USER;
 
 	$updateid = $DB->get_field(\block_exacomp\DB_EXAMPLEEVAL, 'id', array('exampleid'=>$exampleid, 'studentid'=>$USER->id));
 	$update = new stdClass();
@@ -861,6 +862,7 @@ function block_exacomp_delete_timefield($exampleid, $deletestart, $deleteent){
 
 	$DB->update_record(\block_exacomp\DB_EXAMPLEEVAL, $update);
 }
+*/
 
 /**
  * Gets settings for the current course
@@ -2040,7 +2042,7 @@ function block_exacomp_is_ready_for_use($courseid){
 /**
  *
  * Gets grading scheme for a course
- * @param unknown_type $courseid
+ * @param int $courseid
  */
 function block_exacomp_get_grading_scheme($courseid) {
 	global $DB;
@@ -2050,7 +2052,7 @@ function block_exacomp_get_grading_scheme($courseid) {
 /**
  *
  * Builds topic title to print
- * @param unknown_type $topic
+ * @param stdClass $topic
  */
 function block_exacomp_get_output_fields($topic, $show_category=false, $isTopic = true) {
 	global $DB;
@@ -3702,7 +3704,6 @@ function block_exacomp_init_exaport_items($items){
 }
 
 function block_exacomp_set_tipp($compid, $user, $type, $scheme){
-	global $COURSE;
 	//$user_information = block_exacomp_get_user_information_by_course($user, $COURSE->id);
 
 	$show_tipp = false;

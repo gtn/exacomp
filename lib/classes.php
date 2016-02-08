@@ -88,7 +88,7 @@ class db_layer {
 		return $descriptors;
 	}
 
-	function get_examples($descriptor) {
+	function get_examples(descriptor $descriptor) {
 		$dummy = $descriptor->get_data();
 		block_exacomp_get_examples_for_descriptor($dummy, $this->filteredtaxonomies, $this->showallexamples, $this->courseid, false, false);
 
@@ -233,6 +233,10 @@ class db_layer {
 		), $this);
 	}
 
+	/**
+	 * @param db_record[] $objects
+	 * @return array
+	 */
 	function assignDbLayer(array $objects) {
 		array_walk($objects, function($object) {
 			$object->setDbLayer($this);
@@ -466,13 +470,13 @@ class db_record {
 		global $DB;
 
 		if (!isset($this->id)) {
-			throw new block_exacomp\moodle_exception('id not set');
+			throw new moodle_exception('id not set');
 		}
 
 		if ($data === null) {
 			die('TODO: testing');
 			// update all my data
-			return $DB->update_record(static::TABLE, $this->data);
+			// return $DB->update_record(static::TABLE, $this->data);
 		}
 
 		$data = (array)$data;
@@ -515,7 +519,7 @@ class db_record {
 	}
 
 	/**
-	 * @param $conditions can be an
+	 * @param mixed $conditions can be an
 	 * 			* (string,int)id OR (object,array)conditions, to load that record from the database
 	 * 			* OR db_record, which would just be returned
 	 * @param null $fields
@@ -685,7 +689,7 @@ class descriptor extends db_record {
 
 		die('no');
 
-		return topic::get($this->topicid);
+		// return topic::get($this->topicid);
 	}
 
 	static function insertInCourse($courseid, $data) {
@@ -695,6 +699,7 @@ class descriptor extends db_record {
 		$parent_descriptor = isset($descriptor->parentid) ? descriptor::get($descriptor->parentid) : null;
 		$topic = isset($descriptor->topicid) ? topic::get($descriptor->topicid) : null;
 
+		$topicid = null;
 		if ($parent_descriptor) {
 		   $descriptor_topic_mm = $DB->get_record(DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
 		   $topicid = $descriptor_topic_mm->topicid;

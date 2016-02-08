@@ -89,6 +89,7 @@ class printer {
 			}
 			table td {
 				border: 0.2pt solid #555;
+				margin: 40px;
 			}
 			table {
 				padding: 1px 0 1px 1px; /* tcpdf only accepts padding on table tag, which gets applied to all cells */
@@ -114,11 +115,12 @@ class printer {
 		foreach ($html_tables as $html_table) {
 			// convert padding to spaces, because tcpdf doesn't support padding
 			/*
-			$html_table = preg_replace_callback('!padding-left:\s*([0-9]+)[^>]+>(<div[^>]*>)?!', function($matches){
-				return $matches[0].str_repeat('&nbsp;', round($matches[1]/5));
+			$html_table = preg_replace_callback('!rg2-level-([0-9]+).*rg2-indent[^>]+>(<[^>]*>)*(?=[^<])!sU', function($matches){
+				return $matches[0].str_repeat('&nbsp;', max(0, $matches[1])*4); // .' level '.$matches[1];
 			}, $html_table);
 			*/
-			
+			// echo $html_table; exit;
+
 			// add spacing for examples
 			$html_table = preg_replace('!block_exacomp_example.*c1.*<div[^>]*>!isU', '$0&nbsp;&nbsp;&nbsp;&nbsp;', $html_table);
 		

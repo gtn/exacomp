@@ -389,7 +389,19 @@ td.contentcell {
 	cursor: pointer
 }
 
-@media print { 
+@media print {
+	/* hide stuff: */
+	#page-navbar, /* breadcrumbs */
+	ul.nav, /* navigation */
+	#page-footer,
+	header.navbar /* the page navigation header */
+	{
+		display: none;
+	}
+	body {
+		padding: 0 !important;
+	}
+
 	#block_exacomp div#linkback {
 		display: none
 	}
@@ -579,17 +591,28 @@ td.contentcell {
 	background: url(../pix/pfeil_hide.png) 0 6px no-repeat
 }
 
-#block_exacomp tr.rg2-level-1,
-#block_exacomp tr.rg2-level-2,
-#block_exacomp tr.rg2-level-3,
-#block_exacomp tr.rg2-level-4,
-#block_exacomp tr.rg2-level-5,
-#block_exacomp tr.rg2-level-6,
-#block_exacomp tr.rg2-level-7,
-#block_exacomp tr.rg2-level-8,
-#block_exacomp tr.rg2-level-9 {
+#block_exacomp tr[class*=rg2-level-] {
 	display: none;
 }
+#block_exacomp tr.rg2-level-0 {
+	display: table-row;
+}
+#block_exacomp tr.rg2-level-1 .rg2-indent {
+	padding-left: 20px !important;
+}
+#block_exacomp tr.rg2-level-2 .rg2-indent {
+	padding-left: 40px !important;
+}
+#block_exacomp tr.rg2-level-3 .rg2-indent {
+	padding-left: 60px !important;
+}
+#block_exacomp tr.rg2-level-4 .rg2-indent {
+	padding-left: 80px !important;
+}
+#block_exacomp tr.rg2-level-5 .rg2-indent {
+	padding-left: 100px !important;
+}
+
 
 #block_exacomp .exabis_comp_top_student {
 	text-align: center

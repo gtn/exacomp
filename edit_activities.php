@@ -173,7 +173,7 @@ if($modules){
 		echo $output->print_no_course_activities_warning();
 	}else{
 		echo $output->print_activity_legend($headertext);
-		echo $output->print_activity_content($subjects, $visible_modules, $courseid, $colspan, $selected_niveaus);
+		echo $output->print_activity_content($subjects, $visible_modules, $colspan);
 		echo $output->print_activity_footer($niveaus, $modules_to_filter, $selected_niveaus, $selected_modules);
 	}
 }

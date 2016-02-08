@@ -1,4 +1,6 @@
 (function($){
+	// not needed anymore?
+	/*
 	$( window ).load(function() {
 		var group = block_exacomp.get_param('group');
 		block_exacomp.onlyShowColumnGroup(group);
@@ -116,6 +118,7 @@
 		$('.colgroup-button').css('font-weight', 'normal');
 		$('.colgroup-button-'+(group===null?'0':(group==(-1)?'all':group))).css('font-weight', 'bold');
 	}
+	*/
 
 	$(document).on('click', 'input[name^=data]', function(){
 		var $this = $(this);

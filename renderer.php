@@ -433,7 +433,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 * Prints 2 select inputs for subjects and topics
 	 */
 	public function print_overview_dropdowns($schooltypetree, $selectedSubject, $selectedTopic, $students, $selectedStudent = 0, $isTeacher = false) {
-		global $PAGE, $COURSE, $USER, $NG_PAGE;
+		global $COURSE, $USER, $NG_PAGE;
 
 		$content = "";
 		$right_content = "";
@@ -554,10 +554,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 	public function print_niveaus_menu($niveaus,$selectedNiveau,$selectedTopic) {
 		global $NG_PAGE, $CFG, $COURSE;
-		
-		$edit = $this->is_edit_mode();
-		$studentid = optional_param('studentid', BLOCK_EXACOMP_SHOW_ALL_STUDENTS,PARAM_INT);
-		//$subjectid = 
 		
 		$content = html_writer::start_div('niveaus_menu');
 		$content .= html_writer::start_tag('ul');
@@ -1237,6 +1233,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			//for every topic
 			$data = (object)array(
 					'courseid' => $courseid,
+					'rg2_level' => 0,
 					'showevaluation' => 0,
 					'role' => $role,
 					'scheme' => 2,
@@ -1266,7 +1263,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$studentsColspan = $showevaluation ? 2 : 1;
 		if($additional_grading && ($showevaluation || $role = \block_exacomp\ROLE_TEACHER)) $studentsColspan++;
 
-		$table->attributes['class'] = 'exabis_comp_comp';
+		$table->attributes['class'] = 'exabis_comp_comp rg2 exabis-tooltip';
 
 		if(block_exacomp_exaportexists())
 			$eportfolioitems = block_exacomp_get_eportfolioitem_association($students);
@@ -1396,7 +1393,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		//total evaluation crosssub row
 		if($crosssubjs && !$this->is_edit_mode() && !$statistic){
 			$student = array_values($students)[0];
-			$studentid = $student->id;
 
 			$totalRow = new html_table_row();
 			$totalRow->attributes['class'] = 'highlight';
@@ -1457,10 +1453,14 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		if ($this->is_print_mode()) {
 			// private function
 			$cell_width = function($row, $cell, $width) use ($rows) {
+				if (!isset($rows[$row]->cells[$cell])) {
+					throw new coding_exception('cell not found '.$row.'x'.$cell);
+				}
 				$rows[$row]->cells[$cell]->attributes['width'] = $width.'%';
 				// test print cell size
 				//$rows[$row]->cells[$cell]->text = $width.' '.$rows[$row]->cells[$cell]->text;
 			};
+
 			// set table cell sizes for print mode
 			$cnt = count($students);
 			$cell_width(0, 0, 100-5-$cnt*12.5);
@@ -1471,8 +1471,9 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			$cell_width(2, 0, 8);
 			$cell_width(2, 1, 100-5-$cnt*12.5-8);
 			$cell_width(2, 2, 5);
-			for ($i = 0; $i < $cnt*3; $i++) {
-				$cell_width(2, 3+$i, 12.5/3);
+			$col_cnt = 2 + ($additional_grading ? 1 : 0);
+			for ($i = 0; $i < $cnt*$col_cnt; $i++) {
+				$cell_width(2, 3+$i, 12.5/$col_cnt);
 			}
 		}
 
@@ -1519,9 +1520,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			$child_level = $level;
 		}
 
-		$padding = $level * 20 + 12;
-		$child_padding = $child_level * 20 + 12;
-
 		$evaluation = ($data->role == \block_exacomp\ROLE_TEACHER) ? "teacher" : "student";
 
 		foreach($topics as $topic) {
@@ -1530,7 +1528,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			$studentsCount = 0;
 			$studentsColspan = 1;
 
-			$hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) && (!block_exacomp_is_altversion()));
+			// $hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) && (!block_exacomp_is_altversion()));
 
 			$this_rg2_class = $data->rg2_level >= 0 ? 'rg2 rg2-level-'.$data->rg2_level : '';
 
@@ -1543,8 +1541,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			$topicRow->cells[] = $outputidCell;
 
 			$outputnameCell = new html_table_cell();
-			$outputnameCell->attributes['class'] = 'rg2-arrow';
-			$outputnameCell->style = "padding-left: ".$padding."px";
+			$outputnameCell->attributes['class'] = 'rg2-arrow rg2-indent';
 			if(block_exacomp_is_altversion() && $topicparam == block_exacomp\SHOW_ALL_NIVEAUS)
 				$outputnameCell->text = html_writer::div($outputname,"desctitle");
 			else
@@ -1674,7 +1671,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				$own_additionRow->cells[] = new html_table_cell();
 
 				$cell = new html_table_cell();
-				$cell->style = "padding-left: ". $child_padding."px";
+				$cell->attributes['class'] = 'rg2-arrow rg2-indent';
 				$cell->text = html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'type'=>'textfield', 'placeholder'=>\block_exacomp\trans(['de:Neue Kompetenz', 'en:New competency']), 'topicid'=>$topic->id, 'niveauid'=>$niveauid));
 				$own_additionRow->cells[] = $cell;
 				$own_additionRow->cells[] = new html_table_cell();
@@ -1724,13 +1721,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor, false, $parent);
 				$studentsCount = 0;
 
-				$padding = ($level) * 20 + 4;
-
-				//if($descriptor->parentid > 0)
-					//$padding += 20;
-
-				$this_rg2_class = 'rg2 rg2-level-'.$data->rg2_level.' '.$visible_css;
-				$sub_rg2_class = 'rg2 rg2-level-'.($data->rg2_level+1);
+				$this_rg2_class = 'rg2-level-'.$data->rg2_level.' '.$visible_css;
+				$sub_rg2_class = 'rg2-level-'.($data->rg2_level+1);
 
 				$descriptorRow = new html_table_row();
 
@@ -1755,14 +1747,18 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
 				$titleCell = new html_table_cell();
 
+				$titleCell->attributes['class'] = 'rg2-indent';
 				if(($descriptor->examples || $descriptor->children || ($parent && $editmode)) && ($data->rg2_level >= 0))
-					$titleCell->attributes['class'] = 'rg2-arrow';
-				$titleCell->style = "padding-left: ".$padding."px";
+					$titleCell->attributes['class'] .= ' rg2-arrow';
 
-				$title = block_exacomp\get_string('import_source', null, $this->print_source_info($descriptor->source));
-				if (isset($data->subject) && $author = $data->subject->get_author()) $title .= ', '.get_string('author', 'repository').": ".$author."\n";
+				$titleCell->attributes['title'] = [];
+				$titleCell->attributes['title'][] = block_exacomp\get_string('import_source', null, $this->print_source_info($descriptor->source));
+				if (isset($data->subject) && $author = $data->subject->get_author()) {
+					$titleCell->attributes['title'][] = get_string('author', 'repository').": ".$author."\n";
+				}
 
-				$titleCell->text = html_writer::div(html_writer::tag('span', $outputname, array('title'=>$title)));
+				$titleCell->attributes['title'] = join('<br />', $titleCell->attributes['title']);
+				$titleCell->text = html_writer::div(html_writer::tag('span', $outputname));
 
 				//$titleCell->attributes['title'] = $this->print_statistic_table($data->courseid, $students, $descriptor, true, $data->scheme);
 
@@ -2004,13 +2000,28 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					$exampleRow->cells[] = new html_table_cell();
 
 					$titleCell = new html_table_cell();
-					$titleCell->style = "padding-left: ". ($padding + 20 )."px";
-					$title = '';
-					if ($author = $example->get_author()) $title .= get_string('author', 'repository').": ".$author."\n";
-					$title .= strip_tags($example->description);
-					$titleCell->text = html_writer::div(html_writer::tag('span', $example->title, array('title'=>$title)));
+					$titleCell->attributes['class'] = 'rg2-indent';
+					$titleCell->style = 'padding-left: 30px;';
+					$titleCell->text = html_writer::div(html_writer::tag('span', $example->title));
 
-				   if(!$statistic && !$this->is_print_mode()){
+				   	if(!$statistic && !$this->is_print_mode()){
+
+						$titleCell->attributes['title'] = [];
+
+						if ($author = $example->get_author()) {
+						   	$titleCell->attributes['title'][] = get_string('author', 'repository').": ".$author;
+					   	}
+						if(!empty(trim(strip_tags($example->description)))) {
+							$titleCell->attributes['title'][] = $example->description;
+						}
+						if (!empty(trim($example->timeframe))) {
+							$titleCell->attributes['title'][] = $example->timeframe;
+						}
+						if (!empty(trim($example->tips))) {
+							$titleCell->attributes['title'][] = $example->tips;
+						}
+
+						$titleCell->attributes['title'] = join('<br />', $titleCell->attributes['title']);
 
 						if ($editmode) {
 							$titleCell->text .= '<span style="padding-right: 15px;" class="todo-change-stylesheet-icons">';
@@ -2093,16 +2104,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 						/*if ($editmode) {
 							$titleCell->text .= ' '.$this->print_source_info($descriptor->source);
 						}*/
-
-						$titleCell->attributes['title'] = '';
-
-						if(!empty($example->description))
-							$titleCell->attributes['title'] .= $example->description;
-						if(!empty($example->timeframe))
-							$titleCell->attributes['title'] .= '&#013;' . $example->timeframe;
-						if(!empty($example->tips))
-							$titleCell->attributes['title'] .= '&#013;' . $example->tips;
-
 					}
 					$exampleRow->cells[] = $titleCell;
 
@@ -2241,7 +2242,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
 					if($descriptor_in_crosssubj){
 						$cell = new html_table_cell();
-						$cell->style = "padding-left: ". ($padding + 20 )."px";
+						$cell->attributes['class'] = 'rg2-indent';
 						$cell->text = html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'name'=>'new_comp'.$descriptor->id, 'type'=>'textfield', 'placeholder'=>\block_exacomp\trans(['de:Neue Teilkompetenz', 'en:New child competency']), 'parentid'=>$descriptor->id));
 						$own_additionRow->cells[] = $cell;
 					}
@@ -2386,6 +2387,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		));
 
 	}
+	/*
 	private function print_student_example_evaluation_form($exampleid, $studentid, $courseid) {
 		global $DB;
 		$exampleInfo = $DB->get_record(\block_exacomp\DB_EXAMPLEEVAL, array("exampleid" => $exampleid, "studentid" => $studentid, "courseid" => $courseid));
@@ -2407,6 +2409,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
 		return $content;
 	}
+	*/
 
 	/**
 	 *
@@ -2584,7 +2587,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			$scheme_values = \block_exacomp\global_config::get_student_scheme_items($scheme);
 
 			$options[0] = '';
-			$stars = '*';
 			for($i=1; $i<=$scheme; $i++){
 				$options[$i] = $scheme_values[$i];
 			}
@@ -2977,7 +2979,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				$row->cells[] = $selectAllCell;
 
 				$rows[] = $row;
-				$this->print_topics_courseselection($rows, 0, $subject->subs, $topics_activ);
+				$this->print_topics_courseselection($rows, 1, $subject->subs, $topics_activ);
 
 			}
 		}
@@ -3015,29 +3017,22 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			$rows[] = $row;
 
 			foreach ($subject->topics as $topic) {
-				$padding = 20;
-
 				$row = new html_table_row();
 				$row->attributes['class'] = 'exabis_comp_teilcomp rg2-level-1';
 
 				$cell = new html_table_cell();
-				$cell->attributes['class'] = 'rg2-arrow';
-				$cell->style = "padding-left: ".$padding."px";
+				$cell->attributes['class'] = 'rg2-arrow rg2-indent';
 				$cell->text = html_writer::div('<input type="checkbox" name="topics['.$topic->id.']" value="'.$topic->id.'" ">'.$topic->numbering.' '.$topic->title,"desctitle");
 				$row->cells[] = $cell;
 
 				$rows[] = $row;
 
 				foreach($topic->descriptors as $descriptor){
-
-					$padding = 40;
-
 					$row = new html_table_row();
 					$row->attributes['class'] = 'rg2-level-2';
 
 					$cell = new html_table_cell();
-					$cell->attributes['class'] = 'rg2-arrow';
-					$cell->style = "padding-left: ".$padding."px";
+					$cell->attributes['class'] = 'rg2-arrow rg2-indent';
 					$cell->text = html_writer::div('<input type="checkbox" name="descriptors['.$descriptor->id.']" value="'.$descriptor->id.'" />'.$descriptor->numbering.' '.$descriptor->title,"desctitle");
 					$row->cells[] = $cell;
 
@@ -3046,14 +3041,11 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					// child descriptors
 					foreach($descriptor->children as $descriptor){
 
-						$padding = 60;
-
 						$row = new html_table_row();
 						$row->attributes['class'] = 'rg2-level-3';
 
 						$cell = new html_table_cell();
-						$cell->attributes['class'] = 'rg2-arrow';
-						$cell->style = "padding-left: ".$padding."px";
+						$cell->attributes['class'] = 'rg2-arrow rg2-indent';
 						$cell->text = html_writer::div('<input type="checkbox" name="descriptors['.$descriptor->id.']" value="'.$descriptor->id.'" />'.$descriptor->numbering.' '.$descriptor->title,"desctitle");
 						$row->cells[] = $cell;
 
@@ -3076,7 +3068,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		global $PAGE;
 
 		$headertext = "Bitte wählen";
-		$topics_activ = array();
 
 		$header = html_writer::tag('p', $headertext).html_writer::empty_tag('br');
 
@@ -3096,14 +3087,11 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			$rows[] = $row;
 
 			foreach ($subject->topics as $topic) {
-				$padding = 20;
-
 				$row = new html_table_row();
 				$row->attributes['class'] = 'exabis_comp_teilcomp rg2-level-1';
 
 				$cell = new html_table_cell();
-				$cell->attributes['class'] = 'rg2-arrow';
-				$cell->style = "padding-left: ".$padding."px";
+				$cell->attributes['class'] = 'rg2-arrow rg2-indent';
 				$cell->text = html_writer::div('<input type="checkbox" exa-name="topics" value="'.$topic->id.'"'.(!$topic->can_delete?' disabled="disabled"':'').' />'.
 						$topic->numbering.' '.$topic->title,"desctitle");
 				$row->cells[] = $cell;
@@ -3111,15 +3099,11 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				$rows[] = $row;
 
 				foreach($topic->descriptors as $descriptor){
-
-					$padding = 40;
-
 					$row = new html_table_row();
 					$row->attributes['class'] = 'rg2-level-2';
 
 					$cell = new html_table_cell();
-					$cell->attributes['class'] = 'rg2-arrow';
-					$cell->style = "padding-left: ".$padding."px";
+					$cell->attributes['class'] = 'rg2-arrow rg2-indent';
 					$cell->text = html_writer::div('<input type="checkbox" exa-name="descriptors" value="'.$descriptor->id.'"'.(!$descriptor->can_delete?' disabled="disabled"':'').' />'.
 							$descriptor->numbering.' '.$descriptor->title,"desctitle");
 					$row->cells[] = $cell;
@@ -3128,14 +3112,11 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
 					// child descriptors
 					foreach($descriptor->children as $child_descriptor){
-						$padding = 60;
-
 						$row = new html_table_row();
 						$row->attributes['class'] = 'rg2-level-3';
 
 						$cell = new html_table_cell();
-						$cell->attributes['class'] = 'rg2-arrow';
-						$cell->style = "padding-left: ".$padding."px";
+						$cell->attributes['class'] = 'rg2-arrow rg2-indent';
 						$cell->text = html_writer::div('<input type="checkbox" exa-name="descriptors" value="'.$child_descriptor->id.'"'.(!$child_descriptor->can_delete?' disabled="disabled"':'').' />'.
 								$child_descriptor->numbering.' '.$child_descriptor->title,"desctitle");
 						$row->cells[] = $cell;
@@ -3144,14 +3125,11 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
 						// examples
 						foreach($child_descriptor->examples as $example){
-							$padding = 80;
-
 							$row = new html_table_row();
 							$row->attributes['class'] = 'rg2-level-4';
 
 							$cell = new html_table_cell();
-							$cell->attributes['class'] = 'rg2-arrow';
-							$cell->style = "padding-left: ".$padding."px";
+							$cell->attributes['class'] = 'rg2-arrow rg2-indent';
 							$cell->text = html_writer::div('<input type="checkbox" exa-name="examples" value="'.$example->id.'"'.(!$example->can_delete?' disabled="disabled"':'').' />'.
 									$example->numbering.' '.$example->title,"desctitle");
 							$row->cells[] = $cell;
@@ -3162,14 +3140,11 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
 					// examples
 					foreach($descriptor->examples as $example){
-						$padding = 60;
-
 						$row = new html_table_row();
 						$row->attributes['class'] = 'rg2-level-3';
 
 						$cell = new html_table_cell();
-						$cell->attributes['class'] = 'rg2-arrow';
-						$cell->style = "padding-left: ".$padding."px";
+						$cell->attributes['class'] = 'rg2-arrow rg2-indent';
 						$cell->text = html_writer::div('<input type="checkbox" exa-name="examples" value="'.$example->id.'"'.(!$example->can_delete?' disabled="disabled"':'').' />'.
 								$example->numbering.' '.$example->title,"desctitle");
 						$row->cells[] = $cell;
@@ -3190,12 +3165,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	}
 
 	public function print_topics_courseselection(&$rows, $level, $topics, $topics_activ){
-		$padding = $level * 20 + 12;
-
 		foreach($topics as $topic) {
 			list($outputid, $outputname) = block_exacomp_get_output_fields($topic);
 
-			$this_rg2_class = 'rg2-level-'.($level+1);
+			$this_rg2_class = 'rg2-level-'.$level;
 
 			$topicRow = new html_table_row();
 			//$topicRow->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rg2_class . ' highlight';
@@ -3205,8 +3178,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			$topicRow->cells[] = $outputidCell;
 
 			$outputnameCell = new html_table_cell();
-			$outputnameCell->attributes['class'] = 'rg2-arrow';
-			$outputnameCell->style = "padding-left: ".$padding."px";
+			$outputnameCell->attributes['class'] = 'rg2-arrow rg2-indent';
 			$outputnameCell->text = html_writer::div($outputname,"desctitle");
 			$topicRow->cells[] = $outputnameCell;
 
@@ -3216,9 +3188,11 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
 			$rows[] = $topicRow;
 
+			/*
 			if (!empty($topic->subs)) {
 				$this->print_topics_courseselection($rows, $level+1, $topic->subs, $topics_activ);
 			}
+			*/
 		}
 	}
 	public function print_activity_legend($headertext){
@@ -3277,7 +3251,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
 		return $content;
 	}
-	public function print_activity_content($subjects, $modules, $courseid, $colspan){
+	public function print_activity_content($subjects, $modules, $colspan){
 		global $COURSE, $PAGE;
 
 		$table = new html_table;
@@ -3314,8 +3288,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
 		$row->cells[] = $cell;
 
-		$modules_printed = array();
-
 		foreach($modules as $module){
 			$cell = new html_table_cell();
 			$cell->attributes['class'] = 'ec_tableheadwidth';
@@ -3346,12 +3318,10 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
 	}
 	public function print_topics_activities(&$rows, $level, $topics, $modules) {
-		$padding = $level * 20 + 12;
-
 		foreach($topics as $topic) {
 			list($outputid, $outputname) = block_exacomp_get_output_fields($topic, true);
 
-			$hasSubs = (!empty($topic->subs) || !empty($topic->descriptors));
+			//$hasSubs = (!empty($topic->subs) || !empty($topic->descriptors));
 
 			$this_rg2_class = 'rg2-level-'.$level;
 
@@ -3359,8 +3329,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			$topicRow->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rg2_class . ' highlight';
 
 			$outputnameCell = new html_table_cell();
-			$outputnameCell->attributes['class'] = 'rg2-arrow';
-			$outputnameCell->style = "padding-left: ".$padding."px";
+			$outputnameCell->attributes['class'] = 'rg2-arrow rg2-indent';
 			$outputnameCell->text = html_writer::div($outputid.$outputname,"desctitle");
 			$topicRow->cells[] = $outputnameCell;
 
@@ -3390,18 +3359,13 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		foreach($descriptors as $descriptor) {
 			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor,false,false);
 
-			$padding = ($level) * 20 + 4;
-
-			if($descriptor->parentid > 0)
-				$padding += 20;
-			
 			$this_rg2_class = 'rg2-level-'.$level;
 
 			$descriptorRow = new html_table_row();
 			$descriptorRow->attributes['class'] = 'exabis_comp_aufgabe ' . $this_rg2_class;
 
 			$titleCell = new html_table_cell();
-			$titleCell->style = "padding-left: ".$padding."px";
+			$titleCell->attributes['class'] = 'rg2-arrow rg2-indent';
 			$titleCell->text = html_writer::div($outputname);
 
 			$descriptorRow->cells[] = $titleCell;
@@ -3416,7 +3380,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		}
 	}
 	public function print_badge($badge, $descriptors, $context){
-		global $CFG, $COURSE;;
+		global $COURSE;
 
 		$imageurl = moodle_url::make_pluginfile_url($context->id, 'badges', 'badgeimage', $badge->id, '/', 'f1', false);
 		$content = html_writer::empty_tag('img', array('src' => $imageurl, 'class' => 'badge-image'));
@@ -3508,8 +3472,6 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
 	}
 	public function print_topics_badges(&$rows, $level, $topics, $badge) {
-		$padding = $level * 20 + 12;
-
 		foreach($topics as $topic) {
 			list($outputid, $outputname) = block_exacomp_get_output_fields($topic);
 
@@ -3519,8 +3481,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			$topicRow->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rg2_class . ' highlight';
 
 			$outputnameCell = new html_table_cell();
-			$outputnameCell->attributes['class'] = 'rg2-arrow';
-			$outputnameCell->style = "padding-left: ".$padding."px";
+			$outputnameCell->attributes['class'] = 'rg2-arrow rg2-indent';
 			$outputnameCell->text = html_writer::div($outputname,"desctitle");
 			$topicRow->cells[] = $outputnameCell;
 
@@ -3533,22 +3494,22 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				$this->print_descriptors_badges($rows, $level+1, $topic->descriptors, $badge);
 			}
 
+			/*
 			if (!empty($topic->subs)) {
 				$this->print_topics_badges($rows, $level+1, $topic->subs, $badge);
 			}
+			*/
 		}
 	}
 	public function print_descriptors_badges(&$rows, $level, $descriptors, $badge) {
 		foreach($descriptors as $descriptor) {
 			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor,false,false);
 
-			$padding = ($level) * 20 + 4;
-
 			$descriptorRow = new html_table_row();
 			$descriptorRow->attributes['class'] = 'exabis_comp_aufgabe rg2-level-'.$level;
 				
 			$titleCell = new html_table_cell();
-			$titleCell->style = "padding-left: ".$padding."px";
+			$titleCell->attributes['class'] = 'rg2-arrow rg2-indent';
 			$titleCell->text = html_writer::div($outputname);
 
 			$descriptorRow->cells[] = $titleCell;
@@ -4262,9 +4223,9 @@ var dataset = dataset.map(function (group) {
 			$content .= html_writer::tag('p', get_string('item_no_comps', 'block_exacomp'));
 			foreach($items as $item){
 				if($item->userid != $USER->id)
-					$url = $CFG->wwwroot.'/blocks/exaport/shared_item.php?courseid='.$COURSE->id.'&access=portfolio/id/'.$userid.'&itemid='.$item->id.'&backtype=&att='.$item->attachment;
+					$url = $CFG->wwwroot.'/blocks/exaport/shared_item.php?courseid='.$COURSE->id.'&access=portfolio/id/'.$user->id.'&itemid='.$item->id.'&backtype=&att='.$item->attachment;
 				else
-					$url = new moodle_url('/blocks/exaport/item.php',array("courseid"=>$COURSE->id,"access"=>'portfolio/id/'.$userid,"id"=>$item->id,"sesskey"=>sesskey(),"action"=>"edit"));
+					$url = new moodle_url('/blocks/exaport/item.php',array("courseid"=>$COURSE->id,"access"=>'portfolio/id/'.$user->id,"id"=>$item->id,"sesskey"=>sesskey(),"action"=>"edit"));
 				
 				$li_items = '';
 				if(!$item->hascomps){
@@ -4484,7 +4445,7 @@ var dataset = dataset.map(function (group) {
 		return html_writer::div(html_writer::tag('form', $content), 'competence_profile_printbox');
 	}
 	public function print_cross_subjects_drafts($subjects, $isAdmin=false){
-		global $PAGE, $USER;
+		global $PAGE;
 		
 		$draft_content = html_writer::tag('h4', get_string('create_new_crosssub', 'block_exacomp'));
 		$draft_content .= "<h5>" . get_string('use_available_crosssub','block_exacomp') . "</h5>";
@@ -4668,8 +4629,6 @@ var dataset = dataset.map(function (group) {
 	}
 	
 	public function print_competence_based_list_tree($tree, $isTeacher, $editmode, $show_examples = true) {
-		global $PAGE;
-		
 		$html_tree = "";
 		$html_tree .= html_writer::start_tag("ul",array("class"=>"exa-tree exa-tree-open-checked"));
 		foreach($tree as $skey => $subject) {
@@ -5001,7 +4960,6 @@ var dataset = dataset.map(function (group) {
 	}	
 	
 	public function print_lm_graph_legend($scheme) {
-		$global_scheme = \block_exacomp\global_config::get_scheme_id();
 		$global_scheme_values = \block_exacomp\global_config::get_scheme_items($scheme);
 		$content = html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","lmoB");
 		$content .= ' '.get_string("oB","block_exacomp").' ';
