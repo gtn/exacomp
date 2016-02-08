@@ -2240,7 +2240,7 @@ function block_exacomp_build_example_tree_desc($courseid){
 	//go through tree and unset every subject, topic and descriptor where no example is appended
 	foreach($tree as $subject){
 		//traverse recursively, because of possible topic-children
-		$subject_has_examples = block_exacomp_build_rec_topic_example_tree_desc($subject->subs);
+		$subject_has_examples = block_exacomp_build_rec_topic_example_tree_desc($subject->topics);
 
 		if(!$subject_has_examples)
 			unset($tree[$subject->id]);
@@ -2268,17 +2268,21 @@ function block_exacomp_build_rec_topic_example_tree_desc(&$subs){
 				}
 			}
 		}
+		/*
 		if(isset($topic->subs)){
 			$sub_topic_has_examples = block_exacomp_build_rec_topic_example_tree_desc($topic->subs);
 			if($sub_topic_has_examples)
 				$sub_topics_have_examples = true;
 		}
 		elseif((!isset($topic->subs) && !$topic_has_examples))
-		unset($subs[$topic->id]);
-
+			unset($subs[$topic->id]);
 		if(!$topic_has_examples && !$sub_topics_have_examples){
 			unset($subs[$topic->id]);
 		}
+		*/
+
+		if (!$topic_has_examples)
+			unset($subs[$topic->id]);
 	}
 
 	return $sub_has_examples;
@@ -2661,23 +2665,25 @@ function block_exacomp_update_example_visibilities($courseid, $examples){
 }
 //TODO this can be done easier
 function block_exacomp_get_active_topics($tree, $courseid){
-	$topics = block_exacomp_get_topics_by_course($courseid);
+	$active_topics = block_exacomp_get_topics_by_course($courseid);
 	foreach($tree as $subject){
-		block_exacomp_get_active_topics_rec($subject->subs, $topics);
+		block_exacomp_get_active_topics_rec($subject->topics, $active_topics);
 	}
 	return $tree;
 }
 //TODO this can be done easier
-function block_exacomp_get_active_topics_rec($subs, $topics){
+function block_exacomp_get_active_topics_rec($subs, $active_topics){
 	foreach($subs as $topic){
-		if(isset($topics[$topic->id])){
+		if(isset($active_topics[$topic->id])){
 			$topic->checked = true;
 		}else{
 			$topic->checked = false;
 		}
+		/*
 		if(!empty($topic->subs)){
 			block_exacomp_get_active_topics_rec($topic->subs, $topics);
 		}
+		*/
 	}
 }
 /**
@@ -2942,7 +2948,7 @@ function block_exacomp_get_niveaus_for_subject($subjectid) {
 function block_exacomp_get_examples_LIS_student($subjects){
 	$examples = array();
 	foreach($subjects as $subject){
-		block_exacomp_get_examples_LIS_student_topics($subject->subs, $examples);
+		block_exacomp_get_examples_LIS_student_topics($subject->topics, $examples);
 	}
 	return $examples;
 
@@ -2953,10 +2959,12 @@ function block_exacomp_get_examples_LIS_student($subjects){
  * @param unknown_type $subs
  * @param unknown_type $examples
  */
-function block_exacomp_get_examples_LIS_student_topics($subs, &$examples){
-	foreach($subs as $topic){
+function block_exacomp_get_examples_LIS_student_topics($topics, &$examples){
+	foreach($topics as $topic){
+		/*
 		if(isset($topic->subs))
 			block_exacomp_get_examples_LIS_student_topics($subs, $examples);
+		*/
 
 		if(isset($topic->descriptors)){
 			foreach($topic->descriptors as $descriptor){
@@ -2979,15 +2987,17 @@ function block_exacomp_extract_niveaus($subject_tree){
 	$niveaus = array();
 
 	foreach($subject_tree as $subject){
-		block_exacomp_extract_niveaus_topics($subject->subs, $niveaus);
+		block_exacomp_extract_niveaus_topics($subject->topics, $niveaus);
 	}
 	return $niveaus;
 }
 function block_exacomp_extract_niveaus_topics($subs, &$niveaus){
 	global $DB;
 	foreach ($subs as $topic){
+		/*
 		if(isset($topic->subs))
 			block_exacomp_extract_niveaus_topics($topic->subs, $niveaus);
+		*/
 
 		if(isset($topic->descriptors)){
 			foreach($topic->descriptors as $descriptor){
@@ -3010,7 +3020,7 @@ function block_exacomp_filter_niveaus(&$tree, $niveaus){
 		//go through tree and unset every subject, topic and descriptor where niveau is not in selected niveaus
 		foreach($tree as $subject){
 			//traverse recursively, because of possible topic-children
-			$subject_has_niveaus = block_exacomp_filter_niveaus_topics($subject->subs, $niveaus);
+			$subject_has_niveaus = block_exacomp_filter_niveaus_topics($subject->topics, $niveaus);
 
 			if(!$subject_has_niveaus)
 				unset($tree[$subject->id]);
@@ -3023,7 +3033,7 @@ function block_exacomp_filter_niveaus(&$tree, $niveaus){
  */
 function block_exacomp_filter_niveaus_topics($subs, $niveaus){
 	$sub_has_niveaus = false;
-	$sub_topics_have_niveaus = false;
+	// $sub_topics_have_niveaus = false;
 	foreach($subs as $topic){
 		$topic_has_niveaus = false;
 		if(isset($topic->descriptors)){
@@ -3037,6 +3047,7 @@ function block_exacomp_filter_niveaus_topics($subs, $niveaus){
 				}
 			}
 		}
+		/*
 		if(isset($topic->subs)){
 			$sub_topic_has_niveaus = block_exacomp_filter_niveaus_topics($topic->subs, $niveaus);
 			if($sub_topic_has_niveaus)
@@ -3044,10 +3055,12 @@ function block_exacomp_filter_niveaus_topics($subs, $niveaus){
 		}
 		elseif(!isset($topic->subs) && !$topic_has_niveaus)
 			unset($subs[$topic->id]);
-
 		if(!$topic_has_niveaus && !$sub_topics_have_niveaus){
 			unset($subs[$topic->id]);
 		}
+		*/
+		if (!$topic_has_niveaus)
+			unset($subs[$topic->id]);
 	}
 	return $sub_has_niveaus;
 }
@@ -3062,16 +3075,16 @@ function block_exacomp_build_activity_tree($courseid){
 	//append the whole tree to every taxonomy
 	foreach($activities as $activity){
 		$tree = block_exacomp_get_competence_tree($courseid);
-		$activity->subs = $tree;
+		$activity->subjects = $tree;
 	}
 	$activity_association = block_exacomp_get_course_module_association($courseid);
 
 	foreach($activities as $activity){
-		foreach($activity->subs as $subject){
-			$subject_has_examples = block_exacomp_build_activity_tree_topics($subject->subs, $activity->id, $activity_association);
+		foreach($activity->subjects as $subject){
+			$subject_has_examples = block_exacomp_build_activity_tree_topics($subject->topics, $activity->id, $activity_association);
 
 			if(!$subject_has_examples)
-				unset($activity->subs[$subject->id]);
+				unset($activity->subjects[$subject->id]);
 		}
 	}
 
@@ -3117,6 +3130,7 @@ function block_exacomp_build_activity_tree_topics(&$subs, $activityid, $activity
 			}
 		}
 
+		/*
 		if(isset($topic->subs)){
 			$sub_topic_has_activities = block_exacomp_build_activity_tree_topics($topic->subs, $activityid);
 			if($sub_topic_has_activities)
@@ -3127,6 +3141,10 @@ function block_exacomp_build_activity_tree_topics(&$subs, $activityid, $activity
 		}
 
 		if(!$topic_has_activities && !$sub_topics_have_activities){
+			unset($subs[$topic->id]);
+		}
+		*/
+		if (!$topic_has_activities){
 			unset($subs[$topic->id]);
 		}
 	}
@@ -3741,10 +3759,10 @@ function block_exacomp_build_schooltype_tree_for_courseselection($limit_courseid
 	foreach($schooltypes as $schooltype){
 		$subjects = block_exacomp_get_subjects_for_schooltype($limit_courseid, $schooltype->id);
 
-		$schooltype->subs = array();
+		$schooltype->subjects = array();
 		foreach($subjects as $subject){
 			$tree = block_exacomp_get_competence_tree(0, $subject->id, null, true, null, true, array(SHOW_ALL_TAXONOMIES), false, false, false, true);
-			$schooltype->subs += $tree;
+			$schooltype->subjects += $tree;
 		}
 	}
 
@@ -4192,44 +4210,24 @@ function block_exacomp_get_competence_tree_for_cross_subject($courseid, $crosssu
 
 	$subjects = array();
 
+	foreach ($allSubjects as $subject) {
+		$subject->topics = [];
+	}
+
 	foreach ($allTopics as $topic) {
 		//topic must be coursetopic if courseid <> 0
 		if($courseid > 0 && !array_key_exists($topic->id, $courseTopics))
 			continue;
 
-		//if($courseid==0 || $showalldescriptors || block_exacomp_check_activity_association($topic->id, TYPE_TOPIC, $courseid)) {
-			// found: add it to the subject result, even if no descriptor from the topic is used
-			// find all parent topics
-			$found = true;
-			for ($i = 0; $i < 10; $i++) {
-				if ($topic->parentid) {
-					// parent is topic, find it
-					if (empty($allTopics[$topic->parentid])) {
-						$found = false;
-						break;
-					}
+		// find subject
+		if (empty($allSubjects[$topic->subjid])) {
+			continue;
+		}
+		$subject = $allSubjects[$topic->subjid];
 
-					// found it
-					$allTopics[$topic->parentid]->subs[$topic->id] = $topic;
-
-					// go up
-					$topic = $allTopics[$topic->parentid];
-				} else {
-					// parent is subject, find it
-					if (empty($allSubjects[$topic->subjid])) {
-						$found = false;
-						break;
-					}
-
-					// found: add it to the subject result
-					$subject = $allSubjects[$topic->subjid];
-					$subject->subs[$topic->id] = $topic;
-					$subjects[$topic->subjid] = $subject;
-
-					// top found
-					break;
-				}
-			}
+		// found: add it to the subject result
+		$subject->topics[$topic->id] = $topic;
+		$subjects[$subject->id] = $subject;
 	}
 	return block_exacomp\subject::create_objects($subjects);
 }
@@ -4608,7 +4606,7 @@ function block_exacomp_build_example_association_tree($courseid, $example_descri
 	// unset all descriptors, topics and subjects that do not contain the example descriptors
 	foreach($tree as $skey => $subject) {
 		$subject->associated = 0;
-		foreach ( $subject->subs as $tkey => $topic ) {
+		foreach ( $subject->topics as $tkey => $topic ) {
 			$topic->associated = 0;
 			if(isset($topic->descriptors)) {
 				foreach ( $topic->descriptors as $dkey => $descriptor ) {

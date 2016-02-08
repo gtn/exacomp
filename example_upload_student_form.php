@@ -100,10 +100,10 @@ class block_exacomp_example_upload_student_form extends moodleform {
 			$mform->addElement('html', '<li>');
 			$mform->addElement('static', 'subjecttitle', $subject->title);
 			
-			if(!empty($subject->subs))
+			if(!empty($subject->topics))
 				$mform->addElement('html', '<ul>');
 			
-			foreach ( $subject->subs as $tkey => $topic ) {
+			foreach ( $subject->topics as $tkey => $topic ) {
 					$mform->addElement('html', '<li>');
 					$mform->addElement('static', 'subjecttitle', $subject->title);
 			
@@ -118,7 +118,7 @@ class block_exacomp_example_upload_student_form extends moodleform {
 						$mform->addElement('html', '</ul>');
 				
 			}
-			if(!empty($subject->subs))
+			if(!empty($subject->topics))
 				$mform->addElement('html', '</ul>');
 			
 			$mform->addElement('html', '</li>');

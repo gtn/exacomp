@@ -744,44 +744,39 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		global $USER, $COURSE;
 		$supported = block_exacomp_get_supported_modules();
 		foreach($subs as $topic){
-			if(isset($topic->subs))
-				$this->print_competence_overview_LIS_student_topics($topic->subs);
+			foreach($topic->descriptors as $descriptor){
+				$cell = new html_table_cell();
+				$cell->attributes['class'] = 'exabis_comp_top_student';
+				$cell->attributes['title'] = $descriptor->title;
+				$cell->text = $columns[$column_count].html_writer::empty_tag('br');
 
-			if(isset($topic->descriptors)){
-				foreach($topic->descriptors as $descriptor){
-					$cell = new html_table_cell();
-					$cell->attributes['class'] = 'exabis_comp_top_student';
-					$cell->attributes['title'] = $descriptor->title;
-					$cell->text = $columns[$column_count].html_writer::empty_tag('br');
+				$columns[$column_count] = new stdClass();
+				$columns[$column_count]->descriptor = $descriptor->id;
 
-					$columns[$column_count] = new stdClass();
-					$columns[$column_count]->descriptor = $descriptor->id;
+				if($scheme == 1)
+					$cell->text .= "L:".$this->generate_checkbox('data', $descriptor->id, 'competencies', $USER, "teacher", $scheme, true)
+					.html_writer::empty_tag('br')
+					."S:".$this->generate_checkbox('data', $descriptor->id, 'competencies', $USER, "student", $scheme);
+				else
+					$cell->text .= 'L:'.$this->generate_select('data', $descriptor->id, 'competencies', $USER, "teacher", $scheme, true,$profoundness)
+					.html_writer::empty_tag('br')
+					."S:".$this->generate_select('data', $descriptor->id, 'competencies', $USER,"student", $scheme,false,$profoundness);
 
-					if($scheme == 1)
-						$cell->text .= "L:".$this->generate_checkbox('data', $descriptor->id, 'competencies', $USER, "teacher", $scheme, true)
-						.html_writer::empty_tag('br')
-						."S:".$this->generate_checkbox('data', $descriptor->id, 'competencies', $USER, "student", $scheme);
-					else
-						$cell->text .= 'L:'.$this->generate_select('data', $descriptor->id, 'competencies', $USER, "teacher", $scheme, true,$profoundness)
-						.html_writer::empty_tag('br')
-						."S:".$this->generate_select('data', $descriptor->id, 'competencies', $USER,"student", $scheme,false,$profoundness);
+				//$activities = block_exacomp_get_activities($descriptor->id, $COURSE->id);
+				$cm_mm = block_exacomp_get_course_module_association($COURSE->id);
+				$course_mods = get_fast_modinfo($COURSE->id)->get_cms();
 
-					//$activities = block_exacomp_get_activities($descriptor->id, $COURSE->id);
-					$cm_mm = block_exacomp_get_course_module_association($COURSE->id);
-					$course_mods = get_fast_modinfo($COURSE->id)->get_cms();
-
-					if(isset($data->cm_mm->competencies[$descriptor->id])) {
-						$activities_student = array();
-						foreach($cm_mm->competencies[$descriptor->id] as $cmid)
-							$activities_student[] = $course_mods[$cmid];
-						if($activities_student && $stdicon = block_exacomp_get_icon_for_user($activities_student, $USER, $supported)){
-							$cell->text .= html_writer::empty_tag('br')
-							.html_writer::tag('span', $stdicon->img, array('title'=>$stdicon->text, 'class'=>'exabis-tooltip'));
-						}
+				if(isset($data->cm_mm->competencies[$descriptor->id])) {
+					$activities_student = array();
+					foreach($cm_mm->competencies[$descriptor->id] as $cmid)
+						$activities_student[] = $course_mods[$cmid];
+					if($activities_student && $stdicon = block_exacomp_get_icon_for_user($activities_student, $USER, $supported)){
+						$cell->text .= html_writer::empty_tag('br')
+						.html_writer::tag('span', $stdicon->img, array('title'=>$stdicon->text, 'class'=>'exabis-tooltip'));
 					}
-					$row->cells[] = $cell;
-					$column_count++;
 				}
+				$row->cells[] = $cell;
+				$column_count++;
 			}
 		}
 	}
@@ -1025,7 +1020,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$column_count = 0;
 		//print header
 		foreach($subjects as $subject){
-			$this->print_competence_overview_LIS_student_topics($subject->subs, $row, $columns, $column_count, $scheme, block_exacomp_get_settings_by_course($courseid)->useprofoundness);
+			$this->print_competence_overview_LIS_student_topics($subject->topics, $row, $columns, $column_count, $scheme, block_exacomp_get_settings_by_course($courseid)->useprofoundness);
 		}
 		$rows[] = $row;
 
@@ -1226,7 +1221,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			$eportfolioitems = array();
 
 		foreach($subjects as $subject) {
-			if(!$subject->subs)
+			if(!$subject->topics)
 				continue;
 
 			/* TOPICS */
@@ -1246,7 +1241,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					'supported_modules'=>block_exacomp_get_supported_modules(),
 					'showalldescriptors' => block_exacomp_get_settings_by_course($courseid)->show_all_descriptors
 			);
-			$this->print_topics($rows, 0, $subject->subs, $data, $students, true);
+			$this->print_topics($rows, 0, $subject->topics, $data, $students, true);
 			$table->data = $rows;
 		}
 
@@ -1275,7 +1270,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$course_subs = block_exacomp_get_subjects_by_course($courseid);
 
 		foreach($subjects as $subject) {
-			if(!$subject->subs)
+			if(!$subject->topics)
 				continue;
 
 			if($first){
@@ -1385,7 +1380,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 					'supported_modules'=>block_exacomp_get_supported_modules(),
 					'showalldescriptors' => block_exacomp_get_settings_by_course($courseid)->show_all_descriptors,
 			);
-			$this->print_topics($rows, 0, $subject->subs, $data, $students, false, $this->is_edit_mode(), $statistic, $crosssubjs, $crosssubjid);
+			$this->print_topics($rows, 0, $subject->topics, $data, $students, false, $this->is_edit_mode(), $statistic, $crosssubjs, $crosssubjid);
 
 
 			$first = false;
@@ -2810,7 +2805,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			$subject_example_content = (empty($subject->numb) || $subject->numb==0)? '' : $subject->numb;
 			$li_topics = '';
 
-			$li_topics = $this->print_tree_view_examples_desc_rec_topic($subject->subs, $subject_example_content);
+			$li_topics = $this->print_tree_view_examples_desc_rec_topic($subject->topics, $subject_example_content);
 
 			$ul_topics = html_writer::tag('ul', $li_topics);
 			$li_subjects .= html_writer::tag('li', $subject->title
@@ -2874,10 +2869,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			$ul_descriptors = html_writer::tag('ul', $li_descriptors);
 
 			$ul_subs = '';
+			/*
 			if(isset($topic->subs)){
 				$li_subs = $this->print_tree_view_examples_desc_rec_topic($topic->subs, $subject_example_content);
 				$ul_subs .= html_writer::tag('ul', $li_subs);
 			}
+			*/
 
 			$li_topics .= html_writer::tag('li', $topic->title
 					.$ul_descriptors.$ul_subs);
@@ -2922,7 +2919,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	public function print_tree_view_examples_tax($tree){
 		$li_taxonomies = '';
 		foreach($tree as $taxonomy){
-			$ul_subjects = $this->print_tree_view_examples_desc($taxonomy->subs, false);
+			$ul_subjects = $this->print_tree_view_examples_desc($taxonomy->subjects, false);
 			$li_taxonomies .= html_writer::tag('li', $taxonomy->title->title
 					.$ul_subjects);
 		}
@@ -2959,7 +2956,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
 			$rows[] = $row;
 
-			foreach($schooltype->subs as $subject){
+			foreach($schooltype->subjects as $subject){
 				$this_rg2_class = 'rg2-level-0';
 
 				$row = new html_table_row();
@@ -2979,7 +2976,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				$row->cells[] = $selectAllCell;
 
 				$rows[] = $row;
-				$this->print_topics_courseselection($rows, 1, $subject->subs, $topics_activ);
+				$this->print_topics_courseselection($rows, 1, $subject->topics, $topics_activ);
 
 			}
 		}
@@ -3306,7 +3303,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			$cell->text = html_writer::tag('b', $subject->title);
 			$row->cells[] = $cell;
 			$rows[] = $row;
-			$this->print_topics_activities($rows, 0, $subject->subs, $modules);
+			$this->print_topics_activities($rows, 0, $subject->topics, $modules);
 		}
 		$table->data = $rows;
 
@@ -3457,7 +3454,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			$row->cells[] = $cell;
 			$rows[] = $row;
 				
-			$this->print_topics_badges($rows, 0, $subject->subs, $badge);
+			$this->print_topics_badges($rows, 0, $subject->topics, $badge);
 		}
 
 		$table->data = $rows;
@@ -3776,7 +3773,7 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 		  
 		$content="";
 		foreach($in as $subject){
-			foreach($subject->subs as $topic){
+			foreach($subject->topics as $topic){
 				$fieldset_content = html_writer::tag('legend', block_exacomp_get_topic_numbering($topic).' '.$topic->title);
 				
 				$desc_content = "";
@@ -4323,37 +4320,19 @@ var dataset = dataset.map(function (group) {
 		}
 		$subjects = array();
 		
+		foreach ($allSubjects as $subject) {
+			$subject->topics = [];
+		}
 		foreach ($usedTopics as $topic) {
-			$found = true;
-			for ($i = 0; $i < 10; $i++) {
-				if ($topic->parentid) {
-					// parent is topic, find it
-					if (empty($allTopics[$topic->parentid])) {
-						$found = false;
-						break;
-					}
-		
-					// found it
-					$allTopics[$topic->parentid]->subs[$topic->id] = $topic;
-					$usedTopics[$topic->parentid] = $allTopics[$topic->parentid];
-					// go up
-					$topic = $allTopics[$topic->parentid];
-				} else {
-					// parent is subject, find it
-					if (empty($allSubjects[$topic->subjid])) {
-						$found = false;
-						break;
-					}
-		
-					// found: add it to the subject result
-					$subject = $allSubjects[$topic->subjid];
-					$subject->subs[$topic->id] = $topic;
-					$subjects[$topic->subjid] = $subject;
-		
-					// top found
-					break;
-				}
+			// find subject
+			if (empty($allSubjects[$topic->subjid])) {
+				continue;
 			}
+			$subject = $allSubjects[$topic->subjid];
+
+			// found: add it to the subject result
+			$subject->topics[$topic->id] = $topic;
+			$subjects[$subject->id] = $subject;
 		}
 		$list_descriptors = $this->print_competence_profile_tree($subjects, $COURSE->id);
 		$list_heading = html_writer::tag('p', '<b>Verknüpfte Kompetenzen:</b>');
@@ -4636,10 +4615,10 @@ var dataset = dataset.map(function (group) {
 				$html_tree .= html_writer::start_tag("li", array('class'=>($subject->associated == 1)?"associated":""));
 				$html_tree .= $subject->title;
 				
-				if(!empty($subject->subs))
+				if(!empty($subject->topics))
 					$html_tree .= html_writer::start_tag("ul");
 				
-				foreach ( $subject->subs as $tkey => $topic ) {
+				foreach ( $subject->topics as $tkey => $topic ) {
 					if($topic->associated == 1 || ($isTeacher && $editmode==1)){
 						$html_tree .= html_writer::start_tag("li", array('class'=>($topic->associated == 1)?"associated":""));
 						$html_tree .= block_exacomp_get_topic_numbering($topic->id).' '.$topic->title;
@@ -4657,7 +4636,7 @@ var dataset = dataset.map(function (group) {
 					}
 					
 				}
-				if(!empty($subject->subs))
+				if(!empty($subject->topics))
 					$html_tree .= html_writer::end_tag("ul");
 				
 				$html_tree .= html_writer::end_tag("li");

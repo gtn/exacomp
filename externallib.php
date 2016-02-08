@@ -1054,7 +1054,7 @@ class block_exacomp_external extends external_api {
 			$tree = block_exacomp_build_example_tree_desc ( $course ["courseid"] );
 			foreach ( $tree as $subject ) {
 				if ($subject->id == $topicid) {
-					foreach ( $subject->subs as $topic ) {
+					foreach ( $subject->topics as $topic ) {
 						if (! array_key_exists ( $topic->id, $topics )) {
 							$topics [$topic->id] = new stdClass ();
 							$topics [$topic->id]->subtopicid = $topic->id;
@@ -1756,7 +1756,7 @@ class block_exacomp_external extends external_api {
 				$elem_sub->subjectid = $subject->id;
 				$elem_sub->subjecttitle = $subject->title;
 				$elem_sub->topics = array ();
-				foreach ( $subject->subs as $topic ) {
+				foreach ( $subject->topics as $topic ) {
 					$elem_topic = new stdClass ();
 					$elem_topic->topicid = $topic->id;
 					$elem_topic->topictitle = $topic->title;
@@ -2806,7 +2806,7 @@ class block_exacomp_external extends external_api {
 			$tree = block_exacomp_get_competence_tree ( $course ["courseid"] );
 			
 			foreach ( $tree as $subject ) {
-				foreach ( $subject->subs as $topic ) {
+				foreach ( $subject->topics as $topic ) {
 					if ($topicid == 0 || ($topicid != 0 && $topic->id == $topicid)) {
 						foreach ( $topic->descriptors as $descriptor ) {
 							$elem_desc = new stdClass ();
@@ -5827,7 +5827,7 @@ class block_exacomp_external extends external_api {
 
 		$topics_return = array();
 		foreach($tree as $subject){
-			foreach($subject->subs as $topic){
+			foreach($subject->topics as $topic){
 				if(!$only_associated || ($only_associated && $topic->associated == 1)){
 					$topic_return = new stdClass();
 					$topic_return->topicid = $topic->id;
@@ -5862,7 +5862,7 @@ class block_exacomp_external extends external_api {
 
 		$descriptors_return = array();
 		foreach($tree as $subject){
-			foreach($subject->subs as $topic){
+			foreach($subject->topics as $topic){
 				if($topic->id == $topicid){
 					foreach($topic->descriptors as $descriptor){
 						if(!$only_associated || ($only_associated && $descriptor->associated == 1)){
