@@ -500,7 +500,7 @@ class db_record {
 	}
 
 	public function &get_subs() {
-		if (empty(static::SUBS)) {
+		if (empty($this->{static::SUBS})) {
 			throw new \coding_exception('const SUBS not set');
 		}
 		$tmp =& $this->{static::SUBS};
@@ -508,7 +508,7 @@ class db_record {
 	}
 
 	public function set_subs($value) {
-		if (empty(static::SUBS)) {
+		if (empty($this->{static::SUBS})) {
 			throw new \coding_exception('const SUBS not set');
 		}
 		$this->{static::SUBS} = $value;
