@@ -5021,10 +5021,9 @@ class block_exacomp_external extends external_api {
 		if(empty($childsandexamples->examples))
 			$descriptor_return->hasmaterial = false;
 
-		$descriptor_example_statistic = static::get_descriptor_example_statistic($courseid, $userid, $descriptorid, $forall, $crosssubjid);
-		$descriptor_return->examplestotal = $descriptor_example_statistic->total;
-		$descriptor_return->examplesvisible = $descriptor_example_statistic->visible;
-		$descriptor_return->examplesinwork = $descriptor_example_statistic->inwork;
+		$descriptor_return->examplestotal = $childsandexamples->examplestotal;
+		$descriptor_return->examplesvisible = $childsandexamples->examplesvisible;
+		$descriptor_return->examplesinwork = $childsandexamples->examplesinwork;	
 
 		return $descriptor_return;
 	}
@@ -5811,6 +5810,7 @@ class block_exacomp_external extends external_api {
 		$return->examples = $examples_return;
 
 		$descriptor_example_statistic = static::get_descriptor_example_statistic($courseid, $userid, $descriptorid, $forall, $crosssubjid);
+		
 		$return->examplestotal = $descriptor_example_statistic->total;
 		$return->examplesvisible = $descriptor_example_statistic->visible;
 		$return->examplesinwork = $descriptor_example_statistic->inwork;
@@ -6036,16 +6036,21 @@ class block_exacomp_external extends external_api {
 		$return->total = 0;
 		$return->visible = 0;
 		$return->inwork = 0;
+		$number_students = 1;
 
-		if($forall) return $return;
-
-		static::require_can_access_course_user($courseid, $userid);
-
+		if($forall) {
+			static::require_can_access_course($courseid);
+			$students = block_exacomp_get_students_by_course($courseid);
+			$number_students = count($students);
+		}
+		else
+			static::require_can_access_course_user($courseid, $userid);
+		
 		list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork, $totalHidden) = block_exacomp_get_example_statistic_for_descriptor($courseid, $descriptorid, $userid, $crosssubjid);
-
-		$return->total = $totalHidden;
-		$return->visible = $total;
-		$return->inwork = $inWork;
+		
+		$return->total = $totalHidden/ $number_students;
+		$return->visible = $total / $number_students;
+		$return->inwork = $inWork / $number_students;
 		return $return;
 	}
 
