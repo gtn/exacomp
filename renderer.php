@@ -2006,13 +2006,13 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 						if ($author = $example->get_author()) {
 						   	$titleCell->attributes['title'][] = get_string('author', 'repository').": ".$author;
 					   	}
-						if(!empty(trim(strip_tags($example->description)))) {
+						if (!trim(strip_tags($example->description))) {
 							$titleCell->attributes['title'][] = $example->description;
 						}
-						if (!empty(trim($example->timeframe))) {
+						if (!trim($example->timeframe)) {
 							$titleCell->attributes['title'][] = $example->timeframe;
 						}
-						if (!empty(trim($example->tips))) {
+						if (!trim($example->tips)) {
 							$titleCell->attributes['title'][] = $example->tips;
 						}
 

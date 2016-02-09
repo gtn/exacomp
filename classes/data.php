@@ -36,8 +36,8 @@ class data {
 	public static function generate_my_source() {
 		$id = get_config('exacomp', 'mysource');
 		
-		if (!$id || !exabis_special_id_generator::validate_id($id)) {
-			set_config('mysource', exabis_special_id_generator::generate_random_id('EXACOMP'), 'exacomp');
+		if (!$id || !\exabis_special_id_generator::validate_id($id)) {
+			set_config('mysource', \exabis_special_id_generator::generate_random_id('EXACOMP'), 'exacomp');
 		}
 	}
 	
