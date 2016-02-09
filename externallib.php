@@ -6140,13 +6140,25 @@ class block_exacomp_external extends external_api {
 		// and all examples
 		// and try to find it
 		$example = call_user_func(function() use ($exampleid) {
-			$subjects = static::get_subjects_for_user ( g::$USER->id );
-			foreach ($subjects as $subject) {
-				$topics = static::get_examples_for_subject($subject->subjectid, $subject->courseid, 0 );
-				foreach ( $topics as $topic ) {
-					foreach ( $topic->examples as $example ) {
-						if ($example->exampleid == $exampleid) {
-							return $example;
+			$courses = static::get_courses(g::$USER->id);
+			
+			foreach($courses as $course){
+				$topics = static::dakora_get_topics_by_course($course["courseid"]);
+				foreach($topics as $topic){
+					$descriptors = static::dakora_get_descriptors($course["courseid"], $topic->topicid, g::$USER->id, 0);
+					foreach($descriptors as $descriptor){
+						$childsandexamples = static::dakora_get_descriptor_children($course["courseid"], $descriptor->descriptorid, g::$USER->id, 0);
+						foreach ($childsandexamples->examples as $example){
+							if($example->exampleid == $exampleid)
+								return $example;
+						}
+						
+						foreach ($childsandexamples->children as $child){
+							$childchilds = static::dakora_get_descriptor_children($course["courseid"], $child->childid, g::$USER->id, 0);
+							foreach ($childchilds->examples as $examples){
+								if($example->exampleid == $exampleid)
+									return $example;
+							}
 						}
 					}
 				}
