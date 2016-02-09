@@ -1,7 +1,7 @@
 <?php
 require_once 'inc.php';
 require_once('lib/lib.php');
-require_once('lib/xmllib.php');
+require_once('classes/data.php');
 
 $courseid = required_param('courseid', PARAM_INT);
 $schooltypes = explode(',', required_param('schooltypes', PARAM_TAGLIST));
@@ -11,7 +11,7 @@ $lang = optional_param('lang', 'en', PARAM_TEXT);
 global $DB;
 
 $data = file_get_contents($xmlname);
-$success = block_exacomp_data_importer::do_import_string($data);
+$success = block_exacomp\data_importer::do_import_string($data);
 foreach($schooltypes as &$schooltype)
 	$schooltype = $DB->get_field('block_exacompschooltypes','id',array('sourceid'=>$schooltype));
 

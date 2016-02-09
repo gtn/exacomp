@@ -1,7 +1,7 @@
 <?php
  
 require_once __DIR__."/../../lib/lib.php";
-require_once __DIR__."/../../lib/xmllib.php";
+require_once __DIR__."/../../classes/data.php";
 
 /**
  * Define all the backup steps that will be used by the backup_choice_activity_task
@@ -59,7 +59,7 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 				JOIN {block_exacompmdltype_mm} mt ON t.id = mt.stid
 				WHERE mt.courseid = ?",
 				array($this->get_courseid()));
-		$mdltype->set_source_array(block_exacomp_data_course_backup::assign_source_array($dbSchooltypes));
+		$mdltype->set_source_array(block_exacomp\data_course_backup::assign_source_array($dbSchooltypes));
 		
 		$dbTopics = $DB->get_records_sql("
 			SELECT DISTINCT t.id, t.source, t.sourceid, 'dummy' as dummy
@@ -67,7 +67,7 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 			JOIN {".\block_exacomp\DB_COURSETOPICS."} ct ON t.id = ct.topicid
 			WHERE ct.courseid = ?",
 			array($this->get_courseid()));
-		$topic->set_source_array(block_exacomp_data_course_backup::assign_source_array($dbTopics));
+		$topic->set_source_array(block_exacomp\data_course_backup::assign_source_array($dbTopics));
 		
 		$course_settings = block_exacomp_get_settings_by_course($this->get_courseid());
 		if ($course_settings->filteredtaxonomies) {
@@ -78,7 +78,7 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 		} else {
 			$dbTaxonomies = array();
 		}
-		$taxonomy->set_source_array(block_exacomp_data_course_backup::assign_source_array($dbTaxonomies));
+		$taxonomy->set_source_array(block_exacomp\data_course_backup::assign_source_array($dbTaxonomies));
 		
 		$settings->set_source_table('block_exacompsettings', array('courseid'=>backup::VAR_COURSEID));
 		
@@ -96,7 +96,7 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 				JOIN {course_modules} cm ON ca.activityid=cm.id AND cm.course = ?
 			", array($this->get_courseid(), $this->get_courseid()));
 		$dbActivities = iterator_to_array($dbActivities);
-		$compactiv_mm->set_source_array(block_exacomp_data_course_backup::assign_source_array($dbActivities, 'comp'));
+		$compactiv_mm->set_source_array(block_exacomp\data_course_backup::assign_source_array($dbActivities, 'comp'));
 
 		// All the rest of elements only happen if we are including user info
 		/*

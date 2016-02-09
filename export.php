@@ -26,7 +26,7 @@
 * ************************************************************* */
 
 require_once __DIR__."/inc.php";
-require_once __DIR__."/lib/xmllib.php";
+require_once __DIR__."/classes/data.php";
 
 $courseid = required_param('courseid', PARAM_INT);
 
@@ -45,11 +45,11 @@ $action = required_param('action', PARAM_ALPHANUMEXT);
 $output = block_exacomp_get_renderer();
 
 if ($action == 'export_all') {
-	block_exacomp_data_exporter::do_export();
+	block_exacomp\data_exporter::do_export();
 } else if ($action == 'export_selected') {
 	$descriptors = block_exacomp\param::optional_array('descriptors', array(PARAM_INT=>PARAM_INT));
 	
-	block_exacomp_data_exporter::do_export($descriptors);
+	block_exacomp\data_exporter::do_export($descriptors);
 } else if ($action == 'select') {
 	
 	/* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */

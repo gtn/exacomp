@@ -23,7 +23,7 @@
  */
 defined('MOODLE_INTERNAL') || die;
 
-require_once __DIR__."/lib/xmllib.php";
+require_once __DIR__."/classes/data.php";
 
 use block_exacomp\globals as g;
 
@@ -2290,7 +2290,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	public function print_sources() {
 		global $courseid;
 
-		$sources = block_exacomp_data::get_all_used_sources();
+		$sources = block_exacomp\data::get_all_used_sources();
 
 		if (!$sources) return;
 

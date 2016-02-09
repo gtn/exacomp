@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__."/../../lib/lib.php";
-require_once __DIR__."/../../lib/xmllib.php";
+require_once __DIR__."/../../classes/data.php";
 
 class restore_exacomp_block_structure_step extends restore_structure_step {
 
@@ -23,7 +23,7 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
 	protected function get_db_record($table, $data, $prefix = "") {
 		global $DB;
 		
-		if (!$where = block_exacomp_data_course_backup::parse_sourceid($data, $prefix)) {
+		if (!$where = block_exacomp\data_course_backup::parse_sourceid($data, $prefix)) {
 			return null;
 		}
 

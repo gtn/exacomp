@@ -1,31 +1,33 @@
 <?php
 
+namespace block_exacomp;
+
 defined('MOODLE_INTERNAL') || die();
 
-require_once __DIR__.'/exabis_special_id_generator.php';
+require_once __DIR__.'/../lib/exabis_special_id_generator.php';
 
 use block_exacomp\globals as g;
 
-class block_exacomp_ZipArchive extends ZipArchive {
+class ZipArchive extends \ZipArchive {
 	/**
-	 * @return block_exacomp_ZipArchive
+	 * @return ZipArchive
 	 */
 	public static function create_temp_file() {
 		global $CFG;
 
 		$file = tempnam($CFG->tempdir, "zip");
-		$zip = new block_exacomp_ZipArchive();
+		$zip = new ZipArchive();
 		$zip->open($file, ZipArchive::OVERWRITE);
 		
 		return $zip;
 	}
 }
 
-class block_exacomp_data {
+class data {
 
-	protected static $sourceTables = array(\block_exacomp\DB_SKILLS, \block_exacomp\DB_NIVEAUS, \block_exacomp\DB_TAXONOMIES, \block_exacomp\DB_CATEGORIES, \block_exacomp\DB_EXAMPLES,
-					\block_exacomp\DB_DESCRIPTORS, \block_exacomp\DB_CROSSSUBJECTS, \block_exacomp\DB_EDULEVELS, \block_exacomp\DB_SCHOOLTYPES, \block_exacomp\DB_SUBJECTS,
-					\block_exacomp\DB_TOPICS);
+	protected static $sourceTables = array(DB_SKILLS, DB_NIVEAUS, DB_TAXONOMIES, DB_CATEGORIES, DB_EXAMPLES,
+					DB_DESCRIPTORS, DB_CROSSSUBJECTS, DB_EDULEVELS, DB_SCHOOLTYPES, DB_SUBJECTS,
+					DB_TOPICS);
 	
 	public static function get_my_source() {
 		return get_config('exacomp', 'mysource');
@@ -59,7 +61,7 @@ class block_exacomp_data {
 			return null;
 		}
 		
-		return g::$DB->get_record(\block_exacomp\DB_DATASOURCES, array('id' => $source_local_id));
+		return g::$DB->get_record(DB_DATASOURCES, array('id' => $source_local_id));
 	}
 	
 	protected static function add_source_if_not_exists($source_global_id) {
@@ -73,7 +75,7 @@ class block_exacomp_data {
 		$source_local_id = max($maxId + 1, self::MIN_SOURCE_ID);
 
 		// add new source
-		g::$DB->execute("INSERT INTO {".\block_exacomp\DB_DATASOURCES."} (id, source) VALUES (?, ?)", array($source_local_id, $source_global_id));
+		g::$DB->execute("INSERT INTO {".DB_DATASOURCES."} (id, source) VALUES (?, ?)", array($source_local_id, $source_global_id));
 		
 		self::$sources[$source_local_id] = $source_global_id;
 		
@@ -84,7 +86,7 @@ class block_exacomp_data {
 		if (self::$sources === null) {
 			self::$sources = g::$DB->get_records_sql_menu("
 				SELECT id, source AS global_id
-				FROM {".\block_exacomp\DB_DATASOURCES."}
+				FROM {".DB_DATASOURCES."}
 			");
 		}
 		
@@ -95,7 +97,7 @@ class block_exacomp_data {
 	 * checks if data is imported
 	 */
 	public static function has_data() {
-		return (bool)g::$DB->get_records_select('block_exacompdescriptors', 'source!='.\block_exacomp\EXAMPLE_SOURCE_TEACHER, array(), null, 'id', 0, 1);
+		return (bool)g::$DB->get_records_select('block_exacompdescriptors', 'source!='.EXAMPLE_SOURCE_TEACHER, array(), null, 'id', 0, 1);
 	}
 	/*
 	 * check if there is still data in the old source format
@@ -107,11 +109,11 @@ class block_exacomp_data {
 		// check if source is used in descriptor table
 		$sources = g::$DB->get_records_sql("
 			SELECT s.*
-			FROM {".\block_exacomp\DB_DATASOURCES."} s
+			FROM {".DB_DATASOURCES."} s
 			WHERE s.id IN (
-				SELECT DISTINCT source FROM {".\block_exacomp\DB_DESCRIPTORS."}
+				SELECT DISTINCT source FROM {".DB_DESCRIPTORS."}
 				UNION
-				SELECT DISTINCT source FROM {".\block_exacomp\DB_EXAMPLES."}
+				SELECT DISTINCT source FROM {".DB_EXAMPLES."}
 			)
 			ORDER BY NAME
 		");
@@ -132,7 +134,7 @@ class block_exacomp_data {
 			self::truncate_table($source, $table);
 		}
 		
-		g::$DB->delete_records(\block_exacomp\DB_DATASOURCES, array('id' => $source));
+		g::$DB->delete_records(DB_DATASOURCES, array('id' => $source));
 		
 		self::normalize_database();
 
@@ -145,29 +147,29 @@ class block_exacomp_data {
 	protected static function delete_mm_records($source) {
 		$tables = array(
 			array(
-				'table' => \block_exacomp\DB_DESCTOPICS,
-				'mm1' => array('descrid', \block_exacomp\DB_DESCRIPTORS),
-				'mm2' => array('topicid', \block_exacomp\DB_TOPICS),
+				'table' => DB_DESCTOPICS,
+				'mm1' => array('descrid', DB_DESCRIPTORS),
+				'mm2' => array('topicid', DB_TOPICS),
 			),
 			array(
-				'table' => \block_exacomp\DB_DESCEXAMP,
-				'mm1' => array('descrid', \block_exacomp\DB_DESCRIPTORS),
-				'mm2' => array('exampid', \block_exacomp\DB_EXAMPLES),
+				'table' => DB_DESCEXAMP,
+				'mm1' => array('descrid', DB_DESCRIPTORS),
+				'mm2' => array('exampid', DB_EXAMPLES),
 			),
 			array(
-				'table' => \block_exacomp\DB_DESCCROSS,
-				'mm1' => array('descrid', \block_exacomp\DB_DESCRIPTORS),
-				'mm2' => array('crosssubjid', \block_exacomp\DB_CROSSSUBJECTS),
+				'table' => DB_DESCCROSS,
+				'mm1' => array('descrid', DB_DESCRIPTORS),
+				'mm2' => array('crosssubjid', DB_CROSSSUBJECTS),
 			),
 			array(
-				'table' => \block_exacomp\DB_DESCCAT,
-				'mm1' => array('descrid', \block_exacomp\DB_DESCRIPTORS),
-				'mm2' => array('catid', \block_exacomp\DB_CATEGORIES),
+				'table' => DB_DESCCAT,
+				'mm1' => array('descrid', DB_DESCRIPTORS),
+				'mm2' => array('catid', DB_CATEGORIES),
 			),
 			array(
-				'table' => \block_exacomp\DB_EXAMPTAX,
-				'mm1' => array('exampleid', \block_exacomp\DB_EXAMPLES),
-				'mm2' => array('taxid', \block_exacomp\DB_TAXONOMIES),
+				'table' => DB_EXAMPTAX,
+				'mm1' => array('exampleid', DB_EXAMPLES),
+				'mm2' => array('taxid', DB_TAXONOMIES),
 			),
 		);
 		
@@ -188,10 +190,10 @@ class block_exacomp_data {
 		global $DB;
 		
 		// TODO: geht so nicht mehr
-		$DB->delete_records(\block_exacomp\DB_SUBJECTS,array('source' => \block_exacomp\IMPORT_SOURCE_SPECIFIC));
-		$DB->delete_records(\block_exacomp\DB_TOPICS,array('source' => \block_exacomp\IMPORT_SOURCE_SPECIFIC));
-		$DB->delete_records(\block_exacomp\DB_DESCRIPTORS,array('source' => \block_exacomp\IMPORT_SOURCE_SPECIFIC));
-		$examples = $DB->get_records(\block_exacomp\DB_EXAMPLES,array('source' => \block_exacomp\IMPORT_SOURCE_SPECIFIC));
+		$DB->delete_records(DB_SUBJECTS,array('source' => IMPORT_SOURCE_SPECIFIC));
+		$DB->delete_records(DB_TOPICS,array('source' => IMPORT_SOURCE_SPECIFIC));
+		$DB->delete_records(DB_DESCRIPTORS,array('source' => IMPORT_SOURCE_SPECIFIC));
+		$examples = $DB->get_records(DB_EXAMPLES,array('source' => IMPORT_SOURCE_SPECIFIC));
 		foreach($examples as $example) 
 			block_exacomp_delete_custom_example($example->id);
 		
@@ -203,8 +205,8 @@ class block_exacomp_data {
 		// delete entries with no source anymore
 		foreach (self::$sourceTables as $table) {
 			$sql = "DELETE FROM {{$table}} 
-						WHERE source >= ".block_exacomp_data::MIN_SOURCE_ID."
-						AND source NOT IN (SELECT id FROM {".\block_exacomp\DB_DATASOURCES."})
+						WHERE source >= ".data::MIN_SOURCE_ID."
+						AND source NOT IN (SELECT id FROM {".DB_DATASOURCES."})
 					";
 			g::$DB->execute($sql);
 		}
@@ -212,59 +214,59 @@ class block_exacomp_data {
 		// delete unused mms 
 		$tables = array(
 			array(
-				'table' => \block_exacomp\DB_DESCTOPICS,
-				'needed1' => array('descrid', \block_exacomp\DB_DESCRIPTORS),
-				'needed2' => array('topicid', \block_exacomp\DB_TOPICS),
+				'table' => DB_DESCTOPICS,
+				'needed1' => array('descrid', DB_DESCRIPTORS),
+				'needed2' => array('topicid', DB_TOPICS),
 			),
 			array(
-				'table' => \block_exacomp\DB_DESCEXAMP,
-				'needed1' => array('descrid', \block_exacomp\DB_DESCRIPTORS),
-				'needed2' => array('exampid', \block_exacomp\DB_EXAMPLES),
+				'table' => DB_DESCEXAMP,
+				'needed1' => array('descrid', DB_DESCRIPTORS),
+				'needed2' => array('exampid', DB_EXAMPLES),
 			),
 			array(
-				'table' => \block_exacomp\DB_DESCCROSS,
-				'needed1' => array('descrid', \block_exacomp\DB_DESCRIPTORS),
-				'needed2' => array('crosssubjid', \block_exacomp\DB_CROSSSUBJECTS),
+				'table' => DB_DESCCROSS,
+				'needed1' => array('descrid', DB_DESCRIPTORS),
+				'needed2' => array('crosssubjid', DB_CROSSSUBJECTS),
 			),
 			array(
-				'table' => \block_exacomp\DB_EXAMPTAX,
-				'needed1' => array('exampleid', \block_exacomp\DB_EXAMPLES),
-				'needed2' => array('taxid', \block_exacomp\DB_TAXONOMIES),
+				'table' => DB_EXAMPTAX,
+				'needed1' => array('exampleid', DB_EXAMPLES),
+				'needed2' => array('taxid', DB_TAXONOMIES),
 			),
 			array(
-				'table' => \block_exacomp\DB_EXAMPVISIBILITY,
-				'needed1' => array('exampleid', \block_exacomp\DB_EXAMPLES),
+				'table' => DB_EXAMPVISIBILITY,
+				'needed1' => array('exampleid', DB_EXAMPLES),
 				// course / studentid exclusive!
 			),
 			array(
-				'table' => \block_exacomp\DB_DESCVISIBILITY,
-				'needed1' => array('descrid', \block_exacomp\DB_DESCRIPTORS),
+				'table' => DB_DESCVISIBILITY,
+				'needed1' => array('descrid', DB_DESCRIPTORS),
 				// course / studentid exclusive!
 			),
 			array(
-				'table' => \block_exacomp\DB_DESCCAT,
-				'needed1' => array('descrid', \block_exacomp\DB_DESCRIPTORS),
-				'needed2' => array('catid', \block_exacomp\DB_CATEGORIES),
+				'table' => DB_DESCCAT,
+				'needed1' => array('descrid', DB_DESCRIPTORS),
+				'needed2' => array('catid', DB_CATEGORIES),
 			),
 			array(
-				'table' => \block_exacomp\DB_COURSETOPICS,
-				'needed1' => array('topicid', \block_exacomp\DB_TOPICS),
+				'table' => DB_COURSETOPICS,
+				'needed1' => array('topicid', DB_TOPICS),
 				'needed2' => array('courseid', "course"),
 			),
 			// after examples and examptax, delete unused DB_TAXONOMIES
 			array(
-				'table' => \block_exacomp\DB_TAXONOMIES,
-				'needed1' => array('id', 'SELECT taxid FROM {'.\block_exacomp\DB_EXAMPTAX.'}'),
+				'table' => DB_TAXONOMIES,
+				'needed1' => array('id', 'SELECT taxid FROM {'.DB_EXAMPTAX.'}'),
 			),
 			array(
-				'table' => \block_exacomp\DB_NIVEAUS,
-				'needed1' => array('id', 'SELECT niveauid FROM {'.\block_exacomp\DB_DESCRIPTORS.'}'),
+				'table' => DB_NIVEAUS,
+				'needed1' => array('id', 'SELECT niveauid FROM {'.DB_DESCRIPTORS.'}'),
 			),
 						
 			// delete examples without descriptors
 			array(
-				'table' => \block_exacomp\DB_EXAMPLES,
-				'needed1' => array('id', 'SELECT exampid FROM {'.\block_exacomp\DB_DESCEXAMP.'}'),
+				'table' => DB_EXAMPLES,
+				'needed1' => array('id', 'SELECT exampid FROM {'.DB_DESCEXAMP.'}'),
 			),
 			// delete topics without descriptors
 			// ist so nicht mehr richtig
@@ -272,25 +274,25 @@ class block_exacomp_data {
 			// subjects loeschen, wenn der schooltype nicht existiert
 			/*
 			array(
-				'table' => \block_exacomp\DB_TOPICS,
-				'needed1' => array('id', 'SELECT topicid FROM {'.\block_exacomp\DB_DESCTOPICS.'}'),
+				'table' => DB_TOPICS,
+				'needed1' => array('id', 'SELECT topicid FROM {'.DB_DESCTOPICS.'}'),
 			),
 			array(
-				'table' => \block_exacomp\DB_SUBJECTS,
-				'needed1' => array('id', 'SELECT subjid FROM {'.\block_exacomp\DB_TOPICS.'}'),
+				'table' => DB_SUBJECTS,
+				'needed1' => array('id', 'SELECT subjid FROM {'.DB_TOPICS.'}'),
 			),
 			
 			array(
-				'table' => \block_exacomp\DB_CATEGORIES,
-				'needed1' => array('id', 'SELECT catid FROM {'.\block_exacomp\DB_SUBJECTS.'}'),
+				'table' => DB_CATEGORIES,
+				'needed1' => array('id', 'SELECT catid FROM {'.DB_SUBJECTS.'}'),
 			),
 			array(
-				'table' => \block_exacomp\DB_SCHOOLTYPES,
-				'needed1' => array('id', 'SELECT stid FROM {'.\block_exacomp\DB_SUBJECTS.'}'),
+				'table' => DB_SCHOOLTYPES,
+				'needed1' => array('id', 'SELECT stid FROM {'.DB_SUBJECTS.'}'),
 			),
 			array(
-				'table' => \block_exacomp\DB_EDULEVELS,
-				'needed1' => array('id', 'SELECT elid FROM {'.\block_exacomp\DB_SCHOOLTYPES.'}'),
+				'table' => DB_EDULEVELS,
+				'needed1' => array('id', 'SELECT elid FROM {'.DB_SCHOOLTYPES.'}'),
 			),
 			*/
 		);
@@ -321,26 +323,26 @@ class block_exacomp_data {
 		/*
 		$sql = [];
 		foreach (self::$sourceTables as $table) {
-			$sql[] = "SELECT CONCAT(source, '{$table}') AS id, count(*) FROM {{$table}} WHERE source >= ".block_exacomp_data::MIN_SOURCE_ID.' GROUP BY source';
+			$sql[] = "SELECT CONCAT(source, '{$table}') AS id, count(*) FROM {{$table}} WHERE source >= ".data::MIN_SOURCE_ID.' GROUP BY source';
 		}
 		$sql = join(" UNION ", $sql);
 		print_r($DB->get_records_sql($sql));
 		exit;
 		*/
 		/*
-		 $sql = "SELECT * FROM {".\block_exacomp\DB_DATASOURCES."} WHERE id NOT IN (
+		 $sql = "SELECT * FROM {".DB_DATASOURCES."} WHERE id NOT IN (
 		 ".join(" UNION ", $sql)."
 		 )";
 		 */
 		
 		// add subdescriptors to topics
 		$sql = "
-			INSERT INTO {".\block_exacomp\DB_DESCTOPICS."}
+			INSERT INTO {".DB_DESCTOPICS."}
 			(topicid, descrid)
 			SELECT dt_parent.topicid, d.id
-			FROM {".\block_exacomp\DB_DESCRIPTORS."} d
-			JOIN {".\block_exacomp\DB_DESCTOPICS."} dt_parent ON dt_parent.descrid=d.parentid
-			LEFT JOIN {".\block_exacomp\DB_DESCTOPICS."} dt ON dt.descrid=d.id
+			FROM {".DB_DESCRIPTORS."} d
+			JOIN {".DB_DESCTOPICS."} dt_parent ON dt_parent.descrid=d.parentid
+			LEFT JOIN {".DB_DESCTOPICS."} dt ON dt.descrid=d.id
 			WHERE dt.id IS NULL -- only for those, who have no topic yet
 		";
 		g::$DB->execute($sql);
@@ -349,59 +351,59 @@ class block_exacomp_data {
 		// check if new descriptors should be visible in the courses
 		// 1. descriptors directly under the topic
 		$sql = "
-			INSERT INTO {".\block_exacomp\DB_DESCVISIBILITY."}
+			INSERT INTO {".DB_DESCVISIBILITY."}
 			(courseid, descrid, studentid, visible)
 			SELECT ct.courseid, dt.descrid, 0, 1
-			FROM {".\block_exacomp\DB_COURSETOPICS."} ct
-			JOIN {".\block_exacomp\DB_DESCTOPICS."} dt ON ct.topicid = dt.topicid
-			LEFT JOIN {".\block_exacomp\DB_DESCVISIBILITY."} dv ON dv.descrid=dt.descrid AND dv.studentid=0
+			FROM {".DB_COURSETOPICS."} ct
+			JOIN {".DB_DESCTOPICS."} dt ON ct.topicid = dt.topicid
+			LEFT JOIN {".DB_DESCVISIBILITY."} dv ON dv.descrid=dt.descrid AND dv.studentid=0
 			WHERE dv.id IS NULL -- only for those, who have no visibility yet
 		";
 		g::$DB->execute($sql);
 		
 		// 2. cross course descriptors used in crosssubjects
 		$sql = "
-			INSERT INTO {".\block_exacomp\DB_DESCVISIBILITY."}
+			INSERT INTO {".DB_DESCVISIBILITY."}
 			(courseid, descrid, studentid, visible)
 			SELECT cs.courseid, dc.descrid, 0, 1
-			FROM {".\block_exacomp\DB_CROSSSUBJECTS."} cs
-			JOIN {".\block_exacomp\DB_DESCCROSS."} dc ON cs.id = dc.crosssubjid
-			LEFT JOIN {".\block_exacomp\DB_DESCVISIBILITY."} dv ON dv.descrid=dc.descrid AND dv.studentid=0
+			FROM {".DB_CROSSSUBJECTS."} cs
+			JOIN {".DB_DESCCROSS."} dc ON cs.id = dc.crosssubjid
+			LEFT JOIN {".DB_DESCVISIBILITY."} dv ON dv.descrid=dc.descrid AND dv.studentid=0
 			WHERE dv.id IS NULL AND cs.courseid != 0  -- only for those, who have no visibility yet
 		";
 		g::$DB->execute($sql); //only necessary if we save courseinformation as well -> existing crosssubjects imported  only as drafts -> not needed
 		
 		//example visibility
 		$sql = "
-			INSERT INTO {".\block_exacomp\DB_EXAMPVISIBILITY."}
+			INSERT INTO {".DB_EXAMPVISIBILITY."}
 			(courseid, exampleid, studentid, visible)
 			SELECT DISTINCT ct.courseid, dc.exampid, 0, 1
-			FROM {".\block_exacomp\DB_COURSETOPICS."} ct
-			JOIN {".\block_exacomp\DB_DESCTOPICS."} dt ON ct.topicid = dt.topicid
-			JOIN {".\block_exacomp\DB_DESCVISIBILITY."} dv ON dv.descrid=dt.descrid AND dv.studentid=0
-			JOIN {".\block_exacomp\DB_DESCEXAMP."} dc ON dc.descrid=dt.descrid
-			LEFT JOIN {".\block_exacomp\DB_EXAMPVISIBILITY."} ev ON ev.exampleid=dc.exampid AND ev.studentid=0 AND ev.courseid=ct.courseid
+			FROM {".DB_COURSETOPICS."} ct
+			JOIN {".DB_DESCTOPICS."} dt ON ct.topicid = dt.topicid
+			JOIN {".DB_DESCVISIBILITY."} dv ON dv.descrid=dt.descrid AND dv.studentid=0
+			JOIN {".DB_DESCEXAMP."} dc ON dc.descrid=dt.descrid
+			LEFT JOIN {".DB_EXAMPVISIBILITY."} ev ON ev.exampleid=dc.exampid AND ev.studentid=0 AND ev.courseid=ct.courseid
 			WHERE ev.id IS NULL -- only for those, who have no visibility yet
 		";
 		g::$DB->execute($sql);
 		
 		//example visibility： crosssubjects
 		$sql = "
-			INSERT INTO {".\block_exacomp\DB_EXAMPVISIBILITY."}
+			INSERT INTO {".DB_EXAMPVISIBILITY."}
 			(courseid, exampleid, studentid, visible)
 			SELECT DISTINCT cs.courseid, de.exampid, 0, 1
-			FROM {".\block_exacomp\DB_CROSSSUBJECTS."} cs
-			JOIN {".\block_exacomp\DB_DESCCROSS."} dc ON cs.id = dc.crosssubjid
-			JOIN {".\block_exacomp\DB_DESCVISIBILITY."} dv ON dv.descrid=dc.descrid AND dv.studentid=0
-			JOIN {".\block_exacomp\DB_DESCEXAMP."} de ON de.descrid=dv.descrid
-			LEFT JOIN {".\block_exacomp\DB_EXAMPVISIBILITY."} ev ON ev.exampleid=de.exampid AND ev.studentid=0 AND ev.courseid=cs.courseid
+			FROM {".DB_CROSSSUBJECTS."} cs
+			JOIN {".DB_DESCCROSS."} dc ON cs.id = dc.crosssubjid
+			JOIN {".DB_DESCVISIBILITY."} dv ON dv.descrid=dc.descrid AND dv.studentid=0
+			JOIN {".DB_DESCEXAMP."} de ON de.descrid=dv.descrid
+			LEFT JOIN {".DB_EXAMPVISIBILITY."} ev ON ev.exampleid=de.exampid AND ev.studentid=0 AND ev.courseid=cs.courseid
 			WHERE ev.id IS NULL AND cs.courseid != 0  -- only for those, who have no visibility yet
 		";
 		g::$DB->execute($sql); //only necessary if we save courseinformation as well -> existing crosssubjects imported  only as drafts -> not needed
 	}
 }
 
-class block_exacomp_data_exporter extends block_exacomp_data {
+class data_exporter extends data {
 	
 	static $xml;
 	static $zip;
@@ -410,16 +412,16 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 	public static function do_export($filter_descriptors = null) {
 		global $SITE;
 		
-		core_php_time_limit::raise();
+		\core_php_time_limit::raise();
 		raise_memory_limit(MEMORY_HUGE);
 		
 		if (!self::get_my_source()) {
 			// this can't happen anymore, because a source is automatically generated
-			throw new block_exacomp\moodle_exception('source not configured, go to block settings');
+			throw new moodle_exception('source not configured, go to block settings');
 			// '<a href="'.$CFG->wwwroot.'/admin/settings.php?section=blocksettingexacomp">settings</a>'
 		}
 		
-		$xml = new block_exacomp\SimpleXMLElement(
+		$xml = new SimpleXMLElement(
 			'<?xml version="1.0" encoding="UTF-8"?>'.
 			'<exacomp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://github.com/gtn/edustandards/blob/master/new%20schema/exacomp.xsd" />'
 		);
@@ -429,7 +431,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 		$xml['source'] = self::get_my_source();
 		$xml['sourcename'] = $SITE->fullname;
 		
-		$zip = block_exacomp_ZipArchive::create_temp_file();
+		$zip = ZipArchive::create_temp_file();
 		$zip->addEmptyDir('files');
 		
 		self::$xml = $xml;
@@ -474,17 +476,17 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 	
 	private static function assign_source($xmlItem, $dbItem) {
 		if ($dbItem->source && $dbItem->sourceid) {
-			if ($dbItem->source == \block_exacomp\IMPORT_SOURCE_DEFAULT) {
+			if ($dbItem->source == IMPORT_SOURCE_DEFAULT) {
 				// source und sourceid vorhanden -> von wo anders erhalten
-				throw new block_exacomp\moodle_exception('database error, has default source #69fvk3');
-			} elseif ($dbItem->source == \block_exacomp\IMPORT_SOURCE_SPECIFIC) {
+				throw new moodle_exception('database error, has default source #69fvk3');
+			} elseif ($dbItem->source == IMPORT_SOURCE_SPECIFIC) {
 				// local source -> von dieser moodle instanz selbst
-				throw new block_exacomp\moodle_exception('database error, has specific source #yt8d21');
+				throw new moodle_exception('database error, has specific source #yt8d21');
 			} elseif ($source = self::get_source_global_id($dbItem->source)) {
 				$xmlItem['source'] = $source;
 				$xmlItem['id'] = $dbItem->sourceid;
 			} else {
-				throw new block_exacomp\moodle_exception('database error, unknown source '.$dbItem->source.' for type '.$xmlItem->getName().' #f9ssaa8');
+				throw new moodle_exception('database error, unknown source '.$dbItem->source.' for type '.$xmlItem->getName().' #f9ssaa8');
 			}
 		} else {
 			// local source -> set new id
@@ -499,7 +501,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 		}
 	}
 	
-	private static function export_file(block_exacomp\SimpleXMLElement $xmlItem, stored_file $file) {
+	private static function export_file(SimpleXMLElement $xmlItem, stored_file $file) {
 		// add file to zip
 		
 		// testing for big archive with lots of files
@@ -536,7 +538,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 	}
 	
 	private static function export_skills($xmlParent) {
-		$dbItems = g::$DB->get_records(\block_exacomp\DB_SKILLS); // , array("source"=>self::$source));
+		$dbItems = g::$DB->get_records(DB_SKILLS); // , array("source"=>self::$source));
 		
 		if (!$dbItems) return;
 		
@@ -560,7 +562,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 			</niveautexts>
 		</niveau>
 		*/
-		$dbItems = g::$DB->get_records(\block_exacomp\DB_NIVEAUS, array('parentid'=>$parentid)); // , array("source"=>self::$source));
+		$dbItems = g::$DB->get_records(DB_NIVEAUS, array('parentid'=>$parentid)); // , array("source"=>self::$source));
 		
 		if (!$dbItems) return;
 		
@@ -579,7 +581,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 	}
 	
 	private static function export_taxonomies($xmlParent, $parentid = 0) {
-		$dbItems = g::$DB->get_records(\block_exacomp\DB_TAXONOMIES, array('parentid'=>$parentid)); // , array("source"=>self::$source));
+		$dbItems = g::$DB->get_records(DB_TAXONOMIES, array('parentid'=>$parentid)); // , array("source"=>self::$source));
 		
 		if (!$dbItems) return;
 		
@@ -626,7 +628,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 			$filter = "
 				AND e.id IN (
 					SELECT de.exampid
-					FROM {".\block_exacomp\DB_DESCEXAMP."} de
+					FROM {".DB_DESCEXAMP."} de
 					WHERE de.descrid IN (".join(',', self::$filter_descriptors).")
 				)
 			";
@@ -634,10 +636,10 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 			$filter = "";
 		}
 		
-		$dbItems = \block_exacomp\example::get_objects_sql("
+		$dbItems = example::get_objects_sql("
 			SELECT e.*
-			FROM {".\block_exacomp\DB_EXAMPLES."} e
-			WHERE (e.source IS NULL OR e.source != ".\block_exacomp\EXAMPLE_SOURCE_USER.") AND
+			FROM {".DB_EXAMPLES."} e
+			WHERE (e.source IS NULL OR e.source != ".EXAMPLE_SOURCE_USER.") AND
 			".($parentid ? "e.parentid = $parentid" : "(e.parentid=0 OR e.parentid IS NULL)")."
 			$filter
 		");
@@ -650,7 +652,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 			$xmlItem = $xmlItems->addChild('example');
 			
 			// special source handling for examples, if created as teacher, export as my source
-			if ($dbItem->source == \block_exacomp\EXAMPLE_SOURCE_TEACHER) {
+			if ($dbItem->source == EXAMPLE_SOURCE_TEACHER) {
 				$dbItem->source = null;
 				$dbItem->sourceid = null;
 			}
@@ -690,8 +692,8 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 			
 			$descriptors = g::$DB->get_records_sql("
 				SELECT DISTINCT d.id, d.source, d.sourceid
-				FROM {".\block_exacomp\DB_DESCRIPTORS."} d
-				JOIN {".\block_exacomp\DB_DESCEXAMP."} de ON d.id = de.descrid
+				FROM {".DB_DESCRIPTORS."} d
+				JOIN {".DB_DESCEXAMP."} de ON d.id = de.descrid
 				WHERE de.exampid = ?
 			", array($dbItem->id));
 			
@@ -722,11 +724,11 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 		if (!$parentid && self::$filter_descriptors) {
 			$dbItems = g::$DB->get_records_sql("
 				SELECT d.*
-				FROM {".\block_exacomp\DB_DESCRIPTORS."} d
+				FROM {".DB_DESCRIPTORS."} d
 				WHERE parentid=0 AND d.id IN (".join(',', self::$filter_descriptors).")
 			");
 		} else {
-			$dbItems = g::$DB->get_records(\block_exacomp\DB_DESCRIPTORS, array('parentid'=>$parentid));
+			$dbItems = g::$DB->get_records(DB_DESCRIPTORS, array('parentid'=>$parentid));
 		}
 		
 		if (!$dbItems) return;
@@ -737,8 +739,8 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 			$xmlItem = $xmlItems->addChild('descriptor');
 			self::assign_source($xmlItem, $dbItem);
 			
-			self::add_child_with_source($xmlItem, 'skillid', \block_exacomp\DB_SKILLS, $dbItem->skillid);
-			self::add_child_with_source($xmlItem, 'niveauid', \block_exacomp\DB_NIVEAUS, $dbItem->niveauid);
+			self::add_child_with_source($xmlItem, 'skillid', DB_SKILLS, $dbItem->skillid);
+			self::add_child_with_source($xmlItem, 'niveauid', DB_NIVEAUS, $dbItem->niveauid);
 			
 			$xmlItem->addChildWithCDATAIfValue('title', $dbItem->title);
 			$xmlItem->sorting = $dbItem->sorting;
@@ -753,7 +755,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 	private static function export_edulevels($xmlParent, $parentid = 0) {
 		$dbEdulevels = block_exacomp_get_edulevels();
 
-		$xmlEdulevels = block_exacomp\SimpleXMLElement::create('edulevels');
+		$xmlEdulevels = SimpleXMLElement::create('edulevels');
 
 		foreach ($dbEdulevels as $dbEdulevel) {
 			$xmlSchooltypes = self::export_schooltypes($dbEdulevel);
@@ -785,7 +787,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 			$xmlCrosssubject->addChildWithCDATAIfValue('title', $dbCrosssubject->title);
 			$xmlCrosssubject->addChildWithCDATAIfValue('description', $dbCrosssubject->description);
 			
-			$subject = g::$DB->get_record(\block_exacomp\DB_SUBJECTS, array('id'=>$dbCrosssubject->subjectid));
+			$subject = g::$DB->get_record(DB_SUBJECTS, array('id'=>$dbCrosssubject->subjectid));
 			
 			if($subject){
 				$xmlSubject = $xmlCrosssubject->addChild('subjectid');
@@ -796,8 +798,8 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 			
 				 $descriptors = g::$DB->get_records_sql("
 				SELECT DISTINCT d.id, d.source, d.sourceid
-				FROM {".\block_exacomp\DB_DESCRIPTORS."} d
-				JOIN {".\block_exacomp\DB_DESCCROSS."} dc ON d.id = dc.descrid
+				FROM {".DB_DESCRIPTORS."} d
+				JOIN {".DB_DESCCROSS."} dc ON d.id = dc.descrid
 				WHERE dc.crosssubjid = ?
 			", array($dbCrosssubject->id));
 				 
@@ -813,7 +815,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 	
 	private static function export_schooltypes($dbEdulevel) {
 
-		$xmlSchooltypes = block_exacomp\SimpleXMLElement::create('schooltypes');
+		$xmlSchooltypes = SimpleXMLElement::create('schooltypes');
 
 		$dbSchooltypes = block_exacomp_get_schooltypes($dbEdulevel->id);
 
@@ -838,9 +840,9 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 	}
 
 	private static function export_subjects($dbSchooltype) {
-		$xmlSubjects = block_exacomp\SimpleXMLElement::create('subjects');
+		$xmlSubjects = SimpleXMLElement::create('subjects');
 
-		$dbSubjects = block_exacomp\subject::get_objects(array('stid' => $dbSchooltype->id));
+		$dbSubjects = subject::get_objects(array('stid' => $dbSchooltype->id));
 
 		foreach($dbSubjects as $dbSubject){
 			$xmlTopics = self::export_topics($dbSubject);
@@ -869,8 +871,8 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 	private static function export_subject_niveau_mm($xmlSubject, $dbSubject) {
 		$dbItems = g::$DB->get_records_sql("
 			SELECT n.id, n.source, n.sourceid, sn.subtitle
-			FROM {".\block_exacomp\DB_NIVEAUS."} n
-			JOIN {".\block_exacomp\DB_SUBJECT_NIVEAU_MM."} sn ON sn.niveauid=n.id
+			FROM {".DB_NIVEAUS."} n
+			JOIN {".DB_SUBJECT_NIVEAU_MM."} sn ON sn.niveauid=n.id
 			WHERE sn.subjectid = ?
 			ORDER BY n.sorting -- actually sorting is not important
 		", [$dbSubject->id]);
@@ -888,21 +890,21 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 	}
 
 	private static function export_topics($dbSubject) {
-		$xmlTopics = block_exacomp\SimpleXMLElement::create('topics');
+		$xmlTopics = SimpleXMLElement::create('topics');
 
 		if (self::$filter_descriptors) {
 			$dbTopics = g::$DB->get_records_sql("
 				SELECT t.*
-				FROM {".\block_exacomp\DB_TOPICS."} t
+				FROM {".DB_TOPICS."} t
 				WHERE t.subjid = ? AND
 					t.id IN (
 					SELECT dt.topicid
-					FROM {".\block_exacomp\DB_DESCTOPICS."} dt
+					FROM {".DB_DESCTOPICS."} dt
 					WHERE dt.descrid IN (".join(',', self::$filter_descriptors).")
 				)
 			", array($dbSubject->id));
 		} else {
-			$dbTopics = g::$DB->get_records(\block_exacomp\DB_TOPICS, array('subjid' => $dbSubject->id));
+			$dbTopics = g::$DB->get_records(DB_TOPICS, array('subjid' => $dbSubject->id));
 		}
 		
 		foreach($dbTopics as $dbTopic){
@@ -925,8 +927,8 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 			
 			$descriptors = g::$DB->get_records_sql("
 				SELECT DISTINCT d.id, d.source, d.sourceid
-				FROM {".\block_exacomp\DB_DESCRIPTORS."} d
-				JOIN {".\block_exacomp\DB_DESCTOPICS."} dt ON d.id = dt.descrid
+				FROM {".DB_DESCRIPTORS."} d
+				JOIN {".DB_DESCTOPICS."} dt ON d.id = dt.descrid
 				WHERE dt.topicid = ?
 					$filter
 			", array($dbTopic->id));
@@ -943,7 +945,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 		return $xmlTopics;
 	}
 
-	private static function export_sources(block_exacomp\SimpleXMLElement $xmlParent) {
+	private static function export_sources(SimpleXMLElement $xmlParent) {
 		// rather then exporting all sources in the database
 		// we only export the sources used in the xml
 		// this helps later, when only partial exports are made.
@@ -973,7 +975,7 @@ class block_exacomp_data_exporter extends block_exacomp_data {
 	}
 }
 
-class block_exacomp_data_course_backup extends block_exacomp_data {
+class data_course_backup extends data {
 	public static function assign_source_array($items, $prefix = "") {
 		$fld_source = "{$prefix}source";
 		$fld_sourceid = "{$prefix}sourceid";
@@ -981,10 +983,10 @@ class block_exacomp_data_course_backup extends block_exacomp_data {
 		
 		foreach ($items as $dbItem) {
 			if ($dbItem->$fld_source >= self::MIN_SOURCE_ID) {
-				if ($source = block_exacomp_data::get_source_global_id($dbItem->$fld_source)) {
+				if ($source = data::get_source_global_id($dbItem->$fld_source)) {
 					$dbItem->$fld_source = $source;
 				} else {
-					throw new block_exacomp\moodle_exception('database error, unknown source '.$dbItem->$fld_source.' #5555aa8');
+					throw new moodle_exception('database error, unknown source '.$dbItem->$fld_source.' #5555aa8');
 				}
 			} else {
 				// local source -> set new id
@@ -1014,7 +1016,7 @@ class block_exacomp_data_course_backup extends block_exacomp_data {
 	}
 }
 
-class block_exacomp_data_importer extends block_exacomp_data {
+class data_importer extends data {
 	
 	private static $import_source_type;
 	private static $import_source_global_id;
@@ -1024,11 +1026,11 @@ class block_exacomp_data_importer extends block_exacomp_data {
 	
 	private static $zip;
 	
-	public static function do_import_string($data = null, $par_source = \block_exacomp\IMPORT_SOURCE_DEFAULT) {
+	public static function do_import_string($data = null, $par_source = IMPORT_SOURCE_DEFAULT) {
 		global $CFG;
 
 		if (!$data) {
-			throw new block_exacomp\moodle_exception('filenotfound');
+			throw new moodle_exception('filenotfound');
 		}
 		
 		$file = tempnam($CFG->tempdir, "zip");
@@ -1041,11 +1043,11 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		return $ret;
 	}
 	
-	public static function do_import_url($url = null, $par_source = \block_exacomp\IMPORT_SOURCE_DEFAULT) {
+	public static function do_import_url($url = null, $par_source = IMPORT_SOURCE_DEFAULT) {
 		global $CFG;
 
 		if (!$url) {
-			throw new block_exacomp\moodle_exception('filenotfound');
+			throw new moodle_exception('filenotfound');
 		}
 		
 		$file = tempnam($CFG->tempdir, "zip");
@@ -1063,23 +1065,23 @@ class block_exacomp_data_importer extends block_exacomp_data {
 	 * @param String $data xml content
 	 * @param int $source default is 1, for specific import 2 is used. A specific import can be done by teachers and only effects data from topic leven downwards (topics, descriptors, examples)
 	 */
-	public static function do_import_file($file = null, $par_source = \block_exacomp\IMPORT_SOURCE_DEFAULT) {
+	public static function do_import_file($file = null, $par_source = IMPORT_SOURCE_DEFAULT) {
 		if (!$file) {
-			throw new block_exacomp\moodle_exception('filenotfound');
+			throw new moodle_exception('filenotfound');
 		}
 			
 		if (!file_exists($file)) {
-			throw new block_exacomp\moodle_exception('filenotfound');
+			throw new moodle_exception('filenotfound');
 		}
 		
-		core_php_time_limit::raise();
+		\core_php_time_limit::raise();
 		raise_memory_limit(MEMORY_HUGE);
 		
 		self::$import_source_type = $par_source;
 		self::$import_time = time();
 		
 		// guess it's a zip file
-		$zip = new block_exacomp_ZipArchive();
+		$zip = new ZipArchive();
 		$ret = $zip->open($file, ZipArchive::CHECKCONS);
 		
 		if ($ret === true) {
@@ -1087,17 +1089,17 @@ class block_exacomp_data_importer extends block_exacomp_data {
 			self::$zip = $zip;
 			
 			if (!$xml = $zip->getFromName('data.xml')) {
-				throw new block_exacomp\moodle_exception('wrong zip file');
+				throw new moodle_exception('wrong zip file');
 			}
 			
 			/*
 			 * LIBXML_NOCDATA is important at this point, because it converts CDATA Elements to Strings for
 			 * immediate useage
 			 */
-			$xml = simplexml_load_string($xml,'block_exacomp\SimpleXMLElement', LIBXML_NOCDATA);
+			$xml = simplexml_load_string($xml,'SimpleXMLElement', LIBXML_NOCDATA);
 
 			if (!$xml) {
-				throw new block_exacomp\moodle_exception('wrong zip file content');
+				throw new moodle_exception('wrong zip file content');
 			}
 		} else {
 			// on error -> try as xml
@@ -1106,19 +1108,19 @@ class block_exacomp_data_importer extends block_exacomp_data {
 			 * LIBXML_NOCDATA is important at this point, because it converts CDATA Elements to Strings for
 			 * immediate useage
 			 */
-			$xml = @simplexml_load_file($file,'block_exacomp\SimpleXMLElement', LIBXML_NOCDATA);
+			$xml = @simplexml_load_file($file,'SimpleXMLElement', LIBXML_NOCDATA);
 			if (!$xml) {
-				throw new block_exacomp\moodle_exception('wrong file');
+				throw new moodle_exception('wrong file');
 			}
 		}
 		
 
 		if(isset($xml->table)){
-			throw new block_exacomp\moodle_exception('oldxmlfile');
+			throw new moodle_exception('oldxmlfile');
 		}
 		
 		if (empty($xml['source'])) {
-			throw new block_exacomp\moodle_exception('oldxmlfile');
+			throw new moodle_exception('oldxmlfile');
 		}
 		
 		self::$import_source_global_id = (string)$xml['source'];
@@ -1127,7 +1129,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 			self::$import_source_global_id == self::get_my_source() ? 0 : self::add_source_if_not_exists(self::$import_source_global_id);
 		// update source name
 		if (self::$import_source_local_id) {
-			g::$DB->update_record(\block_exacomp\DB_DATASOURCES, array(
+			g::$DB->update_record(DB_DATASOURCES, array(
 				'name' => (string)$xml['sourcename']
 			), array(
 				'id' => self::$import_source_local_id
@@ -1135,22 +1137,22 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		}
 		
 		// update scripts for new source format
-		if (self::has_old_data(\block_exacomp\IMPORT_SOURCE_DEFAULT)) {
-			if (self::$import_source_type != \block_exacomp\IMPORT_SOURCE_DEFAULT) {
-				throw new block_exacomp\moodle_exception('you first need to import the default sources!');
+		if (self::has_old_data(IMPORT_SOURCE_DEFAULT)) {
+			if (self::$import_source_type != IMPORT_SOURCE_DEFAULT) {
+				throw new moodle_exception('you first need to import the default sources!');
 			}
-			self::move_items_to_source(\block_exacomp\IMPORT_SOURCE_DEFAULT, self::$import_source_local_id);
+			self::move_items_to_source(IMPORT_SOURCE_DEFAULT, self::$import_source_local_id);
 		}
 		else {
 			// always move old specific data
-			self::move_items_to_source(\block_exacomp\IMPORT_SOURCE_SPECIFIC, self::$import_source_local_id);
+			self::move_items_to_source(IMPORT_SOURCE_SPECIFIC, self::$import_source_local_id);
 		}
 		
 		// self::kompetenzraster_load_current_data_for_source();
 		// don't delete all mm_records, because if you import 2 partial xml files the 2nd would overwrite the 1st
 		// self::delete_mm_records(self::$import_source_local_id);
 
-		self::truncate_table(self::$import_source_local_id, \block_exacomp\DB_SKILLS);
+		self::truncate_table(self::$import_source_local_id, DB_SKILLS);
 		if(isset($xml->skills)) {
 			foreach($xml->skills->skill as $skill) {
 				self::insert_skill($skill);
@@ -1163,7 +1165,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 			}
 		}
 		
-		self::truncate_table(self::$import_source_local_id, \block_exacomp\DB_TAXONOMIES);
+		self::truncate_table(self::$import_source_local_id, DB_TAXONOMIES);
 		if(isset($xml->taxonomies)) {
 			foreach($xml->taxonomies->taxonomy as $taxonomy) {
 				self::insert_taxonomy($taxonomy);
@@ -1260,14 +1262,14 @@ class block_exacomp_data_importer extends block_exacomp_data {
 			return;
 		}
 		
-		g::$DB->update_record(\block_exacomp\DB_DATASOURCES, array(
+		g::$DB->update_record(DB_DATASOURCES, array(
 			'name' => (string)$xmlItem->name
 		), array(
 			'id' => $dbSource->id,
 		));
 	}
 	
-	private static function insert_file($filearea, block_exacomp\SimpleXMLElement $xmlItem, $item) {
+	private static function insert_file($filearea, SimpleXMLElement $xmlItem, $item) {
 		if (!self::$zip) {
 			return;
 		}
@@ -1299,40 +1301,40 @@ class block_exacomp_data_importer extends block_exacomp_data {
 	protected static function delete_mm_record_for_item($table, $field, $id) {
 		$tables = array(
 			array(
-				'table' => \block_exacomp\DB_DESCTOPICS,
-				'mm1' => array('descrid', \block_exacomp\DB_DESCRIPTORS),
-				'mm2' => array('topicid', \block_exacomp\DB_TOPICS),
+				'table' => DB_DESCTOPICS,
+				'mm1' => array('descrid', DB_DESCRIPTORS),
+				'mm2' => array('topicid', DB_TOPICS),
 			),
 			array(
-				'table' => \block_exacomp\DB_DESCEXAMP,
-				'mm1' => array('descrid', \block_exacomp\DB_DESCRIPTORS),
-				'mm2' => array('exampid', \block_exacomp\DB_EXAMPLES),
+				'table' => DB_DESCEXAMP,
+				'mm1' => array('descrid', DB_DESCRIPTORS),
+				'mm2' => array('exampid', DB_EXAMPLES),
 			),
 			array(
-				'table' => \block_exacomp\DB_DESCCROSS,
-				'mm1' => array('descrid', \block_exacomp\DB_DESCRIPTORS),
-				'mm2' => array('crosssubjid', \block_exacomp\DB_CROSSSUBJECTS),
+				'table' => DB_DESCCROSS,
+				'mm1' => array('descrid', DB_DESCRIPTORS),
+				'mm2' => array('crosssubjid', DB_CROSSSUBJECTS),
 			),
 			array(
-				'table' => \block_exacomp\DB_DESCCAT,
-				'mm1' => array('descrid', \block_exacomp\DB_DESCRIPTORS),
-				'mm2' => array('catid', \block_exacomp\DB_CATEGORIES),
+				'table' => DB_DESCCAT,
+				'mm1' => array('descrid', DB_DESCRIPTORS),
+				'mm2' => array('catid', DB_CATEGORIES),
 			),
 			array(
-				'table' => \block_exacomp\DB_EXAMPTAX,
-				'mm1' => array('exampleid', \block_exacomp\DB_EXAMPLES),
-				'mm2' => array('taxid', \block_exacomp\DB_TAXONOMIES),
+				'table' => DB_EXAMPTAX,
+				'mm1' => array('exampleid', DB_EXAMPLES),
+				'mm2' => array('taxid', DB_TAXONOMIES),
 			),
 			array(
-				'table' => \block_exacomp\DB_SUBJECT_NIVEAU_MM,
-				'mm1' => array('subjectid', \block_exacomp\DB_SUBJECTS),
-				'mm2' => array('niveauid', \block_exacomp\DB_NIVEAUS),
+				'table' => DB_SUBJECT_NIVEAU_MM,
+				'mm1' => array('subjectid', DB_SUBJECTS),
+				'mm2' => array('niveauid', DB_NIVEAUS),
 			),
 		);
 		
 		$tables = array_filter($tables, function($t) use ($table) { return $t['table'] == $table; });
 		if (empty($tables)) {
-			throw new block_exacomp\moodle_exception("delete_mm_record_for_item: wrong table $table");
+			throw new moodle_exception("delete_mm_record_for_item: wrong table $table");
 		}
 		
 		$table = reset($tables);
@@ -1346,7 +1348,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 			$sql .= "{$table['mm2'][0]}=? AND ";
 			$sql .= "{$table['mm1'][0]} IN (SELECT id FROM {{$table['mm1'][1]}} WHERE source=?)";
 		} else {
-			throw new block_exacomp\moodle_exception('delete_mm_record_for_item: error');
+			throw new moodle_exception('delete_mm_record_for_item: error');
 		}
 		
 		g::$DB->execute($sql, array($id, self::$import_source_local_id));
@@ -1357,7 +1359,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 
 		// TODO: check erweitern und überall reingeben
 		/*
-		$item = block_exacomp\param::clean_object($item, array(
+		$item = param::clean_object($item, array(
 			'source' => PARAM_TEXT,
 			'sourceid' => PARAM_INT,
 			'title' => PARAM_TEXT
@@ -1365,8 +1367,8 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		*/
 		$item->parentid = $parent;
 		
-		self::insert_or_update_item(\block_exacomp\DB_NIVEAUS, $item);
-		self::kompetenzraster_mark_item_used(\block_exacomp\DB_NIVEAUS, $item);
+		self::insert_or_update_item(DB_NIVEAUS, $item);
+		self::kompetenzraster_mark_item_used(DB_NIVEAUS, $item);
 		
 		if ($xmlItem->children) {
 			foreach ($xmlItem->children->niveau as $child) {
@@ -1381,12 +1383,12 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		$item = self::parse_xml_item($xmlItem);
 		$item->parentid = $parent;
 		
-		self::insert_or_update_item(\block_exacomp\DB_EXAMPLES, $item);
-		self::kompetenzraster_mark_item_used(\block_exacomp\DB_EXAMPLES, $item);
+		self::insert_or_update_item(DB_EXAMPLES, $item);
+		self::kompetenzraster_mark_item_used(DB_EXAMPLES, $item);
 		
 		// if local example, move to source teacher
 		if (!$item->source) {
-			g::$DB->insert_or_update_record(\block_exacomp\DB_EXAMPLES, array('source' => \block_exacomp\EXAMPLE_SOURCE_TEACHER, 'sourceid'=>null), array("id"=>$item->id));
+			g::$DB->insert_or_update_record(DB_EXAMPLES, array('source' => EXAMPLE_SOURCE_TEACHER, 'sourceid'=>null), array("id"=>$item->id));
 		}
 		
 		// has to be called after inserting the example, because the id is needed!
@@ -1397,23 +1399,23 @@ class block_exacomp_data_importer extends block_exacomp_data {
 			self::insert_file('example_task', $xmlItem->filetask, $item);
 		}
 		
-		self::delete_mm_record_for_item(\block_exacomp\DB_EXAMPTAX, 'exampleid', $item->id);
+		self::delete_mm_record_for_item(DB_EXAMPTAX, 'exampleid', $item->id);
 		if ($xmlItem->taxonomies) {
 			foreach ($xmlItem->taxonomies->taxonomyid as $taxonomy) {
 				if ($taxonomyid = self::get_database_id($taxonomy)) {
-					g::$DB->insert_or_update_record(\block_exacomp\DB_EXAMPTAX, array("exampleid"=>$item->id, "taxid"=>$taxonomyid));
+					g::$DB->insert_or_update_record(DB_EXAMPTAX, array("exampleid"=>$item->id, "taxid"=>$taxonomyid));
 				}
 			}
 		}
 		
-		self::delete_mm_record_for_item(\block_exacomp\DB_DESCEXAMP, 'exampid', $item->id);
+		self::delete_mm_record_for_item(DB_DESCEXAMP, 'exampid', $item->id);
 		if ($xmlItem->descriptors) {
 			foreach($xmlItem->descriptors->descriptorid as $descriptor) {
 				if ($descriptorid = self::get_database_id($descriptor)) {
-					$sql = "SELECT MAX(sorting) as sorting FROM {".\block_exacomp\DB_DESCEXAMP."} WHERE descrid=?";
+					$sql = "SELECT MAX(sorting) as sorting FROM {".DB_DESCEXAMP."} WHERE descrid=?";
 					$max_sorting = g::$DB->get_record_sql($sql, array($descriptorid));
 					$sorting = intval($max_sorting->sorting)+1;
-					g::$DB->insert_or_update_record(\block_exacomp\DB_DESCEXAMP, array("exampid"=>$item->id, "descrid"=>$descriptorid, "sorting"=>$sorting));
+					g::$DB->insert_or_update_record(DB_DESCEXAMP, array("exampid"=>$item->id, "descrid"=>$descriptorid, "sorting"=>$sorting));
 				}
 			}
 		}
@@ -1432,19 +1434,19 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		
 		$item->parentid = $parent;
 	
-		self::insert_or_update_item(\block_exacomp\DB_CATEGORIES, $item);
-		self::kompetenzraster_mark_item_used(\block_exacomp\DB_CATEGORIES, $item);
+		self::insert_or_update_item(DB_CATEGORIES, $item);
+		self::kompetenzraster_mark_item_used(DB_CATEGORIES, $item);
 		
 		// OLD:
 		/*
-		if ($dbItem = $DB->get_record(\block_exacomp\DB_EXAMPLES, array("sourceid"=>$item->source, 'sourceid'=>$item->sourceid))) {
+		if ($dbItem = $DB->get_record(DB_EXAMPLES, array("sourceid"=>$item->source, 'sourceid'=>$item->sourceid))) {
 			$item->id = $dbItem->id;
-			$DB->update_record(\block_exacomp\DB_EXAMPLES, $item);
-		} elseif ($item->source == \block_exacomp\IMPORT_SOURCE_SPECIFIC && $dbItem = $DB->get_record(\block_exacomp\DB_EXAMPLES, array("id"=>$item->sourceid))) {
+			$DB->update_record(DB_EXAMPLES, $item);
+		} elseif ($item->source == IMPORT_SOURCE_SPECIFIC && $dbItem = $DB->get_record(DB_EXAMPLES, array("id"=>$item->sourceid))) {
 			$item->id = $dbItem->id;
-			$DB->update_record(\block_exacomp\DB_EXAMPLES, $item);
+			$DB->update_record(DB_EXAMPLES, $item);
 		} else {
-			$item->id = $DB->insert_record(\block_exacomp\DB_EXAMPLES, $item);
+			$item->id = $DB->insert_record(DB_EXAMPLES, $item);
 		}
 		*/
 		
@@ -1476,37 +1478,37 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		// brauchen wir nicht mehr:
 		/*
 		//if specific import and descriptor already normal imported -> return
-		if(block_exacomp_data_importer::$import_source_type != \block_exacomp\IMPORT_SOURCE_DEFAULT) {
-			if($descriptorObj = $DB->get_record(\block_exacomp\DB_DESCRIPTORS, array("sourceid"=>$descriptor['id']->__toString(),"source"=>\block_exacomp\IMPORT_SOURCE_DEFAULT)))
+		if(data_importer::$import_source_type != IMPORT_SOURCE_DEFAULT) {
+			if($descriptorObj = $DB->get_record(DB_DESCRIPTORS, array("sourceid"=>$descriptor['id']->__toString(),"source"=>IMPORT_SOURCE_DEFAULT)))
 				return;
 		}
 	
 		//other way round: if normale import and descriptor already specific imported -> return
-		if(block_exacomp_data_importer::$import_source_type == \block_exacomp\IMPORT_SOURCE_DEFAULT){
-			if($descriptorObj = $DB->get_record(\block_exacomp\DB_DESCRIPTORS, array("sourceid"=>$descriptor['id']->__toString(), "source"=>\block_exacomp\IMPORT_SOURCE_SPECIFIC)))
+		if(data_importer::$import_source_type == IMPORT_SOURCE_DEFAULT){
+			if($descriptorObj = $DB->get_record(DB_DESCRIPTORS, array("sourceid"=>$descriptor['id']->__toString(), "source"=>IMPORT_SOURCE_SPECIFIC)))
 				return;
 		}
 		
 		*/
 		
 
-		self::insert_or_update_item(\block_exacomp\DB_DESCRIPTORS, $descriptor);
-		self::kompetenzraster_mark_item_used(\block_exacomp\DB_DESCRIPTORS, $descriptor);
+		self::insert_or_update_item(DB_DESCRIPTORS, $descriptor);
+		self::kompetenzraster_mark_item_used(DB_DESCRIPTORS, $descriptor);
 		
 		// if local descriptor, move to custom source
 		if (!$descriptor->source) {
-			g::$DB->insert_or_update_record(\block_exacomp\DB_DESCRIPTORS, array('source' => \block_exacomp\CUSTOM_CREATED_DESCRIPTOR), array("id"=>$descriptor->id));
+			g::$DB->insert_or_update_record(DB_DESCRIPTORS, array('source' => CUSTOM_CREATED_DESCRIPTOR), array("id"=>$descriptor->id));
 		}
 		
 		if ($xmlItem->examples) {
-			throw new block_exacomp\moodle_exception('oldxmlfile');
+			throw new moodle_exception('oldxmlfile');
 		}
 		
-		self::delete_mm_record_for_item(\block_exacomp\DB_DESCCAT, 'descrid', $descriptor->id);
+		self::delete_mm_record_for_item(DB_DESCCAT, 'descrid', $descriptor->id);
 		if ($xmlItem->categories) {
 			foreach ($xmlItem->categories->categoryid as $category) {
 				if ($categoryid = self::get_database_id($category)) {
-					g::$DB->insert_or_update_record(\block_exacomp\DB_DESCCAT, array("descrid"=>$descriptor->id, "catid"=>$categoryid));
+					g::$DB->insert_or_update_record(DB_DESCCAT, array("descrid"=>$descriptor->id, "catid"=>$categoryid));
 				}
 			}
 		}
@@ -1528,17 +1530,17 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		if ($xmlItem->subjectid) {
 			$crosssubject->subjectid = self::get_database_id($xmlItem->subjectid);
 		}
-		self::insert_or_update_item(\block_exacomp\DB_CROSSSUBJECTS, $crosssubject);
-		self::kompetenzraster_mark_item_used(\block_exacomp\DB_CROSSSUBJECTS, $crosssubject);
+		self::insert_or_update_item(DB_CROSSSUBJECTS, $crosssubject);
+		self::kompetenzraster_mark_item_used(DB_CROSSSUBJECTS, $crosssubject);
 
 		//crosssubject in DB
 		//insert descriptors
 		
-		self::delete_mm_record_for_item(\block_exacomp\DB_DESCCROSS, 'crosssubjid', $crosssubject->id);
+		self::delete_mm_record_for_item(DB_DESCCROSS, 'crosssubjid', $crosssubject->id);
 		if ($xmlItem->descriptors) {
 			foreach($xmlItem->descriptors->descriptorid as $descriptor) {
 				if ($descriptorid = self::get_database_id($descriptor)) {
-					g::$DB->insert_or_update_record(\block_exacomp\DB_DESCCROSS, array("crosssubjid"=>$crosssubject->id,"descrid"=>$descriptorid));
+					g::$DB->insert_or_update_record(DB_DESCCROSS, array("crosssubjid"=>$crosssubject->id,"descrid"=>$descriptorid));
 				}
 			}
 		}
@@ -1550,8 +1552,8 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		$taxonomy = self::parse_xml_item($xmlItem);
 		$taxonomy->parentid = $parent;
 	
-		self::insert_or_update_item(\block_exacomp\DB_TAXONOMIES, $taxonomy);
-		self::kompetenzraster_mark_item_used(\block_exacomp\DB_TAXONOMIES, $taxonomy);
+		self::insert_or_update_item(DB_TAXONOMIES, $taxonomy);
+		self::kompetenzraster_mark_item_used(DB_TAXONOMIES, $taxonomy);
 		
 		if ($xmlItem->children) {
 			foreach($xmlItem->children->taxonomy as $child) {
@@ -1566,15 +1568,15 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		$topic = self::parse_xml_item($xmlItem);
 		$topic->parentid = $parent;
 		
-		self::insert_or_update_item(\block_exacomp\DB_TOPICS, $topic);
-		self::kompetenzraster_mark_item_used(\block_exacomp\DB_TOPICS, $topic);
+		self::insert_or_update_item(DB_TOPICS, $topic);
+		self::kompetenzraster_mark_item_used(DB_TOPICS, $topic);
 		
-		self::delete_mm_record_for_item(\block_exacomp\DB_DESCTOPICS, 'topicid', $topic->id);
+		self::delete_mm_record_for_item(DB_DESCTOPICS, 'topicid', $topic->id);
 		if ($xmlItem->descriptors) {
 			$i=1;
 			foreach($xmlItem->descriptors->descriptorid as $descriptor) {
 				if ($descriptorid = self::get_database_id($descriptor)) {
-					g::$DB->insert_or_update_record(\block_exacomp\DB_DESCTOPICS, array("sorting"=>$i), array("topicid"=>$topic->id,"descrid"=>$descriptorid));
+					g::$DB->insert_or_update_record(DB_DESCTOPICS, array("sorting"=>$i), array("topicid"=>$topic->id,"descrid"=>$descriptorid));
 					$i++;
 				}
 			}
@@ -1595,8 +1597,8 @@ class block_exacomp_data_importer extends block_exacomp_data {
 			$subject->catid = self::get_database_id($xmlItem->categoryid);
 		}
 	
-		self::insert_or_update_item(\block_exacomp\DB_SUBJECTS, $subject);
-		self::kompetenzraster_mark_item_used(\block_exacomp\DB_SUBJECTS, $subject);
+		self::insert_or_update_item(DB_SUBJECTS, $subject);
+		self::kompetenzraster_mark_item_used(DB_SUBJECTS, $subject);
 
 		foreach ($xmlItem->topics->topic as $topic) {
 			$topic->subjid = $subject->id;
@@ -1605,12 +1607,12 @@ class block_exacomp_data_importer extends block_exacomp_data {
 
 		if ($subject->source == self::$import_source_local_id) {
 			// delete and reinsert if coming from same source
-			self::delete_mm_record_for_item(\block_exacomp\DB_SUBJECT_NIVEAU_MM, 'subjectid', $subject->id);
+			self::delete_mm_record_for_item(DB_SUBJECT_NIVEAU_MM, 'subjectid', $subject->id);
 		}
 
 		if ($xmlItem->niveaus) {
 			foreach ($xmlItem->niveaus->niveau as $niveau) {
-				g::$DB->insert_or_update_record(\block_exacomp\DB_SUBJECT_NIVEAU_MM,
+				g::$DB->insert_or_update_record(DB_SUBJECT_NIVEAU_MM,
 					simpleXMLElementToArray($niveau),
 					[
 						'subjectid' => $subject->id,
@@ -1624,8 +1626,8 @@ class block_exacomp_data_importer extends block_exacomp_data {
 	private static function insert_schooltype($xmlItem) {
 		$schooltype = self::parse_xml_item($xmlItem);
 
-		self::insert_or_update_item(\block_exacomp\DB_SCHOOLTYPES, $schooltype);
-		self::kompetenzraster_mark_item_used(\block_exacomp\DB_SCHOOLTYPES, $schooltype);
+		self::insert_or_update_item(DB_SCHOOLTYPES, $schooltype);
+		self::kompetenzraster_mark_item_used(DB_SCHOOLTYPES, $schooltype);
 
 		foreach($xmlItem->subjects->subject as $subject) {
 			$subject->stid = $schooltype->id;
@@ -1637,8 +1639,8 @@ class block_exacomp_data_importer extends block_exacomp_data {
 	private static function insert_edulevel($xmlItem) {
 		$edulevel = self::parse_xml_item($xmlItem);
 	
-		self::insert_or_update_item(\block_exacomp\DB_EDULEVELS, $edulevel);
-		self::kompetenzraster_mark_item_used(\block_exacomp\DB_EDULEVELS, $edulevel);
+		self::insert_or_update_item(DB_EDULEVELS, $edulevel);
+		self::kompetenzraster_mark_item_used(DB_EDULEVELS, $edulevel);
 		
 
 		foreach($xmlItem->schooltypes->schooltype as $schooltype) {
@@ -1652,8 +1654,8 @@ class block_exacomp_data_importer extends block_exacomp_data {
 	private static function insert_skill($xmlItem) {
 		$skill = self::parse_xml_item($xmlItem);
 		
-		self::insert_or_update_item(\block_exacomp\DB_SKILLS, $skill);
-		self::kompetenzraster_mark_item_used(\block_exacomp\DB_SKILLS, $skill);
+		self::insert_or_update_item(DB_SKILLS, $skill);
+		self::kompetenzraster_mark_item_used(DB_SKILLS, $skill);
 
 		return $skill;
 	}
@@ -1674,7 +1676,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		$item = (object)$item;
 
 		if (!isset($item->id)) {
-			throw new block_exacomp\moodle_exception('wrong xml format');
+			throw new moodle_exception('wrong xml format');
 		}
 		
 		// foreign source to local source
@@ -1701,20 +1703,20 @@ class block_exacomp_data_importer extends block_exacomp_data {
 
 	private static function get_database_id(SimpleXMLElement $element) {
 		$tableMapping = array(
-			'taxonomyid' => \block_exacomp\DB_TAXONOMIES,
-			'exampleid' => \block_exacomp\DB_EXAMPLES,
-			'descriptorid' => \block_exacomp\DB_DESCRIPTORS,
-			'categoryid' => \block_exacomp\DB_CATEGORIES,
-			'niveauid' => \block_exacomp\DB_NIVEAUS,
-			'niveau' => \block_exacomp\DB_NIVEAUS,
-			'skillid' => \block_exacomp\DB_SKILLS,
-			'subjectid' => \block_exacomp\DB_SUBJECTS
+			'taxonomyid' => DB_TAXONOMIES,
+			'exampleid' => DB_EXAMPLES,
+			'descriptorid' => DB_DESCRIPTORS,
+			'categoryid' => DB_CATEGORIES,
+			'niveauid' => DB_NIVEAUS,
+			'niveau' => DB_NIVEAUS,
+			'skillid' => DB_SKILLS,
+			'subjectid' => DB_SUBJECTS
 		);
 		
 		if (isset($tableMapping[$element->getName()])) {
 			$table = $tableMapping[$element->getName()];
 		} else {
-			throw new block_exacomp\moodle_exception('get_database_id: wrong element name: '.$element->getName().' '.print_r($element, true));
+			throw new moodle_exception('get_database_id: wrong element name: '.$element->getName().' '.print_r($element, true));
 		}
 		
 		$item = self::parse_xml_item($element);
@@ -1770,7 +1772,7 @@ class block_exacomp_data_importer extends block_exacomp_data {
 		}
 		
 		if (!isset(self::$kompetenzraster_unused_data_ids[$table])) {
-			throw new block_exacomp\moodle_exception("unused data for table $table not found");
+			throw new moodle_exception("unused data for table $table not found");
 		}
 		
 		// mark used
@@ -1842,7 +1844,7 @@ function simpleXMLElementToArray(SimpleXMLElement $xmlobject) {
 
 require_once $CFG->libdir . '/formslib.php';
 
-class block_exacomp_generalxml_upload_form extends moodleform {
+class generalxml_upload_form extends \moodleform {
 
 	function definition() {
 		$mform = & $this->_form;
@@ -1850,7 +1852,7 @@ class block_exacomp_generalxml_upload_form extends moodleform {
 		$importtype = optional_param('importtype', 'normal', PARAM_TEXT);
 
 		$this->_form->_attributes['action'] = $_SERVER['REQUEST_URI'];
-		$check = block_exacomp_data::has_data();
+		$check = data::has_data();
 		if($importtype == 'custom') {
 			$mform->addElement('header', 'comment', get_string("doimport_own", "block_exacomp"));
 		}

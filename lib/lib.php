@@ -6,7 +6,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once __DIR__.'/common.php';
 require_once __DIR__.'/classes.php';
-require_once __DIR__.'/block_exacomp.class.php';
+require_once __DIR__.'/../block_exacomp.php';
 
 if (block_exacomp_moodle_badges_enabled()) {
 	require_once($CFG->libdir . '/badgeslib.php');
@@ -1566,7 +1566,7 @@ function block_exacomp_build_navigation_tabs_settings($courseid){
 	return $settings_subtree;
 }
 function block_exacomp_build_navigation_tabs_admin_settings($courseid){
-	$checkImport = block_exacomp_data::has_data();
+	$checkImport = block_exacomp\data::has_data();
 
 	$settings_subtree = array();
 
@@ -1628,7 +1628,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 	else
 		$checkConfig = block_exacomp_is_configured();
 
-	$has_data = \block_exacomp_data::has_data();
+	$has_data = \block_exacomp\data::has_data();
 
 	$rows = array();
 
@@ -2536,7 +2536,7 @@ function block_exacomp_set_coursetopics($courseid, $topicids) {
 
 	block_exacomp_update_example_visibilities($courseid, $examples);
 
-	// TODO: maybe move this whole part to block_exacomp_data::normalize_database() or better a new normalize_course($courseid);
+	// TODO: maybe move this whole part to block_exacomp\data::normalize_database() or better a new normalize_course($courseid);
 
 	//delete unconnected examples
 	//add blocking events to examples which are not deleted

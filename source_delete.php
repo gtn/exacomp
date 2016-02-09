@@ -26,7 +26,7 @@
 * ************************************************************* */
 
 require_once __DIR__."/inc.php";
-require_once __DIR__."/lib/xmllib.php";
+require_once __DIR__."/classes/data.php";
 
 $courseid = required_param('courseid', PARAM_INT);
 
@@ -130,7 +130,7 @@ if ($action == 'delete_selected') {
 		$DB->delete_records_list(\block_exacomp\DB_SUBJECTS, 'id', $delete_subjects);
 	}
 	
-	block_exacomp_data::normalize_database();
+	block_exacomp\data::normalize_database();
 	
 	redirect($CFG->wwwroot.'/blocks/exacomp/import.php?courseid='.$courseid);
 	exit;

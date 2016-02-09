@@ -1,7 +1,7 @@
 <?php
 require_once '/Applications/MAMP/htdocs/moodle27/blocks/exacomp/inc.php';
 require_once('/Applications/MAMP/htdocs/moodle27/blocks/exacomp/lib/lib.php');
-require_once('/Applications/MAMP/htdocs/moodle27/blocks/exacomp/lib/xmllib.php');
+require_once('/Applications/MAMP/htdocs/moodle27/blocks/exacomp/classes/data.php');
 
 require_once('/Applications/MAMP/htdocs/simpletest/autorun.php');
 
@@ -13,7 +13,7 @@ class TestOfLib extends UnitTestCase {
 		block_exacomp_truncate_all_data();
 		// 2. import XML
 		$data = file_get_contents("exacomp_data.xml");
-		block_exacomp_data_importer::do_import($data);
+		block_exacomp\data_importer::do_import($data);
 		// 3. specify course id of the Moodle course where the block is used
 		$this->courseid = 2;
 		

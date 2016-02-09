@@ -3,7 +3,7 @@
 defined('MOODLE_INTERNAL') || die;
 
 require_once __DIR__.'/lib/exabis_special_id_generator.php';
-require_once __DIR__.'/lib/xmllib.php';
+require_once __DIR__.'/classes/data.php';
 require_once __DIR__.'/lib/lib.php';
 
 if (!class_exists('block_exacomp_admin_setting_source')) {
@@ -53,7 +53,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 }
 
 // generate id if not set
-block_exacomp_data::generate_my_source();
+block_exacomp\data::generate_my_source();
 
 $settings->add(new admin_setting_configtext('exacomp/xmlserverurl', get_string('settings_xmlserverurl', 'block_exacomp'),
 		get_string('settings_configxmlserverurl', 'block_exacomp'), "", PARAM_URL));

@@ -29,7 +29,7 @@
 require_once __DIR__."/inc.php";
 require_once __DIR__.'/lib/lib.php';
 require_once $CFG->dirroot.'/lib/datalib.php';
-require_once __DIR__.'/lib/xmllib.php';
+require_once __DIR__.'/classes/data.php';
 
 global $DB, $OUTPUT, $PAGE, $COURSE, $CFG;
 
@@ -48,7 +48,7 @@ require_login ( $course );
 $context = context_system::instance ();
 block_exacomp_require_admin($context);
 
-$check = block_exacomp_data::has_data();
+$check = block_exacomp\data::has_data();
 if (! $check) {
 	redirect ( new moodle_url ( '/blocks/exacomp/import.php', array (
 			'courseid' => $courseid 

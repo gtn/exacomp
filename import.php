@@ -26,7 +26,7 @@
 * ************************************************************* */
 
 require_once __DIR__."/inc.php";
-require_once __DIR__."/lib/xmllib.php";
+require_once __DIR__."/classes/data.php";
 
 $de = false;
 $lang = current_language();
@@ -68,22 +68,22 @@ $importoption = optional_param('importoption', "", PARAM_ALPHA);
 $importtype = optional_param('importtype', '', PARAM_TEXT);
 $action = optional_param('action', '', PARAM_TEXT);
 
-$mform = new block_exacomp_generalxml_upload_form();
+$mform = new block_exacomp\generalxml_upload_form();
 
 $importSuccess = false;
 $importException = null;
 
 try {
 	if (($importtype == 'custom') && $data = $mform->get_file_content('file')) {
-		$importSuccess = block_exacomp_data_importer::do_import_string($data, \block_exacomp\IMPORT_SOURCE_SPECIFIC);
+		$importSuccess = block_exacomp\data_importer::do_import_string($data, \block_exacomp\IMPORT_SOURCE_SPECIFIC);
 	} elseif ($isAdmin && ($importtype == 'normal') && $data = $mform->get_file_content('file')) {
-		$importSuccess = block_exacomp_data_importer::do_import_string($data, \block_exacomp\IMPORT_SOURCE_DEFAULT);
+		$importSuccess = block_exacomp\data_importer::do_import_string($data, \block_exacomp\IMPORT_SOURCE_DEFAULT);
 	} elseif ($isAdmin && ($importtype == 'demo')) {
 		//do demo import
 		
 		// TODO: catch exception
 		$file = optional_param('file', DEMO_XML_PATH, PARAM_TEXT);
-		if ($importSuccess = block_exacomp_data_importer::do_import_url($file, \block_exacomp\IMPORT_SOURCE_DEFAULT)) {
+		if ($importSuccess = block_exacomp\data_importer::do_import_url($file, \block_exacomp\IMPORT_SOURCE_DEFAULT)) {
 			block_exacomp_settstamp();
 		}
 	}
@@ -103,7 +103,7 @@ $pagenode->make_active();
 
 $delete = false;
 if(($isAdmin || block_exacomp_check_customupload()) && $action == 'delete') {
-		block_exacomp_data::delete_source(required_param('source', PARAM_INT));
+		block_exacomp\data::delete_source(required_param('source', PARAM_INT));
 		$delete = true;
 }
 
@@ -158,21 +158,21 @@ if($isAdmin || block_exacomp_check_customupload()) {
 		}
 	} else {
 
-		if (block_exacomp_data::has_old_data(\block_exacomp\IMPORT_SOURCE_DEFAULT)) {
+		if (block_exacomp\data::has_old_data(\block_exacomp\IMPORT_SOURCE_DEFAULT)) {
 			if (!$isAdmin) {
 				print_error('pls contact your admin');
 			}
 			
 			echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'normal')), 'For the latest exacomp version you need to reimport global educational standards'));
 		}
-		elseif (block_exacomp_data::has_old_data(\block_exacomp\IMPORT_SOURCE_SPECIFIC)) {
+		elseif (block_exacomp\data::has_old_data(\block_exacomp\IMPORT_SOURCE_SPECIFIC)) {
 			if (!$isAdmin) {
 				print_error('pls contact your admin');
 			}
 		
 			echo $OUTPUT->box(html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid, 'importtype'=>'custom')), 'For the latest exacomp version you need to reimport school/company specific standards'));
 		} else {
-			$hasData = block_exacomp_data::has_data();
+			$hasData = block_exacomp\data::has_data();
 			
 			if($delete)
 				echo $OUTPUT->box(get_string("delete_success", "block_exacomp"));
