@@ -3815,7 +3815,7 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 					
 					$desc_content .= $this->print_example_stacked_bar($return->data, $descriptor->id);
 					
-					$niveaus[] = '"'.((block_exacomp_is_altversion() && $niveau)?$niveau->title:$descriptor->title).'"';
+					$niveaus[] = ((block_exacomp_is_altversion() && $niveau)?$niveau->title:$descriptor->title);
 					$student_eval[] = (isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:0;
 					$teacher_eval[] = (isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:0;
 					
@@ -3824,7 +3824,7 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 				$div_content = "";
 				if(count($niveaus)>2 && count($niveaus)<9){
 					$radar_graph = html_writer::empty_tag('canvas', array('id'=>'canvas'.$topic->id, 'height'=>'450', 'width'=>'450'));
-					$radar_graph .=  $this->print_radar_graph_topic(implode(",", $niveaus),implode(",", $teacher_eval),implode(",", $student_eval),'canvas'.$topic->id, $scheme);
+					$radar_graph .=  $this->print_radar_graph_topic($niveaus, $teacher_eval, $student_eval,'canvas'.$topic->id, $scheme);
 					$div_content = html_writer::div($radar_graph, 'radar_graph', array('style'=>'width:30%'));
 					$div_content .= $this->print_radar_graph_legend();
 				}
@@ -3844,7 +3844,7 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 
 		return '<script>
 		var radarChartData = {
-			labels: ['.$labels.'],
+			labels: '.json_encode($labels).',
 			datasets: [
 				{
 					label: "Lehrerbeurteilung",
@@ -3854,7 +3854,7 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 					pointStrokeColor: "#fff",
 					pointHighlightFill: "#fff",
 					pointHighlightStroke: "rgba(151,187,205,1)",
-					data: ['.$data1.']
+					data: '.json_encode($data1).'
 				},
 				{
 					label: "Schülerbeurteilung",
@@ -3864,7 +3864,7 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 					pointStrokeColor: "#fff",
 					pointHighlightFill: "#fff",
 					pointHighlightStroke: "rgba(151,187,205,1)",
-					data: ['.$data2.']
+					data: '.json_encode($data2).'
 				}
 			]
 		};
