@@ -157,7 +157,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
 		$html_header = $output->print_overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
 
 		// $html .= "&nbsp;<br />";
-		$html_tables[] = $output->print_competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $scheme, (block_exacomp_is_altversion() && $selectedNiveau->id != block_exacomp\SHOW_ALL_NIVEAUS), false, 0, $statistic);
+		$html_tables[] = $output->print_competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $scheme, $selectedNiveau->id != block_exacomp\SHOW_ALL_NIVEAUS, false, 0, $statistic);
 	}
 
 	block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html_tables);
@@ -209,7 +209,10 @@ if($course_settings->nostudents != 1)
 	echo $output->print_overview_legend($isTeacher);
 if($course_settings->nostudents != 1 && $studentid)
 	echo $output->print_student_evaluation($showevaluation, $isTeacher,$selectedNiveau->id,$ng_subjectid, $topicid, $studentid);
-echo $output->print_competence_overview($competence_tree, $courseid, $students, $showevaluation, $isTeacher ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $scheme, (block_exacomp_is_altversion() && $selectedNiveau->id != block_exacomp\SHOW_ALL_NIVEAUS), false, 0, $statistic);
+
+echo $output->print_competence_overview($competence_tree, $courseid, $students, $showevaluation,
+		$isTeacher ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $scheme,
+		($selectedNiveau->id != block_exacomp\SHOW_ALL_NIVEAUS), false, 0, $statistic);
 echo '</div>';
 
 echo html_writer::end_tag("div");

@@ -32,7 +32,7 @@ global $DB, $OUTPUT, $PAGE, $USER;
 $courseid = required_param('courseid', PARAM_INT);
 $studentid = optional_param('studentid', 0, PARAM_INT);
 
-$showevaluation = (block_exacomp_is_altversion()) ? true : optional_param("showevaluation", false, PARAM_BOOL);
+$showevaluation = optional_param("showevaluation", true, PARAM_BOOL);
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_simplehtml', $courseid);
 }

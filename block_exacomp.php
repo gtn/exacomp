@@ -52,7 +52,9 @@ class block_exacomp extends block_list {
 		else
 			$checkConfig = block_exacomp_is_configured();
 		
-		$has_data = \block_exacomp\data::has_data();
+		// TODO: not working!!
+		// $has_data = block_exacomp\data::has_data();
+		$has_data = true;
 
 		$courseSettings = block_exacomp_get_settings_by_course($courseid);
 		// this is an old setting

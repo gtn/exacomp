@@ -2630,6 +2630,7 @@ function block_exacomp_update_example_visibilities($courseid, $examples){
 					$cross_subject_examples[] = $example->id;
 
 			if($descriptor->parentid == 0){
+				//if($descriptor_topic_mm) {
 				$descriptor_topic_mm = $DB->get_record(\block_exacomp\DB_DESCTOPICS, array('descrid'=>$descriptor->id));
 
 				$descriptor->topicid = $descriptor_topic_mm->topicid;
