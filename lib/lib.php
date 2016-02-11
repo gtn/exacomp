@@ -5385,9 +5385,11 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 			$schedule_examples = $DB->get_records_sql($sql, array($courseid, $child->id,$student->id));
 
 			foreach($schedule_examples as $sched){
-				$example = $totalArray[$sched->exampid];
-				if(!$example->hidden && !array_key_exists($example->id, $inWorkArray))
-					$inWorkArray[$example->id] = $example;
+				if(isset($totalArray[$sched->exampid])){
+					$example = $totalArray[$sched->exampid];
+					if(!$example->hidden && !array_key_exists($example->id, $inWorkArray))
+						$inWorkArray[$example->id] = $example;
+				}
 			}
 
 		}
