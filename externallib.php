@@ -3375,7 +3375,7 @@ class block_exacomp_external extends external_api {
 			
 		static::require_can_access_course_user($courseid, $creatorid);
 		static::require_can_access_course_user($courseid, $userid);
-		static::require_can_access_example($exampleid, $courseid);
+		//static::require_can_access_example($exampleid, $courseid);
 
 		$example = $DB->get_record(\block_exacomp\DB_EXAMPLES, array('id'=>$exampleid));
 
