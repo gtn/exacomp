@@ -3375,7 +3375,7 @@ class block_exacomp_external extends external_api {
 			
 		static::require_can_access_course_user($courseid, $creatorid);
 		static::require_can_access_course_user($courseid, $userid);
-		//static::require_can_access_example($exampleid, $courseid);
+		static::require_can_access_example($exampleid, $courseid);
 
 		$example = $DB->get_record(\block_exacomp\DB_EXAMPLES, array('id'=>$exampleid));
 
@@ -6143,25 +6143,13 @@ class block_exacomp_external extends external_api {
 			$courses = static::get_courses(g::$USER->id);
 			
 			foreach($courses as $course){
-				$topics = static::dakora_get_topics_by_course($course["courseid"]);
-				foreach($topics as $topic){
-					$descriptors = static::dakora_get_descriptors($course["courseid"], $topic->topicid, g::$USER->id, 0);
-					foreach($descriptors as $descriptor){
-						$childsandexamples = static::dakora_get_descriptor_children($course["courseid"], $descriptor->descriptorid, g::$USER->id, 0);
-						foreach ($childsandexamples->examples as $example){
-							if($example->exampleid == $exampleid)
-								return $example;
-						}
-						
-						foreach ($childsandexamples->children as $child){
-							$childchilds = static::dakora_get_descriptor_children($course["courseid"], $child->childid, g::$USER->id, 0);
-							foreach ($childchilds->examples as $examples){
-								if($example->exampleid == $exampleid)
-									return $example;
-							}
-						}
-					}
-				}
+				$example = block_exacomp_check_student_example_permission($course['courseid'], $exampleid, g::$USER->id);
+				if($example)
+					return $example;
+					
+				$example = block_exacomp_check_student_example_permission($course['courseid'], $exampleid, 0);
+				if($example)
+					return $example;
 			}
 
 			return null;
