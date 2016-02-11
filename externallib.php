@@ -5017,13 +5017,13 @@ class block_exacomp_external extends external_api {
 
 		$descriptor_return->children = $childsandexamples->children;
 
-		$descriptor_return->hasmaterial = true;
-		if(empty($childsandexamples->examples))
-			$descriptor_return->hasmaterial = false;
-
 		$descriptor_return->examplestotal = $childsandexamples->examplestotal;
 		$descriptor_return->examplesvisible = $childsandexamples->examplesvisible;
-		$descriptor_return->examplesinwork = $childsandexamples->examplesinwork;	
+		$descriptor_return->examplesinwork = $childsandexamples->examplesinwork;
+
+		$descriptor_return->hasmaterial = true;
+		if(empty($childsandexamples->examples))
+			$descriptor_return->hasmaterial = false;		
 
 		return $descriptor_return;
 	}
@@ -5765,14 +5765,14 @@ class block_exacomp_external extends external_api {
 					}
 				}
 
-				if($show_all){
-					$child_return->hasmaterial = ($child->examples)?true:false;
-				}
-
 				$result = static::get_descriptor_example_statistic($courseid, $userid, $child->id, $forall, $crosssubjid);
 				$child_return->examplestotal = $result->total;
 				$child_return->examplesvisible = $result->visible;
 				$child_return->examplesinwork = $result->inwork;
+				
+				$child_return->hasmaterial = false;
+				if($child_return->examplestotal > 0)
+					$child_return->hasmaterial = true;
 
 				if(!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, $non_visibilities_student))||$forall)){
 					if($crosssubjid == 0 || in_array($child->id, $crossdesc) || in_array($descriptorid, $crossdesc))
@@ -6050,7 +6050,7 @@ class block_exacomp_external extends external_api {
 		
 		$return->total = $totalHidden/ $number_students;
 		$return->visible = $total / $number_students;
-		$return->inwork = $inWork / $number_students;
+		$return->inwork = ($inWork>0)?$inWork / $number_students:0;
 		return $return;
 	}
 

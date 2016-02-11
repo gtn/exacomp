@@ -5330,12 +5330,15 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 	else
 		$students = array($DB->get_record('user', array('id'=>$studentid)));
 
+	$course_settings = block_exacomp_get_settings_by_course($courseid);
 	foreach($children as $child){
 		if($crosssubjid == 0 || array_key_exists($child->id, $crosssubjdescriptos)){
-			$child->examples = $DB->get_records(\block_exacomp\DB_DESCEXAMP,array('descrid' => $child->id));
+			
+			$child = block_exacomp_get_examples_for_descriptor($child, array(SHOW_ALL_TAXONOMIES), ($course_settings->show_all_examples != 0), $courseid, true, true );
+
 			$child->visible =  $DB->get_field(\block_exacomp\DB_DESCVISIBILITY, 'visible', array('courseid'=>$courseid, 'descrid'=>$child->id, 'studentid'=>0));
 			foreach($child->examples as $example)
-				$example->visible = $DB->get_field(\block_exacomp\DB_EXAMPVISIBILITY, 'visible', array('courseid'=>$courseid, 'exampleid'=>$example->exampid, 'studentid'=>0));
+				$example->visible = $DB->get_field(\block_exacomp\DB_EXAMPVISIBILITY, 'visible', array('courseid'=>$courseid, 'exampleid'=>$example->id, 'studentid'=>0));
 		}
 	}
 
@@ -5362,12 +5365,12 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 
 			foreach($child->examples as $example){
 				$visible_example = block_exacomp_is_example_visible($courseid, $example, $student->id);
-				if($visible_example && !array_key_exists( $example->exampid, $totalArray)){
-					$totalArray[$example->exampid] = $example;
+				if($visible_example && !array_key_exists( $example->id, $totalArray)){
+					$totalArray[$example->id] = $example;
 					$example->hidden = false;
 				}else{
-					if (!array_key_exists( $example->exampid, $totalArray) && !array_key_exists( $example->exampid, $totalHiddenArray))
-						$totalHiddenArray[$example->exampid] = $example;
+					if (!array_key_exists( $example->id, $totalArray) && !array_key_exists( $example->id, $totalHiddenArray))
+						$totalHiddenArray[$example->id] = $example;
 					$example->hidden = true;
 				}
 			}
@@ -5383,19 +5386,19 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 
 			foreach($schedule_examples as $sched){
 				$example = $totalArray[$sched->exampid];
-				if(!$example->hidden && !array_key_exists($example->exampid, $inWorkArray))
-					$inWorkArray[$example->exampid] = $example;
+				if(!$example->hidden && !array_key_exists($example->id, $inWorkArray))
+					$inWorkArray[$example->id] = $example;
 			}
 
 		}
 
 		foreach($totalArray as $example)
-				$example_where_string .= $example->exampid.",";
+				$example_where_string .= $example->id.",";
 
 		$example_where_string = substr($example_where_string, 0, strlen($example_where_string)-1);
 		$total += count ($totalArray);
 		$totalHidden = count($totalHiddenArray) + $total;
-		$inWork += count ($inWorkArray);
+		$inWork += ($total == 0)?0:count ($inWorkArray);
 
 		$notInWork = $total - $inWork;
 		$notEvaluated = $total;
