@@ -4921,6 +4921,9 @@ function block_exacomp_get_descriptor_numbering($descriptor){
 
 		$numbering = block_exacomp_get_topic_numbering($topicid);
 
+		if(empty($numbering))
+			return "";
+
 		if($descriptor->parentid == 0){
 			$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
 			if ($niveau)
@@ -4949,15 +4952,13 @@ function block_exacomp_get_topic_numbering($topic){
 	} else {
 	   $topic = block_exacomp_get_topic_by_id($topic);
 	}
+	$numbering = "";
 	if(block_exacomp_is_numbering_enabled()){
-		$numbering = block_exacomp_get_subject_by_id($topic->subjid)->titleshort.'.';
-
-		//topic
-		$numbering .= $topic->numb.'.';
-
-		return $numbering;
+		$s = block_exacomp_get_subject_by_id($topic->subjid);
+		if(!empty($s->titleshort) && !empty($topic->numb))
+			$numbering = $s->titleshort.'.'.$topic->numb.'.';
 	}
-	return "";
+	return $numbering;
 }
 function block_exacomp_get_cross_subjects_drafts_sorted_by_subjects(){
 	global $DB;

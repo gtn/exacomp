@@ -694,7 +694,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$row->cells[] = $cell;
 		}
 
-		if(block_exacomp_is_altversion()){
+		if(block_exacomp_is_numbering_enabled()){
 			$cell = new html_table_cell();
 			$cell->text = html_writer::span(get_string('progress', 'block_exacomp'), 'exabis_comp_top_name')
 			. html_writer::div($cat?$cat->title:'', 'exabis_comp_top_value');
