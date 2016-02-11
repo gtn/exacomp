@@ -3329,8 +3329,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			foreach($modules as $module) {
 				$moduleCell = new html_table_cell();
 				$moduleCell->attributes['module-type='] = $module->modname;
-				if(!block_exacomp_is_altversion())
-				$moduleCell->text = html_writer::checkbox('topicdata[' . $module->id . '][' . $topic->id . ']', "", (in_array($topic->id, $module->topics))?true:false,'',array('class' => 'topiccheckbox'));
+				if(block_exacomp_is_topicgrading_enabled())
+					$moduleCell->text = html_writer::checkbox('topicdata[' . $module->id . '][' . $topic->id . ']', "", (in_array($topic->id, $module->topics))?true:false,'',array('class' => 'topiccheckbox'));
 				$topicRow->cells[] = $moduleCell;
 			}
 

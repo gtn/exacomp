@@ -72,8 +72,4 @@ class api {
 
 		return true;
 	}
-
-	static function is_altversion() {
-		return block_exacomp_is_altversion();
-	}
 }
