@@ -4669,15 +4669,20 @@ var dataset = dataset.map(function (group) {
 	}
 	
 	private function print_competence_for_list_tree($descriptor, $isTeacher, $editmode, $show_examples) {
+		
 		$html_tree = html_writer::start_tag("li", array('class'=>($descriptor->associated == 1)?"associated":""));
 		if($isTeacher && $editmode==1)
 			$html_tree .= html_writer::checkbox("descriptor[]", $descriptor->id, ($descriptor->direct_associated==1)?true:false);
 		
 		$html_tree .= block_exacomp_get_descriptor_numbering($descriptor).' '.$descriptor->title;
+		
+		$ul = false;
+		if($show_examples && $descriptor->direct_associated==1 || !empty($descriptor->children)){
+			$html_tree .= html_writer::start_tag('ul');
+			$ul = true;
+		}
 			
-		if($show_examples){
-			if(!empty($descriptor->examples))
-				$html_tree .= html_writer::start_tag("ul");
+		if($show_examples && $descriptor->direct_associated == 1){
 				
 			foreach($descriptor->examples as $example) {
 				if(!isset($example->associated)) $example->associated = 0;
@@ -4701,23 +4706,21 @@ var dataset = dataset.map(function (group) {
 					$html_tree .= html_writer::tag("li", $example->title . $exampleIcons, array('class'=>($example->associated == 1)?"associated":""));
 				}
 			}
-				
-			if(!empty($descriptor->examples))
-				$html_tree .= html_writer::end_tag("ul");
 		}
 		if(!empty($descriptor->children)) {
-			$html_tree .= html_writer::start_tag("ul");
-			
 			foreach($descriptor->children as $child)
 				if($child->associated == 1 || ($isTeacher && $editmode==1))
 					$html_tree .= $this->print_competence_for_list_tree($child, $isTeacher, $editmode, $show_examples);
-			
-			$html_tree .= html_writer::end_tag("ul");
 		}
+		
+		if($ul)
+			$html_tree .= html_writer::end_tag('ul');
+			
 		$html_tree .= html_writer::end_tag("li");
 		
 		return $html_tree;
 	}
+	
 	function print_statistic_table($courseid, $students, $item, $descriptor=true, $scheme=1){
 		$global_scheme = \block_exacomp\global_config::get_scheme_id();
 		$global_scheme_values = \block_exacomp\global_config::get_scheme_items($scheme);
