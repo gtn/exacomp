@@ -905,6 +905,10 @@ function block_exacomp_is_topicgrading_enabled() {
 function block_exacomp_is_numbering_enabled() {
 	return get_config('exacomp', 'usenumbering');
 }
+function block_exacomp_is_niveautitle_for_profile_enabled() {
+	return get_config('exacomp', 'useniveautitleinprofile');
+}
+
 /**
  * Returns a list of descriptors from a particular course
  *

@@ -139,16 +139,13 @@ foreach($user_courses as $course) {
 	if(isset($profile_settings->exacomp[$course->id]))
 		echo $output->print_competence_profile_course($course,$student);
 }
-
-if(!block_exacomp_is_altversion()){
-	if($profile_settings->showallcomps == 1){
-		if(empty($user_courses))
-			$overview_courses = $possible_courses;
-		else 	
-			$overview_courses = $user_courses;
-			
-		echo $output->print_competence_profile_course_all($overview_courses, $student);
-	}
+if ($profile_settings->showallcomps == 1) {
+	if (empty ( $user_courses ))
+		$overview_courses = $possible_courses;
+	else
+		$overview_courses = $user_courses;
+	
+	echo $output->print_competence_profile_course_all ( $overview_courses, $student );
 }
 if($profile_settings->useexaport){
 	echo $output->print_competence_profile_exaport($profile_settings, $student, $items);

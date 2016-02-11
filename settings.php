@@ -102,3 +102,6 @@ $settings->add(new admin_setting_configcheckbox('exacomp/usetopicgrading', get_s
 
 $settings->add(new admin_setting_configcheckbox('exacomp/usenumbering', get_string('usenumbering', 'block_exacomp'),
 		'' /* \block_exacomp\trans('en:todo') */, 1));
+
+$settings->add(new admin_setting_configcheckbox('exacomp/useniveautitleinprofile', get_string('useniveautitleinprofile', 'block_exacomp'),
+		'' /* \block_exacomp\trans('en:todo') */, 1));

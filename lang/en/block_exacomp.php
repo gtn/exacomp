@@ -148,6 +148,7 @@ $string['usedetailpage'] = 'Use detailed overview of competencies';
 $string['useprofoundness'] = 'Use basic and extended competencies';
 $string['usetopicgrading'] = 'Enable topic gradings';
 $string['usenumbering'] = 'Enable numbering for topics and competencies';
+$string['useniveautitleinprofile'] = 'Use niveau title in competence profile';
 $string['usenostudents'] = 'use without students';
 $string['profoundness_0'] = 'not reached';
 $string['profoundness_1'] = 'partially gained';
