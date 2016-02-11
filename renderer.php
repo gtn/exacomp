@@ -1522,7 +1522,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		global $additional_grading;
 		$topicparam = optional_param('topicid', 0, PARAM_INT);
 
-		if (block_exacomp_is_topicgrading_enabled() || count($topics) > 1 || $topicparam == block_exacomp\SHOW_ALL_TOPICS) {
+		if(true) {
+		//if (block_exacomp_is_topicgrading_enabled() || count($topics) > 1 || $topicparam == block_exacomp\SHOW_ALL_TOPICS) {
 			// display topic row
 			$display_topic_header_row = true;
 			$child_level = $level+1;

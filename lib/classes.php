@@ -619,6 +619,7 @@ class topic extends db_record {
 	const TABLE = DB_TOPICS;
 	const SUBS = 'descriptors';
 
+	// TODO: why not using lib.php block_exacomp_get_topic_numbering??
 	function get_numbering() {
 		if (!isset($this->subject)) {
 			echo 'no subject!';
@@ -654,6 +655,7 @@ class descriptor extends db_record {
 		}
 	}
 
+	// TODO: why not using lib.php block_exacomp_get_descriptor_numbering ??
 	function get_numbering() {
 		global $DB;
 		$topic = $this->topic;
