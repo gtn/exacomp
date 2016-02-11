@@ -28,7 +28,15 @@ require_once __DIR__."/classes/data.php";
 use block_exacomp\globals as g;
 
 class block_exacomp_renderer extends plugin_renderer_base {
-	
+
+	var $show_print_button = false;
+	var $extra_button_html = '';
+
+	public function header_v2($page_identifier="") {
+		// g::$PAGE->show_tabtree
+		return $this->header(block_exacomp_get_context_from_courseid(g::$COURSE->id), g::$COURSE->id, $page_identifier);
+	}
+
 	public function header($context=null, $courseid=0, $page_identifier="", $tabtree=true) {
 		global $PAGE;
 		
@@ -66,7 +74,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 
 		return
-			parent::header().$extras.(($tabtree && $context)?parent::tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier):'').
+			parent::header().
+			$extras.
+			(($tabtree && $context)?parent::tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier):'').
 			$this->print_wrapperdivstart();
 	}
 	
@@ -128,10 +138,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$content .= html_writer::end_tag('div');
 			$content .= html_writer::end_tag('form');
 
-			$print_content = html_writer::link('javascript:window.print()', 
+			$print_content = html_writer::link('javascript:window.print()',
 			html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/view_print.png'), 'alt'=>'print')), array('class'=>'print'));
 			$content .= html_writer::div(html_writer::tag('form', $print_content), 'competence_profile_printbox');
-	
+
 			/*$content .= html_writer::start_tag('div', array('align'=>"right"));
 			$content .= html_writer::start_tag('a', array('href' => new moodle_url('/blocks/exacomp/learningagenda.php?courseid='.$COURSE->id.'&studentid='.$studentid.'&print=1&action='.$action)));
 			$content .= html_writer::empty_tag('img', array('src'=>$CFG->wwwroot . '/blocks/exacomp/pix/view_print.png', 'alt'=>'print'));
@@ -432,15 +442,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	/**
 	 * Prints 2 select inputs for subjects and topics
 	 */
-	public function print_overview_dropdowns($schooltypetree, $selectedSubject, $selectedTopic, $students, $selectedStudent = 0, $isTeacher = false) {
+	public function print_overview_dropdowns($type, $students, $selectedStudent = 0, $isTeacher = false) {
 		global $COURSE, $USER, $NG_PAGE;
 
 		$content = "";
 		$right_content = "";
-		
-		if (!$this->is_edit_mode()) {
-			$right_content .= html_writer::empty_tag('input', array('type'=>'button', 'id'=>'print', 'value'=>block_exacomp\get_string('print'), 'onclick' => "window.open(location.href+'&print=1');"));
-		}
 		
 		if($isTeacher){
 			if ($this->is_edit_mode()) {
@@ -448,9 +454,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				// $content .= html_writer::empty_tag('input', array('type'=>'text', 'name'=>'exacomp_competence_grid_select_student', 'value'=>$selectedStudent));
 				$content .= '<h3>'.\block_exacomp\trans(['de:Sie befinden sich im Bearbeiten Modus', 'en:Editing mode is turned on']).'</h3>';
 			} else {
-				$content .= html_writer::empty_tag("br");
+				$content .= '<div style="padding-bottom: 15px;">';
 				$content .= get_string("choosestudent", "block_exacomp");
 				$content .= block_exacomp_studentselector($students,$selectedStudent,$NG_PAGE->url, BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
+				$content .= '</div>';
 			}
 
 			if(!$this->is_edit_mode() && $selectedStudent != BLOCK_EXACOMP_SHOW_STATISTIC) {
@@ -481,8 +488,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				
 			}
 		}
-		$content .= html_writer::div($right_content, 'edit_buttons_float_right');
-		
+
+		if ($this->is_edit_mode()) {
+			$print = false;
+		} else {
+			if ($type == 'assign_competencies') {
+				$print = "window.open(location.href+'&print=1');";
+			} else {
+				$print = true;
+			}
+		}
+		$content = $this->print_button_box($print, $right_content).$content;
+
 		return $content;
 	}
 	
@@ -737,8 +754,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		return get_string('reports','block_exacomp') . ": " .
 			html_writer::select($options, "exacomp_competence_grid_report", optional_param("report", BLOCK_EXACOMP_REPORT1, PARAM_INT), true, array("data-url"=>$url)).
-			$this->print_profile_print_button();
-		 
+			$this->print_button_box(true, '');
 	}
 	public function print_competence_overview_LIS_student_topics($subs, &$row, &$columns, &$column_count, $scheme, $profoundness = false){
 		global $USER, $COURSE;
@@ -1258,7 +1274,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$studentsColspan = $showevaluation ? 2 : 1;
 		if($additional_grading && ($showevaluation || $role = \block_exacomp\ROLE_TEACHER)) $studentsColspan++;
 
-		$table->attributes['class'] = 'exabis_comp_comp rg2 exabis-tooltip';
+		$table->attributes['class'] = 'exabis_comp_comp rg2 exabis-tooltip'; // .($singletopic?' rg2-always-open-0':'');
 		if(block_exacomp_exaportexists())
 			$eportfolioitems = block_exacomp_get_eportfolioitem_association($students);
 		else
@@ -1365,7 +1381,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			//for every topic
 			$data = (object)array(
 					'subject' => $subject,
-					'rg2_level' => ($singletopic) ? -1 : 0,
+					'rg2_level' => 0, // $singletopic ? -1 : 0,
 					'courseid' => $courseid,
 					'showevaluation' => $showevaluation,
 					'role' => $role,
@@ -1525,7 +1541,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
 			// $hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) );
 			
-			$this_rg2_class = $data->rg2_level >= 0 ? 'rg2 rg2-level-'.$data->rg2_level : '';
+			$this_rg2_class = $data->rg2_level >= 0 ? 'rg2-level-'.$data->rg2_level : '';
 
 			$topicRow = new html_table_row();
 			$topicRow->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rg2_class . ' highlight';
@@ -1636,8 +1652,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			}
 
 			$child_data = $data;
-			// $child_data = clone $data;
-			// $child_data->rg2_level++;
+			$child_data = clone $data;
+			$child_data->rg2_level++;
 
 			if (!empty($topic->descriptors)) {
 				$this->print_descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, $statistic, false, true, $crosssubjid);
@@ -1713,7 +1729,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor, false, $parent);
 				$studentsCount = 0;
 
-				$this_rg2_class = 'rg2-level-'.$data->rg2_level.' '.$visible_css;
+				$this_rg2_class = ($data->rg2_level >= 0 ? 'rg2-level-'.$data->rg2_level : '').' '.$visible_css;
 				$sub_rg2_class = 'rg2-level-'.($data->rg2_level+1);
 
 				$descriptorRow = new html_table_row();
@@ -4414,10 +4430,19 @@ var dataset = dataset.map(function (group) {
 	public function print_wrapperdivend(){
 		  return html_writer::end_tag('div');
 	}
-	public function print_profile_print_button(){
-		$content = html_writer::link('javascript:window.print()',
-				html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/view_print.png'), 'alt'=>'print')), array('class'=>'print'));
-		return html_writer::div(html_writer::tag('form', $content), 'competence_profile_printbox');
+	public function print_button_box($print, $inner_content){
+		$content = '';
+		if ($print) {
+			$content .= html_writer::link('#',
+				html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/view_print.png'), 'alt'=>'print')),
+				[
+					'title' => block_exacomp\get_string('print'),
+					'class'=>'print',
+					'onclick' => (strlen($print)>2 ? $print : 'window.print();').'; return false;',
+				]);
+		}
+		$content .= $inner_content;
+		return html_writer::div($content, 'button-box');
 	}
 	public function print_cross_subjects_drafts($subjects, $isAdmin=false){
 		global $PAGE;

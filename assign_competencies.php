@@ -168,7 +168,7 @@ echo $colselector;
 echo $output->print_competence_overview_form_start($selectedNiveau, $selectedTopic, $studentid, $editmode);
 
 //dropdowns for subjects and topics and students -> if user is teacher
-echo $output->print_overview_dropdowns(block_exacomp_get_schooltypetree_by_topics($courseTopics), $selectedTopic?$selectedTopic->id:null, $selectedNiveau->id, $allCourseStudents, (!$editmode) ? $studentid : $selectedStudentid, $isTeacher);
+echo $output->print_overview_dropdowns('assign_competencies', $allCourseStudents, (!$editmode) ? $studentid : $selectedStudentid, $isTeacher);
 
 echo '<div class="clearfix"></div>';
 

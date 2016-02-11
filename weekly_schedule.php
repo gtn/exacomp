@@ -105,9 +105,8 @@ if($isTeacher){
 	echo html_writer::tag("input", null, array("type" => "hidden", "value" => $student->id, "id" => "menuexacomp_competence_grid_select_student"));
 }
 
+echo $output->print_button_box('weekly_schedule_print();', '');
 echo $output->print_course_dropdown($selectedCourse);
-
-echo '<input type="button" value="'.block_exacomp\get_string('print').'" onclick="weekly_schedule_print();" />';
 
 echo $OUTPUT->box(get_string('weekly_schedule_link_to_grid','block_exacomp'));
 

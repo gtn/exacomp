@@ -58,12 +58,11 @@ $PAGE->requires->js('/blocks/exacomp/javascript/d3.min.js', true);
 block_exacomp_build_breadcrum_navigation($courseid);
 
 $output = block_exacomp_get_renderer();
-// build tab navigation & print header
-echo $output->header($context, $courseid, $page_identifier);
+echo $output->header_v2($page_identifier);
 
 /* CONTENT REGION */
 
-if(!$isTeacher){ 
+if(!$isTeacher){
 	$studentid = $USER->id;
 	echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_profile($context, $courseid), $page_identifier);
 }else {
@@ -89,8 +88,7 @@ if(!$isTeacher){
 }
 $student = $DB->get_record('user',array('id' => $studentid));
 
-
-echo $output->print_profile_print_button();
+echo $output->print_button_box(true, '');
 
 $possible_courses = block_exacomp_get_exacomp_courses($student);
 

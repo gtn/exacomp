@@ -1,12 +1,7 @@
 
-
-/* 
-	Document   : style
-	Created on : 03.05.2011, #block_exacomp 15:30:25
-	Author	 : Florian
-	Description:
-		Purpose of the stylesheet follows.
-*/
+#block_exacomp {
+	position: relative;
+}
 
 #block_exacomp div#exabis_save_button {
 	padding: 10px
@@ -409,6 +404,10 @@ td.contentcell {
 	#block_exacomp table#lernagenda {
 		padding: 5px
 	}
+
+    .button-box {
+	    display: none;
+    }
 }
 
 #block_exacomp .exabis_competencies_lis table.exabis_comp_top,
@@ -691,9 +690,10 @@ td.contentcell {
 	text-align: center
 }
 
-#block_exacomp .competence_profile_printbox {
-	text-align: right;
-	margin-bottom: 5px;
+#block_exacomp .button-box {
+	position: absolute;
+	right: 0;
+	top: 0;
 }
 
 #block_exacomp .competence_profile_overview_feedback {
