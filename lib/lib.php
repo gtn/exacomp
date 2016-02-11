@@ -1660,7 +1660,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 				$rows[] = new tabobject('tab_competence_profile_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid"=>$courseid)), get_string('tab_competence_profile',  'block_exacomp'));
 			}
 
-			if ($isTeacher && !$courseSettings->nostudents) {
+			if (!$courseSettings->nostudents) {
 				//Beispiel-Aufgaben
 				$rows[] = new tabobject('tab_examples', new moodle_url('/blocks/exacomp/view_examples.php',array("courseid"=>$courseid)),get_string('tab_examples','block_exacomp'));
 

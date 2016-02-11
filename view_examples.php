@@ -46,6 +46,12 @@ require_login ( $course );
 
 $context = context_course::instance ( $courseid );
 
+// CHECK TEACHER
+$isTeacher = block_exacomp_is_teacher($context);
+
+$studentid = block_exacomp_get_studentid($isTeacher);
+if($isTeacher)	$studentid == 0;
+
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_examples';
 
@@ -86,14 +92,20 @@ if($style==1){
 	
 	$content = '';
 	foreach($comp_examples as $example){
-		$descexamp_mm = block_exacomp_get_descriptor_mms_by_example($example->id);
-		$descriptors = array();
-		foreach($descexamp_mm as $descexamp){
-			if(!in_array($descexamp->descrid, $descriptors))
-				$descriptors[$descexamp->descrid] = $descexamp->descrid;
+		$permission = block_exacomp_check_student_example_permission($courseid, $example->id, $studentid);
+		if(!$permission)
+			$permission = block_exacomp_check_student_example_permission($courseid, $example->id, 0);
+		
+		if($isTeacher || $permission){
+			$descexamp_mm = block_exacomp_get_descriptor_mms_by_example($example->id);
+			$descriptors = array();
+			foreach($descexamp_mm as $descexamp){
+				if(!in_array($descexamp->descrid, $descriptors))
+					$descriptors[$descexamp->descrid] = $descexamp->descrid;
+			}
+			$tree = block_exacomp_build_example_association_tree($courseid, $descriptors, $example->id, 0, false);
+			$content .= $output->print_example_based_list_tree($example, $tree, true, false);
 		}
-		$tree = block_exacomp_build_example_association_tree($courseid, $descriptors, $example->id, 0, false);
-		$content .= $output->print_example_based_list_tree($example, $tree, true, false);
 	}
 	
 	echo html_writer::div($content, '', array('id'=>'associated_div'));
