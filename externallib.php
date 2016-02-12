@@ -1526,6 +1526,17 @@ class block_exacomp_external extends external_api {
 		
 		$courses = static::get_courses ( $userid );
 		
+		// get subjects that require teacher action, there are ungraded student submissions
+		$require_actions = $DB->get_records_sql('SELECT s.id FROM {block_exacompsubjects} s
+				JOIN {block_exacomptopics} t ON t.subjid = s.id
+				JOIN {block_exacompdescrtopic_mm} td ON td.topicid = t.id
+				JOIN {block_exacompdescriptors} d ON td.descrid = d.id
+				JOIN {block_exacompdescrexamp_mm} de ON de.descrid = d.id
+				JOIN {block_exacompexamples} e ON de.exampid = e.id
+				JOIN {block_exacompitemexample} ie ON ie.exampleid = e.id
+				JOIN {block_exaportitem} i ON i.id = ie.itemid
+				WHERE ie.status = 0 AND i.userid = ?', array($userid));
+		
 		$subjects_res = array ();
 		foreach ( $courses as $course ) {
 			$subjects = block_exacomp_get_subjects_by_course ( $course ["courseid"] );
@@ -1536,6 +1547,7 @@ class block_exacomp_external extends external_api {
 					$elem->subjectid = $subject->id;
 					$elem->title = $subject->title;
 					$elem->courseid = $course ["courseid"];
+					$elem->requireaction = array_key_exists($subject->id, $require_actions);
 					$subjects_res [] = $elem;
 				}
 			}
@@ -1553,7 +1565,8 @@ class block_exacomp_external extends external_api {
 		return new external_multiple_structure ( new external_single_structure ( array (
 				'subjectid' => new external_value ( PARAM_INT, 'id of subject' ),
 				'title' => new external_value ( PARAM_TEXT, 'title of subject' ),
-				'courseid' => new external_value ( PARAM_INT, 'id of course' ) 
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
+				'requireaction' => new external_value ( PARAM_BOOL, 'whether example in this subject has been edited or not by the selected student' )
 		) ) );
 	}
 	
