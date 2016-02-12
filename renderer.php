@@ -1274,7 +1274,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$studentsColspan = $showevaluation ? 2 : 1;
 		if($additional_grading && ($showevaluation || $role = \block_exacomp\ROLE_TEACHER)) $studentsColspan++;
 
-		$table->attributes['class'] = 'exabis_comp_comp rg2 exabis-tooltip'; // .($singletopic?' rg2-always-open-0':'');
+		$table->attributes['class'] = 'exabis_comp_comp rg2 exabis-tooltip';
 		if(block_exacomp_exaportexists())
 			$eportfolioitems = block_exacomp_get_eportfolioitem_association($students);
 		else
@@ -1522,8 +1522,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		global $additional_grading;
 		$topicparam = optional_param('topicid', 0, PARAM_INT);
 
-		if(true) {
-		//if (block_exacomp_is_topicgrading_enabled() || count($topics) > 1 || $topicparam == block_exacomp\SHOW_ALL_TOPICS) {
+		if (block_exacomp_is_topicgrading_enabled() || count($topics) > 1 || $topicparam == block_exacomp\SHOW_ALL_TOPICS) {
 			// display topic row
 			$display_topic_header_row = true;
 			$child_level = $level+1;
@@ -1652,9 +1651,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				$rows[] = $topicRow;
 			}
 
-			$child_data = $data;
 			$child_data = clone $data;
-			$child_data->rg2_level++;
+			$child_data->rg2_level += $child_level-$level;
 
 			if (!empty($topic->descriptors)) {
 				$this->print_descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, $statistic, false, true, $crosssubjid);
@@ -1680,7 +1678,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				$own_additionRow->cells[] = new html_table_cell();
 
 				$cell = new html_table_cell();
-				$cell->attributes['class'] = 'rg2-arrow rg2-indent';
+				$cell->attributes['class'] = 'rg2-indent';
 				$cell->text = html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'type'=>'textfield', 'placeholder'=>\block_exacomp\trans(['de:Neue Kompetenz', 'en:New competency']), 'topicid'=>$topic->id, 'niveauid'=>$niveauid));
 				$own_additionRow->cells[] = $cell;
 				$own_additionRow->cells[] = new html_table_cell();

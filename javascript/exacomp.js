@@ -410,15 +410,6 @@ $(document).on('click', '.exa-collapsible > legend', function(){
 
 		$('.rg2-level-0').show();
 
-		// if just one topic, always open
-		// $('table.rg2-always-open-0 tr.rg2-level-0').addClass('open').find('.rg2-arrow').removeClass('rg2-arrow');
-		if ($('.rg2-level-0').length == 1) {
-			$('.rg2-level-0').addClass('open').find('.rg2-arrow').removeClass('rg2-arrow');
-		}
-		if ($('.rg2-level-1').length == 1) {
-			$('.rg2-level-1').addClass('open').find('.rg2-arrow').removeClass('rg2-arrow');
-		}
-
 		if (options.check_uncheck_parents_children) {
 			$(function(){
 				$('table.rg2 :checkbox').click(function(event){
@@ -446,6 +437,15 @@ $(document).on('click', '.exa-collapsible > legend', function(){
 		}
 
 		update();
+
+		// if just one item, always open and hide arrow
+		if ($('.rg2-level-0.rg2-header').length == 1) {
+			$('.rg2-level-0.rg2-header').addClass('open').find('.rg2-arrow').removeClass('rg2-arrow').addClass('rg2-arrow-disabled');
+			if ($('.rg2-level-1.rg2-header').length == 1) {
+				$('.rg2-level-1.rg2-header').addClass('open').find('.rg2-arrow').removeClass('rg2-arrow').addClass('rg2-arrow-disabled');
+			}
+			update();
+		}
 	});
 })();
 

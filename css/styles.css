@@ -573,6 +573,9 @@ td.contentcell {
 	font-weight: bold;
 	text-decoration: underline;
 }
+#block_exacomp .rg2-header .rg2-arrow-disabled {
+	font-weight: bold;
+}
 #block_exacomp .rg2-header .rg2-arrow-styled {
 	font-weight: inherit;
 	text-decoration: inherit;
