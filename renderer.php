@@ -3743,22 +3743,22 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 			return html_writer::div($content, 'competence_profile_coursedata');
 		}
 		//print graphs
-		//$topics = block_exacomp_get_topics_for_radar_graph($course->id, $student->id);
-		//$radar_graph = html_writer::div($this->print_radar_graph($topics,$course->id),"competence_profile_radargraph");
+		$topics = block_exacomp_get_topics_for_radar_graph($course->id, $student->id);
+		$radar_graph = html_writer::div($this->print_radar_graph($topics,$course->id),"competence_profile_radargraph");
 
-		//list($teachercomp,$studentcomp,$pendingcomp) = block_exacomp_get_competencies_for_pie_chart($course->id,$student, $scheme, 0, true);
-		//$pie_graph = html_writer::div($this->print_pie_graph($teachercomp, $studentcomp, $pendingcomp, $course->id),"competence_profile_radargraph");
+		list($teachercomp,$studentcomp,$pendingcomp) = block_exacomp_get_competencies_for_pie_chart($course->id,$student, $scheme, 0, true);
+		$pie_graph = html_writer::div($this->print_pie_graph($teachercomp, $studentcomp, $pendingcomp, $course->id),"competence_profile_radargraph");
 		
-		//$total_comps = $teachercomp+$studentcomp+$pendingcomp;
-		//$timeline_data= block_exacomp_get_timeline_data(array($course), $student, $total_comps);
+		$total_comps = $teachercomp+$studentcomp+$pendingcomp;
+		$timeline_data= block_exacomp_get_timeline_data(array($course), $student, $total_comps);
 		
-		//if($timeline_data)
-		  //  $timeline_graph =  html_writer::div($this->print_timeline_graph($timeline_data->x_values, $timeline_data->y_values_teacher, $timeline_data->y_values_student, $timeline_data->y_values_total, $course->id),"competence_profile_timelinegraph");
-		//else
-		   // $timeline_graph = "";
+		if($timeline_data)
+		   $timeline_graph =  html_writer::div($this->print_timeline_graph($timeline_data->x_values, $timeline_data->y_values_teacher, $timeline_data->y_values_student, $timeline_data->y_values_total, $course->id),"competence_profile_timelinegraph");
+		else
+		   $timeline_graph = "";
 			
-		//$content .= html_writer::div($radar_graph.$pie_graph.$timeline_graph, 'competence_profile_graphbox clearfix');
-		//$content .= html_writer::div($this->print_radar_graph_legend(),"radargraph_legend");
+		$content .= html_writer::div($radar_graph.$pie_graph.$timeline_graph, 'competence_profile_graphbox clearfix');
+		$content .= html_writer::div($this->print_radar_graph_legend(),"radargraph_legend");
 			
 		//print list
 		$student = block_exacomp_get_user_information_by_course($student, $course->id);

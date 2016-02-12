@@ -2631,16 +2631,16 @@ function block_exacomp_update_example_visibilities($courseid, $examples){
 					$cross_subject_examples[] = $example->id;
 
 			if($descriptor->parentid == 0){
-				//if($descriptor_topic_mm) {
 				$descriptor_topic_mm = $DB->get_record(\block_exacomp\DB_DESCTOPICS, array('descrid'=>$descriptor->id));
-
-				$descriptor->topicid = $descriptor_topic_mm->topicid;
-				$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid);
-				foreach($descriptor->children as $child){
-					$child = block_exacomp_get_examples_for_descriptor($child,  array(SHOW_ALL_TAXONOMIES), true, $courseid, false);
-					foreach($child->examples as $example)
-						if(!in_array($example->id, $cross_subject_examples))
-							$cross_subject_examples[] = $example->id;
+				if($descriptor_topic_mm) {
+					$descriptor->topicid = $descriptor_topic_mm->topicid;
+					$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid);
+					foreach($descriptor->children as $child){
+						$child = block_exacomp_get_examples_for_descriptor($child,  array(SHOW_ALL_TAXONOMIES), true, $courseid, false);
+						foreach($child->examples as $example)
+							if(!in_array($example->id, $cross_subject_examples))
+								$cross_subject_examples[] = $example->id;
+					}
 				}
 			}
 		}
