@@ -1417,6 +1417,7 @@ class block_exacomp_external extends external_api {
 				'trainerid' => $USER->id 
 		) );
 		$returndata = array ();
+		$cohorts = $DB->get_records('cohort');
 		
 		foreach ( $students as $student ) {
 			$studentObject = $DB->get_record ( 'user', array (
@@ -1425,6 +1426,17 @@ class block_exacomp_external extends external_api {
 			$returndataObject = new stdClass ();
 			$returndataObject->name = fullname ( $studentObject );
 			$returndataObject->userid = $student->studentid;
+			$return_cohorts = array();
+			
+			$user_cohorts = $DB->get_records('cohort_members', array('userid' => $student->studentid));
+			foreach ($user_cohorts as $user_cohort) {
+				$currentCohort = new stdClass ();
+				$currentCohort->cohortid = $user_cohort->cohortid;
+				$currentCohort->name = $cohorts[$user_cohort->cohortid]->name;
+				
+				$return_cohorts [] = $currentCohort;
+			}
+			$returndataObject->cohorts = $return_cohorts;
 			$returndata [] = $returndataObject;
 		}
 		return $returndata;
@@ -1438,7 +1450,11 @@ class block_exacomp_external extends external_api {
 	public static function get_external_trainer_students_returns() {
 		return new external_multiple_structure ( new external_single_structure ( array (
 				'userid' => new external_value ( PARAM_INT, 'id of user' ),
-				'name' => new external_value ( PARAM_TEXT, 'name of user' ) 
+				'name' => new external_value ( PARAM_TEXT, 'name of user' ),
+				'cohorts' => new external_multiple_structure ( new external_single_structure ( array (
+						'cohortid' => new external_value ( PARAM_INT, 'id of cohort' ),
+						'name' => new external_value ( PARAM_TEXT, 'title of cohort' )
+				) ) )
 		)
 		 ) );
 	}
