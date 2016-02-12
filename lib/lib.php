@@ -3307,8 +3307,10 @@ function block_exacomp_get_subjects_for_radar_graph($userid) {
 	foreach($user_courses as $course) {
 		$courseSubjects = block_exacomp_get_subjects_by_course($course->id);
 		foreach($courseSubjects as $courseSubject) {
-			if(!isset($subjects[$courseSubject->id]))
+			if (!isset($subjects[$courseSubject->id])) {
+				$courseSubject->competencies = [];
 				$subjects[$courseSubject->id] = $courseSubject;
+			}
 
 			$topics = block_exacomp_get_topics_by_subject($course->id,$courseSubject->id);
 			foreach($topics as $topic) {
@@ -3318,8 +3320,9 @@ function block_exacomp_get_subjects_for_radar_graph($userid) {
 
 			$descriptors = block_exacomp_get_descriptors($course->id, false, $courseSubject->id);
 			foreach($descriptors as $descriptor) {
-				if(!isset($subjects[$courseSubject->id]->competencies[$descriptor->id]))
+				if (!isset($subjects[$courseSubject->id]->competencies[$descriptor->id])) {
 					$subjects[$courseSubject->id]->competencies[$descriptor->id] = $descriptor;
+				}
 			}
 		}
 	}
