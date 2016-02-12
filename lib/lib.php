@@ -896,9 +896,6 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 function block_exacomp_is_skillsmanagement() {
 	return get_config('exacomp', 'skillsmanagement');
 }
-function block_exacomp_is_altversion() {
-	return get_config('exacomp', 'alternativedatamodel');
-}
 function block_exacomp_is_topicgrading_enabled() {
 	return get_config('exacomp', 'usetopicgrading');
 }
