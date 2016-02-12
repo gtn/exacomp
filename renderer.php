@@ -3694,8 +3694,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 	}
 
 	function print_pie_graph($teachercomp, $studentcomp, $pendingcomp, $courseid){
-
-		$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvas_doughnut".$courseid)),'piegraph',array("style" => "width:100%"));
+		$content = html_writer::div(html_writer::tag('canvas', '', array("id" => "canvas_doughnut".$courseid)).'piegraph',array("style" => "width:100%"));
 		$content .= '
 		<script>
 		var pieChartData = [
@@ -3834,8 +3833,7 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 				
 				$div_content = "";
 				if(count($niveaus)>2 && count($niveaus)<9){
-					$radar_graph = html_writer::empty_tag('canvas', array('id'=>'canvas'.$topic->id, 'height'=>'450', 'width'=>'450'));
-					$radar_graph .=  $this->print_radar_graph_topic($niveaus, $teacher_eval, $student_eval,'canvas'.$topic->id, $scheme);
+					$radar_graph = $this->print_radar_graph_topic($niveaus, $teacher_eval, $student_eval,'canvas'.$topic->id, $scheme);
 					$div_content = html_writer::div($radar_graph, 'radar_graph', array('style'=>'width:30%'));
 					$div_content .= $this->print_radar_graph_legend();
 				}
@@ -3853,7 +3851,8 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 	private function print_radar_graph_topic($labels, $data1, $data2, $canvasid, $scheme){
 		$global_scheme_values = \block_exacomp\global_config::get_scheme_items($scheme);
 
-		return '<script>
+		return html_writer::tag('canvas', '', array('id'=>$canvasid, 'height'=>'450', 'width'=>'450', 'style'=>'width: 450px; height: 450px;')).
+		'<script>
 		var radarChartData = {
 			labels: '.json_encode($labels).',
 			datasets: [
@@ -4001,7 +4000,7 @@ var dataset = dataset.map(function (group) {
 		
 		if(count($records) >= 3 && count($records) <= 7) {
 
-			$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvasradar".$courseid)),"radargraph",array("style" => "height:100%"));
+			$content = html_writer::div(html_writer::tag('canvas', '', array("id" => "canvasradar".$courseid))."radargraph",array("style" => "height:100%"));
 			$content .= '
 			<script>
 			var radarChartData = {
@@ -4067,7 +4066,7 @@ var dataset = dataset.map(function (group) {
 	}
 	
 	public function print_timeline_graph($x_values, $y_values1, $y_values2, $y_values3, $courseid){
-		$content = html_writer::div(html_writer::empty_tag("canvas",array("id" => "canvas_timeline".$courseid)),'timeline',array("style" => ""));
+		$content = html_writer::div(html_writer::tag('canvas', '', array("id" => "canvas_timeline".$courseid)),'timeline',array("style" => ""));
 		$content .= '
 		<script>
 		var timelinedata = {
@@ -4345,7 +4344,7 @@ var dataset = dataset.map(function (group) {
 			$subject->topics[$topic->id] = $topic;
 			$subjects[$subject->id] = $subject;
 		}
-		$list_descriptors = $this->print_competence_profile_tree($subjects, $COURSE->id);
+		$list_descriptors = $this->print_competence_profile_tree_v2($subjects, $COURSE->id);
 		$list_heading = html_writer::tag('p', '<b>Verknüpfte Kompetenzen:</b>');
 		
 		return html_writer::div($content.$list_heading.$list_descriptors, 'competence_profile_artefacts');
@@ -4419,7 +4418,7 @@ var dataset = dataset.map(function (group) {
 			}
 			if($compTree)
 				$content .= html_writer::tag('h4', $course->fullname) .
-					$this->print_competence_profile_tree($compTree,$course->id, $student,$scheme, false, $items);
+					$this->print_competence_profile_tree_v2($compTree,$course->id, $student,$scheme, false, $items);
 		}
 		return html_writer::div($content,"competence_profile_coursedata");
 	}
