@@ -460,9 +460,6 @@ td.contentcell {
 #block_exacomp .exabis_competencies_lis table.exabis_comp_comp tr.highlight {
 	background-color: #e6e6e6
 }
-#block_exacomp .exabis_competencies_lis table.exabis_comp_comp tr.rg2-locked {
-	color: #aaa;
-}
 #block_exacomp .exabis_competencies_lis table.exabis_comp_comp td.disabled {
 	background-color: #e6e6e6
 }
@@ -592,6 +589,20 @@ td.contentcell {
 #block_exacomp .rg2-header.open .rg2-arrow div {
 	background: url(../pix/pfeil_hide.png) 0 6px no-repeat
 }
+#block_exacomp .rg2-locked {
+	color: #aaa;
+}
+#block_exacomp .rg2-header.rg2-locked .rg2-arrow {
+	cursor: default;
+	text-decoration: none;
+}
+/*
+hide arrow
+#block_exacomp .rg2-header.rg2-locked .rg2-arrow div {
+	padding-left: 0;
+	background: none;
+}
+*/
 
 #block_exacomp tr[class*=rg2-level-] {
 	display: none;
