@@ -10,6 +10,22 @@ abstract class base extends \block_exacomp\event {
 			return null;
 		}
 		
-		return parent::log($data);
+		// moodle doesn't allow objecttable parameter in $data
+		$objecttable = null;
+		if (!empty($data['objecttable'])) {
+			$objecttable = $data['objecttable'];
+			unset($data['objecttable']);
+		}
+
+		static::prepareData($data);
+
+		$obj = static::create($data);
+
+		// set objecttable here
+		if ($objecttable) {
+			$obj->data['objecttable'] = 'block_exacompdescriptors';
+		}
+
+		return $obj->trigger();
 	}
 }
