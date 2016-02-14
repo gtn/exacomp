@@ -158,3 +158,8 @@
 #block_exacomp #exabis_competences_block .exabis_assign_student{
 	display:none;
 }
+/*
+#block_exacomp .rg2-locked input {
+	display: none;
+}
+*/

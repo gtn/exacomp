@@ -120,15 +120,10 @@
 	}
 	*/
 
+	// uncheck all other checkboxes with the same name
 	$(document).on('click', 'input[name^=data]', function(){
-		var $this = $(this);
-		var $currentvalue = $this.prop('checked');
-		if($currentvalue == true) {
-			$('input[name="'+$this.attr("name")+'"]').prop('checked', !$this.prop('checked'));
-			$this.prop('checked',$currentvalue);
-		}
+		$('input[name="'+$(this).attr("name")+'"]').not(this).prop('checked', false);
 	});
-	
 	// update same examples: checkboxes (bewertungsdimensionen == 1)
 	$(document).on('click', 'input[name^=dataexamples]', function(){
 		var $this = $(this);

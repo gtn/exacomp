@@ -756,6 +756,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			html_writer::select($options, "exacomp_competence_grid_report", optional_param("report", BLOCK_EXACOMP_REPORT1, PARAM_INT), true, array("data-url"=>$url)).
 			$this->print_button_box(true, '');
 	}
+	// not used anymore?
+	/*
 	public function print_competence_overview_LIS_student_topics($subs, &$row, &$columns, &$column_count, $scheme, $profoundness = false){
 		global $USER, $COURSE;
 		$supported = block_exacomp_get_supported_modules();
@@ -796,7 +798,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 		}
 	}
-public function print_competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0,$studentid=0) {
+	*/
+	public function print_competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0,$studentid=0) {
 		global $CFG, $DB;
 
 		$headFlag = false;
@@ -1016,6 +1019,8 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		$url = new moodle_url($PAGE->url, $url_params);
 		return html_writer::start_tag('form',array('id'=>'assign-competencies', "action" => $url, 'method'=>'post'));
 	}
+	// not used anymore?
+	/*
 	public function print_competence_overview_LIS_student($subjects, $courseid, $showevaluation, $scheme, $examples){
 		global $USER, $DB, $PAGE, $COURSE;
 
@@ -1183,11 +1188,12 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		return $div.html_writer::end_tag('form');
 		//return html_writer::tag('form', $div, array('id'=>'assign-competencies', 'action'=>new moodle_url($PAGE->url, array('courseid'=>$courseid, 'action'=>'save')), 'method'=>'post'));
 	}
+	*/
 
 	public function print_profoundness($subjects, $courseid, $students, $role) {
 		$table = new html_table();
 		$rows = array();
-		$table->attributes['class'] = 'exabis_comp_comp';
+		$table->attributes['class'] = 'exabis_comp_comp exabis-tooltip';
 
 		// 1st header row
 		$headerrow = new html_table_row();
@@ -1262,7 +1268,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 		}
 
 		$table_html = html_writer::tag("div", html_writer::tag("div", html_writer::table($table), array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
-		$table_html .= html_writer::div(html_writer::tag("input", "", array("name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp"))),'', array('id'=>'exabis_save_button'));
+		$table_html .= html_writer::div(html_writer::tag("input", "", array("id" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp"))),'', array('id'=>'exabis_save_button'));
 
 		return $table_html.html_writer::end_tag('form');
 	}
@@ -1561,7 +1567,13 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
 			$topicRow->cells[] = $nivCell;
 
-			if(!$statistic && block_exacomp_is_topicgrading_enabled()){
+			if ($profoundness) {
+				$statCell = new html_table_cell();
+				$statCell->text = "";
+				$statCell->colspan = 4;
+
+				$topicRow->cells[] = $statCell;
+			} elseif(!$statistic && block_exacomp_is_topicgrading_enabled()){
 				foreach($students as $student) {
 					$studentCell = new html_table_cell();
 					$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
@@ -2017,13 +2029,13 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 						if ($author = $example->get_author()) {
 						   	$titleCell->attributes['title'][] = get_string('author', 'repository').": ".$author;
 					   	}
-						if (!trim(strip_tags($example->description))) {
+						if (trim(strip_tags($example->description))) {
 							$titleCell->attributes['title'][] = $example->description;
 						}
-						if (!trim($example->timeframe)) {
+						if (trim($example->timeframe)) {
 							$titleCell->attributes['title'][] = $example->timeframe;
 						}
-						if (!trim($example->tips)) {
+						if (trim($example->tips)) {
 							$titleCell->attributes['title'][] = $example->tips;
 						}
 
@@ -2206,6 +2218,11 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 
 							if($additional_grading && $data->role == \block_exacomp\ROLE_TEACHER)
 								$exampleRow->cells[] = $additional_grading_cell;
+						}
+						if ($profoundness) {
+							$emptyCell = new html_table_cell();
+							$emptyCell->colspan = 7-count($exampleRow->cells);
+							$exampleRow->cells[] = $emptyCell;
 						}
 					}else{
 						$statCell = new html_table_cell();
@@ -2520,7 +2537,7 @@ public function print_competence_grid($niveaus, $skills, $topics, $data, $select
 				(!$disabled) ? null : array("disabled"=>"disabled"));
 	}
 	public function generate_checkbox_profoundness($name, $compid, $type, $student, $evaluation, $scheme) {
-		return html_writer::checkbox($name . '[' . $compid . '][' . $student->id . '][' . $evaluation . ']',
+		return html_writer::checkbox($name . '-' . $compid . '-' . $student->id . '-' . $evaluation,
 				$scheme,
 				(isset($student->{$type}->{$evaluation}[$compid])) && $student->{$type}->{$evaluation}[$compid] == $scheme, null);
 	}
