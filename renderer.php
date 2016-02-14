@@ -1974,7 +1974,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$disabledCell->text = html_writer::checkbox("disabled", "",false,null,array("disabled"=>"disabled"));
 							$disabledCell->attributes['class'] = 'disabled';
 
-							if($descriptor->profoundness == 0) {
+							// loaded from the descriptor, this field is filled from the xml import
+							if (!$descriptor->profoundness) {
 								$descriptorRow->cells[] = $cell1;
 								$descriptorRow->cells[] = $cell2;
 								$descriptorRow->cells[] = $disabledCell;
