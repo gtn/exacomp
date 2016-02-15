@@ -1114,7 +1114,7 @@ class block_exacomp_external extends external_api {
 		if ($userid == 0)
 			$userid = $USER->id;
 		
-		static::require_can_access_course_user($courseid, $userid);
+		static::require_can_access_user($userid);
 		
 		$structure = array ();
 		
@@ -1124,6 +1124,7 @@ class block_exacomp_external extends external_api {
 				$structure [$topic->id] = new stdClass ();
 				$structure [$topic->id]->topicid = $topic->id;
 				$structure [$topic->id]->title = $topic->title;
+				$structure [$topic->id]->requireaction = false;
 				$structure [$topic->id]->examples = array ();
 			}
 			$descriptors = block_exacomp_get_descriptors_by_topic ( $courseid, $topic->id, false, true );
@@ -1172,6 +1173,9 @@ class block_exacomp_external extends external_api {
 								if ($item->timecreated > $current_timestamp) {
 									$structure [$topic->id]->examples [$example->id]->example_item = $item->itemid;
 									$structure [$topic->id]->examples [$example->id]->example_status = $item->status;
+									
+									if($item->status == 0)
+										$structure [$topic->id]->requireaction = true;
 								}
 							}
 						} else {
@@ -1195,6 +1199,7 @@ class block_exacomp_external extends external_api {
 		return new external_multiple_structure ( new external_single_structure ( array (
 				'topicid' => new external_value ( PARAM_INT, 'id of topic' ),
 				'title' => new external_value ( PARAM_TEXT, 'title of topic' ),
+				'requireaction' => new external_value( PARAM_BOOL, 'trainer action required or not'),
 				'examples' => new external_multiple_structure ( new external_single_structure ( array (
 						'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
 						'example_title' => new external_value ( PARAM_TEXT, 'title of example' ),
@@ -1437,6 +1442,10 @@ class block_exacomp_external extends external_api {
 				$return_cohorts [] = $currentCohort;
 			}
 			$returndataObject->cohorts = $return_cohorts;
+			
+			$require_actions = static::get_requireaction_subjects($student->studentid);
+			$returndataObject->requireaction = !empty($require_actions);
+			
 			$returndata [] = $returndataObject;
 		}
 		return $returndata;
@@ -1454,7 +1463,8 @@ class block_exacomp_external extends external_api {
 				'cohorts' => new external_multiple_structure ( new external_single_structure ( array (
 						'cohortid' => new external_value ( PARAM_INT, 'id of cohort' ),
 						'name' => new external_value ( PARAM_TEXT, 'title of cohort' )
-				) ) )
+				) ) ),
+				'requireaction' => new external_value( PARAM_BOOL, 'trainer action required or not')
 		)
 		 ) );
 	}
@@ -1541,17 +1551,8 @@ class block_exacomp_external extends external_api {
 		static::require_can_access_user($userid);
 		
 		$courses = static::get_courses ( $userid );
-		
-		// get subjects that require teacher action, there are ungraded student submissions
-		$require_actions = $DB->get_records_sql('SELECT s.id FROM {block_exacompsubjects} s
-				JOIN {block_exacomptopics} t ON t.subjid = s.id
-				JOIN {block_exacompdescrtopic_mm} td ON td.topicid = t.id
-				JOIN {block_exacompdescriptors} d ON td.descrid = d.id
-				JOIN {block_exacompdescrexamp_mm} de ON de.descrid = d.id
-				JOIN {block_exacompexamples} e ON de.exampid = e.id
-				JOIN {block_exacompitemexample} ie ON ie.exampleid = e.id
-				JOIN {block_exaportitem} i ON i.id = ie.itemid
-				WHERE ie.status = 0 AND i.userid = ?', array($userid));
+	
+		$require_actions = static::get_requireaction_subjects($userid);
 		
 		$subjects_res = array ();
 		foreach ( $courses as $course ) {
@@ -6083,6 +6084,26 @@ class block_exacomp_external extends external_api {
 		return $return;
 	}
 
+	/**
+	 * Returns all subjects for the given user where trainer action is required.
+	 * Trainer action is required as soon as there are ungraded submissions.
+	 * @param int $userid
+	 */
+	private function get_requireaction_subjects($userid) {
+		global $DB;
+
+		$require_actions = $DB->get_records_sql('SELECT s.id FROM {block_exacompsubjects} s
+				JOIN {block_exacomptopics} t ON t.subjid = s.id
+				JOIN {block_exacompdescrtopic_mm} td ON td.topicid = t.id
+				JOIN {block_exacompdescriptors} d ON td.descrid = d.id
+				JOIN {block_exacompdescrexamp_mm} de ON de.descrid = d.id
+				JOIN {block_exacompexamples} e ON de.exampid = e.id
+				JOIN {block_exacompitemexample} ie ON ie.exampleid = e.id
+				JOIN {block_exaportitem} i ON i.id = ie.itemid
+				WHERE ie.status = 0 AND i.userid = ?', array($userid));
+		
+		return $require_actions;
+	}
 	private static function require_can_access_course($courseid) {
 		$course = g::$DB->get_record('course', ['id'=>$courseid]);
 		if (!$course) {
