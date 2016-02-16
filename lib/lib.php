@@ -913,10 +913,12 @@ function block_exacomp_is_niveautitle_for_profile_enabled() {
  * @param $courseid
  * @param $onlywithactivitys - to select only descriptors assigned to activities
  */
+// not used anymore
+/*
 function block_exacomp_get_descritors_list($courseid, $onlywithactivitys = 0) {
 	global $DB;
 
-	$query = 'SELECT t.id as topdescrid, d.id,d.title,tp.title as topic,tp.id as topicid, s.title as subject,s.id as
+	$query = 'SELECT t.id as topdescrid, d.id,d.title,tp.title as topic_title,tp.id as topicid, s.title as subject,s.id as
 	subjectid,d.niveauid
 	FROM {'.\block_exacomp\DB_DESCRIPTORS.'} d,
 	{'.\block_exacomp\DB_COURSETOPICS.'} c,
@@ -939,6 +941,7 @@ function block_exacomp_get_descritors_list($courseid, $onlywithactivitys = 0) {
 
 	return $descriptors;
 }
+*/
 /**
  *
  * returns all descriptors
@@ -1162,7 +1165,7 @@ function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldes
 function block_exacomp_get_descriptors_by_subject($subjectid,$niveaus = true) {
 	global $DB;
 
-	$sql = "SELECT d.*, dt.topicid, t.title as topic FROM {".\block_exacomp\DB_DESCRIPTORS."} d, {".\block_exacomp\DB_DESCTOPICS."} dt, {".\block_exacomp\DB_TOPICS."} t
+	$sql = "SELECT d.*, dt.topicid, t.title as topic_title FROM {".\block_exacomp\DB_DESCRIPTORS."} d, {".\block_exacomp\DB_DESCTOPICS."} dt, {".\block_exacomp\DB_TOPICS."} t
 	WHERE d.id=dt.descrid AND d.parentid =0 AND dt.topicid IN (SELECT id FROM {".\block_exacomp\DB_TOPICS."} WHERE subjid=?)";
 	if($niveaus) $sql .= " AND d.niveauid > 0";
 	$sql .= " AND dt.topicid = t.id order by d.skillid, dt.topicid, d.niveauid";
@@ -2045,7 +2048,6 @@ function block_exacomp_is_ready_for_use($courseid){
  * @param int $courseid
  */
 function block_exacomp_get_grading_scheme($courseid) {
-	global $DB;
 	$settings = block_exacomp_get_settings_by_course($courseid);
 	return $settings->grading;
 }
@@ -2923,7 +2925,7 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 				}
 			}
 			$data[$descriptor->skillid][$descriptor->topicid][$descriptor->niveauid][] = $descriptor;
-			$topics[$descriptor->topicid] = $descriptor->topic;
+			$topics[$descriptor->topicid] = $descriptor->topic_title;
 		}
 
 		$selection = $DB->get_records(\block_exacomp\DB_COURSETOPICS,array('courseid'=>$courseid),'','topicid');
@@ -4924,7 +4926,11 @@ function block_exacomp_get_topic_numbering($topic){
 	if (is_object($topic)) {
 		// ok
 	} else {
-	   $topic = block_exacomp_get_topic_by_id($topic);
+	   	$topic = block_exacomp_get_topic_by_id($topic);
+		if (!$topic) {
+			debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+			return '';
+		}
 	}
 
 	$subject = isset($topic->subject) ? $topic->subject : block_exacomp_get_subject_by_id($topic->subjid);
@@ -5385,10 +5391,9 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 			$examp_evals = $DB->get_records_sql($sql, array($courseid, $student->id));
 
 			foreach($examp_evals as $examp_eval){
-				if(isset($examp_eval->teacher_evaluation))
+				if(isset($examp_eval->teacher_evaluation) && isset($gradings[$examp_eval->teacher_evaluation])) {
 					$gradings[$examp_eval->teacher_evaluation]++;
-				else
-					unset($examp_eval);
+				}
 			}
 			$notEvaluated = $total - count($examp_evals);
 		}

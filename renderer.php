@@ -2585,6 +2585,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 		return html_writer::div($content, 'exacomp_profile_badges');
 	}
+
+	// not used anymore ?!?
 	/*
 	public function print_head_view_examples($sort, $show_all_examples, $url, $context){
 		$content = html_writer::start_tag('script', array('type'=>'text/javascript', 'src'=>'javascript/wz_tooltip.js'));
@@ -2618,6 +2620,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 	*/
 
+	/*
 	public function print_tree_view_examples_desc($tree, $do_form = true){
 		$li_subjects = '';
 		foreach($tree as $subject){
@@ -2693,7 +2696,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$li_subs = $this->print_tree_view_examples_desc_rec_topic($topic->subs, $subject_example_content);
 				$ul_subs .= html_writer::tag('ul', $li_subs);
 			}
-			*/
+			* /
 
 			$li_topics .= html_writer::tag('li', $topic->title
 					.$ul_descriptors.$ul_subs);
@@ -2734,7 +2737,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 		return $icon;
 	}
-
 	public function print_tree_view_examples_tax($tree){
 		$li_taxonomies = '';
 		foreach($tree as $taxonomy){
@@ -2747,6 +2749,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content = html_writer::tag('form', $ul_taxonomies, array('name'=>'treeform'));
 		return $content;
 	}
+	*/
 
 	public function print_foot_view_examples(){
 		$content = html_writer::tag('script', 'ddtreemenu.createTree("comptree", true)', array('type'=>'text/javascript'));
@@ -3502,7 +3505,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	function print_pie_graph($teachercomp, $studentcomp, $pendingcomp, $courseid){
-		$content = html_writer::div(html_writer::tag('canvas', '', array("id" => "canvas_doughnut".$courseid)).'piegraph',array("style" => "width:100%"));
+		$content = html_writer::div(html_writer::tag('canvas', '', array("id" => "canvas_doughnut".$courseid)), 'piegraph',array("style" => "width:100%"));
 		$content .= '
 		<script>
 		var pieChartData = [
@@ -3526,11 +3529,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 	];
 		
-	var ctx_d = document.getElementById("canvas_doughnut'.$courseid.'").getContext("2d");
-	ctx_d.canvas.height = 120;
+	var ctx = document.getElementById("canvas_doughnut'.$courseid.'").getContext("2d");
+	ctx.canvas.height = 300;
 			
-	window.myDoughnut = new Chart(ctx_d).Doughnut(pieChartData, {
-	responsive: true
+	window.myDoughnut = new Chart(ctx).Doughnut(pieChartData, {
+		responsive: false, // can\'t be responsive, because Graph.js 1.0.2 does not work with hidden divs
 	});
 
 	</script>
@@ -3549,7 +3552,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 		//print graphs
 		$topics = block_exacomp_get_topics_for_radar_graph($course->id, $student->id);
-		$radar_graph = html_writer::div($this->print_radar_graph($topics,$course->id),"competence_profile_radargraph");
+		$radar_graph = html_writer::div($this->print_radar_graph($topics),"competence_profile_radargraph");
 
 		list($teachercomp,$studentcomp,$pendingcomp) = block_exacomp_get_competencies_for_pie_chart($course->id,$student, $scheme, 0, true);
 		$pie_graph = html_writer::div($this->print_pie_graph($teachercomp, $studentcomp, $pendingcomp, $course->id),"competence_profile_radargraph");
@@ -3641,7 +3644,7 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 				
 				$div_content = "";
 				if(count($niveaus)>2 && count($niveaus)<9){
-					$radar_graph = $this->print_radar_graph_topic($niveaus, $teacher_eval, $student_eval,'canvas'.$topic->id, $scheme);
+					$radar_graph = $this->print_radar_graph_topic($niveaus, $teacher_eval, $student_eval, $scheme);
 					$div_content = html_writer::div($radar_graph, 'radar_graph', array('style'=>'width:30%'));
 					$div_content .= $this->print_radar_graph_legend();
 				}
@@ -3656,15 +3659,21 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 		return $content;
 	}
 	
-	private function print_radar_graph_topic($labels, $data1, $data2, $canvasid, $scheme){
+	private function print_radar_graph_topic($labels, $data1, $data2, $scheme){
 		$global_scheme_values = \block_exacomp\global_config::get_scheme_items($scheme);
 
-		return html_writer::tag('canvas', '', array('id'=>$canvasid, 'height'=>'450', 'width'=>'450', 'style'=>'width: 450px; height: 450px;')).
-		'<script>
-		var radarChartData = {
-			labels: '.json_encode($labels).',
-			datasets: [
-				{
+		static $canvasid_i = 0;
+		$canvasid_i++;
+		$canvasid = 'canvas_radar_graph_topic_'.$canvasid_i;
+
+		$content = html_writer::tag('canvas', '', array('id'=>$canvasid));
+		ob_start();
+		?>
+		<script>
+		$(function(){
+			var radarChartData = {
+			labels: <?php echo json_encode($labels); ?>,
+			datasets: [ {
 					label: "Lehrerbeurteilung",
 					fillColor: "rgba(72,165,63,0.2)",
 					strokeColor: "rgba(72,165,63,1)",
@@ -3672,9 +3681,8 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 					pointStrokeColor: "#fff",
 					pointHighlightFill: "#fff",
 					pointHighlightStroke: "rgba(151,187,205,1)",
-					data: '.json_encode($data1).'
-				},
-				{
+					data: <?php echo json_encode($data1); ?>,
+				}, {
 					label: "Schülerbeurteilung",
 					fillColor: "rgba(249,178,51,0.2)",
 					strokeColor: "#f9b233",
@@ -3682,22 +3690,30 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 					pointStrokeColor: "#fff",
 					pointHighlightFill: "#fff",
 					pointHighlightStroke: "rgba(151,187,205,1)",
-					data: '.json_encode($data2).'
-				}
-			]
-		};
-	
-		window.myRadar = new Chart(document.getElementById("'.$canvasid.'").getContext("2d")).Radar(radarChartData, {
-			responsive: true,
-			showScale: true,
-			scaleShowLabels: true,
-			scaleLabel: "<%if (value == 1){%><%=\''.$global_scheme_values[1].'\'%><%}%><%if (value == 2){%><%=\''.$global_scheme_values[2].'\'%> <%}%><%if (value == 3){%><%=\''.$global_scheme_values[3].'\'%><%}if(value>3){%><%=value%><%}%>",
-			multiTooltipTemplate: "<%if (value == 1){%><%=\''.$global_scheme_values[1].'\'%><%}%><%if (value == 2){%><%=\''.$global_scheme_values[2].'\'%> <%}%><%if (value == 3){%><%=\''.$global_scheme_values[3].'\'%><%}%><%if (value == 0){%><%=\''.$global_scheme_values[0].'\'%><%}if(value>3){%><%=value%><%}%>",
-			scaleLineColor: "rgba(0,0,0,.3)",
-			angleLineColor : "rgba(0,0,0,.3)"
+					data: <?php echo json_encode($data2); ?>,
+				} ]
+			};
+
+
+			var ctx = document.getElementById(<?php echo json_encode($canvasid); ?>).getContext("2d");
+			ctx.canvas.width = 600;
+			ctx.canvas.height = 300;
+
+			new Chart(ctx).Radar(radarChartData, {
+				responsive: false, // can't be responsive, because Graph.js 1.0.2 does not work with hidden divs
+				showScale: true,
+				scaleShowLabels: true,
+				scaleLabel: "<%if (value == 1){%><%='<?php echo $global_scheme_values[1]; ?>'%><%}%><%if (value == 2){%><%='<?php echo $global_scheme_values[2]; ?>'%> <%}%><%if (value == 3){%><%='<?php echo $global_scheme_values[3]; ?>'%><%}if(value>3){%><%=value%><%}%>",
+				multiTooltipTemplate: "<%if (value == 1){%><%='<?php echo $global_scheme_values[1]; ?>'%><%}%><%if (value == 2){%><%='<?php echo $global_scheme_values[2]; ?>'%> <%}%><%if (value == 3){%><%='<?php echo $global_scheme_values[3]; ?>'%><%}%><%if (value == 0){%><%='<?php echo $global_scheme_values[0]; ?>'%><%}if(value>3){%><%=value%><%}%>",
+				scaleLineColor: "rgba(0,0,0,.3)",
+				angleLineColor : "rgba(0,0,0,.3)"
+			});
 		});
-	
-		</script>';
+		</script>
+		<?php
+		$content .= ob_get_clean();
+
+		return $content;
 	}
 	
 	private function print_example_stacked_bar($dataset, $descrid){
@@ -3713,7 +3729,7 @@ width =200,
 	series = dataset.map(function (d) {
 		return d.name;
 	}),
-	dataset = dataset.map(function (d) {console.log(d);
+	dataset = dataset.map(function (d) { // console.log(d);
 		return d.data.map(function (o, i) {
 			// Structure it so that your numeric
 			// axis (the stacked amount) is y
@@ -3729,7 +3745,7 @@ width =200,
 stack(dataset);
 
 var dataset = dataset.map(function (group) {
-	return group.map(function (d) {console.log(d);
+	return group.map(function (d) { // console.log(d);
 		// Invert the x and y values, and y0 becomes x0
 		return {
 			x: d.y,
@@ -3785,7 +3801,7 @@ var dataset = dataset.map(function (group) {
 		.attr('width', function (d) {
 		return xScale(d.x);
 	})
-		.on('mouseover', function (d) {console.log(d);
+		.on('mouseover', function (d) { // console.log(d);
 		var xPos = parseFloat(d3.select(this).attr('x')) / 2 + width / 2;
 		var yPos = parseFloat(d3.select(this).attr('y')) + yScale.rangeBand() / 2;
 
@@ -3803,67 +3819,58 @@ var dataset = dataset.map(function (group) {
 </script>";
 	}		
 
-	function print_radar_graph($records,$courseid) {
+	function print_radar_graph($records) {
 		global $CFG;
 		
-		if(count($records) >= 3 && count($records) <= 7) {
-
-			$content = html_writer::div(html_writer::tag('canvas', '', array("id" => "canvasradar".$courseid))."radargraph",array("style" => "height:100%"));
-			$content .= '
-			<script>
-			var radarChartData = {
-			labels: [';
-
-			foreach($records as $record)
-				$content .= '"'.$record->title.'",';
-
-			$content .= '],
-			datasets: [
-			{
-			label: "'.get_string("studentcomp","block_exacomp").'",
-			fillColor: "rgba(249,178,51,0.2)",
-			strokeColor: "#f9b233",
-			pointColor: "#f9b233",
-			pointStrokeColor: "#fff",
-			pointHighlightFill: "#fff",
-			pointHighlightStroke: "rgba(151,187,205,1)",
-			data: [';
-
-			foreach($records as $record)
-				$content .= '"'.round($record->student, 2).'",';
-			$content .= ']
-			},
-			{
-			label: "'.get_string("teachercomp","block_exacomp").'",
-			fillColor: "rgba(72,165,63,0.2)",
-			strokeColor: "rgba(72,165,63,1)",
-			pointColor: "rgba(72,165,63,1)",
-			pointStrokeColor: "#fff",
-			pointHighlightFill: "#fff",
-			pointHighlightStroke: "rgba(151,187,205,1)",
-			data: [';
-
-			foreach($records as $record)
-				$content .= '"'.round($record->teacher, 2).'",';
-			$content .=']
-		}
-		]
-		};
-
-		var ctx_r = document.getElementById("canvasradar'.$courseid.'").getContext("2d");
-		ctx_r.canvas.height = 150;
-		
-		window.myRadar = new Chart(ctx_r).Radar(radarChartData, {
-		responsive: true, multiTooltipTemplate: "<%= value %>"+"%"
-		});
-		
-		</script>';
-		} else {
+		if (count($records) < 3 || count($records) > 7) {
 			//print error
 			$img = html_writer::div(html_writer::tag("img", "", array("src" => $CFG->wwwroot . "/blocks/exacomp/pix/graph_notavailable.png")));
-			$content = html_writer::div($img . get_string("radargrapherror","block_exacomp"),"competence_profile_grapherror");
+			return html_writer::div($img . get_string("radargrapherror","block_exacomp"),"competence_profile_grapherror");
 		}
-		return $content;
+
+		static $canvasid_i = 0;
+		$canvasid_i++;
+		$canvasid = 'canvas_radar_graph_'.$canvasid_i;
+
+		$content = html_writer::div(html_writer::tag('canvas', '', array("id" => $canvasid)), "radargraph", array("style" => "height:100%"));
+		ob_start();
+		?>
+		<script>
+			var radarChartData = {
+				labels: <?php echo json_encode(array_values(array_map(function($a) { return $a->title; }, $records))); ?>,
+				datasets: [ {
+					label: <?php echo json_encode(get_string("studentcomp","block_exacomp")); ?>,
+					fillColor: "rgba(249,178,51,0.2)",
+					strokeColor: "#f9b233",
+					pointColor: "#f9b233",
+					pointStrokeColor: "#fff",
+					pointHighlightFill: "#fff",
+					pointHighlightStroke: "rgba(151,187,205,1)",
+					data: <?php echo json_encode(array_values(array_map(function($a) { return round($a->student, 2); }, $records))); ?>,
+				}, {
+					label: <?php echo json_encode(get_string("teachercomp","block_exacomp")); ?>,
+					fillColor: "rgba(72,165,63,0.2)",
+					strokeColor: "rgba(72,165,63,1)",
+					pointColor: "rgba(72,165,63,1)",
+					pointStrokeColor: "#fff",
+					pointHighlightFill: "#fff",
+					pointHighlightStroke: "rgba(151,187,205,1)",
+					data: <?php echo json_encode(array_values(array_map(function($a) { return round($a->teacher, 2); }, $records))); ?>,
+				} ]
+			};
+
+			var ctx = document.getElementById(<?php echo json_encode($canvasid); ?>).getContext("2d");
+			ctx.canvas.width = 600;
+			ctx.canvas.height = 300;
+
+			new Chart(ctx).Radar(radarChartData, {
+				responsive: false, // can't be responsive, because Graph.js 1.0.2 does not work with hidden divs
+				multiTooltipTemplate: "<%= value %>"+"%"
+			});
+		
+		</script>
+		<?php
+		return ob_get_clean();
 	}
 	public function print_radar_graph_legend() {
 		$content = html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","competenceyellow");
@@ -3929,12 +3936,12 @@ var dataset = dataset.map(function (group) {
 		]
 		};
 			
-		
 		var ctx = document.getElementById("canvas_timeline'.$courseid.'").getContext("2d")
-		ctx.canvas.height = 50;
+		ctx.canvas.height = 300;
 		
-		window.myTimeline = new Chart(ctx).Line(timelinedata, {
-		responsive: true, bezierCurve : false
+		new Chart(ctx).Line(timelinedata, {
+				responsive: false, // can\'t be responsive, because Graph.js 1.0.2 does not work with hidden divs
+			bezierCurve : false
 		});
 	
 		</script>
@@ -4200,7 +4207,7 @@ var dataset = dataset.map(function (group) {
 		}
 		
 		//print graphs
-		$radar_graph = html_writer::div($this->print_radar_graph($subjects, 0),"competence_profile_radargraph");
+		$radar_graph = html_writer::div($this->print_radar_graph($subjects),"competence_profile_radargraph");
 
 		$pie_graph = html_writer::div($this->print_pie_graph($teachercomp, $studentcomp, $pendingcomp, 0),"competence_profile_radargraph");
 		
