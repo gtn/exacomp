@@ -340,6 +340,12 @@
 		});
 	});
 	
+	$(document).on('click', '[exa-type=link]', function(event) {
+		event.preventDefault();
+
+		document.location.href = this.getAttribute('exa-url') || this.getAttribute('href');
+	});
+
 	$(document).on('click', '#hide-descriptor', function(event) {
 		event.preventDefault();
 

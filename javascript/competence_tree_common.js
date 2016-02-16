@@ -1,8 +1,14 @@
 
 (function($){
 	window.block_exacomp.reload_action = function() {
-		i_want_my_reload = true;
-		$('#assign-competencies input[type="submit"]').click();
+		// is there a sbumit button?
+		if ($('#assign-competencies input[type="submit"]').length) {
+			i_want_my_reload = true;
+			$('#assign-competencies input[type="submit"]').click();
+		} else {
+			document.location.reload(true);
+		}
+
 	}
 
 	$( window ).load(function() {

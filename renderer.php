@@ -518,7 +518,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function print_edit_mode_button($url) {
 		$edit = $this->is_edit_mode();
 		return html_writer::empty_tag('input', array('type'=>'button', 'id'=>'edit_mode_submit', 'name'=> 'edit_mode_submit', 'value'=>\block_exacomp\get_string(($edit) ? 'turneditingoff' : 'turneditingon'),
-				 "onclick" => "document.location.href='".$url->out(false)."'"));
+				 "exa-type" => 'link', 'exa-url' => $url));
 	}
 	
 	public function print_subjects_menu($subjects, $selectedSubject, $selectedTopic) {
@@ -1294,7 +1294,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$table_html = html_writer::table($table);
 
-		if(count($rows) == 0 && $crosssubjid) {
+		if(!$rows && $crosssubjid) {
 			$table_html .= html_writer::div(
 				block_exacomp\get_string('add_content_to_crosssub', null,
 					'cross_subjects.php?courseid='.g::$COURSE->id.'&action=descriptor_selector&crosssubjid='.$crosssubjid),
@@ -1302,9 +1302,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 
 		if (!$this->is_print_mode()) {
-			$buttons = html_writer::tag("input", "", array("id"=>"btn_submit", "name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp")));
-
-			$table_html .= html_writer::div($buttons,'', array('id'=>'exabis_save_button'));
+			if ($rows) {
+				$buttons = html_writer::tag("input", "", array("id"=>"btn_submit", "name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp")));
+				$table_html .= html_writer::div($buttons,'', array('id'=>'exabis_save_button'));
+			}
 
 			$table_html .= html_writer::end_tag('form');
 		}
@@ -4319,9 +4320,9 @@ var dataset = dataset.map(function (group) {
 			$left_content .= html_writer::tag("input", "", array("type" => "submit", "class"=>'allow-submit', "value" => block_exacomp\get_string("save_crosssub")));
 			$left_content .= html_writer::tag("input", "", array("type" => "button", "value" => block_exacomp\get_string('add_descriptors_to_crosssub'), 'exa-type' => "iframe-popup", 'exa-url' => 'cross_subjects.php?courseid='.g::$COURSE->id.'&action=descriptor_selector&crosssubjid='.$cross_subject->id));
 		}
-		if ($cross_subject && $cross_subject->has_capability(\block_exacomp\CAP_MODIFY) && !$cross_subject->is_draft()) {
-			// $left_content .= html_writer::tag("input", "", array("type" => "button", "value" => get_string("save_as_draft", "block_exacomp")));
-			$left_content .= html_writer::tag("input", "", array("type"=>"button", "value"=>get_string("share_crosssub", "block_exacomp"), 'exa-type'=>'iframe-popup', 'exa-url'=>'cross_subjects.php?courseid='.g::$COURSE->id.'&crosssubjid='.$cross_subject->id.'&action=share'));
+		if ($cross_subject && !$this->is_edit_mode() && $cross_subject->has_capability(\block_exacomp\CAP_MODIFY) && !$cross_subject->is_draft()) {
+			$left_content .= html_writer::tag("input", "", array("type" => "button", "value" => get_string("share_crosssub", "block_exacomp"), 'exa-type'=>'iframe-popup', 'exa-url'=>'cross_subjects.php?courseid='.g::$COURSE->id.'&crosssubjid='.$cross_subject->id.'&action=share'));
+			$left_content .= html_writer::tag("input", "", array("type" => "button", "value" => get_string("save_as_draft", "block_exacomp"), 'exa-type'=>'link', 'exa-url'=>'cross_subjects.php?courseid='.g::$COURSE->id.'&crosssubjid='.$cross_subject->id.'&action=save_as_draft'));
 		}
 							// html_writer::tag("input", "", array("id"=>"delete_crosssub", "name"=>"delete_crosssub", "type"=>"button", "value"=>get_string("delete_crosssub", "block_exacomp"), 'message'=>get_string('confirm_delete', 'block_exacomp')), array('id'=>'exabis_save_button'));
 		if (!$this->is_edit_mode() && block_exacomp_is_teacher() && $students) {
