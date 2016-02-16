@@ -776,7 +776,7 @@ class data_exporter extends data {
 		}
 	}
 	
-	private static function export_crosssubjects($xmlParent, $parentid = 0) {
+	private static function export_crosssubjects($xmlParent) {
 		$dbCrosssubjects = block_exacomp_get_crosssubjects();
 		$xmlParent->addChild('crosssubjects');
 

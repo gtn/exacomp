@@ -186,25 +186,17 @@
 	i_want_my_reload = false;
 	
 	$(document).on('click', '#assign-competencies input[type=submit], #assign-competencies input[type=button]', function(event) {
+		if ($(this).is('.allow-submit')) return;
 		event.preventDefault();
 		var courseid = block_exacomp.get_param('courseid');
 
 		// only for crosssubjects
-		var crosssubjid = 0;
-		var select = document
-				.getElementById("menulis_crosssubs");
-
-		if (select) {
-			crosssubjid = select.options[select.selectedIndex].value;
-		} else if (block_exacomp.get_param("crosssubjid") !== null) {
-			crosssubjid = block_exacomp.get_param('crosssubjid');
-		}
-		
+		var crosssubjid = block_exacomp.get_param('crosssubjid');
 
 		switch ($(this).attr('id')) {
 		case 'btn_submit':
 			var reload = i_want_my_reload;
-			
+
 			function all_done() {
 				if (reload) {
 					location.reload();
@@ -215,18 +207,6 @@
 			
 			var multiQueryData = {};
 			
-			if (crosssubjid > 0 && $('input[name^=crosssub-title]').length) {
-				// in editmode
-				reload = true;
-
-				multiQueryData.update_crosssubj = {
-					id: crosssubjid,
-					subjectid: $("#menulis_crosssubject_subject option:selected").val(),
-					title: $('input[name^=crosssub-title]').val(),
-					description: $('input[name^=crosssub-description]').val()
-				};
-			}
-
 			if (!$.isEmptyObject(examples)) {
 				multiQueryData.examples = examples;
 				examples = {};
@@ -270,7 +250,7 @@
 					parentid: this.getAttribute('parentid'),
 					topicid: this.getAttribute('topicid'),
 					niveauid: this.getAttribute('niveauid'),
-					title: this.value
+					title: this.value,
 				});
 
 				if (new_descriptors.length) {
@@ -286,37 +266,13 @@
 					data: JSON.stringify(multiQueryData)
 				}).done(function(msg) {
 					all_done();
-					
-					//im crosssubject neue Teilkompetenz erstellt -> gleich thema zuordnen
-					// TODO: was macht das?
-					// brauchen wir nicht, weil wir die seite eh nue laden?
-					/*
-					??? var msg = new_competencies[0].descriptorid
-
-					var select = document
-					.getElementById("menulis_crosssubs");
-
-					if (block_exacomp.get_param("crosssubjid") !== null || select) {
-						alert('TODO');
-						if (select) {
-							crosssubjid = select.options[select.selectedIndex].value;
-						} else if (block_exacomp.get_param("crosssubjid") !== null) {
-							crosssubjid = block_exacomp.get_param('crosssubjid');
-						}
-						console.log(crosssubjid);
-						block_exacomp.call_ajax({
-							descrid: msg,
-							crosssubjectid : crosssubjid,
-							action : 'crosssubj-descriptors-single'
-						});
-					}
-					*/
 				});
 			} else {
 				all_done();
 			}
 			
 			break;
+		/*
 		case 'save_as_draft':
 			if (crosssubjid > 0) {
 				block_exacomp.call_ajax({
@@ -338,16 +294,12 @@
 				});
 			} 
 			break;
+		*/
 		}
-		
+
 		return false;
 	});
 
-	$(document).on('click', 'input[name=share_all]', function(){
-		// disable if checked
-		$("input[name='student']").attr('disabled', this.checked);
-	});
-	
 	// Add Descriptor to crosssubjects
 	$(document).on('click', '#crosssubjects', function(event) {
 		event.preventDefault();
@@ -371,36 +323,6 @@
 		});
 	});
 
-	// Share crosssubject with students
-	$(document).on('click', ':button[name=share_crosssubj_students]', function() {
-		var students = [];
-		var not_students = [];
-		var courseid = block_exacomp.get_param('courseid');
-		var crosssubjid = block_exacomp.get_param('crosssubjid');
-
-		var data = {
-			action: 'crosssubj-share',
-			crosssubjid : crosssubjid,
-			share_all: $("input[name='share_all']").is(':checked'),
-			students: [],
-			not_students: []
-		};
-		
-		if (!data.share_all) {
-			// send students array if not sharing to all
-			$("input[name='student']").each(function() {
-				if (this.checked)
-					data.students.push($(this).val());
-				else
-					data.not_students.push($(this).val());
-			});
-		}
-
-		block_exacomp.call_ajax(data).done(function(msg) {
-			block_exacomp.popup_close_and_reload();
-		});
-	});
-	
 	$(document).on('click', 'a[id^=competence-grid-link]', function(event) {
 		if($(this).hasClass('deactivated')){
 			event.preventDefault();
@@ -439,8 +361,7 @@
 			$(this).attr('state','+');
 			visible = 0;
 
-			$(this).trigger('rg2.close');
-			tr.addClass('rg2-locked');
+			$(this).trigger('rg2.lock');
 
 			//disable checkbox for teacher, when hiding descriptor for student
 			if(studentid > 0){
@@ -469,7 +390,7 @@
 		}else{
 			$(this).attr('state','-');
 			visible = 1;
-			tr.removeClass('rg2-locked');
+			$(this).trigger('rg2.unlock');
 
 			//enable checkbox for teacher, when showing descriptor for student
 

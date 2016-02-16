@@ -518,6 +518,14 @@ class db_record {
 		$this->{static::SUBS} = $value;
 	}
 
+	public function has_capability($cap) {
+		return has_item_capability($cap, $this);
+	}
+
+	public function require_capability($cap) {
+		return require_item_capability($cap, $this);
+	}
+
 	/**
 	 * @param mixed $conditions can be an
 	 * 			* (string,int)id OR (object,array)conditions, to load that record from the database
@@ -613,14 +621,21 @@ class subject extends db_record {
 	function get_author() {
 		return $this->data->author;
 	}
+
+	function get_numbering() {
+		return '';
+	}
 }
 
 class topic extends db_record {
 	const TABLE = DB_TOPICS;
 	const SUBS = 'descriptors';
 
-	// TODO: why not using lib.php block_exacomp_get_topic_numbering??
+	// why not using lib.php block_exacomp_get_topic_numbering??
+	// because it is faster this way (especially for export etc where whole competence tree is read)
 	function get_numbering() {
+		return block_exacomp_get_topic_numbering($this);
+		/*
 		if (!isset($this->subject)) {
 			echo 'no subject!';
 			var_dump($this);
@@ -638,6 +653,7 @@ class topic extends db_record {
 		$numbering .= $this->numb.'.';
 
 		return $numbering;
+		*/
 	}
 
 	function fill_descriptors() {
@@ -655,8 +671,9 @@ class descriptor extends db_record {
 		}
 	}
 
-	// TODO: why not using lib.php block_exacomp_get_descriptor_numbering ??
 	function get_numbering() {
+		return block_exacomp_get_descriptor_numbering($this);
+		/*
 		global $DB;
 		$topic = $this->topic;
 		if (!$topic) {
@@ -677,6 +694,7 @@ class descriptor extends db_record {
 		}
 
 		return $numbering;
+		*/
 	}
 
 	function get_topic() {
@@ -786,7 +804,7 @@ class example extends db_record {
 			print_error('no descriptor loaded');
 		}
 
-		return $this->descriptor->numbering;
+		return $this->descriptor->get_numbering();
 	}
 
 	function get_author() {
@@ -803,5 +821,20 @@ class niveau extends db_record {
 
 	function get_subtitle($subjectid) {
 		return g::$DB->get_field(DB_SUBJECT_NIVEAU_MM, 'subtitle', ['subjectid' => $subjectid, 'niveauid' => $this->id]); // none for now
+	}
+}
+
+class cross_subject extends db_record {
+	const TABLE = DB_CROSSSUBJECTS;
+
+	function is_draft() {
+		return !$this->courseid;
+	}
+
+	function is_shared() {
+		if ($this->is_draft()) return false;
+		if ($this->shared) return true;
+
+		return g::$DB->record_exists(\block_exacomp\DB_CROSSSTUD, array('crosssubjid'=>$this->id));
 	}
 }

@@ -231,7 +231,7 @@ $(function() {
 	ddtreemenu.openfolder = M.cfg.wwwroot+"/blocks/exacomp/javascript/simpletreemenu/open.gif";
 
 	// mark open elements, ddtreemenu opens them automatically
-	trees.filter('.exa-tree-open-checked').find('ul').has("input[type=checkbox]:checked").attr('rel', 'open');
+	trees.filter('.exa-tree-reopen-checked').find('ul').has("input[type=checkbox]:checked").attr('rel', 'open');
 
 	// init the trees
 	trees.addClass('treeview').each(function(i){
@@ -262,10 +262,8 @@ $(document).on('click', '.exa-collapsible > legend', function(){
 (function(){
 
 	var options = {
-		storageid: document.location.pathname,
 		check_uncheck_parents_children: false,
 		reopen_checked: false,
-		// var remember_state = ['action', 'courseid'];
 	};
 	window.exabis_rg2 = {
 		options: options,
@@ -323,6 +321,9 @@ $(document).on('click', '.exa-collapsible > legend', function(){
 		});
 		return $(children);
 	}
+	function get_table_storageid($table) {
+		return 'rg2-id-storage-' + ($table.attr('exa-rg2-storageid') || document.location.pathname);
+	}
 	function update() {
 		get_tables().each(function(){
 			var visible_level = 0,
@@ -373,8 +374,10 @@ $(document).on('click', '.exa-collapsible > legend', function(){
 
 	$(window).unload(function(){
 		// save state before unload
-		var ids = get_tables().find('.rg2.open:not(.rg2-locked)').map(function(){ return get_row(this).id; }).toArray();
-		localStorage.setObject(options.storageid, ids);
+		get_tables().each(function(){
+			var ids = $(this).find('.rg2.open:not(.rg2-locked)').map(function(){ return get_row(this).id; }).toArray();
+			localStorage.setObject(get_table_storageid($(this)), ids);
+		});
 	});
 
 	$(document).on('click', '.rg2 .selectallornone', function(){
@@ -407,42 +410,66 @@ $(document).on('click', '.exa-collapsible > legend', function(){
 			get_parents(this).addClass('open');
 			update();
 		});
+		$tables.on('rg2.lock', 'tr.rg2', function(){
+			$(this).addClass('rg2-locked');
+			$(this).removeClass('open');
+			$(this).find('.rg2-arrow-disabled').addClass('rg2-arrow').removeClass('rg2-arrow-disabled');
+
+			update();
+		});
+		$tables.on('rg2.unlock', 'tr.rg2', function(){
+			$(this).removeClass('rg2-locked');
+
+			update();
+		});
 
 		$('.rg2-level-0').show();
 
-		if (options.check_uncheck_parents_children) {
-			$(function(){
-				$('table.rg2 :checkbox').click(function(event){
-					get_children(this, true).find(":checkbox").prop('checked', $(this).prop('checked'));
-					if (!$(this).prop('checked')) {
-						// parents, only for uncheck
-						get_parents(this).find(":checkbox").prop('checked', false);
-					}
-				});
+		$(function(){
+			var $tables;
+			if (options.check_uncheck_parents_children) {
+				$tables = get_tables();
+			} else {
+				$tables = get_tables().filter('.rg2-check_uncheck_parents_children');
+			}
+			$tables.find(':checkbox').click(function(event){
+				get_children(this, true).find(":checkbox").prop('checked', $(this).prop('checked'));
+				if (!$(this).prop('checked')) {
+					// parents, only for uncheck
+					get_parents(this).find(":checkbox").prop('checked', false);
+				}
 			});
-		}
+		});
 
 		// reopen saved states
-		var ids;
-		if (ids = localStorage.getObject(options.storageid)) {
-			$.each(ids, function(tmp, id){
-				// only open if not locked
-				$tables.find('.rg2:not(.rg2-locked)[exa-rg2-id="'+id+'"]').addClass('open');
-			});
-		}
+		get_tables().each(function(){
+			var $table = $(this);
+			var ids = localStorage.getObject(get_table_storageid($table));
+			if (ids) {
+				$.each(ids, function(tmp, id){
+					// only open if not locked
+					$table.find('.rg2:not(.rg2-locked)[exa-rg2-id="'+id+'"]').addClass('open');
+				});
+			}
+		});
 
 		// reopen checked
 		if (options.reopen_checked) {
-			$('.rg2 :checkbox:checked').trigger('rg2.open-parents');
+			get_tables().find(':checkbox:checked').trigger('rg2.open-parents');
+		} else {
+			get_tables().filter('.rg2-reopen-checked').find(':checkbox:checked').trigger('rg2.open-parents');
 		}
+
+		// close locked
+		get_tables().find('tr.rg2-locked').removeClass('open');
 
 		update();
 
 		// if just one item, always open and hide arrow
-		if ($('.rg2-level-0.rg2-header').length == 1) {
-			$('.rg2-level-0.rg2-header').addClass('open').find('.rg2-arrow').removeClass('rg2-arrow').addClass('rg2-arrow-disabled');
-			if ($('.rg2-level-1.rg2-header').length == 1) {
-				$('.rg2-level-1.rg2-header').addClass('open').find('.rg2-arrow').removeClass('rg2-arrow').addClass('rg2-arrow-disabled');
+		if ($('.rg2-level-0.rg2-header:not(.rg2-locked)').length == 1) {
+			$('.rg2-level-0.rg2-header:not(.rg2-locked)').addClass('open').find('.rg2-arrow').removeClass('rg2-arrow').addClass('rg2-arrow-disabled');
+			if ($('.rg2-level-1.rg2-header:not(.rg2-locked)').length == 1) {
+				$('.rg2-level-1.rg2-header:not(.rg2-locked)').addClass('open').find('.rg2-arrow').removeClass('rg2-arrow').addClass('rg2-arrow-disabled');
 			}
 			update();
 		}

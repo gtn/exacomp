@@ -86,6 +86,7 @@ const SHOW_ALL_TOPICS = -1;
 const SHOW_ALL_NIVEAUS = 99999999;
 
 const CAP_ADD_EXAMPLE = 'add_example';
+const CAP_VIEW = 'view';
 const CAP_MODIFY = 'modify';
 const CAP_DELETE = 'delete';
 }
@@ -1730,8 +1731,6 @@ define('BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_EDITMODE', 1);
 define('BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN', 2);
 define('BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN', 3);
 function block_exacomp_studentselector($students, $selected, $url, $option = null) {
-	global $CFG;
-
 	$studentsAssociativeArray = array();
 
 	// make copy
@@ -4073,9 +4072,11 @@ function block_exacomp_get_schooltypetree_by_topics($subjects, $competencegrid =
 	return $tree;
 }
 
+/**
+ * @return block_exacomp\cross_subject[]
+ */
 function block_exacomp_get_cross_subjects_drafts(){
-	global $DB;
-	return $DB->get_records(\block_exacomp\DB_CROSSSUBJECTS, array('courseid'=>0));
+	return block_exacomp\cross_subject::get_objects(array('courseid'=>0));
 }
 /**
  *
@@ -4152,18 +4153,19 @@ function block_exacomp_delete_crosssubject_drafts($drafts_to_delete){
 }
 
 function block_exacomp_get_crosssubjects(){
-	global $DB;
-	return $DB->get_records(\block_exacomp\DB_CROSSSUBJECTS);
+	return g::$DB->get_records(\block_exacomp\DB_CROSSSUBJECTS);
 }
-function block_exacomp_get_cross_subjects_by_course($courseid, $studentid=0){
-	global $DB;
-	$crosssubs = $DB->get_records(\block_exacomp\DB_CROSSSUBJECTS, array('courseid'=>$courseid));
-	if($studentid == 0)
-		return $crosssubs;
+function block_exacomp_get_cross_subjects_by_course($courseid, $studentid=null){
+	$crosssubs = block_exacomp\cross_subject::get_objects(['courseid'=>$courseid], 'title');
 
+	if (!$studentid) {
+		return $crosssubs;
+	}
+
+	// also check for student permissions
 	$crosssubs_shared = array();
 	foreach($crosssubs as $crosssubj){
-		if($crosssubj->shared == 1 || block_exacomp_student_crosssubj($crosssubj->id, $studentid))
+		if ($crosssubj->has_capability(block_exacomp\CAP_VIEW))
 			$crosssubs_shared[$crosssubj->id] = $crosssubj;
 	}
 	return $crosssubs_shared;
@@ -4173,20 +4175,6 @@ function block_exacomp_student_crosssubj($crosssubjid, $studentid){
 	return $DB->get_records(\block_exacomp\DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid, 'studentid'=>$studentid));
 }
 
-function block_exacomp_init_course_crosssubjects($courseid, $crosssubjid, $studentid = 0) {
-	$crosssubjects = block_exacomp_get_cross_subjects_by_course($courseid, $studentid);
-
-	$selectedCrosssubject = null;
-	if($crosssubjid != 0){
-		if(isset($crosssubjects[$crosssubjid])){
-			$selectedCrosssubject = $crosssubjects[$crosssubjid];
-		} elseif ($crosssubjects) {
-			$selectedCrosssubject = reset($crosssubjects);
-		}
-	}
-
-	return array($crosssubjects, $selectedCrosssubject);
-}
 /**
  * Gets an associative array that is used to display the whole hierarchie of subjects, topics and competencies within a course
  *
@@ -4415,27 +4403,6 @@ function block_exacomp_unset_cross_subject_descriptor($crosssubjid, $descrid){
 			}
 		}
 	}
-}
-function block_exacomp_set_cross_subject_student($crosssubjid, $studentid){
-	global $DB;
-	$record = $DB->get_record(\block_exacomp\DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid, 'studentid'=>$studentid));
-	if(!$record)
-		$DB->insert_record(\block_exacomp\DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid, 'studentid'=>$studentid));
-}
-function block_exacomp_unset_cross_subject_student($crosssubjid, $studentid){
-	global $DB;
-	$record = $DB->get_record(\block_exacomp\DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid, 'studentid'=>$studentid));
-	if($record)
-		$DB->delete_records(\block_exacomp\DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid, 'studentid'=>$studentid));
-}
-function	 block_exacomp_share_crosssubject($crosssubjid, $value = 0){
-	global $DB;
-
-	// TODO: check if my crosssubj?
-
-	$update = $DB->get_record(\block_exacomp\DB_CROSSSUBJECTS, array('id'=>$crosssubjid));
-	$update->shared = $value;
-	return $DB->update_record(\block_exacomp\DB_CROSSSUBJECTS, $update);
 }
 function block_exacomp_get_descr_topic_sorting($topicid, $descid){
 	global $DB;
@@ -4920,30 +4887,29 @@ function block_exacomp_calculate_statistic_for_example($courseid, $students, $ex
 function block_exacomp_get_descriptor_numbering($descriptor){
 	global $DB;
 
-	if(block_exacomp_is_numbering_enabled()){
-		$topicid = $descriptor->topicid;
-
-		$numbering = block_exacomp_get_topic_numbering($topicid);
-
-		if(empty($numbering))
-			return "";
-
-		if($descriptor->parentid == 0){
-			$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
-			if ($niveau)
-				$numbering .= $niveau->numb;
-		}
-		if($descriptor->parentid != 0){
-			$parent_descriptor = $DB->get_record(\block_exacomp\DB_DESCRIPTORS, array('id'=>$descriptor->parentid));
-			$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$parent_descriptor->niveauid));
-			if ($niveau)
-				$numbering .= $niveau->numb.'.';
-			$numbering .= $descriptor->sorting;
-		}
-
-		return $numbering;
+	if (!block_exacomp_is_numbering_enabled()) {
+		return '';
 	}
-	return "";
+
+	$numbering = block_exacomp_get_topic_numbering(isset($descriptor->topic) ? $descriptor->topic : $descriptor->topicid);
+
+	if (empty($numbering))
+		return "";
+
+	if ($descriptor->parentid == 0){
+		$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
+		if ($niveau)
+			$numbering .= $niveau->numb;
+	}
+	if ($descriptor->parentid != 0){
+		$parent_descriptor = $DB->get_record(\block_exacomp\DB_DESCRIPTORS, array('id'=>$descriptor->parentid));
+		$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$parent_descriptor->niveauid));
+		if ($niveau)
+			$numbering .= $niveau->numb.'.';
+		$numbering .= $descriptor->sorting;
+	}
+
+	return $numbering;
 }
 /**
  *
@@ -4951,18 +4917,22 @@ function block_exacomp_get_descriptor_numbering($descriptor){
  * @return string
  */
 function block_exacomp_get_topic_numbering($topic){
+	if (!block_exacomp_is_numbering_enabled()){
+		return '';
+	}
+
 	if (is_object($topic)) {
 		// ok
 	} else {
 	   $topic = block_exacomp_get_topic_by_id($topic);
 	}
-	$numbering = "";
-	if(block_exacomp_is_numbering_enabled()){
-		$s = block_exacomp_get_subject_by_id($topic->subjid);
-		if(!empty($s->titleshort) && !empty($topic->numb))
-			$numbering = $s->titleshort.'.'.$topic->numb.'.';
+
+	$subject = isset($topic->subject) ? $topic->subject : block_exacomp_get_subject_by_id($topic->subjid);
+	if ($subject && !empty($subject->titleshort) && !empty($topic->numb)) {
+		return $subject->titleshort.'.'.$topic->numb.'.';
+	} else {
+		return '';
 	}
-	return $numbering;
 }
 function block_exacomp_get_cross_subjects_drafts_sorted_by_subjects(){
 	global $DB;
@@ -6638,6 +6608,38 @@ namespace block_exacomp {
 			if ($item->source != DATA_SOURCE_CUSTOM) {
 				throw new permission_exception('Not a custom descriptor');
 			}
+		} elseif ($item instanceof cross_subject && in_array($cap, [CAP_MODIFY, CAP_DELETE])) {
+			if (block_exacomp_is_admin()) return true;
+
+			if ($item->is_draft()) {
+				// draft
+				if (!block_exacomp_is_teacher(g::$COURSE->id)) {
+					throw new permission_exception('User is no teacher');
+				}
+
+				if ($item->creatorid != g::$USER->id) {
+					throw new permission_exception('No permission');
+				}
+			} else {
+				if (!block_exacomp_is_teacher($item->courseid)) {
+					throw new permission_exception('User is no teacher');
+				}
+			}
+		} elseif ($item instanceof cross_subject && in_array($cap, [CAP_VIEW])) {
+			if ($item->has_capability(CAP_MODIFY)) return true;
+
+			if ($item->is_draft() && block_exacomp_is_teacher()) {
+				// teachers can view all drafts
+				return true;
+			}
+
+			// it's a student
+			if ($item->is_draft() || $item->courseid != g::$COURSE->id) {
+				throw new permission_exception('No permission');
+			}
+			if (!$item->shared && !block_exacomp_student_crosssubj($item->id, g::$USER->id)) {
+				throw new permission_exception('No permission');
+			}
 		} else {
 			throw new \coding_exception("Capability $cap for item ".print_r($item, true)." not found");
 		}
@@ -6646,14 +6648,11 @@ namespace block_exacomp {
 	}
 
 	function has_item_capability($cap, $item) {
-		die("TODO: test");
-		/*
 		try {
 			require_item_capability($cap, $item);
 			return true;
 		} catch (permission_exception $e) {
 			return false;
 		}
-		*/
 	}
 }

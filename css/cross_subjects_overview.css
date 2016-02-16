@@ -49,10 +49,6 @@
   background-color: #f9f9f9;
 }
 
-#block_exacomp .exabis_competencies_lis table.exabis_comp_comp thead {
-	font-size: ;
-}
-
 #block_exacomp .exabis_competencies_lis span.exabis_comp_top_header {
 	font-style: italic;
 	font-size: 15px;
@@ -160,10 +156,19 @@
 #block_exacomp div.edit_buttons_float_right {
 	float: right;
 }
+/*
 #block_exacomp a.crosssub-icons {
 	padding-left: 10px;
 	padding-right: 5px;
 }
+*/
+#block_exacomp .generaltable td.lastcol {
+	white-space: nowrap;
+}
+#block_exacomp .generaltable td.lastcol a {
+	margin: 4px;
+}
+
 #block_exacomp h5 {
 	font-size : 15px;
 }

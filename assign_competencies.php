@@ -38,7 +38,7 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 }
 
 $editmode = optional_param('editmode', 0, PARAM_BOOL);
-$ng_subjectid = optional_param('ng_subjectid', 0, PARAM_INT);
+$subjectid = optional_param('subjectid', 0, PARAM_INT);
 
 $topicid = optional_param('topicid', 0, PARAM_INT);
 $niveauid = optional_param('niveauid', block_exacomp\SHOW_ALL_NIVEAUS, PARAM_INT);
@@ -63,18 +63,17 @@ if($editmode) {
 $page_identifier = 'tab_competence_overview';
 
 /* PAGE URL - MUST BE CHANGED */
-$PAGE->set_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid, 'showevaluation'=>$showevaluation));
+$PAGE->set_url('/blocks/exacomp/assign_competencies.php', [
+	'courseid' => $courseid,
+	'showevaluation' => $showevaluation,
+	'studentid' => $studentid,
+	'editmode' => $editmode,
+	'niveauid' => $niveauid,
+	'subjectid' => $subjectid,
+	'topicid' => $topicid,
+]);
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
-$NG_PAGE = (object)[ 'url' => new moodle_url('/blocks/exacomp/assign_competencies.php', array(
-				'courseid' => $courseid,
-				'showevaluation' => $showevaluation,
-				'studentid' => $studentid,
-				'editmode' => $editmode,
-				'niveauid' => $niveauid,
-				'ng_subjectid' => $ng_subjectid,
-				'topicid' => $topicid,
-			)) ];
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
@@ -98,7 +97,7 @@ if($course_settings->uses_activities && !$activities && !$course_settings->show_
 	exit;
 }
 
-$ret = block_exacomp_init_overview_data($courseid, $ng_subjectid, $topicid, $niveauid, $editmode, $isTeacher, ($isTeacher?0:$USER->id));
+$ret = block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher, ($isTeacher?0:$USER->id));
 if (!$ret) {
 	print_error('not configured');
 }
@@ -157,7 +156,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
 		$html_header = $output->print_overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
 
 		// $html .= "&nbsp;<br />";
-		$html_tables[] = $output->print_competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $scheme, $selectedNiveau->id != block_exacomp\SHOW_ALL_NIVEAUS, false, 0, $statistic);
+		$html_tables[] = $output->print_competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $scheme, $selectedNiveau->id != block_exacomp\SHOW_ALL_NIVEAUS, 0, $statistic);
 	}
 
 	block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html_tables);
@@ -208,11 +207,11 @@ echo '<div class="clearfix"></div>';
 if($course_settings->nostudents != 1)
 	echo $output->print_overview_legend($isTeacher);
 if($course_settings->nostudents != 1 && $studentid)
-	echo $output->print_student_evaluation($showevaluation, $isTeacher,$selectedNiveau->id,$ng_subjectid, $topicid, $studentid);
+	echo $output->print_student_evaluation($showevaluation, $isTeacher,$selectedNiveau->id,$subjectid, $topicid, $studentid);
 
 echo $output->print_competence_overview($competence_tree, $courseid, $students, $showevaluation,
 		$isTeacher ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $scheme,
-		($selectedNiveau->id != block_exacomp\SHOW_ALL_NIVEAUS), false, 0, $statistic);
+		($selectedNiveau->id != block_exacomp\SHOW_ALL_NIVEAUS), 0, $statistic);
 echo '</div>';
 
 echo html_writer::end_tag("div");

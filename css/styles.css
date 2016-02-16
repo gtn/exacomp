@@ -626,7 +626,10 @@ hide arrow
 	padding-left: 100px !important;
 }
 
-
+#block_exacomp td.row-numbering {
+	width: 5px;
+	white-space: nowrap;
+}
 #block_exacomp .exabis_comp_top_student {
 	text-align: center
 }

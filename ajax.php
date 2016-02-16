@@ -66,32 +66,6 @@ switch($action){
 		block_exacomp_set_cross_subject_descriptor($subj_id,$descrid);
 			
 		break;
-	case ('crosssubj-descriptors-single'):
-		$descrid = required_param('descrid', PARAM_INT);
-		$crosssubjectid = required_param('crosssubjectid', PARAM_INT);
-		
-		block_exacomp_set_cross_subject_descriptor($crosssubjectid,$descrid);
-		break;	
-	case ('crosssubj-share'):
-		$crosssubjid = required_param('crosssubjid', PARAM_TEXT);
-		$share_all = required_param('share_all', PARAM_BOOL);
-		block_exacomp_share_crosssubject($crosssubjid, $share_all);
-	
-		if (!$share_all) {
-			// save individual users
-			$student_ids = block_exacomp\param::optional_array('students', [PARAM_INT]);
-			$not_students_ids = block_exacomp\param::optional_array('not_students', [PARAM_INT]);
-	
-			foreach($student_ids as $studentid)
-				block_exacomp_set_cross_subject_student($crosssubjid, $studentid);
-			
-			foreach($not_students_ids as $studentid)
-				block_exacomp_unset_cross_subject_student($crosssubjid, $studentid);
-		}
-		
-		\block_exacomp\event\crosssubject_added::log(['objectid' => $exampleid, 'courseid' => $courseid]);
-		
-		die('ok');
 	case('save_as_draft'):
 		$crosssubjid = required_param('crosssubjid', PARAM_INT);
 		block_exacomp_save_drafts_to_course(array($crosssubjid), 0);
@@ -145,7 +119,7 @@ switch($action){
 				'parentid' => PARAM_INT,
 				'topicid' => PARAM_INT,
 				'niveauid' => PARAM_INT,
-				'title' => PARAM_TEXT
+				'title' => PARAM_TEXT,
 			)));
 			foreach ($new_descriptors as $descriptor) {
 				\block_exacomp\descriptor::insertInCourse($courseid, $descriptor);
@@ -166,23 +140,6 @@ switch($action){
 			}
 		}
 
-		if (!empty($data->update_crosssubj)) {
-			$update_crosssubj = block_exacomp\param::clean_object($data->update_crosssubj, array(
-				'id' => PARAM_INT,
-				'subjectid' => PARAM_INT,
-				'title' => PARAM_TEXT,
-				'description' => PARAM_TEXT
-			));
-			
-			if ($update_crosssubj) {
-				// don't update title if empty
-				if (empty($update_crosssubj->title)) unset($update_crosssubj->title);
-				
-				// TODO: pruefen ob mein crosssubj?
-				$DB->update_record(\block_exacomp\DB_CROSSSUBJECTS, $update_crosssubj);
-			}
-		}
-		
 		if (!empty($data->examples)) {
 			$examples = block_exacomp\param::clean_array($data->examples, array((object)array(
 				'userid' => PARAM_INT,

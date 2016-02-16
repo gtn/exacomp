@@ -37,7 +37,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $this->header(block_exacomp_get_context_from_courseid(g::$COURSE->id), g::$COURSE->id, $page_identifier);
 	}
 
-	public function header($context=null, $courseid=0, $page_identifier="", $tabtree=true) {
+	public function header($context=null, $courseid=0, $page_identifier="", $tabtree=null) {
 		global $PAGE;
 		
 		block_exacomp_init_js_css();
@@ -71,6 +71,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 			
 			$extras .= ob_get_clean();
+		}
+
+		if ($tabtree === null) {
+			$tabtree = $PAGE->pagelayout != 'embedded';
 		}
 
 		return
@@ -443,7 +447,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 * Prints 2 select inputs for subjects and topics
 	 */
 	public function print_overview_dropdowns($type, $students, $selectedStudent = 0, $isTeacher = false) {
-		global $COURSE, $USER, $NG_PAGE;
+		global $COURSE, $USER;
 
 		$content = "";
 		$right_content = "";
@@ -456,7 +460,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			} else {
 				$content .= '<div style="padding-bottom: 15px;">';
 				$content .= get_string("choosestudent", "block_exacomp");
-				$content .= block_exacomp_studentselector($students,$selectedStudent,$NG_PAGE->url, BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
+				$content .= block_exacomp_studentselector($students,$selectedStudent,g::$PAGE->url, BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
 				$content .= '</div>';
 			}
 
@@ -481,7 +485,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				)
 			);
 
-			$right_content .= $this->print_edit_mode_button();
+			$right_content .= $this->print_edit_mode_button(block_exacomp\url::create(g::$PAGE->url, ['editmode' => !$this->is_edit_mode()]));
 		} else {
 			foreach(block_exacomp_get_teachers_by_course($COURSE->id) as $teacher) {
 				$right_content .= block_exacomp_get_message_icon($teacher->id);
@@ -511,20 +515,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return !empty($this->print);
 	}
 	
-	public function print_edit_mode_button() {
-		global $NG_PAGE;
-		
-		$url = new block_exacomp\url($NG_PAGE->url);
-
+	public function print_edit_mode_button($url) {
 		$edit = $this->is_edit_mode();
-		$url->param('editmode', !$edit);
-		
 		return html_writer::empty_tag('input', array('type'=>'button', 'id'=>'edit_mode_submit', 'name'=> 'edit_mode_submit', 'value'=>\block_exacomp\get_string(($edit) ? 'turneditingoff' : 'turneditingon'),
 				 "onclick" => "document.location.href='".$url->out(false)."'"));
 	}
 	
 	public function print_subjects_menu($subjects, $selectedSubject, $selectedTopic) {
-		global $NG_PAGE, $CFG, $COURSE;
+		global $CFG, $COURSE;
 
 		$content = html_writer::start_div('subjects_menu');
 		$content .= html_writer::start_tag('ul');
@@ -536,7 +534,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 			$content .= html_writer::tag('li',
 					html_writer::link(
-						new block_exacomp\url($NG_PAGE->url, ['ng_subjectid' => $subject->id, 'topicid'=>block_exacomp\SHOW_ALL_TOPICS]),
+						new block_exacomp\url(g::$PAGE->url, ['subjectid' => $subject->id, 'topicid'=>block_exacomp\SHOW_ALL_TOPICS]),
 						$subject->title.$extra, [
 							'class' => (!$selectedTopic && $subject->id == $selectedSubject->id) ? 'type current' : 'type',
 							'title' => (($author = $subject->get_author()) ? get_string('author', 'repository').": ".$author : ''),
@@ -550,7 +548,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				}
 
 				$content .= html_writer::tag('li',
-					html_writer::link(new block_exacomp\url($NG_PAGE->url, ['ng_subjectid' => $subject->id, 'topicid' => $topic->id]),
+					html_writer::link(new block_exacomp\url(g::$PAGE->url, ['subjectid' => $subject->id, 'topicid' => $topic->id]),
 							block_exacomp_get_topic_numbering($topic).' '.$topic->title.$extra, array('class' => ($selectedTopic && $topic->id == $selectedTopic->id) ? 'current' : ''))
 					);
 			}
@@ -570,7 +568,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 	public function print_niveaus_menu($niveaus,$selectedNiveau,$selectedTopic) {
-		global $NG_PAGE, $CFG, $COURSE;
+		global $CFG, $COURSE;
 		
 		$content = html_writer::start_div('niveaus_menu');
 		$content .= html_writer::start_tag('ul');
@@ -579,7 +577,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$title = isset($niveau->cattitle) ? $niveau->cattitle : $niveau->title;
 			$subtitle = $selectedTopic ? $niveau->get_subtitle($selectedTopic->subjid) : null;
 			$content .= html_writer::tag('li',
-					html_writer::link(new block_exacomp\url($NG_PAGE->url, ['niveauid' => $niveau->id]),
+					html_writer::link(new block_exacomp\url(g::$PAGE->url, ['niveauid' => $niveau->id]),
 							$title.($subtitle?'<span class="subtitle">'.$subtitle.'</span>':''), array('class' => ($niveau->id == $selectedNiveau->id) ? 'current' : '', 'title'=>$title.($subtitle?': '.$subtitle:'')))
 					);
 		}
@@ -1060,7 +1058,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return $table_html.html_writer::end_tag('form');
 	}
-	public function print_competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $singletopic = false, $crosssubjs = false, $crosssubjid = 0, $statistic = false) {
+	public function print_competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $singletopic = false, $crosssubjid = 0, $statistic = false) {
 		global $additional_grading;
 
 		$table = new html_table();
@@ -1069,6 +1067,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		if($additional_grading && ($showevaluation || $role = \block_exacomp\ROLE_TEACHER)) $studentsColspan++;
 
 		$table->attributes['class'] = 'exabis_comp_comp rg2 exabis-tooltip';
+
+		// in the future maybe use lscache or some other method?
+		if ($crosssubjid) {
+			$table->attributes['exa-rg2-storageid'] = 'cross_subject-'.$crosssubjid;
+		} elseif (count($subjects) == 1) {
+			$subject = reset($subjects);
+			$table->attributes['exa-rg2-storageid'] = 'assign_competencies-'.'subject-'.$subject->id;
+			if (count($subject->topics) == 1) {
+			$topic = reset($subject->topics);
+				$table->attributes['exa-rg2-storageid'] .= '-topic-'.$topic->id;
+			}
+		}
+
 		if(block_exacomp_exaportexists())
 			$eportfolioitems = block_exacomp_get_eportfolioitem_association($students);
 		else
@@ -1091,7 +1102,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$title = new html_table_cell();
 				$title->colspan = 2;
 
-				if($crosssubjs)
+				if($crosssubjid)
 					$title->text = html_writer::tag("b", get_string('comps_and_material', 'block_exacomp'));
 				else
 					$title->text = html_writer::tag("b", $subject->title);
@@ -1189,13 +1200,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					'supported_modules'=>block_exacomp_get_supported_modules(),
 					'showalldescriptors' => block_exacomp_get_settings_by_course($courseid)->show_all_descriptors,
 			);
-			$this->print_topics($rows, 0, $subject->topics, $data, $students, false, $this->is_edit_mode(), $statistic, $crosssubjs, $crosssubjid);
+			$this->print_topics($rows, 0, $subject->topics, $data, $students, false, $this->is_edit_mode(), $statistic, $crosssubjid);
 
 
 			$first = false;
 		}
 		//total evaluation crosssub row
-		if($crosssubjs && !$this->is_edit_mode() && !$statistic){
+		if($crosssubjid && !$this->is_edit_mode() && !$statistic && $students){
 			$student = array_values($students)[0];
 
 			$totalRow = new html_table_row();
@@ -1283,25 +1294,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$table_html = html_writer::table($table);
 
-		if(count($rows) == 0 && $crosssubjs) {
-			$table_html .= html_writer::div(get_string('add_content_to_crosssub','block_exacomp',(new moodle_url('assign_competencies.php',array('courseid'=>$courseid,'editmode'=>1)))->__toString()),
+		if(count($rows) == 0 && $crosssubjid) {
+			$table_html .= html_writer::div(
+				block_exacomp\get_string('add_content_to_crosssub', null,
+					'cross_subjects.php?courseid='.g::$COURSE->id.'&action=descriptor_selector&crosssubjid='.$crosssubjid),
 					"alert alert-warning");
 		}
 
-		$new = optional_param('new', false, PARAM_BOOL);
-
 		if (!$this->is_print_mode()) {
-			if($crosssubjs && $role == \block_exacomp\ROLE_TEACHER && !$students) {
-				$buttons = html_writer::tag("input", "", array("id"=>"btn_submit", "name" => "btn_submit", "type" => "submit", "value" => get_string("save_crosssub", "block_exacomp")));
-				if (!$new) {
-					$buttons .= html_writer::tag("input", "", array("id"=>"add_content", "name" => "add_content", "type" => "button", "value" => block_exacomp\get_string('add_descriptors_to_crosssub'), 'exa-type' => "iframe-popup", 'exa-url' => 'cross_subjects.php?courseid='.$courseid.'&action=descriptor_selector&crosssubjid='.$crosssubjid)).
-								html_writer::tag("input", "", array("id"=>"save_as_draft", "name" => "save_as_draft", "type" => "button", "value" => get_string("save_as_draft", "block_exacomp"))).
-								html_writer::tag("input", "", array("id"=>"share_crosssub", "name"=>"share_crosssub", "type"=>"button", "value"=>get_string("share_crosssub", "block_exacomp"), 'exa-type'=>'iframe-popup', 'exa-url'=>'select_students.php?courseid='.$courseid.'&crosssubjid='.$crosssubjid)).
-								html_writer::tag("input", "", array("id"=>"delete_crosssub", "name"=>"delete_crosssub", "type"=>"button", "value"=>get_string("delete_crosssub", "block_exacomp"), 'message'=>get_string('confirm_delete', 'block_exacomp')), array('id'=>'exabis_save_button'));
-				}
-			} else {
-				$buttons = html_writer::tag("input", "", array("id"=>"btn_submit", "name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp")));
-			}
+			$buttons = html_writer::tag("input", "", array("id"=>"btn_submit", "name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp")));
 
 			$table_html .= html_writer::div($buttons,'', array('id'=>'exabis_save_button'));
 
@@ -1311,7 +1312,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $table_html;
 	}
 
-	public function print_topics(&$rows, $level, $topics, $data, $students, $profoundness = false, $editmode = false, $statistic = false, $crosssubjs = false, $crosssubjid=0) {
+	public function print_topics(&$rows, $level, $topics, $data, $students, $profoundness = false, $editmode = false, $statistic = false, $crosssubjid=0) {
 	
 		global $additional_grading;
 		$topicparam = optional_param('topicid', 0, PARAM_INT);
@@ -1465,7 +1466,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 			*/
 
-			if($editmode && !$crosssubjs) {
+			if($editmode && !$crosssubjid) {
 				// kompetenz hinzufuegen (nicht bei themen)
 				$niveauid = optional_param('niveauid', block_exacomp\SHOW_ALL_NIVEAUS, PARAM_INT);
 				//do not set niveauid for new descriptor if "show all" niveaus is selected
@@ -1488,7 +1489,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	function print_descriptors(&$rows, $level, $descriptors, $data, $students, $profoundness = false, $editmode=false, $statistic=false, $custom_created_descriptors=false, $parent = false, $crosssubjid = 0) {
-		global $NG_PAGE, $USER, $COURSE, $DB, $additional_grading;
+		global $USER, $COURSE, $DB, $additional_grading;
 
 		$evaluation = ($data->role == \block_exacomp\ROLE_TEACHER) ? "teacher" : "student";
 
@@ -1841,7 +1842,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							}
 
 							if(!$example_used)
-								$titleCell->text .= html_writer::link(new \block_exacomp\url('example_upload.php', ['action' => 'delete', 'exampleid' => $example->id, 'courseid'=>$COURSE->id, 'returnurl' => $NG_PAGE->url->out_as_local_url(false)]),
+								$titleCell->text .= html_writer::link(new \block_exacomp\url('example_upload.php', ['action' => 'delete', 'exampleid' => $example->id, 'courseid'=>$COURSE->id, 'returnurl' => g::$PAGE->url->out_as_local_url(false)]),
 									$this->pix_icon("t/delete", get_string("delete")),
 									array("onclick" => "return confirm(".json_encode(block_exacomp\get_string('delete_confirmation', null, $example->title)).")"));
 
@@ -2253,7 +2254,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function print_student_evaluation($showevaluation, $isTeacher=true,$niveauid = SHOW_ALL_NIVEAUS, $subjectid=0, $topicid=-1, $studentid=0) {
 		global $COURSE;
 
-		$link = new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid" => $COURSE->id, "showevaluation" => (($showevaluation) ? "0" : "1"),'niveauid'=>$niveauid,'topicid'=>$topicid, 'studentid'=>$studentid, 'ng_subjectid'=>$subjectid));
+		$link = new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid" => $COURSE->id, "showevaluation" => (($showevaluation) ? "0" : "1"),'niveauid'=>$niveauid,'topicid'=>$topicid, 'studentid'=>$studentid, 'subjectid'=>$subjectid));
 		$evaluation = $this->box_start();
 		$evaluation .= get_string('overview','block_exacomp');
 		$evaluation .= html_writer::empty_tag("br");
@@ -4297,67 +4298,59 @@ var dataset = dataset.map(function (group) {
 		
 		return $content;
 	}
-	
-	
-	public function print_cross_subjects_form_start($selectedCrosssubject=null, $studentid=null){
-		global $PAGE, $COURSE;
-		$url_params = array();
-		$url_params['action'] = 'save';
-		if(isset($selectedCrosssubject))
-			$url_params['crosssubjid'] = $selectedCrosssubject->id;
-		if(isset($studentid))
-			$url_params['studentid'] = $studentid;
-				
-		$url = new moodle_url($PAGE->url, $url_params);
-		return html_writer::start_tag('form',array('id'=>'assign-competencies', "action" => $url, 'method'=>'post'));
-	}
-	
-	public function print_dropdowns_cross_subjects($crosssubjects, $selectedCrosssubject, $students, $selectedStudent = BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $isTeacher = false){
+
+	/**
+	 * @param \block_exacomp\cross_subject $cross_subject
+	 * @param $students
+	 * @param $selectedStudent
+	 * @return string
+	 * @throws coding_exception
+	 */
+	public function print_cross_subject_buttons($cross_subject, $students, $selectedStudent){
 		global $PAGE, $COURSE, $USER;
-		
-		$content = html_writer::empty_tag("br");
 
-		/*$content .= get_string("choosecrosssubject", "block_exacomp").': ';
-		$options = array();
-		foreach($crosssubjects as $crosssub)
-			$options[$crosssub->id] = $crosssub->title;
-		$content .= html_writer::select($options, "lis_crosssubs", $selectedCrosssubject, false,
-				array("onchange" => "document.location.href='".$PAGE->url."&studentid=".$selectedStudent."&crosssubjid='+this.value;"));
-*/
-		if($isTeacher){
-			//$content .= html_writer::empty_tag("br");
-	
-			$content .= get_string("choosestudent", "block_exacomp");
-			$content .= block_exacomp_studentselector($students,$this->is_edit_mode()?BLOCK_EXACOMP_SHOW_ALL_STUDENTS:$selectedStudent,$PAGE->url."&crosssubjid=".$selectedCrosssubject,  ($students)?BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN:BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_EDITMODE);
+		$left_content = '';
+		$right_content = '';
 
-			$right_content = html_writer::empty_tag('input', array('type'=>'button', 'id'=>'edit_crossubs', 'name'=> 'edit_crossubs', 'value' => get_string('manage_crosssubs','block_exacomp'),
-				 "onclick" => "document.location.href='".(new moodle_url('/blocks/exacomp/cross_subjects_overview.php',array('courseid' => $COURSE->id)))->__toString()."'"));
-			
-			if($students){
-				$url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid'=>$COURSE->id, 'creatorid'=>$USER->id));
-				$right_content .= html_writer::tag('button', 
-						html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'), 
-							'title'=> get_string('pre_planning_storage', 'block_exacomp'))
-						),
-					array(
-						'id'=>'pre_planning_storage_submit', 'name'=> 'pre_planning_storage_submit',
-						'type'=>'button', /* browser default setting for html buttons is submit */
-						'exa-type' => 'iframe-popup', 'exa-url' => $url->out(false)
-					)
-				);
-	
-				
-				$right_content .= $this->print_edit_mode_button();
-				
-			}
-			$content .= html_writer::div($right_content, 'edit_buttons_float_right');
-		
-		}else{
-			$right_content = html_writer::empty_tag('input', array('type'=>'button', 'id'=>'edit_crossubs', 'name'=> 'edit_crossubs', 'value' => get_string('manage_crosssubs','block_exacomp'),
-				 "onclick" => "document.location.href='".(new moodle_url('/blocks/exacomp/cross_subjects_overview.php',array('courseid' => $COURSE->id)))->__toString()."'"));
-			$content = html_writer::div($right_content, 'edit_buttons_float_right');
-		}   
-		return $content;
+		if (!$cross_subject && $this->is_edit_mode()) {
+			$left_content .= html_writer::tag("input", "", array("type" => "submit", "class"=>'allow-submit', "value" => block_exacomp\get_string("add_crosssub")));
+		}
+		if ($cross_subject && $this->is_edit_mode()) {
+			$left_content .= html_writer::tag("input", "", array("type" => "submit", "class"=>'allow-submit', "value" => block_exacomp\get_string("save_crosssub")));
+			$left_content .= html_writer::tag("input", "", array("type" => "button", "value" => block_exacomp\get_string('add_descriptors_to_crosssub'), 'exa-type' => "iframe-popup", 'exa-url' => 'cross_subjects.php?courseid='.g::$COURSE->id.'&action=descriptor_selector&crosssubjid='.$cross_subject->id));
+		}
+		if ($cross_subject && $cross_subject->has_capability(\block_exacomp\CAP_MODIFY) && !$cross_subject->is_draft()) {
+			// $left_content .= html_writer::tag("input", "", array("type" => "button", "value" => get_string("save_as_draft", "block_exacomp")));
+			$left_content .= html_writer::tag("input", "", array("type"=>"button", "value"=>get_string("share_crosssub", "block_exacomp"), 'exa-type'=>'iframe-popup', 'exa-url'=>'cross_subjects.php?courseid='.g::$COURSE->id.'&crosssubjid='.$cross_subject->id.'&action=share'));
+		}
+							// html_writer::tag("input", "", array("id"=>"delete_crosssub", "name"=>"delete_crosssub", "type"=>"button", "value"=>get_string("delete_crosssub", "block_exacomp"), 'message'=>get_string('confirm_delete', 'block_exacomp')), array('id'=>'exabis_save_button'));
+		if (!$this->is_edit_mode() && block_exacomp_is_teacher() && $students) {
+			$left_content .= get_string("choosestudent", "block_exacomp");
+			$left_content .= block_exacomp_studentselector($students,$selectedStudent,$PAGE->url."&crosssubjid=".$cross_subject->id,  ($students)?BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN:BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_EDITMODE);
+
+			$url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid'=>$COURSE->id, 'creatorid'=>$USER->id));
+			$right_content .= html_writer::tag('button',
+					html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'),
+						'title'=> get_string('pre_planning_storage', 'block_exacomp'))
+					),
+				array(
+					'id'=>'pre_planning_storage_submit', 'name'=> 'pre_planning_storage_submit',
+					'type'=>'button', /* browser default setting for html buttons is submit */
+					'exa-type' => 'iframe-popup', 'exa-url' => $url->out(false)
+				)
+			);
+		}
+		if ($cross_subject && $cross_subject->has_capability(block_exacomp\CAP_MODIFY	)) {
+			$right_content .= $this->print_edit_mode_button(block_exacomp\url::create(g::$PAGE->url, ['editmode' => !$this->is_edit_mode()]));
+		}
+
+		$right_content .= html_writer::empty_tag('input', array('type'=>'button', 'value' => get_string('manage_crosssubs','block_exacomp'),
+			 "onclick" => "document.location.href='".block_exacomp\url::create('/blocks/exacomp/cross_subjects_overview.php',array('courseid' => $COURSE->id))."'"));
+
+		$content  = '';
+		$content .= $left_content;
+		$content .= html_writer::div($right_content, 'edit_buttons_float_right');
+		return html_writer::div($content,'', array('id'=>'exabis_save_button'));
 	}
 	public function print_crosssub_subject_dropdown($crosssubject){
 		$subjects = block_exacomp_get_subjects(g::$COURSE->id);
@@ -4366,12 +4359,12 @@ var dataset = dataset.map(function (group) {
 		foreach($subjects as $subject){
 			$options[$subject->id] = $subject->title;
 		}
-		return html_writer::select($options, "lis_crosssubject_subject", ($crosssubject)?$crosssubject->subjectid:0, false);
+		return html_writer::select($options, "subjectid", ($crosssubject)?$crosssubject->subjectid:0, false);
 		
 	}
-	public function print_overview_metadata_cross_subjects($crosssubject, $isTeacher, $selectedStudent = null){
+	public function print_overview_metadata_cross_subjects($crosssubject, $edit){
 		global $DB;
-		
+
 		$table = new html_table();
 		$table->attributes['class'] = 'exabis_comp_info';
 
@@ -4386,15 +4379,15 @@ var dataset = dataset.map(function (group) {
 		}
 		$cell = new html_table_cell();
 		$cell->text = html_writer::span(get_string('subject_singular', 'block_exacomp'), 'exabis_comp_top_name')
-		. (($selectedStudent == 0)?$this->print_crosssub_subject_dropdown($crosssubject):html_writer::tag('b',$subject_title));
+		. ($edit?$this->print_crosssub_subject_dropdown($crosssubject):html_writer::tag('b',$subject_title));
 
 		$row->cells[] = $cell;
 
 		$cell = new html_table_cell();
 		
-		if($selectedStudent == 0)
+		if ($edit)
 			$cell->text = html_writer::span(get_string('crosssubject', 'block_exacomp'), 'exabis_comp_top_name')
-				. html_writer::empty_tag('input', array('type'=>'text', 'value'=>($crosssubject)?$crosssubject->title:'', 'name'=>'crosssub-title'));
+				. html_writer::empty_tag('input', array('type'=>'text', 'value'=>($crosssubject)?$crosssubject->title:'', 'name'=>'title'));
 		else 
 			$cell->text = html_writer::span(get_string('crosssubject', 'block_exacomp'), 'exabis_comp_top_name')
 				. html_writer::tag('div', ($crosssubject)?$crosssubject->title:'');
@@ -4405,10 +4398,10 @@ var dataset = dataset.map(function (group) {
 		
 		$row = new html_table_row();
 		$cell = new html_table_cell();
-		$cell->colspan = (isset($selectedStudent))?3:2;
-		if($selectedStudent == 0)
+		$cell->colspan = 2; // !$edit?3:2;
+		if ($edit)
 			$cell->text = html_writer::span(get_string('description', 'block_exacomp'), 'exabis_comp_top_name')
-				. html_writer::empty_tag('input', array('type'=>'textarea', 'size'=>200, 'value'=>($crosssubject)?$crosssubject->description:'', 'name'=>'crosssub-description'));
+				. html_writer::empty_tag('input', array('type'=>'textarea', 'size'=>200, 'value'=>($crosssubject)?$crosssubject->description:'', 'name'=>'description'));
 		else
 			 $cell->text = html_writer::span(get_string('description', 'block_exacomp'), 'exabis_comp_top_name')
 				. html_writer::tag('b', ($crosssubject)?$crosssubject->description:'');
@@ -4416,7 +4409,7 @@ var dataset = dataset.map(function (group) {
 		$row->cells[] = $cell;  
 		$rows[] = $row;
 			
-		if($isTeacher){
+		if (block_exacomp_is_teacher()) {
 			$row = new html_table_row();
 			$cell = new html_table_cell();
 			$cell->colspan = 2;
@@ -4434,7 +4427,7 @@ var dataset = dataset.map(function (group) {
 	
 	public function print_competence_based_list_tree($tree, $isTeacher, $editmode, $show_examples = true) {
 		$html_tree = "";
-		$html_tree .= html_writer::start_tag("ul",array("class"=>"exa-tree exa-tree-open-checked"));
+		$html_tree .= html_writer::start_tag("ul",array("class"=>"exa-tree exa-tree-reopen-checked"));
 		foreach($tree as $skey => $subject) {
 			if($subject->associated == 1 || ($isTeacher && $editmode==1)){
 				$html_tree .= html_writer::start_tag("li", array('class'=>($subject->associated == 1)?"associated":""));

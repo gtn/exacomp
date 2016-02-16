@@ -128,7 +128,7 @@ if($formdata = $form->get_data()) {
 	}
 	
 	echo $output->header();
-	echo $output->popup_close_and_forward($CFG->wwwroot."/blocks/exacomp/assign_competencies.php?courseid=".$courseid."&editmode=1&ng_subjectid={$subjectid}");
+	echo $output->popup_close_and_forward($CFG->wwwroot."/blocks/exacomp/assign_competencies.php?courseid=".$courseid."&editmode=1&subjectid={$subjectid}");
 	echo $output->footer();
 	
 	exit;
