@@ -5842,7 +5842,6 @@ function block_exacomp_get_studentid($isTeacher) {
 
 function block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, $niveautitle){
 	$global_scheme = get_config('exacomp', 'adminscheme');
-	$global_scheme_values = array();
 
 	if($global_scheme == 1){
 		$global_scheme_values = array('nE', 'G', 'M', 'E');

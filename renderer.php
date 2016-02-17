@@ -3582,16 +3582,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 private function print_competence_profile_tree_v2($in, $courseid, $student = null,$scheme = 1, $showonlyreached = false, $eportfolioitems = false) {
 		global $DB;
-		if($student != null){
-			$profile_settings = block_exacomp_get_profile_settings($student->id);
-			$studentid= $student->id;
-		}
-		else 
-			$studentid = 0;
-		$showonlyreached_total = false;
-		if($showonlyreached || ($student != null && $profile_settings->showonlyreached ==1))
-			$showonlyreached_total = true;
-		  
+
 		$content="";
 		foreach($in as $subject){
 			foreach($subject->topics as $topic){
@@ -4159,7 +4150,11 @@ var dataset = dataset.map(function (group) {
 			$subject->topics[$topic->id] = $topic;
 			$subjects[$subject->id] = $subject;
 		}
-		$list_descriptors = $this->print_competence_profile_tree_v2($subjects, $COURSE->id);
+
+		$student = $DB->get_record('user',array('id' => $userid));
+		$student = block_exacomp_get_user_information_by_course($student, $COURSE->id);
+
+		$list_descriptors = $this->print_competence_profile_tree_v2($subjects, $COURSE->id, $student);
 		$list_heading = html_writer::tag('p', '<b>Verknüpfte Kompetenzen:</b>');
 		
 		return html_writer::div($content.$list_heading.$list_descriptors, 'competence_profile_artefacts');
