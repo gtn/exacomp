@@ -4470,11 +4470,15 @@ var dataset = dataset.map(function (group) {
 	private function print_competence_for_list_tree($descriptor, $isTeacher, $editmode, $show_examples) {
 		
 		$html_tree = html_writer::start_tag("li", array('class'=>($descriptor->associated == 1)?"associated":""));
-		if($isTeacher && $editmode==1)
-			$html_tree .= html_writer::checkbox("descriptor[]", $descriptor->id, ($descriptor->direct_associated==1)?true:false);
+		$title = block_exacomp_get_descriptor_numbering($descriptor).' '.$descriptor->title;
+
+		if($isTeacher && $editmode==1) {
+			$html_tree .= html_writer::checkbox("descriptor[]", $descriptor->id, $descriptor->direct_associated, $title);
+		} else {
+			$html_tree .= $title;
+		}
 		
-		$html_tree .= block_exacomp_get_descriptor_numbering($descriptor).' '.$descriptor->title;
-		
+
 		$ul = false;
 		if($show_examples && $descriptor->direct_associated==1 || !empty($descriptor->children)){
 			$html_tree .= html_writer::start_tag('ul');

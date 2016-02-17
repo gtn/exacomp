@@ -6109,9 +6109,20 @@ function block_exacomp_save_additional_grading_for_example($courseid, $exampleid
 		$DB->update_record ( 'block_exacompitemexample', $itemexample );
 	}
 }
-function block_exacomp_course_has_examples($courseid){
-	global $DB;
+function block_exacomp_get_examples_by_course($courseid){
+	$sql = "SELECT ex.*
+		FROM {".\block_exacomp\DB_EXAMPLES."} ex
+		WHERE ex.id IN (
+			SELECT dex.exampid
+			FROM {".\block_exacomp\DB_DESCEXAMP."} dex
+			JOIN {".\block_exacomp\DB_DESCTOPICS."} det ON dex.descrid = det.descrid
+			JOIN {".\block_exacomp\DB_COURSETOPICS."} ct ON det.topicid = ct.topicid
+			WHERE ct.courseid = ?
+		)";
 
+	return g::$DB->get_records_sql($sql, array($courseid));
+}
+function block_exacomp_course_has_examples($courseid){
 	$sql = "SELECT COUNT(*)
 		FROM {".\block_exacomp\DB_EXAMPLES."} ex
 		JOIN {".\block_exacomp\DB_DESCEXAMP."} dex ON ex.id = dex.exampid
@@ -6119,7 +6130,7 @@ function block_exacomp_course_has_examples($courseid){
 		JOIN {".\block_exacomp\DB_COURSETOPICS."} ct ON det.topicid = ct.topicid
 		WHERE ct.courseid = ?";
 
-	return (bool)$DB->get_field_sql($sql, array($courseid));
+	return (bool)g::$DB->get_field_sql($sql, array($courseid));
 }
 function block_exacomp_send_message_to_course($courseid, $message) {
 	global $USER;
@@ -6553,9 +6564,21 @@ namespace block_exacomp {
 
 	function require_item_capability($cap, $item) {
 		if ($item instanceof example && in_array($cap, [CAP_MODIFY, CAP_DELETE])) {
-			if ($item->creatorid != g::$USER->id) {
-				throw new permission_exception('User is not creator');
+			if (!block_exacomp_is_teacher(g::$COURSE->id)) {
+				throw new permission_exception('User is no teacher');
 			}
+
+			if ($item->creatorid == g::$USER->id) {
+				// User is creator
+				return true;
+			}
+
+			// find descriptor in course
+			$examples = block_exacomp_get_examples_by_course(g::$COURSE->id);
+			if (!isset($examples[$item->id])) {
+				throw new permission_exception('Not a course example');
+			}
+
 		} elseif ($item instanceof subject && in_array($cap, [CAP_MODIFY, CAP_DELETE])) {
 			if (!block_exacomp_is_teacher(g::$COURSE->id)) {
 				throw new permission_exception('User is no teacher');
@@ -6565,7 +6588,6 @@ namespace block_exacomp {
 			if (!isset($subjects[$item->id])) {
 				throw new permission_exception('No course subject');
 			}
-
 
 			if ($item->source != DATA_SOURCE_CUSTOM) {
 				throw new permission_exception('Not a custom subject');

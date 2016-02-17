@@ -32,17 +32,12 @@ global $DB, $OUTPUT, $PAGE, $USER;
 $courseid = required_param('courseid', PARAM_INT);
 $descrid = optional_param('descrid', 0, PARAM_INT);
 
-if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-	print_error('invalidcourse', 'block_exacomp', $courseid);
-}
-
 // error if example does not exist or was created by somebody else
-if ($descrid > 0 && (!$descriptor = $DB->get_record('block_exacompdescriptors', array('id' => $descrid))))
-{
+if ($descrid > 0 && (!$descriptor = $DB->get_record('block_exacompdescriptors', array('id' => $descrid)))) {
 	print_error('invalidexample', 'block_exacomp', $exampleid);
 }
 
-require_login($course);
+require_login($courseid);
 $context = context_course::instance($courseid);
 block_exacomp_require_teacher($context);
 

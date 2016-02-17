@@ -222,9 +222,25 @@ $(function() {
 		document.location.href = this.getAttribute('data-url') + '&studentid='+this.value;
 	});
 
+	$('ul.exa-tree').each(function(){
+		var $tree = $(this);
+		var $table = $('<table class="exabis_comp_comp rg2 '+$tree.attr('class').replace(/exa\-tree/g, 'rg2')+'"></table>');
+		$table.insertAfter(this).wrap('<div class="exabis_competencies_lis"></div>');
 
+		$tree.find('li').each(function(){
+			var level = $(this).parentsUntil($tree, 'ul').length;
+			$('<tr class="'+$(this).attr('class')+' rg2-level-'+level+'"><td class="rg2-arrow rg2-indent"><div></div></td></tr>')
+				.appendTo($table).find('div').append($(this).clone().find('>ul').remove().end().contents());
+		});
+
+		$table.trigger('rg2.init');
+		$table.find('tr.rg2-header').addClass('highlight');
+
+		$tree.remove();
+	});
 
 	// show tree menus
+	/*
 	var trees = $('ul.exa-tree');
 	// ddtree needs those, why didn't they do it with css?
 	ddtreemenu.closefolder = M.cfg.wwwroot+"/blocks/exacomp/javascript/simpletreemenu/closed.gif";
@@ -250,6 +266,7 @@ $(function() {
 	trees.filter('.exa-tree-open-all').each(function(){
 		ddtreemenu.flatten($(this).attr('id'), 'expand');
 	});
+	/* */
 });
 	
 // collapsible
@@ -268,7 +285,6 @@ $(document).on('click', '.exa-collapsible > legend', function(){
 	window.exabis_rg2 = {
 		options: options,
 		get_row: get_row,
-		update: update,
 		get_children: get_children,
 		get_parents: get_parents,
 	};
@@ -324,42 +340,42 @@ $(document).on('click', '.exa-collapsible > legend', function(){
 	function get_table_storageid($table) {
 		return 'rg2-id-storage-' + ($table.attr('exa-rg2-storageid') || document.location.pathname);
 	}
-	function update() {
-		get_tables().each(function(){
-			var visible_level = 0,
-				$table = $(this);
+	function update_table($table) {
+		var visible_level = 0;
 
-			$table.find('tr.rg2').each(function() {
-				var $tr = $(this),
-					level = get_level($tr);
+		$table.find('tr.rg2').each(function() {
+			var $tr = $(this),
+				level = get_level($tr);
 
-				if (level === null) {
-					visible_level = 0;
-					return;
-				}
+			if (level === null) {
+				visible_level = 0;
+				return;
+			}
 
-				if (level+1 === get_level($tr.next())) {
-					// is header
-					$tr.addClass('rg2-header');
-					if (visible_level >= level) {
-						if ($tr.is('.open')) {
-							visible_level = level + 1;
-						} else {
-							visible_level = level;
-						}
+			if (level+1 === get_level($tr.next())) {
+				// is header
+				$tr.addClass('rg2-header');
+				if (visible_level >= level) {
+					if ($tr.is('.open')) {
+						visible_level = level + 1;
+					} else {
+						visible_level = level;
 					}
 				}
+			}
 
-				if (visible_level >= level) {
-					$tr.show();
-				} else {
-					$tr.hide();
-				}
-			});
+			if (visible_level >= level) {
+				$tr.show();
+			} else {
+				$tr.hide();
+			}
 		});
 	}
 	function get_tables() {
 		return $('table.rg2');
+	}
+	function get_table(dom) {
+		return $(dom).closest('table.rg2');
 	}
 
 	$(document).on('click', '.rg2-header .rg2-arrow', function(event){
@@ -369,7 +385,14 @@ $(document).on('click', '.exa-collapsible > legend', function(){
 		}
 
 		$(this).closest('.rg2-header').toggleClass('open');
-		update();
+		update_table(get_table(this));
+	});
+	// stop labels in headers to check/uncheck. we just want open/close here!
+	$(document).on('click', '.rg2-header label', function(event){
+		event.preventDefault();
+
+		$(this).closest('.rg2-header').toggleClass('open');
+		update_table(get_table(this));
 	});
 
 	$(window).unload(function(){
@@ -388,91 +411,91 @@ $(document).on('click', '.exa-collapsible > legend', function(){
 	});
 
 	// init
-	$(function(){
-		// add class to tables
-		$('tr.rg2, table.rg2, .rg2-level-0').closest('table').addClass('rg2');
-		// add class to rows
-		$('table.rg2 > tr, table.rg2 > tbody > tr').addClass('rg2');
-		var $tables = get_tables();
+	$(document).on('rg2.init', 'table.rg2', function(){
+		var $table = $(this);
 
-		$tables.on('rg2.update', function(){
-			update();
+		// add class to rows
+		$table.find('> tr, > tbody > tr').addClass('rg2');
+
+		$table.on('rg2.update', function(){
+			update_table($table);
 		});
-		$tables.on('rg2.open', 'tr.rg2', function(){
+		$table.on('rg2.open', 'tr.rg2', function(){
 			$(this).addClass('open');
-			update();
+			update_table($table);
 		});
-		$tables.on('rg2.close', 'tr.rg2', function(){
+		$table.on('rg2.close', 'tr.rg2', function(){
 			$(this).removeClass('open');
-			update();
+			update_table($table);
 		});
-		$tables.on('rg2.open-parents', 'tr.rg2', function(){
+		$table.on('rg2.open-parents', 'tr.rg2', function(){
 			get_parents(this).addClass('open');
-			update();
+			update_table($table);
 		});
-		$tables.on('rg2.lock', 'tr.rg2', function(){
+		$table.on('rg2.lock', 'tr.rg2', function(){
 			$(this).addClass('rg2-locked');
 			$(this).removeClass('open');
 			$(this).find('.rg2-arrow-disabled').addClass('rg2-arrow').removeClass('rg2-arrow-disabled');
 
-			update();
+			update_table($table);
 		});
-		$tables.on('rg2.unlock', 'tr.rg2', function(){
+		$table.on('rg2.unlock', 'tr.rg2', function(){
 			$(this).removeClass('rg2-locked');
 
-			update();
+			update_table($table);
 		});
 
-		$('.rg2-level-0').show();
+		$table.find('.rg2-level-0').show();
 
-		$(function(){
-			var $tables;
-			if (options.check_uncheck_parents_children) {
-				$tables = get_tables();
-			} else {
-				$tables = get_tables().filter('.rg2-check_uncheck_parents_children');
-			}
-			$tables.find(':checkbox').click(function(event){
+		if (options.check_uncheck_parents_children || $table.is('.rg2-check_uncheck_parents_children')) {
+			$table.find(':checkbox').click(function(){
 				get_children(this, true).find(":checkbox").prop('checked', $(this).prop('checked'));
 				if (!$(this).prop('checked')) {
 					// parents, only for uncheck
 					get_parents(this).find(":checkbox").prop('checked', false);
 				}
 			});
-		});
+		}
 
 		// reopen saved states
-		get_tables().each(function(){
-			var $table = $(this);
-			var ids = localStorage.getObject(get_table_storageid($table));
-			if (ids) {
-				$.each(ids, function(tmp, id){
-					// only open if not locked
-					$table.find('.rg2:not(.rg2-locked)[exa-rg2-id="'+id+'"]').addClass('open');
-				});
-			}
-		});
+		var ids = localStorage.getObject(get_table_storageid($table));
+		if (ids) {
+			$.each(ids, function(tmp, id){
+				// only open if not locked
+				$table.find('.rg2:not(.rg2-locked)[exa-rg2-id="'+id+'"]').addClass('open');
+			});
+		}
 
 		// reopen checked
-		if (options.reopen_checked) {
-			get_tables().find(':checkbox:checked').trigger('rg2.open-parents');
-		} else {
-			get_tables().filter('.rg2-reopen-checked').find(':checkbox:checked').trigger('rg2.open-parents');
+		if (options.reopen_checked || $table.is('.rg2-reopen-checked')) {
+			$table.find(':checkbox:checked').trigger('rg2.open-parents');
+		}
+
+		// reopen checked
+		if ($table.is('.rg2-open-all')) {
+			$table.find('.rg2-header').addClass('open');
 		}
 
 		// close locked
-		get_tables().find('tr.rg2-locked').removeClass('open');
+		$table.find('tr.rg2-locked').removeClass('open');
 
-		update();
+		update_table($table);
 
 		// if just one item, always open and hide arrow
-		if ($('.rg2-level-0.rg2-header:not(.rg2-locked)').length == 1) {
-			$('.rg2-level-0.rg2-header:not(.rg2-locked)').addClass('open').find('.rg2-arrow').removeClass('rg2-arrow').addClass('rg2-arrow-disabled');
-			if ($('.rg2-level-1.rg2-header:not(.rg2-locked)').length == 1) {
-				$('.rg2-level-1.rg2-header:not(.rg2-locked)').addClass('open').find('.rg2-arrow').removeClass('rg2-arrow').addClass('rg2-arrow-disabled');
+		if ($table.find('.rg2-level-0.rg2-header:not(.rg2-locked)').length == 1) {
+			$table.find('.rg2-level-0.rg2-header:not(.rg2-locked)').addClass('open').find('.rg2-arrow').removeClass('rg2-arrow').addClass('rg2-arrow-disabled');
+			if ($table.find('.rg2-level-1.rg2-header:not(.rg2-locked)').length == 1) {
+				$table.find('.rg2-level-1.rg2-header:not(.rg2-locked)').addClass('open').find('.rg2-arrow').removeClass('rg2-arrow').addClass('rg2-arrow-disabled');
 			}
-			update();
+			update_table($table);
 		}
+	});
+
+	$(function(){
+		// add class to tables
+		$('tr.rg2, table.rg2, .rg2-level-0').closest('table').addClass('rg2');
+
+		get_tables().trigger('rg2.init');
 	});
 })();
 

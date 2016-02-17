@@ -6,9 +6,7 @@ require_once __DIR__.'/example_upload_form.php';
 $courseid = required_param('courseid', PARAM_INT);
 $exampleid = optional_param('exampleid', 0, PARAM_INT);
 
-if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-	print_error('invalidcourse', 'block_exacomp', $courseid);
-}
+require_login($courseid);
 
 if ($exampleid) {
 	if (!$example = block_exacomp\example::get($exampleid)) {
@@ -19,8 +17,6 @@ if ($exampleid) {
 	block_exacomp\require_capability(block_exacomp\CAP_ADD_EXAMPLE, $courseid);
 	$example = null;
 }
-
-require_login($course);
 
 $context = context_course::instance($courseid);
 
