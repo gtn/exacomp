@@ -589,6 +589,9 @@ td.contentcell {
 #block_exacomp .rg2-header.open .rg2-arrow div {
 	background: url(../pix/pfeil_hide.png) 0 6px no-repeat
 }
+#block_exacomp .rg2-highlight td {
+	background-color: #e6e6e6
+}
 #block_exacomp .rg2-locked {
 	color: #aaa;
 }

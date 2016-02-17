@@ -267,6 +267,7 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 			JOIN {'.\block_exacomp\DB_COMPETENCE_ACTIVITY.'} ca ON (d.id=ca.compid AND ca.comptype = '.TYPE_DESCRIPTOR.') OR (t.id=ca.compid AND ca.comptype = '.TYPE_TOPIC.')
 			JOIN {course_modules} a ON ca.activityid=a.id AND a.course=ct.courseid
 			').'
+	ORDER BY s.title
 			';
 
 	$subjects = block_exacomp\subject::get_objects_sql($sql, array($courseid));
@@ -4940,20 +4941,21 @@ function block_exacomp_get_topic_numbering($topic){
 		return '';
 	}
 }
-function block_exacomp_get_cross_subjects_drafts_sorted_by_subjects(){
-	global $DB;
-	$subjects = block_exacomp_get_subjects();
+function block_exacomp_get_course_cross_subjects_drafts_sorted_by_subjects(){
+	$subjects = block_exacomp_get_subjects_by_course(g::$COURSE->id);
 
 	$default_subject = new stdClass();
 	$default_subject->id = 0;
 	$default_subject->title = get_string('nocrosssubsub', 'block_exacomp');
 
-	$subjects[0] = $default_subject;
+	// insert default subject at the front
+	array_unshift($subjects, $default_subject);
 
-	foreach($subjects as $subject){
-		$drafts = $DB->get_records(\block_exacomp\DB_CROSSSUBJECTS, array('subjectid'=>$subject->id, 'courseid'=>0));
-		if($drafts)
-			$subject->crosssub_drafts = $drafts;
+	foreach($subjects as $key=>$subject){
+		$subject->cross_subject_drafts = block_exacomp\cross_subject::get_objects(array('subjectid'=>$subject->id, 'courseid'=>0), 'title');
+		if (!$subject->cross_subject_drafts) {
+			unset($subjects[$key]);
+		}
 	}
 
 	return $subjects;

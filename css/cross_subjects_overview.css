@@ -1,3 +1,4 @@
+/*
 #block_exacomp table.exabis_comp_top, #block_exacomp .exabis_competencies_lis table.exabis_comp_comp, #block_exacomp .exabis_comp_info {
 	width: 100%;
 	border: 1px solid #E3DFD4;
@@ -135,7 +136,7 @@
 #block_exacomp .rowgroup-content {
 	display: none;
 }
-*/
+* /
 #block_exacomp #exabis_competences_block .exabis_comp_top_student{
 	text-align: center;
 }
@@ -162,14 +163,19 @@
 	padding-right: 5px;
 }
 */
-#block_exacomp .generaltable td.lastcol {
+
+/* the table buttons */
+#block_exacomp .generaltable td.c1.lastcol {
 	white-space: nowrap;
+	text-align: right;
+	width: 1px;
 }
-#block_exacomp .generaltable td.lastcol a {
+#block_exacomp .generaltable td.c1.lastcol a {
 	margin: 4px;
 }
 
+/*
 #block_exacomp h5 {
 	font-size : 15px;
 }
-
+*/
