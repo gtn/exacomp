@@ -1307,7 +1307,7 @@ class block_exacomp_external extends external_api {
 				'userid' => $userid 
 		) );
 
-		static::require_can_access_course_user($courseid, $userid);
+		static::require_can_access_user($courseid, $userid);
 		static::require_can_access_example($exampleid, $courseid);
 
 		$descriptors_exam_mm = $DB->get_records (\block_exacomp\DB_DESCEXAMP, array (
@@ -2073,7 +2073,19 @@ class block_exacomp_external extends external_api {
 			$insert->exampid = $id;
 			$insert->descrid = $descriptor;
 			$DB->insert_record (\block_exacomp\DB_DESCEXAMP, $insert );
+			
+			//visibility entries for this example in course where descriptors are associated
+			$courses = block_exacomp_get_courseids_by_descriptor($descriptor);
+			foreach($courses as $course){
+				$insert = new stdClass();
+				$insert->courseid = $course->courseid;
+				$insert->exampleid = $id;
+				$insert->studentid = 0;
+				$insert->visible = 1;
+				$DB->insert_record(\block_exacomp\DB_EXAMPVISIBILITY, $insert);
+			}
 		}
+		
 		
 		return array (
 				"exampleid" => $id 
@@ -6190,14 +6202,37 @@ class block_exacomp_external extends external_api {
 		// and all examples
 		// and try to find it
 		$example = call_user_func(function() use ($exampleid) {
-			$courses = static::get_courses(g::$USER->id);
+			$courses_ws = static::get_courses(g::$USER->id);
+			
+			$courses = array();
+			foreach($courses_ws as $course){
+				$courses[$course['courseid']] = new stdClass();
+				$courses[$course['courseid']]->id = $course['courseid'];
+			}
+			
+			//check if user is external trainer, if he is add courses where external_student is enrolled
+			// check external trainers
+			$external_trainer_entries = g::$DB->get_records ( \block_exacomp\DB_EXTERNAL_TRAINERS, array (
+					'trainerid' => g::$USER->id
+			) );
+			
+			foreach($external_trainer_entries as $ext_tr_entry){
+				$courses_user = static::get_courses($ext_tr_entry->studentid);
+				
+				foreach($courses_user as $course){
+					if(!array_key_exists($course['courseid'], $courses)){
+						$courses[$course['courseid']] = new stdClass();
+						$courses[$course['courseid']]->id = $course['courseid'];
+					}
+				}
+			}
 			
 			foreach($courses as $course){
-				$example = block_exacomp_check_student_example_permission($course['courseid'], $exampleid, g::$USER->id);
+				$example = block_exacomp_check_student_example_permission($course->id, $exampleid, g::$USER->id);
 				if($example)
 					return $example;
 					
-				$example = block_exacomp_check_student_example_permission($course['courseid'], $exampleid, 0);
+				$example = block_exacomp_check_student_example_permission($course->id, $exampleid, 0);
 				if($example)
 					return $example;
 			}

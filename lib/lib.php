@@ -6192,6 +6192,14 @@ function block_exacomp_check_student_example_permission($courseid, $exampleid, $
 	return $DB->get_record(\block_exacomp\DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>$studentid, 'visible'=>1));
 }
 
+function block_exacomp_get_courseids_by_descriptor($descriptorid){
+	$sql = 'SELECT ct.courseid
+		FROM {'.\block_exacomp\DB_COURSETOPICS.'} ct 
+		JOIN {'.\block_exacomp\DB_DESCTOPICS.'} dt ON ct.topicid = dt.topicid  
+		WHERE dt.descrid = ?';
+	
+	return g::$DB->get_records_sql($sql, array($descriptorid));
+}
 
 }
 
