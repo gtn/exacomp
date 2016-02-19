@@ -11,11 +11,11 @@
 	
 	var examples_additional_grading = {};
 
-	$(document).on('focus', 'input[name^=data\-]', function() {
+	$(document).on('focus', 'input[name^=datadescriptors\-]', function() {
 		prev_val = $(this).val();
 	});
 	
-	$(document).on('change', 'input[name^=data\-]', function() {
+	$(document).on('change', 'input[name^=datadescriptors\-]', function() {
 		
 		// check if anyone else has edited the competence before. if so, ask for confirmation
 		if($(this).attr("reviewerid")) {
@@ -29,29 +29,28 @@
 			}
 		}
 		
-		var values = $(this).attr("name").split("-");
 		var tr = $(this).closest('tr');
 		var hide = $(tr).find('input[name~="hide-descriptor"]');
-		
+
 		if ($(this).prop("checked")) {
-			if (competencies[values[1]+"-"+values[2]]) {
-				competencies[values[1]+"-"+values[2]]['value'] = 1;
+			if (competencies[this.name]) {
+				competencies[this.name].value = $(this).val();
 			} else {
-				competencies[values[1]+"-"+values[2]] = {
-					userid : values[2],
-					compid : values[1],
-					value : 1
+				competencies[this.name] = {
+					userid : this.getAttribute('exa-userid'),
+					compid : this.getAttribute('exa-compid'),
+					value : $(this).val(),
 				};
 			}
 			//check comp->hide descriptor not possible
 			hide.addClass("hidden");
 		} else {
-			if (competencies[values[1]+"-"+values[2]]) {
-				competencies[values[1]+"-"+values[2]]['value'] = -1;
+			if (competencies[this.name]) {
+				competencies[this.name].value = -1;
 			} else {
-				competencies[values[1]+"-"+values[2]] = {
-					userid : values[2],
-					compid : values[1],
+				competencies[this.name] = {
+					userid : this.getAttribute('exa-userid'),
+					compid : this.getAttribute('exa-compid'),
 					value : 0
 				};
 			}
@@ -60,12 +59,11 @@
 		}
 		
 	});
-	$(document).on('focus', 'select[name^=data\-]', function() {
+	$(document).on('focus', 'select[name^=datadescriptors\-]', function() {
 		prev_val = $(this).val();
 	});
 	
-	$(document).on('change', 'select[name^=data\-]', function() {
-								  
+	$(document).on('change', 'select[name^=datadescriptors\-]', function() {
 		// check if anyone else has edited the competence before. if so, ask for
 		// confirmation
 		if ($(this).attr("reviewerid")) {
@@ -87,33 +85,32 @@
 	// # TOPICS
 	var topics = {};
 	$(document).on('click', 'input[name^=datatopics\-]', function() {
-		var values = $(this).attr("name").split("-");
+		var id = this.getAttribute('exa-compid')+"-"+this.getAttribute('exa-userid');
 
 		if ($(this).prop("checked")) {
-			if (topics[values[1]+"-"+values[2]]) {
-				topics[values[1]+"-"+values[2]]['value'] = 1;
+			if (topics[this.name]) {
+				topics[this.name].value = $(this).val();
 			} else
-				topics[values[1]+"-"+values[2]] = {
-					userid : values[2],
-					compid : values[1],
-					value : 1
+				topics[this.name] = {
+					userid : this.getAttribute('exa-userid'),
+					compid : this.getAttribute('exa-compid'),
+					value : $(this).val(),
 				};
 		} else {
-			if (topics[values[1]+"-"+values[2]])
-				topics[values[1]]['value'] = -1;
+			if (topics[this.name])
+				topics[values[1]].value = -1;
 			else
-				topics[values[1]+"-"+values[2]] = {
-					userid : values[2],
-					compid : values[1],
+				topics[this.name] = {
+					userid : this.getAttribute('exa-userid'),
+					compid : this.getAttribute('exa-compid'),
 					value : 0
 				};
 		}
 	});
 	$(document).on('change', 'select[name^=datatopics\-]', function() {
-		var values = $(this).attr("name").split("-");
-		topics[values[1]+"-"+values[2]] = {
-			userid : values[2],
-			compid : values[1],
+		topics[this.name] = {
+			userid : this.getAttribute('exa-userid'),
+			compid : this.getAttribute('exa-compid'),
 			value : $(this).val()
 		};
 	});
@@ -124,19 +121,19 @@
 		var values = $(this).attr("name").split("-");
 
 		if ($(this).prop("checked")) {
-			if (crosssubs[values[1]+"-"+values[2]]) {
-				crosssubs[values[1]+"-"+values[2]]['value'] = 1;
+			if (crosssubs[this.name]) {
+				crosssubs[this.name].value = $(this).val();
 			} else
-				crosssubs[values[1]+"-"+values[2]] = {
+				crosssubs[this.name] = {
 					userid : values[2],
 					compid : values[1],
-					value : 1
+					value : $(this).val()
 				};
 		} else {
-			if (crosssubs[values[1]+"-"+values[2]])
-				crosssubs[values[1]+"-"+values[2]]['value'] = 0;
+			if (crosssubs[this.name])
+				crosssubs[this.name].value = 0;
 			else
-				crosssubs[values[1]+"-"+values[2]] = {
+				crosssubs[this.name] = {
 					userid : values[2],
 					compid : values[1],
 					value : -1
@@ -145,7 +142,7 @@
 	});
 	$(document).on('change', 'select[name^=datacrosssubs\-]', function() {
 		var values = $(this).attr("name").split("-");
-		crosssubs[values[1]+"-"+values[2]] = {
+		crosssubs[this.name] = {
 			userid : values[2],
 			compid : values[1],
 			value : $(this).val()
@@ -159,7 +156,7 @@
 		var tr = $(this).closest('tr');
 		var hide = $(tr).find('input[name~="hide-descriptor"]');
 		
-		examples[values[1]+"-"+values[2]] = {
+		examples[this.name] = {
 			userid : values[2],
 			exampleid : values[1],
 			value : $(this).prop("checked")
@@ -175,13 +172,44 @@
 	$(document).on('change', 'select[name^=dataexamples\-]', function() {
 		var values = $(this).attr("name").split("-");
 
-		examples[values[1]+"-"+values[2]] = {
+		examples[this.name] = {
 			userid : values[2],
 			exampleid : values[1],
 			value : $(this).val()
 		};
 	});
-	
+
+	$(document).on('keydown', ':text[exa-type="new-descriptor"]', function(event) {
+		if (event.keyCode == 13) {
+			// enter
+			$(this).siblings(':button[exa-type="new-descriptor"]').trigger('click');
+		}
+	});
+	$(document).on('click', ':button[exa-type="new-descriptor"]', function() {
+		var $input = $(this).siblings(':text');
+		if (!$input.length) {
+			alert('Error: input not found');
+		}
+
+		var value = this.value.trim();
+		if (!value) {
+			return;
+		}
+
+		block_exacomp.call_ajax({
+			action: 'multi',
+			// send data as json, because php max input setting
+			data: JSON.stringify({new_descriptors: [{
+				parentid: $input.attr('parentid'),
+				topicid: $input.attr('topicid'),
+				niveauid: $input.attr('niveauid'),
+				title: $input.val(),
+			}]}),
+		}).done(function(msg) {
+			location.reload();
+		});
+	});
+
 	// global var hack
 	i_want_my_reload = false;
 	
@@ -201,6 +229,7 @@
 				if (reload) {
 					location.reload();
 				} else {
+					document.location.href='#';
 					alert('Änderungen wurden gespeichert!');
 				}
 			}
@@ -240,24 +269,6 @@
 			if(!$.isEmptyObject(examples_additional_grading)){
 				multiQueryData.examples_additional_grading = examples_additional_grading;
 			}
-			
-			//check all new_comp text fields if somewhere new text is entered when saving and create new descriptor
-			var new_descriptors = [];
-			$( "input[exa-type=new-descriptor]" ).each(function (){
-				if (!this.value) return;
-				
-				new_descriptors.push({
-					parentid: this.getAttribute('parentid'),
-					topicid: this.getAttribute('topicid'),
-					niveauid: this.getAttribute('niveauid'),
-					title: this.value,
-				});
-
-				if (new_descriptors.length) {
-					multiQueryData.new_descriptors = new_descriptors;
-					reload = true;
-				}
-			});
 			
 			if (!$.isEmptyObject(multiQueryData)) {
 				block_exacomp.call_ajax({
@@ -371,8 +382,8 @@
 
 			//disable checkbox for teacher, when hiding descriptor for student
 			if(studentid > 0){
-				$('input[name=data-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", true );
-				$('select[name=data-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", true );
+				$('input[name=datadescriptors-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", true );
+				$('select[name=datadescriptors-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", true );
 				$('input[name=add-grading-'+studentid+'-'+descrid+']').prop("disabled", true);
 			}
 			
@@ -401,7 +412,7 @@
 			//enable checkbox for teacher, when showing descriptor for student
 
 			$('input[name=add-grading-'+studentid+'-'+descrid+']').prop("disabled", false);
-			$('select[name=data-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
+			$('select[name=datadescriptors-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
 			
 			var img = $("img", this);
 			img.attr('src',$(this).attr('showurl'));

@@ -13,7 +13,7 @@
 	// student selector
 	$(function(){
 		$('select[name=exacomp_competence_grid_report]').change(function(){
-			document.location.href = this.getAttribute('data-url') + '&report='+this.value;
+			block_exacomp.set_location_params({ report: this.value });
 		});
 	});
 })(jQueryExacomp);

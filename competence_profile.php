@@ -73,8 +73,8 @@ if(!$isTeacher){
 		echo html_writer::tag("p", get_string("select_student","block_exacomp"));
 		//print student selector
 		echo get_string("choosestudent","block_exacomp");
-		echo block_exacomp_studentselector($coursestudents,$studentid,$PAGE->url);
-		echo $OUTPUT->footer();
+		echo $output->print_studentselector($coursestudents,$studentid);
+		echo $output->footer();
 		die;
 	}else{
 		//check permission for viewing students profile
@@ -83,7 +83,7 @@ if(!$isTeacher){
 		
 		//print student selector
 		echo get_string("choosestudent","block_exacomp");
-		echo block_exacomp_studentselector($coursestudents,$studentid,$PAGE->url);
+		echo $output->print_studentselector($coursestudents,$studentid);
 	}
 }
 $student = $DB->get_record('user',array('id' => $studentid));

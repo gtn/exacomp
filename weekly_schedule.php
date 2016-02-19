@@ -93,13 +93,13 @@ if($isTeacher){
 		
 		//print student selector
 		echo get_string("choosestudent","block_exacomp");
-		echo block_exacomp_studentselector($coursestudents,0,$PAGE->url);
+		echo $output->print_studentselector($coursestudents, 0);
 		echo $OUTPUT->footer();
 		die;
 	}else{
 		//print student selector
 		echo get_string("choosestudent","block_exacomp");
-		echo block_exacomp_studentselector($coursestudents,$student->id,$PAGE->url);
+		echo $output->print_studentselector($coursestudents, $student->id);
 	}
 } else {
 	echo html_writer::tag("input", null, array("type" => "hidden", "value" => $student->id, "id" => "menuexacomp_competence_grid_select_student"));

@@ -267,17 +267,20 @@ if ($isTeacher) {
 		$selectedStudentid = 0;
 		$studentid = 0;
 		$editmode = true;
+	} elseif($editmode) {
+		$selectedStudentid = 0;
+		$studentid = 0;
 	} elseif(!$students) {
 		if ($cross_subject && !$cross_subject->is_draft())
 			echo html_writer::div(get_string('share_crosssub_for_further_use','block_exacomp'),"alert alert-warning");
 		// $editmode = true;
 		$selectedStudentid = 0;
 		$studentid = 0;
-	} elseif($editmode) {
+	} elseif (isset($students[$studentid])) {
 		$selectedStudentid = $studentid;
-		$studentid = 0;
 	} else {
-		$selectedStudentid = $studentid;
+		$selectedStudentid = 0;
+		$studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
 	}
 } else {
 	$students = array($USER);
@@ -342,7 +345,7 @@ if($isTeacher){
 		$students = array();
 	elseif($studentid == BLOCK_EXACOMP_SHOW_STATISTIC)
 		$statistic = true;
-	else{
+	elseif (!empty($students[$studentid])) {
 		$students = array($students[$studentid]);
 		$showevaluation = true;
 	}

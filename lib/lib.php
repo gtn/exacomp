@@ -871,26 +871,37 @@ function block_exacomp_delete_timefield($exampleid, $deletestart, $deleteent){
  * @param int $courseid
  */
 function block_exacomp_get_settings_by_course($courseid = 0) {
-	global $DB, $COURSE;
-
 	if (!$courseid)
-		$courseid = $COURSE->id;
+		$courseid = g::$COURSE->id;
 
-	$settings = $DB->get_record(\block_exacomp\DB_SETTINGS, array("courseid" => $courseid));
+	$settings = g::$DB->get_record(block_exacomp\DB_SETTINGS, array("courseid" => $courseid));
 
-	if (empty($settings)) $settings = new stdClass;
-	if (empty($settings->grading)) $settings->grading = 1;
+	if (!$settings) {
+		$settings = new stdClass;
+	}
+
+	// actually this is a global setting now
+	$settings->useprofoundness = get_config('exacomp', 'useprofoundness');
+
+	if ($settings->useprofoundness) {
+		$settings->grading = 2;
+	} elseif (empty($settings->grading)) {
+		$settings->grading = 1;
+	}
 	if (empty($settings->nostudents)) $settings->nostudents = 0;
 	if (!isset($settings->uses_activities)) $settings->uses_activities = block_exacomp_is_skillsmanagement() ? 0 : 1;
 	if (!isset($settings->show_all_examples)) $settings->show_all_examples = block_exacomp_is_skillsmanagement() ? 1 : 0;
 	if (!isset($settings->usedetailpage)) $settings->usedetailpage = 0;
-	if (!$settings->uses_activities) $settings->show_all_descriptors = 1;
-	elseif (!isset($settings->show_all_descriptors)) $settings->show_all_descriptors = 0;
-	if(isset($settings->filteredtaxonomies)) $settings->filteredtaxonomies = json_decode($settings->filteredtaxonomies,true);
-	else $settings->filteredtaxonomies = array(SHOW_ALL_TAXONOMIES);
-
-	// actually this is a global setting now
-	$settings->useprofoundness = get_config('exacomp', 'useprofoundness');
+	if (!$settings->uses_activities) {
+		$settings->show_all_descriptors = 1;
+	} elseif (!isset($settings->show_all_descriptors)) {
+		$settings->show_all_descriptors = 0;
+	}
+	if (isset($settings->filteredtaxonomies)) {
+		$settings->filteredtaxonomies = json_decode($settings->filteredtaxonomies,true);
+	} else {
+		$settings->filteredtaxonomies = array(SHOW_ALL_TAXONOMIES);
+	}
 
 	return $settings;
 }
@@ -1724,44 +1735,6 @@ function block_exacomp_build_breadcrum_navigation($courseid) {
 	$blocknode->make_active();
 }
 
-/**
- * Generates html dropdown for students
- *
- * @param array $students
- * @param object $selected
- * @param moodle_url $url
- */
-define('BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_EDITMODE', 1);
-define('BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN', 2);
-define('BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN', 3);
-function block_exacomp_studentselector($students, $selected, $url, $option = null) {
-	$studentsAssociativeArray = array();
-
-	// make copy
-	$url = new block_exacomp\url($url);
-	$url->remove_params('studentid');
-
-	if ($option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_EDITMODE)
-		$studentsAssociativeArray[0]=get_string('no_student_edit', 'block_exacomp');
-	 else if($option != BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN)
-		$studentsAssociativeArray[0]=get_string('no_student', 'block_exacomp');
-
-	foreach($students as $student) {
-		$studentsAssociativeArray[$student->id] = fullname($student);
-	}
-
-	if ($option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN) {
-		$studentsAssociativeArray[BLOCK_EXACOMP_SHOW_ALL_STUDENTS] = get_string('allstudents', 'block_exacomp');
-	}
-	if($option == BLOCK_EXACOMP_STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN) {
-		$studentsAssociativeArray[BLOCK_EXACOMP_SHOW_STATISTIC] = get_string('statistic', 'block_exacomp');
-	}
-
-	$edit = optional_param('editmode', 0, PARAM_BOOL);
-
-	return html_writer::select($studentsAssociativeArray, 'exacomp_competence_grid_select_student',$selected,true,
-			array("data-url"=>$url,"disabled" => ($edit) ? "disabled" : ""));
-}
 /**
  *
  * Check if school specific import is enabled
@@ -5897,6 +5870,10 @@ function block_exacomp_get_message_icon($userid) {
 		require_once($CFG->dirroot . '/message/lib.php');
 
 		$userto = $DB->get_record('user', array('id' => $userid));
+
+		if (!$userto) {
+			return;
+		}
 
 		message_messenger_requirejs();
 		$url = new moodle_url('message/index.php', array('id' => $userto->id));

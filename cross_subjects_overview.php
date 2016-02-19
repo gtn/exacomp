@@ -114,6 +114,7 @@ if (block_exacomp_is_teacher() || block_exacomp_is_admin()) {
 	echo '<td width="33%" style="vertical-align: top;">';
 
 	$table = new html_table();
+	$table->attributes['class'] = 'generaltable rg2';
 	$tmp = new html_table_cell($output->pix_icon('i/repository', '').' '.block_exacomp\trans('de:Themenvorlagen'));
 	$tmp->colspan = 2;
 	$table->head = [$tmp];

@@ -657,6 +657,13 @@ hide arrow
 	display: none
 }
 
+/* only show first colgroup when loading */
+#block_exacomp td[class*=colgroup-] {
+	display: none;
+}
+#block_exacomp td.colgroup-0 {
+	display: table-cell;
+}
 
 /* ##################################################### */
 /* ##################################################### */

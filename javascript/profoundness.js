@@ -120,8 +120,8 @@
 	}
 	*/
 
-	// uncheck all other checkboxes with the same name
-	$(document).on('click', 'input[name^=data]', function(){
+	// update all checkboxes with the same name
+	$(document).on('click', 'input[name^=datadescriptors]', function(){
 		$('input[name="'+$(this).attr("name")+'"]').not(this).prop('checked', false);
 	});
 	// update same examples: checkboxes (bewertungsdimensionen == 1)

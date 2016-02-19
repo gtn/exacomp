@@ -22,13 +22,35 @@ Storage.prototype.getObject = function(key) {
  
 window.block_exacomp = {
 	get_param: function(name) {
+		name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+		var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+			results = regex.exec(location.search);
+
+		return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
+	},
+
+	get_location: function(params) {
+		var url = document.location.href;
+
+		$.each(params, function(name, value){
 			name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-			var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+			var regex = new RegExp("[\\?&](" + name + "=([^&#]*))"),
 				results = regex.exec(location.search);
-			
-			return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
+
+			if (results === null) {
+				url += (url.indexOf('?') ? '&' : '?')+name+'='+encodeURIComponent(value);
+			} else {
+				url = url.replace(results[1], name+'='+encodeURIComponent(value));
+			}
+		});
+
+		return url;
 	},
 	
+	set_location_params: function(params) {
+		document.location.href = this.get_location(params);
+	},
+
 	get_studentid: function() {
 		studentid = block_exacomp.get_param('studentid');
 		
@@ -219,9 +241,10 @@ $(function() {
 
 	// student selector
 	$('select[name=exacomp_competence_grid_select_student]').change(function(){
-		document.location.href = this.getAttribute('data-url') + '&studentid='+this.value;
+		block_exacomp.set_location_params({ studentid: this.value });
 	});
 
+	// convert exa-tree to rg2
 	$('ul.exa-tree').each(function(){
 		var $tree = $(this);
 		var $table = $('<table class="exabis_comp_comp rg2 '+$tree.attr('class').replace(/exa\-tree/g, 'rg2')+'"></table>');
@@ -493,7 +516,7 @@ $(document).on('click', '.exa-collapsible > legend', function(){
 
 	$(function(){
 		// add class to tables
-		$('tr.rg2, table.rg2, .rg2-level-0').closest('table').addClass('rg2');
+		// $('tr.rg2, table.rg2, .rg2-level-0').closest('table').addClass('rg2');
 
 		get_tables().trigger('rg2.init');
 	});
