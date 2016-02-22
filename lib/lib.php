@@ -4131,6 +4131,12 @@ function block_exacomp_delete_crosssubject_drafts($drafts_to_delete){
 function block_exacomp_get_crosssubjects(){
 	return g::$DB->get_records(\block_exacomp\DB_CROSSSUBJECTS);
 }
+
+/**
+ * @param $courseid
+ * @param null $studentid
+ * @return block_exacomp\cross_subject[]
+ */
 function block_exacomp_get_cross_subjects_by_course($courseid, $studentid=null){
 	$crosssubs = block_exacomp\cross_subject::get_objects(['courseid'=>$courseid], 'title');
 
@@ -4889,7 +4895,7 @@ function block_exacomp_get_descriptor_numbering($descriptor){
 }
 /**
  *
- * @param $topic id or object
+ * @param id|block_exacomp\topic $topic
  * @return string
  */
 function block_exacomp_get_topic_numbering($topic){

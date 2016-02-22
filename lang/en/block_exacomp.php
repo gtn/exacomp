@@ -413,7 +413,7 @@ $string['confirm_delete'] = 'Do you really want to delete this crosssubject?';
 $string['no_students_crosssub'] = 'No students are assigend to this crosssubject.';
 $string['use_available_crosssub'] = 'Use draft for creating new crosssubject:';
 $string['save_crosssub'] = 'Save changes';
-$string['add_content_to_crosssub'] = 'The crosssubject is still empty. <input type="button" exa-type="iframe-popup" exa-url="{$a}" value="Add content via the competence grid" />';
+$string['add_content_to_crosssub'] = 'The crosssubject is still empty.';
 $string['add_descriptors_to_crosssub'] = 'Add descriptor to crosssubject';
 $string['manage_crosssubs'] = 'Back to overview';
 $string['show_course_crosssubs'] = 'Show used crosssubjects';

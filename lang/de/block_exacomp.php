@@ -451,7 +451,7 @@ $string['confirm_delete'] = 'Soll dieses Thema wirklich gelöscht werden?';
 $string['no_students_crosssub'] = 'Es sind keine Teilnehmer zu diesem Thema zugeteilt.';
 $string['use_available_crosssub'] = 'Ein Thema aus einer Vorlage erstellen:';
 $string['save_crosssub'] = 'Thema aktualisieren';
-$string['add_content_to_crosssub'] = 'Das Thema ist noch nicht befüllt. <input type="button" exa-type="iframe-popup" exa-url="{$a}" value="Über den Kompetenzraster Inhalte hinzufügen" />';
+$string['add_content_to_crosssub'] = 'Das Thema ist noch nicht befüllt.';
 $string['add_descriptors_to_crosssub'] = 'Teilkompetenz mit Thema verknüpfen';
 $string['manage_crosssubs'] = 'Zurück zur Übersicht';
 $string['show_course_crosssubs'] = 'Kurs-Themen ansehen';

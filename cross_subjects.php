@@ -262,7 +262,7 @@ if($example_del = optional_param('exampleid', 0, PARAM_INT)){
 // IF TEACHER SHOW ALL COURSE STUDENTS, IF NOT ONLY CURRENT USER
 // TODO: logik hier kontrollieren
 if ($isTeacher) {
-	$students = ($cross_subject)?block_exacomp_get_students_for_crosssubject($courseid, $cross_subject):array();
+	$students = ($cross_subject && !$cross_subject->is_draft())?block_exacomp_get_students_for_crosssubject($courseid, $cross_subject):array();
 	if (!$cross_subject) {
 		$selectedStudentid = 0;
 		$studentid = 0;
@@ -357,17 +357,21 @@ if ($editmode) {
 	echo html_writer::end_tag('form');
 }
 
-if($cross_subject)
-	echo $output->print_overview_legend($isTeacher);
-
-$subjects = block_exacomp_get_competence_tree_for_cross_subject($courseid,(isset($cross_subject))?$cross_subject->id:null,false, !($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies);
-
 if ($cross_subject) {
-	echo html_writer::start_tag('form', array('id'=>'assign-competencies', "action" => $PAGE->url, 'method'=>'post'));
-	echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
-	echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $scheme, false, $cross_subject->id, $statistic);
-	echo html_writer::end_tag("div");
-	echo html_writer::end_tag('form');
+	$subjects = block_exacomp_get_competence_tree_for_cross_subject($courseid,(isset($cross_subject))?$cross_subject->id:null,false, !($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies);
+
+	if ($subjects) {
+		echo $output->print_overview_legend($isTeacher);
+		echo html_writer::start_tag('form', array('id'=>'assign-competencies', "action" => $PAGE->url, 'method'=>'post'));
+		echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
+		echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $scheme, false, $cross_subject->id, $statistic);
+		echo html_writer::end_tag("div");
+		echo html_writer::end_tag('form');
+	} else {
+		echo html_writer::div(
+			block_exacomp\get_string('add_content_to_crosssub'),
+				"alert alert-warning");
+	}
 }
 
 /* END CONTENT REGION */

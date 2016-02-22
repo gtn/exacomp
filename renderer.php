@@ -1288,15 +1288,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$table_html = html_writer::table($table);
 
-		if(!$rows && $crosssubjid) {
-			$table_html .= html_writer::div(
-				block_exacomp\get_string('add_content_to_crosssub', null,
-					'cross_subjects.php?courseid='.g::$COURSE->id.'&action=descriptor_selector&crosssubjid='.$crosssubjid),
-					"alert alert-warning");
-		}
-
 		if (!$this->is_print_mode()) {
-			if ($rows && !$this->is_edit_mode()) {
+			if ($rows && !$this->is_edit_mode() && $students) {
 				$buttons = html_writer::tag("input", "", array("id"=>"btn_submit", "name" => "btn_submit", "type" => "submit", "value" => get_string("save_selection", "block_exacomp")));
 				$table_html .= html_writer::div($buttons,'', array('id'=>'exabis_save_button'));
 			}

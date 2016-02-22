@@ -238,7 +238,7 @@ class db_layer {
 	 * @return array
 	 */
 	function assignDbLayer(array $objects) {
-		array_walk($objects, function($object) {
+		array_walk($objects, function(db_record $object) {
 			$object->setDbLayer($this);
 		});
 
@@ -384,7 +384,7 @@ class db_record {
 			// check if __get is recursively called at the same property
 			if (property_exists($this, $name)) {
 				// the property exists now -> error
-				print_error('property set on object!');
+				throw new \coding_exception('property set on object!');
 			}
 
 			return $ret;
@@ -401,7 +401,7 @@ class db_record {
 
 			return $this->data->$name;
 		} else {
-			print_error("property not found ".get_class($this)."::$name");
+			throw new \coding_exception("property not found ".get_class($this)."::$name");
 		}
 	}
 
@@ -532,7 +532,7 @@ class db_record {
 	 * 			* OR db_record, which would just be returned
 	 * @param null $fields
 	 * @param null $strictness
-	 * @return db_record
+	 * @return static
 	 * @throws \coding_exception
 	 */
 	static function get($conditions, $fields=null, $strictness=null) {

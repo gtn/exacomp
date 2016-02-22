@@ -128,6 +128,7 @@ if (block_exacomp_is_teacher() || block_exacomp_is_admin()) {
 
 		$row = new html_table_row([ $title ]);
 		$row->attributes['class'] = 'rg2-level-0 rg2-highlight';
+		$row->attributes['exa-rg2-id'] = 'subject-'.$subject->id;
 		$table->data[] = $row;
 
 		foreach ($subject->cross_subject_drafts as $crosssub) {
