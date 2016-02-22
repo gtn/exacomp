@@ -5320,7 +5320,6 @@ class block_exacomp_external extends external_api {
 		$topic = block_exacomp_get_topic_by_id($topicid);
 		$user = $DB->get_record('user', array('id'=>$userid));
 		$user = block_exacomp_get_user_information_by_course($user, $courseid);
-		$scheme = block_exacomp\get_comp_eval_scheme($courseid);
 
 		$data->topictitle = $topic->title;
 		$data->topicnumbering = block_exacomp_get_topic_numbering($topic);
@@ -5332,7 +5331,7 @@ class block_exacomp_external extends external_api {
 			$data_content->descriptorid = $descriptor->id;
 			$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
 			$data_content->lfstitle = $niveau->title;
-			$lmdata = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $user, $scheme, $niveau->title);
+			$lmdata = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $user, 0, $niveau->title);
 			$data_content->lfsgraphdata = $lmdata->dataobject;
 			$data_content->totallmnumb = $lmdata->total;
 			$data_content->inworklmnumb = $lmdata->inWork;
