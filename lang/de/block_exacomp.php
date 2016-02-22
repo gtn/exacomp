@@ -466,14 +466,14 @@ $string['competence_associations_explaination'] = 'Das Lernmaterial {$a} ist mit
 
 //Weeky schedule
 $string['weekly_schedule'] = 'Wochenplan';
-$string['weekly_schedule_added'] = 'Die Aufgabe wurde in den Wochenplan hinzugefügt.';
-$string['weekly_schedule_already_exists'] = 'Die Aufgabe ist bereits im Wochenplan.';
+$string['weekly_schedule_added'] = 'Die Aufgabe wurde in den Planungsspeicher im Wochenplan hinzugefügt.';
+$string['weekly_schedule_already_exists'] = 'Die Aufgabe ist bereits im Planungsspeicher im Wochenplan.';
 $string['select_student_weekly_schedule'] = 'Wählen Sie einen Kursteilnehmer aus, dessen Wochenplan Sie sehen möchten.';
 $string['example_pool'] = 'Planungsspeicher';
 $string['example_trash'] = 'Papierkorb';
 $string['choosecourse'] = 'Kurs auswählen: ';
-$string['weekly_schedule_added_all'] = 'Die Aufgabe wurde bei allen Teilnehmern auf den Wochenplan gelegt.';
-$string['weekly_schedule_already_existing_for_one'] = 'Die Aufgabe ist bei mindestens einem Sch&uuml;ler bereits im Wochenplan.';
+$string['weekly_schedule_added_all'] = 'Die Aufgabe wurde bei allen Teilnehmern auf den Planungsspeicher im Wochenplan gelegt.';
+$string['weekly_schedule_already_existing_for_one'] = 'Die Aufgabe ist bei mindestens einem Sch&uuml;ler bereits im Planungsspeicher im Wochenplan.';
 $string['weekly_schedule_link_to_grid'] = 'Um den Wochenplan zu befüllen in den Kompetenzraster wechseln';
 $string['pre_planning_storage'] = 'Vorplanungsspeicher';
 $string['pre_planning_storage_added'] = 'Lernmaterial wurde zum Vorplanungsspeicher hinzugefügt.';
