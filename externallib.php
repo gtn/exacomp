@@ -1307,7 +1307,7 @@ class block_exacomp_external extends external_api {
 				'userid' => $userid 
 		) );
 
-		static::require_can_access_user($courseid, $userid);
+		static::require_can_access_user($userid);
 		static::require_can_access_example($exampleid, $courseid);
 
 		$descriptors_exam_mm = $DB->get_records (\block_exacomp\DB_DESCEXAMP, array (
