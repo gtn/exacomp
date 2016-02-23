@@ -44,6 +44,7 @@ echo $output->header_v2($page_identifier);
 
 /* CONTENT REGION */
 
+$course_settings = block_exacomp_get_settings_by_course($courseid);
 $dropdown_subjects = block_exacomp_get_subjects_by_course($courseid, true);
 
 if($dropdown_subjects && $subjectid == 0)
@@ -58,7 +59,8 @@ if($data) {
 		echo $output->print_studentselector(block_exacomp_get_students_by_course($courseid),$studentid, $output::STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN);
 	}
 	
-	echo $output->print_competence_grid_reports_dropdown();
+	if($course_settings->nostudents != 1)
+		echo $output->print_competence_grid_reports_dropdown();
 
 	echo html_writer::start_div();
 	
