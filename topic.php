@@ -91,7 +91,7 @@ class block_exacomp_local_item_form extends moodleform {
 }
 
 $form = new block_exacomp_local_item_form($_SERVER['REQUEST_URI']);
-if ($item) $form->set_data($item->get_data());
+if ($item) $form->set_data($item);
 
 if($formdata = $form->get_data()) {
 	

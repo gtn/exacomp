@@ -192,7 +192,7 @@ if($exampleid > 0) {
 			array('subdirs' => 0, 'maxfiles' => 1));
 	$example->solution = $draftitemid;
 	
-	$form->set_data($example->get_data());
+	$form->set_data($example);
 }
 
 $form->display();

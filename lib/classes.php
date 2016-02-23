@@ -378,7 +378,7 @@ class db_record {
 	}
 
 	public function toArray() {
-		return $this->get_data();
+		return (array)$this->get_data();
 	}
 
 	public function &__get($name) {

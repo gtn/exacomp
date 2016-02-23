@@ -4024,11 +4024,6 @@ class block_exacomp_external extends external_api {
 
 		$cross_subjects = block_exacomp_get_cross_subjects_by_course($courseid, $userid);
 		
-		// TODO: objekt konvertierung
-		foreach ($cross_subjects as $key => $cs) {
-			$cross_subjects[$key] = $cs->get_data();
-		}
-		
 		//if for all return only common cross subjects
 		if($forall){
 			$cross_subjects_return = array();
