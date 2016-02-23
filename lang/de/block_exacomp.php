@@ -19,7 +19,7 @@ $string['tab_admin_configuration'] = 'Vorauswahl der Standards';
 $string['admin_config_pending'] = 'Vorauswahl der Kompetenzen durch den Administrator notwendig';
 
 //Teacher Tabs
-$string['tab_teacher_settings'] = 'Kurseinstellungen';
+$string['tab_teacher_settings'] = 'Konfiguration';
 $string['tab_teacher_settings_configuration'] = 'Einstellungen';
 $string['tab_teacher_settings_selection_st'] = 'Schultyp-Auswahl';
 $string['tab_teacher_settings_selection'] = 'Gegenstands-Auswahl';
