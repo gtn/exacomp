@@ -1550,16 +1550,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				if(($descriptor->examples || $descriptor->children || ($parent && $editmode)) && ($data->rg2_level >= 0))
 					$titleCell->attributes['class'] .= ' rg2-arrow';
 
-				$titleCell->attributes['title'] = [];
-				$titleCell->attributes['title'][] = block_exacomp\get_string('import_source', null, $this->print_source_info($descriptor->source));
+				$title = [];
+				$title[] = block_exacomp\get_string('import_source', null, $this->print_source_info($descriptor->source));
 				if (isset($data->subject) && $author = $data->subject->get_author()) {
-					$titleCell->attributes['title'][] = get_string('author', 'repository').": ".$author."\n";
+					$title[] = get_string('author', 'repository').": ".$author."\n";
 				}
+				//$title = $this->print_statistic_table($data->courseid, $students, $descriptor, true, $data->scheme);
 
-				$titleCell->attributes['title'] = join('<br />', $titleCell->attributes['title']);
-				$titleCell->text = html_writer::div(html_writer::tag('span', $outputname));
+				$title = join('<br />', $title);
+				$titleCell->text = html_writer::div(html_writer::tag('span', $outputname), '', [ 'title' => $title ]);
 
-				//$titleCell->attributes['title'] = $this->print_statistic_table($data->courseid, $students, $descriptor, true, $data->scheme);
 
 				// EDIT MODE BUTTONS
 				if ($editmode){
@@ -1798,29 +1798,29 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$exampleRow->attributes['class'] = 'exabis_comp_aufgabe block_exacomp_example ' . $sub_rg2_class.$visible_example_css;
 					$exampleRow->cells[] = new html_table_cell();
 
+					$title = [];
+
+					if ($author = $example->get_author()) {
+						$title[] = get_string('author', 'repository').": ".$author;
+					}
+					if (trim(strip_tags($example->description))) {
+						$title[] = $example->description;
+					}
+					if (trim($example->timeframe)) {
+						$title[] = $example->timeframe;
+					}
+					if (trim($example->tips)) {
+						$title[] = $example->tips;
+					}
+
+					$title = join('<br />', $title);
+
 					$titleCell = new html_table_cell();
 					$titleCell->attributes['class'] = 'rg2-indent';
 					$titleCell->style = 'padding-left: 30px;';
-					$titleCell->text = html_writer::div(html_writer::tag('span', $example->title));
+					$titleCell->text = html_writer::div(html_writer::tag('span', $example->title), '', [ 'title' => $title ]);
 
 				   	if(!$statistic && !$this->is_print_mode()){
-
-						$titleCell->attributes['title'] = [];
-
-						if ($author = $example->get_author()) {
-						   	$titleCell->attributes['title'][] = get_string('author', 'repository').": ".$author;
-					   	}
-						if (trim(strip_tags($example->description))) {
-							$titleCell->attributes['title'][] = $example->description;
-						}
-						if (trim($example->timeframe)) {
-							$titleCell->attributes['title'][] = $example->timeframe;
-						}
-						if (trim($example->tips)) {
-							$titleCell->attributes['title'][] = $example->tips;
-						}
-
-						$titleCell->attributes['title'] = join('<br />', $titleCell->attributes['title']);
 
 						if ($editmode) {
 							$titleCell->text .= '<span style="padding-right: 15px;" class="todo-change-stylesheet-icons">';
