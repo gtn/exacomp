@@ -262,7 +262,7 @@ if($example_del = optional_param('exampleid', 0, PARAM_INT)){
 // IF TEACHER SHOW ALL COURSE STUDENTS, IF NOT ONLY CURRENT USER
 // TODO: logik hier kontrollieren
 if ($isTeacher) {
-	$students = ($cross_subject && !$cross_subject->is_draft())?block_exacomp_get_students_for_crosssubject($courseid, $cross_subject):array();
+	$students = ($cross_subject && !$cross_subject->is_draft() && $course_settings->nostudents!=1)?block_exacomp_get_students_for_crosssubject($courseid, $cross_subject):array();
 	if (!$cross_subject) {
 		$selectedStudentid = 0;
 		$studentid = 0;
@@ -271,7 +271,7 @@ if ($isTeacher) {
 		$selectedStudentid = 0;
 		$studentid = 0;
 	} elseif(!$students) {
-		if ($cross_subject && !$cross_subject->is_draft())
+		if ($cross_subject && !$cross_subject->is_draft() && $course_settings->nostudents != 1)
 			echo html_writer::div(get_string('share_crosssub_for_further_use','block_exacomp'),"alert alert-warning");
 		// $editmode = true;
 		$selectedStudentid = 0;
@@ -334,7 +334,7 @@ if(!$isTeacher){
 			$activities_student[] = $course_mods[$cmid];*/
 }
 
-echo $output->print_cross_subject_buttons($cross_subject, $students, $selectedStudentid);
+echo $output->print_cross_subject_buttons($cross_subject, $students, $selectedStudentid, ($course_settings->nostudents!=1));
 
 $statistic = false;
 if($isTeacher){

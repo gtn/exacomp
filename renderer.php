@@ -457,14 +457,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				// display a hidden field? not needed, because the form never gets submitted (it's ajax)
 				// $content .= html_writer::empty_tag('input', array('type'=>'text', 'name'=>'exacomp_competence_grid_select_student', 'value'=>$selectedStudent));
 				$content .= '<h3>'.\block_exacomp\trans(['de:Sie befinden sich im Bearbeiten Modus', 'en:Editing mode is turned on']).'</h3>';
-			} else {
+			} elseif ($students) {
 				$content .= '<div style="padding-bottom: 15px;">';
 				$content .= get_string("choosestudent", "block_exacomp");
 				$content .= $this->print_studentselector($students,$selectedStudent, static::STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
 				$content .= '</div>';
 			}
 
-			if(!$this->is_edit_mode() && $selectedStudent != BLOCK_EXACOMP_SHOW_STATISTIC) {
+			if(!$this->is_edit_mode() && $selectedStudent != BLOCK_EXACOMP_SHOW_STATISTIC && $students) {
 				$right_content .= block_exacomp_get_message_icon($selectedStudent);
 			}
 			
@@ -473,6 +473,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					'exa-type' => 'iframe-popup', 'exa-url' => "subject.php?courseid={$COURSE->id}&show=add"));
 			}
 			
+			if($students){
 			$url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid'=>$COURSE->id, 'creatorid'=>$USER->id));
 			$right_content .= html_writer::tag('button', 
 					html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'), 
@@ -484,6 +485,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					'exa-type' => 'iframe-popup', 'exa-url' => $url->out(false)
 				)
 			);
+			}
 
 			$right_content .= $this->print_edit_mode_button(block_exacomp\url::create(g::$PAGE->url, ['editmode' => !$this->is_edit_mode()]));
 		} else {
@@ -1428,7 +1430,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 
 				}
-			}elseif(!$editmode) {
+			}elseif(!$editmode && $students) {
 				$statCell = new html_table_cell();
 				$statCell->text = "";
 				$statCell->colspan = ($data->showevaluation) ? count($students) * 3 : count($students) * 2;
@@ -4299,7 +4301,7 @@ var dataset = dataset.map(function (group) {
 	 * @return string
 	 * @throws coding_exception
 	 */
-	public function print_cross_subject_buttons($cross_subject, $students, $selectedStudent){
+	public function print_cross_subject_buttons($cross_subject, $students, $selectedStudent, $nostudents = false){
 		global $PAGE, $COURSE, $USER;
 
 		$left_content = '';
@@ -4313,7 +4315,7 @@ var dataset = dataset.map(function (group) {
 			$left_content .= html_writer::tag("input", "", array("type" => "button", "value" => block_exacomp\get_string('add_descriptors_to_crosssub'), 'exa-type' => "iframe-popup", 'exa-url' => 'cross_subjects.php?courseid='.g::$COURSE->id.'&action=descriptor_selector&crosssubjid='.$cross_subject->id));
 		}
 		if ($cross_subject && !$this->is_edit_mode() && $cross_subject->has_capability(\block_exacomp\CAP_MODIFY) && !$cross_subject->is_draft()) {
-			$left_content .= html_writer::tag("input", "", array("type" => "button", "value" => get_string("share_crosssub", "block_exacomp"), 'exa-type'=>'iframe-popup', 'exa-url'=>'cross_subjects.php?courseid='.g::$COURSE->id.'&crosssubjid='.$cross_subject->id.'&action=share'));
+			if($nostudents) $left_content .= html_writer::tag("input", "", array("type" => "button", "value" => get_string("share_crosssub", "block_exacomp"), 'exa-type'=>'iframe-popup', 'exa-url'=>'cross_subjects.php?courseid='.g::$COURSE->id.'&crosssubjid='.$cross_subject->id.'&action=share'));
 			$left_content .= html_writer::tag("input", "", array("type" => "button", "value" => get_string("save_as_draft", "block_exacomp"), 'exa-type'=>'link', 'exa-url'=>'cross_subjects.php?courseid='.g::$COURSE->id.'&crosssubjid='.$cross_subject->id.'&action=save_as_draft'));
 		}
 							// html_writer::tag("input", "", array("id"=>"delete_crosssub", "name"=>"delete_crosssub", "type"=>"button", "value"=>get_string("delete_crosssub", "block_exacomp"), 'message'=>get_string('confirm_delete', 'block_exacomp')), array('id'=>'exabis_save_button'));

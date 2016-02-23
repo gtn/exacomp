@@ -103,13 +103,6 @@ if (!$ret) {
 }
 list($courseSubjects, $courseTopics, $niveaus, $selectedSubject, $selectedTopic, $selectedNiveau) = $ret;
 
-//Delete timestamp (end|start) from example
-/*
-if($example_del = optional_param('exampleid', 0, PARAM_INT)){
-	block_exacomp_delete_timefield($example_del, optional_param('deletestart', 0, PARAM_INT), optional_param('deleteend', 0, PARAM_INT));
-}
-*/
-
 // IF TEACHER SHOW ALL COURSE STUDENTS, IF NOT ONLY CURRENT USER
 $students = $allCourseStudents = ($isTeacher) ? block_exacomp_get_students_by_course($courseid) : array($USER->id => $USER);
 if($course_settings->nostudents) $allCourseStudents = array();
@@ -120,10 +113,10 @@ $competence_tree = block_exacomp_get_competence_tree($courseid,$selectedSubject?
 $scheme = block_exacomp_get_grading_scheme($courseid);
 $colselector="";
 $statistic = false;
-if($isTeacher){
-	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
+if($isTeacher){	//mind nostudents setting
+	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $course_settings->nostudents != 1) {
 		$colselector=$output->print_column_selector(count($allCourseStudents));
-	} elseif (!$studentid) {
+	} elseif (!$studentid || $course_settings->nostudents == 1) {
 		$students = array();
 	} elseif ($studentid == BLOCK_EXACOMP_SHOW_STATISTIC) {
 		$statistic = true;
@@ -166,7 +159,7 @@ echo $output->header($context, $courseid, $page_identifier);
 echo $colselector;
 echo $output->print_competence_overview_form_start($selectedNiveau, $selectedTopic, $studentid, $editmode);
 
-//dropdowns for subjects and topics and students -> if user is teacher
+//dropdowns for subjects and topics and students -> if user is teacher and working with students
 echo $output->print_overview_dropdowns('assign_competencies', $allCourseStudents, (!$editmode) ? $studentid : $selectedStudentid, $isTeacher);
 
 echo '<div class="clearfix"></div>';
