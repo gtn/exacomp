@@ -414,18 +414,6 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
 	return block_exacomp_sort_items($topics, ['subj_' => \block_exacomp\DB_SUBJECTS, '' => \block_exacomp\DB_TOPICS]);
 }
 
-function block_exacomp_property_exists($var, $property) {
-	if ($var instanceof block_exacomp\db_record) {
-		return $var->property_exists($property);
-	} elseif (is_object($var)) {
-		return property_exists($var, $property);
-	} elseif (is_array($var)) {
-		return array_key_exists($property, $var);
-	} else {
-		throw new \coding_exception('wrong variable type');
-	}
-}
-
 function block_exacomp_sort_items(&$items, $sortings) {
 	$sortings = (array)$sortings;
 
@@ -434,13 +422,13 @@ function block_exacomp_sort_items(&$items, $sortings) {
 			if (is_int($prefix)) $prefix = '';
 
 			if ($sorting == \block_exacomp\DB_SUBJECTS) {
-				if (!block_exacomp_property_exists($a, $prefix."source") || !block_exacomp_property_exists($b, $prefix."source")) {
+				if (!property_exists($a, $prefix."source") || !property_exists($b, $prefix."source")) {
 					throw new \block_exacomp\moodle_exception('col not found: '.$prefix."source");
 				}
-				if (!block_exacomp_property_exists($a, $prefix."sorting") || !block_exacomp_property_exists($b, $prefix."sorting")) {
+				if (!property_exists($a, $prefix."sorting") || !property_exists($b, $prefix."sorting")) {
 					throw new \block_exacomp\moodle_exception('col not found: '.$prefix."sorting");
 				}
-				if (!block_exacomp_property_exists($a, $prefix."title") || !block_exacomp_property_exists($b, $prefix."title")) {
+				if (!property_exists($a, $prefix."title") || !property_exists($b, $prefix."title")) {
 					throw new \block_exacomp\moodle_exception('col not found: '.$prefix."title");
 				}
 
@@ -460,13 +448,13 @@ function block_exacomp_sort_items(&$items, $sortings) {
 					return strcmp($a->{$prefix."title"}, $b->{$prefix."title"});
 				}
 			} elseif ($sorting == \block_exacomp\DB_TOPICS) {
-				if (!block_exacomp_property_exists($a, $prefix."sorting") || !block_exacomp_property_exists($b, $prefix."sorting")) {
+				if (!property_exists($a, $prefix."sorting") || !property_exists($b, $prefix."sorting")) {
 					throw new \block_exacomp\moodle_exception('col not found: '.$prefix."sorting");
 				}
-				if (!block_exacomp_property_exists($a, $prefix."numb") || !block_exacomp_property_exists($b, $prefix."numb")) {
+				if (!property_exists($a, $prefix."numb") || !property_exists($b, $prefix."numb")) {
 					throw new \block_exacomp\moodle_exception('col not found: '.$prefix."numb");
 				}
-				if (!block_exacomp_property_exists($a, $prefix."title") || !block_exacomp_property_exists($b, $prefix."title")) {
+				if (!property_exists($a, $prefix."title") || !property_exists($b, $prefix."title")) {
 					throw new \block_exacomp\moodle_exception('col not found: '.$prefix."title");
 				}
 
@@ -484,10 +472,10 @@ function block_exacomp_sort_items(&$items, $sortings) {
 					return strcmp($a->{$prefix."title"}, $b->{$prefix."title"});
 				}
 			} elseif ($sorting == \block_exacomp\DB_DESCRIPTORS) {
-				if (!block_exacomp_property_exists($a, $prefix."sorting") || !block_exacomp_property_exists($b, $prefix."sorting")) {
+				if (!property_exists($a, $prefix."sorting") || !property_exists($b, $prefix."sorting")) {
 					throw new \block_exacomp\moodle_exception('col not found: '.$prefix."sorting");
 				}
-				if (!block_exacomp_property_exists($a, $prefix."title") || !block_exacomp_property_exists($b, $prefix."title")) {
+				if (!property_exists($a, $prefix."title") || !property_exists($b, $prefix."title")) {
 					throw new \block_exacomp\moodle_exception('col not found: '.$prefix."title");
 				}
 
@@ -501,10 +489,10 @@ function block_exacomp_sort_items(&$items, $sortings) {
 					return strcmp($a->{$prefix."title"}, $b->{$prefix."title"});
 				}
 			} elseif ($sorting == \block_exacomp\DB_NIVEAUS) {
-				if (!block_exacomp_property_exists($a, $prefix."sorting") || !block_exacomp_property_exists($b, $prefix."sorting")) {
+				if (!property_exists($a, $prefix."sorting") || !property_exists($b, $prefix."sorting")) {
 					throw new \block_exacomp\moodle_exception('col not found: '.$prefix."sorting");
 				}
-				if (!block_exacomp_property_exists($a, $prefix."title") || !block_exacomp_property_exists($b, $prefix."title")) {
+				if (!property_exists($a, $prefix."title") || !property_exists($b, $prefix."title")) {
 					throw new \block_exacomp\moodle_exception('col not found: '.$prefix."title");
 				}
 

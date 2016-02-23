@@ -336,20 +336,16 @@ class db_layer_all_user_courses extends db_layer {
  */
 class db_record {
 	/**
-	 * @var object
-	 */
-	protected $data = null;
-	/**
 	 * @var db_layer
 	 */
 	protected $dbLayer = null;
 
+	public $id;
+
 	const TABLE = 'todo';
 	const SUBS = null;
 
-	public function __construct($data, db_layer $dbLayer = null) {
-		$this->data = (object)[];
-
+	public function __construct($data = [], db_layer $dbLayer = null) {
 		if ($dbLayer) {
 			$this->setDbLayer($dbLayer);
 		} else {
@@ -374,76 +370,96 @@ class db_record {
 	}
 
 	public function get_data() {
-		return clone $this->data;
+		$data = (object)[];
+		foreach ((new \ReflectionObject($this))->getProperties(\ReflectionProperty::IS_PUBLIC) as $prop) {
+			$data->{$prop->getName()} = $prop->getValue($this);
+		}
+		return $data;
+	}
+
+	public function toArray() {
+		return $this->get_data();
 	}
 
 	public function &__get($name) {
+		static::check_property_name($name);
+
 		if (($method = 'get_'.$name) && method_exists($this, $method)) {
 			@$ret =& $this->$method();
 
 			// check if __get is recursively called at the same property
+			/*
 			if (property_exists($this, $name)) {
 				// the property exists now -> error
-				throw new \coding_exception('property set on object!');
+				throw new \coding_exception("property '$name' set on object!");
 			}
+			*/
 
 			return $ret;
-		} elseif (property_exists($this->data, $name)) {
-			return $this->data->$name;
 		} elseif (($method = 'fill_'.$name) && method_exists($this, $method)) {
-			$this->data->$name = $this->$method();
+			$this->$name = $this->$method();
 
 			// check if __get is recursively called at the same property
+			/*
 			if (property_exists($this, $name)) {
 				// the property exists now -> error
-				print_error('property set on object!');
+				throw new \coding_exception("property '$name' set on object!");
 			}
+			*/
 
-			return $this->data->$name;
+			return $this->$name;
 		} else {
 			throw new \coding_exception("property not found ".get_class($this)."::$name");
 		}
 	}
 
 	public function __isset($name) {
+		static::check_property_name($name);
+
+		// TODO: wird das noch benötigt?
 		if (($method = 'get_'.$name) && method_exists($this, $method)) {
-			return $this->__get($name) !== null;
-		} elseif (property_exists($this->data, $name)) {
-			// ok
+			return true; // $this->__get($name) !== null;
 		} elseif (($method = 'fill_'.$name) && method_exists($this, $method)) {
-			return $this->__get($name) !== null;
+			return true; // $this->__get($name) !== null;
 		} else {
 			return false;
 		}
 
-		return isset($this->data->$name);
-	}
-
-	public function property_exists($name) {
-		return property_exists($this->data, $name);
+		// return isset($this->$name);
 	}
 
 	public function __set($name, $value) {
+		static::check_property_name($name);
+
 		if (($method = 'set_'.$name) && method_exists($this, $method)) {
 			$this->$method($value);
 
 			// check if __set is recursively called at the same property
+			/*
 			if (property_exists($this, $name)) {
 				// the property exists now -> error
 				print_error('property set on object!');
 			}
+			*/
 
 		} else {
-			$this->data->$name = $value;
+			if (method_exists($this, 'get_'.$method)) {
+				throw new \coding_exception("set '$name' not allowed, because there is a get_$name function! ");
+			}
+
+			$this->$name = $value;
 		}
 	}
 	public function __unset($name) {
-		unset($this->data->$name);
-	}
+		static::check_property_name($name);
 
-    function __clone() {
-        $this->data = clone $this->data;
-    }
+		unset($this->$name);
+	}
+	protected function check_property_name($name) {
+		if (!preg_match('!^[a-z]!', $name)) {
+			throw new \coding_exception('wrong property name '.$name);
+		}
+	}
 
 	public function setDbLayer(db_layer $dbLayer) {
 		$this->dbLayer = $dbLayer;
@@ -458,7 +474,7 @@ class db_record {
 	public function insert_record() {
 		global $DB;
 
-		return $this->id = $DB->insert_record(static::TABLE, $this->data);
+		return $this->id = $DB->insert_record(static::TABLE, $this->get_data());
 	}
 
 	public function update($data = null) {
@@ -476,7 +492,7 @@ class db_record {
 		if ($data === null) {
 			die('TODO: testing');
 			// update all my data
-			// return $DB->update_record(static::TABLE, $this->data);
+			// return $DB->update_record(static::TABLE, $this);
 		}
 
 		$data = (array)$data;
@@ -618,8 +634,12 @@ class subject extends db_record {
 		return $this->dbLayer->get_topics_for_subject($this);
 	}
 
+	/**
+	 * maybe htere is a special implementation
+	 * @return string
+	 */
 	function get_author() {
-		return $this->data->author;
+		return $this->author;
 	}
 
 	function get_numbering() {
@@ -665,9 +685,12 @@ class descriptor extends db_record {
 	const TABLE = DB_DESCRIPTORS;
 	const SUBS = 'children';
 
+	var $parent;
+	var $topicid;
+
 	function init() {
-		if (!isset($this->data->parent)) {
-			$this->data->parent = null;
+		if (!isset($this->parent)) {
+			$this->parent = null;
 		}
 	}
 
@@ -697,9 +720,10 @@ class descriptor extends db_record {
 		*/
 	}
 
+	/*
 	function get_topic() {
-		if (isset($this->data->topic)) {
-			return $this->data->topic;
+		if (isset($this->topic)) {
+			return $this->topic;
 		}
 
 		if (!isset($this->topicid)) {
@@ -711,6 +735,7 @@ class descriptor extends db_record {
 
 		// return topic::get($this->topicid);
 	}
+	*/
 
 	static function insertInCourse($courseid, $data) {
 		global $DB;
@@ -808,10 +833,10 @@ class example extends db_record {
 	}
 
 	function get_author() {
-		if ($this->data->creatorid && $user = g::$DB->get_record('user', ['id' => $this->data->creatorid])) {
+		if ($this->creatorid && $user = g::$DB->get_record('user', ['id' => $this->creatorid])) {
 			return fullname($user);
 		} else {
-			return $this->data->author;
+			return $this->author;
 		}
 	}
 }
