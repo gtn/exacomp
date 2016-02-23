@@ -20,7 +20,7 @@ $string['showevaluation']= 'Um die Selbsteinschätzung einzusehen, klicken Sie <
 $string['hideevaluation']= 'Um die Selbsteinschätzung auszublenden, klicken Sie <a href="{$a}">hier</a>';
 $string['assigned_example'] = 'Lernmaterial zuordnen';
 $string['show_all_descriptors'] = 'Alle Lernlisten im &Uuml;berblick anzeigen';
-$string['show_all_examples'] = 'Externe Lernmaterialien für Teilnehmer anzeigen';
+$string['show_all_examples'] = 'Externe Lernmaterialien für TeilnehmerInnen anzeigen';
 $string['filteredtaxonomies'] = 'Lernmaterialien werden anhand der ausgewählten Taxonomien verwendet:';
 $string['delete_unconnected_examples'] = 'Wenn Sie Themenbereiche abwählen, mit denen Lernmaterialien verknüpft sind die noch am Wochenplan liegen, werden diese aus dem Wochenplan entfernt.';
 

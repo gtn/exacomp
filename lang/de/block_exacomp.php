@@ -14,13 +14,13 @@ $string['exacomp:assignstudents'] = 'Externe Trailer zuordnen';
 // TABS and PAGE IDENTIFIERS
 // Admin Tabs
 $string['tab_admin_import'] = 'Import/Export';
-$string['tab_admin_settings'] = 'Einstellungen';
+$string['tab_admin_settings'] = 'Konfiguration';
 $string['tab_admin_configuration'] = 'Vorauswahl der Standards';
 $string['admin_config_pending'] = 'Vorauswahl der Kompetenzen durch den Administrator notwendig';
 
 //Teacher Tabs
 $string['tab_teacher_settings'] = 'Kurseinstellungen';
-$string['tab_teacher_settings_configuration'] = 'Konfiguration';
+$string['tab_teacher_settings_configuration'] = 'Einstellungen';
 $string['tab_teacher_settings_selection_st'] = 'Schultyp-Auswahl';
 $string['tab_teacher_settings_selection'] = 'Gegenstands-Auswahl';
 $string['tab_teacher_settings_assignactivities'] = 'Moodle-Aktivit&auml;ten zuordnen';
@@ -60,7 +60,7 @@ $string['teacher_second_configuration_step'] = 'Im zweiten Konfigurationsschritt
 $string['teacher_third_configuration_step'] = 'Im nächsten Schritt werden Moodle-Aktivit&auml;ten mit Kompetenzen assoziiert. '; 
 $string['teacher_third_configuration_step_link'] = '(Optional: Wenn Sie nicht mit Moodle-Aktivit&auml;ten arbeiten m&ouml;chten, dann entfernen Sie das Häkchen "Ich m&ouml;chte mit Moodle-Aktivit&auml;ten arbeiten" im Tab "Konfiguration".)';
 $string['completed_config'] = 'Die Exabis Competencies Konfiguration wurde abgeschlossen.';
-$string['optional_step'] = 'In Ihrem Kurs sind noch keine Teilnehmer eingeschrieben, bet&auml;tigen Sie diesen Link wenn Sie das jetzt machen m&ouml;chten.';
+$string['optional_step'] = 'In Ihrem Kurs sind noch keine TeilnehmerInnen eingeschrieben, bet&auml;tigen Sie diesen Link wenn Sie das jetzt machen m&ouml;chten.';
 $string['next_step_first_teacher_step'] = 'Klicken Sie hier um zum n&auml;chsten Schritt zu gelangen.';
 
 //Block Settings
@@ -77,7 +77,7 @@ $string['settings_usebadges_description'] = 'Anhaken um den Badges/Auszeichnunge
 $string['settings_skillsmanagement'] = 'Skills-Management verwenden';
 $string['settings_skillsmanagement_description'] = 'Anhaken um Skills-Management-Tool anstelle des Imports verwenden';
 $string['settings_enableteacherimport'] = 'Schulspezifische Standards verwenden';
-$string['settings_enableteacherimport_description'] = 'Anhaken um Lehrern/Kurstrainern zu erlauben, eigene, schulspezifische Standards zu importieren';
+$string['settings_enableteacherimport_description'] = 'Anhaken um LehrerInnen/KurstrainerInnen zu erlauben, eigene, schulspezifische Standards zu importieren';
 $string['settings_interval'] = 'Einheitenlänge';
 $string['settings_interval_description'] = 'Die Länge der Einheiten im Wochenplan in Minuten';
 $string['settings_scheduleunits'] = 'Anzahl der Einheiten';
@@ -85,7 +85,7 @@ $string['settings_scheduleunits_description'] = 'Anzahl der Einheiten im Wochenp
 $string['settings_schedulebegin'] = 'Beginn der Einheiten';
 $string['settings_schedulebegin_description'] = 'Beginnzeitpunkt der ersten Einheit im Wochenplan. Format hh:mm';
 $string['settings_admin_scheme'] = 'Globales Bewertungsschema';
-$string['settings_admin_scheme_description'] = 'Wählen Sie ein kursübergreifendes Bewertungsschema, andernfalls kann der Lehrer pro Kurs ein zahlen basiertes Bewertungsschema festlegen.';
+$string['settings_admin_scheme_description'] = 'Wählen Sie ein kursübergreifendes Bewertungsschema, andernfalls kann der/die LehrerIn pro Kurs ein zahlen basiertes Bewertungsschema festlegen.';
 $string['settings_admin_scheme_none'] = 'keine globale Bewertung';
 $string['settings_additional_grading'] = 'Zus&auml;tzliche Bewertung';
 $string['settings_additional_grading_description'] = 'Zus&auml;tzliche Bewertung für Kompetenzen/Lernmaterialien (0-100%)';
@@ -103,8 +103,8 @@ $string['LA_teacher'] = "L";
 $string['LA_assessment'] = "Einsch&auml;tzung";
 $string['LA_plan'] = "Arbeitsplan";
 $string['LA_no_learningagenda'] = 'Es sind keine Lernagenden in der ausgew&auml;hlten Woche vorhanden.';
-$string['LA_no_student_selected'] = '-- kein Kursteilnehmer ausgew&auml;hlt --';
-$string['LA_select_student'] = 'W&auml;hlen Sie bitte einen Kursteilnehmer aus, um seine Lernagenda einzusehen.';
+$string['LA_no_student_selected'] = '-- kein(e) KursteilnehmerIn ausgew&auml;hlt --';
+$string['LA_select_student'] = 'W&auml;hlen Sie bitte eine(n) KursteilnehmerIn aus, um seine Lernagenda einzusehen.';
 $string['LA_no_example'] = 'Kein Beispiel zugeordnet';
 $string['LA_backtoview'] = 'Zur&uuml;ck zur Originalansicht';
 $string['LA_from_n'] = ' von ';
@@ -124,7 +124,7 @@ Kompetenzorientierter Unterricht ist in aller Munde - und Moodle kann dabei mit 
 <h3>Die TrainerInnen-Rolle</h3>Die Lehrenden k&ouml;nnen mit Hilfe des Blockes einem Kurs bestimmte Kompetenzen zuordnen und den Kompetenzerwerb anschlie&szlig;end auch bewerten.
 <a href="http://www.youtube.com/watch?v=gxSrXa4Ynik">http://www.youtube.com/watch?v=gxSrXa4Ynik</a>
 
-<h3>Die TeilnehmerInnen-Rolle</h3>Lernende k&ouml;nnen mit Hilfe von Exabis Competencies u.a. ihren Kompetenzerwerb selbst einsch&auml;tzen und die eigene Einsch$auml;tzung unkompliziert der des Trainers gegen&uuml;berstellen.
+<h3>Die TeilnehmerInnen-Rolle</h3>Lernende k&ouml;nnen mit Hilfe von Exabis Competencies u.a. ihren Kompetenzerwerb selbst einsch&auml;tzen und die eigene Einsch$auml;tzung unkompliziert der TrainerInnen gegen&uuml;berstellen.
 <a href="http://www.youtube.com/watch?v=DdAOIiXXhZ8">http://www.youtube.com/watch?v=DdAOIiXXhZ8</a>
 
 <h3>Das Bildungsstandards-Erfassungstool</h3>Mit Hilfe dieses Tools k&ouml;nnen Schulen erg&auml;nzend zu den &ouml;sterreichischen Bildungsstandards eigene Standards erstellen, erfassen und verwalten.
@@ -169,13 +169,13 @@ $string['save_success'] = '&Auml;nderungen erfolgreich &uuml;bernommen';
 $string['grading_scheme'] = 'Bewertungsschema';
 $string['uses_activities'] = 'Ich verwende Moodle Aktivit&auml;ten zur Beurteilung';
 $string['show_all_descriptors'] = 'Alle Deskriptoren im &Uuml;berblick anzeigen';
-$string['show_all_examples'] = 'Externe Beispiele für Teilnehmer anzeigen';
+$string['show_all_examples'] = 'Externe Beispiele für TeilnehmerInnen anzeigen';
 $string['usedetailpage'] = 'Detaillierte Kompetenzansicht verwenden';
 $string['useprofoundness'] = 'Erweiterungs- und Grundkompetenzen verwenden';
 $string['usetopicgrading'] = 'Beurteilung von Teilbereichen ermöglichen';
 $string['usenumbering'] = 'Nummerierung bei Kompetenzen und Teilbereichen verwenden';
 $string['useniveautitleinprofile'] = 'Im Kompetenzprofil Lernfortschritt als Titel verwenden';
-$string['usenostudents'] = 'Ohne Kursteilnehmer/innen arbeiten';
+$string['usenostudents'] = 'Ohne KursteilnehmerInnen arbeiten';
 $string['profoundness_0'] = 'Nicht erreicht';
 $string['profoundness_1'] = 'Zum Teil erreicht';
 $string['profoundness_2'] = 'Erreicht';
@@ -242,7 +242,7 @@ $string['legend_upload'] = 'Eigenes Beispiel hochladen';
 $string['allniveaus'] = 'Alle Teilbereiche';
 $string['choosesubject'] = "Fach ausw&auml;hlen: ";
 $string['choosetopic'] = "Teilkompetenzbereich/Leitidee ausw&auml;hlen";
-$string['choosestudent'] = "Kursteilnehmer auswählen: ";
+$string['choosestudent'] = "KursteilnehmerIn auswählen: ";
 $string['own_additions'] = 'Schulische Ergänzung: ';
 $string['delete_confirmation_descr'] = 'Soll die Kompetenz "{$a}" wirklich für alle Kurse gelöscht werden?';
 $string['import_source'] = 'Importiert von: {$a}';
@@ -255,9 +255,9 @@ $string['newsubmission'] = 'Erneute Abgabe';
 
 //Example Submission
 $string['example_submission_header']  = 'Aufgabe {$a} bearbeiten';
-$string['example_submission_info'] = 'Du bist dabei die Aufgabe "{$a}" zu bearbeiten. Deine Abgabe landet im ePortfolio und kann dort von dir und deinem Lehrern eingesehen werden.';
+$string['example_submission_info'] = 'Du bist dabei die Aufgabe "{$a}" zu bearbeiten. Deine Abgabe landet im ePortfolio und kann dort von dir und deinem/r LehrerIn eingesehen werden.';
 $string['example_submission_subject'] = 'Neue Abgabe';
-$string['example_submission_message'] = 'Im Kurs {$a->course} wurde vom Schüler/innen {$a->student} eine neue Abgabe eingereicht.';
+$string['example_submission_message'] = 'Im Kurs {$a->course} wurde von TeilnehmerIn {$a->student} eine neue Abgabe eingereicht.';
 
 $string['submissionmissing']  = 'Es müssen zumindest ein Link oder eine Datei abgegeben werden';
 
@@ -273,21 +273,21 @@ $string['teacher_tipp_2'] = ' Moodle-Aktivit&auml;t(en) zugeordnet und bereits b
 $string['teacher_tipp_3'] = ' Moodle-Aktivit&auml;t(en) in der Kompetenz-Detailansicht erf&uuml;llt.';
 $string['print'] = 'Drucken';
 
-$string['eportitems'] = 'Dieser Teilnehmer hat folgende E-Portfolio-Artefakte zu diesem Deskriptor eingereicht: ';
+$string['eportitems'] = 'Diese(r) TeilnehmerIn hat folgende E-Portfolio-Artefakte zu diesem Deskriptor eingereicht: ';
 $string['eportitem_shared'] = ' (geteilt)';
 $string['eportitem_notshared'] = ' (nicht geteilt)';
 
 $string['teachershortcut'] = 'L';
 $string['studentshortcut'] = 'S';
 
-$string['overview'] = 'Der Kompetenz-&Uuml;berblick listet Teilnehmer/innen und die im Kurs aktivierten Kompetenzen auf.';
+$string['overview'] = 'Der Kompetenz-&Uuml;berblick listet TeilnehmerInnen und die im Kurs aktivierten Kompetenzen auf.';
 $string['showevaluation'] = 'Um die Selbsteinsch&auml;tzung zu aktivieren, klicken Sie <a href="{$a}">hier</a>.';
 $string['hideevaluation'] = 'Um die Selbsteinsch&auml;tzung zu deaktivieren, klicken Sie <a href="{$a}">hier</a>.';
-$string['showevaluation_student'] = 'Um die Einsch&auml;tzung des Trainers zu aktivieren, klicke <a href="{$a}">hier</a>.';
-$string['hideevaluation_student'] = 'Um die Einsch&auml;tzung des Trainers zu deaktivieren, klicke <a href="{$a}">hier</a>.';
+$string['showevaluation_student'] = 'Um die Einsch&auml;tzung der TrainerInnen zu aktivieren, klicke <a href="{$a}">hier</a>.';
+$string['hideevaluation_student'] = 'Um die Einsch&auml;tzung der TrainerInnen zu deaktivieren, klicke <a href="{$a}">hier</a>.';
 $string['columnselect'] = 'Spaltenauswahl';
-$string['allstudents'] = 'Alle  Kursteilnehmer/innen';
-$string['nostudents'] = 'Keine  Kursteilnehmer/innen';
+$string['allstudents'] = 'Alle  KursteilnehmerInnen';
+$string['nostudents'] = 'Keine  KursteilnehmerInnen';
 $string['statistic'] = 'Gesamtübersicht';
 $string['niveau'] = "Lernfortschritt";
 $string['competence_grid_niveau'] = "Niveau";
@@ -296,9 +296,9 @@ $string['groupsize'] = 'Gruppengröße: ';
 
 $string['assigndone'] = 'Aufgabe erledigt: ';
 $string['assignmyself'] = 'selbst';
-$string['assignlearningpartner'] = 'Lernpartner';
+$string['assignlearningpartner'] = 'LernpartnerIn';
 $string['assignlearningrgoup'] = 'Lerngruppe';
-$string['assignteacher'] = 'Trainer';
+$string['assignteacher'] = 'TrainerIn';
 $string['assignfrom'] = 'von';
 $string['assignuntil'] = 'bis';
 $string['assignlearninggroup'] = 'Lerngruppe';
@@ -312,10 +312,10 @@ $string['instruction'] = 'Erläuterung';
 $string['instruction_content'] = 'Hier können Sie für Ihre Lerngruppen / Klasse vermerken, welche 
 				Lernmaterialien bearbeitet und welche Lernnachweise erbracht wurden. 
 				Darüber hinaus können Sie das Erreichen der Teilkompetenzen eintragen. 
-				Schüler/innen können sich darüber hinaus selbst einschätzen. Mit Kompetenzen 
-				verknüpfte Moodle-Aufgaben werden bei Einreichung durch Schüler/innen
+				TeilnehmerInnen können sich darüber hinaus selbst einschätzen. Mit Kompetenzen 
+				verknüpfte Moodle-Aufgaben werden bei Einreichung durch TeilnehmerInnen
 				mit rotem Icon dargestellt. Leistungsnachweise die eigeninitiativ über
-				ePortfolio-Arbeit durch Schüler/innen beigesteuert werden, werden mit
+				ePortfolio-Arbeit durch TeilnehmerInnen beigesteuert werden, werden mit
 				einem blauen Icon dargestellt.';
 
 //Activities
@@ -361,7 +361,7 @@ $string['studentcomp'] = 'Laut Selbsteinschätzung erreichte Kompetenzen';
 $string['radargrapherror'] = 'Der Radargraph kann nur bei 3-7 Achsen dargestellt werden';
 $string['nodata'] = 'Es sind keine Daten vorhanden.';
 $string['item_no_comps'] = 'Zu folgenden Artefakten wurden noch keine Kompetenzen zugeordnet:';
-$string['select_student'] = 'Wählen Sie einen Kursteilnehmer aus, dessen Kompetenzprofil Sie sehen möchten.';
+$string['select_student'] = 'Wählen Sie eine(n) KursteilnehmerIn aus, dessen Kompetenzprofil Sie sehen möchten.';
 $string['my_comps'] = 'Meine Kompetenzen';
 $string['my_items'] = 'Meine Artefakte';
 $string['my_badges'] = 'Meine Auszeichnungen';
@@ -394,9 +394,9 @@ $string['nE'] = 'nicht erreicht';
 
 //Competence Profile Settings
 $string['profile_settings_showonlyreached'] = 'Ich möchte in meinem Kompetenzprofil nur bereits erreichte Kompetenzen sehen.';
-$string['profile_settings_choose_courses'] = 'In Exabis Competencies beurteilen Trainer/innen den Kompetenzerwerb in unterschiedlichen Fachgebieten. Hier kann ausgew&auml;hlt werden, welche Kurse im Kompetenzprofil aufscheinen sollen.';
+$string['profile_settings_choose_courses'] = 'In Exabis Competencies beurteilen TrainerInnen den Kompetenzerwerb in unterschiedlichen Fachgebieten. Hier kann ausgew&auml;hlt werden, welche Kurse im Kompetenzprofil aufscheinen sollen.';
 $string['profile_settings_useexaport'] = 'Ich möchte Kompetenzen, die in Exabis E-Portfolio verwendet werden in meinem Profil sehen.';
-$string['profile_settings_choose_items'] = 'Exabis ePortfolio dokumentiert deinen Kompetenzerwerb auÃŸerhalb von Lehrern vorgegebenen Grenzen. Du kannst ausw&auml;hlen, welche Einträge im Kompetenzprofil aufscheinen sollen.';
+$string['profile_settings_choose_items'] = 'Exabis ePortfolio dokumentiert deinen Kompetenzerwerb außerhalb von LehrerInnen vorgegebenen Grenzen. Du kannst ausw&auml;hlen, welche Einträge im Kompetenzprofil aufscheinen sollen.';
 $string['profile_settings_useexastud'] = 'Ich möchte Beurteilungen aus Exabis Student Review in meinem Profil sehen.';
 $string['profile_settings_choose_periods'] = 'Exabis Student Review speichert Beurteilungen in verschiedenen Kategorien über mehrere Perioden hinweg. Es kann ausgew&auml;hlt werden, welche Perioden das Kompetenzprofil beinhalten soll.';
 $string['profile_settings_no_item'] = 'Kein Exabis ePortfolio Artefakt vorhanden, somit kann nichts dargestellt werden.';
@@ -417,13 +417,13 @@ $string['profoundness_mainly'] = 'Überwiegend erfüllt';
 $string['profoundness_entirely'] = 'Zur Gänze erfüllt';
 
 //External trainer
-$string['block_exacomp_external_trainer_assign_head'] = 'Zuteilung von externen Trainern für Teilnehmer erlauben. Erforderlich für die Benutzung der elove App.';
+$string['block_exacomp_external_trainer_assign_head'] = 'Zuteilung von externen TrainerInnen für TeilnehmerInnen erlauben. Erforderlich für die Benutzung der elove App.';
 $string['block_exacomp_external_trainer_assign_body'] = '';
-$string['block_exacomp_external_trainer_assign'] = 'Externe Trainer zuordnen';
+$string['block_exacomp_external_trainer_assign'] = 'Externe TrainerIn zuordnen';
 $string['block_exacomp_external_trainer_assign_new'] = 'Neue Zuordnung: ';
-$string['block_exacomp_external_trainer'] = 'Ausbilder: ';
-$string['block_exacomp_external_trainer_student'] = 'Auszubildender: ';
-$string['block_exacomp_external_trainer_allstudents'] = 'Alle Teilnehmer';
+$string['block_exacomp_external_trainer'] = 'AusbilderIn: ';
+$string['block_exacomp_external_trainer_student'] = 'Auszubildende: ';
+$string['block_exacomp_external_trainer_allstudents'] = 'Alle TeilnehmerInnen';
 
 //Crosssubjects
 $string['empty_draft'] = 'Neues Thema';
@@ -431,24 +431,24 @@ $string['empty_draft_description'] = 'Erstelle dein eigenes Thema - ändere die 
 $string['add_drafts_to_course'] = 'Ausgewählte Vorlagen im Kurs verwenden';
 $string['choosecrosssubject'] = 'Thema auswählen';
 $string['crosssubject'] = "Thema";
-$string['student_name'] = "Teilnehmer";
+$string['student_name'] = "TeilnehmerIn";
 $string['help_crosssubject'] = "Die Zusammenstellung des Themas erfolgt für die ganze Schule über den Reiter Kompetenzraster. Sie können hier kursspezifisch Kompetenzen, Teilkompetenzen und Lernmaterial ausblenden. Lernmaterial kann hier ergänzt werden. Dieses wird automatisch in die Lernwegeliste integriert.";
 $string['description'] = "Beschreibung";
-$string['no_student'] = '-- kein Kursteilnehmer ausgew&auml;hlt --';
-$string['no_student_edit'] = "Editiermodus - kein Teilnehmer";
+$string['no_student'] = '-- kein(e) KursteilnehmerIn ausgew&auml;hlt --';
+$string['no_student_edit'] = "Editiermodus";
 $string['save_as_draft'] = "Thema als Vorlage speichern";
 $string['comps_and_material'] = "Kompetenzen und Lernmaterial";
 $string['no_crosssubjs'] = 'In diesem Kurs gibt es noch kein Thema.';
 $string['delete_drafts'] = 'Ausgewählte Vorlagen löschen';
-$string['share_crosssub'] = 'Thema für Schüler/innen freigeben';
-$string['share_crosssub_with_students'] = 'Das Thema "{$a}" für folgende Teilnehmer freigeben: ';
-$string['share_crosssub_with_all'] = 'Das Thema "{$a}" für <b>alle</b> Teilnehmer freigeben: ';
+$string['share_crosssub'] = 'Thema für TeilnehmerInnen freigeben';
+$string['share_crosssub_with_students'] = 'Das Thema "{$a}" für folgende TeilnehmerInnen freigeben: ';
+$string['share_crosssub_with_all'] = 'Das Thema "{$a}" für <b>alle</b> TeilnehmerInnen freigeben: ';
 $string['new_crosssub'] = "Eigenes Thema erstellen";
 $string['add_crosssub'] = 'Thema erstellen';
 $string['nocrosssubsub'] = "Allgemeine Themen";
 $string['delete_crosssub'] = 'Thema löschen';
 $string['confirm_delete'] = 'Soll dieses Thema wirklich gelöscht werden?';
-$string['no_students_crosssub'] = 'Es sind keine Teilnehmer zu diesem Thema zugeteilt.';
+$string['no_students_crosssub'] = 'Es sind keine TeilnehmerInnen zu diesem Thema zugeteilt.';
 $string['use_available_crosssub'] = 'Ein Thema aus einer Vorlage erstellen:';
 $string['save_crosssub'] = 'Thema aktualisieren';
 $string['add_content_to_crosssub'] = 'Das Thema ist noch nicht befüllt.';
@@ -457,7 +457,7 @@ $string['manage_crosssubs'] = 'Zurück zur Übersicht';
 $string['show_course_crosssubs'] = 'Kurs-Themen ansehen';
 $string['existing_crosssub'] = 'Vorhandene Themen in diesem Kurs';
 $string['create_new_crosssub'] = 'Neues Thema erstellen';
-$string['share_crosssub_for_further_use'] = 'Geben Sie das Thema an Schüler frei, um volle Funktionalität zu erhalten.';
+$string['share_crosssub_for_further_use'] = 'Geben Sie das Thema an TeilnehmerInnen frei, um volle Funktionalität zu erhalten.';
 
 
 //Associations
@@ -468,17 +468,17 @@ $string['competence_associations_explaination'] = 'Das Lernmaterial {$a} ist mit
 $string['weekly_schedule'] = 'Wochenplan';
 $string['weekly_schedule_added'] = 'Die Aufgabe wurde in den Planungsspeicher im Wochenplan hinzugefügt.';
 $string['weekly_schedule_already_exists'] = 'Die Aufgabe ist bereits im Planungsspeicher im Wochenplan.';
-$string['select_student_weekly_schedule'] = 'Wählen Sie einen Kursteilnehmer aus, dessen Wochenplan Sie sehen möchten.';
+$string['select_student_weekly_schedule'] = 'Wählen Sie eine(n) KursteilnehmerIn aus, dessen Wochenplan Sie sehen möchten.';
 $string['example_pool'] = 'Planungsspeicher';
 $string['example_trash'] = 'Papierkorb';
 $string['choosecourse'] = 'Kurs auswählen: ';
-$string['weekly_schedule_added_all'] = 'Die Aufgabe wurde bei allen Teilnehmern auf den Planungsspeicher im Wochenplan gelegt.';
+$string['weekly_schedule_added_all'] = 'Die Aufgabe wurde bei allen TeilnehmerInnen auf den Planungsspeicher im Wochenplan gelegt.';
 $string['weekly_schedule_already_existing_for_one'] = 'Die Aufgabe ist bei mindestens einem Sch&uuml;ler bereits im Planungsspeicher im Wochenplan.';
 $string['weekly_schedule_link_to_grid'] = 'Um den Wochenplan zu befüllen in den Kompetenzraster wechseln';
 $string['pre_planning_storage'] = 'Vorplanungsspeicher';
 $string['pre_planning_storage_added'] = 'Lernmaterial wurde zum Vorplanungsspeicher hinzugefügt.';
 $string['pre_planning_storage_already_contains'] = 'Lernmateriel bereits im Vorplanungsspeicher enthalten.';
-$string['save_pre_planning_selection'] = 'Ausgewählte Beispiele auf den Wochenplan der ausgewählten Schüler/innen legen';
+$string['save_pre_planning_selection'] = 'Ausgewählte Beispiele auf den Wochenplan der ausgewählten TeilnehmerInnen legen';
 $string['empty_pre_planning_storage'] = 'Vorplanungsspeicher leeren';
 $string['noschedules_pre_planning_storage'] = 'Der Vorplanungsspeicher ist leer. Bitte legen Sie über die Kompetenzraster neue Lernmaterialien in den Vorplanungsspeicher.';
 $string['empty_trash'] = 'Papierkorb leeren';
@@ -528,7 +528,7 @@ $string['process'] = 'Bearbeitungsstand';
 $string['niveauclass'] = 'Niveaueinstufung';
 
 //Message
-$string['messagetocourse'] = 'Nachricht an alle Kursteilnehmer senden';
+$string['messagetocourse'] = 'Nachricht an alle KursteilnehmerInnen senden';
 
 // langstrings for alternativedatamodel
 if (get_config('exacomp','alternativedatamodel') && file_exists(__DIR__.'/block_exacomp_alternativedatamodel.php')){
