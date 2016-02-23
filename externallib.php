@@ -4024,15 +4024,6 @@ class block_exacomp_external extends external_api {
 
 		$cross_subjects = block_exacomp_get_cross_subjects_by_course($courseid, $userid);
 		
-		foreach ($cross_subjects as $key => $cs) {
-			$cross_subjects[$key] = $cs->get_data();
-		}
-		
-		// TODO: objekt konvertierung
-		return $cross_subjects;
-		
-		// TODO: $forall block funktioniert nicht
-		
 		//if for all return only common cross subjects
 		if($forall){
 			$cross_subjects_return = array();
@@ -4051,7 +4042,15 @@ class block_exacomp_external extends external_api {
 						$cross_subjects_return[] = $cross_subject;
 				}
 			}
+			// TODO: objekt konvertierung
+			foreach ($cross_subjects_return as $key => $cs) {
+				$cross_subjects_return[$key] = $cs->get_data();
+			}
 			return $cross_subjects_return;
+		}
+		// TODO: objekt konvertierung
+		foreach ($cross_subjects as $key => $cs) {
+			$cross_subjects[$key] = $cs->get_data();
 		}
 		
 		return $cross_subjects;

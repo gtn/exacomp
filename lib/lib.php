@@ -4147,7 +4147,7 @@ function block_exacomp_get_cross_subjects_by_course($courseid, $studentid=null){
 	// also check for student permissions
 	$crosssubs_shared = array();
 	foreach($crosssubs as $crosssubj){
-		if ($crosssubj->has_capability(block_exacomp\CAP_VIEW))
+		if ($crosssubj->shared == 1 || $crosssubj->has_capability(block_exacomp\CAP_VIEW))
 			$crosssubs_shared[$crosssubj->id] = $crosssubj;
 	}
 	return $crosssubs_shared;
