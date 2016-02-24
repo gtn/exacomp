@@ -1096,7 +1096,7 @@ class data_importer extends data {
 			 * LIBXML_NOCDATA is important at this point, because it converts CDATA Elements to Strings for
 			 * immediate useage
 			 */
-			$xml = simplexml_load_string($xml,'SimpleXMLElement', LIBXML_NOCDATA);
+			$xml = simplexml_load_string($xml, 'block_exacomp\SimpleXMLElement', LIBXML_NOCDATA);
 
 			if (!$xml) {
 				throw new moodle_exception('wrong zip file content');
@@ -1108,12 +1108,11 @@ class data_importer extends data {
 			 * LIBXML_NOCDATA is important at this point, because it converts CDATA Elements to Strings for
 			 * immediate useage
 			 */
-			$xml = @simplexml_load_file($file,'SimpleXMLElement', LIBXML_NOCDATA);
+			$xml = @simplexml_load_file($file,'block_exacomp\SimpleXMLElement', LIBXML_NOCDATA);
 			if (!$xml) {
 				throw new moodle_exception('wrong file');
 			}
 		}
-		
 
 		if(isset($xml->table)){
 			throw new moodle_exception('oldxmlfile');
