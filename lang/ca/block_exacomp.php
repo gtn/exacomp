@@ -59,8 +59,6 @@ $string['tab_skillsmanagement'] = 'Create your competencies';
 //Block Settings
 $string['settings_xmlserverurl'] = 'URL del servidor';
 $string['settings_configxmlserverurl'] = 'URL a un arxiu XML, que s\'utilitza per mantenir actualitzades les entrades de la base de dades';
-$string['settings_alternativedatamodel'] = 'Versió Baden W&uuml;rttemberg';
-$string['settings_alternativedatamodel_description'] = 'Marca per utilitzar la versió Baden W&uuml;rttemberg';
 $string['settings_usedetailpage'] = 'Competence Details';
 $string['settings_usedetailpage_description'] = 'Use competences details overview';
 $string['settings_autotest'] = 'Automatic test evalutaion';

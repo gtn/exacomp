@@ -63,8 +63,6 @@ $string['next_step_first_teacher_step'] = 'Click here to continue configuration.
 //Block Settings 
 $string['settings_xmlserverurl'] = 'Server-URL';
 $string['settings_configxmlserverurl'] = 'Url to a xml file, which is used for keeping the database entries up to date';
-$string['settings_alternativedatamodel'] = 'Baden W&uuml;rttemberg Version';
-$string['settings_alternativedatamodel_description'] = 'Tick to use Baden W&uuml;rttemberg Version';
 $string['settings_autotest'] = 'Automatical gain of competence through quizzes';
 $string['settings_autotest_description'] = 'Competences that are associated with quizzes are gained automatically if needed percentage of quiz is reached';
 $string['settings_testlimit'] = 'Quiz-percentage needed to gain competence';

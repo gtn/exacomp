@@ -66,8 +66,6 @@ $string['next_step_first_teacher_step'] = 'Klicken Sie hier um zum n&auml;chsten
 //Block Settings
 $string['settings_xmlserverurl'] = 'Server-URL';
 $string['settings_configxmlserverurl'] = 'Url zu einer XML Datei, die verwendet wird, um die Daten aktuell zu halten';
-$string['settings_alternativedatamodel'] = 'Baden W&uuml;rttemberg Version';
-$string['settings_alternativedatamodel_description'] = 'Anhaken f&uuml;r die Baden W&uuml;rttemberg Version';
 $string['settings_autotest'] = 'Automatischer Kompetenzerwerb durch Tests';
 $string['settings_autotest_description'] = 'Kompetenzen die mit Tests verbunden sind, gelten automatisch als erworben, wenn der angegebene Test-Prozentwert erreicht wurde';
 $string['settings_testlimit'] = 'Testlimit in %';
@@ -530,7 +528,7 @@ $string['niveauclass'] = 'Niveaueinstufung';
 //Message
 $string['messagetocourse'] = 'Nachricht an alle KursteilnehmerInnen senden';
 
-// langstrings for alternativedatamodel
-if (get_config('exacomp','alternativedatamodel') && file_exists(__DIR__.'/block_exacomp_alternativedatamodel.php')){
-	require __DIR__.'/block_exacomp_alternativedatamodel.php';
+// load local langstrings
+if (file_exists(__DIR__.'/../../local.config/lang.php')){
+	require __DIR__.'/../../local.config/lang.php';
 }
