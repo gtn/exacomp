@@ -95,7 +95,7 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 				JOIN {block_exacomptopics} d ON d.id=ca.compid AND ca.comptype = 1 AND ca.eportfolioitem = 0
 				JOIN {course_modules} cm ON ca.activityid=cm.id AND cm.course = ?
 			", array($this->get_courseid(), $this->get_courseid()));
-		$dbActivities = iterator_to_array($dbActivities);
+		$dbActivities = iterator_to_array($dbActivities, false);
 		$compactiv_mm->set_source_array(block_exacomp\data_course_backup::assign_source_array($dbActivities, 'comp'));
 
 		// All the rest of elements only happen if we are including user info
