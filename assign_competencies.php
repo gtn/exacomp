@@ -1,41 +1,10 @@
 <?php
 
-/* * *************************************************************
- *  Copyright notice
-*
-*  (c) 2014 exabis internet solutions <info@exabis.at>
-*  All rights reserved
-*
-*  You can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  This module is based on the Collaborative Moodle Modules from
-*  NCSA Education Division (http://www.ncsa.uiuc.edu)
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-* ************************************************************* */
-
 require_once __DIR__."/inc.php";
-
-global $DB, $OUTPUT, $PAGE, $USER;
 
 $courseid = required_param('courseid', PARAM_INT);
 $showevaluation = optional_param("showevaluation", true, PARAM_BOOL);
 $group = optional_param('group', 0, PARAM_INT);
-
-if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-	print_error('invalidcourse', 'block_simplehtml', $courseid);
-}
 
 $editmode = optional_param('editmode', 0, PARAM_BOOL);
 $subjectid = optional_param('subjectid', 0, PARAM_INT);
@@ -43,12 +12,10 @@ $subjectid = optional_param('subjectid', 0, PARAM_INT);
 $topicid = optional_param('topicid', 0, PARAM_INT);
 $niveauid = optional_param('niveauid', block_exacomp\SHOW_ALL_NIVEAUS, PARAM_INT);
 
-require_login($course);
-
-$context = context_course::instance($courseid);
+require_login($courseid);
 
 // CHECK TEACHER
-$isTeacher = block_exacomp_is_teacher($context);
+$isTeacher = block_exacomp_is_teacher();
 if(!$isTeacher) $editmode = 0;
 
 $studentid = block_exacomp_get_studentid($isTeacher) ;
@@ -91,7 +58,7 @@ $activities = block_exacomp_get_activities_by_course($courseid);
 $course_settings = block_exacomp_get_settings_by_course($courseid);
 
 if($course_settings->uses_activities && !$activities && !$course_settings->show_all_descriptors) {
-	echo $output->header($context, $courseid, $page_identifier);
+	echo $output->header_v2($page_identifier);
 	echo $output->print_no_activities_warning($isTeacher);
 	echo $output->footer();
 	exit;
@@ -155,7 +122,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
 	block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html_tables);
 }
 
-echo $output->header($context, $courseid, $page_identifier);
+echo $output->header_v2($page_identifier);
 echo $colselector;
 echo $output->print_competence_overview_form_start($selectedNiveau, $selectedTopic, $studentid, $editmode);
 

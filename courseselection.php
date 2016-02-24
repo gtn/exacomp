@@ -1,42 +1,12 @@
 <?php
 
-/* * *************************************************************
- *  Copyright notice
-*
-*  (c) 2014 exabis internet solutions <info@exabis.at>
-*  All rights reserved
-*
-*  You can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  This module is based on the Collaborative Moodle Modules from
-*  NCSA Education Division (http://www.ncsa.uiuc.edu)
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-* ************************************************************* */
-
 require_once __DIR__."/inc.php";
 
 $courseid = required_param('courseid', PARAM_INT);
 $action = optional_param('action', "", PARAM_ALPHAEXT);
 
-if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-	print_error('invalidcourse', 'block_simplehtml', $courseid);
-}
-
-require_login($course);
-
-$context = context_course::instance($courseid);
+require_login($courseid);
+block_exacomp_require_teacher();
 
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_teacher_settings_selection';
@@ -82,7 +52,7 @@ if ($action == 'save') {
 
 // build tab navigation & print header
 $output = block_exacomp_get_renderer();
-echo $output->header($context,$courseid, 'tab_teacher_settings');
+echo $output->header_v2('tab_teacher_settings');
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $page_identifier);
 /* CONTENT REGION */
 

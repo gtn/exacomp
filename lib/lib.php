@@ -167,7 +167,7 @@ function block_exacomp_init_js_css(){
 		$PAGE->requires->js('/blocks/exacomp/javascript/'.$scriptName.'.js', true);
 }
 function block_exacomp_init_js_weekly_schedule(){
-	global $PAGE, $CFG;
+	global $PAGE;
 	
 	$PAGE->requires->jquery_plugin('ui');
 	$PAGE->requires->jquery_plugin('ui-css');
@@ -188,7 +188,7 @@ function block_exacomp_get_context_from_courseid($courseid) {
 	} else if ($courseid === null) {
 		return context_course::instance(g::$COURSE->id);
 	} else {
-		print_error('wrong courseid type '.gettype($courseid));
+		throw new \moodle_exception('wrong courseid type '.gettype($courseid));
 	}
 }
 /**
@@ -685,11 +685,13 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 		return $DB->insert_record(\block_exacomp\DB_EXAMPLEEVAL, $updateEvaluation);
 	}
 
+	// TODO: unreachable statement?!?
+
 	if($role == \block_exacomp\ROLE_TEACHER)
 		\block_exacomp\event\competence_assigned::log(['objectid' => $exampleid, 'courseid' => $courseid, 'relateduserid' => $userid]);
 }
 function block_exacomp_allow_resubmission($userid, $exampleid, $courseid) {
-	global $DB,$USER;
+	global $DB;
 
 	block_exacomp_require_teacher($courseid);
 
@@ -953,7 +955,6 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 	if (!$courseid) {
 		$showalldescriptors = true;
 		$showonlyvisible = false;
-		$mindvisibility = false;
 	}
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
@@ -1268,6 +1269,8 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 			continue;
 		}
 		$subject = $allSubjects[$topic->subjid];
+
+		$topic = block_exacomp\topic::create($topic);
 
 		// found: add it to the subject result
 		$subject->topics[$topic->id] = $topic;
@@ -2018,9 +2021,7 @@ function block_exacomp_get_grading_scheme($courseid) {
  * Builds topic title to print
  * @param stdClass $topic
  */
-function block_exacomp_get_output_fields($topic, $show_category=false, $isTopic = true) {
-	global $DB;
-
+function block_exacomp_get_output_fields($topic) {
 	if (preg_match('!^([^\s]*[0-9][^\s]*+)\s+(.*)$!iu', $topic->title, $matches)) {
 		//$output_id = $matches[1];
 		$output_id = '';
@@ -3741,9 +3742,7 @@ function block_exacomp_build_schooltype_tree_for_courseselection($limit_courseid
  * It is used after every xml import and every example upload.
  */
 function block_exacomp_settstamp(){
-
 	global $DB;
-	$sql="SELECT * FROM {block_exacompsettings} WHERE courseid=0 AND activities='importxml'";
 
 	$modsetting = $DB->get_record('block_exacompsettings', array('courseid'=>0,'activities'=>'importxml'));
 	if ($modsetting){
@@ -5403,16 +5402,6 @@ function block_exacomp_get_file($item, $type) {
  */
 function block_exacomp_get_file_url($item, $type) {
 	global $COURSE;
-
-	// TODO: hacked here, delete fields and delete this code!
-	/*
-	if (($type == 'example_task') && $item->task) {
-		return $item->task;
-	}
-	if (($type == 'example_solution') && $item->solution) {
-		return $item->solution;
-	}
-	*/
 
 	// get from filestorage
 	$file = block_exacomp_get_file($item, $type);

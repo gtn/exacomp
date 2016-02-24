@@ -2977,20 +2977,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	public function print_topics_courseselection(&$rows, $level, $topics, $topics_activ){
 		foreach($topics as $topic) {
-			list($outputid, $outputname) = block_exacomp_get_output_fields($topic);
-
 			$this_rg2_class = 'rg2-level-'.$level;
 
 			$topicRow = new html_table_row();
 			//$topicRow->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rg2_class . ' highlight';
 			$topicRow->attributes['class'] = 'exabis_comp_aufgabe ' . $this_rg2_class;
 			$outputidCell = new html_table_cell();
-			$outputidCell->text = $outputid;
+			$outputidCell->text = $topic->get_numbering();
 			$topicRow->cells[] = $outputidCell;
 
 			$outputnameCell = new html_table_cell();
 			$outputnameCell->attributes['class'] = 'rg2-arrow rg2-indent';
-			$outputnameCell->text = html_writer::div($outputname,"desctitle");
+			$outputnameCell->text = html_writer::div($topic->title,"desctitle");
 			$topicRow->cells[] = $outputnameCell;
 
 			$cell = new html_table_cell();

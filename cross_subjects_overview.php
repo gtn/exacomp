@@ -22,25 +22,6 @@ block_exacomp_build_breadcrum_navigation($courseid);
 
 $output = block_exacomp_get_renderer();
 
-//SAVE DATA
-/*
-if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
- 	if(isset($_POST['delete_crosssubs']) && isset($_POST['draft'])){
-		$drafts_to_delete = $_POST['draft'];
-		block_exacomp_delete_crosssubject_drafts($drafts_to_delete);
-	}
-	else if(isset($_POST['draft'])){
-		$drafts_to_save = $_POST['draft'];
-		//if more than one draft added redirect to first selected
-		$current_id = block_exacomp_save_drafts_to_course($drafts_to_save, $courseid);
-		redirect(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$current_id)));
-	}
-	else if(isset($_POST['new_crosssub_overview'])){
-		redirect(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>0, 'new'=>1)));
-	}
-}
-*/
-
 // build tab navigation & print header
 echo $output->header_v2('tab_cross_subjects');
 
@@ -66,7 +47,8 @@ if (block_exacomp_is_teacher() || block_exacomp_is_admin()) {
 		$table->data[] = [
 			$title,
 			html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$crosssub->id, 'editmode'=>1)),$output->pix_icon("i/edit", get_string("edit")), array('class'=>'crosssub-icons')).
-			(($work_with_students)?html_writer::link('#', $output->pix_icon("i/enrolusers", block_exacomp\trans("de:Freigabe bearbeiten")), ['exa-type'=>'iframe-popup', 'exa-url'=>'cross_subjects.php?courseid='.$courseid.'&crosssubjid='.$crosssub->id.'&action=share']):'')
+			(($work_with_students)?html_writer::link('#', $output->pix_icon("i/enrolusers", block_exacomp\trans("de:Freigabe bearbeiten")), ['exa-type'=>'iframe-popup', 'exa-url'=>'cross_subjects.php?courseid='.$courseid.'&crosssubjid='.$crosssub->id.'&action=share']):'').
+			html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$crosssub->id, 'action'=>'save_as_draft')), $output->pix_icon("i/repository", block_exacomp\trans("de:Kopie als Vorlage speichern")))
 		];
 		/*
 		if($isTeacher){

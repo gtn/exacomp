@@ -5,14 +5,10 @@ require_once __DIR__."/inc.php";
 $courseid = required_param('courseid', PARAM_INT);
 $showevaluation = optional_param("showevaluation", true, PARAM_BOOL);
 $group = optional_param('group', 0, PARAM_INT);
-if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-	print_error('invalidcourse', 'block_simplehtml', $courseid);
-}
-$context = context_course::instance($courseid);
 
 // CHECK TEACHER
-require_login($course);
-$isTeacher = block_exacomp_is_teacher($context);
+require_login($courseid);
+$isTeacher = block_exacomp_is_teacher();
 
 $studentid = block_exacomp_get_studentid($isTeacher) ;
 $editmode = optional_param('editmode', 0, PARAM_BOOL);
@@ -35,7 +31,6 @@ $PAGE->set_url('/blocks/exacomp/cross_subjects.php', [
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
-/* @var $output block_exacomp_renderer */
 $output = block_exacomp_get_renderer();
 
 // build breadcrumbs navigation
@@ -103,20 +98,11 @@ if ($action == 'share') {
 	exit;
 }
 
-if ($isTeacher && optional_param('save', '', PARAM_TEXT)) {
-
-}
-// IF DELETE > 0 DELTE CUSTOM EXAMPLE
-/*
-if(($delete = optional_param("delete", 0, PARAM_INT)) > 0 && $isTeacher)
-	block_exacomp_delete_custom_example($delete);
-*/
-
 $activities = block_exacomp_get_activities_by_course($courseid);
 $course_settings = block_exacomp_get_settings_by_course($courseid);
 
 if($course_settings->uses_activities && !$activities && !$course_settings->show_all_descriptors) {
-	echo $output->header($context, $courseid, 'tab_cross_subjects');
+	echo $output->header_v2('tab_cross_subjects');
 	echo $output->print_no_activities_warning($isTeacher);
 	echo $output->footer();
 	exit;
