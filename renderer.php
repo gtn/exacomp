@@ -3502,14 +3502,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	},
 	{
 	value: '.$teachercomp.',
-	color: "#48a53f",
-	highlight: "#006532",
+	color: "#02a600",
+	highlight: "#028400",
 	label: "'.get_string('teachercomp', 'block_exacomp').'"
 	},
 	{
 	value: '.$studentcomp.',
-	color: "#f9b233",
-	highlight: "#f39200",
+	color: "#0075dd",
+	highlight: "#015FB1",
 	label: "'.get_string('studentcomp', 'block_exacomp').'"
 	}
 	];
@@ -3581,29 +3581,25 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 				foreach($topic->descriptors as $descriptor){
 					$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
 					//always descriptor title TODO: remove global setting
-					$content_div = html_writer::tag('span', $niveau->title . ': ' . $descriptor->title);
+					$content_div = html_writer::tag('span', (($niveau)?$niveau->title:'') . ': ' . $descriptor->title);
 					$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, ((block_exacomp_is_niveautitle_for_profile_enabled() && $niveau)?$niveau->title:$descriptor->title));
 					
 					$span_in_work = "";
 					if($return->total > 0)
 						$span_in_work = html_writer::tag('span', \block_exacomp\get_string('inwork', null, ['inWork' => $return->inWork, 'total' => $return->total]), array('class'=>"compprof_barchart_teacher"));
 					
-					$img_teacher = "";	
-					if(isset($student->competencies->teacher[$descriptor->id])){
-						$img_teacher_src =	 '/blocks/exacomp/pix/compprof_rating_teacher_'.$student->competencies->teacher[$descriptor->id].'.png';			
-						$img_teacher = html_writer::empty_tag('img', array('src'=>new moodle_url($img_teacher_src)));
-					}
+					$img_teacher = block_exacomp_get_html_for_teacher_eval(
+							((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:-1), $scheme);
 					
 					$span_teacher = html_writer::tag('span', "L: ".
-						((isset($student->competencies->teacher[$descriptor->id]))?$img_teacher:'oB') . (isset($student->competencies->teacher_additional_grading[$descriptor->id])? " (".$student->competencies->teacher_additional_grading[$descriptor->id].") ":""), 
+						$img_teacher . (isset($student->competencies->teacher_additional_grading[$descriptor->id])? " (".$student->competencies->teacher_additional_grading[$descriptor->id].") ":""), 
 						array('class'=>"compprof_barchart_teacher"));
 									   
-					$img_student = "";
-					if(isset($student->competencies->student[$descriptor->id])){
-						$img_student_src = '/blocks/exacomp/pix/compprof_rating_student_'.$student->competencies->student[$descriptor->id].'.png';
-						$img_student = html_writer::empty_tag('img', array('src'=>new moodle_url($img_student_src)));
-					}				
-					$span_student = html_writer::tag('span', "S: ".((isset($student->competencies->student[$descriptor->id]))?$img_student:'oB'), array('class'=>"compprof_barchart_teacher"));
+					$img_student = block_exacomp_get_html_for_student_eval(
+							((isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:-1), $scheme);
+									
+					$span_student = html_writer::tag('span', "S: ".
+							$img_student, array('class'=>"compprof_barchart_teacher"));
 						
 					$desc_content .= html_writer::div($content_div.
 							$span_teacher.$span_student.
@@ -3611,6 +3607,7 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 							html_writer::div('', 'compprof_barchart', array('id'=>'svgdesc'.$descriptor->id))
 							.$span_in_work:''), 
 							'compprof_barchart_legend');		
+					
 					$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, ((block_exacomp_is_niveautitle_for_profile_enabled() && $niveau)?$niveau->title:$descriptor->title));
 					$desc_content .= html_writer::div(html_writer::tag('p', html_writer::empty_tag('span', array('id'=>'value'))), 'tooltip hidden', array('id'=>'tooltip'.$descriptor->id));
 					
@@ -3659,21 +3656,21 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 			labels: <?php echo json_encode($labels); ?>,
 			datasets: [ <?php if($teacher) { echo '{
 					label: "Lehrerbeurteilung",
-					fillColor: "rgba(72,165,63,0.2)",
-					strokeColor: "rgba(72,165,63,1)",
-					pointColor: "rgba(72,165,63,1)",
+					fillColor: "#91FD8F",
+					strokeColor: "#02a600",
+					pointColor: "#02a600",
 					pointStrokeColor: "#fff",
 					pointHighlightFill: "#fff",
-					pointHighlightStroke: "rgba(151,187,205,1)",
+					pointHighlightStroke: "#03a801",
 					data: '.json_encode($data1).',
 				}'; } else { echo '{
 					label: "Schülerbeurteilung",
-					fillColor: "rgba(249,178,51,0.2)",
-					strokeColor: "#f9b233",
-					pointColor: "#f9b233",
+					fillColor: "#95CEFF",
+					strokeColor: "#0075dd",
+					pointColor: "#0075dd",
 					pointStrokeColor: "#fff",
 					pointHighlightFill: "#fff",
-					pointHighlightStroke: "rgba(151,187,205,1)",
+					pointHighlightStroke: "#015FB1",
 					data: '.json_encode($data2).',
 				}'; }?>  ]
 			};
@@ -3878,12 +3875,12 @@ var dataset = dataset.map(function (group) {
 			datasets: [
 			{
 				label: "Teacher Timeline",
-				fillColor: "rgba(72,165,63,0.2)",
-					strokeColor: "rgba(72,165,63,1)",
-				pointColor: "rgba(72,165,63,1)",
+				fillColor: "#91FD8F",
+					strokeColor: "#02a600",
+				pointColor: "#02a600",
 				pointStrokeColor: "#fff",
 				pointHighlightFill: "#fff",
-				pointHighlightStroke: "rgba(151,187,205,1)",
+				pointHighlightStroke: "#028400",
 				data: [';
 				foreach($y_values1 as $val)
 					$content .= '"'.$val.'",';
@@ -3892,12 +3889,12 @@ var dataset = dataset.map(function (group) {
 			},
 			{
 				label: "Student Timeline",
-				fillColor: "rgba(249,178,51,0.2)",
-				strokeColor: "#f9b233",
-				pointColor: "#f9b233",
+				fillColor: "#95CEFF",
+				strokeColor: "#0075dd",
+				pointColor: "#0075dd",
 				pointStrokeColor: "#fff",
 				pointHighlightFill: "#fff",
-				pointHighlightStroke: "rgba(151,187,205,1)",
+				pointHighlightStroke: "#015FB1",
 				data: [';
 				foreach($y_values2 as $val)
 					$content .= '"'.$val.'",';

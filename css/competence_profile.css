@@ -59,6 +59,14 @@
 }
 
 #block_exacomp .compprof_barchart_teacher {
+	color: #02a600;
+}
+#block_exacomp .compprof_barchart_student {
+	float: right;
+	margin-right: 30%;
+	color: #0075dd;
+}
+#block_exacomp .compprof_barchart_inwork {
 	margin-right: 10px;
 }
 

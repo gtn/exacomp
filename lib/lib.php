@@ -6145,7 +6145,76 @@ function block_exacomp_get_courseids_by_descriptor($descriptorid){
 	
 	return g::$DB->get_records_sql($sql, array($descriptorid));
 }
+/**
+* get evaluation images for competence profile for teacher
+* according to course scheme and admin scheme
+**/
+function block_exacomp_get_html_for_teacher_eval($evaluation, $scheme){
+	$global_scheme = \block_exacomp\global_config::get_scheme_id();
+	$global_scheme_values = \block_exacomp\global_config::get_scheme_items($scheme);
+	
+	//predefined pictures 
+	if($global_scheme >= 1 && $global_scheme <=3){
+		$grey_nE_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_0_'.$global_scheme.'.png';
+		$grey_1_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_1_'.$global_scheme.'.png';
+		$grey_2_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_2_'.$global_scheme.'.png';
+		$grey_3_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_3_'.$global_scheme.'.png';
+		$nE_src = '/blocks/exacomp/pix/compprof_rating_teacher_0_'.$global_scheme.'.png';
+		$one_src = '/blocks/exacomp/pix/compprof_rating_teacher_1_'.$global_scheme.'.png';
+		$two_src = '/blocks/exacomp/pix/compprof_rating_teacher_2_'.$global_scheme.'.png';
+		$three_src = '/blocks/exacomp/pix/compprof_rating_teacher_3_'.$global_scheme.'.png';
+		
+		$image0 = $grey_nE_src;
+		$image1 = $grey_1_src;
+		$image2 = $grey_2_src;
+		$image3 = $grey_3_src;
+		if($evaluation > -1){
+			if($evaluation == 0){ //not reached
+				$image0 = $nE_src;
+			}if($evaluation >= 1){
+				$image1 = $one_src;
+			}if($evaluation >= 2){
+				$image2 = $two_src;
+			}if($evaluation >= 3){
+				$image3 = $three_src;
+			}
+		}
+		
+		return html_writer::empty_tag('img', array('src'=>new moodle_url($image0), 'width'=>'25', 'height'=>'25')).
+				html_writer::empty_tag('img', array('src'=>new moodle_url($image1), 'width'=>'25', 'height'=>'25')).
+				html_writer::empty_tag('img', array('src'=>new moodle_url($image2), 'width'=>'25', 'height'=>'25')).
+				html_writer::empty_tag('img', array('src'=>new moodle_url($image3), 'width'=>'25', 'height'=>'25'));
+	}else{	//only numeric values available print number
+		if($evaluation > -1)	//evaluated
+			return html_writer::span($evaluation."/".$scheme);
+		else 					//not evaluated
+			return html_writer::span(get_string("oB","block_exacomp"));
+	}
+}
 
+/**
+* get evaluation images for competence profile for students
+* allways use starts so far, according to scheme
+**/
+function block_exacomp_get_html_for_student_eval($evaluation, $scheme){
+	
+	$images = array();
+	for($i=0;$i<$scheme;$i++){
+		if($evaluation > -1 && $i <= $evaluation){
+			$images[] = '/blocks/exacomp/pix/compprof_rating_student.png';
+		}else{
+			$images[] = '/blocks/exacomp/pix/compprof_rating_student_grey.png';
+		}
+	}
+
+	$return = "";
+	foreach($images as $image){
+		$return .= html_writer::empty_tag('img', array('src'=>new moodle_url($image), 'width'=>'25', 'height'=>'25'));
+	}
+	
+	return $return;
+	
+}
 }
 
 namespace block_exacomp {
