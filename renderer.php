@@ -814,6 +814,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				foreach($niveaus as $niveauid => $niveau) {
 					if(isset($data[$skillid][$topicid][$niveauid])) {
 						$cell = new html_table_cell();
+						$cell->attributes['class'] = 'tablecell';
 						$compdiv = "";
 						$allTeachercomps = true;
 						$allStudentcomps = true;
@@ -870,6 +871,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 									$table_head->cells[] = new html_table_cell("Abschluss");
 
 								$crossubject_statistic = new html_table();
+								$crossubject_statistic->attributes['class'] = 'generaltable reportsstattable';
 								$crossubject_statistic_rows = array();
 								$crossubject_statistic_rows[] = $table_head;
 
