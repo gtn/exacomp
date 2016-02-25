@@ -49,6 +49,15 @@
 	margin-bottom: 20px;
 }
 
+#block_exacomp .compprof_barchart_legend:before {
+	content: ".";
+	clear: both;
+	display: block;
+	visibility: hidden;
+	height: 0px;
+	margin-bottom: 20px;
+}
+
 #block_exacomp .compprof_barchart_teacher {
 	margin-right: 10px;
 }

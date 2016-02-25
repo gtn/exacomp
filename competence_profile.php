@@ -133,11 +133,10 @@ foreach($possible_courses as $course){
 if(!empty($profile_settings->exacomp) || $profile_settings->showallcomps == 1)
 	echo html_writer::tag('h3', get_string('my_comps', 'block_exacomp'), array('class'=>'competence_profile_sectiontitle'));
 
-echo $output->lm_graph_legend($max_scheme);
 foreach($user_courses as $course) {
 	//if selected
 	if(isset($profile_settings->exacomp[$course->id]))
-		echo $output->competence_profile_course($course,$student);
+		echo $output->competence_profile_course($course,$student,true,$max_scheme);
 }
 if ($profile_settings->showallcomps == 1) {
 	if (empty ( $user_courses ))

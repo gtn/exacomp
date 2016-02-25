@@ -3529,7 +3529,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	';
 		return $content;
 	}
-	function competence_profile_course($course, $student, $showall = true) {
+	function competence_profile_course($course, $student, $showall = true, $max_scheme = 3) {
 		$scheme = block_exacomp_get_grading_scheme($course->id);
 		$compTree = block_exacomp_get_competence_tree($course->id);
 		
@@ -3540,8 +3540,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			return html_writer::div($content, 'competence_profile_coursedata');
 		}
 		//print graphs
-		$topics = block_exacomp_get_topics_for_radar_graph($course->id, $student->id);
-		$radar_graph = html_writer::div($this->radar_graph($topics),"competence_profile_radargraph");
+		//$topics = block_exacomp_get_topics_for_radar_graph($course->id, $student->id);
+		//$radar_graph = html_writer::div($this->radar_graph($topics),"competence_profile_radargraph");
 
 		list($teachercomp,$studentcomp,$pendingcomp) = block_exacomp_get_competencies_for_pie_chart($course->id,$student, $scheme, 0, true);
 		$pie_graph = html_writer::div($this->pie_graph($teachercomp, $studentcomp, $pendingcomp, $course->id),"competence_profile_radargraph");
@@ -3554,7 +3554,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		else
 		   $timeline_graph = "";
 			
-		$content .= html_writer::div($radar_graph.$pie_graph.$timeline_graph, 'competence_profile_graphbox clearfix');
+		$content .= html_writer::div($pie_graph.$timeline_graph, 'competence_profile_graphbox clearfix');
 		$content .= html_writer::div($this->radar_graph_legend(),"radargraph_legend");
 			
 		//print list
@@ -3564,12 +3564,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		// if($student != null && block_exacomp_get_profile_settings($student->id)->useexaport == 1) {
 		//	$items = block_exacomp_get_exaport_items($student->id);
 		//}
-		$content .= $this->competence_profile_tree_v2($compTree,$course->id, $student,$scheme, false, $items);
+		$content .= $this->competence_profile_tree_v2($compTree,$course->id, $student,$scheme, false, $items, $max_scheme);
 
 		return html_writer::div($content,"competence_profile_coursedata");
 	}
 
-private function competence_profile_tree_v2($in, $courseid, $student = null,$scheme = 1, $showonlyreached = false, $eportfolioitems = false) {
+private function competence_profile_tree_v2($in, $courseid, $student = null,$scheme = 1, $showonlyreached = false, $eportfolioitems = false, $max_scheme = 3) {
 		global $DB;
 
 		$content="";
@@ -3584,10 +3584,9 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 				if(!empty($topic->descriptors))
 				foreach($topic->descriptors as $descriptor){
 					$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
-					$content_div = html_writer::tag('span', (block_exacomp_is_niveautitle_for_profile_enabled() && $niveau)?$niveau->title:$descriptor->title);
+					//always descriptor title TODO: remove global setting
+					$content_div = html_writer::tag('span', $niveau->title . ': ' . $descriptor->title);
 					$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, ((block_exacomp_is_niveautitle_for_profile_enabled() && $niveau)?$niveau->title:$descriptor->title));
-					
-					$desc_content .= html_writer::div($content_div, 'compprof_barchart', array('id'=>'svgdesc'.$descriptor->id));
 					
 					$span_in_work = "";
 					if($return->total > 0)
@@ -3599,7 +3598,7 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 						$img_teacher = html_writer::empty_tag('img', array('src'=>new moodle_url($img_teacher_src)));
 					}
 					
-					$span_teacher = html_writer::tag('span', get_string('teacher_eval', 'block_exacomp').": ".
+					$span_teacher = html_writer::tag('span', "L: ".
 						((isset($student->competencies->teacher[$descriptor->id]))?$img_teacher:'oB') . (isset($student->competencies->teacher_additional_grading[$descriptor->id])? " (".$student->competencies->teacher_additional_grading[$descriptor->id].") ":""), 
 						array('class'=>"compprof_barchart_teacher"));
 									   
@@ -3608,9 +3607,14 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 						$img_student_src = '/blocks/exacomp/pix/compprof_rating_student_'.$student->competencies->student[$descriptor->id].'.png';
 						$img_student = html_writer::empty_tag('img', array('src'=>new moodle_url($img_student_src)));
 					}				
-					$span_student = html_writer::tag('span', get_string('student_eval', 'block_exacomp').": ".((isset($student->competencies->student[$descriptor->id]))?$img_student:'oB'), array('class'=>"compprof_barchart_teacher"));
+					$span_student = html_writer::tag('span', "S: ".((isset($student->competencies->student[$descriptor->id]))?$img_student:'oB'), array('class'=>"compprof_barchart_teacher"));
 						
-					$desc_content .= html_writer::div($span_in_work.$span_teacher.$span_student, 'compprof_barchart_legend');		
+					$desc_content .= html_writer::div($content_div.
+							$span_teacher.$span_student.
+							(($descriptor->examples)?html_writer::empty_tag('br').
+							html_writer::div('', 'compprof_barchart', array('id'=>'svgdesc'.$descriptor->id))
+							.$span_in_work:''), 
+							'compprof_barchart_legend');		
 					$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, ((block_exacomp_is_niveautitle_for_profile_enabled() && $niveau)?$niveau->title:$descriptor->title));
 					$desc_content .= html_writer::div(html_writer::tag('p', html_writer::empty_tag('span', array('id'=>'value'))), 'tooltip hidden', array('id'=>'tooltip'.$descriptor->id));
 					
@@ -3624,13 +3628,17 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 				
 				$div_content = "";
 				if(count($niveaus)>2 && count($niveaus)<9){
-					$radar_graph = $this->radar_graph_topic($niveaus, $teacher_eval, $student_eval, $scheme);
-					$div_content = html_writer::div($radar_graph, 'radar_graph', array('style'=>'width:30%'));
+					$radar_graph = $this->radar_graph_topic($niveaus, $teacher_eval, $student_eval, $scheme,  true);
+					$div_content = html_writer::div($radar_graph, 'competence_profile_radargraph', array('style'=>'width:30%'));
+					$radar_graph = $this->radar_graph_topic($niveaus, $teacher_eval, $student_eval, $scheme, false);
+					$div_content .= html_writer::div($radar_graph, 'competence_profile_radargraph', array('style'=>'width:30%'));
+						
+					$div_content = html_writer::div($div_content, 'competence_profile_graphbox clearfix');
 					$div_content .= $this->radar_graph_legend();
 				}
 				
 				$div_content .= $desc_content;
-				
+				$div_content .= $this->lm_graph_legend($max_scheme);
 				$fieldset_content .= html_writer::div($div_content);
 				$content .= html_writer::tag('fieldset', $fieldset_content, array('class'=>'exa-collapsible', 'id'=>'topic_field'.$topic->id));
 			}
@@ -3653,7 +3661,7 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 		$(function(){
 			var radarChartData = {
 			labels: <?php echo json_encode($labels); ?>,
-			datasets: [ {
+			datasets: [ <?php if($teacher) { echo '{
 					label: "Lehrerbeurteilung",
 					fillColor: "rgba(72,165,63,0.2)",
 					strokeColor: "rgba(72,165,63,1)",
@@ -3661,8 +3669,8 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 					pointStrokeColor: "#fff",
 					pointHighlightFill: "#fff",
 					pointHighlightStroke: "rgba(151,187,205,1)",
-					data: <?php echo json_encode($data1); ?>,
-				}, {
+					data: '.json_encode($data1).',
+				}'; } else { echo '{
 					label: "Schülerbeurteilung",
 					fillColor: "rgba(249,178,51,0.2)",
 					strokeColor: "#f9b233",
@@ -3670,8 +3678,8 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 					pointStrokeColor: "#fff",
 					pointHighlightFill: "#fff",
 					pointHighlightStroke: "rgba(151,187,205,1)",
-					data: <?php echo json_encode($data2); ?>,
-				} ]
+					data: '.json_encode($data2).',
+				}'; }?>  ]
 			};
 
 
@@ -3683,10 +3691,11 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 				responsive: false, // can't be responsive, because Graph.js 1.0.2 does not work with hidden divs
 				showScale: true,
 				scaleShowLabels: true,
-				scaleLabel: "<%if (value == 1){%><%='<?php echo $global_scheme_values[1]; ?>'%><%}%><%if (value == 2){%><%='<?php echo $global_scheme_values[2]; ?>'%> <%}%><%if (value == 3){%><%='<?php echo $global_scheme_values[3]; ?>'%><%}if(value>3){%><%=value%><%}%>",
-				multiTooltipTemplate: "<%if (value == 1){%><%='<?php echo $global_scheme_values[1]; ?>'%><%}%><%if (value == 2){%><%='<?php echo $global_scheme_values[2]; ?>'%> <%}%><%if (value == 3){%><%='<?php echo $global_scheme_values[3]; ?>'%><%}%><%if (value == 0){%><%='<?php echo $global_scheme_values[0]; ?>'%><%}if(value>3){%><%=value%><%}%>",
+				scaleLabel: "<%if (value == 1){%><%='<?php echo ($teacher)?$global_scheme_values[1]:'*'; ?>'%><%}%><%if (value == 2){%><%='<?php echo ($teacher)?$global_scheme_values[2]:'**'; ?>'%> <%}%><%if (value == 3){%><%='<?php echo ($teacher)?$global_scheme_values[3]:'***'; ?>'%><%}if(value>3){%><%=value%><%}%>",
+				tooltipTemplate: "<%if (value == 1){%><%='<?php echo ($teacher)?$global_scheme_values[1]:'*'; ?>'%><%}%><%if (value == 2){%><%='<?php echo ($teacher)?$global_scheme_values[2]:'**'; ?>'%> <%}%><%if (value == 3){%><%='<?php echo ($teacher)?$global_scheme_values[3]:'***'; ?>'%><%}%><%if (value == 0){%><%='<?php echo $global_scheme_values[0]; ?>'%><%}if(value>3){%><%=value%><%}%>",
 				scaleLineColor: "rgba(0,0,0,.3)",
-				angleLineColor : "rgba(0,0,0,.3)"
+				angleLineColor : "rgba(0,0,0,.3)",
+			   	
 			});
 		});
 		</script>

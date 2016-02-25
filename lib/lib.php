@@ -3391,7 +3391,6 @@ function block_exacomp_get_competencies_for_pie_chart($courseid,$user, $scheme, 
 
 	$cm_mm = block_exacomp_get_course_module_association($courseid);
 
-	$topics = block_exacomp_get_topics_by_course($courseid);
 	$descriptors = block_exacomp_get_descriptors($courseid);
 
 	$evaluation = block_exacomp_get_user_information_by_course($user, $courseid);
@@ -3400,40 +3399,6 @@ function block_exacomp_get_competencies_for_pie_chart($courseid,$user, $scheme, 
 	$studentcomp = 0;
 	$pendingcomp = 0;
 
-	foreach($topics as $topic){
-		$teacher_eval = false;
-		$student_eval = false;
-		if(!$coursesettings->uses_activities || ($coursesettings->uses_activities && isset($cm_mm->topics[$topic->id]))){
-			if(isset($evaluation->topics->teacher) && isset($evaluation->topics->teacher[$topic->id])){
-				if($scheme == 1 || $evaluation->topics->teacher[$topic->id] >= ceil($scheme/2)){
-					if($enddate>0){
-						if($enddate >= $evaluation->topics->timestamp_teacher[$topic->id]){
-							$teachercomp ++;
-							$teacher_eval = true;
-						}
-					}else{
-						$teachercomp ++;
-						$teacher_eval = true;
-					}
-				}
-			}
-			if((!$teacher_eval||$exclude_student) && isset($evaluation->topics->student) && isset($evaluation->topics->student[$topic->id])){
-				if($scheme == 1 || $evaluation->topics->student[$topic->id] >= ceil($scheme/2)){
-					if($enddate>0){
-						if($enddate >= $evaluation->topics->timestamp_student[$topic->id]){
-							$studentcomp ++;
-							$student_eval = true;
-						}
-					}else{
-						$studentcomp ++;
-						$student_eval = true;
-					}
-				}
-			}
-			if(!$teacher_eval && !$student_eval)
-				$pendingcomp ++;
-		}
-	}
 	foreach($descriptors as $descriptor){
 		if(block_exacomp_is_descriptor_visible($courseid, $descriptor, $user->id)){
 			$teacher_eval = false;
@@ -3917,7 +3882,8 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 					$teacher_comps+=$comps[0];
 					$student_comps+=$comps[1];
 				}
-				$x_values[] = $act_date["mday"].".".$act_date["mon"];
+				
+				$x_values[] = date('d', $act_time).".".date('m', $act_time);
 				$y_values_teacher[] = $teacher_comps;
 				$y_values_student[] = $student_comps;
 				$y_values_total[] = $total;
@@ -3980,9 +3946,9 @@ function block_exacomp_calc_week_dates($time){
 		$dates[] = getdate( $time-$temp*86400);
 	}
 	if($dates[0]["mon"] == $dates[6]["mon"]){
-		$string = $dates[0]["mday"]."-".$dates[6]["mday"].".".$dates[0]["mon"];
+		$string = date('d', $dates[0][0]).".-".date('d', $dates[6][0]).".".date('m', $dates[0][0]);
 	}else{
-		$string = $dates[0]["mday"].".".$dates[0]["mon"]."-".$dates[6]["mday"].".".$dates[6]["mon"];
+		$string = date('d', $dates[0][0]).".".date('m', $dates[0][0])."-".date('d', $dates[6][0]).".".date('m', $dates[6][0]);
 	}
 	$result = new stdClass();
 	$result->dates = $dates;
