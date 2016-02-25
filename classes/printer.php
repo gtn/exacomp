@@ -302,7 +302,7 @@ class printer {
 		$header = '
 			<table><tr>
 				<td style="font-size: 12pt; font-weight: bold;" align="left">Wochenplan</td>
-				<td style="font-size: 12pt; font-weight: bold;" align="right">Kursteilnehmer: '.fullname($student).'</td>
+				<td style="font-size: 12pt; font-weight: bold;" align="right">Kursteilnehmer/in: '.fullname($student).'</td>
 			</tr></table>
 			&nbsp;<br />
 			<table border="0.1" style="padding: 1px">';

@@ -520,4 +520,4 @@ $string['reached_topic'] = 'Ich habe diese Kompetenz erreicht: ';
 
 
 //Message
-$string['messagetocourse'] = 'Nachricht an alle Kursteilnehmer senden';
+$string['messagetocourse'] = 'Nachricht an alle Kursteilnehmer/innen senden';

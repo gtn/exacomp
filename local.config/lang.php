@@ -20,11 +20,10 @@
 $string['pluginname'] = 'Kompetenzraster';
 
 $string['exacomp:deleteexamples'] = 'Lernmaterialien löschen';
-$string['tab_admin_settings'] = 'Bildungsstandards';
 
 $string['tab_teacher_settings_selection_st'] = 'Bildungsstandard-Auswahl';
 $string['tab_examples'] = 'Lernmaterialien';
-$string['tab_teacher_settings_selection'] = 'Kompetenzbereiche-Auswahl';
+$string['tab_teacher_settings_selection'] = 'Auswahl der Kompetenzbereiche';
 $string['tab_competence_overview'] = 'Kompetenzraster';
 $string['tab_competence_details'] = 'Moodle Aktivit&auml;ten';
 
@@ -40,7 +39,7 @@ $string['showevaluation']= 'Um die Selbsteinschätzung einzusehen, klicken Sie <
 $string['hideevaluation']= 'Um die Selbsteinschätzung auszublenden, klicken Sie <a href="{$a}">hier</a>';
 $string['assigned_example'] = 'Lernmaterial zuordnen';
 $string['show_all_descriptors'] = 'Alle Lernlisten im &Uuml;berblick anzeigen';
-$string['show_all_examples'] = 'Externe Lernmaterialien für TeilnehmerInnen anzeigen';
+$string['show_all_examples'] = 'Externe Lernmaterialien für Kursteilnehmer/innen anzeigen';
 $string['filteredtaxonomies'] = 'Lernmaterialien werden anhand der ausgewählten Taxonomien verwendet:';
 $string['delete_unconnected_examples'] = 'Wenn Sie Themenbereiche abwählen, mit denen Lernmaterialien verknüpft sind die noch am Wochenplan liegen, werden diese aus dem Wochenplan entfernt.';
 
