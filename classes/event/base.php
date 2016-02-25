@@ -1,4 +1,8 @@
 <?php
+/*
+ * copyright exabis
+ */
+
 namespace block_exacomp\event;
 
 defined('MOODLE_INTERNAL') || die();

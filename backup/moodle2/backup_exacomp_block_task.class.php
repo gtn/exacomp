@@ -1,5 +1,8 @@
 <?php
- 
+/*
+ * copyright exabis
+ */
+
 require_once($CFG->dirroot . '/blocks/exacomp/backup/moodle2/backup_exacomp_stepslib.php'); // Because it exists (must)
 require_once($CFG->dirroot . '/blocks/exacomp/backup/moodle2/backup_exacomp_settingslib.php'); // Because it exists (optional)
  

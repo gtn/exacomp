@@ -1,4 +1,7 @@
 <?php
+/*
+ * copyright exabis
+ */
 
 require __DIR__.'/inc.php';
 require_once __DIR__.'/example_upload_form.php';

@@ -1,4 +1,8 @@
 <?php
+/*
+ * copyright exabis
+ */
+
 require __DIR__.'/inc.php';
 require_once('/Applications/MAMP/htdocs/moodle27/blocks/exacomp/lib/lib.php');
 require_once('/Applications/MAMP/htdocs/moodle27/blocks/exacomp/classes/data.php');
@@ -422,4 +426,3 @@ class TestOfLib extends UnitTestCase {
 		$this->assertEqual(count($data[1]->subs) + count($data[2]->subs), 4);
 	}
 }
-?>

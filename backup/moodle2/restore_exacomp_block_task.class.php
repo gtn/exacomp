@@ -1,4 +1,7 @@
 <?php
+/*
+ * copyright exabis
+ */
 
 require_once($CFG->dirroot . '/blocks/exacomp/backup/moodle2/restore_exacomp_stepslib.php'); // We have structure steps
 

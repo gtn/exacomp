@@ -1,7 +1,6 @@
 <?php
-
-/**
- * functions common accross exabis plugins
+/*
+ * copyright exabis
  */
 
 namespace block_exacomp\common;

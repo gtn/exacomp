@@ -1,4 +1,7 @@
 <?php
+/*
+ * copyright exabis
+ */
 
 $defaultLang = 'en_utf8';
 

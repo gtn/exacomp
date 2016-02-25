@@ -1,5 +1,8 @@
 <?php
- 
+/*
+ * copyright exabis
+ */
+
 require_once __DIR__."/../../lib/lib.php";
 require_once __DIR__."/../../classes/data.php";
 

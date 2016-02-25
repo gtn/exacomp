@@ -1,3 +1,7 @@
+/*
+ * copyright exabis
+ */
+
 (function($){
 	function update() {
 		var descriptor_type = $(':radio[name=descriptor_type]:checked').val();

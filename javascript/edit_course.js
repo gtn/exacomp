@@ -1,3 +1,7 @@
+/*
+ * copyright exabis
+ */
+
 $(function(){
 	$('input[name=uses_activities]').change(function(){
 		if ($(this).is(':checked')) {

@@ -1,2 +1,8 @@
-<?php header('Content-Type: application/json'); ?>
-{}
+<?php
+/*
+ * copyright exabis
+ */
+
+header('Content-Type: application/json');
+
+echo '{}';

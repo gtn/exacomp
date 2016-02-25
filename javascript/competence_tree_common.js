@@ -1,3 +1,6 @@
+/*
+ * copyright exabis
+ */
 
 (function($){
 	window.block_exacomp.reload_action = function() {

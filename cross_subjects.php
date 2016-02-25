@@ -1,4 +1,7 @@
 <?php
+/*
+ * copyright exabis
+ */
 
 require __DIR__.'/inc.php';
 
@@ -362,4 +365,3 @@ if ($cross_subject) {
 
 /* END CONTENT REGION */
 echo $output->footer();
-

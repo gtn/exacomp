@@ -1,4 +1,7 @@
 <?php
+/*
+ * copyright exabis
+ */
 
 namespace block_exacomp;
 
@@ -167,4 +170,3 @@ if (is_callable(['\block_exacomp\simple_service', $function])) {
 } else {
 	throw new \moodle_exception("wsfunction '$function' not found");
 }
-

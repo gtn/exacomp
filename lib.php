@@ -1,6 +1,7 @@
 <?php
-
-// this file needs to be here!
+/*
+ * copyright exabis
+ */
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -57,4 +58,3 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
 	send_stored_file($file, 0, 0, $forcedownload, $options);
 	exit;
 }
-

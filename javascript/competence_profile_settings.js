@@ -1,3 +1,6 @@
+/*
+ * copyright exabis
+ */
 
 jQueryExacomp(function($){
 	$('input[name=useexastud]').change(function(){

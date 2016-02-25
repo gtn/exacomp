@@ -1,4 +1,8 @@
 <?php
+/*
+ * copyright exabis
+ */
+
 require __DIR__.'/inc.php';
 require_once('lib/lib.php');
 require_once('classes/data.php');

@@ -1,3 +1,7 @@
+/*
+ * copyright exabis
+ */
+
 if (block_exacomp.get_param('action') == 'share') {
 	$(document).on('click', 'form#share input[name=share_all]', function(){
 		// disable if checked

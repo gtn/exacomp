@@ -1,3 +1,6 @@
+/*
+ * copyright exabis
+ */
 
 (function() {
 

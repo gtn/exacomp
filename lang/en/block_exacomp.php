@@ -1,4 +1,7 @@
 <?php
+/*
+ * copyright exabis
+ */
 
 $string['pluginname'] = 'Exabis Competencies';
 

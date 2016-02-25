@@ -1,3 +1,7 @@
+/*
+ * copyright exabis
+ */
+
 (function($) {
 
 	// ## AJAX

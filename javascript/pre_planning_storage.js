@@ -1,3 +1,7 @@
+/*
+ * copyright exabis
+ */
+
 (function($){
 	var $eventDiv = $( '#external-events' );
 	var $trash = $( '#trash' );

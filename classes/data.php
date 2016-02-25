@@ -1,4 +1,7 @@
 <?php
+/*
+ * copyright exabis
+ */
 
 namespace block_exacomp;
 

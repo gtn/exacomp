@@ -1,3 +1,7 @@
+/*
+ * copyright exabis
+ */
+
 (function($) {
 
 	$(document).on('click', '.switchtextalign', function(){

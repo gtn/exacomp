@@ -1,5 +1,8 @@
 <?php
- 
+/*
+ * copyright exabis
+ */
+
 require __DIR__.'/../inc.php';
 require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
  

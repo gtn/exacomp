@@ -1,4 +1,7 @@
 <?php
+/*
+ * copyright exabis
+ */
 
 defined('MOODLE_INTERNAL') || die;
 

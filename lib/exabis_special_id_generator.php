@@ -1,4 +1,7 @@
 <?php
+/*
+ * copyright exabis
+ */
 
 class exabis_special_id_generator {
 	/*
