@@ -1,6 +1,6 @@
 <?php
  
-require_once('../inc.php');
+require __DIR__.'/../inc.php';
 require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
  
 if (!is_siteadmin()) {

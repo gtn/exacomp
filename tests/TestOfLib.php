@@ -1,5 +1,5 @@
 <?php
-require_once '/Applications/MAMP/htdocs/moodle27/blocks/exacomp/inc.php';
+require __DIR__.'/inc.php';
 require_once('/Applications/MAMP/htdocs/moodle27/blocks/exacomp/lib/lib.php');
 require_once('/Applications/MAMP/htdocs/moodle27/blocks/exacomp/classes/data.php');
 

@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__."/inc.php";
+require __DIR__.'/inc.php';
 
 $courseid = required_param('courseid', PARAM_INT);
 $studentid = optional_param('studentid', 0, PARAM_INT);

@@ -1,3 +1,3 @@
 <?php
 
-require_once __DIR__.'/../inc.php';
+require __DIR__.'/../inc.php';

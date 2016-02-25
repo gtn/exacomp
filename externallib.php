@@ -2,7 +2,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once __DIR__.'/inc.php';
+require __DIR__.'/inc.php';
 require_once $CFG->libdir.'/externallib.php';
 require_once $CFG->dirroot.'/mod/assign/locallib.php';
 require_once $CFG->dirroot.'/mod/assign/submission/file/locallib.php';

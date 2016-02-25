@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__.'/inc.php';
+require __DIR__.'/inc.php';
 
 class block_exacomp_common_functions_testcase extends basic_testcase {
 	public function test_t() {

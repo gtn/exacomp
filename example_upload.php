@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__."/inc.php";
+require __DIR__.'/inc.php';
 require_once __DIR__.'/example_upload_form.php';
 
 $courseid = required_param('courseid', PARAM_INT);

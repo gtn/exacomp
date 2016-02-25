@@ -26,7 +26,7 @@
  * This copyright notice MUST APPEAR in all copies of the script!
  * *************************************************************
  */
-require_once __DIR__."/inc.php";
+require __DIR__.'/inc.php';
 
 global $DB, $OUTPUT, $PAGE;
 

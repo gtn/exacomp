@@ -24,7 +24,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 * ************************************************************* */
 
-require_once __DIR__.'/inc.php';
+require __DIR__.'/inc.php';
 require_once __DIR__.'/example_submission_form.php';
 
 $courseid = required_param('courseid', PARAM_INT);

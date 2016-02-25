@@ -24,7 +24,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 global $DB;
-require_once __DIR__.'/inc.php';
+require __DIR__.'/inc.php';
 
 $courseid = required_param('courseid', PARAM_INT);
 
