@@ -3647,7 +3647,7 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 		return $content;
 	}
 	
-	private function radar_graph_topic($labels, $data1, $data2, $scheme){
+	private function radar_graph_topic($labels, $data1, $data2, $scheme, $teacher = true){
 		$global_scheme_values = \block_exacomp\global_config::get_scheme_items($scheme);
 
 		static $canvasid_i = 0;
