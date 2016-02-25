@@ -47,7 +47,7 @@ class block_exacomp_example_upload_student_form extends moodleform {
 		$treetitle .= html_writer::start_div('fitemtitle') . html_writer::label(get_string('descriptors','block_exacomp'), 'tree'). html_writer::end_div();
 		$treetitle .= html_writer::start_div('felement ftext');
 		$tree = $this->_customdata['tree'];
-		$html_tree = $output->print_competence_based_list_tree($tree, true, 1);
+		$html_tree = $output->competence_based_list_tree($tree, true, 1);
 		$mform->addElement('html', $treetitle);
 		$mform->addElement('html', $html_tree);
 

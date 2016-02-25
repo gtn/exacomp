@@ -76,10 +76,10 @@ if ($show_all_examples != 0)
 
 $tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
 
-echo $output->print_view_example_header();
+echo $output->view_example_header();
 
 if($style==0)
-	echo $output->print_competence_based_list_tree ( $tree , true, false);
+	echo $output->competence_based_list_tree ( $tree , true, false);
 if($style==1){
 	$sql = 'SELECT DISTINCT e.*
 		FROM {'.\block_exacomp\DB_COURSETOPICS.'} ct
@@ -104,7 +104,7 @@ if($style==1){
 					$descriptors[$descexamp->descrid] = $descexamp->descrid;
 			}
 			$tree = block_exacomp_build_example_association_tree($courseid, $descriptors, $example->id, 0, false);
-			$content .= $output->print_example_based_list_tree($example, $tree, true, false);
+			$content .= $output->example_based_list_tree($example, $tree, true, false);
 		}
 	}
 	

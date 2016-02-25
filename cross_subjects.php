@@ -103,7 +103,7 @@ $course_settings = block_exacomp_get_settings_by_course($courseid);
 
 if($course_settings->uses_activities && !$activities && !$course_settings->show_all_descriptors) {
 	echo $output->header_v2('tab_cross_subjects');
-	echo $output->print_no_activities_warning($isTeacher);
+	echo $output->no_activities_warning($isTeacher);
 	echo $output->footer();
 	exit;
 }
@@ -303,7 +303,7 @@ foreach($schooltypes as $schooltype){
 }
 $schooltype = substr($schooltype_title, 0, strlen($schooltype_title)-1);
 */
-echo $output->print_overview_metadata_cross_subjects($cross_subject, $editmode);
+echo $output->overview_metadata_cross_subjects($cross_subject, $editmode);
 
 $scheme = block_exacomp_get_grading_scheme($courseid);
 
@@ -320,13 +320,13 @@ if(!$isTeacher){
 			$activities_student[] = $course_mods[$cmid];*/
 }
 
-echo $output->print_cross_subject_buttons($cross_subject, $students, $selectedStudentid, ($course_settings->nostudents!=1));
+echo $output->cross_subject_buttons($cross_subject, $students, $selectedStudentid, ($course_settings->nostudents!=1));
 
 $statistic = false;
 if($isTeacher){
 	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
 		$showevaluation = false;
-		echo $output->print_column_selector(count($students));
+		echo $output->column_selector(count($students));
 	}elseif ($studentid == 0)
 		$students = array();
 	elseif($studentid == BLOCK_EXACOMP_SHOW_STATISTIC)
@@ -347,10 +347,10 @@ if ($cross_subject) {
 	$subjects = block_exacomp_get_competence_tree_for_cross_subject($courseid,(isset($cross_subject))?$cross_subject->id:null,false, !($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies);
 
 	if ($subjects) {
-		echo $output->print_overview_legend($isTeacher);
+		echo $output->overview_legend($isTeacher);
 		echo html_writer::start_tag('form', array('id'=>'assign-competencies', "action" => $PAGE->url, 'method'=>'post'));
 		echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
-		echo $output->print_competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $scheme, false, $cross_subject->id, $statistic);
+		echo $output->competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $scheme, false, $cross_subject->id, $statistic);
 		echo html_writer::end_tag("div");
 		echo html_writer::end_tag('form');
 	} else {

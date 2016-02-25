@@ -69,7 +69,7 @@ if ($action == 'export_all') {
 	echo $output->header(context_system::instance(), $courseid, 'tab_admin_settings');
 	echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_admin_settings($courseid), $page_identifier);
 	
-	echo $output->print_descriptor_selection_export();
+	echo $output->descriptor_selection_export();
 	
 	echo $output->footer();
 } else {

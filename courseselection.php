@@ -63,7 +63,7 @@ $schooltypes = block_exacomp_build_schooltype_tree_for_courseselection($limit_co
 
 $active_topics = block_exacomp_get_topics_by_subject($courseid, 0, true);
 
-echo $output->print_courseselection($schooltypes, $active_topics, $headertext);
+echo $output->courseselection($schooltypes, $active_topics, $headertext);
 
 /* END CONTENT REGION */
 echo $output->footer();

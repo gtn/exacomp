@@ -96,7 +96,7 @@ echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $
 $courseSettings = block_exacomp_get_settings_by_course($courseid);
 
 
-echo $output->print_edit_course($courseSettings, $courseid, $headertext);
+echo $output->edit_course($courseSettings, $courseid, $headertext);
 
 /* END CONTENT REGION */
 echo $output->footer();

@@ -135,7 +135,7 @@ foreach ( $levels as $level ) {
 	}
 }
 
-echo $output->print_edit_config ( $data, $courseid, $fromimport );
+echo $output->edit_config ( $data, $courseid, $fromimport );
 
 /* END CONTENT REGION */
 echo $output->footer();

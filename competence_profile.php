@@ -73,7 +73,7 @@ if(!$isTeacher){
 		echo html_writer::tag("p", get_string("select_student","block_exacomp"));
 		//print student selector
 		echo get_string("choosestudent","block_exacomp");
-		echo $output->print_studentselector($coursestudents,$studentid);
+		echo $output->studentselector($coursestudents,$studentid);
 		echo $output->footer();
 		die;
 	}else{
@@ -83,19 +83,19 @@ if(!$isTeacher){
 		
 		//print student selector
 		echo get_string("choosestudent","block_exacomp");
-		echo $output->print_studentselector($coursestudents,$studentid);
+		echo $output->studentselector($coursestudents,$studentid);
 	}
 }
 $student = $DB->get_record('user',array('id' => $studentid));
 
-echo $output->print_button_box(true, '');
+echo $output->button_box(true, '');
 
 $possible_courses = block_exacomp_get_exacomp_courses($student);
 
 if(!block_exacomp_check_profile_config($student->id))
 	block_exacomp_init_profile($possible_courses, $student->id);
 
-echo $output->print_competence_profile_metadata($student);
+echo $output->competence_profile_metadata($student);
 
 //echo html_writer::start_div('competence_profile_overview clearfix');
 
@@ -127,17 +127,17 @@ foreach($possible_courses as $course){
 }
 
 //if(!block_exacomp_is_altversion())
-//	echo $output->print_competene_profile_overview($student, $user_courses, $possible_courses, $badges, 
+//	echo $output->competene_profile_overview($student, $user_courses, $possible_courses, $badges,
 //		$profile_settings->useexaport, $items, $exastud_competence_profile_data, $profile_settings->onlygainedbadges);
 
 if(!empty($profile_settings->exacomp) || $profile_settings->showallcomps == 1)
 	echo html_writer::tag('h3', get_string('my_comps', 'block_exacomp'), array('class'=>'competence_profile_sectiontitle'));
 
-echo $output->print_lm_graph_legend($max_scheme);
+echo $output->lm_graph_legend($max_scheme);
 foreach($user_courses as $course) {
 	//if selected
 	if(isset($profile_settings->exacomp[$course->id]))
-		echo $output->print_competence_profile_course($course,$student);
+		echo $output->competence_profile_course($course,$student);
 }
 if ($profile_settings->showallcomps == 1) {
 	if (empty ( $user_courses ))
@@ -145,14 +145,14 @@ if ($profile_settings->showallcomps == 1) {
 	else
 		$overview_courses = $user_courses;
 	
-	echo $output->print_competence_profile_course_all ( $overview_courses, $student );
+	echo $output->competence_profile_course_all ( $overview_courses, $student );
 }
 if($profile_settings->useexaport){
-	echo $output->print_competence_profile_exaport($profile_settings, $student, $items);
+	echo $output->competence_profile_exaport($profile_settings, $student, $items);
 }
 
 if($profile_settings->useexastud){
-	echo $output->print_competence_profile_exastud($profile_settings, $student);
+	echo $output->competence_profile_exastud($profile_settings, $student);
 }
 
 /* END CONTENT REGION */

@@ -81,12 +81,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			parent::header().
 			$extras.
 			(($tabtree && $context)?parent::tabtree(block_exacomp_build_navigation_tabs($context,$courseid), $page_identifier):'').
-			$this->print_wrapperdivstart();
+			$this->wrapperdivstart();
 	}
 	
 	public function footer() {
 		return
-			$this->print_wrapperdivend().
+			$this->wrapperdivend().
 			parent::footer();
 	}
 	
@@ -295,7 +295,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::tag("div", html_writer::table($table), array("id"=>"exabis_competences_block"));
 	}
 
-	public function print_view_learning_agenda($data, $studentname){
+	public function view_learning_agenda($data, $studentname){
 		global $CFG, $COURSE;
 
 		//header
@@ -423,8 +423,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content = html_writer::tag("div", html_writer::table($table), array("id"=>"exabis_competences_block"));
 		return $content;
 	}
-	public function print_subject_dropdown($schooltypetree, $selectedSubject) {
-		global $PAGE;
+	public function subject_dropdown($schooltypetree, $selectedSubject) {
 		$content = get_string("choosesubject", "block_exacomp").': ';
 		$array = array();
 		$options = array();
@@ -446,7 +445,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	/**
 	 * Prints 2 select inputs for subjects and topics
 	 */
-	public function print_overview_dropdowns($type, $students, $selectedStudent = 0, $isTeacher = false) {
+	public function overview_dropdowns($type, $students, $selectedStudent = 0, $isTeacher = false) {
 		global $COURSE, $USER;
 
 		$content = "";
@@ -460,7 +459,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			} elseif ($students) {
 				$content .= '<div style="padding-bottom: 15px;">';
 				$content .= get_string("choosestudent", "block_exacomp");
-				$content .= $this->print_studentselector($students,$selectedStudent, static::STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
+				$content .= $this->studentselector($students,$selectedStudent, static::STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
 				$content .= '</div>';
 			}
 
@@ -487,7 +486,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			);
 			}
 
-			$right_content .= $this->print_edit_mode_button(block_exacomp\url::create(g::$PAGE->url, ['editmode' => !$this->is_edit_mode()]));
+			$right_content .= $this->edit_mode_button(block_exacomp\url::create(g::$PAGE->url, ['editmode' => !$this->is_edit_mode()]));
 		} else {
 			foreach(block_exacomp_get_teachers_by_course($COURSE->id) as $teacher) {
 				$right_content .= block_exacomp_get_message_icon($teacher->id);
@@ -504,7 +503,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$print = true;
 			}
 		}
-		$content = $this->print_button_box($print, $right_content).$content;
+		$content = $this->button_box($print, $right_content).$content;
 
 		return $content;
 	}
@@ -517,13 +516,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return !empty($this->print);
 	}
 	
-	public function print_edit_mode_button($url) {
+	public function edit_mode_button($url) {
 		$edit = $this->is_edit_mode();
 		return html_writer::empty_tag('input', array('type'=>'button', 'id'=>'edit_mode_submit', 'name'=> 'edit_mode_submit', 'value'=>\block_exacomp\get_string(($edit) ? 'turneditingoff' : 'turneditingon'),
 				 "exa-type" => 'link', 'exa-url' => $url));
 	}
 	
-	public function print_subjects_menu($subjects, $selectedSubject, $selectedTopic) {
+	public function subjects_menu($subjects, $selectedSubject, $selectedTopic) {
 		global $CFG, $COURSE;
 
 		$content = html_writer::start_div('subjects_menu');
@@ -569,7 +568,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content .= html_writer::end_tag('div');		
 		return $content;
 	}
-	public function print_niveaus_menu($niveaus,$selectedNiveau,$selectedTopic) {
+	public function niveaus_menu($niveaus,$selectedNiveau,$selectedTopic) {
 		global $CFG, $COURSE;
 		
 		$content = html_writer::start_div('niveaus_menu');
@@ -596,7 +595,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content .= html_writer::end_tag('div');
 		return $content;
 	}
-	public function print_overview_metadata_teacher($subject,$topic){
+	public function overview_metadata_teacher($subject,$topic){
 
 		$table = new html_table();
 		$table->attributes['class'] = 'exabis_comp_top';
@@ -620,7 +619,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		if(isset($subject->description) || isset($topic->description))
 			return $content;
 	}
-	public function print_overview_metadata_student($subject, $topic, $topic_evaluation, $showevaluation, $scheme, $icon = null){
+	public function overview_metadata_student($subject, $topic, $topic_evaluation, $showevaluation, $scheme, $icon = null){
 		$table = new html_table();
 		$table->attributes['class'] = 'exabis_comp_top';
 
@@ -683,7 +682,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return html_writer::table($table).html_writer::empty_tag('br');
 	}
-	public function print_overview_metadata($schooltype, $subject, $descriptor, $cat){
+	public function overview_metadata($schooltype, $subject, $descriptor, $cat){
 		$table = new html_table();
 		$table->attributes['class'] = 'exabis_comp_info';
 
@@ -732,14 +731,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 
-	public function print_competence_grid_legend() {
+	public function competence_grid_legend() {
 		$content = html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","competenceyellow");
 		$content .= ' '.get_string("selfevaluation","block_exacomp").' ';
 		$content .= html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","competenceok");
 		$content .= ' '.get_string("teacherevaluation","block_exacomp").' ';
 		return $content;
 	}
-	public function print_competence_grid_reports_dropdown() {
+	public function competence_grid_reports_dropdown() {
 		$options = array();
 		
 		$options[BLOCK_EXACOMP_REPORT1] = get_string("report_competence","block_exacomp");
@@ -748,10 +747,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		return get_string('reports','block_exacomp') . ": " .
 			html_writer::select($options, "exacomp_competence_grid_report", optional_param("report", BLOCK_EXACOMP_REPORT1, PARAM_INT), true).
-			$this->print_button_box(true, '');
+			$this->button_box(true, '');
 	}
 
-	public function print_competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0,$studentid=0) {
+	public function competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0,$studentid=0) {
 		global $DB;
 
 		$headFlag = false;
@@ -847,7 +846,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							/*
 							if(!$descriptor_used && array_key_exists($descriptor->topicid, $selection) ){
 								if($editmode || ($descriptor->visible == 1 && $role == \block_exacomp\ROLE_TEACHER)){
-									$compString .= $this->print_visibility_icon_descriptor($visible, $descriptor->id);
+									$compString .= $this->visibility_icon_descriptor($visible, $descriptor->id);
 								}
 							} */
 							$compdiv .= html_writer::tag('div', $compString,array('class'=>$cssClass));
@@ -957,7 +956,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return html_writer::tag("div", html_writer::table($table), array("id"=>"exabis_competences_block"));
 	}
-	public function print_competence_overview_form_start($selectedTopic=null, $selectedSubject=null, $studentid=null, $editmode=null){
+	public function competence_overview_form_start($selectedTopic=null, $selectedSubject=null, $studentid=null, $editmode=null){
 		global $PAGE, $COURSE;
 		$url_params = array();
 		$url_params['action'] = 'save';
@@ -974,7 +973,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::start_tag('form',array('id'=>'assign-competencies', "action" => $url, 'method'=>'post'));
 	}
 
-	public function print_profoundness($subjects, $courseid, $students, $role) {
+	public function profoundness($subjects, $courseid, $students, $role) {
 		$table = new html_table();
 		$rows = array();
 		$table->attributes['class'] = 'exabis_comp_comp rg2 exabis-tooltip';
@@ -1047,7 +1046,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					'supported_modules'=>block_exacomp_get_supported_modules(),
 					'showalldescriptors' => block_exacomp_get_settings_by_course($courseid)->show_all_descriptors
 			);
-			$this->print_topics($rows, 0, $subject->topics, $data, $students, true);
+			$this->topics($rows, 0, $subject->topics, $data, $students, true);
 			$table->data = $rows;
 		}
 
@@ -1056,7 +1055,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return $table_html.html_writer::end_tag('form');
 	}
-	public function print_competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $singletopic = false, $crosssubjid = 0, $statistic = false) {
+	public function competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $singletopic = false, $crosssubjid = 0, $statistic = false) {
 		global $additional_grading;
 
 		$table = new html_table();
@@ -1198,7 +1197,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					'supported_modules'=>block_exacomp_get_supported_modules(),
 					'showalldescriptors' => block_exacomp_get_settings_by_course($courseid)->show_all_descriptors,
 			);
-			$this->print_topics($rows, 0, $subject->topics, $data, $students, false, $this->is_edit_mode(), $statistic, $crosssubjid);
+			$this->topics($rows, 0, $subject->topics, $data, $students, false, $this->is_edit_mode(), $statistic, $crosssubjid);
 
 
 			$first = false;
@@ -1304,7 +1303,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $table_html;
 	}
 
-	public function print_topics(&$rows, $level, $topics, $data, $students, $profoundness = false, $editmode = false, $statistic = false, $crosssubjid=0) {
+	public function topics(&$rows, $level, $topics, $data, $students, $profoundness = false, $editmode = false, $statistic = false, $crosssubjid=0) {
 	
 		global $additional_grading;
 		$topicparam = optional_param('topicid', 0, PARAM_INT);
@@ -1448,13 +1447,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$child_data->rg2_level += $child_level-$level;
 
 			if (!empty($topic->descriptors)) {
-				$this->print_descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, $statistic, false, true, $crosssubjid);
-				$this->print_descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, $statistic, true, true, $crosssubjid);
+				$this->descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, $statistic, false, true, $crosssubjid);
+				$this->descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, $statistic, true, true, $crosssubjid);
 			}
 
 			/*
 			if (!empty($topic->subs)) {
-				$this->print_topics($rows, $child_level, $topic->subs, $child_data, $students, $profoundness, $editmode, $crosssubjid);
+				$this->topics($rows, $child_level, $topic->subs, $child_data, $students, $profoundness, $editmode, $crosssubjid);
 			}
 			*/
 
@@ -1481,7 +1480,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 	}
 
-	function print_descriptors(&$rows, $level, $descriptors, $data, $students, $profoundness = false, $editmode=false, $statistic=false, $custom_created_descriptors=false, $parent = false, $crosssubjid = 0) {
+	function descriptors(&$rows, $level, $descriptors, $data, $students, $profoundness = false, $editmode=false, $statistic=false, $custom_created_descriptors=false, $parent = false, $crosssubjid = 0) {
 		global $USER, $COURSE, $DB, $additional_grading;
 
 		$evaluation = ($data->role == \block_exacomp\ROLE_TEACHER) ? "teacher" : "student";
@@ -1553,11 +1552,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$titleCell->attributes['class'] .= ' rg2-arrow';
 
 				$title = [];
-				$title[] = block_exacomp\get_string('import_source', null, $this->print_source_info($descriptor->source));
+				$title[] = block_exacomp\get_string('import_source', null, $this->source_info($descriptor->source));
 				if (isset($data->subject) && $author = $data->subject->get_author()) {
 					$title[] = get_string('author', 'repository').": ".$author."\n";
 				}
-				//$title = $this->print_statistic_table($data->courseid, $students, $descriptor, true, $data->scheme);
+				//$title = $this->statistic_table($data->courseid, $students, $descriptor, true, $data->scheme);
 
 				$title = join('<br />', $title);
 				$titleCell->text = html_writer::div(html_writer::tag('span', $outputname), '', [ 'title' => $title ]);
@@ -1574,7 +1573,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				//if hidden in course, cannot be shown to one student
 				if(!$this->is_print_mode() && !$descriptor_used){
 					if($editmode || ($one_student && $descriptor->visible && $data->role == \block_exacomp\ROLE_TEACHER)){
-						$titleCell->text .= $this->print_visibility_icon_descriptor($visible, $descriptor->id);
+						$titleCell->text .= $this->visibility_icon_descriptor($visible, $descriptor->id);
 					}
 					if($editmode && $custom_created_descriptors){
 						$titleCell->text .= html_writer::link('descriptor.php?courseid='.$COURSE->id.'&id='.$descriptor->id, $this->pix_icon("i/edit", get_string("edit")), array('exa-type' => 'iframe-popup', 'target'=>'_blank'));
@@ -1582,7 +1581,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					}
 				}
 				/*if ($editmode) {
-					$titleCell->text .= ' '.$this->print_source_info($descriptor->source);
+					$titleCell->text .= ' '.$this->source_info($descriptor->source);
 				}*/
 				$descriptorRow->cells[] = $titleCell;
 
@@ -1774,7 +1773,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				}else{
 
 					$statCell = new html_table_cell();
-					$statCell->text = $this->print_statistic_table($data->courseid, $students, $descriptor, true, $data->scheme);
+					$statCell->text = $this->statistic_table($data->courseid, $students, $descriptor, true, $data->scheme);
 
 					$descriptorRow->cells[] = $statCell;
 				}
@@ -1847,7 +1846,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						}
 
 						if (!$example_used && ($data->role == \block_exacomp\ROLE_TEACHER) && ($editmode || (!$editmode && $one_student && block_exacomp_is_example_visible($data->courseid, $example, 0)))) {
-							$titleCell->text .= $this->print_visibility_icon_example($visible_example, $example->id);
+							$titleCell->text .= $this->visibility_icon_example($visible_example, $example->id);
 						/*
 						} else {
 							$titleCell->text .= '<span style="display: inline-block; width: 16px; margin-right: 4px;">&nbsp;</span>';
@@ -1866,7 +1865,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						}
 
 						if ($url = block_exacomp_get_file_url($example, 'example_solution')) {
-							$titleCell->text .= $this->print_example_solution_icon($url);
+							$titleCell->text .= $this->example_solution_icon($url);
 						}
 
 						if ($this->is_print_mode()) {
@@ -1876,18 +1875,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								$titleCell->text .= $this->pix_icon("i/preview", $example->description);
 
 							if($data->role == \block_exacomp\ROLE_STUDENT) {
-								$titleCell->text .= $this->print_schedule_icon($example->id, $USER->id, $data->courseid);
+								$titleCell->text .= $this->schedule_icon($example->id, $USER->id, $data->courseid);
 
-								$titleCell->text .= $this->print_submission_icon($data->courseid, $example->id, $USER->id);
+								$titleCell->text .= $this->submission_icon($data->courseid, $example->id, $USER->id);
 
-								$titleCell->text .= $this->print_competence_association_icon($example->id, $data->courseid, false);
+								$titleCell->text .= $this->competence_association_icon($example->id, $data->courseid, false);
 
 							} else if($data->role == \block_exacomp\ROLE_TEACHER) {
 								$studentid = block_exacomp_get_studentid(true);
 
 								//auch für alle schüler auf wochenplan legen
 								if(!$this->is_edit_mode()){
-									$titleCell->text .= $this->print_schedule_icon($example->id, ($studentid)?$studentid:BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $data->courseid);
+									$titleCell->text .= $this->schedule_icon($example->id, ($studentid)?$studentid:BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $data->courseid);
 
 									if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
 										$titleCell->text .= html_writer::link("#",
@@ -1896,14 +1895,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 									}
 								}
-								$titleCell->text .= $this->print_competence_association_icon($example->id, $data->courseid, $editmode);
+								$titleCell->text .= $this->competence_association_icon($example->id, $data->courseid, $editmode);
 
 							}
 						}
 						$titleCell->text .= '</span>';
 
 						/*if ($editmode) {
-							$titleCell->text .= ' '.$this->print_source_info($descriptor->source);
+							$titleCell->text .= ' '.$this->source_info($descriptor->source);
 						}*/
 					}
 					$exampleRow->cells[] = $titleCell;
@@ -1947,7 +1946,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 									$studentCell->text .= get_string('assigndone','block_exacomp');
 									$studentCell->text .= $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, !$visible_student_example);
 
-									//$studentCell->text .= $this->print_student_example_evaluation_form($example->id, $student->id, $data->courseid);
+									//$studentCell->text .= $this->student_example_evaluation_form($example->id, $student->id, $data->courseid);
 								}
 								else {
 									$studentCell->text .= $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, !$visible_student_example);
@@ -1964,13 +1963,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								$studentCell->text .= $this->generate_select($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, !$visible_student_example, $data->profoundness);
 
 								//if($data->role == \block_exacomp\ROLE_STUDENT)
-									//$studentCell->text .= $this->print_student_example_evaluation_form($example->id, $student->id, $data->courseid);
+									//$studentCell->text .= $this->student_example_evaluation_form($example->id, $student->id, $data->courseid);
 							}
 
 							if($data->showevaluation) {
 								if ($data->role == \block_exacomp\ROLE_TEACHER) {
-									$studentCellEvaluation->text .= $this->print_submission_icon($data->courseid, $example->id, $student->id);
-									$studentCellEvaluation->text .= $this->print_resubmission_icon($example->id, $student->id, $data->courseid);
+									$studentCellEvaluation->text .= $this->submission_icon($data->courseid, $example->id, $student->id);
+									$studentCellEvaluation->text .= $this->resubmission_icon($example->id, $student->id, $data->courseid);
 								}
 
 								$exampleRow->cells[] = $studentCellEvaluation;
@@ -2009,7 +2008,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						}
 					}else{
 						$statCell = new html_table_cell();
-						$statCell->text = $this->print_statistic_table($data->courseid, $students, $example, false, $data->scheme);
+						$statCell->text = $this->statistic_table($data->courseid, $students, $example, false, $data->scheme);
 
 						$exampleRow->cells[] = $statCell;
 					}
@@ -2020,7 +2019,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$child_data->rg2_level++;
 
 				if (!empty($descriptor->children)) {
-					$this->print_descriptors($rows, $level+1, $descriptor->children, $child_data, $students, $profoundness, $editmode, $statistic);
+					$this->descriptors($rows, $level+1, $descriptor->children, $child_data, $students, $profoundness, $editmode, $statistic);
 				}
 				//schulische ergänzungen und neue teilkompetenz
 				if($editmode && $parent) {
@@ -2039,7 +2038,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 					// is this was a bug? it's printed twice?
 					// no, first print the imported descriptors, then print the user created ones
-					$this->print_descriptors($rows, $level+1, $descriptor->children, $child_data, $students, $profoundness, $editmode, $statistic, true);
+					$this->descriptors($rows, $level+1, $descriptor->children, $child_data, $students, $profoundness, $editmode, $statistic, true);
 
 					$own_additionRow = new html_table_row();
 					$own_additionRow->attributes['class'] = 'exabis_comp_aufgabe ' . $sub_rg2_class;
@@ -2060,14 +2059,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 	}
 
-	public function print_preview_icon($alt = null) {
+	public function preview_icon($alt = null) {
 		if($alt == null)
 			$alt = get_string("preview");
 
 		return html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/preview.png'), 'alt'=>$alt));
 	}
 	/*
-	public function print_source_color($sourceid) {
+	public function source_color($sourceid) {
 		global $DB;
 
 		if (!$sourceid) {
@@ -2084,7 +2083,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 	*/
 
-	public function print_source_info($sourceid) {
+	public function source_info($sourceid) {
 		global $DB;
 		$info="";
 		if ($sourceid == \block_exacomp\EXAMPLE_SOURCE_TEACHER) {
@@ -2099,7 +2098,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $info;
 	}
 
-	public function print_sources() {
+	public function sources() {
 		global $courseid;
 
 		$sources = block_exacomp\data::get_all_used_sources();
@@ -2116,9 +2115,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $ret;
 	}
 
-	public function print_submission_icon($courseid, $exampleid, $studentid = 0) {
-		global $CFG;
-
+	public function submission_icon($courseid, $exampleid, $studentid = 0) {
 		if ($this->is_print_mode()) {
 			return '';
 		}
@@ -2146,7 +2143,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 		}
 	}
-	public function print_resubmission_icon($exampleid, $studentid, $courseid) {
+	public function resubmission_icon($exampleid, $studentid, $courseid) {
 		global $DB;
 
 		$exameval = $DB->get_record(\block_exacomp\DB_EXAMPLEEVAL,array('exampleid'=>$exampleid,'studentid'=>$studentid,'courseid'=>$courseid));
@@ -2158,21 +2155,21 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$this->pix_icon("i/reload", get_string("allow_resubmission","block_exacomp")),
 				array('exa-type' => 'allow-resubmission', 'exampleid' => $exampleid, 'studentid' => $studentid, 'courseid' => $courseid));
 	}
-	public function print_schedule_icon($exampleid, $studentid, $courseid) {
+	public function schedule_icon($exampleid, $studentid, $courseid) {
 		return html_writer::link(
 							"#",
 							$this->pix_icon("e/insert_date", get_string("weekly_schedule","block_exacomp")),
 							array('exa-type' => 'add-example-to-schedule', 'exampleid' => $exampleid, 'studentid' => $studentid, 'courseid' => $courseid));
 	}
-	public function print_competence_association_icon($exampleid, $courseid, $editmode) {
+	public function competence_association_icon($exampleid, $courseid, $editmode) {
 		return html_writer::link(
 				new moodle_url('/blocks/exacomp/competence_associations.php',array("courseid"=>$courseid,"exampleid"=>$exampleid, "editmode"=>($editmode)?1:0)),
 				 $this->pix_icon("e/insert_edit_link", get_string('competence_associations','block_exacomp')), array('exa-type' => 'iframe-popup'));
 	}
-	public function print_example_solution_icon($solution) {
+	public function example_solution_icon($solution) {
 		return html_writer::link($solution, $this->pix_icon("e/fullpage", get_string('solution','block_exacomp')) ,array("target" => "_blank"));
 	}
-	public function print_visibility_icon_descriptor($visible, $descriptorid) {
+	public function visibility_icon_descriptor($visible, $descriptorid) {
 		if($visible)
 			$icon = $this->pix_icon("i/hide", get_string("hide"));
 		else
@@ -2183,7 +2180,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		));
 
 	}
-	public function print_visibility_icon_example($visible, $exampleid) {
+	public function visibility_icon_example($visible, $exampleid) {
 		if($visible)
 			$icon = $this->pix_icon("i/hide", get_string("hide"));
 		else
@@ -2195,7 +2192,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	}
 	/*
-	private function print_student_example_evaluation_form($exampleid, $studentid, $courseid) {
+	private function student_example_evaluation_form($exampleid, $studentid, $courseid) {
 		global $DB;
 		$exampleInfo = $DB->get_record(\block_exacomp\DB_EXAMPLEEVAL, array("exampleid" => $exampleid, "studentid" => $studentid, "courseid" => $courseid));
 		$options = array();
@@ -2222,7 +2219,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 *
 	 * @param int $students Amount of students
 	 */
-	public function print_column_selector($students) {
+	public function column_selector($students) {
 		if($students < \block_exacomp\STUDENTS_PER_COLUMN)
 			return;
 
@@ -2245,7 +2242,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 		return html_writer::div($content,'spaltenbrowser');
 	}
-	public function print_student_evaluation($showevaluation, $isTeacher=true,$niveauid = SHOW_ALL_NIVEAUS, $subjectid=0, $topicid=-1, $studentid=0) {
+	public function student_evaluation($showevaluation, $isTeacher=true,$niveauid = SHOW_ALL_NIVEAUS, $subjectid=0, $topicid=-1, $studentid=0) {
 		global $COURSE;
 
 		$link = new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid" => $COURSE->id, "showevaluation" => (($showevaluation) ? "0" : "1"),'niveauid'=>$niveauid,'topicid'=>$topicid, 'studentid'=>$studentid, 'subjectid'=>$subjectid));
@@ -2259,7 +2256,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return $evaluation;
 	}
-	public function print_overview_legend($teacher) {
+	public function overview_legend($teacher) {
 		$legend = "";
 
 		$legend .= html_writer::tag("img", "", array("src" => "pix/list_12x11.png", "alt" => get_string('legend_activities','block_exacomp')));
@@ -2423,7 +2420,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				true,$attributes);
 	}
 
-	public function print_edit_config($data, $courseid, $fromimport=0){
+	public function edit_config($data, $courseid, $fromimport=0){
 		$header = html_writer::tag('p', $data->headertext).html_writer::empty_tag('br');
 
 		$table = new html_table();
@@ -2452,7 +2449,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$cell = new html_table_cell();
 			$cell->colspan = 2;
-			$cell->text = html_writer::tag('b', $levelstruct->level->title).' ('.$this->print_source_info($levelstruct->level->source).')';
+			$cell->text = html_writer::tag('b', $levelstruct->level->title).' ('.$this->source_info($levelstruct->level->source).')';
 
 			$row->cells[] = $cell;
 			$rows[] = $row;
@@ -2495,7 +2492,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 * @param unknown $courseid
 	 * @param unknown $headertext
 	 */
-	public function print_edit_course($settings, $courseid, $headertext){
+	public function edit_course($settings, $courseid, $headertext){
 		global $DB;
 
 		$global_scheme = \block_exacomp\global_config::get_scheme_id();
@@ -2542,7 +2539,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 
-	public function print_my_badges($badges, $onlygained=false){
+	public function my_badges($badges, $onlygained=false){
 		$content = "";
 		if($badges->issued){
 			$content .= html_writer::tag('h4', get_string('my_badges', 'block_exacomp'));
@@ -2582,7 +2579,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	// not used anymore ?!?
 	/*
-	public function print_head_view_examples($sort, $show_all_examples, $url, $context){
+	public function head_view_examples($sort, $show_all_examples, $url, $context){
 		$content = html_writer::start_tag('script', array('type'=>'text/javascript', 'src'=>'javascript/wz_tooltip.js'));
 		$content .= html_writer::end_tag('script');
 		$text_link1 = ($sort=="desc") ? html_writer::tag('b', get_string("subject", "block_exacomp")) : get_string("subject", "block_exacomp");
@@ -2605,7 +2602,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$div_exabis_competences_block = html_writer::start_div('', array('id'=>'exabis_competences_block'));
 		return $div_exabis_competences_block.$content;
 	}
-	public function print_tree_head(){
+	public function tree_head(){
 		$content = html_writer::empty_tag('br').html_writer::empty_tag('br');
 		$content .= html_writer::link("javascript:ddtreemenu.flatten('comptree', 'expand')", get_string("expandcomps", "block_exacomp"));
 		$content .=' | ';
@@ -2615,13 +2612,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	*/
 
 	/*
-	public function print_tree_view_examples_desc($tree, $do_form = true){
+	public function tree_view_examples_desc($tree, $do_form = true){
 		$li_subjects = '';
 		foreach($tree as $subject){
 			$subject_example_content = (empty($subject->numb) || $subject->numb==0)? '' : $subject->numb;
 			$li_topics = '';
 
-			$li_topics = $this->print_tree_view_examples_desc_rec_topic($subject->topics, $subject_example_content);
+			$li_topics = $this->tree_view_examples_desc_rec_topic($subject->topics, $subject_example_content);
 
 			$ul_topics = html_writer::tag('ul', $li_topics);
 			$li_subjects .= html_writer::tag('li', $subject->title
@@ -2642,7 +2639,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 
-	public function print_tree_view_examples_desc_rec_topic($subs, $subject_example_content){
+	public function tree_view_examples_desc_rec_topic($subs, $subject_example_content){
 		$li_topics = '';
 		foreach($subs as $topic){
 			$topic_example_content = (empty($topic->cat)) ? '' : '('.$topic->cat.')';
@@ -2687,7 +2684,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$ul_subs = '';
 			/*
 			if(isset($topic->subs)){
-				$li_subs = $this->print_tree_view_examples_desc_rec_topic($topic->subs, $subject_example_content);
+				$li_subs = $this->tree_view_examples_desc_rec_topic($topic->subs, $subject_example_content);
 				$ul_subs .= html_writer::tag('ul', $li_subs);
 			}
 			* /
@@ -2731,10 +2728,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 		return $icon;
 	}
-	public function print_tree_view_examples_tax($tree){
+	public function tree_view_examples_tax($tree){
 		$li_taxonomies = '';
 		foreach($tree as $taxonomy){
-			$ul_subjects = $this->print_tree_view_examples_desc($taxonomy->subjects, false);
+			$ul_subjects = $this->tree_view_examples_desc($taxonomy->subjects, false);
 			$li_taxonomies .= html_writer::tag('li', $taxonomy->title->title
 					.$ul_subjects);
 		}
@@ -2745,11 +2742,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 	*/
 
-	public function print_foot_view_examples(){
+	public function foot_view_examples(){
 		$content = html_writer::tag('script', 'ddtreemenu.createTree("comptree", true)', array('type'=>'text/javascript'));
 		return $content.html_writer::end_div();
 	}
-	public function print_courseselection($schooltypes, $topics_activ, $headertext){
+	public function courseselection($schooltypes, $topics_activ, $headertext){
 		global $PAGE;
 
 		$header = html_writer::tag('p', $headertext).html_writer::empty_tag('br');
@@ -2764,7 +2761,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$row->attributes['class'] = 'exabis_comp_teilcomp highlight';
 
 			$cell = new html_table_cell();
-			$cell->text = html_writer::div(html_writer::tag('b', $schooltype->title).' ('.$this->print_source_info($schooltype->source).')');
+			$cell->text = html_writer::div(html_writer::tag('b', $schooltype->title).' ('.$this->source_info($schooltype->source).')');
 			$cell->attributes['class'] = 'rg2-arrow';
 
 			$cell->colspan = 3;
@@ -2781,7 +2778,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$cell = new html_table_cell();
 				$cell->text = html_writer::div(html_writer::span($subject->title, 'rg2-arrow-highlight').
 						// wenn different source than parent
-						($subject->source != $schooltype->source ? ' ('.$this->print_source_info($subject->source).')' : ''));
+						($subject->source != $schooltype->source ? ' ('.$this->source_info($subject->source).')' : ''));
 				$cell->attributes['class'] = 'rg2-arrow rg2-arrow-styled';
 
 				$cell->colspan = 2;
@@ -2792,7 +2789,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$row->cells[] = $selectAllCell;
 
 				$rows[] = $row;
-				$this->print_topics_courseselection($rows, 1, $subject->topics, $topics_activ);
+				$this->topics_courseselection($rows, 1, $subject->topics, $topics_activ);
 
 			}
 		}
@@ -2806,7 +2803,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url, "id" => "course-selection"));
 	}
-	public function print_descriptor_selection_export(){
+	public function descriptor_selection_export(){
 		global $PAGE;
 
 		$headertext = "Bitte wählen";
@@ -2877,7 +2874,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url->out(false, array('action'=>'export_selected')), "id" => "course-selection"));
 	}
 
-	public function print_descriptor_selection_source_delete($source, $subjects){
+	public function descriptor_selection_source_delete($source, $subjects){
 		global $PAGE;
 
 		$headertext = "Bitte wählen";
@@ -2977,7 +2974,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url->out(false, array('action'=>'delete_selected')), "id" => "exa-selector"));
 	}
 
-	public function print_topics_courseselection(&$rows, $level, $topics, $topics_activ){
+	public function topics_courseselection(&$rows, $level, $topics, $topics_activ){
 		foreach($topics as $topic) {
 			$this_rg2_class = 'rg2-level-'.$level;
 
@@ -3001,18 +2998,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			/*
 			if (!empty($topic->subs)) {
-				$this->print_topics_courseselection($rows, $level+1, $topic->subs, $topics_activ);
+				$this->topics_courseselection($rows, $level+1, $topic->subs, $topics_activ);
 			}
 			*/
 		}
 	}
-	public function print_activity_legend($headertext){
+	public function activity_legend($headertext){
 		$header = html_writer::tag('p', $headertext).html_writer::empty_tag('br');
 
 		return $header.html_writer::tag('p', get_string("explaineditactivities_subjects", "block_exacomp")).html_writer::empty_tag('br');
 
 	}
-	public function print_activity_footer($niveaus, $modules, $selected_niveaus=array(), $selected_modules=array()){
+	public function activity_footer($niveaus, $modules, $selected_niveaus=array(), $selected_modules=array()){
 		global $PAGE;
 		$content = '';
 
@@ -3062,7 +3059,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return $content;
 	}
-	public function print_activity_content($subjects, $modules, $colspan){
+	public function activity_content($subjects, $modules, $colspan){
 		global $COURSE, $PAGE;
 
 		$table = new html_table;
@@ -3117,7 +3114,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$cell->text = html_writer::tag('b', $subject->title);
 			$row->cells[] = $cell;
 			$rows[] = $row;
-			$this->print_topics_activities($rows, 0, $subject->topics, $modules);
+			$this->topics_activities($rows, 0, $subject->topics, $modules);
 		}
 		$table->data = $rows;
 
@@ -3128,7 +3125,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::tag('form', $div, array('id'=>'edit-activities', 'action'=>$PAGE->url.'&action=save', 'method'=>'post'));
 
 	}
-	public function print_topics_activities(&$rows, $level, $topics, $modules) {
+	public function topics_activities(&$rows, $level, $topics, $modules) {
 		foreach($topics as $topic) {
 			list($outputid, $outputname) = block_exacomp_get_output_fields($topic, true);
 
@@ -3155,17 +3152,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$rows[] = $topicRow;
 
 			if (!empty($topic->descriptors)) {
-				$this->print_descriptors_activities($rows, $level+1, $topic->descriptors, $modules);
+				$this->descriptors_activities($rows, $level+1, $topic->descriptors, $modules);
 			}
 
 			/*
 			if (!empty($topic->subs)) {
-				$this->print_topics_activities($rows, $level+1, $topic->subs, $modules);
+				$this->topics_activities($rows, $level+1, $topic->subs, $modules);
 			}
 			*/
 		}
 	}
-	public function print_descriptors_activities(&$rows, $level, $descriptors, $modules) {
+	public function descriptors_activities(&$rows, $level, $descriptors, $modules) {
 
 		foreach($descriptors as $descriptor) {
 			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor,false,false);
@@ -3190,7 +3187,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$rows[] = $descriptorRow;
 		}
 	}
-	public function print_badge($badge, $descriptors, $context){
+	public function badge($badge, $descriptors, $context){
 		global $COURSE;
 
 		$imageurl = moodle_url::make_pluginfile_url($context->id, 'badges', 'badgeimage', $badge->id, '/', 'f1', false);
@@ -3245,7 +3242,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::div($content, '', array('style'=>'padding:10px;'));
 	}
 
-	public function print_edit_badges($subjects, $badge){
+	public function edit_badges($subjects, $badge){
 		global $COURSE;
 		$table = new html_table();
 		$table->attributes['id'] = 'comps';
@@ -3268,7 +3265,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$row->cells[] = $cell;
 			$rows[] = $row;
 				
-			$this->print_topics_badges($rows, 0, $subject->topics, $badge);
+			$this->topics_badges($rows, 0, $subject->topics, $badge);
 		}
 
 		$table->data = $rows;
@@ -3282,7 +3279,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			.html_writer::tag('form', $div, array('id'=>'edit-activities','action'=> new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid'=>$COURSE->id, 'badgeid'=>$badge->id, 'action'=>'save')), 'method'=>'post'));
 
 	}
-	public function print_topics_badges(&$rows, $level, $topics, $badge) {
+	public function topics_badges(&$rows, $level, $topics, $badge) {
 		foreach($topics as $topic) {
 			list($outputid, $outputname) = block_exacomp_get_output_fields($topic);
 
@@ -3302,17 +3299,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$rows[] = $topicRow;
 
 			if (!empty($topic->descriptors)) {
-				$this->print_descriptors_badges($rows, $level+1, $topic->descriptors, $badge);
+				$this->descriptors_badges($rows, $level+1, $topic->descriptors, $badge);
 			}
 
 			/*
 			if (!empty($topic->subs)) {
-				$this->print_topics_badges($rows, $level+1, $topic->subs, $badge);
+				$this->topics_badges($rows, $level+1, $topic->subs, $badge);
 			}
 			*/
 		}
 	}
-	public function print_descriptors_badges(&$rows, $level, $descriptors, $badge) {
+	public function descriptors_badges(&$rows, $level, $descriptors, $badge) {
 		foreach($descriptors as $descriptor) {
 			list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor,false,false);
 
@@ -3332,22 +3329,22 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$rows[] = $descriptorRow;
 		}
 	}
-	public function print_no_topics_warning(){
+	public function no_topics_warning(){
 		global $COURSE;
 		return html_writer::link(new moodle_url('/blocks/exacomp/courseselection.php', array('courseid'=>$COURSE->id)), get_string("no_topics_selected", "block_exacomp"));
 	}
-	public function print_no_course_activities_warning(){
+	public function no_course_activities_warning(){
 		global $COURSE;
 		return html_writer::link(new moodle_url('/course/view.php', array('id'=>$COURSE->id, 'notifyeditingon'=>1)), get_string("no_course_activities", "block_exacomp"));
 	}
-	public function print_no_activities_warning($isTeacher = true){
+	public function no_activities_warning($isTeacher = true){
 		global $COURSE;
 		if($isTeacher)
 			return html_writer::link(new moodle_url('/blocks/exacomp/edit_activities.php', array('courseid'=>$COURSE->id)), get_string("no_activities_selected", "block_exacomp"));
 		else 
 			return get_string("no_activities_selected_student", "block_exacomp");
 	}
-	function print_competence_profile_metadata($student) {
+	function competence_profile_metadata($student) {
 		$namediv = html_writer::div(html_writer::tag('b',$student->firstname . ' ' . $student->lastname)
 				.html_writer::div(get_string('name', 'block_exacomp'), ''), '');
 
@@ -3370,13 +3367,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $this->notification($message);
 	}
 	
-	function print_competene_profile_overview($student, $courses, $possible_courses, $badges, $exaport, $exaportitems, $exastud_competence_profile_data, $onlygainedbadges=false) {
+	function competene_profile_overview($student, $courses, $possible_courses, $badges, $exaport, $exaportitems, $exastud_competence_profile_data, $onlygainedbadges=false) {
 
-		$table = $this->print_competence_profile_overview_table($student, $courses, $possible_courses);
+		$table = $this->competence_profile_overview_table($student, $courses, $possible_courses);
 		$overviewcontent = $table;
 		//my badges
 		if(!empty($badges))
-			$overviewcontent .= html_writer::div($this->print_my_badges($badges, $onlygainedbadges), 'competence_profile_overview_badges');
+			$overviewcontent .= html_writer::div($this->my_badges($badges, $onlygainedbadges), 'competence_profile_overview_badges');
 		
 		//my items
 		if($exaport){
@@ -3400,7 +3397,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		return html_writer::div($overviewcontent, 'competence_profile_overview clearfix');
 	}
-	function print_competence_profile_overview_table($student, $courses, $possible_courses){
+	function competence_profile_overview_table($student, $courses, $possible_courses){
 		$total_total = 0;
 		$total_reached = 0;
 		$total_average = 0;
@@ -3496,7 +3493,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::div(html_writer::tag('h4', get_string('my_comps', 'block_exacomp')).html_writer::table($table), 'competence_profile_overview_mycompetencies clearfix');;
 	}
 
-	function print_pie_graph($teachercomp, $studentcomp, $pendingcomp, $courseid){
+	function pie_graph($teachercomp, $studentcomp, $pendingcomp, $courseid){
 		$content = html_writer::div(html_writer::tag('canvas', '', array("id" => "canvas_doughnut".$courseid)), 'piegraph',array("style" => "width:100%"));
 		$content .= '
 		<script>
@@ -3532,7 +3529,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	';
 		return $content;
 	}
-	function print_competence_profile_course($course, $student, $showall = true) {
+	function competence_profile_course($course, $student, $showall = true) {
 		$scheme = block_exacomp_get_grading_scheme($course->id);
 		$compTree = block_exacomp_get_competence_tree($course->id);
 		
@@ -3544,21 +3541,21 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 		//print graphs
 		$topics = block_exacomp_get_topics_for_radar_graph($course->id, $student->id);
-		$radar_graph = html_writer::div($this->print_radar_graph($topics),"competence_profile_radargraph");
+		$radar_graph = html_writer::div($this->radar_graph($topics),"competence_profile_radargraph");
 
 		list($teachercomp,$studentcomp,$pendingcomp) = block_exacomp_get_competencies_for_pie_chart($course->id,$student, $scheme, 0, true);
-		$pie_graph = html_writer::div($this->print_pie_graph($teachercomp, $studentcomp, $pendingcomp, $course->id),"competence_profile_radargraph");
+		$pie_graph = html_writer::div($this->pie_graph($teachercomp, $studentcomp, $pendingcomp, $course->id),"competence_profile_radargraph");
 		
 		$total_comps = $teachercomp+$studentcomp+$pendingcomp;
 		$timeline_data= block_exacomp_get_timeline_data(array($course), $student, $total_comps);
 		
 		if($timeline_data)
-		   $timeline_graph =  html_writer::div($this->print_timeline_graph($timeline_data->x_values, $timeline_data->y_values_teacher, $timeline_data->y_values_student, $timeline_data->y_values_total, $course->id),"competence_profile_timelinegraph");
+		   $timeline_graph =  html_writer::div($this->timeline_graph($timeline_data->x_values, $timeline_data->y_values_teacher, $timeline_data->y_values_student, $timeline_data->y_values_total, $course->id),"competence_profile_timelinegraph");
 		else
 		   $timeline_graph = "";
 			
 		$content .= html_writer::div($radar_graph.$pie_graph.$timeline_graph, 'competence_profile_graphbox clearfix');
-		$content .= html_writer::div($this->print_radar_graph_legend(),"radargraph_legend");
+		$content .= html_writer::div($this->radar_graph_legend(),"radargraph_legend");
 			
 		//print list
 		$student = block_exacomp_get_user_information_by_course($student, $course->id);
@@ -3567,12 +3564,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		// if($student != null && block_exacomp_get_profile_settings($student->id)->useexaport == 1) {
 		//	$items = block_exacomp_get_exaport_items($student->id);
 		//}
-		$content .= $this->print_competence_profile_tree_v2($compTree,$course->id, $student,$scheme, false, $items);
+		$content .= $this->competence_profile_tree_v2($compTree,$course->id, $student,$scheme, false, $items);
 
 		return html_writer::div($content,"competence_profile_coursedata");
 	}
 
-private function print_competence_profile_tree_v2($in, $courseid, $student = null,$scheme = 1, $showonlyreached = false, $eportfolioitems = false) {
+private function competence_profile_tree_v2($in, $courseid, $student = null,$scheme = 1, $showonlyreached = false, $eportfolioitems = false) {
 		global $DB;
 
 		$content="";
@@ -3617,7 +3614,7 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 					$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, ((block_exacomp_is_niveautitle_for_profile_enabled() && $niveau)?$niveau->title:$descriptor->title));
 					$desc_content .= html_writer::div(html_writer::tag('p', html_writer::empty_tag('span', array('id'=>'value'))), 'tooltip hidden', array('id'=>'tooltip'.$descriptor->id));
 					
-					$desc_content .= $this->print_example_stacked_bar($return->data, $descriptor->id);
+					$desc_content .= $this->example_stacked_bar($return->data, $descriptor->id);
 					
 					$niveaus[] = ((block_exacomp_is_niveautitle_for_profile_enabled() && $niveau)?$niveau->title:$descriptor->title);
 					$student_eval[] = (isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:0;
@@ -3627,9 +3624,9 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 				
 				$div_content = "";
 				if(count($niveaus)>2 && count($niveaus)<9){
-					$radar_graph = $this->print_radar_graph_topic($niveaus, $teacher_eval, $student_eval, $scheme);
+					$radar_graph = $this->radar_graph_topic($niveaus, $teacher_eval, $student_eval, $scheme);
 					$div_content = html_writer::div($radar_graph, 'radar_graph', array('style'=>'width:30%'));
-					$div_content .= $this->print_radar_graph_legend();
+					$div_content .= $this->radar_graph_legend();
 				}
 				
 				$div_content .= $desc_content;
@@ -3642,7 +3639,7 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 		return $content;
 	}
 	
-	private function print_radar_graph_topic($labels, $data1, $data2, $scheme){
+	private function radar_graph_topic($labels, $data1, $data2, $scheme){
 		$global_scheme_values = \block_exacomp\global_config::get_scheme_items($scheme);
 
 		static $canvasid_i = 0;
@@ -3699,7 +3696,7 @@ private function print_competence_profile_tree_v2($in, $courseid, $student = nul
 		return $content;
 	}
 	
-	private function print_example_stacked_bar($dataset, $descrid){
+	private function example_stacked_bar($dataset, $descrid){
 	return "<script>var margins = {
 	top: 20,
 	left: 10,
@@ -3802,7 +3799,7 @@ var dataset = dataset.map(function (group) {
 </script>";
 	}		
 
-	function print_radar_graph($records) {
+	function radar_graph($records) {
 		global $CFG;
 		
 		if (count($records) < 3 || count($records) > 7) {
@@ -3855,7 +3852,7 @@ var dataset = dataset.map(function (group) {
 		<?php
 		return ob_get_clean();
 	}
-	public function print_radar_graph_legend() {
+	public function radar_graph_legend() {
 		$content = html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","competenceyellow");
 		$content .= ' '.get_string("studentcomp","block_exacomp").' ';
 		$content .= html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","competenceok");
@@ -3863,7 +3860,7 @@ var dataset = dataset.map(function (group) {
 		return $content;
 	}
 	
-	public function print_timeline_graph($x_values, $y_values1, $y_values2, $y_values3, $courseid){
+	public function timeline_graph($x_values, $y_values1, $y_values2, $y_values3, $courseid){
 		$content = html_writer::div(html_writer::tag('canvas', '', array("id" => "canvas_timeline".$courseid)),'timeline',array("style" => ""));
 		$content .= '
 		<script>
@@ -3931,7 +3928,7 @@ var dataset = dataset.map(function (group) {
 		';
 		return $content;
 	}
-	public function print_profile_settings($courses, $settings, $usebadges, $exaport, $exastud, $exastud_periods){
+	public function profile_settings($courses, $settings, $usebadges, $exaport, $exastud, $exastud_periods){
 		global $COURSE;
 		$exacomp_div_content = html_writer::tag('h2', get_string('pluginname', 'block_exacomp'));
 		
@@ -4009,7 +4006,7 @@ var dataset = dataset.map(function (group) {
 
 		return html_writer::tag("div", $div, array("id"=>"exabis_competences_block"));
 	}
-	public function print_competence_profile_exaport($settings, $user, $items){
+	public function competence_profile_exaport($settings, $user, $items){
 		global $COURSE, $CFG, $USER;
 
 		$header = html_writer::tag('h3', get_string('my_items', 'block_exacomp'), array('class'=>'competence_profile_sectiontitle'));
@@ -4019,7 +4016,7 @@ var dataset = dataset.map(function (group) {
 		$items_with_no_comps = false;
 		foreach($items as $item){
 			if($item->hascomps)
-				$content .= $this->print_exaport_item($item, $user->id);
+				$content .= $this->exaport_item($item, $user->id);
 			else
 				$items_with_no_comps = true;
 		}
@@ -4043,7 +4040,7 @@ var dataset = dataset.map(function (group) {
 		return $header.$content;
 	}
 
-	public function print_exaport_item($item, $userid){
+	public function exaport_item($item, $userid){
 		global $COURSE, $CFG, $DB, $USER;
 		$content = html_writer::tag('h4', html_writer::tag('a', $item->name, array('name'=>$item->name.$item->id)), array('class'=>'competence_profile_coursetitle'));
 		
@@ -4146,12 +4143,12 @@ var dataset = dataset.map(function (group) {
 		$student = $DB->get_record('user',array('id' => $userid));
 		$student = block_exacomp_get_user_information_by_course($student, $COURSE->id);
 
-		$list_descriptors = $this->print_competence_profile_tree_v2($subjects, $COURSE->id, $student);
+		$list_descriptors = $this->competence_profile_tree_v2($subjects, $COURSE->id, $student);
 		$list_heading = html_writer::tag('p', '<b>Verknüpfte Kompetenzen:</b>');
 		
 		return html_writer::div($content.$list_heading.$list_descriptors, 'competence_profile_artefacts');
 	}
-	public function print_competence_profile_exastud($profile_settings, $user){
+	public function competence_profile_exastud($profile_settings, $user){
 		$exastud_periods = \block_exastud\api::get_student_periods_with_review();
 
 		$output = '';
@@ -4173,7 +4170,7 @@ var dataset = dataset.map(function (group) {
 		return $output;
 	}
 
-	public function print_competence_profile_course_all($courses, $student){
+	public function competence_profile_course_all($courses, $student){
 		$subjects = block_exacomp_get_subjects_for_radar_graph($student->id);
 		
 		$content = html_writer::div(html_writer::tag('h4', html_writer::tag('a', get_string('profile_settings_showallcomps', 'block_exacomp'), array('name'=>'all_courses'))), 'competence_profile_coursetitle');
@@ -4194,20 +4191,20 @@ var dataset = dataset.map(function (group) {
 		}
 		
 		//print graphs
-		$radar_graph = html_writer::div($this->print_radar_graph($subjects),"competence_profile_radargraph");
+		$radar_graph = html_writer::div($this->radar_graph($subjects),"competence_profile_radargraph");
 
-		$pie_graph = html_writer::div($this->print_pie_graph($teachercomp, $studentcomp, $pendingcomp, 0),"competence_profile_radargraph");
+		$pie_graph = html_writer::div($this->pie_graph($teachercomp, $studentcomp, $pendingcomp, 0),"competence_profile_radargraph");
 		
 		$total_comps = $teachercomp+$studentcomp+$pendingcomp;
 		$timeline_data= block_exacomp_get_timeline_data($courses, $student, $total_comps);
 		
 		if($timeline_data)
-			$timeline_graph =  html_writer::div($this->print_timeline_graph($timeline_data->x_values, $timeline_data->y_values_teacher, $timeline_data->y_values_student, $timeline_data->y_values_total, 0),"competence_profile_timelinegraph");
+			$timeline_graph =  html_writer::div($this->timeline_graph($timeline_data->x_values, $timeline_data->y_values_teacher, $timeline_data->y_values_student, $timeline_data->y_values_total, 0),"competence_profile_timelinegraph");
 		else	
 			$timeline_graph = "";
 			
 		$content .= html_writer::div($radar_graph.$pie_graph.$timeline_graph, 'competence_profile_graphbox clearfix');
-		$content .= html_writer::div($this->print_radar_graph_legend(),"radargraph_legend");
+		$content .= html_writer::div($this->radar_graph_legend(),"radargraph_legend");
 			
 		//print list
 		foreach($courses as $course){
@@ -4220,17 +4217,17 @@ var dataset = dataset.map(function (group) {
 			}
 			if($compTree)
 				$content .= html_writer::tag('h4', $course->fullname) .
-					$this->print_competence_profile_tree_v2($compTree,$course->id, $student,$scheme, false, $items);
+					$this->competence_profile_tree_v2($compTree,$course->id, $student,$scheme, false, $items);
 		}
 		return html_writer::div($content,"competence_profile_coursedata");
 	}
-	public function print_wrapperdivstart(){
+	public function wrapperdivstart(){
 		  return html_writer::start_tag('div',array('id'=>'block_exacomp'));
   }
-	public function print_wrapperdivend(){
+	public function wrapperdivend(){
 		  return html_writer::end_tag('div');
 	}
-	public function print_button_box($print, $inner_content){
+	public function button_box($print, $inner_content){
 		$content = '';
 		if ($print) {
 			$content .= html_writer::link('#',
@@ -4244,7 +4241,7 @@ var dataset = dataset.map(function (group) {
 		$content .= $inner_content;
 		return html_writer::div($content, 'button-box');
 	}
-	public function print_cross_subjects_drafts($subjects, $isAdmin=false){
+	public function cross_subjects_drafts($subjects, $isAdmin=false){
 		global $PAGE;
 		
 		$draft_content = html_writer::tag('h4', get_string('create_new_crosssub', 'block_exacomp'));
@@ -4301,7 +4298,7 @@ var dataset = dataset.map(function (group) {
 	 * @return string
 	 * @throws coding_exception
 	 */
-	public function print_cross_subject_buttons($cross_subject, $students, $selectedStudent, $nostudents = false){
+	public function cross_subject_buttons($cross_subject, $students, $selectedStudent, $nostudents = false){
 		global $PAGE, $COURSE, $USER;
 
 		$left_content = '';
@@ -4321,7 +4318,7 @@ var dataset = dataset.map(function (group) {
 							// html_writer::tag("input", "", array("id"=>"delete_crosssub", "name"=>"delete_crosssub", "type"=>"button", "value"=>get_string("delete_crosssub", "block_exacomp"), 'message'=>get_string('confirm_delete', 'block_exacomp')), array('id'=>'exabis_save_button'));
 		if (!$this->is_edit_mode() && block_exacomp_is_teacher() && $students) {
 			$left_content .= get_string("choosestudent", "block_exacomp");
-			$left_content .= $this->print_studentselector($students,$selectedStudent, ($students)?static::STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN:static::STUDENT_SELECTOR_OPTION_EDITMODE);
+			$left_content .= $this->studentselector($students,$selectedStudent, ($students)?static::STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN:static::STUDENT_SELECTOR_OPTION_EDITMODE);
 
 			$url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid'=>$COURSE->id, 'creatorid'=>$USER->id));
 			$right_content .= html_writer::tag('button',
@@ -4336,7 +4333,7 @@ var dataset = dataset.map(function (group) {
 			);
 		}
 		if ($cross_subject && $cross_subject->has_capability(block_exacomp\CAP_MODIFY	)) {
-			$right_content .= $this->print_edit_mode_button(block_exacomp\url::create(g::$PAGE->url, ['editmode' => !$this->is_edit_mode()]));
+			$right_content .= $this->edit_mode_button(block_exacomp\url::create(g::$PAGE->url, ['editmode' => !$this->is_edit_mode()]));
 		}
 
 		$right_content .= html_writer::empty_tag('input', array('type'=>'button', 'value' => get_string('manage_crosssubs','block_exacomp'),
@@ -4347,7 +4344,7 @@ var dataset = dataset.map(function (group) {
 		$content .= html_writer::div($right_content, 'edit_buttons_float_right');
 		return html_writer::div($content,'', array('id'=>'exabis_save_button'));
 	}
-	public function print_crosssub_subject_dropdown($crosssubject){
+	public function crosssub_subject_dropdown($crosssubject){
 		$subjects = block_exacomp_get_subjects(g::$COURSE->id);
 		$options = array();
 		$options[0] = get_string('nocrosssubsub', 'block_exacomp');
@@ -4357,7 +4354,7 @@ var dataset = dataset.map(function (group) {
 		return html_writer::select($options, "subjectid", ($crosssubject)?$crosssubject->subjectid:0, false);
 		
 	}
-	public function print_overview_metadata_cross_subjects($crosssubject, $edit){
+	public function overview_metadata_cross_subjects($crosssubject, $edit){
 		global $DB;
 
 		$table = new html_table();
@@ -4374,7 +4371,7 @@ var dataset = dataset.map(function (group) {
 		}
 		$cell = new html_table_cell();
 		$cell->text = html_writer::span(get_string('subject_singular', 'block_exacomp'), 'exabis_comp_top_name')
-		. ($edit?$this->print_crosssub_subject_dropdown($crosssubject):html_writer::tag('b',$subject_title));
+		. ($edit?$this->crosssub_subject_dropdown($crosssubject):html_writer::tag('b',$subject_title));
 
 		$row->cells[] = $cell;
 
@@ -4420,7 +4417,7 @@ var dataset = dataset.map(function (group) {
 		return $content;
 	}
 	
-	public function print_competence_based_list_tree($tree, $isTeacher, $editmode, $show_examples = true) {
+	public function competence_based_list_tree($tree, $isTeacher, $editmode, $show_examples = true) {
 		$html_tree = "";
 		$html_tree .= html_writer::start_tag("ul",array("class"=>"exa-tree exa-tree-reopen-checked"));
 		foreach($tree as $skey => $subject) {
@@ -4441,7 +4438,7 @@ var dataset = dataset.map(function (group) {
 						
 							foreach ( $topic->descriptors as $dkey => $descriptor ) {
 								if($descriptor->associated == 1 || ($isTeacher && $editmode==1))
-									$html_tree .= $this->print_competence_for_list_tree($descriptor, $isTeacher, $editmode, $show_examples);
+									$html_tree .= $this->competence_for_list_tree($descriptor, $isTeacher, $editmode, $show_examples);
 							}
 						
 							$html_tree .= html_writer::end_tag("ul");
@@ -4459,7 +4456,7 @@ var dataset = dataset.map(function (group) {
 		return html_writer::div($html_tree, "associated_div", array('id'=>"associated_div"));
 	}
 	
-	private function print_competence_for_list_tree($descriptor, $isTeacher, $editmode, $show_examples) {
+	private function competence_for_list_tree($descriptor, $isTeacher, $editmode, $show_examples) {
 		
 		$html_tree = html_writer::start_tag("li", array('class'=>($descriptor->associated == 1)?"associated":""));
 		$title = block_exacomp_get_descriptor_numbering($descriptor).' '.$descriptor->title;
@@ -4495,7 +4492,7 @@ var dataset = dataset.map(function (group) {
 					}
 					
 					if ($url = block_exacomp_get_file_url($example, 'example_solution')) {
-						$exampleIcons .= $this->print_example_solution_icon($url);
+						$exampleIcons .= $this->example_solution_icon($url);
 					}		
 
 					$html_tree .= html_writer::tag("li", $example->title . $exampleIcons, array('class'=>($example->associated == 1)?"associated":""));
@@ -4505,7 +4502,7 @@ var dataset = dataset.map(function (group) {
 		if(!empty($descriptor->children)) {
 			foreach($descriptor->children as $child)
 				if($child->associated == 1 || ($isTeacher && $editmode==1))
-					$html_tree .= $this->print_competence_for_list_tree($child, $isTeacher, $editmode, $show_examples);
+					$html_tree .= $this->competence_for_list_tree($child, $isTeacher, $editmode, $show_examples);
 		}
 		
 		if($ul)
@@ -4516,7 +4513,7 @@ var dataset = dataset.map(function (group) {
 		return $html_tree;
 	}
 	
-	function print_statistic_table($courseid, $students, $item, $descriptor=true, $scheme=1){
+	function statistic_table($courseid, $students, $item, $descriptor=true, $scheme=1){
 		$global_scheme = \block_exacomp\global_config::get_scheme_id();
 		$global_scheme_values = \block_exacomp\global_config::get_scheme_items($scheme);
 
@@ -4635,7 +4632,7 @@ var dataset = dataset.map(function (group) {
 		$table->data = $rows;
 		return html_writer::table($table);
 	}
-	public function print_example_pool($examples=array()){
+	public function example_pool($examples=array()){
 		$content = html_writer::tag('h4', get_string('example_pool', 'block_exacomp'));
 	
 		foreach($examples as $example){
@@ -4646,16 +4643,16 @@ var dataset = dataset.map(function (group) {
 	}
 
 	
-	public function print_side_wrap_weekly_schedule(){
-		$pool = $this->print_example_pool();
+	public function side_wrap_weekly_schedule(){
+		$pool = $this->example_pool();
 		$calendar = html_writer::div('', '', array('id'=>'calendar'));
-		$trash = $this->print_example_trash();
+		$trash = $this->example_trash();
 		$clear = html_writer::div('', '', array('style'=>'clear:both'));
 		
 		return html_writer::div($pool.$calendar.$trash.$clear, '', array('id'=>'wrap'));
 	}
 	
-	public function print_example_trash($trash_examples = array(), $persistent_trash=true){
+	public function example_trash($trash_examples = array(), $persistent_trash=true){
 		$content = html_writer::tag('h4', get_string('example_trash', 'block_exacomp'));
 		
 		foreach($trash_examples as $example){
@@ -4665,7 +4662,7 @@ var dataset = dataset.map(function (group) {
 		if($persistent_trash) $content .= html_writer::empty_tag('input', array('type'=>'button', 'id'=>'empty_trash', 'value'=>get_string('empty_trash', 'block_exacomp')));
 		return html_writer::div($content, '', array('id'=>'trash'));
 	}
-	public function print_course_dropdown($selectedCourse){
+	public function course_dropdown($selectedCourse){
 		global $DB;
 		$content = get_string("choosecourse", "block_exacomp");
 		$options = array();
@@ -4686,7 +4683,7 @@ var dataset = dataset.map(function (group) {
 		return $content;
 	}
 	
-	public function print_view_example_header(){
+	public function view_example_header(){
 		global $PAGE;
 		$content = html_writer::tag('button', html_writer::empty_tag('img', array('src'=>new moodle_url('/pix/i/withsubcat.png'), 
 			'title'=> get_string('comp_based', 'block_exacomp'))).' '.get_string('comp_based', 'block_exacomp'), array('type'=>'button', 'id'=>'comp_based', 'name'=> 'comp_based', 'class'=>'view_examples_icon',
@@ -4699,7 +4696,7 @@ var dataset = dataset.map(function (group) {
 		return html_writer::div($content, '', array('id'=>'view_examples_header'));
 	}
 	
-	public function print_example_based_list_tree($example, $tree, $isTeacher, $editmode, $showexamples = false){
+	public function example_based_list_tree($example, $tree, $isTeacher, $editmode, $showexamples = false){
 		$html_tree = "";
 		$html_tree .= html_writer::start_tag("ul",array("class"=>"exa-tree"));
 		
@@ -4717,18 +4714,18 @@ var dataset = dataset.map(function (group) {
 		}
 		 
 		if ($url = block_exacomp_get_file_url($example, 'example_solution')) {
-			$exampleIcons .= $this->print_example_solution_icon($url);
+			$exampleIcons .= $this->example_solution_icon($url);
 		}
 		
 		$html_tree .= $example->title . $exampleIcons;
 		
-		$html_tree .= $this->print_competence_based_list_tree($tree, $isTeacher, $editmode, $showexamples);
+		$html_tree .= $this->competence_based_list_tree($tree, $isTeacher, $editmode, $showexamples);
 		
 		$html_tree .= html_writer::end_tag('li');
 		$html_tree .= html_writer::end_tag('ul');
 		return $html_tree;		
 	}
-	public function print_pre_planning_storage_students($students, $examples){
+	public function pre_planning_storage_students($students, $examples){
 		global $COURSE;
 	
 		$content = html_writer::start_tag('ul');
@@ -4751,14 +4748,14 @@ var dataset = dataset.map(function (group) {
 		$content .= html_writer::tag('span', html_writer::start_tag('fieldset', array('class'=>'blue')).html_writer::end_tag('fieldset').'Noch kein Material erhalten', array('class'=>'pre_planning_storage_legend_blue'));
 		return html_writer::div($content, 'external-students', array('id'=>'external-students'));
 	}
-	public function print_pre_planning_storage_pool(){
+	public function pre_planning_storage_pool(){
 		$content = html_writer::tag('h4', get_string('example_pool', 'block_exacomp'));
 	
 		$content .= html_writer::tag('ul', '', array('id'=>'sortable'));
 		return html_writer::div($content, 'external-events', array('id'=>'external-events'));
 	}	
 	
-	public function print_lm_graph_legend($scheme) {
+	public function lm_graph_legend($scheme) {
 		$global_scheme_values = \block_exacomp\global_config::get_scheme_items($scheme);
 		$content = html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","lmoB");
 		$content .= ' '.get_string("oB","block_exacomp").' ';
@@ -4827,7 +4824,7 @@ var dataset = dataset.map(function (group) {
 		return $this->popup_result_header().ob_get_clean();
 	}
 	
-	public function print_cross_subjects_list($course_crosssubs, $courseid, $isTeacher){
+	public function cross_subjects_list($course_crosssubs, $courseid, $isTeacher){
 		$content = "<h4>" . get_string('existing_crosssub','block_exacomp') . "</h4>";
 		
 		if(empty($course_crosssubs))
@@ -4843,7 +4840,7 @@ var dataset = dataset.map(function (group) {
 		}
 		return $content;
 	}
-	public function print_create_blocking_event(){
+	public function create_blocking_event(){
 		global $USER;
 		
 		$content = html_writer::tag('h4', get_string('blocking_event', 'block_exacomp'));
@@ -4862,7 +4859,7 @@ var dataset = dataset.map(function (group) {
 	 * @param object $selected
 	 * @param moodle_url $url
 	 */
-	function print_studentselector($students, $selected, $option = null) {
+	function studentselector($students, $selected, $option = null) {
 		$studentsAssociativeArray = array();
 		$spacer = true;
 

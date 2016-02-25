@@ -31,7 +31,7 @@ $activities = block_exacomp_get_activities_by_course($courseid);
 $course_settings = block_exacomp_get_settings_by_course($courseid);
 
 if($course_settings->uses_activities && !$activities && !$course_settings->show_all_descriptors) {
-	echo $output->print_no_activities_warning($isTeacher);
+	echo $output->no_activities_warning($isTeacher);
 	$output->footer();
 	exit;
 }
@@ -71,14 +71,14 @@ if($example_del = optional_param('exampleid', 0, PARAM_INT)){
 }
 */
 
-echo $output->print_competence_overview_form_start((isset($selectedTopic))?$selectedTopic:null, (isset($selectedSubject))?$selectedSubject:null,$studentid);
+echo $output->competence_overview_form_start((isset($selectedTopic))?$selectedTopic:null, (isset($selectedSubject))?$selectedSubject:null,$studentid);
 
 //dropdowns for subjects and topics
-echo $output->print_overview_dropdowns('profoundness', $students);
+echo $output->overview_dropdowns('profoundness', $students);
 
 if ($isTeacher) {
 	echo ' '.get_string("choosestudent","block_exacomp").' ';
-	echo $output->print_studentselector($coursestudents,$studentid);
+	echo $output->studentselector($coursestudents,$studentid);
 }
 
 $schooltype = block_exacomp_get_schooltype_title_by_subject($selectedSubject);
@@ -86,13 +86,13 @@ $cat = block_exacomp_get_category($selectedTopic);
 
 $scheme = block_exacomp_get_grading_scheme($courseid);
 if($selectedTopic->id != block_exacomp\SHOW_ALL_TOPICS){
-	echo $output->print_overview_metadata($schooltype, $selectedSubject, $selectedTopic, $cat);
+	echo $output->overview_metadata($schooltype, $selectedSubject, $selectedTopic, $cat);
 }
 
 $subjects = block_exacomp_get_competence_tree($courseid, null, (isset($selectedSubject))?$selectedSubject->id:null,false,(isset($selectedTopic))?$selectedTopic->id:null,
 		false);
 
-echo $output->print_profoundness($subjects, $courseid, $students, $isTeacher ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT);
+echo $output->profoundness($subjects, $courseid, $students, $isTeacher ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT);
 
 /* END CONTENT REGION */
 echo $output->footer();

@@ -52,22 +52,22 @@ if($dropdown_subjects && $subjectid == 0)
 
 list($niveaus, $skills, $subjects, $data, $selection) = block_exacomp_init_competence_grid_data($courseid, $subjectid, $studentid, (block_exacomp_get_settings_by_course($courseid)->show_all_examples != 0 || $isTeacher), block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies);
 
-echo $output->print_subject_dropdown(block_exacomp_get_schooltypetree_by_topics($dropdown_subjects,true), $subjectid);
+echo $output->subject_dropdown(block_exacomp_get_schooltypetree_by_topics($dropdown_subjects,true), $subjectid);
 if($data) {
 	if ($isTeacher && !block_exacomp_get_settings_by_course($courseid)->nostudents) {
 		echo ' '.get_string("choosestudent","block_exacomp").' ';
-		echo $output->print_studentselector(block_exacomp_get_students_by_course($courseid),$studentid, $output::STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN);
+		echo $output->studentselector(block_exacomp_get_students_by_course($courseid),$studentid, $output::STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN);
 	}
 	
 	if($course_settings->nostudents != 1)
-		echo $output->print_competence_grid_reports_dropdown();
+		echo $output->competence_grid_reports_dropdown();
 
 	echo html_writer::start_div();
 	
 	if(isset($dropdown_subjects[$subjectid]->infolink))
 		echo html_writer::tag("p",get_string('infolink','block_exacomp') . html_writer::link($dropdown_subjects[$subjectid]->infolink, $dropdown_subjects[$subjectid]->infolink,array('target'=>'_blank')));
 
-	echo $output->print_competence_grid($niveaus, $skills, $subjects, $data, $selection, $courseid,$studentid);
+	echo $output->competence_grid($niveaus, $skills, $subjects, $data, $selection, $courseid,$studentid);
 
 	echo html_writer::end_div();
 }

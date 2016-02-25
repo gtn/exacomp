@@ -76,7 +76,7 @@ if ($badgeid && $badge = $DB->get_record('badge', array('id' => $badgeid))) {
 	}else{
 		$tree = block_exacomp_get_competence_tree($courseid);
 		$badge->descriptors = block_exacomp_get_badge_descriptors($badge->id);
-		echo $output->print_edit_badges($tree, $badge);
+		echo $output->edit_badges($tree, $badge);
 		echo $OUTPUT->footer();
 		return;
 	}
@@ -102,7 +102,7 @@ foreach ($badges as $badge) {
 	', array($badge->id));
 
 	$context = context_course::instance($badge->courseid);
-	echo $output->print_badge($badge, $descriptors, $context);
+	echo $output->badge($badge, $descriptors, $context);
 }
 
 

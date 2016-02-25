@@ -200,7 +200,7 @@ if($isAdmin || block_exacomp_check_customupload()) {
 			
 			if ($isAdmin) {
 				echo '<hr />';
-				echo $output->print_sources();
+				echo $output->sources();
 			}
 		}
 	}

@@ -93,24 +93,24 @@ if($isTeacher){
 		
 		//print student selector
 		echo get_string("choosestudent","block_exacomp");
-		echo $output->print_studentselector($coursestudents, 0);
+		echo $output->studentselector($coursestudents, 0);
 		echo $OUTPUT->footer();
 		die;
 	}else{
 		//print student selector
 		echo get_string("choosestudent","block_exacomp");
-		echo $output->print_studentselector($coursestudents, $student->id);
+		echo $output->studentselector($coursestudents, $student->id);
 	}
 } else {
 	echo html_writer::tag("input", null, array("type" => "hidden", "value" => $student->id, "id" => "menuexacomp_competence_grid_select_student"));
 }
 
-echo $output->print_button_box('weekly_schedule_print();', '');
-echo $output->print_course_dropdown($selectedCourse);
+echo $output->button_box('weekly_schedule_print();', '');
+echo $output->course_dropdown($selectedCourse);
 
 echo $OUTPUT->box(get_string('weekly_schedule_link_to_grid','block_exacomp'));
 
-echo $output->print_side_wrap_weekly_schedule();
+echo $output->side_wrap_weekly_schedule();
 
 /* END CONTENT REGION */
 

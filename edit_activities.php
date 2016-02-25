@@ -166,15 +166,15 @@ if($modules){
 	$topics_set = block_exacomp_get_topics_by_subject($courseid, null, true);
 
 	if(!$topics_set){
-		echo $output->print_activity_legend($headertext);
-		echo $output->print_no_topics_warning();
+		echo $output->activity_legend($headertext);
+		echo $output->no_topics_warning();
 	}else if(count($visible_modules)==0){
-		echo $output->print_activity_legend($headertext);
-		echo $output->print_no_course_activities_warning();
+		echo $output->activity_legend($headertext);
+		echo $output->no_course_activities_warning();
 	}else{
-		echo $output->print_activity_legend($headertext);
-		echo $output->print_activity_content($subjects, $visible_modules, $colspan);
-		echo $output->print_activity_footer($niveaus, $modules_to_filter, $selected_niveaus, $selected_modules);
+		echo $output->activity_legend($headertext);
+		echo $output->activity_content($subjects, $visible_modules, $colspan);
+		echo $output->activity_footer($niveaus, $modules_to_filter, $selected_niveaus, $selected_modules);
 	}
 }
 

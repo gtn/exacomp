@@ -64,7 +64,7 @@ block_exacomp_award_badges($courseid, $USER->id);
 $badges = block_exacomp_get_user_badges($courseid, $USER->id);
 
 
-echo $output->print_my_badges($badges);
+echo $output->my_badges($badges);
 
 /* END CONTENT REGION */
 

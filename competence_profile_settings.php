@@ -113,7 +113,7 @@ if(block_exacomp_moodle_badges_enabled() && $usebadges)
 
 $profile_settings = block_exacomp_get_profile_settings();
 
-echo $output->print_profile_settings($user_courses, $profile_settings, $profile_usebadges, $exaport, $exastud, (isset($exastud_periods))?$exastud_periods:array());
+echo $output->profile_settings($user_courses, $profile_settings, $profile_usebadges, $exaport, $exastud, (isset($exastud_periods))?$exastud_periods:array());
 
 /* END CONTENT REGION */
 echo $output->footer();

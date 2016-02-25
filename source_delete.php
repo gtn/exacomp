@@ -145,7 +145,7 @@ if ($action == 'delete_selected') {
 	echo $output->header($course_context,$courseid, 'tab_admin_settings');
 	echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_admin_settings($courseid), $page_identifier);
 	
-	echo $output->print_descriptor_selection_source_delete($source, $subjects);
+	echo $output->descriptor_selection_source_delete($source, $subjects);
 	
 	echo $output->footer();
 } else {

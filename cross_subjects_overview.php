@@ -140,7 +140,7 @@ if (block_exacomp_is_teacher() || block_exacomp_is_admin()) {
 	echo '</tr></table>';
 } else {
 	$course_crosssubs = block_exacomp_get_cross_subjects_by_course($courseid, $USER->id);
-	echo $output->print_cross_subjects_list($course_crosssubs, $courseid, false);
+	echo $output->cross_subjects_list($course_crosssubs, $courseid, false);
 }
 
 /* END CONTENT REGION */

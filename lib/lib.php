@@ -5566,12 +5566,12 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true){
 			}
 		}
 		if ($url = block_exacomp_get_file_url((object)array('id' => $example->exampleid), 'example_task')) {
-			$example_array['task'] = html_writer::link($url, $output->print_preview_icon(),array("target" => "_blank"));
+			$example_array['task'] = html_writer::link($url, $output->preview_icon(),array("target" => "_blank"));
 		}
 		elseif(isset($example->externalurl)){
-			$example_array['externalurl'] = html_writer::link(str_replace('&amp;','&',$example->externalurl), $output->print_preview_icon(),array("target" => "_blank"));
+			$example_array['externalurl'] = html_writer::link(str_replace('&amp;','&',$example->externalurl), $output->preview_icon(),array("target" => "_blank"));
 		}elseif(isset($example->externaltask)) {
-			$example_array['externaltask'] = html_writer::link(str_replace('&amp;','&',$example->externaltask), $output->print_preview_icon(),array("target" => "_blank"));
+			$example_array['externaltask'] = html_writer::link(str_replace('&amp;','&',$example->externaltask), $output->preview_icon(),array("target" => "_blank"));
 		}
 
 		$course_info = $DB->get_record('course', array('id'=>$example->courseid));
@@ -6498,7 +6498,7 @@ namespace block_exacomp {
 		$values = array(''=>array(''=>''));
 		$niveaus = niveau::get_objects(null, 'sorting');
 		foreach ($niveaus as $niveau) {
-			$sourceName = block_exacomp_get_renderer()->print_source_info($niveau->source);
+			$sourceName = block_exacomp_get_renderer()->source_info($niveau->source);
 			if (!isset($values[$sourceName])) $values[$sourceName] = [];
 			$values[$sourceName][$niveau->id] = $niveau->title;
 		}

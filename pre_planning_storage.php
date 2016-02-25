@@ -83,10 +83,10 @@ foreach($schedules as $schedule){
 /* CONTENT REGION */
 echo html_writer::start_tag('form', array('action'=>$PAGE->url->out(false).'&action=empty', 'method'=>'post'));
 
-echo $output->print_pre_planning_storage_pool();
-echo $output->print_pre_planning_storage_students($students, $examples);
-echo $output->print_example_trash(array(), false);
-echo $output->print_create_blocking_event();
+echo $output->pre_planning_storage_pool();
+echo $output->pre_planning_storage_students($students, $examples);
+echo $output->example_trash(array(), false);
+echo $output->create_blocking_event();
 
 echo html_writer::div(html_writer::empty_tag('input', array('type'=>'button', 'id'=>'save_pre_planning_storage', 
 	'value'=>get_string('save_pre_planning_selection', 'block_exacomp'))).

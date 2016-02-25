@@ -96,7 +96,7 @@ $example_descriptors = $DB->get_records(\block_exacomp\DB_DESCEXAMP,array('examp
 $tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid);
 
 echo html_writer::tag("p",get_string("competence_associations_explaination","block_exacomp",$example->title));
-$content = $output->print_competence_based_list_tree($tree, $isTeacher, $editmode);
+$content = $output->competence_based_list_tree($tree, $isTeacher, $editmode);
 
 if($editmode==1)
 	$content.= html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp')));
