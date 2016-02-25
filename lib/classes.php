@@ -804,7 +804,7 @@ class descriptor extends db_record {
 	}
 
 
-	function set_categories($categories) {
+	function store_categories($categories) {
 		global $DB;
 
 		// read current
@@ -855,6 +855,34 @@ class example extends db_record {
 		} else {
 			return $this->author;
 		}
+	}
+
+	function get_task_file_url() {
+		// get from filestorage
+		$file = block_exacomp_get_file($this, 'example_task');
+		if (!$file) return null;
+
+		$filename = (($numbering = $this->get_numbering())?$numbering.'_':'').
+			$this->title.
+			'_'.trans([ 'de:Aufgabe', 'en:Task' ]).
+			'.'.preg_replace('!^.*\.!', '', $file->get_filename());
+
+		return \moodle_url::make_pluginfile_url(block_exacomp_get_context_from_courseid(g::$COURSE->id)->id, $file->get_component(), $file->get_filearea(),
+			$file->get_itemid(), $file->get_filepath(), $filename);
+	}
+
+	function get_solution_file_url() {
+		// get from filestorage
+		$file = block_exacomp_get_file($this, 'example_solution');
+		if (!$file) return null;
+
+		$filename = (($numbering = $this->get_numbering())?$numbering.'_':'').
+			$this->title.
+			'_'.trans([ 'de:Lösung', 'en:Solution' ]).
+			'.'.preg_replace('!^.*\.!', '', $file->get_filename());
+
+		return \moodle_url::make_pluginfile_url(block_exacomp_get_context_from_courseid(g::$COURSE->id)->id, $file->get_component(), $file->get_filearea(),
+			$file->get_itemid(), $file->get_filepath(), $filename);
 	}
 }
 

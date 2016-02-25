@@ -969,8 +969,6 @@ function block_exacomp_get_descritors_list($courseid, $onlywithactivitys = 0) {
  * @param $courseid if course id =0 all possible descriptors are returned
  */
 function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = false, $subjectid = 0, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $showonlyvisible=false) {
-	global $DB;
-
 	if (!$courseid) {
 		$showalldescriptors = true;
 		$showonlyvisible = false;
@@ -992,9 +990,9 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 			JOIN {'.\block_exacomp\DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
 			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':''));
 
-	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid, $courseid));
+	$descriptors = block_exacomp\descriptor::get_objects_sql($sql, array($courseid, $courseid, $courseid, $courseid));
 
-	foreach($descriptors as &$descriptor) {
+	foreach($descriptors as $descriptor) {
 		//get examples
 		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples, $courseid);
 		   //check for child-descriptors
@@ -1063,7 +1061,7 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescrip
 
 	$params[]= $parent->id;
 	//$descriptors = $DB->get_records_sql($sql, ($showalldescriptors) ? array($parent->id) : array($courseid,$parent->id));
-	$descriptors = $DB->get_records_sql($sql,  $params);
+	$descriptors = block_exacomp\descriptor::get_objects_sql($sql, $params);
 
 	foreach($descriptors as $descriptor) {
 		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples, $courseid);
@@ -1075,12 +1073,12 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescrip
 }
 
 function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES),$showallexamples = true, $courseid = null, $mind_visibility=true, $showonlyvisible = false ) {
-	global $DB, $COURSE;
+	global $COURSE;
 
 	if($courseid == null)
 		$courseid = $COURSE->id;
 
-	$examples = $DB->get_records_sql(
+	$examples = \block_exacomp\example::get_objects_sql(
 			"SELECT de.id as deid, e.id, e.title, e.externalurl, e.source, ".
 				($mind_visibility?"evis.visible,":"")."
 				e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author
@@ -1094,9 +1092,8 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 			. " ORDER BY de.sorting"
 			, array($descriptor->id, $courseid));
 
-	$examples = \block_exacomp\example::create_objects($examples);
-
 	foreach($examples as $example){
+		$example->descriptor = $descriptor;
 		$example->taxonomies = block_exacomp_get_taxonomies_by_example($example);
 
 		$taxtitle = "";
@@ -6588,7 +6585,7 @@ namespace block_exacomp {
 
 	function require_item_capability($cap, $item) {
 		if ($item instanceof example && in_array($cap, [CAP_MODIFY, CAP_DELETE])) {
-			if (!block_exacomp_is_teacher(g::$COURSE->id)) {
+			if (!block_exacomp_is_teacher()) {
 				throw new permission_exception('User is no teacher');
 			}
 
@@ -6602,7 +6599,18 @@ namespace block_exacomp {
 			if (!isset($examples[$item->id])) {
 				throw new permission_exception('Not a course example');
 			}
+		} elseif ($item instanceof example && in_array($cap, [CAP_VIEW])) {
+			if (!block_exacomp_is_student() && !block_exacomp_is_teacher()) {
+				throw new permission_exception('User is no teacher or student');
+			}
 
+			// find descriptor in course
+			$examples = block_exacomp_get_examples_by_course(g::$COURSE->id);
+			if (!isset($examples[$item->id])) {
+				throw new permission_exception('Not a course example');
+			}
+
+			// TODO: check visibility?
 		} elseif ($item instanceof subject && in_array($cap, [CAP_MODIFY, CAP_DELETE])) {
 			if (!block_exacomp_is_teacher(g::$COURSE->id)) {
 				throw new permission_exception('User is no teacher');

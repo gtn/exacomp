@@ -115,7 +115,7 @@ if($formdata = $form->get_data()) {
 		$item->update($new);
 	}
 	
-	$item->set_categories(!empty($formdata->categories) ?: array());
+	$item->store_categories(!empty($formdata->categories) ?: array());
 	
 	echo $output->popup_close_and_reload();
 	exit;

@@ -1849,7 +1849,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						*/
 						}
 
-						if ($url = block_exacomp_get_file_url($example, 'example_task')) {
+						if ($url = $example->get_task_file_url()) {
 							$titleCell->text .= html_writer::link($url, $this->local_pix_icon("filesearch.png", get_string('preview')), array("target" => "_blank"));
 						}
 
@@ -1860,7 +1860,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$titleCell->text .= html_writer::link($example->externaltask, $this->local_pix_icon("globesearch.png", $example->externaltask),array("target" => "_blank"));
 						}
 
-						if ($url = block_exacomp_get_file_url($example, 'example_solution')) {
+						if ($url = $example->get_solution_file_url()) {
 							$titleCell->text .= $this->example_solution_icon($url);
 						}
 
