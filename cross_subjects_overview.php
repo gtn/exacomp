@@ -14,9 +14,6 @@ $PAGE->set_url('/blocks/exacomp/cross_subjects_overview.php', array('courseid' =
 $PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
-$course_settings = block_exacomp_get_settings_by_course($courseid);
-$work_with_students = ($course_settings->nostudents != 1);
-
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
 
@@ -27,120 +24,10 @@ echo $output->header_v2('tab_cross_subjects');
 
 if (block_exacomp_is_teacher() || block_exacomp_is_admin()) {
 	$course_crosssubs = block_exacomp_get_cross_subjects_by_course($courseid);
-
-	$item_title_cell = new html_table_cell;
-	// $item_title_cell->attributes['width'] = '90%';
-
-	echo '<table width="100%" cellpadding="10" cellspacing="0"><tr>';
-	echo '<td width="33%" style="vertical-align: top;">';
-
-	$table = new html_table();
-	$tmp = new html_table_cell($output->pix_icon('i/group', '').' '.block_exacomp\trans('de:freigegebene Kursthemen'));
-	$tmp->colspan = 2;
-	$table->head = [$tmp];
-
-	foreach($course_crosssubs as $crosssub){
-		if (!$crosssub->is_shared()) continue;
-
-		$title = clone $item_title_cell;
-		$title->text = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$crosssub->id)), $crosssub->title);
-		$table->data[] = [
-			$title,
-			html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$crosssub->id, 'editmode'=>1)),$output->pix_icon("i/edit", get_string("edit")), array('class'=>'crosssub-icons')).
-			(($work_with_students)?html_writer::link('#', $output->pix_icon("i/enrolusers", block_exacomp\trans("de:Freigabe bearbeiten")), ['exa-type'=>'iframe-popup', 'exa-url'=>'cross_subjects.php?courseid='.$courseid.'&crosssubjid='.$crosssub->id.'&action=share']):'').
-			html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$crosssub->id, 'action'=>'save_as_draft')), $output->pix_icon("i/repository", block_exacomp\trans("de:Kopie als Vorlage speichern")))
-		];
-		/*
-		if($isTeacher){
-			$content .= html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$crosssub->id, 'editmode'=>1)),$this->pix_icon("i/edit", get_string("edit")), array('class'=>'crosssub-icons'));
-			$content .= html_writer::link('', $this->pix_icon("t/delete", get_string("delete")), array("onclick" => "if( confirm('".get_string('confirm_delete', 'block_exacomp')."')) block_exacomp.delete_crosssubj(".$crosssub->id."); return false;"), array('class'=>'crosssub-icons'));
-		}
-		*/
-	}
-
-	if (!$table->data) {
-		$table->data[] = [get_string('no_crosssubjs', 'block_exacomp')];
-	}
-
-	echo html_writer::table($table);
-
-	echo '</td>';
-	echo '<td width="33%" style="vertical-align: top;">';
-
-	$table = new html_table();
-	$tmp = new html_table_cell($output->pix_icon('i/manual_item', '').' '.block_exacomp\trans('de:vorhandene Kursthemen'));
-	$tmp->colspan = 2;
-	$table->head = [$tmp];
-
-	foreach($course_crosssubs as $crosssub){
-		if ($crosssub->is_shared()) continue;
-
-		$title = clone $item_title_cell;
-		$title->text = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$crosssub->id)), $crosssub->title);
-		$table->data[] = [
-			$title,
-			html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$crosssub->id, 'editmode'=>1)),$output->pix_icon("i/edit", get_string("edit"))).
-			html_writer::link('#', $output->pix_icon("t/delete", get_string("delete")), array("onclick" => "if( confirm('".get_string('confirm_delete', 'block_exacomp')."')) block_exacomp.delete_crosssubj(".$crosssub->id."); return false;")).
-			(($work_with_students)?html_writer::link('#', $output->pix_icon("i/enrolusers", block_exacomp\trans("de:Freigeben")), ['exa-type'=>'iframe-popup', 'exa-url'=>'cross_subjects.php?courseid='.$courseid.'&crosssubjid='.$crosssub->id.'&action=share']):'').
-			html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$crosssub->id, 'action'=>'save_as_draft')), $output->pix_icon("i/repository", block_exacomp\trans("de:Kopie als Vorlage speichern")))
-		];
-	}
-
-	if (!$table->data) {
-		$table->data[] = [get_string('no_crosssubjs', 'block_exacomp')];
-	}
-
-	echo html_writer::table($table);
-
-	echo html_writer::empty_tag('input', array('type'=>'button', 'value' => get_string('create_new_crosssub','block_exacomp'),
-			 "onclick" => "document.location.href='".block_exacomp\url::create('/blocks/exacomp/cross_subjects.php',array('courseid' => $COURSE->id, 'crosssubjid'=>0))."'"));
-
-	echo '</td>';
-	echo '<td width="33%" style="vertical-align: top;">';
-
-	$table = new html_table();
-	$table->attributes['class'] = 'generaltable rg2';
-	$tmp = new html_table_cell($output->pix_icon('i/repository', '').' '.block_exacomp\trans('de:Themenvorlagen'));
-	$tmp->colspan = 2;
-	$table->head = [$tmp];
-
-	$subjects = block_exacomp_get_course_cross_subjects_drafts_sorted_by_subjects();
-	foreach ($subjects as $subject) {
-		$title = new html_table_cell;
-		$title->text = '<div>'.$subject->title.'</div>';
-		$title->attributes['class'] = 'rg2-indent rg2-arrow';
-		$title->colspan = 2;
-
-		$row = new html_table_row([ $title ]);
-		$row->attributes['class'] = 'rg2-level-0 rg2-highlight';
-		$row->attributes['exa-rg2-id'] = 'subject-'.$subject->id;
-		$table->data[] = $row;
-
-		foreach ($subject->cross_subject_drafts as $crosssub) {
-			$title = clone $item_title_cell;
-			$title->text = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$crosssub->id)), $crosssub->title);
-			$row = new html_table_row([
-				$title,
-				($crosssub->has_capability(block_exacomp\CAP_MODIFY) ? html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$crosssub->id, 'editmode'=>1)),$output->pix_icon("i/edit", get_string("edit"))) : '').
-				($crosssub->has_capability(block_exacomp\CAP_DELETE) ? html_writer::link('#', $output->pix_icon("t/delete", get_string("delete")), array("onclick" => "if( confirm('".get_string('confirm_delete', 'block_exacomp')."')) block_exacomp.delete_crosssubj(".$crosssub->id."); return false;")) : '').
-				html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$crosssub->id, 'action'=>'use_draft')), $output->pix_icon("i/manual_item", block_exacomp\trans("de:Vorlage verwenden")))
-			]);
-			$row->attributes['class'] = 'rg2-level-1';
-			$table->data[] = $row;;
-		}
-	}
-
-	if (!$table->data) {
-		$table->data[] = [get_string('no_crosssubjs', 'block_exacomp')];
-	}
-
-	echo html_writer::table($table);
-
-	echo '</td>';
-	echo '</tr></table>';
+	echo $output->cross_subjects_overview_teacher($course_crosssubs);
 } else {
 	$course_crosssubs = block_exacomp_get_cross_subjects_by_course($courseid, $USER->id);
-	echo $output->cross_subjects_list($course_crosssubs, $courseid, false);
+	echo $output->cross_subjects_overview_student($course_crosssubs);
 }
 
 /* END CONTENT REGION */

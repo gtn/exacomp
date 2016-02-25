@@ -879,6 +879,8 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 		$settings->grading = 1;
 	}
 	if (empty($settings->nostudents)) $settings->nostudents = 0;
+	$settings->work_with_students = !$settings->nostudents;
+
 	if (!isset($settings->uses_activities)) $settings->uses_activities = block_exacomp_is_skillsmanagement() ? 0 : 1;
 	if (!isset($settings->show_all_examples)) $settings->show_all_examples = block_exacomp_is_skillsmanagement() ? 1 : 0;
 	if (!isset($settings->usedetailpage)) $settings->usedetailpage = 0;
