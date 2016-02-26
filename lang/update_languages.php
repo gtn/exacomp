@@ -1,9 +1,9 @@
 <?php
 // This file is part of Exabis Competencies
 //
-// (c) 2016 exabis internet solutions <info@exabis.at>
+// (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
 //
-// Exabis Comeptencies is free software: you can redistribute it and/or modify
+// Exabis Competencies is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
@@ -81,7 +81,7 @@ $fileStart = '<?php
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2006 exabis internet solutions <info@exabis.at>
+*  (c) 2006 GTN - Global Training Network GmbH <office@gtn-solutions.com>
 *  All rights reserved
 *
 *  You can redistribute it and/or modify
