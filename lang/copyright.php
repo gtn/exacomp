@@ -43,7 +43,7 @@ foreach ($Iterator as $file) {
 	while (true) {
 		$content = trim($content);
 
-		if (true) {
+		if (false) {
 			if (preg_match('!^/\*.*exabis.*\*/!isU', $content, $matches)) {
 				$copyrightFound = true;
 				echo $matches[0]."\n";
@@ -57,6 +57,7 @@ foreach ($Iterator as $file) {
 				continue;
 			}
 		} else {
+			$copyrightFound = true;
 			if (preg_match('!^/\*.*\*/!sU', $content, $matches)) {
 				echo $matches[0]."\n";
 				$content = preg_replace('!^/\*.*\*/!sU', '', $content);
