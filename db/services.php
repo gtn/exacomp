@@ -19,7 +19,19 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$functions = call_user_func(function(){
+$services = array(
+	'exacompservices' => array(
+		'requiredcapability' => '',
+		'restrictedusers' => 0,
+		'enabled' => 1,
+		'shortname' => 'exacompservices',
+		'functions' => [],
+	)
+);
+
+$functions = [];
+
+call_user_func(function() use (&$functions, &$services) {
 	$definitions = [
 		[ 'block_exacomp_get_courses', 'read', 'Get courses with exacomp block instances.' ],
 		[ 'block_exacomp_get_subjects', 'read', 'Get active subjects for a given course. Will usualy return exactly 1 subject, if so no dropdown selection for the user is neccessary' ],
@@ -104,7 +116,6 @@ $functions = call_user_func(function(){
 		[ 'dakora_allow_example_resubmission', 'read', 'allow student to resubmit example' ],
 	];
 
-	$functions = [];
 	foreach ($definitions as $definition) {
 		$functions[$definition[0]] = [                             // web service function name
 				'classname'   => 'block_exacomp_external',         // class containing the external function
@@ -113,6 +124,7 @@ $functions = call_user_func(function(){
 				'description' => $definition[2],	               // human readable description of the web service function
 				'type'		  => $definition[1],	               // database rights of the web service function (read, write)
 		];
+
+		$services['exacompservices']['functions'][] = $definition[0];
 	}
-	return $functions;
 });
