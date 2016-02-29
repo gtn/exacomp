@@ -9,41 +9,57 @@
 
 #exabis_competencies_block  .content .competenceok,
 #block_exacomp .competenceok {
-	background-color: #02a600 !important
+	background-color: #02a600 !important;
+	color: #a2a2a2 !important;
+	font-size: 0.75em;
 }
 #block_exacomp #competenceyellow,
 #block_exacomp .competenceyellow {
-	background-color: #0075dd !important
+	background-color: #0075dd !important;
+	color: #a2a2a2 !important;
+	font-size: 0.75em;
+	
 }
 #block_exacomp #lmoB,
 #block_exacomp .lmoB {
-	background-color: #B8B894 !important
+	background-color: #BBBBBB !important;
+	color: #a2a2a2 !important;
+	font-size: 0.75em;
 }
 
 #block_exacomp #lmnE,
 #block_exacomp .lmnE {
-	background-color: #990000 !important
+	background-color: #990000 !important;
+	color: #a2a2a2 !important;
+	font-size: 0.75em;
 }
 
 #block_exacomp #green1,
 #block_exacomp .green1 {
-	background-color: #00CC00 !important
+	background-color: #00CC00 !important;
+	color: #a2a2a2 !important;
+	font-size: 0.75em;
+	
 }
 
 #block_exacomp #green2,
 #block_exacomp .green2 {
-	background-color: #008F00 !important
+	background-color: #008F00 !important;
+	color: #a2a2a2 !important;
+	font-size: 0.75em;
 }
 
 #block_exacomp #green3,
 #block_exacomp .green3 {
-	background-color: #006D00 !important
+	background-color: #006D00 !important;
+	color: #a2a2a2 !important;
+	font-size: 0.75em;
 }
 
 #block_exacomp span.competenceyellow,
 #block_exacomp span.competenceok,
 #block_exacomp span.lmoB,
-#block_exacomp span.lmNe,
+#block_exacomp span.lmnE,
 #block_exacomp span.green1,
 #block_exacomp span.green2,
 #block_exacomp span.green3 {
@@ -749,7 +765,6 @@ hide arrow
    	margin-left: 5%;
 }
 #block_exacomp .radargraph_legend{
-	margin-left: 5%;
 	margin-bottom: 40px
 }
 #block_exacomp .competence_profile_overview .compstable,

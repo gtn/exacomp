@@ -732,7 +732,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content .= ' '.get_string("selfevaluation","block_exacomp").' ';
 		$content .= html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","competenceok");
 		$content .= ' '.get_string("teacherevaluation","block_exacomp").' ';
-		return $content;
+		return html_writer::div($content, 'legend');
 	}
 	public function competence_grid_reports_dropdown() {
 		$options = array();
@@ -3661,7 +3661,7 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 			labels: <?php echo json_encode($labels); ?>,
 			datasets: [ <?php if($teacher) { echo '{
 					label: "Lehrerbeurteilung",
-					fillColor: "#91FD8F",
+					fillColor: "rgba(145, 253, 143, 0.2)",
 					strokeColor: "#02a600",
 					pointColor: "#02a600",
 					pointStrokeColor: "#fff",
@@ -3670,7 +3670,7 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 					data: '.json_encode($data1).',
 				}'; } else { echo '{
 					label: "Schülerbeurteilung",
-					fillColor: "#95CEFF",
+					fillColor: "rgba(149, 206, 255, 0.2)",
 					strokeColor: "#0075dd",
 					pointColor: "#0075dd",
 					pointStrokeColor: "#fff",
@@ -3763,7 +3763,7 @@ var dataset = dataset.map(function (group) {
 		.domain(niveaus)
 		.rangeRoundBands([0, height], .1),
   
-	colours = [\"#B8B894\", \"#990000\",  \"#00CC00\", \"#008F00\", \"#006D00\", \"#dddd22\", \"#ff0033\", \"#345678\"],
+	colours = [\"#BBBBBB\", \"#990000\",  \"#00CC00\", \"#008F00\", \"#006D00\", \"#dddd22\", \"#ff0033\", \"#345678\"],
 	
 	groups = svg.selectAll('g')
 		.data(dataset)
@@ -3860,11 +3860,12 @@ var dataset = dataset.map(function (group) {
 		return ob_get_clean();
 	}
 	public function radar_graph_legend() {
-		$content = html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","competenceyellow");
+		$content = html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","competenceok");
+		$content .= ' '.get_string("teachercomp","block_exacomp").' ';
+		$content .= html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","competenceyellow");
 		$content .= ' '.get_string("studentcomp","block_exacomp").' ';
-		$content .= html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","competenceok");
-		$content .= ' '.get_string("teachercomp","block_exacomp").' '.html_writer::empty_tag('br');
-		return $content;
+		
+		return html_writer::div($content, 'legend');
 	}
 	
 	public function timeline_graph($x_values, $y_values1, $y_values2, $y_values3, $courseid){
@@ -3880,8 +3881,8 @@ var dataset = dataset.map(function (group) {
 			datasets: [
 			{
 				label: "Teacher Timeline",
-				fillColor: "#91FD8F",
-					strokeColor: "#02a600",
+				fillColor: "rgba(145, 253, 143, 0.2)",
+				strokeColor: "#02a600",
 				pointColor: "#02a600",
 				pointStrokeColor: "#fff",
 				pointHighlightFill: "#fff",
@@ -3894,7 +3895,7 @@ var dataset = dataset.map(function (group) {
 			},
 			{
 				label: "Student Timeline",
-				fillColor: "#95CEFF",
+				fillColor: "rgba(149, 206, 255, 0.2)",
 				strokeColor: "#0075dd",
 				pointColor: "#0075dd",
 				pointStrokeColor: "#fff",
@@ -4775,7 +4776,7 @@ var dataset = dataset.map(function (group) {
 			$content .= ' '.$global_scheme_values[$i].' ';
 		}
 		
-		return $content;
+		return html_writer::div($content, 'legend');
 	}
 	
 	private function popup_result_header() {
