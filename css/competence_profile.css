@@ -76,8 +76,10 @@
 }
 #block_exacomp .compprof_example{
 	 display: block;
-    margin-top: 25px;
-    text-align: right;
+}
+
+.compprof_barchart_student img, .compprof_barchart_teacher img {
+	margin-left: 5px;
 }
 
 #block_exacomp .compprof_example:before,

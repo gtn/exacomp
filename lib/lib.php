@@ -6213,10 +6213,11 @@ function block_exacomp_get_html_for_student_eval($evaluation, $scheme){
 	
 }
 
-function block_exacomp_get_grid_for_competence_profile($courseid, $studentid){
+function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $subjectid){
 	global $DB;
-	list($course_subjects, $table_column, $table_header, $selectedSubject, $selectedTopic, $selectedNiveau) = block_exacomp_init_overview_data($courseid, 0, 0, 0, false, block_exacomp_is_teacher(), $studentid);
-	$competence_tree = block_exacomp_get_competence_tree($courseid);
+	list($course_subjects, $table_column, $table_header, $selectedSubject, $selectedTopic, $selectedNiveau) = block_exacomp_init_overview_data($courseid, $subjectid, 0, 0, false, block_exacomp_is_teacher(), $studentid);
+	
+	$competence_tree = block_exacomp_get_competence_tree($courseid, $subjectid);
 	$table_content = array();
 	
 	$scheme_items = \block_exacomp\global_config::get_scheme_items(block_exacomp_get_grading_scheme($courseid));
