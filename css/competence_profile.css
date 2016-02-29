@@ -60,21 +60,52 @@
 
 #block_exacomp .compprof_barchart_teacher {
 	color: #02a600;
+	display: block;
 }
 #block_exacomp .compprof_barchart_student {
-	float: right;
-	margin-right: 30%;
+	margin-bottom: 15px;
 	color: #0075dd;
+	display: block;
 }
 #block_exacomp .compprof_barchart_inwork {
 	margin-right: 10px;
 }
 
 #block_exacomp .compprof_evaluation{
-	
+	float: right;
 }
 #block_exacomp .compprof_example{
-	
+	 display: block;
+    margin-top: 25px;
+    text-align: right;
+}
+
+#block_exacomp .compprof_example:before,
+#block_exacomp .compprof_example:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+
+#block_exacomp .compprof_example:after {
+    clear: both;
+}
+
+#block_exacomp .compprof_example {
+    *zoom: 1;
+}
+
+#block_exacomp .compprof_evaluation:before,
+#block_exacomp .compprof_evaluation:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+
+#block_exacomp .compprof_evaluation:after {
+    clear: both;
+}
+
+#block_exacomp .compprof_evaluation {
+    *zoom: 1;
 }
 
 
@@ -128,4 +159,15 @@
 	border: 1px solid #dcdcdc;
 	padding: 2px;
 	border-radius: 4px;
+}
+
+#block_exacomp .compprofiletable {
+	margin-bottom: 50px;
+	background-color: transparent;
+	border-style: solid;
+	border-width: 1px;
+}
+
+#block_exacomp .header {
+	background-color: #dcdcdc !important;
 }

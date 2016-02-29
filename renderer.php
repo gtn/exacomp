@@ -3560,11 +3560,73 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		// if($student != null && block_exacomp_get_profile_settings($student->id)->useexaport == 1) {
 		//	$items = block_exacomp_get_exaport_items($student->id);
 		//}
+		
+		$content .= $this->competence_profile_grid($course->id, $student->id);
 		$content .= $this->competence_profile_tree_v2($compTree,$course->id, $student,$scheme, false, $items, $max_scheme);
 
 		return html_writer::div($content,"competence_profile_coursedata");
 	}
 
+	private function competence_profile_grid($courseid, $studentid){
+		global $DB;
+		list($course_subjects, $table_column, $table_header, $table_content) = block_exacomp_get_grid_for_competence_profile($courseid, $studentid);
+		
+		$spanning_niveaus = $DB->get_records(\block_exacomp\DB_NIVEAUS,array('span' => 1));
+		//calculate the col span for spanning niveaus
+		$spanning_colspan = block_exacomp_calculate_spanning_niveau_colspan($table_header, $spanning_niveaus);
+		
+		
+		$table = new html_table();
+		$table->attributes['class'] = 'compprofiletable flexible boxaligncenter generaltable';
+		$rows = array();
+		
+		//header
+		$row = new html_table_row();
+		
+		//first empty cell
+		$cell = new html_table_cell();
+		$row->cells[] = $cell;
+		
+		//niveaus
+		foreach($table_header as $element){
+			if($element->id != \block_exacomp\SHOW_ALL_NIVEAUS){
+				$cell = new html_table_cell();
+				$cell->text = $element->title;
+				$cell->attributes['class'] = 'header';
+				$row->cells[] = $cell;
+			}
+		}
+		
+		$rows[] = $row;
+		$row = new html_table_row();
+		
+		foreach($table_content as $topic => $content ){
+			
+			$cell = new html_table_cell();
+			$cell->text = $table_column[$topic]->title;
+			$row->cells[] = $cell;
+			
+			foreach($content->niveaus as $niveau => $element){
+				$cell = new html_table_cell();
+				$cell->text = $element;
+				if(array_key_exists($niveau, $spanning_niveaus)){
+					$cell->colspan = $spanning_colspan;
+				}					
+				
+				$row->cells[] = $cell;
+			}
+			
+			$rows[] = $row;
+			$row = new html_table_row();
+		}
+		
+		$table->data = $rows;
+		$content = html_writer::table($table);
+		
+		
+		return html_writer::div($content, 'compprofile_grid');
+	}
+	
 private function competence_profile_tree_v2($in, $courseid, $student = null,$scheme = 1, $showonlyreached = false, $eportfolioitems = false, $max_scheme = 3) {
 		global $DB;
 

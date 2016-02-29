@@ -6212,6 +6212,47 @@ function block_exacomp_get_html_for_student_eval($evaluation, $scheme){
 	return $return;
 	
 }
+
+function block_exacomp_get_grid_for_competence_profile($courseid, $studentid){
+	global $DB;
+	list($course_subjects, $table_column, $table_header, $selectedSubject, $selectedTopic, $selectedNiveau) = block_exacomp_init_overview_data($courseid, 0, 0, 0, false, block_exacomp_is_teacher(), $studentid);
+	$competence_tree = block_exacomp_get_competence_tree($courseid);
+	$table_content = array();
+	
+	$scheme_items = \block_exacomp\global_config::get_scheme_items(block_exacomp_get_grading_scheme($courseid));
+	
+	foreach($competence_tree as $subject){
+		foreach($subject->topics as $topic){
+			$table_content[$topic->id] = new stdClass();
+			$table_content[$topic->id]->niveaus = array();
+			$table_content[$topic->id]->span = 0;
+			foreach($topic->descriptors as $descriptor){
+				
+				$evaluation = block_exacomp\get_comp_eval($courseid, \block_exacomp\ROLE_TEACHER, $studentid, \block_exacomp\TYPE_DESCRIPTOR, $descriptor->id);
+				if(!$evaluation){
+					$evaluation = new stdClass();
+					$evaluation->value = -1;
+				}
+				$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
+				$table_content[$topic->id]->niveaus[$niveau->id] = ($evaluation->value > -1)? $scheme_items[$evaluation->value]:'';
+				if($niveau->span == 1)
+					$table_content[$topic->id]->span = 1;
+			}
+		}
+	}
+	
+	foreach($table_header as $niveau){
+		if($niveau->id != \block_exacomp\SHOW_ALL_NIVEAUS)
+			foreach($table_content as $row){
+				if($row->span != 1){
+					if(!array_key_exists($niveau->id, $row->niveaus))
+						$row->niveaus[$niveau->id] = '';
+				}
+			}
+	}
+	
+	return array($course_subjects, $table_column, $table_header, $table_content);
+}
 }
 
 namespace block_exacomp {
