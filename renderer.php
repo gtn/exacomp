@@ -3586,7 +3586,8 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 					
 					$span_in_work = "";
 					if($return->total > 0)
-						$span_in_work = html_writer::tag('span', \block_exacomp\get_string('inwork', null, ['inWork' => $return->inWork, 'total' => $return->total]), array('class'=>"compprof_barchart_teacher"));
+						$span_in_work = html_writer::tag('span', 
+								\block_exacomp\get_string('inwork', null, ['inWork' => $return->inWork, 'total' => $return->total]), array('class'=>"compprof_barchart_inwork"));
 					
 					$img_teacher = block_exacomp_get_html_for_teacher_eval(
 							((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:-1), $scheme);
@@ -3599,14 +3600,18 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 							((isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:-1), $scheme);
 									
 					$span_student = html_writer::tag('span', "S: ".
-							$img_student, array('class'=>"compprof_barchart_teacher"));
-						
-					$desc_content .= html_writer::div($content_div.
-							$span_teacher.$span_student.
-							(($descriptor->examples)?html_writer::empty_tag('br').
+							$img_student, array('class'=>"compprof_barchart_student"));
+					
+					$div_teacher_student = html_writer::div($span_student. $span_teacher, 'compprof_evaluation');
+
+					$bar_chart = (($descriptor->examples)?html_writer::empty_tag('br').
 							html_writer::div('', 'compprof_barchart', array('id'=>'svgdesc'.$descriptor->id))
-							.$span_in_work:''), 
-							'compprof_barchart_legend');		
+							.$span_in_work:'');
+					
+					$div_barchart = html_writer::div($bar_chart, 'compprof_example');
+					$desc_content .= html_writer::div($content_div.
+							$div_teacher_student.$div_barchart, 
+							'compprof_descriptor');		
 					
 					$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, ((block_exacomp_is_niveautitle_for_profile_enabled() && $niveau)?$niveau->title:$descriptor->title));
 					$desc_content .= html_writer::div(html_writer::tag('p', html_writer::empty_tag('span', array('id'=>'value'))), 'tooltip hidden', array('id'=>'tooltip'.$descriptor->id));

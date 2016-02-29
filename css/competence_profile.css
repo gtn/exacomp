@@ -70,6 +70,35 @@
 	margin-right: 10px;
 }
 
+#block_exacomp .compprof_evaluation{
+	
+}
+#block_exacomp .compprof_example{
+	
+}
+
+
+#block_exacomp .compprof_descriptor {
+	display: inline;
+}
+
+#block_exacomp .compprof_descriptor:after {
+	content: ".";
+	clear: both;
+	display: block;
+	visibility: hidden;
+	height: 0px;
+	margin-bottom: 20px;
+}
+
+#block_exacomp .compprof_descriptor:before {
+	content: ".";
+	clear: both;
+	display: block;
+	visibility: hidden;
+	height: 0px;
+	margin-bottom: 20px;
+}
 .competence_profile_exastud table, .competence_profile_exastud tr {
 	padding: 0;
 	margin: 0;
