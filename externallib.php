@@ -636,7 +636,7 @@ class block_exacomp_external extends external_api {
 			$result = new stdClass ();
 			$result->type = "example";
 			$result->title = $example->title;
-			$result->link = ($url = block_exacomp_get_file_url($example, 'example_task')) ? $url : $example->externalurl;
+			$result->link = ($url = block_exacomp_get_file_url($example, 'example_task', $courseid)) ? $url : $example->externalurl;
 			$result->contentid = $example->id;
 			
 			$results [] = $result;
@@ -1255,7 +1255,7 @@ class block_exacomp_external extends external_api {
 				'exampleid' => $exampleid 
 		) );
 
-		static::require_can_access_example($exampleid, 0);
+		$data = static::require_can_access_example($exampleid);
 
 		$example = $DB->get_record (\block_exacomp\DB_EXAMPLES, array (
 				'id' => $exampleid 
@@ -1263,13 +1263,13 @@ class block_exacomp_external extends external_api {
 		$example->description = htmlentities ( $example->description );
 		$example->hassubmissions = ($DB->get_records('block_exacompitemexample',array('exampleid'=>$exampleid))) ? true : false;
 		
-		$task = block_exacomp_get_file_url($example, 'example_task');
-		if(isset($task))
-			$example->task = $task->__toString();
+		$task = block_exacomp_get_file_url($example, 'example_task', $data->courseid);
+		if ($task)
+			$example->task = (string)$task;
 		
-		$solution = block_exacomp_get_file_url($example, 'example_solution');
-		if(isset($solution))
-			$example->solution = $solution->__toString();
+		$solution = block_exacomp_get_file_url($example, 'example_solution', $data->courseid);
+		if ($solution)
+			$example->solution = (string)$solution;
 		
 		return $example;
 	}
@@ -1508,7 +1508,7 @@ class block_exacomp_external extends external_api {
 				'exampleid' => $exampleid 
 		) );
 
-		static::require_can_access_example($exampleid, 0);
+		static::require_can_access_example($exampleid);
 
 		$entries = $DB->get_records ( 'block_exacompitemexample', array (
 				'exampleid' => $exampleid 
@@ -6213,52 +6213,57 @@ class block_exacomp_external extends external_api {
 		throw new invalid_parameter_exception ( 'Not allowed to view other user' );
 	}
 
+	/**
+	 * @param $exampleid
+	 * @param int $courseid if courseid=0, then we don't know the course and have to search all
+	 * 		                TODO: if courseid is set, then just search that course
+	 * @return object the data of the found example
+	 * @throws \block_exacomp\permission_exception
+	 */
 	private static function require_can_access_example($exampleid, $courseid=null) {
 		// go through all courses
 		// and all subjects
 		// and all examples
 		// and try to find it
-		$example = call_user_func(function() use ($exampleid) {
-			$courses_ws = static::get_courses(g::$USER->id);
-			
-			$courses = array();
-			foreach($courses_ws as $course){
-				$courses[$course['courseid']] = new stdClass();
-				$courses[$course['courseid']]->id = $course['courseid'];
-			}
-			
-			//check if user is external trainer, if he is add courses where external_student is enrolled
-			// check external trainers
-			$external_trainer_entries = g::$DB->get_records ( \block_exacomp\DB_EXTERNAL_TRAINERS, array (
-					'trainerid' => g::$USER->id
-			) );
-			
-			foreach($external_trainer_entries as $ext_tr_entry){
-				$courses_user = static::get_courses($ext_tr_entry->studentid);
-				
-				foreach($courses_user as $course){
-					if(!array_key_exists($course['courseid'], $courses)){
-						$courses[$course['courseid']] = new stdClass();
-						$courses[$course['courseid']]->id = $course['courseid'];
-					}
+		$courses_ws = static::get_courses(g::$USER->id);
+
+		$courses = array();
+		foreach($courses_ws as $course){
+			$courses[$course['courseid']] = new stdClass();
+			$courses[$course['courseid']]->id = $course['courseid'];
+		}
+
+		//check if user is external trainer, if he is add courses where external_student is enrolled
+		// check external trainers
+		$external_trainer_entries = g::$DB->get_records ( \block_exacomp\DB_EXTERNAL_TRAINERS, array (
+				'trainerid' => g::$USER->id
+		) );
+
+		foreach($external_trainer_entries as $ext_tr_entry){
+			$courses_user = static::get_courses($ext_tr_entry->studentid);
+
+			foreach($courses_user as $course){
+				if(!array_key_exists($course['courseid'], $courses)){
+					$courses[$course['courseid']] = new stdClass();
+					$courses[$course['courseid']]->id = $course['courseid'];
 				}
 			}
-			
-			foreach($courses as $course){
-				$example = block_exacomp_check_student_example_permission($course->id, $exampleid, g::$USER->id);
-				if($example)
-					return $example;
-					
-				$example = block_exacomp_check_student_example_permission($course->id, $exampleid, 0);
-				if($example)
-					return $example;
+		}
+
+		$exampleDataFound = null;
+		foreach($courses as $course){
+			// can be viewed by user, or by whole course
+			if (block_exacomp_check_student_example_permission($course->id, $exampleid, g::$USER->id)
+				|| block_exacomp_check_student_example_permission($course->id, $exampleid, 0)) {
+				$exampleDataFound = (object)[ 'exampleid' => $exampleid, 'courseid' => $course->id ];
+				break;
 			}
+		}
 
-			return null;
-		});
-
-		if (!$example) {
+		if (!$exampleDataFound) {
 			throw new \block_exacomp\permission_exception();
 		}
+
+		return $exampleDataFound;
 	}
 }

@@ -5382,15 +5382,15 @@ function block_exacomp_get_file($item, $type) {
  * @param array|object $item database item
  * @param string $type
  */
-function block_exacomp_get_file_url($item, $type) {
-	global $COURSE;
+function block_exacomp_get_file_url($item, $type, $context=null) {
+	$context = block_exacomp_get_context_from_courseid($context);
 
 	// get from filestorage
 	$file = block_exacomp_get_file($item, $type);
 
 	if (!$file) return null;
 
-	return moodle_url::make_pluginfile_url(context_course::instance($COURSE->id)->id, $file->get_component(), $file->get_filearea(),
+	return moodle_url::make_pluginfile_url($context->id, $file->get_component(), $file->get_filearea(),
 		$file->get_itemid(), $file->get_filepath(), $file->get_filename());
 }
 

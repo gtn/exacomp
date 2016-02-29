@@ -52,10 +52,12 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
 
 		$options['filename'] = $filename;
 	} elseif ($filearea == 'example_solution') {
-		// only teachers can see the solution
+		// actually all users are allowed to see the solution
+		/*
 		if (!block_exacomp_is_teacher($context)) {
 			return false;
 		}
+		*/
 
 		$example = block_exacomp\example::get($itemid);
 		if (!$example) {
