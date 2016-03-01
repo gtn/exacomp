@@ -262,6 +262,12 @@ class db_layer {
 		return $objects;
 	}
 
+	/**
+	 * @param string $class
+	 * @param db_record[] $records
+	 * @param array $data
+	 * @return array
+	 */
 	function create_objects($class, array $records, $data = array()) {
 		$objects = array();
 
@@ -609,6 +615,14 @@ class db_record {
 		return $DB->get_record(static::TABLE, $conditions, $fields, $strictness);
 	}
 
+	/**
+	 * @param array|null $conditions
+	 * @param string $sort
+	 * @param string $fields
+	 * @param int $limitfrom
+	 * @param int $limitnum
+	 * @return static[]
+	 */
 	static function get_objects(array $conditions=null, $sort='', $fields='*', $limitfrom=0, $limitnum=0) {
 		return static::create_objects(static::get_records($conditions, $sort, $fields, $limitfrom, $limitnum));
 	}
@@ -617,6 +631,13 @@ class db_record {
 		return g::$DB->get_records(static::TABLE, $conditions, $sort, $fields, $limitfrom, $limitnum);
 	}
 
+	/**
+	 * @param $sql
+	 * @param array|null $params
+	 * @param int $limitfrom
+	 * @param int $limitnum
+	 * @return static[]
+	 */
 	static function get_objects_sql($sql, array $params=null, $limitfrom=0, $limitnum=0) {
 		return static::create_objects(static::get_records_sql($sql, $params, $limitfrom, $limitnum));
 	}
@@ -775,7 +796,7 @@ class descriptor extends db_record {
 		   // TODO
 		   $siblings = block_exacomp_get_descriptors_by_topic($courseid, $topicid);
 		} else {
-		   print_error('parentid or topicid not submitted');
+		   throw new moodle_exception('parentid or topicid not submitted');
 		}
 
 		// get $max_sorting

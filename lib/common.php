@@ -151,6 +151,12 @@ class SimpleXMLElement extends \SimpleXMLElement {
 }
 
 abstract class exadb extends \moodle_database {
+	/**
+	 * @param string $table
+	 * @param array|object $data
+	 * @param array|null $where
+	 * @return null|bool|object
+	 */
 	public function update_record($table, $data, $where=null) {
 	}
 	public function insert_or_update_record($table, $data, $where = null) {
@@ -172,9 +178,9 @@ class exadb_forwarder {
 class exadb_extender extends exadb_forwarder {
 
 	/**
-	 * @param $table
-	 * @param $data
-	 * @param $where
+	 * @param string $table
+	 * @param array|object $data
+	 * @param array|null $where
 	 * @return null|bool|object
 	 */
 	public function update_record($table, $data, $where=null) {
@@ -483,7 +489,7 @@ function _t_parse_string($string, $a) {
 	return $string;
 }
 
-/*
+/**
  * translator function
  */
 function trans() {

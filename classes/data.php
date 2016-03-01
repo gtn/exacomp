@@ -421,9 +421,17 @@ class data {
 }
 
 class data_exporter extends data {
-	
+
+	/**
+	 * @var SimpleXMLElement
+	 */
 	static $xml;
+
+	/**
+	 * @var ZipArchive
+	 */
 	static $zip;
+
 	static $filter_descriptors;
 	
 	public static function do_export($filter_descriptors = null) {
@@ -490,7 +498,12 @@ class data_exporter extends data {
 		
 		exit;
 	}
-	
+
+	/**
+	 * @param SimpleXMLElement $xmlItem
+	 * @param $dbItem
+	 * @throws moodle_exception
+	 */
 	private static function assign_source($xmlItem, $dbItem) {
 		if ($dbItem->source && $dbItem->sourceid) {
 			if ($dbItem->source == IMPORT_SOURCE_DEFAULT) {
@@ -511,14 +524,21 @@ class data_exporter extends data {
 			$xmlItem['id'] = $dbItem->id;
 		}
 	}
-	
+
+	/**
+	 * @param SimpleXMLElement $xmlItem
+	 * @param string $childName
+	 * @param string $table
+	 * @param int $id
+	 * @throws moodle_exception
+	 */
 	private static function add_child_with_source($xmlItem, $childName, $table, $id) {
 		if ($dbItem = g::$DB->get_record($table, array("id" => $id))) {
 			self::assign_source($xmlItem->addChild($childName), $dbItem);
 		}
 	}
-	
-	private static function export_file(SimpleXMLElement $xmlItem, stored_file $file) {
+
+	private static function export_file(SimpleXMLElement $xmlItem, \stored_file $file) {
 		// add file to zip
 		
 		// testing for big archive with lots of files
@@ -553,8 +573,8 @@ class data_exporter extends data {
 		$xmlItem->timecreated = $file->get_timecreated();
 		$xmlItem->timemodified = $file->get_timemodified();
 	}
-	
-	private static function export_skills($xmlParent) {
+
+	private static function export_skills(SimpleXMLElement $xmlParent) {
 		$dbItems = g::$DB->get_records(DB_SKILLS); // , array("source"=>self::$source));
 		
 		if (!$dbItems) return;
@@ -569,7 +589,7 @@ class data_exporter extends data {
 		}
 	}
 	
-	private static function export_niveaus($xmlParent, $parentid = 0) {
+	private static function export_niveaus(SimpleXMLElement $xmlParent, $parentid = 0) {
 		/*
 		<niveau id="4">
 			<title><![CDATA[B2]]></title>
@@ -597,7 +617,7 @@ class data_exporter extends data {
 		}
 	}
 	
-	private static function export_taxonomies($xmlParent, $parentid = 0) {
+	private static function export_taxonomies(SimpleXMLElement $xmlParent, $parentid = 0) {
 		$dbItems = g::$DB->get_records(DB_TAXONOMIES, array('parentid'=>$parentid)); // , array("source"=>self::$source));
 		
 		if (!$dbItems) return;
@@ -615,8 +635,8 @@ class data_exporter extends data {
 			self::export_taxonomies($xmlItem, $dbItem->id);
 		}
 	}
-	
-	private static function export_examples($xmlParent, $parentid = 0) {
+
+	private static function export_examples(SimpleXMLElement $xmlParent, $parentid = 0) {
 		/*
 		<example id="3" taxid="78">
 			<title><![CDATA[Hardware Anschaffungen]]></title>
@@ -652,7 +672,8 @@ class data_exporter extends data {
 		} else {
 			$filter = "";
 		}
-		
+
+		/* @var example[] $dbItems */
 		$dbItems = example::get_objects_sql("
 			SELECT e.*
 			FROM {".DB_EXAMPLES."} e
@@ -737,7 +758,7 @@ class data_exporter extends data {
 		}
 	}
 	
-	private static function export_descriptors($xmlParent, $parentid = 0) {
+	private static function export_descriptors(SimpleXMLElement $xmlParent, $parentid = 0) {
 		if (!$parentid && self::$filter_descriptors) {
 			$dbItems = g::$DB->get_records_sql("
 				SELECT d.*
@@ -768,8 +789,8 @@ class data_exporter extends data {
 			self::export_descriptors($xmlItem, $dbItem->id);
 		}
 	}
-	
-	private static function export_edulevels($xmlParent, $parentid = 0) {
+
+	private static function export_edulevels(SimpleXMLElement $xmlParent, $parentid = 0) {
 		$dbEdulevels = block_exacomp_get_edulevels();
 
 		$xmlEdulevels = SimpleXMLElement::create('edulevels');
@@ -792,8 +813,8 @@ class data_exporter extends data {
 			$xmlParent->addChild($xmlEdulevels);
 		}
 	}
-	
-	private static function export_crosssubjects($xmlParent) {
+
+	private static function export_crosssubjects(SimpleXMLElement $xmlParent) {
 		$dbCrosssubjects = block_exacomp_get_crosssubjects();
 		$xmlParent->addChild('crosssubjects');
 
@@ -801,6 +822,7 @@ class data_exporter extends data {
 			$xmlCrosssubject = $xmlParent->crosssubjects->addchild('crosssubject');
 			self::assign_source($xmlCrosssubject, $dbCrosssubject);
 			
+			/* @var SimpleXMLElement $xmlCrosssubject */
 			$xmlCrosssubject->addChildWithCDATAIfValue('title', $dbCrosssubject->title);
 			$xmlCrosssubject->addChildWithCDATAIfValue('description', $dbCrosssubject->description);
 			
@@ -885,7 +907,7 @@ class data_exporter extends data {
 		return $xmlSubjects;
 	}
 
-	private static function export_subject_niveau_mm($xmlSubject, $dbSubject) {
+	private static function export_subject_niveau_mm(SimpleXMLElement $xmlSubject, $dbSubject) {
 		$dbItems = g::$DB->get_records_sql("
 			SELECT n.id, n.source, n.sourceid, sn.subtitle
 			FROM {".DB_NIVEAUS."} n
@@ -1040,7 +1062,10 @@ class data_importer extends data {
 	private static $import_source_local_id;
 	
 	private static $import_time = null;
-	
+
+	/**
+	 * @var ZipArchive
+	 */
 	private static $zip;
 	
 	public static function do_import_string($data = null, $par_source = IMPORT_SOURCE_DEFAULT) {
@@ -1295,11 +1320,11 @@ class data_importer extends data {
 		$fs = get_file_storage();
 		
 		// delete old file
-		$fs->delete_area_files(context_system::instance()->id, 'block_exacomp', $filearea, $item->id);
+		$fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', $filearea, $item->id);
 		
 		// reimport
-		$file = $fs->create_file_from_string(array(
-			'contextid' => context_system::instance()->id,
+		$fs->create_file_from_string(array(
+			'contextid' => \context_system::instance()->id,
 			'component' => 'block_exacomp',
 			'filearea' => $filearea,
 			'itemid' => $item->id,
@@ -1800,7 +1825,7 @@ class data_importer extends data {
 		// deactivated for now
 	}
 
-
+	/*
 	private static function delete_unused_descriptors($source, $crdate, $topiclist){
 		/* descriptoren löscent, wenn sie
 	
@@ -1810,7 +1835,7 @@ class data_importer extends data {
 		4) wenn der zugehörige topic nirgends augewählt ist (bei settings/subjectselection)
 		5) wenn der zugehörige schultyp nirgends augewählt ist (bei modulkonfiguration/schultypauswahl)
 		6) wenn kein selbst hinaufgeladenes beispiel drannhängt
-		*/
+		* /
 	
 		$sql="SELECT distinct descr.id,descr.sourceid FROM {block_exacompcompuser} u
 		RIGHT JOIN {block_exacompdescriptors} descr ON descr.id=u.compid
@@ -1835,6 +1860,7 @@ class data_importer extends data {
 			g::$DB->delete_records('block_exacompdescrexamp_mm', array("descrid" => $row->id));
 		}
 	}
+	*/
 	
 }
 	
@@ -1844,6 +1870,7 @@ class data_importer extends data {
  * Afterwards we need to filter the empty values, otherwise $DB functions throw warnings
  *
  * @param SimpleXMLElement $xmlobject
+ * @return array
  */
 function simpleXMLElementToArray(SimpleXMLElement $xmlobject) {
 	$array = json_decode(json_encode((array)$xmlobject), true);
@@ -1882,6 +1909,5 @@ class generalxml_upload_form extends \moodleform {
 		$mform->addRule('file', null, 'required', null, 'client');
 
 		$this->add_action_buttons(false, get_string('add'));
-
 	}
 }
