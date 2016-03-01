@@ -916,7 +916,7 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 }
 
 function block_exacomp_is_skillsmanagement() {
-	return get_config('exacomp', 'skillsmanagement');
+	return !empty(g::$CFG->is_skillsmanagement);
 }
 function block_exacomp_is_topicgrading_enabled() {
 	return get_config('exacomp', 'usetopicgrading');
@@ -6564,20 +6564,6 @@ namespace block_exacomp {
 
 		return $examples;
 	}
-
-	function get_string($identifier, $component = null, $a = null) {
-		$manager = get_string_manager();
-
-		if ($component === null)
-			$component = __NAMESPACE__;
-
-		if ($component === __NAMESPACE__ && $manager->string_exists('skillsmanagement_'.$identifier, $component)) {
-			return $manager->get_string('skillsmanagement_'.$identifier, $component, $a);
-		}
-
-		return common\get_string($identifier, $component, $a);
-	}
-
 
 	function get_comp_eval($courseid, $role, $userid, $comptype, $compid) {
 		return g::$DB->get_record(\block_exacomp\DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$compid, 'comptype'=>$comptype, 'role'=>$role));

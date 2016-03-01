@@ -59,6 +59,9 @@ $PAGE->set_title ( get_string ( $page_identifier, 'block_exacomp' ) );
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation ( $courseid );
 
+
+
+
 if ($fromimport == 1) {
 		$img = 'two_admin.png';
 } else {
@@ -102,6 +105,12 @@ echo $output->header($context, $courseid, 'tab_admin_settings');
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_admin_settings($courseid), $page_identifier);
 
 /* CONTENT REGION */
+
+if (block_exacomp_is_skillsmanagement()) {
+	echo $output->notification(block_exacomp\trans('en:This settings is not available in skillsmanagement mode!'));
+	echo $output->footer();
+	exit;
+}
 
 /* HTML CONTENT */
 

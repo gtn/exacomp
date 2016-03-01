@@ -41,7 +41,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 				return true;
 			} else {
 				return 'wrong id';
-				// return get_string('validateerror', 'admin');
+				// return block_exacomp\get_string('validateerror', 'admin');
 			}
 		}
 	}
@@ -72,50 +72,59 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 // generate id if not set
 block_exacomp\data::generate_my_source();
 
-$settings->add(new admin_setting_configtext('exacomp/xmlserverurl', get_string('settings_xmlserverurl', 'block_exacomp'),
-		get_string('settings_configxmlserverurl', 'block_exacomp'), "", PARAM_URL));
-		
-$settings->add(new admin_setting_configcheckbox('exacomp/autotest', get_string('settings_autotest', 'block_exacomp'), 
-		get_string('settings_autotest_description', 'block_exacomp'), 0, 1, 0));
+$settings->add(new admin_setting_configcheckbox('exacomp/autotest', block_exacomp\get_string('settings_autotest'),
+	block_exacomp\get_string('settings_autotest_description'), 0, 1, 0));
 
-$settings->add(new admin_setting_configtext('exacomp/testlimit', get_string('settings_testlimit', 'block_exacomp'), 
-		get_string('settings_testlimit_description', 'block_exacomp'), 50, PARAM_INTEGER));
-	
-$settings->add(new admin_setting_configcheckbox('exacomp/usebadges', get_string('settings_usebadges', 'block_exacomp'), 
-		get_string('settings_usebadges_description', 'block_exacomp'), 0, 1, 0));
+$settings->add(new admin_setting_configtext('exacomp/testlimit', block_exacomp\get_string('settings_testlimit'),
+	block_exacomp\get_string('settings_testlimit_description'), 50, PARAM_INTEGER));
 
-$settings->add(new admin_setting_configcheckbox('exacomp/skillsmanagement', get_string('settings_skillsmanagement', 'block_exacomp'),
-		get_string('settings_skillsmanagement_description', 'block_exacomp'), 0, 1, 0));
+$settings->add(new admin_setting_configcheckbox('exacomp/usebadges', block_exacomp\get_string('settings_usebadges'),
+	block_exacomp\get_string('settings_usebadges_description'), 0, 1, 0));
 
-$settings->add(new admin_setting_configcheckbox('exacomp/external_trainer_assign', get_string('block_exacomp_external_trainer_assign_head', 'block_exacomp'),
-		get_string('block_exacomp_external_trainer_assign_body', 'block_exacomp'), 0));
+$settings->add(new admin_setting_configcheckbox('exacomp/notifications', block_exacomp\get_string('block_exacomp_notifications_head'),
+	block_exacomp\get_string('block_exacomp_notifications_body'), 0));
 
-$settings->add(new block_exacomp_admin_setting_source('exacomp/mysource', 'Source ID', "", PARAM_TEXT));
+$settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme', block_exacomp\get_string('settings_admin_scheme'),
+	block_exacomp\get_string('settings_admin_scheme_description'), block_exacomp\get_string('settings_admin_scheme_none'), array(block_exacomp\get_string('settings_admin_scheme_none'), 'G/M/E', 'A/B/C', '*/**/***')));
 
-$settings->add(new admin_setting_configtext('exacomp/scheduleinterval', get_string('settings_interval','block_exacomp'), get_string('settings_interval_description','block_exacomp'), 50, PARAM_INT));
-$settings->add(new admin_setting_configtext('exacomp/scheduleunits', get_string('settings_scheduleunits','block_exacomp'), get_string('settings_scheduleunits_description','block_exacomp'), 8, PARAM_INT));
-$settings->add(new admin_setting_configtext('exacomp/schedulebegin', get_string('settings_schedulebegin','block_exacomp'), get_string('settings_schedulebegin_description','block_exacomp'), "07:45", PARAM_TEXT));
+$settings->add(new admin_setting_configcheckbox('exacomp/additional_grading', block_exacomp\get_string('settings_additional_grading'),
+	block_exacomp\get_string('settings_additional_grading_description'), 0));
 
-$settings->add(new admin_setting_configcheckbox('exacomp/notifications', get_string('block_exacomp_notifications_head', 'block_exacomp'),
-		get_string('block_exacomp_notifications_body', 'block_exacomp'), 0));
+$settings->add(new admin_setting_configcheckbox('exacomp/useprofoundness', block_exacomp\get_string('useprofoundness'),
+	'', 0));
 
-$settings->add(new admin_setting_configcheckbox('exacomp/logging', get_string('block_exacomp_logging_head', 'block_exacomp'),
-		get_string('block_exacomp_logging_body', 'block_exacomp'), 0));
-		
-$settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme', get_string('settings_admin_scheme', 'block_exacomp'),
-		get_string('settings_admin_scheme_description', 'block_exacomp'), get_string('settings_admin_scheme_none', 'block_exacomp'), array(get_string('settings_admin_scheme_none', 'block_exacomp'), 'G/M/E', 'A/B/C', '*/**/***')));
+$settings->add(new admin_setting_configcheckbox('exacomp/usetopicgrading', block_exacomp\get_string('usetopicgrading'),
+	'', 0));
 
-$settings->add(new admin_setting_configcheckbox('exacomp/additional_grading', get_string('settings_additional_grading', 'block_exacomp'), 
-		get_string('settings_additional_grading_description', 'block_exacomp'), 0));
 
-$settings->add(new admin_setting_configcheckbox('exacomp/useprofoundness', get_string('useprofoundness', 'block_exacomp'),
-		'' /* \block_exacomp\trans('en:todo') */, 0));
+$settings->add(new admin_setting_heading('exacomp/heading_display', block_exacomp\trans(['de:Anzeige', 'en:Display']), ''));
 
-$settings->add(new admin_setting_configcheckbox('exacomp/usetopicgrading', get_string('usetopicgrading', 'block_exacomp'),
-		'' /* \block_exacomp\trans('en:todo') */, 0));
+$settings->add(new admin_setting_configcheckbox('exacomp/usenumbering', block_exacomp\get_string('usenumbering'),
+	'', 1));
 
-$settings->add(new admin_setting_configcheckbox('exacomp/usenumbering', get_string('usenumbering', 'block_exacomp'),
-		'' /* \block_exacomp\trans('en:todo') */, 1));
+$settings->add(new admin_setting_configcheckbox('exacomp/useniveautitleinprofile', block_exacomp\get_string('useniveautitleinprofile'),
+	'', 1));
 
-$settings->add(new admin_setting_configcheckbox('exacomp/useniveautitleinprofile', get_string('useniveautitleinprofile', 'block_exacomp'),
-		'' /* \block_exacomp\trans('en:todo') */, 1));
+
+$settings->add(new admin_setting_heading('exacomp/heading_weekly_schedule', block_exacomp\get_string('weekly_schedule'), ''));
+$settings->add(new admin_setting_configtext('exacomp/scheduleinterval', block_exacomp\get_string('settings_interval'),
+	block_exacomp\get_string('settings_interval_description'), 50, PARAM_INT));
+$settings->add(new admin_setting_configtext('exacomp/scheduleunits', block_exacomp\get_string('settings_scheduleunits'),
+	block_exacomp\get_string('settings_scheduleunits_description'), 8, PARAM_INT));
+$settings->add(new admin_setting_configtext('exacomp/schedulebegin', block_exacomp\get_string('settings_schedulebegin'),
+	block_exacomp\get_string('settings_schedulebegin_description'), "07:45", PARAM_TEXT));
+
+
+$settings->add(new admin_setting_heading('exacomp/heading_data', block_exacomp\trans(['de:Technische Einstellungen', 'en:Technical Settings']), ''));
+
+$settings->add(new admin_setting_configcheckbox('exacomp/logging', block_exacomp\get_string('block_exacomp_logging_head'),
+	block_exacomp\get_string('block_exacomp_logging_body'), 0));
+
+$settings->add(new admin_setting_configcheckbox('exacomp/external_trainer_assign', block_exacomp\get_string('block_exacomp_external_trainer_assign_head'),
+	block_exacomp\get_string('block_exacomp_external_trainer_assign_body'), 0));
+
+$settings->add(new block_exacomp_admin_setting_source('exacomp/mysource', 'Source ID',
+	block_exacomp\trans(['de:Automatisch generierte ID dieser Exacomp Installation. Diese kann nicht geändert werden', 'en:Automatically generated ID of this Exacomp installation. This ID can not be changed']), PARAM_TEXT));
+
+$settings->add(new admin_setting_configtext('exacomp/xmlserverurl', block_exacomp\get_string('settings_xmlserverurl'),
+	block_exacomp\get_string('settings_configxmlserverurl'), "", PARAM_URL));
