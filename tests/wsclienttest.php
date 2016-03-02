@@ -60,25 +60,15 @@ print_r($resp_moodle);
 
 header('Content-Type: text/plain');
 
-echo "
-descriptor details:
-";
 
-
-echo "
-profile:
-
-";
 
 //REST CALL dakora_get_examples_pool_for_week
-$functionname = 'dakora_get_examples_by_descriptor_and_grading_for_crosssubject';
+$functionname = 'dakora_get_competence_grid_for_profile';
 
 $params = new stdClass();
 $params->courseid = 4;
-$params->descriptorid = 2230;
 $params->userid = 4;
-$params->grading = 3;
-$params->crosssubjid = 5;
+$params->subjectid = 3;
 
 
 $serverurl = $domainname . '/webservice/rest/server.php'. '?wstoken=' . $token . '&wsfunction='.$functionname;

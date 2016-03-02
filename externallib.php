@@ -5768,6 +5768,51 @@ class block_exacomp_external extends external_api {
 	}
 
 	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_competence_grid_for_profile_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value (PARAM_INT, 'id of course'),
+				'userid' => new external_value (PARAM_INT, 'id of user'),
+				'subjectid' => new external_value ( PARAM_INT, 'id of example' )
+		) );
+	}
+
+	/**
+	 * Create a new blocking event
+	 */
+	public static function dakora_get_competence_grid_for_profile($courseid, $userid, $subjectid) {
+		global $USER;
+		
+		static::validate_parameters(static::dakora_get_competence_grid_for_profile_parameters(), array('courseid'=>$courseid,
+				'userid'=>$userid, 'subjectid'=>$subjectid));
+	
+		static::require_can_access_course_user($courseid, $userid);
+
+		$content =  block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid);
+		
+		return $content;
+	}
+
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_single_structure
+	 */
+	public static function dakora_get_competence_grid_for_profile_returns() {
+		return new external_single_structure ( array (
+			'rows' => new external_multiple_structure ( new external_single_structure ( array (
+					'columns' => new external_multiple_structure ( new external_single_structure( array (
+						'text' => new external_value ( PARAM_TEXT, 'cell text'),
+						'span' => new external_value ( PARAM_INT, 'colspan' )
+					) ) )
+			) ) )
+		) );
+	}
+
+	/**
 	* helper function to use same code for 2 ws
 	*/
 	private static function get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid = 0, $show_all = false) {

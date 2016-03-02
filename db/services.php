@@ -114,6 +114,7 @@ call_user_func(function() use (&$functions, &$services) {
 		[ 'dakora_get_examples_by_descriptor_and_grading', 'read', 'returns examples for given descriptor and grading' ],
 		[ 'dakora_get_examples_by_descriptor_and_grading_for_crosssubject', 'read', 'returns examples for given descriptor and grading and crosssubject' ],
 		[ 'dakora_allow_example_resubmission', 'read', 'allow student to resubmit example' ],
+		[ 'dakora_get_competence_grid_for_profile', 'read', 'get grid for profile' ]
 	];
 
 	foreach ($definitions as $definition) {

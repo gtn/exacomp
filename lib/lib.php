@@ -6254,6 +6254,64 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 	
 	return array($course_subjects, $table_column, $table_header, $table_content);
 }
+
+function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid){
+	global $DB;
+	list($course_subjects, $table_rows, $table_header, $table_content) = block_exacomp_get_grid_for_competence_profile($courseid, $userid, $subjectid);
+
+	$spanning_niveaus = $DB->get_records(\block_exacomp\DB_NIVEAUS,array('span' => 1));
+	//calculate the col span for spanning niveaus
+	$spanning_colspan = block_exacomp_calculate_spanning_niveau_colspan($table_header, $spanning_niveaus);
+	
+	$table = new stdClass();
+	$table->rows = array();
+	
+	$header_row = new stdClass();
+	$header_row->columns = array();
+	
+	$header_row->columns[0] = new stdClass();
+	$header_row->columns[0]->text = '';
+	$header_row->columns[0]->span = 0;
+	
+	$current_idx = 1;
+	foreach($table_header as $element){
+		if($element->id != \block_exacomp\SHOW_ALL_NIVEAUS){
+			$header_row->columns[$current_idx] = new stdClass();
+			$header_row->columns[$current_idx]->text = $element->title;
+			$header_row->columns[$current_idx]->span = 0;
+			$current_idx++;
+		}
+	}
+	
+	$table->rows[] = $header_row;
+
+	
+	foreach($table_content as $topic => $rowcontent ){
+		$content_row = new stdClass();
+		$content_row->columns = array();
+		
+		$content_row->columns[0] = new stdClass();
+		$content_row->columns[0]->text = $table_rows[$topic]->title;
+		$content_row->columns[0]->span = 0;
+		
+		$current_idx = 1;
+		foreach($rowcontent->niveaus as $niveau => $element){
+			$content_row->columns[$current_idx] = new stdClass();
+			$content_row->columns[$current_idx]->text = $element;
+			
+			if(array_key_exists($niveau, $spanning_niveaus)){
+				$content_row->columns[$current_idx]->span = $spanning_colspan;
+			}else{
+				$content_row->columns[$current_idx]->span = 0;
+			}	
+			$current_idx++;
+		}
+		
+		$table->rows[] = $content_row;
+	}
+	
+	return $table;
+}
 }
 
 namespace block_exacomp {
