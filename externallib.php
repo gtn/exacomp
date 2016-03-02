@@ -5789,6 +5789,9 @@ class block_exacomp_external extends external_api {
 		static::validate_parameters(static::dakora_get_competence_grid_for_profile_parameters(), array('courseid'=>$courseid,
 				'userid'=>$userid, 'subjectid'=>$subjectid));
 	
+		if($userid == 0)
+			$userid = $USER->id;
+			
 		static::require_can_access_course_user($courseid, $userid);
 
 		$content =  block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid);
