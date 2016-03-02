@@ -746,7 +746,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$this->button_box(true, '');
 	}
 
-	public function competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0,$studentid=0) {
+public function competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0,$studentid=0) {
 		global $DB;
 
 		$headFlag = false;
@@ -804,8 +804,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			   
 				$cell2->text = html_writer::tag("span",html_writer::tag("span",block_exacomp_get_topic_numbering( block_exacomp_get_topic_by_id($topicid))." ".$topics[$topicid],array('class'=>'rotated-text__inner')),array('class'=>'rotated-text'));
 				$cell2->attributes['class'] = 'topic';
+				$cell2->rowspan = 2;
 				$row->cells[] = $cell2;
 
+				//make second row, spilt rows after topic title 
+				$row2 = new html_table_row();
 				foreach($niveaus as $niveauid => $niveau) {
 					if(isset($data[$skillid][$topicid][$niveauid])) {
 						$cell = new html_table_cell();
@@ -850,7 +853,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							if($report != BLOCK_EXACOMP_REPORT1)
 							if(array_key_exists($descriptor->topicid, $selection) && $visible && $studentid != 0) {
 
-								$compdiv .= html_writer::start_div('crosssubjects');
 								$table_head = new html_table_row();
 								$table_head->attributes['class'] = 'statistic_head';
 
@@ -880,7 +882,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 										list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_example_statistic_for_crosssubject($courseid, $crosssubject->id, $studentid);
 
 									$table_entry = new html_table_row();
-									$table_entry->cells[] = new html_table_cell(html_writer::link(new moodle_url("/blocks/exacomp/cross_subjects.php", array("courseid" => $courseid, "crosssubjid" => $crosssubject->id)), $crosssubject->title, array('title' => get_string('crosssubject','block_exacomp'))));
+									$table_entry->cells[] = new html_table_cell(html_writer::link(new moodle_url("/blocks/exacomp/cross_subjects.php", array("courseid" => $courseid, "crosssubjid" => $crosssubject->id)), substr($crosssubject->title,0,4), array('title' => $crosssubject->title)));
 									if($studentid != BLOCK_EXACOMP_SHOW_STATISTIC)
 										$table_entry->cells[] = new html_table_cell($total);
 									foreach($gradings as $key => $grading)
@@ -911,18 +913,23 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								$crossubject_statistic_rows[] = $table_entry;
 
 								$crossubject_statistic->data = $crossubject_statistic_rows;
-								$compdiv .= html_writer::table($crossubject_statistic);
-								$compdiv .= html_writer::end_div();
+								
+								//statistic cell
+								$cell_stat = new html_table_cell();
+								$cell_stat->text = html_writer::div(html_writer::table($crossubject_statistic), 'crosssubjects');
+								
 							}
 						}
 
 						// apply colspan for spanning niveaus
 						if(array_key_exists($niveauid,$spanningNiveaus)) {
 							$cell->colspan = $spanningColspan;
+							$cell_stat->colspan = $spanningColspan;
 						}
 
 						$cell->text = $compdiv;
 						$row->cells[] = $cell;
+						$row2->cells[] = $cell_stat;
 
 						// do not print other cells for spanning niveaus
 						if(array_key_exists($niveauid,$spanningNiveaus))
@@ -944,7 +951,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					}
 
 				}
+				
 				$rows[] = $row;
+				$rows[] = $row2;
 			}
 			//$rows[] = $row;
 		}
