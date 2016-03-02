@@ -3633,7 +3633,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	
 private function competence_profile_tree_v2($in, $courseid, $student = null,$scheme = 1, $showonlyreached = false, $eportfolioitems = false, $max_scheme = 3) {
 		global $DB;
-
+		static $barchartid_i = 0;
+		
 		$content="";
 		foreach($in as $subject){
 			foreach($subject->topics as $topic){
@@ -3643,53 +3644,59 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 				$niveaus = array();
 				$student_eval = array();
 				$teacher_eval = array();
-				if(!empty($topic->descriptors))
-				foreach($topic->descriptors as $descriptor){
-					$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
-					//always descriptor title TODO: remove global setting
-					$content_div = html_writer::tag('span', (($niveau)?$niveau->title:'') . ': ' . $descriptor->title);
-					$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, ((block_exacomp_is_niveautitle_for_profile_enabled() && $niveau)?$niveau->title:$descriptor->title));
-					
-					$span_in_work = "";
-					if($return->total > 0)
-						$span_in_work = html_writer::tag('span', 
-								\block_exacomp\get_string('inwork', null, ['inWork' => $return->inWork, 'total' => $return->total]), array('class'=>"compprof_barchart_inwork"));
-					
-					$img_teacher = block_exacomp_get_html_for_teacher_eval(
-							((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:-1), $scheme);
-					
-					$span_teacher = html_writer::tag('span', "L: ".
-						$img_teacher . (isset($student->competencies->teacher_additional_grading[$descriptor->id])? " (".$student->competencies->teacher_additional_grading[$descriptor->id].") ":""), 
-						array('class'=>"compprof_barchart_teacher"));
-									   
-					$img_student = block_exacomp_get_html_for_student_eval(
-							((isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:-1), $scheme);
-									
-					$span_student = html_writer::tag('span', "S: ".
-							$img_student, array('class'=>"compprof_barchart_student"));
-					
-					$div_teacher_student = html_writer::div($span_student. $span_teacher, 'compprof_evaluation');
-
-					$bar_chart = (($descriptor->examples)?html_writer::empty_tag('br').
-							html_writer::div('', 'compprof_barchart', array('id'=>'svgdesc'.$descriptor->id))
-							.$span_in_work:'');
-					
-					$div_barchart = html_writer::div($bar_chart, 'compprof_example');
-					$desc_content .= html_writer::div($content_div.
-							$div_teacher_student.$div_barchart, 
-							'compprof_descriptor');		
-					
-					$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, ((block_exacomp_is_niveautitle_for_profile_enabled() && $niveau)?$niveau->title:$descriptor->title));
-					$desc_content .= html_writer::div(html_writer::tag('p', html_writer::empty_tag('span', array('id'=>'value'))), 'tooltip hidden', array('id'=>'tooltip'.$descriptor->id));
-					
-					$desc_content .= $this->example_stacked_bar($return->data, $descriptor->id);
-					
-					$niveaus[] = ((block_exacomp_is_niveautitle_for_profile_enabled() && $niveau)?$niveau->title:$descriptor->title);
-					$student_eval[] = (isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:0;
-					$teacher_eval[] = (isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:0;
-					
-				}
+				if(!empty($topic->descriptors)){
 				
+					foreach($topic->descriptors as $descriptor){
+						$barchartid_i++;
+						
+						$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
+						//always descriptor title TODO: remove global setting
+						$content_div = html_writer::tag('span', (($niveau)?$niveau->title:'') . ': ' . $descriptor->title);
+						$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, ((block_exacomp_is_niveautitle_for_profile_enabled() && $niveau)?$niveau->title:$descriptor->title));
+						
+						$span_in_work = "";
+						if($return->total > 0)
+							$span_in_work = html_writer::tag('span', 
+									\block_exacomp\get_string('inwork', null, ['inWork' => $return->inWork, 'total' => $return->total]), array('class'=>"compprof_barchart_inwork"));
+						
+						$img_teacher = block_exacomp_get_html_for_teacher_eval(
+								((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:-1), $scheme);
+						
+						$span_teacher = html_writer::tag('span', "L: ".
+							$img_teacher . (isset($student->competencies->teacher_additional_grading[$descriptor->id])? " (".$student->competencies->teacher_additional_grading[$descriptor->id].") ":""), 
+							array('class'=>"compprof_barchart_teacher"));
+										   
+						$img_student = block_exacomp_get_html_for_student_eval(
+								((isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:-1), $scheme);
+										
+						$span_student = html_writer::tag('span', "S: ".
+								$img_student, array('class'=>"compprof_barchart_student"));
+						
+						$div_teacher_student = html_writer::div($span_student. $span_teacher, 'compprof_evaluation');
+
+						$image = '/blocks/exacomp/pix/competence-grid-material-information.png';
+						$img_barchart = html_writer::empty_tag('img', array('src'=>new moodle_url($image), 'width'=>'25', 'height'=>'25'));
+						
+						$bar_chart = (($descriptor->examples)?html_writer::empty_tag('br').$img_barchart. 
+								html_writer::div('', 'compprof_barchart', array('id'=>'svgdesc'.$barchartid_i))
+								.$span_in_work:'');
+						
+						$div_barchart = html_writer::div($bar_chart, 'compprof_example');
+						$desc_content .= html_writer::div($content_div.
+								$div_teacher_student.$div_barchart, 
+								'compprof_descriptor');		
+						
+						$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, ((block_exacomp_is_niveautitle_for_profile_enabled() && $niveau)?$niveau->title:$descriptor->title));
+						$desc_content .= html_writer::div(html_writer::tag('p', html_writer::empty_tag('span', array('id'=>'value'))), 'tooltip hidden', array('id'=>'tooltip'.$barchartid_i));
+						
+						$desc_content .= $this->example_stacked_bar($return->data, $barchartid_i);
+						
+						$niveaus[] = ((block_exacomp_is_niveautitle_for_profile_enabled() && $niveau)?$niveau->title:$descriptor->title);
+						$student_eval[] = (isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:0;
+						$teacher_eval[] = (isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:0;
+						
+					}
+				}
 				$div_content = "";
 				if(count($niveaus)>2 && count($niveaus)<9){
 					$radar_graph = $this->radar_graph_topic($niveaus, $teacher_eval, $student_eval, $scheme,  true);
