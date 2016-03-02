@@ -127,6 +127,12 @@
 	background-color: #FFF
 }
 
+#block_exacomp table.competence_grid td {
+	background-clip: padding-box;
+	-moz-hyphens: auto;
+    word-wrap: break-word;
+}
+
 #block_exacomp .ec_heading {
 	background-color: #dfdfdf
 }

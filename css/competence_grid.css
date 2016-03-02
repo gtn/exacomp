@@ -8,6 +8,7 @@ select[name=lis_subjects] {
 #block_exacomp .crosssubjects {
 	vertical-align: middle;
 	text-align: center;
+	bottom: 0;
 	display: inline-block;
 }
 
@@ -17,4 +18,9 @@ select[name=lis_subjects] {
 
 #block_exacomp .reportsstattable {
 	margin-bottom: 5px;
+}
+
+
+#block_exacomp  .crosssubjects .reportsstattable tr td {
+	line-height: 1.2;
 }
