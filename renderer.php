@@ -3545,7 +3545,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$total_comps = $teachercomp+$studentcomp+$pendingcomp;
 		$timeline_data= block_exacomp_get_timeline_data(array($course), $student, $total_comps);
 		
-		if($timeline_data)
+		if($timeline_data && get_config('exacomp', 'usetimeline'))
 		   $timeline_graph =  html_writer::div($this->timeline_graph($timeline_data->x_values, $timeline_data->y_values_teacher, $timeline_data->y_values_student, $timeline_data->y_values_total, $course->id),"competence_profile_timelinegraph");
 		else
 		   $timeline_graph = "";

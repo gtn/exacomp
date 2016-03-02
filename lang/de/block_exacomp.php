@@ -101,6 +101,8 @@ $string['settings_admin_scheme_description'] = 'Wählen Sie ein kursübergreifen
 $string['settings_admin_scheme_none'] = 'keine globale Bewertung';
 $string['settings_additional_grading'] = 'Zus&auml;tzliche Bewertung';
 $string['settings_additional_grading_description'] = 'Zus&auml;tzliche Bewertung für Kompetenzen/Lernmaterialien (0-100%)';
+$string['settings_usetimeline'] = 'Timeline im Profil verwenden';
+$string['settings_usetimeline_description'] = 'Zeitlichen Ablauf des Kompetenzerwerbes im Profil anzeigen';
 
 //Learning agenda
 $string['LA_MON'] = "Mo";

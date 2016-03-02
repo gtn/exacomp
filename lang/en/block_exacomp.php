@@ -98,6 +98,8 @@ $string['settings_admin_scheme_description'] = 'Choose a grading scheme for all 
 $string['settings_admin_scheme_none'] = 'no global grading';
 $string['settings_additional_grading'] = 'Additional grading';
 $string['settings_additional_grading_description'] = 'Additional grading of outcomes/materials (0-100%)';
+$string['settings_usetimeline'] = 'Use Timeline in profile';
+$string['settings_usetimeline_description'] = 'Chronological sequence of gained outcomes';
 
 //Learning agenda
 $string['LA_MON'] = "MON";
