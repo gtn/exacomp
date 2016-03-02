@@ -1851,19 +1851,19 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 						if ($url = $example->get_task_file_url()) {
 							$titleCell->text .= html_writer::link($url, $this->local_pix_icon("filesearch.png", get_string('preview')), array("target" => "_blank"));
+						}elseif($example->externaltask){
+							$titleCell->text .= html_writer::link($example->externaltask, $this->local_pix_icon("filesearch.png", $example->externaltask),array("target" => "_blank"));
 						}
-
 
 						if($example->externalurl){
 							$titleCell->text .= html_writer::link($example->externalurl, $this->local_pix_icon("globesearch.png", $example->externalurl),array("target" => "_blank"));
-						}elseif($example->externaltask){
-							$titleCell->text .= html_writer::link($example->externaltask, $this->local_pix_icon("globesearch.png", $example->externaltask),array("target" => "_blank"));
 						}
 
 						if ($url = $example->get_solution_file_url()) {
 							$titleCell->text .= $this->example_solution_icon($url);
+						}elseif($example->externalsolution){
+							$titleCell->text .= html_writer::link($example->externalsolution, $this->pix_icon("e/fullpage", get_string('solution','block_exacomp')),array("target" => "_blank"));
 						}
-
 						if ($this->is_print_mode()) {
 							// no icons in print mode
 						} else {

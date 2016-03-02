@@ -1266,10 +1266,14 @@ class block_exacomp_external extends external_api {
 		$task = block_exacomp_get_file_url($example, 'example_task', $data->courseid);
 		if ($task)
 			$example->task = (string)$task;
+		elseif($example->externaltask)
+			$example->task = (string)$example->externaltask;
 		
 		$solution = block_exacomp_get_file_url($example, 'example_solution', $data->courseid);
 		if ($solution)
 			$example->solution = (string)$solution;
+		elseif($example->externalsolution)
+			$example->solution = (string)$example->externalsolution;
 		
 		return $example;
 	}
@@ -1284,7 +1288,7 @@ class block_exacomp_external extends external_api {
 				'title' => new external_value ( PARAM_TEXT, 'title of example' ),
 				'description' => new external_value ( PARAM_TEXT, 'description of example' ),
 				'task' => new external_value ( PARAM_TEXT, 'task(url/description) of example' ),
-				'externaltask' => new external_value ( PARAM_TEXT, 'externaltask(url/description) of example' ),
+				'solution' => new external_value ( PARAM_TEXT, 'solution(url/description) of example' ),
 				'externalurl' => new external_value ( PARAM_TEXT, 'externalurl of example' ),
 				'timeframe' => new external_value ( PARAM_INT, 'timeframe in minutes' ),
 				'hassubmissions' => new external_value ( PARAM_BOOL, 'true if example has already submissions' )
@@ -3388,8 +3392,6 @@ class block_exacomp_external extends external_api {
 				'description' => new external_value ( PARAM_TEXT, 'description of example' ),
 				'task' => new external_value ( PARAM_TEXT, 'task(url/description) of example' ),
 				'solution' => new external_value ( PARAM_TEXT, 'task(url/description) of example' ),
-				'externalsolution' => new external_value ( PARAM_TEXT, 'solution(url/description) of example' ),
-				'externaltask' => new external_value ( PARAM_TEXT, 'externaltask(url/description) of example' ),
 				'externalurl' => new external_value ( PARAM_TEXT, 'externalurl of example' ),
 				'timeframe' => new external_value ( PARAM_INT, 'timeframe in minutes' ),
 				'hassubmissions' => new external_value ( PARAM_BOOL, 'true if example has already submissions' )
