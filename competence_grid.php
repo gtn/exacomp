@@ -27,8 +27,9 @@ require_login($courseid);
 
 // CHECK TEACHER
 $isTeacher = block_exacomp_is_teacher();
+$studentid = optional_param('studentid', BLOCK_EXACOMP_DEFAULT_STUDENT, PARAM_INT);
 
-if($isTeacher && !isset($_SESSION['studentid-'.$COURSE->id]))
+if($isTeacher && ($studentid == BLOCK_EXACOMP_DEFAULT_STUDENT && !isset($_SESSION['studentid-'.$COURSE->id])))
 	$studentid = BLOCK_EXACOMP_SHOW_STATISTIC;
 else {
 	$studentid = block_exacomp_get_studentid($isTeacher);
