@@ -17,8 +17,8 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-$string['pluginname'] = 'Exabis Competencies';
- 
+$string['pluginname'] = 'Exabis Kompetenzraster';
+
 $string['exacomp:addinstance'] = 'Exabis Competencies auf Kursseite anlegen';
 $string['exacomp:myaddinstance'] = 'Exabis Competencies auf Startseite anlegen';
 $string['exacomp:teacher'] = 'Übersicht der Lehrerfunktionen in einem Kurs';
