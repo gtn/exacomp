@@ -812,6 +812,7 @@ public function competence_grid($niveaus, $skills, $topics, $data, $selection = 
 				foreach($niveaus as $niveauid => $niveau) {
 					if(isset($data[$skillid][$topicid][$niveauid])) {
 						$cell = new html_table_cell();
+						$cell_stat = new html_table_cell();
 						$cell->attributes['class'] = 'tablecell';
 						$compdiv = "";
 						$allTeachercomps = true;
@@ -915,7 +916,6 @@ public function competence_grid($niveaus, $skills, $topics, $data, $selection = 
 								$crossubject_statistic->data = $crossubject_statistic_rows;
 								
 								//statistic cell
-								$cell_stat = new html_table_cell();
 								$cell_stat->text = html_writer::div(html_writer::table($crossubject_statistic), 'crosssubjects');
 								
 							}
