@@ -41,7 +41,7 @@ class api {
 
 	static function get_comp_tree_for_exaport($userid) {
 
-		$achieved_descriptors = g::$DB->get_records_menu('block_exacompcompuser', array("userid" => g::$USER->id, "role" => 1 /*teacher*/), null, 'compid as id, compid');
+		$achieved_descriptors = g::$DB->get_records_menu('block_exacompcompuser', array("userid" => g::$USER->id, "role" => 1 /*teacher*/, 'comptype' => \block_exacomp\TYPE_DESCRIPTOR), null, 'compid as id, compid');
 
 		$walker = function($item) use (&$walker, $achieved_descriptors) {
 			$subs = $item->get_subs();
