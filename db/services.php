@@ -71,7 +71,6 @@ call_user_func(function() use (&$functions, &$services) {
 		[ 'dakora_get_descriptors', 'read', 'get descriptors for topic for dakora app associated with examples' ],
 		[ 'dakora_get_all_descriptors', 'read', 'get descriptors for topic for dakora app' ],
 		[ 'dakora_get_descriptor_children', 'read', 'get children (childdescriptor and examples) for descriptor for dakora app (only childs associated with examples)' ],
-		[ 'dakora_get_all_descriptor_children', 'read', 'get children (childdescriptor and examples) for descriptor for dakora app' ],
 		[ 'dakora_get_examples_for_descriptor', 'read', 'get examples for descriptor for dakora app' ],
 		[ 'dakora_get_examples_for_descriptor_for_crosssubject', 'read', 'get examples for descriptor for dakora app' ],
 		[ 'dakora_get_example_overview', 'read', 'get example overview for dakora app' ],
@@ -114,7 +113,10 @@ call_user_func(function() use (&$functions, &$services) {
 		[ 'dakora_get_examples_by_descriptor_and_grading', 'read', 'returns examples for given descriptor and grading' ],
 		[ 'dakora_get_examples_by_descriptor_and_grading_for_crosssubject', 'read', 'returns examples for given descriptor and grading and crosssubject' ],
 		[ 'dakora_allow_example_resubmission', 'read', 'allow student to resubmit example' ],
-		[ 'dakora_get_competence_grid_for_profile', 'read', 'get grid for profile' ]
+		[ 'dakora_get_competence_grid_for_profile', 'read', 'get grid for profile' ],
+
+		// TODO: delete, not needed anymore
+		[ 'dakora_get_all_descriptor_children', 'read', 'get children (childdescriptor and examples) for descriptor for dakora app' ],
 	];
 
 	foreach ($definitions as $definition) {

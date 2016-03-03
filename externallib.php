@@ -3159,7 +3159,7 @@ class block_exacomp_external extends external_api {
 					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of child'),
 					'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 					'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-					'examplesinwork' => new external_value (PARAM_INT, 'edited number of material')
+					'examplesinwork' => new external_value (PARAM_FLOAT, 'edited number of material')
 			) ) ) ,
 			'examples' => new external_multiple_structure ( new external_single_structure ( array (
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
@@ -3168,7 +3168,7 @@ class block_exacomp_external extends external_api {
 			) ) ) ,
 			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
 			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
-			'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work')
+			'examplesinwork' => new external_value (PARAM_FLOAT, 'number of examples in work')
 		) ) ;
 	}
 	/**
@@ -3176,6 +3176,7 @@ class block_exacomp_external extends external_api {
 	 * 
 	 * @return external_function_parameters
 	 */
+	// TODO: delete, not needed anymore
 	public static function dakora_get_all_descriptor_children_parameters() {
 		return new external_function_parameters ( array (
 				'courseid' => new external_value( PARAM_INT, 'id of course' ),
@@ -3184,12 +3185,12 @@ class block_exacomp_external extends external_api {
 				'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false')
 		) );
 	}
-	
 	/**
 	 * get courses
 	 * 
 	 * @return array of user courses
 	 */
+	// TODO: delete, not needed anymore
 	public static function dakora_get_all_descriptor_children($courseid, $descriptorid, $userid, $forall) {
 		global $DB, $USER;
 		static::validate_parameters ( static::dakora_get_all_descriptor_children_parameters (), array (
@@ -3205,12 +3206,13 @@ class block_exacomp_external extends external_api {
 		return static::get_descriptor_children($courseid, $descriptorid, $userid, $forall, 0, true);
 		
 	}
-	
+
 	/**
 	 * Returns desription of method return values
 	 * 
 	 * @return external_multiple_structure
 	 */
+	// TODO: delete, not needed anymore
 	public static function dakora_get_all_descriptor_children_returns() {
 		return new external_single_structure ( array (
 			'children' => new external_multiple_structure ( new external_single_structure ( array (
@@ -3222,7 +3224,7 @@ class block_exacomp_external extends external_api {
 					'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if child has material'),
 					'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 					'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-					'examplesinwork' => new external_value (PARAM_INT, 'edited number of material')
+					'examplesinwork' => new external_value (PARAM_FLOAT, 'edited number of material')
 			) ) ) ,
 			'examples' => new external_multiple_structure ( new external_single_structure ( array (
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
@@ -3231,10 +3233,9 @@ class block_exacomp_external extends external_api {
 			) ) ),
 			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
 			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
-			'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work')
+			'examplesinwork' => new external_value (PARAM_FLOAT, 'number of examples in work')
 		) ) ;
 	}
-
 
 	public static function dakora_get_examples_for_descriptor_parameters(){
 		return new external_function_parameters ( array (
@@ -4248,7 +4249,7 @@ class block_exacomp_external extends external_api {
 					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of children'),
 					'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 					'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-					'examplesinwork' => new external_value (PARAM_INT, 'edited number of material')
+					'examplesinwork' => new external_value (PARAM_FLOAT, 'edited number of material')
 			) ) ) ,
 			'examples' => new external_multiple_structure ( new external_single_structure ( array (
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
@@ -4257,7 +4258,7 @@ class block_exacomp_external extends external_api {
 			) ) ),
 			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
 			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
-			'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work')
+			'examplesinwork' => new external_value (PARAM_FLOAT, 'number of examples in work')
 		) ) ;
 	}
 	/**
@@ -4314,7 +4315,7 @@ class block_exacomp_external extends external_api {
 					'hasmaterial' => new external_value ( PARAM_BOOL, 'true or false if child has materials'),
 					'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 					'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-					'examplesinwork' => new external_value (PARAM_INT, 'edited number of material')
+					'examplesinwork' => new external_value (PARAM_FLOAT, 'edited number of material')
 			) ) ) ,
 			'examples' => new external_multiple_structure ( new external_single_structure ( array (
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
@@ -4323,7 +4324,7 @@ class block_exacomp_external extends external_api {
 			) ) ),
 			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
 			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
-			'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work')
+			'examplesinwork' => new external_value (PARAM_FLOAT, 'number of examples in work')
 		) ) ;
 	}
 
@@ -5078,6 +5079,7 @@ class block_exacomp_external extends external_api {
 		$childsandexamples = static::get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid, true);
 
 		$descriptor_return->children = $childsandexamples->children;
+		$descriptor_return->examples = $childsandexamples->examples;
 
 		$descriptor_return->examplestotal = $childsandexamples->examplestotal;
 		$descriptor_return->examplesvisible = $childsandexamples->examplesvisible;
@@ -5107,13 +5109,19 @@ class block_exacomp_external extends external_api {
 					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
 					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of children'),
 					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of children'),
+					'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if child has material'),
 					'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 					'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-					'examplesinwork' => new external_value (PARAM_INT, 'edited number of material')
+					'examplesinwork' => new external_value (PARAM_FLOAT, 'edited number of material')
+			) ) ),
+			'examples' => new external_multiple_structure ( new external_single_structure ( array (
+					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
+					'exampletitle' => new external_value ( PARAM_TEXT, 'title of example' ),
+					'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' )
 			) ) ),
 			'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 			'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-			'examplesinwork' => new external_value (PARAM_INT, 'edited number of material')
+			'examplesinwork' => new external_value (PARAM_FLOAT, 'edited number of material')
 		) ) ;
 	}
 
