@@ -72,14 +72,14 @@ echo $output->view_example_header();
 if($style==0)
 	echo $output->competence_based_list_tree ( $tree , true, false);
 if($style==1){
-	$sql = 'SELECT DISTINCT e.*
-		FROM {'.\block_exacomp\DB_COURSETOPICS.'} ct
-		JOIN {'.\block_exacomp\DB_DESCTOPICS.'} dt ON ct.topicid = dt.topicid
-		JOIN {'.\block_exacomp\DB_DESCEXAMP.'} de ON dt.descrid = de.descrid
-		JOIN {'.\block_exacomp\DB_EXAMPLES.'} e ON e.id = de.exampid
-		WHERE ct.courseid = ?';
-
-	$comp_examples = $DB->get_records_sql($sql, array($courseid));
+	$comp_examples = \block_exacomp\example::get_objects_sql(
+            'SELECT DISTINCT e.*
+                FROM {'.\block_exacomp\DB_COURSETOPICS.'} ct
+                JOIN {'.\block_exacomp\DB_DESCTOPICS.'} dt ON ct.topicid = dt.topicid
+                JOIN {'.\block_exacomp\DB_DESCEXAMP.'} de ON dt.descrid = de.descrid
+                JOIN {'.\block_exacomp\DB_EXAMPLES.'} e ON e.id = de.exampid
+                WHERE ct.courseid = ?'
+            , array($courseid));
 	
 	$content = '';
 	foreach($comp_examples as $example){

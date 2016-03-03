@@ -4570,20 +4570,34 @@ var dataset = dataset.map(function (group) {
 				if(!isset($example->associated)) $example->associated = 0;
 				if($example->associated == 1 || ($isTeacher && $editmode==1)) {
 					$exampleIcons = " ";
-					
-					if ($url = block_exacomp_get_file_url($example, 'example_task')) {
-						$exampleIcons = html_writer::link($url, $this->pix_icon("i/preview", get_string("preview")),array("target" => "_blank"));
+					if ($url = $example->get_task_file_url ()) {
+						$exampleIcons = html_writer::link ( $url, $this->local_pix_icon ( "filesearch.png", get_string ( 'preview' ) ), array (
+								"target" => "_blank" 
+						)
+						 );
+					} elseif ($example->externaltask) {
+						$exampleIcons = html_writer::link ( $example->externaltask, $this->local_pix_icon ( "filesearch.png", $example->externaltask ), array (
+								
+								"target" => "_blank" 
+						)
+						 );
 					}
 					
-					if($example->externalurl){
-						$exampleIcons .= html_writer::link(str_replace('&amp;','&',$example->externalurl), $this->pix_icon("i/preview", $example->externalurl),array("target" => "_blank"));
-					}elseif($example->externaltask){
-						$exampleIcons.= html_writer::link(str_replace('&amp;','&',$example->externaltask), $this->pix_icon("i/preview", $example->externaltask),array("target" => "_blank"));
+					if ($example->externalurl) {
+						$exampleIcons .= html_writer::link ( $example->externalurl, $this->local_pix_icon ( "globesearch.png", $example->externalurl ), array (
+								"target" => "_blank" 
+						)
+						 );
 					}
 					
-					if ($url = block_exacomp_get_file_url($example, 'example_solution')) {
-						$exampleIcons .= $this->example_solution_icon($url);
-					}		
+					if ($url = $example->get_solution_file_url ()) {
+						$exampleIcons .= $this->example_solution_icon ( $url );
+					} elseif ($example->externalsolution) {
+						$exampleIcons .= html_writer::link ( $example->externalsolution, $this->pix_icon ( "e/fullpage", get_string ( 'solution', 'block_exacomp' ) ), array (
+								"target" => "_blank" 
+						)
+						 );
+					}
 
 					$html_tree .= html_writer::tag("li", $example->title . $exampleIcons, array('class'=>($example->associated == 1)?"associated":""));
 				}
@@ -4791,22 +4805,37 @@ var dataset = dataset.map(function (group) {
 		$html_tree .= html_writer::start_tag("ul",array("class"=>"exa-tree"));
 		
 		$html_tree .= html_writer::start_tag("li", array('class'=>"associated"));
-		
 		$exampleIcons = " ";
-		if ($url = block_exacomp_get_file_url($example, 'example_task')) {
-			$exampleIcons = html_writer::link($url, $this->pix_icon("i/preview", get_string("preview")),array("target" => "_blank"));
-		}
-		 
-		if($example->externalurl){
-			$exampleIcons .= html_writer::link(str_replace('&amp;','&',$example->externalurl), $this->pix_icon("i/preview", $example->externalurl),array("target" => "_blank"));
-		}elseif($example->externaltask){
-			$exampleIcons.= html_writer::link(str_replace('&amp;','&',$example->externaltask), $this->pix_icon("i/preview", $example->externaltask),array("target" => "_blank"));
-		}
-		 
-		if ($url = block_exacomp_get_file_url($example, 'example_solution')) {
-			$exampleIcons .= $this->example_solution_icon($url);
+		
+		if ($url = $example->get_task_file_url ()) {
+			
+			$exampleIcons = html_writer::link ( $url, $this->local_pix_icon ( "filesearch.png", get_string ( 'preview' ) ), array (
+					"target" => "_blank" 
+			) );
+		} elseif ($example->externaltask) {
+			
+			$exampleIcons = html_writer::link ( $example->externaltask, $this->local_pix_icon ( "filesearch.png", $example->externaltask ), array (
+					"target" => "_blank" 
+			) );
 		}
 		
+		if ($example->externalurl) {
+			
+			$exampleIcons .= html_writer::link ( $example->externalurl, $this->local_pix_icon ( "globesearch.png", $example->externalurl ), array (
+					"target" => "_blank" 
+			) );
+		}
+		
+		if ($url = $example->get_solution_file_url ()) {
+			
+			$exampleIcons .= $this->example_solution_icon ( $url );
+		} elseif ($example->externalsolution) {
+			
+			$exampleIcons .= html_writer::link ( $example->externalsolution, $this->pix_icon ( "e/fullpage", get_string ( 'solution', 'block_exacomp' ) ), array (
+					"target" => "_blank" 
+			) );
+		}
+
 		$html_tree .= $example->title . $exampleIcons;
 		
 		$html_tree .= $this->competence_based_list_tree($tree, $isTeacher, $editmode, $showexamples);

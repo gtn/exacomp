@@ -863,8 +863,7 @@ class example extends db_record {
 
 	function get_numbering() {
 		if (!isset($this->descriptor)) {
-			// required that descriptor is set
-			print_error('no descriptor loaded');
+			return null;
 		}
 
 		return $this->descriptor->get_numbering();
