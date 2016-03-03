@@ -746,7 +746,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$this->button_box(true, '');
 	}
 
-public function competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0,$studentid=0) {
+	public function competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0,$studentid=0) {
 		global $DB;
 
 		$headFlag = false;
@@ -812,7 +812,6 @@ public function competence_grid($niveaus, $skills, $topics, $data, $selection = 
 				foreach($niveaus as $niveauid => $niveau) {
 					if(isset($data[$skillid][$topicid][$niveauid])) {
 						$cell = new html_table_cell();
-						$cell_stat = new html_table_cell();
 						$cell->attributes['class'] = 'tablecell';
 						$compdiv = "";
 						$allTeachercomps = true;
@@ -851,39 +850,57 @@ public function competence_grid($niveaus, $skills, $topics, $data, $selection = 
 							} */
 							$compdiv .= html_writer::tag('div', $compString,array('class'=>$cssClass));
 
-							if($report != BLOCK_EXACOMP_REPORT1)
-							if(array_key_exists($descriptor->topicid, $selection) && $visible && $studentid != 0) {
+							if($report != BLOCK_EXACOMP_REPORT1){
+								if(array_key_exists($descriptor->topicid, $selection) && $visible && $studentid != 0) {
 
-								$table_head = new html_table_row();
-								$table_head->attributes['class'] = 'statistic_head';
+									$table_head = new html_table_row();
+									$table_head->attributes['class'] = 'statistic_head';
 
-								$scheme = block_exacomp_get_grading_scheme($courseid);
-								$table_head->cells[] = new html_table_cell("");
-								if($studentid != BLOCK_EXACOMP_SHOW_STATISTIC)
-									$table_head->cells[] = new html_table_cell("&Sigma;");
-								for($i=0;$i<=$scheme;$i++)
-									$table_head->cells[] = new html_table_cell(($global_scheme==0)?$i:$global_scheme_values[$i]);
-								$table_head->cells[] = new html_table_cell("oB");
-								$table_head->cells[] = new html_table_cell("iA");
-								if($studentid != BLOCK_EXACOMP_SHOW_STATISTIC)
-									$table_head->cells[] = new html_table_cell("Abschluss");
+									$scheme = block_exacomp_get_grading_scheme($courseid);
+									$table_head->cells[] = new html_table_cell("");
+									if($studentid != BLOCK_EXACOMP_SHOW_STATISTIC)
+										$table_head->cells[] = new html_table_cell("&Sigma;");
+									for($i=0;$i<=$scheme;$i++)
+										$table_head->cells[] = new html_table_cell(($global_scheme==0)?$i:$global_scheme_values[$i]);
+									$table_head->cells[] = new html_table_cell("oB");
+									$table_head->cells[] = new html_table_cell("iA");
+									if($studentid != BLOCK_EXACOMP_SHOW_STATISTIC)
+										$table_head->cells[] = new html_table_cell("Abschluss");
 
-								$crossubject_statistic = new html_table();
-								$crossubject_statistic->attributes['class'] = 'generaltable reportsstattable';
-								$crossubject_statistic_rows = array();
-								$crossubject_statistic_rows[] = $table_head;
+									$crossubject_statistic = new html_table();
+									$crossubject_statistic->attributes['class'] = 'generaltable reportsstattable';
+									$crossubject_statistic_rows = array();
+									$crossubject_statistic_rows[] = $table_head;
 
-								$crosssubjects = block_exacomp_get_cross_subjects_for_descriptor($courseid, $descriptor->id);
-								$statistic_type = ($report == BLOCK_EXACOMP_REPORT2) ? BLOCK_EXACOMP_DESCRIPTOR_STATISTIC : BLOCK_EXACOMP_EXAMPLE_STATISTIC;
+									$crosssubjects = block_exacomp_get_cross_subjects_for_descriptor($courseid, $descriptor->id);
+									$statistic_type = ($report == BLOCK_EXACOMP_REPORT2) ? BLOCK_EXACOMP_DESCRIPTOR_STATISTIC : BLOCK_EXACOMP_EXAMPLE_STATISTIC;
 
-								foreach($crosssubjects as $crosssubject) {
+									foreach($crosssubjects as $crosssubject) {
+										if($statistic_type == BLOCK_EXACOMP_DESCRIPTOR_STATISTIC)
+											list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_descriptor_statistic_for_crosssubject($courseid, $crosssubject->id, $studentid);
+										else
+											list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_example_statistic_for_crosssubject($courseid, $crosssubject->id, $studentid);
+
+										$table_entry = new html_table_row();
+										$table_entry->cells[] = new html_table_cell(html_writer::link(new moodle_url("/blocks/exacomp/cross_subjects.php", array("courseid" => $courseid, "crosssubjid" => $crosssubject->id)), substr($crosssubject->title,0,4), array('title' => $crosssubject->title)));
+										if($studentid != BLOCK_EXACOMP_SHOW_STATISTIC)
+											$table_entry->cells[] = new html_table_cell($total);
+										foreach($gradings as $key => $grading)
+											$table_entry->cells[] = new html_table_cell($grading);
+										$table_entry->cells[] = new html_table_cell($notEvaluated);
+										$table_entry->cells[] = new html_table_cell($inWork);
+										if($studentid != BLOCK_EXACOMP_SHOW_STATISTIC)
+											$table_entry->cells[] = new html_table_cell($totalGrade);
+
+										$crossubject_statistic_rows[] = $table_entry;
+									}
 									if($statistic_type == BLOCK_EXACOMP_DESCRIPTOR_STATISTIC)
-										list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_descriptor_statistic_for_crosssubject($courseid, $crosssubject->id, $studentid);
+										list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_descriptor_statistic($courseid, $descriptor->id, $studentid);
 									else
-										list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_example_statistic_for_crosssubject($courseid, $crosssubject->id, $studentid);
+										list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork) = block_exacomp_get_example_statistic_for_descriptor($courseid, $descriptor->id, $studentid);
 
 									$table_entry = new html_table_row();
-									$table_entry->cells[] = new html_table_cell(html_writer::link(new moodle_url("/blocks/exacomp/cross_subjects.php", array("courseid" => $courseid, "crosssubjid" => $crosssubject->id)), substr($crosssubject->title,0,4), array('title' => $crosssubject->title)));
+									$table_entry->cells[] = new html_table_cell("LWL " . block_exacomp_get_descriptor_numbering($descriptor));
 									if($studentid != BLOCK_EXACOMP_SHOW_STATISTIC)
 										$table_entry->cells[] = new html_table_cell($total);
 									foreach($gradings as $key => $grading)
@@ -894,42 +911,30 @@ public function competence_grid($niveaus, $skills, $topics, $data, $selection = 
 										$table_entry->cells[] = new html_table_cell($totalGrade);
 
 									$crossubject_statistic_rows[] = $table_entry;
+
+									$crossubject_statistic->data = $crossubject_statistic_rows;
+									
+									//statistic cell
+									$cell_stat = new html_table_cell();
+									$cell_stat->text = html_writer::div(html_writer::table($crossubject_statistic), 'crosssubjects');
+									
 								}
-								if($statistic_type == BLOCK_EXACOMP_DESCRIPTOR_STATISTIC)
-									list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_descriptor_statistic($courseid, $descriptor->id, $studentid);
-								else
-									list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork) = block_exacomp_get_example_statistic_for_descriptor($courseid, $descriptor->id, $studentid);
-
-								$table_entry = new html_table_row();
-								$table_entry->cells[] = new html_table_cell("LWL " . block_exacomp_get_descriptor_numbering($descriptor));
-								if($studentid != BLOCK_EXACOMP_SHOW_STATISTIC)
-									$table_entry->cells[] = new html_table_cell($total);
-								foreach($gradings as $key => $grading)
-									$table_entry->cells[] = new html_table_cell($grading);
-								$table_entry->cells[] = new html_table_cell($notEvaluated);
-								$table_entry->cells[] = new html_table_cell($inWork);
-								if($studentid != BLOCK_EXACOMP_SHOW_STATISTIC)
-									$table_entry->cells[] = new html_table_cell($totalGrade);
-
-								$crossubject_statistic_rows[] = $table_entry;
-
-								$crossubject_statistic->data = $crossubject_statistic_rows;
+								if(array_key_exists($niveauid,$spanningNiveaus)) {
+									$cell_stat->colspan = $spanningColspan;
+								}
 								
-								//statistic cell
-								$cell_stat->text = html_writer::div(html_writer::table($crossubject_statistic), 'crosssubjects');
-								
+								$row2->cells[] = $cell_stat;
 							}
 						}
 
 						// apply colspan for spanning niveaus
 						if(array_key_exists($niveauid,$spanningNiveaus)) {
 							$cell->colspan = $spanningColspan;
-							$cell_stat->colspan = $spanningColspan;
 						}
 
 						$cell->text = $compdiv;
 						$row->cells[] = $cell;
-						$row2->cells[] = $cell_stat;
+						
 
 						// do not print other cells for spanning niveaus
 						if(array_key_exists($niveauid,$spanningNiveaus))
@@ -1860,19 +1865,19 @@ public function competence_grid($niveaus, $skills, $topics, $data, $selection = 
 
 						if ($url = $example->get_task_file_url()) {
 							$titleCell->text .= html_writer::link($url, $this->local_pix_icon("filesearch.png", get_string('preview')), array("target" => "_blank"));
-						}elseif($example->externaltask){
-							$titleCell->text .= html_writer::link($example->externaltask, $this->local_pix_icon("filesearch.png", $example->externaltask),array("target" => "_blank"));
 						}
+
 
 						if($example->externalurl){
 							$titleCell->text .= html_writer::link($example->externalurl, $this->local_pix_icon("globesearch.png", $example->externalurl),array("target" => "_blank"));
+						}elseif($example->externaltask){
+							$titleCell->text .= html_writer::link($example->externaltask, $this->local_pix_icon("globesearch.png", $example->externaltask),array("target" => "_blank"));
 						}
 
 						if ($url = $example->get_solution_file_url()) {
 							$titleCell->text .= $this->example_solution_icon($url);
-						}elseif($example->externalsolution){
-							$titleCell->text .= html_writer::link($example->externalsolution, $this->pix_icon("e/fullpage", get_string('solution','block_exacomp')),array("target" => "_blank"));
 						}
+
 						if ($this->is_print_mode()) {
 							// no icons in print mode
 						} else {

@@ -10,6 +10,7 @@ select[name=lis_subjects] {
 	text-align: center;
 	bottom: 0;
 	display: inline-block;
+	width:100%
 }
 
 #block_exacomp .tablecell {
