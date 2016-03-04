@@ -1602,6 +1602,7 @@ function block_exacomp_build_navigation_tabs_admin_settings($courseid){
 	if (get_config('exacomp','external_trainer_assign') && has_capability('block/exacomp:assignstudents', context_system::instance())) {
 		$settings_subtree[] = new tabobject('tab_external_trainer_assign', new moodle_url('/blocks/exacomp/externaltrainers.php', array('courseid'=>$courseid)), get_string("block_exacomp_external_trainer_assign", "block_exacomp"), null, true);
 	}
+	$settings_subtree[] = new tabobject('tab_webservice_status', new moodle_url('/blocks/exacomp/webservice_status.php', array('courseid'=>$courseid)), block_exacomp\trans(['de:Webservice Status', 'en:Check Webservices']), null, true);
 
 	return $settings_subtree;
 }

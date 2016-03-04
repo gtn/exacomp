@@ -17,7 +17,6 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-global $DB;
 require __DIR__.'/inc.php';
 
 $courseid = required_param('courseid', PARAM_INT);
@@ -33,6 +32,8 @@ $coursecontext = context_course::instance($courseid);
 
 require_capability('block/exacomp:teacher', $coursecontext);
 $url = '/blocks/exacomp/externaltrainers.php';
+$PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
+$PAGE->set_title(get_string('pluginname', 'block_exacomp'));
 $PAGE->set_url($url);
 
 $students = get_users_by_capability($coursecontext, 'block/exacomp:student');

@@ -18,11 +18,8 @@
 // This copyright notice MUST APPEAR in all copies of the script!
 
 require __DIR__.'/inc.php';
-require_once __DIR__.'/lib/lib.php';
 require_once $CFG->dirroot.'/lib/datalib.php';
 require_once __DIR__.'/classes/data.php';
-
-global $DB, $OUTPUT, $PAGE, $COURSE, $CFG;
 
 $courseid = required_param ( 'courseid', PARAM_INT );
 $action = optional_param ( 'action', "", PARAM_ALPHA );
