@@ -1873,10 +1873,8 @@ function block_exacomp_is_configured($courseid=0){
  * Check if moodle version is supporting badges
  */
 function block_exacomp_moodle_badges_enabled() {
-	global $CFG;
-
-	// since moodle 2.5 it has badges functionality
-	return (version_compare($CFG->release, '2.5') >= 0);
+	// moodle has badges since version 2.5
+	return true;
 }
 /**
  *

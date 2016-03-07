@@ -19,4 +19,5 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+global $CFG;
 require __DIR__.'/../inc.php';
