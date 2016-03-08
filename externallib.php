@@ -309,7 +309,7 @@ class block_exacomp_external extends external_api {
 	 * @param $exampleid
 	 * @param $courseid
 	 * @param $userid
-	 * @return list of descriptors
+	 * @return array list of descriptors
 	 * @throws invalid_parameter_exception
 	 */
 	public static function get_descriptors_for_example($exampleid, $courseid, $userid) {
@@ -503,7 +503,7 @@ class block_exacomp_external extends external_api {
 	 * @return array of user courses
 	 */
 	public static function get_subjects_for_user($userid) {
-		global $CFG, $DB, $USER;
+		global $CFG, $USER;
 		require_once ("$CFG->dirroot/lib/enrollib.php");
 		
 		static::validate_parameters ( static::get_subjects_for_user_parameters (), array (
@@ -662,6 +662,7 @@ class block_exacomp_external extends external_api {
 		$item->status = isset ( $itemexample->status ) ? $itemexample->status : 0;
 		
 		if ($item->type == 'file') {
+			// TODO: moved code into exaport\api
 			require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
 			
 			$item->userid = $userid;
@@ -730,7 +731,7 @@ class block_exacomp_external extends external_api {
 	 * @return array of examples
 	 */
 	public static function get_competencies_for_upload($userid) {
-		global $DB, $USER;
+		global $USER;
 		
 		static::validate_parameters ( static::get_competencies_for_upload_parameters (), array (
 				'userid' => $userid 
@@ -1007,7 +1008,8 @@ class block_exacomp_external extends external_api {
 			
 			if (! $fs->file_exists ( $context->id, 'user', 'private', 0, '/', $filename )) {
 				// TODO: das geht so nicht
-				$form->save_stored_file ( 'file', $context->id, 'user', 'private', 0, '/', $filename, true );
+				throw new moodle_exception('TODO: $form not set?');
+				// $form->save_stored_file ( 'file', $context->id, 'user', 'private', 0, '/', $filename, true );
 			}
 
 			$pathnamehash = $fs->get_pathname_hash ( $context->id, 'user', 'private', 0, '/', $filename );
@@ -1605,8 +1607,11 @@ class block_exacomp_external extends external_api {
 			$context = context_user::instance ( $USER->id );
 			$fs = get_file_storage ();
 			
-			if (! $fs->file_exists ( $context->id, 'user', 'private', 0, '/', $filename ))
-				$form->save_stored_file ( 'file', $context->id, 'user', 'private', 0, '/', $filename, true );
+			if (! $fs->file_exists ( $context->id, 'user', 'private', 0, '/', $filename )) {
+				// TODO: das geht so nicht
+				throw new moodle_exception('TODO: $form not set?');
+				// $form->save_stored_file ( 'file', $context->id, 'user', 'private', 0, '/', $filename, true );
+			}
 			
 			$pathnamehash = $fs->get_pathname_hash ( $context->id, 'user', 'private', 0, '/', $filename );
 			$temp_task = new moodle_url ( $CFG->wwwroot . '/blocks/exacomp/example_upload.php', array (
@@ -2011,7 +2016,7 @@ class block_exacomp_external extends external_api {
 	 * @return array of user courses
 	 */
 	public static function dakora_get_descriptor_children($courseid, $descriptorid, $userid, $forall) {
-		global $DB, $USER;
+		global $USER;
 		static::validate_parameters ( static::dakora_get_descriptor_children_parameters (), array (
 				'courseid' => $courseid,
 				'descriptorid' => $descriptorid,
@@ -3099,7 +3104,7 @@ class block_exacomp_external extends external_api {
 	 * @return array of user courses
 	 */
 	public static function dakora_get_all_descriptor_children_for_cross_subject($courseid, $descriptorid, $userid, $forall, $crosssubjid) {
-		global $DB, $USER;
+		global $USER;
 		static::validate_parameters ( static::dakora_get_all_descriptor_children_for_cross_subject_parameters (), array (
 				'courseid' => $courseid,
 				'descriptorid' => $descriptorid,
@@ -3412,7 +3417,7 @@ class block_exacomp_external extends external_api {
 	 *
 	 * @param
 	 *			int courseid
-	 * @return examples
+	 * @return array
 	 */
 	public static function dakora_add_example_to_pre_planning_storage($courseid, $exampleid) {
 		global $USER;
@@ -3670,7 +3675,7 @@ class block_exacomp_external extends external_api {
 	/**
 	 * Add student submission to example.
 	 *
-	 * @param int itemid (0 for new, >0 for existing)
+	 * @param int $itemid (0 for new, >0 for existing)
 	 * @return array of course subjects
 	 */
 	public static function dakora_grade_example($userid, $courseid, $exampleid, $examplevalue, $itemid, $itemvalue, $comment) {
@@ -4668,6 +4673,7 @@ class block_exacomp_external extends external_api {
 		$number_students = 1;
 
 		if($forall) {
+			// TODO: auf lehrer checken? -> einfach durch require_can_access_course_user($courseid, 0) ersetzen
 			static::require_can_access_course($courseid);
 			$students = block_exacomp_get_students_by_course($courseid);
 			$number_students = count($students);
