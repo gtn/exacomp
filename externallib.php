@@ -97,6 +97,83 @@ class block_exacomp_external extends external_api {
 	 * 
 	 * @return external_function_parameters
 	 */
+	public static function set_competence_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
+				'descriptorid' => new external_value ( PARAM_INT, 'id of descriptor' ),
+				'value' => new external_value ( PARAM_INT, 'evaluation value' ) 
+		) );
+	}
+	
+	/**
+	 * Set student evaluation
+	 * 
+	 * @param
+	 *			int courseid
+	 * @param
+	 *			int descriptorid
+	 * @param
+	 *			int value
+	 * @return status
+	 */
+	public static function set_competence($courseid, $descriptorid, $value) {
+		global $DB, $USER;
+		
+		if (empty ( $courseid ) || empty ( $descriptorid ) || ! isset ( $value )) {
+			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
+		}
+		
+		static::validate_parameters ( static::set_competence_parameters (), array (
+				'courseid' => $courseid,
+				'descriptorid' => $descriptorid,
+				'value' => $value 
+		) );
+		
+		static::require_can_access_course($courseid);
+		
+		$transaction = $DB->start_delegated_transaction (); // If an exception is thrown in the below code, all DB queries in this code will be rollback.
+		
+		$DB->delete_records ( 'block_exacompcompuser', array (
+				"userid" => $USER->id,
+				"role" => 0,
+				"compid" => $descriptorid,
+				"courseid" => $courseid,
+				"comptype" => TYPE_DESCRIPTOR 
+		) );
+		if ($value > 0) {
+			$DB->insert_record ( 'block_exacompcompuser', array (
+					"userid" => $USER->id,
+					"role" => 0,
+					"compid" => $descriptorid,
+					"courseid" => $courseid,
+					"comptype" => TYPE_DESCRIPTOR,
+					"reviewerid" => $USER->id,
+					"value" => $value 
+			) );
+		}
+		
+		$transaction->allow_commit ();
+		
+		return array (
+				"success" => true 
+		);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function set_competence_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' ) 
+		) );
+	}
+	
+	/*
+	 * Returns description of method parameters
+	 * @return external_function_parameters
+	 */
 	public static function get_examples_for_subject_parameters() {
 		return new external_function_parameters ( array (
 				'subjectid' => new external_value ( PARAM_INT, 'id of subject' ),
