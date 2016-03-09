@@ -92,84 +92,6 @@ class block_exacomp_external extends external_api {
 		) ) );
 	}
 
-	/**
-	 * Returns description of method parameters
-	 * 
-	 * @return external_function_parameters
-	 */
-	public static function set_competence_parameters() {
-		return new external_function_parameters ( array (
-				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
-				'descriptorid' => new external_value ( PARAM_INT, 'id of descriptor' ),
-				'value' => new external_value ( PARAM_INT, 'evaluation value' ) 
-		) );
-	}
-	
-	/**
-	 * Set student evaluation
-	 * 
-	 * @param
-	 *			int courseid
-	 * @param
-	 *			int descriptorid
-	 * @param
-	 *			int value
-	 * @return status
-	 */
-	public static function set_competence($courseid, $descriptorid, $value) {
-		global $DB, $USER;
-		
-		if (empty ( $courseid ) || empty ( $descriptorid ) || ! isset ( $value )) {
-			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
-		}
-		
-		static::validate_parameters ( static::set_competence_parameters (), array (
-				'courseid' => $courseid,
-				'descriptorid' => $descriptorid,
-				'value' => $value 
-		) );
-		
-		static::require_can_access_course($courseid);
-		
-		$transaction = $DB->start_delegated_transaction (); // If an exception is thrown in the below code, all DB queries in this code will be rollback.
-		
-		$DB->delete_records ( 'block_exacompcompuser', array (
-				"userid" => $USER->id,
-				"role" => 0,
-				"compid" => $descriptorid,
-				"courseid" => $courseid,
-				"comptype" => TYPE_DESCRIPTOR 
-		) );
-		if ($value > 0) {
-			$DB->insert_record ( 'block_exacompcompuser', array (
-					"userid" => $USER->id,
-					"role" => 0,
-					"compid" => $descriptorid,
-					"courseid" => $courseid,
-					"comptype" => TYPE_DESCRIPTOR,
-					"reviewerid" => $USER->id,
-					"value" => $value 
-			) );
-		}
-		
-		$transaction->allow_commit ();
-		
-		return array (
-				"success" => true 
-		);
-	}
-	
-	/**
-	 * Returns desription of method return values
-	 * 
-	 * @return external_multiple_structure
-	 */
-	public static function set_competence_returns() {
-		return new external_single_structure ( array (
-				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' ) 
-		) );
-	}
-	
 	/*
 	 * Returns description of method parameters
 	 * @return external_function_parameters
@@ -1859,6 +1781,75 @@ class block_exacomp_external extends external_api {
 				'descriptorid' => new external_value ( PARAM_INT, 'id of example' ),
 				'descriptortitle' => new external_value ( PARAM_TEXT, 'title of example' ) 
 		) ) );
+	}
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 *
+	 */
+	public static function dakora_set_competence_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
+				'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
+				'compid' => new external_value(PARAM_INT, 'competence id'),
+				'role' => new external_value(PARAM_INT, 'user role (0 == student, 1 == teacher)'),
+				'value' => new external_value(PARAM_INT, 'evaluation value (0, 1, 2 or 3)'),
+				'additionalinfo' => new external_value(PARAM_TEXT, 'additional grading 3 letters')
+		) );
+	}
+	
+	/**
+	 * Set a competence for a user
+	 *
+	 * @param
+	 *			int courseid
+	 *			int userid
+	 *			int compid
+	 *			int role
+	 *			int value
+	 * @return success
+	 */
+	public static function dakora_set_competence($courseid, $userid, $compid, $role, $value, $additional_info) {
+		global $USER, $DB;
+		static::validate_parameters ( static::dakora_set_competence_parameters (), array (
+				'courseid'=>$courseid,
+				'userid'=>$userid,
+				'compid'=>$compid,
+				'role'=>$role,
+				'value'=>$value,
+				'additionalinfo'=>$additional_info
+		) );
+	
+		if($userid == 0 && $role == \block_exacomp\ROLE_STUDENT)
+			$userid = $USER->id;
+			else if($userid == 0)
+				throw new invalid_parameter_exception ( 'Userid can not be 0 for teacher grading' );
+	
+				static::require_can_access_course_user($courseid, $userid);
+	
+				if(block_exacomp_set_user_competence($userid, $compid, \block_exacomp\TYPE_DESCRIPTOR, $courseid, $role, $value) == -1)
+					throw new invalid_parameter_exception ( 'Not allowed' );
+						
+					if($role == \block_exacomp\ROLE_TEACHER){
+						block_exacomp_save_additional_grading_for_descriptor($courseid, $compid, $userid, $additional_info);
+					}
+	
+					return array (
+							"success" => true
+					);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_set_competence_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
+		) );
 	}
 	
 	/**
@@ -3875,12 +3866,59 @@ class block_exacomp_external extends external_api {
 		$childsandexamples = static::get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid, true);
 
 		$descriptor_return->children = $childsandexamples->children;
+		
+		// summary for children gradings
+		$grading_scheme = block_exacomp_get_grading_scheme($courseid) + 1;
+		$children_teacherevaluation = array_fill(0,$grading_scheme,0);
+		$children_studentevaluation = array_fill(0,$grading_scheme,0);
+		
+		foreach($childsandexamples->children as $child) {
+			if($child->teacherevaluation > -1)
+				$children_teacherevaluation[$child->teacherevaluation]++;
+			if($child->studentevaluation > -1)
+				$children_studentevaluation[$child->studentevaluation]++;
+		}
+		$childrengradings = new stdClass();
+		$childrengradings->teacher = array();
+		$childrengradings->student = array();
+		
+		foreach($children_teacherevaluation as $key => $value) {
+			$childrengradings->teacher[$key] = array('sum' => $value);
+		}
+		foreach($children_studentevaluation as $key => $value) {
+			$childrengradings->student[$key] = array('sum' => $value);
+		}
+		$descriptor_return->childrengradings = $childrengradings;
+		
+		// summary for example gradings
 		$descriptor_return->examples = $childsandexamples->examples;
 
+		$examples_teacherevaluation = array_fill(0,$grading_scheme,0);
+		$examples_studentevaluation = array_fill(0,$grading_scheme,0);
+		
+		foreach($childsandexamples->examples as $example) {
+			if($example->teacherevaluation > -1)
+				$examples_teacherevaluation[$example->teacherevaluation]++;
+			if($example->studentevaluation > -1)
+				$examples_studentevaluation[$example->studentevaluation]++;
+		}
+		$examplegradings = new stdClass();
+		$examplegradings->teacher = array();
+		$examplegradings->student = array();
+		
+		foreach($examples_teacherevaluation as $key => $value) {
+			$examplegradings->teacher[$key] = array('sum' => $value);
+		}
+		foreach($examples_studentevaluation as $key => $value) {
+			$examplegradings->student[$key] = array('sum' => $value);
+		}
+		$descriptor_return->examplegradings = $examplegradings;
+		// example statistics
 		$descriptor_return->examplestotal = $childsandexamples->examplestotal;
 		$descriptor_return->examplesvisible = $childsandexamples->examplesvisible;
 		$descriptor_return->examplesinwork = $childsandexamples->examplesinwork;
-
+		$descriptor_return->examplesedited = $childsandexamples->examplesedited;
+		
 		$descriptor_return->hasmaterial = true;
 		if(empty($childsandexamples->examples))
 			$descriptor_return->hasmaterial = false;		
@@ -3888,37 +3926,74 @@ class block_exacomp_external extends external_api {
 		return $descriptor_return;
 	}
 
-	public static function dakora_get_descriptor_details_returns(){
+	public static function dakora_get_descriptor_details_returns() {
 		return new external_single_structure ( array (
-			'descriptorid' => new external_value( PARAM_INT, 'id of descriptor'),
-			'descriptortitle' => new external_value (PARAM_TEXT, 'title of descriptor'),
-			'teacherevaluation'=> new external_value( PARAM_INT, 'teacher evaluation of descriptor'),
-			'studentevaluation'=> new external_value( PARAM_INT, 'student evaluation of descriptor'),
-			'additionalinfo'=> new external_value (PARAM_TEXT, 'additional grading for descriptor'),
-			'numbering' => new external_value ( PARAM_TEXT, 'numbering'),
-			'niveauid' => new external_value ( PARAM_INT, 'id of niveau'),
-			'niveautitle' => new external_value ( PARAM_TEXT, 'title of niveau'),
-			'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if descriptor has material'),
-			'children' => new external_multiple_structure ( new external_single_structure ( array (
-					'childid' => new external_value ( PARAM_INT, 'id of child' ),
-					'childtitle' => new external_value ( PARAM_TEXT, 'title of child' ),
-					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
-					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of children'),
-					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of children'),
-					'hasmaterial' => new external_value (PARAM_BOOL, 'true or false if child has material'),
-					'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
-					'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-					'examplesinwork' => new external_value (PARAM_FLOAT, 'edited number of material')
-			) ) ),
-			'examples' => new external_multiple_structure ( new external_single_structure ( array (
-					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
-					'exampletitle' => new external_value ( PARAM_TEXT, 'title of example' ),
-					'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' )
-			) ) ),
-			'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
-			'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-			'examplesinwork' => new external_value (PARAM_FLOAT, 'edited number of material')
-		) ) ;
+				'descriptorid' => new external_value ( PARAM_INT, 'id of descriptor' ),
+				'descriptortitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
+				'teacherevaluation' => new external_value ( PARAM_INT, 'teacher evaluation of descriptor' ),
+				'studentevaluation' => new external_value ( PARAM_INT, 'student evaluation of descriptor' ),
+				'additionalinfo' => new external_value ( PARAM_TEXT, 'additional grading for descriptor' ),
+				'numbering' => new external_value ( PARAM_TEXT, 'numbering' ),
+				'niveauid' => new external_value ( PARAM_INT, 'id of niveau' ),
+				'niveautitle' => new external_value ( PARAM_TEXT, 'title of niveau' ),
+				'hasmaterial' => new external_value ( PARAM_BOOL, 'true or false if descriptor has material' ),
+				'children' => new external_multiple_structure ( new external_single_structure ( array (
+						'descriptorid' => new external_value ( PARAM_INT, 'id of descriptor' ),
+						'descriptortitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
+						'teacherevaluation' => new external_value ( PARAM_INT, 'teacher evaluation of descriptor' ),
+						'studentevaluation' => new external_value ( PARAM_INT, 'student evaluation of descriptor' ),
+						'numbering' => new external_value ( PARAM_TEXT, 'numbering' ),
+						'hasmaterial' => new external_value ( PARAM_BOOL, 'true or false if descriptor has material' ),
+						'examples' => new external_multiple_structure ( new external_single_structure ( array (
+								'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
+								'exampletitle' => new external_value ( PARAM_TEXT, 'title of example' ),
+								'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
+								'teacherevaluation' => new external_value ( PARAM_INT, 'example evaluation of teacher' ),
+								'studentevaluation' => new external_value ( PARAM_INT, 'example evaluation of student' ),
+								'teacheritemvalue' => new external_value ( PARAM_INT, 'item evaluation of teacher' ) 
+						) ) ),
+						'examplestotal' => new external_value ( PARAM_INT, 'total number of material' ),
+						'examplesvisible' => new external_value ( PARAM_INT, 'visible number of material' ),
+						'examplesinwork' => new external_value ( PARAM_INT, 'number of material in work' ),
+						'examplesedited' => new external_value ( PARAM_INT, 'number of edited material' ),
+						'examplegradings' => new external_single_structure ( array (
+								'teacher' => new external_multiple_structure ( new external_single_structure ( array (
+										'sum' => new external_value ( PARAM_INT, 'number of gradings' ) 
+								) ) ),
+								'student' => new external_multiple_structure ( new external_single_structure ( array (
+										'sum' => new external_value ( PARAM_INT, 'number of gradings' ) 
+								) ) ) 
+						) ) 
+				) ) ),
+				'childrengradings' => new external_single_structure ( array (
+						'teacher' => new external_multiple_structure ( new external_single_structure ( array (
+								'sum' => new external_value ( PARAM_INT, 'number of gradings' ) 
+						) ) ),
+						'student' => new external_multiple_structure ( new external_single_structure ( array (
+								'sum' => new external_value ( PARAM_INT, 'number of gradings' ) 
+						) ) ) 
+				) ),
+				'examples' => new external_multiple_structure ( new external_single_structure ( array (
+						'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
+						'exampletitle' => new external_value ( PARAM_TEXT, 'title of example' ),
+						'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
+						'teacherevaluation' => new external_value ( PARAM_INT, 'example evaluation of teacher' ),
+						'studentevaluation' => new external_value ( PARAM_INT, 'example evaluation of student' ),
+						'teacheritemvalue' => new external_value ( PARAM_INT, 'item evaluation of teacher' ) 
+				) ) ),
+				'examplestotal' => new external_value ( PARAM_INT, 'total number of material' ),
+				'examplesvisible' => new external_value ( PARAM_INT, 'visible number of material' ),
+				'examplesinwork' => new external_value ( PARAM_INT, 'number of material in work' ),
+				'examplesedited' => new external_value ( PARAM_INT, 'number of edited material' ),
+				'examplegradings' => new external_single_structure ( array (
+						'teacher' => new external_multiple_structure ( new external_single_structure ( array (
+								'sum' => new external_value ( PARAM_INT, 'number of gradings' ) 
+						) ) ),
+						'student' => new external_multiple_structure ( new external_single_structure ( array (
+								'sum' => new external_value ( PARAM_INT, 'number of gradings' ) 
+						) ) ) 
+				) ) 
+		) );
 	}
 
 
@@ -4422,7 +4497,7 @@ class block_exacomp_external extends external_api {
 	/**
 	* helper function to use same code for 2 ws
 	*/
-	private static function get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid = 0, $show_all = false) {
+private static function get_descriptor_children($courseid, $descriptorid, $userid, $forall, $crosssubjid = 0, $show_all = false) {
 		global $DB;
 
 		if ($forall) {
@@ -4459,31 +4534,7 @@ class block_exacomp_external extends external_api {
 		$children_return = array();
 		foreach($children as $child){
 			if($child->examples || $show_all){
-				$child_return = new stdClass();
-				$child_return->childid = $child->id;
-				$child_return->childtitle = $child->title;
-				$child_return->numbering = block_exacomp_get_descriptor_numbering($child);
-				$child_return->teacherevaluation = -1;
-				if(!$forall) {
-					if ($grading = block_exacomp\get_comp_eval($courseid, \block_exacomp\ROLE_TEACHER, $userid, \block_exacomp\TYPE_DESCRIPTOR, $child->id)) {
-						$child_return->teacherevaluation = ($grading->value !== null) ? $grading->value : -1;
-					}
-				}
-				$child_return->studentevaluation = -1;
-				if(!$forall) {
-					if ($grading = block_exacomp\get_comp_eval($courseid, \block_exacomp\ROLE_STUDENT, $userid, \block_exacomp\TYPE_DESCRIPTOR, $child->id)) {
-						$child_return->studentevaluation = ($grading->value !== null) ? $grading->value : -1;
-					}
-				}
-
-				$result = static::get_descriptor_example_statistic($courseid, $userid, $child->id, $forall, $crosssubjid);
-				$child_return->examplestotal = $result->total;
-				$child_return->examplesvisible = $result->visible;
-				$child_return->examplesinwork = $result->inwork;
-				
-				$child_return->hasmaterial = false;
-				if($child_return->examplestotal > 0)
-					$child_return->hasmaterial = true;
+				$child_return = static::dakora_get_descriptor_details($courseid, $child->id, $userid, $forall, $crosssubjid);
 
 				if(!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, $non_visibilities_student))||$forall)){
 					if($crosssubjid == 0 || in_array($child->id, $crossdesc) || in_array($descriptorid, $crossdesc))
@@ -4496,7 +4547,7 @@ class block_exacomp_external extends external_api {
 
 		if($crosssubjid == 0 || in_array($parent_descriptor->id, $crossdesc)){
 			$parent_descriptor = block_exacomp_get_examples_for_descriptor($parent_descriptor, array(SHOW_ALL_TAXONOMIES), $showexamples, $courseid);
-
+				
 			$example_non_visibilities = $DB->get_fieldset_select(\block_exacomp\DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
 			if(!$forall) {
 				$example_non_visibilities_student = $DB->get_fieldset_select(\block_exacomp\DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
@@ -4518,14 +4569,15 @@ class block_exacomp_external extends external_api {
 
 		$return = new stdClass();
 		$return->children = $children_return;
-		$return->examples = $examples_return;
-
+		//$return->examples = $examples_return;
+		$return->examples = static::dakora_get_examples_for_descriptor_common($courseid, $descriptorid, $userid, $forall, 0);
+		
 		$descriptor_example_statistic = static::get_descriptor_example_statistic($courseid, $userid, $descriptorid, $forall, $crosssubjid);
 		
 		$return->examplestotal = $descriptor_example_statistic->total;
 		$return->examplesvisible = $descriptor_example_statistic->visible;
 		$return->examplesinwork = $descriptor_example_statistic->inwork;
-
+		$return->examplesedited = $descriptor_example_statistic->edited;
 		return $return;
 	}
 
@@ -4750,7 +4802,6 @@ class block_exacomp_external extends external_api {
 		$number_students = 1;
 
 		if($forall) {
-			// TODO: auf lehrer checken? -> einfach durch require_can_access_course_user($courseid, 0) ersetzen
 			static::require_can_access_course($courseid);
 			$students = block_exacomp_get_students_by_course($courseid);
 			$number_students = count($students);
@@ -4758,11 +4809,12 @@ class block_exacomp_external extends external_api {
 		else
 			static::require_can_access_course_user($courseid, $userid);
 		
-		list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork, $totalHidden) = block_exacomp_get_example_statistic_for_descriptor($courseid, $descriptorid, $userid, $crosssubjid);
+		list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork, $totalHidden, $edited) = block_exacomp_get_example_statistic_for_descriptor($courseid, $descriptorid, $userid, $crosssubjid);
 		
 		$return->total = $totalHidden/ $number_students;
 		$return->visible = $total / $number_students;
 		$return->inwork = ($inWork>0)?$inWork / $number_students:0;
+		$return->edited = $edited / $number_students;
 		return $return;
 	}
 

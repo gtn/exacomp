@@ -5275,6 +5275,7 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 	$totalHidden = 0;
 	$inWork = 0;
 	$notInWork = 0;
+	$edited = 0;
 	$scheme = block_exacomp_get_grading_scheme($courseid);
 
 	$gradings = array();
@@ -5285,6 +5286,7 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 		$totalHiddenArray = array();
 		$totalArray = array();
 		$inWorkArray = array();
+		$editedArray = array();
 		$example_where_string = "";
 		foreach($children as $child){
 			$visible = block_exacomp_is_descriptor_visible($courseid, $child, $student->id);
@@ -5320,6 +5322,25 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 						$inWorkArray[$example->id] = $example;
 				}
 			}
+			
+			// edited examples
+			$sql = "SELECT ie.id, e.id as exampid FROM {".\block_exacomp\DB_EXAMPLES."} e
+					JOIN {".\block_exacomp\DB_DESCEXAMP."} de ON de.exampid = e.id
+					JOIN {".\block_exacomp\DB_DESCRIPTORS."} d ON de.descrid = d.id
+					JOIN {block_exacompitemexample} ie ON ie.exampleid = e.id
+					JOIN {block_exaportitem} i ON i.id = ie.itemid
+					WHERE i.courseid = ?
+					AND d.id = ? AND i.userid = ? ";
+			
+			$items = $DB->get_records_sql($sql, array($courseid, $child->id,$student->id));
+			
+			foreach($items as $item){
+				if(isset($totalArray[$item->exampid])){
+					$example = $totalArray[$item->exampid];
+					if(!$example->hidden && !array_key_exists($example->id))
+						$editedArray[$example->id] = $example;
+				}
+			}
 
 		}
 
@@ -5330,7 +5351,7 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 		$total += count ($totalArray);
 		$totalHidden = count($totalHiddenArray) + $total;
 		$inWork += ($total == 0)?0:count ($inWorkArray);
-
+		$edited += ($total == 0)?0:count ($editedArray);
 		$notInWork = $total - $inWork;
 		$notEvaluated = $total;
 
@@ -5357,7 +5378,7 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 	if($totalGrade == null)
 		$totalGrade = 0;
 
-	return array($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork, $totalHidden);
+	return array($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork, $totalHidden, $edited);
 }
 
 
