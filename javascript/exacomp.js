@@ -16,6 +16,14 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
+/**
+ * $.disablescroll
+ * Author: Josh Harrison - aloof.co
+ *
+ * Disables scroll events from mousewheels, touchmoves and keypresses.
+ * Use while jQuery is animating the scroll position for a guaranteed super-smooth ride!
+ */(function(e){"use strict";function r(t,n){this.opts=e.extend({handleWheel:!0,handleScrollbar:!0,handleKeys:!0,scrollEventKeys:[32,33,34,35,36,37,38,39,40]},n);this.$container=t;this.$document=e(document);this.lockToScrollPos=[0,0];this.disable()}var t,n;n=r.prototype;n.disable=function(){var e=this;e.opts.handleWheel&&e.$container.on("mousewheel.disablescroll DOMMouseScroll.disablescroll touchmove.disablescroll",e._handleWheel);if(e.opts.handleScrollbar){e.lockToScrollPos=[e.$container.scrollLeft(),e.$container.scrollTop()];e.$container.on("scroll.disablescroll",function(){e._handleScrollbar.call(e)})}e.opts.handleKeys&&e.$document.on("keydown.disablescroll",function(t){e._handleKeydown.call(e,t)})};n.undo=function(){var e=this;e.$container.off(".disablescroll");e.opts.handleKeys&&e.$document.off(".disablescroll")};n._handleWheel=function(e){e.preventDefault()};n._handleScrollbar=function(){this.$container.scrollLeft(this.lockToScrollPos[0]);this.$container.scrollTop(this.lockToScrollPos[1])};n._handleKeydown=function(e){for(var t=0;t<this.opts.scrollEventKeys.length;t++)if(e.keyCode===this.opts.scrollEventKeys[t]){e.preventDefault();return}};e.fn.disablescroll=function(e){!t&&(typeof e=="object"||!e)&&(t=new r(this,e));t&&typeof e=="undefined"?t.disable():t&&t[e]&&t[e].call(t)};window.UserScrollDisabler=r})(jQuery);
+
 (function() {
 
 window.jQueryExacomp = jQuery;
@@ -29,15 +37,7 @@ Storage.prototype.getObject = function(key) {
 	return value && JSON.parse(value);
 };
 
-/**
- * $.disablescroll
- * Author: Josh Harrison - aloof.co
- *
- * Disables scroll events from mousewheels, touchmoves and keypresses.
- * Use while jQuery is animating the scroll position for a guaranteed super-smooth ride!
- */(function(e){"use strict";function r(t,n){this.opts=e.extend({handleWheel:!0,handleScrollbar:!0,handleKeys:!0,scrollEventKeys:[32,33,34,35,36,37,38,39,40]},n);this.$container=t;this.$document=e(document);this.lockToScrollPos=[0,0];this.disable()}var t,n;n=r.prototype;n.disable=function(){var e=this;e.opts.handleWheel&&e.$container.on("mousewheel.disablescroll DOMMouseScroll.disablescroll touchmove.disablescroll",e._handleWheel);if(e.opts.handleScrollbar){e.lockToScrollPos=[e.$container.scrollLeft(),e.$container.scrollTop()];e.$container.on("scroll.disablescroll",function(){e._handleScrollbar.call(e)})}e.opts.handleKeys&&e.$document.on("keydown.disablescroll",function(t){e._handleKeydown.call(e,t)})};n.undo=function(){var e=this;e.$container.off(".disablescroll");e.opts.handleKeys&&e.$document.off(".disablescroll")};n._handleWheel=function(e){e.preventDefault()};n._handleScrollbar=function(){this.$container.scrollLeft(this.lockToScrollPos[0]);this.$container.scrollTop(this.lockToScrollPos[1])};n._handleKeydown=function(e){for(var t=0;t<this.opts.scrollEventKeys.length;t++)if(e.keyCode===this.opts.scrollEventKeys[t]){e.preventDefault();return}};e.fn.disablescroll=function(e){!t&&(typeof e=="object"||!e)&&(t=new r(this,e));t&&typeof e=="undefined"?t.disable():t&&t[e]&&t[e].call(t)};window.UserScrollDisabler=r})(jQuery);
- 
-window.block_exacomp = {
+window.block_exacomp = $E = {
 	get_param: function(name) {
 		name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
 		var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
@@ -69,7 +69,7 @@ window.block_exacomp = {
 	},
 
 	get_studentid: function() {
-		studentid = block_exacomp.get_param('studentid');
+		studentid = $E.get_param('studentid');
 		
 		if(studentid === null)
 			studentid = $( "#menuexacomp_competence_grid_select_student" ).val();
@@ -78,7 +78,7 @@ window.block_exacomp = {
 	},
 	
 	call_ajax: function(data) {
-		data.courseid = block_exacomp.get_param('courseid');
+		data.courseid = $E.get_param('courseid');
 		data.sesskey = M.cfg.sesskey;
 		
 		var ajax = $.ajax({
@@ -109,7 +109,7 @@ window.block_exacomp = {
 			};
 		}
 		
-		var popup = new M.core.dialogue({
+		var popup = this.last_popup = new M.core.dialogue({
 			headerContent: config.headerContent || config.title || 'Popup', // M.str.moodle.loadinghelp, // previousimagelink + '<div id=\"imagenumber\" class=\"imagetitle\"><h1> Image '
 			// + screennumber + ' / ' + this.imageidnumbers[imageid] + ' </h1></div>' + nextimagelink,
 			
@@ -122,7 +122,6 @@ window.block_exacomp = {
 			// ok: width: null, = automatic
 			height: config.height || '80%',
 			width: config.width || '85%',
-			// closeButtonTitle: 'clooose'
 		});
 		
 		// disable scrollbars
@@ -135,10 +134,14 @@ window.block_exacomp = {
 		overlay.click(function(){
 			popup.hide();
 		});
-		
-		
+
 		var orig_hide = popup.hide;
 		popup.hide = function() {
+
+			if (config.onhide) {
+				config.onhide();
+			}
+
 			// remove overlay, when hiding popup
 			overlay.remove();
 			
@@ -149,9 +152,14 @@ window.block_exacomp = {
 			orig_hide.call(popup);
 		};
 
-		
-		this.last_popup = popup;
-		
+		popup.remove = function(){
+			if (this.$body.is(':visible')) {
+				this.hide();
+			}
+
+			this.destroy();
+		};
+
 		return popup;
 	},
 	
@@ -258,7 +266,7 @@ $(function() {
 
 	// student selector
 	$('select[name=exacomp_competence_grid_select_student]').change(function(){
-		block_exacomp.set_location_params({ studentid: this.value });
+		$E.set_location_params({ studentid: this.value });
 	});
 
 	// convert exa-tree to rg2
