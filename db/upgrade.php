@@ -1573,7 +1573,10 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		if(!$dbman->field_exists($table, $field)){
 			$dbman->add_field($table, $field);
 		}
-		
+		upgrade_block_savepoint(true, 2015052900, 'exacomp');
+	}
+	
+	if ($oldversion < 2015121001) {
 		$table = new xmldb_table('block_exacompdescrvisibility');
 		
 	  	// Adding fields to table block_exacompdescrcross_mm.
@@ -1618,10 +1621,9 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 				$DB->insert_record(\block_exacomp\DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$descriptor->id, 'studentid'=>0, 'visible'=>1));
 			}
 		}
-		upgrade_block_savepoint(true, 2015052900, 'exacomp');
-	}
+		
 	
-	if ($oldversion < 2015070200) {
+	
 		// in v2 value 0 war nicht gesetzt, jetzt ist value 0 nicht erreicht und NULL nicht gesetzt
 		// 1. compuser mit 0 auf null setzen bzw. löschen
 		$DB->execute('UPDATE {block_exacompcompuser} SET value=NULL WHERE value=0');
@@ -1629,10 +1631,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// 2. das gleiche in der exameval
 		$DB->execute('UPDATE {block_exacompexameval} SET teacher_evaluation=NULL WHERE teacher_evaluation=0');
 		$DB->execute('UPDATE {block_exacompexameval} SET student_evaluation=NULL WHERE student_evaluation=0');
-	}
-	
-	if ($oldversion < 2015070200) {
-	
+
 		// Define table block_exacompschedule to be created.
 		$table = new xmldb_table('block_exacompschedule');
 	
@@ -1652,12 +1651,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		if (!$dbman->table_exists($table)) {
 			$dbman->create_table($table);
 		}
-	
-		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2015070200, 'exacomp');
-	}
-	
-	if ($oldversion < 2015070201) {
 	
 		// Define field sourceid to be dropped from block_exacompsubjects.
 		$table = new xmldb_table('block_exacompsubjects');
@@ -1800,11 +1793,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		
 		// Launch add key catid.
 		$dbman->add_key($table, $key);
-		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2015070201, 'exacomp');
-	}
-	
-	if ($oldversion < 2015070700) {
 	
 		// Define field sorting to be added to block_exacompschedule.
 		$table = new xmldb_table('block_exacompschedule');
@@ -1823,13 +1811,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		if (!$dbman->field_exists($table, $field)) {
 			$dbman->add_field($table, $field);
 		}
-		
-		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2015070700, 'exacomp');
-	}
-	
-	if ($oldversion < 2015071700) {
-	
+
 		// Define field id to be added to block_exacompniveaus.
 		$table = new xmldb_table('block_exacompniveaus');
 		$field = new xmldb_field('span', XMLDB_TYPE_INTEGER, '1', null, null, null, '0', 'source');	
@@ -1838,9 +1820,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			$dbman->add_field($table, $field);
 		}
 	
-		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2015071700, 'exacomp');
-	}
 	
 	function upgrade_block_exacomp_2015072102_block_exacomp_get_topics_by_course_and_subject($courseid, $subjectid = 0, $showalldescriptors = false) {
 		global $DB;
@@ -1862,8 +1841,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		return $DB->get_records_sql($sql, array($courseid, $subjectid));
 	}
 	
-	if($oldversion < 2015072102){
-		global $DB;
 	
 		//insert child descriptors in visibility table if not already done
 		
@@ -1926,9 +1903,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			}	
 		}
 		
-		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2015072102, 'exacomp');
-	}
 	
 	function upgrade_block_exacomp_2015072102_get_descriptors($courseid = 0) {
 		global $DB;
@@ -1993,8 +1967,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		return $descriptors;
 	}
 	
-	if($oldversion < 2015072300){
-		//update descriptor children sorting if not existing
 		
 		//has to be done for all available courses where exacomp is used
 		$courses = block_exacomp_get_courseids();
@@ -2020,10 +1992,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 				}
 			}
 		}
-		
-		upgrade_block_savepoint(true, 2015072300, 'exacomp');
-	}
-	if($oldversion < 2015072301){
 		// Define field id to be added to block_exacompcrosssubjects.
 		$table = new xmldb_table(\block_exacomp\DB_CROSSSUBJECTS);
 		$field = new xmldb_field('subjectid', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'shared');	
@@ -2032,22 +2000,13 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			$dbman->add_field($table, $field);
 		}
 	
-		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2015072301, 'exacomp');
-	}
-	if($oldversion < 2015072302){
-		$table = new xmldb_table('block_exacompexamples');
+			$table = new xmldb_table('block_exacompexamples');
 		$field = new xmldb_field('attachement', XMLDB_TYPE_CHAR, '255', null, null, null, '1');
 		$dbman->drop_field($table, $field);
 		$field = new xmldb_field('ressources', XMLDB_TYPE_CHAR, '255', null, null, null, '1');
 		$dbman->drop_field($table, $field);
 		
-		
-		upgrade_block_savepoint(true, 2015072302, 'exacomp');
-	}
 	
-	if ($oldversion < 2015080900) {
-
 		// Define table block_exacompdatasources to be created.
 		$table = new xmldb_table('block_exacompdatasources');
 
@@ -2065,13 +2024,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			$dbman->create_table($table);
 		}
 
-		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2015080900, 'exacomp');
-	}
-
- 	if ($oldversion < 2015081101) {
-
-		// Define table block_exacompdatasources to be created.
+			// Define table block_exacompdatasources to be created.
 		$table = new xmldb_table('block_exacompdescrcat_mm');
 
 		// Adding fields to table block_exacompdatasources.
@@ -2124,10 +2077,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			$insert->taxid = $example->taxid;
 			$DB->insert_record('block_exacompexampletax_mm', $insert);
 		}
-		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2015081101, 'exacomp');
-	}
-	if ($oldversion < 2015081201) {
 		 $table = new xmldb_table('block_exacompdescriptors');
 		 $field = new xmldb_field('catid');
 		$key = new xmldb_key('catid', XMLDB_KEY_FOREIGN, array('catid'));
@@ -2136,10 +2085,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		 //var_dump($dbman->index_exists($table, $key));
 		 $dbman->drop_field($table, $field);
 		 
-		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2015081201, 'exacomp');
-	}
-	if ($oldversion < 2015081202) {
 		 $table = new xmldb_table('block_exacompexamples');
 		 $field = new xmldb_field('taxid');
 		$key = new xmldb_key('taxid', XMLDB_KEY_FOREIGN, array('taxid'));
@@ -2147,19 +2092,11 @@ function xmldb_block_exacomp_upgrade($oldversion) {
  		$dbman->drop_key($table, $key);
 		 //var_dump($dbman->index_exists($table, $key));
 		 $dbman->drop_field($table, $field);
-		 
-		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2015081202, 'exacomp');
-	}
-	if($oldversion < 2015081900){
+
 		$table = new xmldb_table('block_exacompschedule');
 		$field = new xmldb_field('day');
 		$dbman->drop_field($table, $field);
-		
-		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2015081900, 'exacomp');
-	}
-	if($oldversion < 2015081901){
+
 		$table = new xmldb_table('block_exacompschedule');
 		$field = new xmldb_field('start', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
 		   	
@@ -2173,9 +2110,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			$dbman->add_field($table, $field);
 		}
 		
-		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2015081901, 'exacomp');
-	}
 		
 	function upgrade_block_exacomp_2015082000_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES),$showallexamples = true, $courseid = null, $mind_visibility=true, $showonlyvisible = false ) {
 		global $DB, $COURSE;
@@ -2289,10 +2223,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 
 	return $descriptor;
 }
-
-	
-		
-	if($oldversion < 2015082000){
 		$table = new xmldb_table('block_exacompexampvisibility');
 		
 	  	// Adding fields to table block_exacompdescrcross_mm.
@@ -2340,11 +2270,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 				$DB->insert_record(\block_exacomp\DB_EXAMPVISIBILITY, array('courseid'=>$course, 'exampleid'=>$example->id, 'studentid'=>0, 'visible'=>1));
 			}
 		}
-		
-		upgrade_block_savepoint(true, 2015082000, 'exacomp');
-	}
 	
-	if($oldversion < 2015082500){
 		/**
 		 * go through all examples and move the files into a mod_exacomp filestorage
 		 */
@@ -2430,11 +2356,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		
 		// TODO: delete file url fields (task, solution)
 		
-		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2015082500, 'exacomp');
-	}
 	
-	if ($oldversion < 2015090801) {
 	
 		// Changing the default of field sorting on table block_exacompexamples to 0.
 		$table = new xmldb_table('block_exacompexamples');
@@ -2449,20 +2371,12 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			$DB->update_record(\block_exacomp\DB_EXAMPLES, $exampleWithoutSorting);
 		}
 		
-		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2015090801, 'exacomp');
-	}
-	if($oldversion < 2015090901){
 		$table = new xmldb_table('block_exacompschedule');
 		$field = new xmldb_field('deleted', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', null);
 		   	
 		if (!$dbman->field_exists($table, $field)) {
 			$dbman->add_field($table, $field);
 		}
-		upgrade_block_savepoint(true, 2015090901, 'exacomp');
-	   
-	}
-	if ($oldversion < 2015091100) {
 	
 		// Changing the default of field teachervalue on table block_exacompitemexample to drop it.
 		$table = new xmldb_table('block_exacompitemexample');
@@ -2478,22 +2392,13 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Launch change of default for field studentvalue.
 		$dbman->change_field_default($table, $field);
 		
-		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2015091100, 'exacomp');
-	}
-	
-	if($oldversion < 2015091500){
 		$table = new xmldb_table('block_exacompniveaus');
 		$field = new xmldb_field('numb', XMLDB_TYPE_INTEGER, '10', null, null, null, '1', null);
 		   	
 		if (!$dbman->field_exists($table, $field)) {
 			$dbman->add_field($table, $field);
 		}
-		upgrade_block_savepoint(true, 2015091500, 'exacomp');
-	}
-	 if ($oldversion < 2015092803) {
-		global $DB;
-		
+
 		// Define field sorting to be added to block_exacompdescrexamp_mm.
 		$table = new xmldb_table('block_exacompdescrexamp_mm');
 		$field = new xmldb_field('sorting', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'exampid');
@@ -2513,10 +2418,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 				$DB->update_record(\block_exacomp\DB_DESCEXAMP, $desc_examp);
 			}
 		}
-		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2015092803, 'exacomp');
-	}
-	if ($oldversion < 2015102300) {
 	
 		// Changing type of field numb on table block_exacomptopics to text.
 		$table = new xmldb_table('block_exacomptopics');
@@ -2525,11 +2426,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Launch change of type for field numb.
 		$dbman->change_field_type($table, $field);
 	
-		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2015102300, 'exacomp');
-	}
-	
-	if ($oldversion < 2015103000) {
 		// Define field sorting to be added to block_exacompdescrexamp_mm.
 		$table = new xmldb_table('block_exacompcategories');
 		$field = new xmldb_field('sorting', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'lvl');
@@ -2538,10 +2434,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		if (!$dbman->field_exists($table, $field)) {
 			$dbman->add_field($table, $field);
 		}
-	}
 	
-  if ($oldversion < 2015110201) {
-
 		// Define field id to be added to block_exacompcompuser_mm.
 		$table = new xmldb_table('block_exacompcompuser_mm');
 		$field = new xmldb_field('percentage', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0');
@@ -2551,11 +2444,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			$dbman->add_field($table, $field);
 		}
 
-		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2015110201, 'exacomp');
-	}
-	
-	if($oldversion < 2015110202) {
 
 		// Define field id to be added to block_exacompcompuser_mm.
 		$table = new xmldb_table('block_exacompcompuser');
@@ -2566,11 +2454,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			$dbman->add_field($table, $field);
 		}
 
-		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2015110202, 'exacomp');
-	}
-	
-	if ($oldversion < 2015111200) {
 	
 		// Define field additionalinfo to be added to block_exacompexameval.
 		$table = new xmldb_table('block_exacompexameval');
@@ -2609,10 +2492,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Launch change of default for field additionalinfo.
 		$dbman->change_field_default($table, $field);
 		
-		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2015111200, 'exacomp');
-	}
-	if ($oldversion < 2015112401) {
 	
 		// Define field resubmission to be added to block_exacompexameval.
 		$table = new xmldb_table('block_exacompexameval');
@@ -2623,10 +2502,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			$dbman->add_field($table, $field);
 		}
 	
-		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2015112401, 'exacomp');
-	}
-	if($oldversion < 2015120901){
 		// Define field resubmission to be added to block_exacompexameval.
 		$table = new xmldb_table('block_exacompexamples');
 		$field = new xmldb_field('blocking_event', XMLDB_TYPE_INTEGER, '1', null, null, null, '0', null);
@@ -2637,7 +2512,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		}
 	
 		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2015120901, 'exacomp');
+		upgrade_block_savepoint(true, 2015121001, 'exacomp');
 	}
     if ($oldversion < 2015121500) {
 

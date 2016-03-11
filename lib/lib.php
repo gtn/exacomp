@@ -6255,9 +6255,11 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 					$evaluation->value = -1;
 				}
 				$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
-				$table_content[$topic->id]->niveaus[$niveau->id] = ($evaluation->value > -1)? $scheme_items[$evaluation->value]:'';
-				if($niveau->span == 1)
-					$table_content[$topic->id]->span = 1;
+				if($niveau){
+					$table_content[$topic->id]->niveaus[$niveau->id] = ($evaluation->value > -1)? $scheme_items[$evaluation->value]:'';
+					if($niveau->span == 1)
+						$table_content[$topic->id]->span = 1;
+				}
 			}
 		}
 	}
