@@ -5488,19 +5488,19 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
 
 	$sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
-				eval.student_evaluation, eval.teacher_evaluation, eval.additionalinfo, evis.courseid, s.id as scheduleid,
+				eval.student_evaluation, eval.teacher_evaluation, eval.additionalinfo, s.courseid, s.id as scheduleid,
 				e.externalurl, e.externaltask, e.description
 			FROM {block_exacompschedule} s
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid
 			JOIN {".\block_exacomp\DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=?
-			LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid
-			WHERE s.studentid = ? AND (
+			LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid 
+			WHERE s.studentid = ? AND s.courseid = ? AND (
 				-- innerhalb end und start
 				(s.start > ? AND s.end < ?)
 			)
 			GROUP BY s.id -- because a bug somewhere causes duplicate rows
 			ORDER BY e.title";
-	return $DB->get_records_sql($sql,array($courseid, $studentid, $start, $end));
+	return $DB->get_records_sql($sql,array($courseid, $studentid, $courseid, $start, $end));
 }
 
 function block_exacomp_get_examples_for_start_end_all_courses($studentid, $start, $end){
