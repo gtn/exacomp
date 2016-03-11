@@ -96,6 +96,7 @@ call_user_func(function() use (&$functions, &$services) {
 		[ 'dakora_remove_example_from_schedule', 'write', 'remove example from weekly schedule' ],
 		[ 'dakora_set_example_time_slot', 'write', 'set start and end time for example' ],
 		[ 'dakora_submit_example', 'write', 'submit example solution' ],
+		[ 'dakora_set_competence', 'write', 'set competence for student'],
 	];
 
 	foreach ($definitions as $definition) {
