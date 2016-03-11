@@ -3468,7 +3468,12 @@ function block_exacomp_get_exaport_items($userid = 0){
 	if($userid == 0)
 		$userid = $USER->id;
 
-	$items = $DB->get_records('block_exaportitem',array("userid"=>$userid,"isoez" => 0));
+	$sql = "SELECT * FROM {block_exaportitem} WHERE id NOT IN 
+				(SELECT i.id FROM {block_exaportitem} i JOIN {block_exacompitemexample} ie ON i.id = ie.itemid )
+				AND userid = ? AND isoez = ?";
+	
+	$items = $DB->get_records_sql($sql,array("userid"=>$userid,"isoez" => 0));
+	
 	//if a teacher accesses a competence profile he should only see the views that are shared with him
 	if($userid != $USER->id) {
 		$teacherViews = $DB->get_fieldset_select('block_exaportviewshar', 'viewid', 'userid = ?',array($USER->id));
@@ -5337,7 +5342,7 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 			foreach($items as $item){
 				if(isset($totalArray[$item->exampid])){
 					$example = $totalArray[$item->exampid];
-					if(!$example->hidden && !array_key_exists($example->id))
+					if(!$example->hidden && !array_key_exists($example->id, $editedArray))
 						$editedArray[$example->id] = $example;
 				}
 			}

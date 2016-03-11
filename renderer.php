@@ -3570,13 +3570,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		//print list
 		$student = block_exacomp_get_user_information_by_course($student, $course->id);
 
-		$items = false;
-		// if($student != null && block_exacomp_get_profile_settings($student->id)->useexaport == 1) {
-		//	$items = block_exacomp_get_exaport_items($student->id);
-		//}
-		
 		$content .= $this->competence_profile_grid($course->id, $student->id);
-		$content .= $this->competence_profile_tree_v2($compTree,$course->id, $student,$scheme, false, $items, $max_scheme);
+		$content .= $this->competence_profile_tree_v2($compTree,$course->id, $student,$scheme, false, $max_scheme);
 
 		return html_writer::div($content,"competence_profile_coursedata");
 	}
@@ -3645,7 +3640,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::div($content, 'compprofile_grid');
 	}
 	
-private function competence_profile_tree_v2($in, $courseid, $student = null,$scheme = 1, $showonlyreached = false, $eportfolioitems = false, $max_scheme = 3) {
+private function competence_profile_tree_v2($in, $courseid, $student = null,$scheme = 1, $showonlyreached = false, $max_scheme = 3) {
 		global $DB;
 		static $barchartid_i = 0;
 		
@@ -3691,7 +3686,7 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 						$image = '/blocks/exacomp/pix/competence-grid-material-information.png';
 						$img_barchart = html_writer::empty_tag('img', array('src'=>new moodle_url($image), 'width'=>'25', 'height'=>'25'));
 						
-						$bar_chart = (($descriptor->examples)?html_writer::empty_tag('br').$img_barchart. 
+						$bar_chart = ((isset($descriptor->examples))?html_writer::empty_tag('br').$img_barchart. 
 								html_writer::div('', 'compprof_barchart', array('id'=>'svgdesc'.$barchartid_i))
 								.$span_in_work:'');
 						
@@ -4027,8 +4022,8 @@ var dataset = dataset.map(function (group) {
 		global $COURSE;
 		$exacomp_div_content = html_writer::tag('h2', get_string('pluginname', 'block_exacomp'));
 		
-		$exacomp_div_content .= html_writer::div(
-				html_writer::checkbox('showonlyreached', 1, ($settings->showonlyreached==1), get_string('profile_settings_showonlyreached', 'block_exacomp')));
+		//$exacomp_div_content .= html_writer::div(
+		//		html_writer::checkbox('showonlyreached', 1, ($settings->showonlyreached==1), get_string('profile_settings_showonlyreached', 'block_exacomp')));
 
 		$content_courses = html_writer::tag('p', get_string('profile_settings_choose_courses', 'block_exacomp'));
 		foreach($courses as $course){
@@ -4037,8 +4032,8 @@ var dataset = dataset.map(function (group) {
 		}
 		$exacomp_div_content .= html_writer::div($content_courses);
 		
-		$exacomp_div_content .= html_writer::div(
-				html_writer::checkbox('profile_settings_showallcomps', 1, ($settings->showallcomps==1), get_string('profile_settings_showallcomps', 'block_exacomp')));
+		//$exacomp_div_content .= html_writer::div(
+				//html_writer::checkbox('profile_settings_showallcomps', 1, ($settings->showallcomps==1), get_string('profile_settings_showallcomps', 'block_exacomp')));
 		
 		if($usebadges){
 			$badge_div_content = html_writer::tag('h4', get_string('profile_settings_badges_lineup', 'block_exacomp'));
@@ -4072,7 +4067,7 @@ var dataset = dataset.map(function (group) {
 			}
 		}
 
-		if($exastud){
+		/*if($exastud){
 			$exastud_div_content = html_writer::tag('h2', get_string('pluginname', 'block_exastud'));
 			$exastud_div_content .= html_writer::div(
 					html_writer::checkbox('useexastud', 1, ($settings->useexastud ==1), get_string('profile_settings_useexastud', 'block_exacomp')));
@@ -4091,7 +4086,7 @@ var dataset = dataset.map(function (group) {
 
 			$exastud_div = html_writer::div($exastud_div_content);
 			$content .= $exastud_div;
-		}
+		}*/
 
 
 		$div = html_writer::div(html_writer::tag('form',
@@ -4306,13 +4301,10 @@ var dataset = dataset.map(function (group) {
 			$student = block_exacomp_get_user_information_by_course($student, $course->id);
 			$scheme = block_exacomp_get_grading_scheme($course->id);
 			$compTree = block_exacomp_get_competence_tree($course->id);
-			$items = false;
-			if($student != null && block_exacomp_get_profile_settings($student->id)->useexaport == 1) {
-				$items = block_exacomp_get_exaport_items($student->id);
-			}
+			
 			if($compTree)
 				$content .= html_writer::tag('h4', $course->fullname) .
-					$this->competence_profile_tree_v2($compTree,$course->id, $student,$scheme, false, $items);
+					$this->competence_profile_tree_v2($compTree,$course->id, $student,$scheme, false);
 		}
 		return html_writer::div($content,"competence_profile_coursedata");
 	}
