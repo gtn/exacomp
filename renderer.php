@@ -1449,7 +1449,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$topicRow->cells[] = $statCell;
 			}
 
-			if (!empty($topic->descriptors) && $display_topic_header_row) {
+			// display topic header in edit mode, else the add descriptor field won't show up
+			if ($editmode || (!empty($topic->descriptors) && $display_topic_header_row)) {
 				$rows[] = $topicRow;
 			}
 
