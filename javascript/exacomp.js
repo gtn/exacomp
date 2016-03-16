@@ -55,7 +55,7 @@ window.block_exacomp = $E = {
 				results = regex.exec(location.search);
 
 			if (results === null) {
-				url += (url.indexOf('?') ? '&' : '?')+name+'='+encodeURIComponent(value);
+				url += (url.indexOf('?') != -1 ? '&' : '?')+name+'='+encodeURIComponent(value);
 			} else {
 				url = url.replace(results[1], name+'='+encodeURIComponent(value));
 			}
