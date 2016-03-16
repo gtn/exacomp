@@ -3074,7 +3074,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		global $COURSE, $PAGE;
 
 		$table = new html_table;
-		$table->attributes['class'] = 'exabis_comp_comp';
+		$table->attributes['class'] = 'rg2 exabis_comp_comp';
 		$table->attributes['id'] = 'comps';
 
 		$rows = array();
