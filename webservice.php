@@ -44,10 +44,10 @@ require_once($CFG->dirroot . '/webservice/lib.php');
 header('Access-Control-Allow-Origin: *');
 
 //authenticate the user
-$token = required_param('wstoken', PARAM_ALPHANUM);
+$wstoken = required_param('wstoken', PARAM_ALPHANUM);
 $function = required_param('wsfunction', PARAM_ALPHANUMEXT);
 $webservicelib = new \webservice();
-$authenticationinfo = $webservicelib->authenticate_user($token);
+$authenticationinfo = $webservicelib->authenticate_user($wstoken);
 
 // check if it is a exacomp token
 if ($authenticationinfo['service']->name != 'exacompservices') {
@@ -180,7 +180,6 @@ if (is_callable(['\block_exacomp\simple_service', $function])) {
 
 	// pretty print if available (since php 5.4.0)
 	echo defined('JSON_PRETTY_PRINT') ? json_encode($ret, JSON_PRETTY_PRINT) : json_encode($ret);
-	exit;
 } else {
 	throw new \moodle_exception("wsfunction '$function' not found");
 }
