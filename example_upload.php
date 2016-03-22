@@ -158,11 +158,7 @@ if($formdata = $form->get_data()) {
 	}
 	//add descriptor association
 	$descriptors = block_exacomp\param::optional_array('descriptor', array(PARAM_INT=>PARAM_INT));
-	if ($descriptors || !in_array($descrid, $descriptors)) {
-		if(!in_array($descrid, $descriptors)){
-			$descriptors[] = $descrid;
-		}
-		
+	if ($descriptors) {
 		foreach($descriptors as $descriptorid){
 			$desc_examp = $DB->get_record(\block_exacomp\DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
 			if(!$desc_examp){
