@@ -18,5 +18,6 @@
 // This copyright notice MUST APPEAR in all copies of the script!
 
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
 
 echo '{}';
