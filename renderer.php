@@ -2145,10 +2145,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 		elseif($studentid) {
 			//works only if exaport is installed
-			if ($url = block_exacomp_get_viewurl_for_example($studentid,$exampleid)) {
+			if ($url = block_exacomp_get_viewurl_for_example($studentid,g::$USER->id, $exampleid)) {
 				return html_writer::link($url,
 					$this->pix_icon("i/manual_item", get_string("submission","block_exacomp"), null, array('style' => 'margin: 0 0 0 5px;')),
-					array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+					array("target" => "_blank", 'exa-type' => 'iframe-popup'));
 			}else{
 				return "";
 			}

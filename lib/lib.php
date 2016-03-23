@@ -4489,7 +4489,15 @@ function block_exacomp_get_students_for_crosssubject($courseid, $crosssub){
 	}
 	return $students;
 }
-function block_exacomp_get_viewurl_for_example($studentid,$exampleid) {
+
+/**
+ * get the url to view an example, the example is from $studentid, $viewerid wants to view it
+ * @param $studentid
+ * @param $viewerid
+ * @param $exampleid
+ * @return null|string
+ */
+function block_exacomp_get_viewurl_for_example($studentid, $viewerid, $exampleid) {
 	global $CFG, $DB;
 
 	if (!block_exacomp_exaportexists()) {
@@ -4501,11 +4509,21 @@ function block_exacomp_get_viewurl_for_example($studentid,$exampleid) {
 	if(!$item)
 		return null;
 
-	$view = $DB->get_record('block_exaportviewblock', array("type"=>"item","itemid"=>$item->id));
-	if(!$view)
-		return null;
+	if ($studentid == $viewerid) {
+		// view my own item
+		$access = "portfolio/id/".$studentid."&itemid=".$item->id;
+	} else {
+		// view sb elses item, find a suitable view
+		$sql = "SELECT viewblock.*
+			FROM {block_exaportviewblock} viewblock
+			JOIN {block_exaportviewshar} viewshar ON viewshar.viewid=viewblock.viewid
+			WHERE viewblock.type='item' AND viewblock.itemid=? AND viewshar.userid=?";
+		$view = $DB->get_record_sql($sql, [ $item->id, $viewerid ]);
+		if(!$view)
+			return null;
 
-	$access = "view/id/".$studentid."-".$view->viewid."&itemid=".$item->id;
+		$access = "view/id/".$studentid."-".$view->viewid."&itemid=".$item->id;
+	}
 
 	return $CFG->wwwroot.'/blocks/exaport/shared_item.php?access='.$access;
 }
@@ -5567,7 +5585,7 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true){
 						html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/' . ((!$itemExists) ? 'manual_item.png' : 'reload.png')), 'alt'=>get_string("submission", "block_exacomp"))),
 						array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 			} else {
-				$url = block_exacomp_get_viewurl_for_example ( $example->studentid, $example->exampleid );
+				$url = block_exacomp_get_viewurl_for_example ( $example->studentid, $USER->id, $example->exampleid );
 				if ($url)
 					$example_array ['submission_url'] = html_writer::link ( $url, html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/manual_item.png'), 'alt'=>get_string("submission", "block_exacomp"))), array (
 							"target" => "_blank",
@@ -5921,7 +5939,7 @@ function block_exacomp_send_submission_notification($userfrom, $userto, $example
 
 	$subject = get_string('notification_submission_subject','block_exacomp',array('student' => fullname($userfrom), 'example' => $example->title));
 
-	$viewurl = block_exacomp_get_viewurl_for_example($userfrom->id,$example->id);
+	$viewurl = block_exacomp_get_viewurl_for_example($userfrom->id,$userto->id,$example->id);
 	$message = get_string('notification_submission_body','block_exacomp',array('student' => fullname($userfrom), 'example' => $example->title, 'date' => $date, 'time' => $time, 'viewurl' => $viewurl));
 	$context = get_string('notification_submission_context','block_exacomp');
 
@@ -6004,7 +6022,7 @@ function block_exacomp_send_example_comment_notification($userfrom, $userto, $co
 	$message = get_string('notification_example_comment_body','block_exacomp',array('course' => $course->fullname, 'teacher' => fullname($userfrom), 'example' => $example->title));
 	$context = get_string('notification_example_comment_context','block_exacomp');
 
-	$viewurl = block_exacomp_get_viewurl_for_example($userto->id,$example->id);
+	$viewurl = block_exacomp_get_viewurl_for_example($userto->id, $userto->id, $example->id);
 
 	block_exacomp_send_notification("comment", $userfrom, $userto, $subject, $message, $context, $viewurl);
 }
