@@ -4442,7 +4442,7 @@ var dataset = dataset.map(function (group) {
 		return html_writer::select($options, "subjectid", ($crosssubject)?$crosssubject->subjectid:0, false);
 		
 	}
-	public function overview_metadata_cross_subjects($crosssubject, $edit){
+	public function overview_metadata_cross_subjects($crosssubject, $edit) {
 		global $DB;
 
 		$table = new html_table();
@@ -4450,53 +4450,37 @@ var dataset = dataset.map(function (group) {
 
 		$rows = array();
 
-		$row = new html_table_row();
+		if ($edit)
+			$cellText = html_writer::empty_tag('input', array('type' => 'text', 'value' => ($crosssubject) ? $crosssubject->title : '', 'name' => 'title'));
+		else
+			$cellText = html_writer::tag('div', ($crosssubject) ? $crosssubject->title : '');
+
+		$rows[] = [html_writer::span(get_string('crosssubject', 'block_exacomp'), 'exabis_comp_top_name'), $cellText];
 
 		$subject_title = get_string('nocrosssubsub', 'block_exacomp');
-		if($crosssubject && $crosssubject->subjectid != 0){
-			$subject = $DB->get_record(\block_exacomp\DB_SUBJECTS, array('id'=>$crosssubject->subjectid));
+		if ($crosssubject && $crosssubject->subjectid) {
+			$subject = $DB->get_record(\block_exacomp\DB_SUBJECTS, array('id' => $crosssubject->subjectid));
 			$subject_title = $subject->title;
 		}
-		$cell = new html_table_cell();
-		$cell->text = html_writer::span(get_string('subject_singular', 'block_exacomp'), 'exabis_comp_top_name')
-		. ($edit?$this->crosssub_subject_dropdown($crosssubject):html_writer::tag('b',$subject_title));
 
-		$row->cells[] = $cell;
+		if ($edit) {
+			$cellText = $this->crosssub_subject_dropdown($crosssubject);
+		} else {
+			$cellText = html_writer::tag('b', $subject_title);
+		}
 
-		$cell = new html_table_cell();
-		
+		$rows[] = [html_writer::span(get_string('subject_singular', 'block_exacomp'), 'exabis_comp_top_name'), $cellText];
+
 		if ($edit)
-			$cell->text = html_writer::span(get_string('crosssubject', 'block_exacomp'), 'exabis_comp_top_name')
-				. html_writer::empty_tag('input', array('type'=>'text', 'value'=>($crosssubject)?$crosssubject->title:'', 'name'=>'title'));
-		else 
-			$cell->text = html_writer::span(get_string('crosssubject', 'block_exacomp'), 'exabis_comp_top_name')
-				. html_writer::tag('div', ($crosssubject)?$crosssubject->title:'');
-				
-		$row->cells[] = $cell;
-		
-		$rows[] = $row;
-		
-		$row = new html_table_row();
-		$cell = new html_table_cell();
-		$cell->colspan = 2; // !$edit?3:2;
-		if ($edit)
-			$cell->text = html_writer::span(get_string('description', 'block_exacomp'), 'exabis_comp_top_name')
-				. html_writer::empty_tag('input', array('type'=>'textarea', 'size'=>200, 'value'=>($crosssubject)?$crosssubject->description:'', 'name'=>'description'));
+			$cellText = html_writer::empty_tag('input', array('type' => 'text', 'value' => ($crosssubject) ? $crosssubject->description : '', 'name' => 'description'));
 		else
-			 $cell->text = html_writer::span(get_string('description', 'block_exacomp'), 'exabis_comp_top_name')
-				. html_writer::tag('b', ($crosssubject)?$crosssubject->description:'');
-				
-		$row->cells[] = $cell;  
-		$rows[] = $row;
-			
+			$cellText = html_writer::tag('b', ($crosssubject) ? $crosssubject->description : '');
+
+		$rows[] = [html_writer::span(get_string('description', 'block_exacomp'), 'exabis_comp_top_name'), $cellText];
+
 		if (block_exacomp_is_teacher()) {
-			$row = new html_table_row();
-			$cell = new html_table_cell();
-			$cell->colspan = 2;
-			$cell->text = html_writer::span(get_string('tab_help', 'block_exacomp'), 'exabis_comp_top_name')
-				. get_string('help_crosssubject', 'block_exacomp');	
-			$row->cells[] = $cell;  
-			$rows[] = $row;   
+			$rows[] = [html_writer::span(get_string('tab_help', 'block_exacomp'), 'exabis_comp_top_name'),
+				get_string('help_crosssubject', 'block_exacomp')];
 		}
 		$table->data = $rows;
 
@@ -4504,7 +4488,7 @@ var dataset = dataset.map(function (group) {
 
 		return $content;
 	}
-	
+
 	public function competence_based_list_tree($tree, $isTeacher, $editmode, $show_examples = true) {
 		$html_tree = "";
 		$html_tree .= html_writer::start_tag("ul",array("class"=>"exa-tree exa-tree-reopen-checked"));
