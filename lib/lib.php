@@ -73,6 +73,9 @@ const DB_EXTERNAL_TRAINERS = 'block_exacompexternaltrainer';
 const ROLE_TEACHER = 1;
 const ROLE_STUDENT = 0;
 
+const WS_ROLE_TEACHER = 1;
+const WS_ROLE_STUDENT = 2;
+
 /**
  * COMPETENCE TYPES
  */
