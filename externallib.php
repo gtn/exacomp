@@ -2530,7 +2530,7 @@ class block_exacomp_external extends external_api {
 			}
 		}
 
-		return (object)["role" => \block_exacomp\WS_ROLE_TEACHER];
+		return (object)["role" => \block_exacomp\WS_ROLE_STUDENT];
 	}
 
 	/**
