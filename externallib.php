@@ -3950,9 +3950,9 @@ class block_exacomp_external extends external_api {
 								'teacheritemvalue' => new external_value ( PARAM_INT, 'item evaluation of teacher' )
 						) ) ),
 						'examplestotal' => new external_value ( PARAM_INT, 'total number of material' ),
-						'examplesvisible' => new external_value ( PARAM_INT, 'visible number of material' ),
-						'examplesinwork' => new external_value ( PARAM_INT, 'number of material in work' ),
-						'examplesedited' => new external_value ( PARAM_INT, 'number of edited material' ),
+						'examplesvisible' => new external_value ( PARAM_FLOAT, 'visible number of material' ),
+						'examplesinwork' => new external_value ( PARAM_FLOAT, 'number of material in work' ),
+						'examplesedited' => new external_value ( PARAM_FLOAT, 'number of edited material' ),
 						'examplegradings' => new external_single_structure ( array (
 								'teacher' => new external_multiple_structure ( new external_single_structure ( array (
 										'sum' => new external_value ( PARAM_INT, 'number of gradings' )
@@ -3979,9 +3979,9 @@ class block_exacomp_external extends external_api {
 						'teacheritemvalue' => new external_value ( PARAM_INT, 'item evaluation of teacher' )
 				) ) ),
 				'examplestotal' => new external_value ( PARAM_INT, 'total number of material' ),
-				'examplesvisible' => new external_value ( PARAM_INT, 'visible number of material' ),
-				'examplesinwork' => new external_value ( PARAM_INT, 'number of material in work' ),
-				'examplesedited' => new external_value ( PARAM_INT, 'number of edited material' ),
+				'examplesvisible' => new external_value ( PARAM_FLOAT, 'visible number of material' ),
+				'examplesinwork' => new external_value ( PARAM_FLOAT, 'number of material in work' ),
+				'examplesedited' => new external_value ( PARAM_FLOAT, 'number of edited material' ),
 				'examplegradings' => new external_single_structure ( array (
 						'teacher' => new external_multiple_structure ( new external_single_structure ( array (
 								'sum' => new external_value ( PARAM_INT, 'number of gradings' )
@@ -4236,7 +4236,7 @@ class block_exacomp_external extends external_api {
 			$data_content->totallmnumb = $lmdata->total;
 			$data_content->inworklmnumb = $lmdata->inWork;
 			$data_content->teacherevaluation = (isset($user->competencies->teacher[$descriptor->id]))?$user->competencies->teacher[$descriptor->id]:-1;
-			$data_content->additionalinfo = $user->competencies->teacher_additional_grading[$descriptor->id];
+			$data_content->additionalinfo = (isset($user->competencies->teacher_additional_grading[$descriptor->id]))?$user->competencies->teacher_additional_grading[$descriptor->id]:'';
 			$data_content->studentevaluation = (isset($user->competencies->student[$descriptor->id]))?$user->competencies->student[$descriptor->id]:-1;
 			$data->descriptordata[] = $data_content;
 		}
@@ -4671,7 +4671,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 		return $descriptors_return;
 	}
 
-	private function dakora_get_descriptors_by_cross_subject_common($courseid, $crosssubjid, $userid, $forall, $only_associated){
+	private static function dakora_get_descriptors_by_cross_subject_common($courseid, $crosssubjid, $userid, $forall, $only_associated){
 		global $DB;
 
 		$descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid, true);
