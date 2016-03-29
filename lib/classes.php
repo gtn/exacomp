@@ -865,8 +865,9 @@ class example extends db_record {
 		if (!isset($this->descriptor)) {
 			return null;
 		}
-
-		return $this->descriptor->get_numbering();
+		
+		//return $this->descriptor->get_numbering();
+		return block_exacomp_get_descriptor_numbering($this->descriptor);
 	}
 
 	function get_author() {
