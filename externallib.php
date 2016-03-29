@@ -2568,6 +2568,7 @@ class block_exacomp_external extends external_api {
 
 		foreach($students as $student){
 			$student->studentid = $student->id;
+			$student->imagealt = '';
 			$picture = new user_picture($student);
 			$picture->size = 50;
 			$student->profilepicture = $picture->get_url($PAGE)->out();
