@@ -4098,6 +4098,7 @@ class block_exacomp_external extends external_api {
 			$data['mimetype'] = "";
 			$data['teachercomment'] = "";
 			$data['studentcomment'] = "";
+			$data['teacherfile'] = '';
 			$data['teachervalue'] = isset ( $exampleEvaluation->teacher_evaluation ) ? $exampleEvaluation->teacher_evaluation : -1;
 			$data['studentvalue'] = isset ( $exampleEvaluation->student_evaluation ) ? $exampleEvaluation->student_evaluation : -1;
 			$data['teacheritemvalue'] = isset ( $exampleEvaluation->additionalinfo ) ? $exampleEvaluation->additionalinfo : -1;
