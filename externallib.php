@@ -4599,7 +4599,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 		return $return;
 	}
 
-	private function dakora_get_topics_by_course_common($courseid, $only_associated){
+	private static function dakora_get_topics_by_course_common($courseid, $only_associated){
 
 		static::require_can_access_course($courseid);
 
