@@ -4627,7 +4627,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 	}
 
 
-	private function dakora_get_descriptors_common($courseid, $topicid, $userid, $forall, $only_associated){
+	private static function dakora_get_descriptors_common($courseid, $topicid, $userid, $forall, $only_associated){
 		global $DB;
 
 		if ($forall) {
