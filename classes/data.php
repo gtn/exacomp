@@ -924,7 +924,7 @@ class data_exporter extends data {
 		foreach ($dbItems as $dbItem) {
 			$xmlItem = $xmlItems->addChild('niveau');
 			self::assign_source($xmlItem, $dbItem);
-			$xmlItem->addChildWithCDATAIfValue('subtitle', $dbItem->subtitle);
+			$xmlItem->addChildWithCDATAIfValue('subtitle', $dbItem->get_subtitle());
 		}
 	}
 

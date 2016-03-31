@@ -259,6 +259,7 @@ function block_exacomp_require_admin($context = null) {
  * 
  * @param int $subjectid
  * @return object $subject
+ * @deprecated use subject::get(id) instead
  */
 function block_exacomp_get_subject_by_id($subjectid) {
 	global $DB;
@@ -556,6 +557,7 @@ function block_exacomp_get_all_topics($subjectid = null) {
  *
  * Gets topic with particular id
  * @param  $topicid
+ * @deprecated use topic::get(id) instead
  */
 function block_exacomp_get_topic_by_id($topicid) {
 	global $DB;
@@ -1299,7 +1301,13 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 	// sort topics
 	foreach ($subjects as $subject) {
 		block_exacomp_sort_items($subject->topics, \block_exacomp\DB_TOPICS);
+
+		// sort descriptors in topics
+		foreach ($subject->topics as $topic) {
+			block_exacomp_sort_items($topic->descriptors, \block_exacomp\DB_DESCRIPTORS);
+		}
 	}
+
 
 	return block_exacomp\subject::create_objects($subjects);
 }
@@ -4860,60 +4868,61 @@ function block_exacomp_calculate_statistic_for_example($courseid, $students, $ex
 		$self_title, $student_oB_title, $student_iA_title, $teacher_title, $teacher_oB_title, $teacher_iA_title);
 }
 
-function block_exacomp_get_descriptor_numbering($descriptor){
-	global $DB;
+	function block_exacomp_get_descriptor_numbering($descriptor) {
+		if (!block_exacomp_is_numbering_enabled()) {
+			return '';
+		}
 
-	if (!block_exacomp_is_numbering_enabled()) {
-		return '';
+		$id = $descriptor->id; // saved for later
+
+		static $numberingCache = [];
+
+		if (!isset($numberingCache[$id])) {
+			// build cache
+
+			if (isset($descriptor->topic) && $descriptor->topic instanceof \block_exacomp\topic) {
+				$topic = $descriptor->topic;
+			} else {
+				$topic = \block_exacomp\topic::get($descriptor->topicid);
+			}
+
+			$topicNumbering = $topic->get_numbering();
+			foreach (array_values($topic->descriptors) as $i => $descriptor) {
+				$numberingCache[$descriptor->id] = $topicNumbering ? $topicNumbering.($i + 1).'.' : '';
+
+				foreach (array_values($descriptor->children) as $j => $descriptor) {
+					$numberingCache[$descriptor->id] = $topicNumbering ? $topicNumbering.($i + 1).'.'.($j + 1).'.' : '';
+				}
+			}
+		}
+
+		return isset($numberingCache[$id]) ? $numberingCache[$id] : 'not found #v96900';
 	}
 
-	$numbering = block_exacomp_get_topic_numbering(isset($descriptor->topic) ? $descriptor->topic : $descriptor->topicid);
+	/**
+	 *
+	 * @param id|block_exacomp\topic $topic
+	 * @return string
+	 */
+	function block_exacomp_get_topic_numbering($topic) {
+		if (!block_exacomp_is_numbering_enabled()) {
+			return '';
+		}
 
-	if (empty($numbering))
-		return "";
-
-	if ($descriptor->parentid == 0){
-		$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
-		if ($niveau)
-			$numbering .= $niveau->numb;
-	}
-	if ($descriptor->parentid != 0){
-		$parent_descriptor = $DB->get_record(\block_exacomp\DB_DESCRIPTORS, array('id'=>$descriptor->parentid));
-		$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$parent_descriptor->niveauid));
-		if ($niveau)
-			$numbering .= $niveau->numb.'.';
-		$numbering .= $descriptor->sorting;
-	}
-
-	return $numbering;
-}
-/**
- *
- * @param id|block_exacomp\topic $topic
- * @return string
- */
-function block_exacomp_get_topic_numbering($topic){
-	if (!block_exacomp_is_numbering_enabled()){
-		return '';
-	}
-
-	if (is_object($topic)) {
-		// ok
-	} else {
-	   	$topic = block_exacomp_get_topic_by_id($topic);
+		// make sure it is a topic object
+		$topic = \block_exacomp\topic::to_object($topic);
 		if (!$topic) {
-			debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+			throw new moodle_exception('topic not found');
+		}
+
+		$subject = $topic->get_subject();
+		if ($subject && !empty($subject->titleshort) && !empty($topic->numb)) {
+			return $subject->titleshort.'.'.$topic->numb.'.';
+		} else {
 			return '';
 		}
 	}
 
-	$subject = isset($topic->subject) ? $topic->subject : block_exacomp_get_subject_by_id($topic->subjid);
-	if ($subject && !empty($subject->titleshort) && !empty($topic->numb)) {
-		return $subject->titleshort.'.'.$topic->numb.'.';
-	} else {
-		return '';
-	}
-}
 function block_exacomp_get_course_cross_subjects_drafts_sorted_by_subjects(){
 	$subjects = block_exacomp_get_subjects_by_course(g::$COURSE->id);
 

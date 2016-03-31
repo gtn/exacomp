@@ -46,6 +46,7 @@ class db_layer {
 		if ($default === null) {
 			$default = new static();
 		}
+
 		return $default;
 	}
 
@@ -54,15 +55,16 @@ class db_layer {
 
 		$class = get_called_class();
 		$reflection = new \ReflectionClass($class);
+
 		return $reflection->newInstanceArgs($args);
 	}
 
-	function get_descriptors_for_topic($topic) {
+	function get_descriptors_for_topic(topic $topic) {
 		$descriptors = array_filter($this->get_descriptor_records_for_subject($topic->subjid), function($descriptor) use ($topic) {
 			return $descriptor->topicid == $topic->id;
 		});
 
-		$descriptors = descriptor::create_objects($descriptors, [ 'topic' => $topic ], $this);
+		$descriptors = descriptor::create_objects($descriptors, ['topic' => $topic], $this);
 
 		return $descriptors;
 	}
@@ -80,27 +82,29 @@ class db_layer {
 			$this->showonlyvisible = false;
 			$this->mindvisibility = false;
 		}
-		if(!$this->showalldescriptors)
+		if (!$this->showalldescriptors)
 			$this->showalldescriptors = block_exacomp_get_settings_by_course($this->courseid)->show_all_descriptors;
 
 
 		$sql = 'SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, d.profoundness, d.parentid, n.sorting niveau, dvis.visible as visible, d.sorting '
-					.' FROM {'.DB_TOPICS.'} t '
-							.(($this->courseid>0)?' JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
-							.' JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
-									.' JOIN {'.DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid=0 '
-											.' -- left join, because courseid=0 has no descvisibility!
+			.' FROM {'.DB_TOPICS.'} t '
+			.(($this->courseid > 0) ? ' JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? '.(($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') : '')
+			.' JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
+			.' JOIN {'.DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid=0 '
+			.' -- left join, because courseid=0 has no descvisibility!
 		LEFT JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=?'
-						.($this->showonlyvisible?' AND dvis.visible = 1 ':'')
-						.' LEFT JOIN {'.DB_NIVEAUS.'} n ON d.niveauid = n.id '
-								.($this->showalldescriptors ? '' : '
+			.($this->showonlyvisible ? ' AND dvis.visible = 1 ' : '')
+			.' LEFT JOIN {'.DB_NIVEAUS.'} n ON d.niveauid = n.id '
+			.($this->showalldescriptors ? '' : '
 			JOIN {'.DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
-			JOIN {course_modules} a ON da.activityid=a.id '.(($this->courseid>0)?'AND a.course=?':''))
-					.' ORDER BY d.sorting';
+			JOIN {course_modules} a ON da.activityid=a.id '.(($this->courseid > 0) ? 'AND a.course=?' : ''))
+			.' ORDER BY d.sorting';
 
-			$descriptors = $DB->get_records_sql($sql, array($this->courseid, $this->courseid, $this->courseid, $this->courseid));
+		$descriptors = $DB->get_records_sql($sql, array($this->courseid, $this->courseid, $this->courseid, $this->courseid));
 
 		$subjectDescriptors[$subjectid] = $descriptors;
+
+		block_exacomp_sort_items($subjectDescriptors[$subjectid], \block_exacomp\DB_DESCRIPTORS);
 
 		return $descriptors;
 	}
@@ -110,7 +114,7 @@ class db_layer {
 		block_exacomp_get_examples_for_descriptor($dummy, $this->filteredtaxonomies, $this->showallexamples, $this->courseid, false, false);
 
 		return example::create_objects($dummy->examples, array(
-			'descriptor' => $descriptor
+			'descriptor' => $descriptor,
 		), $this);
 	}
 
@@ -122,14 +126,14 @@ class db_layer {
 			$this->showonlyvisible = false;
 			$this->mindvisibility = false;
 		}
-		if(!$this->showalldescriptors)
+		if (!$this->showalldescriptors)
 			$this->showalldescriptors = block_exacomp_get_settings_by_course($this->courseid)->show_all_descriptors;
 
 		$sql = 'SELECT d.id, d.title, d.niveauid, d.source, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, '.
-				($this->mindvisibility?'dvis.visible as visible, ':'').' d.sorting
+			($this->mindvisibility ? 'dvis.visible as visible, ' : '').' d.sorting
 			FROM {'.DB_DESCRIPTORS.'} d '
-						.($this->mindvisibility ? 'JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 '
-								.($this->showonlyvisible? 'AND dvis.visible=1 ':'') : '');
+			.($this->mindvisibility ? 'JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 '
+				.($this->showonlyvisible ? 'AND dvis.visible=1 ' : '') : '');
 
 		/* activity association only for parent descriptors
 		 .($this->showalldescriptors ? '' : '
@@ -139,23 +143,23 @@ class db_layer {
 		$sql .= ' WHERE d.parentid = ?';
 
 		$params = array();
-		if($this->mindvisibility)
+		if ($this->mindvisibility)
 			$params[] = $this->courseid;
 
-		$params[]= $parent->id;
+		$params[] = $parent->id;
 		//$descriptors = $DB->get_records_sql($sql, ($this->showalldescriptors) ? array($parent->id) : array($this->courseid,$parent->id));
 		$descriptors = $DB->get_records_sql($sql, $params);
 
 		$descriptors = descriptor::create_objects($descriptors, array(
 			'parent' => $parent,
-			'topic' => $parent->topic
+			'topic' => $parent->topic,
 		), $this);
 
 		return $descriptors;
 	}
 
 	function get_subjects() {
-		return $this->assignDbLayer(subject::get_objects());
+		return $this->init_objects(subject::get_objects());
 	}
 
 	function get_subjects_for_source($source) {
@@ -170,15 +174,15 @@ class db_layer {
 			foreach ($subject->topics as $topic) {
 				$topic->can_delete = ($topic->source == $source);
 
-				foreach($topic->descriptors as $descriptor){
+				foreach ($topic->descriptors as $descriptor) {
 					$descriptor->can_delete = ($descriptor->source == $source);
 
 					// child descriptors
-					foreach($descriptor->children as $child_descriptor){
+					foreach ($descriptor->children as $child_descriptor) {
 						$child_descriptor->can_delete = ($child_descriptor->source == $source);
 
 						$examples = array();
-						foreach ($child_descriptor->examples as $example){
+						foreach ($child_descriptor->examples as $example) {
 							$example->can_delete = ($example->source == $source);
 							if (!$example->can_delete) {
 								$child_descriptor->can_delete = false;
@@ -198,7 +202,7 @@ class db_layer {
 						}
 					}
 
-					foreach ($descriptor->examples as $example){
+					foreach ($descriptor->examples as $example) {
 						$example->can_delete = ($example->source == $source);
 						if (!$example->can_delete) {
 							$descriptor->can_delete = false;
@@ -236,28 +240,30 @@ class db_layer {
 	}
 
 	function get_topics_for_subject($subject) {
-		global $DB;
+		$topics = topic::get_objects(['subjid' => $subject->id]);
 
-		return topic::create_objects($DB->get_records_sql('
-			SELECT t.id, t.title, t.parentid, t.subjid, t.source, t.numb
-			FROM {'.DB_SUBJECTS.'} s
-			JOIN {'.DB_TOPICS.'} t ON t.subjid = s.id
-				-- only show active ones
-				WHERE s.id = ?
-			ORDER BY t.id, t.sorting, t.subjid
-		', array($subject->id)), array(
-			'subject' => $subject
-		), $this);
+		$this->init_objects($topics, ['subject' => $subject]);
+
+		return block_exacomp_sort_items($topics, DB_TOPICS);
 	}
 
-	/**
-	 * @param db_record[] $objects
-	 * @return array
-	 */
-	function assignDbLayer(array $objects) {
-		array_walk($objects, function(db_record $object) {
-			$object->setDbLayer($this);
-		});
+	function set_object_datas(array $objects, array $data) {
+		foreach ($objects as $o) {
+			foreach ($data as $key => $value) {
+				$o->$key = $value;
+			}
+		}
+
+		return $objects;
+	}
+
+	function init_objects(array $objects, array $data = []) {
+
+		foreach ($objects as $o) {
+			$o->setDbLayer($this);
+		}
+
+		$this->set_object_datas($objects, $data);
 
 		return $objects;
 	}
@@ -311,7 +317,7 @@ class db_layer_course extends db_layer {
 	}
 
 	function get_topics_for_subject($subject) {
- 		return topic::create_objects(block_exacomp_get_topics_by_subject($this->courseid, $subject->id), $this);
+		return topic::create_objects(block_exacomp_get_topics_by_subject($this->courseid, $subject->id), null, $this);
 	}
 }
 
@@ -327,19 +333,19 @@ class db_layer_all_user_courses extends db_layer {
 		$user_courses = block_exacomp_get_exacomp_courses($this->userid);
 		$subjects = array();
 
-		foreach($user_courses as $course) {
+		foreach ($user_courses as $course) {
 			$courseSubjects = db_layer_course::create($course->id)->get_subjects();
 
-			foreach($courseSubjects as $courseSubject) {
-				if(!isset($subjects[$courseSubject->id]))
+			foreach ($courseSubjects as $courseSubject) {
+				if (!isset($subjects[$courseSubject->id]))
 					$subjects[$courseSubject->id] = $courseSubject;
 
-				foreach($courseSubject->topics as $topic) {
-					if(!isset($subjects[$courseSubject->id]->topics[$topic->id]))
+				foreach ($courseSubject->topics as $topic) {
+					if (!isset($subjects[$courseSubject->id]->topics[$topic->id]))
 						$subjects[$courseSubject->id]->topics[$topic->id] = $topic;
 
-					foreach($topic->descriptors as $descriptor) {
-						if(!isset($subjects[$courseSubject->id]->topics[$topic->id]->descriptors[$descriptor->id])) {
+					foreach ($topic->descriptors as $descriptor) {
+						if (!isset($subjects[$courseSubject->id]->topics[$topic->id]->descriptors[$descriptor->id])) {
 							$subjects[$courseSubject->id]->topics[$topic->id]->descriptors[$descriptor->id] = $descriptor;
 						}
 					}
@@ -397,6 +403,7 @@ class db_record {
 		foreach ((new \ReflectionObject($this))->getProperties(\ReflectionProperty::IS_PUBLIC) as $prop) {
 			$data->{$prop->getName()} = $prop->getValue($this);
 		}
+
 		return $data;
 	}
 
@@ -440,9 +447,9 @@ class db_record {
 		static::check_property_name($name);
 
 		// TODO: wird das noch benötigt?
-		if (($method = 'get_'.$name) && method_exists($this, $method)) {
-			return true; // $this->__get($name) !== null;
-		} elseif (($method = 'fill_'.$name) && method_exists($this, $method)) {
+		//if (($method = 'get_'.$name) && method_exists($this, $method)) {
+		//	return true; // $this->__get($name) !== null;
+		if (($method = 'fill_'.$name) && method_exists($this, $method)) {
 			return true; // $this->__get($name) !== null;
 		} else {
 			return false;
@@ -473,11 +480,13 @@ class db_record {
 			$this->$name = $value;
 		}
 	}
+
 	public function __unset($name) {
 		static::check_property_name($name);
 
 		unset($this->$name);
 	}
+
 	protected function check_property_name($name) {
 		if (!preg_match('!^[a-z]!', $name)) {
 			throw new \coding_exception('wrong property name '.$name);
@@ -524,6 +533,7 @@ class db_record {
 		}
 
 		$data['id'] = $this->id;
+
 		return $DB->update_record(static::TABLE, $data);
 	}
 
@@ -539,6 +549,7 @@ class db_record {
 		if (!isset($this->id)) {
 			throw new moodle_exception('id not set');
 		}
+
 		return $DB->delete_records(static::TABLE, array('id' => $this->id));
 	}
 
@@ -547,6 +558,7 @@ class db_record {
 			throw new \coding_exception('const SUBS not set');
 		}
 		$tmp =& $this->{static::SUBS};
+
 		return $tmp;
 	}
 
@@ -567,15 +579,15 @@ class db_record {
 
 	/**
 	 * @param mixed $conditions can be an
-	 * 			* (string,int)id OR (object,array)conditions, to load that record from the database
-	 * 			* OR db_record, which would just be returned
+	 *            * (string,int)id OR (object,array)conditions, to load that record from the database
+	 *            * OR db_record, which would just be returned
 	 * @param null $fields
 	 * @param null $strictness
 	 * @return static
 	 * @throws \coding_exception
 	 */
-	static function get($conditions, $fields=null, $strictness=null) {
-		if (is_string($conditions) || is_int($conditions)) {
+	static function get($conditions, $fields = null, $strictness = null) {
+		if (is_scalar($conditions)) {
 			// id
 			$conditions = array('id' => $conditions);
 		} elseif (is_object($conditions)) {
@@ -601,7 +613,26 @@ class db_record {
 		return static::create($data);
 	}
 
-	static function get_record(array $conditions, $fields=null, $strictness=null) {
+	/**
+	 * @param $o
+	 * @return static
+	 */
+	static function to_object($o) {
+		if (is_object($o)) {
+			if ($o instanceof static) {
+				return $o;
+			} else {
+				return static::create($o);
+			}
+		} elseif (is_scalar($o)) {
+			// it's id
+			return static::get($o);
+		} else {
+			throw new moodle_exception('wrong parameter');
+		}
+	}
+
+	static function get_record(array $conditions, $fields = null, $strictness = null) {
 		global $DB;
 
 		// allow to just pass strictness
@@ -623,11 +654,11 @@ class db_record {
 	 * @param int $limitnum
 	 * @return static[]
 	 */
-	static function get_objects(array $conditions=null, $sort='', $fields='*', $limitfrom=0, $limitnum=0) {
+	static function get_objects(array $conditions = null, $sort = '', $fields = '*', $limitfrom = 0, $limitnum = 0) {
 		return static::create_objects(static::get_records($conditions, $sort, $fields, $limitfrom, $limitnum));
 	}
 
-	static function get_records(array $conditions=null, $sort='', $fields='*', $limitfrom=0, $limitnum=0) {
+	static function get_records(array $conditions = null, $sort = '', $fields = '*', $limitfrom = 0, $limitnum = 0) {
 		return g::$DB->get_records(static::TABLE, $conditions, $sort, $fields, $limitfrom, $limitnum);
 	}
 
@@ -638,11 +669,11 @@ class db_record {
 	 * @param int $limitnum
 	 * @return static[]
 	 */
-	static function get_objects_sql($sql, array $params=null, $limitfrom=0, $limitnum=0) {
+	static function get_objects_sql($sql, array $params = null, $limitfrom = 0, $limitnum = 0) {
 		return static::create_objects(static::get_records_sql($sql, $params, $limitfrom, $limitnum));
 	}
 
-	static function get_records_sql($sql, array $params=null, $limitfrom=0, $limitnum=0) {
+	static function get_records_sql($sql, array $params = null, $limitfrom = 0, $limitnum = 0) {
 		return g::$DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
 	}
 
@@ -656,7 +687,10 @@ class db_record {
 
 	static function create($data = [], db_layer $dbLayer = null) {
 		if ($data instanceof static) {
-			$data->setDbLayer($dbLayer);
+			if ($dbLayer) {
+				$data->setDbLayer($dbLayer);
+			}
+
 			return $data;
 		}
 
@@ -716,6 +750,14 @@ class topic extends db_record {
 
 	function fill_descriptors() {
 		return $this->dbLayer->get_descriptors_for_topic($this);
+	}
+
+	function get_subject() {
+		if (isset($this->subject)) {
+			return $this->subject;
+		} else {
+			return \block_exacomp\subject::get($this->subjid);
+		}
 	}
 }
 
@@ -784,23 +826,25 @@ class descriptor extends db_record {
 
 		$topicid = null;
 		if ($parent_descriptor) {
-		   $descriptor_topic_mm = $DB->get_record(DB_DESCTOPICS, array('descrid'=>$parent_descriptor->id));
-		   $topicid = $descriptor_topic_mm->topicid;
+			$descriptor_topic_mm = $DB->get_record(DB_DESCTOPICS, array('descrid' => $parent_descriptor->id));
+			$topicid = $descriptor_topic_mm->topicid;
 
-		   $parent_descriptor->topicid = $topicid;
-		   $siblings = block_exacomp_get_child_descriptors($parent_descriptor, $courseid);
+			$parent_descriptor->topicid = $topicid;
+			$siblings = block_exacomp_get_child_descriptors($parent_descriptor, $courseid);
 		} elseif ($topic) {
-		   $topicid = $topic->id;
-		   $descriptor->parentid = 0;
+			$topicid = $topic->id;
+			$descriptor->parentid = 0;
 
-		   // TODO
-		   $siblings = block_exacomp_get_descriptors_by_topic($courseid, $topicid);
+			// TODO
+			$siblings = block_exacomp_get_descriptors_by_topic($courseid, $topicid);
 		} else {
-		   throw new moodle_exception('parentid or topicid not submitted');
+			throw new moodle_exception('parentid or topicid not submitted');
 		}
 
 		// get $max_sorting
-		$max_sorting = $siblings ? max(array_map(function($x) { return $x->sorting; }, $siblings)) : 0;
+		$max_sorting = $siblings ? max(array_map(function($x) {
+			return $x->sorting;
+		}, $siblings)) : 0;
 
 		$descriptor->source = CUSTOM_CREATED_DESCRIPTOR;
 		$descriptor->sorting = $max_sorting + 1;
@@ -846,6 +890,7 @@ class descriptor extends db_record {
 
 	function fill_category_ids() {
 		global $DB;
+
 		return $DB->get_records_menu(DB_DESCCAT, array('descrid' => $this->id), null, 'catid, catid AS tmp');
 	}
 
@@ -865,7 +910,7 @@ class example extends db_record {
 		if (!isset($this->descriptor)) {
 			return null;
 		}
-		
+
 		//return $this->descriptor->get_numbering();
 		return block_exacomp_get_descriptor_numbering($this->descriptor);
 	}
@@ -883,9 +928,9 @@ class example extends db_record {
 		$file = block_exacomp_get_file($this, 'example_task');
 		if (!$file) return null;
 
-		$filename = (($numbering = $this->get_numbering())?$numbering.'_':'').
+		$filename = (($numbering = $this->get_numbering()) ? $numbering.'_' : '').
 			$this->title.
-			'_'.trans([ 'de:Aufgabe', 'en:Task' ]).
+			'_'.trans(['de:Aufgabe', 'en:Task']).
 			'.'.preg_replace('!^.*\.!', '', $file->get_filename());
 
 		return \moodle_url::make_pluginfile_url(block_exacomp_get_context_from_courseid(g::$COURSE->id)->id, $file->get_component(), $file->get_filearea(),
@@ -897,9 +942,9 @@ class example extends db_record {
 		$file = block_exacomp_get_file($this, 'example_solution');
 		if (!$file) return null;
 
-		$filename = (($numbering = $this->get_numbering())?$numbering.'_':'').
+		$filename = (($numbering = $this->get_numbering()) ? $numbering.'_' : '').
 			$this->title.
-			'_'.trans([ 'de:Lösung', 'en:Solution' ]).
+			'_'.trans(['de:Lösung', 'en:Solution']).
 			'.'.preg_replace('!^.*\.!', '', $file->get_filename());
 
 		return \moodle_url::make_pluginfile_url(block_exacomp_get_context_from_courseid(g::$COURSE->id)->id, $file->get_component(), $file->get_filearea(),
@@ -926,6 +971,6 @@ class cross_subject extends db_record {
 		if ($this->is_draft()) return false;
 		if ($this->shared) return true;
 
-		return g::$DB->record_exists(\block_exacomp\DB_CROSSSTUD, array('crosssubjid'=>$this->id));
+		return g::$DB->record_exists(\block_exacomp\DB_CROSSSTUD, array('crosssubjid' => $this->id));
 	}
 }
