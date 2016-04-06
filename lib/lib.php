@@ -66,6 +66,7 @@ const DB_EXAMPVISIBILITY = 'block_exacompexampvisibility';
 const DB_ITEMEXAMPLE = 'block_exacompitemexample';
 const DB_SUBJECT_NIVEAU_MM = 'block_exacompsubjniveau_mm';
 const DB_EXTERNAL_TRAINERS = 'block_exacompexternaltrainer';
+const DB_EVALUATION_NIVEAU = 'block_exacompeval_niveau';
 
 /**
  * PLUGIN ROLES

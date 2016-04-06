@@ -256,12 +256,14 @@
         <FIELD NAME="comptype" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0 für Deskriptor, 1 für Topic"/>
         <FIELD NAME="timestamp" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="additionalinfo" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="additional info value"/>
+      	<FIELD NAME="niveauid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="link to evaluation niveau"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel userid"/>
         <KEY NAME="reviewerid" TYPE="foreign" FIELDS="reviewerid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel Beurteilender"/>
         <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Fremdschlüssel Kurs"/>
+      	<KEY NAME="niveauid" TYPE="foreign" FIELDS="niveauid" REFTABLE="eval_niveau" REFFIELDS="id" COMMENT="Fremdschlüssel Evaluation-Niveau"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="block_exacompsettings" COMMENT="Bewertungsschema des Kurses festlegen">
@@ -518,6 +520,15 @@
         <FIELD NAME="subjectid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="niveauid" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="subtitle" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="block_exacompeval_niveau" COMMENT="evaluation niveau">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="title" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
