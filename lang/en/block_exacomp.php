@@ -392,6 +392,8 @@ $string['profoundness_entirely'] = 'Entirely achieved';
 //External trainers
 $string['block_exacomp_external_trainer_assign_head'] = 'Allow assigning external trainers for students. This is required for using the elove app';
 $string['block_exacomp_external_trainer_assign_body'] = '';
+$string['block_exacomp_elove_student_self_assessment_head'] = 'Allow self-assessment for students in the elove app';
+$string['block_exacomp_elove_student_self_assessment_body'] = '';
 $string['block_exacomp_external_trainer_assign'] = 'Assign external trainers';
 $string['block_exacomp_external_trainer_assign_new'] = 'New assign: ';
 $string['block_exacomp_external_trainer'] = 'Trainer';

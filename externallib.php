@@ -336,7 +336,11 @@ class block_exacomp_external extends external_api {
 					'id' => $descriptor_mm->descrid
 			) );
 
-			$eval = block_exacomp\get_comp_eval($courseid, \block_exacomp\ROLE_TEACHER, $userid, \block_exacomp\TYPE_DESCRIPTOR, $descriptor_mm->descrid);
+			$grading = \block_exacomp\ROLE_TEACHER;
+			if(block_exacomp_is_elove_student_self_assessment_enabled() && !block_exacomp_is_teacher ( $course->id )) {
+				$grading = \block_exacomp\ROLE_STUDENT;
+			}
+			$eval = block_exacomp\get_comp_eval($courseid, $grading, $userid, \block_exacomp\TYPE_DESCRIPTOR, $descriptor_mm->descrid);
 			if ($eval && $eval->value !== null) {
 				$descriptors [$descriptor_mm->descrid]->evaluation = $eval->value;
 			} else {
@@ -606,7 +610,84 @@ class block_exacomp_external extends external_api {
 				'success' => new external_value ( PARAM_BOOL, 'status' )
 		) );
 	}
-
+	/**
+	 * This method is used for eLove
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function set_competence_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
+				'descriptorid' => new external_value ( PARAM_INT, 'id of descriptor' ),
+				'value' => new external_value ( PARAM_INT, 'evaluation value' )
+		) );
+	}
+	
+	/**
+	 * Set student evaluation
+	 *
+	 * @param
+	 *			int courseid
+	 * @param
+	 *			int descriptorid
+	 * @param
+	 *			int value
+	 * @return status
+	 */
+	public static function set_competence($courseid, $descriptorid, $value) {
+		global $DB, $USER;
+	
+		if (empty ( $courseid ) || empty ( $descriptorid ) || ! isset ( $value )) {
+			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
+		}
+	
+		static::validate_parameters ( static::set_competence_parameters (), array (
+				'courseid' => $courseid,
+				'descriptorid' => $descriptorid,
+				'value' => $value
+		) );
+	
+		static::require_can_access_course($courseid);
+	
+		$transaction = $DB->start_delegated_transaction (); // If an exception is thrown in the below code, all DB queries in this code will be rollback.
+	
+		$DB->delete_records ( 'block_exacompcompuser', array (
+				"userid" => $USER->id,
+				"role" => 0,
+				"compid" => $descriptorid,
+				"courseid" => $courseid,
+				"comptype" => TYPE_DESCRIPTOR
+		) );
+		if ($value > 0) {
+			$DB->insert_record ( 'block_exacompcompuser', array (
+					"userid" => $USER->id,
+					"role" => 0,
+					"compid" => $descriptorid,
+					"courseid" => $courseid,
+					"comptype" => TYPE_DESCRIPTOR,
+					"reviewerid" => $USER->id,
+					"value" => $value
+			) );
+		}
+	
+		$transaction->allow_commit ();
+	
+		return array (
+				"success" => true
+		);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function set_competence_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
+		) );
+	}
+	
 	/**
 	 * Returns description of method parameters
 	 *
@@ -1349,6 +1430,8 @@ class block_exacomp_external extends external_api {
 				'id' => $userid
 		) );
 
+		$grading = (block_exacomp_is_elove_student_self_assessment_enabled()) ? "student" : "teacher";
+		
 		// total data
 		$total_competencies = 0;
 		$total_examples = array ();
@@ -1382,8 +1465,8 @@ class block_exacomp_external extends external_api {
 					if ($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset ( $cm_mm->topics [$topic->id] )))
 						$topic_total_competencies ++;
 
-					if (! empty ( $user->topics->teacher )) {
-						if (isset ( $user->topics->teacher ) && isset ( $user->topics->teacher [$topic->id] )) {
+					if (! empty ( $user->topics->$grading )) {
+						if (isset ( $user->topics->$grading ) && isset ( $user->topics->$grading [$topic->id] )) {
 							$topic_reached_competencies ++;
 						}
 					}
@@ -1393,8 +1476,8 @@ class block_exacomp_external extends external_api {
 						if ($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset ( $cm_mm->competencies [$descriptor->id] )))
 							$topic_total_competencies ++;
 
-						if (! empty ( $user->competencies->teacher )) {
-							if (isset ( $user->competencies->teacher ) && isset ( $user->competencies->teacher [$descriptor->id] )) {
+						if (! empty ( $user->competencies->$grading )) {
+							if (isset ( $user->competencies->$grading ) && isset ( $user->competencies->$grading [$descriptor->id] )) {
 								$topic_reached_competencies ++;
 							}
 						}
@@ -4514,6 +4597,36 @@ class block_exacomp_external extends external_api {
 		) ) );
 	}
 
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function is_elove_student_self_assessment_enabled_parameters() {
+		return new external_function_parameters ( array () );
+	}
+	
+	/**
+	 * @return boolean
+	 */
+	public static function is_elove_student_self_assessment_enabled() {
+		global $DB, $USER;
+		static::validate_parameters ( static::is_elove_student_self_assessment_enabled_parameters (), array () );
+	
+		return array('enabled' => block_exacomp_is_elove_student_self_assessment_enabled());
+	}
+	
+	/**
+	 * Returns description of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function is_elove_student_self_assessment_enabled_returns() {
+		return new external_function_parameters ( array (
+				'enabled' => new external_value ( PARAM_BOOL, '' )
+		) );
+	}
+	
 	/**
 	* helper function to use same code for 2 ws
 	*/

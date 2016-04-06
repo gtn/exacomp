@@ -237,6 +237,9 @@ function block_exacomp_is_admin($context = null) {
 	$context = block_exacomp_get_context_from_courseid($context);
 	return has_capability('block/exacomp:admin', $context);
 }
+function block_exacomp_is_elove_student_self_assessment_enabled() {
+	return get_config('exacomp', 'elove_student_self_assessment');
+}
 /**
  * 
  * @param courseid or context $context

@@ -430,9 +430,11 @@ $string['profoundness_extended'] = 'Erweiterte Kompetenz';
 $string['profoundness_mainly'] = 'Überwiegend erfüllt';
 $string['profoundness_entirely'] = 'Zur Gänze erfüllt';
 
-//External trainer
+//External trainer & eLove
 $string['block_exacomp_external_trainer_assign_head'] = 'Zuteilung von externen TrainerInnen für Kursteilnehmer/innen erlauben. Erforderlich für die Benutzung der elove App.';
 $string['block_exacomp_external_trainer_assign_body'] = '';
+$string['block_exacomp_elove_student_self_assessment_head'] = 'Selbsteinschätzung für Kursteilnehmer/innen in der elove App erlauben.';
+$string['block_exacomp_elove_student_self_assessment_body'] = '';
 $string['block_exacomp_external_trainer_assign'] = 'Externe TrainerIn zuordnen';
 $string['block_exacomp_external_trainer_assign_new'] = 'Neue Zuordnung: ';
 $string['block_exacomp_external_trainer'] = 'AusbilderIn: ';

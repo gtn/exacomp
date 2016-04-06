@@ -37,7 +37,7 @@ call_user_func(function() use (&$functions, &$services) {
 		[ 'block_exacomp_create_example', 'write', 'Create an example' ],
 		[ 'block_exacomp_delete_example', 'write', 'delete a custom item' ],
 		[ 'block_exacomp_delete_item', 'write', 'delete a submitted and wrong item' ],
-		// [ 'block_exacomp_set_competence', 'write', 'Set a student evaluation for a particular competence' ],
+		[ 'block_exacomp_set_competence', 'write', 'Set a student evaluation for a particular competence' ],
 		[ 'block_exacomp_get_competencies_by_topic', 'read', 'get competencies for a specific topic' ],
 		[ 'block_exacomp_get_competencies_for_upload', 'read', 'Get competencetree' ],
 		[ 'block_exacomp_get_descriptors_for_example', 'read', 'Get desciptors for example' ],
@@ -97,6 +97,7 @@ call_user_func(function() use (&$functions, &$services) {
 		[ 'dakora_set_example_time_slot', 'write', 'set start and end time for example' ],
 		[ 'dakora_submit_example', 'write', 'submit example solution' ],
 		[ 'dakora_set_competence', 'write', 'set competence for student'],
+		[ 'block_exacomp_is_elove_student_self_assessment_enabled', 'read', 'check the corresponding config setting'],
 	];
 
 	foreach ($definitions as $definition) {

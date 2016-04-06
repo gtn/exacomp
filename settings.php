@@ -125,6 +125,9 @@ $settings->add(new admin_setting_configcheckbox('exacomp/logging', block_exacomp
 $settings->add(new admin_setting_configcheckbox('exacomp/external_trainer_assign', block_exacomp\get_string('block_exacomp_external_trainer_assign_head'),
 	block_exacomp\get_string('block_exacomp_external_trainer_assign_body'), 0));
 
+$settings->add(new admin_setting_configcheckbox('exacomp/elove_student_self_assessment', block_exacomp\get_string('block_exacomp_elove_student_self_assessment_head'),
+		block_exacomp\get_string('block_exacomp_elove_student_self_assessment_body'), 0));
+
 $settings->add(new block_exacomp_admin_setting_source('exacomp/mysource', 'Source ID',
 	block_exacomp\trans(['de:Automatisch generierte ID dieser Exacomp Installation. Diese kann nicht geändert werden', 'en:Automatically generated ID of this Exacomp installation. This ID can not be changed']), PARAM_TEXT));
 
