@@ -463,9 +463,12 @@ class block_exacomp_external extends external_api {
 			}
 			$returndataObject->cohorts = $return_cohorts;
 
-			$require_actions = static::get_requireaction_subjects($student->studentid);
-			$returndataObject->requireaction = !empty($require_actions);
-
+			$returndataObject->requireaction = false;
+			$user_subjects = static::get_subjects_for_user($student->studentid);
+			foreach($user_subjects as $user_subject)
+				if($user_subject->requireaction)
+					$returndataObject->requireaction = true;
+			
 			$returndata [] = $returndataObject;
 		}
 		return $returndata;
