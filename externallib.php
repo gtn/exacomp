@@ -727,7 +727,7 @@ class block_exacomp_external extends external_api {
 				"id" => $itemid,
 				"userid" => $userid
 		);
-		$item = $DB->get_record ( "block_exaportitem", $conditions, 'id,userid,type,name,intro,url', MUST_EXIST );
+		$item = $DB->get_record ( "block_exaportitem", $conditions, 'id,userid,type,name,intro,url,courseid', MUST_EXIST );
 		$itemexample = $DB->get_record ( "block_exacompitemexample", array (
 				"itemid" => $itemid
 		) );
@@ -759,15 +759,19 @@ class block_exacomp_external extends external_api {
 
 		$item->studentcomment = '';
 		$item->teachercomment = '';
+		
 		// TODO: change to exaport\api::get_item_comments()
 		$itemcomments = $DB->get_records ( 'block_exaportitemcomm', array (
 				'itemid' => $itemid
-		), 'timemodified ASC', 'entry, userid', 0, 2 );
+		), 'timemodified ASC', 'entry, userid');
+
+		// teacher comment: last comment from any teacher in the course the item was submited
 		if ($itemcomments) {
 			foreach ( $itemcomments as $itemcomment ) {
-				if ($userid == $itemcomment->userid) {
+				if ($userid == $itemcomment->userid && empty($item->studentcomment)) {
 					$item->studentcomment = $itemcomment->entry;
-				} else {
+				} elseif(isset($item->courseid) && array_key_exists($itemcomment->userid, block_exacomp_get_teachers_by_course($item->courseid))
+						&& empty($item->teachercomment)){
 					$item->teachercomment = $itemcomment->entry;
 				}
 			}
