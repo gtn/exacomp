@@ -336,8 +336,9 @@ class block_exacomp_external extends external_api {
 					'id' => $descriptor_mm->descrid
 			) );
 
+			$isTeacher = $DB->record_exists('block_exacompexternaltrainer', array('trainerid'=>$USER->id,'studentid'=>$userid));
 			$grading = \block_exacomp\ROLE_TEACHER;
-			if(block_exacomp_is_elove_student_self_assessment_enabled() && !block_exacomp_is_teacher ( $course->id )) {
+			if(block_exacomp_is_elove_student_self_assessment_enabled() && !$isTeacher) {
 				$grading = \block_exacomp\ROLE_STUDENT;
 			}
 			$eval = block_exacomp\get_comp_eval($courseid, $grading, $userid, \block_exacomp\TYPE_DESCRIPTOR, $descriptor_mm->descrid);
