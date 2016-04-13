@@ -306,6 +306,7 @@
 				},
 				lang: 'de',
 				defaultView: 'agendaWeek',
+				defaultDate: (moment().day() == 6 || moment().day() == 0) ? moment().add(2, "days") : moment(),
 				minTime: "00:00:00",
 				maxTime: exacomp_calcendar.slot_time(exacomp_calcendar_config.slots.length),
 				axisWidth: 40,
