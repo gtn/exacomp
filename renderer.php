@@ -4235,9 +4235,9 @@ var dataset = dataset.map(function (group) {
 		$student = block_exacomp_get_user_information_by_course($student, $COURSE->id);
 
 		$list_descriptors = $this->competence_profile_tree_v2($subjects, $COURSE->id, $student);
-		$list_heading = html_writer::tag('p', '<b>Verknüpfte Kompetenzen:</b>');
+		$list_heading = html_writer::empty_tag('br');
 		
-		return html_writer::div($content.$list_heading.$list_descriptors, 'competence_profile_artefacts');
+		return html_writer::div($content.$list_descriptors, 'competence_profile_artefacts');
 	}
 	public function competence_profile_exastud($profile_settings, $user){
 		$exastud_periods = \block_exastud\api::get_student_periods_with_review();
