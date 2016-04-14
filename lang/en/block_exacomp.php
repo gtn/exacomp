@@ -245,8 +245,8 @@ $string['allow_resubmission'] = 'Allow a new submission for this example';
 $string['allow_resubmission_info'] = 'The example is now allowed to be resubmited.';
 
 //Example Submission
-$string['example_submission_header']  = 'Aufgabe {$a} bearbeiten';
-$string['example_submission_info'] = 'Du bist dabei die Aufgabe "{$a}" zu bearbeiten. Deine Abgabe landet im ePortfolio und kann dort von dir und deinem Lehrern eingesehen werden.';
+$string['example_submission_header']  = 'Edit example {$a}';
+$string['example_submission_info'] = 'You are about to edit the example "{$a}". Your submission will be saved in Exabis ePortfolio and Teachers can view it there.';
 $string['submissionmissing']  = 'Es müssen zumindest ein Link oder eine Datei abgegeben werden';
 $string['example_submission_subject'] = 'New submission';
 $string['example_submission_message'] = 'Student {$a->student} handed in a new submission in {$a->course}.';
