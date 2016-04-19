@@ -4949,7 +4949,7 @@ var dataset = dataset.map(function (group) {
 		$content .= '<td width="33%" style="vertical-align: top;">';
 
 		$table = new html_table();
-		$tmp = new html_table_cell($this->pix_icon('i/group', '').' '.block_exacomp\trans('de:freigegebene Kursthemen'));
+		$tmp = new html_table_cell($this->pix_icon('i/group', '').' '.block_exacomp\trans('de:Freigegebene Kursthemen'));
 		$tmp->colspan = 2;
 		$table->head = [$tmp];
 
@@ -4982,7 +4982,7 @@ var dataset = dataset.map(function (group) {
 		$content .= '<td width="33%" style="vertical-align: top;">';
 
 		$table = new html_table();
-		$tmp = new html_table_cell($this->pix_icon('i/manual_item', '').' '.block_exacomp\trans('de:vorhandene Kursthemen'));
+		$tmp = new html_table_cell($this->pix_icon('i/manual_item', '').' '.block_exacomp\get_string('available_crosssubjects'));
 		$tmp->colspan = 2;
 		$table->head = [$tmp];
 
@@ -4995,7 +4995,7 @@ var dataset = dataset.map(function (group) {
 				$title,
 				html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>g::$COURSE->id, 'crosssubjid'=>$crosssub->id, 'editmode'=>1)),$this->pix_icon("i/edit", get_string("edit"))).
 				html_writer::link('#', $this->pix_icon("t/delete", get_string("delete")), array("onclick" => "if( confirm('".get_string('confirm_delete', 'block_exacomp')."')) block_exacomp.delete_crosssubj(".$crosssub->id."); return false;")).
-				(($work_with_students)?html_writer::link('#', $this->pix_icon("i/enrolusers", block_exacomp\trans("de:Freigeben")), ['exa-type'=>'iframe-popup', 'exa-url'=>'cross_subjects.php?courseid='.g::$COURSE->id.'&crosssubjid='.$crosssub->id.'&action=share']):'').
+				(($work_with_students)?html_writer::link('#', $this->pix_icon("i/enrolusers", block_exacomp\trans("de:Freigabe bearbeiten")), ['exa-type'=>'iframe-popup', 'exa-url'=>'cross_subjects.php?courseid='.g::$COURSE->id.'&crosssubjid='.$crosssub->id.'&action=share']):'').
 				html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>g::$COURSE->id, 'crosssubjid'=>$crosssub->id, 'action'=>'save_as_draft')), $this->pix_icon("i/repository", block_exacomp\trans("de:Kopie als Vorlage speichern")))
 			];
 		}
@@ -5014,7 +5014,7 @@ var dataset = dataset.map(function (group) {
 
 		$table = new html_table();
 		$table->attributes['class'] = 'generaltable rg2';
-		$tmp = new html_table_cell($this->pix_icon('i/repository', '').' '.block_exacomp\trans('de:Themenvorlagen'));
+		$tmp = new html_table_cell($this->pix_icon('i/repository', '').' '.block_exacomp\get_string('crosssubject_drafts'));
 		$tmp->colspan = 2;
 		$table->head = [$tmp];
 

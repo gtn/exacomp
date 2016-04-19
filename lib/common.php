@@ -27,7 +27,7 @@ class url extends \moodle_url {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param array $overrideparams new attributes for object
 	 * @return self
 	 */
@@ -38,7 +38,7 @@ class url extends \moodle_url {
 		}
 		return $object;
 	}
-	
+
 	protected function merge_overrideparams(array $overrideparams = null) {
 		$params = parent::merge_overrideparams($overrideparams);
 
@@ -50,7 +50,7 @@ class url extends \moodle_url {
 		}
 		return $params;
 	}
-	
+
 	public function params(array $params = null) {
 		parent::params($params);
 
@@ -65,7 +65,7 @@ class url extends \moodle_url {
 }
 
 abstract class event extends \core\event\base {
-	
+
 	protected static function prepareData(array &$data) {
 		if (!isset($data['contextid']) && isset($data['courseid'])) {
 			if ($data['courseid']) {
@@ -75,10 +75,10 @@ abstract class event extends \core\event\base {
 			}
 		}
 	}
-	
+
 	static function log(array $data) {
 		static::prepareData($data);
-		
+
 		return static::create($data)->trigger();
 	}
 }
@@ -240,15 +240,15 @@ class param {
 		if (!is_object($values) && !is_array($values)) {
 			return null;
 		}
-		
+
 		// some value => type
 		$ret = new \stdClass;
 		$values = (object)$values;
 		$definition = (array)$definition;
-		
+
 		foreach ($definition as $key => $valueType) {
 			$value = isset($values->$key) ? $values->$key : null;
-			
+
 			$ret->$key = static::_clean($value, $valueType);
 		}
 
@@ -266,7 +266,7 @@ class param {
 
 		$keyType = key($definition);
 		$valueType = reset($definition);
-		
+
 		// allow clean_array(PARAM_TEXT): which means PARAM_INT=>PARAM_TEXT
 		if ($keyType === 0) {
 			$keyType = PARAM_SEQUENCE;
@@ -280,7 +280,7 @@ class param {
 		foreach ($values as $key=>$value) {
 			$value = static::_clean($value, $valueType);
 			if ($value === null) continue;
-			
+
 			if ($keyType == PARAM_SEQUENCE) {
 				$ret[] = $value;
 			} else {
@@ -290,7 +290,7 @@ class param {
 
 		return $ret;
 	}
-	
+
 	protected static function _clean($value, $definition) {
 		if (is_object($definition)) {
 			return static::clean_object($value, $definition);
@@ -337,7 +337,7 @@ class param {
 
 		return static::clean_array($param, $definition);
 	}
-	
+
 	public static function optional_object($parname, $definition) {
 		$param = static::get_param($parname);
 
@@ -353,15 +353,15 @@ class param {
 
 		return static::clean_object($param, $definition);
 	}
-	
+
 	public static function required_json($parname, $definition = null) {
 		$data = required_param($parname, PARAM_RAW);
-		
+
 		$data = json_decode($data, true);
 		if ($data === null) {
 			print_error('missingparam', '', '', $parname);
 		}
-		
+
 		if ($definition === null) {
 			return $data;
 		} else {
@@ -388,7 +388,7 @@ class globals {
 	 * @var \moodle_page
 	 */
 	public static $PAGE;
-	
+
 	/**
 	 * @var \core_renderer
 	 */
@@ -398,7 +398,7 @@ class globals {
 	 * @var \stdClass
 	 */
 	public static $COURSE;
-	
+
 	/**
 	 * @var \stdClass
 	 */
@@ -408,12 +408,12 @@ class globals {
 	 * @var \stdClass
 	 */
 	public static $SITE;
-	
+
 	/**
 	 * @var _globals_dummy_CFG
 	 */
 	public static $CFG;
-	
+
 	public static function init() {
 		global $PAGE, $OUTPUT, $COURSE, $USER, $CFG, $SITE;
 		globals::$DB = new exadb_extender();
@@ -430,6 +430,48 @@ globals::init();
 function _plugin_name() {
 	return preg_replace('!\\\\.*$!', '', __NAMESPACE__); // the \\\\ syntax matches a \ (backslash)!
 }
+
+call_user_func(function(){
+	if (!globals::$CFG->debugdeveloper) {
+		return;
+	}
+
+	$lang = current_language();
+	$langDir = dirname(__DIR__).'/lang';
+	$langFile = $langDir.'/'.$lang.'/'._plugin_name().'.php';
+
+	if (file_exists($langDir.'/total.php') && ($time = filemtime($langDir.'/total.php')) != filemtime($langFile)) {
+		// regenerate
+		$totalLanguages = require $langDir.'/total.php';
+
+		$byLang = [];
+
+		foreach($totalLanguages as $key=>$langs) {
+			if (!$langs) {
+				$byLang['de'][$key] = null;
+				$byLang['en'][$key] = null;
+				continue;
+			}
+			foreach ($langs as $lang=>$value) {
+				$byLang[$lang][$key] = $value;
+			}
+		}
+
+		foreach ($byLang as $lang => $strings) {
+			$output = '<?php'."\n\n".'$string = '.var_export($strings, true).' + $string;';
+			$output .= '
+
+// load local langstrings
+if (file_exists(__DIR__."/../../local.config/lang.".basename(__DIR__).".php")){
+	require __DIR__."/../../local.config/lang.".basename(__DIR__).".php";
+}
+
+			';
+			file_put_contents($langDir.'/'.$lang.'/'._plugin_name().'.php', $output);
+			touch($langDir.'/'.$lang.'/'._plugin_name().'.php', $time);
+		}
+	}
+});
 
 /**
  * get a language string from current plugin or else from global language strings
@@ -544,7 +586,22 @@ function trans() {
 	$lang = current_language();
 	if (isset($languagestrings[$lang])) {
 		return _t_parse_string($languagestrings[$lang], $a);
-	} elseif ($languagestrings) {
+	}
+
+	$manager = get_string_manager();
+	$component = _plugin_name();
+	$identifier = reset($languagestrings);
+	$identifier = key($languagestrings).':'.$identifier;
+
+	if ($manager->string_exists($identifier, $component)) {
+		return $manager->get_string($identifier, $component, $a);
+	}
+	$identifier = reset($languagestrings);
+	if ($manager->string_exists($identifier, $component)) {
+		return $manager->get_string($identifier, $component, $a);
+	}
+
+	if ($languagestrings) {
 		return _t_parse_string(reset($languagestrings), $a);
 	} else {
 		return _t_parse_string($identifier, $a);
