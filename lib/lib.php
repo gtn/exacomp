@@ -326,15 +326,14 @@ function block_exacomp_get_schooltypes_by_course($courseid) {
  * @param int $courseid
  */
 function block_exacomp_get_subjects_for_schooltype($courseid, $schooltypeid=0){
-	global $DB;
-	$sql = 'SELECT sub.id FROM {'.\block_exacomp\DB_SUBJECTS.'} sub
-	JOIN {'.\block_exacomp\DB_MDLTYPES.'} type ON sub.stid = type.stid
+	$sql = 'SELECT s.* FROM {'.\block_exacomp\DB_SUBJECTS.'} s
+	JOIN {'.\block_exacomp\DB_MDLTYPES.'} type ON s.stid = type.stid
 	WHERE type.courseid=?';
 
 	if($schooltypeid > 0)
 		$sql .= ' AND type.stid = ?';
 
-	return $DB->get_records_sql($sql, array($courseid, $schooltypeid));
+	return \block_exacomp\subject::get_objects_sql($sql, [$courseid, $schooltypeid]);
 }
 /**
  * Gets all subjects that are used in a particular course.
@@ -3726,13 +3725,7 @@ function block_exacomp_build_schooltype_tree_for_courseselection($limit_courseid
 	$schooltypes = block_exacomp_get_schooltypes_by_course($limit_courseid);
 
 	foreach($schooltypes as $schooltype){
-		$subjects = block_exacomp_get_subjects_for_schooltype($limit_courseid, $schooltype->id);
-
-		$schooltype->subjects = array();
-		foreach($subjects as $subject){
-			$tree = block_exacomp_get_competence_tree(0, $subject->id, null, true, null, true, array(SHOW_ALL_TAXONOMIES), false, false, false, true);
-			$schooltype->subjects += $tree;
-		}
+		$schooltype->subjects = block_exacomp_get_subjects_for_schooltype($limit_courseid, $schooltype->id);
 	}
 
 	return $schooltypes;
