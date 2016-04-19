@@ -1610,7 +1610,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 	'help_crosssubject' => [
 		'de' => 'Die Zusammenstellung des Themas erfolgt für die ganze Schule über den Reiter Kompetenzraster. Sie können hier kursspezifisch Kompetenzen, Teilkompetenzen und Lernmaterial ausblenden. Lernmaterial kann hier ergänzt werden. Dieses wird automatisch in die Lernwegeliste integriert.',
-		'en' => 'Die Zusammenstellung des Themas erfolgt für die ganze Schule über den Reiter Lernwegeliste. Sie können hier kursspezifisch Kompetenzen, Teilkompetenzen und Lernmaterial ausblenden. Lernmaterial kann hier ergänzt werden. Dieses wird automatisch in die Lernwegeliste integriert.',
+		'en' => 'The compilation of a subject is done for the whole Moodle installation (school) using the tab learning path. Here you can selectively deactivate course-specific competences, sub-competences and materials. Individual learning material can also be added. This is then automatically added to the learning paths.',
 	],
 	'description' => [
 		'de' => 'Beschreibung',
@@ -1730,6 +1730,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'en' => 'Create Copy as Draft',
 	],
 	'de:Vorlage verwenden' => [
+		'de' => '',
 		'en' => 'Use Draft',
 	],
 	'' => [
