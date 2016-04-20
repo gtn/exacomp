@@ -422,6 +422,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
   'share_crosssub_for_further_use' => 'Geben Sie das Thema an Kursteilnehmer/innen frei, um volle Funktionalität zu erhalten.',
   'available_crosssubjects' => 'Vorhandene Kursthemen',
   'crosssubject_drafts' => 'Themenvorlagen',
+  'de:Vorlage verwenden' => '',
   '' => '',
   '=== Associations ===' => NULL,
   'competence_associations' => 'Verknüpfungen',

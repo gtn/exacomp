@@ -4,17 +4,14 @@ return  [
 	'pluginname' => [
 		'de' => 'Exabis Kompetenzraster',
 		'en' => 'Exabis Competencies',
-		'ca' => 'Competències Exabis',
 	],
 	'exacomp:addinstance' => [
 		'de' => 'Exabis Competencies auf Kursseite anlegen',
 		'en' => 'Add a exabis competencies block',
-		'ca' => 'afegir competències Exabis al curs',
 	],
 	'exacomp:myaddinstance' => [
 		'de' => 'Exabis Competencies auf Startseite anlegen',
 		'en' => 'Add a exabis competencies block to my moodle',
-		'ca' => 'afegir competències Exabis a l\'inici',
 	],
 	'exacomp:teacher' => [
 		'de' => 'Übersicht der Lehrerfunktionen in einem Kurs',
@@ -51,12 +48,10 @@ return  [
 	'tab_admin_settings' => [
 		'de' => 'Website-Einstellungen',
 		'en' => 'Admin Settings',
-		'ca' => 'Importar',
 	],
 	'tab_admin_configuration' => [
 		'de' => 'Vorauswahl der Standards',
 		'en' => 'Standards pre-selection',
-		'ca' => 'Configuració',
 	],
 	'admin_config_pending' => [
 		'de' => 'Vorauswahl der Kompetenzen durch den Administrator notwendig',
@@ -69,32 +64,26 @@ return  [
 	'tab_teacher_settings' => [
 		'de' => 'Kurs-Einstellungen',
 		'en' => 'Settings',
-		'ca' => 'propietats',
 	],
 	'tab_teacher_settings_configuration' => [
 		'de' => 'Einstellungen',
 		'en' => 'Configuration',
-		'ca' => 'Configuració',
 	],
 	'tab_teacher_settings_selection_st' => [
 		'de' => 'Schultyp-Auswahl',
 		'en' => 'Schooltype selection',
-		'ca' => 'Tipus d\'escola',
 	],
 	'tab_teacher_settings_selection' => [
 		'de' => 'Gegenstands-Auswahl',
 		'en' => 'Subject selection',
-		'ca' => 'selecció de matèrial',
 	],
 	'tab_teacher_settings_assignactivities' => [
 		'de' => 'Moodle-Aktivit&auml;ten zuordnen',
 		'en' => 'Assign Moodle activities',
-		'ca' => 'Assignar activitats',
 	],
 	'tab_teacher_settings_badges' => [
 		'de' => 'Auszeichnungen bearbeiten',
 		'en' => 'Edit badges',
-		'ca' => 'edit badges',
 	],
 
 
@@ -103,7 +92,6 @@ return  [
 	'tab_student_all' => [
 		'de' => 'Alle erworbenen Kompetenzen',
 		'en' => 'All gained competencies',
-		'ca' => 'Totes les competències assolides',
 	],
 
 
@@ -112,12 +100,10 @@ return  [
 	'tab_competence_grid' => [
 		'de' => 'Berichte',
 		'en' => 'Reports',
-		'ca' => 'graella de competències',
 	],
 	'tab_competence_overview' => [
 		'de' => 'Kompetenzraster',
 		'en' => 'Competence grid',
-		'ca' => 'Resum de les competències',
 	],
 	'tab_competence_details' => [
 		'de' => 'Kompetenz-Detailansicht',
@@ -126,37 +112,30 @@ return  [
 	'tab_examples' => [
 		'de' => 'Beispiele und Aufgaben',
 		'en' => 'Examples and tasks',
-		'ca' => 'Exemples i tasques',
 	],
 	'tab_learning_agenda' => [
 		'de' => 'Wochenplan',
 		'en' => 'Learning agenda',
-		'ca' => 'agenda d\'aprenentatge',
 	],
 	'tab_badges' => [
 		'de' => 'Meine Auszeichnungen',
 		'en' => 'My badges',
-		'ca' => 'my badges',
 	],
 	'tab_competence_profile' => [
 		'de' => 'Kompetenzprofil',
 		'en' => 'Competence profile',
-		'ca' => 'Perfil competencial',
 	],
 	'tab_competence_profile_profile' => [
 		'de' => 'Profil',
 		'en' => 'Profile',
-		'ca' => 'Perfil',
 	],
 	'tab_competence_profile_settings' => [
 		'de' => 'Einstellungen',
 		'en' => 'Settings',
-		'ca' => 'Propietats',
 	],
 	'tab_help' => [
 		'de' => 'Hilfe',
 		'en' => 'Help',
-		'ca' => 'help',
 	],
 	'tab_teacher_demo_settings' => [
 		'de' => 'Mit Demo-Daten arbeiten',
@@ -241,42 +220,34 @@ return  [
 	'settings_xmlserverurl' => [
 		'de' => 'Server-URL',
 		'en' => 'Server-URL',
-		'ca' => 'URL del servidor',
 	],
 	'settings_configxmlserverurl' => [
 		'de' => 'Url zu einer XML Datei, die verwendet wird, um die Daten aktuell zu halten',
 		'en' => 'Url to a xml file, which is used for keeping the database entries up to date',
-		'ca' => 'URL a un arxiu XML, que s\'utilitza per mantenir actualitzades les entrades de la base de dades',
 	],
 	'settings_autotest' => [
 		'de' => 'Automatischer Kompetenzerwerb durch Tests',
 		'en' => 'Automatical gain of competence through quizzes',
-		'ca' => 'Automatic test evalutaion',
 	],
 	'settings_autotest_description' => [
 		'de' => 'Kompetenzen die mit Tests verbunden sind, gelten automatisch als erworben, wenn der angegebene Test-Prozentwert erreicht wurde',
 		'en' => 'Competences that are associated with quizzes are gained automatically if needed percentage of quiz is reached',
-		'ca' => 'Students reach competenes automatically if a test is completed',
 	],
 	'settings_testlimit' => [
 		'de' => 'Testlimit in %',
 		'en' => 'Quiz-percentage needed to gain competence',
-		'ca' => 'Test limit',
 	],
 	'settings_testlimit_description' => [
 		'de' => 'Dieser Prozentwert muss erreicht werden, damit die Kompetenz als erworben gilt',
 		'en' => 'This percentage has to be reached to gain the competence',
-		'ca' => 'Students have to reach this limit to gain competences',
 	],
 	'settings_usebadges' => [
 		'de' => 'Badges/Auszeichnungen verwenden',
 		'en' => 'Use badges',
-		'ca' => 'Use Badges',
 	],
 	'settings_usebadges_description' => [
 		'de' => 'Anhaken um den Badges/Auszeichnungen Kompetenzen zuzuteilen',
 		'en' => 'Check to associate badges with competences',
-		'ca' => 'Work with Badges associated with competences',
 	],
 	'settings_enableteacherimport' => [
 		'de' => 'Schulspezifische Standards verwenden',
@@ -345,107 +316,86 @@ return  [
 	'LA_MON' => [
 		'de' => 'Mo',
 		'en' => 'MON',
-		'ca' => 'DL',
 	],
 	'LA_TUE' => [
 		'de' => 'Di',
 		'en' => 'TUE',
-		'ca' => 'DM',
 	],
 	'LA_WED' => [
 		'de' => 'Mi',
 		'en' => 'WED',
-		'ca' => 'DC',
 	],
 	'LA_THU' => [
 		'de' => 'Do',
 		'en' => 'THU',
-		'ca' => 'DJ',
 	],
 	'LA_FRI' => [
 		'de' => 'Fr',
 		'en' => 'FRI',
-		'ca' => 'DV',
 	],
 	'LA_todo' => [
 		'de' => 'Was mache ich?',
 		'en' => 'What do I do?',
-		'ca' => 'Quines són les següents tasques?',
 	],
 	'LA_learning' => [
 		'de' => 'Was kann ich lernen?',
 		'en' => 'What can I learn?',
-		'ca' => 'Què puc aprendre?',
 	],
 	'LA_student' => [
 		'de' => 'S',
 		'en' => 'S',
-		'ca' => 'A',
 	],
 	'LA_teacher' => [
 		'de' => 'L',
 		'en' => 'T',
-		'ca' => 'P',
 	],
 	'LA_assessment' => [
 		'de' => 'Einsch&auml;tzung',
 		'en' => 'assessment',
-		'ca' => 'avaluació',
 	],
 	'LA_plan' => [
 		'de' => 'Arbeitsplan',
 		'en' => 'working plan',
-		'ca' => 'Pla de treball',
 	],
 	'LA_no_learningagenda' => [
 		'de' => 'Es sind keine Lernagenden in der ausgew&auml;hlten Woche vorhanden.',
 		'en' => 'There is no learning agenda available for this week.',
-		'ca' => 'no learning agenda',
 	],
 	'LA_no_student_selected' => [
 		'de' => '-- kein(e) Kursteilnehmer/in ausgew&auml;hlt --',
 		'en' => '-- no student selected --',
-		'ca' => '-- no student selected --',
 	],
 	'LA_select_student' => [
 		'de' => 'W&auml;hlen Sie bitte eine(n) Kursteilnehmer/in aus, um seine Lernagenda einzusehen.',
 		'en' => 'Please select a student to view his learning agenda.',
-		'ca' => 'select student',
 	],
 	'LA_no_example' => [
 		'de' => 'Kein Beispiel zugeordnet',
 		'en' => 'no example available',
-		'ca' => 'no example available',
 	],
 	'LA_backtoview' => [
 		'de' => 'Zur&uuml;ck zur Originalansicht',
 		'en' => 'back to original view',
-		'ca' => 'back to original view',
 	],
 	'LA_from_n' => [
 		'de' => ' von ',
 		'en' => ' from ',
-		'ca' => ' from ',
 	],
 	'LA_from_m' => [
 		'de' => ' vom ',
 		'en' => ' from ',
-		'ca' => ' from ',
 	],
 	'LA_to' => [
 		'de' => ' bis zum ',
 		'en' => ' to ',
-		'ca' => ' to ',
 	],
 	'LA_enddate' => [
 		'de' => 'Enddatum',
 		'en' => 'end date',
-		'ca' => 'end date',
 	],
 	'LA_startdate' => [
 		'de' => 'Startdatum',
 		'en' => 'start date',
-		'ca' => 'start date',
 	],
 
 
@@ -482,9 +432,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'en' => '<h1>Introduction Video</h1>
 <iframe width="640" height="360" src="//www.youtube.com/embed/EL4Vb3_17EM?feature=player_embedded" frameborder="0" allowfullscreen></iframe>
 ',
-		'ca' => '<h1>Introduction Video</h1>
-<iframe width="640" height="360" src="//www.youtube.com/embed/EL4Vb3_17EM?feature=player_embedded" frameborder="0" allowfullscreen></iframe>
-',
 	],
 
 
@@ -493,37 +440,30 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	'importinfo' => [
 		'de' => 'Erstellen Sie Ihre eigenen Kompetenzen/Standards auf <a target="_blank" href="http://www.edustandards.org">www.edustandards.org</a> oder laden Sie ein bestehendes XML von <a target="_blank" href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch. Für österreichische Standards besuchen Sie bitte <a target="_blank" href="http://bist.edugroup.at">http://bist.edugroup.at</a>',
 		'en' => 'Please create your outcomes/standards at <a href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file.',
-		'ca' => 'Please create your outcomes/standards at <a target="_blank" href="http://www.edustandards.org">www.edustandards.org</a> or visit <a target="_blank" href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file to the blocks xml directory.',
 	],
 	'importwebservice' => [
 		'de' => 'Es besteht auch die M&ouml;glichkeit die Daten &uuml;ber ein <a href="{$a}">Webservice</a> aktuell zu halten.',
 		'en' => 'It is possible to keep the data up to date via a <a href="{$a}">webservice</a>.',
-		'ca' => 'It is possible to keep the data up to date via a <a href="{$a}">webservice</a>.',
 	],
 	'importdone' => [
 		'de' => 'Die allgemeinen Bildungsstandards sind bereits importiert.',
 		'en' => 'data has already been imported from xml',
-		'ca' => 'Les dades ja s\'han importat des d\'xml',
 	],
 	'importpending' => [
 		'de' => 'Bitte importieren Sie jetzt die allgemeinen Bildungsstandards und w&auml;hlen Sie anschlie&szlig;end im Tab "Konfiguration" die anzuzeigenden Deskriptorenbereiche aus.',
 		'en' => 'no data has been imported yet!',
-		'ca' => 'No s\'han importat les dades!',
 	],
 	'doimport' => [
 		'de' => 'Bildungsstandards importieren',
 		'en' => 'Import outcomes/standards',
-		'ca' => 'Importar descriptors',
 	],
 	'doimport_again' => [
 		'de' => 'Weitere Bildungsstandards importieren',
 		'en' => 'Import additional outcomes/standards',
-		'ca' => 'Tornar a importar descriptors',
 	],
 	'doimport_own' => [
 		'de' => 'Schulspezifische Bildungsstandards importieren',
 		'en' => 'Import individual outcomes/standards',
-		'ca' => 'Importar descriptors individuals',
 	],
 	'delete_own' => [
 		'de' => 'Schulspezifische Bildungsstandards löschen',
@@ -540,27 +480,22 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	'importsuccess' => [
 		'de' => 'Daten erfolgreich importiert!',
 		'en' => 'data was successfully imported!',
-		'ca' => 'Les dades s\'han importat correctament!',
 	],
 	'importsuccess_own' => [
 		'de' => 'Eigene Daten erfolgreich importiert!',
 		'en' => 'individual data was imported successfully!',
-		'ca' => 'Les dades individuals s\'han importat correctament!',
 	],
 	'importfail' => [
 		'de' => 'Es ist ein Fehler aufgetreten.',
 		'en' => 'an error has occured during import',
-		'ca' => 'Hi ha hagut un error durant la importació',
 	],
 	'noxmlfile' => [
 		'de' => 'Ein Import ist derzeit nicht m&ouml;glich weil keine XML Datei vorhanden ist. Bitte hier die entsprechenden Standards downloaden und in das xml Verzeichnis des Blocks kopieren: <a href="https://github.com/gtn/edustandards">https://github.com/gtn/edustandards</a>',
 		'en' => 'There is no data available to import. Please visit <a href="https://github.com/gtn/edustandards">https://github.com/gtn/edustandards</a> to download the required outcomes to the blocks xml directory.',
-		'ca' => 'There is no data available to import. Please visit <a href="https://github.com/gtn/edustandards">https://github.com/gtn/edustandards</a> to download the required outcomes to the blocks xml directory.',
 	],
 	'oldxmlfile' => [
 		'de' => 'Sie benutzen eine veraltete XML-Datei, bitte erstellen Sie sich eine neue Datei auf <a href="http://www.edustandards.org">www.edustandards.org</a> oder laden Sie ein bestehendes XML von <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch.',
 		'en' => 'You are using an outdated xml-file. Please create new outcomes/standards at <a href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file to the blocks xml directory.',
-		'ca' => 'You are using an outdated xml-file. Please create new outcomes/standards at <a href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file to the blocks xml directory.',
 	],
 	'do_demo_import' => [
 		'de' => 'Importieren Sie einen Demodatensatz, um zu sehen wie Exabis Competencies funktioniert.',
@@ -573,17 +508,14 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	'explainconfig' => [
 		'de' => '',
 		'en' => 'Your outcomes have already been imported. In this configuration you have to make the selection of the main standards you would like to use in this Moodle installation.',
-		'ca' => 'Per fer servir el mòdul de competències d\'exabis, cal triar el teu tipus d\'escola. Les dades necessàries s\'importaran des de l\'arxiu xml.',
 	],
 	'save_selection' => [
 		'de' => 'Auswahl speichern',
 		'en' => 'Save selection',
-		'ca' => 'guardar sel·lecció',
 	],
 	'save_success' => [
 		'de' => '&Auml;nderungen erfolgreich &uuml;bernommen',
 		'en' => 'changes were successful',
-		'ca' => 'els canvis s\'han aplicat',
 	],
 
 
@@ -592,22 +524,18 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	'grading_scheme' => [
 		'de' => 'Bewertungsschema',
 		'en' => 'grading scheme',
-		'ca' => 'esquema d\'avaluació',
 	],
 	'uses_activities' => [
 		'de' => 'Ich verwende Moodle Aktivit&auml;ten zur Beurteilung',
 		'en' => 'I work with Moodle activites',
-		'ca' => 'treballo amb activitats',
 	],
 	'show_all_descriptors' => [
 		'de' => 'Alle Deskriptoren im &Uuml;berblick anzeigen',
 		'en' => 'Show all outcomes in overview',
-		'ca' => 'mostra totes les descripcions en la visió de conjunt',
 	],
 	'show_all_examples' => [
 		'de' => 'Externe Beispiele für Kursteilnehmer/innen anzeigen',
 		'en' => 'Show external examples for students',
-		'ca' => 'Show all examples in overview',
 	],
 	'usedetailpage' => [
 		'de' => 'Detaillierte Kompetenzansicht verwenden',
@@ -668,17 +596,14 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	'mybadges' => [
 		'de' => 'Meine Auszeichnungen',
 		'en' => 'My badges',
-		'ca' => 'My badges',
 	],
 	'pendingbadges' => [
 		'de' => 'Anstehende Auszeichnungen',
 		'en' => 'Pending badges',
-		'ca' => 'Pending badges',
 	],
 	'no_badges_yet' => [
 		'de' => 'Keine Auszeichnungen verfügbar',
 		'en' => 'no badges available',
-		'ca' => 'no badges available',
 	],
 	'description_edit_badge_comps' => [
 		'de' => 'Hier können Sie der ausgewählten Auszeichnung Kompetenzen zuordnen.',
@@ -711,32 +636,26 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	'sorting' => [
 		'de' => 'Sortierung w&auml;hlen: ',
 		'en' => 'select sorting: ',
-		'ca' => 'selecciona manera d\'ordenar ',
 	],
 	'subject' => [
 		'de' => 'Gegenst&auml;nde',
 		'en' => 'subjects',
-		'ca' => 'assignatures',
 	],
 	'taxonomies' => [
 		'de' => 'Taxonomien',
 		'en' => 'taxonomies',
-		'ca' => 'taxonomies',
 	],
 	'show_all_course_examples' => [
 		'de' => 'Beispiele aus allen Kursen anzeigen',
 		'en' => 'Show examples from all courses',
-		'ca' => 'Show Examples from all courses',
 	],
 	'expandcomps' => [
 		'de' => 'Alle &ouml;ffnen',
 		'en' => 'expand all',
-		'ca' => 'expandir tot',
 	],
 	'contactcomps' => [
 		'de' => 'Alle schlie&szlig;en',
 		'en' => 'contract all',
-		'ca' => 'contraure tot',
 	],
 	'name_example' => [
 		'de' => 'Name',
@@ -757,32 +676,26 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	'assigned_example' => [
 		'de' => 'Zugeteiltes Beispiel',
 		'en' => 'Assigned Example',
-		'ca' => 'Exemple assignat',
 	],
 	'task_example' => [
 		'de' => 'Aufgabenstellung',
 		'en' => 'Tasks',
-		'ca' => 'Tasques',
 	],
 	'solution_example' => [
 		'de' => 'L&ouml;sung',
 		'en' => 'Solution',
-		'ca' => 'Solució',
 	],
 	'attachement_example' => [
 		'de' => 'Anhang',
 		'en' => 'Attachement',
-		'ca' => 'Arxiu adjunt',
 	],
 	'extern_task' => [
 		'de' => 'Externe Aufgabenstellung',
 		'en' => 'External Task',
-		'ca' => 'Tasca externa',
 	],
 	'total_example' => [
 		'de' => 'Gesamtbeispiel',
 		'en' => 'Complete Example',
-		'ca' => 'Exemple complert',
 	],
 
 
@@ -791,32 +704,26 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	'example_upload_header' => [
 		'de' => 'Eigenes Lernmaterial hochladen',
 		'en' => 'Upload my own task/example',
-		'ca' => 'Pujar la meva pròpia tasca o exemple',
 	],
 	'taxonomy' => [
 		'de' => 'Taxonomie',
 		'en' => 'Taxonomy',
-		'ca' => 'taxonomie',
 	],
 	'descriptors' => [
 		'de' => 'Kompetenzen',
 		'en' => 'Competencies',
-		'ca' => 'competències',
 	],
 	'descriptors_help' => [
 		'de' => 'Es k&ouml;nnen mehrere Kompetenzen ausgew&auml;hlt werden.',
 		'en' => 'You can select multible outcomes/standards',
-		'ca' => 'You can select multible competencies',
 	],
 	'filerequired' => [
 		'de' => 'Es muss eine Datei ausgew&auml;hlt sein.',
 		'en' => 'A file must be selected.',
-		'ca' => 'cal que pugis un arxiu!',
 	],
 	'titlenotemtpy' => [
 		'de' => 'Es muss ein Name eingegeben werden.',
 		'en' => 'A name is required.',
-		'ca' => 'A name is required.',
 	],
 	'lisfilename' => [
 		'de' => 'Dateiname nach LS Vorgabe generieren',
@@ -869,27 +776,22 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	'delete_confirmation' => [
 		'de' => 'Soll "{$a}" wirklich gelöscht werden?',
 		'en' => 'Do you really want to delete "{$a}"?',
-		'ca' => 'Do you really want to delete "{$a}"?',
 	],
 	'legend_activities' => [
 		'de' => 'Moodle-Aktivit&auml;ten',
 		'en' => 'Moodle activities',
-		'ca' => 'activitats',
 	],
 	'legend_eportfolio' => [
 		'de' => 'ePortfolio',
 		'en' => 'ePortfolio',
-		'ca' => 'ePortfolio',
 	],
 	'legend_notask' => [
 		'de' => 'Keine Moodle-Aktivit&auml;t/Quiz f&uuml;r diese Kompetenz abgegeben',
 		'en' => 'No Moodle activities/quizzes have been submitted for this outcome',
-		'ca' => 'no s\'ha enviat res per a aquest descriptor/no s\'ha fet cap quiz',
 	],
 	'legend_upload' => [
 		'de' => 'Eigenes Beispiel hochladen',
 		'en' => 'Upload your own task/example',
-		'ca' => 'Pujar la meva pròpia tasca o exemple',
 	],
 	'allniveaus' => [
 		'de' => 'Alle Teilbereiche',
@@ -970,27 +872,22 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	'usersubmitted' => [
 		'de' => ' hat folgende Moodle-Aktivit&auml;ten abgegeben:',
 		'en' => ' has submitted the following Moodle activities:',
-		'ca' => ' ha enviat les tasques següents:',
 	],
 	'usersubmittedquiz' => [
 		'de' => ' hat folgende Tests durchgef&uuml;hrt:',
 		'en' => ' has done the following quizzes:',
-		'ca' => ' ha completat els jocs de preguntes següents:',
 	],
 	'usernosubmission' => [
 		'de' => ' hat keine Moodle-Aufgaben zu diesem Deskriptor abgegeben und keinen Test durchgef&uuml;hrt.',
 		'en' => ' has not yet submitted any Moodle activities or quizzes associated with this outcome',
-		'ca' => ' no ha enviat cap tasca ni jocs de preguntes associats a aquest descriptor',
 	],
 	'usernosubmission_topic' => [
 		'de' => ' hat keine Moodle-Aufgaben zu diesem Thema abgegeben und keinen Test durchgef&uuml;hrt.',
 		'en' => ' has not yet submitted any Moodle activities or quizzes associated with this topic',
-		'ca' => ' no ha enviat cap tasca ni jocs de preguntes associats a aquest theme',
 	],
 	'grading' => [
 		'de' => ' Bewertung: ',
 		'en' => ' Grading: ',
-		'ca' => ' avaluació: ',
 	],
 	'teacher_tipp' => [
 		'de' => 'Tipp',
@@ -1027,27 +924,22 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	'teachershortcut' => [
 		'de' => 'L',
 		'en' => 'T',
-		'ca' => 'P',
 	],
 	'studentshortcut' => [
 		'de' => 'S',
 		'en' => 'S',
-		'ca' => 'A',
 	],
 	'overview' => [
 		'de' => 'Der Kompetenz-Überblick listet Kursteilnehmer/innen und die im Kurs aktivierten Kompetenzen auf.',
 		'en' => 'This is an overview of all students and the course competencies.',
-		'ca' => 'Aquí hi ha una visió de conjunt de tots els alumnes, els descriptors i les tasques amb les quals han estat associats.',
 	],
 	'showevaluation' => [
 		'de' => 'Um die Selbsteinsch&auml;tzung zu aktivieren, klicken Sie <a href="{$a}">hier</a>.',
 		'en' => 'To show self-assessment click <a href="{$a}">here</a>',
-		'ca' => 'Per mostrar l\'autoavaluació dels alumnes, prem <a href="{$a}">aqui</a>',
 	],
 	'hideevaluation' => [
 		'de' => 'Um die Selbsteinsch&auml;tzung zu deaktivieren, klicken Sie <a href="{$a}">hier</a>.',
 		'en' => 'To hide self-assessment click <a href="{$a}">here</a>',
-		'ca' => 'Per ocultar l\'autoavaluació dels alumnes, prem <a href="{$a}">aqui</a>',
 	],
 	'showevaluation_student' => [
 		'de' => 'Um die Einsch&auml;tzung der TrainerInnen zu aktivieren, klicke <a href="{$a}">hier</a>.',
@@ -1060,12 +952,10 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	'columnselect' => [
 		'de' => 'Spaltenauswahl',
 		'en' => 'Column selection',
-		'ca' => 'Selecció de columna de la taula',
 	],
 	'allstudents' => [
 		'de' => 'Alle  Kursteilnehmer/innen',
 		'en' => 'All students',
-		'ca' => 'Tots els alumnes',
 	],
 	'nostudents' => [
 		'de' => 'Keine  Kursteilnehmer/innen',
@@ -1094,17 +984,14 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	'assigndone' => [
 		'de' => 'Aufgabe erledigt: ',
 		'en' => 'task done: ',
-		'ca' => 'Exercise done: ',
 	],
 	'assignmyself' => [
 		'de' => 'selbst',
 		'en' => 'by myself',
-		'ca' => 'myself',
 	],
 	'assignlearningpartner' => [
 		'de' => 'LernpartnerIn',
 		'en' => 'peer-to-peer',
-		'ca' => 'learning partner',
 	],
 	'assignlearningrgoup' => [
 		'de' => 'Lerngruppe',
@@ -1112,22 +999,18 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	'assignteacher' => [
 		'de' => 'TrainerIn',
 		'en' => 'trainer',
-		'ca' => 'teacher',
 	],
 	'assignfrom' => [
 		'de' => 'von',
 		'en' => 'from',
-		'ca' => 'from',
 	],
 	'assignuntil' => [
 		'de' => 'bis',
 		'en' => 'until',
-		'ca' => 'until',
 	],
 	'assignlearninggroup' => [
 		'de' => 'Lerngruppe',
 		'en' => 'peer group',
-		'ca' => 'learning group',
 	],
 
 
@@ -1175,37 +1058,30 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	'explaineditactivities_subjects' => [
 		'de' => '',
 		'en' => '',
-		'ca' => 'Aquí pots associar tasques amb descriptors.',
 	],
 	'column_setting' => [
 		'de' => 'Spalten aus/einblenden',
 		'en' => 'hide/display columns',
-		'ca' => 'Oculta/mostra columnes',
 	],
 	'niveau_filter' => [
 		'de' => 'Niveaus filtern',
 		'en' => 'filter levels',
-		'ca' => 'filtra nivells',
 	],
 	'module_filter' => [
 		'de' => 'Aktivit&auml;ten filtern',
 		'en' => 'filter activities',
-		'ca' => 'filter activities',
 	],
 	'apply_filter' => [
 		'de' => 'Filter anwenden',
 		'en' => 'apply filter',
-		'ca' => 'apply filter',
 	],
 	'no_topics_selected' => [
 		'de' => 'Konfiguration für Exabis Competencies wurde noch nicht abgeschlossen. Bitte w&auml;hlen Sie zuerst Gegenst&auml;nde aus, denen Sie dann Moodle-Aktivit&auml;ten zuordnen k&ouml;nnen.',
 		'en' => 'configuration of exabis competencies is not completed yet. please chose a topic that you would like to associate Moodle activities with',
-		'ca' => 'Configuration for Exabis Competences hasn\'t been completed. Please select topics first.',
 	],
 	'no_activities_selected' => [
 		'de' => 'Bitte ordnen Sie den erstellen Moodle-Aktivitäten Kompetenzen zu.',
 		'en' => 'please associate Moodle activities with competences',
-		'ca' => 'Please associate tasks with competencies.',
 	],
 	'no_activities_selected_student' => [
 		'de' => 'In diesem Bereich sind derzeit keine Daten vorhanden.',
@@ -1238,22 +1114,18 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	'textalign' => [
 		'de' => 'Textuelle Ausrichtung ändern',
 		'en' => 'Switch text align',
-		'ca' => 'Switch text align',
 	],
 	'selfevaluation' => [
 		'de' => 'Selbsteinschätzung',
 		'en' => 'Self assessment',
-		'ca' => 'Self assessment',
 	],
 	'teacherevaluation' => [
 		'de' => 'Einschätzung des Beurteilenden',
 		'en' => 'Trainer assessment',
-		'ca' => 'Teacher assessment',
 	],
 	'competencegrid_nodata' => [
 		'de' => 'Sollte der Kompetenzraster leer sein, wurden für die Deskriptoren des ausgewählten Gegenstands keine Niveaus in den Daten definiert',
 		'en' => 'In case the competency grid is empty the outcomes for the chosen subject were not assigned to a level in the datafile. This can be fixed by associating outcomes with levels at www.edustandards.org and re-importing the xml-file.',
-		'ca' => 'In case the competency grid is empty the outcomes for the chosen subject were not assigned to a level in the datafile. This can be fixed by associating outcomes with levels at www.edustandards.org and re-importing the xml-file.',
 	],
 	'statistic_type_descriptor' => [
 		'de' => 'Wechsel zur Statistik der Teilkompetenzen',
@@ -1286,7 +1158,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	'detail_description' => [
 		'de' => 'Hier kann mit Hilfe von Aktivitäten eine Kompetenz beurteilt werden.',
 		'en' => 'Use Moodle activities to evaluate competencies.',
-		'ca' => 'Use activities to evaluate competencies.',
 	],
 
 
@@ -1995,11 +1866,5 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 	'reached_topic' => [
 		'en' => 'Ich habe diese Kompetenz erreicht: ',
-	],
-	'settings_usedetailpage' => [
-		'ca' => 'Competence Details',
-	],
-	'settings_usedetailpage_description' => [
-		'ca' => 'Use competences details overview',
 	],
 ];

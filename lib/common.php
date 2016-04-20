@@ -36,6 +36,7 @@ class url extends \moodle_url {
 		if ($overrideparams) {
 			$object->params($overrideparams);
 		}
+
 		return $object;
 	}
 
@@ -48,6 +49,7 @@ class url extends \moodle_url {
 				unset($params[$key]);
 			}
 		}
+
 		return $params;
 	}
 
@@ -60,6 +62,7 @@ class url extends \moodle_url {
 				unset($this->params[$key]);
 			}
 		}
+
 		return $this->params;
 	}
 }
@@ -84,7 +87,7 @@ abstract class event extends \core\event\base {
 }
 
 class moodle_exception extends \moodle_exception {
-	function __construct($errorcode, $module='', $link='', $a=NULL, $debuginfo=null) {
+	function __construct($errorcode, $module = '', $link = '', $a = null, $debuginfo = null) {
 
 		// try to get local error message (use namespace as $component)
 		if (empty($module)) {
@@ -104,12 +107,12 @@ class SimpleXMLElement extends \SimpleXMLElement {
 	 * @param mixed $value
 	 * @return SimpleXMLElement
 	 */
-	public function addChildWithCDATA($name, $value = NULL) {
+	public function addChildWithCDATA($name, $value = null) {
 		$new_child = $this->addChild($name);
 
-		if ($new_child !== NULL) {
+		if ($new_child !== null) {
 			$node = dom_import_simplexml($new_child);
-			$no   = $node->ownerDocument;
+			$no = $node->ownerDocument;
 			$node->appendChild($no->createCDATASection($value));
 		}
 
@@ -120,7 +123,7 @@ class SimpleXMLElement extends \SimpleXMLElement {
 		return new static('<?xml version="1.0" encoding="UTF-8"?><'.$rootElement.' />');
 	}
 
-	public function addChildWithCDATAIfValue($name, $value = NULL) {
+	public function addChildWithCDATAIfValue($name, $value = null) {
 		if ($value) {
 			return $this->addChildWithCDATA($name, $value);
 		} else {
@@ -137,7 +140,8 @@ class SimpleXMLElement extends \SimpleXMLElement {
 
 			// return last child, this is the added child!
 			$children = $this->children();
-			return $children[$children->count()-1];
+
+			return $children[$children->count() - 1];
 		} else {
 			return parent::addChild($name, $value, $namespace);
 		}
@@ -146,6 +150,7 @@ class SimpleXMLElement extends \SimpleXMLElement {
 	public function asPrettyXML() {
 		$dom = dom_import_simplexml($this)->ownerDocument;
 		$dom->formatOutput = true;
+
 		return $dom->saveXML();
 	}
 }
@@ -157,17 +162,19 @@ abstract class exadb extends \moodle_database {
 	 * @param array|null $where
 	 * @return null|bool|object
 	 */
-	public function update_record($table, $data, $where=null) {
+	public function update_record($table, $data, $where = null) {
 	}
+
 	public function insert_or_update_record($table, $data, $where = null) {
 	}
 }
+
 class exadb_forwarder {
 	function __call($func, $args) {
 		global $DB;
 
 		if (method_exists($DB, $func)) {
-		 	// in exadb class
+			// in exadb class
 			return call_user_func_array([$DB, $func], $args);
 		}
 
@@ -183,7 +190,7 @@ class exadb_extender extends exadb_forwarder {
 	 * @param array|null $where
 	 * @return null|bool|object
 	 */
-	public function update_record($table, $data, $where=null) {
+	public function update_record($table, $data, $where = null) {
 		if ($where === null) {
 			return parent::update_record($table, $data);
 		}
@@ -277,7 +284,7 @@ class param {
 		}
 
 		$ret = array();
-		foreach ($values as $key=>$value) {
+		foreach ($values as $key => $value) {
 			$value = static::_clean($value, $valueType);
 			if ($value === null) continue;
 
@@ -425,13 +432,14 @@ class globals {
 		globals::$SITE =& $SITE;
 	}
 }
+
 globals::init();
 
 function _plugin_name() {
 	return preg_replace('!\\\\.*$!', '', __NAMESPACE__); // the \\\\ syntax matches a \ (backslash)!
 }
 
-call_user_func(function(){
+call_user_func(function() {
 	if (!globals::$CFG->debugdeveloper) {
 		return;
 	}
@@ -440,19 +448,19 @@ call_user_func(function(){
 	$langDir = dirname(__DIR__).'/lang';
 	$langFile = $langDir.'/'.$lang.'/'._plugin_name().'.php';
 
-	if (file_exists($langDir.'/total.php') && ($time = filemtime($langDir.'/total.php')) != filemtime($langFile)) {
+	if (file_exists($langDir.'/total.php') && ($time = filemtime($langDir.'/total.php')) != filemtime($langFile) && is_writable($langFile)) {
 		// regenerate
 		$totalLanguages = require $langDir.'/total.php';
 
 		$byLang = [];
 
-		foreach($totalLanguages as $key=>$langs) {
+		foreach ($totalLanguages as $key => $langs) {
 			if (!$langs) {
 				$byLang['de'][$key] = null;
 				$byLang['en'][$key] = null;
 				continue;
 			}
-			foreach ($langs as $lang=>$value) {
+			foreach ($langs as $lang => $value) {
 				$byLang[$lang][$key] = $value;
 			}
 		}
@@ -502,6 +510,7 @@ function _t_check_identifier($string) {
 	else
 		return null;
 }
+
 function _t_parse_string($string, $a) {
 	// copy from moodle/lib/classes/string_manager_standard.php
 	// Process array's and objects (except lang_strings).
@@ -518,7 +527,7 @@ function _t_parse_string($string, $a) {
 				// We support just string or lang_string as value.
 				continue;
 			}
-			$search[]  = '{$a->'.$key.'}';
+			$search[] = '{$a->'.$key.'}';
 			$replace[] = (string)$value;
 		}
 		if ($search) {
@@ -617,6 +626,7 @@ namespace block_exacomp;
 function _should_export_class($classname) {
 	return !class_exists('\\'.__NAMESPACE__.'\\'.$classname);
 }
+
 function _export_function($function) {
 	if (!function_exists('\\'.__NAMESPACE__.'\\'.$function)) {
 		eval('
@@ -628,17 +638,45 @@ function _export_function($function) {
 		');
 		// return call_user_func_array(__CLASS__.'\common\\'.__FUNCTION__, func_get_args());
 	}
+
 	return false;
 }
 
 // export classnames, if not already existing
-if (_should_export_class('event')) { abstract class event extends common\event {} }
-if (_should_export_class('moodle_exception')) { class moodle_exception extends common\moodle_exception {} }
-if (_should_export_class('globals')) { class globals extends common\globals {} }
-if (_should_export_class('param')) { class param extends common\param {} }
-if (_should_export_class('SimpleXMLElement')) { class SimpleXMLElement extends common\SimpleXMLElement {} }
-if (_should_export_class('url')) { class url extends common\url {} }
+if (_should_export_class('event')) {
+	abstract class event extends common\event {
+	}
+}
+if (_should_export_class('moodle_exception')) {
+	class moodle_exception extends common\moodle_exception {
+	}
+}
+if (_should_export_class('globals')) {
+	class globals extends common\globals {
+	}
+}
+if (_should_export_class('param')) {
+	class param extends common\param {
+	}
+}
+if (_should_export_class('SimpleXMLElement')) {
+	class SimpleXMLElement extends common\SimpleXMLElement {
+	}
+}
+if (_should_export_class('url')) {
+	class url extends common\url {
+	}
+}
 
-if (_export_function('get_string')) { function get_string($identifier, $component = null, $a = null) {} }
-if (_export_function('print_error')) { function print_error($errorcode, $module = 'error', $link = '', $a = null, $debuginfo = null) {} }
-if (_export_function('trans')) { function trans() {} }
+if (_export_function('get_string')) {
+	function get_string($identifier, $component = null, $a = null) {
+	}
+}
+if (_export_function('print_error')) {
+	function print_error($errorcode, $module = 'error', $link = '', $a = null, $debuginfo = null) {
+	}
+}
+if (_export_function('trans')) {
+	function trans() {
+	}
+}
