@@ -4379,8 +4379,9 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_admin_grading_scheme() {
 		static::validate_parameters ( static::dakora_get_admin_grading_scheme_parameters (), array () );
-
-		return \block_exacomp\global_config::get_scheme_id();
+		return 1; //TODO new grading scheme!!
+		
+		//return \block_exacomp\global_config::get_scheme_id();
 	}
 
 	/**

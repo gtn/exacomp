@@ -132,6 +132,7 @@ $specificimport = get_config('exacomp','enableteacherimport');
 $notifications = get_config('exacomp','notifications');
 
 $use_eval_niveau = get_config('exacomp', 'use_eval_niveau');
+$evaluation_niveau_type = get_config('exacomp', 'adminscheme');
 $additional_grading = get_config('exacomp', 'additional_grading');
 
 define("SHOW_ALL_TAXONOMIES",100000000);
@@ -6226,18 +6227,18 @@ function block_exacomp_get_courseids_by_descriptor($descriptorid){
 * according to course scheme and admin scheme
 **/
 function block_exacomp_get_html_for_teacher_eval($evaluation, $scheme){
-	$global_scheme = \block_exacomp\global_config::get_scheme_id();
+	global $additional_grading, $evaluation_niveau_type;
 	
 	//predefined pictures 
-	if($global_scheme >= 1 && $global_scheme <=3){
-		$grey_nE_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_0_'.$global_scheme.'.png';
-		$grey_1_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_1_'.$global_scheme.'.png';
-		$grey_2_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_2_'.$global_scheme.'.png';
-		$grey_3_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_3_'.$global_scheme.'.png';
-		$nE_src = '/blocks/exacomp/pix/compprof_rating_teacher_0_'.$global_scheme.'.png';
-		$one_src = '/blocks/exacomp/pix/compprof_rating_teacher_1_'.$global_scheme.'.png';
-		$two_src = '/blocks/exacomp/pix/compprof_rating_teacher_2_'.$global_scheme.'.png';
-		$three_src = '/blocks/exacomp/pix/compprof_rating_teacher_3_'.$global_scheme.'.png';
+	if($additional_grading){
+		$grey_nE_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_0_'.$evaluation_niveau_type.'.png';
+		$grey_1_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_1_'.$evaluation_niveau_type.'.png';
+		$grey_2_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_2_'.$evaluation_niveau_type.'.png';
+		$grey_3_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_3_'.$evaluation_niveau_type.'.png';
+		$nE_src = '/blocks/exacomp/pix/compprof_rating_teacher_0_'.$evaluation_niveau_type.'.png';
+		$one_src = '/blocks/exacomp/pix/compprof_rating_teacher_1_'.$evaluation_niveau_type.'.png';
+		$two_src = '/blocks/exacomp/pix/compprof_rating_teacher_2_'.$evaluation_niveau_type.'.png';
+		$three_src = '/blocks/exacomp/pix/compprof_rating_teacher_3_'.$evaluation_niveau_type.'.png';
 		
 		$image0 = $grey_nE_src;
 		$image1 = $grey_1_src;
@@ -6497,35 +6498,6 @@ namespace block_exacomp {
 				$mapping[$i]->start = $start[$i];
 				$mapping[$i]->end = $end[$i];
 			} 
-		}
-		
-		// ----------------
-		
-
-		//TODO auch diese Logik stimmt so nicht mehr
-		static function get_student_scheme_items($scheme=3) {
-			$global_scheme = get_config('exacomp', 'additional_grading');
-			
-			if (!$global_scheme) {
-				if($scheme > 3){
-					$global_scheme_values = array();
-					for($i=0; $i<=$scheme; $i++)
-						$global_scheme_values[] = $i;
-
-					return $global_scheme_values;
-				}
-
-				return array('0', '1', '2', '3');
-			} else {
-				return array('', '*', '**', '***');
-			}
-		}
-
-		//TODO wird in neuer Bewertung nicht mehr benötigt
-		static function get_scheme_id() {
-			$id = (int)get_config('exacomp', 'additional_grading');
-
-			return $id > 0 && $id <= 3 ? $id : 0;
 		}
 	}
 
