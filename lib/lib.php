@@ -1487,7 +1487,7 @@ function block_exacomp_get_user_crosssubs_by_course($user, $courseid) {
 	$user->crosssubs->student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => TYPE_CROSSSUB),'','compid as id, value');
 	$user->crosssubs->timestamp_teacher = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_CROSSSUB),'','compid as id, timestamp');
 	$user->crosssubs->timestamp_student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => TYPE_CROSSSUB),'','compid as id, timestamp');
-	$user->crosssubs->niveau = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES, array("courseid"=>$courseid, "userid"=>$user->id, "role" =>\block_exacomp\ROLE_TEACHER, "comptype" => TYPE_CROSSSUB),'', 'compid as id, niveauid');
+	$user->crosssubs->niveau = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES, array("courseid"=>$courseid, "userid"=>$user->id, "role" =>\block_exacomp\ROLE_TEACHER, "comptype" => TYPE_CROSSSUB),'', 'compid as id, evalniveauid');
 	return $user;
 }
 /**
@@ -1506,7 +1506,7 @@ function block_exacomp_get_user_competencies_by_course($user, $courseid) {
 	$user->competencies->timestamp_teacher = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR),'','compid as id, timestamp');
 	$user->competencies->timestamp_student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => TYPE_DESCRIPTOR),'','compid as id, timestamp');
 	$user->competencies->teacher_additional_grading = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR),'','compid as id, additionalinfo');
-	$user->competencies->niveau = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES, array("courseid"=>$courseid, "userid"=>$user->id, "role" =>\block_exacomp\ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR),'', 'compid as id, niveauid');
+	$user->competencies->niveau = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES, array("courseid"=>$courseid, "userid"=>$user->id, "role" =>\block_exacomp\ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR),'', 'compid as id, evalniveauid');
 	
 	return $user;
 }
@@ -1526,7 +1526,7 @@ function block_exacomp_get_user_topics_by_course($user, $courseid) {
 	$user->topics->student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => TYPE_TOPIC),'','compid as id, value');
 	$user->topics->timestamp_teacher = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_TOPIC),'','compid as id, timestamp');
 	$user->topics->timestamp_student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => TYPE_TOPIC),'','compid as id, timestamp');
-	$user->topics->niveau = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES, array("courseid"=>$courseid, "userid"=>$user->id, "role" =>\block_exacomp\ROLE_TEACHER, "comptype" => TYPE_TOPIC),'', 'compid as id, niveauid');
+	$user->topics->niveau = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES, array("courseid"=>$courseid, "userid"=>$user->id, "role" =>\block_exacomp\ROLE_TEACHER, "comptype" => TYPE_TOPIC),'', 'compid as id, evalniveauid');
 	
 	return $user;
 }
@@ -1546,7 +1546,7 @@ function block_exacomp_get_user_subjects_by_course($user, $courseid) {
 	$user->subjects->student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => \block_exacomp\TYPE_SUBJECT),'','compid as id, value');
 	$user->subjects->timestamp_teacher = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_SUBJECT),'','compid as id, timestamp');
 	$user->subjects->timestamp_student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => \block_exacomp\TYPE_SUBJECT),'','compid as id, timestamp');
-	$user->subjects->niveau = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES, array("courseid"=>$courseid, "userid"=>$user->id, "role" =>\block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_SUBJECT),'', 'compid as id, niveauid');
+	$user->subjects->niveau = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES, array("courseid"=>$courseid, "userid"=>$user->id, "role" =>\block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_SUBJECT),'', 'compid as id, evalniveauid');
 
 	return $user;
 }
