@@ -90,8 +90,8 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 				//ensure that value is 0-4 which is needed for new grading scheme
 				foreach(block_exacomp_get_courseids() as $course){
 					$course_settings = block_exacomp_get_settings_by_course($course);
-					if($course_settings->grading != 4){ //change course grading
-						$course_settings->grading = 4;
+					if($course_settings->grading != 3){ //change course grading
+						$course_settings->grading = 3;
 						$course_settings->filteredtaxonomies = json_encode($course_settings->filteredtaxonomies);
 						block_exacomp_save_coursesettings($course, $course_settings);
 					}
