@@ -2445,11 +2445,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		global $USER, $DB, $additional_grading;
 	
 		if($additional_grading){
-			$options[0] = '';
-			$options_db = $DB->get_records_menu(\block_exacomp\DB_EVALUATION_NIVEAU);
-			foreach ($options_db as $entry){
-				$options[] = $entry;
-			}
+			$options = \block_exacomp\global_config::get_evalniveaus();
 			
 			$attributes = array();
 			if($disabled)
