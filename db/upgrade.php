@@ -2636,6 +2636,32 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		upgrade_block_savepoint(true, 2016040600, 'exacomp');
 	}
 
+	if ($oldversion < 2016042100) {
+		// Define key niveauid (foreign) to be dropped form block_exacompcompuser.
+		$table = new xmldb_table('block_exacompcompuser');
+		$key = new xmldb_key('niveauid', XMLDB_KEY_FOREIGN, array('niveauid'), 'eval_niveau', array('id'));
+	
+		// Launch drop key niveauid.
+		$dbman->drop_key($table, $key);
+	
+		// Rename field niveauid on table block_exacompcompuser to evalniveauid.
+		$table = new xmldb_table('block_exacompcompuser');
+		$field = new xmldb_field('niveauid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'additionalinfo');
+	
+		// Launch rename field evalniveauid.
+		$dbman->rename_field($table, $field, 'evalniveauid');
+	
+		// Define key evalniveauid (foreign) to be added to block_exacompcompuser.
+		$table = new xmldb_table('block_exacompcompuser');
+		$key = new xmldb_key('evalniveauid', XMLDB_KEY_FOREIGN, array('evalniveauid'), 'eval_niveau', array('id'));
+	
+		// Launch add key evalniveauid.
+		$dbman->add_key($table, $key);
+	
+		// Exacomp savepoint reached.
+		upgrade_block_savepoint(true, 2016042100, 'exacomp');
+	}
+	
 	/*
 	 * insert new upgrade scripts before this comment section
 	 * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
