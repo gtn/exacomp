@@ -6400,6 +6400,99 @@ namespace block_exacomp {
 	use block_exacomp\globals as g;
 
 	class global_config {
+		
+		/**
+		 * Returns all values used for examples and child-descriptors
+		 */
+		static function get_value_titles() {
+			global $additional_grading;
+			// if additional_grading is set, use global value scheme
+			// TODO: use language strings for the titles
+			if ($additional_grading) {
+				return array (
+						- 1 => 'ohne Angabe',
+						0 => 'nicht erreicht',
+						1 => 'teilweise erreicht',
+						2 => 'überwiegend erreicht',
+						3 => 'vollständig erreicht' 
+				);
+			} 
+			// else use value scheme set in the course
+			else {
+				// TODO: add settings to g::$COURSE?
+				$course_grading = block_exacomp_get_settings_by_course(g::$COURSE->id)->grading;
+				
+				$values = array(-1 => ' ');
+				$values += range(0, $course_grading);
+				
+				return $values;
+			}
+		}
+	
+		/**
+		 * Returns title for one value
+		 * @param id $id
+		 */
+		static function get_value_title_by_id($id) {
+			return static::get_value_titles()[$id];
+		}
+		
+		/**
+		 * Returns all values used for examples and child-descriptors
+		 */
+		static function get_student_value_titles() {
+			global $additional_grading;
+				
+			// if additional_grading is set, use global value scheme
+			if ($additional_grading) {
+				return array (
+						- 1 => ' ',
+						1 => ':-(',
+						2 => ':-|',
+						3 => ':-)'
+				);
+			}
+			// else use value scheme set in the course
+			else {
+				// TODO: add settings to g::$COURSE?
+				$course_grading = block_exacomp_get_settings_by_course(g::$COURSE->id)->grading;
+				
+				$values = array(-1 => ' ');
+				$values += range(1, $course_grading);
+				
+				return $values;
+			}
+		}
+		
+		/**
+		 * Returns title for one value
+		 * @param id $id
+		 */
+		static function get_student_value_title_by_id($id) {
+			return static::get_student_value_titles()[$id];
+		}
+		
+		/**
+		 * Returns all evaluation niveaus, specified by the admin
+		 */
+		static function get_evalniveaus() {
+			return g::$DB->get_records_menu(DB_EVALUATION_NIVEAU,null,'','id,title');
+		}
+		
+		/**
+		 * Returns title for one evaluation niveau
+		 * @param id $id
+		 */
+		static function get_evalniveau_title_by_id($id) {
+			return static::get_evalniveaus()[$id];
+		}
+		
+		// ----------------
+		
+		/**
+		 * Get title for id, 0 => A/
+		 * @param schemeid $id
+		 */
 		static function get_scheme_item_title($id) {
 			$items = static::get_scheme_items();
 			if (!empty($items[$id])) {
