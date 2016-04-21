@@ -6227,7 +6227,6 @@ function block_exacomp_get_courseids_by_descriptor($descriptorid){
 **/
 function block_exacomp_get_html_for_teacher_eval($evaluation, $scheme){
 	$global_scheme = \block_exacomp\global_config::get_scheme_id();
-	$global_scheme_values = \block_exacomp\global_config::get_scheme_items($scheme);
 	
 	//predefined pictures 
 	if($global_scheme >= 1 && $global_scheme <=3){
@@ -6299,7 +6298,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 	$competence_tree = block_exacomp_get_competence_tree($courseid, $subjectid);
 	$table_content = array();
 	
-	$scheme_items = \block_exacomp\global_config::get_scheme_items(block_exacomp_get_grading_scheme($courseid));
+	$scheme_items = \block_exacomp\global_config::get_value_titles(block_exacomp_get_grading_scheme($courseid));
 	
 	foreach($competence_tree as $subject){
 		foreach($subject->topics as $topic){
@@ -6481,7 +6480,6 @@ namespace block_exacomp {
 			return $values;
 		}
 		
-		
 		/**
 		 * Returns title for one evaluation niveau
 		 * @param id $id
@@ -6489,8 +6487,6 @@ namespace block_exacomp {
 		static function get_evalniveau_title_by_id($id) {
 			return static::get_evalniveaus()[$id];
 		}
-		
-		// ----------------
 		
 		static function get_scheme_item_node_mapping(){
 			$mapping = array();
@@ -6503,29 +6499,8 @@ namespace block_exacomp {
 			} 
 		}
 		
-		static function get_scheme_items($scheme = 3) {
-			$global_scheme = static::get_scheme_id();
-
-			return array('nicht erreicht', 'teilweise erreicht', 'erreicht', 'überwiegend erreicht', 'vollständig erreicht');
-			//TODO für internationale version
-			/*if($global_scheme == 1){
-				$global_scheme_values = array('nE', 'G', 'M', 'E');
-			}else if($global_scheme == 2){
-				$global_scheme_values = array('nE', 'A', 'B', 'C');
-			}else if($global_scheme == 3){
-				$global_scheme_values = array('nE', '*', '**', '***');
-			}else{
-				if($scheme > 3){
-					$global_scheme_values = array();
-					for($i=0; $i<=$scheme; $i++)
-						$global_scheme_values[] = $i;
-
-				}else
-					$global_scheme_values = array('0', '1', '2', '3');
-			}
-
-			return $global_scheme_values;*/
-		}
+		// ----------------
+		
 
 		//TODO auch diese Logik stimmt so nicht mehr
 		static function get_student_scheme_items($scheme=3) {

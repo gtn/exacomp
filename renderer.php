@@ -759,11 +759,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$table->attributes['class'] = 'competence_grid';
 		$head = array();
 
-		$schema = ($courseid == 0) ? 1 : block_exacomp_get_grading_scheme($courseid);
-		$global_scheme = \block_exacomp\global_config::get_scheme_id();
-		$global_scheme_values = \block_exacomp\global_config::get_scheme_items($schema);
+		$scheme = ($courseid == 0) ? 1 : block_exacomp_get_grading_scheme($courseid);
+		$scheme_values = \block_exacomp\global_config::get_value_titles($scheme);
 		
-		$satisfied = ceil($schema/2);
+		$satisfied = ceil($scheme/2);
 		
 		$profoundness = block_exacomp_get_settings_by_course($courseid)->useprofoundness;
 
@@ -856,12 +855,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 									$table_head = new html_table_row();
 									$table_head->attributes['class'] = 'statistic_head';
 
-									$scheme = block_exacomp_get_grading_scheme($courseid);
 									$table_head->cells[] = new html_table_cell("");
 									if($studentid != BLOCK_EXACOMP_SHOW_STATISTIC)
 										$table_head->cells[] = new html_table_cell("&Sigma;");
 									for($i=0;$i<=$scheme;$i++)
-										$table_head->cells[] = new html_table_cell(($global_scheme==0)?$i:$global_scheme_values[$i]);
+										$table_head->cells[] = new html_table_cell($scheme_values[$i]);
 									$table_head->cells[] = new html_table_cell("oB");
 									$table_head->cells[] = new html_table_cell("iA");
 									if($studentid != BLOCK_EXACOMP_SHOW_STATISTIC)
@@ -2404,14 +2402,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		// TODO: diese $scheme brauchen wir nicht mehr? einfach $options = $scheme_values?
 
 		if(strcmp($evaluation, 'teacher')==0){
-			$scheme_values = \block_exacomp\global_config::get_scheme_items($scheme);
-			$options[-1] = ' ';
-			for($i=0;$i<=$scheme;$i++) {
-				$options[$i] = $scheme_values[$i];
-			}
+			$options = \block_exacomp\global_config::get_value_titles($scheme);
 		}else{
 			$options = \block_exacomp\global_config::get_student_value_titles();
-
 		}
 
 		if ($this->is_print_mode()) {
@@ -2534,14 +2527,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 * @param unknown $headertext
 	 */
 	public function edit_course($settings, $courseid, $headertext){
-		global $DB;
-
-		$global_scheme = \block_exacomp\global_config::get_scheme_id();
+		global $DB, $additional_grading;
 
 		$header = html_writer::tag('p', $headertext).html_writer::empty_tag('br');
 
 		$input_grading = "";
-		if($global_scheme == 0 && !$settings->useprofoundness)
+		if(!$additional_grading && !$settings->useprofoundness)
 			$input_grading = get_string('grading_scheme', 'block_exacomp').": &nbsp"
 			.html_writer::empty_tag('input', array('type'=>'text', 'size'=>2, 'name'=>'grading', 'value'=>block_exacomp_get_grading_scheme($courseid)))
 			.html_writer::empty_tag('br');
@@ -3759,7 +3750,7 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 	}
 	
 	private function radar_graph_topic($labels, $data1, $data2, $scheme, $teacher = true){
-		$global_scheme_values = \block_exacomp\global_config::get_scheme_items($scheme);
+		$global_scheme_values = \block_exacomp\global_config::get_value_titles($scheme);
 
 		static $canvasid_i = 0;
 		$canvasid_i++;
@@ -4630,8 +4621,7 @@ var dataset = dataset.map(function (group) {
 	}
 	
 	function statistic_table($courseid, $students, $item, $descriptor=true, $scheme=1){
-		$global_scheme = \block_exacomp\global_config::get_scheme_id();
-		$global_scheme_values = \block_exacomp\global_config::get_scheme_items($scheme);
+		$global_scheme_values = \block_exacomp\global_config::get_value_titles($scheme);
 
 		if($descriptor)
 			list($self, $student_oB, $student_iA, $teacher, $teacher_oB, $teacher_iA,
@@ -4660,7 +4650,7 @@ var dataset = dataset.map(function (group) {
 		
 		foreach($self as $self_key => $self_value){
 			$cell = new html_table_cell();
-			$cell->text = ($global_scheme==0)?$self_key:$global_scheme_values[$self_key];
+			$cell->text = $global_scheme_values[$self_key];
 			$self_row_header->cells[] = $cell;
 		}
 		
@@ -4708,7 +4698,7 @@ var dataset = dataset.map(function (group) {
 		
 		foreach($teacher as $teacher_key => $teacher_value){
 			$cell = new html_table_cell();
-			$cell->text = ($global_scheme==0)?$teacher_key:$global_scheme_values[$teacher_key];
+			$cell->text = $global_scheme_values[$teacher_key];
 			$teacher_row_header->cells[] = $cell;
 		}
 		
@@ -4887,7 +4877,7 @@ var dataset = dataset.map(function (group) {
 	}	
 	
 	public function lm_graph_legend($scheme) {
-		$global_scheme_values = \block_exacomp\global_config::get_scheme_items($scheme);
+		$global_scheme_values = \block_exacomp\global_config::get_value_titles($scheme);
 		$content = html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","lmoB");
 		$content .= ' '.get_string("oB","block_exacomp").' ';
 
