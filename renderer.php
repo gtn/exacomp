@@ -1066,7 +1066,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $table_html.html_writer::end_tag('form');
 	}
 	public function competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $singletopic = false, $crosssubjid = 0, $statistic = false) {
-		global $additional_grading;
+		global $additional_grading, $use_eval_niveau;
 
 		$table = new html_table();
 		$rows = array();
@@ -1492,7 +1492,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	function descriptors(&$rows, $level, $descriptors, $data, $students, $profoundness = false, $editmode=false, $statistic=false, $custom_created_descriptors=false, $parent = false, $crosssubjid = 0) {
-		global $USER, $COURSE, $DB, $additional_grading;
+		global $USER, $COURSE, $DB, $additional_grading, $use_eval_niveau;
 
 		$evaluation = ($data->role == \block_exacomp\ROLE_TEACHER) ? "teacher" : "student";
 
