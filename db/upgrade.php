@@ -1664,7 +1664,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		return $descriptors;
 	}
 
-	if ($oldversion < 2015121001) {
+	if ($oldversion < 2015121051) {
 		$table = new xmldb_table('block_exacompdescrvisibility');
 
 		// Adding fields to table block_exacompdescrcross_mm.
@@ -2032,6 +2032,10 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			$dbman->create_table($table);
 		}
 
+		// Exacomp savepoint reached.
+		upgrade_block_savepoint(true, 2015121051, 'exacomp');
+	}
+	if ($oldversion < 2015121052) {
 		// Define table block_exacompdatasources to be created.
 		$table = new xmldb_table('block_exacompdescrcat_mm');
 
@@ -2053,6 +2057,9 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		//update table
 		$descriptors = $DB->get_records(\block_exacomp\DB_DESCRIPTORS);
 		foreach ($descriptors as $descriptor) {
+			if (!$descriptor->catid) {
+				continue;
+			}
 			$insert = new stdClass();
 			$insert->descrid = $descriptor->id;
 			$insert->catid = $descriptor->catid;
@@ -2080,6 +2087,9 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		//update table
 		$examples = $DB->get_records(\block_exacomp\DB_EXAMPLES);
 		foreach ($examples as $example) {
+			if ($example->taxid === null) {
+				continue;
+			}
 			$insert = new stdClass();
 			$insert->exampleid = $example->id;
 			$insert->taxid = $example->taxid;
@@ -2285,9 +2295,9 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		}
 
 		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2015121001, 'exacomp');
+		upgrade_block_savepoint(true, 2015121052, 'exacomp');
 	}
-	if ($oldversion < 2015121002) {
+	if ($oldversion < 2015121053) {
 
 		/**
 		 * go through all examples and move the files into a mod_exacomp filestorage
@@ -2532,7 +2542,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		}
 
 		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2015121002, 'exacomp');
+		upgrade_block_savepoint(true, 2015121053, 'exacomp');
 	}
 	if ($oldversion < 2015121500) {
 
