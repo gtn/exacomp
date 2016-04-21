@@ -464,13 +464,16 @@ call_user_func(function() {
 		$byLang = [];
 
 		foreach ($totalLanguages as $key => $langs) {
-			if (!$langs) {
+			if (!$langs || !is_array($langs)) {
 				$byLang['de'][$key] = null;
 				$byLang['en'][$key] = null;
 				continue;
-			}
-			foreach ($langs as $lang => $value) {
-				$byLang[$lang][$key] = $value;
+			} else {
+				// moodle needs at least english translation
+				$byLang['en'][$key] = null;
+				foreach ($langs as $lang => $value) {
+					$byLang[$lang][$key] = $value;
+				}
 			}
 		}
 
