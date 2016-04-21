@@ -48,17 +48,50 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 	
 	class block_exacomp_admin_setting_scheme extends admin_setting_configselect {
 		public function write_setting($data) {
+			global $DB;
 			$ret = parent::write_setting($data);
 		   
 			if ($ret != '') {
 				return $ret;
 			}
 			
+			set_config('use_eval_niveau', 1, 'exacomp');
+			
+			if($data == '1') $titles = array(1=>'G', 2=>'M', 3=>'E');
+			elseif($data == '2') $titles = array(1=>'A', 2=>'B', 3=>'C');
+			elseif($data=='3') $titles = array(1=>'*', 2=>'**', 3=>'***');
+			else{
+				set_config('use_eval_niveau', 0, 'exacomp');
+				return '';
+			}
+			
+			//fill table
+			foreach($titles as $index => $title){
+				$record = $DB->get_record(\block_exacomp\DB_EVALUATION_NIVEAU, array('id'=>$index));
+				if(!$record){
+					$entry = new stdClass();
+					$entry->title = $title;
+					$DB->insert_record(\block_exacomp\DB_EVALUATION_NIVEAU, $entry);
+				}else{
+					$record->title = $title;
+					$DB->update_record(\block_exacomp\DB_EVALUATION_NIVEAU, $record);
+				}
+			}
+			
+			return '';
+		}
+	}
+	
+	class admin_setting_configcheckbox_grading extends admin_setting_configcheckbox {
+		public function write_setting($data) {
+			$ret = parent::write_setting($data);
+			 
 			if($data != '0'){
+				//ensure that value is 0-4 which is needed for new grading scheme
 				foreach(block_exacomp_get_courseids() as $course){
 					$course_settings = block_exacomp_get_settings_by_course($course);
-					if($course_settings->grading != 3){ //change course grading
-						$course_settings->grading = 3;
+					if($course_settings->grading != 4){ //change course grading
+						$course_settings->grading = 4;
 						$course_settings->filteredtaxonomies = json_encode($course_settings->filteredtaxonomies);
 						block_exacomp_save_coursesettings($course, $course_settings);
 					}
@@ -84,14 +117,17 @@ $settings->add(new admin_setting_configcheckbox('exacomp/usebadges', block_exaco
 $settings->add(new admin_setting_configcheckbox('exacomp/notifications', block_exacomp\get_string('block_exacomp_notifications_head'),
 	block_exacomp\get_string('block_exacomp_notifications_body'), 0));
 
+$settings->add(new admin_setting_configcheckbox('exacomp/useprofoundness', block_exacomp\get_string('useprofoundness'),
+		'', 0));
+
+
+$settings->add(new admin_setting_heading('exacomp/heading_evaluation', block_exacomp\trans(['de:Beurteilung', 'en:Evaluation']), ''));
+
 $settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme', block_exacomp\get_string('settings_admin_scheme'),
 	block_exacomp\get_string('settings_admin_scheme_description'), block_exacomp\get_string('settings_admin_scheme_none'), array(block_exacomp\get_string('settings_admin_scheme_none'), 'G/M/E', 'A/B/C', '*/**/***')));
 
-$settings->add(new admin_setting_configcheckbox('exacomp/additional_grading', block_exacomp\get_string('settings_additional_grading'),
+$settings->add(new admin_setting_configcheckbox_grading('exacomp/additional_grading', block_exacomp\get_string('settings_additional_grading'),
 	block_exacomp\get_string('settings_additional_grading_description'), 0));
-
-$settings->add(new admin_setting_configcheckbox('exacomp/useprofoundness', block_exacomp\get_string('useprofoundness'),
-	'', 0));
 
 $settings->add(new admin_setting_configcheckbox('exacomp/usetopicgrading', block_exacomp\get_string('usetopicgrading'),
 	'', 0));

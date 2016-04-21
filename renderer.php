@@ -1701,6 +1701,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							 * if scheme != 1: print select
 							*/
 							else {
+								//TODO: define additional_grading and niveau here, create studentCellEvaluation & studentCell according to role and define order of cells in here
 								if($data->showevaluation)
 									$studentCellEvaluation->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
 
@@ -1723,6 +1724,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							if($data->showevaluation)
 								$descriptorRow->cells[] = $studentCellEvaluation;
 
+							$niveauCell = new html_table_cell();
+							$niveauCell->text = $this->generate_niveau_select('niveau_descriptor', $descriptor->id, 'competencies', $student, ($data->role == \block_exacomp\ROLE_STUDENT)?true:false, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
+							$niveauCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+							$descriptorRow->cells[] = $niveauCell;
+							
 							$additional_grading_cell = new html_table_cell();
 							$params = array('name'=>'add-grading-'.$student->id.'-'.$descriptor->id, 'type'=>'text',
 								'maxlength'=>3, 'class'=>'percent-rating-text',
@@ -1737,12 +1743,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$additional_grading_cell->text = $parent ? ' <span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>' : "";
 							$additional_grading_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
 
-							if($additional_grading && $data->showevaluation && $data->role == \block_exacomp\ROLE_STUDENT)
+							if($additional_grading && $data->showevaluation && $data->role == \block_exacomp\ROLE_STUDENT && $parent)
 								$descriptorRow->cells[] = $additional_grading_cell;
+								
+							if(!$parent || $data->role == \block_exacomp\ROLE_STUDENT)
+								$descriptorRow->cells[] = $studentCell;
 
-							$descriptorRow->cells[] = $studentCell;
-
-							if($additional_grading && $data->role == \block_exacomp\ROLE_TEACHER)
+							if($additional_grading && $data->role == \block_exacomp\ROLE_TEACHER && $parent)
 								$descriptorRow->cells[] = $additional_grading_cell;
 						} else {
 							// ICONS
@@ -2430,7 +2437,32 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				(isset($student->{$type}->{$evaluation}[$compid])) ? $student->{$type}->{$evaluation}[$compid] : -1,
 				true,$attributes);
 	}
-
+	
+	public function generate_niveau_select($name, $compid, $type, $student, $disabled = false, $reviewerid = null) {
+		global $USER, $DB, $additional_grading;
+	
+		if($additional_grading){
+			$options[0] = '';
+			$options = $DB->get_records_menu(\block_exacomp\DB_EVALUATION_NIVEAU);
+			
+			$attributes = array();
+			if($disabled)
+				$attributes["disabled"] = "disabled";
+			if($reviewerid && $reviewerid != $USER->id)
+				$attributes["reviewerid"] = $reviewerid;
+			
+			$attributes['exa-compid'] = $compid;
+			$attributes['exa-userid'] = $student->id;
+			//$attributes['exa-evaluation'] = $evaluation;
+			
+			return html_writer::select(
+					$options,
+					$name . '-' . $compid . '-' . $student->id,
+					(isset($student->{$type}->niveau[$compid])) ? $student->{$type}->niveau[$compid] : -1,true,$attributes);
+		}
+		
+		return '';
+	}
 	public function edit_config($data, $courseid, $fromimport=0){
 		$header = html_writer::tag('p', $data->headertext).html_writer::empty_tag('br');
 

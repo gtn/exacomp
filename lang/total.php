@@ -294,24 +294,24 @@ return  [
 		'en' => 'Begin time for the first unit in the schedule. Format hh:mm',
 	],
 	'settings_admin_scheme' => [
-		'de' => 'Globales Bewertungsschema',
-		'en' => 'Global grading scheme',
+		'de' => 'Globales Bewertungsniveau',
+		'en' => 'Global grading level',
 	],
 	'settings_admin_scheme_description' => [
-		'de' => 'Wählen Sie ein kursübergreifendes Bewertungsschema, andernfalls kann der/die LehrerIn pro Kurs ein zahlen basiertes Bewertungsschema festlegen.',
-		'en' => 'Choose a grading scheme for all courses, if not every teacher can select an own grading scheme for every course based on numbers.',
+		'de' => 'Beurteilungen können auf unterschiedlichem Niveau erfolgen.',
+		'en' => 'Grading can be done on different levels.',
 	],
 	'settings_admin_scheme_none' => [
-		'de' => 'keine globale Bewertung',
-		'en' => 'no global grading',
+		'de' => 'keine Niveaus',
+		'en' => 'no global levels',
 	],
 	'settings_additional_grading' => [
-		'de' => 'Zus&auml;tzliche Bewertung',
-		'en' => 'Additional grading',
+		'de' => 'Angepasste Bewertung',
+		'en' => 'Adapted grading',
 	],
 	'settings_additional_grading_description' => [
-		'de' => 'Zus&auml;tzliche Bewertung für Kompetenzen/Lernmaterialien (0-100%)',
-		'en' => 'Additional grading of outcomes/materials (0-100%)',
+		'de' => 'Bewertung für Teilkompetenzen und Lernmaterialien global auf "nicht erreicht(0)" - "vollständig erreicht(3)" beschränken',
+		'en' => 'Grading limited from "not gained(0)" - "completely gained(3)"',
 	],
 	'settings_usetimeline' => [
 		'de' => 'Timeline im Profil verwenden',
@@ -553,7 +553,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'en' => 'Use basic and extended competencies',
 	],
 	'usetopicgrading' => [
-		'de' => 'Beurteilung von Teilbereichen ermöglichen',
+		'de' => 'Beurteilung von Kompetenzbereichen ermöglichen',
 		'en' => 'Enable topic gradings',
 	],
 	'usenumbering' => [
