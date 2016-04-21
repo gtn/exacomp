@@ -2410,12 +2410,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$options[$i] = $scheme_values[$i];
 			}
 		}else{
-			$scheme_values = \block_exacomp\global_config::get_student_scheme_items($scheme);
+			$options = \block_exacomp\global_config::get_student_value_titles();
 
-			$options[0] = '';
-			for($i=1; $i<=$scheme; $i++){
-				$options[$i] = $scheme_values[$i];
-			}
 		}
 
 		if ($this->is_print_mode()) {
