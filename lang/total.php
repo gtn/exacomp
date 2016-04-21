@@ -1,4 +1,21 @@
 <?php
+// This file is part of Exabis Competencies
+//
+// (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
+//
+// Exabis Competencies is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This script is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You can find the GNU General Public License at <http://www.gnu.org/licenses/>.
+//
+// This copyright notice MUST APPEAR in all copies of the script!
 
 return  [
 	'pluginname' => [
@@ -39,7 +56,6 @@ return  [
 	],
 
 
-
 	'=== Admin Tabs ===' => NULL,
 	'tab_admin_import' => [
 		'de' => 'Import/Export',
@@ -57,7 +73,6 @@ return  [
 		'de' => 'Vorauswahl der Kompetenzen durch den Administrator notwendig',
 		'en' => 'Standards pre-selection needs to be performed by the Moodle administrator',
 	],
-
 
 
 	'=== Teacher Tabs ===' => NULL,
@@ -87,13 +102,11 @@ return  [
 	],
 
 
-
 	'=== Student Tabs ===' => NULL,
 	'tab_student_all' => [
 		'de' => 'Alle erworbenen Kompetenzen',
 		'en' => 'All gained competencies',
 	],
-
 
 
 	'=== Generic Tabs (used by Teacher and Students) ===' => NULL,
@@ -215,7 +228,6 @@ return  [
 	],
 
 
-
 	'=== Block Settings ===' => NULL,
 	'settings_xmlserverurl' => [
 		'de' => 'Server-URL',
@@ -311,7 +323,6 @@ return  [
 	],
 
 
-
 	'=== Learning agenda ===' => NULL,
 	'LA_MON' => [
 		'de' => 'Mo',
@@ -399,7 +410,6 @@ return  [
 	],
 
 
-
 	'=== Help ===' => NULL,
 	'help_content' => [
 		'de' => '<h1>Video zur Einf&uuml;hrung</h1>
@@ -433,7 +443,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 <iframe width="640" height="360" src="//www.youtube.com/embed/EL4Vb3_17EM?feature=player_embedded" frameborder="0" allowfullscreen></iframe>
 ',
 	],
-
 
 
 	'=== Import ===' => NULL,
@@ -503,7 +512,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-
 	'=== Configuration ===' => NULL,
 	'explainconfig' => [
 		'de' => '',
@@ -517,7 +525,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'de' => '&Auml;nderungen erfolgreich &uuml;bernommen',
 		'en' => 'changes were successful',
 	],
-
 
 
 	'=== Course-Configuration ===' => NULL,
@@ -591,7 +598,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-
 	'=== Badges ===' => NULL,
 	'mybadges' => [
 		'de' => 'Meine Auszeichnungen',
@@ -629,7 +635,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'de' => 'Kompetenzen zuordnen',
 		'en' => 'configure competences',
 	],
-
 
 
 	'=== Examples ===' => NULL,
@@ -671,7 +676,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-
 	'=== Icons ===' => NULL,
 	'assigned_example' => [
 		'de' => 'Zugeteiltes Beispiel',
@@ -697,7 +701,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'de' => 'Gesamtbeispiel',
 		'en' => 'Complete Example',
 	],
-
 
 
 	'=== Example Upload ===' => NULL,
@@ -769,7 +772,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'de' => 'Die Aufgabe wurde zur erneuten Abgabe freigegeben.',
 		'en' => 'The example is now allowed to be resubmited.',
 	],
-
 
 
 	'=== Assign competencies ===' => NULL,
@@ -845,7 +847,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'de' => 'Erneute Abgabe',
 		'en' => 'New Submission',
 	],
-
 
 
 	'=== Example Submission ===' => NULL,
@@ -1014,7 +1015,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-
 	'=== metadata ===' => NULL,
 	'subject_singular' => [
 		'de' => 'Schultyp',
@@ -1051,7 +1051,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 				students are displayed with a red icon. ePortfolio-artifacts of students 
 				are displayed in blue icons.',
 	],
-
 
 
 	'=== Activities ===' => NULL,
@@ -1105,7 +1104,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-
 	'=== Competence Grid ===' => NULL,
 	'infolink' => [
 		'de' => 'Weiter Informationen: ',
@@ -1153,13 +1151,11 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-
 	'=== Detail view ===' => NULL,
 	'detail_description' => [
 		'de' => 'Hier kann mit Hilfe von Aktivitäten eine Kompetenz beurteilt werden.',
 		'en' => 'Use Moodle activities to evaluate competencies.',
 	],
-
 
 
 	'=== Competence Profile ===' => NULL,
@@ -1329,7 +1325,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-
 	'=== Competence Profile Settings ===' => NULL,
 	'profile_settings_showonlyreached' => [
 		'de' => 'Ich möchte in meinem Kompetenzprofil nur bereits erreichte Kompetenzen sehen.',
@@ -1389,7 +1384,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-
 	'=== Profoundness ===' => NULL,
 	'profoundness_description' => [
 		'de' => 'Kompetenzbeschreibung',
@@ -1411,7 +1405,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'de' => 'Zur Gänze erfüllt',
 		'en' => 'Entirely achieved',
 	],
-
 
 
 	'=== External trainer & eLove ===' => NULL,
@@ -1451,7 +1444,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'de' => 'Alle Kursteilnehmer/innen',
 		'en' => 'All Students',
 	],
-
 
 
 	'=== Crosssubjects ===' => NULL,
@@ -1614,7 +1606,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-
 	'=== Associations ===' => NULL,
 	'competence_associations' => [
 		'de' => 'Verknüpfungen',
@@ -1624,7 +1615,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'de' => 'Das Lernmaterial {$a} ist mit den folgenden Kompetenzen verknüpft:',
 		'en' => 'The material {$a} is associated wih the following standards:',
 	],
-
 
 
 	'=== Weeky schedule ===' => NULL,
@@ -1714,7 +1704,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-
 	'=== Notifications ===' => NULL,
 	'notification_submission_subject' => [
 		'de' => '{$a->student} hat eine Lösung zum Beispiel {$a->example} eingereicht.',
@@ -1790,7 +1779,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-
 	'=== Logging ===' => NULL,
 	'block_exacomp_logging_head' => [
 		'de' => 'Logging',
@@ -1830,7 +1818,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-
 	'=== Statistics ===' => NULL,
 	'process' => [
 		'de' => 'Bearbeitungsstand',
@@ -1842,7 +1829,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-
 	'=== Message ===' => NULL,
 	'messagetocourse' => [
 		'de' => 'Nachricht an alle Kursteilnehmer/innen senden',
@@ -1850,8 +1836,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-
-	'=== load local langstrings ===' => NULL,
 	'description_example' => [
 		'en' => 'Description',
 	],
