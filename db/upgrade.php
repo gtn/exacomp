@@ -2636,6 +2636,73 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		upgrade_block_savepoint(true, 2016040600, 'exacomp');
 	}
 
+	if ($oldversion < 2016041401) {
+
+		// move elove externaltask to filestorage
+
+		function upgrade_block_exacomp_2016041401_move_to_file_storage($item) {
+			global $CFG;
+
+			$localurlfield = 'externaltask';
+			$type = 'example_task';
+
+			$url = $item->$localurlfield;
+
+			if (strpos($url, $CFG->wwwroot.'/blocks/exacomp/example_upload.php') === false) {
+				return;
+			}
+
+			if (!$url = parse_url($url)) {
+				die('TODO upgrade_block_exacomp_2016042200_move_to_file_storage: wrong url?');
+			}
+
+			parse_str($url['query'], $params);
+			if (isset($params['action']) && $params['action'] == 'serve' && isset($params['i'])) {
+				// ok
+			} else {
+				die('TODO upgrade_block_exacomp_2016042200_move_to_file_storage: wrong file format');
+			}
+
+			$fs = get_file_storage();
+			$file = $fs->get_file_by_hash($params['i']);
+
+			if (!$file) {
+				return array(
+					$localurlfield => '',
+				);
+			}
+
+			// move to exacomp filestorage
+			$fs->delete_area_files(context_system::instance()->id, 'block_exacomp', $type, $item->id);
+
+			// reimport
+			$fs->create_file_from_storedfile(array(
+				'contextid' => context_system::instance()->id,
+				'component' => 'block_exacomp',
+				'filearea' => $type,
+				'itemid' => $item->id,
+			), $file);
+
+			return array(
+				$localurlfield => '',
+			);
+		}
+
+		$examples = $DB->get_records(\block_exacomp\DB_EXAMPLES, null, 'id DESC');
+		foreach ($examples as $example) {
+			$update = upgrade_block_exacomp_2016041401_move_to_file_storage($example);
+
+			if (!$update) continue;
+
+			$update['id'] = $example->id;
+
+			$DB->update_record(\block_exacomp\DB_EXAMPLES, $update);
+		}
+
+		// Exacomp savepoint reached.
+		upgrade_block_savepoint(true, 2016041401, 'exacomp');
+	}
+
 	if ($oldversion < 2016042100) {
 		// Define key niveauid (foreign) to be dropped form block_exacompcompuser.
 		$table = new xmldb_table('block_exacompcompuser');
