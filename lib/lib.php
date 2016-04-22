@@ -6725,13 +6725,13 @@ namespace block_exacomp {
 
 	function require_item_capability($cap, $item) {
 		if ($item instanceof example && in_array($cap, [CAP_MODIFY, CAP_DELETE])) {
-			if (!block_exacomp_is_teacher()) {
-				throw new permission_exception('User is no teacher');
-			}
-
 			if ($item->creatorid == g::$USER->id) {
 				// User is creator
 				return true;
+			}
+
+			if (!block_exacomp_is_teacher()) {
+				throw new permission_exception('User is no teacher');
 			}
 
 			// find descriptor in course

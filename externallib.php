@@ -1091,37 +1091,34 @@ class block_exacomp_external extends external_api {
 				'filename' => $filename
 		) );
 
-		if ($filename != '') {
-			$context = context_user::instance ( $USER->id );
-			$fs = get_file_storage ();
-
-			if (! $fs->file_exists ( $context->id, 'user', 'private', 0, '/', $filename )) {
-				// TODO: das geht so nicht
-				throw new moodle_exception('TODO: $form not set?');
-				// $form->save_stored_file ( 'file', $context->id, 'user', 'private', 0, '/', $filename, true );
-			}
-
-			$pathnamehash = $fs->get_pathname_hash ( $context->id, 'user', 'private', 0, '/', $filename );
-			$temp_task = new moodle_url ( $CFG->wwwroot . '/blocks/exacomp/example_upload.php', array (
-					"action" => "serve",
-					"c" => $context->id,
-					"i" => $pathnamehash,
-					"courseid" => 1
-			) );
-			$example_task = $temp_task->out ( false );
-		}
-
 		// insert into examples and example_desc
 		$example = new stdClass ();
 		$example->title = $name;
 		$example->description = $description;
 		$example->task = $task;
-		$example->externaltask = isset ( $example_task ) ? $example_task : null;
 		$example->creatorid = $USER->id;
 		$example->timestamp = time();
 		$example->source = \block_exacomp\EXAMPLE_SOURCE_USER;
 
-		$id = $DB->insert_record (\block_exacomp\DB_EXAMPLES, $example );
+		$example->id = $id = $DB->insert_record (\block_exacomp\DB_EXAMPLES, $example );
+
+		if ($filename != '') {
+			$context = context_user::instance ( $USER->id );
+			$fs = get_file_storage ();
+
+			if (!$file = $fs->get_file($context->id, 'user', 'private', 0, '/', $filename )) {
+				throw new moodle_exception('file not found');
+			}
+
+			$fs->create_file_from_storedfile(array(
+				'contextid' => context_system::instance()->id,
+				'component' => 'block_exacomp',
+				'filearea' => 'example_task',
+				'itemid' => $example->id,
+			), $file);
+
+			$file->delete();
+		}
 
 		$descriptors = explode ( ',', $comps );
 		foreach ( $descriptors as $descriptor ) {
@@ -1690,28 +1687,36 @@ class block_exacomp_external extends external_api {
 				'filename' => $filename
 		) );
 
-		block_exacomp\require_item_capability(block_exacomp\CAP_MODIFY, block_exacomp\example::get($exampleid));
+		$example = block_exacomp\example::get($exampleid);
 
-		$example_task = "";
+		block_exacomp\require_item_capability(block_exacomp\CAP_MODIFY, $example);
+
 		$type = ($filename != '') ? 'file' : 'url';
 		if ( $type == 'file') {
 			$context = context_user::instance ( $USER->id );
-			$fs = get_file_storage ();
+			$fs = get_file_storage();
 
-			if (! $fs->file_exists ( $context->id, 'user', 'private', 0, '/', $filename )) {
-				// TODO: das geht so nicht
-				throw new moodle_exception('TODO: $form not set?');
-				// $form->save_stored_file ( 'file', $context->id, 'user', 'private', 0, '/', $filename, true );
+			if (!$file = $fs->get_file($context->id, 'user', 'private', 0, '/', $filename )) {
+				throw new moodle_exception('file not found');
 			}
 
-			$pathnamehash = $fs->get_pathname_hash ( $context->id, 'user', 'private', 0, '/', $filename );
-			$temp_task = new moodle_url ( $CFG->wwwroot . '/blocks/exacomp/example_upload.php', array (
-					"action" => "serve",
-					"c" => $context->id,
-					"i" => $pathnamehash,
-					"courseid" => 1
-			) );
-			$example_task = $temp_task->out ( false );
+			$fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_task', $example->id);
+			$fs->create_file_from_storedfile(array(
+				'contextid' => context_system::instance()->id,
+				'component' => 'block_exacomp',
+				'filearea' => 'example_task',
+				'itemid' => $example->id,
+			), $file);
+
+			$file->delete();
+		}
+
+		// hack: delete old pluginfile.php and example_upload urls, don't needed anymore, because file is in filestorage
+		if (preg_match('!pluginfile|example_upload)!', $example->externaltask)) {
+			$example->externaltask = '';
+		}
+		if (preg_match('!pluginfile|example_upload)!', $example->task)) {
+			$example->task = '';
 		}
 
 		$example = $DB->get_record (\block_exacomp\DB_EXAMPLES, array (
@@ -1722,8 +1727,6 @@ class block_exacomp_external extends external_api {
 		$example->title = $name;
 		$example->description = $description;
 		$example->task = $task;
-		if($type == 'file')
-			$example->externaltask = $example_task;
 
 		$DB->update_record (\block_exacomp\DB_EXAMPLES, $example );
 
