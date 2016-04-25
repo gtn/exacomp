@@ -126,10 +126,6 @@ return  [
 		'de' => 'Beispiele und Aufgaben',
 		'en' => 'Examples and tasks',
 	],
-	'tab_learning_agenda' => [
-		'de' => 'Wochenplan',
-		'en' => 'Learning agenda',
-	],
 	'tab_badges' => [
 		'de' => 'Meine Auszeichnungen',
 		'en' => 'My badges',
@@ -149,10 +145,6 @@ return  [
 	'tab_help' => [
 		'de' => 'Hilfe',
 		'en' => 'Help',
-	],
-	'tab_teacher_demo_settings' => [
-		'de' => 'Mit Demo-Daten arbeiten',
-		'en' => 'work with demo data',
 	],
 	'tab_profoundness' => [
 		'de' => 'Grund/Erweiterungskompetenzen',
@@ -654,14 +646,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'de' => 'Beispiele aus allen Kursen anzeigen',
 		'en' => 'Show examples from all courses',
 	],
-	'expandcomps' => [
-		'de' => 'Alle &ouml;ffnen',
-		'en' => 'expand all',
-	],
-	'contactcomps' => [
-		'de' => 'Alle schlie&szlig;en',
-		'en' => 'contract all',
-	],
 	'name_example' => [
 		'de' => 'Name',
 		'en' => 'Name',
@@ -684,14 +668,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	'task_example' => [
 		'de' => 'Aufgabenstellung',
 		'en' => 'Tasks',
-	],
-	'solution_example' => [
-		'de' => 'L&ouml;sung',
-		'en' => 'Solution',
-	],
-	'attachement_example' => [
-		'de' => 'Anhang',
-		'en' => 'Attachement',
 	],
 	'extern_task' => [
 		'de' => 'Externe Aufgabenstellung',
@@ -716,10 +692,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'de' => 'Kompetenzen',
 		'en' => 'Competencies',
 	],
-	'descriptors_help' => [
-		'de' => 'Es k&ouml;nnen mehrere Kompetenzen ausgew&auml;hlt werden.',
-		'en' => 'You can select multible outcomes/standards',
-	],
 	'filerequired' => [
 		'de' => 'Es muss eine Datei ausgew&auml;hlt sein.',
 		'en' => 'A file must be selected.',
@@ -727,10 +699,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	'titlenotemtpy' => [
 		'de' => 'Es muss ein Name eingegeben werden.',
 		'en' => 'A name is required.',
-	],
-	'lisfilename' => [
-		'de' => 'Dateiname nach LS Vorgabe generieren',
-		'en' => 'Use LIS filename template',
 	],
 	'solution' => [
 		'de' => 'Musterlösung',
@@ -990,13 +958,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'de' => 'selbst',
 		'en' => 'by myself',
 	],
-	'assignlearningpartner' => [
-		'de' => 'LernpartnerIn',
-		'en' => 'peer-to-peer',
-	],
-	'assignlearningrgoup' => [
-		'de' => 'Lerngruppe',
-	],
 	'assignteacher' => [
 		'de' => 'TrainerIn',
 		'en' => 'trainer',
@@ -1008,10 +969,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	'assignuntil' => [
 		'de' => 'bis',
 		'en' => 'until',
-	],
-	'assignlearninggroup' => [
-		'de' => 'Lerngruppe',
-		'en' => 'peer group',
 	],
 
 
@@ -1307,14 +1264,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'de' => 'Dezember',
 		'en' => 'December',
 	],
-	'teacher_eval' => [
-		'de' => 'Lehrerbewertung',
-		'en' => 'teacher evaluation',
-	],
-	'student_eval' => [
-		'de' => 'Schülerselbsteinschätzung',
-		'en' => 'student evaluation',
-	],
 	'oB' => [
 		'de' => 'ohne Bewertung',
 		'en' => 'without evaluation',
@@ -1345,10 +1294,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	'profile_settings_useexastud' => [
 		'de' => 'Ich möchte Beurteilungen aus Exabis Student Review in meinem Profil sehen.',
 		'en' => 'I want to see evaluations from Exabis Student Review.',
-	],
-	'profile_settings_choose_periods' => [
-		'de' => 'Exabis Student Review speichert Beurteilungen in verschiedenen Kategorien über mehrere Perioden hinweg. Es kann ausgew&auml;hlt werden, welche Perioden das Kompetenzprofil beinhalten soll.',
-		'en' => 'Exabis Student Review stores reviews in various categories over several periods. You can select which periods to include in the competence profile.',
 	],
 	'profile_settings_no_item' => [
 		'de' => 'Kein Exabis ePortfolio Artefakt vorhanden, somit kann nichts dargestellt werden.',
@@ -1428,10 +1373,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'de' => 'Externe TrainerIn zuordnen',
 		'en' => 'Assign external trainers',
 	],
-	'block_exacomp_external_trainer_assign_new' => [
-		'de' => 'Neue Zuordnung: ',
-		'en' => 'New assign: ',
-	],
 	'block_exacomp_external_trainer' => [
 		'de' => 'AusbilderIn: ',
 		'en' => 'Trainer',
@@ -1458,10 +1399,6 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	'add_drafts_to_course' => [
 		'de' => 'Ausgewählte Vorlagen im Kurs verwenden',
 		'en' => 'Add drafts to course',
-	],
-	'choosecrosssubject' => [
-		'de' => 'Thema auswählen',
-		'en' => 'Choose Cross-Subject',
 	],
 	'crosssubject' => [
 		'de' => 'Thema',

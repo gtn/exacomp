@@ -31,31 +31,22 @@ function get_plugin_name() {
 	return $pluginName;
 }
 
-function getTranslations($language='en') {
-	$string = array();
-	$stringNotUsed = array();
-
-	if (file_exists($language.'/'.get_plugin_name().'.php')) {
-		require ($language.'/'.get_plugin_name().'.php');
-	} else {
-		require ($language.'/'.get_plugin_name().'.orig.php');
-	}
-
-	return $string + $stringNotUsed;
-}
-
-$searchPath = __DIR__.'/../';
+$searchPath = dirname(__DIR__);
 $Directory = new RecursiveDirectoryIterator($searchPath);
 $Iterator = new RecursiveIteratorIterator($Directory);
 // $Regex = new RegexIterator($Iterator, '/^.+\.php$/i', RecursiveRegexIterator::GET_MATCH);
 
-$translations = getTranslations('en');
-foreach ($translations as $key=>$string) {
-	$translations[$key] = (object)[
-		'key' => $key,
-		'string' => $string,
-		'is_used' => false,
-	];
+$translations = require __DIR__.'/total.php';
+foreach ($translations as $key => $strings) {
+	if (!$strings) {
+		unset($translations[$key]);
+	} else {
+		$translations[$key] = (object)[
+			'key' => $key,
+			'strings' => $strings,
+			'is_used' => false,
+		];
+	}
 }
 
 // $files = iterator_to_array($Iterator);
@@ -63,12 +54,44 @@ $all_matches_trans = [];
 $all_matches_get_string = [];
 
 foreach ($Iterator as $file) {
-	$file = $file->getPathname();
-	if (!preg_match('/^.+\.php$/i', $file) || strpos($file, 'tests')) continue;
+	$file = str_replace('\\', '/', $file->getPathname());
+	if (!preg_match('/^.+\.php$/i', $file) || strpos($file, '/tests/') || strpos($file, '/lang/')) continue;
 
 	$file_id = basename(realpath($searchPath)).'/'.str_replace('\\', '/', substr($file, strlen($searchPath)));
 
-	$lines = explode("\n", file_get_contents($file));
+	$content = file_get_contents($file);
+	// echo $file.'<br />';
+	$tokens = token_get_all($content);
+
+	foreach ($tokens as $token) {
+		if (is_array($token)) {
+			$token = (object)[
+				'type' => $token[0],
+				'content' => $token[1],
+				'line' => $token[2],
+			];
+			if ($token->type == T_CONSTANT_ENCAPSED_STRING) {
+				$token->string = substr($token->content, 1, -1);
+
+				if (isset($translations[$token->string])) {
+					$translations[$token->string]->token_found = true;
+				}
+				// var_dump($token);
+			}
+			// var_dump($token); exit;
+			// echo token_name($token[0]) , PHP_EOL;
+		} else {
+			// var_dump($token);
+		}
+	}
+
+	continue;
+	preg_match_all('"[^"]+"|\'[^\']+\'', $content, $matches);
+	var_dump($matches);
+	exit;
+
+	$lines = explode("\n", $content);
+	/*
 	foreach ($lines as $i=>$line) {
 		if (preg_match('!\\\\trans\s*\(\s*(?<params>["\'].*["\'\]])\s*\)!U', $line, $matches)) {
 			$matches = (object)$matches;
@@ -97,7 +120,26 @@ foreach ($Iterator as $file) {
 			}
 		}
 	}
+	*/
 }
+
+echo 'result:';
+echo '<table>';
+foreach ($translations as $trans) {
+	if (@$trans->token_found) {
+		echo "<tr><td>{$trans->key}</td><td>";
+		continue;
+	}
+	echo "<tr><td style='color: red;'>{$trans->key}</td><td>";
+	echo join('<br />', $trans->strings);
+	// echo @$trans->token_found ? 'used' : 'not used';
+	// echo "</td><td>";
+	// echo $match->matches->all;// join('</td><td>', [])."</td>";
+
+}
+echo '</table>';
+
+exit;
 
 
 echo '<table>';
