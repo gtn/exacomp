@@ -41,7 +41,7 @@ $context = context_course::instance($courseid);
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/competence_associations.php', array('courseid' => $courseid));
-$PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
+$PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
 $PAGE->set_pagelayout('embedded');
 
 // build breadcrumbs navigation

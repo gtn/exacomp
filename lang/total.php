@@ -17,10 +17,16 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-return  [
+return [
+	// shown in admin plugin list
 	'pluginname' => [
 		'de' => 'Exabis Kompetenzraster',
-		'en' => 'Exabis Competencies',
+		'en' => 'Exabis Competence grid',
+	],
+	// shown in block title and all headers
+	'blocktitle' => [
+		'de' => 'Kompetenzraster',
+		'en' => 'Competence grid',
 	],
 	'exacomp:addinstance' => [
 		'de' => 'Exabis Competencies auf Kursseite anlegen',
@@ -56,7 +62,7 @@ return  [
 	],
 
 
-	'=== Admin Tabs ===' => NULL,
+	'=== Admin Tabs ===' => null,
 	'tab_admin_import' => [
 		'de' => 'Import/Export',
 		'en' => 'Import/Export',
@@ -75,7 +81,7 @@ return  [
 	],
 
 
-	'=== Teacher Tabs ===' => NULL,
+	'=== Teacher Tabs ===' => null,
 	'tab_teacher_settings' => [
 		'de' => 'Kurs-Einstellungen',
 		'en' => 'Settings',
@@ -102,14 +108,14 @@ return  [
 	],
 
 
-	'=== Student Tabs ===' => NULL,
+	'=== Student Tabs ===' => null,
 	'tab_student_all' => [
 		'de' => 'Alle erworbenen Kompetenzen',
 		'en' => 'All gained competencies',
 	],
 
 
-	'=== Generic Tabs (used by Teacher and Students) ===' => NULL,
+	'=== Generic Tabs (used by Teacher and Students) ===' => null,
 	'tab_competence_grid' => [
 		'de' => 'Berichte',
 		'en' => 'Reports',
@@ -228,7 +234,7 @@ return  [
 	],
 
 
-	'=== Block Settings ===' => NULL,
+	'=== Block Settings ===' => null,
 	'settings_xmlserverurl' => [
 		'de' => 'Server-URL',
 		'en' => 'Server-URL',
@@ -323,7 +329,7 @@ return  [
 	],
 
 
-	'=== Learning agenda ===' => NULL,
+	'=== Learning agenda ===' => null,
 	'LA_MON' => [
 		'de' => 'Mo',
 		'en' => 'MON',
@@ -410,7 +416,7 @@ return  [
 	],
 
 
-	'=== Help ===' => NULL,
+	'=== Help ===' => null,
 	'help_content' => [
 		'de' => '<h1>Video zur Einf&uuml;hrung</h1>
 Kompetenzorientierter Unterricht ist in aller Munde - und Moodle kann dabei mit Hilfe des Blockes exabis Competencies wertvolle Unterst&uuml;tzung leisten.
@@ -445,7 +451,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Import ===' => NULL,
+	'=== Import ===' => null,
 	'importinfo' => [
 		'de' => 'Erstellen Sie Ihre eigenen Kompetenzen/Standards auf <a target="_blank" href="http://www.edustandards.org">www.edustandards.org</a> oder laden Sie ein bestehendes XML von <a target="_blank" href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch. Für österreichische Standards besuchen Sie bitte <a target="_blank" href="http://bist.edugroup.at">http://bist.edugroup.at</a>',
 		'en' => 'Please create your outcomes/standards at <a href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file.',
@@ -512,7 +518,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Configuration ===' => NULL,
+	'=== Configuration ===' => null,
 	'explainconfig' => [
 		'de' => '',
 		'en' => 'Your outcomes have already been imported. In this configuration you have to make the selection of the main standards you would like to use in this Moodle installation.',
@@ -527,7 +533,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Course-Configuration ===' => NULL,
+	'=== Course-Configuration ===' => null,
 	'grading_scheme' => [
 		'de' => 'Bewertungsschema',
 		'en' => 'grading scheme',
@@ -549,24 +555,24 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'en' => 'Use detailed overview of competencies',
 	],
 	'useprofoundness' => [
-		'de' => 'Erweiterungs- und Grundkompetenzen verwenden',
+		'de' => 'Grund- und Erweiterungskompetenzen verwenden',
 		'en' => 'Use basic and extended competencies',
 	],
 	'usetopicgrading' => [
 		'de' => 'Beurteilung von Teilbereichen ermöglichen',
-		'en' => 'Enable topic gradings',
+		'en' => 'Allow to grade topics',
 	],
 	'usenumbering' => [
-		'de' => 'Nummerierung bei Kompetenzen und Teilbereichen verwenden',
-		'en' => 'Enable numbering for topics and competencies',
+		'de' => 'Automatische Nummerierung im Kompetenzraster verwenden',
+		'en' => 'Enable automatic numbering in the competence grid',
 	],
 	'useniveautitleinprofile' => [
-		'de' => 'Im Kompetenzprofil Lernfortschritt als Titel verwenden',
+		'de' => 'Im Kompetenzprofil den Lernfortschritt als Titel verwenden',
 		'en' => 'Use niveau title in competence profile',
 	],
 	'usenostudents' => [
 		'de' => 'Ohne Kursteilnehmer/innen arbeiten',
-		'en' => 'use without students',
+		'en' => 'Use without students',
 	],
 	'profoundness_0' => [
 		'de' => 'Nicht erreicht',
@@ -574,11 +580,11 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 	'profoundness_1' => [
 		'de' => 'Zum Teil erreicht',
-		'en' => 'partially gained',
+		'en' => 'Partially gained',
 	],
 	'profoundness_2' => [
 		'de' => 'Erreicht',
-		'en' => 'fully gained',
+		'en' => 'Fully gained',
 	],
 	'filteredtaxonomies' => [
 		'de' => 'Beispiele werden anhand der ausgewählten Taxonomien verwendet:',
@@ -598,7 +604,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Badges ===' => NULL,
+	'=== Badges ===' => null,
 	'mybadges' => [
 		'de' => 'Meine Auszeichnungen',
 		'en' => 'My badges',
@@ -637,7 +643,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Examples ===' => NULL,
+	'=== Examples ===' => null,
 	'sorting' => [
 		'de' => 'Sortierung w&auml;hlen: ',
 		'en' => 'select sorting: ',
@@ -676,7 +682,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Icons ===' => NULL,
+	'=== Icons ===' => null,
 	'assigned_example' => [
 		'de' => 'Zugeteiltes Beispiel',
 		'en' => 'Assigned Example',
@@ -703,7 +709,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Example Upload ===' => NULL,
+	'=== Example Upload ===' => null,
 	'example_upload_header' => [
 		'de' => 'Eigenes Lernmaterial hochladen',
 		'en' => 'Upload my own task/example',
@@ -774,7 +780,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Assign competencies ===' => NULL,
+	'=== Assign competencies ===' => null,
 	'delete_confirmation' => [
 		'de' => 'Soll "{$a}" wirklich gelöscht werden?',
 		'en' => 'Do you really want to delete "{$a}"?',
@@ -849,7 +855,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Example Submission ===' => NULL,
+	'=== Example Submission ===' => null,
 	'example_submission_header' => [
 		'de' => 'Aufgabe {$a} bearbeiten',
 		'en' => 'Edit example {$a}',
@@ -911,7 +917,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'en' => 'Print',
 	],
 	'eportitems' => [
-		'de' => 'Diese/r Kursteilnehmer/in hat folgende E-Portfolio-Artefakte zu diesem Deskriptor eingereicht: ',
+		'de' => 'Diese/r Kursteilnehmer/in hat folgende ePortfolio-Artefakte zu diesem Deskriptor eingereicht: ',
 		'en' => 'This participant has submitted the following ePortfolio artifacts: ',
 	],
 	'eportitem_shared' => [
@@ -1015,7 +1021,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== metadata ===' => NULL,
+	'=== metadata ===' => null,
 	'subject_singular' => [
 		'de' => 'Schultyp',
 		'en' => 'Field of competence',
@@ -1053,7 +1059,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Activities ===' => NULL,
+	'=== Activities ===' => null,
 	'explaineditactivities_subjects' => [
 		'de' => '',
 		'en' => '',
@@ -1104,7 +1110,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Competence Grid ===' => NULL,
+	'=== Competence Grid ===' => null,
 	'infolink' => [
 		'de' => 'Weiter Informationen: ',
 		'en' => 'Additional information: ',
@@ -1151,14 +1157,14 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Detail view ===' => NULL,
+	'=== Detail view ===' => null,
 	'detail_description' => [
 		'de' => 'Hier kann mit Hilfe von Aktivitäten eine Kompetenz beurteilt werden.',
 		'en' => 'Use Moodle activities to evaluate competencies.',
 	],
 
 
-	'=== Competence Profile ===' => NULL,
+	'=== Competence Profile ===' => null,
 	'name' => [
 		'de' => 'Name',
 		'en' => 'Name',
@@ -1325,7 +1331,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Competence Profile Settings ===' => NULL,
+	'=== Competence Profile Settings ===' => null,
 	'profile_settings_showonlyreached' => [
 		'de' => 'Ich möchte in meinem Kompetenzprofil nur bereits erreichte Kompetenzen sehen.',
 		'en' => 'I only want to see already gained outcomes in my competence profile',
@@ -1335,7 +1341,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'en' => 'Using Exabis Competencies trainers assess your competencies in various subjects. You can select which course to include in the competence profile.',
 	],
 	'profile_settings_useexaport' => [
-		'de' => 'Ich möchte Kompetenzen, die in Exabis E-Portfolio verwendet werden in meinem Profil sehen.',
+		'de' => 'Ich möchte Kompetenzen, die in Exabis ePortfolio verwendet werden in meinem Profil sehen.',
 		'en' => 'I want to see competencies used in Exabis ePortfolio within my profile.',
 	],
 	'profile_settings_choose_items' => [
@@ -1384,7 +1390,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Profoundness ===' => NULL,
+	'=== Profoundness ===' => null,
 	'profoundness_description' => [
 		'de' => 'Kompetenzbeschreibung',
 		'en' => 'Description',
@@ -1407,14 +1413,14 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== External trainer & eLove ===' => NULL,
+	'=== External trainer & eLove ===' => null,
 	'block_exacomp_external_trainer_assign_head' => [
-		'de' => 'Zuteilung von externen TrainerInnen für Kursteilnehmer/innen erlauben. Erforderlich für die Benutzung der elove App.',
-		'en' => 'Allow assigning external trainers for students. This is required for using the elove app',
+		'de' => 'Zuteilung von externen Trainer/innen für Kursteilnehmer/innen erlauben.',
+		'en' => 'Allow assigning external trainers for students.',
 	],
 	'block_exacomp_external_trainer_assign_body' => [
-		'de' => '',
-		'en' => '',
+		'de' => 'Erforderlich für die Benutzung der elove App.',
+		'en' => 'This is required for using the elove app.',
 	],
 	'block_exacomp_elove_student_self_assessment_head' => [
 		'de' => 'Selbsteinschätzung für Kursteilnehmer/innen in der elove App erlauben.',
@@ -1446,7 +1452,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Crosssubjects ===' => NULL,
+	'=== Crosssubjects ===' => null,
 	'empty_draft' => [
 		'de' => 'Neues Thema',
 		'en' => 'New Cross-Subject',
@@ -1606,7 +1612,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Associations ===' => NULL,
+	'=== Associations ===' => null,
 	'competence_associations' => [
 		'de' => 'Verknüpfungen',
 		'en' => 'Associations',
@@ -1617,7 +1623,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Weeky schedule ===' => NULL,
+	'=== Weeky schedule ===' => null,
 	'weekly_schedule' => [
 		'de' => 'Wochenplan',
 		'en' => 'Weekly schedule',
@@ -1704,7 +1710,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Notifications ===' => NULL,
+	'=== Notifications ===' => null,
 	'notification_submission_subject' => [
 		'de' => '{$a->student} hat eine Lösung zum Beispiel {$a->example} eingereicht.',
 		'en' => '{$a->student} submitted a solution for {$a->example}.',
@@ -1779,7 +1785,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Logging ===' => NULL,
+	'=== Logging ===' => null,
 	'block_exacomp_logging_head' => [
 		'de' => 'Logging',
 		'en' => 'Logging',
@@ -1818,7 +1824,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Statistics ===' => NULL,
+	'=== Statistics ===' => null,
 	'process' => [
 		'de' => 'Bearbeitungsstand',
 		'en' => 'State of process',
@@ -1829,7 +1835,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Message ===' => NULL,
+	'=== Message ===' => null,
 	'messagetocourse' => [
 		'de' => 'Nachricht an alle Kursteilnehmer/innen senden',
 		'en' => 'Nachricht an alle Kursteilnehmer/innen senden',

@@ -40,7 +40,7 @@ $page_identifier = 'tab_competence_profile_profile';
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/competence_profile.php', array('courseid' => $courseid));
-$PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
+$PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
 $PAGE->requires->js('/blocks/exacomp/javascript/Chart.js', true);

@@ -25,8 +25,8 @@ require_login($courseid);
 block_exacomp_require_admin();
 
 $PAGE->set_context(context_system::instance());
-$PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
-$PAGE->set_title(get_string('pluginname', 'block_exacomp'));
+$PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
+$PAGE->set_title(get_string('blocktitle', 'block_exacomp'));
 
 $PAGE->set_url('/blocks/exacomp/webservice_status.php');
 

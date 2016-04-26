@@ -49,7 +49,7 @@ $PAGE->set_url('/blocks/exacomp/competence_grid.php', [
 	'studentid' => $studentid,
 	'report' => $report
 ]);
-$PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
+$PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier,'block_exacomp'));
 
 // build breadcrumbs navigation

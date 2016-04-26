@@ -1753,7 +1753,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 function block_exacomp_build_breadcrum_navigation($courseid) {
 	global $PAGE;
 	$coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
-	$blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
+	$blocknode = $coursenode->add(get_string('blocktitle','block_exacomp'));
 	$blocknode->make_active();
 }
 

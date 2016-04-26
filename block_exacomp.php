@@ -25,7 +25,7 @@ require_once __DIR__.'/lib.php';
 
 class block_exacomp extends block_list {
 	function init() {
-		$this->title = \block_exacomp\get_string('pluginname');
+		$this->title = \block_exacomp\get_string('blocktitle');
 	}
 
 	function applicable_formats() {

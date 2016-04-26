@@ -18,6 +18,7 @@
 // This copyright notice MUST APPEAR in all copies of the script!
 
 $string['pluginname'] = 'Exabis Kompetenzraster';
+$string['blocktitle'] = 'Kompetenzraster';
 $string['exacomp:addinstance'] = 'Exabis Competencies auf Kursseite anlegen';
 $string['exacomp:myaddinstance'] = 'Exabis Competencies auf Startseite anlegen';
 $string['exacomp:teacher'] = 'Übersicht der Lehrerfunktionen in einem Kurs';
@@ -191,10 +192,10 @@ $string['uses_activities'] = 'Ich verwende Moodle Aktivit&auml;ten zur Beurteilu
 $string['show_all_descriptors'] = 'Alle Deskriptoren im &Uuml;berblick anzeigen';
 $string['show_all_examples'] = 'Externe Beispiele für Kursteilnehmer/innen anzeigen';
 $string['usedetailpage'] = 'Detaillierte Kompetenzansicht verwenden';
-$string['useprofoundness'] = 'Erweiterungs- und Grundkompetenzen verwenden';
+$string['useprofoundness'] = 'Grund- und Erweiterungskompetenzen verwenden';
 $string['usetopicgrading'] = 'Beurteilung von Teilbereichen ermöglichen';
-$string['usenumbering'] = 'Nummerierung bei Kompetenzen und Teilbereichen verwenden';
-$string['useniveautitleinprofile'] = 'Im Kompetenzprofil Lernfortschritt als Titel verwenden';
+$string['usenumbering'] = 'Automatische Nummerierung im Kompetenzraster verwenden';
+$string['useniveautitleinprofile'] = 'Im Kompetenzprofil den Lernfortschritt als Titel verwenden';
 $string['usenostudents'] = 'Ohne Kursteilnehmer/innen arbeiten';
 $string['profoundness_0'] = 'Nicht erreicht';
 $string['profoundness_1'] = 'Zum Teil erreicht';
@@ -295,7 +296,7 @@ $string['teacher_tipp_1'] = 'Diese Kompetenz wurde bei ';
 $string['teacher_tipp_2'] = ' Moodle-Aktivit&auml;t(en) zugeordnet und bereits bei ';
 $string['teacher_tipp_3'] = ' Moodle-Aktivit&auml;t(en) in der Kompetenz-Detailansicht erf&uuml;llt.';
 $string['print'] = 'Drucken';
-$string['eportitems'] = 'Diese/r Kursteilnehmer/in hat folgende E-Portfolio-Artefakte zu diesem Deskriptor eingereicht: ';
+$string['eportitems'] = 'Diese/r Kursteilnehmer/in hat folgende ePortfolio-Artefakte zu diesem Deskriptor eingereicht: ';
 $string['eportitem_shared'] = ' (geteilt)';
 $string['eportitem_notshared'] = ' (nicht geteilt)';
 $string['teachershortcut'] = 'L';
@@ -419,7 +420,7 @@ $string['nE'] = 'nicht erreicht';
 // Competence Profile Settings
 $string['profile_settings_showonlyreached'] = 'Ich möchte in meinem Kompetenzprofil nur bereits erreichte Kompetenzen sehen.';
 $string['profile_settings_choose_courses'] = 'In Exabis Competencies beurteilen TrainerInnen den Kompetenzerwerb in unterschiedlichen Fachgebieten. Hier kann ausgew&auml;hlt werden, welche Kurse im Kompetenzprofil aufscheinen sollen.';
-$string['profile_settings_useexaport'] = 'Ich möchte Kompetenzen, die in Exabis E-Portfolio verwendet werden in meinem Profil sehen.';
+$string['profile_settings_useexaport'] = 'Ich möchte Kompetenzen, die in Exabis ePortfolio verwendet werden in meinem Profil sehen.';
 $string['profile_settings_choose_items'] = 'Exabis ePortfolio dokumentiert deinen Kompetenzerwerb außerhalb von LehrerInnen vorgegebenen Grenzen. Du kannst ausw&auml;hlen, welche Einträge im Kompetenzprofil aufscheinen sollen.';
 $string['profile_settings_useexastud'] = 'Ich möchte Beurteilungen aus Exabis Student Review in meinem Profil sehen.';
 $string['profile_settings_choose_periods'] = 'Exabis Student Review speichert Beurteilungen in verschiedenen Kategorien über mehrere Perioden hinweg. Es kann ausgew&auml;hlt werden, welche Perioden das Kompetenzprofil beinhalten soll.';
@@ -442,8 +443,8 @@ $string['profoundness_entirely'] = 'Zur Gänze erfüllt';
 
 
 // External trainer & eLove
-$string['block_exacomp_external_trainer_assign_head'] = 'Zuteilung von externen TrainerInnen für Kursteilnehmer/innen erlauben. Erforderlich für die Benutzung der elove App.';
-$string['block_exacomp_external_trainer_assign_body'] = '';
+$string['block_exacomp_external_trainer_assign_head'] = 'Zuteilung von externen Trainer/innen für Kursteilnehmer/innen erlauben.';
+$string['block_exacomp_external_trainer_assign_body'] = 'Erforderlich für die Benutzung der elove App.';
 $string['block_exacomp_elove_student_self_assessment_head'] = 'Selbsteinschätzung für Kursteilnehmer/innen in der elove App erlauben.';
 $string['block_exacomp_elove_student_self_assessment_body'] = '';
 $string['block_exacomp_external_trainer_assign'] = 'Externe TrainerIn zuordnen';

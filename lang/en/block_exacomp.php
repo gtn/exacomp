@@ -17,7 +17,8 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-$string['pluginname'] = 'Exabis Competencies';
+$string['pluginname'] = 'Exabis Competence grid';
+$string['blocktitle'] = 'Competence grid';
 $string['exacomp:addinstance'] = 'Add a exabis competencies block';
 $string['exacomp:myaddinstance'] = 'Add a exabis competencies block to my moodle';
 $string['exacomp:teacher'] = 'overview of trainer actions in a course';
@@ -168,13 +169,13 @@ $string['show_all_descriptors'] = 'Show all outcomes in overview';
 $string['show_all_examples'] = 'Show external examples for students';
 $string['usedetailpage'] = 'Use detailed overview of competencies';
 $string['useprofoundness'] = 'Use basic and extended competencies';
-$string['usetopicgrading'] = 'Enable topic gradings';
-$string['usenumbering'] = 'Enable numbering for topics and competencies';
+$string['usetopicgrading'] = 'Allow to grade topics';
+$string['usenumbering'] = 'Enable automatic numbering in the competence grid';
 $string['useniveautitleinprofile'] = 'Use niveau title in competence profile';
-$string['usenostudents'] = 'use without students';
+$string['usenostudents'] = 'Use without students';
 $string['profoundness_0'] = 'not reached';
-$string['profoundness_1'] = 'partially gained';
-$string['profoundness_2'] = 'fully gained';
+$string['profoundness_1'] = 'Partially gained';
+$string['profoundness_2'] = 'Fully gained';
 $string['filteredtaxonomies'] = 'Examples are filtered accordingly to the following taxonomies:';
 $string['show_all_taxonomies'] = 'All taxonomies';
 $string['warning_use_activities'] = 'Warning: you are now working with Moodle-activites that are associated with competences. Please verify that the same outcomes are used as before.';
@@ -292,6 +293,7 @@ $string['groupsize'] = 'Size of group: ';
 $string['assigndone'] = 'task done: ';
 $string['assignmyself'] = 'by myself';
 $string['assignlearningpartner'] = 'peer-to-peer';
+$string['assignlearningrgoup'] = NULL;
 $string['assignteacher'] = 'trainer';
 $string['assignfrom'] = 'from';
 $string['assignuntil'] = 'until';
@@ -414,8 +416,8 @@ $string['profoundness_entirely'] = 'Entirely achieved';
 
 
 // External trainer & eLove
-$string['block_exacomp_external_trainer_assign_head'] = 'Allow assigning external trainers for students. This is required for using the elove app';
-$string['block_exacomp_external_trainer_assign_body'] = '';
+$string['block_exacomp_external_trainer_assign_head'] = 'Allow assigning external trainers for students.';
+$string['block_exacomp_external_trainer_assign_body'] = 'This is required for using the elove app.';
 $string['block_exacomp_elove_student_self_assessment_head'] = 'Allow self-assessment for students in the elove app';
 $string['block_exacomp_elove_student_self_assessment_body'] = '';
 $string['block_exacomp_external_trainer_assign'] = 'Assign external trainers';

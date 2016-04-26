@@ -36,7 +36,7 @@ $page_identifier = 'tab_badges';
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/my_badges.php', array('courseid' => $courseid));
-$PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
+$PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
 // build breadcrumbs navigation
