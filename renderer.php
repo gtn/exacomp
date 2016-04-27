@@ -1702,7 +1702,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 									'value'=>(isset($student->competencies->teacher_additional_grading[$descriptor->id]) &&
 											$student->competencies->teacher_additional_grading[$descriptor->id] != null)?
 									$student->competencies->teacher_additional_grading[$descriptor->id]:"",
-									'descrid'=>$descriptor->id, 'studentid'=>$student->id);
+									'exa-compid'=>$descriptor->id, 'exa-userid'=>$student->id);
 							
 							if(!$visible_student || $data->role == \block_exacomp\ROLE_STUDENT)
 								$params['disabled'] = 'disabled';
@@ -1936,89 +1936,58 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$exampleRow->cells[] = $nivCell;
 
 					$visible_student_example = $visible_example;
+					
 					if(!$statistic){
 						foreach($students as $student) {
-
+							$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
+							
 							if(!$one_student && !$editmode)
 								$visible_student_example = block_exacomp_is_example_visible($data->courseid, $example, $student->id);
-
-							$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
-							$studentCell = new html_table_cell();
-							$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-
-							// SHOW EVALUATION
-							if($data->showevaluation) {
-								$studentCellEvaluation = new html_table_cell();
-								$studentCellEvaluation->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+							
+							//TODO
+							$self_evaluation_cell = new html_table_cell();
+							$self_evaluation_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+								
+							$evaluation_cell = new html_table_cell();
+							$evaluation_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+								
+							$niveau_cell = new html_table_cell();
+							$niveau_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+							$niveau_cell->text = ($use_eval_niveau)?$this->generate_niveau_select('niveau_descriptor', $example->id, 'examples', $student, ($data->role == \block_exacomp\ROLE_STUDENT)?true:false, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
+							
+								
+							if(!$visible_student_example || $data->role == \block_exacomp\ROLE_STUDENT)
+								$params['disabled'] = 'disabled';
+								
+							//student & niveau & showevaluation
+							if($use_eval_niveau && $data->role == \block_exacomp\ROLE_STUDENT && $data->showevaluation){
+								$exampleRow->cells[] = $niveau_cell;
 							}
-
-							$studentCell->text = html_writer::empty_tag("input",array("type" => "hidden", "value" => 0, "name" => $checkboxname . "-" . $example->id . "-" . $student->id . "-" . (($evaluation == "teacher") ? "teacher" : "student")));
-							/*
-							 * if scheme == 1: print checkbox
-							* if scheme != 1, role = student, version = LIS
-							*/
+								
+							//student show evaluation
+							
+							if($data->scheme == 1)
+								$evaluation_cell->text = $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
+							else
+								$evaluation_cell->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
+							
+								
+							if($data->showevaluation)
+								$exampleRow->cells[] = $evaluation_cell;
+								
+							if($use_eval_niveau && $data->role == \block_exacomp\ROLE_TEACHER){
+								$exampleRow->cells[] = $niveau_cell;
+							}
+								
 							if($data->scheme == 1) {
-								if($data->showevaluation)
-									$studentCellEvaluation->text = $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
-
-								if($data->role == \block_exacomp\ROLE_STUDENT) {
-									$studentCell->text .= get_string('assigndone','block_exacomp');
-									$studentCell->text .= $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, !$visible_student_example);
-
-									//$studentCell->text .= $this->student_example_evaluation_form($example->id, $student->id, $data->courseid);
-								}
-								else {
-									$studentCell->text .= $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, !$visible_student_example);
-								}
+								//TODO evt. noch benötigt?
+								//$studentCell->text .= get_string('assigndone','block_exacomp');
+								$self_evaluation_cell->text = $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, ($visible_student)?false:true, null, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
+							}else {
+								$self_evaluation_cell->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, !$visible_student, $data->profoundness, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
 							}
-							/*
-							 * if scheme != 1, !version: print select
-							* if scheme != 1, version = LIS, role = teacher
-							*/
-							else {
-								if($data->showevaluation)
-									$studentCellEvaluation->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
-
-								$studentCell->text .= $this->generate_select($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, !$visible_student_example, $data->profoundness);
-
-								//if($data->role == \block_exacomp\ROLE_STUDENT)
-									//$studentCell->text .= $this->student_example_evaluation_form($example->id, $student->id, $data->courseid);
-							}
-
-							if($data->showevaluation) {
-								if ($data->role == \block_exacomp\ROLE_TEACHER) {
-									$studentCellEvaluation->text .= $this->submission_icon($data->courseid, $example->id, $student->id);
-									$studentCellEvaluation->text .= $this->resubmission_icon($example->id, $student->id, $data->courseid);
-								}
-
-								$exampleRow->cells[] = $studentCellEvaluation;
-							}
-
-							$additional_grading_cell = new html_table_cell();
-							$additional_grading_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-							//TODO: optimize get_field query for each student for each example
-							$student_additional_grading = $DB->get_field(\block_exacomp\DB_EXAMPLEEVAL, 'additionalinfo', array('studentid'=>$student->id,'exampleid'=>$example->id,'courseid'=>$data->courseid));
-							// hide percent sign when text is empty
-							// $student_additional_grading can also be a zero!
-							if ($student_additional_grading !== false /* row not found */ && $student_additional_grading !== null /* not set */) {
-								$student_additional_grading .= ' %';
-							}
-							if ($this->is_print_mode()) {
-								$additional_grading_cell->text = $student_additional_grading;
-							} else {
-								$additional_grading_cell->text = html_writer::empty_tag('input', array(
-									'class'=>'percent-rating', 'type'=>'text', 'value'=>($student_additional_grading !== false) ? $student_additional_grading : null,
-									'id'=>'additionalinfo-'.$student->id.'-'.$example->id.'-'.$descriptor->id,'exampleid'=>$example->id,'studentid'=>$student->id)
-									+ (($visible_student_example && $data->role == \block_exacomp\ROLE_TEACHER) ? [] : ['disabled'=>'disabled']));
-							}
-
-							if($additional_grading && $data->showevaluation && $data->role == \block_exacomp\ROLE_STUDENT)
-								$exampleRow->cells[] = $additional_grading_cell;
-
-							 $exampleRow->cells[] = $studentCell;
-
-							if($additional_grading && $data->role == \block_exacomp\ROLE_TEACHER)
-								$exampleRow->cells[] = $additional_grading_cell;
+							
+							$exampleRow->cells[] = $self_evaluation_cell;
 						}
 						if ($profoundness) {
 							$emptyCell = new html_table_cell();
