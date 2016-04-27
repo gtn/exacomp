@@ -2288,7 +2288,6 @@ class block_exacomp_external extends external_api {
 				'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
 				'teacherevaluation' => new external_value ( PARAM_INT, 'example evaluation of teacher'),
 				'studentevaluation' => new external_value ( PARAM_INT, 'example evaluation of student'),
-				'teacheritemvalue' => new external_value ( PARAM_INT, 'item evaluation of teacher'),
 				'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id')
 		) ) );
 	}
@@ -2361,7 +2360,6 @@ class block_exacomp_external extends external_api {
 				'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
 				'teacherevaluation' => new external_value ( PARAM_INT, 'example evaluation of teacher'),
 				'studentevaluation' => new external_value ( PARAM_INT, 'example evaluation of student'),
-				'teacheritemvalue' => new external_value ( PARAM_INT, 'item evaluation of teacher'),
 				'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id')
 		) ) );
 	}
@@ -2565,7 +2563,7 @@ class block_exacomp_external extends external_api {
 		) );
 
 		$student->examples = block_exacomp_get_user_examples_by_course($student, $courseid);
-
+		
 		$teacherevaluation = -1;
 		if(isset($student->examples->teacher[$exampleid])){
 			$teacherevaluation = $student->examples->teacher[$exampleid];
@@ -2578,7 +2576,7 @@ class block_exacomp_external extends external_api {
 
 		$evalniveauid = null;
 		if(isset($student->examples->niveau[$exampleid])){
-			$evalniveauid = $student->examples_niveau[$exampleid];
+			$evalniveauid = $student->examples->niveau[$exampleid];
 		}
 		
 		return array (
@@ -4062,7 +4060,6 @@ class block_exacomp_external extends external_api {
 								'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
 								'teacherevaluation' => new external_value ( PARAM_INT, 'example evaluation of teacher' ),
 								'studentevaluation' => new external_value ( PARAM_INT, 'example evaluation of student' ),
-								'teacheritemvalue' => new external_value ( PARAM_INT, 'item evaluation of teacher' ),
 								'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id')
 						) ) ),
 						'examplestotal' => new external_value ( PARAM_INT, 'total number of material' ),
@@ -4092,7 +4089,6 @@ class block_exacomp_external extends external_api {
 						'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
 						'teacherevaluation' => new external_value ( PARAM_INT, 'example evaluation of teacher' ),
 						'studentevaluation' => new external_value ( PARAM_INT, 'example evaluation of student' ),
-						'teacheritemvalue' => new external_value ( PARAM_INT, 'item evaluation of teacher' ),
 						'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id')
 				) ) ),
 				'examplestotal' => new external_value ( PARAM_INT, 'total number of material' ),
@@ -4941,13 +4937,11 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 			if($forall){
 				$example_return->teacherevaluation = -1;
 				$example_return->studentevaluation = -1;
-				$example_return->teacheritemvalue = -1;
 				$example_return->evalniveauid = null;
 			}else{
 				$evaluation = (object) static::dakora_get_example_information($courseid, $userid, $example->id);
 				$example_return->teacherevaluation = $evaluation->teachervalue;
 				$example_return->studentevaluation = $evaluation->studentvalue;
-				$example_return->teacheritemvalue = $evaluation->teacheritemvalue;
 				$example_return->evalniveauid = $evaluation->evalniveauid;
 			}
 

@@ -1220,7 +1220,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						
 					$niveau_cell = new html_table_cell();
 					$niveau_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-					$niveau_cell->text = ($use_eval_niveau)?$this->generate_niveau_select('niveau_subject', $topic->id, 'subjects', $student, ($role == \block_exacomp\ROLE_STUDENT)?true:false, ($role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
+					$niveau_cell->text = ($use_eval_niveau)?$this->generate_niveau_select('niveau_subject', $subject->id, 'subjects', $student, ($role == \block_exacomp\ROLE_STUDENT)?true:false, ($role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
 						
 					$params = array('name'=>'add-grading-'.$student->id.'-'.$subject->id, 'type'=>'text',
 							'maxlength'=>3, 'class'=>'percent-rating-text',
