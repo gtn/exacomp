@@ -633,10 +633,14 @@ function block_exacomp_delete_custom_example($example_object_or_id) {
  * @param int $courseid
  * @param int $role
  * @param int $value
+ * @param int $evalniveauid
  */
-function block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value) {
+function block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid = null) {
 	global $DB, $USER;
 
+	if($evalniveauid !== null && $evalniveauid < 1)
+		$evalniveauid = null;
+	
 	// TODO: block_exacomp_external::require_teacher_permission($courseid, $userid);
 	if($role == \block_exacomp\ROLE_STUDENT && $userid != $USER->id)
 		return -1;
@@ -649,10 +653,11 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 		$record->value = ($value != -1) ? $value : null;
 		$record->timestamp = time();
 		$record->reviewerid = $USER->id;
+		$record->evalniveauid = $evalniveauid;
 		$DB->update_record(\block_exacomp\DB_COMPETENCIES, $record);
 		$id = $record->id;
 	} else {
-		$id = $DB->insert_record(\block_exacomp\DB_COMPETENCIES, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, "courseid" => $courseid, "role" => $role, "value" => $value, "reviewerid" => $USER->id, "timestamp" => time()));
+		$id = $DB->insert_record(\block_exacomp\DB_COMPETENCIES, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, "courseid" => $courseid, "role" => $role, "value" => $value, "reviewerid" => $USER->id, "timestamp" => time(), "evalniveauid" => $evalniveauid));
 	}
 
 	if($role == \block_exacomp\ROLE_TEACHER)
@@ -665,16 +670,19 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 	return $id;
 }
 
-function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $value = null, $starttime = 0, $endtime = 0, $studypartner = 'self', $additionalinfo=null) {
+
+function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $value = null, $evalniveauid = null) {
 	global $DB, $USER;
 
 	$updateEvaluation = new stdClass();
-
+	if($evalniveauid !== null && $evalniveauid < 1)
+		$evalniveauid = null;
+	
 	if ($role == \block_exacomp\ROLE_TEACHER) {
 		block_exacomp_require_teacher($courseid);
 		$updateEvaluation->teacher_evaluation = ($value != -1) ? $value : null;
 		$updateEvaluation->teacher_reviewerid = $USER->id;
-		if($additionalinfo !== null) $updateEvaluation->additionalinfo = $additionalinfo;
+		if($evalniveauid !== null) $updateEvaluation->evalniveauid = $evalniveauid;
 		$updateEvaluation->resubmission = ($value != -1) ? false : true;
 	} else {
 		if ($userid != $USER->id)
@@ -683,16 +691,13 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 
 			if($value !== null)
 				$updateEvaluation->student_evaluation = ($value != -1) ? $value : null;
-
-			$updateEvaluation->starttime = $starttime;
-			$updateEvaluation->endtime = $endtime;
 	}
 	if($record = $DB->get_record(\block_exacomp\DB_EXAMPLEEVAL,array("studentid" => $userid, "courseid" => $courseid, "exampleid" => $exampleid))) {
 		//if teacher keep studenteval
 		if($role == \block_exacomp\ROLE_TEACHER) {
 			$record->teacher_evaluation = $updateEvaluation->teacher_evaluation;
 			$record->teacher_reviewerid = $updateEvaluation->teacher_reviewerid;
-			if($additionalinfo !== null) $record->additionalinfo = $updateEvaluation->additionalinfo;
+			if($evalniveauid !== null) $record->evalniveauid = $updateEvaluation->evalniveauid;
 			$record->resubmission = $updateEvaluation->resubmission;
 
 			$DB->update_record(\block_exacomp\DB_EXAMPLEEVAL,$record);
@@ -714,7 +719,6 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 	}
 
 	// TODO: unreachable statement?!?
-
 	if($role == \block_exacomp\ROLE_TEACHER)
 		\block_exacomp\event\competence_assigned::log(['objectid' => $exampleid, 'courseid' => $courseid, 'relateduserid' => $userid]);
 }
@@ -931,6 +935,9 @@ function block_exacomp_is_skillsmanagement() {
 }
 function block_exacomp_is_topicgrading_enabled() {
 	return get_config('exacomp', 'usetopicgrading');
+}
+function block_exacomp_is_subjectgrading_enabled() {
+	return get_config('exacomp', 'usesubjectgrading');
 }
 function block_exacomp_is_numbering_enabled() {
 	return get_config('exacomp', 'usenumbering');
@@ -1563,7 +1570,8 @@ function block_exacomp_get_user_examples_by_course($user, $courseid) {
 	$examples = new stdClass();
 	$examples->teacher = g::$DB->get_records_menu(\block_exacomp\DB_EXAMPLEEVAL,array("courseid" => $courseid, "studentid" => $user->id),'','exampleid as id, teacher_evaluation as value');
 	$examples->student = g::$DB->get_records_menu(\block_exacomp\DB_EXAMPLEEVAL,array("courseid" => $courseid, "studentid" => $user->id),'','exampleid as id, student_evaluation as value');
-
+	$examples->niveau = g::$DB->get_records_menu(\block_exacomp\DB_EXAMPLEEVAL, array("courseid"=>$courseid, "studentid"=>$user->id),'', 'exampleid as id, evalniveauid');
+	
 	return $examples;
 }
 /**
@@ -5485,7 +5493,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid){
 	$sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
 				eval.student_evaluation, eval.teacher_evaluation, evis.courseid, s.id as scheduleid,
-				e.externalurl, e.externaltask, e.description, eval.additionalinfo
+				e.externalurl, e.externaltask, e.description
 			FROM {block_exacompschedule} s
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid
 			JOIN {".\block_exacomp\DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=?
@@ -5548,7 +5556,7 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
 
 	$sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
-				eval.student_evaluation, eval.teacher_evaluation, eval.additionalinfo, s.courseid, s.id as scheduleid,
+				eval.student_evaluation, eval.teacher_evaluation, s.courseid, s.id as scheduleid,
 				e.externalurl, e.externaltask, e.description
 			FROM {block_exacompschedule} s
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid
@@ -5591,7 +5599,7 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true){
 		if($mind_eval){
 			$example_array['student_evaluation'] = $example->student_evaluation;
 			$example_array['teacher_evaluation'] = $example->teacher_evaluation;
-			$example_array['additionalinfo'] = (isset($example->additionalinfo)?$example->additionalinfo:'');
+			//$example_array['additionalinfo'] = '';
 
 			$example_array['student_evaluation_title'] = \block_exacomp\global_config::get_student_value_title_by_id($example->student_evaluation);
 			$example_array['teacher_evaluation_title'] = \block_exacomp\global_config::get_value_title_by_id($example->teacher_evaluation);
@@ -6434,6 +6442,7 @@ namespace block_exacomp {
 		 * @param id $id
 		 */
 		static function get_value_title_by_id($id) {
+			if(!$id) return -1;
 			return static::get_value_titles()[$id];
 		}
 		
@@ -6469,6 +6478,7 @@ namespace block_exacomp {
 		 * @param id $id
 		 */
 		static function get_student_value_title_by_id($id) {
+			if(!$id) return -1;
 			return static::get_student_value_titles()[$id];
 		}
 		

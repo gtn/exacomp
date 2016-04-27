@@ -352,7 +352,6 @@ class printer {
 
 						$teacher_evaluation = [];
 						if ($example->teacher_evaluation_title) $teacher_evaluation[] = $example->teacher_evaluation_title;
-						if ($example->additionalinfo!==null) $teacher_evaluation[] = $example->additionalinfo.' %';
 						if ($teacher_evaluation) {
 							$tbl .= '<br />L: '.join(' / ', $teacher_evaluation);
 						}

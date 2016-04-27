@@ -2956,8 +2956,7 @@ class block_exacomp_external extends external_api {
 			$example_course = $DB->get_record('course', array('id'=>$example->courseid));
 			$example->courseshortname = $example_course->shortname;
 			$example->coursefullname = $example_course->fullname;
-			if(!isset($example->additionalinfo))
-				$example->additionalinfo = -1;
+			$example->additionalinfo = -1;
 		}
 
 		return $examples;
@@ -3851,7 +3850,7 @@ class block_exacomp_external extends external_api {
 		static::require_can_access_course_user($courseid, $userid);
 		static::require_can_access_example($exampleid, $courseid);
 
-		block_exacomp_set_user_example(($userid == 0) ? $USER->id : $userid, $exampleid, $courseid, $role, $examplevalue,0,0,'self',$itemvalue);
+		block_exacomp_set_user_example(($userid == 0) ? $USER->id : $userid, $exampleid, $courseid, $role, $examplevalue,$itemvalue);
 
 		if($itemid > 0 && $userid > 0) {
 

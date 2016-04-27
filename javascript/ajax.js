@@ -27,8 +27,6 @@
 	
 	var competencies_additional_grading = {};
 	
-	var examples_additional_grading = {};
-
 	$(document).on('focus', 'input[name^=datadescriptors\-]', function() {
 		prev_val = $(this).val();
 	});
@@ -94,12 +92,39 @@
 			}
 		}
 			
-		competencies[this.getAttribute('exa-compid')+"-"+this.getAttribute('exa-userid')] = {
-			userid : this.getAttribute('exa-userid'),
-			compid : this.getAttribute('exa-compid'),
-			value : $(this).val()
-		};
+		var compid = this.getAttribute('exa-compid');
+		var userid = this.getAttribute('exa-userid');	
+		var niveauid = $('select[name=niveau_descriptor-'+compid+'-'+userid).val();
+
+		if(!competencies[compid + "-" + userid])
+			competencies[compid + "-" + userid] = {
+					userid : this.getAttribute('exa-userid'),
+					compid : this.getAttribute('exa-compid'),
+					value : $(this).val(),
+					niveauid : niveauid
+			};
+		else
+			competencies[compid + "-" + userid]['value'] = $(this).val();
 	});
+	
+	$(document).on('change', 'select[name^=niveau_descriptor\-]', function(event) {
+		var compid = this.getAttribute('exa-compid');
+		var userid = this.getAttribute('exa-userid');		
+		var niveauid = $(this).val();
+		var value = $('select[name=datadescriptors-'+compid+'-'+userid+'-teacher').val();
+
+		if(!competencies[compid + "-" + userid]) {
+			competencies[compid + "-" + userid] = {
+					userid : userid,
+					compid : compid,
+					value : value,
+					niveauid : niveauid
+				};
+		}
+		else
+			competencies[compid + "-" + userid]['niveauid'] = niveauid;
+	});
+
 	// # TOPICS
 	var topics = {};
 	$(document).on('click', 'input[name^=datatopics\-]', function() {
@@ -189,14 +214,41 @@
 	});
 	$(document).on('change', 'select[name^=dataexamples\-]', function() {
 		var values = $(this).attr("name").split("-");
-
-		examples[this.name] = {
-			userid : values[2],
-			exampleid : values[1],
-			value : $(this).val()
-		};
+		if(!examples[this.name]) {
+			// get current niveau
+			var niveauid = $('select[name=niveau_examples-'+values[1]+'-'+values[2]).val();
+			examples[this.name] = {
+				userid : values[2],
+				exampleid : values[1],
+				value : $(this).val(),
+				niveauid : niveauid
+			};
+		}
+		else
+			examples[this.name]['value'] = $(this).val();
 	});
+	$(document).on('change', 'select[name^=niveau_examples\-]', function(event) {
+		
+		var name = this.name.replace("niveau_","data") + "-teacher"
+		var niveauid = $(this).val();
+		
+		if(!examples[name]) {
+			var values = name.split("-");
 
+			var value = $('select[name='+name+']').val();
+			
+			examples[name] = {
+					userid : values[2],
+					exampleid : values[1],
+					value : value,
+					niveauid : niveauid
+				};
+		}
+		else
+			examples[name]['niveauid'] = niveauid;
+		
+		console.log(examples[name]);
+	});
 	$(document).on('keydown', ':text[exa-type="new-descriptor"]', function(event) {
 		if (event.keyCode == 13) {
 			// enter
@@ -284,10 +336,6 @@
 				multiQueryData.competencies_additional_grading = competencies_additional_grading;
 			}
 
-			if(!$.isEmptyObject(examples_additional_grading)){
-				multiQueryData.examples_additional_grading = examples_additional_grading;
-			}
-			
 			if (!$.isEmptyObject(multiQueryData)) {
 				block_exacomp.call_ajax({
 					action: 'multi',
@@ -609,15 +657,6 @@
 		if(!competencies_additional_grading[descrid])
 			competencies_additional_grading[descrid] = {};
 		competencies_additional_grading[descrid][studentid] = value;
-	});
-	
-	$(document).on('change', 'input.percent-rating', function(event) {
-		var exampleid = $(this).attr('exampleid');
-		var studentid = $(this).attr('studentid');
-		
-		if(!examples_additional_grading[exampleid])
-			examples_additional_grading[exampleid] = {};
-		examples_additional_grading[exampleid][studentid] = this.value == '' ? -1 : this.value.replace(/[^0-9]/g, '');
 	});
 	
 	$(window).on('beforeunload', function (){

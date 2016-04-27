@@ -2729,6 +2729,79 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		upgrade_block_savepoint(true, 2016042100, 'exacomp');
 	}
 	
+	if ($oldversion < 2016042700) {
+		// Define key evalniveauid (foreign) to be dropped form block_exacompcompuser.
+        $table = new xmldb_table('block_exacompcompuser');
+        $key = new xmldb_key('evalniveauid', XMLDB_KEY_FOREIGN, array('evalniveauid'), 'eval_niveau', array('id'));
+
+        // Launch drop key evalniveauid.
+        $dbman->drop_key($table, $key);
+	
+        $table = new xmldb_table('block_exacompcompuser');
+        $key = new xmldb_key('evalniveauid', XMLDB_KEY_FOREIGN, array('evalniveauid'), 'block_exacompeval_niveau', array('id'));
+        
+        // Launch add key evalniveauid.
+        $dbman->add_key($table, $key);
+        
+        $table = new xmldb_table('block_exacompexameval');
+        $field = new xmldb_field('additionalinfo');
+        
+        // Conditionally launch drop field evalniveauid.
+        if ($dbman->field_exists($table, $field)) {
+        	$dbman->drop_field($table, $field);
+        }
+        
+        $table = new xmldb_table('block_exacompexameval');
+        $field = new xmldb_field('evalniveauid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'studypartner');
+        
+        // Conditionally launch add field evalniveauid.
+        if (!$dbman->field_exists($table, $field)) {
+        	$dbman->add_field($table, $field);
+        }
+        
+        // Define key evalniveauid (foreign) to be added to block_exacompexameval.
+        $table = new xmldb_table('block_exacompexameval');
+        $key = new xmldb_key('evalniveauid', XMLDB_KEY_FOREIGN, array('evalniveauid'), 'block_exacompeval_niveau', array('id'));
+        
+        // Launch add key evalniveauid.
+        $dbman->add_key($table, $key);
+        
+		// Exacomp savepoint reached.
+		upgrade_block_savepoint(true, 2016042700, 'exacomp');
+	}
+	
+	if ($oldversion < 2016042701) {
+	
+		// Define field starttime to be dropped from block_exacompexameval.
+		$table = new xmldb_table('block_exacompexameval');
+		$field = new xmldb_field('starttime');
+	
+		// Conditionally launch drop field starttime.
+		if ($dbman->field_exists($table, $field)) {
+			$dbman->drop_field($table, $field);
+		}
+	
+		// Define field starttime to be dropped from block_exacompexameval.
+		$table = new xmldb_table('block_exacompexameval');
+		$field = new xmldb_field('endtime');
+		
+		// Conditionally launch drop field starttime.
+		if ($dbman->field_exists($table, $field)) {
+			$dbman->drop_field($table, $field);
+		}
+		
+		// Define field starttime to be dropped from block_exacompexameval.
+		$table = new xmldb_table('block_exacompexameval');
+		$field = new xmldb_field('studypartner');
+		
+		// Conditionally launch drop field starttime.
+		if ($dbman->field_exists($table, $field)) {
+			$dbman->drop_field($table, $field);
+		}
+		
+		// Exacomp savepoint reached.
+		upgrade_block_savepoint(true, 2016042701, 'exacomp');
+	}
 	/*
 	 * insert new upgrade scripts before this comment section
 	 * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
