@@ -2191,7 +2191,9 @@ class block_exacomp_external extends external_api {
 		if($userid == 0 && !$forall)
 			$userid = $USER->id;
 
-		return static::get_descriptor_children($courseid, $descriptorid, $userid, $forall);
+		$return = static::get_descriptor_children($courseid, $descriptorid, $userid, $forall);
+		
+		return $return;
 
 	}
 
@@ -2203,8 +2205,8 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_descriptor_children_returns() {
 		return new external_single_structure ( array (
 			'children' => new external_multiple_structure ( new external_single_structure ( array (
-					'childid' => new external_value ( PARAM_INT, 'id of child' ),
-					'childtitle' => new external_value ( PARAM_TEXT, 'title of child' ),
+					'descriptorid' => new external_value ( PARAM_INT, 'id of child' ),
+					'descriptortitle' => new external_value ( PARAM_TEXT, 'title of child' ),
 					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
 					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of child'),
 					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of child'),
@@ -3233,8 +3235,8 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_descriptor_children_for_cross_subject_returns() {
 		return new external_single_structure ( array (
 			'children' => new external_multiple_structure ( new external_single_structure ( array (
-					'childid' => new external_value ( PARAM_INT, 'id of child' ),
-					'childtitle' => new external_value ( PARAM_TEXT, 'title of child' ),
+					'descriptorid' => new external_value ( PARAM_INT, 'id of child' ),
+					'descriptortitle' => new external_value ( PARAM_TEXT, 'title of child' ),
 					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
 					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of children'),
 					'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
@@ -3299,8 +3301,8 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_all_descriptor_children_for_cross_subject_returns() {
 		return new external_single_structure ( array (
 			'children' => new external_multiple_structure ( new external_single_structure ( array (
-					'childid' => new external_value ( PARAM_INT, 'id of child' ),
-					'childtitle' => new external_value ( PARAM_TEXT, 'title of child' ),
+					'descriptorid' => new external_value ( PARAM_INT, 'id of child' ),
+					'descriptortitle' => new external_value ( PARAM_TEXT, 'title of child' ),
 					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
 					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of children'),
 					'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
@@ -4507,7 +4509,7 @@ class block_exacomp_external extends external_api {
 		}
 
 		foreach($childsandexamples->children as $child){
-			$examples = static::dakora_get_examples_for_descriptor_with_grading($courseid, $child->childid, $userid, false);
+			$examples = static::dakora_get_examples_for_descriptor_with_grading($courseid, $child->descriptorid, $userid, false);
 
 			foreach($examples as $example){
 				if($example->teacherevaluation == $grading){
