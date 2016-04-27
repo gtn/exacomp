@@ -6087,9 +6087,11 @@ function block_exacomp_get_cm_from_cmid($cmid) {
 function block_exacomp_save_additional_grading_for_descriptor($courseid, $descriptorid, $studentid, $additionalinfo){
 	global $DB, $USER;
 
+	$value = block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
 	$record = block_exacomp\get_comp_eval($courseid, \block_exacomp\ROLE_TEACHER, $studentid, \block_exacomp\TYPE_DESCRIPTOR, $descriptorid);
 	if($record){
 		$record->additionalinfo = $additionalinfo;
+		$record->value = $value;
 		$DB->update_record(\block_exacomp\DB_COMPETENCIES, $record);
 	}else{
 		$insert = new stdClass();
@@ -6100,6 +6102,7 @@ function block_exacomp_save_additional_grading_for_descriptor($courseid, $descri
 		$insert->additionalinfo = $additionalinfo;
 		$insert->role = \block_exacomp\ROLE_TEACHER;
 		$insert->reviewerid = $USER->id;
+		$insert->value = $value;
 		$DB->insert_record(\block_exacomp\DB_COMPETENCIES, $insert);
 	}
 }
@@ -6499,15 +6502,21 @@ namespace block_exacomp {
 			return static::get_evalniveaus()[$id];
 		}
 		
-		static function get_scheme_item_node_mapping(){
-			$mapping = array();
-			$start = array('4.9', '3.6', '2.3', '1.0');
-			$end = array('6.0', '4.8', '3.5', '2.2');
-			for($i=0;$i<5;$i++){
-				$mapping[$i] = new stdClass();
-				$mapping[$i]->start = $start[$i];
-				$mapping[$i]->end = $end[$i];
-			} 
+		/**
+		 * Maps gradings (1.0 - 6.0) to 0-3 values
+		 * 
+		 * @param double $additionalinfo
+		 */
+		static function get_additionalinfo_value_mapping($additionalinfo){
+			$mapping = array(6.0, 4.8, 3.5, 2.2);
+			
+			foreach($mapping as $k => $v) {
+				if($additionalinfo > $v)
+					break;
+				$value = $k;
+			}
+			
+			return $value;
 		}
 	}
 

@@ -123,8 +123,20 @@
 		}
 		else
 			competencies[compid + "-" + userid]['niveauid'] = niveauid;
+		
+		console.log(competencies[compid + "-" + userid]);
 	});
 
+	$(document).on('change', 'input[name^=add-grading\-]', function(event) {
+		var compid = this.getAttribute('exa-compid');
+		var userid = this.getAttribute('exa-userid');	
+		var value = $(this).val();
+		
+		if(!competencies_additional_grading[compid])
+			competencies_additional_grading[compid] = {};
+		competencies_additional_grading[compid][userid] = value;
+	});
+	
 	// # TOPICS
 	var topics = {};
 	$(document).on('click', 'input[name^=datatopics\-]', function() {
@@ -647,16 +659,6 @@
 		}).done(block_exacomp.popup_close());
 		
 		return false;
-	});
-	
-	$(document).on('change', 'input[name^=add-grading\-]', function(event) {
-		var descrid = $(this).attr('descrid');
-		var studentid = $(this).attr('studentid');
-		var value = $(this).val();
-		
-		if(!competencies_additional_grading[descrid])
-			competencies_additional_grading[descrid] = {};
-		competencies_additional_grading[descrid][studentid] = value;
 	});
 	
 	$(window).on('beforeunload', function (){
