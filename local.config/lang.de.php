@@ -17,8 +17,6 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-$string['pluginname'] = 'Kompetenzraster';
-
 $string['exacomp:deleteexamples'] = 'Lernmaterialien löschen';
 
 $string['tab_teacher_settings_selection_st'] = 'Bildungsstandard-Auswahl';
@@ -88,4 +86,4 @@ $string['block_exacomp_notifications_body'] = 'Bei Aktionen wie einer Lernmateri
 
 $string['assigned_example'] = 'Zugeteiltes Lernmaterial';
 $string['total_example'] = 'Gesamtmaterial';
-$string['usetopicgrading'] = 'Beurteilung von Lernfortschritten ermöglichen';
+//$string['usetopicgrading'] = 'Beurteilung von Lernfortschritten ermöglichen';

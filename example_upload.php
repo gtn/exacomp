@@ -50,12 +50,12 @@ if (optional_param('action', '', PARAM_TEXT) == 'delete') {
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/example_upload.php', array('courseid' => $courseid));
-$PAGE->set_title(get_string('pluginname', 'block_exacomp'));
+$PAGE->set_title(get_string('blocktitle', 'block_exacomp'));
 $PAGE->set_pagelayout('embedded');
 
 // build breadcrumbs navigation
 $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
-$blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
+$blocknode = $coursenode->add(get_string('blocktitle','block_exacomp'));
 $blocknode->make_active();
 
 $action = optional_param('action', 'add', PARAM_TEXT);

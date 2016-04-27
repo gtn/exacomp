@@ -17,7 +17,10 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-$string['pluginname'] = 'Exabis Competencies';
+// shown in admin plugin list
+$string['pluginname'] = 'Exabis Competence grid';
+// shown in block title and all headers
+$string['blocktitle'] = 'Competence grid';
 $string['exacomp:addinstance'] = 'Add a exabis competencies block';
 $string['exacomp:myaddinstance'] = 'Add a exabis competencies block to my moodle';
 $string['exacomp:teacher'] = 'overview of trainer actions in a course';
@@ -95,11 +98,11 @@ $string['settings_scheduleunits'] = 'Anmount of units';
 $string['settings_scheduleunits_description'] = 'Amount of units in the schedule';
 $string['settings_schedulebegin'] = 'Schedule begin';
 $string['settings_schedulebegin_description'] = 'Begin time for the first unit in the schedule. Format hh:mm';
-$string['settings_admin_scheme'] = 'Global grading scheme';
-$string['settings_admin_scheme_description'] = 'Choose a grading scheme for all courses, if not every teacher can select an own grading scheme for every course based on numbers.';
-$string['settings_admin_scheme_none'] = 'no global grading';
-$string['settings_additional_grading'] = 'Additional grading';
-$string['settings_additional_grading_description'] = 'Additional grading of outcomes/materials (0-100%)';
+$string['settings_admin_scheme'] = 'Global grading level';
+$string['settings_admin_scheme_description'] = 'Grading can be done on different levels.';
+$string['settings_admin_scheme_none'] = 'no global levels';
+$string['settings_additional_grading'] = 'Adapted grading';
+$string['settings_additional_grading_description'] = 'Grading limited from "not gained(0)" - "completely gained(3)"';
 $string['settings_usetimeline'] = 'Use Timeline in profile';
 $string['settings_usetimeline_description'] = 'Chronological sequence of gained outcomes';
 
@@ -167,12 +170,12 @@ $string['show_all_examples'] = 'Show external examples for students';
 $string['usedetailpage'] = 'Use detailed overview of competencies';
 $string['useprofoundness'] = 'Use basic and extended competencies';
 $string['usetopicgrading'] = 'Enable topic gradings';
-$string['usenumbering'] = 'Enable numbering for topics and competencies';
+$string['usenumbering'] = 'Enable automatic numbering in the competence grid';
 $string['useniveautitleinprofile'] = 'Use niveau title in competence profile';
-$string['usenostudents'] = 'use without students';
+$string['usenostudents'] = 'Use without students';
 $string['profoundness_0'] = 'not reached';
-$string['profoundness_1'] = 'partially gained';
-$string['profoundness_2'] = 'fully gained';
+$string['profoundness_1'] = 'Partially gained';
+$string['profoundness_2'] = 'Fully gained';
 $string['filteredtaxonomies'] = 'Examples are filtered accordingly to the following taxonomies:';
 $string['show_all_taxonomies'] = 'All taxonomies';
 $string['warning_use_activities'] = 'Warning: you are now working with Moodle-activites that are associated with competences. Please verify that the same outcomes are used as before.';
@@ -401,8 +404,8 @@ $string['profoundness_entirely'] = 'Entirely achieved';
 
 
 // External trainer & eLove
-$string['block_exacomp_external_trainer_assign_head'] = 'Allow assigning external trainers for students. This is required for using the elove app';
-$string['block_exacomp_external_trainer_assign_body'] = '';
+$string['block_exacomp_external_trainer_assign_head'] = 'Allow assigning external trainers for students.';
+$string['block_exacomp_external_trainer_assign_body'] = 'This is required for using the elove app.';
 $string['block_exacomp_elove_student_self_assessment_head'] = 'Allow self-assessment for students in the elove app';
 $string['block_exacomp_elove_student_self_assessment_body'] = '';
 $string['block_exacomp_external_trainer_assign'] = 'Assign external trainers';
@@ -514,12 +517,12 @@ $string['eventsimportcompleted'] = 'Import completed';
 $string['eventscrosssubjectadded'] = 'Cross-Subject added';
 
 
-// Statistics
+// === Statistics ===
 $string['process'] = 'State of process';
 $string['niveauclass'] = 'Niveau classification';
 
 
-// Message
+// === Message ===
 $string['messagetocourse'] = 'Nachricht an alle Kursteilnehmer/innen senden';
 $string['description_example'] = 'Description';
 $string['requirements'] = 'Was du schon k&ouml;nnen solltest: ';

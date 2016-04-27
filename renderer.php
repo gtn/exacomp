@@ -4042,7 +4042,7 @@ var dataset = dataset.map(function (group) {
 	}
 	public function profile_settings($courses, $settings, $usebadges, $exaport, $exastud, $exastud_periods){
 		global $COURSE;
-		$exacomp_div_content = html_writer::tag('h2', get_string('pluginname', 'block_exacomp'));
+		$exacomp_div_content = html_writer::tag('h2', get_string('blocktitle', 'block_exacomp'));
 		
 		//$exacomp_div_content .= html_writer::div(
 		//		html_writer::checkbox('showonlyreached', 1, ($settings->showonlyreached==1), get_string('profile_settings_showonlyreached', 'block_exacomp')));
@@ -4075,14 +4075,14 @@ var dataset = dataset.map(function (group) {
 		if($exaport){
 			$exaport_items = block_exacomp_get_exaport_items();
 			if(!empty($exaport_items)){
-				$exaport_div_content = html_writer::tag('h2', get_string('pluginname', 'block_exaport'));
+				$exaport_div_content = html_writer::tag('h2', get_string('blocktitle', 'block_exaport'));
 				$exaport_div_content .= html_writer::div(
 						html_writer::checkbox('useexaport', 1, ($settings->useexaport==1), get_string('profile_settings_useexaport', 'block_exacomp')));
 					
 				$exaport_div = html_writer::div($exaport_div_content);
 				$content .= $exaport_div;
 			}else{
-				$exaport_div_content = html_writer::tag('h2', get_string('pluginname', 'block_exaport'));
+				$exaport_div_content = html_writer::tag('h2', get_string('blocktitle', 'block_exaport'));
 				$exaport_div_content .= get_string('profile_settings_no_item', 'block_exacomp');
 				$exaport_div = html_writer::div($exaport_div_content);
 				$content .= $exaport_div;
@@ -4090,7 +4090,7 @@ var dataset = dataset.map(function (group) {
 		}
 
 		/*if($exastud){
-			$exastud_div_content = html_writer::tag('h2', get_string('pluginname', 'block_exastud'));
+			$exastud_div_content = html_writer::tag('h2', get_string('blocktitle', 'block_exastud'));
 			$exastud_div_content .= html_writer::div(
 					html_writer::checkbox('useexastud', 1, ($settings->useexastud ==1), get_string('profile_settings_useexastud', 'block_exacomp')));
 				

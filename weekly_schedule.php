@@ -45,7 +45,7 @@ $page_identifier = 'tab_weekly_schedule';
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/weekly_schedule.php', ['courseid' => $courseid, 'studentid'=>$studentid, 'pool_course'=>$selectedCourse]);
-$PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
+$PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
 block_exacomp_init_js_weekly_schedule();

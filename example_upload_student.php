@@ -48,11 +48,11 @@ $context = context_course::instance($courseid);
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/example_upload_student.php', array('courseid' => $courseid));
-$PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
+$PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
 
 // build breadcrumbs navigation
 $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
-$blocknode = $coursenode->add(get_string('pluginname','block_exacomp'));
+$blocknode = $coursenode->add(get_string('blocktitle','block_exacomp'));
 $blocknode->make_active();
 
 $action = optional_param('action', 'add', PARAM_TEXT);

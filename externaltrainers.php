@@ -32,8 +32,8 @@ $coursecontext = context_course::instance($courseid);
 
 require_capability('block/exacomp:teacher', $coursecontext);
 $url = '/blocks/exacomp/externaltrainers.php';
-$PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
-$PAGE->set_title(get_string('pluginname', 'block_exacomp'));
+$PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
+$PAGE->set_title(get_string('blocktitle', 'block_exacomp'));
 $PAGE->set_url($url);
 
 $students = get_users_by_capability($coursecontext, 'block/exacomp:student');

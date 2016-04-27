@@ -56,7 +56,7 @@ $PAGE->set_url('/blocks/exacomp/assign_competencies.php', [
 	'subjectid' => $subjectid,
 	'topicid' => $topicid,
 ]);
-$PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
+$PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
 // build breadcrumbs navigation

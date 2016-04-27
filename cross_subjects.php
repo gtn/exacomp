@@ -45,7 +45,7 @@ $PAGE->set_url('/blocks/exacomp/cross_subjects.php', [
 	'crosssubjid' => $crosssubjid,
 ]);
 
-$PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
+$PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
 $output = block_exacomp_get_renderer();
@@ -78,7 +78,7 @@ if ($action == 'share') {
 	}
 
 	$PAGE->set_url('/blocks/exacomp/cross_subjects.php', array('courseid' => $courseid, 'action' => $action, 'crosssubjid' => $crosssubjid));
-	$PAGE->set_heading(get_string('pluginname', 'block_exacomp'));
+	$PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
 	$PAGE->set_pagelayout('embedded');
 
 	$output = block_exacomp_get_renderer();

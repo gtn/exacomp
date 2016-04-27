@@ -50,7 +50,7 @@ $page_identifier = 'tab_admin_configuration';
 $PAGE->set_url ( '/blocks/exacomp/edit_config.php', array (
 		'courseid' => $courseid 
 ) );
-$PAGE->set_heading ( get_string ( 'pluginname', 'block_exacomp' ) );
+$PAGE->set_heading ( get_string ( 'blocktitle', 'block_exacomp' ) );
 $PAGE->set_title ( get_string ( $page_identifier, 'block_exacomp' ) );
 
 // build breadcrumbs navigation

@@ -17,7 +17,10 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
+// shown in admin plugin list
 $string['pluginname'] = 'Exabis Kompetenzraster';
+// shown in block title and all headers
+$string['blocktitle'] = 'Kompetenzraster';
 $string['exacomp:addinstance'] = 'Exabis Competencies auf Kursseite anlegen';
 $string['exacomp:myaddinstance'] = 'Exabis Competencies auf Startseite anlegen';
 $string['exacomp:teacher'] = 'Übersicht der Lehrerfunktionen in einem Kurs';
@@ -95,11 +98,11 @@ $string['settings_scheduleunits'] = 'Anzahl der Einheiten';
 $string['settings_scheduleunits_description'] = 'Anzahl der Einheiten im Wochenplan';
 $string['settings_schedulebegin'] = 'Beginn der Einheiten';
 $string['settings_schedulebegin_description'] = 'Beginnzeitpunkt der ersten Einheit im Wochenplan. Format hh:mm';
-$string['settings_admin_scheme'] = 'Globales Bewertungsschema';
-$string['settings_admin_scheme_description'] = 'Wählen Sie ein kursübergreifendes Bewertungsschema, andernfalls kann der/die LehrerIn pro Kurs ein zahlen basiertes Bewertungsschema festlegen.';
-$string['settings_admin_scheme_none'] = 'keine globale Bewertung';
-$string['settings_additional_grading'] = 'Zus&auml;tzliche Bewertung';
-$string['settings_additional_grading_description'] = 'Zus&auml;tzliche Bewertung für Kompetenzen/Lernmaterialien (0-100%)';
+$string['settings_admin_scheme'] = 'Globales Bewertungsniveau';
+$string['settings_admin_scheme_description'] = 'Beurteilungen können auf unterschiedlichem Niveau erfolgen.';
+$string['settings_admin_scheme_none'] = 'keine Niveaus';
+$string['settings_additional_grading'] = 'Angepasste Bewertung';
+$string['settings_additional_grading_description'] = 'Bewertung für Teilkompetenzen und Lernmaterialien global auf "nicht erreicht(0)" - "vollständig erreicht(3)" beschränken';
 $string['settings_usetimeline'] = 'Timeline im Profil verwenden';
 $string['settings_usetimeline_description'] = 'Zeitlichen Ablauf des Kompetenzerwerbes im Profil anzeigen';
 
@@ -189,10 +192,10 @@ $string['uses_activities'] = 'Ich verwende Moodle Aktivit&auml;ten zur Beurteilu
 $string['show_all_descriptors'] = 'Alle Deskriptoren im &Uuml;berblick anzeigen';
 $string['show_all_examples'] = 'Externe Beispiele für Kursteilnehmer/innen anzeigen';
 $string['usedetailpage'] = 'Detaillierte Kompetenzansicht verwenden';
-$string['useprofoundness'] = 'Erweiterungs- und Grundkompetenzen verwenden';
-$string['usetopicgrading'] = 'Beurteilung von Teilbereichen ermöglichen';
-$string['usenumbering'] = 'Nummerierung bei Kompetenzen und Teilbereichen verwenden';
-$string['useniveautitleinprofile'] = 'Im Kompetenzprofil Lernfortschritt als Titel verwenden';
+$string['useprofoundness'] = 'Grund- und Erweiterungskompetenzen verwenden';
+$string['usetopicgrading'] = 'Beurteilung von Kompetenzbereichen ermöglichen';
+$string['usenumbering'] = 'Automatische Nummerierung im Kompetenzraster verwenden';
+$string['useniveautitleinprofile'] = 'Im Kompetenzprofil den Lernfortschritt als Titel verwenden';
 $string['usenostudents'] = 'Ohne Kursteilnehmer/innen arbeiten';
 $string['profoundness_0'] = 'Nicht erreicht';
 $string['profoundness_1'] = 'Zum Teil erreicht';
@@ -287,7 +290,7 @@ $string['teacher_tipp_1'] = 'Diese Kompetenz wurde bei ';
 $string['teacher_tipp_2'] = ' Moodle-Aktivit&auml;t(en) zugeordnet und bereits bei ';
 $string['teacher_tipp_3'] = ' Moodle-Aktivit&auml;t(en) in der Kompetenz-Detailansicht erf&uuml;llt.';
 $string['print'] = 'Drucken';
-$string['eportitems'] = 'Diese/r Kursteilnehmer/in hat folgende E-Portfolio-Artefakte zu diesem Deskriptor eingereicht: ';
+$string['eportitems'] = 'Diese/r Kursteilnehmer/in hat folgende ePortfolio-Artefakte zu diesem Deskriptor eingereicht: ';
 $string['eportitem_shared'] = ' (geteilt)';
 $string['eportitem_notshared'] = ' (nicht geteilt)';
 $string['teachershortcut'] = 'L';
@@ -406,7 +409,7 @@ $string['nE'] = 'nicht erreicht';
 // Competence Profile Settings
 $string['profile_settings_showonlyreached'] = 'Ich möchte in meinem Kompetenzprofil nur bereits erreichte Kompetenzen sehen.';
 $string['profile_settings_choose_courses'] = 'In Exabis Competencies beurteilen TrainerInnen den Kompetenzerwerb in unterschiedlichen Fachgebieten. Hier kann ausgew&auml;hlt werden, welche Kurse im Kompetenzprofil aufscheinen sollen.';
-$string['profile_settings_useexaport'] = 'Ich möchte Kompetenzen, die in Exabis E-Portfolio verwendet werden in meinem Profil sehen.';
+$string['profile_settings_useexaport'] = 'Ich möchte Kompetenzen, die in Exabis ePortfolio verwendet werden in meinem Profil sehen.';
 $string['profile_settings_choose_items'] = 'Exabis ePortfolio dokumentiert deinen Kompetenzerwerb außerhalb von LehrerInnen vorgegebenen Grenzen. Du kannst ausw&auml;hlen, welche Einträge im Kompetenzprofil aufscheinen sollen.';
 $string['profile_settings_useexastud'] = 'Ich möchte Beurteilungen aus Exabis Student Review in meinem Profil sehen.';
 $string['profile_settings_no_item'] = 'Kein Exabis ePortfolio Artefakt vorhanden, somit kann nichts dargestellt werden.';
@@ -428,8 +431,8 @@ $string['profoundness_entirely'] = 'Zur Gänze erfüllt';
 
 
 // External trainer & eLove
-$string['block_exacomp_external_trainer_assign_head'] = 'Zuteilung von externen TrainerInnen für Kursteilnehmer/innen erlauben. Erforderlich für die Benutzung der elove App.';
-$string['block_exacomp_external_trainer_assign_body'] = '';
+$string['block_exacomp_external_trainer_assign_head'] = 'Zuteilung von externen Trainer/innen für Kursteilnehmer/innen erlauben.';
+$string['block_exacomp_external_trainer_assign_body'] = 'Erforderlich für die Benutzung der elove App.';
 $string['block_exacomp_elove_student_self_assessment_head'] = 'Selbsteinschätzung für Kursteilnehmer/innen in der elove App erlauben.';
 $string['block_exacomp_elove_student_self_assessment_body'] = '';
 $string['block_exacomp_external_trainer_assign'] = 'Externe TrainerIn zuordnen';
@@ -538,12 +541,12 @@ $string['eventsimportcompleted'] = 'Import durchgeführt';
 $string['eventscrosssubjectadded'] = 'Thema freigegeben';
 
 
-// Statistics
+// === Statistics ===
 $string['process'] = 'Bearbeitungsstand';
 $string['niveauclass'] = 'Niveaueinstufung';
 
 
-// Message
+// === Message ===
 $string['messagetocourse'] = 'Nachricht an alle Kursteilnehmer/innen senden';
 
 
