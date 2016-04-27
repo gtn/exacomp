@@ -1093,7 +1093,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		/* SUBJECTS */
 		$first = true;
 		$course_subs = block_exacomp_get_subjects_by_course($courseid);
-
+		$usesubjectgrading = block_exacomp_is_subjectgrading_enabled();
 		foreach($subjects as $subject) {
 			if(!$subject->topics)
 				continue;
@@ -1110,7 +1110,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				if($crosssubjid)
 					$title->text = html_writer::tag("b", get_string('comps_and_material', 'block_exacomp'));
 				else
-					$title->text ='';
+					$title->text =($usesubjectgrading)?'':html_writer::tag("b", $subject->title);
 
 				$subjectRow->cells[] = $title;
 			}
@@ -1190,7 +1190,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$profoundness = block_exacomp_get_settings_by_course($courseid)->useprofoundness;
 			$evaluation = ($role == \block_exacomp\ROLE_TEACHER) ? 'teacher' : 'student';
 			
-			if(!$crosssubjid){
+			if(!$crosssubjid && $usesubjectgrading){
 				$subjectRow = new html_table_row();
 				$subjectRow->attributes['class'] = 'highlight';
 					
@@ -1700,15 +1700,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						if(!$one_student && !$editmode)
 							$visible_student = block_exacomp_is_descriptor_visible($data->courseid, $descriptor, $student->id);
 
-						$studentCell = new html_table_cell();
+						//$studentCell = new html_table_cell();
 						$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
-						$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+						//$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
 
 						// SHOW EVALUATION
-						if($data->showevaluation) {
+						/*if($data->showevaluation) {
 							$studentCellEvaluation = new html_table_cell();
 							$studentCellEvaluation->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-						}
+						}*/
 
 						// ICONS
 						if(isset($data->cm_mm->competencies[$descriptor->id])) {
@@ -1778,7 +1778,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							
 							$niveau_cell = new html_table_cell();
 							$niveau_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-							$niveau_cell->text = ($use_eval_niveau)?$this->generate_niveau_select('niveau_descriptor', $descriptor->id, 'competencies', $student, ($data->role == \block_exacomp\ROLE_STUDENT)?true:false, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
+							$niveau_cell->text = ($use_eval_niveau)?$this->generate_niveau_select('niveau_descriptor', $descriptor->id, 'competencies', $student, 
+									($data->role == \block_exacomp\ROLE_STUDENT)?true:(($visible_student)?false:true), ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
 								
 							$params = array('name'=>'add-grading-'.$student->id.'-'.$descriptor->id, 'type'=>'text',
 									'maxlength'=>3, 'class'=>'percent-rating-text',
@@ -2036,7 +2037,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								
 							$niveau_cell = new html_table_cell();
 							$niveau_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-							$niveau_cell->text = ($use_eval_niveau)?$this->generate_niveau_select('niveau_examples', $example->id, 'examples', $student, ($data->role == \block_exacomp\ROLE_STUDENT)?true:false, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
+							$niveau_cell->text = ($use_eval_niveau)?$this->generate_niveau_select('niveau_examples', $example->id, 'examples', $student, 
+									($data->role == \block_exacomp\ROLE_STUDENT)?true:(($visible_student_example)?false:true), ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
 							
 								
 							if(!$visible_student_example || $data->role == \block_exacomp\ROLE_STUDENT)
@@ -2065,9 +2067,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							if($data->scheme == 1) {
 								//TODO evt. noch benötigt?
 								//$studentCell->text .= get_string('assigndone','block_exacomp');
-								$self_evaluation_cell->text = $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, ($visible_student)?false:true, null, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
+								$self_evaluation_cell->text = $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, ($visible_student_example)?false:true, null, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
 							}else {
-								$self_evaluation_cell->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, !$visible_student, $data->profoundness, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
+								$self_evaluation_cell->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, !$visible_student_example, $data->profoundness, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
 							}
 							
 							$exampleRow->cells[] = $self_evaluation_cell;

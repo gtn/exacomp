@@ -131,7 +131,8 @@ $settings->add(new admin_setting_configcheckbox_grading('exacomp/additional_grad
 
 $settings->add(new admin_setting_configcheckbox('exacomp/usetopicgrading', block_exacomp\get_string('usetopicgrading'),
 	'', 0));
-
+$settings->add(new admin_setting_configcheckbox('exacomp/usesubjectgrading', block_exacomp\get_string('usesubjectgrading'), 
+	'', 0));
 
 $settings->add(new admin_setting_heading('exacomp/heading_display', block_exacomp\trans(['de:Anzeige', 'en:Display']), ''));
 

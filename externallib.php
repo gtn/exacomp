@@ -2956,8 +2956,7 @@ class block_exacomp_external extends external_api {
 			$example_course = $DB->get_record('course', array('id'=>$example->courseid));
 			$example->courseshortname = $example_course->shortname;
 			$example->coursefullname = $example_course->fullname;
-			if(!isset($example->additionalinfo))
-				$example->additionalinfo = -1;
+			$example->additionalinfo = -1;
 		}
 
 		return $examples;

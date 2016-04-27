@@ -548,6 +548,10 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'de' => 'Beurteilung von Kompetenzbereichen ermöglichen',
 		'en' => 'Enable topic gradings',
 	],
+	'usesubjectgrading' => [
+			'de' => 'Beurteilung von Fächern ermöglichen',
+			'en' => 'Enable subject gradings',
+	],
 	'usenumbering' => [
 		'de' => 'Nummerierung bei Kompetenzen und Teilbereichen verwenden',
 		'en' => 'Enable numbering for topics and competencies',
