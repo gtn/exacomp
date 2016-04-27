@@ -194,6 +194,7 @@ $string['show_all_examples'] = 'Externe Beispiele für Kursteilnehmer/innen anze
 $string['usedetailpage'] = 'Detaillierte Kompetenzansicht verwenden';
 $string['useprofoundness'] = 'Grund- und Erweiterungskompetenzen verwenden';
 $string['usetopicgrading'] = 'Beurteilung von Kompetenzbereichen ermöglichen';
+$string['usesubjectgrading'] = 'Beurteilung von Fächern ermöglichen';
 $string['usenumbering'] = 'Automatische Nummerierung im Kompetenzraster verwenden';
 $string['useniveautitleinprofile'] = 'Im Kompetenzprofil den Lernfortschritt als Titel verwenden';
 $string['usenostudents'] = 'Ohne Kursteilnehmer/innen arbeiten';

@@ -170,6 +170,7 @@ $string['show_all_examples'] = 'Show external examples for students';
 $string['usedetailpage'] = 'Use detailed overview of competencies';
 $string['useprofoundness'] = 'Use basic and extended competencies';
 $string['usetopicgrading'] = 'Enable topic gradings';
+$string['usesubjectgrading'] = 'Enable subject gradings';
 $string['usenumbering'] = 'Enable automatic numbering in the competence grid';
 $string['useniveautitleinprofile'] = 'Use niveau title in competence profile';
 $string['usenostudents'] = 'Use without students';
