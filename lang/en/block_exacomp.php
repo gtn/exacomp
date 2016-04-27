@@ -17,7 +17,9 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
+// shown in admin plugin list
 $string['pluginname'] = 'Exabis Competence grid';
+// shown in block title and all headers
 $string['blocktitle'] = 'Competence grid';
 $string['exacomp:addinstance'] = 'Add a exabis competencies block';
 $string['exacomp:myaddinstance'] = 'Add a exabis competencies block to my moodle';
@@ -293,7 +295,6 @@ $string['groupsize'] = 'Size of group: ';
 $string['assigndone'] = 'task done: ';
 $string['assignmyself'] = 'by myself';
 $string['assignlearningpartner'] = 'peer-to-peer';
-$string['assignlearningrgoup'] = NULL;
 $string['assignteacher'] = 'trainer';
 $string['assignfrom'] = 'from';
 $string['assignuntil'] = 'until';
@@ -531,12 +532,12 @@ $string['eventsimportcompleted'] = 'Import completed';
 $string['eventscrosssubjectadded'] = 'Cross-Subject added';
 
 
-// Statistics
+// === Statistics ===
 $string['process'] = 'State of process';
 $string['niveauclass'] = 'Niveau classification';
 
 
-// Message
+// === Message ===
 $string['messagetocourse'] = 'Nachricht an alle Kursteilnehmer/innen senden';
 $string['description_example'] = 'Description';
 $string['requirements'] = 'Was du schon k&ouml;nnen solltest: ';

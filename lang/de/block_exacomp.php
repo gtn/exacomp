@@ -17,7 +17,9 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
+// shown in admin plugin list
 $string['pluginname'] = 'Exabis Kompetenzraster';
+// shown in block title and all headers
 $string['blocktitle'] = 'Kompetenzraster';
 $string['exacomp:addinstance'] = 'Exabis Competencies auf Kursseite anlegen';
 $string['exacomp:myaddinstance'] = 'Exabis Competencies auf Startseite anlegen';
@@ -555,12 +557,12 @@ $string['eventsimportcompleted'] = 'Import durchgeführt';
 $string['eventscrosssubjectadded'] = 'Thema freigegeben';
 
 
-// Statistics
+// === Statistics ===
 $string['process'] = 'Bearbeitungsstand';
 $string['niveauclass'] = 'Niveaueinstufung';
 
 
-// Message
+// === Message ===
 $string['messagetocourse'] = 'Nachricht an alle Kursteilnehmer/innen senden';
 
 
