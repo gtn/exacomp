@@ -1890,8 +1890,8 @@ class block_exacomp_external extends external_api {
 				'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
 				'compid' => new external_value(PARAM_INT, 'competence id'),
 				'role' => new external_value(PARAM_INT, 'user role (0 == student, 1 == teacher)'),
-				'value' => new external_value(PARAM_INT, 'evaluation value (0, 1, 2 or 3)'),
-				'additionalinfo' => new external_value(PARAM_TEXT, 'additional grading 3 letters')
+				'additionalinfo' => new external_value(PARAM_FLOAT, 'decimal between 1 and 6'),
+				'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau (-1, 1, 2, 3)')
 		) );
 	}
 
@@ -1906,15 +1906,15 @@ class block_exacomp_external extends external_api {
 	 *			int value
 	 * @return success
 	 */
-	public static function dakora_set_competence($courseid, $userid, $compid, $role, $value, $additional_info) {
+	public static function dakora_set_competence($courseid, $userid, $compid, $role, $additionalinfo, $evalniveauid) {
 		global $USER, $DB;
 		static::validate_parameters ( static::dakora_set_competence_parameters (), array (
 				'courseid'=>$courseid,
 				'userid'=>$userid,
 				'compid'=>$compid,
 				'role'=>$role,
-				'value'=>$value,
-				'additionalinfo'=>$additional_info
+				'additionalinfo'=>$additionalinfo, 
+				'evalniveauid'=>$evalniveauid
 		) );
 
 		if($userid == 0 && $role == \block_exacomp\ROLE_STUDENT)
@@ -1924,11 +1924,12 @@ class block_exacomp_external extends external_api {
 
 				static::require_can_access_course_user($courseid, $userid);
 
-				if(block_exacomp_set_user_competence($userid, $compid, \block_exacomp\TYPE_DESCRIPTOR, $courseid, $role, $value) == -1)
+				$value =  block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
+				if(block_exacomp_set_user_competence($userid, $compid, \block_exacomp\TYPE_DESCRIPTOR, $courseid, $role, $value, $evalniveauid) == -1)
 					throw new invalid_parameter_exception ( 'Not allowed' );
 
 					if($role == \block_exacomp\ROLE_TEACHER){
-						block_exacomp_save_additional_grading_for_descriptor($courseid, $compid, $userid, $additional_info);
+						block_exacomp_save_additional_grading_for_descriptor($courseid, $compid, $userid, $additionalinfo);
 					}
 
 					return array (
@@ -2285,7 +2286,8 @@ class block_exacomp_external extends external_api {
 				'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
 				'teacherevaluation' => new external_value ( PARAM_INT, 'example evaluation of teacher'),
 				'studentevaluation' => new external_value ( PARAM_INT, 'example evaluation of student'),
-				'teacheritemvalue' => new external_value ( PARAM_INT, 'item evaluation of teacher')
+				'teacheritemvalue' => new external_value ( PARAM_INT, 'item evaluation of teacher'),
+				'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id')
 		) ) );
 	}
 
@@ -2357,7 +2359,8 @@ class block_exacomp_external extends external_api {
 				'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
 				'teacherevaluation' => new external_value ( PARAM_INT, 'example evaluation of teacher'),
 				'studentevaluation' => new external_value ( PARAM_INT, 'example evaluation of student'),
-				'teacheritemvalue' => new external_value ( PARAM_INT, 'item evaluation of teacher')
+				'teacheritemvalue' => new external_value ( PARAM_INT, 'item evaluation of teacher'),
+				'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id')
 		) ) );
 	}
 
@@ -2571,9 +2574,15 @@ class block_exacomp_external extends external_api {
 			$studentevaluation = $student->examples->student[$exampleid];
 		}
 
+		$evalniveauid = null;
+		if(isset($student->examples->niveau[$exampleid])){
+			$evalniveauid = $student->examples_niveau[$exampleid];
+		}
+		
 		return array (
 				'teacherevaluation' => $teacherevaluation,
-				'studentevaluation' => $studentevaluation
+				'studentevaluation' => $studentevaluation,
+				'evalniveauid' => $evalniveauid
 		);
 	}
 
@@ -2585,7 +2594,8 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_example_grading_returns() {
 		return new external_single_structure ( array (
 				'teacherevaluation' => new external_value ( PARAM_INT, 'teacher evaluation for student and example' ),
-				'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation for example' )
+				'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation for example' ),
+				'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id')
 		) );
 	}
 
@@ -2741,6 +2751,7 @@ class block_exacomp_external extends external_api {
 				'title' => new external_value ( PARAM_TEXT, 'title of example' ),
 				'student_evaluation' => new external_value ( PARAM_INT, 'self evaluation of student' ),
 				'teacher_evaluation' => new external_value( PARAM_INT, 'evaluation of teacher'),
+				'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
 				'courseid' => new external_value(PARAM_INT, 'example course'),
 				'state' => new external_value (PARAM_INT, 'state of example'),
 				'scheduleid' => new external_value (PARAM_INT, 'id in schedule context'),
@@ -2806,6 +2817,7 @@ class block_exacomp_external extends external_api {
 				'title' => new external_value ( PARAM_TEXT, 'title of example' ),
 				'student_evaluation' => new external_value ( PARAM_INT, 'self evaluation of student' ),
 				'teacher_evaluation' => new external_value( PARAM_INT, 'evaluation of teacher'),
+				'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
 				'courseid' => new external_value(PARAM_INT, 'example course'),
 				'state' => new external_value (PARAM_INT, 'state of example'),
 				'scheduleid' => new external_value (PARAM_INT, 'id in schedule context'),
@@ -2956,7 +2968,6 @@ class block_exacomp_external extends external_api {
 			$example_course = $DB->get_record('course', array('id'=>$example->courseid));
 			$example->courseshortname = $example_course->shortname;
 			$example->coursefullname = $example_course->fullname;
-			$example->additionalinfo = -1;
 		}
 
 		return $examples;
@@ -2975,7 +2986,7 @@ class block_exacomp_external extends external_api {
 				'end' => new external_value (PARAM_INT, 'end of event'),
 				'student_evaluation' => new external_value ( PARAM_INT, 'self evaluation of student' ),
 				'teacher_evaluation' => new external_value( PARAM_INT, 'evaluation of teacher'),
-				'additionalinfo' => new external_value( PARAM_INT, 'additional evaluation of teacher'),
+				'evalniveauid' => new external_value( PARAM_INT, 'evaluation niveau id'),
 				'courseid' => new external_value(PARAM_INT, 'example course'),
 				'state' => new external_value (PARAM_INT, 'state of example'),
 				'scheduleid' => new external_value (PARAM_INT, 'id in schedule context'),
@@ -3226,6 +3237,7 @@ class block_exacomp_external extends external_api {
 					'childtitle' => new external_value ( PARAM_TEXT, 'title of child' ),
 					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
 					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of children'),
+					'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
 					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of children'),
 					'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 					'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
@@ -3291,6 +3303,7 @@ class block_exacomp_external extends external_api {
 					'childtitle' => new external_value ( PARAM_TEXT, 'title of child' ),
 					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
 					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of children'),
+					'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
 					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of children'),
 					'hasmaterial' => new external_value ( PARAM_BOOL, 'true or false if child has materials'),
 					'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
@@ -3824,6 +3837,7 @@ class block_exacomp_external extends external_api {
 				'courseid' => new external_value ( PARAM_INT, 'courseid' ),
 				'exampleid' => new external_value ( PARAM_INT, 'exampleid' ),
 				'examplevalue' => new external_value ( PARAM_INT, 'examplevalue' ),
+				'exampleevalniveauid' => new external_value (PARAM_INT, 'example evaluation niveau id'),
 				'itemid' => new external_value ( PARAM_INT, 'itemid' , VALUE_DEFAULT, -1),
 				'itemvalue' => new external_value ( PARAM_INT, 'itemvalue' , VALUE_DEFAULT, -1),
 				'comment' => new external_value ( PARAM_TEXT, 'teachercomment' , VALUE_DEFAULT, "")
@@ -3836,10 +3850,11 @@ class block_exacomp_external extends external_api {
 	 * @param int $itemid (0 for new, >0 for existing)
 	 * @return array of course subjects
 	 */
-	public static function dakora_grade_example($userid, $courseid, $exampleid, $examplevalue, $itemid, $itemvalue, $comment) {
+	public static function dakora_grade_example($userid, $courseid, $exampleid, $examplevalue, $exampleevalniveauid, $itemid, $itemvalue, $comment) {
 		global $DB,$USER;
 
-		static::validate_parameters(static::dakora_grade_example_parameters(), array('userid'=>$userid,'courseid'=>$courseid,'exampleid'=>$exampleid,'examplevalue'=>$examplevalue,'itemid'=>$itemid,'itemvalue'=>$itemvalue,'comment'=>$comment));
+		static::validate_parameters(static::dakora_grade_example_parameters(), array('userid'=>$userid,'courseid'=>$courseid,'exampleid'=>$exampleid,'examplevalue'=>$examplevalue,
+				'exampleevalniveauid'=>$exampleevalniveauid, 'itemid'=>$itemid,'itemvalue'=>$itemvalue,'comment'=>$comment));
 
 		if($userid == 0) {
 			$role = \block_exacomp\ROLE_STUDENT;
@@ -3850,7 +3865,7 @@ class block_exacomp_external extends external_api {
 		static::require_can_access_course_user($courseid, $userid);
 		static::require_can_access_example($exampleid, $courseid);
 
-		block_exacomp_set_user_example(($userid == 0) ? $USER->id : $userid, $exampleid, $courseid, $role, $examplevalue,$itemvalue);
+		block_exacomp_set_user_example(($userid == 0) ? $USER->id : $userid, $exampleid, $courseid, $role, $examplevalue, $exampleevalniveauid);
 
 		if($itemid > 0 && $userid > 0) {
 
@@ -3930,10 +3945,12 @@ class block_exacomp_external extends external_api {
 		$descriptor_return->descriptortitle = $descriptor->title;
 		$descriptor_return->teacherevaluation = -1;
 		$descriptor_return->additionalinfo = null;
+		$descriptor_return->evalniveauid = null;
 		if(!$forall){
 			if ($grading = block_exacomp\get_comp_eval($courseid, \block_exacomp\ROLE_TEACHER, $userid, \block_exacomp\TYPE_DESCRIPTOR, $descriptorid)) {
 				$descriptor_return->teacherevaluation = ($grading->value !== null) ? $grading->value : -1;
 				$descriptor_return->additionalinfo = $grading->additionalinfo;
+				$descriptor_return->evalniveauid = $grading->evalniveauid;
 			}
 		}
 		$descriptor_return->studentevaluation = -1;
@@ -3962,6 +3979,7 @@ class block_exacomp_external extends external_api {
 		$children_teacherevaluation = array_fill(0,$grading_scheme,0);
 		$children_studentevaluation = array_fill(0,$grading_scheme,0);
 
+		//TODO check if this is still valid
 		foreach($childsandexamples->children as $child) {
 			if($child->teacherevaluation > -1)
 				$children_teacherevaluation[$child->teacherevaluation]++;
@@ -4022,7 +4040,8 @@ class block_exacomp_external extends external_api {
 				'descriptortitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
 				'teacherevaluation' => new external_value ( PARAM_INT, 'teacher evaluation of descriptor' ),
 				'studentevaluation' => new external_value ( PARAM_INT, 'student evaluation of descriptor' ),
-				'additionalinfo' => new external_value ( PARAM_TEXT, 'additional grading for descriptor' ),
+				'additionalinfo' => new external_value ( PARAM_FLOAT, 'additional grading for descriptor' ),
+				'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
 				'numbering' => new external_value ( PARAM_TEXT, 'numbering' ),
 				'niveauid' => new external_value ( PARAM_INT, 'id of niveau' ),
 				'niveautitle' => new external_value ( PARAM_TEXT, 'title of niveau' ),
@@ -4031,6 +4050,7 @@ class block_exacomp_external extends external_api {
 						'descriptorid' => new external_value ( PARAM_INT, 'id of descriptor' ),
 						'descriptortitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
 						'teacherevaluation' => new external_value ( PARAM_INT, 'teacher evaluation of descriptor' ),
+						'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
 						'studentevaluation' => new external_value ( PARAM_INT, 'student evaluation of descriptor' ),
 						'numbering' => new external_value ( PARAM_TEXT, 'numbering' ),
 						'hasmaterial' => new external_value ( PARAM_BOOL, 'true or false if descriptor has material' ),
@@ -4040,7 +4060,8 @@ class block_exacomp_external extends external_api {
 								'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
 								'teacherevaluation' => new external_value ( PARAM_INT, 'example evaluation of teacher' ),
 								'studentevaluation' => new external_value ( PARAM_INT, 'example evaluation of student' ),
-								'teacheritemvalue' => new external_value ( PARAM_INT, 'item evaluation of teacher' )
+								'teacheritemvalue' => new external_value ( PARAM_INT, 'item evaluation of teacher' ),
+								'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id')
 						) ) ),
 						'examplestotal' => new external_value ( PARAM_INT, 'total number of material' ),
 						'examplesvisible' => new external_value ( PARAM_FLOAT, 'visible number of material' ),
@@ -4069,7 +4090,8 @@ class block_exacomp_external extends external_api {
 						'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
 						'teacherevaluation' => new external_value ( PARAM_INT, 'example evaluation of teacher' ),
 						'studentevaluation' => new external_value ( PARAM_INT, 'example evaluation of student' ),
-						'teacheritemvalue' => new external_value ( PARAM_INT, 'item evaluation of teacher' )
+						'teacheritemvalue' => new external_value ( PARAM_INT, 'item evaluation of teacher' ),
+						'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id')
 				) ) ),
 				'examplestotal' => new external_value ( PARAM_INT, 'total number of material' ),
 				'examplesvisible' => new external_value ( PARAM_FLOAT, 'visible number of material' ),
@@ -4136,13 +4158,12 @@ class block_exacomp_external extends external_api {
 			$data['mimetype'] = "";
 			$data['teachervalue'] = isset ( $exampleEvaluation->teacher_evaluation ) ? $exampleEvaluation->teacher_evaluation : -1;
 			$data['studentvalue'] = isset ( $exampleEvaluation->student_evaluation ) ? $exampleEvaluation->student_evaluation : -1;
+			$data['evalniveauid'] = isset ( $exampleEvaluation->evalniveauid ) ? $exampleEvaluation->evalniveauid : null;
 			$data['status'] = isset ( $itemInformation->status ) ? $itemInformation->status : -1;
 			$data['name'] = $itemInformation->name;
 			$data['type'] = $itemInformation->type;
 			$data['url'] = $itemInformation->url;
-			//$data['teacheritemvalue'] = isset( $itemInformation->teachervalue ) ? $itemInformation->teachervalue : -1;
-			$data['teacheritemvalue'] = isset ( $exampleEvaluation->additionalinfo ) ? $exampleEvaluation->additionalinfo : -1;
-
+		
 			if ($itemInformation->type == 'file') {
 				require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
 
@@ -4194,7 +4215,7 @@ class block_exacomp_external extends external_api {
 			$data['teacherfile'] = '';
 			$data['teachervalue'] = isset ( $exampleEvaluation->teacher_evaluation ) ? $exampleEvaluation->teacher_evaluation : -1;
 			$data['studentvalue'] = isset ( $exampleEvaluation->student_evaluation ) ? $exampleEvaluation->student_evaluation : -1;
-			$data['teacheritemvalue'] = isset ( $exampleEvaluation->additionalinfo ) ? $exampleEvaluation->additionalinfo : -1;
+			$data['evalniveauid'] = isset ( $exampleEvaluation->evalniveauid ) ? $exampleEvaluation->evalniveauid : null;
 		}
 
 		if(!$exampleEvaluation || $exampleEvaluation->resubmission)
@@ -4222,10 +4243,10 @@ class block_exacomp_external extends external_api {
 				'mimetype' => new external_value ( PARAM_TEXT, 'mime type for file' ),
 				'teachervalue' => new external_value ( PARAM_INT, 'teacher grading' ),
 				'studentvalue' => new external_value ( PARAM_INT, 'student grading' ),
+				'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
 				'teachercomment' => new external_value ( PARAM_TEXT, 'teacher comment' ),
 				'teacherfile' => new external_value ( PARAM_TEXT ),
 				'studentcomment' => new external_value ( PARAM_TEXT, 'student comment' ),
-				'teacheritemvalue' => new external_value ( PARAM_INT, 'item teacher grading' ),
 				'resubmission' => new external_value ( PARAM_BOOL, 'resubmission is allowed/not allowed' )
 		) );
 	}
@@ -4329,7 +4350,8 @@ class block_exacomp_external extends external_api {
 			$data_content->totallmnumb = $lmdata->total;
 			$data_content->inworklmnumb = $lmdata->inWork;
 			$data_content->teacherevaluation = (isset($user->competencies->teacher[$descriptor->id]))?$user->competencies->teacher[$descriptor->id]:-1;
-			$data_content->additionalinfo = (isset($user->competencies->teacher_additional_grading[$descriptor->id]))?$user->competencies->teacher_additional_grading[$descriptor->id]:'';
+			$data_content->additionalinfo = (isset($user->competencies->teacher_additional_grading[$descriptor->id]))?$user->competencies->teacher_additional_grading[$descriptor->id]:-1;
+			$data_content->evalniveauid = (isset($user->competencies->niveau[$descriptor->id]))?$user->competencies->niveau[$descriptor->id]:null;
 			$data_content->studentevaluation = (isset($user->competencies->student[$descriptor->id]))?$user->competencies->student[$descriptor->id]:-1;
 			$data->descriptordata[] = $data_content;
 		}
@@ -4359,7 +4381,8 @@ class block_exacomp_external extends external_api {
 					'totallmnumb' => new external_value ( PARAM_INT, 'number of learning material in total'),
 					'inworklmnumb' => new external_value (PARAM_INT, 'number of learning material in work'),
 					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of descriptor'),
-					'additionalinfo' => new external_value (PARAM_TEXT, 'additional grading of descriptor'),
+					'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading of descriptor'),
+					'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
 					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of descriptor')
 			) ) )
 		) );
@@ -4917,11 +4940,13 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 				$example_return->teacherevaluation = -1;
 				$example_return->studentevaluation = -1;
 				$example_return->teacheritemvalue = -1;
+				$example_return->evalniveauid = null;
 			}else{
 				$evaluation = (object) static::dakora_get_example_information($courseid, $userid, $example->id);
 				$example_return->teacherevaluation = $evaluation->teachervalue;
 				$example_return->studentevaluation = $evaluation->studentvalue;
 				$example_return->teacheritemvalue = $evaluation->teacheritemvalue;
+				$example_return->evalniveauid = $evaluation->evalniveauid;
 			}
 
 			if(!array_key_exists($example->id, $examples_return) && (!in_array($example->id, $example_non_visibilities)) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))

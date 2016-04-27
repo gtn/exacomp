@@ -5492,7 +5492,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid){
 
 	$sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
-				eval.student_evaluation, eval.teacher_evaluation, evis.courseid, s.id as scheduleid,
+				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, evis.courseid, s.id as scheduleid,
 				e.externalurl, e.externaltask, e.description
 			FROM {block_exacompschedule} s
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid
@@ -5514,7 +5514,7 @@ function block_exacomp_get_examples_for_trash($studentid, $courseid){
 
 	$sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
-				eval.student_evaluation, eval.teacher_evaluation, evis.courseid, s.id as scheduleid
+				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, evis.courseid, s.id as scheduleid
 			FROM {block_exacompschedule} s
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid
 			JOIN {".\block_exacomp\DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=?
@@ -5556,7 +5556,7 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
 
 	$sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
-				eval.student_evaluation, eval.teacher_evaluation, s.courseid, s.id as scheduleid,
+				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, s.courseid, s.id as scheduleid,
 				e.externalurl, e.externaltask, e.description
 			FROM {block_exacompschedule} s
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid
@@ -6086,8 +6086,9 @@ function block_exacomp_get_cm_from_cmid($cmid) {
 
 function block_exacomp_save_additional_grading_for_descriptor($courseid, $descriptorid, $studentid, $additionalinfo){
 	global $DB, $USER;
-
+	
 	$value = block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
+	
 	$record = block_exacomp\get_comp_eval($courseid, \block_exacomp\ROLE_TEACHER, $studentid, \block_exacomp\TYPE_DESCRIPTOR, $descriptorid);
 	if($record){
 		$record->additionalinfo = $additionalinfo;
