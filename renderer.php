@@ -1953,7 +1953,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								
 							$niveau_cell = new html_table_cell();
 							$niveau_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-							$niveau_cell->text = ($use_eval_niveau)?$this->generate_niveau_select('niveau_descriptor', $example->id, 'examples', $student, ($data->role == \block_exacomp\ROLE_STUDENT)?true:false, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
+							$niveau_cell->text = ($use_eval_niveau)?$this->generate_niveau_select('niveau_examples', $example->id, 'examples', $student, ($data->role == \block_exacomp\ROLE_STUDENT)?true:false, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
 							
 								
 							if(!$visible_student_example || $data->role == \block_exacomp\ROLE_STUDENT)
