@@ -624,6 +624,7 @@ function block_exacomp_delete_custom_example($example_object_or_id) {
 	$fs->delete_area_files(\context_system::instance()->id, 'block_exacomp', 'example_solution', $example->id);
 }
 
+
 /**
  * Set one competence for one user in one course
  *
@@ -633,10 +634,14 @@ function block_exacomp_delete_custom_example($example_object_or_id) {
  * @param int $courseid
  * @param int $role
  * @param int $value
+ * @param int $evalniveauid
  */
-function block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value) {
+function block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid = null) {
 	global $DB, $USER;
 
+	if($evalniveauid !== null && $evalniveauid < 1)
+		$evalniveauid = null;
+	
 	// TODO: block_exacomp_external::require_teacher_permission($courseid, $userid);
 	if($role == \block_exacomp\ROLE_STUDENT && $userid != $USER->id)
 		return -1;
@@ -649,10 +654,11 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 		$record->value = ($value != -1) ? $value : null;
 		$record->timestamp = time();
 		$record->reviewerid = $USER->id;
+		$record->evalniveauid = $evalniveauid;
 		$DB->update_record(\block_exacomp\DB_COMPETENCIES, $record);
 		$id = $record->id;
 	} else {
-		$id = $DB->insert_record(\block_exacomp\DB_COMPETENCIES, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, "courseid" => $courseid, "role" => $role, "value" => $value, "reviewerid" => $USER->id, "timestamp" => time()));
+		$id = $DB->insert_record(\block_exacomp\DB_COMPETENCIES, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, "courseid" => $courseid, "role" => $role, "value" => $value, "reviewerid" => $USER->id, "timestamp" => time(), "evalniveauid" => $evalniveauid));
 	}
 
 	if($role == \block_exacomp\ROLE_TEACHER)
@@ -669,7 +675,9 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 	global $DB, $USER;
 
 	$updateEvaluation = new stdClass();
-
+	if($evalniveauid !== null && $evalniveauid < 1)
+		$evalniveauid = null;
+	
 	if ($role == \block_exacomp\ROLE_TEACHER) {
 		block_exacomp_require_teacher($courseid);
 		$updateEvaluation->teacher_evaluation = ($value != -1) ? $value : null;
