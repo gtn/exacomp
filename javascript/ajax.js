@@ -24,9 +24,12 @@
 	var competencies = {};
 	
 	var prev_val;
-	
+
+	// TODO: add additional_grading info to competencies array!
 	var competencies_additional_grading = {};
-	
+	var topics_additional_grading = {};
+	var subjects_additional_grading = {};
+
 	$(document).on('focus', 'input[name^=datadescriptors\-]', function() {
 		prev_val = $(this).val();
 	});
@@ -123,8 +126,6 @@
 		}
 		else
 			competencies[compid + "-" + userid]['niveauid'] = niveauid;
-		
-		console.log(competencies[compid + "-" + userid]);
 	});
 
 	$(document).on('change', 'input[name^=add-grading\-]', function(event) {
@@ -132,9 +133,20 @@
 		var userid = this.getAttribute('exa-userid');	
 		var value = $(this).val();
 		
-		if(!competencies_additional_grading[compid])
-			competencies_additional_grading[compid] = {};
-		competencies_additional_grading[compid][userid] = value;
+		var type = this.getAttribute('exa-type');
+		if(type == 0) {
+			if(!competencies_additional_grading[compid])
+				competencies_additional_grading[compid] = {};
+			competencies_additional_grading[compid][userid] = value;
+		} else if(type == 1) {
+			if(!topics_additional_grading[compid])
+				topics_additional_grading[compid] = {};
+			topics_additional_grading[compid][userid] = value;
+		} else if(type == 3) {
+			if(!subjects_additional_grading[compid])
+				subjects_additional_grading[compid] = {};
+			subjects_additional_grading[compid][userid] = value;
+		} 
 	});
 	
 	// # TOPICS
@@ -168,6 +180,46 @@
 			compid : this.getAttribute('exa-compid'),
 			value : $(this).val()
 		};
+	});
+	
+	$(document).on('change', 'select[name^=niveau_topic\-]', function(event) {
+		var compid = this.getAttribute('exa-compid');
+		var userid = this.getAttribute('exa-userid');		
+		var niveauid = $(this).val();
+		var name = 'datatopics-'+compid+'-'+userid+'-teacher';
+		var value = $('select[name='+name+']').val();
+
+		if(!topics[name]) {
+			topics[name] = {
+					userid : userid,
+					compid : compid,
+					value : value,
+					niveauid : niveauid
+				};
+		}
+		else
+			topics[name]['niveauid'] = niveauid;
+		
+		console.log(topics[name]);
+	});
+	// # SUBJECTS
+	var subjects = {}
+	$(document).on('change', 'select[name^=niveau_subject\-]', function(event) {
+		var compid = this.getAttribute('exa-compid');
+		var userid = this.getAttribute('exa-userid');		
+		var niveauid = $(this).val();
+
+		if(!subjects[compid+"-"+userid]) {
+			subjects[compid+"-"+userid] = {
+					userid : userid,
+					compid : compid,
+					niveauid : niveauid
+				};
+		}
+		else
+			subjects[compid+"-"+userid]['niveauid'] = niveauid;
+		
+		console.log(subjects[compid+"-"+userid]);
 	});
 	
 	// # CROSSSUBJECTS
@@ -340,6 +392,11 @@
 				crosssubs = {};
 			}
 			
+			if (!$.isEmptyObject(subjects)) {
+				competencies_by_type[3] = subjects;
+				subjects = {};
+			}
+			
 			if (competencies_by_type.length) {
 				multiQueryData.competencies_by_type = competencies_by_type
 			}
@@ -348,6 +405,14 @@
 				multiQueryData.competencies_additional_grading = competencies_additional_grading;
 			}
 
+			if(!$.isEmptyObject(topics_additional_grading)){
+				multiQueryData.topics_additional_grading = topics_additional_grading;
+			}
+			
+			if(!$.isEmptyObject(subjects_additional_grading)){
+				multiQueryData.subjects_additional_grading = subjects_additional_grading;
+			}
+			
 			if (!$.isEmptyObject(multiQueryData)) {
 				block_exacomp.call_ajax({
 					action: 'multi',

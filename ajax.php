@@ -160,6 +160,34 @@ switch($action){
 				}
 			}
 		}
+		// TODO: refactor, use generic comp array with type instead of 3 arrays for comp, topic and subject
+		if(!empty($data->topics_additional_grading)){
+			$additional_grading = block_exacomp\param::clean_array($data->topics_additional_grading,
+					array(PARAM_INT=>
+							array(PARAM_INT=>PARAM_TEXT)
+					)
+					);
+				
+			foreach($additional_grading as $descrid => $students){
+				foreach($students as $studentid=>$value){
+					block_exacomp_save_additional_grading_for_descriptor($courseid, $descrid, $studentid, $value, 1);
+				}
+			}
+		}
+		if(!empty($data->subjects_additional_grading)){
+			$additional_grading = block_exacomp\param::clean_array($data->subjects_additional_grading,
+					array(PARAM_INT=>
+							array(PARAM_INT=>PARAM_TEXT)
+					)
+					);
+		
+			foreach($additional_grading as $descrid => $students){
+				foreach($students as $studentid=>$value){
+					block_exacomp_save_additional_grading_for_descriptor($courseid, $descrid, $studentid, $value, 3);
+				}
+			}
+		}
+		
 		if(!empty($data->examples_additional_grading)){
 			
 			$additional_grading = block_exacomp\param::clean_array($data->examples_additional_grading, 

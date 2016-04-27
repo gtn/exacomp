@@ -6086,12 +6086,11 @@ function block_exacomp_get_cm_from_cmid($cmid) {
 	}
 }
 
-function block_exacomp_save_additional_grading_for_descriptor($courseid, $descriptorid, $studentid, $additionalinfo){
+function block_exacomp_save_additional_grading_for_descriptor($courseid, $descriptorid, $studentid, $additionalinfo, $comptype = \block_exacomp\TYPE_DESCRIPTOR){
 	global $DB, $USER;
-	
+
 	$value = block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
-	
-	$record = block_exacomp\get_comp_eval($courseid, \block_exacomp\ROLE_TEACHER, $studentid, \block_exacomp\TYPE_DESCRIPTOR, $descriptorid);
+	$record = block_exacomp\get_comp_eval($courseid, \block_exacomp\ROLE_TEACHER, $studentid, $comptype, $descriptorid);
 	if($record){
 		$record->additionalinfo = $additionalinfo;
 		$record->value = $value;
@@ -6101,7 +6100,7 @@ function block_exacomp_save_additional_grading_for_descriptor($courseid, $descri
 		$insert->compid = $descriptorid;
 		$insert->userid = $studentid;
 		$insert->courseid = $courseid;
-		$insert->comptype = \block_exacomp\TYPE_DESCRIPTOR;
+		$insert->comptype = $comptype;
 		$insert->additionalinfo = $additionalinfo;
 		$insert->role = \block_exacomp\ROLE_TEACHER;
 		$insert->reviewerid = $USER->id;
