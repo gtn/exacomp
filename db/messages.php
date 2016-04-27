@@ -18,6 +18,7 @@
 // This copyright notice MUST APPEAR in all copies of the script!
 
 defined('MOODLE_INTERNAL') || die();
+
 $messageproviders = array (
 		// Notify teacher that a student has submitted an item
 		'submission' => array (

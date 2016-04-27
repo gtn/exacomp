@@ -1843,6 +1843,26 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'Nachricht an alle Kursteilnehmer/innen senden',
 		'Nachricht an alle Kursteilnehmer/innen senden',
 	],
+	'messageprovider:submission' => [
+		'Nachricht bei neuer Schülerabgabe',
+		'Notify teacher that a student has submitted an item',
+	],
+	'messageprovider:grading' => [
+		'Nachricht an bei neuer Note',
+		'Notify Student that a teacher graded competencies',
+	],
+	'messageprovider:self_assessment' => [
+		'Nachricht bei neuer Selbstbewertung',
+		'Student assessed some own competencies',
+	],
+	'messageprovider:weekly_schedule' => [
+		'Lehrer/in fügt ein Beispiel in den Wochenplan ein',
+		'Teacher adds new example to weekly schedule',
+	],
+	'messageprovider:comment' => [
+		'Lehrer/in kommentiert ein Beispiel',
+		'Teacher comments an example',
+	],
 
 
 	'description_example' => [
