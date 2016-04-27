@@ -1227,7 +1227,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							'value'=>(isset($student->subjects->teacher_additional_grading[$subject->id]) &&
 									$student->subjects->teacher_additional_grading[$subject->id] != null)?
 							$student->subjects->teacher_additional_grading[$subject->id]:"",
-							'exa-compid'=>$subject->id, 'exa-userid'=>$student->id, 'exa-type'=>'subject');
+							'exa-compid'=>$subject->id, 'exa-userid'=>$student->id, 'exa-type'=>\block_exacomp\TYPE_SUBJECT);
 						
 					if($role == \block_exacomp\ROLE_STUDENT)
 						$params['disabled'] = 'disabled';
@@ -1470,7 +1470,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							'value'=>(isset($student->topics->teacher_additional_grading[$topic->id]) &&
 									$student->topics->teacher_additional_grading[$topic->id] != null)?
 							$student->topics->teacher_additional_grading[$topic->id]:"",
-							'exa-compid'=>$topic->id, 'exa-userid'=>$student->id, 'exa-type'=>'topic');
+							'exa-compid'=>$topic->id, 'exa-userid'=>$student->id, 'exa-type'=>\block_exacomp\TYPE_TOPIC);
 						
 					if($data->role == \block_exacomp\ROLE_STUDENT)
 						$params['disabled'] = 'disabled';
@@ -1786,7 +1786,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 									'value'=>(isset($student->competencies->teacher_additional_grading[$descriptor->id]) &&
 											$student->competencies->teacher_additional_grading[$descriptor->id] != null)?
 									$student->competencies->teacher_additional_grading[$descriptor->id]:"",
-									'exa-compid'=>$descriptor->id, 'exa-userid'=>$student->id, 'exa-type'=>'competence');
+									'exa-compid'=>$descriptor->id, 'exa-userid'=>$student->id, 'exa-type'=>\block_exacomp\TYPE_DESCRIPTOR);
 							
 							if(!$visible_student || $data->role == \block_exacomp\ROLE_STUDENT)
 								$params['disabled'] = 'disabled';
