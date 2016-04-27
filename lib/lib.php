@@ -1559,7 +1559,8 @@ function block_exacomp_get_user_examples_by_course($user, $courseid) {
 	$examples = new stdClass();
 	$examples->teacher = g::$DB->get_records_menu(\block_exacomp\DB_EXAMPLEEVAL,array("courseid" => $courseid, "studentid" => $user->id),'','exampleid as id, teacher_evaluation as value');
 	$examples->student = g::$DB->get_records_menu(\block_exacomp\DB_EXAMPLEEVAL,array("courseid" => $courseid, "studentid" => $user->id),'','exampleid as id, student_evaluation as value');
-
+	$examples->niveau = g::$DB->get_records_menu(\block_exacomp\DB_EXAMPLEEVAL, array("courseid"=>$courseid, "studentid"=>$user->id),'', 'exampleid as id, evalniveauid');
+	
 	return $examples;
 }
 /**
