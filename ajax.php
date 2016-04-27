@@ -136,10 +136,11 @@ switch($action){
 			$examples = block_exacomp\param::clean_array($data->examples, array((object)array(
 				'userid' => PARAM_INT,
 				'exampleid' => PARAM_INT,
-				'value' => PARAM_INT
+				'value' => PARAM_INT,
+				'niveauid' => PARAM_INT
 			)));
 			foreach($examples as $example){
-				block_exacomp_set_user_example($example->userid, $example->exampleid, $courseid, ($isTeacher) ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $example->value);
+				block_exacomp_set_user_example($example->userid, $example->exampleid, $courseid, ($isTeacher) ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $example->value, $example->niveauid);
 			}
 		}
 		

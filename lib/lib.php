@@ -665,7 +665,7 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 	return $id;
 }
 
-function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $value = null, $starttime = 0, $endtime = 0, $studypartner = 'self', $additionalinfo=null) {
+function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $value = null, $evalniveauid = null) {
 	global $DB, $USER;
 
 	$updateEvaluation = new stdClass();
@@ -674,7 +674,7 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 		block_exacomp_require_teacher($courseid);
 		$updateEvaluation->teacher_evaluation = ($value != -1) ? $value : null;
 		$updateEvaluation->teacher_reviewerid = $USER->id;
-		if($additionalinfo !== null) $updateEvaluation->additionalinfo = $additionalinfo;
+		if($evalniveauid !== null) $updateEvaluation->evalniveauid = $evalniveauid;
 		$updateEvaluation->resubmission = ($value != -1) ? false : true;
 	} else {
 		if ($userid != $USER->id)
@@ -683,16 +683,13 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 
 			if($value !== null)
 				$updateEvaluation->student_evaluation = ($value != -1) ? $value : null;
-
-			$updateEvaluation->starttime = $starttime;
-			$updateEvaluation->endtime = $endtime;
 	}
 	if($record = $DB->get_record(\block_exacomp\DB_EXAMPLEEVAL,array("studentid" => $userid, "courseid" => $courseid, "exampleid" => $exampleid))) {
 		//if teacher keep studenteval
 		if($role == \block_exacomp\ROLE_TEACHER) {
 			$record->teacher_evaluation = $updateEvaluation->teacher_evaluation;
 			$record->teacher_reviewerid = $updateEvaluation->teacher_reviewerid;
-			if($additionalinfo !== null) $record->additionalinfo = $updateEvaluation->additionalinfo;
+			if($evalniveauid !== null) $record->evalniveauid = $updateEvaluation->evalniveauid;
 			$record->resubmission = $updateEvaluation->resubmission;
 
 			$DB->update_record(\block_exacomp\DB_EXAMPLEEVAL,$record);
@@ -714,7 +711,6 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 	}
 
 	// TODO: unreachable statement?!?
-
 	if($role == \block_exacomp\ROLE_TEACHER)
 		\block_exacomp\event\competence_assigned::log(['objectid' => $exampleid, 'courseid' => $courseid, 'relateduserid' => $userid]);
 }

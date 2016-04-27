@@ -27,8 +27,6 @@
 	
 	var competencies_additional_grading = {};
 	
-	var examples_additional_grading = {};
-
 	$(document).on('focus', 'input[name^=datadescriptors\-]', function() {
 		prev_val = $(this).val();
 	});
@@ -189,14 +187,38 @@
 	});
 	$(document).on('change', 'select[name^=dataexamples\-]', function() {
 		var values = $(this).attr("name").split("-");
-
-		examples[this.name] = {
-			userid : values[2],
-			exampleid : values[1],
-			value : $(this).val()
-		};
+		if(!examples[this.name])
+			examples[this.name] = {
+				userid : values[2],
+				exampleid : values[1],
+				value : $(this).val(),
+				niveauid : 0
+			};
+		else
+			examples[this.name]['value'] = $(this).val();
+		
+		console.log(examples[this.name])
 	});
+	$(document).on('change', 'select[name^=niveau_examples\-]', function(event) {
+		
+		var name = this.name.replace("niveau_","data") + "-teacher"
+		var value = $(this).val();
+		
+		if(!examples[name]) {
+			var values = name.split("-");
 
+			examples[name] = {
+					userid : values[2],
+					exampleid : values[1],
+					value : -1,
+					niveauid : value
+				};
+		}
+		else
+			examples[name]['niveauid'] = value;
+		
+		console.log(examples[name])
+	});
 	$(document).on('keydown', ':text[exa-type="new-descriptor"]', function(event) {
 		if (event.keyCode == 13) {
 			// enter
@@ -284,10 +306,6 @@
 				multiQueryData.competencies_additional_grading = competencies_additional_grading;
 			}
 
-			if(!$.isEmptyObject(examples_additional_grading)){
-				multiQueryData.examples_additional_grading = examples_additional_grading;
-			}
-			
 			if (!$.isEmptyObject(multiQueryData)) {
 				block_exacomp.call_ajax({
 					action: 'multi',
@@ -611,13 +629,14 @@
 		competencies_additional_grading[descrid][studentid] = value;
 	});
 	
-	$(document).on('change', 'input.percent-rating', function(event) {
-		var exampleid = $(this).attr('exampleid');
-		var studentid = $(this).attr('studentid');
+	$(document).on('change', 'select[name^=niveau_descriptor\-]', function(event) {
+		var compid = $(this).attr('exa-compid');
+		var userid = $(this).attr('exa-userid');
+		var value = $(this).val();
 		
-		if(!examples_additional_grading[exampleid])
-			examples_additional_grading[exampleid] = {};
-		examples_additional_grading[exampleid][studentid] = this.value == '' ? -1 : this.value.replace(/[^0-9]/g, '');
+		if(!competencies_evaluation_niveau[descrid])
+			competencies_evaluation_niveau[descrid] = {};
+		competencies_evaluation_niveau[descrid][studentid] = value;
 	});
 	
 	$(window).on('beforeunload', function (){

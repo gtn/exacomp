@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/exacomp/db" VERSION="20160421" COMMENT="XMLDB file for Moodle blocks/exacomp"
+<XMLDB PATH="blocks/exacomp/db" VERSION="20160427" COMMENT="XMLDB file for Moodle blocks/exacomp"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -263,7 +263,7 @@
         <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel userid"/>
         <KEY NAME="reviewerid" TYPE="foreign" FIELDS="reviewerid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel Beurteilender"/>
         <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Fremdschlüssel Kurs"/>
-        <KEY NAME="evalniveauid" TYPE="foreign" FIELDS="evalniveauid" REFTABLE="eval_niveau" REFFIELDS="id"/>
+        <KEY NAME="evalniveauid" TYPE="foreign" FIELDS="evalniveauid" REFTABLE="block_exacompeval_niveau" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="block_exacompsettings" COMMENT="Bewertungsschema des Kurses festlegen">
@@ -326,7 +326,7 @@
         <FIELD NAME="starttime" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="endtime" TYPE="int" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="studypartner" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="additionalinfo" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="additional info for 0-100 value"/>
+        <FIELD NAME="evalniveauid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="resubmission" TYPE="int" LENGTH="5" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
@@ -335,6 +335,7 @@
         <KEY NAME="exampleid" TYPE="foreign" FIELDS="exampleid" REFTABLE="block_exacompexamples" REFFIELDS="id" COMMENT="Fremdschlüssel Exampleid"/>
         <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Fremdschlüssel Courseid"/>
         <KEY NAME="teacher_reviewerid" TYPE="foreign" FIELDS="teacher_reviewerid" REFTABLE="user" REFFIELDS="id" COMMENT="Fremdschlüssel Userid"/>
+        <KEY NAME="evalniveauid" TYPE="foreign" FIELDS="evalniveauid" REFTABLE="block_exacompeval_niveau" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="block_exacompcategories" COMMENT="used for additional info">
