@@ -564,6 +564,11 @@ $string['niveauclass'] = 'Niveaueinstufung';
 
 // === Message ===
 $string['messagetocourse'] = 'Nachricht an alle Kursteilnehmer/innen senden';
+$string['messageprovider:submission'] = 'Nachricht bei neuer Schülerabgabe';
+$string['messageprovider:grading'] = 'Nachricht an bei neuer Note';
+$string['messageprovider:self_assessment'] = 'Nachricht bei neuer Selbstbewertung';
+$string['messageprovider:weekly_schedule'] = 'Lehrer/in fügt ein Beispiel in den Wochenplan ein';
+$string['messageprovider:comment'] = 'Lehrer/in kommentiert ein Beispiel';
 
 
 // load local langstrings

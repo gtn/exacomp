@@ -539,6 +539,11 @@ $string['niveauclass'] = 'Niveau classification';
 
 // === Message ===
 $string['messagetocourse'] = 'Nachricht an alle Kursteilnehmer/innen senden';
+$string['messageprovider:submission'] = 'Notify teacher that a student has submitted an item';
+$string['messageprovider:grading'] = 'Notify Student that a teacher graded competencies';
+$string['messageprovider:self_assessment'] = 'Student assessed some own competencies';
+$string['messageprovider:weekly_schedule'] = 'Teacher adds new example to weekly schedule';
+$string['messageprovider:comment'] = 'Teacher comments an example';
 $string['description_example'] = 'Description';
 $string['requirements'] = 'Was du schon k&ouml;nnen solltest: ';
 $string['forwhat'] = 'Wof&uuml;r du das brauchst: ';
