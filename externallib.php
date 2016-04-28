@@ -715,6 +715,9 @@ class block_exacomp_external extends external_api {
 		if ($userid == 0)
 			$userid = $USER->id;
 
+set_exception_handler(null);
+ini_set('display_errors', true);
+
 		static::validate_parameters ( static::get_item_for_example_parameters (), array (
 				'userid' => $userid,
 				'itemid' => $itemid
@@ -763,18 +766,24 @@ class block_exacomp_external extends external_api {
 		// TODO: change to exaport\api::get_item_comments()
 		$itemcomments = $DB->get_records ( 'block_exaportitemcomm', array (
 				'itemid' => $itemid
-		), 'timemodified ASC', 'entry, userid');
+		), 'timemodified ASC', 'id, entry, userid');
 
 		// teacher comment: last comment from any teacher in the course the item was submited
 		foreach ($itemcomments as $itemcomment) {
 			if (!$item->studentcomment && $userid == $itemcomment->userid) {
 				$item->studentcomment = $itemcomment->entry;
-			} elseif (!$item->teachercomment && $item->courseid && array_key_exists($itemcomment->userid, block_exacomp_get_teachers_by_course($item->courseid))) {
-				$item->teachercomment = $itemcomment->entry;
+			} elseif (!$item->teachercomment) {
+				if ($item->courseid && block_exacomp_is_teacher($item->courseid, $itemcomment->userid)) {
+					// dakora / exacomp teacher
+					$item->teachercomment = $itemcomment->entry;
+				} elseif (\block_exacomp\is_external_trainer_for_student($itemcomment->userid, $item->userid)) {
+					// elove teacher
+					$item->teachercomment = $itemcomment->entry;
+				}
 			}
 		}
 
-		return ($item);
+		return $item;
 	}
 
 	/**
