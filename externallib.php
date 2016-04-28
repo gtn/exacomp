@@ -766,14 +766,11 @@ class block_exacomp_external extends external_api {
 		), 'timemodified ASC', 'entry, userid');
 
 		// teacher comment: last comment from any teacher in the course the item was submited
-		if ($itemcomments) {
-			foreach ( $itemcomments as $itemcomment ) {
-				if ($userid == $itemcomment->userid && empty($item->studentcomment)) {
-					$item->studentcomment = $itemcomment->entry;
-				} elseif(isset($item->courseid) && array_key_exists($itemcomment->userid, block_exacomp_get_teachers_by_course($item->courseid))
-						&& empty($item->teachercomment)){
-					$item->teachercomment = $itemcomment->entry;
-				}
+		foreach ($itemcomments as $itemcomment) {
+			if (!$item->studentcomment && $userid == $itemcomment->userid) {
+				$item->studentcomment = $itemcomment->entry;
+			} elseif (!$item->teachercomment && $item->courseid && array_key_exists($itemcomment->userid, block_exacomp_get_teachers_by_course($item->courseid))) {
+				$item->teachercomment = $itemcomment->entry;
 			}
 		}
 

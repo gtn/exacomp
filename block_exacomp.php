@@ -20,8 +20,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once __DIR__.'/../moodleblock.class.php';
-require_once __DIR__.'/lib.php';
-
+require_once __DIR__.'/inc.php';
 
 class block_exacomp extends block_list {
 	function init() {
