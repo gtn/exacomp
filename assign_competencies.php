@@ -44,6 +44,9 @@ if($editmode) {
 	$studentid = 0;
 }
 
+require 'externallib.php';
+var_dump(block_exacomp_external::get_user_profile(3));
+
 $page_identifier = 'tab_competence_overview';
 
 /* PAGE URL - MUST BE CHANGED */

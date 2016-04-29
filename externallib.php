@@ -715,9 +715,6 @@ class block_exacomp_external extends external_api {
 		if ($userid == 0)
 			$userid = $USER->id;
 
-set_exception_handler(null);
-ini_set('display_errors', true);
-
 		static::validate_parameters ( static::get_item_for_example_parameters (), array (
 				'userid' => $userid,
 				'itemid' => $itemid
@@ -1473,24 +1470,23 @@ ini_set('display_errors', true);
 					$topic_reached_competencies = 0;
 					$topic_reached_examples = 0;
 
+					// topics zählen wir vorerst nicht, weil get_user_profile für elove ist
+					/*
 					if ($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset ( $cm_mm->topics [$topic->id] )))
 						$topic_total_competencies ++;
 
-					if (! empty ( $user->topics->$grading )) {
-						if (isset ( $user->topics->$grading ) && isset ( $user->topics->$grading [$topic->id] )) {
-							$topic_reached_competencies ++;
-						}
+					if (isset($user->topics->{$grading}[$topic->id])) {
+						$topic_reached_competencies++;
 					}
+					*/
 
 					$descriptors = block_exacomp_get_descriptors_by_topic ( $course ['courseid'], $topic->id, false, true );
 					foreach ( $descriptors as $descriptor ) {
 						if ($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset ( $cm_mm->competencies [$descriptor->id] )))
 							$topic_total_competencies ++;
 
-						if (! empty ( $user->competencies->$grading )) {
-							if (isset ( $user->competencies->$grading ) && isset ( $user->competencies->$grading [$descriptor->id] )) {
-								$topic_reached_competencies ++;
-							}
+						if (isset($user->competencies->{$grading}[$descriptor->id])) {
+							$topic_reached_competencies ++;
 						}
 
 						$examples = $DB->get_records_sql ( "SELECT de.id as deid, e.id, e.title, e.externalurl,
