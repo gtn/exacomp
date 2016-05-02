@@ -53,7 +53,7 @@ return [
 		'use Exabis Competencies',
 	],
 	'exacomp:deleteexamples' => [
-		'Beispiele löschen',
+		'Lernmaterialien löschen',
 		'delete examples',
 	],
 	'exacomp:assignstudents' => [
@@ -62,7 +62,7 @@ return [
 	],
 
 
-	'=== Admin Tabs ===' => null,
+	// === Admin Tabs ===
 	'tab_admin_import' => [
 		'Import/Export',
 		'Import/Export',
@@ -81,7 +81,7 @@ return [
 	],
 
 
-	'=== Teacher Tabs ===' => null,
+	// === Teacher Tabs ===
 	'tab_teacher_settings' => [
 		'Kurs-Einstellungen',
 		'Settings',
@@ -91,15 +91,15 @@ return [
 		'Configuration',
 	],
 	'tab_teacher_settings_selection_st' => [
-		'Schultyp-Auswahl',
+		'Bildungsstandard-Auswahl',
 		'Schooltype selection',
 	],
 	'tab_teacher_settings_selection' => [
-		'Gegenstands-Auswahl',
+		'Auswahl der Kompetenzbereiche',
 		'Subject selection',
 	],
 	'tab_teacher_settings_assignactivities' => [
-		'Moodle-Aktivit&auml;ten zuordnen',
+		'Moodle-Aktivitäten zuordnen',
 		'Assign Moodle activities',
 	],
 	'tab_teacher_settings_badges' => [
@@ -108,14 +108,14 @@ return [
 	],
 
 
-	'=== Student Tabs ===' => null,
+	// === Student Tabs ===
 	'tab_student_all' => [
 		'Alle erworbenen Kompetenzen',
 		'All gained competencies',
 	],
 
 
-	'=== Generic Tabs (used by Teacher and Students) ===' => null,
+	// === Generic Tabs (used by Teacher and Students) ===
 	'tab_competence_grid' => [
 		'Berichte',
 		'Reports',
@@ -125,11 +125,11 @@ return [
 		'Competence grid',
 	],
 	'tab_competence_details' => [
-		'Kompetenz-Detailansicht',
+		'Moodle Aktivitäten',
 		'Detailed competence-view',
 	],
 	'tab_examples' => [
-		'Beispiele und Aufgaben',
+		'Lernmaterialien',
 		'Examples and tasks',
 	],
 	'tab_learning_agenda' => [
@@ -193,11 +193,11 @@ return [
 		'The first step of the configuration is to import some data to Exabis Competencies.',
 	],
 	'second_configuration_step' => [
-		'In diesem Konfigurationsschritt muss eine Vorauswahl für die Standards getroffen werden, damit das Modul verwendet werden kann. Diese Einstellungen sind unabh&auml;ngig vom Kurs für die gesamte Moodle-Installation g&uuml;ltig.',
+		'Im zweiten Konfigurationsschritt müssen Bildungsstandards ausgewählt werden.',
 		'In this configuration step you have to pre-select standards.',
 	],
 	'next_step' => [
-		'Dieser Konfigurationsschritt wurde abgeschlossen. Klicken Sie hier um zum N&auml;chsten zu gelangen.',
+		'Dieser Konfigurationsschritt wurde abgeschlossen. Klicken Sie hier um zum Nächsten zu gelangen.',
 		'This configuration step has been completed. Click here to continue configuration.',
 	],
 	'next_step_teacher' => [
@@ -213,28 +213,28 @@ return [
 		'In the second configuration step topics to work with in this course have to be selected.',
 	],
 	'teacher_third_configuration_step' => [
-		'Im nächsten Schritt werden Moodle-Aktivit&auml;ten mit Kompetenzen assoziiert. ',
+		'Im nächsten Schritt werden Moodle-Aktivitäten mit Kompetenzen assoziiert. ',
 		'The next step is to associate Moodle activities with competencies ',
 	],
 	'teacher_third_configuration_step_link' => [
-		'(Optional: Wenn Sie nicht mit Moodle-Aktivit&auml;ten arbeiten m&ouml;chten, dann entfernen Sie das Häkchen "Ich m&ouml;chte mit Moodle-Aktivit&auml;ten arbeiten" im Tab "Konfiguration".)',
-		'(optional: if you don\'t want to work with activities untick the setting "I want to work with Moodle activities" in the tab "Configuration")',
+		'(Optional: Wenn Sie nicht mit Moodle-Aktivitäten arbeiten möchten, dann entfernen Sie das Häkchen "Ich möchte mit Moodle-Aktivitäten arbeiten" im Tab "Konfiguration".)',
+		'(Optional: if you don\'t want to work with activities untick the setting "I want to work with Moodle activities" in the tab "Configuration")',
 	],
 	'completed_config' => [
 		'Die Exabis Competencies Konfiguration wurde abgeschlossen.',
 		'The configuration of Exabis Competencies is completed.',
 	],
 	'optional_step' => [
-		'In Ihrem Kurs sind noch keine Teilnehmer/innen eingeschrieben, bet&auml;tigen Sie diesen Link wenn Sie das jetzt machen m&ouml;chten.',
+		'In Ihrem Kurs sind noch keine Teilnehmer/innen eingeschrieben, betätigen Sie diesen Link wenn Sie das jetzt machen möchten.',
 		'There are no participants in your course yet. If you want to enrol some please use this link.',
 	],
 	'next_step_first_teacher_step' => [
-		'Klicken Sie hier um zum n&auml;chsten Schritt zu gelangen.',
+		'Klicken Sie hier um zum nächsten Schritt zu gelangen.',
 		'Click here to continue configuration.',
 	],
 
 
-	'=== Block Settings ===' => null,
+	// === Block Settings ===
 	'settings_xmlserverurl' => [
 		'Server-URL',
 		'Server-URL',
@@ -312,11 +312,11 @@ return [
 		'no global grading',
 	],
 	'settings_additional_grading' => [
-		'Zus&auml;tzliche Bewertung',
+		'Zusätzliche Bewertung',
 		'Additional grading',
 	],
 	'settings_additional_grading_description' => [
-		'Zus&auml;tzliche Bewertung für Kompetenzen/Lernmaterialien (0-100%)',
+		'Zusätzliche Bewertung für Kompetenzen/Lernmaterialien (0-100%)',
 		'Additional grading of outcomes/materials (0-100%)',
 	],
 	'settings_usetimeline' => [
@@ -329,7 +329,7 @@ return [
 	],
 
 
-	'=== Learning agenda ===' => null,
+	// === Learning agenda ===
 	'LA_MON' => [
 		'Mo',
 		'MON',
@@ -367,7 +367,7 @@ return [
 		'T',
 	],
 	'LA_assessment' => [
-		'Einsch&auml;tzung',
+		'Einschätzung',
 		'assessment',
 	],
 	'LA_plan' => [
@@ -375,23 +375,23 @@ return [
 		'working plan',
 	],
 	'LA_no_learningagenda' => [
-		'Es sind keine Lernagenden in der ausgew&auml;hlten Woche vorhanden.',
+		'Es sind keine Lernagenden in der ausgewählten Woche vorhanden.',
 		'There is no learning agenda available for this week.',
 	],
 	'LA_no_student_selected' => [
-		'-- kein(e) Kursteilnehmer/in ausgew&auml;hlt --',
+		'-- kein(e) Kursteilnehmer/in ausgewählt --',
 		'-- no student selected --',
 	],
 	'LA_select_student' => [
-		'W&auml;hlen Sie bitte eine(n) Kursteilnehmer/in aus, um seine Lernagenda einzusehen.',
+		'Wählen Sie bitte eine(n) Kursteilnehmer/in aus, um seine Lernagenda einzusehen.',
 		'Please select a student to view his learning agenda.',
 	],
 	'LA_no_example' => [
-		'Kein Beispiel zugeordnet',
+		'Kein Lernmaterial zugeordnet',
 		'no example available',
 	],
 	'LA_backtoview' => [
-		'Zur&uuml;ck zur Originalansicht',
+		'Zurück zur Originalansicht',
 		'back to original view',
 	],
 	'LA_from_n' => [
@@ -416,34 +416,10 @@ return [
 	],
 
 
-	'=== Help ===' => null,
+	// === Help ===
 	'help_content' => [
-		'<h1>Video zur Einf&uuml;hrung</h1>
-Kompetenzorientierter Unterricht ist in aller Munde - und Moodle kann dabei mit Hilfe des Blockes exabis Competencies wertvolle Unterst&uuml;tzung leisten.
-<a href="http://www.youtube.com/watch?v=FQtCrlSNUEQ">http://www.youtube.com/watch?v=FQtCrlSNUEQ</a>
-
-<h3>Die AdministratorInnen-Rolle</h3>Der Administrator/Die Administratorin einer Moodle-Instanz muss bestimmte Vorarbeiten leisten, damit der Block exabis Competencies verwendet werden kann. Informationen dazu liefert dieses Video.
-<a href="http://www.youtube.com/watch?v=a7h_8EtQM9A">http://www.youtube.com/watch?v=a7h_8EtQM9A</a>
-
-<h3>Die TrainerInnen-Rolle</h3>Die Lehrenden k&ouml;nnen mit Hilfe des Blockes einem Kurs bestimmte Kompetenzen zuordnen und den Kompetenzerwerb anschlie&szlig;end auch bewerten.
-<a href="http://www.youtube.com/watch?v=gxSrXa4Ynik">http://www.youtube.com/watch?v=gxSrXa4Ynik</a>
-
-<h3>Die Teilnehmer/innen-Rolle</h3>Lernende k&ouml;nnen mit Hilfe von Exabis Competencies u.a. ihren Kompetenzerwerb selbst einsch&auml;tzen und die eigene Einsch$auml;tzung unkompliziert der TrainerInnen gegen&uuml;berstellen.
-<a href="http://www.youtube.com/watch?v=DdAOIiXXhZ8">http://www.youtube.com/watch?v=DdAOIiXXhZ8</a>
-
-<h3>Das Bildungsstandards-Erfassungstool</h3>Mit Hilfe dieses Tools k&ouml;nnen Schulen erg&auml;nzend zu den &ouml;sterreichischen Bildungsstandards eigene Standards erstellen, erfassen und verwalten.
-<a href="http://www.youtube.com/watch?v=CEfFjo-R558">http://www.youtube.com/watch?v=CEfFjo-R558</a>
-
-<h3>ePOP</h3>Das "elektronische, pers&ouml;nlichkeitsorientierte Portfolio" bringt Portfolioarbeit mit Bildungsstandards aufs Smartphone.
-<a href="http://www.youtube.com/watch?v=JLYrTuiil2E">http://www.youtube.com/watch?v=JLYrTuiil2E</a>
-
-ePortfolio am Smartphone
-Wie wird die App ePOP bedient? Dieses Video liefert einen kompakten &Uuml;berblick.
-<a href="http://www.youtube.com/watch?v=v2UbS7sUaRI#t=127">http://www.youtube.com/watch?v=v2UbS7sUaRI#t=127</a>
-
-ePOP-Kontinente:
-ePOP erlaubt die individuelle Strukturierung der Inhalte.
-<a href="http://www.youtube.com/watch?v=gwqVm5R1Dvo#t=54">http://www.youtube.com/watch?v=gwqVm5R1Dvo#t=54</a>
+		'<h1>Video zur Einführung</h1>
+<iframe width="640" height="360" src="//www.youtube.com/embed/EL4Vb3_17EM?feature=player_embedded" frameborder="0" allowfullscreen></iframe>
 ',
 		'<h1>Introduction Video</h1>
 <iframe width="640" height="360" src="//www.youtube.com/embed/EL4Vb3_17EM?feature=player_embedded" frameborder="0" allowfullscreen></iframe>
@@ -451,13 +427,13 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Import ===' => null,
+	// === Import ===
 	'importinfo' => [
 		'Erstellen Sie Ihre eigenen Kompetenzen/Standards auf <a target="_blank" href="http://www.edustandards.org">www.edustandards.org</a> oder laden Sie ein bestehendes XML von <a target="_blank" href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch. Für österreichische Standards besuchen Sie bitte <a target="_blank" href="http://bist.edugroup.at">http://bist.edugroup.at</a>',
 		'Please create your outcomes/standards at <a href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file.',
 	],
 	'importwebservice' => [
-		'Es besteht auch die M&ouml;glichkeit die Daten &uuml;ber ein <a href="{$a}">Webservice</a> aktuell zu halten.',
+		'Es besteht auch die Möglichkeit die Daten über ein <a href="{$a}">Webservice</a> aktuell zu halten.',
 		'It is possible to keep the data up to date via a <a href="{$a}">webservice</a>.',
 	],
 	'importdone' => [
@@ -465,7 +441,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'data has already been imported from xml',
 	],
 	'importpending' => [
-		'Bitte importieren Sie jetzt die allgemeinen Bildungsstandards und w&auml;hlen Sie anschlie&szlig;end im Tab "Konfiguration" die anzuzeigenden Deskriptorenbereiche aus.',
+		'Bitte importieren Sie jetzt die allgemeinen Bildungsstandards und wählen Sie anschließend im Tab Bildungsstandard die anzuzeigenden Lernlistenbereiche aus.',
 		'no data has been imported yet!',
 	],
 	'doimport' => [
@@ -505,7 +481,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'an error has occured during import',
 	],
 	'noxmlfile' => [
-		'Ein Import ist derzeit nicht m&ouml;glich weil keine XML Datei vorhanden ist. Bitte hier die entsprechenden Standards downloaden und in das xml Verzeichnis des Blocks kopieren: <a href="https://github.com/gtn/edustandards">https://github.com/gtn/edustandards</a>',
+		'Ein Import ist derzeit nicht möglich weil keine XML Datei vorhanden ist. Bitte hier die entsprechenden Standards downloaden und in das xml Verzeichnis des Blocks kopieren: <a href="https://github.com/gtn/edustandards">https://github.com/gtn/edustandards</a>',
 		'There is no data available to import. Please visit <a href="https://github.com/gtn/edustandards">https://github.com/gtn/edustandards</a> to download the required outcomes to the blocks xml directory.',
 	],
 	'oldxmlfile' => [
@@ -518,9 +494,9 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Configuration ===' => null,
+	// === Configuration ===
 	'explainconfig' => [
-		'',
+		'Um das Modul exabis competences verwenden zu können, müssen hier die Kompetenzbereiche der Moodle-Instanz selektiert werden.',
 		'Your outcomes have already been imported. In this configuration you have to make the selection of the main standards you would like to use in this Moodle installation.',
 	],
 	'save_selection' => [
@@ -528,26 +504,26 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'Save selection',
 	],
 	'save_success' => [
-		'&Auml;nderungen erfolgreich &uuml;bernommen',
+		'Änderungen erfolgreich übernommen',
 		'changes were successful',
 	],
 
 
-	'=== Course-Configuration ===' => null,
+	// === Course-Configuration ===
 	'grading_scheme' => [
 		'Bewertungsschema',
 		'grading scheme',
 	],
 	'uses_activities' => [
-		'Ich verwende Moodle Aktivit&auml;ten zur Beurteilung',
+		'Ich verwende Moodle Aktivitäten zur Beurteilung',
 		'I work with Moodle activites',
 	],
 	'show_all_descriptors' => [
-		'Alle Deskriptoren im &Uuml;berblick anzeigen',
+		'Alle Lernlisten im Überblick anzeigen',
 		'Show all outcomes in overview',
 	],
 	'show_all_examples' => [
-		'Externe Beispiele für Kursteilnehmer/innen anzeigen',
+		'Externe Lernmaterialien für Kursteilnehmer/innen anzeigen',
 		'Show external examples for students',
 	],
 	'usedetailpage' => [
@@ -587,7 +563,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'Fully gained',
 	],
 	'filteredtaxonomies' => [
-		'Beispiele werden anhand der ausgewählten Taxonomien verwendet:',
+		'Lernmaterialien werden anhand der ausgewählten Taxonomien verwendet:',
 		'Examples are filtered accordingly to the following taxonomies:',
 	],
 	'show_all_taxonomies' => [
@@ -599,12 +575,12 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'Warning: you are now working with Moodle-activites that are associated with competences. Please verify that the same outcomes are used as before.',
 	],
 	'delete_unconnected_examples' => [
-		'Wenn Sie Themenbereiche abwählen, mit denen Beispiele verknüpft sind die noch am Wochenplan liegen, werden diese aus dem Wochenplan entfernt.',
+		'Wenn Sie Themenbereiche abwählen, mit denen Lernmaterialien verknüpft sind die noch am Wochenplan liegen, werden diese aus dem Wochenplan entfernt.',
 		'If you are deselecting topics which are associated with examples used in the weekly schedule, these examples will be removed.',
 	],
 
 
-	'=== Badges ===' => null,
+	// === Badges ===
 	'mybadges' => [
 		'Meine Auszeichnungen',
 		'My badges',
@@ -643,25 +619,25 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Examples ===' => null,
+	// === Examples ===
 	'sorting' => [
-		'Sortierung w&auml;hlen: ',
+		'Sortierung wählen: ',
 		'select sorting: ',
 	],
 	'subject' => [
-		'Gegenst&auml;nde',
+		'Kompetenzbereiche',
 		'subjects',
 	],
 	'taxonomies' => [
-		'Taxonomien',
+		'Niveaustufen',
 		'taxonomies',
 	],
 	'show_all_course_examples' => [
-		'Beispiele aus allen Kursen anzeigen',
+		'Lernmaterialien aus allen Kursen anzeigen',
 		'Show examples from all courses',
 	],
 	'expandcomps' => [
-		'Alle &ouml;ffnen',
+		'Alle öffnen',
 		'expand all',
 	],
 	'contactcomps' => [
@@ -682,9 +658,9 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Icons ===' => null,
+	// === Icons ===
 	'assigned_example' => [
-		'Zugeteiltes Beispiel',
+		'Zugeteiltes Lernmaterial',
 		'Assigned Example',
 	],
 	'task_example' => [
@@ -692,7 +668,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'Tasks',
 	],
 	'solution_example' => [
-		'L&ouml;sung',
+		'Lösung',
 		'Solution',
 	],
 	'attachement_example' => [
@@ -704,18 +680,18 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'External Task',
 	],
 	'total_example' => [
-		'Gesamtbeispiel',
+		'Gesamtmaterial',
 		'Complete Example',
 	],
 
 
-	'=== Example Upload ===' => null,
+	// === Example Upload ===
 	'example_upload_header' => [
 		'Eigenes Lernmaterial hochladen',
 		'Upload my own task/example',
 	],
 	'taxonomy' => [
-		'Taxonomie',
+		'Niveaustufe',
 		'Taxonomy',
 	],
 	'descriptors' => [
@@ -723,11 +699,11 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'Competencies',
 	],
 	'descriptors_help' => [
-		'Es k&ouml;nnen mehrere Kompetenzen ausgew&auml;hlt werden.',
+		'Es können mehrere Kompetenzen ausgewählt werden.',
 		'You can select multible outcomes/standards',
 	],
 	'filerequired' => [
-		'Es muss eine Datei ausgew&auml;hlt sein.',
+		'Es muss eine Datei ausgewählt sein.',
 		'A file must be selected.',
 	],
 	'titlenotemtpy' => [
@@ -780,13 +756,13 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Assign competencies ===' => null,
+	// === Assign competencies ===
 	'delete_confirmation' => [
 		'Soll "{$a}" wirklich gelöscht werden?',
 		'Do you really want to delete "{$a}"?',
 	],
 	'legend_activities' => [
-		'Moodle-Aktivit&auml;ten',
+		'Moodle-Aktivitäten',
 		'Moodle activities',
 	],
 	'legend_eportfolio' => [
@@ -794,23 +770,23 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'ePortfolio',
 	],
 	'legend_notask' => [
-		'Keine Moodle-Aktivit&auml;t/Quiz f&uuml;r diese Kompetenz abgegeben',
+		'Keine Moodle-Aktivität/Quiz für diese Kompetenz abgegeben',
 		'No Moodle activities/quizzes have been submitted for this outcome',
 	],
 	'legend_upload' => [
-		'Eigenes Beispiel hochladen',
+		'Eigenes Lernmaterial hochladen',
 		'Upload your own task/example',
 	],
 	'allniveaus' => [
-		'Alle Teilbereiche',
+		'Alle Lernfortschritte',
 		'All niveaus',
 	],
 	'choosesubject' => [
-		'Fach ausw&auml;hlen: ',
+		'Kompetenzbereich auswählen',
 		'Choose subject: ',
 	],
 	'choosetopic' => [
-		'Teilkompetenzbereich/Leitidee ausw&auml;hlen',
+		'Lernfortschritte auswählen',
 		'Choose topic',
 	],
 	'choosestudent' => [
@@ -855,7 +831,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Example Submission ===' => null,
+	// === Example Submission ===
 	'example_submission_header' => [
 		'Aufgabe {$a} bearbeiten',
 		'Edit example {$a}',
@@ -877,19 +853,19 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'Es müssen zumindest ein Link oder eine Datei abgegeben werden',
 	],
 	'usersubmitted' => [
-		' hat folgende Moodle-Aktivit&auml;ten abgegeben:',
+		' hat folgende Moodle-Aktivitäten abgegeben:',
 		' has submitted the following Moodle activities:',
 	],
 	'usersubmittedquiz' => [
-		' hat folgende Tests durchgef&uuml;hrt:',
+		' hat folgende Tests durchgeführt:',
 		' has done the following quizzes:',
 	],
 	'usernosubmission' => [
-		' hat keine Moodle-Aufgaben zu diesem Deskriptor abgegeben und keinen Test durchgef&uuml;hrt.',
+		' hat keine Moodle-Aufgaben zu dieser Lernliste abgegeben und keinen Test durchgeführt.',
 		' has not yet submitted any Moodle activities or quizzes associated with this outcome',
 	],
 	'usernosubmission_topic' => [
-		' hat keine Moodle-Aufgaben zu diesem Thema abgegeben und keinen Test durchgef&uuml;hrt.',
+		' hat keine Moodle-Aufgaben zu dieser Teilkompetenz abgegeben und keinen Test durchgeführt.',
 		' has not yet submitted any Moodle activities or quizzes associated with this topic',
 	],
 	'grading' => [
@@ -905,11 +881,11 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'This competence has been associated with ',
 	],
 	'teacher_tipp_2' => [
-		' Moodle-Aktivit&auml;t(en) zugeordnet und bereits bei ',
+		' Moodle-Aktivität(en) zugeordnet und bereits bei ',
 		' Moodle activities and has been reached with ',
 	],
 	'teacher_tipp_3' => [
-		' Moodle-Aktivit&auml;t(en) in der Kompetenz-Detailansicht erf&uuml;llt.',
+		' Moodle-Aktivität(en) in der Kompetenz-Detailansicht erfüllt.',
 		' outcomes.',
 	],
 	'print' => [
@@ -937,23 +913,23 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'S',
 	],
 	'overview' => [
-		'Der Kompetenz-Überblick listet Kursteilnehmer/innen und die im Kurs aktivierten Kompetenzen auf.',
+		'Hier haben Sie einen Überblick über die Teilkompetenzen der ausgewählten Lernwegeliste und die zugeordneten Aufgaben. Sie können das Erreichen der jeweiligen Teilkompetenz individuell bestätigen.',
 		'This is an overview of all students and the course competencies.',
 	],
 	'showevaluation' => [
-		'Um die Selbsteinsch&auml;tzung zu aktivieren, klicken Sie <a href="{$a}">hier</a>.',
+		'Um die Selbsteinschätzung einzusehen, klicken Sie <a href="{$a}">hier</a>',
 		'To show self-assessment click <a href="{$a}">here</a>',
 	],
 	'hideevaluation' => [
-		'Um die Selbsteinsch&auml;tzung zu deaktivieren, klicken Sie <a href="{$a}">hier</a>.',
+		'Um die Selbsteinschätzung auszublenden, klicken Sie <a href="{$a}">hier</a>',
 		'To hide self-assessment click <a href="{$a}">here</a>',
 	],
 	'showevaluation_student' => [
-		'Um die Einsch&auml;tzung der TrainerInnen zu aktivieren, klicke <a href="{$a}">hier</a>.',
+		'Um die Einschätzung der TrainerInnen zu aktivieren, klicke <a href="{$a}">hier</a>.',
 		'To show trainer-assessment click <a href="{$a}">here</a>',
 	],
 	'hideevaluation_student' => [
-		'Um die Einsch&auml;tzung der TrainerInnen zu deaktivieren, klicke <a href="{$a}">hier</a>.',
+		'Um die Einschätzung der TrainerInnen zu deaktivieren, klicke <a href="{$a}">hier</a>.',
 		'To hide trainer-assessment click <a href="{$a}">here</a>',
 	],
 	'columnselect' => [
@@ -1021,36 +997,39 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== metadata ===' => null,
+	// === metadata ===
 	'subject_singular' => [
-		'Schultyp',
+		'Fach',
 		'Field of competence',
 	],
 	'comp_field_idea' => [
-		'Fach',
+		'Kompetenzbereich/Leitidee',
 		'Skill',
 	],
 	'comp' => [
-		'Teilkompetenzbereich',
+		'Kompetenz',
 		'Topic',
 	],
 	'progress' => [
-		'Fortschritt',
+		'Lernfortschritt',
 		'Progress',
 	],
 	'instruction' => [
-		'Erläuterung',
+		'Anleitung',
 		'Instruction',
 	],
 	'instruction_content' => [
-		'Hier können Sie für Ihre Lerngruppen / Klasse vermerken, welche 
-				Lernmaterialien bearbeitet und welche Lernnachweise erbracht wurden. 
-				Darüber hinaus können Sie das Erreichen der Teilkompetenzen eintragen. 
-				Kursteilnehmer/innen können sich darüber hinaus selbst einschätzen. Mit Kompetenzen
-				verknüpfte Moodle-Aufgaben werden bei Einreichung durch Kursteilnehmer/innen
-				mit rotem Icon dargestellt. Leistungsnachweise die eigeninitiativ über
-				ePortfolio-Arbeit durch Kursteilnehmer/innen beigesteuert werden, werden mit
-				einem blauen Icon dargestellt.',
+		'Hier können Sie für Ihre Lerngruppen / Klasse vermerken, welche
+				Lernmaterialien bearbeitet und welche Lernnachweise erbracht wurden.
+				Darüber hinaus können Sie das Erreichen der Teilkompetenzen
+				eintragen. Je nach Konzept der Schule kann die Bearbeitung des
+				Lernmaterials / das Erreichen einer Teilkompetenz durch Kreuz
+				markiert oder die Qualität der Bearbeitung / der Kompetenzerreichung
+				gekennzeichnet werden. Keinenfalls müssen die Schülerinnen und
+				Schüler alle Materialien bearbeiten. Wenn eine (Teil-)kompetenz
+				bereits vorliegt, kann das hier eingetragen werden. Die Schülerinnen
+				und Schüler müssen dann keine zugehörigen Lernmaterialien
+				bearbeiten.',
 		'This is an overview for learning resources that are associated with 
 				standards and ticking off competencies for students. Students can
 				assess their competencies. Moodle activities that were turned in by
@@ -1059,9 +1038,9 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Activities ===' => null,
+	// === Activities ===
 	'explaineditactivities_subjects' => [
-		'',
+		'Hier können Sie den erstellten Aufgaben Lernlisten zuordnen.',
 		'',
 	],
 	'column_setting' => [
@@ -1073,7 +1052,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'filter levels',
 	],
 	'module_filter' => [
-		'Aktivit&auml;ten filtern',
+		'Aktivitäten filtern',
 		'filter activities',
 	],
 	'apply_filter' => [
@@ -1081,7 +1060,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'apply filter',
 	],
 	'no_topics_selected' => [
-		'Konfiguration für Exabis Competencies wurde noch nicht abgeschlossen. Bitte w&auml;hlen Sie zuerst Gegenst&auml;nde aus, denen Sie dann Moodle-Aktivit&auml;ten zuordnen k&ouml;nnen.',
+		'Konfiguration für Exabis Competencies wurde noch nicht abgeschlossen. Bitte wählen Sie zuerst Gegenstände aus, denen Sie dann Moodle-Aktivitäten zuordnen können.',
 		'configuration of exabis competencies is not completed yet. please chose a topic that you would like to associate Moodle activities with',
 	],
 	'no_activities_selected' => [
@@ -1093,7 +1072,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'There is no data available yet',
 	],
 	'no_course_activities' => [
-		'In diesem Kurs wurden noch keine Moodle-Aktivit&auml;ten erstellt, klicken Sie hier um dies nun zu tun.',
+		'In diesem Kurs wurden noch keine Moodle-Aktivitäten erstellt, klicken Sie hier um dies nun zu tun.',
 		'No Moodle activities found in this course - click here to create some.',
 	],
 	'all_modules' => [
@@ -1110,7 +1089,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Competence Grid ===' => null,
+	// === Competence Grid ===
 	'infolink' => [
 		'Weiter Informationen: ',
 		'Additional information: ',
@@ -1157,14 +1136,14 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Detail view ===' => null,
+	// === Detail view ===
 	'detail_description' => [
 		'Hier kann mit Hilfe von Aktivitäten eine Kompetenz beurteilt werden.',
 		'Use Moodle activities to evaluate competencies.',
 	],
 
 
-	'=== Competence Profile ===' => null,
+	// === Competence Profile ===
 	'name' => [
 		'Name',
 		'Name',
@@ -1331,13 +1310,13 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Competence Profile Settings ===' => null,
+	// === Competence Profile Settings ===
 	'profile_settings_showonlyreached' => [
 		'Ich möchte in meinem Kompetenzprofil nur bereits erreichte Kompetenzen sehen.',
 		'I only want to see already gained outcomes in my competence profile',
 	],
 	'profile_settings_choose_courses' => [
-		'In Exabis Competencies beurteilen TrainerInnen den Kompetenzerwerb in unterschiedlichen Fachgebieten. Hier kann ausgew&auml;hlt werden, welche Kurse im Kompetenzprofil aufscheinen sollen.',
+		'In Exabis Competencies beurteilen TrainerInnen den Kompetenzerwerb in unterschiedlichen Fachgebieten. Hier kann ausgewählt werden, welche Kurse im Kompetenzprofil aufscheinen sollen.',
 		'Using Exabis Competencies trainers assess your competencies in various subjects. You can select which course to include in the competence profile.',
 	],
 	'profile_settings_useexaport' => [
@@ -1345,7 +1324,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'I want to see competencies used in Exabis ePortfolio within my profile.',
 	],
 	'profile_settings_choose_items' => [
-		'Exabis ePortfolio dokumentiert deinen Kompetenzerwerb außerhalb von LehrerInnen vorgegebenen Grenzen. Du kannst ausw&auml;hlen, welche Einträge im Kompetenzprofil aufscheinen sollen.',
+		'Exabis ePortfolio dokumentiert deinen Kompetenzerwerb außerhalb von LehrerInnen vorgegebenen Grenzen. Du kannst auswählen, welche Einträge im Kompetenzprofil aufscheinen sollen.',
 		'Exabis ePortfolio is used to document your competencies on your individual learning path. You can select which artifacts to include in the competence profile.',
 	],
 	'profile_settings_useexastud' => [
@@ -1353,7 +1332,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'I want to see evaluations from Exabis Student Review.',
 	],
 	'profile_settings_choose_periods' => [
-		'Exabis Student Review speichert Beurteilungen in verschiedenen Kategorien über mehrere Perioden hinweg. Es kann ausgew&auml;hlt werden, welche Perioden das Kompetenzprofil beinhalten soll.',
+'Exabis Student Review speichert Beurteilungen in verschiedenen Kategorien über mehrere Perioden hinweg. Es kann ausgewählt werden, welche Perioden das Kompetenzprofil beinhalten soll.',
 		'Exabis Student Review stores reviews in various categories over several periods. You can select which periods to include in the competence profile.',
 	],
 	'profile_settings_no_item' => [
@@ -1390,7 +1369,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Profoundness ===' => null,
+	// === Profoundness ===
 	'profoundness_description' => [
 		'Kompetenzbeschreibung',
 		'Description',
@@ -1413,7 +1392,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== External trainer & eLove ===' => null,
+	// === External trainer & eLove ===
 	'block_exacomp_external_trainer_assign_head' => [
 		'Zuteilung von externen Trainer/innen für Kursteilnehmer/innen erlauben.',
 		'Allow assigning external trainers for students.',
@@ -1452,7 +1431,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Crosssubjects ===' => null,
+	// === Crosssubjects ===
 	'empty_draft' => [
 		'Neues Thema',
 		'New Cross-Subject',
@@ -1605,17 +1584,9 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'',
 		'Use Draft',
 	],
-	'' => [
-		'',
-		'',
-	],
-	'' => [
-		'',
-		'',
-	],
 
 
-	'=== Associations ===' => null,
+	// === Associations ===
 	'competence_associations' => [
 		'Verknüpfungen',
 		'Associations',
@@ -1626,7 +1597,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Weeky schedule ===' => null,
+	// === Weeky schedule ===
 	'weekly_schedule' => [
 		'Wochenplan',
 		'Weekly schedule',
@@ -1660,7 +1631,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'Example added to the weekly schedule of all students.',
 	],
 	'weekly_schedule_already_existing_for_one' => [
-		'Die Aufgabe ist bei mindestens einem Sch&uuml;ler bereits im Planungsspeicher im Wochenplan.',
+		'Die Aufgabe ist bei mindestens einem Schüler bereits im Planungsspeicher im Wochenplan.',
 		'Example has already been added to at least one student\'s weekly schedule.',
 	],
 	'weekly_schedule_link_to_grid' => [
@@ -1680,7 +1651,7 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'Example is already in pre-planning storage.',
 	],
 	'save_pre_planning_selection' => [
-		'Ausgewählte Beispiele auf den Wochenplan der ausgewählten Kursteilnehmer/innen legen',
+		'Ausgewählte Lernmaterialien auf den Wochenplan der ausgewählten Schüler/innen legen',
 		'Add selected examples to weekly schedule of selected students',
 	],
 	'empty_pre_planning_storage' => [
@@ -1713,9 +1684,9 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 	],
 
 
-	'=== Notifications ===' => null,
+	// === Notifications ===
 	'notification_submission_subject' => [
-		'{$a->student} hat eine Lösung zum Beispiel {$a->example} eingereicht.',
+		'{$a->student} hat eine Lösung zum Lernmaterial {$a->example} eingereicht.',
 		'{$a->student} submitted a solution for {$a->example}.',
 	],
 	'notification_submission_body' => [
@@ -1783,12 +1754,12 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 		'Notifications and Messages',
 	],
 	'block_exacomp_notifications_body' => [
-		'Bei Aktionen wie einer Beispiel-Einreichung oder einer Beurteilung werden Nachrichten an die zuständigen Benutzer gesendet.',
+		'Bei Aktionen wie einer Lernmaterialien-Einreichung oder einer Beurteilung werden Nachrichten an die zuständigen Benutzer gesendet.',
 		'Users will get notified after relevant actions.',
 	],
 
 
-	'=== Logging ===' => null,
+	// === Logging ===
 	'block_exacomp_logging_head' => [
 		'Logging',
 		'Logging',
@@ -1866,23 +1837,23 @@ ePOP erlaubt die individuelle Strukturierung der Inhalte.
 
 
 	'description_example' => [
-		null,
+		'Beschreibung / Schulbuchverweis',
 		'Description',
 	],
 	'requirements' => [
-		null,
-		'Was du schon k&ouml;nnen solltest: ',
+		'Was du schon können solltest: ',
+		'Was du schon können solltest: ',
 	],
 	'forwhat' => [
-		null,
-		'Wof&uuml;r du das brauchst: ',
+		'Wofür du das brauchst: ',
+		'Wofür du das brauchst: ',
 	],
 	'howtocheck' => [
-		null,
-		'Wie du dein K&ouml;nnen pr&uuml;fen kannst: ',
+		'Wie du dein Können prüfen kannst: ',
+		'Wie du dein Können prüfen kannst: ',
 	],
 	'reached_topic' => [
-		null,
+		'Ich habe diese Kompetenz erreicht: ',
 		'Ich habe diese Kompetenz erreicht: ',
 	],
 ];

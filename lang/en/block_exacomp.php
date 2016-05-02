@@ -31,14 +31,14 @@ $string['exacomp:deleteexamples'] = 'delete examples';
 $string['exacomp:assignstudents'] = 'Assign external trainers';
 
 
-// Admin Tabs
+// === Admin Tabs ===
 $string['tab_admin_import'] = 'Import/Export';
 $string['tab_admin_settings'] = 'Admin Settings';
 $string['tab_admin_configuration'] = 'Standards pre-selection';
 $string['admin_config_pending'] = 'Standards pre-selection needs to be performed by the Moodle administrator';
 
 
-// Teacher Tabs
+// === Teacher Tabs ===
 $string['tab_teacher_settings'] = 'Settings';
 $string['tab_teacher_settings_configuration'] = 'Configuration';
 $string['tab_teacher_settings_selection_st'] = 'Schooltype selection';
@@ -47,11 +47,11 @@ $string['tab_teacher_settings_assignactivities'] = 'Assign Moodle activities';
 $string['tab_teacher_settings_badges'] = 'Edit badges';
 
 
-// Student Tabs
+// === Student Tabs ===
 $string['tab_student_all'] = 'All gained competencies';
 
 
-// Generic Tabs (used by Teacher and Students)
+// === Generic Tabs (used by Teacher and Students) ===
 $string['tab_competence_grid'] = 'Reports';
 $string['tab_competence_overview'] = 'Competence grid';
 $string['tab_competence_details'] = 'Detailed competence-view';
@@ -77,13 +77,13 @@ $string['next_step_teacher'] = 'The configuration that has to be done by the adm
 $string['teacher_first_configuration_step'] = 'The first step of course configuration is to adjust general settings for your course.';
 $string['teacher_second_configuration_step'] = 'In the second configuration step topics to work with in this course have to be selected.';
 $string['teacher_third_configuration_step'] = 'The next step is to associate Moodle activities with competencies ';
-$string['teacher_third_configuration_step_link'] = '(optional: if you don\'t want to work with activities untick the setting "I want to work with Moodle activities" in the tab "Configuration")';
+$string['teacher_third_configuration_step_link'] = '(Optional: if you don\'t want to work with activities untick the setting "I want to work with Moodle activities" in the tab "Configuration")';
 $string['completed_config'] = 'The configuration of Exabis Competencies is completed.';
 $string['optional_step'] = 'There are no participants in your course yet. If you want to enrol some please use this link.';
 $string['next_step_first_teacher_step'] = 'Click here to continue configuration.';
 
 
-// Block Settings
+// === Block Settings ===
 $string['settings_xmlserverurl'] = 'Server-URL';
 $string['settings_configxmlserverurl'] = 'Url to a xml file, which is used for keeping the database entries up to date';
 $string['settings_autotest'] = 'Automatical gain of competence through quizzes';
@@ -109,7 +109,7 @@ $string['settings_usetimeline'] = 'Use Timeline in profile';
 $string['settings_usetimeline_description'] = 'Chronological sequence of gained outcomes';
 
 
-// Learning agenda
+// === Learning agenda ===
 $string['LA_MON'] = 'MON';
 $string['LA_TUE'] = 'TUE';
 $string['LA_WED'] = 'WED';
@@ -133,13 +133,13 @@ $string['LA_enddate'] = 'end date';
 $string['LA_startdate'] = 'start date';
 
 
-// Help
+// === Help ===
 $string['help_content'] = '<h1>Introduction Video</h1>
 <iframe width="640" height="360" src="//www.youtube.com/embed/EL4Vb3_17EM?feature=player_embedded" frameborder="0" allowfullscreen></iframe>
 ';
 
 
-// Import
+// === Import ===
 $string['importinfo'] = 'Please create your outcomes/standards at <a href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file.';
 $string['importwebservice'] = 'It is possible to keep the data up to date via a <a href="{$a}">webservice</a>.';
 $string['importdone'] = 'data has already been imported from xml';
@@ -158,13 +158,13 @@ $string['oldxmlfile'] = 'You are using an outdated xml-file. Please create new o
 $string['do_demo_import'] = 'import demo data to see how Exabis Competencies works.';
 
 
-// Configuration
+// === Configuration ===
 $string['explainconfig'] = 'Your outcomes have already been imported. In this configuration you have to make the selection of the main standards you would like to use in this Moodle installation.';
 $string['save_selection'] = 'Save selection';
 $string['save_success'] = 'changes were successful';
 
 
-// Course-Configuration
+// === Course-Configuration ===
 $string['grading_scheme'] = 'grading scheme';
 $string['uses_activities'] = 'I work with Moodle activites';
 $string['show_all_descriptors'] = 'Show all outcomes in overview';
@@ -184,7 +184,7 @@ $string['warning_use_activities'] = 'Warning: you are now working with Moodle-ac
 $string['delete_unconnected_examples'] = 'If you are deselecting topics which are associated with examples used in the weekly schedule, these examples will be removed.';
 
 
-// Badges
+// === Badges ===
 $string['mybadges'] = 'My badges';
 $string['pendingbadges'] = 'Pending badges';
 $string['no_badges_yet'] = 'no badges available';
@@ -196,7 +196,7 @@ $string['conf_badges'] = 'configure badges';
 $string['conf_comps'] = 'configure competences';
 
 
-// Examples
+// === Examples ===
 $string['sorting'] = 'select sorting: ';
 $string['subject'] = 'subjects';
 $string['taxonomies'] = 'taxonomies';
@@ -208,7 +208,7 @@ $string['comp_based'] = 'sort by competencies';
 $string['examp_based'] = 'sort by examples';
 
 
-// Icons
+// === Icons ===
 $string['assigned_example'] = 'Assigned Example';
 $string['task_example'] = 'Tasks';
 $string['solution_example'] = 'Solution';
@@ -217,7 +217,7 @@ $string['extern_task'] = 'External Task';
 $string['total_example'] = 'Complete Example';
 
 
-// Example Upload
+// === Example Upload ===
 $string['example_upload_header'] = 'Upload my own task/example';
 $string['taxonomy'] = 'Taxonomy';
 $string['descriptors'] = 'Competencies';
@@ -237,7 +237,7 @@ $string['allow_resubmission'] = 'Allow a new submission for this example';
 $string['allow_resubmission_info'] = 'The example is now allowed to be resubmited.';
 
 
-// Assign competencies
+// === Assign competencies ===
 $string['delete_confirmation'] = 'Do you really want to delete "{$a}"?';
 $string['legend_activities'] = 'Moodle activities';
 $string['legend_eportfolio'] = 'ePortfolio';
@@ -258,7 +258,7 @@ $string['example_sorting_notice'] = 'Please save the changes first.';
 $string['newsubmission'] = 'New Submission';
 
 
-// Example Submission
+// === Example Submission ===
 $string['example_submission_header'] = 'Edit example {$a}';
 $string['example_submission_info'] = 'You are about to edit the example "{$a}". Your submission will be saved in Exabis ePortfolio and Teachers can view it there.';
 $string['example_submission_subject'] = 'New submission';
@@ -301,7 +301,7 @@ $string['assignuntil'] = 'until';
 $string['assignlearninggroup'] = 'peer group';
 
 
-// metadata
+// === metadata ===
 $string['subject_singular'] = 'Field of competence';
 $string['comp_field_idea'] = 'Skill';
 $string['comp'] = 'Topic';
@@ -314,7 +314,7 @@ $string['instruction_content'] = 'This is an overview for learning resources tha
 				are displayed in blue icons.';
 
 
-// Activities
+// === Activities ===
 $string['explaineditactivities_subjects'] = '';
 $string['column_setting'] = 'hide/display columns';
 $string['niveau_filter'] = 'filter levels';
@@ -329,7 +329,7 @@ $string['all_niveaus'] = 'all levels';
 $string['tick_some'] = 'Please make a selection!';
 
 
-// Competence Grid
+// === Competence Grid ===
 $string['infolink'] = 'Additional information: ';
 $string['textalign'] = 'Switch text align';
 $string['selfevaluation'] = 'Self assessment';
@@ -343,11 +343,11 @@ $string['report_detailcompetence'] = 'Child Competencies';
 $string['report_examples'] = 'Examples';
 
 
-// Detail view
+// === Detail view ===
 $string['detail_description'] = 'Use Moodle activities to evaluate competencies.';
 
 
-// Competence Profile
+// === Competence Profile ===
 $string['name'] = 'Name';
 $string['city'] = 'City';
 $string['course'] = 'Course';
@@ -391,7 +391,7 @@ $string['oB'] = 'without evaluation';
 $string['nE'] = 'not gained';
 
 
-// Competence Profile Settings
+// === Competence Profile Settings ===
 $string['profile_settings_showonlyreached'] = 'I only want to see already gained outcomes in my competence profile';
 $string['profile_settings_choose_courses'] = 'Using Exabis Competencies trainers assess your competencies in various subjects. You can select which course to include in the competence profile.';
 $string['profile_settings_useexaport'] = 'I want to see competencies used in Exabis ePortfolio within my profile.';
@@ -408,7 +408,7 @@ $string['specificcontent'] = 'site-specific topics';
 $string['specificsubject'] = 'site-specific subjects';
 
 
-// Profoundness
+// === Profoundness ===
 $string['profoundness_description'] = 'Description';
 $string['profoundness_basic'] = 'Basic competence';
 $string['profoundness_extended'] = 'Extended competence';
@@ -416,7 +416,7 @@ $string['profoundness_mainly'] = 'Mainly achieved';
 $string['profoundness_entirely'] = 'Entirely achieved';
 
 
-// External trainer & eLove
+// === External trainer & eLove ===
 $string['block_exacomp_external_trainer_assign_head'] = 'Allow assigning external trainers for students.';
 $string['block_exacomp_external_trainer_assign_body'] = 'This is required for using the elove app.';
 $string['block_exacomp_elove_student_self_assessment_head'] = 'Allow self-assessment for students in the elove app';
@@ -428,7 +428,7 @@ $string['block_exacomp_external_trainer_student'] = 'Student';
 $string['block_exacomp_external_trainer_allstudents'] = 'All Students';
 
 
-// Crosssubjects
+// === Crosssubjects ===
 $string['empty_draft'] = 'New Cross-Subject';
 $string['empty_draft_description'] = 'Create your own Cross-Subject - insert new description';
 $string['add_drafts_to_course'] = 'Add drafts to course';
@@ -467,15 +467,14 @@ $string['de:Freigegebene Kursthemen'] = 'Published Cross Subjects';
 $string['de:Freigabe bearbeiten'] = 'Change Sharing';
 $string['de:Kopie als Vorlage speichern'] = 'Create Copy as Draft';
 $string['de:Vorlage verwenden'] = 'Use Draft';
-$string[''] = '';
 
 
-// Associations
+// === Associations ===
 $string['competence_associations'] = 'Associations';
 $string['competence_associations_explaination'] = 'The material {$a} is associated wih the following standards:';
 
 
-// Weeky schedule
+// === Weeky schedule ===
 $string['weekly_schedule'] = 'Weekly schedule';
 $string['weekly_schedule_added'] = 'Example added to the weekly schedule';
 $string['weekly_schedule_already_exists'] = 'Example is already in the weekly schedule';
@@ -499,7 +498,7 @@ $string['blocking_event_title'] = 'title';
 $string['blocking_event_create'] = 'Add to pre-planning storage';
 
 
-// Notifications
+// === Notifications ===
 $string['notification_submission_subject'] = '{$a->student} submitted a solution for {$a->example}.';
 $string['notification_submission_body'] = '{$a->student} submitted {$a->example} on {$a->date} at {$a->time}. The submission can be seen in ePortfolio: <a href="{$viewurl}">{$a->example}</a>';
 $string['notification_submission_context'] = 'Submission';
@@ -520,7 +519,7 @@ $string['block_exacomp_notifications_head'] = 'Notifications and Messages';
 $string['block_exacomp_notifications_body'] = 'Users will get notified after relevant actions.';
 
 
-// Logging
+// === Logging ===
 $string['block_exacomp_logging_head'] = 'Logging';
 $string['block_exacomp_logging_body'] = 'Relevant actions will get logged.';
 $string['eventscompetenceassigned'] = 'Competence assigned';
@@ -545,7 +544,7 @@ $string['messageprovider:self_assessment'] = 'Student assessed some own competen
 $string['messageprovider:weekly_schedule'] = 'Teacher adds new example to weekly schedule';
 $string['messageprovider:comment'] = 'Teacher comments an example';
 $string['description_example'] = 'Description';
-$string['requirements'] = 'Was du schon k&ouml;nnen solltest: ';
-$string['forwhat'] = 'Wof&uuml;r du das brauchst: ';
-$string['howtocheck'] = 'Wie du dein K&ouml;nnen pr&uuml;fen kannst: ';
+$string['requirements'] = 'Was du schon können solltest: ';
+$string['forwhat'] = 'Wofür du das brauchst: ';
+$string['howtocheck'] = 'Wie du dein Können prüfen kannst: ';
 $string['reached_topic'] = 'Ich habe diese Kompetenz erreicht: ';
