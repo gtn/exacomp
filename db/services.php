@@ -74,6 +74,8 @@ call_user_func(function() use (&$functions, &$services) {
 		[ 'dakora_get_descriptors_for_example', 'read', 'get descriptors where example is associated' ],
 		[ 'dakora_get_descriptors', 'read', 'get descriptors for topic for dakora app associated with examples' ],
 		[ 'dakora_get_example_grading', 'read', 'get student and teacher evaluation for example' ],
+		[ 'dakora_get_topic_grading', 'read', 'get student and teacher evaluation for topic' ],
+		[ 'dakora_get_subject_grading', 'read', 'get student and teacher evaluation for subject'],
 		[ 'dakora_get_example_information', 'read', 'get information and submission for example' ],
 		[ 'dakora_get_example_overview', 'read', 'get example overview for dakora app' ],
 		[ 'dakora_get_examples_by_descriptor_and_grading', 'read', 'returns examples for given descriptor and grading' ],
@@ -98,6 +100,7 @@ call_user_func(function() use (&$functions, &$services) {
 		[ 'dakora_submit_example', 'write', 'submit example solution' ],
 		[ 'dakora_set_competence', 'write', 'set competence for student'],
 		[ 'block_exacomp_is_elove_student_self_assessment_enabled', 'read', 'check the corresponding config setting'],
+		[ 'dakora_get_evaluation_config', 'read', 'get evaluation configuration'],
 	];
 
 	foreach ($definitions as $definition) {

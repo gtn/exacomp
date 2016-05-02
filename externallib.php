@@ -1889,7 +1889,9 @@ class block_exacomp_external extends external_api {
 				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
 				'userid' => new external_value(PARAM_INT, 'id of user, if 0 current user'),
 				'compid' => new external_value(PARAM_INT, 'competence id'),
+				'comptype' => new external_value(PARAM_INT, 'type of competence: descriptor, topic, subject'),
 				'role' => new external_value(PARAM_INT, 'user role (0 == student, 1 == teacher)'),
+				'value' => new external_value(PARAM_INT, 'evaluation value, only set for TK (0 to 3)'),
 				'additionalinfo' => new external_value(PARAM_FLOAT, 'decimal between 1 and 6'),
 				'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau (-1, 1, 2, 3)')
 		) );
@@ -1906,35 +1908,48 @@ class block_exacomp_external extends external_api {
 	 *			int value
 	 * @return success
 	 */
-	public static function dakora_set_competence($courseid, $userid, $compid, $role, $additionalinfo, $evalniveauid) {
+	public static function dakora_set_competence($courseid, $userid, $compid, $comptype, $role, $value, $additionalinfo, $evalniveauid) {
 		global $USER, $DB;
 		static::validate_parameters ( static::dakora_set_competence_parameters (), array (
 				'courseid'=>$courseid,
 				'userid'=>$userid,
 				'compid'=>$compid,
+				'comptype'=>$comptype,
 				'role'=>$role,
+				'value' => $value,
 				'additionalinfo'=>$additionalinfo, 
 				'evalniveauid'=>$evalniveauid
 		) );
 
 		if($userid == 0 && $role == \block_exacomp\ROLE_STUDENT)
 			$userid = $USER->id;
-			else if($userid == 0)
-				throw new invalid_parameter_exception ( 'Userid can not be 0 for teacher grading' );
+		else if($userid == 0)
+			throw new invalid_parameter_exception ( 'Userid can not be 0 for teacher grading' );
 
-				static::require_can_access_course_user($courseid, $userid);
+		static::require_can_access_course_user($courseid, $userid);
 
-				$value =  block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
-				if(block_exacomp_set_user_competence($userid, $compid, \block_exacomp\TYPE_DESCRIPTOR, $courseid, $role, $value, $evalniveauid) == -1)
-					throw new invalid_parameter_exception ( 'Not allowed' );
-
-					if($role == \block_exacomp\ROLE_TEACHER){
-						block_exacomp_save_additional_grading_for_descriptor($courseid, $compid, $userid, $additionalinfo);
-					}
-
-					return array (
-							"success" => true
-					);
+		$parent = true;
+		if($comptype == \block_exacomp\TYPE_DESCRIPTOR){
+			$descriptor = $DB->get_record(\block_exacomp\DB_DESCRIPTORS, array('id'=>$compid));
+			if($descriptor->parent > 0)
+				$parent = false;
+		}
+		
+		if(!$parent || $role == \block_exacomp\ROLE_STUDENT){ //TK or student -> value not mapped
+			if(block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid) == -1)
+				throw new invalid_parameter_exception ('Not allowed');
+		}else{	//teacher grading for K/T/S: map
+			$value =  block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
+			if(block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid) == -1)
+				throw new invalid_parameter_exception ( 'Not allowed' );
+			
+			block_exacomp_save_additional_grading_for_descriptor($courseid, $compid, $userid, $additionalinfo, $comptype);
+			
+		}
+					
+		return array (
+				"success" => true
+		);
 	}
 
 	/**
@@ -2209,6 +2224,7 @@ class block_exacomp_external extends external_api {
 					'descriptortitle' => new external_value ( PARAM_TEXT, 'title of child' ),
 					'numbering' => new external_value ( PARAM_TEXT, 'numbering for child'),
 					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of child'),
+					'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
 					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of child'),
 					'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 					'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
@@ -2598,7 +2614,173 @@ class block_exacomp_external extends external_api {
 				'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id')
 		) );
 	}
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_topic_grading_parameters() {
+		return new external_function_parameters ( array (
+				'topicid' => new external_value ( PARAM_INT, 'id of topic' ),
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
+				'userid' => new external_value ( PARAM_INT, 'id of user, if 0 current user' )
+		) );
+	}
+	
+	/**
+	 * Get topic grading for user
+	 *
+	 * @param
+	 *			int topicid
+	 *			int courseid
+	 *			int userid
+	 * @return grading
+	 */
+	public static function dakora_get_topic_grading($topicid, $courseid, $userid) {
+		global $DB,$USER;
+	
+		static::validate_parameters ( static::dakora_get_topic_grading_parameters (), array (
+				'topicid' => $topicid,
+				'courseid' => $courseid,
+				'userid' => $userid
+		) );
+	
+		if ($userid == 0)
+			$userid = $USER->id;
+	
+		static::require_can_access_course_user($courseid, $userid);
+	
+		$student = $DB->get_record ( 'user', array (
+				'id' => $userid
+		) );
+	
+		$student = block_exacomp_get_user_topics_by_course($student, $courseid);
+	
+		$teacherevaluation = -1;
+		if(isset($student->topics->teacher[$topicid]))
+			$teacherevaluation = $student->topics->teacher[$topicid];
+		
+		$additionalinfo = -1;
+		if(isset($student->topics->teacher_additional_grading[$topicid])){
+			$additionalinfo = $student->topics->teacher_additional_grading[$topicid];
+		}
+	
+		$studentevaluation = -1;
+		if(isset($student->topics->student[$topicid])){
+			$studentevaluation = $student->topics->student[$topicid];
+		}
+	
+		$evalniveauid = null;
+		if(isset($student->topics->niveau[$topicid])){
+			$evalniveauid = $student->topics->niveau[$topicid];
+		}
+	
+		return array (
+				'teacherevaluation' => $teacherevaluation,
+				'additionalinfo' => $additionalinfo,
+				'studentevaluation' => $studentevaluation,
+				'evalniveauid' => $evalniveauid
+		);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_topic_grading_returns() {
+		return new external_single_structure ( array (
+				'teacherevaluation' => new external_value ( PARAM_INT, 'teacher evaluation for student and topic' ),
+				'additionalinfo' => new external_value (PARAM_FLOAT, 'teacher additional info for student and topic'),
+				'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation for topic' ),
+				'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id')
+		) );
+	}
 
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_subject_grading_parameters() {
+		return new external_function_parameters ( array (
+				'subjectid' => new external_value ( PARAM_INT, 'id of subject' ),
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
+				'userid' => new external_value ( PARAM_INT, 'id of user, if 0 current user' )
+		) );
+	}
+	
+	/**
+	 * Get subject grading for user
+	 *
+	 * @param
+	 *			int subjectid
+	 *			int courseid
+	 *			int userid
+	 * @return grading
+	 */
+	public static function dakora_get_subject_grading($subjectid, $courseid, $userid) {
+		global $DB,$USER;
+	
+		static::validate_parameters ( static::dakora_get_subject_grading_parameters (), array (
+				'subjectid' => $subjectid,
+				'courseid' => $courseid,
+				'userid' => $userid
+		) );
+	
+		if ($userid == 0)
+			$userid = $USER->id;
+	
+		static::require_can_access_course_user($courseid, $userid);
+	
+		$student = $DB->get_record ( 'user', array (
+				'id' => $userid
+		) );
+	
+		$student = block_exacomp_get_user_subjects_by_course($student, $courseid);
+		
+		$teacherevaluation = -1;
+		if(isset($student->subjects->teacher[$subjectid]))
+			$teacherevaluation = $student->subjects->teacher[$subjectid];
+	
+		$additionalinfo = -1;
+		if(isset($student->subjects->teacher_additional_grading[$subjectid])){
+			$additionalinfo = $student->subjects->teacher_additional_grading[$subjectid];
+		}
+	
+		$studentevaluation = -1;
+		if(isset($student->subjects->student[$subjectid])){
+			$studentevaluation = $student->subjects->student[$subjectid];
+		}
+	
+		$evalniveauid = null;
+		if(isset($student->subjects->niveau[$subjectid])){
+			$evalniveauid = $student->subjects->niveau[$subjectid];
+		}
+	
+		return array (
+				'teacherevaluation' => $teacherevaluation,
+				'additionalinfo' => $additionalinfo,
+				'studentevaluation' => $studentevaluation,
+				'evalniveauid' => $evalniveauid
+		);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_subject_grading_returns() {
+		return new external_single_structure ( array (
+				'teacherevaluation' => new external_value ( PARAM_INT, 'teacher evaluation for student and subject' ),
+				'additionalinfo' => new external_value (PARAM_FLOAT, 'teacher additional info for student and subject'),
+				'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation for subject' ),
+				'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id')
+		) );
+	}
+	
 	/**
 	 * Returns description of method parameters
 	 *
@@ -4391,36 +4573,6 @@ class block_exacomp_external extends external_api {
 	 *
 	 * @return external_function_parameters
 	 */
-	public static function dakora_get_admin_grading_scheme_parameters() {
-		return new external_function_parameters ( array () );
-	}
-
-	/**
-	 * get example with all submission details and gradings
-	 *
-	 * @return
-	 */
-	public static function dakora_get_admin_grading_scheme() {
-		static::validate_parameters ( static::dakora_get_admin_grading_scheme_parameters (), array () );
-		return 1; //TODO new grading scheme!!
-		
-		//return \block_exacomp\global_config::get_scheme_id();
-	}
-
-	/**
-	 * Returns desription of method return values
-	 *
-	 * @return external_multiple_structure
-	 */
-	public static function dakora_get_admin_grading_scheme_returns() {
-		return new external_value ( PARAM_INT, 'identity of grading scheme' );
-	}
-
-	/**
-	 * Returns description of method parameters
-	 *
-	 * @return external_function_parameters
-	 */
 	public static function dakora_create_blocking_event_parameters() {
 		return new external_function_parameters ( array (
 				'courseid' => new external_value (PARAM_INT, 'id of course'),
@@ -4658,6 +4810,51 @@ class block_exacomp_external extends external_api {
 				'enabled' => new external_value ( PARAM_BOOL, '' )
 		) );
 	}
+	
+	/**
+	 * Returns description of method parameters
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_evaluation_config_parameters(){
+		return new external_function_parameters( array ());
+	}
+	
+	/**
+	 * get admin evaluation configurations 
+	 */
+	public static function dakora_get_evaluation_config() {
+		global $DB;
+		
+		static::validate_parameters (static::dakora_get_evaluation_config_parameters(), array());
+		
+		return array('use_evalniveau' => block_exacomp_use_eval_niveau(), 
+					'evalniveautype' => block_exacomp_evaluation_niveau_type(),
+					'evalniveaus' => \block_exacomp\global_config::get_evalniveaus(),
+					'values' => \block_exacomp\global_config::get_value_titles()
+		);
+	}
+	
+	/**
+	 * Returns description of method return values
+	 * 
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_evaluation_config_returns() {
+		return new external_single_structure ( array (
+				'use_evalniveau' => new external_value ( PARAM_BOOL, 'use evaluation niveaus' ),
+				'evalniveautype' => new external_value (PARAM_INT, 'same as adminscheme before: 1: GME, 2: ABC, 3: */**/***'),
+				'evalniveaus' => new external_single_structure ( array (
+						1 => new external_value ( PARAM_TEXT, 'evaluation title for id = 1' ),
+						2 => new external_value ( PARAM_TEXT, 'evaluation title for id = 2' ),
+						3 => new external_value ( PARAM_TEXT, 'evaluation title for id = 3' ))),
+				'values' => new external_single_structure ( array (
+						0 => new external_value ( PARAM_TEXT, 'value title for id = 0' ),
+						1 => new external_value ( PARAM_TEXT, 'value title for id = 1' ),
+						2 => new external_value ( PARAM_TEXT, 'value title for id = 2' ),
+						3 => new external_value ( PARAM_TEXT, 'value title for id = 3' )))
+		) );
+	}
+	
 	
 	/**
 	* helper function to use same code for 2 ws
@@ -5128,6 +5325,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 
 		return $exampleDataFound;
 	}
+	
 
 	private static function wstoken() {
 		return optional_param('wstoken', null, PARAM_ALPHANUM);

@@ -1064,12 +1064,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $table_html.html_writer::end_tag('form');
 	}
 	public function competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $singletopic = false, $crosssubjid = 0, $statistic = false) {
-		global $DB, $additional_grading, $use_eval_niveau;
+		global $DB;
 
 		$table = new html_table();
 		$rows = array();
 		$studentsColspan = $showevaluation ? 2 : 1;
-		if($additional_grading && ($showevaluation || $role == \block_exacomp\ROLE_TEACHER)) $studentsColspan++;
+		if(block_exacomp_additional_grading() && ($showevaluation || $role == \block_exacomp\ROLE_TEACHER)) $studentsColspan++;
 
 		$table->attributes['class'] = 'exabis_comp_comp rg2 exabis-tooltip';
 
@@ -1173,10 +1173,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						if($role == \block_exacomp\ROLE_TEACHER) {
 							$firstCol->text = get_string('studentshortcut','block_exacomp');
 							$secCol->text = get_string('teachershortcut','block_exacomp');
-							if($additional_grading) $secCol->colspan = 2;
+							if(block_exacomp_additional_grading()) $secCol->colspan = 2;
 						} else {
 							$firstCol->text = get_string('teachershortcut','block_exacomp');
-							if($additional_grading) $firstCol->colspan = 2;
+							if(block_exacomp_additional_grading()) $firstCol->colspan = 2;
 							$secCol->text = get_string('studentshortcut','block_exacomp');
 						}
 
@@ -1220,7 +1220,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						
 					$niveau_cell = new html_table_cell();
 					$niveau_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-					$niveau_cell->text = ($use_eval_niveau)?$this->generate_niveau_select('niveau_subject', $subject->id, 'subjects', $student, ($role == \block_exacomp\ROLE_STUDENT)?true:false, ($role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
+					$niveau_cell->text = (block_exacomp_use_eval_niveau())?$this->generate_niveau_select('niveau_subject', $subject->id, 'subjects', $student, ($role == \block_exacomp\ROLE_STUDENT)?true:false, ($role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
 						
 					$params = array('name'=>'add-grading-'.$student->id.'-'.$subject->id, 'type'=>'text',
 							'maxlength'=>3, 'class'=>'percent-rating-text',
@@ -1233,12 +1233,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$params['disabled'] = 'disabled';
 						
 					//student & niveau & showevaluation
-					if($use_eval_niveau && $role == \block_exacomp\ROLE_STUDENT && $showevaluation){
+					if(block_exacomp_use_eval_niveau() && $role == \block_exacomp\ROLE_STUDENT && $showevaluation){
 						$subjectRow->cells[] = $niveau_cell;
 					}
 						
 					//student show evaluation
-					if($additional_grading && $role == \block_exacomp\ROLE_STUDENT){	//use parent grading
+					if(block_exacomp_additional_grading() && $role == \block_exacomp\ROLE_STUDENT){	//use parent grading
 						$evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
 					}else{	//use drop down/checkbox values
 						if($scheme == 1)
@@ -1250,14 +1250,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					if($showevaluation)
 						$subjectRow->cells[] = $evaluation_cell;
 						
-					if($use_eval_niveau && $role == \block_exacomp\ROLE_TEACHER){
+					if(block_exacomp_use_eval_niveau() && $role == \block_exacomp\ROLE_TEACHER){
 						$subjectRow->cells[] = $niveau_cell;
 					}
 						
 					if($scheme == 1) {
 						$self_evaluation_cell->text = $this->generate_checkbox($checkboxname, $subject->id, 'subjects', $student, $evaluation, $scheme, ($visible_student)?false:true, null, ($role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
 					}else {
-						if($additional_grading && $role == \block_exacomp\ROLE_TEACHER)
+						if(block_exacomp_additional_grading() && $role == \block_exacomp\ROLE_TEACHER)
 							$self_evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
 						else
 							$self_evaluation_cell->text = $this->generate_select($checkboxname, $subject->id, 'subjects', $student, $evaluation, $scheme, false, $profoundness, ($role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
@@ -1372,7 +1372,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$cell_width(2, 0, 8);
 			$cell_width(2, 1, 100-5-$cnt*12.5-8);
 			$cell_width(2, 2, 5);
-			$col_cnt = 2 + ($additional_grading ? 1 : 0);
+			$col_cnt = 2 + (block_exacomp_additional_grading() ? 1 : 0);
 			for ($i = 0; $i < $cnt*$col_cnt; $i++) {
 				$cell_width(2, 3+$i, 12.5/$col_cnt);
 			}
@@ -1394,7 +1394,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	public function topics(&$rows, $level, $topics, $data, $students, $profoundness = false, $editmode = false, $statistic = false, $crosssubjid=0) {
 	
-		global $DB, $additional_grading, $use_eval_niveau;
+		global $DB;
 		$topicparam = optional_param('topicid', 0, PARAM_INT);
 
 		if (block_exacomp_is_topicgrading_enabled() || count($topics) > 1 || $topicparam == block_exacomp\SHOW_ALL_TOPICS) {
@@ -1463,7 +1463,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						
 					$niveau_cell = new html_table_cell();
 					$niveau_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-					$niveau_cell->text = ($use_eval_niveau)?$this->generate_niveau_select('niveau_topic', $topic->id, 'topics', $student, ($data->role == \block_exacomp\ROLE_STUDENT)?true:false, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
+					$niveau_cell->text = (block_exacomp_use_eval_niveau())?$this->generate_niveau_select('niveau_topic', $topic->id, 'topics', $student, ($data->role == \block_exacomp\ROLE_STUDENT)?true:false, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
 					
 					$params = array('name'=>'add-grading-'.$student->id.'-'.$topic->id, 'type'=>'text',
 							'maxlength'=>3, 'class'=>'percent-rating-text',
@@ -1476,12 +1476,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$params['disabled'] = 'disabled';
 						
 					//student & niveau & showevaluation
-					if($use_eval_niveau && $data->role == \block_exacomp\ROLE_STUDENT && $data->showevaluation){
+					if(block_exacomp_use_eval_niveau() && $data->role == \block_exacomp\ROLE_STUDENT && $data->showevaluation){
 						$topicRow->cells[] = $niveau_cell;
 					}
 						
 					//student show evaluation
-					if($additional_grading && $data->role == \block_exacomp\ROLE_STUDENT){	//use parent grading
+					if(block_exacomp_additional_grading() && $data->role == \block_exacomp\ROLE_STUDENT){	//use parent grading
 						$evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
 					}else{	//use drop down/checkbox values
 						if($data->scheme == 1)
@@ -1493,14 +1493,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					if($data->showevaluation)
 						$topicRow->cells[] = $evaluation_cell;
 						
-					if($use_eval_niveau && $data->role == \block_exacomp\ROLE_TEACHER){
+					if(block_exacomp_use_eval_niveau() && $data->role == \block_exacomp\ROLE_TEACHER){
 						$topicRow->cells[] = $niveau_cell;
 					}
 						
 					if($data->scheme == 1) {
 						$self_evaluation_cell->text = $this->generate_checkbox($checkboxname, $topic->id, 'topics', $student, $evaluation, $data->scheme, ($visible_student)?false:true, null, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
 					}else {
-						if($additional_grading && $data->role == \block_exacomp\ROLE_TEACHER)
+						if(block_exacomp_additional_grading() && $data->role == \block_exacomp\ROLE_TEACHER)
 							$self_evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
 						else
 							$self_evaluation_cell->text = $this->generate_select($checkboxname, $topic->id, 'topics', $student, $evaluation, $data->scheme, false, $data->profoundness, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
@@ -1573,7 +1573,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	function descriptors(&$rows, $level, $descriptors, $data, $students, $profoundness = false, $editmode=false, $statistic=false, $custom_created_descriptors=false, $parent = false, $crosssubjid = 0) {
-		global $USER, $COURSE, $DB, $additional_grading, $use_eval_niveau;
+		global $USER, $COURSE, $DB;
 
 		$evaluation = ($data->role == \block_exacomp\ROLE_TEACHER) ? "teacher" : "student";
 
@@ -1778,7 +1778,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							
 							$niveau_cell = new html_table_cell();
 							$niveau_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-							$niveau_cell->text = ($use_eval_niveau)?$this->generate_niveau_select('niveau_descriptor', $descriptor->id, 'competencies', $student, 
+							$niveau_cell->text = (block_exacomp_use_eval_niveau())?$this->generate_niveau_select('niveau_descriptor', $descriptor->id, 'competencies', $student, 
 									($data->role == \block_exacomp\ROLE_STUDENT)?true:(($visible_student)?false:true), ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
 								
 							$params = array('name'=>'add-grading-'.$student->id.'-'.$descriptor->id, 'type'=>'text',
@@ -1792,12 +1792,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								$params['disabled'] = 'disabled';
 							
 							//student & niveau & showevaluation
-							if($use_eval_niveau && $data->role == \block_exacomp\ROLE_STUDENT && $data->showevaluation){
+							if(block_exacomp_use_eval_niveau() && $data->role == \block_exacomp\ROLE_STUDENT && $data->showevaluation){
 								$descriptorRow->cells[] = $niveau_cell;
 							}
 							
 							//student show evaluation
-							if($additional_grading && $parent && $data->role == \block_exacomp\ROLE_STUDENT){	//use parent grading
+							if(block_exacomp_additional_grading() && $parent && $data->role == \block_exacomp\ROLE_STUDENT){	//use parent grading
 								$evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
 							}else{	//use drop down/checkbox values 
 								if($data->scheme == 1)
@@ -1809,14 +1809,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							if($data->showevaluation)
 								$descriptorRow->cells[] = $evaluation_cell;
 							
-							if($use_eval_niveau && $data->role == \block_exacomp\ROLE_TEACHER){
+							if(block_exacomp_use_eval_niveau() && $data->role == \block_exacomp\ROLE_TEACHER){
 								$descriptorRow->cells[] = $niveau_cell;
 							}
 							
 							if($data->scheme == 1) {
 								$self_evaluation_cell->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme, ($visible_student)?false:true, null, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
 							}else {
-								if($additional_grading && $parent && $data->role == \block_exacomp\ROLE_TEACHER)
+								if(block_exacomp_additional_grading() && $parent && $data->role == \block_exacomp\ROLE_TEACHER)
 									$self_evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
 								else 
 									$self_evaluation_cell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme, !$visible_student, $data->profoundness, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
@@ -2037,7 +2037,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								
 							$niveau_cell = new html_table_cell();
 							$niveau_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-							$niveau_cell->text = ($use_eval_niveau)?$this->generate_niveau_select('niveau_examples', $example->id, 'examples', $student, 
+							$niveau_cell->text = (block_exacomp_use_eval_niveau())?$this->generate_niveau_select('niveau_examples', $example->id, 'examples', $student, 
 									($data->role == \block_exacomp\ROLE_STUDENT)?true:(($visible_student_example)?false:true), ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
 							
 								
@@ -2045,7 +2045,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								$params['disabled'] = 'disabled';
 								
 							//student & niveau & showevaluation
-							if($use_eval_niveau && $data->role == \block_exacomp\ROLE_STUDENT && $data->showevaluation){
+							if(block_exacomp_use_eval_niveau() && $data->role == \block_exacomp\ROLE_STUDENT && $data->showevaluation){
 								$exampleRow->cells[] = $niveau_cell;
 							}
 								
@@ -2060,7 +2060,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							if($data->showevaluation)
 								$exampleRow->cells[] = $evaluation_cell;
 								
-							if($use_eval_niveau && $data->role == \block_exacomp\ROLE_TEACHER){
+							if(block_exacomp_use_eval_niveau() && $data->role == \block_exacomp\ROLE_TEACHER){
 								$exampleRow->cells[] = $niveau_cell;
 							}
 								
@@ -2485,9 +2485,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 	
 	public function generate_niveau_select($name, $compid, $type, $student, $disabled = false, $reviewerid = null) {
-		global $USER, $DB, $additional_grading;
+		global $USER, $DB;
 	
-		if($additional_grading){
+		if(block_exacomp_additional_grading()){
 			$options = \block_exacomp\global_config::get_evalniveaus();
 			
 			$attributes = array();
@@ -2581,12 +2581,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 * @param unknown $headertext
 	 */
 	public function edit_course($settings, $courseid, $headertext){
-		global $DB, $additional_grading;
+		global $DB;
 
 		$header = html_writer::tag('p', $headertext).html_writer::empty_tag('br');
 
 		$input_grading = "";
-		if(!$additional_grading && !$settings->useprofoundness)
+		if(!block_exacomp_additional_grading() && !$settings->useprofoundness)
 			$input_grading = get_string('grading_scheme', 'block_exacomp').": &nbsp"
 			.html_writer::empty_tag('input', array('type'=>'text', 'size'=>2, 'name'=>'grading', 'value'=>block_exacomp_get_grading_scheme($courseid)))
 			.html_writer::empty_tag('br');

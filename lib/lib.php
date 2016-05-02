@@ -131,10 +131,6 @@ $testlimit = get_config('exacomp', 'testlimit');
 $specificimport = get_config('exacomp','enableteacherimport');
 $notifications = get_config('exacomp','notifications');
 
-$use_eval_niveau = get_config('exacomp', 'use_eval_niveau');
-$evaluation_niveau_type = get_config('exacomp', 'adminscheme');
-$additional_grading = get_config('exacomp', 'additional_grading');
-
 define("SHOW_ALL_TAXONOMIES",100000000);
 define("BLOCK_EXACOMP_SHOW_ALL_STUDENTS", -1);
 define("BLOCK_EXACOMP_SHOW_STATISTIC", -2);
@@ -243,6 +239,18 @@ function block_exacomp_is_admin($context = null) {
 function block_exacomp_is_elove_student_self_assessment_enabled() {
 	return get_config('exacomp', 'elove_student_self_assessment');
 }
+function block_exacomp_use_eval_niveau(){
+	return get_config('exacomp', 'use_eval_niveau');
+}
+
+function block_exacomp_evaluation_niveau_type(){
+	return get_config('exacomp', 'adminscheme');
+}
+
+function block_exacomp_additional_grading(){
+	return get_config('exacomp', 'additional_grading');
+}
+
 /**
  * 
  * @param courseid or context $context
@@ -6240,10 +6248,10 @@ function block_exacomp_get_courseids_by_descriptor($descriptorid){
 * according to course scheme and admin scheme
 **/
 function block_exacomp_get_html_for_teacher_eval($evaluation, $scheme){
-	global $additional_grading, $evaluation_niveau_type;
+	$evaluation_niveau_type = block_exacomp_evaluation_niveau_type();
 	
 	//predefined pictures 
-	if($additional_grading){
+	if(block_exacomp_additional_grading()){
 		$grey_nE_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_0_'.$evaluation_niveau_type.'.png';
 		$grey_1_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_1_'.$evaluation_niveau_type.'.png';
 		$grey_2_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_2_'.$evaluation_niveau_type.'.png';
@@ -6418,10 +6426,9 @@ namespace block_exacomp {
 		 * Returns all values used for examples and child-descriptors
 		 */
 		static function get_value_titles() {
-			global $additional_grading;
 			// if additional_grading is set, use global value scheme
 			// TODO: use language strings for the titles
-			if ($additional_grading) {
+			if (block_exacomp_additional_grading()) {
 				return array (
 						- 1 => 'ohne Angabe',
 						0 => 'nicht erreicht',
@@ -6455,10 +6462,9 @@ namespace block_exacomp {
 		 * Returns all values used for examples and child-descriptors
 		 */
 		static function get_student_value_titles() {
-			global $additional_grading;
 				
 			// if additional_grading is set, use global value scheme
-			if ($additional_grading) {
+			if (block_exacomp_additional_grading()) {
 				return array (
 						- 1 => ' ',
 						1 => ':-(',
