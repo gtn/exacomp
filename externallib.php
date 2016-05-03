@@ -763,21 +763,24 @@ class block_exacomp_external extends external_api {
 		// TODO: change to exaport\api::get_item_comments()
 		$itemcomments = $DB->get_records ( 'block_exaportitemcomm', array (
 				'itemid' => $itemid
-		), 'timemodified ASC', 'entry, userid');
+		), 'timemodified ASC', 'id, entry, userid');
 
 		// teacher comment: last comment from any teacher in the course the item was submited
-		if ($itemcomments) {
-			foreach ( $itemcomments as $itemcomment ) {
-				if ($userid == $itemcomment->userid && empty($item->studentcomment)) {
-					$item->studentcomment = $itemcomment->entry;
-				} elseif(isset($item->courseid) && array_key_exists($itemcomment->userid, block_exacomp_get_teachers_by_course($item->courseid))
-						&& empty($item->teachercomment)){
+		foreach ($itemcomments as $itemcomment) {
+			if (!$item->studentcomment && $userid == $itemcomment->userid) {
+				$item->studentcomment = $itemcomment->entry;
+			} elseif (!$item->teachercomment) {
+				if ($item->courseid && block_exacomp_is_teacher($item->courseid, $itemcomment->userid)) {
+					// dakora / exacomp teacher
+					$item->teachercomment = $itemcomment->entry;
+				} elseif (\block_exacomp\is_external_trainer_for_student($itemcomment->userid, $item->userid)) {
+					// elove teacher
 					$item->teachercomment = $itemcomment->entry;
 				}
 			}
 		}
 
-		return ($item);
+		return $item;
 	}
 
 	/**
@@ -1467,24 +1470,23 @@ class block_exacomp_external extends external_api {
 					$topic_reached_competencies = 0;
 					$topic_reached_examples = 0;
 
+					// topics zählen wir vorerst nicht, weil get_user_profile für elove ist
+					/*
 					if ($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset ( $cm_mm->topics [$topic->id] )))
 						$topic_total_competencies ++;
 
-					if (! empty ( $user->topics->$grading )) {
-						if (isset ( $user->topics->$grading ) && isset ( $user->topics->$grading [$topic->id] )) {
-							$topic_reached_competencies ++;
-						}
+					if (isset($user->topics->{$grading}[$topic->id])) {
+						$topic_reached_competencies++;
 					}
+					*/
 
 					$descriptors = block_exacomp_get_descriptors_by_topic ( $course ['courseid'], $topic->id, false, true );
 					foreach ( $descriptors as $descriptor ) {
 						if ($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset ( $cm_mm->competencies [$descriptor->id] )))
 							$topic_total_competencies ++;
 
-						if (! empty ( $user->competencies->$grading )) {
-							if (isset ( $user->competencies->$grading ) && isset ( $user->competencies->$grading [$descriptor->id] )) {
-								$topic_reached_competencies ++;
-							}
+						if (isset($user->competencies->{$grading}[$descriptor->id])) {
+							$topic_reached_competencies ++;
 						}
 
 						$examples = $DB->get_records_sql ( "SELECT de.id as deid, e.id, e.title, e.externalurl,

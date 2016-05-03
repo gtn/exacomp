@@ -6420,6 +6420,19 @@ namespace block_exacomp {
 
 	use block_exacomp\globals as g;
 
+	function is_external_trainer_for_student($trainerid, $studentid) {
+		return g::$DB->get_record(DB_EXTERNAL_TRAINERS, [
+			'trainerid' => $trainerid,
+			'studentid' => $studentid,
+		]);
+	}
+
+	function is_external_trainer($trainerid) {
+		return g::$DB->get_record(DB_EXTERNAL_TRAINERS, [
+			'trainerid' => $trainerid,
+		]);
+	}
+
 	class global_config {
 		
 		/**

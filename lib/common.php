@@ -484,7 +484,7 @@ call_user_func(function() {
 				continue;
 			}
 			foreach ($langs as $lang => $value) {
-				$byLang[$lang == 0 ? 'de' : ($lang == 1 ? 'en' : $lang)][$key] = $value;
+				$byLang[$lang === 0 ? 'de' : ($lang === 1 ? 'en' : $lang)][$key] = $value;
 			}
 		}
 
