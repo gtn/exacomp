@@ -504,6 +504,8 @@ call_user_func(function() {
 			}
 
 			// add local.config languages if present
+			// not needed anymore, plugins don't use any local language config anymore
+			/*
 			if (file_exists(dirname(__DIR__)."/local.config/lang.".$lang.".php")){
 				$output .= '
 
@@ -513,6 +515,7 @@ if (file_exists(__DIR__."/../../local.config/lang.".basename(__DIR__).".php")){
 }
 ';
 			}
+			*/
 
 			file_put_contents($langDir.'/'.$lang.'/'._plugin_name().'.php', $output);
 			touch($langDir.'/'.$lang.'/'._plugin_name().'.php', $time);

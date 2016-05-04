@@ -28,10 +28,10 @@ use block_exacomp\globals as g;
 class api {
 	static function active() {
 		// check if block is active
-		if (!g::$DB->get_record('block',array('name'=>'exacomp', 'visible'=>1))) {
+		if (!g::$DB->get_record('block', array('name' => 'exacomp', 'visible' => 1))) {
 			return false;
 		}
-		
+
 		return true;
 	}
 
@@ -61,32 +61,52 @@ class api {
 
 		return $tree;
 	}
-	
-	static function delete_user_data($userid){
+
+	static function delete_user_data($userid) {
 		global $DB;
-		
-		$DB->delete_records(\block_exacomp\DB_COMPETENCIES, array("userid"=>$userid));
-		$DB->delete_records(\block_exacomp\DB_COMPETENCIES_USER_MM, array("userid"=>$userid));
-		$DB->delete_records(\block_exacomp\DB_PROFILESETTINGS, array("userid"=>$userid));
 
-		$DB->delete_records(\block_exacomp\DB_CROSSSTUD, array("studentid"=>$userid));
-		$DB->delete_records(\block_exacomp\DB_DESCVISIBILITY, array("studentid"=>$userid));
-		$DB->delete_records(\block_exacomp\DB_EXAMPLEEVAL, array("studentid"=>$userid));
-		$DB->delete_records(\block_exacomp\DB_EXAMPVISIBILITY, array("studentid"=>$userid));
-		$DB->delete_records(\block_exacomp\DB_EXTERNAL_TRAINERS, array("studentid"=>$userid));
-		$DB->delete_records(\block_exacomp\DB_SCHEDULE, array("studentid"=>$userid));
+		$DB->delete_records(\block_exacomp\DB_COMPETENCIES, array("userid" => $userid));
+		$DB->delete_records(\block_exacomp\DB_COMPETENCIES_USER_MM, array("userid" => $userid));
+		$DB->delete_records(\block_exacomp\DB_PROFILESETTINGS, array("userid" => $userid));
 
-		$DB->delete_records(\block_exacomp\DB_CROSSSUBJECTS, array("creatorid"=>$userid));
-		$DB->delete_records(\block_exacomp\DB_EXAMPLES, array("creatorid"=>$userid));
-		$DB->delete_records(\block_exacomp\DB_SCHEDULE, array("creatorid"=>$userid));
+		$DB->delete_records(\block_exacomp\DB_CROSSSTUD, array("studentid" => $userid));
+		$DB->delete_records(\block_exacomp\DB_DESCVISIBILITY, array("studentid" => $userid));
+		$DB->delete_records(\block_exacomp\DB_EXAMPLEEVAL, array("studentid" => $userid));
+		$DB->delete_records(\block_exacomp\DB_EXAMPVISIBILITY, array("studentid" => $userid));
+		$DB->delete_records(\block_exacomp\DB_EXTERNAL_TRAINERS, array("studentid" => $userid));
+		$DB->delete_records(\block_exacomp\DB_SCHEDULE, array("studentid" => $userid));
 
-		$DB->delete_records(\block_exacomp\DB_EXAMPLEEVAL, array("teacher_reviewerid"=>$userid));
+		$DB->delete_records(\block_exacomp\DB_CROSSSUBJECTS, array("creatorid" => $userid));
+		$DB->delete_records(\block_exacomp\DB_EXAMPLES, array("creatorid" => $userid));
+		$DB->delete_records(\block_exacomp\DB_SCHEDULE, array("creatorid" => $userid));
 
-		$DB->delete_records(\block_exacomp\DB_EXTERNAL_TRAINERS, array("trainerid"=>$userid));
+		$DB->delete_records(\block_exacomp\DB_EXAMPLEEVAL, array("teacher_reviewerid" => $userid));
 
-		$DB->delete_records(\block_exacomp\DB_COMPETENCIES, array("reviewerid"=>$userid));
-		$DB->delete_records(\block_exacomp\DB_COMPETENCIES_USER_MM, array("reviewerid"=>$userid));
+		$DB->delete_records(\block_exacomp\DB_EXTERNAL_TRAINERS, array("trainerid" => $userid));
+
+		$DB->delete_records(\block_exacomp\DB_COMPETENCIES, array("reviewerid" => $userid));
+		$DB->delete_records(\block_exacomp\DB_COMPETENCIES_USER_MM, array("reviewerid" => $userid));
 
 		return true;
+	}
+
+	static function get_subjects_with_grade_for_teacher_and_student($teacherid, $studentid) {
+		$resultSubjects = [];
+
+		$courses = block_exacomp_get_teacher_courses($teacherid);
+		foreach ($courses as $course) {
+			$subjects = db_layer_course::create($course->id)->get_subjects();
+			foreach ($subjects as $subject) {
+				if (!isset($resultSubjects[$subject->id])) {
+					$resultSubjects[$subject->id] = (object)[
+						'title' => $subject->title,
+						'grade' => 2,
+						'gme' => 'G (Demodaten)',
+					];
+				}
+			}
+		}
+
+		return $resultSubjects;
 	}
 }
