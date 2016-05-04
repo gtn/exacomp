@@ -1069,7 +1069,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$table = new html_table();
 		$rows = array();
 		$studentsColspan = $showevaluation ? 2 : 1;
-		if(block_exacomp_additional_grading() && ($showevaluation || $role == \block_exacomp\ROLE_TEACHER)) $studentsColspan++;
+		if(block_exacomp_use_eval_niveau() && ($showevaluation || $role == \block_exacomp\ROLE_TEACHER)) $studentsColspan++;
 
 		$table->attributes['class'] = 'exabis_comp_comp rg2 exabis-tooltip';
 
@@ -1173,10 +1173,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						if($role == \block_exacomp\ROLE_TEACHER) {
 							$firstCol->text = get_string('studentshortcut','block_exacomp');
 							$secCol->text = get_string('teachershortcut','block_exacomp');
-							if(block_exacomp_additional_grading()) $secCol->colspan = 2;
+							if(block_exacomp_use_eval_niveau()) $secCol->colspan = 2;
 						} else {
 							$firstCol->text = get_string('teachershortcut','block_exacomp');
-							if(block_exacomp_additional_grading()) $firstCol->colspan = 2;
+							if(block_exacomp_use_eval_niveau()) $firstCol->colspan = 2;
 							$secCol->text = get_string('studentshortcut','block_exacomp');
 						}
 
