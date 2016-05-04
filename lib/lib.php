@@ -1503,6 +1503,7 @@ function block_exacomp_get_user_crosssubs_by_course($user, $courseid) {
 	$user->crosssubs->student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => TYPE_CROSSSUB),'','compid as id, value');
 	$user->crosssubs->timestamp_teacher = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_CROSSSUB),'','compid as id, timestamp');
 	$user->crosssubs->timestamp_student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => TYPE_CROSSSUB),'','compid as id, timestamp');
+	$user->crosssubs->teacher_additional_grading = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_CROSSSUB),'','compid as id, additionalinfo');
 	$user->crosssubs->niveau = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES, array("courseid"=>$courseid, "userid"=>$user->id, "role" =>\block_exacomp\ROLE_TEACHER, "comptype" => TYPE_CROSSSUB),'', 'compid as id, evalniveauid');
 	return $user;
 }

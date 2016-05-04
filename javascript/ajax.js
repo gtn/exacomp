@@ -29,6 +29,7 @@
 	var competencies_additional_grading = {};
 	var topics_additional_grading = {};
 	var subjects_additional_grading = {};
+	var crosssubs_additional_grading = {};
 
 	$(document).on('focus', 'input[name^=datadescriptors\-]', function() {
 		prev_val = $(this).val();
@@ -142,6 +143,10 @@
 			if(!topics_additional_grading[compid])
 				topics_additional_grading[compid] = {};
 			topics_additional_grading[compid][userid] = value;
+		} else if(type == 2) {
+			if(!crosssubs_additional_grading[compid])
+				crosssubs_additional_grading[compid] = {};
+			crosssubs_additional_grading[compid][userid] = value;
 		} else if(type == 3) {
 			if(!subjects_additional_grading[compid])
 				subjects_additional_grading[compid] = {};
@@ -222,6 +227,25 @@
 		console.log(subjects[compid+"-"+userid]);
 	});
 	
+	//#CROSSSUBJECTS
+	var crosssubs = {}
+	$(document).on('change', 'select[name^=niveau_crosssub\-]', function(event) {
+		var compid = this.getAttribute('exa-compid');
+		var userid = this.getAttribute('exa-userid');		
+		var niveauid = $(this).val();
+
+		if(!crosssubs[compid+"-"+userid]) {
+			crosssubs[compid+"-"+userid] = {
+					userid : userid,
+					compid : compid,
+					niveauid : niveauid
+				};
+		}
+		else
+			crosssubs[compid+"-"+userid]['niveauid'] = niveauid;
+		
+		console.log(crosssubs[compid+"-"+userid]);
+	});
 	// # CROSSSUBJECTS
 	var crosssubs = {};
 	$(document).on('click', 'input[name^=datacrosssubs\-]', function() {
@@ -407,6 +431,10 @@
 
 			if(!$.isEmptyObject(topics_additional_grading)){
 				multiQueryData.topics_additional_grading = topics_additional_grading;
+			}
+			
+			if(!$.isEmptyObject(crosssubs_additional_grading)){
+				multiQueryData.crosssubs_additional_grading = crosssubs_additional_grading;
 			}
 			
 			if(!$.isEmptyObject(subjects_additional_grading)){
