@@ -47,7 +47,7 @@ $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
 function block_exacomp_source_delete_get_subjects($source) {
 	//$DB->set_debug(true);
-	$subjects = \block_exacomp\db_layer::get()->get_subjects_for_source($source);
+	$subjects = \block_exacomp\db_layer_whole_moodle::get()->get_subjects_for_source($source);
 	
 	return $subjects;
 }

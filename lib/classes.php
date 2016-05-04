@@ -50,6 +50,9 @@ class db_layer {
 		return $default;
 	}
 
+	/**
+	 * @return static
+	 */
 	static function create() {
 		$args = func_get_args();
 
@@ -162,6 +165,68 @@ class db_layer {
 		return $this->init_objects(subject::get_objects());
 	}
 
+	function get_topics_for_subject($subject) {
+		$topics = topic::get_objects(['subjid' => $subject->id]);
+
+		$this->init_objects($topics, ['subject' => $subject]);
+
+		return block_exacomp_sort_items($topics, DB_TOPICS);
+	}
+
+	function set_object_datas(array $objects, array $data) {
+		foreach ($objects as $o) {
+			foreach ($data as $key => $value) {
+				$o->$key = $value;
+			}
+		}
+
+		return $objects;
+	}
+
+	function init_objects(array $objects, array $data = []) {
+
+		foreach ($objects as $o) {
+			$o->setDbLayer($this);
+		}
+
+		$this->set_object_datas($objects, $data);
+
+		return $objects;
+	}
+
+	/**
+	 * @param string $class
+	 * @param db_record[] $records
+	 * @param array $data
+	 * @return array
+	 */
+	function create_objects($class, array $records, $data = array()) {
+		$objects = array();
+
+		array_walk($records, function($record) use ($class, &$objects, $data) {
+			if ($data) {
+				foreach ($data as $key => $value) {
+					$record->$key = $value;
+				}
+			}
+
+			if ($record instanceof $class) {
+				// already object
+				$objects[$record->id] = $record;
+				$objects[$record->id]->setDbLayer($this);
+			} else {
+				// create object
+				if ($object = $class::create($record, $this)) {
+					$objects[$object->id] = $object;
+				}
+			}
+		});
+
+		return $objects;
+	}
+}
+
+class db_layer_whole_moodle extends db_layer {
 	function get_subjects_for_source($source) {
 		$subjects = $this->get_subjects();
 		// $subjects = array_values($subjects);
@@ -237,66 +302,6 @@ class db_layer {
 		}
 
 		return $subjects;
-	}
-
-	function get_topics_for_subject($subject) {
-		$topics = topic::get_objects(['subjid' => $subject->id]);
-
-		$this->init_objects($topics, ['subject' => $subject]);
-
-		return block_exacomp_sort_items($topics, DB_TOPICS);
-	}
-
-	function set_object_datas(array $objects, array $data) {
-		foreach ($objects as $o) {
-			foreach ($data as $key => $value) {
-				$o->$key = $value;
-			}
-		}
-
-		return $objects;
-	}
-
-	function init_objects(array $objects, array $data = []) {
-
-		foreach ($objects as $o) {
-			$o->setDbLayer($this);
-		}
-
-		$this->set_object_datas($objects, $data);
-
-		return $objects;
-	}
-
-	/**
-	 * @param string $class
-	 * @param db_record[] $records
-	 * @param array $data
-	 * @return array
-	 */
-	function create_objects($class, array $records, $data = array()) {
-		$objects = array();
-
-		array_walk($records, function($record) use ($class, &$objects, $data) {
-			if ($data) {
-				foreach ($data as $key => $value) {
-					$record->$key = $value;
-				}
-			}
-
-			if ($record instanceof $class) {
-				// already object
-				$objects[$record->id] = $record;
-				$objects[$record->id]->setDbLayer($this);
-			} else {
-				// create object
-				if ($object = $class::create($record, $this)) {
-					$objects[$object->id] = $object;
-				}
-			}
-		});
-
-		return $objects;
 	}
 }
 
