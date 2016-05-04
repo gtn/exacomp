@@ -1158,7 +1158,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 				$evaluationRow = new html_table_row();
 				$emptyCell = new html_table_cell();
-				$emptyCell->colspan = 3;
+				$emptyCell->colspan = block_exacomp_use_eval_niveau() ? 3 : 2; 
 				$evaluationRow->cells[] = $emptyCell;
 
 				if(!$statistic){
