@@ -1293,6 +1293,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 		//total evaluation crosssub row
 		if($crosssubjid && !$this->is_edit_mode() && !$statistic && $students){
+			$studentsCount = 0;
+			$checkboxname = 'datacrosssubs';
 			$student = array_values($students)[0];
 
 			$totalRow = new html_table_row();
@@ -1302,50 +1304,68 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$totalRow->cells[] = $firstCol;
 
 			$totalRow->cells[] = new html_table_cell();
-
-			$nivCell = new html_table_cell();
-			$nivCell->text = "";
-			$totalRow->cells[] = $nivCell;
-
-			$studentsCount = 0;
-			foreach($students as $student){
-
-				$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
-
-				if($showevaluation){
-					$evaluation = ($role == \block_exacomp\ROLE_TEACHER) ? 'student' : 'teacher';
-
-					$studentevalCol = new html_table_cell();
-					$studentevalCol->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-
-					if($scheme == 1) {
-						$studentevalCol->text = $this->generate_checkbox('datacrosssubs', $crosssubjid, 'crosssubs', $student, $evaluation, $scheme, true);
-					}else{
-						$studentevalCol->text = $this->generate_select('datacrosssubs', $crosssubjid, 'crosssubs', $student, $evaluation, $scheme, true);
-					}
-
-					if($role == \block_exacomp\ROLE_STUDENT)
-						$studentevalCol->colspan = 2;
-
-					$totalRow->cells[] = $studentevalCol;
-				}
-
-				$evaluation = ($role == \block_exacomp\ROLE_TEACHER) ? 'teacher' : 'student';
-
-				$teacherevalCol = new html_table_cell();
-				$teacherevalCol->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-				if($scheme == 1) {
-					$teacherevalCol->text = $this->generate_checkbox('datacrosssubs', $crosssubjid, 'crosssubs', $student, $evaluation, $scheme, false);
-				}else{
-					$teacherevalCol->text = $this->generate_select('datacrosssubs', $crosssubjid, 'crosssubs', $student, $evaluation, $scheme, false);
-				}
-
+			$totalRow->cells[] = new html_table_cell();
+			
+			foreach($students as $student) {
 				if($role == \block_exacomp\ROLE_TEACHER)
-					$teacherevalCol->colspan = 2;
-
-				$totalRow->cells[] = $teacherevalCol;
+					$reviewerid = $DB->get_field(\block_exacomp\DB_COMPETENCIES,"reviewerid",array("userid" => $student->id, "compid" => $crosssubjid, "courseid"=>$courseid, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_CROSSSUB));
+				
+				$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
+				
+				$self_evaluation_cell = new html_table_cell();
+				$self_evaluation_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+				
+				$evaluation_cell = new html_table_cell();
+				$evaluation_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+				
+				$niveau_cell = new html_table_cell();
+				$niveau_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+				$niveau_cell->text = (block_exacomp_use_eval_niveau())?$this->generate_niveau_select('niveau_crosssub', $crosssubjid, 'crosssubjects', $student, ($role == \block_exacomp\ROLE_STUDENT)?true:false, ($role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
+				
+				$params = array('name'=>'add-grading-'.$student->id.'-'.$crosssubjid, 'type'=>'text',
+						'maxlength'=>3, 'class'=>'percent-rating-text',
+						'value'=>(isset($student->crosssubs->teacher_additional_grading[$crosssubjid]) &&
+								$student->crosssubs->teacher_additional_grading[$crosssubjid] != null)?
+						$student->crosssubs->teacher_additional_grading[$crosssubjid]:"",
+						'exa-compid'=>$crosssubjid, 'exa-userid'=>$student->id, 'exa-type'=>\block_exacomp\TYPE_CROSSSUB);
+				
+				if($role == \block_exacomp\ROLE_STUDENT)
+					$params['disabled'] = 'disabled';
+				
+				//student & niveau & showevaluation
+				if(block_exacomp_use_eval_niveau() && $role == \block_exacomp\ROLE_STUDENT && $showevaluation){
+					$totalRow->cells[] = $niveau_cell;
+				}
+				
+				//student show evaluation
+				if(block_exacomp_additional_grading() && $role == \block_exacomp\ROLE_STUDENT){	//use parent grading
+					$evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
+				}else{	//use drop down/checkbox values
+					if($scheme == 1)
+						$evaluation_cell->text = $this->generate_checkbox($checkboxname, $crosssubjid, 'crosssubs', $student, ($evaluation == "teacher") ? "student" : "teacher", $scheme, true);
+					else
+						$evaluation_cell->text = $this->generate_select($checkboxname, $crosssubjid, 'crosssubs', $student, ($evaluation == "teacher") ? "student" : "teacher", $scheme, true, $profoundness);
+				}
+				
+				if($showevaluation)
+					$totalRow->cells[] = $evaluation_cell;
+				
+				if(block_exacomp_use_eval_niveau() && $role == \block_exacomp\ROLE_TEACHER){
+					$totalRow->cells[] = $niveau_cell;
+				}
+				
+				if($scheme == 1) {
+					$self_evaluation_cell->text = $this->generate_checkbox($checkboxname, $crosssubjid, 'crosssubs', $student, $evaluation, $scheme, ($visible_student)?false:true, null, ($role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
+				}else {
+					if(block_exacomp_additional_grading() && $role == \block_exacomp\ROLE_TEACHER)
+						$self_evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
+					else
+						$self_evaluation_cell->text = $this->generate_select($checkboxname, $crosssubjid, 'crosssubs', $student, $evaluation, $scheme, false, $profoundness, ($role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
+				}
+					
+				$totalRow->cells[] = $self_evaluation_cell;
 			}
-
+			
 			$rows[] = $totalRow;
 		}
 
