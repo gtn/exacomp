@@ -143,7 +143,7 @@ class block_exacomp_external extends external_api {
 
 			foreach ( $descriptors as $descriptor ) {
 				$examples = $DB->get_records_sql ( "SELECT de.id as deid, e.id, e.title, e.externalurl,
-						e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid
+						e.externalsolution, e.externaltask, e.completefile, e.description, e.source, e.creatorid
 						FROM {" . \block_exacomp\DB_EXAMPLES . "} e
 						JOIN {" . \block_exacomp\DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?
 						", array (
@@ -151,6 +151,11 @@ class block_exacomp_external extends external_api {
 				) );
 
 				foreach ( $examples as $example ) {
+					if ($example->source == \block_exacomp\EXAMPLE_SOURCE_USER && $example->creatorid !== $userid) {
+						// skip non user examples
+						continue;
+					}
+
 					$taxonomies = block_exacomp_get_taxonomies_by_example($example);
 					if(!empty($taxonomies)){
 						$taxonomy = reset($taxonomies);
@@ -1439,6 +1444,29 @@ class block_exacomp_external extends external_api {
 		) );
 
 		$grading = (block_exacomp_is_elove_student_self_assessment_enabled()) ? "student" : "teacher";
+
+		// test:
+		/*
+		$data = (object)[];
+		$walker = function($item) use (&$walker, &$data) {
+			$subs = $item->get_subs();
+			array_walk($subs, $walker);
+
+			if ($item instanceof \block_exacomp\descriptor) {
+				$data->descriptors[$item->id] = $item->id;
+				foreach ($item->examples as $example) {
+					$data->examples[$example->id] = $example->id;
+				}
+			} else {
+				// $item->achieved = null;
+			}
+		};
+
+		$tree = \block_exacomp\db_layer_all_user_courses::create($userid)->get_subjects();
+
+		array_walk($tree, $walker);
+		var_dump($data);
+		*/
 		
 		// total data
 		$total_competencies = 0;
@@ -1471,14 +1499,12 @@ class block_exacomp_external extends external_api {
 					$topic_reached_examples = 0;
 
 					// topics zählen wir vorerst nicht, weil get_user_profile für elove ist
-					/*
-					if ($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset ( $cm_mm->topics [$topic->id] )))
-						$topic_total_competencies ++;
+					//if ($coursesettings->show_all_descriptors || ($coursesettings->uses_activities && isset ( $cm_mm->topics [$topic->id] )))
+					//	$topic_total_competencies ++;
 
-					if (isset($user->topics->{$grading}[$topic->id])) {
-						$topic_reached_competencies++;
-					}
-					*/
+					//if (isset($user->topics->{$grading}[$topic->id])) {
+					//	$topic_reached_competencies++;
+					//}
 
 					$descriptors = block_exacomp_get_descriptors_by_topic ( $course ['courseid'], $topic->id, false, true );
 					foreach ( $descriptors as $descriptor ) {
@@ -1601,6 +1627,12 @@ class block_exacomp_external extends external_api {
 
 			$defaultdata ['subjects'] [] = $cursubject;
 		}
+
+		/*
+		print_r($total_examples);
+		print_r($defaultdata);
+		exit;
+		*/
 
 		return $defaultdata;
 	}
