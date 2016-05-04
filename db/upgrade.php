@@ -2718,7 +2718,11 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Launch rename field evalniveauid.
 		if ($dbman->field_exists($table, $field)) {
 			$dbman->rename_field($table, $field, 'evalniveauid');
+		} else {
+			$field = new xmldb_field('evalniveauid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, null);
+			$dbman->add_field($table, $field);
 		}
+		
 		// Define key evalniveauid (foreign) to be added to block_exacompcompuser.
 		$table = new xmldb_table('block_exacompcompuser');
 		$key = new xmldb_key('evalniveauid', XMLDB_KEY_FOREIGN, array('evalniveauid'), 'eval_niveau', array('id'));
