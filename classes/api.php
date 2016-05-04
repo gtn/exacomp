@@ -89,4 +89,19 @@ class api {
 
 		return true;
 	}
+
+	static function get_subjects_with_grade_for_teacher_and_student($teacherid, $studentid) {
+		return [
+			(object)[
+				'title' => 'Deutsch',
+				'grade' => 2,
+				'gme' => 'G (Demodaten)',
+			],
+			(object)[
+				'title' => 'Englisch',
+				'grade' => 1,
+				'gme' => 'E (Demodaten)',
+			],
+		];
+	}
 }
