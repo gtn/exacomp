@@ -97,11 +97,12 @@ class api {
 		foreach ($courses as $course) {
 			$subjects = db_layer_course::create($course->id)->get_subjects();
 			foreach ($subjects as $subject) {
-				if (!isset($resultSubjects[$subject->id])) {
-					$resultSubjects[$subject->id] = (object)[
+				$evaluation = get_user_subject_evaluation($studentid, $subject->id, $course->id);
+				if ($evaluation) {
+					$resultSubjects[] = (object)[
 						'title' => $subject->title,
-						'grade' => 2,
-						'gme' => 'G (Demodaten)',
+						'additionalinfo' => $evaluation->additionalinfo,
+						'niveau' => $evaluation->niveau,
 					];
 				}
 			}

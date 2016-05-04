@@ -678,28 +678,6 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 	return $id;
 }
 
-/**
- * Returns subject grade and evaluation niveau for one user
- *
- * @param int $userid
- * @param int $subjectid
- * @param int $courseid
- */
-function block_exacomp_get_user_subject_evaluation($userid, $subjectid, $courseid) {
-	global $DB, $USER;
-
-	block_exacomp_require_teacher ( $courseid );
-
-	return $DB->get_record_sql ( "SELECT cu.additionalinfo, en.title as niveau FROM {" . \block_exacomp\DB_COMPETENCIES . "} as cu
-		LEFT JOIN {" . \block_exacomp\DB_EVALUATION_NIVEAU . "} en ON cu.evalniveauid = en.id
-		WHERE cu.userid = ? AND cu.courseid = ? AND cu.compid = ? AND cu.role = ?", array (
-				$userid,
-				$courseid,
-				$subjectid,
-				\block_exacomp\ROLE_TEACHER
-		) );
-}
-
 function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $value = null, $evalniveauid = null) {
 	global $DB, $USER;
 
@@ -6457,6 +6435,30 @@ namespace block_exacomp {
 	function is_external_trainer($trainerid) {
 		return g::$DB->get_record(DB_EXTERNAL_TRAINERS, [
 			'trainerid' => $trainerid,
+		]);
+	}
+
+	/**
+	 * Returns subject grade and evaluation niveau for one user
+	 *
+	 * @param int $userid
+	 * @param int $subjectid
+	 * @param int $courseid
+	 * @return object
+	 */
+	function get_user_subject_evaluation($userid, $subjectid, $courseid) {
+		// don't do teacher check here
+		// block_exacomp_require_teacher ( $courseid );
+
+		return g::$DB->get_record_sql("
+			SELECT cu.additionalinfo, en.title as niveau
+			FROM {".DB_COMPETENCIES."} as cu
+			LEFT JOIN {".DB_EVALUATION_NIVEAU."} en ON cu.evalniveauid = en.id
+			WHERE cu.userid = ? AND cu.courseid = ? AND cu.compid = ? AND cu.role = ?", [
+			$userid,
+			$courseid,
+			$subjectid,
+			ROLE_TEACHER,
 		]);
 	}
 
