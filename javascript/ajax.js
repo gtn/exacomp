@@ -134,6 +134,16 @@
 		var userid = this.getAttribute('exa-userid');	
 		var value = $(this).val();
 		
+		// check for valid grading input range
+		if (value > 6.0) {
+			value = 6.0;
+			$(this).val(value);
+		}
+		else if(value < 1.0) {
+			value = 1.0;
+			$(this).val(value);
+		}
+		
 		var type = this.getAttribute('exa-type');
 		if(type == 0) {
 			if(!competencies_additional_grading[compid])

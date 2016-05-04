@@ -6098,6 +6098,11 @@ function block_exacomp_get_cm_from_cmid($cmid) {
 function block_exacomp_save_additional_grading_for_descriptor($courseid, $descriptorid, $studentid, $additionalinfo, $comptype = \block_exacomp\TYPE_DESCRIPTOR){
 	global $DB, $USER;
 
+	if($additionalinfo > 6.0)
+		$additionalinfo = 6.0;
+	elseif($additionalinfo < 1.0)
+		$additionalinfo = 1.0;
+	
 	$value = block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
 	$record = block_exacomp\get_comp_eval($courseid, \block_exacomp\ROLE_TEACHER, $studentid, $comptype, $descriptorid);
 	if($record){
