@@ -6462,7 +6462,7 @@ namespace block_exacomp {
 				$course_grading = block_exacomp_get_settings_by_course(g::$COURSE->id)->grading;
 				
 				$values = array(-1 => ' ');
-				$values += range(0, $course_grading);
+				$values += range(0, $course_grading+1);
 				
 				return $values;
 			}
@@ -6497,7 +6497,7 @@ namespace block_exacomp {
 				$course_grading = block_exacomp_get_settings_by_course(g::$COURSE->id)->grading;
 				
 				$values = array(-1 => ' ');
-				$values += range(1, $course_grading);
+				$values += range(1, $course_grading+1);
 				
 				return $values;
 			}
