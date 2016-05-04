@@ -190,11 +190,21 @@
 		}
 	});
 	$(document).on('change', 'select[name^=datatopics\-]', function() {
-		topics[this.name] = {
-			userid : this.getAttribute('exa-userid'),
-			compid : this.getAttribute('exa-compid'),
-			value : $(this).val()
-		};
+		var compid = this.getAttribute('exa-compid');
+		var userid = this.getAttribute('exa-userid');	
+		var niveauid = $('select[name=niveau_topic-'+compid+'-'+userid).val();
+		
+		if(!topics[this.name]) {
+			topics[this.name] = {
+				userid : userid,
+				compid : compid,
+				value : $(this).val(),
+				niveauid : niveauid
+			};
+		} else
+			topics[this.name]['value'] = $(this).val();
+		
+		
 	});
 	
 	$(document).on('change', 'select[name^=niveau_topic\-]', function(event) {
@@ -219,22 +229,42 @@
 	});
 	// # SUBJECTS
 	var subjects = {}
+	$(document).on('change', 'select[name^=datasubjects\-]', function() {
+		var compid = this.getAttribute('exa-compid');
+		var userid = this.getAttribute('exa-userid');	
+		var niveauid = $('select[name=niveau_subject-'+compid+'-'+userid).val();
+		
+		if(!subjects[this.name]) {
+			subjects[this.name] = {
+				userid : userid,
+				compid : compid,
+				value : $(this).val(),
+				niveauid : niveauid
+			};
+		} else
+			subjects[this.name]['value'] = $(this).val();
+		
+	});
+	
 	$(document).on('change', 'select[name^=niveau_subject\-]', function(event) {
 		var compid = this.getAttribute('exa-compid');
 		var userid = this.getAttribute('exa-userid');		
 		var niveauid = $(this).val();
-
-		if(!subjects[compid+"-"+userid]) {
-			subjects[compid+"-"+userid] = {
+		var name = 'datasubjects-'+compid+'-'+userid+'-teacher';
+		var value = $('select[name='+name+']').val();
+		
+		if(!subjects[name]) {
+			subjects[name] = {
 					userid : userid,
 					compid : compid,
-					niveauid : niveauid
+					niveauid : niveauid,
+					value : value
 				};
 		}
 		else
-			subjects[compid+"-"+userid]['niveauid'] = niveauid;
+			subjects[name]['niveauid'] = niveauid;
 		
-		console.log(subjects[compid+"-"+userid]);
+		console.log(subjects[name]);
 	});
 	
 	//#CROSSSUBJECTS
