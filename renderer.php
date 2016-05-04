@@ -1259,7 +1259,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						}
 							
 						if($scheme == 1) {
-							$self_evaluation_cell->text = $this->generate_checkbox($checkboxname, $subject->id, 'subjects', $student, $evaluation, $scheme, ($visible_student)?false:true, null, ($role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
+							$self_evaluation_cell->text = $this->generate_checkbox($checkboxname, $subject->id, 'subjects', $student, $evaluation, $scheme, false, null, ($role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
 						}else {
 							if(block_exacomp_additional_grading() && $role == \block_exacomp\ROLE_TEACHER)
 								$self_evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
@@ -1364,7 +1364,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				}
 				
 				if($scheme == 1) {
-					$self_evaluation_cell->text = $this->generate_checkbox($checkboxname, $crosssubjid, 'crosssubs', $student, $evaluation, $scheme, ($visible_student)?false:true, null, ($role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
+					$self_evaluation_cell->text = $this->generate_checkbox($checkboxname, $crosssubjid, 'crosssubs', $student, $evaluation, $scheme, false, null, ($role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
 				}else {
 					if(block_exacomp_additional_grading() && $role == \block_exacomp\ROLE_TEACHER)
 						$self_evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
@@ -1527,7 +1527,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					}
 						
 					if($data->scheme == 1) {
-						$self_evaluation_cell->text = $this->generate_checkbox($checkboxname, $topic->id, 'topics', $student, $evaluation, $data->scheme, ($visible_student)?false:true, null, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
+						$self_evaluation_cell->text = $this->generate_checkbox($checkboxname, $topic->id, 'topics', $student, $evaluation, $data->scheme, false, null, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
 					}else {
 						if(block_exacomp_additional_grading() && $data->role == \block_exacomp\ROLE_TEACHER)
 							$self_evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
