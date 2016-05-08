@@ -37,15 +37,15 @@ class block_exacomp_services_testcase extends basic_testcase {
 
 		foreach ($functions as $function) {
 			$f = $function['methodname'];
-			$this->assertArrayHasKey($f, $class_methods, "function $f not found");
+			$this->assertArrayHasKey($f, $class_methods, "function $f not found in class ".block_exacomp_external::class);
 			unset($class_methods[$f]);
 
 			$f = $function['methodname'].'_parameters';
-			$this->assertArrayHasKey($f, $class_methods, "function $f not found");
+			$this->assertArrayHasKey($f, $class_methods, "function $f not found in class ".block_exacomp_external::class);
 			unset($class_methods[$f]);
 
 			$f = $function['methodname'].'_returns';
-			$this->assertArrayHasKey($f, $class_methods, "function $f not found");
+			$this->assertArrayHasKey($f, $class_methods, "function $f not found in class ".block_exacomp_external::class);
 			unset($class_methods[$f]);
 		}
 

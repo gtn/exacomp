@@ -58,7 +58,6 @@ call_user_func(function() use (&$functions, &$services) {
 		[ 'dakora_allow_example_resubmission', 'read', 'allow student to resubmit example' ],
 		[ 'dakora_create_blocking_event', 'write', 'create a blocking event' ],
 		[ 'dakora_empty_pre_planning_storage', 'write', 'delte all items from current pre planning storage' ],
-		[ 'dakora_get_admin_grading_scheme', 'read', 'get admin grading scheme' ],
 		[ 'dakora_get_all_descriptor_children_for_cross_subject', 'read', 'get children in context of cross subject' ],
 		[ 'dakora_get_all_descriptors_by_cross_subject', 'read', 'get descriptors for a cross subject' ],
 		[ 'dakora_get_all_descriptors', 'read', 'get descriptors for topic for dakora app' ],

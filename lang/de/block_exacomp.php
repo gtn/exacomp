@@ -107,6 +107,13 @@ $string['settings_usetimeline'] = 'Timeline im Profil verwenden';
 $string['settings_usetimeline_description'] = 'Zeitlichen Ablauf des Kompetenzerwerbes im Profil anzeigen';
 
 
+// === Unit Tests ===
+$string['unittest_string'] = 'result_unittest_string';
+$string['de:unittest_string2'] = 'result_unittest_string2';
+$string['de:unittest_param {$a} unittest_param'] = 'result_unittest_param {$a} result_unittest_param';
+$string['de:unittest_param2 {$a->val} unittest_param2'] = 'result_unittest_param2 {$a->val} result_unittest_param2';
+
+
 // === Learning agenda ===
 $string['LA_MON'] = 'Mo';
 $string['LA_TUE'] = 'Di';

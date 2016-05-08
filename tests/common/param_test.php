@@ -111,8 +111,9 @@ class block_exacomp_common_param_testcase extends basic_testcase {
 		$this->assertEquals((object)['key'=>'asdf', 'missing'=>0], $ret);
 		
 		try {
-			$_POST['testparam'] = 'asdf';
+			$_POST['testparam'] = 'test_required_json';
 			$ret = block_exacomp\common\param::required_object('testparam', ['key'=>PARAM_TEXT, 'missing'=>PARAM_INT]);
+			$this->fail('exception expected');
 		} catch (moodle_exception $e) {
 			$this->assertTrue(true);
 		}
@@ -120,6 +121,7 @@ class block_exacomp_common_param_testcase extends basic_testcase {
 		try {
 			unset($_POST['testparam']);
 			$ret = block_exacomp\common\param::required_object('testparam', ['key'=>PARAM_TEXT, 'missing'=>PARAM_INT]);
+			$this->fail('exception expected');
 		} catch (moodle_exception $e) {
 			$this->assertTrue(true);
 		}
@@ -135,8 +137,9 @@ class block_exacomp_common_param_testcase extends basic_testcase {
 		$this->assertEquals(['key'=>'asdf', 'more'=>'asdf'], $ret);
 	
 		try {
-			$_POST['testparam'] = json_encode('asdf');
+			$_POST['testparam'] = 'wrong string value';
 			$ret = block_exacomp\common\param::required_json('testparam', ['key'=>PARAM_TEXT, 'missing'=>PARAM_INT]);
+			$this->fail('exception expected');
 		} catch (moodle_exception $e) {
 			$this->assertTrue(true);
 		}
@@ -144,6 +147,7 @@ class block_exacomp_common_param_testcase extends basic_testcase {
 		try {
 			unset($_POST['testparam']);
 			$ret = block_exacomp\common\param::required_json('testparam', ['key'=>PARAM_TEXT, 'missing'=>PARAM_INT]);
+			$this->fail('exception expected');
 		} catch (moodle_exception $e) {
 			$this->assertTrue(true);
 		}

@@ -321,6 +321,25 @@ return  [
 	],
 
 
+	// === Unit Tests ===
+	'unittest_string' => [
+		'result_unittest_string',
+		'result_unittest_string',
+	],
+	'de:unittest_string2' => [
+		'result_unittest_string2',
+		'result_unittest_string2',
+	],
+	'de:unittest_param {$a} unittest_param' => [
+		'result_unittest_param {$a} result_unittest_param',
+		'result_unittest_param {$a} result_unittest_param',
+	],
+	'de:unittest_param2 {$a->val} unittest_param2' => [
+		'result_unittest_param2 {$a->val} result_unittest_param2',
+		'result_unittest_param2 {$a->val} result_unittest_param2',
+	],
+
+
 	// === Learning agenda ===
 	'LA_MON' => [
 		'Mo',

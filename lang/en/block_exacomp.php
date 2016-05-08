@@ -107,6 +107,13 @@ $string['settings_usetimeline'] = 'Use Timeline in profile';
 $string['settings_usetimeline_description'] = 'Chronological sequence of gained outcomes';
 
 
+// === Unit Tests ===
+$string['unittest_string'] = 'result_unittest_string';
+$string['de:unittest_string2'] = 'result_unittest_string2';
+$string['de:unittest_param {$a} unittest_param'] = 'result_unittest_param {$a} result_unittest_param';
+$string['de:unittest_param2 {$a->val} unittest_param2'] = 'result_unittest_param2 {$a->val} result_unittest_param2';
+
+
 // === Learning agenda ===
 $string['LA_MON'] = 'MON';
 $string['LA_TUE'] = 'TUE';

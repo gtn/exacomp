@@ -20,23 +20,45 @@
 require __DIR__.'/inc.php';
 
 class block_exacomp_common_functions_testcase extends basic_testcase {
-	public function test_t() {
+	public function test_trans() {
 		global $SESSION;
 		$SESSION->forcelang = 'de';
-		
-		$this->assertEquals('Some String', block_exacomp\common\trans('Some String'));
-		$this->assertEquals('xxx arg xxx', block_exacomp\common\trans('de:xxx {$a} xxx', 'arg'));
+
+		try {
+			block_exacomp\common\trans('Some String');
+			$this->fail("exception expected, because not a valid string eg. 'de:Some String'");
+		} catch (moodle_exception $e) {
+			$this->assertTrue(true);
+		}
+
+		// string
 		$this->assertEquals('xxx', block_exacomp\common\trans('de:xxx'));
 		$this->assertEquals('xxx', block_exacomp\common\trans('id', 'de:xxx'));
-		$this->assertEquals('xxx', block_exacomp\common\trans('id', ['de:xxx', 'en:yyy']));
-		$this->assertEquals('yyy', block_exacomp\common\trans('id', ['en:xxx', 'de:yyy']));
-		$this->assertEquals('xxx arg xxx', block_exacomp\common\trans('de:xxx {$a} xxx', 'arg'));
+
+		// param
 		$this->assertEquals('xxx arg xxx', block_exacomp\common\trans('id', 'de:xxx {$a} xxx', 'arg'));
-		$this->assertEquals('xxx arg xxx', block_exacomp\common\trans('id', ['de:xxx {$a} xxx', 'en:xxx {$a} xxx'], 'arg'));
-		$this->assertEquals('xxx test xxx', block_exacomp\common\trans('id', 'de:xxx {$a->arg} xxx', ['arg' => 'test']));
-		$this->assertEquals('xxx test xxx', block_exacomp\common\trans('id', ['de:xxx {$a->arg} xxx', 'en:yyy {$a->arg} yyy'], ['arg' => 'test']));
+		$this->assertEquals('xxx arg xxx', block_exacomp\common\trans('de:xxx {$a} xxx', 'arg'));
+
+		// multiple langauges
+		$this->assertEquals('xxx', block_exacomp\common\trans(['de:xxx', 'en:yyy']));
+		$this->assertEquals('yyy', block_exacomp\common\trans(['en:xxx', 'de:yyy']));
+		$this->assertEquals('xxx arg xxx', block_exacomp\common\trans(['de:xxx {$a} xxx', 'en:yyy {$a} yyy'], 'arg'));
+		$this->assertEquals('xxx test xxx', block_exacomp\common\trans('de:xxx {$a->arg} xxx', ['arg' => 'test']));
+		$this->assertEquals('xxx test xxx', block_exacomp\common\trans(['de:xxx {$a->arg} xxx', 'en:yyy {$a->arg} yyy'], ['arg' => 'test']));
 
 		// other language
-		$this->assertEquals('asdf', block_exacomp\common\trans('id', 'fr:asdf'));
+		$this->assertEquals('asdf', block_exacomp\common\trans('fr:asdf'));
+
+		// fallback to languge file
+		$this->assertEquals('result_unittest_string', block_exacomp\common\trans('unittest_string'));
+
+		// can translate same language
+		$this->assertEquals('result_unittest_string2', block_exacomp\common\trans('de:unittest_string2'));
+
+		// with params
+		$this->assertEquals('result_unittest_param x result_unittest_param',
+			block_exacomp\common\trans('de:unittest_param {$a} unittest_param', 'x'));
+		$this->assertEquals('result_unittest_param2 x result_unittest_param2',
+			block_exacomp\common\trans('de:unittest_param2 {$a->val} unittest_param2', ['val' => 'x']));
 	}
 }
