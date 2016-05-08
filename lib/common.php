@@ -280,7 +280,7 @@ class param {
 		}
 
 		if ($keyType !== PARAM_INT && $keyType !== PARAM_TEXT && $keyType !== PARAM_SEQUENCE) {
-			print_error('wrong key type: '.$keyType);
+			throw new moodle_exception('wrong key type: '.$keyType);
 		}
 
 		$ret = array();
@@ -342,6 +342,10 @@ class param {
 	public static function required_array($parname, $definition) {
 		$param = static::get_required_param($parname);
 
+		if (!is_array($param)) {
+			throw new moodle_exception("required parameter '$parname' is not an array");
+		}
+
 		return static::clean_array($param, $definition);
 	}
 
@@ -358,6 +362,10 @@ class param {
 	public static function required_object($parname, $definition) {
 		$param = static::get_required_param($parname);
 
+		if (!is_array($param)) {
+			throw new moodle_exception("required parameter '$parname' is not an array an can not converted to object");
+		}
+
 		return static::clean_object($param, $definition);
 	}
 
@@ -366,7 +374,7 @@ class param {
 
 		$data = json_decode($data, true);
 		if ($data === null) {
-			print_error('missingparam', '', '', $parname);
+			throw new moodle_exception('missingparam', '', '', $parname);
 		}
 
 		if ($definition === null) {
@@ -491,7 +499,7 @@ call_user_func(function() {
 		foreach ($byLang as $lang => $strings) {
 			$output = '<?php'."\n{$copyright}\n";
 
-			foreach ($strings as $key=>$value) {
+			foreach ($strings as $key => $value) {
 				if (is_int($key)) {
 					$output .= $value."\n";
 				} elseif (strpos($key, '===') === 0) {
@@ -585,7 +593,7 @@ function _t_parse_string($string, $a) {
 /**
  * translator function
  */
-function trans() {
+function trans($string_or_strings, $arg_or_args = null) {
 
 	$origArgs = $args = func_get_args();
 
@@ -594,68 +602,72 @@ function trans() {
 	$a = null;
 
 	if (empty($args)) {
-		print_error('no args');
+		throw new moodle_exception('no args');
 	}
 
 	$arg = array_shift($args);
 	if (is_string($arg) && !_t_check_identifier($arg)) {
 		$identifier = $arg;
-
 		$arg = array_shift($args);
 	}
 
 	if ($arg === null) {
 		// just id submitted
-		$languagestrings = array();
+		$languagestrings = [];
 	} elseif (is_array($arg)) {
 		$languagestrings = $arg;
 	} elseif (is_string($arg) && $matches = _t_check_identifier($arg)) {
-		$languagestrings = array($matches[1] => $matches[2]);
+		$languagestrings = [$matches[1] => $matches[2]];
 	} else {
-		print_error('wrong args: '.print_r($origArgs, true));
+		throw new moodle_exception('wrong args: '.print_r($origArgs, true));
 	}
 
-	if (!empty($args)) {
+	if ($args) {
 		$a = array_shift($args);
 	}
 
+	if ($args) {
+		throw new moodle_exception('too many arguments: '.print_r($origArgs, true));
+	}
+
 	// parse $languagestrings
-	foreach ($languagestrings as $lang => $string) {
-		if (is_number($lang)) {
+	foreach ($languagestrings as $key => $string) {
+		if (is_number($key)) {
 			if ($matches = _t_check_identifier($string)) {
 				$languagestrings[$matches[1]] = $matches[2];
+				unset($languagestrings[$key]);
 			} else {
-				print_error('wrong language string: '.$origArgs);
+				throw new moodle_exception('wrong language string: '.$origArgs);
 			}
 		}
 	}
 
-	if (!empty($args)) {
-		print_error('too many args: '.print_r($origArgs, true));
-	}
-
 	$lang = current_language();
-	if (isset($languagestrings[$lang])) {
-		return _t_parse_string($languagestrings[$lang], $a);
-	}
 
 	$manager = get_string_manager();
 	$component = _plugin_name();
+
+	// try with $identifier from args
+	if ($identifier && $manager->string_exists($identifier, $component)) {
+		return $manager->get_string($identifier, $component, $a);
+	}
+
+	// try with first language string
 	$identifier = reset($languagestrings);
 	$identifier = key($languagestrings).':'.$identifier;
-
 	if ($manager->string_exists($identifier, $component)) {
 		return $manager->get_string($identifier, $component, $a);
 	}
-	$identifier = reset($languagestrings);
-	if ($manager->string_exists($identifier, $component)) {
-		return $manager->get_string($identifier, $component, $a);
+
+	// try submitted language strings
+	if (isset($languagestrings[$lang])) {
+		return _t_parse_string($languagestrings[$lang], $a);
 	}
 
 	if ($languagestrings) {
 		return _t_parse_string(reset($languagestrings), $a);
 	} else {
-		return _t_parse_string($identifier, $a);
+		throw new moodle_exception("language string '{$origArgs[0]}' not found, did you forget to prefix a language? 'en:{$origArgs[0]}'");
 	}
 }
 
