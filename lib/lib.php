@@ -5430,20 +5430,30 @@ function block_exacomp_get_file($item, $type) {
 }
 
 /**
- * @return moodle_url
  * @param array|object $item database item
  * @param string $type
+ * @return moodle_url
  */
 function block_exacomp_get_file_url($item, $type, $context=null) {
-	$context = block_exacomp_get_context_from_courseid($context);
-
 	// get from filestorage
 	$file = block_exacomp_get_file($item, $type);
 
 	if (!$file) return null;
 
-	return moodle_url::make_pluginfile_url($context->id, $file->get_component(), $file->get_filearea(),
+	return block_exacomp_get_url_for_file($file, $context);
+}
+
+/**
+ * @param stored_file $file
+ * @return moodle_url
+ */
+function block_exacomp_get_url_for_file($file, $context=null) {
+	$context = block_exacomp_get_context_from_courseid($context);
+
+	$url = moodle_url::make_pluginfile_url($context->id, $file->get_component(), $file->get_filearea(),
 		$file->get_itemid(), $file->get_filepath(), $file->get_filename());
+
+	return $url;
 }
 
 function block_exacomp_get_examples_for_pool($studentid, $courseid){

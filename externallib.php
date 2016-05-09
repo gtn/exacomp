@@ -247,33 +247,45 @@ class block_exacomp_external extends external_api {
 	public static function get_example_by_id($exampleid) {
 		global $DB;
 
-		if (empty ( $exampleid )) {
-			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
+		if (empty ($exampleid)) {
+			throw new invalid_parameter_exception ('Parameter can not be empty');
 		}
 
-		static::validate_parameters ( static::get_example_by_id_parameters (), array (
-				'exampleid' => $exampleid
-		) );
+		static::validate_parameters(static::get_example_by_id_parameters(), array(
+			'exampleid' => $exampleid,
+		));
 
 		$data = static::require_can_access_example($exampleid);
 
-		$example = $DB->get_record (\block_exacomp\DB_EXAMPLES, array (
-				'id' => $exampleid
-		) );
-		$example->description = htmlentities ( $example->description );
-		$example->hassubmissions = ($DB->get_records('block_exacompitemexample',array('exampleid'=>$exampleid))) ? true : false;
+		$example = $DB->get_record(\block_exacomp\DB_EXAMPLES, array(
+			'id' => $exampleid,
+		));
+		$example->description = htmlentities($example->description);
+		$example->hassubmissions = ($DB->get_records('block_exacompitemexample', array('exampleid' => $exampleid))) ? true : false;
 
-		$task = block_exacomp_get_file_url($example, 'example_task', $data->courseid);
-		if ($task)
-			$example->task = (string)$task;
-		elseif($example->externaltask)
-			$example->task = (string)$example->externaltask;
+		if ($file = block_exacomp_get_file($example, 'example_task')) {
+			$example->taskfileurl = static::get_webservice_url_for_file($file, $data->courseid)->out(false);
+			$example->taskfilename = $file->get_filename();
+		}
+
+		// fall back to old fields
+		// TODO: check if this can be deleted?!?
+		if (!$example->externalurl && $example->externaltask) {
+			$example->externalurl = $example->externaltask;
+		}
+		if (!$example->externalurl && $example->task) {
+			$example->externalurl = $example->task;
+		}
+
+		if (!$example->task) {
+			$example->task = $example->taskfileurl;
+		}
 
 		$solution = block_exacomp_get_file_url($example, 'example_solution', $data->courseid);
 		if ($solution)
 			$example->solution = (string)$solution;
-		elseif($example->externalsolution)
-			$example->solution = (string)$example->externalsolution;
+		elseif ($example->externalsolution)
+			$example->solution = $example->externalsolution;
 
 		return $example;
 	}
@@ -287,9 +299,11 @@ class block_exacomp_external extends external_api {
 		return new external_single_structure ( array (
 				'title' => new external_value ( PARAM_TEXT, 'title of example' ),
 				'description' => new external_value ( PARAM_TEXT, 'description of example' ),
-				'task' => new external_value ( PARAM_TEXT, 'task(url/description) of example' ),
-				'solution' => new external_value ( PARAM_TEXT, 'solution(url/description) of example' ),
+				'taskfileurl' => new external_value ( PARAM_TEXT, 'task fileurl' ),
+				'taskfilename' => new external_value ( PARAM_TEXT, 'task filename' ),
 				'externalurl' => new external_value ( PARAM_TEXT, 'externalurl of example' ),
+				'task' => new external_value ( PARAM_TEXT, '@deprecated' ),
+				'solution' => new external_value ( PARAM_TEXT, 'solution(url/description) of example' ),
 				'timeframe' => new external_value ( PARAM_INT, 'timeframe in minutes' ),
 				'hassubmissions' => new external_value ( PARAM_BOOL, 'true if example has already submissions' )
 		) );
@@ -380,40 +394,40 @@ class block_exacomp_external extends external_api {
 	}
 
 	/**
+	 * @elove (2016-05-09: only used in elove)
 	 * return 1 for trainer
 	 * 2 for student
 	 * 0 if false
 	 *
-	 * @param
-	 *			int userid
-	 * @return int
+	 * @return array
 	 */
 	public static function get_user_role() {
 		global $DB, $USER;
 
-		static::validate_parameters ( static::get_user_role_parameters (), array () );
+		static::validate_parameters(static::get_user_role_parameters(), array());
 
-		$trainer = $DB->get_records ( \block_exacomp\DB_EXTERNAL_TRAINERS, array (
-				'trainerid' => $USER->id
-		) );
-		if ($trainer)
-			return array (
-					"role" => 1
-			);
+		$trainer = $DB->get_records(\block_exacomp\DB_EXTERNAL_TRAINERS, array(
+			'trainerid' => $USER->id,
+		));
+		if ($trainer) {
+			return (object)[
+				"role" => \block_exacomp\WS_ROLE_TEACHER,
+			];
+		}
 
-		$student = $DB->get_records ( \block_exacomp\DB_EXTERNAL_TRAINERS, array (
-				'studentid' => $USER->id
-		) );
+		$student = $DB->get_records(\block_exacomp\DB_EXTERNAL_TRAINERS, array(
+			'studentid' => $USER->id,
+		));
 
 		if ($student)
-			return array (
-					"role" => 2
-			);
+			return (object)[
+				"role" => \block_exacomp\WS_ROLE_STUDENT,
+			];
 
-			// neither student nor trainer
-		return array (
-				"role" => 0
-		);
+		// neither student or trainer
+		return (object)[
+			"role" => 0,
+		];
 	}
 
 	/**
@@ -474,7 +488,7 @@ class block_exacomp_external extends external_api {
 			foreach($user_subjects as $user_subject)
 				if($user_subject->requireaction)
 					$returndataObject->requireaction = true;
-			
+
 			$returndata [] = $returndataObject;
 		}
 		return $returndata;
@@ -631,7 +645,7 @@ class block_exacomp_external extends external_api {
 				'value' => new external_value ( PARAM_INT, 'evaluation value' )
 		) );
 	}
-	
+
 	/**
 	 * Set student evaluation
 	 *
@@ -645,21 +659,21 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function set_competence($courseid, $descriptorid, $value) {
 		global $DB, $USER;
-	
+
 		if (empty ( $courseid ) || empty ( $descriptorid ) || ! isset ( $value )) {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 		}
-	
+
 		static::validate_parameters ( static::set_competence_parameters (), array (
 				'courseid' => $courseid,
 				'descriptorid' => $descriptorid,
 				'value' => $value
 		) );
-	
+
 		static::require_can_access_course($courseid);
-	
+
 		$transaction = $DB->start_delegated_transaction (); // If an exception is thrown in the below code, all DB queries in this code will be rollback.
-	
+
 		$DB->delete_records ( 'block_exacompcompuser', array (
 				"userid" => $USER->id,
 				"role" => 0,
@@ -678,14 +692,14 @@ class block_exacomp_external extends external_api {
 					"value" => $value
 			) );
 		}
-	
+
 		$transaction->allow_commit ();
-	
+
 		return array (
 				"success" => true
 		);
 	}
-	
+
 	/**
 	 * Returns desription of method return values
 	 *
@@ -696,7 +710,7 @@ class block_exacomp_external extends external_api {
 				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
 		) );
 	}
-	
+
 	/**
 	 * Returns description of method parameters
 	 *
@@ -764,7 +778,7 @@ class block_exacomp_external extends external_api {
 
 		$item->studentcomment = '';
 		$item->teachercomment = '';
-		
+
 		// TODO: change to exaport\api::get_item_comments()
 		$itemcomments = $DB->get_records ( 'block_exaportitemcomm', array (
 				'itemid' => $itemid
@@ -1067,25 +1081,25 @@ class block_exacomp_external extends external_api {
 		return new external_function_parameters ( array (
 				'name' => new external_value ( PARAM_TEXT, 'title of example' ),
 				'description' => new external_value ( PARAM_TEXT, 'description of example' ),
-				'task' => new external_value ( PARAM_TEXT, 'task of example' ),
+				'externalurl' => new external_value ( PARAM_TEXT, '' ),
 				'comps' => new external_value ( PARAM_TEXT, 'list of competencies, seperated by comma' ),
 				'filename' => new external_value ( PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area' )
 		) );
 	}
 
 	/**
-	 * create example. DO NOT USE
+	 * create example
+	 * @elove (2016-05-09: only used in elove)
 	 *
 	 * @param $name
 	 * @param $description
-	 * @param $task
+	 * @param $externalurl
 	 * @param $comps
 	 * @param $filename
 	 * @return array
-	 * @throws invalid_parameter_exception
 	 */
-	public static function create_example($name, $description, $task, $comps, $filename) {
-		global $CFG, $DB, $USER;
+	public static function create_example($name, $description, $externalurl, $comps, $filename) {
+		global $DB, $USER;
 
 		if (empty ( $name )) {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
@@ -1094,7 +1108,7 @@ class block_exacomp_external extends external_api {
 		static::validate_parameters ( static::create_example_parameters (), array (
 				'name' => $name,
 				'description' => $description,
-				'task' => $task,
+				'externalurl' => $externalurl,
 				'comps' => $comps,
 				'filename' => $filename
 		) );
@@ -1103,10 +1117,12 @@ class block_exacomp_external extends external_api {
 		$example = new stdClass ();
 		$example->title = $name;
 		$example->description = $description;
-		$example->task = $task;
+		$example->externalurl = $externalurl;
 		$example->creatorid = $USER->id;
 		$example->timestamp = time();
-		$example->source = \block_exacomp\EXAMPLE_SOURCE_USER;
+		$example->source = static::get_user_role()->role == \block_exacomp\WS_ROLE_TEACHER
+			? \block_exacomp\EXAMPLE_SOURCE_TEACHER
+			: \block_exacomp\EXAMPLE_SOURCE_USER;
 
 		$example->id = $id = $DB->insert_record (\block_exacomp\DB_EXAMPLES, $example );
 
@@ -1467,7 +1483,7 @@ class block_exacomp_external extends external_api {
 		array_walk($tree, $walker);
 		var_dump($data);
 		*/
-		
+
 		// total data
 		$total_competencies = 0;
 		$total_examples = array ();
@@ -1692,45 +1708,37 @@ class block_exacomp_external extends external_api {
 				'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
 				'name' => new external_value ( PARAM_TEXT, 'title of example' ),
 				'description' => new external_value ( PARAM_TEXT, 'description of example' ),
-				'task' => new external_value ( PARAM_TEXT, 'task of example' ),
+				'externalurl' => new external_value ( PARAM_TEXT, '' ),
 				'comps' => new external_value ( PARAM_TEXT, 'list of competencies, seperated by comma' ),
 				'filename' => new external_value ( PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area' )
 		) );
 	}
-	/**
-	 * create example
-	 *
-	 * @param
-	 *
-	 * @return
-	 *
-	 */
-	public static function update_example($exampleid, $name, $description, $task, $comps, $filename) {
+	public static function update_example($exampleid, $name, $description, $externalurl, $comps, $filename) {
 		global $CFG, $DB, $USER;
 
-		if (empty ( $exampleid ) || empty ( $name )) {
-			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
+		if (empty ($exampleid) || empty ($name)) {
+			throw new invalid_parameter_exception ('Parameter can not be empty');
 		}
 
-		static::validate_parameters ( static::update_example_parameters (), array (
-				'exampleid' => $exampleid,
-				'name' => $name,
-				'description' => $description,
-				'task' => $task,
-				'comps' => $comps,
-				'filename' => $filename
-		) );
+		static::validate_parameters(static::update_example_parameters(), array(
+			'exampleid' => $exampleid,
+			'name' => $name,
+			'description' => $description,
+			'externalurl' => $externalurl,
+			'comps' => $comps,
+			'filename' => $filename,
+		));
 
 		$example = block_exacomp\example::get($exampleid);
 
 		block_exacomp\require_item_capability(block_exacomp\CAP_MODIFY, $example);
 
 		$type = ($filename != '') ? 'file' : 'url';
-		if ( $type == 'file') {
-			$context = context_user::instance ( $USER->id );
+		if ($type == 'file') {
+			$context = context_user::instance($USER->id);
 			$fs = get_file_storage();
 
-			if (!$file = $fs->get_file($context->id, 'user', 'private', 0, '/', $filename )) {
+			if (!$file = $fs->get_file($context->id, 'user', 'private', 0, '/', $filename)) {
 				throw new moodle_exception('file not found');
 			}
 
@@ -1745,41 +1753,29 @@ class block_exacomp_external extends external_api {
 			$file->delete();
 		}
 
-		// hack: delete old pluginfile.php and example_upload urls, don't needed anymore, because file is in filestorage
-		if (preg_match('!pluginfile|example_upload)!', $example->externaltask)) {
-			$example->externaltask = '';
-		}
-		if (preg_match('!pluginfile|example_upload)!', $example->task)) {
-			$example->task = '';
-		}
-
-		$example = $DB->get_record (\block_exacomp\DB_EXAMPLES, array (
-				'id' => $exampleid
-		) );
-
 		// insert into examples and example_desc
 		$example->title = $name;
 		$example->description = $description;
-		$example->task = $task;
+		$example->externalurl = $externalurl;
 
-		$DB->update_record (\block_exacomp\DB_EXAMPLES, $example );
+		$DB->update_record(\block_exacomp\DB_EXAMPLES, $example);
 
-		if (! empty ( $comps )) {
-			$DB->delete_records (\block_exacomp\DB_DESCEXAMP, array (
-					'exampid' => $exampleid
-			) );
+		if (!empty ($comps)) {
+			$DB->delete_records(\block_exacomp\DB_DESCEXAMP, array(
+				'exampid' => $exampleid,
+			));
 
-			$descriptors = explode ( ',', $comps );
-			foreach ( $descriptors as $descriptor ) {
+			$descriptors = explode(',', $comps);
+			foreach ($descriptors as $descriptor) {
 				$insert = new stdClass ();
 				$insert->exampid = $exampleid;
 				$insert->descrid = $descriptor;
-				$DB->insert_record (\block_exacomp\DB_DESCEXAMP, $insert );
+				$DB->insert_record(\block_exacomp\DB_DESCEXAMP, $insert);
 			}
 		}
 
-		return array (
-				"success" => true
+		return array(
+			"success" => true,
 		);
 	}
 
@@ -1987,9 +1983,7 @@ class block_exacomp_external extends external_api {
 	 * @return external_function_parameters
 	 */
 	public static function dakora_get_courses_parameters() {
-		return new external_function_parameters ( array (
-				'userid' => new external_value ( PARAM_INT, 'id of user, 0 for current user' )
-		) );
+		return static::get_courses_parameters();
 	}
 
 
@@ -2008,11 +2002,7 @@ class block_exacomp_external extends external_api {
 	 * @return external_multiple_structure
 	 */
 	public static function dakora_get_courses_returns() {
-		return new external_multiple_structure ( new external_single_structure ( array (
-				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
-				'fullname' => new external_value ( PARAM_TEXT, 'fullname of course' ),
-				'shortname' => new external_value ( PARAM_RAW, 'shortname of course' )
-		) ) );
+		return static::get_courses_returns();
 	}
 
 	/**
@@ -2397,9 +2387,7 @@ class block_exacomp_external extends external_api {
 
 
 	public static function dakora_get_example_overview_parameters(){
-		return new external_function_parameters ( array (
-				'exampleid' => new external_value( PARAM_INT, 'id of example' )
-		) );
+		return static::get_example_by_id_parameters();
 	}
 
 	public static function dakora_get_example_overview($exampleid){
@@ -2407,15 +2395,7 @@ class block_exacomp_external extends external_api {
 	}
 
 	public static function dakora_get_example_overview_returns(){
-		return new external_single_structure ( array (
-				'title' => new external_value ( PARAM_TEXT, 'title of example' ),
-				'description' => new external_value ( PARAM_TEXT, 'description of example' ),
-				'task' => new external_value ( PARAM_TEXT, 'task(url/description) of example' ),
-				'solution' => new external_value ( PARAM_TEXT, 'task(url/description) of example' ),
-				'externalurl' => new external_value ( PARAM_TEXT, 'externalurl of example' ),
-				'timeframe' => new external_value ( PARAM_INT, 'timeframe in minutes' ),
-				'hassubmissions' => new external_value ( PARAM_BOOL, 'true if example has already submissions' )
-		) );
+		return static::get_example_by_id_returns();
 	}
 
 	/**
@@ -4610,14 +4590,14 @@ class block_exacomp_external extends external_api {
 
 		static::require_can_access_course_user($courseid, $userid);
 		$subjects = block_exacomp_get_subjects_by_course($courseid);
-		
+
 		$content = array();
-		
+
 		foreach($subjects as $subject) {
 			$subjectinfo = block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subject->id);
 			$subjectinfo->subjectid = $subject->id;
 			$subjectinfo->subjecttitle = $subject->title;
-			
+
 			$content[] = $subjectinfo;
 		}
 
@@ -4650,17 +4630,17 @@ class block_exacomp_external extends external_api {
 	public static function is_elove_student_self_assessment_enabled_parameters() {
 		return new external_function_parameters ( array () );
 	}
-	
+
 	/**
 	 * @return boolean
 	 */
 	public static function is_elove_student_self_assessment_enabled() {
 		global $DB, $USER;
 		static::validate_parameters ( static::is_elove_student_self_assessment_enabled_parameters (), array () );
-	
+
 		return array('enabled' => block_exacomp_is_elove_student_self_assessment_enabled());
 	}
-	
+
 	/**
 	 * Returns description of method return values
 	 *
@@ -4671,7 +4651,7 @@ class block_exacomp_external extends external_api {
 				'enabled' => new external_value ( PARAM_BOOL, '' )
 		) );
 	}
-	
+
 	/**
 	* helper function to use same code for 2 ws
 	*/
@@ -5144,5 +5124,16 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 
 	private static function wstoken() {
 		return optional_param('wstoken', null, PARAM_ALPHANUM);
+	}
+
+	private static function get_webservice_url_for_file($file, $context=null) {
+		$context = block_exacomp_get_context_from_courseid($context);
+
+		$url = moodle_url::make_webservice_pluginfile_url($context->id, $file->get_component(), $file->get_filearea(),
+			$file->get_itemid(), $file->get_filepath(), $file->get_filename());
+
+		$url->param('token', static::wstoken());
+
+		return $url;
 	}
 }
