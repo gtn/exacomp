@@ -31,7 +31,7 @@ $PAGE->set_title(get_string('blocktitle', 'block_exacomp'));
 $PAGE->set_url('/blocks/exacomp/webservice_status.php');
 
 
-$output = $PAGE->get_renderer ( 'block_exacomp' );
+$output = block_exacomp_get_renderer();
 echo $output->header_v2('tab_admin_settings');
 echo $output->tabtree(block_exacomp_build_navigation_tabs_admin_settings($courseid), 'tab_webservice_status');
 

@@ -97,7 +97,7 @@ if (isset ( $action ) && $action == 'save') {
 }
 
 // build tab navigation & print header
-$output = $PAGE->get_renderer ( 'block_exacomp' );
+$output = block_exacomp_get_renderer();
 echo $output->header($context, $courseid, 'tab_admin_settings');
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_admin_settings($courseid), $page_identifier);
 

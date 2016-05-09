@@ -41,7 +41,6 @@ $context = context_course::instance ( $courseid );
 $isTeacher = block_exacomp_is_teacher($context);
 
 $studentid = block_exacomp_get_studentid($isTeacher);
-if($isTeacher)	$studentid == 0;
 
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_examples';
@@ -57,7 +56,7 @@ $PAGE->set_title ( get_string ( $page_identifier, 'block_exacomp' ) );
 block_exacomp_build_breadcrum_navigation ( $courseid );
 
 // build tab navigation & print header
-$output = $PAGE->get_renderer ( 'block_exacomp' );
+$output = block_exacomp_get_renderer();
 echo $output->header($context, $courseid , $page_identifier );
 
 if ($show_all_examples != 0)
