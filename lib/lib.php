@@ -110,6 +110,7 @@ const CAP_ADD_EXAMPLE = 'add_example';
 const CAP_VIEW = 'view';
 const CAP_MODIFY = 'modify';
 const CAP_DELETE = 'delete';
+const CAP_SORTING = 'sorting';
 }
 
 namespace {
@@ -5769,15 +5770,14 @@ function block_exacomp_example_down($exampleid, $descrid) {
 function block_exacomp_example_order($exampleid, $descrid, $operator = "<") {
 	global $DB, $USER, $COURSE;
 
-	$example = $DB->get_record(\block_exacomp\DB_EXAMPLES,array('id' => $exampleid));
+	$example = \block_exacomp\example::get($exampleid);
 	if(!$example || !$DB->record_exists(\block_exacomp\DB_DESCEXAMP, array('exampid' => $exampleid,'descrid' => $descrid)))
 		return false;
 
 	$desc_examp = $DB->get_record(\block_exacomp\DB_DESCEXAMP, array('exampid' => $exampleid,'descrid' => $descrid));
 	$example->descsorting = $desc_examp->sorting;
 
-	// TODO: use block_exacomp\require_item_capability()
-	if(block_exacomp_is_admin($COURSE->id) || (isset($example->creatorid) && $example->creatorid == $USER->id)) {
+	if (\block_exacomp\require_item_capability(\block_exacomp\CAP_SORTING, $example)) {
 		$sql = 'SELECT e.*, de.sorting as descsorting FROM {block_exacompexamples} e
 			JOIN {block_exacompdescrexamp_mm} de ON de.exampid = e.id
 			WHERE de.sorting ' . ((strcmp($operator,"<") == 0) ? "<" : ">") . ' ? AND de.descrid = ?
@@ -6747,7 +6747,7 @@ namespace block_exacomp {
 	}
 
 	function require_item_capability($cap, $item) {
-		if ($item instanceof example && in_array($cap, [CAP_MODIFY, CAP_DELETE])) {
+		if ($item instanceof example && in_array($cap, [CAP_MODIFY, CAP_DELETE, CAP_SORTING])) {
 			if ($item->creatorid == g::$USER->id) {
 				// User is creator
 				return true;
@@ -6757,7 +6757,7 @@ namespace block_exacomp {
 				throw new permission_exception('User is no teacher');
 			}
 
-			// find descriptor in course
+			// find example in course
 			$examples = block_exacomp_get_examples_by_course(g::$COURSE->id);
 			if (!isset($examples[$item->id])) {
 				throw new permission_exception('Not a course example');

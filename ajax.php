@@ -18,23 +18,23 @@
 // This copyright notice MUST APPEAR in all copies of the script!
 
 require __DIR__.'/inc.php';
-global $DB, $USER;
 
-$courseid = required_param ( 'courseid', PARAM_INT );
-if (! $course = $DB->get_record ( 'course', array (
-		'id' => $courseid 
-) )) {
-	print_error ( 'invalidcourse', 'block_simplehtml', $courseid );
+$courseid = required_param('courseid', PARAM_INT);
+$action = required_param('action', PARAM_TEXT);
+
+if (!$course = $DB->get_record('course', array(
+	'id' => $courseid,
+))
+) {
+	print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
 
-require_login ( $course );
-$context = context_course::instance ( $courseid );
-$isTeacher = block_exacomp_is_teacher($context);
+require_login($course);
+$isTeacher = block_exacomp_is_teacher($courseid);
 
 require_sesskey();
 
-$action = required_param('action', PARAM_TEXT);
-switch($action){
+switch ($action) {
 	case ('crosssubj-descriptors'):
 		$descrid = required_param('descrid', PARAM_INT);
 		$crosssubjects = required_param('crosssubjects', PARAM_TEXT);
@@ -42,21 +42,21 @@ switch($action){
 
 		$not_crosssubjects = required_param('not_crosssubjects', PARAM_TEXT);
 		$not_subj_ids = json_decode($not_crosssubjects);
-		
-		foreach($not_subj_ids as $not_subj_id)
-			if(!is_numeric($not_subj_id))
+
+		foreach ($not_subj_ids as $not_subj_id)
+			if (!is_numeric($not_subj_id))
 				print_error('invalidparameter', 'block_exacomp', $not_subj_id);
-		
-		foreach($subj_ids as $subj_id)
-			if(!is_numeric($subj_id))		
+
+		foreach ($subj_ids as $subj_id)
+			if (!is_numeric($subj_id))
 				print_error('invalidparameter', 'block_exacomp', $subj_id);
-		
-		foreach($not_subj_ids as $not_subj_id)
-		block_exacomp_unset_cross_subject_descriptor($not_subj_id, $descrid);
-			
-		foreach($subj_ids as $subj_id)
-		block_exacomp_set_cross_subject_descriptor($subj_id,$descrid);
-			
+
+		foreach ($not_subj_ids as $not_subj_id)
+			block_exacomp_unset_cross_subject_descriptor($not_subj_id, $descrid);
+
+		foreach ($subj_ids as $subj_id)
+			block_exacomp_set_cross_subject_descriptor($subj_id, $descrid);
+
 		break;
 	case('save_as_draft'):
 		$crosssubjid = required_param('crosssubjid', PARAM_INT);
@@ -67,7 +67,7 @@ switch($action){
 		$courseid = required_param('courseid', PARAM_INT);
 		$visible = required_param('value', PARAM_INT);
 		$studentid = required_param('studentid', PARAM_INT);
-		
+
 		block_exacomp_set_descriptor_visibility($descrid, $courseid, $visible, $studentid);
 		break;
 	case('hide-example'):
@@ -75,33 +75,33 @@ switch($action){
 		$courseid = required_param('courseid', PARAM_INT);
 		$visible = required_param('value', PARAM_INT);
 		$studentid = required_param('studentid', PARAM_INT);
-		
+
 		block_exacomp_set_example_visibility($exampleid, $courseid, $visible, $studentid);
 		break;
 	case('add-example-to-schedule'):
 		$studentid = required_param('studentid', PARAM_INT);
 		$exampleid = required_param('exampleid', PARAM_INT);
 		$creatorid = $USER->id;
-		
-		if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
+
+		if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
 			$course_students = block_exacomp_get_students_by_course($courseid);
-			
-			foreach($course_students as $student){
+
+			foreach ($course_students as $student) {
 				block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid);
 			}
-			
+
 			echo get_string('weekly_schedule_added_all', 'block_exacomp');
-		}else if($studentid == 0){
-			if(!block_exacomp_in_pre_planing_storage($exampleid, $creatorid, $courseid)){
-				if(block_exacomp_add_example_to_schedule(0, $exampleid, $creatorid, $courseid))
+		} else if ($studentid == 0) {
+			if (!block_exacomp_in_pre_planing_storage($exampleid, $creatorid, $courseid)) {
+				if (block_exacomp_add_example_to_schedule(0, $exampleid, $creatorid, $courseid))
 					echo get_string('pre_planning_storage_added', 'block_exacomp');
-			}else 
+			} else
 				echo get_string('pre_planning_storage_already_contains', 'block_exacomp');
-		}else{
-			if ( block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid) )
-				echo get_string("weekly_schedule_added","block_exacomp");
+		} else {
+			if (block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatorid, $courseid))
+				echo get_string("weekly_schedule_added", "block_exacomp");
 		}
-		
+
 		break;
 	case 'multi':
 		$data = (object)block_exacomp\param::required_json('data');
@@ -117,17 +117,17 @@ switch($action){
 				\block_exacomp\descriptor::insertInCourse($courseid, $descriptor);
 			}
 		}
-		
+
 
 		if (!empty($data->competencies_by_type)) {
-			$competencies_by_type = block_exacomp\param::clean_array($data->competencies_by_type, array(PARAM_INT=>array((object)array(
+			$competencies_by_type = block_exacomp\param::clean_array($data->competencies_by_type, array(PARAM_INT => array((object)array(
 				'compid' => PARAM_INT,
 				'userid' => PARAM_INT,
-				'value' => PARAM_INT
+				'value' => PARAM_INT,
 			))));
 			foreach ($competencies_by_type as $comptype => $competencies) {
-				foreach($competencies as $comp){
-					block_exacomp_set_user_competence ( $comp->userid, $comp->compid, $comptype, $courseid, ($isTeacher) ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $comp->value );
+				foreach ($competencies as $comp) {
+					block_exacomp_set_user_competence($comp->userid, $comp->compid, $comptype, $courseid, ($isTeacher) ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $comp->value);
 				}
 			}
 		}
@@ -136,37 +136,37 @@ switch($action){
 			$examples = block_exacomp\param::clean_array($data->examples, array((object)array(
 				'userid' => PARAM_INT,
 				'exampleid' => PARAM_INT,
-				'value' => PARAM_INT
+				'value' => PARAM_INT,
 			)));
-			foreach($examples as $example){
+			foreach ($examples as $example) {
 				block_exacomp_set_user_example($example->userid, $example->exampleid, $courseid, ($isTeacher) ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $example->value);
 			}
 		}
-		
-		if(!empty($data->competencies_additional_grading)){
-			
-			$additional_grading = block_exacomp\param::clean_array($data->competencies_additional_grading, 
-				array(PARAM_INT=>
-					array(PARAM_INT=>PARAM_TEXT)
+
+		if (!empty($data->competencies_additional_grading)) {
+
+			$additional_grading = block_exacomp\param::clean_array($data->competencies_additional_grading,
+				array(PARAM_INT =>
+					array(PARAM_INT => PARAM_TEXT),
 				)
 			);
-			
-			foreach($additional_grading as $descrid => $students){
-				foreach($students as $studentid=>$value){
+
+			foreach ($additional_grading as $descrid => $students) {
+				foreach ($students as $studentid => $value) {
 					block_exacomp_save_additional_grading_for_descriptor($courseid, $descrid, $studentid, $value);
 				}
 			}
 		}
-		if(!empty($data->examples_additional_grading)){
-			
-			$additional_grading = block_exacomp\param::clean_array($data->examples_additional_grading, 
-				array(PARAM_INT=>
-					array(PARAM_INT=>PARAM_INT)
+		if (!empty($data->examples_additional_grading)) {
+
+			$additional_grading = block_exacomp\param::clean_array($data->examples_additional_grading,
+				array(PARAM_INT =>
+					array(PARAM_INT => PARAM_INT),
 				)
 			);
-			
-			foreach($additional_grading as $exampleid => $students){
-				foreach($students as $studentid=>$value){
+
+			foreach ($additional_grading as $exampleid => $students) {
+				foreach ($students as $studentid => $value) {
 					block_exacomp_save_additional_grading_for_example($courseid, $exampleid, $studentid, $value);
 				}
 			}
@@ -174,20 +174,20 @@ switch($action){
 		die('ok');
 	case 'delete-crosssubject':
 		$crosssubjectid = required_param('crosssubjid', PARAM_INT);
-		
+
 		// TODO: pruefen ob mein crosssubj?
-		
+
 		//delete student-crosssubject association
-		$DB->delete_records(\block_exacomp\DB_CROSSSTUD, array('crosssubjid'=>$crosssubjectid));
-		
+		$DB->delete_records(\block_exacomp\DB_CROSSSTUD, array('crosssubjid' => $crosssubjectid));
+
 		//delete descriptor-crosssubject association
-		$DB->delete_records(\block_exacomp\DB_DESCCROSS, array('crosssubjid'=>$crosssubjectid));
-		
+		$DB->delete_records(\block_exacomp\DB_DESCCROSS, array('crosssubjid' => $crosssubjectid));
+
 		//delete crosssubject overall evaluations
-		$DB->delete_records(\block_exacomp\DB_COMPETENCIES, array('compid'=>$crosssubjectid, 'comptype'=>TYPE_CROSSSUB));
-		
+		$DB->delete_records(\block_exacomp\DB_COMPETENCIES, array('compid' => $crosssubjectid, 'comptype' => TYPE_CROSSSUB));
+
 		//delete crosssubject
-		$DB->delete_records(\block_exacomp\DB_CROSSSUBJECTS, array('id'=>$crosssubjectid));
+		$DB->delete_records(\block_exacomp\DB_CROSSSUBJECTS, array('id' => $crosssubjectid));
 		break;
 	case 'set-example-start-end':
 		$scheduleid = required_param('scheduleid', PARAM_INT);
@@ -195,88 +195,87 @@ switch($action){
 		$end = required_param('end', PARAM_INT);
 		$deleted = optional_param('deleted', 0, PARAM_INT);
 		echo $start;
-		
+
 		block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted);
 		break;
 	case 'remove-example-from-schedule':
 		$scheduleid = required_param('scheduleid', PARAM_INT);
-		
+
 		block_exacomp_remove_example_from_schedule($scheduleid);
 		break;
 	case 'get-examples-for-start-end':
 		$studentid = required_param('studentid', PARAM_INT);
-		if(!$studentid) $studentid = $USER->id;
+		if (!$studentid) $studentid = $USER->id;
 		$start = required_param('start', PARAM_INT);
 		$end = required_param('end', PARAM_INT);
-		
+
 		$examples = block_exacomp_get_examples_for_start_end_all_courses($studentid, $start, $end);
-		foreach($examples as $example){
+		foreach ($examples as $example) {
 			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $studentid);
 		}
 		$json_examples = block_exacomp_get_json_examples($examples);
-		
+
 		echo json_encode($json_examples);
 		break;
 	case 'get-weekly-schedule-configuration':
 		$studentid = required_param('studentid', PARAM_INT);
-		if(!$studentid) $studentid = $USER->id;
-		
+		if (!$studentid) $studentid = $USER->id;
+
 		$pool_course = required_param('pool_course', PARAM_INT);
-		if(!$pool_course)$pool_course = $courseid;
-		
+		if (!$pool_course) $pool_course = $courseid;
+
 		$examples_pool = block_exacomp_get_examples_for_pool($studentid, $pool_course);
-		foreach($examples_pool as &$example_pool){
+		foreach ($examples_pool as &$example_pool) {
 			$example_pool->state = block_exacomp_get_dakora_state_for_example($example_pool->courseid, $example_pool->exampleid, $studentid);
 		}
 		$json_examples_pool = block_exacomp_get_json_examples($examples_pool);
-		
+
 		$examples_trash = block_exacomp_get_examples_for_trash($studentid, $pool_course);
 		$json_examples_trash = block_exacomp_get_json_examples($examples_trash);
-		
+
 		$json_time_slots = block_exacomp_build_json_time_slots();
-		
+
 		$configuration = array();
 		$configuration['pool'] = $json_examples_pool; //for pool
 		$configuration['trash'] = $json_examples_trash; //for trash
 		$configuration['slots'] = $json_time_slots; //for calendar
-		
+
 		echo json_encode($configuration);
-		
+
 		break;
 	case 'empty-trash':
 		$studentid = required_param('studentid', PARAM_INT);
-		if(!$studentid) $studentid = $USER->id;
-		
+		if (!$studentid) $studentid = $USER->id;
+
 		$schedules = block_exacomp_get_examples_for_trash($studentid, $courseid);
-		foreach($schedules as $schedule){
+		foreach ($schedules as $schedule) {
 			block_exacomp_remove_example_from_schedule($schedule->id);
 		}
 		break;
 	case 'get-pre-planning-storage':
 		$creatorid = required_param('creatorid', PARAM_INT);
 		$examples = block_exacomp_get_pre_planning_storage($creatorid, $courseid);
-		
+
 		$json_examples = block_exacomp_get_json_examples($examples, false);
-		
+
 		echo json_encode($json_examples);
 		break;
-	case('example-up'):
+	case('example-sorting'):
 		$exampleid = required_param('exampleid', PARAM_INT);
 		$descrid = required_param('descrid', PARAM_INT);
-		
-		echo block_exacomp_example_up($exampleid, $descrid);
-		break;
-	case ('example-down') :
-		$exampleid = required_param ( 'exampleid', PARAM_INT );
-		$descrid = required_param ( 'descrid', PARAM_INT );
-		
-		echo block_exacomp_example_down ( $exampleid, $descrid );
-		break;
+		$direction = required_param('direction', PARAM_TEXT);
+
+		if ($direction == 'up') {
+			block_exacomp_example_up($exampleid, $descrid);
+		} else {
+			block_exacomp_example_down($exampleid, $descrid);
+		}
+		die('ok');
 	case 'delete-descriptor':
 		if (!$isTeacher) {
 			print_error('noteacher');
 		}
-		
+
 		block_exacomp_delete_custom_descriptor(required_param('id', PARAM_INT));
 		break;
 	case 'allow-resubmission':
@@ -286,25 +285,25 @@ switch($action){
 		$studentid = required_param('studentid', PARAM_INT);
 		$exampleid = required_param('exampleid', PARAM_INT);
 		$courseid = required_param('courseid', PARAM_INT);
-		
+
 		echo block_exacomp_allow_resubmission($studentid, $exampleid, $courseid);
 		break;
 	case 'send-message-to-course':
-			if (!$isTeacher) {
-				print_error('noteacher');
-			}
-			$message = required_param('message', PARAM_TEXT);
-			$courseid = required_param('courseid', PARAM_INT);
-		
-			echo block_exacomp_send_message_to_course($courseid, $message);
-			break;
+		if (!$isTeacher) {
+			print_error('noteacher');
+		}
+		$message = required_param('message', PARAM_TEXT);
+		$courseid = required_param('courseid', PARAM_INT);
+
+		echo block_exacomp_send_message_to_course($courseid, $message);
+		break;
 	case 'create_blocking_event':
 		$creatorid = required_param('creatorid', PARAM_INT);
 		$title = required_param('title', PARAM_TEXT);
-		
+
 		block_exacomp_create_blocking_event($courseid, $title, $creatorid, 0);
-		
+
 		break;
 	default:
-		print_error('wrong action: '.$action);
+		throw new moodle_exception('wrong action: '.$action);
 }
