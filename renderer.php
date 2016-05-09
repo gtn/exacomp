@@ -1971,8 +1971,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 									array("onclick" => "return confirm(".json_encode(block_exacomp\get_string('delete_confirmation', null, $example->title)).")"));
 
 							//print up & down icons
-							$titleCell->text .= html_writer::link("#", $this->pix_icon("t/up", get_string('up')), array("id" => "example-up", "exampleid" => $example->id, "descrid" => $descriptor->id));
-							$titleCell->text .= html_writer::link("#", $this->pix_icon("t/down", get_string('down')), array("id" => "example-down", "exampleid" => $example->id, "descrid" => $descriptor->id));
+							$titleCell->text .= html_writer::link("#", $this->pix_icon("t/up", get_string('up')), array("exa-type" => "example-sorting", 'exa-direction'=>'up', "exa-exampleid" => $example->id, "exa-descrid" => $descriptor->id));
+							$titleCell->text .= html_writer::link("#", $this->pix_icon("t/down", get_string('down')), array("exa-type" => "example-sorting", 'exa-direction'=>'down', "exa-exampleid" => $example->id, "exa-descrid" => $descriptor->id));
 
 							$titleCell->text .= '</span>';
 						}

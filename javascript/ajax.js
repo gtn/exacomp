@@ -403,7 +403,7 @@
 				niveauid: $input.attr('niveauid'),
 				title: $input.val(),
 			}]}),
-		}).done(function(msg) {
+		}).done(function() {
 			location.reload();
 		});
 	});
@@ -653,32 +653,25 @@
 
 	});
 
-	$(document).on('click', '#example-up', function(event) {
+	$(document).on('click', 'a[exa-type=example-sorting]', function (event) {
+		event.preventDefault();
+
 		if (Object.keys(competencies).length > 0 || Object.keys(topics).length > 0
-				|| Object.keys(examples).length > 0)
-			alert( M.util.get_string('example_sorting_notice', 'block_exacomp') );
-		else
+			|| Object.keys(examples).length > 0) {
+			alert(M.util.get_string('example_sorting_notice', 'block_exacomp'));
+			return;
+		}
+
 		block_exacomp.call_ajax({
-			descrid : $(this).attr('descrid'),
-			exampleid : $(this).attr('exampleid'),
-			action : 'example-up'
+			action: 'example-sorting',
+			direction: this.getAttribute('exa-direction'),
+			descrid: this.getAttribute('exa-descrid'),
+			exampleid: this.getAttribute('exa-exampleid'),
+		}).done(function () {
+			location.reload();
 		});
-		location.reload();
 	});
-	
-	$(document).on('click', '#example-down', function(event) {
-		if (Object.keys(competencies).length > 0 || Object.keys(topics).length > 0
-				|| Object.keys(examples).length > 0)
-			alert( M.util.get_string('example_sorting_notice', 'block_exacomp') );
-		else
-		block_exacomp.call_ajax({
-			descrid : $(this).attr('descrid'),
-			exampleid : $(this).attr('exampleid'),
-			action : 'example-down'
-		});
-		location.reload();
-	});
-	
+
 	$(document).on('click', '#hide-example', function(event) {
 		event.preventDefault();
 
@@ -804,7 +797,7 @@
 		block_exacomp.call_ajax({
 			id: id,
 			action : 'delete-descriptor'
-		}).done(function(msg) {
+		}).done(function() {
 			location.reload();
 		});
 	}
@@ -813,7 +806,7 @@
 		block_exacomp.call_ajax({
 			crosssubjid : id,
 			action : 'delete-crosssubject'
-		}).done(function(msg) {
+		}).done(function() {
 			location.reload();
 		});
 	}

@@ -18,22 +18,22 @@
 // This copyright notice MUST APPEAR in all copies of the script!
 
 require __DIR__.'/inc.php';
-global $DB, $USER;
 
 $courseid = required_param ( 'courseid', PARAM_INT );
+$action = required_param('action', PARAM_TEXT);
+
 if (! $course = $DB->get_record ( 'course', array (
-		'id' => $courseid 
-) )) {
+	'id' => $courseid,
+))
+) {
 	print_error ( 'invalidcourse', 'block_simplehtml', $courseid );
 }
 
 require_login ( $course );
-$context = context_course::instance ( $courseid );
-$isTeacher = block_exacomp_is_teacher($context);
+$isTeacher = block_exacomp_is_teacher($courseid);
 
 require_sesskey();
 
-$action = required_param('action', PARAM_TEXT);
 switch($action){
 	case ('crosssubj-descriptors'):
 		$descrid = required_param('descrid', PARAM_INT);
@@ -124,7 +124,7 @@ switch($action){
 				'compid' => PARAM_INT,
 				'userid' => PARAM_INT,
 				'value' => PARAM_INT,
-				'niveauid' => PARAM_INT
+				'niveauid' => PARAM_INT,
 			))));
 			
 			foreach ($competencies_by_type as $comptype => $competencies) {
@@ -139,7 +139,7 @@ switch($action){
 				'userid' => PARAM_INT,
 				'exampleid' => PARAM_INT,
 				'value' => PARAM_INT,
-				'niveauid' => PARAM_INT
+				'niveauid' => PARAM_INT,
 			)));
 			foreach($examples as $example){
 				block_exacomp_set_user_example($example->userid, $example->exampleid, $courseid, ($isTeacher) ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $example->value, $example->niveauid);
@@ -150,7 +150,7 @@ switch($action){
 			
 			$additional_grading = block_exacomp\param::clean_array($data->competencies_additional_grading, 
 				array(PARAM_INT=>
-					array(PARAM_INT=>PARAM_TEXT)
+					array(PARAM_INT => PARAM_TEXT),
 				)
 			);
 			
@@ -205,7 +205,7 @@ switch($action){
 			
 			$additional_grading = block_exacomp\param::clean_array($data->examples_additional_grading, 
 				array(PARAM_INT=>
-					array(PARAM_INT=>PARAM_INT)
+					array(PARAM_INT => PARAM_INT),
 				)
 			);
 			
@@ -304,18 +304,17 @@ switch($action){
 		
 		echo json_encode($json_examples);
 		break;
-	case('example-up'):
+	case('example-sorting'):
 		$exampleid = required_param('exampleid', PARAM_INT);
 		$descrid = required_param('descrid', PARAM_INT);
+		$direction = required_param('direction', PARAM_TEXT);
 		
-		echo block_exacomp_example_up($exampleid, $descrid);
-		break;
-	case ('example-down') :
-		$exampleid = required_param ( 'exampleid', PARAM_INT );
-		$descrid = required_param ( 'descrid', PARAM_INT );
-		
-		echo block_exacomp_example_down ( $exampleid, $descrid );
-		break;
+		if ($direction == 'up') {
+			block_exacomp_example_up($exampleid, $descrid);
+		} else {
+			block_exacomp_example_down($exampleid, $descrid);
+		}
+		die('ok');
 	case 'delete-descriptor':
 		if (!$isTeacher) {
 			print_error('noteacher');
@@ -350,5 +349,5 @@ switch($action){
 		
 		break;
 	default:
-		print_error('wrong action: '.$action);
+		throw new moodle_exception('wrong action: '.$action);
 }
