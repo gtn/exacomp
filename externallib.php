@@ -1966,7 +1966,7 @@ class block_exacomp_external extends external_api {
 		$parent = true;
 		if($comptype == \block_exacomp\TYPE_DESCRIPTOR){
 			$descriptor = $DB->get_record(\block_exacomp\DB_DESCRIPTORS, array('id'=>$compid));
-			if($descriptor->parent > 0)
+			if($descriptor->parent && $descriptor->parent > 0)
 				$parent = false;
 		}
 		
