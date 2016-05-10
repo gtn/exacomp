@@ -6247,7 +6247,7 @@ function block_exacomp_create_blocking_event($courseid, $title, $creatorid, $stu
 function block_exacomp_check_student_example_permission($courseid, $exampleid, $studentid){
 	global $DB;
 	
-	return $DB->get_record(\block_exacomp\DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>$studentid, 'visible'=>1));
+	return $DB->record_exists(\block_exacomp\DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>$studentid, 'visible'=>1));
 }
 
 function block_exacomp_get_courseids_by_descriptor($descriptorid){
