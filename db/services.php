@@ -26,6 +26,8 @@ $services = array(
 		'enabled' => 1,
 		'shortname' => 'exacompservices',
 		'functions' => [],
+		'downloadfiles' => 1,
+		'uploadfiles' => 1,
 	)
 );
 

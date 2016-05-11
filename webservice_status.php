@@ -134,16 +134,16 @@ $table->data[] = $row;
 
 /// 5. Checks
 $status = '';
+$description = '';
 //set shortname for external service exacompservices
 $exacomp_service = $DB->get_record('external_services', array('name'=>'exacompservices'));
 if (!$exacomp_service) {
 	$status .= html_writer::tag('span', 'Exacompservice not found', array('class' => 'statuscritical'));
+} elseif (!$exacomp_service->downloadfiles || !$exacomp_service->uploadfiles) {
+	$status .= html_writer::tag('span', 'Error', array('class' => 'statuscritical'));
+	$description .= '<a href="'.(new moodle_url('/admin/webservice/service.php', ['id' => $exacomp_service->id])).'">'.
+		'Exacompservice needs "'.get_string('downloadfiles', 'webservice').'" and "'.get_string('uploadfiles', 'webservice').'" enabled</a><br />';
 }
-// not needed anymore
-/*
-	$exacomp_service->shortname = 'exacompservices';
-	$DB->update_record('external_services', $exacomp_service);
-*/
 
 $exaport_service = $DB->get_record('external_services', array('name'=>'exaportservices'));
 if (!$exaport_service) {
@@ -162,7 +162,7 @@ if (empty($status)) {
 $row = array();
 $row[0] = "5. Webservice checks";
 $row[1] = $status;
-$row[2] = '';
+$row[2] = $description;
 $table->data[] = $row;
 
 
@@ -187,4 +187,3 @@ if (get_config('exacomp', 'external_trainer_assign')) {
 echo html_writer::table($table);
 
 echo $output->footer();
-
