@@ -263,7 +263,8 @@ class block_exacomp_external extends external_api {
 		));
 		$example->description = htmlentities($example->description);
 		$example->hassubmissions = ($DB->get_records('block_exacompitemexample', array('exampleid' => $exampleid))) ? true : false;
-
+		$example->taskfileurl = "";
+		$example->taskfilename = "";
 		if ($file = block_exacomp_get_file($example, 'example_task')) {
 			$example->taskfileurl = static::get_webservice_url_for_file($file, $data->courseid)->out(false);
 			$example->taskfilename = $file->get_filename();
@@ -1970,7 +1971,7 @@ class block_exacomp_external extends external_api {
 		$parent = true;
 		if($comptype == \block_exacomp\TYPE_DESCRIPTOR){
 			$descriptor = $DB->get_record(\block_exacomp\DB_DESCRIPTORS, array('id'=>$compid));
-			if($descriptor->parent > 0)
+			if($descriptor->parent && $descriptor->parent > 0)
 				$parent = false;
 		}
 		
@@ -4367,7 +4368,8 @@ class block_exacomp_external extends external_api {
 			$data['name'] = $itemInformation->name;
 			$data['type'] = $itemInformation->type;
 			$data['url'] = $itemInformation->url;
-		
+			$data['teacheritemvalue'] = isset ( $itemInformation->teachervalue ) ? $itemInformation->teachervalue : -1;
+			
 			if ($itemInformation->type == 'file') {
 				require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
 
@@ -4420,6 +4422,7 @@ class block_exacomp_external extends external_api {
 			$data['teachervalue'] = isset ( $exampleEvaluation->teacher_evaluation ) ? $exampleEvaluation->teacher_evaluation : -1;
 			$data['studentvalue'] = isset ( $exampleEvaluation->student_evaluation ) ? $exampleEvaluation->student_evaluation : -1;
 			$data['evalniveauid'] = isset ( $exampleEvaluation->evalniveauid ) ? $exampleEvaluation->evalniveauid : null;
+			$data['teacheritemvalue'] = isset ( $itemInformation->teachervalue ) ? $itemInformation->teachervalue : -1;
 		}
 
 		if(!$exampleEvaluation || $exampleEvaluation->resubmission)
@@ -4451,6 +4454,7 @@ class block_exacomp_external extends external_api {
 				'teachercomment' => new external_value ( PARAM_TEXT, 'teacher comment' ),
 				'teacherfile' => new external_value ( PARAM_TEXT ),
 				'studentcomment' => new external_value ( PARAM_TEXT, 'student comment' ),
+				'teacheritemvalue' => new external_value ( PARAM_INT, 'item teacher grading' ),
 				'resubmission' => new external_value ( PARAM_BOOL, 'resubmission is allowed/not allowed' )
 		) );
 	}
