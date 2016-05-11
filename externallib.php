@@ -157,6 +157,8 @@ class block_exacomp_external extends external_api {
 						continue;
 					}
 
+					// TODO: is this dead code?
+					/*
 					$taxonomies = block_exacomp_get_taxonomies_by_example($example);
 					if(!empty($taxonomies)){
 						$taxonomy = reset($taxonomies);
@@ -167,6 +169,7 @@ class block_exacomp_external extends external_api {
 						$example->taxid = null;
 						$example->tax = "";
 					}
+					*/
 
 					if (! array_key_exists ( $example->id, $structure [$topic->id]->examples )) {
 						$structure [$topic->id]->examples [$example->id] = new stdClass ();
@@ -466,23 +469,27 @@ class block_exacomp_external extends external_api {
 	public static function get_external_trainer_students() {
 		global $DB, $USER;
 
-		$students = $DB->get_records ( \block_exacomp\DB_EXTERNAL_TRAINERS, array (
-				'trainerid' => $USER->id
-		) );
-		$returndata = array ();
+		$students = $DB->get_records(\block_exacomp\DB_EXTERNAL_TRAINERS, array(
+			'trainerid' => $USER->id,
+		));
+		$returndata = array();
 		$cohorts = $DB->get_records('cohort');
 
-		foreach ( $students as $student ) {
-			$studentObject = $DB->get_record ( 'user', array (
-					'id' => $student->studentid
-			) );
+		foreach ($students as $student) {
+			$studentObject = $DB->get_record('user', array(
+				'id' => $student->studentid,
+			));
 			$returndataObject = new stdClass ();
-			$returndataObject->name = fullname ( $studentObject );
+			$returndataObject->name = fullname($studentObject);
 			$returndataObject->userid = $student->studentid;
 			$return_cohorts = array();
 
 			$user_cohorts = $DB->get_records('cohort_members', array('userid' => $student->studentid));
 			foreach ($user_cohorts as $user_cohort) {
+				if (!isset($cohorts[$user_cohort->cohortid])) {
+					continue;
+				}
+
 				$currentCohort = new stdClass ();
 				$currentCohort->cohortid = $user_cohort->cohortid;
 				$currentCohort->name = $cohorts[$user_cohort->cohortid]->name;
@@ -493,12 +500,17 @@ class block_exacomp_external extends external_api {
 
 			$returndataObject->requireaction = false;
 			$user_subjects = static::get_subjects_for_user($student->studentid);
-			foreach($user_subjects as $user_subject)
-				if($user_subject->requireaction)
+			foreach ($user_subjects as $user_subject) {
+				if ($user_subject->requireaction) {
 					$returndataObject->requireaction = true;
-			
+				}
+			}
+
+			static::_get_user_profile($returndataObject, 'get_external_trainer_students');
+
 			$returndata [] = $returndataObject;
 		}
+
 		return $returndata;
 	}
 
@@ -508,16 +520,20 @@ class block_exacomp_external extends external_api {
 	 * @return external_multiple_structure
 	 */
 	public static function get_external_trainer_students_returns() {
-		return new external_multiple_structure ( new external_single_structure ( array (
-				'userid' => new external_value ( PARAM_INT, 'id of user' ),
-				'name' => new external_value ( PARAM_TEXT, 'name of user' ),
-				'cohorts' => new external_multiple_structure ( new external_single_structure ( array (
-						'cohortid' => new external_value ( PARAM_INT, 'id of cohort' ),
-						'name' => new external_value ( PARAM_TEXT, 'title of cohort' )
-				) ) ),
-				'requireaction' => new external_value( PARAM_BOOL, 'trainer action required or not')
-		)
-		 ) );
+		return new external_multiple_structure (new external_single_structure (array(
+			'userid' => new external_value (PARAM_INT, 'id of user'),
+			'name' => new external_value (PARAM_TEXT, 'name of user'),
+			'cohorts' => new external_multiple_structure (new external_single_structure (array(
+				'cohortid' => new external_value (PARAM_INT, 'id of cohort'),
+				'name' => new external_value (PARAM_TEXT, 'title of cohort'),
+			))),
+			'requireaction' => new external_value(PARAM_BOOL, 'trainer action required or not'),
+			'examples' => new external_single_structure (array(
+				'total' => new external_value (PARAM_INT),
+				'submitted' => new external_value (PARAM_INT),
+				'reached' => new external_value (PARAM_INT),
+			)),
+		)));
 	}
 
 	/**
@@ -653,7 +669,7 @@ class block_exacomp_external extends external_api {
 				'value' => new external_value ( PARAM_INT, 'evaluation value' )
 		) );
 	}
-	
+
 	/**
 	 * Set student evaluation
 	 *
@@ -667,21 +683,21 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function set_competence($courseid, $descriptorid, $value) {
 		global $DB, $USER;
-	
+
 		if (empty ( $courseid ) || empty ( $descriptorid ) || ! isset ( $value )) {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 		}
-	
+
 		static::validate_parameters ( static::set_competence_parameters (), array (
 				'courseid' => $courseid,
 				'descriptorid' => $descriptorid,
 				'value' => $value
 		) );
-	
+
 		static::require_can_access_course($courseid);
-	
+
 		$transaction = $DB->start_delegated_transaction (); // If an exception is thrown in the below code, all DB queries in this code will be rollback.
-	
+
 		$DB->delete_records ( 'block_exacompcompuser', array (
 				"userid" => $USER->id,
 				"role" => 0,
@@ -700,14 +716,14 @@ class block_exacomp_external extends external_api {
 					"value" => $value
 			) );
 		}
-	
+
 		$transaction->allow_commit ();
-	
+
 		return array (
 				"success" => true
 		);
 	}
-	
+
 	/**
 	 * Returns desription of method return values
 	 *
@@ -718,7 +734,7 @@ class block_exacomp_external extends external_api {
 				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
 		) );
 	}
-	
+
 	/**
 	 * Returns description of method parameters
 	 *
@@ -786,7 +802,7 @@ class block_exacomp_external extends external_api {
 
 		$item->studentcomment = '';
 		$item->teachercomment = '';
-		
+
 		// TODO: change to exaport\api::get_item_comments()
 		$itemcomments = $DB->get_records ( 'block_exaportitemcomm', array (
 				'itemid' => $itemid
@@ -1491,7 +1507,7 @@ class block_exacomp_external extends external_api {
 		array_walk($tree, $walker);
 		var_dump($data);
 		*/
-		
+
 		// total data
 		$total_competencies = 0;
 		$total_examples = array ();
@@ -1540,13 +1556,18 @@ class block_exacomp_external extends external_api {
 						}
 
 						$examples = $DB->get_records_sql ( "SELECT de.id as deid, e.id, e.title, e.externalurl,
-						e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid
+						e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.source
 						FROM {" . \block_exacomp\DB_EXAMPLES . "} e
 						JOIN {" . \block_exacomp\DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=? ", array (
 								$descriptor->id
 						) );
 
 						foreach ( $examples as $example ) {
+							if ($example->source == \block_exacomp\EXAMPLE_SOURCE_USER) {
+								// ignore source=user for now
+								continue;
+							}
+
 							$taxonomies = block_exacomp_get_taxonomies_by_example($example);
 							if(!empty($taxonomies)){
 								$taxonomy = reset($taxonomies);
@@ -1659,6 +1680,61 @@ class block_exacomp_external extends external_api {
 		*/
 
 		return $defaultdata;
+	}
+
+	private static function _get_user_profile($user, $type) {
+		$userid = $user->userid;
+
+		// $data = (object)[];
+
+		$all_examples_reached = g::$DB->get_records_sql_menu("
+			select distinct ie.exampleid, ie.exampleid as tmp from {block_exacompitemexample} ie
+			JOIN {block_exaportitem} i ON i.id = ie.itemid
+			WHERE i.userid=? AND ie.status=2
+		", [ $userid ]);
+
+		$all_examples_submitted = g::$DB->get_records_sql_menu("
+			select distinct ie.exampleid, ie.exampleid as tmp from {block_exacompitemexample} ie
+			JOIN {block_exaportitem} i ON i.id = ie.itemid
+			WHERE i.userid=?
+		", [ $userid ]);
+
+		$all_user_examples = [];
+
+		// find all_user_examples
+		$walker = function($item) use (&$walker, &$all_user_examples) {
+			if ($item instanceof \block_exacomp\descriptor) {
+				foreach ($item->examples as $example) {
+					$all_user_examples[$example->id] = $example->id;
+				}
+
+				// skip child descriptors for now, so it matches the old code in get_user_profile()
+				return;
+			}
+
+			array_walk($item->get_subs(), $walker);
+		};
+		$tree = \block_exacomp\db_layer_all_user_courses::create($userid)->get_subjects();
+		array_walk($tree, $walker);
+
+		$examples_submitted = array_intersect_key($all_examples_submitted, $all_user_examples);
+		$examples_reached = array_intersect_key($all_examples_reached, $all_user_examples);
+
+		/*
+		var_dump([
+			'examples_total' => $all_user_examples,
+			'examples_submitted' => $examples_submitted,
+			'examples_reached' => $examples_reached,
+		]);
+		sort($all_user_examples);
+		var_dump(join(',', $all_user_examples));
+		/* */
+
+		$user->examples = [
+			'total' => count($all_user_examples),
+			'submitted' => count($examples_submitted),
+			'reached' => count($examples_reached),
+		];
 	}
 
 	/**
@@ -1955,7 +2031,7 @@ class block_exacomp_external extends external_api {
 				'comptype'=>$comptype,
 				'role'=>$role,
 				'value' => $value,
-				'additionalinfo'=>$additionalinfo, 
+				'additionalinfo'=>$additionalinfo,
 				'evalniveauid'=>$evalniveauid
 		) );
 
@@ -1972,7 +2048,7 @@ class block_exacomp_external extends external_api {
 			if($descriptor && $descriptor->parentid > 0)
 				$parent = false;
 		}
-		
+
 		if(!$parent || $role == \block_exacomp\ROLE_STUDENT){ //TK or student -> value not mapped
 			if(block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid) == -1)
 				throw new invalid_parameter_exception ('Not allowed');
@@ -1980,11 +2056,11 @@ class block_exacomp_external extends external_api {
 			$value =  block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
 			if(block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid) == -1)
 				throw new invalid_parameter_exception ( 'Not allowed' );
-			
+
 			block_exacomp_save_additional_grading_for_descriptor($courseid, $compid, $userid, $additionalinfo, $comptype);
-			
+
 		}
-					
+
 		return array (
 				"success" => true
 		);
@@ -2239,7 +2315,7 @@ class block_exacomp_external extends external_api {
 			$userid = $USER->id;
 
 		$return = static::get_descriptor_children($courseid, $descriptorid, $userid, $forall);
-		
+
 		return $return;
 
 	}
@@ -2601,7 +2677,7 @@ class block_exacomp_external extends external_api {
 		) );
 
 		$student->examples = block_exacomp_get_user_examples_by_course($student, $courseid);
-		
+
 		$teacherevaluation = -1;
 		if(isset($student->examples->teacher[$exampleid])){
 			$teacherevaluation = $student->examples->teacher[$exampleid];
@@ -2616,7 +2692,7 @@ class block_exacomp_external extends external_api {
 		if(isset($student->examples->niveau[$exampleid])){
 			$evalniveauid = $student->examples->niveau[$exampleid];
 		}
-		
+
 		return array (
 				'teacherevaluation' => $teacherevaluation,
 				'studentevaluation' => $studentevaluation,
@@ -2636,7 +2712,7 @@ class block_exacomp_external extends external_api {
 				'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id')
 		) );
 	}
-	
+
 	/**
 	 * Returns description of method parameters
 	 *
@@ -2649,7 +2725,7 @@ class block_exacomp_external extends external_api {
 				'userid' => new external_value ( PARAM_INT, 'id of user, if 0 current user' )
 		) );
 	}
-	
+
 	/**
 	 * Get topic grading for user
 	 *
@@ -2661,43 +2737,43 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_topic_grading($topicid, $courseid, $userid) {
 		global $DB,$USER;
-	
+
 		static::validate_parameters ( static::dakora_get_topic_grading_parameters (), array (
 				'topicid' => $topicid,
 				'courseid' => $courseid,
 				'userid' => $userid
 		) );
-	
+
 		if ($userid == 0)
 			$userid = $USER->id;
-	
+
 		static::require_can_access_course_user($courseid, $userid);
-	
+
 		$student = $DB->get_record ( 'user', array (
 				'id' => $userid
 		) );
-	
+
 		$student = block_exacomp_get_user_topics_by_course($student, $courseid);
-	
+
 		$teacherevaluation = -1;
 		if(isset($student->topics->teacher[$topicid]))
 			$teacherevaluation = $student->topics->teacher[$topicid];
-		
+
 		$additionalinfo = -1;
 		if(isset($student->topics->teacher_additional_grading[$topicid])){
 			$additionalinfo = $student->topics->teacher_additional_grading[$topicid];
 		}
-	
+
 		$studentevaluation = -1;
 		if(isset($student->topics->student[$topicid])){
 			$studentevaluation = $student->topics->student[$topicid];
 		}
-	
+
 		$evalniveauid = null;
 		if(isset($student->topics->niveau[$topicid])){
 			$evalniveauid = $student->topics->niveau[$topicid];
 		}
-	
+
 		return array (
 				'teacherevaluation' => $teacherevaluation,
 				'additionalinfo' => $additionalinfo,
@@ -2705,7 +2781,7 @@ class block_exacomp_external extends external_api {
 				'evalniveauid' => $evalniveauid
 		);
 	}
-	
+
 	/**
 	 * Returns desription of method return values
 	 *
@@ -2732,7 +2808,7 @@ class block_exacomp_external extends external_api {
 				'userid' => new external_value ( PARAM_INT, 'id of user, if 0 current user' )
 		) );
 	}
-	
+
 	/**
 	 * Get subject grading for user
 	 *
@@ -2744,43 +2820,43 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_subject_grading($subjectid, $courseid, $userid) {
 		global $DB,$USER;
-	
+
 		static::validate_parameters ( static::dakora_get_subject_grading_parameters (), array (
 				'subjectid' => $subjectid,
 				'courseid' => $courseid,
 				'userid' => $userid
 		) );
-	
+
 		if ($userid == 0)
 			$userid = $USER->id;
-	
+
 		static::require_can_access_course_user($courseid, $userid);
-	
+
 		$student = $DB->get_record ( 'user', array (
 				'id' => $userid
 		) );
-	
+
 		$student = block_exacomp_get_user_subjects_by_course($student, $courseid);
-		
+
 		$teacherevaluation = -1;
 		if(isset($student->subjects->teacher[$subjectid]))
 			$teacherevaluation = $student->subjects->teacher[$subjectid];
-	
+
 		$additionalinfo = -1;
 		if(isset($student->subjects->teacher_additional_grading[$subjectid])){
 			$additionalinfo = $student->subjects->teacher_additional_grading[$subjectid];
 		}
-	
+
 		$studentevaluation = -1;
 		if(isset($student->subjects->student[$subjectid])){
 			$studentevaluation = $student->subjects->student[$subjectid];
 		}
-	
+
 		$evalniveauid = null;
 		if(isset($student->subjects->niveau[$subjectid])){
 			$evalniveauid = $student->subjects->niveau[$subjectid];
 		}
-	
+
 		return array (
 				'teacherevaluation' => $teacherevaluation,
 				'additionalinfo' => $additionalinfo,
@@ -2788,7 +2864,7 @@ class block_exacomp_external extends external_api {
 				'evalniveauid' => $evalniveauid
 		);
 	}
-	
+
 	/**
 	 * Returns desription of method return values
 	 *
@@ -2802,7 +2878,7 @@ class block_exacomp_external extends external_api {
 				'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id')
 		) );
 	}
-	
+
 	/**
 	 * Returns description of method parameters
 	 *
@@ -4367,7 +4443,7 @@ class block_exacomp_external extends external_api {
 			$data['type'] = $itemInformation->type;
 			$data['url'] = $itemInformation->url;
 			$data['teacheritemvalue'] = isset ( $itemInformation->teachervalue ) ? $itemInformation->teachervalue : -1;
-			
+
 			if ($itemInformation->type == 'file') {
 				require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
 
@@ -4775,14 +4851,14 @@ class block_exacomp_external extends external_api {
 
 		static::require_can_access_course_user($courseid, $userid);
 		$subjects = block_exacomp_get_subjects_by_course($courseid);
-		
+
 		$content = array();
-		
+
 		foreach($subjects as $subject) {
 			$subjectinfo = block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subject->id);
 			$subjectinfo->subjectid = $subject->id;
 			$subjectinfo->subjecttitle = $subject->title;
-			
+
 			$content[] = $subjectinfo;
 		}
 
@@ -4815,17 +4891,17 @@ class block_exacomp_external extends external_api {
 	public static function is_elove_student_self_assessment_enabled_parameters() {
 		return new external_function_parameters ( array () );
 	}
-	
+
 	/**
 	 * @return boolean
 	 */
 	public static function is_elove_student_self_assessment_enabled() {
 		global $DB, $USER;
 		static::validate_parameters ( static::is_elove_student_self_assessment_enabled_parameters (), array () );
-	
+
 		return array('enabled' => block_exacomp_is_elove_student_self_assessment_enabled());
 	}
-	
+
 	/**
 	 * Returns description of method return values
 	 *
@@ -4836,7 +4912,7 @@ class block_exacomp_external extends external_api {
 				'enabled' => new external_value ( PARAM_BOOL, '' )
 		) );
 	}
-	
+
 	/**
 	 * Returns description of method parameters
 	 * @return external_function_parameters
@@ -4844,25 +4920,25 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_evaluation_config_parameters(){
 		return new external_function_parameters( array ());
 	}
-	
+
 	/**
-	 * get admin evaluation configurations 
+	 * get admin evaluation configurations
 	 */
 	public static function dakora_get_evaluation_config() {
 		global $DB;
-		
+
 		static::validate_parameters (static::dakora_get_evaluation_config_parameters(), array());
-		
-		return array('use_evalniveau' => block_exacomp_use_eval_niveau(), 
+
+		return array('use_evalniveau' => block_exacomp_use_eval_niveau(),
 					'evalniveautype' => block_exacomp_evaluation_niveau_type(),
 					'evalniveaus' => \block_exacomp\global_config::get_evalniveaus(),
 					'values' => \block_exacomp\global_config::get_value_titles()
 		);
 	}
-	
+
 	/**
 	 * Returns description of method return values
-	 * 
+	 *
 	 * @return external_multiple_structure
 	 */
 	public static function dakora_get_evaluation_config_returns() {
@@ -4880,8 +4956,8 @@ class block_exacomp_external extends external_api {
 						3 => new external_value ( PARAM_TEXT, 'value title for id = 3' )))
 		) );
 	}
-	
-	
+
+
 	/**
 	* helper function to use same code for 2 ws
 	*/
@@ -5352,7 +5428,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 
 		return $exampleDataFound;
 	}
-	
+
 
 	private static function wstoken() {
 		return optional_param('wstoken', null, PARAM_ALPHANUM);
