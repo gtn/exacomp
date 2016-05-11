@@ -289,11 +289,12 @@ class block_exacomp_external extends external_api {
 			$example->task = $example->externalurl;
 		}
 
-		$solution = block_exacomp_get_file_url($example, 'example_solution', $data->courseid);
-		if ($solution)
-			$example->solution = (string)$solution;
-		elseif ($example->externalsolution)
+		$solution = block_exacomp_get_file($example, 'example_solution', $data->courseid);
+		if ($solution) {
+			$example->solution = (string)static::get_webservice_url_for_file($solution, $data->courseid)->out(false);;
+		} elseif ($example->externalsolution) {
 			$example->solution = $example->externalsolution;
+		}
 
 		return $example;
 	}
