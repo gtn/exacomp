@@ -19,7 +19,7 @@
 
 require __DIR__.'/inc.php';
 
-$courseid = required_param ( 'courseid', PARAM_INT );
+$courseid = required_param('courseid', PARAM_INT);
 
 require_login($courseid);
 block_exacomp_require_admin();
@@ -31,7 +31,7 @@ $PAGE->set_title(get_string('blocktitle', 'block_exacomp'));
 $PAGE->set_url('/blocks/exacomp/webservice_status.php');
 
 
-$output = $PAGE->get_renderer ( 'block_exacomp' );
+$output = $PAGE->get_renderer('block_exacomp');
 echo $output->header_v2('tab_admin_settings');
 echo $output->tabtree(block_exacomp_build_navigation_tabs_admin_settings($courseid), 'tab_webservice_status');
 
@@ -54,8 +54,8 @@ $table->data = array();
 /// 1. Enable Web Services
 $row = array();
 $url = new moodle_url("/admin/search.php?query=enablewebservices");
-$row[0] = "1. " . html_writer::tag('a', get_string('enablews', 'webservice'),
-				array('href' => $url));
+$row[0] = "1. ".html_writer::tag('a', get_string('enablews', 'webservice'),
+		array('href' => $url));
 $status = html_writer::tag('span', get_string('no'), array('class' => 'statuscritical'));
 if ($CFG->enablewebservices) {
 	$status = html_writer::tag('span', get_string('ok'), array('class' => 'statusok'));
@@ -67,15 +67,15 @@ $table->data[] = $row;
 /// 2. Enable protocols
 $row = array();
 $url = new moodle_url("/admin/settings.php?section=webserviceprotocols");
-$row[0] = "2. " . html_writer::tag('a', get_string('enableprotocols', 'webservice'),
-				array('href' => $url));
+$row[0] = "2. ".html_writer::tag('a', get_string('enableprotocols', 'webservice'),
+		array('href' => $url));
 //retrieve activated protocol
 $active_protocols = empty($CFG->webserviceprotocols) ?
-		array() : explode(',', $CFG->webserviceprotocols);
+	array() : explode(',', $CFG->webserviceprotocols);
 $status = "";
 if (!empty($active_protocols)) {
 	foreach ($active_protocols as $protocol) {
-		$status .= $protocol . $brtag;
+		$status .= $protocol.$brtag;
 	}
 }
 if (!in_array('rest', $active_protocols)) {
@@ -91,8 +91,8 @@ $table->data[] = $row;
 /// 3. Enable Web Services for Mobile Devices
 $row = array();
 $url = new moodle_url("/admin/search.php?query=enablemobilewebservice");
-$row[0] = "3. " . html_writer::tag('a', get_string('enablemobilewebservice', 'admin'),
-				array('href' => $url));
+$row[0] = "3. ".html_writer::tag('a', get_string('enablemobilewebservice', 'admin'),
+		array('href' => $url));
 if ($CFG->enablemobilewebservice) {
 	$status = html_writer::tag('span', get_string('ok'), array('class' => 'statusok'));
 } else {
@@ -109,8 +109,8 @@ $table->data[] = $row;
 /// 4. Webservice Roles
 $row = array();
 $url = new moodle_url("/admin/roles/manage.php");
-$row[0] = "4. " . html_writer::tag('a', 'Roles with webservice access',
-				array('href' => $url));
+$row[0] = "4. ".html_writer::tag('a', 'Roles with webservice access',
+		array('href' => $url));
 $wsroles = get_roles_with_capability('moodle/webservice:createtoken');
 // get rolename in local language
 $wsroles = role_fix_names($wsroles, context_system::instance(), ROLENAME_ORIGINAL);
@@ -134,18 +134,18 @@ $table->data[] = $row;
 
 /// 5. Checks
 $status = '';
+$description = '';
 //set shortname for external service exacompservices
-$exacomp_service = $DB->get_record('external_services', array('name'=>'exacompservices'));
+$exacomp_service = $DB->get_record('external_services', array('name' => 'exacompservices'));
 if (!$exacomp_service) {
 	$status .= html_writer::tag('span', 'Exacompservice not found', array('class' => 'statuscritical'));
+} elseif (!$exacomp_service->downloadfiles || !$exacomp_service->uploadfiles) {
+	$status .= html_writer::tag('span', 'Error', array('class' => 'statuscritical'));
+	$description .= '<a href="'.(new moodle_url('/admin/webservice/service.php', ['id' => $exacomp_service->id])).'">'.
+		'Exacompservice needs "'.get_string('downloadfiles', 'webservice').'" and "'.get_string('uploadfiles', 'webservice').'" enabled</a><br />';
 }
-// not needed anymore
-/*
-	$exacomp_service->shortname = 'exacompservices';
-	$DB->update_record('external_services', $exacomp_service);
-*/
 
-$exaport_service = $DB->get_record('external_services', array('name'=>'exaportservices'));
+$exaport_service = $DB->get_record('external_services', array('name' => 'exaportservices'));
 if (!$exaport_service) {
 	$status .= html_writer::tag('span', 'Exaportservice not found', array('class' => 'statuscritical'));
 }
@@ -162,7 +162,7 @@ if (empty($status)) {
 $row = array();
 $row[0] = "5. Webservice checks";
 $row[1] = $status;
-$row[2] = '';
+$row[2] = $description;
 $table->data[] = $row;
 
 
@@ -176,8 +176,8 @@ if (get_config('exacomp', 'external_trainer_assign')) {
 	// checks for elove app
 	$row = array();
 	$url = new moodle_url("/blocks/exacomp/externaltrainers.php?courseid=".$courseid);
-	$row[0] = "6. " . html_writer::tag('a', get_string('block_exacomp_external_trainer_assign', 'block_exacomp'),
-					array('href' => $url));
+	$row[0] = "6. ".html_writer::tag('a', get_string('block_exacomp_external_trainer_assign', 'block_exacomp'),
+			array('href' => $url));
 
 	$row[1] = $status;
 	$row[2] = '';
@@ -187,4 +187,3 @@ if (get_config('exacomp', 'external_trainer_assign')) {
 echo html_writer::table($table);
 
 echo $output->footer();
-
