@@ -267,6 +267,9 @@ class block_exacomp_external extends external_api {
 		if ($file = block_exacomp_get_file($example, 'example_task')) {
 			$example->taskfileurl = static::get_webservice_url_for_file($file, $data->courseid)->out(false);
 			$example->taskfilename = $file->get_filename();
+		} else {
+			$example->taskfileurl = null;
+			$example->taskfilename = null;
 		}
 
 		// fall back to old fields
@@ -3853,6 +3856,7 @@ class block_exacomp_external extends external_api {
 
 		$creatorid = $USER->id;
 
+		// TODO: input parameter prüfen? \block_exacomp\param::json()?
 		$examples = json_decode($examples);
 		$students = json_decode($students);
 
@@ -5196,18 +5200,19 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 	 * Trainer action is required as soon as there are ungraded submissions.
 	 * @param int $userid
 	 */
-	private function get_requireaction_subjects($userid) {
+	private static function get_requireaction_subjects($userid) {
 		global $DB;
 
-		$require_actions = $DB->get_records_sql('SELECT s.id FROM {block_exacompsubjects} s
-				JOIN {block_exacomptopics} t ON t.subjid = s.id
-				JOIN {block_exacompdescrtopic_mm} td ON td.topicid = t.id
-				JOIN {block_exacompdescriptors} d ON td.descrid = d.id
-				JOIN {block_exacompdescrexamp_mm} de ON de.descrid = d.id
-				JOIN {block_exacompexamples} e ON de.exampid = e.id
-				JOIN {block_exacompitemexample} ie ON ie.exampleid = e.id
-				JOIN {block_exaportitem} i ON i.id = ie.itemid
-				WHERE ie.status = 0 AND i.userid = ?', array($userid));
+		$require_actions = $DB->get_records_sql('SELECT DISTINCT s.id
+ 			FROM {block_exacompsubjects} s
+			JOIN {block_exacomptopics} t ON t.subjid = s.id
+			JOIN {block_exacompdescrtopic_mm} td ON td.topicid = t.id
+			JOIN {block_exacompdescriptors} d ON td.descrid = d.id
+			JOIN {block_exacompdescrexamp_mm} de ON de.descrid = d.id
+			JOIN {block_exacompexamples} e ON de.exampid = e.id
+			JOIN {block_exacompitemexample} ie ON ie.exampleid = e.id
+			JOIN {block_exaportitem} i ON i.id = ie.itemid
+			WHERE ie.status = 0 AND i.userid = ?', array($userid));
 
 		return $require_actions;
 	}
