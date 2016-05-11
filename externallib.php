@@ -157,6 +157,8 @@ class block_exacomp_external extends external_api {
 						continue;
 					}
 
+					// TODO: is this dead code?
+					/*
 					$taxonomies = block_exacomp_get_taxonomies_by_example($example);
 					if(!empty($taxonomies)){
 						$taxonomy = reset($taxonomies);
@@ -167,6 +169,7 @@ class block_exacomp_external extends external_api {
 						$example->taxid = null;
 						$example->tax = "";
 					}
+					*/
 
 					if (! array_key_exists ( $example->id, $structure [$topic->id]->examples )) {
 						$structure [$topic->id]->examples [$example->id] = new stdClass ();
@@ -468,14 +471,14 @@ class block_exacomp_external extends external_api {
 		global $DB, $USER;
 
 		$students = $DB->get_records ( \block_exacomp\DB_EXTERNAL_TRAINERS, array (
-				'trainerid' => $USER->id
+			'trainerid' => $USER->id,
 		) );
 		$returndata = array ();
 		$cohorts = $DB->get_records('cohort');
 
 		foreach ( $students as $student ) {
 			$studentObject = $DB->get_record ( 'user', array (
-					'id' => $student->studentid
+				'id' => $student->studentid,
 			) );
 			$returndataObject = new stdClass ();
 			$returndataObject->name = fullname ( $studentObject );
@@ -484,6 +487,10 @@ class block_exacomp_external extends external_api {
 
 			$user_cohorts = $DB->get_records('cohort_members', array('userid' => $student->studentid));
 			foreach ($user_cohorts as $user_cohort) {
+				if (!isset($cohorts[$user_cohort->cohortid])) {
+					continue;
+				}
+
 				$currentCohort = new stdClass ();
 				$currentCohort->cohortid = $user_cohort->cohortid;
 				$currentCohort->name = $cohorts[$user_cohort->cohortid]->name;
@@ -494,12 +501,17 @@ class block_exacomp_external extends external_api {
 
 			$returndataObject->requireaction = false;
 			$user_subjects = static::get_subjects_for_user($student->studentid);
-			foreach($user_subjects as $user_subject)
-				if($user_subject->requireaction)
+			foreach ($user_subjects as $user_subject) {
+				if ($user_subject->requireaction) {
 					$returndataObject->requireaction = true;
+				}
+			}
 			
+			static::_get_user_profile($returndataObject, 'get_external_trainer_students');
+
 			$returndata [] = $returndataObject;
 		}
+
 		return $returndata;
 	}
 
@@ -514,11 +526,15 @@ class block_exacomp_external extends external_api {
 				'name' => new external_value ( PARAM_TEXT, 'name of user' ),
 				'cohorts' => new external_multiple_structure ( new external_single_structure ( array (
 						'cohortid' => new external_value ( PARAM_INT, 'id of cohort' ),
-						'name' => new external_value ( PARAM_TEXT, 'title of cohort' )
+				'name' => new external_value (PARAM_TEXT, 'title of cohort'),
 				) ) ),
-				'requireaction' => new external_value( PARAM_BOOL, 'trainer action required or not')
-		)
-		 ) );
+			'requireaction' => new external_value(PARAM_BOOL, 'trainer action required or not'),
+			'examples' => new external_single_structure (array(
+				'total' => new external_value (PARAM_INT),
+				'submitted' => new external_value (PARAM_INT),
+				'reached' => new external_value (PARAM_INT),
+			)),
+		)));
 	}
 
 	/**
@@ -1541,13 +1557,18 @@ class block_exacomp_external extends external_api {
 						}
 
 						$examples = $DB->get_records_sql ( "SELECT de.id as deid, e.id, e.title, e.externalurl,
-						e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid
+						e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.source
 						FROM {" . \block_exacomp\DB_EXAMPLES . "} e
 						JOIN {" . \block_exacomp\DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=? ", array (
 								$descriptor->id
 						) );
 
 						foreach ( $examples as $example ) {
+							if ($example->source == \block_exacomp\EXAMPLE_SOURCE_USER) {
+								// ignore source=user for now
+								continue;
+							}
+
 							$taxonomies = block_exacomp_get_taxonomies_by_example($example);
 							if(!empty($taxonomies)){
 								$taxonomy = reset($taxonomies);
@@ -1660,6 +1681,61 @@ class block_exacomp_external extends external_api {
 		*/
 
 		return $defaultdata;
+	}
+
+	private static function _get_user_profile($user, $type) {
+		$userid = $user->userid;
+
+		// $data = (object)[];
+
+		$all_examples_reached = g::$DB->get_records_sql_menu("
+			select distinct ie.exampleid, ie.exampleid as tmp from {block_exacompitemexample} ie
+			JOIN {block_exaportitem} i ON i.id = ie.itemid
+			WHERE i.userid=? AND ie.status=2
+		", [ $userid ]);
+
+		$all_examples_submitted = g::$DB->get_records_sql_menu("
+			select distinct ie.exampleid, ie.exampleid as tmp from {block_exacompitemexample} ie
+			JOIN {block_exaportitem} i ON i.id = ie.itemid
+			WHERE i.userid=?
+		", [ $userid ]);
+
+		$all_user_examples = [];
+
+		// find all_user_examples
+		$walker = function($item) use (&$walker, &$all_user_examples) {
+			if ($item instanceof \block_exacomp\descriptor) {
+				foreach ($item->examples as $example) {
+					$all_user_examples[$example->id] = $example->id;
+				}
+
+				// skip child descriptors for now, so it matches the old code in get_user_profile()
+				return;
+			}
+
+			array_walk($item->get_subs(), $walker);
+		};
+		$tree = \block_exacomp\db_layer_all_user_courses::create($userid)->get_subjects();
+		array_walk($tree, $walker);
+
+		$examples_submitted = array_intersect_key($all_examples_submitted, $all_user_examples);
+		$examples_reached = array_intersect_key($all_examples_reached, $all_user_examples);
+
+		/*
+		var_dump([
+			'examples_total' => $all_user_examples,
+			'examples_submitted' => $examples_submitted,
+			'examples_reached' => $examples_reached,
+		]);
+		sort($all_user_examples);
+		var_dump(join(',', $all_user_examples));
+		/* */
+
+		$user->examples = [
+			'total' => count($all_user_examples),
+			'submitted' => count($examples_submitted),
+			'reached' => count($examples_reached),
+		];
 	}
 
 	/**
