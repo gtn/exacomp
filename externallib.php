@@ -267,6 +267,9 @@ class block_exacomp_external extends external_api {
 		if ($file = block_exacomp_get_file($example, 'example_task')) {
 			$example->taskfileurl = static::get_webservice_url_for_file($file, $data->courseid)->out(false);
 			$example->taskfilename = $file->get_filename();
+		} else {
+			$example->taskfileurl = null;
+			$example->taskfilename = null;
 		}
 
 		// fall back to old fields
@@ -3659,6 +3662,7 @@ class block_exacomp_external extends external_api {
 
 		$creatorid = $USER->id;
 
+		// TODO: input parameter prüfen? \block_exacomp\param::json()?
 		$examples = json_decode($examples);
 		$students = json_decode($students);
 
