@@ -507,7 +507,7 @@ class block_exacomp_external extends external_api {
 				}
 			}
 			
-			static::_get_user_profile($returndataObject, 'get_external_trainer_students');
+			static::get_user_list_info($returndataObject, 'get_external_trainer_students');
 
 			$returndata [] = $returndataObject;
 		}
@@ -1683,10 +1683,8 @@ class block_exacomp_external extends external_api {
 		return $defaultdata;
 	}
 
-	private static function _get_user_profile($user, $type) {
+	private static function get_user_list_info($user, $type) {
 		$userid = $user->userid;
-
-		// $data = (object)[];
 
 		$all_examples_reached = g::$DB->get_records_sql_menu("
 			select distinct ie.exampleid, ie.exampleid as tmp from {block_exacompitemexample} ie
@@ -1700,16 +1698,18 @@ class block_exacomp_external extends external_api {
 			WHERE i.userid=?
 		", [ $userid ]);
 
-		$all_user_examples = [];
+		$all_examples = [];
+
+		// old, slow
+		/*
+		// $data = (object)[];
 
 		// find all_user_examples
-		$walker = function($item) use (&$walker, &$all_user_examples) {
+		$walker = function($item) use (&$walker, &$all_examples) {
 			if ($item instanceof \block_exacomp\descriptor) {
 				foreach ($item->examples as $example) {
-					$all_user_examples[$example->id] = $example->id;
+					$all_examples[$example->id] = $example->id;
 				}
-
-				// skip child descriptors for now, so it matches the old code in get_user_profile()
 				return;
 			}
 
@@ -1717,22 +1717,44 @@ class block_exacomp_external extends external_api {
 		};
 		$tree = \block_exacomp\db_layer_all_user_courses::create($userid)->get_subjects();
 		array_walk($tree, $walker);
+		*/
 
-		$examples_submitted = array_intersect_key($all_examples_submitted, $all_user_examples);
-		$examples_reached = array_intersect_key($all_examples_reached, $all_user_examples);
+		// new, faster
+		$courseids = array_keys(enrol_get_all_users_courses($user->userid));
+
+		if ($courseids) {
+			$sql = "SELECT ex.id, ex.id AS tmp
+				FROM {".\block_exacomp\DB_EXAMPLES."} ex
+				WHERE ex.id IN (
+					SELECT dex.exampid
+					FROM {".\block_exacomp\DB_DESCEXAMP."} dex
+					JOIN {".\block_exacomp\DB_DESCTOPICS."} det ON dex.descrid = det.descrid
+					JOIN {".\block_exacomp\DB_COURSETOPICS."} ct ON det.topicid = ct.topicid
+					JOIN {".\block_exacomp\DB_DESCRIPTORS."} d ON d.id = dex.descrid
+					WHERE ct.courseid IN (".join(',',$courseids).")
+					AND d.parentid = 0 -- ignore child descriptors
+				)
+				AND ex.source != ".\block_exacomp\EXAMPLE_SOURCE_USER."
+			";
+
+			$all_examples = g::$DB->get_records_sql_menu($sql);
+		}
+
+		$examples_submitted = array_intersect_key($all_examples_submitted, $all_examples);
+		$examples_reached = array_intersect_key($all_examples_reached, $all_examples);
 
 		/*
 		var_dump([
-			'examples_total' => $all_user_examples,
+			'examples_total' => $all_examples,
 			'examples_submitted' => $examples_submitted,
 			'examples_reached' => $examples_reached,
 		]);
-		sort($all_user_examples);
-		var_dump(join(',', $all_user_examples));
+		sort($all_examples);
+		var_dump(join(',', $all_examples));
 		/* */
 
 		$user->examples = [
-			'total' => count($all_user_examples),
+			'total' => count($all_examples),
 			'submitted' => count($examples_submitted),
 			'reached' => count($examples_reached),
 		];
