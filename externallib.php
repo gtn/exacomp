@@ -263,8 +263,6 @@ class block_exacomp_external extends external_api {
 		));
 		$example->description = htmlentities($example->description);
 		$example->hassubmissions = ($DB->get_records('block_exacompitemexample', array('exampleid' => $exampleid))) ? true : false;
-		$example->taskfileurl = "";
-		$example->taskfilename = "";
 		if ($file = block_exacomp_get_file($example, 'example_task')) {
 			$example->taskfileurl = static::get_webservice_url_for_file($file, $data->courseid)->out(false);
 			$example->taskfilename = $file->get_filename();
@@ -1971,7 +1969,7 @@ class block_exacomp_external extends external_api {
 		$parent = true;
 		if($comptype == \block_exacomp\TYPE_DESCRIPTOR){
 			$descriptor = $DB->get_record(\block_exacomp\DB_DESCRIPTORS, array('id'=>$compid));
-			if($descriptor->parent && $descriptor->parent > 0)
+			if($descriptor && $descriptor->parent > 0)
 				$parent = false;
 		}
 		
