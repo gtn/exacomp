@@ -284,6 +284,8 @@ class block_exacomp_external extends external_api {
 			$example->externalurl = $example->task;
 		}
 
+		$example->externalurl = static::format_url($example->externalurl);
+
 		// TODO: task field still needed in exacomp?
 		if (!$example->task) {
 			$example->task = $example->taskfileurl;
@@ -506,7 +508,7 @@ class block_exacomp_external extends external_api {
 					$returndataObject->requireaction = true;
 				}
 			}
-			
+
 			static::get_user_list_info($returndataObject, 'get_external_trainer_students');
 
 			$returndata [] = $returndataObject;
@@ -670,7 +672,7 @@ class block_exacomp_external extends external_api {
 				'value' => new external_value ( PARAM_INT, 'evaluation value' )
 		) );
 	}
-	
+
 	/**
 	 * Set student evaluation
 	 *
@@ -684,21 +686,21 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function set_competence($courseid, $descriptorid, $value) {
 		global $DB, $USER;
-	
+
 		if (empty ( $courseid ) || empty ( $descriptorid ) || ! isset ( $value )) {
 			throw new invalid_parameter_exception ( 'Parameter can not be empty' );
 		}
-	
+
 		static::validate_parameters ( static::set_competence_parameters (), array (
 				'courseid' => $courseid,
 				'descriptorid' => $descriptorid,
 				'value' => $value
 		) );
-	
+
 		static::require_can_access_course($courseid);
-	
+
 		$transaction = $DB->start_delegated_transaction (); // If an exception is thrown in the below code, all DB queries in this code will be rollback.
-	
+
 		$DB->delete_records ( 'block_exacompcompuser', array (
 				"userid" => $USER->id,
 				"role" => 0,
@@ -717,14 +719,14 @@ class block_exacomp_external extends external_api {
 					"value" => $value
 			) );
 		}
-	
+
 		$transaction->allow_commit ();
-	
+
 		return array (
 				"success" => true
 		);
 	}
-	
+
 	/**
 	 * Returns desription of method return values
 	 *
@@ -735,7 +737,7 @@ class block_exacomp_external extends external_api {
 				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
 		) );
 	}
-	
+
 	/**
 	 * Returns description of method parameters
 	 *
@@ -790,12 +792,12 @@ class block_exacomp_external extends external_api {
 		$item->status = isset ( $itemexample->status ) ? $itemexample->status : 0;
 
 		if ($item->type == 'file') {
-			// TODO: moved code into exaport\api
+			// TODO: move code into exaport\api
 			require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
 
 			$item->userid = $userid;
 			if ($file = block_exaport_get_item_file ( $item )) {
-				$item->file = ("{$CFG->wwwroot}/blocks/exaport/portfoliofile.php?access=portfolio/id/" . $userid . "&itemid=" . $itemid);
+				$item->file = ("{$CFG->wwwroot}/blocks/exaport/portfoliofile.php?access=portfolio/id/" . $userid . "&itemid=" . $itemid."&wstoken=".static::wstoken());
 				$item->isimage = $file->is_valid_image ();
 				$item->filename = $file->get_filename ();
 			}
@@ -803,7 +805,7 @@ class block_exacomp_external extends external_api {
 
 		$item->studentcomment = '';
 		$item->teachercomment = '';
-		
+
 		// TODO: change to exaport\api::get_item_comments()
 		$itemcomments = $DB->get_records ( 'block_exaportitemcomm', array (
 				'itemid' => $itemid
@@ -1508,7 +1510,7 @@ class block_exacomp_external extends external_api {
 		array_walk($tree, $walker);
 		var_dump($data);
 		*/
-		
+
 		// total data
 		$total_competencies = 0;
 		$total_examples = array ();
@@ -4698,14 +4700,14 @@ class block_exacomp_external extends external_api {
 
 		static::require_can_access_course_user($courseid, $userid);
 		$subjects = block_exacomp_get_subjects_by_course($courseid);
-		
+
 		$content = array();
-		
+
 		foreach($subjects as $subject) {
 			$subjectinfo = block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subject->id);
 			$subjectinfo->subjectid = $subject->id;
 			$subjectinfo->subjecttitle = $subject->title;
-			
+
 			$content[] = $subjectinfo;
 		}
 
@@ -4738,17 +4740,17 @@ class block_exacomp_external extends external_api {
 	public static function is_elove_student_self_assessment_enabled_parameters() {
 		return new external_function_parameters ( array () );
 	}
-	
+
 	/**
 	 * @return boolean
 	 */
 	public static function is_elove_student_self_assessment_enabled() {
 		global $DB, $USER;
 		static::validate_parameters ( static::is_elove_student_self_assessment_enabled_parameters (), array () );
-	
+
 		return array('enabled' => block_exacomp_is_elove_student_self_assessment_enabled());
 	}
-	
+
 	/**
 	 * Returns description of method return values
 	 *
@@ -4759,7 +4761,7 @@ class block_exacomp_external extends external_api {
 				'enabled' => new external_value ( PARAM_BOOL, '' )
 		) );
 	}
-	
+
 	/**
 	* helper function to use same code for 2 ws
 	*/
@@ -5242,6 +5244,31 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 			$file->get_itemid(), $file->get_filepath(), $file->get_filename());
 
 		$url->param('token', static::wstoken());
+
+		return $url;
+	}
+
+	private static function format_url($url) {
+		$url_no_protocol = strtolower(preg_replace('!^.*://!', '', $url));
+		$www_root_no_protocol = strtolower(preg_replace('!^.*://!', '', g::$CFG->wwwroot));
+
+		if (strpos($url_no_protocol, $www_root_no_protocol) === 0) {
+			// is local moodle url
+
+			// add http:// or https:// (if required)
+			// $url = g::$CFG->wwwroot.substr($url_no_protocol, strlen($www_root_no_protocol));
+
+			// make local url = relative to moodle
+			$url = substr($url_no_protocol, strlen($www_root_no_protocol));
+
+			// link to url.php, which loggs the user in first
+			$url = (new moodle_url('/blocks/exacomp/login.php', [
+				'wstoken' => static::wstoken(),
+				'url' => $url,
+			]))->out(false);
+		} elseif (!preg_replace('!^.*://!', '', $url)) {
+			$url = 'http://'.$url;
+		}
 
 		return $url;
 	}
