@@ -94,10 +94,16 @@
 	color: #0075dd;
 	display: block;
 }
+#block_exacomp .compprof_barchart_niveau {
+	color: #df8c0b;
+}
 #block_exacomp .compprof_barchart_inwork {
 	margin-right: 10px;
 }
 
+#block_exacomp .compprof_niveau{
+	float: center;
+}
 #block_exacomp .compprof_evaluation{
 	float: right;
 }

@@ -4656,7 +4656,7 @@ class block_exacomp_external extends external_api {
 			$data_content->totallmnumb = $lmdata->total;
 			$data_content->inworklmnumb = $lmdata->inWork;
 			$data_content->teacherevaluation = (isset($user->competencies->teacher[$descriptor->id]))?$user->competencies->teacher[$descriptor->id]:-1;
-			$data_content->additionalinfo = (isset($user->competencies->teacher_additional_grading[$descriptor->id]))?$user->competencies->teacher_additional_grading[$descriptor->id]:-1;
+			$data_content->additionalinfo = ((isset($user->competencies->teacher_additional_grading[$descriptor->id]) && $user->competencies->teacher_additional_grading[$descriptor->id]))?$user->competencies->teacher_additional_grading[$descriptor->id]:-1;
 			$data_content->evalniveauid = (isset($user->competencies->niveau[$descriptor->id]))?$user->competencies->niveau[$descriptor->id]:null;
 			$data_content->studentevaluation = (isset($user->competencies->student[$descriptor->id]))?$user->competencies->student[$descriptor->id]:-1;
 			$data->descriptordata[] = $data_content;

@@ -1105,7 +1105,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 		$courseid = $COURSE->id;
 
 	$examples = \block_exacomp\example::get_objects_sql(
-			"SELECT de.id as deid, e.id, e.title, e.externalurl, e.source, ".
+			"SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source, ".
 				($mind_visibility?"evis.visible,":"")."
 				e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author
 				FROM {" . \block_exacomp\DB_EXAMPLES . "} e
@@ -6262,7 +6262,7 @@ function block_exacomp_get_courseids_by_descriptor($descriptorid){
 * get evaluation images for competence profile for teacher
 * according to course scheme and admin scheme
 **/
-function block_exacomp_get_html_for_teacher_eval($evaluation, $scheme){
+function block_exacomp_get_html_for_niveau_eval($evaluation, $scheme){
 	$evaluation_niveau_type = block_exacomp_evaluation_niveau_type();
 	
 	//predefined pictures 
@@ -6283,11 +6283,11 @@ function block_exacomp_get_html_for_teacher_eval($evaluation, $scheme){
 		if($evaluation > -1){
 			if($evaluation == 0){ //not reached
 				$image0 = $nE_src;
-			}if($evaluation >= 1){
+			}if($evaluation == 1){
 				$image1 = $one_src;
-			}if($evaluation >= 2){
+			}if($evaluation == 2){
 				$image2 = $two_src;
-			}if($evaluation >= 3){
+			}if($evaluation == 3){
 				$image3 = $three_src;
 			}
 		}
@@ -6332,36 +6332,66 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 	global $DB;
 	list($course_subjects, $table_column, $table_header, $selectedSubject, $selectedTopic, $selectedNiveau) = block_exacomp_init_overview_data($courseid, $subjectid, 0, 0, false, block_exacomp_is_teacher(), $studentid);
 	
+	$user = $DB->get_record('user', array('id'=>$studentid));
+	$user = block_exacomp_get_user_information_by_course($user, $courseid);
+	
 	$competence_tree = block_exacomp_get_competence_tree($courseid, $subjectid);
-	$table_content = array();
-	
+	$table_content = new stdClass();
+	$table_content->content = array();
+		
 	$scheme_items = \block_exacomp\global_config::get_value_titles(block_exacomp_get_grading_scheme($courseid));
-	
+	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
 	foreach($competence_tree as $subject){
 		foreach($subject->topics as $topic){
-			$table_content[$topic->id] = new stdClass();
-			$table_content[$topic->id]->niveaus = array();
-			$table_content[$topic->id]->span = 0;
+			$table_content->content[$topic->id] = new stdClass();
+			$table_content->content[$topic->id]->niveaus = array();
+			$table_content->content[$topic->id]->span = 0;
 			foreach($topic->descriptors as $descriptor){
 				
 				$evaluation = block_exacomp\get_comp_eval($courseid, \block_exacomp\ROLE_TEACHER, $studentid, \block_exacomp\TYPE_DESCRIPTOR, $descriptor->id);
-				if(!$evaluation){
-					$evaluation = new stdClass();
-					$evaluation->value = -1;
-				}
+				
 				$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
 				if($niveau){
-					$table_content[$topic->id]->niveaus[$niveau->id] = ($evaluation->value > -1)? $scheme_items[$evaluation->value]:'';
+					$table_content->content[$topic->id]->niveaus[$niveau->id] = ($evaluation)?
+						(((block_exacomp_use_eval_niveau())?
+								(($evaluation->evalniveauid)?$evaluationniveau_items[$evaluation->evalniveauid].' ':'')
+						:'')
+						.((block_exacomp_additional_grading())?
+								(($evaluation->additionalinfo)?$evaluation->additionalinfo:'')
+						:$scheme_items[$evaluation->value]))
+					:'';
 					if($niveau->span == 1)
-						$table_content[$topic->id]->span = 1;
+						$table_content->content[$topic->id]->span = 1;
 				}
 			}
+			
+			$table_content->content[$topic->id]->topic_evaluation = 
+						((block_exacomp_use_eval_niveau())?
+								((isset($user->topics->niveau[$topic->id]))
+										?$evaluationniveau_items[$user->topics->niveau[$topic->id]].' ':'')
+						:'')
+						.((block_exacomp_additional_grading())?
+								((isset($user->topics->teacher_additional_grading[$topic->id]))
+										?$user->topics->teacher_additional_grading[$topic->id]:'')
+						:((isset($user->topics->teacher[$topic->id]))
+								?$scheme_items[$user->topics->teacher[$topic->id]]:''));
 		}
+		$table_content->subject_evaluation = 
+					(((block_exacomp_use_eval_niveau())?
+								((isset($user->subjects->niveau[$subject->id]))
+										?$evaluationniveau_items[$user->subjects->niveau[$subject->id]].' ':'')
+						:'')
+						.((block_exacomp_additional_grading())?
+								((isset($user->subjects->teacher_additional_grading[$subject->id]))
+										?$user->subjects->teacher_additional_grading[$subject->id]:'')
+						:((isset($user->subjects->teacher[$subject->id]))
+								?$scheme_items[$user->subjects->teacher[$subject->id]]:'')));
+		$table_content->subject_title = $subject->title;
 	}
 	
 	foreach($table_header as $niveau){
 		if($niveau->id != \block_exacomp\SHOW_ALL_NIVEAUS)
-			foreach($table_content as $row){
+			foreach($table_content->content as $row){
 				if($row->span != 1){
 					if(!array_key_exists($niveau->id, $row->niveaus))
 						$row->niveaus[$niveau->id] = '';
@@ -6387,7 +6417,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 	$header_row->columns = array();
 	
 	$header_row->columns[0] = new stdClass();
-	$header_row->columns[0]->text = '';
+	$header_row->columns[0]->text = $table_content->subject_title;
 	$header_row->columns[0]->span = 0;
 	
 	$current_idx = 1;
@@ -6400,10 +6430,17 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 		}
 	}
 	
+	if(block_exacomp_is_topicgrading_enabled()){
+		$topic_eval_header = new stdClass();
+		$topic_eval_header->text = get_string('total', 'block_exacomp');
+		$topic_eval_header->span = 0;
+		$header_row->columns[$current_idx] = $topic_eval_header;
+	}
+	
 	$table->rows[] = $header_row;
 
 	
-	foreach($table_content as $topic => $rowcontent ){
+	foreach($table_content->content as $topic => $rowcontent ){
 		$content_row = new stdClass();
 		$content_row->columns = array();
 		
@@ -6424,9 +6461,31 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 			$current_idx++;
 		}
 		
+		if(block_exacomp_is_topicgrading_enabled()){
+			$topic_eval = new stdClass();
+			$topic_eval->text = $rowcontent->topic_evaluation;
+			$topic_eval->span = 0;
+			$content_row->columns[$current_idx] = $topic_eval;
+		}
+		
 		$table->rows[] = $content_row;
 	}
 	
+	if(block_exacomp_is_subjectgrading_enabled()){
+		$content_row = new stdClass();
+		$content_row->columns = array();
+		
+		$content_row->columns[0] = new stdClass();
+		$content_row->columns[0]->text = '';
+		$content_row->columns[0]->span = count($table_header);
+	
+		$content_row->columns[1] = new stdClass();
+		$content_row->columns[1]->text = $table_content->subject_evaluation;
+		$content_row->columns[1]->span = 0;
+		
+		$table->rows[] = $content_row;
+	}
+	print_r($table);
 	return $table;
 }
 }
@@ -6495,7 +6554,7 @@ namespace block_exacomp {
 				$course_grading = block_exacomp_get_settings_by_course(g::$COURSE->id)->grading;
 				
 				$values = array(-1 => ' ');
-				$values += range(0, $course_grading+1);
+				$values += range(0, $course_grading);
 				
 				return $values;
 			}
@@ -6530,7 +6589,7 @@ namespace block_exacomp {
 				$course_grading = block_exacomp_get_settings_by_course(g::$COURSE->id)->grading;
 				
 				$values = array(-1 => ' ');
-				$values += range(1, $course_grading+1);
+				$values += range(1, $course_grading);
 				
 				return $values;
 			}

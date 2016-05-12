@@ -3694,7 +3694,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			//calculate the col span for spanning niveaus
 			$spanning_colspan = block_exacomp_calculate_spanning_niveau_colspan($table_header, $spanning_niveaus);
 			
-			
 			$table = new html_table();
 			$table->attributes['class'] = 'compprofiletable flexible boxaligncenter generaltable';
 			$rows = array();
@@ -3702,8 +3701,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			//header
 			$row = new html_table_row();
 			
-			//first empty cell
+			//first subject title cell
 			$cell = new html_table_cell();
+			$cell->text = $table_content->subject_title;
 			$row->cells[] = $cell;
 			
 			//niveaus
@@ -3715,11 +3715,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$row->cells[] = $cell;
 				}
 			}
-			
+
+			if(block_exacomp_is_topicgrading_enabled()){
+				$topic_eval_header = new html_table_cell();
+				$topic_eval_header->text = get_string('total', 'block_exacomp');
+				$topic_eval_header->attributes['class'] = 'header';
+				$row->cells[] = $topic_eval_header;
+			}
 			$rows[] = $row;
 			$row = new html_table_row();
 			
-			foreach($table_content as $topic => $rowcontent ){
+			foreach($table_content->content as $topic => $rowcontent ){
 				
 				$cell = new html_table_cell();
 				$cell->text = $table_column[$topic]->title;
@@ -3735,10 +3741,29 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$row->cells[] = $cell;
 				}
 				
+				if(block_exacomp_is_topicgrading_enabled()){
+					$topic_eval_cell = new html_table_cell();
+					$topic_eval_cell->text = $rowcontent->topic_evaluation;
+					
+					$row->cells[] = $topic_eval_cell;
+				}
 				$rows[] = $row;
 				$row = new html_table_row();
 			}
 			
+			if(block_exacomp_is_subjectgrading_enabled()){
+				$subject_empty_cell = new html_table_cell();
+				$subject_empty_cell->colspan = count($table_header);
+				$subject_empty_cell->attributes['class'] = 'header';
+				$row->cells[] = $subject_empty_cell;
+				
+				$subject_eval_cell = new html_table_cell();
+				$subject_eval_cell->text = $table_content->subject_evaluation;
+				$subject_eval_cell->attributes['class'] = 'header';
+				$row->cells[] = $subject_eval_cell;
+				
+				$rows[] = $row;
+			}
 			$table->data = $rows;
 			$content .= html_writer::table($table);
 		}
@@ -3765,7 +3790,7 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 						$barchartid_i++;
 						
 						$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
-						//always descriptor title TODO: remove global setting
+
 						$content_div = html_writer::tag('span', (($niveau)?$niveau->title:'') . ': ' . $descriptor->title);
 						$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, ((block_exacomp_is_niveautitle_for_profile_enabled() && $niveau)?$niveau->title:$descriptor->title));
 						
@@ -3774,11 +3799,17 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 							$span_in_work = html_writer::tag('span', 
 									\block_exacomp\get_string('inwork', null, ['inWork' => $return->inWork, 'total' => $return->total]), array('class'=>"compprof_barchart_inwork"));
 						
-						$img_teacher = block_exacomp_get_html_for_teacher_eval(
-								((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:-1), $scheme);
+						$img_niveau = block_exacomp_get_html_for_niveau_eval(
+								((isset($student->competencies->niveau[$descriptor->id]))?$student->competencies->niveau[$descriptor->id]:-1), $scheme);
+						
+						$span_niveau = html_writer::tag('span', "Niveau: ".
+								$img_niveau, array('class'=>"compprof_barchart_niveau"));
+						
+						$img_teacher = '';//block_exacomp_get_html_for_teacher_eval(
+								//((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:-1), $scheme);
 						
 						$span_teacher = html_writer::tag('span', "L: ".
-							$img_teacher . (isset($student->competencies->teacher_additional_grading[$descriptor->id])? " (".$student->competencies->teacher_additional_grading[$descriptor->id].") ":""), 
+							$img_teacher . (isset($student->competencies->teacher_additional_grading[$descriptor->id])? html_writer::tag('b', $student->competencies->teacher_additional_grading[$descriptor->id]):""), 
 							array('class'=>"compprof_barchart_teacher"));
 										   
 						$img_student = block_exacomp_get_html_for_student_eval(
@@ -3786,7 +3817,7 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 										
 						$span_student = html_writer::tag('span', "S: ".
 								$img_student, array('class'=>"compprof_barchart_student"));
-						
+						$div_niveau = html_writer::div($span_niveau, 'compprof_niveau');
 						$div_teacher_student = html_writer::div($span_student. $span_teacher, 'compprof_evaluation');
 
 						$image = '/blocks/exacomp/pix/competence-grid-material-information.png';
@@ -3798,7 +3829,7 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 						
 						$div_barchart = html_writer::div($bar_chart, 'compprof_example');
 						$desc_content .= html_writer::div($content_div.
-								$div_teacher_student.$div_barchart, 
+								((block_exacomp_use_eval_niveau())?$div_niveau:'').$div_teacher_student.$div_barchart, 
 								'compprof_descriptor');		
 						
 						$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, ((block_exacomp_is_niveautitle_for_profile_enabled() && $niveau)?$niveau->title:$descriptor->title));
