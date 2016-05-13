@@ -763,7 +763,9 @@
 			//disable checkbox for teacher, when hiding descriptor for student
 			if(studentid > 0)
 				$('input[name=dataexamples-'+exampleid+'-'+studentid+'-'+'teacher]').prop( "disabled", true ); 
-			
+				$('select[name=dataexamples-'+exampleid+'-'+studentid+'-teacher]').prop("disabled", true);
+				$('select[name=niveau_examples-'+exampleid+'-'+studentid+']').prop("disabled", true);
+
 			var img = $("img", this);
 			img.attr('src',$(this).attr('hideurl'));
 			img.attr('alt', M.util.get_string('show','moodle'));
@@ -781,6 +783,8 @@
 			
 			//enable checkbox for teacher, when showing descriptor for student
 			$('input[name=dataexamples-'+exampleid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
+			$('select[name=dataexamples-'+exampleid+'-'+studentid+'-teacher]').prop("disabled", false);
+			$('select[name=niveau_examples-'+exampleid+'-'+studentid+']').prop("disabled", false);
 			
 			var img = $("img", this);
 			img.attr('src',$(this).attr('showurl'));
