@@ -6336,14 +6336,14 @@ function block_exacomp_get_html_for_student_eval($evaluation, $scheme){
  **/
 function block_exacomp_get_html_for_teacher_eval($evaluation, $scheme){
 	$images = array();
-	
+
 	if($evaluation == 0)
 		$images[] = '/blocks/exacomp/pix/compprof_rating_teacher_0_1.png';
 	else 
 		$images[] = '/blocks/exacomp/pix/compprof_rating_teacher_grey_0_1.png';
 	
 	for($i=1;$i<=$scheme;$i++){
-		if($evaluation > -1 && $i < $evaluation){
+		if($evaluation > 0 && $i <= $evaluation){
 			$images[] = '/blocks/exacomp/pix/compprof_rating_teacher.png';
 		}else{
 			$images[] = '/blocks/exacomp/pix/compprof_rating_teacher_grey.png';
@@ -6660,7 +6660,7 @@ namespace block_exacomp {
 		static function get_additionalinfo_value_mapping($additionalinfo){
 			if($additionalinfo == "")
 				return -1;
-					
+				
 			$mapping = array(6.0, 4.8, 3.5, 2.2);
 			
 			foreach($mapping as $k => $v) {

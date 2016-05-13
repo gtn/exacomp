@@ -3806,7 +3806,7 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 						$span_niveau = html_writer::tag('span', "Niveau: ".
 								$img_niveau, array('class'=>"compprof_barchart_niveau"));
 						
-						$img_teacher = (block_exacomp_additional_grading())?'':block_exacomp_get_html_for_teacher_eval(((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:-1), $scheme);//block_exacomp_get_html_for_teacher_eval(
+						$img_teacher = (block_exacomp_additional_grading())?'':(block_exacomp_get_html_for_teacher_eval(((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:-1), $scheme));//block_exacomp_get_html_for_teacher_eval(
 								//((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:-1), $scheme);
 						
 						$span_teacher = html_writer::tag('span', "L: ".
