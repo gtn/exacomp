@@ -485,6 +485,7 @@ $string['save_pre_planning_selection'] = 'Add selected examples to weekly schedu
 $string['empty_pre_planning_storage'] = 'Empty pre-planning storage';
 $string['noschedules_pre_planning_storage'] = 'Pre-planning storage has been emptied, use the competence grid to put new examples in the pre-planning storage.';
 $string['empty_trash'] = 'Empty trash bin';
+$string['empty_pre_planning_confirm'] = 'Examples added from all teachers are deleted, are you sure you want to do this?';
 $string['to_weekly_schedule'] = 'To weekly schedule';
 $string['blocking_event'] = 'Create blocking event';
 $string['blocking_event_title'] = 'title';

@@ -1626,6 +1626,10 @@ return  [
 		'Papierkorb leeren',
 		'Empty trash bin',
 	],
+	'empty_pre_planning_confirm' => [
+		'Auch Beispiele, die ein anderer Lehrer zum Vorplanungsspeicher hinzugefügt hat, werden entfernt. Sind Sie sicher?',
+		'Examples added from all teachers are deleted, are you sure you want to do this?',
+	],
 	'to_weekly_schedule' => [
 		'Zum Wochenplan',
 		'To weekly schedule',

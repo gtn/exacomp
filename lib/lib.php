@@ -5851,10 +5851,10 @@ function block_exacomp_example_order($exampleid, $descrid, $operator = "<") {
 	}
 	return false;
 }
-function block_exacomp_empty_pre_planning_storage($creatorid, $courseid){
+function block_exacomp_empty_pre_planning_storage($courseid){
 	global $DB;
 
-	$DB->delete_records(\block_exacomp\DB_SCHEDULE, array('creatorid'=>$creatorid, 'courseid'=>$courseid, 'studentid'=>0));
+	$DB->delete_records(\block_exacomp\DB_SCHEDULE, array('courseid'=>$courseid, 'studentid'=>0));
 }
 function block_exacomp_get_current_item_for_example($userid, $exampleid) {
 	global $DB;

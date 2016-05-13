@@ -3855,10 +3855,9 @@ class block_exacomp_external extends external_api {
 				'courseid'=>$courseid
 		) );
 
-		$creatorid = $USER->id;
 		static::require_can_access_course($courseid);
 
-		block_exacomp_empty_pre_planning_storage($creatorid, $courseid);
+		block_exacomp_empty_pre_planning_storage($courseid);
 
 		return array (
 				"success" => true

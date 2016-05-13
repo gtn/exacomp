@@ -488,6 +488,7 @@ $string['save_pre_planning_selection'] = 'Ausgewählte Lernmaterialien auf den W
 $string['empty_pre_planning_storage'] = 'Vorplanungsspeicher leeren';
 $string['noschedules_pre_planning_storage'] = 'Der Vorplanungsspeicher ist leer. Bitte legen Sie über die Kompetenzraster neue Lernmaterialien in den Vorplanungsspeicher.';
 $string['empty_trash'] = 'Papierkorb leeren';
+$string['empty_pre_planning_confirm'] = 'Auch Beispiele, die ein anderer Lehrer zum Vorplanungsspeicher hinzugefügt hat, werden entfernt. Sind Sie sicher?';
 $string['to_weekly_schedule'] = 'Zum Wochenplan';
 $string['blocking_event'] = 'Sperrelement erstellen';
 $string['blocking_event_title'] = 'Titel';
