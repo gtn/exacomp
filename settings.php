@@ -59,7 +59,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 			
 			if($data == '1') $titles = array(1=>'G', 2=>'M', 3=>'E');
 			elseif($data == '2') $titles = array(1=>'A', 2=>'B', 3=>'C');
-			elseif($data=='3') $titles = array(1=>'*', 2=>'**', 3=>'***');
+			elseif($data=='3') $titles = array(1=>'1', 2=>'2', 3=>'3');
 			else{
 				set_config('use_eval_niveau', 0, 'exacomp');
 				return '';
