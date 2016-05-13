@@ -5266,7 +5266,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 				'wstoken' => static::wstoken(),
 				'url' => $url,
 			]))->out(false);
-		} elseif (!preg_replace('!^.*://!', '', $url)) {
+		} elseif (!preg_match('!^.*://!', $url)) {
 			$url = 'http://'.$url;
 		}
 
