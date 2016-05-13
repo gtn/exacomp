@@ -6101,7 +6101,7 @@ function block_exacomp_save_additional_grading_for_descriptor($courseid, $descri
 
 	if($additionalinfo > 6.0)
 		$additionalinfo = 6.0;
-	elseif($additionalinfo < 1.0)
+	elseif($additionalinfo < 1.0 && $additionalinfo != "")
 		$additionalinfo = 1.0;
 	
 	$value = block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
@@ -6658,6 +6658,9 @@ namespace block_exacomp {
 		 * @param double $additionalinfo
 		 */
 		static function get_additionalinfo_value_mapping($additionalinfo){
+			if($additionalinfo == "")
+				return -1;
+					
 			$mapping = array(6.0, 4.8, 3.5, 2.2);
 			
 			foreach($mapping as $k => $v) {

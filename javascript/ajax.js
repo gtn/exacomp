@@ -139,21 +139,18 @@
 		}
 		else
 			competencies[compid + "-" + userid]['niveauid'] = niveauid;
-		
-		console.log(competencies[compid + "-" + userid]);
 	});
 
 	$(document).on('change', 'input[name^=add-grading\-]', function(event) {
 		var compid = this.getAttribute('exa-compid');
 		var userid = this.getAttribute('exa-userid');	
 		var value = $(this).val();
-		
 		// check for valid grading input range
 		if (value > 6.0) {
 			value = 6.0;
 			$(this).val(value);
 		}
-		else if(value < 1.0) {
+		else if(value < 1.0 && value != "") {
 			value = 1.0;
 			$(this).val(value);
 		}
@@ -249,8 +246,6 @@
 		}
 		else
 			topics[name]['niveauid'] = niveauid;
-		
-		console.log(topics[name]);
 	});
 	// # SUBJECTS
 	var subjects = {}
@@ -280,8 +275,6 @@
 					niveauid : niveauid
 				};
 		}
-		
-		console.log(subjects[this.name]);
 	});
 	$(document).on('change', 'select[name^=datasubjects\-]', function() {
 		var compid = this.getAttribute('exa-compid');
@@ -324,8 +317,6 @@
 		}
 		else
 			subjects[name]['niveauid'] = niveauid;
-		
-		console.log(subjects[name]);
 	});
 	
 	//#CROSSSUBJECTS
@@ -355,8 +346,6 @@
 		}
 		else
 			crosssubs[name]['niveauid'] = niveauid;
-		
-		console.log(crosssubs[name]);
 	});
 	$(document).on('click', 'input[name^=datacrosssubs\-]', function() {
 		var values = $(this).attr("name").split("-");
@@ -452,8 +441,6 @@
 		}
 		else
 			examples[name]['niveauid'] = niveauid;
-		
-		console.log(examples[name]);
 	});
 	$(document).on('keydown', ':text[exa-type="new-descriptor"]', function(event) {
 		if (event.keyCode == 13) {
@@ -674,6 +661,7 @@
 				$('input[name=datadescriptors-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", true );
 				$('select[name=datadescriptors-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", true );
 				$('input[name=add-grading-'+studentid+'-'+descrid+']').prop("disabled", true);
+				$('select[name=niveau_descriptor-'+descrid+'-'+studentid+']').prop("disabled", true);
 			}
 			
 			var img = $("img", this);
@@ -702,7 +690,8 @@
 
 			$('input[name=add-grading-'+studentid+'-'+descrid+']').prop("disabled", false);
 			$('select[name=datadescriptors-'+descrid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
-			
+			$('select[name=niveau_descriptor-'+descrid+'-'+studentid+']').prop("disabled", false);
+
 			var img = $("img", this);
 			img.attr('src',$(this).attr('showurl'));
 			img.attr('alt', M.util.get_string('hide','moodle'));
