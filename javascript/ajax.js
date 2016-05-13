@@ -52,26 +52,32 @@
 		var tr = $(this).closest('tr');
 		var hide = $(tr).find('input[name~="hide-descriptor"]');
 
+		var compid = this.getAttribute('exa-compid');
+		var userid = this.getAttribute('exa-userid');	
+		var niveauid = $('select[name=niveau_descriptor-'+compid+'-'+userid).val();
+
 		if ($(this).prop("checked")) {
-			if (competencies[this.name]) {
-				competencies[this.name].value = $(this).val();
+			if (competencies[compid + "-" + userid]) {
+				competencies[compid + "-" + userid].value = $(this).val();
 			} else {
-				competencies[this.name] = {
-					userid : this.getAttribute('exa-userid'),
-					compid : this.getAttribute('exa-compid'),
+				competencies[compid + "-" + userid] = {
+					userid : userid,
+					compid : compid,
 					value : $(this).val(),
+					niveauid : niveauid
 				};
 			}
 			//check comp->hide descriptor not possible
 			hide.addClass("hidden");
 		} else {
-			if (competencies[this.name]) {
-				competencies[this.name].value = -1;
+			if (competencies[compid + "-" + userid]) {
+				competencies[compid + "-" + userid].value = -1;
 			} else {
-				competencies[this.name] = {
-					userid : this.getAttribute('exa-userid'),
-					compid : this.getAttribute('exa-compid'),
-					value : 0
+				competencies[compid + "-" + userid] = {
+					userid : userid,
+					compid : compid,
+					value : 0,
+					niveauid : niveauid
 				};
 			}
 			//uncheck comp -> hide possible again
@@ -116,7 +122,13 @@
 		var userid = this.getAttribute('exa-userid');		
 		var niveauid = $(this).val();
 		var value = $('select[name=datadescriptors-'+compid+'-'+userid+'-teacher').val();
-
+		// in case of checkboxes instead of selects:
+		if(value === undefined)
+			if ($('input[name=datadescriptors-'+compid+'-'+userid+'-teacher').prop("checked"))
+				value = $('input[name=datadescriptors-'+compid+'-'+userid+'-teacher').val();
+			else
+				value = -1;
+			
 		if(!competencies[compid + "-" + userid]) {
 			competencies[compid + "-" + userid] = {
 					userid : userid,
@@ -127,6 +139,8 @@
 		}
 		else
 			competencies[compid + "-" + userid]['niveauid'] = niveauid;
+		
+		console.log(competencies[compid + "-" + userid]);
 	});
 
 	$(document).on('change', 'input[name^=add-grading\-]', function(event) {
@@ -168,7 +182,11 @@
 	var topics = {};
 	$(document).on('click', 'input[name^=datatopics\-]', function() {
 		var id = this.getAttribute('exa-compid')+"-"+this.getAttribute('exa-userid');
-
+		
+		var compid = this.getAttribute('exa-compid');
+		var userid = this.getAttribute('exa-userid');	
+		var niveauid = $('select[name=niveau_topic-'+compid+'-'+userid+']').val();
+		
 		if ($(this).prop("checked")) {
 			if (topics[this.name]) {
 				topics[this.name].value = $(this).val();
@@ -177,22 +195,24 @@
 					userid : this.getAttribute('exa-userid'),
 					compid : this.getAttribute('exa-compid'),
 					value : $(this).val(),
+					niveauid : niveauid
 				};
 		} else {
 			if (topics[this.name])
-				topics[values[1]].value = -1;
+				topics[this.name].value = -1;
 			else
 				topics[this.name] = {
 					userid : this.getAttribute('exa-userid'),
 					compid : this.getAttribute('exa-compid'),
-					value : 0
+					value : 0,
+					niveauid : niveauid
 				};
 		}
 	});
 	$(document).on('change', 'select[name^=datatopics\-]', function() {
 		var compid = this.getAttribute('exa-compid');
 		var userid = this.getAttribute('exa-userid');	
-		var niveauid = $('select[name=niveau_topic-'+compid+'-'+userid).val();
+		var niveauid = $('select[name=niveau_topic-'+compid+'-'+userid+']').val();
 		
 		if(!topics[this.name]) {
 			topics[this.name] = {
@@ -203,8 +223,6 @@
 			};
 		} else
 			topics[this.name]['value'] = $(this).val();
-		
-		
 	});
 	
 	$(document).on('change', 'select[name^=niveau_topic\-]', function(event) {
@@ -213,7 +231,14 @@
 		var niveauid = $(this).val();
 		var name = 'datatopics-'+compid+'-'+userid+'-teacher';
 		var value = $('select[name='+name+']').val();
-
+		
+		// in case of checkboxes instead of selects:
+		if(value === undefined)
+			if ($('input[name='+name+']').prop("checked"))
+				value = $('input[name='+name+']').val();
+			else
+				value = -1;
+		
 		if(!topics[name]) {
 			topics[name] = {
 					userid : userid,
@@ -229,6 +254,35 @@
 	});
 	// # SUBJECTS
 	var subjects = {}
+	$(document).on('click', 'input[name^=datasubjects\-]', function() {
+		var compid = this.getAttribute('exa-compid');
+		var userid = this.getAttribute('exa-userid');	
+		var niveauid = $('select[name=niveau_subject-'+compid+'-'+userid+']').val();
+		
+		if ($(this).prop("checked")) {
+			if (subjects[this.name]) {
+				subjects[this.name].value = $(this).val();
+			} else
+				subjects[this.name] = {
+					userid : this.getAttribute('exa-userid'),
+					compid : this.getAttribute('exa-compid'),
+					value : $(this).val(),
+					niveauid : niveauid
+				};
+		} else {
+			if (subjects[this.name])
+				subjects[this.name].value = -1;
+			else
+				subjects[this.name] = {
+					userid : this.getAttribute('exa-userid'),
+					compid : this.getAttribute('exa-compid'),
+					value : 0,
+					niveauid : niveauid
+				};
+		}
+		
+		console.log(subjects[this.name]);
+	});
 	$(document).on('change', 'select[name^=datasubjects\-]', function() {
 		var compid = this.getAttribute('exa-compid');
 		var userid = this.getAttribute('exa-userid');	
@@ -253,6 +307,13 @@
 		var name = 'datasubjects-'+compid+'-'+userid+'-teacher';
 		var value = $('select[name='+name+']').val();
 		
+		// in case of checkboxes instead of selects:
+		if(value === undefined)
+			if ($('input[name='+name+']').prop("checked"))
+				value = $('input[name='+name+']').val();
+			else
+				value = -1;
+		
 		if(!subjects[name]) {
 			subjects[name] = {
 					userid : userid,
@@ -269,28 +330,39 @@
 	
 	//#CROSSSUBJECTS
 	var crosssubs = {}
+	
 	$(document).on('change', 'select[name^=niveau_crosssub\-]', function(event) {
 		var compid = this.getAttribute('exa-compid');
 		var userid = this.getAttribute('exa-userid');		
 		var niveauid = $(this).val();
-
-		if(!crosssubs[compid+"-"+userid]) {
-			crosssubs[compid+"-"+userid] = {
+		var name = 'datacrosssubs-'+compid+'-'+userid+'-teacher';
+		var value = $('select[name='+name+']').val();
+		
+		// in case of checkboxes instead of selects:
+		if(value === undefined)
+			if ($('input[name='+name+']').prop("checked"))
+				value = $('input[name='+name+']').val();
+			else
+				value = -1;
+		
+		if(!crosssubs[name]) {
+			crosssubs[name] = {
 					userid : userid,
 					compid : compid,
-					niveauid : niveauid
+					niveauid : niveauid,
+					value : value
 				};
 		}
 		else
-			crosssubs[compid+"-"+userid]['niveauid'] = niveauid;
+			crosssubs[name]['niveauid'] = niveauid;
 		
-		console.log(crosssubs[compid+"-"+userid]);
+		console.log(crosssubs[name]);
 	});
-	// # CROSSSUBJECTS
-	var crosssubs = {};
 	$(document).on('click', 'input[name^=datacrosssubs\-]', function() {
 		var values = $(this).attr("name").split("-");
-
+		var compid = this.getAttribute('exa-compid');
+		var userid = this.getAttribute('exa-userid');	
+		var niveauid = $('select[name=niveau_crosssub-'+compid+'-'+userid+']').val();
 		if ($(this).prop("checked")) {
 			if (crosssubs[this.name]) {
 				crosssubs[this.name].value = $(this).val();
@@ -298,7 +370,8 @@
 				crosssubs[this.name] = {
 					userid : values[2],
 					compid : values[1],
-					value : $(this).val()
+					value : $(this).val(),
+					niveauid : niveauid
 				};
 		} else {
 			if (crosssubs[this.name])
@@ -307,16 +380,21 @@
 				crosssubs[this.name] = {
 					userid : values[2],
 					compid : values[1],
-					value : -1
+					value : -1,
+					niveauid : niveauid
 				};
 		}
 	});
 	$(document).on('change', 'select[name^=datacrosssubs\-]', function() {
+		var compid = this.getAttribute('exa-compid');
+		var userid = this.getAttribute('exa-userid');	
+		var niveauid = $('select[name=niveau_crosssub-'+compid+'-'+userid+']').val();
 		var values = $(this).attr("name").split("-");
 		crosssubs[this.name] = {
 			userid : values[2],
 			compid : values[1],
-			value : $(this).val()
+			value : $(this).val(),
+			niveauid : niveauid
 		};
 	});
 	
