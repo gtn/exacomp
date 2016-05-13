@@ -283,6 +283,8 @@ class block_exacomp_external extends external_api {
 			$example->externalurl = $example->task;
 		}
 
+		$example->externalurl = static::format_url($example->externalurl);
+
 		// TODO: task field still needed in exacomp?
 		if (!$example->task) {
 			$example->task = $example->taskfileurl;
@@ -789,12 +791,12 @@ class block_exacomp_external extends external_api {
 		$item->status = isset ( $itemexample->status ) ? $itemexample->status : 0;
 
 		if ($item->type == 'file') {
-			// TODO: moved code into exaport\api
+			// TODO: move code into exaport\api
 			require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
 
 			$item->userid = $userid;
 			if ($file = block_exaport_get_item_file ( $item )) {
-				$item->file = ("{$CFG->wwwroot}/blocks/exaport/portfoliofile.php?access=portfolio/id/" . $userid . "&itemid=" . $itemid);
+				$item->file = ("{$CFG->wwwroot}/blocks/exaport/portfoliofile.php?access=portfolio/id/" . $userid . "&itemid=" . $itemid."&wstoken=".static::wstoken());
 				$item->isimage = $file->is_valid_image ();
 				$item->filename = $file->get_filename ();
 			}
@@ -5465,6 +5467,31 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 			$file->get_itemid(), $file->get_filepath(), $file->get_filename());
 
 		$url->param('token', static::wstoken());
+
+		return $url;
+	}
+
+	private static function format_url($url) {
+		$url_no_protocol = strtolower(preg_replace('!^.*://!', '', $url));
+		$www_root_no_protocol = strtolower(preg_replace('!^.*://!', '', g::$CFG->wwwroot));
+
+		if (strpos($url_no_protocol, $www_root_no_protocol) === 0) {
+			// is local moodle url
+
+			// add http:// or https:// (if required)
+			// $url = g::$CFG->wwwroot.substr($url_no_protocol, strlen($www_root_no_protocol));
+
+			// make local url = relative to moodle
+			$url = substr($url_no_protocol, strlen($www_root_no_protocol));
+
+			// link to url.php, which loggs the user in first
+			$url = (new moodle_url('/blocks/exacomp/login.php', [
+				'wstoken' => static::wstoken(),
+				'url' => $url,
+			]))->out(false);
+		} elseif (!preg_replace('!^.*://!', '', $url)) {
+			$url = 'http://'.$url;
+}
 
 		return $url;
 	}

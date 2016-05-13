@@ -1775,7 +1775,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								if(count($data->eportfolioitems[$student->id]->competencies[$descriptor->id]->items) == 1)
 									$link = new moodle_url('/blocks/exaport/shared_view.php', array('courseid'=>$COURSE->id, 'access'=>$first_param.'/'.$item->owner.'-'.$second_param));
 								else
-									$link = new moodle_url('/blocks/exaport/shared_views.php',array('courseid'=>$COURSE->id));
+									$link = new moodle_url('/blocks/exaport/shared_views.php',array('courseid'=>$COURSE->id, 'userid' => $student->id, 'sort'=>'timemodified'));
 
 								if($shared)
 									$img = html_writer::link($link, html_writer::empty_tag("img", array("src" => "pix/folder_shared.png","alt" => '')));
