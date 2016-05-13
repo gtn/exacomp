@@ -4859,18 +4859,19 @@ class block_exacomp_external extends external_api {
 	public static function dakora_get_competence_grid_for_profile_parameters() {
 		return new external_function_parameters ( array (
 				'courseid' => new external_value (PARAM_INT, 'id of course'),
-				'userid' => new external_value (PARAM_INT, 'id of user')
+				'userid' => new external_value (PARAM_INT, 'id of user'),
+				'subjectid' => new external_value (PARAM_INT, 'id of subject')
 		) );
 	}
 
 	/**
 	 * Create a new blocking event
 	 */
-	public static function dakora_get_competence_grid_for_profile($courseid, $userid) {
+	public static function dakora_get_competence_grid_for_profile($courseid, $userid, $subjectid) {
 		global $USER;
 
 		static::validate_parameters(static::dakora_get_competence_grid_for_profile_parameters(), array('courseid'=>$courseid,
-				'userid'=>$userid));
+				'userid'=>$userid, 'subjectid'=>$subjectid));
 
 		if($userid == 0)
 			$userid = $USER->id;
@@ -4878,17 +4879,15 @@ class block_exacomp_external extends external_api {
 		static::require_can_access_course_user($courseid, $userid);
 		$subjects = block_exacomp_get_subjects_by_course($courseid);
 
-		$content = array();
+		//$content = array();
 
-		foreach($subjects as $subject) {
-			$subjectinfo = block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subject->id);
-			$subjectinfo->subjectid = $subject->id;
-			$subjectinfo->subjecttitle = $subject->title;
+		//foreach($subjects as $subject) {
+			$subjectinfo = block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid);
+			return $subjectinfo;
+			//$content[] = $subjectinfo;
+		//}
 
-			$content[] = $subjectinfo;
-		}
-
-		return $content;
+		//return $content;
 	}
 
 	/**
@@ -4897,16 +4896,14 @@ class block_exacomp_external extends external_api {
 	 * @return external_single_structure
 	 */
 	public static function dakora_get_competence_grid_for_profile_returns() {
-		return new external_multiple_structure ( new external_single_structure ( array (
-			'subjectid' => new external_value ( PARAM_INT, 'subjectid' ),
-			'subjecttitle' => new external_value ( PARAM_TEXT, 'subjecttitle' ),
+		return new external_single_structure ( array (
 			'rows' => new external_multiple_structure ( new external_single_structure ( array (
 					'columns' => new external_multiple_structure ( new external_single_structure( array (
 						'text' => new external_value ( PARAM_TEXT, 'cell text'),
 						'span' => new external_value ( PARAM_INT, 'colspan' )
 					) ) )
 			) ) )
-		) ) );
+		) ) ;
 	}
 
 	/**

@@ -4666,7 +4666,7 @@ function block_exacomp_check_child_descriptors($descriptor, $example_descriptors
 }
 function block_exacomp_calculate_spanning_niveau_colspan($niveaus, $spanningNiveaus) {
 
-	$colspan = count($niveaus);
+	$colspan = count($niveaus)-1;
 
 	foreach($niveaus as $id => $niveau) {
 		if(array_key_exists($id, $spanningNiveaus)) {
@@ -6476,7 +6476,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 		$content_row->columns = array();
 		
 		$content_row->columns[0] = new stdClass();
-		$content_row->columns[0]->text = '';
+		$content_row->columns[0]->text = get_string('total', 'block_exacomp');
 		$content_row->columns[0]->span = count($table_header);
 	
 		$content_row->columns[1] = new stdClass();
@@ -6485,7 +6485,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 		
 		$table->rows[] = $content_row;
 	}
-	print_r($table);
+	
 	return $table;
 }
 }

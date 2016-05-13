@@ -3753,6 +3753,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			
 			if(block_exacomp_is_subjectgrading_enabled()){
 				$subject_empty_cell = new html_table_cell();
+				$subject_empty_cell->text = get_string('total', 'block_exacomp');
 				$subject_empty_cell->colspan = count($table_header);
 				$subject_empty_cell->attributes['class'] = 'header';
 				$row->cells[] = $subject_empty_cell;
