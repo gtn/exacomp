@@ -385,10 +385,10 @@
 						element.find(".fc-content").append('<div>S: '+this.student_evaluation_title+'</div>');
 					}
 					var teacher_evaluation = [];
+					if (this.niveau != null) teacher_evaluation.push("Niveau: " + this.niveau);
 					if (this.teacher_evaluation_title) teacher_evaluation.push(this.teacher_evaluation_title);
-					if (this.additionalinfo!==null) teacher_evaluation.push(this.additionalinfo+' %');
 					if (teacher_evaluation.length) {
-						element.find(".fc-content").append('<div>L: '+teacher_evaluation.join(' / ')+'</div>');
+						element.find(".fc-content").append('<div>L: '+teacher_evaluation.join(' ')+'</div>');
 					}
 
 					element.find(".fc-content").append(

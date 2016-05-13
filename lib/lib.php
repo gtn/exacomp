@@ -5579,11 +5579,12 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
 	$sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
 				eval.student_evaluation, eval.teacher_evaluation, eval.evalniveauid, s.courseid, s.id as scheduleid,
-				e.externalurl, e.externaltask, e.description
+				e.externalurl, e.externaltask, e.description, evalniveau.title as niveau
 			FROM {block_exacompschedule} s
 			JOIN {block_exacompexamples} e ON e.id = s.exampleid
 			JOIN {".\block_exacomp\DB_EXAMPVISIBILITY."} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.visible = 1 AND evis.courseid=?
 			LEFT JOIN {block_exacompexameval} eval ON eval.exampleid = s.exampleid AND eval.studentid = s.studentid 
+			LEFT JOIN {block_exacompeval_niveau} evalniveau ON evalniveau.id = eval.evalniveauid
 			WHERE s.studentid = ? AND s.courseid = ? AND (
 				-- innerhalb end und start
 				(s.start > ? AND s.end < ?)
@@ -5618,6 +5619,8 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true){
 		$example_array['start'] = $example->start;
 		$example_array['end'] = $example->end;
 		$example_array['exampleid'] = $example->exampleid;
+		$example_array['niveau'] = $example->niveau;
+		
 		if($mind_eval){
 			$example_array['student_evaluation'] = $example->student_evaluation;
 			$example_array['teacher_evaluation'] = $example->teacher_evaluation;
@@ -6596,7 +6599,7 @@ namespace block_exacomp {
 		 * @param id $id
 		 */
 		static function get_value_title_by_id($id) {
-			if(!$id) return -1;
+			if(!$id) return ' ';
 			return static::get_value_titles()[$id];
 		}
 		
@@ -6631,7 +6634,7 @@ namespace block_exacomp {
 		 * @param id $id
 		 */
 		static function get_student_value_title_by_id($id) {
-			if(!$id) return -1;
+			if(!$id) return ' ';
 			return static::get_student_value_titles()[$id];
 		}
 		
