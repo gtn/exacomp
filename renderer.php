@@ -3806,11 +3806,11 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 						$span_niveau = html_writer::tag('span', "Niveau: ".
 								$img_niveau, array('class'=>"compprof_barchart_niveau"));
 						
-						$img_teacher = '';//block_exacomp_get_html_for_teacher_eval(
+						$img_teacher = (block_exacomp_additional_grading())?'':block_exacomp_get_html_for_teacher_eval(((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:-1), $scheme);//block_exacomp_get_html_for_teacher_eval(
 								//((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:-1), $scheme);
 						
 						$span_teacher = html_writer::tag('span', "L: ".
-							$img_teacher . (isset($student->competencies->teacher_additional_grading[$descriptor->id])? html_writer::tag('b', $student->competencies->teacher_additional_grading[$descriptor->id]):""), 
+							$img_teacher . ((block_exacomp_additional_grading())?(isset($student->competencies->teacher_additional_grading[$descriptor->id])? html_writer::tag('b', $student->competencies->teacher_additional_grading[$descriptor->id]):""):''), 
 							array('class'=>"compprof_barchart_teacher"));
 										   
 						$img_student = block_exacomp_get_html_for_student_eval(
@@ -3828,15 +3828,19 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 								html_writer::div('', 'compprof_barchart', array('id'=>'svgdesc'.$barchartid_i))
 								.$span_in_work:'');
 						
+						$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, ((block_exacomp_is_niveautitle_for_profile_enabled() && $niveau)?$niveau->title:$descriptor->title));
+						
 						$div_barchart = html_writer::div($bar_chart, 'compprof_example');
 						$desc_content .= html_writer::div($content_div.
-								((block_exacomp_use_eval_niveau())?$div_niveau:'').$div_teacher_student.$div_barchart, 
+								((block_exacomp_use_eval_niveau())?$div_niveau:'').$div_teacher_student.(($return->total>0)?$div_barchart:''), 
 								'compprof_descriptor');		
 						
-						$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, ((block_exacomp_is_niveautitle_for_profile_enabled() && $niveau)?$niveau->title:$descriptor->title));
 						$desc_content .= html_writer::div(html_writer::tag('p', html_writer::empty_tag('span', array('id'=>'value'))), 'tooltip hidden', array('id'=>'tooltip'.$barchartid_i));
 						
-						$desc_content .= $this->example_stacked_bar($return->data, $barchartid_i);
+						if($return->total>0){
+							$stacked_bar = $this->example_stacked_bar($return->data, $barchartid_i);
+							$desc_content .= $stacked_bar;
+						}
 						
 						$niveaus[] = ((block_exacomp_is_niveautitle_for_profile_enabled() && $niveau)?$niveau->title:$descriptor->title);
 						$student_eval[] = (isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:0;
@@ -3845,7 +3849,7 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 					}
 				}
 				$div_content = "";
-				if(count($niveaus)>2 && count($niveaus)<9){
+				/*if(count($niveaus)>2 && count($niveaus)<9){
 					$radar_graph = $this->radar_graph_topic($niveaus, $teacher_eval, $student_eval, $scheme,  true);
 					$div_content = html_writer::div($radar_graph, 'competence_profile_radargraph', array('style'=>'width:30%'));
 					$radar_graph = $this->radar_graph_topic($niveaus, $teacher_eval, $student_eval, $scheme, false);
@@ -3853,7 +3857,7 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 						
 					$div_content = html_writer::div($div_content, 'competence_profile_graphbox clearfix');
 					$div_content .= $this->radar_graph_legend();
-				}
+				}*/
 				
 				$div_content .= $desc_content;
 				$div_content .= $this->lm_graph_legend($max_scheme);

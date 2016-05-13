@@ -28,7 +28,7 @@
 #block_exacomp .tooltip {
 	position: absolute;
 	text-align: center;
-	width: 40px;
+	width: auto;
 	height: auto;
 	padding: 10px;
 	background-color: black;

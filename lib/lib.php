@@ -3466,7 +3466,6 @@ function block_exacomp_get_competencies_for_pie_chart($courseid,$user, $scheme, 
 	$cm_mm = block_exacomp_get_course_module_association($courseid);
 
 	$descriptors = block_exacomp_get_descriptors($courseid);
-
 	$evaluation = block_exacomp_get_user_information_by_course($user, $courseid);
 
 	$teachercomp = 0;
@@ -3477,9 +3476,9 @@ function block_exacomp_get_competencies_for_pie_chart($courseid,$user, $scheme, 
 		if(block_exacomp_is_descriptor_visible($courseid, $descriptor, $user->id)){
 			$teacher_eval = false;
 			$student_eval = false;
-			if(!$coursesettings->uses_activities || ($coursesettings->uses_activities && isset($cm_mm->competencies[$descriptor->id]))){
+			//if(!$coursesettings->uses_activities || ($coursesettings->uses_activities && isset($cm_mm->competencies[$descriptor->id]))){
 				if(isset($evaluation->competencies->teacher) && isset($evaluation->competencies->teacher[$descriptor->id])){
-					if($scheme == 1 || $evaluation->competencies->teacher[$descriptor->id] >= ceil($scheme/2)){
+					if($scheme == 1 || $evaluation->competencies->teacher[$descriptor->id] >= ((block_exacomp_additional_grading())?1:ceil($scheme/2))){
 						if($enddate>0){
 							//compare only enddate->kumuliert
 							if($enddate>=$evaluation->competencies->timestamp_teacher[$descriptor->id]){
@@ -3493,7 +3492,7 @@ function block_exacomp_get_competencies_for_pie_chart($courseid,$user, $scheme, 
 					}
 				}
 				if((!$teacher_eval||$exclude_student) && isset($evaluation->competencies->student) && isset($evaluation->competencies->student[$descriptor->id])){
-					if($scheme == 1 || $evaluation->competencies->student[$descriptor->id] >= ceil($scheme/2)){
+					if($scheme == 1 || $evaluation->competencies->student[$descriptor->id] >= ((block_exacomp_additional_grading())?1:ceil($scheme/2))){
 						if($enddate>0){
 							if($enddate >= $evaluation->competencies->timestamp_student[$descriptor->id]){
 								$studentcomp ++;
@@ -3507,7 +3506,7 @@ function block_exacomp_get_competencies_for_pie_chart($courseid,$user, $scheme, 
 				}
 				if(!$teacher_eval && !$student_eval)
 					$pendingcomp ++;
-			}
+			//}
 		}
 	}
 
@@ -5439,12 +5438,14 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 				WHERE courseid = ? AND studentid = ? AND exampleid IN (".$example_where_string.")";
 			$examp_evals = $DB->get_records_sql($sql, array($courseid, $student->id));
 
+			$count_evaluations = 0;
 			foreach($examp_evals as $examp_eval){
 				if(isset($examp_eval->teacher_evaluation) && isset($gradings[$examp_eval->teacher_evaluation])) {
 					$gradings[$examp_eval->teacher_evaluation]++;
+					$count_evaluations++;
 				}
 			}
-			$notEvaluated = $total - count($examp_evals);
+			$notEvaluated = $total - $count_evaluations;
 		}
 
 	}
@@ -5889,19 +5890,10 @@ function block_exacomp_get_studentid($isTeacher) {
 }
 
 function block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, $niveautitle){
-	$global_scheme = get_config('exacomp', 'adminscheme');
-
-	if($global_scheme == 1){
-		$global_scheme_values = array('nE', 'G', 'M', 'E');
-	}else if($global_scheme == 2){
-		$global_scheme_values = array('nE', 'A', 'B', 'C');
-	}else if($global_scheme == 3){
-		$global_scheme_values = array('nE', '*', '**', '***');
-	}else{
-		$global_scheme_values = array('0', '1', '2', '3');
-	}
+	$global_scheme_values = \block_exacomp\global_config::get_value_titles(block_exacomp_get_grading_scheme($courseid));
+	
 	list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork) = block_exacomp_get_example_statistic_for_descriptor($courseid, $descriptor->id, $student->id);
-
+	
 	$string = "[";
 	$object = array();
 	$object_data = new stdClass();
@@ -5920,10 +5912,10 @@ function block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $st
 		$object_data->data = array();
 		$object_data->data["niveau"] = $niveautitle;
 		$object_data->data["count"] = $grading;
-		$object_data->name = (($global_scheme==0)?$i:$global_scheme_values[$i]);
+		$object_data->name = $global_scheme_values[$i];
 		$object[] = $object_data;
 
-		$string .= "{data:[{niveau:'".$niveautitle."',count:".$grading."}],name:' ".(($global_scheme==0)?$i:$global_scheme_values[$i])."'},";
+		$string .= "{data:[{niveau:'".$niveautitle."',count:".$grading."}],name:' ".$global_scheme_values[$i]."'},";
 		$i++;
 	}
 
@@ -6266,24 +6258,18 @@ function block_exacomp_get_html_for_niveau_eval($evaluation, $scheme){
 	$evaluation_niveau_type = block_exacomp_evaluation_niveau_type();
 	
 	//predefined pictures 
-	if(block_exacomp_additional_grading()){
-		$grey_nE_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_0_'.$evaluation_niveau_type.'.png';
 		$grey_1_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_1_'.$evaluation_niveau_type.'.png';
 		$grey_2_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_2_'.$evaluation_niveau_type.'.png';
 		$grey_3_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_3_'.$evaluation_niveau_type.'.png';
-		$nE_src = '/blocks/exacomp/pix/compprof_rating_teacher_0_'.$evaluation_niveau_type.'.png';
 		$one_src = '/blocks/exacomp/pix/compprof_rating_teacher_1_'.$evaluation_niveau_type.'.png';
 		$two_src = '/blocks/exacomp/pix/compprof_rating_teacher_2_'.$evaluation_niveau_type.'.png';
 		$three_src = '/blocks/exacomp/pix/compprof_rating_teacher_3_'.$evaluation_niveau_type.'.png';
 		
-		$image0 = $grey_nE_src;
 		$image1 = $grey_1_src;
 		$image2 = $grey_2_src;
 		$image3 = $grey_3_src;
 		if($evaluation > -1){
-			if($evaluation == 0){ //not reached
-				$image0 = $nE_src;
-			}if($evaluation == 1){
+			if($evaluation == 1){
 				$image1 = $one_src;
 			}if($evaluation == 2){
 				$image2 = $two_src;
@@ -6292,16 +6278,9 @@ function block_exacomp_get_html_for_niveau_eval($evaluation, $scheme){
 			}
 		}
 		
-		return html_writer::empty_tag('img', array('src'=>new moodle_url($image0), 'width'=>'25', 'height'=>'25')).
-				html_writer::empty_tag('img', array('src'=>new moodle_url($image1), 'width'=>'25', 'height'=>'25')).
+		return html_writer::empty_tag('img', array('src'=>new moodle_url($image1), 'width'=>'25', 'height'=>'25')).
 				html_writer::empty_tag('img', array('src'=>new moodle_url($image2), 'width'=>'25', 'height'=>'25')).
 				html_writer::empty_tag('img', array('src'=>new moodle_url($image3), 'width'=>'25', 'height'=>'25'));
-	}else{	//only numeric values available print number
-		if($evaluation > -1)	//evaluated
-			return html_writer::span($evaluation."/".$scheme);
-		else 					//not evaluated
-			return html_writer::span(get_string("oB","block_exacomp"));
-	}
 }
 
 /**
@@ -6309,6 +6288,29 @@ function block_exacomp_get_html_for_niveau_eval($evaluation, $scheme){
 * allways use starts so far, according to scheme
 **/
 function block_exacomp_get_html_for_student_eval($evaluation, $scheme){
+	
+	if(block_exacomp_additional_grading()){
+		$image1 = '/blocks/exacomp/pix/compprof_rating_student_grey_1.png';
+		$image2 = '/blocks/exacomp/pix/compprof_rating_student_grey_2.png';
+		$image3 = '/blocks/exacomp/pix/compprof_rating_student_grey_3.png';
+		$one_src = '/blocks/exacomp/pix/compprof_rating_student_1.png';
+		$two_src = '/blocks/exacomp/pix/compprof_rating_student_2.png';
+		$three_src = '/blocks/exacomp/pix/compprof_rating_student_3.png';
+		
+		if($evaluation > -1){
+			if($evaluation == 1){
+				$image1 = $one_src;
+			}if($evaluation == 2){
+				$image2 = $two_src;
+			}if($evaluation == 3){
+				$image3 = $three_src;
+			}
+		}
+		
+		return html_writer::empty_tag('img', array('src'=>new moodle_url($image1), 'width'=>'25', 'height'=>'25')).
+				html_writer::empty_tag('img', array('src'=>new moodle_url($image2), 'width'=>'25', 'height'=>'25')).
+				html_writer::empty_tag('img', array('src'=>new moodle_url($image3), 'width'=>'25', 'height'=>'25'));
+	}
 	
 	$images = array();
 	for($i=0;$i<$scheme;$i++){
@@ -6326,6 +6328,35 @@ function block_exacomp_get_html_for_student_eval($evaluation, $scheme){
 	
 	return $return;
 	
+}
+
+/**
+ * get evaluation images for competence profile for students
+ * allways use starts so far, according to scheme
+ **/
+function block_exacomp_get_html_for_teacher_eval($evaluation, $scheme){
+	$images = array();
+	
+	if($evaluation == 0)
+		$images[] = '/blocks/exacomp/pix/compprof_rating_teacher_0_1.png';
+	else 
+		$images[] = '/blocks/exacomp/pix/compprof_rating_teacher_grey_0_1.png';
+	
+	for($i=1;$i<=$scheme;$i++){
+		if($evaluation > -1 && $i < $evaluation){
+			$images[] = '/blocks/exacomp/pix/compprof_rating_teacher.png';
+		}else{
+			$images[] = '/blocks/exacomp/pix/compprof_rating_teacher_grey.png';
+		}
+	}
+
+	$return = "";
+	foreach($images as $image){
+		$return .= html_writer::empty_tag('img', array('src'=>new moodle_url($image), 'width'=>'25', 'height'=>'25'));
+	}
+
+	return $return;
+
 }
 
 function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $subjectid){
