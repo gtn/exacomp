@@ -23,6 +23,9 @@ $courseid = required_param('courseid', PARAM_INT);
 $subjectid = optional_param('subjectid', 0, PARAM_INT);
 $report = optional_param("report", BLOCK_EXACOMP_REPORT1, PARAM_INT);
 
+// TODO: add evaluation niveaus in report2, report3, then enable them again on this page
+$report = BLOCK_EXACOMP_REPORT1;
+
 require_login($courseid);
 
 // CHECK TEACHER
@@ -77,8 +80,8 @@ if($data) {
 		echo $output->studentselector(block_exacomp_get_students_by_course($courseid),$studentid, $output::STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN);
 	}
 	
-	if($course_settings->nostudents != 1)
-		echo $output->competence_grid_reports_dropdown();
+	//if($course_settings->nostudents != 1)
+	//	echo $output->competence_grid_reports_dropdown();
 
 	echo html_writer::start_div();
 	
