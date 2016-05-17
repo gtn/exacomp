@@ -4892,8 +4892,10 @@ class block_exacomp_external extends external_api {
 			'rows' => new external_multiple_structure ( new external_single_structure ( array (
 					'columns' => new external_multiple_structure ( new external_single_structure( array (
 						'text' => new external_value ( PARAM_TEXT, 'cell text', VALUE_DEFAULT, ""),
-						'evaluation' => new external_value (PARAM_TEXT, 'evaluation', VALUE_DEFAULT, ""),
-						'evalniveau' => new external_value (PARAM_TEXT, 'evaluation niveau', VALUE_DEFAULT, ''),
+						'evaluation' => new external_value (PARAM_FLOAT, 'evaluation', VALUE_DEFAULT, -1),
+						'evaluation_text' => new external_value (PARAM_TEXT, 'evaluation text', VALUE_DEFAULT, ""),
+						'evaluation_mapped'=> new external_value (PARAM_INT, 'mapped evaluation', VALUE_DEFAULT, -1),
+						'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id', VALUE_DEFAULT, 0),
 						'topicid' => new external_value (PARAM_INT, 'topic id', VALUE_DEFAULT, 0),
 						'span' => new external_value ( PARAM_INT, 'colspan' )
 					) ) )
