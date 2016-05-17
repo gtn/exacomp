@@ -95,6 +95,9 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 						$course_settings->filteredtaxonomies = json_encode($course_settings->filteredtaxonomies);
 						block_exacomp_save_coursesettings($course, $course_settings);
 					}
+					
+					//map subject, topic, crosssubject, descriptor grading to grade
+					block_exacomp_map_value_to_grading($course);
 				}
 			}
 			return '';

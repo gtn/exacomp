@@ -6522,6 +6522,29 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 	
 	return $table;
 }
+
+function block_exacomp_map_value_to_grading($course){
+	global $DB;
+	
+	$mapping =  \block_exacomp\global_config::get_values_additionalinfo_mapping();
+	
+	//TOPIC, SUBJECT, CROSSSUBJECT, DESCRIPTOR
+	$select = 'courseid = ? AND role = ?'; //is put into the where clause
+	$params = array($course, \block_exacomp\ROLE_TEACHER);
+	$results = $DB->get_records_select(\block_exacomp\DB_COMPETENCIES, $select, $params);
+	
+	foreach($results as $result){
+		if(!$result->additionalinfo && $result->value > -1){
+			if($result->comptype == \block_exacomp\TYPE_DESCRIPTOR)
+				$descriptor = $DB->get_record(\block_exacomp\DB_DESCRIPTORS, array('id'=>$result->compid));
+			
+			if($result->comptype != \block_exacomp\TYPE_DESCRIPTOR || $descriptor->parentid == 0){
+				$result->additionalinfo = $mapping[$result->value];
+				$DB->update_record(\block_exacomp\DB_COMPETENCIES, $result);
+			}
+		}
+	}
+}
 }
 
 namespace block_exacomp {
@@ -6673,6 +6696,28 @@ namespace block_exacomp {
 			}
 			
 			return $value;
+		}
+		
+		/**
+		 * Maps 0-3 values to gradings (1.0 - 6.0)
+		 *
+		 * @param int $value
+		 */
+		static function get_value_additionalinfo_mapping($value){
+			if(!$value || $value == "")
+				return -1;
+		
+			$mapping = array(6.0, 4.8, 3.5, 2.2);
+				
+			return $mapping[$value];
+		}
+		
+		/**
+		 * return range of gradings to value mapping
+		 * @param int $value
+		 */
+		static function get_values_additionalinfo_mapping(){
+			return array(6.0, 4.8, 3.5, 2.2);
 		}
 	}
 
