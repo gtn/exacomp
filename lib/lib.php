@@ -6515,12 +6515,13 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 			$content_row->columns[$current_idx] = new stdClass();
 			$content_row->columns[$current_idx]->evaluation = empty($element->eval)?-1:$element->eval;
 			$content_row->columns[$current_idx]->evalniveauid = $element->evalniveauid;
+			$content_row->columns[$current_idx]->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($element->eval);
 			
 			if(array_key_exists($niveau, $spanning_niveaus)){
 				$content_row->columns[$current_idx]->span = $spanning_colspan;
 			}else{
 				$content_row->columns[$current_idx]->span = 0;
-			}	
+			}	 
 			$current_idx++;
 		}
 		
