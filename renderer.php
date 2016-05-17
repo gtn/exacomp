@@ -3733,7 +3733,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				
 				foreach($rowcontent->niveaus as $niveau => $element){
 					$cell = new html_table_cell();
-					$cell->text = $element;
+					$cell->text = $element->evalniveau . $element->eval;
 					if(array_key_exists($niveau, $spanning_niveaus)){
 						$cell->colspan = $spanning_colspan;
 					}					
@@ -3743,7 +3743,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				
 				if(block_exacomp_is_topicgrading_enabled()){
 					$topic_eval_cell = new html_table_cell();
-					$topic_eval_cell->text = $rowcontent->topic_evaluation;
+					$topic_eval_cell->text = $rowcontent->topic_evalniveau . $rowcontent->topic_eval;
 					
 					$row->cells[] = $topic_eval_cell;
 				}
@@ -3759,7 +3759,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$row->cells[] = $subject_empty_cell;
 				
 				$subject_eval_cell = new html_table_cell();
-				$subject_eval_cell->text = $table_content->subject_evaluation;
+				$subject_eval_cell->text = $table_content->subject_evalniveau . $table_content->subject_eval;
 				$subject_eval_cell->attributes['class'] = 'header';
 				$row->cells[] = $subject_eval_cell;
 				

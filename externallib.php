@@ -4878,15 +4878,8 @@ class block_exacomp_external extends external_api {
 		static::require_can_access_course_user($courseid, $userid);
 		$subjects = block_exacomp_get_subjects_by_course($courseid);
 
-		//$content = array();
-
-		//foreach($subjects as $subject) {
-			$subjectinfo = block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid);
-			return $subjectinfo;
-			//$content[] = $subjectinfo;
-		//}
-
-		//return $content;
+		$subjectinfo = block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid);
+		return $subjectinfo;
 	}
 
 	/**
@@ -4898,7 +4891,10 @@ class block_exacomp_external extends external_api {
 		return new external_single_structure ( array (
 			'rows' => new external_multiple_structure ( new external_single_structure ( array (
 					'columns' => new external_multiple_structure ( new external_single_structure( array (
-						'text' => new external_value ( PARAM_TEXT, 'cell text'),
+						'text' => new external_value ( PARAM_TEXT, 'cell text', VALUE_DEFAULT, ""),
+						'evaluation' => new external_value (PARAM_TEXT, 'evaluation', VALUE_DEFAULT, ""),
+						'evalniveau' => new external_value (PARAM_TEXT, 'evaluation niveau', VALUE_DEFAULT, ''),
+						'topicid' => new external_value (PARAM_INT, 'topic id', VALUE_DEFAULT, 0),
 						'span' => new external_value ( PARAM_INT, 'colspan' )
 					) ) )
 			) ) )

@@ -6386,40 +6386,47 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 				
 				$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
 				if($niveau){
-					$table_content->content[$topic->id]->niveaus[$niveau->id] = ($evaluation)?
-						(((block_exacomp_use_eval_niveau())?
+					$table_content->content[$topic->id]->niveaus[$niveau->id] = new stdClass();
+					$table_content->content[$topic->id]->niveaus[$niveau->id]->evalniveau = ($evaluation)?
+						((block_exacomp_use_eval_niveau())?
 								(($evaluation->evalniveauid)?$evaluationniveau_items[$evaluation->evalniveauid].' ':'')
-						:'')
-						.((block_exacomp_additional_grading())?
+						:''):'';
+					
+					$table_content->content[$topic->id]->niveaus[$niveau->id]->eval = ($evaluation) ? (((block_exacomp_additional_grading())?
 								(($evaluation->additionalinfo)?$evaluation->additionalinfo:'')
-						:$scheme_items[$evaluation->value]))
-					:'';
+						:$scheme_items[$evaluation->value])):'';
+					
 					if($niveau->span == 1)
 						$table_content->content[$topic->id]->span = 1;
 				}
 			}
 			
-			$table_content->content[$topic->id]->topic_evaluation = 
+			$table_content->content[$topic->id]->topic_evalniveau = 
 						((block_exacomp_use_eval_niveau())?
 								((isset($user->topics->niveau[$topic->id]))
 										?$evaluationniveau_items[$user->topics->niveau[$topic->id]].' ':'')
-						:'')
-						.((block_exacomp_additional_grading())?
+						:'');
+			
+			$table_content->content[$topic->id]->topic_eval = 
+						((block_exacomp_additional_grading())?
 								((isset($user->topics->teacher_additional_grading[$topic->id]))
 										?$user->topics->teacher_additional_grading[$topic->id]:'')
 						:((isset($user->topics->teacher[$topic->id]))
 								?$scheme_items[$user->topics->teacher[$topic->id]]:''));
+			
+			$table_content->content[$topic->id]->topic_id = $topic->id;
 		}
-		$table_content->subject_evaluation = 
-					(((block_exacomp_use_eval_niveau())?
+		$table_content->subject_evalniveau = 
+					((block_exacomp_use_eval_niveau())?
 								((isset($user->subjects->niveau[$subject->id]))
 										?$evaluationniveau_items[$user->subjects->niveau[$subject->id]].' ':'')
-						:'')
-						.((block_exacomp_additional_grading())?
+						:'');
+		$table_content->subject_eval = ((block_exacomp_additional_grading())?
 								((isset($user->subjects->teacher_additional_grading[$subject->id]))
 										?$user->subjects->teacher_additional_grading[$subject->id]:'')
 						:((isset($user->subjects->teacher[$subject->id]))
-								?$scheme_items[$user->subjects->teacher[$subject->id]]:'')));
+								?$scheme_items[$user->subjects->teacher[$subject->id]]:''));
+		
 		$table_content->subject_title = $subject->title;
 	}
 	
@@ -6485,7 +6492,8 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 		$current_idx = 1;
 		foreach($rowcontent->niveaus as $niveau => $element){
 			$content_row->columns[$current_idx] = new stdClass();
-			$content_row->columns[$current_idx]->text = $element;
+			$content_row->columns[$current_idx]->evaluation = $element->eval;
+			$content_row->columns[$current_idx]->evalniveau = $element->evalniveau;
 			
 			if(array_key_exists($niveau, $spanning_niveaus)){
 				$content_row->columns[$current_idx]->span = $spanning_colspan;
@@ -6497,7 +6505,9 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 		
 		if(block_exacomp_is_topicgrading_enabled()){
 			$topic_eval = new stdClass();
-			$topic_eval->text = $rowcontent->topic_evaluation;
+			$topic_eval->evaluation = $rowcontent->topic_eval;
+			$topic_eval->evalniveau = $rowcontent->topic_evalniveau;
+			$topic_eval->topicid = $rowcontent->topic_id;
 			$topic_eval->span = 0;
 			$content_row->columns[$current_idx] = $topic_eval;
 		}
@@ -6514,7 +6524,8 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 		$content_row->columns[0]->span = count($table_header);
 	
 		$content_row->columns[1] = new stdClass();
-		$content_row->columns[1]->text = $table_content->subject_evaluation;
+		$content_row->columns[1]->evaluation = $table_content->subject_eval;
+		$content_row->columns[1]->evalniveau = $table_content->subject_evalniveau;
 		$content_row->columns[1]->span = 0;
 		
 		$table->rows[] = $content_row;
