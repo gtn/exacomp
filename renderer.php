@@ -1112,11 +1112,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				else
 					$title->text =($usesubjectgrading)?'':html_writer::tag("b", $subject->title);
 
+				$title->print_width = 5 + 25;
 				$subjectRow->cells[] = $title;
 			}
 
 			$nivCell = new html_table_cell();
 			$nivCell->text = \block_exacomp\get_string('competence_grid_niveau');
+			$nivCell->print_width = 5;
 
 			if($first)
 				$subjectRow->cells[] = $nivCell;
@@ -1129,6 +1131,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
 
 					$studentCell->attributes['class'] = 'exabis_comp_top_studentcol colgroup colgroup-' . $columnGroup;
+					$studentCell->print_width = (100 - (5 + 25 + 5)) / count($students);
 					$studentCell->colspan = $studentsColspan;
 					$studentCell->text = fullname($student);
 					if (!$this->is_print_mode() && block_exacomp_exastudexists() && ($info = \block_exastud\api::get_student_review_link_info_for_teacher($student->id))) {
@@ -1150,8 +1153,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				if($first)
 					$subjectRow->cells[] = $groupCell;
 			}
-			if($first)
+			if($first) {
 				$rows[] = $subjectRow;
+			}
 
 			if($showevaluation) {
 				$studentsCount = 0;
@@ -1197,12 +1201,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				//subject-title
 				$title = new html_table_cell();
 				$title->colspan = 2;
-					
+				$title->print_width = 5 + 25;
+
 				$title->text = html_writer::tag("b", $subject->title);
-					
+
 				$subjectRow->cells[] = $title;
-				$subjectRow->cells[] = new html_table_cell();
-				
+
+				$nivCell = new html_table_cell();
+				$nivCell->print_width = 5;
+				$subjectRow->cells[] = $nivCell;
+
+
 				$checkboxname = 'datasubjects';
 				$studentsCount = 0;
 				foreach($students as $student) {
@@ -1274,6 +1283,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$subjectRow->cells[] = $empty_cell;
 					}
 				}
+
+				if ($this->is_print_mode()) {
+					$cnt = count($subjectRow->cells);
+
+					for ($i = 2; $i < $cnt; $i++) {
+						$subjectRow->cells[$i]->print_width = (100 - (5 + 25 + 5)) / ($cnt - 2);
+					}
+				}
+
 				$rows[] = $subjectRow;
 			}
 
@@ -1295,8 +1313,21 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					'supported_modules'=>block_exacomp_get_supported_modules(),
 					'showalldescriptors' => block_exacomp_get_settings_by_course($courseid)->show_all_descriptors,
 			);
+
+			$row_cnt = count($rows); // save row count to calc print_wdith
 			$this->topics($rows, 0, $subject->topics, $data, $students, false, $this->is_edit_mode(), $statistic, $crosssubjid);
 
+			if ($this->is_print_mode()) {
+				$row = $rows[$row_cnt];
+				$row->cells[0]->print_width = 5;
+				$row->cells[1]->print_width = 25;
+				$row->cells[2]->print_width = 5;
+				$cnt = count($row->cells);
+
+				for ($i = 3; $i < $cnt; $i++) {
+					$row->cells[$i]->print_width = (100 - (5 + 25 + 5)) / ($cnt - 3);
+				}
+			}
 
 			$first = false;
 		}
@@ -1381,29 +1412,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$table->data = $rows;
 
 		if ($this->is_print_mode()) {
-			// private function
-			$cell_width = function($row, $cell, $width) use ($rows) {
-				if (!isset($rows[$row]->cells[$cell])) {
-					throw new coding_exception('cell not found '.$row.'x'.$cell);
+			// set cell print width
+			foreach ($rows as $row) {
+				foreach ($row->cells as $cell) {
+					if (!empty($cell->print_width)) {
+						$cell->attributes['width'] = $cell->print_width.'%';
+						// testing:
+						// $cell->text = $cell->print_width.' '.$cell->text;
+					}
 				}
-				$rows[$row]->cells[$cell]->attributes['width'] = $width.'%';
-				// test print cell size
-				//$rows[$row]->cells[$cell]->text = $width.' '.$rows[$row]->cells[$cell]->text;
-			};
-
-			// set table cell sizes for print mode
-			$cnt = count($students);
-			$cell_width(0, 0, 100-5-$cnt*12.5);
-			$cell_width(0, 1, 5);
-			for ($i = 0; $i < $cnt; $i++) {
-				$cell_width(0, 2+$i, 12.5);
-			}
-			$cell_width(2, 0, 8);
-			$cell_width(2, 1, 100-5-$cnt*12.5-8);
-			$cell_width(2, 2, 5);
-			$col_cnt = 2 + (block_exacomp_additional_grading() ? 1 : 0);
-			for ($i = 0; $i < $cnt*$col_cnt; $i++) {
-				$cell_width(2, 3+$i, 12.5/$col_cnt);
 			}
 		}
 
