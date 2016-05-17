@@ -1702,8 +1702,8 @@ return  [
 		'New example on the schedule',
 	],
 	'notification_weekly_schedule_body' => [
-		'{$a->teacher} hat dir im Kurs {$a->course} die Aufgabe {$a->example} auf den Wochenplan gelegt.',
-		'{$a->teacher} added an example {$a->example} in {$a->course} to your weekly schedule.',
+		'{$a->teacher} hat dir im Kurs {$a->course} eine neue Aufgabe auf den Wochenplan gelegt.',
+		'{$a->teacher} added an example in {$a->course} to your weekly schedule.',
 	],
 	'notification_weekly_schedule_context' => [
 		'Wochenplan',

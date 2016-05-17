@@ -5619,7 +5619,7 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true){
 		$example_array['start'] = $example->start;
 		$example_array['end'] = $example->end;
 		$example_array['exampleid'] = $example->exampleid;
-		$example_array['niveau'] = $example->niveau;
+		$example_array['niveau'] = isset($example->niveau) ? $example->niveau : null;
 		
 		if($mind_eval){
 			$example_array['student_evaluation'] = $example->student_evaluation;
@@ -5967,10 +5967,10 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
 		return;
 
 	// do not send too many notifications. therefore check if user has got same notification within the last 5 minutes
-	/*if($DB->get_records_select('message_read', "useridfrom = ? AND useridto = ? AND contexturlname = ? AND timecreated > ?",
+	if($DB->get_records_select('message_read', "useridfrom = ? AND useridto = ? AND contexturlname = ? AND timecreated > ?",
 		array('useridfrom' => $userfrom->id, 'useridto' => $userto->id, 'contexturlname' => $context, (time()-5*60))))
 		return;
-	*/
+	
 	require_once($CFG->dirroot . '/message/lib.php');
 
 	$eventdata = new stdClass ();
@@ -6063,7 +6063,7 @@ function block_exacomp_send_weekly_schedule_notification($userfrom, $userto, $co
 	$course = get_course($courseid);
 	$example = $DB->get_record(\block_exacomp\DB_EXAMPLES,array('id' => $exampleid));
 	$subject = get_string('notification_weekly_schedule_subject','block_exacomp');
-	$message = get_string('notification_weekly_schedule_body','block_exacomp',array('course' => $course->fullname, 'teacher' => fullname($userfrom), 'example' => $example->title));
+	$message = get_string('notification_weekly_schedule_body','block_exacomp',array('course' => $course->fullname, 'teacher' => fullname($userfrom)));
 	$context = get_string('notification_weekly_schedule_context','block_exacomp');
 
 	$viewurl = new moodle_url('/blocks/exacomp/weekly_schedule.php',array('courseid' => $courseid));
