@@ -840,7 +840,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							if(isset($descriptor->teachercomp) && $descriptor->teachercomp) {
 								$evalniveau = $DB->get_record(\block_exacomp\DB_COMPETENCES, array("compid"=>$descriptor->id,"role"=>\block_exacomp\ROLE_TEACHER,'courseid'=>$courseid,'userid'=>$studentid,'comptype'=>\block_exacomp\TYPE_DESCRIPTOR));
 								if($evalniveau->evalniveauid) {
-									$compString .= block_exacomp_get_html_for_niveau_eval($evalniveau->evalniveauid);
+									$compString .= html_writer::tag("p", block_exacomp_get_html_for_niveau_eval($evalniveau->evalniveauid));
 								}
 								
 								$cssClass = "contentok";
