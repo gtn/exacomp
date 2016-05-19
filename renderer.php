@@ -3840,6 +3840,8 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 						$div_niveau = html_writer::div($span_niveau, 'compprof_niveau');
 						$div_teacher_student = html_writer::div($span_student. $span_teacher, 'compprof_evaluation');
 
+						$div_flgr = html_writer::div(((block_exacomp_use_eval_niveau())?$div_niveau:'').$div_teacher_student, 'compprof_flrg');
+						
 						$image = '/blocks/exacomp/pix/competence-grid-material-information.png';
 						$img_barchart = html_writer::empty_tag('img', array('src'=>new moodle_url($image), 'width'=>'25', 'height'=>'25'));
 						
@@ -3851,7 +3853,7 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 						
 						$div_barchart = html_writer::div($bar_chart, 'compprof_example');
 						$desc_content .= html_writer::div($content_div.
-								((block_exacomp_use_eval_niveau())?$div_niveau:'').$div_teacher_student.(($return->total>0)?$div_barchart:''), 
+								$div_flgr.(($return->total>0)?$div_barchart:''), 
 								'compprof_descriptor');		
 						
 						$desc_content .= html_writer::div(html_writer::tag('p', html_writer::empty_tag('span', array('id'=>'value'))), 'tooltip hidden', array('id'=>'tooltip'.$barchartid_i));
