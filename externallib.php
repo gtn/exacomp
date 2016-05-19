@@ -4250,7 +4250,7 @@ class block_exacomp_external extends external_api {
 		$descriptor_return->descriptorid = $descriptorid;
 		$descriptor_return->descriptortitle = $descriptor->title;
 		$descriptor_return->teacherevaluation = -1;
-		$descriptor_return->additionalinfo = null;
+		$descriptor_return->additionalinfo = -1;
 		$descriptor_return->evalniveauid = null;
 		if(!$forall){
 			if ($grading = block_exacomp\get_comp_eval($courseid, \block_exacomp\ROLE_TEACHER, $userid, \block_exacomp\TYPE_DESCRIPTOR, $descriptorid)) {
