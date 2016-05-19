@@ -330,6 +330,10 @@ return  [
 		'result_unittest_string2',
 		'result_unittest_string2',
 	],
+	'de:unittest_string3' => [
+		null,
+		'result_unittest_string3',
+	],
 	'de:unittest_param {$a} unittest_param' => [
 		'result_unittest_param {$a} result_unittest_param',
 		'result_unittest_param {$a} result_unittest_param',
@@ -1497,7 +1501,7 @@ return  [
 		'The Cross-Subject is still empty.',
 	],
 	'add_descriptors_to_crosssub' => [
-		'Teilkompetenz mit Thema verknüpfen',
+		'Kompetenzen mit Thema verknüpfen',
 		'Add descriptor to Cross-Subject',
 	],
 	'manage_crosssubs' => [

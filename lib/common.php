@@ -652,16 +652,16 @@ function trans($string_or_strings, $arg_or_args = null) {
 		return $manager->get_string($identifier, $component, $a);
 	}
 
-	// try with first language string
+	// try submitted language strings
+	if (isset($languagestrings[$lang])) {
+		return _t_parse_string($languagestrings[$lang], $a);
+	}
+
+	// try language string
 	$identifier = reset($languagestrings);
 	$identifier = key($languagestrings).':'.$identifier;
 	if ($manager->string_exists($identifier, $component)) {
 		return $manager->get_string($identifier, $component, $a);
-	}
-
-	// try submitted language strings
-	if (isset($languagestrings[$lang])) {
-		return _t_parse_string($languagestrings[$lang], $a);
 	}
 
 	if ($languagestrings) {

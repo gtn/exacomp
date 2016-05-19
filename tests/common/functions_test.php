@@ -22,6 +22,7 @@ require __DIR__.'/inc.php';
 class block_exacomp_common_functions_testcase extends basic_testcase {
 	public function test_trans() {
 		global $SESSION;
+
 		$SESSION->forcelang = 'de';
 
 		try {
@@ -49,11 +50,16 @@ class block_exacomp_common_functions_testcase extends basic_testcase {
 		// other language
 		$this->assertEquals('asdf', block_exacomp\common\trans('fr:asdf'));
 
-		// fallback to languge file
+		// fallback to language file
 		$this->assertEquals('result_unittest_string', block_exacomp\common\trans('unittest_string'));
 
-		// can translate same language
-		$this->assertEquals('result_unittest_string2', block_exacomp\common\trans('de:unittest_string2'));
+		// can't translate same language
+		$this->assertEquals('unittest_string2', block_exacomp\common\trans('de:unittest_string2'));
+
+		// if language definition is null, then use original language string
+		$this->assertEquals('unittest_string3', block_exacomp\common\trans('de:unittest_string3'));
+
+		$SESSION->forcelang = 'en';
 
 		// with params
 		$this->assertEquals('result_unittest_param x result_unittest_param',

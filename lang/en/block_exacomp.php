@@ -110,6 +110,7 @@ $string['settings_usetimeline_description'] = 'Chronological sequence of gained 
 // === Unit Tests ===
 $string['unittest_string'] = 'result_unittest_string';
 $string['de:unittest_string2'] = 'result_unittest_string2';
+$string['de:unittest_string3'] = 'result_unittest_string3';
 $string['de:unittest_param {$a} unittest_param'] = 'result_unittest_param {$a} result_unittest_param';
 $string['de:unittest_param2 {$a->val} unittest_param2'] = 'result_unittest_param2 {$a->val} result_unittest_param2';
 
@@ -506,7 +507,7 @@ $string['notification_example_comment_subject'] = 'New comment for example {$a->
 $string['notification_example_comment_body'] = '{$a->teacher} commented in {$a->course} the example {$a->example}.';
 $string['notification_example_comment_context'] = 'Comment';
 $string['notification_weekly_schedule_subject'] = 'New example on the schedule';
-$string['notification_weekly_schedule_body'] = '{$a->teacher} added an example {$a->example} in {$a->course} to your weekly schedule.';
+$string['notification_weekly_schedule_body'] = '{$a->teacher} added an example in {$a->course} to your weekly schedule.';
 $string['notification_weekly_schedule_context'] = 'Weekly schedule';
 $string['inwork'] = '{$a->inWork}/{$a->total} in work';
 $string['block_exacomp_notifications_head'] = 'Notifications and Messages';
