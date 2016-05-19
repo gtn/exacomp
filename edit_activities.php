@@ -56,11 +56,11 @@ $headertext = "";
 $img = new moodle_url('/blocks/exacomp/pix/three.png');
 	 
 if (($action = optional_param("action", "", PARAM_TEXT) )== "save") {
-	block_exacomp_delete_competencies_activities();
+	block_exacomp_delete_competences_activities();
 	// DESCRIPTOR DATA
-	block_exacomp_save_competencies_activities(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, 0);
+	block_exacomp_save_competences_activities(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, 0);
 	// TOPIC DATA
-	block_exacomp_save_competencies_activities(isset($_POST['topicdata']) ? $_POST['topicdata'] : array(), $courseid, 1);
+	block_exacomp_save_competences_activities(isset($_POST['topicdata']) ? $_POST['topicdata'] : array(), $courseid, 1);
 	
 	if(!isset($_POST['data']) && !isset($_POST['topicdata']))
 		$headertext = get_string('tick_some', 'block_exacomp');

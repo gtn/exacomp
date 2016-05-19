@@ -48,8 +48,8 @@ const DB_COURSETOPICS = 'block_exacompcoutopi_mm';
 const DB_DESCTOPICS = 'block_exacompdescrtopic_mm';
 const DB_CATEGORIES = 'block_exacompcategories';
 const DB_COMPETENCE_ACTIVITY = 'block_exacompcompactiv_mm';
-const DB_COMPETENCIES = 'block_exacompcompuser';
-const DB_COMPETENCIES_USER_MM = 'block_exacompcompuser_mm';
+const DB_COMPETENCES = 'block_exacompcompuser';
+const DB_COMPETENCE_USER_MM = 'block_exacompcompuser_mm';
 const DB_SETTINGS = 'block_exacompsettings';
 const DB_MDLTYPES = 'block_exacompmdltype_mm';
 const DB_DESCBADGE = 'block_exacompdescbadge_mm';
@@ -663,10 +663,10 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 		$record->timestamp = time();
 		$record->reviewerid = $USER->id;
 		$record->evalniveauid = $evalniveauid;
-		$DB->update_record(\block_exacomp\DB_COMPETENCIES, $record);
+		$DB->update_record(\block_exacomp\DB_COMPETENCES, $record);
 		$id = $record->id;
 	} else {
-		$id = $DB->insert_record(\block_exacomp\DB_COMPETENCIES, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, "courseid" => $courseid, "role" => $role, "value" => $value, "reviewerid" => $USER->id, "timestamp" => time(), "evalniveauid" => $evalniveauid));
+		$id = $DB->insert_record(\block_exacomp\DB_COMPETENCES, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, "courseid" => $courseid, "role" => $role, "value" => $value, "reviewerid" => $USER->id, "timestamp" => time(), "evalniveauid" => $evalniveauid));
 	}
 
 	if($role == \block_exacomp\ROLE_TEACHER)
@@ -757,12 +757,12 @@ function block_exacomp_allow_resubmission($userid, $exampleid, $courseid) {
 function block_exacomp_set_user_competence_activity($userid, $compid, $comptype, $activityid,$role, $value) {
 	global $DB,$USER;
 
-	if($record = $DB->get_record(\block_exacomp\DB_COMPETENCIES_USER_MM, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, 'activityid'=>$activityid, "role" => $role))) {
+	if($record = $DB->get_record(\block_exacomp\DB_COMPETENCE_USER_MM, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, 'activityid'=>$activityid, "role" => $role))) {
 		$record->value = $value;
 		$record->timestamp = time();
-		$DB->update_record(\block_exacomp\DB_COMPETENCIES_USER_MM, $record);
+		$DB->update_record(\block_exacomp\DB_COMPETENCE_USER_MM, $record);
 	} else {
-		$DB->insert_record(\block_exacomp\DB_COMPETENCIES_USER_MM, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, 'activityid'=>$activityid, "role" => $role, "value" => $value, "reviewerid" => $USER->id, "timestamp" => time()));
+		$DB->insert_record(\block_exacomp\DB_COMPETENCE_USER_MM, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, 'activityid'=>$activityid, "role" => $role, "value" => $value, "reviewerid" => $USER->id, "timestamp" => time()));
 	}
 }
 
@@ -775,7 +775,7 @@ function block_exacomp_set_user_competence_activity($userid, $compid, $comptype,
  * @param int $comptype
  * @param int $topicid
  */
-function block_exacomp_save_competencies($data, $courseid, $role, $comptype, $topicid = null, $subjectid = false) {
+function block_exacomp_save_competences($data, $courseid, $role, $comptype, $topicid = null, $subjectid = false) {
 	global $USER;
 	$values = array();
 	foreach ($data as $compidKey => $students) {
@@ -808,7 +808,7 @@ function block_exacomp_save_competencies($data, $courseid, $role, $comptype, $to
  * @param int $role
  * @param int $comptype
  */
-function block_exacomp_save_competencies_activities_detail($data, $courseid, $role, $comptype) {
+function block_exacomp_save_competences_activities_detail($data, $courseid, $role, $comptype) {
 	global $USER;
 	$activityid = null;
 	$values = array();
@@ -870,10 +870,10 @@ function block_exacomp_reset_comp_activity_data($courseid, $role, $comptype, $us
 
 	if($role == \block_exacomp\ROLE_TEACHER){
 		foreach($activities as $activity)
-			$DB->delete_records(\block_exacomp\DB_COMPETENCIES_USER_MM, array("activityid" => $activity->id, "role" => $role, "comptype" => $comptype));
+			$DB->delete_records(\block_exacomp\DB_COMPETENCE_USER_MM, array("activityid" => $activity->id, "role" => $role, "comptype" => $comptype));
 	}else{
 		foreach($activities as $activity)
-			$DB->delete_records(\block_exacomp\DB_COMPETENCIES_USER_MM, array("activityid" => $activity->id, "role" => $role,  "comptype" => $comptype, "userid"=>$userid));
+			$DB->delete_records(\block_exacomp\DB_COMPETENCE_USER_MM, array("activityid" => $activity->id, "role" => $role,  "comptype" => $comptype, "userid"=>$userid));
 	}
 }
 
@@ -1470,7 +1470,7 @@ function block_exacomp_get_teachers_by_course($courseid) {
  */
 function block_exacomp_get_user_information_by_course($user, $courseid, $onlycomps=false) {
 	// get student competencies
-	$user = block_exacomp_get_user_competencies_by_course($user, $courseid);
+	$user = block_exacomp_get_user_competences_by_course($user, $courseid);
 	// get student topics
 	$user = block_exacomp_get_user_topics_by_course($user, $courseid);
 	// get student crosssubs
@@ -1485,7 +1485,7 @@ function block_exacomp_get_user_information_by_course($user, $courseid, $onlycom
 		// get student activities topics
 		$user = block_exacomp_get_user_activities_topics_by_course($user, $courseid, $activities);
 		// get student activities competencies
-		$user = block_exacomp_get_user_activities_competencies_by_course($user, $courseid, $activities);
+		$user = block_exacomp_get_user_activities_competences_by_course($user, $courseid, $activities);
 	}
 	return $user;
 }
@@ -1499,12 +1499,12 @@ function block_exacomp_get_user_information_by_course($user, $courseid, $onlycom
 function block_exacomp_get_user_crosssubs_by_course($user, $courseid) {
 	global $DB;
 	$user->crosssubs = new stdClass();
-	$user->crosssubs->teacher = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_CROSSSUB),'','compid as id, value');
-	$user->crosssubs->student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => TYPE_CROSSSUB),'','compid as id, value');
-	$user->crosssubs->timestamp_teacher = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_CROSSSUB),'','compid as id, timestamp');
-	$user->crosssubs->timestamp_student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => TYPE_CROSSSUB),'','compid as id, timestamp');
-	$user->crosssubs->teacher_additional_grading = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_CROSSSUB),'','compid as id, additionalinfo');
-	$user->crosssubs->niveau = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES, array("courseid"=>$courseid, "userid"=>$user->id, "role" =>\block_exacomp\ROLE_TEACHER, "comptype" => TYPE_CROSSSUB),'', 'compid as id, evalniveauid');
+	$user->crosssubs->teacher = $DB->get_records_menu(\block_exacomp\DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_CROSSSUB),'','compid as id, value');
+	$user->crosssubs->student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => TYPE_CROSSSUB),'','compid as id, value');
+	$user->crosssubs->timestamp_teacher = $DB->get_records_menu(\block_exacomp\DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_CROSSSUB),'','compid as id, timestamp');
+	$user->crosssubs->timestamp_student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => TYPE_CROSSSUB),'','compid as id, timestamp');
+	$user->crosssubs->teacher_additional_grading = $DB->get_records_menu(\block_exacomp\DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_CROSSSUB),'','compid as id, additionalinfo');
+	$user->crosssubs->niveau = $DB->get_records_menu(\block_exacomp\DB_COMPETENCES, array("courseid"=>$courseid, "userid"=>$user->id, "role" =>\block_exacomp\ROLE_TEACHER, "comptype" => TYPE_CROSSSUB),'', 'compid as id, evalniveauid');
 	return $user;
 }
 /**
@@ -1514,16 +1514,16 @@ function block_exacomp_get_user_crosssubs_by_course($user, $courseid) {
  * @param int $courseid
  * @return stdClass user
  */
-function block_exacomp_get_user_competencies_by_course($user, $courseid) {
+function block_exacomp_get_user_competences_by_course($user, $courseid) {
 	global $DB;
 
 	$user->competencies = new stdClass();
-	$user->competencies->teacher = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR),'','compid as id, value');
-	$user->competencies->student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => TYPE_DESCRIPTOR),'','compid as id, value');
-	$user->competencies->timestamp_teacher = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR),'','compid as id, timestamp');
-	$user->competencies->timestamp_student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => TYPE_DESCRIPTOR),'','compid as id, timestamp');
-	$user->competencies->teacher_additional_grading = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR),'','compid as id, additionalinfo');
-	$user->competencies->niveau = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES, array("courseid"=>$courseid, "userid"=>$user->id, "role" =>\block_exacomp\ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR),'', 'compid as id, evalniveauid');
+	$user->competencies->teacher = $DB->get_records_menu(\block_exacomp\DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR),'','compid as id, value');
+	$user->competencies->student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => TYPE_DESCRIPTOR),'','compid as id, value');
+	$user->competencies->timestamp_teacher = $DB->get_records_menu(\block_exacomp\DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR),'','compid as id, timestamp');
+	$user->competencies->timestamp_student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => TYPE_DESCRIPTOR),'','compid as id, timestamp');
+	$user->competencies->teacher_additional_grading = $DB->get_records_menu(\block_exacomp\DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR),'','compid as id, additionalinfo');
+	$user->competencies->niveau = $DB->get_records_menu(\block_exacomp\DB_COMPETENCES, array("courseid"=>$courseid, "userid"=>$user->id, "role" =>\block_exacomp\ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR),'', 'compid as id, evalniveauid');
 	
 	return $user;
 }
@@ -1539,12 +1539,12 @@ function block_exacomp_get_user_topics_by_course($user, $courseid) {
 	global $DB;
 
 	$user->topics = new stdClass();
-	$user->topics->teacher = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_TOPIC),'','compid as id, value');
-	$user->topics->student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => TYPE_TOPIC),'','compid as id, value');
-	$user->topics->timestamp_teacher = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_TOPIC),'','compid as id, timestamp');
-	$user->topics->timestamp_student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => TYPE_TOPIC),'','compid as id, timestamp');
-	$user->topics->teacher_additional_grading = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_TOPIC),'','compid as id, additionalinfo');
-	$user->topics->niveau = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES, array("courseid"=>$courseid, "userid"=>$user->id, "role" =>\block_exacomp\ROLE_TEACHER, "comptype" => TYPE_TOPIC),'', 'compid as id, evalniveauid');
+	$user->topics->teacher = $DB->get_records_menu(\block_exacomp\DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_TOPIC),'','compid as id, value');
+	$user->topics->student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => TYPE_TOPIC),'','compid as id, value');
+	$user->topics->timestamp_teacher = $DB->get_records_menu(\block_exacomp\DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_TOPIC),'','compid as id, timestamp');
+	$user->topics->timestamp_student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => TYPE_TOPIC),'','compid as id, timestamp');
+	$user->topics->teacher_additional_grading = $DB->get_records_menu(\block_exacomp\DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_TOPIC),'','compid as id, additionalinfo');
+	$user->topics->niveau = $DB->get_records_menu(\block_exacomp\DB_COMPETENCES, array("courseid"=>$courseid, "userid"=>$user->id, "role" =>\block_exacomp\ROLE_TEACHER, "comptype" => TYPE_TOPIC),'', 'compid as id, evalniveauid');
 	
 	return $user;
 }
@@ -1560,12 +1560,12 @@ function block_exacomp_get_user_subjects_by_course($user, $courseid) {
 	global $DB;
 
 	$user->subjects = new stdClass();
-	$user->subjects->teacher = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_SUBJECT),'','compid as id, value');
-	$user->subjects->student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => \block_exacomp\TYPE_SUBJECT),'','compid as id, value');
-	$user->subjects->timestamp_teacher = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_SUBJECT),'','compid as id, timestamp');
-	$user->subjects->timestamp_student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => \block_exacomp\TYPE_SUBJECT),'','compid as id, timestamp');
-	$user->subjects->teacher_additional_grading = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_SUBJECT),'','compid as id, additionalinfo');
-	$user->subjects->niveau = $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES, array("courseid"=>$courseid, "userid"=>$user->id, "role" =>\block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_SUBJECT),'', 'compid as id, evalniveauid');
+	$user->subjects->teacher = $DB->get_records_menu(\block_exacomp\DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_SUBJECT),'','compid as id, value');
+	$user->subjects->student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => \block_exacomp\TYPE_SUBJECT),'','compid as id, value');
+	$user->subjects->timestamp_teacher = $DB->get_records_menu(\block_exacomp\DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_SUBJECT),'','compid as id, timestamp');
+	$user->subjects->timestamp_student = $DB->get_records_menu(\block_exacomp\DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => \block_exacomp\TYPE_SUBJECT),'','compid as id, timestamp');
+	$user->subjects->teacher_additional_grading = $DB->get_records_menu(\block_exacomp\DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_SUBJECT),'','compid as id, additionalinfo');
+	$user->subjects->niveau = $DB->get_records_menu(\block_exacomp\DB_COMPETENCES, array("courseid"=>$courseid, "userid"=>$user->id, "role" =>\block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_SUBJECT),'', 'compid as id, evalniveauid');
 
 	return $user;
 }
@@ -1603,8 +1603,8 @@ function block_exacomp_get_user_activities_topics_by_course($user, $courseid, $a
 		$user->activities_topics->activities[$activity->id]->teacher = array();
 		$user->activities_topics->activities[$activity->id]->student = array();
 
-		$user->activities_topics->activities[$activity->id]->teacher += $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_TOPIC),'','compid as id, value');
-		$user->activities_topics->activities[$activity->id]->student += $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => TYPE_TOPIC),'','compid as id, value');
+		$user->activities_topics->activities[$activity->id]->teacher += $DB->get_records_menu(\block_exacomp\DB_COMPETENCE_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_TOPIC),'','compid as id, value');
+		$user->activities_topics->activities[$activity->id]->student += $DB->get_records_menu(\block_exacomp\DB_COMPETENCE_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => TYPE_TOPIC),'','compid as id, value');
 	}
 
 	return $user;
@@ -1615,7 +1615,7 @@ function block_exacomp_get_user_activities_topics_by_course($user, $courseid, $a
  * @param object $user
  * @param int $courseid
  */
-function block_exacomp_get_user_activities_competencies_by_course($user, $courseid, $activities){
+function block_exacomp_get_user_activities_competences_by_course($user, $courseid, $activities){
 	global $DB;
 
 	$user->activities_competencies = new stdClass();
@@ -1626,8 +1626,8 @@ function block_exacomp_get_user_activities_competencies_by_course($user, $course
 
 		$user->activities_competencies->activities[$activity->id]->teacher = array();
 		$user->activities_competencies->activities[$activity->id]->student = array();
-		$user->activities_competencies->activities[$activity->id]->teacher += $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR, "eportfolioitem"=>0),'','compid as id, value');
-		$user->activities_competencies->activities[$activity->id]->student += $DB->get_records_menu(\block_exacomp\DB_COMPETENCIES_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => TYPE_DESCRIPTOR, "eportfolioitem"=>0),'','compid as id, value');
+		$user->activities_competencies->activities[$activity->id]->teacher += $DB->get_records_menu(\block_exacomp\DB_COMPETENCE_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => TYPE_DESCRIPTOR, "eportfolioitem"=>0),'','compid as id, value');
+		$user->activities_competencies->activities[$activity->id]->student += $DB->get_records_menu(\block_exacomp\DB_COMPETENCE_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => \block_exacomp\ROLE_STUDENT, "comptype" => TYPE_DESCRIPTOR, "eportfolioitem"=>0),'','compid as id, value');
 	}
 
 	return $user;
@@ -1956,7 +1956,7 @@ function block_exacomp_save_coursesettings($courseid, $settings) {
 	//update compcompuser && compcompuser_mm && exameval
 	if($old_course_settings->grading != $settings->grading){
 		//block_exacompcompuser
-		$records = $DB->get_records(\block_exacomp\DB_COMPETENCIES, array('courseid'=>$courseid));
+		$records = $DB->get_records(\block_exacomp\DB_COMPETENCES, array('courseid'=>$courseid));
 		foreach($records as $record){
 			//if value is set and greater than zero->adapt to new scheme
 			if(isset($record->value) && $record->value > 0){
@@ -1967,7 +1967,7 @@ function block_exacomp_save_coursesettings($courseid, $settings) {
 				$update = new stdClass();
 				$update->id = $record->id;
 				$update->value = $value_new;
-				$DB->update_record(\block_exacomp\DB_COMPETENCIES, $update);
+				$DB->update_record(\block_exacomp\DB_COMPETENCES, $update);
 
 			}
 		}
@@ -1975,7 +1975,7 @@ function block_exacomp_save_coursesettings($courseid, $settings) {
 		//block_exacompcompuser_mm
 		$records = $DB->get_records_sql('
 			SELECT comp.id, comp.value
-			FROM {'.\block_exacomp\DB_COMPETENCIES_USER_MM.'} comp
+			FROM {'.\block_exacomp\DB_COMPETENCE_USER_MM.'} comp
 			JOIN {course_modules} cm ON comp.activityid=cm.id
 			WHERE cm.course=?', array($courseid));
 
@@ -1988,7 +1988,7 @@ function block_exacomp_save_coursesettings($courseid, $settings) {
 				$update = new stdClass();
 				$update->id = $record->id;
 				$update->value = $value_new;
-				$DB->update_record(\block_exacomp\DB_COMPETENCIES_USER_MM, $update);
+				$DB->update_record(\block_exacomp\DB_COMPETENCE_USER_MM, $update);
 			}
 		}
 
@@ -2154,7 +2154,7 @@ function block_exacomp_award_badges($courseid, $userid=null) {
 				continue;
 			}
 
-			$usercompetences_all = block_exacomp_get_user_competencies_by_course($user, $courseid);
+			$usercompetences_all = block_exacomp_get_user_competences_by_course($user, $courseid);
 			$usercompetences = $usercompetences_all->competencies->teacher;
 
 			$allFound = true;
@@ -2233,7 +2233,7 @@ function block_exacomp_get_user_badges($courseid, $userid) {
 		$badge->descriptorStatus = array();
 
 		$user = $DB->get_record('user', array('id'=>$userid));
-		$usercompetences_all = block_exacomp_get_user_competencies_by_course($user, $courseid);
+		$usercompetences_all = block_exacomp_get_user_competences_by_course($user, $courseid);
 		$usercomptences = $usercompetences_all->competencies->teacher;
 		//$usercompetences = block_exacomp_get_usercompetences($userid, $role=1, $courseid);
 
@@ -2800,7 +2800,7 @@ function block_exacomp_get_coursemodule($mod) {
  * @param unknown_type $courseid
  * @param unknown_type $comptype
  */
-function block_exacomp_save_competencies_activities($data, $courseid, $comptype) {
+function block_exacomp_save_competences_activities($data, $courseid, $comptype) {
 	global $USER;
 	if($data != null)
 	foreach($data as $cmoduleKey => $comps){
@@ -2833,7 +2833,7 @@ function block_exacomp_set_compactivity($activityid, $compid, $comptype) {
  *
  * Delete competence, activity associations
  */
-function block_exacomp_delete_competencies_activities(){
+function block_exacomp_delete_competences_activities(){
 	global $COURSE, $DB;
 
 	$cmodules = $DB->get_records('course_modules', array('course'=>$COURSE->id));
@@ -2894,8 +2894,8 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 
 		$data = array();
 		if($studentid)
-			$competencies = array("studentcomps"=>$DB->get_records(\block_exacomp\DB_COMPETENCIES,array("role"=>\block_exacomp\ROLE_STUDENT,"courseid"=>$courseid,"userid"=>$studentid,"comptype"=>TYPE_DESCRIPTOR),"","compid,userid,reviewerid,value"),
-					"teachercomps"=>$DB->get_records(\block_exacomp\DB_COMPETENCIES,array("role"=>\block_exacomp\ROLE_TEACHER,"courseid"=>$courseid,"userid"=>$studentid,"comptype"=>TYPE_DESCRIPTOR),"","compid,userid,reviewerid,value,evalniveauid"));
+			$competencies = array("studentcomps"=>$DB->get_records(\block_exacomp\DB_COMPETENCES,array("role"=>\block_exacomp\ROLE_STUDENT,"courseid"=>$courseid,"userid"=>$studentid,"comptype"=>TYPE_DESCRIPTOR),"","compid,userid,reviewerid,value"),
+					"teachercomps"=>$DB->get_records(\block_exacomp\DB_COMPETENCES,array("role"=>\block_exacomp\ROLE_TEACHER,"courseid"=>$courseid,"userid"=>$studentid,"comptype"=>TYPE_DESCRIPTOR),"","compid,userid,reviewerid,value,evalniveauid"));
 
 		// Arrange data in associative array for easier use
 		$topics = array();
@@ -3371,7 +3371,7 @@ function block_exacomp_get_subjects_for_radar_graph($userid) {
 	foreach($subjects as $subject) {
 		$total = (isset($subject->topics)? count($subject->topics):0) + (isset($subject->competencies)? count($subject->competencies) : 0);
 		$subject->total = $total;
-		$sql = "SELECT DISTINCT c.id, c.userid, c.compid, c.role, c.courseid, c.value, c.comptype, c.timestamp FROM {".\block_exacomp\DB_COMPETENCIES."} c, {".\block_exacomp\DB_TOPICS."} t
+		$sql = "SELECT DISTINCT c.id, c.userid, c.compid, c.role, c.courseid, c.value, c.comptype, c.timestamp FROM {".\block_exacomp\DB_COMPETENCES."} c, {".\block_exacomp\DB_TOPICS."} t
 			WHERE
 			((c.comptype = 1 AND c.compid = t.id AND t.subjid = ?)
 			OR
@@ -3429,7 +3429,7 @@ function block_exacomp_get_topics_for_radar_graph($courseid,$studentid) {
 	foreach($topics as $topic) {
 		$totalDescr = block_exacomp_get_descriptors_by_topic($courseid, $topic->id, false, true);
 
-		$sql = "SELECT c.id, c.userid, c.compid, c.role, c.courseid, c.value, c.comptype, c.timestamp FROM {".\block_exacomp\DB_COMPETENCIES."} c, {".\block_exacomp\DB_DESCTOPICS."} dt
+		$sql = "SELECT c.id, c.userid, c.compid, c.role, c.courseid, c.value, c.comptype, c.timestamp FROM {".\block_exacomp\DB_COMPETENCES."} c, {".\block_exacomp\DB_DESCTOPICS."} dt
 		WHERE c.compid = dt.descrid AND dt.topicid = ? AND c.comptype = 0 AND c.role=? AND c.userid = ? AND c.value >= ? AND c.courseid = ?";
 
 		$competencies = $DB->get_records_sql($sql,array($topic->id,\block_exacomp\ROLE_TEACHER,$studentid, ceil($scheme / 2), $courseid));
@@ -3438,7 +3438,7 @@ function block_exacomp_get_topics_for_radar_graph($courseid,$studentid) {
 		if(count($totalDescr)>0)
 			$topic->teacher = (count($competencies) / count($totalDescr)) * 100;
 
-		$sql = "SELECT c.id, c.userid, c.compid, c.role, c.courseid, c.value, c.comptype, c.timestamp FROM {".\block_exacomp\DB_COMPETENCIES."} c, {".\block_exacomp\DB_DESCTOPICS."} dt
+		$sql = "SELECT c.id, c.userid, c.compid, c.role, c.courseid, c.value, c.comptype, c.timestamp FROM {".\block_exacomp\DB_COMPETENCES."} c, {".\block_exacomp\DB_DESCTOPICS."} dt
 		WHERE c.compid = dt.descrid AND dt.topicid = ? AND c.comptype = 0 AND c.role=? AND c.userid = ? AND c.value >= ? AND c.courseid = ?";
 
 		$competencies = $DB->get_records_sql($sql,array($topic->id,\block_exacomp\ROLE_STUDENT,$studentid, ceil($scheme/2),$courseid));
@@ -3459,7 +3459,7 @@ function block_exacomp_get_topics_for_radar_graph($courseid,$studentid) {
  * @param int $courseid
  * @return multitype:unknown
  */
-function block_exacomp_get_competencies_for_pie_chart($courseid,$user, $scheme, $enddate=0, $exclude_student=false) {
+function block_exacomp_get_competences_for_pie_chart($courseid,$user, $scheme, $enddate=0, $exclude_student=false) {
 
 	$coursesettings = block_exacomp_get_settings_by_course($courseid);
 
@@ -3792,7 +3792,7 @@ function block_exacomp_settstamp(){
 	}
 }
 /**
- * This function checkes for finished quizes that are associated with competencies and automatically gains them if the
+ * This function checkes for finished quizes that are associated with competences and automatically gains them if the
  * coresponding setting is activated.
  */
 function block_exacomp_perform_auto_test() {
@@ -3853,7 +3853,7 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 		$topics = block_exacomp_get_topics_by_course($course->id);
 		$descriptors = block_exacomp_get_descriptors($course->id);
 
-		$teacher_competencies = $DB->get_records(\block_exacomp\DB_COMPETENCIES, array('userid'=>$student->id, 'role'=>\block_exacomp\ROLE_TEACHER, 'value'=>1, 'courseid'=>$course->id));
+		$teacher_competencies = $DB->get_records(\block_exacomp\DB_COMPETENCES, array('userid'=>$student->id, 'role'=>\block_exacomp\ROLE_TEACHER, 'value'=>1, 'courseid'=>$course->id));
 
 		foreach($teacher_competencies as $competence){
 			$no_data = false;
@@ -3876,7 +3876,7 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 				}
 			}
 		}
-		$student_competencies = $DB->get_records(\block_exacomp\DB_COMPETENCIES, array('userid'=>$student->id, 'role'=>\block_exacomp\ROLE_STUDENT, 'value'=>1, 'courseid'=>$course->id));
+		$student_competencies = $DB->get_records(\block_exacomp\DB_COMPETENCES, array('userid'=>$student->id, 'role'=>\block_exacomp\ROLE_STUDENT, 'value'=>1, 'courseid'=>$course->id));
 
 		foreach($student_competencies as $competence){
 			$no_data = false;
@@ -3925,7 +3925,7 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 				$student_comps = 0;
 				foreach($courses as $course){
 					$scheme = block_exacomp_get_grading_scheme($course->id);
-					$comps = block_exacomp_get_competencies_for_pie_chart($course->id, $student, $scheme, $week->dates[6][0], true);
+					$comps = block_exacomp_get_competences_for_pie_chart($course->id, $student, $scheme, $week->dates[6][0], true);
 					$teacher_comps+=$comps[0];
 					$student_comps+=$comps[1];
 				}
@@ -3950,7 +3950,7 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 				$student_comps = 0;
 				foreach($courses as $course){
 					$scheme = block_exacomp_get_grading_scheme($course->id);
-					$comps = block_exacomp_get_competencies_for_pie_chart($course->id, $student, $scheme, $act_time, true);
+					$comps = block_exacomp_get_competences_for_pie_chart($course->id, $student, $scheme, $act_time, true);
 					$teacher_comps+=$comps[0];
 					$student_comps+=$comps[1];
 				}
@@ -3980,7 +3980,7 @@ function block_exacomp_get_timeline_data($courses, $student, $total){
 				$student_comps = 0;
 				foreach($courses as $course){
 					$scheme = block_exacomp_get_grading_scheme($course->id);
-					$comps = block_exacomp_get_competencies_for_pie_chart($course->id, $student, $scheme, $act_time, true);
+					$comps = block_exacomp_get_competences_for_pie_chart($course->id, $student, $scheme, $act_time, true);
 					$teacher_comps+=$comps[0];
 					$student_comps+=$comps[1];
 				}
@@ -4036,7 +4036,7 @@ function block_exacomp_calc_week_dates($time){
 function block_exacomp_check_user_evaluation_exists($courseid){
 	$students = block_exacomp_get_students_by_course($courseid);
 	foreach($students as $student){
-		$info =  block_exacomp_get_user_competencies_by_course($student, $courseid);
+		$info =  block_exacomp_get_user_competences_by_course($student, $courseid);
 
 		if(!empty($info->competencies->teacher) || !empty($info->comptencies->student))
 			return true;
@@ -4452,7 +4452,7 @@ function block_exacomp_descriptor_used($courseid, $descriptor, $studentid){
 	//								 if no evaluation/submission for the examples of this descriptor
 
 	if($studentid == 0){
-		$sql = "SELECT * FROM {".\block_exacomp\DB_COMPETENCIES."} WHERE courseid = ? AND compid = ? AND comptype=? AND ( value>0 OR additionalinfo IS NOT NULL)";
+		$sql = "SELECT * FROM {".\block_exacomp\DB_COMPETENCES."} WHERE courseid = ? AND compid = ? AND comptype=? AND ( value>0 OR additionalinfo IS NOT NULL)";
 		$records = $DB->get_records_sql($sql, array($courseid, $descriptor->id, TYPE_DESCRIPTOR));
 		if($records) return true;
 
@@ -4469,7 +4469,7 @@ function block_exacomp_descriptor_used($courseid, $descriptor, $studentid){
 		}
 		//TODO submission //activities
 	}else{
-		$sql = "SELECT * FROM {".\block_exacomp\DB_COMPETENCIES."} WHERE courseid = ? AND compid = ? AND comptype=? AND userid = ? AND ( value>0 OR additionalinfo IS NOT NULL)";
+		$sql = "SELECT * FROM {".\block_exacomp\DB_COMPETENCES."} WHERE courseid = ? AND compid = ? AND comptype=? AND userid = ? AND ( value>0 OR additionalinfo IS NOT NULL)";
 		$records = $DB->get_records_sql($sql, array($courseid, $descriptor->id, TYPE_DESCRIPTOR, $studentid));
 		if($records) return true;
 
@@ -5107,7 +5107,7 @@ function block_exacomp_get_descriptor_statistic_for_crosssubject($courseid, $cro
 		if($studentid != 0)
 			$conditions[] = $studentid;
 
-		$sql = "SELECT count(c.id) as count FROM {".\block_exacomp\DB_COMPETENCIES."} c
+		$sql = "SELECT count(c.id) as count FROM {".\block_exacomp\DB_COMPETENCES."} c
 				WHERE courseid = ?
 				AND comptype = ?
 				AND role = ?
@@ -5193,7 +5193,7 @@ function block_exacomp_get_descriptor_statistic($courseid, $descrid, $studentid)
 
 		$gradings[$i] = 0;
 		if(!empty($descriptor_where_string)){
-			$sql = "SELECT count(c.id) as count FROM {".\block_exacomp\DB_COMPETENCIES."} c
+			$sql = "SELECT count(c.id) as count FROM {".\block_exacomp\DB_COMPETENCES."} c
 					WHERE courseid = ?
 					AND comptype = ?
 					AND role = ?
@@ -5221,7 +5221,7 @@ function block_exacomp_delete_custom_descriptor($descriptorid){
 	global $DB;
 
 	//delete descriptor evaluation
-	$DB->delete_records(\block_exacomp\DB_COMPETENCIES, array('compid'=>$descriptorid, 'comptype'=>TYPE_DESCRIPTOR));
+	$DB->delete_records(\block_exacomp\DB_COMPETENCES, array('compid'=>$descriptorid, 'comptype'=>TYPE_DESCRIPTOR));
 
 	//delete crosssubject association
 	$DB->delete_records(\block_exacomp\DB_DESCCROSS, array('descrid'=>$descriptorid));
@@ -6112,7 +6112,7 @@ function block_exacomp_save_additional_grading_for_descriptor($courseid, $descri
 	if($record){
 		$record->additionalinfo = $additionalinfo;
 		$record->value = $value;
-		$DB->update_record(\block_exacomp\DB_COMPETENCIES, $record);
+		$DB->update_record(\block_exacomp\DB_COMPETENCES, $record);
 	}else{
 		$insert = new stdClass();
 		$insert->compid = $descriptorid;
@@ -6123,7 +6123,7 @@ function block_exacomp_save_additional_grading_for_descriptor($courseid, $descri
 		$insert->role = \block_exacomp\ROLE_TEACHER;
 		$insert->reviewerid = $USER->id;
 		$insert->value = $value;
-		$DB->insert_record(\block_exacomp\DB_COMPETENCIES, $insert);
+		$DB->insert_record(\block_exacomp\DB_COMPETENCES, $insert);
 	}
 }
 
@@ -6568,7 +6568,7 @@ function block_exacomp_map_value_to_grading($course){
 	//TOPIC, SUBJECT, CROSSSUBJECT, DESCRIPTOR
 	$select = 'courseid = ? AND role = ?'; //is put into the where clause
 	$params = array($course, \block_exacomp\ROLE_TEACHER);
-	$results = $DB->get_records_select(\block_exacomp\DB_COMPETENCIES, $select, $params);
+	$results = $DB->get_records_select(\block_exacomp\DB_COMPETENCES, $select, $params);
 	
 	foreach($results as $result){
 		if(!$result->additionalinfo && $result->value > -1){
@@ -6577,7 +6577,7 @@ function block_exacomp_map_value_to_grading($course){
 			
 			if($result->comptype != \block_exacomp\TYPE_DESCRIPTOR || $descriptor->parentid == 0){
 				$result->additionalinfo = $mapping[$result->value];
-				$DB->update_record(\block_exacomp\DB_COMPETENCIES, $result);
+				$DB->update_record(\block_exacomp\DB_COMPETENCES, $result);
 			}
 		}
 	}
@@ -6615,7 +6615,7 @@ namespace block_exacomp {
 
 		return g::$DB->get_record_sql("
 			SELECT cu.additionalinfo, en.title as niveau
-			FROM {".DB_COMPETENCIES."} as cu
+			FROM {".DB_COMPETENCES."} as cu
 			LEFT JOIN {".DB_EVALUATION_NIVEAU."} en ON cu.evalniveauid = en.id
 			WHERE cu.userid = ? AND cu.courseid = ? AND cu.compid = ? AND cu.role = ?", [
 			$userid,
@@ -6998,11 +6998,11 @@ namespace block_exacomp {
 	}
 
 	function get_comp_eval($courseid, $role, $userid, $comptype, $compid) {
-		return g::$DB->get_record(\block_exacomp\DB_COMPETENCIES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$compid, 'comptype'=>$comptype, 'role'=>$role));
+		return g::$DB->get_record(\block_exacomp\DB_COMPETENCES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$compid, 'comptype'=>$comptype, 'role'=>$role));
 	}
 
 	function get_comp_eval_value($courseid, $role, $userid, $comptype, $compid) {
-		return g::$DB->get_field(\block_exacomp\DB_COMPETENCIES, 'value', array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$compid, 'comptype'=>$comptype, 'role'=>$role));
+		return g::$DB->get_field(\block_exacomp\DB_COMPETENCES, 'value', array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$compid, 'comptype'=>$comptype, 'role'=>$role));
 	}
 
 	function get_select_niveau_items() {

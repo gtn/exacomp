@@ -838,7 +838,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								$cssClass .= ' child';
 
 							if(isset($descriptor->teachercomp) && $descriptor->teachercomp) {
-								$evalniveau = $DB->get_record(\block_exacomp\DB_COMPETENCIES, array("compid"=>$descriptor->id,"role"=>\block_exacomp\ROLE_TEACHER,'courseid'=>$courseid,'userid'=>$studentid,'comptype'=>\block_exacomp\TYPE_DESCRIPTOR));
+								$evalniveau = $DB->get_record(\block_exacomp\DB_COMPETENCES, array("compid"=>$descriptor->id,"role"=>\block_exacomp\ROLE_TEACHER,'courseid'=>$courseid,'userid'=>$studentid,'comptype'=>\block_exacomp\TYPE_DESCRIPTOR));
 								if($evalniveau->evalniveauid) {
 									$evalniveautitle = $DB->get_field(\block_exacomp\DB_EVALUATION_NIVEAU, "title", array("id" => $evalniveau->evalniveauid));
 									$compString .= " (" . $evalniveautitle . ")";
@@ -1222,7 +1222,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$studentsCount = 0;
 				foreach($students as $student) {
 					if($role == \block_exacomp\ROLE_TEACHER){
-						$reviewerid = $DB->get_field(\block_exacomp\DB_COMPETENCIES,"reviewerid",array("userid" => $student->id, "compid" => $subject->id, "courseid"=>$courseid, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_SUBJECT));
+						$reviewerid = $DB->get_field(\block_exacomp\DB_COMPETENCES,"reviewerid",array("userid" => $student->id, "compid" => $subject->id, "courseid"=>$courseid, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_SUBJECT));
 						
 						$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
 							
@@ -1354,7 +1354,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			
 			foreach($students as $student) {
 				if($role == \block_exacomp\ROLE_TEACHER)
-					$reviewerid = $DB->get_field(\block_exacomp\DB_COMPETENCIES,"reviewerid",array("userid" => $student->id, "compid" => $crosssubjid, "courseid"=>$courseid, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_CROSSSUB));
+					$reviewerid = $DB->get_field(\block_exacomp\DB_COMPETENCES,"reviewerid",array("userid" => $student->id, "compid" => $crosssubjid, "courseid"=>$courseid, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_CROSSSUB));
 				
 				$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
 				
@@ -1499,7 +1499,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$checkboxname = 'datatopics';
 				foreach($students as $student) {
 					if($data->role == \block_exacomp\ROLE_TEACHER)
-						$reviewerid = $DB->get_field(\block_exacomp\DB_COMPETENCIES,"reviewerid",array("userid" => $student->id, "compid" => $topic->id, "courseid"=>$data->courseid, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_TOPIC));
+						$reviewerid = $DB->get_field(\block_exacomp\DB_COMPETENCES,"reviewerid",array("userid" => $student->id, "compid" => $topic->id, "courseid"=>$data->courseid, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_TOPIC));
 						
 					$studentCell = new html_table_cell();
 					$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
@@ -1745,7 +1745,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$icontext = "";
 						//check reviewerid for teacher
 						if($data->role == \block_exacomp\ROLE_TEACHER)
-							$reviewerid = $DB->get_field(\block_exacomp\DB_COMPETENCIES,"reviewerid",array("userid" => $student->id, "compid" => $descriptor->id, "courseid"=>$data->courseid, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_DESCRIPTOR));
+							$reviewerid = $DB->get_field(\block_exacomp\DB_COMPETENCES,"reviewerid",array("userid" => $student->id, "compid" => $descriptor->id, "courseid"=>$data->courseid, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_DESCRIPTOR));
 
 						//check visibility for every student in overview
 
@@ -3562,7 +3562,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		foreach($possible_courses as $course){
 			$statistics = block_exacomp_get_course_competence_statistics($course->id, $student, block_exacomp_get_grading_scheme($course->id));
-			//$pie_data = block_exacomp_get_competencies_for_pie_chart($course->id, $student, block_exacomp_get_grading_scheme($course->id));
+			//$pie_data = block_exacomp_get_competences_for_pie_chart($course->id, $student, block_exacomp_get_grading_scheme($course->id));
 
 			if(array_key_exists($course->id, $courses)){
 				$row = new html_table_row();
@@ -3682,7 +3682,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		//$topics = block_exacomp_get_topics_for_radar_graph($course->id, $student->id);
 		//$radar_graph = html_writer::div($this->radar_graph($topics),"competence_profile_radargraph");
 
-		list($teachercomp,$studentcomp,$pendingcomp) = block_exacomp_get_competencies_for_pie_chart($course->id,$student, $scheme, 0, true);
+		list($teachercomp,$studentcomp,$pendingcomp) = block_exacomp_get_competences_for_pie_chart($course->id,$student, $scheme, 0, true);
 		$pie_graph = html_writer::div($this->pie_graph($teachercomp, $studentcomp, $pendingcomp, $course->id),"competence_profile_radargraph");
 		
 		$total_comps = $teachercomp+$studentcomp+$pendingcomp;
@@ -4439,7 +4439,7 @@ var dataset = dataset.map(function (group) {
 		$studentcomp = 0;
 		$pendingcomp = 0;
 		foreach($courses as $course){
-			$course_data = block_exacomp_get_competencies_for_pie_chart($course->id, $student, block_exacomp_get_grading_scheme($course->id), 0, true);
+			$course_data = block_exacomp_get_competences_for_pie_chart($course->id, $student, block_exacomp_get_grading_scheme($course->id), 0, true);
 			$teachercomp += $course_data[0];
 			$studentcomp += $course_data[1];
 			$pendingcomp += $course_data[2];

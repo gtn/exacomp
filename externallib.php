@@ -1322,7 +1322,7 @@ class block_exacomp_external extends external_api {
 					$entry->reviewerid = $USER->id;
 					$entry->value = 1;
 					$entry->timestamp = time ();
-					$DB->update_record (\block_exacomp\DB_COMPETENCIES, $entry );
+					$DB->update_record (\block_exacomp\DB_COMPETENCES, $entry );
 				} else {
 					$insert = new stdClass ();
 					$insert->userid = $userid;
@@ -1333,7 +1333,7 @@ class block_exacomp_external extends external_api {
 					$insert->value = 1;
 					$insert->timestamp = time ();
 
-					$DB->insert_record (\block_exacomp\DB_COMPETENCIES, $insert );
+					$DB->insert_record (\block_exacomp\DB_COMPETENCES, $insert );
 				}
 			}
 		}
@@ -1346,7 +1346,7 @@ class block_exacomp_external extends external_api {
 				$entry->reviewerid = $USER->id;
 				$entry->value = 0;
 				$entry->timestamp = time ();
-				$DB->update_record (\block_exacomp\DB_COMPETENCIES, $entry );
+				$DB->update_record (\block_exacomp\DB_COMPETENCES, $entry );
 			} else {
 				$insert = new stdClass ();
 				$insert->userid = $userid;
@@ -1357,7 +1357,7 @@ class block_exacomp_external extends external_api {
 				$insert->value = 0;
 				$insert->timestamp = time ();
 
-				$DB->insert_record (\block_exacomp\DB_COMPETENCIES, $insert );
+				$DB->insert_record (\block_exacomp\DB_COMPETENCES, $insert );
 			}
 		}
 

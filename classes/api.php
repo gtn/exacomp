@@ -70,8 +70,8 @@ class api {
 	static function delete_user_data($userid) {
 		global $DB;
 
-		$DB->delete_records(\block_exacomp\DB_COMPETENCIES, array("userid" => $userid));
-		$DB->delete_records(\block_exacomp\DB_COMPETENCIES_USER_MM, array("userid" => $userid));
+		$DB->delete_records(\block_exacomp\DB_COMPETENCES, array("userid" => $userid));
+		$DB->delete_records(\block_exacomp\DB_COMPETENCE_USER_MM, array("userid" => $userid));
 		$DB->delete_records(\block_exacomp\DB_PROFILESETTINGS, array("userid" => $userid));
 
 		$DB->delete_records(\block_exacomp\DB_CROSSSTUD, array("studentid" => $userid));
@@ -89,8 +89,8 @@ class api {
 
 		$DB->delete_records(\block_exacomp\DB_EXTERNAL_TRAINERS, array("trainerid" => $userid));
 
-		$DB->delete_records(\block_exacomp\DB_COMPETENCIES, array("reviewerid" => $userid));
-		$DB->delete_records(\block_exacomp\DB_COMPETENCIES_USER_MM, array("reviewerid" => $userid));
+		$DB->delete_records(\block_exacomp\DB_COMPETENCES, array("reviewerid" => $userid));
+		$DB->delete_records(\block_exacomp\DB_COMPETENCE_USER_MM, array("reviewerid" => $userid));
 
 		return true;
 	}

@@ -228,7 +228,7 @@ switch($action){
 		$DB->delete_records(\block_exacomp\DB_DESCCROSS, array('crosssubjid'=>$crosssubjectid));
 		
 		//delete crosssubject overall evaluations
-		$DB->delete_records(\block_exacomp\DB_COMPETENCIES, array('compid'=>$crosssubjectid, 'comptype'=>TYPE_CROSSSUB));
+		$DB->delete_records(\block_exacomp\DB_COMPETENCES, array('compid'=>$crosssubjectid, 'comptype'=>TYPE_CROSSSUB));
 		
 		//delete crosssubject
 		$DB->delete_records(\block_exacomp\DB_CROSSSUBJECTS, array('id'=>$crosssubjectid));

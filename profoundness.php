@@ -78,7 +78,7 @@ list($tmp2, $subjects, $topics, $tmp, $selectedSubject, $selectedTopic) = block_
 // SAVA DATA
 if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 	// DESCRIPTOR DATA
-	block_exacomp_save_competencies(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, TYPE_DESCRIPTOR, $selectedTopic->id, $selectedSubject->id);
+	block_exacomp_save_competences(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, TYPE_DESCRIPTOR, $selectedTopic->id, $selectedSubject->id);
 
 }
 //Delete timestamp (end|start) from example
