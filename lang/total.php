@@ -574,7 +574,7 @@ return  [
 	],
 	'useniveautitleinprofile' => [
 		'Im Kompetenzprofil den Lernfortschritt als Titel verwenden',
-		'Use niveau title in competence profile',
+		'Use level title in competence profile',
 	],
 	'usenostudents' => [
 		'Ohne Kursteilnehmer/innen arbeiten',
@@ -785,7 +785,7 @@ return  [
 	],
 	'allniveaus' => [
 		'Alle Lernfortschritte',
-		'All niveaus',
+		'All levels',
 	],
 	'choosesubject' => [
 		'Kompetenzbereich auswählen',
@@ -956,11 +956,11 @@ return  [
 	],
 	'niveau' => [
 		'Lernfortschritt',
-		'Niveau',
+		'Level',
 	],
 	'competence_grid_niveau' => [
 		'Niveau',
-		'Niveau',
+		'Level',
 	],
 	'descriptor' => [
 		'Kompetenz',
@@ -1044,7 +1044,7 @@ return  [
 	],
 	'niveau_filter' => [
 		'Niveaus filtern',
-		'filter levels',
+		'Filter levels',
 	],
 	'module_filter' => [
 		'Aktivitäten filtern',
@@ -1076,7 +1076,7 @@ return  [
 	],
 	'all_niveaus' => [
 		'Alle Niveaustufen',
-		'all levels',
+		'All levels',
 	],
 	'tick_some' => [
 		'Bitte treffen Sie eine Auswahl!',
@@ -1784,7 +1784,7 @@ return  [
 	],
 	'niveauclass' => [
 		'Niveaueinstufung',
-		'Niveau classification',
+		'Level classification',
 	],
 
 
