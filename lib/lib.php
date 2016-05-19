@@ -6257,7 +6257,7 @@ function block_exacomp_get_courseids_by_descriptor($descriptorid){
 * get evaluation images for competence profile for teacher
 * according to course scheme and admin scheme
 **/
-function block_exacomp_get_html_for_niveau_eval($evaluation, $scheme){
+function block_exacomp_get_html_for_niveau_eval($evaluation){
 	$evaluation_niveau_type = block_exacomp_evaluation_niveau_type();
 	
 	//predefined pictures 
@@ -6364,7 +6364,7 @@ function block_exacomp_get_html_for_teacher_eval($evaluation, $scheme){
 
 function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $subjectid){
 	global $DB;
-	list($course_subjects, $table_column, $table_header, $selectedSubject, $selectedTopic, $selectedNiveau) = block_exacomp_init_overview_data($courseid, $subjectid, 0, 0, false, block_exacomp_is_teacher(), $studentid);
+	list($course_subjects, $table_column, $table_header, $selectedSubject, $selectedTopic, $selectedNiveau) = block_exacomp_init_overview_data($courseid, $subjectid, -1, 0, false, block_exacomp_is_teacher(), $studentid);
 	
 	$user = $DB->get_record('user', array('id'=>$studentid));
 	$user = block_exacomp_get_user_information_by_course($user, $courseid);

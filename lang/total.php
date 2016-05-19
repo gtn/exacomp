@@ -319,7 +319,18 @@ return  [
 		'Zeitlichen Ablauf des Kompetenzerwerbes im Profil anzeigen',
 		'Chronological sequence of gained outcomes',
 	],
-
+	'timeline_teacher' => [
+		'L',				
+		'T',
+	],
+	'timeline_student' => [
+			'S',
+			'S',
+	],
+	'timeline_total' => [
+			'Verfügbare',
+			'Total',
+	],
 
 	// === Unit Tests ===
 	'unittest_string' => [

@@ -840,8 +840,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							if(isset($descriptor->teachercomp) && $descriptor->teachercomp) {
 								$evalniveau = $DB->get_record(\block_exacomp\DB_COMPETENCES, array("compid"=>$descriptor->id,"role"=>\block_exacomp\ROLE_TEACHER,'courseid'=>$courseid,'userid'=>$studentid,'comptype'=>\block_exacomp\TYPE_DESCRIPTOR));
 								if($evalniveau->evalniveauid) {
-									$evalniveautitle = $DB->get_field(\block_exacomp\DB_EVALUATION_NIVEAU, "title", array("id" => $evalniveau->evalniveauid));
-									$compString .= " (" . $evalniveautitle . ")";
+									$compString .= block_exacomp_get_html_for_niveau_eval($evalniveau->evalniveauid);
 								}
 								
 								$cssClass = "contentok";
@@ -3641,31 +3640,28 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		value:'.$pendingcomp.',
 		color:"#888888",
 		highlight: "#3D3D3D",
-		label: "'.get_string('pendingcomp', 'block_exacomp').'"
-	},
-	{
-	value: '.$teachercomp.',
-	color: "#02a600",
-	highlight: "#028400",
-	label: "'.get_string('teachercomp', 'block_exacomp').'"
-	},
-	{
-	value: '.$studentcomp.',
-	color: "#0075dd",
-	highlight: "#015FB1",
-	label: "'.get_string('studentcomp', 'block_exacomp').'"
-	}
-	];
-		
-	var ctx = document.getElementById("canvas_doughnut'.$courseid.'").getContext("2d");
-	ctx.canvas.height = 300;
+		},
+		{
+		value: '.$teachercomp.',
+		color: "#02a600",
+		highlight: "#028400",
+		},
+		{
+		value: '.$studentcomp.',
+		color: "#0075dd",
+		highlight: "#015FB1",
+		}
+		];
 			
-	window.myDoughnut = new Chart(ctx).Doughnut(pieChartData, {
-		responsive: false, // can\'t be responsive, because Graph.js 1.0.2 does not work with hidden divs
-	});
-
-	</script>
-	';
+		var ctx = document.getElementById("canvas_doughnut'.$courseid.'").getContext("2d");
+		ctx.canvas.height = 300;
+				
+		window.myDoughnut = new Chart(ctx).Doughnut(pieChartData, {
+			responsive: false, // can\'t be responsive, because Graph.js 1.0.2 does not work with hidden divs
+		});
+	
+		</script>
+		';
 		return $content;
 	}
 	function competence_profile_course($course, $student, $showall = true, $max_scheme = 3) {
@@ -3824,7 +3820,7 @@ private function competence_profile_tree_v2($in, $courseid, $student = null,$sch
 									\block_exacomp\get_string('inwork', null, ['inWork' => $return->inWork, 'total' => $return->total]), array('class'=>"compprof_barchart_inwork"));
 						
 						$img_niveau = block_exacomp_get_html_for_niveau_eval(
-								((isset($student->competencies->niveau[$descriptor->id]))?$student->competencies->niveau[$descriptor->id]:-1), $scheme);
+								((isset($student->competencies->niveau[$descriptor->id]))?$student->competencies->niveau[$descriptor->id]:-1));
 						
 						$span_niveau = html_writer::tag('span', "Niveau: ".
 								$img_niveau, array('class'=>"compprof_barchart_niveau"));
@@ -4127,7 +4123,7 @@ var dataset = dataset.map(function (group) {
 			$content .= '],
 			datasets: [
 			{
-				label: "Teacher Timeline",
+				label: "'.get_string("timeline_teacher","block_exacomp").'",
 				fillColor: "rgba(145, 253, 143, 0.2)",
 				strokeColor: "#02a600",
 				pointColor: "#02a600",
@@ -4141,7 +4137,7 @@ var dataset = dataset.map(function (group) {
 				$content .= ']
 			},
 			{
-				label: "Student Timeline",
+				label: "'.get_string("timeline_student","block_exacomp").'",
 				fillColor: "rgba(149, 206, 255, 0.2)",
 				strokeColor: "#0075dd",
 				pointColor: "#0075dd",
@@ -4155,7 +4151,7 @@ var dataset = dataset.map(function (group) {
 				$content .= ']
 			},
 			{
-				label: "All Competencies",
+				label: "'.get_string("timeline_total","block_exacomp").'",
 				fillColor: "rgba(220,220,220,0.2)",
 				strokeColor: "rgba(220,220,220,1)",
 				pointColor: "rgba(220,220,220,1)",
