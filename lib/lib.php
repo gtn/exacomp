@@ -685,12 +685,12 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 	$updateEvaluation = new stdClass();
 	if($evalniveauid !== null && $evalniveauid < 1)
 		$evalniveauid = null;
-	
+
 	if ($role == \block_exacomp\ROLE_TEACHER) {
 		block_exacomp_require_teacher($courseid);
 		$updateEvaluation->teacher_evaluation = ($value != -1) ? $value : null;
 		$updateEvaluation->teacher_reviewerid = $USER->id;
-		if($evalniveauid !== null) $updateEvaluation->evalniveauid = $evalniveauid;
+		$updateEvaluation->evalniveauid = $evalniveauid;
 		$updateEvaluation->resubmission = ($value != -1) ? false : true;
 	} else {
 		if ($userid != $USER->id)
@@ -705,7 +705,7 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 		if($role == \block_exacomp\ROLE_TEACHER) {
 			$record->teacher_evaluation = $updateEvaluation->teacher_evaluation;
 			$record->teacher_reviewerid = $updateEvaluation->teacher_reviewerid;
-			if($evalniveauid !== null) $record->evalniveauid = $updateEvaluation->evalniveauid;
+			$record->evalniveauid = $updateEvaluation->evalniveauid;
 			$record->resubmission = $updateEvaluation->resubmission;
 
 			$DB->update_record(\block_exacomp\DB_EXAMPLEEVAL,$record);
@@ -2895,7 +2895,7 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 		$data = array();
 		if($studentid)
 			$competencies = array("studentcomps"=>$DB->get_records(\block_exacomp\DB_COMPETENCIES,array("role"=>\block_exacomp\ROLE_STUDENT,"courseid"=>$courseid,"userid"=>$studentid,"comptype"=>TYPE_DESCRIPTOR),"","compid,userid,reviewerid,value"),
-					"teachercomps"=>$DB->get_records(\block_exacomp\DB_COMPETENCIES,array("role"=>\block_exacomp\ROLE_TEACHER,"courseid"=>$courseid,"userid"=>$studentid,"comptype"=>TYPE_DESCRIPTOR),"","compid,userid,reviewerid,value"));
+					"teachercomps"=>$DB->get_records(\block_exacomp\DB_COMPETENCIES,array("role"=>\block_exacomp\ROLE_TEACHER,"courseid"=>$courseid,"userid"=>$studentid,"comptype"=>TYPE_DESCRIPTOR),"","compid,userid,reviewerid,value,evalniveauid"));
 
 		// Arrange data in associative array for easier use
 		$topics = array();
@@ -4931,10 +4931,10 @@ function block_exacomp_calculate_statistic_for_example($courseid, $students, $ex
 
 			$topicNumbering = $topic->get_numbering();
 			foreach (array_values($topic->descriptors) as $i => $descriptor) {
-				$numberingCache[$descriptor->id] = $topicNumbering ? $topicNumbering.($i + 1).'.' : '';
+				$numberingCache[$descriptor->id] = $topicNumbering ? $topicNumbering.'.'.($i + 1) : '';
 
 				foreach (array_values($descriptor->children) as $j => $descriptor) {
-					$numberingCache[$descriptor->id] = $topicNumbering ? $topicNumbering.($i + 1).'.'.($j + 1).'.' : '';
+					$numberingCache[$descriptor->id] = $topicNumbering ? $topicNumbering.'.'.($i + 1).'.'.($j + 1) : '';
 				}
 			}
 		}
@@ -4960,7 +4960,7 @@ function block_exacomp_calculate_statistic_for_example($courseid, $students, $ex
 
 		$subject = $topic->get_subject();
 		if ($subject && !empty($subject->titleshort) && !empty($topic->numb)) {
-			return $subject->titleshort.'.'.$topic->numb.'.';
+			return $subject->titleshort.'.'.$topic->numb;
 		} else {
 			return '';
 		}

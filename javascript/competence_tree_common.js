@@ -85,6 +85,10 @@
 		var $this = $(this);
 		$('input[name="'+$this.attr("name")+'"]').val($this.val());
 	});
+	$(document).on('change', 'select[name^=niveau_examples-]', function(){
+		var $this = $(this);
+		$('select[name="'+$this.attr("name")+'"]').val($this.val());
+	});
 	
 	$(function(){
 		function additionlgrading_int_val(value, add) {

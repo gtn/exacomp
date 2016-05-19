@@ -837,9 +837,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							if($descriptor->parentid > 0)
 								$cssClass .= ' child';
 
-							if(isset($descriptor->teachercomp) && $descriptor->teachercomp)
+							if(isset($descriptor->teachercomp) && $descriptor->teachercomp) {
+								$evalniveau = $DB->get_record(\block_exacomp\DB_COMPETENCIES, array("compid"=>$descriptor->id,"role"=>\block_exacomp\ROLE_TEACHER,'courseid'=>$courseid,'userid'=>$studentid,'comptype'=>\block_exacomp\TYPE_DESCRIPTOR));
+								if($evalniveau->evalniveauid) {
+									$evalniveautitle = $DB->get_field(\block_exacomp\DB_EVALUATION_NIVEAU, "title", array("id" => $evalniveau->evalniveauid));
+									$compString .= " (" . $evalniveautitle . ")";
+								}
+								
 								$cssClass = "contentok";
-
+							}
 							// Check visibility
 							/*
 							if(!$descriptor_used && array_key_exists($descriptor->topicid, $selection) ){
