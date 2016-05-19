@@ -1,9 +1,9 @@
 <?php
-// This file is part of Exabis Competencies
+// This file is part of Exabis Competence Grid
 //
 // (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
 //
-// Exabis Competencies is free software: you can redistribute it and/or modify
+// Exabis Competence Grid is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
@@ -21,8 +21,8 @@
 $string['pluginname'] = 'Exabis Kompetenzraster';
 // shown in block title and all headers
 $string['blocktitle'] = 'Kompetenzraster';
-$string['exacomp:addinstance'] = 'Exabis Competencies auf Kursseite anlegen';
-$string['exacomp:myaddinstance'] = 'Exabis Competencies auf Startseite anlegen';
+$string['exacomp:addinstance'] = 'Exabis Competence Grid auf Kursseite anlegen';
+$string['exacomp:myaddinstance'] = 'Exabis Competence Grid auf Startseite anlegen';
 $string['exacomp:teacher'] = 'Übersicht der Lehrerfunktionen in einem Kurs';
 $string['exacomp:admin'] = 'Übersicht der Administratorfunktionen in einem Kurs';
 $string['exacomp:student'] = 'Übersicht der Teilnehmerfunktionen in einem Kurs';
@@ -68,7 +68,7 @@ $string['tab_cross_subjects_course'] = 'Kursthemen';
 $string['tab_weekly_schedule'] = 'Wochenplan';
 $string['assign_descriptor_to_crosssubject'] = 'Die Teilkompetenz "{$a}" den folgenden Themen zuordnen:';
 $string['assign_descriptor_no_crosssubjects_available'] = 'Es sind keine Themen vorhanden, legen Sie welche an.';
-$string['first_configuration_step'] = 'Der erste Konfigurationsschritt besteht darin, Daten in das Exabis Competencies Modul zu importieren.';
+$string['first_configuration_step'] = 'Der erste Konfigurationsschritt besteht darin, Daten in das Exabis Kompetenzraster Modul zu importieren.';
 $string['second_configuration_step'] = 'Im zweiten Konfigurationsschritt müssen Bildungsstandards ausgewählt werden.';
 $string['next_step'] = 'Dieser Konfigurationsschritt wurde abgeschlossen. Klicken Sie hier um zum Nächsten zu gelangen.';
 $string['next_step_teacher'] = 'Die Konfiguration, die vom Administrator vorgenommen werden muss, ist hiermit abgeschlossen. Um mit der kursspezifischen Konfiguration fortzufahren klicken Sie hier.';
@@ -76,7 +76,7 @@ $string['teacher_first_configuration_step'] = 'Im ersten Konfigurationsschritt d
 $string['teacher_second_configuration_step'] = 'Im zweiten Konfigurationsschritt müssen Themenbereiche ausgewählt werden, mit denen Sie in diesem Kurs arbeiten möchten.';
 $string['teacher_third_configuration_step'] = 'Im nächsten Schritt werden Moodle-Aktivitäten mit Kompetenzen assoziiert. ';
 $string['teacher_third_configuration_step_link'] = '(Optional: Wenn Sie nicht mit Moodle-Aktivitäten arbeiten möchten, dann entfernen Sie das Häkchen "Ich möchte mit Moodle-Aktivitäten arbeiten" im Tab "Konfiguration".)';
-$string['completed_config'] = 'Die Exabis Competencies Konfiguration wurde abgeschlossen.';
+$string['completed_config'] = 'Die Exabis Kompetenzraster Konfiguration wurde abgeschlossen.';
 $string['optional_step'] = 'In Ihrem Kurs sind noch keine Teilnehmer/innen eingeschrieben, betätigen Sie diesen Link wenn Sie das jetzt machen möchten.';
 $string['next_step_first_teacher_step'] = 'Klicken Sie hier um zum nächsten Schritt zu gelangen.';
 
@@ -160,7 +160,7 @@ $string['importsuccess_own'] = 'Eigene Daten erfolgreich importiert!';
 $string['importfail'] = 'Es ist ein Fehler aufgetreten.';
 $string['noxmlfile'] = 'Ein Import ist derzeit nicht möglich weil keine XML Datei vorhanden ist. Bitte hier die entsprechenden Standards downloaden und in das xml Verzeichnis des Blocks kopieren: <a href="https://github.com/gtn/edustandards">https://github.com/gtn/edustandards</a>';
 $string['oldxmlfile'] = 'Sie benutzen eine veraltete XML-Datei, bitte erstellen Sie sich eine neue Datei auf <a href="http://www.edustandards.org">www.edustandards.org</a> oder laden Sie ein bestehendes XML von <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> hoch.';
-$string['do_demo_import'] = 'Importieren Sie einen Demodatensatz, um zu sehen wie Exabis Competencies funktioniert.';
+$string['do_demo_import'] = 'Importieren Sie einen Demodatensatz, um zu sehen wie Exabis Kompetenzraster funktioniert.';
 
 
 // === Configuration ===
@@ -324,7 +324,7 @@ $string['column_setting'] = 'Spalten aus/einblenden';
 $string['niveau_filter'] = 'Niveaus filtern';
 $string['module_filter'] = 'Aktivitäten filtern';
 $string['apply_filter'] = 'Filter anwenden';
-$string['no_topics_selected'] = 'Konfiguration für Exabis Competencies wurde noch nicht abgeschlossen. Bitte wählen Sie zuerst Gegenstände aus, denen Sie dann Moodle-Aktivitäten zuordnen können.';
+$string['no_topics_selected'] = 'Konfiguration für Exabis Kompetenzraster wurde noch nicht abgeschlossen. Bitte wählen Sie zuerst Gegenstände aus, denen Sie dann Moodle-Aktivitäten zuordnen können.';
 $string['no_activities_selected'] = 'Bitte ordnen Sie den erstellen Moodle-Aktivitäten Kompetenzen zu.';
 $string['no_activities_selected_student'] = 'In diesem Bereich sind derzeit keine Daten vorhanden.';
 $string['no_course_activities'] = 'In diesem Kurs wurden noch keine Moodle-Aktivitäten erstellt, klicken Sie hier um dies nun zu tun.';
@@ -395,7 +395,7 @@ $string['nE'] = 'nicht erreicht';
 
 // === Competence Profile Settings ===
 $string['profile_settings_showonlyreached'] = 'Ich möchte in meinem Kompetenzprofil nur bereits erreichte Kompetenzen sehen.';
-$string['profile_settings_choose_courses'] = 'In Exabis Competencies beurteilen TrainerInnen den Kompetenzerwerb in unterschiedlichen Fachgebieten. Hier kann ausgewählt werden, welche Kurse im Kompetenzprofil aufscheinen sollen.';
+$string['profile_settings_choose_courses'] = 'In Exabis Kompetenzraster beurteilen TrainerInnen den Kompetenzerwerb in unterschiedlichen Fachgebieten. Hier kann ausgewählt werden, welche Kurse im Kompetenzprofil aufscheinen sollen.';
 $string['profile_settings_useexaport'] = 'Ich möchte Kompetenzen, die in Exabis ePortfolio verwendet werden in meinem Profil sehen.';
 $string['profile_settings_choose_items'] = 'Exabis ePortfolio dokumentiert deinen Kompetenzerwerb außerhalb von LehrerInnen vorgegebenen Grenzen. Du kannst auswählen, welche Einträge im Kompetenzprofil aufscheinen sollen.';
 $string['profile_settings_useexastud'] = 'Ich möchte Beurteilungen aus Exabis Student Review in meinem Profil sehen.';

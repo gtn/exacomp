@@ -1,9 +1,9 @@
 <?php
-// This file is part of Exabis Competencies
+// This file is part of Exabis Competence Grid
 //
 // (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
 //
-// Exabis Competencies is free software: you can redistribute it and/or modify
+// Exabis Competence Grid is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
@@ -21,20 +21,20 @@ return  [
 	// shown in admin plugin list
 	'pluginname' => [
 		'Exabis Kompetenzraster',
-		'Exabis Competence grid',
+		'Exabis Competence Grid',
 	],
 	// shown in block title and all headers
 	'blocktitle' => [
 		'Kompetenzraster',
-		'Competence grid',
+		'Competence Grid',
 	],
 	'exacomp:addinstance' => [
-		'Exabis Competencies auf Kursseite anlegen',
-		'Add a exabis competencies block',
+		'Exabis Competence Grid auf Kursseite anlegen',
+		'Add a Exabis Competence Grid block',
 	],
 	'exacomp:myaddinstance' => [
-		'Exabis Competencies auf Startseite anlegen',
-		'Add a exabis competencies block to my moodle',
+		'Exabis Competence Grid auf Startseite anlegen',
+		'Add a Exabis Competence Grid block to my moodle',
 	],
 	'exacomp:teacher' => [
 		'Übersicht der Lehrerfunktionen in einem Kurs',
@@ -50,7 +50,7 @@ return  [
 	],
 	'exacomp:use' => [
 		'Nutzung',
-		'use Exabis Competencies',
+		'use Exabis Competence Grid',
 	],
 	'exacomp:deleteexamples' => [
 		'Lernmaterialien löschen',
@@ -181,8 +181,8 @@ return  [
 		'No Cross-Subjects are available.',
 	],
 	'first_configuration_step' => [
-		'Der erste Konfigurationsschritt besteht darin, Daten in das Exabis Competencies Modul zu importieren.',
-		'The first step of the configuration is to import some data to Exabis Competencies.',
+		'Der erste Konfigurationsschritt besteht darin, Daten in das Exabis Kompetenzraster Modul zu importieren.',
+		'The first step of the configuration is to import some data to Exabis Competence Grid.',
 	],
 	'second_configuration_step' => [
 		'Im zweiten Konfigurationsschritt müssen Bildungsstandards ausgewählt werden.',
@@ -213,8 +213,8 @@ return  [
 		'(Optional: if you don\'t want to work with activities untick the setting "I want to work with Moodle activities" in the tab "Configuration")',
 	],
 	'completed_config' => [
-		'Die Exabis Competencies Konfiguration wurde abgeschlossen.',
-		'The configuration of Exabis Competencies is completed.',
+		'Die Exabis Kompetenzraster Konfiguration wurde abgeschlossen.',
+		'The configuration of Exabis Competence Grid is completed.',
 	],
 	'optional_step' => [
 		'In Ihrem Kurs sind noch keine Teilnehmer/innen eingeschrieben, betätigen Sie diesen Link wenn Sie das jetzt machen möchten.',
@@ -504,8 +504,8 @@ return  [
 		'You are using an outdated xml-file. Please create new outcomes/standards at <a href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file to the blocks xml directory.',
 	],
 	'do_demo_import' => [
-		'Importieren Sie einen Demodatensatz, um zu sehen wie Exabis Competencies funktioniert.',
-		'import demo data to see how Exabis Competencies works.',
+		'Importieren Sie einen Demodatensatz, um zu sehen wie Exabis Kompetenzraster funktioniert.',
+		'import demo data to see how Exabis Competence Grid works.',
 	],
 
 
@@ -1044,8 +1044,8 @@ return  [
 		'apply filter',
 	],
 	'no_topics_selected' => [
-		'Konfiguration für Exabis Competencies wurde noch nicht abgeschlossen. Bitte wählen Sie zuerst Gegenstände aus, denen Sie dann Moodle-Aktivitäten zuordnen können.',
-		'configuration of exabis competencies is not completed yet. please chose a topic that you would like to associate Moodle activities with',
+		'Konfiguration für Exabis Kompetenzraster wurde noch nicht abgeschlossen. Bitte wählen Sie zuerst Gegenstände aus, denen Sie dann Moodle-Aktivitäten zuordnen können.',
+		'configuration of Exabis Competence Grid is not completed yet. please chose a topic that you would like to associate Moodle activities with',
 	],
 	'no_activities_selected' => [
 		'Bitte ordnen Sie den erstellen Moodle-Aktivitäten Kompetenzen zu.',
@@ -1292,8 +1292,8 @@ return  [
 		'I only want to see already gained outcomes in my competence profile',
 	],
 	'profile_settings_choose_courses' => [
-		'In Exabis Competencies beurteilen TrainerInnen den Kompetenzerwerb in unterschiedlichen Fachgebieten. Hier kann ausgewählt werden, welche Kurse im Kompetenzprofil aufscheinen sollen.',
-		'Using Exabis Competencies trainers assess your competencies in various subjects. You can select which course to include in the competence profile.',
+		'In Exabis Kompetenzraster beurteilen TrainerInnen den Kompetenzerwerb in unterschiedlichen Fachgebieten. Hier kann ausgewählt werden, welche Kurse im Kompetenzprofil aufscheinen sollen.',
+		'Using Exabis Competence Grid trainers assess your competencies in various subjects. You can select which course to include in the competence profile.',
 	],
 	'profile_settings_useexaport' => [
 		'Ich möchte Kompetenzen, die in Exabis ePortfolio verwendet werden in meinem Profil sehen.',

@@ -1,9 +1,9 @@
 <?php
-// This file is part of Exabis Competencies
+// This file is part of Exabis Competence Grid
 //
 // (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
 //
-// Exabis Competencies is free software: you can redistribute it and/or modify
+// Exabis Competence Grid is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
@@ -36,8 +36,8 @@ echo $output->header_v2('tab_admin_settings');
 echo $output->tabtree(block_exacomp_build_navigation_tabs_admin_settings($courseid), 'tab_webservice_status');
 
 echo block_exacomp\trans([
-	'de:Die folgenden Schritte sind notwendig um Exabis Competencies Webservices zu aktiviert:',
-	'en:Please follow the steps below to enable Exabis Competencies webservices:',
+	'de:Die folgenden Schritte sind notwendig um Exabis Competence Grid Webservices zu aktiviert:',
+	'en:Please follow the steps below to enable Exabis Competence Grid webservices:',
 ]);
 
 $brtag = html_writer::empty_tag('br');

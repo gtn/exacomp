@@ -1,9 +1,9 @@
 <?php
-// This file is part of Exabis Competencies
+// This file is part of Exabis Competence Grid
 //
 // (c) 2016 GTN - Global Training Network GmbH <office@gtn-solutions.com>
 //
-// Exabis Competencies is free software: you can redistribute it and/or modify
+// Exabis Competence Grid is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
@@ -18,15 +18,15 @@
 // This copyright notice MUST APPEAR in all copies of the script!
 
 // shown in admin plugin list
-$string['pluginname'] = 'Exabis Competence grid';
+$string['pluginname'] = 'Exabis Competence Grid';
 // shown in block title and all headers
-$string['blocktitle'] = 'Competence grid';
-$string['exacomp:addinstance'] = 'Add a exabis competencies block';
-$string['exacomp:myaddinstance'] = 'Add a exabis competencies block to my moodle';
+$string['blocktitle'] = 'Competence Grid';
+$string['exacomp:addinstance'] = 'Add a Exabis Competence Grid block';
+$string['exacomp:myaddinstance'] = 'Add a Exabis Competence Grid block to my moodle';
 $string['exacomp:teacher'] = 'overview of trainer actions in a course';
 $string['exacomp:admin'] = 'overview of administrator actions in a course';
 $string['exacomp:student'] = 'overview of student actions in a course';
-$string['exacomp:use'] = 'use Exabis Competencies';
+$string['exacomp:use'] = 'use Exabis Competence Grid';
 $string['exacomp:deleteexamples'] = 'delete examples';
 $string['exacomp:assignstudents'] = 'Assign external trainers';
 
@@ -68,7 +68,7 @@ $string['tab_cross_subjects_course'] = 'Course Cross-Subjects';
 $string['tab_weekly_schedule'] = 'Weekly Schedule';
 $string['assign_descriptor_to_crosssubject'] = 'Assign the competence "{$a}" to the following Cross-Subjects:';
 $string['assign_descriptor_no_crosssubjects_available'] = 'No Cross-Subjects are available.';
-$string['first_configuration_step'] = 'The first step of the configuration is to import some data to Exabis Competencies.';
+$string['first_configuration_step'] = 'The first step of the configuration is to import some data to Exabis Competence Grid.';
 $string['second_configuration_step'] = 'In this configuration step you have to pre-select standards.';
 $string['next_step'] = 'This configuration step has been completed. Click here to continue configuration.';
 $string['next_step_teacher'] = 'The configuration that has to be done by the administrator is now completed. To continue with the course specific configuration click here.';
@@ -76,7 +76,7 @@ $string['teacher_first_configuration_step'] = 'The first step of course configur
 $string['teacher_second_configuration_step'] = 'In the second configuration step topics to work with in this course have to be selected.';
 $string['teacher_third_configuration_step'] = 'The next step is to associate Moodle activities with competencies ';
 $string['teacher_third_configuration_step_link'] = '(Optional: if you don\'t want to work with activities untick the setting "I want to work with Moodle activities" in the tab "Configuration")';
-$string['completed_config'] = 'The configuration of Exabis Competencies is completed.';
+$string['completed_config'] = 'The configuration of Exabis Competence Grid is completed.';
 $string['optional_step'] = 'There are no participants in your course yet. If you want to enrol some please use this link.';
 $string['next_step_first_teacher_step'] = 'Click here to continue configuration.';
 
@@ -161,7 +161,7 @@ $string['importsuccess_own'] = 'individual data was imported successfully!';
 $string['importfail'] = 'an error has occured during import';
 $string['noxmlfile'] = 'There is no data available to import. Please visit <a href="https://github.com/gtn/edustandards">https://github.com/gtn/edustandards</a> to download the required outcomes to the blocks xml directory.';
 $string['oldxmlfile'] = 'You are using an outdated xml-file. Please create new outcomes/standards at <a href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file to the blocks xml directory.';
-$string['do_demo_import'] = 'import demo data to see how Exabis Competencies works.';
+$string['do_demo_import'] = 'import demo data to see how Exabis Competence Grid works.';
 
 
 // === Configuration ===
@@ -319,7 +319,7 @@ $string['column_setting'] = 'hide/display columns';
 $string['niveau_filter'] = 'filter levels';
 $string['module_filter'] = 'filter activities';
 $string['apply_filter'] = 'apply filter';
-$string['no_topics_selected'] = 'configuration of exabis competencies is not completed yet. please chose a topic that you would like to associate Moodle activities with';
+$string['no_topics_selected'] = 'configuration of Exabis Competence Grid is not completed yet. please chose a topic that you would like to associate Moodle activities with';
 $string['no_activities_selected'] = 'please associate Moodle activities with competences';
 $string['no_activities_selected_student'] = 'There is no data available yet';
 $string['no_course_activities'] = 'No Moodle activities found in this course - click here to create some.';
@@ -390,7 +390,7 @@ $string['nE'] = 'not gained';
 
 // === Competence Profile Settings ===
 $string['profile_settings_showonlyreached'] = 'I only want to see already gained outcomes in my competence profile';
-$string['profile_settings_choose_courses'] = 'Using Exabis Competencies trainers assess your competencies in various subjects. You can select which course to include in the competence profile.';
+$string['profile_settings_choose_courses'] = 'Using Exabis Competence Grid trainers assess your competencies in various subjects. You can select which course to include in the competence profile.';
 $string['profile_settings_useexaport'] = 'I want to see competencies used in Exabis ePortfolio within my profile.';
 $string['profile_settings_choose_items'] = 'Exabis ePortfolio is used to document your competencies on your individual learning path. You can select which artifacts to include in the competence profile.';
 $string['profile_settings_useexastud'] = 'I want to see evaluations from Exabis Student Review.';

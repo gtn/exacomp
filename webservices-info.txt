@@ -1,3 +1,3 @@
-If you want to use Exabis Competencies Web services go the url
+If you want to use Exabis Competence Grid Web services go the url
 http://yourmoodle/blocks/exacomp/webservice_status.php?courseid=1
 and follow the steps on this page
