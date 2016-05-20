@@ -41,7 +41,7 @@ class api {
 			FROM {block_exacompdescriptors} d
 			JOIN {block_exacompcompactiv_mm} compactiv ON compactiv.compid = d.id
 			WHERE compactiv.eportfolioitem = 1 AND compactiv.activityid = ?
-		", [$item->id]);
+		", [$item]);
 	}
 
 	static function get_comp_tree_for_exaport($userid) {
