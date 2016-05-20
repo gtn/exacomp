@@ -5194,6 +5194,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 							if($descriptor->niveauid){
 								$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
 								$descriptor_return->niveautitle = substr(block_exacomp_get_descriptor_numbering($descriptor),0,1).": ".$niveau->title;
+								$descriptor_return->niveausort = block_exacomp_get_descriptor_numbering($descriptor);
 								$descriptor_return->niveauid = $niveau->id;
 							}
 							$descriptors_return[] = $descriptor_return;
@@ -5208,6 +5209,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 					if($descriptor->niveauid){
 						$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
 						$descriptor_return->niveautitle = substr(block_exacomp_get_descriptor_numbering($descriptor),0,1).": ".$niveau->title;
+						$descriptor_return->niveausort = block_exacomp_get_descriptor_numbering($descriptor);
 						$descriptor_return->niveauid = $niveau->id;
 					}
 					$descriptors_return[] = $descriptor_return;
@@ -5215,9 +5217,16 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 			}
 		}
 
+		#sort crosssub entries
+		usort($descriptors_return, "static::cmp");
+		
 		return $descriptors_return;
 	}
-
+	
+	private static function cmp($a, $b){
+		return strcmp($a->niveausort, $b->niveausort);
+	}
+	
 	private static function dakora_get_examples_for_descriptor_common($courseid, $descriptorid, $userid, $forall, $crosssubjid=0){
 		global $DB;
 
