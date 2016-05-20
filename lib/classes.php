@@ -63,22 +63,18 @@ class db_layer {
 	}
 
 	function get_descriptors_for_topic(topic $topic) {
-		$descriptors = array_filter($this->get_descriptor_records_for_subject($topic->subjid), function($descriptor) use ($topic) {
-			return $descriptor->topicid == $topic->id;
-		});
+		$descriptors = $this->get_descriptor_records_for_topic($topic);
 
 		$descriptors = descriptor::create_objects($descriptors, ['topic' => $topic], $this);
 
 		return $descriptors;
 	}
 
-	function get_descriptor_records_for_subject($subjectid) {
-		static $subjectDescriptors = array();
-		if (isset($subjectDescriptors[$subjectid])) {
-			return $subjectDescriptors[$subjectid];
+	function get_descriptor_records_for_topic(topic $topic) {
+		static $topicDescriptors = array();
+		if (isset($topicDescriptors[$topic->id])) {
+			return $topicDescriptors[$topic->id];
 		}
-
-		global $DB;
 
 		if (!$this->courseid) {
 			$this->showalldescriptors = true;
@@ -89,25 +85,25 @@ class db_layer {
 			$this->showalldescriptors = block_exacomp_get_settings_by_course($this->courseid)->show_all_descriptors;
 
 
-		$sql = 'SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, d.profoundness, d.parentid, n.sorting niveau, dvis.visible as visible, d.sorting '
-			.' FROM {'.DB_TOPICS.'} t '
-			.(($this->courseid > 0) ? ' JOIN {'.DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? '.(($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') : '')
-			.' JOIN {'.DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
-			.' JOIN {'.DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid=0 '
-			.' -- left join, because courseid=0 has no descvisibility!
-		LEFT JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=?'
-			.($this->showonlyvisible ? ' AND dvis.visible = 1 ' : '')
-			.' LEFT JOIN {'.DB_NIVEAUS.'} n ON d.niveauid = n.id '
-			.($this->showalldescriptors ? '' : '
-			JOIN {'.DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
-			JOIN {course_modules} a ON da.activityid=a.id '.(($this->courseid > 0) ? 'AND a.course=?' : ''))
-			.' ORDER BY d.sorting';
+		$sql = "
+			SELECT DISTINCT d.id, d.title, d.source, d.niveauid, desctopmm.topicid, d.profoundness, d.parentid,
+				n.sorting AS niveau_sorting, n.title AS niveau_title, dvis.visible as visible, desctopmm.sorting
+			FROM {".DB_DESCTOPICS."} desctopmm
+			JOIN {".DB_DESCRIPTORS."} d ON desctopmm.descrid=d.id AND d.parentid=0
+			-- left join, because courseid=0 has no descvisibility!
+			LEFT JOIN {".DB_DESCVISIBILITY."} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=?
+			".($this->showonlyvisible ? " AND dvis.visible = 1 " : "")."
+			LEFT JOIN {".DB_NIVEAUS."} n ON d.niveauid = n.id
+			".($this->showalldescriptors ? "" : "
+				JOIN {".DB_COMPETENCE_ACTIVITY."} da ON d.id=da.compid AND da.comptype=".TYPE_DESCRIPTOR."
+				JOIN {course_modules} a ON da.activityid=a.id ".(($this->courseid > 0) ? "AND a.course=".$this->courseid : ""))."
+			WHERE desctopmm.topicid = ".$topic->id;
 
-		$descriptors = $DB->get_records_sql($sql, array($this->courseid, $this->courseid, $this->courseid, $this->courseid));
+		$descriptors = g::$DB->get_records_sql($sql, array($this->courseid));
 
-		$subjectDescriptors[$subjectid] = $descriptors;
+		block_exacomp_sort_items($descriptors, ['niveau_' => \block_exacomp\DB_NIVEAUS, \block_exacomp\DB_DESCRIPTORS]);
 
-		block_exacomp_sort_items($subjectDescriptors[$subjectid], \block_exacomp\DB_DESCRIPTORS);
+		$topicDescriptors[$topic->id] = $descriptors;
 
 		return $descriptors;
 	}
