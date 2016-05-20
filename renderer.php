@@ -4653,7 +4653,7 @@ var dataset = dataset.map(function (group) {
 
 	public function competence_based_list_tree($tree, $isTeacher, $editmode, $show_examples = true) {
 		$html_tree = "";
-		$html_tree .= html_writer::start_tag("ul",array("class"=>"exa-tree exa-tree-reopen-checked"));
+		$html_tree .= html_writer::start_tag("ul",array("class"=>"exa-tree ".($editmode?'exa-tree-reopen-checked':'exa-tree-open-all')));
 		foreach($tree as $skey => $subject) {
 			if($subject->associated == 1 || ($isTeacher && $editmode==1)){
 				$html_tree .= html_writer::start_tag("li", array('class'=>($subject->associated == 1)?"associated":""));
