@@ -104,14 +104,20 @@
 #block_exacomp .compprof_niveau{
 	float: center;
 }
-#block_exacomp .compprof_evaluation{
+#block_exacomp .compprof_flrg {
 	float: right;
 }
+
+#block_exacomp .compprof_niveau, #block_exacomp .compprof_evaluation {
+	text-align: right;
+	margin-bottom: 5px;
+}
+
 #block_exacomp .compprof_example{
 	 display: block;
 }
 
-.compprof_barchart_student img, .compprof_barchart_teacher img {
+#block_exacomp .compprof_barchart_student img, #block_exacomp .compprof_barchart_teacher img, #block_exacomp .compprof_niveau img {
 	margin-left: 5px;
 }
 
