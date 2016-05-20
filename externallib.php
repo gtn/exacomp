@@ -5121,10 +5121,12 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 							$descriptor_return->descriptortitle = $descriptor->title;
 							$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
 							$descriptor_return->niveautitle = "";
+							$descriptor_return->niveausort = "";
 							$descriptor_return->niveauid = 0;
 							if($descriptor->niveauid){
 								$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
 								$descriptor_return->niveautitle = $niveau->title;
+								$descriptor_return->niveausort = $niveau->title;
 								$descriptor_return->niveauid = $niveau->id;
 							}
 							if(!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student))||$forall))
@@ -5135,6 +5137,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 			}
 		}
 
+		usort($descriptors_return, "static::cmp");
 		return $descriptors_return;
 	}
 
