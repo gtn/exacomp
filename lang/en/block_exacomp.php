@@ -105,7 +105,9 @@ $string['settings_additional_grading'] = 'Adapted grading';
 $string['settings_additional_grading_description'] = 'Grading limited from "not gained(0)" - "completely gained(3)"';
 $string['settings_usetimeline'] = 'Use Timeline in profile';
 $string['settings_usetimeline_description'] = 'Chronological sequence of gained outcomes';
-
+$string['timeline_teacher'] = 'T';
+$string['timeline_student'] = 'S';
+$string['timeline_total'] = 'Total';
 
 // === Unit Tests ===
 $string['unittest_string'] = 'result_unittest_string';
@@ -180,7 +182,7 @@ $string['useprofoundness'] = 'Use basic and extended competencies';
 $string['usetopicgrading'] = 'Enable topic gradings';
 $string['usesubjectgrading'] = 'Enable subject gradings';
 $string['usenumbering'] = 'Enable automatic numbering in the competence grid';
-$string['useniveautitleinprofile'] = 'Use niveau title in competence profile';
+$string['useniveautitleinprofile'] = 'Use level title in competence profile';
 $string['usenostudents'] = 'Use without students';
 $string['profoundness_0'] = 'not reached';
 $string['profoundness_1'] = 'Partially gained';
@@ -244,7 +246,7 @@ $string['legend_activities'] = 'Moodle activities';
 $string['legend_eportfolio'] = 'ePortfolio';
 $string['legend_notask'] = 'No Moodle activities/quizzes have been submitted for this outcome';
 $string['legend_upload'] = 'Upload your own task/example';
-$string['allniveaus'] = 'All niveaus';
+$string['allniveaus'] = 'All levels';
 $string['choosesubject'] = 'Choose subject: ';
 $string['choosetopic'] = 'Choose topic';
 $string['choosestudent'] = 'Choose student: ';
@@ -289,8 +291,8 @@ $string['columnselect'] = 'Column selection';
 $string['allstudents'] = 'All students';
 $string['nostudents'] = 'No students';
 $string['statistic'] = 'Overview';
-$string['niveau'] = 'Niveau';
-$string['competence_grid_niveau'] = 'Niveau';
+$string['niveau'] = 'Level';
+$string['competence_grid_niveau'] = 'Level';
 $string['descriptor'] = 'Competency';
 $string['groupsize'] = 'Size of group: ';
 $string['assigndone'] = 'task done: ';
@@ -316,7 +318,7 @@ $string['instruction_content'] = 'This is an overview for learning resources tha
 // === Activities ===
 $string['explaineditactivities_subjects'] = '';
 $string['column_setting'] = 'hide/display columns';
-$string['niveau_filter'] = 'filter levels';
+$string['niveau_filter'] = 'Filter levels';
 $string['module_filter'] = 'filter activities';
 $string['apply_filter'] = 'apply filter';
 $string['no_topics_selected'] = 'configuration of Exabis Competence Grid is not completed yet. please chose a topic that you would like to associate Moodle activities with';
@@ -324,7 +326,7 @@ $string['no_activities_selected'] = 'please associate Moodle activities with com
 $string['no_activities_selected_student'] = 'There is no data available yet';
 $string['no_course_activities'] = 'No Moodle activities found in this course - click here to create some.';
 $string['all_modules'] = 'all activities';
-$string['all_niveaus'] = 'all levels';
+$string['all_niveaus'] = 'All levels';
 $string['tick_some'] = 'Please make a selection!';
 
 
@@ -528,7 +530,7 @@ $string['eventscrosssubjectadded'] = 'Cross-Subject added';
 
 // === Statistics ===
 $string['process'] = 'State of process';
-$string['niveauclass'] = 'Niveau classification';
+$string['niveauclass'] = 'Level classification';
 
 
 // === Message ===

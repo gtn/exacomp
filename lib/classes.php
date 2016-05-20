@@ -863,6 +863,8 @@ class descriptor extends db_record {
 		$childdesctopic_mm = new \stdClass();
 		$childdesctopic_mm->topicid = $topicid;
 		$childdesctopic_mm->descrid = $descriptor->id;
+		// right now custom descriptor sorting is always null => sort by title
+		// $childdesctopic_mm->sorting = null;
 
 		$DB->insert_record(DB_DESCTOPICS, $childdesctopic_mm);
 

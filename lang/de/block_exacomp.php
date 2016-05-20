@@ -105,7 +105,9 @@ $string['settings_additional_grading'] = 'Angepasste Bewertung';
 $string['settings_additional_grading_description'] = 'Bewertung für Teilkompetenzen und Lernmaterialien global auf "nicht erreicht(0)" - "vollständig erreicht(3)" beschränken';
 $string['settings_usetimeline'] = 'Timeline im Profil verwenden';
 $string['settings_usetimeline_description'] = 'Zeitlichen Ablauf des Kompetenzerwerbes im Profil anzeigen';
-
+$string['timeline_teacher'] = 'L';
+$string['timeline_student'] = 'S';
+$string['timeline_total'] = 'Verfügbare';
 
 // === Unit Tests ===
 $string['unittest_string'] = 'result_unittest_string';

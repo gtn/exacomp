@@ -519,7 +519,7 @@ $(document).on('click', '.exa-collapsible > legend', function(){
 			$table.find(':checkbox:checked').trigger('rg2.open-parents');
 		}
 
-		// reopen checked
+		// open all
 		if ($table.is('.rg2-open-all')) {
 			$table.find('.rg2-header').addClass('open');
 		}
