@@ -35,13 +35,13 @@ class api {
 		return true;
 	}
 
-	static function get_active_comps_for_exaport_item($item) {
+	static function get_active_comps_for_exaport_item($itemid) {
 		return g::$DB->get_records_sql("
 			SELECT d.*
 			FROM {block_exacompdescriptors} d
 			JOIN {block_exacompcompactiv_mm} compactiv ON compactiv.compid = d.id
 			WHERE compactiv.eportfolioitem = 1 AND compactiv.activityid = ?
-		", [$item]);
+		", [$itemid]);
 	}
 
 	static function get_comp_tree_for_exaport($userid) {
