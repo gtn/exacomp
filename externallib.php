@@ -4949,9 +4949,9 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_evaluation_config() {
 		global $DB;
-
+		// TODO: fjungwirth: What if scheme > 4 is selected in a course? WS & Dakora need to be adapted to that I think
+		
 		static::validate_parameters (static::dakora_get_evaluation_config_parameters(), array());
-
 		return array('use_evalniveau' => block_exacomp_use_eval_niveau(),
 					'evalniveautype' => block_exacomp_evaluation_niveau_type(),
 					'evalniveaus' => \block_exacomp\global_config::get_evalniveaus(),
@@ -4969,14 +4969,14 @@ class block_exacomp_external extends external_api {
 				'use_evalniveau' => new external_value ( PARAM_BOOL, 'use evaluation niveaus' ),
 				'evalniveautype' => new external_value (PARAM_INT, 'same as adminscheme before: 1: GME, 2: ABC, 3: */**/***'),
 				'evalniveaus' => new external_single_structure ( array (
-						1 => new external_value ( PARAM_TEXT, 'evaluation title for id = 1' ),
-						2 => new external_value ( PARAM_TEXT, 'evaluation title for id = 2' ),
-						3 => new external_value ( PARAM_TEXT, 'evaluation title for id = 3' ))),
+						1 => new external_value ( PARAM_TEXT, 'evaluation title for id = 1', VALUE_OPTIONAL ),
+						2 => new external_value ( PARAM_TEXT, 'evaluation title for id = 2', VALUE_OPTIONAL ),
+						3 => new external_value ( PARAM_TEXT, 'evaluation title for id = 3', VALUE_OPTIONAL ))),
 				'values' => new external_single_structure ( array (
-						0 => new external_value ( PARAM_TEXT, 'value title for id = 0' ),
-						1 => new external_value ( PARAM_TEXT, 'value title for id = 1' ),
-						2 => new external_value ( PARAM_TEXT, 'value title for id = 2' ),
-						3 => new external_value ( PARAM_TEXT, 'value title for id = 3' )))
+						0 => new external_value ( PARAM_TEXT, 'value title for id = 0', VALUE_DEFAULT, "0" ),
+						1 => new external_value ( PARAM_TEXT, 'value title for id = 1', VALUE_DEFAULT, "1" ),
+						2 => new external_value ( PARAM_TEXT, 'value title for id = 2', VALUE_DEFAULT, "2" ),
+						3 => new external_value ( PARAM_TEXT, 'value title for id = 3', VALUE_DEFAULT, "3" )))
 		) );
 	}
 

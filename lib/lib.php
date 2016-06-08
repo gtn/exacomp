@@ -245,7 +245,7 @@ function block_exacomp_use_eval_niveau(){
 }
 
 function block_exacomp_evaluation_niveau_type(){
-	return get_config('exacomp', 'adminscheme');
+	return (get_config('exacomp', 'adminscheme')) ? get_config('exacomp', 'adminscheme') : 0;
 }
 
 function block_exacomp_additional_grading(){
@@ -6730,6 +6730,7 @@ namespace block_exacomp {
 		static function get_evalniveaus() {
 			$values = array(-1 => ' ');
 			$values += g::$DB->get_records_menu(DB_EVALUATION_NIVEAU,null,'','id,title');
+			
 			return $values;
 		}
 		
