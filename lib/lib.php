@@ -3850,6 +3850,11 @@ function block_exacomp_perform_auto_test() {
 					//assign competences to student
 					if(isset($test->descriptors)){
 						foreach($test->descriptors as $descriptor){
+							if(block_exacomp_additional_grading()){
+								block_exacomp_save_additional_grading_for_descriptor($courseid, $descriptor->compid, $student->id, 
+								\block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 0);
+							}
+						
 							block_exacomp_set_user_competence($student->id, $descriptor->compid,
 									0, $courseid, \block_exacomp\ROLE_TEACHER, $grading_scheme);
 							mtrace("set competence ".$descriptor->compid." for user ".$student->id.'<br>');
@@ -3857,6 +3862,11 @@ function block_exacomp_perform_auto_test() {
 					}
 					if(isset($test->topics)){
 						foreach($test->topics as $topic){
+							if(block_exacomp_additional_grading() && block_exacomp_is_topicgrading_enabled()){
+								block_exacomp_save_additional_grading_for_descriptor($courseid, $descriptor->compid, $student->id, 
+								\block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 1);
+							}
+							
 							block_exacomp_set_user_competence($student->id, $topic->compid,
 									1, $courseid, \block_exacomp\ROLE_TEACHER, $grading_scheme);
 							mtrace("set topic competence ".$topic->compid." for user ".$student->id.'<br>');
