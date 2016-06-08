@@ -6533,7 +6533,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 		$content_row->columns = array();
 		
 		$content_row->columns[0] = new stdClass();
-		$content_row->columns[0]->text = $table_rows[$topic]->title;
+		$content_row->columns[0]->text = block_exacomp_get_topic_numbering($topic) . " " . $table_rows[$topic]->title;
 		$content_row->columns[0]->span = 0;
 		
 		$current_idx = 1;

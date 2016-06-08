@@ -3747,7 +3747,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			foreach($table_content->content as $topic => $rowcontent ){
 				
 				$cell = new html_table_cell();
-				$cell->text = $table_column[$topic]->title;
+				$cell->text = block_exacomp_get_topic_numbering($topic) . " " . $table_column[$topic]->title;
 				$row->cells[] = $cell;
 				
 				foreach($rowcontent->niveaus as $niveau => $element){
