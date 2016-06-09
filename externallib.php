@@ -3996,7 +3996,8 @@ class block_exacomp_external extends external_api {
 				'filename' => new external_value ( PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area' ),
 				'studentcomment' => new external_value ( PARAM_TEXT, 'studentcomment' ),
 				'itemid' => new external_value ( PARAM_INT, 'itemid (0 for insert, >0 for update)' ),
-				'courseid' => new external_value ( PARAM_INT, 'courseid' )
+				'courseid' => new external_value ( PARAM_INT, 'courseid' ),
+				'fileitemid' => new external_value ( PARAM_INT, 'fileitemid')
 		) );
 	}
 
@@ -4006,10 +4007,9 @@ class block_exacomp_external extends external_api {
 	 * @param int itemid (0 for new, >0 for existing)
 	 * @return array of course subjects
 	 */
-	public static function dakora_submit_example($exampleid,$studentvalue = null,$url,$filename,$studentcomment,$itemid=0,$courseid=0) {
+	public static function dakora_submit_example($exampleid,$studentvalue = null,$url,$filename,$studentcomment,$itemid=0,$courseid=0, $fileitemid = 0) {
 		global $CFG,$DB,$USER;
-
-		static::validate_parameters(static::dakora_submit_example_parameters(), array('exampleid'=>$exampleid,'url'=>$url,'filename'=>$filename,'studentcomment'=>$studentcomment,'studentvalue'=>$studentvalue,'itemid'=>$itemid,'courseid'=>$courseid));
+		static::validate_parameters(static::dakora_submit_example_parameters(), array('exampleid'=>$exampleid,'url'=>$url,'filename'=>$filename,'studentcomment'=>$studentcomment,'studentvalue'=>$studentvalue,'itemid'=>$itemid,'courseid'=>$courseid, 'fileitemid'=>$fileitemid));
 
 		if (!isset($type)) {
 			$type = ($filename != '') ? 'file' : 'url';
@@ -4025,7 +4025,7 @@ class block_exacomp_external extends external_api {
 				$insert = false;
 		}
 		require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
-
+	
 		if($insert) {
 			//store item in the right portfolio category
 			$course = get_course($courseid);
@@ -4065,6 +4065,7 @@ class block_exacomp_external extends external_api {
 
 		} else {
 			$item = $DB->get_record('block_exaportitem',array('id'=>$itemid));
+			
 			if($url != '')
 				$item->url = $url;
 			$item->timemodified = time();
@@ -4081,7 +4082,7 @@ class block_exacomp_external extends external_api {
 			$context = context_user::instance($USER->id);
 			$fs = get_file_storage();
 			try {
-				$old = $fs->get_file($context->id, "user", "private", 0, "/", $filename);
+				$old = $fs->get_file($context->id, "user", "draft", $fileitemid, "/", $filename);
 
 				if($old) {
 					$file_record = array('contextid'=>$context->id, 'component'=>'block_exaport', 'filearea'=>'item_file',
