@@ -936,9 +936,10 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 	// actually this is a global setting now
 	$settings->useprofoundness = get_config('exacomp', 'useprofoundness');
 
-	if ($settings->useprofoundness) {
+	/*if ($settings->useprofoundness) {
 		$settings->grading = 2;
-	} elseif (empty($settings->grading)) {
+	} else*/
+	if (empty($settings->grading)) {
 		$settings->grading = 1;
 	}
 	if (empty($settings->nostudents)) $settings->nostudents = 0;
