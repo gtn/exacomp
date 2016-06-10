@@ -4966,11 +4966,45 @@ function block_exacomp_calculate_statistic_for_example($courseid, $students, $ex
 			}
 
 			$topicNumbering = $topic->get_numbering();
-			foreach (array_values($topic->descriptors) as $i => $descriptor) {
-				$numberingCache[$descriptor->id] = $topicNumbering ? $topicNumbering.'.'.($i + 1) : '';
+			if (!$topicNumbering) {
+				// no numbering
+				foreach ($topic->descriptors as $descriptor) {
+					$numberingCache[$descriptor->id] = '';
 
-				foreach (array_values($descriptor->children) as $j => $descriptor) {
-					$numberingCache[$descriptor->id] = $topicNumbering ? $topicNumbering.'.'.($i + 1).'.'.($j + 1) : '';
+					foreach ($descriptor->children as $descriptor) {
+						$numberingCache[$descriptor->id] = '';
+					}
+				}
+			} else {
+				// get niveaus and descriptor counts
+				$niveaus = g::$DB->get_records(block_exacomp\DB_NIVEAUS);
+				foreach ($topic->descriptors as $descriptor) {
+					if (isset($niveaus[$descriptor->niveauid])) {
+						@$niveaus[$descriptor->niveauid]->descriptor_cnt++;
+					}
+				}
+
+				$descriptorMainNumber = 0;
+				foreach ($topic->descriptors as $descriptor) {
+					if (!isset($niveaus[$descriptor->niveauid])) {
+						// descriptor without niveau
+						$descriptorMainNumber++;
+						$descriptorNumber = $descriptorMainNumber;
+					} elseif ($niveaus[$descriptor->niveauid]->descriptor_cnt > 1) {
+						// make niveaus with multiple descriptors in the format of "{$niveau->numb}-{$i}"
+						$descriptorMainNumber = $niveaus[$descriptor->niveauid]->numb;
+						@$niveaus[$descriptor->niveauid]->descriptor_i++;
+						$descriptorNumber = $niveaus[$descriptor->niveauid]->numb.'-'.$niveaus[$descriptor->niveauid]->descriptor_i;
+					} else {
+						$descriptorMainNumber = $niveaus[$descriptor->niveauid]->numb;
+						$descriptorNumber = $niveaus[$descriptor->niveauid]->numb;
+					}
+
+					$numberingCache[$descriptor->id] = $topicNumbering ? $topicNumbering.'.'.$descriptorNumber : '';
+
+					foreach (array_values($descriptor->children) as $j => $descriptor) {
+						$numberingCache[$descriptor->id] = $topicNumbering ? $topicNumbering.'.'.$descriptorNumber.'.'.($j + 1) : '';
+					}
 				}
 			}
 		}
