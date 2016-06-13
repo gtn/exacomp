@@ -2636,11 +2636,11 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		upgrade_block_savepoint(true, 2016040600, 'exacomp');
 	}
 
-	if ($oldversion < 2016041401) {
+	if ($oldversion < 2016041402) {
 
 		// move elove externaltask to filestorage
 
-		function upgrade_block_exacomp_2016041401_move_to_file_storage($item) {
+		function upgrade_block_exacomp_2016041402_move_to_file_storage($item) {
 			global $CFG;
 
 			$localurlfield = 'externaltask';
@@ -2653,14 +2653,14 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 			}
 
 			if (!$url = parse_url($url)) {
-				die('TODO upgrade_block_exacomp_2016042200_move_to_file_storage: wrong url?');
+				die('TODO upgrade_block_exacomp_2016041402_move_to_file_storage: wrong url?');
 			}
 
 			parse_str($url['query'], $params);
 			if (isset($params['action']) && $params['action'] == 'serve' && isset($params['i'])) {
 				// ok
 			} else {
-				die('TODO upgrade_block_exacomp_2016042200_move_to_file_storage: wrong file format');
+				die('TODO upgrade_block_exacomp_2016041402_move_to_file_storage: wrong file format');
 			}
 
 			$fs = get_file_storage();
@@ -2690,7 +2690,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 
 		$examples = $DB->get_records(\block_exacomp\DB_EXAMPLES, null, 'id DESC');
 		foreach ($examples as $example) {
-			$update = upgrade_block_exacomp_2016041401_move_to_file_storage($example);
+			$update = upgrade_block_exacomp_2016041402_move_to_file_storage($example);
 
 			if (!$update) continue;
 
@@ -2700,7 +2700,7 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		}
 
 		// Exacomp savepoint reached.
-		upgrade_block_savepoint(true, 2016041401, 'exacomp');
+		upgrade_block_savepoint(true, 2016041402, 'exacomp');
 	}
 
 	if ($oldversion < 2016042100) {
