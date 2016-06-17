@@ -5823,7 +5823,7 @@ function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $stud
 
 	$items_examp = $DB->get_records_sql($sql,array($exampleid, $studentid));
 
-	if($items_examp)
+	if($items_examp || ($comp && $comp->student_evaluation !== null && $comp->student_evaluation > 0))
 		return \block_exacomp\EXAMPLE_STATE_SUBMITTED;
 
 	$schedule = $DB->get_records(\block_exacomp\DB_SCHEDULE, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>$studentid));
