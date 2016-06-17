@@ -51,7 +51,7 @@ class block_exacomp_example_submission_form extends moodleform {
 		$mform->setType('exampleid', PARAM_INT);
 		$mform->setDefault('exampleid',$exampleid);
 		
-		$this->add_action_buttons(false);
+		$this->add_action_buttons(false, get_string('submit_example', 'block_exacomp'));
 	}
 
 	function validation($data, $files) {

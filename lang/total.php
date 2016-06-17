@@ -1835,4 +1835,8 @@ return  [
 		'Ich habe diese Kompetenz erreicht: ',
 		'Ich habe diese Kompetenz erreicht: ',
 	],
+	'submit_example' => [
+		'Abgeben',
+		'Submit'
+	],
 ];
