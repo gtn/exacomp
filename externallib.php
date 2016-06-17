@@ -4656,6 +4656,7 @@ class block_exacomp_external extends external_api {
 			$data_content->descriptorid = $descriptor->id;
 			$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
 			$data_content->lfstitle = $niveau->title;
+			$data_content->niveausort = $niveau->title;
 			$lmdata = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $user, 0, $niveau->title);
 			$data_content->lfsgraphdata = $lmdata->dataobject;
 			$data_content->totallmnumb = $lmdata->total;
@@ -4664,9 +4665,12 @@ class block_exacomp_external extends external_api {
 			$data_content->additionalinfo = ((isset($user->competencies->teacher_additional_grading[$descriptor->id]) && $user->competencies->teacher_additional_grading[$descriptor->id]))?$user->competencies->teacher_additional_grading[$descriptor->id]:-1;
 			$data_content->evalniveauid = (isset($user->competencies->niveau[$descriptor->id]))?$user->competencies->niveau[$descriptor->id]:null;
 			$data_content->studentevaluation = (isset($user->competencies->student[$descriptor->id]))?$user->competencies->student[$descriptor->id]:-1;
-			$data->descriptordata[] = $data_content;
+			$data_contents[] = $data_content;
 		}
-
+		#sort profile entries
+		usort($data_contents, "static::cmp");
+		$data->descriptordata = $data_contents;
+		
 		return $data;
 	}
 
@@ -4682,6 +4686,7 @@ class block_exacomp_external extends external_api {
 			'descriptordata' => new external_multiple_structure ( new external_single_structure ( array (
 					'descriptorid' => new external_value( PARAM_INT, 'id of descriptor'),
 					'lfstitle' => new external_value ( PARAM_TEXT, 'title of lfs' ),
+					'niveausort' => new external_value (PARAM_TEXT, 'sorting'),
 					'lfsgraphdata' => new external_multiple_structure ( new external_single_structure( array (
 						'data' => new external_single_structure ( array (
 							'niveau' => new external_value ( PARAM_TEXT, 'title of niveau'),
@@ -4900,6 +4905,7 @@ class block_exacomp_external extends external_api {
 						'evaluation_text' => new external_value (PARAM_TEXT, 'evaluation text', VALUE_DEFAULT, ""),
 						'evaluation_mapped'=> new external_value (PARAM_INT, 'mapped evaluation', VALUE_DEFAULT, -1),
 						'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id', VALUE_DEFAULT, 0),
+						'show' => new external_value (PARAM_BOOL, 'show cell', VALUE_DEFAULT, true),
 						'topicid' => new external_value (PARAM_INT, 'topic id', VALUE_DEFAULT, 0),
 						'span' => new external_value ( PARAM_INT, 'colspan' )
 					) ) )
@@ -5499,7 +5505,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 				'wstoken' => static::wstoken(),
 				'url' => $url,
 			]))->out(false);
-		} elseif (!preg_match('!^.*://!', $url)) {
+		} elseif (!preg_replace('!^.*://!', '', $url)) {
 			$url = 'http://'.$url;
 }
 
