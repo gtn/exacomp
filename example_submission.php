@@ -59,14 +59,15 @@ echo $output->header($context, $courseid, '', false);
 /* CONTENT REGION */
 
 $studentExamples = block_exacomp_get_user_examples_by_course($USER, $courseid);
+require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
 if(!empty($studentExamples->teacher[$exampleid])) {
-	die(get_string('isgraded','block_exacomp'));
+	if(($itemInformation && !block_exaport_item_is_resubmitable($itemInformation->id)) || !$itemInformation)
+		die(get_string('isgraded','block_exacomp'));
 }
 
 $form = new block_exacomp_example_submission_form($_SERVER['REQUEST_URI'], array("exampleid"=>$exampleid));
 
 if($formdata = $form->get_data()) {
-	require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
 	
 	$type = 'file';
 	

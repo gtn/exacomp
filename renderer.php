@@ -2108,9 +2108,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								$evaluation_cell->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
 							
 								
-							if($data->showevaluation)
+							if($data->showevaluation) {
+								if ($data->role == \block_exacomp\ROLE_TEACHER) {
+									$evaluation_cell->text .= $this->submission_icon($data->courseid, $example->id, $student->id);
+									$evaluation_cell->text .= $this->resubmission_icon($example->id, $student->id, $data->courseid);
+								}	
 								$exampleRow->cells[] = $evaluation_cell;
-								
+							}
+							
 							if(block_exacomp_use_eval_niveau() && $data->role == \block_exacomp\ROLE_TEACHER){
 								$exampleRow->cells[] = $niveau_cell;
 							}
