@@ -729,7 +729,7 @@ return  [
 		'Submission',
 	],
 	'assignments' => [
-		'Kurs-Aufgaben',
+		'Moodle Aktivitäten',
 		'Assignments',
 	],
 	'files' => [

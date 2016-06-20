@@ -1115,8 +1115,9 @@ class data_importer extends data {
 		if (!file_exists($file)) {
 			throw new moodle_exception('filenotfound');
 		}
-		
-		\core_php_time_limit::raise();
+
+		@set_time_limit(60*10);
+		// \core_php_time_limit::raise();
 		raise_memory_limit(MEMORY_HUGE);
 		
 		self::$import_source_type = $par_source;

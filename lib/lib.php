@@ -6654,7 +6654,7 @@ function block_exacomp_map_value_to_grading($course){
 				$descriptor = $DB->get_record(\block_exacomp\DB_DESCRIPTORS, array('id'=>$result->compid));
 			
 			if($result->comptype != \block_exacomp\TYPE_DESCRIPTOR || $descriptor->parentid == 0){
-				$result->additionalinfo = $mapping[$result->value];
+				$result->additionalinfo = @$mapping[$result->value];
 				$DB->update_record(\block_exacomp\DB_COMPETENCES, $result);
 			}
 		}
