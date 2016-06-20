@@ -6180,6 +6180,10 @@ function block_exacomp_save_additional_grading_for_descriptor($courseid, $descri
 	
 	$value = block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
 	$record = block_exacomp\get_comp_eval($courseid, \block_exacomp\ROLE_TEACHER, $studentid, $comptype, $descriptorid);
+	
+	// force additional info to be stored with a dot as decimal mark
+	$additionalinfo = str_replace(",", ".", $additionalinfo);
+	
 	if($record){
 		$record->additionalinfo = $additionalinfo;
 		$record->value = $value;
