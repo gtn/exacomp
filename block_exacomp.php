@@ -210,6 +210,8 @@ class block_exacomp extends block_list {
 		//import xml with provided server url
 		if($xmlserverurl) {
 			try {
+				require_once __DIR__."/classes/data.php";
+
 				if (block_exacomp\data_importer::do_import_url($xmlserverurl, \block_exacomp\IMPORT_SOURCE_DEFAULT)) {
 					mtrace("import done");
 					block_exacomp_settstamp();
