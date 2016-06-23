@@ -283,7 +283,8 @@ class block_exacomp_external extends external_api {
 			$example->externalurl = $example->task;
 		}
 
-		$example->externalurl = static::format_url($example->externalurl);
+		if($example->externalurl)
+			$example->externalurl = static::format_url($example->externalurl);
 
 		// TODO: task field still needed in exacomp?
 		if (!$example->task) {
