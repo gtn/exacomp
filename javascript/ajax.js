@@ -616,6 +616,13 @@
 		}
 	});
 	
+	$(document).keydown(function(event) {
+		console.log(event.which);
+		if ( event.which == 13 ) {
+			   event.preventDefault();
+		}
+	});
+	
 	$(document).on('click', '[exa-type=iframe-popup]', function(event) {
 		event.preventDefault();
 
