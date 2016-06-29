@@ -131,8 +131,14 @@ if($isAdmin || block_exacomp_check_customupload()) {
 					}
 				} else {
 					echo $OUTPUT->box(get_string("importinfo", "block_exacomp"));
-					if($isAdmin) echo $OUTPUT->box(get_string("importwebservice", "block_exacomp",new moodle_url("/admin/settings.php", array('section'=>'blocksettingexacomp'))));
-			
+					if($isAdmin) echo $OUTPUT->box(get_string("importwebservice", "block_exacomp", (string)new moodle_url("/admin/settings.php", array('section'=>'blocksettingexacomp'))));
+
+					@set_time_limit(0);
+					$max_execution_time = (int)ini_get('max_execution_time');
+					if ($max_execution_time && $max_execution_time < 60*5) {
+						echo '<h3>'.\block_exacomp\get_string("import_max_execution_time", null, $max_execution_time).'</h3>';
+					}
+
 					$mform->display();
 				}
 			}

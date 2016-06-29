@@ -150,6 +150,7 @@ $string['help_content'] = '<h1>Introduction Video</h1>
 // === Import ===
 $string['importinfo'] = 'Please create your outcomes/standards at <a href="http://www.edustandards.org">www.edustandards.org</a> or visit <a href="http://www.github.com/gtn/edustandards">github.com/gtn/edustandards</a> to download an available xml file.';
 $string['importwebservice'] = 'It is possible to keep the data up to date via a <a href="{$a}">webservice</a>.';
+$string['import_max_execution_time'] = 'Important: The current Serversettings limit the Import to run up to {$a} seconds. If the import takes longer no data will be imported and the browser may display "500 Internal Server Error".';
 $string['importdone'] = 'data has already been imported from xml';
 $string['importpending'] = 'no data has been imported yet!';
 $string['doimport'] = 'Import outcomes/standards';
@@ -545,3 +546,4 @@ $string['requirements'] = 'Was du schon können solltest: ';
 $string['forwhat'] = 'Wofür du das brauchst: ';
 $string['howtocheck'] = 'Wie du dein Können prüfen kannst: ';
 $string['reached_topic'] = 'Ich habe diese Kompetenz erreicht: ';
+$string['submit_example'] = 'Submit';

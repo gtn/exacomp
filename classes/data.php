@@ -1116,12 +1116,14 @@ class data_importer extends data {
 			throw new moodle_exception('filenotfound');
 		}
 
-		@set_time_limit(60*10);
+		@set_time_limit(0);
 		// \core_php_time_limit::raise();
 		raise_memory_limit(MEMORY_HUGE);
 		
 		self::$import_source_type = $par_source;
 		self::$import_time = time();
+
+		$transaction = g::$DB->start_delegated_transaction();
 		
 		// guess it's a zip file
 		$zip = new ZipArchive();
@@ -1264,6 +1266,8 @@ class data_importer extends data {
 		self::normalize_database();
 	
 		block_exacomp_settstamp();
+
+		$transaction->allow_commit();
 		
 		return true;
 	}

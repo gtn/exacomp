@@ -462,6 +462,10 @@ return  [
 		'Es besteht auch die Möglichkeit die Daten über ein <a href="{$a}">Webservice</a> aktuell zu halten.',
 		'It is possible to keep the data up to date via a <a href="{$a}">webservice</a>.',
 	],
+	'import_max_execution_time' => [
+		'Wichtig: Die aktuellen Servereinstellung beschränken den Import auf {$a} Sekunden. Falls der Import länger dauert, wird er abgebrochen und es werden keine Daten importiert. Am Bildschirm wird in diesem Fall eine Sever Fehlermeldung (wie z.B. "500 Internal Server Error") angezeigt.',
+		'Important: The current Serversettings limit the Import to run up to {$a} seconds. If the import takes longer no data will be imported and the browser may display "500 Internal Server Error".',
+	],
 	'importdone' => [
 		'Die allgemeinen Bildungsstandards sind bereits importiert.',
 		'data has already been imported from xml',
