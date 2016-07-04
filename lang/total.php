@@ -839,8 +839,18 @@ return  [
 		'Erneute Abgabe',
 		'New Submission',
 	],
-
-
+	'value_too_large' => [
+			'Fehler: Benotungen dürfen nicht größer als 6.0 sein!',
+			'Error: Values above 6.0 are not allowed',
+	],
+	'value_too_low' => [
+			'Fehler: Benotungen dürfen nicht kleiner als 1.0 sein!',				
+			'Error: Values below 1.0 are not allowed',
+		],
+	'value_not_allowed' => [				
+			'Fehler: Benotungen müssen Zahlenwerte zwischen 1.0 und 6.0 sein',
+			'Error: Values need to be numbers between 1.0 and 6.0',
+	],
 	// === Example Submission ===
 	'example_submission_header' => [
 		'Aufgabe {$a} bearbeiten',

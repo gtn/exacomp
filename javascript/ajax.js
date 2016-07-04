@@ -147,11 +147,17 @@
 		var value = $(this).val();
 		// check for valid grading input range
 		if (value > 6.0) {
-			value = 6.0;
+			alert(M.util.get_string('value_too_large','block_exacomp'));
+			value = null;
 			$(this).val(value);
 		}
 		else if(value < 1.0 && value != "") {
-			value = 1.0;
+			alert(M.util.get_string('value_too_low','block_exacomp'));
+			value = null
+			$(this).val(value);
+		} else if(value != "" && !$.isNumeric(value)) {
+			alert(M.util.get_string('value_not_allowed','block_exacomp'));
+			value = null
 			$(this).val(value);
 		}
 		

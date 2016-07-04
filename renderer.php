@@ -2042,12 +2042,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								if(!$this->is_edit_mode()){
 									$titleCell->text .= $this->schedule_icon($example->id, ($studentid)?$studentid:BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $data->courseid);
 
-									if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
 										$titleCell->text .= html_writer::link("#",
 											html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'), 'title'=> get_string('pre_planning_storage', 'block_exacomp'))),
 											array('exa-type' => 'add-example-to-schedule', 'exampleid' => $example->id, 'studentid' => 0, 'courseid' => $data->courseid));
 
-									}
 								}
 								$titleCell->text .= $this->competence_association_icon($example->id, $data->courseid, $editmode);
 

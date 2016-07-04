@@ -177,7 +177,7 @@ function block_exacomp_init_js_css(){
 		'show', 'hide' //, 'selectall', 'deselectall'
 	], 'moodle');
 	$PAGE->requires->strings_for_js([
-		'override_notice', 'unload_notice', 'example_sorting_notice', 'delete_unconnected_examples'
+		'override_notice', 'unload_notice', 'example_sorting_notice', 'delete_unconnected_examples', 'value_too_large', 'value_too_low', 'value_not_allowed'
 	], 'block_exacomp');
 	
 	// page specific js/css
@@ -4615,6 +4615,14 @@ function block_exacomp_get_viewurl_for_example($studentid, $viewerid, $exampleid
 
 	return $CFG->wwwroot.'/blocks/exaport/shared_item.php?access='.$access;
 }
+function block_exacomp_get_gridurl_for_example($courseid, $studentid, $exampleid) {
+	global $CFG, $DB;
+	
+	$example_descriptors = $DB->get_records(\block_exacomp\DB_DESCEXAMP,array('exampid'=>$exampleid),'','descrid');
+	$tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid);
+	$topic = (reset(reset($tree)->topics));
+	return $CFG->wwwroot.'/blocks/exacomp/assign_competencies.php?courseid='.$courseid . '&studentid='.$studentid . '&subjectid='.$topic->subjid . '&topicid='.$topic->id;
+}
 function block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid) {
 	global $USER, $DB;
 
@@ -6062,16 +6070,17 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
 
 	message_send ( $eventdata );
 }
-function block_exacomp_send_submission_notification($userfrom, $userto, $example, $date, $time) {
+function block_exacomp_send_submission_notification($userfrom, $userto, $example, $date, $time, $courseid) {
 	global $CFG,$USER;
 
 	$subject = get_string('notification_submission_subject','block_exacomp',array('student' => fullname($userfrom), 'example' => $example->title));
 
-	$viewurl = block_exacomp_get_viewurl_for_example($userfrom->id,$userto->id,$example->id);
-	$message = get_string('notification_submission_body','block_exacomp',array('student' => fullname($userfrom), 'example' => $example->title, 'date' => $date, 'time' => $time, 'viewurl' => $viewurl));
+	$gridurl = block_exacomp_get_gridurl_for_example($courseid, $userto->id, $example->id);
+	
+	$message = get_string('notification_submission_body','block_exacomp',array('student' => fullname($userfrom), 'example' => $example->title, 'date' => $date, 'time' => $time, 'viewurl' => $gridurl));
 	$context = get_string('notification_submission_context','block_exacomp');
 
-	block_exacomp_send_notification("submission", $userfrom, $userto, $subject, $message, $context, $viewurl);
+	block_exacomp_send_notification("submission", $userfrom, $userto, $subject, $message, $context, $gridurl);
 }
 function block_exacomp_notify_all_teachers_about_submission($courseid, $exampleid, $timecreated) {
 	global $USER, $DB;
@@ -6079,7 +6088,7 @@ function block_exacomp_notify_all_teachers_about_submission($courseid, $examplei
 	$teachers = block_exacomp_get_teachers_by_course($courseid);
 	if($teachers) {
 		foreach($teachers as $teacher) {
-			block_exacomp_send_submission_notification($USER, $teacher, $DB->get_record(\block_exacomp\DB_EXAMPLES,array('id'=>$exampleid)), date("D, d.m.Y",$timecreated), date("H:s",$timecreated));
+			block_exacomp_send_submission_notification($USER, $teacher, $DB->get_record(\block_exacomp\DB_EXAMPLES,array('id'=>$exampleid)), date("D, d.m.Y",$timecreated), date("H:s",$timecreated), $courseid);
 		}
 	}
 }
