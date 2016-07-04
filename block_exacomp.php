@@ -152,7 +152,11 @@ class block_exacomp extends block_list {
 				//Einstellungen
 				$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/edit_course.php', array('courseid' => $courseid)), get_string('tab_teacher_settings', 'block_exacomp'), array('title' => get_string('tab_teacher_settings', 'block_exacomp')));
 				$this->content->icons[] = html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/subjects_topics.gif'), 'alt' => "", 'height' => 16, 'width' => 23));
-			
+				
+				if(!$ready_for_use) {
+					$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/subject.php', array('courseid' => $courseid, 'embedded' => false)), get_string('tab_teacher_settings_new_subject', 'block_exacomp'), array('title' => get_string('tab_teacher_settings_new_subject', 'block_exacomp')));
+					$this->content->icons[] = html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/subject.png'), 'alt' => "", 'height' => 16, 'width' => 23));
+				}
 				if (get_config('exacomp','external_trainer_assign')) {
 					$this->content->items[]='<a title="' . get_string('block_exacomp_external_trainer_assign', 'block_exacomp') . '" href="' . $CFG->wwwroot . '/blocks/exacomp/externaltrainers.php?courseid=' . $COURSE->id . '">' . get_string('block_exacomp_external_trainer_assign', 'block_exacomp') . '</a>';
 					$this->content->icons[]='<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/personal.png" height="16" width="23" alt="'.get_string("block_exacomp_external_trainer_assign", "block_exacomp").'" />';

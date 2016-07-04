@@ -106,7 +106,10 @@ return  [
 		'Auszeichnungen bearbeiten',
 		'Edit badges',
 	],
-
+	'tab_teacher_settings_new_subject' => [
+		'Neuen Kompetenzraster anlegen',
+		'Create new subject',
+	],
 
 	// === Student Tabs ===
 	'tab_student_all' => [

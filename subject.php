@@ -22,6 +22,7 @@ require __DIR__.'/inc.php';
 global $DB, $OUTPUT, $PAGE, $USER;
 
 $courseid = required_param('courseid', PARAM_INT);
+$embedded = optional_param('embedded', true, PARAM_BOOL);
 
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 	print_error('invalidcourse', 'block_exacomp', $courseid);
@@ -38,7 +39,8 @@ $item = $id ? \block_exacomp\subject::get($id) : null;
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/subject.php', array('courseid' => $courseid));
 $PAGE->set_heading($item ? \block_exacomp\trans(['de:Kompetenzraster bearbeiten', 'en:Modify competence grid']) : \block_exacomp\trans(['de:Neuen Kompetenzraster anlegen', 'en:Create new competence grid']));
-$PAGE->set_pagelayout('embedded');
+if($embedded)
+	$PAGE->set_pagelayout('embedded');
 
 // build tab navigation & print header
 
