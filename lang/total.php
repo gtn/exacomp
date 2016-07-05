@@ -1682,60 +1682,60 @@ return  [
 
 	// === Notifications ===
 	'notification_submission_subject' => [
-		'{$a->student} hat eine Lösung zum Lernmaterial {$a->example} eingereicht.',
-		'{$a->student} submitted a solution for {$a->example}.',
+		'{$a->site}: {$a->student} hat eine Lösung zum Lernmaterial {$a->example} eingereicht',
+		'{$a->site}: {$a->student} submitted a solution for {$a->example}',
 	],
 	'notification_submission_body' => [
-		'{$a->student} hat die Aufgabe {$a->example} bearbeitet und am {$a->date} um {$a->time} hochgeladen. Die Abgabe kann im ePortfolio eingesehen werden: <a href="{$viewurl}">{$a->example}</a>',
-		'{$a->student} submitted {$a->example} on {$a->date} at {$a->time}. The submission can be seen in ePortfolio: <a href="{$viewurl}">{$a->example}</a>',
+		'Sehr geehrter/geehrte {$a->receiver}, </br></br> {$a->student} hat die Aufgabe {$a->example} bearbeitet und am {$a->date} um {$a->time} hochgeladen. Die Abgabe kann im ePortfolio eingesehen werden: <a href="{$viewurl}">{$a->example}</a> </br></br> Die Nachricht wurde generiert von der Moodle-Seite {$a->site}.',
+		'Dear Mr./Ms. {$a->receiver}, </br></br> {$a->student} submitted {$a->example} on {$a->date} at {$a->time}. The submission can be seen in ePortfolio: <a href="{$viewurl}">{$a->example}</a> </br></br> This message has been generated form moodle site {$a->site}.',
 	],
 	'notification_submission_context' => [
 		'Abgabe',
 		'Submission',
 	],
 	'notification_grading_subject' => [
-		'Neue Beurteilungen im Kurs {$a->course}',
-		'New grading in course {$a->course}',
+		'{$a->site}: Neue Beurteilungen im Kurs {$a->course}',
+		'{$a->site}: New grading in course {$a->course}',
 	],
 	'notification_grading_body' => [
-		'Du hast im Kurs {$a->course} neue Beurteilungen von {$a->teacher} erhalten.',
-		'You have got new gradings in {$a->course} from {$a->teacher}.',
+		'Lieber/Liebe {$a->receiver}, </br></br> Du hast im Kurs {$a->course} neue Beurteilungen von {$a->teacher} erhalten.</br></br> Die Nachricht wurde generiert von der Moodle-Seite {$a->site}.',
+		'Dear {$a->receiver}, </br></br>You have got new gradings in {$a->course} from {$a->teacher}.</br></br> This message has been generated form moodle site {$a->site}.',
 	],
 	'notification_grading_context' => [
 		'Beurteilung',
 		'Grading',
 	],
 	'notification_self_assessment_subject' => [
-		'Neue Selbsteinschätzung im Kurs {$a->course}',
-		'New self assessments in {$a->course}',
+		'{$a->site}: Neue Selbsteinschätzung im Kurs {$a->course}',
+		'{$a->site}: New self assessments in {$a->course}',
 	],
 	'notification_self_assessment_body' => [
-		'{$a->student} hat im Kurs {$a->course} neue Selbsteinschätzungen gemacht.',
-		'{$a->student} has new self assessments in {$a->course}.',
+		'Sehr geehrter/geehrte {$a->receiver}, </br></br> {$a->student} hat im Kurs {$a->course} neue Selbsteinschätzungen gemacht.</br></br> Die Nachricht wurde generiert von der Moodle-Seite {$a->site}.',
+		'Dear Mr./Ms. {$a->receiver}, </br></br> {$a->student} has new self assessments in {$a->course}.</br></br> This message has been generated form moodle site {$a->site}.',
 	],
 	'notification_self_assessment_context' => [
 		'Selbsteinschätzung',
 		'Self assessment',
 	],
 	'notification_example_comment_subject' => [
-		'Neuer Kommentar bei Aufgabe {$a->example}',
-		'New comment for example {$a->example}',
+		'{$a->site}: Neuer Kommentar bei Aufgabe {$a->example}',
+		'{$a->site}: New comment for example {$a->example}',
 	],
 	'notification_example_comment_body' => [
-		'{$a->teacher} hat im Kurs {$a->course} die Aufgabe {$a->example} kommentiert.',
-		'{$a->teacher} commented in {$a->course} the example {$a->example}.',
+		'Lieber/Liebe {$a->receiver}, </br></br> {$a->teacher} hat im Kurs {$a->course} die Aufgabe {$a->example} kommentiert.</br></br> Die Nachricht wurde generiert von der Moodle-Seite {$a->site}.',
+		'Dear {$a->receiver}, </br></br>{$a->teacher} commented in {$a->course} the example {$a->example}.</br></br> This message has been generated form moodle site {$a->site}.',
 	],
 	'notification_example_comment_context' => [
 		'Kommentar',
 		'Comment',
 	],
 	'notification_weekly_schedule_subject' => [
-		'Neue Aufgabe am Wochenplan',
-		'New example on the schedule',
+		'{$a->site}: Neue Aufgabe am Wochenplan',
+		'{$a->site}: New example on the schedule',
 	],
 	'notification_weekly_schedule_body' => [
-		'{$a->teacher} hat dir im Kurs {$a->course} eine neue Aufgabe auf den Wochenplan gelegt.',
-		'{$a->teacher} added an example in {$a->course} to your weekly schedule.',
+		'Lieber/Liebe {$a->receiver}, </br></br>{$a->teacher} hat dir im Kurs {$a->course} eine neue Aufgabe auf den Wochenplan gelegt.</br></br> Die Nachricht wurde generiert von der Moodle-Seite {$a->site}.',
+		'Dear {$a->receiver}, </br></br>{$a->teacher} added an example in {$a->course} to your weekly schedule.</br></br> This message has been generated form moodle site {$a->site}.',
 	],
 	'notification_weekly_schedule_context' => [
 		'Wochenplan',
@@ -1753,6 +1753,7 @@ return  [
 		'Bei Aktionen wie einer Lernmaterialien-Einreichung oder einer Beurteilung werden Nachrichten an die zuständigen Benutzer gesendet.',
 		'Users will get notified after relevant actions.',
 	],
+
 
 
 	// === Logging ===
