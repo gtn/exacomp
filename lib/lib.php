@@ -6724,9 +6724,9 @@ namespace block_exacomp {
 				return array (
 						- 1 => 'ohne Angabe',
 						0 => 'nicht erreicht',
-						1 => 'teilweise erreicht',
-						2 => 'überwiegend erreicht',
-						3 => 'vollständig erreicht' 
+						1 => 'teilweise',
+						2 => 'überwiegend',
+						3 => 'vollständig' 
 				);
 			} 
 			// else use value scheme set in the course
