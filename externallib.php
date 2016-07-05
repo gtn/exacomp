@@ -2665,6 +2665,7 @@ class block_exacomp_external extends external_api {
 				'descriptorid' => new external_value ( PARAM_INT, 'id of descriptor' ),
 				'title' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
 				'evaluation' => new external_value ( PARAM_INT, 'evaluation of descriptor' ),
+				'topicid' => new external_value (PARAM_INT, 'id of topic'),
 				'numbering' => new external_value ( PARAM_TEXT, 'descriptor numbering')
 		) ) );
 	}
