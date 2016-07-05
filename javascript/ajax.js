@@ -36,7 +36,6 @@
 	});
 	
 	$(document).on('change', 'input[name^=datadescriptors\-]', function() {
-		
 		// check if anyone else has edited the competence before. if so, ask for confirmation
 		if($(this).attr("reviewerid")) {
 			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
@@ -89,13 +88,17 @@
 		prev_val = $(this).val();
 	});
 	
+	$(document).on('focus', 'select[name^=niveau\_]', function() {
+		prev_val = $(this).val();
+	});
+	
 	$(document).on('change', 'select[name^=datadescriptors\-]', function() {
 		// check if anyone else has edited the competence before. if so, ask for
 		// confirmation
 		if ($(this).attr("reviewerid")) {
 			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
 				$(this).val(prev_val);
-					return;
+				return;
 			} else {
 			// remove reviewer attribute
 				$(this).removeAttr("reviewerid");
@@ -121,6 +124,19 @@
 		var compid = this.getAttribute('exa-compid');
 		var userid = this.getAttribute('exa-userid');		
 		var niveauid = $(this).val();
+		
+		// check if anyone else has edited the competence before. if so, ask for
+		// confirmation
+		if ($(this).attr("reviewerid")) {
+			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+				$(this).val(prev_val);
+					return;
+			} else {
+			// remove reviewer attribute
+				$(this).removeAttr("reviewerid");
+			}
+		}
+		
 		var value = $('select[name=datadescriptors-'+compid+'-'+userid+'-teacher').val();
 		// in case of checkboxes instead of selects:
 		if(value === undefined)
@@ -141,12 +157,28 @@
 			competencies[compid + "-" + userid]['niveauid'] = niveauid;
 	});
 
+	$(document).on('focus', 'input[name^=add-grading\-]', function() {
+		prev_val = $(this).val();
+	});
+	
 	$(document).on('change', 'input[name^=add-grading\-]', function(event) {
 		var compid = this.getAttribute('exa-compid');
 		var userid = this.getAttribute('exa-userid');	
 		var value = $(this).val();
 		
 		value = value.replace(",", ".");
+		
+		// check if anyone else has edited the competence before. if so, ask for confirmation
+		if($(this).attr("reviewerid")) {
+			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+				$(this).val(prev_val);
+				return;
+			}
+			else {
+				//remove reviewer attribute
+				$(this).removeAttr("reviewerid");
+			}
+		}
 		
 		// check for valid grading input range
 		if (value > 6.0) {
@@ -186,12 +218,27 @@
 	
 	// # TOPICS
 	var topics = {};
+	$(document).on('focus', 'input[name^=datatopics\-]', function() {
+		prev_val = $(this).val();
+	});
+	
 	$(document).on('click', 'input[name^=datatopics\-]', function() {
 		var id = this.getAttribute('exa-compid')+"-"+this.getAttribute('exa-userid');
 		
 		var compid = this.getAttribute('exa-compid');
 		var userid = this.getAttribute('exa-userid');	
 		var niveauid = $('select[name=niveau_topic-'+compid+'-'+userid+']').val();
+		
+		if($(this).attr("reviewerid")) {
+			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+				$(this).prop("checked",prev_val);
+				return;
+			}
+			else {
+				//remove reviewer attribute
+				$(this).removeAttr("reviewerid");
+			}
+		}
 		
 		if ($(this).prop("checked")) {
 			if (topics[this.name]) {
@@ -215,7 +262,25 @@
 				};
 		}
 	});
+	
+	$(document).on('focus', 'select[name^=datatopics\-]', function() {
+		prev_val = $(this).val();
+	});
+	
+		
 	$(document).on('change', 'select[name^=datatopics\-]', function() {
+		// check if anyone else has edited the competence before. if so, ask for
+		// confirmation
+		if ($(this).attr("reviewerid")) {
+			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+				$(this).val(prev_val);
+				return;
+			} else {
+			// remove reviewer attribute
+				$(this).removeAttr("reviewerid");
+			}
+		}
+		
 		var compid = this.getAttribute('exa-compid');
 		var userid = this.getAttribute('exa-userid');	
 		var niveauid = $('select[name=niveau_topic-'+compid+'-'+userid+']').val();
@@ -238,6 +303,18 @@
 		var name = 'datatopics-'+compid+'-'+userid+'-teacher';
 		var value = $('select[name='+name+']').val();
 		
+		// check if anyone else has edited the competence before. if so, ask for
+		// confirmation
+		if ($(this).attr("reviewerid")) {
+			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+				$(this).val(prev_val);
+					return;
+			} else {
+			// remove reviewer attribute
+				$(this).removeAttr("reviewerid");
+			}
+		}
+		
 		// in case of checkboxes instead of selects:
 		if(value === undefined)
 			if ($('input[name='+name+']').prop("checked"))
@@ -258,10 +335,26 @@
 	});
 	// # SUBJECTS
 	var subjects = {}
+	var topics = {};
+	$(document).on('focus', 'input[name^=datasubjects\-]', function() {
+		prev_val = $(this).val();
+	});
+		
 	$(document).on('click', 'input[name^=datasubjects\-]', function() {
 		var compid = this.getAttribute('exa-compid');
 		var userid = this.getAttribute('exa-userid');	
 		var niveauid = $('select[name=niveau_subject-'+compid+'-'+userid+']').val();
+		
+		if($(this).attr("reviewerid")) {
+			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+				$(this).prop("checked",prev_val);
+				return;
+			}
+			else {
+				//remove reviewer attribute
+				$(this).removeAttr("reviewerid");
+			}
+		}
 		
 		if ($(this).prop("checked")) {
 			if (subjects[this.name]) {
@@ -285,7 +378,24 @@
 				};
 		}
 	});
+	
+	$(document).on('focus', 'select[name^=datasubjects\-]', function() {
+		prev_val = $(this).val();
+	});
+		
 	$(document).on('change', 'select[name^=datasubjects\-]', function() {
+		// check if anyone else has edited the competence before. if so, ask for
+		// confirmation
+		if ($(this).attr("reviewerid")) {
+			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+				$(this).val(prev_val);
+				return;
+			} else {
+			// remove reviewer attribute
+				$(this).removeAttr("reviewerid");
+			}
+		}
+		
 		var compid = this.getAttribute('exa-compid');
 		var userid = this.getAttribute('exa-userid');	
 		var niveauid = $('select[name=niveau_subject-'+compid+'-'+userid).val();
@@ -308,6 +418,18 @@
 		var niveauid = $(this).val();
 		var name = 'datasubjects-'+compid+'-'+userid+'-teacher';
 		var value = $('select[name='+name+']').val();
+		
+		// check if anyone else has edited the competence before. if so, ask for
+		// confirmation
+		if ($(this).attr("reviewerid")) {
+			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+				$(this).val(prev_val);
+					return;
+			} else {
+			// remove reviewer attribute
+				$(this).removeAttr("reviewerid");
+			}
+		}
 		
 		// in case of checkboxes instead of selects:
 		if(value === undefined)
@@ -398,10 +520,26 @@
 	
 	// # EXAMPLES
 	var examples = {};
+	
+	$(document).on('focus', 'input[name^=dataexamples\-]', function() {
+		prev_val = $(this).val();
+	});
+		
 	$(document).on('click', 'input[name^=dataexamples\-]', function() {
 		var values = $(this).attr("name").split("-");
 		var tr = $(this).closest('tr');
 		var hide = $(tr).find('input[name~="hide-descriptor"]');
+		
+		if($(this).attr("reviewerid")) {
+			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+				$(this).prop("checked",prev_val);
+				return;
+			}
+			else {
+				//remove reviewer attribute
+				$(this).removeAttr("reviewerid");
+			}
+		}
 		
 		examples[this.name] = {
 			userid : values[2],
@@ -416,7 +554,24 @@
 			hide.removeClass("hidden");
 		}
 	});
+	
+	$(document).on('focus', 'select[name^=dataexamples\-]', function() {
+		prev_val = $(this).val();
+	});
+		
 	$(document).on('change', 'select[name^=dataexamples\-]', function() {
+		// check if anyone else has edited the competence before. if so, ask for
+		// confirmation
+		if ($(this).attr("reviewerid")) {
+			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+				$(this).val(prev_val);
+				return;
+			} else {
+			// remove reviewer attribute
+				$(this).removeAttr("reviewerid");
+			}
+		}
+		
 		var values = $(this).attr("name").split("-");
 		if(!examples[this.name]) {
 			// get current niveau
@@ -432,6 +587,18 @@
 			examples[this.name]['value'] = $(this).val();
 	});
 	$(document).on('change', 'select[name^=niveau_examples\-]', function(event) {
+		
+		// check if anyone else has edited the competence before. if so, ask for
+		// confirmation
+		if ($(this).attr("reviewerid")) {
+			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
+				$(this).val(prev_val);
+					return;
+			} else {
+			// remove reviewer attribute
+				$(this).removeAttr("reviewerid");
+			}
+		}
 		
 		var name = this.name.replace("niveau_","data") + "-teacher"
 		var niveauid = $(this).val();

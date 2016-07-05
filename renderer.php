@@ -1069,7 +1069,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $table_html.html_writer::end_tag('form');
 	}
 	public function competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $singletopic = false, $crosssubjid = 0, $statistic = false) {
-		global $DB;
+		global $DB, $USER;
 
 		$table = new html_table();
 		$rows = array();
@@ -1222,6 +1222,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				foreach($students as $student) {
 					if($role == \block_exacomp\ROLE_TEACHER){
 						$reviewerid = $DB->get_field(\block_exacomp\DB_COMPETENCES,"reviewerid",array("userid" => $student->id, "compid" => $subject->id, "courseid"=>$courseid, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_SUBJECT));
+						if($reviewerid == $USER->id)
+							$reviewerid = null;
 						
 						$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
 							
@@ -1240,7 +1242,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								'value'=>(isset($student->subjects->teacher_additional_grading[$subject->id]) &&
 										$student->subjects->teacher_additional_grading[$subject->id] != null)?
 								$student->subjects->teacher_additional_grading[$subject->id]:"",
-								'exa-compid'=>$subject->id, 'exa-userid'=>$student->id, 'exa-type'=>\block_exacomp\TYPE_SUBJECT);
+								'exa-compid'=>$subject->id, 'exa-userid'=>$student->id, 'exa-type'=>\block_exacomp\TYPE_SUBJECT,
+								'reviewerid' => ($role == \block_exacomp\ROLE_TEACHER ) ? $reviewerid : null)
+								;
 							
 						if($role == \block_exacomp\ROLE_STUDENT)
 							$params['disabled'] = 'disabled';
@@ -1444,8 +1448,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	public function topics(&$rows, $level, $topics, $data, $students, $profoundness = false, $editmode = false, $statistic = false, $crosssubjid=0) {
-	
-		global $DB;
+		global $DB, $USER;
 		$topicparam = optional_param('topicid', 0, PARAM_INT);
 
 		if (block_exacomp_is_topicgrading_enabled() || count($topics) > 1 || $topicparam == block_exacomp\SHOW_ALL_TOPICS) {
@@ -1497,9 +1500,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				
 				$checkboxname = 'datatopics';
 				foreach($students as $student) {
-					if($data->role == \block_exacomp\ROLE_TEACHER)
+					if($data->role == \block_exacomp\ROLE_TEACHER) {
 						$reviewerid = $DB->get_field(\block_exacomp\DB_COMPETENCES,"reviewerid",array("userid" => $student->id, "compid" => $topic->id, "courseid"=>$data->courseid, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_TOPIC));
-						
+						if($reviewerid == $USER->id)
+							$reviewerid = null;
+					}
 					$studentCell = new html_table_cell();
 					$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
 					
@@ -1521,7 +1526,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							'value'=>(isset($student->topics->teacher_additional_grading[$topic->id]) &&
 									$student->topics->teacher_additional_grading[$topic->id] != null)?
 							$student->topics->teacher_additional_grading[$topic->id]:"",
-							'exa-compid'=>$topic->id, 'exa-userid'=>$student->id, 'exa-type'=>\block_exacomp\TYPE_TOPIC);
+							'exa-compid'=>$topic->id, 'exa-userid'=>$student->id, 'exa-type'=>\block_exacomp\TYPE_TOPIC,
+							'reviewerid' => ($data->role == \block_exacomp\ROLE_TEACHER ) ? $reviewerid : null
+					);
 						
 					if($data->role == \block_exacomp\ROLE_STUDENT)
 						$params['disabled'] = 'disabled';
@@ -1743,9 +1750,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					foreach($students as $student) {
 						$icontext = "";
 						//check reviewerid for teacher
-						if($data->role == \block_exacomp\ROLE_TEACHER)
+						if($data->role == \block_exacomp\ROLE_TEACHER) {
 							$reviewerid = $DB->get_field(\block_exacomp\DB_COMPETENCES,"reviewerid",array("userid" => $student->id, "compid" => $descriptor->id, "courseid"=>$data->courseid, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_DESCRIPTOR));
-
+							if($reviewerid == $USER->id)
+								$reviewerid = null;
+						}
 						//check visibility for every student in overview
 
 						if(!$one_student && !$editmode)
@@ -1837,7 +1846,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 									'value'=>(isset($student->competencies->teacher_additional_grading[$descriptor->id]) &&
 											$student->competencies->teacher_additional_grading[$descriptor->id] != null)?
 									$student->competencies->teacher_additional_grading[$descriptor->id]:"",
-									'exa-compid'=>$descriptor->id, 'exa-userid'=>$student->id, 'exa-type'=>\block_exacomp\TYPE_DESCRIPTOR);
+									'exa-compid'=>$descriptor->id, 'exa-userid'=>$student->id, 'exa-type'=>\block_exacomp\TYPE_DESCRIPTOR,
+									'reviewerid' => ($data->role == \block_exacomp\ROLE_TEACHER ) ? $reviewerid : null
+							);
 							
 							if(!$visible_student || $data->role == \block_exacomp\ROLE_STUDENT)
 								$params['disabled'] = 'disabled';
@@ -2078,6 +2089,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								$visible_student_example = block_exacomp_is_example_visible($data->courseid, $example, $student->id);
 							
 							//TODO
+							
+								//check reviewerid for teacher
+							if($data->role == \block_exacomp\ROLE_TEACHER) {
+								$reviewerid = $DB->get_field(\block_exacomp\DB_EXAMPLEEVAL,"teacher_reviewerid",array("studentid" => $student->id, "exampleid" => $example->id, "courseid"=>$data->courseid));
+								if($reviewerid == $USER->id)
+									$reviewerid = null;
+							}
+								
 							$self_evaluation_cell = new html_table_cell();
 							$self_evaluation_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
 								
@@ -2088,7 +2107,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$niveau_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
 							$niveau_cell->text = (block_exacomp_use_eval_niveau())?$this->generate_niveau_select('niveau_examples', $example->id, 'examples', $student, 
 									($data->role == \block_exacomp\ROLE_STUDENT)?true:(($visible_student_example)?false:true), ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
-							
 								
 							if(!$visible_student_example || $data->role == \block_exacomp\ROLE_STUDENT)
 								$params['disabled'] = 'disabled';
