@@ -6071,13 +6071,13 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
 	message_send ( $eventdata );
 }
 function block_exacomp_send_submission_notification($userfrom, $userto, $example, $date, $time, $courseid) {
-	global $CFG,$USER,$PAGE;
+	global $CFG,$USER,$SITE;
 
-	$subject = get_string('notification_submission_subject','block_exacomp',array('site'=>$PAGE->fullname, 'student' => fullname($userfrom), 'example' => $example->title));
+	$subject = get_string('notification_submission_subject','block_exacomp',array('site'=>$SITE->fullname, 'student' => fullname($userfrom), 'example' => $example->title));
 
 	$gridurl = block_exacomp_get_gridurl_for_example($courseid, $userto->id, $example->id);
 	
-	$message = get_string('notification_submission_body','block_exacomp',array('student' => fullname($userfrom), 'example' => $example->title, 'date' => $date, 'time' => $time, 'viewurl' => $gridurl, 'receiver'=>fullname($userto), 'site'=>$PAGE->fullname));
+	$message = get_string('notification_submission_body','block_exacomp',array('student' => fullname($userfrom), 'example' => $example->title, 'date' => $date, 'time' => $time, 'viewurl' => $gridurl, 'receiver'=>fullname($userto), 'site'=>$SITE->fullname));
 	$context = get_string('notification_submission_context','block_exacomp');
 
 	block_exacomp_send_notification("submission", $userfrom, $userto, $subject, $message, $context, $gridurl);
@@ -6093,12 +6093,12 @@ function block_exacomp_notify_all_teachers_about_submission($courseid, $examplei
 	}
 }
 function block_exacomp_send_self_assessment_notification($userfrom, $userto, $courseid) {
-	global $CFG,$USER, $PAGE;
+	global $CFG,$USER, $SITE;
 
 	$course = get_course($courseid);
 
-	$subject = get_string('notification_self_assessment_subject','block_exacomp',array('site'=>$PAGE->fullname,'course' => $course->shortname));
-	$message = get_string('notification_self_assessment_body','block_exacomp',array('course' => $course->fullname, 'student' => fullname($userfrom), 'receiver'=>fullname($userto), 'site'=>$PAGE->fullname));
+	$subject = get_string('notification_self_assessment_subject','block_exacomp',array('site'=>$SITE->fullname,'course' => $course->shortname));
+	$message = get_string('notification_self_assessment_body','block_exacomp',array('course' => $course->fullname, 'student' => fullname($userfrom), 'receiver'=>fullname($userto), 'site'=>$SITE->fullname));
 	$context = get_string('notification_self_assessment_context','block_exacomp');
 
 	$viewurl = new moodle_url('/blocks/exacomp/assign_competencies.php',array('courseid' => $courseid));
@@ -6116,12 +6116,12 @@ function block_exacomp_notify_all_teachers_about_self_assessment($courseid) {
 	}
 }
 function block_exacomp_send_grading_notification($userfrom, $userto, $courseid) {
-	global $CFG,$USER, $PAGE;
+	global $CFG,$USER, $SITE;
 
 	$course = get_course($courseid);
 
-	$subject = get_string('notification_grading_subject','block_exacomp',array('site'=>$PAGE->fullname,'course' => $course->shortname));
-	$message = get_string('notification_grading_body','block_exacomp',array('course' => $course->fullname, 'teacher' => fullname($userfrom), 'receiver'=>fullname($userto), 'site'=>$PAGE->fullname));
+	$subject = get_string('notification_grading_subject','block_exacomp',array('site'=>$SITE->fullname,'course' => $course->shortname));
+	$message = get_string('notification_grading_body','block_exacomp',array('course' => $course->fullname, 'teacher' => fullname($userfrom), 'receiver'=>fullname($userto), 'site'=>$SITE->fullname));
 	$context = get_string('notification_grading_context','block_exacomp');
 
 	$viewurl = new moodle_url('/blocks/exacomp/assign_competencies.php',array('courseid' => $courseid));
@@ -6138,12 +6138,12 @@ function block_exacomp_notify_students_about_grading($courseid, $students) {
 	}
 }
 function block_exacomp_send_weekly_schedule_notification($userfrom, $userto, $courseid, $exampleid) {
-	global $CFG,$USER,$DB, $PAGE;
+	global $CFG,$USER,$DB, $SITE;
 
 	$course = get_course($courseid);
 	$example = $DB->get_record(\block_exacomp\DB_EXAMPLES,array('id' => $exampleid));
-	$subject = get_string('notification_weekly_schedule_subject','block_exacomp', array('site'=>$PAGE->fullname));
-	$message = get_string('notification_weekly_schedule_body','block_exacomp',array('course' => $course->fullname, 'teacher' => fullname($userfrom), 'receiver'=>fullname($userto), 'site'=>$PAGE->fullname));
+	$subject = get_string('notification_weekly_schedule_subject','block_exacomp', array('site'=>$SITE->fullname));
+	$message = get_string('notification_weekly_schedule_body','block_exacomp',array('course' => $course->fullname, 'teacher' => fullname($userfrom), 'receiver'=>fullname($userto), 'site'=>$SITE->fullname));
 	$context = get_string('notification_weekly_schedule_context','block_exacomp');
 
 	$viewurl = new moodle_url('/blocks/exacomp/weekly_schedule.php',array('courseid' => $courseid));
@@ -6151,12 +6151,12 @@ function block_exacomp_send_weekly_schedule_notification($userfrom, $userto, $co
 	block_exacomp_send_notification("weekly_schedule", $userfrom, $userto, $subject, $message, $context, $viewurl);
 }
 function block_exacomp_send_example_comment_notification($userfrom, $userto, $courseid, $exampleid) {
-	global $CFG,$USER,$DB, $PAGE;
+	global $CFG,$USER,$DB, $SITE;
 
 	$course = get_course($courseid);
 	$example = $DB->get_record(\block_exacomp\DB_EXAMPLES,array('id' => $exampleid));
-	$subject = get_string('notification_example_comment_subject','block_exacomp', array('example' => $example->title, 'site'=>$PAGE->fullname));
-	$message = get_string('notification_example_comment_body','block_exacomp',array('course' => $course->fullname, 'teacher' => fullname($userfrom), 'example' => $example->title, 'receiver'=>fullname($userto), 'site'=>$PAGE->fullname));
+	$subject = get_string('notification_example_comment_subject','block_exacomp', array('example' => $example->title, 'site'=>$SITE->fullname));
+	$message = get_string('notification_example_comment_body','block_exacomp',array('course' => $course->fullname, 'teacher' => fullname($userfrom), 'example' => $example->title, 'receiver'=>fullname($userto), 'site'=>$SITE->fullname));
 	$context = get_string('notification_example_comment_context','block_exacomp');
 
 	$viewurl = block_exacomp_get_viewurl_for_example($userto->id, $userto->id, $example->id);
