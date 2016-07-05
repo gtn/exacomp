@@ -145,6 +145,9 @@
 		var compid = this.getAttribute('exa-compid');
 		var userid = this.getAttribute('exa-userid');	
 		var value = $(this).val();
+		
+		value = value.replace(",", ".");
+		
 		// check for valid grading input range
 		if (value > 6.0) {
 			alert(M.util.get_string('value_too_large','block_exacomp'));
