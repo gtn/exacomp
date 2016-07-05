@@ -103,7 +103,7 @@ const EXAMPLE_STATE_EVALUATED_NEGATIV = 4; // evaluated -> only from teacher-> e
 const EXAMPLE_STATE_EVALUATED_POSITIV = 5; //evaluated -> only from teacher -> exacomp evaluation > nE
 const EXAMPLE_STATE_LOCKED_TIME = 9; //handled like example entry on calender, but represent locked time
 
-const STUDENTS_PER_COLUMN = 4;
+const STUDENTS_PER_COLUMN = 3;
 const SHOW_ALL_TOPICS = -1;
 const SHOW_ALL_NIVEAUS = 99999999;
 
