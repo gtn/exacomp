@@ -2643,6 +2643,12 @@ class block_exacomp_external extends external_api {
 
 		$final_descriptors = array();
 		foreach($descriptors as $descriptor)
+			$descriptor->id = $descriptor->descriptorid;
+			
+			$descriptor_topic_mm = $DB->get_record(\block_exacomp\DB_DESCTOPICS, array('descrid'=>$descriptor->id));
+			$descriptor->topicid = $descriptor_topic_mm->topicid;
+			$descriptor->numbering = block_exacomp_get_descriptor_numbering($descriptor);
+			
 			if(!in_array($descriptor->descriptorid, $non_visibilities) && ((!$forall && !in_array($descriptor->descriptorid, $non_visibilities_student))||$forall))
 				$final_descriptors[] = $descriptor;
 
@@ -2658,7 +2664,8 @@ class block_exacomp_external extends external_api {
 		return new external_multiple_structure ( new external_single_structure ( array (
 				'descriptorid' => new external_value ( PARAM_INT, 'id of descriptor' ),
 				'title' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
-				'evaluation' => new external_value ( PARAM_INT, 'evaluation of descriptor' )
+				'evaluation' => new external_value ( PARAM_INT, 'evaluation of descriptor' ),
+				'numbering' => new external_value ( PARAM_TEXT, 'descriptor numbering')
 		) ) );
 	}
 
