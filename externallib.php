@@ -2648,6 +2648,7 @@ class block_exacomp_external extends external_api {
 			$descriptor_topic_mm = $DB->get_record(\block_exacomp\DB_DESCTOPICS, array('descrid'=>$descriptor->id));
 			$descriptor->topicid = $descriptor_topic_mm->topicid;
 			$descriptor->numbering = block_exacomp_get_descriptor_numbering($descriptor);
+			$descriptor->child = ($DB->get_field(\block_exacomp\DB_DESCRIPTORS, 'parentid', array('id'=>$descriptor->id))>0)?1:0;
 			
 			if(!in_array($descriptor->descriptorid, $non_visibilities) && ((!$forall && !in_array($descriptor->descriptorid, $non_visibilities_student))||$forall))
 				$final_descriptors[] = $descriptor;
@@ -2666,7 +2667,8 @@ class block_exacomp_external extends external_api {
 				'title' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
 				'evaluation' => new external_value ( PARAM_INT, 'evaluation of descriptor' ),
 				'topicid' => new external_value (PARAM_INT, 'id of topic'),
-				'numbering' => new external_value ( PARAM_TEXT, 'descriptor numbering')
+				'numbering' => new external_value ( PARAM_TEXT, 'descriptor numbering'),
+				'child' => new external_value (PARAM_BOOL, 'true: child, false: parent')
 		) ) );
 	}
 
