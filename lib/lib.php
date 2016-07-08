@@ -4508,6 +4508,28 @@ function block_exacomp_set_example_visibility($exampleid, $courseid, $visible, $
 		['exampleid'=>$exampleid, 'courseid'=>$courseid, 'studentid'=>$studentid]
 	);
 }
+
+function block_exacomp_topic_used($courseid, $topic, $studentid){
+	global $DB;
+	
+	if($studentid == 0){
+		$sql = "SELECT * FROM {".\block_exacomp\DB_COMPETENCES."} WHERE courseid = ? AND compid = ? AND comptype=? AND ( value>0 OR additionalinfo IS NOT NULL)";
+		$records = $DB->get_records_sql($sql, array($courseid, $topic->id, TYPE_TOPIC));
+		if($records) return true;
+	}else{
+		$sql = "SELECT * FROM {".\block_exacomp\DB_COMPETENCES."} WHERE courseid = ? AND compid = ? AND comptype=? AND userid = ? AND ( value>0 OR additionalinfo IS NOT NULL)";
+		$records = $DB->get_records_sql($sql, array($courseid, $topic->id, TYPE_TOPIC, $studentid));
+		if($records) return true;
+	}
+	
+	$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $topic->id);
+	foreach($descriptors as $descriptor){
+		if(block_exacomp_descriptor_used($courseid, $descriptor, $studentid))
+			return true;
+	}
+	
+	return false;
+}
 function block_exacomp_descriptor_used($courseid, $descriptor, $studentid){
 	global $DB;
 	//if studentid == 0 used = true, if no evaluation (teacher OR student) for this descriptor for any student in this course
@@ -4748,7 +4770,46 @@ function block_exacomp_calculate_spanning_niveau_colspan($niveaus, $spanningNive
 
 	return $colspan;
 }
-
+function block_exacomp_is_topic_visible($courseid, $topic, $studentid){
+	global $DB;
+	
+	// $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
+	if ($studentid <= 0) {
+		$studentid = 0;
+	}
+	
+	// if used, hiding is impossible
+	$topic_used = block_exacomp_topic_used($courseid, $topic, $studentid);
+	if($topic_used)
+		return true;
+	
+		// always use global value first (if set)
+		if (isset($topic->visible) && !$topic->visible) {
+			return false;
+		}
+	
+		// check if it is hidden for whole course?
+		$visible = $DB->get_field(\block_exacomp\DB_TOPICVISIBILITY, 'visible',
+				['courseid'=>$courseid, 'topicid'=>$topic->id, 'studentid'=>0]);
+		// $DB->get_field() returns false if not found
+		if ($visible !== false && !$visible) {
+			return false;
+		}
+	
+		// then try for a student
+		if ($studentid > 0) {
+			$visible = $DB->get_field(\block_exacomp\DB_TOPICVISIBILITY, 'visible',
+					['courseid'=>$courseid, 'topicid'=>$topic->id, 'studentid'=>$studentid]);
+			// $DB->get_field() returns false if not found
+			if ($visible !== false) {
+				return $visible;
+			}
+		}
+	
+		// default is visible
+		return true;
+}
+				
 function block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid) {
 	global $DB;
 

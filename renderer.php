@@ -518,7 +518,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				 "exa-type" => 'link', 'exa-url' => $url));
 	}
 	
-	public function subjects_menu($subjects, $selectedSubject, $selectedTopic) {
+	public function subjects_menu($subjects, $selectedSubject, $selectedTopic, $students = array(), $editmode=false) {
 		global $CFG, $COURSE;
 
 		$content = html_writer::start_div('subjects_menu');
@@ -538,7 +538,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						])
 			);
 
+			$studentid = 0;
+			if(!$editmode && count($students)==1){
+				$studentid = array_values($students)[0]->id;
+			}
+				
+			
 			foreach($subject->topics as $topic) {
+				$visible = block_exacomp_is_topic_visible($COURSE->id, $topic, $studentid);
+					
 				$extra = '';
 				if ($this->is_edit_mode() && $topic->source == \block_exacomp\DATA_SOURCE_CUSTOM) {
 					$extra .= ' '.$this->pix_icon("i/edit", get_string("edit"), null, ['exa-type' => "iframe-popup", 'exa-url' => 'topic.php?courseid='.$COURSE->id.'&id='.$topic->id]);
@@ -546,7 +554,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 				$content .= html_writer::tag('li',
 					html_writer::link(new block_exacomp\url(g::$PAGE->url, ['subjectid' => $subject->id, 'topicid' => $topic->id]),
-							block_exacomp_get_topic_numbering($topic).' '.$topic->title.$extra, array('class' => ($selectedTopic && $topic->id == $selectedTopic->id) ? 'current' : ''))
+							block_exacomp_get_topic_numbering($topic).' '.$topic->title.$extra/*.$this->visibility_icon_topic($visible, $topic->id)*/, array('class' => ($selectedTopic && $topic->id == $selectedTopic->id) ? 'current' : ''))
 					);
 			}
 			   if ($this->is_edit_mode() && $subject->source == \block_exacomp\DATA_SOURCE_CUSTOM) {
@@ -1467,7 +1475,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			list($outputid, $outputname) = block_exacomp_get_output_fields($topic);
 			$studentsCount = 0;
 			$studentsColspan = 1;
-
+			
+			$studentid = 0;
+			if(!$editmode && count($students)==1){
+				$studentid = array_values($students)[0]->id;
+			}
+			
+			$visible = block_exacomp_is_topic_visible($data->courseid, $topic, $studentid);
+			
 			// $hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) );
 			
 			$this_rg2_class = $data->rg2_level >= 0 ? 'rg2-level-'.$data->rg2_level : '';
@@ -1482,7 +1497,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$outputnameCell = new html_table_cell();
 			$outputnameCell->attributes['class'] = 'rg2-arrow rg2-indent';
-			$outputnameCell->text = html_writer::div($outputname,"desctitle");
+			$outputnameCell->text = html_writer::div($outputname.$this->visibility_icon_topic($visible, $topic->id),"desctitle");
 			$topicRow->cells[] = $outputnameCell;
 
 			$nivCell = new html_table_cell();
@@ -2321,6 +2336,18 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$icon = $this->pix_icon("i/show", get_string("show"));
 
 		return html_writer::link("", $icon, array('name' => 'hide-descriptor','descrid' => $descriptorid, 'id' => 'hide-descriptor', 'state' => ($visible) ? '-' : '+',
+				'showurl' => $this->pix_url("i/hide"), 'hideurl' => $this->pix_url("i/show")
+		));
+
+	}
+	
+	public function visibility_icon_topic($visible, $topicid) {
+		if($visible)
+			$icon = $this->pix_icon("i/hide", get_string("hide"));
+		else
+			$icon = $this->pix_icon("i/show", get_string("show"));
+
+		return html_writer::link("", $icon, array('class'=>'hide-topic','name' => 'hide-topic','topicid' => $topicid, 'id' => 'hide-topic', 'state' => ($visible) ? '-' : '+',
 				'showurl' => $this->pix_url("i/hide"), 'hideurl' => $this->pix_url("i/show")
 		));
 

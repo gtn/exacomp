@@ -174,7 +174,7 @@ echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
 echo html_writer::start_tag("div", array("class"=>"gridlayout"));
 
 echo '<div class="gridlayout-left">';
-echo $output->subjects_menu($courseSubjects, $selectedSubject, $selectedTopic);
+echo $output->subjects_menu($courseSubjects, $selectedSubject, $selectedTopic, $students, $editmode);
 echo '</div>';
 echo '<div class="gridlayout-right">';
 echo $output->niveaus_menu($niveaus,$selectedNiveau,$selectedTopic);

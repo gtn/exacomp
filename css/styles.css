@@ -975,6 +975,9 @@ not used anymore?
    outline: 0;
 }
 
+#block_exacomp a.hide-topic{
+	padding: 5px;
+}
 #block_exacomp .view_examples_icon {
 	margin-right:10px;
 }
