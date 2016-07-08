@@ -67,6 +67,7 @@ const DB_ITEMEXAMPLE = 'block_exacompitemexample';
 const DB_SUBJECT_NIVEAU_MM = 'block_exacompsubjniveau_mm';
 const DB_EXTERNAL_TRAINERS = 'block_exacompexternaltrainer';
 const DB_EVALUATION_NIVEAU = 'block_exacompeval_niveau';
+const DB_TOPICVISIBILITY = 'block_exacomptopicvisibility';
 
 /**
  * PLUGIN ROLES
@@ -2573,6 +2574,8 @@ function block_exacomp_set_coursetopics($courseid, $topicids) {
 
 	$DB->delete_records(\block_exacomp\DB_COURSETOPICS, array("courseid" => $courseid));
 
+	block_exacomp_update_topic_visibilities($courseid, $topicids);
+	
 	$descriptors = array();
 	$examples = array();
 	foreach ($topicids as $topicid) {
@@ -2732,6 +2735,31 @@ function block_exacomp_update_example_visibilities($courseid, $examples){
 		}
 	}
 }
+
+function block_exacomp_update_topic_visibilities($courseid, $topicids){
+	global $DB;
+	
+	$visibilities = $DB->get_fieldset_select(\block_exacomp\DB_TOPICVISIBILITY,'topicid', 'courseid=? AND studentid=0', array($courseid));
+	
+	//manage visibility, do not delete user visibility, but delete unused entries
+	foreach($topicids as $topicid){
+		//new descriptors in table
+		if(!in_array($topicid, $visibilities)) {
+			$visibilities[] = $topicid;
+			$DB->insert_record(\block_exacomp\DB_TOPICVISIBILITY, array("courseid"=>$courseid, "topicid"=>$topicid, "studentid"=>0, "visible"=>1));
+		}
+	}
+	
+	foreach($visibilities as $visible){
+		//delete ununsed descriptors for course and for special students
+		if(!in_array($visible, $topicids)){
+			//check if used in cross-subjects --> then it must still be visible
+			$DB->delete_records(\block_exacomp\DB_TOPICVISIBILITY, array("courseid"=>$courseid, "topicid"=>$visible));
+		}
+	}
+	
+}
+
 //TODO this can be done easier
 function block_exacomp_get_active_topics($tree, $courseid){
 	$active_topics = block_exacomp_get_topics_by_course($courseid);

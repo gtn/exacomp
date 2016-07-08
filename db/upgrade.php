@@ -2807,6 +2807,47 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		// Exacomp savepoint reached.
 		upgrade_block_savepoint(true, 2016042701, 'exacomp');
 	}
+	
+	if($oldversion < 2016070800){
+		$table = new xmldb_table('block_exacomptopicvisibility');
+
+		// Adding fields to table block_exacompdescrcross_mm.
+		$table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+		$table->add_field('courseid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+		$table->add_field('topicid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+		$table->add_field('studentid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+		$table->add_field('visible', XMLDB_TYPE_INTEGER, '2', null, null, null, '1');
+
+		// Adding keys to table block_exacompcdescrross_mm.
+		$table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+		$table->add_key('courseid', XMLDB_KEY_FOREIGN, array('courseid'), 'course', array('id'));
+		$table->add_key('topicid', XMLDB_KEY_FOREIGN, array('topicid'), 'block_exacomptopics', array('id'));
+		$table->add_key('studentid', XMLDB_KEY_FOREIGN, array('studentid'), 'user', array('id'));
+
+		// Conditionally launch create table for block_exacompdescrcros_mm.
+		if (!$dbman->table_exists($table)) {
+			$dbman->create_table($table);
+		}
+
+		//create entry for all existing courses
+		$courses = block_exacomp_get_courseids();
+		foreach ($courses as $courseid) {
+			$descriptors = array();
+
+			$sql = 'SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description
+				FROM {'.\block_exacomp\DB_TOPICS.'} t
+				JOIN {'.\block_exacomp\DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.
+				'ORDER BY t.sorting, t.subjid
+						';
+			//GROUP By funktioniert nur mit allen feldern im select, aber nicht mit strings
+			$topics = $DB->get_records_sql($sql, array($courseid));
+			foreach ($topics as $topic) {
+				$DB->insert_record(\block_exacomp\DB_TOPICVISIBILITY, array('courseid' => $courseid, 'topicid' => $topic->id, 'studentid' => 0, 'visible' => 1));
+			}
+		}
+	
+		upgrade_block_savepoint(true, 2016070800, 'exacomp');
+	}
 	/*
 	 * insert new upgrade scripts before this comment section
 	 * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!
