@@ -1490,9 +1490,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$visible = block_exacomp_is_topic_visible($data->courseid, $topic, $studentid);
 			
 			// $hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) );
+			$visible_css = block_exacomp_get_visible_css($visible, $data->role);
 			
-			$this_rg2_class = $data->rg2_level >= 0 ? 'rg2-level-'.$data->rg2_level : '';
-
+			$this_rg2_class = ($data->rg2_level >= 0 ? 'rg2-level-'.$data->rg2_level : '').' '.$visible_css;
+			
 			$topicRow = new html_table_row();
 			$topicRow->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rg2_class . ' highlight';
 			$topicRow->attributes['exa-rg2-id'] = 'topic-'.$topic->id;
@@ -1527,6 +1528,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			} elseif(!$statistic && block_exacomp_is_topicgrading_enabled()){
 				
 				$checkboxname = 'datatopics';
+				$visible_student = $visible;
+				
 				foreach($students as $student) {
 					if($data->role == \block_exacomp\ROLE_TEACHER) {
 						$reviewerid = $DB->get_field(\block_exacomp\DB_COMPETENCES,"reviewerid",array("userid" => $student->id, "compid" => $topic->id, "courseid"=>$data->courseid, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_TOPIC));
@@ -1535,6 +1538,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					}
 					$studentCell = new html_table_cell();
 					$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
+					
+					if(!$one_student && !$editmode)
+						$visible_student = block_exacomp_is_topic_visible($data->courseid, $topic, $student->id);
 					
 					//TODO evt. needed
 					//$studentCell->colspan = (!$profoundness) ? $studentsColspan : 4;
@@ -1547,7 +1553,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						
 					$niveau_cell = new html_table_cell();
 					$niveau_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-					$niveau_cell->text = (block_exacomp_use_eval_niveau())?$this->generate_niveau_select('niveau_topic', $topic->id, 'topics', $student, ($data->role == \block_exacomp\ROLE_STUDENT)?true:false, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
+					$niveau_cell->text = (block_exacomp_use_eval_niveau())?$this->generate_niveau_select('niveau_topic', $topic->id, 'topics', $student,
+							($data->role == \block_exacomp\ROLE_STUDENT)?true:(($visible_student)?false:true), ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
 					
 					$params = array('name'=>'add-grading-'.$student->id.'-'.$topic->id, 'type'=>'text',
 							'maxlength'=>3, 'class'=>'percent-rating-text',
@@ -1558,7 +1565,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							'reviewerid' => ($data->role == \block_exacomp\ROLE_TEACHER ) ? $reviewerid : null
 					);
 						
-					if($data->role == \block_exacomp\ROLE_STUDENT)
+					if(!$visible_student || $data->role == \block_exacomp\ROLE_STUDENT)
 						$params['disabled'] = 'disabled';
 						
 					//student & niveau & showevaluation
@@ -1584,12 +1591,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					}
 						
 					if($data->scheme == 1) {
-						$self_evaluation_cell->text = $this->generate_checkbox($checkboxname, $topic->id, 'topics', $student, $evaluation, $data->scheme, false, null, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
+						$self_evaluation_cell->text = $this->generate_checkbox($checkboxname, $topic->id, 'topics', $student, $evaluation,  $data->scheme, ($visible_student)?false:true, null, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
 					}else {
 						if(block_exacomp_additional_grading() && $data->role == \block_exacomp\ROLE_TEACHER)
 							$self_evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
 						else
-							$self_evaluation_cell->text = $this->generate_select($checkboxname, $topic->id, 'topics', $student, $evaluation, $data->scheme, false, $data->profoundness, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
+							$self_evaluation_cell->text = $this->generate_select($checkboxname, $topic->id, 'topics', $student, $evaluation, $data->scheme, !$visible_student, $data->profoundness, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
 					}
 						
 					$topicRow->cells[] = $self_evaluation_cell;
@@ -1693,12 +1700,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			//echo $descriptor->visible . " / " . $visible . " <br/> ";
 
 			if($data->role == \block_exacomp\ROLE_TEACHER || $visible){
-				$visible_css = block_exacomp_get_descriptor_visible_css($visible, $data->role);
+				$visible_css = block_exacomp_get_visible_css($visible, $data->role);
 
 				$checkboxname = "datadescriptors";
 				list($outputid, $outputname) = block_exacomp_get_output_fields($descriptor, false, $parent);
 				$studentsCount = 0;
-
+				
 				$this_rg2_class = ($data->rg2_level >= 0 ? 'rg2-level-'.$data->rg2_level : '').' '.$visible_css;
 				$sub_rg2_class = 'rg2-level-'.($data->rg2_level+1);
 
@@ -1784,7 +1791,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								$reviewerid = null;
 						}
 						//check visibility for every student in overview
-
+						
 						if(!$one_student && !$editmode)
 							$visible_student = block_exacomp_is_descriptor_visible($data->courseid, $descriptor, $student->id);
 
@@ -1985,7 +1992,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						continue;
 					}
 
-					$visible_example_css = block_exacomp_get_example_visible_css($visible_example, $data->role);
+					$visible_example_css = block_exacomp_get_visible_css($visible_example, $data->role);
 
 					$studentsCount = 0;
 					$exampleRow = new html_table_row();

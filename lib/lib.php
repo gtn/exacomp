@@ -4159,7 +4159,7 @@ function block_exacomp_get_cross_subjects_drafts(){
  * @param int $courseid
  */
 function block_exacomp_save_drafts_to_course($drafts_to_save, $courseid){
-	//TODO TOPICVISIBILITY
+	//TODO test TOPICVISIBILITY
 	global $DB, $USER;
 	$redirect_crosssubjid = 0;
 	foreach($drafts_to_save as $draftid){
@@ -4909,31 +4909,14 @@ function block_exacomp_is_example_visible($courseid, $example, $studentid){
 	return true;
 }
 
-function block_exacomp_get_descriptor_visible_css($visible, $role) {
-	//TODO TOPICVISIBILITY only one method
+function block_exacomp_get_visible_css($visible, $role) {
 	$visible_css = '';
 	if(!$visible)
 		($role == \block_exacomp\ROLE_TEACHER) ? $visible_css = ' rg2-locked' : $visible_css = ' hidden';
 
 	return $visible_css;
 }
-function block_exacomp_get_example_visible_css($visible, $role) {
-	$visible_css = '';
-	if(!$visible)
-		($role == \block_exacomp\ROLE_TEACHER) ? $visible_css = ' rg2-locked' : $visible_css = ' hidden';
 
-	return $visible_css;
-}
-// TODO: was macht die funktion?
-function block_exacomp_init_cross_subjects(){
-	global $DB;
-	$emptydrafts = $DB->get_records(\block_exacomp\DB_CROSSSUBJECTS, array('sourceid'=>0, 'source'=>1, 'creatorid'=>0, 'courseid'=>0));
-
-	foreach($emptydrafts as $emptydraft){
-		if(strcmp($emptydraft->title, 'Leere Vorlage')==0 || strcmp($emptydraft->title, 'new crosssubject')==0)
-			$DB->delete_records(\block_exacomp\DB_CROSSSUBJECTS, array('id'=>$emptydraft->id));
-	}
-}
 /**
  *
  * Calculate number of students which have achieved a certain evaluation (depending on scheme)
