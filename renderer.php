@@ -813,6 +813,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$cell2->attributes['class'] = 'topic';
 				$cell2->rowspan = 2;
 				$row->cells[] = $cell2;
+				
+				// Check visibility
+				$topic_std = new stdClass();
+				$topic_std->id = $topicid;
+				
+				$topic_visible = block_exacomp_is_topic_visible($courseid, $topic_std, ($studentid != BLOCK_EXACOMP_SHOW_STATISTIC) ? $studentid : 0);
+			
 
 				//make second row, spilt rows after topic title 
 				$row2 = new html_table_row();
@@ -836,7 +843,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 							$text = block_exacomp_get_descriptor_numbering($descriptor)." ".$descriptor->title;
 							if(array_key_exists($descriptor->topicid, $selection)) {
-								$text = html_writer::link(new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid"=>$courseid,"subjectid"=>$topicid,"topicid"=>$descriptor->id,"studentid"=>$studentid)),$text,array("id" => "competence-grid-link-".$descriptor->id,"class" => ($visible) ? '' : 'deactivated'));
+								$text = html_writer::link(new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid"=>$courseid,"subjectid"=>$topicid,"topicid"=>$descriptor->id,"studentid"=>$studentid)),$text,array("id" => "competence-grid-link-".$descriptor->id,"class" => ($visible && $topic_visible) ? '' : 'deactivated'));
 							}
 
 							$compString .= $text;

@@ -1031,6 +1031,7 @@
 			img.attr('src',$(this).attr('hideurl'));
 			img.attr('alt', M.util.get_string('show','moodle'));
 			img.attr('title', M.util.get_string('show','moodle'));
+			
 		}else{
 			$(this).attr('state','-');
 			visible = 1;

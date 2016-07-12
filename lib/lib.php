@@ -4305,7 +4305,7 @@ function block_exacomp_get_competence_tree_for_cross_subject($courseid, $crosssu
 			continue;
 		}
 		
-		if(!block_exacomp_is_topic_visible($courseid, $topic, $studentid)){
+		if($showonlyvisibletopics && !block_exacomp_is_topic_visible($courseid, $topic, $studentid)){
 			continue;
 		}
 		$subject = $allSubjects[$topic->subjid];
