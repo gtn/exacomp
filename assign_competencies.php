@@ -92,7 +92,7 @@ $students = $allCourseStudents = ($isTeacher) ? block_exacomp_get_students_by_co
 if($course_settings->nostudents) $allCourseStudents = array();
 
 $competence_tree = block_exacomp_get_competence_tree($courseid,$selectedSubject?$selectedSubject->id:null,$selectedTopic?$selectedTopic->id:null,false,$selectedNiveau?$selectedNiveau->id:null,
-		($course_settings->show_all_examples != 0 || $isTeacher),$course_settings->filteredtaxonomies, true);
+		($course_settings->show_all_examples != 0 || $isTeacher),$course_settings->filteredtaxonomies, true, false, false, false, ($isTeacher)?false:true);
 
 $scheme = block_exacomp_get_grading_scheme($courseid);
 $colselector="";

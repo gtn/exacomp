@@ -261,6 +261,11 @@ class data {
 				// course / studentid exclusive!
 			),
 			array(
+				'table' => DB_TOPICVISIBILITY,
+				'needed1' => array('topicid', DB_TOPICS),
+				// course / studentid exclusive!
+			),
+			array(
 				'table' => DB_DESCCAT,
 				'needed1' => array('descrid', DB_DESCRIPTORS),
 				'needed2' => array('catid', DB_CATEGORIES),
@@ -351,6 +356,16 @@ class data {
 		 ".join(" UNION ", $sql)."
 		 )";
 		 */
+		// add topic visibility to course if associated
+		$sql = "
+			INSERT INTO {".DB_TOPICVISIBILITY."}
+			(courseid, topicid, studentid, visible)
+			SELECT ct.courseid, ct.topicid, 0, 1
+			FROM {".DB_COURSETOPICS."} ct
+			LEFT JOIN {".DB_TOPICVISIBILITY."} tv
+			WHERE tv.id IS NULL --only for those, who have no visibility yet
+		";
+		g::$DB->execute($sql);
 		
 		// add subdescriptors to topics
 		$sql = "

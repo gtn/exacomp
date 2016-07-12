@@ -419,8 +419,8 @@ function block_exacomp_get_subjecttitle_by_example($exampleid) {
  * returns all topics from a course
  * @param int $courseid
  */
-function block_exacomp_get_topics_by_course($courseid,$showalldescriptors = false) {
-	return block_exacomp_get_topics_by_subject($courseid,0,$showalldescriptors);
+function block_exacomp_get_topics_by_course($courseid,$showalldescriptors = false, $showonlyvisible=false) {
+	return block_exacomp_get_topics_by_subject($courseid,0,$showalldescriptors, $showonlyvisible);
 }
 /**
  * Gets all topics from a particular subject
@@ -429,7 +429,6 @@ function block_exacomp_get_topics_by_course($courseid,$showalldescriptors = fals
  */
 function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showalldescriptors = false, $showonlyvisible=false) {
 	global $DB;
-
 	if(!$courseid)
 		$showonlyvisible = false;
 	
@@ -441,7 +440,7 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
 	JOIN {'.\block_exacomp\DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.(($subjectid > 0) ? 'AND t.subjid = ? ': '').'
 	JOIN {'.\block_exacomp\DB_SUBJECTS.'} s ON t.subjid=s.id -- join subject here, to make sure only topics with existing subject are loaded
 	-- left join, because courseid=0 has no topicvisibility!
-	LEFT JOIN {'.\block_exacomp\DB_TOPICVISIBILITY.'} tvis ON tvis.topicid=t.id AND tvis.studentid=0 AND tvis.courseid=?'
+	JOIN {'.\block_exacomp\DB_TOPICVISIBILITY.'} tvis ON tvis.topicid=t.id AND tvis.studentid=0 AND tvis.courseid=?'
 	.($showonlyvisible?' AND tvis.visible = 1 ':'')
 	.($showalldescriptors ? '' : '
 			-- only show active ones
@@ -451,8 +450,14 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
 			JOIN {course_modules} a ON da.activityid=a.id AND a.course=ct.courseid
 			').'
 			';
+	
 	//GROUP By funktioniert nur mit allen feldern im select, aber nicht mit strings
-	$topics = $DB->get_records_sql($sql, array($courseid, $subjectid, $courseid));
+	$params = array($courseid);
+	if($subjectid>0)
+		$params[] = $subjectid;
+	$params[] = $courseid;
+	
+	$topics = $DB->get_records_sql($sql,$params);
 
 	return block_exacomp_sort_items($topics, ['subj_' => \block_exacomp\DB_SUBJECTS, '' => \block_exacomp\DB_TOPICS]);
 }
@@ -1272,7 +1277,7 @@ function block_exacomp_get_descriptors_by_example($exampleid) {
  * @param int $topicid
  * @return associative_array
  */
-function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $topicid = null, $showalldescriptors = false, $niveauid = null, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $calledfromoverview = false, $calledfromactivities = false, $showonlyvisible=false, $without_descriptors=false) {
+function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $topicid = null, $showalldescriptors = false, $niveauid = null, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $calledfromoverview = false, $calledfromactivities = false, $showonlyvisible=false, $without_descriptors=false, $showonlyvisibletopics = false) {
 	global $DB;
 
 	if(!$showalldescriptors)
@@ -1296,7 +1301,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 	$allTopics = block_exacomp_get_all_topics($subjectid, $showonlyvisible);
 	if($courseid > 0) {
 		if((!$calledfromoverview && !$calledfromactivities) || !$selectedTopic) {
-			$courseTopics = block_exacomp_get_topics_by_subject($courseid, $subjectid);
+			$courseTopics = block_exacomp_get_topics_by_subject($courseid, $subjectid, false, $showonlyvisibletopics);
 		}
 		elseif(isset($selectedTopic)) {
 			$courseTopics = \block_exacomp\topic::get($selectedTopic->id);
@@ -1377,7 +1382,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
  * @return multitype:unknown Ambigous <stdClass, unknown>
  */
 function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher=true, $studentid=0) {
-	$courseTopics = block_exacomp_get_topics_by_course($courseid);
+	$courseTopics = block_exacomp_get_topics_by_course($courseid, false, ($isTeacher)?false:true);
 	$courseSubjects = block_exacomp_get_subjects_by_course($courseid);
 
 	$selectedSubject = null;
@@ -1387,7 +1392,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 		if (!empty($courseSubjects[$subjectid])) {
 			$selectedSubject = $courseSubjects[$subjectid];
 
-			$topics = block_exacomp_get_topics_by_subject($courseid, $selectedSubject->id);
+			$topics = block_exacomp_get_topics_by_subject($courseid, $selectedSubject->id, false, ($isTeacher)?false:true);
 			if ($topicid == block_exacomp\SHOW_ALL_TOPICS) {
 				// no $selectedTopic
 			} elseif ($topicid && isset($topics[$topicid])) {
