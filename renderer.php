@@ -1477,8 +1477,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$studentsColspan = 1;
 			
 			$studentid = 0;
-			if(!$editmode && count($students)==1){
+			$one_student = false;
+				
+			if(!$editmode && count($students)==1 && block_exacomp_get_studentid() != BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
 				$studentid = array_values($students)[0]->id;
+				$one_student = true;
 			}
 			
 			$visible = block_exacomp_is_topic_visible($data->courseid, $topic, $studentid);
@@ -1497,6 +1500,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$outputnameCell = new html_table_cell();
 			$outputnameCell->attributes['class'] = 'rg2-arrow rg2-indent';
+			
+			
+			// display the hide/unhide icon only in editmode or iff only 1 student is selected
+			// TODO: uncomment as soon as topic->visible is available, and write only $outputname in html_writer in 1511
+			/*if($editmode || ($one_student && $topic->visible && $data->role == \block_exacomp\ROLE_TEACHER)){
+				$outputname .= $this->visibility_icon_topic($visible, $topic->id);
+			}*/
+			
 			$outputnameCell->text = html_writer::div($outputname.$this->visibility_icon_topic($visible, $topic->id),"desctitle");
 			$topicRow->cells[] = $outputnameCell;
 
@@ -1670,7 +1681,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$one_student = false;
 			$studentid = 0;
-			if(!$editmode && count($students)==1){
+			if(!$editmode && count($students)==1 && block_exacomp_get_studentid() != BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
 				$studentid = array_values($students)[0]->id;
 				$one_student = true;
 			}
@@ -2062,7 +2073,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								$titleCell->text .= $this->competence_association_icon($example->id, $data->courseid, false);
 
 							} else if($data->role == \block_exacomp\ROLE_TEACHER) {
-								$studentid = block_exacomp_get_studentid(true);
+								$studentid = block_exacomp_get_studentid();
 
 								//auch für alle schüler auf wochenplan legen
 								if(!$this->is_edit_mode()){

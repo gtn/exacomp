@@ -6043,10 +6043,10 @@ function block_exacomp_get_current_item_for_example($userid, $exampleid) {
 /**
  * keeps selected studentid in the session
  */
-function block_exacomp_get_studentid($isTeacher) {
-	if(!$isTeacher)
+function block_exacomp_get_studentid() {
+	if(!block_exacomp_is_teacher())
 		return g::$USER->id;
-
+	
 	$studentid = optional_param('studentid', BLOCK_EXACOMP_DEFAULT_STUDENT, PARAM_INT);
 
 	if($studentid == BLOCK_EXACOMP_DEFAULT_STUDENT) {

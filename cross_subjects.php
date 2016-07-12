@@ -27,7 +27,7 @@ $group = optional_param('group', 0, PARAM_INT);
 require_login($courseid);
 $isTeacher = block_exacomp_is_teacher();
 
-$studentid = block_exacomp_get_studentid($isTeacher) ;
+$studentid = block_exacomp_get_studentid() ;
 $editmode = optional_param('editmode', 0, PARAM_BOOL);
 
 $crosssubjid = optional_param('crosssubjid', 0, PARAM_INT);

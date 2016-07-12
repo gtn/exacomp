@@ -35,7 +35,7 @@ $studentid = optional_param('studentid', BLOCK_EXACOMP_DEFAULT_STUDENT, PARAM_IN
 if($isTeacher && ($studentid == BLOCK_EXACOMP_DEFAULT_STUDENT && !isset($_SESSION['studentid-'.$COURSE->id])))
 	$studentid = BLOCK_EXACOMP_SHOW_STATISTIC;
 else {
-	$studentid = block_exacomp_get_studentid($isTeacher);
+	$studentid = block_exacomp_get_studentid();
 	$coursestudents = block_exacomp_get_students_by_course($courseid);
 	if (!isset($coursestudents[$studentid])) {
 		$studentid = BLOCK_EXACOMP_SHOW_STATISTIC;

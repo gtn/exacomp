@@ -35,7 +35,7 @@ require_login($courseid);
 $isTeacher = block_exacomp_is_teacher();
 if(!$isTeacher) $editmode = 0;
 
-$studentid = block_exacomp_get_studentid($isTeacher) ;
+$studentid = block_exacomp_get_studentid() ;
 if($studentid == 0)
 	$studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
 

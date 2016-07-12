@@ -69,7 +69,7 @@ class simple_service {
 		// CHECK TEACHER
 		$isTeacher = block_exacomp_is_teacher($context);
 
-		$studentid = block_exacomp_get_studentid($isTeacher) ;
+		$studentid = block_exacomp_get_studentid() ;
 
 		/* CONTENT REGION */
 		if($isTeacher){

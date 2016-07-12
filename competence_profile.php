@@ -34,7 +34,7 @@ $context = context_course::instance($courseid);
 // CHECK TEACHER
 $isTeacher = block_exacomp_is_teacher($context);
 
-$studentid = block_exacomp_get_studentid($isTeacher) ;
+$studentid = block_exacomp_get_studentid() ;
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_competence_profile_profile';
 
