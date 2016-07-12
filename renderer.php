@@ -1512,9 +1512,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$outputnameCell = new html_table_cell();
 			$outputnameCell->attributes['class'] = 'rg2-arrow rg2-indent';
 			
+			$topic_used = block_exacomp_topic_used($data->courseid, $topic, $studentid);
 			
 			// display the hide/unhide icon only in editmode or iff only 1 student is selected
-			if($editmode || ($one_student && $topic->visible && $data->role == \block_exacomp\ROLE_TEACHER)){
+			if(!$topic_used && $editmode || ($one_student && $topic->visible && $data->role == \block_exacomp\ROLE_TEACHER)){
 				$outputname .= $this->visibility_icon_topic($visible, $topic->id);
 			}
 			
