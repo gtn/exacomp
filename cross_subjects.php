@@ -361,7 +361,7 @@ if ($editmode) {
 }
 
 if ($cross_subject) {
-	$subjects = block_exacomp_get_competence_tree_for_cross_subject($courseid,(isset($cross_subject))?$cross_subject->id:null,false, !($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies);
+	$subjects = block_exacomp_get_competence_tree_for_cross_subject($courseid,(isset($cross_subject))?$cross_subject->id:null,false, !($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies, ($studentid>0 && !$isTeacher)?$studentid:0, ($isTeacher)?false:true);
 
 	if ($subjects) {
 		echo $output->overview_legend($isTeacher);

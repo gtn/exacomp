@@ -419,7 +419,7 @@ class data {
 		";
 		g::$DB->execute($sql);
 		
-		//example visibility： crosssubjects
+		//example visibility crosssubjects
 		$sql = "
 			INSERT INTO {".DB_EXAMPVISIBILITY."}
 			(courseid, exampleid, studentid, visible)

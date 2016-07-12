@@ -81,7 +81,7 @@ if($course_settings->uses_activities && !$activities && !$course_settings->show_
 	exit;
 }
 
-$ret = block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher, ($isTeacher?0:$USER->id));
+$ret = block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher, ($isTeacher?0:$USER->id), ($isTeacher)?false:true);
 if (!$ret) {
 	print_error('not configured');
 }

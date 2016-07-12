@@ -832,7 +832,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							// Check visibility
 							$descriptor_used = block_exacomp_descriptor_used($courseid, $descriptor, ($studentid != BLOCK_EXACOMP_SHOW_STATISTIC) ? $studentid : 0);
 							$visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, ($studentid != BLOCK_EXACOMP_SHOW_STATISTIC) ? $studentid : 0);
-							$visible_css = block_exacomp_get_descriptor_visible_css($visible, $role);
+							$visible_css = block_exacomp_get_visible_css($visible, $role);
 
 							$text = block_exacomp_get_descriptor_numbering($descriptor)." ".$descriptor->title;
 							if(array_key_exists($descriptor->topicid, $selection)) {

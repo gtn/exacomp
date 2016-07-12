@@ -1381,21 +1381,23 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
  * @param number $studentid set if he is a student
  * @return multitype:unknown Ambigous <stdClass, unknown>
  */
-function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher=true, $studentid=0) {
-	$courseTopics = block_exacomp_get_topics_by_course($courseid, false, ($isTeacher)?false:true);
+function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher=true, $studentid=0, $showonlyvisible=false) {
+	$courseTopics = block_exacomp_get_topics_by_course($courseid, false, $showonlyvisible?(($isTeacher)?false:true):false);
 	$courseSubjects = block_exacomp_get_subjects_by_course($courseid);
 
+	$topic = new \stdClass();
+	$topic->id = $topicid;
+	
 	$selectedSubject = null;
 	$selectedTopic = null;
-
 	if ($subjectid) {
 		if (!empty($courseSubjects[$subjectid])) {
 			$selectedSubject = $courseSubjects[$subjectid];
 
-			$topics = block_exacomp_get_topics_by_subject($courseid, $selectedSubject->id, false, ($isTeacher)?false:true);
+			$topics = block_exacomp_get_topics_by_subject($courseid, $selectedSubject->id, false, ($showonlyvisible?(($isTeacher)?false:true):false));
 			if ($topicid == block_exacomp\SHOW_ALL_TOPICS) {
 				// no $selectedTopic
-			} elseif ($topicid && isset($topics[$topicid])) {
+			} elseif ($topicid && isset($topics[$topicid]) && block_exacomp_is_topic_visible($courseid, $topic, $studentid)) {
 				$selectedTopic = $topics[$topicid];
 			} else {
 				// select first
@@ -1404,7 +1406,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 		}
 	}
 	if (!$selectedSubject && $topicid) {
-		if (isset($courseTopics[$topicid])) {
+		if (isset($courseTopics[$topicid]) && block_exacomp_is_topic_visible($courseid, $topic, $studentid)) {
 			$selectedTopic = $courseTopics[$topicid];
 			$selectedSubject = $courseSubjects[$selectedTopic->subjid];
 		}
@@ -1412,7 +1414,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 	if (!$selectedSubject) {
 		// select the first subject
 		$selectedSubject = reset($courseSubjects);
-		$topics = block_exacomp_get_topics_by_subject($courseid, $selectedSubject->id);
+		$topics = block_exacomp_get_topics_by_subject($courseid, $selectedSubject->id, false, ($showonlyvisible?(($isTeacher)?false:true):false));
 		$selectedTopic = reset($topics);
 	}
 
@@ -4268,7 +4270,7 @@ function block_exacomp_student_crosssubj($crosssubjid, $studentid){
  * @param int $subjectid
  * @return associative_array
  */
-function block_exacomp_get_competence_tree_for_cross_subject($courseid, $crosssubjid, $showalldescriptors = false, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES)) {
+function block_exacomp_get_competence_tree_for_cross_subject($courseid, $crosssubjid, $showalldescriptors = false, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $studentid = 0, $showonlyvisibletopics = false) {
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
@@ -4300,6 +4302,10 @@ function block_exacomp_get_competence_tree_for_cross_subject($courseid, $crosssu
 
 		// find subject
 		if (empty($allSubjects[$topic->subjid])) {
+			continue;
+		}
+		
+		if(!block_exacomp_is_topic_visible($courseid, $topic, $studentid)){
 			continue;
 		}
 		$subject = $allSubjects[$topic->subjid];
