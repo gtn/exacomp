@@ -427,17 +427,23 @@ function block_exacomp_get_topics_by_course($courseid,$showalldescriptors = fals
  * @param int $courseid
  * @param int $subjectid
  */
-function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showalldescriptors = false) {
+function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showalldescriptors = false, $showonlyvisible=false) {
 	global $DB;
 
+	if(!$courseid)
+		$showonlyvisible = false;
+	
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
-	$sql = 'SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description, t.numb, t.source, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
+	$sql = 'SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description, t.numb, t.source, tvis.visible as visible, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
 	FROM {'.\block_exacomp\DB_TOPICS.'} t
 	JOIN {'.\block_exacomp\DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.(($subjectid > 0) ? 'AND t.subjid = ? ': '').'
 	JOIN {'.\block_exacomp\DB_SUBJECTS.'} s ON t.subjid=s.id -- join subject here, to make sure only topics with existing subject are loaded
-	'.($showalldescriptors ? '' : '
+	-- left join, because courseid=0 has no topicvisibility!
+	LEFT JOIN {'.\block_exacomp\DB_TOPICVISIBILITY.'} tvis ON tvis.topicid=t.id AND tvis.studentid=0 AND tvis.courseid=?'
+	.($showonlyvisible?' AND tvis.visible = 1 ':'')
+	.($showalldescriptors ? '' : '
 			-- only show active ones
 			JOIN {'.\block_exacomp\DB_DESCTOPICS.'} topmm ON topmm.topicid=t.id
 			JOIN {'.\block_exacomp\DB_DESCRIPTORS.'} d ON topmm.descrid=d.id
@@ -446,7 +452,7 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
 			').'
 			';
 	//GROUP By funktioniert nur mit allen feldern im select, aber nicht mit strings
-	$topics = $DB->get_records_sql($sql, array($courseid, $subjectid));
+	$topics = $DB->get_records_sql($sql, array($courseid, $subjectid, $courseid));
 
 	return block_exacomp_sort_items($topics, ['subj_' => \block_exacomp\DB_SUBJECTS, '' => \block_exacomp\DB_TOPICS]);
 }
@@ -577,9 +583,9 @@ function block_exacomp_sort_items(&$items, $sortings) {
 /**
  * Gets all topics
  */
-function block_exacomp_get_all_topics($subjectid = null) {
+function block_exacomp_get_all_topics($subjectid = null, $showonlyvisible = false) {
 	global $DB;
-
+	
 	$topics = $DB->get_records_sql('
 			SELECT t.id, t.sorting, t.numb, t.title, t.parentid, t.subjid, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
 			FROM {'.\block_exacomp\DB_SUBJECTS.'} s
@@ -1287,7 +1293,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 		$allSubjects = block_exacomp_get_subjects_by_course($courseid, $showalldescriptors);
 
 	// 2. GET TOPICS
-	$allTopics = block_exacomp_get_all_topics($subjectid);
+	$allTopics = block_exacomp_get_all_topics($subjectid, $showonlyvisible);
 	if($courseid > 0) {
 		if((!$calledfromoverview && !$calledfromactivities) || !$selectedTopic) {
 			$courseTopics = block_exacomp_get_topics_by_subject($courseid, $subjectid);
@@ -4153,6 +4159,7 @@ function block_exacomp_get_cross_subjects_drafts(){
  * @param int $courseid
  */
 function block_exacomp_save_drafts_to_course($drafts_to_save, $courseid){
+	//TODO TOPICVISIBILITY
 	global $DB, $USER;
 	$redirect_crosssubjid = 0;
 	foreach($drafts_to_save as $draftid){
@@ -4903,6 +4910,7 @@ function block_exacomp_is_example_visible($courseid, $example, $studentid){
 }
 
 function block_exacomp_get_descriptor_visible_css($visible, $role) {
+	//TODO TOPICVISIBILITY only one method
 	$visible_css = '';
 	if(!$visible)
 		($role == \block_exacomp\ROLE_TEACHER) ? $visible_css = ' rg2-locked' : $visible_css = ' hidden';

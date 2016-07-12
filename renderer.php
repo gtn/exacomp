@@ -441,7 +441,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	/**
 	 * Prints 2 select inputs for subjects and topics
 	 */
-	public function overview_dropdowns($type, $students, $selectedStudent = 0, $isTeacher = false) {
+	public function overview_dropdowns($type, $students, $selectedStudent = -1, $isTeacher = false) {
 		global $COURSE, $USER;
 
 		$content = "";
@@ -1484,6 +1484,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$one_student = true;
 			}
 			
+			if(!isset($topic->visible))
+				$topic->visible = $DB->get_field(\block_exacomp\DB_TOPICVISIBILITY, 'visible', array('courseid'=>$data->courseid, 'topicid'=>$topic->id, 'studentid'=>0));
+					
 			$visible = block_exacomp_is_topic_visible($data->courseid, $topic, $studentid);
 			
 			// $hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) );
@@ -1503,12 +1506,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			
 			
 			// display the hide/unhide icon only in editmode or iff only 1 student is selected
-			// TODO: uncomment as soon as topic->visible is available, and write only $outputname in html_writer in 1511
-			/*if($editmode || ($one_student && $topic->visible && $data->role == \block_exacomp\ROLE_TEACHER)){
+			if($editmode || ($one_student && $topic->visible && $data->role == \block_exacomp\ROLE_TEACHER)){
 				$outputname .= $this->visibility_icon_topic($visible, $topic->id);
-			}*/
+			}
 			
-			$outputnameCell->text = html_writer::div($outputname.$this->visibility_icon_topic($visible, $topic->id),"desctitle");
+			$outputnameCell->text = html_writer::div($outputname,"desctitle");
 			$topicRow->cells[] = $outputnameCell;
 
 			$nivCell = new html_table_cell();

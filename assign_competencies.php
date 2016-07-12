@@ -39,10 +39,10 @@ $studentid = block_exacomp_get_studentid() ;
 if($studentid == 0)
 	$studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
 
-if($editmode) {
-	$selectedStudentid = $studentid;
-	$studentid = 0;
+if($editmode && $studentid <= 0) {
+	$studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
 }
+$selectedStudentid = $studentid;
 
 $page_identifier = 'tab_competence_overview';
 
@@ -98,9 +98,9 @@ $scheme = block_exacomp_get_grading_scheme($courseid);
 $colselector="";
 $statistic = false;
 if($isTeacher){	//mind nostudents setting
-	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $course_settings->nostudents != 1) {
+	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $editmode == 0 && $course_settings->nostudents != 1) {
 		$colselector=$output->column_selector(count($allCourseStudents));
-	} elseif (!$studentid || $course_settings->nostudents == 1) {
+	} elseif (!$studentid || $course_settings->nostudents == 1 || ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $editmode = 1)) {
 		$students = array();
 	} elseif ($studentid == BLOCK_EXACOMP_SHOW_STATISTIC) {
 		$statistic = true;
