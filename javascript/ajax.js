@@ -225,6 +225,9 @@
 	$(document).on('click', 'input[name^=datatopics\-]', function() {
 		var id = this.getAttribute('exa-compid')+"-"+this.getAttribute('exa-userid');
 		
+		var tr = $(this).closest('tr');
+		var hide = $(tr).find('input[name~="hide-topic"]');
+		
 		var compid = this.getAttribute('exa-compid');
 		var userid = this.getAttribute('exa-userid');	
 		var niveauid = $('select[name=niveau_topic-'+compid+'-'+userid+']').val();
@@ -250,6 +253,9 @@
 					value : $(this).val(),
 					niveauid : niveauid
 				};
+		
+			//check comp->hide descriptor not possible
+			hide.addClass("hidden");
 		} else {
 			if (topics[this.name])
 				topics[this.name].value = -1;
@@ -260,6 +266,9 @@
 					value : 0,
 					niveauid : niveauid
 				};
+			
+			//uncheck comp -> hide possible again
+			hide.removeClass("hidden");
 		}
 	});
 	
@@ -528,7 +537,7 @@
 	$(document).on('click', 'input[name^=dataexamples\-]', function() {
 		var values = $(this).attr("name").split("-");
 		var tr = $(this).closest('tr');
-		var hide = $(tr).find('input[name~="hide-descriptor"]');
+		var hide = $(tr).find('input[name~="hide-example"]');
 		
 		if($(this).attr("reviewerid")) {
 			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
@@ -986,6 +995,64 @@
 			value : visible,
 			studentid : studentid,
 			action : 'hide-example'
+		});
+
+	});
+
+	$(document).on('click', '#hide-topic', function(event) {
+		event.preventDefault();
+
+		var tr = $(this).closest('tr');
+
+		var courseid = block_exacomp.get_param('courseid');
+		var studentid = block_exacomp.get_studentid() || 0;
+		var topicid = $(this).attr('topicid');
+		var val = $(this).attr('state');
+		if(studentid < 0) {
+			// no negative studentid: (all users, gesamtübersicht,...)
+			studentid = 0;
+		}
+		
+		if(val=='-'){
+			$(this).attr('state','+');
+			visible = 0;
+
+			$(this).trigger('rg2.lock');
+
+			//disable checkbox for teacher, when hiding descriptor for student
+			if(studentid > 0){
+				$('input[name=datatopics-'+topicid+'-'+studentid+'-'+'teacher]').prop( "disabled", true );
+				$('select[name=datatopics-'+topicid+'-'+studentid+'-'+'teacher]').prop( "disabled", true );
+				$('input[name=add-grading-'+studentid+'-'+topicid+']').prop("disabled", true);
+				$('select[name=niveau_topic-'+topicid+'-'+studentid+']').prop("disabled", true);
+			}
+			
+			var img = $("img", this);
+			img.attr('src',$(this).attr('hideurl'));
+			img.attr('alt', M.util.get_string('show','moodle'));
+			img.attr('title', M.util.get_string('show','moodle'));
+		}else{
+			$(this).attr('state','-');
+			visible = 1;
+			$(this).trigger('rg2.unlock');
+
+			//enable checkbox for teacher, when showing descriptor for student
+			$('input[name=datatopics-'+topicid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
+			$('input[name=add-grading-'+studentid+'-'+topicid+']').prop("disabled", false);
+			$('select[name=datatopics-'+topicid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
+			$('select[name=niveau_topic-'+topicid+'-'+studentid+']').prop("disabled", false);
+
+			var img = $("img", this);
+			img.attr('src',$(this).attr('showurl'));
+			img.attr('alt', M.util.get_string('hide','moodle'));
+			img.attr('title', M.util.get_string('hide','moodle'));
+		}
+		
+		block_exacomp.call_ajax({
+			topicid : topicid,
+			value : visible,
+			studentid : studentid,
+			action : 'hide-topic'
 		});
 
 	});

@@ -4508,7 +4508,19 @@ function block_exacomp_set_example_visibility($exampleid, $courseid, $visible, $
 		['exampleid'=>$exampleid, 'courseid'=>$courseid, 'studentid'=>$studentid]
 	);
 }
+function block_exacomp_set_topic_visibility($topicid, $courseid, $visible, $studentid){
+	global $DB;
+	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS || $studentid ==0){//if visibility changed for all: delete individual settings
+		$studentid = 0;
+		$sql = "DELETE FROM {".\block_exacomp\DB_TOPICVISIBILITY."} WHERE topicid = ? AND courseid = ? and studentid <> 0";
 
+		$DB->execute($sql, array($topicid, $courseid));
+	}
+	g::$DB->insert_or_update_record(\block_exacomp\DB_TOPICVISIBILITY,
+			['visible'=>$visible],
+			['topicid'=>$topicid, 'courseid'=>$courseid, 'studentid'=>$studentid]
+			);
+}
 function block_exacomp_topic_used($courseid, $topic, $studentid){
 	global $DB;
 	
