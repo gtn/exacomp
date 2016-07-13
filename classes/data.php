@@ -1905,7 +1905,7 @@ function simpleXMLElementToArray(SimpleXMLElement $xmlobject) {
 	return $array_final;
 }
 
-require_once $CFG->libdir . '/formslib.php';
+require_once g::$CFG->libdir . '/formslib.php';
 
 class generalxml_upload_form extends \moodleform {
 
