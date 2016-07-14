@@ -1222,7 +1222,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				foreach($students as $student) {
 					if($role == \block_exacomp\ROLE_TEACHER){
 						$reviewerid = $DB->get_field(\block_exacomp\DB_COMPETENCES,"reviewerid",array("userid" => $student->id, "compid" => $subject->id, "courseid"=>$courseid, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_SUBJECT));
-						if($reviewerid == $USER->id)
+						if($reviewerid == $USER->id || $reviewerid == 0)
 							$reviewerid = null;
 						
 						$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
@@ -1356,9 +1356,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$totalRow->cells[] = new html_table_cell();
 			
 			foreach($students as $student) {
-				if($role == \block_exacomp\ROLE_TEACHER)
+				if($role == \block_exacomp\ROLE_TEACHER) {
 					$reviewerid = $DB->get_field(\block_exacomp\DB_COMPETENCES,"reviewerid",array("userid" => $student->id, "compid" => $crosssubjid, "courseid"=>$courseid, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_CROSSSUB));
-				
+					if($reviewerid == $USER->id || $reviewerid == 0)
+						$reviewerid = null;
+
+				}
 				$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
 				
 				$self_evaluation_cell = new html_table_cell();
@@ -1502,7 +1505,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				foreach($students as $student) {
 					if($data->role == \block_exacomp\ROLE_TEACHER) {
 						$reviewerid = $DB->get_field(\block_exacomp\DB_COMPETENCES,"reviewerid",array("userid" => $student->id, "compid" => $topic->id, "courseid"=>$data->courseid, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_TOPIC));
-						if($reviewerid == $USER->id)
+						if($reviewerid == $USER->id || $reviewerid == 0)
 							$reviewerid = null;
 					}
 					$studentCell = new html_table_cell();
@@ -1752,7 +1755,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						//check reviewerid for teacher
 						if($data->role == \block_exacomp\ROLE_TEACHER) {
 							$reviewerid = $DB->get_field(\block_exacomp\DB_COMPETENCES,"reviewerid",array("userid" => $student->id, "compid" => $descriptor->id, "courseid"=>$data->courseid, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_DESCRIPTOR));
-							if($reviewerid == $USER->id)
+							if($reviewerid == $USER->id || $reviewerid == 0)
 								$reviewerid = null;
 						}
 						//check visibility for every student in overview
@@ -2093,7 +2096,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								//check reviewerid for teacher
 							if($data->role == \block_exacomp\ROLE_TEACHER) {
 								$reviewerid = $DB->get_field(\block_exacomp\DB_EXAMPLEEVAL,"teacher_reviewerid",array("studentid" => $student->id, "exampleid" => $example->id, "courseid"=>$data->courseid));
-								if($reviewerid == $USER->id)
+								if($reviewerid == $USER->id || $reviewerid == 0)
 									$reviewerid = null;
 							}
 								
