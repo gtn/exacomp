@@ -134,7 +134,7 @@ $notifications = get_config('exacomp','notifications');
 
 define("SHOW_ALL_TAXONOMIES",100000000);
 define("BLOCK_EXACOMP_SHOW_ALL_STUDENTS", -1);
-define("BLOCK_EXACOMP_SHOW_STATISTIC", -2);
+define("BLOCK_EXACOMP_SHOW_STATISTIC", -1);
 define("BLOCK_EXACOMP_DEFAULT_STUDENT", -5);
 
 define("BLOCK_EXACOMP_REPORT1",1);
