@@ -833,7 +833,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 												"topicid"=>$topicid,
 												"subjectid"=>$subjectid,
 												"niveauid"=>$niveauid,
-												"studentid"=>$studentid)),$text,array("id" => "competence-grid-link-".$descriptor->id,"class" => ($visible && $topic_visible) ? '' : 'deactivated'));
+												"studentid"=>$studentid)),$text,array("id" => "competence-grid-link-".$descriptor->id,"class" => ($visible) ? '' : 'deactivated'));
 	
 							}
 
