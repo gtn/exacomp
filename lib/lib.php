@@ -4557,7 +4557,7 @@ function block_exacomp_set_topic_visibility($topicid, $courseid, $visible, $stud
 }
 function block_exacomp_topic_used($courseid, $topic, $studentid){
 	global $DB;
-	
+
 	if($studentid == 0){
 		$sql = "SELECT * FROM {".\block_exacomp\DB_COMPETENCES."} WHERE courseid = ? AND compid = ? AND comptype=? AND ( value>0 OR additionalinfo IS NOT NULL)";
 		$records = $DB->get_records_sql($sql, array($courseid, $topic->id, TYPE_TOPIC));
@@ -4570,6 +4570,7 @@ function block_exacomp_topic_used($courseid, $topic, $studentid){
 	
 	$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $topic->id);
 	foreach($descriptors as $descriptor){
+		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
 		if(block_exacomp_descriptor_used($courseid, $descriptor, $studentid))
 			return true;
 	}
@@ -4588,39 +4589,19 @@ function block_exacomp_descriptor_used($courseid, $descriptor, $studentid){
 		$sql = "SELECT * FROM {".\block_exacomp\DB_COMPETENCES."} WHERE courseid = ? AND compid = ? AND comptype=? AND ( value>0 OR additionalinfo IS NOT NULL)";
 		$records = $DB->get_records_sql($sql, array($courseid, $descriptor->id, TYPE_DESCRIPTOR));
 		if($records) return true;
-
-		if(isset($descriptor->examples) && $descriptor->examples){
-			foreach($descriptor->examples as $example){
-				$sql = "SELECT * FROM {".\block_exacomp\DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND teacher_evaluation>0";
-				$records = $DB->get_records_sql($sql, array($courseid, $example->id));
-				if($records) return true;
-
-				$sql = "SELECT * FROM {".\block_exacomp\DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND student_evaluation>0";
-				$records = $DB->get_records_sql($sql, array($courseid, $example->id));
-				if($records) return true;
-			}
-		}
-		//TODO submission //activities
 	}else{
 		$sql = "SELECT * FROM {".\block_exacomp\DB_COMPETENCES."} WHERE courseid = ? AND compid = ? AND comptype=? AND userid = ? AND ( value>0 OR additionalinfo IS NOT NULL)";
 		$records = $DB->get_records_sql($sql, array($courseid, $descriptor->id, TYPE_DESCRIPTOR, $studentid));
 		if($records) return true;
-
-		if(isset($descriptor->examples) && $descriptor->examples){
-			foreach($descriptor->examples as $example){
-				$sql = "SELECT * FROM {".\block_exacomp\DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND studentid=? AND teacher_evaluation>0";
-				$records = $DB->get_records_sql($sql, array($courseid, $example->id, $studentid));
-				if($records) return true;
-
-				$sql = "SELECT * FROM {".\block_exacomp\DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND studentid = ? AND student_evaluation>0";
-				$records = $DB->get_records_sql($sql, array($courseid, $example->id, $studentid));
-				if($records) return true;
-			}
-		}
-
-		//TODO submissions & avtivities
 	}
 
+	if(isset($descriptor->examples) && $descriptor->examples){
+		foreach($descriptor->examples as $example){
+			if(block_exacomp_example_used($courseid, $example, $studentid))
+				return true;
+		}
+	}
+	
 	return false;
 }
 
@@ -4629,7 +4610,6 @@ function block_exacomp_example_used($courseid, $example, $studentid){
 	//if studentid == 0 used = true, if no evaluation/submission for this example
 
 	//if studentid != 0 used = true, if no evaluation/submission for this examples for this student
-
 	if($studentid == 0){
 		$sql = "SELECT * FROM {".\block_exacomp\DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND teacher_evaluation>0";
 		$records = $DB->get_records_sql($sql, array($courseid, $example->id));
@@ -6495,9 +6475,9 @@ function block_exacomp_get_courseids_by_descriptor($descriptorid){
 **/
 function block_exacomp_get_html_for_niveau_eval($evaluation){
 	$evaluation_niveau_type = block_exacomp_evaluation_niveau_type();
-	
 	if($evaluation_niveau_type == 0)
 		return;
+
 	//predefined pictures 
 		$grey_1_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_1_'.$evaluation_niveau_type.'.png';
 		$grey_2_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_2_'.$evaluation_niveau_type.'.png';
