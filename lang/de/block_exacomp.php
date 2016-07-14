@@ -45,7 +45,7 @@ $string['tab_teacher_settings_selection_st'] = 'Bildungsstandard-Auswahl';
 $string['tab_teacher_settings_selection'] = 'Auswahl der Kompetenzbereiche';
 $string['tab_teacher_settings_assignactivities'] = 'Moodle-Aktivitäten zuordnen';
 $string['tab_teacher_settings_badges'] = 'Auszeichnungen bearbeiten';
-
+$string['tab_teacher_settings_new_subject'] = 'Neuen Kompetenzraster anlegen';
 
 // === Student Tabs ===
 $string['tab_student_all'] = 'Alle erworbenen Kompetenzen';
@@ -259,8 +259,9 @@ $string['override_notice'] = 'Dieser Eintrag wurde von jemand anderem bearbeitet
 $string['unload_notice'] = 'Die Seite wirklich verlassen? Ungespeicherte Änderungen gehen verloren.';
 $string['example_sorting_notice'] = 'Bitte zuerst die aktuellen Bewertungen speichern';
 $string['newsubmission'] = 'Erneute Abgabe';
-
-
+$string['value_too_large'] = 'Fehler: Benotungen dürfen nicht größer als 6.0 sein!';
+$string['value_too_low'] = 'Fehler: Benotungen dürfen nicht kleiner als 1.0 sein!';
+$string['value_not_allowed'] = 'Fehler: Benotungen müssen Zahlenwerte zwischen 1.0 und 6.0 sein';
 // === Example Submission ===
 $string['example_submission_header'] = 'Aufgabe {$a} bearbeiten';
 $string['example_submission_info'] = 'Du bist dabei die Aufgabe "{$a}" zu bearbeiten. Deine Abgabe landet im ePortfolio und kann dort von dir und deinem/r LehrerIn eingesehen werden.';
@@ -499,24 +500,25 @@ $string['blocking_event_create'] = 'Zum Vorplanungsspeicher hinzufügen';
 
 
 // === Notifications ===
-$string['notification_submission_subject'] = '{$a->student} hat eine Lösung zum Lernmaterial {$a->example} eingereicht.';
-$string['notification_submission_body'] = '{$a->student} hat die Aufgabe {$a->example} bearbeitet und am {$a->date} um {$a->time} hochgeladen. Die Abgabe kann im ePortfolio eingesehen werden: <a href="{$viewurl}">{$a->example}</a>';
+$string['notification_submission_subject'] = '{$a->site}: {$a->student} hat eine Lösung zum Lernmaterial {$a->example} eingereicht';
+$string['notification_submission_body'] = 'Sehr geehrter/geehrte {$a->receiver}, </br></br> {$a->student} hat die Aufgabe {$a->example} bearbeitet und am {$a->date} um {$a->time} hochgeladen. Die Abgabe kann im ePortfolio eingesehen werden: <a href="{$viewurl}">{$a->example}</a> </br></br> Die Nachricht wurde generiert von der Moodle-Seite {$a->site}.';
 $string['notification_submission_context'] = 'Abgabe';
-$string['notification_grading_subject'] = 'Neue Beurteilungen im Kurs {$a->course}';
-$string['notification_grading_body'] = 'Du hast im Kurs {$a->course} neue Beurteilungen von {$a->teacher} erhalten.';
+$string['notification_grading_subject'] = '{$a->site}: Neue Beurteilungen im Kurs {$a->course}';
+$string['notification_grading_body'] = 'Lieber/Liebe {$a->receiver}, </br></br> Du hast im Kurs {$a->course} neue Beurteilungen von {$a->teacher} erhalten.</br></br> Die Nachricht wurde generiert von der Moodle-Seite {$a->site}.';
 $string['notification_grading_context'] = 'Beurteilung';
-$string['notification_self_assessment_subject'] = 'Neue Selbsteinschätzung im Kurs {$a->course}';
-$string['notification_self_assessment_body'] = '{$a->student} hat im Kurs {$a->course} neue Selbsteinschätzungen gemacht.';
+$string['notification_self_assessment_subject'] = '{$a->site}: Neue Selbsteinschätzung im Kurs {$a->course}';
+$string['notification_self_assessment_body'] = 'Sehr geehrter/geehrte {$a->receiver}, </br></br> {$a->student} hat im Kurs {$a->course} neue Selbsteinschätzungen gemacht.</br></br> Die Nachricht wurde generiert von der Moodle-Seite {$a->site}.';
 $string['notification_self_assessment_context'] = 'Selbsteinschätzung';
-$string['notification_example_comment_subject'] = 'Neuer Kommentar bei Aufgabe {$a->example}';
-$string['notification_example_comment_body'] = '{$a->teacher} hat im Kurs {$a->course} die Aufgabe {$a->example} kommentiert.';
+$string['notification_example_comment_subject'] = '{$a->site}: Neuer Kommentar bei Aufgabe {$a->example}';
+$string['notification_example_comment_body'] = 'Lieber/Liebe {$a->receiver}, </br></br> {$a->teacher} hat im Kurs {$a->course} die Aufgabe {$a->example} kommentiert.</br></br> Die Nachricht wurde generiert von der Moodle-Seite {$a->site}.';
 $string['notification_example_comment_context'] = 'Kommentar';
-$string['notification_weekly_schedule_subject'] = 'Neue Aufgabe am Wochenplan';
-$string['notification_weekly_schedule_body'] = '{$a->teacher} hat dir im Kurs {$a->course} eine neue Aufgabe auf den Wochenplan gelegt.';
+$string['notification_weekly_schedule_subject'] = '{$a->site}: Neue Aufgabe am Wochenplan';
+$string['notification_weekly_schedule_body'] = 'Lieber/Liebe {$a->receiver}, </br></br>{$a->teacher} hat dir im Kurs {$a->course} eine neue Aufgabe auf den Wochenplan gelegt.</br></br> Die Nachricht wurde generiert von der Moodle-Seite {$a->site}.';
 $string['notification_weekly_schedule_context'] = 'Wochenplan';
 $string['inwork'] = '{$a->inWork}/{$a->total} Materialien in Arbeit';
 $string['block_exacomp_notifications_head'] = 'Mitteilungen und Benachrichtigungen';
 $string['block_exacomp_notifications_body'] = 'Bei Aktionen wie einer Lernmaterialien-Einreichung oder einer Beurteilung werden Nachrichten an die zuständigen Benutzer gesendet.';
+
 
 
 // === Logging ===
