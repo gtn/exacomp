@@ -30,17 +30,8 @@ require_login($courseid);
 
 // CHECK TEACHER
 $isTeacher = block_exacomp_is_teacher();
-$studentid = optional_param('studentid', BLOCK_EXACOMP_DEFAULT_STUDENT, PARAM_INT);
+$studentid = optional_param('studentid', BLOCK_EXACOMP_SHOW_ALL_STUDENTS, PARAM_INT);
 
-if($isTeacher && ($studentid == BLOCK_EXACOMP_DEFAULT_STUDENT && !isset($_SESSION['studentid-'.$COURSE->id])))
-	$studentid = BLOCK_EXACOMP_SHOW_STATISTIC;
-else {
-	$studentid = block_exacomp_get_studentid($isTeacher);
-	$coursestudents = block_exacomp_get_students_by_course($courseid);
-	if (!isset($coursestudents[$studentid])) {
-		$studentid = BLOCK_EXACOMP_SHOW_STATISTIC;
-	}
-}
 
 /* PAGE IDENTIFIER - MUST BE CHANGED. Please use string identifier from lang file */
 $page_identifier = 'tab_competence_grid';
@@ -77,7 +68,9 @@ echo $output->subject_dropdown(block_exacomp_get_schooltypetree_by_topics($dropd
 if($data) {
 	if ($isTeacher && !block_exacomp_get_settings_by_course($courseid)->nostudents) {
 		echo ' '.get_string("choosestudent","block_exacomp").' ';
-		echo $output->studentselector(block_exacomp_get_students_by_course($courseid),$studentid, $output::STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN);
+		echo $output->studentselector(block_exacomp_get_students_by_course($courseid),$studentid, $output::STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
+
+		
 	}
 	
 	//if($course_settings->nostudents != 1)
@@ -88,7 +81,7 @@ if($data) {
 	if(isset($dropdown_subjects[$subjectid]->infolink))
 		echo html_writer::tag("p",get_string('infolink','block_exacomp') . html_writer::link($dropdown_subjects[$subjectid]->infolink, $dropdown_subjects[$subjectid]->infolink,array('target'=>'_blank')));
 
-	echo $output->competence_grid($niveaus, $skills, $subjects, $data, $selection, $courseid,$studentid);
+	echo $output->competence_grid($niveaus, $skills, $subjects, $data, $selection, $courseid,$studentid,$subjectid);
 
 	echo html_writer::end_div();
 }
