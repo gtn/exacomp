@@ -1994,7 +1994,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$example_used = block_exacomp_example_used($data->courseid, $example, $studentid);
 
 					$visible_example = block_exacomp_is_example_visible($data->courseid, $example, $studentid);
-
+					$visible_solution = block_exacomp_is_example_solution_visible($data->courseid, $example, $studentid);
+					
 					if ($data->role != \block_exacomp\ROLE_TEACHER && !$visible_example) {
 						// do not display
 						continue;
@@ -2071,9 +2072,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						}elseif($example->externaltask){
 							$titleCell->text .= html_writer::link($example->externaltask, $this->local_pix_icon("globesearch.png", $example->externaltask),array("target" => "_blank"));
 						}
-
-						if ($url = $example->get_solution_file_url()) {
-							$titleCell->text .= $this->example_solution_icon($url);
+						if (($data->role == \block_exacomp\ROLE_TEACHER) && ($editmode || (! $editmode && $one_student && block_exacomp_is_example_visible ( $data->courseid, $example, 0 ))))
+							$titleCell->text .= $this->visibility_icon_example_solution ( $visible_solution, $example->id );
+						
+						if (($data->role == \block_exacomp\ROLE_TEACHER || $visible_solution) && $url = $example->get_solution_file_url ()) {
+							$titleCell->text .= $this->example_solution_icon ( $url );
 						}
 
 						if ($this->is_print_mode()) {
@@ -2390,6 +2393,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				'showurl' => $this->pix_url("i/hide"), 'hideurl' => $this->pix_url("i/show")
 		));
 
+	}
+	public function visibility_icon_example_solution($visible, $exampleid) {
+		if($visible)
+			$icon = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/solution_visible.png'), 'alt'=>get_string("hide_solution","block_exacomp"), 'title'=>get_string("hide_solution","block_exacomp"), 'width' => '16'));
+			else
+				$icon = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/solution_hidden.png'), 'alt'=>get_string("show_solution","block_exacomp"), 'title'=>get_string("show_solution","block_exacomp"), 'width' => '16'));
+	
+				return html_writer::link("", $icon, array('name' => 'hide-solution','exampleid' => $exampleid, 'id' => 'hide-solution', 'state' => ($visible) ? '-' : '+',
+						'showurl' => new moodle_url('/blocks/exacomp/pix/solution_visible.png'), 'hideurl' => new moodle_url('/blocks/exacomp/pix/solution_hidden.png')
+				));
+	
 	}
 	/*
 	private function student_example_evaluation_form($exampleid, $studentid, $courseid) {
@@ -4810,13 +4824,16 @@ var dataset = dataset.map(function (group) {
 						 );
 					}
 					
-					if ($url = $example->get_solution_file_url ()) {
-						$exampleIcons .= $this->example_solution_icon ( $url );
-					} elseif ($example->externalsolution) {
-						$exampleIcons .= html_writer::link ( $example->externalsolution, $this->pix_icon ( "e/fullpage", get_string ( 'solution', 'block_exacomp' ) ), array (
-								"target" => "_blank" 
-						)
-						 );
+					$visible_solution = block_exacomp_is_example_solution_visible(g::$COURSE->id, $example, g::$USER->id);
+                    if ($isTeacher || $visible_solution) {
+                        if ($url = $example->get_solution_file_url ()) {
+                            $exampleIcons .= $this->example_solution_icon ( $url );
+                        } elseif ($example->externalsolution) {
+                            $exampleIcons .= html_writer::link ( $example->externalsolution, $this->pix_icon ( "e/fullpage", get_string ( 'solution', 'block_exacomp' ) ), array (
+                                    "target" => "_blank"
+                            )
+                             );
+                        }
 					}
 
 					$html_tree .= html_writer::tag("li", $example->title . $exampleIcons, array('class'=>($example->associated == 1)?"associated":""));
@@ -5045,14 +5062,15 @@ var dataset = dataset.map(function (group) {
 			) );
 		}
 		
-		if ($url = $example->get_solution_file_url ()) {
-			
-			$exampleIcons .= $this->example_solution_icon ( $url );
-		} elseif ($example->externalsolution) {
-			
-			$exampleIcons .= html_writer::link ( $example->externalsolution, $this->pix_icon ( "e/fullpage", get_string ( 'solution', 'block_exacomp' ) ), array (
-					"target" => "_blank" 
-			) );
+		$visible_solution = block_exacomp_is_example_solution_visible(g::$COURSE->id, $example, g::$USER->id);
+        if($isTeacher || $visible_solution) {
+            if ($url = $example->get_solution_file_url ()) {
+                $exampleIcons .= $this->example_solution_icon ( $url );
+            } elseif ($example->externalsolution) {
+                $exampleIcons .= html_writer::link ( $example->externalsolution, $this->pix_icon ( "e/fullpage", get_string ( 'solution', 'block_exacomp' ) ), array (
+                        "target" => "_blank"
+                ) );
+            }
 		}
 
 		$html_tree .= $example->title . $exampleIcons;

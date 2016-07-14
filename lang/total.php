@@ -686,7 +686,6 @@ return  [
 		'sort by examples',
 	],
 
-
 	// === Icons ===
 	'assigned_example' => [
 		'Zugeteiltes Lernmaterial',
@@ -730,6 +729,14 @@ return  [
 	'solution' => [
 		'Musterlösung',
 		'Solution',
+	],
+	'hide_solution' => [
+		'Musterlösung verbergen',
+		'Hide solution',
+	],
+	'show_solution' => [
+		'Musterlösung anzeigen',
+		'Show solution',
 	],
 	'submission' => [
 		'Abgabe',

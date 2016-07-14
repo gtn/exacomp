@@ -2848,6 +2848,39 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	
 		upgrade_block_savepoint(true, 2016070800, 'exacomp');
 	}
+	
+	if ($oldversion < 2016071200) {
+	
+		// Define table block_exacompsolutvisibility to be created.
+		$table = new xmldb_table('block_exacompsolutvisibility');
+	
+		// Adding fields to table block_exacompsolutvisibility.
+		$table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+		$table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+		$table->add_field('exampleid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+		$table->add_field('studentid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+		$table->add_field('visible', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1');
+	
+		// Adding keys to table block_exacompsolutvisibility.
+		$table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+		$table->add_key('courseid', XMLDB_KEY_FOREIGN, array('courseid'), 'course', array('id'));
+		$table->add_key('exampleid', XMLDB_KEY_FOREIGN, array('exampleid'), 'block_exacompexamples', array('id'));
+		$table->add_key('studentid', XMLDB_KEY_FOREIGN, array('studentid'), 'user', array('id'));
+	
+		// Conditionally launch create table for block_exacompsolutvisibility.
+		if (!$dbman->table_exists($table)) {
+			$dbman->create_table($table);
+		}
+	
+		// create entries for all examples in all courses
+		$example_visibilities = $DB->get_records(\block_exacomp\DB_EXAMPVISIBILITY);
+		foreach($example_visibilities as $examplevisibility)
+			$DB->insert_record(\block_exacomp\DB_SOLUTIONVISIBILITY, array('courseid' => $examplevisibility->courseid, 'exampleid' => $examplevisibility->exampleid, 'studentid' => $examplevisibility->studentid, 'visible' => 1));
+		
+		// Exacomp savepoint reached.
+		upgrade_block_savepoint(true, 2016071200, 'exacomp');
+	}
+	
 	/*
 	 * insert new upgrade scripts before this comment section
 	 * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!

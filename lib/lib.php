@@ -68,6 +68,7 @@ const DB_SUBJECT_NIVEAU_MM = 'block_exacompsubjniveau_mm';
 const DB_EXTERNAL_TRAINERS = 'block_exacompexternaltrainer';
 const DB_EVALUATION_NIVEAU = 'block_exacompeval_niveau';
 const DB_TOPICVISIBILITY = 'block_exacomptopicvisibility';
+const DB_SOLUTIONVISIBILITY = 'block_exacompsolutvisibility';
 
 /**
  * PLUGIN ROLES
@@ -178,7 +179,7 @@ function block_exacomp_init_js_css(){
 		'show', 'hide' //, 'selectall', 'deselectall'
 	], 'moodle');
 	$PAGE->requires->strings_for_js([
-		'override_notice', 'unload_notice', 'example_sorting_notice', 'delete_unconnected_examples', 'value_too_large', 'value_too_low', 'value_not_allowed'
+		'override_notice', 'unload_notice', 'example_sorting_notice', 'delete_unconnected_examples', 'value_too_large', 'value_too_low', 'value_not_allowed', 'hide_solution', 'show_solution'
 	], 'block_exacomp');
 	
 	// page specific js/css
@@ -1142,17 +1143,17 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 
 	$examples = \block_exacomp\example::get_objects_sql(
 			"SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source, ".
-				($mind_visibility?"evis.visible,":"")."
+                ($mind_visibility?"evis.visible,esvis.visible as solution_visible, ":"")."
 				e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author
 				FROM {" . \block_exacomp\DB_EXAMPLES . "} e
 				JOIN {" . \block_exacomp\DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?"
 			.($mind_visibility?' JOIN {'.\block_exacomp\DB_EXAMPVISIBILITY.'} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.courseid=? '
-			.($showonlyvisible?' AND evis.visible = 1 ':''):'')
+			.($showonlyvisible?' AND evis.visible = 1 ':''). ' JOIN {'.\block_exacomp\DB_SOLUTIONVISIBILITY.'} esvis ON esvis.exampleid= e.id AND esvis.studentid=0 AND esvis.courseid=? ' :'')
 			. " WHERE "
 			. " e.source != " . \block_exacomp\EXAMPLE_SOURCE_USER . " AND "
 			. (($showallexamples) ? " 1=1 " : " e.creatorid > 0")
 			. " ORDER BY de.sorting"
-			, array($descriptor->id, $courseid));
+			, array($descriptor->id, $courseid, $courseid));
 
 	foreach($examples as $example){
 		$example->descriptor = $descriptor;
@@ -2736,6 +2737,7 @@ function block_exacomp_update_example_visibilities($courseid, $examples){
 		if(!in_array($example->id, $visibilities)) {
 			$visibilities[] = $example->id;
 			$DB->insert_record(\block_exacomp\DB_EXAMPVISIBILITY, array("courseid"=>$courseid, "exampleid"=>$example->id, "studentid"=>0, "visible"=>1));
+			$DB->insert_record(\block_exacomp\DB_SOLUTIONVISIBILITY, array("courseid"=>$courseid, "exampleid"=>$example->id, "studentid"=>0, "visible"=>1));
 		}
 	}
 
@@ -2743,8 +2745,10 @@ function block_exacomp_update_example_visibilities($courseid, $examples){
 		//delete ununsed descriptors for course and for special students
 		if(!array_key_exists($visible, $finalexamples)){
 			//check if used in cross-subjects --> then it must still be visible
-			if(!in_array($visible, $cross_subject_examples))
-				$DB->delete_records(\block_exacomp\DB_EXAMPVISIBILITY, array("courseid"=>$courseid, "exampleid"=>$visible));
+			if(!in_array($visible, $cross_subject_examples)) {
+                $DB->delete_records(\block_exacomp\DB_EXAMPVISIBILITY, array("courseid"=>$courseid, "exampleid"=>$visible));
+                $DB->delete_records(\block_exacomp\DB_SOLUTIONVISIBILITY, array("courseid"=>$courseid, "exampleid"=>$visible));
+            }
 		}
 	}
 }
@@ -4526,6 +4530,18 @@ function block_exacomp_set_example_visibility($exampleid, $courseid, $visible, $
 		['exampleid'=>$exampleid, 'courseid'=>$courseid, 'studentid'=>$studentid]
 	);
 }
+function block_exacomp_set_example_solution_visibility($exampleid, $courseid, $visible, $studentid){
+	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS || $studentid == 0){//if visibility changed for all: delete individual settings
+		$studentid = 0;
+		$sql = "DELETE FROM {".\block_exacomp\DB_SOLUTIONVISIBILITY."} WHERE exampleid = ? AND courseid = ? and studentid <> 0";
+		g::$DB->execute($sql, array($exampleid, $courseid));
+	}
+
+	g::$DB->insert_or_update_record(\block_exacomp\DB_SOLUTIONVISIBILITY,
+		['visible'=>$visible],
+		['exampleid'=>$exampleid, 'courseid'=>$courseid, 'studentid'=>$studentid]
+	);
+}
 function block_exacomp_set_topic_visibility($topicid, $courseid, $visible, $studentid){
 	global $DB;
 	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS || $studentid ==0){//if visibility changed for all: delete individual settings
@@ -4919,7 +4935,40 @@ function block_exacomp_is_example_visible($courseid, $example, $studentid){
 	// default is visible
 	return true;
 }
+function block_exacomp_is_example_solution_visible($courseid, $example, $studentid){
+	global $DB;
 
+	// $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
+	if ($studentid <= 0) {
+		$studentid = 0;
+	}
+
+	// always use global value first (if set)
+	if (isset($example->solution_visible) && !$example->solution_visible) {
+		return false;
+	}
+
+	// check if it is hidden for whole course?
+	$visible = $DB->get_field(\block_exacomp\DB_SOLUTIONVISIBILITY, 'visible',
+			['courseid'=>$courseid, 'exampleid'=>$example->id, 'studentid'=>0]);
+	// $DB->get_field() returns false if not found
+	if ($visible !== false && !$visible) {
+		return false;
+	}
+
+	// then try for a student
+	if ($studentid > 0) {
+		$visible = $DB->get_field(\block_exacomp\DB_SOLUTIONVISIBILITY, 'visible',
+				['courseid'=>$courseid, 'exampleid'=>$example->id, 'studentid'=>$studentid]);
+		// $DB->get_field() returns false if not found
+		if ($visible !== false) {
+			return $visible;
+		}
+	}
+
+	// default is visible
+	return true;
+}
 function block_exacomp_get_visible_css($visible, $role) {
 	$visible_css = '';
 	if(!$visible)

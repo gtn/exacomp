@@ -180,6 +180,10 @@ if($formdata = $form->get_data()) {
 	if (!$DB->get_record(\block_exacomp\DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$newExample->id, 'studentid'=>0))) {
 		$DB->insert_record(\block_exacomp\DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$newExample->id, 'studentid'=>0, 'visible'=>1));
 	}
+	if (!$DB->get_record(\block_exacomp\DB_SOLUTIONVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$newExample->id, 'studentid'=>0))) {
+		$DB->insert_record(\block_exacomp\DB_SOLUTIONVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$newExample->id, 'studentid'=>0, 'visible'=>1));
+	}
+	
 	block_exacomp_settstamp();
 	
 	// save file

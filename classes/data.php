@@ -419,6 +419,20 @@ class data {
 		";
 		g::$DB->execute($sql);
 		
+		//example solutions visibility
+		$sql = "
+            INSERT INTO {".DB_SOLUTIONVISIBILITY."}
+            (courseid, exampleid, studentid, visible)
+            SELECT DISTINCT ct.courseid, dc.exampid, 0, 1
+            FROM {".DB_COURSETOPICS."} ct
+            JOIN {".DB_DESCTOPICS."} dt ON ct.topicid = dt.topicid
+            JOIN {".DB_DESCVISIBILITY."} dv ON dv.descrid=dt.descrid AND dv.studentid=0
+            JOIN {".DB_DESCEXAMP."} dc ON dc.descrid=dt.descrid
+            LEFT JOIN {".DB_SOLUTIONVISIBILITY."} ev ON ev.exampleid=dc.exampid AND ev.studentid=0 AND ev.courseid=ct.courseid
+            WHERE ev.id IS NULL -- only for those, who have no visibility yet
+        ";
+		g::$DB->execute($sql);
+		
 		//example visibility crosssubjects
 		$sql = "
 			INSERT INTO {".DB_EXAMPVISIBILITY."}
@@ -431,6 +445,20 @@ class data {
 			LEFT JOIN {".DB_EXAMPVISIBILITY."} ev ON ev.exampleid=de.exampid AND ev.studentid=0 AND ev.courseid=cs.courseid
 			WHERE ev.id IS NULL AND cs.courseid != 0  -- only for those, who have no visibility yet
 		";
+		g::$DB->execute($sql); //only necessary if we save courseinformation as well -> existing crosssubjects imported  only as drafts -> not needed
+		
+		//example solution visibility： crosssubjects
+		$sql = "
+            INSERT INTO {".DB_SOLUTIONVISIBILITY."}
+            (courseid, exampleid, studentid, visible)
+            SELECT DISTINCT cs.courseid, de.exampid, 0, 1
+            FROM {".DB_CROSSSUBJECTS."} cs
+            JOIN {".DB_DESCCROSS."} dc ON cs.id = dc.crosssubjid
+            JOIN {".DB_DESCVISIBILITY."} dv ON dv.descrid=dc.descrid AND dv.studentid=0
+            JOIN {".DB_DESCEXAMP."} de ON de.descrid=dv.descrid
+            LEFT JOIN {".DB_SOLUTIONVISIBILITY."} ev ON ev.exampleid=de.exampid AND ev.studentid=0 AND ev.courseid=cs.courseid
+            WHERE ev.id IS NULL AND cs.courseid != 0  -- only for those, who have no visibility yet
+        ";
 		g::$DB->execute($sql); //only necessary if we save courseinformation as well -> existing crosssubjects imported  only as drafts -> not needed
 	}
 }

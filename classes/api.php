@@ -87,7 +87,8 @@ class api {
 		$DB->delete_records(\block_exacomp\DB_EXTERNAL_TRAINERS, array("studentid" => $userid));
 		$DB->delete_records(\block_exacomp\DB_SCHEDULE, array("studentid" => $userid));
 		$DB->delete_records(\block_exacomp\DB_TOPICVISIBILITY, array("studentid"=>$userid));
-
+		$DB->delete_records(\block_exacomp\DB_SOLUTIONVISIBILITY, array("studentid"=>$userid));
+		
 		$DB->delete_records(\block_exacomp\DB_CROSSSUBJECTS, array("creatorid" => $userid));
 		$DB->delete_records(\block_exacomp\DB_EXAMPLES, array("creatorid" => $userid));
 		$DB->delete_records(\block_exacomp\DB_SCHEDULE, array("creatorid" => $userid));

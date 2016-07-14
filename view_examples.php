@@ -69,7 +69,7 @@ $tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, t
 echo $output->view_example_header();
 
 if($style==0)
-	echo $output->competence_based_list_tree ( $tree , true, false);
+	echo $output->competence_based_list_tree ( $tree , $isTeacher, false);
 if($style==1){
 	$comp_examples = \block_exacomp\example::get_objects_sql(
             'SELECT DISTINCT e.*
@@ -94,7 +94,7 @@ if($style==1){
 					$descriptors[$descexamp->descrid] = $descexamp->descrid;
 			}
 			$tree = block_exacomp_build_example_association_tree($courseid, $descriptors, $example->id, 0, false);
-			$content .= $output->example_based_list_tree($example, $tree, true, false);
+			$content .= $output->example_based_list_tree($example, $tree, $isTeacher, false);
 		}
 	}
 	

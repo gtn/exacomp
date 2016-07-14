@@ -1058,6 +1058,48 @@
 
 	});
 
+	$(document).on('click', '#hide-solution', function(event) {
+        event.preventDefault();
+
+        var tr = $(this).closest('tr');
+
+        var courseid = block_exacomp.get_param('courseid');
+        var studentid = block_exacomp.get_studentid();
+        var exampleid = $(this).attr('exampleid');
+        var val = $(this).attr('state');
+
+        if(studentid==null)
+            studentid = 0;
+
+        if(val=='-'){
+            $(this).attr('state','+');
+            visible = 0;
+
+            var img = $("img", this);
+            img.attr('src',$(this).attr('hideurl'));
+            img.attr('alt', M.util.get_string('show_solution','block_exacomp'));
+            img.attr('title', M.util.get_string('show_solution','block_exacomp'));
+
+        }else{
+            $(this).attr('state','-');
+            visible = 1;
+
+            var img = $("img", this);
+            img.attr('src',$(this).attr('showurl'));
+            img.attr('alt', M.util.get_string('hide_solution','block_exacomp'));
+            img.attr('title', M.util.get_string('hide_solution','block_exacomp'));
+
+        }
+
+        block_exacomp.call_ajax({
+            exampleid : exampleid,
+            value : visible,
+            studentid : studentid,
+            action : 'hide-solution'
+        });
+
+    });
+	
 	$(document).on('click','[exa-type=add-example-to-schedule]', function(event) {
 		var exampleid = $(this).attr('exampleid');
 		var studentid = $(this).attr('studentid');
