@@ -363,7 +363,7 @@ class data {
 			SELECT ct.courseid, ct.topicid, 0, 1
 			FROM {".DB_COURSETOPICS."} ct
 			LEFT JOIN {".DB_TOPICVISIBILITY."} tv ON tv.topicid = ct.topicid
-			WHERE tv.id IS NULL --only for those, who have no visibility yet
+			WHERE tv.id IS NULL -- only for those, who have no visibility yet
 		";
 		g::$DB->execute($sql);
 		
