@@ -746,7 +746,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$this->button_box(true, '');
 	}
 
-	public function competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0,$studentid=0) {
+	public function competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0,$studentid=0,$subjectid=0) {
 		global $DB;
 
 		$headFlag = false;
@@ -828,7 +828,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 							$text = block_exacomp_get_descriptor_numbering($descriptor)." ".$descriptor->title;
 							if(array_key_exists($descriptor->topicid, $selection)) {
-								$text = html_writer::link(new moodle_url("/blocks/exacomp/assign_competencies.php",array("courseid"=>$courseid,"subjectid"=>$topicid,"topicid"=>$descriptor->id,"studentid"=>$studentid)),$text,array("id" => "competence-grid-link-".$descriptor->id,"class" => ($visible) ? '' : 'deactivated'));
+								$text = html_writer::link(new moodle_url("/blocks/exacomp/assign_competencies.php",
+										array("courseid"=>$courseid,
+												"topicid"=>$topicid,
+												"subjectid"=>$subjectid,
+												"niveauid"=>$niveauid,
+												"studentid"=>$studentid)),$text,array("id" => "competence-grid-link-".$descriptor->id,"class" => ($visible && $topic_visible) ? '' : 'deactivated'));
+	
 							}
 
 							$compString .= $text;
