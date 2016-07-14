@@ -39,10 +39,13 @@ $studentid = block_exacomp_get_studentid() ;
 if($studentid == 0)
 	$studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
 
-if($editmode && $studentid <= 0) {
+$selectedStudentid = $studentid;
+	
+if($editmode) {
+	$selectedStudentid = $studentid;
 	$studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
 }
-$selectedStudentid = $studentid;
+
 
 $page_identifier = 'tab_competence_overview';
 
@@ -50,7 +53,7 @@ $page_identifier = 'tab_competence_overview';
 $PAGE->set_url('/blocks/exacomp/assign_competencies.php', [
 	'courseid' => $courseid,
 	'showevaluation' => $showevaluation,
-	'studentid' => $studentid,
+	'studentid' => $selectedStudentid,
 	'editmode' => $editmode,
 	'niveauid' => $niveauid,
 	'subjectid' => $subjectid,
@@ -144,7 +147,7 @@ echo $colselector;
 echo $output->competence_overview_form_start($selectedNiveau, $selectedTopic, $studentid, $editmode);
 
 //dropdowns for subjects and topics and students -> if user is teacher and working with students
-echo $output->overview_dropdowns('assign_competencies', $allCourseStudents, (!$editmode) ? $studentid : $selectedStudentid, $isTeacher);
+echo $output->overview_dropdowns('assign_competencies', $allCourseStudents, $selectedStudentid, $isTeacher);
 
 echo '<div class="clearfix"></div>';
 
