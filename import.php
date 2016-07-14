@@ -84,7 +84,7 @@ try {
 		\block_exacomp\event\import_completed::log(['objectid' => $courseid, 'courseid' => $courseid]);
 	}
 
-} catch (block_exacomp\moodle_exception $importException) {
+} catch (block_exacomp\import_exception $importException) {
 }
 
 // build breadcrumbs navigation

@@ -1072,7 +1072,7 @@ class data_importer extends data {
 		global $CFG;
 
 		if (!$data) {
-			throw new moodle_exception('filenotfound');
+			throw new import_exception('data was empty');
 		}
 		
 		$file = tempnam($CFG->tempdir, "zip");
@@ -1089,11 +1089,21 @@ class data_importer extends data {
 		global $CFG;
 
 		if (!$url) {
-			throw new moodle_exception('filenotfound');
+			throw new import_exception('filenotfound');
+		}
+
+		if (file_exists($url)) {
+			// it's a file
+			return self::do_import_file($url, $par_source);
 		}
 		
 		$file = tempnam($CFG->tempdir, "zip");
-		file_put_contents($file, fopen($url, 'r'));
+		$handle = @fopen($url, 'r');
+		if (!$handle) {
+			throw new import_exception("could not open url '$url''");
+		}
+
+		file_put_contents($file, $handle);
 		
 		$ret = self::do_import_file($file, $par_source);
 		
@@ -1109,11 +1119,11 @@ class data_importer extends data {
 	 */
 	public static function do_import_file($file = null, $par_source = IMPORT_SOURCE_DEFAULT) {
 		if (!$file) {
-			throw new moodle_exception('filenotfound');
+			throw new import_exception('filenotfound');
 		}
 			
 		if (!file_exists($file)) {
-			throw new moodle_exception('filenotfound');
+			throw new import_exception('filenotfound');
 		}
 
 		@set_time_limit(0);
@@ -1134,7 +1144,7 @@ class data_importer extends data {
 			self::$zip = $zip;
 			
 			if (!$xml = $zip->getFromName('data.xml')) {
-				throw new moodle_exception('wrong zip file');
+				throw new import_exception('wrong zip file format');
 			}
 			
 			/*
@@ -1144,7 +1154,7 @@ class data_importer extends data {
 			$xml = simplexml_load_string($xml, 'block_exacomp\SimpleXMLElement', LIBXML_NOCDATA);
 
 			if (!$xml) {
-				throw new moodle_exception('wrong zip file content');
+				throw new import_exception('wrong zip data.xml content');
 			}
 		} else {
 			// on error -> try as xml
@@ -1155,16 +1165,16 @@ class data_importer extends data {
 			 */
 			$xml = @simplexml_load_file($file,'block_exacomp\SimpleXMLElement', LIBXML_NOCDATA);
 			if (!$xml) {
-				throw new moodle_exception('wrong file');
+				throw new import_exception('wrong file not a zipfile and not a data.xml file');
 			}
 		}
 
 		if(isset($xml->table)){
-			throw new moodle_exception('oldxmlfile');
+			throw new import_exception('oldxmlfile');
 		}
 		
 		if (empty($xml['source'])) {
-			throw new moodle_exception('oldxmlfile');
+			throw new import_exception('oldxmlfile');
 		}
 		
 		self::$import_source_global_id = (string)$xml['source'];
@@ -1183,7 +1193,7 @@ class data_importer extends data {
 		// update scripts for new source format
 		if (self::has_old_data(IMPORT_SOURCE_DEFAULT)) {
 			if (self::$import_source_type != IMPORT_SOURCE_DEFAULT) {
-				throw new moodle_exception('you first need to import the default sources!');
+				throw new import_exception('you first need to import the default sources!');
 			}
 			self::move_items_to_source(IMPORT_SOURCE_DEFAULT, self::$import_source_local_id);
 		}
@@ -1890,6 +1900,8 @@ function simpleXMLElementToArray(SimpleXMLElement $xmlobject) {
 	return $array_final;
 }
 
+// formslib.php requires global $CFG variable
+global $CFG;
 require_once $CFG->libdir . '/formslib.php';
 
 class generalxml_upload_form extends \moodleform {
@@ -1915,4 +1927,7 @@ class generalxml_upload_form extends \moodleform {
 
 		$this->add_action_buttons(false, get_string('add'));
 	}
+}
+
+class import_exception extends moodle_exception {
 }

@@ -222,7 +222,7 @@ class block_exacomp extends block_list {
 				} else {
 					mtrace("import failed: unknown error");
 				}
-			} catch (block_exacomp\moodle_exception $e) {
+			} catch (block_exacomp\import_exception $e) {
 				mtrace("import failed: ".$e->getMessage());
 			}
 		}
