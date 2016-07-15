@@ -45,7 +45,7 @@ $string['tab_teacher_settings_selection_st'] = 'Schooltype selection';
 $string['tab_teacher_settings_selection'] = 'Subject selection';
 $string['tab_teacher_settings_assignactivities'] = 'Assign Moodle activities';
 $string['tab_teacher_settings_badges'] = 'Edit badges';
-
+$string['tab_teacher_settings_new_subject'] = 'Create new subject';
 
 // === Student Tabs ===
 $string['tab_student_all'] = 'All gained competencies';
@@ -215,7 +215,6 @@ $string['name_example'] = 'Name';
 $string['comp_based'] = 'sort by competencies';
 $string['examp_based'] = 'sort by examples';
 
-
 // === Icons ===
 $string['assigned_example'] = 'Assigned Example';
 $string['task_example'] = 'Tasks';
@@ -230,6 +229,8 @@ $string['descriptors'] = 'Competencies';
 $string['filerequired'] = 'A file must be selected.';
 $string['titlenotemtpy'] = 'A name is required.';
 $string['solution'] = 'Solution';
+$string['hide_solution'] = 'Hide solution';
+$string['show_solution'] = 'Show solution';
 $string['submission'] = 'Submission';
 $string['assignments'] = 'Assignments';
 $string['files'] = 'Files';
@@ -260,8 +261,9 @@ $string['override_notice'] = 'This entry was editied by someone else before. Con
 $string['unload_notice'] = 'Are you sure? Unsaved changes will be lost.';
 $string['example_sorting_notice'] = 'Please save the changes first.';
 $string['newsubmission'] = 'New Submission';
-
-
+$string['value_too_large'] = 'Error: Values above 6.0 are not allowed';
+$string['value_too_low'] = 'Error: Values below 1.0 are not allowed';
+$string['value_not_allowed'] = 'Error: Values need to be numbers between 1.0 and 6.0';
 // === Example Submission ===
 $string['example_submission_header'] = 'Edit example {$a}';
 $string['example_submission_info'] = 'You are about to edit the example "{$a}". Your submission will be saved in Exabis ePortfolio and Teachers can view it there.';
@@ -497,24 +499,25 @@ $string['blocking_event_create'] = 'Add to pre-planning storage';
 
 
 // === Notifications ===
-$string['notification_submission_subject'] = '{$a->student} submitted a solution for {$a->example}.';
-$string['notification_submission_body'] = '{$a->student} submitted {$a->example} on {$a->date} at {$a->time}. The submission can be seen in ePortfolio: <a href="{$viewurl}">{$a->example}</a>';
+$string['notification_submission_subject'] = '{$a->site}: {$a->student} submitted a solution for {$a->example}';
+$string['notification_submission_body'] = 'Dear Mr./Ms. {$a->receiver}, </br></br> {$a->student} submitted {$a->example} on {$a->date} at {$a->time}. The submission can be seen in ePortfolio: <a href="{$viewurl}">{$a->example}</a> </br></br> This message has been generated form moodle site {$a->site}.';
 $string['notification_submission_context'] = 'Submission';
-$string['notification_grading_subject'] = 'New grading in course {$a->course}';
-$string['notification_grading_body'] = 'You have got new gradings in {$a->course} from {$a->teacher}.';
+$string['notification_grading_subject'] = '{$a->site}: New grading in course {$a->course}';
+$string['notification_grading_body'] = 'Dear {$a->receiver}, </br></br>You have got new gradings in {$a->course} from {$a->teacher}.</br></br> This message has been generated form moodle site {$a->site}.';
 $string['notification_grading_context'] = 'Grading';
-$string['notification_self_assessment_subject'] = 'New self assessments in {$a->course}';
-$string['notification_self_assessment_body'] = '{$a->student} has new self assessments in {$a->course}.';
+$string['notification_self_assessment_subject'] = '{$a->site}: New self assessments in {$a->course}';
+$string['notification_self_assessment_body'] = 'Dear Mr./Ms. {$a->receiver}, </br></br> {$a->student} has new self assessments in {$a->course}.</br></br> This message has been generated form moodle site {$a->site}.';
 $string['notification_self_assessment_context'] = 'Self assessment';
-$string['notification_example_comment_subject'] = 'New comment for example {$a->example}';
-$string['notification_example_comment_body'] = '{$a->teacher} commented in {$a->course} the example {$a->example}.';
+$string['notification_example_comment_subject'] = '{$a->site}: New comment for example {$a->example}';
+$string['notification_example_comment_body'] = 'Dear {$a->receiver}, </br></br>{$a->teacher} commented in {$a->course} the example {$a->example}.</br></br> This message has been generated form moodle site {$a->site}.';
 $string['notification_example_comment_context'] = 'Comment';
-$string['notification_weekly_schedule_subject'] = 'New example on the schedule';
-$string['notification_weekly_schedule_body'] = '{$a->teacher} added an example in {$a->course} to your weekly schedule.';
+$string['notification_weekly_schedule_subject'] = '{$a->site}: New example on the schedule';
+$string['notification_weekly_schedule_body'] = 'Dear {$a->receiver}, </br></br>{$a->teacher} added an example in {$a->course} to your weekly schedule.</br></br> This message has been generated form moodle site {$a->site}.';
 $string['notification_weekly_schedule_context'] = 'Weekly schedule';
 $string['inwork'] = '{$a->inWork}/{$a->total} in work';
 $string['block_exacomp_notifications_head'] = 'Notifications and Messages';
 $string['block_exacomp_notifications_body'] = 'Users will get notified after relevant actions.';
+
 
 
 // === Logging ===
