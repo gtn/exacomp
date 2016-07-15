@@ -4608,35 +4608,54 @@ function block_exacomp_descriptor_used($courseid, $descriptor, $studentid){
 function block_exacomp_example_used($courseid, $example, $studentid){
 	global $DB;
 	//if studentid == 0 used = true, if no evaluation/submission for this example
-
 	//if studentid != 0 used = true, if no evaluation/submission for this examples for this student
-	if($studentid == 0){
+	
+	if($studentid == 0){ // any self or teacher evaluation
 		$sql = "SELECT * FROM {".\block_exacomp\DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND teacher_evaluation>0";
 		$records = $DB->get_records_sql($sql, array($courseid, $example->id));
 		if($records) return true;
-
+		
 		$sql = "SELECT * FROM {".\block_exacomp\DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND student_evaluation>0";
 		$records = $DB->get_records_sql($sql, array($courseid, $example->id));
 		if($records) return true;
-
-		//TODO submission //activities
-	}else{
+		
+		//on any weekly schedule? -> yes: used
+		$onSchedule = $DB->record_exists(\block_exacomp\DB_SCHEDULE, array('courseid'=>$courseid, 'exampleid' => $example->id));
+		if($onSchedule)
+			return true;
+			
+		//any submission made?
+		if(block_exacomp_exaportexists()){
+			$sql = "SELECT * FROM {".\block_exacomp\DB_ITEMEXAMPLE."} ie JOIN {".'block_exaportitem'."} i ON ie.itemid = i.id ".
+					"WHERE ie.exampleid = ? AND i.courseid = ?";
+			$records = $DB->get_records_sql($sql, array($example->id, $courseid));
+			if($records)
+				return true;
+		}
+	}else{ // any self or teacher evaluation for this student
 		$sql = "SELECT * FROM {".\block_exacomp\DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND studentid=? AND teacher_evaluation>0";
 		$records = $DB->get_records_sql($sql, array($courseid, $example->id, $studentid));
 		if($records) return true;
-
+		
 		$sql = "SELECT * FROM {".\block_exacomp\DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND studentid = ? AND student_evaluation>0";
 		$records = $DB->get_records_sql($sql, array($courseid, $example->id, $studentid));
 		if($records) return true;
-
-		//TODO submissions & avtivities
+		
+		//on students weekly schedule? -> yes: used
+		$onSchedule = $DB->record_exists(\block_exacomp\DB_SCHEDULE, array('studentid'=>$studentid, 'courseid'=>$courseid, 'exampleid' => $example->id));
+		if($onSchedule)
+			return true;
+		
+		//submission made?
+		if(block_exacomp_exaportexists()){
+			$sql = "SELECT * FROM {".\block_exacomp\DB_ITEMEXAMPLE."} ie JOIN {".'block_exaportitem'."} i ON ie.itemid = i.id ".
+					"WHERE ie.exampleid = ? AND i.userid = ? AND i.courseid = ?";
+			$records = $DB->get_records_sql($sql, array($example->id, $studentid, $courseid));
+			if($records)
+				return true;
+		}
 	}
-
-
-	$onSchedule = $DB->record_exists(\block_exacomp\DB_SCHEDULE, array('exampleid' => $example->id));
-	if($onSchedule)
-		return true;
-
+	
 	return false;
 }
 function block_exacomp_get_students_for_crosssubject($courseid, $crosssub){
