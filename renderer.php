@@ -1478,6 +1478,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		global $DB, $USER;
 		$topicparam = optional_param('topicid', 0, PARAM_INT);
 
+		$parent_visible = array_combine ( array_keys($students) , array_fill(0, count($students), true));
+		
 		if (block_exacomp_is_topicgrading_enabled() || count($topics) > 1 || $topicparam == block_exacomp\SHOW_ALL_TOPICS) {
 			// display topic row
 			$display_topic_header_row = true;
@@ -1561,6 +1563,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					
 					if(!$one_student && !$editmode)
 						$visible_student = block_exacomp_is_topic_visible($data->courseid, $topic, $student->id, true);
+					
+					if(!$visible_student)
+						$parent_visible[$student->id] = false;
 					
 					//TODO evt. needed
 					//$studentCell->colspan = (!$profoundness) ? $studentsColspan : 4;
@@ -1652,8 +1657,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$child_data->rg2_level += $child_level-$level;
 
 			if (!empty($topic->descriptors)) {
-				$this->descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, $statistic, false, true, $crosssubjid);
-				$this->descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, $statistic, true, true, $crosssubjid);
+				$this->descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, $statistic, false, true, $crosssubjid, $parent_visible);
+				$this->descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, $statistic, true, true, $crosssubjid, $parent_visible);
 			}
 
 			/*
@@ -1685,12 +1690,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 	}
 
-	function descriptors(&$rows, $level, $descriptors, $data, $students, $profoundness = false, $editmode=false, $statistic=false, $custom_created_descriptors=false, $parent = false, $crosssubjid = 0) {
+	function descriptors(&$rows, $level, $descriptors, $data, $students, $profoundness = false, $editmode=false, $statistic=false, $custom_created_descriptors=false, $parent = false, $crosssubjid = 0, $parent_visible) {
 		global $USER, $COURSE, $DB;
 
 		$evaluation = ($data->role == \block_exacomp\ROLE_TEACHER) ? "teacher" : "student";
 
 		foreach($descriptors as $descriptor) {
+			$descriptor_parent_visible = $parent_visible;
+			
 			if (!$editmode) {
 				if ($custom_created_descriptors) {
 					continue;
@@ -1715,8 +1722,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$one_student = true;
 			}
 			$descriptor_used = block_exacomp_descriptor_used($data->courseid, $descriptor, $studentid);
-
-			$visible = block_exacomp_is_descriptor_visible($data->courseid, $descriptor, $studentid, true );
+			//TODO: if used, always visible?
+			$visible = block_exacomp_is_descriptor_visible($data->courseid, $descriptor, $studentid, $descriptor_used );
 			
 			if($data->role == \block_exacomp\ROLE_TEACHER || $visible){
 				$visible_css = block_exacomp_get_visible_css($visible, $data->role);
@@ -1729,7 +1736,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$sub_rg2_class = 'rg2-level-'.($data->rg2_level+1);
 
 				$descriptorRow = new html_table_row();
-
 
 				$descriptorRow->attributes['class'] = 'exabis_comp_aufgabe ' . $this_rg2_class;
 				$descriptorRow->attributes['exa-rg2-id'] = 'descriptor-'.$descriptor->id;
@@ -1798,10 +1804,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$nivCell->text = join(' ', $nivText);
 				$descriptorRow->cells[] = $nivCell;
 
-
-				$visible_student = $visible;
 				if(!$statistic){
 					foreach($students as $student) {
+						$visible_student = $visible;
+						
 						$icontext = "";
 						//check reviewerid for teacher
 						if($data->role == \block_exacomp\ROLE_TEACHER) {
@@ -1809,11 +1815,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							if($reviewerid == $USER->id || $reviewerid == 0)
 								$reviewerid = null;
 						}
-						//check visibility for every student in overview
 						
-						if(!$one_student && !$editmode)
-							$visible_student = block_exacomp_is_descriptor_visible($data->courseid, $descriptor, $student->id, true);
-
+						//check visibility for every student in overview
+						if(!$one_student && $parent_visible[$student->id] == false)
+							$visible_student = false;
+						elseif($visible && !$one_student && !$editmode) {
+							$visible_student = block_exacomp_is_descriptor_visible($data->courseid, $descriptor, $student->id);
+							if(!$one_student)
+								$descriptor_parent_visible[$student->id] = $visible_student;
+						}
 						//$studentCell = new html_table_cell();
 						$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
 						//$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
@@ -2004,7 +2014,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				foreach($descriptor->examples as $example) {
 					$example_used = block_exacomp_example_used($data->courseid, $example, $studentid);
 
-					$visible_example = block_exacomp_is_example_visible($data->courseid, $example, $studentid);
+					//TODO: if used, always visible?
+					if(!$one_student && $parent_visible[$student->id] == false)
+						$visible_example = false;
+					else 
+						$visible_example = block_exacomp_is_example_visible($data->courseid, $example, $studentid);
+					
 					$visible_solution = block_exacomp_is_example_solution_visible($data->courseid, $example, $studentid);
 					
 					if ($data->role != \block_exacomp\ROLE_TEACHER && !$visible_example) {
@@ -2221,7 +2236,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$child_data->rg2_level++;
 
 				if (!empty($descriptor->children)) {
-					$this->descriptors($rows, $level+1, $descriptor->children, $child_data, $students, $profoundness, $editmode, $statistic);
+					$this->descriptors($rows, $level+1, $descriptor->children, $child_data, $students, $profoundness, $editmode, $statistic, $custom_created_descriptors, $parent, $crosssubjid, $descriptor_parent_visible);
 				}
 				//schulische ergänzungen und neue teilkompetenz
 				if($editmode && $parent) {

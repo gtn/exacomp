@@ -151,7 +151,7 @@ class db_layer {
 
 		$descriptors = descriptor::create_objects($descriptors, array(
 			'parent' => $parent,
-			'topic' => $parent->topic,
+			'topic' => $parent->topicid,
 		), $this);
 
 		return $descriptors;
