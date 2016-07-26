@@ -1216,7 +1216,7 @@ function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldes
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
-	$sql = '(SELECT DISTINCT d.id, desctopmm.id as u_id, d.title, d.niveauid, t.id AS topicid, d.requirement, d.knowledgecheck, d.benefit, d.sorting, n.title as cattitle '
+	$sql = '(SELECT DISTINCT d.id, desctopmm.id as u_id, d.title, d.niveauid, t.id AS topicid, d.requirement, d.knowledgecheck, d.benefit, d.sorting, d.parentid, n.title as cattitle '
 	.'FROM {'.\block_exacomp\DB_TOPICS.'} t JOIN {'.\block_exacomp\DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($topicid > 0) ? ' AND t.id = '.$topicid.' ' : '')
 	.'JOIN {'.\block_exacomp\DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
 	.'JOIN {'.\block_exacomp\DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid=0 '
@@ -4571,6 +4571,7 @@ function block_exacomp_topic_used($courseid, $topic, $studentid){
 	$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $topic->id);
 	foreach($descriptors as $descriptor){
 		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
+		$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid);
 		if(block_exacomp_descriptor_used($courseid, $descriptor, $studentid))
 			return true;
 	}
@@ -4598,7 +4599,6 @@ function block_exacomp_descriptor_used($courseid, $descriptor, $studentid){
 	if(isset($descriptor->parentid) && $descriptor->parentid==0){
 		//check child used
 		foreach($descriptor->children as $child){
-			//$child = block_exacomp_get_examples_for_descriptor($child);
 			if(block_exacomp_descriptor_used($courseid, $child, $studentid))
 				return true;
 		}
