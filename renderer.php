@@ -544,26 +544,31 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 				
 			
-			foreach($subject->topics as $topic) {
-				$visible = block_exacomp_is_topic_visible($COURSE->id, $topic, $studentid);
+			foreach ( $subject->topics as $topic ) {
+				$visible = block_exacomp_is_topic_visible ( $COURSE->id, $topic, g::$USER->id );
+				
+				if($visible) {
+					$extra = '';
+					if ($this->is_edit_mode () && $topic->source == \block_exacomp\DATA_SOURCE_CUSTOM) {
+						$extra .= ' ' . $this->pix_icon ( "i/edit", get_string ( "edit" ), null, [ 
+								'exa-type' => "iframe-popup",
+								'exa-url' => 'topic.php?courseid=' . $COURSE->id . '&id=' . $topic->id 
+						] );
+					}
 					
-				$extra = '';
-				if ($this->is_edit_mode() && $topic->source == \block_exacomp\DATA_SOURCE_CUSTOM) {
-					$extra .= ' '.$this->pix_icon("i/edit", get_string("edit"), null, ['exa-type' => "iframe-popup", 'exa-url' => 'topic.php?courseid='.$COURSE->id.'&id='.$topic->id]);
+					$content .= html_writer::tag ( 'li', html_writer::link ( new block_exacomp\url ( g::$PAGE->url, [ 
+							'subjectid' => $subject->id,
+							'topicid' => $topic->id 
+					] ), block_exacomp_get_topic_numbering ( $topic ) . ' ' . $topic->title . $extra, array (
+							'class' => ($selectedTopic && $topic->id == $selectedTopic->id) ? 'current' : '' 
+					) ) );
 				}
-
-				$content .= html_writer::tag('li',
-					html_writer::link(new block_exacomp\url(g::$PAGE->url, ['subjectid' => $subject->id, 'topicid' => $topic->id]),
-							block_exacomp_get_topic_numbering($topic).' '.$topic->title.$extra/*.$this->visibility_icon_topic($visible, $topic->id)*/, array('class' => ($selectedTopic && $topic->id == $selectedTopic->id) ? 'current' : ''))
-					);
 			}
-			   if ($this->is_edit_mode() && $subject->source == \block_exacomp\DATA_SOURCE_CUSTOM) {
+			if ($this->is_edit_mode () && $subject->source == \block_exacomp\DATA_SOURCE_CUSTOM) {
 				// only if editing and if subject was added by teacher
-				$content .= html_writer::tag('li',
-					html_writer::link("topic.php?show=add&courseid={$COURSE->id}&subjectid={$subject->id}",
-							"<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".
-							\block_exacomp\trans('de:Neuer Kompetenzbereich'), array('exa-type' => 'iframe-popup'))
-					);
+				$content .= html_writer::tag ( 'li', html_writer::link ( "topic.php?show=add&courseid={$COURSE->id}&subjectid={$subject->id}", "<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> " . \block_exacomp\trans ( 'de:Neuer Kompetenzbereich' ), array (
+						'exa-type' => 'iframe-popup' 
+				) ) );
 			}
 		
 		}
@@ -1502,7 +1507,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$topic->visible = $DB->get_field(\block_exacomp\DB_TOPICVISIBILITY, 'visible', array('courseid'=>$data->courseid, 'topicid'=>$topic->id, 'studentid'=>0));
 					
 			$visible = block_exacomp_is_topic_visible($data->courseid, $topic, $studentid);
-			
+
 			// $hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) );
 			$visible_css = block_exacomp_get_visible_css($visible, $data->role);
 			
@@ -1711,9 +1716,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 			$descriptor_used = block_exacomp_descriptor_used($data->courseid, $descriptor, $studentid);
 
-			$visible = block_exacomp_is_descriptor_visible($data->courseid, $descriptor, $studentid );
-			//echo $descriptor->visible . " / " . $visible . " <br/> ";
-
+			$visible = block_exacomp_is_descriptor_visible($data->courseid, $descriptor, $studentid, true );
+			
 			if($data->role == \block_exacomp\ROLE_TEACHER || $visible){
 				$visible_css = block_exacomp_get_visible_css($visible, $data->role);
 
