@@ -1555,7 +1555,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
 					
 					if(!$one_student && !$editmode)
-						$visible_student = block_exacomp_is_topic_visible($data->courseid, $topic, $student->id);
+						$visible_student = block_exacomp_is_topic_visible($data->courseid, $topic, $student->id, true);
 					
 					//TODO evt. needed
 					//$studentCell->colspan = (!$profoundness) ? $studentsColspan : 4;
@@ -1711,7 +1711,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 			$descriptor_used = block_exacomp_descriptor_used($data->courseid, $descriptor, $studentid);
 
-			$visible = block_exacomp_is_descriptor_visible($data->courseid, $descriptor, $studentid, ($one_student||$data->role==\block_exacomp\ROLE_STUDENT) );
+			$visible = block_exacomp_is_descriptor_visible($data->courseid, $descriptor, $studentid );
 			//echo $descriptor->visible . " / " . $visible . " <br/> ";
 
 			if($data->role == \block_exacomp\ROLE_TEACHER || $visible){
@@ -1808,7 +1808,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						//check visibility for every student in overview
 						
 						if(!$one_student && !$editmode)
-							$visible_student = block_exacomp_is_descriptor_visible($data->courseid, $descriptor, $student->id);
+							$visible_student = block_exacomp_is_descriptor_visible($data->courseid, $descriptor, $student->id, true);
 
 						//$studentCell = new html_table_cell();
 						$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
@@ -2139,7 +2139,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
 							
 							if(!$one_student && !$editmode)
-								$visible_student_example = block_exacomp_is_example_visible($data->courseid, $example, $student->id);
+								$visible_student_example = block_exacomp_is_example_visible($data->courseid, $example, $student->id, true);
 							
 							//TODO
 							

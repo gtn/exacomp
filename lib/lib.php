@@ -4855,7 +4855,7 @@ function block_exacomp_is_topic_visible($courseid, $topic, $studentid){
 		return true;
 }
 				
-function block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid) {
+function block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid, $checkParent = false) {
 	global $DB;
 
 	// $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
@@ -4863,6 +4863,23 @@ function block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid)
 		$studentid = 0;
 	}
 
+	if($checkParent) {
+		if($descriptor->topicid) {
+			$topic = \block_exacomp\topic::get($descriptor->topicid);
+		}
+	
+		// first, check parent visibility, and only if topic is visible, continue here
+		if($descriptor->parentid) {
+			$parent = \block_exacomp\descriptor::get($descriptor->parentid);
+			$parent->topicid = $descriptor->topicid;
+			if(!block_exacomp_is_descriptor_visible($courseid, $parent, $studentid, $checkParent)) {
+				return false;
+			}
+		}
+		else if(isset($topic) && !block_exacomp_is_topic_visible($courseid, $topic, $studentid))
+			return false;
+	}
+	
 	// if used, hiding is impossible
 	$descriptor_used = block_exacomp_descriptor_used($courseid, $descriptor, $studentid);
 	if($descriptor_used)
@@ -4894,7 +4911,7 @@ function block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid)
 	// default is visible
 	return true;
 }
-function block_exacomp_is_example_visible($courseid, $example, $studentid){
+function block_exacomp_is_example_visible($courseid, $example, $studentid, $checkParent = false){
 	global $DB;
 
 	// $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
@@ -4902,6 +4919,12 @@ function block_exacomp_is_example_visible($courseid, $example, $studentid){
 		$studentid = 0;
 	}
 
+	// first, check parent visibility, and only if descriptor is visible, continue here
+	if($checkParent)
+		if(!block_exacomp_is_descriptor_visible($courseid, $example->descriptor, $studentid, $checkParent)) {
+			return false;
+		}
+	
 	// if used, hiding is impossible
 	$example_used = block_exacomp_example_used($courseid, $example, $studentid);
 	if ($example_used) {
