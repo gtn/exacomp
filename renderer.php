@@ -545,9 +545,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				
 			
 			foreach ( $subject->topics as $topic ) {
-				$visible = block_exacomp_is_topic_visible ( $COURSE->id, $topic, g::$USER->id );
-				
-				if($visible) {
+				if(block_exacomp_is_teacher() || block_exacomp_is_topic_visible ( $COURSE->id, $topic, g::$USER->id )) {
 					$extra = '';
 					if ($this->is_edit_mode () && $topic->source == \block_exacomp\DATA_SOURCE_CUSTOM) {
 						$extra .= ' ' . $this->pix_icon ( "i/edit", get_string ( "edit" ), null, [ 
@@ -1529,6 +1527,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$topic_used = block_exacomp_topic_used($data->courseid, $topic, $studentid);
 			
 			// display the hide/unhide icon only in editmode or iff only 1 student is selected
+			
 			if(!$topic_used && $editmode || (!$topic_used && $one_student && $data->role == \block_exacomp\ROLE_TEACHER)){
 				$outputname .= $this->visibility_icon_topic($visible, $topic->id);
 			}
@@ -1690,7 +1689,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 	}
 
-	function descriptors(&$rows, $level, $descriptors, $data, $students, $profoundness = false, $editmode=false, $statistic=false, $custom_created_descriptors=false, $parent = false, $crosssubjid = 0, $parent_visible) {
+	function descriptors(&$rows, $level, $descriptors, $data, $students, $profoundness = false, $editmode=false, $statistic=false, $custom_created_descriptors=false, $parent = false, $crosssubjid = 0, $parent_visible = array()) {
 		global $USER, $COURSE, $DB;
 
 		$evaluation = ($data->role == \block_exacomp\ROLE_TEACHER) ? "teacher" : "student";
