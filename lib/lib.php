@@ -6789,7 +6789,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 		$current_idx = 1;
 		foreach($rowcontent->niveaus as $niveau => $element){
 			$content_row->columns[$current_idx] = new stdClass();
-			$content_row->columns[$current_idx]->evaluation = empty($element->eval)?-1:$element->eval;
+			$content_row->columns[$current_idx]->evaluation = ( empty($element->eval) || strlen(trim($element->eval)) == 0 )?-1:$element->eval;
 			$content_row->columns[$current_idx]->evalniveauid = $element->evalniveauid;
 			$content_row->columns[$current_idx]->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($element->eval);
 			
