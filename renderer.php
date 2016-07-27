@@ -1475,8 +1475,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function topics(&$rows, $level, $topics, $data, $students, $profoundness = false, $editmode = false, $statistic = false, $crosssubjid=0) {
 		global $DB, $USER;
 		$topicparam = optional_param('topicid', 0, PARAM_INT);
-
-		$parent_visible = array_combine ( array_keys($students) , array_fill(0, count($students), true));
 		
 		if (block_exacomp_is_topicgrading_enabled() || count($topics) > 1 || $topicparam == block_exacomp\SHOW_ALL_TOPICS) {
 			// display topic row
@@ -1490,7 +1488,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$evaluation = ($data->role == \block_exacomp\ROLE_TEACHER) ? "teacher" : "student";
 
 		foreach($topics as $topic) {
-
+			$parent_visible = array_combine ( array_keys($students) , array_fill(0, count($students), true));
+				
 			list($outputid, $outputname) = block_exacomp_get_output_fields($topic);
 			$studentsCount = 0;
 			$studentsColspan = 1;
