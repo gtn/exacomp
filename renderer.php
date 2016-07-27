@@ -1488,7 +1488,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$evaluation = ($data->role == \block_exacomp\ROLE_TEACHER) ? "teacher" : "student";
 
 		foreach($topics as $topic) {
-			$parent_visible = array_combine ( array_keys($students) , array_fill(0, count($students), true));
+			$parent_visible = (count($students)>0)?array_combine ( array_keys($students) , array_fill(0, count($students), true)):array();
 				
 			list($outputid, $outputname) = block_exacomp_get_output_fields($topic);
 			$studentsCount = 0;
