@@ -1528,7 +1528,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			
 			// display the hide/unhide icon only in editmode or iff only 1 student is selected
 			
-			if(!$topic_used && $editmode || (!$topic_used && $one_student && $data->role == \block_exacomp\ROLE_TEACHER)){
+			if (!$topic_used && ($data->role == \block_exacomp\ROLE_TEACHER) && ($editmode || (!$editmode && $one_student && block_exacomp_is_topic_visible($data->courseid, $topic, 0)))) {
 				$outputname .= $this->visibility_icon_topic($visible, $topic->id);
 			}
 			
@@ -1780,8 +1780,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							array("target" => "_blank", 'exa-type' => 'iframe-popup'));
 				}
 				//if hidden in course, cannot be shown to one student
-				if(!$this->is_print_mode() && !$descriptor_used){
-					if($editmode || ($one_student && $data->role == \block_exacomp\ROLE_TEACHER)){
+				
+				if(!$this->is_print_mode()){
+					if (!$descriptor_used && ($data->role == \block_exacomp\ROLE_TEACHER) && ($editmode || (!$editmode && $one_student && block_exacomp_is_descriptor_visible($data->courseid, $descriptor, 0)))) {
 						$titleCell->text .= $this->visibility_icon_descriptor($visible, $descriptor->id);
 					}
 					if($editmode && $custom_created_descriptors){
