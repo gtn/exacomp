@@ -2156,7 +2156,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							if(!$one_student && $descriptor_parent_visible[$student->id] == false)
 								$visible_student_example = false;
 							elseif(!$one_student && !$editmode)
-								$visible_student_example = block_exacomp_is_example_visible($data->courseid, $example, $student->id, true);
+								$visible_student_example = block_exacomp_is_example_visible($data->courseid, $example, $student->id);
 							
 							//check reviewerid for teacher
 							if($data->role == \block_exacomp\ROLE_TEACHER) {
