@@ -1723,7 +1723,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 			$descriptor_used = block_exacomp_descriptor_used($data->courseid, $descriptor, $studentid);
 			//TODO: if used, always visible?
-			$visible = block_exacomp_is_descriptor_visible($data->courseid, $descriptor, $studentid, $descriptor_used );
+			$visible = block_exacomp_is_descriptor_visible($data->courseid, $descriptor, $studentid);
 			
 			if($data->role == \block_exacomp\ROLE_TEACHER || $visible){
 				$visible_css = block_exacomp_get_visible_css($visible, $data->role);
@@ -2015,11 +2015,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$example_used = block_exacomp_example_used($data->courseid, $example, $studentid);
 
 					//TODO: if used, always visible?
-					if(!$one_student && $parent_visible[$student->id] == false)
-						$visible_example = false;
-					else 
-						$visible_example = block_exacomp_is_example_visible($data->courseid, $example, $studentid);
 					
+					$visible_example = block_exacomp_is_example_visible($data->courseid, $example, $studentid);
 					$visible_solution = block_exacomp_is_example_solution_visible($data->courseid, $example, $studentid);
 					
 					if ($data->role != \block_exacomp\ROLE_TEACHER && !$visible_example) {
@@ -2157,12 +2154,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						foreach($students as $student) {
 							$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
 							
-							if(!$one_student && !$editmode)
+							if(!$one_student && $descriptor_parent_visible[$student->id] == false)
+								$visible_student_example = false;
+							elseif(!$one_student && !$editmode)
 								$visible_student_example = block_exacomp_is_example_visible($data->courseid, $example, $student->id, true);
 							
-							//TODO
-							
-								//check reviewerid for teacher
+							//check reviewerid for teacher
 							if($data->role == \block_exacomp\ROLE_TEACHER) {
 								$reviewerid = $DB->get_field(\block_exacomp\DB_EXAMPLEEVAL,"teacher_reviewerid",array("studentid" => $student->id, "exampleid" => $example->id, "courseid"=>$data->courseid));
 								if($reviewerid == $USER->id || $reviewerid == 0)
@@ -2236,7 +2233,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$child_data->rg2_level++;
 
 				if (!empty($descriptor->children)) {
-					$this->descriptors($rows, $level+1, $descriptor->children, $child_data, $students, $profoundness, $editmode, $statistic, $custom_created_descriptors, $parent, $crosssubjid, $descriptor_parent_visible);
+					$this->descriptors($rows, $level+1, $descriptor->children, $child_data, $students, $profoundness, $editmode, $statistic, $custom_created_descriptors, false, $crosssubjid, $descriptor_parent_visible);
 				}
 				//schulische ergänzungen und neue teilkompetenz
 				if($editmode && $parent) {
