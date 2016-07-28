@@ -20,7 +20,6 @@
 defined('MOODLE_INTERNAL') || die;
 
 require_once __DIR__.'/lib/exabis_special_id_generator.php';
-require_once __DIR__.'/classes/data.php';
 require_once __DIR__.'/lib/lib.php';
 
 if (!class_exists('block_exacomp_admin_setting_source')) {

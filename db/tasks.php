@@ -19,8 +19,23 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'block_exacomp';
-$plugin->release = '3.0.3.experimental';
-$plugin->version   = 2016071203;
-$plugin->requires  = 2015051100;
-$plugin->maturity = MATURITY_STABLE;
+$tasks = array(
+	array(
+		'classname' => 'block_exacomp\task\import',
+		'blocking' => 0,
+		'minute' => '0',
+		'hour' => '3',
+		'day' => '*',
+		'month' => '*',
+		'dayofweek' => '*',
+	),
+	array(
+		'classname' => 'block_exacomp\task\autotest',
+		'blocking' => 0,
+		'minute' => '*/5',
+		'hour' => '*',
+		'day' => '*',
+		'month' => '*',
+		'dayofweek' => '*',
+	),
+);

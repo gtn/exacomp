@@ -199,36 +199,4 @@ class block_exacomp extends block_list {
 	function has_config() {
 		return true;
 	}
-
-	/**
-	 * This function is executed by the Moodle cron job.
-	 * It checks if an url for updating the data-xml file is specified and in this case
-	 * it tries to get the content and update the local xml.
-	 */
-	public function cron() {
-		global $xmlserverurl;
-		$xmlserverurl = get_config('exacomp', 'xmlserverurl');
-
-		mtrace('Exabis Competence Grid: cron job is running.');
-
-		//import xml with provided server url
-		if($xmlserverurl) {
-			try {
-				require_once __DIR__."/classes/data.php";
-
-				if (block_exacomp\data_importer::do_import_url($xmlserverurl, \block_exacomp\IMPORT_SOURCE_DEFAULT)) {
-					mtrace("import done");
-					block_exacomp_settstamp();
-				} else {
-					mtrace("import failed: unknown error");
-				}
-			} catch (block_exacomp\moodle_exception $e) {
-				mtrace("import failed: ".$e->getMessage());
-			}
-		}
-
-		block_exacomp_perform_auto_test();
-
-		return true;
-	}
 }

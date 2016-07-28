@@ -19,8 +19,6 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once __DIR__."/classes/data.php";
-
 use block_exacomp\globals as g;
 
 class block_exacomp_renderer extends plugin_renderer_base {

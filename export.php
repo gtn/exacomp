@@ -18,7 +18,6 @@
 // This copyright notice MUST APPEAR in all copies of the script!
 
 require __DIR__.'/inc.php';
-require_once __DIR__."/classes/data.php";
 
 $courseid = required_param('courseid', PARAM_INT);
 
@@ -35,6 +34,8 @@ require_capability('block/exacomp:admin', context_system::instance());
 $action = required_param('action', PARAM_ALPHANUMEXT);
 
 $output = block_exacomp_get_renderer();
+
+\block_exacomp\data::prepare();
 
 if ($action == 'export_all') {
 	block_exacomp\data_exporter::do_export();

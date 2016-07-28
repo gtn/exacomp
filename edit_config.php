@@ -19,7 +19,6 @@
 
 require __DIR__.'/inc.php';
 require_once $CFG->dirroot.'/lib/datalib.php';
-require_once __DIR__.'/classes/data.php';
 
 $courseid = required_param ( 'courseid', PARAM_INT );
 $action = optional_param ( 'action', "", PARAM_ALPHA );

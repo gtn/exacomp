@@ -19,7 +19,6 @@
 
 require __DIR__.'/inc.php';
 require_once('/Applications/MAMP/htdocs/moodle27/blocks/exacomp/lib/lib.php');
-require_once('/Applications/MAMP/htdocs/moodle27/blocks/exacomp/classes/data.php');
 
 require_once('/Applications/MAMP/htdocs/simpletest/autorun.php');
 
@@ -27,6 +26,7 @@ class TestOfLib extends UnitTestCase {
 	private $courseid;
 
 	function setUp() {
+		\block_exacomp\data::prepare();
 		// 1. remove DB
 		block_exacomp_truncate_all_data();
 		// 2. import XML

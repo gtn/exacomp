@@ -19,7 +19,6 @@
 
 require __DIR__.'/inc.php';
 require_once('lib/lib.php');
-require_once('classes/data.php');
 
 $courseid = required_param('courseid', PARAM_INT);
 $schooltypes = explode(',', required_param('schooltypes', PARAM_TAGLIST));
@@ -29,6 +28,7 @@ $lang = optional_param('lang', 'en', PARAM_TEXT);
 global $DB;
 
 $data = file_get_contents($xmlname);
+\block_exacomp\data::prepare();
 $success = block_exacomp\data_importer::do_import_string($data);
 foreach($schooltypes as &$schooltype)
 	$schooltype = $DB->get_field('block_exacompschooltypes','id',array('sourceid'=>$schooltype));

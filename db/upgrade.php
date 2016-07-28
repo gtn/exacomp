@@ -2887,8 +2887,6 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	 */
 
 	// always normalize database after upgrade
-	require_once __DIR__.'/../lib/lib.php';
-	require_once __DIR__.'/../classes/data.php';
 	block_exacomp\data::normalize_database();
 
 	return $return_result;

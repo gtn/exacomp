@@ -18,7 +18,6 @@
 // This copyright notice MUST APPEAR in all copies of the script!
 
 require __DIR__.'/inc.php';
-require_once __DIR__."/classes/data.php";
 
 $de = false;
 $lang = current_language();
@@ -64,6 +63,8 @@ $mform = new block_exacomp\generalxml_upload_form();
 
 $importSuccess = false;
 $importException = null;
+
+\block_exacomp\data::prepare();
 
 try {
 	if (($importtype == 'custom') && $data = $mform->get_file_content('file')) {

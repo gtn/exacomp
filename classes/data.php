@@ -45,7 +45,11 @@ class data {
 	protected static $sourceTables = array(DB_SKILLS, DB_NIVEAUS, DB_TAXONOMIES, DB_CATEGORIES, DB_EXAMPLES,
 					DB_DESCRIPTORS, DB_CROSSSUBJECTS, DB_EDULEVELS, DB_SCHOOLTYPES, DB_SUBJECTS,
 					DB_TOPICS);
-	
+
+	public static function prepare() {
+		// this is a dummy to load all the other classes
+	}
+
 	public static function get_my_source() {
 		return get_config('exacomp', 'mysource');
 	}

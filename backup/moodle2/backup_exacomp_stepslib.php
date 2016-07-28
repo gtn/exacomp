@@ -18,7 +18,6 @@
 // This copyright notice MUST APPEAR in all copies of the script!
 
 require_once __DIR__."/../../lib/lib.php";
-require_once __DIR__."/../../classes/data.php";
 
 /**
  * Define all the backup steps that will be used by the backup_choice_activity_task
@@ -38,7 +37,9 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 		
 		// Define each element separated
  
-		 $exacomp = new backup_nested_element('exacomp', array('id'), null);
+		\block_exacomp\data::prepare();
+
+		$exacomp = new backup_nested_element('exacomp', array('id'), null);
 
 		$settings = new backup_nested_element('settings', array(), array('courseid','grading','tstamp','uses_activities','show_all_descriptors','show_all_examples','nostudents'
 			// TODO: is this one still needed? always null

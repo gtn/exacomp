@@ -17,10 +17,18 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
+namespace block_exacomp\task;
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'block_exacomp';
-$plugin->release = '3.0.3.experimental';
-$plugin->version   = 2016071203;
-$plugin->requires  = 2015051100;
-$plugin->maturity = MATURITY_STABLE;
+require_once __DIR__.'/../../inc.php';
+
+class autotest extends \core\task\scheduled_task {
+	public function get_name() {
+		return \block_exacomp\trans(['en:Auto Test']);
+	}
+
+	public function execute() {
+		block_exacomp_perform_auto_test();
+	}
+}
