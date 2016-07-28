@@ -102,6 +102,9 @@ call_user_func(function() use (&$functions, &$services) {
 		[ 'dakora_set_competence', 'write', 'set competence for student'],
 		[ 'block_exacomp_is_elove_student_self_assessment_enabled', 'read', 'check the corresponding config setting'],
 		[ 'dakora_get_evaluation_config', 'read', 'get evaluation configuration'],
+		[ 'dakora_set_descriptor_visibility', 'write', 'set visibility for descriptor'],
+		[ 'dakora_set_example_visibility', 'write', 'set visibility for example'],
+		[ 'dakora_set_topic_visibility', 'wrtie', 'set visibility for topic']
 	];
 
 	foreach ($definitions as $definition) {

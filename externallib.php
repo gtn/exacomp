@@ -2177,7 +2177,7 @@ class block_exacomp_external extends external_api {
 				'numbering' => new external_value ( PARAM_TEXT, 'numbering for topic'),
 				'subjectid'=> new external_value (PARAM_INT, 'id of subject'),
 				'subjecttitle'=> new external_value (PARAM_TEXT, 'title of subject'),
-				'visible' => new external_value ( PARAM_BOOL, 'visibility of topic in current context')
+				'visible' => new external_value ( PARAM_INT, 'visibility of topic in current context')
 		) ) );
 	}
 
@@ -2226,7 +2226,7 @@ class block_exacomp_external extends external_api {
 				'numbering' => new external_value ( PARAM_TEXT, 'numbering for topic'),
 				'subjectid' => new external_value (PARAM_INT, 'id of subject'),
 				'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
-				'visible' => new external_value ( PARAM_BOOL, 'visibility of topic in current context')
+				'visible' => new external_value ( PARAM_INT, 'visibility of topic in current context')
 		) ) );
 	}
 
@@ -4671,9 +4671,7 @@ class block_exacomp_external extends external_api {
 
 		if ($userid == 0)
 			$userid = $USER->id;
-
-		static::require_can_access_course_user($courseid, $userid);
-
+		
 		$data = new stdClass();
 
 		$topic = block_exacomp_get_topic_by_id($topicid);
@@ -4993,6 +4991,7 @@ class block_exacomp_external extends external_api {
 		// TODO: fjungwirth: What if scheme > 4 is selected in a course? WS & Dakora need to be adapted to that I think
 		
 		static::validate_parameters (static::dakora_get_evaluation_config_parameters(), array());
+	
 		return array('use_evalniveau' => block_exacomp_use_eval_niveau(),
 					'evalniveautype' => block_exacomp_evaluation_niveau_type(),
 					'evalniveaus' => \block_exacomp\global_config::get_evalniveaus(),
@@ -5021,7 +5020,113 @@ class block_exacomp_external extends external_api {
 		) );
 	}
 
+	public static function dakora_set_descriptor_visibility_parameters(){
+		return new external_function_parameters ( array (
+				'courseid' => new external_value (PARAM_INT, 'id of course'),
+				'descriptorid' => new external_value (PARAM_INT, 'id of descriptor'),
+				'userid' => new external_value ( PARAM_INT, 'id of user, 0 for current user'),
+				'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
+				'visible' => new external_value (PARAM_BOOL, 'visibility for descriptor in current context')
+		) );
+	}
+	
+	public static function dakora_set_descriptor_visibility($courseid, $descriptorid, $userid, $forall, $visible){
+		global $USER;
+		static::validate_parameters ( static::dakora_set_descriptor_visibility_parameters(), array (
+				'courseid' => $courseid,
+				'descriptorid' => $descriptorid,
+				'userid' => $userid,
+				'forall' => $forall,
+				'visible' => $visible
+		) );
 
+		if($userid == 0 && !$forall)
+			$userid = $USER->id;
+
+		static::require_can_access_course_user($courseid, $userid);
+		
+		block_exacomp_set_descriptor_visibility($descriptorid, $courseid, $visible, $userid);
+		
+		return array('success' => true);
+	}
+	
+	public static function dakora_set_descriptor_visibility_returns(){
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
+		) );
+	}
+
+	public static function dakora_set_example_visibility_parameters(){
+		return new external_function_parameters ( array (
+				'courseid' => new external_value (PARAM_INT, 'id of course'),
+				'exampleid' => new external_value (PARAM_INT, 'id of example'),
+				'userid' => new external_value ( PARAM_INT, 'id of user, 0 for current user'),
+				'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
+				'visible' => new external_value (PARAM_BOOL, 'visibility for example in current context')
+		) );
+	}
+	
+	public static function dakora_set_example_visibility($courseid, $exampleid, $userid, $forall, $visible){
+		global $USER;
+		static::validate_parameters ( static::dakora_set_example_visibility_parameters(), array (
+				'courseid' => $courseid,
+				'exampleid' => $exampleid,
+				'userid' => $userid,
+				'forall' => $forall,
+				'visible' => $visible
+		) );
+
+		if($userid == 0 && !$forall)
+			$userid = $USER->id;
+
+		static::require_can_access_course_user($courseid, $userid);
+		
+		block_exacomp_set_example_visibility($exampleid, $courseid, $visible, $userid);
+		
+		return array('success' => true);
+	}
+	
+	public static function dakora_set_example_visibility_returns(){
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
+		) );
+	}
+	
+	public static function dakora_set_topic_visibility_parameters(){
+		return new external_function_parameters ( array (
+				'courseid' => new external_value (PARAM_INT, 'id of course'),
+				'topicid' => new external_value (PARAM_INT, 'id of topic'),
+				'userid' => new external_value ( PARAM_INT, 'id of user, 0 for current user'),
+				'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
+				'visible' => new external_value (PARAM_BOOL, 'visibility for topic in current context')
+		) );
+	}
+	
+	public static function dakora_set_topic_visibility($courseid, $topicid, $userid, $forall, $visible){
+		global $USER;
+		static::validate_parameters ( static::dakora_set_topic_visibility_parameters(), array (
+				'courseid' => $courseid,
+				'topicid' => $topicid,
+				'userid' => $userid,
+				'forall' => $forall,
+				'visible' => $visible
+		) );
+
+		if($userid == 0 && !$forall)
+			$userid = $USER->id;
+
+		static::require_can_access_course_user($courseid, $userid);
+		
+		block_exacomp_set_topic_visibility($topicid, $courseid, $visible, $userid);
+		
+		return array('success' => true);
+	}
+	
+	public static function dakora_set_topic_visibility_returns(){
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
+		) );
+	}
 	/**
 	* helper function to use same code for 2 ws
 	*/
