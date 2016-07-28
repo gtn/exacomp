@@ -2275,7 +2275,8 @@ class block_exacomp_external extends external_api {
 				'descriptortitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
 				'numbering' => new external_value ( PARAM_TEXT, 'numbering for descriptor'),
 				'niveautitle' => new external_value ( PARAM_TEXT, 'title of niveau'),
-				'niveauid' => new external_value ( PARAM_INT, 'id of niveau')
+				'niveauid' => new external_value ( PARAM_INT, 'id of niveau'),
+				'visible' => new external_value ( PARAM_INT, 'visibility of topic in current context')
 		) ) );
 	}
 
@@ -2324,7 +2325,8 @@ class block_exacomp_external extends external_api {
 				'descriptortitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
 				'numbering' => new external_value ( PARAM_TEXT, 'numbering for descriptor'),
 				'niveautitle' => new external_value ( PARAM_TEXT, 'title of niveau'),
-				'niveauid' => new external_value ( PARAM_INT, 'id of niveau')
+				'niveauid' => new external_value ( PARAM_INT, 'id of niveau'),
+				'visible' => new external_value ( PARAM_INT, 'visibility of topic in current context')
 		) ) );
 	}
 
@@ -2381,12 +2383,14 @@ class block_exacomp_external extends external_api {
 					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of child'),
 					'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 					'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-					'examplesinwork' => new external_value (PARAM_FLOAT, 'edited number of material')
+					'examplesinwork' => new external_value (PARAM_FLOAT, 'edited number of material'),
+					'visible' => new external_value (PARAM_INT, 'visibility of child')
 			) ) ) ,
 			'examples' => new external_multiple_structure ( new external_single_structure ( array (
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
 					'exampletitle' => new external_value ( PARAM_TEXT, 'title of example' ),
-					'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' )
+					'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
+					'visible' => new external_value (PARAM_INT, 'visibility of example')
 			) ) ) ,
 			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
 			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
@@ -2422,7 +2426,8 @@ class block_exacomp_external extends external_api {
 		return new external_multiple_structure ( new external_single_structure ( array (
 				'exampleid' => new external_value ( PARAM_INT, 'id of descriptor' ),
 				'exampletitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
-				'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' )
+				'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
+				'visible' => new external_value(PARAM_INT, 'visibility of example in current context')
 		) ) );
 	}
 
@@ -2455,6 +2460,7 @@ class block_exacomp_external extends external_api {
 				'exampleid' => new external_value ( PARAM_INT, 'id of descriptor' ),
 				'exampletitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
 				'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
+				'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
 				'teacherevaluation' => new external_value ( PARAM_INT, 'example evaluation of teacher'),
 				'studentevaluation' => new external_value ( PARAM_INT, 'example evaluation of student'),
 				'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id')
@@ -2492,7 +2498,8 @@ class block_exacomp_external extends external_api {
 		return new external_multiple_structure ( new external_single_structure ( array (
 				'exampleid' => new external_value ( PARAM_INT, 'id of descriptor' ),
 				'exampletitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
-				'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' )
+				'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
+				'visible' => new external_value (PARAM_INT, 'visibility of example in current context')
 		) ) );
 	}
 
@@ -2527,6 +2534,7 @@ class block_exacomp_external extends external_api {
 				'exampleid' => new external_value ( PARAM_INT, 'id of descriptor' ),
 				'exampletitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
 				'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
+				'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
 				'teacherevaluation' => new external_value ( PARAM_INT, 'example evaluation of teacher'),
 				'studentevaluation' => new external_value ( PARAM_INT, 'example evaluation of student'),
 				'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id')
@@ -3581,12 +3589,14 @@ class block_exacomp_external extends external_api {
 					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of children'),
 					'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 					'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-					'examplesinwork' => new external_value (PARAM_FLOAT, 'edited number of material')
+					'examplesinwork' => new external_value (PARAM_FLOAT, 'edited number of material'),
+					'visible' => new external_value (PARAM_INT, 'visibility of child in current context')
 			) ) ) ,
 			'examples' => new external_multiple_structure ( new external_single_structure ( array (
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
 					'exampletitle' => new external_value ( PARAM_TEXT, 'title of example' ),
-					'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' )
+					'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
+					'visible'=> new external_value (PARAM_INT, 'visibility of example in current context')
 			) ) ),
 			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
 			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
@@ -3648,12 +3658,14 @@ class block_exacomp_external extends external_api {
 					'hasmaterial' => new external_value ( PARAM_BOOL, 'true or false if child has materials'),
 					'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 					'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-					'examplesinwork' => new external_value (PARAM_FLOAT, 'edited number of material')
+					'examplesinwork' => new external_value (PARAM_FLOAT, 'edited number of material'),
+					'visible' => new external_value (PARAM_INT, 'visibility of children in current context')
 			) ) ) ,
 			'examples' => new external_multiple_structure ( new external_single_structure ( array (
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
 					'exampletitle' => new external_value ( PARAM_TEXT, 'title of example' ),
-					'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' )
+					'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
+					'visible' => new external_value (PARAM_INT, 'visibility of example in current context')
 			) ) ),
 			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
 			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
@@ -4399,6 +4411,7 @@ class block_exacomp_external extends external_api {
 								'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
 								'exampletitle' => new external_value ( PARAM_TEXT, 'title of example' ),
 								'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
+								'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
 								'teacherevaluation' => new external_value ( PARAM_INT, 'example evaluation of teacher' ),
 								'studentevaluation' => new external_value ( PARAM_INT, 'example evaluation of student' ),
 								'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id')
@@ -4406,6 +4419,7 @@ class block_exacomp_external extends external_api {
 						'examplestotal' => new external_value ( PARAM_INT, 'total number of material' ),
 						'examplesvisible' => new external_value ( PARAM_FLOAT, 'visible number of material' ),
 						'examplesinwork' => new external_value ( PARAM_FLOAT, 'number of material in work' ),
+						'visible' => new external_value(PARAM_INT, 'visibility of children in current context'),
 						'examplesedited' => new external_value ( PARAM_FLOAT, 'number of edited material' ),
 						'examplegradings' => new external_single_structure ( array (
 								'teacher' => new external_multiple_structure ( new external_single_structure ( array (
@@ -4428,6 +4442,7 @@ class block_exacomp_external extends external_api {
 						'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
 						'exampletitle' => new external_value ( PARAM_TEXT, 'title of example' ),
 						'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
+						'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
 						'teacherevaluation' => new external_value ( PARAM_INT, 'example evaluation of teacher' ),
 						'studentevaluation' => new external_value ( PARAM_INT, 'example evaluation of student' ),
 						'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id')
@@ -4828,7 +4843,7 @@ class block_exacomp_external extends external_api {
 			$examples = static::dakora_get_examples_for_descriptor_with_grading($courseid, $child->descriptorid, $userid, false);
 
 			foreach($examples as $example){
-				if($example->teacherevaluation == $grading){
+				if($example->teacherevaluation == $grading && $example->visible == 1){
 					if(!array_key_exists($example->exampleid, $examples_return))
 						$examples_return[$example->exampleid] = $example;
 				}
@@ -5169,10 +5184,11 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 			if($child->examples || $show_all){
 				$child_return = static::dakora_get_descriptor_details($courseid, $child->id, $userid, $forall, $crosssubjid);
 
-				if(!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, $non_visibilities_student))||$forall)){
+				$child_return->visible = (!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, $non_visibilities_student))||$forall))?1:0;
+				//if(!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, $non_visibilities_student))||$forall)){
 					if($crosssubjid == 0 || in_array($child->id, $crossdesc) || in_array($descriptorid, $crossdesc))
 						$children_return[] = $child_return;
-				}
+				//}
 			}
 		}
 
@@ -5194,8 +5210,8 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 				$example_return->exampleid = $example->id;
 				$example_return->exampletitle = $example->title;
 				$example_return->examplestate = ($forall)?0:block_exacomp_get_dakora_state_for_example($courseid, $example->id, $userid);
-
-				if(!array_key_exists($example->id, $examples_return) && (!in_array($example->id, $example_non_visibilities)) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))
+				$example_return->visible = ((!in_array($example->id, $example_non_visibilities)) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))?1:0;
+				if(!array_key_exists($example->id, $examples_return))
 					$examples_return[$example->id] = $example_return;
 			}
 		}
@@ -5276,8 +5292,9 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 								$descriptor_return->niveausort = $niveau->title;
 								$descriptor_return->niveauid = $niveau->id;
 							}
-							if(!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student))||$forall))
-								$descriptors_return[] = $descriptor_return;
+							$descriptor_return->visible = (!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student))||$forall))?1:0;
+							//if(!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student))||$forall))
+							$descriptors_return[] = $descriptor_return;
 						}
 					}
 				}
@@ -5306,6 +5323,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 
 		$descriptors_return = array();
 		foreach($descriptors as $descriptor){
+			//TODO
 			if(!in_array($descriptor->topicid, $non_topic_visibilities) && ((!$forall && !in_array($descriptor->topicid, $non_topic_visibilities_student))||$forall)){
 				if(!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student))||$forall)){ 	//descriptor is visibile
 					if($only_associated){
@@ -5431,7 +5449,8 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 				$example_return->evalniveauid = $evaluation->evalniveauid;
 			}
 
-			if(!array_key_exists($example->id, $examples_return) && (!in_array($example->id, $example_non_visibilities)) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))
+			$example_return->visible = ((!in_array($example->id, $example_non_visibilities)) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))?1:0;
+			if(!array_key_exists($example->id, $examples_return))
 				$examples_return[$example->id] = $example_return;
 		}
 
