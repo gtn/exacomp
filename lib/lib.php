@@ -6157,7 +6157,7 @@ function block_exacomp_get_studentid() {
 }
 
 function block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, $niveautitle){
-	$global_scheme_values = \block_exacomp\global_config::get_value_titles(block_exacomp_get_grading_scheme($courseid));
+	$global_scheme_values = \block_exacomp\global_config::get_value_titles($courseid);
 	
 	list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork) = block_exacomp_get_example_statistic_for_descriptor($courseid, $descriptor->id, $student->id);
 	
@@ -6173,7 +6173,7 @@ function block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $st
 	//$string .= "{data:[{niveau:'".$niveautitle."',count:".$notInWork."}],name:' nB'},";
 	$string .= "{data:[{niveau:'".$niveautitle."',count:".$notEvaluated."}],name:' oB'},";
 
-	 $i = 0;
+	$i = 0;
 	foreach($gradings as $grading){
 		$object_data = new stdClass();
 		$object_data->data = array();
@@ -6911,9 +6911,10 @@ namespace block_exacomp {
 		/**
 		 * Returns all values used for examples and child-descriptors
 		 */
-		static function get_value_titles() {
+		static function get_value_titles($courseid = 0) {
 			// if additional_grading is set, use global value scheme
 			// TODO: use language strings for the titles
+			
 			if (block_exacomp_additional_grading()) {
 				return array (
 						- 1 => 'ohne Angabe',
@@ -6926,7 +6927,7 @@ namespace block_exacomp {
 			// else use value scheme set in the course
 			else {
 				// TODO: add settings to g::$COURSE?
-				$course_grading = block_exacomp_get_settings_by_course(g::$COURSE->id)->grading;
+				$course_grading = block_exacomp_get_settings_by_course(($courseid==0)?g::$COURSE->id:$courseid)->grading;
 				
 				$values = array(-1 => ' ');
 				$values += range(0, $course_grading);
