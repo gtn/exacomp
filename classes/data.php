@@ -1936,30 +1936,3 @@ function simpleXMLElementToArray(SimpleXMLElement $xmlobject) {
 	}
 	return $array_final;
 }
-
-require_once g::$CFG->libdir . '/formslib.php';
-
-class generalxml_upload_form extends \moodleform {
-
-	function definition() {
-		$mform = & $this->_form;
-
-		$importtype = optional_param('importtype', 'normal', PARAM_TEXT);
-
-		$this->_form->_attributes['action'] = $_SERVER['REQUEST_URI'];
-		$check = data::has_data();
-		if($importtype == 'custom') {
-			$mform->addElement('header', 'comment', get_string("doimport_own", "block_exacomp"));
-		}
-		elseif($check){
-			$mform->addElement('header', 'comment', get_string("doimport", "block_exacomp"));
-		} else
-			$mform->addElement('header', 'comment', get_string("doimport_again", "block_exacomp"));
-
-
-		$mform->addElement('filepicker', 'file', get_string("file"),null);
-		$mform->addRule('file', null, 'required', null, 'client');
-
-		$this->add_action_buttons(false, get_string('add'));
-	}
-}
