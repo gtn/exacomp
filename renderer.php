@@ -991,12 +991,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::tag("div", html_writer::table($table), array("id"=>"exabis_competences_block"));
 	}
 	public function competence_overview_form_start($selectedTopic=null, $selectedSubject=null, $studentid=null, $editmode=null){
-		global $PAGE, $COURSE;
+		global $PAGE;
 		$url_params = array();
 		$url_params['action'] = 'save';
-		if(isset($selectedTopic))
+		if($selectedTopic)
 			$url_params['topicid'] = $selectedTopic->id;
-		if(isset($selectedSubject))
+		if($selectedSubject)
 			$url_params['subjectid'] = $selectedSubject->id;
 		if(isset($studentid))
 			$url_params['studentid'] = $studentid;
@@ -5141,7 +5141,7 @@ var dataset = dataset.map(function (group) {
 		
 		for($i=1;$i<=$scheme;$i++){
 			$content .= html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","green".(($i>3)?3:$i));
-			$content .= ' '.$global_scheme_values[$i].' ';
+			$content .= ' '.@$global_scheme_values[$i].' ';
 		}
 		
 		return html_writer::div($content, 'legend');
