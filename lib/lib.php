@@ -327,7 +327,7 @@ function block_exacomp_get_all_subjects() {
 function block_exacomp_get_schooltypes_by_course($courseid) {
 	global $DB;
 	return $DB->get_records_sql('
-			SELECT DISTINCT s.id, s.title, s.source, s.sourceid
+			SELECT DISTINCT s.id, s.title, s.source, s.sourceid, s.sorting
 			FROM {'.\block_exacomp\DB_SCHOOLTYPES.'} s
 			JOIN {'.\block_exacomp\DB_MDLTYPES.'} m ON m.stid = s.id AND m.courseid = ?
 			ORDER BY s.sorting, s.title
@@ -380,7 +380,7 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 	}
 
 	$subjects = $DB->get_records_sql('
-			SELECT DISTINCT s.id, s.title, s.stid
+			SELECT DISTINCT s.id, s.title, s.stid, s.sorting
 			FROM {'.\block_exacomp\DB_SUBJECTS.'} s
 			JOIN {'.\block_exacomp\DB_TOPICS.'} t ON t.subjid = s.id
 			JOIN {'.\block_exacomp\DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?
@@ -1145,6 +1145,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 			"SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source, ".
                 ($mind_visibility?"evis.visible,esvis.visible as solution_visible, ":"")."
 				e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author
+				, de.sorting
 				FROM {" . \block_exacomp\DB_EXAMPLES . "} e
 				JOIN {" . \block_exacomp\DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?"
 			.($mind_visibility?' JOIN {'.\block_exacomp\DB_EXAMPVISIBILITY.'} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.courseid=? '
@@ -5824,6 +5825,12 @@ function block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted
 	if($entry->studentid != $USER->id)
 		block_exacomp_require_teacher($entry->courseid);
 
+	if ($DB instanceof pgsql_native_moodle_database) {
+		// HACK: because moodle doesn't quote pgsql identifiers and pgsql doesn't allow end as column name
+		$DB->execute('UPDATE {'.\block_exacomp\DB_SCHEDULE.'} SET "end"=? WHERE id=?', [$entry->end, $entry->id]);
+		unset($entry->end);
+	}
+
 	$DB->update_record(\block_exacomp\DB_SCHEDULE, $entry);
 }
 
@@ -5853,7 +5860,7 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
 				-- innerhalb end und start
 				(s.start > ? AND s.end < ?)
 			)
-			GROUP BY s.id -- because a bug somewhere causes duplicate rows
+			-- GROUP BY s.id -- because a bug somewhere causes duplicate rows
 			ORDER BY e.title";
 	return $DB->get_records_sql($sql,array($courseid, $studentid, $courseid, $start, $end));
 }
@@ -6068,8 +6075,6 @@ function block_exacomp_get_pre_planning_storage($creatorid, $courseid){
 	return $DB->get_records_sql($sql,array($courseid, $creatorid));
 }
 function block_exacomp_get_student_pool_examples($students, $courseid){
-	global $DB;
-
 	foreach($students as $student){
 		$student->pool_examples = block_exacomp_get_examples_for_pool($student->id, $courseid);
 	}
