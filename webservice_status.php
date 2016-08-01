@@ -28,7 +28,7 @@ $PAGE->set_context(context_system::instance());
 $PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
 $PAGE->set_title(get_string('blocktitle', 'block_exacomp'));
 
-$PAGE->set_url('/blocks/exacomp/webservice_status.php');
+$PAGE->set_url('/blocks/exacomp/webservice_status.php', ['courseid' => $courseid]);
 
 
 $output = block_exacomp_get_renderer();

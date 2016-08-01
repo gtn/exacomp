@@ -6534,6 +6534,9 @@ function block_exacomp_get_html_for_niveau_eval($evaluation){
 	if($evaluation_niveau_type == 0)
 		return;
 
+	if($evaluation_niveau_type == 0)
+		return;
+
 	//predefined pictures 
 		$grey_1_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_1_'.$evaluation_niveau_type.'.png';
 		$grey_2_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_2_'.$evaluation_niveau_type.'.png';
