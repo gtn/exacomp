@@ -1252,8 +1252,6 @@ class data_importer extends data {
 		}
 		
 	 	if(isset($xml->crosssubjects)) {
-			//insert empty draft as first entry
-			block_exacomp_init_cross_subjects();
 			foreach($xml->crosssubjects->crosssubject as $crosssubject) {
 				self::insert_crosssubject($crosssubject);
 			}
