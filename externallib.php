@@ -4518,23 +4518,22 @@ class block_exacomp_external extends external_api {
 			$data['type'] = $itemInformation->type;
 			$data['url'] = $itemInformation->url;
 			$data['teacheritemvalue'] = isset ( $itemInformation->teachervalue ) ? $itemInformation->teachervalue : -1;
-
-			if ($itemInformation->type == 'file') {
-				require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
-
-				if ($file = block_exaport_get_item_file ( $itemInformation )) {
-					
-					/*$fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
-						'userid' => $userid,
-						'itemid' => $itemInformation->id,
-						'wstoken' => static::wstoken(),
-					]);*/
-					//TODO: moodle_url contains encoding errors which lead to problems in dakora
-					$fileurl = $CFG->wwwroot . "/blocks/exaport/portfoliofile.php?" . "userid=" . $userid . "&itemid=" . $itemInformation->id . "&wstoken=" . static::wstoken();
-					$data['file'] = $fileurl;
-					$data['mimetype'] = $file->get_mimetype();
-					$data['filename'] = $file->get_filename();
-				}
+			
+			require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
+			if ($file = block_exaport_get_item_file ( $itemInformation )) {
+				
+				/*
+				 * $fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
+				 * 'userid' => $userid,
+				 * 'itemid' => $itemInformation->id,
+				 * 'wstoken' => static::wstoken(),
+				 * ]);
+				 */
+				// TODO: moodle_url contains encoding errors which lead to problems in dakora
+				$fileurl = $CFG->wwwroot . "/blocks/exaport/portfoliofile.php?" . "userid=" . $userid . "&itemid=" . $itemInformation->id . "&wstoken=" . static::wstoken ();
+				$data ['file'] = $fileurl;
+				$data ['mimetype'] = $file->get_mimetype ();
+				$data ['filename'] = $file->get_filename ();
 			}
 
 			$data['studentcomment'] = '';
