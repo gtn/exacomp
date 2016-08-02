@@ -5143,6 +5143,43 @@ class block_exacomp_external extends external_api {
 				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
 		) );
 	}
+
+	public static function dakora_set_example_solution_visibility_parameters(){
+		return new external_function_parameters ( array (
+				'courseid' => new external_value (PARAM_INT, 'id of course'),
+				'exampleid' => new external_value (PARAM_INT, 'id of example'),
+				'userid' => new external_value ( PARAM_INT, 'id of user, 0 for current user'),
+				'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
+				'visible' => new external_value (PARAM_BOOL, 'visibility for example in current context')
+		) );
+	}
+
+	public static function dakora_set_example_solution_visibility($courseid, $exampleid, $userid, $forall, $visible){
+		global $USER;
+		static::validate_parameters ( static::dakora_set_example_solution_visibility_parameters(), array (
+				'courseid' => $courseid,
+				'exampleid' => $exampleid,
+				'userid' => $userid,
+				'forall' => $forall,
+				'visible' => $visible
+		) );
+	
+		if($userid == 0 && !$forall)
+			$userid = $USER->id;
+	
+		static::require_can_access_course_user($courseid, $userid);
+
+		block_exacomp_set_example_solution_visibility($exampleid, $courseid, $visible, $userid);
+	
+		return array('success' => true);
+	}
+	
+	public static function dakora_set_example_solution_visibility_returns(){
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
+		) );
+	}
+	
 	/**
 	* helper function to use same code for 2 ws
 	*/

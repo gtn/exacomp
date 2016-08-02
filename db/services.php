@@ -104,7 +104,8 @@ call_user_func(function() use (&$functions, &$services) {
 		[ 'dakora_get_evaluation_config', 'read', 'get evaluation configuration'],
 		[ 'dakora_set_descriptor_visibility', 'write', 'set visibility for descriptor'],
 		[ 'dakora_set_example_visibility', 'write', 'set visibility for example'],
-		[ 'dakora_set_topic_visibility', 'wrtie', 'set visibility for topic']
+		[ 'dakora_set_topic_visibility', 'wrtie', 'set visibility for topic'],
+		[ 'dakora_set_example_solution_visibility', 'write', 'set visibility for example solutions']
 	];
 
 	foreach ($definitions as $definition) {
