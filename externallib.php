@@ -3474,7 +3474,8 @@ class block_exacomp_external extends external_api {
 				'descriptortitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
 				'numbering' => new external_value ( PARAM_TEXT, 'numbering for descriptor'),
 				'niveautitle' => new external_value ( PARAM_TEXT, 'title of nivaue'),
-				'niveauid' => new external_value ( PARAM_INT, 'id of niveau')
+				'niveauid' => new external_value ( PARAM_INT, 'id of niveau'),
+				'visible' => new external_value (PARAM_INT, 'visibility of example in current context')
 		) ) );
 	}
 
@@ -3530,7 +3531,8 @@ class block_exacomp_external extends external_api {
 				'descriptortitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
 				'numbering' => new external_value ( PARAM_TEXT, 'numbering for descriptor'),
 				'niveautitle' => new external_value ( PARAM_TEXT, 'title of nivaue'),
-				'niveauid' => new external_value ( PARAM_INT, 'id of niveau')
+				'niveauid' => new external_value ( PARAM_INT, 'id of niveau'),
+				'visible' => new external_value (PARAM_INT, 'visibility of example in current context')
 		) ) );
 	}
 
@@ -5324,60 +5326,51 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 		$descriptors_return = array();
 		foreach($descriptors as $descriptor){
 			//TODO
-			if(!in_array($descriptor->topicid, $non_topic_visibilities) && ((!$forall && !in_array($descriptor->topicid, $non_topic_visibilities_student))||$forall)){
-				if(!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student))||$forall)){ 	//descriptor is visibile
-					if($only_associated){
-						$has_visible_examples = false;
-						$has_children_with_visible_examples = false;
+			if($only_associated){
+				$has_visible_examples = false;
+				$has_children_with_visible_examples = false;
 
-						$example_non_visibilities = $DB->get_fieldset_select(\block_exacomp\DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
-							if(!$forall)
-								$example_non_visibilities_student = $DB->get_fieldset_select(\block_exacomp\DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+				$example_non_visibilities = $DB->get_fieldset_select(\block_exacomp\DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
+					if(!$forall)
+						$example_non_visibilities_student = $DB->get_fieldset_select(\block_exacomp\DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
 
 
-						if(isset($descriptor->examples)){	//descriptor has examples
-							foreach($descriptor->examples as $example){
-								if(!in_array($example->id, $example_non_visibilities) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))
-									$has_visible_examples = true;	//descriptor has visible examples
+				if(isset($descriptor->examples)){	//descriptor has examples
+					foreach($descriptor->examples as $example){
+						if(!in_array($example->id, $example_non_visibilities) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))
+							$has_visible_examples = true;	//descriptor has visible examples
 
-							}
-						}
+					}
+				}
 
-						if(isset($descriptor->children)){
-							foreach($descriptor->children as $child){
-								if((!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, $non_visibilities_student))||$forall))){ //child is visible
-									if(isset($child->examples)){	//descriptor has children
-										foreach($child->examples as $example){
-											if(!in_array($example->id, $example_non_visibilities) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))
-												$has_children_with_visible_examples = true;	//descriptor has children with visible examples
-										}
-									}
+				if(isset($descriptor->children)){
+					foreach($descriptor->children as $child){
+						if((!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, $non_visibilities_student))||$forall))){ //child is visible
+							if(isset($child->examples)){	//descriptor has children
+								foreach($child->examples as $example){
+									if(!in_array($example->id, $example_non_visibilities) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))
+										$has_children_with_visible_examples = true;	//descriptor has children with visible examples
 								}
 							}
 						}
+					}
+				}
 
-						if($has_visible_examples || $has_children_with_visible_examples){
-								$descriptor_return = new stdClass();
-								$descriptor_return->descriptorid = $descriptor->id;
-								$descriptor_return->descriptortitle = $descriptor->title;
-								$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
-								$descriptor_return->niveautitle = "";
-								$descriptor_return->niveauid = 0;
-								if($descriptor->niveauid){
-									$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
-									$descriptor_return->niveautitle = substr(block_exacomp_get_descriptor_numbering($descriptor),0,1).": ".$niveau->title;
-									$descriptor_return->niveausort = block_exacomp_get_descriptor_numbering($descriptor);
-									$descriptor_return->niveauid = $niveau->id;
-								}
-								$descriptors_return[] = $descriptor_return;
-						}
-					}else{
+				if($has_visible_examples || $has_children_with_visible_examples){
 						$descriptor_return = new stdClass();
 						$descriptor_return->descriptorid = $descriptor->id;
 						$descriptor_return->descriptortitle = $descriptor->title;
 						$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
 						$descriptor_return->niveautitle = "";
 						$descriptor_return->niveauid = 0;
+						
+						$visibility = 0;
+						if(!in_array($descriptor->topicid, $non_topic_visibilities) && ((!$forall && !in_array($descriptor->topicid, $non_topic_visibilities_student))||$forall))
+							if(!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student))||$forall))	//descriptor is visibile
+								$visibility = 1;
+								
+						$descriptor_return->visible = $visibility;
+						
 						if($descriptor->niveauid){
 							$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
 							$descriptor_return->niveautitle = substr(block_exacomp_get_descriptor_numbering($descriptor),0,1).": ".$niveau->title;
@@ -5385,8 +5378,29 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 							$descriptor_return->niveauid = $niveau->id;
 						}
 						$descriptors_return[] = $descriptor_return;
-					}
 				}
+			}else{
+				$descriptor_return = new stdClass();
+				$descriptor_return->descriptorid = $descriptor->id;
+				$descriptor_return->descriptortitle = $descriptor->title;
+				$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
+				$descriptor_return->niveautitle = "";
+				$descriptor_return->niveauid = 0;
+				
+				$visibility = 0;
+				if(!in_array($descriptor->topicid, $non_topic_visibilities) && ((!$forall && !in_array($descriptor->topicid, $non_topic_visibilities_student))||$forall))
+					if(!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student))||$forall))	//descriptor is visibile
+						$visibility = 1;
+						
+				$descriptor_return->visible = $visibility;
+				
+				if($descriptor->niveauid){
+					$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
+					$descriptor_return->niveautitle = substr(block_exacomp_get_descriptor_numbering($descriptor),0,1).": ".$niveau->title;
+					$descriptor_return->niveausort = block_exacomp_get_descriptor_numbering($descriptor);
+					$descriptor_return->niveauid = $niveau->id;
+				}
+				$descriptors_return[] = $descriptor_return;
 			}
 		}
 
