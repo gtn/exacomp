@@ -6668,20 +6668,22 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 				
 				$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
 				if($niveau){
-					$table_content->content[$topic->id]->niveaus[$niveau->id] = new stdClass();
-					$table_content->content[$topic->id]->niveaus[$niveau->id]->evalniveau = ($evaluation)?
+					$table_content->content[$topic->id]->niveaus[$niveau->title] = new stdClass();
+					$table_content->content[$topic->id]->niveaus[$niveau->title]->evalniveau = ($evaluation)?
 						((block_exacomp_use_eval_niveau())?
 								(($evaluation->evalniveauid)?$evaluationniveau_items[$evaluation->evalniveauid].' ':'')
 						:''):'';
 						
-					$table_content->content[$topic->id]->niveaus[$niveau->id]->evalniveauid = ($evaluation)?
+					$table_content->content[$topic->id]->niveaus[$niveau->title]->evalniveauid = ($evaluation)?
 						((block_exacomp_use_eval_niveau())?
 								(($evaluation->evalniveauid)?$evaluation->evalniveauid:0)
 						:0):0;
 					
-					$table_content->content[$topic->id]->niveaus[$niveau->id]->eval = ($evaluation) ? (((block_exacomp_additional_grading())?
+					$table_content->content[$topic->id]->niveaus[$niveau->title]->eval = ($evaluation) ? (((block_exacomp_additional_grading())?
 								(($evaluation->additionalinfo)?$evaluation->additionalinfo:'')
 						:$scheme_items[$evaluation->value])):'';
+					
+					$table_content->content[$topic->id]->niveaus[$niveau->title]->show = true;
 					
 					if($niveau->span == 1)
 						$table_content->content[$topic->id]->span = 1;
@@ -6736,14 +6738,20 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 		elseif($niveau->id != \block_exacomp\SHOW_ALL_NIVEAUS)
 			foreach($table_content->content as $row){
 				if($row->span != 1){
-					if(!array_key_exists($niveau->id, $row->niveaus)){
-						$row->niveaus[$niveau->id] = new stdClass();
-						$row->niveaus[$niveau->id]->eval = '';
-						$row->niveaus[$niveau->id]->evalniveau = '';
-						$row->niveaus[$niveau->id]->evalniveauid = 0;
+					if(!array_key_exists($niveau->title, $row->niveaus)){
+						$row->niveaus[$niveau->title] = new stdClass();
+						$row->niveaus[$niveau->title]->eval = '';
+						$row->niveaus[$niveau->title]->evalniveau = '';
+						$row->niveaus[$niveau->title]->evalniveauid = 0;
+						$row->niveaus[$niveau->title]->show = false;
 					}
 				}
 			}
+	}
+	
+	foreach($table_content->content as $row){
+		#sort crosssub entries
+		ksort($row->niveaus);
 	}
 	
 	return array($course_subjects, $table_column, $table_header, $table_content);
