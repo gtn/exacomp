@@ -1349,7 +1349,8 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 			continue;
 		}
 		$subject = $allSubjects[$topic->subjid];
-
+		if(!isset($topic->descriptors))
+			$topic->descriptors = array();
 		$topic = block_exacomp\topic::create($topic);
 
 		// found: add it to the subject result
