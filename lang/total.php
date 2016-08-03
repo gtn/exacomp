@@ -738,6 +738,10 @@ return  [
 		'Musterlösung anzeigen',
 		'Show solution',
 	],
+	'hide_solution_disabled' => [
+			'Musterlösung ist bereits für alle Schüler versteckt',
+			'The solution is already hidden for all students',
+	],
 	'submission' => [
 		'Abgabe',
 		'Submission',

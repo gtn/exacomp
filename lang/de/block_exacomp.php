@@ -230,6 +230,7 @@ $string['titlenotemtpy'] = 'Es muss ein Name eingegeben werden.';
 $string['solution'] = 'Musterlösung';
 $string['hide_solution'] = 'Musterlösung verbergen';
 $string['show_solution'] = 'Musterlösung anzeigen';
+$string['hide_solution_disabled'] = 'Musterlösung ist bereits für alle Schüler versteckt';
 $string['submission'] = 'Abgabe';
 $string['assignments'] = 'Moodle Aktivitäten';
 $string['files'] = 'Dateien';

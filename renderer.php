@@ -2092,11 +2092,27 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						}elseif($example->externaltask){
 							$titleCell->text .= html_writer::link($example->externaltask, $this->local_pix_icon("globesearch.png", $example->externaltask),array("target" => "_blank"));
 						}
-						if (($data->role == \block_exacomp\ROLE_TEACHER) && ($editmode || (! $editmode && $one_student && block_exacomp_is_example_visible ( $data->courseid, $example, 0 ))))
-							$titleCell->text .= $this->visibility_icon_example_solution ( $visible_solution, $example->id );
 						
-						if (($data->role == \block_exacomp\ROLE_TEACHER || $visible_solution) && $url = $example->get_solution_file_url ()) {
-							$titleCell->text .= $this->example_solution_icon ( $url );
+						$solution_url = $example->get_solution_file_url();
+						// Display Icons to hide/unhide example solution visibility
+						if($solution_url && $data->role == \block_exacomp\ROLE_TEACHER) {
+							// If solution exists and teacher is in edit mode, display icon
+							if($editmode) {
+								$titleCell->text .= $this->visibility_icon_example_solution ( $visible_solution, $example->id );
+							}
+							else if($one_student && block_exacomp_is_example_visible ( $data->courseid, $example, 0 )){
+								// If solution exists, but is globally hidden, hide/unhide is not possibly for a single student
+								if (isset($example->solution_visible) && !$example->solution_visible)
+									//display disabled icon
+									$titleCell->text .= $this->visibility_icon_example_solution_disabled();
+								else
+									$titleCell->text .= $this->visibility_icon_example_solution ( $visible_solution, $example->id );
+							}
+								
+						}
+						
+						if (($data->role == \block_exacomp\ROLE_TEACHER || $visible_solution) && $solution_url) {
+							$titleCell->text .= $this->example_solution_icon ( $solution_url );
 						}
 
 						if ($this->is_print_mode()) {
@@ -2424,6 +2440,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						'showurl' => new moodle_url('/blocks/exacomp/pix/solution_visible.png'), 'hideurl' => new moodle_url('/blocks/exacomp/pix/solution_hidden.png')
 				));
 	
+	}
+	public function visibility_icon_example_solution_disabled() {
+		return html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/locked.png'), 'alt'=>get_string("hide_solution_disabled","block_exacomp"), 'title'=>get_string("hide_solution_disabled","block_exacomp"), 'width' => '16'));
 	}
 	/*
 	private function student_example_evaluation_form($exampleid, $studentid, $courseid) {
