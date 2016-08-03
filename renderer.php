@@ -1525,8 +1525,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			
 			// display the hide/unhide icon only in editmode or iff only 1 student is selected
 			
-			if (!$topic_used && ($data->role == \block_exacomp\ROLE_TEACHER) && ($editmode || (!$editmode && $one_student && block_exacomp_is_topic_visible($data->courseid, $topic, 0)))) {
-				$outputname .= $this->visibility_icon_topic($visible, $topic->id);
+			if (($data->role == \block_exacomp\ROLE_TEACHER) && ($editmode || (!$editmode && $one_student && block_exacomp_is_topic_visible($data->courseid, $topic, 0)))) {
+				if($topic_used){
+					$icon_img = html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/locked.png'), 
+							'alt' => "locked", 'height' => 16, 'width' => 16));
+					$outputname .= html_writer::span($icon_img, 'imglocked', array('title'=>get_string('competence_locked', 'block_exacomp')));
+				}else
+					$outputname .= $this->visibility_icon_topic($visible, $topic->id);
 			}
 			
 			$outputnameCell->text = html_writer::div($outputname,"desctitle");
@@ -1779,8 +1784,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				//if hidden in course, cannot be shown to one student
 				
 				if(!$this->is_print_mode()){
-					if (!$descriptor_used && ($data->role == \block_exacomp\ROLE_TEACHER) && ($editmode || (!$editmode && $one_student && block_exacomp_is_descriptor_visible($data->courseid, $descriptor, 0)))) {
-						$titleCell->text .= $this->visibility_icon_descriptor($visible, $descriptor->id);
+					if (($data->role == \block_exacomp\ROLE_TEACHER) && ($editmode || (!$editmode && $one_student && block_exacomp_is_descriptor_visible($data->courseid, $descriptor, 0)))) {
+						if($descriptor_used){
+							$icon_img = html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/locked.png'),
+									'alt' => "locked", 'height' => 16, 'width' => 16));
+							$titleCell->text .= html_writer::span($icon_img, 'imglocked', array('title'=>get_string('competence_locked', 'block_exacomp')));
+							
+						}else
+							$titleCell->text .= $this->visibility_icon_descriptor($visible, $descriptor->id);
 					}
 					if($editmode && $custom_created_descriptors){
 						$titleCell->text .= html_writer::link('descriptor.php?courseid='.$COURSE->id.'&id='.$descriptor->id, $this->pix_icon("i/edit", get_string("edit")), array('exa-type' => 'iframe-popup', 'target'=>'_blank'));
@@ -2010,7 +2021,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 				foreach($descriptor->examples as $example) {
 					$example_used = block_exacomp_example_used($data->courseid, $example, $studentid);
-
+				
 					//TODO: if used, always visible?
 					
 					$visible_example = block_exacomp_is_example_visible($data->courseid, $example, $studentid);
@@ -2074,12 +2085,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$titleCell->text .= '</span>';
 						}
 
-						if (!$example_used && ($data->role == \block_exacomp\ROLE_TEACHER) && ($editmode || (!$editmode && $one_student && block_exacomp_is_example_visible($data->courseid, $example, 0)))) {
-							$titleCell->text .= $this->visibility_icon_example($visible_example, $example->id);
-						/*
-						} else {
-							$titleCell->text .= '<span style="display: inline-block; width: 16px; margin-right: 4px;">&nbsp;</span>';
-						*/
+						if (($data->role == \block_exacomp\ROLE_TEACHER) && ($editmode || (!$editmode && $one_student && block_exacomp_is_example_visible($data->courseid, $example, 0)))) {
+							if($example_used){
+								$icon_img = html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/locked.png'),
+										'alt' => "locked", 'height' => 16, 'width' => 16));
+								$titleCell->text .= html_writer::span($icon_img, 'imglocked', array('title'=>get_string('competence_locked', 'block_exacomp')));
+							}else 
+								$titleCell->text .= $this->visibility_icon_example($visible_example, $example->id);
 						}
 
 						if ($url = $example->get_task_file_url()) {

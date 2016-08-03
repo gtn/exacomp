@@ -865,6 +865,10 @@ return  [
 			'Fehler: Benotungen müssen Zahlenwerte zwischen 1.0 und 6.0 sein',
 			'Error: Values need to be numbers between 1.0 and 6.0',
 	],
+	'competence_locked' => [
+			'Beurteilung vorhanden oder Lernmaterial in Verwendung!',
+			'Evaluation exists or learning material is used',
+	],
 	// === Example Submission ===
 	'example_submission_header' => [
 		'Aufgabe {$a} bearbeiten',

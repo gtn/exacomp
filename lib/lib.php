@@ -4623,10 +4623,11 @@ function block_exacomp_example_used($courseid, $example, $studentid){
 	//if studentid == 0 used = true, if no evaluation/submission for this example
 	//if studentid != 0 used = true, if no evaluation/submission for this examples for this student
 	
-	if($studentid == 0){ // any self or teacher evaluation
+	if($studentid <= 0){ // any self or teacher evaluation
 		$sql = "SELECT * FROM {".\block_exacomp\DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND teacher_evaluation>= 0";
 		$records = $DB->get_records_sql($sql, array($courseid, $example->id));
-		if($records) return true;
+		if($records)
+			return true;
 		
 		$sql = "SELECT * FROM {".\block_exacomp\DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND student_evaluation>= 0";
 		$records = $DB->get_records_sql($sql, array($courseid, $example->id));

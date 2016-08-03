@@ -1105,3 +1105,7 @@ not used anymore?
 .exa-tree {
 	display: none;
 }
+
+#block_exacomp .imglocked{
+	padding-left: 3px;
+}
