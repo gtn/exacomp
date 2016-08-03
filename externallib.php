@@ -2543,15 +2543,43 @@ class block_exacomp_external extends external_api {
 
 
 	public static function dakora_get_example_overview_parameters(){
-		return static::get_example_by_id_parameters();
+		return new external_function_parameters ( array (
+				'courseid' => new external_value( PARAM_INT, 'id of course' ),
+				'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
+				'userid' => new external_value (PARAM_INT, 'id of user, if 0 current user')
+		) );
 	}
 
-	public static function dakora_get_example_overview($exampleid){
-		return static::get_example_by_id ( $exampleid );
+	public static function dakora_get_example_overview($courseid, $exampleid, $userid){
+		
+		$isTeacher = block_exacomp_is_teacher($courseid);
+		if(!$isTeacher)
+			$userid = g::$USER->id;
+		
+		$example = static::get_example_by_id ( $exampleid );
+		
+		$solution_visible = block_exacomp_is_example_solution_visible($courseid, $example, $userid);
+		$example->solution_visible = $solution_visible;
+		// remove solution if not visible for student
+		if(!$isTeacher && !$solution_visible)
+			$example->solution = "";
+		
+		return $example;
 	}
 
 	public static function dakora_get_example_overview_returns(){
-		return static::get_example_by_id_returns();
+		return new external_single_structure ( array (
+				'title' => new external_value ( PARAM_TEXT, 'title of example' ),
+				'description' => new external_value ( PARAM_TEXT, 'description of example' ),
+				'taskfileurl' => new external_value ( PARAM_TEXT, 'task fileurl' ),
+				'taskfilename' => new external_value ( PARAM_TEXT, 'task filename' ),
+				'externalurl' => new external_value ( PARAM_TEXT, 'externalurl of example' ),
+				'task' => new external_value ( PARAM_TEXT, '@deprecated' ),
+				'solution' => new external_value ( PARAM_TEXT, 'solution(url/description) of example' ),
+				'timeframe' => new external_value ( PARAM_INT, 'timeframe in minutes' ),
+				'hassubmissions' => new external_value ( PARAM_BOOL, 'true if example has already submissions' ),
+				'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context')
+		) );
 	}
 
 	/**
