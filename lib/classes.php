@@ -81,8 +81,9 @@ class db_layer {
 			$this->showonlyvisible = false;
 			$this->mindvisibility = false;
 		}
-		if (!$this->showalldescriptors)
+		if (!$this->showalldescriptors) {
 			$this->showalldescriptors = block_exacomp_get_settings_by_course($this->courseid)->show_all_descriptors;
+		}
 
 
 		$sql = "
@@ -92,14 +93,14 @@ class db_layer {
 			JOIN {".DB_DESCRIPTORS."} d ON desctopmm.descrid=d.id AND d.parentid=0
 			-- left join, because courseid=0 has no descvisibility!
 			LEFT JOIN {".DB_DESCVISIBILITY."} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=?
-			".($this->showonlyvisible ? " AND dvis.visible = 1 " : "")."
 			LEFT JOIN {".DB_NIVEAUS."} n ON d.niveauid = n.id
 			".($this->showalldescriptors ? "" : "
 				JOIN {".DB_COMPETENCE_ACTIVITY."} da ON d.id=da.compid AND da.comptype=".TYPE_DESCRIPTOR."
 				JOIN {course_modules} a ON da.activityid=a.id ".(($this->courseid > 0) ? "AND a.course=".$this->courseid : ""))."
-			WHERE desctopmm.topicid = ".$topic->id;
+			WHERE desctopmm.topicid = ?
+			".($this->showonlyvisible ? " AND (dvis.visible = 1 OR dvis.visible IS NULL)" : "");
 
-		$descriptors = g::$DB->get_records_sql($sql, array($this->courseid));
+		$descriptors = g::$DB->get_records_sql($sql, [$this->courseid, $topic->id]);
 
 		block_exacomp_sort_items($descriptors, ['niveau_' => \block_exacomp\DB_NIVEAUS, \block_exacomp\DB_DESCRIPTORS]);
 
@@ -110,14 +111,14 @@ class db_layer {
 
 	function get_examples(descriptor $descriptor) {
 		$dummy = $descriptor->get_data();
-		block_exacomp_get_examples_for_descriptor($dummy, $this->filteredtaxonomies, $this->showallexamples, $this->courseid, false, false);
+		block_exacomp_get_examples_for_descriptor($dummy, $this->filteredtaxonomies, $this->showallexamples, $this->courseid, true, true);
 
 		return example::create_objects($dummy->examples, array(
 			'descriptor' => $descriptor,
 		), $this);
 	}
 
-	function get_child_descriptors($parent) {
+	function get_child_descriptors(descriptor $parent) {
 		global $DB;
 
 		if (!$this->courseid) {
@@ -125,8 +126,9 @@ class db_layer {
 			$this->showonlyvisible = false;
 			$this->mindvisibility = false;
 		}
-		if (!$this->showalldescriptors)
+		if (!$this->showalldescriptors) {
 			$this->showalldescriptors = block_exacomp_get_settings_by_course($this->courseid)->show_all_descriptors;
+		}
 
 		$sql = 'SELECT d.id, d.title, d.niveauid, d.source, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, '.
 			($this->mindvisibility ? 'dvis.visible as visible, ' : '').' d.sorting
@@ -142,8 +144,9 @@ class db_layer {
 		$sql .= ' WHERE d.parentid = ?';
 
 		$params = array();
-		if ($this->mindvisibility)
+		if ($this->mindvisibility) {
 			$params[] = $this->courseid;
+		}
 
 		$params[] = $parent->id;
 		//$descriptors = $DB->get_records_sql($sql, ($this->showalldescriptors) ? array($parent->id) : array($this->courseid,$parent->id));
@@ -161,7 +164,7 @@ class db_layer {
 		return $this->init_objects(subject::get_objects());
 	}
 
-	function get_topics_for_subject($subject) {
+	function get_topics_for_subject(subjet $subject) {
 		$topics = topic::get_objects(['subjid' => $subject->id]);
 
 		$this->init_objects($topics, ['subject' => $subject]);
@@ -311,14 +314,61 @@ class db_layer_course extends db_layer {
 
 	function __construct($courseid) {
 		$this->courseid = $courseid;
+
+		if (!block_exacomp_is_teacher($courseid)) {
+			$this->showonlyvisible = true;
+		}
 	}
 
 	function get_subjects() {
 		return subject::create_objects(block_exacomp_get_subjects_by_course($this->courseid), null, $this);
 	}
 
-	function get_topics_for_subject($subject) {
-		return topic::create_objects(block_exacomp_get_topics_by_subject($this->courseid, $subject->id), null, $this);
+	function filter_user_visibility($items) {
+		if ($this->showonlyvisible) {
+			foreach ($items as $key => $item) {
+				if ($item instanceof topic) {
+					if (!block_exacomp_is_topic_visible($this->courseid, $item, g::$USER->id)) {
+						unset($items[$key]);
+					}
+				}
+				if ($item instanceof descriptor) {
+					if (!block_exacomp_is_descriptor_visible($this->courseid, $item, g::$USER->id)) {
+						unset($items[$key]);
+					}
+				}
+				if ($item instanceof example) {
+					if (!block_exacomp_is_example_visible($this->courseid, $item, g::$USER->id)) {
+						unset($items[$key]);
+					}
+				}
+			}
+		}
+
+		return $items;
+	}
+
+	function get_topics_for_subject(subject $subject) {
+		$items = topic::create_objects(block_exacomp_get_topics_by_subject($this->courseid, $subject->id, false, $this->showonlyvisible), null, $this);
+
+		return $this->filter_user_visibility($items);
+	}
+
+	function get_descriptors_for_topic(topic $topic) {
+		$items = parent::get_descriptors_for_topic($topic);
+		return $this->filter_user_visibility($items);
+
+	}
+
+	function get_child_descriptors(descriptor $parent) {
+		$items = parent::get_child_descriptors($parent);
+		return $this->filter_user_visibility($items);
+	}
+
+	function get_examples(descriptor $descriptor) {
+		$items = parent::get_examples($descriptor);
+
+		return $this->filter_user_visibility($items);
 	}
 }
 
@@ -338,12 +388,14 @@ class db_layer_all_user_courses extends db_layer {
 			$courseSubjects = db_layer_course::create($course->id)->get_subjects();
 
 			foreach ($courseSubjects as $courseSubject) {
-				if (!isset($subjects[$courseSubject->id]))
+				if (!isset($subjects[$courseSubject->id])) {
 					$subjects[$courseSubject->id] = $courseSubject;
+				}
 
 				foreach ($courseSubject->topics as $topic) {
-					if (!isset($subjects[$courseSubject->id]->topics[$topic->id]))
+					if (!isset($subjects[$courseSubject->id]->topics[$topic->id])) {
 						$subjects[$courseSubject->id]->topics[$topic->id] = $topic;
+					}
 
 					foreach ($topic->descriptors as $descriptor) {
 						if (!isset($subjects[$courseSubject->id]->topics[$topic->id]->descriptors[$descriptor->id])) {
@@ -609,7 +661,9 @@ class db_record {
 
 		$data = static::get_record($conditions, $fields, $strictness);
 
-		if (!$data) return null;
+		if (!$data) {
+			return null;
+		}
 
 		return static::create($data);
 	}
@@ -641,8 +695,12 @@ class db_record {
 			$strictness = $fields;
 			$fields = null;
 		}
-		if ($fields === null) $fields = '*';
-		if ($strictness === null) $strictness = IGNORE_MISSING;
+		if ($fields === null) {
+			$fields = '*';
+		}
+		if ($strictness === null) {
+			$strictness = IGNORE_MISSING;
+		}
 
 		return $DB->get_record(static::TABLE, $conditions, $fields, $strictness);
 	}
@@ -929,7 +987,9 @@ class example extends db_record {
 	function get_task_file_url() {
 		// get from filestorage
 		$file = block_exacomp_get_file($this, 'example_task');
-		if (!$file) return null;
+		if (!$file) {
+			return null;
+		}
 
 		$filename = (($numbering = $this->get_numbering()) ? $numbering.'_' : '').
 			$this->title.
@@ -943,7 +1003,9 @@ class example extends db_record {
 	function get_solution_file_url() {
 		// get from filestorage
 		$file = block_exacomp_get_file($this, 'example_solution');
-		if (!$file) return null;
+		if (!$file) {
+			return null;
+		}
 
 		$filename = (($numbering = $this->get_numbering()) ? $numbering.'_' : '').
 			$this->title.
@@ -971,8 +1033,12 @@ class cross_subject extends db_record {
 	}
 
 	function is_shared() {
-		if ($this->is_draft()) return false;
-		if ($this->shared) return true;
+		if ($this->is_draft()) {
+			return false;
+		}
+		if ($this->shared) {
+			return true;
+		}
 
 		return g::$DB->record_exists(\block_exacomp\DB_CROSSSTUD, array('crosssubjid' => $this->id));
 	}
