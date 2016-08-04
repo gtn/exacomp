@@ -164,7 +164,7 @@ class db_layer {
 		return $this->init_objects(subject::get_objects());
 	}
 
-	function get_topics_for_subject(subjet $subject) {
+	function get_topics_for_subject(subject $subject) {
 		$topics = topic::get_objects(['subjid' => $subject->id]);
 
 		$this->init_objects($topics, ['subject' => $subject]);
