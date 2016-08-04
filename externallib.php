@@ -4768,7 +4768,7 @@ class block_exacomp_external extends external_api {
 			$data_contents[] = $data_content;
 		}
 		#sort profile entries
-		usort($data_contents, "static::cmp");
+		usort($data_contents, "static::cmp_niveausort");
 		$data->descriptordata = $data_contents;
 		
 		return $data;
@@ -5395,7 +5395,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 			}
 		}
 
-		usort($descriptors_return, "static::cmp");
+		usort($descriptors_return, "static::cmp_niveausort");
 		return $descriptors_return;
 	}
 
@@ -5498,12 +5498,12 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 		}
 
 		#sort crosssub entries
-		usort($descriptors_return, "static::cmp");
+		usort($descriptors_return, "static::cmp_niveausort");
 		
 		return $descriptors_return;
 	}
 	
-	private static function cmp($a, $b){
+	private static function cmp_niveausort($a, $b){
 		return strcmp($a->niveausort, $b->niveausort);
 	}
 	
