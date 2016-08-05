@@ -4660,6 +4660,11 @@ function block_exacomp_example_used($courseid, $example, $studentid){
 		if($onSchedule)
 			return true;
 		
+		//or on pre planning storage
+		$onSchedule = $DB->record_exists(\block_exacomp\DB_SCHEDULE, array('studentid'=>0, 'courseid'=>$courseid, 'exampleid' => $example->id));
+		if($onSchedule)
+			return true;
+		
 		//submission made?
 		if(block_exacomp_exaportexists()){
 			$sql = "SELECT * FROM {".\block_exacomp\DB_ITEMEXAMPLE."} ie JOIN {".'block_exaportitem'."} i ON ie.itemid = i.id ".
