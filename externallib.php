@@ -4435,6 +4435,9 @@ class block_exacomp_external extends external_api {
 		if(empty($childsandexamples->examples))
 			$descriptor_return->hasmaterial = false;
 
+		$descriptor_return->visible = (block_exacomp_is_descriptor_visible($courseid, $descriptor, $userid))?1:0;
+		$descriptor_return->used = (block_exacomp_descriptor_used($courseid, $descriptor, $userid))?1:0;
+		
 		return $descriptor_return;
 	}
 
@@ -4512,7 +4515,9 @@ class block_exacomp_external extends external_api {
 						'student' => new external_multiple_structure ( new external_single_structure ( array (
 								'sum' => new external_value ( PARAM_INT, 'number of gradings' )
 						) ) )
-				) )
+				) ),
+				'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
+				'used' => new external_value (PARAM_INT, 'used in current context')
 		) );
 	}
 
@@ -5339,7 +5344,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 					$topic_return->numbering = block_exacomp_get_topic_numbering($topic->id);
 					$topic_return->subjectid = $subject->id;
 					$topic_return->subjecttitle = $subject->title;
-					$topic_return->visible = block_exacomp_is_topic_visible($courseid, $topic, $userid);
+					$topic_return->visible = (block_exacomp_is_topic_visible($courseid, $topic, $userid))?1:0;
 					$topic_return->used = (block_exacomp_topic_used($courseid, $topic, $userid))?1:0;
 					$topics_return[] = $topic_return;
 				}
@@ -5564,6 +5569,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 
 		return $examples_return;
 	}
+	//TODO this is not true for newest version
 	private static function get_descriptor_example_statistic($courseid, $userid, $descriptorid, $forall, $crosssubjid){
 		$return = new stdClass();
 		$return->total = 0;
@@ -5581,10 +5587,10 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 
 		list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork, $totalHidden, $edited) = block_exacomp_get_example_statistic_for_descriptor($courseid, $descriptorid, $userid, $crosssubjid);
 
-		$return->total = $totalHidden/ $number_students;
-		$return->visible = $total / $number_students;
-		$return->inwork = ($inWork>0)?$inWork / $number_students:0;
-		$return->edited = $edited / $number_students;
+		$return->total = $total;
+		$return->visible = $totalHidden;
+		$return->inwork = ($inWork>0)?$inWork :0;
+		$return->edited = $edited ;
 		return $return;
 	}
 
