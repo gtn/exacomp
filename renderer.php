@@ -2145,12 +2145,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 								//auch für alle schüler auf wochenplan legen
 								if(!$this->is_edit_mode()){
-									$titleCell->text .= $this->schedule_icon($example->id, ($studentid)?$studentid:BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $data->courseid);
+									if($visible_example){ //prevent errors
+										$titleCell->text .= $this->schedule_icon($example->id, ($studentid)?$studentid:BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $data->courseid);
 
 										$titleCell->text .= html_writer::link("#",
 											html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'), 'title'=> get_string('pre_planning_storage', 'block_exacomp'))),
-											array('exa-type' => 'add-example-to-schedule', 'exampleid' => $example->id, 'studentid' => 0, 'courseid' => $data->courseid));
-
+											array('class'=>'add-to-preplanning', 'exa-type' => 'add-example-to-schedule', 'exampleid' => $example->id, 'studentid' => 0, 'courseid' => $data->courseid));
+									}
 								}
 								$titleCell->text .= $this->competence_association_icon($example->id, $data->courseid, $editmode);
 
@@ -2398,7 +2399,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::link(
 							"#",
 							$this->pix_icon("e/insert_date", get_string("weekly_schedule","block_exacomp")),
-							array('exa-type' => 'add-example-to-schedule', 'exampleid' => $exampleid, 'studentid' => $studentid, 'courseid' => $courseid));
+							array('class'=>'add-to-schedule', 'exa-type' => 'add-example-to-schedule', 'exampleid' => $exampleid, 'studentid' => $studentid, 'courseid' => $courseid));
 	}
 	public function competence_association_icon($exampleid, $courseid, $editmode) {
 		return html_writer::link(

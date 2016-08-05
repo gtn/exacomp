@@ -931,11 +931,14 @@
 		});
 	});
 
+	
 	$(document).on('click', '#hide-example', function(event) {
 		event.preventDefault();
 
 		var tr = $(this).closest('tr');
-
+		var schedule = $(this).siblings('.add-to-schedule');
+		var preplanning = $(this).siblings('.add-to-preplanning');
+		
 		var courseid = block_exacomp.get_param('courseid');
 		var studentid = block_exacomp.get_studentid();
 		var exampleid = $(this).attr('exampleid');
@@ -963,6 +966,9 @@
 			img.attr('alt', M.util.get_string('show','moodle'));
 			img.attr('title', M.util.get_string('show','moodle'));
 			
+			schedule.click(function () {return false;});
+			preplanning.click(function () {return false;});
+			
 			//only for competence grid
 			var link = $('#competence-grid-link-'+exampleid);
 			if(link) {
@@ -982,6 +988,9 @@
 			img.attr('src',$(this).attr('showurl'));
 			img.attr('alt', M.util.get_string('hide','moodle'));
 			img.attr('title', M.util.get_string('hide','moodle'));
+			
+			schedule.unbind('click');
+			preplanning.unbind('click');
 			
 			//only for competence grid
 			var link = $('#competence-grid-link-'+exampleid);
