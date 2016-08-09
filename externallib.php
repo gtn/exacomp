@@ -4413,6 +4413,9 @@ class block_exacomp_external extends external_api {
 				$examples_teacherevaluation[$example->teacherevaluation]++;
 			if($example->studentevaluation > -1)
 				$examples_studentevaluation[$example->studentevaluation]++;
+			
+			$solution_visible = block_exacomp_is_example_solution_visible($courseid, $example, $userid);
+			$example->solution_visible = $solution_visible;
 		}
 		$examplegradings = new stdClass();
 		$examplegradings->teacher = array();
@@ -4469,7 +4472,8 @@ class block_exacomp_external extends external_api {
 								'used' => new external_value (PARAM_INT, 'used in current context'),
 								'teacherevaluation' => new external_value ( PARAM_INT, 'example evaluation of teacher' ),
 								'studentevaluation' => new external_value ( PARAM_INT, 'example evaluation of student' ),
-								'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id')
+								'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
+								'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context')
 						) ) ),
 						'examplestotal' => new external_value ( PARAM_INT, 'total number of material' ),
 						'examplesvisible' => new external_value ( PARAM_FLOAT, 'visible number of material' ),
@@ -4502,7 +4506,8 @@ class block_exacomp_external extends external_api {
 						'used' => new external_value ( PARAM_INT, 'used in current context'),
 						'teacherevaluation' => new external_value ( PARAM_INT, 'example evaluation of teacher' ),
 						'studentevaluation' => new external_value ( PARAM_INT, 'example evaluation of student' ),
-						'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id')
+						'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),				
+						'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context')
 				) ) ),
 				'examplestotal' => new external_value ( PARAM_INT, 'total number of material' ),
 				'examplesvisible' => new external_value ( PARAM_FLOAT, 'visible number of material' ),
@@ -5735,7 +5740,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 		$exampleDataFound = null;
 		foreach($courses as $course){
 			// can be viewed by user, or by whole course
-			if (block_exacomp_check_student_example_permission($course->id, $exampleid, g::$USER->id)
+			if (block_exacomp_is_teacher ( $courseid ) || block_exacomp_check_student_example_permission($course->id, $exampleid, g::$USER->id)
 				|| block_exacomp_check_student_example_permission($course->id, $exampleid, 0)) {
 				$exampleDataFound = (object)[ 'exampleid' => $exampleid, 'courseid' => $course->id ];
 				break;
