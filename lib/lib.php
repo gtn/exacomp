@@ -4233,6 +4233,29 @@ function block_exacomp_create_new_crosssub($courseid){
 	$insert->source = \block_exacomp\IMPORT_SOURCE_SPECIFIC;
 	return $DB->insert_record(\block_exacomp\DB_CROSSSUBJECTS, $insert);
 }
+function block_exacomp_create_crosssub($courseid, $title, $description, $creatorid, $subjectid=0){
+	global $DB;
+	
+	$insert = new stdClass();
+	$insert->title = $title;
+	$insert->description = $description;
+	$insert->courseid = $courseid;
+	$insert->creatorid = $creatorid;
+	$insert->subjectid = $subjectid;
+	$insert->sourceid = 0;
+	$insert->source = \block_exacomp\IMPORT_SOURCE_SPECIFIC;
+	return $DB->insert_record(\block_exacomp\DB_CROSSSUBJECTS, $insert);
+}
+
+function block_exacomp_edit_crosssub($crosssubjid, $title, $description, $subjectid){
+	global $DB;
+	
+	$crosssubj = $DB->get_record(\block_exacomp\DB_CROSSSUBJECTS, array('id'=>$crosssubjid));
+	$crosssubj->title = $title;
+	$crosssubj->description = $description;
+	$crosssubj->subjectid = $subjectid;
+	return $DB->update_record(\block_exacomp\DB_CROSSSUBJECTS, $crosssubj);
+}
 function block_exacomp_delete_crosssubject_drafts($drafts_to_delete){
 	global $DB;
 	foreach($drafts_to_delete as $draftid){
@@ -5853,7 +5876,6 @@ function block_exacomp_copy_example_from_schedule($scheduleid){
 	
 	$DB->insert_record(\block_exacomp\DB_SCHEDULE, $entry);
 }
-
 function block_exacomp_remove_example_from_schedule($scheduleid){
 	global $DB, $USER;
 
@@ -5927,7 +5949,7 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true){
 		$example_array['courseid'] = $example->courseid;
 		$example_array['scheduleid'] = $example->scheduleid;
 		$example_array['copy_url'] = $OUTPUT->pix_icon("e/copy", get_string('copy'));
-		
+
 		$img = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/assoc_icon.png'), 'alt'=>get_string("competence_associations", "block_exacomp"), 'height'=>16, 'width'=>16));
 
 		$example_array['assoc_url'] = html_writer::link(

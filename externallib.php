@@ -3424,14 +3424,16 @@ class block_exacomp_external extends external_api {
 			static::require_can_access_course_user($courseid, $userid);
 		}
 
+//		$cross_subjects_all = block_exacomp_get_cross_subjects_by_course($courseid); 
 		$cross_subjects = block_exacomp_get_cross_subjects_by_course($courseid, $userid);
-
+		$cross_subjects_visible = $cross_subjects;
+		
 		//if for all return only common cross subjects
 		if($forall){
-			$cross_subjects_return = array();
+			$cross_subjects_visible = array();
 			foreach($cross_subjects as $cross_subject){
 				if($cross_subject->shared == 1)
-					$cross_subjects_return[] = $cross_subject;
+					$cross_subjects_visible[$cross_subject->id] = $cross_subject;
 				else{
 					$shared_for_all = true;
 					$cross_sub_students = $DB->get_fieldset_select(\block_exacomp\DB_CROSSSTUD,'studentid', 'crosssubjid=?', array($cross_subject->id));
@@ -3441,14 +3443,20 @@ class block_exacomp_external extends external_api {
 							$shared_for_all = false;
 
 					if($shared_for_all)
-						$cross_subjects_return[] = $cross_subject;
+						$cross_subjects_visible[$cross_subject->id] = $cross_subject;
 				}
 			}
 
-			return $cross_subjects_return;
+			
 		}
 
-		return $cross_subjects;
+		$all_cross_subjects = block_exacomp_get_cross_subjects_by_course($courseid);
+		foreach($all_cross_subjects as $cross_subject){
+			$cross_subject->visible = 0;
+			if(array_key_exists($cross_subject->id, $cross_subjects_visible))
+				$cross_subject->visible = 1;
+		}
+		return $all_cross_subjects;
 	}
 
 	/**
@@ -3461,7 +3469,8 @@ class block_exacomp_external extends external_api {
 				'id' => new external_value ( PARAM_INT, 'id of cross subject' ),
 				'title' => new external_value ( PARAM_TEXT, 'title of cross subject' ),
 				'description' => new external_value ( PARAM_TEXT, 'description of cross subject'),
-				'subjectid' => new external_value (PARAM_INT, 'subject id, cross subject is associated with')
+				'subjectid' => new external_value (PARAM_INT, 'subject id, cross subject is associated with'),
+				'visible' => new external_value ( PARAM_INT, 'visibility of crosssubject for selected student')
 		) ) );
 	}
 
@@ -5242,6 +5251,285 @@ class block_exacomp_external extends external_api {
 		) );
 	}
 	
+	public static function dakora_create_cross_subject_parameters(){
+		return new external_function_parameters ( array (
+				'courseid' => new external_value (PARAM_INT, 'id of course'),
+				'title' => new external_value (PARAM_TEXT, 'title of crosssubject'),
+				'description' => new external_value ( PARAM_TEXT, 'description of crosssubject'),
+				'subjectid' => new external_value (PARAM_INT, 'id of subject crosssubject is assigned to'),
+				'draftid' => new external_value (PARAM_INT, 'id of draft', VALUE_DEFAULT, 0)
+		) );
+	}
+
+	public static function dakora_create_cross_subject($courseid, $title, $description, $subjectid, $draftid){
+		global $USER;
+		static::validate_parameters ( static::dakora_create_cross_subject_parameters(), array (
+				'courseid' => $courseid,
+				'title' => $title,
+				'description' => $description,
+				'subjectid' => $subjectid,
+				'draftid' => $draftid
+		) );
+	
+		$userid = $USER->id;
+	
+		static::require_can_access_course($courseid);
+		
+		block_exacomp_require_teacher($courseid );
+		
+		if($draftid > 0){
+			$crosssubjid = block_exacomp_save_drafts_to_course(array($draftid), $courseid);
+			block_exacomp_edit_crosssub($crosssubjid, $title, $description, $subjectid);
+		}else
+			block_exacomp_create_crosssub($courseid, $title, $description, $userid, $subjectid);
+		
+		return array('success' => true);
+	}
+	
+	public static function dakora_create_cross_subject_returns(){
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
+		) );
+	}
+	
+	public static function dakora_edit_cross_subject_parameters(){
+		return new external_function_parameters ( array (
+				'courseid' => new external_value (PARAM_INT, 'id of course'),
+				'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject'),
+				'title' => new external_value (PARAM_TEXT, 'title of crosssubject'),
+				'description' => new external_value ( PARAM_TEXT, 'description of crosssubject'),
+				'subjectid' => new external_value (PARAM_INT, 'id of subject crosssubject is assigned to')
+		) );
+	}
+
+	public static function dakora_edit_cross_subject($courseid, $crosssubjid, $title, $description, $subjectid){
+		global $USER;
+		static::validate_parameters ( static::dakora_edit_cross_subject_parameters(), array (
+				'courseid' => $courseid,
+				'crosssubjid' => $crosssubjid,
+				'title' => $title,
+				'description' => $description,
+				'subjectid' => $subjectid
+		) );
+	
+		$userid = $USER->id;
+	
+		static::require_can_access_course($courseid);
+		block_exacomp_require_teacher($courseid);
+		
+		block_exacomp_edit_crosssub($crosssubjid, $title, $description, $subjectid);
+		return array('success'=>true);
+	}
+	
+	public static function dakora_edit_cross_subject_returns(){
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
+		) );
+	}
+	
+	public static function dakora_get_cross_subject_drafts_parameters(){
+		return new external_function_parameters ( array (
+			'courseid' => new external_value (PARAM_INT, 'id of course')
+			) );
+	}
+
+	public static function dakora_get_cross_subject_drafts($courseid){
+		global $USER;
+		static::validate_parameters ( static::dakora_get_cross_subject_drafts_parameters(), array ('courseid'=>$courseid) );
+	
+		$userid = $USER->id;
+		
+		block_exacomp_require_teacher($courseid);
+		
+		return block_exacomp_get_cross_subjects_drafts();
+	}
+	
+	public static function dakora_get_cross_subject_drafts_returns(){
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'id' => new external_value ( PARAM_INT, 'id of crosssubjet draft' ),
+				'title' => new external_value (PARAM_TEXT, 'title of draft'),
+				'description' => new external_value (PARAM_TEXT, 'description of draft')
+		) ) );
+	}
+	
+	public static function dakora_get_subjects_parameters(){
+		return new external_function_parameters ( array (
+			'courseid' => new external_value (PARAM_INT, 'id of course')
+			) );
+	}
+
+	public static function dakora_get_subjects($courseid){
+		global $USER;
+		static::validate_parameters ( static::dakora_get_subjects_parameters(), array ('courseid'=>$courseid) );
+	
+		$userid = $USER->id;
+		
+		static::require_can_access_course($courseid);
+		block_exacomp_require_teacher($courseid);
+		
+		$subjects = array();
+		$default_sub = new stdClass();
+		$default_sub->id = 0;
+		$default_sub->title =  get_string('nocrosssubsub', 'block_exacomp');
+		$subjects[] = $default_sub;
+		
+		$subjects = array_merge($subjects, block_exacomp_get_subjects_by_course ( $courseid ));
+		
+		return $subjects;
+	}
+	
+	public static function dakora_get_subjects_returns(){
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'id' => new external_value ( PARAM_INT, 'id of subject' ),
+				'title' => new external_value (PARAM_TEXT, 'title of subject')
+		) ) );
+	}
+	
+	public static function dakora_get_students_for_cross_subject_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
+				'crosssubjid' => new external_value ( PARAM_INT, 'id of crossssubj')
+		) );
+	}
+
+	public static function dakora_get_students_for_cross_subject($courseid, $crosssubjid) {
+		global $DB;
+		static::validate_parameters ( static::dakora_get_students_for_cross_subject_parameters (), array (
+				'courseid'=>$courseid,
+				'crosssubjid'=>$crosssubjid
+			) );
+
+		static::require_can_access_course($courseid);
+		block_exacomp_require_teacher($courseid);
+		
+		$crosssub = $DB->get_record(\block_exacomp\DB_CROSSSUBJECTS, array('id'=>$crosssubjid));
+		$students = block_exacomp_get_students_for_crosssubject($courseid, $crosssub);
+		
+		$coursestudents = static::dakora_get_students_for_course($courseid);
+		foreach($coursestudents as $student){
+			if(array_key_exists($student->id, $students))
+				$student->visible = 1;
+			else
+				$student->visible = 0;
+		}
+		
+		$return = new stdClass();
+		$return->students = $coursestudents;
+		$return->visible_forall = $crosssub->shared;
+		
+		return $return;
+	}
+
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_students_for_cross_subject_returns() {
+		return new external_single_structure ( array (
+			'students' => new external_multiple_structure ( new external_single_structure ( array (
+					'id' => new external_value ( PARAM_INT, 'id of student' ),
+					'firstname' => new external_value ( PARAM_TEXT, 'firstname of student' ),
+					'lastname' => new external_value ( PARAM_TEXT, 'lastname of student'),
+					'visible' => new external_value ( PARAM_INT, 'visibility of crosssubject to student')
+			) ) ) ,
+			'visible_forall' => new external_value (PARAM_INT, 'visibility of crosssubject to all students')
+			) );
+	}
+	
+	public static function dakora_set_cross_subject_student_parameters(){
+		return new external_function_parameters ( array (
+				'courseid' => new external_value (PARAM_INT, 'id of course'),
+				'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject'),
+				'userid' => new external_value (PARAM_TEXT, 'title of crosssubject'),
+				'value' => new external_value ( PARAM_INT, 'value 0 or 1')
+		) );
+	}
+
+	public static function dakora_set_cross_subject_student($courseid, $crosssubjid, $userid, $value){
+		global $USER, $DB;
+		static::validate_parameters ( static::dakora_set_cross_subject_student_parameters(), array (
+				'courseid' => $courseid,
+				'crosssubjid' => $crosssubjid,
+				'userid' => $userid,
+				'value' => $value
+		) );
+	
+		static::require_can_access_course($courseid);
+		block_exacomp_require_teacher($courseid);
+		
+		if($userid == 0){
+			$crosssub = $DB->get_record(\block_exacomp\DB_CROSSSUBJECTS, array('id'=>$crosssubjid));
+			if($crosssub->shared != $value){
+				$crosssub->shared = $value;
+				$DB->update_record(\block_exacomp\DB_CROSSSUBJECTS, $crosssub);
+			}
+			return array('success'=>true);
+		}
+		
+		if(block_exacomp_student_crosssubj($crosssubjid, $userid) && $value == 0){
+			$DB->delete_records(\block_exacomp\DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid, 'studentid'=>$userid));
+			return array('success'=>true);
+		}
+		
+		if(!block_exacomp_student_crosssubj($crosssubjid, $userid) && $value == 1){
+			$insert = new stdClass();
+			$insert->studentid = $userid;
+			$insert->crosssubjid = $crosssubjid;
+			$DB->insert_record(\block_exacomp\DB_CROSSSTUD, $insert);
+			return array('success'=>true);
+		}
+		
+		if(block_exacomp_student_crosssubj($crosssubjid, $userid) && $value == 1 || !block_exacomp_student_crosssubj($crosssubjid, $userid) && $value == 0)
+			return array('success' => true);
+		
+		return array('success'=>false);
+	}
+	
+	public static function dakora_set_cross_subject_student_returns(){
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
+		) );
+	}
+
+	public static function dakora_set_cross_subject_descriptor_parameters(){
+		return new external_function_parameters ( array (
+				'courseid' => new external_value (PARAM_INT, 'id of course'),
+				'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject'),
+				'descriptorid' => new external_value (PARAM_TEXT, 'title of crosssubject'),
+				'value' => new external_value ( PARAM_INT, 'value 0 or 1')
+		) );
+	}
+
+	public static function dakora_set_cross_subject_descriptor($courseid, $crosssubjid, $descriptorid, $value){
+		global $USER, $DB;
+		static::validate_parameters ( static::dakora_set_cross_subject_descriptor_parameters(), array (
+				'courseid' => $courseid,
+				'crosssubjid' => $crosssubjid,
+				'descriptorid' => $descriptorid,
+				'value' => $value
+		) );
+	
+		static::require_can_access_course($courseid);
+		block_exacomp_require_teacher($courseid);
+		
+		if($value == 1){
+			block_exacomp_set_cross_subject_descriptor($crosssubjid, $descriptorid);
+			return array('success'=>true);
+		}
+		
+		if($value == 0){
+			block_exacomp_unset_cross_subject_descriptor($crosssubjid, $descriptorid);
+			return array('success'=>true);
+		}
+		return array('success'=>false);
+	}
+	
+	public static function dakora_set_cross_subject_descriptor_returns(){
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
+		) );
+	}
 	/**
 	* helper function to use same code for 2 ws
 	*/
