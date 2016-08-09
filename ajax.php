@@ -263,6 +263,10 @@ switch($action){
 		
 		block_exacomp_remove_example_from_schedule($scheduleid);
 		break;
+	case 'copy-example-from-schedule':
+		$scheduleid = required_param('scheduleid', PARAM_INT);
+		block_exacomp_copy_example_from_schedule($scheduleid);
+		break;
 	case 'get-examples-for-start-end':
 		$studentid = required_param('studentid', PARAM_INT);
 		if(!$studentid) $studentid = $USER->id;

@@ -5840,6 +5840,19 @@ function block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted
 
 	$DB->update_record(\block_exacomp\DB_SCHEDULE, $entry);
 }
+function block_exacomp_copy_example_from_schedule($scheduleid){
+	global $DB, $USER;
+
+	$entry = $DB->get_record(\block_exacomp\DB_SCHEDULE, array('id' => $scheduleid));
+	if($entry->studentid != $USER->id)
+		block_exacomp_require_teacher($entry->courseid);
+
+	unset($entry->id);
+	unset($entry->start);
+	unset($entry->end);
+	
+	$DB->insert_record(\block_exacomp\DB_SCHEDULE, $entry);
+}
 
 function block_exacomp_remove_example_from_schedule($scheduleid){
 	global $DB, $USER;
@@ -5913,6 +5926,8 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true){
 		$example_array['studentid'] = $example->studentid;
 		$example_array['courseid'] = $example->courseid;
 		$example_array['scheduleid'] = $example->scheduleid;
+		$example_array['copy_url'] = $OUTPUT->pix_icon("e/copy", get_string('copy'));
+		
 		$img = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/assoc_icon.png'), 'alt'=>get_string("competence_associations", "block_exacomp"), 'height'=>16, 'width'=>16));
 
 		$example_array['assoc_url'] = html_writer::link(
