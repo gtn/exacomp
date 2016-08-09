@@ -380,7 +380,7 @@
 					((event.externalurl != null) ? '	<div class="event-task">'+event.externalurl+'</div>' : '' )+
 					((event.task != null) ? '	<div class="event-task">'+event.task+'</div>' : '' )+
 					((event.submission_url != null) ? '	<div class="event-submission">'+event.submission_url+'</div>' : '' )+
-					'	<div class="event-copy">'+'<a href="#" id="event-copy" exa-scheduleid="1">' + event.copy_url + '</a>'+'</div>'+
+					'	<div class="event-copy">'+'<a href="#" id="event-copy" exa-scheduleid="'+event.scheduleid+'">' + event.copy_url + '</a>'+'</div>'+
 					'</div>');
 				
 				$(element).addTouch();
