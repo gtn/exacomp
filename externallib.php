@@ -5442,19 +5442,24 @@ class block_exacomp_external extends external_api {
 				'courseid' => new external_value (PARAM_INT, 'id of course'),
 				'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject'),
 				'userid' => new external_value (PARAM_TEXT, 'title of crosssubject'),
+				'forall' => new external_value (PARAM_INT, '0 or 1'),
 				'value' => new external_value ( PARAM_INT, 'value 0 or 1')
 		) );
 	}
 
-	public static function dakora_set_cross_subject_student($courseid, $crosssubjid, $userid, $value){
+	public static function dakora_set_cross_subject_student($courseid, $crosssubjid, $userid, $forall, $value){
 		global $USER, $DB;
 		static::validate_parameters ( static::dakora_set_cross_subject_student_parameters(), array (
 				'courseid' => $courseid,
 				'crosssubjid' => $crosssubjid,
 				'userid' => $userid,
+				'forall' => $forall,
 				'value' => $value
 		) );
 	
+		if($userid == 0 && !$forall)
+			$userid = $USER->id;
+		
 		static::require_can_access_course($courseid);
 		block_exacomp_require_teacher($courseid);
 		
