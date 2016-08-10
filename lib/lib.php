@@ -5938,6 +5938,8 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true){
 		$example_array['end'] = $example->end;
 		$example_array['exampleid'] = $example->exampleid;
 		$example_array['niveau'] = isset($example->niveau) ? $example->niveau : null;
+		$example_array['description'] = ($example->description)?$example->description:"";
+		
 		
 		if($mind_eval){
 			$example_array['student_evaluation'] = $example->student_evaluation;
