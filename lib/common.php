@@ -65,6 +65,12 @@ class url extends \moodle_url {
 
 		return $this->params;
 	}
+
+	static function request_uri() {
+		global $CFG;
+
+		return new static(preg_replace('!^'.preg_quote(parse_url($CFG->wwwroot)['path'], '!').'!', '', $_SERVER['REQUEST_URI']));
+	}
 }
 
 abstract class event extends \core\event\base {
