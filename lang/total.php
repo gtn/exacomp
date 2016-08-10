@@ -322,6 +322,14 @@ return  [
 		'Zeitlichen Ablauf des Kompetenzerwerbes im Profil anzeigen',
 		'Chronological sequence of gained outcomes',
 	],
+	'settings_periods' => [
+		'Einträge für Zeittafel',
+		'Timetable entries'
+	],
+	'settings_periods_description' => [
+		'Der Wochenplan ist flexibel an jedes Stunden- und Pausenraster anpassbar. Verwenden Sie im Textblock für jeden Zeitblock eine neue Zeile. Es sind beliebige Texteinträge erlaubt, z.B. "1. Std" oder "07:30 - 09:00".',
+		'Weekly schedule can be adapted to any timetable. Use one row in the text area for each time entry. You can use any format you like, e.g. "1st hour" or "07:30 - 09:00".'	
+	],
 	'timeline_teacher' => [
 		'L',				
 		'T',
