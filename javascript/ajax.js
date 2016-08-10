@@ -969,6 +969,9 @@
 			schedule.click(function () {return false;});
 			preplanning.click(function () {return false;});
 			
+			schedule.children().prop("title", M.util.get_string('weekly_schedule_disabled','block_exacomp'));
+			preplanning.children().prop("title", M.util.get_string('pre_planning_storage_disabled','block_exacomp'));
+			
 			//only for competence grid
 			var link = $('#competence-grid-link-'+exampleid);
 			if(link) {
@@ -991,6 +994,9 @@
 			
 			schedule.unbind('click');
 			preplanning.unbind('click');
+			
+			schedule.children().prop("title", M.util.get_string('weekly_schedule','block_exacomp'));
+			preplanning.children().prop("title", M.util.get_string('pre_planning_storage','block_exacomp'));
 			
 			//only for competence grid
 			var link = $('#competence-grid-link-'+exampleid);

@@ -1655,7 +1655,7 @@ return  [
 	],
 	'pre_planning_storage' => [
 		'Vorplanungsspeicher',
-		'pre-planning storage',
+		'Pre-planning storage',
 	],
 	'pre_planning_storage_added' => [
 		'Lernmaterial wurde zum Vorplanungsspeicher hinzugefügt.',
@@ -1700,6 +1700,14 @@ return  [
 	'blocking_event_create' => [
 		'Zum Vorplanungsspeicher hinzufügen',
 		'Add to pre-planning storage',
+	],
+	'weekly_schedule_disabled' => [
+		'Lernmaterial ist versteckt und kann nicht auf Wochenplan gelegt werden.',
+		'Hidden example can not be added to weekly schedule'
+	],
+	'pre_planning_storage_disabled' => [
+		'Lernmaterial ist versteckt und kann nicht in den Vorplanungsspeicher gelegt werden.',
+		'Hidden example can not be added to pre-planning storage.'
 	],
 
 

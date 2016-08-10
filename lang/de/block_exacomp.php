@@ -502,6 +502,8 @@ $string['to_weekly_schedule'] = 'Zum Wochenplan';
 $string['blocking_event'] = 'Sperrelement erstellen';
 $string['blocking_event_title'] = 'Titel';
 $string['blocking_event_create'] = 'Zum Vorplanungsspeicher hinzufügen';
+$string['weekly_schedule_disabled'] = 'Lernmaterial ist versteckt und kann nicht auf Wochenplan gelegt werden.';
+$string['pre_planning_storage_disabled'] = 'Lernmaterial ist versteckt und kann nicht in den Vorplanungsspeicher gelegt werden.';
 
 
 // === Notifications ===

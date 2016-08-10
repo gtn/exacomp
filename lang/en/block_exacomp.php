@@ -488,7 +488,7 @@ $string['choosecourse'] = 'Select course: ';
 $string['weekly_schedule_added_all'] = 'Example added to the weekly schedule of all students.';
 $string['weekly_schedule_already_existing_for_one'] = 'Example has already been added to at least one student\'s weekly schedule.';
 $string['weekly_schedule_link_to_grid'] = 'For adding examples to the schedule, please use the overview';
-$string['pre_planning_storage'] = 'pre-planning storage';
+$string['pre_planning_storage'] = 'Pre-planning storage';
 $string['pre_planning_storage_added'] = 'Example added to the pre-planning storage.';
 $string['pre_planning_storage_already_contains'] = 'Example is already in pre-planning storage.';
 $string['save_pre_planning_selection'] = 'Add selected examples to weekly schedule of selected students';
@@ -500,6 +500,8 @@ $string['to_weekly_schedule'] = 'To weekly schedule';
 $string['blocking_event'] = 'Create blocking event';
 $string['blocking_event_title'] = 'title';
 $string['blocking_event_create'] = 'Add to pre-planning storage';
+$string['weekly_schedule_disabled'] = 'Hidden example can not be added to weekly schedule';
+$string['pre_planning_storage_disabled'] = 'Hidden example can not be added to pre-planning storage.';
 
 
 // === Notifications ===
