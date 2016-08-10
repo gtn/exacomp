@@ -6038,7 +6038,7 @@ function block_exacomp_build_json_time_slots($date = null){
 		//only write at the begin of every unit
 		if($i%4 == 0){
 			$entry['name'] = ($i/4 + 1) . '. Einheit';
-			$entry['time'] = ($timeentries[$i/4])?$timeentries[$i/4]:'';
+			$entry['time'] = (isset($timeentries[$i/4]))?$timeentries[$i/4]:'';
 		}
 		else{
 			$entry['name'] = '';
