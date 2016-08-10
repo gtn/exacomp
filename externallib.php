@@ -3753,7 +3753,14 @@ class block_exacomp_external extends external_api {
 		$interval = (get_config("exacomp","scheduleinterval")) ? get_config("exacomp","scheduleinterval") : 50;
 		$time =  (get_config("exacomp","schedulebegin")) ? get_config("exacomp","schedulebegin") : "07:45";
 
-		return array("units" => $units, "interval" => $interval, "begin" => $time);
+		$periods = block_exacomp_get_timetable_entries();
+		$periods_return = array();
+		foreach($periods as $period){
+			$period_return = new stdClass();
+			$period_return->title = $period;
+			$periods_return[] = $period_return;
+		}
+		return array("units" => $units, "interval" => $interval, "begin" => $time, "periods"=>$periods_return);
 	}
 
 	/**
@@ -3765,7 +3772,10 @@ class block_exacomp_external extends external_api {
 		return new external_single_structure ( array (
 						'units' => new external_value ( PARAM_INT, 'number of units per day' ),
 						'interval' => new external_value ( PARAM_TEXT, 'duration of unit in minutes' ),
-						'begin' => new external_value ( PARAM_TEXT, 'begin time for the first unit, format hh:mm')
+						'begin' => new external_value ( PARAM_TEXT, 'begin time for the first unit, format hh:mm'),
+						'periods' => new external_multiple_structure ( new external_single_structure ( array (
+							'title' => new external_value ( PARAM_TEXT, 'id of example' )
+						)))
 				));
 	}
 
