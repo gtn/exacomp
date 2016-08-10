@@ -5025,8 +5025,12 @@ var dataset = dataset.map(function (group) {
 		return html_writer::table($table);
 	}
 	public function example_pool($examples=array()){
-		$content = html_writer::tag('h4', get_string('example_pool', 'block_exacomp'));
-	
+		$studentid = block_exacomp_get_studentid();
+		if($studentid > 0)
+			$content = html_writer::tag('h4', get_string('example_pool', 'block_exacomp'));
+		else 
+			$content = html_writer::tag('h4', get_string('pre_planning_storage', 'block_exacomp'));
+				
 		foreach($examples as $example){
 			$content .= html_writer::div($example->title, 'fc-event', array('exampleid'=>$example->exampleid));
 		}

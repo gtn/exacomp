@@ -41,6 +41,16 @@
 		exacomp_calendar_copy_event($(this).attr("exa-scheduleid"));
 	});
 	
+	$(document).on('click', '#add-examples-to-schedule-for-all', function(event) {
+        if (confirm(M.util.get_string('add_example_for_all_students_to_schedule_confirmation', 'block_exacomp'))) {
+            block_exacomp.call_ajax({
+                action : 'add-examples-to-schedule-for-all'
+            }).done(function(msg) {
+                location.reload();
+            });
+        }
+    });
+	
 	function exacomp_calendar_copy_event(scheduleid) {
 		console.log('exacomp_calendar_copy_event', scheduleid);
 		

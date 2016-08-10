@@ -179,7 +179,7 @@ function block_exacomp_init_js_css(){
 		'show', 'hide' //, 'selectall', 'deselectall'
 	], 'moodle');
 	$PAGE->requires->strings_for_js([
-		'override_notice', 'unload_notice', 'example_sorting_notice', 'delete_unconnected_examples', 'value_too_large', 'value_too_low', 'value_not_allowed', 'hide_solution', 'show_solution', 'weekly_schedule', 'pre_planning_storage', 'weekly_schedule_disabled', 'pre_planning_storage_disabled'
+		'override_notice', 'unload_notice', 'example_sorting_notice', 'delete_unconnected_examples', 'value_too_large', 'value_too_low', 'value_not_allowed', 'hide_solution', 'show_solution', 'weekly_schedule', 'pre_planning_storage', 'weekly_schedule_disabled', 'pre_planning_storage_disabled', 'add_example_for_all_students_to_schedule_confirmation'
 	], 'block_exacomp');
 	
 	// page specific js/css
@@ -4765,13 +4765,12 @@ function block_exacomp_get_gridurl_for_example($courseid, $studentid, $exampleid
 	$topic = (reset(reset($tree)->topics));
 	return $CFG->wwwroot.'/blocks/exacomp/assign_competencies.php?courseid='.$courseid . '&studentid='.$studentid . '&subjectid='.$topic->subjid . '&topicid='.$topic->id;
 }
-function block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid) {
+function block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid,$start=null,$end=null) {
 	global $USER, $DB;
 
 	$timecreated = $timemodified = time();
 
-	$DB->insert_record(\block_exacomp\DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid,'creatorid' => $creatorid, 'timecreated' => $timecreated, 'timemodified' => $timemodified));
-
+	$DB->insert_record(\block_exacomp\DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid,'creatorid' => $creatorid, 'timecreated' => $timecreated, 'timemodified' => $timemodified, 'start' => $start,'end' => $end));
 	//only send a notification if a teacher adds an example for a student and not for pre planning storage
 	if($creatorid != $studentid && $studentid >0)
 		block_exacomp_send_weekly_schedule_notification($USER,$DB->get_record('user', array('id' => $studentid)), $courseid, $exampleid);
@@ -4780,7 +4779,23 @@ function block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,
 
 	return true;
 }
+function block_exacomp_add_examples_to_schedule_for_all($courseid) {
+	// Check Permission
+	block_exacomp_require_teacher($courseid);
+	// Get all examples to add:
+	//    -> studentid 0: on teachers schedule
+	$examples = g::$DB->get_records_select(block_exacomp\DB_SCHEDULE, "studentid = 0 AND courseid = ? AND start IS NOT NULL AND end IS NOT NULL", array($courseid));
+	// Get all students for the given course
+	$students = block_exacomp_get_students_by_course($courseid);
+	// Add examples for all users
+	foreach($examples as $example)
+		foreach($students as $student)
+			block_exacomp_add_example_to_schedule($student->id, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->end);
 
+			// Delete records from the teacher's schedule
+			g::$DB->delete_records_list(block_exacomp\DB_SCHEDULE, 'id', array_keys($examples));
+			return true;
+}
 function block_exacomp_add_days($date, $days) {
 	return mktime(0,0,0,date('m', $date), date('d', $date)+$days, date('Y', $date));
 }

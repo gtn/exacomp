@@ -489,7 +489,7 @@ $string['example_trash'] = 'Papierkorb';
 $string['choosecourse'] = 'Kurs auswählen: ';
 $string['weekly_schedule_added_all'] = 'Die Aufgabe wurde bei allen Kursteilnehmer/innen auf den Planungsspeicher im Wochenplan gelegt.';
 $string['weekly_schedule_already_existing_for_one'] = 'Die Aufgabe ist bei mindestens einem Schüler bereits im Planungsspeicher im Wochenplan.';
-$string['weekly_schedule_link_to_grid'] = 'Um den Wochenplan zu befüllen in den Kompetenzraster wechseln';
+$string['weekly_schedule_link_to_grid'] = 'Um den Planungsspeicher zu befüllen in den Kompetenzraster wechseln';
 $string['pre_planning_storage'] = 'Vorplanungsspeicher';
 $string['pre_planning_storage_added'] = 'Lernmaterial wurde zum Vorplanungsspeicher hinzugefügt.';
 $string['pre_planning_storage_already_contains'] = 'Lernmateriel bereits im Vorplanungsspeicher enthalten.';
@@ -504,7 +504,8 @@ $string['blocking_event_title'] = 'Titel';
 $string['blocking_event_create'] = 'Zum Vorplanungsspeicher hinzufügen';
 $string['weekly_schedule_disabled'] = 'Lernmaterial ist versteckt und kann nicht auf Wochenplan gelegt werden.';
 $string['pre_planning_storage_disabled'] = 'Lernmaterial ist versteckt und kann nicht in den Vorplanungsspeicher gelegt werden.';
-
+$string['add_example_for_all_students_to_schedule'] = 'Achtung: Sie sind dabei Lernmaterialien für alle Schüler auf deren Wochenplan zu legen. Dafür ist eine zusätzliche Bestätigung notwendig. Etwaige Änderungen können danach nur mehr auf den individuellen Plänen der jeweiligen Schüler vorgenommen werden.';
+$string['add_example_for_all_students_to_schedule_confirmation'] = 'Sind Sie sicher, dass Sie die Lernmaterialien für alle Schüler auf den Wochenplan legen möchten?';
 
 // === Notifications ===
 $string['notification_submission_subject'] = '{$a->site}: {$a->student} hat eine Lösung zum Lernmaterial {$a->example} eingereicht';

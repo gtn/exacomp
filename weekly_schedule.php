@@ -80,19 +80,8 @@ echo $output->header($context, $courseid, $page_identifier);
 
 /* CONTENT REGION */
 if($isTeacher){
-	if(!$student) {
-		echo html_writer::tag("p", get_string("select_student_weekly_schedule","block_exacomp"));
-		
-		//print student selector
-		echo get_string("choosestudent","block_exacomp");
-		echo $output->studentselector($coursestudents, 0);
-		echo $OUTPUT->footer();
-		die;
-	}else{
-		//print student selector
-		echo get_string("choosestudent","block_exacomp");
-		echo $output->studentselector($coursestudents, $student->id);
-	}
+	echo get_string("choosestudent","block_exacomp");
+	echo $output->studentselector($coursestudents, ($student) ? $student->id : 0, 2);
 } else {
 	echo html_writer::tag("input", null, array("type" => "hidden", "value" => $student->id, "id" => "menuexacomp_competence_grid_select_student"));
 }
@@ -102,6 +91,11 @@ echo $output->course_dropdown($selectedCourse);
 
 echo $OUTPUT->box(get_string('weekly_schedule_link_to_grid','block_exacomp'));
 
+if($studentid == 0) {
+	echo html_writer::div(get_string('add_example_for_all_students_to_schedule','block_exacomp') .
+				html_writer::tag("input", "", array("id"=>"add-examples-to-schedule-for-all", "name" => "add-examples-to-schedule-for-all", "type" => "submit", "value" => get_string("save_selection", "block_exacomp")))
+			,"alert alert-warning");
+}
 echo $output->side_wrap_weekly_schedule();
 
 /* END CONTENT REGION */

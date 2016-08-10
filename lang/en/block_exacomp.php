@@ -502,7 +502,8 @@ $string['blocking_event_title'] = 'title';
 $string['blocking_event_create'] = 'Add to pre-planning storage';
 $string['weekly_schedule_disabled'] = 'Hidden example can not be added to weekly schedule';
 $string['pre_planning_storage_disabled'] = 'Hidden example can not be added to pre-planning storage.';
-
+$string['add_example_for_all_students_to_schedule'] = 'Attention: Here you can add examples to the schedules of all students. This requires extra confirmation.';
+$string['add_example_for_all_students_to_schedule_confirmation'] = 'You are about to add the examples to the schedules of all students, do you want to continue?';
 
 // === Notifications ===
 $string['notification_submission_subject'] = '{$a->site}: {$a->student} submitted a solution for {$a->example}';

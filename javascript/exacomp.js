@@ -71,7 +71,7 @@ window.block_exacomp = $E = {
 	get_studentid: function() {
 		studentid = $E.get_param('studentid');
 		
-		if(studentid === null)
+		if(studentid === null || studentid == -5)
 			studentid = $( "#menuexacomp_competence_grid_select_student" ).val();
 		
 		return studentid;
