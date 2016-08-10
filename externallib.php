@@ -5479,6 +5479,9 @@ class block_exacomp_external extends external_api {
 				$crosssub->shared = $value;
 				$DB->update_record(\block_exacomp\DB_CROSSSUBJECTS, $crosssub);
 			}
+			
+			$DB->delete_records(\block_exacomp\DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid));
+
 			return array('success'=>true);
 		}
 		
