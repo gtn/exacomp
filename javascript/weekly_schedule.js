@@ -425,7 +425,7 @@
 				var i = 0, einheit = 0;
 				element.find('.fc-time').each(function(){
 					var slot = exacomp_calcendar_config.slots[i];
-					this.innerHTML = '<span>'+(slot.name ? '<b>' + slot.name + '</b><br />' : '')
+					this.innerHTML = '<span>'+(slot.name ? '<b>' + slot.name + '</b><br />' + slot.time : '')
 						+ '<span style="font-size: 85%">'+'</span>'+'</span>';
 					i++;
 					if (slot.name) einheit++;

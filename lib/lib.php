@@ -254,6 +254,11 @@ function block_exacomp_additional_grading(){
 	return get_config('exacomp', 'additional_grading');
 }
 
+function block_exacomp_get_timetable_entries(){
+	$content = get_config('exacomp', 'periods');
+	return explode("\n", $content);
+}
+
 /**
  * 
  * @param courseid or context $context
@@ -6003,6 +6008,7 @@ function block_exacomp_build_json_time_slots($date = null){
 
 	$slots = array();
 
+	$timeentries = block_exacomp_get_timetable_entries();
 	/*
 	 * Split every unit into 4 pieces
 	 */
@@ -6011,11 +6017,14 @@ function block_exacomp_build_json_time_slots($date = null){
 		$entry = array();
 
 		//only write at the begin of every unit
-		if($i%4 == 0)
+		if($i%4 == 0){
 			$entry['name'] = ($i/4 + 1) . '. Einheit';
-		else
+			$entry['time'] = ($timeentries[$i/4])?$timeentries[$i/4]:'';
+		}
+		else{
 			$entry['name'] = '';
-
+			$entry['time'] = '';
+		}
 		$entry['start'] = block_exacomp_parse_seconds_to_timestring($secTime);
 		if ($date) {
 			$entry['start_time'] = $date + $secTime;
