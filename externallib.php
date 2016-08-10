@@ -2387,7 +2387,7 @@ class block_exacomp_external extends external_api {
 					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of child'),
 					'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 					'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-					'examplesinwork' => new external_value (PARAM_FLOAT, 'edited number of material'),
+					'examplesinwork' => new external_value (PARAM_INT, 'edited number of material'),
 					'visible' => new external_value (PARAM_INT, 'visibility of child'),
 					'used' => new external_value ( PARAM_INT, 'used in current context')
 			) ) ) ,
@@ -2400,7 +2400,7 @@ class block_exacomp_external extends external_api {
 			) ) ) ,
 			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
 			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
-			'examplesinwork' => new external_value (PARAM_FLOAT, 'number of examples in work')
+			'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work')
 		) ) ;
 	}
 
@@ -3113,7 +3113,7 @@ class block_exacomp_external extends external_api {
 				'userid'=>$userid
 			) );
 
-		if($userid == 0)
+		if($userid == 0 && !block_exacomp_is_teacher($courseid))
 			$userid = $USER->id;
 
 		static::require_can_access_course_user($courseid, $userid);
@@ -3346,13 +3346,13 @@ class block_exacomp_external extends external_api {
 				'end'=>$end
 			) );
 
-		if($userid == 0)
+		if($userid == 0 && !block_exacomp_is_teacher()) {
 			$userid = $USER->id;
-
-		static::require_can_access_user($userid);
-
+            
+		  static::require_can_access_user($userid);
+        }
 		$examples = block_exacomp_get_examples_for_start_end_all_courses($userid, $start, $end);
-
+        
 		foreach($examples as $example){
 			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
 
@@ -3645,7 +3645,7 @@ class block_exacomp_external extends external_api {
 					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of children'),
 					'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 					'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-					'examplesinwork' => new external_value (PARAM_FLOAT, 'edited number of material'),
+					'examplesinwork' => new external_value (PARAM_INT, 'edited number of material'),
 					'visible' => new external_value (PARAM_INT, 'visibility of child in current context'),
 					'used' => new external_value (PARAM_INT, 'used in current context')
 			) ) ) ,
@@ -3658,7 +3658,7 @@ class block_exacomp_external extends external_api {
 			) ) ),
 			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
 			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
-			'examplesinwork' => new external_value (PARAM_FLOAT, 'number of examples in work')
+			'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work')
 		) ) ;
 	}
 	/**
@@ -3716,7 +3716,7 @@ class block_exacomp_external extends external_api {
 					'hasmaterial' => new external_value ( PARAM_BOOL, 'true or false if child has materials'),
 					'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 					'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-					'examplesinwork' => new external_value (PARAM_FLOAT, 'edited number of material'),
+					'examplesinwork' => new external_value (PARAM_INT, 'edited number of material'),
 					'visible' => new external_value (PARAM_INT, 'visibility of children in current context'),
 					'used' => new external_value ( PARAM_INT, 'used in current context')
 			) ) ) ,
@@ -3729,7 +3729,7 @@ class block_exacomp_external extends external_api {
 			) ) ),
 			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
 			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
-			'examplesinwork' => new external_value (PARAM_FLOAT, 'number of examples in work')
+			'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work')
 		) ) ;
 	}
 
@@ -4433,6 +4433,7 @@ class block_exacomp_external extends external_api {
 			if($example->studentevaluation > -1)
 				$examples_studentevaluation[$example->studentevaluation]++;
 			
+			$example->id  = $example->exampleid;
 			$solution_visible = block_exacomp_is_example_solution_visible($courseid, $example, $userid);
 			$example->solution_visible = $solution_visible;
 		}
@@ -4495,11 +4496,11 @@ class block_exacomp_external extends external_api {
 								'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context')
 						) ) ),
 						'examplestotal' => new external_value ( PARAM_INT, 'total number of material' ),
-						'examplesvisible' => new external_value ( PARAM_FLOAT, 'visible number of material' ),
-						'examplesinwork' => new external_value ( PARAM_FLOAT, 'number of material in work' ),
+						'examplesvisible' => new external_value ( PARAM_INT, 'visible number of material' ),
+						'examplesinwork' => new external_value ( PARAM_INT, 'number of material in work' ),
 						'visible' => new external_value(PARAM_INT, 'visibility of children in current context'),
 						'used' => new external_value ( PARAM_INT, 'used in current context'),
-						'examplesedited' => new external_value ( PARAM_FLOAT, 'number of edited material' ),
+						'examplesedited' => new external_value ( PARAM_INT, 'number of edited material' ),
 						'examplegradings' => new external_single_structure ( array (
 								'teacher' => new external_multiple_structure ( new external_single_structure ( array (
 										'sum' => new external_value ( PARAM_INT, 'number of gradings' )
@@ -4529,9 +4530,9 @@ class block_exacomp_external extends external_api {
 						'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context')
 				) ) ),
 				'examplestotal' => new external_value ( PARAM_INT, 'total number of material' ),
-				'examplesvisible' => new external_value ( PARAM_FLOAT, 'visible number of material' ),
-				'examplesinwork' => new external_value ( PARAM_FLOAT, 'number of material in work' ),
-				'examplesedited' => new external_value ( PARAM_FLOAT, 'number of edited material' ),
+				'examplesvisible' => new external_value ( PARAM_INT, 'visible number of material' ),
+				'examplesinwork' => new external_value ( PARAM_INT, 'number of material in work' ),
+				'examplesedited' => new external_value ( PARAM_INT, 'number of edited material' ),
 				'examplegradings' => new external_single_structure ( array (
 						'teacher' => new external_multiple_structure ( new external_single_structure ( array (
 								'sum' => new external_value ( PARAM_INT, 'number of gradings' )
@@ -5481,7 +5482,6 @@ class block_exacomp_external extends external_api {
 			}
 			
 			$DB->delete_records(\block_exacomp\DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid));
-
 			return array('success'=>true);
 		}
 		
@@ -5896,11 +5896,11 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 		else
 			static::require_can_access_course_user($courseid, $userid);
 
-		list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork, $totalHidden, $edited) = block_exacomp_get_example_statistic_for_descriptor($courseid, $descriptorid, $userid, $crosssubjid);
+		list($total, $gradings, $notevaluated, $inwork, $totalgrade, $notinwork, $hidden, $edited, $evaluated, $visible) = block_exacomp_get_example_statistic_for_descriptor_refact($courseid, $descriptorid, $userid, $crosssubjid);
 
 		$return->total = $total;
-		$return->visible = $totalHidden;
-		$return->inwork = ($inWork>0)?$inWork :0;
+		$return->visible = $visible;
+		$return->inwork = $inwork;
 		$return->edited = $edited ;
 		return $return;
 	}

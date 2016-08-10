@@ -5631,6 +5631,117 @@ function block_exacomp_get_example_statistic_for_crosssubject($courseid, $crosss
 
 	return array($total, $gradings, $notEvaluated, $inWork,$totalGrade);
 }
+function block_exacomp_get_example_statistic_for_descriptor_refact($courseid, $descrid, $studentid, $crosssubjid = 0) {
+	global $DB;
+
+	//get descriptor from id
+	$descriptor = $DB->get_record(\block_exacomp\DB_DESCRIPTORS,array("id" => $descrid));
+	//get examples for descriptor
+	$descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
+
+	//check if descriptor is associated if crosssubject is given - if not examples are not included in crosssubject
+	$crosssubjdescriptos = array();
+	if($crosssubjid > 0)
+		$crosssubjdescriptos = block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid);
+
+	if($studentid > 0){
+		$students = block_exacomp_get_students_by_course($courseid);
+		$student = $students[$studentid];
+		$student = block_exacomp_get_user_information_by_course($student, $courseid);
+	}
+	//define values to be returned
+	$total = 0; //total number of examples associated with descriptor
+	$hidden = 0; //number of examples visible for student
+	$visible = 0; //number of examples visible to user
+
+	$inwork = 0; //number of examples in work (on schedule or pool)
+	$notinwork = 0; //number of examples not in work (not on schedule or pool)
+	$edited = 0; //number of examples were a submission or evaluation exists
+
+	$evaluated = 0;
+	$notevaluated = 0; //number of examples not evaluated
+
+	$gradings = array(); //array[niveauid][value][number of examples evaluated with this value and niveau]
+	//create grading statistic
+	$scheme_items = \block_exacomp\global_config::get_value_titles(block_exacomp_get_grading_scheme($courseid));
+	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
+
+	if(block_exacomp_use_eval_niveau())
+		foreach($evaluationniveau_items as $niveaukey => $niveauitem){
+			$gradings[$niveaukey] = array();
+			foreach($scheme_items as $schemekey => $schemetitle){
+				$gradings[$niveaukey][$schemekey] = 0;
+			}
+		}
+	else 
+		foreach($scheme_items as $key => $title){
+			$gradings[$key] = 0;
+		}
+	
+	$totalgrade = 0; //TODO still needed?
+
+	//calculate statistic
+	if($crosssubjid == 0 || array_key_exists($descriptor->id, $crosssubjdescriptos)){
+		$total = count($descriptor->examples);
+
+		foreach($descriptor->examples as $example){
+			//count visible examples for this student
+			if(block_exacomp_is_example_visible($courseid, $example, $studentid))
+				$visible++;
+
+				//check if inwork
+				$schedule = $DB->record_exists(\block_exacomp\DB_SCHEDULE, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'studentid'=>$studentid));
+				if($schedule)
+					$inwork++;
+						
+				if($studentid > 0){ //no meaningful numbers if studentid > 0
+					//submission made?
+					$submission_exists = false;
+					if(block_exacomp_exaportexists()){
+						$sql = "SELECT * FROM {".\block_exacomp\DB_ITEMEXAMPLE."} ie JOIN {".'block_exaportitem'."} i ON ie.itemid = i.id ".
+								"WHERE ie.exampleid = ? AND i.userid = ? AND i.courseid = ?";
+						$records = $DB->get_records_sql($sql, array($example->id, $studentid, $courseid));
+						if($records)
+							$submission_exists = true;
+					}
+						
+					$teacher_eval_exists = false;
+					$sql = "SELECT * FROM {".\block_exacomp\DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND studentid=? AND teacher_evaluation>=0";
+					$records = $DB->get_records_sql($sql, array($courseid, $example->id, $studentid));
+					if($records) $teacher_eval_exists = true;
+						
+					$student_eval_exists = false;
+					$sql = "SELECT * FROM {".\block_exacomp\DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND studentid = ? AND student_evaluation>=0";
+					$records = $DB->get_records_sql($sql, array($courseid, $example->id, $studentid));
+					if($records) $student_eval_exists = true;
+						
+					if($submission_exists || $teacher_eval_exists || $student_eval_exists)
+						$edited++;
+							
+					if($teacher_eval_exists || $student_eval_exists)
+						$evaluated++;
+							
+						//create grading statistic
+						if(block_exacomp_use_eval_niveau()){
+							if(isset($student->examples->teacher[$example->id]) && isset($student->examples->niveau[$example->id]))
+								$gradings[$student->examples->niveau[$example->id]][$student->examples->teacher[$example->id]]++;
+						}else{ 
+							if(isset($student->examples->teacher[$example->id]))
+								$gradings[$student->examples->teacher[$example->id]]++;
+						}
+				}
+		}
+			
+		$hidden = $total - $visible;
+		$notinwork = $total - $inwork;
+		$notevaluated = $total - $evaluated;
+
+	}
+
+	$statistic = array($total, $gradings, $notevaluated, $inwork, $totalgrade, $notinwork, $hidden, $edited, $evaluated, $visible);
+
+	return $statistic;
+}
 function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid, $studentid, $crosssubjid = 0) {
 	global $DB;
 
