@@ -5944,10 +5944,12 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true){
 		if($mind_eval){
 			$example_array['student_evaluation'] = $example->student_evaluation;
 			$example_array['teacher_evaluation'] = $example->teacher_evaluation;
-			//$example_array['additionalinfo'] = '';
-
-			$example_array['student_evaluation_title'] = \block_exacomp\global_config::get_student_value_title_by_id($example->student_evaluation);
-			$example_array['teacher_evaluation_title'] = \block_exacomp\global_config::get_value_title_by_id($example->teacher_evaluation);
+			
+			$student_title = \block_exacomp\global_config::get_student_value_title_by_id($example->student_evaluation);
+			$teacher_title = \block_exacomp\global_config::get_value_title_by_id($example->teacher_evaluation);
+			
+			$example_array['student_evaluation_title'] = (strcmp($student_title, ' ')==0)?'-':$student_title;
+			$example_array['teacher_evaluation_title'] = (strcmp($teacher_title, ' ')==0)?'-':$teacher_title;
 		}
 		if(isset($example->state))
 			$example_array['state'] = $example->state;
