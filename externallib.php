@@ -3316,6 +3316,51 @@ class block_exacomp_external extends external_api {
 		) );
 	}
 
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_add_examples_to_schedule_for_all_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value(PARAM_INT, 'id of course')
+		) );
+	}
+	
+	/**
+	 * remove example from time slot
+	 *
+	 * @param
+	 *
+	 * @return list of descriptors
+	 */
+	public static function dakora_add_examples_to_schedule_for_all($courseid) {
+	
+		static::validate_parameters ( static::dakora_add_examples_to_schedule_for_all_parameters (), array (
+				'courseid' => $courseid
+		) );
+	
+		// permissions are checked in lib.php
+		block_exacomp_add_examples_to_schedule_for_all($courseid);
+	
+		return array (
+				"success" => true
+		);
+	
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_add_examples_to_schedule_for_all_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
+		) );
+	}
+	
 	/**
 	 * Returns description of method parameters
 	 *
@@ -3393,6 +3438,7 @@ class block_exacomp_external extends external_api {
 				'coursefullname' => new external_value (PARAM_TEXT, 'full name of example course')
 		) ) );
 	}
+	
 
 	/**
 	 * Returns description of method parameters
