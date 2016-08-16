@@ -5637,7 +5637,7 @@ function block_exacomp_get_example_statistic_for_descriptor_refact($courseid, $d
 	//get descriptor from id
 	$descriptor = $DB->get_record(\block_exacomp\DB_DESCRIPTORS,array("id" => $descrid));
 	//get examples for descriptor
-	$descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
+	$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(SHOW_ALL_TAXONOMIES), true, $courseid);
 
 	//check if descriptor is associated if crosssubject is given - if not examples are not included in crosssubject
 	$crosssubjdescriptos = array();
