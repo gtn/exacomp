@@ -4453,22 +4453,36 @@ class block_exacomp_external extends external_api {
 
 		// summary for children gradings
 		$grading_scheme = block_exacomp_get_grading_scheme($courseid) + 1;
-		$children_teacherevaluation = array_fill(0,$grading_scheme,0);
+	
+		$number_evalniveaus = 1;
+		if(block_exacomp_use_eval_niveau()){
+			$number_evalniveaus = 4;
+		}
+		
+		$children_teacherevaluation = array();
+		for($i = 0;$i<$number_evalniveaus; $i++){
+			$children_teacherevaluation[$i] = array_fill(0,$grading_scheme,0);
+		}
+		
 		$children_studentevaluation = array_fill(0,$grading_scheme,0);
-
-		//TODO check if this is still valid
+		
 		foreach($childsandexamples->children as $child) {
 			if($child->teacherevaluation > -1)
-				$children_teacherevaluation[$child->teacherevaluation]++;
+				$children_teacherevaluation[($child->evalniveauid>0)?$child->evalniveauid:0][$child->teacherevaluation]++;
 			if($child->studentevaluation > -1)
 				$children_studentevaluation[$child->studentevaluation]++;
 		}
+		
 		$childrengradings = new stdClass();
 		$childrengradings->teacher = array();
 		$childrengradings->student = array();
 
-		foreach($children_teacherevaluation as $key => $value) {
-			$childrengradings->teacher[$key] = array('sum' => $value);
+		
+		foreach($children_teacherevaluation as $niveauid => $gradings) {
+			foreach($gradings as $key => $grading){
+				$childrengradings->teacher[] = array('evalniveauid'=>$niveauid, 'value'=>$key, 'sum' => $grading);
+			}
+			
 		}
 		foreach($children_studentevaluation as $key => $value) {
 			$childrengradings->student[$key] = array('sum' => $value);
@@ -4566,6 +4580,8 @@ class block_exacomp_external extends external_api {
 				) ) ),
 				'childrengradings' => new external_single_structure ( array (
 						'teacher' => new external_multiple_structure ( new external_single_structure ( array (
+								'evalniveauid' => new external_value (PARAM_INT, 'niveau id to according number', 0),
+								'value' => new external_value (PARAM_INT, 'grading value', 0),
 								'sum' => new external_value ( PARAM_INT, 'number of gradings' )
 						) ) ),
 						'student' => new external_multiple_structure ( new external_single_structure ( array (
