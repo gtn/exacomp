@@ -3340,29 +3340,37 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_examples_for_time_slot($userid, $start, $end) {
 		global $USER, $DB;
+		
 		static::validate_parameters ( static::dakora_get_examples_for_time_slot_parameters (), array (
-				'userid'=>$userid,
-				'start'=>$start,
-				'end'=>$end
-			) );
-
-		if($userid == 0 && !block_exacomp_is_teacher()) {
+				'userid' => $userid,
+				'start' => $start,
+				'end' => $end 
+		));
+		
+		$isTeacher = block_exacomp_is_teacher_in_any_course ();
+		
+		if ($userid == 0 && ! $isTeacher)
 			$userid = $USER->id;
-            
-		  static::require_can_access_user($userid);
-        }
-		$examples = block_exacomp_get_examples_for_start_end_all_courses($userid, $start, $end);
-        
-		foreach($examples as $example){
-			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
-
-			$example_course = $DB->get_record('course', array('id'=>$example->courseid));
+		
+		if ($userid != 0)
+			static::require_can_access_user ( $userid );
+		
+		$examples = block_exacomp_get_examples_for_start_end_all_courses ( $userid, $start, $end );
+		
+		foreach ( $examples as $example ) {
+			
+			$example->state = block_exacomp_get_dakora_state_for_example ( $example->courseid, $example->exampleid, $userid );
+			$example_course = $DB->get_record ( 'course', array (
+					'id' => $example->courseid 
+			) );
+			
 			$example->courseshortname = $example_course->shortname;
 			$example->coursefullname = $example_course->fullname;
 		}
-
+		
 		return $examples;
 	}
+	
 
 	/**
 	 * Returns desription of method return values

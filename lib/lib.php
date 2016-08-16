@@ -222,6 +222,18 @@ function block_exacomp_is_teacher($context = null, $userid = null) {
 	$context = block_exacomp_get_context_from_courseid($context);
 	return has_capability('block/exacomp:teacher', $context, $userid);
 }
+
+function block_exacomp_is_teacher_in_any_course() {
+	$courses = block_exacomp_get_courseids();
+
+	foreach($courses as $course) {
+		if(block_exacomp_is_teacher($course))
+			return true;
+	}
+
+	return false;
+}
+
 /**
  * 
  * @param courseid or context $context
@@ -6039,6 +6051,9 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
 }
 
 function block_exacomp_get_examples_for_start_end_all_courses($studentid, $start, $end){
+	if($studentid < 0)
+		$studentid = 0;
+	
 	$courses = block_exacomp_get_courseids();
 	$examples = array();
 	foreach($courses as $course){
