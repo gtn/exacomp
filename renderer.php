@@ -2356,7 +2356,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	public function submission_icon($courseid, $exampleid, $studentid = 0) {
-		if ($this->is_print_mode()) {
+		if ($this->is_print_mode() || !block_exacomp_exaportexists()) {
 			return '';
 		}
 
