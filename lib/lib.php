@@ -6215,15 +6215,17 @@ function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $stud
 		return \block_exacomp\EXAMPLE_STATE_EVALUATED_POSITIV;
 	}
 
-	$sql = "select * FROM {block_exacompitemexample} ie
-			JOIN {block_exaportitem} i ON i.id = ie.itemid
-			WHERE ie.exampleid = ? AND i.userid = ?";
-
-	$items_examp = $DB->get_records_sql($sql,array($exampleid, $studentid));
-
-	if($items_examp || ($comp && $comp->student_evaluation !== null && $comp->student_evaluation > 0))
-		return \block_exacomp\EXAMPLE_STATE_SUBMITTED;
-
+	if(block_exacomp_exaportexists()) {
+		$sql = "select * FROM {block_exacompitemexample} ie
+				JOIN {block_exaportitem} i ON i.id = ie.itemid
+				WHERE ie.exampleid = ? AND i.userid = ?";
+	
+		$items_examp = $DB->get_records_sql($sql,array($exampleid, $studentid));
+	
+		if($items_examp || ($comp && $comp->student_evaluation !== null && $comp->student_evaluation > 0))
+			return \block_exacomp\EXAMPLE_STATE_SUBMITTED;
+	}
+	
 	$schedule = $DB->get_records(\block_exacomp\DB_SCHEDULE, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>$studentid));
 
 	if($schedule){
