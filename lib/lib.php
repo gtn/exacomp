@@ -4273,6 +4273,12 @@ function block_exacomp_edit_crosssub($crosssubjid, $title, $description, $subjec
 	$crosssubj->subjectid = $subjectid;
 	return $DB->update_record(\block_exacomp\DB_CROSSSUBJECTS, $crosssubj);
 }
+function block_exacomp_delete_crosssub($crosssubjid){
+	global $DB;
+	//delete student association if crosssubject is deleted
+	$DB->delete_records(\block_exacomp\DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid));
+	return $DB->delete_records(\block_exacomp\DB_CROSSSUBJECTS, array('id'=>$crosssubjid));
+}
 function block_exacomp_delete_crosssubject_drafts($drafts_to_delete){
 	global $DB;
 	foreach($drafts_to_delete as $draftid){

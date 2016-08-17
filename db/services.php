@@ -113,6 +113,7 @@ call_user_func(function() use (&$functions, &$services) {
 		[ 'dakora_get_students_for_cross_subject', 'read', 'get_students_for_crosssubject'],
 		[ 'dakora_set_cross_subject_student', 'write', 'set visibility for crosssubject and student'],
 		[ 'dakora_set_cross_subject_descriptor', 'write', 'set descriptor crosssubject association'],
+		[ 'dakora_delete_cross_subject', 'write', 'delete cross subject'],
 		[ 'dakora_add_examples_to_schedule_for_all', 'write', 'add examples to the schedules of all course students']
 				
 	];

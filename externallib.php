@@ -5373,6 +5373,36 @@ class block_exacomp_external extends external_api {
 		) );
 	}
 	
+	public static function dakora_delete_cross_subject_parameters(){
+		return new external_function_parameters ( array (
+				'courseid' => new external_value (PARAM_INT, 'id of course'),
+				'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject')
+		) );
+	}
+
+	public static function dakora_delete_cross_subject($courseid, $crosssubjid){
+		global $USER;
+		static::validate_parameters ( static::dakora_delete_cross_subject_parameters(), array (
+				'courseid' => $courseid,
+				'crosssubjid' => $crosssubjid
+		) );
+	
+		$userid = $USER->id;
+	
+		static::require_can_access_course($courseid);
+		
+		block_exacomp_require_teacher($courseid );
+		
+		$return = block_exacomp_delete_crosssub($crosssubjid);
+		return array('success' => $return);
+	}
+	
+	public static function dakora_delete_cross_subject_returns(){
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
+		) );
+	}
+	
 	public static function dakora_edit_cross_subject_parameters(){
 		return new external_function_parameters ( array (
 				'courseid' => new external_value (PARAM_INT, 'id of course'),
