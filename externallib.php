@@ -4492,12 +4492,16 @@ class block_exacomp_external extends external_api {
 		// summary for example gradings
 		$descriptor_return->examples = $childsandexamples->examples;
 
-		$examples_teacherevaluation = array_fill(0,$grading_scheme,0);
+		$examples_teacherevaluation = array();
+		for($i = 0;$i<$number_evalniveaus; $i++){
+			$examples_teacherevaluation[$i] = array_fill(0,$grading_scheme,0);
+		}
+	
 		$examples_studentevaluation = array_fill(0,$grading_scheme,0);
 
 		foreach($childsandexamples->examples as $example) {
 			if($example->teacherevaluation > -1)
-				$examples_teacherevaluation[$example->teacherevaluation]++;
+				$examples_teacherevaluation[($example->evalniveauid>0)?$example->evalniveauid:0][$example->teacherevaluation]++;
 			if($example->studentevaluation > -1)
 				$examples_studentevaluation[$example->studentevaluation]++;
 			
@@ -4509,9 +4513,13 @@ class block_exacomp_external extends external_api {
 		$examplegradings->teacher = array();
 		$examplegradings->student = array();
 
-		foreach($examples_teacherevaluation as $key => $value) {
-			$examplegradings->teacher[$key] = array('sum' => $value);
+		foreach($examples_teacherevaluation as $niveauid => $gradings) {
+			foreach($gradings as $key => $grading){
+				$examplegradings->teacher[] = array('evalniveauid'=>$niveauid, 'value'=>$key, 'sum' => $grading);
+			}
+			
 		}
+	
 		foreach($examples_studentevaluation as $key => $value) {
 			$examplegradings->student[$key] = array('sum' => $value);
 		}
@@ -4571,6 +4579,8 @@ class block_exacomp_external extends external_api {
 						'examplesedited' => new external_value ( PARAM_INT, 'number of edited material' ),
 						'examplegradings' => new external_single_structure ( array (
 								'teacher' => new external_multiple_structure ( new external_single_structure ( array (
+										'evalniveauid' => new external_value (PARAM_INT, 'niveau id to according number', 0),
+										'value' => new external_value (PARAM_INT, 'grading value', 0),
 										'sum' => new external_value ( PARAM_INT, 'number of gradings' )
 								) ) ),
 								'student' => new external_multiple_structure ( new external_single_structure ( array (
@@ -4605,6 +4615,8 @@ class block_exacomp_external extends external_api {
 				'examplesedited' => new external_value ( PARAM_INT, 'number of edited material' ),
 				'examplegradings' => new external_single_structure ( array (
 						'teacher' => new external_multiple_structure ( new external_single_structure ( array (
+								'evalniveauid' => new external_value (PARAM_INT, 'niveau id to according number', 0),
+								'value' => new external_value (PARAM_INT, 'grading value', 0),
 								'sum' => new external_value ( PARAM_INT, 'number of gradings' )
 						) ) ),
 						'student' => new external_multiple_structure ( new external_single_structure ( array (
