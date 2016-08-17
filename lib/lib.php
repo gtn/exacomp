@@ -6029,6 +6029,7 @@ function block_exacomp_remove_example_from_schedule($scheduleid){
 	global $DB, $USER;
 
 	$entry = $DB->get_record(\block_exacomp\DB_SCHEDULE, array('id' => $scheduleid));
+	
 	if($entry->studentid != $USER->id)
 		block_exacomp_require_teacher($entry->courseid);
 

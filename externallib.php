@@ -3178,8 +3178,8 @@ class block_exacomp_external extends external_api {
 				'courseid'=>$courseid,
 				'userid'=>$userid
 			) );
-
-		if($userid == 0)
+		
+        if($userid == 0 && !block_exacomp_is_teacher($courseid))
 			$userid = $USER->id;
 
 		static::require_can_access_course_user($courseid, $userid);
@@ -4939,7 +4939,7 @@ class block_exacomp_external extends external_api {
 		static::validate_parameters(static::dakora_create_blocking_event_parameters(), array('courseid'=>$courseid,'title'=>$title,
 			'userid'=>$userid, 'preplanningstorage'=>$preplanningstorage));
 
-		if($userid == 0 && !$preplanningstorage)
+		if($userid == 0 && !$preplanningstorage && !block_exacomp_is_teacher($courseid))
 			$userid = $USER->id;
 
 		static::require_can_access_course_user($courseid, $userid);
