@@ -1738,7 +1738,7 @@ function block_exacomp_build_navigation_tabs_profile($context,$courseid){
 	$profile_subtree[] = new tabobject('tab_competence_profile_settings', new moodle_url('/blocks/exacomp/competence_profile_settings.php', array("courseid"=>$courseid)), get_string('tab_competence_profile_settings', 'block_exacomp'), null, true);
 	return $profile_subtree;
 }
-function block_exacomp_build_navigation_tabs_cross_subjects($context,$courseid){
+/*function block_exacomp_build_navigation_tabs_cross_subjects($context,$courseid){
 	if (!block_exacomp_is_teacher($context))
 		return array();
 
@@ -1750,7 +1750,7 @@ function block_exacomp_build_navigation_tabs_cross_subjects($context,$courseid){
 	if($crosssubs)
 		$profile_subtree[] = new tabobject('tab_cross_subjects_course', new moodle_url('/blocks/exacomp/cross_subjects.php', array("courseid"=>$courseid)), get_string('tab_cross_subjects_course', 'block_exacomp'), null, true);
 	return $profile_subtree;
-}
+}*/
 /**
  * Build navigtion tabs, depending on role and version
  *
@@ -2797,15 +2797,15 @@ function block_exacomp_update_topic_visibilities($courseid, $topicids){
 }
 
 //TODO this can be done easier
-function block_exacomp_get_active_topics($tree, $courseid){
+/*function block_exacomp_get_active_topics($tree, $courseid){
 	$active_topics = block_exacomp_get_topics_by_course($courseid);
 	foreach($tree as $subject){
 		block_exacomp_get_active_topics_rec($subject->topics, $active_topics);
 	}
 	return $tree;
-}
+}*/
 //TODO this can be done easier
-function block_exacomp_get_active_topics_rec($subs, $active_topics){
+/*function block_exacomp_get_active_topics_rec($subs, $active_topics){
 	foreach($subs as $topic){
 		if(isset($active_topics[$topic->id])){
 			$topic->checked = true;
@@ -2816,9 +2816,9 @@ function block_exacomp_get_active_topics_rec($subs, $active_topics){
 		if(!empty($topic->subs)){
 			block_exacomp_get_active_topics_rec($topic->subs, $topics);
 		}
-		*/
+		*//*
 	}
-}
+}*/
 /**
  *
  * Returns quizes assigned to course
@@ -3078,26 +3078,26 @@ function block_exacomp_get_niveaus_for_subject($subjectid) {
  * Gets examples for LIS student view
  * @param unknown_type $subjects
  */
-function block_exacomp_get_examples_LIS_student($subjects){
+/*function block_exacomp_get_examples_LIS_student($subjects){
 	$examples = array();
 	foreach($subjects as $subject){
 		block_exacomp_get_examples_LIS_student_topics($subject->topics, $examples);
 	}
 	return $examples;
 
-}
+}*/
 /**
  *
  * Helper function to extract examples from subject tree for LIS student view
  * @param unknown_type $subs
  * @param unknown_type $examples
  */
-function block_exacomp_get_examples_LIS_student_topics($topics, &$examples){
+/*function block_exacomp_get_examples_LIS_student_topics($topics, &$examples){
 	foreach($topics as $topic){
 		/*
 		if(isset($topic->subs))
 			block_exacomp_get_examples_LIS_student_topics($subs, $examples);
-		*/
+		*//*
 
 		if(isset($topic->descriptors)){
 			foreach($topic->descriptors as $descriptor){
@@ -3115,7 +3115,7 @@ function block_exacomp_get_examples_LIS_student_topics($topics, &$examples){
 			}
 		}
 	}
-}
+}*/
 function block_exacomp_extract_niveaus($subject_tree){
 	$niveaus = array();
 
@@ -4238,7 +4238,7 @@ function block_exacomp_save_drafts_to_course($drafts_to_save, $courseid){
 	}
 	return $redirect_crosssubjid;
 }
-function block_exacomp_create_new_crosssub($courseid){
+/*function block_exacomp_create_new_crosssub($courseid){
 	global $DB, $USER;
 
 	$insert = new stdClass();
@@ -4249,7 +4249,7 @@ function block_exacomp_create_new_crosssub($courseid){
 	$insert->sourceid = 0;
 	$insert->source = \block_exacomp\IMPORT_SOURCE_SPECIFIC;
 	return $DB->insert_record(\block_exacomp\DB_CROSSSUBJECTS, $insert);
-}
+}*/
 function block_exacomp_create_crosssub($courseid, $title, $description, $creatorid, $subjectid=0){
 	global $DB;
 	
