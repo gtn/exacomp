@@ -1190,11 +1190,13 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 		$filtered_taxonomies = implode(",", $filteredtaxonomies);
 
 		foreach($examples as $example){
-			foreach($examples->taxonomies as $taxonomy){
-				if(in_array($taxonomy->id, $filtered_taxonomies)){
-					if(!array_key_exists($example->id, $filtered_examples))
-						$filtered_examples[$example->id] = $example;
-					continue;
+			if($example->taxonomies){
+				foreach($example->taxonomies as $taxonomy){
+					if(in_array($taxonomy->id, $filteredtaxonomies)){
+						if(!array_key_exists($example->id, $filtered_examples))
+							$filtered_examples[$example->id] = $example;
+						continue;
+					}
 				}
 			}
 		}
@@ -1336,7 +1338,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 	if($without_descriptors)
 		$allDescriptors = array();
 	else
-		$allDescriptors = block_exacomp_get_descriptors($courseid, $showalldescriptors,0,$showallexamples, array(SHOW_ALL_TAXONOMIES), $showonlyvisible);
+		$allDescriptors = block_exacomp_get_descriptors($courseid, $showalldescriptors,0,$showallexamples, $filteredtaxonomies, $showonlyvisible);
 
 	foreach ($allDescriptors as $descriptor) {
 
