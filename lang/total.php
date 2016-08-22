@@ -1893,6 +1893,43 @@ return  [
 	],
 	'submit_example' => [
 		'Abgeben',
-		'Submit'
+		'Submit',
 	],
+		// === Webservice Status ===
+	'enable_rest' => [
+		'REST Protokoll nicht aktiviert',
+		'REST Protocol not enabled'	,
+	],
+	'access_roles' => [
+		'Benutzerrollen mit Zugriff auf Webservices',
+		'Roles with webservice access',
+	],
+	'no_permission' => [
+		'Berechtigung wurde nicht erteilt',
+		'Permissions not set',	
+	],
+	'description_createtoken' => [
+			'Der Benutzerrolle "Authentifizierte/r Nutzer/in" zusätzliche Rechte erteilen: Website-Administration/Nutzer_innen/Rechte ändern/Rollen verwalten
+4.1 Authentifizierte/r Nutzer/in wählen
+4.2 Bearbeiten auswählen
+4.3 Nach "createtoken" filtern
+4.4 Moodle/webservice:createtoken erlauben',
+			'Grant additional permission to the role "authenticated user" at: Site administration/Users/Permissions/Define roles
+4.1 Select Authenticated User
+4.2 Click on "Edit"
+4.3 Filter for createtoken
+4.4 Allow moodle/webservice:createtoken',
+	],
+	'exacomp_not_found' => [
+		'Exacompservice nicht gefunden',
+		'Exacompservice not found',
+	],
+	'exaport_not_found' => [
+		'Exaportservice nicht gefunden',
+		'Exaportservice not found',	
+	],
+	'no_external_trainer' => [
+		'Keine externen Trainer zugeteilt',
+		'No external trainers assigned',
+	]
 ];

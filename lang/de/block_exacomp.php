@@ -559,3 +559,15 @@ $string['forwhat'] = 'Wofür du das brauchst: ';
 $string['howtocheck'] = 'Wie du dein Können prüfen kannst: ';
 $string['reached_topic'] = 'Ich habe diese Kompetenz erreicht: ';
 $string['submit_example'] = 'Abgeben';
+// === Webservice Status ===
+$string['enable_rest'] = 'REST Protokoll nicht aktiviert';
+$string['access_roles'] = 'Benutzerrollen mit Zugriff auf Webservices';
+$string['no_permission'] = 'Berechtigung wurde nicht erteilt';
+$string['description_createtoken'] = 'Der Benutzerrolle "Authentifizierte/r Nutzer/in" zusätzliche Rechte erteilen: Website-Administration/Nutzer_innen/Rechte ändern/Rollen verwalten
+4.1 Authentifizierte/r Nutzer/in wählen
+4.2 Bearbeiten auswählen
+4.3 Nach "createtoken" filtern
+4.4 Moodle/webservice:createtoken erlauben';
+$string['exacomp_not_found'] = 'Exacompservice nicht gefunden';
+$string['exaport_not_found'] = 'Exaportservice nicht gefunden';
+$string['no_external_trainer'] = 'Keine externen Trainer zugeteilt';
