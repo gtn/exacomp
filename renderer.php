@@ -2384,7 +2384,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 	}
 	public function resubmission_icon($exampleid, $studentid, $courseid) {
-		global $DB;
+		global $CFG, $DB;
+
+		if($CFG->block_exaport_app_alloweditdelete)
+			return "";
 
 		$exameval = $DB->get_record(\block_exacomp\DB_EXAMPLEEVAL,array('exampleid'=>$exampleid,'studentid'=>$studentid,'courseid'=>$courseid));
 		if(!$exameval || $exameval->resubmission)
