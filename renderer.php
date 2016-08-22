@@ -114,7 +114,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $this->pix($image, $alt=null, $attributes + ['class'=>'smallicon']);
 	}
 	
-	public function form_week_learningagenda($selectstudent,$action,$studentid, $view, $date = ''){
+	/*public function form_week_learningagenda($selectstudent,$action,$studentid, $view, $date = ''){
 		global $COURSE, $CFG;
 
 		if($view == 0){
@@ -144,7 +144,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$content .= html_writer::start_tag('a', array('href' => new moodle_url('/blocks/exacomp/learningagenda.php?courseid='.$COURSE->id.'&studentid='.$studentid.'&print=1&action='.$action)));
 			$content .= html_writer::empty_tag('img', array('src'=>$CFG->wwwroot . '/blocks/exacomp/pix/view_print.png', 'alt'=>'print'));
 			$content .= html_writer::end_tag('a');
-			$content .= html_writer::end_tag('div');*/
+			$content .= html_writer::end_tag('div');*//*
 			$content .= html_writer::end_div();
 		} else {
 			$content = html_writer::start_tag('div', array('id'=>'linkback', 'align'=>"right"));
@@ -416,7 +416,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$content = html_writer::tag("div", html_writer::table($table), array("id"=>"exabis_competences_block"));
 		return $content;
-	}
+	}*/
 	public function subject_dropdown($schooltypetree, $selectedSubject) {
 		$content = get_string("choosesubject", "block_exacomp").': ';
 		$array = array();
@@ -2602,12 +2602,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 *
 	 * @return String $checkbox html code for checkbox
 	 */
-	public function generate_checkbox_activities($name, $compid, $activityid, $type, $student, $evaluation, $scheme, $disabled = false) {
+	/*public function generate_checkbox_activities($name, $compid, $activityid, $type, $student, $evaluation, $scheme, $disabled = false) {
 		return html_writer::checkbox(
 				$name . '[' .$compid .'][' . $student->id .'][' . $activityid . '][' . $evaluation . ']', $scheme,
 				(isset($student->{$type}->activities[$activityid]->{$evaluation}[$compid])) && $student->{$type}->activities[$activityid]->{$evaluation}[$compid] >= ceil($scheme/2),
 				null, (!$disabled) ? null : array("disabled"=>"disabled"));
-	}
+	}*/
 	/**
 	 * Used to generate a select for activities topics & competencies
 	 *
@@ -2620,7 +2620,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 *
 	 * @return String $select html code for select
 	 */
-	public function generate_select_activities($name, $compid, $activityid, $type, $student, $evaluation, $scheme, $disabled = false, $profoundness = false) {
+	/*public function generate_select_activities($name, $compid, $activityid, $type, $student, $evaluation, $scheme, $disabled = false, $profoundness = false) {
 		$options = array();
 		for($i=0;$i<=$scheme;$i++)
 			$options[] = (!$profoundness) ? $i : get_string('profoundness_'.$i,'block_exacomp');
@@ -2630,7 +2630,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$name . '[' . $compid . '][' . $student->id . '][' . $activityid . '][' . $evaluation . ']',
 				(isset($student->{$type}->activities[$activityid]->{$evaluation}[$compid])) ? $student->{$type}->activities[$activityid]->{$evaluation}[$compid] : 0,
 				false,(!$disabled) ? null : array("disabled"=>"disabled"));
-	}
+	}*/
 	/**
 	 * Used to generate a select for topics/competencies/examples values
 	 *
