@@ -4802,7 +4802,8 @@ function block_exacomp_add_examples_to_schedule_for_all($courseid) {
 	block_exacomp_require_teacher($courseid);
 	// Get all examples to add:
 	//    -> studentid 0: on teachers schedule
-	$examples = g::$DB->get_records_select(block_exacomp\DB_SCHEDULE, "studentid = 0 AND courseid = ? AND start IS NOT NULL AND end IS NOT NULL", array($courseid));
+	$examples = g::$DB->get_records_select(block_exacomp\DB_SCHEDULE, "studentid = 0 AND courseid = ? AND start IS NOT NULL AND end IS NOT NULL AND deleted != 0", array($courseid));
+	
 	// Get all students for the given course
 	$students = block_exacomp_get_students_by_course($courseid);
 	// Add examples for all users
