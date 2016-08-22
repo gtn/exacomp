@@ -2797,14 +2797,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$input_nostudents = html_writer::checkbox('nostudents', 1, $settings->nostudents==1, get_string('usenostudents', 'block_exacomp'))
 		.html_writer::empty_tag('br');
 
-		if (!block_exacomp_is_skillsmanagement()) {
+		/*if (!block_exacomp_is_skillsmanagement()) {
 			$alltax = array(SHOW_ALL_TAXONOMIES => get_string('show_all_taxonomies','block_exacomp'));
 			$taxonomies = $DB->get_records_menu('block_exacomptaxonomies',null,'sorting','id,title');
 			$taxonomies = $alltax + $taxonomies;
 			$input_taxonomies = html_writer::empty_tag('br').html_writer::select($taxonomies, 'filteredtaxonomies[]',$settings->filteredtaxonomies,false,array('multiple'=>'multiple'));
 		} else {
-			$input_taxonomies = '';
-		}
+			*/
+		$input_taxonomies = '';
+		//}
 
 		$input_submit = html_writer::empty_tag('br').html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save', 'admin')));
 
