@@ -7090,6 +7090,191 @@ function block_exacomp_map_value_to_grading($course){
 		}
 	}
 }
+
+/**
+ * return all visible descriptors for a subject in course and user context with only one sql query
+ * parts of this query dealing with the visibility could replace is_descriptor_visible
+ * 
+ * @param int $courseid
+ * @param int $subjectid
+ * @param int $userid
+ * @param string $parent true for parent, false for child descriptors
+ * 
+ * @return: {{id, title}, {...}}
+ */
+function block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid=0, $parent=true){
+	global $DB;
+	
+	$sql = "SELECT DISTINCT d.id, d.title FROM {".\block_exacomp\DB_DESCRIPTORS."} d
+		LEFT JOIN {".\block_exacomp\DB_DESCTOPICS."} dt ON d.id = dt.descrid
+		LEFT JOIN {".\block_exacomp\DB_COURSETOPICS."} ct ON dt.topicid = ct.topicid
+		LEFT JOIN {".\block_exacomp\DB_DESCVISIBILITY."} dv ON d.id = dv.descrid AND dv.courseid = ct.courseid
+		LEFT JOIN {".\block_exacomp\DB_TOPICVISIBILITY."} tv ON dt.topicid = tv.topicid AND tv.courseid = ct.courseid
+		LEFT JOIN {".\block_exacomp\DB_TOPICS."} t ON ct.topicid = t.id
+		WHERE ct.courseid = ? AND t.subjid = ? AND 
+				
+		".(($parent)?"d.parentid = 0":"d.parentid!=0")."
+						
+		AND ((dv.visible = 1 AND dv.studentid = 0 AND NOT EXISTS 
+		  (SELECT *
+		   FROM {".\block_exacomp\DB_DESCVISIBILITY."} dvsub
+		   WHERE dvsub.descrid = dv.descrid AND dvsub.courseid = dv.courseid AND dvsub.visible = 0 AND dvsub.studentid = ?)) 
+		   OR (dv.visible = 1 AND dv.studentid = ? AND NOT EXISTS 
+		  (SELECT *
+		   FROM {".\block_exacomp\DB_DESCVISIBILITY."} dvsub
+		   WHERE dvsub.descrid = dv.descrid AND dvsub.courseid = dv.courseid AND dvsub.visible = 0 AND dvsub.studentid = 0)))
+		   
+		AND ((tv.visible = 1 AND tv.studentid = 0 AND NOT EXISTS 
+		  (SELECT *
+		   FROM {".\block_exacomp\DB_TOPICVISIBILITY."} tvsub
+		   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = ?)) 
+		   OR (tv.visible = 1 AND tv.studentid = ? AND NOT EXISTS 
+		  (SELECT *
+		   FROM {".\block_exacomp\DB_TOPICVISIBILITY."} tvsub
+		   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = 0)))";
+			
+	$params = array($courseid, $subjectid, $userid, $userid, $userid, $userid);
+	
+	return $DB->get_records_sql($sql, $params);
+}
+
+/**
+ * return all visible examples for a subject in course and user context with only one sql query
+ * parts of this query dealing with the visibility could replace is_example_visible
+ * 
+ * @param int $courseid
+ * @param int $subjectid
+ * @param number $userid
+ * 
+ * @return {{id, title}, {...}}
+ */
+function block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $userid=0){
+	global $DB;
+
+	$sql = "SELECT DISTINCT e.id, e.title FROM {".\block_exacomp\DB_EXAMPLES."} e
+		LEFT JOIN {".\block_exacomp\DB_DESCEXAMP."} de ON e.id = de.exampid
+		LEFT JOIN {".\block_exacomp\DB_DESCTOPICS."} dt ON de.descrid = dt.descrid
+		LEFT JOIN {".\block_exacomp\DB_COURSETOPICS."} ct ON dt.topicid = ct.topicid
+		LEFT JOIN {".\block_exacomp\DB_EXAMPVISIBILITY."} ev ON e.id = ev.exampleid AND ev.courseid = ct.courseid
+		LEFT JOIN {".\block_exacomp\DB_DESCVISIBILITY."} dv ON de.descrid = dv.descrid AND dv.courseid = ct.courseid
+		LEFT JOIN {".\block_exacomp\DB_TOPICVISIBILITY."} tv ON dt.topicid = tv.topicid AND tv.courseid = ct.courseid
+		LEFT JOIN {".\block_exacomp\DB_TOPICS."} t ON ct.topicid = t.id
+		
+		WHERE ct.courseid = ? AND t.subjid = ?
+		
+		AND ((ev.visible = 1 AND ev.studentid = 0 AND NOT EXISTS 
+		  (SELECT *
+		   FROM {".\block_exacomp\DB_EXAMPVISIBILITY."} evsub
+		   WHERE evsub.exampleid = ev.exampleid AND evsub.courseid = ev.courseid AND evsub.visible = 0 AND evsub.studentid = ?)) 
+		   OR (ev.visible = 1 AND ev.studentid = ? AND NOT EXISTS 
+		  (SELECT *
+		   FROM {".\block_exacomp\DB_EXAMPVISIBILITY."} evsub
+		   WHERE evsub.exampleid = ev.exampleid AND evsub.courseid = ev.courseid AND evsub.visible = 0 AND evsub.studentid = 0)))
+		
+		AND ((dv.visible = 1 AND dv.studentid = 0 AND NOT EXISTS
+		  (SELECT *
+		   FROM {".\block_exacomp\DB_DESCVISIBILITY."} dvsub
+		   WHERE dvsub.descrid = dv.descrid AND dvsub.courseid = dv.courseid AND dvsub.visible = 0 AND dvsub.studentid = ?))
+		   OR (dv.visible = 1 AND dv.studentid = ? AND NOT EXISTS
+		  (SELECT *
+		   FROM {".\block_exacomp\DB_DESCVISIBILITY."} dvsub
+		   WHERE dvsub.descrid = dv.descrid AND dvsub.courseid = dv.courseid AND dvsub.visible = 0 AND dvsub.studentid = 0)))
+		 
+		AND ((tv.visible = 1 AND tv.studentid = 0 AND NOT EXISTS
+		  (SELECT *
+		   FROM {".\block_exacomp\DB_TOPICVISIBILITY."} tvsub
+		   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = ?))
+		   OR (tv.visible = 1 AND tv.studentid = ? AND NOT EXISTS
+		  (SELECT *
+		   FROM {".\block_exacomp\DB_TOPICVISIBILITY."} tvsub
+		   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = 0)))";
+
+	$params = array($courseid, $subjectid, $userid, $userid, $userid, $userid, $userid, $userid);
+
+	return $DB->get_records_sql($sql, $params);
+}
+/**
+ * get evaluation statistics for a user in course and subject context for descriptor, childdescriptor and examples
+ * global use of evaluation_niveau is minded here
+ * 
+ * @param int $courseid
+ * @param int $subjectid
+ * @param int $userid - not working for userid = 0 : no user_information available
+ * @return array("descriptor_evaluation", "child_evaluation", "example_evaluation") 
+ */
+function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid){
+	global $DB;
+	
+	$user = $DB->get_record("user", array("id"=>$userid));
+
+	$user = block_exacomp_get_user_information_by_course($user, $courseid);
+
+	$descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid);
+	$child_descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid, false);
+	$examples = block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $userid);
+	
+	$descriptorgradings = array(); //array[niveauid][value][number of examples evaluated with this value and niveau]
+	$childgradings = array();
+	$examplegradings = array();
+	
+	//create grading statistic
+	$scheme_items = \block_exacomp\global_config::get_value_titles(block_exacomp_get_grading_scheme($courseid));
+	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
+	
+	if(block_exacomp_use_eval_niveau())
+		foreach($evaluationniveau_items as $niveaukey => $niveauitem){
+			$descriptorgradings[$niveaukey] = array();
+			$childgradings[$niveaukey] = array();
+			$examplegradings[$niveaukey] = array();
+			
+			foreach($scheme_items as $schemekey => $schemetitle){
+				$descriptorgradings[$niveaukey][$schemekey] = 0;
+				$childgradings[$niveaukey][$schemekey] = 0;
+				$examplegradings[$niveaukey][$schemekey] = 0;
+			}
+	}
+	else
+		foreach($scheme_items as $key => $title){
+			$descriptorgradings[$key] = 0;
+			$childgradings[$key] = 0;
+			$examplegradings[$key] = 0;
+	}
+	
+	foreach($descriptors as $descriptor){
+		//create grading statistic
+		if(block_exacomp_use_eval_niveau()){
+			if(isset($user->competencies->teacher[$descriptor->id]) && isset($user->competencies->niveau[$descriptor->id]))
+				$descriptorgradings[$user->competencies->niveau[$descriptor->id]][$user->competencies->teacher[$descriptor->id]]++;
+		}else{
+			if(isset($user->competencies->teacher[$descriptor->id]))
+				$descriptorgradings[$user->competencies->teacher[$descriptor->id]]++;
+		}	
+	}
+	
+	foreach($child_descriptors as $child){
+		//create child grading statistic
+		if(block_exacomp_use_eval_niveau()){
+			if(isset($user->competencies->teacher[$child->id]) && isset($user->competencies->niveau[$child->id]))
+				$childgradings[$user->competencies->niveau[$child->id]][$user->competencies->teacher[$child->id]]++;
+		}else{
+			if(isset($user->competencies->teacher[$child->id]))
+				$childgradings[$user->competencies->teacher[$child->id]]++;
+		}
+	}
+	
+	foreach($examples as $example){
+		//create grading statistic
+		if(block_exacomp_use_eval_niveau()){
+			if(isset($user->examples->teacher[$example->id]) && isset($student->examples->niveau[$example->id]))
+				$examplegradings[$student->examples->niveau[$example->id]][$student->examples->teacher[$example->id]]++;
+		}else{
+			if(isset($student->examples->teacher[$example->id]))
+				$examplegradings[$student->examples->teacher[$example->id]]++;
+		}
+		
+	}
+	return array("descriptor_evaluation" => $descriptorgradings, "child_evaluations"=>$childgradings, "example_evaluations" => $examplegradings);	
+}
 }
 
 namespace block_exacomp {
