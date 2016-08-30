@@ -3837,7 +3837,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		   $timeline_graph = "";
 			
 		$content .= html_writer::div($pie_graph.$timeline_graph, 'competence_profile_graphbox clearfix');
-		$content .= html_writer::div($this->radar_graph_legend(),"radargraph_legend");
+		//$content .= html_writer::div($this->radar_graph_legend(),"radargraph_legend");
 			
 		//print list
 		$student = block_exacomp_get_user_information_by_course($student, $course->id);
