@@ -6108,7 +6108,7 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true){
 		$example_array['studentid'] = $example->studentid;
 		$example_array['courseid'] = $example->courseid;
 		$example_array['scheduleid'] = $example->scheduleid;
-		$example_array['copy_url'] = $OUTPUT->pix_icon("e/copy", get_string('copy'));
+		$example_array['copy_url'] = $output->local_pix_icon("copy_example.png", get_string('copy'));
 
 		$img = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/assoc_icon.png'), 'alt'=>get_string("competence_associations", "block_exacomp"), 'height'=>16, 'width'=>16));
 
