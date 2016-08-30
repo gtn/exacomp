@@ -3824,7 +3824,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		//$radar_graph = html_writer::div($this->radar_graph($topics),"competence_profile_radargraph");
 
 		list($teachercomp,$studentcomp,$pendingcomp) = block_exacomp_get_competences_for_pie_chart($course->id,$student, $scheme, 0, true);
-		$pie_graph = html_writer::div($this->pie_graph($teachercomp, $studentcomp, $pendingcomp, $course->id),"competence_profile_radargraph");
+		// TODO: fix pie graph with respect to new grading options
+		//$pie_graph = html_writer::div($this->pie_graph($teachercomp, $studentcomp, $pendingcomp, $course->id),"competence_profile_radargraph");
+		$pie_graph = "";
 		
 		$total_comps = $teachercomp+$studentcomp+$pendingcomp;
 		$timeline_data= block_exacomp_get_timeline_data(array($course), $student, $total_comps);
