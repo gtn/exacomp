@@ -111,7 +111,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 	
 	public function local_pix_icon($image, $alt=null, $attributes=array()) {
-		return $this->pix($image, $alt=null, $attributes + ['class'=>'smallicon']);
+		return $this->pix($image, $alt, $attributes + ['class'=>'smallicon']);
 	}
 	
 	/*public function form_week_learningagenda($selectstudent,$action,$studentid, $view, $date = ''){
@@ -2100,9 +2100,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 
 						if($example->externalurl){
-							$titleCell->text .= html_writer::link($example->externalurl, $this->local_pix_icon("globesearch.png", $example->externalurl),array("target" => "_blank"));
+							$titleCell->text .= html_writer::link($example->externalurl, $this->local_pix_icon("globesearch.png", get_string('preview')),array("target" => "_blank"));
 						}elseif($example->externaltask){
-							$titleCell->text .= html_writer::link($example->externaltask, $this->local_pix_icon("globesearch.png", $example->externaltask),array("target" => "_blank"));
+							$titleCell->text .= html_writer::link($example->externaltask, $this->local_pix_icon("globesearch.png", get_string('preview')),array("target" => "_blank"));
 						}
 						
 						$solution_url = $example->get_solution_file_url();

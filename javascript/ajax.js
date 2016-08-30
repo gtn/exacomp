@@ -934,77 +934,80 @@
 	
 	$(document).on('click', '#hide-example', function(event) {
 		event.preventDefault();
-
-		var tr = $(this).closest('tr');
-		var schedule = $(this).siblings('.add-to-schedule');
-		var preplanning = $(this).siblings('.add-to-preplanning');
-		
-		var courseid = block_exacomp.get_param('courseid');
-		var studentid = block_exacomp.get_studentid();
 		var exampleid = $(this).attr('exampleid');
-		var val = $(this).attr('state');
-		
-		if(studentid==null)
-			studentid = 0;
-		
-		if(val=='-'){
-			$(this).attr('state','+');
-			visible = 0;
 
-			exabis_rg2.get_row(this)
-				.trigger('rg2.close')
-				.addClass('rg2-locked');
+		// an example can be attached at several competencies, therefore we need to process all example instances
+		var examples = $('a[id="hide-example"][exampleid="'+exampleid+'"]').each(function() { 
 
-			//disable checkbox for teacher, when hiding descriptor for student
-			if(studentid > 0)
-				$('input[name=dataexamples-'+exampleid+'-'+studentid+'-'+'teacher]').prop( "disabled", true ); 
-				$('select[name=dataexamples-'+exampleid+'-'+studentid+'-teacher]').prop("disabled", true);
-				$('select[name=niveau_examples-'+exampleid+'-'+studentid+']').prop("disabled", true);
-
-			var img = $("img", this);
-			img.attr('src',$(this).attr('hideurl'));
-			img.attr('alt', M.util.get_string('show','moodle'));
-			img.attr('title', M.util.get_string('show','moodle'));
+			var tr = $(this).closest('tr');
+			var schedule = $(this).siblings('.add-to-schedule');
+			var preplanning = $(this).siblings('.add-to-preplanning');
 			
-			schedule.click(function () {return false;});
-			preplanning.click(function () {return false;});
+			var courseid = block_exacomp.get_param('courseid');
+			var studentid = block_exacomp.get_studentid();
+			var val = $(this).attr('state');
 			
-			schedule.children().prop("title", M.util.get_string('weekly_schedule_disabled','block_exacomp'));
-			preplanning.children().prop("title", M.util.get_string('pre_planning_storage_disabled','block_exacomp'));
+			if(studentid==null)
+				studentid = 0;
 			
-			//only for competence grid
-			var link = $('#competence-grid-link-'+exampleid);
-			if(link) {
-				 link.addClass('deactivated');
+			if(val=='-'){
+				$(this).attr('state','+');
+				visible = 0;
+	
+				exabis_rg2.get_row(this)
+					.trigger('rg2.close')
+					.addClass('rg2-locked');
+	
+				//disable checkbox for teacher, when hiding descriptor for student
+				if(studentid > 0)
+					$('input[name=dataexamples-'+exampleid+'-'+studentid+'-'+'teacher]').prop( "disabled", true ); 
+					$('select[name=dataexamples-'+exampleid+'-'+studentid+'-teacher]').prop("disabled", true);
+					$('select[name=niveau_examples-'+exampleid+'-'+studentid+']').prop("disabled", true);
+	
+				var img = $("img", this);
+				img.attr('src',$(this).attr('hideurl'));
+				img.attr('alt', M.util.get_string('show','moodle'));
+				img.attr('title', M.util.get_string('show','moodle'));
+				
+				schedule.click(function () {return false;});
+				preplanning.click(function () {return false;});
+				
+				schedule.children().prop("title", M.util.get_string('weekly_schedule_disabled','block_exacomp'));
+				preplanning.children().prop("title", M.util.get_string('pre_planning_storage_disabled','block_exacomp'));
+				
+				//only for competence grid
+				var link = $('#competence-grid-link-'+exampleid);
+				if(link) {
+					 link.addClass('deactivated');
+				}
+			}else{
+				$(this).attr('state','-');
+				visible = 1;
+				tr.removeClass('rg2-locked');
+				
+				//enable checkbox for teacher, when showing descriptor for student
+				$('input[name=dataexamples-'+exampleid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
+				$('select[name=dataexamples-'+exampleid+'-'+studentid+'-teacher]').prop("disabled", false);
+				$('select[name=niveau_examples-'+exampleid+'-'+studentid+']').prop("disabled", false);
+				
+				var img = $("img", this);
+				img.attr('src',$(this).attr('showurl'));
+				img.attr('alt', M.util.get_string('hide','moodle'));
+				img.attr('title', M.util.get_string('hide','moodle'));
+				
+				schedule.unbind('click');
+				preplanning.unbind('click');
+				
+				schedule.children().prop("title", M.util.get_string('weekly_schedule','block_exacomp'));
+				preplanning.children().prop("title", M.util.get_string('pre_planning_storage','block_exacomp'));
+				
+				//only for competence grid
+				var link = $('#competence-grid-link-'+exampleid);
+				if(link) {
+					 link.removeClass('deactivated');
+				}
 			}
-		}else{
-			$(this).attr('state','-');
-			visible = 1;
-			tr.removeClass('rg2-locked');
-			
-			//enable checkbox for teacher, when showing descriptor for student
-			$('input[name=dataexamples-'+exampleid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
-			$('select[name=dataexamples-'+exampleid+'-'+studentid+'-teacher]').prop("disabled", false);
-			$('select[name=niveau_examples-'+exampleid+'-'+studentid+']').prop("disabled", false);
-			
-			var img = $("img", this);
-			img.attr('src',$(this).attr('showurl'));
-			img.attr('alt', M.util.get_string('hide','moodle'));
-			img.attr('title', M.util.get_string('hide','moodle'));
-			
-			schedule.unbind('click');
-			preplanning.unbind('click');
-			
-			schedule.children().prop("title", M.util.get_string('weekly_schedule','block_exacomp'));
-			preplanning.children().prop("title", M.util.get_string('pre_planning_storage','block_exacomp'));
-			
-			//only for competence grid
-			var link = $('#competence-grid-link-'+exampleid);
-			if(link) {
-				 link.removeClass('deactivated');
-			}
-		}
-		
+		});
 		block_exacomp.call_ajax({
 			exampleid : exampleid,
 			value : visible,
