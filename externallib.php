@@ -5832,6 +5832,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 
 		$descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid, true);
 
+        
 		$non_visibilities = $DB->get_fieldset_select(\block_exacomp\DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
 		$non_topic_visibilities = $DB->get_fieldset_select(\block_exacomp\DB_TOPICVISIBILITY, 'topicid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
 		
@@ -5893,7 +5894,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 						$descriptor_return->used = (block_exacomp_descriptor_used($courseid, $descriptor, $userid))?1:0;
 						if($descriptor->niveauid){
 							$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
-							$descriptor_return->niveautitle = substr(block_exacomp_get_descriptor_numbering($descriptor),0,1).": ".$niveau->title;
+							$descriptor_return->niveautitle = substr(block_exacomp_get_descriptor_numbering($descriptor),0,3).": ".$niveau->title;
 							$descriptor_return->niveausort = block_exacomp_get_descriptor_numbering($descriptor);
 							$descriptor_return->niveauid = $niveau->id;
 						}
@@ -5917,7 +5918,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 				
 				if($descriptor->niveauid){
 					$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
-					$descriptor_return->niveautitle = substr(block_exacomp_get_descriptor_numbering($descriptor),0,1).": ".$niveau->title;
+					$descriptor_return->niveautitle = substr(block_exacomp_get_descriptor_numbering($descriptor),0,3).": ".$niveau->title;
 					$descriptor_return->niveausort = block_exacomp_get_descriptor_numbering($descriptor);
 					$descriptor_return->niveauid = $niveau->id;
 				}
