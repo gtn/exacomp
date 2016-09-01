@@ -204,7 +204,13 @@
 	};
 	function refill_pool() {
 		$eventDiv = $( '#external-events' );
+		title = null;
+		$eventDiv.children().each(function(i, elm) {
+			if ( $(this).is( "h4" ) ) {title = $(this);} 
+		});
+		
 		$eventDiv.empty();
+		$eventDiv.append(title);
 		
 		block_exacomp_get_configuration(function(configuration) {
 			$.extend(exacomp_calcendar_config, configuration);
@@ -390,7 +396,7 @@
 					((event.externalurl != null) ? '	<div class="event-task">'+event.externalurl+'</div>' : '' )+
 					((event.task != null) ? '	<div class="event-task">'+event.task+'</div>' : '' )+
 					((event.submission_url != null) ? '	<div class="event-submission">'+event.submission_url+'</div>' : '' )+
-					'	<div class="event-copy">'+'<a href="#" id="event-copy" exa-scheduleid="'+event.scheduleid+'">' + event.copy_url + '</a>'+'</div>'+
+					((event.courseid == courseid)?'	<div class="event-copy">'+'<a href="#" id="event-copy" exa-scheduleid="'+event.scheduleid+'">' + event.copy_url + '</a>'+'</div>':'')+
 					'</div>');
 				
 				$(element).addTouch();
