@@ -7200,7 +7200,7 @@ function block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $
  * @param int $courseid
  * @param int $subjectid
  * @param int $userid - not working for userid = 0 : no user_information available
- * @return array("descriptor_evaluation", "child_evaluation", "example_evaluation") 
+ * @return array("descriptor_evaluation", "child_evaluation", "example_evaluation") this is representing the resulting matrix
  */
 function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid){
 	global $DB;
@@ -7209,6 +7209,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 
 	$user = block_exacomp_get_user_information_by_course($user, $courseid);
 
+	//TODO: is visibility hier fürn hugo? Bewertungen kann es eh nur für sichtbare geben ...
 	$descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid);
 	$child_descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid, false);
 	$examples = block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $userid);
@@ -7275,6 +7276,48 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	}
 	return array("descriptor_evaluation" => $descriptorgradings, "child_evaluations"=>$childgradings, "example_evaluations" => $examplegradings);	
 }
+
+/**
+ * get evaluation statistics for a user in course and subject context for descriptor, childdescriptor and examples
+ * global use of evaluation_niveau is minded here
+ *
+ * @param int $courseid
+ * @param int $topic
+ * @param int $userid - not working for userid = 0 : no user_information available
+ * @return descriptor_evaluation_list this is a list of niveautitles of all evaluated descriptors with according evaluation value and evaluation niveau
+ */
+function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $userid){
+	global $DB;
+
+	$user = $DB->get_record("user", array("id"=>$userid));
+
+	$user = block_exacomp_get_user_information_by_course($user, $courseid);
+	$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $topicid);
+	
+	#sort crosssub entries
+	usort($descriptors, "block_exacomp_cmp_niveausort");
+	
+	$descriptorgradings = array(); //array[niveauid][value][number of examples evaluated with this value and niveau]
+	
+	//create grading statistic
+	$scheme_items = \block_exacomp\global_config::get_value_titles(block_exacomp_get_grading_scheme($courseid));
+	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
+
+	foreach($descriptors as $descriptor){
+		$descriptorgradings[$descriptor->cattitle] = new stdClass();
+		$descriptorgradings[$descriptor->cattitle]->teachervalue = (isset($user->competencies->teacher[$descriptor->id])? $user->competencies->teacher[$descriptor->id]:-1);
+		$descriptorgradings[$descriptor->cattitle]->evalniveau = (isset($user->competencies->niveau[$descriptor->id])? $user->competencies->niveau[$descriptor->id]:0);	
+		$descriptorgradings[$descriptor->cattitle]->studentvalue = (isset($user->competencies->student[$descriptor->id])? $user->competencies->student[$descriptor->id]:-1);
+	}
+
+	return array("descriptor_evaluation" => $descriptorgradings);
+}
+
+//TODO duplicate function in external lib, remove function in externallib
+function block_exacomp_cmp_niveausort($a, $b){
+	return strcmp($a->cattitle, $b->cattitle);
+}
+
 }
 
 namespace block_exacomp {
