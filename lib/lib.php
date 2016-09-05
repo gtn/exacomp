@@ -6610,6 +6610,7 @@ function block_exacomp_save_additional_grading_for_descriptor($courseid, $descri
 		$insert->role = \block_exacomp\ROLE_TEACHER;
 		$insert->reviewerid = $USER->id;
 		$insert->value = $value;
+		$insert->timestamp = time();
 		$DB->insert_record(\block_exacomp\DB_COMPETENCES, $insert);
 	}
 }
@@ -7195,14 +7196,16 @@ function block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $
 }
 /**
  * get evaluation statistics for a user in course and subject context for descriptor, childdescriptor and examples
+ * within given timeframe (if start and end = 0, all available data is used)
  * global use of evaluation_niveau is minded here
  * 
  * @param int $courseid
  * @param int $subjectid
  * @param int $userid - not working for userid = 0 : no user_information available
- * @return array("descriptor_evaluation", "child_evaluation", "example_evaluation") this is representing the resulting matrix
+ * @return array("descriptor_evaluation", "child_evaluation", "example_evaluation") 
+ * this is representing the resulting matrix, use of evaluation niveaus is minded here 
  */
-function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid){
+function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp = 0, $end_timestamp = 0){
 	global $DB;
 	
 	$user = $DB->get_record("user", array("id"=>$userid));
@@ -7220,60 +7223,62 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	
 	//create grading statistic
 	$scheme_items = \block_exacomp\global_config::get_value_titles(block_exacomp_get_grading_scheme($courseid));
-	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
+	$evaluationniveau_items = (block_exacomp_use_eval_niveau())?\block_exacomp\global_config::get_evalniveaus():array('-1'=>'');
 	
-	if(block_exacomp_use_eval_niveau())
-		foreach($evaluationniveau_items as $niveaukey => $niveauitem){
-			$descriptorgradings[$niveaukey] = array();
-			$childgradings[$niveaukey] = array();
-			$examplegradings[$niveaukey] = array();
-			
-			foreach($scheme_items as $schemekey => $schemetitle){
+	foreach($evaluationniveau_items as $niveaukey => $niveauitem){
+		$descriptorgradings[$niveaukey] = array();
+		$childgradings[$niveaukey] = array();
+		$examplegradings[$niveaukey] = array();
+		
+		foreach($scheme_items as $schemekey => $schemetitle){
+			if($schemekey > -1){
 				$descriptorgradings[$niveaukey][$schemekey] = 0;
 				$childgradings[$niveaukey][$schemekey] = 0;
 				$examplegradings[$niveaukey][$schemekey] = 0;
 			}
+		}
 	}
-	else
-		foreach($scheme_items as $key => $title){
-			$descriptorgradings[$key] = 0;
-			$childgradings[$key] = 0;
-			$examplegradings[$key] = 0;
-	}
-	
+
 	foreach($descriptors as $descriptor){
-		//create grading statistic
-		if(block_exacomp_use_eval_niveau()){
-			if(isset($user->competencies->teacher[$descriptor->id]) && isset($user->competencies->niveau[$descriptor->id]))
-				$descriptorgradings[$user->competencies->niveau[$descriptor->id]][$user->competencies->teacher[$descriptor->id]]++;
-		}else{
-			if(isset($user->competencies->teacher[$descriptor->id]))
-				$descriptorgradings[$user->competencies->teacher[$descriptor->id]]++;
-		}	
+		//check if grading is within timeframe
+		if(isset($user->competencies->timestamp_teacher[$descriptor->id]) && 
+				($start_timestamp == 0 || $user->competencies->timestamp_teacher[$descriptor->id] >= $start_timestamp) && 
+				($end_timestamp == 0 || $user->competencies->timestamp_teacher[$descriptor->id] <= $endtimestamp)){
+			
+			//check if niveau is given in evaluation, if not -1
+			$niveaukey = (block_exacomp_use_eval_niveau() && isset($user->competencies->niveau[$descriptor->id]))?$user->competencies->niveau[$descriptor->id]:-1;
+			if(isset($user->competencies->teacher[$descriptor->id])) //increase counter in statistic
+				$descriptorgradings[$niveaukey][$user->competencies->teacher[$descriptor->id]]++;
+		}
 	}
 	
 	foreach($child_descriptors as $child){
-		//create child grading statistic
-		if(block_exacomp_use_eval_niveau()){
-			if(isset($user->competencies->teacher[$child->id]) && isset($user->competencies->niveau[$child->id]))
-				$childgradings[$user->competencies->niveau[$child->id]][$user->competencies->teacher[$child->id]]++;
-		}else{
-			if(isset($user->competencies->teacher[$child->id]))
-				$childgradings[$user->competencies->teacher[$child->id]]++;
+		//check if grading is within timeframe
+		if(isset($user->competencies->timestamp_teacher[$child->id]) &&
+				($start_timestamp == 0 || $user->competencies->timestamp_teacher[$child->id] >= $start_timestamp) &&
+				($end_timestamp == 0 || $user->competencies->timestamp_teacher[$child->id] <= $endtimestamp)){
+		
+			//check if niveau is given in evaluation, if not -1
+			$niveaukey = (block_exacomp_use_eval_niveau() && isset($user->competencies->niveau[$child->id]))?$user->competencies->niveau[$child->id]:-1;
+			if(isset($user->competencies->teacher[$child->id])) //increase counter in statistic
+				$childgradings[$niveaukey][$user->competencies->teacher[$child->id]]++;
 		}
 	}
 	
 	foreach($examples as $example){
-		//create grading statistic
-		if(block_exacomp_use_eval_niveau()){
-			if(isset($user->examples->teacher[$example->id]) && isset($student->examples->niveau[$example->id]))
-				$examplegradings[$student->examples->niveau[$example->id]][$student->examples->teacher[$example->id]]++;
-		}else{
-			if(isset($student->examples->teacher[$example->id]))
-				$examplegradings[$student->examples->teacher[$example->id]]++;
+		//create grading statistic for example
+		if(isset($user->examples->timestamp_teacher[$example->id]) &&
+				($start_timestamp == 0 || $user->examples->timestamp_teacher[$example->id] >= $start_timestamp) &&
+				($end_timestamp == 0 || $user->examples->timestamp_teacher[$example->id] <= $endtimestamp)){
+
+			//check if niveau is given in evaluation, if not -1
+			$niveaukey = (block_exacomp_use_eval_niveau() && isset($user->examples->niveau[$example->id]))?$user->examples->niveau[$example->id]:-1;
+			if(isset($user->examples->teacher[$example->id])) //increase counter in statistic
+				$examplegradings[$niveaukey][$user->examples->teacher[$example->id]]++;
 		}
 		
 	}
+	
 	return array("descriptor_evaluation" => $descriptorgradings, "child_evaluations"=>$childgradings, "example_evaluations" => $examplegradings);	
 }
 
@@ -7286,7 +7291,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
  * @param int $userid - not working for userid = 0 : no user_information available
  * @return descriptor_evaluation_list this is a list of niveautitles of all evaluated descriptors with according evaluation value and evaluation niveau
  */
-function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $userid){
+function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $userid, $start_timestamp = 0, $end_timestamp = 0){
 	global $DB;
 
 	$user = $DB->get_record("user", array("id"=>$userid));
@@ -7299,15 +7304,18 @@ function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $
 	
 	$descriptorgradings = array(); //array[niveauid][value][number of examples evaluated with this value and niveau]
 	
-	//create grading statistic
-	$scheme_items = \block_exacomp\global_config::get_value_titles(block_exacomp_get_grading_scheme($courseid));
-	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
-
 	foreach($descriptors as $descriptor){
+		$teacher_eval_within_timeframe = (isset($user->competencies->timestamp_teacher[$descriptor->id]) &&
+				($start_timestamp == 0 || $user->competencies->timestamp_teacher[$descriptor->id] >= $start_timestamp) &&
+				($end_timestamp == 0 || $user->competencies->timestamp_teacher[$descriptor->id] <= $end_timestamp));
+		$student_eval_within_timeframe = (isset($user->competencies->timestamp_student[$descriptor->id]) &&
+				($start_timestamp == 0 || $user->competencies->timestamp_student[$descriptor->id] >= $start_timestamp) &&
+				($end_timestamp == 0 || $user->competencies->timestamp_student[$descriptor->id] <= $end_timestamp));
+		
 		$descriptorgradings[$descriptor->cattitle] = new stdClass();
-		$descriptorgradings[$descriptor->cattitle]->teachervalue = (isset($user->competencies->teacher[$descriptor->id])? $user->competencies->teacher[$descriptor->id]:-1);
-		$descriptorgradings[$descriptor->cattitle]->evalniveau = (isset($user->competencies->niveau[$descriptor->id])? $user->competencies->niveau[$descriptor->id]:0);	
-		$descriptorgradings[$descriptor->cattitle]->studentvalue = (isset($user->competencies->student[$descriptor->id])? $user->competencies->student[$descriptor->id]:-1);
+		$descriptorgradings[$descriptor->cattitle]->teachervalue = ((isset($user->competencies->teacher[$descriptor->id]) && $teacher_eval_within_timeframe)? $user->competencies->teacher[$descriptor->id]:-1);
+		$descriptorgradings[$descriptor->cattitle]->evalniveau = ((isset($user->competencies->niveau[$descriptor->id]) && $teacher_eval_within_timeframe)? $user->competencies->niveau[$descriptor->id]:-1);	
+		$descriptorgradings[$descriptor->cattitle]->studentvalue = ((isset($user->competencies->student[$descriptor->id]) && $student_eval_within_timeframe) ? $user->competencies->student[$descriptor->id]:-1);
 	}
 
 	return array("descriptor_evaluation" => $descriptorgradings);
