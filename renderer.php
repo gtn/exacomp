@@ -2298,7 +2298,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		if($alt == null)
 			$alt = get_string("preview");
 
-		return html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/preview.png'), 'alt'=>$alt));
+		return html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/preview.png'), 'alt'=>$alt, 'title'=>$alt));
 	}
 	/*
 	public function source_color($sourceid) {

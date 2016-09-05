@@ -6110,7 +6110,7 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true){
 		$example_array['scheduleid'] = $example->scheduleid;
 		$example_array['copy_url'] = $output->local_pix_icon("copy_example.png", get_string('copy'));
 
-		$img = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/assoc_icon.png'), 'alt'=>get_string("competence_associations", "block_exacomp"), 'height'=>16, 'width'=>16));
+		$img = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/assoc_icon.png'), 'alt'=>get_string("competence_associations", "block_exacomp"), 'title'=>get_string("competence_associations", "block_exacomp"), 'height'=>16, 'width'=>16));
 
 		$example_array['assoc_url'] = html_writer::link(
 				new moodle_url('/blocks/exacomp/competence_associations.php',array("courseid"=>$example->courseid,"exampleid"=>$example->exampleid, "editmode"=>0)),
@@ -6124,12 +6124,12 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true){
 
 				$example_array ['submission_url'] = html_writer::link(
 						new moodle_url('/blocks/exacomp/example_submission.php',array("courseid"=>$example->courseid,"exampleid"=>$example->exampleid)),
-						html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/' . ((!$itemExists) ? 'manual_item.png' : 'reload.png')), 'alt'=>get_string("submission", "block_exacomp"))),
+						html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/' . ((!$itemExists) ? 'manual_item.png' : 'reload.png')), 'alt'=>get_string("submission", "block_exacomp"), 'title'=>get_string("submission", "block_exacomp"))),
 						array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 			} else {
 				$url = block_exacomp_get_viewurl_for_example ( $example->studentid, $USER->id, $example->exampleid );
 				if ($url)
-					$example_array ['submission_url'] = html_writer::link ( $url, html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/manual_item.png'), 'alt'=>get_string("submission", "block_exacomp"))), array (
+					$example_array ['submission_url'] = html_writer::link ( $url, html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/manual_item.png'), 'alt'=>get_string("submission", "block_exacomp"), 'title'=>get_string("submission", "block_exacomp"))), array (
 							"target" => "_blank",
 							"onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"
 					) );
