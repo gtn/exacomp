@@ -103,10 +103,6 @@ if (block_exacomp_moodle_badges_enabled() && $usebadges && $profile_settings->us
 }
 
 $items = array();
-if($profile_settings->useexaport == 1){
-	$items = block_exacomp_get_exaport_items($studentid);
-	$items = block_exacomp_init_exaport_items($items);
-}
 
 $user_courses = array();
 $max_scheme = 3;
@@ -118,10 +114,6 @@ foreach($possible_courses as $course){
 	}
 }
 
-//if(!block_exacomp_is_altversion())
-//	echo $output->competene_profile_overview($student, $user_courses, $possible_courses, $badges,
-//		$profile_settings->useexaport, $items, $exastud_competence_profile_data, $profile_settings->onlygainedbadges);
-
 if(!empty($profile_settings->exacomp) || $profile_settings->showallcomps == 1)
 	echo html_writer::tag('h3', get_string('my_comps', 'block_exacomp'), array('class'=>'competence_profile_sectiontitle'));
 
@@ -129,21 +121,6 @@ foreach($user_courses as $course) {
 	//if selected
 	if(isset($profile_settings->exacomp[$course->id]))
 		echo $output->competence_profile_course($course,$student,true,$max_scheme);
-}
-if ($profile_settings->showallcomps == 1) {
-	if (empty ( $user_courses ))
-		$overview_courses = $possible_courses;
-	else
-		$overview_courses = $user_courses;
-	
-	echo $output->competence_profile_course_all ( $overview_courses, $student );
-}
-if($profile_settings->useexaport){
-	echo $output->competence_profile_exaport($profile_settings, $student, $items);
-}
-
-if($profile_settings->useexastud){
-	echo $output->competence_profile_exastud($profile_settings, $student);
 }
 
 /* END CONTENT REGION */
