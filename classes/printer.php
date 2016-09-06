@@ -280,7 +280,7 @@ class printer {
 				background-color: #026cc5;
 			}
 			.state4 {
-				background-color: rgb(24, 164, 6);
+				background-color: rgb(246, 46, 39);
 			}
 
 			.state3 {
@@ -288,7 +288,7 @@ class printer {
 			}
 
 			.state5 {
-				background-color: rgb(246, 46, 39);
+				background-color: rgb(24, 164, 6);
 			}
 
 			.state9 {
@@ -346,6 +346,10 @@ class printer {
 						$tbl .= '<b>'.$course->shortname.':</b><br />';
 						$tbl .= $example->title;
 
+						if($example->description){
+							$tbl .= '<br />'.$example->description;
+						}
+
 						if ($example->student_evaluation_title) {
 							$tbl .= '<br />S: '.$example->student_evaluation_title;
 						}
@@ -355,13 +359,12 @@ class printer {
 						if ($teacher_evaluation) {
 							$tbl .= '<br />L: '.join(' / ', $teacher_evaluation);
 						}
-
-						if ($example->descriptors) {
+						/*if ($example->descriptors) {
 							$tbl .= '<br />';
 							foreach ($example->descriptors as $descriptor) {
 								$tbl .= '<br />• '.$descriptor->title;
 							}
-						}
+						}*/
 
 						$tbl .= '</td>';
 					} else if (!$example) {

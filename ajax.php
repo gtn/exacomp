@@ -263,6 +263,10 @@ switch($action){
 		
 		block_exacomp_remove_example_from_schedule($scheduleid);
 		break;
+	case 'copy-example-from-schedule':
+		$scheduleid = required_param('scheduleid', PARAM_INT);
+		block_exacomp_copy_example_from_schedule($scheduleid);
+		break;
 	case 'get-examples-for-start-end':
 		$studentid = required_param('studentid', PARAM_INT);
 		if(!$studentid) $studentid = $USER->id;
@@ -280,6 +284,15 @@ switch($action){
 	case 'get-weekly-schedule-configuration':
 		$studentid = required_param('studentid', PARAM_INT);
 		if(!$studentid) $studentid = $USER->id;
+		
+		// -1 => teacher wants to add examples for all students to their schedule
+		if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
+			// check for teacher permissions
+			block_exacomp_require_teacher();
+			// now we want to display the examples from the pre-plan-storage, which are the examples in the schedule database table
+			// with studentid 0
+			$studentid = 0;
+		}
 		
 		$pool_course = required_param('pool_course', PARAM_INT);
 		if(!$pool_course)$pool_course = $courseid;
@@ -319,6 +332,10 @@ switch($action){
 		$json_examples = block_exacomp_get_json_examples($examples, false);
 		
 		echo json_encode($json_examples);
+		break;
+	case 'add-examples-to-schedule-for-all':
+		$courseid = required_param('courseid', PARAM_INT);
+		block_exacomp_add_examples_to_schedule_for_all($courseid);
 		break;
 	case('example-sorting'):
 		$exampleid = required_param('exampleid', PARAM_INT);

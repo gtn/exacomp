@@ -105,6 +105,8 @@ $string['settings_additional_grading'] = 'Adapted grading';
 $string['settings_additional_grading_description'] = 'Grading limited from "not gained(0)" - "completely gained(3)"';
 $string['settings_usetimeline'] = 'Use Timeline in profile';
 $string['settings_usetimeline_description'] = 'Chronological sequence of gained outcomes';
+$string['settings_periods'] = 'Timetable entries';
+$string['settings_periods_description'] = 'Weekly schedule can be adapted to any timetable. Use one row in the text area for each time entry. You can use any format you like, e.g. "1st hour" or "07:30 - 09:00".';
 $string['timeline_teacher'] = 'T';
 $string['timeline_student'] = 'S';
 $string['timeline_total'] = 'Total';
@@ -231,6 +233,7 @@ $string['titlenotemtpy'] = 'A name is required.';
 $string['solution'] = 'Solution';
 $string['hide_solution'] = 'Hide solution';
 $string['show_solution'] = 'Show solution';
+$string['hide_solution_disabled'] = 'The solution is already hidden for all students';
 $string['submission'] = 'Submission';
 $string['assignments'] = 'Assignments';
 $string['files'] = 'Files';
@@ -264,6 +267,7 @@ $string['newsubmission'] = 'New Submission';
 $string['value_too_large'] = 'Error: Values above 6.0 are not allowed';
 $string['value_too_low'] = 'Error: Values below 1.0 are not allowed';
 $string['value_not_allowed'] = 'Error: Values need to be numbers between 1.0 and 6.0';
+$string['competence_locked'] = 'Evaluation exists or learning material is used';
 // === Example Submission ===
 $string['example_submission_header'] = 'Edit example {$a}';
 $string['example_submission_info'] = 'You are about to edit the example "{$a}". Your submission will be saved in Exabis ePortfolio and Teachers can view it there.';
@@ -484,7 +488,7 @@ $string['choosecourse'] = 'Select course: ';
 $string['weekly_schedule_added_all'] = 'Example added to the weekly schedule of all students.';
 $string['weekly_schedule_already_existing_for_one'] = 'Example has already been added to at least one student\'s weekly schedule.';
 $string['weekly_schedule_link_to_grid'] = 'For adding examples to the schedule, please use the overview';
-$string['pre_planning_storage'] = 'pre-planning storage';
+$string['pre_planning_storage'] = 'Pre-planning storage';
 $string['pre_planning_storage_added'] = 'Example added to the pre-planning storage.';
 $string['pre_planning_storage_already_contains'] = 'Example is already in pre-planning storage.';
 $string['save_pre_planning_selection'] = 'Add selected examples to weekly schedule of selected students';
@@ -496,7 +500,10 @@ $string['to_weekly_schedule'] = 'To weekly schedule';
 $string['blocking_event'] = 'Create blocking event';
 $string['blocking_event_title'] = 'title';
 $string['blocking_event_create'] = 'Add to pre-planning storage';
-
+$string['weekly_schedule_disabled'] = 'Hidden example can not be added to weekly schedule';
+$string['pre_planning_storage_disabled'] = 'Hidden example can not be added to pre-planning storage.';
+$string['add_example_for_all_students_to_schedule'] = 'Attention: Here you can add examples to the schedules of all students. This requires extra confirmation.';
+$string['add_example_for_all_students_to_schedule_confirmation'] = 'You are about to add the examples to the schedules of all students, do you want to continue?';
 
 // === Notifications ===
 $string['notification_submission_subject'] = '{$a->site}: {$a->student} submitted a solution for {$a->example}';
@@ -550,3 +557,15 @@ $string['forwhat'] = 'Wofür du das brauchst: ';
 $string['howtocheck'] = 'Wie du dein Können prüfen kannst: ';
 $string['reached_topic'] = 'Ich habe diese Kompetenz erreicht: ';
 $string['submit_example'] = 'Submit';
+// === Webservice Status ===
+$string['enable_rest'] = 'REST Protocol not enabled';
+$string['access_roles'] = 'Roles with webservice access';
+$string['no_permission'] = 'Permissions not set';
+$string['description_createtoken'] = 'Grant additional permission to the role "authenticated user" at: Site administration/Users/Permissions/Define roles
+4.1 Select Authenticated User
+4.2 Click on "Edit"
+4.3 Filter for createtoken
+4.4 Allow moodle/webservice:createtoken';
+$string['exacomp_not_found'] = 'Exacompservice not found';
+$string['exaport_not_found'] = 'Exaportservice not found';
+$string['no_external_trainer'] = 'No external trainers assigned';

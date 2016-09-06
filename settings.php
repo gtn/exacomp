@@ -154,6 +154,8 @@ $settings->add(new admin_setting_configtext('exacomp/scheduleunits', block_exaco
 	block_exacomp\get_string('settings_scheduleunits_description'), 8, PARAM_INT));
 $settings->add(new admin_setting_configtext('exacomp/schedulebegin', block_exacomp\get_string('settings_schedulebegin'),
 	block_exacomp\get_string('settings_schedulebegin_description'), "07:45", PARAM_TEXT));
+$settings->add(new admin_setting_configtextarea('exacomp/periods', block_exacomp\get_string('settings_periods'),block_exacomp\get_string('settings_periods_description'),''));
+ 
 
 
 $settings->add(new admin_setting_heading('exacomp/heading_data', block_exacomp\trans(['de:Technische Einstellungen', 'en:Technical Settings']), ''));

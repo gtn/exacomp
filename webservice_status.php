@@ -79,7 +79,7 @@ if (!empty($active_protocols)) {
 	}
 }
 if (!in_array('rest', $active_protocols)) {
-	$status = html_writer::tag('span', 'REST Protocol not enabled', array('class' => 'statuscritical')).$brtag.$status;
+	$status = html_writer::tag('span', get_string('enable_rest', 'block_exacomp'), array('class' => 'statuscritical')).$brtag.$status;
 } else {
 	$status = html_writer::tag('span', get_string('ok'), array('class' => 'statusok')).$brtag.$status;
 }
@@ -109,12 +109,13 @@ $table->data[] = $row;
 /// 4. Webservice Roles
 $row = array();
 $url = new moodle_url("/admin/roles/manage.php");
-$row[0] = "4. " . html_writer::tag('a', 'Roles with webservice access',
+$row[0] = "4. " . html_writer::tag('a', get_string('access_roles', 'block_exacomp'),
 				array('href' => $url));
 $wsroles = get_roles_with_capability('moodle/webservice:createtoken');
 // get rolename in local language
 $wsroles = role_fix_names($wsroles, context_system::instance(), ROLENAME_ORIGINAL);
-if ($wsroles) {
+
+if (count($wsroles)>1) {	//admin has always permission
 	$status = html_writer::tag('span', get_string('ok'), array('class' => 'statusok'));
 	foreach ($wsroles as $role) {
 		$status .= $brtag.$role->localname;
@@ -124,11 +125,7 @@ if ($wsroles) {
 }
 
 $row[1] = $status;
-$row[2] = nl2br('Grant additional permission to the role "authenticated user" at: Site administration/Users/Permissions/Define roles
-4.1 Select Authenticated User
-4.2 Click on "Edit"
-4.3 Filter for createtoken
-4.4 Allow moodle/webservice:createtoken');
+$row[2] = nl2br(get_string('description_createtoken', 'block_exacomp'));
 $table->data[] = $row;
 
 
@@ -138,7 +135,7 @@ $description = '';
 //set shortname for external service exacompservices
 $exacomp_service = $DB->get_record('external_services', array('name'=>'exacompservices'));
 if (!$exacomp_service) {
-	$status .= html_writer::tag('span', 'Exacompservice not found', array('class' => 'statuscritical'));
+	$status .= html_writer::tag('span', get_string('exacomp_not_found', 'block_exacomp'), array('class' => 'statuscritical'));
 } elseif (!$exacomp_service->downloadfiles || !$exacomp_service->uploadfiles) {
 	$status .= html_writer::tag('span', 'Error', array('class' => 'statuscritical'));
 	$description .= '<a href="'.(new moodle_url('/admin/webservice/service.php', ['id' => $exacomp_service->id])).'">'.
@@ -147,7 +144,7 @@ if (!$exacomp_service) {
 
 $exaport_service = $DB->get_record('external_services', array('name'=>'exaportservices'));
 if (!$exaport_service) {
-	$status .= html_writer::tag('span', 'Exaportservice not found', array('class' => 'statuscritical'));
+	$status .= html_writer::tag('span', get_string('exaport_not_found', 'block_exacomp'), array('class' => 'statuscritical'));
 }
 // not needed anymore
 /*
@@ -160,7 +157,7 @@ if (empty($status)) {
 }
 
 $row = array();
-$row[0] = "5. Webservice checks";
+$row[0] = "5. Additional webservice checks";
 $row[1] = $status;
 $row[2] = $description;
 $table->data[] = $row;
@@ -171,7 +168,7 @@ if (get_config('exacomp', 'external_trainer_assign')) {
 	if ($count) {
 		$status = html_writer::tag('span', get_string('ok'), array('class' => 'statusok'));
 	} else {
-		$status = html_writer::tag('span', 'No external trainers assigned', array('class' => 'statuscritical'));
+		$status = html_writer::tag('span', get_string('no_external_trainer', 'block_exacomp'), array('class' => 'statuscritical'));
 	}
 	// checks for elove app
 	$row = array();

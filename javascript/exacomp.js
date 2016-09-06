@@ -71,7 +71,7 @@ window.block_exacomp = $E = {
 	get_studentid: function() {
 		studentid = $E.get_param('studentid');
 		
-		if(studentid === null)
+		if(studentid === null || studentid == -5)
 			studentid = $( "#menuexacomp_competence_grid_select_student" ).val();
 		
 		return studentid;
@@ -80,14 +80,13 @@ window.block_exacomp = $E = {
 	call_ajax: function(data) {
 		data.courseid = $E.get_param('courseid');
 		data.sesskey = M.cfg.sesskey;
-		
 		var ajax = $.ajax({
 			method : "POST",
 			url : "ajax.php",
 			data : data
 		})
 		.done(function(ret) {
-			console.log(data.action, 'ret', ret);
+			//console.log(data.action, 'ret', ret);
 		}).error(function(ret) {
 			var errorMsg = '';
 			if (ret.responseText[0] == '<') {

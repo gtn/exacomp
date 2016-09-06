@@ -2177,7 +2177,8 @@ class block_exacomp_external extends external_api {
 				'numbering' => new external_value ( PARAM_TEXT, 'numbering for topic'),
 				'subjectid'=> new external_value (PARAM_INT, 'id of subject'),
 				'subjecttitle'=> new external_value (PARAM_TEXT, 'title of subject'),
-				'visible' => new external_value ( PARAM_INT, 'visibility of topic in current context')
+				'visible' => new external_value ( PARAM_INT, 'visibility of topic in current context'),
+				'used' => new external_value (PARAM_INT, 'used in current context')
 		) ) );
 	}
 
@@ -2226,7 +2227,8 @@ class block_exacomp_external extends external_api {
 				'numbering' => new external_value ( PARAM_TEXT, 'numbering for topic'),
 				'subjectid' => new external_value (PARAM_INT, 'id of subject'),
 				'subjecttitle' => new external_value (PARAM_TEXT, 'title of subject'),
-				'visible' => new external_value ( PARAM_INT, 'visibility of topic in current context')
+				'visible' => new external_value ( PARAM_INT, 'visibility of topic in current context'),
+				'used' => new external_value ( PARAM_INT, 'used in current context')
 		) ) );
 	}
 
@@ -2276,7 +2278,8 @@ class block_exacomp_external extends external_api {
 				'numbering' => new external_value ( PARAM_TEXT, 'numbering for descriptor'),
 				'niveautitle' => new external_value ( PARAM_TEXT, 'title of niveau'),
 				'niveauid' => new external_value ( PARAM_INT, 'id of niveau'),
-				'visible' => new external_value ( PARAM_INT, 'visibility of topic in current context')
+				'visible' => new external_value ( PARAM_INT, 'visibility of topic in current context'),
+				'used' => new external_value ( PARAM_INT, 'used in current context')
 		) ) );
 	}
 
@@ -2326,7 +2329,8 @@ class block_exacomp_external extends external_api {
 				'numbering' => new external_value ( PARAM_TEXT, 'numbering for descriptor'),
 				'niveautitle' => new external_value ( PARAM_TEXT, 'title of niveau'),
 				'niveauid' => new external_value ( PARAM_INT, 'id of niveau'),
-				'visible' => new external_value ( PARAM_INT, 'visibility of topic in current context')
+				'visible' => new external_value ( PARAM_INT, 'visibility of topic in current context'),
+				'used' => new external_value ( PARAM_INT, 'used in current context')
 		) ) );
 	}
 
@@ -2383,18 +2387,20 @@ class block_exacomp_external extends external_api {
 					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of child'),
 					'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 					'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-					'examplesinwork' => new external_value (PARAM_FLOAT, 'edited number of material'),
-					'visible' => new external_value (PARAM_INT, 'visibility of child')
+					'examplesinwork' => new external_value (PARAM_INT, 'edited number of material'),
+					'visible' => new external_value (PARAM_INT, 'visibility of child'),
+					'used' => new external_value ( PARAM_INT, 'used in current context')
 			) ) ) ,
 			'examples' => new external_multiple_structure ( new external_single_structure ( array (
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
 					'exampletitle' => new external_value ( PARAM_TEXT, 'title of example' ),
 					'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
-					'visible' => new external_value (PARAM_INT, 'visibility of example')
+					'visible' => new external_value (PARAM_INT, 'visibility of example'),
+					'used' => new external_value (PARAM_INT, 'used in current context')
 			) ) ) ,
 			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
 			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
-			'examplesinwork' => new external_value (PARAM_FLOAT, 'number of examples in work')
+			'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work')
 		) ) ;
 	}
 
@@ -2427,7 +2433,8 @@ class block_exacomp_external extends external_api {
 				'exampleid' => new external_value ( PARAM_INT, 'id of descriptor' ),
 				'exampletitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
 				'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
-				'visible' => new external_value(PARAM_INT, 'visibility of example in current context')
+				'visible' => new external_value(PARAM_INT, 'visibility of example in current context'),
+				'used' => new external_value ( PARAM_INT, 'used in current context')
 		) ) );
 	}
 
@@ -2461,6 +2468,7 @@ class block_exacomp_external extends external_api {
 				'exampletitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
 				'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
 				'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
+				'used' => new external_value (PARAM_INT, 'used in current context'),
 				'teacherevaluation' => new external_value ( PARAM_INT, 'example evaluation of teacher'),
 				'studentevaluation' => new external_value ( PARAM_INT, 'example evaluation of student'),
 				'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id')
@@ -2499,7 +2507,8 @@ class block_exacomp_external extends external_api {
 				'exampleid' => new external_value ( PARAM_INT, 'id of descriptor' ),
 				'exampletitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
 				'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
-				'visible' => new external_value (PARAM_INT, 'visibility of example in current context')
+				'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
+				'used' => new external_value (PARAM_INT, 'used in current context')
 		) ) );
 	}
 
@@ -2535,6 +2544,7 @@ class block_exacomp_external extends external_api {
 				'exampletitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
 				'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
 				'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
+				'used' => new external_value (PARAM_INT, 'used in current context'),
 				'teacherevaluation' => new external_value ( PARAM_INT, 'example evaluation of teacher'),
 				'studentevaluation' => new external_value ( PARAM_INT, 'example evaluation of student'),
 				'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id')
@@ -2543,15 +2553,48 @@ class block_exacomp_external extends external_api {
 
 
 	public static function dakora_get_example_overview_parameters(){
-		return static::get_example_by_id_parameters();
+		return new external_function_parameters ( array (
+				'courseid' => new external_value( PARAM_INT, 'id of course' ),
+				'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
+				'userid' => new external_value (PARAM_INT, 'id of user, if 0 current user')
+		) );
 	}
 
-	public static function dakora_get_example_overview($exampleid){
-		return static::get_example_by_id ( $exampleid );
+	public static function dakora_get_example_overview($courseid, $exampleid, $userid){
+		static::validate_parameters ( static::dakora_get_example_overview_parameters (), array (
+				'courseid' => $courseid,
+				'exampleid' => $exampleid,
+				'userid' => $userid,
+		) );
+		
+		$isTeacher = block_exacomp_is_teacher($courseid);
+		if(!$isTeacher)
+			$userid = g::$USER->id;
+		
+		$example = static::get_example_by_id ( $exampleid );
+		
+		$solution_visible = block_exacomp_is_example_solution_visible($courseid, $example, $userid);
+		$example->solution_visible = $solution_visible;
+		// remove solution if not visible for student
+		if(!$isTeacher && !$solution_visible)
+			$example->solution = "";
+		
+		return $example;
 	}
 
 	public static function dakora_get_example_overview_returns(){
-		return static::get_example_by_id_returns();
+		return new external_single_structure ( array (
+				'title' => new external_value ( PARAM_TEXT, 'title of example' ),
+				'description' => new external_value ( PARAM_TEXT, 'description of example' ),
+				'taskfileurl' => new external_value ( PARAM_TEXT, 'task fileurl' ),
+				'taskfilename' => new external_value ( PARAM_TEXT, 'task filename' ),
+				'externalurl' => new external_value ( PARAM_TEXT, 'externalurl of example' ),
+				'task' => new external_value ( PARAM_TEXT, '@deprecated' ),
+				'solution' => new external_value ( PARAM_TEXT, 'solution(url/description) of example' ),
+				'timeframe' => new external_value ( PARAM_INT, 'timeframe in minutes' ),
+				'hassubmissions' => new external_value ( PARAM_BOOL, 'true if example has already submissions' ),
+				'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context')
+		) );
 	}
 
 	/**
@@ -3070,7 +3113,7 @@ class block_exacomp_external extends external_api {
 				'userid'=>$userid
 			) );
 
-		if($userid == 0)
+		if($userid == 0 && !block_exacomp_is_teacher($courseid))
 			$userid = $USER->id;
 
 		static::require_can_access_course_user($courseid, $userid);
@@ -3135,8 +3178,8 @@ class block_exacomp_external extends external_api {
 				'courseid'=>$courseid,
 				'userid'=>$userid
 			) );
-
-		if($userid == 0)
+		
+        if($userid == 0 && !block_exacomp_is_teacher($courseid))
 			$userid = $USER->id;
 
 		static::require_can_access_course_user($courseid, $userid);
@@ -3273,6 +3316,51 @@ class block_exacomp_external extends external_api {
 		) );
 	}
 
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_add_examples_to_schedule_for_all_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value(PARAM_INT, 'id of course')
+		) );
+	}
+	
+	/**
+	 * remove example from time slot
+	 *
+	 * @param
+	 *
+	 * @return list of descriptors
+	 */
+	public static function dakora_add_examples_to_schedule_for_all($courseid) {
+	
+		static::validate_parameters ( static::dakora_add_examples_to_schedule_for_all_parameters (), array (
+				'courseid' => $courseid
+		) );
+	
+		// permissions are checked in lib.php
+		block_exacomp_add_examples_to_schedule_for_all($courseid);
+	
+		return array (
+				"success" => true
+		);
+	
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_add_examples_to_schedule_for_all_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
+		) );
+	}
+	
 	/**
 	 * Returns description of method parameters
 	 *
@@ -3297,29 +3385,37 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_get_examples_for_time_slot($userid, $start, $end) {
 		global $USER, $DB;
+		
 		static::validate_parameters ( static::dakora_get_examples_for_time_slot_parameters (), array (
-				'userid'=>$userid,
-				'start'=>$start,
-				'end'=>$end
-			) );
-
-		if($userid == 0)
+				'userid' => $userid,
+				'start' => $start,
+				'end' => $end 
+		));
+		
+		$isTeacher = block_exacomp_is_teacher_in_any_course ();
+		
+		if ($userid == 0 && ! $isTeacher)
 			$userid = $USER->id;
-
-		static::require_can_access_user($userid);
-
-		$examples = block_exacomp_get_examples_for_start_end_all_courses($userid, $start, $end);
-
-		foreach($examples as $example){
-			$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $userid);
-
-			$example_course = $DB->get_record('course', array('id'=>$example->courseid));
+		
+		if ($userid != 0)
+			static::require_can_access_user ( $userid );
+		
+		$examples = block_exacomp_get_examples_for_start_end_all_courses ( $userid, $start, $end );
+		
+		foreach ( $examples as $example ) {
+			
+			$example->state = block_exacomp_get_dakora_state_for_example ( $example->courseid, $example->exampleid, $userid );
+			$example_course = $DB->get_record ( 'course', array (
+					'id' => $example->courseid 
+			) );
+			
 			$example->courseshortname = $example_course->shortname;
 			$example->coursefullname = $example_course->fullname;
 		}
-
+		
 		return $examples;
 	}
+	
 
 	/**
 	 * Returns desription of method return values
@@ -3342,6 +3438,7 @@ class block_exacomp_external extends external_api {
 				'coursefullname' => new external_value (PARAM_TEXT, 'full name of example course')
 		) ) );
 	}
+	
 
 	/**
 	 * Returns description of method parameters
@@ -3381,14 +3478,16 @@ class block_exacomp_external extends external_api {
 			static::require_can_access_course_user($courseid, $userid);
 		}
 
+//		$cross_subjects_all = block_exacomp_get_cross_subjects_by_course($courseid); 
 		$cross_subjects = block_exacomp_get_cross_subjects_by_course($courseid, $userid);
-
+		$cross_subjects_visible = $cross_subjects;
+		
 		//if for all return only common cross subjects
 		if($forall){
-			$cross_subjects_return = array();
+			$cross_subjects_visible = array();
 			foreach($cross_subjects as $cross_subject){
 				if($cross_subject->shared == 1)
-					$cross_subjects_return[] = $cross_subject;
+					$cross_subjects_visible[$cross_subject->id] = $cross_subject;
 				else{
 					$shared_for_all = true;
 					$cross_sub_students = $DB->get_fieldset_select(\block_exacomp\DB_CROSSSTUD,'studentid', 'crosssubjid=?', array($cross_subject->id));
@@ -3398,14 +3497,20 @@ class block_exacomp_external extends external_api {
 							$shared_for_all = false;
 
 					if($shared_for_all)
-						$cross_subjects_return[] = $cross_subject;
+						$cross_subjects_visible[$cross_subject->id] = $cross_subject;
 				}
 			}
 
-			return $cross_subjects_return;
+			
 		}
 
-		return $cross_subjects;
+		$all_cross_subjects = block_exacomp_get_cross_subjects_by_course($courseid);
+		foreach($all_cross_subjects as $cross_subject){
+			$cross_subject->visible = 0;
+			if(array_key_exists($cross_subject->id, $cross_subjects_visible))
+				$cross_subject->visible = 1;
+		}
+		return $all_cross_subjects;
 	}
 
 	/**
@@ -3418,7 +3523,8 @@ class block_exacomp_external extends external_api {
 				'id' => new external_value ( PARAM_INT, 'id of cross subject' ),
 				'title' => new external_value ( PARAM_TEXT, 'title of cross subject' ),
 				'description' => new external_value ( PARAM_TEXT, 'description of cross subject'),
-				'subjectid' => new external_value (PARAM_INT, 'subject id, cross subject is associated with')
+				'subjectid' => new external_value (PARAM_INT, 'subject id, cross subject is associated with'),
+				'visible' => new external_value ( PARAM_INT, 'visibility of crosssubject for selected student')
 		) ) );
 	}
 
@@ -3474,7 +3580,9 @@ class block_exacomp_external extends external_api {
 				'descriptortitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
 				'numbering' => new external_value ( PARAM_TEXT, 'numbering for descriptor'),
 				'niveautitle' => new external_value ( PARAM_TEXT, 'title of nivaue'),
-				'niveauid' => new external_value ( PARAM_INT, 'id of niveau')
+				'niveauid' => new external_value ( PARAM_INT, 'id of niveau'),
+				'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
+				'used' => new external_value ( PARAM_INT, 'used in current context')
 		) ) );
 	}
 
@@ -3530,7 +3638,9 @@ class block_exacomp_external extends external_api {
 				'descriptortitle' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
 				'numbering' => new external_value ( PARAM_TEXT, 'numbering for descriptor'),
 				'niveautitle' => new external_value ( PARAM_TEXT, 'title of nivaue'),
-				'niveauid' => new external_value ( PARAM_INT, 'id of niveau')
+				'niveauid' => new external_value ( PARAM_INT, 'id of niveau'),
+				'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
+				'used' => new external_value ( PARAM_INT, 'used in current context')
 		) ) );
 	}
 
@@ -3589,18 +3699,20 @@ class block_exacomp_external extends external_api {
 					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of children'),
 					'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 					'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-					'examplesinwork' => new external_value (PARAM_FLOAT, 'edited number of material'),
-					'visible' => new external_value (PARAM_INT, 'visibility of child in current context')
+					'examplesinwork' => new external_value (PARAM_INT, 'edited number of material'),
+					'visible' => new external_value (PARAM_INT, 'visibility of child in current context'),
+					'used' => new external_value (PARAM_INT, 'used in current context')
 			) ) ) ,
 			'examples' => new external_multiple_structure ( new external_single_structure ( array (
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
 					'exampletitle' => new external_value ( PARAM_TEXT, 'title of example' ),
 					'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
-					'visible'=> new external_value (PARAM_INT, 'visibility of example in current context')
+					'visible'=> new external_value (PARAM_INT, 'visibility of example in current context'),
+					'used' => new external_value (PARAM_INT, 'used in current context')
 			) ) ),
 			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
 			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
-			'examplesinwork' => new external_value (PARAM_FLOAT, 'number of examples in work')
+			'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work')
 		) ) ;
 	}
 	/**
@@ -3658,18 +3770,20 @@ class block_exacomp_external extends external_api {
 					'hasmaterial' => new external_value ( PARAM_BOOL, 'true or false if child has materials'),
 					'examplestotal' => new external_value (PARAM_INT, 'total number of material'),
 					'examplesvisible' => new external_value (PARAM_INT, 'visible number of material'),
-					'examplesinwork' => new external_value (PARAM_FLOAT, 'edited number of material'),
-					'visible' => new external_value (PARAM_INT, 'visibility of children in current context')
+					'examplesinwork' => new external_value (PARAM_INT, 'edited number of material'),
+					'visible' => new external_value (PARAM_INT, 'visibility of children in current context'),
+					'used' => new external_value ( PARAM_INT, 'used in current context')
 			) ) ) ,
 			'examples' => new external_multiple_structure ( new external_single_structure ( array (
 					'exampleid' => new external_value ( PARAM_INT, 'id of example' ),
 					'exampletitle' => new external_value ( PARAM_TEXT, 'title of example' ),
 					'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
-					'visible' => new external_value (PARAM_INT, 'visibility of example in current context')
+					'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
+					'used' => new external_value ( PARAM_INT, 'used in current context')
 			) ) ),
 			'examplestotal' => new external_value (PARAM_INT, 'number of total examples'),
 			'examplesvisible' => new external_value (PARAM_INT, 'number of visible examples'),
-			'examplesinwork' => new external_value (PARAM_FLOAT, 'number of examples in work')
+			'examplesinwork' => new external_value (PARAM_INT, 'number of examples in work')
 		) ) ;
 	}
 
@@ -3693,7 +3807,14 @@ class block_exacomp_external extends external_api {
 		$interval = (get_config("exacomp","scheduleinterval")) ? get_config("exacomp","scheduleinterval") : 50;
 		$time =  (get_config("exacomp","schedulebegin")) ? get_config("exacomp","schedulebegin") : "07:45";
 
-		return array("units" => $units, "interval" => $interval, "begin" => $time);
+		$periods = block_exacomp_get_timetable_entries();
+		$periods_return = array();
+		foreach($periods as $period){
+			$period_return = new stdClass();
+			$period_return->title = $period;
+			$periods_return[] = $period_return;
+		}
+		return array("units" => $units, "interval" => $interval, "begin" => $time, "periods"=>$periods_return);
 	}
 
 	/**
@@ -3705,7 +3826,10 @@ class block_exacomp_external extends external_api {
 		return new external_single_structure ( array (
 						'units' => new external_value ( PARAM_INT, 'number of units per day' ),
 						'interval' => new external_value ( PARAM_TEXT, 'duration of unit in minutes' ),
-						'begin' => new external_value ( PARAM_TEXT, 'begin time for the first unit, format hh:mm')
+						'begin' => new external_value ( PARAM_TEXT, 'begin time for the first unit, format hh:mm'),
+						'periods' => new external_multiple_structure ( new external_single_structure ( array (
+							'title' => new external_value ( PARAM_TEXT, 'id of example' )
+						)))
 				));
 	}
 
@@ -4329,22 +4453,36 @@ class block_exacomp_external extends external_api {
 
 		// summary for children gradings
 		$grading_scheme = block_exacomp_get_grading_scheme($courseid) + 1;
-		$children_teacherevaluation = array_fill(0,$grading_scheme,0);
+	
+		$number_evalniveaus = 1;
+		if(block_exacomp_use_eval_niveau()){
+			$number_evalniveaus = 4;
+		}
+		
+		$children_teacherevaluation = array();
+		for($i = 0;$i<$number_evalniveaus; $i++){
+			$children_teacherevaluation[$i] = array_fill(0,$grading_scheme,0);
+		}
+		
 		$children_studentevaluation = array_fill(0,$grading_scheme,0);
-
-		//TODO check if this is still valid
+		
 		foreach($childsandexamples->children as $child) {
 			if($child->teacherevaluation > -1)
-				$children_teacherevaluation[$child->teacherevaluation]++;
+				$children_teacherevaluation[($child->evalniveauid>0)?$child->evalniveauid:0][$child->teacherevaluation]++;
 			if($child->studentevaluation > -1)
 				$children_studentevaluation[$child->studentevaluation]++;
 		}
+		
 		$childrengradings = new stdClass();
 		$childrengradings->teacher = array();
 		$childrengradings->student = array();
 
-		foreach($children_teacherevaluation as $key => $value) {
-			$childrengradings->teacher[$key] = array('sum' => $value);
+		
+		foreach($children_teacherevaluation as $niveauid => $gradings) {
+			foreach($gradings as $key => $grading){
+				$childrengradings->teacher[] = array('evalniveauid'=>$niveauid, 'value'=>$key, 'sum' => $grading);
+			}
+			
 		}
 		foreach($children_studentevaluation as $key => $value) {
 			$childrengradings->student[$key] = array('sum' => $value);
@@ -4354,22 +4492,34 @@ class block_exacomp_external extends external_api {
 		// summary for example gradings
 		$descriptor_return->examples = $childsandexamples->examples;
 
-		$examples_teacherevaluation = array_fill(0,$grading_scheme,0);
+		$examples_teacherevaluation = array();
+		for($i = 0;$i<$number_evalniveaus; $i++){
+			$examples_teacherevaluation[$i] = array_fill(0,$grading_scheme,0);
+		}
+	
 		$examples_studentevaluation = array_fill(0,$grading_scheme,0);
 
 		foreach($childsandexamples->examples as $example) {
 			if($example->teacherevaluation > -1)
-				$examples_teacherevaluation[$example->teacherevaluation]++;
+				$examples_teacherevaluation[($example->evalniveauid>0)?$example->evalniveauid:0][$example->teacherevaluation]++;
 			if($example->studentevaluation > -1)
 				$examples_studentevaluation[$example->studentevaluation]++;
+			
+			$example->id  = $example->exampleid;
+			$solution_visible = block_exacomp_is_example_solution_visible($courseid, $example, $userid);
+			$example->solution_visible = $solution_visible;
 		}
 		$examplegradings = new stdClass();
 		$examplegradings->teacher = array();
 		$examplegradings->student = array();
 
-		foreach($examples_teacherevaluation as $key => $value) {
-			$examplegradings->teacher[$key] = array('sum' => $value);
+		foreach($examples_teacherevaluation as $niveauid => $gradings) {
+			foreach($gradings as $key => $grading){
+				$examplegradings->teacher[] = array('evalniveauid'=>$niveauid, 'value'=>$key, 'sum' => $grading);
+			}
+			
 		}
+	
 		foreach($examples_studentevaluation as $key => $value) {
 			$examplegradings->student[$key] = array('sum' => $value);
 		}
@@ -4384,6 +4534,9 @@ class block_exacomp_external extends external_api {
 		if(empty($childsandexamples->examples))
 			$descriptor_return->hasmaterial = false;
 
+		$descriptor_return->visible = (block_exacomp_is_descriptor_visible($courseid, $descriptor, $userid))?1:0;
+		$descriptor_return->used = (block_exacomp_descriptor_used($courseid, $descriptor, $userid))?1:0;
+		
 		return $descriptor_return;
 	}
 
@@ -4412,17 +4565,22 @@ class block_exacomp_external extends external_api {
 								'exampletitle' => new external_value ( PARAM_TEXT, 'title of example' ),
 								'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
 								'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
+								'used' => new external_value (PARAM_INT, 'used in current context'),
 								'teacherevaluation' => new external_value ( PARAM_INT, 'example evaluation of teacher' ),
 								'studentevaluation' => new external_value ( PARAM_INT, 'example evaluation of student' ),
-								'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id')
+								'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
+								'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context')
 						) ) ),
 						'examplestotal' => new external_value ( PARAM_INT, 'total number of material' ),
-						'examplesvisible' => new external_value ( PARAM_FLOAT, 'visible number of material' ),
-						'examplesinwork' => new external_value ( PARAM_FLOAT, 'number of material in work' ),
+						'examplesvisible' => new external_value ( PARAM_INT, 'visible number of material' ),
+						'examplesinwork' => new external_value ( PARAM_INT, 'number of material in work' ),
 						'visible' => new external_value(PARAM_INT, 'visibility of children in current context'),
-						'examplesedited' => new external_value ( PARAM_FLOAT, 'number of edited material' ),
+						'used' => new external_value ( PARAM_INT, 'used in current context'),
+						'examplesedited' => new external_value ( PARAM_INT, 'number of edited material' ),
 						'examplegradings' => new external_single_structure ( array (
 								'teacher' => new external_multiple_structure ( new external_single_structure ( array (
+										'evalniveauid' => new external_value (PARAM_INT, 'niveau id to according number', 0),
+										'value' => new external_value (PARAM_INT, 'grading value', 0),
 										'sum' => new external_value ( PARAM_INT, 'number of gradings' )
 								) ) ),
 								'student' => new external_multiple_structure ( new external_single_structure ( array (
@@ -4432,6 +4590,8 @@ class block_exacomp_external extends external_api {
 				) ) ),
 				'childrengradings' => new external_single_structure ( array (
 						'teacher' => new external_multiple_structure ( new external_single_structure ( array (
+								'evalniveauid' => new external_value (PARAM_INT, 'niveau id to according number', 0),
+								'value' => new external_value (PARAM_INT, 'grading value', 0),
 								'sum' => new external_value ( PARAM_INT, 'number of gradings' )
 						) ) ),
 						'student' => new external_multiple_structure ( new external_single_structure ( array (
@@ -4443,22 +4603,28 @@ class block_exacomp_external extends external_api {
 						'exampletitle' => new external_value ( PARAM_TEXT, 'title of example' ),
 						'examplestate' => new external_value ( PARAM_INT, 'state of example, always 0 if for all students' ),
 						'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
+						'used' => new external_value ( PARAM_INT, 'used in current context'),
 						'teacherevaluation' => new external_value ( PARAM_INT, 'example evaluation of teacher' ),
 						'studentevaluation' => new external_value ( PARAM_INT, 'example evaluation of student' ),
-						'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id')
+						'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),				
+						'solution_visible' => new external_value (PARAM_BOOL, 'visibility for example solution in current context')
 				) ) ),
 				'examplestotal' => new external_value ( PARAM_INT, 'total number of material' ),
-				'examplesvisible' => new external_value ( PARAM_FLOAT, 'visible number of material' ),
-				'examplesinwork' => new external_value ( PARAM_FLOAT, 'number of material in work' ),
-				'examplesedited' => new external_value ( PARAM_FLOAT, 'number of edited material' ),
+				'examplesvisible' => new external_value ( PARAM_INT, 'visible number of material' ),
+				'examplesinwork' => new external_value ( PARAM_INT, 'number of material in work' ),
+				'examplesedited' => new external_value ( PARAM_INT, 'number of edited material' ),
 				'examplegradings' => new external_single_structure ( array (
 						'teacher' => new external_multiple_structure ( new external_single_structure ( array (
+								'evalniveauid' => new external_value (PARAM_INT, 'niveau id to according number', 0),
+								'value' => new external_value (PARAM_INT, 'grading value', 0),
 								'sum' => new external_value ( PARAM_INT, 'number of gradings' )
 						) ) ),
 						'student' => new external_multiple_structure ( new external_single_structure ( array (
 								'sum' => new external_value ( PARAM_INT, 'number of gradings' )
 						) ) )
-				) )
+				) ),
+				'visible' => new external_value (PARAM_INT, 'visibility of example in current context'),
+				'used' => new external_value (PARAM_INT, 'used in current context')
 		) );
 	}
 
@@ -4518,23 +4684,22 @@ class block_exacomp_external extends external_api {
 			$data['type'] = $itemInformation->type;
 			$data['url'] = $itemInformation->url;
 			$data['teacheritemvalue'] = isset ( $itemInformation->teachervalue ) ? $itemInformation->teachervalue : -1;
-
-			if ($itemInformation->type == 'file') {
-				require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
-
-				if ($file = block_exaport_get_item_file ( $itemInformation )) {
-					
-					/*$fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
-						'userid' => $userid,
-						'itemid' => $itemInformation->id,
-						'wstoken' => static::wstoken(),
-					]);*/
-					//TODO: moodle_url contains encoding errors which lead to problems in dakora
-					$fileurl = $CFG->wwwroot . "/blocks/exaport/portfoliofile.php?" . "userid=" . $userid . "&itemid=" . $itemInformation->id . "&wstoken=" . static::wstoken();
-					$data['file'] = $fileurl;
-					$data['mimetype'] = $file->get_mimetype();
-					$data['filename'] = $file->get_filename();
-				}
+			
+			require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
+			if ($file = block_exaport_get_item_file ( $itemInformation )) {
+				
+				/*
+				 * $fileurl = (string)new moodle_url("/blocks/exaport/portfoliofile.php", [
+				 * 'userid' => $userid,
+				 * 'itemid' => $itemInformation->id,
+				 * 'wstoken' => static::wstoken(),
+				 * ]);
+				 */
+				// TODO: moodle_url contains encoding errors which lead to problems in dakora
+				$fileurl = $CFG->wwwroot . "/blocks/exaport/portfoliofile.php?" . "userid=" . $userid . "&itemid=" . $itemInformation->id . "&wstoken=" . static::wstoken ();
+				$data ['file'] = $fileurl;
+				$data ['mimetype'] = $file->get_mimetype ();
+				$data ['filename'] = $file->get_filename ();
 			}
 
 			$data['studentcomment'] = '';
@@ -4715,7 +4880,7 @@ class block_exacomp_external extends external_api {
 			$data_contents[] = $data_content;
 		}
 		#sort profile entries
-		usort($data_contents, "static::cmp");
+		usort($data_contents, "static::cmp_niveausort");
 		$data->descriptordata = $data_contents;
 		
 		return $data;
@@ -4774,7 +4939,7 @@ class block_exacomp_external extends external_api {
 		static::validate_parameters(static::dakora_create_blocking_event_parameters(), array('courseid'=>$courseid,'title'=>$title,
 			'userid'=>$userid, 'preplanningstorage'=>$preplanningstorage));
 
-		if($userid == 0 && !$preplanningstorage)
+		if($userid == 0 && !$preplanningstorage && !block_exacomp_is_teacher($courseid))
 			$userid = $USER->id;
 
 		static::require_can_access_course_user($courseid, $userid);
@@ -5142,6 +5307,359 @@ class block_exacomp_external extends external_api {
 				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
 		) );
 	}
+
+	public static function dakora_set_example_solution_visibility_parameters(){
+		return new external_function_parameters ( array (
+				'courseid' => new external_value (PARAM_INT, 'id of course'),
+				'exampleid' => new external_value (PARAM_INT, 'id of example'),
+				'userid' => new external_value ( PARAM_INT, 'id of user, 0 for current user'),
+				'forall' => new external_value (PARAM_BOOL, 'for all users = true, for one user = false'),
+				'visible' => new external_value (PARAM_BOOL, 'visibility for example in current context')
+		) );
+	}
+
+	public static function dakora_set_example_solution_visibility($courseid, $exampleid, $userid, $forall, $visible){
+		global $USER;
+		static::validate_parameters ( static::dakora_set_example_solution_visibility_parameters(), array (
+				'courseid' => $courseid,
+				'exampleid' => $exampleid,
+				'userid' => $userid,
+				'forall' => $forall,
+				'visible' => $visible
+		) );
+	
+		if($userid == 0 && !$forall)
+			$userid = $USER->id;
+	
+		static::require_can_access_course_user($courseid, $userid);
+
+		block_exacomp_set_example_solution_visibility($exampleid, $courseid, $visible, $userid);
+	
+		return array('success' => true);
+	}
+	
+	public static function dakora_set_example_solution_visibility_returns(){
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
+		) );
+	}
+	
+	public static function dakora_create_cross_subject_parameters(){
+		return new external_function_parameters ( array (
+				'courseid' => new external_value (PARAM_INT, 'id of course'),
+				'title' => new external_value (PARAM_TEXT, 'title of crosssubject'),
+				'description' => new external_value ( PARAM_TEXT, 'description of crosssubject'),
+				'subjectid' => new external_value (PARAM_INT, 'id of subject crosssubject is assigned to'),
+				'draftid' => new external_value (PARAM_INT, 'id of draft', VALUE_DEFAULT, 0)
+		) );
+	}
+
+	public static function dakora_create_cross_subject($courseid, $title, $description, $subjectid, $draftid){
+		global $USER;
+		static::validate_parameters ( static::dakora_create_cross_subject_parameters(), array (
+				'courseid' => $courseid,
+				'title' => $title,
+				'description' => $description,
+				'subjectid' => $subjectid,
+				'draftid' => $draftid
+		) );
+	
+		$userid = $USER->id;
+	
+		static::require_can_access_course($courseid);
+		
+		block_exacomp_require_teacher($courseid );
+		
+		if($draftid > 0){
+			$crosssubjid = block_exacomp_save_drafts_to_course(array($draftid), $courseid);
+			block_exacomp_edit_crosssub($crosssubjid, $title, $description, $subjectid);
+		}else
+			block_exacomp_create_crosssub($courseid, $title, $description, $userid, $subjectid);
+		
+		return array('success' => true);
+	}
+	
+	public static function dakora_create_cross_subject_returns(){
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
+		) );
+	}
+	
+	public static function dakora_delete_cross_subject_parameters(){
+		return new external_function_parameters ( array (
+				'courseid' => new external_value (PARAM_INT, 'id of course'),
+				'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject')
+		) );
+	}
+
+	public static function dakora_delete_cross_subject($courseid, $crosssubjid){
+		global $USER;
+		static::validate_parameters ( static::dakora_delete_cross_subject_parameters(), array (
+				'courseid' => $courseid,
+				'crosssubjid' => $crosssubjid
+		) );
+	
+		$userid = $USER->id;
+	
+		static::require_can_access_course($courseid);
+		
+		block_exacomp_require_teacher($courseid );
+		
+		$return = block_exacomp_delete_crosssub($crosssubjid);
+		return array('success' => $return);
+	}
+	
+	public static function dakora_delete_cross_subject_returns(){
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
+		) );
+	}
+	
+	public static function dakora_edit_cross_subject_parameters(){
+		return new external_function_parameters ( array (
+				'courseid' => new external_value (PARAM_INT, 'id of course'),
+				'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject'),
+				'title' => new external_value (PARAM_TEXT, 'title of crosssubject'),
+				'description' => new external_value ( PARAM_TEXT, 'description of crosssubject'),
+				'subjectid' => new external_value (PARAM_INT, 'id of subject crosssubject is assigned to')
+		) );
+	}
+
+	public static function dakora_edit_cross_subject($courseid, $crosssubjid, $title, $description, $subjectid){
+		global $USER;
+		static::validate_parameters ( static::dakora_edit_cross_subject_parameters(), array (
+				'courseid' => $courseid,
+				'crosssubjid' => $crosssubjid,
+				'title' => $title,
+				'description' => $description,
+				'subjectid' => $subjectid
+		) );
+	
+		$userid = $USER->id;
+	
+		static::require_can_access_course($courseid);
+		block_exacomp_require_teacher($courseid);
+		
+		block_exacomp_edit_crosssub($crosssubjid, $title, $description, $subjectid);
+		return array('success'=>true);
+	}
+	
+	public static function dakora_edit_cross_subject_returns(){
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
+		) );
+	}
+	
+	public static function dakora_get_cross_subject_drafts_parameters(){
+		return new external_function_parameters ( array (
+			'courseid' => new external_value (PARAM_INT, 'id of course')
+			) );
+	}
+
+	public static function dakora_get_cross_subject_drafts($courseid){
+		global $USER;
+		static::validate_parameters ( static::dakora_get_cross_subject_drafts_parameters(), array ('courseid'=>$courseid) );
+	
+		$userid = $USER->id;
+		
+		block_exacomp_require_teacher($courseid);
+		
+		return block_exacomp_get_cross_subjects_drafts();
+	}
+	
+	public static function dakora_get_cross_subject_drafts_returns(){
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'id' => new external_value ( PARAM_INT, 'id of crosssubjet draft' ),
+				'title' => new external_value (PARAM_TEXT, 'title of draft'),
+				'description' => new external_value (PARAM_TEXT, 'description of draft')
+		) ) );
+	}
+	
+	public static function dakora_get_subjects_parameters(){
+		return new external_function_parameters ( array (
+			'courseid' => new external_value (PARAM_INT, 'id of course')
+			) );
+	}
+
+	public static function dakora_get_subjects($courseid){
+		global $USER;
+		static::validate_parameters ( static::dakora_get_subjects_parameters(), array ('courseid'=>$courseid) );
+	
+		$userid = $USER->id;
+		
+		static::require_can_access_course($courseid);
+		block_exacomp_require_teacher($courseid);
+		
+		$subjects = array();
+		$default_sub = new stdClass();
+		$default_sub->id = 0;
+		$default_sub->title =  get_string('nocrosssubsub', 'block_exacomp');
+		$subjects[] = $default_sub;
+		
+		$subjects = array_merge($subjects, block_exacomp_get_subjects_by_course ( $courseid ));
+		
+		return $subjects;
+	}
+	
+	public static function dakora_get_subjects_returns(){
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'id' => new external_value ( PARAM_INT, 'id of subject' ),
+				'title' => new external_value (PARAM_TEXT, 'title of subject')
+		) ) );
+	}
+	
+	public static function dakora_get_students_for_cross_subject_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
+				'crosssubjid' => new external_value ( PARAM_INT, 'id of crossssubj')
+		) );
+	}
+
+	public static function dakora_get_students_for_cross_subject($courseid, $crosssubjid) {
+		global $DB;
+		static::validate_parameters ( static::dakora_get_students_for_cross_subject_parameters (), array (
+				'courseid'=>$courseid,
+				'crosssubjid'=>$crosssubjid
+			) );
+
+		static::require_can_access_course($courseid);
+		block_exacomp_require_teacher($courseid);
+		
+		$crosssub = $DB->get_record(\block_exacomp\DB_CROSSSUBJECTS, array('id'=>$crosssubjid));
+		$students = block_exacomp_get_students_for_crosssubject($courseid, $crosssub);
+		
+		$coursestudents = static::dakora_get_students_for_course($courseid);
+		foreach($coursestudents as $student){
+			if(array_key_exists($student->id, $students))
+				$student->visible = 1;
+			else
+				$student->visible = 0;
+		}
+		
+		$return = new stdClass();
+		$return->students = $coursestudents;
+		$return->visible_forall = $crosssub->shared;
+		
+		return $return;
+	}
+
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function dakora_get_students_for_cross_subject_returns() {
+		return new external_single_structure ( array (
+			'students' => new external_multiple_structure ( new external_single_structure ( array (
+					'id' => new external_value ( PARAM_INT, 'id of student' ),
+					'firstname' => new external_value ( PARAM_TEXT, 'firstname of student' ),
+					'lastname' => new external_value ( PARAM_TEXT, 'lastname of student'),
+					'visible' => new external_value ( PARAM_INT, 'visibility of crosssubject to student')
+			) ) ) ,
+			'visible_forall' => new external_value (PARAM_INT, 'visibility of crosssubject to all students')
+			) );
+	}
+	
+	public static function dakora_set_cross_subject_student_parameters(){
+		return new external_function_parameters ( array (
+				'courseid' => new external_value (PARAM_INT, 'id of course'),
+				'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject'),
+				'userid' => new external_value (PARAM_TEXT, 'title of crosssubject'),
+				'forall' => new external_value (PARAM_INT, '0 or 1'),
+				'value' => new external_value ( PARAM_INT, 'value 0 or 1')
+		) );
+	}
+
+	public static function dakora_set_cross_subject_student($courseid, $crosssubjid, $userid, $forall, $value){
+		global $USER, $DB;
+		static::validate_parameters ( static::dakora_set_cross_subject_student_parameters(), array (
+				'courseid' => $courseid,
+				'crosssubjid' => $crosssubjid,
+				'userid' => $userid,
+				'forall' => $forall,
+				'value' => $value
+		) );
+	
+		if($userid == 0 && !$forall)
+			$userid = $USER->id;
+		
+		static::require_can_access_course($courseid);
+		block_exacomp_require_teacher($courseid);
+		
+		if($userid == 0){
+			$crosssub = $DB->get_record(\block_exacomp\DB_CROSSSUBJECTS, array('id'=>$crosssubjid));
+			if($crosssub->shared != $value){
+				$crosssub->shared = $value;
+				$DB->update_record(\block_exacomp\DB_CROSSSUBJECTS, $crosssub);
+			}
+			
+			$DB->delete_records(\block_exacomp\DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid));
+			return array('success'=>true);
+		}
+		
+		if(block_exacomp_student_crosssubj($crosssubjid, $userid) && $value == 0){
+			$DB->delete_records(\block_exacomp\DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid, 'studentid'=>$userid));
+			return array('success'=>true);
+		}
+		
+		if(!block_exacomp_student_crosssubj($crosssubjid, $userid) && $value == 1){
+			$insert = new stdClass();
+			$insert->studentid = $userid;
+			$insert->crosssubjid = $crosssubjid;
+			$DB->insert_record(\block_exacomp\DB_CROSSSTUD, $insert);
+			return array('success'=>true);
+		}
+		
+		if(block_exacomp_student_crosssubj($crosssubjid, $userid) && $value == 1 || !block_exacomp_student_crosssubj($crosssubjid, $userid) && $value == 0)
+			return array('success' => true);
+		
+		return array('success'=>false);
+	}
+	
+	public static function dakora_set_cross_subject_student_returns(){
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
+		) );
+	}
+
+	public static function dakora_set_cross_subject_descriptor_parameters(){
+		return new external_function_parameters ( array (
+				'courseid' => new external_value (PARAM_INT, 'id of course'),
+				'crosssubjid' => new external_value (PARAM_INT, 'id of crosssubject'),
+				'descriptorid' => new external_value (PARAM_TEXT, 'title of crosssubject'),
+				'value' => new external_value ( PARAM_INT, 'value 0 or 1')
+		) );
+	}
+
+	public static function dakora_set_cross_subject_descriptor($courseid, $crosssubjid, $descriptorid, $value){
+		global $USER, $DB;
+		static::validate_parameters ( static::dakora_set_cross_subject_descriptor_parameters(), array (
+				'courseid' => $courseid,
+				'crosssubjid' => $crosssubjid,
+				'descriptorid' => $descriptorid,
+				'value' => $value
+		) );
+	
+		static::require_can_access_course($courseid);
+		block_exacomp_require_teacher($courseid);
+		
+		if($value == 1){
+			block_exacomp_set_cross_subject_descriptor($crosssubjid, $descriptorid);
+			return array('success'=>true);
+		}
+		
+		if($value == 0){
+			block_exacomp_unset_cross_subject_descriptor($crosssubjid, $descriptorid);
+			return array('success'=>true);
+		}
+		return array('success'=>false);
+	}
+	
+	public static function dakora_set_cross_subject_descriptor_returns(){
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'status of success, either true (1) or false (0)' )
+		) );
+	}
 	/**
 	* helper function to use same code for 2 ws
 	*/
@@ -5185,6 +5703,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 				$child_return = static::dakora_get_descriptor_details($courseid, $child->id, $userid, $forall, $crosssubjid);
 
 				$child_return->visible = (!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, $non_visibilities_student))||$forall))?1:0;
+				$child_return->used = (block_exacomp_descriptor_used($courseid, $child, $userid))?1:0;
 				//if(!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, $non_visibilities_student))||$forall)){
 					if($crosssubjid == 0 || in_array($child->id, $crossdesc) || in_array($descriptorid, $crossdesc))
 						$children_return[] = $child_return;
@@ -5211,6 +5730,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 				$example_return->exampletitle = $example->title;
 				$example_return->examplestate = ($forall)?0:block_exacomp_get_dakora_state_for_example($courseid, $example->id, $userid);
 				$example_return->visible = ((!in_array($example->id, $example_non_visibilities)) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))?1:0;
+				$example_return->used = (block_exacomp_example_used($courseid, $example, $userid))?1:0;
 				if(!array_key_exists($example->id, $examples_return))
 					$examples_return[$example->id] = $example_return;
 			}
@@ -5247,7 +5767,8 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 					$topic_return->numbering = block_exacomp_get_topic_numbering($topic->id);
 					$topic_return->subjectid = $subject->id;
 					$topic_return->subjecttitle = $subject->title;
-					$topic_return->visible = block_exacomp_is_topic_visible($courseid, $topic, $userid);
+					$topic_return->visible = (block_exacomp_is_topic_visible($courseid, $topic, $userid))?1:0;
+					$topic_return->used = (block_exacomp_topic_used($courseid, $topic, $userid))?1:0;
 					$topics_return[] = $topic_return;
 				}
 			}
@@ -5293,6 +5814,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 								$descriptor_return->niveauid = $niveau->id;
 							}
 							$descriptor_return->visible = (!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student))||$forall))?1:0;
+							$descriptor_return->used = (block_exacomp_descriptor_used($courseid, $descriptor, $userid))?1:0;
 							//if(!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student))||$forall))
 							$descriptors_return[] = $descriptor_return;
 						}
@@ -5301,7 +5823,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 			}
 		}
 
-		usort($descriptors_return, "static::cmp");
+		usort($descriptors_return, "static::cmp_niveausort");
 		return $descriptors_return;
 	}
 
@@ -5310,6 +5832,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 
 		$descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid, true);
 
+        
 		$non_visibilities = $DB->get_fieldset_select(\block_exacomp\DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
 		$non_topic_visibilities = $DB->get_fieldset_select(\block_exacomp\DB_TOPICVISIBILITY, 'topicid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
 		
@@ -5324,79 +5847,92 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 		$descriptors_return = array();
 		foreach($descriptors as $descriptor){
 			//TODO
-			if(!in_array($descriptor->topicid, $non_topic_visibilities) && ((!$forall && !in_array($descriptor->topicid, $non_topic_visibilities_student))||$forall)){
-				if(!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student))||$forall)){ 	//descriptor is visibile
-					if($only_associated){
-						$has_visible_examples = false;
-						$has_children_with_visible_examples = false;
+			if($only_associated){
+				$has_visible_examples = false;
+				$has_children_with_visible_examples = false;
 
-						$example_non_visibilities = $DB->get_fieldset_select(\block_exacomp\DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
-							if(!$forall)
-								$example_non_visibilities_student = $DB->get_fieldset_select(\block_exacomp\DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
+				$example_non_visibilities = $DB->get_fieldset_select(\block_exacomp\DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, 0));
+					if(!$forall)
+						$example_non_visibilities_student = $DB->get_fieldset_select(\block_exacomp\DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=? AND visible=0', array($courseid, $userid));
 
 
-						if(isset($descriptor->examples)){	//descriptor has examples
-							foreach($descriptor->examples as $example){
-								if(!in_array($example->id, $example_non_visibilities) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))
-									$has_visible_examples = true;	//descriptor has visible examples
+				if(isset($descriptor->examples)){	//descriptor has examples
+					foreach($descriptor->examples as $example){
+						if(!in_array($example->id, $example_non_visibilities) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))
+							$has_visible_examples = true;	//descriptor has visible examples
 
-							}
-						}
+					}
+				}
 
-						if(isset($descriptor->children)){
-							foreach($descriptor->children as $child){
-								if((!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, $non_visibilities_student))||$forall))){ //child is visible
-									if(isset($child->examples)){	//descriptor has children
-										foreach($child->examples as $example){
-											if(!in_array($example->id, $example_non_visibilities) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))
-												$has_children_with_visible_examples = true;	//descriptor has children with visible examples
-										}
-									}
+				if(isset($descriptor->children)){
+					foreach($descriptor->children as $child){
+						if((!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, $non_visibilities_student))||$forall))){ //child is visible
+							if(isset($child->examples)){	//descriptor has children
+								foreach($child->examples as $example){
+									if(!in_array($example->id, $example_non_visibilities) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))
+										$has_children_with_visible_examples = true;	//descriptor has children with visible examples
 								}
 							}
 						}
+					}
+				}
 
-						if($has_visible_examples || $has_children_with_visible_examples){
-								$descriptor_return = new stdClass();
-								$descriptor_return->descriptorid = $descriptor->id;
-								$descriptor_return->descriptortitle = $descriptor->title;
-								$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
-								$descriptor_return->niveautitle = "";
-								$descriptor_return->niveauid = 0;
-								if($descriptor->niveauid){
-									$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
-									$descriptor_return->niveautitle = substr(block_exacomp_get_descriptor_numbering($descriptor),0,1).": ".$niveau->title;
-									$descriptor_return->niveausort = block_exacomp_get_descriptor_numbering($descriptor);
-									$descriptor_return->niveauid = $niveau->id;
-								}
-								$descriptors_return[] = $descriptor_return;
-						}
-					}else{
+				if($has_visible_examples || $has_children_with_visible_examples){
 						$descriptor_return = new stdClass();
 						$descriptor_return->descriptorid = $descriptor->id;
 						$descriptor_return->descriptortitle = $descriptor->title;
 						$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
 						$descriptor_return->niveautitle = "";
 						$descriptor_return->niveauid = 0;
+						
+						$visibility = 0;
+						if(!in_array($descriptor->topicid, $non_topic_visibilities) && ((!$forall && !in_array($descriptor->topicid, $non_topic_visibilities_student))||$forall))
+							if(!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student))||$forall))	//descriptor is visibile
+								$visibility = 1;
+								
+						$descriptor_return->visible = $visibility;
+						$descriptor_return->used = (block_exacomp_descriptor_used($courseid, $descriptor, $userid))?1:0;
 						if($descriptor->niveauid){
 							$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
-							$descriptor_return->niveautitle = substr(block_exacomp_get_descriptor_numbering($descriptor),0,1).": ".$niveau->title;
+							$descriptor_return->niveautitle = substr(block_exacomp_get_descriptor_numbering($descriptor),0,3).": ".$niveau->title;
 							$descriptor_return->niveausort = block_exacomp_get_descriptor_numbering($descriptor);
 							$descriptor_return->niveauid = $niveau->id;
 						}
 						$descriptors_return[] = $descriptor_return;
-					}
 				}
+			}else{
+				$descriptor_return = new stdClass();
+				$descriptor_return->descriptorid = $descriptor->id;
+				$descriptor_return->descriptortitle = $descriptor->title;
+				$descriptor_return->numbering = block_exacomp_get_descriptor_numbering($descriptor);
+				$descriptor_return->niveautitle = "";
+				$descriptor_return->niveauid = 0;
+				
+				$visibility = 0;
+				if(!in_array($descriptor->topicid, $non_topic_visibilities) && ((!$forall && !in_array($descriptor->topicid, $non_topic_visibilities_student))||$forall))
+					if(!in_array($descriptor->id, $non_visibilities) && ((!$forall && !in_array($descriptor->id, $non_visibilities_student))||$forall))	//descriptor is visibile
+						$visibility = 1;
+						
+				$descriptor_return->visible = $visibility;
+				$descriptor_return->used = (block_exacomp_descriptor_used($courseid, $descriptor, $userid))?1:0;
+				
+				if($descriptor->niveauid){
+					$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
+					$descriptor_return->niveautitle = substr(block_exacomp_get_descriptor_numbering($descriptor),0,3).": ".$niveau->title;
+					$descriptor_return->niveausort = block_exacomp_get_descriptor_numbering($descriptor);
+					$descriptor_return->niveauid = $niveau->id;
+				}
+				$descriptors_return[] = $descriptor_return;
 			}
 		}
 
 		#sort crosssub entries
-		usort($descriptors_return, "static::cmp");
+		usort($descriptors_return, "static::cmp_niveausort");
 		
 		return $descriptors_return;
 	}
 	
-	private static function cmp($a, $b){
+	private static function cmp_niveausort($a, $b){
 		return strcmp($a->niveausort, $b->niveausort);
 	}
 	
@@ -5450,12 +5986,14 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 			}
 
 			$example_return->visible = ((!in_array($example->id, $example_non_visibilities)) && ((!$forall && !in_array($example->id, $example_non_visibilities_student))||$forall))?1:0;
+			$example_return->used = (block_exacomp_example_used($courseid, $example, $userid))?1:0;
 			if(!array_key_exists($example->id, $examples_return))
 				$examples_return[$example->id] = $example_return;
 		}
 
 		return $examples_return;
 	}
+	//TODO this is not true for newest version
 	private static function get_descriptor_example_statistic($courseid, $userid, $descriptorid, $forall, $crosssubjid){
 		$return = new stdClass();
 		$return->total = 0;
@@ -5471,12 +6009,12 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 		else
 			static::require_can_access_course_user($courseid, $userid);
 
-		list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork, $totalHidden, $edited) = block_exacomp_get_example_statistic_for_descriptor($courseid, $descriptorid, $userid, $crosssubjid);
+		list($total, $gradings, $notevaluated, $inwork, $totalgrade, $notinwork, $hidden, $edited, $evaluated, $visible) = block_exacomp_get_example_statistic_for_descriptor_refact($courseid, $descriptorid, $userid, $crosssubjid);
 
-		$return->total = $totalHidden/ $number_students;
-		$return->visible = $total / $number_students;
-		$return->inwork = ($inWork>0)?$inWork / $number_students:0;
-		$return->edited = $edited / $number_students;
+		$return->total = $total;
+		$return->visible = $visible;
+		$return->inwork = $inwork;
+		$return->edited = $edited ;
 		return $return;
 	}
 
@@ -5621,7 +6159,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 		$exampleDataFound = null;
 		foreach($courses as $course){
 			// can be viewed by user, or by whole course
-			if (block_exacomp_check_student_example_permission($course->id, $exampleid, g::$USER->id)
+			if (block_exacomp_is_teacher ( $courseid ) || block_exacomp_check_student_example_permission($course->id, $exampleid, g::$USER->id)
 				|| block_exacomp_check_student_example_permission($course->id, $exampleid, 0)) {
 				$exampleDataFound = (object)[ 'exampleid' => $exampleid, 'courseid' => $course->id ];
 				break;

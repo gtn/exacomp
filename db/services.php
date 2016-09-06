@@ -104,7 +104,18 @@ call_user_func(function() use (&$functions, &$services) {
 		[ 'dakora_get_evaluation_config', 'read', 'get evaluation configuration'],
 		[ 'dakora_set_descriptor_visibility', 'write', 'set visibility for descriptor'],
 		[ 'dakora_set_example_visibility', 'write', 'set visibility for example'],
-		[ 'dakora_set_topic_visibility', 'wrtie', 'set visibility for topic']
+		[ 'dakora_set_topic_visibility', 'wrtie', 'set visibility for topic'],
+		[ 'dakora_set_example_solution_visibility', 'write', 'set visibility for example solutions'],
+		[ 'dakora_create_cross_subject', 'write', 'create new crosssubject'],
+		[ 'dakora_edit_cross_subject', 'write', 'edit existing crosssubject'],
+		[ 'dakora_get_cross_subject_drafts', 'read', 'get available drafts'],
+		[ 'dakora_get_subjects', 'read', 'get subjects'],
+		[ 'dakora_get_students_for_cross_subject', 'read', 'get_students_for_crosssubject'],
+		[ 'dakora_set_cross_subject_student', 'write', 'set visibility for crosssubject and student'],
+		[ 'dakora_set_cross_subject_descriptor', 'write', 'set descriptor crosssubject association'],
+		[ 'dakora_delete_cross_subject', 'write', 'delete cross subject'],
+		[ 'dakora_add_examples_to_schedule_for_all', 'write', 'add examples to the schedules of all course students']
+				
 	];
 
 	foreach ($definitions as $definition) {

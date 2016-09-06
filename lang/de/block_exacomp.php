@@ -105,6 +105,8 @@ $string['settings_additional_grading'] = 'Angepasste Bewertung';
 $string['settings_additional_grading_description'] = 'Bewertung für Teilkompetenzen und Lernmaterialien global auf "nicht erreicht(0)" - "vollständig erreicht(3)" beschränken';
 $string['settings_usetimeline'] = 'Timeline im Profil verwenden';
 $string['settings_usetimeline_description'] = 'Zeitlichen Ablauf des Kompetenzerwerbes im Profil anzeigen';
+$string['settings_periods'] = 'Einträge für Zeittafel';
+$string['settings_periods_description'] = 'Der Wochenplan ist flexibel an jedes Stunden- und Pausenraster anpassbar. Verwenden Sie im Textblock für jeden Zeitblock eine neue Zeile. Es sind beliebige Texteinträge erlaubt, z.B. "1. Std" oder "07:30 - 09:00".';
 $string['timeline_teacher'] = 'L';
 $string['timeline_student'] = 'S';
 $string['timeline_total'] = 'Verfügbare';
@@ -230,6 +232,7 @@ $string['titlenotemtpy'] = 'Es muss ein Name eingegeben werden.';
 $string['solution'] = 'Musterlösung';
 $string['hide_solution'] = 'Musterlösung verbergen';
 $string['show_solution'] = 'Musterlösung anzeigen';
+$string['hide_solution_disabled'] = 'Musterlösung ist bereits für alle Schüler versteckt';
 $string['submission'] = 'Abgabe';
 $string['assignments'] = 'Moodle Aktivitäten';
 $string['files'] = 'Dateien';
@@ -263,6 +266,7 @@ $string['newsubmission'] = 'Erneute Abgabe';
 $string['value_too_large'] = 'Fehler: Benotungen dürfen nicht größer als 6.0 sein!';
 $string['value_too_low'] = 'Fehler: Benotungen dürfen nicht kleiner als 1.0 sein!';
 $string['value_not_allowed'] = 'Fehler: Benotungen müssen Zahlenwerte zwischen 1.0 und 6.0 sein';
+$string['competence_locked'] = 'Beurteilung vorhanden oder Lernmaterial in Verwendung!';
 // === Example Submission ===
 $string['example_submission_header'] = 'Aufgabe {$a} bearbeiten';
 $string['example_submission_info'] = 'Du bist dabei die Aufgabe "{$a}" zu bearbeiten. Deine Abgabe landet im ePortfolio und kann dort von dir und deinem/r LehrerIn eingesehen werden.';
@@ -485,7 +489,7 @@ $string['example_trash'] = 'Papierkorb';
 $string['choosecourse'] = 'Kurs auswählen: ';
 $string['weekly_schedule_added_all'] = 'Die Aufgabe wurde bei allen Kursteilnehmer/innen auf den Planungsspeicher im Wochenplan gelegt.';
 $string['weekly_schedule_already_existing_for_one'] = 'Die Aufgabe ist bei mindestens einem Schüler bereits im Planungsspeicher im Wochenplan.';
-$string['weekly_schedule_link_to_grid'] = 'Um den Wochenplan zu befüllen in den Kompetenzraster wechseln';
+$string['weekly_schedule_link_to_grid'] = 'Um den Planungsspeicher zu befüllen in den Kompetenzraster wechseln';
 $string['pre_planning_storage'] = 'Vorplanungsspeicher';
 $string['pre_planning_storage_added'] = 'Lernmaterial wurde zum Vorplanungsspeicher hinzugefügt.';
 $string['pre_planning_storage_already_contains'] = 'Lernmateriel bereits im Vorplanungsspeicher enthalten.';
@@ -498,7 +502,10 @@ $string['to_weekly_schedule'] = 'Zum Wochenplan';
 $string['blocking_event'] = 'Sperrelement erstellen';
 $string['blocking_event_title'] = 'Titel';
 $string['blocking_event_create'] = 'Zum Vorplanungsspeicher hinzufügen';
-
+$string['weekly_schedule_disabled'] = 'Lernmaterial ist versteckt und kann nicht auf Wochenplan gelegt werden.';
+$string['pre_planning_storage_disabled'] = 'Lernmaterial ist versteckt und kann nicht in den Vorplanungsspeicher gelegt werden.';
+$string['add_example_for_all_students_to_schedule'] = 'Achtung: Sie sind dabei Lernmaterialien für alle Schüler auf deren Wochenplan zu legen. Dafür ist eine zusätzliche Bestätigung notwendig. Etwaige Änderungen können danach nur mehr auf den individuellen Plänen der jeweiligen Schüler vorgenommen werden.';
+$string['add_example_for_all_students_to_schedule_confirmation'] = 'Sind Sie sicher, dass Sie die Lernmaterialien für alle Schüler auf den Wochenplan legen möchten?';
 
 // === Notifications ===
 $string['notification_submission_subject'] = '{$a->site}: {$a->student} hat eine Lösung zum Lernmaterial {$a->example} eingereicht';
@@ -552,3 +559,15 @@ $string['forwhat'] = 'Wofür du das brauchst: ';
 $string['howtocheck'] = 'Wie du dein Können prüfen kannst: ';
 $string['reached_topic'] = 'Ich habe diese Kompetenz erreicht: ';
 $string['submit_example'] = 'Abgeben';
+// === Webservice Status ===
+$string['enable_rest'] = 'REST Protokoll nicht aktiviert';
+$string['access_roles'] = 'Benutzerrollen mit Zugriff auf Webservices';
+$string['no_permission'] = 'Berechtigung wurde nicht erteilt';
+$string['description_createtoken'] = 'Der Benutzerrolle "Authentifizierte/r Nutzer/in" zusätzliche Rechte erteilen: Website-Administration/Nutzer_innen/Rechte ändern/Rollen verwalten
+4.1 Authentifizierte/r Nutzer/in wählen
+4.2 Bearbeiten auswählen
+4.3 Nach "createtoken" filtern
+4.4 Moodle/webservice:createtoken erlauben';
+$string['exacomp_not_found'] = 'Exacompservice nicht gefunden';
+$string['exaport_not_found'] = 'Exaportservice nicht gefunden';
+$string['no_external_trainer'] = 'Keine externen Trainer zugeteilt';

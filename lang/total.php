@@ -322,6 +322,14 @@ return  [
 		'Zeitlichen Ablauf des Kompetenzerwerbes im Profil anzeigen',
 		'Chronological sequence of gained outcomes',
 	],
+	'settings_periods' => [
+		'Einträge für Zeittafel',
+		'Timetable entries'
+	],
+	'settings_periods_description' => [
+		'Der Wochenplan ist flexibel an jedes Stunden- und Pausenraster anpassbar. Verwenden Sie im Textblock für jeden Zeitblock eine neue Zeile. Es sind beliebige Texteinträge erlaubt, z.B. "1. Std" oder "07:30 - 09:00".',
+		'Weekly schedule can be adapted to any timetable. Use one row in the text area for each time entry. You can use any format you like, e.g. "1st hour" or "07:30 - 09:00".'	
+	],
 	'timeline_teacher' => [
 		'L',				
 		'T',
@@ -738,6 +746,10 @@ return  [
 		'Musterlösung anzeigen',
 		'Show solution',
 	],
+	'hide_solution_disabled' => [
+			'Musterlösung ist bereits für alle Schüler versteckt',
+			'The solution is already hidden for all students',
+	],
 	'submission' => [
 		'Abgabe',
 		'Submission',
@@ -860,6 +872,10 @@ return  [
 	'value_not_allowed' => [				
 			'Fehler: Benotungen müssen Zahlenwerte zwischen 1.0 und 6.0 sein',
 			'Error: Values need to be numbers between 1.0 and 6.0',
+	],
+	'competence_locked' => [
+			'Beurteilung vorhanden oder Lernmaterial in Verwendung!',
+			'Evaluation exists or learning material is used',
 	],
 	// === Example Submission ===
 	'example_submission_header' => [
@@ -1634,12 +1650,12 @@ return  [
 		'Example has already been added to at least one student\'s weekly schedule.',
 	],
 	'weekly_schedule_link_to_grid' => [
-		'Um den Wochenplan zu befüllen in den Kompetenzraster wechseln',
+		'Um den Planungsspeicher zu befüllen in den Kompetenzraster wechseln',
 		'For adding examples to the schedule, please use the overview',
 	],
 	'pre_planning_storage' => [
 		'Vorplanungsspeicher',
-		'pre-planning storage',
+		'Pre-planning storage',
 	],
 	'pre_planning_storage_added' => [
 		'Lernmaterial wurde zum Vorplanungsspeicher hinzugefügt.',
@@ -1685,7 +1701,22 @@ return  [
 		'Zum Vorplanungsspeicher hinzufügen',
 		'Add to pre-planning storage',
 	],
-
+	'weekly_schedule_disabled' => [
+		'Lernmaterial ist versteckt und kann nicht auf Wochenplan gelegt werden.',
+		'Hidden example can not be added to weekly schedule'
+	],
+	'pre_planning_storage_disabled' => [
+		'Lernmaterial ist versteckt und kann nicht in den Vorplanungsspeicher gelegt werden.',
+		'Hidden example can not be added to pre-planning storage.'
+	],
+	'add_example_for_all_students_to_schedule' => [
+			'Achtung: Sie sind dabei Lernmaterialien für alle Schüler auf deren Wochenplan zu legen. Dafür ist eine zusätzliche Bestätigung notwendig. Etwaige Änderungen können danach nur mehr auf den individuellen Plänen der jeweiligen Schüler vorgenommen werden.',
+			'Attention: Here you can add examples to the schedules of all students. This requires extra confirmation.',
+	],
+	'add_example_for_all_students_to_schedule_confirmation' => [
+			'Sind Sie sicher, dass Sie die Lernmaterialien für alle Schüler auf den Wochenplan legen möchten?',
+			'You are about to add the examples to the schedules of all students, do you want to continue?',
+	],
 
 	// === Notifications ===
 	'notification_submission_subject' => [
@@ -1862,6 +1893,43 @@ return  [
 	],
 	'submit_example' => [
 		'Abgeben',
-		'Submit'
+		'Submit',
 	],
+		// === Webservice Status ===
+	'enable_rest' => [
+		'REST Protokoll nicht aktiviert',
+		'REST Protocol not enabled'	,
+	],
+	'access_roles' => [
+		'Benutzerrollen mit Zugriff auf Webservices',
+		'Roles with webservice access',
+	],
+	'no_permission' => [
+		'Berechtigung wurde nicht erteilt',
+		'Permissions not set',	
+	],
+	'description_createtoken' => [
+			'Der Benutzerrolle "Authentifizierte/r Nutzer/in" zusätzliche Rechte erteilen: Website-Administration/Nutzer_innen/Rechte ändern/Rollen verwalten
+4.1 Authentifizierte/r Nutzer/in wählen
+4.2 Bearbeiten auswählen
+4.3 Nach "createtoken" filtern
+4.4 Moodle/webservice:createtoken erlauben',
+			'Grant additional permission to the role "authenticated user" at: Site administration/Users/Permissions/Define roles
+4.1 Select Authenticated User
+4.2 Click on "Edit"
+4.3 Filter for createtoken
+4.4 Allow moodle/webservice:createtoken',
+	],
+	'exacomp_not_found' => [
+		'Exacompservice nicht gefunden',
+		'Exacompservice not found',
+	],
+	'exaport_not_found' => [
+		'Exaportservice nicht gefunden',
+		'Exaportservice not found',	
+	],
+	'no_external_trainer' => [
+		'Keine externen Trainer zugeteilt',
+		'No external trainers assigned',
+	]
 ];

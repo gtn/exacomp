@@ -111,10 +111,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 	
 	public function local_pix_icon($image, $alt=null, $attributes=array()) {
-		return $this->pix($image, $alt=null, $attributes + ['class'=>'smallicon']);
+		return $this->pix($image, $alt, $attributes + ['class'=>'smallicon']);
 	}
 	
-	public function form_week_learningagenda($selectstudent,$action,$studentid, $view, $date = ''){
+	/*public function form_week_learningagenda($selectstudent,$action,$studentid, $view, $date = ''){
 		global $COURSE, $CFG;
 
 		if($view == 0){
@@ -144,7 +144,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$content .= html_writer::start_tag('a', array('href' => new moodle_url('/blocks/exacomp/learningagenda.php?courseid='.$COURSE->id.'&studentid='.$studentid.'&print=1&action='.$action)));
 			$content .= html_writer::empty_tag('img', array('src'=>$CFG->wwwroot . '/blocks/exacomp/pix/view_print.png', 'alt'=>'print'));
 			$content .= html_writer::end_tag('a');
-			$content .= html_writer::end_tag('div');*/
+			$content .= html_writer::end_tag('div');*//*
 			$content .= html_writer::end_div();
 		} else {
 			$content = html_writer::start_tag('div', array('id'=>'linkback', 'align'=>"right"));
@@ -416,7 +416,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$content = html_writer::tag("div", html_writer::table($table), array("id"=>"exabis_competences_block"));
 		return $content;
-	}
+	}*/
 	public function subject_dropdown($schooltypetree, $selectedSubject) {
 		$content = get_string("choosesubject", "block_exacomp").': ';
 		$array = array();
@@ -1525,8 +1525,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			
 			// display the hide/unhide icon only in editmode or iff only 1 student is selected
 			
-			if (!$topic_used && ($data->role == \block_exacomp\ROLE_TEACHER) && ($editmode || (!$editmode && $one_student && block_exacomp_is_topic_visible($data->courseid, $topic, 0)))) {
-				$outputname .= $this->visibility_icon_topic($visible, $topic->id);
+			if (($data->role == \block_exacomp\ROLE_TEACHER) && ($editmode || (!$editmode && $one_student && block_exacomp_is_topic_visible($data->courseid, $topic, 0)))) {
+				if($topic_used){
+					$outputname .= html_writer::span($this->local_pix_icon("visibility_lock.png",get_string('competence_locked', 'block_exacomp'),array('height'=>'18')), 'imglocked', array('title'=>get_string('competence_locked', 'block_exacomp')));
+				}else
+					$outputname .= $this->visibility_icon_topic($visible, $topic->id);
 			}
 			
 			$outputnameCell->text = html_writer::div($outputname,"desctitle");
@@ -1779,8 +1782,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				//if hidden in course, cannot be shown to one student
 				
 				if(!$this->is_print_mode()){
-					if (!$descriptor_used && ($data->role == \block_exacomp\ROLE_TEACHER) && ($editmode || (!$editmode && $one_student && block_exacomp_is_descriptor_visible($data->courseid, $descriptor, 0)))) {
-						$titleCell->text .= $this->visibility_icon_descriptor($visible, $descriptor->id);
+					if (($data->role == \block_exacomp\ROLE_TEACHER) && ($editmode || (!$editmode && $one_student && block_exacomp_is_descriptor_visible($data->courseid, $descriptor, 0)))) {
+						if($descriptor_used){
+							$titleCell->text .= html_writer::span($this->local_pix_icon("visibility_lock.png",get_string('competence_locked', 'block_exacomp'),array('height'=>'18')), 'imglocked', array('title'=>get_string('competence_locked', 'block_exacomp')));
+								
+						}else
+							$titleCell->text .= $this->visibility_icon_descriptor($visible, $descriptor->id);
 					}
 					if($editmode && $custom_created_descriptors){
 						$titleCell->text .= html_writer::link('descriptor.php?courseid='.$COURSE->id.'&id='.$descriptor->id, $this->pix_icon("i/edit", get_string("edit")), array('exa-type' => 'iframe-popup', 'target'=>'_blank'));
@@ -2010,7 +2017,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 				foreach($descriptor->examples as $example) {
 					$example_used = block_exacomp_example_used($data->courseid, $example, $studentid);
-
+				
 					//TODO: if used, always visible?
 					
 					$visible_example = block_exacomp_is_example_visible($data->courseid, $example, $studentid);
@@ -2074,12 +2081,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$titleCell->text .= '</span>';
 						}
 
-						if (!$example_used && ($data->role == \block_exacomp\ROLE_TEACHER) && ($editmode || (!$editmode && $one_student && block_exacomp_is_example_visible($data->courseid, $example, 0)))) {
-							$titleCell->text .= $this->visibility_icon_example($visible_example, $example->id);
-						/*
-						} else {
-							$titleCell->text .= '<span style="display: inline-block; width: 16px; margin-right: 4px;">&nbsp;</span>';
-						*/
+						if (($data->role == \block_exacomp\ROLE_TEACHER) && ($editmode || (!$editmode && $one_student && block_exacomp_is_example_visible($data->courseid, $example, 0)))) {
+							if($example_used){
+								$titleCell->text .= html_writer::span($this->local_pix_icon("visibility_lock.png",get_string('competence_locked', 'block_exacomp'),array('height'=>'18')), 'imglocked', array('title'=>get_string('competence_locked', 'block_exacomp')));
+								
+							}else 
+								$titleCell->text .= $this->visibility_icon_example($visible_example, $example->id);
 						}
 
 						if ($url = $example->get_task_file_url()) {
@@ -2088,15 +2095,31 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 
 						if($example->externalurl){
-							$titleCell->text .= html_writer::link($example->externalurl, $this->local_pix_icon("globesearch.png", $example->externalurl),array("target" => "_blank"));
+							$titleCell->text .= html_writer::link($example->externalurl, $this->local_pix_icon("globesearch.png", get_string('preview')),array("target" => "_blank"));
 						}elseif($example->externaltask){
-							$titleCell->text .= html_writer::link($example->externaltask, $this->local_pix_icon("globesearch.png", $example->externaltask),array("target" => "_blank"));
+							$titleCell->text .= html_writer::link($example->externaltask, $this->local_pix_icon("globesearch.png", get_string('preview')),array("target" => "_blank"));
 						}
-						if (($data->role == \block_exacomp\ROLE_TEACHER) && ($editmode || (! $editmode && $one_student && block_exacomp_is_example_visible ( $data->courseid, $example, 0 ))))
-							$titleCell->text .= $this->visibility_icon_example_solution ( $visible_solution, $example->id );
 						
-						if (($data->role == \block_exacomp\ROLE_TEACHER || $visible_solution) && $url = $example->get_solution_file_url ()) {
-							$titleCell->text .= $this->example_solution_icon ( $url );
+						$solution_url = $example->get_solution_file_url();
+						// Display Icons to hide/unhide example solution visibility
+						if($solution_url && $data->role == \block_exacomp\ROLE_TEACHER) {
+							// If solution exists and teacher is in edit mode, display icon
+							if($editmode) {
+								$titleCell->text .= $this->visibility_icon_example_solution ( $visible_solution, $example->id );
+							}
+							else if($one_student && block_exacomp_is_example_visible ( $data->courseid, $example, 0 )){
+								// If solution exists, but is globally hidden, hide/unhide is not possibly for a single student
+								if (isset($example->solution_visible) && !$example->solution_visible)
+									//display disabled icon
+									$titleCell->text .= $this->visibility_icon_example_solution_disabled();
+								else
+									$titleCell->text .= $this->visibility_icon_example_solution ( $visible_solution, $example->id );
+							}
+								
+						}
+						
+						if (($data->role == \block_exacomp\ROLE_TEACHER || $visible_solution) && $solution_url) {
+							$titleCell->text .= $this->example_solution_icon ( $solution_url );
 						}
 
 						if ($this->is_print_mode()) {
@@ -2117,12 +2140,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 								//auch für alle schüler auf wochenplan legen
 								if(!$this->is_edit_mode()){
-									$titleCell->text .= $this->schedule_icon($example->id, ($studentid)?$studentid:BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $data->courseid);
+									if($visible_example){ //prevent errors
+										$titleCell->text .= $this->schedule_icon($example->id, ($studentid)?$studentid:BLOCK_EXACOMP_SHOW_ALL_STUDENTS, $data->courseid);
 
 										$titleCell->text .= html_writer::link("#",
 											html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'), 'title'=> get_string('pre_planning_storage', 'block_exacomp'))),
-											array('exa-type' => 'add-example-to-schedule', 'exampleid' => $example->id, 'studentid' => 0, 'courseid' => $data->courseid));
-
+											array('class'=>'add-to-preplanning', 'exa-type' => 'add-example-to-schedule', 'exampleid' => $example->id, 'studentid' => 0, 'courseid' => $data->courseid));
+									}
 								}
 								$titleCell->text .= $this->competence_association_icon($example->id, $data->courseid, $editmode);
 
@@ -2274,7 +2298,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		if($alt == null)
 			$alt = get_string("preview");
 
-		return html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/preview.png'), 'alt'=>$alt));
+		return html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/preview.png'), 'alt'=>$alt, 'title'=>$alt));
 	}
 	/*
 	public function source_color($sourceid) {
@@ -2327,7 +2351,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	public function submission_icon($courseid, $exampleid, $studentid = 0) {
-		if ($this->is_print_mode()) {
+		if ($this->is_print_mode() || !block_exacomp_exaportexists()) {
 			return '';
 		}
 
@@ -2355,7 +2379,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 	}
 	public function resubmission_icon($exampleid, $studentid, $courseid) {
-		global $DB;
+		global $CFG, $DB;
+
+		if($CFG->block_exaport_app_alloweditdelete)
+			return "";
 
 		$exameval = $DB->get_record(\block_exacomp\DB_EXAMPLEEVAL,array('exampleid'=>$exampleid,'studentid'=>$studentid,'courseid'=>$courseid));
 		if(!$exameval || $exameval->resubmission)
@@ -2370,7 +2397,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::link(
 							"#",
 							$this->pix_icon("e/insert_date", get_string("weekly_schedule","block_exacomp")),
-							array('exa-type' => 'add-example-to-schedule', 'exampleid' => $exampleid, 'studentid' => $studentid, 'courseid' => $courseid));
+							array('class'=>'add-to-schedule', 'exa-type' => 'add-example-to-schedule', 'exampleid' => $exampleid, 'studentid' => $studentid, 'courseid' => $courseid));
 	}
 	public function competence_association_icon($exampleid, $courseid, $editmode) {
 		return html_writer::link(
@@ -2424,6 +2451,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						'showurl' => new moodle_url('/blocks/exacomp/pix/solution_visible.png'), 'hideurl' => new moodle_url('/blocks/exacomp/pix/solution_hidden.png')
 				));
 	
+	}
+	public function visibility_icon_example_solution_disabled() {
+		return html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/locked.png'), 'alt'=>get_string("hide_solution_disabled","block_exacomp"), 'title'=>get_string("hide_solution_disabled","block_exacomp"), 'width' => '16'));
 	}
 	/*
 	private function student_example_evaluation_form($exampleid, $studentid, $courseid) {
@@ -2570,12 +2600,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 *
 	 * @return String $checkbox html code for checkbox
 	 */
-	public function generate_checkbox_activities($name, $compid, $activityid, $type, $student, $evaluation, $scheme, $disabled = false) {
+	/*public function generate_checkbox_activities($name, $compid, $activityid, $type, $student, $evaluation, $scheme, $disabled = false) {
 		return html_writer::checkbox(
 				$name . '[' .$compid .'][' . $student->id .'][' . $activityid . '][' . $evaluation . ']', $scheme,
 				(isset($student->{$type}->activities[$activityid]->{$evaluation}[$compid])) && $student->{$type}->activities[$activityid]->{$evaluation}[$compid] >= ceil($scheme/2),
 				null, (!$disabled) ? null : array("disabled"=>"disabled"));
-	}
+	}*/
 	/**
 	 * Used to generate a select for activities topics & competencies
 	 *
@@ -2588,7 +2618,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	 *
 	 * @return String $select html code for select
 	 */
-	public function generate_select_activities($name, $compid, $activityid, $type, $student, $evaluation, $scheme, $disabled = false, $profoundness = false) {
+	/*public function generate_select_activities($name, $compid, $activityid, $type, $student, $evaluation, $scheme, $disabled = false, $profoundness = false) {
 		$options = array();
 		for($i=0;$i<=$scheme;$i++)
 			$options[] = (!$profoundness) ? $i : get_string('profoundness_'.$i,'block_exacomp');
@@ -2598,7 +2628,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$name . '[' . $compid . '][' . $student->id . '][' . $activityid . '][' . $evaluation . ']',
 				(isset($student->{$type}->activities[$activityid]->{$evaluation}[$compid])) ? $student->{$type}->activities[$activityid]->{$evaluation}[$compid] : 0,
 				false,(!$disabled) ? null : array("disabled"=>"disabled"));
-	}
+	}*/
 	/**
 	 * Used to generate a select for topics/competencies/examples values
 	 *
@@ -3789,7 +3819,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		//$radar_graph = html_writer::div($this->radar_graph($topics),"competence_profile_radargraph");
 
 		list($teachercomp,$studentcomp,$pendingcomp) = block_exacomp_get_competences_for_pie_chart($course->id,$student, $scheme, 0, true);
-		$pie_graph = html_writer::div($this->pie_graph($teachercomp, $studentcomp, $pendingcomp, $course->id),"competence_profile_radargraph");
+		// TODO: fix pie graph with respect to new grading options
+		//$pie_graph = html_writer::div($this->pie_graph($teachercomp, $studentcomp, $pendingcomp, $course->id),"competence_profile_radargraph");
+		$pie_graph = "";
 		
 		$total_comps = $teachercomp+$studentcomp+$pendingcomp;
 		$timeline_data= block_exacomp_get_timeline_data(array($course), $student, $total_comps);
@@ -3800,7 +3832,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		   $timeline_graph = "";
 			
 		$content .= html_writer::div($pie_graph.$timeline_graph, 'competence_profile_graphbox clearfix');
-		$content .= html_writer::div($this->radar_graph_legend(),"radargraph_legend");
+		//$content .= html_writer::div($this->radar_graph_legend(),"radargraph_legend");
 			
 		//print list
 		$student = block_exacomp_get_user_information_by_course($student, $course->id);
@@ -4993,8 +5025,12 @@ var dataset = dataset.map(function (group) {
 		return html_writer::table($table);
 	}
 	public function example_pool($examples=array()){
-		$content = html_writer::tag('h4', get_string('example_pool', 'block_exacomp'));
-	
+		$studentid = block_exacomp_get_studentid();
+		if($studentid > 0)
+			$content = html_writer::tag('h4', get_string('example_pool', 'block_exacomp'));
+		else 
+			$content = html_writer::tag('h4', get_string('pre_planning_storage', 'block_exacomp'));
+				
 		foreach($examples as $example){
 			$content .= html_writer::div($example->title, 'fc-event', array('exampleid'=>$example->exampleid));
 		}
