@@ -1048,7 +1048,7 @@ function block_exacomp_get_descritors_list($courseid, $onlywithactivitys = 0) {
  * returns all descriptors
  * @param $courseid if course id =0 all possible descriptors are returned
  */
-function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = false, $subjectid = 0, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $showonlyvisible=false) {
+function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = false, $subjectid = 0, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $showonlyvisible=false, $include_childs = true) {
 	if (!$courseid) {
 		$showalldescriptors = true;
 		$showonlyvisible = false;
@@ -1073,11 +1073,12 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 	$descriptors = block_exacomp\descriptor::get_objects_sql($sql, array($courseid, $courseid, $courseid, $courseid));
 
 	foreach($descriptors as $descriptor) {
-		//get examples
-		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples, $courseid);
-		   //check for child-descriptors
-		$descriptor->children = block_exacomp_get_child_descriptors($descriptor,$courseid, $showalldescriptors, $filteredtaxonomies, $showallexamples, true, $showonlyvisible);
-
+		if($include_childs){
+			//get examples
+			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples, $courseid);
+			   //check for child-descriptors
+			$descriptor->children = block_exacomp_get_child_descriptors($descriptor,$courseid, $showalldescriptors, $filteredtaxonomies, $showallexamples, true, $showonlyvisible);
+		}
 		//get categories
 		$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
 	}
@@ -1298,7 +1299,7 @@ function block_exacomp_get_descriptors_by_example($exampleid) {
  * @param int $topicid
  * @return associative_array
  */
-function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $topicid = null, $showalldescriptors = false, $niveauid = null, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $calledfromoverview = false, $calledfromactivities = false, $showonlyvisible=false, $without_descriptors=false, $showonlyvisibletopics = false) {
+function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $topicid = null, $showalldescriptors = false, $niveauid = null, $showallexamples = true, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $calledfromoverview = false, $calledfromactivities = false, $showonlyvisible=false, $without_descriptors=false, $showonlyvisibletopics = false, $include_childs = true) {
 	global $DB;
 
 	if(!$showalldescriptors)
@@ -1338,7 +1339,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 	if($without_descriptors)
 		$allDescriptors = array();
 	else
-		$allDescriptors = block_exacomp_get_descriptors($courseid, $showalldescriptors,0,$showallexamples, $filteredtaxonomies, $showonlyvisible);
+		$allDescriptors = block_exacomp_get_descriptors($courseid, $showalldescriptors,0,$showallexamples, $filteredtaxonomies, $showonlyvisible, $include_childs);
 
 	foreach ($allDescriptors as $descriptor) {
 
@@ -6103,7 +6104,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 	$user = $DB->get_record('user', array('id'=>$studentid));
 	$user = block_exacomp_get_user_information_by_course($user, $courseid);
 	
-	$competence_tree = block_exacomp_get_competence_tree($courseid, $subjectid);
+	$competence_tree = block_exacomp_get_competence_tree($courseid, $subjectid, null, false, null, true, array(SHOW_ALL_TAXONOMIES), false, false, false, false, false, false);
 	$table_content = new stdClass();
 	$table_content->content = array();
 		
@@ -6520,7 +6521,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 		
 	}
 	
-	return array("descriptor_evaluation" => $descriptorgradings, "child_evaluations"=>$childgradings, "example_evaluations" => $examplegradings);	
+	return array("descriptor_evaluations" => $descriptorgradings, "child_evaluations"=>$childgradings, "example_evaluations" => $examplegradings);	
 }
 
 /**
@@ -6562,6 +6563,46 @@ function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $
 	return array("descriptor_evaluation" => $descriptorgradings);
 }
 
+function block_exacomp_get_visible_own_and_child_examples_for_descriptor($courseid, $descriptorid, $userid){
+	global $DB;
+	$sql = 'SELECT DISTINCT e.id, e.title, e.sorting FROM {'.\block_exacomp\DB_EXAMPLES.'} e 
+		JOIN {'.\block_exacomp\DB_DESCEXAMP.'} de ON de.exampid = e.id
+		JOIN {'.\block_exacomp\DB_DESCRIPTORS.'} d ON de.descrid = d.id
+		LEFT JOIN {'.\block_exacomp\DB_EXAMPVISIBILITY.'} ev ON e.id = ev.exampleid AND ev.courseid = ?
+		WHERE e.blocking_event = 0 AND d.id IN (
+				SELECT dsub.id FROM {'.\block_exacomp\DB_DESCRIPTORS.'} dsub 
+                LEFT JOIN {'.\block_exacomp\DB_DESCVISIBILITY.'} dv ON dsub.id = dv.descrid AND dv.courseid = ? 
+                WHERE dsub.id = ? OR dsub.parentid = ?
+                AND ((dv.visible = 1 AND dv.studentid = 0 AND NOT EXISTS (
+                		SELECT * FROM {'.\block_exacomp\DB_DESCVISIBILITY.'} dvsub
+		  				WHERE dvsub.descrid = dv.descrid AND dvsub.courseid = dv.courseid AND dvsub.visible = 0 AND dvsub.studentid = ?))
+		  		OR (dv.visible = 1 AND dv.studentid = ? AND NOT EXISTS (
+                		SELECT * FROM {'.\block_exacomp\DB_DESCVISIBILITY.'} dvsub
+		  			 	WHERE dvsub.descrid = dv.descrid AND dvsub.courseid = dv.courseid AND dvsub.visible = 0 AND dvsub.studentid = 0)))
+		)
+ 		AND ((ev.visible = 1 AND ev.studentid = 0 AND NOT EXISTS (
+              	SELECT * FROM {'.\block_exacomp\DB_EXAMPVISIBILITY.'} evsub
+   				WHERE evsub.exampleid = ev.exampleid AND evsub.courseid = ev.courseid AND evsub.visible = 0 AND evsub.studentid = ?)) 
+   		OR (ev.visible = 1 AND ev.studentid = ? AND NOT EXISTS (
+              	SELECT * FROM {'.\block_exacomp\DB_EXAMPVISIBILITY.'} evsub
+  				WHERE evsub.exampleid = ev.exampleid AND evsub.courseid = ev.courseid AND evsub.visible = 0 AND evsub.studentid =0)))';
+	
+	$examples = $DB->get_records_sql($sql, array($courseid, $courseid, $descriptorid, $descriptorid, $userid, $userid, $userid, $userid));
+	
+	foreach($examples as $example){
+		$example->state = block_exacomp_get_dakora_state_for_example($courseid, $example->id, $userid);
+	}
+	
+	usort($examples, "block_exacomp_cmp_statetitlesort");
+	return $examples;
+}
+
+function block_exacomp_cmp_statetitlesort($a, $b){
+	if($a->state == $b->state)
+		return $a->sorting > $b->sorting;
+	
+	return $a->state < $b->state;
+}
 //TODO duplicate function in external lib, remove function in externallib
 function block_exacomp_cmp_niveausort($a, $b){
 	return strcmp($a->cattitle, $b->cattitle);
@@ -6615,11 +6656,20 @@ namespace block_exacomp {
 		/**
 		 * Returns all values used for examples and child-descriptors
 		 */
-		static function get_value_titles($courseid = 0) {
+		static function get_value_titles($courseid = 0, $short = false) {
 			// if additional_grading is set, use global value scheme
 			// TODO: use language strings for the titles
 			
 			if (block_exacomp_additional_grading()) {
+				if($short)
+					return array(
+					 	-1 => 'oA',
+						0 => 'nE',
+						1 => 'tE',
+						2 => 'üE',
+						3 => 'vE'
+					);
+					
 				return array (
 						- 1 => 'ohne Angabe',
 						0 => 'nicht erreicht',

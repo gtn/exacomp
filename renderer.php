@@ -20,6 +20,7 @@
 defined('MOODLE_INTERNAL') || die;
 
 use block_exacomp\globals as g;
+use const block_exacomp\EXAMPLE_STATE_SUBMITTED;
 
 class block_exacomp_renderer extends plugin_renderer_base {
 
@@ -3169,122 +3170,322 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	
 	function competence_profile_course($course, $student, $showall = true, $max_scheme = 3) {
 		//$scheme = block_exacomp_get_grading_scheme($course->id);
-		//$compTree = block_exacomp_get_competence_tree($course->id);
-		
-		//print heading
-		$content = html_writer::tag("h4", html_writer::tag('a', $course->fullname, array('name'=>$course->fullname.$course->id)), array("class" => "competence_profile_coursetitle"));
-		/*if(!$compTree) {
-			$content .= html_writer::div(get_string("nodata","block_exacomp"),"error");
-			return html_writer::div($content, 'competence_profile_coursedata');
-		}*/
-		//print list
+		$competence_tree = block_exacomp_get_competence_tree($course->id, null, null, false, null, true, array(SHOW_ALL_TAXONOMIES), false, false, false, false, false, false);
 		$student = block_exacomp_get_user_information_by_course($student, $course->id);
-
-		$content .= html_writer::tag('div', $this->competence_profile_grid($course->id, $student->id), array('class'=>'container','id'=>'charts'));
+		
+		foreach($competence_tree as $subject){
+			$content = html_writer::tag("h4", html_writer::tag('a', $subject->title, array('name'=>$course->fullname.$course->id)), array("class" => "competence_profile_coursetitle"));
+			$content .= html_writer::tag('div', $this->competence_profile_grid($course->id, $subject, $student->id), array('class'=>'container','id'=>'charts'));
+			
+			if(block_exacomp_additional_grading()){
+				$stat = block_exacomp_get_evaluation_statistic_for_subject($course->id, $subject->id, $student->id);
+				$tables = $this->subject_statistic_table($course->id, $stat['descriptor_evaluations'], 'Kompetenzen');
+				$tables .= $this->subject_statistic_table($course->id, $stat['child_evaluations'], 'Teilkompetenzen');
+				$tables .= $this->subject_statistic_table($course->id, $stat['example_evaluations'], 'Lernmaterialien');
+				$content .= html_writer::tag('div', $tables, array('class'=>'statistictables'));
+			}
+			foreach($subject->subs as $topic){
+				block_exacomp_get_descriptor_statistic_for_topic($course->id, $topic->id, $student->id);
+				foreach($topic->descriptors as $descriptor){
+					$descriptor->examples = block_exacomp_get_visible_own_and_child_examples_for_descriptor($course->id, $descriptor->id, $student->id);	
+				}
+			}
+			
+			$content .= html_writer::tag('div', $this->comparison_table($course->id, $subject, $student), array('class'=>'comparisondiv'));
+		}
+		
 		$content .= "<script> $('#charts').find('canvas').donut();	</script>";
 		//$content .= $this->competence_profile_tree_v2($compTree,$course->id, $student,$scheme, false, $max_scheme);
 
 		return html_writer::div($content,"competence_profile_coursedata");
 	}
 
-	private function competence_profile_grid($courseid, $studentid){
+	private function competence_profile_grid($courseid, $subject, $studentid){
 		global $DB;
-		$subjects = block_exacomp_get_subjects_by_course($courseid);
 		$content = '';
 		
-		foreach($subjects as $subject){
-			list($course_subjects, $table_column, $table_header, $table_content) = block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $subject->id);
+		list($course_subjects, $table_column, $table_header, $table_content) = block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $subject->id);
+		
+		$spanning_niveaus = $DB->get_records(\block_exacomp\DB_NIVEAUS,array('span' => 1));
+		//calculate the col span for spanning niveaus
+		$spanning_colspan = block_exacomp_calculate_spanning_niveau_colspan($table_header, $spanning_niveaus);
+		
+		$table = new html_table();
+		$table->attributes['class'] = 'compprofiletable flexible boxaligncenter generaltable';
+		$rows = array();
+		
+		//header
+		$row = new html_table_row();
+		
+		//first subject title cell
+		$cell = new html_table_cell();
+		$cell->text = '';//$table_content->subject_title;
+		$row->cells[] = $cell;
+		
+		//niveaus
+		foreach($table_header as $element){
+			if($element->id != \block_exacomp\SHOW_ALL_NIVEAUS){
+				$cell = new html_table_cell();
+				$cell->text = $element->title;
+				$cell->attributes['class'] = 'header';
+				$row->cells[] = $cell;
+			}
+		}
+
+		if(block_exacomp_is_topicgrading_enabled()){
+			$topic_eval_header = new html_table_cell();
+			$topic_eval_header->text = get_string('total', 'block_exacomp');
+			$topic_eval_header->attributes['class'] = 'header';
+			$row->cells[] = $topic_eval_header;
+		}
+		$rows[] = $row;
+		$row = new html_table_row();
+		
+		foreach($table_content->content as $topic => $rowcontent ){
 			
-			$spanning_niveaus = $DB->get_records(\block_exacomp\DB_NIVEAUS,array('span' => 1));
-			//calculate the col span for spanning niveaus
-			$spanning_colspan = block_exacomp_calculate_spanning_niveau_colspan($table_header, $spanning_niveaus);
-			
-			$table = new html_table();
-			$table->attributes['class'] = 'compprofiletable flexible boxaligncenter generaltable';
-			$rows = array();
-			
-			//header
-			$row = new html_table_row();
-			
-			//first subject title cell
 			$cell = new html_table_cell();
-			$cell->text = $table_content->subject_title;
+			$cell->text = block_exacomp_get_topic_numbering($topic) . " " . $table_column[$topic]->title;
 			$row->cells[] = $cell;
 			
-			//niveaus
-			foreach($table_header as $element){
-				if($element->id != \block_exacomp\SHOW_ALL_NIVEAUS){
-					$cell = new html_table_cell();
-					$cell->text = $element->title;
-					$cell->attributes['class'] = 'header';
-					$row->cells[] = $cell;
-				}
+			foreach($rowcontent->niveaus as $niveau => $element){
+				$element_eval_value = \block_exacomp\global_config::get_additionalinfo_value_mapping($element->eval);
+					
+				$cell = new html_table_cell();
+				$cell->text = html_writer::empty_tag('canvas',
+						array("id"=>"chart".$niveau, "height"=>"50", "width"=>"50", "data-title"=>$element->evalniveau,
+								"data-value"=>$element_eval_value, "data-valuemax"=>"3"));
+				
+				if(array_key_exists($niveau, $spanning_niveaus)){
+					$cell->colspan = $spanning_colspan;
+				}					
+				
+				$row->cells[] = $cell;
 			}
-
+			
 			if(block_exacomp_is_topicgrading_enabled()){
-				$topic_eval_header = new html_table_cell();
-				$topic_eval_header->text = get_string('total', 'block_exacomp');
-				$topic_eval_header->attributes['class'] = 'header';
-				$row->cells[] = $topic_eval_header;
+				$topic_eval_value = \block_exacomp\global_config::get_additionalinfo_value_mapping($rowcontent->topic_eval);
+				$topic_eval_cell = new html_table_cell();
+				$topic_eval_cell->text = html_writer::empty_tag('canvas', 
+						array("id"=>"chart".$topic, "height"=>"50", "width"=>"50", "data-title"=>$rowcontent->topic_evalniveau, 
+						"data-value"=>$topic_eval_value, "data-valuemax"=>"3"));
+				//$rowcontent->topic_evalniveau . $rowcontent->topic_eval;
+				$row->cells[] = $topic_eval_cell;
 			}
 			$rows[] = $row;
 			$row = new html_table_row();
-			
-			foreach($table_content->content as $topic => $rowcontent ){
-				
-				$cell = new html_table_cell();
-				$cell->text = block_exacomp_get_topic_numbering($topic) . " " . $table_column[$topic]->title;
-				$row->cells[] = $cell;
-				
-				foreach($rowcontent->niveaus as $niveau => $element){
-					$element_eval_value = \block_exacomp\global_config::get_additionalinfo_value_mapping($element->eval);
-						
-					$cell = new html_table_cell();
-					$cell->text = html_writer::empty_tag('canvas',
-							array("id"=>"chart".$niveau, "height"=>"50", "width"=>"50", "data-title"=>$element->evalniveau,
-									"data-value"=>$element_eval_value, "data-valuemax"=>"3"));
-					
-					if(array_key_exists($niveau, $spanning_niveaus)){
-						$cell->colspan = $spanning_colspan;
-					}					
-					
-					$row->cells[] = $cell;
-				}
-				
-				if(block_exacomp_is_topicgrading_enabled()){
-					$topic_eval_value = \block_exacomp\global_config::get_additionalinfo_value_mapping($rowcontent->topic_eval);
-					$topic_eval_cell = new html_table_cell();
-					$topic_eval_cell->text = html_writer::empty_tag('canvas', 
-							array("id"=>"chart".$topic, "height"=>"50", "width"=>"50", "data-title"=>$rowcontent->topic_evalniveau, 
-							"data-value"=>$topic_eval_value, "data-valuemax"=>"3"));
-					//$rowcontent->topic_evalniveau . $rowcontent->topic_eval;
-					$row->cells[] = $topic_eval_cell;
-				}
-				$rows[] = $row;
-				$row = new html_table_row();
-			}
-			
-			if(block_exacomp_is_subjectgrading_enabled()){
-				$subject_empty_cell = new html_table_cell();
-				$subject_empty_cell->text = get_string('total', 'block_exacomp');
-				$subject_empty_cell->colspan = count($table_header);
-				$subject_empty_cell->attributes['class'] = 'header';
-				$row->cells[] = $subject_empty_cell;
-				
-				$subject_eval_cell = new html_table_cell();
-				$subject_eval_cell->text = $table_content->subject_evalniveau . $table_content->subject_eval;
-				$subject_eval_cell->attributes['class'] = 'header';
-				$row->cells[] = $subject_eval_cell;
-				
-				$rows[] = $row;
-			}
-			$table->data = $rows;
-			$content .= html_writer::table($table);
 		}
 		
+		if(block_exacomp_is_subjectgrading_enabled()){
+			$subject_empty_cell = new html_table_cell();
+			$subject_empty_cell->text = get_string('total', 'block_exacomp');
+			$subject_empty_cell->colspan = count($table_header);
+			$subject_empty_cell->attributes['class'] = 'header';
+			$row->cells[] = $subject_empty_cell;
+			
+			$subject_eval_cell = new html_table_cell();
+			$subject_eval_cell->text = $table_content->subject_evalniveau . $table_content->subject_eval;
+			$subject_eval_cell->attributes['class'] = 'header';
+			$row->cells[] = $subject_eval_cell;
+			
+			$rows[] = $row;
+		}
+		$table->data = $rows;
+		$content .= html_writer::table($table);
+				
 		return html_writer::div($content, 'compprofile_grid');
 	}
 	
+	private function subject_statistic_table($courseid, $stat, $stat_title){
+		$content = '';
+		
+		$evaluation_niveaus = \block_exacomp\global_config::get_evalniveaus();
+		$value_titles = \block_exacomp\global_config::get_value_titles($courseid, true);
+		
+		//first table for descriptor evaluation
+		$table = new html_table();
+		$table->attributes['class'] = ' flexible boxaligncenter statistictable';
+		$rows = array();
+		
+		//header
+		$row = new html_table_row();
+		
+		//first subject title cell
+		$cell = new html_table_cell();
+		$cell->text = $stat_title;
+		$cell->colspan = count($value_titles);
+		$row->cells[] = $cell;
+		$rows[] = $row;
+		
+		$row = new html_table_row();
+		$cell = new html_table_cell();
+		$row->cells[] = $cell;
+		
+		foreach($value_titles as $key => $value){
+			//ohne beurteilung wird hier nicht angezeigt
+			if($key > -1){
+				$cell = new html_table_cell();
+				$cell->text = $value;
+				$row->cells[] = $cell;
+			}
+		}
+		$rows[] = $row;
+		
+		foreach($stat as $niveau=>$data){
+			$row = new html_table_row();
+			$cell = new html_table_cell();
+			$cell->text = $evaluation_niveaus[$niveau];
+			$row->cells[] = $cell;
+			
+			foreach($data as $sum){
+				$cell = new html_table_cell();
+				$cell->text = $sum;
+				$row->cells[] = $cell;
+			}
+			$rows[] = $row;
+		}
+		
+		$table->data = $rows;
+		
+		$content .= html_writer::div(html_writer::table($table), 'stat_table');
+		return $content;
+	}
+	
+	private function comparison_table($courseid, $subject, $student){
+		$evaluation_niveaus = \block_exacomp\global_config::get_evalniveaus();
+		$content = '';
+		
+		//first table for descriptor evaluation
+		$table = new html_table();
+		$table->attributes['class'] = ' flexible boxaligncenter comparisontable';
+		$rows = array();
+		
+		//header
+		$row = new html_table_row();
+		
+		//first subject title cell
+		$cell = new html_table_cell();
+		$cell->text = $subject->title;//TODO not hardcoded
+		$cell->colspan = 2; //TODO not hardcoded
+		$row->cells[] = $cell;
+		
+		$cell = new html_table_cell();
+		$cell->text = 'Lehrerbewertung';
+		$row->cells[] = $cell;
+		
+		$cell = new html_table_cell();
+		$cell->text = 'Schülerbewertung';
+		$row->cells[] = $cell;
+		
+		$rows[] = $row;
+		
+		foreach($subject->subs as $topic){
+			//if(block_exacomp_is_topic_visible($courseid, $topic, $student->id)){ //TODO this costs 2 sec
+				$row = new html_table_row();
+				$cell = new html_table_cell();
+				$cell->text = $topic->numbering;
+				$row->cells[] = $cell;
+				
+				$cell = new html_table_cell();
+				$cell->text = $topic->title;
+				$row->cells[] = $cell;
+				
+				$cell = new html_table_cell();
+				$cell->text = ((isset($student->topics->niveau[$topic->id]))?$evaluation_niveaus[$student->topics->niveau[$topic->id]].' ': '').
+					((isset($student->topics->teacher_additional_grading[$topic->id]))?$student->topics->teacher_additional_grading[$topic->id]:'');
+				$row->cells[] = $cell;
+				
+				$cell = new html_table_cell();
+				$cell->text = (isset($student->topics->student[$topic->id]))?$student->topics->student[$topic->id]:'';
+				$row->cells[] = $cell;
+				$rows[] = $row;
+				
+				foreach($topic->descriptors as $descriptor){
+					//if(block_exacomp_is_descriptor_visible($courseid, $descriptor, $student->id)){
+						$row = new html_table_row();
+						$cell = new html_table_cell();
+						$cell->text = $descriptor->numbering;
+						$row->cells[] = $cell;
+						
+						$cell = new html_table_cell();
+						$cell->text = $descriptor->title;
+						$row->cells[] = $cell;
+						
+						$cell = new html_table_cell();
+						$cell->text = ((isset($student->competencies->niveau[$descriptor->id]))?$evaluation_niveaus[$student->competencies->niveau[$descriptor->id]].' ': '').
+						((isset($student->competencies->teacher_additional_grading[$descriptor->id]))?$student->competencies->teacher_additional_grading[$descriptor->id]:'');
+						$row->cells[] = $cell;
+						
+						$cell = new html_table_cell();
+						$cell->text = (isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:'';
+						$row->cells[] = $cell;
+						$rows[] = $row;
+						
+						$edited = false;
+						$inwork = false;
+						$notinwork = false;
+						foreach($descriptor->examples as $example){
+							//cannot be 9 -> no blocking events here
+							if($example->state > \block_exacomp\EXAMPLE_STATE_SUBMITTED && !$edited){
+								$row = new html_table_row();
+								$cell = new html_table_cell();
+								$row->cells[] = $cell;
+								$cell = new html_table_cell();
+								$cell->text = 'Bearbeitete Lernmaterialien';
+								$cell->colspan = 3;
+								$row->cells[] = $cell;
+								$rows[] = $row;
+								$edited = true;
+							}elseif($example->state > \block_exacomp\EXAMPLE_STATE_NOT_SET && $example->state < \block_exacomp\EXAMPLE_STATE_SUBMITTED && !$inwork){
+								$row = new html_table_row();
+								$cell = new html_table_cell();
+								$row->cells[] = $cell;
+								$cell = new html_table_cell();
+								$cell->text = 'Lernmaterialien in Arbeit';
+								$cell->colspan = 3;
+								$row->cells[] = $cell;
+								$rows[] = $row;
+								$inwork = true;
+							}elseif($example->state == \block_exacomp\EXAMPLE_STATE_NOT_SET && !$notinwork){
+								$row = new html_table_row();
+								$cell = new html_table_cell();
+								$row->cells[] = $cell;
+								$cell = new html_table_cell();
+								$cell->text = 'Unbearbeitete Lernmaterialien';
+								$cell->colspan = 3;
+								$row->cells[] = $cell;
+								$rows[] = $row;
+								$notinwork = true;
+							}
+							
+							$row = new html_table_row();
+							$cell = new html_table_cell();
+							$cell->text = '';
+							$row->cells[] = $cell;
+							
+							$cell = new html_table_cell();
+							$cell->text = $example->title;
+							$row->cells[] = $cell;
+							
+							$cell = new html_table_cell();
+							$cell->text = ((isset($student->examples->niveau[$example->id]))?$evaluation_niveaus[$student->examples->niveau[$example->id]].' ': '').
+							((isset($student->examples->teacher[$example->id]))?$student->examples->teacher[$example->id]:'');
+							$row->cells[] = $cell;
+							
+							$cell = new html_table_cell();
+							$cell->text = (isset($student->examples->student[$example->id]))?$student->examples->student[$example->id]:'';
+							$row->cells[] = $cell;
+							$rows[] = $row;
+						}
+					//}
+				}
+			//}
+		}
+		
+		$table->data = $rows;
+		
+		$content .= html_writer::div(html_writer::table($table), 'stat_table');
+		return $content;
+	}
 private function competence_profile_tree_v2($in, $courseid, $student = null,$scheme = 1, $showonlyreached = false, $max_scheme = 3) {
 		global $DB;
 		static $barchartid_i = 0;
