@@ -3818,26 +3818,27 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		//$topics = block_exacomp_get_topics_for_radar_graph($course->id, $student->id);
 		//$radar_graph = html_writer::div($this->radar_graph($topics),"competence_profile_radargraph");
 
-		list($teachercomp,$studentcomp,$pendingcomp) = block_exacomp_get_competences_for_pie_chart($course->id,$student, $scheme, 0, true);
+		//list($teachercomp,$studentcomp,$pendingcomp) = block_exacomp_get_competences_for_pie_chart($course->id,$student, $scheme, 0, true);
 		// TODO: fix pie graph with respect to new grading options
 		//$pie_graph = html_writer::div($this->pie_graph($teachercomp, $studentcomp, $pendingcomp, $course->id),"competence_profile_radargraph");
-		$pie_graph = "";
+		//$pie_graph = "";
 		
-		$total_comps = $teachercomp+$studentcomp+$pendingcomp;
-		$timeline_data= block_exacomp_get_timeline_data(array($course), $student, $total_comps);
+		//$total_comps = $teachercomp+$studentcomp+$pendingcomp;
+		//$timeline_data= block_exacomp_get_timeline_data(array($course), $student, $total_comps);
 		
-		if($timeline_data && get_config('exacomp', 'usetimeline'))
-		   $timeline_graph =  html_writer::div($this->timeline_graph($timeline_data->x_values, $timeline_data->y_values_teacher, $timeline_data->y_values_student, $timeline_data->y_values_total, $course->id),"competence_profile_timelinegraph");
-		else
-		   $timeline_graph = "";
+		//if($timeline_data && get_config('exacomp', 'usetimeline'))
+		  // $timeline_graph =  html_writer::div($this->timeline_graph($timeline_data->x_values, $timeline_data->y_values_teacher, $timeline_data->y_values_student, $timeline_data->y_values_total, $course->id),"competence_profile_timelinegraph");
+		//else
+		  // $timeline_graph = "";
 			
-		$content .= html_writer::div($pie_graph.$timeline_graph, 'competence_profile_graphbox clearfix');
+		//$content .= html_writer::div($pie_graph.$timeline_graph, 'competence_profile_graphbox clearfix');
 		//$content .= html_writer::div($this->radar_graph_legend(),"radargraph_legend");
 			
 		//print list
 		$student = block_exacomp_get_user_information_by_course($student, $course->id);
 
-		$content .= $this->competence_profile_grid($course->id, $student->id);
+		$content .= html_writer::tag('div', $this->competence_profile_grid($course->id, $student->id), array('class'=>'container','id'=>'charts'));
+		$content .= "<script> $('#charts').find('canvas').donut();	</script>";
 		$content .= $this->competence_profile_tree_v2($compTree,$course->id, $student,$scheme, false, $max_scheme);
 
 		return html_writer::div($content,"competence_profile_coursedata");
@@ -3893,8 +3894,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$row->cells[] = $cell;
 				
 				foreach($rowcontent->niveaus as $niveau => $element){
+					$element_eval_value = \block_exacomp\global_config::get_additionalinfo_value_mapping($element->eval);
+						
 					$cell = new html_table_cell();
-					$cell->text = $element->evalniveau . $element->eval;
+					$cell->text = html_writer::empty_tag('canvas',
+							array("id"=>"chart".$niveau, "height"=>"50", "width"=>"50", "data-title"=>$element->evalniveau,
+									"data-value"=>$element_eval_value, "data-valuemax"=>"3"));
+					
 					if(array_key_exists($niveau, $spanning_niveaus)){
 						$cell->colspan = $spanning_colspan;
 					}					
@@ -3903,9 +3909,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				}
 				
 				if(block_exacomp_is_topicgrading_enabled()){
+					$topic_eval_value = \block_exacomp\global_config::get_additionalinfo_value_mapping($rowcontent->topic_eval);
 					$topic_eval_cell = new html_table_cell();
-					$topic_eval_cell->text = $rowcontent->topic_evalniveau . $rowcontent->topic_eval;
-					
+					$topic_eval_cell->text = html_writer::empty_tag('canvas', 
+							array("id"=>"chart".$topic, "height"=>"50", "width"=>"50", "data-title"=>$rowcontent->topic_evalniveau, 
+							"data-value"=>$topic_eval_value, "data-valuemax"=>"3"));
+					//$rowcontent->topic_evalniveau . $rowcontent->topic_eval;
 					$row->cells[] = $topic_eval_cell;
 				}
 				$rows[] = $row;
