@@ -2617,7 +2617,7 @@ function block_exacomp_set_coursetopics($courseid, $topicids) {
 		$DB->insert_record(\block_exacomp\DB_COURSETOPICS, array("courseid" => $courseid, "topicid" => $topicid));
 
 		//insert descriptors in block_exacompdescrvisibility
-		$descriptors_topic = block_exacomp_get_descriptors_by_topic($courseid, $topicid);
+		$descriptors_topic = block_exacomp_get_descriptors_by_topic($courseid, $topicid, true);
 		foreach($descriptors_topic as $descriptor){
 			$descriptors[$descriptor->id] = $descriptor;
 		}
