@@ -3810,6 +3810,8 @@ function block_exacomp_set_descriptor_visibility($descrid, $courseid, $visible, 
 		['visible'=>$visible],
 		['descrid'=>$descrid, 'courseid'=>$courseid, 'studentid'=>$studentid]
 	);
+	
+	block_exacomp_update_visibility_cache($courseid);
 }
 function block_exacomp_set_example_visibility($exampleid, $courseid, $visible, $studentid){
 	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS || $studentid == 0){//if visibility changed for all: delete individual settings
@@ -3822,6 +3824,8 @@ function block_exacomp_set_example_visibility($exampleid, $courseid, $visible, $
 		['visible'=>$visible],
 		['exampleid'=>$exampleid, 'courseid'=>$courseid, 'studentid'=>$studentid]
 	);
+	
+	block_exacomp_update_visibility_cache($courseid);
 }
 function block_exacomp_set_example_solution_visibility($exampleid, $courseid, $visible, $studentid){
 	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS || $studentid == 0){//if visibility changed for all: delete individual settings
@@ -3847,6 +3851,8 @@ function block_exacomp_set_topic_visibility($topicid, $courseid, $visible, $stud
 			['visible'=>$visible],
 			['topicid'=>$topicid, 'courseid'=>$courseid, 'studentid'=>$studentid]
 			);
+	
+	block_exacomp_update_visibility_cache($courseid);
 }
 function block_exacomp_topic_used($courseid, $topic, $studentid){
 	global $DB;
@@ -4148,36 +4154,9 @@ function block_exacomp_is_topic_visible($courseid, $topic, $studentid){
 		$studentid = 0;
 	}
 	
-	// if used, hiding is impossible
-	$topic_used = block_exacomp_topic_used($courseid, $topic, $studentid);
-	if($topic_used)
-		return true;
+	$visibilities = block_exacomp_get_visibility_cache($courseid);
 	
-		// always use global value first (if set)
-		if (isset($topic->visible) && !$topic->visible) {
-			return false;
-		}
-	
-		// check if it is hidden for whole course?
-		$visible = $DB->get_field(\block_exacomp\DB_TOPICVISIBILITY, 'visible',
-				['courseid'=>$courseid, 'topicid'=>$topic->id, 'studentid'=>0]);
-		// $DB->get_field() returns false if not found
-		if ($visible !== false && !$visible) {
-			return false;
-		}
-	
-		// then try for a student
-		if ($studentid > 0) {
-			$visible = $DB->get_field(\block_exacomp\DB_TOPICVISIBILITY, 'visible',
-					['courseid'=>$courseid, 'topicid'=>$topic->id, 'studentid'=>$studentid]);
-			// $DB->get_field() returns false if not found
-			if ($visible !== false) {
-				return $visible;
-			}
-		}
-	
-		// default is visible
-		return true;
+	return array_key_exists($topic->id, $visibilities->topic_visibilities[$studentid]);
 }
 				
 function block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid, $checkParent = false) {
@@ -4188,53 +4167,9 @@ function block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid,
 		$studentid = 0;
 	}
 
-	if($checkParent) {
-		if($descriptor->topicid) {
-			$topic = \block_exacomp\topic::get($descriptor->topicid);
-		}
+	$visibilities = block_exacomp_get_visibility_cache($courseid);
 	
-		// first, check parent visibility, and only if topic is visible, continue here
-		if($descriptor->parentid) {
-			$parent = \block_exacomp\descriptor::get($descriptor->parentid);
-			$parent->topicid = $descriptor->topicid;
-			if(!block_exacomp_is_descriptor_visible($courseid, $parent, $studentid, $checkParent)) {
-				return false;
-			}
-		}
-		else if(isset($topic) && !block_exacomp_is_topic_visible($courseid, $topic, $studentid))
-			return false;
-	}
-	
-	// if used, hiding is impossible
-	$descriptor_used = block_exacomp_descriptor_used($courseid, $descriptor, $studentid);
-	if($descriptor_used)
-		return true;
-
-	// always use global value first (if set)
-	if (isset($descriptor->visible) && !$descriptor->visible) {
-		return false;
-	}
-
-	// check if it is hidden for whole course?
-	$visible = $DB->get_field(\block_exacomp\DB_DESCVISIBILITY, 'visible',
-		['courseid'=>$courseid, 'descrid'=>$descriptor->id, 'studentid'=>0]);
-	// $DB->get_field() returns false if not found
-	if ($visible !== false && !$visible) {
-		return false;
-	}
-
-	// then try for a student
-	if ($studentid > 0) {
-		$visible = $DB->get_field(\block_exacomp\DB_DESCVISIBILITY, 'visible',
-			['courseid'=>$courseid, 'descrid'=>$descriptor->id, 'studentid'=>$studentid]);
-		// $DB->get_field() returns false if not found
-		if ($visible !== false) {
-			return $visible;
-		}
-	}
-
-	// default is visible
-	return true;
+	return array_key_exists($descriptor->id, $visibilities->descriptor_visibilites[$studentid]);
 }
 function block_exacomp_is_example_visible($courseid, $example, $studentid, $checkParent = false){
 	global $DB;
@@ -4244,43 +4179,9 @@ function block_exacomp_is_example_visible($courseid, $example, $studentid, $chec
 		$studentid = 0;
 	}
 
-	// first, check parent visibility, and only if descriptor is visible, continue here
-	if($checkParent)
-		if(!block_exacomp_is_descriptor_visible($courseid, $example->descriptor, $studentid, $checkParent)) {
-			return false;
-		}
+	$visibilities = block_exacomp_get_visibility_cache($courseid);
 	
-	// if used, hiding is impossible
-	$example_used = block_exacomp_example_used($courseid, $example, $studentid);
-	if ($example_used) {
-		return true;
-	}
-
-	// always use global value first (if set)
-	if (isset($example->visible) && !$example->visible) {
-		return false;
-	}
-
-	// check if it is hidden for whole course?
-	$visible = $DB->get_field(\block_exacomp\DB_EXAMPVISIBILITY, 'visible',
-		['courseid'=>$courseid, 'exampleid'=>$example->id, 'studentid'=>0]);
-	// $DB->get_field() returns false if not found
-	if ($visible !== false && !$visible) {
-		return false;
-	}
-
-	// then try for a student
-	if ($studentid > 0) {
-		$visible = $DB->get_field(\block_exacomp\DB_EXAMPVISIBILITY, 'visible',
-			['courseid'=>$courseid, 'exampleid'=>$example->id, 'studentid'=>$studentid]);
-		// $DB->get_field() returns false if not found
-		if ($visible !== false) {
-			return $visible;
-		}
-	}
-
-	// default is visible
-	return true;
+	return array_key_exists($example->id, $visibilities->example_visibilities[$studentid]);
 }
 function block_exacomp_is_example_solution_visible($courseid, $example, $studentid){
 	global $DB;
@@ -6779,22 +6680,23 @@ function block_exacomp_get_visibility_object($courseid){
 	$visibilites->example_visibilities = block_exacomp_get_example_visibilites_for_course(2);
 	$visibilites->descriptor_visibilites = block_exacomp_get_descriptor_visibilites_for_course(2);
 	$visibilites->topic_visibilities = block_exacomp_get_topic_visibilites_for_course(2);
-	return $visibilities;
+	return $visibilites;
 }
 function block_exacomp_get_visibility_cache($courseid){
 	// Get a cache instance
 	$cache = cache::make('block_exacomp', 'visibility_cache');
 	
-	$visibilities = $cache->get('visibilities');
+	$visibilites = $cache->get('visibilities');
 	
 	if(!$visibilites || $visibilites->courseid != $courseid){
 		$result = $cache->set('visibilities', block_exacomp_get_visibility_object($courseid));
+		$visibilites = $cache->get('visibilities');
 	}
 	
 	return $visibilites;
 }
 
-function block_exacomp_set_visibility_cache($courseid){
+function block_exacomp_update_visibility_cache($courseid){
 	return $cache->set('visibilities', block_exacomp_get_visibility_object($courseid));
 }
 
