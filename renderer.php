@@ -20,7 +20,7 @@
 defined('MOODLE_INTERNAL') || die;
 
 use block_exacomp\globals as g;
-use const block_exacomp\EXAMPLE_STATE_SUBMITTED;
+use block_exacomp\EXAMPLE_STATE_SUBMITTED;
 
 class block_exacomp_renderer extends plugin_renderer_base {
 
