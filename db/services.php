@@ -54,6 +54,7 @@ call_user_func(function() use (&$functions, &$services) {
 		[ 'block_exacomp_grade_item', 'write', 'Grade an item' ],
 		[ 'block_exacomp_submit_example', 'read', 'Submit example' ],
 		[ 'block_exacomp_update_example', 'write', 'update an example' ],
+		[ 'block_exacomp_perform_auto_test', 'write', 'trigger auto test function to assign competencies for associated quizes' ],
 		[ 'dakora_add_example_to_learning_calendar', 'write', 'add example to learning calendar for dakora' ],
 		[ 'dakora_add_example_to_pre_planning_storage', 'write', 'add example to current pre planning storage' ],
 		[ 'dakora_add_examples_to_students_schedule', 'write', 'add examples from current pre planning storage to students weekly schedule' ],

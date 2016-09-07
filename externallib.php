@@ -138,6 +138,7 @@ class block_exacomp_external extends external_api {
 				$structure [$topic->id]->title = $topic->title;
 				$structure [$topic->id]->requireaction = false;
 				$structure [$topic->id]->examples = array ();
+				$structure [$topic->id]->quizes = array ();
 			}
 			$descriptors = block_exacomp_get_descriptors_by_topic ( $courseid, $topic->id, false, true );
 
@@ -205,6 +206,27 @@ class block_exacomp_external extends external_api {
 						}
 					}
 				}
+				
+				// TODO: check mdl version >= 2016052300 (3.1) & if quiz is accessible by user
+				$quizes = $DB->get_records_sql ( "SELECT q.id, q.name
+						FROM {" . \block_exacomp\DB_COMPETENCE_ACTIVITY . "} ca
+						JOIN {course_modules} cm ON ca.activityid = cm.id
+						JOIN {modules} m ON cm.module = m.id
+						JOIN {quiz} q ON cm.instance = q.id
+						WHERE m.name = 'quiz' AND ca.compid = ? AND ca.comptype = ?
+						", array (
+							$descriptor->id, TYPE_DESCRIPTOR
+							)
+						);
+				
+				foreach ( $quizes as $quiz ) {
+				
+					if (! array_key_exists ( $quiz->id, $structure [$topic->id]->quizes )) {
+						$structure [$topic->id]->quizes [$quiz->id] = new stdClass ();
+						$structure [$topic->id]->quizes [$quiz->id]->quizid = $quiz->id;
+						$structure [$topic->id]->quizes [$quiz->id]->quiz_title = $quiz->name;
+					}
+				}
 			}
 		}
 
@@ -227,7 +249,11 @@ class block_exacomp_external extends external_api {
 						'example_item' => new external_value ( PARAM_INT, 'current item id' ),
 						'example_status' => new external_value ( PARAM_INT, 'status of current item' ),
 						'example_creatorid' => new external_value ( PARAM_INT, 'creator of example' )
-				) ) )
+				) ) ),
+				'quizes' => new external_multiple_structure ( new external_single_structure ( array (
+						'quizid' => new external_value ( PARAM_INT, 'id of example' ),
+						'quiz_title' => new external_value ( PARAM_TEXT, 'title of example' )
+				) ), 'quiz data', VALUE_OPTIONAL )
 		) ) );
 	}
 	/**
@@ -1049,13 +1075,13 @@ class block_exacomp_external extends external_api {
 			$DB->update_record('block_exaportitem', $item);
 		}
 
-		//if a file is added we need to copy the file from the user/private filearea to block_exaport/item_file with the itemid from above
+		//if a file is added we need to copy the file from the user/draft filearea to block_exaport/item_file with the itemid from above
 		if($type == "file") {
 			$context = context_user::instance($USER->id);
 			$fs = get_file_storage();
 			try {
-				$old = $fs->get_file($context->id, "user", "private", 0, "/", $filename);
-
+				$old = $fs->get_file($context->id, "user", "draft", 0, "/", $filename);
+				
 				if($old) {
 					$file_record = array('contextid'=>$context->id, 'component'=>'block_exaport', 'filearea'=>'item_file',
 							'itemid'=>$itemid, 'filepath'=>'/', 'filename'=>$old->get_filename(),
@@ -1110,7 +1136,8 @@ class block_exacomp_external extends external_api {
 				'description' => new external_value ( PARAM_TEXT, 'description of example' ),
 				'externalurl' => new external_value ( PARAM_TEXT, '' ),
 				'comps' => new external_value ( PARAM_TEXT, 'list of competencies, seperated by comma' ),
-				'filename' => new external_value ( PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area' )
+				'filename' => new external_value ( PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area' ),
+				'fileitemid' => new external_value ( PARAM_INT, 'fileitemid')
 		) );
 	}
 
@@ -1125,7 +1152,7 @@ class block_exacomp_external extends external_api {
 	 * @param $filename
 	 * @return array
 	 */
-	public static function create_example($name, $description, $externalurl, $comps, $filename) {
+	public static function create_example($name, $description, $externalurl, $comps, $filename, $fileitemid=0) {
 		global $DB, $USER;
 
 		if (empty ( $name )) {
@@ -1137,7 +1164,8 @@ class block_exacomp_external extends external_api {
 				'description' => $description,
 				'externalurl' => $externalurl,
 				'comps' => $comps,
-				'filename' => $filename
+				'filename' => $filename,
+				'fileitemid' => $fileitemid
 		) );
 
 		// insert into examples and example_desc
@@ -1157,7 +1185,7 @@ class block_exacomp_external extends external_api {
 			$context = context_user::instance ( $USER->id );
 			$fs = get_file_storage ();
 
-			if (!$file = $fs->get_file($context->id, 'user', 'private', 0, '/', $filename )) {
+			if (!$file = $fs->get_file($context->id, 'user', 'draft', $fileitemid, '/', $filename )) {
 				throw new moodle_exception('file not found');
 			}
 
@@ -1821,10 +1849,11 @@ class block_exacomp_external extends external_api {
 				'description' => new external_value ( PARAM_TEXT, 'description of example' ),
 				'externalurl' => new external_value ( PARAM_TEXT, '' ),
 				'comps' => new external_value ( PARAM_TEXT, 'list of competencies, seperated by comma' ),
-				'filename' => new external_value ( PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area' )
+				'filename' => new external_value ( PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area' ),
+				'fileitemid' => new external_value ( PARAM_INT, 'fileitemid')
 		) );
 	}
-	public static function update_example($exampleid, $name, $description, $externalurl, $comps, $filename) {
+	public static function update_example($exampleid, $name, $description, $externalurl, $comps, $filename, $fileitemid=0) {
 		global $CFG, $DB, $USER;
 
 		if (empty ($exampleid) || empty ($name)) {
@@ -1838,6 +1867,7 @@ class block_exacomp_external extends external_api {
 			'externalurl' => $externalurl,
 			'comps' => $comps,
 			'filename' => $filename,
+			'fileitemid' => $fileitemid
 		));
 
 		$example = block_exacomp\example::get($exampleid);
@@ -1849,7 +1879,7 @@ class block_exacomp_external extends external_api {
 			$context = context_user::instance($USER->id);
 			$fs = get_file_storage();
 
-			if (!$file = $fs->get_file($context->id, 'user', 'private', 0, '/', $filename)) {
+			if (!$file = $fs->get_file($context->id, 'user', 'draft', $fileitemid, '/', $filename)) {
 				throw new moodle_exception('file not found');
 			}
 
@@ -1901,6 +1931,7 @@ class block_exacomp_external extends external_api {
 		) );
 	}
 
+	
 	/**
 	 * Returns description of method parameters
 	 *
@@ -2019,6 +2050,36 @@ class block_exacomp_external extends external_api {
 		) ) );
 	}
 
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function perform_auto_test_parameters() {
+		return new external_function_parameters ( array (
+		) );
+	}
+	public static function perform_auto_test() {
+		global $CFG, $DB, $USER;
+	
+		block_exacomp_perform_auto_test();
+	
+		return array(
+				"success" => true,
+		);
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function perform_auto_test_returns() {
+		return new external_single_structure ( array (
+				'success' => new external_value ( PARAM_BOOL, 'true if successful' )
+		) );
+	}
+	
 	/**
 	 * Returns description of method parameters
 	 *
