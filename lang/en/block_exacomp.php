@@ -30,6 +30,8 @@ $string['exacomp:use'] = 'use Exabis Competence Grid';
 $string['exacomp:deleteexamples'] = 'delete examples';
 $string['exacomp:assignstudents'] = 'Assign external trainers';
 
+//Cache definition
+$string['cachedef_visibility_cache'] = 'Cache zur Performanceerhöhung von Sichtbarkeitsabfragen';
 
 // === Admin Tabs ===
 $string['tab_admin_import'] = 'Import/Export';

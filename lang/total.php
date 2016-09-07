@@ -60,7 +60,12 @@ return  [
 		'Externe Trailer zuordnen',
 		'Assign external trainers',
 	],
-
+	
+	//Cache definition
+	'cachedef_visibility_cache' => [
+		'Cache to improve performance while checking visibilities',
+		'Cache zur Performanceerhöhung von Sichtbarkeitsabfragen',
+	],
 
 	// === Admin Tabs ===
 	'tab_admin_import' => [

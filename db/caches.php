@@ -17,10 +17,9 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->component = 'block_exacomp';
-$plugin->release = '3.0.3.experimental';
-$plugin->version   = 2016090702;
-$plugin->requires  = 2015051100;
-$plugin->maturity = MATURITY_STABLE;
+$definitions = array(
+		'visibility_cache' => array(
+				'mode' => cache_store::MODE_APPLICATION
+		)
+);
+?>

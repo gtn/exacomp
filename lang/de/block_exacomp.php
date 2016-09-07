@@ -30,6 +30,8 @@ $string['exacomp:use'] = 'Nutzung';
 $string['exacomp:deleteexamples'] = 'Lernmaterialien löschen';
 $string['exacomp:assignstudents'] = 'Externe Trailer zuordnen';
 
+//Cache definition
+$string['cachedef_visibility_cache'] = 'Cache to improve performance while checking visibilities';
 
 // === Admin Tabs ===
 $string['tab_admin_import'] = 'Import/Export';

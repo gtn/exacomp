@@ -6597,6 +6597,207 @@ function block_exacomp_get_visible_own_and_child_examples_for_descriptor($course
 	return $examples;
 }
 
+/**
+ * return all visible examples for a course and user context with only one sql query
+ *
+ * @param int $courseid
+ * @param number $userid
+ *
+ * @return {{id}, {...}}
+ */
+function block_exacomp_get_example_visibilites_for_course_and_user($courseid, $userid = 0){
+	global $DB;
+
+	$sql = "SELECT DISTINCT e.id FROM {".\block_exacomp\DB_EXAMPLES."} e
+		LEFT JOIN {".\block_exacomp\DB_DESCEXAMP."} de ON e.id = de.exampid
+		LEFT JOIN {".\block_exacomp\DB_DESCTOPICS."} dt ON de.descrid = dt.descrid
+		LEFT JOIN {".\block_exacomp\DB_COURSETOPICS."} ct ON dt.topicid = ct.topicid
+		LEFT JOIN {".\block_exacomp\DB_EXAMPVISIBILITY."} ev ON e.id = ev.exampleid AND ev.courseid = ct.courseid
+		LEFT JOIN {".\block_exacomp\DB_DESCVISIBILITY."} dv ON de.descrid = dv.descrid AND dv.courseid = ct.courseid
+		LEFT JOIN {".\block_exacomp\DB_TOPICVISIBILITY."} tv ON dt.topicid = tv.topicid AND tv.courseid = ct.courseid
+		LEFT JOIN {".\block_exacomp\DB_TOPICS."} t ON ct.topicid = t.id
+
+		WHERE ct.courseid = ? 
+
+		AND ((ev.visible = 1 AND ev.studentid = 0 AND NOT EXISTS
+		  (SELECT *
+		   FROM {".\block_exacomp\DB_EXAMPVISIBILITY."} evsub
+		   WHERE evsub.exampleid = ev.exampleid AND evsub.courseid = ev.courseid AND evsub.visible = 0 AND evsub.studentid = ?))
+		   OR (ev.visible = 1 AND ev.studentid = ? AND NOT EXISTS
+		  (SELECT *
+		   FROM {".\block_exacomp\DB_EXAMPVISIBILITY."} evsub
+		   WHERE evsub.exampleid = ev.exampleid AND evsub.courseid = ev.courseid AND evsub.visible = 0 AND evsub.studentid = 0)))
+
+		AND ((dv.visible = 1 AND dv.studentid = 0 AND NOT EXISTS
+		  (SELECT *
+		   FROM {".\block_exacomp\DB_DESCVISIBILITY."} dvsub
+		   WHERE dvsub.descrid = dv.descrid AND dvsub.courseid = dv.courseid AND dvsub.visible = 0 AND dvsub.studentid = ?))
+		   OR (dv.visible = 1 AND dv.studentid = ? AND NOT EXISTS
+		  (SELECT *
+		   FROM {".\block_exacomp\DB_DESCVISIBILITY."} dvsub
+		   WHERE dvsub.descrid = dv.descrid AND dvsub.courseid = dv.courseid AND dvsub.visible = 0 AND dvsub.studentid = 0)))
+		
+		AND ((tv.visible = 1 AND tv.studentid = 0 AND NOT EXISTS
+		  (SELECT *
+		   FROM {".\block_exacomp\DB_TOPICVISIBILITY."} tvsub
+		   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = ?))
+		   OR (tv.visible = 1 AND tv.studentid = ? AND NOT EXISTS
+		  (SELECT *
+		   FROM {".\block_exacomp\DB_TOPICVISIBILITY."} tvsub
+		   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = 0)))";
+
+	$params = array($courseid, $userid, $userid, $userid, $userid, $userid, $userid);
+
+	return $DB->get_records_sql($sql, $params);
+}
+/**
+ * get all visible descriptors for all course students -> improved performance
+ * @param unknown $courseid
+ * @return {[userid]=>[{id}, {id},...]}
+ */
+function block_exacomp_get_example_visibilites_for_course($courseid){
+	global $DB;
+	$user_visibilites = array();
+	$students = block_exacomp_get_students_by_course($courseid);
+
+	foreach($students as $student){
+		$user_visibilites[$student->id] = block_exacomp_get_example_visibilites_for_course_and_user($courseid, $student->id);
+	}
+	$user_visibilites[0] = block_exacomp_get_example_visibilites_for_course_and_user($courseid);
+	return $user_visibilites;
+}
+
+/**
+ * return all visible descriptors (parent & child) for a course and user context with only one sql query
+ * 
+ * @param int $courseid
+ * @param int $userid if userid == 0 -> only visibility for all is minded, not user related:
+ * 						 used in assign_competencies when all sutdents are selected
+ *
+ * @return: {{id}, {...}}
+ */
+function block_exacomp_get_descriptor_visibilites_for_course_and_user($courseid, $userid = 0){
+	global $DB;
+
+	$sql = "SELECT DISTINCT d.id FROM {".\block_exacomp\DB_DESCRIPTORS."} d
+		LEFT JOIN {".\block_exacomp\DB_DESCTOPICS."} dt ON d.id = dt.descrid
+		LEFT JOIN {".\block_exacomp\DB_COURSETOPICS."} ct ON dt.topicid = ct.topicid
+		LEFT JOIN {".\block_exacomp\DB_DESCVISIBILITY."} dv ON d.id = dv.descrid AND dv.courseid = ct.courseid
+		LEFT JOIN {".\block_exacomp\DB_TOPICVISIBILITY."} tv ON dt.topicid = tv.topicid AND tv.courseid = ct.courseid
+		LEFT JOIN {".\block_exacomp\DB_TOPICS."} t ON ct.topicid = t.id
+		WHERE ct.courseid = ? 
+
+		AND ((dv.visible = 1 AND dv.studentid = 0 AND NOT EXISTS
+		  (SELECT *
+		   FROM {".\block_exacomp\DB_DESCVISIBILITY."} dvsub
+		   WHERE dvsub.descrid = dv.descrid AND dvsub.courseid = dv.courseid AND dvsub.visible = 0 AND dvsub.studentid = ?))
+		   OR (dv.visible = 1 AND dv.studentid = ? AND NOT EXISTS
+		  (SELECT *
+		   FROM {".\block_exacomp\DB_DESCVISIBILITY."} dvsub
+		   WHERE dvsub.descrid = dv.descrid AND dvsub.courseid = dv.courseid AND dvsub.visible = 0 AND dvsub.studentid = 0)))
+		 
+		AND ((tv.visible = 1 AND tv.studentid = 0 AND NOT EXISTS
+		  (SELECT *
+		   FROM {".\block_exacomp\DB_TOPICVISIBILITY."} tvsub
+		   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = ?))
+		   OR (tv.visible = 1 AND tv.studentid = ? AND NOT EXISTS
+		  (SELECT *
+		   FROM {".\block_exacomp\DB_TOPICVISIBILITY."} tvsub
+		   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = 0)))";
+		
+	$params = array($courseid, $userid, $userid, $userid, $userid);
+
+	return $DB->get_records_sql($sql, $params);
+}
+
+/**
+ * get all visible descriptors for all course students -> improved performance
+ * @param unknown $courseid
+ * @return {[userid]=>[{id}, {id},...]}
+ */
+function block_exacomp_get_descriptor_visibilites_for_course($courseid){
+	global $DB;
+	$user_visibilites = array();
+	$students = block_exacomp_get_students_by_course($courseid);
+	
+	foreach($students as $student){
+		$user_visibilites[$student->id] = block_exacomp_get_descriptor_visibilites_for_course_and_user($courseid, $student->id);
+	}
+	$user_visibilites[0] = block_exacomp_get_descriptor_visibilites_for_course_and_user($courseid);
+	return $user_visibilites;
+}
+
+/**
+ * return all visible topics for a course and user context with only one sql query
+ *
+ * @param int $courseid
+ * @param int $userid
+ *
+ * @return: {{id}, {...}}
+ */
+function block_exacomp_get_topic_visibilites_for_course_and_user($courseid, $userid = 0){
+	global $DB;
+	
+	$sql = "SELECT DISTINCT t.id FROM {".\block_exacomp\DB_TOPICS."} t
+		LEFT JOIN {".\block_exacomp\DB_COURSETOPICS."} ct ON t.id = ct.topicid
+		LEFT JOIN {".\block_exacomp\DB_TOPICVISIBILITY."} tv ON t.id = tv.topicid AND tv.courseid = ct.courseid
+		WHERE ct.courseid = ? 
+
+		AND ((tv.visible = 1 AND tv.studentid = 0 AND NOT EXISTS 
+   			(SELECT * FROM {".\block_exacomp\DB_TOPICVISIBILITY."} tvsub
+			WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = ?)) 
+		OR (tv.visible = 1 AND tv.studentid = ? AND NOT EXISTS 
+			(SELECT * FROM {".\block_exacomp\DB_TOPICVISIBILITY."} tvsub
+			WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = 0)))";
+
+	$params = array($courseid, $userid, $userid);
+
+	return $DB->get_records_sql($sql, $params);
+}
+
+/**
+ * get all visible topic for all course students -> improved performance
+ * @param unknown $courseid
+ * @return {[userid]=>[{id}, {id},...]}
+ */
+function block_exacomp_get_topic_visibilites_for_course($courseid){
+	global $DB;
+	$user_visibilites = array();
+	$students = block_exacomp_get_students_by_course($courseid);
+
+	foreach($students as $student){
+		$user_visibilites[$student->id] = block_exacomp_get_topic_visibilites_for_course_and_user($courseid, $student->id);
+	}
+
+	$user_visibilites[0] = block_exacomp_get_topic_visibilites_for_course_and_user($courseid);
+	return $user_visibilites;
+}
+
+function block_exacomp_get_visibility_object($courseid){
+	$visibilites = new stdClass();
+	$visibilites->courseid = $courseid;
+	$visibilites->example_visibilities = block_exacomp_get_example_visibilites_for_course(2);
+	$visibilites->descriptor_visibilites = block_exacomp_get_descriptor_visibilites_for_course(2);
+	$visibilites->topic_visibilities = block_exacomp_get_topic_visibilites_for_course(2);
+	return $visibilities;
+}
+function block_exacomp_get_visibility_cache($courseid){
+	// Get a cache instance
+	$cache = cache::make('block_exacomp', 'visibility_cache');
+	
+	$visibilities = $cache->get('visibilities');
+	
+	if(!$visibilites || $visibilites->courseid != $courseid){
+		$result = $cache->set('visibilities', block_exacomp_get_visibility_object($courseid));
+	}
+	
+	return $visibilites;
+}
+
+function block_exacomp_set_visibility_cache($courseid){
+	return $cache->set('visibilities', block_exacomp_get_visibility_object($courseid));
+}
+
 function block_exacomp_cmp_statetitlesort($a, $b){
 	if($a->state == $b->state)
 		return $a->sorting > $b->sorting;
