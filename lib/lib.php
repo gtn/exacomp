@@ -4191,32 +4191,11 @@ function block_exacomp_is_example_solution_visible($courseid, $example, $student
 		$studentid = 0;
 	}
 
-	// always use global value first (if set)
-	if (isset($example->solution_visible) && !$example->solution_visible) {
-		return false;
-	}
-
-	// check if it is hidden for whole course?
-	$visible = $DB->get_field(\block_exacomp\DB_SOLUTIONVISIBILITY, 'visible',
-			['courseid'=>$courseid, 'exampleid'=>$example->id, 'studentid'=>0]);
-	// $DB->get_field() returns false if not found
-	if ($visible !== false && !$visible) {
-		return false;
-	}
-
-	// then try for a student
-	if ($studentid > 0) {
-		$visible = $DB->get_field(\block_exacomp\DB_SOLUTIONVISIBILITY, 'visible',
-				['courseid'=>$courseid, 'exampleid'=>$example->id, 'studentid'=>$studentid]);
-		// $DB->get_field() returns false if not found
-		if ($visible !== false) {
-			return $visible;
-		}
-	}
-
-	// default is visible
-	return true;
+	$visibilities = block_exacomp_get_visibility_cache($courseid);
+	
+	return array_key_exists($example->id, $visibilities->solution_visibilities[$studentid]);
 }
+
 function block_exacomp_get_visible_css($visible, $role) {
 	$visible_css = '';
 	if(!$visible)
@@ -6506,7 +6485,7 @@ function block_exacomp_get_visible_own_and_child_examples_for_descriptor($course
  *
  * @return {{id}, {...}}
  */
-function block_exacomp_get_example_visibilites_for_course_and_user($courseid, $userid = 0){
+function block_exacomp_get_example_visibilities_for_course_and_user($courseid, $userid = 0){
 	global $DB;
 
 	$sql = "SELECT DISTINCT e.id FROM {".\block_exacomp\DB_EXAMPLES."} e
@@ -6556,15 +6535,14 @@ function block_exacomp_get_example_visibilites_for_course_and_user($courseid, $u
  * @param unknown $courseid
  * @return {[userid]=>[{id}, {id},...]}
  */
-function block_exacomp_get_example_visibilites_for_course($courseid){
-	global $DB;
+function block_exacomp_get_example_visibilities_for_course($courseid){
 	$user_visibilites = array();
 	$students = block_exacomp_get_students_by_course($courseid);
 
 	foreach($students as $student){
-		$user_visibilites[$student->id] = block_exacomp_get_example_visibilites_for_course_and_user($courseid, $student->id);
+		$user_visibilites[$student->id] = block_exacomp_get_example_visibilities_for_course_and_user($courseid, $student->id);
 	}
-	$user_visibilites[0] = block_exacomp_get_example_visibilites_for_course_and_user($courseid);
+	$user_visibilites[0] = block_exacomp_get_example_visibilities_for_course_and_user($courseid);
 	return $user_visibilites;
 }
 
@@ -6577,7 +6555,7 @@ function block_exacomp_get_example_visibilites_for_course($courseid){
  *
  * @return: {{id}, {...}}
  */
-function block_exacomp_get_descriptor_visibilites_for_course_and_user($courseid, $userid = 0){
+function block_exacomp_get_descriptor_visibilities_for_course_and_user($courseid, $userid = 0){
 	global $DB;
 
 	$sql = "SELECT DISTINCT d.id FROM {".\block_exacomp\DB_DESCRIPTORS."} d
@@ -6616,15 +6594,14 @@ function block_exacomp_get_descriptor_visibilites_for_course_and_user($courseid,
  * @param unknown $courseid
  * @return {[userid]=>[{id}, {id},...]}
  */
-function block_exacomp_get_descriptor_visibilites_for_course($courseid){
-	global $DB;
+function block_exacomp_get_descriptor_visibilities_for_course($courseid){
 	$user_visibilites = array();
 	$students = block_exacomp_get_students_by_course($courseid);
 	
 	foreach($students as $student){
-		$user_visibilites[$student->id] = block_exacomp_get_descriptor_visibilites_for_course_and_user($courseid, $student->id);
+		$user_visibilites[$student->id] = block_exacomp_get_descriptor_visibilities_for_course_and_user($courseid, $student->id);
 	}
-	$user_visibilites[0] = block_exacomp_get_descriptor_visibilites_for_course_and_user($courseid);
+	$user_visibilites[0] = block_exacomp_get_descriptor_visibilities_for_course_and_user($courseid);
 	return $user_visibilites;
 }
 
@@ -6636,7 +6613,7 @@ function block_exacomp_get_descriptor_visibilites_for_course($courseid){
  *
  * @return: {{id}, {...}}
  */
-function block_exacomp_get_topic_visibilites_for_course_and_user($courseid, $userid = 0){
+function block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $userid = 0){
 	global $DB;
 	
 	$sql = "SELECT DISTINCT t.id FROM {".\block_exacomp\DB_TOPICS."} t
@@ -6661,25 +6638,66 @@ function block_exacomp_get_topic_visibilites_for_course_and_user($courseid, $use
  * @param unknown $courseid
  * @return {[userid]=>[{id}, {id},...]}
  */
-function block_exacomp_get_topic_visibilites_for_course($courseid){
-	global $DB;
+function block_exacomp_get_topic_visibilities_for_course($courseid){
 	$user_visibilites = array();
 	$students = block_exacomp_get_students_by_course($courseid);
 
 	foreach($students as $student){
-		$user_visibilites[$student->id] = block_exacomp_get_topic_visibilites_for_course_and_user($courseid, $student->id);
+		$user_visibilites[$student->id] = block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $student->id);
 	}
 
-	$user_visibilites[0] = block_exacomp_get_topic_visibilites_for_course_and_user($courseid);
+	$user_visibilites[0] = block_exacomp_get_topic_visibilities_for_course_and_user($courseid);
 	return $user_visibilites;
 }
+/**
+ * returnes a list of examples whose solutions are visibile in course and user context
+ * @param unknown $courseid
+ * @param number $userid
+ */
+function block_exacomp_get_solution_visibilities_for_course_and_user($courseid, $userid = 0){
+	global $DB;
+	
+	$sql = "SELECT DISTINCT e.id FROM {".\block_exacomp\DB_EXAMPLES."} e 
+		LEFT JOIN {".\block_exacomp\DB_DESCEXAMP."} de ON e.id = de.exampid 
+		LEFT JOIN {".\block_exacomp\DB_DESCTOPICS."} dt ON de.descrid = dt.descrid 
+		LEFT JOIN {".\block_exacomp\DB_COURSETOPICS."} ct ON dt.topicid = ct.topicid 
+		LEFT JOIN {".\block_exacomp\DB_SOLUTIONVISIBILITY."} sv ON e.id = sv.exampleid AND sv.courseid = ct.courseid 
+		WHERE ct.courseid = ? 
+		AND ((sv.visible = 1 AND sv.studentid = 0 AND NOT EXISTS (
+			SELECT * FROM {".\block_exacomp\DB_SOLUTIONVISIBILITY."} svsub 
+			WHERE svsub.exampleid = sv.exampleid AND svsub.courseid = sv.courseid AND svsub.visible = 0 AND svsub.studentid = ?)) 
+		OR (sv.visible = 1 AND sv.studentid = ? AND NOT EXISTS (
+			SELECT * FROM {".\block_exacomp\DB_SOLUTIONVISIBILITY."} svsub WHERE svsub.exampleid = sv.exampleid AND svsub.courseid = sv.courseid AND svsub.visible = 0 AND svsub.studentid = 0)))";
+	
+	$params = array($courseid, $userid, $userid);
+	
+	return $DB->get_records_sql($sql, $params);
+}
 
+/**
+ * returns a list of examples whose solutions are visibile for each user in course
+ * userid = 0 individual visibility not minded
+ * @param unknown $courseid
+ * @return 
+ */
+function block_exacomp_get_solution_visibilities_for_course($courseid){
+	$user_visibilites = array();
+	$students = block_exacomp_get_students_by_course($courseid);
+	
+	foreach($students as $student){
+		$user_visibilites[$student->id] = block_exacomp_get_solution_visibilities_for_course_and_user($courseid, $student->id);
+	}
+	
+	$user_visibilites[0] = block_exacomp_get_solution_visibilities_for_course_and_user($courseid);
+	return $user_visibilites;
+}
 function block_exacomp_get_visibility_object($courseid){
 	$visibilites = new stdClass();
 	$visibilites->courseid = $courseid;
-	$visibilites->example_visibilities = block_exacomp_get_example_visibilites_for_course(2);
-	$visibilites->descriptor_visibilites = block_exacomp_get_descriptor_visibilites_for_course(2);
-	$visibilites->topic_visibilities = block_exacomp_get_topic_visibilites_for_course(2);
+	$visibilites->example_visibilities = block_exacomp_get_example_visibilities_for_course($courseid);
+	$visibilites->descriptor_visibilites = block_exacomp_get_descriptor_visibilities_for_course($courseid);
+	$visibilites->topic_visibilities = block_exacomp_get_topic_visibilities_for_course($courseid);
+	$visibilites->solution_visibilities = block_exacomp_get_solution_visibilities_for_course($courseid);
 	return $visibilites;
 }
 function block_exacomp_get_visibility_cache($courseid){
