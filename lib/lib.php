@@ -3851,7 +3851,6 @@ function block_exacomp_set_topic_visibility($topicid, $courseid, $visible, $stud
 			['visible'=>$visible],
 			['topicid'=>$topicid, 'courseid'=>$courseid, 'studentid'=>$studentid]
 			);
-	
 	block_exacomp_update_visibility_cache($courseid);
 }
 function block_exacomp_topic_used($courseid, $topic, $studentid){
@@ -6369,7 +6368,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 			
 			//check if niveau is given in evaluation, if not -1
 			$niveaukey = (block_exacomp_use_eval_niveau() && isset($user->competencies->niveau[$descriptor->id]))?$user->competencies->niveau[$descriptor->id]:-1;
-			if(isset($user->competencies->teacher[$descriptor->id])) //increase counter in statistic
+			if(isset($user->competencies->teacher[$descriptor->id]) && $user->competencies->teacher[$descriptor->id]>-1) //increase counter in statistic
 				$descriptorgradings[$niveaukey][$user->competencies->teacher[$descriptor->id]]++;
 		}
 	}
@@ -6382,7 +6381,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 		
 			//check if niveau is given in evaluation, if not -1
 			$niveaukey = (block_exacomp_use_eval_niveau() && isset($user->competencies->niveau[$child->id]))?$user->competencies->niveau[$child->id]:-1;
-			if(isset($user->competencies->teacher[$child->id])) //increase counter in statistic
+			if(isset($user->competencies->teacher[$child->id]) && $user->competencies->teacher[$child->id]>-1) //increase counter in statistic
 				$childgradings[$niveaukey][$user->competencies->teacher[$child->id]]++;
 		}
 	}
@@ -6395,7 +6394,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 
 			//check if niveau is given in evaluation, if not -1
 			$niveaukey = (block_exacomp_use_eval_niveau() && isset($user->examples->niveau[$example->id]))?$user->examples->niveau[$example->id]:-1;
-			if(isset($user->examples->teacher[$example->id])) //increase counter in statistic
+			if(isset($user->examples->teacher[$example->id]) && $user->examples->teacher[$examples->id]>-1) //increase counter in statistic
 				$examplegradings[$niveaukey][$user->examples->teacher[$example->id]]++;
 		}
 		
@@ -6715,6 +6714,7 @@ function block_exacomp_get_visibility_cache($courseid){
 }
 
 function block_exacomp_update_visibility_cache($courseid){
+	$cache = cache::make('block_exacomp', 'visibility_cache');
 	return $cache->set('visibilities', block_exacomp_get_visibility_object($courseid));
 }
 

@@ -95,12 +95,6 @@ $usebadges = get_config('exacomp', 'usebadges');
 
 $profile_settings = block_exacomp_get_profile_settings($studentid);
 
-if (block_exacomp_moodle_badges_enabled() && $usebadges && $profile_settings->usebadges){
-	block_exacomp_award_badges($courseid, $studentid);
-	$badges = block_exacomp_get_user_badges($courseid, $studentid);
-}else{
-	$badges = array();
-}
 
 $items = array();
 
@@ -125,3 +119,4 @@ foreach($user_courses as $course) {
 
 /* END CONTENT REGION */
 echo $output->footer();
+
