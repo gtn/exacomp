@@ -4140,7 +4140,7 @@ function block_exacomp_calculate_spanning_niveau_colspan($niveaus, $spanningNive
 	$colspan = count($niveaus)-1;
 
 	foreach($niveaus as $id => $niveau) {
-		if(array_key_exists($id, $spanningNiveaus)) {
+		if(in_array($niveau->title, $spanningNiveaus)) {
 			$colspan--;
 		}
 	}

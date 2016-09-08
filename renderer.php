@@ -3213,7 +3213,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		list($course_subjects, $table_column, $table_header, $table_content) = block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $subject->id);
 		
-		$spanning_niveaus = $DB->get_records(\block_exacomp\DB_NIVEAUS,array('span' => 1));
+		$spanning_niveaus = $DB->get_fieldset_select(\block_exacomp\DB_NIVEAUS,'title', 'span=?', array(1));
+
 		//calculate the col span for spanning niveaus
 		$spanning_colspan = block_exacomp_calculate_spanning_niveau_colspan($table_header, $spanning_niveaus);
 		
@@ -3262,7 +3263,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						array("id"=>"chart".$niveau, "height"=>"50", "width"=>"50", "data-title"=>$element->evalniveau,
 								"data-value"=>$element_eval_value, "data-valuemax"=>"3"));
 				
-				if(array_key_exists($niveau, $spanning_niveaus)){
+				if(in_array($niveau, $spanning_niveaus)){
 					$cell->colspan = $spanning_colspan;
 				}					
 				
