@@ -62,6 +62,10 @@ $PAGE->set_url('/blocks/exacomp/assign_competencies.php', [
 $PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
+$PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/moment.min.js', true);
+$PAGE->requires->js('/blocks/exacomp/javascript/jquery.daterangepicker.min.js', true);
+$PAGE->requires->css('/blocks/exacomp/css/daterangepicker.min.css', true);
+
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
 

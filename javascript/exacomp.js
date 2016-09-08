@@ -544,6 +544,45 @@ $(document).on('click', '.exa-collapsible > legend', function(){
 
 		get_tables().trigger('rg2.init');
 	});
+	
+	$(document).ready(function() {
+
+        $('input[id="daterangepicker"]').dateRangePicker({
+            separator : ' ' + M.util.get_string('seperatordaterange', 'block_exacomp') + ' ',
+            format : 'DD.MMM.YYYY',
+            startOfWeek : 'monday',
+            showShortcuts : true,
+            shortcuts : {
+                'prev-days' : [ 3, 5, 7 ],
+                'prev' : [ 'week', 'month', 'year' ],
+                'next-days' : null,
+                'next' : null
+            }
+        }).bind('datepicker-change',function(event,obj)
+        {
+        	sessionStorage.setItem('date1', obj.date1);
+        	sessionStorage.setItem('date2', obj.date2);
+        	sessionStorage.setItem('value', obj.value);
+        	
+        	// TODO: update grading highlightings
+        });
+        
+        if(sessionStorage.getItem('date1') != null && sessionStorage.getItem('date2') != null)
+        	$('input[id="daterangepicker"]').data('dateRangePicker').setDateRange(new Date(sessionStorage.getItem('date1')), new Date(sessionStorage.getItem('date2')));
+        
+        $('#clear-range').click(function(event) {
+        	event.preventDefault();
+            
+            $('input[id="daterangepicker"]').data('dateRangePicker').clear();
+
+            sessionStorage.removeItem('date1');
+        	sessionStorage.removeItem('date2');
+        	sessionStorage.removeItem('value');
+        	
+        	// TODO: reset grading highlightings
+        });
+
+    });
 })();
 
 

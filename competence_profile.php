@@ -45,6 +45,9 @@ $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
 $PAGE->requires->js('/blocks/exacomp/javascript/Chart.js', true);
 $PAGE->requires->js('/blocks/exacomp/javascript/d3.min.js', true);
+$PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/moment.min.js', true);
+$PAGE->requires->js('/blocks/exacomp/javascript/jquery.daterangepicker.min.js', true);
+$PAGE->requires->css('/blocks/exacomp/css/daterangepicker.min.css', true);
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
@@ -76,6 +79,10 @@ if(!$isTeacher){
 		//print student selector
 		echo get_string("choosestudent","block_exacomp");
 		echo $output->studentselector($coursestudents,$studentid);
+		
+		//print date range picker
+		echo get_string("choosedaterange","block_exacomp");
+		echo $output->daterangepicker();
 	}
 }
 $student = $DB->get_record('user',array('id' => $studentid));

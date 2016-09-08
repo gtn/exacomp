@@ -152,6 +152,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$content .= '<div style="padding-bottom: 15px;">';
 				$content .= get_string("choosestudent", "block_exacomp");
 				$content .= $this->studentselector($students,$selectedStudent, static::STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
+				
+				//print date range picker
+				$content .= get_string("choosedaterange","block_exacomp");
+				$content .= $this->daterangepicker();
+				
 				$content .= '</div>';
 			}
 
@@ -4506,5 +4511,8 @@ public function profile_settings($courses, $settings){
 
 		return html_writer::select($studentsAssociativeArray, 'exacomp_competence_grid_select_student',$selected,true,
 				array("disabled" => $this->is_edit_mode() ? "disabled" : ""));
+	}
+	function daterangepicker() {
+		return html_writer::tag('input', '', array('size' => '30', 'id' => 'daterangepicker')) . html_writer::tag('button', get_string('cleardaterange','block_exacomp'), array('id' => 'clear-range'));
 	}
 }

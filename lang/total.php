@@ -830,6 +830,18 @@ return  [
 		'Kursteilnehmer/in auswählen: ',
 		'Choose student: ',
 	],
+		'choosedaterange' => [
+				'Betrachtungszeitraum auswählen: ',
+				'Pick a date range: ',
+		],
+		'cleardaterange' => [
+				'Zurücksetzen',
+				'Clear range',
+		],
+		'seperatordaterange' => [
+				'bis',
+				'to',
+		],
 	'own_additions' => [
 		'Schulische Ergänzung: ',
 		'Curricular additions: ',
