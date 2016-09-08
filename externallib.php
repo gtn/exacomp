@@ -2145,6 +2145,19 @@ class block_exacomp_external extends external_api {
 			if(block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid) == -1)
 				throw new invalid_parameter_exception ('Not allowed');
 		}else{	//teacher grading for K/T/S: map
+		
+			//ensure correct values for additionalinfo
+			if($additionalinfo > 6.0)
+				$additionalinfo = 6.0;
+			elseif($additionalinfo < 1.0 && $additionalinfo != "")
+				$additionalinfo = 1.0;
+			
+			// force additional info to be stored with a dot as decimal mark
+			$additionalinfo = str_replace(",", ".", $additionalinfo);
+			
+			if($additionalinfo == '' || empty($additionalinfo || $additionalinfo == 0))
+				$additionalinfo = NULL;
+	
 			$value =  block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
 			if(block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid) == -1)
 				throw new invalid_parameter_exception ( 'Not allowed' );
