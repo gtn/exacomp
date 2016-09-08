@@ -207,24 +207,28 @@ class block_exacomp_external extends external_api {
 					}
 				}
 				
-				// TODO: check mdl version >= 2016052300 (3.1) & if quiz is accessible by user
-				$quizes = $DB->get_records_sql ( "SELECT q.id, q.name
-						FROM {" . \block_exacomp\DB_COMPETENCE_ACTIVITY . "} ca
-						JOIN {course_modules} cm ON ca.activityid = cm.id
-						JOIN {modules} m ON cm.module = m.id
-						JOIN {quiz} q ON cm.instance = q.id
-						WHERE m.name = 'quiz' AND ca.compid = ? AND ca.comptype = ?
-						", array (
-							$descriptor->id, TYPE_DESCRIPTOR
-							)
-						);
-				
-				foreach ( $quizes as $quiz ) {
-				
-					if (! array_key_exists ( $quiz->id, $structure [$topic->id]->quizes )) {
-						$structure [$topic->id]->quizes [$quiz->id] = new stdClass ();
-						$structure [$topic->id]->quizes [$quiz->id]->quizid = $quiz->id;
-						$structure [$topic->id]->quizes [$quiz->id]->quiz_title = $quiz->name;
+				// Quiz webservices are available from Moodle 3.1 onwards
+				global $CFG;
+				if($CFG->version >= 2016052300) {
+					$quizes = $DB->get_records_sql ( "SELECT q.id, q.name
+							FROM {" . \block_exacomp\DB_COMPETENCE_ACTIVITY . "} ca
+							JOIN {course_modules} cm ON ca.activityid = cm.id
+							JOIN {modules} m ON cm.module = m.id
+							JOIN {quiz} q ON cm.instance = q.id
+							WHERE m.name = 'quiz' AND ca.compid = ? AND ca.comptype = ?
+							", array (
+								$descriptor->id, TYPE_DESCRIPTOR
+								)
+							);
+					
+					foreach ( $quizes as $quiz ) {
+						// TODO: is quiz accessible by the user?
+						
+						if (! array_key_exists ( $quiz->id, $structure [$topic->id]->quizes )) {
+							$structure [$topic->id]->quizes [$quiz->id] = new stdClass ();
+							$structure [$topic->id]->quizes [$quiz->id]->quizid = $quiz->id;
+							$structure [$topic->id]->quizes [$quiz->id]->quiz_title = $quiz->name;
+						}
 					}
 				}
 			}
