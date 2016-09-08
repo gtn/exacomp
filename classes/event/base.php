@@ -21,6 +21,8 @@ namespace block_exacomp\event;
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once __DIR__.'/../../inc.php';
+
 abstract class base extends \block_exacomp\event {
 	static function log(array $data) {
 		// check if logging is enabled and then trigger the event

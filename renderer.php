@@ -239,7 +239,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$studentid = array_values($students)[0]->id;
 			}
 				
-			
 			foreach ( $subject->topics as $topic ) {
 				if(block_exacomp_is_teacher() || block_exacomp_is_topic_visible ( $COURSE->id, $topic, g::$USER->id )) {
 					$extra = '';
@@ -285,9 +284,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$title.($subtitle?'<span class="subtitle">'.$subtitle.'</span>':''), array('class' => ($niveau->id == $selectedNiveau->id) ? 'current' : '', 'title'=>$title.($subtitle?': '.$subtitle:'')))
 					);
 		}
-		
-		if ($this->is_edit_mode()) {
+
+		if ($this->is_edit_mode() && $selectedTopic) {
 			// add niveau button
+			// nur anzeigen wenn auch ein einzelner topic ausgewählt wurde
 			$content .= html_writer::tag('li',
 						html_writer::link("niveau.php?show=add&courseid={$COURSE->id}&topicid=".($selectedTopic?$selectedTopic->id:block_exacomp\SHOW_ALL_TOPICS),
 								"<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".\block_exacomp\trans(['de:Neuer Lernfortschritt', 'en:New niveau']), array('exa-type' => 'iframe-popup'))
