@@ -1203,186 +1203,188 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					
 			$visible = block_exacomp_is_topic_visible($data->courseid, $topic, $studentid);
 
-			// $hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) );
-			$visible_css = block_exacomp_get_visible_css($visible, $data->role);
-			
-			$this_rg2_class = ($data->rg2_level >= 0 ? 'rg2-level-'.$data->rg2_level : '').' '.$visible_css;
-			
-			$topicRow = new html_table_row();
-			$topicRow->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rg2_class . ' highlight';
-			$topicRow->attributes['exa-rg2-id'] = 'topic-'.$topic->id;
-
-			$outputidCell = new html_table_cell();
-			$outputidCell->text = (block_exacomp_is_numbering_enabled()) ? block_exacomp_get_topic_numbering($topic->id) : '';
-			$topicRow->cells[] = $outputidCell;
-
-			$outputnameCell = new html_table_cell();
-			$outputnameCell->attributes['class'] = 'rg2-arrow rg2-indent';
-			
-			$topic_used = block_exacomp_topic_used($data->courseid, $topic, $studentid);
-			
-			// display the hide/unhide icon only in editmode or iff only 1 student is selected
-			
-			if (($data->role == \block_exacomp\ROLE_TEACHER) && ($editmode || (!$editmode && $one_student && block_exacomp_is_topic_visible($data->courseid, $topic, 0)))) {
-				if($topic_used){
-					$outputname .= html_writer::span($this->local_pix_icon("visibility_lock.png",get_string('competence_locked', 'block_exacomp'),array('height'=>'18')), 'imglocked', array('title'=>get_string('competence_locked', 'block_exacomp')));
-				}else
-					$outputname .= $this->visibility_icon_topic($visible, $topic->id);
-			}
-			
-			$outputnameCell->text = html_writer::div($outputname,"desctitle");
-			$topicRow->cells[] = $outputnameCell;
-
-			$nivCell = new html_table_cell();
-			$nivCell->text = "";
-
-			$topicRow->cells[] = $nivCell;
-
-			if ($profoundness) {
-				$statCell = new html_table_cell();
-				$statCell->text = "";
-				$statCell->colspan = 4;
-
-				$topicRow->cells[] = $statCell;
-			} elseif(!$statistic && block_exacomp_is_topicgrading_enabled()){
+			if($data->role == \block_exacomp\ROLE_TEACHER || $visible){
+				// $hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) );
+				$visible_css = block_exacomp_get_visible_css($visible, $data->role);
 				
-				$checkboxname = 'datatopics';
-				$visible_student = $visible;
+				$this_rg2_class = ($data->rg2_level >= 0 ? 'rg2-level-'.$data->rg2_level : '').' '.$visible_css;
 				
-				foreach($students as $student) {
-					if($data->role == \block_exacomp\ROLE_TEACHER) {
-						$reviewerid = $DB->get_field(\block_exacomp\DB_COMPETENCES,"reviewerid",array("userid" => $student->id, "compid" => $topic->id, "courseid"=>$data->courseid, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_TOPIC));
-						if($reviewerid == $USER->id || $reviewerid == 0)
-							$reviewerid = null;
-					}
-					$studentCell = new html_table_cell();
-					$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
-					
-					if(!$one_student && !$editmode)
-						$visible_student = block_exacomp_is_topic_visible($data->courseid, $topic, $student->id, true);
-					
-					if(!$visible_student)
-						$parent_visible[$student->id] = false;
-					
-					//TODO evt. needed
-					//$studentCell->colspan = (!$profoundness) ? $studentsColspan : 4;
-
-					$self_evaluation_cell = new html_table_cell();
-					$self_evaluation_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-						
-					$evaluation_cell = new html_table_cell();
-					$evaluation_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-						
-					$niveau_cell = new html_table_cell();
-					$niveau_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-					$niveau_cell->text = (block_exacomp_use_eval_niveau())?$this->generate_niveau_select('niveau_topic', $topic->id, 'topics', $student,
-							($data->role == \block_exacomp\ROLE_STUDENT)?true:(($visible_student)?false:true), ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
-					
-					$params = array('name'=>'add-grading-'.$student->id.'-'.$topic->id, 'type'=>'text',
-							'maxlength'=>3, 'class'=>'percent-rating-text',
-							'value'=>(isset($student->topics->teacher_additional_grading[$topic->id]) &&
-									$student->topics->teacher_additional_grading[$topic->id] != null)?
-							$student->topics->teacher_additional_grading[$topic->id]:"",
-							'exa-compid'=>$topic->id, 'exa-userid'=>$student->id, 'exa-type'=>\block_exacomp\TYPE_TOPIC,
-							'reviewerid' => ($data->role == \block_exacomp\ROLE_TEACHER ) ? $reviewerid : null
-					);
-						
-					if(!$visible_student || $data->role == \block_exacomp\ROLE_STUDENT)
-						$params['disabled'] = 'disabled';
-						
-					//student & niveau & showevaluation
-					if(block_exacomp_use_eval_niveau() && $data->role == \block_exacomp\ROLE_STUDENT && $data->showevaluation){
-						$topicRow->cells[] = $niveau_cell;
-					}
-						
-					//student show evaluation
-					if(block_exacomp_additional_grading() && $data->role == \block_exacomp\ROLE_STUDENT){	//use parent grading
-						$evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
-					}else{	//use drop down/checkbox values
-						if($data->scheme == 1)
-							$evaluation_cell->text = $this->generate_checkbox($checkboxname, $topic->id, 'topics', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
-						else
-							$evaluation_cell->text = $this->generate_select($checkboxname, $topic->id, 'topics', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
-					}
-						
-					if($data->showevaluation)
-						$topicRow->cells[] = $evaluation_cell;
-						
-					if(block_exacomp_use_eval_niveau() && $data->role == \block_exacomp\ROLE_TEACHER){
-						$topicRow->cells[] = $niveau_cell;
-					}
-						
-					if($data->scheme == 1) {
-						$self_evaluation_cell->text = $this->generate_checkbox($checkboxname, $topic->id, 'topics', $student, $evaluation,  $data->scheme, ($visible_student)?false:true, null, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
-					}else {
-						if(block_exacomp_additional_grading() && $data->role == \block_exacomp\ROLE_TEACHER)
-							$self_evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
-						else
-							$self_evaluation_cell->text = $this->generate_select($checkboxname, $topic->id, 'topics', $student, $evaluation, $data->scheme, !$visible_student, $data->profoundness, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
-					}
-						
-					$topicRow->cells[] = $self_evaluation_cell;
-					//HERE
-					//							foreach($data->cm_mm->topics[$topic->id] as $cmid)
-					//			$cm_temp[] = $data->course_mods[$cmid];
-
-					//		$icon = block_exacomp_get_icon_for_user($cm_temp, $student, $data->supported_modules);
-					//		$studentCell->text .= '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>'
-						// TIPP
-						/*if(block_exacomp_set_tipp($topic->id, $student, 'activities_topics', $data->scheme)){
-							$icon_img = html_writer::empty_tag('img', array('src'=>"pix/info.png", "alt"=>get_string('teacher_tipp', 'block_exacomp')));
-							$string = block_exacomp_get_tipp_string($topic->id, $student, $data->scheme, 'activities_topics', TYPE_TOPIC);
-							$studentCell->text .= html_writer::span($icon_img, 'exabis-tooltip', array('title'=>$string));
-
-						}*/
-
+				$topicRow = new html_table_row();
+				$topicRow->attributes['class'] = 'exabis_comp_teilcomp ' . $this_rg2_class . ' highlight';
+				$topicRow->attributes['exa-rg2-id'] = 'topic-'.$topic->id;
+	
+				$outputidCell = new html_table_cell();
+				$outputidCell->text = (block_exacomp_is_numbering_enabled()) ? block_exacomp_get_topic_numbering($topic->id) : '';
+				$topicRow->cells[] = $outputidCell;
+	
+				$outputnameCell = new html_table_cell();
+				$outputnameCell->attributes['class'] = 'rg2-arrow rg2-indent';
+				
+				$topic_used = block_exacomp_topic_used($data->courseid, $topic, $studentid);
+				
+				// display the hide/unhide icon only in editmode or iff only 1 student is selected
+				
+				if (($data->role == \block_exacomp\ROLE_TEACHER) && ($editmode || (!$editmode && $one_student && block_exacomp_is_topic_visible($data->courseid, $topic, 0)))) {
+					if($topic_used){
+						$outputname .= html_writer::span($this->local_pix_icon("visibility_lock.png",get_string('competence_locked', 'block_exacomp'),array('height'=>'18')), 'imglocked', array('title'=>get_string('competence_locked', 'block_exacomp')));
+					}else
+						$outputname .= $this->visibility_icon_topic($visible, $topic->id);
 				}
-			}elseif(!$editmode && $students) {
-				$statCell = new html_table_cell();
-				$statCell->text = "";
-				$statCell->colspan = ($data->showevaluation) ? count($students) * 3 : count($students) * 2;
-
-				$topicRow->cells[] = $statCell;
-			}
-
-			// display topic header in edit mode, else the add descriptor field won't show up
-			if ($editmode || (!empty($topic->descriptors) && $display_topic_header_row)) {
-				$rows[] = $topicRow;
-			}
-
-			$child_data = clone $data;
-			$child_data->rg2_level += $child_level-$level;
-
-			if (!empty($topic->descriptors)) {
-				$this->descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, $statistic, false, true, $crosssubjid, $parent_visible);
-				$this->descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, $statistic, true, true, $crosssubjid, $parent_visible);
-			}
-
-			/*
-			if (!empty($topic->subs)) {
-				$this->topics($rows, $child_level, $topic->subs, $child_data, $students, $profoundness, $editmode, $crosssubjid);
-			}
-			*/
-
-			if($editmode && !$crosssubjid) {
-				// kompetenz hinzufuegen (nicht bei themen)
-				$niveauid = optional_param('niveauid', block_exacomp\SHOW_ALL_NIVEAUS, PARAM_INT);
-				//do not set niveauid for new descriptor if "show all" niveaus is selected
-				if($niveauid == block_exacomp\SHOW_ALL_NIVEAUS)
-					$niveauid = 0;
-
-				$own_additionRow = new html_table_row();
-				$own_additionRow->attributes['class'] = 'exabis_comp_aufgabe highlight rg2 rg2-level-'.$child_data->rg2_level;
-
-				$own_additionRow->cells[] = new html_table_cell();
-
-				$cell = new html_table_cell();
-				$cell->attributes['class'] = 'rg2-indent';
-				$cell->text  = html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'type'=>'text', 'placeholder' => \block_exacomp\trans(['de:Neue Kompetenz', 'en:New competency']), 'topicid'=>$topic->id, 'niveauid'=>$niveauid));
-				$cell->text .= html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'type'=>'button', 'value'=>\block_exacomp\get_string('add')));
-				$own_additionRow->cells[] = $cell;
-				$own_additionRow->cells[] = new html_table_cell();
-				$rows[] = $own_additionRow;
+				
+				$outputnameCell->text = html_writer::div($outputname,"desctitle");
+				$topicRow->cells[] = $outputnameCell;
+	
+				$nivCell = new html_table_cell();
+				$nivCell->text = "";
+	
+				$topicRow->cells[] = $nivCell;
+	
+				if ($profoundness) {
+					$statCell = new html_table_cell();
+					$statCell->text = "";
+					$statCell->colspan = 4;
+	
+					$topicRow->cells[] = $statCell;
+				} elseif(!$statistic && block_exacomp_is_topicgrading_enabled()){
+					
+					$checkboxname = 'datatopics';
+					$visible_student = $visible;
+					
+					foreach($students as $student) {
+						if($data->role == \block_exacomp\ROLE_TEACHER) {
+							$reviewerid = $DB->get_field(\block_exacomp\DB_COMPETENCES,"reviewerid",array("userid" => $student->id, "compid" => $topic->id, "courseid"=>$data->courseid, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_TOPIC));
+							if($reviewerid == $USER->id || $reviewerid == 0)
+								$reviewerid = null;
+						}
+						$studentCell = new html_table_cell();
+						$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
+						
+						if(!$one_student && !$editmode)
+							$visible_student = block_exacomp_is_topic_visible($data->courseid, $topic, $student->id, true);
+						
+						if(!$visible_student)
+							$parent_visible[$student->id] = false;
+						
+						//TODO evt. needed
+						//$studentCell->colspan = (!$profoundness) ? $studentsColspan : 4;
+	
+						$self_evaluation_cell = new html_table_cell();
+						$self_evaluation_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+							
+						$evaluation_cell = new html_table_cell();
+						$evaluation_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+							
+						$niveau_cell = new html_table_cell();
+						$niveau_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+						$niveau_cell->text = (block_exacomp_use_eval_niveau())?$this->generate_niveau_select('niveau_topic', $topic->id, 'topics', $student,
+								($data->role == \block_exacomp\ROLE_STUDENT)?true:(($visible_student)?false:true), ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
+						
+						$params = array('name'=>'add-grading-'.$student->id.'-'.$topic->id, 'type'=>'text',
+								'maxlength'=>3, 'class'=>'percent-rating-text',
+								'value'=>(isset($student->topics->teacher_additional_grading[$topic->id]) &&
+										$student->topics->teacher_additional_grading[$topic->id] != null)?
+								$student->topics->teacher_additional_grading[$topic->id]:"",
+								'exa-compid'=>$topic->id, 'exa-userid'=>$student->id, 'exa-type'=>\block_exacomp\TYPE_TOPIC,
+								'reviewerid' => ($data->role == \block_exacomp\ROLE_TEACHER ) ? $reviewerid : null
+						);
+							
+						if(!$visible_student || $data->role == \block_exacomp\ROLE_STUDENT)
+							$params['disabled'] = 'disabled';
+							
+						//student & niveau & showevaluation
+						if(block_exacomp_use_eval_niveau() && $data->role == \block_exacomp\ROLE_STUDENT && $data->showevaluation){
+							$topicRow->cells[] = $niveau_cell;
+						}
+							
+						//student show evaluation
+						if(block_exacomp_additional_grading() && $data->role == \block_exacomp\ROLE_STUDENT){	//use parent grading
+							$evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
+						}else{	//use drop down/checkbox values
+							if($data->scheme == 1)
+								$evaluation_cell->text = $this->generate_checkbox($checkboxname, $topic->id, 'topics', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
+							else
+								$evaluation_cell->text = $this->generate_select($checkboxname, $topic->id, 'topics', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
+						}
+							
+						if($data->showevaluation)
+							$topicRow->cells[] = $evaluation_cell;
+							
+						if(block_exacomp_use_eval_niveau() && $data->role == \block_exacomp\ROLE_TEACHER){
+							$topicRow->cells[] = $niveau_cell;
+						}
+							
+						if($data->scheme == 1) {
+							$self_evaluation_cell->text = $this->generate_checkbox($checkboxname, $topic->id, 'topics', $student, $evaluation,  $data->scheme, ($visible_student)?false:true, null, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
+						}else {
+							if(block_exacomp_additional_grading() && $data->role == \block_exacomp\ROLE_TEACHER)
+								$self_evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
+							else
+								$self_evaluation_cell->text = $this->generate_select($checkboxname, $topic->id, 'topics', $student, $evaluation, $data->scheme, !$visible_student, $data->profoundness, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
+						}
+							
+						$topicRow->cells[] = $self_evaluation_cell;
+						//HERE
+						//							foreach($data->cm_mm->topics[$topic->id] as $cmid)
+						//			$cm_temp[] = $data->course_mods[$cmid];
+	
+						//		$icon = block_exacomp_get_icon_for_user($cm_temp, $student, $data->supported_modules);
+						//		$studentCell->text .= '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>'
+							// TIPP
+							/*if(block_exacomp_set_tipp($topic->id, $student, 'activities_topics', $data->scheme)){
+								$icon_img = html_writer::empty_tag('img', array('src'=>"pix/info.png", "alt"=>get_string('teacher_tipp', 'block_exacomp')));
+								$string = block_exacomp_get_tipp_string($topic->id, $student, $data->scheme, 'activities_topics', TYPE_TOPIC);
+								$studentCell->text .= html_writer::span($icon_img, 'exabis-tooltip', array('title'=>$string));
+	
+							}*/
+	
+					}
+				}elseif(!$editmode && $students) {
+					$statCell = new html_table_cell();
+					$statCell->text = "";
+					$statCell->colspan = ($data->showevaluation) ? count($students) * 3 : count($students) * 2;
+	
+					$topicRow->cells[] = $statCell;
+				}
+	
+				// display topic header in edit mode, else the add descriptor field won't show up
+				if ($editmode || (!empty($topic->descriptors) && $display_topic_header_row)) {
+					$rows[] = $topicRow;
+				}
+	
+				$child_data = clone $data;
+				$child_data->rg2_level += $child_level-$level;
+	
+				if (!empty($topic->descriptors)) {
+					$this->descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, $statistic, false, true, $crosssubjid, $parent_visible);
+					$this->descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, $statistic, true, true, $crosssubjid, $parent_visible);
+				}
+	
+				/*
+				if (!empty($topic->subs)) {
+					$this->topics($rows, $child_level, $topic->subs, $child_data, $students, $profoundness, $editmode, $crosssubjid);
+				}
+				*/
+	
+				if($editmode && !$crosssubjid) {
+					// kompetenz hinzufuegen (nicht bei themen)
+					$niveauid = optional_param('niveauid', block_exacomp\SHOW_ALL_NIVEAUS, PARAM_INT);
+					//do not set niveauid for new descriptor if "show all" niveaus is selected
+					if($niveauid == block_exacomp\SHOW_ALL_NIVEAUS)
+						$niveauid = 0;
+	
+					$own_additionRow = new html_table_row();
+					$own_additionRow->attributes['class'] = 'exabis_comp_aufgabe highlight rg2 rg2-level-'.$child_data->rg2_level;
+	
+					$own_additionRow->cells[] = new html_table_cell();
+	
+					$cell = new html_table_cell();
+					$cell->attributes['class'] = 'rg2-indent';
+					$cell->text  = html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'type'=>'text', 'placeholder' => \block_exacomp\trans(['de:Neue Kompetenz', 'en:New competency']), 'topicid'=>$topic->id, 'niveauid'=>$niveauid));
+					$cell->text .= html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'type'=>'button', 'value'=>\block_exacomp\get_string('add')));
+					$own_additionRow->cells[] = $cell;
+					$own_additionRow->cells[] = new html_table_cell();
+					$rows[] = $own_additionRow;
+				}
 			}
 		}
 	}
