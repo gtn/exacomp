@@ -116,15 +116,16 @@ if($formdata = $form->get_data()) {
 			'topicid' => $topicid
 		));
 		$subjectid = $new->id;
+
+		block_exacomp_set_topic_visibility($topicid, $courseid, 1, 0);
+
 	} else {
 		$item->update($new);
 		$subjectid = $item->id;
 	}
 	
-	echo $output->header();
 	echo $output->popup_close_and_forward($CFG->wwwroot."/blocks/exacomp/assign_competencies.php?courseid=".$courseid."&editmode=1&subjectid={$subjectid}");
-	echo $output->footer();
-	
+
 	exit;
 }
 
