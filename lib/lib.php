@@ -6019,6 +6019,8 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 					
 					$table_content->content[$topic->id]->niveaus[$niveau->title]->show = true;
 					
+					$table_content->content[$topic->id]->niveaus[$niveau->title]->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid);
+					
 					if($niveau->span == 1)
 						$table_content->content[$topic->id]->span = 1;
 				}
@@ -6042,6 +6044,8 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 										?$user->topics->teacher_additional_grading[$topic->id]:'')
 						:((isset($user->topics->teacher[$topic->id]))
 								?$scheme_items[$user->topics->teacher[$topic->id]]:''));
+			
+			$table_content->content[$topic->id]->visible = block_exacomp_is_topic_visible($courseid, $topic, $studentid);
 			
 			$table_content->content[$topic->id]->topic_id = $topic->id;
 		}
@@ -6078,6 +6082,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 						$row->niveaus[$niveau->title]->evalniveau = '';
 						$row->niveaus[$niveau->title]->evalniveauid = 0;
 						$row->niveaus[$niveau->title]->show = false;
+						$row->niveaus[$niveau->title]->visible = true;
 					}
 				}
 			}

@@ -3179,9 +3179,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		//$scheme = block_exacomp_get_grading_scheme($course->id);
 		$competence_tree = block_exacomp_get_competence_tree($course->id, null, null, false, null, true, array(SHOW_ALL_TAXONOMIES), false, false, false, false, false, false);
 		$student = block_exacomp_get_user_information_by_course($student, $course->id);
-		
+		$content = '';
+
 		foreach($competence_tree as $subject){
-			$content = html_writer::tag("h4", html_writer::tag('a', $subject->title, array('name'=>$course->fullname.$course->id)), array("class" => "competence_profile_coursetitle"));
+			$content .= html_writer::tag("h4", html_writer::tag('a', $subject->title, array('name'=>$course->fullname.$course->id)), array("class" => "competence_profile_coursetitle"));
 			$content .= html_writer::tag('div', $this->competence_profile_grid($course->id, $subject, $student->id), array('class'=>'container','id'=>'charts'));
 			
 			if(block_exacomp_additional_grading()){
@@ -3257,12 +3258,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			
 			foreach($rowcontent->niveaus as $niveau => $element){
 				$element_eval_value = \block_exacomp\global_config::get_additionalinfo_value_mapping($element->eval);
-					
-				$cell = new html_table_cell();
-				$cell->text = html_writer::empty_tag('canvas',
-						array("id"=>"chart".$niveau, "height"=>"50", "width"=>"50", "data-title"=>$element->evalniveau,
-								"data-value"=>$element_eval_value, "data-valuemax"=>"3"));
 				
+				$cell = new html_table_cell();
+				$cell->text = (($element->show)?(html_writer::empty_tag('canvas',
+						array("id"=>"chart".$niveau, "height"=>"50", "width"=>"50", "data-title"=>$element->evalniveau,
+								"data-value"=>$element_eval_value, "data-valuemax"=>"3"))):'');
+				$cell->attributes['class'] = (($element->visible)?'':'notvisible');
 				if(in_array($niveau, $spanning_niveaus)){
 					$cell->colspan = $spanning_colspan;
 				}					
@@ -3276,6 +3277,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$topic_eval_cell->text = html_writer::empty_tag('canvas', 
 						array("id"=>"chart".$topic, "height"=>"50", "width"=>"50", "data-title"=>$rowcontent->topic_evalniveau, 
 						"data-value"=>$topic_eval_value, "data-valuemax"=>"3"));
+				$topic_eval_cell->attributes['class'] = (($rowcontent->visible)?'':'notvisible');
+				
 				//$rowcontent->topic_evalniveau . $rowcontent->topic_eval;
 				$row->cells[] = $topic_eval_cell;
 			}
