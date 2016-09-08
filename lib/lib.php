@@ -179,7 +179,7 @@ function block_exacomp_init_js_css(){
 		'show', 'hide' //, 'selectall', 'deselectall'
 	], 'moodle');
 	$PAGE->requires->strings_for_js([
-		'override_notice', 'unload_notice', 'example_sorting_notice', 'delete_unconnected_examples', 'value_too_large', 'value_too_low', 'value_not_allowed', 'hide_solution', 'show_solution', 'weekly_schedule', 'pre_planning_storage', 'weekly_schedule_disabled', 'pre_planning_storage_disabled', 'add_example_for_all_students_to_schedule_confirmation', 'seperatordaterange'
+        'override_notice', 'unload_notice', 'example_sorting_notice', 'delete_unconnected_examples', 'value_too_large', 'value_too_low', 'value_not_allowed', 'hide_solution', 'show_solution', 'weekly_schedule', 'pre_planning_storage', 'weekly_schedule_disabled', 'pre_planning_storage_disabled', 'add_example_for_all_students_to_schedule_confirmation', 'seperatordaterange'
 	], 'block_exacomp');
 	
 	// page specific js/css
@@ -1423,8 +1423,9 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 			} elseif ($topicid && isset($topics[$topicid]) && block_exacomp_is_topic_visible($courseid, $topic, $studentid)) {
 				$selectedTopic = $topics[$topicid];
 			} else {
-				// select first
-				$selectedTopic = reset($topics);
+				// select first visible
+				$visible_topics = block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $studentid);
+				$selectedTopic = $topics[reset($visible_topics)->id];
 			}
 		}
 	}
@@ -1438,7 +1439,8 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 		// select the first subject
 		$selectedSubject = reset($courseSubjects);
 		$topics = block_exacomp_get_topics_by_subject($courseid, $selectedSubject->id, false, ($showonlyvisible?(($isTeacher)?false:true):false));
-		$selectedTopic = reset($topics);
+		$visible_topics = block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $studentid);
+		$selectedTopic = $topics[reset($visible_topics)->id];
 	}
 
 	// load all descriptors first (needed for teacher)
