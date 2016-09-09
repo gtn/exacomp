@@ -339,15 +339,12 @@ if(!$isTeacher){
 
 echo $output->cross_subject_buttons($cross_subject, $students, $selectedStudentid, ($course_settings->nostudents!=1));
 
-$statistic = false;
 if($isTeacher){
 	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS){
 		$showevaluation = false;
 		echo $output->column_selector(count($students));
 	}elseif ($studentid == 0)
 		$students = array();
-	elseif($studentid == BLOCK_EXACOMP_SHOW_STATISTIC)
-		$statistic = true;
 	elseif (!empty($students[$studentid])) {
 		$students = array($students[$studentid]);
 		$showevaluation = true;
@@ -367,7 +364,7 @@ if ($cross_subject) {
 		echo $output->overview_legend($isTeacher);
 		echo html_writer::start_tag('form', array('id'=>'assign-competencies', "action" => $PAGE->url, 'method'=>'post'));
 		echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
-		echo $output->competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $scheme, false, $cross_subject->id, $statistic);
+		echo $output->competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $scheme, false, $cross_subject->id);
 		echo html_writer::end_tag("div");
 		echo html_writer::end_tag('form');
 	} else {

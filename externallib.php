@@ -4947,10 +4947,9 @@ class block_exacomp_external extends external_api {
 			$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
 			$data_content->lfstitle = $niveau->title;
 			$data_content->niveausort = $niveau->title;
-			$lmdata = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $user, 0, $niveau->title);
-			$data_content->lfsgraphdata = $lmdata->dataobject;
-			$data_content->totallmnumb = $lmdata->total;
-			$data_content->inworklmnumb = $lmdata->inWork;
+			$data_content->lfsgraphdata = NULL;
+			$data_content->totallmnumb = 0;
+			$data_content->inworklmnumb = 0;
 			$data_content->teacherevaluation = (isset($user->competencies->teacher[$descriptor->id]))?$user->competencies->teacher[$descriptor->id]:-1;
 			$data_content->additionalinfo = ((isset($user->competencies->teacher_additional_grading[$descriptor->id]) && $user->competencies->teacher_additional_grading[$descriptor->id]))?$user->competencies->teacher_additional_grading[$descriptor->id]:-1;
 			$data_content->evalniveauid = (isset($user->competencies->niveau[$descriptor->id]))?$user->competencies->niveau[$descriptor->id]:null;

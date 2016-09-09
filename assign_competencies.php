@@ -103,14 +103,11 @@ $competence_tree = block_exacomp_get_competence_tree($courseid,$selectedSubject?
 
 $scheme = block_exacomp_get_grading_scheme($courseid);
 $colselector="";
-$statistic = false;
 if($isTeacher){	//mind nostudents setting
 	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $editmode == 0 && $course_settings->nostudents != 1) {
 		$colselector=$output->column_selector(count($allCourseStudents));
 	} elseif (!$studentid || $course_settings->nostudents == 1 || ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $editmode = 1)) {
 		$students = array();
-	} elseif ($studentid == BLOCK_EXACOMP_SHOW_STATISTIC) {
-		$statistic = true;
 	} else {
 		$students = !empty($students[$studentid]) ? array($students[$studentid]) : $students;
 	}
@@ -195,7 +192,7 @@ if($course_settings->nostudents != 1 && $studentid)
 
 echo $output->competence_overview($competence_tree, $courseid, $students, $showevaluation,
 		$isTeacher ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $scheme,
-		($selectedNiveau->id != block_exacomp\SHOW_ALL_NIVEAUS), 0, $statistic);
+		($selectedNiveau->id != block_exacomp\SHOW_ALL_NIVEAUS), 0);
 echo '</div>';
 
 echo html_writer::end_tag("div");

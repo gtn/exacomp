@@ -160,7 +160,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$content .= '</div>';
 			}
 
-			if(!$this->is_edit_mode() && $selectedStudent != BLOCK_EXACOMP_SHOW_STATISTIC && $students) {
+			if(!$this->is_edit_mode() && $students) {
 				$right_content .= block_exacomp_get_message_icon($selectedStudent);
 			}
 			
@@ -465,7 +465,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$context = context_course::instance($courseid);
 		$role = block_exacomp_is_teacher($context) ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT;
-		$editmode = (($studentid == 0 || $studentid == BLOCK_EXACOMP_SHOW_STATISTIC) && $role == \block_exacomp\ROLE_TEACHER) ? true : false;
+		$editmode = (($studentid == 0) && $role == \block_exacomp\ROLE_TEACHER) ? true : false;
 
 		$table = new html_table();
 		$table->attributes['class'] = 'competence_grid';
@@ -478,7 +478,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		$profoundness = block_exacomp_get_settings_by_course($courseid)->useprofoundness;
 
-		$spanningNiveaus = $DB->get_records(\block_exacomp\DB_NIVEAUS,array('span' => 1));
+		$spanningNiveaus = $DB->get_fieldset_select(\block_exacomp\DB_NIVEAUS,'title', 'span=?', array(1));
+		
 		//calculate the col span for spanning niveaus
 		$spanningColspan = block_exacomp_calculate_spanning_niveau_colspan($niveaus, $spanningNiveaus);
 		$report = optional_param('report', BLOCK_EXACOMP_REPORT1, PARAM_INT);
@@ -522,7 +523,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$topic_std = new stdClass();
 				$topic_std->id = $topicid;
 				
-				$topic_visible = block_exacomp_is_topic_visible($courseid, $topic_std, ($studentid != BLOCK_EXACOMP_SHOW_STATISTIC) ? $studentid : 0);
+				$topic_visible = block_exacomp_is_topic_visible($courseid, $topic_std, $studentid);
 			
 
 				//make second row, spilt rows after topic title 
@@ -541,8 +542,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								$descriptor->visible = $DB->get_field(\block_exacomp\DB_DESCVISIBILITY, 'visible', array('courseid'=>$courseid, 'descrid'=>$descriptor->id, 'studentid'=>0));
 							
 							// Check visibility
-							$descriptor_used = block_exacomp_descriptor_used($courseid, $descriptor, ($studentid != BLOCK_EXACOMP_SHOW_STATISTIC) ? $studentid : 0);
-							$visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, ($studentid != BLOCK_EXACOMP_SHOW_STATISTIC) ? $studentid : 0);
+							$descriptor_used = block_exacomp_descriptor_used($courseid, $descriptor, $studentid);
+							$visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid);
 							$visible_css = block_exacomp_get_visible_css($visible, $role);
 
 							$text = block_exacomp_get_descriptor_numbering($descriptor)." ".$descriptor->title;
@@ -569,89 +570,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								
 								$cssClass = "contentok";
 							}
-							// Check visibility
-							/*
-							if(!$descriptor_used && array_key_exists($descriptor->topicid, $selection) ){
-								if($editmode || ($descriptor->visible == 1 && $role == \block_exacomp\ROLE_TEACHER)){
-									$compString .= $this->visibility_icon_descriptor($visible, $descriptor->id);
-								}
-							} */
+							
 							$compdiv .= html_writer::tag('div', $compString,array('class'=>$cssClass));
-
-							if($report != BLOCK_EXACOMP_REPORT1){
-								if(array_key_exists($descriptor->topicid, $selection) && $visible && $studentid != 0) {
-
-									$table_head = new html_table_row();
-									$table_head->attributes['class'] = 'statistic_head';
-
-									$table_head->cells[] = new html_table_cell("");
-									if($studentid != BLOCK_EXACOMP_SHOW_STATISTIC)
-										$table_head->cells[] = new html_table_cell("&Sigma;");
-									for($i=0;$i<=$scheme;$i++)
-										$table_head->cells[] = new html_table_cell($scheme_values[$i]);
-									$table_head->cells[] = new html_table_cell("oB");
-									$table_head->cells[] = new html_table_cell("iA");
-									if($studentid != BLOCK_EXACOMP_SHOW_STATISTIC)
-										$table_head->cells[] = new html_table_cell("Abschluss");
-
-									$crossubject_statistic = new html_table();
-									$crossubject_statistic->attributes['class'] = 'generaltable reportsstattable';
-									$crossubject_statistic_rows = array();
-									$crossubject_statistic_rows[] = $table_head;
-
-									$crosssubjects = block_exacomp_get_cross_subjects_for_descriptor($courseid, $descriptor->id);
-									$statistic_type = ($report == BLOCK_EXACOMP_REPORT2) ? BLOCK_EXACOMP_DESCRIPTOR_STATISTIC : BLOCK_EXACOMP_EXAMPLE_STATISTIC;
-
-									foreach($crosssubjects as $crosssubject) {
-										if($statistic_type == BLOCK_EXACOMP_DESCRIPTOR_STATISTIC)
-											list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_descriptor_statistic_for_crosssubject($courseid, $crosssubject->id, $studentid);
-										else
-											list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_example_statistic_for_crosssubject($courseid, $crosssubject->id, $studentid);
-
-										$table_entry = new html_table_row();
-										$table_entry->cells[] = new html_table_cell(html_writer::link(new moodle_url("/blocks/exacomp/cross_subjects.php", array("courseid" => $courseid, "crosssubjid" => $crosssubject->id)), substr($crosssubject->title,0,4), array('title' => $crosssubject->title)));
-										if($studentid != BLOCK_EXACOMP_SHOW_STATISTIC)
-											$table_entry->cells[] = new html_table_cell($total);
-										foreach($gradings as $key => $grading)
-											$table_entry->cells[] = new html_table_cell($grading);
-										$table_entry->cells[] = new html_table_cell($notEvaluated);
-										$table_entry->cells[] = new html_table_cell($inWork);
-										if($studentid != BLOCK_EXACOMP_SHOW_STATISTIC)
-											$table_entry->cells[] = new html_table_cell($totalGrade);
-
-										$crossubject_statistic_rows[] = $table_entry;
-									}
-									if($statistic_type == BLOCK_EXACOMP_DESCRIPTOR_STATISTIC)
-										list($total, $gradings, $notEvaluated, $inWork,$totalGrade) = block_exacomp_get_descriptor_statistic($courseid, $descriptor->id, $studentid);
-									else
-										list($total, $gradings, $notEvaluated, $inWork,$totalGrade, $notInWork) = block_exacomp_get_example_statistic_for_descriptor($courseid, $descriptor->id, $studentid);
-
-									$table_entry = new html_table_row();
-									$table_entry->cells[] = new html_table_cell("LWL " . block_exacomp_get_descriptor_numbering($descriptor));
-									if($studentid != BLOCK_EXACOMP_SHOW_STATISTIC)
-										$table_entry->cells[] = new html_table_cell($total);
-									foreach($gradings as $key => $grading)
-										$table_entry->cells[] = new html_table_cell($grading);
-									$table_entry->cells[] = new html_table_cell($notEvaluated);
-									$table_entry->cells[] = new html_table_cell($inWork);
-									if($studentid != BLOCK_EXACOMP_SHOW_STATISTIC)
-										$table_entry->cells[] = new html_table_cell($totalGrade);
-
-									$crossubject_statistic_rows[] = $table_entry;
-
-									$crossubject_statistic->data = $crossubject_statistic_rows;
-									
-									//statistic cell
-									$cell_stat = new html_table_cell();
-									$cell_stat->text = html_writer::div(html_writer::table($crossubject_statistic), 'crosssubjects');
-									
-								}
-								if(array_key_exists($niveauid,$spanningNiveaus)) {
-									$cell_stat->colspan = $spanningColspan;
-								}
-								
-								$row2->cells[] = $cell_stat;
-							}
 						}
 
 						// apply colspan for spanning niveaus
@@ -792,7 +712,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return $table_html.html_writer::end_tag('form');
 	}
-	public function competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $singletopic = false, $crosssubjid = 0, $statistic = false) {
+	public function competence_overview($subjects, $courseid, $students, $showevaluation, $role, $scheme = 1, $singletopic = false, $crosssubjid = 0) {
 		global $DB, $USER;
 
 		$table = new html_table();
@@ -854,34 +774,27 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$studentsCount = 0;
 
-			if(!$statistic){
-				foreach($students as $student) {
-					$studentCell = new html_table_cell();
-					$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
+			foreach($students as $student) {
+				$studentCell = new html_table_cell();
+				$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
 
-					$studentCell->attributes['class'] = 'exabis_comp_top_studentcol colgroup colgroup-' . $columnGroup;
-					$studentCell->print_width = (100 - (5 + 25 + 5)) / count($students);
-					$studentCell->colspan = $studentsColspan;
-					$studentCell->text = fullname($student);
-					if (!$this->is_print_mode() && block_exacomp_exastudexists() && ($info = \block_exastud\api::get_student_review_link_info_for_teacher($student->id))) {
-						$studentCell->text .= ' <a href="'.$info->url.'" title="'.\block_exacomp\trans('de:Überfachliche Bewertung').'" onclick="window.open(this.href,this.target,\'width=880,height=660,scrollbars=yes\'); return false;">'.'<img src="pix/review_student.png" />'.'</a>';
-					}
-
-					if ($this->is_print_mode()) {
-						// zeilenumbruch im namen beim drucken: nur erstes leerzeichen durch <br> ersetzen
-						$studentCell->text = preg_replace('!\s!', '<br />', $studentCell->text, 1);
-					}
-
-					if($first)
-						$subjectRow->cells[] = $studentCell;
+				$studentCell->attributes['class'] = 'exabis_comp_top_studentcol colgroup colgroup-' . $columnGroup;
+				$studentCell->print_width = (100 - (5 + 25 + 5)) / count($students);
+				$studentCell->colspan = $studentsColspan;
+				$studentCell->text = fullname($student);
+				if (!$this->is_print_mode() && block_exacomp_exastudexists() && ($info = \block_exastud\api::get_student_review_link_info_for_teacher($student->id))) {
+					$studentCell->text .= ' <a href="'.$info->url.'" title="'.\block_exacomp\trans('de:Überfachliche Bewertung').'" onclick="window.open(this.href,this.target,\'width=880,height=660,scrollbars=yes\'); return false;">'.'<img src="pix/review_student.png" />'.'</a>';
 				}
-			}else{
-				$groupCell = new html_table_cell();
-				$groupCell->text = get_string('groupsize', 'block_exacomp').count($students);
+
+				if ($this->is_print_mode()) {
+					// zeilenumbruch im namen beim drucken: nur erstes leerzeichen durch <br> ersetzen
+					$studentCell->text = preg_replace('!\s!', '<br />', $studentCell->text, 1);
+				}
 
 				if($first)
-					$subjectRow->cells[] = $groupCell;
+					$subjectRow->cells[] = $studentCell;
 			}
+
 			if($first) {
 				$rows[] = $subjectRow;
 			}
@@ -894,28 +807,26 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$emptyCell->colspan = 3; 
 				$evaluationRow->cells[] = $emptyCell;
 
-				if(!$statistic){
-					foreach($students as $student) {
-						$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
+				foreach($students as $student) {
+					$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
 
-						$firstCol = new html_table_cell();
-						$firstCol->attributes['class'] = 'exabis_comp_top_studentcol colgroup colgroup-' . $columnGroup;
-						$secCol = new html_table_cell();
-						$secCol->attributes['class'] = 'exabis_comp_top_studentcol colgroup colgroup-' . $columnGroup;
+					$firstCol = new html_table_cell();
+					$firstCol->attributes['class'] = 'exabis_comp_top_studentcol colgroup colgroup-' . $columnGroup;
+					$secCol = new html_table_cell();
+					$secCol->attributes['class'] = 'exabis_comp_top_studentcol colgroup colgroup-' . $columnGroup;
 
-						if($role == \block_exacomp\ROLE_TEACHER) {
-							$firstCol->text = get_string('studentshortcut','block_exacomp');
-							$secCol->text = get_string('teachershortcut','block_exacomp');
-							if(block_exacomp_use_eval_niveau()) $secCol->colspan = 2;
-						} else {
-							$firstCol->text = get_string('teachershortcut','block_exacomp');
-							if(block_exacomp_use_eval_niveau()) $firstCol->colspan = 2;
-							$secCol->text = get_string('studentshortcut','block_exacomp');
-						}
-
-						$evaluationRow->cells[] = $firstCol;
-						$evaluationRow->cells[] = $secCol;
+					if($role == \block_exacomp\ROLE_TEACHER) {
+						$firstCol->text = get_string('studentshortcut','block_exacomp');
+						$secCol->text = get_string('teachershortcut','block_exacomp');
+						if(block_exacomp_use_eval_niveau()) $secCol->colspan = 2;
+					} else {
+						$firstCol->text = get_string('teachershortcut','block_exacomp');
+						if(block_exacomp_use_eval_niveau()) $firstCol->colspan = 2;
+						$secCol->text = get_string('studentshortcut','block_exacomp');
 					}
+
+					$evaluationRow->cells[] = $firstCol;
+					$evaluationRow->cells[] = $secCol;
 				}
 				$rows[] = $evaluationRow;
 			}
@@ -1048,7 +959,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			);
 
 			$row_cnt = count($rows); // save row count to calc print_wdith
-			$this->topics($rows, 0, $subject->topics, $data, $students, false, $this->is_edit_mode(), $statistic, $crosssubjid);
+			$this->topics($rows, 0, $subject->topics, $data, $students, false, $this->is_edit_mode(), $crosssubjid);
 
 			if ($this->is_print_mode()) {
 				$row = $rows[$row_cnt];
@@ -1065,7 +976,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$first = false;
 		}
 		//total evaluation crosssub row
-		if($crosssubjid && !$this->is_edit_mode() && !$statistic && $students){
+		if($crosssubjid && !$this->is_edit_mode() && $students){
 			$studentsCount = 0;
 			$checkboxname = 'datacrosssubs';
 			$student = array_values($students)[0];
@@ -1173,7 +1084,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $table_html;
 	}
 
-	public function topics(&$rows, $level, $topics, $data, $students, $profoundness = false, $editmode = false, $statistic = false, $crosssubjid=0) {
+	public function topics(&$rows, $level, $topics, $data, $students, $profoundness = false, $editmode = false, $crosssubjid=0) {
 		global $DB, $USER;
 		$topicparam = optional_param('topicid', 0, PARAM_INT);
 		
@@ -1250,7 +1161,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$statCell->colspan = 4;
 	
 					$topicRow->cells[] = $statCell;
-				} elseif(!$statistic && block_exacomp_is_topicgrading_enabled()){
+				} elseif(block_exacomp_is_topicgrading_enabled()){
 					
 					$checkboxname = 'datatopics';
 					$visible_student = $visible;
@@ -1328,29 +1239,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						}
 							
 						$topicRow->cells[] = $self_evaluation_cell;
-						//HERE
-						//							foreach($data->cm_mm->topics[$topic->id] as $cmid)
-						//			$cm_temp[] = $data->course_mods[$cmid];
-	
-						//		$icon = block_exacomp_get_icon_for_user($cm_temp, $student, $data->supported_modules);
-						//		$studentCell->text .= '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>'
-							// TIPP
-							/*if(block_exacomp_set_tipp($topic->id, $student, 'activities_topics', $data->scheme)){
-								$icon_img = html_writer::empty_tag('img', array('src'=>"pix/info.png", "alt"=>get_string('teacher_tipp', 'block_exacomp')));
-								$string = block_exacomp_get_tipp_string($topic->id, $student, $data->scheme, 'activities_topics', TYPE_TOPIC);
-								$studentCell->text .= html_writer::span($icon_img, 'exabis-tooltip', array('title'=>$string));
-	
-							}*/
-	
+						
 					}
-				}elseif(!$editmode && $students) {
-					$statCell = new html_table_cell();
-					$statCell->text = "";
-					$statCell->colspan = ($data->showevaluation) ? count($students) * 3 : count($students) * 2;
-	
-					$topicRow->cells[] = $statCell;
 				}
-	
+				
 				// display topic header in edit mode, else the add descriptor field won't show up
 				if ($editmode || (!empty($topic->descriptors) && $display_topic_header_row)) {
 					$rows[] = $topicRow;
@@ -1360,15 +1252,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$child_data->rg2_level += $child_level-$level;
 	
 				if (!empty($topic->descriptors)) {
-					$this->descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, $statistic, false, true, $crosssubjid, $parent_visible);
-					$this->descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, $statistic, true, true, $crosssubjid, $parent_visible);
+					$this->descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, false, true, $crosssubjid, $parent_visible);
+					$this->descriptors($rows, $child_level, $topic->descriptors, $child_data, $students, $profoundness, $editmode, true, true, $crosssubjid, $parent_visible);
 				}
 	
-				/*
-				if (!empty($topic->subs)) {
-					$this->topics($rows, $child_level, $topic->subs, $child_data, $students, $profoundness, $editmode, $crosssubjid);
-				}
-				*/
 	
 				if($editmode && !$crosssubjid) {
 					// kompetenz hinzufuegen (nicht bei themen)
@@ -1394,7 +1281,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 	}
 
-	function descriptors(&$rows, $level, $descriptors, $data, $students, $profoundness = false, $editmode=false, $statistic=false, $custom_created_descriptors=false, $parent = false, $crosssubjid = 0, $parent_visible = array()) {
+	function descriptors(&$rows, $level, $descriptors, $data, $students, $profoundness = false, $editmode=false, $custom_created_descriptors=false, $parent = false, $crosssubjid = 0, $parent_visible = array()) {
 		global $USER, $COURSE, $DB;
 
 		$evaluation = ($data->role == \block_exacomp\ROLE_TEACHER) ? "teacher" : "student";
@@ -1470,8 +1357,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				if (isset($data->subject) && $author = $data->subject->get_author()) {
 					$title[] = get_string('author', 'repository').": ".$author."\n";
 				}
-				//$title = $this->statistic_table($data->courseid, $students, $descriptor, true, $data->scheme);
-
+				
 				$title = join('<br />', $title);
 				$titleCell->text = html_writer::div(html_writer::tag('span', $outputname), '', [ 'title' => $title ]);
 
@@ -1513,207 +1399,199 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$nivCell->text = join(' ', $nivText);
 				$descriptorRow->cells[] = $nivCell;
 
-				if(!$statistic){
-					foreach($students as $student) {
-						$visible_student = $visible;
-						
-						$icontext = "";
-						//check reviewerid for teacher
-						if($data->role == \block_exacomp\ROLE_TEACHER) {
-							$reviewerid = $DB->get_field(\block_exacomp\DB_COMPETENCES,"reviewerid",array("userid" => $student->id, "compid" => $descriptor->id, "courseid"=>$data->courseid, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_DESCRIPTOR));
-							if($reviewerid == $USER->id || $reviewerid == 0)
-								$reviewerid = null;
-						}
-						
-						//check visibility for every student in overview
-						if(!$one_student && $parent_visible[$student->id] == false)
-							$visible_student = false;
-						elseif($visible && !$one_student && !$editmode) {
-							$visible_student = block_exacomp_is_descriptor_visible($data->courseid, $descriptor, $student->id);
-							if(!$one_student)
-								$descriptor_parent_visible[$student->id] = $visible_student;
-						}
-						//$studentCell = new html_table_cell();
-						$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
-						//$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+				foreach($students as $student) {
+					$visible_student = $visible;
+					
+					$icontext = "";
+					//check reviewerid for teacher
+					if($data->role == \block_exacomp\ROLE_TEACHER) {
+						$reviewerid = $DB->get_field(\block_exacomp\DB_COMPETENCES,"reviewerid",array("userid" => $student->id, "compid" => $descriptor->id, "courseid"=>$data->courseid, "role" => \block_exacomp\ROLE_TEACHER, "comptype" => \block_exacomp\TYPE_DESCRIPTOR));
+						if($reviewerid == $USER->id || $reviewerid == 0)
+							$reviewerid = null;
+					}
+					
+					//check visibility for every student in overview
+					if(!$one_student && $parent_visible[$student->id] == false)
+						$visible_student = false;
+					elseif($visible && !$one_student && !$editmode) {
+						$visible_student = block_exacomp_is_descriptor_visible($data->courseid, $descriptor, $student->id);
+						if(!$one_student)
+							$descriptor_parent_visible[$student->id] = $visible_student;
+					}
+					//$studentCell = new html_table_cell();
+					$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
+					//$studentCell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
 
-						// SHOW EVALUATION
-						/*if($data->showevaluation) {
-							$studentCellEvaluation = new html_table_cell();
-							$studentCellEvaluation->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-						}*/
+					// SHOW EVALUATION
+					/*if($data->showevaluation) {
+						$studentCellEvaluation = new html_table_cell();
+						$studentCellEvaluation->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+					}*/
 
-						// ICONS
-						if(isset($data->cm_mm->competencies[$descriptor->id])) {
-							//get CM instances
-							$cm_temp = array();
-							foreach($data->cm_mm->competencies[$descriptor->id] as $cmid)
-								$cm_temp[] = $data->course_mods[$cmid];
+					// ICONS
+					if(isset($data->cm_mm->competencies[$descriptor->id])) {
+						//get CM instances
+						$cm_temp = array();
+						foreach($data->cm_mm->competencies[$descriptor->id] as $cmid)
+							$cm_temp[] = $data->course_mods[$cmid];
 
-							$icon = block_exacomp_get_icon_for_user($cm_temp, $student, $data->supported_modules);
-							$icontext = '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>';
-						}
-						//EPORTFOLIOITEMS
-						if($data->exaport_exists){
-							if(isset($data->eportfolioitems[$student->id]) && isset($data->eportfolioitems[$student->id]->competencies[$descriptor->id])){
-								$shared = false;
-								$li_items = '';
-								foreach($data->eportfolioitems[$student->id]->competencies[$descriptor->id]->items as $item){
-									$li_item = $item->name;
-									if($item->shared){
-										$li_item .= get_string('eportitem_shared', 'block_exacomp');
-										$shared = true;
-									}
-									else
-										$li_item .=  get_string('eportitem_notshared', 'block_exacomp');
-
-									$li_items .= html_writer::tag('li', $li_item);
+						$icon = block_exacomp_get_icon_for_user($cm_temp, $student, $data->supported_modules);
+						$icontext = '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>';
+					}
+					//EPORTFOLIOITEMS
+					if($data->exaport_exists){
+						if(isset($data->eportfolioitems[$student->id]) && isset($data->eportfolioitems[$student->id]->competencies[$descriptor->id])){
+							$shared = false;
+							$li_items = '';
+							foreach($data->eportfolioitems[$student->id]->competencies[$descriptor->id]->items as $item){
+								$li_item = $item->name;
+								if($item->shared){
+									$li_item .= get_string('eportitem_shared', 'block_exacomp');
+									$shared = true;
 								}
-								$first_param = 'id';
-								$second_param = $item->viewid;
-								if($item->useextern){
-									$second_param = $item->hash;
-									$first_param = 'hash';
-								}
-								// link to view if only 1 item, else link to shared_views list
-								if(count($data->eportfolioitems[$student->id]->competencies[$descriptor->id]->items) == 1)
-									$link = new moodle_url('/blocks/exaport/shared_view.php', array('courseid'=>$COURSE->id, 'access'=>$first_param.'/'.$item->owner.'-'.$second_param));
 								else
-									$link = new moodle_url('/blocks/exaport/shared_views.php',array('courseid'=>$COURSE->id, 'userid' => $student->id, 'sort'=>'timemodified'));
+									$li_item .=  get_string('eportitem_notshared', 'block_exacomp');
 
-								if($shared)
-									$img = html_writer::link($link, html_writer::empty_tag("img", array("src" => "pix/folder_shared.png","alt" => '')));
-								//$img = html_writer::empty_tag("img", array("src" => "pix/folder_shared.png","alt" => ''));
-								else
-									$img = html_writer::empty_tag("img", array("src" => "pix/folder_notshared.png","alt" => ''));
-
-								$text =  get_string('eportitems', 'block_exacomp').html_writer::tag('ul', $li_items);
-
-								$eportfoliotext = '<span title="'.$text.'" class="exabis-tooltip">'.$img.'</span>';
-							}else{
-								$eportfoliotext = '';
+								$li_items .= html_writer::tag('li', $li_item);
 							}
-						}
-						// TIPP
-						if(block_exacomp_set_tipp($descriptor->id, $student, 'activities_competencies', $data->scheme)){
-							$icon_img = html_writer::empty_tag('img', array('src'=>"pix/info.png", "alt"=>get_string('teacher_tipp', 'block_exacomp')));
-							$string = block_exacomp_get_tipp_string($descriptor->id, $student, $data->scheme, 'activities_competencies', TYPE_DESCRIPTOR);
-							$tipptext = html_writer::span($icon_img, 'exabis-tooltip', array('title'=>$string));
-						}
-
-						if(!$profoundness) {
-							
-							$self_evaluation_cell = new html_table_cell();
-							$self_evaluation_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-							
-							$evaluation_cell = new html_table_cell();
-							$evaluation_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-							
-							$niveau_cell = new html_table_cell();
-							$niveau_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-							$niveau_cell->text = (block_exacomp_use_eval_niveau())?$this->generate_niveau_select('niveau_descriptor', $descriptor->id, 'competencies', $student, 
-									($data->role == \block_exacomp\ROLE_STUDENT)?true:(($visible_student)?false:true), ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
-								
-							$params = array('name'=>'add-grading-'.$student->id.'-'.$descriptor->id, 'type'=>'text',
-									'maxlength'=>3, 'class'=>'percent-rating-text',
-									'value'=>(isset($student->competencies->teacher_additional_grading[$descriptor->id]) &&
-											$student->competencies->teacher_additional_grading[$descriptor->id] != null)?
-									$student->competencies->teacher_additional_grading[$descriptor->id]:"",
-									'exa-compid'=>$descriptor->id, 'exa-userid'=>$student->id, 'exa-type'=>\block_exacomp\TYPE_DESCRIPTOR,
-									'reviewerid' => ($data->role == \block_exacomp\ROLE_TEACHER ) ? $reviewerid : null
-							);
-							
-							if(!$visible_student || $data->role == \block_exacomp\ROLE_STUDENT)
-								$params['disabled'] = 'disabled';
-							
-							//student & niveau & showevaluation
-							if(block_exacomp_use_eval_niveau() && $data->role == \block_exacomp\ROLE_STUDENT && $data->showevaluation){
-								$descriptorRow->cells[] = $niveau_cell;
+							$first_param = 'id';
+							$second_param = $item->viewid;
+							if($item->useextern){
+								$second_param = $item->hash;
+								$first_param = 'hash';
 							}
-							
-							//student show evaluation
-							if(block_exacomp_additional_grading() && $parent && $data->role == \block_exacomp\ROLE_STUDENT){	//use parent grading
-								$evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
-							}else{	//use drop down/checkbox values 
-								if($data->scheme == 1)
-									$evaluation_cell->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
-								else 
-									$evaluation_cell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
-							}
-							
-							if($data->showevaluation)
-								$descriptorRow->cells[] = $evaluation_cell;
-							
-							if(block_exacomp_use_eval_niveau() && $data->role == \block_exacomp\ROLE_TEACHER){
-								$descriptorRow->cells[] = $niveau_cell;
-							}
-							
-							if($data->scheme == 1) {
-								$self_evaluation_cell->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme, ($visible_student)?false:true, null, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
-							}else {
-								if(block_exacomp_additional_grading() && $parent && $data->role == \block_exacomp\ROLE_TEACHER)
-									$self_evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
-								else 
-									$self_evaluation_cell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme, !$visible_student, $data->profoundness, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
-							}
-							
-							// ICONS
-							if(isset($icontext))
-								$self_evaluation_cell->text .= $icontext;
-							
-							//EPORTFOLIOITEMS
-							if(isset($eportfoliotext))
-								$self_evaluation_cell->text .= $eportfoliotext;
-							
-							// TIPP
-							if(isset($tipptext))
-								$self_evaluation_cell->text .= $tipptext;
-							
-							$descriptorRow->cells[] = $self_evaluation_cell;
+							// link to view if only 1 item, else link to shared_views list
+							if(count($data->eportfolioitems[$student->id]->competencies[$descriptor->id]->items) == 1)
+								$link = new moodle_url('/blocks/exaport/shared_view.php', array('courseid'=>$COURSE->id, 'access'=>$first_param.'/'.$item->owner.'-'.$second_param));
+							else
+								$link = new moodle_url('/blocks/exaport/shared_views.php',array('courseid'=>$COURSE->id, 'userid' => $student->id, 'sort'=>'timemodified'));
 
-						} else {
-							// ICONS
-							if(isset($icontext))
-								$titleCell->text .= $icontext;
+							if($shared)
+								$img = html_writer::link($link, html_writer::empty_tag("img", array("src" => "pix/folder_shared.png","alt" => '')));
+							//$img = html_writer::empty_tag("img", array("src" => "pix/folder_shared.png","alt" => ''));
+							else
+								$img = html_writer::empty_tag("img", array("src" => "pix/folder_notshared.png","alt" => ''));
 
-							//EPORTFOLIOITEMS
-							if(isset($eportfoliotext))
-								$titleCell->text .= $eportfoliotext;
+							$text =  get_string('eportitems', 'block_exacomp').html_writer::tag('ul', $li_items);
 
-							// TIPP
-							if(isset($tipptext))
-								$titleCell->text .= $tipptext;
-
-							$cell1 = new html_table_cell();
-							$cell2 = new html_table_cell();
-							$disabledCell = new html_table_cell();
-
-							$cell1->text = $this->generate_checkbox_profoundness($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, 1);
-							$cell2->text = $this->generate_checkbox_profoundness($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, 2);
-							$disabledCell->text = html_writer::checkbox("disabled", "",false,null,array("disabled"=>"disabled"));
-							$disabledCell->attributes['class'] = 'disabled';
-
-							// loaded from the descriptor, this field is filled from the xml import
-							if (!$descriptor->profoundness) {
-								$descriptorRow->cells[] = $cell1;
-								$descriptorRow->cells[] = $cell2;
-								$descriptorRow->cells[] = $disabledCell;
-								$descriptorRow->cells[] = $disabledCell;
-							} else {
-								$descriptorRow->cells[] = $disabledCell;
-								$descriptorRow->cells[] = $disabledCell;
-								$descriptorRow->cells[] = $cell1;
-								$descriptorRow->cells[] = $cell2;
-							}
-
+							$eportfoliotext = '<span title="'.$text.'" class="exabis-tooltip">'.$img.'</span>';
+						}else{
+							$eportfoliotext = '';
 						}
 					}
-				}else{
+					// TIPP
+					if(block_exacomp_set_tipp($descriptor->id, $student, 'activities_competencies', $data->scheme)){
+						$icon_img = html_writer::empty_tag('img', array('src'=>"pix/info.png", "alt"=>get_string('teacher_tipp', 'block_exacomp')));
+						$string = block_exacomp_get_tipp_string($descriptor->id, $student, $data->scheme, 'activities_competencies', TYPE_DESCRIPTOR);
+						$tipptext = html_writer::span($icon_img, 'exabis-tooltip', array('title'=>$string));
+					}
 
-					$statCell = new html_table_cell();
-					$statCell->text = $this->statistic_table($data->courseid, $students, $descriptor, true, $data->scheme);
+					if(!$profoundness) {
+						
+						$self_evaluation_cell = new html_table_cell();
+						$self_evaluation_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+						
+						$evaluation_cell = new html_table_cell();
+						$evaluation_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+						
+						$niveau_cell = new html_table_cell();
+						$niveau_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+						$niveau_cell->text = (block_exacomp_use_eval_niveau())?$this->generate_niveau_select('niveau_descriptor', $descriptor->id, 'competencies', $student, 
+								($data->role == \block_exacomp\ROLE_STUDENT)?true:(($visible_student)?false:true), ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
+							
+						$params = array('name'=>'add-grading-'.$student->id.'-'.$descriptor->id, 'type'=>'text',
+								'maxlength'=>3, 'class'=>'percent-rating-text',
+								'value'=>(isset($student->competencies->teacher_additional_grading[$descriptor->id]) &&
+										$student->competencies->teacher_additional_grading[$descriptor->id] != null)?
+								$student->competencies->teacher_additional_grading[$descriptor->id]:"",
+								'exa-compid'=>$descriptor->id, 'exa-userid'=>$student->id, 'exa-type'=>\block_exacomp\TYPE_DESCRIPTOR,
+								'reviewerid' => ($data->role == \block_exacomp\ROLE_TEACHER ) ? $reviewerid : null
+						);
+						
+						if(!$visible_student || $data->role == \block_exacomp\ROLE_STUDENT)
+							$params['disabled'] = 'disabled';
+						
+						//student & niveau & showevaluation
+						if(block_exacomp_use_eval_niveau() && $data->role == \block_exacomp\ROLE_STUDENT && $data->showevaluation){
+							$descriptorRow->cells[] = $niveau_cell;
+						}
+						
+						//student show evaluation
+						if(block_exacomp_additional_grading() && $parent && $data->role == \block_exacomp\ROLE_STUDENT){	//use parent grading
+							$evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
+						}else{	//use drop down/checkbox values 
+							if($data->scheme == 1)
+								$evaluation_cell->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
+							else 
+								$evaluation_cell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
+						}
+						
+						if($data->showevaluation)
+							$descriptorRow->cells[] = $evaluation_cell;
+						
+						if(block_exacomp_use_eval_niveau() && $data->role == \block_exacomp\ROLE_TEACHER){
+							$descriptorRow->cells[] = $niveau_cell;
+						}
+						
+						if($data->scheme == 1) {
+							$self_evaluation_cell->text = $this->generate_checkbox($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme, ($visible_student)?false:true, null, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
+						}else {
+							if(block_exacomp_additional_grading() && $parent && $data->role == \block_exacomp\ROLE_TEACHER)
+								$self_evaluation_cell->text = '<span class="percent-rating">'.html_writer::empty_tag('input', $params).'</span>';
+							else 
+								$self_evaluation_cell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme, !$visible_student, $data->profoundness, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
+						}
+						
+						// ICONS
+						if(isset($icontext))
+							$self_evaluation_cell->text .= $icontext;
+						
+						//EPORTFOLIOITEMS
+						if(isset($eportfoliotext))
+							$self_evaluation_cell->text .= $eportfoliotext;
+						
+						// TIPP
+						if(isset($tipptext))
+							$self_evaluation_cell->text .= $tipptext;
+						
+						$descriptorRow->cells[] = $self_evaluation_cell;
 
-					$descriptorRow->cells[] = $statCell;
+					} else {
+						// ICONS
+						if(isset($icontext))
+							$titleCell->text .= $icontext;
+
+						//EPORTFOLIOITEMS
+						if(isset($eportfoliotext))
+							$titleCell->text .= $eportfoliotext;
+
+						// TIPP
+						if(isset($tipptext))
+							$titleCell->text .= $tipptext;
+
+						$cell1 = new html_table_cell();
+						$cell2 = new html_table_cell();
+						$disabledCell = new html_table_cell();
+
+						$cell1->text = $this->generate_checkbox_profoundness($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, 1);
+						$cell2->text = $this->generate_checkbox_profoundness($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, 2);
+						$disabledCell->text = html_writer::checkbox("disabled", "",false,null,array("disabled"=>"disabled"));
+						$disabledCell->attributes['class'] = 'disabled';
+
+						// loaded from the descriptor, this field is filled from the xml import
+						if (!$descriptor->profoundness) {
+							$descriptorRow->cells[] = $cell1;
+							$descriptorRow->cells[] = $cell2;
+							$descriptorRow->cells[] = $disabledCell;
+							$descriptorRow->cells[] = $disabledCell;
+						} else {
+							$descriptorRow->cells[] = $disabledCell;
+							$descriptorRow->cells[] = $disabledCell;
+							$descriptorRow->cells[] = $cell1;
+							$descriptorRow->cells[] = $cell2;
+						}
+
+					}
 				}
 
 				$rows[] = $descriptorRow;
@@ -1762,7 +1640,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$titleCell->style = 'padding-left: 30px;';
 					$titleCell->text = html_writer::div(html_writer::tag('span', $example->title), '', [ 'title' => $title ]);
 
-				   	if(!$statistic && !$this->is_print_mode()){
+				   	if(!$this->is_print_mode()){
 
 						if ($editmode) {
 							$titleCell->text .= '<span style="padding-right: 15px;" class="todo-change-stylesheet-icons">';
@@ -1876,82 +1754,76 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 					$visible_student_example = $visible_example;
 					
-					if(!$statistic){
-						foreach($students as $student) {
-							$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
-							
-							if(!$one_student && $descriptor_parent_visible[$student->id] == false)
-								$visible_student_example = false;
-							elseif(!$one_student && !$editmode)
-								$visible_student_example = block_exacomp_is_example_visible($data->courseid, $example, $student->id);
-							
-							//check reviewerid for teacher
-							if($data->role == \block_exacomp\ROLE_TEACHER) {
-								$reviewerid = $DB->get_field(\block_exacomp\DB_EXAMPLEEVAL,"teacher_reviewerid",array("studentid" => $student->id, "exampleid" => $example->id, "courseid"=>$data->courseid));
-								if($reviewerid == $USER->id || $reviewerid == 0)
-									$reviewerid = null;
-							}
-								
-							$self_evaluation_cell = new html_table_cell();
-							$self_evaluation_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-								
-							$evaluation_cell = new html_table_cell();
-							$evaluation_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-								
-							$niveau_cell = new html_table_cell();
-							$niveau_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
-							$niveau_cell->text = (block_exacomp_use_eval_niveau())?$this->generate_niveau_select('niveau_examples', $example->id, 'examples', $student, 
-									($data->role == \block_exacomp\ROLE_STUDENT)?true:(($visible_student_example)?false:true), ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
-								
-							if(!$visible_student_example || $data->role == \block_exacomp\ROLE_STUDENT)
-								$params['disabled'] = 'disabled';
-								
-							//student & niveau & showevaluation
-							if(block_exacomp_use_eval_niveau() && $data->role == \block_exacomp\ROLE_STUDENT && $data->showevaluation){
-								$exampleRow->cells[] = $niveau_cell;
-							}
-								
-							//student show evaluation
-							
-							if($data->scheme == 1)
-								$evaluation_cell->text = $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
-							else
-								$evaluation_cell->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
-							
-								
-							if($data->showevaluation) {
-								if ($data->role == \block_exacomp\ROLE_TEACHER) {
-									$evaluation_cell->text .= $this->submission_icon($data->courseid, $example->id, $student->id);
-									$evaluation_cell->text .= $this->resubmission_icon($example->id, $student->id, $data->courseid);
-								}	
-								$exampleRow->cells[] = $evaluation_cell;
-							}
-							
-							if(block_exacomp_use_eval_niveau() && $data->role == \block_exacomp\ROLE_TEACHER){
-								$exampleRow->cells[] = $niveau_cell;
-							}
-								
-							if($data->scheme == 1) {
-								//TODO evt. noch benötigt?
-								//$studentCell->text .= get_string('assigndone','block_exacomp');
-								$self_evaluation_cell->text = $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, ($visible_student_example)?false:true, null, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
-							}else {
-								$self_evaluation_cell->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, !$visible_student_example, $data->profoundness, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
-							}
-							
-							$exampleRow->cells[] = $self_evaluation_cell;
+					foreach($students as $student) {
+						$columnGroup = floor($studentsCount++ / \block_exacomp\STUDENTS_PER_COLUMN);
+						
+						if(!$one_student && $descriptor_parent_visible[$student->id] == false)
+							$visible_student_example = false;
+						elseif(!$one_student && !$editmode)
+							$visible_student_example = block_exacomp_is_example_visible($data->courseid, $example, $student->id);
+						
+						//check reviewerid for teacher
+						if($data->role == \block_exacomp\ROLE_TEACHER) {
+							$reviewerid = $DB->get_field(\block_exacomp\DB_EXAMPLEEVAL,"teacher_reviewerid",array("studentid" => $student->id, "exampleid" => $example->id, "courseid"=>$data->courseid));
+							if($reviewerid == $USER->id || $reviewerid == 0)
+								$reviewerid = null;
 						}
-						if ($profoundness) {
-							$emptyCell = new html_table_cell();
-							$emptyCell->colspan = 7-count($exampleRow->cells);
-							$exampleRow->cells[] = $emptyCell;
+							
+						$self_evaluation_cell = new html_table_cell();
+						$self_evaluation_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+							
+						$evaluation_cell = new html_table_cell();
+						$evaluation_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+							
+						$niveau_cell = new html_table_cell();
+						$niveau_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+						$niveau_cell->text = (block_exacomp_use_eval_niveau())?$this->generate_niveau_select('niveau_examples', $example->id, 'examples', $student, 
+								($data->role == \block_exacomp\ROLE_STUDENT)?true:(($visible_student_example)?false:true), ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
+							
+						if(!$visible_student_example || $data->role == \block_exacomp\ROLE_STUDENT)
+							$params['disabled'] = 'disabled';
+							
+						//student & niveau & showevaluation
+						if(block_exacomp_use_eval_niveau() && $data->role == \block_exacomp\ROLE_STUDENT && $data->showevaluation){
+							$exampleRow->cells[] = $niveau_cell;
 						}
-					}else{
-						$statCell = new html_table_cell();
-						$statCell->text = $this->statistic_table($data->courseid, $students, $example, false, $data->scheme);
-
-						$exampleRow->cells[] = $statCell;
+							
+						//student show evaluation
+						
+						if($data->scheme == 1)
+							$evaluation_cell->text = $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
+						else
+							$evaluation_cell->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
+						
+							
+						if($data->showevaluation) {
+							if ($data->role == \block_exacomp\ROLE_TEACHER) {
+								$evaluation_cell->text .= $this->submission_icon($data->courseid, $example->id, $student->id);
+								$evaluation_cell->text .= $this->resubmission_icon($example->id, $student->id, $data->courseid);
+							}	
+							$exampleRow->cells[] = $evaluation_cell;
+						}
+						
+						if(block_exacomp_use_eval_niveau() && $data->role == \block_exacomp\ROLE_TEACHER){
+							$exampleRow->cells[] = $niveau_cell;
+						}
+							
+						if($data->scheme == 1) {
+							//TODO evt. noch benötigt?
+							//$studentCell->text .= get_string('assigndone','block_exacomp');
+							$self_evaluation_cell->text = $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, ($visible_student_example)?false:true, null, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
+						}else {
+							$self_evaluation_cell->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, !$visible_student_example, $data->profoundness, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
+						}
+						
+						$exampleRow->cells[] = $self_evaluation_cell;
 					}
+					if ($profoundness) {
+						$emptyCell = new html_table_cell();
+						$emptyCell->colspan = 7-count($exampleRow->cells);
+						$exampleRow->cells[] = $emptyCell;
+					}
+					
 					$rows[] = $exampleRow;
 				}
 
@@ -1959,7 +1831,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$child_data->rg2_level++;
 
 				if (!empty($descriptor->children)) {
-					$this->descriptors($rows, $level+1, $descriptor->children, $child_data, $students, $profoundness, $editmode, $statistic, $custom_created_descriptors, false, $crosssubjid, $descriptor_parent_visible);
+					$this->descriptors($rows, $level+1, $descriptor->children, $child_data, $students, $profoundness, $editmode, $custom_created_descriptors, false, $crosssubjid, $descriptor_parent_visible);
 				}
 				//schulische ergänzungen und neue teilkompetenz
 				if($editmode && $parent) {
@@ -1978,7 +1850,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 					// is this was a bug? it's printed twice?
 					// no, first print the imported descriptors, then print the user created ones
-					$this->descriptors($rows, $level+1, $descriptor->children, $child_data, $students, $profoundness, $editmode, $statistic, true);
+					$this->descriptors($rows, $level+1, $descriptor->children, $child_data, $students, $profoundness, $editmode, true);
 
 					$own_additionRow = new html_table_row();
 					$own_additionRow->attributes['class'] = 'exabis_comp_aufgabe ' . $sub_rg2_class;
@@ -3498,214 +3370,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content .= html_writer::div(html_writer::table($table), 'stat_table');
 		return $content;
 	}
-private function competence_profile_tree_v2($in, $courseid, $student = null,$scheme = 1, $showonlyreached = false, $max_scheme = 3) {
-		global $DB;
-		static $barchartid_i = 0;
-		
-		$content="";
-		foreach($in as $subject){
-			foreach($subject->topics as $topic){
-				$fieldset_content = html_writer::tag('legend', block_exacomp_get_topic_numbering($topic).' '.$topic->title);
-				
-				$desc_content = "";
-				$niveaus = array();
-				$student_eval = array();
-				$teacher_eval = array();
-				if(!empty($topic->descriptors)){
-				
-					foreach($topic->descriptors as $descriptor){
-						$barchartid_i++;
-						
-						$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
-
-						$content_div = html_writer::tag('span', (($niveau)?$niveau->title:'') . ': ' . $descriptor->title);
-						$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, ((block_exacomp_is_niveautitle_for_profile_enabled() && $niveau)?$niveau->title:$descriptor->title));
-						
-						$span_in_work = "";
-						if($return->total > 0)
-							$span_in_work = html_writer::tag('span', 
-									\block_exacomp\get_string('inwork', null, ['inWork' => $return->inWork, 'total' => $return->total]), array('class'=>"compprof_barchart_inwork"));
-						
-						$img_niveau = block_exacomp_get_html_for_niveau_eval(
-								((isset($student->competencies->niveau[$descriptor->id]))?$student->competencies->niveau[$descriptor->id]:-1));
-						
-						$span_niveau = html_writer::tag('span', "Niveau: ".
-								$img_niveau, array('class'=>"compprof_barchart_niveau"));
-						
-						$img_teacher = (block_exacomp_additional_grading())?'':(block_exacomp_get_html_for_teacher_eval(((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:-1), $scheme));//block_exacomp_get_html_for_teacher_eval(
-								//((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:-1), $scheme);
-						
-						$span_teacher = html_writer::tag('span', "L: ".
-							$img_teacher . ((block_exacomp_additional_grading())?(isset($student->competencies->teacher_additional_grading[$descriptor->id])? html_writer::tag('b', $student->competencies->teacher_additional_grading[$descriptor->id]):""):''), 
-							array('class'=>"compprof_barchart_teacher"));
-										   
-						$img_student = block_exacomp_get_html_for_student_eval(
-								((isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:-1), $scheme);
-										
-						$span_student = html_writer::tag('span', "S: ".
-								$img_student, array('class'=>"compprof_barchart_student"));
-						$div_niveau = html_writer::div($span_niveau, 'compprof_niveau');
-						$div_teacher_student = html_writer::div($span_student. $span_teacher, 'compprof_evaluation');
-
-						$div_flgr = html_writer::div(((block_exacomp_use_eval_niveau())?$div_niveau:'').$div_teacher_student, 'compprof_flrg');
-						
-						$image = '/blocks/exacomp/pix/competence-grid-material-information.png';
-						$img_barchart = html_writer::empty_tag('img', array('src'=>new moodle_url($image), 'width'=>'25', 'height'=>'25'));
-						
-						$bar_chart = ((isset($descriptor->examples))?html_writer::empty_tag('br').$img_barchart. 
-								html_writer::div('', 'compprof_barchart', array('id'=>'svgdesc'.$barchartid_i))
-								.$span_in_work:'');
-						
-						$return = block_exacomp_calc_example_stat_for_profile($courseid, $descriptor, $student, $scheme, ((block_exacomp_is_niveautitle_for_profile_enabled() && $niveau)?$niveau->title:$descriptor->title));
-						
-						$div_barchart = html_writer::div($bar_chart, 'compprof_example');
-						$desc_content .= html_writer::div($content_div.
-								$div_flgr.(($return->total>0)?$div_barchart:''), 
-								'compprof_descriptor');		
-						
-						$desc_content .= html_writer::div(html_writer::tag('p', html_writer::empty_tag('span', array('id'=>'value'))), 'tooltip hidden', array('id'=>'tooltip'.$barchartid_i));
-						
-						if($return->total>0){
-							$stacked_bar = $this->example_stacked_bar($return->data, $barchartid_i);
-							$desc_content .= $stacked_bar;
-						}
-						
-						$niveaus[] = ((block_exacomp_is_niveautitle_for_profile_enabled() && $niveau)?$niveau->title:$descriptor->title);
-						$student_eval[] = (isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:0;
-						$teacher_eval[] = (isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:0;
-						
-					}
-				}
-				$div_content = "";
-				
-				$div_content .= $desc_content;
-				$div_content .= $this->lm_graph_legend($max_scheme);
-				$fieldset_content .= html_writer::div($div_content);
-				$content .= html_writer::tag('fieldset', $fieldset_content, array('class'=>'exa-collapsible', 'id'=>'topic_field'.$topic->id));
-			}
-		}
-		
-		return $content;
-	}
-		
-	public function lm_graph_legend($scheme) {
-		$global_scheme_values = \block_exacomp\global_config::get_value_titles($scheme);
-		$content = html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","lmoB");
-		$content .= ' '.get_string("oB","block_exacomp").' ';
-	
-		$content .= html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","lmnE");
-		$content .= ' '.get_string("nE","block_exacomp").' ';
-	
-		for($i=1;$i<=$scheme;$i++){
-			$content .= html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","green".(($i>3)?3:$i));
-			$content .= ' '.@$global_scheme_values[$i].' ';
-		}
-	
-		return html_writer::div($content, 'legend');
-	}
-	
-private function example_stacked_bar($dataset, $descrid){
-	return "<script>var margins = {
-	top: 20,
-	left: 10,
-	right: 10,
-	bottom: 0
-},
-width =200,
-	height = 20,
-	dataset =  ".$dataset.",
-	series = dataset.map(function (d) {
-		return d.name;
-	}),
-	dataset = dataset.map(function (d) { // console.log(d);
-		return d.data.map(function (o, i) {
-			// Structure it so that your numeric
-			// axis (the stacked amount) is y
-			return {
-				y: o.count,
-				x: o.niveau,
-	title: d.name
-			};
-		});
-	}),
-	stack = d3.layout.stack();
-
-stack(dataset);
-
-var dataset = dataset.map(function (group) {
-	return group.map(function (d) { // console.log(d);
-		// Invert the x and y values, and y0 becomes x0
-		return {
-			x: d.y,
-			y: d.x,
-			x0: d.y0,
-			title: d.title
-		};
-	});
-}),
-	svg = d3.select('#svgdesc".$descrid."')
-		.append('svg')
-		.attr('width', width + margins.left + margins.right)
-		.attr('height', height + margins.top + margins.bottom)
-		.append('g')
-		.attr('transform', 'translate(' + margins.left + ',' + (margins.top + 5) + ')'),
-	xMax = d3.max(dataset, function (group) {
-		return d3.max(group, function (d) {
-			return d.x + d.x0;
-		});
-	}),
-	xScale = d3.scale.linear()
-		.domain([0, xMax])
-		.range([0, width]),
-	niveaus = dataset[0].map(function (d) {
-		return d.y;
-	}),
-	yScale = d3.scale.ordinal()
-		.domain(niveaus)
-		.rangeRoundBands([0, height], .1),
-  
-	colours = [\"#BBBBBB\", \"#990000\",  \"#00CC00\", \"#008F00\", \"#006D00\", \"#dddd22\", \"#ff0033\", \"#345678\"],
-	
-	groups = svg.selectAll('g')
-		.data(dataset)
-		.enter()
-		.append('g')
-		.style('fill', function (d, i) {
-		return colours[i];
-	}),
-	rects = groups.selectAll('rect')
-		.data(function (d) {
-		return d;
-	})
-		.enter()
-		.append('rect')
-		.attr('x', function (d) {
-		return xScale(d.x0);
-	})
-	   
-		.attr('height', function (d) {
-		return yScale.rangeBand();
-	})
-		.attr('width', function (d) {
-		return xScale(d.x);
-	})
-		.on('mouseover', function (d) { // console.log(d);
-		var xPos = parseFloat(d3.select(this).attr('x')) / 2 + width / 2;
-		var yPos = parseFloat(d3.select(this).attr('y')) + yScale.rangeBand() / 2;
-
-		d3.select('#tooltip".$descrid."')
-			.style('left', xPos + 'px')
-			.style('top', yPos + 'px')
-			.select('#value')
-			.text(d.x+d.title);
-
-		d3.select('#tooltip".$descrid."').classed('hidden', false);
-	})
-		.on('mouseout', function () {
-		d3.select('#tooltip".$descrid."').classed('hidden', true);
-	})
-</script>";
-	}		
 
 public function profile_settings($courses, $settings){
 		global $COURSE;
@@ -4021,126 +3685,7 @@ public function profile_settings($courses, $settings){
 		
 		return $html_tree;
 	}
-	
-	//TODO still any meaning?
-	function statistic_table($courseid, $students, $item, $descriptor=true, $scheme=1){
-		$global_scheme_values = \block_exacomp\global_config::get_value_titles($scheme);
 
-		if($descriptor)
-			list($self, $student_oB, $student_iA, $teacher, $teacher_oB, $teacher_iA,
-						$self_title, $student_oB_title, $student_iA_title, $teacher_title, 
-						$teacher_oB_title, $teacher_iA_title) = block_exacomp_calculate_statistic_for_descriptor($courseid, $students, $item, $scheme);
-		else
-			list($self, $student_oB, $student_iA, $teacher, $teacher_oB, $teacher_iA,
-						$self_title, $student_oB_title, $student_iA_title, $teacher_title, 
-						$teacher_oB_title, $teacher_iA_title) = block_exacomp_calculate_statistic_for_example($courseid, $students, $item, $scheme);
-			
-		
-		$table = new html_table();
-		$table->attributes['class'] = 'statistic';
-		$table->border = 3;
-		
-		$rows = array();
-		
-		$self_row_header = new html_table_row();
-		$self_row_header->attributes['class'] = 'statistic_head';
-		
-		$empty_cell = new html_table_cell();
-		$self_row_header->cells[] = $empty_cell;
-		
-		$empty_cell = new html_table_cell();
-		$self_row_header->cells[] = $empty_cell;
-		
-		foreach($self as $self_key => $self_value){
-			$cell = new html_table_cell();
-			$cell->text = $global_scheme_values[$self_key];
-			$self_row_header->cells[] = $cell;
-		}
-		
-		$cell = new html_table_cell();
-		$cell->text = "oB";
-		$self_row_header->cells[] = $cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = "iA";
-		$self_row_header->cells[] = $cell;
-		
-		$rows[] = $self_row_header;
-		
-		$self_row = new html_table_row();
-		$self_row->attributes['class'] = '';
-		
-		$cell = new html_table_cell();
-		$cell->text = "S";
-		$self_row->cells[] = $cell;
-		
-		$empty_cell = new html_table_cell();
-		$self_row->cells[] = $empty_cell;
-		
-		foreach($self as $self_key => $self_value){
-			$cell = new html_table_cell();
-			$cell->text =($self_value>0)?html_writer::tag('span', $self_value, array('title'=>$self_title[$self_key])):$self_value;
-			$self_row->cells[] = $cell;
-		}
-	
-		$cell = new html_table_cell();
-		$cell->text = ($student_oB>0)?html_writer::tag('span', $student_oB, array('title'=>$student_oB_title)):$student_oB;
-		$self_row->cells[] = $cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = ($student_iA>0)?html_writer::tag('span', $student_iA, array('title'=>$student_iA_title)):$student_iA;
-		$self_row->cells[] = $cell;
-		
-		$rows[] = $self_row;
-		
-		$teacher_row_header = new html_table_row();
-		$teacher_row_header->attributes['class'] = 'statistic_head';
-		
-		$empty_cell = new html_table_cell();
-		$teacher_row_header->cells[] = $empty_cell;
-		
-		foreach($teacher as $teacher_key => $teacher_value){
-			$cell = new html_table_cell();
-			$cell->text = $global_scheme_values[$teacher_key];
-			$teacher_row_header->cells[] = $cell;
-		}
-		
-		$cell = new html_table_cell();
-		$cell->text = "oB";
-		$teacher_row_header->cells[] = $cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = "iA";
-		$teacher_row_header->cells[] = $cell;
-
-		$rows[] = $teacher_row_header;
-		
-		$teacher_row = new html_table_row();
-		$teacher_row->attributes['class'] = '';
-		
-		$cell = new html_table_cell();
-		$cell->text = "L";
-		$teacher_row->cells[] = $cell;
-		
-		foreach($teacher as $teacher_key => $teacher_value){
-			$cell = new html_table_cell();
-			$cell->text = ($teacher_value>0)?html_writer::tag('span', $teacher_value, array('title'=>$teacher_title[$teacher_key])):$teacher_value;
-			$teacher_row->cells[] = $cell;
-		}
-		
-		$cell = new html_table_cell();
-		$cell->text = ($teacher_oB>0)?html_writer::tag('span', $teacher_oB, array('title'=>$teacher_oB_title)):$teacher_oB;
-		$teacher_row->cells[] = $cell;
-		
-		$cell = new html_table_cell();
-		$cell->text = ($teacher_iA>0)?html_writer::tag('span', $teacher_iA, array('title'=>$teacher_iA_title)):$teacher_iA;
-		$teacher_row->cells[] = $cell;
-
-		$rows[] = $teacher_row;
-		
-		$table->data = $rows;
-		return html_writer::table($table);
-	}
 	public function example_pool($examples=array()){
 		$studentid = block_exacomp_get_studentid();
 		if($studentid > 0)
@@ -4500,9 +4045,6 @@ public function profile_settings($courses, $settings){
 
 		if ($option == static::STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN) {
 			$studentsAssociativeArray[BLOCK_EXACOMP_SHOW_ALL_STUDENTS] = get_string('allstudents', 'block_exacomp');
-		}
-		if($option == static::STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN) {
-			$studentsAssociativeArray[BLOCK_EXACOMP_SHOW_STATISTIC] = get_string('statistic', 'block_exacomp');
 		}
 
 		// add a spacer line
