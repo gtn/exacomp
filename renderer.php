@@ -3254,6 +3254,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			
 			$cell = new html_table_cell();
 			$cell->text = block_exacomp_get_topic_numbering($topic) . " " . $table_column[$topic]->title;
+			$cell->attributes['class'] = (($rowcontent->visible)?'':'notvisible');
 			$row->cells[] = $cell;
 			
 			foreach($rowcontent->niveaus as $niveau => $element){
@@ -3263,7 +3264,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$cell->text = (($element->show)?(html_writer::empty_tag('canvas',
 						array("id"=>"chart".$niveau, "height"=>"50", "width"=>"50", "data-title"=>$element->evalniveau,
 								"data-value"=>$element_eval_value, "data-valuemax"=>"3"))):'');
-				$cell->attributes['class'] = (($element->visible)?'':'notvisible');
+				$cell->attributes['class'] = (($element->visible && $rowcontent->visible)?'':'notvisible');
 				if(in_array($niveau, $spanning_niveaus)){
 					$cell->colspan = $spanning_colspan;
 				}					

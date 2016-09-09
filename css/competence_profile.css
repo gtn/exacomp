@@ -220,3 +220,8 @@
 #block_exacomp .header {
 	background-color: #dcdcdc !important;
 }
+
+#block_exacomp .notvisible{
+	background-color: #cccccc;
+	opacity: 0.5;
+}
