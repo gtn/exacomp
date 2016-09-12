@@ -465,7 +465,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$context = context_course::instance($courseid);
 		$role = block_exacomp_is_teacher($context) ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT;
-		$editmode = (($studentid == 0) && $role == \block_exacomp\ROLE_TEACHER) ? true : false;
+		$editmode = (($studentid == 0) ? true : false);
 
 		$table = new html_table();
 		$table->attributes['class'] = 'competence_grid';
@@ -478,11 +478,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		$profoundness = block_exacomp_get_settings_by_course($courseid)->useprofoundness;
 
-		$spanningNiveaus = $DB->get_fieldset_select(\block_exacomp\DB_NIVEAUS,'title', 'span=?', array(1));
-		
+		$spanningNiveaus = $DB->get_records(\block_exacomp\DB_NIVEAUS,array('span' => 1));
 		//calculate the col span for spanning niveaus
 		$spanningColspan = block_exacomp_calculate_spanning_niveau_colspan($niveaus, $spanningNiveaus);
-		$report = optional_param('report', BLOCK_EXACOMP_REPORT1, PARAM_INT);
 		
 		$rows = array();
 
@@ -613,6 +611,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return html_writer::tag("div", html_writer::table($table), array("id"=>"exabis_competences_block"));
 	}
+
 	public function competence_overview_form_start($selectedTopic=null, $selectedSubject=null, $studentid=null, $editmode=null){
 		global $PAGE;
 		$url_params = array();
