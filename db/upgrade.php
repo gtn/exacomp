@@ -2881,6 +2881,30 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		upgrade_block_savepoint(true, 2016071200, 'exacomp');
 	}
 	
+	if ($oldversion < 2016091100) {
+	
+		// Define field timestamp_teacher to be added to block_exacompexameval.
+		$table = new xmldb_table('block_exacompexameval');
+		$field = new xmldb_field('timestamp_teacher', XMLDB_TYPE_INTEGER, '20', null, null, null, '0', 'resubmission');
+	
+		// Conditionally launch add field timestamp_teacher.
+		if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+	
+		// Define field timestamp_student to be added to block_exacompexameval.
+		$table = new xmldb_table('block_exacompexameval');
+		$field = new xmldb_field('timestamp_student', XMLDB_TYPE_INTEGER, '20', null, null, null, '0', 'timestamp_teacher');
+		
+		// Conditionally launch add field timestamp_student.
+		if (!$dbman->field_exists($table, $field)) {
+			$dbman->add_field($table, $field);
+		}
+		
+		// Exacomp savepoint reached.
+		upgrade_block_savepoint(true, 2016091100, 'exacomp');
+	}
+	
 	/*
 	 * insert new upgrade scripts before this comment section
 	 * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!

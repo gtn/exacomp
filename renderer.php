@@ -1780,6 +1780,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$niveau_cell->text = (block_exacomp_use_eval_niveau())?$this->generate_niveau_select('niveau_examples', $example->id, 'examples', $student, 
 								($data->role == \block_exacomp\ROLE_STUDENT)?true:(($visible_student_example)?false:true), ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
 							
+						$niveau_cell->attributes['exa-timestamp'] = isset($student->examples->timestamp_teacher[$example->id]) ? $student->examples->timestamp_teacher[$example->id] : 0;
+								
 						if(!$visible_student_example || $data->role == \block_exacomp\ROLE_STUDENT)
 							$params['disabled'] = 'disabled';
 							
@@ -1794,7 +1796,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$evaluation_cell->text = $this->generate_checkbox($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true);
 						else
 							$evaluation_cell->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, ($evaluation == "teacher") ? "student" : "teacher", $data->scheme, true, $data->profoundness);
-						
 							
 						if($data->showevaluation) {
 							if ($data->role == \block_exacomp\ROLE_TEACHER) {
@@ -1815,6 +1816,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						}else {
 							$self_evaluation_cell->text = $this->generate_select($checkboxname, $example->id, 'examples', $student, $evaluation, $data->scheme, !$visible_student_example, $data->profoundness, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
 						}
+						$self_evaluation_cell->attributes['exa-timestamp'] = isset($student->examples->timestamp_teacher[$example->id]) ? $student->examples->timestamp_teacher[$example->id] : 0;
 						
 						$exampleRow->cells[] = $self_evaluation_cell;
 					}

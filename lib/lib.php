@@ -742,6 +742,7 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 		block_exacomp_require_teacher($courseid);
 		$updateEvaluation->teacher_evaluation = ($value != -1) ? $value : null;
 		$updateEvaluation->teacher_reviewerid = $USER->id;
+		$updateEvaluation->timestamp_teacher = time();
 		$updateEvaluation->evalniveauid = $evalniveauid;
 		$updateEvaluation->resubmission = ($value != -1) ? false : true;
 	} else {
@@ -749,6 +750,7 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 			// student can only assess himself
 			return;
 
+			$updateEvaluation->timestamp_student = time();
 			if($value !== null)
 				$updateEvaluation->student_evaluation = ($value != -1) ? $value : null;
 	}
@@ -757,6 +759,7 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 		if($role == \block_exacomp\ROLE_TEACHER) {
 			$record->teacher_evaluation = $updateEvaluation->teacher_evaluation;
 			$record->teacher_reviewerid = $updateEvaluation->teacher_reviewerid;
+			$record->timestamp_teacher = $updateEvaluation->timestamp_teacher;
 			$record->evalniveauid = $updateEvaluation->evalniveauid;
 			$record->resubmission = $updateEvaluation->resubmission;
 
@@ -1647,6 +1650,8 @@ function block_exacomp_get_user_examples_by_course($user, $courseid) {
 	$examples->teacher = g::$DB->get_records_menu(\block_exacomp\DB_EXAMPLEEVAL,array("courseid" => $courseid, "studentid" => $user->id),'','exampleid as id, teacher_evaluation as value');
 	$examples->student = g::$DB->get_records_menu(\block_exacomp\DB_EXAMPLEEVAL,array("courseid" => $courseid, "studentid" => $user->id),'','exampleid as id, student_evaluation as value');
 	$examples->niveau = g::$DB->get_records_menu(\block_exacomp\DB_EXAMPLEEVAL, array("courseid"=>$courseid, "studentid"=>$user->id),'', 'exampleid as id, evalniveauid');
+	$examples->timestamp_teacher = g::$DB->get_records_menu(\block_exacomp\DB_EXAMPLEEVAL,array("courseid" => $courseid, "studentid" => $user->id),'','exampleid as id, timestamp_teacher as timestamp');
+	$examples->timestamp_student = g::$DB->get_records_menu(\block_exacomp\DB_EXAMPLEEVAL,array("courseid" => $courseid, "studentid" => $user->id),'','exampleid as id, timestamp_student as timestamp');
 	
 	return $examples;
 }
