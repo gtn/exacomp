@@ -56,6 +56,9 @@ block_exacomp_build_breadcrum_navigation($courseid);
 $output->requires()->js('/blocks/exacomp/javascript/jquery.inputmask.bundle.js', true);
 $output->requires()->js('/blocks/exacomp/javascript/competence_tree_common.js', true);
 $output->requires()->css('/blocks/exacomp/css/competence_tree_common.css');
+$PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/moment.min.js', true);
+$PAGE->requires->js('/blocks/exacomp/javascript/jquery.daterangepicker.min.js', true);
+$PAGE->requires->css('/blocks/exacomp/css/daterangepicker.min.css', true);
 
 if ($action == 'share') {
 	$cross_subject = \block_exacomp\cross_subject::get($crosssubjid, MUST_EXIST);

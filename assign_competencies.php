@@ -62,10 +62,6 @@ $PAGE->set_url('/blocks/exacomp/assign_competencies.php', [
 $PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
 $PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
 
-$PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/moment.min.js', true);
-$PAGE->requires->js('/blocks/exacomp/javascript/jquery.daterangepicker.min.js', true);
-$PAGE->requires->css('/blocks/exacomp/css/daterangepicker.min.css', true);
-
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
 
@@ -76,6 +72,9 @@ $output = block_exacomp_get_renderer();
 $output->requires()->js('/blocks/exacomp/javascript/jquery.inputmask.bundle.js', true);
 $output->requires()->js('/blocks/exacomp/javascript/competence_tree_common.js', true);
 $output->requires()->css('/blocks/exacomp/css/competence_tree_common.css');
+$PAGE->requires->js('/blocks/exacomp/javascript/fullcalendar/moment.min.js', true);
+$PAGE->requires->js('/blocks/exacomp/javascript/jquery.daterangepicker.min.js', true);
+$PAGE->requires->css('/blocks/exacomp/css/daterangepicker.min.css', true);
 $output->editmode = $editmode;
 
 $activities = block_exacomp_get_activities_by_course($courseid);

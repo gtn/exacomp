@@ -624,6 +624,10 @@ hide arrow
 }
 */
 
+#block_exacomp .highlight_cell {
+	background-color: #b7efeb;
+}
+
 #block_exacomp tr[class*=rg2-level-] {
 	display: none;
 }

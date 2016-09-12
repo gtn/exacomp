@@ -870,6 +870,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							
 						$niveau_cell = new html_table_cell();
 						$niveau_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+						$niveau_cell->attributes['exa-timestamp'] = isset($student->subjects->timestamp_teacher[$subject->id]) ? $student->subjects->timestamp_teacher[$subject->id] : 0;
+						
 						$niveau_cell->text = (block_exacomp_use_eval_niveau())?$this->generate_niveau_select('niveau_subject', $subject->id, 'subjects', $student, ($role == \block_exacomp\ROLE_STUDENT)?true:false, ($role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
 							
 						$params = array('name'=>'add-grading-'.$student->id.'-'.$subject->id, 'type'=>'text',
@@ -919,6 +921,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							else
 								$self_evaluation_cell->text = $this->generate_select($checkboxname, $subject->id, 'subjects', $student, $evaluation, $scheme, false, $profoundness, ($role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
 						}
+						$self_evaluation_cell->attributes['exa-timestamp'] = isset($student->subjects->timestamp_teacher[$subject->id]) ? $student->subjects->timestamp_teacher[$subject->id] : 0;
 						
 						$subjectRow->cells[] = $self_evaluation_cell;
 					}else{
@@ -1006,6 +1009,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				
 				$niveau_cell = new html_table_cell();
 				$niveau_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+				$niveau_cell->attributes['exa-timestamp'] = isset($student->crosssubs->timestamp_teacher[$crosssubjid]) ? $student->crosssubs->timestamp_teacher[$crosssubjid] : 0;
+				
 				$niveau_cell->text = (block_exacomp_use_eval_niveau())?$this->generate_niveau_select('niveau_crosssub', $crosssubjid, 'crosssubs', $student, ($role == \block_exacomp\ROLE_STUDENT)?true:false, ($role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
 				
 				$params = array('name'=>'add-grading-'.$student->id.'-'.$crosssubjid, 'type'=>'text',
@@ -1048,7 +1053,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					else
 						$self_evaluation_cell->text = $this->generate_select($checkboxname, $crosssubjid, 'crosssubs', $student, $evaluation, $scheme, false, $profoundness, ($role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
 				}
-					
+				$self_evaluation_cell->attributes['exa-timestamp'] = isset($student->crosssubs->timestamp_teacher[$crosssubjid]) ? $student->crosssubs->timestamp_teacher[$crosssubjid] : 0;
+				
 				$totalRow->cells[] = $self_evaluation_cell;
 			}
 			
@@ -1192,6 +1198,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							
 						$niveau_cell = new html_table_cell();
 						$niveau_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+						$niveau_cell->attributes['exa-timestamp'] = isset($student->topics->timestamp_teacher[$topic->id]) ? $student->topics->timestamp_teacher[$topic->id] : 0;
+						
 						$niveau_cell->text = (block_exacomp_use_eval_niveau())?$this->generate_niveau_select('niveau_topic', $topic->id, 'topics', $student,
 								($data->role == \block_exacomp\ROLE_STUDENT)?true:(($visible_student)?false:true), ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
 						
@@ -1237,7 +1245,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							else
 								$self_evaluation_cell->text = $this->generate_select($checkboxname, $topic->id, 'topics', $student, $evaluation, $data->scheme, !$visible_student, $data->profoundness, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
 						}
-							
+						$self_evaluation_cell->attributes['exa-timestamp'] = isset($student->topics->timestamp_teacher[$topic->id]) ? $student->topics->timestamp_teacher[$topic->id] : 0;
+						
 						$topicRow->cells[] = $self_evaluation_cell;
 						
 					}
@@ -1496,6 +1505,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						
 						$niveau_cell = new html_table_cell();
 						$niveau_cell->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
+						$niveau_cell->attributes['exa-timestamp'] = isset($student->competencies->timestamp_teacher[$descriptor->id]) ? $student->competencies->timestamp_teacher[$descriptor->id] : 0;
+						
 						$niveau_cell->text = (block_exacomp_use_eval_niveau())?$this->generate_niveau_select('niveau_descriptor', $descriptor->id, 'competencies', $student, 
 								($data->role == \block_exacomp\ROLE_STUDENT)?true:(($visible_student)?false:true), ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null):'';
 							
@@ -1541,6 +1552,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							else 
 								$self_evaluation_cell->text = $this->generate_select($checkboxname, $descriptor->id, 'competencies', $student, $evaluation, $data->scheme, !$visible_student, $data->profoundness, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
 						}
+						$self_evaluation_cell->attributes['exa-timestamp'] = isset($student->competencies->timestamp_teacher[$descriptor->id]) ? $student->competencies->timestamp_teacher[$descriptor->id] : 0;
 						
 						// ICONS
 						if(isset($icontext))
@@ -3475,7 +3487,7 @@ public function profile_settings($courses, $settings){
 	public function cross_subject_buttons($cross_subject, $students, $selectedStudent, $nostudents = false){
 		global $PAGE, $COURSE, $USER;
 
-		$left_content = '';
+		$left_content = html_writer::start_tag("p");
 		$right_content = '';
 
 		if (!$cross_subject && $this->is_edit_mode()) {
@@ -3489,11 +3501,17 @@ public function profile_settings($courses, $settings){
 			if($nostudents) $left_content .= html_writer::tag("input", "", array("type" => "button", "value" => get_string("share_crosssub", "block_exacomp"), 'exa-type'=>'iframe-popup', 'exa-url'=>'cross_subjects.php?courseid='.g::$COURSE->id.'&crosssubjid='.$cross_subject->id.'&action=share'));
 			$left_content .= html_writer::tag("input", "", array("type" => "button", "value" => get_string("save_as_draft", "block_exacomp"), 'exa-type'=>'link', 'exa-url'=>'cross_subjects.php?courseid='.g::$COURSE->id.'&crosssubjid='.$cross_subject->id.'&action=save_as_draft'));
 		}
+		$left_content .= html_writer::end_tag("p");
+		
 							// html_writer::tag("input", "", array("id"=>"delete_crosssub", "name"=>"delete_crosssub", "type"=>"button", "value"=>get_string("delete_crosssub", "block_exacomp"), 'message'=>get_string('confirm_delete', 'block_exacomp')), array('id'=>'exabis_save_button'));
 		if (!$this->is_edit_mode() && block_exacomp_is_teacher() && $students) {
 			$left_content .= get_string("choosestudent", "block_exacomp");
 			$left_content .= $this->studentselector($students,$selectedStudent, ($students)?static::STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN:static::STUDENT_SELECTOR_OPTION_EDITMODE);
 
+			//print date range picker
+			$left_content .= get_string("choosedaterange","block_exacomp");
+			$left_content .= $this->daterangepicker();
+			
 			$url = new moodle_url('/blocks/exacomp/pre_planning_storage.php', array('courseid'=>$COURSE->id, 'creatorid'=>$USER->id));
 			$right_content .= html_writer::tag('button',
 					html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/pre-planning-storage.png'),
@@ -4062,6 +4080,9 @@ public function profile_settings($courses, $settings){
 				array("disabled" => $this->is_edit_mode() ? "disabled" : ""));
 	}
 	function daterangepicker() {
-		return html_writer::tag('input', '', array('size' => '30', 'id' => 'daterangepicker')) . html_writer::tag('button', get_string('cleardaterange','block_exacomp'), array('id' => 'clear-range'));
+		global $OUTPUT;
+		
+		return html_writer::tag('input', '', array('size' => '27', 'id' => 'daterangepicker', 'title' => get_string("choosedaterange","block_exacomp")))
+		. html_writer::tag('button', get_string('cleardaterange','block_exacomp'), array('id' => 'clear-range'));
 	}
 }

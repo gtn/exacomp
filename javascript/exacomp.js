@@ -545,43 +545,78 @@ $(document).on('click', '.exa-collapsible > legend', function(){
 		get_tables().trigger('rg2.init');
 	});
 	
+	function highlight_cells(date1, date2) {
+		date1_s = (new Date(date1).getTime() / 1000);
+    	date2_s = (new Date(date2).getTime() / 1000);
+    	
+    	// Highlight the gradings within the given range
+    	$("td[exa-timestamp]" ).each(function( index ) {
+    		if ($(this).attr("exa-timestamp") >= date1_s && $(this).attr("exa-timestamp") <= date2_s ) {
+    			$(this).addClass('highlight_cell');
+    		}
+    	});
+	}
+	
 	$(document).ready(function() {
-
-        $('input[id="daterangepicker"]').dateRangePicker({
-            separator : ' ' + M.util.get_string('seperatordaterange', 'block_exacomp') + ' ',
-            format : 'DD.MMM.YYYY',
-            startOfWeek : 'monday',
-            showShortcuts : true,
-            shortcuts : {
-                'prev-days' : [ 3, 5, 7 ],
-                'prev' : [ 'week', 'month', 'year' ],
-                'next-days' : null,
-                'next' : null
-            }
-        }).bind('datepicker-change',function(event,obj)
-        {
-        	sessionStorage.setItem('date1', obj.date1);
-        	sessionStorage.setItem('date2', obj.date2);
-        	sessionStorage.setItem('value', obj.value);
-        	
-        	// TODO: update grading highlightings
-        });
-        
-        if(sessionStorage.getItem('date1') != null && sessionStorage.getItem('date2') != null)
-        	$('input[id="daterangepicker"]').data('dateRangePicker').setDateRange(new Date(sessionStorage.getItem('date1')), new Date(sessionStorage.getItem('date2')));
-        
-        $('#clear-range').click(function(event) {
-        	event.preventDefault();
-            
-            $('input[id="daterangepicker"]').data('dateRangePicker').clear();
-
-            sessionStorage.removeItem('date1');
-        	sessionStorage.removeItem('date2');
-        	sessionStorage.removeItem('value');
-        	
-        	// TODO: reset grading highlightings
-        });
-
+		if($('input[id="daterangepicker"]').length) {
+	        $('input[id="daterangepicker"]').dateRangePicker({
+	            separator : ' ' + M.util.get_string('seperatordaterange', 'block_exacomp') + ' ',
+	            format : 'DD.MMM.YYYY',
+	            startOfWeek : 'monday',
+	            showShortcuts : true,
+	            shortcuts : {
+	                'prev-days' : [ 3, 5, 7 ],
+	                'prev' : [ 'week', 'month', 'year' ],
+	                'next-days' : null,
+	                'next' : null
+	            }
+	        }).bind('datepicker-change',function(event,obj)
+	        {
+	        	sessionStorage.setItem('date1', obj.date1);
+	        	sessionStorage.setItem('date2', obj.date2);
+	        	sessionStorage.setItem('value', obj.value);
+	        	
+	        	highlight_cells(obj.date1, obj.date2);
+	        });
+	        
+	        if(sessionStorage.getItem('date1') != null && sessionStorage.getItem('date2') != null) {
+	        	$('input[id="daterangepicker"]').data('dateRangePicker').setDateRange(new Date(sessionStorage.getItem('date1')), new Date(sessionStorage.getItem('date2')));
+	        	highlight_cells(sessionStorage.getItem('date1'), sessionStorage.getItem('date2'));
+	        }
+	        
+	        $('#clear-range').click(function(event) {
+	        	event.preventDefault();
+	            
+	            $('input[id="daterangepicker"]').data('dateRangePicker').clear();
+	
+	            sessionStorage.removeItem('date1');
+	        	sessionStorage.removeItem('date2');
+	        	sessionStorage.removeItem('value');
+	        	
+	        	// Reset the gradings within the given range
+	        	$("td[exa-timestamp]" ).each(function( index ) {
+	        		$(this).removeClass('highlight_cell');
+	        	});
+	        });
+	        
+	        $(document).on('change', '[name^=datadescriptors\-], [name^=niveau_descriptor\-], [name^=dataexamples\-], [name^=niveau_examples\-], [name^=add-grading\-], [name^=niveau_topic\-], [name^=datatopics\-], [name^=niveau_subject\-], [name^=datasubjects\-], [name^=niveau_crosssub\-], [name^=datacrosssubs\-]', function() {
+	        	// one example can have several inputs/selects (if it is attached to several descriptors), so iterate over all
+	        	if($(this).attr("name").indexOf("example") !== -1) {
+		        	$("[name=" + $(this).attr("name") + "]").each(function() {
+		        		if(Date.now() >= new Date(sessionStorage.getItem('date1')) && Date.now() <= new Date(sessionStorage.getItem('date2')))
+			        		$(this).closest('td').addClass('highlight_cell');
+			        	
+			        	$(this).closest('td').attr('exa-timestamp', Math.floor(Date.now() / 1000));
+		        	});
+	        	}
+	        	else {
+	        		if(Date.now() >= new Date(sessionStorage.getItem('date1')) && Date.now() <= new Date(sessionStorage.getItem('date2')))
+		        		$(this).closest('td').addClass('highlight_cell');
+		        	
+		        	$(this).closest('td').attr('exa-timestamp', Math.floor(Date.now() / 1000));
+	        	}
+	        });
+		}
     });
 })();
 
