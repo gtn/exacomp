@@ -66,7 +66,6 @@ call_user_func(function() use (&$functions, &$services) {
 		[ 'dakora_get_all_descriptors', 'read', 'get descriptors for topic for dakora app' ],
 		[ 'dakora_get_all_topics_by_course', 'read', 'get topics for course for dakora app' ],
 		[ 'dakora_get_competence_grid_for_profile', 'read', 'get grid for profile' ],
-		[ 'dakora_get_competence_profile_for_topic', 'read', 'get competence profile for current topic' ],
 		[ 'dakora_get_courses', 'read', 'get courses for user for dakora app' ],
 		[ 'dakora_get_cross_subjects_by_course', 'read', 'get cross subjects for an user in course context (allways all crosssubjs, even if not associated)' ],
 		[ 'dakora_get_descriptor_children_for_cross_subject', 'read', 'get children in context of cross subject, associated with examples' ],
@@ -115,7 +114,8 @@ call_user_func(function() use (&$functions, &$services) {
 		[ 'dakora_set_cross_subject_student', 'write', 'set visibility for crosssubject and student'],
 		[ 'dakora_set_cross_subject_descriptor', 'write', 'set descriptor crosssubject association'],
 		[ 'dakora_delete_cross_subject', 'write', 'delete cross subject'],
-		[ 'dakora_add_examples_to_schedule_for_all', 'write', 'add examples to the schedules of all course students']
+		[ 'dakora_add_examples_to_schedule_for_all', 'write', 'add examples to the schedules of all course students'],
+		[ 'dakora_get_competence_profile_statistic', 'read', 'get statistic in user and subject context']
 				
 	];
 
@@ -131,3 +131,4 @@ call_user_func(function() use (&$functions, &$services) {
 		$services['exacompservices']['functions'][] = $definition[0];
 	}
 });
+

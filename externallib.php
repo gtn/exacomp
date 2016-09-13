@@ -4899,100 +4899,6 @@ class block_exacomp_external extends external_api {
 		) );
 	}
 
-
-	/**
-	 * Returns description of method parameters
-	 *
-	 * @return external_function_parameters
-	 */
-	public static function dakora_get_competence_profile_for_topic_parameters() {
-		return new external_function_parameters ( array (
-				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
-				'userid' => new external_value ( PARAM_INT, 'id of user' ),
-				'topicid' => new external_value ( PARAM_INT, 'id of topic' )
-		) );
-	}
-
-	/**
-	 * get example with all submission details and gradings
-	 *
-	 * @return
-	 */
-	public static function dakora_get_competence_profile_for_topic($courseid, $userid, $topicid) {
-		global $DB, $USER;
-
-		static::validate_parameters ( static::dakora_get_competence_profile_for_topic_parameters (), array (
-				'courseid' => $courseid,
-				'userid' => $userid,
-				'topicid' => $topicid
-		) );
-
-		if ($userid == 0)
-			$userid = $USER->id;
-		
-		$data = new stdClass();
-
-		$topic = block_exacomp_get_topic_by_id($topicid);
-		$user = $DB->get_record('user', array('id'=>$userid));
-		$user = block_exacomp_get_user_information_by_course($user, $courseid);
-
-		$data->topictitle = $topic->title;
-		$data->topicnumbering = block_exacomp_get_topic_numbering($topic);
-		$data->descriptordata = array();
-
-		$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $topicid, false, true, true);
-		foreach($descriptors as $descriptor){
-			$data_content = new stdClass();
-			$data_content->descriptorid = $descriptor->id;
-			$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id'=>$descriptor->niveauid));
-			$data_content->lfstitle = $niveau->title;
-			$data_content->niveausort = $niveau->title;
-			$data_content->lfsgraphdata = NULL;
-			$data_content->totallmnumb = 0;
-			$data_content->inworklmnumb = 0;
-			$data_content->teacherevaluation = (isset($user->competencies->teacher[$descriptor->id]))?$user->competencies->teacher[$descriptor->id]:-1;
-			$data_content->additionalinfo = ((isset($user->competencies->teacher_additional_grading[$descriptor->id]) && $user->competencies->teacher_additional_grading[$descriptor->id]))?$user->competencies->teacher_additional_grading[$descriptor->id]:-1;
-			$data_content->evalniveauid = (isset($user->competencies->niveau[$descriptor->id]))?$user->competencies->niveau[$descriptor->id]:null;
-			$data_content->studentevaluation = (isset($user->competencies->student[$descriptor->id]))?$user->competencies->student[$descriptor->id]:-1;
-			$data_contents[] = $data_content;
-		}
-		#sort profile entries
-		usort($data_contents, "static::cmp_niveausort");
-		$data->descriptordata = $data_contents;
-		
-		return $data;
-	}
-
-	/**
-	 * Returns desription of method return values
-	 *
-	 * @return external_multiple_structure
-	 */
-	public static function dakora_get_competence_profile_for_topic_returns() {
-		return new external_single_structure ( array (
-			'topictitle' => new external_value(PARAM_TEXT, 'title of topic'),
-			'topicnumbering' => new external_value (PARAM_TEXT, 'numbering for topic'),
-			'descriptordata' => new external_multiple_structure ( new external_single_structure ( array (
-					'descriptorid' => new external_value( PARAM_INT, 'id of descriptor'),
-					'lfstitle' => new external_value ( PARAM_TEXT, 'title of lfs' ),
-					'niveausort' => new external_value (PARAM_TEXT, 'sorting'),
-					'lfsgraphdata' => new external_multiple_structure ( new external_single_structure( array (
-						'data' => new external_single_structure ( array (
-							'niveau' => new external_value ( PARAM_TEXT, 'title of niveau'),
-							'count' => new external_value ( PARAM_TEXT, 'amount of lm in this category' )
-							)),
-						'name' => new external_value ( PARAM_TEXT, 'name of dataset' )
-						) ) ),
-					'totallmnumb' => new external_value ( PARAM_INT, 'number of learning material in total'),
-					'inworklmnumb' => new external_value (PARAM_INT, 'number of learning material in work'),
-					'teacherevaluation' => new external_value ( PARAM_INT, 'grading of descriptor'),
-					'additionalinfo' => new external_value (PARAM_FLOAT, 'additional grading of descriptor'),
-					'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id'),
-					'studentevaluation' => new external_value ( PARAM_INT, 'self evaluation of descriptor')
-			) ) )
-		) );
-	}
-
 	/**
 	 * Returns description of method parameters
 	 *
@@ -5174,7 +5080,7 @@ class block_exacomp_external extends external_api {
 			$userid = $USER->id;
 
 		static::require_can_access_course_user($courseid, $userid);
-		$subjects = block_exacomp_get_subjects_by_course($courseid);
+		//$subjects = block_exacomp_get_subjects_by_course($courseid);
 
 		$subjectinfo = block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid);
 		return $subjectinfo;
@@ -5201,6 +5107,100 @@ class block_exacomp_external extends external_api {
 						'timestamp' => new external_value ( PARAM_INT, 'evaluation timestamp, 0 if not set', VALUE_DEFAULT, 0)
 					) ) )
 			) ) )
+		) ) ;
+	}
+
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_competence_profile_statistic_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value (PARAM_INT, 'id of course'),
+				'userid' => new external_value (PARAM_INT, 'id of user'),
+				'subjectid' => new external_value (PARAM_INT, 'id of subject'),
+				'start_timestamp' => new external_value (PARAM_INT, 'start timestamp for evaluation range'),
+				'end_timestamp' => new external_value (PARAM_INT, 'end timestamp for evaluation range')
+		) );
+	}
+
+	/**
+	 *Get competence grid for profile
+	 */
+	public static function dakora_get_competence_profile_statistic($courseid, $userid, $subjectid, $start_timestamp, $end_timestamp) {
+		global $USER;
+
+		static::validate_parameters(static::dakora_get_competence_profile_statistic_parameters(), array('courseid'=>$courseid,
+				'userid'=>$userid, 'subjectid'=>$subjectid, 'start_timestamp'=>$start_timestamp, 'end_timestamp'=>$end_timestamp));
+
+		if($userid == 0)
+			$userid = $USER->id;
+
+		static::require_can_access_course_user($courseid, $userid);
+		
+		$statistics = block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp, $end_timestamp);
+		
+		$statistics_return = array();
+		
+		foreach($statistics as $key=>$statistic){
+			$return = array();
+			foreach($statistic as $niveauid => $niveaustat){
+				$niveau = new stdClass();
+				$niveau->id = $niveauid;
+				
+				$evaluations = array();
+				foreach($niveaustat as $evalvalue => $sum){
+					$eval = new stdClass();
+					$eval->value = $evalvalue;
+					$eval->sum = $sum;
+					$evaluations[] = $eval; 
+				}
+				$niveau->evaluations = $evaluations;
+				
+				$return[] = $niveau;
+			}
+			$statistics_return[$key]["niveaus"] = $return;
+		}
+		
+		return $statistics_return;
+	}
+
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_single_structure
+	 */
+	public static function dakora_get_competence_profile_statistic_returns() {
+		return new external_single_structure ( array (
+			'descriptor_evaluations' => new external_single_structure ( array (
+					'niveaus' => new external_multiple_structure ( new external_single_structure( array (
+						'id' => new external_value(PARAM_INT, 'evalniveauid'),
+						'evaluations' => new external_multiple_structure ( new external_single_structure ( array (
+							'value' => new external_value( PARAM_INT, 'value of evaluation'),
+							'sum' => new external_value ( PARAM_INT, 'sum of evaluations of current gradings')
+						) ) )
+					) ) )
+			) ),
+			'child_evaluations' => new external_single_structure ( array (
+					'niveaus' => new external_multiple_structure ( new external_single_structure( array (
+						'id' => new external_value(PARAM_INT, 'evalniveauid'),
+						'evaluations' => new external_multiple_structure ( new external_single_structure ( array (
+							'value' => new external_value( PARAM_INT, 'value of evaluation'),
+							'sum' => new external_value ( PARAM_INT, 'sum of evaluations of current gradings')
+						) ) )
+					) ) )
+			) ),
+			'example_evaluations' => new external_single_structure ( array (
+					'niveaus' => new external_multiple_structure ( new external_single_structure( array (
+						'id' => new external_value(PARAM_INT, 'evalniveauid'),
+						'evaluations' => new external_multiple_structure ( new external_single_structure ( array (
+							'value' => new external_value( PARAM_INT, 'value of evaluation'),
+							'sum' => new external_value ( PARAM_INT, 'sum of evaluations of current gradings')
+						) ) )
+					) ) )
+			) ),
 		) ) ;
 	}
 
