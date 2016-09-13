@@ -1547,7 +1547,7 @@ function block_exacomp_get_user_information_by_course($user, $courseid, $onlycom
 	$user = block_exacomp_get_user_subjects_by_course($user, $courseid); 
 
 	if(!$onlycomps){
-		// get student examples
+		// get student exampl
 		$user->examples = block_exacomp_get_user_examples_by_course($user, $courseid);
 		$activities = block_exacomp_get_activities_by_course($courseid);
 		// get student activities topics
@@ -5465,6 +5465,8 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 					
 					$table_content->content[$topic->id]->niveaus[$niveau->title]->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid);
 					
+					$table_content->content[$topic->id]->niveaus[$niveau->title]->timestamp = $evaluation->timestamp;
+					
 					if($niveau->span == 1)
 						$table_content->content[$topic->id]->span = 1;
 				}
@@ -5491,6 +5493,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 			
 			$table_content->content[$topic->id]->visible = block_exacomp_is_topic_visible($courseid, $topic, $studentid);
 			
+			$table_content->content[$topic->id]->timestamp = ((isset($user->topics->timestamp_teacher[$topic->id]))?$user->topics->timestamp_teacher[$topic->id]:0);
 			$table_content->content[$topic->id]->topic_id = $topic->id;
 		}
 		$table_content->subject_evalniveau = 
@@ -5527,6 +5530,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 						$row->niveaus[$niveau->title]->evalniveauid = 0;
 						$row->niveaus[$niveau->title]->show = false;
 						$row->niveaus[$niveau->title]->visible = true;
+						$row->niveaus[$niveau->title]->timestamp = 0;
 					}
 				}
 			}
