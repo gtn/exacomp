@@ -5465,7 +5465,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 					
 					$table_content->content[$topic->id]->niveaus[$niveau->title]->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid);
 					
-					$table_content->content[$topic->id]->niveaus[$niveau->title]->timestamp = $evaluation->timestamp;
+					$table_content->content[$topic->id]->niveaus[$niveau->title]->timestamp = ((isset($evaluation->timestamp))?$evaluation->timestamp:0);
 					
 					if($niveau->span == 1)
 						$table_content->content[$topic->id]->span = 1;
@@ -5601,7 +5601,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 			$content_row->columns[$current_idx]->show = $element->show;
 			$content_row->columns[$current_idx]->visible = ((!$element->visible || !$rowcontent->visible)?false:true);
 			$content_row->columns[$current_idx]->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($element->eval);
-			
+			$content_row->columns[$current_idx]->timestamp = $element->timestamp;
 			if(array_key_exists($niveau, $spanning_niveaus)){
 				$content_row->columns[$current_idx]->span = $spanning_colspan;
 			}else{
@@ -5619,6 +5619,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 			$topic_eval->topicid = $rowcontent->topic_id;
 			$topic_eval->span = 0;
 			$topic_eval->visible = $rowcontent->visible;
+			$topic_eval->timestamp = $rowcontent->timestamp;
 			$content_row->columns[$current_idx] = $topic_eval;
 		}
 		

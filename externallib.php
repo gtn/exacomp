@@ -5197,7 +5197,8 @@ class block_exacomp_external extends external_api {
 						'show' => new external_value (PARAM_BOOL, 'show cell', VALUE_DEFAULT, true),
 						'visible' => new external_value(PARAM_BOOL, 'cell visibility', VALUE_DEFAULT, true),
 						'topicid' => new external_value (PARAM_INT, 'topic id', VALUE_DEFAULT, 0),
-						'span' => new external_value ( PARAM_INT, 'colspan' )
+						'span' => new external_value ( PARAM_INT, 'colspan' ),
+						'timestamp' => new external_value ( PARAM_INT, 'evaluation timestamp, 0 if not set', VALUE_DEFAULT, 0)
 					) ) )
 			) ) )
 		) ) ;
