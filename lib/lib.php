@@ -4189,8 +4189,6 @@ function block_exacomp_is_example_visible($courseid, $example, $studentid, $chec
 	return array_key_exists($example->id, $visibilities->example_visibilities[$studentid]);
 }
 function block_exacomp_is_example_solution_visible($courseid, $example, $studentid){
-	global $DB;
-
 	// $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
 	if ($studentid <= 0) {
 		$studentid = 0;
@@ -4198,7 +4196,7 @@ function block_exacomp_is_example_solution_visible($courseid, $example, $student
 
 	$visibilities = block_exacomp_get_visibility_cache($courseid);
 	
-	return array_key_exists($example->id, $visibilities->solution_visibilities[$studentid]);
+	return !empty($visibilities->solution_visibilities[$studentid]) && array_key_exists($example->id, $visibilities->solution_visibilities[$studentid]);
 }
 
 function block_exacomp_get_visible_css($visible, $role) {
