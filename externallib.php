@@ -5162,7 +5162,7 @@ class block_exacomp_external extends external_api {
 	}
 
 	/**
-	 * Create a new blocking event
+	 *Get competence grid for profile
 	 */
 	public static function dakora_get_competence_grid_for_profile($courseid, $userid, $subjectid) {
 		global $USER;
@@ -5195,6 +5195,7 @@ class block_exacomp_external extends external_api {
 						'evaluation_mapped'=> new external_value (PARAM_INT, 'mapped evaluation', VALUE_DEFAULT, -1),
 						'evalniveauid' => new external_value (PARAM_INT, 'evaluation niveau id', VALUE_DEFAULT, 0),
 						'show' => new external_value (PARAM_BOOL, 'show cell', VALUE_DEFAULT, true),
+						'visible' => new external_value(PARAM_BOOL, 'cell visibility', VALUE_DEFAULT, true),
 						'topicid' => new external_value (PARAM_INT, 'topic id', VALUE_DEFAULT, 0),
 						'span' => new external_value ( PARAM_INT, 'colspan' )
 					) ) )
@@ -6291,3 +6292,4 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 		return $url;
 	}
 }
+

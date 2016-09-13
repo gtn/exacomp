@@ -5581,43 +5581,44 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 	foreach($table_content->content as $topic => $rowcontent ){
 		$topic_visibility_check = new stdClass();
 		$topic_visibility_check->id = $rowcontent->topic_id;
-		if(block_exacomp_is_topic_visible($courseid, $topic_visibility_check, $userid)){
-			$content_row = new stdClass();
-			$content_row->columns = array();
+		$content_row = new stdClass();
+		$content_row->columns = array();
+		
+		$content_row->columns[0] = new stdClass();
+		$content_row->columns[0]->text = block_exacomp_get_topic_numbering($topic) . " " . $table_rows[$topic]->title;
+		$content_row->columns[0]->span = 0;
+		$content_row->columns[0]->visible = $rowcontent->visible;
+		
+		$current_idx = 1;
+		foreach($rowcontent->niveaus as $niveau => $element){
+			$content_row->columns[$current_idx] = new stdClass();
+			$content_row->columns[$current_idx]->evaluation = ( empty($element->eval) || strlen(trim($element->eval)) == 0 )?-1:$element->eval;
+			$content_row->columns[$current_idx]->evalniveauid = $element->evalniveauid;
+			$content_row->columns[$current_idx]->show = $element->show;
+			$content_row->columns[$current_idx]->visible = ((!$element->visible || !$rowcontent->visible)?false:true);
+			$content_row->columns[$current_idx]->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($element->eval);
 			
-			$content_row->columns[0] = new stdClass();
-			$content_row->columns[0]->text = block_exacomp_get_topic_numbering($topic) . " " . $table_rows[$topic]->title;
-			$content_row->columns[0]->span = 0;
-			
-			$current_idx = 1;
-			foreach($rowcontent->niveaus as $niveau => $element){
-				$content_row->columns[$current_idx] = new stdClass();
-				$content_row->columns[$current_idx]->evaluation = ( empty($element->eval) || strlen(trim($element->eval)) == 0 )?-1:$element->eval;
-				$content_row->columns[$current_idx]->evalniveauid = $element->evalniveauid;
-				$content_row->columns[$current_idx]->show = $element->show;
-				$content_row->columns[$current_idx]->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($element->eval);
-				
-				if(array_key_exists($niveau, $spanning_niveaus)){
-					$content_row->columns[$current_idx]->span = $spanning_colspan;
-				}else{
-					$content_row->columns[$current_idx]->span = 0;
-				}	 
-				$current_idx++;
-			}
-			
-			if(block_exacomp_is_topicgrading_enabled()){
-				$topic_eval = new stdClass();
-				$topic_eval->evaluation_text = \block_exacomp\global_config::get_value_title_by_id(\block_exacomp\global_config::get_additionalinfo_value_mapping($rowcontent->topic_eval));
-				$topic_eval->evaluation = empty($rowcontent->topic_eval)?-1:$rowcontent->topic_eval;
-				$topic_eval->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($rowcontent->topic_eval);
-				$topic_eval->evalniveauid = $rowcontent->topic_evalniveauid;
-				$topic_eval->topicid = $rowcontent->topic_id;
-				$topic_eval->span = 0;
-				$content_row->columns[$current_idx] = $topic_eval;
-			}
-			
-			$table->rows[] = $content_row;
+			if(array_key_exists($niveau, $spanning_niveaus)){
+				$content_row->columns[$current_idx]->span = $spanning_colspan;
+			}else{
+				$content_row->columns[$current_idx]->span = 0;
+			}	 
+			$current_idx++;
 		}
+		
+		if(block_exacomp_is_topicgrading_enabled()){
+			$topic_eval = new stdClass();
+			$topic_eval->evaluation_text = \block_exacomp\global_config::get_value_title_by_id(\block_exacomp\global_config::get_additionalinfo_value_mapping($rowcontent->topic_eval));
+			$topic_eval->evaluation = empty($rowcontent->topic_eval)?-1:$rowcontent->topic_eval;
+			$topic_eval->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($rowcontent->topic_eval);
+			$topic_eval->evalniveauid = $rowcontent->topic_evalniveauid;
+			$topic_eval->topicid = $rowcontent->topic_id;
+			$topic_eval->span = 0;
+			$topic_eval->visible = $rowcontent->visible;
+			$content_row->columns[$current_idx] = $topic_eval;
+		}
+		
+		$table->rows[] = $content_row;
 	}
 	
 	if(block_exacomp_is_subjectgrading_enabled()){
@@ -5845,7 +5846,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 
 			//check if niveau is given in evaluation, if not -1
 			$niveaukey = (block_exacomp_use_eval_niveau() && isset($user->examples->niveau[$example->id]))?$user->examples->niveau[$example->id]:-1;
-			if(isset($user->examples->teacher[$example->id]) && $user->examples->teacher[$examples->id]>-1) //increase counter in statistic
+			if(isset($user->examples->teacher[$example->id]) && $user->examples->teacher[$example->id]>-1) //increase counter in statistic
 				$examplegradings[$niveaukey][$user->examples->teacher[$example->id]]++;
 		}
 		
@@ -6783,3 +6784,4 @@ namespace block_exacomp {
 		}
 	}
 }
+
