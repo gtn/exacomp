@@ -5345,6 +5345,75 @@ class block_exacomp_external extends external_api {
 			) ) )
 		) ) ;
 	}
+	
+		/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_competence_profile_topic_statistic_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value (PARAM_INT, 'id of course'),
+				'userid' => new external_value (PARAM_INT, 'id of user'),
+				'topicid' => new external_value (PARAM_INT, 'id of subject'),
+				'start_timestamp' => new external_value (PARAM_INT, 'start timestamp for evaluation range'),
+				'end_timestamp' => new external_value (PARAM_INT, 'end timestamp for evaluation range')
+		) );
+	}
+
+	/**
+	 *Get competence statistic for topic in profile for 3D graph
+	 */
+	public static function dakora_get_competence_profile_topic_statistic($courseid, $userid, $topicid, $start_timestamp, $end_timestamp) {
+		global $USER;
+
+		static::validate_parameters(static::dakora_get_competence_profile_topic_statistic_parameters(), array('courseid'=>$courseid,
+				'userid'=>$userid, 'topicid'=>$topicid, 'start_timestamp'=>$start_timestamp, 'end_timestamp'=>$end_timestamp));
+
+		if($userid == 0)
+			$userid = $USER->id;
+
+		static::require_can_access_course_user($courseid, $userid);
+		
+		$statistics = block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $userid, $start_timestamp, $end_timestamp);
+		
+		$statistics_return = array();
+		
+		foreach($statistics as $key=>$statistic){
+			$return = array();
+			foreach($statistic as $niveautitle => $niveaustat){
+				$niveau = new stdClass();
+				$niveau->title = $niveautitle;
+				$niveau->teacherevaluation = $niveaustat->teachervalue;
+				$niveau->evalniveauid = $niveaustat->evalniveau;
+				$niveau->studentevaluation = $niveaustat->studentvalue;
+				
+				$return[] = $niveau;
+			}
+			$statistics_return[$key]["niveaus"] = $return;
+		}
+		
+		return $statistics_return;
+	}
+
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_single_structure
+	 */
+	public static function dakora_get_competence_profile_topic_statistic_returns() {
+		return new external_single_structure ( array (
+			'descriptor_evaluation' => new external_single_structure ( array (
+					'niveaus' => new external_multiple_structure ( new external_single_structure( array (
+						'title' => new external_value(PARAM_TEXT, 'evalniveauid'),
+						'teacherevaluation' => new external_value(PARAM_INT, 'evaluation value of current lfs'),
+						'evalniveauid' => new external_value(PARAM_INT, 'evaluation niveau id'),
+						'studentevaluation' => new external_value (PARAM_INT, 'student evaluation')
+					) ) )
+			) )
+		) ) ;
+	}
+	
 	/**
 	 * Returns description of method parameters
 	 *
