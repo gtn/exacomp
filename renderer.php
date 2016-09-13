@@ -3061,9 +3061,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 	
 	function competence_profile_course($course, $student, $showall = true, $max_scheme = 3) {
-		//$scheme = block_exacomp_get_grading_scheme($course->id);
 		$competence_tree = block_exacomp_get_competence_tree($course->id, null, null, false, null, true, array(SHOW_ALL_TAXONOMIES), false, false, false, false, false, false);
-		$student = block_exacomp_get_user_information_by_course($student, $course->id);
 		$content = '';
 
 		foreach($competence_tree as $subject){
@@ -3077,19 +3075,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$tables .= $this->subject_statistic_table($course->id, $stat['example_evaluations'], 'Lernmaterialien');
 				$content .= html_writer::tag('div', $tables, array('class'=>'statistictables'));
 			}
-			foreach($subject->subs as $topic){
-				block_exacomp_get_descriptor_statistic_for_topic($course->id, $topic->id, $student->id);
-				foreach($topic->descriptors as $descriptor){
-					$descriptor->examples = block_exacomp_get_visible_own_and_child_examples_for_descriptor($course->id, $descriptor->id, $student->id);	
-				}
-			}
+			
+			list($student, $subject) = block_exacomp_get_data_for_profile_comparison($course->id, $subject, $student);
 			
 			$content .= html_writer::tag('div', $this->comparison_table($course->id, $subject, $student), array('class'=>'comparisondiv'));
 		}
 		
 		$content .= "<script> $('#charts').find('canvas').donut();	</script>";
-		//$content .= $this->competence_profile_tree_v2($compTree,$course->id, $student,$scheme, false, $max_scheme);
-
+		
 		return html_writer::div($content,"competence_profile_coursedata");
 	}
 
@@ -4085,3 +4078,4 @@ public function profile_settings($courses, $settings){
 		. html_writer::tag('button', get_string('cleardaterange','block_exacomp'), array('id' => 'clear-range'));
 	}
 }
+
