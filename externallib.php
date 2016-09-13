@@ -5127,7 +5127,7 @@ class block_exacomp_external extends external_api {
 	}
 
 	/**
-	 *Get competence grid for profile
+	 *Get competence statistic for profile
 	 */
 	public static function dakora_get_competence_profile_statistic($courseid, $userid, $subjectid, $start_timestamp, $end_timestamp) {
 		global $USER;
@@ -5204,6 +5204,147 @@ class block_exacomp_external extends external_api {
 		) ) ;
 	}
 
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function dakora_get_competence_profile_comparison_parameters() {
+		return new external_function_parameters ( array (
+				'courseid' => new external_value (PARAM_INT, 'id of course'),
+				'userid' => new external_value (PARAM_INT, 'id of user'),
+				'subjectid' => new external_value (PARAM_INT, 'id of subject')
+		) );
+	}
+
+	/**
+	 *Get competence comparison for profile
+	 */
+	public static function dakora_get_competence_profile_comparison($courseid, $userid, $subjectid) {
+		global $USER;
+
+		static::validate_parameters(static::dakora_get_competence_profile_comparison_parameters(), array('courseid'=>$courseid,
+				'userid'=>$userid, 'subjectid'=>$subjectid));
+
+		if($userid == 0)
+			$userid = $USER->id;
+
+		static::require_can_access_course_user($courseid, $userid);
+		
+		$competence_tree = block_exacomp_get_competence_tree($course->id, null, null, false, null, true, array(SHOW_ALL_TAXONOMIES), false, false, false, false, false, false);
+		
+		$students = block_exacomp_get_students_by_course($courseid);
+		$student = $students[$userid];
+		list($student, $subject) = block_exacomp_get_data_for_profile_comparison($courseid, $competence_tree[$subjectid], $student);
+		
+		$comparison = new stdClass();
+		$comparison->subjectid = $subject->id;
+		$comparison->subjectitle = $subject->title;
+		$comparison->topics = array();
+		
+		foreach($subject->subs as $topic){
+			$topic->numbering = block_exacomp_get_topic_numbering($topic->id);
+			$topic->topicid = $topic->id;
+			$topic->teacherevaluation =  ((isset($student->topics->teacher[$topic->id]))?$student->topics->teacher[$topic->id]:-1);
+			$topic->additionalinfo = ((isset($student->topics->teacher_additional_grading[$topic->id]))?$student->topics->teacher_additional_grading[$topic->id]:-1);
+			$topic->evalniveauid = ((isset($student->topics->niveau[$topic->id]))?$student->topics->niveau[$topic->id]: -1);
+			$topic->timestamp = ((isset($student->topics->timestamp_teacher[$topic->id]))?$student->topics->timestamp_teacher[$topic->id]: 0);
+			$topic->studentevaluation = ((isset($student->topics->student[$topic->id]))?$student->topics->student[$topic->id]:-1);
+			
+			foreach($topic->descriptors as $descriptor){
+				$descriptor->numbering = block_exacomp_get_descriptor_numbering($descriptor);
+				$descriptor->descriptorid = $descriptor->id;
+				$descriptor->teacherevaluation = ((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:-1);
+				$descriptor->additionalinfo = ((isset($student->competencies->teacher_additional_grading[$descriptor->id]))?$student->competencies->teacher_additional_grading[$descriptor->id]:-1);
+				$descriptor->evalniveauid = ((isset($student->competencies->niveau[$descriptor->id]))?$student->competencies->niveau[$descriptor->id]: -1);
+				$descriptor->timestamp = ((isset($student->competencies->timestamp_teacher[$descriptor->id]))?$student->competencies->timestamp_teacher[$descriptor->id]: 0);
+				$descriptor->studentevaluation = ((isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:-1);
+				
+				$descriptor->subs = array();
+				
+				$edited = false;
+				$inwork = false;
+				$notinwork = false;
+				foreach($descriptor->examples as $example){
+					$sub = new stdClass();
+					//cannot be 9 -> no blocking events here
+					if($example->state > \block_exacomp\EXAMPLE_STATE_SUBMITTED && !$edited){
+						$sub->example = false;
+						$sub->title = 'Bearbeitet Lernmaterialien';
+						$descriptor->subs[] = $sub;
+						$edited = true;
+					}elseif($example->state > \block_exacomp\EXAMPLE_STATE_NOT_SET && $example->state < \block_exacomp\EXAMPLE_STATE_SUBMITTED && !$inwork){
+						$sub->example = fale;
+						$sub->title = 'Lernmaterialien in Arbeit';
+						$descriptor->subs[] = $sub;
+						$inwork = true;
+					}elseif($example->state == \block_exacomp\EXAMPLE_STATE_NOT_SET && !$notinwork){
+						$sub->example = false;
+						$sub->title = 'Unbearbeitete Lernmaterialien';
+						$descriptor->subs[] = $sub;
+						$notinwork = true;
+					}
+					
+					$sub = $example;
+					$sub->exampleid = $example->id;
+					$sub->example = true;
+					$sub->teacherevaluation = ((isset($student->examples->teacher[$example->id]))?$student->examples->teacher[$example->id]:-1);
+					$sub->evalniveauid = ((isset($student->examples->niveau[$example->id]))?$student->examples->niveau[$example->id]: -1);
+					$sub->timestamp = ((isset($student->examples->timestamp_teacher[$example->id]))?$student->examples->timestamp_teacher[$example->id]: 0);
+					$sub->studentevaluation = ((isset($student->examples->student[$example->id]))?$student->examples->student[$example->id]:-1); 
+					$descriptor->subs[] = $sub;
+				}
+			
+			}
+			
+			$comparison->topics[] = $topic;
+		}
+		
+		//var_dump($comparison);
+		
+		return $comparison;
+	}
+
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_single_structure
+	 */
+	public static function dakora_get_competence_profile_comparison_returns() {
+		return new external_single_structure ( array (
+			'subjectid' => new external_value ( PARAM_INT, 'id of subject'),
+			'subjectitle' => new external_value (PARAM_TEXT, 'title of subject'),
+			'topics' => new external_multiple_structure ( new external_single_structure ( array (
+					'topicid' => new external_value ( PARAM_INT, 'id of topic'),
+					'title' => new external_value ( PARAM_TEXT, 'title of topic'),
+					'numbering' => new external_value ( PARAM_TEXT, 'topic numbering'),
+					'teacherevaluation' => new external_value ( PARAM_INT, 'teacher evaluation'),
+					'additionalinfo' => new external_value ( PARAM_FLOAT, 'additional grading for topic'),
+					'evalniveauid' => new external_value ( PARAM_INT, 'teacher evaluation niveau id'),
+					'timestamp' => new external_value ( PARAM_INT, 'timestamp for teacher topic evaluation'),
+					'studentevaluation' => new external_value ( PARAM_INT, 'student evaluation'),
+					'descriptors' => new external_multiple_structure ( new external_single_structure( array (
+						'descriptorid' => new external_value ( PARAM_INT, 'descriptorid'),
+						'title' => new external_value ( PARAM_TEXT, 'title of descriptor'),
+						'numbering' => new external_value ( PARAM_TEXT, 'descriptor numbering'),
+						'teacherevaluation' => new external_value ( PARAM_INT, 'teacher evaluation'),
+						'additionalinfo' => new external_value ( PARAM_FLOAT, 'additional grading of descriptor'),
+						'evalniveauid' => new external_value ( PARAM_INT, 'teacher evaluation niveau id'),
+						'timestamp' => new external_value ( PARAM_INT, 'timestamp for teacher descriptor evaluation'),
+						'studentevaluation' => new external_value ( PARAM_INT, 'student evaluation'),
+						'examples' => new external_multiple_structure( new external_single_structure ( array (
+							'example' => new external_value ( PARAM_BOOL, 'indicates if sub is example or grouping statement'),
+							'exampleid' => new external_value ( PARAM_INT, 'id of example', VALUE_DEFAULT, 0),
+							'title' => new external_value ( PARAM_TEXT, 'title of sub'),
+							'teacherevaluation' => new external_value ( PARAM_INT, 'teacher evaluation', VALUE_DEFAULT, -1),
+							'evalniveauid' => new external_value ( PARAM_INT, 'teacher evaluation niveau id', VALUE_DEFAULT, -1),
+							'timestamp' => new external_value ( PARAM_INT, 'timestamp for teacher example evaluation', VALUE_DEFAULT, 0),
+							'studentevaluation' => new external_value ( PARAM_INT, 'student evaluation', VALUE_DEFAULT, -1)
+						) ) )
+					) ) )
+			) ) )
+		) ) ;
+	}
 	/**
 	 * Returns description of method parameters
 	 *
