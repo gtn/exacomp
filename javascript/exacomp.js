@@ -557,6 +557,25 @@ $(document).on('click', '.exa-collapsible > legend', function(){
     	});
 	}
 	
+	function update_statistic_tables(date1, date2) {
+		date1_s = (new Date(date1).getTime() / 1000);
+    	date2_s = (new Date(date2).getTime() / 1000);
+		// make ajax call for new data / html code
+    	
+    	$('div[class="statistictables"]').each(function () {
+    		var subjectid = $(this).attr('exa-subjectid')
+    		block_exacomp.call_ajax({
+    			studentid: block_exacomp.get_studentid(),
+    			subjectid: subjectid,
+    			start: date1_s,
+    			end: date2_s,
+    			action : 'get_statistics_for_profile'
+    		}).done(function(html) {
+    			$('div[class="statistictables"][exa-subjectid="' + subjectid + '"]').replaceWith(html);
+    		});
+    	});
+	}
+	
 	$(document).ready(function() {
 		if($('input[id="daterangepicker"]').length) {
 	        $('input[id="daterangepicker"]').dateRangePicker({
@@ -576,6 +595,7 @@ $(document).on('click', '.exa-collapsible > legend', function(){
 	        	sessionStorage.setItem('date2', obj.date2);
 	        	sessionStorage.setItem('value', obj.value);
 	        	
+	        	update_statistic_tables(obj.date1, obj.date2);
 	        	highlight_cells(obj.date1, obj.date2);
 	        });
 	        
@@ -597,6 +617,8 @@ $(document).on('click', '.exa-collapsible > legend', function(){
 	        	$("td[exa-timestamp]" ).each(function( index ) {
 	        		$(this).removeClass('highlight_cell');
 	        	});
+	        	
+	        	update_statistic_tables(0,0);
 	        });
 	        
 	        $(document).on('change', '[name^=datadescriptors\-], [name^=niveau_descriptor\-], [name^=dataexamples\-], [name^=niveau_examples\-], [name^=add-grading\-], [name^=niveau_topic\-], [name^=datatopics\-], [name^=niveau_subject\-], [name^=datasubjects\-], [name^=niveau_crosssub\-], [name^=datacrosssubs\-]', function() {

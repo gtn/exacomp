@@ -366,6 +366,26 @@ switch($action){
 		block_exacomp_create_blocking_event($courseid, $title, $creatorid, 0);
 		
 		break;
+	case 'get_statistics_for_profile' :
+		if (block_exacomp_additional_grading ()) {
+			$courseid = required_param ( 'courseid', PARAM_INT );
+			$subjectid = required_param ( 'subjectid', PARAM_INT );
+			$studentid = required_param ( 'studentid', PARAM_INT );
+			$start = optional_param ( 'start', 0, PARAM_INT );
+			$end = optional_param ( 'end', 0, PARAM_INT );
+			
+			$stat = block_exacomp_get_evaluation_statistic_for_subject ( $courseid, $subjectid, $studentid, $start, $end );
+			$output = block_exacomp_get_renderer ();
+			
+			$tables = $output->subject_statistic_table ( $course->id, $stat ['descriptor_evaluations'], 'Kompetenzen' );
+			$tables .= $output->subject_statistic_table ( $course->id, $stat ['child_evaluations'], 'Teilkompetenzen' );
+			$tables .= $output->subject_statistic_table ( $course->id, $stat ['example_evaluations'], 'Lernmaterialien' );
+			echo html_writer::tag ( 'div', $tables, array (
+					'class' => 'statistictables',
+					'exa-subjectid' => $subjectid 
+			) );
+		}
+		break;
 	default:
 		throw new moodle_exception('wrong action: '.$action);
 }

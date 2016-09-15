@@ -5969,82 +5969,95 @@ function block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $
  * evalvalue is 0 to 3, this statistic is not display if block_exacomp_additional_grading() = false
  * 
  */
-function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp = 0, $end_timestamp = 0){
-	global $DB;
-	
-	$user = $DB->get_record("user", array("id"=>$userid));
-
-	$user = block_exacomp_get_user_information_by_course($user, $courseid);
-
-	//TODO: is visibility hier fürn hugo? Bewertungen kann es eh nur für sichtbare geben ...
-	$descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid);
-	$child_descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid, false);
-	$examples = block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $userid);
-	
-	$descriptorgradings = array(); //array[niveauid][value][number of examples evaluated with this value and niveau]
-	$childgradings = array();
-	$examplegradings = array();
-	
-	//create grading statistic
-	$scheme_items = \block_exacomp\global_config::get_value_titles(block_exacomp_get_grading_scheme($courseid));
-	$evaluationniveau_items = (block_exacomp_use_eval_niveau())?\block_exacomp\global_config::get_evalniveaus():array('0'=>'');
-	
-	foreach($evaluationniveau_items as $niveaukey => $niveauitem){
-		$descriptorgradings[$niveaukey] = array();
-		$childgradings[$niveaukey] = array();
-		$examplegradings[$niveaukey] = array();
+function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp = 0, $end_timestamp = 0) {
+		global $DB;
 		
-		foreach($scheme_items as $schemekey => $schemetitle){
-			if($schemekey > -1){
-				$descriptorgradings[$niveaukey][$schemekey] = 0;
-				$childgradings[$niveaukey][$schemekey] = 0;
-				$examplegradings[$niveaukey][$schemekey] = 0;
+		$user = $DB->get_record ( "user", array (
+				"id" => $userid 
+		) );
+		
+		$user = block_exacomp_get_user_information_by_course ( $user, $courseid );
+		
+		// TODO: is visibility hier fürn hugo? Bewertungen kann es eh nur für sichtbare geben ...
+		$descriptors = block_exacomp_get_visible_descriptors_for_subject ( $courseid, $subjectid, $userid );
+		$child_descriptors = block_exacomp_get_visible_descriptors_for_subject ( $courseid, $subjectid, $userid, false );
+		$examples = block_exacomp_get_visible_examples_for_subject ( $courseid, $subjectid, $userid );
+		
+		$descriptorgradings = array (); // array[niveauid][value][number of examples evaluated with this value and niveau]
+		$childgradings = array ();
+		$examplegradings = array ();
+		
+		// create grading statistic
+		$scheme_items = \block_exacomp\global_config::get_value_titles ( block_exacomp_get_grading_scheme ( $courseid ) );
+		$evaluationniveau_items = (block_exacomp_use_eval_niveau ()) ? \block_exacomp\global_config::get_evalniveaus () : array (
+				'0' => '' 
+		);
+		
+		foreach ( $evaluationniveau_items as $niveaukey => $niveauitem ) {
+			$descriptorgradings [$niveaukey] = array ();
+			$childgradings [$niveaukey] = array ();
+			$examplegradings [$niveaukey] = array ();
+			
+			foreach ( $scheme_items as $schemekey => $schemetitle ) {
+				
+				if ($schemekey > - 1) {
+					$descriptorgradings [$niveaukey] [$schemekey] = 0;
+					$childgradings [$niveaukey] [$schemekey] = 0;
+					$examplegradings [$niveaukey] [$schemekey] = 0;
+				}
 			}
 		}
-	}
-
-	foreach($descriptors as $descriptor){
-		//check if grading is within timeframe
-		if(isset($user->competencies->timestamp_teacher[$descriptor->id]) && 
-				($start_timestamp == 0 || $user->competencies->timestamp_teacher[$descriptor->id] >= $start_timestamp) && 
-				($end_timestamp == 0 || $user->competencies->timestamp_teacher[$descriptor->id] <= $endtimestamp)){
+		
+		foreach ( $descriptors as $descriptor ) {
+			// check if grading is within timeframe
 			
-			//check if niveau is given in evaluation, if not -1
-			$niveaukey = (block_exacomp_use_eval_niveau() && isset($user->competencies->niveau[$descriptor->id]))?$user->competencies->niveau[$descriptor->id]:-1;
-			if(isset($user->competencies->teacher[$descriptor->id]) && $user->competencies->teacher[$descriptor->id]>-1) //increase counter in statistic
-				$descriptorgradings[$niveaukey][$user->competencies->teacher[$descriptor->id]]++;
-		}
-	}
-	
-	foreach($child_descriptors as $child){
-		//check if grading is within timeframe
-		if(isset($user->competencies->timestamp_teacher[$child->id]) &&
-				($start_timestamp == 0 || $user->competencies->timestamp_teacher[$child->id] >= $start_timestamp) &&
-				($end_timestamp == 0 || $user->competencies->timestamp_teacher[$child->id] <= $endtimestamp)){
-		
-			//check if niveau is given in evaluation, if not -1
-			$niveaukey = (block_exacomp_use_eval_niveau() && isset($user->competencies->niveau[$child->id]))?$user->competencies->niveau[$child->id]:-1;
-			if(isset($user->competencies->teacher[$child->id]) && $user->competencies->teacher[$child->id]>-1) //increase counter in statistic
-				$childgradings[$niveaukey][$user->competencies->teacher[$child->id]]++;
-		}
-	}
-	
-	foreach($examples as $example){
-		//create grading statistic for example
-		if(isset($user->examples->timestamp_teacher[$example->id]) &&
-				($start_timestamp == 0 || $user->examples->timestamp_teacher[$example->id] >= $start_timestamp) &&
-				($end_timestamp == 0 || $user->examples->timestamp_teacher[$example->id] <= $endtimestamp)){
-
-			//check if niveau is given in evaluation, if not -1
-			$niveaukey = (block_exacomp_use_eval_niveau() && isset($user->examples->niveau[$example->id]))?$user->examples->niveau[$example->id]:-1;
-			if(isset($user->examples->teacher[$example->id]) && $user->examples->teacher[$example->id]>-1) //increase counter in statistic
-				$examplegradings[$niveaukey][$user->examples->teacher[$example->id]]++;
+			if (isset ( $user->competencies->timestamp_teacher [$descriptor->id] ) && 
+			($start_timestamp == 0 || $user->competencies->timestamp_teacher [$descriptor->id] >= $start_timestamp) && 
+			($end_timestamp == 0 || $user->competencies->timestamp_teacher [$descriptor->id] <= $end_timestamp)) {
+				// check if niveau is given in evaluation, if not -1
+				$niveaukey = (block_exacomp_use_eval_niveau () && isset ( $user->competencies->niveau [$descriptor->id] )) ? $user->competencies->niveau [$descriptor->id] : - 1;
+				
+				if (isset ( $user->competencies->teacher [$descriptor->id] ) && $user->competencies->teacher [$descriptor->id] > - 1) // increase counter in statistic
+					$descriptorgradings [$niveaukey] [$user->competencies->teacher [$descriptor->id]] ++;
+			}
 		}
 		
+		foreach ( $child_descriptors as $child ) {
+			// check if grading is within timeframe
+			
+			if (isset ( $user->competencies->timestamp_teacher [$child->id] ) && 
+			($start_timestamp == 0 || $user->competencies->timestamp_teacher [$child->id] >= $start_timestamp) && 
+			($end_timestamp == 0 || $user->competencies->timestamp_teacher [$child->id] <= $end_timestamp)) {
+				
+				// check if niveau is given in evaluation, if not -1
+				$niveaukey = (block_exacomp_use_eval_niveau () && isset ( $user->competencies->niveau [$child->id] )) ? $user->competencies->niveau [$child->id] : - 1;
+				
+				if (isset ( $user->competencies->teacher [$child->id] ) && $user->competencies->teacher [$child->id] > - 1) // increase counter in statistic
+					$childgradings [$niveaukey] [$user->competencies->teacher [$child->id]] ++;
+			}
+		}
+		
+		foreach ( $examples as $example ) {
+			// create grading statistic for example
+			
+			if (isset ( $user->examples->timestamp_teacher [$example->id] ) && 
+			($start_timestamp == 0 || $user->examples->timestamp_teacher [$example->id] >= $start_timestamp) && 
+			($end_timestamp == 0 || $user->examples->timestamp_teacher [$example->id] <= $end_timestamp)) {
+				
+				// check if niveau is given in evaluation, if not -1
+				$niveaukey = (block_exacomp_use_eval_niveau () && isset ( $user->examples->niveau [$example->id] )) ? $user->examples->niveau [$example->id] : - 1;
+				
+				if (isset ( $user->examples->teacher [$example->id] ) && $user->examples->teacher [$example->id] > - 1) // increase counter in statistic
+					$examplegradings [$niveaukey] [$user->examples->teacher [$example->id]] ++;
+			}
+		}
+		
+		return array (
+				"descriptor_evaluations" => $descriptorgradings,
+				"child_evaluations" => $childgradings,
+				"example_evaluations" => $examplegradings 
+		);
 	}
-	
-	return array("descriptor_evaluations" => $descriptorgradings, "child_evaluations"=>$childgradings, "example_evaluations" => $examplegradings);	
-}
 
 /**
  * get evaluation statistics for a user in course and subject context for descriptor, childdescriptor and examples

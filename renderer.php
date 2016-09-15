@@ -2907,7 +2907,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$tables = $this->subject_statistic_table($course->id, $stat['descriptor_evaluations'], 'Kompetenzen');
 				$tables .= $this->subject_statistic_table($course->id, $stat['child_evaluations'], 'Teilkompetenzen');
 				$tables .= $this->subject_statistic_table($course->id, $stat['example_evaluations'], 'Lernmaterialien');
-				$content .= html_writer::tag('div', $tables, array('class'=>'statistictables'));
+				$content .= html_writer::tag('div', $tables, array('class'=>'statistictables', 'exa-subjectid' => $subject->id));
 			}
 			
 			list($student, $subject) = block_exacomp_get_data_for_profile_comparison($course->id, $subject, $student);
@@ -2915,7 +2915,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$content .= html_writer::tag('div', $this->comparison_table($course->id, $subject, $student), array('class'=>'comparisondiv'));
 		}
 		
-		$content .= "<script> $('#charts').find('canvas').donut();	</script>";
+		$content .= "<script> $('div[class=\"container\"]').each(function () {
+                        $(this).find('canvas').donut();
+                    });    </script>";
 		
 		return html_writer::div($content,"competence_profile_coursedata");
 	}
@@ -2986,7 +2988,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$cell->text = (($element->show) ? (html_writer::empty_tag ( 'canvas', 
 
 				array (
-						"id" => "chart" . $niveau,
+						"id" => "chart" . "-" . $subject->id . "-" . $niveau,
 						"height" => "50",
 						"width" => "50",
 						"data-title" => $element->evalniveau,
@@ -3059,7 +3061,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 	
 	
-	private function subject_statistic_table($courseid, $stat, $stat_title){
+	function subject_statistic_table($courseid, $stat, $stat_title){
 		$content = '';
 		
 		$evaluation_niveaus = \block_exacomp\global_config::get_evalniveaus();
