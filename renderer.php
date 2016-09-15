@@ -3145,9 +3145,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			
 			foreach ( $rowcontent->niveaus as $niveau => $element ) {
 				
-				if (block_exacomp_additional_grading ())
+				if (block_exacomp_additional_grading ()) {
 					$element->eval = \block_exacomp\global_config::get_additionalinfo_value_mapping ( $element->eval );
-				
+				}
 				$cell = new html_table_cell ();
 				$cell->text = (($element->show) ? (html_writer::empty_tag ( 'canvas', 
 
@@ -3350,8 +3350,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$row->cells[] = $cell;
 						
 						$cell = new html_table_cell();
-						$cell->text = ((isset($student->competencies->niveau[$descriptor->id]))?$evaluation_niveaus[$student->competencies->niveau[$descriptor->id]].' ': '').
-						((isset($student->competencies->teacher_additional_grading[$descriptor->id]))?$student->competencies->teacher_additional_grading[$descriptor->id]:'');
+						$cell->text = ((isset($student->competencies->niveau[$descriptor->id]))?$evaluation_niveaus[$student->competencies->niveau[$descriptor->id]].' ': '');
+						if (block_exacomp_additional_grading())
+							$cell->text .= ((isset($student->competencies->teacher_additional_grading[$descriptor->id]))?$student->competencies->teacher_additional_grading[$descriptor->id]:'');
+						else
+							$cell->text .= ((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:'');
+						
 						$cell->attributes['exa-timestamp'] = isset($student->competencies->timestamp_teacher[$descriptor->id]) ? $student->competencies->timestamp_teacher[$descriptor->id] : 0;
 						$row->cells[] = $cell;
 						

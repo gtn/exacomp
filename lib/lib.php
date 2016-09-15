@@ -5456,9 +5456,10 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 								:-1)
 						:0;
 						
-					$table_content->content[$topic->id]->niveaus[$niveau->title]->eval = ($evaluation) ? (((block_exacomp_additional_grading())?
-								(($evaluation->additionalinfo)?$evaluation->additionalinfo:'')
-						:$scheme_items[$evaluation->value])):'-1';
+					$table_content->content[$topic->id]->niveaus[$niveau->title]->eval =
+						(block_exacomp_additional_grading())
+						? (($evaluation && $evaluation->additionalinfo) ? $evaluation->additionalinfo : '')
+						: (($evaluation && $evaluation->value) ? $scheme_items[$evaluation->value] : -1);
 					
 					$table_content->content[$topic->id]->niveaus[$niveau->title]->show = true;
 					
