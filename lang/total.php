@@ -63,8 +63,8 @@ return  [
 	
 	//Cache definition
 	'cachedef_visibility_cache' => [
-		'Cache to improve performance while checking visibilities',
 		'Cache zur Performanceerhöhung von Sichtbarkeitsabfragen',
+		'Cache to improve performance while checking visibilities',
 	],
 
 	// === Admin Tabs ===
@@ -131,10 +131,6 @@ return  [
 	'tab_competence_overview' => [
 		'Kompetenzraster',
 		'Competence grid',
-	],
-	'tab_competence_details' => [
-		'Moodle Aktivitäten',
-		'Detailed competence-view',
 	],
 	'tab_examples' => [
 		'Lernmaterialien',
@@ -267,14 +263,6 @@ return  [
 		'Anhaken um den Badges/Auszeichnungen Kompetenzen zuzuteilen',
 		'Check to associate badges with competences',
 	],
-	'settings_enableteacherimport' => [
-		'Schulspezifische Standards verwenden',
-		'Use school specific standards',
-	],
-	'settings_enableteacherimport_description' => [
-		'Anhaken um LehrerInnen/KurstrainerInnen zu erlauben, eigene, schulspezifische Standards zu importieren',
-		'Check to enable school specific standard import for trainers',
-	],
 	'settings_interval' => [
 		'Einheitenlänge',
 		'Unit duration',
@@ -319,14 +307,6 @@ return  [
 		'Bewertung für Teilkompetenzen und Lernmaterialien global auf "nicht erreicht(0)" - "vollständig erreicht(3)" beschränken',
 		'Grading limited from "not gained(0)" - "completely gained(3)"',
 	],
-	'settings_usetimeline' => [
-		'Timeline im Profil verwenden',
-		'Use Timeline in profile',
-	],
-	'settings_usetimeline_description' => [
-		'Zeitlichen Ablauf des Kompetenzerwerbes im Profil anzeigen',
-		'Chronological sequence of gained outcomes',
-	],
 	'settings_periods' => [
 		'Einträge für Zeittafel',
 		'Timetable entries'
@@ -334,18 +314,6 @@ return  [
 	'settings_periods_description' => [
 		'Der Wochenplan ist flexibel an jedes Stunden- und Pausenraster anpassbar. Verwenden Sie im Textblock für jeden Zeitblock eine neue Zeile. Es sind beliebige Texteinträge erlaubt, z.B. "1. Std" oder "07:30 - 09:00".',
 		'Weekly schedule can be adapted to any timetable. Use one row in the text area for each time entry. You can use any format you like, e.g. "1st hour" or "07:30 - 09:00".'	
-	],
-	'timeline_teacher' => [
-		'L',				
-		'T',
-	],
-	'timeline_student' => [
-			'S',
-			'S',
-	],
-	'timeline_total' => [
-			'Verfügbare',
-			'Total',
 	],
 
 	// === Unit Tests ===
@@ -572,10 +540,6 @@ return  [
 		'Externe Lernmaterialien für Kursteilnehmer/innen anzeigen',
 		'Show external examples for students',
 	],
-	'usedetailpage' => [
-		'Detaillierte Kompetenzansicht verwenden',
-		'Use detailed overview of competencies',
-	],
 	'useprofoundness' => [
 		'Grund- und Erweiterungskompetenzen verwenden',
 		'Use basic and extended competencies',
@@ -591,10 +555,6 @@ return  [
 	'usenumbering' => [
 		'Automatische Nummerierung im Kompetenzraster verwenden',
 		'Enable automatic numbering in the competence grid',
-	],
-	'useniveautitleinprofile' => [
-		'Im Kompetenzprofil den Lernfortschritt als Titel verwenden',
-		'Use level title in competence profile',
 	],
 	'usenostudents' => [
 		'Ohne Kursteilnehmer/innen arbeiten',
@@ -1023,29 +983,9 @@ return  [
 		'Kompetenz',
 		'Competency',
 	],
-	'groupsize' => [
-		'Gruppengröße: ',
-		'Size of group: ',
-	],
 	'assigndone' => [
 		'Aufgabe erledigt: ',
 		'task done: ',
-	],
-	'assignmyself' => [
-		'selbst',
-		'by myself',
-	],
-	'assignteacher' => [
-		'TrainerIn',
-		'trainer',
-	],
-	'assignfrom' => [
-		'von',
-		'from',
-	],
-	'assignuntil' => [
-		'bis',
-		'until',
 	],
 
 
@@ -1094,10 +1034,6 @@ return  [
 	'explaineditactivities_subjects' => [
 		'Hier können Sie den erstellten Aufgaben Lernlisten zuordnen.',
 		'',
-	],
-	'column_setting' => [
-		'Spalten aus/einblenden',
-		'hide/display columns',
 	],
 	'niveau_filter' => [
 		'Niveaus filtern',
@@ -1174,25 +1110,6 @@ return  [
 		'Berichte',
 		'Type of report',
 	],
-	'report_competence' => [
-		'Kompetenzen',
-		'Competencies',
-	],
-	'report_detailcompetence' => [
-		'Teilkompetenzen',
-		'Child Competencies',
-	],
-	'report_examples' => [
-		'Lernmaterialien',
-		'Examples',
-	],
-
-
-	// === Detail view ===
-	'detail_description' => [
-		'Hier kann mit Hilfe von Aktivitäten eine Kompetenz beurteilt werden.',
-		'Use Moodle activities to evaluate competencies.',
-	],
 
 
 	// === Competence Profile ===
@@ -1204,45 +1121,9 @@ return  [
 		'Wohnort',
 		'City',
 	],
-	'course' => [
-		'Kurs',
-		'Course',
-	],
-	'gained' => [
-		'Erreicht',
-		'gained',
-	],
 	'total' => [
 		'Gesamt',
 		'total',
-	],
-	'allcourses' => [
-		'Alle Kurse',
-		'all courses',
-	],
-	'pendingcomp' => [
-		'Ausstehende Kompetenzen',
-		'pending competencies',
-	],
-	'teachercomp' => [
-		'Erreichte Kompetenzen',
-		'gained competencies',
-	],
-	'studentcomp' => [
-		'Laut Selbsteinschätzung erreichte Kompetenzen',
-		'self evaluated competencies',
-	],
-	'radargrapherror' => [
-		'Der Radargraph kann nur bei 3-7 Achsen dargestellt werden',
-		'Radargraph can only be displayed with 3-7 axis',
-	],
-	'nodata' => [
-		'Es sind keine Daten vorhanden.',
-		'There is no data do display',
-	],
-	'item_no_comps' => [
-		'Zu folgenden Artefakten wurden noch keine Kompetenzen zugeordnet:',
-		'There are no outcomes assigned to the following items: ',
 	],
 	'select_student' => [
 		'Wählen Sie eine(n) Kursteilnehmer/in aus, dessen Kompetenzprofil Sie sehen möchten.',
@@ -1252,162 +1133,22 @@ return  [
 		'Meine Kompetenzen',
 		'My Competencies',
 	],
-	'my_items' => [
-		'Meine Artefakte',
-		'My artifacts',
-	],
 	'my_badges' => [
 		'Meine Auszeichnungen',
 		'My Badges',
 	],
-	'my_periods' => [
-		'Meine Feedbacks',
-		'My assessments',
-	],
-	'item_type' => [
-		'Typ',
-		'Type',
-	],
-	'item_link' => [
-		'Link',
-		'Link',
-	],
-	'item_file' => [
-		'Datei',
-		'File',
-	],
-	'item_note' => [
-		'Notiz',
-		'Note',
-	],
-	'item_title' => [
-		'Titel',
-		'Title',
-	],
-	'item_url' => [
-		'Url',
-		'URL',
-	],
-	'period_reviewer' => [
-		'Bewerter',
-		'Reviewer',
-	],
-	'period_feedback' => [
-		'Verbales Feedback',
-		'Feedback',
-	],
-	'January' => [
-		'Jänner',
-		'January',
-	],
-	'February' => [
-		'Februar',
-		'February',
-	],
-	'March' => [
-		'März',
-		'March',
-	],
-	'April' => [
-		'April',
-		'April',
-	],
-	'May' => [
-		'Mai',
-		'May',
-	],
-	'June' => [
-		'Juni',
-		'June',
-	],
-	'July' => [
-		'Juli',
-		'July',
-	],
-	'August' => [
-		'August',
-		'August',
-	],
-	'September' => [
-		'September',
-		'September',
-	],
-	'October' => [
-		'Oktober',
-		'October',
-	],
-	'November' => [
-		'November',
-		'November',
-	],
-	'December' => [
-		'Dezember',
-		'December',
-	],
-	'oB' => [
-		'ohne Bewertung',
-		'without evaluation',
-	],
-	'nE' => [
-		'nicht erreicht',
-		'not gained',
-	],
 
 
 	// === Competence Profile Settings ===
-	'profile_settings_showonlyreached' => [
-		'Ich möchte in meinem Kompetenzprofil nur bereits erreichte Kompetenzen sehen.',
-		'I only want to see already gained outcomes in my competence profile',
-	],
 	'profile_settings_choose_courses' => [
 		'In Exabis Kompetenzraster beurteilen TrainerInnen den Kompetenzerwerb in unterschiedlichen Fachgebieten. Hier kann ausgewählt werden, welche Kurse im Kompetenzprofil aufscheinen sollen.',
 		'Using Exabis Competence Grid trainers assess your competencies in various subjects. You can select which course to include in the competence profile.',
-	],
-	'profile_settings_useexaport' => [
-		'Ich möchte Kompetenzen, die in Exabis ePortfolio verwendet werden in meinem Profil sehen.',
-		'I want to see competencies used in Exabis ePortfolio within my profile.',
-	],
-	'profile_settings_choose_items' => [
-		'Exabis ePortfolio dokumentiert deinen Kompetenzerwerb außerhalb von LehrerInnen vorgegebenen Grenzen. Du kannst auswählen, welche Einträge im Kompetenzprofil aufscheinen sollen.',
-		'Exabis ePortfolio is used to document your competencies on your individual learning path. You can select which artifacts to include in the competence profile.',
-	],
-	'profile_settings_useexastud' => [
-		'Ich möchte Beurteilungen aus Exabis Student Review in meinem Profil sehen.',
-		'I want to see evaluations from Exabis Student Review.',
-	],
-	'profile_settings_no_item' => [
-		'Kein Exabis ePortfolio Artefakt vorhanden, somit kann nichts dargestellt werden.',
-		'No Exabis ePortfolio item available, so there is nothing to display.',
-	],
-	'profile_settings_no_period' => [
-		'Keine Beurteilung in einer Periode in Exabis Student Review vorhanden.',
-		'No review in a period in Exabis Student Review available.',
-	],
-	'profile_settings_usebadges' => [
-		'Ich möchte im Kompetenzprofil auch meine Auszeichnungen sehen.',
-		'I want to see badges in my competence profile.',
-	],
-	'profile_settings_onlygainedbadges' => [
-		'Ich möchte nur Auszeichnungen sehen, die mir bereits verliehen wurden.',
-		'I don\'t want to see pending badges.',
-	],
-	'profile_settings_badges_lineup' => [
-		'Einstellungen zu Auszeichnungen',
-		'Badges settings',
-	],
-	'profile_settings_showallcomps' => [
-		'Alle meine Kompetenzen',
-		'all my competencies',
 	],
 	'specificcontent' => [
 		'Schulbezogene Themenbereiche',
 		'site-specific topics',
 	],
-	'specificsubject' => [
-		'Schulbezogene Gegenstands-/Kompetenzbereiche',
-		'site-specific subjects',
-	],
-
+	
 
 	// === Profoundness ===
 	'profoundness_description' => [
@@ -1468,14 +1209,6 @@ return  [
 
 
 	// === Crosssubjects ===
-	'empty_draft' => [
-		'Neues Thema',
-		'New Cross-Subject',
-	],
-	'empty_draft_description' => [
-		'Erstelle dein eigenes Thema - ändere die Beschreibung hier',
-		'Create your own Cross-Subject - insert new description',
-	],
 	'add_drafts_to_course' => [
 		'Ausgewählte Vorlagen im Kurs verwenden',
 		'Add drafts to course',
@@ -1483,10 +1216,6 @@ return  [
 	'crosssubject' => [
 		'Thema',
 		'Cross-Subject',
-	],
-	'student_name' => [
-		'Kursteilnehmer/in',
-		'Participant',
 	],
 	'help_crosssubject' => [
 		'Die Zusammenstellung des Themas erfolgt für die ganze Schule über den Reiter Kompetenzraster. Sie können hier kursspezifisch Kompetenzen, Teilkompetenzen und Lernmaterial ausblenden. Lernmaterial kann hier ergänzt werden. Dieses wird automatisch in die Lernwegeliste integriert.',
@@ -1849,18 +1578,6 @@ return  [
 		'Cross-Subject added',
 	],
 
-
-	// === Statistics ===
-	'process' => [
-		'Bearbeitungsstand',
-		'State of process',
-	],
-	'niveauclass' => [
-		'Niveaueinstufung',
-		'Level classification',
-	],
-
-
 	// === Message ===
 	'messagetocourse' => [
 		'Nachricht an alle Kursteilnehmer/innen senden',
@@ -1891,22 +1608,6 @@ return  [
 	'description_example' => [
 		'Beschreibung / Schulbuchverweis',
 		'Description',
-	],
-	'requirements' => [
-		'Was du schon können solltest: ',
-		'Was du schon können solltest: ',
-	],
-	'forwhat' => [
-		'Wofür du das brauchst: ',
-		'Wofür du das brauchst: ',
-	],
-	'howtocheck' => [
-		'Wie du dein Können prüfen kannst: ',
-		'Wie du dein Können prüfen kannst: ',
-	],
-	'reached_topic' => [
-		'Ich habe diese Kompetenz erreicht: ',
-		'Ich habe diese Kompetenz erreicht: ',
 	],
 	'submit_example' => [
 		'Abgeben',
