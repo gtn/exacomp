@@ -5802,7 +5802,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	
 	//create grading statistic
 	$scheme_items = \block_exacomp\global_config::get_value_titles(block_exacomp_get_grading_scheme($courseid));
-	$evaluationniveau_items = (block_exacomp_use_eval_niveau())?\block_exacomp\global_config::get_evalniveaus():array('-1'=>'');
+	$evaluationniveau_items = (block_exacomp_use_eval_niveau())?\block_exacomp\global_config::get_evalniveaus():array('0'=>'');
 	
 	foreach($evaluationniveau_items as $niveaukey => $niveauitem){
 		$descriptorgradings[$niveaukey] = array();
@@ -5873,6 +5873,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $userid, $start_timestamp = 0, $end_timestamp = 0){
 	global $DB;
 
+	$use_evalniveau = block_exacomp_use_eval_niveau();
 	$user = $DB->get_record("user", array("id"=>$userid));
 
 	$user = block_exacomp_get_user_information_by_course($user, $courseid);
@@ -5893,7 +5894,7 @@ function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $
 		
 		$descriptorgradings[$descriptor->cattitle] = new stdClass();
 		$descriptorgradings[$descriptor->cattitle]->teachervalue = ((isset($user->competencies->teacher[$descriptor->id]) && $teacher_eval_within_timeframe)? $user->competencies->teacher[$descriptor->id]:-1);
-		$descriptorgradings[$descriptor->cattitle]->evalniveau = ((isset($user->competencies->niveau[$descriptor->id]) && $teacher_eval_within_timeframe)? $user->competencies->niveau[$descriptor->id]:-1);	
+		$descriptorgradings[$descriptor->cattitle]->evalniveau = ($use_evalniveau)?((isset($user->competencies->niveau[$descriptor->id]) && $teacher_eval_within_timeframe)? $user->competencies->niveau[$descriptor->id]:-1):0;		
 		$descriptorgradings[$descriptor->cattitle]->studentvalue = ((isset($user->competencies->student[$descriptor->id]) && $student_eval_within_timeframe) ? $user->competencies->student[$descriptor->id]:-1);
 	}
 
