@@ -5579,7 +5579,17 @@ function block_exacomp_get_html_for_niveau_eval($evaluation){
  * @param unknown $courseid
  * @param unknown $studentid
  * @param unknown $subjectid
- * @return unknown[]|unknown[][]|\block_exacomp\stdClass[] TODO: explain return values
+ * @return array{[subject_title, subject_eval, subject_evalniveau, subject_evalniveauid, timestamp, 
+ * 				  content {[topicid] => [topic_evalniveau, topic_evalniveauid, topic_eval, topicid, visible, timestamp, span,
+ * 					        niveaus {[niveautitle] => [evalniveau, evalniveauid, eval, visible, show, timestamp, span]}
+ * 				  ]}
+ * 		   ]}
+ * where xx_evalniveau is empty if block_exacomp_use_eval_niveau() = false
+ *       xx_evalniveauid is -1 is not evaluated and 0 if block_exacomp_use_eval_niveau() = false
+ *       xx_eval is additional grading (not mapped!) if block_exacomp_additional_grading() = true
+ *               and value if block_exacomp_additional_grading() = false
+ *       show = false, if niveau not used within current topic
+ *       span = 1 or 0 inidication if niveau is across (übergreifend)
  */
 function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $subjectid){
 	global $DB;
@@ -5714,6 +5724,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
  * @param unknown $userid
  * @param unknown $subjectid
  * @return \block_exacomp\stdClass
+ * see ws dakora_get_competence_grid_for_profile for return value description
  */
 function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid){
 	global $DB;
@@ -5955,9 +5966,14 @@ function block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $
  * @param int $courseid
  * @param int $subjectid
  * @param int $userid - not working for userid = 0 : no user_information available
- * @return array("descriptor_evaluation", "child_evaluation", "example_evaluation") 
+ * @return array(["descriptor_evaluation"] => ["evalniveauid"] => [evalvalue] => sum
+ * 				 ["child_evaluation"] => ["evalniveauid"] => [evalvalue] => sum
+ * 				 ["example_evaluation"] => ["evalniveauid"] => [evalvalue] => sum
+ *         ) 
  * this is representing the resulting matrix, use of evaluation niveaus is minded here 
- * TODO explain evaluation return values
+ * evalniveauid = 0 if block_exacomp_use_eval_niveau() = false, otherwise -1, 1, 2, 3
+ * evalvalue is 0 to 3, this statistic is not display if block_exacomp_additional_grading() = false
+ * 
  */
 function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp = 0, $end_timestamp = 0){
 	global $DB;
@@ -7006,5 +7022,6 @@ namespace block_exacomp {
 		}
 	}
 }
+
 
 
