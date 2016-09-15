@@ -141,11 +141,6 @@ $settings->add(new admin_setting_heading('exacomp/heading_display', block_exacom
 $settings->add(new admin_setting_configcheckbox('exacomp/usenumbering', block_exacomp\get_string('usenumbering'),
 	'', 1));
 
-$settings->add(new admin_setting_configcheckbox('exacomp/useniveautitleinprofile', block_exacomp\get_string('useniveautitleinprofile'),
-	'', 1));
-$settings->add(new admin_setting_configcheckbox('exacomp/usetimeline', block_exacomp\get_string('settings_usetimeline'),
-		block_exacomp\get_string('settings_usetimeline_description'), 0));
-
 
 $settings->add(new admin_setting_heading('exacomp/heading_weekly_schedule', block_exacomp\get_string('weekly_schedule'), ''));
 $settings->add(new admin_setting_configtext('exacomp/scheduleinterval', block_exacomp\get_string('settings_interval'),
@@ -174,4 +169,5 @@ $settings->add(new block_exacomp_admin_setting_source('exacomp/mysource', 'Sourc
 
 $settings->add(new admin_setting_configtext('exacomp/xmlserverurl', block_exacomp\get_string('settings_xmlserverurl'),
 	block_exacomp\get_string('settings_configxmlserverurl'), "", PARAM_URL));
+
 
