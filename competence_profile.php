@@ -91,8 +91,7 @@ echo $output->button_box(true, '');
 
 $possible_courses = block_exacomp_get_exacomp_courses($student);
 
-if(!block_exacomp_check_profile_config($student->id))
-	block_exacomp_init_profile($possible_courses, $student->id);
+block_exacomp_init_profile($possible_courses, $student->id);
 
 echo $output->competence_profile_metadata($student);
 

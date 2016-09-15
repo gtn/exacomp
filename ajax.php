@@ -216,21 +216,6 @@ switch($action){
 				}
 			}
 		}
-		
-		if(!empty($data->examples_additional_grading)){
-			
-			$additional_grading = block_exacomp\param::clean_array($data->examples_additional_grading, 
-				array(PARAM_INT=>
-					array(PARAM_INT => PARAM_INT),
-				)
-			);
-			
-			foreach($additional_grading as $exampleid => $students){
-				foreach($students as $studentid=>$value){
-					block_exacomp_save_additional_grading_for_example($courseid, $exampleid, $studentid, $value);
-				}
-			}
-		}
 		die('ok');
 	case 'delete-crosssubject':
 		$crosssubjectid = required_param('crosssubjid', PARAM_INT);

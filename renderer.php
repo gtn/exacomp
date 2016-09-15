@@ -512,7 +512,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 				$cell2 = new html_table_cell();
 			   
-				$cell2->text = html_writer::tag("span",html_writer::tag("span",block_exacomp_get_topic_numbering( block_exacomp_get_topic_by_id($topicid))." ".$topics[$topicid],array('class'=>'rotated-text__inner')),array('class'=>'rotated-text'));
+				$cell2->text = html_writer::tag("span",html_writer::tag("span",block_exacomp_get_topic_numbering( \block_exacomp\topic::get($topicid))." ".$topics[$topicid],array('class'=>'rotated-text__inner')),array('class'=>'rotated-text'));
 				$cell2->attributes['class'] = 'topic';
 				$cell2->rowspan = 2;
 				$row->cells[] = $cell2;
@@ -1307,7 +1307,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					continue;
 				}
 			}
-			$descriptor_in_crosssubj = ($crosssubjid <= 0) || array_key_exists($descriptor->id, block_exacomp_get_cross_subject_descriptors($crosssubjid));
+			$descriptor_in_crosssubj = ($crosssubjid <= 0) || array_key_exists($descriptor->id, block_exacomp_get_descriptors_for_cross_subject($data->courseid, $crosssubjid));
 
 			//visibility
 			//visible if

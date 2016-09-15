@@ -49,12 +49,6 @@ $output = block_exacomp_get_renderer();
 echo $output->header($context,$courseid, 'tab_teacher_settings');
 echo $OUTPUT->tabtree(block_exacomp_build_navigation_tabs_settings($courseid), $page_identifier);
 
-if (!block_exacomp_moodle_badges_enabled()) {
-	error("Badges library not found, please upgrade your Moodle to 2.5");
-	exit;
-}
-
-
 /* CONTENT REGION */
 
 if ($badgeid && $badge = $DB->get_record('badge', array('id' => $badgeid))) {

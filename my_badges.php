@@ -47,10 +47,6 @@ $output = block_exacomp_get_renderer();
 echo $output->header($context,$courseid, $page_identifier);
 
 /* CONTENT REGION */
-if (!block_exacomp_moodle_badges_enabled()) {
-	error("Badges library not found, please upgrade your Moodle to 2.5");
-	exit;
-}
 
 block_exacomp_award_badges($courseid, $USER->id);
 $badges = block_exacomp_get_user_badges($courseid, $USER->id);

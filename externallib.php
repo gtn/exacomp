@@ -2795,7 +2795,7 @@ class block_exacomp_external extends external_api {
 			$descriptor_topic_mm = $DB->get_record(\block_exacomp\DB_DESCTOPICS, array('descrid'=>$descriptor->id));
 			$descriptor->topicid = $descriptor_topic_mm->topicid;
 			
-			$topic = block_exacomp_get_topic_by_id($descriptor->topicid);
+			$topic = \block_exacomp\topic::get($descriptor->topicid);
 			if(block_exacomp_is_topic_visible($courseid, $topic, $userid)){
 				$descriptor->numbering = block_exacomp_get_descriptor_numbering($descriptor);
 				$descriptor->child = (($parentid = $DB->get_field(\block_exacomp\DB_DESCRIPTORS, 'parentid', array('id'=>$descriptor->id)))>0)?1:0;
@@ -6243,7 +6243,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 		$showexamples = ($isTeacher)?true:$coursesettings->show_all_examples;
 
 		if($crosssubjid > 0){
-			$cross_subject_descriptors = block_exacomp_get_cross_subject_descriptors($crosssubjid);
+			$cross_subject_descriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid);
 			if(!array_key_exists($descriptor->id, $cross_subject_descriptors))
 				return array();
 		}
@@ -6300,7 +6300,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 		else
 			static::require_can_access_course_user($courseid, $userid);
 
-		list($total, $gradings, $notevaluated, $inwork, $totalgrade, $notinwork, $hidden, $edited, $evaluated, $visible) = block_exacomp_get_example_statistic_for_descriptor_refact($courseid, $descriptorid, $userid, $crosssubjid);
+		list($total, $gradings, $notevaluated, $inwork, $totalgrade, $notinwork, $hidden, $edited, $evaluated, $visible) = block_exacomp_get_example_statistic_for_descriptor($courseid, $descriptorid, $userid, $crosssubjid);
 
 		$return->total = $total;
 		$return->visible = $visible;
