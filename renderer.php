@@ -3085,105 +3085,145 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		return html_writer::div($content,"competence_profile_coursedata");
 	}
-
-	private function competence_profile_grid($courseid, $subject, $studentid){
+	private function competence_profile_grid($courseid, $subject, $studentid) {
 		global $DB;
+		
 		$content = '';
 		
-		list($course_subjects, $table_column, $table_header, $table_content) = block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $subject->id);
+		list ( $course_subjects, $table_column, $table_header, $table_content ) = block_exacomp_get_grid_for_competence_profile ( $courseid, $studentid, $subject->id );
 		
-		$spanning_niveaus = $DB->get_fieldset_select(\block_exacomp\DB_NIVEAUS,'title', 'span=?', array(1));
-
-		//calculate the col span for spanning niveaus
-		$spanning_colspan = block_exacomp_calculate_spanning_niveau_colspan($table_header, $spanning_niveaus);
+		$spanning_niveaus = $DB->get_fieldset_select ( \block_exacomp\DB_NIVEAUS, 'title', 'span=?', array (
+				1 
+		) );
 		
-		$table = new html_table();
-		$table->attributes['class'] = 'compprofiletable flexible boxaligncenter generaltable';
-		$rows = array();
+		// calculate the col span for spanning niveaus
 		
-		//header
-		$row = new html_table_row();
+		$spanning_colspan = block_exacomp_calculate_spanning_niveau_colspan ( $table_header, $spanning_niveaus );
 		
-		//first subject title cell
-		$cell = new html_table_cell();
-		$cell->text = '';//$table_content->subject_title;
-		$row->cells[] = $cell;
+		$table = new html_table ();
+		$table->attributes ['class'] = 'compprofiletable flexible boxaligncenter generaltable';
+		$rows = array ();
 		
-		//niveaus
-		foreach($table_header as $element){
-			if($element->id != \block_exacomp\SHOW_ALL_NIVEAUS){
-				$cell = new html_table_cell();
+		// header
+		$row = new html_table_row ();
+		
+		// first subject title cell
+		$cell = new html_table_cell ();
+		$cell->text = ''; // $table_content->subject_title;
+		$row->cells [] = $cell;
+		
+		// niveaus
+		foreach ( $table_header as $element ) {
+			
+			if ($element->id != \block_exacomp\SHOW_ALL_NIVEAUS) {
+				
+				$cell = new html_table_cell ();
 				$cell->text = $element->title;
-				$cell->attributes['class'] = 'header';
-				$row->cells[] = $cell;
+				$cell->attributes ['class'] = 'header';
+				$row->cells [] = $cell;
 			}
 		}
+		
+		if (block_exacomp_is_topicgrading_enabled ()) {
+			
+			$topic_eval_header = new html_table_cell ();
+			$topic_eval_header->text = get_string ( 'total', 'block_exacomp' );
+			$topic_eval_header->attributes ['class'] = 'header';
+			$row->cells [] = $topic_eval_header;
+		}
+		
+		$rows [] = $row;
+		
+		$row = new html_table_row ();
+		
+		foreach ( $table_content->content as $topic => $rowcontent ) {
+			
+			$cell = new html_table_cell ();
+			$cell->text = block_exacomp_get_topic_numbering ( $topic ) . " " . $table_column [$topic]->title;
+			$cell->attributes ['class'] = (($rowcontent->visible) ? '' : 'notvisible');
+			$row->cells [] = $cell;
+			
+			foreach ( $rowcontent->niveaus as $niveau => $element ) {
+				
+				if (block_exacomp_additional_grading ())
+					$element->eval = \block_exacomp\global_config::get_additionalinfo_value_mapping ( $element->eval );
+				
+				$cell = new html_table_cell ();
+				$cell->text = (($element->show) ? (html_writer::empty_tag ( 'canvas', 
 
-		if(block_exacomp_is_topicgrading_enabled()){
-			$topic_eval_header = new html_table_cell();
-			$topic_eval_header->text = get_string('total', 'block_exacomp');
-			$topic_eval_header->attributes['class'] = 'header';
-			$row->cells[] = $topic_eval_header;
-		}
-		$rows[] = $row;
-		$row = new html_table_row();
-		
-		foreach($table_content->content as $topic => $rowcontent ){
-			
-			$cell = new html_table_cell();
-			$cell->text = block_exacomp_get_topic_numbering($topic) . " " . $table_column[$topic]->title;
-			$cell->attributes['class'] = (($rowcontent->visible)?'':'notvisible');
-			$row->cells[] = $cell;
-			
-			foreach($rowcontent->niveaus as $niveau => $element){
-				$element_eval_value = \block_exacomp\global_config::get_additionalinfo_value_mapping($element->eval);
+				array (
+						"id" => "chart" . $niveau,
+						"height" => "50",
+						"width" => "50",
+						"data-title" => $element->evalniveau,
+						
+						"data-value" => $element->eval,
+						"data-valuemax" => "3" 
+				) )) : '');
 				
-				$cell = new html_table_cell();
-				$cell->text = (($element->show)?(html_writer::empty_tag('canvas',
-						array("id"=>"chart".$niveau, "height"=>"50", "width"=>"50", "data-title"=>$element->evalniveau,
-								"data-value"=>$element_eval_value, "data-valuemax"=>"3"))):'');
-				$cell->attributes['class'] = (($element->visible && $rowcontent->visible)?'':'notvisible');
-				if(in_array($niveau, $spanning_niveaus)){
+				$cell->attributes ['class'] = (($element->visible && $rowcontent->visible) ? '' : 'notvisible');
+				$cell->attributes ['exa-timestamp'] = $element->timestamp;
+				
+				if (in_array ( $niveau, $spanning_niveaus )) {
 					$cell->colspan = $spanning_colspan;
-				}					
+				}
 				
-				$row->cells[] = $cell;
+				$row->cells [] = $cell;
 			}
 			
-			if(block_exacomp_is_topicgrading_enabled()){
-				$topic_eval_value = \block_exacomp\global_config::get_additionalinfo_value_mapping($rowcontent->topic_eval);
-				$topic_eval_cell = new html_table_cell();
-				$topic_eval_cell->text = html_writer::empty_tag('canvas', 
-						array("id"=>"chart".$topic, "height"=>"50", "width"=>"50", "data-title"=>$rowcontent->topic_evalniveau, 
-						"data-value"=>$topic_eval_value, "data-valuemax"=>"3"));
-				$topic_eval_cell->attributes['class'] = (($rowcontent->visible)?'':'notvisible');
+			if (block_exacomp_is_topicgrading_enabled ()) {
 				
-				//$rowcontent->topic_evalniveau . $rowcontent->topic_eval;
-				$row->cells[] = $topic_eval_cell;
+				if (block_exacomp_additional_grading ())
+					$rowcontent->topic_eval = \block_exacomp\global_config::get_additionalinfo_value_mapping ( $rowcontent->topic_eval );
+				
+				$topic_eval_cell = new html_table_cell ();
+				$topic_eval_cell->text = html_writer::empty_tag ( 'canvas', 
+
+				array (
+						"id" => "chart" . $topic,
+						"height" => "50",
+						"width" => "50",
+						"data-title" => $rowcontent->topic_evalniveau,
+						
+						"data-value" => $rowcontent->topic_eval,
+						"data-valuemax" => "3" 
+				) );
+				
+				$topic_eval_cell->attributes ['class'] = (($rowcontent->visible) ? '' : 'notvisible');
+				$topic_eval_cell->attributes ['exa-timestamp'] = $rowcontent->timestamp;
+				
+				$row->cells [] = $topic_eval_cell;
 			}
-			$rows[] = $row;
-			$row = new html_table_row();
+			
+			$rows [] = $row;
+			
+			$row = new html_table_row ();
 		}
 		
-		if(block_exacomp_is_subjectgrading_enabled()){
-			$subject_empty_cell = new html_table_cell();
-			$subject_empty_cell->text = get_string('total', 'block_exacomp');
-			$subject_empty_cell->colspan = count($table_header);
-			$subject_empty_cell->attributes['class'] = 'header';
-			$row->cells[] = $subject_empty_cell;
+		if (block_exacomp_is_subjectgrading_enabled ()) {
 			
-			$subject_eval_cell = new html_table_cell();
+			$subject_empty_cell = new html_table_cell ();
+			$subject_empty_cell->text = get_string ( 'total', 'block_exacomp' );
+			$subject_empty_cell->colspan = count ( $table_header );
+			$subject_empty_cell->attributes ['class'] = 'header';
+			
+			$row->cells [] = $subject_empty_cell;
+			$subject_eval_cell = new html_table_cell ();
 			$subject_eval_cell->text = $table_content->subject_evalniveau . $table_content->subject_eval;
-			$subject_eval_cell->attributes['class'] = 'header';
-			$row->cells[] = $subject_eval_cell;
+			$subject_eval_cell->attributes ['class'] = 'header';
+			$subject_eval_cell->attributes ['exa-timestamp'] = $table_content->timestamp;
+			$row->cells [] = $subject_eval_cell;
 			
-			$rows[] = $row;
+			$rows [] = $row;
 		}
+		
 		$table->data = $rows;
-		$content .= html_writer::table($table);
-				
-		return html_writer::div($content, 'compprofile_grid');
+		
+		$content .= html_writer::table ( $table );
+		
+		return html_writer::div ( $content, 'compprofile_grid' );
 	}
+	
 	
 	private function subject_statistic_table($courseid, $stat, $stat_title){
 		$content = '';
@@ -3242,6 +3282,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	
 	private function comparison_table($courseid, $subject, $student){
 		$evaluation_niveaus = \block_exacomp\global_config::get_evalniveaus();
+		$scheme_items = \block_exacomp\global_config::get_value_titles(block_exacomp_get_grading_scheme($courseid));
+		
 		$content = '';
 		
 		//first table for descriptor evaluation
@@ -3280,8 +3322,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$row->cells[] = $cell;
 				
 				$cell = new html_table_cell();
+				
 				$cell->text = ((isset($student->topics->niveau[$topic->id]))?$evaluation_niveaus[$student->topics->niveau[$topic->id]].' ': '').
-					((isset($student->topics->teacher_additional_grading[$topic->id]))?$student->topics->teacher_additional_grading[$topic->id]:'');
+					((block_exacomp_additional_grading()) ?
+						((isset($student->topics->teacher_additional_grading[$topic->id]))
+								?$student->topics->teacher_additional_grading[$topic->id]:'')
+						:((isset($student->topics->teacher[$topic->id]))
+								?$scheme_items[$student->topics->teacher[$topic->id]]:''));
+				
+				$cell->attributes['exa-timestamp'] = isset($student->topics->timestamp_teacher[$topic->id]) ? $student->topics->timestamp_teacher[$topic->id] : 0;
 				$row->cells[] = $cell;
 				
 				$cell = new html_table_cell();
@@ -3303,6 +3352,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$cell = new html_table_cell();
 						$cell->text = ((isset($student->competencies->niveau[$descriptor->id]))?$evaluation_niveaus[$student->competencies->niveau[$descriptor->id]].' ': '').
 						((isset($student->competencies->teacher_additional_grading[$descriptor->id]))?$student->competencies->teacher_additional_grading[$descriptor->id]:'');
+						$cell->attributes['exa-timestamp'] = isset($student->competencies->timestamp_teacher[$descriptor->id]) ? $student->competencies->timestamp_teacher[$descriptor->id] : 0;
 						$row->cells[] = $cell;
 						
 						$cell = new html_table_cell();
@@ -3359,6 +3409,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 							$cell = new html_table_cell();
 							$cell->text = ((isset($student->examples->niveau[$example->id]))?$evaluation_niveaus[$student->examples->niveau[$example->id]].' ': '').
 							((isset($student->examples->teacher[$example->id]))?$student->examples->teacher[$example->id]:'');
+							$cell->attributes['exa-timestamp'] = isset($student->examples->timestamp_teacher[$example->id]) ? $student->examples->timestamp_teacher[$example->id] : 0;
 							$row->cells[] = $cell;
 							
 							$cell = new html_table_cell();

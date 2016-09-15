@@ -5457,7 +5457,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 					
 					$table_content->content[$topic->id]->niveaus[$niveau->title]->eval = ($evaluation) ? (((block_exacomp_additional_grading())?
 								(($evaluation->additionalinfo)?$evaluation->additionalinfo:'')
-						:$scheme_items[$evaluation->value])):'';
+						:$scheme_items[$evaluation->value])):'-1';
 					
 					$table_content->content[$topic->id]->niveaus[$niveau->title]->show = true;
 					
@@ -5487,7 +5487,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 								((isset($user->topics->teacher_additional_grading[$topic->id]))
 										?$user->topics->teacher_additional_grading[$topic->id]:'')
 						:((isset($user->topics->teacher[$topic->id]))
-								?$scheme_items[$user->topics->teacher[$topic->id]]:''));
+								?$scheme_items[$user->topics->teacher[$topic->id]]:'-1'));
 			
 			$table_content->content[$topic->id]->visible = block_exacomp_is_topic_visible($courseid, $topic, $studentid);
 			
@@ -5510,6 +5510,9 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 										?$user->subjects->teacher_additional_grading[$subject->id]:'')
 						:((isset($user->subjects->teacher[$subject->id]))
 								?$scheme_items[$user->subjects->teacher[$subject->id]]:''));
+		
+		$table_content->timestamp = (isset($user->subjects->timestamp_teacher[$subject->id]))
+			? $user->subjects->timestamp_teacher[$subject->id] : '';
 		
 		$table_content->subject_title = $subject->title;
 	}
