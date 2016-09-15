@@ -24,6 +24,10 @@ use block_exacomp\EXAMPLE_STATE_SUBMITTED;
 
 class block_exacomp_renderer extends plugin_renderer_base {
 
+	const STUDENT_SELECTOR_OPTION_EDITMODE = 1;
+	const STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN = 2;
+	const STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN = 3;
+	
 	var $show_print_button = false;
 	var $extra_button_html = '';
 
@@ -3814,12 +3818,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				(($work_with_students)?html_writer::link('#', $this->pix_icon("i/enrolusers", block_exacomp\trans("de:Freigabe bearbeiten")), ['exa-type'=>'iframe-popup', 'exa-url'=>'cross_subjects.php?courseid='.g::$COURSE->id.'&crosssubjid='.$crosssub->id.'&action=share']):'').
 				html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>g::$COURSE->id, 'crosssubjid'=>$crosssub->id, 'action'=>'save_as_draft')), $this->pix_icon("i/repository", block_exacomp\trans("de:Kopie als Vorlage speichern")))
 			];
-			/*
-			if($isTeacher){
-				$content .= html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>g::$COURSE->id, 'crosssubjid'=>$crosssub->id, 'editmode'=>1)),$this->pix_icon("i/edit", get_string("edit")), array('class'=>'crosssub-icons'));
-				$content .= html_writer::link('', $this->pix_icon("t/delete", get_string("delete")), array("onclick" => "if( confirm('".get_string('confirm_delete', 'block_exacomp')."')) block_exacomp.delete_crosssubj(".$crosssub->id."); return false;"), array('class'=>'crosssub-icons'));
-			}
-			*/
 		}
 
 		if (!$table->data) {
@@ -3915,9 +3913,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::div($content, '', array('id'=>'blocking_event'));
 	}
 
-	const STUDENT_SELECTOR_OPTION_EDITMODE = 1;
-	const STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN = 2;
-	const STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN = 3;
 	/**
 	 * Generates html dropdown for students
 	 *
@@ -3952,6 +3947,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::select($studentsAssociativeArray, 'exacomp_competence_grid_select_student',$selected,true,
 				array("disabled" => $this->is_edit_mode() ? "disabled" : ""));
 	}
+	
 	function daterangepicker() {
 		global $OUTPUT;
 		
@@ -3959,4 +3955,5 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		. html_writer::tag('button', get_string('cleardaterange','block_exacomp'), array('id' => 'clear-range'));
 	}
 }
+
 
