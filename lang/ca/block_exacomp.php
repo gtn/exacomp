@@ -192,3 +192,4 @@ $string['competencegrid_nodata'] = 'In case the competency grid is empty the out
 
 //Detail view
 $string['detail_description'] = 'Use activities to evaluate competencies.';
+

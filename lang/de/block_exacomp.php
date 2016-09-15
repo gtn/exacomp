@@ -31,7 +31,7 @@ $string['exacomp:deleteexamples'] = 'Lernmaterialien löschen';
 $string['exacomp:assignstudents'] = 'Externe Trailer zuordnen';
 
 //Cache definition
-$string['cachedef_visibility_cache'] = 'Cache to improve performance while checking visibilities';
+$string['cachedef_visibility_cache'] = 'Cache zur Performanceerhöhung von Sichtbarkeitsabfragen';
 
 // === Admin Tabs ===
 $string['tab_admin_import'] = 'Import/Export';
@@ -56,7 +56,6 @@ $string['tab_student_all'] = 'Alle erworbenen Kompetenzen';
 // === Generic Tabs (used by Teacher and Students) ===
 $string['tab_competence_grid'] = 'Berichte';
 $string['tab_competence_overview'] = 'Kompetenzraster';
-$string['tab_competence_details'] = 'Moodle Aktivitäten';
 $string['tab_examples'] = 'Lernmaterialien';
 $string['tab_badges'] = 'Meine Auszeichnungen';
 $string['tab_competence_profile'] = 'Kompetenzprofil';
@@ -92,8 +91,6 @@ $string['settings_testlimit'] = 'Testlimit in %';
 $string['settings_testlimit_description'] = 'Dieser Prozentwert muss erreicht werden, damit die Kompetenz als erworben gilt';
 $string['settings_usebadges'] = 'Badges/Auszeichnungen verwenden';
 $string['settings_usebadges_description'] = 'Anhaken um den Badges/Auszeichnungen Kompetenzen zuzuteilen';
-$string['settings_enableteacherimport'] = 'Schulspezifische Standards verwenden';
-$string['settings_enableteacherimport_description'] = 'Anhaken um LehrerInnen/KurstrainerInnen zu erlauben, eigene, schulspezifische Standards zu importieren';
 $string['settings_interval'] = 'Einheitenlänge';
 $string['settings_interval_description'] = 'Die Länge der Einheiten im Wochenplan in Minuten';
 $string['settings_scheduleunits'] = 'Anzahl der Einheiten';
@@ -105,13 +102,8 @@ $string['settings_admin_scheme_description'] = 'Beurteilungen können auf unters
 $string['settings_admin_scheme_none'] = 'keine Niveaus';
 $string['settings_additional_grading'] = 'Angepasste Bewertung';
 $string['settings_additional_grading_description'] = 'Bewertung für Teilkompetenzen und Lernmaterialien global auf "nicht erreicht(0)" - "vollständig erreicht(3)" beschränken';
-$string['settings_usetimeline'] = 'Timeline im Profil verwenden';
-$string['settings_usetimeline_description'] = 'Zeitlichen Ablauf des Kompetenzerwerbes im Profil anzeigen';
 $string['settings_periods'] = 'Einträge für Zeittafel';
 $string['settings_periods_description'] = 'Der Wochenplan ist flexibel an jedes Stunden- und Pausenraster anpassbar. Verwenden Sie im Textblock für jeden Zeitblock eine neue Zeile. Es sind beliebige Texteinträge erlaubt, z.B. "1. Std" oder "07:30 - 09:00".';
-$string['timeline_teacher'] = 'L';
-$string['timeline_student'] = 'S';
-$string['timeline_total'] = 'Verfügbare';
 
 // === Unit Tests ===
 $string['unittest_string'] = 'result_unittest_string';
@@ -181,12 +173,10 @@ $string['grading_scheme'] = 'Bewertungsschema';
 $string['uses_activities'] = 'Ich verwende Moodle Aktivitäten zur Beurteilung';
 $string['show_all_descriptors'] = 'Alle Lernlisten im Überblick anzeigen';
 $string['show_all_examples'] = 'Externe Lernmaterialien für Kursteilnehmer/innen anzeigen';
-$string['usedetailpage'] = 'Detaillierte Kompetenzansicht verwenden';
 $string['useprofoundness'] = 'Grund- und Erweiterungskompetenzen verwenden';
 $string['usetopicgrading'] = 'Beurteilung von Kompetenzbereichen ermöglichen';
 $string['usesubjectgrading'] = 'Beurteilung von Fächern ermöglichen';
 $string['usenumbering'] = 'Automatische Nummerierung im Kompetenzraster verwenden';
-$string['useniveautitleinprofile'] = 'Im Kompetenzprofil den Lernfortschritt als Titel verwenden';
 $string['usenostudents'] = 'Ohne Kursteilnehmer/innen arbeiten';
 $string['profoundness_0'] = 'Nicht erreicht';
 $string['profoundness_1'] = 'Zum Teil erreicht';
@@ -305,12 +295,7 @@ $string['statistic'] = 'Gesamtübersicht';
 $string['niveau'] = 'Lernfortschritt';
 $string['competence_grid_niveau'] = 'Niveau';
 $string['descriptor'] = 'Kompetenz';
-$string['groupsize'] = 'Gruppengröße: ';
 $string['assigndone'] = 'Aufgabe erledigt: ';
-$string['assignmyself'] = 'selbst';
-$string['assignteacher'] = 'TrainerIn';
-$string['assignfrom'] = 'von';
-$string['assignuntil'] = 'bis';
 
 
 // === metadata ===
@@ -334,7 +319,6 @@ $string['instruction_content'] = 'Hier können Sie für Ihre Lerngruppen / Klass
 
 // === Activities ===
 $string['explaineditactivities_subjects'] = 'Hier können Sie den erstellten Aufgaben Lernlisten zuordnen.';
-$string['column_setting'] = 'Spalten aus/einblenden';
 $string['niveau_filter'] = 'Niveaus filtern';
 $string['module_filter'] = 'Aktivitäten filtern';
 $string['apply_filter'] = 'Filter anwenden';
@@ -356,71 +340,20 @@ $string['competencegrid_nodata'] = 'Sollte der Kompetenzraster leer sein, wurden
 $string['statistic_type_descriptor'] = 'Wechsel zur Statistik der Teilkompetenzen';
 $string['statistic_type_example'] = 'Wechsel zur Statistik der Aufgaben';
 $string['reports'] = 'Berichte';
-$string['report_competence'] = 'Kompetenzen';
-$string['report_detailcompetence'] = 'Teilkompetenzen';
-$string['report_examples'] = 'Lernmaterialien';
-
-
-// === Detail view ===
-$string['detail_description'] = 'Hier kann mit Hilfe von Aktivitäten eine Kompetenz beurteilt werden.';
 
 
 // === Competence Profile ===
 $string['name'] = 'Name';
 $string['city'] = 'Wohnort';
-$string['course'] = 'Kurs';
-$string['gained'] = 'Erreicht';
 $string['total'] = 'Gesamt';
-$string['allcourses'] = 'Alle Kurse';
-$string['pendingcomp'] = 'Ausstehende Kompetenzen';
-$string['teachercomp'] = 'Erreichte Kompetenzen';
-$string['studentcomp'] = 'Laut Selbsteinschätzung erreichte Kompetenzen';
-$string['radargrapherror'] = 'Der Radargraph kann nur bei 3-7 Achsen dargestellt werden';
-$string['nodata'] = 'Es sind keine Daten vorhanden.';
-$string['item_no_comps'] = 'Zu folgenden Artefakten wurden noch keine Kompetenzen zugeordnet:';
 $string['select_student'] = 'Wählen Sie eine(n) Kursteilnehmer/in aus, dessen Kompetenzprofil Sie sehen möchten.';
 $string['my_comps'] = 'Meine Kompetenzen';
-$string['my_items'] = 'Meine Artefakte';
 $string['my_badges'] = 'Meine Auszeichnungen';
-$string['my_periods'] = 'Meine Feedbacks';
-$string['item_type'] = 'Typ';
-$string['item_link'] = 'Link';
-$string['item_file'] = 'Datei';
-$string['item_note'] = 'Notiz';
-$string['item_title'] = 'Titel';
-$string['item_url'] = 'Url';
-$string['period_reviewer'] = 'Bewerter';
-$string['period_feedback'] = 'Verbales Feedback';
-$string['January'] = 'Jänner';
-$string['February'] = 'Februar';
-$string['March'] = 'März';
-$string['April'] = 'April';
-$string['May'] = 'Mai';
-$string['June'] = 'Juni';
-$string['July'] = 'Juli';
-$string['August'] = 'August';
-$string['September'] = 'September';
-$string['October'] = 'Oktober';
-$string['November'] = 'November';
-$string['December'] = 'Dezember';
-$string['oB'] = 'ohne Bewertung';
-$string['nE'] = 'nicht erreicht';
 
 
 // === Competence Profile Settings ===
-$string['profile_settings_showonlyreached'] = 'Ich möchte in meinem Kompetenzprofil nur bereits erreichte Kompetenzen sehen.';
 $string['profile_settings_choose_courses'] = 'In Exabis Kompetenzraster beurteilen TrainerInnen den Kompetenzerwerb in unterschiedlichen Fachgebieten. Hier kann ausgewählt werden, welche Kurse im Kompetenzprofil aufscheinen sollen.';
-$string['profile_settings_useexaport'] = 'Ich möchte Kompetenzen, die in Exabis ePortfolio verwendet werden in meinem Profil sehen.';
-$string['profile_settings_choose_items'] = 'Exabis ePortfolio dokumentiert deinen Kompetenzerwerb außerhalb von LehrerInnen vorgegebenen Grenzen. Du kannst auswählen, welche Einträge im Kompetenzprofil aufscheinen sollen.';
-$string['profile_settings_useexastud'] = 'Ich möchte Beurteilungen aus Exabis Student Review in meinem Profil sehen.';
-$string['profile_settings_no_item'] = 'Kein Exabis ePortfolio Artefakt vorhanden, somit kann nichts dargestellt werden.';
-$string['profile_settings_no_period'] = 'Keine Beurteilung in einer Periode in Exabis Student Review vorhanden.';
-$string['profile_settings_usebadges'] = 'Ich möchte im Kompetenzprofil auch meine Auszeichnungen sehen.';
-$string['profile_settings_onlygainedbadges'] = 'Ich möchte nur Auszeichnungen sehen, die mir bereits verliehen wurden.';
-$string['profile_settings_badges_lineup'] = 'Einstellungen zu Auszeichnungen';
-$string['profile_settings_showallcomps'] = 'Alle meine Kompetenzen';
 $string['specificcontent'] = 'Schulbezogene Themenbereiche';
-$string['specificsubject'] = 'Schulbezogene Gegenstands-/Kompetenzbereiche';
 
 
 // === Profoundness ===
@@ -443,11 +376,8 @@ $string['block_exacomp_external_trainer_allstudents'] = 'Alle Kursteilnehmer/inn
 
 
 // === Crosssubjects ===
-$string['empty_draft'] = 'Neues Thema';
-$string['empty_draft_description'] = 'Erstelle dein eigenes Thema - ändere die Beschreibung hier';
 $string['add_drafts_to_course'] = 'Ausgewählte Vorlagen im Kurs verwenden';
 $string['crosssubject'] = 'Thema';
-$string['student_name'] = 'Kursteilnehmer/in';
 $string['help_crosssubject'] = 'Die Zusammenstellung des Themas erfolgt für die ganze Schule über den Reiter Kompetenzraster. Sie können hier kursspezifisch Kompetenzen, Teilkompetenzen und Lernmaterial ausblenden. Lernmaterial kann hier ergänzt werden. Dieses wird automatisch in die Lernwegeliste integriert.';
 $string['description'] = 'Beschreibung';
 $string['no_student'] = '-- kein(e) Kursteilnehmer/in ausgewählt --';
@@ -545,12 +475,6 @@ $string['eventsexampleadded'] = 'Aufgabe zu Wochenplan hinzugefügt';
 $string['eventsimportcompleted'] = 'Import durchgeführt';
 $string['eventscrosssubjectadded'] = 'Thema freigegeben';
 
-
-// === Statistics ===
-$string['process'] = 'Bearbeitungsstand';
-$string['niveauclass'] = 'Niveaueinstufung';
-
-
 // === Message ===
 $string['messagetocourse'] = 'Nachricht an alle Kursteilnehmer/innen senden';
 $string['messageprovider:submission'] = 'Nachricht bei neuer Schülerabgabe';
@@ -559,10 +483,6 @@ $string['messageprovider:self_assessment'] = 'Nachricht bei neuer Selbstbewertun
 $string['messageprovider:weekly_schedule'] = 'Lehrer/in fügt ein Beispiel in den Wochenplan ein';
 $string['messageprovider:comment'] = 'Lehrer/in kommentiert ein Beispiel';
 $string['description_example'] = 'Beschreibung / Schulbuchverweis';
-$string['requirements'] = 'Was du schon können solltest: ';
-$string['forwhat'] = 'Wofür du das brauchst: ';
-$string['howtocheck'] = 'Wie du dein Können prüfen kannst: ';
-$string['reached_topic'] = 'Ich habe diese Kompetenz erreicht: ';
 $string['submit_example'] = 'Abgeben';
 // === Webservice Status ===
 $string['enable_rest'] = 'REST Protokoll nicht aktiviert';
@@ -576,3 +496,4 @@ $string['description_createtoken'] = 'Der Benutzerrolle "Authentifizierte/r Nutz
 $string['exacomp_not_found'] = 'Exacompservice nicht gefunden';
 $string['exaport_not_found'] = 'Exaportservice nicht gefunden';
 $string['no_external_trainer'] = 'Keine externen Trainer zugeteilt';
+

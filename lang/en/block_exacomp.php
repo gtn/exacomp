@@ -31,7 +31,7 @@ $string['exacomp:deleteexamples'] = 'delete examples';
 $string['exacomp:assignstudents'] = 'Assign external trainers';
 
 //Cache definition
-$string['cachedef_visibility_cache'] = 'Cache zur Performanceerhöhung von Sichtbarkeitsabfragen';
+$string['cachedef_visibility_cache'] = 'Cache to improve performance while checking visibilities';
 
 // === Admin Tabs ===
 $string['tab_admin_import'] = 'Import/Export';
@@ -56,7 +56,6 @@ $string['tab_student_all'] = 'All gained competencies';
 // === Generic Tabs (used by Teacher and Students) ===
 $string['tab_competence_grid'] = 'Reports';
 $string['tab_competence_overview'] = 'Competence grid';
-$string['tab_competence_details'] = 'Detailed competence-view';
 $string['tab_examples'] = 'Examples and tasks';
 $string['tab_badges'] = 'My badges';
 $string['tab_competence_profile'] = 'Competence profile';
@@ -92,8 +91,6 @@ $string['settings_testlimit'] = 'Quiz-percentage needed to gain competence';
 $string['settings_testlimit_description'] = 'This percentage has to be reached to gain the competence';
 $string['settings_usebadges'] = 'Use badges';
 $string['settings_usebadges_description'] = 'Check to associate badges with competences';
-$string['settings_enableteacherimport'] = 'Use school specific standards';
-$string['settings_enableteacherimport_description'] = 'Check to enable school specific standard import for trainers';
 $string['settings_interval'] = 'Unit duration';
 $string['settings_interval_description'] = 'Duration of the units in the schedule';
 $string['settings_scheduleunits'] = 'Anmount of units';
@@ -105,13 +102,8 @@ $string['settings_admin_scheme_description'] = 'Grading can be done on different
 $string['settings_admin_scheme_none'] = 'no global levels';
 $string['settings_additional_grading'] = 'Adapted grading';
 $string['settings_additional_grading_description'] = 'Grading limited from "not gained(0)" - "completely gained(3)"';
-$string['settings_usetimeline'] = 'Use Timeline in profile';
-$string['settings_usetimeline_description'] = 'Chronological sequence of gained outcomes';
 $string['settings_periods'] = 'Timetable entries';
 $string['settings_periods_description'] = 'Weekly schedule can be adapted to any timetable. Use one row in the text area for each time entry. You can use any format you like, e.g. "1st hour" or "07:30 - 09:00".';
-$string['timeline_teacher'] = 'T';
-$string['timeline_student'] = 'S';
-$string['timeline_total'] = 'Total';
 
 // === Unit Tests ===
 $string['unittest_string'] = 'result_unittest_string';
@@ -182,12 +174,10 @@ $string['grading_scheme'] = 'grading scheme';
 $string['uses_activities'] = 'I work with Moodle activites';
 $string['show_all_descriptors'] = 'Show all outcomes in overview';
 $string['show_all_examples'] = 'Show external examples for students';
-$string['usedetailpage'] = 'Use detailed overview of competencies';
 $string['useprofoundness'] = 'Use basic and extended competencies';
 $string['usetopicgrading'] = 'Enable topic gradings';
 $string['usesubjectgrading'] = 'Enable subject gradings';
 $string['usenumbering'] = 'Enable automatic numbering in the competence grid';
-$string['useniveautitleinprofile'] = 'Use level title in competence profile';
 $string['usenostudents'] = 'Use without students';
 $string['profoundness_0'] = 'not reached';
 $string['profoundness_1'] = 'Partially gained';
@@ -306,12 +296,7 @@ $string['statistic'] = 'Overview';
 $string['niveau'] = 'Level';
 $string['competence_grid_niveau'] = 'Level';
 $string['descriptor'] = 'Competency';
-$string['groupsize'] = 'Size of group: ';
 $string['assigndone'] = 'task done: ';
-$string['assignmyself'] = 'by myself';
-$string['assignteacher'] = 'trainer';
-$string['assignfrom'] = 'from';
-$string['assignuntil'] = 'until';
 
 
 // === metadata ===
@@ -329,7 +314,6 @@ $string['instruction_content'] = 'This is an overview for learning resources tha
 
 // === Activities ===
 $string['explaineditactivities_subjects'] = '';
-$string['column_setting'] = 'hide/display columns';
 $string['niveau_filter'] = 'Filter levels';
 $string['module_filter'] = 'filter activities';
 $string['apply_filter'] = 'apply filter';
@@ -351,71 +335,20 @@ $string['competencegrid_nodata'] = 'In case the competency grid is empty the out
 $string['statistic_type_descriptor'] = 'Change to descriptor statistics';
 $string['statistic_type_example'] = 'Change to example statistics';
 $string['reports'] = 'Type of report';
-$string['report_competence'] = 'Competencies';
-$string['report_detailcompetence'] = 'Child Competencies';
-$string['report_examples'] = 'Examples';
-
-
-// === Detail view ===
-$string['detail_description'] = 'Use Moodle activities to evaluate competencies.';
 
 
 // === Competence Profile ===
 $string['name'] = 'Name';
 $string['city'] = 'City';
-$string['course'] = 'Course';
-$string['gained'] = 'gained';
 $string['total'] = 'total';
-$string['allcourses'] = 'all courses';
-$string['pendingcomp'] = 'pending competencies';
-$string['teachercomp'] = 'gained competencies';
-$string['studentcomp'] = 'self evaluated competencies';
-$string['radargrapherror'] = 'Radargraph can only be displayed with 3-7 axis';
-$string['nodata'] = 'There is no data do display';
-$string['item_no_comps'] = 'There are no outcomes assigned to the following items: ';
 $string['select_student'] = 'Please select a student first';
 $string['my_comps'] = 'My Competencies';
-$string['my_items'] = 'My artifacts';
 $string['my_badges'] = 'My Badges';
-$string['my_periods'] = 'My assessments';
-$string['item_type'] = 'Type';
-$string['item_link'] = 'Link';
-$string['item_file'] = 'File';
-$string['item_note'] = 'Note';
-$string['item_title'] = 'Title';
-$string['item_url'] = 'URL';
-$string['period_reviewer'] = 'Reviewer';
-$string['period_feedback'] = 'Feedback';
-$string['January'] = 'January';
-$string['February'] = 'February';
-$string['March'] = 'March';
-$string['April'] = 'April';
-$string['May'] = 'May';
-$string['June'] = 'June';
-$string['July'] = 'July';
-$string['August'] = 'August';
-$string['September'] = 'September';
-$string['October'] = 'October';
-$string['November'] = 'November';
-$string['December'] = 'December';
-$string['oB'] = 'without evaluation';
-$string['nE'] = 'not gained';
 
 
 // === Competence Profile Settings ===
-$string['profile_settings_showonlyreached'] = 'I only want to see already gained outcomes in my competence profile';
 $string['profile_settings_choose_courses'] = 'Using Exabis Competence Grid trainers assess your competencies in various subjects. You can select which course to include in the competence profile.';
-$string['profile_settings_useexaport'] = 'I want to see competencies used in Exabis ePortfolio within my profile.';
-$string['profile_settings_choose_items'] = 'Exabis ePortfolio is used to document your competencies on your individual learning path. You can select which artifacts to include in the competence profile.';
-$string['profile_settings_useexastud'] = 'I want to see evaluations from Exabis Student Review.';
-$string['profile_settings_no_item'] = 'No Exabis ePortfolio item available, so there is nothing to display.';
-$string['profile_settings_no_period'] = 'No review in a period in Exabis Student Review available.';
-$string['profile_settings_usebadges'] = 'I want to see badges in my competence profile.';
-$string['profile_settings_onlygainedbadges'] = 'I don\'t want to see pending badges.';
-$string['profile_settings_badges_lineup'] = 'Badges settings';
-$string['profile_settings_showallcomps'] = 'all my competencies';
 $string['specificcontent'] = 'site-specific topics';
-$string['specificsubject'] = 'site-specific subjects';
 
 
 // === Profoundness ===
@@ -438,11 +371,8 @@ $string['block_exacomp_external_trainer_allstudents'] = 'All Students';
 
 
 // === Crosssubjects ===
-$string['empty_draft'] = 'New Cross-Subject';
-$string['empty_draft_description'] = 'Create your own Cross-Subject - insert new description';
 $string['add_drafts_to_course'] = 'Add drafts to course';
 $string['crosssubject'] = 'Cross-Subject';
-$string['student_name'] = 'Participant';
 $string['help_crosssubject'] = 'The compilation of a subject is done for the whole Moodle installation (school) using the tab learning path. Here you can selectively deactivate course-specific competences, sub-competences and materials. Individual learning material can also be added. This is then automatically added to the learning paths.';
 $string['description'] = 'Description';
 $string['no_student'] = '-- no participant selected --';
@@ -543,12 +473,6 @@ $string['eventsexampleadded'] = 'Example added to weekly schedule';
 $string['eventsimportcompleted'] = 'Import completed';
 $string['eventscrosssubjectadded'] = 'Cross-Subject added';
 
-
-// === Statistics ===
-$string['process'] = 'State of process';
-$string['niveauclass'] = 'Level classification';
-
-
 // === Message ===
 $string['messagetocourse'] = 'Nachricht an alle Kursteilnehmer/innen senden';
 $string['messageprovider:submission'] = 'Notify teacher that a student has submitted an item';
@@ -557,10 +481,6 @@ $string['messageprovider:self_assessment'] = 'Student assessed some own competen
 $string['messageprovider:weekly_schedule'] = 'Teacher adds new example to weekly schedule';
 $string['messageprovider:comment'] = 'Teacher comments an example';
 $string['description_example'] = 'Description';
-$string['requirements'] = 'Was du schon können solltest: ';
-$string['forwhat'] = 'Wofür du das brauchst: ';
-$string['howtocheck'] = 'Wie du dein Können prüfen kannst: ';
-$string['reached_topic'] = 'Ich habe diese Kompetenz erreicht: ';
 $string['submit_example'] = 'Submit';
 // === Webservice Status ===
 $string['enable_rest'] = 'REST Protocol not enabled';
@@ -574,3 +494,4 @@ $string['description_createtoken'] = 'Grant additional permission to the role "a
 $string['exacomp_not_found'] = 'Exacompservice not found';
 $string['exaport_not_found'] = 'Exaportservice not found';
 $string['no_external_trainer'] = 'No external trainers assigned';
+
