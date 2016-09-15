@@ -87,7 +87,7 @@ if($style==1){
 			$permission = block_exacomp_check_student_example_permission($courseid, $example->id, 0);
 		
 		if($isTeacher || $permission){
-			$descexamp_mm = block_exacomp_get_descriptor_mms_by_example($example->id);
+			$descexamp_mm = $DB->get_records('block_exacompdescrexamp_mm',array('exampid' => $exampleid));
 			$descriptors = array();
 			foreach($descexamp_mm as $descexamp){
 				if(!in_array($descexamp->descrid, $descriptors))

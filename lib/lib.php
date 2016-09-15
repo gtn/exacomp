@@ -74,6 +74,8 @@ const DB_SOLUTIONVISIBILITY = 'block_exacompsolutvisibility';
 const ROLE_TEACHER = 1;
 const ROLE_STUDENT = 0;
 
+const STUDENT_ENROLMENTID = 5;
+
 const WS_ROLE_TEACHER = 1;
 const WS_ROLE_STUDENT = 2;
 
@@ -424,12 +426,10 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 function block_exacomp_get_subjecttitle_by_example($exampleid) {
 	global $DB;
 
-	// TODO: refactor and use block_exacomp_get_descriptors_by_example()
-	$descriptors = block_exacomp_get_descriptor_mms_by_example($exampleid);
-
+	$desctiptors = block_exacomp_get_descriptors_by_example($exampleid);
 	foreach($descriptors as $descriptor) {
 
-		$full = $DB->get_record(\block_exacomp\DB_DESCRIPTORS, array("id" => $descriptor->descrid));
+		$full = $DB->get_record(\block_exacomp\DB_DESCRIPTORS, array("id" => $descriptor->id));
 		$sql = "select s.* FROM {block_exacompsubjects} s, {block_exacompdescrtopic_mm} dt, {block_exacomptopics} t
 		WHERE dt.descrid = ? AND t.id = dt.topicid AND t.subjid = s.id";
 
@@ -1163,12 +1163,6 @@ function block_exacomp_get_descriptors_by_subject($subjectid,$niveaus = true) {
  * get descriptors associated with example
  * @param unknown $exampleid
  */
-function block_exacomp_get_descriptor_mms_by_example($exampleid) {
-	global $DB;
-
-	return $DB->get_records('block_exacompdescrexamp_mm',array('exampid' => $exampleid));
-}
-
 function block_exacomp_get_descriptors_by_example($exampleid) {
 	global $DB;
 
@@ -1386,8 +1380,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
  */
 function block_exacomp_get_students_by_course($courseid) {
 	$context = context_course::instance($courseid);
-	// TODO: wie werden studenten definiert, kann man den rollen capabilities zuweisen damit sie als studenten gelten? -- prieler
-	return get_role_users(5, $context);
+	return get_role_users(STUDENT_ENROLMENTID, $context);
 }
 /**
  *
@@ -1853,8 +1846,7 @@ function block_exacomp_set_mdltype($values, $courseid = 0) {
 function block_exacomp_clean_course_topics($values, $courseid){
 	global $DB;
 
-	if($courseid == 0)
-		// TODO: ist das korrekt so? sollte man nicht courseid=0 auslesen?
+	if($courseid == 0) //all topics for all courses
 		$coutopics = $DB->get_records(\block_exacomp\DB_COURSETOPICS);
 	else
 		$coutopics = $DB->get_records(\block_exacomp\DB_COURSETOPICS, array('courseid'=>$courseid));
@@ -2838,7 +2830,7 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 
 				$taxtitle = "";
 				foreach($example->taxonomies as $taxonomy){
-					$taxtitle .= $taxonomy->title.", "; // TODO: beistrich am ende?
+					$taxtitle .= $taxonomy->title.", ";
 				}
 
 				$taxtitle = substr($taxtitle, 0, strlen($taxtitle)-1);
@@ -4475,7 +4467,7 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 			$gradings[$key] = 0;
 		}
 	
-	$totalgrade = 0; //TODO still needed?
+	$totalgrade = 0;
 
 	//calculate statistic
 	if($crosssubjid == 0 || array_key_exists($descriptor->id, $crosssubjdescriptos)){
