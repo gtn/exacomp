@@ -5242,12 +5242,14 @@ class block_exacomp_external extends external_api {
 		$comparison->subjectitle = $subject->title;
 		$comparison->topics = array();
 		
+		$use_evalniveau = block_exacomp_use_eval_niveau();
+		
 		foreach($subject->subs as $topic){
 			$topic->numbering = block_exacomp_get_topic_numbering($topic->id);
 			$topic->topicid = $topic->id;
 			$topic->teacherevaluation =  ((isset($student->topics->teacher[$topic->id]))?$student->topics->teacher[$topic->id]:-1);
 			$topic->additionalinfo = ((isset($student->topics->teacher_additional_grading[$topic->id]))?$student->topics->teacher_additional_grading[$topic->id]:-1);
-			$topic->evalniveauid = ((isset($student->topics->niveau[$topic->id]))?$student->topics->niveau[$topic->id]: -1);
+			$topic->evalniveauid = ($use_evalniveau)?((isset($student->topics->niveau[$topic->id]))?$student->topics->niveau[$topic->id]: -1):0;
 			$topic->timestamp = ((isset($student->topics->timestamp_teacher[$topic->id]))?$student->topics->timestamp_teacher[$topic->id]: 0);
 			$topic->studentevaluation = ((isset($student->topics->student[$topic->id]))?$student->topics->student[$topic->id]:-1);
 			
@@ -5256,7 +5258,7 @@ class block_exacomp_external extends external_api {
 				$descriptor->descriptorid = $descriptor->id;
 				$descriptor->teacherevaluation = ((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:-1);
 				$descriptor->additionalinfo = ((isset($student->competencies->teacher_additional_grading[$descriptor->id]))?$student->competencies->teacher_additional_grading[$descriptor->id]:-1);
-				$descriptor->evalniveauid = ((isset($student->competencies->niveau[$descriptor->id]))?$student->competencies->niveau[$descriptor->id]: -1);
+				$descriptor->evalniveauid = ($use_evalniveau)?((isset($student->competencies->niveau[$descriptor->id]))?$student->competencies->niveau[$descriptor->id]: -1):0;
 				$descriptor->timestamp = ((isset($student->competencies->timestamp_teacher[$descriptor->id]))?$student->competencies->timestamp_teacher[$descriptor->id]: 0);
 				$descriptor->studentevaluation = ((isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:-1);
 				
@@ -5289,7 +5291,7 @@ class block_exacomp_external extends external_api {
 					$sub->exampleid = $example->id;
 					$sub->example = true;
 					$sub->teacherevaluation = ((isset($student->examples->teacher[$example->id]))?$student->examples->teacher[$example->id]:-1);
-					$sub->evalniveauid = ((isset($student->examples->niveau[$example->id]))?$student->examples->niveau[$example->id]: -1);
+					$sub->evalniveauid = ($use_evalniveau)?((isset($student->examples->niveau[$example->id]))?$student->examples->niveau[$example->id]: -1):0;
 					$sub->timestamp = ((isset($student->examples->timestamp_teacher[$example->id]))?$student->examples->timestamp_teacher[$example->id]: 0);
 					$sub->studentevaluation = ((isset($student->examples->student[$example->id]))?$student->examples->student[$example->id]:-1); 
 					$descriptor->subs[] = $sub;
