@@ -1671,8 +1671,8 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 
 	if($checkConfig && $has_data){	//Modul wurde konfiguriert
 		if ($isTeacherOrStudent && block_exacomp_is_activated($courseid)) {
-			//Kompetenzraster
-			$rows[] = new tabobject('tab_competence_grid', new moodle_url('/blocks/exacomp/competence_grid.php',array("courseid"=>$courseid)),get_string('tab_competence_grid','block_exacomp'), null, true);
+			// moved into competence profile !
+			// $rows[] = new tabobject('tab_competence_grid', new moodle_url('/blocks/exacomp/competence_grid.php',array("courseid"=>$courseid)),get_string('tab_competence_grid','block_exacomp'), null, true);
 		}
 		if ($isTeacherOrStudent && $ready_for_use) {
 			//Kompetenzüberblick
