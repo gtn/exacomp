@@ -1380,7 +1380,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
  */
 function block_exacomp_get_students_by_course($courseid) {
 	$context = context_course::instance($courseid);
-	return get_role_users(STUDENT_ENROLMENTID, $context);
+	return get_role_users(\block_exacomp\STUDENT_ENROLMENTID, $context);
 }
 /**
  *

@@ -327,69 +327,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		if(isset($subject->description) || isset($topic->description))
 			return $content;
 	}
-	public function overview_metadata_student($subject, $topic, $topic_evaluation, $showevaluation, $scheme, $icon = null){
-		$table = new html_table();
-		$table->attributes['class'] = 'exabis_comp_top';
-
-		$rows = array();
-
-		$row = new html_table_row();
-
-		$cell = new html_table_cell();
-		$cell->attributes['class'] = 'comp_grey_97';
-		$cell->text = html_writer::tag('b', get_string('requirements', 'block_exacomp'))
-		.html_writer::tag('p', $topic->requirement);
-
-		$row->cells[] = $cell;
-		$rows[] = $row;
-
-		$row = new html_table_row();
-
-		$cell = new html_table_cell();
-		$cell->attributes['class'] = 'comp_grey_97';
-		$cell->text = html_writer::tag('b', get_string('forwhat', 'block_exacomp'))
-		.html_writer::tag('p', $topic->benefit);
-
-		$row->cells[] = $cell;
-		$rows[] = $row;
-
-		$row = new html_table_row();
-
-		$cell = new html_table_cell();
-		$cell->attributes['class'] = 'comp_grey_97';
-		$cell->text = html_writer::tag('b', get_string('howtocheck', 'block_exacomp'))
-		.html_writer::tag('p', $topic->knowledgecheck);
-
-		/*
-		$p_content = get_string('reached_topic', 'block_exacomp');
-
-		if($scheme == 1)
-			$p_content .= "S: " . html_writer::checkbox("topiccomp", 1, ((isset($topic_evaluation->student[$topic->id]))?true:false))
-			." Bestätigung L: ".html_writer::checkbox("topiccomp", 1, ((isset($topic_evaluation->teacher[$topic->id]))?true:false), "", array("disabled"=>"disabled"));
-		else{
-			(isset($topic_evaluation->student[$topic->id]))?$value_student = $topic_evaluation->student[$topic->id] : $value_student = 0;
-			(isset($topic_evaluation->teacher[$topic->id]))?$value_teacher = $topic_evaluation->teacher[$topic->id] : $value_teacher = 0;
-				
-			$p_content .= "S: " . html_writer::checkbox("topiccomp", $scheme, $value_student >= ceil($scheme/2))
-			." Bestätigung L: ". $value_teacher;
-
-		}
-			
-		if(isset($icon))
-			$p_content .= " ".html_writer::span($icon->img, 'exabis-tooltip', array('title'=>s($icon->text)));
-		$p_content .= html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'topiccompid', 'value'=>$topic->id));
-		$p_content .= html_writer::empty_tag('input', array('type'=>'hidden', 'name'=>'subjectcompid', 'value'=>$subject->id));
-			
-		$cell->text .= html_writer::tag('p', $p_content);
-		*/
-
-		$row->cells[] = $cell;
-		$rows[] = $row;
-
-		$table->data = $rows;
-
-		return html_writer::table($table).html_writer::empty_tag('br');
-	}
 	public function overview_metadata($schooltype, $subject, $descriptor, $cat){
 		$table = new html_table();
 		$table->attributes['class'] = 'exabis_comp_info';
@@ -437,25 +374,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content = html_writer::table($table);
 
 		return $content;
-	}
-
-	public function competence_grid_legend() {
-		$content = html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","competenceyellow");
-		$content .= ' '.get_string("selfevaluation","block_exacomp").' ';
-		$content .= html_writer::span("&nbsp;&nbsp;&nbsp;&nbsp;","competenceok");
-		$content .= ' '.get_string("teacherevaluation","block_exacomp").' ';
-		return html_writer::div($content, 'legend');
-	}
-	public function competence_grid_reports_dropdown() {
-		$options = array();
-		
-		$options[BLOCK_EXACOMP_REPORT1] = get_string("report_competence","block_exacomp");
-		$options[BLOCK_EXACOMP_REPORT2] = get_string("report_detailcompetence","block_exacomp");
-		$options[BLOCK_EXACOMP_REPORT3] = get_string("report_examples","block_exacomp");
-		
-		return get_string('reports','block_exacomp') . ": " .
-			html_writer::select($options, "exacomp_competence_grid_report", optional_param("report", BLOCK_EXACOMP_REPORT1, PARAM_INT), true).
-			$this->button_box(true, '');
 	}
 
 	public function competence_grid($niveaus, $skills, $topics, $data, $selection = array(), $courseid = 0,$studentid=0,$subjectid=0) {
@@ -1612,8 +1530,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				foreach($descriptor->examples as $example) {
 					$example_used = block_exacomp_example_used($data->courseid, $example, $studentid);
 				
-					//TODO: if used, always visible?
-					
 					$visible_example = block_exacomp_is_example_visible($data->courseid, $example, $studentid);
 					$visible_solution = block_exacomp_is_example_solution_visible($data->courseid, $example, $studentid);
 					
@@ -1748,9 +1664,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						}
 						$titleCell->text .= '</span>';
 
-						/*if ($editmode) {
-							$titleCell->text .= ' '.$this->source_info($descriptor->source);
-						}*/
 					}
 					$exampleRow->cells[] = $titleCell;
 
@@ -1890,24 +1803,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/preview.png'), 'alt'=>$alt, 'title'=>$alt));
 	}
-	/*
-	public function source_color($sourceid) {
-		global $DB;
-
-		if (!$sourceid) {
-			return;
-		} elseif ($sourceid == \block_exacomp\EXAMPLE_SOURCE_TEACHER) {
-			$color = '#FFFF00';
-		} else {
-			$cnt = $DB->get_field_sql("SELECT COUNT(*) FROM {block_exacompdatasources} WHERE id < ?", array($sourceid));
-			$colors = array('#FF0000', '#00FF00', '#0000FF', '#FF00FF', '#00FFFF', '#800000', '#008000', '#000080', '#808000', '#800080', '#008080', '#C0C0C0', '#808080', '#9999FF', '#993366', '#FFFFCC', '#CCFFFF', '#660066', '#FF8080', '#0066CC', '#CCCCFF', '#000080');
-			$color = $colors[$cnt%count($colors)];
-		}
-
-		return '<span style="border: 1px solid black; background: '.$color.'; margin-right: 5px;">&nbsp;&nbsp;&nbsp;</span>';
-	}
-	*/
-
+	
 	public function source_info($sourceid) {
 		global $DB;
 		$info="";
@@ -2045,29 +1941,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	public function visibility_icon_example_solution_disabled() {
 		return html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/locked.png'), 'alt'=>get_string("hide_solution_disabled","block_exacomp"), 'title'=>get_string("hide_solution_disabled","block_exacomp"), 'width' => '16'));
 	}
-	/*
-	private function student_example_evaluation_form($exampleid, $studentid, $courseid) {
-		global $DB;
-		$exampleInfo = $DB->get_record(\block_exacomp\DB_EXAMPLEEVAL, array("exampleid" => $exampleid, "studentid" => $studentid, "courseid" => $courseid));
-		$options = array();
-		$options['self'] = get_string('assignmyself','block_exacomp');
-		$options['studypartner'] = get_string('assignlearningpartner','block_exacomp');
-		$options['studygroup'] = get_string('assignlearninggroup','block_exacomp');
-		$options['teacher'] = get_string('assignteacher','block_exacomp');
-
-		$content = html_writer::select($options, 'dataexamples-' . $exampleid . '-' . $studentid . '-studypartner', (isset($exampleInfo->studypartner) ? $exampleInfo->studypartner : null), false);
-
-		$content .= get_string('assignfrom','block_exacomp');
-		$content .= html_writer::empty_tag('input', array('class' => 'datepicker', 'type' => 'text', 'name' => 'dataexamples-' . $exampleid . '-' . $studentid . '-starttime', 'disabled',
-				'value' => (isset($exampleInfo->starttime) ? date("Y-m-d",$exampleInfo->starttime) : null)));
-
-		$content .= get_string('assignuntil','block_exacomp');
-		$content .= html_writer::empty_tag('input', array('class' => 'datepicker', 'type' => 'text', 'name' => 'dataexamples-' . $exampleid . '-' . $studentid . '-endtime', 'disabled',
-				'value' => (isset($exampleInfo->endtime) ? date("Y-m-d",$exampleInfo->endtime) : null)));
-
-		return $content;
-	}
-	*/
 
 	/**
 	 *
@@ -2096,6 +1969,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 		return html_writer::div($content,'spaltenbrowser');
 	}
+	
 	public function student_evaluation($showevaluation, $isTeacher=true,$niveauid = SHOW_ALL_NIVEAUS, $subjectid=0, $topicid=-1, $studentid=0) {
 		global $COURSE;
 
@@ -2177,48 +2051,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$scheme,
 				(isset($student->{$type}->{$evaluation}[$compid])) && $student->{$type}->{$evaluation}[$compid] == $scheme, null, $attributes);
 	}
-	/**
-	 * Used to generate a checkbox for ticking activities topics and competencies
-	 *
-	 * @param String $name name of the checkbox: data for competencies, dataexamples for examples, datatopic for topics
-	 * @param int $compid
-	 * @param String $type comptencies or topics or examples
-	 * @param stdClass $student
-	 * @param String $evaluation teacher or student
-	 * @param int $scheme grading scheme
-	 * @param bool $disabled disabled becomes true for the "show evaluation" option
-	 *
-	 * @return String $checkbox html code for checkbox
-	 */
-	/*public function generate_checkbox_activities($name, $compid, $activityid, $type, $student, $evaluation, $scheme, $disabled = false) {
-		return html_writer::checkbox(
-				$name . '[' .$compid .'][' . $student->id .'][' . $activityid . '][' . $evaluation . ']', $scheme,
-				(isset($student->{$type}->activities[$activityid]->{$evaluation}[$compid])) && $student->{$type}->activities[$activityid]->{$evaluation}[$compid] >= ceil($scheme/2),
-				null, (!$disabled) ? null : array("disabled"=>"disabled"));
-	}*/
-	/**
-	 * Used to generate a select for activities topics & competencies
-	 *
-	 * @param String $name name of the checkbox: data for competencies, dataexamples for examples, datatopic for topics
-	 * @param int $compid
-	 * @param String $type comptencies or topics or examples
-	 * @param stdClass $student
-	 * @param String $evaluation teacher or student
-	 * @param bool $disabled disabled becomes true for the "show evaluation" option
-	 *
-	 * @return String $select html code for select
-	 */
-	/*public function generate_select_activities($name, $compid, $activityid, $type, $student, $evaluation, $scheme, $disabled = false, $profoundness = false) {
-		$options = array();
-		for($i=0;$i<=$scheme;$i++)
-			$options[] = (!$profoundness) ? $i : get_string('profoundness_'.$i,'block_exacomp');
 
-		return html_writer::select(
-				$options,
-				$name . '[' . $compid . '][' . $student->id . '][' . $activityid . '][' . $evaluation . ']',
-				(isset($student->{$type}->activities[$activityid]->{$evaluation}[$compid])) ? $student->{$type}->activities[$activityid]->{$evaluation}[$compid] : 0,
-				false,(!$disabled) ? null : array("disabled"=>"disabled"));
-	}*/
 	/**
 	 * Used to generate a select for topics/competencies/examples values
 	 *
@@ -2445,10 +2278,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::div($content, 'exacomp_profile_badges');
 	}
 
-	public function foot_view_examples(){
-		$content = html_writer::tag('script', 'ddtreemenu.createTree("comptree", true)', array('type'=>'text/javascript'));
-		return $content.html_writer::end_div();
-	}
 	public function courseselection($schooltypes, $topics_activ, $headertext){
 		global $PAGE;
 
@@ -2506,6 +2335,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url, "id" => "course-selection"));
 	}
+	
 	public function descriptor_selection_export(){
 		global $PAGE;
 
@@ -3311,119 +3141,115 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$rows[] = $row;
 		
 		foreach($subject->subs as $topic){
-			//if(block_exacomp_is_topic_visible($courseid, $topic, $student->id)){ //TODO this costs 2 sec
+			$row = new html_table_row();
+			$cell = new html_table_cell();
+			$cell->text = $topic->numbering;
+			$row->cells[] = $cell;
+			
+			$cell = new html_table_cell();
+			$cell->text = $topic->title;
+			$row->cells[] = $cell;
+			
+			$cell = new html_table_cell();
+			
+			$cell->text = ((isset($student->topics->niveau[$topic->id]))?$evaluation_niveaus[$student->topics->niveau[$topic->id]].' ': '').
+				((block_exacomp_additional_grading()) ?
+					((isset($student->topics->teacher_additional_grading[$topic->id]))
+							?$student->topics->teacher_additional_grading[$topic->id]:'')
+					:((isset($student->topics->teacher[$topic->id]))
+							?$scheme_items[$student->topics->teacher[$topic->id]]:''));
+			
+			$cell->attributes['exa-timestamp'] = isset($student->topics->timestamp_teacher[$topic->id]) ? $student->topics->timestamp_teacher[$topic->id] : 0;
+			$row->cells[] = $cell;
+			
+			$cell = new html_table_cell();
+			$cell->text = (isset($student->topics->student[$topic->id]))?$student->topics->student[$topic->id]:'';
+			$row->cells[] = $cell;
+			$rows[] = $row;
+			
+			foreach($topic->descriptors as $descriptor){
 				$row = new html_table_row();
 				$cell = new html_table_cell();
-				$cell->text = $topic->numbering;
+				$cell->text = $descriptor->numbering;
 				$row->cells[] = $cell;
 				
 				$cell = new html_table_cell();
-				$cell->text = $topic->title;
+				$cell->text = $descriptor->title;
 				$row->cells[] = $cell;
 				
 				$cell = new html_table_cell();
+				$cell->text = ((isset($student->competencies->niveau[$descriptor->id]))?$evaluation_niveaus[$student->competencies->niveau[$descriptor->id]].' ': '');
+				if (block_exacomp_additional_grading())
+					$cell->text .= ((isset($student->competencies->teacher_additional_grading[$descriptor->id]))?$student->competencies->teacher_additional_grading[$descriptor->id]:'');
+				else
+					$cell->text .= ((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:'');
 				
-				$cell->text = ((isset($student->topics->niveau[$topic->id]))?$evaluation_niveaus[$student->topics->niveau[$topic->id]].' ': '').
-					((block_exacomp_additional_grading()) ?
-						((isset($student->topics->teacher_additional_grading[$topic->id]))
-								?$student->topics->teacher_additional_grading[$topic->id]:'')
-						:((isset($student->topics->teacher[$topic->id]))
-								?$scheme_items[$student->topics->teacher[$topic->id]]:''));
-				
-				$cell->attributes['exa-timestamp'] = isset($student->topics->timestamp_teacher[$topic->id]) ? $student->topics->timestamp_teacher[$topic->id] : 0;
+				$cell->attributes['exa-timestamp'] = isset($student->competencies->timestamp_teacher[$descriptor->id]) ? $student->competencies->timestamp_teacher[$descriptor->id] : 0;
 				$row->cells[] = $cell;
 				
 				$cell = new html_table_cell();
-				$cell->text = (isset($student->topics->student[$topic->id]))?$student->topics->student[$topic->id]:'';
+				$cell->text = (isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:'';
 				$row->cells[] = $cell;
 				$rows[] = $row;
 				
-				foreach($topic->descriptors as $descriptor){
-					//if(block_exacomp_is_descriptor_visible($courseid, $descriptor, $student->id)){
+				$edited = false;
+				$inwork = false;
+				$notinwork = false;
+				foreach($descriptor->examples as $example){
+					//cannot be 9 -> no blocking events here
+					if($example->state > \block_exacomp\EXAMPLE_STATE_SUBMITTED && !$edited){
 						$row = new html_table_row();
 						$cell = new html_table_cell();
-						$cell->text = $descriptor->numbering;
 						$row->cells[] = $cell;
-						
 						$cell = new html_table_cell();
-						$cell->text = $descriptor->title;
-						$row->cells[] = $cell;
-						
-						$cell = new html_table_cell();
-						$cell->text = ((isset($student->competencies->niveau[$descriptor->id]))?$evaluation_niveaus[$student->competencies->niveau[$descriptor->id]].' ': '');
-						if (block_exacomp_additional_grading())
-							$cell->text .= ((isset($student->competencies->teacher_additional_grading[$descriptor->id]))?$student->competencies->teacher_additional_grading[$descriptor->id]:'');
-						else
-							$cell->text .= ((isset($student->competencies->teacher[$descriptor->id]))?$student->competencies->teacher[$descriptor->id]:'');
-						
-						$cell->attributes['exa-timestamp'] = isset($student->competencies->timestamp_teacher[$descriptor->id]) ? $student->competencies->timestamp_teacher[$descriptor->id] : 0;
-						$row->cells[] = $cell;
-						
-						$cell = new html_table_cell();
-						$cell->text = (isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:'';
+						$cell->text = 'Bearbeitete Lernmaterialien';
+						$cell->colspan = 3;
 						$row->cells[] = $cell;
 						$rows[] = $row;
-						
-						$edited = false;
-						$inwork = false;
-						$notinwork = false;
-						foreach($descriptor->examples as $example){
-							//cannot be 9 -> no blocking events here
-							if($example->state > \block_exacomp\EXAMPLE_STATE_SUBMITTED && !$edited){
-								$row = new html_table_row();
-								$cell = new html_table_cell();
-								$row->cells[] = $cell;
-								$cell = new html_table_cell();
-								$cell->text = 'Bearbeitete Lernmaterialien';
-								$cell->colspan = 3;
-								$row->cells[] = $cell;
-								$rows[] = $row;
-								$edited = true;
-							}elseif($example->state > \block_exacomp\EXAMPLE_STATE_NOT_SET && $example->state < \block_exacomp\EXAMPLE_STATE_SUBMITTED && !$inwork){
-								$row = new html_table_row();
-								$cell = new html_table_cell();
-								$row->cells[] = $cell;
-								$cell = new html_table_cell();
-								$cell->text = 'Lernmaterialien in Arbeit';
-								$cell->colspan = 3;
-								$row->cells[] = $cell;
-								$rows[] = $row;
-								$inwork = true;
-							}elseif($example->state == \block_exacomp\EXAMPLE_STATE_NOT_SET && !$notinwork){
-								$row = new html_table_row();
-								$cell = new html_table_cell();
-								$row->cells[] = $cell;
-								$cell = new html_table_cell();
-								$cell->text = 'Unbearbeitete Lernmaterialien';
-								$cell->colspan = 3;
-								$row->cells[] = $cell;
-								$rows[] = $row;
-								$notinwork = true;
-							}
-							
-							$row = new html_table_row();
-							$cell = new html_table_cell();
-							$cell->text = '';
-							$row->cells[] = $cell;
-							
-							$cell = new html_table_cell();
-							$cell->text = $example->title;
-							$row->cells[] = $cell;
-							
-							$cell = new html_table_cell();
-							$cell->text = ((isset($student->examples->niveau[$example->id]))?$evaluation_niveaus[$student->examples->niveau[$example->id]].' ': '').
-							((isset($student->examples->teacher[$example->id]))?$student->examples->teacher[$example->id]:'');
-							$cell->attributes['exa-timestamp'] = isset($student->examples->timestamp_teacher[$example->id]) ? $student->examples->timestamp_teacher[$example->id] : 0;
-							$row->cells[] = $cell;
-							
-							$cell = new html_table_cell();
-							$cell->text = (isset($student->examples->student[$example->id]))?$student->examples->student[$example->id]:'';
-							$row->cells[] = $cell;
-							$rows[] = $row;
-						}
-					//}
+						$edited = true;
+					}elseif($example->state > \block_exacomp\EXAMPLE_STATE_NOT_SET && $example->state < \block_exacomp\EXAMPLE_STATE_SUBMITTED && !$inwork){
+						$row = new html_table_row();
+						$cell = new html_table_cell();
+						$row->cells[] = $cell;
+						$cell = new html_table_cell();
+						$cell->text = 'Lernmaterialien in Arbeit';
+						$cell->colspan = 3;
+						$row->cells[] = $cell;
+						$rows[] = $row;
+						$inwork = true;
+					}elseif($example->state == \block_exacomp\EXAMPLE_STATE_NOT_SET && !$notinwork){
+						$row = new html_table_row();
+						$cell = new html_table_cell();
+						$row->cells[] = $cell;
+						$cell = new html_table_cell();
+						$cell->text = 'Unbearbeitete Lernmaterialien';
+						$cell->colspan = 3;
+						$row->cells[] = $cell;
+						$rows[] = $row;
+						$notinwork = true;
+					}
+					
+					$row = new html_table_row();
+					$cell = new html_table_cell();
+					$cell->text = '';
+					$row->cells[] = $cell;
+					
+					$cell = new html_table_cell();
+					$cell->text = $example->title;
+					$row->cells[] = $cell;
+					
+					$cell = new html_table_cell();
+					$cell->text = ((isset($student->examples->niveau[$example->id]))?$evaluation_niveaus[$student->examples->niveau[$example->id]].' ': '').
+					((isset($student->examples->teacher[$example->id]))?$student->examples->teacher[$example->id]:'');
+					$cell->attributes['exa-timestamp'] = isset($student->examples->timestamp_teacher[$example->id]) ? $student->examples->timestamp_teacher[$example->id] : 0;
+					$row->cells[] = $cell;
+					
+					$cell = new html_table_cell();
+					$cell->text = (isset($student->examples->student[$example->id]))?$student->examples->student[$example->id]:'';
+					$row->cells[] = $cell;
+					$rows[] = $row;
 				}
-			//}
+			}
 		}
 		
 		$table->data = $rows;
@@ -3432,7 +3258,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 
-public function profile_settings($courses, $settings){
+	public function profile_settings($courses, $settings){
 		global $COURSE;
 		$exacomp_div_content = html_writer::tag('h2', get_string('blocktitle', 'block_exacomp'));
 		
