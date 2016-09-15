@@ -886,7 +886,6 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 
 	if (!isset($settings->uses_activities)) $settings->uses_activities = block_exacomp_is_skillsmanagement() ? 0 : 1;
 	if (!isset($settings->show_all_examples)) $settings->show_all_examples = block_exacomp_is_skillsmanagement() ? 1 : 0;
-	if (!isset($settings->usedetailpage)) $settings->usedetailpage = 0;
 	if (!$settings->uses_activities) {
 		$settings->show_all_descriptors = 1;
 	} elseif (!isset($settings->show_all_descriptors)) {
@@ -1685,11 +1684,6 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 			}
 
 			if (!$courseSettings->nostudents) {
-				//Kompetenz-Detailansicht nur wenn mit Aktivitäten gearbeitet wird
-				if ($courseSettings->uses_activities && $courseSettings->usedetailpage) {
-					$rows[] = new tabobject('tab_competence_details', new moodle_url('/blocks/exacomp/competence_detail.php',array("courseid"=>$courseid)),get_string('tab_competence_details','block_exacomp'), null, true);
-				}
-
 				//Kompetenzprofil
 				$rows[] = new tabobject('tab_competence_profile_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid"=>$courseid)), get_string('tab_competence_profile',  'block_exacomp'), null, true);
 			}
@@ -7022,6 +7016,7 @@ namespace block_exacomp {
 		}
 	}
 }
+
 
 
 
