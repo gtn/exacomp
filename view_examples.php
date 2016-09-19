@@ -64,13 +64,17 @@ if ($show_all_examples != 0)
 	
 	/* CONTENT REGION */
 
-$tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
+
 
 echo $output->view_example_header();
 
-if($style==0)
+if($style==0){
+	$tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
 	echo $output->competence_based_list_tree ( $tree , $isTeacher, false);
+}
 if($style==1){
+	//could be optimized together with block_exacomp_build_example_tree
+	//non critical - only 1 additional query for whole loading process
 	$comp_examples = \block_exacomp\example::get_objects_sql(
             'SELECT DISTINCT e.*
                 FROM {'.\block_exacomp\DB_COURSETOPICS.'} ct
@@ -87,13 +91,7 @@ if($style==1){
 			$permission = block_exacomp_check_student_example_permission($courseid, $example->id, 0);
 		
 		if($isTeacher || $permission){
-			$descexamp_mm = $DB->get_records('block_exacompdescrexamp_mm',array('exampid' => $exampleid));
-			$descriptors = array();
-			foreach($descexamp_mm as $descexamp){
-				if(!in_array($descexamp->descrid, $descriptors))
-					$descriptors[$descexamp->descrid] = $descexamp->descrid;
-			}
-			$tree = block_exacomp_build_example_association_tree($courseid, $descriptors, $example->id, 0, false);
+			$tree = block_exacomp_build_example_tree($courseid, $example->id);
 			$content .= $output->example_based_list_tree($example, $tree, $isTeacher, false);
 		}
 	}
@@ -105,3 +103,4 @@ echo '</div>';
 
 /* END CONTENT REGION */
 echo $output->footer ();
+

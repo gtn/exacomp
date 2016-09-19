@@ -6442,6 +6442,84 @@ function block_exacomp_cmp_niveausort($a, $b){
 	return strcmp($a->cattitle, $b->cattitle);
 }
 
+/**
+ * create tree for one example, similar like block_exacomp_build_example_association_tree() 
+ * but with improved performance
+ */
+function block_exacomp_build_example_tree($courseid, $exampleid){
+	global $DB;
+	
+	$sql = "SELECT d.id as descrid, d.title as descrtitle, d.parentid as parentid, s.id as subjid, s.title as subjecttitle, t.id as topicid, t.title as topictitle, 
+				e.id as exampleid, e.title as exampletitle 
+			FROM {".\block_exacomp\DB_SUBJECTS."} s 
+			JOIN {".\block_exacomp\DB_TOPICS."} t ON t.subjid = s.id
+			JOIN {".\block_exacomp\DB_COURSETOPICS."} ct ON t.id = ct.topicid
+			JOIN {".\block_exacomp\DB_DESCTOPICS."} dt ON dt.topicid = t.id
+			JOIN {".\block_exacomp\DB_DESCRIPTORS."} d ON d.id = dt.descrid
+			JOIN {".\block_exacomp\DB_DESCEXAMP."} de ON d.id = de.descrid
+			JOIN {".\block_exacomp\DB_EXAMPLES."} e ON e.id = de.exampid
+			WHERE e.id = ? AND ct.courseid = ?";
+	
+	$records = $DB->get_records_sql($sql, array($exampleid, $courseid));
+	
+	$tree = array();
+	foreach($records as $record){
+		
+		//subject already in tree?
+		if(!array_key_exists($record->subjid, $tree)){ //create subject entry in tree
+			$tree[$record->subjid] = new stdClass();
+			$tree[$record->subjid]->id = $record->subjid;
+			$tree[$record->subjid]->title = $record->subjecttitle;
+			$tree[$record->subjid]->associated = 1; //associated needed to reuse existing renderer function
+			$tree[$record->subjid]->topics = array();
+		}
+		
+		//topic already in tree?
+		if(!array_key_exists($record->topicid, $tree[$record->subjid]->topics)){ //create topic entry in tree
+			$tree[$record->subjid]->topics[$record->topicid] = new stdClass();
+			$tree[$record->subjid]->topics[$record->topicid]->id = $record->topicid;
+			$tree[$record->subjid]->topics[$record->topicid]->title = $record->topictitle;
+			$tree[$record->subjid]->topics[$record->topicid]->associated = 1;
+			$tree[$record->subjid]->topics[$record->topicid]->descriptors = array();
+		}
+		
+		//check if parent descriptor or child
+		if($record->parentid > 0){	//child get parentdescriptor
+			$parent_descriptor = $DB->get_record(\block_exacomp\DB_DESCRIPTORS, array('id'=>$record->parentid));
+			
+			//parent already in tree?
+			if(!array_key_exists($parent_descriptor->id, $tree[$record->subjid]->topics[$record->topicid]->descriptors)){	//create parent entry in tree
+				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id] = new stdClass();
+				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->id = $parent_descriptor->id;
+				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->title = $parent_descriptor->title;
+				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->topicid = $record->topicid;
+				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->associated = 1;
+				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->children = array();
+			}
+			
+			//child already in tree?
+			if(!array_key_exists($record->descrid, $tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->children)){
+				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->children[$record->descrid] = new stdClass();
+				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->children[$record->descrid]->id = $record->descrid;
+				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->children[$record->descrid]->title = $record->descrtitle;
+				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->children[$record->descrid]->topicid = $record->topicid;
+				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->children[$record->descrid]->associated = 1;
+			}
+		}else{
+			//descriptor already in tree?
+			if(!array_key_exists($record->descrid, $tree[$record->subjid]->topics[$record->topicid]->descriptors)){	//create descriptor entry in tree
+				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$record->descrid] = new stdClass();
+				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$record->descrid]->id = $record->descrid;
+				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$record->descrid]->title = $record->descrtitle;
+				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$record->descrid]->topicid = $record->topicid;
+				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$record->descrid]->associated = 1;
+				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$record->descrid]->children = array();
+			}
+		}
+	}
+	return $tree;
+}
+
 }
 
 namespace block_exacomp {
@@ -7029,6 +7107,7 @@ namespace block_exacomp {
 		}
 	}
 }
+
 
 
 
