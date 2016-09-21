@@ -926,6 +926,7 @@ class descriptor extends db_record {
 
 		$DB->insert_record(DB_DESCTOPICS, $childdesctopic_mm);
 
+		block_exacomp_update_visibility_cache($courseid);
 		return $descriptor;
 	}
 
@@ -1043,3 +1044,4 @@ class cross_subject extends db_record {
 		return g::$DB->record_exists(\block_exacomp\DB_CROSSSTUD, array('crosssubjid' => $this->id));
 	}
 }
+
