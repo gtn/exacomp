@@ -52,8 +52,6 @@ $string['tab_help'] = 'help';
 
 //Block Settings
 $string['settings_xmlserverurl'] = 'URL del servidor';
-$string['settings_configxmlserverurl'] = 'URL a un arxiu XML, que s\'utilitza per mantenir actualitzades les entrades de la base de dades';
-$string['settings_usedetailpage'] = 'Competence Details';
 $string['settings_usedetailpage_description'] = 'Use competences details overview';
 $string['settings_autotest'] = 'Automatic test evalutaion';
 $string['settings_autotest_description'] = 'Students reach competenes automatically if a test is completed';
