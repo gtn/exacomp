@@ -6022,7 +6022,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 
 		$children_return = array();
 		foreach($children as $child){
-			if($child->examples || $showall){
+			if($child->examples || $show_all){
 				$child_return = static::dakora_get_descriptor_details($courseid, $child->id, $userid, $forall, $crosssubjid);
 
 				$child_return->visible = (!in_array($child->id, $non_visibilities) && ((!$forall && !in_array($child->id, $non_visibilities_student))||$forall))?1:0;
