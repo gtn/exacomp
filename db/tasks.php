@@ -32,7 +32,7 @@ $tasks = array(
 	array(
 		'classname' => 'block_exacomp\task\autotest',
 		'blocking' => 0,
-		'minute' => '*/5',
+		'minute' => '*',
 		'hour' => '*',
 		'day' => '*',
 		'month' => '*',

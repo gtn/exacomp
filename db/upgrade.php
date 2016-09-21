@@ -2905,6 +2905,29 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 		upgrade_block_savepoint(true, 2016091100, 'exacomp');
 	}
 	
+	if ($oldversion < 2016092101) {
+	
+		// Define table block_exacompautotestassign to be created.
+		$table = new xmldb_table('block_exacompautotestassign');
+	
+		// Adding fields to table block_exacompautotestassign.
+		$table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+		$table->add_field('quiz', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+		$table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+		$table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+	
+		// Adding keys to table block_exacompautotestassign.
+		$table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+	
+		// Conditionally launch create table for block_exacompautotestassign.
+		if (!$dbman->table_exists($table)) {
+			$dbman->create_table($table);
+		}
+	
+		// Exacomp savepoint reached.
+		upgrade_block_savepoint(true, 2016092101, 'exacomp');
+	}
+	
 	/*
 	 * insert new upgrade scripts before this comment section
 	 * NOTICE: don't use any functions, constants etc. from lib.php here anymore! copy them over if necessary!

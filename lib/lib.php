@@ -67,6 +67,7 @@ const DB_EXTERNAL_TRAINERS = 'block_exacompexternaltrainer';
 const DB_EVALUATION_NIVEAU = 'block_exacompeval_niveau';
 const DB_TOPICVISIBILITY = 'block_exacomptopicvisibility';
 const DB_SOLUTIONVISIBILITY = 'block_exacompsolutvisibility';
+const DB_AUTOTESTASSIGN = 'block_exacompautotestassign';
 
 /**
  * PLUGIN ROLES
@@ -3188,7 +3189,10 @@ function block_exacomp_perform_auto_test() {
 			foreach($tests as $test){
 				//get grading for each test and assign topics and descriptors
 				$quiz = $DB->get_record('quiz_grades', array('quiz'=>$test->id, 'userid'=>$student->id));
-				if(isset($quiz->grade) && (floatval($test->grade)*(floatval($testlimit)/100)) <= $quiz->grade){
+				$quiz_assignment = $DB->get_record(\block_exacomp\DB_AUTOTESTASSIGN, array('quiz' => $test->id, 'userid' => $student->id));
+				
+				// assign competencies if test is successfully completed AND test grade update since last auto assign
+				if(isset($quiz->grade) && (floatval($test->grade)*(floatval($testlimit)/100)) <= $quiz->grade && (!$quiz_assignment || $quiz_assignment->timemodified < $quiz->timemodified)){
 					//assign competences to student
 					if(isset($test->descriptors)){
 						foreach($test->descriptors as $descriptor){
@@ -3214,6 +3218,18 @@ function block_exacomp_perform_auto_test() {
 							mtrace("set topic competence ".$topic->compid." for user ".$student->id.'<br>');
 
 						}
+					}
+					
+					if(!$quiz_assignment) {
+						$quiz_assignment = new \stdClass();
+						$quiz_assignment->quiz = $test->id;
+						$quiz_assignment->userid = $student->id;
+						$quiz_assignment->timemodified = $quiz->timemodified;
+						$DB->insert_record(\block_exacomp\DB_AUTOTESTASSIGN, $quiz_assignment);
+					}
+					else {
+						$quiz_assignment->timemodified = $quiz->timemodified;
+						$DB->update_record(\block_exacomp\DB_AUTOTESTASSIGN, $quiz_assignment);
 					}
 				}
 			}
