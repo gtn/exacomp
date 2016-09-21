@@ -1047,7 +1047,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$visible = block_exacomp_is_topic_visible($data->courseid, $topic, $studentid);
 
 			if($data->role == \block_exacomp\ROLE_TEACHER || $visible){
-				// $hasSubs = (!empty($topic->subs) || !empty($topic->descriptors) );
 				$visible_css = block_exacomp_get_visible_css($visible, $data->role);
 				
 				$this_rg2_class = ($data->rg2_level >= 0 ? 'rg2-level-'.$data->rg2_level : '').' '.$visible_css;
@@ -2824,11 +2823,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$this->descriptors_badges($rows, $level+1, $topic->descriptors, $badge);
 			}
 
-			/*
-			if (!empty($topic->subs)) {
-				$this->topics_badges($rows, $level+1, $topic->subs, $badge);
-			}
-			*/
 		}
 	}
 	public function descriptors_badges(&$rows, $level, $descriptors, $badge) {
@@ -3958,6 +3952,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		. html_writer::tag('button', get_string('cleardaterange','block_exacomp'), array('id' => 'clear-range'));
 	}
 }
+
 
 
 
