@@ -2906,7 +2906,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$stat = block_exacomp_get_evaluation_statistic_for_subject($course->id, $subject->id, $student->id);
 				$tables = $this->subject_statistic_table($course->id, $stat['descriptor_evaluations'], 'Kompetenzen');
 				$tables .= $this->subject_statistic_table($course->id, $stat['child_evaluations'], 'Teilkompetenzen');
-				$tables .= $this->subject_statistic_table($course->id, $stat['example_evaluations'], 'Lernmaterialien');
+				if(block_exacomp_course_has_examples($course->id))
+					$tables .= $this->subject_statistic_table($course->id, $stat['example_evaluations'], 'Lernmaterialien');
 				$content .= html_writer::tag('div', $tables, array('class'=>'statistictables', 'exa-subjectid' => $subject->id));
 			}
 			
@@ -3957,5 +3958,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		. html_writer::tag('button', get_string('cleardaterange','block_exacomp'), array('id' => 'clear-range'));
 	}
 }
+
 
 
