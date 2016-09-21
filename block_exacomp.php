@@ -71,9 +71,6 @@ class block_exacomp extends block_list {
 		$has_data = block_exacomp\data::has_data();
 
 		$courseSettings = block_exacomp_get_settings_by_course($courseid);
-		// this is an old setting
-		// TODO: delete all occurences of usedetailpage in all files
-		$usedetailpage = $courseSettings->usedetailpage;
 
 		$ready_for_use = block_exacomp_is_ready_for_use($courseid);
 
@@ -107,11 +104,6 @@ class block_exacomp extends block_list {
 				}
 
 				if (!$courseSettings->nostudents) {
-					//Kompetenz-Detailansicht nur wenn mit Aktivitäten gearbeitet wird
-					if ($courseSettings->uses_activities && $usedetailpage) {
-						$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/competence_detail.php', array('courseid' => $courseid)), get_string('tab_competence_details', 'block_exacomp'), array('title' => get_string('tab_competence_details', 'block_exacomp')));
-						$this->content->icons[] = html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/detailed_view_of_competencies.png'), 'alt' => "", 'height' => 16, 'width' => 23));
-					}
 
 					//Kompetenzprofil
 					$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/competence_profile.php', array('courseid' => $courseid)), get_string('tab_competence_profile', 'block_exacomp'), array('title' => get_string('tab_competence_profile', 'block_exacomp')));
