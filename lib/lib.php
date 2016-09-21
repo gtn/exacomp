@@ -6383,7 +6383,6 @@ function block_exacomp_get_solution_visibilities_for_course($courseid){
  */
 function block_exacomp_get_visibility_object($courseid){
 	$visibilites = new stdClass();
-	$visibilites->courseid = $courseid;
 	$visibilites->example_visibilities = block_exacomp_get_example_visibilities_for_course($courseid);
 	$visibilites->descriptor_visibilites = block_exacomp_get_descriptor_visibilities_for_course($courseid);
 	$visibilites->topic_visibilities = block_exacomp_get_topic_visibilities_for_course($courseid);
@@ -6400,11 +6399,11 @@ function block_exacomp_get_visibility_cache($courseid){
 	// Get a cache instance
 	$cache = cache::make('block_exacomp', 'visibility_cache');
 	
-	$visibilites = $cache->get('visibilities');
+	$visibilites = $cache->get($courseid);
 	
-	if(!$visibilites || $visibilites->courseid != $courseid){
-		$result = $cache->set('visibilities', block_exacomp_get_visibility_object($courseid));
-		$visibilites = $cache->get('visibilities');
+	if(!$visibilites){
+		$result = $cache->set($courseid, block_exacomp_get_visibility_object($courseid));
+		$visibilites = $cache->get($courseid);
 	}
 	
 	return $visibilites;
@@ -6416,7 +6415,7 @@ function block_exacomp_get_visibility_cache($courseid){
  */
 function block_exacomp_update_visibility_cache($courseid){
 	$cache = cache::make('block_exacomp', 'visibility_cache');
-	return $cache->set('visibilities', block_exacomp_get_visibility_object($courseid));
+	return $cache->set($courseid, block_exacomp_get_visibility_object($courseid));
 }
 
 /**
