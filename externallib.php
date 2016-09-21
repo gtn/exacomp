@@ -2058,36 +2058,6 @@ class block_exacomp_external extends external_api {
 	 * Returns description of method parameters
 	 *
 	 * @return external_function_parameters
-	 */
-	public static function perform_auto_test_parameters() {
-		return new external_function_parameters ( array (
-		) );
-	}
-	public static function perform_auto_test() {
-		global $CFG, $DB, $USER;
-	
-		block_exacomp_perform_auto_test();
-	
-		return array(
-				"success" => true,
-		);
-	}
-	
-	/**
-	 * Returns desription of method return values
-	 *
-	 * @return external_multiple_structure
-	 */
-	public static function perform_auto_test_returns() {
-		return new external_single_structure ( array (
-				'success' => new external_value ( PARAM_BOOL, 'true if successful' )
-		) );
-	}
-	
-	/**
-	 * Returns description of method parameters
-	 *
-	 * @return external_function_parameters
 	 *
 	 */
 	public static function dakora_set_competence_parameters() {

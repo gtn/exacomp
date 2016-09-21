@@ -866,39 +866,41 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
 	if (!$courseid)
 		$courseid = g::$COURSE->id;
 
-	$settings = g::$DB->get_record(block_exacomp\DB_SETTINGS, array("courseid" => $courseid));
+		$settings = g::$DB->get_record(block_exacomp\DB_SETTINGS, array("courseid" => $courseid));
 
-	if (!$settings) {
-		$settings = new stdClass;
-	}
+		if (!$settings) {
+			$settings = new stdClass;
+		}
 
-	// actually this is a global setting now
-	$settings->useprofoundness = get_config('exacomp', 'useprofoundness');
+		// actually this is a global setting now
+		$settings->useprofoundness = get_config('exacomp', 'useprofoundness');
 
-	/*if ($settings->useprofoundness) {
-		$settings->grading = 2;
-	} else*/
-	if (empty($settings->grading)) {
-		$settings->grading = 1;
-	}
-	if (empty($settings->nostudents)) $settings->nostudents = 0;
-	$settings->work_with_students = !$settings->nostudents;
+		/*if ($settings->useprofoundness) {
+		 $settings->grading = 2;
+		 } else*/
+		if (empty($settings->grading)) {
+			$settings->grading = 1;
+		}
+		if (empty($settings->nostudents)) $settings->nostudents = 0;
+		$settings->work_with_students = !$settings->nostudents;
 
-	if (!isset($settings->uses_activities)) $settings->uses_activities = block_exacomp_is_skillsmanagement() ? 0 : 1;
-	if (!isset($settings->show_all_examples)) $settings->show_all_examples = block_exacomp_is_skillsmanagement() ? 1 : 0;
-	if (!$settings->uses_activities) {
-		$settings->show_all_descriptors = 1;
-	} elseif (!isset($settings->show_all_descriptors)) {
-		$settings->show_all_descriptors = 0;
-	}
-	if (isset($settings->filteredtaxonomies)) {
-		$settings->filteredtaxonomies = json_decode($settings->filteredtaxonomies,true);
-	} else {
-		$settings->filteredtaxonomies = array(SHOW_ALL_TAXONOMIES);
-	}
+		if (!isset($settings->uses_activities)) $settings->uses_activities = 0;
+		if (!isset($settings->show_all_examples)) $settings->show_all_examples = block_exacomp_is_skillsmanagement() ? 1 : 0;
+		if (!$settings->uses_activities) {
+			$settings->show_all_descriptors = 1;
+		}
+		if (!isset($settings->show_all_descriptors)) {
+			$settings->show_all_descriptors = 1;
+		}
+		if (isset($settings->filteredtaxonomies)) {
+			$settings->filteredtaxonomies = json_decode($settings->filteredtaxonomies,true);
+		} else {
+			$settings->filteredtaxonomies = array(SHOW_ALL_TAXONOMIES);
+		}
 
-	return $settings;
+		return $settings;
 }
+
 
 /**
  *
