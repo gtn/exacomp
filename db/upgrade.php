@@ -2704,6 +2704,27 @@ function xmldb_block_exacomp_upgrade($oldversion) {
 	}
 
 	if ($oldversion < 2016042100) {
+
+		/** -------------------------------------------------------------------------------------------------------------
+		 * this added at current state of development (22.9.2016) and backdated due to update problems
+		 *  of old grading scheme to new grading scheme (if additional_grading was set in old version)
+		 *  to solve the problem check is done on version where grading changed
+		 *
+		 */
+		//if old grading scheme and additional grading is used, any 3 chars can be added as grading informatione
+		//now only values from 1.0 to 6.0 are allowed -> clean field vales additional_grading
+		$records = $DB->get_records_select(\block_exacomp\DB_COMPETENCES,"additionalinfo IS NOT NULL");
+		foreach($records as $record){
+			$record->additionalinfo = NULL;
+			$DB->update_record(\block_exacomp\DB_COMPETENCES, $record);
+		}
+	
+		//remove tick on setting additional_grading (this is completely different to new functionality and not working if ticked)
+		set_config('additional_grading', 0, 'exacomp');
+		/**
+		 * -------------------------------------------------------------------------------------------------------------
+		 */
+
 		// Define key niveauid (foreign) to be dropped form block_exacompcompuser.
 		$table = new xmldb_table('block_exacompcompuser');
 		$key = new xmldb_key('niveauid', XMLDB_KEY_FOREIGN, array('niveauid'), 'eval_niveau', array('id'));
