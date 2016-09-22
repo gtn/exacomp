@@ -754,6 +754,46 @@ return  [
 
 
 	// === Assign competencies ===
+	'comp_-1' => [
+		'ohne Angabe',
+		'no information',
+	],
+	'comp_0' => [
+		'nicht erreicht',
+		'not gained',
+	],
+	'comp_1' => [
+		'teilweise',
+		'partly',
+	],
+	'comp_2' => [
+		'überwiegend',
+		'mostly',
+		],
+	'comp_3' => [
+		'vollständig',
+		'completely',
+	],
+		'comp_-1_short' => [
+				'oA',
+				'nI',
+		],
+		'comp_0_short' => [
+				'nE',
+				'nG',
+		],
+		'comp_1_short' => [
+				'tE',
+				'pG',
+		],
+		'comp_2_short' => [
+				'üE',
+				'mG',
+		],
+		'comp_3_short' => [
+				'vE',
+				'cG',
+		],
 	'delete_confirmation' => [
 		'Soll "{$a}" wirklich gelöscht werden?',
 		'Do you really want to delete "{$a}"?',

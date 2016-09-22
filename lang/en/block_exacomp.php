@@ -238,6 +238,16 @@ $string['allow_resubmission_info'] = 'The example is now allowed to be resubmite
 
 
 // === Assign competencies ===
+$string['comp_-1'] = 'no information';
+$string['comp_0'] = 'not gained';
+$string['comp_1'] = 'partly';
+$string['comp_2'] = 'mostly';
+$string['comp_3'] = 'completely';
+$string['comp_-1_short'] = 'nI';
+$string['comp_0_short'] = 'nG';
+$string['comp_1_short'] = 'pG';
+$string['comp_2_short'] = 'mG';
+$string['comp_3_short'] = 'cG';
 $string['delete_confirmation'] = 'Do you really want to delete "{$a}"?';
 $string['legend_activities'] = 'Moodle activities';
 $string['legend_eportfolio'] = 'ePortfolio';
@@ -494,4 +504,3 @@ $string['description_createtoken'] = 'Grant additional permission to the role "a
 $string['exacomp_not_found'] = 'Exacompservice not found';
 $string['exaport_not_found'] = 'Exaportservice not found';
 $string['no_external_trainer'] = 'No external trainers assigned';
-

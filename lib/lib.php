@@ -4464,7 +4464,7 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 
 	$gradings = array(); //array[niveauid][value][number of examples evaluated with this value and niveau]
 	//create grading statistic
-	$scheme_items = \block_exacomp\global_config::get_value_titles(block_exacomp_get_grading_scheme($courseid));
+	$scheme_items = \block_exacomp\global_config::get_value_titles($courseid);
 	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
 
 	if(block_exacomp_use_eval_niveau())
@@ -5615,7 +5615,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 	$table_content->content = array();
 		
 	$use_evalniveau = block_exacomp_use_eval_niveau();
-	$scheme_items = \block_exacomp\global_config::get_value_titles(block_exacomp_get_grading_scheme($courseid));
+	$scheme_items = \block_exacomp\global_config::get_value_titles($courseid);
 	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
 	foreach($competence_tree as $subject){
 		foreach($subject->topics as $topic){
@@ -6593,24 +6593,23 @@ namespace block_exacomp {
 		 */
 		static function get_value_titles($courseid = 0, $short = false) {
 			// if additional_grading is set, use global value scheme
-			// TODO: use language strings for the titles
 			
 			if (block_exacomp_additional_grading()) {
 				if($short)
 					return array(
-					 	-1 => 'oA',
-						0 => 'nE',
-						1 => 'tE',
-						2 => 'üE',
-						3 => 'vE'
+					 	- 1 => get_string('comp_-1_short','block_exacomp'),
+						0 => get_string('comp_0_short','block_exacomp'),
+						1 => get_string('comp_1_short','block_exacomp'),
+						2 => get_string('comp_2_short','block_exacomp'),
+						3 => get_string('comp_3_short','block_exacomp')
 					);
 					
 				return array (
-						- 1 => 'ohne Angabe',
-						0 => 'nicht erreicht',
-						1 => 'teilweise',
-						2 => 'überwiegend',
-						3 => 'vollständig' 
+						- 1 => get_string('comp_-1','block_exacomp'),
+						0 => get_string('comp_0','block_exacomp'),
+						1 => get_string('comp_1','block_exacomp'),
+						2 => get_string('comp_2','block_exacomp'),
+						3 => get_string('comp_3','block_exacomp')
 				);
 			} 
 			// else use value scheme set in the course

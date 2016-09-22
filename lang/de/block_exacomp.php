@@ -237,6 +237,16 @@ $string['allow_resubmission_info'] = 'Die Aufgabe wurde zur erneuten Abgabe frei
 
 
 // === Assign competencies ===
+$string['comp_-1'] = 'ohne Angabe';
+$string['comp_0'] = 'nicht erreicht';
+$string['comp_1'] = 'teilweise';
+$string['comp_2'] = 'überwiegend';
+$string['comp_3'] = 'vollständig';
+$string['comp_-1_short'] = 'oA';
+$string['comp_0_short'] = 'nE';
+$string['comp_1_short'] = 'tE';
+$string['comp_2_short'] = 'üE';
+$string['comp_3_short'] = 'vE';
 $string['delete_confirmation'] = 'Soll "{$a}" wirklich gelöscht werden?';
 $string['legend_activities'] = 'Moodle-Aktivitäten';
 $string['legend_eportfolio'] = 'ePortfolio';
@@ -496,4 +506,3 @@ $string['description_createtoken'] = 'Der Benutzerrolle "Authentifizierte/r Nutz
 $string['exacomp_not_found'] = 'Exacompservice nicht gefunden';
 $string['exaport_not_found'] = 'Exaportservice nicht gefunden';
 $string['no_external_trainer'] = 'Keine externen Trainer zugeteilt';
-
