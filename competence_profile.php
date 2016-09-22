@@ -105,12 +105,10 @@ $profile_settings = block_exacomp_get_profile_settings($studentid);
 $items = array();
 
 $user_courses = array();
-$max_scheme = 3;
+
 foreach($possible_courses as $course){
 	if(isset($profile_settings->exacomp[$course->id])){
 		$user_courses[$course->id] = $course; 
-		if(($grading = block_exacomp_get_grading_scheme($course->id)) > $max_scheme)
-			$max_scheme = $grading;
 	}
 }
 
@@ -120,9 +118,10 @@ if(!empty($profile_settings->exacomp) || $profile_settings->showallcomps == 1)
 foreach($user_courses as $course) {
 	//if selected
 	if(isset($profile_settings->exacomp[$course->id]))
-		echo $output->competence_profile_course($course,$student,true,$max_scheme);
+		echo $output->competence_profile_course($course,$student,true,block_exacomp_get_grading_scheme($course->id));
 }
 
 /* END CONTENT REGION */
 echo $output->footer();
+
 

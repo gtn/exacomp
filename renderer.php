@@ -2894,7 +2894,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		foreach($competence_tree as $subject){
 			$content .= html_writer::tag("h4", html_writer::tag('a', $subject->title, array('name'=>$course->fullname.$course->id)), array("class" => "competence_profile_coursetitle"));
-			$content .= html_writer::tag('div', $this->competence_profile_grid($course->id, $subject, $student->id), array('class'=>'container','id'=>'charts'));
+			$content .= html_writer::tag('div', $this->competence_profile_grid($course->id, $subject, $student->id, $max_scheme), array('class'=>'container','id'=>'charts'));
 			
 			if(block_exacomp_additional_grading()){
 				$stat = block_exacomp_get_evaluation_statistic_for_subject($course->id, $subject->id, $student->id);
@@ -2916,7 +2916,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		return html_writer::div($content,"competence_profile_coursedata");
 	}
-	private function competence_profile_grid($courseid, $subject, $studentid) {
+	private function competence_profile_grid($courseid, $subject, $studentid, $max_scheme) {
 		global $DB;
 		
 		$content = '';
@@ -2989,7 +2989,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						"data-title" => $element->evalniveau,
 						
 						"data-value" => $element->eval,
-						"data-valuemax" => "3" 
+						"data-valuemax" => $max_scheme 
 				) )) : '');
 				
 				$cell->attributes ['class'] = (($element->visible && $rowcontent->visible) ? '' : 'notvisible');
@@ -3017,7 +3017,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						"data-title" => $rowcontent->topic_evalniveau,
 						
 						"data-value" => $rowcontent->topic_eval,
-						"data-valuemax" => "3" 
+						"data-valuemax" => $max_scheme 
 				) );
 				
 				$topic_eval_cell->attributes ['class'] = (($rowcontent->visible) ? '' : 'notvisible');
