@@ -306,8 +306,11 @@ $string['assignmyself'] = 'selbst';
 $string['assignteacher'] = 'TrainerIn';
 $string['assignfrom'] = 'von';
 $string['assignuntil'] = 'bis';
-
-
+$string['comp_-1'] = 'ohne Angabe';
+$string['comp_0'] = 'nicht erreicht';
+$string['comp_1'] = 'teilweise';
+$string['comp_2'] = 'überwiegend';
+$string['comp_3'] = 'vollständig';
 // === metadata ===
 $string['subject_singular'] = 'Fach';
 $string['comp_field_idea'] = 'Kompetenzbereich/Leitidee';

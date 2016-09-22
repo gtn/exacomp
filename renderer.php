@@ -2647,7 +2647,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		// TODO: diese $scheme brauchen wir nicht mehr? einfach $options = $scheme_values?
 
 		if(strcmp($evaluation, 'teacher')==0){
-			$options = \block_exacomp\global_config::get_value_titles($scheme);
+			$options = \block_exacomp\global_config::get_value_titles();
 		}else{
 			$options = \block_exacomp\global_config::get_student_value_titles();
 		}

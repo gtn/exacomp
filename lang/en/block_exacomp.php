@@ -307,8 +307,11 @@ $string['assignmyself'] = 'by myself';
 $string['assignteacher'] = 'trainer';
 $string['assignfrom'] = 'from';
 $string['assignuntil'] = 'until';
-
-
+$string['comp_-1'] = 'no information';
+$string['comp_0'] = 'not gained';
+$string['comp_1'] = 'partly';
+$string['comp_2'] = 'mostly';
+$string['comp_3'] = 'completely';
 // === metadata ===
 $string['subject_singular'] = 'Field of competence';
 $string['comp_field_idea'] = 'Skill';
