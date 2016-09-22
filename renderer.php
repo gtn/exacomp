@@ -3094,7 +3094,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		foreach($stat as $niveau=>$data){
 			$row = new html_table_row();
 			$cell = new html_table_cell();
-			$cell->text = $evaluation_niveaus[$niveau];
+			$cell->text = (block_exacomp_use_eval_niveau())?$evaluation_niveaus[$niveau]:'';
 			$row->cells[] = $cell;
 			
 			foreach($data as $sum){
@@ -3952,6 +3952,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		. html_writer::tag('button', get_string('cleardaterange','block_exacomp'), array('id' => 'clear-range'));
 	}
 }
+
 
 
 
