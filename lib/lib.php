@@ -6715,7 +6715,7 @@ namespace block_exacomp {
 			if(!$value || $value == "")
 				return -1;
 		
-			$mapping = array(6.0, 4.8, 3.5, 2.2);
+			$mapping = array(6.0, 4.4, 2.7, 1.0);
 				
 			return $mapping[$value];
 		}
@@ -6725,7 +6725,7 @@ namespace block_exacomp {
 		 * @param int $value
 		 */
 		static function get_values_additionalinfo_mapping(){
-			return array(6.0, 4.8, 3.5, 2.2);
+			return array(6.0, 4.4, 2.7, 1.0);
 		}
 	}
 
