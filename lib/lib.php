@@ -7372,18 +7372,18 @@ namespace block_exacomp {
 			
 			if (block_exacomp_additional_grading()) {
 				return array (
-						- 1 => 'ohne Angabe',
-						0 => 'nicht erreicht',
-						1 => 'teilweise',
-						2 => 'überwiegend',
-						3 => 'vollständig' 
+						- 1 => get_string('comp_-1','block_exacomp'),
+						0 => get_string('comp_0','block_exacomp'),
+						1 => get_string('comp_1','block_exacomp'),
+						2 => get_string('comp_2','block_exacomp'),
+						3 => get_string('comp_3','block_exacomp')
 				);
 			} 
 			// else use value scheme set in the course
 			else {
 				// TODO: add settings to g::$COURSE?
 				$course_grading = block_exacomp_get_settings_by_course(($courseid==0)?g::$COURSE->id:$courseid)->grading;
-				
+
 				$values = array(-1 => ' ');
 				$values += range(0, $course_grading);
 				
