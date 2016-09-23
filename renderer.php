@@ -3079,6 +3079,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		$row = new html_table_row();
 		$cell = new html_table_cell();
+		$cell->attributes['class'] = 'cell-th';
 		$row->cells[] = $cell;
 		
 		foreach($value_titles as $key => $value){
@@ -3086,6 +3087,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			if($key > -1){
 				$cell = new html_table_cell();
 				$cell->text = $value;
+				$cell->attributes['class'] = 'cell-th';
 				$row->cells[] = $cell;
 			}
 		}
@@ -3095,6 +3097,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$row = new html_table_row();
 			$cell = new html_table_cell();
 			$cell->text = (block_exacomp_use_eval_niveau())?$evaluation_niveaus[$niveau]:'';
+			$cell->attributes['class'] = 'cell-th';
 			$row->cells[] = $cell;
 			
 			foreach($data as $sum){
@@ -3143,12 +3146,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		foreach($subject->subs as $topic){
 			$row = new html_table_row();
+			$row->attributes['class'] = 'comparison_topic';
 			$cell = new html_table_cell();
 			$cell->text = $topic->numbering;
 			$row->cells[] = $cell;
 			
 			$cell = new html_table_cell();
-			$cell->text = $topic->title;
+			$cell->text = $topic->title
+				.html_writer::link('#', 
+						html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/compprofpie.png'), 'alt'=>'print')), 
+						array('class'=>'compprofpie'));
 			$row->cells[] = $cell;
 			
 			$cell = new html_table_cell();
@@ -3170,6 +3177,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			
 			foreach($topic->descriptors as $descriptor){
 				$row = new html_table_row();
+				$row->attributes['class'] = 'comparison_desc';
 				$cell = new html_table_cell();
 				$cell->text = $descriptor->numbering;
 				$row->cells[] = $cell;
@@ -3200,6 +3208,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					//cannot be 9 -> no blocking events here
 					if($example->state > \block_exacomp\EXAMPLE_STATE_SUBMITTED && !$edited){
 						$row = new html_table_row();
+						$row->attributes['class'] = 'comparison_mat comparmat_mathead';
 						$cell = new html_table_cell();
 						$row->cells[] = $cell;
 						$cell = new html_table_cell();
@@ -3210,6 +3219,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$edited = true;
 					}elseif($example->state > \block_exacomp\EXAMPLE_STATE_NOT_SET && $example->state < \block_exacomp\EXAMPLE_STATE_SUBMITTED && !$inwork){
 						$row = new html_table_row();
+						$row->attributes['class'] = 'comparison_mat comparmat_mathead';
 						$cell = new html_table_cell();
 						$row->cells[] = $cell;
 						$cell = new html_table_cell();
@@ -3220,6 +3230,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$inwork = true;
 					}elseif($example->state == \block_exacomp\EXAMPLE_STATE_NOT_SET && !$notinwork){
 						$row = new html_table_row();
+						$row->attributes['class'] = 'comparison_mat comparmat_mathead';
 						$cell = new html_table_cell();
 						$row->cells[] = $cell;
 						$cell = new html_table_cell();
@@ -3231,6 +3242,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					}
 					
 					$row = new html_table_row();
+					$row->attributes['class'] = 'comparison_mat';
 					$cell = new html_table_cell();
 					$cell->text = '';
 					$row->cells[] = $cell;

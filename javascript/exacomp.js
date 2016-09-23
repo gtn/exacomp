@@ -553,6 +553,11 @@ $(document).on('click', '.exa-collapsible > legend', function(){
     	$("td[exa-timestamp]" ).each(function( index ) {
     		if ($(this).attr("exa-timestamp") >= date1_s && $(this).attr("exa-timestamp") <= date2_s ) {
     			$(this).addClass('highlight_cell');
+    			
+    			tr = $(this).closest('tr');
+        		if(tr.hasClass('comparison_topic') || tr.hasClass('comparison_desc') || tr.hasClass('comparison_mat')){
+        			tr.addClass('highlight_cell');
+        		}
     		}
     	});
 	}
@@ -616,6 +621,11 @@ $(document).on('click', '.exa-collapsible > legend', function(){
 	        	// Reset the gradings within the given range
 	        	$("td[exa-timestamp]" ).each(function( index ) {
 	        		$(this).removeClass('highlight_cell');
+	        		
+	        		tr = $(this).closest('tr');
+	        		if(tr.hasClass('highlight_cell')){
+	        			tr.removeClass('highlight_cell');
+	        		}
 	        	});
 	        	
 	        	update_statistic_tables(0,0);
@@ -627,7 +637,7 @@ $(document).on('click', '.exa-collapsible > legend', function(){
 		        	$("[name=" + $(this).attr("name") + "]").each(function() {
 		        		if(Date.now() >= new Date(sessionStorage.getItem('date1')) && Date.now() <= new Date(sessionStorage.getItem('date2')))
 			        		$(this).closest('td').addClass('highlight_cell');
-			        	
+
 			        	$(this).closest('td').attr('exa-timestamp', Math.floor(Date.now() / 1000));
 		        	});
 	        	}

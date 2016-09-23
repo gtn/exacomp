@@ -225,3 +225,135 @@
 	background-color: #cccccc;
 	opacity: 0.5;
 }
+
+/* ####### New Styles ########## */
+
+#block_exacomp .competence_profile_coursetitle a {
+	color: #000;
+	font-size: 18px;
+	margin-bottom: 50px;
+	display: block;
+	padding: 0 10px;
+}
+
+#block_exacomp .competence_profile_coursedata {
+	padding-left: 0;
+	padding-right: 0;
+}
+
+#block_exacomp .competence_profile_innersection {
+	border-top: 1px solid #ddd;
+	padding: 10px;
+}
+
+#block_exacomp .competence_profile_insectitle {
+	background: rgba(0, 0, 0, 0) url("../arrow_hide12.png") no-repeat scroll 0 4px;
+	padding-left: 18px;
+	margin-bottom: 20px;
+}
+
+#block_exacomp .open .competence_profile_insectitle {
+	background: rgba(0, 0, 0, 0) url("../arrow_show12.png") no-repeat scroll 0 4px;
+}
+
+#block_exacomp .competence_profile_coursedata th {
+	font-weight: normal;
+}
+
+#block_exacomp .comparison_topic {
+	font-size: 1em;
+	font-weight: bold;
+}
+
+#block_exacomp .comparison_topic td {
+	padding-top: 20px;
+	background-color: #e6e6e6;
+}
+
+#block_exacomp .comparison_topic .highlight_cell {
+    background-color: #b7efeb;
+}
+
+#block_exacomp .comparison_desc .cell.c1 {
+	padding-left: 15px;
+}
+
+#block_exacomp .comparison_mat {
+	font-size: 0.9em;
+}
+
+#block_exacomp .comparison_mat .cell.c1 {
+	padding-left: 40px;
+}
+
+#block_exacomp .comparison_mat.comparmat_mathead td.cell.c1 {
+	font-weight: bold;
+	padding-left: 30px;
+}
+
+#block_exacomp .comparisondiv .comparisontable td.cell.c2,
+#block_exacomp .comparisondiv .comparisontable td.cell.c3,
+#block_exacomp .comparisondiv .comparisontable th.cell.c1,
+#block_exacomp .comparisondiv .comparisontable th.cell.c2  {
+	text-align: center;
+}
+
+#block_exacomp .statistictables .stat_table table, #block_exacomp .statistictables .stat_table table.flexible {
+	width: inherit
+}
+
+#block_exacomp .statistictables .stat_table table th {
+	font-weight: bold;
+}
+
+#block_exacomp .statistictables .stat_table table td {
+	min-width: 70px;
+	text-align: center;
+}
+
+#block_exacomp .statistictables .stat_table table td.cell-th, #block_exacomp .statistictables .stat_table table .cell-th td {
+	 background-color: #e6e6e6;
+	 font-weight: bold;
+}
+
+#block_exacomp .competence_profile_coursedata #charts {
+	width: auto;
+}
+
+#block_exacomp .comparison_topic .highlight_cell, #block_exacomp .highlight_cell, #block_exacomp .highlight_cell td {
+	/* background-color: inherit;
+	-webkit-box-shadow: inset 0px 0px 10px 0px rgba(0,158,155,0.75);
+-moz-box-shadow: inset 0px 0px 10px 0px rgba(0,158,155,0.75);
+box-shadow: inset 0px 0px 10px 0px rgba(0,158,155,0.75); */
+	background-color: #d9edf7;
+}
+
+#block_exacomp .comparison_topic.highlight_cell td {
+	background-color: #b5dcf0;
+}
+
+#block_exacomp .compprofpie {
+	float: right;
+	font-weight: normal;
+	color: #000;
+	padding-right: 5px;
+}
+
+#block_exacomp .statistictables .statistictable {
+	float: left;
+	margin-right: 20px;
+}
+
+#block_exacomp .cf:before,
+#block_exacomp .cf:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+
+#block_exacomp .cf:after {
+    clear: both;
+}
+
+#block_exacomp .cf {
+    *zoom: 1;
+}
