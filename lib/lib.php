@@ -6971,7 +6971,10 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 	global $DB;
 	list($course_subjects, $table_rows, $table_header, $table_content) = block_exacomp_get_grid_for_competence_profile($courseid, $userid, $subjectid);
 
-	$spanning_niveaus = $DB->get_records(\block_exacomp\DB_NIVEAUS,array('span' => 1));
+	$spanning_niveaus = $DB->get_fieldset_select ( \block_exacomp\DB_NIVEAUS, 'title', 'span=?', array (
+				1 
+		) );
+	
 	//calculate the col span for spanning niveaus
 	$spanning_colspan = block_exacomp_calculate_spanning_niveau_colspan($table_header, $spanning_niveaus);
 	
@@ -7024,7 +7027,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 				$content_row->columns[$current_idx]->show = $element->show;
 				$content_row->columns[$current_idx]->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($element->eval);
 				
-				if(array_key_exists($niveau, $spanning_niveaus)){
+				if(in_array($niveau, $spanning_niveaus)){
 					$content_row->columns[$current_idx]->span = $spanning_colspan;
 				}else{
 					$content_row->columns[$current_idx]->span = 0;
