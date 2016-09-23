@@ -811,16 +811,19 @@
 	$(document).on('click', '[exa-type=iframe-popup]', function(event) {
 		event.preventDefault();
 		popupheight = this.getAttribute('exa-height');	
-		
-		if(popupheight.endsWith("px")){
-			popupheight = popupheight.slice(0, -2);
-		}
-		
 		windowheight = $( window ).height() * 0.8;
-		if(popupheight > windowheight){
+		
+		if(popupheight != null){
+			if(popupheight.endsWith("px")){
+				popupheight = popupheight.slice(0, -2);
+			}
+			
+			if(popupheight > windowheight){
+				popupheight = windowheight;
+			}
+		}else{
 			popupheight = windowheight;
 		}
-		
 		// open iframe from exa-url OR href attribute
 		block_exacomp.popup_iframe({
 			url: this.getAttribute('exa-url') || this.getAttribute('href'),
