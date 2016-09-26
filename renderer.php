@@ -2894,7 +2894,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		foreach($competence_tree as $subject){
 			$content .= html_writer::tag("h4", html_writer::tag('a', $subject->title, array('name'=>$course->fullname.$course->id)), array("class" => "competence_profile_coursetitle"));
-			$content .= html_writer::tag('div', $this->competence_profile_grid($course->id, $subject, $student->id, $max_scheme), array('class'=>'container','id'=>'charts'));
+			
+			$innersection = html_writer::tag('legend', get_string('innersection1', 'block_exacomp'), array('class'=>'competence_profile_insectitle'));
+			$innersection .= html_writer::tag('div', $this->competence_profile_grid($course->id, $subject, $student->id, $max_scheme), array('class'=>'container','id'=>'charts'));
+			$content .= html_writer::tag('fieldset', $innersection, array('id'=>'toclose', 'name'=>'toclose', 'class'=>' competence_profile_innersection exa-collapsible exa-collapsible-open'));
 			
 			if(block_exacomp_additional_grading()){
 				$stat = block_exacomp_get_evaluation_statistic_for_subject($course->id, $subject->id, $student->id);
@@ -2902,16 +2905,26 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$tables .= $this->subject_statistic_table($course->id, $stat['child_evaluations'], 'Teilkompetenzen');
 				if(block_exacomp_course_has_examples($course->id))
 					$tables .= $this->subject_statistic_table($course->id, $stat['example_evaluations'], 'Lernmaterialien');
-				$content .= html_writer::tag('div', $tables, array('class'=>'statistictables', 'exa-subjectid' => $subject->id));
+				
+				$innersection = html_writer::tag('legend', get_string('innersection2', 'block_exacomp'), array('class'=>'competence_profile_insectitle'));
+				$innersection .= html_writer::tag('div', $tables, array('class'=>'statistictables', 'exa-subjectid' => $subject->id));
+				$content .= html_writer::tag('fieldset', $innersection, array('class'=>' competence_profile_innersection exa-collapsible'));
+						
 			}
 			
 			list($student, $subject) = block_exacomp_get_data_for_profile_comparison($course->id, $subject, $student);
 			
-			$content .= html_writer::tag('div', $this->comparison_table($course->id, $subject, $student), array('class'=>'comparisondiv'));
+			$innersection = html_writer::tag('legend', get_string('innersection3', 'block_exacomp'), array('class'=>'competence_profile_insectitle'));
+			$innersection .= html_writer::tag('div', $this->comparison_table($course->id, $subject, $student), array('class'=>'comparisondiv'));
+			$content .= html_writer::tag('fieldset', $innersection, array('class'=>' competence_profile_innersection exa-collapsible'));
+				
 		}
 		
 		$content .= "<script> $('div[class=\"container\"]').each(function () {
-                        $(this).find('canvas').donut();
+                        $(this).find('canvas').each(function () {
+			
+					$(this).donut();
+				});
                     });    </script>";
 		
 		return html_writer::div($content,"competence_profile_coursedata");
@@ -3064,7 +3077,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		//first table for descriptor evaluation
 		$table = new html_table();
-		$table->attributes['class'] = ' flexible boxaligncenter statistictable';
+		$table->attributes['class'] = ' flexible statistictable';
 		$rows = array();
 		
 		//header

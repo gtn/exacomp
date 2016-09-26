@@ -1177,8 +1177,18 @@ return  [
 		'Meine Auszeichnungen',
 		'My Badges',
 	],
-
-
+	'innersection1' => [
+		'Rasterübersicht',	
+		'Grid view',
+	],
+	'innersection2' => [
+		'Statistik',
+		'Statistics',
+	],
+	'innersection3' => [
+		'Vergleich: Lehrer-Schüler',
+		'Comparison: Teacher-Student',
+	],
 	// === Competence Profile Settings ===
 	'profile_settings_choose_courses' => [
 		'In Exabis Kompetenzraster beurteilen TrainerInnen den Kompetenzerwerb in unterschiedlichen Fachgebieten. Hier kann ausgewählt werden, welche Kurse im Kompetenzprofil aufscheinen sollen.',

@@ -354,8 +354,9 @@ $string['total'] = 'total';
 $string['select_student'] = 'Please select a student first';
 $string['my_comps'] = 'My Competencies';
 $string['my_badges'] = 'My Badges';
-
-
+$string['innersection1'] = 'Grid view';
+$string['innersection2'] = 'Statistics';
+$string['innersection3'] = 'Comparison: Teacher-Student';
 // === Competence Profile Settings ===
 $string['profile_settings_choose_courses'] = 'Using Exabis Competence Grid trainers assess your competencies in various subjects. You can select which course to include in the competence profile.';
 $string['specificcontent'] = 'site-specific topics';

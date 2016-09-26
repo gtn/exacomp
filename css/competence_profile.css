@@ -236,6 +236,7 @@
 	padding: 0 10px;
 }
 
+<<<<<<< cb6ea977f73e03ba771a5199bb26a845624ca94a
 #block_exacomp .competence_profile_coursedata {
 	padding-left: 0;
 	padding-right: 0;
@@ -243,10 +244,14 @@
 
 #block_exacomp .competence_profile_innersection {
 	border-top: 1px solid #ddd;
+=======
+#block_exacomp .competence_profile_innersection {
+>>>>>>> design: competence profile
 	padding: 10px;
 }
 
 #block_exacomp .competence_profile_insectitle {
+<<<<<<< cb6ea977f73e03ba771a5199bb26a845624ca94a
 	background: rgba(0, 0, 0, 0) url("../arrow_hide12.png") no-repeat scroll 0 4px;
 	padding-left: 18px;
 	margin-bottom: 20px;
@@ -254,6 +259,14 @@
 
 #block_exacomp .open .competence_profile_insectitle {
 	background: rgba(0, 0, 0, 0) url("../arrow_show12.png") no-repeat scroll 0 4px;
+=======
+	background: rgba(0, 0, 0, 0) url("../pix/pfeil_show.png") no-repeat scroll 0;
+	padding-left: 18px;
+}
+
+#block_exacomp .exa-collapsible-open .competence_profile_insectitle {
+	background: rgba(0, 0, 0, 0) url("../pix/pfeil_hide.png") no-repeat scroll 0;
+>>>>>>> design: competence profile
 }
 
 #block_exacomp .competence_profile_coursedata th {
