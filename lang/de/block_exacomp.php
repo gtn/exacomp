@@ -366,6 +366,7 @@ $string['innersection3'] = 'Vergleich: Lehrer-Schüler';
 $string['profile_settings_choose_courses'] = 'In Exabis Kompetenzraster beurteilen TrainerInnen den Kompetenzerwerb in unterschiedlichen Fachgebieten. Hier kann ausgewählt werden, welche Kurse im Kompetenzprofil aufscheinen sollen.';
 $string['specificcontent'] = 'Schulbezogene Themenbereiche';
 $string['topic_3dchart'] = '3D Diagramm';
+$string['topic_3dchart_empty'] = 'Es liegen keine Beurteilungen für diesen Kompetenzbereich vor.';
 // === Profoundness ===
 $string['profoundness_description'] = 'Kompetenzbeschreibung';
 $string['profoundness_basic'] = 'Grundkompetenz';

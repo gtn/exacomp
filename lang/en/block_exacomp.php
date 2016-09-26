@@ -361,6 +361,7 @@ $string['innersection3'] = 'Comparison: Teacher-Student';
 $string['profile_settings_choose_courses'] = 'Using Exabis Competence Grid trainers assess your competencies in various subjects. You can select which course to include in the competence profile.';
 $string['specificcontent'] = 'site-specific topics';
 $string['topic_3dchart'] = '3D Chart';
+$string['topic_3dchart_empty'] = 'No gradings available';
 // === Profoundness ===
 $string['profoundness_description'] = 'Description';
 $string['profoundness_basic'] = 'Basic competence';

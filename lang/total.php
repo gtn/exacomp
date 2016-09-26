@@ -1203,6 +1203,11 @@ return  [
 			'3D Diagramm',
 			'3D Chart',
 	],
+		
+	'topic_3dchart_empty' => [
+			'Es liegen keine Beurteilungen für diesen Kompetenzbereich vor.',
+			'No gradings available',
+	],
 	// === Profoundness ===
 	'profoundness_description' => [
 		'Kompetenzbeschreibung',
