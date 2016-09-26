@@ -71,12 +71,12 @@
 					xBarWidth : 1,
 					yBarWidth : 1,
 
-					// Option tooltip can be true, false, or a function
-					// returning a string with HTML contents
-					// tooltip: true,
 					tooltip : function(point) {
 						// parameter point contains properties x, y, z
-						return 'value: <b>' + point.z + '</b>';
+						if(point.y < 4)
+							return exacomp_data.evalniveau_titles[point.y] + ' <b>' + point.z + '</b>';
+						else
+							return M.util.get_string('selfevaluation', 'block_exacomp') + ' <b>' + point.z + '</b>';
 					},
 
 					xValueLabel : function(value) {
