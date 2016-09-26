@@ -141,7 +141,6 @@ if (optional_param('print', false, PARAM_BOOL)) {
 
 	block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html_tables);
 }
-block_exacomp_perform_auto_test();
 
 echo $output->header_v2($page_identifier);
 echo $colselector;

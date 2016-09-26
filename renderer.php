@@ -1893,6 +1893,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				new moodle_url('/blocks/exacomp/competence_associations.php',array("courseid"=>$courseid,"exampleid"=>$exampleid, "editmode"=>($editmode)?1:0)),
 				 $this->pix_icon("e/insert_edit_link", get_string('competence_associations','block_exacomp')), array('exa-type' => 'iframe-popup'));
 	}
+	public function topic_3dchart_icon($topicid, $userid, $courseid) {
+		return html_writer::link(
+				new moodle_url('/blocks/exacomp/3dchart.php',array("courseid"=>$courseid,"userid" => $userid, "topicid"=>$topicid)),
+				$this->pix("compprofpie.png", get_string('topic_3dchart','block_exacomp')), array('exa-type' => 'iframe-popup', 'class'=>'compprofpie'));
+	}
+	
 	public function example_solution_icon($solution) {
 		return html_writer::link($solution, $this->pix_icon("e/fullpage", get_string('solution','block_exacomp')) ,array("target" => "_blank"));
 	}
@@ -3166,9 +3172,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			
 			$cell = new html_table_cell();
 			$cell->text = $topic->title
-				.html_writer::link('#', 
-						html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/compprofpie.png'), 'alt'=>'print')), 
-						array('class'=>'compprofpie'));
+				. $this->topic_3dchart_icon($topic->id, $student->id, $courseid);
 			$row->cells[] = $cell;
 			
 			$cell = new html_table_cell();

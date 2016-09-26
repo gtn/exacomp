@@ -387,6 +387,18 @@ switch($action){
 			) );
 		}
 		break;
+	case 'get_3dchart_data' :
+		$data = new stdClass ();
+		$courseid = required_param ( 'courseid', PARAM_INT );
+		$topicid = required_param ( 'topicid', PARAM_INT );
+		$userid = required_param ( 'userid', PARAM_INT );
+		
+		$data->evaluation = block_exacomp_get_descriptor_statistic_for_topic ( $courseid, $topicid, $userid ) ['descriptor_evaluation'];
+		$data->evalniveau_titles = \block_exacomp\global_config::get_evalniveaus ();
+		$data->value_titles = \block_exacomp\global_config::get_value_titles ( $courseid, true );
+		
+		echo json_encode ( ( array ) $data );
+		break;
 	default:
 		throw new moodle_exception('wrong action: '.$action);
 }

@@ -1199,7 +1199,10 @@ return  [
 		'site-specific topics',
 	],
 	
-
+	'topic_3dchart' => [
+			'3D Diagramm',
+			'3D Chart',
+	],
 	// === Profoundness ===
 	'profoundness_description' => [
 		'Kompetenzbeschreibung',
