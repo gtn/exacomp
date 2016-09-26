@@ -2899,7 +2899,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content = '';
 
 		foreach($competence_tree as $subject){
-			$content .= html_writer::tag("h4", html_writer::tag('a', $subject->title, array('name'=>$course->fullname.$course->id)), array("class" => "competence_profile_coursetitle"));
+			$content .= html_writer::tag("h4", $subject->title, array("class" => "competence_profile_coursetitle"));
 			
 			$innersection = html_writer::tag('legend', get_string('innersection1', 'block_exacomp'), array('class'=>'competence_profile_insectitle'));
 			$innersection .= html_writer::tag('div', $this->competence_profile_grid($course->id, $subject, $student->id, $max_scheme), array('class'=>'container','id'=>'charts'));

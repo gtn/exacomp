@@ -83,18 +83,19 @@ echo '&nbsp;&nbsp;&nbsp;&nbsp;'.get_string('block_exacomp_external_trainer_stude
 echo html_writer::select($selectstudents, 'studentid');
 echo '<input type="submit">';
 echo '</form>';
+if($externaltrainers){
+	echo '<table id="user-table" class="generaltable externaltrainerstable">';
+	echo '<tr><th>Trainer</th><th>Schüler</th><th></th></tr>';
+	foreach($externaltrainers as $trainer) {
+		echo '<tr>';
+			echo '<td>' . fullname($DB->get_record('user', array('id'=>$trainer->trainerid))) . '</td>';
+			echo '<td>' . fullname($DB->get_record('user', array('id'=>$trainer->studentid))) . '</td>';
+			echo '<td> <a href="'.$CFG->wwwroot.'/blocks/exacomp/externaltrainers.php?delete='.$trainer->id.'&courseid='.$courseid.'">'.
+			'<img src="pix/del.png" /></a></td>';
 
-echo '<table id="user-table">';
-echo '<tr><th>Trainer</th><th>Schüler</th><th></th></tr>';
-foreach($externaltrainers as $trainer) {
-	echo '<tr>';
-		echo '<td>' . fullname($DB->get_record('user', array('id'=>$trainer->trainerid))) . '</td>';
-		echo '<td>' . fullname($DB->get_record('user', array('id'=>$trainer->studentid))) . '</td>';
-		echo '<td> <a href="'.$CFG->wwwroot.'/blocks/exacomp/externaltrainers.php?delete='.$trainer->id.'&courseid='.$courseid.'">'.
-		'<img src="pix/del.png" /></a></td>';
-
-	echo '</tr>';
+		echo '</tr>';
+	}
+	echo '</table>';
 }
-echo '</table>';
-
 echo $output->footer();
+

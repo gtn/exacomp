@@ -1,3 +1,10 @@
 #block_exacomp #user-table td, #block_exacomp #user-table th {
-	padding: 5px 20px 0 0;
+	padding: 5px 20px 5px 5px;
 }
+
+#block_exacomp .externaltrainerstable{
+	width: 50%;
+	border: 1px lightgray solid;
+	margin-top: 20px;
+}
+
