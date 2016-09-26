@@ -379,7 +379,8 @@ switch($action){
 			
 			$tables = $output->subject_statistic_table ( $course->id, $stat ['descriptor_evaluations'], 'Kompetenzen' );
 			$tables .= $output->subject_statistic_table ( $course->id, $stat ['child_evaluations'], 'Teilkompetenzen' );
-			$tables .= $output->subject_statistic_table ( $course->id, $stat ['example_evaluations'], 'Lernmaterialien' );
+			if(block_exacomp_course_has_examples($course->id))
+				$tables .= $output->subject_statistic_table ( $course->id, $stat ['example_evaluations'], 'Lernmaterialien' );
 			echo html_writer::tag ( 'div', $tables, array (
 					'class' => 'statistictables',
 					'exa-subjectid' => $subjectid 
@@ -389,3 +390,4 @@ switch($action){
 	default:
 		throw new moodle_exception('wrong action: '.$action);
 }
+
