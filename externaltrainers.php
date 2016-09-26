@@ -84,7 +84,7 @@ echo html_writer::select($selectstudents, 'studentid');
 echo '<input type="submit">';
 echo '</form>';
 
-echo '<table id="user-table">';
+echo '<table id="user-table" class="generaltable externaltrainerstable">';
 echo '<tr><th>Trainer</th><th>Schüler</th><th></th></tr>';
 foreach($externaltrainers as $trainer) {
 	echo '<tr>';
@@ -98,3 +98,4 @@ foreach($externaltrainers as $trainer) {
 echo '</table>';
 
 echo $output->footer();
+
