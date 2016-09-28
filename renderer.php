@@ -2302,7 +2302,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 
 	public function courseselection($schooltypes, $topics_activ, $headertext){
-		global $PAGE;
+		global $PAGE, $COURSE;
 
 		$header = html_writer::tag('p', $headertext).html_writer::empty_tag('br');
 
@@ -2356,8 +2356,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$table_html .= html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))), '', array('id'=>'exabis_save_button'));
 		$table_html .= html_writer::tag("input", "", array("name" => "action", "type" => "hidden", "value" => 'save'));
 
-		return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url, "id" => "course-selection"));
+		$examples_on_schedule = block_exacomp_any_examples_on_schedule($COURSE->id);
+		
+		return html_writer::tag("form", $header.$table_html, array("method" => "post", "action" => $PAGE->url, "id" => "course-selection", "examplesonschedule"=>$examples_on_schedule));
 	}
+
 	
 	public function descriptor_selection_export(){
 		global $PAGE;

@@ -6539,6 +6539,15 @@ function block_exacomp_build_example_tree($courseid, $exampleid){
 	return $tree;
 }
 
+	function block_exacomp_any_examples_on_schedule($courseid){
+		global $DB;
+		$schedule = $DB->get_records(\block_exacomp\DB_SCHEDULE, array('courseid'=>$courseid));
+		if(!$schedule)
+			return false;
+		
+		return true;
+	}
+
 }
 
 namespace block_exacomp {
@@ -7125,6 +7134,7 @@ namespace block_exacomp {
 		}
 	}
 }
+
 
 
 
