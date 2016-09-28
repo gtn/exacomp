@@ -1729,11 +1729,11 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 			$rows[] = new tabobject('tab_admin_settings', new moodle_url('/blocks/exacomp/edit_config.php',array("courseid"=>$courseid)),get_string('tab_admin_settings','block_exacomp'), null, true);
 		}
 	}
-
-	if ($de && !block_exacomp_is_skillsmanagement()) {
+	/*
+	if ($de) {
 		//Hilfe
 		$rows[] = new tabobject('tab_help', new moodle_url('/blocks/exacomp/help.php', array("courseid"=>$courseid)), get_string('tab_help', 'block_exacomp'), null, true);
-	}
+	}*/
 
 	return $rows;
 }

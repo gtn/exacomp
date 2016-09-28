@@ -237,6 +237,7 @@ $string['allow_resubmission_info'] = 'Die Aufgabe wurde zur erneuten Abgabe frei
 
 
 // === Assign competencies ===
+$string['header_edit_mode'] = 'Sie befinden sich im Bearbeitungsmodus';
 $string['comp_-1'] = 'ohne Angabe';
 $string['comp_0'] = 'nicht erreicht';
 $string['comp_1'] = 'teilweise';

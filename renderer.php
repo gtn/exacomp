@@ -151,7 +151,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			if ($this->is_edit_mode()) {
 				// display a hidden field? not needed, because the form never gets submitted (it's ajax)
 				// $content .= html_writer::empty_tag('input', array('type'=>'text', 'name'=>'exacomp_competence_grid_select_student', 'value'=>$selectedStudent));
-				$content .= '<h3>'.\block_exacomp\trans(['de:Sie befinden sich im Bearbeiten Modus', 'en:Editing mode is turned on']).'</h3>';
+				$content .= '<h3>'.get_string('header_edit_mode','block_exacomp').'</h3>';
 			} elseif ($students) {
 				$content .= '<div style="padding-bottom: 15px;">';
 				$content .= get_string("choosestudent", "block_exacomp");

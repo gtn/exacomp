@@ -87,11 +87,6 @@ class block_exacomp extends block_list {
 
 		if($checkConfig && $has_data){	//Modul wurde konfiguriert
 			
-			if ($isTeacherOrStudent && block_exacomp_is_activated($courseid)) {
-				//Kompetenzraster
-				$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/competence_grid.php', array('courseid'=>$courseid)), get_string('tab_competence_grid', 'block_exacomp'), array('title'=>get_string('tab_competence_grid', 'block_exacomp')));
-				$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/examples_and_tasks.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
-			}
 			if ($isTeacherOrStudent && $ready_for_use) {
 				//Kompetenzüberblick
 				$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid)), get_string('tab_competence_overview', 'block_exacomp'), array('title' => get_string('tab_competence_overview', 'block_exacomp')));
@@ -154,11 +149,11 @@ class block_exacomp extends block_list {
 					$this->content->icons[]='<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/personal.png" height="16" width="23" alt="'.get_string("block_exacomp_external_trainer_assign", "block_exacomp").'" />';
 				}
 			}
-			if ($de && !block_exacomp_is_skillsmanagement()) {
+			/*if ($de) {
 				//Hilfe
 				$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/help.php', array('courseid' => $courseid)), get_string('tab_help', 'block_exacomp'), array('title' => get_string('tab_help', 'block_exacomp')));
 				$this->content->icons[] = html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/info.png'), 'alt' => "", 'height' => 16, 'width' => 23));
-			}
+			}*/
 		} else {
 			if ($isTeacher && !has_capability('block/exacomp:admin', $globalcontext)){
 				$this->content->items[] = get_string('admin_config_pending','block_exacomp');

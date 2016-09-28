@@ -754,6 +754,10 @@ return  [
 
 
 	// === Assign competencies ===
+	'header_edit_mode' => [
+			'Sie befinden sich im Bearbeitungsmodus',
+			'Editing mode is turned on',
+	],
 	'comp_-1' => [
 		'ohne Angabe',
 		'no information',

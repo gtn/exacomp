@@ -238,6 +238,7 @@ $string['allow_resubmission_info'] = 'The example is now allowed to be resubmite
 
 
 // === Assign competencies ===
+$string['header_edit_mode'] = 'Editing mode is turned on';
 $string['comp_-1'] = 'no information';
 $string['comp_0'] = 'not gained';
 $string['comp_1'] = 'partly';
