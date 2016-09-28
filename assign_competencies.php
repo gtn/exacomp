@@ -136,7 +136,7 @@ if (optional_param('print', false, PARAM_BOOL)) {
 		$html_header = $output->overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
 
 		// $html .= "&nbsp;<br />";
-		$html_tables[] = $output->competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $scheme, $selectedNiveau->id != block_exacomp\SHOW_ALL_NIVEAUS, 0, $statistic);
+		$html_tables[] = $output->competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $scheme, $selectedNiveau->id != block_exacomp\SHOW_ALL_NIVEAUS, 0);
 	}
 
 	block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html_tables);
