@@ -2346,7 +2346,7 @@ function block_exacomp_get_eportfolioitem_association($students){
  *
  * @return stdClass $icon
  */
-function block_exacomp_get_icon_for_user($coursemodules, $student, $supported) {
+function block_exacomp_get_icon_for_user($coursemodules, $student) {
 	global $CFG, $DB;
 	require_once $CFG->libdir . '/gradelib.php';
 
@@ -2358,13 +2358,12 @@ function block_exacomp_get_icon_for_user($coursemodules, $student, $supported) {
 
 	foreach ($coursemodules as $cm) {
 		$hasSubmission = false;
-		if(!in_array($cm->module, $supported))
-			continue;
 
 		$gradeinfo = grade_get_grades($cm->course,"mod",$modules[$cm->module],$cm->instance,$student->id);
 
 		//check for assign
-		if($cm->module == $supported[0]) {
+		$assign = $DB->get_record('modules', array('name'=>'assign'));
+		if($cm->module == $assign->id) {
 			$hasSubmission = $DB->get_record('assign_submission', array('assignment' => $cm->instance, 'userid' => $student->id));
 		}
 

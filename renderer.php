@@ -1362,7 +1362,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						foreach($data->cm_mm->competencies[$descriptor->id] as $cmid)
 							$cm_temp[] = $data->course_mods[$cmid];
 
-						$icon = block_exacomp_get_icon_for_user($cm_temp, $student, $data->supported_modules);
+						$icon = block_exacomp_get_icon_for_user($cm_temp, $student);
 						$icontext = '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>';
 					}
 					//EPORTFOLIOITEMS
