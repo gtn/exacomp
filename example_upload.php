@@ -189,7 +189,9 @@ if($formdata = $form->get_data()) {
 			$newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
 	file_save_draft_area_files($formdata->solution, context_system::instance()->id, 'block_exacomp', 'example_solution',
 			$newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
-	
+
+	block_exacomp_update_visibility_cache($courseid);	
+
 	echo $output->popup_close_and_reload();
 	exit;
 }
