@@ -87,7 +87,12 @@ if(!$isTeacher){
 }
 $student = $DB->get_record('user',array('id' => $studentid));
 
-echo $output->button_box(true, '');
+echo html_writer::div(html_writer::link('#',
+	html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/view_print.png'), 'alt'=>'print')),
+	[
+		'title' => block_exacomp\get_string('print'),
+		'class'=>'print'
+	]), 'button-box');
 
 $possible_courses = block_exacomp_get_exacomp_courses($student);
 

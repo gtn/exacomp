@@ -3324,6 +3324,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				[
 					'title' => block_exacomp\get_string('print'),
 					'class'=>'print',
+					'onclick' => (strlen($print)>2 ? $print : 'window.print();').'; return false;',			
 				]);
 		}
 		$content .= $inner_content;
