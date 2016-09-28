@@ -210,7 +210,7 @@ class block_exacomp_external extends external_api {
 				// Quiz webservices are available from Moodle 3.1 onwards
 				global $CFG;
 				if($CFG->version >= 2016052300) {
-					$quizes = $DB->get_records_sql ( "SELECT q.id, q.name
+					$quizes = $DB->get_records_sql ( "SELECT q.id, q.name, q.grade
 							FROM {" . \block_exacomp\DB_COMPETENCE_ACTIVITY . "} ca
 							JOIN {course_modules} cm ON ca.activityid = cm.id
 							JOIN {modules} m ON cm.module = m.id
@@ -222,12 +222,15 @@ class block_exacomp_external extends external_api {
 							);
 					
 					foreach ( $quizes as $quiz ) {
-						// TODO: is quiz accessible by the user?
+						$cm = get_coursemodule_from_instance('quiz', $quiz->id);
+						if(!$cm->visible)
+							continue;
 						
 						if (! array_key_exists ( $quiz->id, $structure [$topic->id]->quizes )) {
 							$structure [$topic->id]->quizes [$quiz->id] = new stdClass ();
 							$structure [$topic->id]->quizes [$quiz->id]->quizid = $quiz->id;
 							$structure [$topic->id]->quizes [$quiz->id]->quiz_title = $quiz->name;
+							$structure [$topic->id]->quizes [$quiz->id]->quiz_grade = $quiz->grade;
 						}
 					}
 				}
@@ -255,8 +258,10 @@ class block_exacomp_external extends external_api {
 						'example_creatorid' => new external_value ( PARAM_INT, 'creator of example' )
 				) ) ),
 				'quizes' => new external_multiple_structure ( new external_single_structure ( array (
-						'quizid' => new external_value ( PARAM_INT, 'id of example' ),
-						'quiz_title' => new external_value ( PARAM_TEXT, 'title of example' )
+						'quizid' => new external_value ( PARAM_INT, 'id of quiz' ),
+						'quiz_title' => new external_value ( PARAM_TEXT, 'title of quiz' ),
+						'quiz_grade' => new external_value ( PARAM_FLOAT, 'sum grade of quiz' )
+						
 				) ), 'quiz data', VALUE_OPTIONAL )
 		) ) );
 	}
@@ -428,6 +433,86 @@ class block_exacomp_external extends external_api {
 				'evaluation' => new external_value ( PARAM_INT, 'evaluation of descriptor' )
 		) ) );
 	}
+	
+	/**
+	 * Returns description of method parameters
+	 *
+	 * @return external_function_parameters
+	 */
+	public static function get_descriptors_for_quiz_parameters() {
+		return new external_function_parameters ( array (
+				'quizid' => new external_value ( PARAM_INT, 'id of quiz' ),
+				'courseid' => new external_value ( PARAM_INT, 'id of course' ),
+				'userid' => new external_value ( PARAM_INT, 'id of user' )
+		) );
+	}
+	
+	/**
+	 * Get descriptors for quiz
+	 *
+	 * @param $quizid
+	 * @param $courseid
+	 * @param $userid
+	 * @return array list of descriptors
+	 * @throws invalid_parameter_exception
+	 */
+	public static function get_descriptors_for_quiz($quizid, $courseid, $userid) {
+		global $DB, $USER;
+	
+		if ($userid == 0)
+			$userid = $USER->id;
+	
+			static::validate_parameters ( static::get_descriptors_for_quiz_parameters (), array (
+					'quizid' => $quizid,
+					'courseid' => $courseid,
+					'userid' => $userid
+			) );
+	
+			static::require_can_access_user($userid);
+			$cm = get_coursemodule_from_instance('quiz', $quizid);
+			if(!$cm->visible)
+				throw new invalid_parameter_exception('no access to the requested quiz.');
+			
+			$descriptors_quiz_mm = $DB->get_records (\block_exacomp\DB_COMPETENCE_ACTIVITY, array (
+					'activityid' => $cm->id,
+					'comptype' => \block_exacomp\TYPE_DESCRIPTOR
+			) );
+	
+			$descriptors = array ();
+			foreach ( $descriptors_quiz_mm as $descriptor_mm ) {
+				$descriptors [$descriptor_mm->compid] = $DB->get_record (\block_exacomp\DB_DESCRIPTORS, array (
+						'id' => $descriptor_mm->compid
+				) );
+	
+				$isTeacher = $DB->record_exists('block_exacompexternaltrainer', array('trainerid'=>$USER->id,'studentid'=>$userid));
+				$grading = \block_exacomp\ROLE_TEACHER;
+				if(block_exacomp_is_elove_student_self_assessment_enabled() && !$isTeacher) {
+					$grading = \block_exacomp\ROLE_STUDENT;
+				}
+				$eval = block_exacomp\get_comp_eval($courseid, $grading, $userid, \block_exacomp\TYPE_DESCRIPTOR, $descriptor_mm->compid);
+				if ($eval && $eval->value !== null) {
+					$descriptors [$descriptor_mm->compid]->evaluation = $eval->value;
+				} else {
+					$descriptors [$descriptor_mm->compid]->evaluation = 0;
+				}
+				$descriptors [$descriptor_mm->compid]->descriptorid = $descriptor_mm->compid;
+			}
+			return $descriptors;
+	}
+	
+	/**
+	 * Returns desription of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function get_descriptors_for_quiz_returns() {
+		return new external_multiple_structure ( new external_single_structure ( array (
+				'descriptorid' => new external_value ( PARAM_INT, 'id of descriptor' ),
+				'title' => new external_value ( PARAM_TEXT, 'title of descriptor' ),
+				'evaluation' => new external_value ( PARAM_INT, 'evaluation of descriptor' )
+		) ) );
+	}
+	
 	/**
 	 * Returns description of method parameters
 	 *

@@ -21,7 +21,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_exacomp';
 $plugin->release = '3.0.3.experimental';
-$plugin->version   = 2016092200;
+$plugin->version   = 2016092800;
 $plugin->requires  = 2015051100;
 $plugin->maturity = MATURITY_STABLE;
 

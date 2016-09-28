@@ -43,6 +43,7 @@ call_user_func(function() use (&$functions, &$services) {
 		[ 'block_exacomp_get_competencies_by_topic', 'read', 'get competencies for a specific topic' ],
 		[ 'block_exacomp_get_competencies_for_upload', 'read', 'Get competencetree' ],
 		[ 'block_exacomp_get_descriptors_for_example', 'read', 'Get desciptors for example' ],
+		[ 'block_exacomp_get_descriptors_for_quiz', 'read', 'Get desciptors for quiz' ],
 		[ 'block_exacomp_get_example_by_id', 'read', 'Get example' ],
 		[ 'block_exacomp_get_examples_for_subject', 'read', 'Get examples for subtopic' ],
 		[ 'block_exacomp_get_external_trainer_students', 'read', 'Get external trainer\'s students' ],
