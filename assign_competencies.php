@@ -165,9 +165,6 @@ if($selectedNiveau->id != block_exacomp\SHOW_ALL_NIVEAUS){
 			foreach($cm_mm->topics[$selectedNiveau->id] as $cmid)
 				$activities_student[] = $course_mods[$cmid];
 		
-		// TODO: disabled for now
-		// if(block_exacomp_is_altversion())
-		//	echo $output->overview_metadata_student($selectedTopic, $selectedNiveau, $students[$USER->id]->topics, $showevaluation, $scheme, block_exacomp_get_icon_for_user($activities_student, $USER, block_exacomp_get_supported_modules()));
 	}
 }
 

@@ -87,8 +87,6 @@ $example_activities = array();
 if($csettings->uses_activities) {
 	$example_activities[0] = get_string('none');
 	
-	$supported_modules = block_exacomp_get_supported_modules();
-	
 	$modinfo = get_fast_modinfo($COURSE->id);
 	$modules = $modinfo->get_cms();
 	foreach($modules as $mod){
@@ -102,16 +100,16 @@ if($csettings->uses_activities) {
 		
 		$module_type = $DB->get_record('course_modules', array('id'=>$module->id));
 		
+		$forum = $DB->get_record('modules', array('name'=>'forum'));
 		//skip News forum in any language, supported_modules[1] == forum
-		if($module_type->module == $supported_modules[1]){
+		if($module_type->module == $forum->id){
 			$forum = $DB->get_record('forum', array('id'=>$module->instance));
 			if(strcmp($forum->type, 'news')==0){
 				continue;
 			}
 		}
-		if(in_array($module_type->module, $supported_modules)){
-			$example_activities[$module->id] = $module->name;
-		}
+		
+		$example_activities[$module->id] = $module->name;
 	}
 }
 $form = new block_exacomp_example_upload_form($_SERVER['REQUEST_URI'],

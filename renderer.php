@@ -621,7 +621,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					'exaport_exists'=>block_exacomp_exaportexists(),
 					'course_mods' => get_fast_modinfo($courseid)->get_cms(),
 					'selected_topicid' => null,
-					'supported_modules'=>block_exacomp_get_supported_modules(),
 					'showalldescriptors' => block_exacomp_get_settings_by_course($courseid)->show_all_descriptors
 			);
 			$this->topics($rows, 0, $subject->topics, $data, $students, true);
@@ -878,7 +877,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					'exaport_exists'=>block_exacomp_exaportexists(),
 					'course_mods' => get_fast_modinfo($courseid)->get_cms(),
 					'selected_topicid' => null,
-					'supported_modules'=>block_exacomp_get_supported_modules(),
 					'showalldescriptors' => block_exacomp_get_settings_by_course($courseid)->show_all_descriptors,
 			);
 

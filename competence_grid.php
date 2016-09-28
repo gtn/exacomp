@@ -54,7 +54,7 @@ $output = block_exacomp_get_renderer();
 echo $output->header_v2($page_identifier);
 
 /* CONTENT REGION */
-
+/*
 $course_settings = block_exacomp_get_settings_by_course($courseid);
 $dropdown_subjects = block_exacomp_get_subjects_by_course($courseid, true);
 
@@ -85,5 +85,6 @@ if($data) {
 else {
 	echo html_writer::div(get_string('competencegrid_nodata', 'block_exacomp'));
 }
+*/
 /* END CONTENT REGION */
 echo $output->footer();

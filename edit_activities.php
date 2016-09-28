@@ -119,36 +119,35 @@ if($modules){
 			$hasFileModule = true;
 		}
 		
-		$supported_modules = block_exacomp_get_supported_modules();
-		
 		$module_type = $DB->get_record('course_modules', array('id'=>$module->id));
 
 		//skip News forum in any language, supported_modules[1] == forum
-		if($module_type->module == $supported_modules[1]){
+		$forum = $DB->get_record('modules', array('name'=>'forum'));
+		if($module_type->module == $forum->id){
 			$forum = $DB->get_record('forum', array('id'=>$module->instance));
 			if(strcmp($forum->type, 'news')==0){
 				$colspan = ($colspan-1);
 				continue;	
 			}	
 		}
-		if(in_array($module_type->module, $supported_modules)){
-			$compsactiv = $DB->get_records('block_exacompcompactiv_mm', array('activityid'=>$module->id, 'eportfolioitem'=>0));
+		
+		$compsactiv = $DB->get_records('block_exacompcompactiv_mm', array('activityid'=>$module->id, 'eportfolioitem'=>0));
 			
-			$module->descriptors = array();
-			$module->topics = array();
-			
-			foreach($compsactiv as $comp){
-				if($comp->comptype == 0)
-					$module->descriptors[$comp->compid] = $comp->compid;
-				else 	
-					$module->topics[$comp->compid] = $comp->compid;
-			}
-			
-			if(empty($selected_modules) || in_array(0, $selected_modules) || in_array($module->id, $selected_modules))
-				$visible_modules[] = $module;
-			
-			$modules_to_filter[] = $module;
+		$module->descriptors = array();
+		$module->topics = array();
+		
+		foreach($compsactiv as $comp){
+			if($comp->comptype == 0)
+				$module->descriptors[$comp->compid] = $comp->compid;
+			else 	
+				$module->topics[$comp->compid] = $comp->compid;
 		}
+		
+		if(empty($selected_modules) || in_array(0, $selected_modules) || in_array($module->id, $selected_modules))
+			$visible_modules[] = $module;
+		
+		$modules_to_filter[] = $module;
+		
 	}
 	
 	$niveaus = block_exacomp_extract_niveaus($subjects);

@@ -2200,8 +2200,9 @@ function block_exacomp_get_badge_descriptors($badgeid){
 /**
  *
  * Gets supported modules for assigning activities
+ * -- not needed any more: requirement all modules are supported
  */
-function block_exacomp_get_supported_modules() {
+/*function block_exacomp_get_supported_modules() {
 	global $DB;
 
 	$assign = $DB->get_record('modules', array('name'=>'assign'));
@@ -2213,7 +2214,7 @@ function block_exacomp_get_supported_modules() {
 	$lesson = $DB->get_record('modules', array('name'=>'lesson'));
 	//do not change order, this affects visible modules
 	return array($assign->id, $forum->id, $glossary->id, $quiz->id, $wiki->id, $url->id, $lesson->id);
-}
+}*/
 /**
  * Returns an associative array that gives information about which competence/topic is
  * associated with which course module
@@ -2782,7 +2783,7 @@ function block_exacomp_get_activities_by_course($courseid){
  * @param array $filteredtaxonomies
  * @return unknown[]|NULL[][]
  */
-function block_exacomp_init_competence_grid_data($courseid, $subjectid, $studentid, $showallexamples = false, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES)) {
+/*function block_exacomp_init_competence_grid_data($courseid, $subjectid, $studentid, $showallexamples = false, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES)) {
 	global $DB;
 
 	if($studentid) {
@@ -2877,7 +2878,7 @@ function block_exacomp_init_competence_grid_data($courseid, $subjectid, $student
 
 		return array($niveaus, $skills, $topics, $data, $selection);
 
-}
+}*/
 
 /**
  * return all avaiable niveaus within one subject (LFS for LIS)
