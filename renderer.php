@@ -1071,6 +1071,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$outputname .= $this->visibility_icon_topic($visible, $topic->id);
 				}
 				
+				// ICONS
+				if(isset($data->cm_mm->topics[$topic->id])) {
+					//get CM instances
+					$cm_temp = array();
+					foreach($data->cm_mm->topics[$topic->id] as $cmid)
+						$cm_temp[] = $data->course_mods[$cmid];
+
+					$icon = block_exacomp_get_icon_for_user($cm_temp, $student);
+					$icontext = '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>';
+				}
+				
 				$outputnameCell->text = html_writer::div($outputname,"desctitle");
 				$topicRow->cells[] = $outputnameCell;
 	
@@ -1164,6 +1175,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 								$self_evaluation_cell->text = $this->generate_select($checkboxname, $topic->id, 'topics', $student, $evaluation, $data->scheme, !$visible_student, $data->profoundness, ($data->role == \block_exacomp\ROLE_TEACHER) ? $reviewerid : null);
 						}
 						$self_evaluation_cell->attributes['exa-timestamp'] = isset($student->topics->timestamp_teacher[$topic->id]) ? $student->topics->timestamp_teacher[$topic->id] : 0;
+						
+						// ICONS
+						if(isset($icontext))
+							$self_evaluation_cell->text .= $icontext;
+						
 						
 						$topicRow->cells[] = $self_evaluation_cell;
 						
@@ -1354,7 +1370,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$studentCellEvaluation = new html_table_cell();
 						$studentCellEvaluation->attributes['class'] = 'colgroup colgroup-' . $columnGroup;
 					}*/
-
+					
 					// ICONS
 					if(isset($data->cm_mm->competencies[$descriptor->id])) {
 						//get CM instances
@@ -3979,6 +3995,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		. html_writer::tag('button', get_string('cleardaterange','block_exacomp'), array('id' => 'clear-range'));
 	}
 }
+
 
 
 
