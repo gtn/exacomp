@@ -66,6 +66,11 @@
 	margin-top: 10px;
 }
 
+#block_exacomp #save_pre_planning_storage{
+	margin-top:50px;
+	float:right;
+}
+
 #block_exacomp #external-students li.has_examples, #block_exacomp #external-students li.has_examples_temp a {
 	color: #7e7e7e;
 }
