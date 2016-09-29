@@ -153,7 +153,7 @@ class block_exacomp_external extends external_api {
 				) );
 
 				foreach ( $examples as $example ) {
-					if ($example->source == \block_exacomp\EXAMPLE_SOURCE_USER && $example->creatorid !== $userid) {
+					if ($example->source == \block_exacomp\EXAMPLE_SOURCE_USER && $example->creatorid != $userid) {
 						// skip non user examples
 						continue;
 					}
@@ -392,7 +392,8 @@ class block_exacomp_external extends external_api {
 		) );
 
 		static::require_can_access_user($userid);
-		static::require_can_access_example($exampleid, $courseid);
+		if($courseid > 0)
+			static::require_can_access_example($exampleid, $courseid);
 
 		$descriptors_exam_mm = $DB->get_records (\block_exacomp\DB_DESCEXAMP, array (
 				'exampid' => $exampleid
@@ -1057,6 +1058,7 @@ class block_exacomp_external extends external_api {
 				'url' => new external_value ( PARAM_URL, 'url' ),
 				'effort' => new external_value ( PARAM_TEXT, 'effort' ),
 				'filename' => new external_value ( PARAM_TEXT, 'filename, used to look up file and create a new one in the exaport file area' ),
+				'fileitemid' => new external_value ( PARAM_INT, 'fileitemid, used to look up file and create a new one in the exaport file area' ),
 				'studentcomment' => new external_value ( PARAM_TEXT, 'studentcomment' ),
 				'title' => new external_value ( PARAM_TEXT, 'title' ),
 				'itemid' => new external_value ( PARAM_INT, 'itemid' ),
@@ -1078,10 +1080,10 @@ class block_exacomp_external extends external_api {
 	 * @return array of course subjects
 	 * @throws invalid_parameter_exception
 	 */
-	public static function submit_example($exampleid,$studentvalue,$url,$effort,$filename,$studentcomment,$title,$itemid=0,$courseid=0) {
+	public static function submit_example($exampleid,$studentvalue,$url,$effort,$filename,$fileitemid=0,$studentcomment,$title,$itemid=0,$courseid=0) {
 		global $CFG,$DB,$USER;
 
-		static::validate_parameters(static::submit_example_parameters(), array('title'=>$title,'exampleid'=>$exampleid,'url'=>$url,'effort'=>$effort,'filename'=>$filename,'studentcomment'=>$studentcomment,'studentvalue'=>$studentvalue,'itemid'=>$itemid,'courseid'=>$courseid));
+		static::validate_parameters(static::submit_example_parameters(), array('title'=>$title,'exampleid'=>$exampleid,'url'=>$url,'effort'=>$effort,'filename'=>$filename,'fileitemid'=>$fileitemid,'studentcomment'=>$studentcomment,'studentvalue'=>$studentvalue,'itemid'=>$itemid,'courseid'=>$courseid));
 
 		if ($CFG->block_exaport_app_externaleportfolio) {
 			// export to Mahara
@@ -1169,7 +1171,7 @@ class block_exacomp_external extends external_api {
 			$context = context_user::instance($USER->id);
 			$fs = get_file_storage();
 			try {
-				$old = $fs->get_file($context->id, "user", "draft", 0, "/", $filename);
+				$old = $fs->get_file($context->id, "user", "draft", $fileitemid, "/", $filename);
 				
 				if($old) {
 					$file_record = array('contextid'=>$context->id, 'component'=>'block_exaport', 'filearea'=>'item_file',
@@ -1550,7 +1552,7 @@ class block_exacomp_external extends external_api {
 							$elem->example_status = - 1;
 						}
 
-						$examples [] = $elem;
+						$examples [$example->exampleid] = $elem;
 					}
 				}
 			}
@@ -5232,8 +5234,8 @@ class block_exacomp_external extends external_api {
 				'courseid' => new external_value (PARAM_INT, 'id of course'),
 				'userid' => new external_value (PARAM_INT, 'id of user'),
 				'subjectid' => new external_value (PARAM_INT, 'id of subject'),
-				'start_timestamp' => new external_value (PARAM_INT, 'start timestamp for evaluation range', VALUE_DEFAULT, 0),
-				'end_timestamp' => new external_value (PARAM_INT, 'end timestamp for evaluation range', VALUE_DEFAULT, 0)
+				'start_timestamp' => new external_value (PARAM_INT, 'start timestamp for evaluation range'),
+				'end_timestamp' => new external_value (PARAM_INT, 'end timestamp for evaluation range')
 		) );
 	}
 
@@ -5475,8 +5477,8 @@ class block_exacomp_external extends external_api {
 				'courseid' => new external_value (PARAM_INT, 'id of course'),
 				'userid' => new external_value (PARAM_INT, 'id of user'),
 				'topicid' => new external_value (PARAM_INT, 'id of subject'),
-				'start_timestamp' => new external_value (PARAM_INT, 'start timestamp for evaluation range', VALUE_DEFAULT, 0),
-				'end_timestamp' => new external_value (PARAM_INT, 'end timestamp for evaluation range', VALUE_DEFAULT, 0)
+				'start_timestamp' => new external_value (PARAM_INT, 'start timestamp for evaluation range'),
+				'end_timestamp' => new external_value (PARAM_INT, 'end timestamp for evaluation range')
 		) );
 	}
 
@@ -6626,6 +6628,5 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 		return $url;
 	}
 }
-
 
 
