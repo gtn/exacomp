@@ -5232,8 +5232,8 @@ class block_exacomp_external extends external_api {
 				'courseid' => new external_value (PARAM_INT, 'id of course'),
 				'userid' => new external_value (PARAM_INT, 'id of user'),
 				'subjectid' => new external_value (PARAM_INT, 'id of subject'),
-				'start_timestamp' => new external_value (PARAM_INT, 'start timestamp for evaluation range'),
-				'end_timestamp' => new external_value (PARAM_INT, 'end timestamp for evaluation range')
+				'start_timestamp' => new external_value (PARAM_INT, 'start timestamp for evaluation range', VALUE_DEFAULT, 0),
+				'end_timestamp' => new external_value (PARAM_INT, 'end timestamp for evaluation range', VALUE_DEFAULT, 0)
 		) );
 	}
 
@@ -5475,8 +5475,8 @@ class block_exacomp_external extends external_api {
 				'courseid' => new external_value (PARAM_INT, 'id of course'),
 				'userid' => new external_value (PARAM_INT, 'id of user'),
 				'topicid' => new external_value (PARAM_INT, 'id of subject'),
-				'start_timestamp' => new external_value (PARAM_INT, 'start timestamp for evaluation range'),
-				'end_timestamp' => new external_value (PARAM_INT, 'end timestamp for evaluation range')
+				'start_timestamp' => new external_value (PARAM_INT, 'start timestamp for evaluation range', VALUE_DEFAULT, 0),
+				'end_timestamp' => new external_value (PARAM_INT, 'end timestamp for evaluation range', VALUE_DEFAULT, 0)
 		) );
 	}
 
@@ -6626,5 +6626,6 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 		return $url;
 	}
 }
+
 
 
