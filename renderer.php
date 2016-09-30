@@ -2930,7 +2930,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$tables .= $this->subject_statistic_table($course->id, $stat['example_evaluations'], 'Lernmaterialien');
 				
 				$innersection = html_writer::tag('legend', get_string('innersection2', 'block_exacomp'), array('class'=>'competence_profile_insectitle'));
-				$innersection .= html_writer::tag('div', $tables, array('class'=>'statistictables', 'exa-subjectid' => $subject->id));
+				$innersection .= html_writer::tag('div', $tables, array('class'=>'statistictables', 'exa-subjectid' => $subject->id, 'exa-courseid' => $course->id));
 				$content .= html_writer::tag('fieldset', $innersection, array('class'=>' competence_profile_innersection exa-collapsible'));
 						
 			}
