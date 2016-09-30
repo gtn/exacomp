@@ -835,46 +835,7 @@ class descriptor extends db_record {
 
 	function get_numbering() {
 		return block_exacomp_get_descriptor_numbering($this);
-		/*
-		global $DB;
-		$topic = $this->topic;
-		if (!$topic) {
-			var_dump($this);
-		}
-		$numbering = $topic->numbering;
-
-		if($this->parentid == 0){
-			//Descriptor im Topic
-			$desctopicmm = $DB->get_record(DB_DESCTOPICS, array('descrid'=>$this->id, 'topicid'=>$topic->id));
-			$numbering .= $desctopicmm->sorting;
-		}else{
-			//Parent-Descriptor im Topic
-			$desctopicmm = $DB->get_record(DB_DESCTOPICS, array('descrid'=>$this->parentid, 'topicid'=>$topic->id));
-			$numbering .= $desctopicmm->sorting.'.';
-
-			$numbering .= $this->sorting;
-		}
-
-		return $numbering;
-		*/
 	}
-
-	/*
-	function get_topic() {
-		if (isset($this->topic)) {
-			return $this->topic;
-		}
-
-		if (!isset($this->topicid)) {
-			// required that topicid is set
-			print_error('no topic loaded');
-		}
-
-		die('no');
-
-		// return topic::get($this->topicid);
-	}
-	*/
 
 	static function insertInCourse($courseid, $data) {
 		global $DB;
@@ -921,9 +882,7 @@ class descriptor extends db_record {
 		$childdesctopic_mm = new \stdClass();
 		$childdesctopic_mm->topicid = $topicid;
 		$childdesctopic_mm->descrid = $descriptor->id;
-		// right now custom descriptor sorting is always null => sort by title
-		// $childdesctopic_mm->sorting = null;
-
+		
 		$DB->insert_record(DB_DESCTOPICS, $childdesctopic_mm);
 
 		block_exacomp_update_visibility_cache($courseid);

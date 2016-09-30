@@ -431,7 +431,7 @@ function block_exacomp_get_subjecttitle_by_example($exampleid) {
 	foreach($descriptors as $descriptor) {
 
 		$full = $DB->get_record(\block_exacomp\DB_DESCRIPTORS, array("id" => $descriptor->id));
-		$sql = "select s.* FROM {block_exacompsubjects} s, {block_exacompdescrtopic_mm} dt, {block_exacomptopics} t
+		$sql = "select s.* FROM {".\block_exacomp\DB_SUBJECTS."} s, {".\block_exacomp\DB_DESCTOPICS."} dt, {".\block_exacomp\DB_TOPICS."} t
 		WHERE dt.descrid = ? AND t.id = dt.topicid AND t.subjid = s.id";
 
 		$subject = $DB->get_record_sql($sql,array($full->parentid),IGNORE_MULTIPLE);
@@ -2887,9 +2887,9 @@ function block_exacomp_get_niveaus_for_subject($subjectid) {
 	global $DB;
 	//sql could be optimized
 	$niveaus = "SELECT DISTINCT n.id as id, n.title, n.sorting 
-			FROM {block_exacompdescriptors} d, {block_exacompdescrtopic_mm} dt, {block_exacompniveaus} n
+			FROM {".\block_exacomp\DB_DESCRIPTORS."} d, {".\block_exacomp\DB_DESCTOPICS."} dt, {".\block_exacomp\DB_NIVEAUS."} n
 			WHERE d.id=dt.descrid AND dt.topicid IN 
-				(SELECT id FROM {block_exacomptopics} WHERE subjid=?)
+				(SELECT id FROM {".\block_exacomp\DB_TOPICS."} WHERE subjid=?)
 			AND d.niveauid > 0 AND d.niveauid = n.id order by n.sorting, n.id";
 
 	return $DB->get_records_sql_menu($niveaus,array($subjectid));
@@ -3691,17 +3691,6 @@ function block_exacomp_unset_cross_subject_descriptor($crosssubjid, $descrid){
 			}
 		}
 	}
-}
-/**
- * get right order for descriptors within topic
- * @param unknown $topicid
- * @param unknown $descid
- * @return number
- */
-function block_exacomp_get_descr_topic_sorting($topicid, $descid){
-	global $DB;
-	$record = $DB->get_record(\block_exacomp\DB_DESCTOPICS, array('descrid'=>$descid, 'topicid'=>$topicid));
-	return ($record) ? $record->sorting : 0;
 }
 /**
  * change descriptor visibility, studentid = 0 : visibility settings for all students 

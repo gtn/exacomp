@@ -1538,19 +1538,6 @@ class data_importer extends data {
 		self::insert_or_update_item(DB_CATEGORIES, $item);
 		self::kompetenzraster_mark_item_used(DB_CATEGORIES, $item);
 		
-		// OLD:
-		/*
-		if ($dbItem = $DB->get_record(DB_EXAMPLES, array("sourceid"=>$item->source, 'sourceid'=>$item->sourceid))) {
-			$item->id = $dbItem->id;
-			$DB->update_record(DB_EXAMPLES, $item);
-		} elseif ($item->source == IMPORT_SOURCE_SPECIFIC && $dbItem = $DB->get_record(DB_EXAMPLES, array("id"=>$item->sourceid))) {
-			$item->id = $dbItem->id;
-			$DB->update_record(DB_EXAMPLES, $item);
-		} else {
-			$item->id = $DB->insert_record(DB_EXAMPLES, $item);
-		}
-		*/
-		
 		if ($xmlItem->children) {
 			foreach($xmlItem->children->category as $child) {
 				self::insert_category($child, $item->id);
@@ -1575,22 +1562,6 @@ class data_importer extends data {
 			$descriptor->skillid = self::get_database_id($xmlItem->skillid);
 		if (!isset($descriptor->profoundness))
 			$descriptor->profoundness = 0;
-		
-		// brauchen wir nicht mehr:
-		/*
-		//if specific import and descriptor already normal imported -> return
-		if(data_importer::$import_source_type != IMPORT_SOURCE_DEFAULT) {
-			if($descriptorObj = $DB->get_record(DB_DESCRIPTORS, array("sourceid"=>$descriptor['id']->__toString(),"source"=>IMPORT_SOURCE_DEFAULT)))
-				return;
-		}
-	
-		//other way round: if normale import and descriptor already specific imported -> return
-		if(data_importer::$import_source_type == IMPORT_SOURCE_DEFAULT){
-			if($descriptorObj = $DB->get_record(DB_DESCRIPTORS, array("sourceid"=>$descriptor['id']->__toString(), "source"=>IMPORT_SOURCE_SPECIFIC)))
-				return;
-		}
-		
-		*/
 		
 
 		self::insert_or_update_item(DB_DESCRIPTORS, $descriptor);
@@ -1674,11 +1645,10 @@ class data_importer extends data {
 		
 		self::delete_mm_record_for_item(DB_DESCTOPICS, 'topicid', $topic->id);
 		if ($xmlItem->descriptors) {
-			$i=1;
+			
 			foreach($xmlItem->descriptors->descriptorid as $descriptor) {
 				if ($descriptorid = self::get_database_id($descriptor)) {
-					g::$DB->insert_or_update_record(DB_DESCTOPICS, array("sorting"=>$i), array("topicid"=>$topic->id,"descrid"=>$descriptorid));
-					$i++;
+					g::$DB->insert_or_update_record(DB_DESCTOPICS, array("topicid"=>$topic->id,"descrid"=>$descriptorid));
 				}
 			}
 		}
@@ -1827,100 +1797,9 @@ class data_importer extends data {
 	}
 	
 	
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
-	/*
-	private static $kompetenzraster_data_ids = array();
-	private static $kompetenzraster_unused_data_ids = array();
-	
-	private static function kompetenzraster_load_current_data_for_source() {
-		global $DB;
-		
-		foreach (self::$sourceTables as $table) {
-			self::$kompetenzraster_data_ids[$table] = $DB->get_records_menu($table, array('source'=>self::$import_source_local_id), null, 'id, sourceid AS tmp');
-		}
-		
-		self::$kompetenzraster_unused_data_ids = self::$kompetenzraster_data_ids;
-	}
-	
-	private static function kompetenzraster_clean_unused_data_from_source() {
-		global $DB;
-		
-		echo "unused data: ".print_r(self::$kompetenzraster_unused_data_ids, true);
-		foreach (self::$kompetenzraster_unused_data_ids as $table => $ids) {
-			foreach ($ids as $localid => $sourceid) {
-				// echo "delete old entry in table $table, local_id $localid, global_id $sourceid";
-				// TODO: derzeit deaktiviert, es soll nichts gelöscht werden
-				// $DB->delete_records($table, array("id"=>$localid));
-			}
-		}
-	}
-	
-	private static function kompetenzraster_mark_item_used($table, $item) {
-		if ($item->source != self::$import_source_local_id) {
-			// not my source
-			return;
-		}
-		
-		if (!isset(self::$kompetenzraster_unused_data_ids[$table])) {
-			throw new moodle_exception("unused data for table $table not found");
-		}
-		
-		// mark used
-		unset(self::$kompetenzraster_unused_data_ids[$table][$item->id]);
-	}
-	*/
-
 	private static function kompetenzraster_mark_item_used($table, $item) {
 		// deactivated for now
 	}
-
-	/*
-	private static function delete_unused_descriptors($source, $crdate, $topiclist){
-		/* descriptoren löscent, wenn sie
-	
-		1) nicht im xml sind (crdate <> $crdate)
-		2) nicht einer aktivität zugeordnet sind
-		3) wenn es keine schüler/lehrer bewertung dazu direkt oder bei einer aktivität gibt
-		4) wenn der zugehörige topic nirgends augewählt ist (bei settings/subjectselection)
-		5) wenn der zugehörige schultyp nirgends augewählt ist (bei modulkonfiguration/schultypauswahl)
-		6) wenn kein selbst hinaufgeladenes beispiel drannhängt
-		* /
-	
-		$sql="SELECT distinct descr.id,descr.sourceid FROM {block_exacompcompuser} u
-		RIGHT JOIN {block_exacompdescriptors} descr ON descr.id=u.compid
-		JOIN {block_exacompdescrtopic_mm} tmm ON tmm.descrid=descr.id
-		JOIN {block_exacomptopics} top ON top.id=tmm.topicid
-		JOIN {block_exacompsubjects} subj ON subj.id=top.subjid
-		JOIN {block_exacompschooltypes} st ON st.id=subj.stid
-		LEFT JOIN {block_exacompcoutopi_mm} cou ON cou.topicid=tmm.topicid
-		LEFT JOIN ({block_exacompdescrexamp_mm} emm
-		JOIN {block_exacompexamples} ex ON (ex.id=emm.exampid AND ex.source=3)) ON emm.descrid=descr.id
-		LEFT JOIN {block_exacompmdltype_mm} typmm ON typmm.stid=st.id
-		LEFT JOIN {block_exacompcompuser_mm} umm ON umm.compid=descr.id
-		LEFT JOIN {block_exacompcompactiv_mm} act ON act.compid=descr.id
-		WHERE typmm.id IS NULL AND ex.id IS NULL AND act.id IS NULL AND cou.id IS NULL AND  umm.id IS NULL AND u.id IS NULL AND descr.source=? AND descr.crdate <> (?)";
-	
-		$rs = g::$DB->get_records_sql($sql, array($source, $crdate));
-		foreach($rs as $row){
-			g::$DB->delete_records('block_exacompdescriptors', array("id" => $row->id));
-			//topic, auch prüfen ob untertopics vorhanden, den dann nicht löschen
-			$sql="DELETE FROM {block_exacompdescrtopic_mm} WHERE descrid=? AND topicid NOT IN (".$topiclist.")";
-			g::$DB->Execute($sql, array($row->id));
-			g::$DB->delete_records('block_exacompdescrexamp_mm', array("descrid" => $row->id));
-		}
-	}
-	*/
 	
 }
 	
