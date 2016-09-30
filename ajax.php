@@ -383,7 +383,8 @@ switch($action){
 				$tables .= $output->subject_statistic_table ( $course->id, $stat ['example_evaluations'], 'Lernmaterialien' );
 			echo html_writer::tag ( 'div', $tables, array (
 					'class' => 'statistictables',
-					'exa-subjectid' => $subjectid 
+					'exa-subjectid' => $subjectid,
+					'exa-courseid' => $courseid
 			) );
 		}
 		break;

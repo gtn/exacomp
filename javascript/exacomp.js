@@ -78,7 +78,8 @@ window.block_exacomp = $E = {
 	},
 	
 	call_ajax: function(data) {
-		data.courseid = $E.get_param('courseid');
+		if(data.courseid == null)
+			data.courseid = $E.get_param('courseid');
 		data.sesskey = M.cfg.sesskey;
 		var ajax = $.ajax({
 			method : "POST",
@@ -546,6 +547,16 @@ $(document).on('click', '.exa-collapsible > legend', function(){
 	});
 	
 	function highlight_cells(date1, date2) {
+		// Reset the gradings within the given range
+    	$("td[exa-timestamp]" ).each(function( index ) {
+    		$(this).removeClass('highlight_cell');
+    		
+    		tr = $(this).closest('tr');
+    		if(tr.hasClass('highlight_cell')){
+    			tr.removeClass('highlight_cell');
+    		}
+    	});
+    	
 		date1_s = (new Date(date1).getTime() / 1000);
     	date2_s = (new Date(date2).getTime() / 1000);
     	
@@ -568,10 +579,13 @@ $(document).on('click', '.exa-collapsible > legend', function(){
 		// make ajax call for new data / html code
     	
     	$('div[class="statistictables"]').each(function () {
-    		var subjectid = $(this).attr('exa-subjectid')
+    		var subjectid = $(this).attr('exa-subjectid');
+    		var courseid = $(this).attr('exa-courseid');
+    		console.log(courseid);
     		block_exacomp.call_ajax({
     			studentid: block_exacomp.get_studentid(),
     			subjectid: subjectid,
+    			courseid: courseid,
     			start: date1_s,
     			end: date2_s,
     			action : 'get_statistics_for_profile'

@@ -1645,10 +1645,19 @@ class data_importer extends data {
 		
 		self::delete_mm_record_for_item(DB_DESCTOPICS, 'topicid', $topic->id);
 		if ($xmlItem->descriptors) {
+<<<<<<< 65eeb5c7f1af0a69684611bb38b6f1a348cd823a
 			
 			foreach($xmlItem->descriptors->descriptorid as $descriptor) {
 				if ($descriptorid = self::get_database_id($descriptor)) {
 					g::$DB->insert_or_update_record(DB_DESCTOPICS, array("topicid"=>$topic->id,"descrid"=>$descriptorid));
+=======
+			//TODO test import
+			//$i=1;
+			foreach($xmlItem->descriptors->descriptorid as $descriptor) {
+				if ($descriptorid = self::get_database_id($descriptor)) {
+					g::$DB->insert_or_update_record(DB_DESCTOPICS, array("topicid"=>$topic->id,"descrid"=>$descriptorid));
+					//$i++;
+>>>>>>> d390950bab9965409eff3e2ebc28c86302236658
 				}
 			}
 		}
