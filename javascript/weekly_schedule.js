@@ -229,6 +229,8 @@
 			el.append('<div class="event-task">'+data.externalurl+'</div>');
 		else if(data.task != null)
 			el.append('<div class="event-task">'+data.task+'</div>');		
+		else if(data.externaltask != null)
+			el.append('<div class="event-task">'+data.externaltask+'</div>');
 		if(data.submission_url != null)
 			el.append('<div class="event-submission">'+data.submission_url+'</div>');
 
@@ -394,6 +396,7 @@
 					//'	<div>L: <input type="checkbox" '+((event.teacher_evaluation>0)?'checked=checked':'')+'/> S: <input type="checkbox" '+((event.student_evaluation>0)?'checked=checked':'')+'/></div>' +
 					((event.state < 9) ? '	<div class="event-assoc">'+event.assoc_url+/*((event.solution)?event.solution:'')+*/'</div>' : '') +
 					((event.externalurl != null) ? '	<div class="event-task">'+event.externalurl+'</div>' : '' )+
+					((event.externaltask != null) ? '	<div class="event-task">'+event.externaltask+'</div>' : '' )+
 					((event.task != null) ? '	<div class="event-task">'+event.task+'</div>' : '' )+
 					((event.submission_url != null) ? '	<div class="event-submission">'+event.submission_url+'</div>' : '' )+
 					((event.courseid == courseid)?'	<div class="event-copy">'+'<a href="#" id="event-copy" exa-scheduleid="'+event.scheduleid+'">' + event.copy_url + '</a>'+'</div>':'')+
