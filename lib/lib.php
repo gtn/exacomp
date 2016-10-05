@@ -6161,7 +6161,6 @@ function block_exacomp_get_data_for_profile_comparison($courseid, $subject, $stu
 	$student = block_exacomp_get_user_information_by_course($student, $courseid);
 	
 	foreach($subject->subs as $topic){
-		block_exacomp_get_descriptor_statistic_for_topic($courseid, $topic->id, $student->id);
 		foreach($topic->descriptors as $descriptor){
 			$descriptor->examples = block_exacomp_get_visible_own_and_child_examples_for_descriptor($courseid, $descriptor->id, $student->id);
 		}
