@@ -1031,8 +1031,26 @@ return  [
 		'Aufgabe erledigt: ',
 		'task done: ',
 	],
-
-
+		'comp_-1' => [
+				'ohne Angabe',
+				'no information',
+		],
+		'comp_0' => [
+				'nicht erreicht',
+				'not gained',
+		],
+		'comp_1' => [
+				'teilweise',
+				'partly',
+		],
+		'comp_2' => [
+				'überwiegend',
+				'mostly',
+		],
+		'comp_3' => [
+				'vollständig',
+				'completely',
+		],
 	// === metadata ===
 	'subject_singular' => [
 		'Fach',
