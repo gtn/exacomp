@@ -4790,6 +4790,11 @@ function block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,
 
 	$timecreated = $timemodified = time();
 
+	// already inside schedule?
+	if($DB->get_record(\block_exacomp\DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid))){
+		return true;
+	}
+
 	$DB->insert_record(\block_exacomp\DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid,'creatorid' => $creatorid, 'timecreated' => $timecreated, 'timemodified' => $timemodified, 'start' => $start,'end' => $end));
 	//only send a notification if a teacher adds an example for a student and not for pre planning storage
 	if($creatorid != $studentid && $studentid >0)
