@@ -27,9 +27,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	const STUDENT_SELECTOR_OPTION_EDITMODE = 1;
 	const STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN = 2;
 	const STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN = 3;
-	
-	var $show_print_button = false;
-	var $extra_button_html = '';
 
 	public function header_v2($page_identifier="") {
 		// g::$PAGE->show_tabtree
@@ -294,13 +291,22 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					);
 		}
 
-		if ($this->is_edit_mode() && $selectedTopic) {
+		if ($this->is_edit_mode()) {
 			// add niveau button
-			// nur anzeigen wenn auch ein einzelner topic ausgewählt wurde
-			$content .= html_writer::tag('li',
-						html_writer::link("niveau.php?show=add&courseid={$COURSE->id}&topicid=".($selectedTopic?$selectedTopic->id:block_exacomp\SHOW_ALL_TOPICS),
-								"<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".\block_exacomp\trans(['de:Neuer Lernfortschritt', 'en:New niveau']), array('exa-type' => 'iframe-popup'))
-			);
+			// nur erlauben, wenn auch ein einzelner topic ausgewählt wurde
+			$addNiveauContent = "<img src=\"{$CFG->wwwroot}/pix/t/addfile.png\" /> ".\block_exacomp\trans(['de:Neuer Lernfortschritt', 'en:New niveau']);
+
+			if ($selectedTopic) {
+				$content .= html_writer::tag('li',
+							html_writer::link("niveau.php?show=add&courseid={$COURSE->id}&topicid=".($selectedTopic?$selectedTopic->id:block_exacomp\SHOW_ALL_TOPICS),
+								$addNiveauContent, array('exa-type' => 'iframe-popup'))
+				);
+			} else {
+				$content .= html_writer::tag('li',
+							html_writer::link('javascript:void(0)',
+								$addNiveauContent, array('onclick'=>'alert('.json_encode(\block_exacomp\trans('de:Bitte wählen Sie zuerst in der linken Leiste einen Kompetenzbereich aus')).')'))
+				);
+			}
 		}
 		
 		$content .= html_writer::end_tag('ul');
@@ -1215,7 +1221,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$cell = new html_table_cell();
 					$cell->attributes['class'] = 'rg2-indent';
 					$cell->text  = html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'type'=>'text', 'placeholder' => \block_exacomp\trans(['de:Neue Kompetenz', 'en:New competency']), 'topicid'=>$topic->id, 'niveauid'=>$niveauid));
-					$cell->text .= html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'type'=>'button', 'value'=>\block_exacomp\get_string('add')));
+					if ($niveauid) {
+						$cell->text .= html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'type'=>'button', 'value'=>\block_exacomp\get_string('add')));
+					} else {
+						$cell->text .= html_writer::empty_tag('input', array('type'=>'button', 'value'=>\block_exacomp\get_string('add'), 'onclick'=>'alert('.json_encode(\block_exacomp\trans('de:Um eine Kompetenz einfügen zu können, müssen Sie zuerst einen Lernfortschritt auswählen oder hinzufügen!')).')'));
+					}
 					$own_additionRow->cells[] = $cell;
 					$own_additionRow->cells[] = new html_table_cell();
 					$rows[] = $own_additionRow;

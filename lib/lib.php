@@ -6931,8 +6931,11 @@ namespace block_exacomp {
 	 * return niveau items
 	 * @return string[][]
 	 */
-	function get_select_niveau_items() {
-		$values = array(''=>array(''=>''));
+	function get_select_niveau_items($blank = true) {
+		$values = [];
+		if ($blank) {
+			$values[''] = [''=>''];
+		}
 		$niveaus = niveau::get_objects(null, 'sorting');
 		foreach ($niveaus as $niveau) {
 			$sourceName = block_exacomp_get_renderer()->source_info($niveau->source);

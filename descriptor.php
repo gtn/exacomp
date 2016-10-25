@@ -74,7 +74,9 @@ class block_exacomp_local_item_form extends moodleform {
 		$mform->setType('title', PARAM_TEXT);
 		$mform->addRule('title', \block_exacomp\get_string("titlenotemtpy"), 'required', null, 'client');
 
-		$mform->addElement('selectgroups', 'niveauid', \block_exacomp\get_string('niveau'), block_exacomp\get_select_niveau_items());
+		if ($this->_customdata['hasNiveau']) {
+			$mform->addElement('selectgroups', 'niveauid', \block_exacomp\get_string('niveau'), block_exacomp\get_select_niveau_items(false));
+		}
 
 		$element = $mform->addElement('select', 'categories', \block_exacomp\get_string('categories'), $DB->get_records_menu(\block_exacomp\DB_CATEGORIES, null, 'title', 'id, title'));
 		$element->setMultiple(true);
@@ -83,7 +85,7 @@ class block_exacomp_local_item_form extends moodleform {
 	}
 }
 
-$form = new block_exacomp_local_item_form($_SERVER['REQUEST_URI']);
+$form = new block_exacomp_local_item_form($_SERVER['REQUEST_URI'], [ 'hasNiveau' => !$item->parentid ]);
 
 if ($item) {
 	$data = $item->get_data();
