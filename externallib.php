@@ -5344,8 +5344,6 @@ class block_exacomp_external extends external_api {
 
 		static::require_can_access_course_user($courseid, $userid);
 		
-		$competence_tree = block_exacomp_get_competence_tree($courseid, null, null, false, null, true, array(SHOW_ALL_TAXONOMIES), false, false, false, false, false, false);
-
 		$students = block_exacomp_get_students_by_course($courseid);
 		$student = $students[$userid];
 
@@ -5373,7 +5371,10 @@ class block_exacomp_external extends external_api {
 			$edited = false;
 			$inwork = false;
 			$notinwork = false;
-			foreach($descriptor->examples as $example){
+
+			$examples = block_exacomp_get_visible_own_and_child_examples_for_descriptor($courseid, $descriptor->id, $student->id);
+
+			foreach ($examples as $example){
 				$sub = new stdClass();
 				//cannot be 9 -> no blocking events here
 				if($example->state > \block_exacomp\EXAMPLE_STATE_SUBMITTED && !$edited){
@@ -5401,11 +5402,12 @@ class block_exacomp_external extends external_api {
 				$sub->timestampteacher = ((isset($student->examples->timestamp_teacher[$example->id]))?$student->examples->timestamp_teacher[$example->id]: 0);
 				$sub->studentevaluation = ((isset($student->examples->student[$example->id]))?$student->examples->student[$example->id]:-1);
 				$sub->timestampstudent = ((isset($student->examples->timestamp_student[$example->id]))?$student->examples->timestamp_student[$example->id]: 0);
-				$descriptor->subs[] = $sub;
+				$descriptor->examples[] = $sub;
 			}
+
 			$comparison->descriptors[] = $descriptor;
 		}
-		
+
 		return $comparison;
 	}
 

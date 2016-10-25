@@ -308,11 +308,6 @@ $string['niveau'] = 'Level';
 $string['competence_grid_niveau'] = 'Level';
 $string['descriptor'] = 'Competency';
 $string['assigndone'] = 'task done: ';
-$string['comp_-1'] = 'no information';
-$string['comp_0'] = 'not gained';
-$string['comp_1'] = 'partly';
-$string['comp_2'] = 'mostly';
-$string['comp_3'] = 'completely';
 // === metadata ===
 $string['subject_singular'] = 'Field of competence';
 $string['comp_field_idea'] = 'Skill';

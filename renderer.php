@@ -2936,7 +2936,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 			
 			list($student, $subject) = block_exacomp_get_data_for_profile_comparison($course->id, $subject, $student);
-			
+
 			$innersection = html_writer::tag('legend', get_string('innersection3', 'block_exacomp'), array('class'=>'competence_profile_insectitle'));
 			$innersection .= html_writer::tag('div', $this->comparison_table($course->id, $subject, $student), array('class'=>'comparisondiv'));
 			$content .= html_writer::tag('fieldset', $innersection, array('class'=>' competence_profile_innersection exa-collapsible'));
@@ -3155,7 +3155,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$scheme_items = \block_exacomp\global_config::get_value_titles($courseid);
 		
 		$content = '';
-		
+
 		//first table for descriptor evaluation
 		$table = new html_table();
 		$table->attributes['class'] = ' flexible boxaligncenter comparisontable';
@@ -3179,7 +3179,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$row->cells[] = $cell;
 		
 		$rows[] = $row;
-		
+
 		foreach($subject->subs as $topic){
 			$row = new html_table_row();
 			$row->attributes['class'] = 'comparison_topic';
@@ -3208,7 +3208,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$cell->text = (isset($student->topics->student[$topic->id]))?$student->topics->student[$topic->id]:'';
 			$row->cells[] = $cell;
 			$rows[] = $row;
-			
+
 			foreach($topic->descriptors as $descriptor){
 				$row = new html_table_row();
 				$row->attributes['class'] = 'comparison_desc';
