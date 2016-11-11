@@ -112,44 +112,46 @@ if($formdata = $form->get_data()) {
 		$niveau->title = $formdata->niveau_title;
 		$niveau->id = $DB->insert_record(\block_exacomp\DB_NIVEAUS, $niveau);
 	} else {
-		$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id' => $formdata->niveau_id), '*', MUST_EXIST);
-	}
-	
-	if ($formdata->descriptor_type == 'new') {
-		\block_exacomp\descriptor::insertInCourse($courseid, array(
-			'title' => $formdata->descriptor_title,
-			'topicid' => $topic->id,
-			'niveauid' => $niveau->id
-		));
-	} else {
-		$descriptor = \block_exacomp\descriptor::get($formdata->descriptor_id, MUST_EXIST);
-		$descriptor->update(array('niveauid' => $niveau->id));
+		$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id' => $formdata->niveau_id));
 	}
 
-	/*
-	$mm = new stdClass();
-	$mm->descrid = $formdata->descriptor_id;
-	$mm->catid = $formdata->category;
-	
-	if (!$item) {
-		$new->source = \block_exacomp\DATA_SOURCE_CUSTOM;
-		$new->sourceid = 0;
-		$new->subjid = required_param('subjectid', PARAM_INT);
-		
-		$new->id = $DB->insert_record(\block_exacomp\DB_TOPICS, $new);
-		
-		// add topic to course
-		$DB->insert_record(\block_exacomp\DB_COURSETOPICS, array(
-			'courseid' => $courseid,
-			'topicid' => $new->id
-		));
-	} else {
-		$item->update($new);
+	if ($niveau) {
+		if ($formdata->descriptor_type == 'new') {
+			\block_exacomp\descriptor::insertInCourse($courseid, array(
+				'title' => $formdata->descriptor_title,
+				'topicid' => $topic->id,
+				'niveauid' => $niveau->id
+			));
+		} else {
+			$descriptor = \block_exacomp\descriptor::get($formdata->descriptor_id, MUST_EXIST);
+			$descriptor->update(array('niveauid' => $niveau->id));
+		}
+
+		/*
+		$mm = new stdClass();
+		$mm->descrid = $formdata->descriptor_id;
+		$mm->catid = $formdata->category;
+
+		if (!$item) {
+			$new->source = \block_exacomp\DATA_SOURCE_CUSTOM;
+			$new->sourceid = 0;
+			$new->subjid = required_param('subjectid', PARAM_INT);
+
+			$new->id = $DB->insert_record(\block_exacomp\DB_TOPICS, $new);
+
+			// add topic to course
+			$DB->insert_record(\block_exacomp\DB_COURSETOPICS, array(
+				'courseid' => $courseid,
+				'topicid' => $new->id
+			));
+		} else {
+			$item->update($new);
+		}
+		*/
+
+		echo $output->popup_close_and_reload();
+		exit;
 	}
-	*/
-	
-	echo $output->popup_close_and_reload();
-	exit;
 }
 
 echo $output->header($context, $courseid, '', false);
