@@ -22,7 +22,7 @@
 	// # COMPETENCIES
 	//cannot hide anymore, as soon as competency is checked
 	var competencies = {};
-	
+
 	var prev_val;
 
 	// TODO: add additional_grading info to competencies array!
@@ -34,7 +34,7 @@
 	$(document).on('focus', 'input[name^=datadescriptors\-]', function() {
 		prev_val = $(this).val();
 	});
-	
+
 	$(document).on('change', 'input[name^=datadescriptors\-]', function() {
 		// check if anyone else has edited the competence before. if so, ask for confirmation
 		if($(this).attr("reviewerid")) {
@@ -47,12 +47,12 @@
 				$(this).removeAttr("reviewerid");
 			}
 		}
-		
+
 		var tr = $(this).closest('tr');
 		var hide = $(tr).find('input[name~="hide-descriptor"]');
 
 		var compid = this.getAttribute('exa-compid');
-		var userid = this.getAttribute('exa-userid');	
+		var userid = this.getAttribute('exa-userid');
 		var niveauid = $('select[name=niveau_descriptor-'+compid+'-'+userid).val();
 
 		if ($(this).prop("checked")) {
@@ -82,16 +82,16 @@
 			//uncheck comp -> hide possible again
 			hide.removeClass("hidden");
 		}
-		
+
 	});
 	$(document).on('focus', 'select[name^=datadescriptors\-]', function() {
 		prev_val = $(this).val();
 	});
-	
+
 	$(document).on('focus', 'select[name^=niveau\_]', function() {
 		prev_val = $(this).val();
 	});
-	
+
 	$(document).on('change', 'select[name^=datadescriptors\-]', function() {
 		// check if anyone else has edited the competence before. if so, ask for
 		// confirmation
@@ -104,9 +104,9 @@
 				$(this).removeAttr("reviewerid");
 			}
 		}
-			
+
 		var compid = this.getAttribute('exa-compid');
-		var userid = this.getAttribute('exa-userid');	
+		var userid = this.getAttribute('exa-userid');
 		var niveauid = $('select[name=niveau_descriptor-'+compid+'-'+userid).val();
 
 		if(!competencies[compid + "-" + userid])
@@ -119,12 +119,12 @@
 		else
 			competencies[compid + "-" + userid]['value'] = $(this).val();
 	});
-	
+
 	$(document).on('change', 'select[name^=niveau_descriptor\-]', function(event) {
 		var compid = this.getAttribute('exa-compid');
-		var userid = this.getAttribute('exa-userid');		
+		var userid = this.getAttribute('exa-userid');
 		var niveauid = $(this).val();
-		
+
 		// check if anyone else has edited the competence before. if so, ask for
 		// confirmation
 		if ($(this).attr("reviewerid")) {
@@ -136,15 +136,15 @@
 				$(this).removeAttr("reviewerid");
 			}
 		}
-		
-		var value = $('select[name=datadescriptors-'+compid+'-'+userid+'-teacher').val();
+
+		var value = $('select[name=datadescriptors-'+compid+'-'+userid+'-teacher]').val();
 		// in case of checkboxes instead of selects:
 		if(value === undefined)
-			if ($('input[name=datadescriptors-'+compid+'-'+userid+'-teacher').prop("checked"))
-				value = $('input[name=datadescriptors-'+compid+'-'+userid+'-teacher').val();
+			if ($('input[name=datadescriptors-'+compid+'-'+userid+'-teacher]').prop("checked"))
+				value = $('input[name=datadescriptors-'+compid+'-'+userid+'-teacher]').val();
 			else
 				value = -1;
-			
+
 		if(!competencies[compid + "-" + userid]) {
 			competencies[compid + "-" + userid] = {
 					userid : userid,
@@ -160,14 +160,14 @@
 	$(document).on('focus', 'input[name^=add-grading\-]', function() {
 		prev_val = $(this).val();
 	});
-	
+
 	$(document).on('change', 'input[name^=add-grading\-]', function(event) {
 		var compid = this.getAttribute('exa-compid');
-		var userid = this.getAttribute('exa-userid');	
+		var userid = this.getAttribute('exa-userid');
 		var value = $(this).val();
-		
+
 		value = value.replace(",", ".");
-		
+
 		// check if anyone else has edited the competence before. if so, ask for confirmation
 		if($(this).attr("reviewerid")) {
 			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
@@ -179,7 +179,7 @@
 				$(this).removeAttr("reviewerid");
 			}
 		}
-		
+
 		// check for valid grading input range
 		if (value > 6.0) {
 			alert(M.util.get_string('value_too_large','block_exacomp'));
@@ -195,7 +195,7 @@
 			value = null
 			$(this).val(value);
 		}
-		
+
 		var type = this.getAttribute('exa-type');
 		if(type == 0) {
 			if(!competencies_additional_grading[compid])
@@ -213,25 +213,25 @@
 			if(!subjects_additional_grading[compid])
 				subjects_additional_grading[compid] = {};
 			subjects_additional_grading[compid][userid] = value;
-		} 
+		}
 	});
-	
+
 	// # TOPICS
 	var topics = {};
 	$(document).on('focus', 'input[name^=datatopics\-]', function() {
 		prev_val = $(this).val();
 	});
-	
+
 	$(document).on('click', 'input[name^=datatopics\-]', function() {
 		var id = this.getAttribute('exa-compid')+"-"+this.getAttribute('exa-userid');
-		
+
 		var tr = $(this).closest('tr');
 		var hide = $(tr).find('input[name~="hide-topic"]');
-		
+
 		var compid = this.getAttribute('exa-compid');
-		var userid = this.getAttribute('exa-userid');	
+		var userid = this.getAttribute('exa-userid');
 		var niveauid = $('select[name=niveau_topic-'+compid+'-'+userid+']').val();
-		
+
 		if($(this).attr("reviewerid")) {
 			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
 				$(this).prop("checked",prev_val);
@@ -242,7 +242,7 @@
 				$(this).removeAttr("reviewerid");
 			}
 		}
-		
+
 		if ($(this).prop("checked")) {
 			if (topics[this.name]) {
 				topics[this.name].value = $(this).val();
@@ -253,7 +253,7 @@
 					value : $(this).val(),
 					niveauid : niveauid
 				};
-		
+
 			//check comp->hide descriptor not possible
 			hide.addClass("hidden");
 		} else {
@@ -266,17 +266,17 @@
 					value : 0,
 					niveauid : niveauid
 				};
-			
+
 			//uncheck comp -> hide possible again
 			hide.removeClass("hidden");
 		}
 	});
-	
+
 	$(document).on('focus', 'select[name^=datatopics\-]', function() {
 		prev_val = $(this).val();
 	});
-	
-		
+
+
 	$(document).on('change', 'select[name^=datatopics\-]', function() {
 		// check if anyone else has edited the competence before. if so, ask for
 		// confirmation
@@ -289,11 +289,11 @@
 				$(this).removeAttr("reviewerid");
 			}
 		}
-		
+
 		var compid = this.getAttribute('exa-compid');
-		var userid = this.getAttribute('exa-userid');	
+		var userid = this.getAttribute('exa-userid');
 		var niveauid = $('select[name=niveau_topic-'+compid+'-'+userid+']').val();
-		
+
 		if(!topics[this.name]) {
 			topics[this.name] = {
 				userid : userid,
@@ -304,14 +304,14 @@
 		} else
 			topics[this.name]['value'] = $(this).val();
 	});
-	
+
 	$(document).on('change', 'select[name^=niveau_topic\-]', function(event) {
 		var compid = this.getAttribute('exa-compid');
-		var userid = this.getAttribute('exa-userid');		
+		var userid = this.getAttribute('exa-userid');
 		var niveauid = $(this).val();
 		var name = 'datatopics-'+compid+'-'+userid+'-teacher';
 		var value = $('select[name='+name+']').val();
-		
+
 		// check if anyone else has edited the competence before. if so, ask for
 		// confirmation
 		if ($(this).attr("reviewerid")) {
@@ -323,14 +323,14 @@
 				$(this).removeAttr("reviewerid");
 			}
 		}
-		
+
 		// in case of checkboxes instead of selects:
 		if(value === undefined)
 			if ($('input[name='+name+']').prop("checked"))
 				value = $('input[name='+name+']').val();
 			else
 				value = -1;
-		
+
 		if(!topics[name]) {
 			topics[name] = {
 					userid : userid,
@@ -348,12 +348,12 @@
 	$(document).on('focus', 'input[name^=datasubjects\-]', function() {
 		prev_val = $(this).val();
 	});
-		
+
 	$(document).on('click', 'input[name^=datasubjects\-]', function() {
 		var compid = this.getAttribute('exa-compid');
-		var userid = this.getAttribute('exa-userid');	
+		var userid = this.getAttribute('exa-userid');
 		var niveauid = $('select[name=niveau_subject-'+compid+'-'+userid+']').val();
-		
+
 		if($(this).attr("reviewerid")) {
 			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
 				$(this).prop("checked",prev_val);
@@ -364,7 +364,7 @@
 				$(this).removeAttr("reviewerid");
 			}
 		}
-		
+
 		if ($(this).prop("checked")) {
 			if (subjects[this.name]) {
 				subjects[this.name].value = $(this).val();
@@ -387,11 +387,11 @@
 				};
 		}
 	});
-	
+
 	$(document).on('focus', 'select[name^=datasubjects\-]', function() {
 		prev_val = $(this).val();
 	});
-		
+
 	$(document).on('change', 'select[name^=datasubjects\-]', function() {
 		// check if anyone else has edited the competence before. if so, ask for
 		// confirmation
@@ -404,11 +404,11 @@
 				$(this).removeAttr("reviewerid");
 			}
 		}
-		
+
 		var compid = this.getAttribute('exa-compid');
-		var userid = this.getAttribute('exa-userid');	
+		var userid = this.getAttribute('exa-userid');
 		var niveauid = $('select[name=niveau_subject-'+compid+'-'+userid).val();
-		
+
 		if(!subjects[this.name]) {
 			subjects[this.name] = {
 				userid : userid,
@@ -418,16 +418,16 @@
 			};
 		} else
 			subjects[this.name]['value'] = $(this).val();
-		
+
 	});
-	
+
 	$(document).on('change', 'select[name^=niveau_subject\-]', function(event) {
 		var compid = this.getAttribute('exa-compid');
-		var userid = this.getAttribute('exa-userid');		
+		var userid = this.getAttribute('exa-userid');
 		var niveauid = $(this).val();
 		var name = 'datasubjects-'+compid+'-'+userid+'-teacher';
 		var value = $('select[name='+name+']').val();
-		
+
 		// check if anyone else has edited the competence before. if so, ask for
 		// confirmation
 		if ($(this).attr("reviewerid")) {
@@ -439,14 +439,14 @@
 				$(this).removeAttr("reviewerid");
 			}
 		}
-		
+
 		// in case of checkboxes instead of selects:
 		if(value === undefined)
 			if ($('input[name='+name+']').prop("checked"))
 				value = $('input[name='+name+']').val();
 			else
 				value = -1;
-		
+
 		if(!subjects[name]) {
 			subjects[name] = {
 					userid : userid,
@@ -458,24 +458,24 @@
 		else
 			subjects[name]['niveauid'] = niveauid;
 	});
-	
+
 	//#CROSSSUBJECTS
 	var crosssubs = {}
-	
+
 	$(document).on('change', 'select[name^=niveau_crosssub\-]', function(event) {
 		var compid = this.getAttribute('exa-compid');
-		var userid = this.getAttribute('exa-userid');		
+		var userid = this.getAttribute('exa-userid');
 		var niveauid = $(this).val();
 		var name = 'datacrosssubs-'+compid+'-'+userid+'-teacher';
 		var value = $('select[name='+name+']').val();
-		
+
 		// in case of checkboxes instead of selects:
 		if(value === undefined)
 			if ($('input[name='+name+']').prop("checked"))
 				value = $('input[name='+name+']').val();
 			else
 				value = -1;
-		
+
 		if(!crosssubs[name]) {
 			crosssubs[name] = {
 					userid : userid,
@@ -490,7 +490,7 @@
 	$(document).on('click', 'input[name^=datacrosssubs\-]', function() {
 		var values = $(this).attr("name").split("-");
 		var compid = this.getAttribute('exa-compid');
-		var userid = this.getAttribute('exa-userid');	
+		var userid = this.getAttribute('exa-userid');
 		var niveauid = $('select[name=niveau_crosssub-'+compid+'-'+userid+']').val();
 		if ($(this).prop("checked")) {
 			if (crosssubs[this.name]) {
@@ -516,7 +516,7 @@
 	});
 	$(document).on('change', 'select[name^=datacrosssubs\-]', function() {
 		var compid = this.getAttribute('exa-compid');
-		var userid = this.getAttribute('exa-userid');	
+		var userid = this.getAttribute('exa-userid');
 		var niveauid = $('select[name=niveau_crosssub-'+compid+'-'+userid+']').val();
 		var values = $(this).attr("name").split("-");
 		crosssubs[this.name] = {
@@ -526,19 +526,19 @@
 			niveauid : niveauid
 		};
 	});
-	
+
 	// # EXAMPLES
 	var examples = {};
-	
+
 	$(document).on('focus', 'input[name^=dataexamples\-]', function() {
 		prev_val = $(this).val();
 	});
-		
+
 	$(document).on('click', 'input[name^=dataexamples\-]', function() {
 		var values = $(this).attr("name").split("-");
 		var tr = $(this).closest('tr');
 		var hide = $(tr).find('input[name~="hide-example"]');
-		
+
 		if($(this).attr("reviewerid")) {
 			if (!confirm(M.util.get_string('override_notice', 'block_exacomp'))) {
 				$(this).prop("checked",prev_val);
@@ -549,7 +549,7 @@
 				$(this).removeAttr("reviewerid");
 			}
 		}
-		
+
 		examples[this.name] = {
 			userid : values[2],
 			exampleid : values[1],
@@ -563,11 +563,11 @@
 			hide.removeClass("hidden");
 		}
 	});
-	
+
 	$(document).on('focus', 'select[name^=dataexamples\-]', function() {
 		prev_val = $(this).val();
 	});
-		
+
 	$(document).on('change', 'select[name^=dataexamples\-]', function() {
 		// check if anyone else has edited the competence before. if so, ask for
 		// confirmation
@@ -580,7 +580,7 @@
 				$(this).removeAttr("reviewerid");
 			}
 		}
-		
+
 		var values = $(this).attr("name").split("-");
 		if(!examples[this.name]) {
 			// get current niveau
@@ -596,7 +596,7 @@
 			examples[this.name]['value'] = $(this).val();
 	});
 	$(document).on('change', 'select[name^=niveau_examples\-]', function(event) {
-		
+
 		// check if anyone else has edited the competence before. if so, ask for
 		// confirmation
 		if ($(this).attr("reviewerid")) {
@@ -608,15 +608,15 @@
 				$(this).removeAttr("reviewerid");
 			}
 		}
-		
+
 		var name = this.name.replace("niveau_","data") + "-teacher"
 		var niveauid = $(this).val();
-		
+
 		if(!examples[name]) {
 			var values = name.split("-");
 
 			var value = $('select[name='+name+']').val();
-			
+
 			examples[name] = {
 					userid : values[2],
 					exampleid : values[1],
@@ -660,7 +660,7 @@
 
 	// global var hack
 	i_want_my_reload = false;
-	
+
 	$(document).on('click', '#assign-competencies input[type=submit], #assign-competencies input[type=button]', function(event) {
 		if ($(this).is('.allow-submit')) return;
 		event.preventDefault();
@@ -681,16 +681,16 @@
 					alert('Änderungen wurden gespeichert!');
 				}
 			}
-			
+
 			var multiQueryData = {};
-			
+
 			if (!$.isEmptyObject(examples)) {
 				multiQueryData.examples = examples;
 				examples = {};
 			}
 
 			var competencies_by_type = [];
-			
+
 			if (!$.isEmptyObject(competencies)) {
 				competencies_by_type[0] = competencies;
 				competencies = {};
@@ -700,21 +700,21 @@
 				competencies_by_type[1] = topics;
 				topics = {};
 			}
-			
+
 			if (!$.isEmptyObject(crosssubs)) {
 				competencies_by_type[2] = crosssubs;
 				crosssubs = {};
 			}
-			
+
 			if (!$.isEmptyObject(subjects)) {
 				competencies_by_type[3] = subjects;
 				subjects = {};
 			}
-			
+
 			if (competencies_by_type.length) {
 				multiQueryData.competencies_by_type = competencies_by_type
 			}
-			
+
 			if(!$.isEmptyObject(competencies_additional_grading)){
 				multiQueryData.competencies_additional_grading = competencies_additional_grading;
 			}
@@ -722,15 +722,15 @@
 			if(!$.isEmptyObject(topics_additional_grading)){
 				multiQueryData.topics_additional_grading = topics_additional_grading;
 			}
-			
+
 			if(!$.isEmptyObject(crosssubs_additional_grading)){
 				multiQueryData.crosssubs_additional_grading = crosssubs_additional_grading;
 			}
-			
+
 			if(!$.isEmptyObject(subjects_additional_grading)){
 				multiQueryData.subjects_additional_grading = subjects_additional_grading;
 			}
-			
+
 			if (!$.isEmptyObject(multiQueryData)) {
 				block_exacomp.call_ajax({
 					action: 'multi',
@@ -742,7 +742,7 @@
 			} else {
 				all_done();
 			}
-			
+
 			break;
 		/*
 		case 'save_as_draft':
@@ -764,7 +764,7 @@
 				}).done(function(msg) {
 					location.href = 'cross_subjects_overview.php?courseid='+block_exacomp.get_param('courseid');
 				});
-			} 
+			}
 			break;
 		*/
 		}
@@ -800,24 +800,23 @@
 			event.preventDefault();
 		}
 	});
-	
+
 	$(document).keydown(function(event) {
-		console.log(event.which);
 		if ( event.which == 13 ) {
 			   event.preventDefault();
 		}
 	});
-	
+
 	$(document).on('click', '[exa-type=iframe-popup]', function(event) {
 		event.preventDefault();
-		popupheight = this.getAttribute('exa-height');	
+		popupheight = this.getAttribute('exa-height');
 		windowheight = $( window ).height() * 0.8;
-		
+
 		if(popupheight != null){
 			if(popupheight.endsWith("px")){
 				popupheight = popupheight.slice(0, -2);
 			}
-			
+
 			if(popupheight > windowheight){
 				popupheight = windowheight;
 			}
@@ -831,7 +830,7 @@
 			height: popupheight,
 		});
 	});
-	
+
 	$(document).on('click', '[exa-type=link]', function(event) {
 		event.preventDefault();
 
@@ -849,12 +848,12 @@
 		var val = $(this).attr('state');
 		var select = document
 			.getElementById("menulis_topics");
-		
+
 		if(studentid < 0) {
 			// no negative studentid: (all users, gesamtübersicht,...)
 			studentid = 0;
 		}
-		
+
 		if(val=='-'){
 			$(this).attr('state','+');
 			visible = 0;
@@ -868,24 +867,24 @@
 				$('input[name=add-grading-'+studentid+'-'+descrid+']').prop("disabled", true);
 				$('select[name=niveau_descriptor-'+descrid+'-'+studentid+']').prop("disabled", true);
 			}
-			
+
 			var img = $("img", this);
 			img.attr('src',$(this).attr('hideurl'));
 			img.attr('alt', M.util.get_string('show','moodle'));
 			img.attr('title', M.util.get_string('show','moodle'));
-			
+
 			//only for competence grid
 			var link = $('#competence-grid-link-'+descrid);
 			if(link) {
 				 link.addClass('deactivated');
 			}
-			
+
 			if (select) {
 				for(i=0; i<select.options.length; i++){
 					if(select.options[i].value == descrid)
 						$(select.options[i]).attr('disabled', 'disabled');
 				}
-			} 
+			}
 		}else{
 			$(this).attr('state','-');
 			visible = 1;
@@ -901,21 +900,21 @@
 			img.attr('src',$(this).attr('showurl'));
 			img.attr('alt', M.util.get_string('hide','moodle'));
 			img.attr('title', M.util.get_string('hide','moodle'));
-			
+
 			//only for competence grid
 			var link = $('#competence-grid-link-'+descrid);
 			if(link) {
 				 link.removeClass('deactivated');
 			}
-			
+
 			if (select) {
 				for(i=0; i<select.options.length; i++){
 					if(select.options[i].value == descrid)
 						$(select.options[i]).removeAttr('disabled');
 				}
-			} 
+			}
 		}
-		
+
 		block_exacomp.call_ajax({
 			descrid : descrid,
 			value : visible,
@@ -944,50 +943,50 @@
 		});
 	});
 
-	
+
 	$(document).on('click', '#hide-example', function(event) {
 		event.preventDefault();
 		var exampleid = $(this).attr('exampleid');
 
 		// an example can be attached at several competencies, therefore we need to process all example instances
-		var examples = $('a[id="hide-example"][exampleid="'+exampleid+'"]').each(function() { 
+		var examples = $('a[id="hide-example"][exampleid="'+exampleid+'"]').each(function() {
 
 			var tr = $(this).closest('tr');
 			var schedule = $(this).siblings('.add-to-schedule');
 			var preplanning = $(this).siblings('.add-to-preplanning');
-			
+
 			var courseid = block_exacomp.get_param('courseid');
 			var studentid = block_exacomp.get_studentid();
 			var val = $(this).attr('state');
-			
+
 			if(studentid==null)
 				studentid = 0;
-			
+
 			if(val=='-'){
 				$(this).attr('state','+');
 				visible = 0;
-	
+
 				exabis_rg2.get_row(this)
 					.trigger('rg2.close')
 					.addClass('rg2-locked');
-	
+
 				//disable checkbox for teacher, when hiding descriptor for student
 				if(studentid > 0)
-					$('input[name=dataexamples-'+exampleid+'-'+studentid+'-'+'teacher]').prop( "disabled", true ); 
+					$('input[name=dataexamples-'+exampleid+'-'+studentid+'-'+'teacher]').prop( "disabled", true );
 					$('select[name=dataexamples-'+exampleid+'-'+studentid+'-teacher]').prop("disabled", true);
 					$('select[name=niveau_examples-'+exampleid+'-'+studentid+']').prop("disabled", true);
-	
+
 				var img = $("img", this);
 				img.attr('src',$(this).attr('hideurl'));
 				img.attr('alt', M.util.get_string('show','moodle'));
 				img.attr('title', M.util.get_string('show','moodle'));
-				
+
 				schedule.click(function () {return false;});
 				preplanning.click(function () {return false;});
-				
+
 				schedule.children().prop("title", M.util.get_string('weekly_schedule_disabled','block_exacomp'));
 				preplanning.children().prop("title", M.util.get_string('pre_planning_storage_disabled','block_exacomp'));
-				
+
 				//only for competence grid
 				var link = $('#competence-grid-link-'+exampleid);
 				if(link) {
@@ -997,23 +996,23 @@
 				$(this).attr('state','-');
 				visible = 1;
 				tr.removeClass('rg2-locked');
-				
+
 				//enable checkbox for teacher, when showing descriptor for student
 				$('input[name=dataexamples-'+exampleid+'-'+studentid+'-'+'teacher]').prop( "disabled", false );
 				$('select[name=dataexamples-'+exampleid+'-'+studentid+'-teacher]').prop("disabled", false);
 				$('select[name=niveau_examples-'+exampleid+'-'+studentid+']').prop("disabled", false);
-				
+
 				var img = $("img", this);
 				img.attr('src',$(this).attr('showurl'));
 				img.attr('alt', M.util.get_string('hide','moodle'));
 				img.attr('title', M.util.get_string('hide','moodle'));
-				
+
 				schedule.unbind('click');
 				preplanning.unbind('click');
-				
+
 				schedule.children().prop("title", M.util.get_string('weekly_schedule','block_exacomp'));
 				preplanning.children().prop("title", M.util.get_string('pre_planning_storage','block_exacomp'));
-				
+
 				//only for competence grid
 				var link = $('#competence-grid-link-'+exampleid);
 				if(link) {
@@ -1043,7 +1042,7 @@
 			// no negative studentid: (all users, gesamtübersicht,...)
 			studentid = 0;
 		}
-		
+
 		if(val=='-'){
 			$(this).attr('state','+');
 			visible = 0;
@@ -1057,12 +1056,12 @@
 				$('input[name=add-grading-'+studentid+'-'+topicid+']').prop("disabled", true);
 				$('select[name=niveau_topic-'+topicid+'-'+studentid+']').prop("disabled", true);
 			}
-			
+
 			var img = $("img", this);
 			img.attr('src',$(this).attr('hideurl'));
 			img.attr('alt', M.util.get_string('show','moodle'));
 			img.attr('title', M.util.get_string('show','moodle'));
-			
+
 		}else{
 			$(this).attr('state','-');
 			visible = 1;
@@ -1079,7 +1078,7 @@
 			img.attr('alt', M.util.get_string('hide','moodle'));
 			img.attr('title', M.util.get_string('hide','moodle'));
 		}
-		
+
 		block_exacomp.call_ajax({
 			topicid : topicid,
 			value : visible,
@@ -1130,11 +1129,11 @@
         });
 
     });
-	
+
 	$(document).on('click','[exa-type=add-example-to-schedule]', function(event) {
 		var exampleid = $(this).attr('exampleid');
 		var studentid = $(this).attr('studentid');
-		
+
 		if(studentid == -1){
 			if (confirm("Möchten Sie das Beispiel wirklich bei allen Schülern auf den Planungsspeicher legen?")) {
 				block_exacomp.call_ajax({
@@ -1142,7 +1141,7 @@
 					studentid : studentid,
 					action : 'add-example-to-schedule'
 				}).done(function(msg) { alert(msg) });
-			} 
+			}
 		}else {
 			block_exacomp.call_ajax({
 				exampleid : exampleid,
@@ -1150,44 +1149,44 @@
 				action : 'add-example-to-schedule'
 			}).done(function(msg) { alert(msg) });
 		}
-		
+
 		event.preventDefault();
 		return false;
 	});
-	
+
 	$(document).on('click','[exa-type=allow-resubmission]', function(event) {
 		var exampleid = $(this).attr('exampleid');
 		var studentid = $(this).attr('studentid');
-		
-		
+
+
 		block_exacomp.call_ajax({
 			exampleid : exampleid,
 			studentid : studentid,
 			action : 'allow-resubmission'
 		}).done(function(msg) { alert(msg) });
-		
+
 		event.preventDefault();
 		return false;
 	});
-	
+
 	$(document).on('click','[exa-type=send-message-to-course]', function(event) {
-		
+
 		message = $('textarea[id=message]').val();
-		
+
 		block_exacomp.call_ajax({
 			message : message,
 			action : 'send-message-to-course'
 		}).done(block_exacomp.popup_close());
-		
+
 		return false;
 	});
-	
+
 	$(window).on('beforeunload', function (){
 		if (Object.keys(competencies).length > 0 || Object.keys(topics).length > 0
 				|| Object.keys(examples).length > 0)
 			return M.util.get_string('unload_notice', 'block_exacomp');
 	});
-	
+
 	block_exacomp.delete_descriptor = function(id) {
 		block_exacomp.call_ajax({
 			id: id,
@@ -1196,7 +1195,7 @@
 			location.reload();
 		});
 	}
-	
+
 	block_exacomp.delete_crosssubj = function(id) {
 		block_exacomp.call_ajax({
 			crosssubjid : id,
