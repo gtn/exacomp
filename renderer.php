@@ -27,7 +27,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	const STUDENT_SELECTOR_OPTION_EDITMODE = 1;
 	const STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN = 2;
 	const STUDENT_SELECTOR_OPTION_COMPETENCE_GRID_DROPDOWN = 3;
-
+	
 	public function header_v2($page_identifier="") {
 		// g::$PAGE->show_tabtree
 		return $this->header(block_exacomp_get_context_from_courseid(g::$COURSE->id), g::$COURSE->id, $page_identifier);
@@ -1222,7 +1222,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$cell->attributes['class'] = 'rg2-indent';
 					$cell->text  = html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'type'=>'text', 'placeholder' => \block_exacomp\trans(['de:Neue Kompetenz', 'en:New competency']), 'topicid'=>$topic->id, 'niveauid'=>$niveauid));
 					if ($niveauid) {
-						$cell->text .= html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'type'=>'button', 'value'=>\block_exacomp\get_string('add')));
+					$cell->text .= html_writer::empty_tag('input', array('exa-type'=>'new-descriptor', 'type'=>'button', 'value'=>\block_exacomp\get_string('add')));
 					} else {
 						$cell->text .= html_writer::empty_tag('input', array('type'=>'button', 'value'=>\block_exacomp\get_string('add'), 'onclick'=>'alert('.json_encode(\block_exacomp\trans('de:Um eine Kompetenz einfügen zu können, müssen Sie zuerst einen Lernfortschritt auswählen oder hinzufügen!')).')'));
 					}
@@ -1364,7 +1364,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					}
 					
 					//check visibility for every student in overview
-					if(!$one_student && $parent_visible[$student->id] == false)
+					if(!$one_student && empty($parent_visible[$student->id]))
 						$visible_student = false;
 					elseif($visible && !$one_student && !$editmode) {
 						$visible_student = block_exacomp_is_descriptor_visible($data->courseid, $descriptor, $student->id);
@@ -2946,7 +2946,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			}
 			
 			list($student, $subject) = block_exacomp_get_data_for_profile_comparison($course->id, $subject, $student);
-
+			
 			$innersection = html_writer::tag('legend', get_string('innersection3', 'block_exacomp'), array('class'=>'competence_profile_insectitle'));
 			$innersection .= html_writer::tag('div', $this->comparison_table($course->id, $subject, $student), array('class'=>'comparisondiv'));
 			$content .= html_writer::tag('fieldset', $innersection, array('class'=>' competence_profile_innersection exa-collapsible'));
@@ -3165,7 +3165,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$scheme_items = \block_exacomp\global_config::get_value_titles($courseid);
 		
 		$content = '';
-
+		
 		//first table for descriptor evaluation
 		$table = new html_table();
 		$table->attributes['class'] = ' flexible boxaligncenter comparisontable';
@@ -3189,7 +3189,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$row->cells[] = $cell;
 		
 		$rows[] = $row;
-
+		
 		foreach($subject->subs as $topic){
 			$row = new html_table_row();
 			$row->attributes['class'] = 'comparison_topic';
@@ -3218,7 +3218,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$cell->text = (isset($student->topics->student[$topic->id]))?$student->topics->student[$topic->id]:'';
 			$row->cells[] = $cell;
 			$rows[] = $row;
-
+			
 			foreach($topic->descriptors as $descriptor){
 				$row = new html_table_row();
 				$row->attributes['class'] = 'comparison_desc';

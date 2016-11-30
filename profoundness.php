@@ -64,6 +64,12 @@ if ($isTeacher){
 	$student = $USER;
 }
 
+if (!$coursestudents) {
+	echo block_exacomp\get_string('nostudents');
+	$output->footer();
+	exit;
+}
+
 $studentid = $student->id;
 $students = array($student);
 
