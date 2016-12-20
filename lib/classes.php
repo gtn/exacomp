@@ -870,22 +870,36 @@ class descriptor extends db_record {
 		$descriptor->sorting = $max_sorting + 1;
 		$descriptor->insert();
 
-		$visibility = new \stdClass();
-		$visibility->courseid = $courseid;
-		$visibility->descrid = $descriptor->id;
-		$visibility->studentid = 0;
-		$visibility->visible = 1;
-
-		$DB->insert_record(DB_DESCVISIBILITY, $visibility);
-
 		//topic association
 		$childdesctopic_mm = new \stdClass();
 		$childdesctopic_mm->topicid = $topicid;
 		$childdesctopic_mm->descrid = $descriptor->id;
-		
+
 		$DB->insert_record(DB_DESCTOPICS, $childdesctopic_mm);
 
-		block_exacomp_update_visibility_cache($courseid);
+		// other courses
+		$otherCourseids = block_exacomp_get_courseids_by_descriptor($descriptor->id);
+
+		// add myself (should be in there anyway)
+		if (!in_array($courseid, $otherCourseids)) {
+			$otherCourseids[] = $courseid;
+		}
+
+		foreach ($otherCourseids as $otherCourseid) {
+			$visibility = new \stdClass();
+			$visibility->courseid = $otherCourseid;
+			$visibility->descrid = $descriptor->id;
+			$visibility->studentid = 0;
+			$visibility->visible = 1;
+
+			$DB->insert_record(DB_DESCVISIBILITY, $visibility);
+		}
+
+		// reset desc visiblity in all associated courses
+		foreach ($otherCourseids as $otherCourseid) {
+			block_exacomp_clear_visibility_cache($otherCourseid);
+		}
+
 		return $descriptor;
 	}
 

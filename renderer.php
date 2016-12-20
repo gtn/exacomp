@@ -1784,7 +1784,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$child_data->rg2_level++;
 
 				if (!empty($descriptor->children)) {
-					$this->descriptors($rows, $level+1, $descriptor->children, $child_data, $students, $profoundness, $editmode, $custom_created_descriptors, false, $crosssubjid, $descriptor_parent_visible);
+					$this->descriptors($rows, $level+1, $descriptor->children, $child_data, $students, $profoundness, $editmode, false, false, $crosssubjid, $descriptor_parent_visible);
 				}
 				//schulische ergänzungen und neue teilkompetenz
 				if($editmode && $parent) {
@@ -1802,7 +1802,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$rows[] = $own_additionRow;
 
 					// is this was a bug? it's printed twice?
-					// no, first print the imported descriptors, then print the user created ones
+					// no, first print 	the imported descriptors, then print the user created ones
 					$this->descriptors($rows, $level+1, $descriptor->children, $child_data, $students, $profoundness, $editmode, true);
 
 					$own_additionRow = new html_table_row();

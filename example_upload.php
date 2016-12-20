@@ -169,19 +169,28 @@ if($formdata = $form->get_data()) {
 				$insert->sorting = $sorting;
 				
 				$DB->insert_record(\block_exacomp\DB_DESCEXAMP, $insert);
-		}
+			}
 			//block_exacomp_globals::$DB->insert_or_update_record(\block_exacomp\DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
-	}
-	}
-	
-	//add visibility if not exists
-	if (!$DB->get_record(\block_exacomp\DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$newExample->id, 'studentid'=>0))) {
-		$DB->insert_record(\block_exacomp\DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$newExample->id, 'studentid'=>0, 'visible'=>1));
-	}
-	if (!$DB->get_record(\block_exacomp\DB_SOLUTIONVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$newExample->id, 'studentid'=>0))) {
-		$DB->insert_record(\block_exacomp\DB_SOLUTIONVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$newExample->id, 'studentid'=>0, 'visible'=>1));
+		}
 	}
 	
+	// other courses
+	$otherCourseids = block_exacomp_get_courseids_by_example($newExample->id);
+	// add myself (should be in there anyway)
+	if (!in_array($courseid, $otherCourseids)) {
+		$otherCourseids[] = $courseid;
+	}
+
+	foreach ($otherCourseids as $otherCourseid) {
+		//add visibility if not exists
+		if (!$DB->get_record(\block_exacomp\DB_EXAMPVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$newExample->id, 'studentid'=>0))) {
+			$DB->insert_record(\block_exacomp\DB_EXAMPVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$newExample->id, 'studentid'=>0, 'visible'=>1));
+		}
+		if (!$DB->get_record(\block_exacomp\DB_SOLUTIONVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$newExample->id, 'studentid'=>0))) {
+			$DB->insert_record(\block_exacomp\DB_SOLUTIONVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$newExample->id, 'studentid'=>0, 'visible'=>1));
+		}
+	}
+
 	block_exacomp_settstamp();
 	
 	// save file
@@ -190,7 +199,9 @@ if($formdata = $form->get_data()) {
 	file_save_draft_area_files($formdata->solution, context_system::instance()->id, 'block_exacomp', 'example_solution',
 			$newExample->id, array('subdirs' => 0, 'maxfiles' => 1));
 
-	block_exacomp_update_visibility_cache($courseid);	
+	foreach ($otherCourseids as $otherCourseid) {
+		block_exacomp_clear_visibility_cache($otherCourseid);
+	}
 
 	echo $output->popup_close_and_reload();
 	exit;

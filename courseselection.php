@@ -39,7 +39,7 @@ block_exacomp_build_breadcrum_navigation($courseid);
 $headertext = "";
 
 $img = new moodle_url('/blocks/exacomp/pix/two.png');
-	 	
+
 if ($action == 'save') {
 	$topics = block_exacomp\param::optional_array('topics', [PARAM_INT]);
 	block_exacomp_set_coursetopics($courseid, $topics);

@@ -1298,10 +1298,10 @@ class block_exacomp_external extends external_api {
 			$DB->insert_record (\block_exacomp\DB_DESCEXAMP, $insert );
 
 			//visibility entries for this example in course where descriptors are associated
-			$courses = block_exacomp_get_courseids_by_descriptor($descriptor);
-			foreach($courses as $course){
+			$courseids = block_exacomp_get_courseids_by_descriptor($descriptor);
+			foreach($courseids as $courseid){
 				$insert = new stdClass();
-				$insert->courseid = $course->courseid;
+				$insert->courseid = $courseid;
 				$insert->exampleid = $id;
 				$insert->studentid = 0;
 				$insert->visible = 1;

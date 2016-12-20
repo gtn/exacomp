@@ -427,7 +427,7 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 function block_exacomp_get_subjecttitle_by_example($exampleid) {
 	global $DB;
 
-	$desctiptors = block_exacomp_get_descriptors_by_example($exampleid);
+	$descriptors = block_exacomp_get_descriptors_by_example($exampleid);
 	foreach($descriptors as $descriptor) {
 
 		$full = $DB->get_record(\block_exacomp\DB_DESCRIPTORS, array("id" => $descriptor->id));
@@ -1267,7 +1267,6 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 	foreach ($subjects as $subject) {
 		block_exacomp_sort_items($subject->topics, \block_exacomp\DB_TOPICS);
 	}
-
 
 	return block_exacomp\subject::create_objects($subjects);
 }
@@ -2381,24 +2380,13 @@ function block_exacomp_get_icon_for_user($coursemodules, $student) {
 	return $icon;
 }
 
-/**
- *
- * Assign topics to course
- * @param unknown_type $courseid
- * @param unknown_type $values
- */
-function block_exacomp_set_coursetopics($courseid, $topicids) {
-	global $DB;
+function block_exacomp_normalize_course_visibilities($courseid) {
+	$topicids = g::$DB->get_records_menu(\block_exacomp\DB_COURSETOPICS, array("courseid" => $courseid), null, 'topicid, topicid AS tmp');
 
-	$DB->delete_records(\block_exacomp\DB_COURSETOPICS, array("courseid" => $courseid));
-
-	block_exacomp_update_topic_visibilities($courseid, $topicids);
-	
 	$descriptors = array();
 	$examples = array();
-	foreach ($topicids as $topicid) {
-		$DB->insert_record(\block_exacomp\DB_COURSETOPICS, array("courseid" => $courseid, "topicid" => $topicid));
 
+	foreach ($topicids as $topicid) {
 		//insert descriptors in block_exacompdescrvisibility
 		$descriptors_topic = block_exacomp_get_descriptors_by_topic($courseid, $topicid, true);
 		foreach($descriptors_topic as $descriptor){
@@ -2425,18 +2413,36 @@ function block_exacomp_set_coursetopics($courseid, $topicids) {
 
 	block_exacomp_update_example_visibilities($courseid, $examples);
 
-	// TODO: maybe move this whole part to block_exacomp\data::normalize_database() or better a new normalize_course($courseid);
-
 	//delete unconnected examples
 	//add blocking events to examples which are not deleted
-	$blocking_events = $DB->get_records(\block_exacomp\DB_EXAMPLES, array('blocking_event'=>1));
+	$blocking_events = g::$DB->get_records(\block_exacomp\DB_EXAMPLES, array('blocking_event'=>1));
 
 	foreach($blocking_events as $event){
 		$examples[$event->id] = $event;
 	}
 
 	$where = $examples ? join(',', array_keys($examples)) : '-1';
-	$DB->execute("DELETE FROM {".\block_exacomp\DB_SCHEDULE."} WHERE courseid = ? AND exampleid NOT IN($where)", array($courseid));
+	g::$DB->execute("DELETE FROM {".\block_exacomp\DB_SCHEDULE."} WHERE courseid = ? AND exampleid NOT IN($where)", array($courseid));
+}
+
+/**
+ *
+ * Assign topics to course
+ * @param unknown_type $courseid
+ * @param unknown_type $values
+ */
+function block_exacomp_set_coursetopics($courseid, $topicids) {
+	global $DB;
+
+	$DB->delete_records(\block_exacomp\DB_COURSETOPICS, array("courseid" => $courseid));
+
+	block_exacomp_update_topic_visibilities($courseid, $topicids);
+
+	foreach ($topicids as $topicid) {
+		$DB->insert_record(\block_exacomp\DB_COURSETOPICS, array("courseid" => $courseid, "topicid" => $topicid));
+	}
+
+	block_exacomp_normalize_course_visibilities($courseid);
 }
 
 /**
@@ -3711,8 +3717,8 @@ function block_exacomp_set_descriptor_visibility($descrid, $courseid, $visible, 
 		['visible'=>$visible],
 		['descrid'=>$descrid, 'courseid'=>$courseid, 'studentid'=>$studentid]
 	);
-	
-	block_exacomp_update_visibility_cache($courseid);
+
+	block_exacomp_clear_visibility_cache($courseid);
 }
 /**
  * change example visibility, studentid = 0: visibility settings for all students
@@ -3733,7 +3739,7 @@ function block_exacomp_set_example_visibility($exampleid, $courseid, $visible, $
 		['exampleid'=>$exampleid, 'courseid'=>$courseid, 'studentid'=>$studentid]
 	);
 	
-	block_exacomp_update_visibility_cache($courseid);
+	block_exacomp_clear_visibility_cache($courseid);
 }
 /**
  * change example solution visibility, studentid = 0: visibility settings for all students
@@ -3773,7 +3779,7 @@ function block_exacomp_set_topic_visibility($topicid, $courseid, $visible, $stud
 			['visible'=>$visible],
 			['topicid'=>$topicid, 'courseid'=>$courseid, 'studentid'=>$studentid]
 			);
-	block_exacomp_update_visibility_cache($courseid);
+	block_exacomp_clear_visibility_cache($courseid);
 }
 
 /**
@@ -5250,7 +5256,7 @@ function block_exacomp_notify_all_teachers_about_submission($courseid, $examplei
  * @param unknown $courseid
  */
 function block_exacomp_send_self_assessment_notification($userfrom, $userto, $courseid) {
-	global $CFG,$USER, $SITE;
+	global $SITE;
 
 	$course = get_course($courseid);
 
@@ -5537,7 +5543,17 @@ function block_exacomp_get_courseids_by_descriptor($descriptorid){
 		JOIN {'.\block_exacomp\DB_DESCTOPICS.'} dt ON ct.topicid = dt.topicid  
 		WHERE dt.descrid = ?';
 	
-	return g::$DB->get_records_sql($sql, array($descriptorid));
+	return g::$DB->get_fieldset_sql($sql, array($descriptorid));
+}
+
+function block_exacomp_get_courseids_by_example($exampleid){
+	$sql = 'SELECT ct.courseid
+		FROM {'.\block_exacomp\DB_COURSETOPICS.'} ct 
+		JOIN {'.\block_exacomp\DB_DESCTOPICS.'} dt ON ct.topicid = dt.topicid  
+		JOIN {'.\block_exacomp\DB_DESCEXAMP.'} dex ON dex.descrid = dt.descrid
+		WHERE dex.exampid=?';
+
+	return g::$DB->get_fieldset_sql($sql, array($exampleid));
 }
 
 /**
@@ -6411,24 +6427,23 @@ function block_exacomp_get_visibility_object($courseid){
 function block_exacomp_get_visibility_cache($courseid){
 	// Get a cache instance
 	$cache = cache::make('block_exacomp', 'visibility_cache');
-	
 	$visibilites = $cache->get($courseid);
-	
+
 	if(!$visibilites){
-		$result = $cache->set($courseid, block_exacomp_get_visibility_object($courseid));
-		$visibilites = $cache->get($courseid);
+		$visibilites = block_exacomp_get_visibility_object($courseid);
+		$cache->set($courseid, $visibilites);
 	}
 	
 	return $visibilites;
 }
 
 /**
- * update visibility cache if any visibility of any object in course changes
+ * clear visibility cache if any visibility of any object in course changes
  * @param unknown $courseid
  */
-function block_exacomp_update_visibility_cache($courseid){
+function block_exacomp_clear_visibility_cache($courseid){
 	$cache = cache::make('block_exacomp', 'visibility_cache');
-	return $cache->set($courseid, block_exacomp_get_visibility_object($courseid));
+	return $cache->delete($courseid);
 }
 
 /**
@@ -7130,10 +7145,3 @@ namespace block_exacomp {
 		}
 	}
 }
-
-
-
-
-
-
-
