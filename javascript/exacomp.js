@@ -24,647 +24,660 @@
  * Use while jQuery is animating the scroll position for a guaranteed super-smooth ride!
  */(function(e){"use strict";function r(t,n){this.opts=e.extend({handleWheel:!0,handleScrollbar:!0,handleKeys:!0,scrollEventKeys:[32,33,34,35,36,37,38,39,40]},n);this.$container=t;this.$document=e(document);this.lockToScrollPos=[0,0];this.disable()}var t,n;n=r.prototype;n.disable=function(){var e=this;e.opts.handleWheel&&e.$container.on("mousewheel.disablescroll DOMMouseScroll.disablescroll touchmove.disablescroll",e._handleWheel);if(e.opts.handleScrollbar){e.lockToScrollPos=[e.$container.scrollLeft(),e.$container.scrollTop()];e.$container.on("scroll.disablescroll",function(){e._handleScrollbar.call(e)})}e.opts.handleKeys&&e.$document.on("keydown.disablescroll",function(t){e._handleKeydown.call(e,t)})};n.undo=function(){var e=this;e.$container.off(".disablescroll");e.opts.handleKeys&&e.$document.off(".disablescroll")};n._handleWheel=function(e){e.preventDefault()};n._handleScrollbar=function(){this.$container.scrollLeft(this.lockToScrollPos[0]);this.$container.scrollTop(this.lockToScrollPos[1])};n._handleKeydown=function(e){for(var t=0;t<this.opts.scrollEventKeys.length;t++)if(e.keyCode===this.opts.scrollEventKeys[t]){e.preventDefault();return}};e.fn.disablescroll=function(e){!t&&(typeof e=="object"||!e)&&(t=new r(this,e));t&&typeof e=="undefined"?t.disable():t&&t[e]&&t[e].call(t)};window.UserScrollDisabler=r})(jQuery);
 
-(function() {
+!function () {
 
-window.jQueryExacomp = jQuery;
-var $ = jQuery;
+	window.jQueryExacomp = jQuery;
+	var $ = jQuery;
 
-Storage.prototype.setObject = function(key, value) {
-	this.setItem(key, JSON.stringify(value));
-};
-Storage.prototype.getObject = function(key) {
-	var value = this.getItem(key);
-	return value && JSON.parse(value);
-};
+	Storage.prototype.setObject = function (key, value) {
+		this.setItem(key, JSON.stringify(value));
+	};
+	Storage.prototype.getObject = function (key) {
+		var value = this.getItem(key);
+		return value && JSON.parse(value);
+	};
 
-window.block_exacomp = $E = {
-	get_param: function(name) {
-		name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-		var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-			results = regex.exec(location.search);
-
-		return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
-	},
-
-	get_location: function(params) {
-		var url = document.location.href;
-
-		$.each(params, function(name, value){
+	window.block_exacomp = $E = {
+		get_param: function (name) {
 			name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-			var regex = new RegExp("[\\?&](" + name + "=([^&#]*))"),
+			var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
 				results = regex.exec(location.search);
 
-			if (results === null) {
-				url += (url.indexOf('?') != -1 ? '&' : '?')+name+'='+encodeURIComponent(value);
-			} else {
-				url = url.replace(results[1], name+'='+encodeURIComponent(value));
-			}
-		});
+			return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, " "));
+		},
 
-		return url;
-	},
-	
-	set_location_params: function(params) {
-		document.location.href = this.get_location(params);
-	},
+		get_location: function (params) {
+			var url = document.location.href;
 
-	get_studentid: function() {
-		studentid = $E.get_param('studentid');
-		
-		if(studentid === null || studentid == -5)
-			studentid = $( "#menuexacomp_competence_grid_select_student" ).val();
-		
-		return studentid;
-	},
-	
-	call_ajax: function(data) {
-		if(data.courseid == null)
-			data.courseid = $E.get_param('courseid');
-		data.sesskey = M.cfg.sesskey;
-		var ajax = $.ajax({
-			method : "POST",
-			url : "ajax.php",
-			data : data
-		})
-		.done(function(ret) {
-			//console.log(data.action, 'ret', ret);
-		}).error(function(ret) {
-			var errorMsg = '';
-			if (ret.responseText[0] == '<') {
-				// html
-				errorMsg = $(ret.responseText).find('.errormessage').text();
+			$.each(params, function (name, value) {
+				name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+				var regex = new RegExp("[\\?&](" + name + "=([^&#]*))"),
+					results = regex.exec(location.search);
+
+				if (results === null) {
+					url += (url.indexOf('?') != -1 ? '&' : '?') + name + '=' + encodeURIComponent(value);
+				} else {
+					url = url.replace(results[1], name + '=' + encodeURIComponent(value));
+				}
+			});
+
+			return url;
+		},
+
+		set_location_params: function (params) {
+			document.location.href = this.get_location(params);
+		},
+
+		get_studentid: function () {
+			studentid = $E.get_param('studentid');
+
+			if (studentid === null || studentid == -5)
+				studentid = $("#menuexacomp_competence_grid_select_student").val();
+
+			return studentid;
+		},
+
+		call_ajax: function (data) {
+			if (data.courseid == null)
+				data.courseid = $E.get_param('courseid');
+			data.sesskey = M.cfg.sesskey;
+			var ajax = $.ajax({
+				method: "POST",
+				url: "ajax.php",
+				data: data
+			})
+				.done(function (ret) {
+					//console.log(data.action, 'ret', ret);
+				}).error(function (ret) {
+					var errorMsg = '';
+					if (ret.responseText[0] == '<') {
+						// html
+						errorMsg = $(ret.responseText).find('.errormessage').text();
+					}
+					console.log("Error in action '" + data.action + "'", errorMsg, 'ret', ret);
+				});
+
+			return ajax;
+		},
+
+		popup_iframe: function (config) {
+
+			// allow passing of an url
+			if (typeof config == 'string') {
+				config = {
+					url: config
+				};
 			}
-			console.log("Error in action '" + data.action +"'", errorMsg, 'ret', ret);
-		});
-		
-		return ajax;
-	},
-	
-	popup_iframe: function(config) {
-		
-		// allow passing of an url
-		if (typeof config == 'string') {
-			config = {
-				url: config
+
+			var popup = this.last_popup = new M.core.dialogue({
+				headerContent: config.headerContent || config.title || 'Popup', // M.str.moodle.loadinghelp, // previousimagelink + '<div id=\"imagenumber\" class=\"imagetitle\"><h1> Image '
+				// + screennumber + ' / ' + this.imageidnumbers[imageid] + ' </h1></div>' + nextimagelink,
+
+				bodyContent: '<iframe src="' + config.url + '" width="100%" height="100%" frameborder="0"></iframe>',
+				visible: true, //by default it is not displayed
+				modal: false, // sollte true sein, aber wegen moodle bug springt dann das fenster immer nach oben
+				zIndex: 1000,
+				// ok: width: '80%',
+				// ok: width: '500px',
+				// ok: width: null, = automatic
+				height: config.height || '80%',
+				width: config.width || '85%',
+			});
+
+			// disable scrollbars
+			$(window).disablescroll();
+
+			// hack my own overlay, because moodle dialogue modal is not working
+			var overlay = $('<div style="opacity:0.7; filter: alpha(opacity=20); background-color:#000; width:100%; height:100%; z-index:10; top:0; left:0; position:fixed;"></div>')
+				.appendTo('body');
+			// hide popup when clicking overlay
+			overlay.click(function () {
+				popup.hide();
+			});
+
+			var orig_hide = popup.hide;
+			popup.hide = function () {
+
+				if (config.onhide) {
+					config.onhide();
+				}
+
+				// remove overlay, when hiding popup
+				overlay.remove();
+
+				// enable scrolling
+				$(window).disablescroll('undo');
+
+				// call original popup.hide()
+				orig_hide.call(popup);
 			};
-		}
-		
-		var popup = this.last_popup = new M.core.dialogue({
-			headerContent: config.headerContent || config.title || 'Popup', // M.str.moodle.loadinghelp, // previousimagelink + '<div id=\"imagenumber\" class=\"imagetitle\"><h1> Image '
-			// + screennumber + ' / ' + this.imageidnumbers[imageid] + ' </h1></div>' + nextimagelink,
-			
-			bodyContent: '<iframe src="'+config.url+'" width="100%" height="100%" frameborder="0"></iframe>',
-			visible: true, //by default it is not displayed
-			modal: false, // sollte true sein, aber wegen moodle bug springt dann das fenster immer nach oben
-			zIndex: 1000,
-			// ok: width: '80%',
-			// ok: width: '500px',
-			// ok: width: null, = automatic
-			height: config.height || '80%',
-			width: config.width || '85%',
-		});
-		
-		// disable scrollbars
-		$(window).disablescroll();
-		
-		// hack my own overlay, because moodle dialogue modal is not working
-		var overlay = $('<div style="opacity:0.7; filter: alpha(opacity=20); background-color:#000; width:100%; height:100%; z-index:10; top:0; left:0; position:fixed;"></div>')
-			.appendTo('body');
-		// hide popup when clicking overlay
-		overlay.click(function(){
-			popup.hide();
-		});
 
-		var orig_hide = popup.hide;
-		popup.hide = function() {
+			popup.remove = function () {
+				if (this.$body.is(':visible')) {
+					this.hide();
+				}
 
-			if (config.onhide) {
-				config.onhide();
+				this.destroy();
+			};
+
+			return popup;
+		},
+
+		popup_close: function () {
+			var parent = window.opener || window.parent;
+
+			// close inline popup
+			if (parent.block_exacomp.last_popup) {
+				parent.block_exacomp.last_popup.hide();
+			} else {
+				// OR close real window
+				window.close();
 			}
+		},
 
-			// remove overlay, when hiding popup
-			overlay.remove();
-			
-			// enable scrolling
-			$(window).disablescroll('undo');
-			
-			// call original popup.hide()
-			orig_hide.call(popup);
-		};
+		popup_close_and_notify: function (func, args) {
+			var parent = window.opener || window.parent;
 
-		popup.remove = function(){
-			if (this.$body.is(':visible')) {
-				this.hide();
+			// first notify parent
+			parent.block_exacomp[func].apply(parent.block_exacomp, args);
+
+			// then close popup and unload iframe etc.
+			this.popup_close();
+		},
+
+		popup_close_and_forward: function (url) {
+			var parent = (window.opener || window.parent);
+
+			this.popup_close();
+			parent.location.href = url;
+		},
+
+		popup_close_and_reload: function () {
+			var parent = window.opener || window.parent;
+
+			this.popup_close();
+			if (parent.block_exacomp && parent.block_exacomp.reload_action) {
+				parent.block_exacomp.reload_action();
+			} else {
+				parent.location.reload(true);
 			}
+		},
+	};
 
-			this.destroy();
-		};
+	$(function () {
+		// handle: de-du, de, en, en-us,... and strip -du, ...
+		var lang = $('html').prop('lang').replace(/\-.*/, '');
 
-		return popup;
-	},
-	
-	popup_close: function() {
-		var parent = window.opener || window.parent;
-		
-		// close inline popup
-		if (parent.block_exacomp.last_popup) {
-			parent.block_exacomp.last_popup.hide();
-		} else {
-			// OR close real window
-			window.close();
-		}
-	},
-
-	popup_close_and_notify: function(func, args) {
-		var parent = window.opener || window.parent;
-	
-		// first notify parent
-		parent.block_exacomp[func].apply(parent.block_exacomp, args);
-
-		// then close popup and unload iframe etc.
-		this.popup_close();
-	},
-
-	popup_close_and_forward: function(url) {
-		var parent = (window.opener || window.parent);
-
-		this.popup_close();
-		parent.location.href = url;
-	},
-
-	popup_close_and_reload: function() {
-		var parent = window.opener || window.parent;
-
-		this.popup_close();
-		if (parent.block_exacomp && parent.block_exacomp.reload_action) {
-			parent.block_exacomp.reload_action();
-		} else {
-			parent.location.reload(true);
-		}
-	},
-};
-
-$(function() {
-	// handle: de-du, de, en, en-us,... and strip -du, ...
-	var lang = $('html').prop('lang').replace(/\-.*/, '');
-	
-	if ($.datepicker) {
-		$.datepicker.setDefaults({
-			dateFormat : 'yy-mm-dd'
-		});
-
-		if (lang == 'de') {
+		if ($.datepicker) {
 			$.datepicker.setDefaults({
-				showOn : "both",
-				buttonImageOnly : true,
-				buttonImage : "pix/calendar_alt_stroke_12x12.png",
-				buttonText : "Calendar",
-				prevText : '&#x3c;zurück',
-				prevStatus : '',
-				prevJumpText : '&#x3c;&#x3c;',
-				prevJumpStatus : '',
-				nextText : 'Vor&#x3e;',
-				nextStatus : '',
-				nextJumpText : '&#x3e;&#x3e;',
-				nextJumpStatus : '',
-				currentText : 'heute',
-				currentStatus : '',
-				todayText : 'heute',
-				todayStatus : '',
-				clearText : '-',
-				clearStatus : '',
-				closeText : 'schließen',
-				closeStatus : '',
-				monthNames : [ 'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+				dateFormat: 'yy-mm-dd'
+			});
+
+			if (lang == 'de') {
+				$.datepicker.setDefaults({
+					showOn: "both",
+					buttonImageOnly: true,
+					buttonImage: "pix/calendar_alt_stroke_12x12.png",
+					buttonText: "Calendar",
+					prevText: '&#x3c;zurück',
+					prevStatus: '',
+					prevJumpText: '&#x3c;&#x3c;',
+					prevJumpStatus: '',
+					nextText: 'Vor&#x3e;',
+					nextStatus: '',
+					nextJumpText: '&#x3e;&#x3e;',
+					nextJumpStatus: '',
+					currentText: 'heute',
+					currentStatus: '',
+					todayText: 'heute',
+					todayStatus: '',
+					clearText: '-',
+					clearStatus: '',
+					closeText: 'schließen',
+					closeStatus: '',
+					monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
 						'Juli', 'August', 'September', 'Oktober', 'November',
-						'Dezember' ],
-				monthNamesShort : [ 'Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun',
-						'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez' ],
-				dayNames : [ 'Sonntag', 'Montag', 'Dienstag', 'Mittwoch',
-						'Donnerstag', 'Freitag', 'Samstag' ],
-				dayNamesShort : [ 'So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa' ],
-				dayNamesMin : [ 'So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa' ],
-				showMonthAfterYear : false,
-				showOn : 'both'
+						'Dezember'],
+					monthNamesShort: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun',
+						'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+					dayNames: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch',
+						'Donnerstag', 'Freitag', 'Samstag'],
+					dayNamesShort: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+					dayNamesMin: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+					showMonthAfterYear: false,
+					showOn: 'both'
+				});
+			}
+			$(".datepicker").datepicker();
+
+			// set minDate to today for datepicker-mindate class
+			$(".datepicker.datepicker-mindate").datepicker("option", "minDate", 0);
+		}
+
+		if ($().tooltip) {
+			// only if we have the tooltip function
+			$('.exabis-tooltip').tooltip({
+				// retreave content as html
+				content: function () {
+					return $(this).prop('title');
+				}
 			});
 		}
-		$(".datepicker").datepicker();
 
-		// set minDate to today for datepicker-mindate class
-		$(".datepicker.datepicker-mindate").datepicker("option", "minDate", 0);
-	}
-
-	if ($().tooltip) {
-		// only if we have the tooltip function
-		$('.exabis-tooltip').tooltip({
-			// retreave content as html
-			content : function() {
-				return $(this).prop('title');
-			}
-		});
-	}
-
-	// student selector
-	$('select[name=exacomp_competence_grid_select_student]').change(function(){
-		$E.set_location_params({ studentid: this.value });
-	});
-
-	// convert exa-tree to rg2
-	$('ul.exa-tree').each(function(){
-		var $tree = $(this);
-		var $table = $('<table class="exabis_comp_comp rg2 '+$tree.attr('class').replace(/exa\-tree/g, 'rg2')+'"></table>');
-		$table.insertAfter(this).wrap('<div class="exabis_competencies_lis"></div>');
-
-		$tree.find('li').each(function(){
-			var level = $(this).parentsUntil($tree, 'ul').length;
-			$('<tr class="'+$(this).attr('class')+' rg2-level-'+level+'"><td class="rg2-arrow rg2-indent"><div></div></td></tr>')
-				.appendTo($table).find('div').append($(this).clone().find('>ul').remove().end().contents());
+		// student selector
+		$('select[name=exacomp_competence_grid_select_student]').change(function () {
+			$E.set_location_params({studentid: this.value});
 		});
 
-		$table.trigger('rg2.init');
-		$table.find('tr.rg2-header').addClass('highlight');
+		// convert exa-tree to rg2
+		$('ul.exa-tree').each(function () {
+			var $tree = $(this);
+			var $table = $('<table class="exabis_comp_comp rg2 ' + $tree.attr('class').replace(/exa\-tree/g, 'rg2') + '"></table>');
+			$table.insertAfter(this).wrap('<div class="exabis_competencies_lis"></div>');
 
-		$tree.remove();
+			$tree.find('li').each(function () {
+				var level = $(this).parentsUntil($tree, 'ul').length;
+				$('<tr class="' + $(this).attr('class') + ' rg2-level-' + level + '"><td class="rg2-arrow rg2-indent"><div></div></td></tr>')
+					.appendTo($table).find('div').append($(this).clone().find('>ul').remove().end().contents());
+			});
+
+			$table.trigger('rg2.init');
+			$table.find('tr.rg2-header').addClass('highlight');
+
+			$tree.remove();
+		});
+
+		// show tree menus
+		/*
+		var trees = $('ul.exa-tree');
+		// ddtree needs those, why didn't they do it with css?
+		ddtreemenu.closefolder = M.cfg.wwwroot+"/blocks/exacomp/javascript/simpletreemenu/closed.gif";
+		ddtreemenu.openfolder = M.cfg.wwwroot+"/blocks/exacomp/javascript/simpletreemenu/open.gif";
+
+		// mark open elements, ddtreemenu opens them automatically
+		trees.filter('.exa-tree-reopen-checked').find('ul').has("input[type=checkbox]:checked").attr('rel', 'open');
+
+		// init the trees
+		trees.addClass('treeview').each(function(i){
+			var id = 'simple-tree-'+i;
+			$(this).attr('id', id);
+			ddtreemenu.createTree(id, false);
+		});
+		trees.show();
+
+		// prevent item from open/close when clicking checkbox
+		trees.find('input').click(function(e){
+			e.stopPropagation();
+		});
+
+		// open all
+		trees.filter('.exa-tree-open-all').each(function(){
+			ddtreemenu.flatten($(this).attr('id'), 'expand');
+		});
+		/* */
 	});
 
-	// show tree menus
-	/*
-	var trees = $('ul.exa-tree');
-	// ddtree needs those, why didn't they do it with css?
-	ddtreemenu.closefolder = M.cfg.wwwroot+"/blocks/exacomp/javascript/simpletreemenu/closed.gif";
-	ddtreemenu.openfolder = M.cfg.wwwroot+"/blocks/exacomp/javascript/simpletreemenu/open.gif";
-
-	// mark open elements, ddtreemenu opens them automatically
-	trees.filter('.exa-tree-reopen-checked').find('ul').has("input[type=checkbox]:checked").attr('rel', 'open');
-
-	// init the trees
-	trees.addClass('treeview').each(function(i){
-		var id = 'simple-tree-'+i;
-		$(this).attr('id', id);
-		ddtreemenu.createTree(id, false);
-	});
-	trees.show();
-
-	// prevent item from open/close when clicking checkbox
-	trees.find('input').click(function(e){
-		e.stopPropagation();
-	});
-
-	// open all
-	trees.filter('.exa-tree-open-all').each(function(){
-		ddtreemenu.flatten($(this).attr('id'), 'expand');
-	});
-	/* */
-});
-	
 // collapsible
-$(document).on('click', '.exa-collapsible > legend', function(){
-	$(this).parent().toggleClass('exa-collapsible-open');
-});
+	$(document).on('click', '.exa-collapsible > legend', function () {
+		$(this).parent().toggleClass('exa-collapsible-open');
+	});
 
 
 // rowgroup2
-(function(){
+	(function () {
 
-	var options = {
-		check_uncheck_parents_children: false,
-		reopen_checked: false,
-	};
-	window.exabis_rg2 = {
-		options: options,
-		get_row: get_row,
-		get_children: get_children,
-		get_parents: get_parents,
-	};
+		var options = {
+			check_uncheck_parents_children: false,
+			reopen_checked: false,
+		};
+		window.exabis_rg2 = {
+			options: options,
+			get_row: get_row,
+			get_children: get_children,
+			get_parents: get_parents,
+		};
 
-	var id_i = 0;
-	function get_row(dom) {
-		var $tr = $(dom).closest('tr.rg2');
-		$tr.level = get_level($tr) || 0;
-		if ($tr.attr('exa-rg2-id')) {
-			$tr.id = $tr.attr('exa-rg2-id');
-		} else {
-			id_i++;
-			$tr.id = 'no-id-'+id_i;
-			$tr.attr('exa-rg2-id', $tr.id);
-		}
-		return $tr;
-	}
-	function get_level($tr) {
-		$tr = $($tr);
-		if (!$tr.attr('class')) return null;
-		var matches = $tr.attr('class').match(/(^|\s)rg2-level-([0-9]+)(\s|$)/);
-		return matches ? parseInt(matches[2]) : null;
-	}
-	function get_parents(item) {
-		var $row = get_row(item),
-			level = $row.level - 1,
-			parents = [];
-		$row.prevAll('tr.rg2').each(function(){
-			if (get_row(this).level == level) {
-				parents[level] = this;
-				level--;
-			}
-		});
-		return $(parents);
-	}
-	function get_children(item, deep) {
-		var $row = get_row(item);
-		var children = [];
-		$row.nextAll('tr.rg2').each(function(){
-			var $child_row = get_row(this);
-			if ($child_row.level > $row.level + 1) {
-				if (deep) {
-					children.push(this);
-				}
-			} else if ($child_row.level == $row.level + 1) {
-				children.push(this);
+		var id_i = 0;
+
+		function get_row(dom) {
+			var $tr = $(dom).closest('tr.rg2');
+			$tr.level = get_level($tr) || 0;
+			if ($tr.attr('exa-rg2-id')) {
+				$tr.id = $tr.attr('exa-rg2-id');
 			} else {
-				return false;
+				id_i++;
+				$tr.id = 'no-id-' + id_i;
+				$tr.attr('exa-rg2-id', $tr.id);
 			}
-		});
-		return $(children);
-	}
-	function get_table_storageid($table) {
-		return 'rg2-id-storage-' + ($table.attr('exa-rg2-storageid') || document.location.pathname);
-	}
-	function update_table($table) {
-		var visible_level = 0;
+			return $tr;
+		}
 
-		$table.find('tr.rg2').each(function() {
-			var $tr = $(this),
-				level = get_level($tr);
+		function get_level($tr) {
+			$tr = $($tr);
+			if (!$tr.attr('class')) return null;
+			var matches = $tr.attr('class').match(/(^|\s)rg2-level-([0-9]+)(\s|$)/);
+			return matches ? parseInt(matches[2]) : null;
+		}
 
-			if (level === null) {
-				visible_level = 0;
+		function get_parents(item) {
+			var $row = get_row(item),
+				level = $row.level - 1,
+				parents = [];
+			$row.prevAll('tr.rg2').each(function () {
+				if (get_row(this).level == level) {
+					parents[level] = this;
+					level--;
+				}
+			});
+			return $(parents);
+		}
+
+		function get_children(item, deep) {
+			var $row = get_row(item);
+			var children = [];
+			$row.nextAll('tr.rg2').each(function () {
+				var $child_row = get_row(this);
+				if ($child_row.level > $row.level + 1) {
+					if (deep) {
+						children.push(this);
+					}
+				} else if ($child_row.level == $row.level + 1) {
+					children.push(this);
+				} else {
+					return false;
+				}
+			});
+			return $(children);
+		}
+
+		function get_table_storageid($table) {
+			return 'rg2-id-storage-' + ($table.attr('exa-rg2-storageid') || document.location.pathname);
+		}
+
+		function update_table($table) {
+			var visible_level = 0;
+
+			$table.find('tr.rg2').each(function () {
+				var $tr = $(this),
+					level = get_level($tr);
+
+				if (level === null) {
+					visible_level = 0;
+					return;
+				}
+
+				if (level + 1 === get_level($tr.next())) {
+					// is header
+					$tr.addClass('rg2-header');
+					if (visible_level >= level) {
+						if ($tr.is('.open')) {
+							visible_level = level + 1;
+						} else {
+							visible_level = level;
+						}
+					}
+				}
+
+				if (visible_level >= level) {
+					$tr.show();
+				} else {
+					$tr.hide();
+				}
+			});
+		}
+
+		function get_tables() {
+			return $('table.rg2');
+		}
+
+		function get_table(dom) {
+			return $(dom).closest('table.rg2');
+		}
+
+		$(document).on('click', '.rg2-header .rg2-arrow', function (event) {
+			if (event.isDefaultPrevented() || $(event.target).is('input, select') || $(this).closest('.rg2-locked').length) {
+				// the click handler on an edit button is called, so don't open/close menu
 				return;
 			}
 
-			if (level+1 === get_level($tr.next())) {
-				// is header
-				$tr.addClass('rg2-header');
-				if (visible_level >= level) {
-					if ($tr.is('.open')) {
-						visible_level = level + 1;
-					} else {
-						visible_level = level;
+			$(this).closest('.rg2-header').toggleClass('open');
+			update_table(get_table(this));
+		});
+		// stop labels in headers to check/uncheck. we just want open/close here!
+		$(document).on('click', '.rg2-header label', function (event) {
+			event.preventDefault();
+
+			$(this).closest('.rg2-header').toggleClass('open');
+			update_table(get_table(this));
+		});
+
+		$(window).unload(function () {
+			// save state before unload
+			get_tables().each(function () {
+				var ids = $(this).find('.rg2.open:not(.rg2-locked)').map(function () {
+					return get_row(this).id;
+				}).toArray();
+				localStorage.setObject(get_table_storageid($(this)), ids);
+			});
+		});
+
+		$(document).on('click', '.rg2 .selectallornone', function () {
+			$(this).trigger('rg2.open');
+
+			var $children = get_children(this);
+			$children.find(':checkbox').prop('checked', $children.find(':checkbox:not(:checked)').length > 0);
+		});
+
+		// init
+		$(document).on('rg2.init', 'table.rg2', function () {
+			var $table = $(this);
+
+			// add class to rows
+			$table.find('> tr, > tbody > tr').addClass('rg2');
+
+			$table.on('rg2.update', function () {
+				update_table($table);
+			});
+			$table.on('rg2.open', 'tr.rg2', function () {
+				$(this).addClass('open');
+				update_table($table);
+			});
+			$table.on('rg2.close', 'tr.rg2', function () {
+				$(this).removeClass('open');
+				update_table($table);
+			});
+			$table.on('rg2.open-parents', 'tr.rg2', function () {
+				get_parents(this).addClass('open');
+				update_table($table);
+			});
+			$table.on('rg2.lock', 'tr.rg2', function () {
+				$(this).addClass('rg2-locked');
+				$(this).removeClass('open');
+				$(this).find('.rg2-arrow-disabled').addClass('rg2-arrow').removeClass('rg2-arrow-disabled');
+
+				update_table($table);
+			});
+			$table.on('rg2.unlock', 'tr.rg2', function () {
+				$(this).removeClass('rg2-locked');
+
+				update_table($table);
+			});
+
+			$table.find('.rg2-level-0').show();
+
+			if (options.check_uncheck_parents_children || $table.is('.rg2-check_uncheck_parents_children')) {
+				$table.find(':checkbox').click(function () {
+					get_children(this, true).find(":checkbox").prop('checked', $(this).prop('checked'));
+					if (!$(this).prop('checked')) {
+						// parents, only for uncheck
+						get_parents(this).find(":checkbox").prop('checked', false);
+					}
+				});
+			}
+
+			// reopen saved states
+			var ids = localStorage.getObject(get_table_storageid($table));
+			if (ids) {
+				$.each(ids, function (tmp, id) {
+					// only open if not locked
+					$table.find('.rg2:not(.rg2-locked)[exa-rg2-id="' + id + '"]').addClass('open');
+				});
+			}
+
+			// reopen checked
+			if (options.reopen_checked || $table.is('.rg2-reopen-checked')) {
+				$table.find(':checkbox:checked').trigger('rg2.open-parents');
+			}
+
+			// open all
+			if ($table.is('.rg2-open-all')) {
+				$table.find('.rg2-header').addClass('open');
+			}
+
+			// close locked
+			$table.find('tr.rg2-locked').removeClass('open');
+
+			update_table($table);
+
+			// if just one item, always open and hide arrow
+			if ($table.find('.rg2-level-0.rg2-header:not(.rg2-locked)').length == 1) {
+				$table.find('.rg2-level-0.rg2-header:not(.rg2-locked)').addClass('open').find('.rg2-arrow').removeClass('rg2-arrow').addClass('rg2-arrow-disabled');
+				if ($table.find('.rg2-level-1.rg2-header:not(.rg2-locked)').length == 1) {
+					$table.find('.rg2-level-1.rg2-header:not(.rg2-locked)').addClass('open').find('.rg2-arrow').removeClass('rg2-arrow').addClass('rg2-arrow-disabled');
+				}
+				update_table($table);
+			}
+		});
+
+		$(function () {
+			// add class to tables
+			// $('tr.rg2, table.rg2, .rg2-level-0').closest('table').addClass('rg2');
+
+			get_tables().trigger('rg2.init');
+		});
+	})();
+
+	$(function () {
+		function highlight_cells(date1, date2) {
+			// Reset the gradings within the given range
+			$("td[exa-timestamp]").each(function (index) {
+				$(this).removeClass('highlight_cell');
+
+				tr = $(this).closest('tr');
+				if (tr.hasClass('highlight_cell')) {
+					tr.removeClass('highlight_cell');
+				}
+			});
+
+			var date1_s = Math.round(new Date(date1).getTime() / 1000);
+			// always highlight until the end of the selected date
+			var date2_s = new Date(date2);
+			date2_s.setDate(date2_s.getDate()+1);
+			date2_s = Math.round(date2_s.getTime() / 1000);
+
+			// Highlight the gradings within the given range
+			$("td[exa-timestamp]").each(function (index) {
+				if ($(this).attr("exa-timestamp") >= date1_s && $(this).attr("exa-timestamp") < date2_s) {
+					$(this).addClass('highlight_cell');
+
+					tr = $(this).closest('tr');
+					if (tr.hasClass('comparison_topic') || tr.hasClass('comparison_desc') || tr.hasClass('comparison_mat')) {
+						tr.addClass('highlight_cell');
 					}
 				}
-			}
-
-			if (visible_level >= level) {
-				$tr.show();
-			} else {
-				$tr.hide();
-			}
-		});
-	}
-	function get_tables() {
-		return $('table.rg2');
-	}
-	function get_table(dom) {
-		return $(dom).closest('table.rg2');
-	}
-
-	$(document).on('click', '.rg2-header .rg2-arrow', function(event){
-		if (event.isDefaultPrevented() || $(event.target).is('input, select') || $(this).closest('.rg2-locked').length) {
-			// the click handler on an edit button is called, so don't open/close menu
-			return;
+			});
 		}
 
-		$(this).closest('.rg2-header').toggleClass('open');
-		update_table(get_table(this));
-	});
-	// stop labels in headers to check/uncheck. we just want open/close here!
-	$(document).on('click', '.rg2-header label', function(event){
-		event.preventDefault();
+		function update_statistic_tables(date1, date2) {
+			var date1_s = (new Date(date1).getTime() / 1000);
+			// always highlight until the end of the selected date
+			var date2_s = new Date(date2);
+			date2_s.setDate(date2_s.getDate()+1);
+			date2_s = Math.round(date2_s.getTime() / 1000);
 
-		$(this).closest('.rg2-header').toggleClass('open');
-		update_table(get_table(this));
-	});
+			// make ajax call for new data / html code
 
-	$(window).unload(function(){
-		// save state before unload
-		get_tables().each(function(){
-			var ids = $(this).find('.rg2.open:not(.rg2-locked)').map(function(){ return get_row(this).id; }).toArray();
-			localStorage.setObject(get_table_storageid($(this)), ids);
-		});
-	});
+			$('div[class="statistictables"]').each(function () {
+				var subjectid = $(this).attr('exa-subjectid');
+				var courseid = $(this).attr('exa-courseid');
+				block_exacomp.call_ajax({
+					studentid: block_exacomp.get_studentid(),
+					subjectid: subjectid,
+					courseid: courseid,
+					start: date1_s,
+					end: date2_s,
+					action: 'get_statistics_for_profile'
+				}).done(function (html) {
+					$('div[class="statistictables"][exa-subjectid="' + subjectid + '"]').replaceWith(html);
+				});
+			});
+		}
 
-	$(document).on('click', '.rg2 .selectallornone', function(){
-		$(this).trigger('rg2.open');
+		if ($('input[id="daterangepicker"]').length) {
+			$('input[id="daterangepicker"]').dateRangePicker({
+				separator: ' ' + M.util.get_string('seperatordaterange', 'block_exacomp') + ' ',
+				format: 'DD.MMM.YYYY',
+				startOfWeek: 'monday',
+				showShortcuts: true,
+				shortcuts: {
+					'prev-days': [3, 5, 7],
+					'prev': ['week', 'month', 'year'],
+					'next-days': null,
+					'next': null
+				}
+			}).bind('datepicker-change', function (event, obj) {
+				sessionStorage.setItem('date1', obj.date1);
+				sessionStorage.setItem('date2', obj.date2);
+				sessionStorage.setItem('value', obj.value);
 
-		var $children = get_children(this);
-		$children.find(':checkbox').prop('checked', $children.find(':checkbox:not(:checked)').length > 0);
-	});
+				update_statistic_tables(obj.date1, obj.date2);
+				highlight_cells(obj.date1, obj.date2);
+			});
 
-	// init
-	$(document).on('rg2.init', 'table.rg2', function(){
-		var $table = $(this);
+			if (sessionStorage.getItem('date1') != null && sessionStorage.getItem('date2') != null) {
+				$('input[id="daterangepicker"]').data('dateRangePicker').setDateRange(new Date(sessionStorage.getItem('date1')), new Date(sessionStorage.getItem('date2')));
+				highlight_cells(sessionStorage.getItem('date1'), sessionStorage.getItem('date2'));
+			}
 
-		// add class to rows
-		$table.find('> tr, > tbody > tr').addClass('rg2');
+			$('#clear-range').click(function (event) {
+				event.preventDefault();
 
-		$table.on('rg2.update', function(){
-			update_table($table);
-		});
-		$table.on('rg2.open', 'tr.rg2', function(){
-			$(this).addClass('open');
-			update_table($table);
-		});
-		$table.on('rg2.close', 'tr.rg2', function(){
-			$(this).removeClass('open');
-			update_table($table);
-		});
-		$table.on('rg2.open-parents', 'tr.rg2', function(){
-			get_parents(this).addClass('open');
-			update_table($table);
-		});
-		$table.on('rg2.lock', 'tr.rg2', function(){
-			$(this).addClass('rg2-locked');
-			$(this).removeClass('open');
-			$(this).find('.rg2-arrow-disabled').addClass('rg2-arrow').removeClass('rg2-arrow-disabled');
+				$('input[id="daterangepicker"]').data('dateRangePicker').clear();
 
-			update_table($table);
-		});
-		$table.on('rg2.unlock', 'tr.rg2', function(){
-			$(this).removeClass('rg2-locked');
+				sessionStorage.removeItem('date1');
+				sessionStorage.removeItem('date2');
+				sessionStorage.removeItem('value');
 
-			update_table($table);
-		});
+				// Reset the gradings within the given range
+				$("td[exa-timestamp]").each(function (index) {
+					$(this).removeClass('highlight_cell');
 
-		$table.find('.rg2-level-0').show();
+					tr = $(this).closest('tr');
+					if (tr.hasClass('highlight_cell')) {
+						tr.removeClass('highlight_cell');
+					}
+				});
 
-		if (options.check_uncheck_parents_children || $table.is('.rg2-check_uncheck_parents_children')) {
-			$table.find(':checkbox').click(function(){
-				get_children(this, true).find(":checkbox").prop('checked', $(this).prop('checked'));
-				if (!$(this).prop('checked')) {
-					// parents, only for uncheck
-					get_parents(this).find(":checkbox").prop('checked', false);
+				update_statistic_tables(0, 0);
+			});
+
+			$(document).on('change', '[name^=datadescriptors\-], [name^=niveau_descriptor\-], [name^=dataexamples\-], [name^=niveau_examples\-], [name^=add-grading\-], [name^=niveau_topic\-], [name^=datatopics\-], [name^=niveau_subject\-], [name^=datasubjects\-], [name^=niveau_crosssub\-], [name^=datacrosssubs\-]', function () {
+				// one example can have several inputs/selects (if it is attached to several descriptors), so iterate over all
+				if ($(this).attr("name").indexOf("example") !== -1) {
+					$("[name=" + $(this).attr("name") + "]").each(function () {
+						if (Date.now() >= new Date(sessionStorage.getItem('date1')) && Date.now() <= new Date(sessionStorage.getItem('date2')))
+							$(this).closest('td').addClass('highlight_cell');
+
+						$(this).closest('td').attr('exa-timestamp', Math.floor(Date.now() / 1000));
+					});
+				} else {
+					if (Date.now() >= new Date(sessionStorage.getItem('date1')) && Date.now() <= new Date(sessionStorage.getItem('date2')))
+						$(this).closest('td').addClass('highlight_cell');
+
+					$(this).closest('td').attr('exa-timestamp', Math.floor(Date.now() / 1000));
 				}
 			});
 		}
-
-		// reopen saved states
-		var ids = localStorage.getObject(get_table_storageid($table));
-		if (ids) {
-			$.each(ids, function(tmp, id){
-				// only open if not locked
-				$table.find('.rg2:not(.rg2-locked)[exa-rg2-id="'+id+'"]').addClass('open');
-			});
-		}
-
-		// reopen checked
-		if (options.reopen_checked || $table.is('.rg2-reopen-checked')) {
-			$table.find(':checkbox:checked').trigger('rg2.open-parents');
-		}
-
-		// open all
-		if ($table.is('.rg2-open-all')) {
-			$table.find('.rg2-header').addClass('open');
-		}
-
-		// close locked
-		$table.find('tr.rg2-locked').removeClass('open');
-
-		update_table($table);
-
-		// if just one item, always open and hide arrow
-		if ($table.find('.rg2-level-0.rg2-header:not(.rg2-locked)').length == 1) {
-			$table.find('.rg2-level-0.rg2-header:not(.rg2-locked)').addClass('open').find('.rg2-arrow').removeClass('rg2-arrow').addClass('rg2-arrow-disabled');
-			if ($table.find('.rg2-level-1.rg2-header:not(.rg2-locked)').length == 1) {
-				$table.find('.rg2-level-1.rg2-header:not(.rg2-locked)').addClass('open').find('.rg2-arrow').removeClass('rg2-arrow').addClass('rg2-arrow-disabled');
-			}
-			update_table($table);
-		}
 	});
 
-	$(function(){
-		// add class to tables
-		// $('tr.rg2, table.rg2, .rg2-level-0').closest('table').addClass('rg2');
-
-		get_tables().trigger('rg2.init');
-	});
-	
-	function highlight_cells(date1, date2) {
-		// Reset the gradings within the given range
-    	$("td[exa-timestamp]" ).each(function( index ) {
-    		$(this).removeClass('highlight_cell');
-    		
-    		tr = $(this).closest('tr');
-    		if(tr.hasClass('highlight_cell')){
-    			tr.removeClass('highlight_cell');
-    		}
-    	});
-    	
-		date1_s = (new Date(date1).getTime() / 1000);
-    	date2_s = (new Date(date2).getTime() / 1000);
-    	
-    	// Highlight the gradings within the given range
-    	$("td[exa-timestamp]" ).each(function( index ) {
-    		if ($(this).attr("exa-timestamp") >= date1_s && $(this).attr("exa-timestamp") <= date2_s ) {
-    			$(this).addClass('highlight_cell');
-    			
-    			tr = $(this).closest('tr');
-        		if(tr.hasClass('comparison_topic') || tr.hasClass('comparison_desc') || tr.hasClass('comparison_mat')){
-        			tr.addClass('highlight_cell');
-        		}
-    		}
-    	});
-	}
-	
-	function update_statistic_tables(date1, date2) {
-		date1_s = (new Date(date1).getTime() / 1000);
-    	date2_s = (new Date(date2).getTime() / 1000);
-		// make ajax call for new data / html code
-    	
-    	$('div[class="statistictables"]').each(function () {
-    		var subjectid = $(this).attr('exa-subjectid');
-    		var courseid = $(this).attr('exa-courseid');
-    		console.log(courseid);
-    		block_exacomp.call_ajax({
-    			studentid: block_exacomp.get_studentid(),
-    			subjectid: subjectid,
-    			courseid: courseid,
-    			start: date1_s,
-    			end: date2_s,
-    			action : 'get_statistics_for_profile'
-    		}).done(function(html) {
-    			$('div[class="statistictables"][exa-subjectid="' + subjectid + '"]').replaceWith(html);
-    		});
-    	});
-	}
-	
-	$(document).ready(function() {
-		if($('input[id="daterangepicker"]').length) {
-	        $('input[id="daterangepicker"]').dateRangePicker({
-	            separator : ' ' + M.util.get_string('seperatordaterange', 'block_exacomp') + ' ',
-	            format : 'DD.MMM.YYYY',
-	            startOfWeek : 'monday',
-	            showShortcuts : true,
-	            shortcuts : {
-	                'prev-days' : [ 3, 5, 7 ],
-	                'prev' : [ 'week', 'month', 'year' ],
-	                'next-days' : null,
-	                'next' : null
-	            }
-	        }).bind('datepicker-change',function(event,obj)
-	        {
-	        	sessionStorage.setItem('date1', obj.date1);
-	        	sessionStorage.setItem('date2', obj.date2);
-	        	sessionStorage.setItem('value', obj.value);
-	        	
-	        	update_statistic_tables(obj.date1, obj.date2);
-	        	highlight_cells(obj.date1, obj.date2);
-	        });
-	        
-	        if(sessionStorage.getItem('date1') != null && sessionStorage.getItem('date2') != null) {
-	        	$('input[id="daterangepicker"]').data('dateRangePicker').setDateRange(new Date(sessionStorage.getItem('date1')), new Date(sessionStorage.getItem('date2')));
-	        	highlight_cells(sessionStorage.getItem('date1'), sessionStorage.getItem('date2'));
-	        }
-	        
-	        $('#clear-range').click(function(event) {
-	        	event.preventDefault();
-	            
-	            $('input[id="daterangepicker"]').data('dateRangePicker').clear();
-	
-	            sessionStorage.removeItem('date1');
-	        	sessionStorage.removeItem('date2');
-	        	sessionStorage.removeItem('value');
-	        	
-	        	// Reset the gradings within the given range
-	        	$("td[exa-timestamp]" ).each(function( index ) {
-	        		$(this).removeClass('highlight_cell');
-	        		
-	        		tr = $(this).closest('tr');
-	        		if(tr.hasClass('highlight_cell')){
-	        			tr.removeClass('highlight_cell');
-	        		}
-	        	});
-	        	
-	        	update_statistic_tables(0,0);
-	        });
-	        
-	        $(document).on('change', '[name^=datadescriptors\-], [name^=niveau_descriptor\-], [name^=dataexamples\-], [name^=niveau_examples\-], [name^=add-grading\-], [name^=niveau_topic\-], [name^=datatopics\-], [name^=niveau_subject\-], [name^=datasubjects\-], [name^=niveau_crosssub\-], [name^=datacrosssubs\-]', function() {
-	        	// one example can have several inputs/selects (if it is attached to several descriptors), so iterate over all
-	        	if($(this).attr("name").indexOf("example") !== -1) {
-		        	$("[name=" + $(this).attr("name") + "]").each(function() {
-		        		if(Date.now() >= new Date(sessionStorage.getItem('date1')) && Date.now() <= new Date(sessionStorage.getItem('date2')))
-			        		$(this).closest('td').addClass('highlight_cell');
-
-			        	$(this).closest('td').attr('exa-timestamp', Math.floor(Date.now() / 1000));
-		        	});
-	        	}
-	        	else {
-	        		if(Date.now() >= new Date(sessionStorage.getItem('date1')) && Date.now() <= new Date(sessionStorage.getItem('date2')))
-		        		$(this).closest('td').addClass('highlight_cell');
-		        	
-		        	$(this).closest('td').attr('exa-timestamp', Math.floor(Date.now() / 1000));
-	        	}
-	        });
-		}
-    });
-})();
-
-
-})();
+}();

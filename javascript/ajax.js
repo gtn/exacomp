@@ -802,7 +802,6 @@
 	});
 	
 	$(document).keydown(function(event) {
-		console.log(event.which);
 		if ( event.which == 13 ) {
 			   event.preventDefault();
 		}
