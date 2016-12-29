@@ -6691,6 +6691,11 @@ namespace block_exacomp {
 		 * Returns all evaluation niveaus, specified by the admin
 		 */
 		static function get_evalniveaus() {
+			static $values;
+
+			if ($values !== null) {
+				return $values;
+			}
 			$values = array(-1 => ' ');
 			$values += g::$DB->get_records_menu(DB_EVALUATION_NIVEAU,null,'','id,title');
 			
