@@ -471,7 +471,6 @@ $string['block_exacomp_notifications_head'] = 'Notifications and Messages';
 $string['block_exacomp_notifications_body'] = 'Users will get notified after relevant actions.';
 
 
-
 // === Logging ===
 $string['block_exacomp_logging_head'] = 'Logging';
 $string['block_exacomp_logging_body'] = 'Relevant actions will get logged.';

@@ -473,7 +473,6 @@ $string['block_exacomp_notifications_head'] = 'Mitteilungen und Benachrichtigung
 $string['block_exacomp_notifications_body'] = 'Bei Aktionen wie einer Lernmaterialien-Einreichung oder einer Beurteilung werden Nachrichten an die zuständigen Benutzer gesendet.';
 
 
-
 // === Logging ===
 $string['block_exacomp_logging_head'] = 'Logging';
 $string['block_exacomp_logging_body'] = 'Relevante Aktionen werden geloggt.';

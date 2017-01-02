@@ -17,7 +17,7 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-return  [
+return [
 	// shown in admin plugin list
 	'pluginname' => [
 		'Exabis Kompetenzraster',
@@ -60,7 +60,7 @@ return  [
 		'Externe Trailer zuordnen',
 		'Assign external trainers',
 	],
-	
+
 	//Cache definition
 	'cachedef_visibility_cache' => [
 		'Cache zur Performanceerhöhung von Sichtbarkeitsabfragen',
@@ -309,11 +309,11 @@ return  [
 	],
 	'settings_periods' => [
 		'Einträge für Zeittafel',
-		'Timetable entries'
+		'Timetable entries',
 	],
 	'settings_periods_description' => [
 		'Der Wochenplan ist flexibel an jedes Stunden- und Pausenraster anpassbar. Verwenden Sie im Textblock für jeden Zeitblock eine neue Zeile. Es sind beliebige Texteinträge erlaubt, z.B. "1. Std" oder "07:30 - 09:00".',
-		'Weekly schedule can be adapted to any timetable. Use one row in the text area for each time entry. You can use any format you like, e.g. "1st hour" or "07:30 - 09:00".'	
+		'Weekly schedule can be adapted to any timetable. Use one row in the text area for each time entry. You can use any format you like, e.g. "1st hour" or "07:30 - 09:00".',
 	],
 
 	// === Unit Tests ===
@@ -712,8 +712,8 @@ return  [
 		'Show solution',
 	],
 	'hide_solution_disabled' => [
-			'Musterlösung ist bereits für alle Schüler versteckt',
-			'The solution is already hidden for all students',
+		'Musterlösung ist bereits für alle Schüler versteckt',
+		'The solution is already hidden for all students',
 	],
 	'submission' => [
 		'Abgabe',
@@ -755,8 +755,8 @@ return  [
 
 	// === Assign competencies ===
 	'header_edit_mode' => [
-			'Sie befinden sich im Bearbeitungsmodus',
-			'Editing mode is turned on',
+		'Sie befinden sich im Bearbeitungsmodus',
+		'Editing mode is turned on',
 	],
 	'comp_-1' => [
 		'ohne Angabe',
@@ -773,31 +773,31 @@ return  [
 	'comp_2' => [
 		'überwiegend',
 		'mostly',
-		],
+	],
 	'comp_3' => [
 		'vollständig',
 		'completely',
 	],
-		'comp_-1_short' => [
-				'oA',
-				'nI',
-		],
-		'comp_0_short' => [
-				'nE',
-				'nG',
-		],
-		'comp_1_short' => [
-				'tE',
-				'pG',
-		],
-		'comp_2_short' => [
-				'üE',
-				'mG',
-		],
-		'comp_3_short' => [
-				'vE',
-				'cG',
-		],
+	'comp_-1_short' => [
+		'oA',
+		'nI',
+	],
+	'comp_0_short' => [
+		'nE',
+		'nG',
+	],
+	'comp_1_short' => [
+		'tE',
+		'pG',
+	],
+	'comp_2_short' => [
+		'üE',
+		'mG',
+	],
+	'comp_3_short' => [
+		'vE',
+		'cG',
+	],
 	'delete_confirmation' => [
 		'Soll "{$a}" wirklich gelöscht werden?',
 		'Do you really want to delete "{$a}"?',
@@ -834,18 +834,18 @@ return  [
 		'Kursteilnehmer/in auswählen: ',
 		'Choose student: ',
 	],
-		'choosedaterange' => [
-				'Betrachtungszeitraum auswählen: ',
-				'Pick a date range: ',
-		],
-		'cleardaterange' => [
-				'Zurücksetzen',
-				'Clear range',
-		],
-		'seperatordaterange' => [
-				'bis',
-				'to',
-		],
+	'choosedaterange' => [
+		'Betrachtungszeitraum auswählen: ',
+		'Pick a date range: ',
+	],
+	'cleardaterange' => [
+		'Zurücksetzen',
+		'Clear range',
+	],
+	'seperatordaterange' => [
+		'bis',
+		'to',
+	],
 	'own_additions' => [
 		'Schulische Ergänzung: ',
 		'Curricular additions: ',
@@ -883,20 +883,20 @@ return  [
 		'New Submission',
 	],
 	'value_too_large' => [
-			'Fehler: Benotungen dürfen nicht größer als 6.0 sein!',
-			'Error: Values above 6.0 are not allowed',
+		'Fehler: Benotungen dürfen nicht größer als 6.0 sein!',
+		'Error: Values above 6.0 are not allowed',
 	],
 	'value_too_low' => [
-			'Fehler: Benotungen dürfen nicht kleiner als 1.0 sein!',				
-			'Error: Values below 1.0 are not allowed',
-		],
-	'value_not_allowed' => [				
-			'Fehler: Benotungen müssen Zahlenwerte zwischen 1.0 und 6.0 sein',
-			'Error: Values need to be numbers between 1.0 and 6.0',
+		'Fehler: Benotungen dürfen nicht kleiner als 1.0 sein!',
+		'Error: Values below 1.0 are not allowed',
+	],
+	'value_not_allowed' => [
+		'Fehler: Benotungen müssen Zahlenwerte zwischen 1.0 und 6.0 sein',
+		'Error: Values need to be numbers between 1.0 and 6.0',
 	],
 	'competence_locked' => [
-			'Beurteilung vorhanden oder Lernmaterial in Verwendung!',
-			'Evaluation exists or learning material is used',
+		'Beurteilung vorhanden oder Lernmaterial in Verwendung!',
+		'Evaluation exists or learning material is used',
 	],
 	// === Example Submission ===
 	'example_submission_header' => [
@@ -1031,26 +1031,6 @@ return  [
 		'Aufgabe erledigt: ',
 		'task done: ',
 	],
-		'comp_-1' => [
-				'ohne Angabe',
-				'no information',
-		],
-		'comp_0' => [
-				'nicht erreicht',
-				'not gained',
-		],
-		'comp_1' => [
-				'teilweise',
-				'partly',
-		],
-		'comp_2' => [
-				'überwiegend',
-				'mostly',
-		],
-		'comp_3' => [
-				'vollständig',
-				'completely',
-		],
 	// === metadata ===
 	'subject_singular' => [
 		'Fach',
@@ -1200,7 +1180,7 @@ return  [
 		'My Badges',
 	],
 	'innersection1' => [
-		'Rasterübersicht',	
+		'Rasterübersicht',
 		'Grid view',
 	],
 	'innersection2' => [
@@ -1220,15 +1200,15 @@ return  [
 		'Schulbezogene Themenbereiche',
 		'site-specific topics',
 	],
-	
+
 	'topic_3dchart' => [
-			'3D Diagramm',
-			'3D Chart',
+		'3D Diagramm',
+		'3D Chart',
 	],
-		
+
 	'topic_3dchart_empty' => [
-			'Es liegen keine Beurteilungen für diesen Kompetenzbereich vor.',
-			'No gradings available',
+		'Es liegen keine Beurteilungen für diesen Kompetenzbereich vor.',
+		'No gradings available',
 	],
 	// === Profoundness ===
 	'profoundness_description' => [
@@ -1529,19 +1509,19 @@ return  [
 	],
 	'weekly_schedule_disabled' => [
 		'Lernmaterial ist versteckt und kann nicht auf Wochenplan gelegt werden.',
-		'Hidden example can not be added to weekly schedule'
+		'Hidden example can not be added to weekly schedule',
 	],
 	'pre_planning_storage_disabled' => [
 		'Lernmaterial ist versteckt und kann nicht in den Vorplanungsspeicher gelegt werden.',
-		'Hidden example can not be added to pre-planning storage.'
+		'Hidden example can not be added to pre-planning storage.',
 	],
 	'add_example_for_all_students_to_schedule' => [
-			'Achtung: Sie sind dabei Lernmaterialien für alle Schüler auf deren Wochenplan zu legen. Dafür ist eine zusätzliche Bestätigung notwendig. Etwaige Änderungen können danach nur mehr auf den individuellen Plänen der jeweiligen Schüler vorgenommen werden.',
-			'Attention: Here you can add examples to the schedules of all students. This requires extra confirmation.',
+		'Achtung: Sie sind dabei Lernmaterialien für alle Schüler auf deren Wochenplan zu legen. Dafür ist eine zusätzliche Bestätigung notwendig. Etwaige Änderungen können danach nur mehr auf den individuellen Plänen der jeweiligen Schüler vorgenommen werden.',
+		'Attention: Here you can add examples to the schedules of all students. This requires extra confirmation.',
 	],
 	'add_example_for_all_students_to_schedule_confirmation' => [
-			'Sind Sie sicher, dass Sie die Lernmaterialien für alle Schüler auf den Wochenplan legen möchten?',
-			'You are about to add the examples to the schedules of all students, do you want to continue?',
+		'Sind Sie sicher, dass Sie die Lernmaterialien für alle Schüler auf den Wochenplan legen möchten?',
+		'You are about to add the examples to the schedules of all students, do you want to continue?',
 	],
 
 	// === Notifications ===
@@ -1619,7 +1599,6 @@ return  [
 	],
 
 
-
 	// === Logging ===
 	'block_exacomp_logging_head' => [
 		'Logging',
@@ -1693,10 +1672,10 @@ return  [
 		'Abgeben',
 		'Submit',
 	],
-		// === Webservice Status ===
+	// === Webservice Status ===
 	'enable_rest' => [
 		'REST Protokoll nicht aktiviert',
-		'REST Protocol not enabled'	,
+		'REST Protocol not enabled',
 	],
 	'access_roles' => [
 		'Benutzerrollen mit Zugriff auf Webservices',
@@ -1704,15 +1683,15 @@ return  [
 	],
 	'no_permission' => [
 		'Berechtigung wurde nicht erteilt',
-		'Permissions not set',	
+		'Permissions not set',
 	],
 	'description_createtoken' => [
-			'Der Benutzerrolle "Authentifizierte/r Nutzer/in" zusätzliche Rechte erteilen: Website-Administration/Nutzer_innen/Rechte ändern/Rollen verwalten
+		'Der Benutzerrolle "Authentifizierte/r Nutzer/in" zusätzliche Rechte erteilen: Website-Administration/Nutzer_innen/Rechte ändern/Rollen verwalten
 4.1 Authentifizierte/r Nutzer/in wählen
 4.2 Bearbeiten auswählen
 4.3 Nach "createtoken" filtern
 4.4 Moodle/webservice:createtoken erlauben',
-			'Grant additional permission to the role "authenticated user" at: Site administration/Users/Permissions/Define roles
+		'Grant additional permission to the role "authenticated user" at: Site administration/Users/Permissions/Define roles
 4.1 Select Authenticated User
 4.2 Click on "Edit"
 4.3 Filter for createtoken
@@ -1724,10 +1703,10 @@ return  [
 	],
 	'exaport_not_found' => [
 		'Exaportservice nicht gefunden',
-		'Exaportservice not found',	
+		'Exaportservice not found',
 	],
 	'no_external_trainer' => [
 		'Keine externen Trainer zugeteilt',
 		'No external trainers assigned',
-	]
+	],
 ];
