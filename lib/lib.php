@@ -6716,10 +6716,11 @@ namespace block_exacomp {
 		 * @param double $additionalinfo
 		 */
 		static function get_additionalinfo_value_mapping($additionalinfo){
-			if($additionalinfo == "")
+			if (!$additionalinfo)
 				return -1;
 				
 			$mapping = array(6.0, 4.8, 3.5, 2.2);
+			$value = -1;
 			
 			foreach($mapping as $k => $v) {
 				if($additionalinfo > $v)
@@ -6736,7 +6737,7 @@ namespace block_exacomp {
 		 * @param int $value
 		 */
 		static function get_value_additionalinfo_mapping($value){
-			if(!$value || $value == "")
+			if (!$value)
 				return -1;
 		
 			$mapping = array(6.0, 4.4, 2.7, 1.0);
