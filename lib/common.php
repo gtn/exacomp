@@ -175,16 +175,16 @@ abstract class exadb extends \moodle_database {
 	}
 }
 
+/**
+ * Class exadb_forwarder
+ * exadb_extender extends this call,
+ * which allows exadb_extender to call parent::function(), which gets forwarded to $DB->function()
+ */
 class exadb_forwarder {
 	function __call($func, $args) {
 		global $DB;
 
-		if (method_exists($DB, $func)) {
-			// in exadb class
-			return call_user_func_array([$DB, $func], $args);
-		}
-
-		throw new \coding_exception(" Call to undefined method g::\$DB->$func");
+		return call_user_func_array([$DB, $func], $args);
 	}
 }
 
@@ -684,11 +684,11 @@ function trans($string_or_strings, $arg_or_args = null) {
 namespace block_exacomp;
 
 function _should_export_class($classname) {
-	return !class_exists('\\'.__NAMESPACE__.'\\'.$classname);
+	return !class_exists(__NAMESPACE__.'\\'.$classname);
 }
 
 function _export_function($function) {
-	if (!function_exists('\\'.__NAMESPACE__.'\\'.$function)) {
+	if (!function_exists(__NAMESPACE__.'\\'.$function)) {
 		eval('
 			namespace '.__NAMESPACE__.' {
 				function '.$function.'() {
