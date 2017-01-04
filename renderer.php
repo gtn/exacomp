@@ -2124,7 +2124,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$attributes['exa-userid'] = $student->id;
 		$attributes['exa-evaluation'] = $evaluation;
 
-		return html_writer::select(
+		return $this->select(
 				$options,
 				$name . '-' . $compid . '-' . $student->id . '-' . $evaluation,
 				(isset($student->{$type}->{$evaluation}[$compid])) ? $student->{$type}->{$evaluation}[$compid] : -1,
@@ -2147,7 +2147,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$attributes['exa-userid'] = $student->id;
 			//$attributes['exa-evaluation'] = $evaluation;
 			
-			return html_writer::select(
+			return $this->select(
 					$options,
 					$name . '-' . $compid . '-' . $student->id,
 					(isset($student->{$type}->niveau[$compid])) ? $student->{$type}->niveau[$compid] : -1,true,$attributes);
@@ -4007,10 +4007,33 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::tag('input', '', array('size' => '27', 'id' => 'daterangepicker', 'title' => get_string("choosedaterange","block_exacomp")))
 		. html_writer::tag('button', get_string('cleardaterange','block_exacomp'), array('id' => 'clear-range'));
 	}
+
+	function select(array $options, $name, $selected = '', $nothing = array('' => 'choosedots'), array $attributes = null) {
+        if (empty($attributes['disabled'])) {
+            unset($attributes['disabled']);
+        }
+
+		$optionsOutput = \block_exacomp\StaticCacheCallback::get([__CLASS__, __FUNCTION__], function($options, $selected){
+			$output = '';
+			foreach ($options as $value=>$label) {
+		        $attributes = array();
+				$value = (string)$value;
+				if ($value === $selected) {
+					$attributes['selected'] = 'selected';
+				}
+        		$attributes['value'] = $value;
+        		$output .= html_writer::tag('option', $label, $attributes);
+			}
+
+			return $output;
+		}, [$options, $selected]);
+
+		$attributesOutput = '';
+        foreach ($attributes as $oName => $value) {
+            $attributesOutput .= ' ' . $oName . '="' . s($value) . '"';
+        }
+		$output = '<select name="'.$name.'" '.$attributesOutput.'>'.$optionsOutput.'</select>';
+
+		return $output;
+	}
 }
-
-
-
-
-
-

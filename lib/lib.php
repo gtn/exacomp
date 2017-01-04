@@ -1147,10 +1147,12 @@ function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldes
 	$sql .= ' ORDER BY d.sorting';
 	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid));
 
-
+	/*
 	foreach($descriptors as $descriptor){
 		$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
 	}
+	*/
+
 	return $descriptors;
 }
 /**
