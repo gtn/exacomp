@@ -120,6 +120,7 @@ const CAP_SORTING = 'sorting';
 namespace {
 
 use block_exacomp\globals as g;
+use block_exacomp\StaticCacheCallback;
 
 /**
  * COMPETENCE TYPES
@@ -988,8 +989,16 @@ function block_exacomp_get_categories_for_descriptor($descriptor){
 function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescriptors = false, $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES), $showallexamples = true, $mindvisibility = true, $showonlyvisible=false ) {
 	global $DB;
 
-	if(!$DB->record_exists(\block_exacomp\DB_DESCRIPTORS, array("parentid" => $parent->id))) {
-		return array();
+	// old:
+	// $DB->record_exists(\block_exacomp\DB_DESCRIPTORS, array("parentid" => $parent->id))
+
+	static $descparents = null;
+	if ($descparents === null) {
+		$descparents = $DB->get_records_menu(\block_exacomp\DB_DESCRIPTORS, null, null, 'distinct parentid,parentid AS tmp');
+	}
+
+	if (!isset($descparents[$parent->id])) {
+		return [];
 	}
 
 	if (!$courseid) {
@@ -1743,9 +1752,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
  */
 function block_exacomp_build_breadcrum_navigation($courseid) {
 	global $PAGE;
-	$coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
-	$blocknode = $coursenode->add(get_string('blocktitle','block_exacomp'));
-	$blocknode->make_active();
+	$PAGE->navbar->add(get_string('blocktitle','block_exacomp'));
 }
 
 /**
@@ -4181,10 +4188,10 @@ function block_exacomp_is_topic_visible($courseid, $topic, $studentid){
 	if ($studentid <= 0) {
 		$studentid = 0;
 	}
-	
-	$visibilities = block_exacomp_get_visibility_cache($courseid);
-	
-	return array_key_exists($topic->id, $visibilities->topic_visibilities[$studentid]);
+
+	$visibilities = block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $studentid);
+
+	return array_key_exists($topic->id, $visibilities);
 }
 
 /**
@@ -4202,9 +4209,9 @@ function block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid)
 		$studentid = 0;
 	}
 
-	$visibilities = block_exacomp_get_visibility_cache($courseid);
-	
-	return array_key_exists($descriptor->id, $visibilities->descriptor_visibilites[$studentid]);
+	$visibilities = block_exacomp_get_descriptor_visibilities_for_course_and_user($courseid, $studentid);
+
+	return array_key_exists($descriptor->id, $visibilities);
 }
 
 /**
@@ -4222,9 +4229,9 @@ function block_exacomp_is_example_visible($courseid, $example, $studentid){
 		$studentid = 0;
 	}
 
-	$visibilities = block_exacomp_get_visibility_cache($courseid);
-	
-	return array_key_exists($example->id, $visibilities->example_visibilities[$studentid]);
+	$visibilities = block_exacomp_get_example_visibilities_for_course_and_user($courseid, $studentid);
+
+	return array_key_exists($example->id, $visibilities);
 }
 
 /**
@@ -4240,9 +4247,9 @@ function block_exacomp_is_example_solution_visible($courseid, $example, $student
 		$studentid = 0;
 	}
 
-	$visibilities = block_exacomp_get_visibility_cache($courseid);
-	
-	return !empty($visibilities->solution_visibilities[$studentid]) && array_key_exists($example->id, $visibilities->solution_visibilities[$studentid]);
+	$visibilities = block_exacomp_get_solution_visibilities_for_course_and_user($courseid, $studentid);
+
+	return array_key_exists($example->id, $visibilities);
 }
 
 /**
@@ -6199,64 +6206,51 @@ function block_exacomp_get_data_for_profile_comparison($courseid, $subject, $stu
  * @return {{id}, {...}}
  */
 function block_exacomp_get_example_visibilities_for_course_and_user($courseid, $userid = 0){
-	global $DB;
+	return StaticCacheCallback::get([__CLASS__, __FUNCTION__], function($courseid, $userid){
+		global $DB;
 
-	$sql = "SELECT DISTINCT e.id FROM {".\block_exacomp\DB_EXAMPLES."} e
-		LEFT JOIN {".\block_exacomp\DB_DESCEXAMP."} de ON e.id = de.exampid
-		LEFT JOIN {".\block_exacomp\DB_DESCTOPICS."} dt ON de.descrid = dt.descrid
-		LEFT JOIN {".\block_exacomp\DB_COURSETOPICS."} ct ON dt.topicid = ct.topicid
-		LEFT JOIN {".\block_exacomp\DB_EXAMPVISIBILITY."} ev ON e.id = ev.exampleid AND ev.courseid = ct.courseid
-		LEFT JOIN {".\block_exacomp\DB_DESCVISIBILITY."} dv ON de.descrid = dv.descrid AND dv.courseid = ct.courseid
-		LEFT JOIN {".\block_exacomp\DB_TOPICVISIBILITY."} tv ON dt.topicid = tv.topicid AND tv.courseid = ct.courseid
-		LEFT JOIN {".\block_exacomp\DB_TOPICS."} t ON ct.topicid = t.id
+		$sql = "SELECT DISTINCT e.id FROM {".\block_exacomp\DB_EXAMPLES."} e
+			LEFT JOIN {".\block_exacomp\DB_DESCEXAMP."} de ON e.id = de.exampid
+			LEFT JOIN {".\block_exacomp\DB_DESCTOPICS."} dt ON de.descrid = dt.descrid
+			LEFT JOIN {".\block_exacomp\DB_COURSETOPICS."} ct ON dt.topicid = ct.topicid
+			LEFT JOIN {".\block_exacomp\DB_EXAMPVISIBILITY."} ev ON e.id = ev.exampleid AND ev.courseid = ct.courseid
+			LEFT JOIN {".\block_exacomp\DB_DESCVISIBILITY."} dv ON de.descrid = dv.descrid AND dv.courseid = ct.courseid
+			LEFT JOIN {".\block_exacomp\DB_TOPICVISIBILITY."} tv ON dt.topicid = tv.topicid AND tv.courseid = ct.courseid
+			LEFT JOIN {".\block_exacomp\DB_TOPICS."} t ON ct.topicid = t.id
+	
+			WHERE ct.courseid = ? 
+	
+			AND ((ev.visible = 1 AND ev.studentid = 0 AND NOT EXISTS
+			  (SELECT *
+			   FROM {".\block_exacomp\DB_EXAMPVISIBILITY."} evsub
+			   WHERE evsub.exampleid = ev.exampleid AND evsub.courseid = ev.courseid AND evsub.visible = 0 AND evsub.studentid = ?))
+			   OR (ev.visible = 1 AND ev.studentid = ? AND NOT EXISTS
+			  (SELECT *
+			   FROM {".\block_exacomp\DB_EXAMPVISIBILITY."} evsub
+			   WHERE evsub.exampleid = ev.exampleid AND evsub.courseid = ev.courseid AND evsub.visible = 0 AND evsub.studentid = 0)))
+	
+			AND ((dv.visible = 1 AND dv.studentid = 0 AND NOT EXISTS
+			  (SELECT *
+			   FROM {".\block_exacomp\DB_DESCVISIBILITY."} dvsub
+			   WHERE dvsub.descrid = dv.descrid AND dvsub.courseid = dv.courseid AND dvsub.visible = 0 AND dvsub.studentid = ?))
+			   OR (dv.visible = 1 AND dv.studentid = ? AND NOT EXISTS
+			  (SELECT *
+			   FROM {".\block_exacomp\DB_DESCVISIBILITY."} dvsub
+			   WHERE dvsub.descrid = dv.descrid AND dvsub.courseid = dv.courseid AND dvsub.visible = 0 AND dvsub.studentid = 0)))
+			
+			AND ((tv.visible = 1 AND tv.studentid = 0 AND NOT EXISTS
+			  (SELECT *
+			   FROM {".\block_exacomp\DB_TOPICVISIBILITY."} tvsub
+			   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = ?))
+			   OR (tv.visible = 1 AND tv.studentid = ? AND NOT EXISTS
+			  (SELECT *
+			   FROM {".\block_exacomp\DB_TOPICVISIBILITY."} tvsub
+			   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = 0)))";
 
-		WHERE ct.courseid = ? 
+		$params = array($courseid, $userid, $userid, $userid, $userid, $userid, $userid);
 
-		AND ((ev.visible = 1 AND ev.studentid = 0 AND NOT EXISTS
-		  (SELECT *
-		   FROM {".\block_exacomp\DB_EXAMPVISIBILITY."} evsub
-		   WHERE evsub.exampleid = ev.exampleid AND evsub.courseid = ev.courseid AND evsub.visible = 0 AND evsub.studentid = ?))
-		   OR (ev.visible = 1 AND ev.studentid = ? AND NOT EXISTS
-		  (SELECT *
-		   FROM {".\block_exacomp\DB_EXAMPVISIBILITY."} evsub
-		   WHERE evsub.exampleid = ev.exampleid AND evsub.courseid = ev.courseid AND evsub.visible = 0 AND evsub.studentid = 0)))
-
-		AND ((dv.visible = 1 AND dv.studentid = 0 AND NOT EXISTS
-		  (SELECT *
-		   FROM {".\block_exacomp\DB_DESCVISIBILITY."} dvsub
-		   WHERE dvsub.descrid = dv.descrid AND dvsub.courseid = dv.courseid AND dvsub.visible = 0 AND dvsub.studentid = ?))
-		   OR (dv.visible = 1 AND dv.studentid = ? AND NOT EXISTS
-		  (SELECT *
-		   FROM {".\block_exacomp\DB_DESCVISIBILITY."} dvsub
-		   WHERE dvsub.descrid = dv.descrid AND dvsub.courseid = dv.courseid AND dvsub.visible = 0 AND dvsub.studentid = 0)))
-		
-		AND ((tv.visible = 1 AND tv.studentid = 0 AND NOT EXISTS
-		  (SELECT *
-		   FROM {".\block_exacomp\DB_TOPICVISIBILITY."} tvsub
-		   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = ?))
-		   OR (tv.visible = 1 AND tv.studentid = ? AND NOT EXISTS
-		  (SELECT *
-		   FROM {".\block_exacomp\DB_TOPICVISIBILITY."} tvsub
-		   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = 0)))";
-
-	$params = array($courseid, $userid, $userid, $userid, $userid, $userid, $userid);
-
-	return $DB->get_records_sql($sql, $params);
-}
-/**
- * get all visible descriptors for all course students -> improved performance
- * @param unknown $courseid
- * @return {[userid]=>[{id}, {id},...]}
- */
-function block_exacomp_get_example_visibilities_for_course($courseid){
-	$user_visibilites = array();
-	$students = block_exacomp_get_students_by_course($courseid);
-
-	foreach($students as $student){
-		$user_visibilites[$student->id] = block_exacomp_get_example_visibilities_for_course_and_user($courseid, $student->id);
-	}
-	$user_visibilites[0] = block_exacomp_get_example_visibilities_for_course_and_user($courseid);
-	return $user_visibilites;
+		return $DB->get_records_sql($sql, $params);
+	}, func_get_args());
 }
 
 /**
@@ -6269,53 +6263,39 @@ function block_exacomp_get_example_visibilities_for_course($courseid){
  * @return: {{id}, {...}}
  */
 function block_exacomp_get_descriptor_visibilities_for_course_and_user($courseid, $userid = 0){
-	global $DB;
+	return StaticCacheCallback::get([__CLASS__, __FUNCTION__], function($courseid, $userid){
+		global $DB;
 
-	$sql = "SELECT DISTINCT d.id FROM {".\block_exacomp\DB_DESCRIPTORS."} d
-		LEFT JOIN {".\block_exacomp\DB_DESCTOPICS."} dt ON d.id = dt.descrid
-		LEFT JOIN {".\block_exacomp\DB_COURSETOPICS."} ct ON dt.topicid = ct.topicid
-		LEFT JOIN {".\block_exacomp\DB_DESCVISIBILITY."} dv ON d.id = dv.descrid AND dv.courseid = ct.courseid
-		LEFT JOIN {".\block_exacomp\DB_TOPICVISIBILITY."} tv ON dt.topicid = tv.topicid AND tv.courseid = ct.courseid
-		LEFT JOIN {".\block_exacomp\DB_TOPICS."} t ON ct.topicid = t.id
-		WHERE ct.courseid = ? 
-
-		AND ((dv.visible = 1 AND dv.studentid = 0 AND NOT EXISTS
-		  (SELECT *
-		   FROM {".\block_exacomp\DB_DESCVISIBILITY."} dvsub
-		   WHERE dvsub.descrid = dv.descrid AND dvsub.courseid = dv.courseid AND dvsub.visible = 0 AND dvsub.studentid = ?))
-		   OR (dv.visible = 1 AND dv.studentid = ? AND NOT EXISTS
-		  (SELECT *
-		   FROM {".\block_exacomp\DB_DESCVISIBILITY."} dvsub
-		   WHERE dvsub.descrid = dv.descrid AND dvsub.courseid = dv.courseid AND dvsub.visible = 0 AND dvsub.studentid = 0)))
-		 
-		AND ((tv.visible = 1 AND tv.studentid = 0 AND NOT EXISTS
-		  (SELECT *
-		   FROM {".\block_exacomp\DB_TOPICVISIBILITY."} tvsub
-		   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = ?))
-		   OR (tv.visible = 1 AND tv.studentid = ? AND NOT EXISTS
-		  (SELECT *
-		   FROM {".\block_exacomp\DB_TOPICVISIBILITY."} tvsub
-		   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = 0)))";
-		
-	$params = array($courseid, $userid, $userid, $userid, $userid);
-
-	return $DB->get_records_sql($sql, $params);
-}
-
-/**
- * get all visible descriptors for all course students -> improved performance
- * @param unknown $courseid
- * @return {[userid]=>[{id}, {id},...]}
- */
-function block_exacomp_get_descriptor_visibilities_for_course($courseid){
-	$user_visibilites = array();
-	$students = block_exacomp_get_students_by_course($courseid);
+		$sql = "SELECT DISTINCT d.id FROM {".\block_exacomp\DB_DESCRIPTORS."} d
+			LEFT JOIN {".\block_exacomp\DB_DESCTOPICS."} dt ON d.id = dt.descrid
+			LEFT JOIN {".\block_exacomp\DB_COURSETOPICS."} ct ON dt.topicid = ct.topicid
+			LEFT JOIN {".\block_exacomp\DB_DESCVISIBILITY."} dv ON d.id = dv.descrid AND dv.courseid = ct.courseid
+			LEFT JOIN {".\block_exacomp\DB_TOPICVISIBILITY."} tv ON dt.topicid = tv.topicid AND tv.courseid = ct.courseid
+			LEFT JOIN {".\block_exacomp\DB_TOPICS."} t ON ct.topicid = t.id
+			WHERE ct.courseid = ? 
 	
-	foreach($students as $student){
-		$user_visibilites[$student->id] = block_exacomp_get_descriptor_visibilities_for_course_and_user($courseid, $student->id);
-	}
-	$user_visibilites[0] = block_exacomp_get_descriptor_visibilities_for_course_and_user($courseid);
-	return $user_visibilites;
+			AND ((dv.visible = 1 AND dv.studentid = 0 AND NOT EXISTS
+			  (SELECT *
+			   FROM {".\block_exacomp\DB_DESCVISIBILITY."} dvsub
+			   WHERE dvsub.descrid = dv.descrid AND dvsub.courseid = dv.courseid AND dvsub.visible = 0 AND dvsub.studentid = ?))
+			   OR (dv.visible = 1 AND dv.studentid = ? AND NOT EXISTS
+			  (SELECT *
+			   FROM {".\block_exacomp\DB_DESCVISIBILITY."} dvsub
+			   WHERE dvsub.descrid = dv.descrid AND dvsub.courseid = dv.courseid AND dvsub.visible = 0 AND dvsub.studentid = 0)))
+			 
+			AND ((tv.visible = 1 AND tv.studentid = 0 AND NOT EXISTS
+			  (SELECT *
+			   FROM {".\block_exacomp\DB_TOPICVISIBILITY."} tvsub
+			   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = ?))
+			   OR (tv.visible = 1 AND tv.studentid = ? AND NOT EXISTS
+			  (SELECT *
+			   FROM {".\block_exacomp\DB_TOPICVISIBILITY."} tvsub
+			   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = 0)))";
+
+		$params = array($courseid, $userid, $userid, $userid, $userid);
+
+		return $DB->get_records_sql($sql, $params);
+	}, func_get_args());
 }
 
 /**
@@ -6327,96 +6307,52 @@ function block_exacomp_get_descriptor_visibilities_for_course($courseid){
  * @return: {{id}, {...}}
  */
 function block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $userid = 0){
-	global $DB;
+	return StaticCacheCallback::get([__CLASS__, __FUNCTION__], function($courseid, $userid){
+		global $DB;
+
+		$sql = "SELECT DISTINCT t.id FROM {".\block_exacomp\DB_TOPICS."} t
+			LEFT JOIN {".\block_exacomp\DB_COURSETOPICS."} ct ON t.id = ct.topicid
+			LEFT JOIN {".\block_exacomp\DB_TOPICVISIBILITY."} tv ON t.id = tv.topicid AND tv.courseid = ct.courseid
+			WHERE ct.courseid = ? 
 	
-	$sql = "SELECT DISTINCT t.id FROM {".\block_exacomp\DB_TOPICS."} t
-		LEFT JOIN {".\block_exacomp\DB_COURSETOPICS."} ct ON t.id = ct.topicid
-		LEFT JOIN {".\block_exacomp\DB_TOPICVISIBILITY."} tv ON t.id = tv.topicid AND tv.courseid = ct.courseid
-		WHERE ct.courseid = ? 
+			AND ((tv.visible = 1 AND tv.studentid = 0 AND NOT EXISTS 
+				(SELECT * FROM {".\block_exacomp\DB_TOPICVISIBILITY."} tvsub
+				WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = ?)) 
+			OR (tv.visible = 1 AND tv.studentid = ? AND NOT EXISTS 
+				(SELECT * FROM {".\block_exacomp\DB_TOPICVISIBILITY."} tvsub
+				WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = 0)))";
 
-		AND ((tv.visible = 1 AND tv.studentid = 0 AND NOT EXISTS 
-   			(SELECT * FROM {".\block_exacomp\DB_TOPICVISIBILITY."} tvsub
-			WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = ?)) 
-		OR (tv.visible = 1 AND tv.studentid = ? AND NOT EXISTS 
-			(SELECT * FROM {".\block_exacomp\DB_TOPICVISIBILITY."} tvsub
-			WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = 0)))";
+		$params = array($courseid, $userid, $userid);
 
-	$params = array($courseid, $userid, $userid);
-
-	return $DB->get_records_sql($sql, $params);
+		return $DB->get_records_sql($sql, $params);
+	}, func_get_args());
 }
 
-/**
- * get all visible topic for all course students -> improved performance
- * @param unknown $courseid
- * @return {[userid]=>[{id}, {id},...]}
- */
-function block_exacomp_get_topic_visibilities_for_course($courseid){
-	$user_visibilites = array();
-	$students = block_exacomp_get_students_by_course($courseid);
-
-	foreach($students as $student){
-		$user_visibilites[$student->id] = block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $student->id);
-	}
-
-	$user_visibilites[0] = block_exacomp_get_topic_visibilities_for_course_and_user($courseid);
-	return $user_visibilites;
-}
 /**
  * returnes a list of examples whose solutions are visibile in course and user context
  * @param unknown $courseid
  * @param number $userid
  */
 function block_exacomp_get_solution_visibilities_for_course_and_user($courseid, $userid = 0){
-	global $DB;
-	
-	$sql = "SELECT DISTINCT e.id FROM {".\block_exacomp\DB_EXAMPLES."} e 
-		LEFT JOIN {".\block_exacomp\DB_DESCEXAMP."} de ON e.id = de.exampid 
-		LEFT JOIN {".\block_exacomp\DB_DESCTOPICS."} dt ON de.descrid = dt.descrid 
-		LEFT JOIN {".\block_exacomp\DB_COURSETOPICS."} ct ON dt.topicid = ct.topicid 
-		LEFT JOIN {".\block_exacomp\DB_SOLUTIONVISIBILITY."} sv ON e.id = sv.exampleid AND sv.courseid = ct.courseid 
-		WHERE ct.courseid = ? 
-		AND ((sv.visible = 1 AND sv.studentid = 0 AND NOT EXISTS (
-			SELECT * FROM {".\block_exacomp\DB_SOLUTIONVISIBILITY."} svsub 
-			WHERE svsub.exampleid = sv.exampleid AND svsub.courseid = sv.courseid AND svsub.visible = 0 AND svsub.studentid = ?)) 
-		OR (sv.visible = 1 AND sv.studentid = ? AND NOT EXISTS (
-			SELECT * FROM {".\block_exacomp\DB_SOLUTIONVISIBILITY."} svsub WHERE svsub.exampleid = sv.exampleid AND svsub.courseid = sv.courseid AND svsub.visible = 0 AND svsub.studentid = 0)))";
-	
-	$params = array($courseid, $userid, $userid);
-	
-	return $DB->get_records_sql($sql, $params);
-}
+	return StaticCacheCallback::get([__CLASS__, __FUNCTION__], function($courseid, $userid){
+		global $DB;
 
-/**
- * returns a list of examples whose solutions are visibile for each user in course
- * userid = 0 individual visibility not minded
- * @param unknown $courseid
- * @return 
- */
-function block_exacomp_get_solution_visibilities_for_course($courseid){
-	$user_visibilites = array();
-	$students = block_exacomp_get_students_by_course($courseid);
-	
-	foreach($students as $student){
-		$user_visibilites[$student->id] = block_exacomp_get_solution_visibilities_for_course_and_user($courseid, $student->id);
-	}
-	
-	$user_visibilites[0] = block_exacomp_get_solution_visibilities_for_course_and_user($courseid);
-	return $user_visibilites;
-}
+		$sql = "SELECT DISTINCT e.id FROM {".\block_exacomp\DB_EXAMPLES."} e 
+			LEFT JOIN {".\block_exacomp\DB_DESCEXAMP."} de ON e.id = de.exampid 
+			LEFT JOIN {".\block_exacomp\DB_DESCTOPICS."} dt ON de.descrid = dt.descrid 
+			LEFT JOIN {".\block_exacomp\DB_COURSETOPICS."} ct ON dt.topicid = ct.topicid 
+			LEFT JOIN {".\block_exacomp\DB_SOLUTIONVISIBILITY."} sv ON e.id = sv.exampleid AND sv.courseid = ct.courseid 
+			WHERE ct.courseid = ? 
+			AND ((sv.visible = 1 AND sv.studentid = 0 AND NOT EXISTS (
+				SELECT * FROM {".\block_exacomp\DB_SOLUTIONVISIBILITY."} svsub 
+				WHERE svsub.exampleid = sv.exampleid AND svsub.courseid = sv.courseid AND svsub.visible = 0 AND svsub.studentid = ?)) 
+			OR (sv.visible = 1 AND sv.studentid = ? AND NOT EXISTS (
+				SELECT * FROM {".\block_exacomp\DB_SOLUTIONVISIBILITY."} svsub WHERE svsub.exampleid = sv.exampleid AND svsub.courseid = sv.courseid AND svsub.visible = 0 AND svsub.studentid = 0)))";
 
-/**
- * get visibilites for all objects in course with only 4 sql queries to store in cache
- * @param unknown $courseid
- * @return \block_exacomp\stdClass
- */
-function block_exacomp_get_visibility_object($courseid){
-	$visibilites = new stdClass();
-	$visibilites->example_visibilities = block_exacomp_get_example_visibilities_for_course($courseid);
-	$visibilites->descriptor_visibilites = block_exacomp_get_descriptor_visibilities_for_course($courseid);
-	$visibilites->topic_visibilities = block_exacomp_get_topic_visibilities_for_course($courseid);
-	$visibilites->solution_visibilities = block_exacomp_get_solution_visibilities_for_course($courseid);
-	return $visibilites;
+		$params = array($courseid, $userid, $userid);
+
+		return $DB->get_records_sql($sql, $params);
+	}, func_get_args());
 }
 
 /**
@@ -6425,16 +6361,7 @@ function block_exacomp_get_visibility_object($courseid){
  * @return unknown
  */
 function block_exacomp_get_visibility_cache($courseid){
-	// Get a cache instance
-	$cache = cache::make('block_exacomp', 'visibility_cache');
-	$visibilites = $cache->get($courseid);
-
-	if(!$visibilites){
-		$visibilites = block_exacomp_get_visibility_object($courseid);
-		$cache->set($courseid, $visibilites);
-	}
-	
-	return $visibilites;
+	// not needed anymore
 }
 
 /**
@@ -6442,8 +6369,7 @@ function block_exacomp_get_visibility_cache($courseid){
  * @param unknown $courseid
  */
 function block_exacomp_clear_visibility_cache($courseid){
-	$cache = cache::make('block_exacomp', 'visibility_cache');
-	return $cache->delete($courseid);
+	// not needed anymore
 }
 
 /**
@@ -6611,36 +6537,38 @@ namespace block_exacomp {
 		 * Returns all values used for examples and child-descriptors
 		 */
 		static function get_value_titles($courseid = 0, $short = false) {
-			// if additional_grading is set, use global value scheme
-			
-			if (block_exacomp_additional_grading()) {
-				if($short)
-					return array(
-					 	- 1 => get_string('comp_-1_short','block_exacomp'),
-						0 => get_string('comp_0_short','block_exacomp'),
-						1 => get_string('comp_1_short','block_exacomp'),
-						2 => get_string('comp_2_short','block_exacomp'),
-						3 => get_string('comp_3_short','block_exacomp')
-					);
-					
-				return array (
-						- 1 => get_string('comp_-1','block_exacomp'),
-						0 => get_string('comp_0','block_exacomp'),
-						1 => get_string('comp_1','block_exacomp'),
-						2 => get_string('comp_2','block_exacomp'),
-						3 => get_string('comp_3','block_exacomp')
-				);
-			} 
-			// else use value scheme set in the course
-			else {
-				// TODO: add settings to g::$COURSE?
-				$course_grading = block_exacomp_get_settings_by_course(($courseid==0)?g::$COURSE->id:$courseid)->grading;
+			return StaticCacheCallback::get([__CLASS__, __FUNCTION__], function($courseid = 0, $short = false) {
+				// if additional_grading is set, use global value scheme
 
-				$values = array(-1 => ' ');
-				$values += range(0, $course_grading);
-				
-				return $values;
-			}
+				if (block_exacomp_additional_grading()) {
+					if($short)
+						return array(
+							- 1 => get_string('comp_-1_short','block_exacomp'),
+							0 => get_string('comp_0_short','block_exacomp'),
+							1 => get_string('comp_1_short','block_exacomp'),
+							2 => get_string('comp_2_short','block_exacomp'),
+							3 => get_string('comp_3_short','block_exacomp')
+						);
+
+					return array (
+							- 1 => get_string('comp_-1','block_exacomp'),
+							0 => get_string('comp_0','block_exacomp'),
+							1 => get_string('comp_1','block_exacomp'),
+							2 => get_string('comp_2','block_exacomp'),
+							3 => get_string('comp_3','block_exacomp')
+					);
+				}
+				// else use value scheme set in the course
+				else {
+					// TODO: add settings to g::$COURSE?
+					$course_grading = block_exacomp_get_settings_by_course(($courseid==0)?g::$COURSE->id:$courseid)->grading;
+
+					$values = array(-1 => ' ');
+					$values += range(0, $course_grading);
+
+					return $values;
+				}
+			}, func_get_args());
 		}
 	
 		/**
@@ -6656,26 +6584,27 @@ namespace block_exacomp {
 		 * Returns all values used for examples and child-descriptors
 		 */
 		static function get_student_value_titles() {
-				
-			// if additional_grading is set, use global value scheme
-			if (block_exacomp_additional_grading()) {
-				return array (
-						- 1 => ' ',
-						1 => ':-(',
-						2 => ':-|',
-						3 => ':-)'
-				);
-			}
-			// else use value scheme set in the course
-			else {
-				// TODO: add settings to g::$COURSE?
-				$course_grading = block_exacomp_get_settings_by_course(g::$COURSE->id)->grading;
-				
-				$values = array(-1 => ' ');
-				$values += range(1, $course_grading);
-				
-				return $values;
-			}
+			return StaticCacheCallback::get(__FUNCTION__, function() {
+				// if additional_grading is set, use global value scheme
+				if (block_exacomp_additional_grading()) {
+					return array (
+							- 1 => ' ',
+							1 => ':-(',
+							2 => ':-|',
+							3 => ':-)'
+					);
+				}
+				// else use value scheme set in the course
+				else {
+					// TODO: add settings to g::$COURSE?
+					$course_grading = block_exacomp_get_settings_by_course(g::$COURSE->id)->grading;
+
+					$values = array(-1 => ' ');
+					$values += range(1, $course_grading);
+
+					return $values;
+				}
+			});
 		}
 		
 		/**
@@ -7148,6 +7077,575 @@ namespace block_exacomp {
 			return true;
 		} catch (permission_exception $e) {
 			return false;
+		}
+	}
+
+	class Cache {
+		static function get($cache_id) {
+			if ($cache_file = self::getCacheFile($cache_id)) {
+				// cache exists
+				$cache_data = unserialize(file_get_contents($cache_file));
+
+				touch($cache_file);
+
+				return $cache_data;
+			}
+
+			return null;
+		}
+
+		static function set($cache_id, $data) {
+			$cache_file = self::getCacheFilePath($cache_id);
+
+			$cache_data = serialize($data);
+
+			file_put_contents($cache_file, $cache_data);
+		}
+
+		static function delete($cache_id) {
+			$cache_file = self::getCacheFilePath($cache_id);
+
+			@unlink($cache_file);
+		}
+
+		public static function getCacheId($cache_id) {
+			if (is_array($cache_id) || is_object($cache_id)) {
+				// etag can be an object (eg. database query)
+				$cache_id = (array)$cache_id;
+
+				self::getCacheIdIterator($cache_id);
+
+				$string_id = '';
+
+				if (is_array($cache_id)) {
+					foreach ($cache_id as $key => $value) {
+						if (is_scalar($value)) {
+							if ($key === 0) {
+								$key = 'area';
+							} elseif (is_int($key)) {
+								// no int keys allowed in tags
+								continue;
+							}
+
+							$prepend = str_replace('-', '', $key).'-'.str_replace('-', '', $value).'-';
+							if (strlen($string_id.$prepend) > 150) {
+								// too long
+								break;
+							}
+							$string_id .= $prepend;
+						}
+					}
+				}
+
+				$string_id .= 'cacheid-'.md5(filemtime(__FILE__).json_encode($cache_id));
+			} elseif (is_string($cache_id) && (strlen($cache_id) > 10)) {
+				$string_id = $cache_id;
+			} else {
+				die('TODO: check if md5, else generate md5');
+				$string_id = '...';
+			}
+
+			return $string_id;
+		}
+
+		static function getFilesByTags($tags) {
+			$tags = (array)$tags;
+			if (isset($tags[0])) {
+				$tags['area'] = $tags[0];
+				unset($tags[0]);
+			}
+
+			$value = reset($tags);
+			$key = key($tags);
+			$tag = str_replace('-', '', $key).'-'.str_replace('-', '', $value);
+
+			$foundFiles = [];
+			$possibleFiles = glob(FS::joinPath(self::getCachePath(), '*'.$tag.'*')) ?: [];
+
+			foreach ($possibleFiles as $filepath) {
+				$fileTags = static::parseTags($filepath);
+
+				$found = false;
+				foreach ($tags as $key => $value) {
+					if (array_key_exists(str_replace('-', '', $key), $fileTags) && $fileTags[str_replace('-', '', $key)] == str_replace('-', '', $value)) {
+						$found = true;
+					} else {
+						$found = false;
+						break;
+					}
+				}
+
+				if ($found) {
+					$foundFiles[] = (object)[
+						'file' => $filepath,
+						'tags' => $tags,
+					];
+				}
+			}
+
+			return $foundFiles;
+		}
+
+		static function clearFilesByTags($tags) {
+			$files = static::getFilesByTags($tags);
+
+			foreach ($files as $file) {
+				@unlink($file->file);
+			}
+
+			return true;
+		}
+
+		static function parseTags($filepath) {
+			$filename = basename($filepath);
+
+			$tmp_tags = explode('-', $filename);
+
+			$tags = [];
+			for ($i = 0; $i < count($tmp_tags); $i += 2) {
+				$tags[$tmp_tags[$i]] = $tmp_tags[$i + 1];
+			}
+
+			return $tags;
+		}
+
+		private static function getCacheFilePath($cache_id) {
+			return FS::joinPath(static::getCachePath(), self::getCacheId($cache_id).'.cache');
+		}
+
+		static function getCachePath() {
+			static $path;
+			if ($path !== null) {
+				return $path;
+			}
+
+			$path = FS::joinPath(sys_get_temp_dir(), 'super-cache');
+			if (!is_dir($path)) {
+				mkdir($path);
+			}
+
+			return $path;
+		}
+
+
+		static function getCacheFile($cache_id) {
+			$cache_file = self::getCacheFilePath($cache_id);
+
+			if (file_exists($cache_file)) {
+				return $cache_file;
+			} else {
+				return null;
+			}
+		}
+
+		public static function clean($lifetime) {
+			FS::deleteOlderThan(static::getCachePath(), $lifetime);
+		}
+
+		/**
+		 * don't use whole object, just use it's cache_id
+		 */
+		private static function getCacheIdIterator(&$cache_id, $level = 0) {
+			foreach ($cache_id as $key => &$value) {
+				if (is_array($value)) {
+					self::getCacheIdIterator($value, $level + 1);
+				} elseif (is_object($value) && !empty($value->cache_id)) {
+					$cache_id[$key] = $value->cache_id;
+					// TODO: go through subs? or is it string?
+					/*
+					if (is_array($cache_id[$key]) {
+					}
+					*/
+				}
+			}
+		}
+
+		static function time($cache_id) {
+			if ($cache_file = self::getCacheFile($cache_id)) {
+				return filemtime($cache_file);
+			}
+		}
+
+		static function full($cache_id, $callback, array $params = [], array $options = []) {
+			if (headers_sent()) {
+				throw new Exception('Cache::whole not supported: headers already sent');
+			}
+
+			$cb = new CacheCallback($cache_id, function() use (&$cb, $callback) {
+				ob_start();
+
+				$ret = call_user_func_array($callback, func_get_args());
+
+				header("Last-Modified: ".gmdate("D, d M Y H:i:s", time())." GMT");
+				header("Etag: \"".$cb->cacheId()."\"");
+
+				ob_end_flush();
+
+				return $ret;
+			}, $params, $options);
+
+			$data = $cb->get();
+
+			if ($data &&
+				((@strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $data->time) ||
+					(@trim($_SERVER['HTTP_IF_NONE_MATCH']) == $cb->cacheId()))
+			) {
+				header("HTTP/1.1 304 Not Modified");
+				header(@$data->headers('Etag'));
+				header(@$data->headers('Last-Modified'));
+
+				exit;
+			}
+
+			return $cb->execute();
+		}
+
+		static function callback($cache_id, $callback, array $params = [], array $options = []) {
+			$cb = new CacheCallback($cache_id, $callback, $params, $options);
+
+			return $cb->execute();
+		}
+
+		static function createCallback($cache_id, $callback, array $params = [], array $options = []) {
+			return new CacheCallback($cache_id, $callback, $params, $options);
+		}
+
+		static function object($cache_id, $class, array $params = [], array $options = []) {
+			$cb = new CacheCallback($cache_id, function($params) use ($class, $params) {
+				$r = new \ReflectionClass($class);
+
+				return $r->newInstanceArgs($params);
+			}, $params, $options);
+
+			return $cb->execute();
+		}
+	}
+
+	class CacheItem {
+		protected $cache_id;
+
+		function __construct($cache_id) {
+			$this->cache_id = Cache::getCacheId($cache_id);
+		}
+
+		function get() {
+			return Cache::get($this->cache_id);
+		}
+
+		function set($data) {
+			return Cache::set($this->cache_id, $data);
+		}
+
+		function delete() {
+			return Cache::delete($this->cache_id);
+		}
+
+		function cacheId() {
+			return $this->cache_id;
+		}
+	}
+
+	class CacheCallback extends CacheItem {
+		protected $params;
+		protected $callback;
+		protected $ttl;
+		protected $lock;
+		protected $etag;
+
+		function __construct($cache_id, $callback, array $params = [], array $options = []) {
+			if (!is_callable($callback)) {
+				throw new Exception('no valid callback given');
+			}
+
+			$cache_id = (array)$cache_id;
+			$cache_id[] = $params;
+
+			$this->params = $params;
+			$this->callback = $callback;
+
+			foreach ($options as $key => $value) {
+				if ($key == 'ttl') {
+					$this->setTTl($value);
+				} elseif ($key == 'etag') {
+					$this->setEtag($value);
+				} elseif ($key == 'lock') {
+					$this->setLock($value);
+				} else {
+					throw new \Exception("option $key not found");
+				}
+			}
+
+			parent::__construct($cache_id);
+		}
+
+		protected function _headersDiff($headersBefore) {
+			$headersAfter = headers_list();
+			foreach ($headersAfter as $key => $value) {
+				if (in_array($value, $headersBefore)) {
+					unset($headersAfter[$key]);
+				}
+			}
+
+			$diff = array_values($headersAfter);
+			$headers = [];
+			foreach ($diff as $header) {
+				$id = explode(':', $header)[0];
+				if (!isset($headers[$id])) {
+					$headers[$id] = $header;
+				} else {
+					$headers[] = $header;
+				}
+			}
+
+			return $headers;
+		}
+
+		function getLock() {
+			static $lock;
+
+			if (!$lock) {
+				$lockfile = $this->getLockFile();
+				$lock = FS::getLock($lockfile, is_int($this->lock) ? $this->lock : 30);
+			}
+
+			return $lock;
+		}
+
+		function getLockFile() {
+			return FS::joinPath(Cache::getCachePath(), Cache::getCacheId($this->cache_id).'.lock');
+
+		}
+
+		function get() {
+			$data = parent::get();
+
+			if (!$data) {
+				return;
+			}
+
+			if ($this->ttl && ($data->time > time() || $data->time < (time() - $this->ttl))) {
+				// too old, or newer
+				return;
+			}
+
+			if ($this->etag && ($this->etag !== $data->etag)) {
+				return;
+			}
+
+			return $data;
+		}
+
+		function execute() {
+			$data = $this->get();
+
+			if (!$data && $this->lock) {
+				$this->getLock()->lock();
+
+				$data = $this->get();
+
+				if ($data) {
+					$this->getLock()->unlock();
+				}
+			}
+
+			if ($data) {
+				foreach ($data->headers as $header) {
+					header($header);
+				}
+
+				echo $data->output;
+
+				return $data->ret;
+			}
+
+			$headersBefore = headers_list();
+
+			ob_start();
+			$ret = call_user_func_array($this->callback, $this->params);
+			$output = ob_get_flush();
+
+			$headers = $this->_headersDiff($headersBefore);
+
+			$this->set((object)[
+				'time' => time(),
+				'etag' => $this->etag,
+				'ret' => $ret,
+				'output' => $output,
+				'headers' => $headers,
+			]);
+
+			if ($this->lock) {
+				$this->getLock()->unlock();
+			}
+
+			return $ret;
+		}
+
+		function setTTl($seconds) {
+			$this->ttl = $seconds;
+		}
+
+		function getTTl() {
+			return $this->ttl;
+		}
+
+		function setEtag($etag) {
+			$this->etag = Cache::getCacheId($etag);
+		}
+
+		function setLock($lock) {
+			$this->lock = $lock;
+		}
+	}
+
+	class Fs {
+		static function joinPath($path, $file) {
+			return rtrim(static::toUnixPath($path), '/').($file !== null ? '/'.ltrim($file, '/') : '');
+		}
+
+		public static function toUnixPath($path) {
+			return str_replace('\\', '/', $path);
+		}
+
+		static function pathToUrl($path) {
+			$path = static::toUnixPath($path);
+			$doc_root = static::toUnixPath($_SERVER['DOCUMENT_ROOT']);
+			$pos = strpos($path, $doc_root);
+			if ($pos === false) {
+				throw new \Exception("path not found $path");
+			}
+
+			return substr($path, strlen($doc_root) + $pos);
+		}
+
+		static function toFilesystemFilename($fileName) {
+			if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+				return utf8_decode($fileName);
+			}
+
+			return $fileName;
+		}
+
+		static function fromFilesystemFilename($fileName) {
+			if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+				return utf8_encode($fileName);
+			}
+
+			return $fileName;
+		}
+
+		static function deleteOlderThan($path, $lifetime) {
+			$files = glob(static::joinPath($path, '*'));
+			$olderThan = time() - $lifetime;
+
+			foreach ($files as $file) {
+				if (is_file($file) && (filemtime($file) < $olderThan)) {
+					@unlink($file);
+				}
+			}
+		}
+
+		static function mkdirs($path) {
+			if (is_dir($path)) {
+				return true;
+			}
+
+			return mkdir($path, 0777, true);
+		}
+
+		static function getUploadedFile($key) {
+			$access = function($value) use ($key) {
+				$key = preg_split('![/\.]!', str_replace(']', '', str_replace('[', '/', trim($key, '][/. '))));
+				$key = array_merge(array_slice($key, 0, 1), [$value], array_slice($key, 1));
+
+				$now = $_FILES;
+				while ($key && isset($now[$key[0]])) {
+					$now = $now[array_shift($key)];
+				}
+
+				return $now;
+			};
+
+			$tmp_name = $access('tmp_name');
+			if (is_string($tmp_name) && !empty($tmp_name)) {
+				// when not submitting a new file, php gets an empty string
+
+				$file = new UploadedFile;
+				$file->filename = $access('name');
+				$file->type = $access('type');
+				$file->file = $tmp_name;
+				$file->error = $access('error');
+				$file->size = $access('size');
+				$file->filename = $access('name');
+
+				return $file;
+			} else {
+				return null;
+			}
+		}
+
+		static function getLock($file, $wait = 30) {
+			return new Lock($file, $wait);
+		}
+	}
+
+	class UploadedFile {
+		var $filename;
+		var $type;
+		var $file;
+		var $error;
+		var $size;
+	}
+
+	class Lock {
+		private $fp;
+		private $file;
+		private $wait;
+
+		function __construct($file, $wait = 30) {
+			$this->file = $file;
+			$this->wait = $wait;
+		}
+
+		function lock() {
+			$this->fp = fopen($this->file, 'w');
+
+			$start = time();
+			while (!flock($this->fp, LOCK_EX | LOCK_NB)) {
+				if (time() > $start + $this->wait) {
+					throw new \Exception("couldn't get lock within {$this->wait} seconds");
+				}
+
+				usleep(rand(5 * 1000, 10 * 1000));
+			}
+
+			return true;
+		}
+
+		function unlock() {
+			if ($this->fp) {
+				flock($this->fp, LOCK_UN);
+				fclose($this->fp);
+				@unlink($this->file);
+			}
+		}
+
+		function __destruct() {
+			$this->unlock();
+		}
+	}
+
+	class StaticCacheCallback {
+		static $cachedItems = [];
+
+		static function get($cache_id, $callback, $params = []) {
+			$id = json_encode([$cache_id, $params]);
+
+			if (array_key_exists($id, static::$cachedItems)) {
+				return static::$cachedItems[$id];
+			} else {
+				return static::$cachedItems[$id] = call_user_func_array($callback, $params);
+			}
 		}
 	}
 }
