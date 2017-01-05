@@ -60,7 +60,7 @@ echo $output->header($context, $courseid, '', false);
 
 $studentExamples = block_exacomp_get_user_examples_by_course($USER, $courseid);
 
-require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
+require_once $CFG->dirroot . '/blocks/exaport/inc.php';
 if(!empty($studentExamples->teacher[$exampleid])) {
 	if(($itemInformation && !block_exaport_item_is_resubmitable($itemInformation->id)) || (!$itemInformation && !block_exaport_example_is_submitable($exampleid)))
 		die(get_string('isgraded','block_exacomp'));

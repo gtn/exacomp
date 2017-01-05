@@ -1,0 +1,9 @@
+{
+  "name": "gtn/exacomp",
+  "type": "moodle-block",
+  "autoload": {
+    "psr-4": {
+      "Super\\": "vendor/super/"
+    }
+  }
+}

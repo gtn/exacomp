@@ -18,7 +18,6 @@
 // This copyright notice MUST APPEAR in all copies of the script!
 
 require __DIR__.'/inc.php';
-require_once('/Applications/MAMP/htdocs/moodle27/blocks/exacomp/lib/lib.php');
 
 require_once('/Applications/MAMP/htdocs/simpletest/autorun.php');
 

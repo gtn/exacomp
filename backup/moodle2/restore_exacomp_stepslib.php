@@ -17,7 +17,7 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-require_once __DIR__."/../../lib/lib.php";
+require_once __DIR__."/../../inc.php";
 
 class restore_exacomp_block_structure_step extends restore_structure_step {
 

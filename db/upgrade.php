@@ -17,7 +17,7 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-require_once __DIR__.'/../lib/lib.php';
+require_once __DIR__.'/../inc.php';
 
 function xmldb_block_exacomp_upgrade($oldversion) {
 	global $DB, $CFG;

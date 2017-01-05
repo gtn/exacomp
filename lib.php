@@ -19,7 +19,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once __DIR__.'/lib/lib.php';
+require_once __DIR__.'/inc.php';
 
 function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
 //  Check the contextlevel is as expected - if your plugin is a block, this becomes CONTEXT_BLOCK, etc.

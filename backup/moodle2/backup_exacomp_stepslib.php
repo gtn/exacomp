@@ -17,7 +17,7 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-require_once __DIR__."/../../lib/lib.php";
+require_once __DIR__."/../../inc.php";
 
 /**
  * Define all the backup steps that will be used by the backup_choice_activity_task

@@ -76,8 +76,8 @@ class url extends \moodle_url {
 abstract class event extends \core\event\base {
 
 	protected static function prepareData(array &$data) {
-		if (!isset($data['contextid']) && isset($data['courseid'])) {
-			if ($data['courseid']) {
+		if (!isset($data['contextid'])) {
+			if (!empty($data['courseid'])) {
 				$data['contextid'] = \context_course::instance($data['courseid'])->id;
 			} else {
 				$data['contextid'] = \context_system::instance()->id;

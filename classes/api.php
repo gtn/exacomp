@@ -21,7 +21,7 @@ namespace block_exacomp;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once __DIR__.'/../lib/lib.php';
+require_once __DIR__.'/../inc.php';
 
 use block_exacomp\globals as g;
 

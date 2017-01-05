@@ -752,7 +752,7 @@ class block_exacomp_external extends external_api {
 				$DB->delete_records('block_exacompitemexample',array('id' => $itemexample->id));
 				$DB->delete_records('block_exaportitem',array('id' => $itemid));
 				if($item->type == 'file') {
-					require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
+					require_once $CFG->dirroot . '/blocks/exaport/inc.php';
 					block_exaport_file_remove($item);
 				}
 
@@ -909,7 +909,7 @@ class block_exacomp_external extends external_api {
 
 		if ($item->type == 'file') {
 			// TODO: move code into exaport\api
-			require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
+			require_once $CFG->dirroot . '/blocks/exaport/inc.php';
 
 			$item->userid = $userid;
 			if ($file = block_exaport_get_item_file ( $item )) {
@@ -1109,7 +1109,7 @@ class block_exacomp_external extends external_api {
 			if ($itemexample->status == 0)
 				$insert = false;
 		}
-		require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
+		require_once $CFG->dirroot . '/blocks/exaport/inc.php';
 
 		if($insert) {
 			//store item in eLOVE portfolio category
@@ -4367,7 +4367,7 @@ class block_exacomp_external extends external_api {
 			if($itemexample->teachervalue == null || $itemexample->status == 0)
 				$insert = false;
 		}
-		require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
+		require_once $CFG->dirroot . '/blocks/exaport/inc.php';
 	
 		if($insert) {
 			//store item in the right portfolio category
@@ -4872,7 +4872,7 @@ class block_exacomp_external extends external_api {
 			$data['url'] = $itemInformation->url;
 			$data['teacheritemvalue'] = isset ( $itemInformation->teachervalue ) ? $itemInformation->teachervalue : -1;
 			
-			require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
+			require_once $CFG->dirroot . '/blocks/exaport/inc.php';
 			if ($file = block_exaport_get_item_file ( $itemInformation )) {
 				
 				/*

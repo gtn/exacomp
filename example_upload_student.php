@@ -105,7 +105,7 @@ if($formdata = $form->get_data()) {
 	}
 	
 	// save file
-   require_once $CFG->dirroot . '/blocks/exaport/lib/lib.php';
+   require_once $CFG->dirroot . '/blocks/exaport/inc.php';
 
 	if ($form->get_new_filename('file'))
 		$type = 'file';

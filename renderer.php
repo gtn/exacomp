@@ -4013,7 +4013,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
             unset($attributes['disabled']);
         }
 
-		$optionsOutput = \block_exacomp\StaticCacheCallback::get([__CLASS__, __FUNCTION__], function($options, $selected){
+		$optionsOutput = \Super\Cache::staticCallback([__CLASS__, __FUNCTION__], function($options, $selected){
 			$output = '';
 			foreach ($options as $value=>$label) {
 		        $attributes = array();

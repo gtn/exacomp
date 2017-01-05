@@ -24,6 +24,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once __DIR__.'/../lib/exabis_special_id_generator.php';
 
 use block_exacomp\globals as g;
+use Super\Fs;
 
 class ZipArchive extends \ZipArchive {
 	/**
@@ -1179,6 +1180,10 @@ class data_importer extends data {
 		
 		self::$import_source_type = $par_source;
 		self::$import_time = time();
+
+		// lock import, so only one import is running at the same time
+		$lock = Fs::getLock(g::$CFG->tempdir.'/exacomp_import.lock', 0);
+		$lock->lock();
 
 		$transaction = g::$DB->start_delegated_transaction();
 		
