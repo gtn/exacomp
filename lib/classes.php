@@ -111,7 +111,7 @@ class db_layer {
 
 	function get_examples(descriptor $descriptor) {
 		$dummy = $descriptor->get_data();
-		block_exacomp_get_examples_for_descriptor($dummy, $this->filteredtaxonomies, $this->showallexamples, $this->courseid, true, true);
+		block_exacomp_get_examples_for_descriptor($dummy, $this->filteredtaxonomies, $this->showallexamples, $this->courseid, true, $this->showonlyvisible);
 
 		return example::create_objects($dummy->examples, array(
 			'descriptor' => $descriptor,
@@ -935,6 +935,10 @@ class descriptor extends db_record {
 
 	function fill_examples() {
 		return $this->dbLayer->get_examples($this);
+	}
+
+	function fill_categories() {
+		return block_exacomp_get_categories_for_descriptor($this);
 	}
 }
 

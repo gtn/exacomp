@@ -934,14 +934,26 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 	$descriptors = block_exacomp\descriptor::get_objects_sql($sql, array($courseid, $courseid, $courseid, $courseid));
 
 	foreach($descriptors as $descriptor) {
-		if($include_childs){
+		if ($include_childs) {
+			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples, $courseid);
+			$descriptor->children = block_exacomp_get_child_descriptors($descriptor,$courseid, $showalldescriptors, $filteredtaxonomies, $showallexamples, true, $showonlyvisible);
+			$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
+		}
+		/*
+		if ($include_childs === true || (is_array($include_childs) && in_array(block_exacomp\DB_EXAMPLES, $include_childs))) {
 			//get examples
 			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples, $courseid);
-			   //check for child-descriptors
+		}
+
+		if ($include_childs === true || (is_array($include_childs) && in_array(block_exacomp\DB_DESCRIPTORS, $include_childs))) {
+		   //check for child-descriptors
 			$descriptor->children = block_exacomp_get_child_descriptors($descriptor,$courseid, $showalldescriptors, $filteredtaxonomies, $showallexamples, true, $showonlyvisible);
 		}
-		//get categories
-		$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
+
+		if (!is_array($include_childs) || in_array(block_exacomp\DB_CATEGORIES, $include_childs)) {
+			$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
+		}
+		*/
 	}
 
 	return block_exacomp_sort_items($descriptors, ['niveau_' => \block_exacomp\DB_NIVEAUS, \block_exacomp\DB_DESCRIPTORS]);
