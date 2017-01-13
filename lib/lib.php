@@ -87,6 +87,7 @@ const TYPE_DESCRIPTOR = 0;
 const TYPE_TOPIC = 1;
 const TYPE_CROSSSUB = 2;
 const TYPE_SUBJECT = 3;
+const TYPE_EXAMPLE = 4;
 
 const SETTINGS_MAX_SCHEME = 10;
 const DATA_SOURCE_CUSTOM = 3;
@@ -320,7 +321,7 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
 	$sql = '
-	SELECT DISTINCT s.id, s.titleshort, s.title, s.stid, s.infolink, s.description, s.source, s.sorting, s.author
+	SELECT DISTINCT s.id, s.titleshort, s.title, s.stid, s.infolink, s.description, s.source, s.sourceid, s.sorting, s.author
 	FROM {'.\block_exacomp\DB_SUBJECTS.'} s
 	JOIN {'.\block_exacomp\DB_TOPICS.'} t ON t.subjid = s.id
 	JOIN {'.\block_exacomp\DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?
@@ -459,7 +460,7 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
-	$sql = 'SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description, t.numb, t.source, tvis.visible as visible, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
+	$sql = 'SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description, t.numb, t.source, t.sourceid, tvis.visible as visible, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
 	FROM {'.\block_exacomp\DB_TOPICS.'} t
 	JOIN {'.\block_exacomp\DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.(($subjectid > 0) ? 'AND t.subjid = ? ': '').'
 	JOIN {'.\block_exacomp\DB_SUBJECTS.'} s ON t.subjid=s.id -- join subject here, to make sure only topics with existing subject are loaded
@@ -1063,7 +1064,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 		$courseid = $COURSE->id;
 
 	$examples = \block_exacomp\example::get_objects_sql(
-			"SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source, ".
+			"SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source, e.sourceid, ".
                 ($mind_visibility?"evis.visible,esvis.visible as solution_visible, ":"")."
 				e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author
 				, de.sorting
@@ -6888,9 +6889,11 @@ namespace block_exacomp {
 	 * @param unknown $comptype
 	 * @param unknown $compid
 	 */
+	/*
 	function get_comp_eval_value($courseid, $role, $userid, $comptype, $compid) {
 		return g::$DB->get_field(\block_exacomp\DB_COMPETENCES, 'value', array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$compid, 'comptype'=>$comptype, 'role'=>$role));
 	}
+	*/
 
 	/**
 	 * return niveau items

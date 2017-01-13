@@ -33,8 +33,8 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 		global $DB;
 		
 		// To know if we are including userinfo
-		// $userinfo = $this->get_setting_value('userinfo');
-		
+        $userinfo = $this->get_setting_value('users');
+
 		// Define each element separated
  
 		\block_exacomp\data::prepare();
@@ -55,6 +55,12 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 		$activities = new backup_nested_element('activities');
 		$compactiv_mm = new backup_nested_element('compactiv_mm', array(), array('comptype', 'compsource', 'compsourceid', 'activityid'));
 		
+        $compcompusers = new backup_nested_element('evaluations');
+
+        $compcompuser = new backup_nested_element('evaluation', [], [
+			'userid', 'type', 'source', 'sourceid', 'role', 'reviewerid', 'timestamp', 'additionalinfo', 'evalniveauid', 'value'
+		]);
+
 		// Build the tree
 
 		$exacomp->add_child($settings);
@@ -66,7 +72,10 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 		$taxonomies->add_child($taxonomy);
 		$exacomp->add_child($activities);
 		$activities->add_child($compactiv_mm);
-		
+
+		$exacomp->add_child($compcompusers);
+		$compcompusers->add_child($compcompuser);
+
 		// Define sources
 		
 		$exacomp->set_source_array(array((object)array('id' => $this->task->get_blockid())));
@@ -117,20 +126,125 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 		$compactiv_mm->set_source_array(block_exacomp\data_course_backup::assign_source_array($dbActivities, 'comp'));
 
 		// All the rest of elements only happen if we are including user info
-		/*
 		if ($userinfo) {
 			// nothing for now
+	        $compcompuser->set_source_array(static::get_evaluations($this->get_courseid()));
 		}
-		*/
 
 		// Define id annotations
 		// actually this is not needed, because not allowed according to backup_helper::get_inforef_itemnames
-		// $compactiv_mm->annotate_ids('course_module', 'activityid');
-		
+		$compcompuser->annotate_ids('user', 'userid');
+		$compcompuser->annotate_ids('user', 'reviewerid');
+
 		// Define file annotations
 		// $choice->annotate_files('mod_choice', 'intro', null); // This file area hasn't itemid
 
 		// Return the root element (choice), wrapped into standard activity structure
 		return $this->prepare_block_structure($exacomp);
+	}
+
+	static function get_evaluations($courseid) {
+		global $DB;
+
+		$students = block_exacomp_get_students_by_course($courseid);
+		$tree = \block_exacomp\db_layer_course::create($courseid)->get_subjects();
+
+		$dataSources = $DB->get_records_menu(\block_exacomp\DB_DATASOURCES, null, null, 'id,source');
+
+		$compcompuser = [];
+
+		$walker = function($item) use (&$walker, $courseid, &$compcompuser, &$dataSources, &$students) {
+			global $DB;
+
+			if ($item instanceof \block_exacomp\descriptor) {
+				array_walk($item->examples, $walker);
+			}
+
+			if (!($item instanceof \block_exacomp\example)) {
+				array_walk($item->get_subs(), $walker);
+			}
+
+			if ($item->source == \block_exacomp\DATA_SOURCE_CUSTOM) {
+				$source = get_config('exacomp', 'mysource');
+				$sourceid = $item->id;
+			} elseif (isset($dataSources[$item->source])) {
+				$source = $dataSources[$item->source];
+				$sourceid = $item->sourceid;
+			} else {
+				throw new \Exception("source {$item->source} not found");
+			}
+
+			foreach ($students as $student) {
+				if ($item instanceof \block_exacomp\example) {
+					$evaluation = $DB->get_record(\block_exacomp\DB_EXAMPLEEVAL, array("studentid" => $student->id, "courseid" => $courseid, "exampleid" => $item->id));
+					if ($evaluation && ($evaluation->teacher_evaluation || $evaluation->evalniveauid)) {
+						$compcompuser[] = [
+							'userid' => $student->id,
+							'type' => $item::TYPE,
+							'source' => $source,
+							'sourceid' => $sourceid,
+							// 'eval' => $evaluation,
+							'role' => \block_exacomp\ROLE_TEACHER,
+							'reviewerid' => $evaluation->teacher_reviewerid,
+							'timestamp' => $evaluation->timestamp_teacher,
+							'evalniveauid' => $evaluation->evalniveauid,
+							'additionalinfo' => $evaluation->teacher_evaluation,
+						];
+					}
+					if ($evaluation && $evaluation->student_evaluation) {
+						$compcompuser[] = [
+							'userid' => $student->id,
+							'type' => $item::TYPE,
+							'source' => $source,
+							'sourceid' => $sourceid,
+							// 'eval' => $evaluation,
+							'role' => \block_exacomp\ROLE_STUDENT,
+							'reviewerid' => $student->id,
+							'timestamp' => $evaluation->timestamp_student,
+							'evalniveauid' => $evaluation->student_evaluation,
+							'additionalinfo' => null,
+						];
+					}
+				} else {
+					$evaluation = block_exacomp\get_comp_eval($courseid, \block_exacomp\ROLE_TEACHER, $student->id, $item::TYPE, $item->id);
+					if ($evaluation) {
+						$compcompuser[] = [
+							'userid' => $student->id,
+							'type' => $item::TYPE,
+							'source' => $source,
+							'sourceid' => $sourceid,
+							// 'eval' => $evaluation,
+							'role' => $evaluation->role,
+							'reviewerid' => $evaluation->reviewerid,
+							'timestamp' => $evaluation->timestamp,
+							'additionalinfo' => $evaluation->additionalinfo,
+							'evalniveauid' => $evaluation->evalniveauid,
+							'value' => $evaluation->value, // still needed?
+						];
+					}
+
+					$evaluation = block_exacomp\get_comp_eval($courseid, \block_exacomp\ROLE_STUDENT, $student->id, $item::TYPE, $item->id);
+					if ($evaluation) {
+						$compcompuser[] = [
+							'userid' => $student->id,
+							'type' => $item::TYPE,
+							'source' => $source,
+							'sourceid' => $sourceid,
+							// 'eval' => $evaluation,
+							'role' => $evaluation->role,
+							'reviewerid' => $evaluation->reviewerid,
+							'timestamp' => $evaluation->timestamp,
+							'evalniveauid' => $evaluation->evalniveauid,
+							'additionalinfo' => $evaluation->additionalinfo,
+							'value' => $evaluation->value, // still needed?
+						];
+					}
+				}
+			}
+		};
+
+		array_walk($tree, $walker);
+
+		return $compcompuser;
 	}
 }

@@ -24,11 +24,15 @@ if (!is_siteadmin()) {
 	die('Pls login first!');
 }
 
-$course_id = 2; // Set this to one existing choice cmid in your dev site
-$user_doing_the_backup   = 2; // Set this to the id of your admin accouun
- 
-$bc = new backup_controller(backup::TYPE_1COURSE, $course_id, backup::FORMAT_MOODLE,
-							backup::INTERACTIVE_NO, backup::MODE_GENERAL, $user_doing_the_backup);
+$CFG->keeptempdirectoriesonbackup = true;
+
+$courseid = 2;
+$user_doing_the_backup = 2; // Set this to the id of your admin accouun
+
+$bc = new backup_controller(backup::TYPE_1COURSE, $courseid, backup::FORMAT_MOODLE,
+	backup::INTERACTIVE_NO, backup::MODE_GENERAL, $user_doing_the_backup);
+
+$bc->get_plan()->set_excluding_activities();
 $bc->execute_plan();
 
 die('done');
