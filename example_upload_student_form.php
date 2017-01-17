@@ -29,7 +29,7 @@ class block_exacomp_example_upload_student_form extends moodleform {
 		$mform = & $this->_form;
 
 		$descrTitle = '';
-		$mform->addElement('header', 'general', block_exacomp_get_string("example_upload_header", "block_exacomp", $descrTitle));
+		$mform->addElement('header', 'general', block_exacomp_get_string("example_upload_header", null, $descrTitle));
 
 		$mform->addElement('hidden', 'id');
 		$mform->setType('id', PARAM_INT);
@@ -37,7 +37,7 @@ class block_exacomp_example_upload_student_form extends moodleform {
 		
 		//add html tree -> different treated in example_upload -> mform does not support a tree structure
 		$treetitle = html_writer::start_div('fitem');
-		$treetitle .= html_writer::start_div('fitemtitle') . html_writer::label(block_exacomp_get_string('descriptors','block_exacomp'), 'tree'). html_writer::end_div();
+		$treetitle .= html_writer::start_div('fitemtitle') . html_writer::label(block_exacomp_get_string('descriptors'), 'tree'). html_writer::end_div();
 		$treetitle .= html_writer::start_div('felement ftext');
 		$tree = $this->_customdata['tree'];
 		$html_tree = $output->competence_based_list_tree($tree, true, 1);
@@ -51,17 +51,17 @@ class block_exacomp_example_upload_student_form extends moodleform {
 		$mform->setType('action', PARAM_ACTION);
 		$mform->setDefault('action', 'add');
 
-		$mform->addElement('text', 'title', block_exacomp_get_string("name_example","block_exacomp"), 'maxlength="255" size="60"');
+		$mform->addElement('text', 'title', block_exacomp_get_string("name_example"), 'maxlength="255" size="60"');
 		$mform->setType('title', PARAM_TEXT);
-		$mform->addRule('title', block_exacomp_get_string("titlenotemtpy", "block_exacomp"), 'required', null, 'client');
+		$mform->addRule('title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
 
 		$mform->addElement('text', 'description', block_exacomp_get_string("moduleintro"), 'maxlength="255" size="60"');
 		$mform->setType('description', PARAM_TEXT);
 		
-		$mform->addElement('text', 'externalurl', block_exacomp_get_string("link","block_exacomp"), 'maxlength="255" size="60"');
+		$mform->addElement('text', 'externalurl', block_exacomp_get_string("link"), 'maxlength="255" size="60"');
 		$mform->setType('externalurl', PARAM_TEXT);
 		
-		// $mform->addElement('select', 'taxid', block_exacomp_get_string('taxonomy', 'block_exacomp'),$this->_customdata['taxonomies']);
+		// $mform->addElement('select', 'taxid', block_exacomp_get_string('taxonomy'),$this->_customdata['taxonomies']);
 		
 		$editexample = $this->_customdata['exampleid'] > 0;
 		
@@ -80,7 +80,7 @@ class block_exacomp_example_upload_student_form extends moodleform {
 		$errors= array();
 	
 		if (!empty($data['link']) && filter_var($data['link'], FILTER_VALIDATE_URL) === FALSE) {
-			$errors['link'] = block_exacomp_get_string('linkerr','block_exacomp');
+			$errors['link'] = block_exacomp_get_string('linkerr');
 		}
 	
 		return $errors;

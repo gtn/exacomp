@@ -42,7 +42,7 @@ class example_graded extends base {
 	 * @return string
 	 */
 	public static function get_name() {
-		return block_exacomp_get_string('eventsexamplegraded', 'block_exacomp');
+		return block_exacomp_get_string('eventsexamplegraded');
 	}
 
 	/**

@@ -40,8 +40,8 @@ $page_identifier = 'tab_teacher_settings_configuration';
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/edit_course.php', array('courseid' => $courseid));
-$PAGE->set_heading(block_exacomp_get_string('blocktitle', 'block_exacomp'));
-$PAGE->set_title(block_exacomp_get_string($page_identifier, 'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
+$PAGE->set_title(block_exacomp_get_string($page_identifier));
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
@@ -67,16 +67,16 @@ if ($action == 'save_coursesettings') {
 	
 	$headertext = "";
 	if($settings->uses_activities==1 && block_exacomp_check_user_evaluation_exists($courseid))
-		$headertext .= block_exacomp_get_string("warning_use_activities", "block_exacomp").html_writer::empty_tag('br');
+		$headertext .= block_exacomp_get_string("warning_use_activities").html_writer::empty_tag('br');
 	
-	$headertext.=block_exacomp_get_string("save_success", "block_exacomp") .html_writer::empty_tag('br')
+	$headertext.=block_exacomp_get_string("save_success") .html_writer::empty_tag('br')
 		.html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))				
-		. html_writer::link(new moodle_url($url, array('courseid'=>$courseid)), block_exacomp_get_string('next_step', 'block_exacomp'));
+		. html_writer::link(new moodle_url($url, array('courseid'=>$courseid)), block_exacomp_get_string('next_step'));
 }else{
 	$url = 'courseselection.php';
 	
-	$headertext = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).block_exacomp_get_string('teacher_first_configuration_step', 'block_exacomp')
-		.' '.html_writer::link(new moodle_url($url, array('courseid'=>$courseid)), block_exacomp_get_string('next_step_first_teacher_step', 'block_exacomp'));
+	$headertext = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/one.png'), 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).block_exacomp_get_string('teacher_first_configuration_step')
+		.' '.html_writer::link(new moodle_url($url, array('courseid'=>$courseid)), block_exacomp_get_string('next_step_first_teacher_step'));
 } 
 
 // build tab navigation & print header

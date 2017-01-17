@@ -49,8 +49,8 @@ $page_identifier = 'tab_admin_configuration';
 $PAGE->set_url ( '/blocks/exacomp/edit_config.php', array (
 		'courseid' => $courseid 
 ) );
-$PAGE->set_heading ( block_exacomp_get_string('blocktitle', 'block_exacomp' ) );
-$PAGE->set_title ( block_exacomp_get_string($page_identifier, 'block_exacomp' ) );
+$PAGE->set_heading ( block_exacomp_get_string('blocktitle') );
+$PAGE->set_title ( block_exacomp_get_string($page_identifier) );
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation ( $courseid );
@@ -71,13 +71,13 @@ if (isset ( $action ) && $action == 'save') {
 	block_exacomp_set_mdltype ( $values );
 	
 	if (! isset ( $_POST ['data'] ))
-		$headertext = block_exacomp_get_string('tick_some', 'block_exacomp' );
+		$headertext = block_exacomp_get_string('tick_some');
 	else {
-		$string = block_exacomp_get_string('next_step', 'block_exacomp' );
+		$string = block_exacomp_get_string('next_step');
 		
 		$url = 'edit_course.php';
 		
-		$headertext = block_exacomp_get_string("save_success", "block_exacomp" ) . html_writer::empty_tag ( 'br' ) . html_writer::empty_tag ( 'img', array (
+		$headertext = block_exacomp_get_string("save_success") . html_writer::empty_tag ( 'br' ) . html_writer::empty_tag ( 'img', array (
 				'src' => new moodle_url ( '/blocks/exacomp/pix/' . $img ),
 				'alt' => '',
 				'width' => '60px',
@@ -92,7 +92,7 @@ if (isset ( $action ) && $action == 'save') {
 			'alt' => '',
 			'width' => '60px',
 			'height' => '60px' 
-	) ) . block_exacomp_get_string('second_configuration_step', 'block_exacomp' ) . html_writer::empty_tag ( 'br' ) . block_exacomp_get_string("explainconfig", "block_exacomp" );
+	) ) . block_exacomp_get_string('second_configuration_step') . html_writer::empty_tag ( 'br' ) . block_exacomp_get_string("explainconfig");
 }
 
 // build tab navigation & print header

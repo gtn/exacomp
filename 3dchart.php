@@ -48,7 +48,7 @@ if(!block_exacomp_use_eval_niveau())
 //	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/3dchart.php', array('courseid' => $courseid));
-$PAGE->set_heading(block_exacomp_get_string('blocktitle', 'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
 $PAGE->set_pagelayout('embedded');
 
 // build breadcrumbs navigation

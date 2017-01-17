@@ -45,8 +45,8 @@ $PAGE->set_url('/blocks/exacomp/cross_subjects.php', [
 	'crosssubjid' => $crosssubjid,
 ]);
 
-$PAGE->set_heading(block_exacomp_get_string('blocktitle', 'block_exacomp'));
-$PAGE->set_title(block_exacomp_get_string($page_identifier, 'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
+$PAGE->set_title(block_exacomp_get_string($page_identifier));
 
 $output = block_exacomp_get_renderer();
 
@@ -81,7 +81,7 @@ if ($action == 'share') {
 	}
 
 	$PAGE->set_url('/blocks/exacomp/cross_subjects.php', array('courseid' => $courseid, 'action' => $action, 'crosssubjid' => $crosssubjid));
-	$PAGE->set_heading(block_exacomp_get_string('blocktitle', 'block_exacomp'));
+	$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
 	$PAGE->set_pagelayout('embedded');
 
 	$output = block_exacomp_get_renderer();
@@ -89,7 +89,7 @@ if ($action == 'share') {
 
 	$students = block_exacomp_get_students_by_course($courseid);
 	if(!$students) {
-		echo block_exacomp_get_string('nostudents','block_exacomp');
+		echo block_exacomp_get_string('nostudents');
 		echo $output->footer();
 		exit;
 	}
@@ -100,10 +100,10 @@ if ($action == 'share') {
 	echo '<form method="post" id="share">';
 	echo '<input type="hidden" name="save" value="save" />';
 	echo html_writer::checkbox('share_all', 'share_all', $shared, '');
-	echo block_exacomp_get_string('share_crosssub_with_all', 'block_exacomp', $cross_subject->title);
+	echo block_exacomp_get_string('share_crosssub_with_all', null, $cross_subject->title);
 	echo html_writer::empty_tag('br').html_writer::empty_tag('br');
 
-	echo block_exacomp_get_string('share_crosssub_with_students','block_exacomp',$cross_subject->title).html_writer::empty_tag('br');
+	echo block_exacomp_get_string('share_crosssub_with_students', null,$cross_subject->title).html_writer::empty_tag('br');
 
 	foreach($students as $student) {
 		echo html_writer::checkbox('studentids[]',$student->id,isset($assigned_students[$student->id]),$student->firstname." ".$student->lastname, $shared?['disabled'=>true]:[]);
@@ -111,7 +111,7 @@ if ($action == 'share') {
 	}
 
 	echo html_writer::empty_tag('br');
-	echo html_writer::tag("input", '', array("type"=>"submit","value"=>block_exacomp_get_string('save_selection', 'block_exacomp')));
+	echo html_writer::tag("input", '', array("type"=>"submit","value"=>block_exacomp_get_string('save_selection')));
 	echo '</form>';
 
 	echo $output->footer();
@@ -278,7 +278,7 @@ if ($isTeacher) {
 		$studentid = 0;
 	} elseif(!$students) {
 		if ($cross_subject && !$cross_subject->is_draft() && $course_settings->nostudents != 1)
-			echo html_writer::div(block_exacomp_get_string('share_crosssub_for_further_use','block_exacomp'),"alert alert-warning");
+			echo html_writer::div(block_exacomp_get_string('share_crosssub_for_further_use'),"alert alert-warning");
 		// $editmode = true;
 		$selectedStudentid = 0;
 		$studentid = 0;

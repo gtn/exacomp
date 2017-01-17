@@ -106,16 +106,16 @@ switch($action){
 				block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid);
 			}
 			
-			echo block_exacomp_get_string('weekly_schedule_added_all', 'block_exacomp');
+			echo block_exacomp_get_string('weekly_schedule_added_all');
 		}else if($studentid == 0){
 			if(!block_exacomp_in_pre_planing_storage($exampleid, $creatorid, $courseid)){
 				if(block_exacomp_add_example_to_schedule(0, $exampleid, $creatorid, $courseid))
-					echo block_exacomp_get_string('pre_planning_storage_added', 'block_exacomp');
+					echo block_exacomp_get_string('pre_planning_storage_added');
 			}else 
-				echo block_exacomp_get_string('pre_planning_storage_already_contains', 'block_exacomp');
+				echo block_exacomp_get_string('pre_planning_storage_already_contains');
 		}else{
 			if ( block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid) )
-				echo block_exacomp_get_string("weekly_schedule_added","block_exacomp");
+				echo block_exacomp_get_string("weekly_schedule_added");
 		}
 		
 		break;

@@ -40,8 +40,8 @@ $page_identifier = 'tab_competence_profile_profile';
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/competence_profile.php', array('courseid' => $courseid));
-$PAGE->set_heading(block_exacomp_get_string('blocktitle', 'block_exacomp'));
-$PAGE->set_title(block_exacomp_get_string($page_identifier, 'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
+$PAGE->set_title(block_exacomp_get_string($page_identifier));
 
 $PAGE->requires->js('/blocks/exacomp/javascript/Chart.js', true);
 $PAGE->requires->js('/blocks/exacomp/javascript/d3.min.js', true);
@@ -65,9 +65,9 @@ if(!$isTeacher){
 	$coursestudents = block_exacomp_get_students_by_course($courseid);
 	
 	if($studentid == 0 || $studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
-		echo html_writer::tag("p", block_exacomp_get_string("select_student","block_exacomp"));
+		echo html_writer::tag("p", block_exacomp_get_string("select_student"));
 		//print student selector
-		echo block_exacomp_get_string("choosestudent","block_exacomp");
+		echo block_exacomp_get_string("choosestudent");
 		echo $output->studentselector($coursestudents,$studentid);
 		echo $output->footer();
 		die;
@@ -77,11 +77,11 @@ if(!$isTeacher){
 			print_error("nopermissions","","","Show student profile");
 		
 		//print student selector
-		echo block_exacomp_get_string("choosestudent","block_exacomp");
+		echo block_exacomp_get_string("choosestudent");
 		echo $output->studentselector($coursestudents,$studentid);
 		
 		//print date range picker
-		echo block_exacomp_get_string("choosedaterange","block_exacomp");
+		echo block_exacomp_get_string("choosedaterange");
 		echo $output->daterangepicker();
 	}
 }
@@ -118,7 +118,7 @@ foreach($possible_courses as $course){
 }
 
 if(!empty($profile_settings->exacomp) || $profile_settings->showallcomps == 1)
-	echo html_writer::tag('h3', block_exacomp_get_string('my_comps', 'block_exacomp'), array('class'=>'competence_profile_sectiontitle'));
+	echo html_writer::tag('h3', block_exacomp_get_string('my_comps'), array('class'=>'competence_profile_sectiontitle'));
 
 foreach($user_courses as $course) {
 	//if selected

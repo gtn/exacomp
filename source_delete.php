@@ -42,8 +42,8 @@ $page_identifier = 'tab_admin_settings';
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/source_delete.php', array('courseid' => $courseid, 'source' => $source, 'action' => 'select'));
-$PAGE->set_heading(block_exacomp_get_string('blocktitle', 'block_exacomp'));
-$PAGE->set_title(block_exacomp_get_string($page_identifier, 'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
+$PAGE->set_title(block_exacomp_get_string($page_identifier));
 
 function block_exacomp_source_delete_get_subjects($source) {
 	//$DB->set_debug(true);
@@ -130,8 +130,8 @@ if ($action == 'delete_selected') {
 	
 	// build breadcrumbs navigation
 	$coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
-	$blocknode = $coursenode->add(block_exacomp_get_string('blocktitle','block_exacomp'));
-	$pagenode = $blocknode->add(block_exacomp_get_string($page_identifier,'block_exacomp'), $PAGE->url);
+	$blocknode = $coursenode->add(block_exacomp_get_string('blocktitle'));
+	$pagenode = $blocknode->add(block_exacomp_get_string($page_identifier), $PAGE->url);
 	$pagenode->make_active();
 	
 	echo $output->header($course_context,$courseid, 'tab_admin_settings');

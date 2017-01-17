@@ -34,7 +34,7 @@ $context = context_course::instance($courseid);
 block_exacomp_require_teacher($context);
 
 $PAGE->set_url('/blocks/exacomp/select_crosssubjects.php', array('courseid' => $courseid));
-$PAGE->set_heading(block_exacomp_get_string('blocktitle', 'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
 $PAGE->set_pagelayout('embedded');
 
 // build breadcrumbs navigation
@@ -73,11 +73,11 @@ foreach($subjects as $subject){
 $content .= html_writer::end_tag('ul');
 
 if(!$crosssubjects_exist) {
-	echo block_exacomp_get_string('assign_descriptor_no_crosssubjects_available','block_exacomp');
+	echo block_exacomp_get_string('assign_descriptor_no_crosssubjects_available');
 	echo $OUTPUT->footer();
 	exit;
 }
-echo block_exacomp_get_string('assign_descriptor_to_crosssubject','block_exacomp',$descriptor->title);
+echo block_exacomp_get_string('assign_descriptor_to_crosssubject', null,$descriptor->title);
 echo html_writer::empty_tag('br');
 
 echo "<div>";
@@ -85,6 +85,6 @@ echo $content;
 
 echo "</div>";
 
-echo html_writer::div(html_writer::tag("input", '', array("type"=>"button","value"=>block_exacomp_get_string('add_descriptors_to_crosssub', 'block_exacomp'),"id"=>"crosssubjects")), '', array('id'=>'exabis_save_button'));
+echo html_writer::div(html_writer::tag("input", '', array("type"=>"button","value"=>block_exacomp_get_string('add_descriptors_to_crosssub'),"id"=>"crosssubjects")), '', array('id'=>'exabis_save_button'));
 
 echo $output->footer();

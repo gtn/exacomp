@@ -59,8 +59,8 @@ $PAGE->set_url('/blocks/exacomp/assign_competencies.php', [
 	'subjectid' => $subjectid,
 	'topicid' => $topicid,
 ]);
-$PAGE->set_heading(block_exacomp_get_string('blocktitle', 'block_exacomp'));
-$PAGE->set_title(block_exacomp_get_string($page_identifier, 'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
+$PAGE->set_title(block_exacomp_get_string($page_identifier));
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);

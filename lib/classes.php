@@ -1035,19 +1035,19 @@ class global_config {
 			if (block_exacomp_additional_grading()) {
 				if($short)
 					return array(
-						- 1 => block_exacomp_get_string('comp_-1_short','block_exacomp'),
-						0 => block_exacomp_get_string('comp_0_short','block_exacomp'),
-						1 => block_exacomp_get_string('comp_1_short','block_exacomp'),
-						2 => block_exacomp_get_string('comp_2_short','block_exacomp'),
-						3 => block_exacomp_get_string('comp_3_short','block_exacomp')
+						- 1 => block_exacomp_get_string('comp_-1_short'),
+						0 => block_exacomp_get_string('comp_0_short'),
+						1 => block_exacomp_get_string('comp_1_short'),
+						2 => block_exacomp_get_string('comp_2_short'),
+						3 => block_exacomp_get_string('comp_3_short')
 					);
 
 				return array (
-						- 1 => block_exacomp_get_string('comp_-1','block_exacomp'),
-						0 => block_exacomp_get_string('comp_0','block_exacomp'),
-						1 => block_exacomp_get_string('comp_1','block_exacomp'),
-						2 => block_exacomp_get_string('comp_2','block_exacomp'),
-						3 => block_exacomp_get_string('comp_3','block_exacomp')
+						- 1 => block_exacomp_get_string('comp_-1'),
+						0 => block_exacomp_get_string('comp_0'),
+						1 => block_exacomp_get_string('comp_1'),
+						2 => block_exacomp_get_string('comp_2'),
+						3 => block_exacomp_get_string('comp_3')
 				);
 			}
 			// else use value scheme set in the course

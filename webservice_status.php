@@ -25,8 +25,8 @@ require_login($courseid);
 block_exacomp_require_admin();
 
 $PAGE->set_context(context_system::instance());
-$PAGE->set_heading(block_exacomp_get_string('blocktitle', 'block_exacomp'));
-$PAGE->set_title(block_exacomp_get_string('blocktitle', 'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
+$PAGE->set_title(block_exacomp_get_string('blocktitle'));
 
 $PAGE->set_url('/blocks/exacomp/webservice_status.php', ['courseid' => $courseid]);
 
@@ -79,7 +79,7 @@ if (!empty($active_protocols)) {
 	}
 }
 if (!in_array('rest', $active_protocols)) {
-	$status = html_writer::tag('span', block_exacomp_get_string('enable_rest', 'block_exacomp'), array('class' => 'statuscritical')).$brtag.$status;
+	$status = html_writer::tag('span', block_exacomp_get_string('enable_rest'), array('class' => 'statuscritical')).$brtag.$status;
 } else {
 	$status = html_writer::tag('span', block_exacomp_get_string('ok'), array('class' => 'statusok')).$brtag.$status;
 }
@@ -109,7 +109,7 @@ $table->data[] = $row;
 /// 4. Webservice Roles
 $row = array();
 $url = new moodle_url("/admin/roles/manage.php");
-$row[0] = "4. " . html_writer::tag('a', block_exacomp_get_string('access_roles', 'block_exacomp'),
+$row[0] = "4. " . html_writer::tag('a', block_exacomp_get_string('access_roles'),
 				array('href' => $url));
 $wsroles = get_roles_with_capability('moodle/webservice:createtoken');
 // get rolename in local language
@@ -125,7 +125,7 @@ if (count($wsroles)>1) {	//admin has always permission
 }
 
 $row[1] = $status;
-$row[2] = nl2br(block_exacomp_get_string('description_createtoken', 'block_exacomp'));
+$row[2] = nl2br(block_exacomp_get_string('description_createtoken'));
 $table->data[] = $row;
 
 
@@ -135,7 +135,7 @@ $description = '';
 //set shortname for external service exacompservices
 $exacomp_service = $DB->get_record('external_services', array('name'=>'exacompservices'));
 if (!$exacomp_service) {
-	$status .= html_writer::tag('span', block_exacomp_get_string('exacomp_not_found', 'block_exacomp'), array('class' => 'statuscritical'));
+	$status .= html_writer::tag('span', block_exacomp_get_string('exacomp_not_found'), array('class' => 'statuscritical'));
 } elseif (!$exacomp_service->downloadfiles || !$exacomp_service->uploadfiles) {
 	$status .= html_writer::tag('span', 'Error', array('class' => 'statuscritical'));
 	$description .= '<a href="'.(new moodle_url('/admin/webservice/service.php', ['id' => $exacomp_service->id])).'">'.
@@ -144,7 +144,7 @@ if (!$exacomp_service) {
 
 $exaport_service = $DB->get_record('external_services', array('name'=>'exaportservices'));
 if (!$exaport_service) {
-	$status .= html_writer::tag('span', block_exacomp_get_string('exaport_not_found', 'block_exacomp'), array('class' => 'statuscritical'));
+	$status .= html_writer::tag('span', block_exacomp_get_string('exaport_not_found'), array('class' => 'statuscritical'));
 }
 // not needed anymore
 /*
@@ -168,12 +168,12 @@ if (get_config('exacomp', 'external_trainer_assign')) {
 	if ($count) {
 		$status = html_writer::tag('span', block_exacomp_get_string('ok'), array('class' => 'statusok'));
 	} else {
-		$status = html_writer::tag('span', block_exacomp_get_string('no_external_trainer', 'block_exacomp'), array('class' => 'statuscritical'));
+		$status = html_writer::tag('span', block_exacomp_get_string('no_external_trainer'), array('class' => 'statuscritical'));
 	}
 	// checks for elove app
 	$row = array();
 	$url = new moodle_url("/blocks/exacomp/externaltrainers.php?courseid=".$courseid);
-	$row[0] = "6. " . html_writer::tag('a', block_exacomp_get_string('block_exacomp_external_trainer_assign', 'block_exacomp'),
+	$row[0] = "6. " . html_writer::tag('a', block_exacomp_get_string('block_exacomp_external_trainer_assign'),
 					array('href' => $url));
 
 	$row[1] = $status;

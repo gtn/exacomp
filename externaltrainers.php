@@ -32,14 +32,14 @@ $coursecontext = context_course::instance($courseid);
 
 require_capability('block/exacomp:teacher', $coursecontext);
 $url = '/blocks/exacomp/externaltrainers.php';
-$PAGE->set_heading(block_exacomp_get_string('blocktitle', 'block_exacomp'));
-$PAGE->set_title(block_exacomp_get_string('blocktitle', 'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
+$PAGE->set_title(block_exacomp_get_string('blocktitle'));
 $PAGE->set_url($url, ['courseid' => $courseid]);
 
 $students = get_users_by_capability($coursecontext, 'block/exacomp:student');
 
 $selectstudents = array();
-$selectstudents[0] = block_exacomp_get_string('block_exacomp_external_trainer_allstudents','block_exacomp');
+$selectstudents[0] = block_exacomp_get_string('block_exacomp_external_trainer_allstudents');
 foreach($students as $student) {
 	$selectstudents[$student->id] = fullname($student); 
 }
@@ -69,17 +69,17 @@ if(($delete = optional_param('delete',0,PARAM_INT)) > 0) {
 
 $externaltrainers = $DB->get_records(BLOCK_EXACOMP_DB_EXTERNAL_TRAINERS);
 
-$PAGE->set_title(block_exacomp_get_string('block_exacomp_external_trainer_assign','block_exacomp'));
+$PAGE->set_title(block_exacomp_get_string('block_exacomp_external_trainer_assign'));
 
 $output = block_exacomp_get_renderer();
 echo $output->header($context, $courseid, 'tab_admin_settings');
 echo $output->tabtree(block_exacomp_build_navigation_tabs_admin_settings($courseid), 'tab_external_trainer_assign');
 
-echo $output->heading(block_exacomp_get_string('block_exacomp_external_trainer_assign','block_exacomp'));
+echo $output->heading(block_exacomp_get_string('block_exacomp_external_trainer_assign'));
 echo '<form method="post">';
-echo block_exacomp_get_string('block_exacomp_external_trainer','block_exacomp');
+echo block_exacomp_get_string('block_exacomp_external_trainer');
 echo html_writer::select($selectteachers, 'trainerid');
-echo '&nbsp;&nbsp;&nbsp;&nbsp;'.block_exacomp_get_string('block_exacomp_external_trainer_student','block_exacomp');
+echo '&nbsp;&nbsp;&nbsp;&nbsp;'.block_exacomp_get_string('block_exacomp_external_trainer_student');
 echo html_writer::select($selectstudents, 'studentid');
 echo '<input type="submit">';
 echo '</form>';

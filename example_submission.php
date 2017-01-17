@@ -44,12 +44,12 @@ $context = context_course::instance($courseid);
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/example_submission.php', array('courseid' => $courseid,'exampleid' => $exampleid));
-$PAGE->set_heading(block_exacomp_get_string('blocktitle', 'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
 $PAGE->set_pagelayout('embedded');
 
 // build breadcrumbs navigation
 $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
-$blocknode = $coursenode->add(block_exacomp_get_string('blocktitle','block_exacomp'));
+$blocknode = $coursenode->add(block_exacomp_get_string('blocktitle'));
 $blocknode->make_active();
 
 // build tab navigation & print header
@@ -63,7 +63,7 @@ $studentExamples = block_exacomp_get_user_examples_by_course($USER, $courseid);
 require_once $CFG->dirroot . '/blocks/exaport/inc.php';
 if(!empty($studentExamples->teacher[$exampleid])) {
 	if(($itemInformation && !block_exaport_item_is_resubmitable($itemInformation->id)) || (!$itemInformation && !block_exaport_example_is_submitable($exampleid)))
-		die(block_exacomp_get_string('isgraded','block_exacomp'));
+		die(block_exacomp_get_string('isgraded'));
 }
 
 $form = new block_exacomp_example_submission_form($_SERVER['REQUEST_URI'], array("exampleid"=>$exampleid));

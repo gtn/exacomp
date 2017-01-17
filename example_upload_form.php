@@ -31,7 +31,7 @@ class block_exacomp_example_upload_form extends moodleform {
 		$descrid = $this->_customdata['descrid'];
 		
 		$descrTitle = $DB->get_field('block_exacompdescriptors','title',array("id"=>$descrid));
-		$mform->addElement('header', 'general', block_exacomp_get_string("example_upload_header", "block_exacomp", $descrTitle));
+		$mform->addElement('header', 'general', block_exacomp_get_string("example_upload_header", null, $descrTitle));
 
 		$mform->addElement('hidden', 'id');
 		$mform->setType('id', PARAM_INT);
@@ -39,7 +39,7 @@ class block_exacomp_example_upload_form extends moodleform {
 		
 		//add html tree -> different treated in example_upload -> mform does not support a tree structure
 		$treetitle = html_writer::start_div('fitem');
-		$treetitle .= html_writer::start_div('fitemtitle') . html_writer::label(block_exacomp_get_string('descriptors','block_exacomp'), 'tree'). html_writer::end_div();
+		$treetitle .= html_writer::start_div('fitemtitle') . html_writer::label(block_exacomp_get_string('descriptors'), 'tree'). html_writer::end_div();
 		$treetitle .= html_writer::start_div('felement ftext');
 		$tree = $this->_customdata['tree'];
 		$html_tree = $output->competence_based_list_tree($tree, true, 1, false);
@@ -53,36 +53,36 @@ class block_exacomp_example_upload_form extends moodleform {
 		$mform->setType('action', PARAM_ACTION);
 		$mform->setDefault('action', 'add');
 
-		$mform->addElement('text', 'title', block_exacomp_get_string("name_example","block_exacomp"), 'maxlength="255" size="60"');
+		$mform->addElement('text', 'title', block_exacomp_get_string("name_example"), 'maxlength="255" size="60"');
 		$mform->setType('title', PARAM_TEXT);
-		$mform->addRule('title', block_exacomp_get_string("titlenotemtpy", "block_exacomp"), 'required', null, 'client');
+		$mform->addRule('title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
 
-		$mform->addElement('text', 'description', block_exacomp_get_string("description_example","block_exacomp"), 'maxlength="255" size="60"');
+		$mform->addElement('text', 'description', block_exacomp_get_string("description_example"), 'maxlength="255" size="60"');
 		$mform->setType('description', PARAM_TEXT);
 
 		if ($this->_customdata['taxonomies']) {
-			$tselect = $mform->addElement('select', 'taxid', block_exacomp_get_string('taxonomy', 'block_exacomp'),$this->_customdata['taxonomies']);
+			$tselect = $mform->addElement('select', 'taxid', block_exacomp_get_string('taxonomy'),$this->_customdata['taxonomies']);
 			$tselect->setMultiple(true);
 			$tselect->setSelected(array_keys($DB->get_records(BLOCK_EXACOMP_DB_EXAMPTAX,array("exampleid" => $this->_customdata['exampleid']),"","taxid")));
 		}
 
-		$mform->addElement('header', 'link', block_exacomp_get_string('link','block_exacomp'));
+		$mform->addElement('header', 'link', block_exacomp_get_string('link'));
 		
-		$mform->addElement('text', 'externalurl', block_exacomp_get_string("link","block_exacomp"), 'maxlength="255" size="60"');
+		$mform->addElement('text', 'externalurl', block_exacomp_get_string("link"), 'maxlength="255" size="60"');
 		$mform->setType('externalurl', PARAM_TEXT);
 		
-		$mform->addElement('header', 'files', block_exacomp_get_string('files','block_exacomp'));
+		$mform->addElement('header', 'files', block_exacomp_get_string('files'));
 		
 		$mform->addElement('filemanager', 'file', block_exacomp_get_string('file'), null, array('subdirs' => false, 'maxfiles' => 1));
-		$mform->addElement('filemanager', 'solution', block_exacomp_get_string('solution','block_exacomp'), null, array('subdirs' => false, 'maxfiles' => 1));
+		$mform->addElement('filemanager', 'solution', block_exacomp_get_string('solution'), null, array('subdirs' => false, 'maxfiles' => 1));
 		
 		if( $this->_customdata['uses_activities'] ) {
 		
-			$mform->addElement('header', 'assignments', block_exacomp_get_string('assignments','block_exacomp'));
-			$mform->addElement('select', 'assignment', block_exacomp_get_string('assignments','block_exacomp'), $this->_customdata['activities']);
+			$mform->addElement('header', 'assignments', block_exacomp_get_string('assignments'));
+			$mform->addElement('select', 'assignment', block_exacomp_get_string('assignments'), $this->_customdata['activities']);
 		}
 		/* if(block_exacomp_is_altversion()) {
-			$mform->addElement('checkbox', 'lisfilename', block_exacomp_get_string('lisfilename', 'block_exacomp'));
+			$mform->addElement('checkbox', 'lisfilename', block_exacomp_get_string('lisfilename'));
 			$mform->setDefault('lisfilename', 1);
 		} */
 		
@@ -104,7 +104,7 @@ class block_exacomp_example_upload_form extends moodleform {
 	
 		if (!empty($data['link']) && filter_var($data['link'], FILTER_VALIDATE_URL) === FALSE
 				&& filter_var("http://" . $data['link'], FILTER_VALIDATE_URL) === FALSE) {
-			$errors['link'] = block_exacomp_get_string('linkerr','block_exacomp');
+			$errors['link'] = block_exacomp_get_string('linkerr');
 		}
 	
 		return $errors;

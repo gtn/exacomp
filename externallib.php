@@ -5878,7 +5878,7 @@ class block_exacomp_external extends external_api {
 		$subjects = array();
 		$default_sub = new stdClass();
 		$default_sub->id = 0;
-		$default_sub->title =  block_exacomp_get_string('nocrosssubsub', 'block_exacomp');
+		$default_sub->title =  block_exacomp_get_string('nocrosssubsub');
 		$subjects[] = $default_sub;
 		
 		$subjects = array_merge($subjects, block_exacomp_get_subjects_by_course ( $courseid ));

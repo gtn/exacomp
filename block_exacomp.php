@@ -89,47 +89,47 @@ class block_exacomp extends block_list {
 			
 			if ($isTeacherOrStudent && $ready_for_use) {
 				//Kompetenzüberblick
-				$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid)), block_exacomp_get_string('tab_competence_overview', 'block_exacomp'), array('title' => block_exacomp_get_string('tab_competence_overview', 'block_exacomp')));
+				$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid)), block_exacomp_get_string('tab_competence_overview'), array('title' => block_exacomp_get_string('tab_competence_overview')));
 				$this->content->icons[] = html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/grid.png'), 'alt' => "", 'height' => 16, 'width' => '23'));
 
 				if ($isTeacher || block_exacomp_get_cross_subjects_by_course($courseid, $USER->id)) {
 					// Cross subjects: always for teacher and for students if it there are cross subjects
-					$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects_overview.php', array('courseid' => $courseid)), block_exacomp_get_string('tab_cross_subjects', 'block_exacomp'), array('title' => block_exacomp_get_string('tab_cross_subjects', 'block_exacomp')));
+					$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/cross_subjects_overview.php', array('courseid' => $courseid)), block_exacomp_get_string('tab_cross_subjects'), array('title' => block_exacomp_get_string('tab_cross_subjects')));
 					$this->content->icons[] = html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/detailed_view_of_competencies.png'), 'alt' => "", 'height' => 16, 'width' => '23'));
 				}
 
 				if (!$courseSettings->nostudents) {
 
 					//Kompetenzprofil
-					$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/competence_profile.php', array('courseid' => $courseid)), block_exacomp_get_string('tab_competence_profile', 'block_exacomp'), array('title' => block_exacomp_get_string('tab_competence_profile', 'block_exacomp')));
+					$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/competence_profile.php', array('courseid' => $courseid)), block_exacomp_get_string('tab_competence_profile'), array('title' => block_exacomp_get_string('tab_competence_profile')));
 					$this->content->icons[] = html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/overview_of_competencies.png'), 'alt' => "", 'height' => 16, 'width' => 23));
 				}
 
 				if (!$courseSettings->nostudents) {
 					//Beispiel-Aufgaben
-					$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/view_examples.php', array('courseid' => $courseid)), block_exacomp_get_string('tab_examples', 'block_exacomp'), array('title' => block_exacomp_get_string('tab_examples', 'block_exacomp')));
+					$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/view_examples.php', array('courseid' => $courseid)), block_exacomp_get_string('tab_examples'), array('title' => block_exacomp_get_string('tab_examples')));
 					$this->content->icons[] = html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/area.png'), 'alt' => "", 'height' => 16, 'width' => 23));
 
 					//Lernagenda
-					//$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/learningagenda.php', array('courseid'=>$courseid)), block_exacomp_get_string('tab_learning_agenda', 'block_exacomp'), array('title'=>block_exacomp_get_string('tab_learning_agenda', 'block_exacomp')));
+					//$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/learningagenda.php', array('courseid'=>$courseid)), block_exacomp_get_string('tab_learning_agenda'), array('title'=>block_exacomp_get_string('tab_learning_agenda')));
 					//$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/subject.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
 				}
 
 				if (!$courseSettings->nostudents) {
 					//Wochenplan
-					$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/weekly_schedule.php', array('courseid' => $courseid)), block_exacomp_get_string('tab_weekly_schedule', 'block_exacomp'), array('title' => block_exacomp_get_string('tab_weekly_schedule', 'block_exacomp')));
+					$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/weekly_schedule.php', array('courseid' => $courseid)), block_exacomp_get_string('tab_weekly_schedule'), array('title' => block_exacomp_get_string('tab_weekly_schedule')));
 					$this->content->icons[] = html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/assign_moodle_activities.png'), 'alt' => "", 'height' => 16, 'width' => 23));
 				}
 
 				if ($isTeacher && !$courseSettings->nostudents) {
 					if ($courseSettings->useprofoundness) {
-						$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/profoundness.php', array('courseid' => $courseid)), block_exacomp_get_string('tab_profoundness', 'block_exacomp'), array('title' => block_exacomp_get_string('tab_profoundness', 'block_exacomp')));
+						$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/profoundness.php', array('courseid' => $courseid)), block_exacomp_get_string('tab_profoundness'), array('title' => block_exacomp_get_string('tab_profoundness')));
 						$this->content->icons[] = html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/subject.png'), 'alt' => "", 'height' => 16, 'width' => 23));
 					}
 
 					//Meine Auszeichnungen
 					//if ($usebadges) {
-					//$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/my_badges.php', array('courseid'=>$courseid)), block_exacomp_get_string('tab_badges', 'block_exacomp'), array('title'=>block_exacomp_get_string('tab_badges', 'block_exacomp')));
+					//$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/my_badges.php', array('courseid'=>$courseid)), block_exacomp_get_string('tab_badges'), array('title'=>block_exacomp_get_string('tab_badges')));
 					//$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/pix/i/badge.png'), 'alt'=>"", 'height'=>16, 'width'=>23));
 					//}
 				}
@@ -137,26 +137,26 @@ class block_exacomp extends block_list {
 
 			if ($isTeacher) {
 				//Einstellungen
-				$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/edit_course.php', array('courseid' => $courseid)), block_exacomp_get_string('tab_teacher_settings', 'block_exacomp'), array('title' => block_exacomp_get_string('tab_teacher_settings', 'block_exacomp')));
+				$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/edit_course.php', array('courseid' => $courseid)), block_exacomp_get_string('tab_teacher_settings'), array('title' => block_exacomp_get_string('tab_teacher_settings')));
 				$this->content->icons[] = html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/subjects_topics.gif'), 'alt' => "", 'height' => 16, 'width' => 23));
 				
 				if(!$ready_for_use) {
-					$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/subject.php', array('courseid' => $courseid, 'embedded' => false)), block_exacomp_get_string('tab_teacher_settings_new_subject', 'block_exacomp'), array('title' => block_exacomp_get_string('tab_teacher_settings_new_subject', 'block_exacomp')));
+					$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/subject.php', array('courseid' => $courseid, 'embedded' => false)), block_exacomp_get_string('tab_teacher_settings_new_subject'), array('title' => block_exacomp_get_string('tab_teacher_settings_new_subject')));
 					$this->content->icons[] = html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/subject.png'), 'alt' => "", 'height' => 16, 'width' => 23));
 				}
 				if (get_config('exacomp','external_trainer_assign')) {
-					$this->content->items[]='<a title="' . block_exacomp_get_string('block_exacomp_external_trainer_assign', 'block_exacomp') . '" href="' . $CFG->wwwroot . '/blocks/exacomp/externaltrainers.php?courseid=' . $COURSE->id . '">' . block_exacomp_get_string('block_exacomp_external_trainer_assign', 'block_exacomp') . '</a>';
-					$this->content->icons[]='<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/personal.png" height="16" width="23" alt="'.block_exacomp_get_string("block_exacomp_external_trainer_assign", "block_exacomp").'" />';
+					$this->content->items[]='<a title="' . block_exacomp_get_string('block_exacomp_external_trainer_assign') . '" href="' . $CFG->wwwroot . '/blocks/exacomp/externaltrainers.php?courseid=' . $COURSE->id . '">' . block_exacomp_get_string('block_exacomp_external_trainer_assign') . '</a>';
+					$this->content->icons[]='<img src="' . $CFG->wwwroot . '/blocks/exacomp/pix/personal.png" height="16" width="23" alt="'.block_exacomp_get_string("block_exacomp_external_trainer_assign").'" />';
 				}
 			}
 			/*if ($de) {
 				//Hilfe
-				$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/help.php', array('courseid' => $courseid)), block_exacomp_get_string('tab_help', 'block_exacomp'), array('title' => block_exacomp_get_string('tab_help', 'block_exacomp')));
+				$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/help.php', array('courseid' => $courseid)), block_exacomp_get_string('tab_help'), array('title' => block_exacomp_get_string('tab_help')));
 				$this->content->icons[] = html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/info.png'), 'alt' => "", 'height' => 16, 'width' => 23));
 			}*/
 		} else {
 			if ($isTeacher && !has_capability('block/exacomp:admin', $globalcontext)){
-				$this->content->items[] = block_exacomp_get_string('admin_config_pending','block_exacomp');
+				$this->content->items[] = block_exacomp_get_string('admin_config_pending');
 				$this->content->icons[] = '';
 			}
 		}
@@ -167,12 +167,12 @@ class block_exacomp extends block_list {
 			//Admin sieht immer Modulkonfiguration
 			//Wenn Import schon erledigt, weiterleitung zu edit_config, ansonsten import.
 			if($has_data){
-				$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/edit_config.php', array('courseid'=>$courseid)), block_exacomp_get_string('tab_admin_settings', 'block_exacomp'), array('title'=>block_exacomp_get_string('tab_admin_settings', 'block_exacomp')));
+				$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/edit_config.php', array('courseid'=>$courseid)), block_exacomp_get_string('tab_admin_settings'), array('title'=>block_exacomp_get_string('tab_admin_settings')));
 				$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/standardpreselect.png'), 'alt'=>'', 'height'=>16, 'width'=>23));
 			}
 
 			// always show import/export
-			$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid)), block_exacomp_get_string('tab_admin_import', 'block_exacomp'), array('title'=>block_exacomp_get_string('tab_admin_import', 'block_exacomp')));
+			$this->content->items[] = html_writer::link(new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid)), block_exacomp_get_string('tab_admin_import'), array('title'=>block_exacomp_get_string('tab_admin_import')));
 			$this->content->icons[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/importexport.png'), 'alt'=>'', 'height'=>16, 'width'=>23));
 		}
 		

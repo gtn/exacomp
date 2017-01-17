@@ -38,8 +38,8 @@ $page_identifier = 'tab_teacher_settings_badges';
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/edit_badges.php', array('courseid' => $courseid));
-$PAGE->set_heading(block_exacomp_get_string('blocktitle', 'block_exacomp'));
-$PAGE->set_title(block_exacomp_get_string($page_identifier, 'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
+$PAGE->set_title(block_exacomp_get_string($page_identifier));
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
@@ -72,7 +72,7 @@ if ($badgeid && $badge = $DB->get_record('badge', array('id' => $badgeid))) {
 $badges = badges_get_badges(BADGE_TYPE_COURSE, $courseid); 
 
 if (!$badges) {
-	echo $OUTPUT->box(text_to_html(block_exacomp_get_string("no_badges_yet", "block_exacomp")));
+	echo $OUTPUT->box(text_to_html(block_exacomp_get_string("no_badges_yet")));
 	echo $OUTPUT->footer();
 	return;
 }

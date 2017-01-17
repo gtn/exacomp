@@ -30,8 +30,8 @@ $page_identifier = 'tab_profoundness';
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/profoundness.php', array('courseid' => $courseid));
-$PAGE->set_heading(block_exacomp_get_string('blocktitle', 'block_exacomp'));
-$PAGE->set_title(block_exacomp_get_string($page_identifier, 'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
+$PAGE->set_title(block_exacomp_get_string($page_identifier));
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
@@ -100,7 +100,7 @@ echo $output->competence_overview_form_start((isset($selectedTopic))?$selectedTo
 echo $output->overview_dropdowns('profoundness', $students);
 
 if ($isTeacher) {
-	echo ' '.block_exacomp_get_string("choosestudent","block_exacomp").' ';
+	echo ' '.block_exacomp_get_string("choosestudent").' ';
 	echo $output->studentselector($coursestudents,$studentid);
 }
 

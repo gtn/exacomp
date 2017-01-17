@@ -48,7 +48,7 @@ if (!$isTeacher) {
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/competence_associations.php', array('courseid' => $courseid));
-$PAGE->set_heading(block_exacomp_get_string('blocktitle', 'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
 $PAGE->set_pagelayout('embedded');
 
 // build breadcrumbs navigation
@@ -93,11 +93,11 @@ $example_descriptors = $DB->get_records(BLOCK_EXACOMP_DB_DESCEXAMP,array('exampi
 
 $tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid);
 
-echo html_writer::tag("p",block_exacomp_get_string("competence_associations_explaination","block_exacomp",$example->title));
+echo html_writer::tag("p",block_exacomp_get_string("competence_associations_explaination", null,$example->title));
 $content = $output->competence_based_list_tree($tree, $isTeacher, $editmode);
 
 if($editmode)
-	$content.= html_writer::empty_tag('input', array('type'=>'submit', 'value'=>block_exacomp_get_string('save_selection', 'block_exacomp')));
+	$content.= html_writer::empty_tag('input', array('type'=>'submit', 'value'=>block_exacomp_get_string('save_selection')));
 
 echo  html_writer::tag('form', $content, array('method'=>'post', 'action'=>$PAGE->url.'&exampleid='.$exampleid.'&editmode='.$editmode.'&action=save', 'name'=>'add_association'));
 		

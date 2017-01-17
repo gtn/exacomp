@@ -42,8 +42,8 @@ $PAGE->set_url('/blocks/exacomp/competence_grid.php', [
 	'studentid' => $studentid,
 	'report' => $report
 ]);
-$PAGE->set_heading(block_exacomp_get_string('blocktitle', 'block_exacomp'));
-$PAGE->set_title(block_exacomp_get_string($page_identifier,'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
+$PAGE->set_title(block_exacomp_get_string($page_identifier));
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
@@ -66,7 +66,7 @@ list($niveaus, $skills, $subjects, $data, $selection) = block_exacomp_init_compe
 echo $output->subject_dropdown(block_exacomp_get_schooltypetree_by_topics($dropdown_subjects,true), $subjectid);
 if($data) {
 	if ($isTeacher && !block_exacomp_get_settings_by_course($courseid)->nostudents) {
-		echo ' '.block_exacomp_get_string("choosestudent","block_exacomp").' ';
+		echo ' '.block_exacomp_get_string("choosestudent").' ';
 		echo $output->studentselector(block_exacomp_get_students_by_course($courseid),$studentid, $output::STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
 	}
 	
@@ -76,14 +76,14 @@ if($data) {
 	echo html_writer::start_div();
 	
 	if(isset($dropdown_subjects[$subjectid]->infolink))
-		echo html_writer::tag("p",block_exacomp_get_string('infolink','block_exacomp') . html_writer::link($dropdown_subjects[$subjectid]->infolink, $dropdown_subjects[$subjectid]->infolink,array('target'=>'_blank')));
+		echo html_writer::tag("p",block_exacomp_get_string('infolink') . html_writer::link($dropdown_subjects[$subjectid]->infolink, $dropdown_subjects[$subjectid]->infolink,array('target'=>'_blank')));
 
 	echo $output->competence_grid($niveaus, $skills, $subjects, $data, $selection, $courseid,$studentid,$subjectid);
 
 	echo html_writer::end_div();
 }
 else {
-	echo html_writer::div(block_exacomp_get_string('competencegrid_nodata', 'block_exacomp'));
+	echo html_writer::div(block_exacomp_get_string('competencegrid_nodata'));
 }
 */
 /* END CONTENT REGION */
