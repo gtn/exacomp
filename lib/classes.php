@@ -21,6 +21,7 @@ namespace block_exacomp;
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once __DIR__.'/../inc.php';
 use block_exacomp\globals as g;
 use Super\Cache;
 
@@ -867,7 +868,7 @@ class descriptor extends db_record {
 			return $x->sorting;
 		}, $siblings)) : 0;
 
-		$descriptor->source = CUSTOM_CREATED_DESCRIPTOR;
+		$descriptor->source = BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR;
 		$descriptor->sorting = $max_sorting + 1;
 		$descriptor->insert();
 

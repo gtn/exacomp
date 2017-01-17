@@ -1574,7 +1574,7 @@ class data_importer extends data {
 		
 		// if local descriptor, move to custom source
 		if (!$descriptor->source) {
-			g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('source' => CUSTOM_CREATED_DESCRIPTOR), array("id"=>$descriptor->id));
+			g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('source' => BLOCK_EXACOMP_CUSTOM_CREATED_DESCRIPTOR), array("id"=>$descriptor->id));
 		}
 		
 		if ($xmlItem->examples) {

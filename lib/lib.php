@@ -1310,9 +1310,13 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 			} elseif ($topicid && isset($topics[$topicid]) && block_exacomp_is_topic_visible($courseid, $topic, $studentid)) {
 				$selectedTopic = $topics[$topicid];
 			} else {
-				// select first visible
-				$visible_topics = block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $studentid);
-				$selectedTopic = $topics[reset($visible_topics)->id];
+				// select first visible topic
+				foreach ($topics as $tmpTopic) {
+					if (block_exacomp_is_topic_visible($courseid, $tmpTopic, $studentid)) {
+						$selectedTopic = $tmpTopic;
+						break;
+					}
+				}
 			}
 		}
 	}
@@ -1325,9 +1329,15 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 	if (!$selectedSubject) {
 		// select the first subject
 		$selectedSubject = reset($courseSubjects);
+
 		$topics = block_exacomp_get_topics_by_subject($courseid, $selectedSubject->id, false, ($showonlyvisible?(($isTeacher)?false:true):false));
-		$visible_topics = block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $studentid);
-		$selectedTopic = $topics[reset($visible_topics)->id];
+		// select first visible topic
+		foreach ($topics as $tmpTopic) {
+			if (block_exacomp_is_topic_visible($courseid, $tmpTopic, $studentid)) {
+				$selectedTopic = $tmpTopic;
+				break;
+			}
+		}
 	}
 
 	// load all descriptors first (needed for teacher)
@@ -6730,7 +6740,7 @@ function block_exacomp_get_select_niveau_items($blank = true) {
 	if ($blank) {
 		$values[''] = [''=>''];
 	}
-	$niveaus = niveau::get_objects(null, 'sorting');
+	$niveaus = \block_exacomp\niveau::get_objects(null, 'sorting');
 	foreach ($niveaus as $niveau) {
 		$sourceName = block_exacomp_get_renderer()->source_info($niveau->source);
 		if (!isset($values[$sourceName])) $values[$sourceName] = [];
@@ -6825,7 +6835,7 @@ function block_exacomp_require_item_capability($cap, $item) {
 			throw new block_exacomp_permission_exception('No course subject');
 		}
 
-		if ($item->source != DATA_SOURCE_CUSTOM) {
+		if ($item->source != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
 			throw new block_exacomp_permission_exception('Not a custom subject');
 		}
 	} elseif ($item instanceof \block_exacomp\topic && in_array($cap, [BLOCK_EXACOMP_CAP_MODIFY, BLOCK_EXACOMP_CAP_DELETE])) {
@@ -6839,7 +6849,7 @@ function block_exacomp_require_item_capability($cap, $item) {
 		}
 
 
-		if ($item->source != DATA_SOURCE_CUSTOM) {
+		if ($item->source != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
 			throw new block_exacomp_permission_exception('Not a custom topic');
 		}
 	} elseif ($item instanceof \block_exacomp\descriptor && in_array($cap, [BLOCK_EXACOMP_CAP_MODIFY, BLOCK_EXACOMP_CAP_DELETE])) {
@@ -6867,7 +6877,7 @@ function block_exacomp_require_item_capability($cap, $item) {
 			throw new block_exacomp_permission_exception('No course descriptor');
 		}
 
-		if ($item->source != DATA_SOURCE_CUSTOM) {
+		if ($item->source != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
 			throw new block_exacomp_permission_exception('Not a custom descriptor');
 		}
 	} elseif ($item instanceof \block_exacomp\cross_subject && in_array($cap, [BLOCK_EXACOMP_CAP_MODIFY, BLOCK_EXACOMP_CAP_DELETE])) {
