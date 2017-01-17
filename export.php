@@ -50,13 +50,13 @@ if ($action == 'export_all') {
 	
 	/* PAGE URL - MUST BE CHANGED */
 	$PAGE->set_url('/blocks/exacomp/export.php', array('courseid' => $courseid));
-	$PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
-	$PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
+	$PAGE->set_heading(block_exacomp_get_string('blocktitle', 'block_exacomp'));
+	$PAGE->set_title(block_exacomp_get_string($page_identifier, 'block_exacomp'));
 	
 	// build breadcrumbs navigation
 	$coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
-	$blocknode = $coursenode->add(get_string('blocktitle','block_exacomp'));
-	$pagenode = $blocknode->add(get_string($page_identifier,'block_exacomp'), $PAGE->url);
+	$blocknode = $coursenode->add(block_exacomp_get_string('blocktitle','block_exacomp'));
+	$pagenode = $blocknode->add(block_exacomp_get_string($page_identifier,'block_exacomp'), $PAGE->url);
 	$pagenode->make_active();
 	
 	echo $output->header(context_system::instance(), $courseid, 'tab_admin_settings');

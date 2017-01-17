@@ -25,8 +25,8 @@ require_login($courseid);
 block_exacomp_require_admin();
 
 $PAGE->set_context(context_system::instance());
-$PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
-$PAGE->set_title(get_string('blocktitle', 'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle', 'block_exacomp'));
+$PAGE->set_title(block_exacomp_get_string('blocktitle', 'block_exacomp'));
 
 $PAGE->set_url('/blocks/exacomp/webservice_status.php', ['courseid' => $courseid]);
 
@@ -35,17 +35,17 @@ $output = block_exacomp_get_renderer();
 echo $output->header_v2('tab_admin_settings');
 echo $output->tabtree(block_exacomp_build_navigation_tabs_admin_settings($courseid), 'tab_webservice_status');
 
-echo block_exacomp\trans([
+echo block_exacomp_trans([
 	'de:Die folgenden Schritte sind notwendig um Exabis Competence Grid Webservices zu aktiviert:',
 	'en:Please follow the steps below to enable Exabis Competence Grid webservices:',
 ]);
 
 $brtag = html_writer::empty_tag('br');
 
-// echo $OUTPUT->heading(get_string('onesystemcontrolling', 'webservice'), 3, 'main');
+// echo $OUTPUT->heading(block_exacomp_get_string('onesystemcontrolling', 'webservice'), 3, 'main');
 $table = new html_table();
-$table->head = array(get_string('step', 'webservice'), get_string('status'),
-	get_string('description'));
+$table->head = array(block_exacomp_get_string('step', 'webservice'), block_exacomp_get_string('status'),
+	block_exacomp_get_string('description'));
 $table->colclasses = array('leftalign step', 'leftalign status', 'leftalign description');
 $table->id = 'onesystemcontrol';
 $table->attributes['class'] = 'admintable wsoverview generaltable';
@@ -54,20 +54,20 @@ $table->data = array();
 /// 1. Enable Web Services
 $row = array();
 $url = new moodle_url("/admin/search.php?query=enablewebservices");
-$row[0] = "1. " . html_writer::tag('a', get_string('enablews', 'webservice'),
+$row[0] = "1. " . html_writer::tag('a', block_exacomp_get_string('enablews', 'webservice'),
 				array('href' => $url));
-$status = html_writer::tag('span', get_string('no'), array('class' => 'statuscritical'));
+$status = html_writer::tag('span', block_exacomp_get_string('no'), array('class' => 'statuscritical'));
 if ($CFG->enablewebservices) {
-	$status = html_writer::tag('span', get_string('ok'), array('class' => 'statusok'));
+	$status = html_writer::tag('span', block_exacomp_get_string('ok'), array('class' => 'statusok'));
 }
 $row[1] = $status;
-$row[2] = get_string('enablewsdescription', 'webservice');
+$row[2] = block_exacomp_get_string('enablewsdescription', 'webservice');
 $table->data[] = $row;
 
 /// 2. Enable protocols
 $row = array();
 $url = new moodle_url("/admin/settings.php?section=webserviceprotocols");
-$row[0] = "2. " . html_writer::tag('a', get_string('enableprotocols', 'webservice'),
+$row[0] = "2. " . html_writer::tag('a', block_exacomp_get_string('enableprotocols', 'webservice'),
 				array('href' => $url));
 //retrieve activated protocol
 $active_protocols = empty($CFG->webserviceprotocols) ?
@@ -79,24 +79,24 @@ if (!empty($active_protocols)) {
 	}
 }
 if (!in_array('rest', $active_protocols)) {
-	$status = html_writer::tag('span', get_string('enable_rest', 'block_exacomp'), array('class' => 'statuscritical')).$brtag.$status;
+	$status = html_writer::tag('span', block_exacomp_get_string('enable_rest', 'block_exacomp'), array('class' => 'statuscritical')).$brtag.$status;
 } else {
-	$status = html_writer::tag('span', get_string('ok'), array('class' => 'statusok')).$brtag.$status;
+	$status = html_writer::tag('span', block_exacomp_get_string('ok'), array('class' => 'statusok')).$brtag.$status;
 }
 
 $row[1] = $status;
-$row[2] = get_string('enableprotocolsdescription', 'webservice');
+$row[2] = block_exacomp_get_string('enableprotocolsdescription', 'webservice');
 $table->data[] = $row;
 
 /// 3. Enable Web Services for Mobile Devices
 $row = array();
 $url = new moodle_url("/admin/search.php?query=enablemobilewebservice");
-$row[0] = "3. " . html_writer::tag('a', get_string('enablemobilewebservice', 'admin'),
+$row[0] = "3. " . html_writer::tag('a', block_exacomp_get_string('enablemobilewebservice', 'admin'),
 				array('href' => $url));
 if ($CFG->enablemobilewebservice) {
-	$status = html_writer::tag('span', get_string('ok'), array('class' => 'statusok'));
+	$status = html_writer::tag('span', block_exacomp_get_string('ok'), array('class' => 'statusok'));
 } else {
-	$status = html_writer::tag('span', get_string('no'), array('class' => 'statuscritical'));
+	$status = html_writer::tag('span', block_exacomp_get_string('no'), array('class' => 'statuscritical'));
 }
 
 $row[1] = $status;
@@ -109,14 +109,14 @@ $table->data[] = $row;
 /// 4. Webservice Roles
 $row = array();
 $url = new moodle_url("/admin/roles/manage.php");
-$row[0] = "4. " . html_writer::tag('a', get_string('access_roles', 'block_exacomp'),
+$row[0] = "4. " . html_writer::tag('a', block_exacomp_get_string('access_roles', 'block_exacomp'),
 				array('href' => $url));
 $wsroles = get_roles_with_capability('moodle/webservice:createtoken');
 // get rolename in local language
 $wsroles = role_fix_names($wsroles, context_system::instance(), ROLENAME_ORIGINAL);
 
 if (count($wsroles)>1) {	//admin has always permission
-	$status = html_writer::tag('span', get_string('ok'), array('class' => 'statusok'));
+	$status = html_writer::tag('span', block_exacomp_get_string('ok'), array('class' => 'statusok'));
 	foreach ($wsroles as $role) {
 		$status .= $brtag.$role->localname;
 	}
@@ -125,7 +125,7 @@ if (count($wsroles)>1) {	//admin has always permission
 }
 
 $row[1] = $status;
-$row[2] = nl2br(get_string('description_createtoken', 'block_exacomp'));
+$row[2] = nl2br(block_exacomp_get_string('description_createtoken', 'block_exacomp'));
 $table->data[] = $row;
 
 
@@ -135,16 +135,16 @@ $description = '';
 //set shortname for external service exacompservices
 $exacomp_service = $DB->get_record('external_services', array('name'=>'exacompservices'));
 if (!$exacomp_service) {
-	$status .= html_writer::tag('span', get_string('exacomp_not_found', 'block_exacomp'), array('class' => 'statuscritical'));
+	$status .= html_writer::tag('span', block_exacomp_get_string('exacomp_not_found', 'block_exacomp'), array('class' => 'statuscritical'));
 } elseif (!$exacomp_service->downloadfiles || !$exacomp_service->uploadfiles) {
 	$status .= html_writer::tag('span', 'Error', array('class' => 'statuscritical'));
 	$description .= '<a href="'.(new moodle_url('/admin/webservice/service.php', ['id' => $exacomp_service->id])).'">'.
-		'Exacompservice needs "'.get_string('downloadfiles', 'webservice').'" and "'.get_string('uploadfiles', 'webservice').'" enabled</a><br />';
+		'Exacompservice needs "'.block_exacomp_get_string('downloadfiles', 'webservice').'" and "'.block_exacomp_get_string('uploadfiles', 'webservice').'" enabled</a><br />';
 }
 
 $exaport_service = $DB->get_record('external_services', array('name'=>'exaportservices'));
 if (!$exaport_service) {
-	$status .= html_writer::tag('span', get_string('exaport_not_found', 'block_exacomp'), array('class' => 'statuscritical'));
+	$status .= html_writer::tag('span', block_exacomp_get_string('exaport_not_found', 'block_exacomp'), array('class' => 'statuscritical'));
 }
 // not needed anymore
 /*
@@ -153,7 +153,7 @@ if (!$exaport_service) {
 */
 
 if (empty($status)) {
-	$status = html_writer::tag('span', get_string('ok'), array('class' => 'statusok'));
+	$status = html_writer::tag('span', block_exacomp_get_string('ok'), array('class' => 'statusok'));
 }
 
 $row = array();
@@ -166,14 +166,14 @@ $table->data[] = $row;
 if (get_config('exacomp', 'external_trainer_assign')) {
 	$count = $DB->count_records('block_exacompexternaltrainer');
 	if ($count) {
-		$status = html_writer::tag('span', get_string('ok'), array('class' => 'statusok'));
+		$status = html_writer::tag('span', block_exacomp_get_string('ok'), array('class' => 'statusok'));
 	} else {
-		$status = html_writer::tag('span', get_string('no_external_trainer', 'block_exacomp'), array('class' => 'statuscritical'));
+		$status = html_writer::tag('span', block_exacomp_get_string('no_external_trainer', 'block_exacomp'), array('class' => 'statuscritical'));
 	}
 	// checks for elove app
 	$row = array();
 	$url = new moodle_url("/blocks/exacomp/externaltrainers.php?courseid=".$courseid);
-	$row[0] = "6. " . html_writer::tag('a', get_string('block_exacomp_external_trainer_assign', 'block_exacomp'),
+	$row[0] = "6. " . html_writer::tag('a', block_exacomp_get_string('block_exacomp_external_trainer_assign', 'block_exacomp'),
 					array('href' => $url));
 
 	$row[1] = $status;

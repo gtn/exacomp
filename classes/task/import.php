@@ -25,7 +25,7 @@ require_once __DIR__.'/../../inc.php';
 
 class import extends \core\task\scheduled_task {
 	public function get_name() {
-		return \block_exacomp\trans(['en:Import Data', 'de:Daten Importieren']);
+		return block_exacomp_trans(['en:Import Data', 'de:Daten Importieren']);
 	}
 
 	public function execute() {
@@ -41,7 +41,7 @@ class import extends \core\task\scheduled_task {
 		try {
 			\block_exacomp\data::prepare();
 
-			if (\block_exacomp\data_importer::do_import_url($xmlserverurl, \block_exacomp\IMPORT_SOURCE_DEFAULT)) {
+			if (\block_exacomp\data_importer::do_import_url($xmlserverurl, BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT)) {
 				mtrace("import done");
 				block_exacomp_settstamp();
 			} else {

@@ -17,8 +17,6 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-namespace block_exacomp;
-
 use block_exacomp\globals as g;
 
 // we want cookies, so moodle remembers the login

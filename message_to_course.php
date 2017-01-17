@@ -32,7 +32,7 @@ require_login($course);
 block_exacomp_require_teacher($courseid);
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/example_upload.php', array('courseid' => $courseid));
-$PAGE->set_title(get_string('blocktitle', 'block_exacomp'));
+$PAGE->set_title(block_exacomp_get_string('blocktitle', 'block_exacomp'));
 $PAGE->set_pagelayout('embedded');
 $context = context_course::instance($courseid);
 $output = block_exacomp_get_renderer();
@@ -42,4 +42,4 @@ $context = context_course::instance($courseid);
 
 echo html_writer::tag("textarea", "", array("id" => "message", "style" => "width:280px;height:180px"));
 echo html_writer::tag("br", "");
-echo html_writer::tag("input", "", array("type" => "submit", "value" => get_string("messagetocourse","block_exacomp"), "exa-type" => "send-message-to-course"));
+echo html_writer::tag("input", "", array("type" => "submit", "value" => block_exacomp_get_string("messagetocourse","block_exacomp"), "exa-type" => "send-message-to-course"));

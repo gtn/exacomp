@@ -25,7 +25,7 @@ require_once __DIR__.'/../../inc.php';
 
 class autotest extends \core\task\scheduled_task {
 	public function get_name() {
-		return \block_exacomp\trans(['en:Auto Test']);
+		return block_exacomp_trans(['en:Auto Test']);
 	}
 
 	public function execute() {

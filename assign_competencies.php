@@ -27,7 +27,7 @@ $editmode = optional_param('editmode', 0, PARAM_BOOL);
 $subjectid = optional_param('subjectid', 0, PARAM_INT);
 
 $topicid = optional_param('topicid', 0, PARAM_INT);
-$niveauid = optional_param('niveauid', block_exacomp\SHOW_ALL_NIVEAUS, PARAM_INT);
+$niveauid = optional_param('niveauid', BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, PARAM_INT);
 
 require_login($courseid);
 
@@ -59,8 +59,8 @@ $PAGE->set_url('/blocks/exacomp/assign_competencies.php', [
 	'subjectid' => $subjectid,
 	'topicid' => $topicid,
 ]);
-$PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
-$PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle', 'block_exacomp'));
+$PAGE->set_title(block_exacomp_get_string($page_identifier, 'block_exacomp'));
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
@@ -124,19 +124,19 @@ if (optional_param('print', false, PARAM_BOOL)) {
 		// all students, do nothing
 	} else {
 		// get the students on this group
-		$students = array_slice($students, $group*\block_exacomp\STUDENTS_PER_COLUMN, \block_exacomp\STUDENTS_PER_COLUMN, true);
+		$students = array_slice($students, $group*BLOCK_EXACOMP_STUDENTS_PER_COLUMN, BLOCK_EXACOMP_STUDENTS_PER_COLUMN, true);
 	}
 	
 	// TOOD: print column information for print
 	
 	// loop through all pages (eg. when all students should be printed)
-	for ($group_i = 0; $group_i < count($students); $group_i+=\block_exacomp\STUDENTS_PER_COLUMN) {
-		$students_to_print = array_slice($students, $group_i, \block_exacomp\STUDENTS_PER_COLUMN, true);
+	for ($group_i = 0; $group_i < count($students); $group_i+=BLOCK_EXACOMP_STUDENTS_PER_COLUMN) {
+		$students_to_print = array_slice($students, $group_i, BLOCK_EXACOMP_STUDENTS_PER_COLUMN, true);
 		
 		$html_header = $output->overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
 
 		// $html .= "&nbsp;<br />";
-		$html_tables[] = $output->competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $scheme, $selectedNiveau->id != block_exacomp\SHOW_ALL_NIVEAUS, 0);
+		$html_tables[] = $output->competence_overview($competence_tree, $courseid, $students_to_print, $showevaluation, $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $scheme, $selectedNiveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, 0);
 	}
 
 	block_exacomp\printer::competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, null, $html_header, $html_tables);
@@ -151,7 +151,7 @@ echo $output->overview_dropdowns('assign_competencies', $allCourseStudents, $sel
 
 echo '<div class="clearfix"></div>';
 
-if($selectedNiveau->id != block_exacomp\SHOW_ALL_NIVEAUS){
+if($selectedNiveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS){
 	echo $output->overview_metadata($selectedSubject->title, $selectedTopic, null, $selectedNiveau);
 			
 	if($isTeacher)
@@ -187,8 +187,8 @@ if($course_settings->nostudents != 1 && $studentid)
 	echo $output->student_evaluation($showevaluation, $isTeacher,$selectedNiveau->id,$subjectid, $topicid, $studentid);
 
 echo $output->competence_overview($competence_tree, $courseid, $students, $showevaluation,
-		$isTeacher ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $scheme,
-		($selectedNiveau->id != block_exacomp\SHOW_ALL_NIVEAUS), 0);
+		$isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $scheme,
+		($selectedNiveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS), 0);
 echo '</div>';
 
 echo html_writer::end_tag("div");

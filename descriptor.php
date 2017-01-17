@@ -37,7 +37,7 @@ $item = $id ? \block_exacomp\descriptor::get($id) : null;
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/descriptor.php', array('courseid' => $courseid));
-$PAGE->set_heading($item ? \block_exacomp\trans('competency_edit', ['de:Kompetenz bearbeiten', 'en:Edit competency']) : \block_exacomp\trans('competency_add', ['de:Neue Kompetenz anlegen', 'en:Create new competency']));
+$PAGE->set_heading($item ? block_exacomp_trans('competency_edit', ['de:Kompetenz bearbeiten', 'en:Edit competency']) : block_exacomp_trans('competency_add', ['de:Neue Kompetenz anlegen', 'en:Create new competency']));
 $PAGE->set_pagelayout('embedded');
 
 // build tab navigation & print header
@@ -46,13 +46,13 @@ $PAGE->set_pagelayout('embedded');
 
 block_exacomp_require_teacher($context);
 if ($item) {
-	block_exacomp\require_item_capability(block_exacomp\CAP_MODIFY, $item);
+	block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_MODIFY, $item);
 }
 
-// TODO: check permissions, check if item is \block_exacomp\DATA_SOURCE_CUSTOM
+// TODO: check permissions, check if item is BLOCK_EXACOMP_DATA_SOURCE_CUSTOM
 
 if ($item && optional_param('action', '', PARAM_TEXT) == 'delete') {
-	block_exacomp\require_item_capability(block_exacomp\CAP_DELETE, $item);
+	block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_DELETE, $item);
 	$item->delete();
 
 	echo $output->popup_close_and_reload();
@@ -70,15 +70,15 @@ class block_exacomp_local_item_form extends moodleform {
 
 		$mform = & $this->_form;
 
-		$mform->addElement('text', 'title', \block_exacomp\get_string('name'), 'maxlength="255" size="60"');
+		$mform->addElement('text', 'title', block_exacomp_get_string('name'), 'maxlength="255" size="60"');
 		$mform->setType('title', PARAM_TEXT);
-		$mform->addRule('title', \block_exacomp\get_string("titlenotemtpy"), 'required', null, 'client');
+		$mform->addRule('title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
 
 		if ($this->_customdata['hasNiveau']) {
-			$mform->addElement('selectgroups', 'niveauid', \block_exacomp\get_string('niveau'), block_exacomp\get_select_niveau_items(false));
+			$mform->addElement('selectgroups', 'niveauid', block_exacomp_get_string('niveau'), block_exacomp_get_select_niveau_items(false));
 		}
 
-		$element = $mform->addElement('select', 'categories', \block_exacomp\get_string('categories'), $DB->get_records_menu(\block_exacomp\DB_CATEGORIES, null, 'title', 'id, title'));
+		$element = $mform->addElement('select', 'categories', block_exacomp_get_string('categories'), $DB->get_records_menu(BLOCK_EXACOMP_DB_CATEGORIES, null, 'title', 'id, title'));
 		$element->setMultiple(true);
 		
 		$this->add_action_buttons(false);
@@ -102,14 +102,14 @@ if($formdata = $form->get_data()) {
 	
 	if (!$item) {
 		die('TODO');
-		$new->source = \block_exacomp\DATA_SOURCE_CUSTOM;
+		$new->source = BLOCK_EXACOMP_DATA_SOURCE_CUSTOM;
 		$new->sourceid = 0;
 		$new->subjid = required_param('subjectid', PARAM_INT);
 		
-		$new->id = $DB->insert_record(\block_exacomp\DB_TOPICS, $new);
+		$new->id = $DB->insert_record(BLOCK_EXACOMP_DB_TOPICS, $new);
 		
 		// add topic to course
-		$DB->insert_record(\block_exacomp\DB_COURSETOPICS, array(
+		$DB->insert_record(BLOCK_EXACOMP_DB_COURSETOPICS, array(
 			'courseid' => $courseid,
 			'topicid' => $new->id
 		));
@@ -129,8 +129,8 @@ echo $output->header($context, $courseid, '', false);
 if ($item) {
 	// TODO: also check $item->can_delete
 	echo '<div style="position: absolute; top: 40px; right: 20px;">';
-	echo '<a href="'.$_SERVER['REQUEST_URI'].'&action=delete" onclick="return confirm(\''.\block_exacomp\trans('de:Wirklich löschen?').'\');">';
-	echo \block_exacomp\get_string('delete');
+	echo '<a href="'.$_SERVER['REQUEST_URI'].'&action=delete" onclick="return confirm(\''.block_exacomp_trans('de:Wirklich löschen?').'\');">';
+	echo block_exacomp_get_string('delete');
 	echo '</a></div>';
 }
 */

@@ -49,8 +49,8 @@ $page_identifier = 'tab_examples';
 $PAGE->set_url ( '/blocks/exacomp/view_examples.php', array (
 		'courseid' => $courseid 
 ) );
-$PAGE->set_heading ( get_string ( 'blocktitle', 'block_exacomp' ) );
-$PAGE->set_title ( get_string ( $page_identifier, 'block_exacomp' ) );
+$PAGE->set_heading ( block_exacomp_get_string('blocktitle', 'block_exacomp' ) );
+$PAGE->set_title ( block_exacomp_get_string($page_identifier, 'block_exacomp' ) );
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation ( $courseid );
@@ -77,10 +77,10 @@ if($style==1){
 	//non critical - only 1 additional query for whole loading process
 	$comp_examples = \block_exacomp\example::get_objects_sql(
             'SELECT DISTINCT e.*
-                FROM {'.\block_exacomp\DB_COURSETOPICS.'} ct
-                JOIN {'.\block_exacomp\DB_DESCTOPICS.'} dt ON ct.topicid = dt.topicid
-                JOIN {'.\block_exacomp\DB_DESCEXAMP.'} de ON dt.descrid = de.descrid
-                JOIN {'.\block_exacomp\DB_EXAMPLES.'} e ON e.id = de.exampid
+                FROM {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct
+                JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} dt ON ct.topicid = dt.topicid
+                JOIN {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} de ON dt.descrid = de.descrid
+                JOIN {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e ON e.id = de.exampid
                 WHERE ct.courseid = ?'
             , array($courseid));
 	

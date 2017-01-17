@@ -17,8 +17,6 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-namespace block_exacomp;
-
 require __DIR__.'/inc.php';
 
 $courseid = required_param('courseid', PARAM_INT);

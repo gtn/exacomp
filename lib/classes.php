@@ -22,13 +22,14 @@ namespace block_exacomp;
 defined('MOODLE_INTERNAL') || die();
 
 use block_exacomp\globals as g;
+use Super\Cache;
 
 class db_layer {
 
 	public $courseid = 0;
 	public $showalldescriptors = true;
 	public $showallexamples = true;
-	public $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES);
+	public $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES);
 	public $showonlyvisible = false;
 	public $mindvisibility = false;
 
@@ -89,20 +90,20 @@ class db_layer {
 		$sql = "
 			SELECT DISTINCT d.id, d.title, d.source, d.niveauid, desctopmm.topicid, d.profoundness, d.parentid,
 				n.sorting AS niveau_sorting, n.title AS niveau_title, dvis.visible as visible, desctopmm.sorting
-			FROM {".DB_DESCTOPICS."} desctopmm
-			JOIN {".DB_DESCRIPTORS."} d ON desctopmm.descrid=d.id AND d.parentid=0
+			FROM {".BLOCK_EXACOMP_DB_DESCTOPICS."} desctopmm
+			JOIN {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d ON desctopmm.descrid=d.id AND d.parentid=0
 			-- left join, because courseid=0 has no descvisibility!
-			LEFT JOIN {".DB_DESCVISIBILITY."} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=?
-			LEFT JOIN {".DB_NIVEAUS."} n ON d.niveauid = n.id
+			LEFT JOIN {".BLOCK_EXACOMP_DB_DESCVISIBILITY."} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=?
+			LEFT JOIN {".BLOCK_EXACOMP_DB_NIVEAUS."} n ON d.niveauid = n.id
 			".($this->showalldescriptors ? "" : "
-				JOIN {".DB_COMPETENCE_ACTIVITY."} da ON d.id=da.compid AND da.comptype=".TYPE_DESCRIPTOR."
+				JOIN {".BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY."} da ON d.id=da.compid AND da.comptype=".BLOCK_EXACOMP_TYPE_DESCRIPTOR."
 				JOIN {course_modules} a ON da.activityid=a.id ".(($this->courseid > 0) ? "AND a.course=".$this->courseid : ""))."
 			WHERE desctopmm.topicid = ?
 			".($this->showonlyvisible ? " AND (dvis.visible = 1 OR dvis.visible IS NULL)" : "");
 
 		$descriptors = g::$DB->get_records_sql($sql, [$this->courseid, $topic->id]);
 
-		block_exacomp_sort_items($descriptors, ['niveau_' => \block_exacomp\DB_NIVEAUS, \block_exacomp\DB_DESCRIPTORS]);
+		block_exacomp_sort_items($descriptors, ['niveau_' => BLOCK_EXACOMP_DB_NIVEAUS, BLOCK_EXACOMP_DB_DESCRIPTORS]);
 
 		$topicDescriptors[$topic->id] = $descriptors;
 
@@ -132,13 +133,13 @@ class db_layer {
 
 		$sql = 'SELECT d.id, d.title, d.niveauid, d.source, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, '.
 			($this->mindvisibility ? 'dvis.visible as visible, ' : '').' d.sorting
-			FROM {'.DB_DESCRIPTORS.'} d '
-			.($this->mindvisibility ? 'JOIN {'.DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 '
+			FROM {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d '
+			.($this->mindvisibility ? 'JOIN {'.BLOCK_EXACOMP_DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 '
 				.($this->showonlyvisible ? 'AND dvis.visible=1 ' : '') : '');
 
 		/* activity association only for parent descriptors
 		 .($this->showalldescriptors ? '' : '
-		 JOIN {'.DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.TYPE_DESCRIPTOR.'
+		 JOIN {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.BLOCK_EXACOMP_TYPE_DESCRIPTOR.'
 		 JOIN {course_modules} a ON da.activityid=a.id '.(($this->courseid>0)?'AND a.course=?':''));
 		*/
 		$sql .= ' WHERE d.parentid = ?';
@@ -169,7 +170,7 @@ class db_layer {
 
 		$this->init_objects($topics, ['subject' => $subject]);
 
-		return block_exacomp_sort_items($topics, DB_TOPICS);
+		return block_exacomp_sort_items($topics, BLOCK_EXACOMP_DB_TOPICS);
 	}
 
 	function set_object_datas(array $objects, array $data) {
@@ -308,7 +309,7 @@ class db_layer_course extends db_layer {
 	public $courseid = 0;
 	public $showalldescriptors = false;
 	public $showallexamples = true;
-	public $filteredtaxonomies = array(SHOW_ALL_TAXONOMIES);
+	public $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES);
 	public $showonlyvisible = false;
 	public $mindvisibility = true;
 
@@ -623,11 +624,11 @@ class db_record {
 	}
 
 	public function has_capability($cap) {
-		return has_item_capability($cap, $this);
+		return block_exacomp_has_item_capability($cap, $this);
 	}
 
 	public function require_capability($cap) {
-		return require_item_capability($cap, $this);
+		return block_exacomp_require_item_capability($cap, $this);
 	}
 
 	/**
@@ -758,7 +759,7 @@ class db_record {
 }
 
 class subject extends db_record {
-	const TABLE = DB_SUBJECTS;
+	const TABLE = BLOCK_EXACOMP_DB_SUBJECTS;
 	const SUBS = 'topics';
 
 	function fill_topics() {
@@ -779,7 +780,7 @@ class subject extends db_record {
 }
 
 class topic extends db_record {
-	const TABLE = DB_TOPICS;
+	const TABLE = BLOCK_EXACOMP_DB_TOPICS;
 	const SUBS = 'descriptors';
 
 	// why not using lib.php block_exacomp_get_topic_numbering??
@@ -821,7 +822,7 @@ class topic extends db_record {
 }
 
 class descriptor extends db_record {
-	const TABLE = DB_DESCRIPTORS;
+	const TABLE = BLOCK_EXACOMP_DB_DESCRIPTORS;
 	const SUBS = 'children';
 
 	var $parent;
@@ -846,7 +847,7 @@ class descriptor extends db_record {
 
 		$topicid = null;
 		if ($parent_descriptor) {
-			$descriptor_topic_mm = $DB->get_record(DB_DESCTOPICS, array('descrid' => $parent_descriptor->id));
+			$descriptor_topic_mm = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid' => $parent_descriptor->id));
 			$topicid = $descriptor_topic_mm->topicid;
 
 			$parent_descriptor->topicid = $topicid;
@@ -875,7 +876,7 @@ class descriptor extends db_record {
 		$childdesctopic_mm->topicid = $topicid;
 		$childdesctopic_mm->descrid = $descriptor->id;
 
-		$DB->insert_record(DB_DESCTOPICS, $childdesctopic_mm);
+		$DB->insert_record(BLOCK_EXACOMP_DB_DESCTOPICS, $childdesctopic_mm);
 
 		// other courses
 		$otherCourseids = block_exacomp_get_courseids_by_descriptor($descriptor->id);
@@ -892,7 +893,7 @@ class descriptor extends db_record {
 			$visibility->studentid = 0;
 			$visibility->visible = 1;
 
-			$DB->insert_record(DB_DESCVISIBILITY, $visibility);
+			$DB->insert_record(BLOCK_EXACOMP_DB_DESCVISIBILITY, $visibility);
 		}
 
 		// reset desc visiblity in all associated courses
@@ -908,25 +909,25 @@ class descriptor extends db_record {
 		global $DB;
 
 		// read current
-		$to_delete = $current = $DB->get_records_menu(DB_DESCCAT, array('descrid' => $this->id), null, 'catid, id');
+		$to_delete = $current = $DB->get_records_menu(BLOCK_EXACOMP_DB_DESCCAT, array('descrid' => $this->id), null, 'catid, id');
 
 		// add new ones
 		foreach ($categories as $id) {
 			if (!isset($current[$id])) {
-				$DB->insert_record(DB_DESCCAT, array('descrid' => $this->id, 'catid' => $id));
+				$DB->insert_record(BLOCK_EXACOMP_DB_DESCCAT, array('descrid' => $this->id, 'catid' => $id));
 			} else {
 				unset($to_delete[$id]);
 			}
 		}
 
 		// delete old ones
-		$DB->delete_records_list(DB_DESCCAT, 'id', $to_delete);
+		$DB->delete_records_list(BLOCK_EXACOMP_DB_DESCCAT, 'id', $to_delete);
 	}
 
 	function fill_category_ids() {
 		global $DB;
 
-		return $DB->get_records_menu(DB_DESCCAT, array('descrid' => $this->id), null, 'catid, catid AS tmp');
+		return $DB->get_records_menu(BLOCK_EXACOMP_DB_DESCCAT, array('descrid' => $this->id), null, 'catid, catid AS tmp');
 	}
 
 	function fill_children() {
@@ -943,7 +944,7 @@ class descriptor extends db_record {
 }
 
 class example extends db_record {
-	const TABLE = DB_EXAMPLES;
+	const TABLE = BLOCK_EXACOMP_DB_EXAMPLES;
 
 	function get_numbering() {
 		if (!isset($this->descriptor)) {
@@ -996,15 +997,15 @@ class example extends db_record {
 }
 
 class niveau extends db_record {
-	const TABLE = DB_NIVEAUS;
+	const TABLE = BLOCK_EXACOMP_DB_NIVEAUS;
 
 	function get_subtitle($subjectid) {
-		return g::$DB->get_field(DB_SUBJECT_NIVEAU_MM, 'subtitle', ['subjectid' => $subjectid, 'niveauid' => $this->id]); // none for now
+		return g::$DB->get_field(BLOCK_EXACOMP_DB_SUBJECT_NIVEAU_MM, 'subtitle', ['subjectid' => $subjectid, 'niveauid' => $this->id]); // none for now
 	}
 }
 
 class cross_subject extends db_record {
-	const TABLE = DB_CROSSSUBJECTS;
+	const TABLE = BLOCK_EXACOMP_DB_CROSSSUBJECTS;
 
 	function is_draft() {
 		return !$this->courseid;
@@ -1018,7 +1019,158 @@ class cross_subject extends db_record {
 			return true;
 		}
 
-		return g::$DB->record_exists(\block_exacomp\DB_CROSSSTUD, array('crosssubjid' => $this->id));
+		return g::$DB->record_exists(BLOCK_EXACOMP_DB_CROSSSTUD, array('crosssubjid' => $this->id));
 	}
 }
 
+class global_config {
+
+	/**
+	 * Returns all values used for examples and child-descriptors
+	 */
+	static function get_value_titles($courseid = 0, $short = false) {
+		return Cache::staticCallback([__CLASS__, __FUNCTION__], function($courseid = 0, $short = false) {
+			// if additional_grading is set, use global value scheme
+
+			if (block_exacomp_additional_grading()) {
+				if($short)
+					return array(
+						- 1 => block_exacomp_get_string('comp_-1_short','block_exacomp'),
+						0 => block_exacomp_get_string('comp_0_short','block_exacomp'),
+						1 => block_exacomp_get_string('comp_1_short','block_exacomp'),
+						2 => block_exacomp_get_string('comp_2_short','block_exacomp'),
+						3 => block_exacomp_get_string('comp_3_short','block_exacomp')
+					);
+
+				return array (
+						- 1 => block_exacomp_get_string('comp_-1','block_exacomp'),
+						0 => block_exacomp_get_string('comp_0','block_exacomp'),
+						1 => block_exacomp_get_string('comp_1','block_exacomp'),
+						2 => block_exacomp_get_string('comp_2','block_exacomp'),
+						3 => block_exacomp_get_string('comp_3','block_exacomp')
+				);
+			}
+			// else use value scheme set in the course
+			else {
+				// TODO: add settings to g::$COURSE?
+				$course_grading = block_exacomp_get_settings_by_course(($courseid==0)?g::$COURSE->id:$courseid)->grading;
+
+				$values = array(-1 => ' ');
+				$values += range(0, $course_grading);
+
+				return $values;
+			}
+		}, func_get_args());
+	}
+
+	/**
+	 * Returns title for one value
+	 * @param id $id
+	 */
+	static function get_value_title_by_id($id) {
+		if(!$id) return ' ';
+		return static::get_value_titles()[$id];
+	}
+
+	/**
+	 * Returns all values used for examples and child-descriptors
+	 */
+	static function get_student_value_titles() {
+		return Cache::staticCallback([__CLASS__, __FUNCTION__], function() {
+			// if additional_grading is set, use global value scheme
+			if (block_exacomp_additional_grading()) {
+				return array (
+						- 1 => ' ',
+						1 => ':-(',
+						2 => ':-|',
+						3 => ':-)'
+				);
+			}
+			// else use value scheme set in the course
+			else {
+				// TODO: add settings to g::$COURSE?
+				$course_grading = block_exacomp_get_settings_by_course(g::$COURSE->id)->grading;
+
+				$values = array(-1 => ' ');
+				$values += range(1, $course_grading);
+
+				return $values;
+			}
+		});
+	}
+
+	/**
+	 * Returns title for one value
+	 * @param id $id
+	 */
+	static function get_student_value_title_by_id($id) {
+		if(!$id) return ' ';
+		return static::get_student_value_titles()[$id];
+	}
+
+	/**
+	 * Returns all evaluation niveaus, specified by the admin
+	 */
+	static function get_evalniveaus() {
+		static $values;
+
+		if ($values !== null) {
+			return $values;
+		}
+		$values = array(-1 => ' ');
+		$values += g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU,null,'','id,title');
+
+		return $values;
+	}
+
+	/**
+	 * Returns title for one evaluation niveau
+	 * @param id $id
+	 */
+	static function get_evalniveau_title_by_id($id) {
+		return static::get_evalniveaus()[$id];
+	}
+
+	/**
+	 * Maps gradings (1.0 - 6.0) to 0-3 values
+	 *
+	 * @param double $additionalinfo
+	 */
+	static function get_additionalinfo_value_mapping($additionalinfo){
+		if (!$additionalinfo)
+			return -1;
+
+		$mapping = array(6.0, 4.8, 3.5, 2.2);
+		$value = -1;
+
+		foreach($mapping as $k => $v) {
+			if($additionalinfo > $v)
+				break;
+			$value = $k;
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Maps 0-3 values to gradings (1.0 - 6.0)
+	 *
+	 * @param int $value
+	 */
+	static function get_value_additionalinfo_mapping($value){
+		if (!$value)
+			return -1;
+
+		$mapping = array(6.0, 4.4, 2.7, 1.0);
+
+		return $mapping[$value];
+	}
+
+	/**
+	 * return range of gradings to value mapping
+	 * @param int $value
+	 */
+	static function get_values_additionalinfo_mapping(){
+		return array(6.0, 4.4, 2.7, 1.0);
+	}
+}

@@ -84,7 +84,7 @@ class TestOfLib extends UnitTestCase {
 		block_exacomp_set_coursetopics($this->courseid, $topicData);
 	
 		$activities = 'a:1:{i:2;a:1:{i:1;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_DESCRIPTOR);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_DESCRIPTOR);
 		 
 		$subjects = block_exacomp_get_subjects_by_course($this->courseid, false);
 	
@@ -104,7 +104,7 @@ class TestOfLib extends UnitTestCase {
 		block_exacomp_set_coursetopics($this->courseid, $topicData);
 	
 		$activities = 'a:1:{i:2;a:1:{i:1;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_TOPIC);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_TOPIC);
 	
 		$subjects = block_exacomp_get_subjects_by_course($this->courseid, false);
 	
@@ -135,7 +135,7 @@ class TestOfLib extends UnitTestCase {
 		block_exacomp_set_coursetopics($this->courseid, $topicData);
 		 
 		$activities = 'a:1:{i:2;a:1:{i:1;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_DESCRIPTOR);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_DESCRIPTOR);
 		
 		$topics = block_exacomp_get_topics_by_subject($this->courseid, 1);
 		 
@@ -154,7 +154,7 @@ class TestOfLib extends UnitTestCase {
 		block_exacomp_set_coursetopics($this->courseid, $topicData);
 	
 		$activities = 'a:1:{i:2;a:1:{i:1;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_DESCRIPTOR);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_DESCRIPTOR);
 		 
 		$topics = block_exacomp_get_topics_by_course($this->courseid);
 	
@@ -173,7 +173,7 @@ class TestOfLib extends UnitTestCase {
 		block_exacomp_set_coursetopics($this->courseid, $topicData);
 	
 		$activities = 'a:1:{i:2;a:1:{i:1;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_TOPIC);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_TOPIC);
 	
 		$topics = block_exacomp_get_topics_by_course($this->courseid);
 	
@@ -191,10 +191,10 @@ class TestOfLib extends UnitTestCase {
 		block_exacomp_set_coursetopics($this->courseid, $topicData);
 	
 		$activities = 'a:1:{i:2;a:1:{i:12;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_DESCRIPTOR);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_DESCRIPTOR);
 		
 		$activities = 'a:1:{i:2;a:2:{i:1;s:0:"";i:8;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_TOPIC);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_TOPIC);
 	
 		$topics = block_exacomp_get_topics_by_course($this->courseid);
 	
@@ -212,10 +212,10 @@ class TestOfLib extends UnitTestCase {
 		block_exacomp_set_coursetopics($this->courseid, $topicData);
 	
 		$activities = 'a:1:{i:2;a:1:{i:12;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_DESCRIPTOR);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_DESCRIPTOR);
 		 
 		$activities = 'a:1:{i:2;a:1:{i:1;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_TOPIC);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_TOPIC);
 	
 		$topics = block_exacomp_get_topics_by_course($this->courseid);
 	
@@ -233,10 +233,10 @@ class TestOfLib extends UnitTestCase {
 		block_exacomp_set_coursetopics($this->courseid, $topicData);
 	
 		$activities = 'a:1:{i:2;a:1:{i:12;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_DESCRIPTOR);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_DESCRIPTOR);
 		
 		$activities = 'a:1:{i:2;a:1:{i:1;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_TOPIC);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_TOPIC);
 		
 		$descriptors = block_exacomp_get_descriptors($this->courseid);
 	
@@ -253,10 +253,10 @@ class TestOfLib extends UnitTestCase {
 		block_exacomp_set_coursetopics($this->courseid, $topicData);
 	
 		$activities = 'a:2:{i:2;a:1:{i:12;s:0:"";}i:3;a:1:{i:12;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_DESCRIPTOR);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_DESCRIPTOR);
 		 
 		$activities = 'a:1:{i:2;a:1:{i:1;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_TOPIC);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_TOPIC);
 		 
 		$descriptors = block_exacomp_get_descriptors($this->courseid);
 	
@@ -273,10 +273,10 @@ class TestOfLib extends UnitTestCase {
 		block_exacomp_set_coursetopics($this->courseid, $topicData);
 	
 		$activities = 'a:3:{i:2;a:1:{i:12;s:0:"";}i:3;a:1:{i:12;s:0:"";}i:4;a:1:{i:15;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_DESCRIPTOR);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_DESCRIPTOR);
 	
 		$activities = 'a:1:{i:2;a:1:{i:1;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_TOPIC);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_TOPIC);
 	
 		$descriptors = block_exacomp_get_descriptors($this->courseid);
 	
@@ -292,7 +292,7 @@ class TestOfLib extends UnitTestCase {
 		block_exacomp_set_coursetopics($this->courseid, $topicData);
 		
 		$activities = 'a:1:{i:2;a:1:{i:8;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_TOPIC);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_TOPIC);
 		
 		$data = block_exacomp_get_competence_tree($this->courseid);
 		
@@ -308,7 +308,7 @@ class TestOfLib extends UnitTestCase {
 		block_exacomp_set_coursetopics($this->courseid, $topicData);
 		 
 		$activities = 'a:1:{i:2;a:1:{i:1;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_TOPIC);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_TOPIC);
 		 
 		$data = block_exacomp_get_competence_tree($this->courseid);
 		 
@@ -324,10 +324,10 @@ class TestOfLib extends UnitTestCase {
 		block_exacomp_set_coursetopics($this->courseid, $topicData);
 	
 		$activities = 'a:2:{i:2;a:1:{i:12;s:0:"";}i:3;a:1:{i:12;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_DESCRIPTOR);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_DESCRIPTOR);
 	
 		$activities = 'a:1:{i:2;a:1:{i:1;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_TOPIC);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_TOPIC);
 		
 		$data = block_exacomp_get_competence_tree($this->courseid);
 	
@@ -343,7 +343,7 @@ class TestOfLib extends UnitTestCase {
 		block_exacomp_set_coursetopics($this->courseid, $topicData);
 	
 		$activities = 'a:2:{i:2;a:1:{i:12;s:0:"";}i:3;a:1:{i:12;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_DESCRIPTOR);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_DESCRIPTOR);
 	
 		$data = block_exacomp_get_competence_tree($this->courseid);
 	
@@ -359,7 +359,7 @@ class TestOfLib extends UnitTestCase {
 		block_exacomp_set_coursetopics($this->courseid, $topicData);
 	
 		$activities = 'a:2:{i:2;a:2:{i:1;s:0:"";i:12;s:0:"";}i:3;a:1:{i:12;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_DESCRIPTOR);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_DESCRIPTOR);
 	
 		$data = block_exacomp_get_competence_tree($this->courseid);
 	
@@ -375,10 +375,10 @@ class TestOfLib extends UnitTestCase {
 		block_exacomp_set_coursetopics($this->courseid, $topicData);
 	
 		$activities = 'a:3:{i:2;a:1:{i:1;s:0:"";}i:3;a:1:{i:2;s:0:"";}i:4;a:1:{i:3;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_DESCRIPTOR);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_DESCRIPTOR);
 	
 		$activities = 'a:1:{i:2;a:1:{i:1;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_TOPIC);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_TOPIC);
 		
 		$data = block_exacomp_get_competence_tree($this->courseid);
 	
@@ -394,10 +394,10 @@ class TestOfLib extends UnitTestCase {
 		block_exacomp_set_coursetopics($this->courseid, $topicData);
 	
 		$activities = 'a:3:{i:2;a:3:{i:1;s:0:"";i:22;s:0:"";i:23;s:0:"";}i:3;a:1:{i:2;s:0:"";}i:4;a:1:{i:3;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_DESCRIPTOR);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_DESCRIPTOR);
 	
 		$activities = 'a:1:{i:2;a:1:{i:1;s:0:"";}}';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_TOPIC);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_TOPIC);
 		 
 		$data = block_exacomp_get_competence_tree($this->courseid);
 	
@@ -413,10 +413,10 @@ class TestOfLib extends UnitTestCase {
 		block_exacomp_set_coursetopics($this->courseid, $topicData);
 	
 		$activities = '';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_DESCRIPTOR);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_DESCRIPTOR);
 	
 		$activities = '';
-		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, TYPE_TOPIC);
+		block_exacomp_save_competences_activities(unserialize($activities), $this->courseid, BLOCK_EXACOMP_TYPE_TOPIC);
 	
 		$data = block_exacomp_get_competence_tree($this->courseid);
 	

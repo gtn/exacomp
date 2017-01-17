@@ -48,7 +48,7 @@ if (!$isTeacher) {
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/competence_associations.php', array('courseid' => $courseid));
-$PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle', 'block_exacomp'));
 $PAGE->set_pagelayout('embedded');
 
 // build breadcrumbs navigation
@@ -66,9 +66,9 @@ if ($editmode && optional_param("action", "", PARAM_TEXT) == "save") {
 
 		foreach($descriptorids as $descriptorid){
 			//check if record already exists -> if not insert new
-			$record = $DB->get_records(\block_exacomp\DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$exampleid));
+			$record = $DB->get_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$exampleid));
 			if(!$record){
-				$sql = "SELECT MAX(sorting) as sorting FROM {".\block_exacomp\DB_DESCEXAMP."} WHERE descrid=?";
+				$sql = "SELECT MAX(sorting) as sorting FROM {".BLOCK_EXACOMP_DB_DESCEXAMP."} WHERE descrid=?";
 				$max_sorting = $DB->get_record_sql($sql, array($descriptorid));
 				$sorting = intval($max_sorting->sorting)+1;
 
@@ -76,12 +76,12 @@ if ($editmode && optional_param("action", "", PARAM_TEXT) == "save") {
 				$insert->descrid = $descriptorid;
 				$insert->exampid = $exampleid;
 				$insert->sorting = $sorting;
-				$DB->insert_record(\block_exacomp\DB_DESCEXAMP, $insert);
+				$DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
 			}
 		}
 
 		$not_in = join(',', $descriptorids);
-		$deleted = $DB->delete_records_select(\block_exacomp\DB_DESCEXAMP, 'exampid = ? AND descrid NOT IN('.$not_in.')', array($exampleid));
+		$deleted = $DB->delete_records_select(BLOCK_EXACOMP_DB_DESCEXAMP, 'exampid = ? AND descrid NOT IN('.$not_in.')', array($exampleid));
 	}
 
 	echo $output->popup_close_and_reload();
@@ -89,15 +89,15 @@ if ($editmode && optional_param("action", "", PARAM_TEXT) == "save") {
 }
 /* CONTENT REGION */
 //get descriptors for the given example
-$example_descriptors = $DB->get_records(\block_exacomp\DB_DESCEXAMP,array('exampid'=>$exampleid),'','descrid');
+$example_descriptors = $DB->get_records(BLOCK_EXACOMP_DB_DESCEXAMP,array('exampid'=>$exampleid),'','descrid');
 
 $tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid);
 
-echo html_writer::tag("p",get_string("competence_associations_explaination","block_exacomp",$example->title));
+echo html_writer::tag("p",block_exacomp_get_string("competence_associations_explaination","block_exacomp",$example->title));
 $content = $output->competence_based_list_tree($tree, $isTeacher, $editmode);
 
 if($editmode)
-	$content.= html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp')));
+	$content.= html_writer::empty_tag('input', array('type'=>'submit', 'value'=>block_exacomp_get_string('save_selection', 'block_exacomp')));
 
 echo  html_writer::tag('form', $content, array('method'=>'post', 'action'=>$PAGE->url.'&exampleid='.$exampleid.'&editmode='.$editmode.'&action=save', 'name'=>'add_association'));
 		

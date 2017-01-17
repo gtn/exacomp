@@ -34,7 +34,7 @@ $context = context_course::instance($courseid);
 block_exacomp_require_teacher($context);
 
 $PAGE->set_url('/blocks/exacomp/pre_planning_storage.php', array('courseid' => $courseid, 'creatorid'=>$creatorid));
-$PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle', 'block_exacomp'));
 $PAGE->set_pagelayout('embedded');
 
 // build breadcrumbs navigation
@@ -47,7 +47,7 @@ echo $output->header($context, $courseid, '', false);
 $students = block_exacomp_get_students_by_course($courseid);
 
 if(!$students) {
-	echo get_string('nostudents','block_exacomp');
+	echo block_exacomp_get_string('nostudents','block_exacomp');
 		
 	echo $output->footer();
 	exit;
@@ -59,7 +59,7 @@ if(strcmp($action, 'empty')==0){
 
 $schedules = block_exacomp_get_pre_planning_storage($creatorid, $courseid);
 //if(!$schedules) {
-	//echo get_string('noschedules_pre_planning_storage','block_exacomp');
+	//echo block_exacomp_get_string('noschedules_pre_planning_storage','block_exacomp');
 	//echo $output->footer();
 	//exit;
 //}
@@ -81,9 +81,9 @@ echo $output->example_trash(array(), false);
 echo $output->create_blocking_event();
 
 echo html_writer::div(html_writer::empty_tag('input', array('type'=>'button', 'id'=>'save_pre_planning_storage', 
-	'value'=>get_string('save_pre_planning_selection', 'block_exacomp'))).
+	'value'=>block_exacomp_get_string('save_pre_planning_selection', 'block_exacomp'))).
 	html_writer::empty_tag('input', array('type'=>'submit', 'id'=>'empty_pre_planning_storage', 
-	'value'=>get_string('empty_pre_planning_storage', 'block_exacomp'), 'onclick'=>"return confirm('".get_string('empty_pre_planning_confirm', 'block_exacomp')."')")),'', array('id'=>'save_button'));
+	'value'=>block_exacomp_get_string('empty_pre_planning_storage', 'block_exacomp'), 'onclick'=>"return confirm('".block_exacomp_get_string('empty_pre_planning_confirm', 'block_exacomp')."')")),'', array('id'=>'save_button'));
 
 echo html_writer::end_tag('form');
 echo $output->footer();

@@ -100,7 +100,7 @@ foreach ($Iterator as $file) {
 		}
 
 		// $brackets = '(\[[^\]+]\]|\([^\]+\))';
-		if (preg_match('!(?<all>get_string\s*\(\s*(?<params>["\'][^"\']*["\'](\s*,\s*["\'][^"\']*["\'])?))!', $line, $matches)) {
+		if (preg_match('!(?<all>block_exacomp_get_string\s*\(\s*(?<params>["\'][^"\']*["\'](\s*,\s*["\'][^"\']*["\'])?))!', $line, $matches)) {
 			$matches = (object)$matches;
 			$params = eval('return array('.$matches->params.');');
 

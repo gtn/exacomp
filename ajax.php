@@ -106,16 +106,16 @@ switch($action){
 				block_exacomp_add_example_to_schedule($student->id, $exampleid, $creatorid, $courseid);
 			}
 			
-			echo get_string('weekly_schedule_added_all', 'block_exacomp');
+			echo block_exacomp_get_string('weekly_schedule_added_all', 'block_exacomp');
 		}else if($studentid == 0){
 			if(!block_exacomp_in_pre_planing_storage($exampleid, $creatorid, $courseid)){
 				if(block_exacomp_add_example_to_schedule(0, $exampleid, $creatorid, $courseid))
-					echo get_string('pre_planning_storage_added', 'block_exacomp');
+					echo block_exacomp_get_string('pre_planning_storage_added', 'block_exacomp');
 			}else 
-				echo get_string('pre_planning_storage_already_contains', 'block_exacomp');
+				echo block_exacomp_get_string('pre_planning_storage_already_contains', 'block_exacomp');
 		}else{
 			if ( block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid) )
-				echo get_string("weekly_schedule_added","block_exacomp");
+				echo block_exacomp_get_string("weekly_schedule_added","block_exacomp");
 		}
 		
 		break;
@@ -145,7 +145,7 @@ switch($action){
 			
 			foreach ($competencies_by_type as $comptype => $competencies) {
 				foreach($competencies as $comp){
-					block_exacomp_set_user_competence ( $comp->userid, $comp->compid, $comptype, $courseid, ($isTeacher) ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $comp->value, $comp->niveauid );
+					block_exacomp_set_user_competence ( $comp->userid, $comp->compid, $comptype, $courseid, ($isTeacher) ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $comp->value, $comp->niveauid );
 				}
 			}
 		}
@@ -158,7 +158,7 @@ switch($action){
 				'niveauid' => PARAM_INT,
 			)));
 			foreach($examples as $example){
-				block_exacomp_set_user_example($example->userid, $example->exampleid, $courseid, ($isTeacher) ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $example->value, $example->niveauid);
+				block_exacomp_set_user_example($example->userid, $example->exampleid, $courseid, ($isTeacher) ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $example->value, $example->niveauid);
 			}
 		}
 		
@@ -223,16 +223,16 @@ switch($action){
 		// TODO: pruefen ob mein crosssubj?
 		
 		//delete student-crosssubject association
-		$DB->delete_records(\block_exacomp\DB_CROSSSTUD, array('crosssubjid'=>$crosssubjectid));
+		$DB->delete_records(BLOCK_EXACOMP_DB_CROSSSTUD, array('crosssubjid'=>$crosssubjectid));
 		
 		//delete descriptor-crosssubject association
-		$DB->delete_records(\block_exacomp\DB_DESCCROSS, array('crosssubjid'=>$crosssubjectid));
+		$DB->delete_records(BLOCK_EXACOMP_DB_DESCCROSS, array('crosssubjid'=>$crosssubjectid));
 		
 		//delete crosssubject overall evaluations
-		$DB->delete_records(\block_exacomp\DB_COMPETENCES, array('compid'=>$crosssubjectid, 'comptype'=>TYPE_CROSSSUB));
+		$DB->delete_records(BLOCK_EXACOMP_DB_COMPETENCES, array('compid'=>$crosssubjectid, 'comptype'=>BLOCK_EXACOMP_TYPE_CROSSSUB));
 		
 		//delete crosssubject
-		$DB->delete_records(\block_exacomp\DB_CROSSSUBJECTS, array('id'=>$crosssubjectid));
+		$DB->delete_records(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id'=>$crosssubjectid));
 		break;
 	case 'set-example-start-end':
 		$scheduleid = required_param('scheduleid', PARAM_INT);

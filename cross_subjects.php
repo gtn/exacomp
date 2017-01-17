@@ -45,8 +45,8 @@ $PAGE->set_url('/blocks/exacomp/cross_subjects.php', [
 	'crosssubjid' => $crosssubjid,
 ]);
 
-$PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
-$PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle', 'block_exacomp'));
+$PAGE->set_title(block_exacomp_get_string($page_identifier, 'block_exacomp'));
 
 $output = block_exacomp_get_renderer();
 
@@ -63,7 +63,7 @@ $PAGE->requires->css('/blocks/exacomp/css/daterangepicker.min.css', true);
 if ($action == 'share') {
 	$cross_subject = \block_exacomp\cross_subject::get($crosssubjid, MUST_EXIST);
 
-	$cross_subject->require_capability(block_exacomp\CAP_MODIFY);
+	$cross_subject->require_capability(BLOCK_EXACOMP_CAP_MODIFY);
 
 	if (optional_param('save', '', PARAM_TEXT)) {
 		$share_all = optional_param('share_all', false, PARAM_BOOL);
@@ -71,9 +71,9 @@ if ($action == 'share') {
 
 		$cross_subject->update(['shared' => $share_all]);
 
-		$DB->delete_records(\block_exacomp\DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid));
+		$DB->delete_records(BLOCK_EXACOMP_DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid));
 		foreach($studentids as $studentid) {
-			$DB->insert_record(\block_exacomp\DB_CROSSSTUD, ['crosssubjid'=>$crosssubjid, 'studentid'=>$studentid]);
+			$DB->insert_record(BLOCK_EXACOMP_DB_CROSSSTUD, ['crosssubjid'=>$crosssubjid, 'studentid'=>$studentid]);
 		}
 
 		echo $output->popup_close_and_reload();
@@ -81,7 +81,7 @@ if ($action == 'share') {
 	}
 
 	$PAGE->set_url('/blocks/exacomp/cross_subjects.php', array('courseid' => $courseid, 'action' => $action, 'crosssubjid' => $crosssubjid));
-	$PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
+	$PAGE->set_heading(block_exacomp_get_string('blocktitle', 'block_exacomp'));
 	$PAGE->set_pagelayout('embedded');
 
 	$output = block_exacomp_get_renderer();
@@ -89,21 +89,21 @@ if ($action == 'share') {
 
 	$students = block_exacomp_get_students_by_course($courseid);
 	if(!$students) {
-		echo get_string('nostudents','block_exacomp');
+		echo block_exacomp_get_string('nostudents','block_exacomp');
 		echo $output->footer();
 		exit;
 	}
 
-	$assigned_students = $DB->get_records_menu(\block_exacomp\DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid),'','studentid,crosssubjid');
+	$assigned_students = $DB->get_records_menu(BLOCK_EXACOMP_DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid),'','studentid,crosssubjid');
 	$shared = $cross_subject->shared;
 
 	echo '<form method="post" id="share">';
 	echo '<input type="hidden" name="save" value="save" />';
 	echo html_writer::checkbox('share_all', 'share_all', $shared, '');
-	echo get_string('share_crosssub_with_all', 'block_exacomp', $cross_subject->title);
+	echo block_exacomp_get_string('share_crosssub_with_all', 'block_exacomp', $cross_subject->title);
 	echo html_writer::empty_tag('br').html_writer::empty_tag('br');
 
-	echo get_string('share_crosssub_with_students','block_exacomp',$cross_subject->title).html_writer::empty_tag('br');
+	echo block_exacomp_get_string('share_crosssub_with_students','block_exacomp',$cross_subject->title).html_writer::empty_tag('br');
 
 	foreach($students as $student) {
 		echo html_writer::checkbox('studentids[]',$student->id,isset($assigned_students[$student->id]),$student->firstname." ".$student->lastname, $shared?['disabled'=>true]:[]);
@@ -111,7 +111,7 @@ if ($action == 'share') {
 	}
 
 	echo html_writer::empty_tag('br');
-	echo html_writer::tag("input", '', array("type"=>"submit","value"=>get_string('save_selection', 'block_exacomp')));
+	echo html_writer::tag("input", '', array("type"=>"submit","value"=>block_exacomp_get_string('save_selection', 'block_exacomp')));
 	echo '</form>';
 
 	echo $output->footer();
@@ -131,11 +131,11 @@ if($course_settings->uses_activities && !$activities && !$course_settings->show_
 $cross_subject = $crosssubjid ? \block_exacomp\cross_subject::get($crosssubjid, MUST_EXIST) : null;
 
 if ($action == 'descriptor_selector') {
-	$cross_subject->require_capability(block_exacomp\CAP_MODIFY);
+	$cross_subject->require_capability(BLOCK_EXACOMP_CAP_MODIFY);
 
 	if (optional_param('save', '', PARAM_TEXT)) {
 		$descriptors = block_exacomp\param::optional_array('descriptors', PARAM_INT);
-		$old_descriptors = $DB->get_records_menu(\block_exacomp\DB_DESCCROSS, array('crosssubjid'=>$crosssubjid), null, 'descrid, descrid AS tmp');
+		$old_descriptors = $DB->get_records_menu(BLOCK_EXACOMP_DB_DESCCROSS, array('crosssubjid'=>$crosssubjid), null, 'descrid, descrid AS tmp');
 
 		foreach ($descriptors as $descriptorid) {
 			block_exacomp_set_cross_subject_descriptor($crosssubjid, $descriptorid);
@@ -153,7 +153,7 @@ if ($action == 'descriptor_selector') {
 	$PAGE->set_pagelayout('embedded');
 	echo $output->header_v2();
 
-	$active_descriptors = $DB->get_records_menu(block_exacomp\DB_DESCCROSS, ['crosssubjid'=>$crosssubjid], null, 'id, descrid');
+	$active_descriptors = $DB->get_records_menu(BLOCK_EXACOMP_DB_DESCCROSS, ['crosssubjid'=>$crosssubjid], null, 'id, descrid');
 
 	$print_tree = function($items, $level = 0) use (&$print_tree, $active_descriptors) {
 		if (!$items) return '';
@@ -202,11 +202,11 @@ if ($action == 'descriptor_selector') {
 		return $output;
 	};
 
-	$subjects = block_exacomp\db_layer_course::create($courseid)->get_subjects();
+	$subjects = BLOCK_EXACOMP_DB_layer_course::create($courseid)->get_subjects();
 
 	echo '<form method="post">';
 	echo $print_tree($subjects);
-	echo '<input type="submit" name="save" value="'.block_exacomp\get_string('add_descriptors_to_crosssub').'" />';
+	echo '<input type="submit" name="save" value="'.block_exacomp_get_string('add_descriptors_to_crosssub').'" />';
 	echo '</form>';
 
 	echo $output->footer();
@@ -215,7 +215,7 @@ if ($action == 'descriptor_selector') {
 
 if ($isTeacher && optional_param('save', '', PARAM_TEXT)) {
 	if ($cross_subject) {
-		$cross_subject->require_capability(block_exacomp\CAP_MODIFY);
+		$cross_subject->require_capability(BLOCK_EXACOMP_CAP_MODIFY);
 	} else {
 		// add
 		block_exacomp_require_teacher();
@@ -243,13 +243,13 @@ if ($isTeacher && optional_param('save', '', PARAM_TEXT)) {
 	exit;
 }
 if ($isTeacher && $action == 'use_draft') {
-	$cross_subject->require_capability(block_exacomp\CAP_VIEW);
+	$cross_subject->require_capability(BLOCK_EXACOMP_CAP_VIEW);
 
 	$new_id = block_exacomp_save_drafts_to_course([$cross_subject->id], $COURSE->id);
 	redirect(new moodle_url('/blocks/exacomp/cross_subjects.php', array('courseid'=>$courseid, 'crosssubjid'=>$new_id, 'editmode'=>1)));
 }
 if ($isTeacher && $action == 'save_as_draft') {
-	$cross_subject->require_capability(block_exacomp\CAP_MODIFY);
+	$cross_subject->require_capability(BLOCK_EXACOMP_CAP_MODIFY);
 
 	$new_id = block_exacomp_save_drafts_to_course([$cross_subject->id], 0);
 	redirect(new moodle_url('/blocks/exacomp/cross_subjects_overview.php', array('courseid'=>$courseid)));
@@ -278,7 +278,7 @@ if ($isTeacher) {
 		$studentid = 0;
 	} elseif(!$students) {
 		if ($cross_subject && !$cross_subject->is_draft() && $course_settings->nostudents != 1)
-			echo html_writer::div(get_string('share_crosssub_for_further_use','block_exacomp'),"alert alert-warning");
+			echo html_writer::div(block_exacomp_get_string('share_crosssub_for_further_use','block_exacomp'),"alert alert-warning");
 		// $editmode = true;
 		$selectedStudentid = 0;
 		$studentid = 0;
@@ -298,10 +298,10 @@ if ($isTeacher) {
 if ($editmode) {
 	block_exacomp_require_teacher();
 	if ($cross_subject) {
-		$cross_subject->require_capability(block_exacomp\CAP_MODIFY);
+		$cross_subject->require_capability(BLOCK_EXACOMP_CAP_MODIFY);
 	}
 } else {
-	$cross_subject->require_capability(block_exacomp\CAP_VIEW);
+	$cross_subject->require_capability(BLOCK_EXACOMP_CAP_VIEW);
 }
 
 $output->editmode = $editmode;
@@ -367,12 +367,12 @@ if ($cross_subject) {
 		echo $output->overview_legend($isTeacher);
 		echo html_writer::start_tag('form', array('id'=>'assign-competencies', "action" => $PAGE->url, 'method'=>'post'));
 		echo html_writer::start_tag("div", array("class"=>"exabis_competencies_lis"));
-		echo $output->competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, $scheme, false, $cross_subject->id);
+		echo $output->competence_overview($subjects, $courseid, $students, $showevaluation, $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, $scheme, false, $cross_subject->id);
 		echo html_writer::end_tag("div");
 		echo html_writer::end_tag('form');
 	} else {
 		echo html_writer::div(
-			block_exacomp\get_string('add_content_to_crosssub'),
+			block_exacomp_get_string('add_content_to_crosssub'),
 				"alert alert-warning");
 	}
 }

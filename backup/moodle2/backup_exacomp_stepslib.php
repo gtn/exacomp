@@ -81,8 +81,8 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 		
 		$dbTopics = $DB->get_records_sql("
 			SELECT DISTINCT t.id, t.source, t.sourceid, 'dummy' as dummy
-			FROM {".\block_exacomp\DB_TOPICS."} t
-			JOIN {".\block_exacomp\DB_COURSETOPICS."} ct ON t.id = ct.topicid
+			FROM {".BLOCK_EXACOMP_DB_TOPICS."} t
+			JOIN {".BLOCK_EXACOMP_DB_COURSETOPICS."} ct ON t.id = ct.topicid
 			WHERE ct.courseid = ?",
 			array($this->get_courseid()));
 		$topic->set_source_array(block_exacomp\data_course_backup::assign_source_array($dbTopics));
@@ -91,7 +91,7 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 		if ($course_settings->filteredtaxonomies) {
 			$dbTaxonomies = $DB->get_records_sql("
 				SELECT DISTINCT t.id, t.source, t.sourceid, 'dummy' as dummy
-				FROM {".\block_exacomp\DB_TAXONOMIES."} t
+				FROM {".BLOCK_EXACOMP_DB_TAXONOMIES."} t
 				WHERE t.id IN (".join(',', $course_settings->filteredtaxonomies).")");
 		} else {
 			$dbTaxonomies = array();
