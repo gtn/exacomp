@@ -541,7 +541,7 @@ class block_exacomp_external extends external_api {
 		));
 		if ($trainer) {
 			return (object)[
-				"role" => \block_exacomp\WS_ROLE_TEACHER,
+				"role" => BLOCK_EXACOMP_WS_ROLE_TEACHER,
 			];
 		}
 
@@ -551,7 +551,7 @@ class block_exacomp_external extends external_api {
 
 		if ($student)
 			return (object)[
-				"role" => \block_exacomp\WS_ROLE_STUDENT,
+				"role" => BLOCK_EXACOMP_WS_ROLE_STUDENT,
 			];
 
 		// neither student or trainer
@@ -1266,7 +1266,7 @@ class block_exacomp_external extends external_api {
 		$example->externalurl = $externalurl;
 		$example->creatorid = $USER->id;
 		$example->timestamp = time();
-		$example->source = static::get_user_role()->role == \block_exacomp\WS_ROLE_TEACHER
+		$example->source = static::get_user_role()->role == BLOCK_EXACOMP_WS_ROLE_TEACHER
 			? BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER
 			: BLOCK_EXACOMP_EXAMPLE_SOURCE_USER;
 
@@ -3190,11 +3190,11 @@ class block_exacomp_external extends external_api {
 			$isTeacher = block_exacomp_is_teacher($context);
 
 			if ($isTeacher) {
-				return (object)["role" => \block_exacomp\WS_ROLE_TEACHER];
+				return (object)["role" => BLOCK_EXACOMP_WS_ROLE_TEACHER];
 			}
 		}
 
-		return (object)["role" => \block_exacomp\WS_ROLE_STUDENT];
+		return (object)["role" => BLOCK_EXACOMP_WS_ROLE_STUDENT];
 	}
 
 	/**
@@ -6059,7 +6059,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 
 		$coursesettings = block_exacomp_get_settings_by_course($courseid);
 
-		$isTeacher = (static::dakora_get_user_role()->role == \block_exacomp\WS_ROLE_TEACHER);
+		$isTeacher = (static::dakora_get_user_role()->role == BLOCK_EXACOMP_WS_ROLE_TEACHER);
 		$showexamples = ($isTeacher)?true:$coursesettings->show_all_examples;
 
 		$parent_descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id'=>$descriptorid));
@@ -6333,7 +6333,7 @@ private static function get_descriptor_children($courseid, $descriptorid, $useri
 		$descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id'=>$descriptorid));
 		$coursesettings = block_exacomp_get_settings_by_course($courseid);
 
-		$isTeacher = (static::dakora_get_user_role()->role == \block_exacomp\WS_ROLE_TEACHER);
+		$isTeacher = (static::dakora_get_user_role()->role == BLOCK_EXACOMP_WS_ROLE_TEACHER);
 		$showexamples = ($isTeacher)?true:$coursesettings->show_all_examples;
 
 		if($crosssubjid > 0){
