@@ -4008,6 +4008,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		. html_writer::tag('button', get_string('cleardaterange','block_exacomp'), array('id' => 'clear-range'));
 	}
 
+	/**
+	 * own select function, because moodle select is quite slow and we output 1000 selects for all students
+	 * @param array $options
+	 * @param $name
+	 * @param string $selected
+	 * @param array $nothing
+	 * @param array|null $attributes
+	 * @return string
+	 */
 	function select(array $options, $name, $selected = '', $nothing = array('' => 'choosedots'), array $attributes = null) {
         if (empty($attributes['disabled'])) {
             unset($attributes['disabled']);
