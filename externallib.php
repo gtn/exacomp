@@ -1624,7 +1624,7 @@ class block_exacomp_external extends external_api {
 			}
 		};
 
-		$tree = BLOCK_EXACOMP_DB_layer_all_user_courses::create($userid)->get_subjects();
+		$tree = block_exacomp\db_layer_all_user_courses::create($userid)->get_subjects();
 
 		array_walk($tree, $walker);
 		var_dump($data);
@@ -1838,7 +1838,7 @@ class block_exacomp_external extends external_api {
 
 			array_walk($item->get_subs(), $walker);
 		};
-		$tree = BLOCK_EXACOMP_DB_layer_all_user_courses::create($userid)->get_subjects();
+		$tree = block_exacomp\db_layer_all_user_courses::create($userid)->get_subjects();
 		array_walk($tree, $walker);
 		*/
 

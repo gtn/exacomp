@@ -202,7 +202,7 @@ if ($action == 'descriptor_selector') {
 		return $output;
 	};
 
-	$subjects = BLOCK_EXACOMP_DB_layer_course::create($courseid)->get_subjects();
+	$subjects = block_exacomp\db_layer_course::create($courseid)->get_subjects();
 
 	echo '<form method="post">';
 	echo $print_tree($subjects);
