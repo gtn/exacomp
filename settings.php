@@ -56,25 +56,23 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 			
 			set_config('use_eval_niveau', 1, 'exacomp');
 			
-			if($data == '1') $titles = array(1=>'G', 2=>'M', 3=>'E');
+			if($data == '1') $titles = array(1=>'G', 2=>'M', 3=>'E', 101=>'Z');
 			elseif($data == '2') $titles = array(1=>'A', 2=>'B', 3=>'C');
 			elseif($data=='3') $titles = array(1=>'1', 2=>'2', 3=>'3');
 			else{
 				set_config('use_eval_niveau', 0, 'exacomp');
 				return '';
 			}
-			
+
+			$DB->delete_records(\block_exacomp\DB_EVALUATION_NIVEAU);
+
 			//fill table
-			foreach($titles as $index => $title){
-				$record = $DB->get_record(\block_exacomp\DB_EVALUATION_NIVEAU, array('id'=>$index));
-				if(!$record){
-					$entry = new stdClass();
-					$entry->title = $title;
-					$DB->insert_record(\block_exacomp\DB_EVALUATION_NIVEAU, $entry);
-				}else{
-					$record->title = $title;
-					$DB->update_record(\block_exacomp\DB_EVALUATION_NIVEAU, $record);
-				}
+			foreach($titles as $id => $title){
+				$entry = new stdClass();
+				$entry->title = $title;
+				$entry->id = $id;
+				// to insert record with a specific id, use insert_record_raw and set $customsequence = true
+				$DB->insert_record_raw(\block_exacomp\DB_EVALUATION_NIVEAU, $entry, false, false, true);
 			}
 			
 			return '';
@@ -126,7 +124,7 @@ $settings->add(new admin_setting_configcheckbox('exacomp/useprofoundness', block
 $settings->add(new admin_setting_heading('exacomp/heading_evaluation', block_exacomp\trans(['de:Beurteilung', 'en:Evaluation']), ''));
 
 $settings->add(new block_exacomp_admin_setting_scheme('exacomp/adminscheme', block_exacomp\get_string('settings_admin_scheme'),
-	block_exacomp\get_string('settings_admin_scheme_description'), block_exacomp\get_string('settings_admin_scheme_none'), array(block_exacomp\get_string('settings_admin_scheme_none'), 'G/M/E', 'A/B/C', '*/**/***')));
+	block_exacomp\get_string('settings_admin_scheme_description'), block_exacomp\get_string('settings_admin_scheme_none'), array(block_exacomp\get_string('settings_admin_scheme_none'), 'G/M/E/Z', 'A/B/C', '*/**/***')));
 
 $settings->add(new admin_setting_configcheckbox_grading('exacomp/additional_grading', block_exacomp\get_string('settings_additional_grading'),
 	block_exacomp\get_string('settings_additional_grading_description'), 0));
