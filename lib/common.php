@@ -500,7 +500,16 @@ namespace block_exacomp\common {
 					continue;
 				}
 				foreach ($langs as $lang => $value) {
-					$byLang[$lang === 0 ? 'de' : ($lang === 1 ? 'en' : $lang)][$key] = $value;
+					if ($lang === 0) {
+						$lang = 'de';
+					} elseif ($lang === 1) {
+						$lang = 'en';
+					}
+					if ($value === null && preg_match('!^'.$lang.':(.*)$!', $key, $matches)) {
+						$byLang[$lang][$key] = $matches[1];
+					} else {
+						$byLang[$lang][$key] = $value;
+					}
 				}
 			}
 
