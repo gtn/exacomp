@@ -3031,8 +3031,26 @@ function block_exacomp_exaportexists(){
  * checks if block Exabis Studentreview is installed
  * @return boolean
  */
-function block_exacomp_exastudexists(){
+function block_exacomp_is_exastud_installed(){
 	return class_exists('\block_exastud\api') && \block_exastud\api::active();
+}
+
+function block_exacomp_get_exastud_periods_current_and_past_periods() {
+	if (!block_exacomp_is_exastud_installed()) {
+		return [];
+	}
+
+	if (!method_exists('block_exastud\api', 'get_periods')) {
+		return [];
+	}
+
+	$periods = \block_exastud\api::get_periods();
+	// filter only current/past
+	$periods = array_filter($periods, function($p) {
+		return $p->starttime < time();
+	});
+
+	return $periods;
 }
 
 /**

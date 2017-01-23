@@ -707,7 +707,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$studentCell->print_width = (100 - (5 + 25 + 5)) / count($students);
 				$studentCell->colspan = $studentsColspan;
 				$studentCell->text = fullname($student);
-				if (!$this->is_print_mode() && block_exacomp_exastudexists() && ($info = \block_exastud\api::get_student_review_link_info_for_teacher($student->id))) {
+				if (!$this->is_print_mode() && block_exacomp_is_exastud_installed() && ($info = \block_exastud\api::get_student_review_link_info_for_teacher($student->id))) {
 					$studentCell->text .= ' <a href="'.$info->url.'" title="'.block_exacomp_trans('de:Überfachliche Bewertung').'" onclick="window.open(this.href,this.target,\'width=880,height=660,scrollbars=yes\'); return false;">'.'<img src="pix/review_student.png" />'.'</a>';
 				}
 
@@ -4001,10 +4001,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 	}
 	
 	function daterangepicker() {
-		global $OUTPUT;
-		
 		return html_writer::tag('input', '', array('size' => '27', 'id' => 'daterangepicker', 'title' => block_exacomp_get_string("choosedaterange")))
-		. html_writer::tag('button', block_exacomp_get_string('cleardaterange'), array('id' => 'clear-range'));
+		.' '.html_writer::tag('button', block_exacomp_get_string('cleardaterange'), array('id' => 'clear-range'));
 	}
 
 	/**

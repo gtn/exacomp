@@ -1709,4 +1709,8 @@ return [
 		'Keine externen Trainer zugeteilt',
 		'No external trainers assigned',
 	],
+	'periodselect' => [
+		'Auswahl der Periode',
+		'Select Period',
+	],
 ];
