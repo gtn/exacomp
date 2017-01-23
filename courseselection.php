@@ -30,8 +30,8 @@ $page_identifier = 'tab_teacher_settings_selection';
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/courseselection.php', array('courseid' => $courseid));
-$PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
-$PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
+$PAGE->set_title(block_exacomp_get_string($page_identifier));
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
@@ -45,26 +45,26 @@ if ($action == 'save') {
 	block_exacomp_set_coursetopics($courseid, $topics);
 	
 	if(empty($topics)) {
-		$headertext = get_string('tick_some', 'block_exacomp');
+		$headertext = block_exacomp_get_string('tick_some');
 	} else {
 		$course_settings = block_exacomp_get_settings_by_course($courseid);
 		if($course_settings->uses_activities){
 			if (block_exacomp_is_activated($courseid))
-			$headertext=get_string("save_success", "block_exacomp") .html_writer::empty_tag('br')
+			$headertext=block_exacomp_get_string("save_success") .html_writer::empty_tag('br')
 				.html_writer::empty_tag('img', array('src'=>$img, 'alt'=>'', 'width'=>'60px', 'height'=>'60px'))				
-				. html_writer::link(new moodle_url('edit_activities.php', array('courseid'=>$courseid)), get_string('next_step', 'block_exacomp'));
+				. html_writer::link(new moodle_url('edit_activities.php', array('courseid'=>$courseid)), block_exacomp_get_string('next_step'));
 		}else{
-			 $headertext=get_string("save_success", "block_exacomp") .html_writer::empty_tag('br')
-				.html_writer::empty_tag('img', array('src'=>$img, 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).get_string('completed_config', 'block_exacomp');
+			 $headertext=block_exacomp_get_string("save_success") .html_writer::empty_tag('br')
+				.html_writer::empty_tag('img', array('src'=>$img, 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).block_exacomp_get_string('completed_config');
 	
 	   		 $students = block_exacomp_get_students_by_course($courseid);
 	   		 if(empty($students))
 				$headertext .= html_writer::empty_tag('br')
-					.html_writer::link(new moodle_url('/enrol/users.php', array('id'=>$courseid)), get_string('optional_step', 'block_exacomp'));
+					.html_writer::link(new moodle_url('/enrol/users.php', array('id'=>$courseid)), block_exacomp_get_string('optional_step'));
 		}
 	}
 }else{
-	$headertext = html_writer::empty_tag('img', array('src'=>$img, 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).get_string('teacher_second_configuration_step', 'block_exacomp');
+	$headertext = html_writer::empty_tag('img', array('src'=>$img, 'alt'=>'', 'width'=>'60px', 'height'=>'60px')).block_exacomp_get_string('teacher_second_configuration_step');
 }
 
 // build tab navigation & print header

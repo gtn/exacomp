@@ -29,7 +29,7 @@ if (!$course = $DB->get_record('course', array('id' => $courseid))) {
 }
 
 // error if example does not exist or was created by somebody else
-if (!$topic = $DB->get_record(\block_exacomp\DB_TOPICS, array('id' => $topicid))) {
+if (!$topic = $DB->get_record(BLOCK_EXACOMP_DB_TOPICS, array('id' => $topicid))) {
 	print_error('invalidtopic', 'block_exacomp', $topicid);
 }
 
@@ -48,7 +48,7 @@ if(!block_exacomp_use_eval_niveau())
 //	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/3dchart.php', array('courseid' => $courseid));
-$PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
 $PAGE->set_pagelayout('embedded');
 
 // build breadcrumbs navigation

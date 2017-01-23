@@ -36,8 +36,8 @@ $page_identifier = 'tab_competence_profile_settings';
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/competence_profile_settings.php', array('courseid' => $courseid));
-$PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
-$PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
+$PAGE->set_title(block_exacomp_get_string($page_identifier));
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);

@@ -29,9 +29,9 @@ if ($exampleid) {
 	if (!$example = block_exacomp\example::get($exampleid)) {
 		print_error('invalidexample', 'block_exacomp', $exampleid);
 	}
-	block_exacomp\require_item_capability(block_exacomp\CAP_MODIFY, $example);
+	block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_MODIFY, $example);
 } else {
-	block_exacomp\require_capability(block_exacomp\CAP_ADD_EXAMPLE, $courseid);
+	block_exacomp_require_capability(BLOCK_EXACOMP_CAP_ADD_EXAMPLE, $courseid);
 	$example = null;
 }
 
@@ -50,12 +50,12 @@ if (optional_param('action', '', PARAM_TEXT) == 'delete') {
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/example_upload.php', array('courseid' => $courseid));
-$PAGE->set_title(get_string('blocktitle', 'block_exacomp'));
+$PAGE->set_title(block_exacomp_get_string('blocktitle'));
 $PAGE->set_pagelayout('embedded');
 
 // build breadcrumbs navigation
 $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
-$blocknode = $coursenode->add(get_string('blocktitle','block_exacomp'));
+$blocknode = $coursenode->add(block_exacomp_get_string('blocktitle'));
 $blocknode->make_active();
 
 $action = optional_param('action', 'add', PARAM_TEXT);
@@ -78,14 +78,14 @@ $topics = $DB->get_records("block_exacomptopics", array("subjid"=>$topicsub->sub
 
 $example_descriptors = array();
 if($exampleid>0)
-	$example_descriptors = $DB->get_records(\block_exacomp\DB_DESCEXAMP,array('exampid'=>$exampleid),'','descrid');
+	$example_descriptors = $DB->get_records(BLOCK_EXACOMP_DB_DESCEXAMP,array('exampid'=>$exampleid),'','descrid');
 
 $tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid, $descrid);
 $csettings = block_exacomp_get_settings_by_course($courseid);
 $example_activities = array();
 
 if($csettings->uses_activities) {
-	$example_activities[0] = get_string('none');
+	$example_activities[0] = block_exacomp_get_string('none');
 	
 	$modinfo = get_fast_modinfo($COURSE->id);
 	$modules = $modinfo->get_cms();
@@ -94,7 +94,7 @@ if($csettings->uses_activities) {
 		$module = block_exacomp_get_coursemodule($mod);
 	
 		//Skip Nachrichtenforum
-		if(strcmp($module->name, get_string('namenews','mod_forum'))==0){
+		if(strcmp($module->name, block_exacomp_get_string('namenews','mod_forum'))==0){
 			continue;
 		}
 		
@@ -125,7 +125,7 @@ if($formdata = $form->get_data()) {
 		$newExample->externalurl = (filter_var($formdata->externalurl, FILTER_VALIDATE_URL) == TRUE) ? $formdata->externalurl : "http://" . $formdata->externalurl;
 	else
 		$newExample->externalurl = null;
-	$newExample->source = \block_exacomp\EXAMPLE_SOURCE_TEACHER;
+	$newExample->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER;
 
 	$newExample->externaltask = '';
 	if(!empty($formdata->assignment)) {
@@ -146,10 +146,10 @@ if($formdata = $form->get_data()) {
 	}
 
 	//insert taxid in exampletax_mm
-	$DB->delete_records(\block_exacomp\DB_EXAMPTAX, ['exampleid' => $newExample->id]);
+	$DB->delete_records(BLOCK_EXACOMP_DB_EXAMPTAX, ['exampleid' => $newExample->id]);
 	if (!empty($formdata->taxid)) {
 		foreach($formdata->taxid as $tax => $taxid)
-			$DB->insert_record(\block_exacomp\DB_EXAMPTAX, [
+			$DB->insert_record(BLOCK_EXACOMP_DB_EXAMPTAX, [
 				'exampleid' => $newExample->id,
 				'taxid' => $taxid
 			]);
@@ -158,9 +158,9 @@ if($formdata = $form->get_data()) {
 	$descriptors = block_exacomp\param::optional_array('descriptor', array(PARAM_INT=>PARAM_INT));
 	if ($descriptors) {
 		foreach($descriptors as $descriptorid){
-			$desc_examp = $DB->get_record(\block_exacomp\DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
+			$desc_examp = $DB->get_record(BLOCK_EXACOMP_DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
 			if(!$desc_examp){
-				$sql = "SELECT MAX(sorting) as sorting FROM {".\block_exacomp\DB_DESCEXAMP."} WHERE descrid=?";
+				$sql = "SELECT MAX(sorting) as sorting FROM {".BLOCK_EXACOMP_DB_DESCEXAMP."} WHERE descrid=?";
 				$max_sorting = $DB->get_record_sql($sql, array($descriptorid)); 
 				$sorting = intval($max_sorting->sorting)+1;
 				$insert = new stdClass();
@@ -168,9 +168,9 @@ if($formdata = $form->get_data()) {
 				$insert->exampid = $newExample->id;
 				$insert->sorting = $sorting;
 				
-				$DB->insert_record(\block_exacomp\DB_DESCEXAMP, $insert);
+				$DB->insert_record(BLOCK_EXACOMP_DB_DESCEXAMP, $insert);
 			}
-			//block_exacomp_globals::$DB->insert_or_update_record(\block_exacomp\DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
+			//block_exacomp_globals::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_DESCEXAMP, array('descrid'=>$descriptorid, 'exampid'=>$newExample->id));
 		}
 	}
 	
@@ -183,11 +183,11 @@ if($formdata = $form->get_data()) {
 
 	foreach ($otherCourseids as $otherCourseid) {
 		//add visibility if not exists
-		if (!$DB->get_record(\block_exacomp\DB_EXAMPVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$newExample->id, 'studentid'=>0))) {
-			$DB->insert_record(\block_exacomp\DB_EXAMPVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$newExample->id, 'studentid'=>0, 'visible'=>1));
+		if (!$DB->get_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$newExample->id, 'studentid'=>0))) {
+			$DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$newExample->id, 'studentid'=>0, 'visible'=>1));
 		}
-		if (!$DB->get_record(\block_exacomp\DB_SOLUTIONVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$newExample->id, 'studentid'=>0))) {
-			$DB->insert_record(\block_exacomp\DB_SOLUTIONVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$newExample->id, 'studentid'=>0, 'visible'=>1));
+		if (!$DB->get_record(BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$newExample->id, 'studentid'=>0))) {
+			$DB->insert_record(BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY, array('courseid'=>$otherCourseid, 'exampleid'=>$newExample->id, 'studentid'=>0, 'visible'=>1));
 		}
 	}
 

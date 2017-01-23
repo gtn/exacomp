@@ -60,7 +60,7 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
 			foreach ($data->exacomp['taxonomies']['taxonomy'] as $taxonomy) {
 				$taxonomy = (object)$taxonomy;
 
-				if (!$dbTaxonomy = $this->get_db_record(\block_exacomp\DB_TAXONOMIES, $taxonomy)) {
+				if (!$dbTaxonomy = $this->get_db_record(BLOCK_EXACOMP_DB_TAXONOMIES, $taxonomy)) {
 					continue;
 				}
 
@@ -74,16 +74,16 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
 			$settings = (object)reset($settings);
 			unset($settings->courseid);
 			unset($settings->id);
-
-			$settings->filteredtaxonomies = json_encode($taxonomies ? $taxonomies : array(SHOW_ALL_TAXONOMIES));
-
-			block_exacomp\globals::$DB->insert_or_update_record(\block_exacomp\DB_SETTINGS, $settings, array('courseid' => $this->get_courseid()));
+			
+			$settings->filteredtaxonomies = $taxonomies ? json_encode($taxonomies) : array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES);
+			
+			block_exacomp\globals::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_SETTINGS, $settings, array('courseid'=>$this->get_courseid()));
 		}
 
 		if (isset($data->exacomp['mdltypes']['mdltype'])) {
 			foreach ($data->exacomp['mdltypes']['mdltype'] as $mdltype) {
 				$mdltype = (object)$mdltype;
-				if (!$schooltype = $this->get_db_record(\block_exacomp\DB_SCHOOLTYPES, $mdltype)) {
+				if (!$schooltype = $this->get_db_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, $mdltype)) {
 					continue;
 				}
 
@@ -100,7 +100,7 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
 			foreach ($data->exacomp['topics']['topic'] as $topic) {
 				$topic = (object)$topic;
 
-				if (!$dbTopic = $this->get_db_record(\block_exacomp\DB_TOPICS, $topic)) {
+				if (!$dbTopic = $this->get_db_record(BLOCK_EXACOMP_DB_TOPICS, $topic)) {
 					continue;
 				}
 
@@ -123,10 +123,10 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
 			foreach ($data->exacomp['activities']['compactiv_mm'] as $descractiv_mm) {
 				$descractiv_mm = (object)$descractiv_mm;
 
-				if ($descractiv_mm->comptype == \block_exacomp\TYPE_DESCRIPTOR) {
-					$table = \block_exacomp\DB_DESCRIPTORS;
-				} elseif ($descractiv_mm->comptype == \block_exacomp\TYPE_TOPIC) {
-					$table = \block_exacomp\DB_TOPICS;
+				if ($descractiv_mm->comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
+					$table = BLOCK_EXACOMP_DB_DESCRIPTORS;
+				} elseif ($descractiv_mm->comptype == BLOCK_EXACOMP_TYPE_TOPIC) {
+					$table = BLOCK_EXACOMP_DB_TOPICS;
 				} else {
 					print_error("unknown comptype {$descractiv_mm->comptype}");
 				}
@@ -150,14 +150,14 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
 		if (isset($data->exacomp['evaluations']['evaluation'])) {
 			foreach ($data->exacomp['evaluations']['evaluation'] as $evaluation) {
 				$evaluation = (object)$evaluation;
-				if ($evaluation->type == \block_exacomp\TYPE_SUBJECT) {
-					$table = \block_exacomp\DB_SUBJECTS;
-				} elseif ($evaluation->type == \block_exacomp\TYPE_TOPIC) {
-					$table = \block_exacomp\DB_TOPICS;
-				} elseif ($evaluation->type == \block_exacomp\TYPE_DESCRIPTOR) {
-					$table = \block_exacomp\DB_DESCRIPTORS;
-				} elseif ($evaluation->type == \block_exacomp\TYPE_EXAMPLE) {
-					$table = \block_exacomp\DB_EXAMPLES;
+				if ($evaluation->type == BLOCK_EXACOMP_TYPE_SUBJECT) {
+					$table = BLOCK_EXACOMP_DB_SUBJECTS;
+				} elseif ($evaluation->type == BLOCK_EXACOMP_TYPE_TOPIC) {
+					$table = BLOCK_EXACOMP_DB_TOPICS;
+				} elseif ($evaluation->type == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
+					$table = BLOCK_EXACOMP_DB_DESCRIPTORS;
+				} elseif ($evaluation->type == BLOCK_EXACOMP_TYPE_EXAMPLE) {
+					$table = BLOCK_EXACOMP_DB_EXAMPLES;
 				} else {
 					// unknown type
 					continue;
@@ -169,8 +169,8 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
 					continue;
 				}
 
-				if ($evaluation->type == \block_exacomp\TYPE_EXAMPLE) {
-					if ($evaluation->role == \block_exacomp\ROLE_TEACHER) {
+				if ($evaluation->type == BLOCK_EXACOMP_TYPE_EXAMPLE) {
+					if ($evaluation->role == BLOCK_EXACOMP_ROLE_TEACHER) {
 						$data = [
 							'teacher_reviewerid' => $evaluation->reviewerid,
 							'timestamp_teacher' => $evaluation->timestamp,
@@ -184,13 +184,13 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
 						];
 					}
 
-					g::$DB->insert_or_update_record(\block_exacomp\DB_EXAMPLEEVAL, $data, [
+					g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, $data, [
 						'studentid' => $this->get_mappingid('user', $evaluation->userid) ?: $evaluation->userid,
 						'courseid' => $this->get_courseid(),
 						'exampleid' => $competence->id,
 					]);
 				} else {
-					g::$DB->insert_or_update_record(\block_exacomp\DB_COMPETENCES, [
+					g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_COMPETENCES, [
 						'reviewerid' => $this->get_mappingid('user', $evaluation->reviewerid) ?: $evaluation->userid,
 						'timestamp' => $evaluation->timestamp,
 						'additionalinfo' => $evaluation->additionalinfo,

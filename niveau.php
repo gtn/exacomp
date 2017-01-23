@@ -34,7 +34,7 @@ $output = block_exacomp_get_renderer();
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/topic.php', array('courseid' => $courseid));
-$PAGE->set_heading(\block_exacomp\trans(['de:Lernfortschritt hinzufügen', 'en:Add niveau']));
+$PAGE->set_heading(block_exacomp_trans(['de:Lernfortschritt hinzufügen', 'en:Add niveau']));
 $PAGE->set_pagelayout('embedded');
 
 // build tab navigation & print header
@@ -43,7 +43,7 @@ $PAGE->set_pagelayout('embedded');
 
 block_exacomp_require_teacher($context);
 
-// TODO: check permissions, check if item is \block_exacomp\DATA_SOURCE_CUSTOM
+// TODO: check permissions, check if item is BLOCK_EXACOMP_DATA_SOURCE_CUSTOM
 
 require_once $CFG->libdir . '/formslib.php';
 
@@ -56,36 +56,36 @@ class block_exacomp_local_item_form extends moodleform {
 
 		$mform = & $this->_form;
 
-		$niveaus = block_exacomp\get_select_niveau_items();
+		$niveaus = block_exacomp_get_select_niveau_items();
 
 		$radioarray=array();
 		if ($niveaus) {
-			$radioarray[] =& $mform->createElement('radio', 'niveau_type', '', \block_exacomp\trans(['de:vorhandener Lernfortschritt', 'en:Existing niveau']), 'existing');
+			$radioarray[] =& $mform->createElement('radio', 'niveau_type', '', block_exacomp_trans(['de:vorhandener Lernfortschritt', 'en:Existing niveau']), 'existing');
 		}
-		$radioarray[] =& $mform->createElement('radio', 'niveau_type', '', \block_exacomp\trans(['de:neuer Lernfortschritt', 'en:New niveau']), 'new');
+		$radioarray[] =& $mform->createElement('radio', 'niveau_type', '', block_exacomp_trans(['de:neuer Lernfortschritt', 'en:New niveau']), 'new');
 		$mform->addGroup($radioarray, 'radioar', '', array(' '), false);
 		
-		$mform->addElement('text', 'niveau_title', \block_exacomp\get_string('name'), 'maxlength="255" size="60"');
+		$mform->addElement('text', 'niveau_title', block_exacomp_get_string('name'), 'maxlength="255" size="60"');
 		$mform->setType('niveau_title', PARAM_TEXT);
-		// $mform->addRule('niveau_title', \block_exacomp\get_string("titlenotemtpy"), 'required', null, 'client');
+		// $mform->addRule('niveau_title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
 		
-		$mform->addElement('selectgroups', 'niveau_id', \block_exacomp\get_string('niveau'), $niveaus);
+		$mform->addElement('selectgroups', 'niveau_id', block_exacomp_get_string('niveau'), $niveaus);
 		
-		$mform->addElement('static', 'niveau_descriptor_description', \block_exacomp\trans(['de:Bitte weisen sie diesem Lernfotschritt eine Kompetenz zu', 'en:Please assign a competency to the new niveau']).':');
+		$mform->addElement('static', 'niveau_descriptor_description', block_exacomp_trans(['de:Bitte weisen sie diesem Lernfotschritt eine Kompetenz zu', 'en:Please assign a competency to the new niveau']).':');
 		
 		$radioarray=array();
 		if ($this->_customdata['descriptors']) {
 			// disable if no descriptors
-			$radioarray[] =& $mform->createElement('radio', 'descriptor_type', '', \block_exacomp\trans(['de:vorhandene Kompetenz', 'en:Existing competency']), 'existing');
+			$radioarray[] =& $mform->createElement('radio', 'descriptor_type', '', block_exacomp_trans(['de:vorhandene Kompetenz', 'en:Existing competency']), 'existing');
 		}
-		$radioarray[] =& $mform->createElement('radio', 'descriptor_type', '', \block_exacomp\trans(['de:neue Kompetenz', 'en:New competency']), 'new');
+		$radioarray[] =& $mform->createElement('radio', 'descriptor_type', '', block_exacomp_trans(['de:neue Kompetenz', 'en:New competency']), 'new');
 		$mform->addGroup($radioarray, 'radioar', '', array(' '), false);
 
-		$mform->addElement('text', 'descriptor_title', \block_exacomp\get_string('name'), 'maxlength="255" size="60"');
+		$mform->addElement('text', 'descriptor_title', block_exacomp_get_string('name'), 'maxlength="255" size="60"');
 		$mform->setType('descriptor_title', PARAM_TEXT);
-		// $mform->addRule('descriptor_title', \block_exacomp\get_string("titlenotemtpy"), 'required', null, 'client');
+		// $mform->addRule('descriptor_title', block_exacomp_get_string("titlenotemtpy"), 'required', null, 'client');
 		
-		$mform->addElement('select', 'descriptor_id', \block_exacomp\get_string('descriptor'), $this->_customdata['descriptors']);
+		$mform->addElement('select', 'descriptor_id', block_exacomp_get_string('descriptor'), $this->_customdata['descriptors']);
 		
 		$this->add_action_buttons(false);
 	}
@@ -107,12 +107,12 @@ if($formdata = $form->get_data()) {
 	
 	if ($formdata->niveau_type == 'new') {
 		$niveau = new stdClass;
-		$niveau->sorting = $DB->get_field(\block_exacomp\DB_NIVEAUS, 'MAX(sorting)', array()) + 1;
-		$niveau->source = \block_exacomp\EXAMPLE_SOURCE_TEACHER;
+		$niveau->sorting = $DB->get_field(BLOCK_EXACOMP_DB_NIVEAUS, 'MAX(sorting)', array()) + 1;
+		$niveau->source = BLOCK_EXACOMP_EXAMPLE_SOURCE_TEACHER;
 		$niveau->title = $formdata->niveau_title;
-		$niveau->id = $DB->insert_record(\block_exacomp\DB_NIVEAUS, $niveau);
+		$niveau->id = $DB->insert_record(BLOCK_EXACOMP_DB_NIVEAUS, $niveau);
 	} else {
-		$niveau = $DB->get_record(\block_exacomp\DB_NIVEAUS, array('id' => $formdata->niveau_id));
+		$niveau = $DB->get_record(BLOCK_EXACOMP_DB_NIVEAUS, array('id' => $formdata->niveau_id));
 	}
 
 	if ($niveau) {
@@ -133,14 +133,14 @@ if($formdata = $form->get_data()) {
 		$mm->catid = $formdata->category;
 
 		if (!$item) {
-			$new->source = \block_exacomp\DATA_SOURCE_CUSTOM;
+			$new->source = BLOCK_EXACOMP_DATA_SOURCE_CUSTOM;
 			$new->sourceid = 0;
 			$new->subjid = required_param('subjectid', PARAM_INT);
 
-			$new->id = $DB->insert_record(\block_exacomp\DB_TOPICS, $new);
+			$new->id = $DB->insert_record(BLOCK_EXACOMP_DB_TOPICS, $new);
 
 			// add topic to course
-			$DB->insert_record(\block_exacomp\DB_COURSETOPICS, array(
+			$DB->insert_record(BLOCK_EXACOMP_DB_COURSETOPICS, array(
 				'courseid' => $courseid,
 				'topicid' => $new->id
 			));

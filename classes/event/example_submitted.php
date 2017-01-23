@@ -42,7 +42,7 @@ class example_submitted extends base {
 	 * @return string
 	 */
 	public static function get_name() {
-		return get_string('eventsexamplesubmitted', 'block_exacomp');
+		return block_exacomp_get_string('eventsexamplesubmitted');
 	}
 
 	/**

@@ -30,8 +30,8 @@ $page_identifier = 'tab_profoundness';
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/profoundness.php', array('courseid' => $courseid));
-$PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
-$PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
+$PAGE->set_title(block_exacomp_get_string($page_identifier));
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
@@ -65,7 +65,7 @@ if ($isTeacher){
 }
 
 if (!$coursestudents) {
-	echo block_exacomp\get_string('nostudents');
+	echo block_exacomp_get_string('nostudents');
 	$output->footer();
 	exit;
 }
@@ -84,7 +84,7 @@ list($tmp2, $subjects, $topics, $tmp, $selectedSubject, $selectedTopic) = block_
 // SAVA DATA
 if (($action = optional_param("action", "", PARAM_TEXT) ) == "save") {
 	// DESCRIPTOR DATA
-	block_exacomp_save_competences(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT, TYPE_DESCRIPTOR, $selectedTopic->id, $selectedSubject->id);
+	block_exacomp_save_competences(isset($_POST['data']) ? $_POST['data'] : array(), $courseid, ($isTeacher) ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $selectedTopic->id, $selectedSubject->id);
 
 }
 //Delete timestamp (end|start) from example
@@ -100,7 +100,7 @@ echo $output->competence_overview_form_start((isset($selectedTopic))?$selectedTo
 echo $output->overview_dropdowns('profoundness', $students);
 
 if ($isTeacher) {
-	echo ' '.get_string("choosestudent","block_exacomp").' ';
+	echo ' '.block_exacomp_get_string("choosestudent").' ';
 	echo $output->studentselector($coursestudents,$studentid);
 }
 
@@ -108,14 +108,14 @@ $schooltype = block_exacomp_get_schooltype_title_by_subject($selectedSubject);
 $cat = block_exacomp_get_category($selectedTopic);
 
 $scheme = block_exacomp_get_grading_scheme($courseid);
-if($selectedTopic->id != block_exacomp\SHOW_ALL_TOPICS){
+if($selectedTopic->id != BLOCK_EXACOMP_SHOW_ALL_TOPICS){
 	echo $output->overview_metadata($schooltype, $selectedSubject, $selectedTopic, $cat);
 }
 
 $subjects = block_exacomp_get_competence_tree($courseid, null, (isset($selectedSubject))?$selectedSubject->id:null,false,(isset($selectedTopic))?$selectedTopic->id:null,
 		false);
 
-echo $output->profoundness($subjects, $courseid, $students, $isTeacher ? \block_exacomp\ROLE_TEACHER : \block_exacomp\ROLE_STUDENT);
+echo $output->profoundness($subjects, $courseid, $students, $isTeacher ? BLOCK_EXACOMP_ROLE_TEACHER : BLOCK_EXACOMP_ROLE_STUDENT);
 
 /* END CONTENT REGION */
 echo $output->footer();

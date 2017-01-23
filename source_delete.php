@@ -42,12 +42,12 @@ $page_identifier = 'tab_admin_settings';
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/source_delete.php', array('courseid' => $courseid, 'source' => $source, 'action' => 'select'));
-$PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
-$PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
+$PAGE->set_title(block_exacomp_get_string($page_identifier));
 
 function block_exacomp_source_delete_get_subjects($source) {
 	//$DB->set_debug(true);
-	$subjects = \block_exacomp\db_layer_whole_moodle::get()->get_subjects_for_source($source);
+	$subjects = block_exacomp\db_layer_whole_moodle::get()->get_subjects_for_source($source);
 	
 	return $subjects;
 }
@@ -110,16 +110,16 @@ if ($action == 'delete_selected') {
 	}
 	if ($delete_examples) {
 		// TODO auch filestorage loeschen
-		$DB->delete_records_list(\block_exacomp\DB_EXAMPLES, 'id', $delete_examples);
+		$DB->delete_records_list(BLOCK_EXACOMP_DB_EXAMPLES, 'id', $delete_examples);
 	}
 	if ($delete_descriptors) {
-		$DB->delete_records_list(\block_exacomp\DB_DESCRIPTORS, 'id', $delete_descriptors);
+		$DB->delete_records_list(BLOCK_EXACOMP_DB_DESCRIPTORS, 'id', $delete_descriptors);
 	}
 	if ($delete_topics) {
-		$DB->delete_records_list(\block_exacomp\DB_TOPICS, 'id', $delete_topics);
+		$DB->delete_records_list(BLOCK_EXACOMP_DB_TOPICS, 'id', $delete_topics);
 	}
 	if ($delete_subjects) {
-		$DB->delete_records_list(\block_exacomp\DB_SUBJECTS, 'id', $delete_subjects);
+		$DB->delete_records_list(BLOCK_EXACOMP_DB_SUBJECTS, 'id', $delete_subjects);
 	}
 	
 	block_exacomp\data::normalize_database();
@@ -130,8 +130,8 @@ if ($action == 'delete_selected') {
 	
 	// build breadcrumbs navigation
 	$coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
-	$blocknode = $coursenode->add(get_string('blocktitle','block_exacomp'));
-	$pagenode = $blocknode->add(get_string($page_identifier,'block_exacomp'), $PAGE->url);
+	$blocknode = $coursenode->add(block_exacomp_get_string('blocktitle'));
+	$pagenode = $blocknode->add(block_exacomp_get_string($page_identifier), $PAGE->url);
 	$pagenode->make_active();
 	
 	echo $output->header($course_context,$courseid, 'tab_admin_settings');

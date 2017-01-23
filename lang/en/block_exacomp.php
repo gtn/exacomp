@@ -503,3 +503,4 @@ $string['description_createtoken'] = 'Grant additional permission to the role "a
 $string['exacomp_not_found'] = 'Exacompservice not found';
 $string['exaport_not_found'] = 'Exaportservice not found';
 $string['no_external_trainer'] = 'No external trainers assigned';
+$string['periodselect'] = 'Select Period';

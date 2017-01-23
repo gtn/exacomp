@@ -37,6 +37,10 @@
 		return value && JSON.parse(value);
 	};
 
+	function is_page(page) {
+		return !!$('body#page-blocks-exacomp-' + page).length;
+	}
+
 	window.block_exacomp = $E = {
 		get_param: function (name) {
 			name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
@@ -614,6 +618,7 @@
 		}
 
 		if ($('input[id="daterangepicker"]').length) {
+			var allowClearSelect = true;
 			$('input[id="daterangepicker"]').dateRangePicker({
 				separator: ' ' + M.util.get_string('seperatordaterange', 'block_exacomp') + ' ',
 				format: 'DD.MMM.YYYY',
@@ -632,6 +637,9 @@
 
 				update_statistic_tables(obj.date1, obj.date2);
 				highlight_cells(obj.date1, obj.date2);
+				if (allowClearSelect) {
+					$('select[name="daterangeperiods"]').val('');
+				}
 			});
 
 			if (sessionStorage.getItem('date1') != null && sessionStorage.getItem('date2') != null) {
@@ -639,10 +647,19 @@
 				highlight_cells(sessionStorage.getItem('date1'), sessionStorage.getItem('date2'));
 			}
 
+			// perioden auswahl
+			$('select[name="daterangeperiods"]').change(function (event) {
+				var fromTo = $(this).val().split('-');
+				allowClearSelect = false;
+				$('input[id="daterangepicker"]').data('dateRangePicker').setDateRange(new Date(fromTo[0]*1000), new Date(fromTo[1]*1000));
+				allowClearSelect = true;
+			});
+
 			$('#clear-range').click(function (event) {
 				event.preventDefault();
 
 				$('input[id="daterangepicker"]').data('dateRangePicker').clear();
+				$('select[name="daterangeperiods"]').val('');
 
 				sessionStorage.removeItem('date1');
 				sessionStorage.removeItem('date2');

@@ -42,7 +42,7 @@ class crosssubject_added extends base {
 	 * @return string
 	 */
 	public static function get_name() {
-		return get_string('eventscrosssubjectadded', 'block_exacomp');
+		return block_exacomp_get_string('eventscrosssubjectadded');
 	}
 
 	/**

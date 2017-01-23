@@ -3,6 +3,11 @@
 	position: relative;
 }
 
+#block_exacomp select, #block_exacomp input, #block_exacomp button {
+	/* remove standard moodle margins */
+	margin: 0;
+}
+
 #block_exacomp div#exabis_save_button {
 	padding: 10px
 }

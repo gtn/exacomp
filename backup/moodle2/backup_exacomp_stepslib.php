@@ -90,8 +90,8 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 		
 		$dbTopics = $DB->get_records_sql("
 			SELECT DISTINCT t.id, t.source, t.sourceid, 'dummy' as dummy
-			FROM {".\block_exacomp\DB_TOPICS."} t
-			JOIN {".\block_exacomp\DB_COURSETOPICS."} ct ON t.id = ct.topicid
+			FROM {".BLOCK_EXACOMP_DB_TOPICS."} t
+			JOIN {".BLOCK_EXACOMP_DB_COURSETOPICS."} ct ON t.id = ct.topicid
 			WHERE ct.courseid = ?",
 			array($this->get_courseid()));
 		$topic->set_source_array(block_exacomp\data_course_backup::assign_source_array($dbTopics));
@@ -100,7 +100,7 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 		if ($course_settings->filteredtaxonomies) {
 			$dbTaxonomies = $DB->get_records_sql("
 				SELECT DISTINCT t.id, t.source, t.sourceid, 'dummy' as dummy
-				FROM {".\block_exacomp\DB_TAXONOMIES."} t
+				FROM {".BLOCK_EXACOMP_DB_TAXONOMIES."} t
 				WHERE t.id IN (".join(',', $course_settings->filteredtaxonomies).")");
 		} else {
 			$dbTaxonomies = array();
@@ -149,7 +149,7 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 		$students = block_exacomp_get_students_by_course($courseid);
 		$tree = \block_exacomp\db_layer_course::create($courseid)->get_subjects();
 
-		$dataSources = $DB->get_records_menu(\block_exacomp\DB_DATASOURCES, null, null, 'id,source');
+		$dataSources = $DB->get_records_menu(BLOCK_EXACOMP_DB_DATASOURCES, null, null, 'id,source');
 
 		$compcompuser = [];
 
@@ -164,7 +164,7 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 				array_walk($item->get_subs(), $walker);
 			}
 
-			if ($item->source == \block_exacomp\DATA_SOURCE_CUSTOM) {
+			if ($item->source == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
 				$source = get_config('exacomp', 'mysource');
 				$sourceid = $item->id;
 			} elseif (isset($dataSources[$item->source])) {
@@ -176,7 +176,7 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 
 			foreach ($students as $student) {
 				if ($item instanceof \block_exacomp\example) {
-					$evaluation = $DB->get_record(\block_exacomp\DB_EXAMPLEEVAL, array("studentid" => $student->id, "courseid" => $courseid, "exampleid" => $item->id));
+					$evaluation = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $student->id, "courseid" => $courseid, "exampleid" => $item->id));
 					if ($evaluation && ($evaluation->teacher_evaluation || $evaluation->evalniveauid)) {
 						$compcompuser[] = [
 							'userid' => $student->id,
@@ -184,7 +184,7 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 							'source' => $source,
 							'sourceid' => $sourceid,
 							// 'eval' => $evaluation,
-							'role' => \block_exacomp\ROLE_TEACHER,
+							'role' => BLOCK_EXACOMP_ROLE_TEACHER,
 							'reviewerid' => $evaluation->teacher_reviewerid,
 							'timestamp' => $evaluation->timestamp_teacher,
 							'evalniveauid' => $evaluation->evalniveauid,
@@ -198,7 +198,7 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 							'source' => $source,
 							'sourceid' => $sourceid,
 							// 'eval' => $evaluation,
-							'role' => \block_exacomp\ROLE_STUDENT,
+							'role' => BLOCK_EXACOMP_ROLE_STUDENT,
 							'reviewerid' => $student->id,
 							'timestamp' => $evaluation->timestamp_student,
 							'evalniveauid' => $evaluation->student_evaluation,
@@ -206,7 +206,7 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 						];
 					}
 				} else {
-					$evaluation = block_exacomp\get_comp_eval($courseid, \block_exacomp\ROLE_TEACHER, $student->id, $item::TYPE, $item->id);
+					$evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $student->id, $item::TYPE, $item->id);
 					if ($evaluation) {
 						$compcompuser[] = [
 							'userid' => $student->id,
@@ -223,7 +223,7 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 						];
 					}
 
-					$evaluation = block_exacomp\get_comp_eval($courseid, \block_exacomp\ROLE_STUDENT, $student->id, $item::TYPE, $item->id);
+					$evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $student->id, $item::TYPE, $item->id);
 					if ($evaluation) {
 						$compcompuser[] = [
 							'userid' => $student->id,

@@ -40,8 +40,8 @@ $page_identifier = 'tab_competence_profile_profile';
 
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/competence_profile.php', array('courseid' => $courseid));
-$PAGE->set_heading(get_string('blocktitle', 'block_exacomp'));
-$PAGE->set_title(get_string($page_identifier, 'block_exacomp'));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
+$PAGE->set_title(block_exacomp_get_string($page_identifier));
 
 $PAGE->requires->js('/blocks/exacomp/javascript/Chart.js', true);
 $PAGE->requires->js('/blocks/exacomp/javascript/d3.min.js', true);
@@ -64,10 +64,11 @@ if(!$isTeacher){
 	
 	$coursestudents = block_exacomp_get_students_by_course($courseid);
 	
+	echo '<div style="padding-bottom: 15px;">';
 	if($studentid == 0 || $studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
-		echo html_writer::tag("p", get_string("select_student","block_exacomp"));
+		echo html_writer::tag("p", block_exacomp_get_string("select_student"));
 		//print student selector
-		echo get_string("choosestudent","block_exacomp");
+		echo block_exacomp_get_string("choosestudent");
 		echo $output->studentselector($coursestudents,$studentid);
 		echo $output->footer();
 		die;
@@ -77,20 +78,29 @@ if(!$isTeacher){
 			print_error("nopermissions","","","Show student profile");
 		
 		//print student selector
-		echo get_string("choosestudent","block_exacomp");
+		echo block_exacomp_get_string("choosestudent");
 		echo $output->studentselector($coursestudents,$studentid);
 		
 		//print date range picker
-		echo get_string("choosedaterange","block_exacomp");
-		echo $output->daterangepicker();
+		echo block_exacomp_get_string("choosedaterange");
+		if ($periods = block_exacomp_get_exastud_periods_current_and_past_periods()) {
+			$options = [];
+			foreach ($periods as $period) {
+				$options[$period->starttime.'-'.$period->endtime] = $period->description;
+			}
+			echo html_writer::select($options, 'daterangeperiods', '', block_exacomp_get_string('periodselect'), []).' ';
+		}
+		echo $output->daterangepicker(true);
 	}
+
+	echo '</div>';
 }
 $student = $DB->get_record('user',array('id' => $studentid));
 
 echo html_writer::div(html_writer::link('#',
 	html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/view_print.png'), 'alt'=>'print')),
 	[
-		'title' => block_exacomp\get_string('print'),
+		'title' => block_exacomp_get_string('print'),
 		'class'=>'print'
 	]), 'button-box');
 
@@ -118,7 +128,7 @@ foreach($possible_courses as $course){
 }
 
 if(!empty($profile_settings->exacomp) || $profile_settings->showallcomps == 1)
-	echo html_writer::tag('h3', get_string('my_comps', 'block_exacomp'), array('class'=>'competence_profile_sectiontitle'));
+	echo html_writer::tag('h3', block_exacomp_get_string('my_comps'), array('class'=>'competence_profile_sectiontitle'));
 
 foreach($user_courses as $course) {
 	//if selected
