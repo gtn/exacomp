@@ -125,13 +125,6 @@ const BLOCK_EXACOMP_REPORT1 = 1;
 const BLOCK_EXACOMP_REPORT2 = 2;
 const BLOCK_EXACOMP_REPORT3 = 3;
 
-$usebadges = get_config('exacomp', 'usebadges');
-$xmlserverurl = get_config('exacomp', 'xmlserverurl');
-$autotest = get_config('exacomp', 'autotest');
-$testlimit = get_config('exacomp', 'testlimit');
-$specificimport = get_config('exacomp','enableteacherimport');
-$notifications = get_config('exacomp','notifications');
-
 /**
  * access configuration setting via functions
  */
@@ -146,9 +139,6 @@ function block_exacomp_is_subjectgrading_enabled() {
 }
 function block_exacomp_is_numbering_enabled() {
 	return get_config('exacomp', 'usenumbering');
-}
-function block_exacomp_is_niveautitle_for_profile_enabled() {
-	return get_config('exacomp', 'useniveautitleinprofile');
 }
 
 /**
@@ -1603,7 +1593,7 @@ function block_exacomp_get_user_activities_competences_by_course($user, $coursei
  * @return \block_exacomp\tabobject[]
  */
 function block_exacomp_build_navigation_tabs_settings($courseid){
-	global $usebadges;
+	$usebadges = get_config('exacomp', 'usebadges');
 	$courseSettings = block_exacomp_get_settings_by_course($courseid);
 	$settings_subtree = array();
 
@@ -1771,9 +1761,7 @@ function block_exacomp_build_breadcrum_navigation($courseid) {
  * Check if school specific import is enabled
  */
 function block_exacomp_check_customupload() {
-	global $specificimport;
-
-	return $specificimport;
+	return get_config('exacomp','enableteacherimport');
 }
 
 /**
@@ -6145,7 +6133,9 @@ function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $
 	$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $topicid);
 
 	#sort crosssub entries
-	usort($descriptors, "block_exacomp_cmp_niveausort");
+	usort($descriptors, function ($a, $b){
+		return strcmp($a->cattitle, $b->cattitle);
+	});
 
 	$descriptorgradings = array(); //array[niveauid][value][number of examples evaluated with this value and niveau]
 
@@ -6203,7 +6193,13 @@ function block_exacomp_get_visible_own_and_child_examples_for_descriptor($course
 		$example->state = block_exacomp_get_dakora_state_for_example($courseid, $example->id, $userid);
 	}
 
-	usort($examples, "block_exacomp_cmp_statetitlesort");
+	usort($examples, function($a, $b){
+		if($a->state == $b->state)
+			return $a->sorting > $b->sorting;
+
+		return $a->state < $b->state;
+	});
+
 	return $examples;
 }
 
@@ -6386,43 +6382,11 @@ function block_exacomp_get_solution_visibilities_for_course_and_user($courseid, 
 }
 
 /**
- * use cache to store all visibilities to improve performance
- * @param unknown $courseid
- * @return unknown
- */
-function block_exacomp_get_visibility_cache($courseid){
-	// not needed anymore
-}
-
-/**
  * clear visibility cache if any visibility of any object in course changes
  * @param unknown $courseid
  */
 function block_exacomp_clear_visibility_cache($courseid){
 	// not needed anymore
-}
-
-/**
- * helper function to sort examples according to their state
- * @param unknown $a
- * @param unknown $b
- * @return boolean
- */
-function block_exacomp_cmp_statetitlesort($a, $b){
-	if($a->state == $b->state)
-		return $a->sorting > $b->sorting;
-
-	return $a->state < $b->state;
-}
-
-/**
- * helper function to sort descriptors according to their niveaus
- * @param unknown $a
- * @param unknown $b
- * @return number
- */
-function block_exacomp_cmp_niveausort($a, $b){
-	return strcmp($a->cattitle, $b->cattitle);
 }
 
 /**
@@ -6528,7 +6492,7 @@ function block_exacomp_is_external_trainer_for_student($trainerid, $studentid) {
  * used for eLove-App, checks if trainer is external trainer for any student
  * @param unknown $trainerid
  */
-function is_external_trainer($trainerid) {
+function block_exacomp_is_external_trainer($trainerid) {
 	return g::$DB->get_record(BLOCK_EXACOMP_DB_EXTERNAL_TRAINERS, [
 		'trainerid' => $trainerid,
 	]);

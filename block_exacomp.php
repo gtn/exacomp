@@ -33,10 +33,7 @@ class block_exacomp extends block_list {
 	}
 
 	function get_content() {
-		global $CFG, $USER, $COURSE, $usebadges;
-
-		//does not work with global var, don't know why TODO
-		$usebadges = get_config('exacomp', 'usebadges');
+		global $CFG, $USER, $COURSE;
 
 		if ($this->content !== null) {
 			return $this->content;
