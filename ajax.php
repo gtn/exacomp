@@ -118,7 +118,7 @@ switch($action){
 				echo block_exacomp_get_string("weekly_schedule_added");
 		}
 		
-		break;
+		exit;
 	case 'multi':
 		$data = (object)block_exacomp\param::required_json('data');
 
@@ -242,7 +242,7 @@ switch($action){
 		echo $start;
 		
 		block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted);
-		break;
+		exit;
 	case 'remove-example-from-schedule':
 		$scheduleid = required_param('scheduleid', PARAM_INT);
 		
@@ -265,7 +265,7 @@ switch($action){
 		$json_examples = block_exacomp_get_json_examples($examples);
 		
 		echo json_encode($json_examples);
-		break;
+		exit;
 	case 'get-weekly-schedule-configuration':
 		$studentid = required_param('studentid', PARAM_INT);
 		if(!$studentid) $studentid = $USER->id;
@@ -300,7 +300,7 @@ switch($action){
 		
 		echo json_encode($configuration);
 		
-		break;
+		exit;
 	case 'empty-trash':
 		$studentid = required_param('studentid', PARAM_INT);
 		if(!$studentid) $studentid = $USER->id;
@@ -317,7 +317,7 @@ switch($action){
 		$json_examples = block_exacomp_get_json_examples($examples, false);
 		
 		echo json_encode($json_examples);
-		break;
+		exit;
 	case 'add-examples-to-schedule-for-all':
 		$courseid = required_param('courseid', PARAM_INT);
 		block_exacomp_add_examples_to_schedule_for_all($courseid);
@@ -349,7 +349,7 @@ switch($action){
 		$courseid = required_param('courseid', PARAM_INT);
 		
 		echo block_exacomp_allow_resubmission($studentid, $exampleid, $courseid);
-		break;
+		exit;
 	case 'send-message-to-course':
 			if (!$isTeacher) {
 				print_error('noteacher');
@@ -358,7 +358,7 @@ switch($action){
 			$courseid = required_param('courseid', PARAM_INT);
 		
 			echo block_exacomp_send_message_to_course($courseid, $message);
-			break;
+			exit;
 	case 'create_blocking_event':
 		$creatorid = required_param('creatorid', PARAM_INT);
 		$title = required_param('title', PARAM_TEXT);
@@ -386,6 +386,8 @@ switch($action){
 					'exa-subjectid' => $subjectid,
 					'exa-courseid' => $courseid
 			) );
+
+			exit;
 		}
 		break;
 	case 'get_3dchart_data' :
@@ -401,8 +403,9 @@ switch($action){
 		$data->value_titles = \block_exacomp\global_config::get_value_titles ( $courseid, true );
 		
 		echo json_encode ( ( array ) $data );
-		break;
+		exit;
 	default:
 		throw new moodle_exception('wrong action: '.$action);
 }
 
+echo 'ok';

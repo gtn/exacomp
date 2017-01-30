@@ -946,7 +946,12 @@
 
 	$(document).on('click', '#hide-example', function(event) {
 		event.preventDefault();
+
 		var exampleid = $(this).attr('exampleid');
+		var courseid = block_exacomp.get_param('courseid');
+		var studentid = block_exacomp.get_studentid();
+		if(studentid==null)
+			studentid = 0;
 
 		// an example can be attached at several competencies, therefore we need to process all example instances
 		var examples = $('a[id="hide-example"][exampleid="'+exampleid+'"]').each(function() {
@@ -955,12 +960,7 @@
 			var schedule = $(this).siblings('.add-to-schedule');
 			var preplanning = $(this).siblings('.add-to-preplanning');
 
-			var courseid = block_exacomp.get_param('courseid');
-			var studentid = block_exacomp.get_studentid();
 			var val = $(this).attr('state');
-
-			if(studentid==null)
-				studentid = 0;
 
 			if(val=='-'){
 				$(this).attr('state','+');
@@ -1020,6 +1020,7 @@
 				}
 			}
 		});
+
 		block_exacomp.call_ajax({
 			exampleid : exampleid,
 			value : visible,

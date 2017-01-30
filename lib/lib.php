@@ -976,7 +976,7 @@ function block_exacomp_get_categories_for_descriptor($descriptor){
  * @param string $showonlyvisible - return only visible
  * @return unknown
  */
-function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescriptors = false, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showallexamples = true, $mindvisibility = true, $showonlyvisible=false ) {
+function block_exacomp_get_child_descriptors($parent, $courseid, $unusedShowalldescriptors = false, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showallexamples = true, $mindvisibility = true, $showonlyvisible=false ) {
 	global $DB;
 
 	// old:
@@ -992,12 +992,9 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescrip
 	}
 
 	if (!$courseid) {
-		$showalldescriptors = true;
 		$showonlyvisible = false;
 		$mindvisibility = false;
 	}
-	if(!$showalldescriptors)
-		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
 	$sql = 'SELECT d.id, d.title, d.niveauid, d.source, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, '.
 			($mindvisibility?'dvis.visible as visible, ':'').' d.sorting
@@ -1012,12 +1009,11 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $showalldescrip
 		$params[] = $courseid;
 
 	$params[]= $parent->id;
-	//$descriptors = $DB->get_records_sql($sql, ($showalldescriptors) ? array($parent->id) : array($courseid,$parent->id));
 	$descriptors = block_exacomp\descriptor::get_objects_sql($sql, $params);
 
 	foreach($descriptors as $descriptor) {
 		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples, $courseid);
-		$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid,$showalldescriptors,$filteredtaxonomies);
+		$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid,null /* unused */,$filteredtaxonomies);
 		$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
 	}
 
@@ -1041,19 +1037,28 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 		$courseid = $COURSE->id;
 
 	$examples = \block_exacomp\example::get_objects_sql(
-			"SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source, ".
-                ($mind_visibility?"evis.visible,esvis.visible as solution_visible, ":"")."
-				e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author
-				, de.sorting
-				FROM {" . BLOCK_EXACOMP_DB_EXAMPLES . "} e
-				JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?"
-			.($mind_visibility?' JOIN {'.BLOCK_EXACOMP_DB_EXAMPVISIBILITY.'} evis ON evis.exampleid= e.id AND evis.studentid=0 AND evis.courseid=? '
-			.($showonlyvisible?' AND evis.visible = 1 ':''). ' JOIN {'.BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY.'} esvis ON esvis.exampleid= e.id AND esvis.studentid=0 AND esvis.courseid=? ' :'')
-			. " WHERE "
-			. " e.source != " . BLOCK_EXACOMP_EXAMPLE_SOURCE_USER . " AND "
-			. (($showallexamples) ? " 1=1 " : " e.creatorid > 0")
-			. " ORDER BY de.sorting"
-			, array($descriptor->id, $courseid, $courseid));
+		"SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source,
+			e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author
+			, de.sorting
+			FROM {" . BLOCK_EXACOMP_DB_EXAMPLES . "} e
+			JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?"
+		. " WHERE "
+		. " e.source != " . BLOCK_EXACOMP_EXAMPLE_SOURCE_USER . " AND "
+		. ($showallexamples ? " 1=1 " : " e.creatorid > 0")
+		. " ORDER BY de.sorting"
+		, array($descriptor->id, $courseid, $courseid));
+
+	// old
+	if ($mind_visibility || $showonlyvisible) {
+		foreach ($examples as $example) {
+			$example->visible = block_exacomp_is_example_visible($courseid, $example, 0);
+			$example->solution_visible = block_exacomp_is_example_solution_visible($courseid, $example, 0);
+
+			if ($showonlyvisible && !$example->visible) {
+				unset($examples[$example->id]);
+			}
+		}
+	}
 
 	foreach($examples as $example){
 		$example->descriptor = $descriptor;
@@ -3479,51 +3484,60 @@ function block_exacomp_student_crosssubj($crosssubjid, $studentid){
  * @param int $subjectid
  * @return associative_array
  */
-function block_exacomp_get_competence_tree_for_cross_subject($courseid, $crosssubjid, $showalldescriptors = false, $showallexamples = true, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $studentid = 0, $showonlyvisibletopics = false) {
-	if(!$showalldescriptors)
-		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
+function block_exacomp_get_competence_tree_for_cross_subject($courseid, $cross_subject, $showallexamples = true, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $studentid = 0, $showonlyvisibletopics = false) {
+	// $showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
 	$allTopics = block_exacomp_get_all_topics();
 	$allSubjects = block_exacomp_get_subjects();
 
-	$allDescriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid, $showalldescriptors);
+	$allDescriptors = block_exacomp_get_descriptors_for_cross_subject($courseid, $cross_subject, false);
 
-	$courseTopics = block_exacomp_get_topics_for_cross_subject_by_descriptors($allDescriptors);
+	$subjects = [];
+	$topics = [];
 
-	foreach ($allDescriptors as $descriptor) {
-
-		// get descriptor topic
-		if (empty($allTopics[$descriptor->topicid])) continue;
-		$topic = $allTopics[$descriptor->topicid];
-		$topic->descriptors[$descriptor->id] = $descriptor;
+	foreach ($allTopics as $topic) {
+		$topic->descriptors = [];
 	}
 
-	$subjects = array();
+	foreach ($allDescriptors as $descriptor) {
+		// get descriptor topic
+		if (empty($allTopics[$descriptor->topicid])) {
+			continue;
+		}
+		$topic = $topics[$descriptor->topicid] = $allTopics[$descriptor->topicid];
+		$topic->descriptors[$descriptor->id] = $descriptor;
+	}
 
 	foreach ($allSubjects as $subject) {
 		$subject->topics = [];
 	}
 
-	foreach ($allTopics as $topic) {
-		//topic must be coursetopic if courseid <> 0
-		if($courseid > 0 && !array_key_exists($topic->id, $courseTopics))
-			continue;
-
-		// find subject
+	foreach ($topics as $topic) {
 		if (empty($allSubjects[$topic->subjid])) {
 			continue;
 		}
 
-		if($showonlyvisibletopics && !block_exacomp_is_topic_visible($courseid, $topic, $studentid)){
+		$subject = $subjects[$topic->subjid] = $allSubjects[$topic->subjid];
+		$subject->topics[$topic->id] = $topic;
+
+		if ($showonlyvisibletopics && !block_exacomp_is_topic_visible($courseid, $topic, $studentid)){
 			continue;
 		}
-		$subject = $allSubjects[$topic->subjid];
 
 		// found: add it to the subject result
-		$subject->topics[$topic->id] = $topic;
 		$subjects[$subject->id] = $subject;
 	}
+
 	return block_exacomp\subject::create_objects($subjects);
+}
+
+function block_exacomp_get_descriptors_assigned_to_cross_subject($crosssubjid) {
+	 return g::$DB->get_records_sql("
+		SELECT d.*
+		FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d
+		JOIN {".BLOCK_EXACOMP_DB_DESCCROSS."} dc ON d.id = dc.descrid
+		WHERE dc.crosssubjid = ?
+	", array($crosssubjid));
 }
 
 /**
@@ -3533,38 +3547,55 @@ function block_exacomp_get_competence_tree_for_cross_subject($courseid, $crosssu
  * @param string $showalldescriptors
  * @return unknown
  */
-function block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid, $showalldescriptors = false){
+function block_exacomp_get_descriptors_for_cross_subject($courseid, $cross_subject, $showalldescriptors = null){
 	global $DB;
-	$comps = $DB->get_records(BLOCK_EXACOMP_DB_DESCCROSS, array('crosssubjid'=>$crosssubjid),'','descrid,crosssubjid');
 
-	if(!$comps) return array();
+	$crosssubjid = is_scalar($cross_subject) ? $cross_subject : $cross_subject->id;
 
+	$assignedDescriptors = block_exacomp_get_descriptors_assigned_to_cross_subject($crosssubjid);
+	if (!$assignedDescriptors) {
+		return [];
+	}
+
+	$searchDescriptorIds = [];
+	foreach ($assignedDescriptors as $descriptor) {
+		$searchDescriptorIds[] = $descriptor->parentid ?: $descriptor->id;
+	}
+
+	/*
 	$show_childs = array();
-	$WHERE = "";
 	foreach($comps as $comp){
-		$cross_descr = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS,array('id'=>$comp->descrid));
-
-		$WHERE .= (($cross_descr->parentid == 0)?$cross_descr->id:$cross_descr->parentid).',';
-
 		if($cross_descr->parentid == 0) //parent deskriptor -> show all childs
 			$show_childs[$cross_descr->id] = true;
 	}
-	$WHERE = substr($WHERE, 0, strlen($WHERE)-1);
+	*/
 
-	if(!$showalldescriptors)
+	if($showalldescriptors === null)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
-	$sql = '(SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.source, d.title, d.niveauid, t.id AS topicid, d.profoundness, d.sorting, d.parentid, dvis.visible as visible, tvis.visible as tvisible, n.sorting as niveau '
+	$sql = 'SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.source, d.title, d.niveauid, t.id AS topicid, d.profoundness, d.sorting, d.parentid, n.sorting as niveau '
 	.'FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t '
 	.'JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
 	.'JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid = 0 '
-	.'JOIN {'.BLOCK_EXACOMP_DB_DESCVISIBILITY.'} dvis ON dvis.descrid = d.id AND dvis.studentid=0 AND dvis.courseid=? '
-	.'JOIN {'.BLOCK_EXACOMP_DB_TOPICVISIBILITY.'} tvis ON tvis.topicid = t.id AND tvis.studentid=0 AND tvis.courseid=? '
 	.'LEFT JOIN {'.BLOCK_EXACOMP_DB_NIVEAUS.'} n ON n.id = d.niveauid '
-	.'WHERE d.id IN('.$WHERE.')'.')';
+	.'WHERE d.id IN('.join(',', $searchDescriptorIds).')';
 
-	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid, $courseid));
+	$descriptors = \block_exacomp\descriptor::get_objects_sql($sql);
 
+	foreach ($descriptors as $descriptor) {
+		if (isset($assignedDescriptors[$descriptor->id])) {
+			// assigned, ok
+		} else {
+			// not assigned = nicht direkt ausgewählt => children checken
+			foreach ($descriptor->children as $child_descriptor) {
+				if (!isset($assignedDescriptors[$child_descriptor->id])) {
+					unset($descriptor->children[$child_descriptor->id]);
+				}
+			}
+		}
+	}
+
+	/*
 	foreach($descriptors as &$descriptor) {
 		//get examples
 		if(array_key_exists($descriptor->id, $comps) || (isset($show_childs[$descriptor->id]) && $show_childs[$descriptor->id]))
@@ -3579,25 +3610,27 @@ function block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid
 		}
 		$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
 	}
+	*/
 
 	return $descriptors;
 
 }
-/**
- * get topics for crosssubject, topics can not be associated with crosssubjects, but are displayed for grouping
- * @param unknown $descriptors
- * @return unknown[]
- */
-function block_exacomp_get_topics_for_cross_subject_by_descriptors($descriptors){
-	global $DB;
-	$topics = array();
-	foreach($descriptors as $descriptor){
-		$topic = $DB->get_record(BLOCK_EXACOMP_DB_TOPICS, array('id'=>$descriptor->topicid));
-		if(!array_key_exists($topic->id, $topics))
-			$topics[$topic->id] = $topic;
-	}
 
-	return $topics;
+function block_exacomp_get_subjects_for_cross_subject($cross_subject) {
+	$crosssubjid = is_scalar($cross_subject) ? $cross_subject : $cross_subject->id;
+
+	return \block_exacomp\subject::get_objects_sql("
+		SELECT s.*
+		FROM {".BLOCK_EXACOMP_DB_SUBJECTS."} s
+		WHERE id IN (
+			SELECT t.subjid
+			FROM {".BLOCK_EXACOMP_DB_TOPICS."} t
+			JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt ON t.id = dt.topicid
+			JOIN {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d ON dt.descrid=d.id
+			JOIN {".BLOCK_EXACOMP_DB_DESCCROSS."} dc ON d.id = dc.descrid
+			WHERE dc.crosssubjid = ?
+		);
+	", [$crosssubjid]);
 }
 
 /**
@@ -3738,6 +3771,7 @@ function block_exacomp_set_descriptor_visibility($descrid, $courseid, $visible, 
 
 		$DB->execute($sql, array($descrid, $courseid));
 	}
+
 	g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_DESCVISIBILITY,
 		['visible'=>$visible],
 		['descrid'=>$descrid, 'courseid'=>$courseid, 'studentid'=>$studentid]
@@ -4206,10 +4240,21 @@ function block_exacomp_is_topic_visible($courseid, $topic, $studentid){
 	if ($studentid <= 0) {
 		$studentid = 0;
 	}
+	
+	$visibilities = block_exacomp_get_topic_visibilities_for_course_and_user($courseid, 0);
+	if (isset($visibilities[$topic->id]) && !$visibilities[$topic->id]) {
+		return false;
+	}
 
-	$visibilities = block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $studentid);
-
-	return array_key_exists($topic->id, $visibilities);
+	if ($studentid > 0) {
+		// also check student if set
+		$visibilities = block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $studentid);
+		if (isset($visibilities[$topic->id]) && !$visibilities[$topic->id]) {
+			return false;
+		}
+	}
+	
+	return true;
 }
 
 /**
@@ -4227,9 +4272,24 @@ function block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid)
 		$studentid = 0;
 	}
 
-	$visibilities = block_exacomp_get_descriptor_visibilities_for_course_and_user($courseid, $studentid);
+	if (($topic = \block_exacomp\topic::get($descriptor->topicid)) && !block_exacomp_is_topic_visible($courseid, $topic, $studentid)) {
+		return false;
+	}
 
-	return array_key_exists($descriptor->id, $visibilities);
+	$visibilities = block_exacomp_get_descriptor_visibilities_for_course_and_user($courseid, 0);
+	if (isset($visibilities[$descriptor->id]) && !$visibilities[$descriptor->id]) {
+		return false;
+	}
+
+	if ($studentid > 0) {
+		// also check student if set
+		$visibilities = block_exacomp_get_descriptor_visibilities_for_course_and_user($courseid, $studentid);
+		if (isset($visibilities[$descriptor->id]) && !$visibilities[$descriptor->id]) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 /**
@@ -4240,16 +4300,32 @@ function block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid)
  * @return boolean
  */
 function block_exacomp_is_example_visible($courseid, $example, $studentid){
-	global $DB;
-
 	// $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
 	if ($studentid <= 0) {
 		$studentid = 0;
 	}
 
-	$visibilities = block_exacomp_get_example_visibilities_for_course_and_user($courseid, $studentid);
+	// TODO: also need check descriptor? then we also need to check crossdescriptors!
+	/*
+	if (($topic = \block_exacomp\topic::get($descriptor->topicid)) && !block_exacomp_is_topic_visible($courseid, $topic, $studentid)) {
+		return false;
+	}
+	*/
 
-	return array_key_exists($example->id, $visibilities);
+	$visibilities = block_exacomp_get_example_visibilities_for_course_and_user($courseid, 0);
+	if (isset($visibilities[$example->id]) && !$visibilities[$example->id]) {
+		return false;
+	}
+
+	if ($studentid > 0) {
+		// also check student if set
+		$visibilities = block_exacomp_get_example_visibilities_for_course_and_user($courseid, $studentid);
+		if (isset($visibilities[$example->id]) && !$visibilities[$example->id]) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 /**
@@ -4264,10 +4340,21 @@ function block_exacomp_is_example_solution_visible($courseid, $example, $student
 	if ($studentid <= 0) {
 		$studentid = 0;
 	}
+	
+	$visibilities = block_exacomp_get_solution_visibilities_for_course_and_user($courseid, 0);
+	if (isset($visibilities[$example->id]) && !$visibilities[$example->id]) {
+		return false;
+	}
 
-	$visibilities = block_exacomp_get_solution_visibilities_for_course_and_user($courseid, $studentid);
+	if ($studentid > 0) {
+		// also check student if set
+		$visibilities = block_exacomp_get_solution_visibilities_for_course_and_user($courseid, $studentid);
+		if (isset($visibilities[$example->id]) && !$visibilities[$example->id]) {
+			return false;
+		}
+	}
 
-	return array_key_exists($example->id, $visibilities);
+	return true;
 }
 
 /**
@@ -6232,50 +6319,12 @@ function block_exacomp_get_data_for_profile_comparison($courseid, $subject, $stu
  * @return {{id}, {...}}
  */
 function block_exacomp_get_example_visibilities_for_course_and_user($courseid, $userid = 0){
-	return Cache::staticCallback([__CLASS__, __FUNCTION__], function($courseid, $userid){
-		global $DB;
-
-		$sql = "SELECT DISTINCT e.id FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
-			LEFT JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON e.id = de.exampid
-			LEFT JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt ON de.descrid = dt.descrid
-			LEFT JOIN {".BLOCK_EXACOMP_DB_COURSETOPICS."} ct ON dt.topicid = ct.topicid
-			LEFT JOIN {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} ev ON e.id = ev.exampleid AND ev.courseid = ct.courseid
-			LEFT JOIN {".BLOCK_EXACOMP_DB_DESCVISIBILITY."} dv ON de.descrid = dv.descrid AND dv.courseid = ct.courseid
-			LEFT JOIN {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tv ON dt.topicid = tv.topicid AND tv.courseid = ct.courseid
-			LEFT JOIN {".BLOCK_EXACOMP_DB_TOPICS."} t ON ct.topicid = t.id
-	
-			WHERE ct.courseid = ? 
-	
-			AND ((ev.visible = 1 AND ev.studentid = 0 AND NOT EXISTS
-			  (SELECT *
-			   FROM {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evsub
-			   WHERE evsub.exampleid = ev.exampleid AND evsub.courseid = ev.courseid AND evsub.visible = 0 AND evsub.studentid = ?))
-			   OR (ev.visible = 1 AND ev.studentid = ? AND NOT EXISTS
-			  (SELECT *
-			   FROM {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} evsub
-			   WHERE evsub.exampleid = ev.exampleid AND evsub.courseid = ev.courseid AND evsub.visible = 0 AND evsub.studentid = 0)))
-	
-			AND ((dv.visible = 1 AND dv.studentid = 0 AND NOT EXISTS
-			  (SELECT *
-			   FROM {".BLOCK_EXACOMP_DB_DESCVISIBILITY."} dvsub
-			   WHERE dvsub.descrid = dv.descrid AND dvsub.courseid = dv.courseid AND dvsub.visible = 0 AND dvsub.studentid = ?))
-			   OR (dv.visible = 1 AND dv.studentid = ? AND NOT EXISTS
-			  (SELECT *
-			   FROM {".BLOCK_EXACOMP_DB_DESCVISIBILITY."} dvsub
-			   WHERE dvsub.descrid = dv.descrid AND dvsub.courseid = dv.courseid AND dvsub.visible = 0 AND dvsub.studentid = 0)))
-			
-			AND ((tv.visible = 1 AND tv.studentid = 0 AND NOT EXISTS
-			  (SELECT *
-			   FROM {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tvsub
-			   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = ?))
-			   OR (tv.visible = 1 AND tv.studentid = ? AND NOT EXISTS
-			  (SELECT *
-			   FROM {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tvsub
-			   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = 0)))";
-
-		$params = array($courseid, $userid, $userid, $userid, $userid, $userid, $userid);
-
-		return $DB->get_records_sql($sql, $params);
+	return Cache::staticCallback(__FUNCTION__, function($courseid, $userid){
+		return g::$DB->get_records_sql_menu("
+			SELECT DISTINCT ev.exampleid, ev.visible
+			FROM {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} ev
+			WHERE ev.courseid=? AND ev.studentid=?
+		", [$courseid, $userid]);
 	}, func_get_args());
 }
 
@@ -6288,39 +6337,13 @@ function block_exacomp_get_example_visibilities_for_course_and_user($courseid, $
  *
  * @return: {{id}, {...}}
  */
-function block_exacomp_get_descriptor_visibilities_for_course_and_user($courseid, $userid = 0){
-	return Cache::staticCallback([__CLASS__, __FUNCTION__], function($courseid, $userid){
-		global $DB;
-
-		$sql = "SELECT DISTINCT d.id FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d
-			LEFT JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt ON d.id = dt.descrid
-			LEFT JOIN {".BLOCK_EXACOMP_DB_COURSETOPICS."} ct ON dt.topicid = ct.topicid
-			LEFT JOIN {".BLOCK_EXACOMP_DB_DESCVISIBILITY."} dv ON d.id = dv.descrid AND dv.courseid = ct.courseid
-			LEFT JOIN {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tv ON dt.topicid = tv.topicid AND tv.courseid = ct.courseid
-			LEFT JOIN {".BLOCK_EXACOMP_DB_TOPICS."} t ON ct.topicid = t.id
-			WHERE ct.courseid = ? 
-	
-			AND ((dv.visible = 1 AND dv.studentid = 0 AND NOT EXISTS
-			  (SELECT *
-			   FROM {".BLOCK_EXACOMP_DB_DESCVISIBILITY."} dvsub
-			   WHERE dvsub.descrid = dv.descrid AND dvsub.courseid = dv.courseid AND dvsub.visible = 0 AND dvsub.studentid = ?))
-			   OR (dv.visible = 1 AND dv.studentid = ? AND NOT EXISTS
-			  (SELECT *
-			   FROM {".BLOCK_EXACOMP_DB_DESCVISIBILITY."} dvsub
-			   WHERE dvsub.descrid = dv.descrid AND dvsub.courseid = dv.courseid AND dvsub.visible = 0 AND dvsub.studentid = 0)))
-			 
-			AND ((tv.visible = 1 AND tv.studentid = 0 AND NOT EXISTS
-			  (SELECT *
-			   FROM {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tvsub
-			   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = ?))
-			   OR (tv.visible = 1 AND tv.studentid = ? AND NOT EXISTS
-			  (SELECT *
-			   FROM {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tvsub
-			   WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = 0)))";
-
-		$params = array($courseid, $userid, $userid, $userid, $userid);
-
-		return $DB->get_records_sql($sql, $params);
+function block_exacomp_get_descriptor_visibilities_for_course_and_user($courseid, $userid){
+	return Cache::staticCallback([__FUNCTION__], function($courseid, $userid){
+		return g::$DB->get_records_sql_menu("
+			SELECT DISTINCT dv.descrid, dv.visible
+			FROM {".BLOCK_EXACOMP_DB_DESCVISIBILITY."} dv
+			WHERE dv.courseid = ? AND dv.studentid = ?
+		", [$courseid, $userid]);
 	}, func_get_args());
 }
 
@@ -6333,24 +6356,11 @@ function block_exacomp_get_descriptor_visibilities_for_course_and_user($courseid
  * @return: {{id}, {...}}
  */
 function block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $userid = 0){
-	return Cache::staticCallback([__CLASS__, __FUNCTION__], function($courseid, $userid){
-		global $DB;
-
-		$sql = "SELECT DISTINCT t.id FROM {".BLOCK_EXACOMP_DB_TOPICS."} t
-			LEFT JOIN {".BLOCK_EXACOMP_DB_COURSETOPICS."} ct ON t.id = ct.topicid
-			LEFT JOIN {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tv ON t.id = tv.topicid AND tv.courseid = ct.courseid
-			WHERE ct.courseid = ? 
-	
-			AND ((tv.visible = 1 AND tv.studentid = 0 AND NOT EXISTS 
-				(SELECT * FROM {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tvsub
-				WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = ?)) 
-			OR (tv.visible = 1 AND tv.studentid = ? AND NOT EXISTS 
-				(SELECT * FROM {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tvsub
-				WHERE tvsub.topicid = tv.topicid AND tvsub.courseid = tv.courseid AND tvsub.visible = 0 AND tvsub.studentid = 0)))";
-
-		$params = array($courseid, $userid, $userid);
-
-		return $DB->get_records_sql($sql, $params);
+	return Cache::staticCallback(__FUNCTION__, function($courseid, $userid){
+		return g::$DB->get_records_sql_menu("
+			SELECT DISTINCT tv.topicid, tv.visible
+			FROM {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tv
+			WHERE tv.courseid = ? AND tv.studentid = ?", [$courseid, $userid]);
 	}, func_get_args());
 }
 
@@ -6360,24 +6370,12 @@ function block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $us
  * @param number $userid
  */
 function block_exacomp_get_solution_visibilities_for_course_and_user($courseid, $userid = 0){
-	return Cache::staticCallback([__CLASS__, __FUNCTION__], function($courseid, $userid){
-		global $DB;
-
-		$sql = "SELECT DISTINCT e.id FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e 
-			LEFT JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON e.id = de.exampid 
-			LEFT JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt ON de.descrid = dt.descrid 
-			LEFT JOIN {".BLOCK_EXACOMP_DB_COURSETOPICS."} ct ON dt.topicid = ct.topicid 
-			LEFT JOIN {".BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY."} sv ON e.id = sv.exampleid AND sv.courseid = ct.courseid 
-			WHERE ct.courseid = ? 
-			AND ((sv.visible = 1 AND sv.studentid = 0 AND NOT EXISTS (
-				SELECT * FROM {".BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY."} svsub 
-				WHERE svsub.exampleid = sv.exampleid AND svsub.courseid = sv.courseid AND svsub.visible = 0 AND svsub.studentid = ?)) 
-			OR (sv.visible = 1 AND sv.studentid = ? AND NOT EXISTS (
-				SELECT * FROM {".BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY."} svsub WHERE svsub.exampleid = sv.exampleid AND svsub.courseid = sv.courseid AND svsub.visible = 0 AND svsub.studentid = 0)))";
-
-		$params = array($courseid, $userid, $userid);
-
-		return $DB->get_records_sql($sql, $params);
+	return Cache::staticCallback(__FUNCTION__, function($courseid, $userid){
+		return g::$DB->get_records_sql_menu("
+			SELECT DISTINCT sv.exampleid, sv.visible 
+			FROM {".BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY."} sv 
+			WHERE sv.courseid = ? AND sv.studentid=? 
+		", [$courseid, $userid]);
 	}, func_get_args());
 }
 
@@ -6766,7 +6764,7 @@ function block_exacomp_has_capability($cap, $data) {
  * @throws block_exacomp_permission_exception
  */
 function block_exacomp_require_capability($cap, $data) {
-	if (!has_capability($cap, $data)) {
+	if (!block_exacomp_has_capability($cap, $data)) {
 		throw new block_exacomp_permission_exception();
 	}
 }

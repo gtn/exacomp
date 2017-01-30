@@ -204,6 +204,15 @@ if ($action == 'descriptor_selector') {
 
 	$subjects = block_exacomp\db_layer_course::create($courseid)->get_subjects();
 
+	// andere subjects laden, die nicht im kurs sind, aber im cross_subject
+	$cross_subject_subjects = block_exacomp_get_subjects_for_cross_subject($cross_subject);
+	foreach ($cross_subject_subjects as $cross_subject_subject) {
+		if (!isset($subjects[$cross_subject_subject->id])) {
+			$subjects[$cross_subject_subject->id] = $cross_subject_subject;
+		}
+	}
+
+
 	echo '<form method="post">';
 	echo $print_tree($subjects);
 	echo '<input type="submit" name="save" value="'.block_exacomp_get_string('add_descriptors_to_crosssub').'" />';
@@ -361,7 +370,7 @@ if ($editmode) {
 }
 
 if ($cross_subject) {
-	$subjects = block_exacomp_get_competence_tree_for_cross_subject($courseid,(isset($cross_subject))?$cross_subject->id:null,false, !($course_settings->show_all_examples == 0 && !$isTeacher),$course_settings->filteredtaxonomies, ($studentid>0 && !$isTeacher)?$studentid:0, ($isTeacher)?false:true);
+	$subjects = block_exacomp_get_competence_tree_for_cross_subject($courseid, $cross_subject, !($course_settings->show_all_examples == 0 && !$isTeacher), $course_settings->filteredtaxonomies, ($studentid>0 && !$isTeacher)?$studentid:0, ($isTeacher)?false:true);
 
 	if ($subjects) {
 		echo $output->overview_legend($isTeacher);
