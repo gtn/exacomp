@@ -463,9 +463,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						foreach($data[$skillid][$topicid][$niveauid] as $descriptor) {
 							$compString = "";
 							
-							if(!isset($descriptor->visible))
-								$descriptor->visible = $DB->get_field(BLOCK_EXACOMP_DB_DESCVISIBILITY, 'visible', array('courseid'=>$courseid, 'descrid'=>$descriptor->id, 'studentid'=>0));
-							
 							// Check visibility
 							$descriptor_used = block_exacomp_descriptor_used($courseid, $descriptor, $studentid);
 							$visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid);
@@ -1044,9 +1041,6 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$one_student = true;
 			}
 			
-			if(!isset($topic->visible))
-				$topic->visible = $DB->get_field(BLOCK_EXACOMP_DB_TOPICVISIBILITY, 'visible', array('courseid'=>$data->courseid, 'topicid'=>$topic->id, 'studentid'=>0));
-					
 			$visible = block_exacomp_is_topic_visible($data->courseid, $topic, $studentid);
 
 			if($data->role == BLOCK_EXACOMP_ROLE_TEACHER || $visible){
