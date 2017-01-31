@@ -97,8 +97,9 @@ class db_layer {
 			LEFT JOIN {".BLOCK_EXACOMP_DB_DESCVISIBILITY."} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=?
 			LEFT JOIN {".BLOCK_EXACOMP_DB_NIVEAUS."} n ON d.niveauid = n.id
 			".($this->showalldescriptors ? "" : "
-				JOIN {".BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY."} da ON d.id=da.compid AND da.comptype=".BLOCK_EXACOMP_TYPE_DESCRIPTOR."
-				JOIN {course_modules} a ON da.activityid=a.id ".(($this->courseid > 0) ? "AND a.course=".$this->courseid : ""))."
+				JOIN {".BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY."} ca ON d.id=ca.compid AND ca.comptype=".BLOCK_EXACOMP_TYPE_DESCRIPTOR."
+				AND ca.activityid IN (".block_exacomp_get_allowed_course_modules_for_course_for_select($this->courseid).")
+			")."
 			WHERE desctopmm.topicid = ?
 			".($this->showonlyvisible ? " AND (dvis.visible = 1 OR dvis.visible IS NULL)" : "");
 
@@ -320,10 +321,12 @@ class db_layer_course extends db_layer {
 		if (!block_exacomp_is_teacher($courseid)) {
 			$this->showonlyvisible = true;
 		}
+
+		$this->showalldescriptors = /* $this->showalldescriptors || */ block_exacomp_get_settings_by_course($this->courseid)->show_all_descriptors;
 	}
 
 	function get_subjects() {
-		return subject::create_objects(block_exacomp_get_subjects_by_course($this->courseid), null, $this);
+		return subject::create_objects(block_exacomp_get_subjects_by_course($this->courseid, $this->showalldescriptors), null, $this);
 	}
 
 	function filter_user_visibility($items) {

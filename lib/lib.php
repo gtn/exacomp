@@ -298,18 +298,18 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
 	$sql = '
-	SELECT DISTINCT s.id, s.titleshort, s.title, s.stid, s.infolink, s.description, s.source, s.sorting, s.author
-	FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s
-	JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON t.subjid = s.id
-	JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?
-	'.($showalldescriptors ? '' : '
+		SELECT DISTINCT s.id, s.titleshort, s.title, s.stid, s.infolink, s.description, s.source, s.sorting, s.author
+		FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s
+		JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON t.subjid = s.id
+		JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?
+		'.($showalldescriptors ? '' : '
 			-- only show active ones
 			JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} topmm ON topmm.topicid=t.id
 			JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON topmm.descrid=d.id
-			JOIN {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} ca ON (d.id=ca.compid AND ca.comptype = '.BLOCK_EXACOMP_TYPE_DESCRIPTOR.') OR (t.id=ca.compid AND ca.comptype = '.BLOCK_EXACOMP_TYPE_TOPIC.')
-			JOIN {course_modules} a ON ca.activityid=a.id AND a.course=ct.courseid
+			JOIN {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} ca ON ((d.id=ca.compid AND ca.comptype = '.BLOCK_EXACOMP_TYPE_DESCRIPTOR.') OR (t.id=ca.compid AND ca.comptype = '.BLOCK_EXACOMP_TYPE_TOPIC.'))
+				AND ca.activityid IN ('.block_exacomp_get_allowed_course_modules_for_course_for_select($courseid).')
 			').'
-	ORDER BY s.title
+		ORDER BY s.title
 			';
 
 	$subjects = block_exacomp\subject::get_objects_sql($sql, array($courseid));
@@ -387,13 +387,6 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 			FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s
 			JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON t.subjid = s.id
 			JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?
-			'.(block_exacomp_get_settings_by_course($courseid)->show_all_descriptors ? '' : '
-					-- only show active ones
-					JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} topmm ON topmm.topicid=t.id
-					JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON topmm.descrid=d.id
-					JOIN {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} ca ON (d.id=ca.compid AND ca.comptype = '.BLOCK_EXACOMP_TYPE_DESCRIPTOR.') OR (t.id=ca.compid AND ca.comptype = '.BLOCK_EXACOMP_TYPE_TOPIC.')
-					JOIN {course_modules} a ON ca.activityid=a.id AND a.course=ct.courseid
-					').'
 			ORDER BY s.sorting, s.title
 			', array($courseid));
 
@@ -437,27 +430,26 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
-	$sql = 'SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description, t.numb, t.source, tvis.visible as visible, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
-	FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t
-	JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.(($subjectid > 0) ? 'AND t.subjid = ? ': '').'
-	JOIN {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s ON t.subjid=s.id -- join subject here, to make sure only topics with existing subject are loaded
-	-- left join, because courseid=0 has no topicvisibility!
-	JOIN {'.BLOCK_EXACOMP_DB_TOPICVISIBILITY.'} tvis ON tvis.topicid=t.id AND tvis.studentid=0 AND tvis.courseid=?'
-	.($showonlyvisible?' AND tvis.visible = 1 ':'')
-	.($showalldescriptors ? '' : '
+	$sql = '
+		SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description, t.numb, t.source, tvis.visible as visible, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
+		FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t
+		JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.(($subjectid > 0) ? 'AND t.subjid = ? ': '').'
+		JOIN {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s ON t.subjid=s.id -- join subject here, to make sure only topics with existing subject are loaded
+		-- left join, because courseid=0 has no topicvisibility!
+		JOIN {'.BLOCK_EXACOMP_DB_TOPICVISIBILITY.'} tvis ON tvis.topicid=t.id AND tvis.studentid=0 AND tvis.courseid=ct.courseid'
+		.($showonlyvisible?' AND tvis.visible = 1 ':'')
+		.($showalldescriptors ? '' : '
 			-- only show active ones
 			JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} topmm ON topmm.topicid=t.id
 			JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON topmm.descrid=d.id
-			JOIN {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} da ON (d.id=da.compid AND da.comptype = '.BLOCK_EXACOMP_TYPE_DESCRIPTOR.') OR (t.id=da.compid AND da.comptype = '.BLOCK_EXACOMP_TYPE_TOPIC.')
-			JOIN {course_modules} a ON da.activityid=a.id AND a.course=ct.courseid
-			').'
-			';
+			JOIN {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} da ON ((d.id=da.compid AND da.comptype = '.BLOCK_EXACOMP_TYPE_DESCRIPTOR.') OR (t.id=da.compid AND da.comptype = '.BLOCK_EXACOMP_TYPE_TOPIC.'))
+				AND da.activityid IN ('.block_exacomp_get_allowed_course_modules_for_course_for_select($courseid).')
+		');
 
 	//GROUP By funktioniert nur mit allen feldern im select, aber nicht mit strings
 	$params = array($courseid);
 	if($subjectid>0)
 		$params[] = $subjectid;
-	$params[] = $courseid;
 
 	$topics = $DB->get_records_sql($sql,$params);
 
@@ -896,18 +888,20 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
 
-	$sql = 'SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, d.profoundness, d.parentid, n.sorting AS niveau_sorting, n.title AS niveau_title, dvis.visible as visible, desctopmm.sorting '
-	.' FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t '
-	.(($courseid>0)?' JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'')
-	.' JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
-	.' JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid=0 '
-	.' -- left join, because courseid=0 has no descvisibility!
-		LEFT JOIN {'.BLOCK_EXACOMP_DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=?'
-	.($showonlyvisible?' AND dvis.visible = 1 ':'')
-	.' LEFT JOIN {'.BLOCK_EXACOMP_DB_NIVEAUS.'} n ON d.niveauid = n.id '
-	.($showalldescriptors ? '' : '
-			JOIN {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.BLOCK_EXACOMP_TYPE_DESCRIPTOR.'
-			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':''));
+	$sql = '
+		SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, d.profoundness, d.parentid, n.sorting AS niveau_sorting, n.title AS niveau_title, dvis.visible as visible, desctopmm.sorting
+		FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t
+		'.(($courseid>0)?' JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'').'
+		JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id
+		JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid=0
+		-- left join, because courseid=0 has no descvisibility!
+		LEFT JOIN {'.BLOCK_EXACOMP_DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=?
+		'.($showonlyvisible?' AND dvis.visible = 1 ':'').'
+		LEFT JOIN {'.BLOCK_EXACOMP_DB_NIVEAUS.'} n ON d.niveauid = n.id
+		'.($showalldescriptors ? '' : '
+			JOIN {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} ca ON d.id=ca.compid AND ca.comptype='.BLOCK_EXACOMP_TYPE_DESCRIPTOR.'
+				AND ca.activityid IN ('.block_exacomp_get_allowed_course_modules_for_course_for_select($courseid).')
+		');
 
 	$descriptors = block_exacomp\descriptor::get_objects_sql($sql, array($courseid, $courseid, $courseid, $courseid));
 
@@ -1128,18 +1122,20 @@ function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldes
 	if(!$showalldescriptors)
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
 
-	$sql = '(SELECT DISTINCT d.id, desctopmm.id as u_id, d.title, d.niveauid, t.id AS topicid, d.requirement, d.knowledgecheck, d.benefit, d.sorting, d.parentid, n.title as cattitle '
-	.'FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($topicid > 0) ? ' AND t.id = '.$topicid.' ' : '')
-	.'JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
-	.'JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid=0 '
-	. 'LEFT JOIN {'.BLOCK_EXACOMP_DB_NIVEAUS.'} n ON n.id = d.niveauid '
-	.($mind_visibility?'JOIN {'.BLOCK_EXACOMP_DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=? '
-	.($showonlyvisible?'AND dvis.visible = 1 ':''):'')
-	.($showalldescriptors ? '' : '
-			JOIN {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} da ON d.id=da.compid AND da.comptype='.BLOCK_EXACOMP_TYPE_DESCRIPTOR.'
-			JOIN {course_modules} a ON da.activityid=a.id '.(($courseid>0)?'AND a.course=?':'')).')';
+	$sql = '
+		SELECT DISTINCT d.id, desctopmm.id as u_id, d.title, d.niveauid, t.id AS topicid, d.requirement, d.knowledgecheck, d.benefit, d.sorting, d.parentid, n.title as cattitle
+		FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($topicid > 0) ? ' AND t.id = '.$topicid.' ' : '').'
+		JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id
+		JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid=0
+		LEFT JOIN {'.BLOCK_EXACOMP_DB_NIVEAUS.'} n ON n.id = d.niveauid '
+		.($mind_visibility?'JOIN {'.BLOCK_EXACOMP_DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=? '
+		.($showonlyvisible?'AND dvis.visible = 1 ':''):'')
+		.($showalldescriptors ? '' : '
+			JOIN {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} ca ON d.id=ca.compid AND ca.comptype='.BLOCK_EXACOMP_TYPE_DESCRIPTOR.'
+				AND ca.activityid IN ('.block_exacomp_get_allowed_course_modules_for_course_for_select($courseid).')
+		').'
+		ORDER BY d.sorting';
 
-	$sql .= ' ORDER BY d.sorting';
 	$descriptors = $DB->get_records_sql($sql, array($courseid, $courseid, $courseid));
 
 	/*
@@ -1209,12 +1205,12 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 	}
 	else
 		$allSubjects = block_exacomp_get_subjects_by_course($courseid, $showalldescriptors);
-
+	
 	// 2. GET TOPICS
 	$allTopics = block_exacomp_get_all_topics($subjectid, $showonlyvisible);
 	if($courseid > 0) {
 		if((!$calledfromoverview && !$calledfromactivities) || !$selectedTopic) {
-			$courseTopics = block_exacomp_get_topics_by_subject($courseid, $subjectid, false, $showonlyvisibletopics);
+			$courseTopics = block_exacomp_get_topics_by_subject($courseid, $subjectid, $showalldescriptors, $showonlyvisibletopics);
 		}
 		elseif(isset($selectedTopic)) {
 			$courseTopics = \block_exacomp\topic::get($selectedTopic->id);
@@ -2261,6 +2257,48 @@ function block_exacomp_get_course_module_association($courseid) {
 
 	return $mm;
 }
+
+function block_exacomp_get_allowed_course_modules_for_course($courseid) {
+	return \Super\Cache::staticCallback(__FUNCTION__, function($courseid) {
+		// TODO: optimieren
+		$modinfo = get_fast_modinfo($courseid);
+		$modules = $modinfo->get_cms();
+
+		$active_modules = [];
+		foreach($modules as $mod){
+			$module = block_exacomp_get_coursemodule($mod);
+
+			//Skip Nachrichtenforum
+			if (strcmp($module->name, block_exacomp_get_string('namenews','mod_forum'))==0) {
+				continue;
+			}
+
+			//skip News forum in any language, supported_modules[1] == forum
+			$forum = g::$DB->get_record('modules', array('name'=>'forum'));
+			if($module->module == $forum->id){
+				$forum = g::$DB->get_record('forum', array('id'=>$module->instance));
+				if(strcmp($forum->type, 'news')==0){
+					continue;
+				}
+			}
+
+			$active_modules[$module->id] = $module;
+		}
+
+		return $active_modules;
+	}, func_get_args());
+}
+
+function block_exacomp_get_allowed_course_modules_for_course_for_select($courseid) {
+	$ids = array_keys(block_exacomp_get_allowed_course_modules_for_course($courseid));
+	if (!$ids) {
+		// always return at least one
+		return '-9999';
+	} else {
+		return join(',', $ids);
+	}
+}
+
 /**
  * Returns an associative array that gives information about which competence/topic is
  * associated with which eportfolioitem
