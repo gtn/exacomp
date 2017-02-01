@@ -9,22 +9,12 @@
 				var data = new vis.DataSet();;
 				var graph = null;
 
-				var exacomp_data = null;
 				var start, end = 0;
 				
 				if(sessionStorage.getItem('date1') != null && sessionStorage.getItem('date2') != null) {
 					start = (new Date(sessionStorage.getItem('date1')).getTime() / 1000);
 			    	end = (new Date(sessionStorage.getItem('date2')).getTime() / 1000);
 				}
-				
-				block_exacomp.call_ajax({
-					topicid : block_exacomp.get_param('topicid'),
-					userid : block_exacomp.get_param('userid'),
-					start : start,
-					end : end,
-					action : 'get_3dchart_data'
-				}).done(function(msg) {
-					exacomp_data = $.parseJSON(msg); 
 				
 				// Create and populate a data table.
 				
@@ -147,6 +137,5 @@
 						container.innerHTML = M.util.get_string('topic_3dchart_empty', 'block_exacomp');
 					}
 				
-				});
 			});
 })(jQueryExacomp);

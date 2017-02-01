@@ -3102,7 +3102,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		
 		$evaluation_niveaus = \block_exacomp\global_config::get_evalniveaus();
 		$value_titles = \block_exacomp\global_config::get_value_titles($courseid, true);
-		
+		$value_titles_long = \block_exacomp\global_config::get_value_titles($courseid, false);
+
 		//first table for descriptor evaluation
 		$table = new html_table();
 		$table->attributes['class'] = ' flexible statistictable';
@@ -3129,6 +3130,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$cell = new html_table_cell();
 				$cell->text = $value;
 				$cell->attributes['class'] = 'cell-th';
+				$cell->attributes['title'] = $value_titles_long[$key];
 				$row->cells[] = $cell;
 			}
 		}
@@ -3239,67 +3241,59 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$cell->text = (isset($student->competencies->student[$descriptor->id]))?$student->competencies->student[$descriptor->id]:'';
 				$row->cells[] = $cell;
 				$rows[] = $row;
-				
-				$edited = false;
-				$inwork = false;
-				$notinwork = false;
-				foreach($descriptor->examples as $example){
-					//cannot be 9 -> no blocking events here
-					if($example->state > BLOCK_EXACOMP_EXAMPLE_STATE_SUBMITTED && !$edited){
-						$row = new html_table_row();
-						$row->attributes['class'] = 'comparison_mat comparmat_mathead';
-						$cell = new html_table_cell();
-						$row->cells[] = $cell;
-						$cell = new html_table_cell();
-						$cell->text = 'Bearbeitete Lernmaterialien';
-						$cell->colspan = 3;
-						$row->cells[] = $cell;
-						$rows[] = $row;
-						$edited = true;
-					}elseif($example->state > BLOCK_EXACOMP_EXAMPLE_STATE_NOT_SET && $example->state < BLOCK_EXACOMP_EXAMPLE_STATE_SUBMITTED && !$inwork){
-						$row = new html_table_row();
-						$row->attributes['class'] = 'comparison_mat comparmat_mathead';
-						$cell = new html_table_cell();
-						$row->cells[] = $cell;
-						$cell = new html_table_cell();
-						$cell->text = 'Lernmaterialien in Arbeit';
-						$cell->colspan = 3;
-						$row->cells[] = $cell;
-						$rows[] = $row;
-						$inwork = true;
-					}elseif($example->state == BLOCK_EXACOMP_EXAMPLE_STATE_NOT_SET && !$notinwork){
-						$row = new html_table_row();
-						$row->attributes['class'] = 'comparison_mat comparmat_mathead';
-						$cell = new html_table_cell();
-						$row->cells[] = $cell;
-						$cell = new html_table_cell();
-						$cell->text = 'Unbearbeitete Lernmaterialien';
-						$cell->colspan = 3;
-						$row->cells[] = $cell;
-						$rows[] = $row;
-						$notinwork = true;
+
+				$displayOrder = [
+					'Bearbeitete Lernmaterialien' => function($example) {
+						return (BLOCK_EXACOMP_EXAMPLE_STATE_SUBMITTED == $example->state);
+					},
+					'Lernmaterialien in Arbeit' => function($example) {
+						return (BLOCK_EXACOMP_EXAMPLE_STATE_IN_CALENDAR == $example->state);
+					},
+					'unbearbeitete zugewiesene Lernmaterialien' => function($example) {
+						return (BLOCK_EXACOMP_EXAMPLE_STATE_IN_POOL == $example->state);
+					},
+				];
+
+				foreach ($displayOrder as $title => $filter) {
+					$examples = array_filter($descriptor->examples, $filter);
+
+					if (!$examples) {
+						continue;
 					}
-					
+
 					$row = new html_table_row();
-					$row->attributes['class'] = 'comparison_mat';
+					$row->attributes['class'] = 'comparison_mat comparmat_mathead';
 					$cell = new html_table_cell();
-					$cell->text = '';
 					$row->cells[] = $cell;
-					
 					$cell = new html_table_cell();
-					$cell->text = $example->title;
-					$row->cells[] = $cell;
-					
-					$cell = new html_table_cell();
-					$cell->text = ((isset($student->examples->niveau[$example->id]))?$evaluation_niveaus[$student->examples->niveau[$example->id]].' ': '').
-					((isset($student->examples->teacher[$example->id]))?$student->examples->teacher[$example->id]:'');
-					$cell->attributes['exa-timestamp'] = isset($student->examples->timestamp_teacher[$example->id]) ? $student->examples->timestamp_teacher[$example->id] : 0;
-					$row->cells[] = $cell;
-					
-					$cell = new html_table_cell();
-					$cell->text = (isset($student->examples->student[$example->id]))?$student->examples->student[$example->id]:'';
+					$cell->text = $title;
+					$cell->colspan = 3;
 					$row->cells[] = $cell;
 					$rows[] = $row;
+
+					foreach ($examples as $example){
+
+						$row = new html_table_row();
+						$row->attributes['class'] = 'comparison_mat';
+						$cell = new html_table_cell();
+						$cell->text = '';
+						$row->cells[] = $cell;
+
+						$cell = new html_table_cell();
+						$cell->text = $example->title;
+						$row->cells[] = $cell;
+
+						$cell = new html_table_cell();
+						$cell->text = ((isset($student->examples->niveau[$example->id]))?$evaluation_niveaus[$student->examples->niveau[$example->id]].' ': '').
+						((isset($student->examples->teacher[$example->id]))?$student->examples->teacher[$example->id]:'');
+						$cell->attributes['exa-timestamp'] = isset($student->examples->timestamp_teacher[$example->id]) ? $student->examples->timestamp_teacher[$example->id] : 0;
+						$row->cells[] = $cell;
+
+						$cell = new html_table_cell();
+						$cell->text = (isset($student->examples->student[$example->id]))?$student->examples->student[$example->id]:'';
+						$row->cells[] = $cell;
+						$rows[] = $row;
+					}
 				}
 			}
 		}

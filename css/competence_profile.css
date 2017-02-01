@@ -300,7 +300,7 @@
 }
 
 #block_exacomp .statistictables .stat_table table td {
-	min-width: 70px;
+	min-width: 35px;
 	text-align: center;
 }
 

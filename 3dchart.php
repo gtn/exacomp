@@ -20,6 +20,8 @@ global $USER;
 
 require __DIR__.'/inc.php';
 
+$start = optional_param( 'start', 0, PARAM_INT);
+$end = optional_param( 'end', 0, PARAM_INT);
 $courseid = required_param('courseid', PARAM_INT);
 $topicid = required_param('topicid', PARAM_INT);
 $userid = required_param('userid', PARAM_INT);
@@ -53,6 +55,13 @@ $PAGE->set_pagelayout('embedded');
 
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
+
+$data = new stdClass ();
+$data->evaluation = block_exacomp_get_descriptor_statistic_for_topic ( $courseid, $topicid, $userid, $start, $end ) ['descriptor_evaluation'];
+$data->evalniveau_titles = \block_exacomp\global_config::get_evalniveaus ();
+$data->value_titles = \block_exacomp\global_config::get_value_titles ( $courseid, true );
+
+echo '<script> exacomp_data = '.json_encode($data).'; </script>';
 
 $output = block_exacomp_get_renderer();
 $output->requires()->js('/blocks/exacomp/javascript/vis.js', true);

@@ -780,23 +780,23 @@ return [
 	],
 	'comp_-1_short' => [
 		'oA',
-		'nI',
+		'ni',
 	],
 	'comp_0_short' => [
-		'nE',
-		'nG',
+		'ne',
+		'ng',
 	],
 	'comp_1_short' => [
-		'tE',
-		'pG',
+		'te',
+		'pg',
 	],
 	'comp_2_short' => [
-		'üE',
-		'mG',
+		'üe',
+		'mg',
 	],
 	'comp_3_short' => [
-		'vE',
-		'cG',
+		've',
+		'cg',
 	],
 	'delete_confirmation' => [
 		'Soll "{$a}" wirklich gelöscht werden?',

@@ -108,6 +108,7 @@ $string['settings_periods_description'] = 'Der Wochenplan ist flexibel an jedes 
 // === Unit Tests ===
 $string['unittest_string'] = 'result_unittest_string';
 $string['de:unittest_string2'] = 'result_unittest_string2';
+$string['de:unittest_string3'] = 'unittest_string3';
 $string['de:unittest_param {$a} unittest_param'] = 'result_unittest_param {$a} result_unittest_param';
 $string['de:unittest_param2 {$a->val} unittest_param2'] = 'result_unittest_param2 {$a->val} result_unittest_param2';
 
@@ -244,10 +245,10 @@ $string['comp_1'] = 'teilweise';
 $string['comp_2'] = 'überwiegend';
 $string['comp_3'] = 'vollständig';
 $string['comp_-1_short'] = 'oA';
-$string['comp_0_short'] = 'nE';
-$string['comp_1_short'] = 'tE';
-$string['comp_2_short'] = 'üE';
-$string['comp_3_short'] = 'vE';
+$string['comp_0_short'] = 'ne';
+$string['comp_1_short'] = 'te';
+$string['comp_2_short'] = 'üe';
+$string['comp_3_short'] = 've';
 $string['delete_confirmation'] = 'Soll "{$a}" wirklich gelöscht werden?';
 $string['legend_activities'] = 'Moodle-Aktivitäten';
 $string['legend_eportfolio'] = 'ePortfolio';
@@ -416,6 +417,9 @@ $string['create_new_crosssub'] = 'Neues Thema erstellen';
 $string['share_crosssub_for_further_use'] = 'Geben Sie das Thema an Kursteilnehmer/innen frei, um volle Funktionalität zu erhalten.';
 $string['available_crosssubjects'] = 'Vorhandene Kursthemen';
 $string['crosssubject_drafts'] = 'Themenvorlagen';
+$string['de:Freigegebene Kursthemen'] = 'Freigegebene Kursthemen';
+$string['de:Freigabe bearbeiten'] = 'Freigabe bearbeiten';
+$string['de:Kopie als Vorlage speichern'] = 'Kopie als Vorlage speichern';
 $string['de:Vorlage verwenden'] = '';
 
 
