@@ -25,8 +25,8 @@ use Super\Cache;
 require_once __DIR__.'/common.php';
 require_once __DIR__.'/classes.php';
 require_once __DIR__.'/../block_exacomp.php';
-require_once($CFG->libdir . '/badgeslib.php');
-require_once($CFG->dirroot . '/badges/lib/awardlib.php');
+require_once($CFG->libdir.'/badgeslib.php');
+require_once($CFG->dirroot.'/badges/lib/awardlib.php');
 
 
 /**
@@ -131,12 +131,15 @@ const BLOCK_EXACOMP_REPORT3 = 3;
 function block_exacomp_is_skillsmanagement() {
 	return !empty(g::$CFG->is_skillsmanagement);
 }
+
 function block_exacomp_is_topicgrading_enabled() {
 	return get_config('exacomp', 'usetopicgrading');
 }
+
 function block_exacomp_is_subjectgrading_enabled() {
 	return get_config('exacomp', 'usesubjectgrading');
 }
+
 function block_exacomp_is_numbering_enabled() {
 	return get_config('exacomp', 'usenumbering');
 }
@@ -147,6 +150,7 @@ function block_exacomp_is_numbering_enabled() {
  */
 function block_exacomp_get_renderer() {
 	global $PAGE;
+
 	return $PAGE->get_renderer('block_exacomp');
 }
 
@@ -154,12 +158,14 @@ function block_exacomp_get_renderer() {
  *
  * Includes all neccessary JavaScript files
  */
-function block_exacomp_init_js_css(){
+function block_exacomp_init_js_css() {
 	global $PAGE, $CFG;
 
 	// only allowed to be called once
 	static $js_inited = false;
-	if ($js_inited) return;
+	if ($js_inited) {
+		return;
+	}
 	$js_inited = true;
 
 	// js/css for whole block
@@ -177,17 +183,20 @@ function block_exacomp_init_js_css(){
 		'show', 'hide' //, 'selectall', 'deselectall'
 	], 'moodle');
 	$PAGE->requires->strings_for_js([
-        'override_notice', 'unload_notice', 'example_sorting_notice', 'delete_unconnected_examples', 'value_too_large', 'value_too_low', 'value_not_allowed', 'hide_solution', 'show_solution', 'weekly_schedule', 'pre_planning_storage', 'weekly_schedule_disabled', 'pre_planning_storage_disabled', 'add_example_for_all_students_to_schedule_confirmation', 'seperatordaterange', 'selfevaluation', 'topic_3dchart_empty'
+		'override_notice', 'unload_notice', 'example_sorting_notice', 'delete_unconnected_examples', 'value_too_large', 'value_too_low', 'value_not_allowed', 'hide_solution', 'show_solution', 'weekly_schedule', 'pre_planning_storage', 'weekly_schedule_disabled', 'pre_planning_storage_disabled', 'add_example_for_all_students_to_schedule_confirmation', 'seperatordaterange', 'selfevaluation', 'selfevaluation_short', 'topic_3dchart_empty',
 	], 'block_exacomp');
 
 	// page specific js/css
 	$scriptName = preg_replace('!\.[^\.]+$!', '', basename($_SERVER['PHP_SELF']));
-	if (file_exists($CFG->dirroot.'/blocks/exacomp/css/'.$scriptName.'.css'))
+	if (file_exists($CFG->dirroot.'/blocks/exacomp/css/'.$scriptName.'.css')) {
 		$PAGE->requires->css('/blocks/exacomp/css/'.$scriptName.'.css');
-	if (file_exists($CFG->dirroot.'/blocks/exacomp/javascript/'.$scriptName.'.js'))
+	}
+	if (file_exists($CFG->dirroot.'/blocks/exacomp/javascript/'.$scriptName.'.js')) {
 		$PAGE->requires->js('/blocks/exacomp/javascript/'.$scriptName.'.js', true);
+	}
 }
-function block_exacomp_init_js_weekly_schedule(){
+
+function block_exacomp_init_js_weekly_schedule() {
 	global $PAGE;
 
 	$PAGE->requires->jquery_plugin('ui');
@@ -212,21 +221,24 @@ function block_exacomp_get_context_from_courseid($courseid) {
 		throw new \moodle_exception('wrong courseid type '.gettype($courseid));
 	}
 }
+
 /**
  *
  * @param courseid or context $context
  */
 function block_exacomp_is_teacher($context = null, $userid = null) {
 	$context = block_exacomp_get_context_from_courseid($context);
+
 	return has_capability('block/exacomp:teacher', $context, $userid);
 }
 
 function block_exacomp_is_teacher_in_any_course() {
 	$courses = block_exacomp_get_courseids();
 
-	foreach($courses as $course) {
-		if(block_exacomp_is_teacher($course))
+	foreach ($courses as $course) {
+		if (block_exacomp_is_teacher($course)) {
 			return true;
+		}
 	}
 
 	return false;
@@ -238,34 +250,40 @@ function block_exacomp_is_teacher_in_any_course() {
  */
 function block_exacomp_is_student($context = null) {
 	$context = block_exacomp_get_context_from_courseid($context);
+
 	// a teacher can not be a student in the same course
 	return has_capability('block/exacomp:student', $context) && !has_capability('block/exacomp:teacher', $context);
 }
+
 /**
  *
  * @param courseid or context $context
  */
 function block_exacomp_is_admin($context = null) {
 	$context = block_exacomp_get_context_from_courseid($context);
+
 	return has_capability('block/exacomp:admin', $context);
 }
+
 function block_exacomp_is_elove_student_self_assessment_enabled() {
 	return get_config('exacomp', 'elove_student_self_assessment');
 }
-function block_exacomp_use_eval_niveau(){
+
+function block_exacomp_use_eval_niveau() {
 	return get_config('exacomp', 'use_eval_niveau');
 }
 
-function block_exacomp_evaluation_niveau_type(){
+function block_exacomp_evaluation_niveau_type() {
 	return (get_config('exacomp', 'adminscheme')) ? get_config('exacomp', 'adminscheme') : 0;
 }
 
-function block_exacomp_additional_grading(){
+function block_exacomp_additional_grading() {
 	return get_config('exacomp', 'additional_grading');
 }
 
-function block_exacomp_get_timetable_entries(){
+function block_exacomp_get_timetable_entries() {
 	$content = get_config('exacomp', 'periods');
+
 	return explode("\n", $content);
 }
 
@@ -275,14 +293,17 @@ function block_exacomp_get_timetable_entries(){
  */
 function block_exacomp_require_teacher($context = null) {
 	$context = block_exacomp_get_context_from_courseid($context);
+
 	return require_capability('block/exacomp:teacher', $context);
 }
+
 /**
  *
  * @param courseid or context $context
  */
 function block_exacomp_require_admin($context = null) {
 	$context = block_exacomp_get_context_from_courseid($context);
+
 	return require_capability('block/exacomp:admin', $context);
 }
 
@@ -294,8 +315,9 @@ function block_exacomp_require_admin($context = null) {
  * @return array $subjects
  */
 function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = false) {
-	if(!$showalldescriptors)
+	if (!$showalldescriptors) {
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
+	}
 
 	$sql = '
 		SELECT DISTINCT s.id, s.titleshort, s.title, s.stid, s.infolink, s.description, s.source, s.sorting, s.author
@@ -316,19 +338,23 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 
 	return block_exacomp_sort_items($subjects, BLOCK_EXACOMP_DB_SUBJECTS);
 }
+
 /**
  * Gets all available subjects
  */
 function block_exacomp_get_all_subjects() {
 	global $DB;
-	return $DB->get_records(BLOCK_EXACOMP_DB_SUBJECTS,array(),'','id, title, source, sourceid, author');
+
+	return $DB->get_records(BLOCK_EXACOMP_DB_SUBJECTS, array(), '', 'id, title, source, sourceid, author');
 }
+
 /**
  * This method is only used in the LIS version
  * @param int $courseid
  */
 function block_exacomp_get_schooltypes_by_course($courseid) {
 	global $DB;
+
 	return $DB->get_records_sql('
 			SELECT DISTINCT s.id, s.title, s.source, s.sourceid, s.sorting
 			FROM {'.BLOCK_EXACOMP_DB_SCHOOLTYPES.'} s
@@ -336,22 +362,25 @@ function block_exacomp_get_schooltypes_by_course($courseid) {
 			ORDER BY s.sorting, s.title
 			', array($courseid));
 }
+
 /**
  *
  * This function is used for courseselection.php
  * -only subject according to selected schooltypes are returned
  * @param int $courseid
  */
-function block_exacomp_get_subjects_for_schooltype($courseid, $schooltypeid=0){
+function block_exacomp_get_subjects_for_schooltype($courseid, $schooltypeid = 0) {
 	$sql = 'SELECT s.* FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s
 	JOIN {'.BLOCK_EXACOMP_DB_MDLTYPES.'} type ON s.stid = type.stid
 	WHERE type.courseid=?';
 
-	if($schooltypeid > 0)
+	if ($schooltypeid > 0) {
 		$sql .= ' AND type.stid = ?';
+	}
 
 	return \block_exacomp\subject::get_objects_sql($sql, [$courseid, $schooltypeid]);
 }
+
 /**
  * Gets all subjects that are used in a particular course.
  *
@@ -362,7 +391,7 @@ function block_exacomp_get_subjects_for_schooltype($courseid, $schooltypeid=0){
 function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 	global $DB;
 
-	if($courseid == 0) {
+	if ($courseid == 0) {
 		$sql = 'SELECT s.id, s.title, s.author
 		FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s
 		JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON t.subjid = s.id
@@ -371,7 +400,7 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 		';
 
 		return $DB->get_records_sql($sql);
-	} else if($subjectid != null) {
+	} else if ($subjectid != null) {
 		$sql = 'SELECT s.id, s.title, s.author
 		FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s
 		JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON t.subjid = s.id
@@ -379,7 +408,7 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 		GROUP BY s.id, s.title, s.stid
 		ORDER BY s.stid, s.sorting, s.title';
 
-		return $DB->get_records_sql($sql,$subjectid);
+		return $DB->get_records_sql($sql, $subjectid);
 	}
 
 	$subjects = $DB->get_records_sql('
@@ -392,6 +421,7 @@ function block_exacomp_get_subjects($courseid = 0, $subjectid = null) {
 
 	return $subjects;
 }
+
 /**
  * returns the subject an example belongs to
  * @param int $exampleid
@@ -400,44 +430,50 @@ function block_exacomp_get_subjecttitle_by_example($exampleid) {
 	global $DB;
 
 	$descriptors = block_exacomp_get_descriptors_by_example($exampleid);
-	foreach($descriptors as $descriptor) {
+	foreach ($descriptors as $descriptor) {
 
 		$full = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array("id" => $descriptor->id));
 		$sql = "select s.* FROM {".BLOCK_EXACOMP_DB_SUBJECTS."} s, {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt, {".BLOCK_EXACOMP_DB_TOPICS."} t
 		WHERE dt.descrid = ? AND t.id = dt.topicid AND t.subjid = s.id";
 
-		$subject = $DB->get_record_sql($sql,array($full->parentid),IGNORE_MULTIPLE);
-		if ($subject) return $subject->title;
+		$subject = $DB->get_record_sql($sql, array($full->parentid), IGNORE_MULTIPLE);
+		if ($subject) {
+			return $subject->title;
+		}
 	}
 }
+
 /**
  * returns all topics from a course
  * @param int $courseid
  */
-function block_exacomp_get_topics_by_course($courseid,$showalldescriptors = false, $showonlyvisible=false) {
-	return block_exacomp_get_topics_by_subject($courseid,0,$showalldescriptors, $showonlyvisible);
+function block_exacomp_get_topics_by_course($courseid, $showalldescriptors = false, $showonlyvisible = false) {
+	return block_exacomp_get_topics_by_subject($courseid, 0, $showalldescriptors, $showonlyvisible);
 }
+
 /**
  * Gets all topics from a particular subject
  * @param int $courseid
  * @param int $subjectid
  */
-function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showalldescriptors = false, $showonlyvisible=false) {
+function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showalldescriptors = false, $showonlyvisible = false) {
 	global $DB;
-	if(!$courseid)
+	if (!$courseid) {
 		$showonlyvisible = false;
+	}
 
-	if(!$showalldescriptors)
+	if (!$showalldescriptors) {
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
+	}
 
 	$sql = '
 		SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description, t.numb, t.source, tvis.visible as visible, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
 		FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t
-		JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.(($subjectid > 0) ? 'AND t.subjid = ? ': '').'
+		JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.(($subjectid > 0) ? 'AND t.subjid = ? ' : '').'
 		JOIN {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s ON t.subjid=s.id -- join subject here, to make sure only topics with existing subject are loaded
 		-- left join, because courseid=0 has no topicvisibility!
 		JOIN {'.BLOCK_EXACOMP_DB_TOPICVISIBILITY.'} tvis ON tvis.topicid=t.id AND tvis.studentid=0 AND tvis.courseid=ct.courseid'
-		.($showonlyvisible?' AND tvis.visible = 1 ':'')
+		.($showonlyvisible ? ' AND tvis.visible = 1 ' : '')
 		.($showalldescriptors ? '' : '
 			-- only show active ones
 			JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} topmm ON topmm.topicid=t.id
@@ -448,17 +484,18 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
 
 	//GROUP By funktioniert nur mit allen feldern im select, aber nicht mit strings
 	$params = array($courseid);
-	if($subjectid>0)
+	if ($subjectid > 0) {
 		$params[] = $subjectid;
+	}
 
-	$topics = $DB->get_records_sql($sql,$params);
+	$topics = $DB->get_records_sql($sql, $params);
 
 	return block_exacomp_sort_items($topics, ['subj_' => BLOCK_EXACOMP_DB_SUBJECTS, '' => BLOCK_EXACOMP_DB_TOPICS]);
 }
 
 /**
  * receives a list of items and returns them sorted
- * @param unknown $items  can be array of different types of items, like topics, subjects...
+ * @param unknown $items can be array of different types of items, like topics, subjects...
  * @param unknown $sortings associated array with sorting options
  * @throws \block_exacomp\moodle_exception
  * @return unknown sorted items
@@ -468,7 +505,9 @@ function block_exacomp_sort_items(&$items, $sortings) {
 
 	uasort($items, function($a, $b) use ($sortings) {
 		foreach ($sortings as $prefix => $sorting) {
-			if (is_int($prefix)) $prefix = '';
+			if (is_int($prefix)) {
+				$prefix = '';
+			}
 
 			if ($sorting == BLOCK_EXACOMP_DB_SUBJECTS) {
 				if (!property_exists($a, $prefix.'source') || !property_exists($b, $prefix.'source')) {
@@ -483,15 +522,19 @@ function block_exacomp_sort_items(&$items, $sortings) {
 
 				// sort subjects
 				// first imported, then generated
-				if ($a->{$prefix.'source'} != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM && $b->{$prefix.'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM)
+				if ($a->{$prefix.'source'} != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM && $b->{$prefix.'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
 					return -1;
-				if ($a->{$prefix.'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM && $b->{$prefix.'source'} != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM)
+				}
+				if ($a->{$prefix.'source'} == BLOCK_EXACOMP_DATA_SOURCE_CUSTOM && $b->{$prefix.'source'} != BLOCK_EXACOMP_DATA_SOURCE_CUSTOM) {
 					return 1;
+				}
 
-				if ($a->{$prefix.'sorting'} < $b->{$prefix.'sorting'})
+				if ($a->{$prefix.'sorting'} < $b->{$prefix.'sorting'}) {
 					return -1;
-				if ($a->{$prefix.'sorting'} > $b->{$prefix.'sorting'})
+				}
+				if ($a->{$prefix.'sorting'} > $b->{$prefix.'sorting'}) {
 					return 1;
+				}
 
 				if ($a->{$prefix.'title'} != $b->{$prefix.'title'}) {
 					return strcmp($a->{$prefix.'title'}, $b->{$prefix.'title'});
@@ -507,15 +550,19 @@ function block_exacomp_sort_items(&$items, $sortings) {
 					throw new \block_exacomp\moodle_exception('col not found: '.$prefix.'title');
 				}
 
-				if ($a->{$prefix.'numb'} < $b->{$prefix.'numb'})
+				if ($a->{$prefix.'numb'} < $b->{$prefix.'numb'}) {
 					return -1;
-				if ($a->{$prefix.'numb'} > $b->{$prefix.'numb'})
+				}
+				if ($a->{$prefix.'numb'} > $b->{$prefix.'numb'}) {
 					return 1;
+				}
 
-				if ($a->{$prefix.'sorting'} < $b->{$prefix.'sorting'})
+				if ($a->{$prefix.'sorting'} < $b->{$prefix.'sorting'}) {
 					return -1;
-				if ($a->{$prefix.'sorting'} > $b->{$prefix.'sorting'})
+				}
+				if ($a->{$prefix.'sorting'} > $b->{$prefix.'sorting'}) {
 					return 1;
+				}
 
 				if ($a->{$prefix.'title'} != $b->{$prefix.'title'}) {
 					return strcmp($a->{$prefix.'title'}, $b->{$prefix.'title'});
@@ -541,10 +588,12 @@ function block_exacomp_sort_items(&$items, $sortings) {
 					}
 				}
 
-				if ($a->{$prefix.'sorting'} < $b->{$prefix.'sorting'})
+				if ($a->{$prefix.'sorting'} < $b->{$prefix.'sorting'}) {
 					return -1;
-				if ($a->{$prefix.'sorting'} > $b->{$prefix.'sorting'})
+				}
+				if ($a->{$prefix.'sorting'} > $b->{$prefix.'sorting'}) {
 					return 1;
+				}
 
 				// last by title
 				if ($a->{$prefix.'title'} != $b->{$prefix.'title'}) {
@@ -567,10 +616,12 @@ function block_exacomp_sort_items(&$items, $sortings) {
 						return -1;
 					}
 
-					if ($a->{$prefix.'sorting'} < $b->{$prefix.'sorting'})
+					if ($a->{$prefix.'sorting'} < $b->{$prefix.'sorting'}) {
 						return -1;
-					if ($a->{$prefix.'sorting'} > $b->{$prefix.'sorting'})
+					}
+					if ($a->{$prefix.'sorting'} > $b->{$prefix.'sorting'}) {
 						return 1;
+					}
 				}
 
 				if ($a->{$prefix.'title'} != $b->{$prefix.'title'}) {
@@ -616,14 +667,16 @@ function block_exacomp_get_all_topics($subjectid = null, $showonlyvisible = fals
 function block_exacomp_check_activity_association($compid, $comptype, $courseid) {
 	global $DB;
 
-	if(!block_exacomp_get_settings_by_course($courseid)->uses_activities)
+	if (!block_exacomp_get_settings_by_course($courseid)->uses_activities) {
 		return true;
+	}
 
 	$cms = get_course_mods($courseid);
 
-	foreach($cms as $cm) {
-		if($DB->record_exists(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array("compid"=>$compid,"comptype"=>$comptype,"activityid"=>$cm->id)))
+	foreach ($cms as $cm) {
+		if ($DB->record_exists(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array("compid" => $compid, "comptype" => $comptype, "activityid" => $cm->id))) {
 			return true;
+		}
 	}
 
 	return false;
@@ -666,18 +719,21 @@ function block_exacomp_delete_custom_example($example_object_or_id) {
 function block_exacomp_set_user_competence($userid, $compid, $comptype, $courseid, $role, $value, $evalniveauid = null) {
 	global $DB, $USER;
 
-	if($evalniveauid !== null && $evalniveauid < 1)
+	if ($evalniveauid !== null && $evalniveauid < 1) {
 		$evalniveauid = null;
+	}
 
 	// TODO: block_exacomp_external::require_teacher_permission($courseid, $userid);
-	if($role == BLOCK_EXACOMP_ROLE_STUDENT && $userid != $USER->id)
+	if ($role == BLOCK_EXACOMP_ROLE_STUDENT && $userid != $USER->id) {
 		return -1;
-	if($role == BLOCK_EXACOMP_ROLE_TEACHER)
+	}
+	if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
 		block_exacomp_require_teacher($courseid);
+	}
 
 	$id = -1;
 
-	if($record = block_exacomp_get_comp_eval($courseid, $role, $userid, $comptype, $compid)) {
+	if ($record = block_exacomp_get_comp_eval($courseid, $role, $userid, $comptype, $compid)) {
 		$record->value = ($value != -1) ? $value : null;
 		$record->timestamp = time();
 		$record->reviewerid = $USER->id;
@@ -688,10 +744,11 @@ function block_exacomp_set_user_competence($userid, $compid, $comptype, $coursei
 		$id = $DB->insert_record(BLOCK_EXACOMP_DB_COMPETENCES, array("userid" => $userid, "compid" => $compid, "comptype" => $comptype, "courseid" => $courseid, "role" => $role, "value" => $value, "reviewerid" => $USER->id, "timestamp" => time(), "evalniveauid" => $evalniveauid));
 	}
 
-	if($role == BLOCK_EXACOMP_ROLE_TEACHER)
-		block_exacomp_send_grading_notification($USER, $DB->get_record('user',array('id'=>$userid)), $courseid);
-	else
+	if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
+		block_exacomp_send_grading_notification($USER, $DB->get_record('user', array('id' => $userid)), $courseid);
+	} else {
 		block_exacomp_notify_all_teachers_about_self_assessment($courseid);
+	}
 
 	\block_exacomp\event\competence_assigned::log(['objecttable' => ($comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) ? 'block_exacompdescriptors' : 'block_exacomptopics', 'objectid' => $compid, 'courseid' => $courseid, 'relateduserid' => $userid]);
 
@@ -702,8 +759,9 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 	global $DB, $USER;
 
 	$updateEvaluation = new stdClass();
-	if($evalniveauid !== null && $evalniveauid < 1)
+	if ($evalniveauid !== null && $evalniveauid < 1) {
 		$evalniveauid = null;
+	}
 
 	if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
 		block_exacomp_require_teacher($courseid);
@@ -713,34 +771,36 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 		$updateEvaluation->evalniveauid = $evalniveauid;
 		$updateEvaluation->resubmission = ($value != -1) ? false : true;
 	} else {
-		if ($userid != $USER->id)
-			// student can only assess himself
+		if ($userid != $USER->id) // student can only assess himself
+		{
 			return;
+		}
 
-			$updateEvaluation->timestamp_student = time();
-			if($value !== null)
-				$updateEvaluation->student_evaluation = ($value != -1) ? $value : null;
+		$updateEvaluation->timestamp_student = time();
+		if ($value !== null) {
+			$updateEvaluation->student_evaluation = ($value != -1) ? $value : null;
+		}
 	}
-	if($record = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL,array("studentid" => $userid, "courseid" => $courseid, "exampleid" => $exampleid))) {
+	if ($record = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("studentid" => $userid, "courseid" => $courseid, "exampleid" => $exampleid))) {
 		//if teacher keep studenteval
-		if($role == BLOCK_EXACOMP_ROLE_TEACHER) {
+		if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
 			$record->teacher_evaluation = $updateEvaluation->teacher_evaluation;
 			$record->teacher_reviewerid = $updateEvaluation->teacher_reviewerid;
 			$record->timestamp_teacher = $updateEvaluation->timestamp_teacher;
 			$record->evalniveauid = $updateEvaluation->evalniveauid;
 			$record->resubmission = $updateEvaluation->resubmission;
 
-			$DB->update_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL,$record);
+			$DB->update_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, $record);
 		} else {
 			//if student keep teachereval
 			$updateEvaluation->teacher_evaluation = $record->teacher_evaluation;
 			$updateEvaluation->teacher_reviewerid = $record->teacher_reviewerid;
 			$updateEvaluation->id = $record->id;
-			$DB->update_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL,$updateEvaluation);
+			$DB->update_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, $updateEvaluation);
 		}
+
 		return $record->id;
-	}
-	else {
+	} else {
 		$updateEvaluation->courseid = $courseid;
 		$updateEvaluation->exampleid = $exampleid;
 		$updateEvaluation->studentid = $userid;
@@ -749,8 +809,9 @@ function block_exacomp_set_user_example($userid, $exampleid, $courseid, $role, $
 	}
 
 	// TODO: unreachable statement?!?
-	if($role == BLOCK_EXACOMP_ROLE_TEACHER)
+	if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
 		\block_exacomp\event\competence_assigned::log(['objectid' => $exampleid, 'courseid' => $courseid, 'relateduserid' => $userid]);
+	}
 }
 
 /**
@@ -765,10 +826,11 @@ function block_exacomp_allow_resubmission($userid, $exampleid, $courseid) {
 
 	block_exacomp_require_teacher($courseid);
 
-	$exameval = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array('courseid'=>$courseid,'studentid'=>$userid,'exampleid'=>$exampleid));
-	if($exameval) {
+	$exameval = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array('courseid' => $courseid, 'studentid' => $userid, 'exampleid' => $exampleid));
+	if ($exameval) {
 		$exameval->resubmission = 1;
 		$DB->update_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, $exameval);
+
 		return block_exacomp_get_string('allow_resubmission_info');
 	}
 
@@ -790,24 +852,26 @@ function block_exacomp_save_competences($data, $courseid, $role, $comptype, $top
 	foreach ($data as $compidKey => $students) {
 		if (!empty($data[$compidKey])) {
 			foreach ($data[$compidKey] as $studentidKey => $evaluations) {
-				if(is_array($evaluations)) {
-					if(isset($evaluations['teacher']))
+				if (is_array($evaluations)) {
+					if (isset($evaluations['teacher'])) {
 						$value = intval($evaluations['teacher']);
-					else
+					} else {
 						$value = intval($evaluations['student']);
+					}
 				}
-				$values[] =  array('user' => intval($studentidKey), 'compid' => intval($compidKey), 'value' => $value);
+				$values[] = array('user' => intval($studentidKey), 'compid' => intval($compidKey), 'value' => $value);
 			}
 		}
 	}
-	if(!$subjectid)
+	if (!$subjectid) {
 		block_exacomp_reset_comp_data($courseid, $role, $comptype, (($role == BLOCK_EXACOMP_ROLE_STUDENT)) ? $USER->id : false, $topicid);
-	else {
+	} else {
 		$studentid = ($role == BLOCK_EXACOMP_ROLE_STUDENT) ? $USER->id : required_param('studentid', PARAM_INT);
 		block_exacomp_reset_comp_data_for_subject($courseid, $role, $comptype, $studentid, $subjectid);
 	}
-	foreach ($values as $value)
+	foreach ($values as $value) {
 		block_exacomp_set_user_competence($value['user'], $value['compid'], $comptype, $courseid, $role, $value['value']);
+	}
 }
 
 /**
@@ -827,7 +891,7 @@ function block_exacomp_reset_comp_data_for_subject($courseid, $role, $comptype =
 		(SELECT t.id FROM {block_exacomptopics} t, {block_exacompsubjects} s
 		WHERE t.subjid = s.id AND s.stid = ?))";
 
-	$DB->delete_records_select('block_exacompcompuser', $select,array($courseid, $role, $comptype, $userid, $subjectid));
+	$DB->delete_records_select('block_exacompcompuser', $select, array($courseid, $role, $comptype, $userid, $subjectid));
 }
 
 /**
@@ -835,42 +899,49 @@ function block_exacomp_reset_comp_data_for_subject($courseid, $role, $comptype =
  * @param int $courseid
  */
 function block_exacomp_get_settings_by_course($courseid = 0) {
-	if (!$courseid)
+	if (!$courseid) {
 		$courseid = g::$COURSE->id;
+	}
 
-		$settings = g::$DB->get_record(BLOCK_EXACOMP_DB_SETTINGS, array("courseid" => $courseid));
+	$settings = g::$DB->get_record(BLOCK_EXACOMP_DB_SETTINGS, array("courseid" => $courseid));
 
-		if (!$settings) {
-			$settings = new stdClass;
-		}
+	if (!$settings) {
+		$settings = new stdClass;
+	}
 
-		// actually this is a global setting now
-		$settings->useprofoundness = get_config('exacomp', 'useprofoundness');
+	// actually this is a global setting now
+	$settings->useprofoundness = get_config('exacomp', 'useprofoundness');
 
-		/*if ($settings->useprofoundness) {
+	/*if ($settings->useprofoundness) {
 		 $settings->grading = 2;
 		 } else*/
-		if (empty($settings->grading)) {
-			$settings->grading = 1;
-		}
-		if (empty($settings->nostudents)) $settings->nostudents = 0;
-		$settings->work_with_students = !$settings->nostudents;
+	if (empty($settings->grading)) {
+		$settings->grading = 1;
+	}
+	if (empty($settings->nostudents)) {
+		$settings->nostudents = 0;
+	}
+	$settings->work_with_students = !$settings->nostudents;
 
-		if (!isset($settings->uses_activities)) $settings->uses_activities = 0;
-		if (!isset($settings->show_all_examples)) $settings->show_all_examples = block_exacomp_is_skillsmanagement() ? 1 : 0;
-		if (!$settings->uses_activities) {
-			$settings->show_all_descriptors = 1;
-		}
-		if (!isset($settings->show_all_descriptors)) {
-			$settings->show_all_descriptors = 1;
-		}
-		if (isset($settings->filteredtaxonomies)) {
-			$settings->filteredtaxonomies = json_decode($settings->filteredtaxonomies,true);
-		} else {
-			$settings->filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES);
-		}
+	if (!isset($settings->uses_activities)) {
+		$settings->uses_activities = 0;
+	}
+	if (!isset($settings->show_all_examples)) {
+		$settings->show_all_examples = block_exacomp_is_skillsmanagement() ? 1 : 0;
+	}
+	if (!$settings->uses_activities) {
+		$settings->show_all_descriptors = 1;
+	}
+	if (!isset($settings->show_all_descriptors)) {
+		$settings->show_all_descriptors = 1;
+	}
+	if (isset($settings->filteredtaxonomies)) {
+		$settings->filteredtaxonomies = json_decode($settings->filteredtaxonomies, true);
+	} else {
+		$settings->filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES);
+	}
 
-		return $settings;
+	return $settings;
 }
 
 
@@ -879,24 +950,25 @@ function block_exacomp_get_settings_by_course($courseid = 0) {
  * returns all descriptors
  * @param $courseid if course id =0 all possible descriptors are returned
  */
-function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = false, $subjectid = 0, $showallexamples = true, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showonlyvisible=false, $include_childs = true) {
+function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = false, $subjectid = 0, $showallexamples = true, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showonlyvisible = false, $include_childs = true) {
 	if (!$courseid) {
 		$showalldescriptors = true;
 		$showonlyvisible = false;
 	}
-	if(!$showalldescriptors)
+	if (!$showalldescriptors) {
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
+	}
 
 
 	$sql = '
 		SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.title, d.source, d.niveauid, t.id AS topicid, d.profoundness, d.parentid, n.sorting AS niveau_sorting, n.title AS niveau_title, dvis.visible as visible, desctopmm.sorting
 		FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t
-		'.(($courseid>0)?' JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') :'').'
+		'.(($courseid > 0) ? ' JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? '.(($subjectid > 0) ? ' AND t.subjid = '.$subjectid.' ' : '') : '').'
 		JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id
 		JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid=0
 		-- left join, because courseid=0 has no descvisibility!
 		LEFT JOIN {'.BLOCK_EXACOMP_DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=?
-		'.($showonlyvisible?' AND dvis.visible = 1 ':'').'
+		'.($showonlyvisible ? ' AND dvis.visible = 1 ' : '').'
 		LEFT JOIN {'.BLOCK_EXACOMP_DB_NIVEAUS.'} n ON d.niveauid = n.id
 		'.($showalldescriptors ? '' : '
 			JOIN {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} ca ON d.id=ca.compid AND ca.comptype='.BLOCK_EXACOMP_TYPE_DESCRIPTOR.'
@@ -905,10 +977,10 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 
 	$descriptors = block_exacomp\descriptor::get_objects_sql($sql, array($courseid, $courseid, $courseid, $courseid));
 
-	foreach($descriptors as $descriptor) {
+	foreach ($descriptors as $descriptor) {
 		if ($include_childs) {
 			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples, $courseid);
-			$descriptor->children = block_exacomp_get_child_descriptors($descriptor,$courseid, $showalldescriptors, $filteredtaxonomies, $showallexamples, true, $showonlyvisible);
+			$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid, $showalldescriptors, $filteredtaxonomies, $showallexamples, true, $showonlyvisible);
 			$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
 		}
 		/*
@@ -936,16 +1008,16 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
  * @param unknown $descriptor
  * @return unknown
  */
-function block_exacomp_get_categories_for_descriptor($descriptor){
+function block_exacomp_get_categories_for_descriptor($descriptor) {
 	global $DB;
 	//im upgrade skript zugriff auf diese funktion obwohl die tabelle erst sp�ter akutalisiert wird
 	static $table_exists = false;
 	if (!$table_exists) {
-	   $dbman = $DB->get_manager();
-	   $table = new xmldb_table('block_exacompdescrcat_mm');
-	   if (!$table_exists = $dbman->table_exists($table)) {
-		   return array();
-	   }
+		$dbman = $DB->get_manager();
+		$table = new xmldb_table('block_exacompdescrcat_mm');
+		if (!$table_exists = $dbman->table_exists($table)) {
+			return array();
+		}
 	}
 
 	$categories = $DB->get_records_sql("
@@ -970,7 +1042,7 @@ function block_exacomp_get_categories_for_descriptor($descriptor){
  * @param string $showonlyvisible - return only visible
  * @return unknown
  */
-function block_exacomp_get_child_descriptors($parent, $courseid, $unusedShowalldescriptors = false, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showallexamples = true, $mindvisibility = true, $showonlyvisible=false ) {
+function block_exacomp_get_child_descriptors($parent, $courseid, $unusedShowalldescriptors = false, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showallexamples = true, $mindvisibility = true, $showonlyvisible = false) {
 	global $DB;
 
 	// old:
@@ -991,23 +1063,24 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $unusedShowalld
 	}
 
 	$sql = 'SELECT d.id, d.title, d.niveauid, d.source, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, '.
-			($mindvisibility?'dvis.visible as visible, ':'').' d.sorting
+		($mindvisibility ? 'dvis.visible as visible, ' : '').' d.sorting
 			FROM {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d '
-			.($mindvisibility ? 'JOIN {'.BLOCK_EXACOMP_DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 '
-			.($showonlyvisible? 'AND dvis.visible=1 ':'') : '');
+		.($mindvisibility ? 'JOIN {'.BLOCK_EXACOMP_DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 '
+			.($showonlyvisible ? 'AND dvis.visible=1 ' : '') : '');
 
 	$sql .= ' WHERE d.parentid = ?';
 
 	$params = array();
-	if($mindvisibility)
+	if ($mindvisibility) {
 		$params[] = $courseid;
+	}
 
-	$params[]= $parent->id;
+	$params[] = $parent->id;
 	$descriptors = block_exacomp\descriptor::get_objects_sql($sql, $params);
 
-	foreach($descriptors as $descriptor) {
+	foreach ($descriptors as $descriptor) {
 		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies, $showallexamples, $courseid);
-		$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid,null /* unused */,$filteredtaxonomies);
+		$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid, null /* unused */, $filteredtaxonomies);
 		$descriptor->categories = block_exacomp_get_categories_for_descriptor($descriptor);
 	}
 
@@ -1024,22 +1097,23 @@ function block_exacomp_get_child_descriptors($parent, $courseid, $unusedShowalld
  * @param string $showonlyvisible - return only visible
  * @return unknown
  */
-function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES),$showallexamples = true, $courseid = null, $mind_visibility=true, $showonlyvisible = false ) {
+function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $showallexamples = true, $courseid = null, $mind_visibility = true, $showonlyvisible = false) {
 	global $COURSE;
 
-	if($courseid == null)
+	if ($courseid == null) {
 		$courseid = $COURSE->id;
+	}
 
 	$examples = \block_exacomp\example::get_objects_sql(
 		"SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source,
 			e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author
 			, de.sorting
-			FROM {" . BLOCK_EXACOMP_DB_EXAMPLES . "} e
-			JOIN {" . BLOCK_EXACOMP_DB_DESCEXAMP . "} de ON e.id=de.exampid AND de.descrid=?"
-		. " WHERE "
-		. " e.source != " . BLOCK_EXACOMP_EXAMPLE_SOURCE_USER . " AND "
-		. ($showallexamples ? " 1=1 " : " e.creatorid > 0")
-		. " ORDER BY de.sorting"
+			FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
+			JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON e.id=de.exampid AND de.descrid=?"
+		." WHERE "
+		." e.source != ".BLOCK_EXACOMP_EXAMPLE_SOURCE_USER." AND "
+		.($showallexamples ? " 1=1 " : " e.creatorid > 0")
+		." ORDER BY de.sorting"
 		, array($descriptor->id, $courseid, $courseid));
 
 	// old
@@ -1054,39 +1128,40 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 		}
 	}
 
-	foreach($examples as $example){
+	foreach ($examples as $example) {
 		$example->descriptor = $descriptor;
 		$example->taxonomies = block_exacomp_get_taxonomies_by_example($example);
 
 		$taxtitle = "";
-		foreach($example->taxonomies as $taxonomy){
+		foreach ($example->taxonomies as $taxonomy) {
 			$taxtitle .= $taxonomy->title.", ";
 		}
 
-		$taxtitle = substr($taxtitle, 0, strlen($taxtitle)-1);
+		$taxtitle = substr($taxtitle, 0, strlen($taxtitle) - 1);
 		$example->tax = $taxtitle;
 	}
 	$filtered_examples = array();
-	if(!in_array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES, $filteredtaxonomies)){
+	if (!in_array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES, $filteredtaxonomies)) {
 		$filtered_taxonomies = implode(",", $filteredtaxonomies);
 
-		foreach($examples as $example){
-			if($example->taxonomies){
-				foreach($example->taxonomies as $taxonomy){
-					if(in_array($taxonomy->id, $filteredtaxonomies)){
-						if(!array_key_exists($example->id, $filtered_examples))
+		foreach ($examples as $example) {
+			if ($example->taxonomies) {
+				foreach ($example->taxonomies as $taxonomy) {
+					if (in_array($taxonomy->id, $filteredtaxonomies)) {
+						if (!array_key_exists($example->id, $filtered_examples)) {
 							$filtered_examples[$example->id] = $example;
+						}
 						continue;
 					}
 				}
 			}
 		}
-	}else{
+	} else {
 		$filtered_examples = $examples;
 	}
 
 	$descriptor->examples = array();
-	foreach($filtered_examples as $example){
+	foreach ($filtered_examples as $example) {
 		$descriptor->examples[$example->id] = $example;
 	}
 
@@ -1097,7 +1172,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
  * get taxonomies for a certain example
  * @param unknown $example
  */
-function block_exacomp_get_taxonomies_by_example($example){
+function block_exacomp_get_taxonomies_by_example($example) {
 	global $DB;
 
 	return $DB->get_records_sql("
@@ -1116,20 +1191,21 @@ function block_exacomp_get_taxonomies_by_example($example){
  * @param int $topicid
  * @param bool $showalldescriptors
  */
-function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldescriptors = false, $mind_visibility=false, $showonlyvisible=true) {
+function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldescriptors = false, $mind_visibility = false, $showonlyvisible = true) {
 	global $DB;
 
-	if(!$showalldescriptors)
+	if (!$showalldescriptors) {
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
+	}
 
 	$sql = '
 		SELECT DISTINCT d.id, desctopmm.id as u_id, d.title, d.niveauid, t.id AS topicid, d.requirement, d.knowledgecheck, d.benefit, d.sorting, d.parentid, n.title as cattitle
-		FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? ' . (($topicid > 0) ? ' AND t.id = '.$topicid.' ' : '').'
+		FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} topmm ON topmm.topicid=t.id AND topmm.courseid=? '.(($topicid > 0) ? ' AND t.id = '.$topicid.' ' : '').'
 		JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id
 		JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid=0
 		LEFT JOIN {'.BLOCK_EXACOMP_DB_NIVEAUS.'} n ON n.id = d.niveauid '
-		.($mind_visibility?'JOIN {'.BLOCK_EXACOMP_DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=? '
-		.($showonlyvisible?'AND dvis.visible = 1 ':''):'')
+		.($mind_visibility ? 'JOIN {'.BLOCK_EXACOMP_DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=? '
+			.($showonlyvisible ? 'AND dvis.visible = 1 ' : '') : '')
 		.($showalldescriptors ? '' : '
 			JOIN {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} ca ON d.id=ca.compid AND ca.comptype='.BLOCK_EXACOMP_TYPE_DESCRIPTOR.'
 				AND ca.activityid IN ('.block_exacomp_get_allowed_course_modules_for_course_for_select($courseid).')
@@ -1146,21 +1222,24 @@ function block_exacomp_get_descriptors_by_topic($courseid, $topicid, $showalldes
 
 	return $descriptors;
 }
+
 /**
  * Returns descriptors for a given subject
  * @param int $subjectid
  * @param bool $niveaus default false, if true only descriptors with neveaus are returned
  * @return multitype:
  */
-function block_exacomp_get_descriptors_by_subject($subjectid,$niveaus = true) {
+function block_exacomp_get_descriptors_by_subject($subjectid, $niveaus = true) {
 	global $DB;
 
 	$sql = "SELECT d.*, dt.topicid, t.title as topic_title FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d, {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt, {".BLOCK_EXACOMP_DB_TOPICS."} t
 	WHERE d.id=dt.descrid AND d.parentid =0 AND dt.topicid IN (SELECT id FROM {".BLOCK_EXACOMP_DB_TOPICS."} WHERE subjid=?)";
-	if($niveaus) $sql .= " AND d.niveauid > 0";
+	if ($niveaus) {
+		$sql .= " AND d.niveauid > 0";
+	}
 	$sql .= " AND dt.topicid = t.id order by d.skillid, dt.topicid, d.niveauid";
 
-	return $DB->get_records_sql($sql,array($subjectid));
+	return $DB->get_records_sql($sql, array($subjectid));
 }
 
 /**
@@ -1186,33 +1265,33 @@ function block_exacomp_get_descriptors_by_example($exampleid) {
  * @param int $topicid
  * @return associative_array
  */
-function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $topicid = null, $showalldescriptors = false, $niveauid = null, $showallexamples = true, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $calledfromoverview = false, $calledfromactivities = false, $showonlyvisible=false, $without_descriptors=false, $showonlyvisibletopics = false, $include_childs = true) {
+function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $topicid = null, $showalldescriptors = false, $niveauid = null, $showallexamples = true, $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), $calledfromoverview = false, $calledfromactivities = false, $showonlyvisible = false, $without_descriptors = false, $showonlyvisibletopics = false, $include_childs = true) {
 	global $DB;
 
-	if(!$showalldescriptors)
+	if (!$showalldescriptors) {
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
+	}
 
 	$selectedTopic = null;
-	if($topicid && $calledfromoverview) {
-		$selectedTopic = $DB->get_record(BLOCK_EXACOMP_DB_TOPICS,array('id'=>$topicid));
+	if ($topicid && $calledfromoverview) {
+		$selectedTopic = $DB->get_record(BLOCK_EXACOMP_DB_TOPICS, array('id' => $topicid));
 	}
 
 	// 1. GET SUBJECTS
-	if($courseid == 0)
+	if ($courseid == 0) {
 		$allSubjects = block_exacomp_get_all_subjects();
-	elseif($subjectid) {
+	} elseif ($subjectid) {
 		$allSubjects = array($subjectid => \block_exacomp\subject::get($subjectid));
-	}
-	else
+	} else {
 		$allSubjects = block_exacomp_get_subjects_by_course($courseid, $showalldescriptors);
-	
+	}
+
 	// 2. GET TOPICS
 	$allTopics = block_exacomp_get_all_topics($subjectid, $showonlyvisible);
-	if($courseid > 0) {
-		if((!$calledfromoverview && !$calledfromactivities) || !$selectedTopic) {
+	if ($courseid > 0) {
+		if ((!$calledfromoverview && !$calledfromactivities) || !$selectedTopic) {
 			$courseTopics = block_exacomp_get_topics_by_subject($courseid, $subjectid, $showalldescriptors, $showonlyvisibletopics);
-		}
-		elseif(isset($selectedTopic)) {
+		} elseif (isset($selectedTopic)) {
 			$courseTopics = \block_exacomp\topic::get($selectedTopic->id);
 			if (!$courseTopics) {
 				$courseTopics = array();
@@ -1223,19 +1302,24 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 	}
 
 	// 3. GET DESCRIPTORS
-	if($without_descriptors)
+	if ($without_descriptors) {
 		$allDescriptors = array();
-	else
-		$allDescriptors = block_exacomp_get_descriptors($courseid, $showalldescriptors,0,$showallexamples, $filteredtaxonomies, $showonlyvisible, $include_childs);
+	} else {
+		$allDescriptors = block_exacomp_get_descriptors($courseid, $showalldescriptors, 0, $showallexamples, $filteredtaxonomies, $showonlyvisible, $include_childs);
+	}
 
 	foreach ($allDescriptors as $descriptor) {
 
-		if($niveauid != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS && $calledfromoverview)
-			if($descriptor->niveauid != $niveauid)
+		if ($niveauid != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS && $calledfromoverview) {
+			if ($descriptor->niveauid != $niveauid) {
 				continue;
+			}
+		}
 
 		// get descriptor topic
-		if (empty($allTopics[$descriptor->topicid])) continue;
+		if (empty($allTopics[$descriptor->topicid])) {
+			continue;
+		}
 		$topic = $allTopics[$descriptor->topicid];
 		$topic->descriptors[$descriptor->id] = $descriptor;
 	}
@@ -1248,16 +1332,18 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 
 	foreach ($allTopics as $topic) {
 		//topic must be coursetopic if courseid <> 0
-		if ($courseid>0 && !array_key_exists($topic->id, $courseTopics))
+		if ($courseid > 0 && !array_key_exists($topic->id, $courseTopics)) {
 			continue;
+		}
 
 		// find subject
 		if (empty($allSubjects[$topic->subjid])) {
 			continue;
 		}
 		$subject = $allSubjects[$topic->subjid];
-		if(!isset($topic->descriptors))
+		if (!isset($topic->descriptors)) {
 			$topic->descriptors = array();
+		}
 		$topic = block_exacomp\topic::create($topic);
 
 		// found: add it to the subject result
@@ -1272,6 +1358,7 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
 
 	return block_exacomp\subject::create_objects($subjects);
 }
+
 /**
  *
  * @param unknown $courseid
@@ -1282,8 +1369,8 @@ function block_exacomp_get_competence_tree($courseid = 0, $subjectid = null, $to
  * @param number $studentid set if he is a student
  * @return multitype:unknown Ambigous <stdClass, unknown>
  */
-function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher=true, $studentid=0, $showonlyvisible=false) {
-	$courseTopics = block_exacomp_get_topics_by_course($courseid, false, $showonlyvisible?(($isTeacher)?false:true):false);
+function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $niveauid, $editmode, $isTeacher = true, $studentid = 0, $showonlyvisible = false) {
+	$courseTopics = block_exacomp_get_topics_by_course($courseid, false, $showonlyvisible ? (($isTeacher) ? false : true) : false);
 	$courseSubjects = block_exacomp_get_subjects_by_course($courseid);
 
 	$topic = new \stdClass();
@@ -1295,7 +1382,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 		if (!empty($courseSubjects[$subjectid])) {
 			$selectedSubject = $courseSubjects[$subjectid];
 
-			$topics = block_exacomp_get_topics_by_subject($courseid, $selectedSubject->id, false, ($showonlyvisible?(($isTeacher)?false:true):false));
+			$topics = block_exacomp_get_topics_by_subject($courseid, $selectedSubject->id, false, ($showonlyvisible ? (($isTeacher) ? false : true) : false));
 			if ($topicid == BLOCK_EXACOMP_SHOW_ALL_TOPICS) {
 				// no $selectedTopic
 			} elseif ($topicid && isset($topics[$topicid]) && block_exacomp_is_topic_visible($courseid, $topic, $studentid)) {
@@ -1321,7 +1408,7 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 		// select the first subject
 		$selectedSubject = reset($courseSubjects);
 
-		$topics = block_exacomp_get_topics_by_subject($courseid, $selectedSubject->id, false, ($showonlyvisible?(($isTeacher)?false:true):false));
+		$topics = block_exacomp_get_topics_by_subject($courseid, $selectedSubject->id, false, ($showonlyvisible ? (($isTeacher) ? false : true) : false));
 		// select first visible topic
 		foreach ($topics as $tmpTopic) {
 			if (block_exacomp_is_topic_visible($courseid, $tmpTopic, $studentid)) {
@@ -1333,14 +1420,14 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 
 	// load all descriptors first (needed for teacher)
 	if ($editmode) {
-		$descriptors = block_exacomp_get_descriptors_by_topic ( $courseid, $selectedTopic ? $selectedTopic->id : null, true, false, false);
+		$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $selectedTopic ? $selectedTopic->id : null, true, false, false);
 	} else {
-		$descriptors = block_exacomp_get_descriptors_by_topic ( $courseid, $selectedTopic ? $selectedTopic->id : null, false, true, true);
+		$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $selectedTopic ? $selectedTopic->id : null, false, true, true);
 	}
 
 	if (!$selectedTopic) {
 		// $descriptors contains all descriptors for this course, so filter it for just descriptors of selected subject
-		foreach ($descriptors as $key=>$descriptor) {
+		foreach ($descriptors as $key => $descriptor) {
 			if (isset($courseTopics[$descriptor->topicid]) && ($courseTopics[$descriptor->topicid]->subjid == $selectedSubject->id)) {
 				// OK
 			} else {
@@ -1381,11 +1468,16 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 	}
 
 	// add topics to subjects
-	foreach ($courseSubjects as $subject) $subject->topics = [];
-	foreach ($courseTopics as $topic) $courseSubjects[$topic->subjid]->topics[$topic->id] = $topic;
+	foreach ($courseSubjects as $subject) {
+		$subject->topics = [];
+	}
+	foreach ($courseTopics as $topic) {
+		$courseSubjects[$topic->subjid]->topics[$topic->id] = $topic;
+	}
 
 	return array($courseSubjects, $courseTopics, $niveaus, $selectedSubject, $selectedTopic, $selectedNiveau);
 }
+
 /**
  *
  * Returns all students enroled to a particular course
@@ -1393,8 +1485,10 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
  */
 function block_exacomp_get_students_by_course($courseid) {
 	$context = context_course::instance($courseid);
+
 	return get_role_users(BLOCK_EXACOMP_STUDENT_ENROLMENTID, $context);
 }
+
 /**
  *
  * Returns all teacher enroled to a course
@@ -1402,26 +1496,27 @@ function block_exacomp_get_students_by_course($courseid) {
  */
 function block_exacomp_get_teachers_by_course($courseid) {
 	$context = context_course::instance($courseid);
-	return get_enrolled_users($context,'block/exacomp:teacher');
+
+	return get_enrolled_users($context, 'block/exacomp:teacher');
 }
 
 /**
  * Returns all the import information for a particular user in the given course about his competencies, topics and example evaluation values
  *
  * It returns user objects in the following format
- *		 $user
- *			 ->competencies
- *				 ->teacher[competenceid] = competence value
- *				 ->student[competenceid] = competence value
- *			 ->topics
- *				 ->teacher
- *				 ->student
+ *         $user
+ *             ->competencies
+ *                 ->teacher[competenceid] = competence value
+ *                 ->student[competenceid] = competence value
+ *             ->topics
+ *                 ->teacher
+ *                 ->student
  *
  * @param sdtClass $user
  * @param int $courseid
  * @return stdClass $ser
  */
-function block_exacomp_get_user_information_by_course($user, $courseid, $onlycomps=false) {
+function block_exacomp_get_user_information_by_course($user, $courseid, $onlycomps = false) {
 	// get student competencies
 	$user = block_exacomp_get_user_competences_by_course($user, $courseid);
 	// get student topics
@@ -1431,7 +1526,7 @@ function block_exacomp_get_user_information_by_course($user, $courseid, $onlycom
 	// get student subjects
 	$user = block_exacomp_get_user_subjects_by_course($user, $courseid);
 
-	if(!$onlycomps){
+	if (!$onlycomps) {
 		// get student exampl
 		$user->examples = block_exacomp_get_user_examples_by_course($user, $courseid);
 		$activities = block_exacomp_get_activities_by_course($courseid);
@@ -1440,11 +1535,12 @@ function block_exacomp_get_user_information_by_course($user, $courseid, $onlycom
 		// get student activities competencies
 		$user = block_exacomp_get_user_activities_competences_by_course($user, $courseid, $activities);
 	}
+
 	return $user;
 }
+
 /**
  * This method returns all user crosssubs for a particular user in the given course
-
  * @param stdClass $user
  * @param int $courseid
  * @return stdClass user
@@ -1452,17 +1548,18 @@ function block_exacomp_get_user_information_by_course($user, $courseid, $onlycom
 function block_exacomp_get_user_crosssubs_by_course($user, $courseid) {
 	global $DB;
 	$user->crosssubs = new stdClass();
-	$user->crosssubs->teacher = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_CROSSSUB),'','compid as id, value');
-	$user->crosssubs->student = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_CROSSSUB),'','compid as id, value');
-	$user->crosssubs->timestamp_teacher = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_CROSSSUB),'','compid as id, timestamp');
-	$user->crosssubs->timestamp_student = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_CROSSSUB),'','compid as id, timestamp');
-	$user->crosssubs->teacher_additional_grading = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_CROSSSUB),'','compid as id, additionalinfo');
-	$user->crosssubs->niveau = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid"=>$courseid, "userid"=>$user->id, "role" =>BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_CROSSSUB),'', 'compid as id, evalniveauid');
+	$user->crosssubs->teacher = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_CROSSSUB), '', 'compid as id, value');
+	$user->crosssubs->student = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_CROSSSUB), '', 'compid as id, value');
+	$user->crosssubs->timestamp_teacher = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_CROSSSUB), '', 'compid as id, timestamp');
+	$user->crosssubs->timestamp_student = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_CROSSSUB), '', 'compid as id, timestamp');
+	$user->crosssubs->teacher_additional_grading = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_CROSSSUB), '', 'compid as id, additionalinfo');
+	$user->crosssubs->niveau = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_CROSSSUB), '', 'compid as id, evalniveauid');
+
 	return $user;
 }
+
 /**
  * This method returns all user competencies for a particular user in the given course
-
  * @param stdClass $user
  * @param int $courseid
  * @return stdClass user
@@ -1471,12 +1568,12 @@ function block_exacomp_get_user_competences_by_course($user, $courseid) {
 	global $DB;
 
 	$user->competencies = new stdClass();
-	$user->competencies->teacher = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR),'','compid as id, value');
-	$user->competencies->student = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR),'','compid as id, value');
-	$user->competencies->timestamp_teacher = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR),'','compid as id, timestamp');
-	$user->competencies->timestamp_student = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR),'','compid as id, timestamp');
-	$user->competencies->teacher_additional_grading = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR),'','compid as id, additionalinfo');
-	$user->competencies->niveau = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid"=>$courseid, "userid"=>$user->id, "role" =>BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR),'', 'compid as id, evalniveauid');
+	$user->competencies->teacher = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR), '', 'compid as id, value');
+	$user->competencies->student = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR), '', 'compid as id, value');
+	$user->competencies->timestamp_teacher = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR), '', 'compid as id, timestamp');
+	$user->competencies->timestamp_student = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR), '', 'compid as id, timestamp');
+	$user->competencies->teacher_additional_grading = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR), '', 'compid as id, additionalinfo');
+	$user->competencies->niveau = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR), '', 'compid as id, evalniveauid');
 
 	return $user;
 }
@@ -1492,12 +1589,12 @@ function block_exacomp_get_user_topics_by_course($user, $courseid) {
 	global $DB;
 
 	$user->topics = new stdClass();
-	$user->topics->teacher = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC),'','compid as id, value');
-	$user->topics->student = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC),'','compid as id, value');
-	$user->topics->timestamp_teacher = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC),'','compid as id, timestamp');
-	$user->topics->timestamp_student = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC),'','compid as id, timestamp');
-	$user->topics->teacher_additional_grading = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC),'','compid as id, additionalinfo');
-	$user->topics->niveau = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid"=>$courseid, "userid"=>$user->id, "role" =>BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC),'', 'compid as id, evalniveauid');
+	$user->topics->teacher = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC), '', 'compid as id, value');
+	$user->topics->student = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC), '', 'compid as id, value');
+	$user->topics->timestamp_teacher = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC), '', 'compid as id, timestamp');
+	$user->topics->timestamp_student = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC), '', 'compid as id, timestamp');
+	$user->topics->teacher_additional_grading = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC), '', 'compid as id, additionalinfo');
+	$user->topics->niveau = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC), '', 'compid as id, evalniveauid');
 
 	return $user;
 }
@@ -1513,12 +1610,12 @@ function block_exacomp_get_user_subjects_by_course($user, $courseid) {
 	global $DB;
 
 	$user->subjects = new stdClass();
-	$user->subjects->teacher = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT),'','compid as id, value');
-	$user->subjects->student = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT),'','compid as id, value');
-	$user->subjects->timestamp_teacher = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT),'','compid as id, timestamp');
-	$user->subjects->timestamp_student = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT),'','compid as id, timestamp');
-	$user->subjects->teacher_additional_grading = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES,array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT),'','compid as id, additionalinfo');
-	$user->subjects->niveau = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid"=>$courseid, "userid"=>$user->id, "role" =>BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT),'', 'compid as id, evalniveauid');
+	$user->subjects->teacher = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, value');
+	$user->subjects->student = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, value');
+	$user->subjects->timestamp_teacher = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, timestamp');
+	$user->subjects->timestamp_student = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, timestamp');
+	$user->subjects->teacher_additional_grading = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, additionalinfo');
+	$user->subjects->niveau = $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCES, array("courseid" => $courseid, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_SUBJECT), '', 'compid as id, evalniveauid');
 
 	return $user;
 }
@@ -1532,57 +1629,59 @@ function block_exacomp_get_user_subjects_by_course($user, $courseid) {
  */
 function block_exacomp_get_user_examples_by_course($user, $courseid) {
 	$examples = new stdClass();
-	$examples->teacher = g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EXAMPLEEVAL,array("courseid" => $courseid, "studentid" => $user->id),'','exampleid as id, teacher_evaluation as value');
-	$examples->student = g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EXAMPLEEVAL,array("courseid" => $courseid, "studentid" => $user->id),'','exampleid as id, student_evaluation as value');
-	$examples->niveau = g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("courseid"=>$courseid, "studentid"=>$user->id),'', 'exampleid as id, evalniveauid');
-	$examples->timestamp_teacher = g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EXAMPLEEVAL,array("courseid" => $courseid, "studentid" => $user->id),'','exampleid as id, timestamp_teacher as timestamp');
-	$examples->timestamp_student = g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EXAMPLEEVAL,array("courseid" => $courseid, "studentid" => $user->id),'','exampleid as id, timestamp_student as timestamp');
+	$examples->teacher = g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("courseid" => $courseid, "studentid" => $user->id), '', 'exampleid as id, teacher_evaluation as value');
+	$examples->student = g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("courseid" => $courseid, "studentid" => $user->id), '', 'exampleid as id, student_evaluation as value');
+	$examples->niveau = g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("courseid" => $courseid, "studentid" => $user->id), '', 'exampleid as id, evalniveauid');
+	$examples->timestamp_teacher = g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("courseid" => $courseid, "studentid" => $user->id), '', 'exampleid as id, timestamp_teacher as timestamp');
+	$examples->timestamp_student = g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array("courseid" => $courseid, "studentid" => $user->id), '', 'exampleid as id, timestamp_student as timestamp');
 
 	return $examples;
 }
+
 /**
  *  This method returns all topics for the detailed view for a given user
  *
  * @param object $user
  * @param int $courseid
  */
-function block_exacomp_get_user_activities_topics_by_course($user, $courseid, $activities){
+function block_exacomp_get_user_activities_topics_by_course($user, $courseid, $activities) {
 	global $DB;
 
 	$user->activities_topics = new stdClass();
 	$user->activities_topics->activities = array();
 
-	foreach($activities as $activity){
+	foreach ($activities as $activity) {
 		$user->activities_topics->activities[$activity->id] = new stdClass();
 
 		$user->activities_topics->activities[$activity->id]->teacher = array();
 		$user->activities_topics->activities[$activity->id]->student = array();
 
-		$user->activities_topics->activities[$activity->id]->teacher += $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCE_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC),'','compid as id, value');
-		$user->activities_topics->activities[$activity->id]->student += $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCE_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC),'','compid as id, value');
+		$user->activities_topics->activities[$activity->id]->teacher += $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCE_USER_MM, array("activityid" => $activity->id, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC), '', 'compid as id, value');
+		$user->activities_topics->activities[$activity->id]->student += $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCE_USER_MM, array("activityid" => $activity->id, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_TOPIC), '', 'compid as id, value');
 	}
 
 	return $user;
 }
+
 /**
  *  This method returns all competencies for the detailed view for a given user
  *
  * @param object $user
  * @param int $courseid
  */
-function block_exacomp_get_user_activities_competences_by_course($user, $courseid, $activities){
+function block_exacomp_get_user_activities_competences_by_course($user, $courseid, $activities) {
 	global $DB;
 
 	$user->activities_competencies = new stdClass();
 	$user->activities_competencies->activities = array();
 
-	foreach($activities as $activity){
+	foreach ($activities as $activity) {
 		$user->activities_competencies->activities[$activity->id] = new stdClass();
 
 		$user->activities_competencies->activities[$activity->id]->teacher = array();
 		$user->activities_competencies->activities[$activity->id]->student = array();
-		$user->activities_competencies->activities[$activity->id]->teacher += $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCE_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR, "eportfolioitem"=>0),'','compid as id, value');
-		$user->activities_competencies->activities[$activity->id]->student += $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCE_USER_MM,array("activityid" => $activity->id, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR, "eportfolioitem"=>0),'','compid as id, value');
+		$user->activities_competencies->activities[$activity->id]->teacher += $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCE_USER_MM, array("activityid" => $activity->id, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_TEACHER, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR, "eportfolioitem" => 0), '', 'compid as id, value');
+		$user->activities_competencies->activities[$activity->id]->student += $DB->get_records_menu(BLOCK_EXACOMP_DB_COMPETENCE_USER_MM, array("activityid" => $activity->id, "userid" => $user->id, "role" => BLOCK_EXACOMP_ROLE_STUDENT, "comptype" => BLOCK_EXACOMP_TYPE_DESCRIPTOR, "eportfolioitem" => 0), '', 'compid as id, value');
 	}
 
 	return $user;
@@ -1593,20 +1692,22 @@ function block_exacomp_get_user_activities_competences_by_course($user, $coursei
  * @param unknown $courseid
  * @return \block_exacomp\tabobject[]
  */
-function block_exacomp_build_navigation_tabs_settings($courseid){
+function block_exacomp_build_navigation_tabs_settings($courseid) {
 	$usebadges = get_config('exacomp', 'usebadges');
 	$courseSettings = block_exacomp_get_settings_by_course($courseid);
 	$settings_subtree = array();
 
-	$settings_subtree[] = new tabobject('tab_teacher_settings_configuration', new moodle_url('/blocks/exacomp/edit_course.php', array('courseid'=>$courseid)), block_exacomp_get_string("tab_teacher_settings_configuration"), null, true);
-	$settings_subtree[] = new tabobject('tab_teacher_settings_selection', new moodle_url('/blocks/exacomp/courseselection.php', array('courseid'=>$courseid)), block_exacomp_get_string("tab_teacher_settings_selection"), null, true);
+	$settings_subtree[] = new tabobject('tab_teacher_settings_configuration', new moodle_url('/blocks/exacomp/edit_course.php', array('courseid' => $courseid)), block_exacomp_get_string("tab_teacher_settings_configuration"), null, true);
+	$settings_subtree[] = new tabobject('tab_teacher_settings_selection', new moodle_url('/blocks/exacomp/courseselection.php', array('courseid' => $courseid)), block_exacomp_get_string("tab_teacher_settings_selection"), null, true);
 
-	if (block_exacomp_is_activated($courseid))
-		if ($courseSettings->uses_activities)
-			$settings_subtree[] = new tabobject('tab_teacher_settings_assignactivities', new moodle_url('/blocks/exacomp/edit_activities.php', array('courseid'=>$courseid)), block_exacomp_get_string("tab_teacher_settings_assignactivities"), null, true);
+	if (block_exacomp_is_activated($courseid)) {
+		if ($courseSettings->uses_activities) {
+			$settings_subtree[] = new tabobject('tab_teacher_settings_assignactivities', new moodle_url('/blocks/exacomp/edit_activities.php', array('courseid' => $courseid)), block_exacomp_get_string("tab_teacher_settings_assignactivities"), null, true);
+		}
+	}
 
 	if ($usebadges) {
-		$settings_subtree[] = new tabobject('tab_teacher_settings_badges', new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid'=>$courseid)), block_exacomp_get_string("tab_teacher_settings_badges"), null, true);
+		$settings_subtree[] = new tabobject('tab_teacher_settings_badges', new moodle_url('/blocks/exacomp/edit_badges.php', array('courseid' => $courseid)), block_exacomp_get_string("tab_teacher_settings_badges"), null, true);
 	}
 
 	return $settings_subtree;
@@ -1617,37 +1718,41 @@ function block_exacomp_build_navigation_tabs_settings($courseid){
  * @param unknown $courseid
  * @return \block_exacomp\tabobject[]
  */
-function block_exacomp_build_navigation_tabs_admin_settings($courseid){
+function block_exacomp_build_navigation_tabs_admin_settings($courseid) {
 	$checkImport = block_exacomp\data::has_data();
 
 	$settings_subtree = array();
 
-	if ($checkImport && has_capability('block/exacomp:admin', context_system::instance()))
-		$settings_subtree[] = new tabobject('tab_admin_configuration', new moodle_url('/blocks/exacomp/edit_config.php',array("courseid"=>$courseid)),block_exacomp_get_string('tab_admin_configuration'), null, true);
-
-	$settings_subtree[] = new tabobject('tab_admin_import', new moodle_url('/blocks/exacomp/import.php', array('courseid'=>$courseid)), block_exacomp_get_string("tab_admin_import"), null, true);
-
-	if (get_config('exacomp','external_trainer_assign') && has_capability('block/exacomp:assignstudents', context_system::instance())) {
-		$settings_subtree[] = new tabobject('tab_external_trainer_assign', new moodle_url('/blocks/exacomp/externaltrainers.php', array('courseid'=>$courseid)), block_exacomp_get_string("block_exacomp_external_trainer_assign"), null, true);
+	if ($checkImport && has_capability('block/exacomp:admin', context_system::instance())) {
+		$settings_subtree[] = new tabobject('tab_admin_configuration', new moodle_url('/blocks/exacomp/edit_config.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_admin_configuration'), null, true);
 	}
-	$settings_subtree[] = new tabobject('tab_webservice_status', new moodle_url('/blocks/exacomp/webservice_status.php', array('courseid'=>$courseid)), block_exacomp_trans(['de:Webservice Status', 'en:Check Webservices']), null, true);
+
+	$settings_subtree[] = new tabobject('tab_admin_import', new moodle_url('/blocks/exacomp/import.php', array('courseid' => $courseid)), block_exacomp_get_string("tab_admin_import"), null, true);
+
+	if (get_config('exacomp', 'external_trainer_assign') && has_capability('block/exacomp:assignstudents', context_system::instance())) {
+		$settings_subtree[] = new tabobject('tab_external_trainer_assign', new moodle_url('/blocks/exacomp/externaltrainers.php', array('courseid' => $courseid)), block_exacomp_get_string("block_exacomp_external_trainer_assign"), null, true);
+	}
+	$settings_subtree[] = new tabobject('tab_webservice_status', new moodle_url('/blocks/exacomp/webservice_status.php', array('courseid' => $courseid)), block_exacomp_trans(['de:Webservice Status', 'en:Check Webservices']), null, true);
 
 	return $settings_subtree;
 }
+
 /**
  * build navigation tab for student profile
  * @param unknown $context
  * @param unknown $courseid
  * @return \block_exacomp\tabobject[]
  */
-function block_exacomp_build_navigation_tabs_profile($context,$courseid){
-	if (block_exacomp_is_teacher($context))
+function block_exacomp_build_navigation_tabs_profile($context, $courseid) {
+	if (block_exacomp_is_teacher($context)) {
 		return array();
+	}
 
 	$profile_subtree = array();
 
-	$profile_subtree[] = new tabobject('tab_competence_profile_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid"=>$courseid)), block_exacomp_get_string('tab_competence_profile_profile'), null, true);
-	$profile_subtree[] = new tabobject('tab_competence_profile_settings', new moodle_url('/blocks/exacomp/competence_profile_settings.php', array("courseid"=>$courseid)), block_exacomp_get_string('tab_competence_profile_settings'), null, true);
+	$profile_subtree[] = new tabobject('tab_competence_profile_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_competence_profile_profile'), null, true);
+	$profile_subtree[] = new tabobject('tab_competence_profile_settings', new moodle_url('/blocks/exacomp/competence_profile_settings.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_competence_profile_settings'), null, true);
+
 	return $profile_subtree;
 }
 
@@ -1657,7 +1762,7 @@ function block_exacomp_build_navigation_tabs_profile($context,$courseid){
  * @param object $context
  * @param int $courseid
  */
-function block_exacomp_build_navigation_tabs($context,$courseid) {
+function block_exacomp_build_navigation_tabs($context, $courseid) {
 	global $USER;
 
 	$globalcontext = context_system::instance();
@@ -1667,13 +1772,14 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 
 	$de = false;
 	$lang = current_language();
-	if(isset($lang) && substr( $lang, 0, 2) === 'de'){
-			$de = true;
+	if (isset($lang) && substr($lang, 0, 2) === 'de') {
+		$de = true;
 	}
-	if(block_exacomp_is_skillsmanagement())
+	if (block_exacomp_is_skillsmanagement()) {
 		$checkConfig = block_exacomp_is_configured($courseid);
-	else
+	} else {
 		$checkConfig = block_exacomp_is_configured();
+	}
 
 	$has_data = \block_exacomp\data::has_data();
 
@@ -1683,38 +1789,38 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 	$isStudent = has_capability('block/exacomp:student', $context) && $courseid != 1 && !has_capability('block/exacomp:admin', $context);
 	$isTeacherOrStudent = $isTeacher || $isStudent;
 
-	if($checkConfig && $has_data){	//Modul wurde konfiguriert
+	if ($checkConfig && $has_data) {    //Modul wurde konfiguriert
 		if ($isTeacherOrStudent && block_exacomp_is_activated($courseid)) {
 			// moved into competence profile !
 			// $rows[] = new tabobject('tab_competence_grid', new moodle_url('/blocks/exacomp/competence_grid.php',array("courseid"=>$courseid)),block_exacomp_get_string('tab_competence_grid'), null, true);
 		}
 		if ($isTeacherOrStudent && $ready_for_use) {
 			//Kompetenzüberblick
-			$rows[] = new tabobject('tab_competence_overview', new moodle_url('/blocks/exacomp/assign_competencies.php',array("courseid"=>$courseid)),block_exacomp_get_string('tab_competence_overview'), null, true);
+			$rows[] = new tabobject('tab_competence_overview', new moodle_url('/blocks/exacomp/assign_competencies.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_competence_overview'), null, true);
 
-			if ($isTeacher ||block_exacomp_get_cross_subjects_by_course($courseid, $USER->id)) {
+			if ($isTeacher || block_exacomp_get_cross_subjects_by_course($courseid, $USER->id)) {
 				// Cross subjects: always for teacher and for students if it there are cross subjects
-				$rows[] = new tabobject('tab_cross_subjects', new moodle_url('/blocks/exacomp/cross_subjects_overview.php', array("courseid"=>$courseid)), block_exacomp_get_string('tab_cross_subjects'), null, true);
+				$rows[] = new tabobject('tab_cross_subjects', new moodle_url('/blocks/exacomp/cross_subjects_overview.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_cross_subjects'), null, true);
 			}
 
 			if (!$courseSettings->nostudents) {
 				//Kompetenzprofil
-				$rows[] = new tabobject('tab_competence_profile_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid"=>$courseid)), block_exacomp_get_string('tab_competence_profile'), null, true);
+				$rows[] = new tabobject('tab_competence_profile_profile', new moodle_url('/blocks/exacomp/competence_profile.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_competence_profile'), null, true);
 			}
 
 			if (!$courseSettings->nostudents) {
 				//Beispiel-Aufgaben
-				$rows[] = new tabobject('tab_examples', new moodle_url('/blocks/exacomp/view_examples.php',array("courseid"=>$courseid)),block_exacomp_get_string('tab_examples'), null, true);
+				$rows[] = new tabobject('tab_examples', new moodle_url('/blocks/exacomp/view_examples.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_examples'), null, true);
 			}
 
 			if (!$courseSettings->nostudents) {
 				//Wochenplan
-				$rows[] = new tabobject('tab_weekly_schedule', new moodle_url('/blocks/exacomp/weekly_schedule.php',array("courseid"=>$courseid)),block_exacomp_get_string('tab_weekly_schedule'), null, true);
+				$rows[] = new tabobject('tab_weekly_schedule', new moodle_url('/blocks/exacomp/weekly_schedule.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_weekly_schedule'), null, true);
 			}
 
 			if ($isTeacher && !$courseSettings->nostudents) {
 				if ($courseSettings->useprofoundness) {
-					$rows[] = new tabobject('tab_profoundness', new moodle_url('/blocks/exacomp/profoundness.php',array("courseid"=>$courseid)),block_exacomp_get_string('tab_profoundness'), null, true);
+					$rows[] = new tabobject('tab_profoundness', new moodle_url('/blocks/exacomp/profoundness.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_profoundness'), null, true);
 				}
 
 				//Meine Auszeichnungen
@@ -1727,7 +1833,7 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 
 		if ($isTeacher) {
 			//Einstellungen
-			$rows[] = new tabobject('tab_teacher_settings', new moodle_url('/blocks/exacomp/edit_course.php',array("courseid"=>$courseid)),block_exacomp_get_string('tab_teacher_settings'), null, true);
+			$rows[] = new tabobject('tab_teacher_settings', new moodle_url('/blocks/exacomp/edit_course.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_teacher_settings'), null, true);
 		}
 	}
 
@@ -1736,10 +1842,11 @@ function block_exacomp_build_navigation_tabs($context,$courseid) {
 	if (is_siteadmin() || (has_capability('block/exacomp:admin', $globalcontext) && !block_exacomp_is_skillsmanagement())) {
 		//Admin sieht immer Modulkonfiguration
 		//Wenn Import schon erledigt, weiterleitung zu edit_config, ansonsten import.
-		if($has_data){
-			$rows[] = new tabobject('tab_admin_settings', new moodle_url('/blocks/exacomp/edit_config.php',array("courseid"=>$courseid)),block_exacomp_get_string('tab_admin_settings'), null, true);
+		if ($has_data) {
+			$rows[] = new tabobject('tab_admin_settings', new moodle_url('/blocks/exacomp/edit_config.php', array("courseid" => $courseid)), block_exacomp_get_string('tab_admin_settings'), null, true);
 		}
 	}
+
 	/*
 	if ($de) {
 		//Hilfe
@@ -1762,7 +1869,7 @@ function block_exacomp_build_breadcrum_navigation($courseid) {
  * Check if school specific import is enabled
  */
 function block_exacomp_check_customupload() {
-	return get_config('exacomp','enableteacherimport');
+	return get_config('exacomp', 'enableteacherimport');
 }
 
 /**
@@ -1771,8 +1878,10 @@ function block_exacomp_check_customupload() {
  */
 function block_exacomp_get_edulevels() {
 	global $DB;
-	return $DB->get_records(BLOCK_EXACOMP_DB_EDULEVELS,null,'source');
+
+	return $DB->get_records(BLOCK_EXACOMP_DB_EDULEVELS, null, 'source');
 }
+
 /**
  *
  * Get schooltypes for particular education level
@@ -1783,37 +1892,45 @@ function block_exacomp_get_schooltypes($edulevel) {
 
 	return $DB->get_records(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("elid" => $edulevel));
 }
+
 /**
  * Gets a subject's schooltype title
  *
  * @param object $subject
  * @return Ambigous <mixed, boolean>
  */
-function block_exacomp_get_schooltype_title_by_subject($subject){
+function block_exacomp_get_schooltype_title_by_subject($subject) {
 	global $DB;
-	$subject = $DB->get_record(BLOCK_EXACOMP_DB_SUBJECTS, array('id'=>$subject->id));
-	if ($subject) return $DB->get_field(BLOCK_EXACOMP_DB_SCHOOLTYPES, "title", array("id"=>$subject->stid));
+	$subject = $DB->get_record(BLOCK_EXACOMP_DB_SUBJECTS, array('id' => $subject->id));
+	if ($subject) {
+		return $DB->get_field(BLOCK_EXACOMP_DB_SCHOOLTYPES, "title", array("id" => $subject->stid));
+	}
 
 }
+
 /**
  * Get a schooltype by subject
  *
  * @param unknown_type $subject
  */
-function block_exacomp_get_schooltype_by_subject($subject){
+function block_exacomp_get_schooltype_by_subject($subject) {
 	global $DB;
-	return $DB->get_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id"=>$subject->stid));
+
+	return $DB->get_record(BLOCK_EXACOMP_DB_SCHOOLTYPES, array("id" => $subject->stid));
 }
+
 /**
  * Gets a topic's category
  *
  * @param object $topic
  */
-function block_exacomp_get_category($topic){
+function block_exacomp_get_category($topic) {
 	global $DB;
-	if(isset($topic->catid))
-		return $DB->get_record(BLOCK_EXACOMP_DB_CATEGORIES,array("id"=>$topic->catid));
+	if (isset($topic->catid)) {
+		return $DB->get_record(BLOCK_EXACOMP_DB_CATEGORIES, array("id" => $topic->catid));
+	}
 }
+
 /**
  * Gets assigned schooltypes for particular courseid
  *
@@ -1825,6 +1942,7 @@ function block_exacomp_get_mdltypes($typeid, $courseid = 0) {
 
 	return $DB->get_record(BLOCK_EXACOMP_DB_MDLTYPES, array("stid" => $typeid, "courseid" => $courseid));
 }
+
 /**
  *
  * Assign a schooltype to a course
@@ -1834,9 +1952,9 @@ function block_exacomp_get_mdltypes($typeid, $courseid = 0) {
 function block_exacomp_set_mdltype($values, $courseid = 0) {
 	global $DB;
 
-	$DB->delete_records(BLOCK_EXACOMP_DB_MDLTYPES,array("courseid"=>$courseid));
+	$DB->delete_records(BLOCK_EXACOMP_DB_MDLTYPES, array("courseid" => $courseid));
 	foreach ($values as $value) {
-		$DB->insert_record(BLOCK_EXACOMP_DB_MDLTYPES, array("stid" => intval($value),"courseid" => $courseid));
+		$DB->insert_record(BLOCK_EXACOMP_DB_MDLTYPES, array("stid" => intval($value), "courseid" => $courseid));
 	}
 
 	block_exacomp_clean_course_topics($values, $courseid);
@@ -1847,33 +1965,37 @@ function block_exacomp_set_mdltype($values, $courseid = 0) {
  * @param unknown $values
  * @param unknown $courseid
  */
-function block_exacomp_clean_course_topics($values, $courseid){
+function block_exacomp_clean_course_topics($values, $courseid) {
 	global $DB;
 
-	if($courseid == 0) //all topics for all courses
+	if ($courseid == 0) //all topics for all courses
+	{
 		$coutopics = $DB->get_records(BLOCK_EXACOMP_DB_COURSETOPICS);
-	else
-		$coutopics = $DB->get_records(BLOCK_EXACOMP_DB_COURSETOPICS, array('courseid'=>$courseid));
+	} else {
+		$coutopics = $DB->get_records(BLOCK_EXACOMP_DB_COURSETOPICS, array('courseid' => $courseid));
+	}
 
-	foreach($coutopics as $coutopic){
+	foreach ($coutopics as $coutopic) {
 		$sql = 'SELECT s.stid FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t
 			JOIN {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s ON t.subjid=s.id
 			WHERE t.id=?';
 
 		$schooltype = $DB->get_record_sql($sql, array($coutopic->topicid));
 
-		if($schooltype && !array_key_exists($schooltype->stid, $values)){
-			$DB->delete_records(BLOCK_EXACOMP_DB_COURSETOPICS, array('id'=>$coutopic->id));
+		if ($schooltype && !array_key_exists($schooltype->stid, $values)) {
+			$DB->delete_records(BLOCK_EXACOMP_DB_COURSETOPICS, array('id' => $coutopic->id));
 		}
 	}
 }
+
 /**
  * check if configuration is already finished
  * configuration is finished if schooltype is selected for course(LIS)/moodle(normal)
  */
-function block_exacomp_is_configured($courseid=0){
+function block_exacomp_is_configured($courseid = 0) {
 	global $DB;
-	return $DB->get_records(BLOCK_EXACOMP_DB_MDLTYPES, array("courseid"=>$courseid));
+
+	return $DB->get_records(BLOCK_EXACOMP_DB_MDLTYPES, array("courseid" => $courseid));
 }
 
 /**
@@ -1889,16 +2011,18 @@ function block_exacomp_save_coursesettings($courseid, $settings) {
 
 	$DB->delete_records(BLOCK_EXACOMP_DB_SETTINGS, array("courseid" => $courseid));
 
-	if ($settings->grading > BLOCK_EXACOMP_SETTINGS_MAX_SCHEME) $settings->grading = BLOCK_EXACOMP_SETTINGS_MAX_SCHEME;
+	if ($settings->grading > BLOCK_EXACOMP_SETTINGS_MAX_SCHEME) {
+		$settings->grading = BLOCK_EXACOMP_SETTINGS_MAX_SCHEME;
+	}
 
 	//adapt old evaluation to new scheme
 	//update compcompuser && compcompuser_mm && exameval
-	if($old_course_settings->grading != $settings->grading){
+	if ($old_course_settings->grading != $settings->grading) {
 		//block_exacompcompuser
-		$records = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCES, array('courseid'=>$courseid));
-		foreach($records as $record){
+		$records = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCES, array('courseid' => $courseid));
+		foreach ($records as $record) {
 			//if value is set and greater than zero->adapt to new scheme
-			if(isset($record->value) && $record->value > 0){
+			if (isset($record->value) && $record->value > 0) {
 				//calculate old percentage and apply it to new scheme
 				$percent_old = $record->value / $old_course_settings->grading;
 				$value_new = round($settings->grading * $percent_old);
@@ -1918,8 +2042,8 @@ function block_exacomp_save_coursesettings($courseid, $settings) {
 			JOIN {course_modules} cm ON comp.activityid=cm.id
 			WHERE cm.course=?', array($courseid));
 
-		foreach($records as $record){
-			if(isset($record->value) && $record->value > 0){
+		foreach ($records as $record) {
+			if (isset($record->value) && $record->value > 0) {
 				//calculate old percentage and apply it to new scheme
 				$percent_old = $record->value / $old_course_settings->grading;
 				$value_new = round($settings->grading * $percent_old);
@@ -1932,32 +2056,33 @@ function block_exacomp_save_coursesettings($courseid, $settings) {
 		}
 
 		//block_exacompexampeval
-		$records = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array('courseid'=>$courseid));
-		foreach($records as $record){
+		$records = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array('courseid' => $courseid));
+		foreach ($records as $record) {
 			$update = new stdClass();
 			$update->id = $record->id;
 
 			$doteacherupdate = false;
-			if(isset($record->teacher_evaluation) && $record->teacher_evaluation > 0){
+			if (isset($record->teacher_evaluation) && $record->teacher_evaluation > 0) {
 				//calculate old percentage and apply it to new scheme
-				$percent_old =  $record->teacher_evaluation / $old_course_settings->grading;
+				$percent_old = $record->teacher_evaluation / $old_course_settings->grading;
 				$teachereval_new = round($settings->grading * $percent_old);
 
 				$update->teacher_evaluation = $teachereval_new;
 				$doteacherupdate = true;
 			}
 			$dostudentupdate = false;
-			if(isset($record->student_evaluation) && $record->student_evaluation > 0){
+			if (isset($record->student_evaluation) && $record->student_evaluation > 0) {
 				//calculate old percentage and apply it to new scheme
-				$percent_old =  $record->student_evaluation / $old_course_settings->grading;
+				$percent_old = $record->student_evaluation / $old_course_settings->grading;
 				$studenteval_new = round($settings->grading * $percent_old);
 
 				$update->student_evaluation = $studenteval_new;
 				$dostudentupdate = true;
 			}
 
-			if($dostudentupdate || $doteacherupdate)
+			if ($dostudentupdate || $doteacherupdate) {
 				$DB->update_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, $update);
+			}
 		}
 
 	}
@@ -1967,6 +2092,7 @@ function block_exacomp_save_coursesettings($courseid, $settings) {
 
 	$DB->insert_record(BLOCK_EXACOMP_DB_SETTINGS, $settings);
 }
+
 /**
  *
  * Check if there are already topics assigned to a course
@@ -1977,45 +2103,51 @@ function block_exacomp_is_activated($courseid) {
 
 	return $DB->get_records(BLOCK_EXACOMP_DB_COURSETOPICS, array("courseid" => $courseid));
 }
+
 /**
- *	Check is block is ready for use.
- *	It is ready if:
- *	1. block is activated and no activites are used in the course
- *	or
- *	2. block is activated, activities are used and associated
+ *    Check is block is ready for use.
+ *    It is ready if:
+ *    1. block is activated and no activites are used in the course
+ *    or
+ *    2. block is activated, activities are used and associated
  *
  */
-function block_exacomp_is_ready_for_use($courseid){
+function block_exacomp_is_ready_for_use($courseid) {
 
 	global $DB;
 	$course_settings = block_exacomp_get_settings_by_course($courseid);
 	$is_activated = block_exacomp_is_activated($courseid);
 
 	//no topics selected
-	if(!$is_activated)
+	if (!$is_activated) {
 		return false;
+	}
 
 	return true;
 
 	//topics selected
 	//no activities->finish
-	if(!$course_settings->uses_activities)
+	if (!$course_settings->uses_activities) {
 		return true;
+	}
 
-	if($course_settings->show_all_descriptors)
+	if ($course_settings->show_all_descriptors) {
 		return true;
+	}
 
 	//work with activities
-	$activities_assigned_to_any_course = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array('eportfolioitem'=>0));
+	$activities_assigned_to_any_course = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array('eportfolioitem' => 0));
 	//no activites assigned
-	if(!$activities_assigned_to_any_course)
+	if (!$activities_assigned_to_any_course) {
 		return false;
+	}
 
 	//activity assigned in given course
-	foreach($activities_assigned_to_any_course as $activity){
-		$module = $DB->get_record('course_modules', array('id'=>$activity->activityid));
-		if(isset($module->course) && $module->course == $courseid)
+	foreach ($activities_assigned_to_any_course as $activity) {
+		$module = $DB->get_record('course_modules', array('id' => $activity->activityid));
+		if (isset($module->course) && $module->course == $courseid) {
 			return true;
+		}
 	}
 
 	//no activity assigned in given course
@@ -2029,8 +2161,10 @@ function block_exacomp_is_ready_for_use($courseid){
  */
 function block_exacomp_get_grading_scheme($courseid) {
 	$settings = block_exacomp_get_settings_by_course($courseid);
+
 	return $settings->grading;
 }
+
 /**
  *
  * Builds topic title to print
@@ -2048,13 +2182,14 @@ function block_exacomp_get_output_fields($topic) {
 
 	return array($output_id, $output_title);
 }
+
 /**
  *
  * Awards badges to user
  * @param int $courseid
  * @param int $userid
  */
-function block_exacomp_award_badges($courseid, $userid=null) {
+function block_exacomp_award_badges($courseid, $userid = null) {
 	global $DB, $USER;
 
 	$users = get_enrolled_users(context_course::instance($courseid));
@@ -2065,7 +2200,7 @@ function block_exacomp_award_badges($courseid, $userid=null) {
 
 		// only award for this user
 		$users = array(
-				$userid => $users[$userid]
+			$userid => $users[$userid],
 		);
 	}
 	$badges = badges_get_badges(BADGE_TYPE_COURSE, $courseid);
@@ -2073,7 +2208,9 @@ function block_exacomp_award_badges($courseid, $userid=null) {
 	foreach ($badges as $badge) {
 
 		// badges, which can be issued to user: status=active, type=manual
-		if (!$badge->is_active() || !$badge->has_manual_award_criteria()) continue;
+		if (!$badge->is_active() || !$badge->has_manual_award_criteria()) {
+			continue;
+		}
 
 
 		$descriptors = $DB->get_records_sql('
@@ -2083,7 +2220,9 @@ function block_exacomp_award_badges($courseid, $userid=null) {
 				', array($badge->id));
 
 		// no descriptors selected?
-		if (empty($descriptors)) continue;
+		if (empty($descriptors)) {
+			continue;
+		}
 		foreach ($users as $user) {
 			if ($badge->is_issued($user->id)) {
 				// skip, already issued
@@ -2105,11 +2244,13 @@ function block_exacomp_award_badges($courseid, $userid=null) {
 			}
 
 			// some are missing
-			if (!$allFound) continue;
+			if (!$allFound) {
+				continue;
+			}
 
 			// has all required competencies
 			$acceptedroles = array_keys($badge->criteria[BADGE_CRITERIA_TYPE_MANUAL]->params);
-			if (process_manual_award($user->id, $USER->id, $acceptedroles[0], $badge->id))  {
+			if (process_manual_award($user->id, $USER->id, $acceptedroles[0], $badge->id)) {
 				// If badge was successfully awarded, review manual badge criteria.
 				$data = new stdClass();
 				$data->crit = $badge->criteria[BADGE_CRITERIA_TYPE_MANUAL];
@@ -2121,6 +2262,7 @@ function block_exacomp_award_badges($courseid, $userid=null) {
 		}
 	}
 }
+
 /**
  *
  * Gets all badges for particular user
@@ -2129,12 +2271,15 @@ function block_exacomp_award_badges($courseid, $userid=null) {
 function block_exacomp_get_all_user_badges($userid = null) {
 	global $USER;
 
-	if ($userid == null) $userid = $USER->id;
+	if ($userid == null) {
+		$userid = $USER->id;
+	}
 
 	$records = badges_get_user_badges($userid);
 
 	return $records;
 }
+
 /**
  *
  * Gets all badges for particular user in particular course
@@ -2148,14 +2293,16 @@ function block_exacomp_get_user_badges($courseid, $userid) {
 	$badges = badges_get_badges(BADGE_TYPE_COURSE);
 
 	$result = (object)array(
-			'issued' => array(),
-			'pending' => array()
+		'issued' => array(),
+		'pending' => array(),
 	);
 
 	foreach ($badges as $badge) {
 
 		// badges, which can be issued to user: status=active, type=manual
-		if (!$badge->is_active() || !$badge->has_manual_award_criteria()) continue;
+		if (!$badge->is_active() || !$badge->has_manual_award_criteria()) {
+			continue;
+		}
 
 		$descriptors = $DB->get_records_sql('
 				SELECT d.*
@@ -2164,20 +2311,22 @@ function block_exacomp_get_user_badges($courseid, $userid) {
 				', array($badge->id));
 
 		// no descriptors selected?
-		if (empty($descriptors)) continue;
+		if (empty($descriptors)) {
+			continue;
+		}
 
 		$badge->descriptorStatus = array();
 
-		$user = $DB->get_record('user', array('id'=>$userid));
+		$user = $DB->get_record('user', array('id' => $userid));
 		$usercompetences_all = block_exacomp_get_user_competences_by_course($user, $courseid);
 		$usercomptences = $usercompetences_all->competencies->teacher;
 		//$usercompetences = block_exacomp_get_usercompetences($userid, $role=1, $courseid);
 
 		foreach ($descriptors as $descriptor) {
 			if (isset($usercompetences[$descriptor->id])) {
-				$badge->descriptorStatus[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/accept.png'), 'style'=>'vertical-align:text-bottom;')).$descriptor->title;
+				$badge->descriptorStatus[] = html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/accept.png'), 'style' => 'vertical-align:text-bottom;')).$descriptor->title;
 			} else {
-				$badge->descriptorStatus[] = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/cancel.png'), 'style'=>'vertical-align:text-bottom;')).$descriptor->title;
+				$badge->descriptorStatus[] = html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/cancel.png'), 'style' => 'vertical-align:text-bottom;')).$descriptor->title;
 			}
 		}
 
@@ -2190,13 +2339,15 @@ function block_exacomp_get_user_badges($courseid, $userid) {
 
 	return $result;
 }
+
 /**
  *
  * Gets all descriptors assigned to a badge
  * @param unknown_type $badgeid
  */
-function block_exacomp_get_badge_descriptors($badgeid){
+function block_exacomp_get_badge_descriptors($badgeid) {
 	global $DB;
+
 	return $DB->get_records_sql('
 			SELECT d.*
 			FROM {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d
@@ -2233,8 +2384,9 @@ function block_exacomp_get_badge_descriptors($badgeid){
  * @return array
  */
 function block_exacomp_get_course_module_association($courseid) {
-	if(block_exacomp_get_settings_by_course($courseid)->uses_activities == 0)
+	if (block_exacomp_get_settings_by_course($courseid)->uses_activities == 0) {
 		return null;
+	}
 
 	global $DB;
 	$records = $DB->get_records_sql('
@@ -2248,11 +2400,12 @@ function block_exacomp_get_course_module_association($courseid) {
 	$mm->competencies = array();
 	$mm->topics = array();
 
-	foreach($records as $record) {
-		if($record->comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR)
+	foreach ($records as $record) {
+		if ($record->comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
 			$mm->competencies[$record->compid][$record->activityid] = $record->activityid;
-		else
+		} else {
 			$mm->topics[$record->compid][$record->activityid] = $record->activityid;
+		}
 	}
 
 	return $mm;
@@ -2265,19 +2418,19 @@ function block_exacomp_get_allowed_course_modules_for_course($courseid) {
 		$modules = $modinfo->get_cms();
 
 		$active_modules = [];
-		foreach($modules as $mod){
+		foreach ($modules as $mod) {
 			$module = block_exacomp_get_coursemodule($mod);
 
 			//Skip Nachrichtenforum
-			if (strcmp($module->name, block_exacomp_get_string('namenews','mod_forum'))==0) {
+			if (strcmp($module->name, block_exacomp_get_string('namenews', 'mod_forum')) == 0) {
 				continue;
 			}
 
 			//skip News forum in any language, supported_modules[1] == forum
-			$forum = g::$DB->get_record('modules', array('name'=>'forum'));
-			if($module->module == $forum->id){
-				$forum = g::$DB->get_record('forum', array('id'=>$module->instance));
-				if(strcmp($forum->type, 'news')==0){
+			$forum = g::$DB->get_record('modules', array('name' => 'forum'));
+			if ($module->module == $forum->id) {
+				$forum = g::$DB->get_record('forum', array('id' => $module->instance));
+				if (strcmp($forum->type, 'news') == 0) {
 					continue;
 				}
 			}
@@ -2311,11 +2464,11 @@ function block_exacomp_get_allowed_course_modules_for_course_for_select($coursei
  * @return array
  */
 
-function block_exacomp_get_eportfolioitem_association($students){
+function block_exacomp_get_eportfolioitem_association($students) {
 	global $DB, $COURSE, $USER;
 	//$teachers = block_exacomp_get_teachers_by_course($COURSE->id);
 	$result = array();
-	foreach($students as $student){
+	foreach ($students as $student) {
 		$eportfolioitems = $DB->get_records_sql('
 			SELECT mm.id, compid, activityid, i.shareall, i.externaccess, i.name
 			FROM {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} mm
@@ -2326,7 +2479,7 @@ function block_exacomp_get_eportfolioitem_association($students){
 		$result[$student->id] = new stdClass();
 		$result[$student->id]->competencies = array();
 
-		foreach($eportfolioitems as $item){
+		foreach ($eportfolioitems as $item) {
 			$shared = false;
 			$viewid = 0;
 			$owner = 0;
@@ -2341,8 +2494,8 @@ function block_exacomp_get_eportfolioitem_association($students){
 
 			$shared_info = $DB->get_records_sql($sql, array($item->activityid));
 
-			foreach($shared_info as $info){
-				if((isset($info->shareall) && $info->shareall>0)){
+			foreach ($shared_info as $info) {
+				if ((isset($info->shareall) && $info->shareall > 0)) {
 					$shared = true;
 					$useextern = false;
 					$hash = $info->hash;
@@ -2350,8 +2503,8 @@ function block_exacomp_get_eportfolioitem_association($students){
 					$owner = $info->owner;
 					continue;
 				}
-				if(isset($info->externaccess)&& $info->externaccess>0){
-					$shared= true;
+				if (isset($info->externaccess) && $info->externaccess > 0) {
+					$shared = true;
 					$useextern = true;
 					$hash = $info->hash;
 					$viewid = $info->id;
@@ -2360,10 +2513,10 @@ function block_exacomp_get_eportfolioitem_association($students){
 				}
 
 			}
-			if(!$shared){
-				foreach($shared_info as $info){
-					if(isset($info->userid) && $USER->id == $info->userid){
-						$shared=true;
+			if (!$shared) {
+				foreach ($shared_info as $info) {
+					if (isset($info->userid) && $USER->id == $info->userid) {
+						$shared = true;
 						$useextern = false;
 						$hash = $info->hash;
 						$viewid = $info->id;
@@ -2372,7 +2525,7 @@ function block_exacomp_get_eportfolioitem_association($students){
 					}
 				}
 			}
-			if(!isset($result[$student->id]->competencies[$item->compid])){
+			if (!isset($result[$student->id]->competencies[$item->compid])) {
 				$result[$student->id]->competencies[$item->compid] = new stdClass();
 				$result[$student->id]->competencies[$item->compid]->items = array();
 			}
@@ -2385,11 +2538,12 @@ function block_exacomp_get_eportfolioitem_association($students){
 			$result[$student->id]->competencies[$item->compid]->items[$item->activityid]->hash = $hash;
 		}
 	}
+
 	return $result;
 }
+
 /**
  * Prepares an icon for a student for the given course modules, based on the grading.
-
  * @param array $coursemodules
  * @param stdClass $student
  *
@@ -2397,34 +2551,34 @@ function block_exacomp_get_eportfolioitem_association($students){
  */
 function block_exacomp_get_icon_for_user($coursemodules, $student) {
 	global $CFG, $DB;
-	require_once $CFG->libdir . '/gradelib.php';
+	require_once $CFG->libdir.'/gradelib.php';
 
 	$found = false;
 	$modules = $DB->get_records_menu("modules");
 
 	$icon = new stdClass();
-	$icon->text = fullname($student) . block_exacomp_get_string('usersubmitted') . '&#013;';
+	$icon->text = fullname($student).block_exacomp_get_string('usersubmitted').'&#013;';
 
 	foreach ($coursemodules as $cm) {
 		$hasSubmission = false;
 
-		$gradeinfo = grade_get_grades($cm->course,"mod",$modules[$cm->module],$cm->instance,$student->id);
+		$gradeinfo = grade_get_grades($cm->course, "mod", $modules[$cm->module], $cm->instance, $student->id);
 
 		//check for assign
-		$assign = $DB->get_record('modules', array('name'=>'assign'));
-		if($cm->module == $assign->id) {
+		$assign = $DB->get_record('modules', array('name' => 'assign'));
+		if ($cm->module == $assign->id) {
 			$hasSubmission = $DB->get_record('assign_submission', array('assignment' => $cm->instance, 'userid' => $student->id));
 		}
 
-		if(isset($gradeinfo->items[0]->grades[$student->id]->dategraded) || $hasSubmission) {
+		if (isset($gradeinfo->items[0]->grades[$student->id]->dategraded) || $hasSubmission) {
 			$found = true;
-			$icon->img = html_writer::empty_tag("img", array("src" => "pix/list_12x11.png","alt" => block_exacomp_get_string("legend_activities")));
-			$icon->text .= '* ' . str_replace('"', '', $gradeinfo->items[0]->name) . ((isset($gradeinfo->items[0]->grades[$student->id])) ? block_exacomp_get_string('grading'). $gradeinfo->items[0]->grades[$student->id]->str_long_grade : '' ) . '&#013;';
+			$icon->img = html_writer::empty_tag("img", array("src" => "pix/list_12x11.png", "alt" => block_exacomp_get_string("legend_activities")));
+			$icon->text .= '* '.str_replace('"', '', $gradeinfo->items[0]->name).((isset($gradeinfo->items[0]->grades[$student->id])) ? block_exacomp_get_string('grading').$gradeinfo->items[0]->grades[$student->id]->str_long_grade : '').'&#013;';
 		}
 	}
-	if(!$found) {
-		$icon->text = fullname($student) . block_exacomp_get_string("usernosubmission");
-		$icon->img = html_writer::empty_tag("img", array("src" => "pix/x_11x11.png","alt" => fullname($student) . block_exacomp_get_string("usernosubmission")));
+	if (!$found) {
+		$icon->text = fullname($student).block_exacomp_get_string("usernosubmission");
+		$icon->img = html_writer::empty_tag("img", array("src" => "pix/x_11x11.png", "alt" => fullname($student).block_exacomp_get_string("usernosubmission")));
 	}
 
 	return $icon;
@@ -2439,35 +2593,35 @@ function block_exacomp_normalize_course_visibilities($courseid) {
 	foreach ($topicids as $topicid) {
 		//insert descriptors in block_exacompdescrvisibility
 		$descriptors_topic = block_exacomp_get_descriptors_by_topic($courseid, $topicid, true);
-		foreach($descriptors_topic as $descriptor){
+		foreach ($descriptors_topic as $descriptor) {
 			$descriptors[$descriptor->id] = $descriptor;
 		}
 	}
 
 	block_exacomp_update_descriptor_visibilities($courseid, $descriptors);
 
-	foreach($descriptors as $descriptor){
-		 $descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), true, $courseid, false);
-			foreach($descriptor->examples as $example){
+	foreach ($descriptors as $descriptor) {
+		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), true, $courseid, false);
+		foreach ($descriptor->examples as $example) {
+			$examples[$example->id] = $example;
+		}
+
+		$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid);
+		foreach ($descriptor->children as $child) {
+			$child = block_exacomp_get_examples_for_descriptor($child, array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), true, $courseid, false);
+			foreach ($child->examples as $example) {
 				$examples[$example->id] = $example;
 			}
-
-			$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid);
-			foreach($descriptor->children as $child){
-				$child = block_exacomp_get_examples_for_descriptor($child, array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), true, $courseid, false);
-				foreach($child->examples as $example){
-					$examples[$example->id] = $example;
-				}
-			}
+		}
 	}
 
 	block_exacomp_update_example_visibilities($courseid, $examples);
 
 	//delete unconnected examples
 	//add blocking events to examples which are not deleted
-	$blocking_events = g::$DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('blocking_event'=>1));
+	$blocking_events = g::$DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES, array('blocking_event' => 1));
 
-	foreach($blocking_events as $event){
+	foreach ($blocking_events as $event) {
 		$examples[$event->id] = $event;
 	}
 
@@ -2501,51 +2655,54 @@ function block_exacomp_set_coursetopics($courseid, $topicids) {
  * @param unknown_type $courseid
  * @param unknown_type $descriptors
  */
-function block_exacomp_update_descriptor_visibilities($courseid, $descriptors){
+function block_exacomp_update_descriptor_visibilities($courseid, $descriptors) {
 	global $DB;
 
-	$visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_DESCVISIBILITY,'descrid', 'courseid=? AND studentid=0', array($courseid));
+	$visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_DESCVISIBILITY, 'descrid', 'courseid=? AND studentid=0', array($courseid));
 
 	//get all cross subject descriptors - to support cross-course subjects descriptor visibility must be kept
-	$cross_subjects = $DB->get_records(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('courseid'=>$courseid));
+	$cross_subjects = $DB->get_records(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('courseid' => $courseid));
 	$cross_subjects_descriptors = array();
 
-	foreach($cross_subjects as $crosssub){
+	foreach ($cross_subjects as $crosssub) {
 		$cross_subject_descriptors = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_DESCCROSS, 'descrid', 'crosssubjid=?', array($crosssub->id));
-		foreach($cross_subject_descriptors as $descriptor)
-			if(!in_array($descriptor, $cross_subjects_descriptors)){
+		foreach ($cross_subject_descriptors as $descriptor) {
+			if (!in_array($descriptor, $cross_subjects_descriptors)) {
 				$cross_subjects_descriptors[] = $descriptor;
 			}
+		}
 	}
 
-	$finaldescriptors=$descriptors;
+	$finaldescriptors = $descriptors;
 	//manage visibility, do not delete user visibility, but delete unused entries
-	foreach($descriptors as $descriptor){
+	foreach ($descriptors as $descriptor) {
 		//new descriptors in table
-		if(!in_array($descriptor->id, $visibilities)) {
+		if (!in_array($descriptor->id, $visibilities)) {
 			$visibilities[] = $descriptor->id;
-			$DB->insert_record(BLOCK_EXACOMP_DB_DESCVISIBILITY, array("courseid"=>$courseid, "descrid"=>$descriptor->id, "studentid"=>0, "visible"=>1));
+			$DB->insert_record(BLOCK_EXACOMP_DB_DESCVISIBILITY, array("courseid" => $courseid, "descrid" => $descriptor->id, "studentid" => 0, "visible" => 1));
 		}
 
 		$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid, true, array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), true, false);
 
-		foreach($descriptor->children as $childdescriptor){
-			if(!in_array($childdescriptor->id, $visibilities)) {
+		foreach ($descriptor->children as $childdescriptor) {
+			if (!in_array($childdescriptor->id, $visibilities)) {
 				$visibilities[] = $childdescriptor->id;
-				$DB->insert_record(BLOCK_EXACOMP_DB_DESCVISIBILITY, array("courseid"=>$courseid, "descrid"=>$childdescriptor->id, "studentid"=>0, "visible"=>1));
+				$DB->insert_record(BLOCK_EXACOMP_DB_DESCVISIBILITY, array("courseid" => $courseid, "descrid" => $childdescriptor->id, "studentid" => 0, "visible" => 1));
 			}
 
-			if(!array_key_exists($childdescriptor->id, $finaldescriptors))
+			if (!array_key_exists($childdescriptor->id, $finaldescriptors)) {
 				$finaldescriptors[$childdescriptor->id] = $childdescriptor;
+			}
 		}
 	}
 
-	foreach($visibilities as $visible){
+	foreach ($visibilities as $visible) {
 		//delete ununsed descriptors for course and for special students
-		if(!array_key_exists($visible, $finaldescriptors)){
+		if (!array_key_exists($visible, $finaldescriptors)) {
 			//check if used in cross-subjects --> then it must still be visible
-			if(!in_array($visible, $cross_subjects_descriptors))
-				$DB->delete_records(BLOCK_EXACOMP_DB_DESCVISIBILITY, array("courseid"=>$courseid, "descrid"=>$visible));
+			if (!in_array($visible, $cross_subjects_descriptors)) {
+				$DB->delete_records(BLOCK_EXACOMP_DB_DESCVISIBILITY, array("courseid" => $courseid, "descrid" => $visible));
+			}
 		}
 	}
 }
@@ -2556,34 +2713,38 @@ function block_exacomp_update_descriptor_visibilities($courseid, $descriptors){
  * @param unknown_type $courseid
  * @param unknown_type $descriptors
  */
-function block_exacomp_update_example_visibilities($courseid, $examples){
+function block_exacomp_update_example_visibilities($courseid, $examples) {
 	global $DB;
 
-	$visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_EXAMPVISIBILITY,'exampleid', 'courseid=? AND studentid=0', array($courseid));
+	$visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, 'exampleid', 'courseid=? AND studentid=0', array($courseid));
 
 	//get all cross subject examples - to support cross-course subjects exampels visibility must be kept
-	$cross_subjects = $DB->get_records(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('courseid'=>$courseid));
+	$cross_subjects = $DB->get_records(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('courseid' => $courseid));
 	$cross_subject_examples = array();
 
-	foreach($cross_subjects as $crosssub){
+	foreach ($cross_subjects as $crosssub) {
 		$cross_subject_descriptors = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_DESCCROSS, 'descrid', 'crosssubjid=?', array($crosssub->id));
-		foreach($cross_subject_descriptors as $descriptor){
-			$descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id'=>$descriptor));
+		foreach ($cross_subject_descriptors as $descriptor) {
+			$descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id' => $descriptor));
 			$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), true, $courseid, false);
-			foreach($descriptor->examples as $example)
-				if(!in_array($example->id, $cross_subject_examples))
+			foreach ($descriptor->examples as $example) {
+				if (!in_array($example->id, $cross_subject_examples)) {
 					$cross_subject_examples[] = $example->id;
+				}
+			}
 
-			if($descriptor->parentid == 0){
-				$descriptor_topic_mm = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid'=>$descriptor->id));
-				if($descriptor_topic_mm) {
+			if ($descriptor->parentid == 0) {
+				$descriptor_topic_mm = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid' => $descriptor->id));
+				if ($descriptor_topic_mm) {
 					$descriptor->topicid = $descriptor_topic_mm->topicid;
 					$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid);
-					foreach($descriptor->children as $child){
-						$child = block_exacomp_get_examples_for_descriptor($child,  array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), true, $courseid, false);
-						foreach($child->examples as $example)
-							if(!in_array($example->id, $cross_subject_examples))
+					foreach ($descriptor->children as $child) {
+						$child = block_exacomp_get_examples_for_descriptor($child, array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), true, $courseid, false);
+						foreach ($child->examples as $example) {
+							if (!in_array($example->id, $cross_subject_examples)) {
 								$cross_subject_examples[] = $example->id;
+							}
+						}
 					}
 				}
 			}
@@ -2592,51 +2753,52 @@ function block_exacomp_update_example_visibilities($courseid, $examples){
 
 	$finalexamples = $examples;
 	//manage visibility, do not delete user visibility, but delete unused entries
-	foreach($examples as $example){
+	foreach ($examples as $example) {
 		//new example in table
-		if(!in_array($example->id, $visibilities)) {
+		if (!in_array($example->id, $visibilities)) {
 			$visibilities[] = $example->id;
-			$DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array("courseid"=>$courseid, "exampleid"=>$example->id, "studentid"=>0, "visible"=>1));
-			$DB->insert_record(BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY, array("courseid"=>$courseid, "exampleid"=>$example->id, "studentid"=>0, "visible"=>1));
+			$DB->insert_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array("courseid" => $courseid, "exampleid" => $example->id, "studentid" => 0, "visible" => 1));
+			$DB->insert_record(BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY, array("courseid" => $courseid, "exampleid" => $example->id, "studentid" => 0, "visible" => 1));
 		}
 	}
 
-	foreach($visibilities as $visible){
+	foreach ($visibilities as $visible) {
 		//delete ununsed descriptors for course and for special students
-		if(!array_key_exists($visible, $finalexamples)){
+		if (!array_key_exists($visible, $finalexamples)) {
 			//check if used in cross-subjects --> then it must still be visible
-			if(!in_array($visible, $cross_subject_examples)) {
-                $DB->delete_records(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array("courseid"=>$courseid, "exampleid"=>$visible));
-                $DB->delete_records(BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY, array("courseid"=>$courseid, "exampleid"=>$visible));
-            }
+			if (!in_array($visible, $cross_subject_examples)) {
+				$DB->delete_records(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array("courseid" => $courseid, "exampleid" => $visible));
+				$DB->delete_records(BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY, array("courseid" => $courseid, "exampleid" => $visible));
+			}
 		}
 	}
 }
+
 /**
  * given list is visible in course - make sure for each visible topic one entry in visibility table exists
  * (studentid = 0 and courseid = courseid)
  * @param unknown $courseid
  * @param unknown $topicids
  */
-function block_exacomp_update_topic_visibilities($courseid, $topicids){
+function block_exacomp_update_topic_visibilities($courseid, $topicids) {
 	global $DB;
 
-	$visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_TOPICVISIBILITY,'topicid', 'courseid=? AND studentid=0', array($courseid));
+	$visibilities = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_TOPICVISIBILITY, 'topicid', 'courseid=? AND studentid=0', array($courseid));
 
 	//manage visibility, do not delete user visibility, but delete unused entries
-	foreach($topicids as $topicid){
+	foreach ($topicids as $topicid) {
 		//new descriptors in table
-		if(!in_array($topicid, $visibilities)) {
+		if (!in_array($topicid, $visibilities)) {
 			$visibilities[] = $topicid;
-			$DB->insert_record(BLOCK_EXACOMP_DB_TOPICVISIBILITY, array("courseid"=>$courseid, "topicid"=>$topicid, "studentid"=>0, "visible"=>1));
+			$DB->insert_record(BLOCK_EXACOMP_DB_TOPICVISIBILITY, array("courseid" => $courseid, "topicid" => $topicid, "studentid" => 0, "visible" => 1));
 		}
 	}
 
-	foreach($visibilities as $visible){
+	foreach ($visibilities as $visible) {
 		//delete ununsed descriptors for course and for special students
-		if(!in_array($visible, $topicids)){
+		if (!in_array($visible, $topicids)) {
 			//check if used in cross-subjects --> then it must still be visible
-			$DB->delete_records(BLOCK_EXACOMP_DB_TOPICVISIBILITY, array("courseid"=>$courseid, "topicid"=>$visible));
+			$DB->delete_records(BLOCK_EXACOMP_DB_TOPICVISIBILITY, array("courseid" => $courseid, "topicid" => $visible));
 		}
 	}
 
@@ -2647,37 +2809,39 @@ function block_exacomp_update_topic_visibilities($courseid, $topicids){
  * Returns quizes assigned to course
  * @param unknown_type $courseid
  */
-function block_exacomp_get_active_tests_by_course($courseid){
+function block_exacomp_get_active_tests_by_course($courseid) {
 	global $DB;
 
 	$sql = "SELECT DISTINCT cm.instance as id, cm.id as activityid, q.grade FROM {block_exacompcompactiv_mm} activ "
-	."JOIN {course_modules} cm ON cm.id = activ.activityid "
-	."JOIN {modules} m ON m.id = cm.module "
-	."JOIN {quiz} q ON cm.instance = q.id "
-	."WHERE m.name='quiz' AND cm.course=?";
+		."JOIN {course_modules} cm ON cm.id = activ.activityid "
+		."JOIN {modules} m ON m.id = cm.module "
+		."JOIN {quiz} q ON cm.instance = q.id "
+		."WHERE m.name='quiz' AND cm.course=?";
 
 	$tests = $DB->get_records_sql($sql, array($courseid));
 
-	foreach($tests as $test){
-		$test->descriptors = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array('activityid'=>$test->activityid, 'comptype'=>BLOCK_EXACOMP_TYPE_DESCRIPTOR), null, 'compid');
-		$test->topics = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array('activityid'=>$test->activityid, 'comptype'=>BLOCK_EXACOMP_TYPE_TOPIC), null, 'compid');
+	foreach ($tests as $test) {
+		$test->descriptors = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array('activityid' => $test->activityid, 'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR), null, 'compid');
+		$test->topics = $DB->get_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array('activityid' => $test->activityid, 'comptype' => BLOCK_EXACOMP_TYPE_TOPIC), null, 'compid');
 	}
 
 	return $tests;
 }
+
 /**
  *
  * Returns all course ids where an instance of Exabis Competences is installed
  */
-function block_exacomp_get_courseids(){
-	$instances = g::$DB->get_records('block_instances', array('blockname'=>'exacomp'));
+function block_exacomp_get_courseids() {
+	$instances = g::$DB->get_records('block_instances', array('blockname' => 'exacomp'));
 
 	$exabis_competences_courses = array();
 
-	foreach($instances as $instance){
-		$context = g::$DB->get_record('context', array('id'=>$instance->parentcontextid, 'contextlevel'=>CONTEXT_COURSE));
-		if($context)
+	foreach ($instances as $instance) {
+		$context = g::$DB->get_record('context', array('id' => $instance->parentcontextid, 'contextlevel' => CONTEXT_COURSE));
+		if ($context) {
 			$exabis_competences_courses[$context->instanceid] = $context->instanceid;
+		}
 	}
 
 	return $exabis_competences_courses;
@@ -2696,41 +2860,47 @@ function block_exacomp_get_exacomp_courses($userid) {
 		$context = context_course::instance($course);
 
 		// only active courses where user is enrolled
-		if(is_enrolled($context, $userid, '', true) && has_capability('block/exacomp:use', $context, $userid)){
-			$user_courses[$course] = g::$DB->get_record('course', array('id'=>$course));
+		if (is_enrolled($context, $userid, '', true) && has_capability('block/exacomp:use', $context, $userid)) {
+			$user_courses[$course] = g::$DB->get_record('course', array('id' => $course));
 		}
 	}
 
 	return $user_courses;
 }
+
 /**
  * get all courses where a given user is enrolled as teacher
  * @param unknown_type $userid
  */
 function block_exacomp_get_teacher_courses($userid) {
 	$courses = block_exacomp_get_exacomp_courses($userid);
-	foreach ($courses as $key=>$course) {
+	foreach ($courses as $key => $course) {
 		if (!block_exacomp_is_teacher(context_course::instance($course->id))) {
 			// unset($courses[$key]);
 		}
 	}
+
 	return $courses;
 }
+
 /**
  *
  * Gets URL for particular activity
  * @param unknown_type $activity
  * @param unknown_type $student
  */
-function block_exacomp_get_activityurl($activity,$student=false) {
+function block_exacomp_get_activityurl($activity, $student = false) {
 	global $DB;
 
-	$mod = $DB->get_record('modules',array("id"=>$activity->module));
+	$mod = $DB->get_record('modules', array("id" => $activity->module));
 
-	if($mod->name == "assignment" && !$student)
-		return new moodle_url('/mod/assignment/submissions.php', array('id'=>$activity->id));
-	else return new moodle_url('/mod/'.$mod->name.'/view.php', array('id'=>$activity->id));
+	if ($mod->name == "assignment" && !$student) {
+		return new moodle_url('/mod/assignment/submissions.php', array('id' => $activity->id));
+	} else {
+		return new moodle_url('/mod/'.$mod->name.'/view.php', array('id' => $activity->id));
+	}
 }
+
 /**
  *
  * Gets course module name for module
@@ -2738,9 +2908,11 @@ function block_exacomp_get_activityurl($activity,$student=false) {
  */
 function block_exacomp_get_coursemodule($mod) {
 	global $DB;
-	$name = $DB->get_field('modules','name',array("id"=>$mod->module));
-	return get_coursemodule_from_id($name,$mod->id);
+	$name = $DB->get_field('modules', 'name', array("id" => $mod->module));
+
+	return get_coursemodule_from_id($name, $mod->id);
 }
+
 /**
  *
  * Assign competencies to activites
@@ -2750,16 +2922,18 @@ function block_exacomp_get_coursemodule($mod) {
  */
 function block_exacomp_save_competences_activities($data, $courseid, $comptype) {
 	global $USER;
-	if($data != null)
-	foreach($data as $cmoduleKey => $comps){
-		if(!empty($cmoduleKey)){
-			foreach($comps as $compidKey=>$empty){
-				//set activity
-				block_exacomp_set_compactivity($cmoduleKey, $compidKey, $comptype);
+	if ($data != null) {
+		foreach ($data as $cmoduleKey => $comps) {
+			if (!empty($cmoduleKey)) {
+				foreach ($comps as $compidKey => $empty) {
+					//set activity
+					block_exacomp_set_compactivity($cmoduleKey, $compidKey, $comptype);
+				}
 			}
 		}
 	}
 }
+
 /**
  *
  * Assign one competence to one activity
@@ -2770,26 +2944,28 @@ function block_exacomp_save_competences_activities($data, $courseid, $comptype) 
 function block_exacomp_set_compactivity($activityid, $compid, $comptype) {
 	global $DB, $COURSE;
 
-	$cmmod = $DB->get_record('course_modules',array("id"=>$activityid));
-	$modulename = $DB->get_record('modules',array("id"=>$cmmod->module));
+	$cmmod = $DB->get_record('course_modules', array("id" => $activityid));
+	$modulename = $DB->get_record('modules', array("id" => $cmmod->module));
 	$instance = get_coursemodule_from_id($modulename->name, $activityid);
 
-	$DB->delete_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array("activityid" => $activityid, "compid" => $compid, "comptype"=>$comptype, "eportfolioitem"=>0));
-	$DB->insert_record(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array("activityid" => $activityid, "compid" => $compid, "comptype"=>$comptype, "coursetitle"=>$COURSE->shortname, 'activitytitle'=>$instance->name));
+	$DB->delete_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array("activityid" => $activityid, "compid" => $compid, "comptype" => $comptype, "eportfolioitem" => 0));
+	$DB->insert_record(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array("activityid" => $activityid, "compid" => $compid, "comptype" => $comptype, "coursetitle" => $COURSE->shortname, 'activitytitle' => $instance->name));
 }
+
 /**
  *
  * Delete competence, activity associations
  */
-function block_exacomp_delete_competences_activities(){
+function block_exacomp_delete_competences_activities() {
 	global $COURSE, $DB;
 
-	$cmodules = $DB->get_records('course_modules', array('course'=>$COURSE->id));
+	$cmodules = $DB->get_records('course_modules', array('course' => $COURSE->id));
 
-	foreach($cmodules as $cm){
-		$DB->delete_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array('activityid'=>$cm->id, 'eportfolioitem'=>0));
+	foreach ($cmodules as $cm) {
+		$DB->delete_records(BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY, array('activityid' => $cm->id, 'eportfolioitem' => 0));
 	}
 }
+
 /**
  * Get activity for particular competence
  * @param unknown_type $descid
@@ -2806,8 +2982,8 @@ function block_exacomp_get_activities($compid, $courseid = null, $comptype = BLO
 
 	$condition = array($compid, $comptype);
 
-	if ($courseid){
-		$query.=" AND a.course=?";
+	if ($courseid) {
+		$query .= " AND a.course=?";
 		$condition = array($compid, $comptype, $courseid);
 	}
 
@@ -2815,17 +2991,20 @@ function block_exacomp_get_activities($compid, $courseid = null, $comptype = BLO
 	if (!$activities) {
 		$activities = array();
 	}
+
 	return $activities;
 }
+
 /**
  * Get activities avaiable in current course
  * @param unknown $courseid
  */
-function block_exacomp_get_activities_by_course($courseid){
+function block_exacomp_get_activities_by_course($courseid) {
 	global $DB;
 	$query = 'SELECT DISTINCT mm.activityid as id, mm.activitytitle as title FROM {'.BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY.'} mm
 		INNER JOIN {course_modules} a ON a.id=mm.activityid
 		WHERE a.course = ? AND mm.eportfolioitem=0';
+
 	return $DB->get_records_sql($query, array($courseid));
 }
 
@@ -2948,28 +3127,31 @@ function block_exacomp_get_niveaus_for_subject($subjectid) {
 				(SELECT id FROM {".BLOCK_EXACOMP_DB_TOPICS."} WHERE subjid=?)
 			AND d.niveauid > 0 AND d.niveauid = n.id order by n.sorting, n.id";
 
-	return $DB->get_records_sql_menu($niveaus,array($subjectid));
+	return $DB->get_records_sql_menu($niveaus, array($subjectid));
 }
+
 /**
  * get all avaiable niveaus within full competence tree
  * @param unknown $subject_tree
  */
-function block_exacomp_extract_niveaus($subject_tree){
+function block_exacomp_extract_niveaus($subject_tree) {
 	global $DB;
 	$niveaus = array();
 
-	foreach($subject_tree as $subject){
-		foreach ($subject->topics as $topic){
-			if(isset($topic->descriptors)){
-				foreach($topic->descriptors as $descriptor){
-					if($descriptor->niveauid > 0){
-						if(!isset($niveaus[$descriptor->niveauid]))
-							$niveaus[$descriptor->niveauid] = $DB->get_record(BLOCK_EXACOMP_DB_NIVEAUS, array('id'=>$descriptor->niveauid));
+	foreach ($subject_tree as $subject) {
+		foreach ($subject->topics as $topic) {
+			if (isset($topic->descriptors)) {
+				foreach ($topic->descriptors as $descriptor) {
+					if ($descriptor->niveauid > 0) {
+						if (!isset($niveaus[$descriptor->niveauid])) {
+							$niveaus[$descriptor->niveauid] = $DB->get_record(BLOCK_EXACOMP_DB_NIVEAUS, array('id' => $descriptor->niveauid));
+						}
 					}
 				}
 			}
 		}
 	}
+
 	return $niveaus;
 }
 
@@ -2979,42 +3161,45 @@ function block_exacomp_extract_niveaus($subject_tree){
  * @param unknown_type $tree
  * @param unknown_type $niveaus
  */
-function block_exacomp_filter_niveaus(&$tree, $niveaus){
-	if(!empty($niveaus) && !in_array(0, $niveaus)){
+function block_exacomp_filter_niveaus(&$tree, $niveaus) {
+	if (!empty($niveaus) && !in_array(0, $niveaus)) {
 		//go through tree and unset every subject, topic and descriptor where niveau is not in selected niveaus
-		foreach($tree as $subject){
+		foreach ($tree as $subject) {
 			//traverse recursively, because of possible topic-children
 			$subject_has_niveaus = block_exacomp_filter_niveaus_topics($subject->topics, $niveaus);
 
-			if(!$subject_has_niveaus)
+			if (!$subject_has_niveaus) {
 				unset($tree[$subject->id]);
+			}
 		}
 	}
 }
+
 /**
  * helper function to traverse through tree recursively, because of endless topic children
  * and unset every node where descriptor doesn't fit to niveaus
  */
-function block_exacomp_filter_niveaus_topics($subs, $niveaus){
+function block_exacomp_filter_niveaus_topics($subs, $niveaus) {
 	$sub_has_niveaus = false;
 	// $sub_topics_have_niveaus = false;
-	foreach($subs as $topic){
+	foreach ($subs as $topic) {
 		$topic_has_niveaus = false;
-		if(isset($topic->descriptors)){
-			foreach($topic->descriptors as $descriptor){
-				if(!in_array($descriptor->niveauid, $niveaus)){
+		if (isset($topic->descriptors)) {
+			foreach ($topic->descriptors as $descriptor) {
+				if (!in_array($descriptor->niveauid, $niveaus)) {
 					unset($topic->descriptors[$descriptor->id]);
-				}
-				else{
+				} else {
 					$sub_has_niveaus = true;
 					$topic_has_niveaus = true;
 				}
 			}
 		}
 
-		if (!$topic_has_niveaus)
+		if (!$topic_has_niveaus) {
 			unset($subs[$topic->id]);
+		}
 	}
+
 	return $sub_has_niveaus;
 }
 
@@ -3024,28 +3209,50 @@ function block_exacomp_filter_niveaus_topics($subs, $niveaus){
 function block_exacomp_truncate_all_data() {
 	global $DB;
 
-	$sql = "TRUNCATE {block_exacompcategories}"; $DB->execute($sql);
-	$sql = "TRUNCATE {block_exacompcompactiv_mm}"; $DB->execute($sql);
-	$sql = "TRUNCATE {block_exacompcompuser}"; $DB->execute($sql);
-	$sql = "TRUNCATE {block_exacompcompuser_mm}"; $DB->execute($sql);
-	$sql = "TRUNCATE {block_exacompcoutopi_mm}"; $DB->execute($sql);
-	$sql = "TRUNCATE {block_exacompdescbadge_mm}"; $DB->execute($sql);
-	$sql = "TRUNCATE {block_exacompdescrexamp_mm}"; $DB->execute($sql);
-	$sql = "TRUNCATE {block_exacompdescriptors}"; $DB->execute($sql);
-	$sql = "TRUNCATE {block_exacompdescrtopic_mm}"; $DB->execute($sql);
-	$sql = "TRUNCATE {block_exacompedulevels}"; $DB->execute($sql);
-	$sql = "TRUNCATE {block_exacompexameval}"; $DB->execute($sql);
-	$sql = "TRUNCATE {block_exacompexamples}"; $DB->execute($sql);
-	$sql = "TRUNCATE {block_exacompmdltype_mm}"; $DB->execute($sql);
-	$sql = "TRUNCATE {block_exacompniveaus}"; $DB->execute($sql);
-	$sql = "TRUNCATE {block_exacompprofilesettings}"; $DB->execute($sql);
-	$sql = "TRUNCATE {block_exacompschooltypes}"; $DB->execute($sql);
-	$sql = "TRUNCATE {block_exacompsettings}"; $DB->execute($sql);
-	$sql = "TRUNCATE {block_exacompskills}"; $DB->execute($sql);
-	$sql = "TRUNCATE {block_exacompsubjects}"; $DB->execute($sql);
-	$sql = "TRUNCATE {block_exacomptaxonomies}"; $DB->execute($sql);
-	$sql = "TRUNCATE {block_exacomptopics}"; $DB->execute($sql);
-	$sql = "TRUNCATE {block_exacompdatasources}"; $DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompcategories}";
+	$DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompcompactiv_mm}";
+	$DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompcompuser}";
+	$DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompcompuser_mm}";
+	$DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompcoutopi_mm}";
+	$DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompdescbadge_mm}";
+	$DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompdescrexamp_mm}";
+	$DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompdescriptors}";
+	$DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompdescrtopic_mm}";
+	$DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompedulevels}";
+	$DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompexameval}";
+	$DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompexamples}";
+	$DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompmdltype_mm}";
+	$DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompniveaus}";
+	$DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompprofilesettings}";
+	$DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompschooltypes}";
+	$DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompsettings}";
+	$DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompskills}";
+	$DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompsubjects}";
+	$DB->execute($sql);
+	$sql = "TRUNCATE {block_exacomptaxonomies}";
+	$DB->execute($sql);
+	$sql = "TRUNCATE {block_exacomptopics}";
+	$DB->execute($sql);
+	$sql = "TRUNCATE {block_exacompdatasources}";
+	$DB->execute($sql);
 
 	// TODO: tabellen block_exacompdescrvisibility, block_exacompitemexample, block_exacompschedule gehören auch gelöscht?
 }
@@ -3053,16 +3260,17 @@ function block_exacomp_truncate_all_data() {
 /**
  * checks is block Exabis Eportfolio is installed
  */
-function block_exacomp_exaportexists(){
+function block_exacomp_exaportexists() {
 	global $DB;
-	return $DB->get_record('block',array('name'=>'exaport'));
+
+	return $DB->get_record('block', array('name' => 'exaport'));
 }
 
 /**
  * checks if block Exabis Studentreview is installed
  * @return boolean
  */
-function block_exacomp_is_exastud_installed(){
+function block_exacomp_is_exastud_installed() {
 	return class_exists('\block_exastud\api') && \block_exastud\api::active();
 }
 
@@ -3089,17 +3297,18 @@ function block_exacomp_get_exastud_periods_current_and_past_periods() {
  * @param number $userid
  * @return \block_exacomp\stdClass
  */
-function block_exacomp_get_profile_settings($userid = 0){
+function block_exacomp_get_profile_settings($userid = 0) {
 	global $USER, $DB;
 
-	if($userid == 0)
+	if ($userid == 0) {
 		$userid = $USER->id;
+	}
 
 	$profile_settings = new stdClass();
 
 	$profile_settings->exacomp = array();
-	$exacomp_settings = $DB->get_records(BLOCK_EXACOMP_DB_PROFILESETTINGS, array('block'=>'exacomp', 'userid'=>$userid));
-	foreach($exacomp_settings as $setting){
+	$exacomp_settings = $DB->get_records(BLOCK_EXACOMP_DB_PROFILESETTINGS, array('block' => 'exacomp', 'userid' => $userid));
+	foreach ($exacomp_settings as $setting) {
 		$profile_settings->exacomp[$setting->itemid] = $setting;
 	}
 
@@ -3110,9 +3319,9 @@ function block_exacomp_get_profile_settings($userid = 0){
  * reset profile settings
  * @param unknown $userid
  */
-function block_exacomp_reset_profile_settings($userid){
+function block_exacomp_reset_profile_settings($userid) {
 	global $DB;
-	$DB->delete_records(BLOCK_EXACOMP_DB_PROFILESETTINGS, array('userid'=>$userid));
+	$DB->delete_records(BLOCK_EXACOMP_DB_PROFILESETTINGS, array('userid' => $userid));
 }
 
 /**
@@ -3121,13 +3330,13 @@ function block_exacomp_reset_profile_settings($userid){
  * @param unknown $userid
  * @param unknown $courses
  */
-function block_exacomp_set_profile_settings($userid, $courses){
+function block_exacomp_set_profile_settings($userid, $courses) {
 	global $DB;
 
 	block_exacomp_reset_profile_settings($userid);
 
 	//save courses
-	foreach($courses as $course){
+	foreach ($courses as $course) {
 		$insert = new stdClass();
 		$insert->block = 'exacomp';
 		$insert->itemid = $course;
@@ -3137,18 +3346,19 @@ function block_exacomp_set_profile_settings($userid, $courses){
 		$DB->insert_record(BLOCK_EXACOMP_DB_PROFILESETTINGS, $insert);
 	}
 }
+
 /**
  * initialize user profile settings
  * @param unknown $courses
  * @param unknown $userid
  */
-function block_exacomp_init_profile($courses, $userid){
+function block_exacomp_init_profile($courses, $userid) {
 	global $DB;
 
-	$record = $DB->get_records(BLOCK_EXACOMP_DB_PROFILESETTINGS, array('userid'=>$userid));
-	if(!$record){
+	$record = $DB->get_records(BLOCK_EXACOMP_DB_PROFILESETTINGS, array('userid' => $userid));
+	if (!$record) {
 		block_exacomp_reset_profile_settings($userid);
-		foreach($courses as $course){
+		foreach ($courses as $course) {
 			$insert = new stdClass();
 			$insert->block = 'exacomp';
 			$insert->itemid = $course->id;
@@ -3168,14 +3378,16 @@ function block_exacomp_init_profile($courses, $userid){
  * @param unknown $scheme
  * @return boolean
  */
-function block_exacomp_set_tipp($compid, $user, $type, $scheme){
+function block_exacomp_set_tipp($compid, $user, $type, $scheme) {
 	//$user_information = block_exacomp_get_user_information_by_course($user, $COURSE->id);
 
 	$show_tipp = false;
-	foreach($user->{$type}->activities as $activity){
-		if(isset($activity->teacher[$compid]) && $activity->teacher[$compid]>= ceil($scheme/2) )
+	foreach ($user->{$type}->activities as $activity) {
+		if (isset($activity->teacher[$compid]) && $activity->teacher[$compid] >= ceil($scheme / 2)) {
 			$show_tipp = true;
+		}
 	}
+
 	return $show_tipp;
 }
 
@@ -3188,7 +3400,7 @@ function block_exacomp_set_tipp($compid, $user, $type, $scheme){
  * @param unknown $comptype
  * @return string
  */
-function block_exacomp_get_tipp_string($compid, $user, $scheme, $type, $comptype){
+function block_exacomp_get_tipp_string($compid, $user, $scheme, $type, $comptype) {
 	global $COURSE;
 	$activities = block_exacomp_get_activities($compid, $COURSE->id, $comptype);
 	$user_information = block_exacomp_get_user_information_by_course($user, $COURSE->id);
@@ -3196,44 +3408,48 @@ function block_exacomp_get_tipp_string($compid, $user, $scheme, $type, $comptype
 	$gained = 0;
 	$total = count($activities);
 
-	foreach($activities as $activity){
-		if(isset($user_information->{$type}->activities[$activity->id]->teacher[$compid])
-			&& $user_information->{$type}->activities[$activity->id]->teacher[$compid] >= ceil($scheme/2)){
-				$gained++;
+	foreach ($activities as $activity) {
+		if (isset($user_information->{$type}->activities[$activity->id]->teacher[$compid])
+			&& $user_information->{$type}->activities[$activity->id]->teacher[$compid] >= ceil($scheme / 2)
+		) {
+			$gained++;
 		}
 	}
 
 	return block_exacomp_get_string('teacher_tipp_1').$total.block_exacomp_get_string('teacher_tipp_2').$gained.block_exacomp_get_string('teacher_tipp_3');
 }
+
 /**
  *
  * Gets tree with schooltype on highest level
  * @param unknown_type $courseid
  */
-function block_exacomp_build_schooltype_tree_for_courseselection($limit_courseid){
+function block_exacomp_build_schooltype_tree_for_courseselection($limit_courseid) {
 	$schooltypes = block_exacomp_get_schooltypes_by_course($limit_courseid);
 
-	foreach($schooltypes as $schooltype){
+	foreach ($schooltypes as $schooltype) {
 		$schooltype->subjects = block_exacomp_get_subjects_for_schooltype($limit_courseid, $schooltype->id);
 	}
 
 	return $schooltypes;
 }
+
 /**
  * This function is used for ePop, to test for the latest db update.
  * It is used after every xml import and every example upload.
  */
-function block_exacomp_settstamp(){
+function block_exacomp_settstamp() {
 	global $DB;
 
-	$modsetting = $DB->get_record('block_exacompsettings', array('courseid'=>0,'activities'=>'importxml'));
-	if ($modsetting){
+	$modsetting = $DB->get_record('block_exacompsettings', array('courseid' => 0, 'activities' => 'importxml'));
+	if ($modsetting) {
 		$modsetting->tstamp = time();
 		$DB->update_record('block_exacompsettings', $modsetting);
-	}else{
-		$DB->insert_record('block_exacompsettings',array("courseid" => 0,"grading"=>"0","activities"=>"importxml","tstamp"=>time()));
+	} else {
+		$DB->insert_record('block_exacompsettings', array("courseid" => 0, "grading" => "0", "activities" => "importxml", "tstamp" => time()));
 	}
 }
+
 /**
  * This function checkes for finished quizes that are associated with competences and automatically gains them if the
  * coresponding setting is activated.
@@ -3244,13 +3460,14 @@ function block_exacomp_perform_auto_test() {
 	$autotest = get_config('exacomp', 'autotest');
 	$testlimit = get_config('exacomp', 'testlimit');
 
-	if(!$autotest)
+	if (!$autotest) {
 		return;
+	}
 
 	//for all courses where exacomp is used
 	$courses = block_exacomp_get_courseids();
 
-	foreach($courses as $courseid){
+	foreach ($courses as $courseid) {
 		//tests associated with competences
 		//get all tests that are associated with competences
 		$tests = block_exacomp_get_active_tests_by_course($courseid);
@@ -3259,49 +3476,48 @@ function block_exacomp_perform_auto_test() {
 		$grading_scheme = block_exacomp_get_grading_scheme($courseid);
 
 		//get student grading for each test
-		foreach($students as $student){
-			foreach($tests as $test){
+		foreach ($students as $student) {
+			foreach ($tests as $test) {
 				//get grading for each test and assign topics and descriptors
-				$quiz = $DB->get_record('quiz_grades', array('quiz'=>$test->id, 'userid'=>$student->id));
+				$quiz = $DB->get_record('quiz_grades', array('quiz' => $test->id, 'userid' => $student->id));
 				$quiz_assignment = $DB->get_record(BLOCK_EXACOMP_DB_AUTOTESTASSIGN, array('quiz' => $test->id, 'userid' => $student->id));
 
 				// assign competencies if test is successfully completed AND test grade update since last auto assign
-				if(isset($quiz->grade) && (floatval($test->grade)*(floatval($testlimit)/100)) <= $quiz->grade && (!$quiz_assignment || $quiz_assignment->timemodified < $quiz->timemodified)){
+				if (isset($quiz->grade) && (floatval($test->grade) * (floatval($testlimit) / 100)) <= $quiz->grade && (!$quiz_assignment || $quiz_assignment->timemodified < $quiz->timemodified)) {
 					//assign competences to student
-					if(isset($test->descriptors)){
-						foreach($test->descriptors as $descriptor){
-							if(block_exacomp_additional_grading()){
+					if (isset($test->descriptors)) {
+						foreach ($test->descriptors as $descriptor) {
+							if (block_exacomp_additional_grading()) {
 								block_exacomp_save_additional_grading_for_descriptor($courseid, $descriptor->compid, $student->id,
-								\block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 0);
+									\block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 0);
 							}
 
 							block_exacomp_set_user_competence($student->id, $descriptor->compid,
-									0, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
+								0, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
 							mtrace("set competence ".$descriptor->compid." for user ".$student->id.'<br>');
 						}
 					}
-					if(isset($test->topics)){
-						foreach($test->topics as $topic){
-							if(block_exacomp_additional_grading() && block_exacomp_is_topicgrading_enabled()){
+					if (isset($test->topics)) {
+						foreach ($test->topics as $topic) {
+							if (block_exacomp_additional_grading() && block_exacomp_is_topicgrading_enabled()) {
 								block_exacomp_save_additional_grading_for_descriptor($courseid, $descriptor->compid, $student->id,
-								\block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 1);
+									\block_exacomp\global_config::get_value_additionalinfo_mapping($grading_scheme), $comptype = 1);
 							}
 
 							block_exacomp_set_user_competence($student->id, $topic->compid,
-									1, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
+								1, $courseid, BLOCK_EXACOMP_ROLE_TEACHER, $grading_scheme);
 							mtrace("set topic competence ".$topic->compid." for user ".$student->id.'<br>');
 
 						}
 					}
 
-					if(!$quiz_assignment) {
+					if (!$quiz_assignment) {
 						$quiz_assignment = new \stdClass();
 						$quiz_assignment->quiz = $test->id;
 						$quiz_assignment->userid = $student->id;
 						$quiz_assignment->timemodified = $quiz->timemodified;
 						$DB->insert_record(BLOCK_EXACOMP_DB_AUTOTESTASSIGN, $quiz_assignment);
-					}
-					else {
+					} else {
 						$quiz_assignment->timemodified = $quiz->timemodified;
 						$DB->update_record(BLOCK_EXACOMP_DB_AUTOTESTASSIGN, $quiz_assignment);
 					}
@@ -3309,43 +3525,48 @@ function block_exacomp_perform_auto_test() {
 			}
 		}
 	}
+
 	return true;
 }
+
 /**
  *
  * check if there are already evaluations available
  * @param unknown_type $courseid
  */
-function block_exacomp_check_user_evaluation_exists($courseid){
+function block_exacomp_check_user_evaluation_exists($courseid) {
 	$students = block_exacomp_get_students_by_course($courseid);
-	foreach($students as $student){
-		$info =  block_exacomp_get_user_competences_by_course($student, $courseid);
+	foreach ($students as $student) {
+		$info = block_exacomp_get_user_competences_by_course($student, $courseid);
 
-		if(!empty($info->competencies->teacher) || !empty($info->comptencies->student))
+		if (!empty($info->competencies->teacher) || !empty($info->comptencies->student)) {
 			return true;
+		}
 	}
+
 	return false;
 }
+
 /**
  * build a schooltype -> subjects tree with given subjects
  * @param unknown_type $subjects
  * @return tree like:
  *  schooltype1
- *	  - subject 1
- *	  - subject 2
+ *      - subject 1
+ *      - subject 2
  *  schooltype2
- *	  - subject 3
+ *      - subject 3
  */
-function block_exacomp_get_schooltypetree_by_topics($subjects, $competencegrid = false){
+function block_exacomp_get_schooltypetree_by_topics($subjects, $competencegrid = false) {
 	$tree = array();
-	foreach($subjects as $subject){
-		if(!$competencegrid) {
+	foreach ($subjects as $subject) {
+		if (!$competencegrid) {
 			$schooltype = \block_exacomp\subject::get($subject->subjid);
-		}
-		else
+		} else {
 			$schooltype = block_exacomp_get_schooltype_by_subject($subject);
+		}
 
-		if(!array_key_exists($schooltype->id, $tree)){
+		if (!array_key_exists($schooltype->id, $tree)) {
 			$tree[$schooltype->id] = new stdClass();
 			$tree[$schooltype->id]->id = $schooltype->id;
 			$tree[$schooltype->id]->title = $schooltype->title;
@@ -3362,65 +3583,70 @@ function block_exacomp_get_schooltypetree_by_topics($subjects, $competencegrid =
  * get all crosssubjects, submitted as drafts, available in all courses
  * @return block_exacomp\cross_subject[]
  */
-function block_exacomp_get_cross_subjects_drafts(){
-	return block_exacomp\cross_subject::get_objects(array('courseid'=>0));
+function block_exacomp_get_cross_subjects_drafts() {
+	return block_exacomp\cross_subject::get_objects(array('courseid' => 0));
 }
+
 /**
  *
  * save the given drafts to course
  * @param array $drafts_to_save
  * @param int $courseid
  */
-function block_exacomp_save_drafts_to_course($drafts_to_save, $courseid){
+function block_exacomp_save_drafts_to_course($drafts_to_save, $courseid) {
 	//TODO test TOPICVISIBILITY
 	global $DB, $USER;
 	$redirect_crosssubjid = 0;
-	foreach($drafts_to_save as $draftid){
-		$draft = $DB->get_record(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id'=>$draftid));
+	foreach ($drafts_to_save as $draftid) {
+		$draft = $DB->get_record(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id' => $draftid));
 		$draft->courseid = $courseid;
 		$draft->creatorid = $USER->id;
 		$draft->sourceid = 0;
 		$draft->source = BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC;
 		$crosssubjid = $DB->insert_record(BLOCK_EXACOMP_DB_CROSSSUBJECTS, $draft);
 
-		if($redirect_crosssubjid == 0) $redirect_crosssubjid = $crosssubjid;
+		if ($redirect_crosssubjid == 0) {
+			$redirect_crosssubjid = $crosssubjid;
+		}
 
 		//assign competencies
-		$comps = $DB->get_records(BLOCK_EXACOMP_DB_DESCCROSS, array('crosssubjid'=>$draftid));
-		foreach($comps as $comp){
+		$comps = $DB->get_records(BLOCK_EXACOMP_DB_DESCCROSS, array('crosssubjid' => $draftid));
+		foreach ($comps as $comp) {
 			$insert = new stdClass();
 			$insert->descrid = $comp->descrid;
 			$insert->crosssubjid = $crosssubjid;
 			$DB->insert_record(BLOCK_EXACOMP_DB_DESCCROSS, $insert);
 
 			//cross course subjects -> insert in visibility table if not existing
-			$visibility = $DB->get_record(BLOCK_EXACOMP_DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$comp->descrid, 'studentid'=>0));
-			if(!$visibility){
+			$visibility = $DB->get_record(BLOCK_EXACOMP_DB_DESCVISIBILITY, array('courseid' => $courseid, 'descrid' => $comp->descrid, 'studentid' => 0));
+			if (!$visibility) {
 				$insert = new stdClass();
 				$insert->courseid = $courseid;
 				$insert->descrid = $comp->descrid;
-				$insert->studentid=0;
+				$insert->studentid = 0;
 				$insert->visible = 1;
 				$DB->insert_record(BLOCK_EXACOMP_DB_DESCVISIBILITY, $insert);
 			}
 
 			//check if descriptor has parent and if parent is visible in course
-			$descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id'=>$comp->descrid));
-			if($descriptor->parentid != 0){ //has parent
-					$parent_visibility = $DB->get_record(BLOCK_EXACOMP_DB_DESCVISIBILITY, array('courseid'=>$courseid, 'descrid'=>$descriptor->parentid, 'studentid'=>0));
-					if(!$parent_visibility){ //not visible insert in table
-						$insert = new stdClass();
-						$insert->courseid = $courseid;
-						$insert->descrid = $descriptor->parentid;
-						$insert->studentid=0;
-						$insert->visible = 1;
-						$DB->insert_record(BLOCK_EXACOMP_DB_DESCVISIBILITY, $insert);
-					}
+			$descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id' => $comp->descrid));
+			if ($descriptor->parentid != 0) { //has parent
+				$parent_visibility = $DB->get_record(BLOCK_EXACOMP_DB_DESCVISIBILITY, array('courseid' => $courseid, 'descrid' => $descriptor->parentid, 'studentid' => 0));
+				if (!$parent_visibility) { //not visible insert in table
+					$insert = new stdClass();
+					$insert->courseid = $courseid;
+					$insert->descrid = $descriptor->parentid;
+					$insert->studentid = 0;
+					$insert->visible = 1;
+					$DB->insert_record(BLOCK_EXACOMP_DB_DESCVISIBILITY, $insert);
+				}
 			}
 		}
 	}
+
 	return $redirect_crosssubjid;
 }
+
 /**
  * create new crosssubject in course
  * @param unknown $courseid
@@ -3429,7 +3655,7 @@ function block_exacomp_save_drafts_to_course($drafts_to_save, $courseid){
  * @param unknown $creatorid
  * @param number $subjectid
  */
-function block_exacomp_create_crosssub($courseid, $title, $description, $creatorid, $subjectid=0){
+function block_exacomp_create_crosssub($courseid, $title, $description, $creatorid, $subjectid = 0) {
 	global $DB;
 
 	$insert = new stdClass();
@@ -3440,8 +3666,10 @@ function block_exacomp_create_crosssub($courseid, $title, $description, $creator
 	$insert->subjectid = $subjectid;
 	$insert->sourceid = 0;
 	$insert->source = BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC;
+
 	return $DB->insert_record(BLOCK_EXACOMP_DB_CROSSSUBJECTS, $insert);
 }
+
 /**
  * update title, description or subjectid of crosssubject
  * @param unknown $crosssubjid
@@ -3449,39 +3677,44 @@ function block_exacomp_create_crosssub($courseid, $title, $description, $creator
  * @param unknown $description
  * @param unknown $subjectid
  */
-function block_exacomp_edit_crosssub($crosssubjid, $title, $description, $subjectid){
+function block_exacomp_edit_crosssub($crosssubjid, $title, $description, $subjectid) {
 	global $DB;
 
-	$crosssubj = $DB->get_record(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id'=>$crosssubjid));
+	$crosssubj = $DB->get_record(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id' => $crosssubjid));
 	$crosssubj->title = $title;
 	$crosssubj->description = $description;
 	$crosssubj->subjectid = $subjectid;
+
 	return $DB->update_record(BLOCK_EXACOMP_DB_CROSSSUBJECTS, $crosssubj);
 }
+
 /**
  * remove given crosssubject
  * @param unknown $crosssubjid
  */
-function block_exacomp_delete_crosssub($crosssubjid){
+function block_exacomp_delete_crosssub($crosssubjid) {
 	global $DB;
 	//delete student association if crosssubject is deleted
-	$DB->delete_records(BLOCK_EXACOMP_DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid));
-	return $DB->delete_records(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id'=>$crosssubjid));
+	$DB->delete_records(BLOCK_EXACOMP_DB_CROSSSTUD, array('crosssubjid' => $crosssubjid));
+
+	return $DB->delete_records(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id' => $crosssubjid));
 }
+
 /**
  * delete drafts for all users in all courses
  * @param unknown $drafts_to_delete
  */
-function block_exacomp_delete_crosssubject_drafts($drafts_to_delete){
+function block_exacomp_delete_crosssubject_drafts($drafts_to_delete) {
 	global $DB;
-	foreach($drafts_to_delete as $draftid){
-		$DB->delete_records(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id'=>$draftid));
+	foreach ($drafts_to_delete as $draftid) {
+		$DB->delete_records(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id' => $draftid));
 	}
 }
+
 /**
  * returns all crosssubjects
  */
-function block_exacomp_get_crosssubjects(){
+function block_exacomp_get_crosssubjects() {
 	return g::$DB->get_records(BLOCK_EXACOMP_DB_CROSSSUBJECTS);
 }
 
@@ -3490,8 +3723,8 @@ function block_exacomp_get_crosssubjects(){
  * @param null $studentid
  * @return block_exacomp\cross_subject[]
  */
-function block_exacomp_get_cross_subjects_by_course($courseid, $studentid=null){
-	$crosssubs = block_exacomp\cross_subject::get_objects(['courseid'=>$courseid], 'title');
+function block_exacomp_get_cross_subjects_by_course($courseid, $studentid = null) {
+	$crosssubs = block_exacomp\cross_subject::get_objects(['courseid' => $courseid], 'title');
 
 	if (!$studentid) {
 		return $crosssubs;
@@ -3499,20 +3732,24 @@ function block_exacomp_get_cross_subjects_by_course($courseid, $studentid=null){
 
 	// also check for student permissions
 	$crosssubs_shared = array();
-	foreach($crosssubs as $crosssubj){
-		if ($crosssubj->shared == 1 || block_exacomp_student_crosssubj($crosssubj->id, $studentid))
+	foreach ($crosssubs as $crosssubj) {
+		if ($crosssubj->shared == 1 || block_exacomp_student_crosssubj($crosssubj->id, $studentid)) {
 			$crosssubs_shared[$crosssubj->id] = $crosssubj;
+		}
 	}
+
 	return $crosssubs_shared;
 }
+
 /**
  * check crosssubject student association
  * @param unknown $crosssubjid
  * @param unknown $studentid
  */
-function block_exacomp_student_crosssubj($crosssubjid, $studentid){
+function block_exacomp_student_crosssubj($crosssubjid, $studentid) {
 	global $DB;
-	return $DB->get_records(BLOCK_EXACOMP_DB_CROSSSTUD, array('crosssubjid'=>$crosssubjid, 'studentid'=>$studentid));
+
+	return $DB->get_records(BLOCK_EXACOMP_DB_CROSSSTUD, array('crosssubjid' => $crosssubjid, 'studentid' => $studentid));
 }
 
 /**
@@ -3558,7 +3795,7 @@ function block_exacomp_get_competence_tree_for_cross_subject($courseid, $cross_s
 		$subject = $subjects[$topic->subjid] = $allSubjects[$topic->subjid];
 		$subject->topics[$topic->id] = $topic;
 
-		if ($showonlyvisibletopics && !block_exacomp_is_topic_visible($courseid, $topic, $studentid)){
+		if ($showonlyvisibletopics && !block_exacomp_is_topic_visible($courseid, $topic, $studentid)) {
 			continue;
 		}
 
@@ -3570,7 +3807,7 @@ function block_exacomp_get_competence_tree_for_cross_subject($courseid, $cross_s
 }
 
 function block_exacomp_get_descriptors_assigned_to_cross_subject($crosssubjid) {
-	 return g::$DB->get_records_sql("
+	return g::$DB->get_records_sql("
 		SELECT d.*
 		FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d
 		JOIN {".BLOCK_EXACOMP_DB_DESCCROSS."} dc ON d.id = dc.descrid
@@ -3585,7 +3822,7 @@ function block_exacomp_get_descriptors_assigned_to_cross_subject($crosssubjid) {
  * @param string $showalldescriptors
  * @return unknown
  */
-function block_exacomp_get_descriptors_for_cross_subject($courseid, $cross_subject, $showalldescriptors = null){
+function block_exacomp_get_descriptors_for_cross_subject($courseid, $cross_subject, $showalldescriptors = null) {
 	global $DB;
 
 	$crosssubjid = is_scalar($cross_subject) ? $cross_subject : $cross_subject->id;
@@ -3608,15 +3845,16 @@ function block_exacomp_get_descriptors_for_cross_subject($courseid, $cross_subje
 	}
 	*/
 
-	if($showalldescriptors === null)
+	if ($showalldescriptors === null) {
 		$showalldescriptors = block_exacomp_get_settings_by_course($courseid)->show_all_descriptors;
+	}
 
 	$sql = 'SELECT DISTINCT desctopmm.id as u_id, d.id as id, d.source, d.title, d.niveauid, t.id AS topicid, d.profoundness, d.sorting, d.parentid, n.sorting as niveau '
-	.'FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t '
-	.'JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
-	.'JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid = 0 '
-	.'LEFT JOIN {'.BLOCK_EXACOMP_DB_NIVEAUS.'} n ON n.id = d.niveauid '
-	.'WHERE d.id IN('.join(',', $searchDescriptorIds).')';
+		.'FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t '
+		.'JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} desctopmm ON desctopmm.topicid=t.id '
+		.'JOIN {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d ON desctopmm.descrid=d.id AND d.parentid = 0 '
+		.'LEFT JOIN {'.BLOCK_EXACOMP_DB_NIVEAUS.'} n ON n.id = d.niveauid '
+		.'WHERE d.id IN('.join(',', $searchDescriptorIds).')';
 
 	$descriptors = \block_exacomp\descriptor::get_objects_sql($sql);
 
@@ -3676,16 +3914,17 @@ function block_exacomp_get_subjects_for_cross_subject($cross_subject) {
  * @param unknown $crosssubjid
  * @param unknown $descrid
  */
-function block_exacomp_set_cross_subject_descriptor($crosssubjid,$descrid) {
+function block_exacomp_set_cross_subject_descriptor($crosssubjid, $descrid) {
 	global $DB, $COURSE;
-	$record = $DB->get_record(BLOCK_EXACOMP_DB_DESCCROSS,array('crosssubjid'=>$crosssubjid,'descrid'=>$descrid));
-	if(!$record)
-		$DB->insert_record(BLOCK_EXACOMP_DB_DESCCROSS,array('crosssubjid'=>$crosssubjid,'descrid'=>$descrid));
+	$record = $DB->get_record(BLOCK_EXACOMP_DB_DESCCROSS, array('crosssubjid' => $crosssubjid, 'descrid' => $descrid));
+	if (!$record) {
+		$DB->insert_record(BLOCK_EXACOMP_DB_DESCCROSS, array('crosssubjid' => $crosssubjid, 'descrid' => $descrid));
+	}
 
 	//insert visibility if cross course
-	$cross_subject = $DB->get_record(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id'=>$crosssubjid));
-	$visibility = $DB->get_record(BLOCK_EXACOMP_DB_DESCVISIBILITY, array('courseid'=>$cross_subject->courseid, 'descrid'=>$descrid, 'studentid'=>0));
-	if(!$visibility){
+	$cross_subject = $DB->get_record(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id' => $crosssubjid));
+	$visibility = $DB->get_record(BLOCK_EXACOMP_DB_DESCVISIBILITY, array('courseid' => $cross_subject->courseid, 'descrid' => $descrid, 'studentid' => 0));
+	if (!$visibility) {
 		$insert = new stdClass();
 		$insert->courseid = $cross_subject->courseid;
 		$insert->descrid = $descrid;
@@ -3694,18 +3933,18 @@ function block_exacomp_set_cross_subject_descriptor($crosssubjid,$descrid) {
 		$DB->insert_record(BLOCK_EXACOMP_DB_DESCVISIBILITY, $insert);
 	}
 
-	$descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id'=>$descrid));
+	$descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id' => $descrid));
 
-	if($descriptor->parentid == 0){	//insert children into visibility table
+	if ($descriptor->parentid == 0) {    //insert children into visibility table
 		//get topicid
-		$descriptor_topic_mm = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid'=>$descriptor->id));
+		$descriptor_topic_mm = $DB->get_record(BLOCK_EXACOMP_DB_DESCTOPICS, array('descrid' => $descriptor->id));
 		$descriptor->topicid = $descriptor_topic_mm->topicid;
 
 		$children = block_exacomp_get_child_descriptors($descriptor, $COURSE->id);
 
-		foreach($children as $child){
-			$visibility = $DB->get_record(BLOCK_EXACOMP_DB_DESCVISIBILITY, array('courseid'=>$cross_subject->courseid, 'descrid'=>$child->id, 'studentid'=>0));
-			if(!$visibility){
+		foreach ($children as $child) {
+			$visibility = $DB->get_record(BLOCK_EXACOMP_DB_DESCVISIBILITY, array('courseid' => $cross_subject->courseid, 'descrid' => $child->id, 'studentid' => 0));
+			if (!$visibility) {
 				$insert = new stdClass();
 				$insert->courseid = $cross_subject->courseid;
 				$insert->descrid = $child->id;
@@ -3715,9 +3954,9 @@ function block_exacomp_set_cross_subject_descriptor($crosssubjid,$descrid) {
 
 				//insert example visibility if not existent
 				$child = block_exacomp_get_examples_for_descriptor($child, array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), true, $COURSE->id);
-				foreach($child->examples as $example){
-					$record = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid'=>$cross_subject->courseid, 'exampleid'=>$example->id, 'studentid'=>0));
-					if(!$record){
+				foreach ($child->examples as $example) {
+					$record = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid' => $cross_subject->courseid, 'exampleid' => $example->id, 'studentid' => 0));
+					if (!$record) {
 						$insert = new stdClass();
 						$insert->courseid = $cross_subject->courseid;
 						$insert->exampleid = $example->id;
@@ -3728,10 +3967,9 @@ function block_exacomp_set_cross_subject_descriptor($crosssubjid,$descrid) {
 				}
 			}
 		}
-	}
-	else{ //insert parent into visibility table
-		$visibility = $DB->get_record(BLOCK_EXACOMP_DB_DESCVISIBILITY, array('courseid'=>$cross_subject->courseid, 'descrid'=>$descriptor->parentid, 'studentid'=>0));
-		if(!$visibility){
+	} else { //insert parent into visibility table
+		$visibility = $DB->get_record(BLOCK_EXACOMP_DB_DESCVISIBILITY, array('courseid' => $cross_subject->courseid, 'descrid' => $descriptor->parentid, 'studentid' => 0));
+		if (!$visibility) {
 			$insert = new stdClass();
 			$insert->courseid = $cross_subject->courseid;
 			$insert->descrid = $descriptor->parentid;
@@ -3744,9 +3982,9 @@ function block_exacomp_set_cross_subject_descriptor($crosssubjid,$descrid) {
 	//example visibility
 	$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), true, $COURSE->id);
 
-	foreach($descriptor->examples as $example){
-		$record = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid'=>$cross_subject->courseid, 'exampleid'=>$example->id,'studentid'=>0));
-		if(!$record){
+	foreach ($descriptor->examples as $example) {
+		$record = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid' => $cross_subject->courseid, 'exampleid' => $example->id, 'studentid' => 0));
+		if (!$record) {
 			$insert = new stdClass();
 			$insert->courseid = $cross_subject->courseid;
 			$insert->exampleid = $example->id;
@@ -3763,37 +4001,40 @@ function block_exacomp_set_cross_subject_descriptor($crosssubjid,$descrid) {
  * @param unknown $crosssubjid
  * @param unknown $descrid
  */
-function block_exacomp_unset_cross_subject_descriptor($crosssubjid, $descrid){
+function block_exacomp_unset_cross_subject_descriptor($crosssubjid, $descrid) {
 	global $DB, $COURSE;
-	$record = $DB->get_record(BLOCK_EXACOMP_DB_DESCCROSS,array('crosssubjid'=>$crosssubjid,'descrid'=>$descrid));
-	if($record)
-		$DB->delete_records(BLOCK_EXACOMP_DB_DESCCROSS,array('crosssubjid'=>$crosssubjid,'descrid'=>$descrid));
+	$record = $DB->get_record(BLOCK_EXACOMP_DB_DESCCROSS, array('crosssubjid' => $crosssubjid, 'descrid' => $descrid));
+	if ($record) {
+		$DB->delete_records(BLOCK_EXACOMP_DB_DESCCROSS, array('crosssubjid' => $crosssubjid, 'descrid' => $descrid));
+	}
 
 	//delete visibility of non course descriptors, not connected to another course crosssubject
-	$cross_subject = $DB->get_record(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id'=>$crosssubjid));
+	$cross_subject = $DB->get_record(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array('id' => $crosssubjid));
 	$cross_courseid = $cross_subject->courseid;
 
-	if($cross_courseid != $COURSE->id){	//not current course
+	if ($cross_courseid != $COURSE->id) {    //not current course
 		$course_descriptors = block_exacomp_get_descriptors($cross_courseid);
 
-		if(!array_key_exists($descrid, $course_descriptors)){	// no course descriptor -> cross course
-			$descriptor_crosssubs_mm = $DB->get_records(BLOCK_EXACOMP_DB_DESCCROSS, array('descrid'=>$descrid));
+		if (!array_key_exists($descrid, $course_descriptors)) {    // no course descriptor -> cross course
+			$descriptor_crosssubs_mm = $DB->get_records(BLOCK_EXACOMP_DB_DESCCROSS, array('descrid' => $descrid));
 			$course_cross_subjects = block_exacomp_get_cross_subjects_by_course($cross_courseid);
 
 			$used_in_other_crosssub = false;
-			foreach($descriptor_crosssubs_mm as $entry){
-				if($entry->crosssubjid != $cross_subject->id){
-					if(array_key_exists($entry->crosssubjid, $course_cross_subjects))
+			foreach ($descriptor_crosssubs_mm as $entry) {
+				if ($entry->crosssubjid != $cross_subject->id) {
+					if (array_key_exists($entry->crosssubjid, $course_cross_subjects)) {
 						$used_in_other_crosssub = true;
+					}
 				}
 			}
 
-			if(!$used_in_other_crosssub){ // delete visibility if not used in other cross subject in this course
-				$DB->delete_records(BLOCK_EXACOMP_DB_DESCVISIBILITY, array('descrid'=>$descrid, 'courseid'=>$cross_courseid, 'studentid'=>0));
+			if (!$used_in_other_crosssub) { // delete visibility if not used in other cross subject in this course
+				$DB->delete_records(BLOCK_EXACOMP_DB_DESCVISIBILITY, array('descrid' => $descrid, 'courseid' => $cross_courseid, 'studentid' => 0));
 			}
 		}
 	}
 }
+
 /**
  * change descriptor visibility, studentid = 0 : visibility settings for all students
  * @param unknown $descrid
@@ -3801,9 +4042,9 @@ function block_exacomp_unset_cross_subject_descriptor($crosssubjid, $descrid){
  * @param unknown $visible
  * @param unknown $studentid
  */
-function block_exacomp_set_descriptor_visibility($descrid, $courseid, $visible, $studentid){
+function block_exacomp_set_descriptor_visibility($descrid, $courseid, $visible, $studentid) {
 	global $DB;
-	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS || $studentid ==0){//if visibility changed for all: delete individual settings
+	if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS || $studentid == 0) {//if visibility changed for all: delete individual settings
 		$studentid = 0;
 		$sql = "DELETE FROM {".BLOCK_EXACOMP_DB_DESCVISIBILITY."} WHERE descrid = ? AND courseid = ? and studentid <> 0";
 
@@ -3811,12 +4052,13 @@ function block_exacomp_set_descriptor_visibility($descrid, $courseid, $visible, 
 	}
 
 	g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_DESCVISIBILITY,
-		['visible'=>$visible],
-		['descrid'=>$descrid, 'courseid'=>$courseid, 'studentid'=>$studentid]
+		['visible' => $visible],
+		['descrid' => $descrid, 'courseid' => $courseid, 'studentid' => $studentid]
 	);
 
 	block_exacomp_clear_visibility_cache($courseid);
 }
+
 /**
  * change example visibility, studentid = 0: visibility settings for all students
  * @param unknown $exampleid
@@ -3824,20 +4066,21 @@ function block_exacomp_set_descriptor_visibility($descrid, $courseid, $visible, 
  * @param unknown $visible
  * @param unknown $studentid
  */
-function block_exacomp_set_example_visibility($exampleid, $courseid, $visible, $studentid){
-	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS || $studentid == 0){//if visibility changed for all: delete individual settings
+function block_exacomp_set_example_visibility($exampleid, $courseid, $visible, $studentid) {
+	if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS || $studentid == 0) {//if visibility changed for all: delete individual settings
 		$studentid = 0;
 		$sql = "DELETE FROM {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} WHERE exampleid = ? AND courseid = ? and studentid <> 0";
 		g::$DB->execute($sql, array($exampleid, $courseid));
 	}
 
 	g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPVISIBILITY,
-		['visible'=>$visible],
-		['exampleid'=>$exampleid, 'courseid'=>$courseid, 'studentid'=>$studentid]
+		['visible' => $visible],
+		['exampleid' => $exampleid, 'courseid' => $courseid, 'studentid' => $studentid]
 	);
 
 	block_exacomp_clear_visibility_cache($courseid);
 }
+
 /**
  * change example solution visibility, studentid = 0: visibility settings for all students
  * @param unknown $exampleid
@@ -3845,18 +4088,19 @@ function block_exacomp_set_example_visibility($exampleid, $courseid, $visible, $
  * @param unknown $visible
  * @param unknown $studentid
  */
-function block_exacomp_set_example_solution_visibility($exampleid, $courseid, $visible, $studentid){
-	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS || $studentid == 0){//if visibility changed for all: delete individual settings
+function block_exacomp_set_example_solution_visibility($exampleid, $courseid, $visible, $studentid) {
+	if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS || $studentid == 0) {//if visibility changed for all: delete individual settings
 		$studentid = 0;
 		$sql = "DELETE FROM {".BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY."} WHERE exampleid = ? AND courseid = ? and studentid <> 0";
 		g::$DB->execute($sql, array($exampleid, $courseid));
 	}
 
 	g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY,
-		['visible'=>$visible],
-		['exampleid'=>$exampleid, 'courseid'=>$courseid, 'studentid'=>$studentid]
+		['visible' => $visible],
+		['exampleid' => $exampleid, 'courseid' => $courseid, 'studentid' => $studentid]
 	);
 }
+
 /**
  * change topic visibility settings, studentid = 0: visibility settings for all students
  * @param unknown $topicid
@@ -3864,18 +4108,18 @@ function block_exacomp_set_example_solution_visibility($exampleid, $courseid, $v
  * @param unknown $visible
  * @param unknown $studentid
  */
-function block_exacomp_set_topic_visibility($topicid, $courseid, $visible, $studentid){
+function block_exacomp_set_topic_visibility($topicid, $courseid, $visible, $studentid) {
 	global $DB;
-	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS || $studentid ==0){//if visibility changed for all: delete individual settings
+	if ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS || $studentid == 0) {//if visibility changed for all: delete individual settings
 		$studentid = 0;
 		$sql = "DELETE FROM {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} WHERE topicid = ? AND courseid = ? and studentid <> 0";
 
 		$DB->execute($sql, array($topicid, $courseid));
 	}
 	g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_TOPICVISIBILITY,
-			['visible'=>$visible],
-			['topicid'=>$topicid, 'courseid'=>$courseid, 'studentid'=>$studentid]
-			);
+		['visible' => $visible],
+		['topicid' => $topicid, 'courseid' => $courseid, 'studentid' => $studentid]
+	);
 	block_exacomp_clear_visibility_cache($courseid);
 }
 
@@ -3887,27 +4131,33 @@ function block_exacomp_set_topic_visibility($topicid, $courseid, $visible, $stud
  * @param unknown $studentid
  * @return boolean
  */
-function block_exacomp_topic_used($courseid, $topic, $studentid){
+function block_exacomp_topic_used($courseid, $topic, $studentid) {
 	global $DB;
-	if($studentid == 0){
+	if ($studentid == 0) {
 		$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_COMPETENCES."} WHERE courseid = ? AND compid = ? AND comptype=? AND ( value>=0 OR additionalinfo IS NOT NULL)";
 		$records = $DB->get_records_sql($sql, array($courseid, $topic->id, BLOCK_EXACOMP_TYPE_TOPIC));
-		if($records) return true;
-	}else{
+		if ($records) {
+			return true;
+		}
+	} else {
 		$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_COMPETENCES."} WHERE courseid = ? AND compid = ? AND comptype=? AND userid = ? AND ( value>=0 OR additionalinfo IS NOT NULL)";
 		$records = $DB->get_records_sql($sql, array($courseid, $topic->id, BLOCK_EXACOMP_TYPE_TOPIC, $studentid));
-		if($records) return true;
+		if ($records) {
+			return true;
+		}
 	}
 
 	$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $topic->id);
-	foreach($descriptors as $descriptor){
+	foreach ($descriptors as $descriptor) {
 		$descriptor->children = block_exacomp_get_child_descriptors($descriptor, $courseid);
-		if(block_exacomp_descriptor_used($courseid, $descriptor, $studentid))
+		if (block_exacomp_descriptor_used($courseid, $descriptor, $studentid)) {
 			return true;
+		}
 	}
 
 	return false;
 }
+
 /**
  * check if descriptor or underlying object (childdescriptor, example) is used
  * descriptor used: teacher or student evaluation exists
@@ -3916,7 +4166,7 @@ function block_exacomp_topic_used($courseid, $topic, $studentid){
  * @param unknown $studentid
  * @return boolean
  */
-function block_exacomp_descriptor_used($courseid, $descriptor, $studentid){
+function block_exacomp_descriptor_used($courseid, $descriptor, $studentid) {
 	global $DB;
 	//if studentid == 0 used = true, if no evaluation (teacher OR student) for this descriptor for any student in this course
 	//								 if no evaluation/submission for the examples of this descriptor
@@ -3924,31 +4174,38 @@ function block_exacomp_descriptor_used($courseid, $descriptor, $studentid){
 	//if studentid != 0 used = true, if any assignment (teacher OR student) for this descriptor for THIS student in this course
 	//								 if no evaluation/submission for the examples of this descriptor
 
-	if(!isset($descriptor->examples))
+	if (!isset($descriptor->examples)) {
 		$descriptor = block_exacomp_get_examples_for_descriptor($descriptor);
-
-	if($studentid == 0){
-		$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_COMPETENCES."} WHERE courseid = ? AND compid = ? AND comptype=? AND ( value>=0 OR additionalinfo IS NOT NULL)";
-		$records = $DB->get_records_sql($sql, array($courseid, $descriptor->id, BLOCK_EXACOMP_TYPE_DESCRIPTOR));
-		if($records) return true;
-	}else{
-		$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_COMPETENCES."} WHERE courseid = ? AND compid = ? AND comptype=? AND userid = ? AND ( value>=0 OR additionalinfo IS NOT NULL)";
-		$records = $DB->get_records_sql($sql, array($courseid, $descriptor->id, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $studentid));
-		if($records) return true;
 	}
 
-	if(isset($descriptor->children)){
-		//check child used
-		foreach($descriptor->children as $child){
-			if(block_exacomp_descriptor_used($courseid, $child, $studentid))
-				return true;
+	if ($studentid == 0) {
+		$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_COMPETENCES."} WHERE courseid = ? AND compid = ? AND comptype=? AND ( value>=0 OR additionalinfo IS NOT NULL)";
+		$records = $DB->get_records_sql($sql, array($courseid, $descriptor->id, BLOCK_EXACOMP_TYPE_DESCRIPTOR));
+		if ($records) {
+			return true;
+		}
+	} else {
+		$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_COMPETENCES."} WHERE courseid = ? AND compid = ? AND comptype=? AND userid = ? AND ( value>=0 OR additionalinfo IS NOT NULL)";
+		$records = $DB->get_records_sql($sql, array($courseid, $descriptor->id, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $studentid));
+		if ($records) {
+			return true;
 		}
 	}
 
-	if($descriptor->examples){
-		foreach($descriptor->examples as $example){
-			if(block_exacomp_example_used($courseid, $example, $studentid))
+	if (isset($descriptor->children)) {
+		//check child used
+		foreach ($descriptor->children as $child) {
+			if (block_exacomp_descriptor_used($courseid, $child, $studentid)) {
 				return true;
+			}
+		}
+	}
+
+	if ($descriptor->examples) {
+		foreach ($descriptor->examples as $example) {
+			if (block_exacomp_example_used($courseid, $example, $studentid)) {
+				return true;
+			}
 		}
 	}
 
@@ -3964,60 +4221,72 @@ function block_exacomp_descriptor_used($courseid, $descriptor, $studentid){
  * @param unknown $studentid
  * @return boolean
  */
-function block_exacomp_example_used($courseid, $example, $studentid){
+function block_exacomp_example_used($courseid, $example, $studentid) {
 	global $DB;
 	//if studentid == 0 used = true, if no evaluation/submission for this example
 	//if studentid != 0 used = true, if no evaluation/submission for this examples for this student
 
-	if($studentid <= 0){ // any self or teacher evaluation
+	if ($studentid <= 0) { // any self or teacher evaluation
 		$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND teacher_evaluation>= 0";
 		$records = $DB->get_records_sql($sql, array($courseid, $example->id));
-		if($records)
+		if ($records) {
 			return true;
+		}
 
 		$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND student_evaluation>= 0";
 		$records = $DB->get_records_sql($sql, array($courseid, $example->id));
-		if($records) return true;
+		if ($records) {
+			return true;
+		}
 
 		//on any weekly schedule? -> yes: used
-		$onSchedule = $DB->record_exists(BLOCK_EXACOMP_DB_SCHEDULE, array('courseid'=>$courseid, 'exampleid' => $example->id));
-		if($onSchedule)
+		$onSchedule = $DB->record_exists(BLOCK_EXACOMP_DB_SCHEDULE, array('courseid' => $courseid, 'exampleid' => $example->id));
+		if ($onSchedule) {
 			return true;
+		}
 
 		//any submission made?
-		if(block_exacomp_exaportexists()){
+		if (block_exacomp_exaportexists()) {
 			$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_ITEMEXAMPLE."} ie JOIN {".'block_exaportitem'."} i ON ie.itemid = i.id ".
-					"WHERE ie.exampleid = ? AND i.courseid = ?";
+				"WHERE ie.exampleid = ? AND i.courseid = ?";
 			$records = $DB->get_records_sql($sql, array($example->id, $courseid));
-			if($records)
+			if ($records) {
 				return true;
+			}
 		}
-	}else{ // any self or teacher evaluation for this student
+	} else { // any self or teacher evaluation for this student
 		$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND studentid=? AND teacher_evaluation>=0";
 		$records = $DB->get_records_sql($sql, array($courseid, $example->id, $studentid));
-		if($records) return true;
+		if ($records) {
+			return true;
+		}
 
 		$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND studentid = ? AND student_evaluation>=0";
 		$records = $DB->get_records_sql($sql, array($courseid, $example->id, $studentid));
-		if($records) return true;
+		if ($records) {
+			return true;
+		}
 
 		//on students weekly schedule? -> yes: used
-		$onSchedule = $DB->record_exists(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid'=>$studentid, 'courseid'=>$courseid, 'exampleid' => $example->id));
-		if($onSchedule)
+		$onSchedule = $DB->record_exists(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'courseid' => $courseid, 'exampleid' => $example->id));
+		if ($onSchedule) {
 			return true;
+		}
 
 		//or on pre planning storage
-		$onSchedule = $DB->record_exists(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid'=>0, 'courseid'=>$courseid, 'exampleid' => $example->id));
-		if($onSchedule)
+		$onSchedule = $DB->record_exists(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => 0, 'courseid' => $courseid, 'exampleid' => $example->id));
+		if ($onSchedule) {
 			return true;
+		}
 
 		//submission made?
-		if(block_exacomp_exaportexists()){
+		if (block_exacomp_exaportexists()) {
 			$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_ITEMEXAMPLE."} ie JOIN {".'block_exaportitem'."} i ON ie.itemid = i.id ".
-					"WHERE ie.exampleid = ? AND i.userid = ? AND i.courseid = ?";
+				"WHERE ie.exampleid = ? AND i.userid = ? AND i.courseid = ?";
 			$records = $DB->get_records_sql($sql, array($example->id, $studentid, $courseid));
-			if($records)
+			if ($records) {
 				return true;
+			}
 		}
 	}
 
@@ -4030,18 +4299,21 @@ function block_exacomp_example_used($courseid, $example, $studentid){
  * @param unknown $crosssub
  * @return unknown|unknown[]
  */
-function block_exacomp_get_students_for_crosssubject($courseid, $crosssub){
+function block_exacomp_get_students_for_crosssubject($courseid, $crosssub) {
 	global $DB;
 	$course_students = block_exacomp_get_students_by_course($courseid);
-	if($crosssub->shared)
+	if ($crosssub->shared) {
 		return $course_students;
+	}
 
 	$students = array();
-	$assigned_students = $DB->get_records_menu(BLOCK_EXACOMP_DB_CROSSSTUD,array('crosssubjid'=>$crosssub->id),'','studentid,crosssubjid');
-	foreach($course_students as $student){
-		if(isset($assigned_students[$student->id]))
+	$assigned_students = $DB->get_records_menu(BLOCK_EXACOMP_DB_CROSSSTUD, array('crosssubjid' => $crosssub->id), '', 'studentid,crosssubjid');
+	foreach ($course_students as $student) {
+		if (isset($assigned_students[$student->id])) {
 			$students[$student->id] = $student;
+		}
 	}
+
 	return $students;
 }
 
@@ -4061,8 +4333,9 @@ function block_exacomp_get_viewurl_for_example($studentid, $viewerid, $exampleid
 
 	$item = block_exacomp_get_current_item_for_example($studentid, $exampleid);
 
-	if(!$item)
+	if (!$item) {
 		return null;
+	}
 
 	if ($studentid == $viewerid) {
 		// view my own item
@@ -4073,15 +4346,17 @@ function block_exacomp_get_viewurl_for_example($studentid, $viewerid, $exampleid
 			FROM {block_exaportviewblock} viewblock
 			JOIN {block_exaportviewshar} viewshar ON viewshar.viewid=viewblock.viewid
 			WHERE viewblock.type='item' AND viewblock.itemid=? AND viewshar.userid=?";
-		$view = $DB->get_record_sql($sql, [ $item->id, $viewerid ]);
-		if(!$view)
+		$view = $DB->get_record_sql($sql, [$item->id, $viewerid]);
+		if (!$view) {
 			return null;
+		}
 
 		$access = "view/id/".$studentid."-".$view->viewid."&itemid=".$item->id;
 	}
 
 	return $CFG->wwwroot.'/blocks/exaport/shared_item.php?access='.$access;
 }
+
 /**
  * get the url to enter the competence overview example belongs to
  * @param unknown $courseid
@@ -4092,10 +4367,11 @@ function block_exacomp_get_viewurl_for_example($studentid, $viewerid, $exampleid
 function block_exacomp_get_gridurl_for_example($courseid, $studentid, $exampleid) {
 	global $CFG, $DB;
 
-	$example_descriptors = $DB->get_records(BLOCK_EXACOMP_DB_DESCEXAMP,array('exampid'=>$exampleid),'','descrid');
+	$example_descriptors = $DB->get_records(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $exampleid), '', 'descrid');
 	$tree = block_exacomp_build_example_association_tree($courseid, $example_descriptors, $exampleid);
 	$topic = (reset(reset($tree)->topics));
-	return $CFG->wwwroot.'/blocks/exacomp/assign_competencies.php?courseid='.$courseid . '&studentid='.$studentid . '&subjectid='.$topic->subjid . '&topicid='.$topic->id;
+
+	return $CFG->wwwroot.'/blocks/exacomp/assign_competencies.php?courseid='.$courseid.'&studentid='.$studentid.'&subjectid='.$topic->subjid.'&topicid='.$topic->id;
 }
 
 /**
@@ -4108,20 +4384,21 @@ function block_exacomp_get_gridurl_for_example($courseid, $studentid, $exampleid
  * @param unknown $end
  * @return boolean
  */
-function block_exacomp_add_example_to_schedule($studentid,$exampleid,$creatorid,$courseid,$start=null,$end=null) {
+function block_exacomp_add_example_to_schedule($studentid, $exampleid, $creatorid, $courseid, $start = null, $end = null) {
 	global $USER, $DB;
 
 	$timecreated = $timemodified = time();
 
 	// already inside schedule?
-	if($DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid))){
+	if ($DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid))) {
 		return true;
 	}
 
-	$DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid,'creatorid' => $creatorid, 'timecreated' => $timecreated, 'timemodified' => $timemodified, 'start' => $start,'end' => $end));
+	$DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, array('studentid' => $studentid, 'exampleid' => $exampleid, 'courseid' => $courseid, 'creatorid' => $creatorid, 'timecreated' => $timecreated, 'timemodified' => $timemodified, 'start' => $start, 'end' => $end));
 	//only send a notification if a teacher adds an example for a student and not for pre planning storage
-	if($creatorid != $studentid && $studentid >0)
-		block_exacomp_send_weekly_schedule_notification($USER,$DB->get_record('user', array('id' => $studentid)), $courseid, $exampleid);
+	if ($creatorid != $studentid && $studentid > 0) {
+		block_exacomp_send_weekly_schedule_notification($USER, $DB->get_record('user', array('id' => $studentid)), $courseid, $exampleid);
+	}
 
 	\block_exacomp\event\example_added::log(['objectid' => $exampleid, 'courseid' => $courseid, 'relateduserid' => $studentid]);
 
@@ -4143,13 +4420,16 @@ function block_exacomp_add_examples_to_schedule_for_all($courseid) {
 	// Get all students for the given course
 	$students = block_exacomp_get_students_by_course($courseid);
 	// Add examples for all users
-	foreach($examples as $example)
-		foreach($students as $student)
+	foreach ($examples as $example) {
+		foreach ($students as $student) {
 			block_exacomp_add_example_to_schedule($student->id, $example->exampleid, g::$USER->id, $courseid, $example->start, $example->end);
+		}
+	}
 
-			// Delete records from the teacher's schedule
-			g::$DB->delete_records_list(BLOCK_EXACOMP_DB_SCHEDULE, 'id', array_keys($examples));
-			return true;
+	// Delete records from the teacher's schedule
+	g::$DB->delete_records_list(BLOCK_EXACOMP_DB_SCHEDULE, 'id', array_keys($examples));
+
+	return true;
 }
 
 /**
@@ -4159,7 +4439,7 @@ function block_exacomp_add_examples_to_schedule_for_all($courseid) {
  * @return number
  */
 function block_exacomp_add_days($date, $days) {
-	return mktime(0,0,0,date('m', $date), date('d', $date)+$days, date('Y', $date));
+	return mktime(0, 0, 0, date('m', $date), date('d', $date) + $days, date('Y', $date));
 }
 
 /**
@@ -4171,31 +4451,35 @@ function block_exacomp_add_days($date, $days) {
  * @param string $showallexamples
  * @return associative_array
  */
-function block_exacomp_build_example_association_tree($courseid, $example_descriptors = array(), $exampleid=0, $descriptorid = 0, $showallexamples=false){
+function block_exacomp_build_example_association_tree($courseid, $example_descriptors = array(), $exampleid = 0, $descriptorid = 0, $showallexamples = false) {
 	//get all subjects, topics, descriptors and examples
 	$tree = block_exacomp_get_competence_tree($courseid, null, null, false, BLOCK_EXACOMP_SHOW_ALL_NIVEAUS, true, block_exacomp_get_settings_by_course($courseid)->filteredtaxonomies, false, false, true);
 
 	// unset all descriptors, topics and subjects that do not contain the example descriptors
-	foreach($tree as $skey => $subject) {
+	foreach ($tree as $skey => $subject) {
 		$subject->associated = 0;
-		foreach ( $subject->topics as $tkey => $topic ) {
+		foreach ($subject->topics as $tkey => $topic) {
 			$topic->associated = 0;
-			if(isset($topic->descriptors)) {
-				foreach ( $topic->descriptors as $dkey => $descriptor ) {
+			if (isset($topic->descriptors)) {
+				foreach ($topic->descriptors as $dkey => $descriptor) {
 
 					$descriptor = block_exacomp_check_child_descriptors($descriptor, $example_descriptors, $exampleid, $descriptorid, $showallexamples);
 
-					if ($descriptor->associated)
+					if ($descriptor->associated) {
 						$topic->associated = 1;
+					}
 				}
 			}
 
-			if ($topic->associated)
+			if ($topic->associated) {
 				$subject->associated = 1;
+			}
 		}
 	}
+
 	return $tree;
 }
+
 /**
  * helper function for block_exacomp_build_example_association_tree
  * @param unknown $descriptor
@@ -4205,46 +4489,49 @@ function block_exacomp_build_example_association_tree($courseid, $example_descri
  * @param string $showallexamples
  * @return unknown
  */
-function block_exacomp_check_child_descriptors($descriptor, $example_descriptors, $exampleid, $descriptorid = 0, $showallexamples=false) {
+function block_exacomp_check_child_descriptors($descriptor, $example_descriptors, $exampleid, $descriptorid = 0, $showallexamples = false) {
 
 	$descriptor->associated = 0;
 	$descriptor->direct_associated = 0;
 
-	if (array_key_exists ( $descriptor->id, $example_descriptors ) || $descriptorid == $descriptor->id || ($showallexamples && !empty($descriptor->examples))){
-			$descriptor->associated = 1;
-			$descriptor->direct_associated = 1;
+	if (array_key_exists($descriptor->id, $example_descriptors) || $descriptorid == $descriptor->id || ($showallexamples && !empty($descriptor->examples))) {
+		$descriptor->associated = 1;
+		$descriptor->direct_associated = 1;
 	}
 
 	//check descriptor examples
-	foreach($descriptor->examples as $ekey => $example) {
+	foreach ($descriptor->examples as $ekey => $example) {
 		$descriptor->examples[$ekey]->associated = 1;
-		if($example->id != $exampleid && !$showallexamples)
+		if ($example->id != $exampleid && !$showallexamples) {
 			$descriptor->examples[$ekey]->associated = 0;
+		}
 	}
 
 	//check children and their examples
-	foreach($descriptor->children as $ckey => $cvalue) {
+	foreach ($descriptor->children as $ckey => $cvalue) {
 		$keepDescriptor_child = false;
-		if (array_key_exists ( $cvalue->id, $example_descriptors ) || $descriptorid == $ckey || ($showallexamples && !empty($cvalue->examples))) {
+		if (array_key_exists($cvalue->id, $example_descriptors) || $descriptorid == $ckey || ($showallexamples && !empty($cvalue->examples))) {
 			$keepDescriptor_child = true;
 			$descriptor->associated = 1;
 		}
 		$descriptor->children[$ckey]->associated = 1;
 		$descriptor->children[$ckey]->direct_associated = 1;
-		if (! $keepDescriptor_child) {
+		if (!$keepDescriptor_child) {
 			$descriptor->children[$ckey]->associated = 0;
 			$descriptor->children[$ckey]->direct_associated = 0;
 			continue;
 		}
-		foreach($cvalue->examples as $ekey => $example) {
+		foreach ($cvalue->examples as $ekey => $example) {
 			$cvalue->examples[$ekey]->associated = 1;
-			if($example->id != $exampleid && !$showallexamples)
+			if ($example->id != $exampleid && !$showallexamples) {
 				$cvalue->examples[$ekey]->associated = 0;
+			}
 		}
 	}
 
 	return $descriptor;
 }
+
 /**
  * descriptors can be across all niveaus, a colspan is needed to display tables correct
  * @param unknown $niveaus
@@ -4253,10 +4540,10 @@ function block_exacomp_check_child_descriptors($descriptor, $example_descriptors
  */
 function block_exacomp_calculate_spanning_niveau_colspan($niveaus, $spanningNiveaus) {
 
-	$colspan = count($niveaus)-1;
+	$colspan = count($niveaus) - 1;
 
-	foreach($niveaus as $id => $niveau) {
-		if((isset($niveau->title))?in_array($niveau->title, $spanningNiveaus):in_array($niveau, $spanningNiveaus)) {
+	foreach ($niveaus as $id => $niveau) {
+		if ((isset($niveau->title)) ? in_array($niveau->title, $spanningNiveaus) : in_array($niveau, $spanningNiveaus)) {
 			$colspan--;
 		}
 	}
@@ -4271,14 +4558,14 @@ function block_exacomp_calculate_spanning_niveau_colspan($niveaus, $spanningNive
  * @param unknown $studentid
  * @return boolean
  */
-function block_exacomp_is_topic_visible($courseid, $topic, $studentid){
+function block_exacomp_is_topic_visible($courseid, $topic, $studentid) {
 	global $DB;
 
 	// $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
 	if ($studentid <= 0) {
 		$studentid = 0;
 	}
-	
+
 	$visibilities = block_exacomp_get_topic_visibilities_for_course_and_user($courseid, 0);
 	if (isset($visibilities[$topic->id]) && !$visibilities[$topic->id]) {
 		return false;
@@ -4291,7 +4578,7 @@ function block_exacomp_is_topic_visible($courseid, $topic, $studentid){
 			return false;
 		}
 	}
-	
+
 	return true;
 }
 
@@ -4337,7 +4624,7 @@ function block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid)
  * @param unknown $studentid
  * @return boolean
  */
-function block_exacomp_is_example_visible($courseid, $example, $studentid){
+function block_exacomp_is_example_visible($courseid, $example, $studentid) {
 	// $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
 	if ($studentid <= 0) {
 		$studentid = 0;
@@ -4373,12 +4660,12 @@ function block_exacomp_is_example_visible($courseid, $example, $studentid){
  * @param unknown $studentid
  * @return boolean
  */
-function block_exacomp_is_example_solution_visible($courseid, $example, $studentid){
+function block_exacomp_is_example_solution_visible($courseid, $example, $studentid) {
 	// $studentid could be BLOCK_EXACOMP_SHOW_ALL_STUDENTS
 	if ($studentid <= 0) {
 		$studentid = 0;
 	}
-	
+
 	$visibilities = block_exacomp_get_solution_visibilities_for_course_and_user($courseid, 0);
 	if (isset($visibilities[$example->id]) && !$visibilities[$example->id]) {
 		return false;
@@ -4403,8 +4690,9 @@ function block_exacomp_is_example_solution_visible($courseid, $example, $student
  */
 function block_exacomp_get_visible_css($visible, $role) {
 	$visible_css = '';
-	if(!$visible)
+	if (!$visible) {
 		($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $visible_css = ' rg2-locked' : $visible_css = ' hidden';
+	}
 
 	return $visible_css;
 }
@@ -4506,7 +4794,7 @@ function block_exacomp_get_topic_numbering($topic) {
 /**
  * get crosssubjectdrafts sorted by subject
  */
-function block_exacomp_get_course_cross_subjects_drafts_sorted_by_subjects(){
+function block_exacomp_get_course_cross_subjects_drafts_sorted_by_subjects() {
 	$subjects = block_exacomp_get_subjects_by_course(g::$COURSE->id);
 
 	$default_subject = new stdClass();
@@ -4516,8 +4804,8 @@ function block_exacomp_get_course_cross_subjects_drafts_sorted_by_subjects(){
 	// insert default subject at the front
 	array_unshift($subjects, $default_subject);
 
-	foreach($subjects as $key=>$subject){
-		$subject->cross_subject_drafts = block_exacomp\cross_subject::get_objects(array('subjectid'=>$subject->id, 'courseid'=>0), 'title');
+	foreach ($subjects as $key => $subject) {
+		$subject->cross_subject_drafts = block_exacomp\cross_subject::get_objects(array('subjectid' => $subject->id, 'courseid' => 0), 'title');
 		if (!$subject->cross_subject_drafts) {
 			unset($subjects[$key]);
 		}
@@ -4530,7 +4818,7 @@ function block_exacomp_get_course_cross_subjects_drafts_sorted_by_subjects(){
  * get crosssubjectdrafts grouped by subject
  * @return unknown
  */
-function block_exacomp_get_cross_subjects_grouped_by_subjects(){
+function block_exacomp_get_cross_subjects_grouped_by_subjects() {
 	global $DB;
 
 	$subjects = block_exacomp_get_subjects();
@@ -4541,7 +4829,7 @@ function block_exacomp_get_cross_subjects_grouped_by_subjects(){
 
 	$subjects[0] = $default_subject;
 
-	foreach($subjects as $subject){
+	foreach ($subjects as $subject) {
 		$subject->crosssubjects = $DB->get_records_sql('
 			SELECT *
 			FROM {'.BLOCK_EXACOMP_DB_CROSSSUBJECTS.'}
@@ -4560,17 +4848,17 @@ function block_exacomp_get_cross_subjects_grouped_by_subjects(){
  * delete descriptor created within Exabis Competencies in Moodle
  * @param unknown $descriptorid
  */
-function block_exacomp_delete_custom_descriptor($descriptorid){
+function block_exacomp_delete_custom_descriptor($descriptorid) {
 	global $DB;
 
 	//delete descriptor evaluation
-	$DB->delete_records(BLOCK_EXACOMP_DB_COMPETENCES, array('compid'=>$descriptorid, 'comptype'=>BLOCK_EXACOMP_TYPE_DESCRIPTOR));
+	$DB->delete_records(BLOCK_EXACOMP_DB_COMPETENCES, array('compid' => $descriptorid, 'comptype' => BLOCK_EXACOMP_TYPE_DESCRIPTOR));
 
 	//delete crosssubject association
-	$DB->delete_records(BLOCK_EXACOMP_DB_DESCCROSS, array('descrid'=>$descriptorid));
+	$DB->delete_records(BLOCK_EXACOMP_DB_DESCCROSS, array('descrid' => $descriptorid));
 
 	//delete descriptor
-	$DB->delete_records(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id'=>$descriptorid));
+	$DB->delete_records(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id' => $descriptorid));
 
 }
 
@@ -4586,16 +4874,17 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 	global $DB;
 
 	//get descriptor from id
-	$descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS,array("id" => $descrid));
+	$descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array("id" => $descrid));
 	//get examples for descriptor
 	$descriptor = block_exacomp_get_examples_for_descriptor($descriptor, array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), true, $courseid);
 
 	//check if descriptor is associated if crosssubject is given - if not examples are not included in crosssubject
 	$crosssubjdescriptos = array();
-	if($crosssubjid > 0)
+	if ($crosssubjid > 0) {
 		$crosssubjdescriptos = block_exacomp_get_descriptors_for_cross_subject($courseid, $crosssubjid);
+	}
 
-	if($studentid > 0){
+	if ($studentid > 0) {
 		$students = block_exacomp_get_students_by_course($courseid);
 		$student = $students[$studentid];
 		$student = block_exacomp_get_user_information_by_course($student, $courseid);
@@ -4617,70 +4906,82 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 	$scheme_items = \block_exacomp\global_config::get_value_titles($courseid);
 	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
 
-	if(block_exacomp_use_eval_niveau())
-		foreach($evaluationniveau_items as $niveaukey => $niveauitem){
+	if (block_exacomp_use_eval_niveau()) {
+		foreach ($evaluationniveau_items as $niveaukey => $niveauitem) {
 			$gradings[$niveaukey] = array();
-			foreach($scheme_items as $schemekey => $schemetitle){
+			foreach ($scheme_items as $schemekey => $schemetitle) {
 				$gradings[$niveaukey][$schemekey] = 0;
 			}
 		}
-	else
-		foreach($scheme_items as $key => $title){
+	} else {
+		foreach ($scheme_items as $key => $title) {
 			$gradings[$key] = 0;
 		}
+	}
 
 	$totalgrade = 0;
 
 	//calculate statistic
-	if($crosssubjid == 0 || array_key_exists($descriptor->id, $crosssubjdescriptos)){
+	if ($crosssubjid == 0 || array_key_exists($descriptor->id, $crosssubjdescriptos)) {
 		$total = count($descriptor->examples);
 
-		foreach($descriptor->examples as $example){
+		foreach ($descriptor->examples as $example) {
 			//count visible examples for this student
-			if(block_exacomp_is_example_visible($courseid, $example, $studentid))
+			if (block_exacomp_is_example_visible($courseid, $example, $studentid)) {
 				$visible++;
+			}
 
-				//check if inwork
-				$schedule = $DB->record_exists(BLOCK_EXACOMP_DB_SCHEDULE, array('courseid'=>$courseid, 'exampleid'=>$example->id, 'studentid'=>$studentid));
-				if($schedule)
-					$inwork++;
+			//check if inwork
+			$schedule = $DB->record_exists(BLOCK_EXACOMP_DB_SCHEDULE, array('courseid' => $courseid, 'exampleid' => $example->id, 'studentid' => $studentid));
+			if ($schedule) {
+				$inwork++;
+			}
 
-				if($studentid > 0){ //no meaningful numbers if studentid > 0
-					//submission made?
-					$submission_exists = false;
-					if(block_exacomp_exaportexists()){
-						$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_ITEMEXAMPLE."} ie JOIN {".'block_exaportitem'."} i ON ie.itemid = i.id ".
-								"WHERE ie.exampleid = ? AND i.userid = ? AND i.courseid = ?";
-						$records = $DB->get_records_sql($sql, array($example->id, $studentid, $courseid));
-						if($records)
-							$submission_exists = true;
+			if ($studentid > 0) { //no meaningful numbers if studentid > 0
+				//submission made?
+				$submission_exists = false;
+				if (block_exacomp_exaportexists()) {
+					$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_ITEMEXAMPLE."} ie JOIN {".'block_exaportitem'."} i ON ie.itemid = i.id ".
+						"WHERE ie.exampleid = ? AND i.userid = ? AND i.courseid = ?";
+					$records = $DB->get_records_sql($sql, array($example->id, $studentid, $courseid));
+					if ($records) {
+						$submission_exists = true;
 					}
-
-					$teacher_eval_exists = false;
-					$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND studentid=? AND teacher_evaluation>=0";
-					$records = $DB->get_records_sql($sql, array($courseid, $example->id, $studentid));
-					if($records) $teacher_eval_exists = true;
-
-					$student_eval_exists = false;
-					$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND studentid = ? AND student_evaluation>=0";
-					$records = $DB->get_records_sql($sql, array($courseid, $example->id, $studentid));
-					if($records) $student_eval_exists = true;
-
-					if($submission_exists || $teacher_eval_exists || $student_eval_exists)
-						$edited++;
-
-					if($teacher_eval_exists || $student_eval_exists)
-						$evaluated++;
-
-						//create grading statistic
-						if(block_exacomp_use_eval_niveau()){
-							if(isset($student->examples->teacher[$example->id]) && isset($student->examples->niveau[$example->id]))
-								$gradings[$student->examples->niveau[$example->id]][$student->examples->teacher[$example->id]]++;
-						}else{
-							if(isset($student->examples->teacher[$example->id]))
-								$gradings[$student->examples->teacher[$example->id]]++;
-						}
 				}
+
+				$teacher_eval_exists = false;
+				$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND studentid=? AND teacher_evaluation>=0";
+				$records = $DB->get_records_sql($sql, array($courseid, $example->id, $studentid));
+				if ($records) {
+					$teacher_eval_exists = true;
+				}
+
+				$student_eval_exists = false;
+				$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_EXAMPLEEVAL."} WHERE courseid = ? AND exampleid = ? AND studentid = ? AND student_evaluation>=0";
+				$records = $DB->get_records_sql($sql, array($courseid, $example->id, $studentid));
+				if ($records) {
+					$student_eval_exists = true;
+				}
+
+				if ($submission_exists || $teacher_eval_exists || $student_eval_exists) {
+					$edited++;
+				}
+
+				if ($teacher_eval_exists || $student_eval_exists) {
+					$evaluated++;
+				}
+
+				//create grading statistic
+				if (block_exacomp_use_eval_niveau()) {
+					if (isset($student->examples->teacher[$example->id]) && isset($student->examples->niveau[$example->id])) {
+						$gradings[$student->examples->niveau[$example->id]][$student->examples->teacher[$example->id]]++;
+					}
+				} else {
+					if (isset($student->examples->teacher[$example->id])) {
+						$gradings[$student->examples->teacher[$example->id]]++;
+					}
+				}
+			}
 		}
 
 		$hidden = $total - $visible;
@@ -4714,11 +5015,13 @@ function block_exacomp_get_file($item, $type) {
  * @param string $type
  * @return moodle_url
  */
-function block_exacomp_get_file_url($item, $type, $context=null) {
+function block_exacomp_get_file_url($item, $type, $context = null) {
 	// get from filestorage
 	$file = block_exacomp_get_file($item, $type);
 
-	if (!$file) return null;
+	if (!$file) {
+		return null;
+	}
 
 	return block_exacomp_get_url_for_file($file, $context);
 }
@@ -4727,7 +5030,7 @@ function block_exacomp_get_file_url($item, $type, $context=null) {
  * @param stored_file $file
  * @return moodle_url
  */
-function block_exacomp_get_url_for_file($file, $context=null) {
+function block_exacomp_get_url_for_file($file, $context = null) {
 	$context = block_exacomp_get_context_from_courseid($context);
 
 	$url = moodle_url::make_pluginfile_url($context->id, $file->get_component(), $file->get_filearea(),
@@ -4741,13 +5044,14 @@ function block_exacomp_get_url_for_file($file, $context=null) {
  * @param unknown $studentid
  * @param unknown $courseid
  */
-function block_exacomp_get_examples_for_pool($studentid, $courseid){
+function block_exacomp_get_examples_for_pool($studentid, $courseid) {
 	global $DB;
 
-	 if (date('w', time()) == 1)
-		 $beginning_of_week = strtotime('Today',time());
-	 else
-		 $beginning_of_week = strtotime('last Monday',time());
+	if (date('w', time()) == 1) {
+		$beginning_of_week = strtotime('Today', time());
+	} else {
+		$beginning_of_week = strtotime('last Monday', time());
+	}
 
 	$sql = "select s.*,
 				e.title, e.id as exampleid, e.source AS example_source, evis.visible,
@@ -4765,7 +5069,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid){
 			)
 			ORDER BY s.id";
 
-	return $DB->get_records_sql($sql,array($courseid, $studentid, $beginning_of_week));
+	return $DB->get_records_sql($sql, array($courseid, $studentid, $beginning_of_week));
 }
 
 /**
@@ -4773,7 +5077,7 @@ function block_exacomp_get_examples_for_pool($studentid, $courseid){
  * @param unknown $studentid
  * @param unknown $courseid
  */
-function block_exacomp_get_examples_for_trash($studentid, $courseid){
+function block_exacomp_get_examples_for_trash($studentid, $courseid) {
 	global $DB;
 
 	$sql = "select s.*,
@@ -4789,7 +5093,7 @@ function block_exacomp_get_examples_for_trash($studentid, $courseid){
 			)
 			ORDER BY s.id";
 
-	return $DB->get_records_sql($sql,array($courseid, $studentid));
+	return $DB->get_records_sql($sql, array($courseid, $studentid));
 }
 
 /**
@@ -4799,16 +5103,17 @@ function block_exacomp_get_examples_for_trash($studentid, $courseid){
  * @param unknown $end
  * @param number $deleted
  */
-function block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted = 0){
+function block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted = 0) {
 	global $DB, $USER;
 
-	$entry = $DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('id'=>$scheduleid));
+	$entry = $DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('id' => $scheduleid));
 	$entry->start = $start;
 	$entry->end = $end;
 	$entry->deleted = $deleted;
 
-	if($entry->studentid != $USER->id)
+	if ($entry->studentid != $USER->id) {
 		block_exacomp_require_teacher($entry->courseid);
+	}
 
 	if ($DB instanceof pgsql_native_moodle_database) {
 		// HACK: because moodle doesn't quote pgsql identifiers and pgsql doesn't allow end as column name
@@ -4823,12 +5128,13 @@ function block_exacomp_set_example_start_end($scheduleid, $start, $end, $deleted
  * copy example from calendar to pool
  * @param unknown $scheduleid
  */
-function block_exacomp_copy_example_from_schedule($scheduleid){
+function block_exacomp_copy_example_from_schedule($scheduleid) {
 	global $DB, $USER;
 
 	$entry = $DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('id' => $scheduleid));
-	if($entry->studentid != $USER->id)
+	if ($entry->studentid != $USER->id) {
 		block_exacomp_require_teacher($entry->courseid);
+	}
 
 	unset($entry->id);
 	unset($entry->start);
@@ -4841,15 +5147,16 @@ function block_exacomp_copy_example_from_schedule($scheduleid){
  * remove example from schedule
  * @param unknown $scheduleid
  */
-function block_exacomp_remove_example_from_schedule($scheduleid){
+function block_exacomp_remove_example_from_schedule($scheduleid) {
 	global $DB, $USER;
 
 	$entry = $DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('id' => $scheduleid));
 
-	if($entry->studentid != $USER->id)
+	if ($entry->studentid != $USER->id) {
 		block_exacomp_require_teacher($entry->courseid);
+	}
 
-	$DB->delete_records(BLOCK_EXACOMP_DB_SCHEDULE, array('id'=>$scheduleid));
+	$DB->delete_records(BLOCK_EXACOMP_DB_SCHEDULE, array('id' => $scheduleid));
 }
 
 /**
@@ -4859,7 +5166,7 @@ function block_exacomp_remove_example_from_schedule($scheduleid){
  * @param unknown $start
  * @param unknown $end
  */
-function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start, $end){
+function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start, $end) {
 	global $DB;
 
 	$sql = "select s.*,
@@ -4877,7 +5184,8 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
 			)
 			-- GROUP BY s.id -- because a bug somewhere causes duplicate rows
 			ORDER BY e.title";
-	return $DB->get_records_sql($sql,array($courseid, $studentid, $courseid, $start, $end));
+
+	return $DB->get_records_sql($sql, array($courseid, $studentid, $courseid, $start, $end));
 }
 
 /**
@@ -4887,34 +5195,37 @@ function block_exacomp_get_examples_for_start_end($courseid, $studentid, $start,
  * @param unknown $end
  * @return unknown[]
  */
-function block_exacomp_get_examples_for_start_end_all_courses($studentid, $start, $end){
-	if($studentid < 0)
+function block_exacomp_get_examples_for_start_end_all_courses($studentid, $start, $end) {
+	if ($studentid < 0) {
 		$studentid = 0;
+	}
 
 	$courses = block_exacomp_get_courseids();
 	$examples = array();
-	foreach($courses as $course){
+	foreach ($courses as $course) {
 		$course_examples = block_exacomp_get_examples_for_start_end($course, $studentid, $start, $end);
-		foreach($course_examples as $example){
-			if(!array_key_exists($example->scheduleid, $examples))
+		foreach ($course_examples as $example) {
+			if (!array_key_exists($example->scheduleid, $examples)) {
 				$examples[$example->scheduleid] = $example;
+			}
 		}
 	}
 
 	return $examples;
 }
+
 /**
  * needed for communication with fullcalendar
  * @param unknown $examples
  * @param string $mind_eval
  * @return NULL[][]|string[][]
  */
-function block_exacomp_get_json_examples($examples, $mind_eval = true){
+function block_exacomp_get_json_examples($examples, $mind_eval = true) {
 	global $OUTPUT, $DB, $CFG, $USER, $PAGE;
 	$output = block_exacomp_get_renderer();
 
 	$array = array();
-	foreach($examples as $example){
+	foreach ($examples as $example) {
 		$example_array = array();
 		$example_array['id'] = $example->scheduleid;
 		$example_array['title'] = $example->title;
@@ -4922,62 +5233,64 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true){
 		$example_array['end'] = $example->end;
 		$example_array['exampleid'] = $example->exampleid;
 		$example_array['niveau'] = isset($example->niveau) ? $example->niveau : null;
-		$example_array['description'] = isset($example->description) ? $example->description:"";
+		$example_array['description'] = isset($example->description) ? $example->description : "";
 
 
-		if($mind_eval){
+		if ($mind_eval) {
 			$example_array['student_evaluation'] = $example->student_evaluation;
 			$example_array['teacher_evaluation'] = $example->teacher_evaluation;
 
 			$student_title = \block_exacomp\global_config::get_student_value_title_by_id($example->student_evaluation);
 			$teacher_title = \block_exacomp\global_config::get_value_title_by_id($example->teacher_evaluation);
 
-			$example_array['student_evaluation_title'] = (strcmp($student_title, ' ')==0)?'-':$student_title;
-			$example_array['teacher_evaluation_title'] = (strcmp($teacher_title, ' ')==0)?'-':$teacher_title;
+			$example_array['student_evaluation_title'] = (strcmp($student_title, ' ') == 0) ? '-' : $student_title;
+			$example_array['teacher_evaluation_title'] = (strcmp($teacher_title, ' ') == 0) ? '-' : $teacher_title;
 		}
-		if(isset($example->state))
+		if (isset($example->state)) {
 			$example_array['state'] = $example->state;
+		}
 
 		$example_array['studentid'] = $example->studentid;
 		$example_array['courseid'] = $example->courseid;
 		$example_array['scheduleid'] = $example->scheduleid;
 		$example_array['copy_url'] = $output->local_pix_icon("copy_example.png", block_exacomp_get_string('copy'));
 
-		$img = html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/assoc_icon.png'), 'alt'=>block_exacomp_get_string("competence_associations"), 'title'=>block_exacomp_get_string("competence_associations"), 'height'=>16, 'width'=>16));
+		$img = html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/assoc_icon.png'), 'alt' => block_exacomp_get_string("competence_associations"), 'title' => block_exacomp_get_string("competence_associations"), 'height' => 16, 'width' => 16));
 
 		$example_array['assoc_url'] = html_writer::link(
-				new moodle_url('/blocks/exacomp/competence_associations.php',array("courseid"=>$example->courseid,"exampleid"=>$example->exampleid, "editmode"=>0)),
-				 $img, array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+			new moodle_url('/blocks/exacomp/competence_associations.php', array("courseid" => $example->courseid, "exampleid" => $example->exampleid, "editmode" => 0)),
+			$img, array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 
-		if($url = block_exacomp_get_file_url($example, 'example_solution'))
-			$example_array['solution'] = html_writer::link($url, $OUTPUT->pix_icon("e/fullpage", block_exacomp_get_string('solution')) ,array("target" => "_blank"));
-		if (block_exacomp_exaportexists ()) {
+		if ($url = block_exacomp_get_file_url($example, 'example_solution')) {
+			$example_array['solution'] = html_writer::link($url, $OUTPUT->pix_icon("e/fullpage", block_exacomp_get_string('solution')), array("target" => "_blank"));
+		}
+		if (block_exacomp_exaportexists()) {
 			if ($USER->id == $example->studentid) {
 				$itemExists = block_exacomp_get_current_item_for_example($USER->id, $example->exampleid);
 
 				$example_array ['submission_url'] = html_writer::link(
-						new moodle_url('/blocks/exacomp/example_submission.php',array("courseid"=>$example->courseid,"exampleid"=>$example->exampleid)),
-						html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/' . ((!$itemExists) ? 'manual_item.png' : 'reload.png')), 'alt'=>block_exacomp_get_string("submission"), 'title'=>block_exacomp_get_string("submission"))),
-						array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
+					new moodle_url('/blocks/exacomp/example_submission.php', array("courseid" => $example->courseid, "exampleid" => $example->exampleid)),
+					html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/'.((!$itemExists) ? 'manual_item.png' : 'reload.png')), 'alt' => block_exacomp_get_string("submission"), 'title' => block_exacomp_get_string("submission"))),
+					array("target" => "_blank", "onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"));
 			} else {
-				$url = block_exacomp_get_viewurl_for_example ( $example->studentid, $USER->id, $example->exampleid );
-				if ($url)
-					$example_array ['submission_url'] = html_writer::link ( $url, html_writer::empty_tag('img', array('src'=>new moodle_url('/blocks/exacomp/pix/manual_item.png'), 'alt'=>block_exacomp_get_string("submission"), 'title'=>block_exacomp_get_string("submission"))), array (
-							"target" => "_blank",
-							"onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;"
-					) );
+				$url = block_exacomp_get_viewurl_for_example($example->studentid, $USER->id, $example->exampleid);
+				if ($url) {
+					$example_array ['submission_url'] = html_writer::link($url, html_writer::empty_tag('img', array('src' => new moodle_url('/blocks/exacomp/pix/manual_item.png'), 'alt' => block_exacomp_get_string("submission"), 'title' => block_exacomp_get_string("submission"))), array(
+						"target" => "_blank",
+						"onclick" => "window.open(this.href,this.target,'width=880,height=660, scrollbars=yes'); return false;",
+					));
+				}
 			}
 		}
 		if ($url = block_exacomp_get_file_url((object)array('id' => $example->exampleid), 'example_task')) {
-			$example_array['task'] = html_writer::link($url, $output->preview_icon(),array("target" => "_blank"));
-		}
-		elseif(isset($example->externalurl)){
-			$example_array['externalurl'] = html_writer::link(str_replace('&amp;','&',$example->externalurl), $output->preview_icon(),array("target" => "_blank"));
-		}elseif(isset($example->externaltask)) {
-			$example_array['externaltask'] = html_writer::link(str_replace('&amp;','&',$example->externaltask), $output->preview_icon(),array("target" => "_blank"));
+			$example_array['task'] = html_writer::link($url, $output->preview_icon(), array("target" => "_blank"));
+		} elseif (isset($example->externalurl)) {
+			$example_array['externalurl'] = html_writer::link(str_replace('&amp;', '&', $example->externalurl), $output->preview_icon(), array("target" => "_blank"));
+		} elseif (isset($example->externaltask)) {
+			$example_array['externaltask'] = html_writer::link(str_replace('&amp;', '&', $example->externaltask), $output->preview_icon(), array("target" => "_blank"));
 		}
 
-		$course_info = $DB->get_record('course', array('id'=>$example->courseid));
+		$course_info = $DB->get_record('course', array('id' => $example->courseid));
 		$example_array['courseinfo'] = $course_info->shortname;
 
 		$array[] = $example_array;
@@ -4991,13 +5304,13 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true){
  * @param unknown $date
  * @return string[][]|number[][]|unknown[][]
  */
-function block_exacomp_build_json_time_slots($date = null){
+function block_exacomp_build_json_time_slots($date = null) {
 
-	$units = (get_config("exacomp","scheduleunits")) ? get_config("exacomp","scheduleunits") : 8;
-	$interval = (get_config("exacomp","scheduleinterval")) ? get_config("exacomp","scheduleinterval") : 50;
-	$time =  (get_config("exacomp","schedulebegin")) ? get_config("exacomp","schedulebegin") : "07:45";
+	$units = (get_config("exacomp", "scheduleunits")) ? get_config("exacomp", "scheduleunits") : 8;
+	$interval = (get_config("exacomp", "scheduleinterval")) ? get_config("exacomp", "scheduleinterval") : 50;
+	$time = (get_config("exacomp", "schedulebegin")) ? get_config("exacomp", "schedulebegin") : "07:45";
 
-	list($h,$m) = explode(":",$time);
+	list($h, $m) = explode(":", $time);
 	$secTime = $h * 3600 + $m * 60;
 
 	$slots = array();
@@ -5006,16 +5319,15 @@ function block_exacomp_build_json_time_slots($date = null){
 	/*
 	 * Split every unit into 4 pieces
 	 */
-	for($i=0; $i < $units * 4; $i++) {
+	for ($i = 0; $i < $units * 4; $i++) {
 
 		$entry = array();
 
 		//only write at the begin of every unit
-		if($i%4 == 0){
-			$entry['name'] = ($i/4 + 1) . '. Einheit';
-			$entry['time'] = (isset($timeentries[$i/4]))?$timeentries[$i/4]:'';
-		}
-		else{
+		if ($i % 4 == 0) {
+			$entry['name'] = ($i / 4 + 1).'. Einheit';
+			$entry['time'] = (isset($timeentries[$i / 4])) ? $timeentries[$i / 4] : '';
+		} else {
 			$entry['name'] = '';
 			$entry['time'] = '';
 		}
@@ -5044,8 +5356,9 @@ function block_exacomp_build_json_time_slots($date = null){
  */
 function block_exacomp_parse_seconds_to_timestring($secTime) {
 	$hours = floor($secTime / 3600);
-	$mins = floor(($secTime - ($hours*3600)) / 60);
-	return sprintf('%02d', $hours) . ":" . sprintf('%02d', $mins) ;
+	$mins = floor(($secTime - ($hours * 3600)) / 60);
+
+	return sprintf('%02d', $hours).":".sprintf('%02d', $mins);
 }
 
 /**
@@ -5055,7 +5368,7 @@ function block_exacomp_parse_seconds_to_timestring($secTime) {
  * @param unknown $studentid
  * @return BLOCK_EXACOMP_EXAMPLE_STATE_LOCKED_TIME|BLOCK_EXACOMP_EXAMPLE_STATE_EVALUATED_NEGATIV|BLOCK_EXACOMP_EXAMPLE_STATE_EVALUATED_POSITIV|BLOCK_EXACOMP_EXAMPLE_STATE_SUBMITTED|BLOCK_EXACOMP_EXAMPLE_STATE_IN_CALENDAR|BLOCK_EXACOMP_EXAMPLE_STATE_IN_POOL|BLOCK_EXACOMP_EXAMPLE_STATE_NOT_SET
  */
-function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $studentid){
+function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $studentid) {
 	global $DB;
 	//state 0 = never used in weekly schedule, no evaluation
 	//state 1 = planned to work with example -> example is in pool, but no
@@ -5065,48 +5378,53 @@ function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $stud
 	//state 5 = evaluated -> only from teacher exacomp evaluation > nE
 	//state 9 = locked time
 
-	$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id'=>$exampleid));
-		if($example->blocking_event)
-			return BLOCK_EXACOMP_EXAMPLE_STATE_LOCKED_TIME;
+	$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
+	if ($example->blocking_event) {
+		return BLOCK_EXACOMP_EXAMPLE_STATE_LOCKED_TIME;
+	}
 
-	$comp = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>$studentid));
+	$comp = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, array('courseid' => $courseid, 'exampleid' => $exampleid, 'studentid' => $studentid));
 
-	if($comp && $comp->teacher_evaluation !== null){
-		if($comp->teacher_evaluation == 0)
+	if ($comp && $comp->teacher_evaluation !== null) {
+		if ($comp->teacher_evaluation == 0) {
 			return BLOCK_EXACOMP_EXAMPLE_STATE_EVALUATED_NEGATIV;
+		}
 
 		return BLOCK_EXACOMP_EXAMPLE_STATE_EVALUATED_POSITIV;
 	}
 
-	if(block_exacomp_exaportexists()) {
+	if (block_exacomp_exaportexists()) {
 		$sql = "select * FROM {block_exacompitemexample} ie
 				JOIN {block_exaportitem} i ON i.id = ie.itemid
 				WHERE ie.exampleid = ? AND i.userid = ?";
 
-		$items_examp = $DB->get_records_sql($sql,array($exampleid, $studentid));
+		$items_examp = $DB->get_records_sql($sql, array($exampleid, $studentid));
 
-		if($items_examp || ($comp && $comp->student_evaluation !== null && $comp->student_evaluation > 0))
+		if ($items_examp || ($comp && $comp->student_evaluation !== null && $comp->student_evaluation > 0)) {
 			return BLOCK_EXACOMP_EXAMPLE_STATE_SUBMITTED;
+		}
 	}
 
-	$schedule = $DB->get_records(BLOCK_EXACOMP_DB_SCHEDULE, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>$studentid));
+	$schedule = $DB->get_records(BLOCK_EXACOMP_DB_SCHEDULE, array('courseid' => $courseid, 'exampleid' => $exampleid, 'studentid' => $studentid));
 
-	if($schedule){
+	if ($schedule) {
 		$in_work = false;
-		foreach($schedule as $entry){
-			if($entry->start>0 && $entry->end > 0) {
+		foreach ($schedule as $entry) {
+			if ($entry->start > 0 && $entry->end > 0) {
 				$in_work = true;
 			}
 		}
 
-		if($in_work)
+		if ($in_work) {
 			return BLOCK_EXACOMP_EXAMPLE_STATE_IN_CALENDAR;
-		else
+		} else {
 			return BLOCK_EXACOMP_EXAMPLE_STATE_IN_POOL;
+		}
 	}
 
 	return BLOCK_EXACOMP_EXAMPLE_STATE_NOT_SET;
 }
+
 /**
  * check if example already contained in pre planning storage
  * @param unknown $exampleid
@@ -5114,11 +5432,12 @@ function block_exacomp_get_dakora_state_for_example($courseid, $exampleid, $stud
  * @param unknown $courseid
  * @return boolean
  */
-function block_exacomp_in_pre_planing_storage($exampleid, $creatorid, $courseid){
+function block_exacomp_in_pre_planing_storage($exampleid, $creatorid, $courseid) {
 	global $DB;
 
-	if($DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('exampleid'=>$exampleid, 'creatorid'=>$creatorid, 'courseid'=>$courseid, 'studentid'=>0)))
+	if ($DB->get_record(BLOCK_EXACOMP_DB_SCHEDULE, array('exampleid' => $exampleid, 'creatorid' => $creatorid, 'courseid' => $courseid, 'studentid' => 0))) {
 		return true;
+	}
 
 	return false;
 }
@@ -5128,10 +5447,10 @@ function block_exacomp_in_pre_planing_storage($exampleid, $creatorid, $courseid)
  * @param unknown $creatorid
  * @param unknown $courseid
  */
-function block_exacomp_has_items_pre_planning_storage($creatorid, $courseid){
+function block_exacomp_has_items_pre_planning_storage($creatorid, $courseid) {
 	global $DB;
 
-	return $DB->get_records(BLOCK_EXACOMP_DB_SCHEDULE, array('creatorid'=>$creatorid, 'courseid'=>$courseid, 'studentid'=>0));
+	return $DB->get_records(BLOCK_EXACOMP_DB_SCHEDULE, array('creatorid' => $creatorid, 'courseid' => $courseid, 'studentid' => 0));
 }
 
 /**
@@ -5139,7 +5458,7 @@ function block_exacomp_has_items_pre_planning_storage($creatorid, $courseid){
  * @param unknown $creatorid
  * @param unknown $courseid
  */
-function block_exacomp_get_pre_planning_storage($creatorid, $courseid){
+function block_exacomp_get_pre_planning_storage($creatorid, $courseid) {
 	global $DB;
 
 	$sql = "select s.*,
@@ -5154,7 +5473,7 @@ function block_exacomp_get_pre_planning_storage($creatorid, $courseid){
 			)
 			ORDER BY s.id";
 
-	return $DB->get_records_sql($sql,array($courseid, $creatorid));
+	return $DB->get_records_sql($sql, array($courseid, $creatorid));
 }
 
 /**
@@ -5163,10 +5482,11 @@ function block_exacomp_get_pre_planning_storage($creatorid, $courseid){
  * @param unknown $courseid
  * @return unknown
  */
-function block_exacomp_get_student_pool_examples($students, $courseid){
-	foreach($students as $student){
+function block_exacomp_get_student_pool_examples($students, $courseid) {
+	foreach ($students as $student) {
 		$student->pool_examples = block_exacomp_get_examples_for_pool($student->id, $courseid);
 	}
+
 	return $students;
 }
 
@@ -5201,22 +5521,23 @@ function block_exacomp_example_order($exampleid, $descrid, $operator = "<") {
 	global $DB, $USER, $COURSE;
 
 	$example = \block_exacomp\example::get($exampleid);
-	if(!$example || !$DB->record_exists(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $exampleid,'descrid' => $descrid)))
+	if (!$example || !$DB->record_exists(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $exampleid, 'descrid' => $descrid))) {
 		return false;
+	}
 
-	$desc_examp = $DB->get_record(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $exampleid,'descrid' => $descrid));
+	$desc_examp = $DB->get_record(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $exampleid, 'descrid' => $descrid));
 	$example->descsorting = $desc_examp->sorting;
 
 	if (block_exacomp_require_item_capability(BLOCK_EXACOMP_CAP_SORTING, $example)) {
 		$sql = 'SELECT e.*, de.sorting as descsorting FROM {block_exacompexamples} e
 			JOIN {block_exacompdescrexamp_mm} de ON de.exampid = e.id
-			WHERE de.sorting ' . ((strcmp($operator,"<") == 0) ? "<" : ">") . ' ? AND de.descrid = ?
-			ORDER BY de.sorting ' . ((strcmp($operator,"<") == 0) ? "DESC" : "ASC") . '
+			WHERE de.sorting '.((strcmp($operator, "<") == 0) ? "<" : ">").' ? AND de.descrid = ?
+			ORDER BY de.sorting '.((strcmp($operator, "<") == 0) ? "DESC" : "ASC").'
 			LIMIT 1';
 
-		$switchWith = $DB->get_record_sql($sql,array($example->descsorting, $descrid));
+		$switchWith = $DB->get_record_sql($sql, array($example->descsorting, $descrid));
 
-		if($switchWith) {
+		if ($switchWith) {
 			$oldSorting = ($example->descsorting) ? $example->descsorting : 0;
 
 			$example->descsorting = ($switchWith->descsorting) ? $switchWith->descsorting : 0;
@@ -5225,13 +5546,14 @@ function block_exacomp_example_order($exampleid, $descrid, $operator = "<") {
 			$desc_examp->sorting = $example->descsorting;
 			$DB->update_record(BLOCK_EXACOMP_DB_DESCEXAMP, $desc_examp);
 
-			$desc_examp = $DB->get_record(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $switchWith->id,'descrid' => $descrid));
+			$desc_examp = $DB->get_record(BLOCK_EXACOMP_DB_DESCEXAMP, array('exampid' => $switchWith->id, 'descrid' => $descrid));
 			$desc_examp->sorting = $switchWith->descsorting;
 			$DB->update_record(BLOCK_EXACOMP_DB_DESCEXAMP, $desc_examp);
 
 			return true;
 		}
 	}
+
 	return false;
 }
 
@@ -5239,10 +5561,10 @@ function block_exacomp_example_order($exampleid, $descrid, $operator = "<") {
  * remove examples from pre-planning storage
  * @param unknown $courseid
  */
-function block_exacomp_empty_pre_planning_storage($courseid){
+function block_exacomp_empty_pre_planning_storage($courseid) {
 	global $DB;
 
-	$DB->delete_records(BLOCK_EXACOMP_DB_SCHEDULE, array('courseid'=>$courseid, 'studentid'=>0));
+	$DB->delete_records(BLOCK_EXACOMP_DB_SCHEDULE, array('courseid' => $courseid, 'studentid' => 0));
 }
 
 /**
@@ -5261,26 +5583,29 @@ function block_exacomp_get_current_item_for_example($userid, $exampleid) {
 			ORDER BY ie.timecreated DESC
 			LIMIT 1';
 
-	return $DB->get_record_sql($sql,array($exampleid, $userid));
+	return $DB->get_record_sql($sql, array($exampleid, $userid));
 }
 
 /**
  * keeps selected studentid in the session
  */
 function block_exacomp_get_studentid() {
-	if(!block_exacomp_is_teacher())
+	if (!block_exacomp_is_teacher()) {
 		return g::$USER->id;
+	}
 
 	$studentid = optional_param('studentid', BLOCK_EXACOMP_DEFAULT_STUDENT, PARAM_INT);
 
-	if($studentid == BLOCK_EXACOMP_DEFAULT_STUDENT) {
-		if(isset($_SESSION['studentid-'.g::$COURSE->id]))
+	if ($studentid == BLOCK_EXACOMP_DEFAULT_STUDENT) {
+		if (isset($_SESSION['studentid-'.g::$COURSE->id])) {
 			$studentid = $_SESSION['studentid-'.g::$COURSE->id];
-		else
+		} else {
 			$studentid = BLOCK_EXACOMP_SHOW_ALL_STUDENTS;
+		}
 	} else {
 		$_SESSION['studentid-'.g::$COURSE->id] = $studentid;
 	}
+
 	return $studentid;
 }
 
@@ -5291,8 +5616,8 @@ function block_exacomp_get_studentid() {
 function block_exacomp_get_message_icon($userid) {
 	global $DB, $CFG, $COURSE;
 
-	if($userid != BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
-		require_once($CFG->dirroot . '/message/lib.php');
+	if ($userid != BLOCK_EXACOMP_SHOW_ALL_STUDENTS) {
+		require_once($CFG->dirroot.'/message/lib.php');
 
 		$userto = $DB->get_record('user', array('id' => $userid));
 
@@ -5304,17 +5629,18 @@ function block_exacomp_get_message_icon($userid) {
 		$url = new moodle_url('message/index.php', array('id' => $userto->id));
 		$attributes = message_messenger_sendmessage_link_params($userto);
 
-		return html_writer::link($url, html_writer::tag('button',html_writer::img(new moodle_url('/blocks/exacomp/pix/envelope.png'), block_exacomp_get_string('message','message'),array('title' => fullname($userto)))), $attributes);
+		return html_writer::link($url, html_writer::tag('button', html_writer::img(new moodle_url('/blocks/exacomp/pix/envelope.png'), block_exacomp_get_string('message', 'message'), array('title' => fullname($userto)))), $attributes);
 	} else {
 		$attributes = array(
 			'exa-type' => 'iframe-popup',
-			'href'=>new moodle_url('message_to_course.php',array('courseid'=>$COURSE->id)),
+			'href' => new moodle_url('message_to_course.php', array('courseid' => $COURSE->id)),
 			'exa-width' => '340px',
 			'exa-height' => '340px',
 		);
+
 		return html_writer::tag('button',
-				html_writer::img(new moodle_url('/blocks/exacomp/pix/envelope.png'), block_exacomp_get_string('message','message'),array('title' => block_exacomp_get_string('messagetocourse'))),
-				$attributes);
+			html_writer::img(new moodle_url('/blocks/exacomp/pix/envelope.png'), block_exacomp_get_string('message', 'message'), array('title' => block_exacomp_get_string('messagetocourse'))),
+			$attributes);
 	}
 }
 
@@ -5331,15 +5657,18 @@ function block_exacomp_get_message_icon($userid) {
 function block_exacomp_send_notification($notificationtype, $userfrom, $userto, $subject, $message, $context, $contexturl) {
 	global $CFG, $DB;
 
-	if(!get_config('exacomp','notifications'))
+	if (!get_config('exacomp', 'notifications')) {
 		return;
+	}
 
 	// do not send too many notifications. therefore check if user has got same notification within the last 5 minutes
-	if($DB->get_records_select('message_read', "useridfrom = ? AND useridto = ? AND contexturlname = ? AND timecreated > ?",
-		array('useridfrom' => $userfrom->id, 'useridto' => $userto->id, 'contexturlname' => $context, (time()-5*60))))
+	if ($DB->get_records_select('message_read', "useridfrom = ? AND useridto = ? AND contexturlname = ? AND timecreated > ?",
+		array('useridfrom' => $userfrom->id, 'useridto' => $userto->id, 'contexturlname' => $context, (time() - 5 * 60)))
+	) {
 		return;
+	}
 
-	require_once($CFG->dirroot . '/message/lib.php');
+	require_once($CFG->dirroot.'/message/lib.php');
 
 	$eventdata = new stdClass ();
 	$eventdata->modulename = 'block_exacomp';
@@ -5357,7 +5686,7 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
 	$eventdata->contexturl = $contexturl;
 	$eventdata->contexturlname = $context;
 
-	message_send ( $eventdata );
+	message_send($eventdata);
 }
 
 /**
@@ -5370,13 +5699,13 @@ function block_exacomp_send_notification($notificationtype, $userfrom, $userto, 
  * @param unknown $courseid
  */
 function block_exacomp_send_submission_notification($userfrom, $userto, $example, $date, $time, $courseid) {
-	global $CFG,$USER,$SITE;
+	global $CFG, $USER, $SITE;
 
-	$subject = block_exacomp_get_string('notification_submission_subject', null,array('site'=>$SITE->fullname, 'student' => fullname($userfrom), 'example' => $example->title));
+	$subject = block_exacomp_get_string('notification_submission_subject', null, array('site' => $SITE->fullname, 'student' => fullname($userfrom), 'example' => $example->title));
 
 	$gridurl = block_exacomp_get_gridurl_for_example($courseid, $userto->id, $example->id);
 
-	$message = block_exacomp_get_string('notification_submission_body', null,array('student' => fullname($userfrom), 'example' => $example->title, 'date' => $date, 'time' => $time, 'viewurl' => $gridurl, 'receiver'=>fullname($userto), 'site'=>$SITE->fullname));
+	$message = block_exacomp_get_string('notification_submission_body', null, array('student' => fullname($userfrom), 'example' => $example->title, 'date' => $date, 'time' => $time, 'viewurl' => $gridurl, 'receiver' => fullname($userto), 'site' => $SITE->fullname));
 	$context = block_exacomp_get_string('notification_submission_context');
 
 	block_exacomp_send_notification("submission", $userfrom, $userto, $subject, $message, $context, $gridurl);
@@ -5392,9 +5721,9 @@ function block_exacomp_notify_all_teachers_about_submission($courseid, $examplei
 	global $USER, $DB;
 
 	$teachers = block_exacomp_get_teachers_by_course($courseid);
-	if($teachers) {
-		foreach($teachers as $teacher) {
-			block_exacomp_send_submission_notification($USER, $teacher, $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES,array('id'=>$exampleid)), date("D, d.m.Y",$timecreated), date("H:s",$timecreated), $courseid);
+	if ($teachers) {
+		foreach ($teachers as $teacher) {
+			block_exacomp_send_submission_notification($USER, $teacher, $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid)), date("D, d.m.Y", $timecreated), date("H:s", $timecreated), $courseid);
 		}
 	}
 }
@@ -5410,11 +5739,11 @@ function block_exacomp_send_self_assessment_notification($userfrom, $userto, $co
 
 	$course = get_course($courseid);
 
-	$subject = block_exacomp_get_string('notification_self_assessment_subject', null,array('site'=>$SITE->fullname,'course' => $course->shortname));
-	$message = block_exacomp_get_string('notification_self_assessment_body', null,array('course' => $course->fullname, 'student' => fullname($userfrom), 'receiver'=>fullname($userto), 'site'=>$SITE->fullname));
+	$subject = block_exacomp_get_string('notification_self_assessment_subject', null, array('site' => $SITE->fullname, 'course' => $course->shortname));
+	$message = block_exacomp_get_string('notification_self_assessment_body', null, array('course' => $course->fullname, 'student' => fullname($userfrom), 'receiver' => fullname($userto), 'site' => $SITE->fullname));
 	$context = block_exacomp_get_string('notification_self_assessment_context');
 
-	$viewurl = new moodle_url('/blocks/exacomp/assign_competencies.php',array('courseid' => $courseid));
+	$viewurl = new moodle_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid));
 
 	block_exacomp_send_notification("self_assessment", $userfrom, $userto, $subject, $message, $context, $viewurl);
 }
@@ -5427,8 +5756,8 @@ function block_exacomp_notify_all_teachers_about_self_assessment($courseid) {
 	global $USER, $DB;
 
 	$teachers = block_exacomp_get_teachers_by_course($courseid);
-	if($teachers) {
-		foreach($teachers as $teacher) {
+	if ($teachers) {
+		foreach ($teachers as $teacher) {
 			block_exacomp_send_self_assessment_notification($USER, $teacher, $courseid);
 		}
 	}
@@ -5441,15 +5770,15 @@ function block_exacomp_notify_all_teachers_about_self_assessment($courseid) {
  * @param unknown $courseid
  */
 function block_exacomp_send_grading_notification($userfrom, $userto, $courseid) {
-	global $CFG,$USER, $SITE;
+	global $CFG, $USER, $SITE;
 
 	$course = get_course($courseid);
 
-	$subject = block_exacomp_get_string('notification_grading_subject', null,array('site'=>$SITE->fullname,'course' => $course->shortname));
-	$message = block_exacomp_get_string('notification_grading_body', null,array('course' => $course->fullname, 'teacher' => fullname($userfrom), 'receiver'=>fullname($userto), 'site'=>$SITE->fullname));
+	$subject = block_exacomp_get_string('notification_grading_subject', null, array('site' => $SITE->fullname, 'course' => $course->shortname));
+	$message = block_exacomp_get_string('notification_grading_body', null, array('course' => $course->fullname, 'teacher' => fullname($userfrom), 'receiver' => fullname($userto), 'site' => $SITE->fullname));
 	$context = block_exacomp_get_string('notification_grading_context');
 
-	$viewurl = new moodle_url('/blocks/exacomp/assign_competencies.php',array('courseid' => $courseid));
+	$viewurl = new moodle_url('/blocks/exacomp/assign_competencies.php', array('courseid' => $courseid));
 
 	block_exacomp_send_notification("grading", $userfrom, $userto, $subject, $message, $context, $viewurl);
 }
@@ -5462,8 +5791,8 @@ function block_exacomp_send_grading_notification($userfrom, $userto, $courseid) 
 function block_exacomp_notify_students_about_grading($courseid, $students) {
 	global $USER, $DB;
 
-	if($students) {
-		foreach($students as $student) {
+	if ($students) {
+		foreach ($students as $student) {
 			block_exacomp_send_grading_notification($USER, $DB->get_record('user', array('id' => $student)), $courseid);
 		}
 	}
@@ -5477,15 +5806,15 @@ function block_exacomp_notify_students_about_grading($courseid, $students) {
  * @param unknown $exampleid
  */
 function block_exacomp_send_weekly_schedule_notification($userfrom, $userto, $courseid, $exampleid) {
-	global $CFG,$USER,$DB, $SITE;
+	global $CFG, $USER, $DB, $SITE;
 
 	$course = get_course($courseid);
-	$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES,array('id' => $exampleid));
-	$subject = block_exacomp_get_string('notification_weekly_schedule_subject', null, array('site'=>$SITE->fullname));
-	$message = block_exacomp_get_string('notification_weekly_schedule_body', null,array('course' => $course->fullname, 'teacher' => fullname($userfrom), 'receiver'=>fullname($userto), 'site'=>$SITE->fullname));
+	$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
+	$subject = block_exacomp_get_string('notification_weekly_schedule_subject', null, array('site' => $SITE->fullname));
+	$message = block_exacomp_get_string('notification_weekly_schedule_body', null, array('course' => $course->fullname, 'teacher' => fullname($userfrom), 'receiver' => fullname($userto), 'site' => $SITE->fullname));
 	$context = block_exacomp_get_string('notification_weekly_schedule_context');
 
-	$viewurl = new moodle_url('/blocks/exacomp/weekly_schedule.php',array('courseid' => $courseid));
+	$viewurl = new moodle_url('/blocks/exacomp/weekly_schedule.php', array('courseid' => $courseid));
 
 	block_exacomp_send_notification("weekly_schedule", $userfrom, $userto, $subject, $message, $context, $viewurl);
 }
@@ -5498,12 +5827,12 @@ function block_exacomp_send_weekly_schedule_notification($userfrom, $userto, $co
  * @param unknown $exampleid
  */
 function block_exacomp_send_example_comment_notification($userfrom, $userto, $courseid, $exampleid) {
-	global $CFG,$USER,$DB, $SITE;
+	global $CFG, $USER, $DB, $SITE;
 
 	$course = get_course($courseid);
-	$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES,array('id' => $exampleid));
-	$subject = block_exacomp_get_string('notification_example_comment_subject', null, array('example' => $example->title, 'site'=>$SITE->fullname));
-	$message = block_exacomp_get_string('notification_example_comment_body', null,array('course' => $course->fullname, 'teacher' => fullname($userfrom), 'example' => $example->title, 'receiver'=>fullname($userto), 'site'=>$SITE->fullname));
+	$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array('id' => $exampleid));
+	$subject = block_exacomp_get_string('notification_example_comment_subject', null, array('example' => $example->title, 'site' => $SITE->fullname));
+	$message = block_exacomp_get_string('notification_example_comment_body', null, array('course' => $course->fullname, 'teacher' => fullname($userfrom), 'example' => $example->title, 'receiver' => fullname($userto), 'site' => $SITE->fullname));
 	$context = block_exacomp_get_string('notification_example_comment_context');
 
 	$viewurl = block_exacomp_get_viewurl_for_example($userto->id, $userto->id, $example->id);
@@ -5520,6 +5849,7 @@ function block_exacomp_get_cm_from_cmid($cmid) {
 	try {
 		// get_course_and_cm_from_cmid() throws moodle_exception if cm not found
 		list($course, $cm) = get_course_and_cm_from_cmid($cmid);
+
 		return $cm;
 	} catch (moodle_exception $e) {
 		return null;
@@ -5535,13 +5865,14 @@ function block_exacomp_get_cm_from_cmid($cmid) {
  * @param unknown $additionalinfo
  * @param unknown $comptype
  */
-function block_exacomp_save_additional_grading_for_descriptor($courseid, $descriptorid, $studentid, $additionalinfo, $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR){
+function block_exacomp_save_additional_grading_for_descriptor($courseid, $descriptorid, $studentid, $additionalinfo, $comptype = BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
 	global $DB, $USER;
 
-	if($additionalinfo > 6.0)
+	if ($additionalinfo > 6.0) {
 		$additionalinfo = 6.0;
-	elseif($additionalinfo < 1.0 && $additionalinfo != "")
+	} elseif ($additionalinfo < 1.0 && $additionalinfo != "") {
 		$additionalinfo = 1.0;
+	}
 
 	$value = block_exacomp\global_config::get_additionalinfo_value_mapping($additionalinfo);
 	$record = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, $comptype, $descriptorid);
@@ -5549,14 +5880,15 @@ function block_exacomp_save_additional_grading_for_descriptor($courseid, $descri
 	// force additional info to be stored with a dot as decimal mark
 	$additionalinfo = str_replace(",", ".", $additionalinfo);
 
-	if($additionalinfo == '' || empty($additionalinfo))
-		$additionalinfo = NULL;
+	if ($additionalinfo == '' || empty($additionalinfo)) {
+		$additionalinfo = null;
+	}
 
-	if($record){
+	if ($record) {
 		$record->additionalinfo = $additionalinfo;
 		$record->value = $value;
 		$DB->update_record(BLOCK_EXACOMP_DB_COMPETENCES, $record);
-	}else{
+	} else {
 		$insert = new stdClass();
 		$insert->compid = $descriptorid;
 		$insert->userid = $studentid;
@@ -5575,7 +5907,7 @@ function block_exacomp_save_additional_grading_for_descriptor($courseid, $descri
  * get all examples associated with any descriptors in this course
  * @param unknown $courseid
  */
-function block_exacomp_get_examples_by_course($courseid){
+function block_exacomp_get_examples_by_course($courseid) {
 	$sql = "SELECT ex.*
 		FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ex
 		WHERE ex.id IN (
@@ -5595,7 +5927,7 @@ function block_exacomp_get_examples_by_course($courseid){
  * @param unknown $courseid
  * @return boolean
  */
-function block_exacomp_course_has_examples($courseid){
+function block_exacomp_course_has_examples($courseid) {
 	$sql = "SELECT COUNT(*)
 		FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} ex
 		JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} dex ON ex.id = dex.exampid
@@ -5620,7 +5952,7 @@ function block_exacomp_send_message_to_course($courseid, $message) {
 
 	$students = block_exacomp_get_students_by_course($courseid);
 
-	foreach($students as $student) {
+	foreach ($students as $student) {
 		if (empty($student->id) || isguestuser($student->id) || $student->id == $USER->id) {
 			continue;
 		}
@@ -5641,7 +5973,7 @@ function block_exacomp_send_message_to_course($courseid, $message) {
  * @param unknown $creatorid
  * @param unknown $studentid
  */
-function block_exacomp_create_blocking_event($courseid, $title, $creatorid, $studentid){
+function block_exacomp_create_blocking_event($courseid, $title, $creatorid, $studentid) {
 	global $DB;
 
 	$example = new stdClass();
@@ -5659,8 +5991,8 @@ function block_exacomp_create_blocking_event($courseid, $title, $creatorid, $stu
 
 	$scheduleid = $DB->insert_record(BLOCK_EXACOMP_DB_SCHEDULE, $schedule);
 
-	$record = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>0, 'visible'=>1));
-	if(!$record){
+	$record = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid' => $courseid, 'exampleid' => $exampleid, 'studentid' => 0, 'visible' => 1));
+	if (!$record) {
 		$visibility = new stdClass();
 		$visibility->courseid = $courseid;
 		$visibility->exampleid = $exampleid;
@@ -5677,17 +6009,17 @@ function block_exacomp_create_blocking_event($courseid, $title, $creatorid, $stu
  * @param unknown $exampleid
  * @param unknown $studentid
  */
-function block_exacomp_check_student_example_permission($courseid, $exampleid, $studentid){
+function block_exacomp_check_student_example_permission($courseid, $exampleid, $studentid) {
 	global $DB;
 
-	return $DB->record_exists(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid'=>$courseid, 'exampleid'=>$exampleid, 'studentid'=>$studentid, 'visible'=>1));
+	return $DB->record_exists(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid' => $courseid, 'exampleid' => $exampleid, 'studentid' => $studentid, 'visible' => 1));
 }
 
 /**
  * needed to create example over webservice API
  * @param unknown $descriptorid
  */
-function block_exacomp_get_courseids_by_descriptor($descriptorid){
+function block_exacomp_get_courseids_by_descriptor($descriptorid) {
 	$sql = 'SELECT ct.courseid
 		FROM {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct 
 		JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} dt ON ct.topicid = dt.topicid  
@@ -5696,7 +6028,7 @@ function block_exacomp_get_courseids_by_descriptor($descriptorid){
 	return g::$DB->get_fieldset_sql($sql, array($descriptorid));
 }
 
-function block_exacomp_get_courseids_by_example($exampleid){
+function block_exacomp_get_courseids_by_example($exampleid) {
 	$sql = 'SELECT ct.courseid
 		FROM {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct 
 		JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} dt ON ct.topicid = dt.topicid  
@@ -5707,41 +6039,45 @@ function block_exacomp_get_courseids_by_example($exampleid){
 }
 
 /**
-* get evaluation images for competence profile for teacher
-* according to course scheme and admin scheme
-**/
-function block_exacomp_get_html_for_niveau_eval($evaluation){
+ * get evaluation images for competence profile for teacher
+ * according to course scheme and admin scheme
+ **/
+function block_exacomp_get_html_for_niveau_eval($evaluation) {
 	$evaluation_niveau_type = block_exacomp_evaluation_niveau_type();
-	if($evaluation_niveau_type == 0)
+	if ($evaluation_niveau_type == 0) {
 		return;
+	}
 
-	if($evaluation_niveau_type == 0)
+	if ($evaluation_niveau_type == 0) {
 		return;
+	}
 
 	//predefined pictures
-		$grey_1_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_1_'.$evaluation_niveau_type.'.png';
-		$grey_2_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_2_'.$evaluation_niveau_type.'.png';
-		$grey_3_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_3_'.$evaluation_niveau_type.'.png';
-		$one_src = '/blocks/exacomp/pix/compprof_rating_teacher_1_'.$evaluation_niveau_type.'.png';
-		$two_src = '/blocks/exacomp/pix/compprof_rating_teacher_2_'.$evaluation_niveau_type.'.png';
-		$three_src = '/blocks/exacomp/pix/compprof_rating_teacher_3_'.$evaluation_niveau_type.'.png';
+	$grey_1_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_1_'.$evaluation_niveau_type.'.png';
+	$grey_2_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_2_'.$evaluation_niveau_type.'.png';
+	$grey_3_src = '/blocks/exacomp/pix/compprof_rating_teacher_grey_3_'.$evaluation_niveau_type.'.png';
+	$one_src = '/blocks/exacomp/pix/compprof_rating_teacher_1_'.$evaluation_niveau_type.'.png';
+	$two_src = '/blocks/exacomp/pix/compprof_rating_teacher_2_'.$evaluation_niveau_type.'.png';
+	$three_src = '/blocks/exacomp/pix/compprof_rating_teacher_3_'.$evaluation_niveau_type.'.png';
 
-		$image1 = $grey_1_src;
-		$image2 = $grey_2_src;
-		$image3 = $grey_3_src;
-		if($evaluation > -1){
-			if($evaluation == 1){
-				$image1 = $one_src;
-			}if($evaluation == 2){
-				$image2 = $two_src;
-			}if($evaluation == 3){
-				$image3 = $three_src;
-			}
+	$image1 = $grey_1_src;
+	$image2 = $grey_2_src;
+	$image3 = $grey_3_src;
+	if ($evaluation > -1) {
+		if ($evaluation == 1) {
+			$image1 = $one_src;
 		}
+		if ($evaluation == 2) {
+			$image2 = $two_src;
+		}
+		if ($evaluation == 3) {
+			$image3 = $three_src;
+		}
+	}
 
-		return html_writer::empty_tag('img', array('src'=>new moodle_url($image1), 'width'=>'25', 'height'=>'25')).
-				html_writer::empty_tag('img', array('src'=>new moodle_url($image2), 'width'=>'25', 'height'=>'25')).
-				html_writer::empty_tag('img', array('src'=>new moodle_url($image3), 'width'=>'25', 'height'=>'25'));
+	return html_writer::empty_tag('img', array('src' => new moodle_url($image1), 'width' => '25', 'height' => '25')).
+	html_writer::empty_tag('img', array('src' => new moodle_url($image2), 'width' => '25', 'height' => '25')).
+	html_writer::empty_tag('img', array('src' => new moodle_url($image3), 'width' => '25', 'height' => '25'));
 }
 
 /**
@@ -5752,10 +6088,10 @@ function block_exacomp_get_html_for_niveau_eval($evaluation){
  * @param unknown $studentid
  * @param unknown $subjectid
  * @return array{[subject_title, subject_eval, subject_evalniveau, subject_evalniveauid, timestamp,
- * 				  content {[topicid] => [topic_evalniveau, topic_evalniveauid, topic_eval, topicid, visible, timestamp, span,
- * 					        niveaus {[niveautitle] => [evalniveau, evalniveauid, eval, visible, show, timestamp, span]}
- * 				  ]}
- * 		   ]}
+ *                  content {[topicid] => [topic_evalniveau, topic_evalniveauid, topic_eval, topicid, visible, timestamp, span,
+ *                            niveaus {[niveautitle] => [evalniveau, evalniveauid, eval, visible, show, timestamp, span]}
+ *                  ]}
+ *           ]}
  * where xx_evalniveau is empty if block_exacomp_use_eval_niveau() = false
  *       xx_evalniveauid is -1 is not evaluated and 0 if block_exacomp_use_eval_niveau() = false
  *       xx_eval is additional grading (not mapped!) if block_exacomp_additional_grading() = true
@@ -5763,126 +6099,92 @@ function block_exacomp_get_html_for_niveau_eval($evaluation){
  *       show = false, if niveau not used within current topic
  *       span = 1 or 0 inidication if niveau is across (übergreifend)
  */
-function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $subjectid){
+function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $subjectid) {
 	global $DB;
 	list($course_subjects, $table_column, $table_header, $selectedSubject, $selectedTopic, $selectedNiveau) = block_exacomp_init_overview_data($courseid, $subjectid, -1, 0, false, block_exacomp_is_teacher(), $studentid);
 
-	$user = $DB->get_record('user', array('id'=>$studentid));
+	$user = $DB->get_record('user', array('id' => $studentid));
 	$user = block_exacomp_get_user_information_by_course($user, $courseid);
 
-	$competence_tree = block_exacomp_get_competence_tree($courseid, $subjectid, null, false, null, true, array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES), false, false, false, false, false, false);
+	$subject = block_exacomp\db_layer_course::create($courseid)->get_subject($subjectid);
+	if (!$subject) {
+		return;
+	}
+
 	$table_content = new stdClass();
 	$table_content->content = array();
 
 	$use_evalniveau = block_exacomp_use_eval_niveau();
 	$scheme_items = \block_exacomp\global_config::get_value_titles($courseid);
 	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
-	foreach($competence_tree as $subject){
-		foreach($subject->topics as $topic){
-			$table_content->content[$topic->id] = new stdClass();
-			$table_content->content[$topic->id]->niveaus = array();
-			$table_content->content[$topic->id]->span = 0;
-			foreach($topic->descriptors as $descriptor){
+	foreach ($subject->topics as $topic) {
+		// auswertung pro lfs
+		$data = $table_content->content[$topic->id] = block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $studentid, $topic);
 
-				$evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
+		// gesamt für topic
+		$data->topic_evalniveauid =
+			(($use_evalniveau) ?
+				((isset($user->topics->niveau[$topic->id]))
+					? $user->topics->niveau[$topic->id] : -1)
+				: 0);
 
-				$niveau = $DB->get_record(BLOCK_EXACOMP_DB_NIVEAUS, array('id'=>$descriptor->niveauid));
-				if($niveau){
-					$table_content->content[$topic->id]->niveaus[$niveau->title] = new stdClass();
-					$table_content->content[$topic->id]->niveaus[$niveau->title]->evalniveau = ($evaluation)?
-						((block_exacomp_use_eval_niveau())?
-								(($evaluation->evalniveauid)?$evaluationniveau_items[$evaluation->evalniveauid].' ':'')
-						:''):'';
+		$data->topic_evalniveau = @$evaluationniveau_items[$data->topic_evalniveauid] ?: '';
 
-					$table_content->content[$topic->id]->niveaus[$niveau->title]->evalniveauid = ($use_evalniveau)?
-							(($evaluation)? (($evaluation->evalniveauid)?$evaluation->evalniveauid:-1)
-								:-1)
-						:0;
+		$data->topic_eval =
+			((block_exacomp_additional_grading()) ?
+				((isset($user->topics->teacher_additional_grading[$topic->id]))
+					? $user->topics->teacher_additional_grading[$topic->id] : '')
+				: ((isset($user->topics->teacher[$topic->id]))
+					? $scheme_items[$user->topics->teacher[$topic->id]] : '-1'));
 
-					$table_content->content[$topic->id]->niveaus[$niveau->title]->eval =
-						(block_exacomp_additional_grading())
-						? (($evaluation && $evaluation->additionalinfo) ? $evaluation->additionalinfo : '')
-						: (($evaluation && $evaluation->value) ? $scheme_items[$evaluation->value] : -1);
-
-					$table_content->content[$topic->id]->niveaus[$niveau->title]->show = true;
-
-					$table_content->content[$topic->id]->niveaus[$niveau->title]->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid);
-
-					$table_content->content[$topic->id]->niveaus[$niveau->title]->timestamp = ((isset($evaluation->timestamp))?$evaluation->timestamp:0);
-
-					if($niveau->span == 1)
-						$table_content->content[$topic->id]->span = 1;
-				}
-			}
-
-			$table_content->content[$topic->id]->topic_evalniveau =
-						(($use_evalniveau)?
-								((isset($user->topics->niveau[$topic->id]))
-										?$evaluationniveau_items[$user->topics->niveau[$topic->id]].' ':'')
-						:'');
-
-			$table_content->content[$topic->id]->topic_evalniveauid =
-						(($use_evalniveau)?
-								((isset($user->topics->niveau[$topic->id]))
-										?$user->topics->niveau[$topic->id]:-1)
-						:0);
-
-			$table_content->content[$topic->id]->topic_eval =
-						((block_exacomp_additional_grading())?
-								((isset($user->topics->teacher_additional_grading[$topic->id]))
-										?$user->topics->teacher_additional_grading[$topic->id]:'')
-						:((isset($user->topics->teacher[$topic->id]))
-								?$scheme_items[$user->topics->teacher[$topic->id]]:'-1'));
-
-			$table_content->content[$topic->id]->visible = block_exacomp_is_topic_visible($courseid, $topic, $studentid);
-
-			$table_content->content[$topic->id]->timestamp = ((isset($user->topics->timestamp_teacher[$topic->id]))?$user->topics->timestamp_teacher[$topic->id]:0);
-			$table_content->content[$topic->id]->topic_id = $topic->id;
-		}
-		$table_content->subject_evalniveau =
-					(($use_evalniveau)?
-								((isset($user->subjects->niveau[$subject->id]))
-										?$evaluationniveau_items[$user->subjects->niveau[$subject->id]].' ':'')
-						:'');
-
-		$table_content->subject_evalniveauid = (($use_evalniveau)?
-								((isset($user->subjects->niveau[$subject->id]))
-										?$user->subjects->niveau[$subject->id]:-1)
-						:0);
-
-		$table_content->subject_eval = ((block_exacomp_additional_grading())?
-								((isset($user->subjects->teacher_additional_grading[$subject->id]))
-										?$user->subjects->teacher_additional_grading[$subject->id]:'')
-						:((isset($user->subjects->teacher[$subject->id]))
-								?$scheme_items[$user->subjects->teacher[$subject->id]]:''));
-
-		$table_content->timestamp = (isset($user->subjects->timestamp_teacher[$subject->id]))
-			? $user->subjects->timestamp_teacher[$subject->id] : '';
-
-		$table_content->subject_title = $subject->title;
+		$data->visible = block_exacomp_is_topic_visible($courseid, $topic, $studentid);
+		$data->timestamp = ((isset($user->topics->timestamp_teacher[$topic->id])) ? $user->topics->timestamp_teacher[$topic->id] : 0);
+		$data->topic_id = $topic->id;
 	}
 
-	foreach($table_header as $key => $niveau){
-		if(isset($niveau->span) && $niveau->span == 1)
-			unset($table_header[$key]);
+	$table_content->subject_evalniveau =
+		(($use_evalniveau) ?
+			((isset($user->subjects->niveau[$subject->id]))
+				? $evaluationniveau_items[$user->subjects->niveau[$subject->id]].' ' : '')
+			: '');
 
-		elseif($niveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS)
-			foreach($table_content->content as $row){
-				if($row->span != 1){
-					if(!array_key_exists($niveau->title, $row->niveaus)){
+	$table_content->subject_evalniveauid = (($use_evalniveau) ?
+		((isset($user->subjects->niveau[$subject->id]))
+			? $user->subjects->niveau[$subject->id] : -1)
+		: 0);
+
+	$table_content->subject_eval = ((block_exacomp_additional_grading()) ?
+		((isset($user->subjects->teacher_additional_grading[$subject->id]))
+			? $user->subjects->teacher_additional_grading[$subject->id] : '')
+		: ((isset($user->subjects->teacher[$subject->id]))
+			? $scheme_items[$user->subjects->teacher[$subject->id]] : ''));
+
+	$table_content->timestamp = (isset($user->subjects->timestamp_teacher[$subject->id]))
+		? $user->subjects->timestamp_teacher[$subject->id] : '';
+
+	$table_content->subject_title = $subject->title;
+
+	foreach ($table_header as $key => $niveau) {
+		if (isset($niveau->span) && $niveau->span == 1) {
+			unset($table_header[$key]);
+		} elseif ($niveau->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS) {
+			foreach ($table_content->content as $row) {
+				if ($row->span != 1) {
+					if (!array_key_exists($niveau->title, $row->niveaus)) {
 						$row->niveaus[$niveau->title] = new stdClass();
 						$row->niveaus[$niveau->title]->eval = '';
 						$row->niveaus[$niveau->title]->evalniveau = '';
-						$row->niveaus[$niveau->title]->evalniveauid = ($use_evalniveau)?-1:0;
+						$row->niveaus[$niveau->title]->evalniveauid = ($use_evalniveau) ? -1 : 0;
 						$row->niveaus[$niveau->title]->show = false;
 						$row->niveaus[$niveau->title]->visible = true;
 						$row->niveaus[$niveau->title]->timestamp = 0;
 					}
 				}
 			}
+		}
 	}
 
-	foreach($table_content->content as $row){
+	foreach ($table_content->content as $row) {
 		#sort crosssub entries
 		ksort($row->niveaus);
 	}
@@ -5891,6 +6193,55 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 }
 
 /**
+ * @param $courseid
+ * @param $studentid
+ * @param \block_exacomp\topic $topic
+ * @return object
+ */
+function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $studentid, $topic) {
+	$data = (object)[];
+	$data->niveaus = array();
+	$data->span = 0;
+
+	$use_evalniveau = block_exacomp_use_eval_niveau();
+	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
+
+	foreach ($topic->descriptors as $descriptor) {
+		$evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
+
+		$niveau = \block_exacomp\niveau::get($descriptor->niveauid);
+		if (!$niveau) {
+			continue;
+		}
+
+		$data->niveaus[$niveau->title] = new stdClass();
+
+		if ($use_evalniveau && $evaluation && $evaluation->evalniveauid) {
+			$data->niveaus[$niveau->title]->evalniveau = $evaluationniveau_items[$evaluation->evalniveauid];
+			$data->niveaus[$niveau->title]->evalniveauid = $evaluation->evalniveauid ?: -1;
+		} else {
+			$data->niveaus[$niveau->title]->evalniveau = '';
+			$data->niveaus[$niveau->title]->evalniveauid = -1;
+		}
+
+		// copy of block_exacomp_get_descriptor_statistic_for_topic()
+		$data->niveaus[$niveau->title]->eval =
+			(block_exacomp_additional_grading())
+				? (($evaluation && $evaluation->additionalinfo) ? $evaluation->additionalinfo : '')
+				: (($evaluation && $evaluation->value) ? $scheme_items[$evaluation->value] : -1);
+
+		$data->niveaus[$niveau->title]->show = true;
+		$data->niveaus[$niveau->title]->visible = block_exacomp_is_descriptor_visible($courseid, $descriptor, $studentid);
+		$data->niveaus[$niveau->title]->timestamp = ((isset($evaluation->timestamp)) ? $evaluation->timestamp : 0);
+
+		if ($niveau->span == 1) {
+			$data->span = 1;
+		}
+	}
+
+	return $data;
+}
+/**
  * format data to access via WS
  * @param unknown $courseid
  * @param unknown $userid
@@ -5898,13 +6249,13 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
  * @return \block_exacomp\stdClass
  * see ws dakora_get_competence_grid_for_profile for return value description
  */
-function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid){
+function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $subjectid) {
 	global $DB;
 	list($course_subjects, $table_rows, $table_header, $table_content) = block_exacomp_get_grid_for_competence_profile($courseid, $userid, $subjectid);
 
-	$spanning_niveaus = $DB->get_fieldset_select ( BLOCK_EXACOMP_DB_NIVEAUS, 'title', 'span=?', array (
-				1
-		) );//calculate the col span for spanning niveaus
+	$spanning_niveaus = $DB->get_fieldset_select(BLOCK_EXACOMP_DB_NIVEAUS, 'title', 'span=?', array(
+		1,
+	));//calculate the col span for spanning niveaus
 	$spanning_colspan = block_exacomp_calculate_spanning_niveau_colspan($table_header, $spanning_niveaus);
 
 	$table = new stdClass();
@@ -5918,8 +6269,8 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 	$header_row->columns[0]->span = 0;
 
 	$current_idx = 1;
-	foreach($table_header as $element){
-		if($element->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS){
+	foreach ($table_header as $element) {
+		if ($element->id != BLOCK_EXACOMP_SHOW_ALL_NIVEAUS) {
 			$header_row->columns[$current_idx] = new stdClass();
 			$header_row->columns[$current_idx]->text = $element->title;
 			$header_row->columns[$current_idx]->span = 0;
@@ -5927,7 +6278,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 		}
 	}
 
-	if(block_exacomp_is_topicgrading_enabled()){
+	if (block_exacomp_is_topicgrading_enabled()) {
 		$topic_eval_header = new stdClass();
 		$topic_eval_header->text = block_exacomp_get_string('total');
 		$topic_eval_header->span = 0;
@@ -5937,39 +6288,39 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 	$table->rows[] = $header_row;
 
 
-	foreach($table_content->content as $topic => $rowcontent ){
+	foreach ($table_content->content as $topic => $rowcontent) {
 		$topic_visibility_check = new stdClass();
 		$topic_visibility_check->id = $rowcontent->topic_id;
 		$content_row = new stdClass();
 		$content_row->columns = array();
 
 		$content_row->columns[0] = new stdClass();
-		$content_row->columns[0]->text = block_exacomp_get_topic_numbering($topic) . " " . $table_rows[$topic]->title;
+		$content_row->columns[0]->text = block_exacomp_get_topic_numbering($topic)." ".$table_rows[$topic]->title;
 		$content_row->columns[0]->span = 0;
 		$content_row->columns[0]->visible = $rowcontent->visible;
 
 		$current_idx = 1;
-		foreach($rowcontent->niveaus as $niveau => $element){
+		foreach ($rowcontent->niveaus as $niveau => $element) {
 			$content_row->columns[$current_idx] = new stdClass();
-			$content_row->columns[$current_idx]->evaluation = ( empty($element->eval) || strlen(trim($element->eval)) == 0 )?-1:$element->eval;
+			$content_row->columns[$current_idx]->evaluation = (empty($element->eval) || strlen(trim($element->eval)) == 0) ? -1 : $element->eval;
 			$content_row->columns[$current_idx]->evalniveauid = $element->evalniveauid;
 			$content_row->columns[$current_idx]->show = $element->show;
-			$content_row->columns[$current_idx]->visible = ((!$element->visible || !$rowcontent->visible)?false:true);
+			$content_row->columns[$current_idx]->visible = ((!$element->visible || !$rowcontent->visible) ? false : true);
 			$content_row->columns[$current_idx]->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($element->eval);
 			$content_row->columns[$current_idx]->timestamp = $element->timestamp;
 
-			if(in_array($niveau, $spanning_niveaus)){
+			if (in_array($niveau, $spanning_niveaus)) {
 				$content_row->columns[$current_idx]->span = $spanning_colspan;
-			}else{
+			} else {
 				$content_row->columns[$current_idx]->span = 0;
 			}
 			$current_idx++;
 		}
 
-		if(block_exacomp_is_topicgrading_enabled()){
+		if (block_exacomp_is_topicgrading_enabled()) {
 			$topic_eval = new stdClass();
 			$topic_eval->evaluation_text = \block_exacomp\global_config::get_value_title_by_id(\block_exacomp\global_config::get_additionalinfo_value_mapping($rowcontent->topic_eval));
-			$topic_eval->evaluation = empty($rowcontent->topic_eval)?-1:$rowcontent->topic_eval;
+			$topic_eval->evaluation = empty($rowcontent->topic_eval) ? -1 : $rowcontent->topic_eval;
 			$topic_eval->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($rowcontent->topic_eval);
 			$topic_eval->evalniveauid = $rowcontent->topic_evalniveauid;
 			$topic_eval->topicid = $rowcontent->topic_id;
@@ -5982,7 +6333,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 		$table->rows[] = $content_row;
 	}
 
-	if(block_exacomp_is_subjectgrading_enabled()){
+	if (block_exacomp_is_subjectgrading_enabled()) {
 		$content_row = new stdClass();
 		$content_row->columns = array();
 
@@ -5991,7 +6342,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 		$content_row->columns[0]->span = count($table_header);
 
 		$content_row->columns[1] = new stdClass();
-		$content_row->columns[1]->evaluation = empty($table_content->subject_eval)?-1:$table_content->subject_eval;
+		$content_row->columns[1]->evaluation = empty($table_content->subject_eval) ? -1 : $table_content->subject_eval;
 		$content_row->columns[1]->evaluation_text = \block_exacomp\global_config::get_value_title_by_id(\block_exacomp\global_config::get_additionalinfo_value_mapping($table_content->subject_eval));
 		$content_row->columns[1]->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($table_content->subject_eval);
 		$content_row->columns[1]->evalniveauid = $table_content->subject_evalniveauid;
@@ -6002,26 +6353,28 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 
 	return $table;
 }
+
 /**
  * if additional grading is enabled, already existing evaluation for topic, subjects and descriptors are mapped to notes from 1 to 6
  * @param unknown $course
  */
-function block_exacomp_map_value_to_grading($course){
+function block_exacomp_map_value_to_grading($course) {
 	global $DB;
 
-	$mapping =  \block_exacomp\global_config::get_values_additionalinfo_mapping();
+	$mapping = \block_exacomp\global_config::get_values_additionalinfo_mapping();
 
 	//TOPIC, SUBJECT, CROSSSUBJECT, DESCRIPTOR
 	$select = 'courseid = ? AND role = ?'; //is put into the where clause
 	$params = array($course, BLOCK_EXACOMP_ROLE_TEACHER);
 	$results = $DB->get_records_select(BLOCK_EXACOMP_DB_COMPETENCES, $select, $params);
 
-	foreach($results as $result){
-		if(!$result->additionalinfo && $result->value > -1){
-			if($result->comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR)
-				$descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id'=>$result->compid));
+	foreach ($results as $result) {
+		if (!$result->additionalinfo && $result->value > -1) {
+			if ($result->comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
+				$descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id' => $result->compid));
+			}
 
-			if($result->comptype != BLOCK_EXACOMP_TYPE_DESCRIPTOR || $descriptor->parentid == 0){
+			if ($result->comptype != BLOCK_EXACOMP_TYPE_DESCRIPTOR || $descriptor->parentid == 0) {
 				$result->additionalinfo = @$mapping[$result->value];
 				$DB->update_record(BLOCK_EXACOMP_DB_COMPETENCES, $result);
 			}
@@ -6040,7 +6393,7 @@ function block_exacomp_map_value_to_grading($course){
  *
  * @return: {{id, title}, {...}}
  */
-function block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid=0, $parent=true){
+function block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid = 0, $parent = true) {
 	global $DB;
 
 	$sql = "SELECT DISTINCT d.id, d.title FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d
@@ -6051,7 +6404,7 @@ function block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid
 		LEFT JOIN {".BLOCK_EXACOMP_DB_TOPICS."} t ON ct.topicid = t.id
 		WHERE ct.courseid = ? AND t.subjid = ? AND 
 				
-		".(($parent)?"d.parentid = 0":"d.parentid!=0")."
+		".(($parent) ? "d.parentid = 0" : "d.parentid!=0")."
 						
 		AND ((dv.visible = 1 AND dv.studentid = 0 AND NOT EXISTS 
 		  (SELECT *
@@ -6086,7 +6439,7 @@ function block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid
  *
  * @return {{id, title}, {...}}
  */
-function block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $userid=0){
+function block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $userid = 0) {
 	global $DB;
 
 	$sql = "SELECT DISTINCT e.id, e.title FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
@@ -6131,6 +6484,7 @@ function block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $
 
 	return $DB->get_records_sql($sql, $params);
 }
+
 /**
  * get evaluation statistics for a user in course and subject context for descriptor, childdescriptor and examples
  * within given timeframe (if start and end = 0, all available data is used)
@@ -6140,8 +6494,8 @@ function block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $
  * @param int $subjectid
  * @param int $userid - not working for userid = 0 : no user_information available
  * @return array(["descriptor_evaluation"] => ["evalniveauid"] => [evalvalue] => sum
- * 				 ["child_evaluation"] => ["evalniveauid"] => [evalvalue] => sum
- * 				 ["example_evaluation"] => ["evalniveauid"] => [evalvalue] => sum
+ *                 ["child_evaluation"] => ["evalniveauid"] => [evalvalue] => sum
+ *                 ["example_evaluation"] => ["evalniveauid"] => [evalvalue] => sum
  *         )
  * this is representing the resulting matrix, use of evaluation niveaus is minded here
  * evalniveauid = 0 if block_exacomp_use_eval_niveau() = false, otherwise -1, 1, 2, 3
@@ -6149,99 +6503,104 @@ function block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $
  *
  */
 function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjectid, $userid, $start_timestamp = 0, $end_timestamp = 0) {
-		global $DB;
+	global $DB;
 
-		$user = $DB->get_record ( "user", array (
-				"id" => $userid
-		) );
+	$user = $DB->get_record("user", array(
+		"id" => $userid,
+	));
 
-		$user = block_exacomp_get_user_information_by_course ( $user, $courseid );
+	$user = block_exacomp_get_user_information_by_course($user, $courseid);
 
-		// TODO: is visibility hier fürn hugo? Bewertungen kann es eh nur für sichtbare geben ...
-		$descriptors = block_exacomp_get_visible_descriptors_for_subject ( $courseid, $subjectid, $userid );
-		$child_descriptors = block_exacomp_get_visible_descriptors_for_subject ( $courseid, $subjectid, $userid, false );
-		$examples = block_exacomp_get_visible_examples_for_subject ( $courseid, $subjectid, $userid );
+	// TODO: is visibility hier fürn hugo? Bewertungen kann es eh nur für sichtbare geben ...
+	$descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid);
+	$child_descriptors = block_exacomp_get_visible_descriptors_for_subject($courseid, $subjectid, $userid, false);
+	$examples = block_exacomp_get_visible_examples_for_subject($courseid, $subjectid, $userid);
 
-		$descriptorgradings = array (); // array[niveauid][value][number of examples evaluated with this value and niveau]
-		$childgradings = array ();
-		$examplegradings = array ();
+	$descriptorgradings = array(); // array[niveauid][value][number of examples evaluated with this value and niveau]
+	$childgradings = array();
+	$examplegradings = array();
 
-		// create grading statistic
-		$scheme_items = \block_exacomp\global_config::get_value_titles ( block_exacomp_get_grading_scheme ( $courseid ) );
-		$evaluationniveau_items = (block_exacomp_use_eval_niveau ()) ? \block_exacomp\global_config::get_evalniveaus () : array (
-				'0' => ''
-		);
+	// create grading statistic
+	$scheme_items = \block_exacomp\global_config::get_value_titles(block_exacomp_get_grading_scheme($courseid));
+	$evaluationniveau_items = (block_exacomp_use_eval_niveau()) ? \block_exacomp\global_config::get_evalniveaus() : array(
+		'0' => '',
+	);
 
-		foreach ( $evaluationniveau_items as $niveaukey => $niveauitem ) {
-			$descriptorgradings [$niveaukey] = array ();
-			$childgradings [$niveaukey] = array ();
-			$examplegradings [$niveaukey] = array ();
+	foreach ($evaluationniveau_items as $niveaukey => $niveauitem) {
+		$descriptorgradings [$niveaukey] = array();
+		$childgradings [$niveaukey] = array();
+		$examplegradings [$niveaukey] = array();
 
-			foreach ( $scheme_items as $schemekey => $schemetitle ) {
+		foreach ($scheme_items as $schemekey => $schemetitle) {
 
-				if ($schemekey > - 1) {
-					$descriptorgradings [$niveaukey] [$schemekey] = 0;
-					$childgradings [$niveaukey] [$schemekey] = 0;
-					$examplegradings [$niveaukey] [$schemekey] = 0;
-				}
+			if ($schemekey > -1) {
+				$descriptorgradings [$niveaukey] [$schemekey] = 0;
+				$childgradings [$niveaukey] [$schemekey] = 0;
+				$examplegradings [$niveaukey] [$schemekey] = 0;
 			}
 		}
-
-		foreach ( $descriptors as $descriptor ) {
-			// check if grading is within timeframe
-
-			if (isset ( $user->competencies->timestamp_teacher [$descriptor->id] ) &&
-			($start_timestamp == 0 || $user->competencies->timestamp_teacher [$descriptor->id] >= $start_timestamp) &&
-			($end_timestamp == 0 || $user->competencies->timestamp_teacher [$descriptor->id] <= $end_timestamp)) {
-
-				// check if niveau is given in evaluation, if not -1
-				$niveaukey = (block_exacomp_use_eval_niveau())?((isset($user->competencies->niveau[$descriptor->id]))?$user->competencies->niveau[$descriptor->id]:-1):0;
-
-				if (isset ( $user->competencies->teacher [$descriptor->id] ) && $user->competencies->teacher [$descriptor->id] > - 1) // increase counter in statistic
-					$descriptorgradings [$niveaukey] [$user->competencies->teacher [$descriptor->id]] ++;
-			}
-		}
-
-		foreach ( $child_descriptors as $child ) {
-			// check if grading is within timeframe
-
-			if (isset ( $user->competencies->timestamp_teacher [$child->id] ) &&
-			($start_timestamp == 0 || $user->competencies->timestamp_teacher [$child->id] >= $start_timestamp) &&
-			($end_timestamp == 0 || $user->competencies->timestamp_teacher [$child->id] <= $end_timestamp)) {
-
-				// check if niveau is given in evaluation, if not -1
-				$niveaukey = (block_exacomp_use_eval_niveau())?((isset($user->competencies->niveau[$child->id]))?$user->competencies->niveau[$child->id]:-1):0;
-
-				if (isset ( $user->competencies->teacher [$child->id] ) && $user->competencies->teacher [$child->id] > - 1 && isset($childgradings [$niveaukey] [$user->competencies->teacher [$child->id]])) {
-					// increase counter in statistic
-					$childgradings [$niveaukey] [$user->competencies->teacher [$child->id]] ++;
-				}
-			}
-		}
-
-		foreach ( $examples as $example ) {
-			// create grading statistic for example
-
-			if (isset ( $user->examples->timestamp_teacher [$example->id] ) &&
-			($start_timestamp == 0 || $user->examples->timestamp_teacher [$example->id] >= $start_timestamp) &&
-			($end_timestamp == 0 || $user->examples->timestamp_teacher [$example->id] <= $end_timestamp)) {
-
-				// check if niveau is given in evaluation, if not -1
-				$niveaukey = (block_exacomp_use_eval_niveau())?((isset($user->examples->niveau[$example->id]))?$user->examples->niveau[$example->id]:-1):0;
-
-				if (isset ( $user->examples->teacher [$example->id] ) && $user->examples->teacher [$example->id] > - 1 && isset($examplegradings [$niveaukey] [$user->examples->teacher [$example->id]])) {
-					// increase counter in statistic
-					$examplegradings [$niveaukey] [$user->examples->teacher [$example->id]] ++;
-				}
-			}
-		}
-
-		return array (
-				"descriptor_evaluations" => $descriptorgradings,
-				"child_evaluations" => $childgradings,
-				"example_evaluations" => $examplegradings
-		);
 	}
+
+	foreach ($descriptors as $descriptor) {
+		// check if grading is within timeframe
+
+		if (isset ($user->competencies->timestamp_teacher [$descriptor->id]) &&
+			($start_timestamp == 0 || $user->competencies->timestamp_teacher [$descriptor->id] >= $start_timestamp) &&
+			($end_timestamp == 0 || $user->competencies->timestamp_teacher [$descriptor->id] <= $end_timestamp)
+		) {
+
+			// check if niveau is given in evaluation, if not -1
+			$niveaukey = (block_exacomp_use_eval_niveau()) ? ((isset($user->competencies->niveau[$descriptor->id])) ? $user->competencies->niveau[$descriptor->id] : -1) : 0;
+
+			if (isset ($user->competencies->teacher [$descriptor->id]) && $user->competencies->teacher [$descriptor->id] > -1) // increase counter in statistic
+			{
+				$descriptorgradings [$niveaukey] [$user->competencies->teacher [$descriptor->id]]++;
+			}
+		}
+	}
+
+	foreach ($child_descriptors as $child) {
+		// check if grading is within timeframe
+
+		if (isset ($user->competencies->timestamp_teacher [$child->id]) &&
+			($start_timestamp == 0 || $user->competencies->timestamp_teacher [$child->id] >= $start_timestamp) &&
+			($end_timestamp == 0 || $user->competencies->timestamp_teacher [$child->id] <= $end_timestamp)
+		) {
+
+			// check if niveau is given in evaluation, if not -1
+			$niveaukey = (block_exacomp_use_eval_niveau()) ? ((isset($user->competencies->niveau[$child->id])) ? $user->competencies->niveau[$child->id] : -1) : 0;
+
+			if (isset ($user->competencies->teacher [$child->id]) && $user->competencies->teacher [$child->id] > -1 && isset($childgradings [$niveaukey] [$user->competencies->teacher [$child->id]])) {
+				// increase counter in statistic
+				$childgradings [$niveaukey] [$user->competencies->teacher [$child->id]]++;
+			}
+		}
+	}
+
+	foreach ($examples as $example) {
+		// create grading statistic for example
+
+		if (isset ($user->examples->timestamp_teacher [$example->id]) &&
+			($start_timestamp == 0 || $user->examples->timestamp_teacher [$example->id] >= $start_timestamp) &&
+			($end_timestamp == 0 || $user->examples->timestamp_teacher [$example->id] <= $end_timestamp)
+		) {
+
+			// check if niveau is given in evaluation, if not -1
+			$niveaukey = (block_exacomp_use_eval_niveau()) ? ((isset($user->examples->niveau[$example->id])) ? $user->examples->niveau[$example->id] : -1) : 0;
+
+			if (isset ($user->examples->teacher [$example->id]) && $user->examples->teacher [$example->id] > -1 && isset($examplegradings [$niveaukey] [$user->examples->teacher [$example->id]])) {
+				// increase counter in statistic
+				$examplegradings [$niveaukey] [$user->examples->teacher [$example->id]]++;
+			}
+		}
+	}
+
+	return array(
+		"descriptor_evaluations" => $descriptorgradings,
+		"child_evaluations" => $childgradings,
+		"example_evaluations" => $examplegradings,
+	);
+}
 
 /**
  * get evaluation statistics for a user in course and subject context for descriptor, childdescriptor and examples
@@ -6252,34 +6611,45 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
  * @param int $userid - not working for userid = 0 : no user_information available
  * @return descriptor_evaluation_list this is a list of niveautitles of all evaluated descriptors with according evaluation value and evaluation niveau
  */
-function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $userid, $start_timestamp = 0, $end_timestamp = 0){
+function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $studentid, $start_timestamp = 0, $end_timestamp = 0) {
 	global $DB;
 
+	if (!$end_timestamp) {
+		// until now
+		$end_timestamp = time();
+	}
+
 	$use_evalniveau = block_exacomp_use_eval_niveau();
-	$user = $DB->get_record("user", array("id"=>$userid));
+	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
+	$user = $DB->get_record("user", array("id" => $studentid));
 
-	$user = block_exacomp_get_user_information_by_course($user, $courseid);
-	$descriptors = block_exacomp_get_descriptors_by_topic($courseid, $topicid);
-
-	#sort crosssub entries
-	usort($descriptors, function ($a, $b){
-		return strcmp($a->cattitle, $b->cattitle);
-	});
+	$topic = \block_exacomp\topic::get($topicid);
+	$topic->setDbLayer(\block_exacomp\db_layer_course::create($courseid));
 
 	$descriptorgradings = array(); //array[niveauid][value][number of examples evaluated with this value and niveau]
 
-	foreach($descriptors as $descriptor){
-		$teacher_eval_within_timeframe = (isset($user->competencies->timestamp_teacher[$descriptor->id]) &&
-				($start_timestamp == 0 || $user->competencies->timestamp_teacher[$descriptor->id] >= $start_timestamp) &&
-				($end_timestamp == 0 || $user->competencies->timestamp_teacher[$descriptor->id] <= $end_timestamp));
-		$student_eval_within_timeframe = (isset($user->competencies->timestamp_student[$descriptor->id]) &&
-				($start_timestamp == 0 || $user->competencies->timestamp_student[$descriptor->id] >= $start_timestamp) &&
-				($end_timestamp == 0 || $user->competencies->timestamp_student[$descriptor->id] <= $end_timestamp));
+	$user = block_exacomp_get_user_information_by_course($user, $courseid);
 
-		$descriptorgradings[$descriptor->cattitle] = new stdClass();
-		$descriptorgradings[$descriptor->cattitle]->teachervalue = ((isset($user->competencies->teacher[$descriptor->id]) && $teacher_eval_within_timeframe)? $user->competencies->teacher[$descriptor->id]:-1);
-		$descriptorgradings[$descriptor->cattitle]->evalniveau = ($use_evalniveau)?((isset($user->competencies->niveau[$descriptor->id]) && $teacher_eval_within_timeframe)? $user->competencies->niveau[$descriptor->id]:-1):0;
-		$descriptorgradings[$descriptor->cattitle]->studentvalue = ((isset($user->competencies->student[$descriptor->id]) && $student_eval_within_timeframe) ? $user->competencies->student[$descriptor->id]:-1);
+	foreach ($topic->descriptors as $descriptor) {
+		$niveau = \block_exacomp\niveau::get($descriptor->niveauid);
+		if (!$niveau) {
+			continue;
+		}
+
+		$teacher_evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $studentid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
+		$student_evaluation = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $studentid, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
+
+		$teacher_eval_within_timeframe = $teacher_evaluation && $teacher_evaluation->timestamp >= $start_timestamp && $teacher_evaluation->timestamp <= $end_timestamp;
+		$student_eval_within_timeframe = $student_evaluation && $student_evaluation->timestamp >= $start_timestamp && $student_evaluation->timestamp <= $end_timestamp;
+
+		$descriptorgradings[$niveau->title] = new stdClass();
+		// copy of block_exacomp_get_grid_for_competence_profile_topic_data()
+		$descriptorgradings[$niveau->title]->teachervalue =
+				(block_exacomp_additional_grading())
+				? (($teacher_evaluation && $teacher_evaluation->additionalinfo) ? \block_exacomp\global_config::get_additionalinfo_value_mapping($teacher_evaluation->additionalinfo) : '')
+				: (($teacher_evaluation && $teacher_evaluation->value) ? $scheme_items[$teacher_evaluation->value] : -1);
+		$descriptorgradings[$niveau->title]->evalniveau = ($use_evalniveau &&  $teacher_eval_within_timeframe ? $teacher_evaluation->evalniveauid : -1) ?: -1;
+		$descriptorgradings[$niveau->title]->studentvalue = ($student_eval_within_timeframe ? $student_evaluation->value : -1) ?: -1;
 	}
 
 	return array("descriptor_evaluation" => $descriptorgradings);
@@ -6292,7 +6662,7 @@ function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $
  * @param unknown $userid
  * @return unknown
  */
-function block_exacomp_get_visible_own_and_child_examples_for_descriptor($courseid, $descriptorid, $userid){
+function block_exacomp_get_visible_own_and_child_examples_for_descriptor($courseid, $descriptorid, $userid) {
 	global $DB;
 	$sql = 'SELECT DISTINCT e.id, e.title, e.sorting FROM {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e 
 		JOIN {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} de ON de.exampid = e.id
@@ -6318,13 +6688,14 @@ function block_exacomp_get_visible_own_and_child_examples_for_descriptor($course
 
 	$examples = $DB->get_records_sql($sql, array($courseid, $courseid, $descriptorid, $descriptorid, $userid, $userid, $userid, $userid));
 
-	foreach($examples as $example){
+	foreach ($examples as $example) {
 		$example->state = block_exacomp_get_dakora_state_for_example($courseid, $example->id, $userid);
 	}
 
-	usort($examples, function($a, $b){
-		if($a->state == $b->state)
+	usort($examples, function($a, $b) {
+		if ($a->state == $b->state) {
 			return $a->sorting > $b->sorting;
+		}
 
 		return $a->state < $b->state;
 	});
@@ -6340,11 +6711,11 @@ function block_exacomp_get_visible_own_and_child_examples_for_descriptor($course
  * @param unknown $student
  * @return unknown[]|stdClass[]
  */
-function block_exacomp_get_data_for_profile_comparison($courseid, $subject, $student){
+function block_exacomp_get_data_for_profile_comparison($courseid, $subject, $student) {
 	$student = block_exacomp_get_user_information_by_course($student, $courseid);
 
-	foreach($subject->subs as $topic){
-		foreach($topic->descriptors as $descriptor){
+	foreach ($subject->subs as $topic) {
+		foreach ($topic->descriptors as $descriptor) {
 			$descriptor->examples = block_exacomp_get_visible_own_and_child_examples_for_descriptor($courseid, $descriptor->id, $student->id);
 		}
 	}
@@ -6360,8 +6731,8 @@ function block_exacomp_get_data_for_profile_comparison($courseid, $subject, $stu
  *
  * @return {{id}, {...}}
  */
-function block_exacomp_get_example_visibilities_for_course_and_user($courseid, $userid = 0){
-	return Cache::staticCallback(__FUNCTION__, function($courseid, $userid){
+function block_exacomp_get_example_visibilities_for_course_and_user($courseid, $userid = 0) {
+	return Cache::staticCallback(__FUNCTION__, function($courseid, $userid) {
 		return g::$DB->get_records_sql_menu("
 			SELECT DISTINCT ev.exampleid, ev.visible
 			FROM {".BLOCK_EXACOMP_DB_EXAMPVISIBILITY."} ev
@@ -6375,12 +6746,12 @@ function block_exacomp_get_example_visibilities_for_course_and_user($courseid, $
  *
  * @param int $courseid
  * @param int $userid if userid == 0 -> only visibility for all is minded, not user related:
- * 						 used in assign_competencies when all sutdents are selected
+ *                         used in assign_competencies when all sutdents are selected
  *
  * @return: {{id}, {...}}
  */
-function block_exacomp_get_descriptor_visibilities_for_course_and_user($courseid, $userid){
-	return Cache::staticCallback([__FUNCTION__], function($courseid, $userid){
+function block_exacomp_get_descriptor_visibilities_for_course_and_user($courseid, $userid) {
+	return Cache::staticCallback([__FUNCTION__], function($courseid, $userid) {
 		return g::$DB->get_records_sql_menu("
 			SELECT DISTINCT dv.descrid, dv.visible
 			FROM {".BLOCK_EXACOMP_DB_DESCVISIBILITY."} dv
@@ -6397,8 +6768,8 @@ function block_exacomp_get_descriptor_visibilities_for_course_and_user($courseid
  *
  * @return: {{id}, {...}}
  */
-function block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $userid = 0){
-	return Cache::staticCallback(__FUNCTION__, function($courseid, $userid){
+function block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $userid = 0) {
+	return Cache::staticCallback(__FUNCTION__, function($courseid, $userid) {
 		return g::$DB->get_records_sql_menu("
 			SELECT DISTINCT tv.topicid, tv.visible
 			FROM {".BLOCK_EXACOMP_DB_TOPICVISIBILITY."} tv
@@ -6411,8 +6782,8 @@ function block_exacomp_get_topic_visibilities_for_course_and_user($courseid, $us
  * @param unknown $courseid
  * @param number $userid
  */
-function block_exacomp_get_solution_visibilities_for_course_and_user($courseid, $userid = 0){
-	return Cache::staticCallback(__FUNCTION__, function($courseid, $userid){
+function block_exacomp_get_solution_visibilities_for_course_and_user($courseid, $userid = 0) {
+	return Cache::staticCallback(__FUNCTION__, function($courseid, $userid) {
 		return g::$DB->get_records_sql_menu("
 			SELECT DISTINCT sv.exampleid, sv.visible 
 			FROM {".BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY."} sv 
@@ -6425,7 +6796,7 @@ function block_exacomp_get_solution_visibilities_for_course_and_user($courseid, 
  * clear visibility cache if any visibility of any object in course changes
  * @param unknown $courseid
  */
-function block_exacomp_clear_visibility_cache($courseid){
+function block_exacomp_clear_visibility_cache($courseid) {
 	// not needed anymore
 }
 
@@ -6433,7 +6804,7 @@ function block_exacomp_clear_visibility_cache($courseid){
  * create tree for one example, similar like block_exacomp_build_example_association_tree()
  * but with improved performance
  */
-function block_exacomp_build_example_tree($courseid, $exampleid){
+function block_exacomp_build_example_tree($courseid, $exampleid) {
 	global $DB;
 
 	$sql = "SELECT d.id as descrid, d.title as descrtitle, d.parentid as parentid, s.id as subjid, s.title as subjecttitle, t.id as topicid, t.title as topictitle, 
@@ -6450,10 +6821,10 @@ function block_exacomp_build_example_tree($courseid, $exampleid){
 	$records = $DB->get_records_sql($sql, array($exampleid, $courseid));
 
 	$tree = array();
-	foreach($records as $record){
+	foreach ($records as $record) {
 
 		//subject already in tree?
-		if(!array_key_exists($record->subjid, $tree)){ //create subject entry in tree
+		if (!array_key_exists($record->subjid, $tree)) { //create subject entry in tree
 			$tree[$record->subjid] = new stdClass();
 			$tree[$record->subjid]->id = $record->subjid;
 			$tree[$record->subjid]->title = $record->subjecttitle;
@@ -6462,7 +6833,7 @@ function block_exacomp_build_example_tree($courseid, $exampleid){
 		}
 
 		//topic already in tree?
-		if(!array_key_exists($record->topicid, $tree[$record->subjid]->topics)){ //create topic entry in tree
+		if (!array_key_exists($record->topicid, $tree[$record->subjid]->topics)) { //create topic entry in tree
 			$tree[$record->subjid]->topics[$record->topicid] = new stdClass();
 			$tree[$record->subjid]->topics[$record->topicid]->id = $record->topicid;
 			$tree[$record->subjid]->topics[$record->topicid]->title = $record->topictitle;
@@ -6471,11 +6842,11 @@ function block_exacomp_build_example_tree($courseid, $exampleid){
 		}
 
 		//check if parent descriptor or child
-		if($record->parentid > 0){	//child get parentdescriptor
-			$parent_descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id'=>$record->parentid));
+		if ($record->parentid > 0) {    //child get parentdescriptor
+			$parent_descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id' => $record->parentid));
 
 			//parent already in tree?
-			if(!array_key_exists($parent_descriptor->id, $tree[$record->subjid]->topics[$record->topicid]->descriptors)){	//create parent entry in tree
+			if (!array_key_exists($parent_descriptor->id, $tree[$record->subjid]->topics[$record->topicid]->descriptors)) {    //create parent entry in tree
 				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id] = new stdClass();
 				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->id = $parent_descriptor->id;
 				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->title = $parent_descriptor->title;
@@ -6485,16 +6856,16 @@ function block_exacomp_build_example_tree($courseid, $exampleid){
 			}
 
 			//child already in tree?
-			if(!array_key_exists($record->descrid, $tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->children)){
+			if (!array_key_exists($record->descrid, $tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->children)) {
 				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->children[$record->descrid] = new stdClass();
 				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->children[$record->descrid]->id = $record->descrid;
 				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->children[$record->descrid]->title = $record->descrtitle;
 				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->children[$record->descrid]->topicid = $record->topicid;
 				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->children[$record->descrid]->associated = 1;
 			}
-		}else{
+		} else {
 			//descriptor already in tree?
-			if(!array_key_exists($record->descrid, $tree[$record->subjid]->topics[$record->topicid]->descriptors)){	//create descriptor entry in tree
+			if (!array_key_exists($record->descrid, $tree[$record->subjid]->topics[$record->topicid]->descriptors)) {    //create descriptor entry in tree
 				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$record->descrid] = new stdClass();
 				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$record->descrid]->id = $record->descrid;
 				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$record->descrid]->title = $record->descrtitle;
@@ -6504,17 +6875,19 @@ function block_exacomp_build_example_tree($courseid, $exampleid){
 			}
 		}
 	}
+
 	return $tree;
 }
 
-	function block_exacomp_any_examples_on_schedule($courseid){
-		global $DB;
-		$schedule = $DB->get_records(BLOCK_EXACOMP_DB_SCHEDULE, array('courseid'=>$courseid));
-		if(!$schedule)
-			return false;
-
-		return true;
+function block_exacomp_any_examples_on_schedule($courseid) {
+	global $DB;
+	$schedule = $DB->get_records(BLOCK_EXACOMP_DB_SCHEDULE, array('courseid' => $courseid));
+	if (!$schedule) {
+		return false;
 	}
+
+	return true;
+}
 
 /**
  * used for eLove-App, checks if trainer is specified as external trainer for student
@@ -6588,7 +6961,9 @@ function block_exacomp_search_competence_grid_as_tree($courseid, $q) {
 			$found = false;
 			// for now, just search all fields for the search string
 			foreach ($object->get_data() as $value) {
-				if (is_array($value) || is_object($value)) continue;
+				if (is_array($value) || is_object($value)) {
+					continue;
+				}
 
 				if (\core_text::strpos(\core_text::strtolower($value), $q) !== false) {
 					$found = true;
@@ -6607,10 +6982,12 @@ function block_exacomp_search_competence_grid_as_tree($courseid, $q) {
 		$items = array_filter($items, function($item) use ($filter_not_empty) {
 			if ($item instanceof \block_exacomp\subject) {
 				$filter_not_empty($item->topics);
+
 				return !!$item->topics;
 			}
 			if ($item instanceof \block_exacomp\topic) {
 				$filter_not_empty($item->descriptors);
+
 				return !!$item->descriptors;
 			}
 			if ($item instanceof \block_exacomp\descriptor) {
@@ -6629,6 +7006,7 @@ function block_exacomp_search_competence_grid_as_tree($courseid, $q) {
 				} else {
 					$filter($item->topics);
 				}
+
 				return !!$item->topics;
 			}
 			if ($item instanceof \block_exacomp\topic) {
@@ -6643,10 +7021,12 @@ function block_exacomp_search_competence_grid_as_tree($courseid, $q) {
 			if ($item instanceof \block_exacomp\descriptor) {
 				if ($find($item)) {
 					$filter_not_empty($item->children);
+
 					return true;
 				} else {
 					$filter($item->examples);
 					$filter($item->children);
+
 					return $item->examples || $item->children;
 				}
 			}
@@ -6699,7 +7079,7 @@ function block_exacomp_search_competence_grid_as_example_list($courseid, $q) {
 
 				if (empty($parent->subjects[$data->subject->id])) {
 					$parent->subjects[$data->subject->id] = clone $data->subject;
-					$parent->subjects[$data->subject->id]->topics = [ ];
+					$parent->subjects[$data->subject->id]->topics = [];
 				}
 				$parent = $parent->subjects[$data->subject->id];
 
@@ -6738,7 +7118,7 @@ function block_exacomp_search_competence_grid_as_example_list($courseid, $q) {
  * @param unknown $compid
  */
 function block_exacomp_get_comp_eval($courseid, $role, $userid, $comptype, $compid) {
-	return g::$DB->get_record(BLOCK_EXACOMP_DB_COMPETENCES, array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$compid, 'comptype'=>$comptype, 'role'=>$role));
+	return g::$DB->get_record(BLOCK_EXACOMP_DB_COMPETENCES, array('courseid' => $courseid, 'userid' => $userid, 'compid' => $compid, 'comptype' => $comptype, 'role' => $role));
 }
 
 /**
@@ -6750,7 +7130,7 @@ function block_exacomp_get_comp_eval($courseid, $role, $userid, $comptype, $comp
  * @param unknown $compid
  */
 function block_exacomp_get_comp_eval_value($courseid, $role, $userid, $comptype, $compid) {
-	return g::$DB->get_field(BLOCK_EXACOMP_DB_COMPETENCES, 'value', array('courseid'=>$courseid, 'userid'=>$userid, 'compid'=>$compid, 'comptype'=>$comptype, 'role'=>$role));
+	return g::$DB->get_field(BLOCK_EXACOMP_DB_COMPETENCES, 'value', array('courseid' => $courseid, 'userid' => $userid, 'compid' => $compid, 'comptype' => $comptype, 'role' => $role));
 }
 
 /**
@@ -6760,12 +7140,14 @@ function block_exacomp_get_comp_eval_value($courseid, $role, $userid, $comptype,
 function block_exacomp_get_select_niveau_items($blank = true) {
 	$values = [];
 	if ($blank) {
-		$values[''] = [''=>''];
+		$values[''] = ['' => ''];
 	}
 	$niveaus = \block_exacomp\niveau::get_objects(null, 'sorting');
 	foreach ($niveaus as $niveau) {
 		$sourceName = block_exacomp_get_renderer()->source_info($niveau->source);
-		if (!isset($values[$sourceName])) $values[$sourceName] = [];
+		if (!isset($values[$sourceName])) {
+			$values[$sourceName] = [];
+		}
 		$values[$sourceName][$niveau->id] = $niveau->title;
 	}
 	ksort($values);
@@ -6774,7 +7156,7 @@ function block_exacomp_get_select_niveau_items($blank = true) {
 }
 
 class block_exacomp_permission_exception extends moodle_exception {
-	function __construct($errorcode = 'Not allowed', $module='', $link='', $a=NULL, $debuginfo=null) {
+	function __construct($errorcode = 'Not allowed', $module = '', $link = '', $a = null, $debuginfo = null) {
 		return parent::__construct($errorcode, $module, $link, $a, $debuginfo);
 	}
 }
@@ -6893,7 +7275,9 @@ function block_exacomp_require_item_capability($cap, $item) {
 					break;
 				}
 			}
-			if ($found) break;
+			if ($found) {
+				break;
+			}
 		}
 		if (!$found) {
 			throw new block_exacomp_permission_exception('No course descriptor');
@@ -6903,7 +7287,9 @@ function block_exacomp_require_item_capability($cap, $item) {
 			throw new block_exacomp_permission_exception('Not a custom descriptor');
 		}
 	} elseif ($item instanceof \block_exacomp\cross_subject && in_array($cap, [BLOCK_EXACOMP_CAP_MODIFY, BLOCK_EXACOMP_CAP_DELETE])) {
-		if (block_exacomp_is_admin()) return true;
+		if (block_exacomp_is_admin()) {
+			return true;
+		}
 
 		if ($item->is_draft()) {
 			// draft
@@ -6920,7 +7306,9 @@ function block_exacomp_require_item_capability($cap, $item) {
 			}
 		}
 	} elseif ($item instanceof \block_exacomp\cross_subject && in_array($cap, [BLOCK_EXACOMP_CAP_VIEW])) {
-		if ($item->has_capability(BLOCK_EXACOMP_CAP_MODIFY)) return true;
+		if ($item->has_capability(BLOCK_EXACOMP_CAP_MODIFY)) {
+			return true;
+		}
 
 		if ($item->is_draft() && block_exacomp_is_teacher()) {
 			// teachers can view all drafts
@@ -6950,6 +7338,7 @@ function block_exacomp_require_item_capability($cap, $item) {
 function block_exacomp_has_item_capability($cap, $item) {
 	try {
 		block_exacomp_require_item_capability($cap, $item);
+
 		return true;
 	} catch (block_exacomp_permission_exception $e) {
 		return false;

@@ -339,6 +339,7 @@ $string['tick_some'] = 'Please make a selection!';
 $string['infolink'] = 'Additional information: ';
 $string['textalign'] = 'Switch text align';
 $string['selfevaluation'] = 'Self assessment';
+$string['selfevaluation_short'] = 'SA';
 $string['teacherevaluation'] = 'Trainer assessment';
 $string['competencegrid_nodata'] = 'In case the competency grid is empty the outcomes for the chosen subject were not assigned to a level in the datafile. This can be fixed by associating outcomes with levels at www.edustandards.org and re-importing the xml-file.';
 $string['statistic_type_descriptor'] = 'Change to descriptor statistics';

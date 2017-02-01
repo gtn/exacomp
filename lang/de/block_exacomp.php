@@ -345,6 +345,7 @@ $string['tick_some'] = 'Bitte treffen Sie eine Auswahl!';
 $string['infolink'] = 'Weiter Informationen: ';
 $string['textalign'] = 'Textuelle Ausrichtung ändern';
 $string['selfevaluation'] = 'Selbsteinschätzung';
+$string['selfevaluation_short'] = 'SE';
 $string['teacherevaluation'] = 'Einschätzung des Beurteilenden';
 $string['competencegrid_nodata'] = 'Sollte der Kompetenzraster leer sein, wurden für die Deskriptoren des ausgewählten Gegenstands keine Niveaus in den Daten definiert';
 $string['statistic_type_descriptor'] = 'Wechsel zur Statistik der Teilkompetenzen';

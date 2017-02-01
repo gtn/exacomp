@@ -1132,6 +1132,10 @@ return [
 		'Selbsteinschätzung',
 		'Self assessment',
 	],
+	'selfevaluation_short' => [
+		'SE',
+		'SA',
+	],
 	'teacherevaluation' => [
 		'Einschätzung des Beurteilenden',
 		'Trainer assessment',

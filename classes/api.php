@@ -86,9 +86,9 @@ class api {
 		$DB->delete_records(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array("studentid" => $userid));
 		$DB->delete_records(BLOCK_EXACOMP_DB_EXTERNAL_TRAINERS, array("studentid" => $userid));
 		$DB->delete_records(BLOCK_EXACOMP_DB_SCHEDULE, array("studentid" => $userid));
-		$DB->delete_records(BLOCK_EXACOMP_DB_TOPICVISIBILITY, array("studentid"=>$userid));
-		$DB->delete_records(BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY, array("studentid"=>$userid));
-		
+		$DB->delete_records(BLOCK_EXACOMP_DB_TOPICVISIBILITY, array("studentid" => $userid));
+		$DB->delete_records(BLOCK_EXACOMP_DB_SOLUTIONVISIBILITY, array("studentid" => $userid));
+
 		$DB->delete_records(BLOCK_EXACOMP_DB_CROSSSUBJECTS, array("creatorid" => $userid));
 		$DB->delete_records(BLOCK_EXACOMP_DB_EXAMPLES, array("creatorid" => $userid));
 		$DB->delete_records(BLOCK_EXACOMP_DB_SCHEDULE, array("creatorid" => $userid));
@@ -196,7 +196,7 @@ class api {
 					$topic->teacher_eval_additional_grading = null;
 				}
 
-				if (!$topic->descriptors && !$topic->teacher_eval_niveau_text && ! $topic->teacher_eval_additional_grading) {
+				if (!$topic->descriptors && !$topic->teacher_eval_niveau_text && !$topic->teacher_eval_additional_grading) {
 					unset($subject->topics[$topic->id]);
 				}
 			}

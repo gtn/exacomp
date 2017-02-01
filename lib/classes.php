@@ -322,11 +322,18 @@ class db_layer_course extends db_layer {
 			$this->showonlyvisible = true;
 		}
 
-		$this->showalldescriptors = /* $this->showalldescriptors || */ block_exacomp_get_settings_by_course($this->courseid)->show_all_descriptors;
+		$this->showalldescriptors = /* $this->showalldescriptors || */
+			block_exacomp_get_settings_by_course($this->courseid)->show_all_descriptors;
 	}
 
 	function get_subjects() {
 		return subject::create_objects(block_exacomp_get_subjects_by_course($this->courseid, $this->showalldescriptors), null, $this);
+	}
+
+	function get_subject($subjectid) {
+		$subjects = $this->get_subjects();
+
+		return isset($subjects[$subjectid]) ? $subjects[$subjectid] : null;
 	}
 
 	function filter_user_visibility($items) {
@@ -361,12 +368,14 @@ class db_layer_course extends db_layer {
 
 	function get_descriptors_for_topic(topic $topic) {
 		$items = parent::get_descriptors_for_topic($topic);
+
 		return $this->filter_user_visibility($items);
 
 	}
 
 	function get_child_descriptors(descriptor $parent) {
 		$items = parent::get_child_descriptors($parent);
+
 		return $this->filter_user_visibility($items);
 	}
 
@@ -762,6 +771,10 @@ class db_record {
 	}
 }
 
+/**
+ * Class subject
+ * @property topic[] topics
+ */
 class subject extends db_record {
 	const TABLE = BLOCK_EXACOMP_DB_SUBJECTS;
 	const SUBS = 'topics';
@@ -783,6 +796,10 @@ class subject extends db_record {
 	}
 }
 
+/**
+ * Class topic
+ * @property descriptor[] descriptors
+ */
 class topic extends db_record {
 	const TABLE = BLOCK_EXACOMP_DB_TOPICS;
 	const SUBS = 'descriptors';
@@ -1037,27 +1054,27 @@ class global_config {
 			// if additional_grading is set, use global value scheme
 
 			if (block_exacomp_additional_grading()) {
-				if($short)
+				if ($short) {
 					return array(
-						- 1 => block_exacomp_get_string('comp_-1_short'),
+						-1 => block_exacomp_get_string('comp_-1_short'),
 						0 => block_exacomp_get_string('comp_0_short'),
 						1 => block_exacomp_get_string('comp_1_short'),
 						2 => block_exacomp_get_string('comp_2_short'),
-						3 => block_exacomp_get_string('comp_3_short')
+						3 => block_exacomp_get_string('comp_3_short'),
 					);
+				}
 
-				return array (
-						- 1 => block_exacomp_get_string('comp_-1'),
-						0 => block_exacomp_get_string('comp_0'),
-						1 => block_exacomp_get_string('comp_1'),
-						2 => block_exacomp_get_string('comp_2'),
-						3 => block_exacomp_get_string('comp_3')
+				return array(
+					-1 => block_exacomp_get_string('comp_-1'),
+					0 => block_exacomp_get_string('comp_0'),
+					1 => block_exacomp_get_string('comp_1'),
+					2 => block_exacomp_get_string('comp_2'),
+					3 => block_exacomp_get_string('comp_3'),
 				);
-			}
-			// else use value scheme set in the course
+			} // else use value scheme set in the course
 			else {
 				// TODO: add settings to g::$COURSE?
-				$course_grading = block_exacomp_get_settings_by_course(($courseid==0)?g::$COURSE->id:$courseid)->grading;
+				$course_grading = block_exacomp_get_settings_by_course(($courseid == 0) ? g::$COURSE->id : $courseid)->grading;
 
 				$values = array(-1 => ' ');
 				$values += range(0, $course_grading);
@@ -1072,7 +1089,10 @@ class global_config {
 	 * @param id $id
 	 */
 	static function get_value_title_by_id($id) {
-		if(!$id) return ' ';
+		if (!$id) {
+			return ' ';
+		}
+
 		return static::get_value_titles()[$id];
 	}
 
@@ -1083,14 +1103,13 @@ class global_config {
 		return Cache::staticCallback([__CLASS__, __FUNCTION__], function() {
 			// if additional_grading is set, use global value scheme
 			if (block_exacomp_additional_grading()) {
-				return array (
-						- 1 => ' ',
-						1 => ':-(',
-						2 => ':-|',
-						3 => ':-)'
+				return array(
+					-1 => ' ',
+					1 => ':-(',
+					2 => ':-|',
+					3 => ':-)',
 				);
-			}
-			// else use value scheme set in the course
+			} // else use value scheme set in the course
 			else {
 				// TODO: add settings to g::$COURSE?
 				$course_grading = block_exacomp_get_settings_by_course(g::$COURSE->id)->grading;
@@ -1108,7 +1127,10 @@ class global_config {
 	 * @param id $id
 	 */
 	static function get_student_value_title_by_id($id) {
-		if(!$id) return ' ';
+		if (!$id) {
+			return ' ';
+		}
+
 		return static::get_student_value_titles()[$id];
 	}
 
@@ -1122,7 +1144,7 @@ class global_config {
 			return $values;
 		}
 		$values = array(-1 => ' ');
-		$values += g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU,null,'','id,title');
+		$values += g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU, null, '', 'id,title');
 
 		return $values;
 	}
@@ -1140,16 +1162,18 @@ class global_config {
 	 *
 	 * @param double $additionalinfo
 	 */
-	static function get_additionalinfo_value_mapping($additionalinfo){
-		if (!$additionalinfo)
+	static function get_additionalinfo_value_mapping($additionalinfo) {
+		if (!$additionalinfo) {
 			return -1;
+		}
 
 		$mapping = array(6.0, 4.8, 3.5, 2.2);
 		$value = -1;
 
-		foreach($mapping as $k => $v) {
-			if($additionalinfo > $v)
+		foreach ($mapping as $k => $v) {
+			if ($additionalinfo > $v) {
 				break;
+			}
 			$value = $k;
 		}
 
@@ -1161,9 +1185,10 @@ class global_config {
 	 *
 	 * @param int $value
 	 */
-	static function get_value_additionalinfo_mapping($value){
-		if (!$value)
+	static function get_value_additionalinfo_mapping($value) {
+		if (!$value) {
 			return -1;
+		}
 
 		$mapping = array(6.0, 4.4, 2.7, 1.0);
 
@@ -1174,7 +1199,7 @@ class global_config {
 	 * return range of gradings to value mapping
 	 * @param int $value
 	 */
-	static function get_values_additionalinfo_mapping(){
+	static function get_values_additionalinfo_mapping() {
 		return array(6.0, 4.4, 2.7, 1.0);
 	}
 }

@@ -20,8 +20,8 @@ global $USER;
 
 require __DIR__.'/inc.php';
 
-$start = optional_param( 'start', 0, PARAM_INT);
-$end = optional_param( 'end', 0, PARAM_INT);
+$start = optional_param('start', 0, PARAM_INT);
+$end = optional_param('end', 0, PARAM_INT);
 $courseid = required_param('courseid', PARAM_INT);
 $topicid = required_param('topicid', PARAM_INT);
 $userid = required_param('userid', PARAM_INT);
@@ -39,13 +39,15 @@ require_login($course);
 
 $context = context_course::instance($courseid);
 
-if($userid != $USER->id)
+if ($userid != $USER->id) {
 	block_exacomp_require_teacher($courseid);
+}
 
-if(!block_exacomp_use_eval_niveau())
+if (!block_exacomp_use_eval_niveau()) {
 	print_error('invalidevalniveau', 'block_exacomp');
-	
-	
+}
+
+
 //	$scheme_items = \block_exacomp\global_config::get_value_titles($courseid);
 //	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
 /* PAGE URL - MUST BE CHANGED */
@@ -57,9 +59,16 @@ $PAGE->set_pagelayout('embedded');
 block_exacomp_build_breadcrum_navigation($courseid);
 
 $data = new stdClass ();
-$data->evaluation = block_exacomp_get_descriptor_statistic_for_topic ( $courseid, $topicid, $userid, $start, $end ) ['descriptor_evaluation'];
-$data->evalniveau_titles = \block_exacomp\global_config::get_evalniveaus ();
-$data->value_titles = \block_exacomp\global_config::get_value_titles ( $courseid, true );
+$data->evaluation = block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $userid, $start, $end) ['descriptor_evaluation'];
+$data->evalniveau_titles = \block_exacomp\global_config::get_evalniveaus();
+$data->value_titles = array_filter(\block_exacomp\global_config::get_value_titles($courseid, true), function($k) {
+	return $k >= 0;
+}, ARRAY_FILTER_USE_KEY);
+$data->value_titles_long = array_filter(\block_exacomp\global_config::get_value_titles($courseid, false), function($k) {
+	return $k >= 0;
+}, ARRAY_FILTER_USE_KEY);
+$data->value_titles_self_assessment = \block_exacomp\global_config::get_student_value_titles();
+
 
 echo '<script> exacomp_data = '.json_encode($data).'; </script>';
 

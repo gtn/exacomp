@@ -882,8 +882,8 @@ class data_exporter extends data {
 			}
 
 			$xmlCrosssubject->courseid = $dbCrosssubject->courseid;
-			
-				 $descriptors = g::$DB->get_records_sql("
+
+			$descriptors = g::$DB->get_records_sql("
 				SELECT DISTINCT d.id, d.source, d.sourceid
 				FROM {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d
 				JOIN {".BLOCK_EXACOMP_DB_DESCCROSS."} dc ON d.id = dc.descrid
