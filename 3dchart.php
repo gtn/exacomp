@@ -58,27 +58,108 @@ $PAGE->set_pagelayout('embedded');
 // build breadcrumbs navigation
 block_exacomp_build_breadcrum_navigation($courseid);
 
-$data = new stdClass ();
-$data->evaluation = block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $userid, $start, $end) ['descriptor_evaluation'];
-$data->evalniveau_titles = \block_exacomp\global_config::get_evalniveaus();
-$data->value_titles = array_filter(\block_exacomp\global_config::get_value_titles($courseid, true), function($k) {
+$exacomp_graph = (object)[
+	'data' => [],
+	'options' => (object)[],
+];
+
+$graph_options =& $exacomp_graph->options;
+$graph_data =& $exacomp_graph->data;
+
+/*
+$graph_options->xMin = 0;
+$graph_options->xMax = 10;
+$graph_options->yMin = 0;
+$graph_options->yMax = 10;
+$graph_options->zMin = 0;
+$graph_options->zMax = 10;
+*/
+
+$evaluation = block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $userid, $start, $end)['descriptor_evaluation'];
+
+$graph_options->xLabels = array_map(function($label) {
+	// remove LFS at the beginning
+	return preg_replace('!^'.preg_quote(block_exacomp_get_string('niveau_short'), '!').'!', '', $label);
+}, array_keys(['' => ''] + $evaluation));
+$graph_options->xLabel = block_exacomp_get_string('niveau_short');
+$xlabels_long = array_keys(['' => ''] + $evaluation);
+
+$evalniveau_titles = array_filter(\block_exacomp\global_config::get_evalniveaus(), function($k) {
+	return $k > 0;
+}, ARRAY_FILTER_USE_KEY);
+$graph_options->yLabels = array_values([0 => ''] + $evalniveau_titles);
+$y_id_to_index = array_combine(array_keys([0 => ''] + $evalniveau_titles), array_keys($graph_options->yLabels));
+$ylabels_long = $graph_options->yLabels;
+
+end($graph_options->yLabels);
+$student_value_index = key($graph_options->yLabels) + 1;
+$graph_options->yLabels[$student_value_index] = block_exacomp_get_string('selfevaluation_short');
+$ylabels_long[$student_value_index] = block_exacomp_get_string('selfevaluation');
+
+$value_titles = array_filter(\block_exacomp\global_config::get_value_titles($courseid, true), function($k) {
 	return $k >= 0;
 }, ARRAY_FILTER_USE_KEY);
-$data->value_titles_long = array_filter(\block_exacomp\global_config::get_value_titles($courseid, false), function($k) {
+$value_titles_long = array_filter(\block_exacomp\global_config::get_value_titles($courseid, false), function($k) {
 	return $k >= 0;
 }, ARRAY_FILTER_USE_KEY);
-$data->value_titles_self_assessment = \block_exacomp\global_config::get_student_value_titles();
+$value_titles_self_assessment = \block_exacomp\global_config::get_student_value_titles();
 
+$graph_options->zLabels = array_fill(0, count($value_titles), '');
 
-echo '<script> exacomp_data = '.json_encode($data).'; </script>';
+$graph_options->yColors = [
+	$student_value_index => [
+		'fill' => 'RGB(255,197,57)',
+	],
+];
+
+$x = 1;
+foreach ($evaluation as $e) {
+	if ($e->studentvalue > 0) {
+		$data_value = (object)[
+			'x' => $x,
+			'y' => $student_value_index,
+			'z' => $e->studentvalue,
+			'label' => $xlabels_long[$x].' / '.block_exacomp_get_string('selfevaluation').': <b>'.$value_titles_self_assessment[$e->studentvalue].'</b>',
+		];
+		$graph_data["{$data_value->x}-{$data_value->y}-{$data_value->z}"] = $data_value;
+	}
+	if ($e->teachervalue >= 0 && isset($y_id_to_index[$e->evalniveau])) {
+		$data_value = (object)[
+			'x' => $x,
+			'y' => $y_id_to_index[$e->evalniveau],
+			'z' => $e->teachervalue,
+			'label' => $xlabels_long[$x].' / '.$ylabels_long[$y_id_to_index[$e->evalniveau]].': <b>'.$value_titles_long[$e->teachervalue].'</b>',
+		];
+		$graph_data["{$data_value->x}-{$data_value->y}-{$data_value->z}"] = $data_value;
+	}
+/*
+			var title = evalniveau_titles_by_index[point.y] ? evalniveau_titles_by_index[point.y].title : '' || '';
+			var value
+			if (evalniveau_titles_by_index[point.y].id == student_value_id) {
+				value = exacomp_data.value_titles_self_assessment[point.z];
+			} else {
+				value = exacomp_data.value_titles_long[Object.keys(exacomp_data.value_titles)[point.z]];
+			}
+			return title + ' <b>' + value + '</b>';
+*/
+	$x++;
+}
+
+echo '<script> exacomp_graph = '.json_encode($exacomp_graph).'; </script>';
 
 $output = block_exacomp_get_renderer();
 $output->requires()->js('/blocks/exacomp/javascript/vis.js', true);
+
 // build tab navigation & print header
-echo $output->header($context, $courseid, "", false);
+$PAGE->set_pagelayout('embedded');
+echo $output->header_v2();
 
 /* CONTENT REGION */
-echo html_writer::div(null, null, array('id' => 'mygraph'));
+if (!$exacomp_graph->data) {
+	echo block_exacomp_get_string('topic_3dchart_empty');
+} else {
+	echo html_writer::div(null, null, array('id' => 'mygraph'));
+}
 
 /* END CONTENT REGION */
 echo $output->footer();

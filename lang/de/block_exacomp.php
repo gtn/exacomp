@@ -305,6 +305,7 @@ $string['allstudents'] = 'Alle  Kursteilnehmer/innen';
 $string['nostudents'] = 'Keine  Kursteilnehmer/innen';
 $string['statistic'] = 'Gesamtübersicht';
 $string['niveau'] = 'Lernfortschritt';
+$string['niveau_short'] = 'LFS';
 $string['competence_grid_niveau'] = 'Niveau';
 $string['descriptor'] = 'Kompetenz';
 $string['assigndone'] = 'Aufgabe erledigt: ';

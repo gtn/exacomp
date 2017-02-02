@@ -1019,6 +1019,10 @@ return [
 		'Lernfortschritt',
 		'Level',
 	],
+	'niveau_short' => [
+		'LFS',
+		'Level',
+	],
 	'competence_grid_niveau' => [
 		'Niveau',
 		'Level',

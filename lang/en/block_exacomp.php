@@ -305,6 +305,7 @@ $string['allstudents'] = 'All students';
 $string['nostudents'] = 'No students';
 $string['statistic'] = 'Overview';
 $string['niveau'] = 'Level';
+$string['niveau_short'] = 'Level';
 $string['competence_grid_niveau'] = 'Level';
 $string['descriptor'] = 'Competency';
 $string['assigndone'] = 'task done: ';
