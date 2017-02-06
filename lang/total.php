@@ -630,6 +630,10 @@ return [
 
 
 	// === Examples ===
+	'example' => [
+		'Lernmaterial',
+		'Example',
+	],
 	'sorting' => [
 		'Sortierung wählen: ',
 		'select sorting: ',
@@ -919,25 +923,17 @@ return [
 		'Es müssen zumindest ein Link oder eine Datei abgegeben werden',
 		'Es müssen zumindest ein Link oder eine Datei abgegeben werden',
 	],
-	'usersubmitted' => [
-		' hat folgende Moodle-Aktivitäten abgegeben:',
-		' has submitted the following Moodle activities:',
-	],
-	'usersubmittedquiz' => [
-		' hat folgende Tests durchgeführt:',
-		' has done the following quizzes:',
+	'associated_activities' => [
+		'Zugeordnete Moodle-Aktivitäten:',
+		'Associated Moodle Activities:',
 	],
 	'usernosubmission' => [
-		' hat keine Moodle-Aufgaben zu dieser Lernliste abgegeben und keinen Test durchgeführt.',
-		' has not yet submitted any Moodle activities or quizzes associated with this outcome',
-	],
-	'usernosubmission_topic' => [
-		' hat keine Moodle-Aufgaben zu dieser Teilkompetenz abgegeben und keinen Test durchgeführt.',
-		' has not yet submitted any Moodle activities or quizzes associated with this topic',
+		'Offene Moodle-Aktivitäten',
+		'{$a} has not yet submitted any Moodle activities or quizzes associated with this outcome',
 	],
 	'grading' => [
-		' Bewertung: ',
-		' Grading: ',
+		'Bewertung',
+		'Grading',
 	],
 	'teacher_tipp' => [
 		'Tipp',
@@ -960,8 +956,8 @@ return [
 		'Print',
 	],
 	'eportitems' => [
-		'Diese/r Kursteilnehmer/in hat folgende ePortfolio-Artefakte zu diesem Deskriptor eingereicht: ',
-		'This participant has submitted the following ePortfolio artifacts: ',
+		'Zu diesem Deskriptor eingereichte ePortfolio-Artefakte:',
+		'Submitted ePortfolio artifacts:',
 	],
 	'eportitem_shared' => [
 		' (geteilt)',

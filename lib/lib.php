@@ -175,6 +175,7 @@ function block_exacomp_init_js_css() {
 	$PAGE->requires->jquery_plugin('ui-css');
 	$PAGE->requires->js("/blocks/exacomp/javascript/simpletreemenu/simpletreemenu.js", true);
 	$PAGE->requires->css("/blocks/exacomp/javascript/simpletreemenu/simpletree.css", true);
+	$PAGE->requires->js("/blocks/exacomp/javascript/jquery.disablescroll.js", true);
 	$PAGE->requires->js('/blocks/exacomp/javascript/exacomp.js', true);
 	$PAGE->requires->js('/blocks/exacomp/javascript/ajax.js', true);
 
@@ -2544,25 +2545,30 @@ function block_exacomp_get_eportfolioitem_association($students) {
 
 /**
  * Prepares an icon for a student for the given course modules, based on the grading.
- * @param array $coursemodules
+ * @param array $associated_modules
  * @param stdClass $student
  *
  * @return stdClass $icon
  */
-function block_exacomp_get_icon_for_user($coursemodules, $student) {
+function block_exacomp_get_icon_for_user($associated_modules, $student) {
 	global $CFG, $DB;
 	require_once $CFG->libdir.'/gradelib.php';
 
 	$found = false;
-	$modules = $DB->get_records_menu("modules");
 
 	$icon = new stdClass();
-	$icon->text = fullname($student).block_exacomp_get_string('usersubmitted').'&#013;';
+	$icon->text = block_exacomp_get_string('associated_activities', null, fullname($student));
+	$icon->text .= '<div>';
 
-	foreach ($coursemodules as $cm) {
+	usort($associated_modules, function($a, $b) {
+		return strcmp($a->get_formatted_name(), $b->get_formatted_name());
+	});
+
+	foreach ($associated_modules as $cm) {
+		/* @var cm_info $cm */
 		$hasSubmission = false;
 
-		$gradeinfo = grade_get_grades($cm->course, "mod", $modules[$cm->module], $cm->instance, $student->id);
+		$gradeinfo = grade_get_grades($cm->course, "mod", $cm->modname, $cm->instance, $student->id);
 
 		//check for assign
 		$assign = $DB->get_record('modules', array('name' => 'assign'));
@@ -2570,15 +2576,36 @@ function block_exacomp_get_icon_for_user($coursemodules, $student) {
 			$hasSubmission = $DB->get_record('assign_submission', array('assignment' => $cm->instance, 'userid' => $student->id));
 		}
 
+		$icon->text .= '<div>';
+		
 		if (isset($gradeinfo->items[0]->grades[$student->id]->dategraded) || $hasSubmission) {
 			$found = true;
-			$icon->img = html_writer::empty_tag("img", array("src" => "pix/list_12x11.png", "alt" => block_exacomp_get_string("legend_activities")));
-			$icon->text .= '* '.str_replace('"', '', $gradeinfo->items[0]->name).((isset($gradeinfo->items[0]->grades[$student->id])) ? block_exacomp_get_string('grading').$gradeinfo->items[0]->grades[$student->id]->str_long_grade : '').'&#013;';
+			$icon->text .= html_writer::empty_tag("img", array("src" => "pix/list_12x11.png"));
+		} else {
+			$icon->text .= html_writer::empty_tag("img", array("src" => "pix/x_11x11.png"));
 		}
+
+		$icon->text .= ' ';
+
+		$entry = s($cm->get_formatted_name());
+		if (isset($gradeinfo->items[0]->grades[$student->id])) {
+			$entry .= ', '.block_exacomp_get_string('grading').': '.$gradeinfo->items[0]->grades[$student->id]->str_long_grade;
+		}
+
+		if ($cm->modname == 'quiz' && block_exacomp_is_teacher()) {
+			$url = new moodle_url('/mod/quiz/report.php?id='.$cm->id.'&mode=overview');
+		} else {
+			$url = new moodle_url('/mod/'.$cm->modname.'/view.php?id='.$cm->id);
+		}
+		$icon->text .= '<a href="'.$url.'">'.$entry.'</a>';
+
+		$icon->text .= '</div>';
 	}
-	if (!$found) {
-		$icon->text = fullname($student).block_exacomp_get_string("usernosubmission");
-		$icon->img = html_writer::empty_tag("img", array("src" => "pix/x_11x11.png", "alt" => fullname($student).block_exacomp_get_string("usernosubmission")));
+
+	if ($found) {
+		$icon->img = html_writer::empty_tag("img", array("src" => "pix/list_12x11.png", "alt" => block_exacomp_get_string("legend_activities")));
+	} else {
+		$icon->img = html_writer::empty_tag("img", array("src" => "pix/x_11x11.png", "alt" => block_exacomp_get_string("usernosubmission", null, fullname($student))));
 	}
 
 	return $icon;
@@ -4716,8 +4743,10 @@ function block_exacomp_get_descriptor_numbering($descriptor) {
 
 		if (isset($descriptor->topic) && $descriptor->topic instanceof \block_exacomp\topic) {
 			$topic = $descriptor->topic;
-		} else {
+		} elseif (!empty($descriptor->topicid)) {
 			$topic = \block_exacomp\topic::get($descriptor->topicid);
+		} else {
+			throw new \Exception('topic not found');
 		}
 
 		$topicNumbering = $topic->get_numbering();
@@ -6004,18 +6033,6 @@ function block_exacomp_create_blocking_event($courseid, $title, $creatorid, $stu
 }
 
 /**
- * check if student is allowed to access example - needed for ws security
- * @param unknown $courseid
- * @param unknown $exampleid
- * @param unknown $studentid
- */
-function block_exacomp_check_student_example_permission($courseid, $exampleid, $studentid) {
-	global $DB;
-
-	return $DB->record_exists(BLOCK_EXACOMP_DB_EXAMPVISIBILITY, array('courseid' => $courseid, 'exampleid' => $exampleid, 'studentid' => $studentid, 'visible' => 1));
-}
-
-/**
  * needed to create example over webservice API
  * @param unknown $descriptorid
  */
@@ -6241,6 +6258,7 @@ function block_exacomp_get_grid_for_competence_profile_topic_data($courseid, $st
 
 	return $data;
 }
+
 /**
  * format data to access via WS
  * @param unknown $courseid
@@ -6645,10 +6663,10 @@ function block_exacomp_get_descriptor_statistic_for_topic($courseid, $topicid, $
 		$descriptorgradings[$niveau->title] = new stdClass();
 		// copy of block_exacomp_get_grid_for_competence_profile_topic_data()
 		$descriptorgradings[$niveau->title]->teachervalue =
-				(block_exacomp_additional_grading())
+			(block_exacomp_additional_grading())
 				? (($teacher_evaluation && $teacher_evaluation->additionalinfo) ? \block_exacomp\global_config::get_additionalinfo_value_mapping($teacher_evaluation->additionalinfo) : '')
 				: (($teacher_evaluation && $teacher_evaluation->value) ? $scheme_items[$teacher_evaluation->value] : -1);
-		$descriptorgradings[$niveau->title]->evalniveau = ($use_evalniveau &&  $teacher_eval_within_timeframe ? $teacher_evaluation->evalniveauid : -1) ?: -1;
+		$descriptorgradings[$niveau->title]->evalniveau = ($use_evalniveau && $teacher_eval_within_timeframe ? $teacher_evaluation->evalniveauid : -1) ?: -1;
 		$descriptorgradings[$niveau->title]->studentvalue = ($student_eval_within_timeframe ? $student_evaluation->value : -1) ?: -1;
 	}
 
@@ -6804,9 +6822,7 @@ function block_exacomp_clear_visibility_cache($courseid) {
  * create tree for one example, similar like block_exacomp_build_example_association_tree()
  * but with improved performance
  */
-function block_exacomp_build_example_tree($courseid, $exampleid) {
-	global $DB;
-
+function block_exacomp_build_example_parent_names($courseid, $exampleid) {
 	$sql = "SELECT d.id as descrid, d.title as descrtitle, d.parentid as parentid, s.id as subjid, s.title as subjecttitle, t.id as topicid, t.title as topictitle, 
 				e.id as exampleid, e.title as exampletitle 
 			FROM {".BLOCK_EXACOMP_DB_SUBJECTS."} s 
@@ -6818,65 +6834,28 @@ function block_exacomp_build_example_tree($courseid, $exampleid) {
 			JOIN {".BLOCK_EXACOMP_DB_EXAMPLES."} e ON e.id = de.exampid
 			WHERE e.id = ? AND ct.courseid = ?";
 
-	$records = $DB->get_records_sql($sql, array($exampleid, $courseid));
+	$records = iterator_to_array(g::$DB->get_recordset_sql($sql, array($exampleid, $courseid)));
 
-	$tree = array();
+	$flatTree = array();
 	foreach ($records as $record) {
-
-		//subject already in tree?
-		if (!array_key_exists($record->subjid, $tree)) { //create subject entry in tree
-			$tree[$record->subjid] = new stdClass();
-			$tree[$record->subjid]->id = $record->subjid;
-			$tree[$record->subjid]->title = $record->subjecttitle;
-			$tree[$record->subjid]->associated = 1; //associated needed to reuse existing renderer function
-			$tree[$record->subjid]->topics = array();
-		}
-
-		//topic already in tree?
-		if (!array_key_exists($record->topicid, $tree[$record->subjid]->topics)) { //create topic entry in tree
-			$tree[$record->subjid]->topics[$record->topicid] = new stdClass();
-			$tree[$record->subjid]->topics[$record->topicid]->id = $record->topicid;
-			$tree[$record->subjid]->topics[$record->topicid]->title = $record->topictitle;
-			$tree[$record->subjid]->topics[$record->topicid]->associated = 1;
-			$tree[$record->subjid]->topics[$record->topicid]->descriptors = array();
-		}
+		$titles = [block_exacomp_get_topic_numbering(\block_exacomp\topic::get($record->topicid)).' '.$record->topictitle];
 
 		//check if parent descriptor or child
 		if ($record->parentid > 0) {    //child get parentdescriptor
-			$parent_descriptor = $DB->get_record(BLOCK_EXACOMP_DB_DESCRIPTORS, array('id' => $record->parentid));
+			$parent_descriptor = \block_exacomp\descriptor::get($record->parentid);
+			$parent_descriptor->topicid = $record->topicid;
 
-			//parent already in tree?
-			if (!array_key_exists($parent_descriptor->id, $tree[$record->subjid]->topics[$record->topicid]->descriptors)) {    //create parent entry in tree
-				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id] = new stdClass();
-				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->id = $parent_descriptor->id;
-				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->title = $parent_descriptor->title;
-				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->topicid = $record->topicid;
-				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->associated = 1;
-				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->children = array();
-			}
-
-			//child already in tree?
-			if (!array_key_exists($record->descrid, $tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->children)) {
-				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->children[$record->descrid] = new stdClass();
-				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->children[$record->descrid]->id = $record->descrid;
-				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->children[$record->descrid]->title = $record->descrtitle;
-				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->children[$record->descrid]->topicid = $record->topicid;
-				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$parent_descriptor->id]->children[$record->descrid]->associated = 1;
-			}
-		} else {
-			//descriptor already in tree?
-			if (!array_key_exists($record->descrid, $tree[$record->subjid]->topics[$record->topicid]->descriptors)) {    //create descriptor entry in tree
-				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$record->descrid] = new stdClass();
-				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$record->descrid]->id = $record->descrid;
-				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$record->descrid]->title = $record->descrtitle;
-				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$record->descrid]->topicid = $record->topicid;
-				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$record->descrid]->associated = 1;
-				$tree[$record->subjid]->topics[$record->topicid]->descriptors[$record->descrid]->children = array();
-			}
+			$titles[] = block_exacomp_get_descriptor_numbering($parent_descriptor).' '.$parent_descriptor->title;
 		}
+
+		$descriptor = \block_exacomp\descriptor::get($record->descrid);
+		$descriptor->topicid = $record->topicid;
+		$titles[] = block_exacomp_get_descriptor_numbering($descriptor).' '.$record->descrtitle;
+
+		$flatTree[join(' | ', $titles)] = $titles;
 	}
 
-	return $tree;
+	return $flatTree;
 }
 
 function block_exacomp_any_examples_on_schedule($courseid) {

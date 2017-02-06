@@ -201,6 +201,7 @@ $string['conf_comps'] = 'configure competences';
 
 
 // === Examples ===
+$string['example'] = 'Example';
 $string['sorting'] = 'select sorting: ';
 $string['subject'] = 'subjects';
 $string['taxonomies'] = 'taxonomies';
@@ -280,17 +281,15 @@ $string['example_submission_info'] = 'You are about to edit the example "{$a}". 
 $string['example_submission_subject'] = 'New submission';
 $string['example_submission_message'] = 'Student {$a->student} handed in a new submission in {$a->course}.';
 $string['submissionmissing'] = 'Es müssen zumindest ein Link oder eine Datei abgegeben werden';
-$string['usersubmitted'] = ' has submitted the following Moodle activities:';
-$string['usersubmittedquiz'] = ' has done the following quizzes:';
-$string['usernosubmission'] = ' has not yet submitted any Moodle activities or quizzes associated with this outcome';
-$string['usernosubmission_topic'] = ' has not yet submitted any Moodle activities or quizzes associated with this topic';
-$string['grading'] = ' Grading: ';
+$string['associated_activities'] = 'Associated Moodle Activities:';
+$string['usernosubmission'] = '{$a} has not yet submitted any Moodle activities or quizzes associated with this outcome';
+$string['grading'] = 'Grading';
 $string['teacher_tipp'] = 'tip';
 $string['teacher_tipp_1'] = 'This competence has been associated with ';
 $string['teacher_tipp_2'] = ' Moodle activities and has been reached with ';
 $string['teacher_tipp_3'] = ' outcomes.';
 $string['print'] = 'Print';
-$string['eportitems'] = 'This participant has submitted the following ePortfolio artifacts: ';
+$string['eportitems'] = 'Submitted ePortfolio artifacts:';
 $string['eportitem_shared'] = ' (shared)';
 $string['eportitem_notshared'] = ' (not shared)';
 $string['teachershortcut'] = 'T';

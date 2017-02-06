@@ -16,14 +16,6 @@
 //
 // This copyright notice MUST APPEAR in all copies of the script!
 
-/**
- * $.disablescroll
- * Author: Josh Harrison - aloof.co
- *
- * Disables scroll events from mousewheels, touchmoves and keypresses.
- * Use while jQuery is animating the scroll position for a guaranteed super-smooth ride!
- */(function(e){"use strict";function r(t,n){this.opts=e.extend({handleWheel:!0,handleScrollbar:!0,handleKeys:!0,scrollEventKeys:[32,33,34,35,36,37,38,39,40]},n);this.$container=t;this.$document=e(document);this.lockToScrollPos=[0,0];this.disable()}var t,n;n=r.prototype;n.disable=function(){var e=this;e.opts.handleWheel&&e.$container.on("mousewheel.disablescroll DOMMouseScroll.disablescroll touchmove.disablescroll",e._handleWheel);if(e.opts.handleScrollbar){e.lockToScrollPos=[e.$container.scrollLeft(),e.$container.scrollTop()];e.$container.on("scroll.disablescroll",function(){e._handleScrollbar.call(e)})}e.opts.handleKeys&&e.$document.on("keydown.disablescroll",function(t){e._handleKeydown.call(e,t)})};n.undo=function(){var e=this;e.$container.off(".disablescroll");e.opts.handleKeys&&e.$document.off(".disablescroll")};n._handleWheel=function(e){e.preventDefault()};n._handleScrollbar=function(){this.$container.scrollLeft(this.lockToScrollPos[0]);this.$container.scrollTop(this.lockToScrollPos[1])};n._handleKeydown=function(e){for(var t=0;t<this.opts.scrollEventKeys.length;t++)if(e.keyCode===this.opts.scrollEventKeys[t]){e.preventDefault();return}};e.fn.disablescroll=function(e){!t&&(typeof e=="object"||!e)&&(t=new r(this,e));t&&typeof e=="undefined"?t.disable():t&&t[e]&&t[e].call(t)};window.UserScrollDisabler=r})(jQuery);
-
 !function () {
 
 	window.jQueryExacomp = jQuery;
@@ -261,9 +253,35 @@
 		if ($().tooltip) {
 			// only if we have the tooltip function
 			$('.exabis-tooltip').tooltip({
+				items: '[title], [data-tooltip-content]',
 				// retreave content as html
 				content: function () {
-					return $(this).prop('title');
+					console.log($(this).data('tooltip-content'));
+					return $(this).data('tooltip-content') || $(this).prop('title');
+				},
+
+				// copy from http://stackoverflow.com/a/16663648/5164463
+				// disable closing of tooltip if you hover over it!
+				show: null, // show immediately
+				open: function (event, ui) {
+					if (typeof(event.originalEvent) === 'undefined') {
+						return false;
+					}
+
+					var $id = $(ui.tooltip).attr('id');
+
+					// close any lingering tooltips
+					$('div.ui-tooltip').not('#' + $id).remove();
+				},
+				close: function (event, ui) {
+					ui.tooltip.hover(function () {
+							$(this).stop(true).fadeTo(400, 1);
+						},
+						function () {
+							$(this).fadeOut('400', function () {
+								$(this).remove();
+							});
+						});
 				}
 			});
 		}
@@ -576,7 +594,7 @@
 			var date1_s = Math.round(new Date(date1).getTime() / 1000);
 			// always highlight until the end of the selected date
 			var date2_s = new Date(date2);
-			date2_s.setDate(date2_s.getDate()+1);
+			date2_s.setDate(date2_s.getDate() + 1);
 			date2_s = Math.round(date2_s.getTime() / 1000);
 
 			// Highlight the gradings within the given range
@@ -596,7 +614,7 @@
 			var date1_s = (new Date(date1).getTime() / 1000);
 			// always highlight until the end of the selected date
 			var date2_s = new Date(date2);
-			date2_s.setDate(date2_s.getDate()+1);
+			date2_s.setDate(date2_s.getDate() + 1);
 			date2_s = Math.round(date2_s.getTime() / 1000);
 
 			// make ajax call for new data / html code
@@ -651,7 +669,7 @@
 			$('select[name="daterangeperiods"]').change(function (event) {
 				var fromTo = $(this).val().split('-');
 				allowClearSelect = false;
-				$('input[id="daterangepicker"]').data('dateRangePicker').setDateRange(new Date(fromTo[0]*1000), new Date(fromTo[1]*1000));
+				$('input[id="daterangepicker"]').data('dateRangePicker').setDateRange(new Date(fromTo[0] * 1000), new Date(fromTo[1] * 1000));
 				allowClearSelect = true;
 			});
 

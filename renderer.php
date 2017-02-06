@@ -151,9 +151,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				// $content .= html_writer::empty_tag('input', array('type'=>'text', 'name'=>'exacomp_competence_grid_select_student', 'value'=>$selectedStudent));
 				$content .= '<h3>'.block_exacomp_get_string('header_edit_mode').'</h3>';
 			} elseif ($students) {
-				$content .= '<div style="padding-bottom: 15px;">';
+				$content .= '<div style="padding-bottom: 5px;">';
 				$content .= block_exacomp_get_string("choosestudent");
 				$content .= $this->studentselector($students, $selectedStudent, static::STUDENT_SELECTOR_OPTION_OVERVIEW_DROPDOWN);
+
+				$content .= '</div><div style="padding-bottom: 15px;">';
 
 				//print date range picker
 				$content .= block_exacomp_get_string("choosedaterange");
@@ -1442,7 +1444,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						}
 
 						$icon = block_exacomp_get_icon_for_user($cm_temp, $student);
-						$icontext = '<span title="'.$icon->text.'" class="exabis-tooltip">'.$icon->img.'</span>';
+						$icontext = '<span data-tooltip-content="'.s($icon->text).'" class="exabis-tooltip">'.$icon->img.'</span>';
 					}
 					//EPORTFOLIOITEMS
 					if ($data->exaport_exists) {
@@ -2739,8 +2741,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 
-	public function activity_content($subjects, $modules, $colspan) {
+	public function activity_content($subjects, $modules) {
 		global $COURSE, $PAGE;
+
+		$colspan = (count($modules) + 2);
 
 		$table = new html_table;
 		$table->attributes['class'] = 'rg2 exabis_comp_comp';
@@ -2757,20 +2761,15 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$cell->attributes['class'] = 'category catlevel1';
 		$cell->attributes['scope'] = 'col';
 		$cell->text = html_writer::tag('h1', $COURSE->fullname);
-
+		$cell->colspan = count($modules) + 2;
 		$row->cells[] = $cell;
 
-		$cell = new html_table_cell();
-		$cell->attributes['class'] = 'category catlevel1 bottom';
-		$cell->attributes['scope'] = 'col';
-		$cell->colspan = $colspan;
-
-		$row->cells[] = $cell;
 		$rows[] = $row;
 
 		//print row with list of activities
 		$row = new html_table_row();
 		$cell = new html_table_cell();
+		$cell->colspan = 2;
 
 		$row->cells[] = $cell;
 
@@ -2788,7 +2787,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$row = new html_table_row();
 			$row->attributes['class'] = 'ec_heading';
 			$cell = new html_table_cell();
-			$cell->colspan = $colspan;
+			$cell->colspan = count($modules) + 2;
 			$cell->text = html_writer::tag('b', $subject->title);
 			$row->cells[] = $cell;
 			$rows[] = $row;
@@ -2812,6 +2811,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$topicRow = new html_table_row();
 			$topicRow->attributes['class'] = 'exabis_comp_teilcomp '.$this_rg2_class.' highlight';
+
+			$topicRow->cells[] = block_exacomp_get_topic_numbering($topic);
 
 			$outputnameCell = new html_table_cell();
 			$outputnameCell->attributes['class'] = 'rg2-arrow rg2-indent';
@@ -2844,6 +2845,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$descriptorRow = new html_table_row();
 			$descriptorRow->attributes['class'] = 'exabis_comp_aufgabe '.$this_rg2_class;
+
+			$descriptorRow->cells[] = block_exacomp_get_descriptor_numbering($descriptor);
 
 			$titleCell = new html_table_cell();
 			$titleCell->attributes['class'] = 'rg2-arrow rg2-indent';
@@ -3858,51 +3861,62 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return html_writer::div($content, '', array('id' => 'view_examples_header'));
 	}
 
-	public function example_based_list_tree($example, $tree, $isTeacher, $editmode, $showexamples = false) {
-		$html_tree = "";
-		$html_tree .= html_writer::start_tag("ul", array("class" => "exa-tree"));
+	public function example_based_list_tree($examples) {
+		$isTeacher = block_exacomp_is_teacher();
 
-		$html_tree .= html_writer::start_tag("li", array('class' => "associated"));
-		$exampleIcons = " ";
+		$content = '<table class="default-table">';
 
-		if ($url = $example->get_task_file_url()) {
+		$content .= '<tr><th>'.block_exacomp_get_string('example').'</th><th>'.block_exacomp_get_string('descriptors').'</th></tr>';
 
-			$exampleIcons = html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array(
-				"target" => "_blank",
-			));
-		} elseif ($example->externaltask) {
+		foreach ($examples as $example) {
+			$exampleIcons = " ";
 
-			$exampleIcons = html_writer::link($example->externaltask, $this->local_pix_icon("filesearch.png", $example->externaltask), array(
-				"target" => "_blank",
-			));
-		}
+			if ($url = $example->get_task_file_url()) {
 
-		if ($example->externalurl) {
+				$exampleIcons = html_writer::link($url, $this->local_pix_icon("filesearch.png", block_exacomp_get_string('preview')), array(
+					"target" => "_blank",
+				));
+			} elseif ($example->externaltask) {
 
-			$exampleIcons .= html_writer::link($example->externalurl, $this->local_pix_icon("globesearch.png", $example->externalurl), array(
-				"target" => "_blank",
-			));
-		}
-
-		$visible_solution = block_exacomp_is_example_solution_visible(g::$COURSE->id, $example, g::$USER->id);
-		if ($isTeacher || $visible_solution) {
-			if ($url = $example->get_solution_file_url()) {
-				$exampleIcons .= $this->example_solution_icon($url);
-			} elseif ($example->externalsolution) {
-				$exampleIcons .= html_writer::link($example->externalsolution, $this->pix_icon("e/fullpage", block_exacomp_get_string('solution')), array(
+				$exampleIcons = html_writer::link($example->externaltask, $this->local_pix_icon("filesearch.png", $example->externaltask), array(
 					"target" => "_blank",
 				));
 			}
+
+			if ($example->externalurl) {
+
+				$exampleIcons .= html_writer::link($example->externalurl, $this->local_pix_icon("globesearch.png", $example->externalurl), array(
+					"target" => "_blank",
+				));
+			}
+
+			$visible_solution = block_exacomp_is_example_solution_visible(g::$COURSE->id, $example, g::$USER->id);
+			if ($isTeacher || $visible_solution) {
+				if ($url = $example->get_solution_file_url()) {
+					$exampleIcons .= $this->example_solution_icon($url);
+				} elseif ($example->externalsolution) {
+					$exampleIcons .= html_writer::link($example->externalsolution, $this->pix_icon("e/fullpage", block_exacomp_get_string('solution')), array(
+						"target" => "_blank",
+					));
+				}
+			}
+
+			$content .= '<tr><td>';
+
+			$content .= $example->title.' '.$example->id.' '.$exampleIcons;
+
+			$example_parent_names = block_exacomp_build_example_parent_names(g::$COURSE->id, $example->id);
+
+			$content .= '</td><td>'.join('<br/>', array_map(function($names){
+				return '<span>'.join('</span><span> &#x25B8; ', $names).'</span>';
+			}, $example_parent_names));
+
+			$content .= '</td></tr>';
 		}
 
-		$html_tree .= $example->title.$exampleIcons;
+		$content .= '</table>';
 
-		$html_tree .= $this->competence_based_list_tree($tree, $isTeacher, $editmode, $showexamples);
-
-		$html_tree .= html_writer::end_tag('li');
-		$html_tree .= html_writer::end_tag('ul');
-
-		return $html_tree;
+		return $content;
 	}
 
 	public function pre_planning_storage_students($students, $examples) {

@@ -7034,9 +7034,7 @@ class block_exacomp_external extends external_api {
 		$exampleDataFound = null;
 		foreach ($courses as $course) {
 			// can be viewed by user, or by whole course
-			if (block_exacomp_is_teacher($courseid) || block_exacomp_check_student_example_permission($course->id, $exampleid, g::$USER->id)
-				|| block_exacomp_check_student_example_permission($course->id, $exampleid, 0)
-			) {
+			if (block_exacomp_is_teacher($courseid) || block_exacomp_is_example_visible($course->id, \block_exacomp\example::get($exampleid), g::$USER->id)) {
 				$exampleDataFound = (object)['exampleid' => $exampleid, 'courseid' => $course->id];
 				break;
 			}

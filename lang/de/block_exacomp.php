@@ -201,6 +201,7 @@ $string['conf_comps'] = 'Kompetenzen zuordnen';
 
 
 // === Examples ===
+$string['example'] = 'Lernmaterial';
 $string['sorting'] = 'Sortierung wählen: ';
 $string['subject'] = 'Kompetenzbereiche';
 $string['taxonomies'] = 'Niveaustufen';
@@ -280,17 +281,15 @@ $string['example_submission_info'] = 'Du bist dabei die Aufgabe "{$a}" zu bearbe
 $string['example_submission_subject'] = 'Neue Abgabe';
 $string['example_submission_message'] = 'Im Kurs {$a->course} wurde von Teilnehmer/in {$a->student} eine neue Abgabe eingereicht.';
 $string['submissionmissing'] = 'Es müssen zumindest ein Link oder eine Datei abgegeben werden';
-$string['usersubmitted'] = ' hat folgende Moodle-Aktivitäten abgegeben:';
-$string['usersubmittedquiz'] = ' hat folgende Tests durchgeführt:';
-$string['usernosubmission'] = ' hat keine Moodle-Aufgaben zu dieser Lernliste abgegeben und keinen Test durchgeführt.';
-$string['usernosubmission_topic'] = ' hat keine Moodle-Aufgaben zu dieser Teilkompetenz abgegeben und keinen Test durchgeführt.';
-$string['grading'] = ' Bewertung: ';
+$string['associated_activities'] = 'Zugeordnete Moodle-Aktivitäten:';
+$string['usernosubmission'] = 'Offene Moodle-Aktivitäten';
+$string['grading'] = 'Bewertung';
 $string['teacher_tipp'] = 'Tipp';
 $string['teacher_tipp_1'] = 'Diese Kompetenz wurde bei ';
 $string['teacher_tipp_2'] = ' Moodle-Aktivität(en) zugeordnet und bereits bei ';
 $string['teacher_tipp_3'] = ' Moodle-Aktivität(en) in der Kompetenz-Detailansicht erfüllt.';
 $string['print'] = 'Drucken';
-$string['eportitems'] = 'Diese/r Kursteilnehmer/in hat folgende ePortfolio-Artefakte zu diesem Deskriptor eingereicht: ';
+$string['eportitems'] = 'Zu diesem Deskriptor eingereichte ePortfolio-Artefakte:';
 $string['eportitem_shared'] = ' (geteilt)';
 $string['eportitem_notshared'] = ' (nicht geteilt)';
 $string['teachershortcut'] = 'L';

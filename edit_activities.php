@@ -104,7 +104,6 @@ $visible_modules = [];
 $modules_to_filter = [];
 
 if($modules){
-	$colspan = (count($modules) + 1);
 	foreach($modules as $module){
 		$compsactiv = $DB->get_records('block_exacompcompactiv_mm', array('activityid'=>$module->id, 'eportfolioitem'=>0));
 			
@@ -138,7 +137,7 @@ if($modules){
 		echo $output->no_course_activities_warning();
 	}else{
 		echo $output->activity_legend($headertext);
-		echo $output->activity_content($subjects, $visible_modules, $colspan);
+		echo $output->activity_content($subjects, $visible_modules);
 		echo $output->activity_footer($niveaus, $modules_to_filter, $selected_niveaus, $selected_modules);
 	}
 }

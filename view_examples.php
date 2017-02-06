@@ -21,21 +21,22 @@ require __DIR__.'/inc.php';
 
 global $DB, $OUTPUT, $PAGE;
 
-$courseid = required_param ( 'courseid', PARAM_INT );
+$courseid = required_param('courseid', PARAM_INT);
 $courseid_for_tree = $courseid;
-$sort = optional_param ( 'sort', "desc", PARAM_ALPHA );
-$show_all_examples = optional_param ( 'showallexamples_check', '0', PARAM_INT );
+$sort = optional_param('sort', "desc", PARAM_ALPHA);
+$show_all_examples = optional_param('showallexamples_check', '0', PARAM_INT);
 $style = optional_param('style', 0, PARAM_INT);
 
-if (! $course = $DB->get_record ( 'course', array (
-		'id' => $courseid 
-) )) {
-	print_error ( 'invalidcourse', 'block_simplehtml', $courseid );
+if (!$course = $DB->get_record('course', array(
+	'id' => $courseid,
+))
+) {
+	print_error('invalidcourse', 'block_simplehtml', $courseid);
 }
 
-require_login ( $course );
+require_login($course);
 
-$context = context_course::instance ( $courseid );
+$context = context_course::instance($courseid);
 
 // CHECK TEACHER
 $isTeacher = block_exacomp_is_teacher($context);
@@ -46,61 +47,54 @@ $studentid = block_exacomp_get_studentid();
 $page_identifier = 'tab_examples';
 
 /* PAGE URL - MUST BE CHANGED */
-$PAGE->set_url ( '/blocks/exacomp/view_examples.php', array (
-		'courseid' => $courseid 
-) );
-$PAGE->set_heading ( block_exacomp_get_string('blocktitle') );
-$PAGE->set_title ( block_exacomp_get_string($page_identifier) );
+$PAGE->set_url('/blocks/exacomp/view_examples.php', array(
+	'courseid' => $courseid,
+));
+$PAGE->set_heading(block_exacomp_get_string('blocktitle'));
+$PAGE->set_title(block_exacomp_get_string($page_identifier));
 
 // build breadcrumbs navigation
-block_exacomp_build_breadcrum_navigation ( $courseid );
+block_exacomp_build_breadcrum_navigation($courseid);
 
 // build tab navigation & print header
 $output = block_exacomp_get_renderer();
-echo $output->header($context, $courseid , $page_identifier );
+echo $output->header_v2($page_identifier);
 
-if ($show_all_examples != 0)
+if ($show_all_examples != 0) {
 	$courseid_for_tree = 0;
-	
-	/* CONTENT REGION */
+}
 
+/* CONTENT REGION */
 
 
 echo $output->view_example_header();
 
-if($style==0){
+if ($style == 0) {
 	$tree = block_exacomp_build_example_association_tree($courseid, array(), 0, 0, true);
-	echo $output->competence_based_list_tree ( $tree , $isTeacher, false);
+	echo $output->competence_based_list_tree($tree, $isTeacher, false);
 }
-if($style==1){
+if ($style == 1) {
 	//could be optimized together with block_exacomp_build_example_tree
 	//non critical - only 1 additional query for whole loading process
-	$comp_examples = \block_exacomp\example::get_objects_sql(
-            'SELECT DISTINCT e.*
-                FROM {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct
-                JOIN {'.BLOCK_EXACOMP_DB_DESCTOPICS.'} dt ON ct.topicid = dt.topicid
-                JOIN {'.BLOCK_EXACOMP_DB_DESCEXAMP.'} de ON dt.descrid = de.descrid
-                JOIN {'.BLOCK_EXACOMP_DB_EXAMPLES.'} e ON e.id = de.exampid
-                WHERE ct.courseid = ?'
-            , array($courseid));
-	
-	$content = '';
-	foreach($comp_examples as $example){
-		$permission = block_exacomp_check_student_example_permission($courseid, $example->id, $studentid);
-		if(!$permission)
-			$permission = block_exacomp_check_student_example_permission($courseid, $example->id, 0);
-		
-		if($isTeacher || $permission){
-			$tree = block_exacomp_build_example_tree($courseid, $example->id);
-			$content .= $output->example_based_list_tree($example, $tree, $isTeacher, false);
-		}
+	$examples = \block_exacomp\example::get_objects_sql("
+		SELECT DISTINCT e.*
+		FROM {".BLOCK_EXACOMP_DB_COURSETOPICS."} ct
+		JOIN {".BLOCK_EXACOMP_DB_DESCTOPICS."} dt ON ct.topicid = dt.topicid
+		JOIN {".BLOCK_EXACOMP_DB_DESCEXAMP."} de ON dt.descrid = de.descrid
+		JOIN {".BLOCK_EXACOMP_DB_EXAMPLES."} e ON e.id = de.exampid
+		WHERE ct.courseid = ?
+		ORDER BY e.title
+	", [$courseid]);
+
+	if (!$isTeacher) {
+		$examples = array_filter($examples, function($example) use ($courseid, $studentid) {
+			return block_exacomp_is_example_visible($courseid, $example, $studentid);
+		});
 	}
-	
-	echo html_writer::div($content, '', array('id'=>'associated_div'));
-	
+
+	echo $output->example_based_list_tree($examples);
 }
-echo '</div>';
 
 /* END CONTENT REGION */
-echo $output->footer ();
+echo $output->footer();
 
