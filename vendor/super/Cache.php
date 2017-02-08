@@ -82,7 +82,7 @@ class Cache {
 		$tag = str_replace('-', '', $key).'-'.str_replace('-', '', $value);
 
 		$foundFiles = [];
-		$possibleFiles = glob(FS::joinPath(self::getCachePath(), '*'.$tag.'*')) ?: [];
+		$possibleFiles = glob(Fs::joinPath(self::getCachePath(), '*'.$tag.'*')) ?: [];
 
 		foreach ($possibleFiles as $filepath) {
 			$fileTags = static::parseTags($filepath);
@@ -132,7 +132,7 @@ class Cache {
 	}
 
 	private static function getCacheFilePath($cache_id) {
-		return FS::joinPath(static::getCachePath(), self::getCacheId($cache_id).'.cache');
+		return Fs::joinPath(static::getCachePath(), self::getCacheId($cache_id).'.cache');
 	}
 
 	static function getCachePath() {
@@ -141,7 +141,7 @@ class Cache {
 			return $path;
 		}
 
-		$path = FS::joinPath(sys_get_temp_dir(), 'super-cache');
+		$path = Fs::joinPath(sys_get_temp_dir(), 'super-cache');
 		if (!is_dir($path)) {
 			mkdir($path);
 		}
@@ -161,7 +161,7 @@ class Cache {
 	}
 
 	public static function clean($lifetime) {
-		FS::deleteOlderThan(static::getCachePath(), $lifetime);
+		Fs::deleteOlderThan(static::getCachePath(), $lifetime);
 	}
 
 	/**
@@ -278,6 +278,8 @@ class CacheCallback extends CacheItem {
 	protected $lock;
 	protected $etag;
 
+	protected $time;
+
 	function __construct($cache_id, $callback, array $params = [], array $options = []) {
 		if (!is_callable($callback)) {
 			throw new Exception('no valid callback given');
@@ -331,23 +333,27 @@ class CacheCallback extends CacheItem {
 
 		if (!$lock) {
 			$lockfile = $this->getLockFile();
-			$lock = FS::getLock($lockfile, is_int($this->lock) ? $this->lock : 30);
+			$lock = Fs::getLock($lockfile, is_int($this->lock) ? $this->lock : 30);
 		}
 
 		return $lock;
 	}
 
 	function getLockFile() {
-		return FS::joinPath(Cache::getCachePath(), Cache::getCacheId($this->cache_id).'.lock');
+		return Fs::joinPath(Cache::getCachePath(), Cache::getCacheId($this->cache_id).'.lock');
 
 	}
 
 	function get() {
+		$this->time = null;
+
 		$data = parent::get();
 
 		if (!$data) {
 			return;
 		}
+
+		$this->time = $data->time;
 
 		if ($this->ttl && ($data->time > time() || $data->time < (time() - $this->ttl))) {
 			// too old, or newer
@@ -392,8 +398,10 @@ class CacheCallback extends CacheItem {
 
 		$headers = $this->_headersDiff($headersBefore);
 
+		$this->time = time();
+
 		$this->set((object)[
-			'time' => time(),
+			'time' => $this->time,
 			'etag' => $this->etag,
 			'ret' => $ret,
 			'output' => $output,
@@ -421,6 +429,10 @@ class CacheCallback extends CacheItem {
 
 	function setLock($lock) {
 		$this->lock = $lock;
+	}
+
+	function getTime() {
+		return $this->time;
 	}
 }
 

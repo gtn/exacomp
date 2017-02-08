@@ -122,7 +122,7 @@ class Lock {
 
 			usleep(rand(5 * 1000, 10 * 1000));
 		}
-		
+
 		return true;
 	}
 
