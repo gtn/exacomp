@@ -163,8 +163,35 @@ class db_layer {
 		return $descriptors;
 	}
 
+	/**
+	 * @return subject[]
+	 */
 	function get_subjects() {
 		return $this->init_objects(subject::get_objects());
+	}
+
+	/**
+	 * @return topic[]
+	 */
+	function get_topics() {
+		$subs = [];
+		foreach ($this->get_subjects() as $sub) {
+			$subs += $sub->subs;
+		}
+
+		return $subs;
+	}
+
+	/**
+	 * @return descriptor[]
+	 */
+	function get_descriptor_parents() {
+		$subs = [];
+		foreach ($this->get_topics() as $sub) {
+			$subs += $sub->subs;
+		}
+
+		return $subs;
 	}
 
 	function get_topics_for_subject(subject $subject) {
@@ -309,16 +336,18 @@ class db_layer_whole_moodle extends db_layer {
 
 class db_layer_course extends db_layer {
 	public $courseid = 0;
+	public $userid = 0;
 	public $showalldescriptors = false;
 	public $showallexamples = true;
 	public $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES);
 	public $showonlyvisible = false;
 	public $mindvisibility = true;
 
-	function __construct($courseid) {
+	function __construct($courseid, $userid=null) {
 		$this->courseid = $courseid;
+		$this->userid = $userid ?: g::$USER->id;
 
-		if (!block_exacomp_is_teacher($courseid)) {
+		if (!block_exacomp_is_teacher($courseid, $this->userid)) {
 			$this->showonlyvisible = true;
 		}
 
@@ -337,22 +366,24 @@ class db_layer_course extends db_layer {
 	}
 
 	function filter_user_visibility($items) {
-		if ($this->showonlyvisible) {
-			foreach ($items as $key => $item) {
-				if ($item instanceof topic) {
-					if (!block_exacomp_is_topic_visible($this->courseid, $item, g::$USER->id)) {
-						unset($items[$key]);
-					}
+		if (!$this->showonlyvisible) {
+			return $items;
+		}
+
+		foreach ($items as $key => $item) {
+			if ($item instanceof topic) {
+				if (!block_exacomp_is_topic_visible($this->courseid, $item, $this->userid)) {
+					unset($items[$key]);
 				}
-				if ($item instanceof descriptor) {
-					if (!block_exacomp_is_descriptor_visible($this->courseid, $item, g::$USER->id)) {
-						unset($items[$key]);
-					}
+			}
+			if ($item instanceof descriptor) {
+				if (!block_exacomp_is_descriptor_visible($this->courseid, $item, $this->userid)) {
+					unset($items[$key]);
 				}
-				if ($item instanceof example) {
-					if (!block_exacomp_is_example_visible($this->courseid, $item, g::$USER->id)) {
-						unset($items[$key]);
-					}
+			}
+			if ($item instanceof example) {
+				if (!block_exacomp_is_example_visible($this->courseid, $item, $this->userid)) {
+					unset($items[$key]);
 				}
 			}
 		}
@@ -386,7 +417,11 @@ class db_layer_course extends db_layer {
 	}
 }
 
-class db_layer_all_user_courses extends db_layer {
+class db_layer_student extends db_layer_course {
+	public $showonlyvisible = true;
+}
+
+class db_layer_all_user_courses extends db_layer_student {
 
 	var $userid;
 

@@ -3085,7 +3085,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$content .= html_writer::tag('fieldset', $innersection, array('class' => ' competence_profile_innersection exa-collapsible'));
 
 			$innersection = html_writer::tag('legend', block_exacomp_trans(['de:Zeitlicher Ablauf des Kompetenzerwerbs', 'en:Chronological sequence of gained outcomes']), array('class' => 'competence_profile_insectitle'));
-			$innersection .= html_writer::div($this->timeline_graph([$course], $student), "competence_profile_timelinegraph");
+			$innersection .= html_writer::div($this->timeline_graph($course, $student), "competence_profile_timelinegraph");
 			$content .= html_writer::tag('fieldset', $innersection, array('class' => ' competence_profile_innersection exa-collapsible'));
 		}
 
@@ -3275,6 +3275,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		}
 		$rows[] = $row;
 
+		// remove first empty title
+		array_shift($value_titles);
+
 		foreach ($stat as $niveau => $data) {
 			$row = new html_table_row();
 			$cell = new html_table_cell();
@@ -3282,9 +3285,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$cell->attributes['class'] = 'cell-th';
 			$row->cells[] = $cell;
 
-			foreach ($data as $sum) {
+			foreach ($value_titles as $key => $tmp) {
 				$cell = new html_table_cell();
-				$cell->text = $sum;
+				$cell->text = (int)@$data[$key];
 				$row->cells[] = $cell;
 			}
 			$rows[] = $row;
@@ -3446,8 +3449,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 
-	public function timeline_graph($courses, $student) {
-		$timeline_data = block_exacomp_get_gained_competences($courses, $student);
+	public function timeline_graph($course, $student) {
+		$timeline_data = block_exacomp_get_gained_competences($course, $student);
 		if (!$timeline_data) {
 			return '';
 		}

@@ -2319,7 +2319,7 @@ class block_exacomp_external extends external_api {
 				throw new invalid_parameter_exception ('Not allowed');
 			}
 
-			block_exacomp_save_additional_grading_for_descriptor($courseid, $compid, $userid, $additionalinfo, $comptype);
+			block_exacomp_save_additional_grading_for_comp($courseid, $compid, $userid, $additionalinfo, $comptype);
 
 		}
 

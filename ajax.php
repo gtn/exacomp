@@ -172,7 +172,7 @@ switch($action){
 			
 			foreach($additional_grading as $descrid => $students){
 				foreach($students as $studentid=>$value){
-					block_exacomp_save_additional_grading_for_descriptor($courseid, $descrid, $studentid, $value);
+					block_exacomp_save_additional_grading_for_comp($courseid, $descrid, $studentid, $value, BLOCK_EXACOMP_TYPE_DESCRIPTOR);
 				}
 			}
 		}
@@ -186,7 +186,7 @@ switch($action){
 				
 			foreach($additional_grading as $descrid => $students){
 				foreach($students as $studentid=>$value){
-					block_exacomp_save_additional_grading_for_descriptor($courseid, $descrid, $studentid, $value, 1);
+					block_exacomp_save_additional_grading_for_comp($courseid, $descrid, $studentid, $value, BLOCK_EXACOMP_TYPE_TOPIC);
 				}
 			}
 		}
@@ -199,7 +199,7 @@ switch($action){
 		
 			foreach($additional_grading as $descrid => $students){
 				foreach($students as $studentid=>$value){
-					block_exacomp_save_additional_grading_for_descriptor($courseid, $descrid, $studentid, $value, 2);
+					block_exacomp_save_additional_grading_for_comp($courseid, $descrid, $studentid, $value, BLOCK_EXACOMP_TYPE_CROSSSUB);
 				}
 			}
 		}
@@ -212,7 +212,7 @@ switch($action){
 		
 			foreach($additional_grading as $descrid => $students){
 				foreach($students as $studentid=>$value){
-					block_exacomp_save_additional_grading_for_descriptor($courseid, $descrid, $studentid, $value, 3);
+					block_exacomp_save_additional_grading_for_comp($courseid, $descrid, $studentid, $value, BLOCK_EXACOMP_TYPE_SUBJECT);
 				}
 			}
 		}
