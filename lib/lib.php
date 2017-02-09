@@ -1004,7 +1004,16 @@ function block_exacomp_get_descriptors($courseid = 0, $showalldescriptors = fals
 	return block_exacomp_sort_items($descriptors, ['niveau_' => BLOCK_EXACOMP_DB_NIVEAUS, BLOCK_EXACOMP_DB_DESCRIPTORS]);
 }
 
-/**
+function block_exacomp_get_descriptors_with_children_flat($courseid = 0) {
+	$descriptors = block_exacomp_get_descriptors($courseid);
+	foreach ($descriptors as $descriptor) {
+		$descriptors += $descriptor->children;
+	}
+
+	return $descriptors;
+}
+
+	/**
  * return categories for specific descriptor (e.g. G, M, E for LIS data)
  * @param unknown $descriptor
  * @return unknown
@@ -2577,7 +2586,7 @@ function block_exacomp_get_icon_for_user($associated_modules, $student) {
 		}
 
 		$icon->text .= '<div>';
-		
+
 		if (isset($gradeinfo->items[0]->grades[$student->id]->dategraded) || $hasSubmission) {
 			$found = true;
 			$icon->text .= html_writer::empty_tag("img", array("src" => "pix/list_12x11.png"));
@@ -3554,6 +3563,93 @@ function block_exacomp_perform_auto_test() {
 	}
 
 	return true;
+}
+
+function block_exacomp_check_competence_data_is_gained($competence_data) {
+	if ($competence_data->comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR && $competence_data->role == BLOCK_EXACOMP_ROLE_TEACHER) {
+		return $competence_data->value >= 1;
+	} elseif ($competence_data->comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR && $competence_data->role == BLOCK_EXACOMP_ROLE_STUDENT) {
+		return $competence_data->value >= 1;
+	} else {
+		throw new \Exception('competence type not supported: '.print_r($competence_data, true));
+	}
+}
+
+function block_exacomp_get_gained_competences($courses, $student) {
+
+	$gained_competencies_teacher = [];
+	$gained_competencies_student = [];
+
+	$total_descriptors = 0;
+
+	foreach ($courses as $course) {
+		$topics = block_exacomp_get_topics_by_course($course->id);
+		$descriptors = block_exacomp_get_descriptors($course->id);
+
+		$descriptors = array_filter($descriptors, function($descriptor) use ($course, $student) {
+			return block_exacomp_is_descriptor_visible($course->id, $descriptor, $student->id);
+		});
+		$total_descriptors += count($descriptors);
+
+		$teacher_competencies = g::$DB->get_records(BLOCK_EXACOMP_DB_COMPETENCES, ['userid' => $student->id, 'role' => BLOCK_EXACOMP_ROLE_TEACHER, 'courseid' => $course->id]);
+		foreach ($teacher_competencies as $competence_data) {
+			if ($competence_data->comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
+				if (!isset($descriptors[$competence_data->compid])) {
+					continue;
+				}
+
+				if (block_exacomp_check_competence_data_is_gained($competence_data)) {
+					$gained_competencies_teacher[] = $competence_data;
+				}
+			}
+			/*
+			if ($competence_data->comptype == BLOCK_EXACOMP_TYPE_TOPIC) {
+				if (!isset($topics[$competence_data->compid])) {
+					continue;
+				}
+				$topic = $topics[$competence_data->compid];
+				if (!block_exacomp_is_topic_visible($course->id, $topic, $student->id)) {
+					continue;
+				}
+
+				$gained_competencies_teacher[] = $competence_data;
+			}
+			*/
+		}
+
+		$student_competencies = g::$DB->get_records(BLOCK_EXACOMP_DB_COMPETENCES, ['userid' => $student->id, 'role' => BLOCK_EXACOMP_ROLE_STUDENT, 'courseid' => $course->id]);
+
+		foreach ($student_competencies as $competence_data) {
+			if ($competence_data->comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
+				if (!isset($descriptors[$competence_data->compid])) {
+					continue;
+				}
+
+				if (block_exacomp_check_competence_data_is_gained($competence_data)) {
+					$gained_competencies_student[] = $competence_data;
+				}
+			}
+			/*
+			if ($competence_data->comptype == BLOCK_EXACOMP_TYPE_TOPIC) {
+				if (!isset($topics[$competence_data->compid])) {
+					continue;
+				}
+				$topic = $topics[$competence_data->compid];
+				if (!block_exacomp_is_topic_visible($course->id, $topic, $student->id)) {
+					continue;
+				}
+
+				$gained_competencies_student[] = $competence_data;
+			}
+			*/
+		}
+	}
+
+	if (!$gained_competencies_teacher && !$gained_competencies_student) {
+		return null;
+	}
+
+	return [$gained_competencies_teacher, $gained_competencies_student, $total_descriptors];
 }
 
 /**

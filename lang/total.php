@@ -1717,4 +1717,17 @@ return [
 		'Auswahl der Periode',
 		'Select Period',
 	],
+
+	'teacher' => [
+		'Lehrer',
+		'Teacher',
+	],
+	'student' => [
+		'Schüler',
+		'Student',
+	],
+	'timeline_available' => [
+		'Verfügbare',
+		'Available',
+	],
 ];

@@ -64,7 +64,7 @@ if (!class_exists('block_exacomp_admin_setting_source')) {
 				return '';
 			}
 
-			$DB->delete_records(\block_exacomp\DB_EVALUATION_NIVEAU);
+			$DB->delete_records(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU);
 
 			//fill table
 			foreach($titles as $id => $title){

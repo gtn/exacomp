@@ -511,3 +511,6 @@ $string['exacomp_not_found'] = 'Exacompservice nicht gefunden';
 $string['exaport_not_found'] = 'Exaportservice nicht gefunden';
 $string['no_external_trainer'] = 'Keine externen Trainer zugeteilt';
 $string['periodselect'] = 'Auswahl der Periode';
+$string['teacher'] = 'Lehrer';
+$string['student'] = 'Schüler';
+$string['timeline_available'] = 'Verfügbare';

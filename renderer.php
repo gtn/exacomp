@@ -3084,6 +3084,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$innersection .= html_writer::tag('div', $this->comparison_table($course->id, $subject, $student), array('class' => 'comparisondiv'));
 			$content .= html_writer::tag('fieldset', $innersection, array('class' => ' competence_profile_innersection exa-collapsible'));
 
+			$innersection = html_writer::tag('legend', block_exacomp_trans(['de:Zeitlicher Ablauf des Kompetenzerwerbs', 'en:Chronological sequence of gained outcomes']), array('class' => 'competence_profile_insectitle'));
+			$innersection .= html_writer::div($this->timeline_graph([$course], $student), "competence_profile_timelinegraph");
+			$content .= html_writer::tag('fieldset', $innersection, array('class' => ' competence_profile_innersection exa-collapsible'));
 		}
 
 		$content .= "<script> $('div[class=\"container\"]').each(function () {
@@ -3439,6 +3442,157 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$table->data = $rows;
 
 		$content .= html_writer::div(html_writer::table($table), 'stat_table');
+
+		return $content;
+	}
+
+	public function timeline_graph($courses, $student) {
+		$timeline_data = block_exacomp_get_gained_competences($courses, $student);
+		if (!$timeline_data) {
+			return '';
+		}
+
+		list ($gained_competencies_teacher, $gained_competencies_student, $total_competencies) = $timeline_data;
+
+		$max_timestamp = time();
+		$min_timestamp = time();
+
+		foreach (array_merge($gained_competencies_teacher, $gained_competencies_student) as $competence) {
+			if ($competence->timestamp) {
+				$min_timestamp = min($min_timestamp, $competence->timestamp);
+			}
+		}
+
+		$time_diff = $max_timestamp - $min_timestamp;
+
+		if ($time_diff < 28 * 60 * 60 * 24) { // Days
+			$brackets = [];
+
+			$today = strtotime('today', $min_timestamp);
+			while ($today <= time()) {
+				$next_day = strtotime('tomorrow', $today);
+
+				$brackets[] = (object)[
+					'timestamp' => $today,
+					'timestamp_end' => $next_day,
+					'title' => date('d.m.', $today),
+				];
+				$today = $next_day;
+			}
+		} else if ($time_diff < 6 * 30 * 60 * 60 * 24) { // weeks
+			$brackets = [];
+
+			$monday = strtotime('last monday', strtotime('tomorrow', $min_timestamp));
+			while ($monday <= time()) {
+				$next_monday = strtotime('next monday', $monday);
+				$next_sunday = strtotime('yesterday', $next_monday);
+
+				if (date('m', $monday) == date('m', $next_sunday)) {
+					$title = date('d.', $monday)."-".date('d.m.', $next_sunday);
+				} else {
+					$title = date('d.m.', $monday).".-".date('d.m.', $next_sunday);
+				}
+
+				$brackets[] = (object)[
+					'timestamp' => $monday,
+					'timestamp_end' => $next_monday,
+					'title' => $title,
+				];
+				$monday = $next_monday;
+			}
+		} else { // months
+			$brackets = [];
+
+			$first_day = strtotime('first day of this month', $min_timestamp);
+			while ($first_day <= time()) {
+				$next_first_day = strtotime('first day of next month', $first_day);
+
+				$brackets[] = (object)[
+					'timestamp' => $first_day,
+					'timestamp_end' => $next_first_day,
+					'title' => date('F', $first_day),
+				];
+				$first_day = $next_first_day;
+			}
+		}
+
+		$y_labels = [];
+		$y_values_teacher = [];
+		$y_values_student = [];
+		$y_values_total = [];
+
+		foreach ($brackets as $bracket) {
+			$bracket->gained_competencies_teacher = [];
+			$bracket->gained_competencies_student = [];
+
+			foreach ($gained_competencies_teacher as $key => $comp) {
+				if ($comp->timestamp < $bracket->timestamp_end) {
+					$bracket->gained_competencies_teacher[] = $comp;
+				}
+			}
+			foreach ($gained_competencies_student as $key => $comp) {
+				if ($comp->timestamp < $bracket->timestamp_end) {
+					$bracket->gained_competencies_student[] = $comp;
+				}
+			}
+
+			$y_labels[] = $bracket->title;
+			$y_values_teacher[] = count($bracket->gained_competencies_teacher);
+			$y_values_student[] = count($bracket->gained_competencies_student);
+			$y_values_total[] = $total_competencies;
+		}
+
+		$canvas_id = "canvas_timeline".str_replace('.', '', microtime(true));
+		$content = html_writer::div(html_writer::tag('canvas', '', array("id" => $canvas_id)), 'timeline', array("style" => ""));
+		$content .= '
+		<script>
+		var timelinedata = {
+			labels: '.json_encode($y_labels).',
+			datasets: [
+			{
+				label: "'.block_exacomp_get_string("teacher").'",
+				fillColor: "rgba(145, 253, 143, 0.2)",
+				strokeColor: "#02a600",
+				pointColor: "#02a600",
+				pointStrokeColor: "#fff",
+				pointHighlightFill: "#fff",
+				pointHighlightStroke: "#028400",
+				data: '.json_encode($y_values_teacher).'
+			},
+			{
+				label: "'.block_exacomp_get_string("student").'",
+				fillColor: "rgba(149, 206, 255, 0.2)",
+				strokeColor: "#0075dd",
+				pointColor: "#0075dd",
+				pointStrokeColor: "#fff",
+				pointHighlightFill: "#fff",
+				pointHighlightStroke: "#015FB1",
+				data: '.json_encode($y_values_student).'
+			},
+			{
+				label: "'.block_exacomp_get_string("timeline_available").'",
+				fillColor: "rgba(220,220,220,0.2)",
+				strokeColor: "rgba(220,220,220,1)",
+				pointColor: "rgba(220,220,220,1)",
+				pointStrokeColor: "#fff",
+				pointHighlightFill: "#fff",
+				pointHighlightStroke: "rgba(220,220,220,1)",
+				data: '.json_encode($y_values_total).'
+			}
+		]
+		};
+			
+		var ctx = document.getElementById('.json_encode($canvas_id).').getContext("2d")
+		ctx.canvas.height = 300;
+		ctx.canvas.width = 600;
+		
+		new Chart(ctx).Line(timelinedata, {
+				responsive: false, // can\'t be responsive, because Graph.js 1.0.2 does not work with hidden divs
+			bezierCurve : false
+		});
+	
+		</script>
+		';
 
 		return $content;
 	}
@@ -3907,9 +4061,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$example_parent_names = block_exacomp_build_example_parent_names(g::$COURSE->id, $example->id);
 
-			$content .= '</td><td>'.join('<br/>', array_map(function($names){
-				return '<span>'.join('</span><span> &#x25B8; ', $names).'</span>';
-			}, $example_parent_names));
+			$content .= '</td><td>'.join('<br/>', array_map(function($names) {
+					return '<span>'.join('</span><span> &#x25B8; ', $names).'</span>';
+				}, $example_parent_names));
 
 			$content .= '</td></tr>';
 		}
