@@ -89,7 +89,7 @@ class db_layer {
 
 
 		$sql = "
-			SELECT DISTINCT d.id, d.title, d.source, d.niveauid, desctopmm.topicid, d.profoundness, d.parentid,
+			SELECT DISTINCT d.id, d.title, d.source, d.sourceid, d.niveauid, desctopmm.topicid, d.profoundness, d.parentid,
 				n.sorting AS niveau_sorting, n.title AS niveau_title, dvis.visible as visible, desctopmm.sorting
 			FROM {".BLOCK_EXACOMP_DB_DESCTOPICS."} desctopmm
 			JOIN {".BLOCK_EXACOMP_DB_DESCRIPTORS."} d ON desctopmm.descrid=d.id AND d.parentid=0
@@ -133,7 +133,7 @@ class db_layer {
 			$this->showalldescriptors = block_exacomp_get_settings_by_course($this->courseid)->show_all_descriptors;
 		}
 
-		$sql = 'SELECT d.id, d.title, d.niveauid, d.source, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, '.
+		$sql = 'SELECT d.id, d.title, d.niveauid, d.source, d.sourceid, '.$parent->topicid.' as topicid, d.profoundness, d.parentid, '.
 			($this->mindvisibility ? 'dvis.visible as visible, ' : '').' d.sorting
 			FROM {'.BLOCK_EXACOMP_DB_DESCRIPTORS.'} d '
 			.($this->mindvisibility ? 'JOIN {'.BLOCK_EXACOMP_DB_DESCVISIBILITY.'} dvis ON dvis.descrid=d.id AND dvis.courseid=? AND dvis.studentid=0 '
@@ -343,7 +343,7 @@ class db_layer_course extends db_layer {
 	public $showonlyvisible = false;
 	public $mindvisibility = true;
 
-	function __construct($courseid, $userid=null) {
+	function __construct($courseid, $userid = null) {
 		$this->courseid = $courseid;
 		$this->userid = $userid ?: g::$USER->id;
 
@@ -474,6 +474,7 @@ class db_record {
 	public $id;
 
 	const TABLE = 'todo';
+	const TYPE = '';
 	const SUBS = null;
 
 	public function __construct($data = [], db_layer $dbLayer = null) {
@@ -808,13 +809,14 @@ class db_record {
 
 /**
  * Class subject
- * @property topic[] topics
+ * @property topic[] $topics
  */
 class subject extends db_record {
 	const TABLE = BLOCK_EXACOMP_DB_SUBJECTS;
+	const TYPE = BLOCK_EXACOMP_TYPE_SUBJECT;
 	const SUBS = 'topics';
 
-	function fill_topics() {
+	protected function fill_topics() {
 		return $this->dbLayer->get_topics_for_subject($this);
 	}
 
@@ -833,10 +835,11 @@ class subject extends db_record {
 
 /**
  * Class topic
- * @property descriptor[] descriptors
+ * @property descriptor[] $descriptors
  */
 class topic extends db_record {
 	const TABLE = BLOCK_EXACOMP_DB_TOPICS;
+	const TYPE = BLOCK_EXACOMP_TYPE_TOPIC;
 	const SUBS = 'descriptors';
 
 	// why not using lib.php block_exacomp_get_topic_numbering??
@@ -864,7 +867,7 @@ class topic extends db_record {
 		*/
 	}
 
-	function fill_descriptors() {
+	protected function fill_descriptors() {
 		return $this->dbLayer->get_descriptors_for_topic($this);
 	}
 
@@ -877,8 +880,12 @@ class topic extends db_record {
 	}
 }
 
+/**
+ * @property example[] $examples
+ */
 class descriptor extends db_record {
 	const TABLE = BLOCK_EXACOMP_DB_DESCRIPTORS;
+	const TYPE = BLOCK_EXACOMP_TYPE_DESCRIPTOR;
 	const SUBS = 'children';
 
 	var $parent;
@@ -980,27 +987,28 @@ class descriptor extends db_record {
 		$DB->delete_records_list(BLOCK_EXACOMP_DB_DESCCAT, 'id', $to_delete);
 	}
 
-	function fill_category_ids() {
+	protected function fill_category_ids() {
 		global $DB;
 
 		return $DB->get_records_menu(BLOCK_EXACOMP_DB_DESCCAT, array('descrid' => $this->id), null, 'catid, catid AS tmp');
 	}
 
-	function fill_children() {
+	protected function fill_children() {
 		return $this->dbLayer->get_child_descriptors($this);
 	}
 
-	function fill_examples() {
+	protected function fill_examples() {
 		return $this->dbLayer->get_examples($this);
 	}
 
-	function fill_categories() {
+	protected function fill_categories() {
 		return block_exacomp_get_categories_for_descriptor($this);
 	}
 }
 
 class example extends db_record {
 	const TABLE = BLOCK_EXACOMP_DB_EXAMPLES;
+	const TYPE = BLOCK_EXACOMP_TYPE_EXAMPLE;
 
 	function get_numbering() {
 		if (!isset($this->descriptor)) {

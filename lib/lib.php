@@ -322,7 +322,7 @@ function block_exacomp_get_subjects_by_course($courseid, $showalldescriptors = f
 	}
 
 	$sql = '
-		SELECT DISTINCT s.id, s.titleshort, s.title, s.stid, s.infolink, s.description, s.source, s.sorting, s.author
+		SELECT DISTINCT s.id, s.titleshort, s.title, s.stid, s.infolink, s.description, s.source, s.sourceid, s.sorting, s.author
 		FROM {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s
 		JOIN {'.BLOCK_EXACOMP_DB_TOPICS.'} t ON t.subjid = s.id
 		JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ?
@@ -469,7 +469,7 @@ function block_exacomp_get_topics_by_subject($courseid, $subjectid = 0, $showall
 	}
 
 	$sql = '
-		SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description, t.numb, t.source, tvis.visible as visible, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
+		SELECT DISTINCT t.id, t.title, t.sorting, t.subjid, t.description, t.numb, t.source, t.sourceid, tvis.visible as visible, s.source AS subj_source, s.sorting AS subj_sorting, s.title AS subj_title
 		FROM {'.BLOCK_EXACOMP_DB_TOPICS.'} t
 		JOIN {'.BLOCK_EXACOMP_DB_COURSETOPICS.'} ct ON ct.topicid = t.id AND ct.courseid = ? '.(($subjectid > 0) ? 'AND t.subjid = ? ' : '').'
 		JOIN {'.BLOCK_EXACOMP_DB_SUBJECTS.'} s ON t.subjid=s.id -- join subject here, to make sure only topics with existing subject are loaded
@@ -1091,7 +1091,7 @@ function block_exacomp_get_examples_for_descriptor($descriptor, $filteredtaxonom
 	}
 
 	$examples = \block_exacomp\example::get_objects_sql(
-		"SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source,
+		"SELECT DISTINCT de.id as deid, e.id, e.title, e.externalurl, e.source, e.sourceid,
 			e.externalsolution, e.externaltask, e.completefile, e.description, e.creatorid, e.iseditable, e.tips, e.timeframe, e.author
 			, de.sorting
 			FROM {".BLOCK_EXACOMP_DB_EXAMPLES."} e
