@@ -343,7 +343,7 @@ class db_layer_course extends db_layer {
 	public $showonlyvisible = false;
 	public $mindvisibility = true;
 
-	function __construct($courseid, $userid=null) {
+	function __construct($courseid, $userid = null) {
 		$this->courseid = $courseid;
 		$this->userid = $userid ?: g::$USER->id;
 
@@ -370,23 +370,23 @@ class db_layer_course extends db_layer {
 			return $items;
 		}
 
-			foreach ($items as $key => $item) {
-				if ($item instanceof topic) {
+		foreach ($items as $key => $item) {
+			if ($item instanceof topic) {
 				if (!block_exacomp_is_topic_visible($this->courseid, $item, $this->userid)) {
-						unset($items[$key]);
-					}
-				}
-				if ($item instanceof descriptor) {
-				if (!block_exacomp_is_descriptor_visible($this->courseid, $item, $this->userid)) {
-						unset($items[$key]);
-					}
-				}
-				if ($item instanceof example) {
-				if (!block_exacomp_is_example_visible($this->courseid, $item, $this->userid)) {
-						unset($items[$key]);
-					}
+					unset($items[$key]);
 				}
 			}
+			if ($item instanceof descriptor) {
+				if (!block_exacomp_is_descriptor_visible($this->courseid, $item, $this->userid)) {
+					unset($items[$key]);
+				}
+			}
+			if ($item instanceof example) {
+				if (!block_exacomp_is_example_visible($this->courseid, $item, $this->userid)) {
+					unset($items[$key]);
+				}
+			}
+		}
 
 		return $items;
 	}
@@ -1100,7 +1100,7 @@ class global_config {
 			if (block_exacomp_additional_grading()) {
 				if ($short) {
 					return array(
-						- 1 => block_exacomp_get_string('comp_-1_short'),
+						-1 => block_exacomp_get_string('comp_-1_short'),
 						0 => block_exacomp_get_string('comp_0_short'),
 						1 => block_exacomp_get_string('comp_1_short'),
 						2 => block_exacomp_get_string('comp_2_short'),
@@ -1108,17 +1108,17 @@ class global_config {
 					);
 				}
 
-				return array (
-						- 1 => block_exacomp_get_string('comp_-1'),
-						0 => block_exacomp_get_string('comp_0'),
-						1 => block_exacomp_get_string('comp_1'),
-						2 => block_exacomp_get_string('comp_2'),
+				return array(
+					-1 => block_exacomp_get_string('comp_-1'),
+					0 => block_exacomp_get_string('comp_0'),
+					1 => block_exacomp_get_string('comp_1'),
+					2 => block_exacomp_get_string('comp_2'),
 					3 => block_exacomp_get_string('comp_3'),
 				);
 			} // else use value scheme set in the course
 			else {
 				// TODO: add settings to g::$COURSE?
-				$course_grading = block_exacomp_get_settings_by_course(($courseid==0)?g::$COURSE->id:$courseid)->grading;
+				$course_grading = block_exacomp_get_settings_by_course(($courseid == 0) ? g::$COURSE->id : $courseid)->grading;
 
 				$values = array(-1 => ' ');
 				$values += range(0, $course_grading);
@@ -1147,10 +1147,10 @@ class global_config {
 		return Cache::staticCallback([__CLASS__, __FUNCTION__], function() {
 			// if additional_grading is set, use global value scheme
 			if (block_exacomp_additional_grading()) {
-				return array (
-						- 1 => ' ',
-						1 => ':-(',
-						2 => ':-|',
+				return array(
+					-1 => ' ',
+					1 => ':-(',
+					2 => ':-|',
 					3 => ':-)',
 				);
 			} // else use value scheme set in the course
@@ -1188,7 +1188,7 @@ class global_config {
 			return $values;
 		}
 		$values = array(-1 => ' ');
-		$values += g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU,null,'','id,title');
+		$values += g::$DB->get_records_menu(BLOCK_EXACOMP_DB_EVALUATION_NIVEAU, null, '', 'id,title');
 
 		return $values;
 	}
@@ -1206,7 +1206,7 @@ class global_config {
 	 *
 	 * @param double $additionalinfo
 	 */
-	static function get_additionalinfo_value_mapping($additionalinfo){
+	static function get_additionalinfo_value_mapping($additionalinfo) {
 		if (!$additionalinfo) {
 			return -1;
 		}
@@ -1214,7 +1214,7 @@ class global_config {
 		$mapping = array(6.0, 4.8, 3.5, 2.2);
 		$value = -1;
 
-		foreach($mapping as $k => $v) {
+		foreach ($mapping as $k => $v) {
 			if ($additionalinfo > $v) {
 				break;
 			}
@@ -1229,7 +1229,7 @@ class global_config {
 	 *
 	 * @param int $value
 	 */
-	static function get_value_additionalinfo_mapping($value){
+	static function get_value_additionalinfo_mapping($value) {
 		if (!$value) {
 			return -1;
 		}
@@ -1243,7 +1243,7 @@ class global_config {
 	 * return range of gradings to value mapping
 	 * @param int $value
 	 */
-	static function get_values_additionalinfo_mapping(){
+	static function get_values_additionalinfo_mapping() {
 		return array(6.0, 4.4, 2.7, 1.0);
 	}
 }
