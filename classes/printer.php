@@ -27,29 +27,29 @@ use block_exacomp\globals as g;
 class printer_TCPDF extends \TCPDF {
 	private $_header = '';
 	private $_style = '';
-	
+
 	public function __construct($orientation) {
 		parent::__construct($orientation);
 		$this->SetFont('helvetica', '', 9);
 		$this->setHeaderFont(['helvetica', '', 9]);
 	}
-	
+
 	private function _initPage() {
 		if ($this->numpages == 0) {
 			// at least one page
 			$this->AddPage();
 		}
 	}
-	
+
 	public function setHeaderHTML($header) {
 		$this->_header = $header;
 	}
-	
+
 	public function setStyle($style) {
 		$this->_style = $style;
 	}
 
-	public function Image($file, $x='', $y='', $w=0, $h=0, $type='', $link='', $align='', $resize=false, $dpi=300, $palign='', $ismask=false, $imgmask=false, $border=0, $fitbox=false, $hidden=false, $fitonpage=false, $alt=false, $altimgs=array()) {
+	public function Image($file, $x = '', $y = '', $w = 0, $h = 0, $type = '', $link = '', $align = '', $resize = false, $dpi = 300, $palign = '', $ismask = false, $imgmask = false, $border = 0, $fitbox = false, $hidden = false, $fitonpage = false, $alt = false, $altimgs = array()) {
 		$args = func_get_args();
 
 		// replace moodle image urls with local urls
@@ -57,36 +57,40 @@ class printer_TCPDF extends \TCPDF {
 			$path = g::$PAGE->theme->resolve_image_location($matches['imagename'], $matches['component']);
 			$args[0] = $path;
 		}
+
 		return call_user_func_array(array('parent', __FUNCTION__), $args);
 	}
 
-	public function writeHTML($html, $ln=true, $fill=false, $reseth=false, $cell=false, $align='') {
+	public function writeHTML($html, $ln = true, $fill = false, $reseth = false, $cell = false, $align = '') {
 		$this->_initPage();
-		
+
 		$style = '';
-		if ($this->_style) $style = "<style> $this->_style </style>";
-		
+		if ($this->_style) {
+			$style = "<style> $this->_style </style>";
+		}
+
 		// remove input and select fields
 		$html = preg_replace('!<input\s[^>]*type="text"[^>]*value="([^"]*)"[^>]*>!smiU', '$1', $html);
-		$html = preg_replace_callback('!<select\s.*</select>!smiU', function($matches){
+		$html = preg_replace_callback('!<select\s.*</select>!smiU', function($matches) {
 			if (preg_match('!<option\s[^>]*selected="[^"]+"[^>]*>([^<]*)<!smiU', $matches[0], $subMatches)) {
 				return $subMatches[1];
 			}
 			if (preg_match('!<option(\s[^>]*)?>([^<]*)<!smiU', $matches[0], $subMatches)) {
 				return $subMatches[2];
 			}
+
 			return $matches[0];
 		}, $html);
-		
+
 		return parent::writeHTML($style.$html, $ln, $fill, $reseth, $cell, $align);
 	}
-	
+
 	public function Header() {
 		if ($this->_header) {
 			$this->writeHTML($this->_header);
 		}
 	}
-	
+
 	public function Footer() {
 		return;
 	}
@@ -95,7 +99,7 @@ class printer_TCPDF extends \TCPDF {
 class printer {
 	static function competence_overview($selectedSubject, $selectedTopic, $selectedNiveau, $selectedStudent, $html_header, $html_tables) {
 		$pdf = new printer_TCPDF('L');
-		
+
 		$pdf->setStyle('
 			* {
 				font-size: 9pt;
@@ -125,10 +129,10 @@ class printer {
 				background-color: #e6e6e6;
 			}
 				');
-		
+
 		$pdf->setHeaderMargin(5);
 		$pdf->SetTopMargin(40);
-		
+
 		foreach ($html_tables as $html_table) {
 			// convert padding to spaces, because tcpdf doesn't support padding
 			/*
@@ -140,26 +144,26 @@ class printer {
 
 			// add spacing for examples
 			$html_table = preg_replace('!block_exacomp_example.*c1.*<div[^>]*>!isU', '$0&nbsp;&nbsp;&nbsp;&nbsp;', $html_table);
-		
+
 			// ersten beide zeilen in den header geben
 			if (!preg_match('!<table.*<tbody>.*(<tr.*<tr.*</tr>)!isU', $html_table, $matches)) {
 				die('error #gg98daa');
 			}
-			
+
 			$html_table = str_replace($matches[1], '', $html_table);
 			$html_table = str_replace('<tr ', '<tr nobr="true"', $html_table);
 
 			$pdf->setHeaderHTML($html_header.$matches[0].'</table>');
-			
+
 			$pdf->AddPage();
 			$pdf->writeHTML($html_table);
 		}
-		
+
 		$pdf->Output();
-		
+
 		exit;
 	}
-	
+
 	static function weekly_schedule($course, $student, $interval /* week or day */) {
 		$first_day = optional_param('time', time(), PARAM_INT);
 		if ($interval == 'week') {
@@ -171,22 +175,24 @@ class printer {
 		} else {
 			print_error('wrong interval');
 		}
-		
+
 		$days = [];
-		
+
 		function generate_day($day, $studentid) {
 			$day->title = strftime('%a %d.%m.', $day->time);
-		
-			$examples = block_exacomp_get_examples_for_start_end_all_courses($studentid, $day->time, block_exacomp_add_days($day->time, 1)-1);
+
+			$examples = block_exacomp_get_examples_for_start_end_all_courses($studentid, $day->time, block_exacomp_add_days($day->time, 1) - 1);
 
 			$examples = block_exacomp_get_json_examples($examples);
-			$examples = array_map(function($o) { return (object) $o; }, $examples);
+			$examples = array_map(function($o) {
+				return (object)$o;
+			}, $examples);
 
-			foreach($examples as $example){
+			foreach ($examples as $example) {
 				// get data
 				$example->descriptors = block_exacomp_get_descriptors_by_example($example->id);
 				$example->state = block_exacomp_get_dakora_state_for_example($example->courseid, $example->exampleid, $studentid);
-				
+
 				// find start slot
 				for ($i = 0; $i < count($day->slots); $i++) {
 					if ($day->slots[$i]->start_time >= $example->start) {
@@ -195,7 +201,7 @@ class printer {
 						break;
 					}
 				}
-				
+
 				// find end slot
 				for ($i = $example->start_slot; $i < count($day->slots); $i++) {
 					if ($day->slots[$i]->start_time >= $example->end) {
@@ -203,25 +209,25 @@ class printer {
 					}
 					$example->end_slot = $i;
 				}
-				
+
 				$example->rowspan = $example->end_slot - $example->start_slot + 1;
 			}
 
 			// first sort by start time, then by duration (same as fullcalendar)
 			usort($examples, function($a, $b) {
-				return 
+				return
 					(
-						$a->start <> $b->start
+					$a->start <> $b->start
 						? $a->start > $b->start
 						: $a->rowspan < $b->rowspan
 					) ? 1 : -1;
 			});
-			
+
 			// init empty columns
 			foreach ($day->slots as $slot) {
 				$slot->cols = array_fill(0, 1000, false);
 			}
-			
+
 			$day->colspan = 1; // the max colspan for this day
 			foreach ($examples as $example) {
 				for ($col_i = 0; $col_i < 1000; $col_i++) {
@@ -233,44 +239,44 @@ class printer {
 							break;
 						}
 					}
-					
+
 					// yes, can be inserted here
 					if ($ok) {
 						for ($slot_i = $example->start_slot; $slot_i <= $example->end_slot; $slot_i++) {
 							$day->slots[$slot_i]->cols[$col_i] = true;
 						}
-						
+
 						$day->slots[$example->start_slot]->cols[$col_i] = $example;
-						$day->colspan = max($day->colspan, $col_i+1);
+						$day->colspan = max($day->colspan, $col_i + 1);
 						break;
 					}
-					
+
 					// no -> continue to next column
 				}
 			}
 		}
-		
+
 		for ($i = 0; $i < $day_cnt; $i++) {
 			// build the day object
 			$time = block_exacomp_add_days($first_day, $i);
 			$days[$time] = (object)[
 				'time' => $time,
-				'slots' => array_map(function($x){return (object)$x; }, block_exacomp_build_json_time_slots($time))
+				'slots' => array_map(function($x) {
+					return (object)$x;
+				}, block_exacomp_build_json_time_slots($time)),
 			];
-			
+
 			// load the events and columns for this day
 			generate_day($days[$time], $student->id);
 		}
-		
-		
-		
-		
+
+
 		// Instanciation of inherited class
-		$pdf = new printer_TCPDF($interval == 'week' ? 'L' : null /* landscape for weekly print */ );
-		
+		$pdf = new printer_TCPDF($interval == 'week' ? 'L' : null /* landscape for weekly print */);
+
 		$pdf->setHeaderMargin(5);
 		$pdf->SetTopMargin(25);
-		
+
 		$pdf->setStyle('
 			* {
 				font-size: 9pt;
@@ -298,7 +304,7 @@ class printer {
 				background-color: #acbcca;
 			}
 		');
-		
+
 		$header = '
 			<table><tr>
 				<td style="font-size: 12pt; font-weight: bold;" align="left">Wochenplan</td>
@@ -312,15 +318,17 @@ class printer {
 		}
 		$header .= '</tr></table>';
 		$pdf->setHeaderHTML($header);
-		
+
 		$tbl = '<table border="0.1" style="padding: 1px">';
 		$color_i = 0;
-		foreach (block_exacomp_build_json_time_slots() as $slot_i=>$slot) {
+		foreach (block_exacomp_build_json_time_slots() as $slot_i => $slot) {
 			$tbl .= '<tr nobr="true"';
 			if ($slot['name']) {
 				$color_i++;
 			}
-			if ($color_i % 2) $tbl .= ' style="background-color:#EEEEEE;"';
+			if ($color_i % 2) {
+				$tbl .= ' style="background-color:#EEEEEE;"';
+			}
 			$tbl .= '><td>'.$slot["name"].'</td>';
 			foreach ($days as $day) {
 				for ($col_i = 0; $col_i < $day->colspan; $col_i++) {
@@ -337,8 +345,8 @@ class printer {
 						} else {
 							$state_text = '';
 						}
-						
-						
+
+
 						$course = get_course($example->courseid);
 						$tbl .= '<td rowspan="'.$example->rowspan.'" class="'.$class.'">';
 						// for now don't print state_text
@@ -346,7 +354,7 @@ class printer {
 						$tbl .= '<b>'.$course->shortname.':</b><br />';
 						$tbl .= $example->title;
 
-						if($example->description){
+						if ($example->description) {
 							$tbl .= '<br />'.$example->description;
 						}
 
@@ -355,7 +363,9 @@ class printer {
 						}
 
 						$teacher_evaluation = [];
-						if ($example->teacher_evaluation_title) $teacher_evaluation[] = $example->teacher_evaluation_title;
+						if ($example->teacher_evaluation_title) {
+							$teacher_evaluation[] = $example->teacher_evaluation_title;
+						}
 						if ($teacher_evaluation) {
 							$tbl .= '<br />L: '.join(' / ', $teacher_evaluation);
 						}
@@ -375,11 +385,11 @@ class printer {
 			$tbl .= '</tr>';
 		}
 		$tbl .= '</table>';
-		
+
 		// $tbl .= '<b>Legende:</b><br />';
-		
+
 		$pdf->writeHTML($tbl);
-		
+
 		$pdf->Output();
 		exit;
 	}

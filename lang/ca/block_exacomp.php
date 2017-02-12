@@ -150,11 +150,9 @@ $string['legend_notask'] = 'no s\'ha enviat res per a aquest descriptor/no s\'ha
 $string['legend_upload'] = 'Pujar la meva pròpia tasca o exemple';
 
 //Icons
-$string['usersubmitted'] = ' ha enviat les tasques següents:';
-$string['usersubmittedquiz'] = ' ha completat els jocs de preguntes següents:';
-$string['usernosubmission'] = ' no ha enviat cap tasca ni jocs de preguntes associats a aquest descriptor';
-$string['usernosubmission_topic'] = ' no ha enviat cap tasca ni jocs de preguntes associats a aquest theme';
-$string['grading'] = ' avaluació: ';
+$string['usersubmitted'] = '{$a} ha enviat les tasques següents:';
+$string['usernosubmission'] = '{$a} no ha enviat cap tasca ni jocs de preguntes associats a aquest descriptor';
+$string['grading'] = 'avaluació';
 
 $string['teachershortcut'] = 'P';
 $string['studentshortcut'] = 'A';

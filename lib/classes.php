@@ -97,8 +97,9 @@ class db_layer {
 			LEFT JOIN {".BLOCK_EXACOMP_DB_DESCVISIBILITY."} dvis ON dvis.descrid=d.id AND dvis.studentid=0 AND dvis.courseid=?
 			LEFT JOIN {".BLOCK_EXACOMP_DB_NIVEAUS."} n ON d.niveauid = n.id
 			".($this->showalldescriptors ? "" : "
-				JOIN {".BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY."} da ON d.id=da.compid AND da.comptype=".BLOCK_EXACOMP_TYPE_DESCRIPTOR."
-				JOIN {course_modules} a ON da.activityid=a.id ".(($this->courseid > 0) ? "AND a.course=".$this->courseid : ""))."
+				JOIN {".BLOCK_EXACOMP_DB_COMPETENCE_ACTIVITY."} ca ON d.id=ca.compid AND ca.comptype=".BLOCK_EXACOMP_TYPE_DESCRIPTOR."
+				AND ca.activityid IN (".block_exacomp_get_allowed_course_modules_for_course_for_select($this->courseid).")
+			")."
 			WHERE desctopmm.topicid = ?
 			".($this->showonlyvisible ? " AND (dvis.visible = 1 OR dvis.visible IS NULL)" : "");
 
@@ -162,8 +163,35 @@ class db_layer {
 		return $descriptors;
 	}
 
+	/**
+	 * @return subject[]
+	 */
 	function get_subjects() {
 		return $this->init_objects(subject::get_objects());
+	}
+
+	/**
+	 * @return topic[]
+	 */
+	function get_topics() {
+		$subs = [];
+		foreach ($this->get_subjects() as $sub) {
+			$subs += $sub->subs;
+		}
+
+		return $subs;
+	}
+
+	/**
+	 * @return descriptor[]
+	 */
+	function get_descriptor_parents() {
+		$subs = [];
+		foreach ($this->get_topics() as $sub) {
+			$subs += $sub->subs;
+		}
+
+		return $subs;
 	}
 
 	function get_topics_for_subject(subject $subject) {
@@ -308,44 +336,57 @@ class db_layer_whole_moodle extends db_layer {
 
 class db_layer_course extends db_layer {
 	public $courseid = 0;
+	public $userid = 0;
 	public $showalldescriptors = false;
 	public $showallexamples = true;
 	public $filteredtaxonomies = array(BLOCK_EXACOMP_SHOW_ALL_TAXONOMIES);
 	public $showonlyvisible = false;
 	public $mindvisibility = true;
 
-	function __construct($courseid) {
+	function __construct($courseid, $userid=null) {
 		$this->courseid = $courseid;
+		$this->userid = $userid ?: g::$USER->id;
 
-		if (!block_exacomp_is_teacher($courseid)) {
+		if (!block_exacomp_is_teacher($courseid, $this->userid)) {
 			$this->showonlyvisible = true;
 		}
+
+		$this->showalldescriptors = /* $this->showalldescriptors || */
+			block_exacomp_get_settings_by_course($this->courseid)->show_all_descriptors;
 	}
 
 	function get_subjects() {
-		return subject::create_objects(block_exacomp_get_subjects_by_course($this->courseid), null, $this);
+		return subject::create_objects(block_exacomp_get_subjects_by_course($this->courseid, $this->showalldescriptors), null, $this);
+	}
+
+	function get_subject($subjectid) {
+		$subjects = $this->get_subjects();
+
+		return isset($subjects[$subjectid]) ? $subjects[$subjectid] : null;
 	}
 
 	function filter_user_visibility($items) {
-		if ($this->showonlyvisible) {
+		if (!$this->showonlyvisible) {
+			return $items;
+		}
+
 			foreach ($items as $key => $item) {
 				if ($item instanceof topic) {
-					if (!block_exacomp_is_topic_visible($this->courseid, $item, g::$USER->id)) {
+				if (!block_exacomp_is_topic_visible($this->courseid, $item, $this->userid)) {
 						unset($items[$key]);
 					}
 				}
 				if ($item instanceof descriptor) {
-					if (!block_exacomp_is_descriptor_visible($this->courseid, $item, g::$USER->id)) {
+				if (!block_exacomp_is_descriptor_visible($this->courseid, $item, $this->userid)) {
 						unset($items[$key]);
 					}
 				}
 				if ($item instanceof example) {
-					if (!block_exacomp_is_example_visible($this->courseid, $item, g::$USER->id)) {
+				if (!block_exacomp_is_example_visible($this->courseid, $item, $this->userid)) {
 						unset($items[$key]);
 					}
 				}
 			}
-		}
 
 		return $items;
 	}
@@ -358,12 +399,14 @@ class db_layer_course extends db_layer {
 
 	function get_descriptors_for_topic(topic $topic) {
 		$items = parent::get_descriptors_for_topic($topic);
+
 		return $this->filter_user_visibility($items);
 
 	}
 
 	function get_child_descriptors(descriptor $parent) {
 		$items = parent::get_child_descriptors($parent);
+
 		return $this->filter_user_visibility($items);
 	}
 
@@ -374,7 +417,11 @@ class db_layer_course extends db_layer {
 	}
 }
 
-class db_layer_all_user_courses extends db_layer {
+class db_layer_student extends db_layer_course {
+	public $showonlyvisible = true;
+}
+
+class db_layer_all_user_courses extends db_layer_student {
 
 	var $userid;
 
@@ -761,7 +808,8 @@ class db_record {
 }
 
 /**
- * @var $topics topic[]
+ * Class subject
+ * @property topic[] topics
  */
 class subject extends db_record {
 	const TABLE = BLOCK_EXACOMP_DB_SUBJECTS;
@@ -785,6 +833,10 @@ class subject extends db_record {
 	}
 }
 
+/**
+ * Class topic
+ * @property descriptor[] descriptors
+ */
 class topic extends db_record {
 	const TABLE = BLOCK_EXACOMP_DB_TOPICS;
 	const TYPE = BLOCK_EXACOMP_TYPE_TOPIC;
@@ -1046,24 +1098,24 @@ class global_config {
 			// if additional_grading is set, use global value scheme
 
 			if (block_exacomp_additional_grading()) {
-				if($short)
+				if ($short) {
 					return array(
 						- 1 => block_exacomp_get_string('comp_-1_short'),
 						0 => block_exacomp_get_string('comp_0_short'),
 						1 => block_exacomp_get_string('comp_1_short'),
 						2 => block_exacomp_get_string('comp_2_short'),
-						3 => block_exacomp_get_string('comp_3_short')
+						3 => block_exacomp_get_string('comp_3_short'),
 					);
+				}
 
 				return array (
 						- 1 => block_exacomp_get_string('comp_-1'),
 						0 => block_exacomp_get_string('comp_0'),
 						1 => block_exacomp_get_string('comp_1'),
 						2 => block_exacomp_get_string('comp_2'),
-						3 => block_exacomp_get_string('comp_3')
+					3 => block_exacomp_get_string('comp_3'),
 				);
-			}
-			// else use value scheme set in the course
+			} // else use value scheme set in the course
 			else {
 				// TODO: add settings to g::$COURSE?
 				$course_grading = block_exacomp_get_settings_by_course(($courseid==0)?g::$COURSE->id:$courseid)->grading;
@@ -1081,7 +1133,10 @@ class global_config {
 	 * @param id $id
 	 */
 	static function get_value_title_by_id($id) {
-		if(!$id) return ' ';
+		if (!$id) {
+			return ' ';
+		}
+
 		return static::get_value_titles()[$id];
 	}
 
@@ -1096,10 +1151,9 @@ class global_config {
 						- 1 => ' ',
 						1 => ':-(',
 						2 => ':-|',
-						3 => ':-)'
+					3 => ':-)',
 				);
-			}
-			// else use value scheme set in the course
+			} // else use value scheme set in the course
 			else {
 				// TODO: add settings to g::$COURSE?
 				$course_grading = block_exacomp_get_settings_by_course(g::$COURSE->id)->grading;
@@ -1117,7 +1171,10 @@ class global_config {
 	 * @param id $id
 	 */
 	static function get_student_value_title_by_id($id) {
-		if(!$id) return ' ';
+		if (!$id) {
+			return ' ';
+		}
+
 		return static::get_student_value_titles()[$id];
 	}
 
@@ -1150,15 +1207,17 @@ class global_config {
 	 * @param double $additionalinfo
 	 */
 	static function get_additionalinfo_value_mapping($additionalinfo){
-		if (!$additionalinfo)
+		if (!$additionalinfo) {
 			return -1;
+		}
 
 		$mapping = array(6.0, 4.8, 3.5, 2.2);
 		$value = -1;
 
 		foreach($mapping as $k => $v) {
-			if($additionalinfo > $v)
+			if ($additionalinfo > $v) {
 				break;
+			}
 			$value = $k;
 		}
 
@@ -1171,8 +1230,9 @@ class global_config {
 	 * @param int $value
 	 */
 	static function get_value_additionalinfo_mapping($value){
-		if (!$value)
+		if (!$value) {
 			return -1;
+		}
 
 		$mapping = array(6.0, 4.4, 2.7, 1.0);
 

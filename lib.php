@@ -21,15 +21,15 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once __DIR__.'/inc.php';
 
-function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
+function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
 //  Check the contextlevel is as expected - if your plugin is a block, this becomes CONTEXT_BLOCK, etc.
 	if ($context->contextlevel != CONTEXT_COURSE) {
-		return false; 
+		return false;
 	}
- 
+
 	// Make sure the user is logged in and has access to the module (plugins that are not course modules should leave out the 'cm' part).
 	require_login($course, true, $cm);
- 
+
 	// Check the relevant capabilities - these may vary depending on the filearea being accessed.
 
 	// Leave this line out if you set the itemid to null in make_pluginfile_url (set $itemid to 0 instead).
@@ -95,7 +95,7 @@ function block_exacomp_pluginfile($course, $cm, $context, $filearea, $args, $for
 		return false; // The file does not exist.
 	}
 	*/
-	
+
 	// We can now send the file back to the browser - in this case with a cache lifetime of 1 day and no filtering. 
 	// From Moodle 2.3, use send_stored_file instead.
 	send_stored_file($file, 0, 0, $forcedownload, $options);

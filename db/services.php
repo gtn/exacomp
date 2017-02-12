@@ -33,104 +33,29 @@ $services = array(
 
 $functions = [];
 
-call_user_func(function() use (&$functions, &$services) {
-	$definitions = [
-		[ 'block_exacomp_get_courses', 'read', 'Get courses with exacomp block instances.' ],
-		[ 'block_exacomp_create_example', 'write', 'Create an example' ],
-		[ 'block_exacomp_delete_example', 'write', 'delete a custom item' ],
-		[ 'block_exacomp_delete_item', 'write', 'delete a submitted and wrong item' ],
-		[ 'block_exacomp_set_competence', 'write', 'Set a student evaluation for a particular competence' ],
-		[ 'block_exacomp_get_competencies_by_topic', 'read', 'get competencies for a specific topic' ],
-		[ 'block_exacomp_get_competencies_for_upload', 'read', 'Get competencetree' ],
-		[ 'block_exacomp_get_descriptors_for_example', 'read', 'Get desciptors for example' ],
-		[ 'block_exacomp_get_descriptors_for_quiz', 'read', 'Get desciptors for quiz' ],
-		[ 'block_exacomp_get_example_by_id', 'read', 'Get example' ],
-		[ 'block_exacomp_get_examples_for_subject', 'read', 'Get examples for subtopic' ],
-		[ 'block_exacomp_get_external_trainer_students', 'read', 'Get external trainer\'s students' ],
-		[ 'block_exacomp_get_item_for_example', 'read', 'Get Item' ],
-		[ 'block_exacomp_get_subjects_for_user', 'read', 'Get Subjects' ],
-		[ 'block_exacomp_get_user_examples', 'read', 'get examples created by a specific user' ],
-		[ 'block_exacomp_get_user_profile', 'read', 'get a list of courses with their competencies' ],
-		[ 'block_exacomp_get_user_role', 'read', 'Get role for user: 1=trainer 2=student' ],
-		[ 'block_exacomp_grade_item', 'write', 'Grade an item' ],
-		[ 'block_exacomp_submit_example', 'read', 'Submit example' ],
-		[ 'block_exacomp_update_example', 'write', 'update an example' ],
-		[ 'dakora_add_example_to_learning_calendar', 'write', 'add example to learning calendar for dakora' ],
-		[ 'dakora_add_example_to_pre_planning_storage', 'write', 'add example to current pre planning storage' ],
-		[ 'dakora_add_examples_to_students_schedule', 'write', 'add examples from current pre planning storage to students weekly schedule' ],
-		[ 'dakora_allow_example_resubmission', 'read', 'allow student to resubmit example' ],
-		[ 'dakora_create_blocking_event', 'write', 'create a blocking event' ],
-		[ 'dakora_empty_pre_planning_storage', 'write', 'delte all items from current pre planning storage' ],
-		[ 'dakora_get_all_descriptor_children_for_cross_subject', 'read', 'get children in context of cross subject' ],
-		[ 'dakora_get_all_descriptors_by_cross_subject', 'read', 'get descriptors for a cross subject' ],
-		[ 'dakora_get_all_descriptors', 'read', 'get descriptors for topic for dakora app' ],
-		[ 'dakora_get_all_topics_by_course', 'read', 'get topics for course for dakora app' ],
-		[ 'dakora_get_competence_grid_for_profile', 'read', 'get grid for profile' ],
-		[ 'dakora_get_courses', 'read', 'get courses for user for dakora app' ],
-		[ 'dakora_get_cross_subjects_by_course', 'read', 'get cross subjects for an user in course context (allways all crosssubjs, even if not associated)' ],
-		[ 'dakora_get_descriptor_children_for_cross_subject', 'read', 'get children in context of cross subject, associated with examples' ],
-		[ 'dakora_get_descriptor_children', 'read', 'get children (childdescriptor and examples) for descriptor for dakora app (only childs associated with examples)' ],
-		[ 'dakora_get_descriptor_details', 'read', 'get descriptor details incl. grading and children' ],
-		[ 'dakora_get_descriptors_by_cross_subject', 'read', 'get descriptors for a cross subject associated with examples' ],
-		[ 'dakora_get_descriptors_for_example', 'read', 'get descriptors where example is associated' ],
-		[ 'dakora_get_descriptors', 'read', 'get descriptors for topic for dakora app associated with examples' ],
-		[ 'dakora_get_example_grading', 'read', 'get student and teacher evaluation for example' ],
-		[ 'dakora_get_topic_grading', 'read', 'get student and teacher evaluation for topic' ],
-		[ 'dakora_get_subject_grading', 'read', 'get student and teacher evaluation for subject'],
-		[ 'dakora_get_example_information', 'read', 'get information and submission for example' ],
-		[ 'dakora_get_example_overview', 'read', 'get example overview for dakora app' ],
-		[ 'dakora_get_examples_by_descriptor_and_grading', 'read', 'returns examples for given descriptor and grading' ],
-		[ 'dakora_get_examples_for_descriptor_for_crosssubject_with_grading', 'read', 'get examples for descriptor with additional grading information' ],
-		[ 'dakora_get_examples_for_descriptor_for_crosssubject', 'read', 'get examples for descriptor for dakora app' ],
-		[ 'dakora_get_examples_for_descriptor_with_grading', 'read', 'get examples for descriptor with additional grading information' ],
-		[ 'dakora_get_examples_for_descriptor', 'read', 'get examples for descriptor for dakora app' ],
-		[ 'dakora_get_examples_for_time_slot', 'read', 'get examples for a special start to end period (e.g. day)' ],
-		[ 'dakora_get_examples_pool', 'read', 'get list of examples for weekly schedule pool' ],
-		[ 'dakora_get_examples_trash', 'read', 'get examples for trash bin' ],
-		[ 'dakora_get_pre_planning_storage_examples', 'read', 'get examples for pre planning storage' ],
-		[ 'dakora_get_pre_planning_storage_students', 'read', 'get students for pre planning storage' ],
-		[ 'dakora_get_schedule_config', 'read', 'get configuration options for schedule units' ],
-		[ 'dakora_get_students_for_course', 'read', 'get list of students for course' ],
-		[ 'dakora_get_topics_by_course', 'read', 'get topics for course for dakora app associated with examples' ],
-		[ 'dakora_get_user_information', 'read', 'get information about current user' ],
-		[ 'dakora_get_user_role', 'read', 'get user role 1= trainer, 2= student' ],
-		[ 'dakora_grade_example', 'write', 'grade example solution' ],
-		[ 'dakora_has_items_in_pre_planning_storage', 'read', 'return 0 if no items, 1 otherwise' ],
-		[ 'dakora_remove_example_from_schedule', 'write', 'remove example from weekly schedule' ],
-		[ 'dakora_set_example_time_slot', 'write', 'set start and end time for example' ],
-		[ 'dakora_submit_example', 'write', 'submit example solution' ],
-		[ 'dakora_set_competence', 'write', 'set competence for student'],
-		[ 'block_exacomp_is_elove_student_self_assessment_enabled', 'read', 'check the corresponding config setting'],
-		[ 'dakora_get_evaluation_config', 'read', 'get evaluation configuration'],
-		[ 'dakora_set_descriptor_visibility', 'write', 'set visibility for descriptor'],
-		[ 'dakora_set_example_visibility', 'write', 'set visibility for example'],
-		[ 'dakora_set_topic_visibility', 'wrtie', 'set visibility for topic'],
-		[ 'dakora_set_example_solution_visibility', 'write', 'set visibility for example solutions'],
-		[ 'dakora_create_cross_subject', 'write', 'create new crosssubject'],
-		[ 'dakora_edit_cross_subject', 'write', 'edit existing crosssubject'],
-		[ 'dakora_get_cross_subject_drafts', 'read', 'get available drafts'],
-		[ 'dakora_get_subjects', 'read', 'get subjects'],
-		[ 'dakora_get_students_for_cross_subject', 'read', 'get_students_for_crosssubject'],
-		[ 'dakora_set_cross_subject_student', 'write', 'set visibility for crosssubject and student'],
-		[ 'dakora_set_cross_subject_descriptor', 'write', 'set descriptor crosssubject association'],
-		[ 'dakora_delete_cross_subject', 'write', 'delete cross subject'],
-		[ 'dakora_add_examples_to_schedule_for_all', 'write', 'add examples to the schedules of all course students'],
-		[ 'dakora_get_competence_profile_statistic', 'read', 'get statistic in user and subject context'],
-		[ 'dakora_get_competence_profile_comparison', 'read', 'get list for student and teacher comparison'],
-		[ 'dakora_get_competence_profile_topic_statistic', 'read', 'get data for 3D graph']
-				
+require_once __DIR__.'/../externallib.php';
+$rc = new ReflectionClass('block_exacomp_external');
+$methods = $rc->getMethods( ReflectionMethod::IS_STATIC| ReflectionMethod::IS_PUBLIC);
+foreach ($methods as $method) {
+	if (!preg_match('!@ws-type-(read|write)!', $method->getDocComment(), $matches)) {
+		continue;
+	}
+
+	$description = preg_replace('!^[/\t \\*]+!m', '', $method->getDocComment());
+	$description = trim(preg_replace('!@.*!sm', '', $description));
+
+	$func = $method->getName();
+	if (strpos($func, 'dakora_') === false) {
+		$func = 'block_exacomp_'.$func;
+	}
+
+	$functions[$func] = [                             // web service function name
+			'classname'   => 'block_exacomp_external',         // class containing the external function
+			'methodname'  => $method->getName(), // external function name, strip block_exacomp_ for function name
+			'classpath'   => 'blocks/exacomp/externallib.php', // file containing the class/external function
+			'description' => $description,	               // human readable description of the web service function
+			'type'		  => $matches[1],	               // database rights of the web service function (read, write)
 	];
 
-	foreach ($definitions as $definition) {
-		$functions[$definition[0]] = [                             // web service function name
-				'classname'   => 'block_exacomp_external',         // class containing the external function
-				'methodname'  => str_replace('block_exacomp_', '', $definition[0]), // external function name, strip block_exacomp_ for function name
-				'classpath'   => 'blocks/exacomp/externallib.php', // file containing the class/external function
-				'description' => $definition[2],	               // human readable description of the web service function
-				'type'		  => $definition[1],	               // database rights of the web service function (read, write)
-		];
-
-		$services['exacompservices']['functions'][] = $definition[0];
-	}
-});
-
+	$services['exacompservices']['functions'][] = $func;
+}

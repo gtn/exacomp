@@ -630,6 +630,10 @@ return [
 
 
 	// === Examples ===
+	'example' => [
+		'Lernmaterial',
+		'Example',
+	],
 	'sorting' => [
 		'Sortierung wählen: ',
 		'select sorting: ',
@@ -780,23 +784,23 @@ return [
 	],
 	'comp_-1_short' => [
 		'oA',
-		'nI',
+		'ni',
 	],
 	'comp_0_short' => [
-		'nE',
-		'nG',
+		'ne',
+		'ng',
 	],
 	'comp_1_short' => [
-		'tE',
-		'pG',
+		'te',
+		'pg',
 	],
 	'comp_2_short' => [
-		'üE',
-		'mG',
+		'üe',
+		'mg',
 	],
 	'comp_3_short' => [
-		'vE',
-		'cG',
+		've',
+		'cg',
 	],
 	'delete_confirmation' => [
 		'Soll "{$a}" wirklich gelöscht werden?',
@@ -919,25 +923,17 @@ return [
 		'Es müssen zumindest ein Link oder eine Datei abgegeben werden',
 		'Es müssen zumindest ein Link oder eine Datei abgegeben werden',
 	],
-	'usersubmitted' => [
-		' hat folgende Moodle-Aktivitäten abgegeben:',
-		' has submitted the following Moodle activities:',
-	],
-	'usersubmittedquiz' => [
-		' hat folgende Tests durchgeführt:',
-		' has done the following quizzes:',
+	'associated_activities' => [
+		'Zugeordnete Moodle-Aktivitäten:',
+		'Associated Moodle Activities:',
 	],
 	'usernosubmission' => [
-		' hat keine Moodle-Aufgaben zu dieser Lernliste abgegeben und keinen Test durchgeführt.',
-		' has not yet submitted any Moodle activities or quizzes associated with this outcome',
-	],
-	'usernosubmission_topic' => [
-		' hat keine Moodle-Aufgaben zu dieser Teilkompetenz abgegeben und keinen Test durchgeführt.',
-		' has not yet submitted any Moodle activities or quizzes associated with this topic',
+		'Offene Moodle-Aktivitäten',
+		'{$a} has not yet submitted any Moodle activities or quizzes associated with this outcome',
 	],
 	'grading' => [
-		' Bewertung: ',
-		' Grading: ',
+		'Bewertung',
+		'Grading',
 	],
 	'teacher_tipp' => [
 		'Tipp',
@@ -960,8 +956,8 @@ return [
 		'Print',
 	],
 	'eportitems' => [
-		'Diese/r Kursteilnehmer/in hat folgende ePortfolio-Artefakte zu diesem Deskriptor eingereicht: ',
-		'This participant has submitted the following ePortfolio artifacts: ',
+		'Zu diesem Deskriptor eingereichte ePortfolio-Artefakte:',
+		'Submitted ePortfolio artifacts:',
 	],
 	'eportitem_shared' => [
 		' (geteilt)',
@@ -1017,6 +1013,10 @@ return [
 	],
 	'niveau' => [
 		'Lernfortschritt',
+		'Level',
+	],
+	'niveau_short' => [
+		'LFS',
 		'Level',
 	],
 	'competence_grid_niveau' => [
@@ -1131,6 +1131,10 @@ return [
 	'selfevaluation' => [
 		'Selbsteinschätzung',
 		'Self assessment',
+	],
+	'selfevaluation_short' => [
+		'SE',
+		'SA',
 	],
 	'teacherevaluation' => [
 		'Einschätzung des Beurteilenden',
@@ -1712,5 +1716,18 @@ return [
 	'periodselect' => [
 		'Auswahl der Periode',
 		'Select Period',
+	],
+
+	'teacher' => [
+		'Lehrer',
+		'Teacher',
+	],
+	'student' => [
+		'Schüler',
+		'Student',
+	],
+	'timeline_available' => [
+		'Verfügbare',
+		'Available',
 	],
 ];

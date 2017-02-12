@@ -98,39 +98,13 @@ if(($action = optional_param("action", "", PARAM_TEXT) ) == "filter"){
 
 
 $subjects = block_exacomp_get_competence_tree($courseid, null, null, true, null, false, array(), false, true);
-$modinfo = get_fast_modinfo($COURSE->id);
-$modules = $modinfo->get_cms();
 
-$visible_modules = array();
-$modules_to_filter = array();
+$modules = block_exacomp_get_allowed_course_modules_for_course($COURSE->id);
+$visible_modules = [];
+$modules_to_filter = [];
+
 if($modules){
-	$colspan = (count($modules) + 1);
-	foreach($modules as $mod){
-		
-		$module = block_exacomp_get_coursemodule($mod);
-		
-		//Skip Nachrichtenforum
-		if(strcmp($module->name, block_exacomp_get_string('namenews','mod_forum'))==0){
-			$colspan=($colspan-1);
-			continue;
-		}
-		
-		if ($module->modname == 'file') {
-			$hasFileModule = true;
-		}
-		
-		$module_type = $DB->get_record('course_modules', array('id'=>$module->id));
-
-		//skip News forum in any language, supported_modules[1] == forum
-		$forum = $DB->get_record('modules', array('name'=>'forum'));
-		if($module_type->module == $forum->id){
-			$forum = $DB->get_record('forum', array('id'=>$module->instance));
-			if(strcmp($forum->type, 'news')==0){
-				$colspan = ($colspan-1);
-				continue;	
-			}	
-		}
-		
+	foreach($modules as $module){
 		$compsactiv = $DB->get_records('block_exacompcompactiv_mm', array('activityid'=>$module->id, 'eportfolioitem'=>0));
 			
 		$module->descriptors = array();
@@ -147,7 +121,6 @@ if($modules){
 			$visible_modules[] = $module;
 		
 		$modules_to_filter[] = $module;
-		
 	}
 	
 	$niveaus = block_exacomp_extract_niveaus($subjects);
@@ -164,7 +137,7 @@ if($modules){
 		echo $output->no_course_activities_warning();
 	}else{
 		echo $output->activity_legend($headertext);
-		echo $output->activity_content($subjects, $visible_modules, $colspan);
+		echo $output->activity_content($subjects, $visible_modules);
 		echo $output->activity_footer($niveaus, $modules_to_filter, $selected_niveaus, $selected_modules);
 	}
 }
