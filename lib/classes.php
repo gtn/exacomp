@@ -809,7 +809,7 @@ class db_record {
 
 /**
  * Class subject
- * @property topic[] topics
+ * @property topic[] $topics
  */
 class subject extends db_record {
 	const TABLE = BLOCK_EXACOMP_DB_SUBJECTS;
@@ -835,7 +835,7 @@ class subject extends db_record {
 
 /**
  * Class topic
- * @property descriptor[] descriptors
+ * @property descriptor[] $descriptors
  */
 class topic extends db_record {
 	const TABLE = BLOCK_EXACOMP_DB_TOPICS;
@@ -881,8 +881,7 @@ class topic extends db_record {
 }
 
 /**
- * @property example[] examples
- * @property string bark
+ * @property example[] $examples
  */
 class descriptor extends db_record {
 	const TABLE = BLOCK_EXACOMP_DB_DESCRIPTORS;
