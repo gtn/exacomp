@@ -3570,10 +3570,6 @@ function block_exacomp_get_gained_competences($course, $student) {
 		}
 	}
 
-	if (!$gained_competencies_teacher && !$gained_competencies_student) {
-		return null;
-	}
-
 	return [$gained_competencies_teacher, $gained_competencies_student, count($descriptors)];
 }
 
@@ -6734,7 +6730,7 @@ function block_exacomp_get_visible_own_and_child_examples_for_descriptor($course
  * @param unknown $student
  * @return unknown[]|stdClass[]
  */
-function block_exacomp_get_data_for_profile_comparison($courseid, $subject, $student) {
+function  block_exacomp_get_data_for_profile_comparison($courseid, $subject, $student) {
 	$student = block_exacomp_get_user_information_by_course($student, $courseid);
 
 	foreach ($subject->subs as $topic) {
@@ -7115,6 +7111,7 @@ function block_exacomp_get_comp_eval_gained($courseid, $role, $userid, $comptype
  * @param unknown $userid
  * @param unknown $comptype
  * @param unknown $compid
+ * @return \block_exacomp\comp_eval
  */
 function block_exacomp_get_comp_eval($courseid, $role, $userid, $comptype, $compid) {
 
@@ -7125,27 +7122,43 @@ function block_exacomp_get_comp_eval($courseid, $role, $userid, $comptype, $comp
 			return null;
 		}
 
+		$data = [
+			'id' => 'example:'.$eval->id,
+			'courseid' => $eval->courseid,
+			'userid' => $eval->studentid,
+			'comptype' => BLOCK_EXACOMP_TYPE_EXAMPLE,
+			'compid' => $eval->exampleid,
+		];
+
 		if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
-			return (object)[
-				'id' => 'example:'.$eval->id,
-				'courseid' => $eval->courseid,
-				'userid' => $eval->studentid,
-				'comptype' => BLOCK_EXACOMP_TYPE_EXAMPLE,
-				'compid' => $eval->exampleid,
+			$data += [
 				'value' => $eval->teacher_evaluation === null ? -1 : $eval->teacher_evaluation,
 				'role' => BLOCK_EXACOMP_ROLE_TEACHER,
 				'reviewerid' => $eval->teacher_reviewerid,
 				'evalniveauid' => $eval->evalniveauid,
 				'additionalinfo' => $eval->additionalinfo,
 				'timestamp' => $eval->timestamp_teacher,
-				'@interal-original-data' => $eval,
 			];
 		} else {
-			throw new \Exception('todo: programming');
+			$data += [
+				'value' => $eval->student_evaluation === null ? -1 : $eval->student_evaluation,
+				'role' => BLOCK_EXACOMP_ROLE_STUDENT,
+				'reviewerid' => $eval->studentid,
+				'evalniveauid' => null,
+				'additionalinfo' => null,
+				'timestamp' => $eval->timestamp_student,
+			];
 		}
+
+		// lastly add original data for debugging
+		$data += [
+			'@interal-original-data' => $eval,
+		];
+
+		return \block_exacomp\comp_eval::create($data);
 	}
 
-	return g::$DB->get_record(BLOCK_EXACOMP_DB_COMPETENCES, array('courseid' => $courseid, 'userid' => $userid, 'compid' => $compid, 'comptype' => $comptype, 'role' => $role));
+	return \block_exacomp\comp_eval::get(['courseid' => $courseid, 'userid' => $userid, 'compid' => $compid, 'comptype' => $comptype, 'role' => $role]);
 }
 
 /**
@@ -7156,9 +7169,11 @@ function block_exacomp_get_comp_eval($courseid, $role, $userid, $comptype, $comp
  * @param unknown $comptype
  * @param unknown $compid
  */
+/*
 function block_exacomp_get_comp_eval_value($courseid, $role, $userid, $comptype, $compid) {
 	return g::$DB->get_field(BLOCK_EXACOMP_DB_COMPETENCES, 'value', array('courseid' => $courseid, 'userid' => $userid, 'compid' => $compid, 'comptype' => $comptype, 'role' => $role));
 }
+*/
 
 /**
  * return niveau items

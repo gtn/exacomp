@@ -473,7 +473,7 @@ class db_record {
 
 	public $id;
 
-	const TABLE = 'todo';
+	const TABLE = 'unknown_table';
 	const TYPE = '';
 	const SUBS = null;
 
@@ -591,7 +591,7 @@ class db_record {
 	}
 
 	protected function check_property_name($name) {
-		if (!preg_match('!^[a-z]!', $name)) {
+		if ($name[0] == '_') {
 			throw new \coding_exception('wrong property name '.$name);
 		}
 	}
@@ -1132,11 +1132,11 @@ class global_config {
 	 * @param id $id
 	 */
 	static function get_value_title_by_id($id) {
-		if (!$id) {
+		if ($id === null || $id < 0) {
 			return ' ';
 		}
 
-		return static::get_value_titles()[$id];
+		return @static::get_value_titles()[$id];
 	}
 
 	/**
@@ -1170,11 +1170,11 @@ class global_config {
 	 * @param id $id
 	 */
 	static function get_student_value_title_by_id($id) {
-		if (!$id) {
+		if ($id === null || $id < 0) {
 			return ' ';
 		}
 
-		return static::get_student_value_titles()[$id];
+		return @static::get_student_value_titles()[$id];
 	}
 
 	/**
@@ -1197,7 +1197,7 @@ class global_config {
 	 * @param id $id
 	 */
 	static function get_evalniveau_title_by_id($id) {
-		return static::get_evalniveaus()[$id];
+		return @static::get_evalniveaus()[$id];
 	}
 
 	/**
@@ -1244,5 +1244,38 @@ class global_config {
 	 */
 	static function get_values_additionalinfo_mapping() {
 		return array(6.0, 4.4, 2.7, 1.0);
+	}
+}
+
+class comp_eval extends db_record {
+	const TABLE = BLOCK_EXACOMP_DB_COMPETENCES;
+
+	public $id;
+	public $courseid;
+	public $userid;
+	public $comptype;
+	public $compid;
+
+	public $value;
+	public $role;
+	public $reviewerid;
+	public $evalniveauid;
+	public $additionalinfo;
+	public $timestamp;
+
+	function get_value_title() {
+		if ($this->role == BLOCK_EXACOMP_ROLE_STUDENT) {
+			return global_config::get_student_value_title_by_id($this->value);
+		} elseif ($this->role == BLOCK_EXACOMP_ROLE_TEACHER) {
+			if ($this->comptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
+				return global_config::get_value_title_by_id($this->value);
+			}
+		}
+
+		return null;
+	}
+
+	function get_evalniveau_title() {
+		return global_config::get_evalniveau_title_by_id($this->evalniveauid);
 	}
 }

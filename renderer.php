@@ -3089,6 +3089,10 @@ class block_exacomp_renderer extends plugin_renderer_base {
 			$content .= html_writer::tag('fieldset', $innersection, array('class' => ' competence_profile_innersection exa-collapsible'));
 		}
 
+		if (!$content) {
+			return '';
+		}
+
 		$content .= "<script> $('div[class=\"container\"]').each(function () {
                         $(this).find('canvas').each(function () {
 			
@@ -3300,10 +3304,13 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $content;
 	}
 
+	/**
+	 * @param $courseid
+	 * @param \block_exacomp\subject $subject
+	 * @param $student
+	 * @return string
+	 */
 	private function comparison_table($courseid, $subject, $student) {
-		$evaluation_niveaus = \block_exacomp\global_config::get_evalniveaus();
-		$scheme_items = \block_exacomp\global_config::get_value_titles($courseid);
-
 		$content = '';
 
 		//first table for descriptor evaluation
@@ -3331,6 +3338,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$rows[] = $row;
 
 		foreach ($subject->subs as $topic) {
+			$teacherEval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $student->id, BLOCK_EXACOMP_TYPE_TOPIC, $topic->id);
+			$studentEval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $student->id, BLOCK_EXACOMP_TYPE_TOPIC, $topic->id);
+
 			$row = new html_table_row();
 			$row->attributes['class'] = 'comparison_topic';
 			$cell = new html_table_cell();
@@ -3344,22 +3354,27 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 			$cell = new html_table_cell();
 
-			$cell->text = ((isset($student->topics->niveau[$topic->id])) ? $evaluation_niveaus[$student->topics->niveau[$topic->id]].' ' : '').
-				((block_exacomp_additional_grading()) ?
-					((isset($student->topics->teacher_additional_grading[$topic->id]))
-						? $student->topics->teacher_additional_grading[$topic->id] : '')
-					: ((isset($student->topics->teacher[$topic->id]))
-						? $scheme_items[$student->topics->teacher[$topic->id]] : ''));
+			if ($teacherEval) {
+				$cell->text = $teacherEval->get_evalniveau_title();
+				if (block_exacomp_additional_grading()) {
+					$cell->text .= $teacherEval->additionalinfo;
+				} else {
+					$cell->text .= $teacherEval->value;
+				}
+				$cell->attributes['exa-timestamp'] = $teacherEval->timestamp;
+			}
 
-			$cell->attributes['exa-timestamp'] = isset($student->topics->timestamp_teacher[$topic->id]) ? $student->topics->timestamp_teacher[$topic->id] : 0;
 			$row->cells[] = $cell;
 
 			$cell = new html_table_cell();
-			$cell->text = (isset($student->topics->student[$topic->id])) ? $student->topics->student[$topic->id] : '';
+			$cell->text = $studentEval ? $studentEval->get_value_title() : '';
 			$row->cells[] = $cell;
 			$rows[] = $row;
 
 			foreach ($topic->descriptors as $descriptor) {
+				$teacherEval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $student->id, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
+				$studentEval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $student->id, BLOCK_EXACOMP_TYPE_DESCRIPTOR, $descriptor->id);
+
 				$row = new html_table_row();
 				$row->attributes['class'] = 'comparison_desc';
 				$cell = new html_table_cell();
@@ -3371,24 +3386,27 @@ class block_exacomp_renderer extends plugin_renderer_base {
 				$row->cells[] = $cell;
 
 				$cell = new html_table_cell();
-				$cell->text = ((isset($student->competencies->niveau[$descriptor->id])) ? $evaluation_niveaus[$student->competencies->niveau[$descriptor->id]].' ' : '');
-				if (block_exacomp_additional_grading()) {
-					$cell->text .= ((isset($student->competencies->teacher_additional_grading[$descriptor->id])) ? $student->competencies->teacher_additional_grading[$descriptor->id] : '');
-				} else {
-					$cell->text .= ((isset($student->competencies->teacher[$descriptor->id])) ? $student->competencies->teacher[$descriptor->id] : '');
-				}
 
-				$cell->attributes['exa-timestamp'] = isset($student->competencies->timestamp_teacher[$descriptor->id]) ? $student->competencies->timestamp_teacher[$descriptor->id] : 0;
+				if ($teacherEval) {
+					$cell->text = $teacherEval->get_evalniveau_title();
+					if (block_exacomp_additional_grading()) {
+						$cell->text .= $teacherEval->additionalinfo;
+					} else {
+						$cell->text .= $teacherEval->value;
+					}
+					$cell->attributes['exa-timestamp'] = $teacherEval->timestamp;
+				}
 				$row->cells[] = $cell;
 
 				$cell = new html_table_cell();
-				$cell->text = (isset($student->competencies->student[$descriptor->id])) ? $student->competencies->student[$descriptor->id] : '';
+				$cell->text = $studentEval ? $studentEval->get_value_title() : '';
 				$row->cells[] = $cell;
 				$rows[] = $row;
 
 				$displayOrder = [
 					'Bearbeitete Lernmaterialien' => function($example) {
-						return (BLOCK_EXACOMP_EXAMPLE_STATE_SUBMITTED == $example->state);
+						return in_array($example->state,
+							[BLOCK_EXACOMP_EXAMPLE_STATE_SUBMITTED, BLOCK_EXACOMP_EXAMPLE_STATE_EVALUATED_NEGATIV, BLOCK_EXACOMP_EXAMPLE_STATE_EVALUATED_POSITIV]);
 					},
 					'Lernmaterialien in Arbeit' => function($example) {
 						return (BLOCK_EXACOMP_EXAMPLE_STATE_IN_CALENDAR == $example->state);
@@ -3416,6 +3434,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 					$rows[] = $row;
 
 					foreach ($examples as $example) {
+						$teacherEval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_TEACHER, $student->id, BLOCK_EXACOMP_TYPE_EXAMPLE, $example->id);
+						$studentEval = block_exacomp_get_comp_eval($courseid, BLOCK_EXACOMP_ROLE_STUDENT, $student->id, BLOCK_EXACOMP_TYPE_EXAMPLE, $example->id);
 
 						$row = new html_table_row();
 						$row->attributes['class'] = 'comparison_mat';
@@ -3428,13 +3448,14 @@ class block_exacomp_renderer extends plugin_renderer_base {
 						$row->cells[] = $cell;
 
 						$cell = new html_table_cell();
-						$cell->text = ((isset($student->examples->niveau[$example->id])) ? $evaluation_niveaus[$student->examples->niveau[$example->id]].' ' : '').
-							((isset($student->examples->teacher[$example->id])) ? $student->examples->teacher[$example->id] : '');
-						$cell->attributes['exa-timestamp'] = isset($student->examples->timestamp_teacher[$example->id]) ? $student->examples->timestamp_teacher[$example->id] : 0;
+						if ($teacherEval) {
+							$cell->text = $teacherEval->get_evalniveau_title().' '.$teacherEval->get_value_title();
+							$cell->attributes['exa-timestamp'] = $teacherEval->timestamp;
+						}
 						$row->cells[] = $cell;
 
 						$cell = new html_table_cell();
-						$cell->text = (isset($student->examples->student[$example->id])) ? $student->examples->student[$example->id] : '';
+						$cell->text = $studentEval ? $studentEval->get_value_title() : '';
 						$row->cells[] = $cell;
 						$rows[] = $row;
 					}
@@ -3451,14 +3472,11 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	public function timeline_graph($course, $student) {
 		$timeline_data = block_exacomp_get_gained_competences($course, $student);
-		if (!$timeline_data) {
-			return '';
-		}
 
 		list ($gained_competencies_teacher, $gained_competencies_student, $total_competencies) = $timeline_data;
 
 		$max_timestamp = time();
-		$min_timestamp = time();
+		$min_timestamp = strtotime('yesterday', time());
 
 		foreach (array_merge($gained_competencies_teacher, $gained_competencies_student) as $competence) {
 			if ($competence->timestamp) {
