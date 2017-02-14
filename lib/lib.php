@@ -4175,7 +4175,7 @@ function block_exacomp_set_topic_visibility($topicid, $courseid, $visible, $stud
  * @param unknown $studentid
  * @return boolean
  */
-function block_exacomp_topic_used($courseid, $topic, $studentid) {
+function block_exacomp_is_topic_used($courseid, $topic, $studentid) {
 	global $DB;
 	if ($studentid == 0) {
 		$sql = "SELECT * FROM {".BLOCK_EXACOMP_DB_COMPETENCES."} WHERE courseid = ? AND compid = ? AND comptype=? AND ( value>=0 OR additionalinfo IS NOT NULL)";
