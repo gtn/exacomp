@@ -20,7 +20,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_exacomp';
-$plugin->release = '4.6.0'; // achtung, nicht erhöhen, weil dakora 4.6 nur mit exacomp 4.6.x zusammen arbeitet
+$plugin->release = '4.6.1.experimental'; // achtung, nicht erhöhen, weil dakora 4.6 nur mit exacomp 4.6.x zusammen arbeitet
 $plugin->version   = 2017021300;
 $plugin->requires  = 2015051100;
 $plugin->maturity = MATURITY_STABLE;
