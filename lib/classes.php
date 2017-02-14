@@ -475,6 +475,11 @@ class db_record {
 
 	const TABLE = 'unknown_table';
 	const TYPE = '';
+	/**
+	 * null = not set => error
+	 * false = not set = no subs
+	 * string = name of subs
+	 */
 	const SUBS = null;
 
 	public function __construct($data = [], db_layer $dbLayer = null) {
@@ -657,6 +662,10 @@ class db_record {
 	}
 
 	public function &get_subs() {
+		if (static::SUBS === false) {
+			$subs = [];
+			return $subs;
+		}
 		if (!static::SUBS) {
 			throw new \coding_exception('const SUBS not set');
 		}
@@ -994,7 +1003,12 @@ class descriptor extends db_record {
 	}
 
 	protected function fill_children() {
-		return $this->dbLayer->get_child_descriptors($this);
+		if ($this->parentid) {
+			// already is child
+			return [];
+		} else {
+			return $this->dbLayer->get_child_descriptors($this);
+		}
 	}
 
 	protected function fill_examples() {
@@ -1009,6 +1023,7 @@ class descriptor extends db_record {
 class example extends db_record {
 	const TABLE = BLOCK_EXACOMP_DB_EXAMPLES;
 	const TYPE = BLOCK_EXACOMP_TYPE_EXAMPLE;
+	const SUBS = false;
 
 	function get_numbering() {
 		if (!isset($this->descriptor)) {

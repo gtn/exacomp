@@ -21,25 +21,38 @@ require __DIR__.'/../inc.php';
 require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
  
 if (!is_siteadmin()) {
-	die('Pls login first!');
+	die('No Admin!');
 }
 
 // Transaction.
 $transaction = $DB->start_delegated_transaction();
- 
+
+$files = glob($CFG->dataroot . '/temp/backup/*');
+$files = array_filter($files, 'is_dir');
+usort($files, function($a, $b) {
+	return filemtime($a) < filemtime($b);
+});
+
+if (!isset($files[0])) {
+	die('backup not found');
+}
+echo "restoring last backup: ".$files[0]."\n";
+
 // Create new course.
-$folder			 = '61ccef7ce9f223715890ee752aa30db3'; // as found in: $CFG->dataroot . '/temp/backup/' 
-$categoryid		 = 1; // e.g. 1 == Miscellaneous
+$folder             = basename($files[0]); // as found in: $CFG->dataroot . '/temp/backup/'
+$categoryid         = 1; // e.g. 1 == Miscellaneous
 $userdoingrestore   = 2; // e.g. 2 == admin
-$courseid		   = 52; // restore_dbops::create_new_course('', '', $categoryid);
-echo $courseid.' ';
+$courseid           = restore_dbops::create_new_course('', '', $categoryid);
+
 // Restore backup into course.
-$controller = new restore_controller($folder, $courseid, 
-		backup::INTERACTIVE_NO, backup::MODE_SAMESITE, $userdoingrestore,
-		backup::TARGET_NEW_COURSE);
+$controller = new restore_controller($folder, $courseid,
+        backup::INTERACTIVE_NO, backup::MODE_SAMESITE, $userdoingrestore,
+        backup::TARGET_NEW_COURSE);
 $controller->execute_precheck();
 $controller->execute_plan();
- 
+
+var_dump($courseid);
+
 // Commit.
 $transaction->allow_commit();
 

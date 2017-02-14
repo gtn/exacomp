@@ -6730,7 +6730,7 @@ function block_exacomp_get_visible_own_and_child_examples_for_descriptor($course
  * @param unknown $student
  * @return unknown[]|stdClass[]
  */
-function  block_exacomp_get_data_for_profile_comparison($courseid, $subject, $student) {
+function block_exacomp_get_data_for_profile_comparison($courseid, $subject, $student) {
 	$student = block_exacomp_get_user_information_by_course($student, $courseid);
 
 	foreach ($subject->subs as $topic) {
@@ -7092,6 +7092,7 @@ function block_exacomp_search_competence_grid_as_example_list($courseid, $q) {
 function block_exacomp_check_competence_data_is_gained($competence_data) {
 	if (block_exacomp_additional_grading()) {
 		$value = block_exacomp\global_config::get_additionalinfo_value_mapping($competence_data->additionalinfo);
+
 		return $value >= 1;
 	} else {
 		return $competence_data->value >= 1;
@@ -7132,16 +7133,17 @@ function block_exacomp_get_comp_eval($courseid, $role, $userid, $comptype, $comp
 
 		if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
 			$data += [
-				'value' => $eval->teacher_evaluation === null ? -1 : $eval->teacher_evaluation,
+				'value' => $eval->teacher_evaluation,
 				'role' => BLOCK_EXACOMP_ROLE_TEACHER,
 				'reviewerid' => $eval->teacher_reviewerid,
 				'evalniveauid' => $eval->evalniveauid,
-				'additionalinfo' => $eval->additionalinfo,
+				'additionalinfo' => null,
 				'timestamp' => $eval->timestamp_teacher,
+				'resubmission' => $eval->resubmission,
 			];
 		} else {
 			$data += [
-				'value' => $eval->student_evaluation === null ? -1 : $eval->student_evaluation,
+				'value' => $eval->student_evaluation,
 				'role' => BLOCK_EXACOMP_ROLE_STUDENT,
 				'reviewerid' => $eval->studentid,
 				'evalniveauid' => null,
@@ -7159,6 +7161,62 @@ function block_exacomp_get_comp_eval($courseid, $role, $userid, $comptype, $comp
 	}
 
 	return \block_exacomp\comp_eval::get(['courseid' => $courseid, 'userid' => $userid, 'compid' => $compid, 'comptype' => $comptype, 'role' => $role]);
+}
+
+function block_exacomp_set_comp_eval($courseid, $role, $userid, $comptype, $compid, $data) {
+	$data = (array)$data;
+	unset($data['courseid']);
+	unset($data['role']);
+	unset($data['userid']);
+	unset($data['comptype']);
+	unset($data['compid']);
+
+	if ($comptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
+		if ($role == BLOCK_EXACOMP_ROLE_TEACHER) {
+			if (array_key_exists('reviewerid', $data)) {
+				$data['teacher_reviewerid'] = $data['reviewerid'];
+				unset($data['reviewerid']);
+			}
+			if (array_key_exists('timestamp', $data)) {
+				$data['timestamp_teacher'] = $data['timestamp'];
+				unset($data['timestamp']);
+			}
+			if (array_key_exists('value', $data)) {
+				$data['teacher_evaluation'] = $data['value'] < 0 ? null : $data['value'];
+				unset($data['value']);
+			}
+			if (array_key_exists('evalniveauid', $data)) {
+				$data['evalniveauid'] = $data['evalniveauid'] < 0 ? null : $data['evalniveauid'];
+			}
+			// resubmission: as is
+		} else {
+			if (array_key_exists('timestamp', $data)) {
+				$data['timestamp_student'] = $data['timestamp'];
+				unset($data['timestamp']);
+			}
+			if (array_key_exists('value', $data)) {
+				$data['student_evaluation'] = $data['value'] < 0 ? null : $data['value'];
+				unset($data['value']);
+			}
+			unset($data['resubmission']);
+			unset($data['evalniveauid']);
+			unset($data['reviewerid']);
+		}
+
+		g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, $data, [
+			'studentid' => $userid,
+			'courseid' => $courseid,
+			'exampleid' => $compid,
+		]);
+	} else {
+		g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_COMPETENCES, $data, [
+			'courseid' => $courseid,
+			'userid' => $userid,
+			'comptype' => $comptype,
+			'compid' => $compid,
+			'role' => $role,
+		]);
+	}
 }
 
 /**
@@ -7384,5 +7442,17 @@ function block_exacomp_has_item_capability($cap, $item) {
 		return true;
 	} catch (block_exacomp_permission_exception $e) {
 		return false;
+	}
+}
+
+function block_exacomp_get_db_table_from_type($type) {
+	if ($type == BLOCK_EXACOMP_TYPE_SUBJECT) {
+		return BLOCK_EXACOMP_DB_SUBJECTS;
+	} elseif ($type == BLOCK_EXACOMP_TYPE_TOPIC) {
+		return BLOCK_EXACOMP_DB_TOPICS;
+	} elseif ($type == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
+		return BLOCK_EXACOMP_DB_DESCRIPTORS;
+	} elseif ($type == BLOCK_EXACOMP_TYPE_EXAMPLE) {
+		return BLOCK_EXACOMP_DB_EXAMPLES;
 	}
 }
