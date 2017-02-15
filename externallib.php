@@ -6033,7 +6033,7 @@ class block_exacomp_external extends external_api {
 
 	/**
 	 * set visibility for topic
-	 * @ws-type-wrtie
+	 * @ws-type-write
 	 * @param $courseid
 	 * @param $topicid
 	 * @param $userid
