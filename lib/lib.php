@@ -7386,3 +7386,23 @@ function block_exacomp_has_item_capability($cap, $item) {
 		return false;
 	}
 }
+
+function block_exacomp_get_db_table_from_type($type) {
+	if ($type == BLOCK_EXACOMP_TYPE_SUBJECT) {
+		return BLOCK_EXACOMP_DB_SUBJECTS;
+	} elseif ($type == BLOCK_EXACOMP_TYPE_TOPIC) {
+		return BLOCK_EXACOMP_DB_TOPICS;
+	} elseif ($type == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
+		return BLOCK_EXACOMP_DB_DESCRIPTORS;
+	} elseif ($type == BLOCK_EXACOMP_TYPE_EXAMPLE) {
+		return BLOCK_EXACOMP_DB_EXAMPLES;
+	}
+}
+
+function block_exacomp_format_eval_value($value) {
+	if ($value === null) {
+		return '';
+	}
+
+	return format_float($value, 1, true, true);
+}
