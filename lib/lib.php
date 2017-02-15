@@ -7456,3 +7456,11 @@ function block_exacomp_get_db_table_from_type($type) {
 		return BLOCK_EXACOMP_DB_EXAMPLES;
 	}
 }
+
+function block_exacomp_format_eval_value($value) {
+	if ($value === null) {
+		return '';
+	}
+
+	return format_float($value, 1, true, true);
+}

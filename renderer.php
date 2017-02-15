@@ -835,9 +835,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 						$params = array('name' => 'add-grading-'.$student->id.'-'.$subject->id, 'type' => 'text',
 							'maxlength' => 3, 'class' => 'percent-rating-text',
-							'value' => (isset($student->subjects->teacher_additional_grading[$subject->id]) &&
-								$student->subjects->teacher_additional_grading[$subject->id] != null) ?
-								$student->subjects->teacher_additional_grading[$subject->id] : "",
+							'value' => isset($student->subjects->teacher_additional_grading[$subject->id]) ?
+								block_exacomp_format_eval_value($student->subjects->teacher_additional_grading[$subject->id]) : "",
 							'exa-compid' => $subject->id, 'exa-userid' => $student->id, 'exa-type' => BLOCK_EXACOMP_TYPE_SUBJECT,
 							'reviewerid' => ($role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null);
 
@@ -976,9 +975,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 				$params = array('name' => 'add-grading-'.$student->id.'-'.$crosssubjid, 'type' => 'text',
 					'maxlength' => 3, 'class' => 'percent-rating-text',
-					'value' => (isset($student->crosssubs->teacher_additional_grading[$crosssubjid]) &&
-						$student->crosssubs->teacher_additional_grading[$crosssubjid] != null) ?
-						$student->crosssubs->teacher_additional_grading[$crosssubjid] : "",
+					'value' => isset($student->crosssubs->teacher_additional_grading[$crosssubjid]) ?
+						block_exacomp_format_eval_value($student->crosssubs->teacher_additional_grading[$crosssubjid]) : "",
 					'exa-compid' => $crosssubjid, 'exa-userid' => $student->id, 'exa-type' => BLOCK_EXACOMP_TYPE_CROSSSUB);
 
 				if ($role == BLOCK_EXACOMP_ROLE_STUDENT) {
@@ -1183,9 +1181,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 						$params = array('name' => 'add-grading-'.$student->id.'-'.$topic->id, 'type' => 'text',
 							'maxlength' => 3, 'class' => 'percent-rating-text',
-							'value' => (isset($student->topics->teacher_additional_grading[$topic->id]) &&
-								$student->topics->teacher_additional_grading[$topic->id] != null) ?
-								$student->topics->teacher_additional_grading[$topic->id] : "",
+							'value' => isset($student->topics->teacher_additional_grading[$topic->id]) ?
+								block_exacomp_format_eval_value($student->topics->teacher_additional_grading[$topic->id]) : "",
 							'exa-compid' => $topic->id, 'exa-userid' => $student->id, 'exa-type' => BLOCK_EXACOMP_TYPE_TOPIC,
 							'reviewerid' => ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null,
 						);
@@ -1513,9 +1510,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 						$params = array('name' => 'add-grading-'.$student->id.'-'.$descriptor->id, 'type' => 'text',
 							'maxlength' => 3, 'class' => 'percent-rating-text',
-							'value' => (isset($student->competencies->teacher_additional_grading[$descriptor->id]) &&
-								$student->competencies->teacher_additional_grading[$descriptor->id] != null) ?
-								$student->competencies->teacher_additional_grading[$descriptor->id] : "",
+							'value' => isset($student->competencies->teacher_additional_grading[$descriptor->id]) ?
+								block_exacomp_format_eval_value($student->competencies->teacher_additional_grading[$descriptor->id]) : "",
 							'exa-compid' => $descriptor->id, 'exa-userid' => $student->id, 'exa-type' => BLOCK_EXACOMP_TYPE_DESCRIPTOR,
 							'reviewerid' => ($data->role == BLOCK_EXACOMP_ROLE_TEACHER) ? $reviewerid : null,
 						);
