@@ -36,7 +36,7 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function get_courses_parameters() {
 		return new external_function_parameters (array(
-			'userid' => new external_value (PARAM_INT, 'id of user'),
+			'userid' => new external_value (PARAM_INT, 'id of user', VALUE_OPTIONAL),
 		));
 	}
 
@@ -47,7 +47,7 @@ class block_exacomp_external extends external_api {
 	 * @ws-type-read
 	 * @return array of user courses
 	 */
-	public static function get_courses($userid) {
+	public static function get_courses($userid = null) {
 		global $CFG, $DB, $USER;
 		require_once("$CFG->dirroot/lib/enrollib.php");
 
@@ -2356,7 +2356,7 @@ class block_exacomp_external extends external_api {
 	 * @ws-type-read
 	 * @return array of user courses
 	 */
-	public static function dakora_get_courses($userid) {
+	public static function dakora_get_courses($userid = null) {
 		return static::get_courses($userid);
 	}
 
@@ -5253,7 +5253,14 @@ class block_exacomp_external extends external_api {
 		global $CFG, $USER;
 		require_once($CFG->dirroot."/user/lib.php");
 
-		return user_get_user_details_courses($USER);
+		$data = user_get_user_details_courses($USER);
+		$data['exarole'] = static::get_user_role()->role;
+		unset($data['enrolledcourses']);
+		unset($data['preferences']);
+
+		$data['dakoracourses'] = static::dakora_get_courses();
+
+		return $data;
 	}
 
 	/**
@@ -5277,6 +5284,8 @@ class block_exacomp_external extends external_api {
 			'url' => new external_value(PARAM_URL, 'URL of the user', VALUE_OPTIONAL),
 			'profileimageurlsmall' => new external_value(PARAM_URL, 'User image profile URL - small version'),
 			'profileimageurl' => new external_value(PARAM_URL, 'User image profile URL - big version'),
+			'exarole' => new external_value (PARAM_INT, '1=trainer, 2=student'),
+			'dakoracourses' => static::dakora_get_courses_returns(),
 		));
 	}
 
@@ -5926,6 +5935,34 @@ class block_exacomp_external extends external_api {
 			'version' => $info->versiondb,
 			'release' => $info->release,
 		);
+	}
+
+	public static function login_parameters() {
+		return new external_function_parameters(array());
+	}
+
+	/**
+	 * Returns description of method return values
+	 *
+	 * @return external_multiple_structure
+	 */
+	public static function login_returns() {
+		return new external_single_structure (array(
+			'user' => static::dakora_get_user_information_returns(),
+			'config' => static::dakora_get_config_returns(),
+		));
+	}
+
+	/**
+	 *
+	 * @ws-type-read
+	 * @return array
+	 */
+	public static function login() {
+		return [
+			'user' => static::dakora_get_user_information(),
+			'config' => static::dakora_get_config(),
+		];
 	}
 
 	public static function dakora_set_descriptor_visibility_parameters() {
