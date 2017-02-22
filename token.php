@@ -6,10 +6,6 @@ define('NO_MOODLE_COOKIES', true);
 
 require __DIR__.'/inc.php';
 
-$block_exacomp_tokens = [];
-
-$services = @$_GET['services'];
-
 function block_exacomp_load_service($service) {
 	extract($GLOBALS);
 
@@ -34,20 +30,19 @@ function block_exacomp_load_service($service) {
 	}
 }
 
-if ($services) {
-	$services = explode(',', $services);
+$block_exacomp_tokens = [];
 
-	foreach ($services as $service) {
-		$token = block_exacomp_load_service($service);
-		if ($token) {
-			$block_exacomp_tokens[$service] = $token;
-		}
-	}
+$services = optional_param('services', 'moodle_mobile_app', PARAM_TEXT);
+$services = explode(',', $services);
+
+foreach ($services as $service) {
+	$token = block_exacomp_load_service($service);
+	$block_exacomp_tokens[$service] = $token;
 }
 
 require __DIR__.'/externallib.php';
 
 $data = block_exacomp_external::login();
-$data['config']['tokens'] = $block_exacomp_tokens;
+$data['tokens'] = $block_exacomp_tokens;
 
 echo json_encode($data, JSON_PRETTY_PRINT);
