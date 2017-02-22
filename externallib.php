@@ -4423,7 +4423,6 @@ class block_exacomp_external extends external_api {
 	 * @return examples
 	 */
 	public static function dakora_empty_pre_planning_storage($courseid) {
-		global $USER;
 		static::validate_parameters(static::dakora_empty_pre_planning_storage_parameters(), array(
 			'courseid' => $courseid,
 		));
@@ -4495,7 +4494,7 @@ class block_exacomp_external extends external_api {
 	 */
 	public static function dakora_add_example_to_pre_planning_storage_returns() {
 		return new external_single_structure (array(
-			'success' => new external_value (PARAM_BOOL, 'status of success, either true (1) or false (0)'),
+			'success' => new external_value (PARAM_BOOL, 'status of success'),
 		));
 	}
 
@@ -5930,8 +5929,8 @@ class block_exacomp_external extends external_api {
 		return array(
 			'use_evalniveau' => block_exacomp_use_eval_niveau(),
 			'evalniveautype' => block_exacomp_evaluation_niveau_type(),
-			'evalniveaus' => static::key_value_return(\block_exacomp\global_config::get_evalniveaus()),
-			'values' => static::key_value_return(\block_exacomp\global_config::get_value_titles()),
+			'evalniveaus' => static::return_key_value(\block_exacomp\global_config::get_evalniveaus()),
+			'values' => static::return_key_value(\block_exacomp\global_config::get_value_titles()),
 			'version' => $info->versiondb,
 			'release' => $info->release,
 		);
@@ -6071,7 +6070,7 @@ class block_exacomp_external extends external_api {
 
 	/**
 	 * set visibility for topic
-	 * @ws-type-wrtie
+	 * @ws-type-write
 	 * @param $courseid
 	 * @param $topicid
 	 * @param $userid
@@ -6658,7 +6657,7 @@ class block_exacomp_external extends external_api {
 					$topic_return->subjectid = $subject->id;
 					$topic_return->subjecttitle = $subject->title;
 					$topic_return->visible = (block_exacomp_is_topic_visible($courseid, $topic, $userid)) ? 1 : 0;
-					$topic_return->used = (block_exacomp_topic_used($courseid, $topic, $userid)) ? 1 : 0;
+					$topic_return->used = (block_exacomp_is_topic_used($courseid, $topic, $userid)) ? 1 : 0;
 					$topics_return[] = $topic_return;
 				}
 			}
@@ -7136,13 +7135,13 @@ class block_exacomp_external extends external_api {
 			)));
 	}
 
-	protected static function key_value_return($values) {
+	protected static function return_key_value($values) {
 		$nameKey = 'id';
 		$nameValue = 'name';
 		$return = [];
 
-		foreach ($values as $key=>$value) {
-			$return[] = [$nameKey=>$key, $nameValue=>$value];
+		foreach ($values as $key => $value) {
+			$return[] = [$nameKey => $key, $nameValue => $value];
 		}
 
 		return $return;
