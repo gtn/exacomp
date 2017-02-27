@@ -473,7 +473,7 @@
 			update_table(get_table(this));
 		});
 
-		$(window).unload(function () {
+		$(window).on('beforeunload', function () {
 			// save state before unload
 			get_tables().each(function () {
 				var ids = $(this).find('.rg2.open:not(.rg2-locked)').map(function () {
