@@ -5257,8 +5257,6 @@ class block_exacomp_external extends external_api {
 		unset($data['enrolledcourses']);
 		unset($data['preferences']);
 
-		$data['dakoracourses'] = static::dakora_get_courses();
-
 		return $data;
 	}
 
@@ -5284,7 +5282,6 @@ class block_exacomp_external extends external_api {
 			'profileimageurlsmall' => new external_value(PARAM_URL, 'User image profile URL - small version'),
 			'profileimageurl' => new external_value(PARAM_URL, 'User image profile URL - big version'),
 			'exarole' => new external_value (PARAM_INT, '1=trainer, 2=student'),
-			'dakoracourses' => static::dakora_get_courses_returns(),
 		));
 	}
 
@@ -5960,6 +5957,7 @@ class block_exacomp_external extends external_api {
 	public static function login() {
 		return [
 			'user' => static::dakora_get_user_information(),
+			'exacompcourses' => static::dakora_get_courses(),
 			'config' => static::dakora_get_config(),
 		];
 	}
