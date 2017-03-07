@@ -664,6 +664,7 @@ class db_record {
 	public function &get_subs() {
 		if (static::SUBS === false) {
 			$subs = [];
+
 			return $subs;
 		}
 		if (!static::SUBS) {
@@ -1107,7 +1108,7 @@ class global_config {
 	/**
 	 * Returns all values used for examples and child-descriptors
 	 */
-	static function get_value_titles($courseid = 0, $short = false) {
+	static function get_teacher_eval_items($courseid = 0, $short = false) {
 		return Cache::staticCallback([__CLASS__, __FUNCTION__], function($courseid = 0, $short = false) {
 			// if additional_grading is set, use global value scheme
 
@@ -1146,27 +1147,32 @@ class global_config {
 	 * Returns title for one value
 	 * @param id $id
 	 */
-	static function get_value_title_by_id($id) {
+	static function get_teacher_eval_title_by_id($id) {
 		if ($id === null || $id < 0) {
 			return ' ';
 		}
 
-		return @static::get_value_titles()[$id];
+		return @static::get_teacher_eval_items()[$id];
 	}
 
 	/**
 	 * Returns all values used for examples and child-descriptors
 	 */
-	static function get_student_value_titles() {
+	static function get_student_eval_items() {
 		return Cache::staticCallback([__CLASS__, __FUNCTION__], function() {
 			// if additional_grading is set, use global value scheme
 			if (block_exacomp_additional_grading()) {
-				return array(
+				/*
+					3 => '😊',
+					2 => '😔',
+					1 => '😓',
+				*/
+				return [
 					-1 => ' ',
-					1 => ':-(',
-					2 => ':-|',
 					3 => ':-)',
-				);
+					2 => ':-|',
+					1 => ':-(',
+				];
 			} // else use value scheme set in the course
 			else {
 				// TODO: add settings to g::$COURSE?
@@ -1184,12 +1190,12 @@ class global_config {
 	 * Returns title for one value
 	 * @param id $id
 	 */
-	static function get_student_value_title_by_id($id) {
+	static function get_student_eval_title_by_id($id) {
 		if ($id === null || $id < 0) {
 			return ' ';
 		}
 
-		return @static::get_student_value_titles()[$id];
+		return @static::get_student_eval_items()[$id];
 	}
 
 	/**
@@ -1280,10 +1286,10 @@ class comp_eval extends db_record {
 
 	function get_value_title() {
 		if ($this->role == BLOCK_EXACOMP_ROLE_STUDENT) {
-			return global_config::get_student_value_title_by_id($this->value);
+			return global_config::get_student_eval_title_by_id($this->value);
 		} elseif ($this->role == BLOCK_EXACOMP_ROLE_TEACHER) {
 			if ($this->comptype == BLOCK_EXACOMP_TYPE_EXAMPLE) {
-				return global_config::get_value_title_by_id($this->value);
+				return global_config::get_teacher_eval_title_by_id($this->value);
 			}
 		}
 

@@ -48,7 +48,7 @@ if (!block_exacomp_use_eval_niveau()) {
 }
 
 
-//	$scheme_items = \block_exacomp\global_config::get_value_titles($courseid);
+//	$scheme_items = \block_exacomp\global_config::get_teacher_eval_items($courseid);
 //	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
 /* PAGE URL - MUST BE CHANGED */
 $PAGE->set_url('/blocks/exacomp/3dchart.php', array('courseid' => $courseid));
@@ -96,13 +96,13 @@ $student_value_index = key($graph_options->yLabels) + 1;
 $graph_options->yLabels[$student_value_index] = block_exacomp_get_string('selfevaluation_short');
 $ylabels_long[$student_value_index] = block_exacomp_get_string('selfevaluation');
 
-$value_titles = array_filter(\block_exacomp\global_config::get_value_titles($courseid, true), function($k) {
+$value_titles = array_filter(\block_exacomp\global_config::get_teacher_eval_items($courseid, true), function($k) {
 	return $k >= 0;
 }, ARRAY_FILTER_USE_KEY);
-$value_titles_long = array_filter(\block_exacomp\global_config::get_value_titles($courseid, false), function($k) {
+$value_titles_long = array_filter(\block_exacomp\global_config::get_teacher_eval_items($courseid, false), function($k) {
 	return $k >= 0;
 }, ARRAY_FILTER_USE_KEY);
-$value_titles_self_assessment = \block_exacomp\global_config::get_student_value_titles();
+$value_titles_self_assessment = \block_exacomp\global_config::get_student_eval_items();
 
 $graph_options->zLabels = array_fill(0, count($value_titles), '');
 

@@ -177,7 +177,7 @@ class api {
 					// echo 'x x '.$descriptor->title.' '.(@$niveaus_competencies[$descriptor->id])."<br/>\n";
 					$descriptor->teacher_eval_niveau_text = @$niveau_titles[$niveaus_competencies[$descriptor->id]];
 					if (isset($teacher_additional_grading_competencies[$descriptor->id])) {
-						// \block_exacomp\global_config::get_value_title_by_id
+						// \block_exacomp\global_config::get_teacher_eval_title_by_id
 						$descriptor->teacher_eval_additional_grading = \block_exacomp\global_config::get_additionalinfo_value_mapping($teacher_additional_grading_competencies[$descriptor->id]);
 					} else {
 						$descriptor->teacher_eval_additional_grading = null;
@@ -190,7 +190,7 @@ class api {
 
 				$topic->teacher_eval_niveau_text = @$niveau_titles[$niveaus_topics[$topic->id]];
 				if (isset($teacher_additional_grading_topics[$topic->id])) {
-					// \block_exacomp\global_config::get_value_title_by_id
+					// \block_exacomp\global_config::get_teacher_eval_title_by_id
 					$topic->teacher_eval_additional_grading = \block_exacomp\global_config::get_additionalinfo_value_mapping($teacher_additional_grading_topics[$topic->id]);
 				} else {
 					$topic->teacher_eval_additional_grading = null;

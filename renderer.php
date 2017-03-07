@@ -410,7 +410,7 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$head = array();
 
 		$scheme = ($courseid == 0) ? 1 : block_exacomp_get_grading_scheme($courseid);
-		$scheme_values = \block_exacomp\global_config::get_value_titles($courseid);
+		$scheme_values = \block_exacomp\global_config::get_teacher_eval_items($courseid);
 
 		$satisfied = ceil($scheme / 2);
 
@@ -2200,9 +2200,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		// TODO: diese $scheme brauchen wir nicht mehr? einfach $options = $scheme_values?
 
 		if (strcmp($evaluation, 'teacher') == 0) {
-			$options = \block_exacomp\global_config::get_value_titles();
+			$options = \block_exacomp\global_config::get_teacher_eval_items();
 		} else {
-			$options = \block_exacomp\global_config::get_student_value_titles();
+			$options = \block_exacomp\global_config::get_student_eval_items();
 		}
 
 		if ($this->is_print_mode()) {
@@ -3240,8 +3240,8 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$content = '';
 
 		$evaluation_niveaus = \block_exacomp\global_config::get_evalniveaus();
-		$value_titles = \block_exacomp\global_config::get_value_titles($courseid, true);
-		$value_titles_long = \block_exacomp\global_config::get_value_titles($courseid, false);
+		$value_titles = \block_exacomp\global_config::get_teacher_eval_items($courseid, true);
+		$value_titles_long = \block_exacomp\global_config::get_teacher_eval_items($courseid, false);
 
 		//first table for descriptor evaluation
 		$table = new html_table();

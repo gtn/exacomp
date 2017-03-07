@@ -5868,7 +5868,7 @@ class block_exacomp_external extends external_api {
 		return array('use_evalniveau' => block_exacomp_use_eval_niveau(),
 			'evalniveautype' => block_exacomp_evaluation_niveau_type(),
 			'evalniveaus' => \block_exacomp\global_config::get_evalniveaus(),
-			'values' => \block_exacomp\global_config::get_value_titles(),
+			'values' => \block_exacomp\global_config::get_teacher_eval_items(),
 		);
 	}
 
@@ -5907,7 +5907,8 @@ class block_exacomp_external extends external_api {
 			'use_evalniveau' => new external_value (PARAM_BOOL, 'use evaluation niveaus'),
 			'evalniveautype' => new external_value (PARAM_INT, 'same as adminscheme before: 1: GME, 2: ABC, 3: */**/***'),
 			'evalniveaus' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'evaluation titles'),
-			'values' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
+			'teacher_eval_items' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
+			'student_eval_items' => static::key_value_returns(PARAM_INT, PARAM_TEXT, 'values'),
 			'version' => new external_value (PARAM_INT),
 			'release' => new external_value (PARAM_TEXT),
 		));
@@ -5927,7 +5928,8 @@ class block_exacomp_external extends external_api {
 			'use_evalniveau' => block_exacomp_use_eval_niveau(),
 			'evalniveautype' => block_exacomp_evaluation_niveau_type(),
 			'evalniveaus' => static::return_key_value(\block_exacomp\global_config::get_evalniveaus()),
-			'values' => static::return_key_value(\block_exacomp\global_config::get_value_titles()),
+			'teacher_eval_items' => static::return_key_value(\block_exacomp\global_config::get_teacher_eval_items()),
+			'student_eval_items' => static::return_key_value(\block_exacomp\global_config::get_student_eval_items()),
 			'version' => $info->versiondb,
 			'release' => $info->release,
 		);

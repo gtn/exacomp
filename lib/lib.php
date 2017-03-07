@@ -4949,7 +4949,7 @@ function block_exacomp_get_example_statistic_for_descriptor($courseid, $descrid,
 
 	$gradings = array(); //array[niveauid][value][number of examples evaluated with this value and niveau]
 	//create grading statistic
-	$scheme_items = \block_exacomp\global_config::get_value_titles($courseid);
+	$scheme_items = \block_exacomp\global_config::get_teacher_eval_items($courseid);
 	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
 
 	if (block_exacomp_use_eval_niveau()) {
@@ -5286,8 +5286,8 @@ function block_exacomp_get_json_examples($examples, $mind_eval = true) {
 			$example_array['student_evaluation'] = $example->student_evaluation;
 			$example_array['teacher_evaluation'] = $example->teacher_evaluation;
 
-			$student_title = \block_exacomp\global_config::get_student_value_title_by_id($example->student_evaluation);
-			$teacher_title = \block_exacomp\global_config::get_value_title_by_id($example->teacher_evaluation);
+			$student_title = \block_exacomp\global_config::get_student_eval_title_by_id($example->student_evaluation);
+			$teacher_title = \block_exacomp\global_config::get_teacher_eval_title_by_id($example->teacher_evaluation);
 
 			$example_array['student_evaluation_title'] = (strcmp($student_title, ' ') == 0) ? '-' : $student_title;
 			$example_array['teacher_evaluation_title'] = (strcmp($teacher_title, ' ') == 0) ? '-' : $teacher_title;
@@ -6155,7 +6155,7 @@ function block_exacomp_get_grid_for_competence_profile($courseid, $studentid, $s
 	$table_content->content = array();
 
 	$use_evalniveau = block_exacomp_use_eval_niveau();
-	$scheme_items = \block_exacomp\global_config::get_value_titles($courseid);
+	$scheme_items = \block_exacomp\global_config::get_teacher_eval_items($courseid);
 	$evaluationniveau_items = \block_exacomp\global_config::get_evalniveaus();
 	foreach ($subject->topics as $topic) {
 		// auswertung pro lfs
@@ -6360,7 +6360,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 
 		if (block_exacomp_is_topicgrading_enabled()) {
 			$topic_eval = new stdClass();
-			$topic_eval->evaluation_text = \block_exacomp\global_config::get_value_title_by_id(\block_exacomp\global_config::get_additionalinfo_value_mapping($rowcontent->topic_eval));
+			$topic_eval->evaluation_text = \block_exacomp\global_config::get_teacher_eval_title_by_id(\block_exacomp\global_config::get_additionalinfo_value_mapping($rowcontent->topic_eval));
 			$topic_eval->evaluation = empty($rowcontent->topic_eval) ? -1 : $rowcontent->topic_eval;
 			$topic_eval->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($rowcontent->topic_eval);
 			$topic_eval->evalniveauid = $rowcontent->topic_evalniveauid;
@@ -6384,7 +6384,7 @@ function block_exacomp_get_competence_profile_grid_for_ws($courseid, $userid, $s
 
 		$content_row->columns[1] = new stdClass();
 		$content_row->columns[1]->evaluation = empty($table_content->subject_eval) ? -1 : $table_content->subject_eval;
-		$content_row->columns[1]->evaluation_text = \block_exacomp\global_config::get_value_title_by_id(\block_exacomp\global_config::get_additionalinfo_value_mapping($table_content->subject_eval));
+		$content_row->columns[1]->evaluation_text = \block_exacomp\global_config::get_teacher_eval_title_by_id(\block_exacomp\global_config::get_additionalinfo_value_mapping($table_content->subject_eval));
 		$content_row->columns[1]->evaluation_mapped = \block_exacomp\global_config::get_additionalinfo_value_mapping($table_content->subject_eval);
 		$content_row->columns[1]->evalniveauid = $table_content->subject_evalniveauid;
 		$content_row->columns[1]->span = 0;
@@ -6556,7 +6556,7 @@ function block_exacomp_get_evaluation_statistic_for_subject($courseid, $subjecti
 	$examplegradings = [];
 
 	// create grading statistic
-	$scheme_items = \block_exacomp\global_config::get_value_titles(block_exacomp_get_grading_scheme($courseid));
+	$scheme_items = \block_exacomp\global_config::get_teacher_eval_items(block_exacomp_get_grading_scheme($courseid));
 	$evaluationniveau_items = (block_exacomp_use_eval_niveau()) ? \block_exacomp\global_config::get_evalniveaus() : array(
 		'0' => '',
 	);
