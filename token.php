@@ -16,9 +16,18 @@ function block_exacomp_load_service($service) {
 	} catch (moodle_exception $e) {
 		if ($e->errorcode == 'servicenotavailable') {
 			return null;
-		} else {
-			throw $e;
 		}
+
+		global $A2FA_ERROR;
+		if ($A2FA_ERROR) {
+			echo json_encode([
+				'error' => $A2FA_ERROR,
+				'errorcode' => 'a2farequired',
+			], JSON_PRETTY_PRINT);
+			exit;
+		}
+
+		throw $e;
 	}
 	$ret = ob_get_clean();
 
