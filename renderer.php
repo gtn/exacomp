@@ -1977,17 +1977,17 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 	/**
 	 *
-	 * @param int $students Amount of students
+	 * @param int $item_count Amount of students
 	 */
-	public function column_selector($students) {
-		if($students < \block_exacomp\STUDENTS_PER_COLUMN)
+	public function students_column_selector($item_count) {
+		if($item_count < \block_exacomp\STUDENTS_PER_COLUMN)
 			return;
 
 		$content = html_writer::tag("b", get_string('columnselect','block_exacomp'));
-		for($i=0; $i < ceil($students / \block_exacomp\STUDENTS_PER_COLUMN); $i++) {
+		for($i=0; $i < ceil($item_count / \block_exacomp\STUDENTS_PER_COLUMN); $i++) {
 			$content .= " ";
 			$content .= html_writer::link('',
-					($i*\block_exacomp\STUDENTS_PER_COLUMN+1).'-'.min($students, ($i+1)*\block_exacomp\STUDENTS_PER_COLUMN),
+					($i*\block_exacomp\STUDENTS_PER_COLUMN+1).'-'.min($item_count, ($i+1)*\block_exacomp\STUDENTS_PER_COLUMN),
 					array('class' => 'colgroup-button', 'exa-groupid'=>$i));
 		}
 		$content .= " " . html_writer::link('',
@@ -2573,84 +2573,16 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		return $header.html_writer::tag('p', get_string("explaineditactivities_subjects", "block_exacomp")).html_writer::empty_tag('br');
 
 	}
-	public function activity_footer($niveaus, $modules, $selected_niveaus=array(), $selected_modules=array()){
-		global $PAGE;
-		$content = '';
 
-		$form_content = '';
-		if(!empty($niveaus) && isset($niveaus)){
-			$selected = '';
-			if(empty($selected_niveaus) || in_array('0', $selected_niveaus))
-				$selected = ' selected';
-
-			$options = html_writer::tag('option'.$selected, get_string('all_niveaus', 'block_exacomp'), array('value'=>0));
-			$has_niveaus = false;
-			foreach($niveaus as $niveau){
-				if($niveau){
-					$selected = '';
-					if(!empty($selected_niveaus) && in_array($niveau->id, $selected_niveaus))
-						$selected = ' selected';
-					$has_niveaus = true;
-					$options .= html_writer::tag('option'.$selected, $niveau->title, array('value'=>$niveau->id));
-				}
-			}
-			$select = html_writer::tag('select multiple', $options, array('name'=>'niveau_filter[]'));
-			if($has_niveaus)
-				$form_content .= html_writer::div(html_writer::tag('h5', get_string('niveau_filter', 'block_exacomp')).$select, '');
-		}
-
-		if(!empty($modules)){
-			$selected = '';
-			if(in_array('0', $selected_modules) || empty($selected_modules))
-				$selected = ' selected';
-
-			$options = html_writer::tag('option'.$selected, get_string('all_modules', 'block_exacomp'), array('value'=>0));
-			foreach($modules as $module){
-				$selected = '';
-				if(in_array($module->id, $selected_modules))
-					$selected = ' selected';
-
-				$options .= html_writer::tag('option'.$selected, $module->name, array('value'=>$module->id));
-			}
-			$select = html_writer::tag('select multiple', $options, array('name'=>'module_filter[]'));
-			$form_content .= html_writer::div(html_writer::tag('h5', get_string('module_filter', 'block_exacomp')).$select, '');
-		}
-
-		if(!empty($niveaus) || !empty($modules)){
-			$form_content .= html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('apply_filter', 'block_exacomp')));
-			$content .= html_writer::tag('form', $form_content, array('action'=>$PAGE->url.'&action=filter', 'method'=>'post'));
-		}
-
-		return $content;
-	}
 	public function activity_content($subjects, $modules, $colspan){
-		global $COURSE, $PAGE;
+		global $PAGE;
 
 		$table = new html_table;
 		$table->attributes['class'] = 'rg2 exabis_comp_comp';
+		$table->attributes['style'] = 'display: none'; // hide table first, show with javascript
 		$table->attributes['id'] = 'comps';
 
 		$rows = array();
-
-		//print heading
-
-		$row = new html_table_row();
-		$row->attributes['class'] = 'heading r0';
-
-		$cell = new html_table_cell();
-		$cell->attributes['class'] = 'category catlevel1';
-		$cell->attributes['scope'] = 'col';
-		$cell->text = html_writer::tag('h1', $COURSE->fullname);
-
-		$row->cells[] = $cell;
-
-		$cell = new html_table_cell();
-		$cell->attributes['class'] = 'category catlevel1 bottom';
-		$cell->attributes['scope'] = 'col';
-		$cell->colspan = $colspan;
-	
-		$row->cells[] = $cell;
-		$rows[] = $row;
 
 		//print row with list of activities
 		$row = new html_table_row();
@@ -2684,7 +2616,12 @@ class block_exacomp_renderer extends plugin_renderer_base {
 		$div = html_writer::tag("div", html_writer::tag("div", $table_html, array("class"=>"exabis_competencies_lis")), array("id"=>"exabis_competences_block"));
 		$div .= html_writer::div(html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('save_selection', 'block_exacomp'))), '', array('id'=>'exabis_save_button'));
 
-		return html_writer::tag('form', $div, array('id'=>'edit-activities', 'action'=>$PAGE->url.'&action=save', 'method'=>'post'));
+		$js = '
+			<script>
+				block_exacomp.column_selector("table.exabis_comp_comp");
+			</script>
+		';
+		return $js.html_writer::tag('form', $div, array('id'=>'edit-activities', 'action'=>$PAGE->url.'&action=save', 'method'=>'post'));
 
 	}
 	public function topics_activities(&$rows, $level, $topics, $modules) {

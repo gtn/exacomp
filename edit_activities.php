@@ -165,7 +165,6 @@ if($modules){
 	}else{
 		echo $output->activity_legend($headertext);
 		echo $output->activity_content($subjects, $visible_modules, $colspan);
-		echo $output->activity_footer($niveaus, $modules_to_filter, $selected_niveaus, $selected_modules);
 	}
 }
 
