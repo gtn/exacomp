@@ -246,6 +246,21 @@ namespace block_exacomp\common {
 				return (object)$data;
 			}
 		}
+
+		public function get_column_names($table) {
+			return array_keys($this->get_columns($table));
+		}
+
+		public function get_column_names_prefixed($table, $prefix = '') {
+			$prefix = trim($prefix, '.');
+
+			$columns = $this->get_column_names($table);
+			$columns = array_map(function($column) use ($prefix) {
+				return $prefix.'.'.$column;
+			}, $columns);
+
+			return join(', ', $columns);
+		}
 	}
 
 	class param {
