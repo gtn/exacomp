@@ -198,6 +198,79 @@
 				parent.location.reload(true);
 			}
 		},
+
+		column_selector: function(tablesearch, options) {
+
+			options = options || {};
+			options = $.extend({
+				title_colspan: 1,
+				item_colspan: 1,
+			}, options);
+
+			$(function(){
+				var $table = $(tablesearch);
+
+				var table_total_colspan = 0;
+				$table.find('tr:first').find('td,th').each(function(){
+					table_total_colspan += this.colSpan;
+				});
+
+				var item_count = (table_total_colspan - options.title_colspan) / options.item_colspan;
+				var items_per_page = 6;
+				var $content = $('#col_selector_content');
+
+				if (item_count <= items_per_page) {
+					$table.show();
+					return;
+				}
+
+				function select_group() {
+					$('.colgroup-button').css('font-weight', 'normal');
+					$(this).css('font-weight', 'bold');
+
+					var groupid = $(this).attr('exa-groupid');
+
+					$table.find('tr').each(function(){
+						var rowColSpan = 0;
+						$(this).find('td,tr').each(function(i, col){
+							if (rowColSpan < options.title_colspan) {
+								// nothing, always show title
+							} else if (groupid === 'all') {
+								$(col).show();
+							} else if (Math.floor((rowColSpan - options.title_colspan) / items_per_page) == groupid) {
+								$(col).show();
+							} else {
+								$(col).hide();
+							}
+
+							rowColSpan += this.colSpan;
+						});
+					});
+
+					return false;
+				}
+
+				$content.append('<b>' + M.util.get_string('columnselect','block_exacomp') + ':</b>');
+				for (var i=0; i < Math.ceil(item_count / items_per_page); i++) {
+					$content.append(' ');
+					$('<a href="#" class="colgroup-button" exa-groupid="'+i+'">'
+						+(i*items_per_page+1)+'-'+Math.min(item_count, (i+1)*items_per_page)+'</a>')
+						.click(select_group)
+						.appendTo($content);
+				}
+
+				$content.append(' ');
+				$('<a href="#" class="colgroup-button colgroup-button-all" exa-groupid="all">'
+					+M.util.get_string('all','moodle')+'</a>')
+					.click(select_group)
+					.appendTo($content);
+
+				$content.find('a:first').click();
+				$table.show();
+			});
+
+			document.write('<div id="col_selector_content"></div>');
+		}
 	};
 
 	$(function () {
@@ -473,7 +546,7 @@
 			update_table(get_table(this));
 		});
 
-		$(window).unload(function () {
+		$(window).on('beforeunload', function () {
 			// save state before unload
 			get_tables().each(function () {
 				var ids = $(this).find('.rg2.open:not(.rg2-locked)').map(function () {

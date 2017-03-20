@@ -212,10 +212,10 @@ class data {
 		global $DB;
 		
 		// TODO: geht so nicht mehr
-		$DB->delete_records(BLOCK_EXACOMP_DB_SUBJECTS,array('source' => IMPORT_SOURCE_SPECIFIC));
-		$DB->delete_records(BLOCK_EXACOMP_DB_TOPICS,array('source' => IMPORT_SOURCE_SPECIFIC));
-		$DB->delete_records(BLOCK_EXACOMP_DB_DESCRIPTORS,array('source' => IMPORT_SOURCE_SPECIFIC));
-		$examples = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES,array('source' => IMPORT_SOURCE_SPECIFIC));
+		$DB->delete_records(BLOCK_EXACOMP_DB_SUBJECTS,array('source' => BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC));
+		$DB->delete_records(BLOCK_EXACOMP_DB_TOPICS,array('source' => BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC));
+		$DB->delete_records(BLOCK_EXACOMP_DB_DESCRIPTORS,array('source' => BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC));
+		$examples = $DB->get_records(BLOCK_EXACOMP_DB_EXAMPLES,array('source' => BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC));
 		foreach($examples as $example) 
 			block_exacomp_delete_custom_example($example->id);
 		
@@ -554,10 +554,10 @@ class data_exporter extends data {
 	 */
 	private static function assign_source($xmlItem, $dbItem) {
 		if ($dbItem->source && $dbItem->sourceid) {
-			if ($dbItem->source == IMPORT_SOURCE_DEFAULT) {
+			if ($dbItem->source == BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT) {
 				// source und sourceid vorhanden -> von wo anders erhalten
 				throw new moodle_exception('database error, has default source #69fvk3');
-			} elseif ($dbItem->source == IMPORT_SOURCE_SPECIFIC) {
+			} elseif ($dbItem->source == BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC) {
 				// local source -> von dieser moodle instanz selbst
 				throw new moodle_exception('database error, has specific source #yt8d21');
 			} elseif ($source = self::get_source_global_id($dbItem->source)) {
@@ -1116,7 +1116,7 @@ class data_importer extends data {
 	 */
 	private static $zip;
 	
-	public static function do_import_string($data = null, $par_source = IMPORT_SOURCE_DEFAULT) {
+	public static function do_import_string($data = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT) {
 		global $CFG;
 
 		if (!$data) {
@@ -1133,7 +1133,7 @@ class data_importer extends data {
 		return $ret;
 	}
 	
-	public static function do_import_url($url = null, $par_source = IMPORT_SOURCE_DEFAULT) {
+	public static function do_import_url($url = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT) {
 		global $CFG;
 
 		if (!$url) {
@@ -1165,7 +1165,7 @@ class data_importer extends data {
 	 * @param String $data xml content
 	 * @param int $source default is 1, for specific import 2 is used. A specific import can be done by teachers and only effects data from topic leven downwards (topics, descriptors, examples)
 	 */
-	public static function do_import_file($file = null, $par_source = IMPORT_SOURCE_DEFAULT) {
+	public static function do_import_file($file = null, $par_source = BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT) {
 		if (!$file) {
 			throw new import_exception('filenotfound');
 		}
@@ -1243,15 +1243,15 @@ class data_importer extends data {
 		}
 		
 		// update scripts for new source format
-		if (self::has_old_data(IMPORT_SOURCE_DEFAULT)) {
-			if (self::$import_source_type != IMPORT_SOURCE_DEFAULT) {
+		if (self::has_old_data(BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT)) {
+			if (self::$import_source_type != BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT) {
 				throw new import_exception('you first need to import the default sources!');
 			}
-			self::move_items_to_source(IMPORT_SOURCE_DEFAULT, self::$import_source_local_id);
+			self::move_items_to_source(BLOCK_EXACOMP_IMPORT_SOURCE_DEFAULT, self::$import_source_local_id);
 		}
 		else {
 			// always move old specific data
-			self::move_items_to_source(IMPORT_SOURCE_SPECIFIC, self::$import_source_local_id);
+			self::move_items_to_source(BLOCK_EXACOMP_IMPORT_SOURCE_SPECIFIC, self::$import_source_local_id);
 		}
 		
 		// self::kompetenzraster_load_current_data_for_source();

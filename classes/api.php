@@ -110,7 +110,7 @@ class api {
 		foreach ($courses as $course) {
 			$subjects = db_layer_course::create($course->id)->get_subjects();
 			foreach ($subjects as $subject) {
-				$evaluation = get_user_subject_evaluation($studentid, $subject->id, $course->id);
+				$evaluation = block_exacomp_get_user_subject_evaluation($studentid, $subject->id, $course->id);
 				if ($evaluation) {
 					$resultSubjects[] = (object)[
 						'title' => $subject->title,
