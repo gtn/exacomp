@@ -2729,7 +2729,9 @@ class block_exacomp_renderer extends plugin_renderer_base {
 
 		$js = '
 			<script>
-				block_exacomp.column_selector("table.exabis_comp_comp");
+				block_exacomp.column_selector("table.exabis_comp_comp", {
+					title_colspan: 2
+				});
 			</script>
 		';
 		return $js.html_writer::tag('form', $div, array('id'=>'edit-activities', 'action'=>$PAGE->url.'&action=save', 'method'=>'post'));

@@ -199,13 +199,23 @@
 			}
 		},
 
-		column_selector: function(tablesearch) {
+		column_selector: function(tablesearch, options) {
+
+			options = options || {};
+			options = $.extend({
+				title_colspan: 1,
+				item_colspan: 1,
+			}, options);
 
 			$(function(){
 				var $table = $(tablesearch);
-				var item_colspan = 1;
-				var title_colspan = 1;
-				var item_count = ($("table.exabis_comp_comp").find('tr:first').find('td,th').length - title_colspan) / item_colspan;
+
+				var table_total_colspan = 0;
+				$table.find('tr:first').find('td,th').each(function(){
+					table_total_colspan += this.colSpan;
+				});
+
+				var item_count = (table_total_colspan - options.title_colspan) / options.item_colspan;
 				var items_per_page = 6;
 				var $content = $('#col_selector_content');
 
@@ -221,16 +231,19 @@
 					var groupid = $(this).attr('exa-groupid');
 
 					$table.find('tr').each(function(){
+						var rowColSpan = 0;
 						$(this).find('td,tr').each(function(i, col){
-							if (i < title_colspan) {
+							if (rowColSpan < options.title_colspan) {
 								// nothing, always show title
 							} else if (groupid === 'all') {
 								$(col).show();
-							} else if (Math.floor((i - title_colspan) / items_per_page) == groupid) {
+							} else if (Math.floor((rowColSpan - options.title_colspan) / items_per_page) == groupid) {
 								$(col).show();
 							} else {
 								$(col).hide();
 							}
+
+							rowColSpan += this.colSpan;
 						});
 					});
 
