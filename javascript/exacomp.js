@@ -198,6 +198,66 @@
 				parent.location.reload(true);
 			}
 		},
+
+		column_selector: function(tablesearch) {
+
+			$(function(){
+				var $table = $(tablesearch);
+				var item_colspan = 1;
+				var title_colspan = 1;
+				var item_count = ($("table.exabis_comp_comp").find('tr:first').find('td,th').length - title_colspan) / item_colspan;
+				var items_per_page = 6;
+				var $content = $('#col_selector_content');
+
+				if (item_count <= items_per_page) {
+					$table.show();
+					return;
+				}
+
+				function select_group() {
+					$('.colgroup-button').css('font-weight', 'normal');
+					$(this).css('font-weight', 'bold');
+
+					var groupid = $(this).attr('exa-groupid');
+
+					$table.find('tr').each(function(){
+						$(this).find('td,tr').each(function(i, col){
+							if (i < title_colspan) {
+								// nothing, always show title
+							} else if (groupid === 'all') {
+								$(col).show();
+							} else if (Math.floor((i - title_colspan) / items_per_page) == groupid) {
+								$(col).show();
+							} else {
+								$(col).hide();
+							}
+						});
+					});
+
+					return false;
+				}
+
+				$content.append('<b>' + M.util.get_string('columnselect','block_exacomp') + ':</b>');
+				for (var i=0; i < Math.ceil(item_count / items_per_page); i++) {
+					$content.append(' ');
+					$('<a href="#" class="colgroup-button" exa-groupid="'+i+'">'
+						+(i*items_per_page+1)+'-'+Math.min(item_count, (i+1)*items_per_page)+'</a>')
+						.click(select_group)
+						.appendTo($content);
+				}
+
+				$content.append(' ');
+				$('<a href="#" class="colgroup-button colgroup-button-all" exa-groupid="all">'
+					+M.util.get_string('all','moodle')+'</a>')
+					.click(select_group)
+					.appendTo($content);
+
+				$content.find('a:first').click();
+				$table.show();
+			});
+
+			document.write('<div id="col_selector_content"></div>');
+		}
 	};
 
 	$(function () {

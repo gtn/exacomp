@@ -104,7 +104,7 @@ $scheme = block_exacomp_get_grading_scheme($courseid);
 $colselector="";
 if($isTeacher){	//mind nostudents setting
 	if($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $editmode == 0 && $course_settings->nostudents != 1) {
-		$colselector=$output->column_selector(count($allCourseStudents));
+		$colselector=$output->students_column_selector(count($allCourseStudents));
 	} elseif (!$studentid || $course_settings->nostudents == 1 || ($studentid == BLOCK_EXACOMP_SHOW_ALL_STUDENTS && $editmode = 1)) {
 		$students = array();
 	} else {
