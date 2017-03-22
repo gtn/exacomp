@@ -307,7 +307,8 @@ class block_exacomp_external extends external_api {
 			'exampleid' => $exampleid,
 		));
 
-		$data = static::require_can_access_example($exampleid);
+		$courseid = static::find_courseid_for_example($exampleid);
+		static::require_can_access_example($exampleid, $courseid);
 
 		$example = $DB->get_record(BLOCK_EXACOMP_DB_EXAMPLES, array(
 			'id' => $exampleid,
@@ -315,7 +316,7 @@ class block_exacomp_external extends external_api {
 		$example->description = htmlentities($example->description);
 		$example->hassubmissions = ($DB->get_records('block_exacompitemexample', array('exampleid' => $exampleid))) ? true : false;
 		if ($file = block_exacomp_get_file($example, 'example_task')) {
-			$example->taskfileurl = static::get_webservice_url_for_file($file, $data->courseid)->out(false);
+			$example->taskfileurl = static::get_webservice_url_for_file($file, $courseid)->out(false);
 			$example->taskfilename = $file->get_filename();
 		} else {
 			$example->taskfileurl = null;
@@ -343,9 +344,9 @@ class block_exacomp_external extends external_api {
 			$example->task = $example->externalurl;
 		}
 
-		$solution = block_exacomp_get_file($example, 'example_solution', $data->courseid);
+		$solution = block_exacomp_get_file($example, 'example_solution', $courseid);
 		if ($solution) {
-			$example->solution = (string)static::get_webservice_url_for_file($solution, $data->courseid)->out(false);;
+			$example->solution = (string)static::get_webservice_url_for_file($solution, $courseid)->out(false);;
 		} elseif ($example->externalsolution) {
 			$example->solution = $example->externalsolution;
 		}
@@ -936,7 +937,9 @@ class block_exacomp_external extends external_api {
 		if (!$itemexample) {
 			throw new invalid_parameter_exception ('Item not found');
 		}
-		static::require_can_access_example($itemexample->exampleid);
+
+		$courseid = static::find_courseid_for_example($itemexample->exampleid);
+		static::require_can_access_example($itemexample->exampleid, $courseid);
 
 		$item->file = "";
 		$item->isimage = false;
@@ -4478,7 +4481,7 @@ class block_exacomp_external extends external_api {
 		$creatorid = $USER->id;
 
 		static::require_can_access_course($courseid);
-		static::require_can_access_example($exampleid);
+		static::require_can_access_example($exampleid, $courseid);
 
 		block_exacomp_add_example_to_schedule(0, $exampleid, $creatorid, $courseid);
 
@@ -6970,7 +6973,7 @@ class block_exacomp_external extends external_api {
 			}
 
 			if (!can_access_course($course)) {
-				throw new invalid_parameter_exception ('Not allowed to access this course');
+				throw new block_exacomp_permission_exception('Not allowed to access this course');
 			}
 		}
 
@@ -6990,17 +6993,10 @@ class block_exacomp_external extends external_api {
 			}
 		}
 
-		throw new invalid_parameter_exception ('Not allowed to view other user');
+		throw new block_exacomp_permission_exception('Not allowed to view other user');
 	}
 
-	/**
-	 * @param $exampleid
-	 * @param int $courseid if courseid=0, then we don't know the course and have to search all
-	 *                        TODO: if courseid is set, then just search that course
-	 * @return object the data of the found example
-	 * @throws block_exacomp_permission_exception
-	 */
-	private static function require_can_access_example($exampleid, $courseid = null) {
+	private static function find_courseid_for_example($exampleid) {
 		// go through all courses
 		// and all subjects
 		// and all examples
@@ -7030,20 +7026,38 @@ class block_exacomp_external extends external_api {
 			}
 		}
 
-		$exampleDataFound = null;
 		foreach ($courses as $course) {
-			// can be viewed by user, or by whole course
-			if (block_exacomp_is_teacher($courseid) || block_exacomp_is_example_visible($course->id, \block_exacomp\example::get($exampleid), g::$USER->id)) {
-				$exampleDataFound = (object)['exampleid' => $exampleid, 'courseid' => $course->id];
-				break;
+			try {
+				static::require_can_access_example($exampleid, $course->id);
+
+				return $course->id;
+			} catch (block_exacomp_permission_exception $e) {
+				// try other course
 			}
 		}
+	}
 
-		if (!$exampleDataFound) {
-			throw new block_exacomp_permission_exception();
+	/**
+	 * @param $exampleid
+	 * @param int $courseid if courseid=0, then we don't know the course and have to search all
+	 *                        TODO: if courseid is set, then just search that course
+	 * @return object the data of the found example
+	 * @throws block_exacomp_permission_exception
+	 */
+	private static function require_can_access_example($exampleid, $courseid) {
+		$examples = block_exacomp_get_examples_by_course($courseid);
+		if (!isset($examples[$exampleid])) {
+			throw new block_exacomp_permission_exception("Example '$exampleid' not found in course '$courseid'");
 		}
 
-		return $exampleDataFound;
+		// can be viewed by user, or by whole course
+		if (block_exacomp_is_teacher($courseid) ||
+			(block_exacomp_is_student($courseid) && block_exacomp_is_example_visible($courseid, \block_exacomp\example::get($exampleid), g::$USER->id))
+		) {
+			return;
+		}
+
+		throw new block_exacomp_permission_exception("Example '$exampleid' in course '$courseid' not allowed");
 	}
 
 
@@ -7110,5 +7124,3 @@ class block_exacomp_external extends external_api {
 		return $return;
 	}
 }
-
-
