@@ -103,6 +103,25 @@ class api {
 		return true;
 	}
 
+	static function delete_student_assessment_data_up_until($studentid, $time) {
+		global $DB;
+
+		// comp assessment
+		$DB->delete_records_select(BLOCK_EXACOMP_DB_COMPETENCES,
+			"userid=? AND timestamp<=?", [$studentid, $time]);
+
+		// example teacher assessment
+		$DB->delete_records_select(BLOCK_EXACOMP_DB_EXAMPLEEVAL,
+			"studentid=? AND timestamp_teacher>0 AND timestamp_teacher<=?", [$studentid, $time]);
+
+		// example self assessment, if timestamp_teacher>0 => der lehrer hat nach dem bildungsstandard noch bewertet
+		// => das wollen wir dann nicht löschen
+		$DB->delete_records_select(BLOCK_EXACOMP_DB_EXAMPLEEVAL,
+			"studentid=? AND timestamp_teacher=0 AND timestamp_student<=?", [$studentid, $time]);
+
+		return true;
+	}
+
 	static function get_subjects_with_grade_for_teacher_and_student($teacherid, $studentid) {
 		$resultSubjects = [];
 
