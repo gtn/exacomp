@@ -76,8 +76,6 @@ const BLOCK_EXACOMP_DB_AUTOTESTASSIGN = 'block_exacompautotestassign';
 const BLOCK_EXACOMP_ROLE_TEACHER = 1;
 const BLOCK_EXACOMP_ROLE_STUDENT = 0;
 
-const BLOCK_EXACOMP_STUDENT_ENROLMENTID = 5;
-
 const BLOCK_EXACOMP_WS_ROLE_TEACHER = 1;
 const BLOCK_EXACOMP_WS_ROLE_STUDENT = 2;
 
@@ -1476,7 +1474,9 @@ function block_exacomp_init_overview_data($courseid, $subjectid, $topicid, $nive
 function block_exacomp_get_students_by_course($courseid) {
 	$context = context_course::instance($courseid);
 
-	return get_role_users(BLOCK_EXACOMP_STUDENT_ENROLMENTID, $context);
+	$students = get_users_by_capability($context, 'block/exacomp:student', '', 'lastname,firstname');
+	// TODO ggf user mit exacomp:teacher hier filtern?
+	return $students;
 }
 
 /**
