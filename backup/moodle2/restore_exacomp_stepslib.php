@@ -19,6 +19,8 @@
 
 require_once __DIR__."/../../inc.php";
 
+use block_exacomp\globals as g;
+
 class restore_exacomp_block_structure_step extends restore_structure_step {
 
 	protected function define_structure() {
@@ -31,14 +33,15 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
 		$paths[] = new restore_path_element('topic', '/block/exacomp/topics/topic');
 		$paths[] = new restore_path_element('compactiv_mm', '/block/exacomp/activities/compactiv_mm');
 		$paths[] = new restore_path_element('taxonomy', '/block/exacomp/taxonomies/taxonomy');
+		$paths[] = new restore_path_element('evaluation', '/block/exacomp/evaluations/evaluation');
 
 		// Return the paths wrapped into standard activity structure
 		return $paths;
 	}
-	
+
 	protected function get_db_record($table, $data, $prefix = "") {
 		global $DB;
-		
+
 		\block_exacomp\data::prepare();
 		if (!$where = block_exacomp\data_course_backup::parse_sourceid($data, $prefix)) {
 			return null;
@@ -54,18 +57,18 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
 
 		$taxonomies = array();
 		if (isset($data->exacomp['taxonomies']['taxonomy'])) {
-			foreach($data->exacomp['taxonomies']['taxonomy'] as $taxonomy) {
+			foreach ($data->exacomp['taxonomies']['taxonomy'] as $taxonomy) {
 				$taxonomy = (object)$taxonomy;
-				
+
 				if (!$dbTaxonomy = $this->get_db_record(BLOCK_EXACOMP_DB_TAXONOMIES, $taxonomy)) {
 					continue;
 				}
-				
+
 				$taxonomies[] = $dbTaxonomy->id;
 			}
-			
+
 		}
-		
+
 		if (isset($data->exacomp['settings'])) {
 			$settings = $data->exacomp['settings'];
 			$settings = (object)reset($settings);
@@ -90,55 +93,118 @@ class restore_exacomp_block_structure_step extends restore_structure_step {
 				$DB->insert_record('block_exacompmdltype_mm', $mdltype);
 			}
 		}
-		
+
+		$topicids = [];
 		if (isset($data->exacomp['topics']['topic'])) {
 
-			foreach($data->exacomp['topics']['topic'] as $topic) {
+			foreach ($data->exacomp['topics']['topic'] as $topic) {
 				$topic = (object)$topic;
-				
+
 				if (!$dbTopic = $this->get_db_record(BLOCK_EXACOMP_DB_TOPICS, $topic)) {
 					continue;
 				}
-				
-				block_exacomp\globals::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_COURSETOPICS, array('topicid' => $dbTopic->id, 'courseid' => $this->get_courseid()));
+
+				$topicids[] = $dbTopic->id;
 			}
 		}
-		
+
+		block_exacomp_set_coursetopics($this->get_courseid(), $topicids);
+
 		// hack
 		$GLOBALS['block_exacomp_imported_activities'] = array();
 		if (isset($data->exacomp['activities']['compactiv_mm'])) {
-			$course = $DB->get_record("course",array("id"=>$this->get_courseid()));
+			$course = $DB->get_record("course", array("id" => $this->get_courseid()));
 
 			$DB->execute("
 					DELETE FROM {block_exacompcompactiv_mm} WHERE activityid IN
 					(SELECT id FROM {course_modules} WHERE course = ?)
 				", array($this->get_courseid()));
-			
+
 			foreach ($data->exacomp['activities']['compactiv_mm'] as $descractiv_mm) {
 				$descractiv_mm = (object)$descractiv_mm;
-				
+
 				if ($descractiv_mm->comptype == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
 					$table = BLOCK_EXACOMP_DB_DESCRIPTORS;
-				} else if ($descractiv_mm->comptype == BLOCK_EXACOMP_TYPE_TOPIC) {
+				} elseif ($descractiv_mm->comptype == BLOCK_EXACOMP_TYPE_TOPIC) {
 					$table = BLOCK_EXACOMP_DB_TOPICS;
 				} else {
 					print_error("unknown comptype {$descractiv_mm->comptype}");
 				}
-				
+
 				if (!$source_desc = $this->get_db_record($table, $descractiv_mm, 'comp')) {
 					continue;
 				}
-				
+
 				$descractiv_mm->compid = $source_desc->id;
 				// temporary activityid, will be overwritten in restore_exacomp_block_task.class.php::after_restore()
 				$descractiv_mm->oldactivityid = $descractiv_mm->activityid;
 				$descractiv_mm->activityid = -12345;
 				$descractiv_mm->coursetitle = $course->shortname;
-					
+
 				$descractiv_mm->id = $DB->insert_record('block_exacompcompactiv_mm', $descractiv_mm);
-				
+
 				$GLOBALS['block_exacomp_imported_activities'][$descractiv_mm->id] = $descractiv_mm;
 			}
 		}
-   }
+
+		if (isset($data->exacomp['evaluations']['evaluation'])) {
+			foreach ($data->exacomp['evaluations']['evaluation'] as $evaluation) {
+				$evaluation = (object)$evaluation;
+				if ($evaluation->type == BLOCK_EXACOMP_TYPE_SUBJECT) {
+					$table = BLOCK_EXACOMP_DB_SUBJECTS;
+				} elseif ($evaluation->type == BLOCK_EXACOMP_TYPE_TOPIC) {
+					$table = BLOCK_EXACOMP_DB_TOPICS;
+				} elseif ($evaluation->type == BLOCK_EXACOMP_TYPE_DESCRIPTOR) {
+					$table = BLOCK_EXACOMP_DB_DESCRIPTORS;
+				} elseif ($evaluation->type == BLOCK_EXACOMP_TYPE_EXAMPLE) {
+					$table = BLOCK_EXACOMP_DB_EXAMPLES;
+				} else {
+					// unknown type
+					continue;
+				}
+
+				if (!$competence = $this->get_db_record($table, $evaluation)) {
+					// competence not found
+					// also checks for local competence etc.
+					continue;
+				}
+
+				if ($evaluation->type == BLOCK_EXACOMP_TYPE_EXAMPLE) {
+					if ($evaluation->role == BLOCK_EXACOMP_ROLE_TEACHER) {
+						$data = [
+							'teacher_reviewerid' => $evaluation->reviewerid,
+							'timestamp_teacher' => $evaluation->timestamp,
+							'teacher_evaluation' => $evaluation->additionalinfo,
+							'evalniveauid' => $evaluation->evalniveauid,
+						];
+					} else {
+						$data = [
+							'timestamp_student' => $evaluation->timestamp,
+							'student_evaluation' => $evaluation->evalniveauid,
+						];
+					}
+
+					g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_EXAMPLEEVAL, $data, [
+						'studentid' => $this->get_mappingid('user', $evaluation->userid) ?: $evaluation->userid,
+						'courseid' => $this->get_courseid(),
+						'exampleid' => $competence->id,
+					]);
+				} else {
+					g::$DB->insert_or_update_record(BLOCK_EXACOMP_DB_COMPETENCES, [
+						'reviewerid' => $this->get_mappingid('user', $evaluation->reviewerid) ?: $evaluation->userid,
+						'timestamp' => $evaluation->timestamp,
+						'additionalinfo' => $evaluation->additionalinfo,
+						'evalniveauid' => $evaluation->evalniveauid,
+						'value' => $evaluation->value,
+					], [
+						'courseid' => $this->get_courseid(),
+						'userid' => $this->get_mappingid('user', $evaluation->userid) ?: $evaluation->userid,
+						'comptype' => $evaluation->type,
+						'compid' => $competence->id,
+						'role' => $evaluation->role,
+					]);
+				}
+			}
+		}
+	}
 }
