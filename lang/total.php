@@ -1192,7 +1192,7 @@ return [
 		'Statistics',
 	],
 	'innersection3' => [
-		'Vergleich: Lehrer-Schüler',
+		'Übersicht über die Kompetenzen und Aufgaben',
 		'Comparison: Teacher-Student',
 	],
 	// === Competence Profile Settings ===

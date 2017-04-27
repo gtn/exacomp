@@ -59,7 +59,7 @@ class backup_exacomp_block_structure_step extends backup_block_structure_step {
 
 		$compcompuser = new backup_nested_element('evaluation', [], [
 			'userid', 'comptype', 'source', 'sourceid', 'role', 'reviewerid', 'timestamp',
-			'value', 'additionalinfo', 'evalniveauid', 'resubmission'
+			'value', 'additionalinfo', 'evalniveauid', 'resubmission',
 		]);
 
 		// Build the tree

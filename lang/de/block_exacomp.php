@@ -362,7 +362,7 @@ $string['my_comps'] = 'Meine Kompetenzen';
 $string['my_badges'] = 'Meine Auszeichnungen';
 $string['innersection1'] = 'Rasterübersicht';
 $string['innersection2'] = 'Statistik';
-$string['innersection3'] = 'Vergleich: Lehrer-Schüler';
+$string['innersection3'] = 'Übersicht über die Kompetenzen und Aufgaben';
 // === Competence Profile Settings ===
 $string['profile_settings_choose_courses'] = 'In Exabis Kompetenzraster beurteilen TrainerInnen den Kompetenzerwerb in unterschiedlichen Fachgebieten. Hier kann ausgewählt werden, welche Kurse im Kompetenzprofil aufscheinen sollen.';
 $string['specificcontent'] = 'Schulbezogene Themenbereiche';
